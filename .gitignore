@@ -22,7 +22,7 @@ _esy
 *.bak
 *.swp
 *.swo
-
+*.flambda
 *.jsx
 *.lambda
 *.rawlambda

@@ -2557,8 +2557,86 @@ let time ?nums description  f  =
     end
 
 end
-module Set_gen
-= struct
+module Set_gen : sig 
+#1 "set_gen.mli"
+type 'a t =private
+    Empty
+  | Leaf of 'a
+  | Node of { l : 'a t; v : 'a; r : 'a t; h : int; }
+(* type ('a, 'id) enumeration0 =
+    End
+  | More of 'a * ('a, 'id) t * ('a, 'id) enumeration0 *)
+(* val cons_enum : 'a t-> ('a, 'b) enumeration0 -> ('a, 'b) enumeration0 *)
+(* val height : 'a t-> int *)
+val min_elt : 'a t-> 'a
+val max_elt : 'a t-> 'a
+val empty : 'a t
+val is_empty : 'a t-> bool
+val unsafe_create : 
+  'a -> 'a t -> 'a t -> int -> 'a t
+(* val cardinal_aux : int -> 'a t-> int *)
+val cardinal : 'a t-> int
+(* val elements_aux : 'a list -> 'a t-> 'a list *)
+val elements : 'a t-> 'a list
+val choose : 'a t-> 'a
+val iter : 'a t-> ('a -> unit) -> unit
+val fold : 'a t-> 'c -> ('a -> 'c -> 'c) -> 'c
+val for_all : 'a t-> ('a -> bool) -> bool
+val exists : 'a t-> ('a -> bool) -> bool
+(* val max_int_2 : int -> int -> int *)
+(* exception Height_invariant_broken
+exception Height_diff_borken *)
+(* val check_height_and_diff : 'a t-> int *)
+val check : 'a t-> unit
+(* val create : 'a t-> 'a -> 'a t-> 'a t*)
+val internal_bal : 'a t-> 'a -> 'a t-> 'a t
+val remove_min_elt : 'a t-> 'a t
+val singleton : 'a -> 'a t
+val internal_merge : 'a t-> 'a t-> 'a t
+val add_min_element : 'a -> 'a t-> 'a t
+val add_max_element : 'a -> 'a t-> 'a t
+val internal_join : 'a t-> 'a -> 'a t-> 'a t
+val internal_concat : 'a t-> 'a t-> 'a t
+(* val filter : 'a t-> ('a -> bool) -> 'a t *)
+val partition : 'a t-> ('a -> bool) -> 'a t * 'a t
+val of_sorted_array : 'a array -> 'a t
+val is_ordered : cmp:('a -> 'a -> int) -> 'a t-> bool
+val invariant : cmp:('a -> 'a -> int) -> 'a t-> bool
+(* val compare_aux :
+  cmp:('a -> 'b -> int) ->
+  ('a, 'c) enumeration0 -> ('b, 'd) enumeration0 -> int *)
+(* val compare : cmp:('a -> 'b -> int) -> 'a t -> ('b, 'd) t -> int *)
+module type S =
+  sig
+    type elt
+    type t
+    val empty : t
+    val is_empty : t -> bool
+    val iter : t -> (elt -> unit) -> unit
+    val fold : t -> 'a -> (elt -> 'a -> 'a) -> 'a
+    val for_all : t -> (elt -> bool) -> bool
+    val exists : t -> (elt -> bool) -> bool
+    val singleton : elt -> t
+    val cardinal : t -> int
+    val elements : t -> elt list
+    val min_elt : t -> elt
+    (* val max_elt : t -> elt *)
+    val choose : t -> elt
+    val mem : t -> elt -> bool
+    val add : t -> elt -> t
+    val remove : t -> elt -> t
+    val union : t -> t -> t
+    val inter : t -> t -> t
+    val diff : t -> t -> t
+    val find : t -> elt -> elt
+    val of_list : elt list -> t
+    val of_sorted_array : elt array -> t
+    (* val of_array : elt array -> t *)
+    val invariant : t -> bool
+    val print : Format.formatter -> t -> unit
+  end
+
+end = struct
 #1 "set_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
@@ -2572,55 +2650,90 @@ module Set_gen
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
 (***********************************************************************)
-
+[@@@warnerror "+55"]
 (** balanced tree based on stdlib distribution *)
 
-type ('a, 'id) t0 = 
+type 'a t0 = 
   | Empty 
-  | Node of ('a, 'id) t0 * 'a * ('a, 'id) t0 * int 
+  | Leaf of  'a 
+  | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
 
-type ('a, 'id) enumeration0 = 
-  | End | More of 'a * ('a, 'id) t0 * ('a, 'id) enumeration0
+let empty = Empty
+let  [@inline] height = function
+  | Empty -> 0 
+  | Leaf _ -> 1
+  | Node {h} -> h   
+
+let [@inline] calc_height a b =  
+  (if a >= b then a else b) + 1 
+
+(* 
+    Invariants: 
+    1. {[ l < v < r]}
+    2. l and r balanced 
+    3. [height l] - [height r] <= 2
+*)
+let [@inline] unsafe_create v l  r h = 
+  if h = 1 then Leaf v   
+  else Node{l;v;r; h }         
 
 
-let rec cons_enum s e = 
+let [@inline] singleton x = Leaf x
+
+type 'a t = 'a t0 = private
+  | Empty 
+  | Leaf of 'a
+  | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
+
+(* type 'a enumeration0 = 
+  | End | More of 'a * 'a t0 * 'a enumeration0 *)
+
+
+(* let rec cons_enum s e = 
   match s with 
   | Empty -> e 
-  | Node(l,v,r,_) -> cons_enum l (More(v,r,e))
+  | Node {l; v;r} -> cons_enum l (More(v,r,e)) *)
 
-let  height = function
-  | Empty -> 0 
-  | Node(_,_,_,h) -> h   
+
 
 (* Smallest and greatest element of a set *)
 
 let rec min_elt = function
-    Empty -> raise Not_found
-  | Node(Empty, v, _, _) -> v
-  | Node(l, _, _, _) -> min_elt l
+  | Empty -> raise Not_found
+  | Leaf v -> v 
+  | Node{l; v} ->
+    match l with 
+    | Empty -> v 
+    | Leaf _
+    | Node _ ->  min_elt l
 
 let rec max_elt = function
-    Empty -> raise Not_found
-  | Node(_, v, Empty, _) -> v
-  | Node(_, _, r, _) -> max_elt r
+  | Empty -> raise Not_found
+  | Leaf v -> v 
+  | Node{ v; r} -> 
+    match r with 
+    | Empty -> v 
+    | Leaf _
+    | Node _ -> max_elt r
 
 
 
 
-let empty = Empty
 
 let is_empty = function Empty -> true | _ -> false
 
 let rec cardinal_aux acc  = function
   | Empty -> acc 
-  | Node (l,_,r, _) -> 
+  | Leaf _ -> acc + 1
+  | Node {l;r} -> 
     cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
 
 let cardinal s = cardinal_aux 0 s 
 
 let rec elements_aux accu = function
   | Empty -> accu
-  | Node(l, v, r, _) -> elements_aux (v :: elements_aux accu r) l
+  | Leaf v -> v :: accu
+  | Node{l; v; r} -> elements_aux (v :: elements_aux accu r) l
 
 let elements s =
   elements_aux [] s
@@ -2629,31 +2742,26 @@ let choose = min_elt
 
 let rec iter  x f = match x with
   | Empty -> ()
-  | Node(l, v, r, _) -> iter l f ; f v; iter r f 
+  | Leaf v -> f v 
+  | Node {l; v; r} -> iter l f ; f v; iter r f 
 
 let rec fold s accu f =
   match s with
   | Empty -> accu
-  | Node(l, v, r, _) -> fold r (f v (fold l accu f)) f 
+  | Leaf v -> f v accu
+  | Node{l; v; r} -> fold r (f v (fold l accu f)) f 
 
 let rec for_all x p = match x with
   | Empty -> true
-  | Node(l, v, r, _) -> p v && for_all l p && for_all r p 
+  | Leaf v -> p v 
+  | Node{l; v; r} -> p v && for_all l p && for_all r p 
 
 let rec exists x p = match x with
   | Empty -> false
-  | Node(l, v, r, _) -> p v || exists l p  || exists r p
+  | Leaf v -> p v 
+  | Node {l; v; r} -> p v || exists l p  || exists r p
 
 
-let max_int3 (a : int) b c = 
-  if a >= b then 
-    if a >= c then a 
-    else c
-  else 
-  if b >=c then b
-  else c     
-let max_int_2 (a : int) b =  
-  if a >= b then a else b 
 
 
 
@@ -2663,10 +2771,11 @@ exception Height_diff_borken
 let rec check_height_and_diff = 
   function 
   | Empty -> 0
-  | Node(l,_,r,h) -> 
+  | Leaf _ -> 1
+  | Node{l;r;h} -> 
     let hl = check_height_and_diff l in
     let hr = check_height_and_diff r in
-    if h <>  max_int_2 hl hr + 1 then raise Height_invariant_broken
+    if h <>  calc_height hl hr  then raise Height_invariant_broken
     else  
       let diff = (abs (hl - hr)) in  
       if  diff > 2 then raise Height_diff_borken 
@@ -2674,16 +2783,6 @@ let rec check_height_and_diff =
 
 let check tree = 
   ignore (check_height_and_diff tree)
-(* 
-    Invariants: 
-    1. {[ l < v < r]}
-    2. l and r balanced 
-    3. [height l] - [height r] <= 2
-*)
-let create l v r = 
-  let hl = match l with Empty -> 0 | Node (_,_,_,h) -> h in
-  let hr = match r with Empty -> 0 | Node (_,_,_,h) -> h in
-  Node(l,v,r, if hl >= hr then hl + 1 else hr + 1)         
 
 (* Same as create, but performs one step of rebalancing if necessary.
     Invariants:
@@ -2695,50 +2794,61 @@ let create l v r =
 
     Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
 *)
-let internal_bal l v r =
-  let hl = match l with Empty -> 0 | Node(_,_,_,h) -> h in
-  let hr = match r with Empty -> 0 | Node(_,_,_,h) -> h in
-  if hl > hr + 2 then begin
-    match l with
-      Empty -> assert false
-    | Node(ll, lv, lr, _) ->   
-      if height ll >= height lr then
-        (* [ll] >~ [lr] 
-           [ll] >~ [r] 
-           [ll] ~~ [ lr ^ r]  
-        *)
-        create ll lv (create lr v r)
-      else begin
-        match lr with
-          Empty -> assert false
-        | Node(lrl, lrv, lrr, _)->
-          (* [lr] >~ [ll]
-             [lr] >~ [r]
-             [ll ^ lrl] ~~ [lrr ^ r]   
-          *)
-          create (create ll lv lrl) lrv (create lrr v r)
-      end
-  end else if hr > hl + 2 then begin
-    match r with
-      Empty -> assert false
-    | Node(rl, rv, rr, _) ->
-      if height rr >= height rl then
-        create (create l v rl) rv rr
-      else begin
-        match rl with
-          Empty -> assert false
-        | Node(rll, rlv, rlr, _) ->
-          create (create l v rll) rlv (create rlr rv rr)
-      end
+let internal_bal l v r : _ t =
+  let hl = height l in
+  let hr = height r in
+  if hl > hr + 2 then 
+    let [@warning "-8"] Node ({l=ll;r= lr} as l) = l in 
+    let hll = height ll in 
+    let hlr = height lr in 
+    if hll >= hlr then
+      let hnode = calc_height hlr hr in       
+      unsafe_create l.v 
+        ll  
+        (unsafe_create v lr  r hnode ) 
+        (calc_height hll hnode)
+    else       
+      let [@warning "-8"] Node ({l = lrl; r = lrr } as lr) = lr in 
+      let hlrl = height lrl in 
+      let hlrr = height lrr in 
+      let hlnode = calc_height hll hlrl in 
+      let hrnode = calc_height hlrr hr in 
+      unsafe_create lr.v 
+        (unsafe_create l.v ll  lrl hlnode)  
+        (unsafe_create v lrr  r hrnode)
+        (calc_height hlnode hrnode)
+  else if hr > hl + 2 then begin    
+    let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
+    let hrr = height rr in 
+    let hrl = height rl in 
+    if hrr >= hrl then
+      let hnode = calc_height hl hrl in
+      unsafe_create r.v 
+        (unsafe_create v l  rl hnode) 
+        rr 
+        (calc_height hnode hrr )
+    else begin
+      let [@warning "-8"] Node ({l = rll ; r = rlr } as rl) = rl in 
+      let hrll = height rll in 
+      let hrlr = height rlr in 
+      let hlnode = (calc_height hl hrll) in
+      let hrnode = (calc_height hrlr hrr) in
+      unsafe_create rl.v 
+        (unsafe_create v l rll hlnode)  
+        (unsafe_create r.v rlr rr hrnode)
+        (calc_height hlnode hrnode)
+    end
   end else
-    Node(l, v, r, (if hl >= hr then hl + 1 else hr + 1))    
+    unsafe_create v l  r (calc_height hl hr)
+
 
 let rec remove_min_elt = function
     Empty -> invalid_arg "Set.remove_min_elt"
-  | Node(Empty, _, r, _) -> r
-  | Node(l, v, r, _) -> internal_bal (remove_min_elt l) v r
+  | Leaf _ -> empty  
+  | Node{l=Empty; r} -> r
+  | Node{l; v; r} -> internal_bal (remove_min_elt l) v r
 
-let singleton x = Node(Empty, x, Empty, 1)    
+
 
 (* 
    All elements of l must precede the elements of r.
@@ -2761,12 +2871,14 @@ let internal_merge l r =
 
 let rec add_min_element v = function
   | Empty -> singleton v
-  | Node (l, x, r, _) ->
+  | Leaf x -> unsafe_create x (singleton v) empty 2 
+  | Node {l; v=x; r} ->
     internal_bal (add_min_element v l) x r
 
 let rec add_max_element v = function
   | Empty -> singleton v
-  | Node (l, x, r, _) ->
+  | Leaf x -> unsafe_create v (singleton x) empty 2 
+  | Node {l; v=x; r} ->
     internal_bal l x (add_max_element v r)
 
 (** 
@@ -2782,7 +2894,17 @@ let rec internal_join l v r =
   match (l, r) with
     (Empty, _) -> add_min_element v r
   | (_, Empty) -> add_max_element v l
-  | (Node(ll, lv, lr, lh), Node(rl, rv, rr, rh)) ->
+  | Leaf lv, Node {h = rh} ->
+    if rh > 3 then 
+      add_min_element lv (add_min_element v r ) (* FIXME: could inlined *)
+    else unsafe_create  v l r (rh + 1)
+  | Leaf _, Leaf _ -> 
+    unsafe_create  v l r 2
+  | Node {h = lh}, Leaf rv ->
+    if lh > 3 then       
+      add_max_element rv (add_max_element v l)
+    else unsafe_create  v l r (lh + 1)    
+  | (Node{l=ll;v= lv;r= lr;h= lh}, Node {l=rl; v=rv; r=rr; h=rh}) ->
     if lh > rh + 2 then 
       (* proof by induction:
          now [height of ll] is [lh - 1] 
@@ -2790,7 +2912,7 @@ let rec internal_join l v r =
       internal_bal ll lv (internal_join lr v r) 
     else
     if rh > lh + 2 then internal_bal (internal_join l v rl) rv rr 
-    else create l v r
+    else unsafe_create  v l r (calc_height lh rh)
 
 
 (*
@@ -2803,19 +2925,20 @@ let internal_concat t1 t2 =
   | (t, Empty) -> t
   | (_, _) -> internal_join t1 (min_elt t2) (remove_min_elt t2)
 
-let rec filter x p = match x with 
+(* let rec filter x p = match x with 
   | Empty -> Empty
-  | Node(l, v, r, _) ->
+  | Node {l; v; r} ->
     (* call [p] in the expected left-to-right order *)
     let l' = filter l p in
     let pv = p v in
     let r' = filter r p in
     if pv then internal_join l' v r' else internal_concat l' r'
-
+ *)
 
 let rec partition x p = match x with 
-  | Empty -> (Empty, Empty)
-  | Node(l, v, r, _) ->
+  | Empty -> (empty, empty)
+  | Leaf v -> let pv = p v in if pv then x, empty else empty, x
+  | Node{l; v; r} ->
     (* call [p] in the expected left-to-right order *)
     let (lt, lf) = partition l p in
     let pv = p v in
@@ -2824,47 +2947,29 @@ let rec partition x p = match x with
     then (internal_join lt v rt, internal_concat lf rf)
     else (internal_concat lt rt, internal_join lf v rf)
 
-let of_sorted_list l =
-  let rec sub n l =
-    match n, l with
-    | 0, l -> Empty, l
-    | 1, x0 :: l -> Node (Empty, x0, Empty, 1), l
-    | 2, x0 :: x1 :: l -> Node (Node(Empty, x0, Empty, 1), x1, Empty, 2), l
-    | 3, x0 :: x1 :: x2 :: l ->
-      Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2),l
-    | n, l ->
-      let nl = n / 2 in
-      let left, l = sub nl l in
-      match l with
-      | [] -> assert false
-      | mid :: l ->
-        let right, l = sub (n - nl - 1) l in
-        create left mid right, l
-  in
-  fst (sub (List.length l) l)
 
 let of_sorted_array l =   
   let rec sub start n l  =
-    if n = 0 then Empty else 
+    if n = 0 then empty else 
     if n = 1 then 
       let x0 = Array.unsafe_get l start in
-      Node (Empty, x0, Empty, 1)
+      singleton x0
     else if n = 2 then     
       let x0 = Array.unsafe_get l start in 
       let x1 = Array.unsafe_get l (start + 1) in 
-      Node (Node(Empty, x0, Empty, 1), x1, Empty, 2) else
+      unsafe_create x1 (singleton x0)  empty 2 else
     if n = 3 then 
       let x0 = Array.unsafe_get l start in 
       let x1 = Array.unsafe_get l (start + 1) in
       let x2 = Array.unsafe_get l (start + 2) in
-      Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2)
+      unsafe_create x1 (singleton x0)  (singleton x2) 2
     else 
       let nl = n / 2 in
       let left = sub start nl l in
       let mid = start + nl in 
       let v = Array.unsafe_get l mid in 
       let right = sub (mid + 1) (n - nl - 1) l in        
-      create left v right
+      unsafe_create v left  right (calc_height (height left) (height right))
   in
   sub 0 (Array.length l) l 
 
@@ -2872,7 +2977,8 @@ let is_ordered ~cmp tree =
   let rec is_ordered_min_max tree =
     match tree with
     | Empty -> `Empty
-    | Node(l,v,r,_) -> 
+    | Leaf v -> `V (v,v)
+    | Node {l;v;r} -> 
       begin match is_ordered_min_max l with
         | `No -> `No 
         | `Empty ->
@@ -2905,7 +3011,7 @@ let invariant ~cmp t =
   check t ; 
   is_ordered ~cmp t 
 
-let rec compare_aux ~cmp e1 e2 =
+(* let rec compare_aux ~cmp e1 e2 =
   match (e1, e2) with
     (End, End) -> 0
   | (End, _)  -> -1
@@ -2917,7 +3023,7 @@ let rec compare_aux ~cmp e1 e2 =
     else compare_aux ~cmp (cons_enum r1 e1) (cons_enum r2 e2)
 
 let compare ~cmp s1 s2 =
-  compare_aux ~cmp (cons_enum s1 End) (cons_enum s2 End)
+  compare_aux ~cmp (cons_enum s1 End) (cons_enum s2 End) *)
 
 
 module type S = sig
@@ -2933,9 +3039,9 @@ module type S = sig
   val cardinal: t -> int
   val elements: t -> elt list
   val min_elt: t -> elt
-  val max_elt: t -> elt
+  (* val max_elt: t -> elt *)
   val choose: t -> elt
-  val partition: t -> (elt -> bool) ->  t * t
+  (* val partition: t -> (elt -> bool) ->  t * t *)
 
   val mem: t -> elt -> bool
   val add: t -> elt -> t
@@ -2943,16 +3049,15 @@ module type S = sig
   val union: t -> t -> t
   val inter: t -> t -> t
   val diff: t -> t -> t
-  val compare: t -> t -> int
-  val equal: t -> t -> bool
+  (* val compare: t -> t -> int *)
+  (* val equal: t -> t -> bool *)
   (* val subset: t -> t -> bool *)
-  val filter: t -> (elt -> bool) ->  t
+  (* val filter: t -> (elt -> bool) ->  t *)
 
   val find:  t -> elt -> elt
   val of_list: elt list -> t
-  val of_sorted_list : elt list ->  t
   val of_sorted_array : elt array -> t 
-  val of_array : elt array -> t 
+  (* val of_array : elt array -> t  *)
   val invariant : t -> bool 
   val print : Format.formatter -> t -> unit 
 end 
@@ -3059,12 +3164,9 @@ type elt = int
 let compare_elt = Ext_int.compare 
 let print_elt = Format.pp_print_int
 
-type ('a, 'id) t0 = ('a, 'id) Set_gen.t0 = 
-  | Empty 
-  | Node of ('a, 'id) t0 * 'a * ('a, 'id) t0 * int 
+type ('a ) t0 = 'a Set_gen.t 
 
-
-type  t = (elt, unit) t0
+type  t = elt t0
 
 let empty = Set_gen.empty 
 let is_empty = Set_gen.is_empty
@@ -3076,19 +3178,25 @@ let singleton = Set_gen.singleton
 let cardinal = Set_gen.cardinal
 let elements = Set_gen.elements
 let min_elt = Set_gen.min_elt
-let max_elt = Set_gen.max_elt
+(* let max_elt = Set_gen.max_elt *)
 let choose = Set_gen.choose 
 (* let of_sorted_list = Set_gen.of_sorted_list *)
 (* let of_sorted_array = Set_gen.of_sorted_array *)
-let partition = Set_gen.partition 
-let filter = Set_gen.filter 
-let of_sorted_list = Set_gen.of_sorted_list
+(* let partition = Set_gen.partition 
+let filter = Set_gen.filter  *)
 let of_sorted_array = Set_gen.of_sorted_array
 
 let rec split (tree : t) x : t * bool * t =  match tree with 
   | Empty ->
-    (Empty, false, Empty)
-  | Node(l, v, r, _) ->
+    (empty, false, empty)
+  | Leaf v ->   
+    let c = compare_elt x v in
+    if c = 0 then (empty, true, empty)
+    else if c < 0 then
+      (empty, false, tree)
+    else
+      (tree, false, empty)
+  | Node {l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then (l, true, r)
     else if c < 0 then
@@ -3096,8 +3204,15 @@ let rec split (tree : t) x : t * bool * t =  match tree with
     else
       let (lr, pres, rr) = split r x in (Set_gen.internal_join l v lr, pres, rr)
 let rec add (tree : t) x : t =  match tree with 
-  | Empty -> Node(Empty, x, Empty, 1)
-  | Node(l, v, r, _) as t ->
+  | Empty -> singleton x
+  | Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then tree else     
+    if c < 0 then 
+      Set_gen.unsafe_create v (singleton x) empty 2 
+    else 
+      Set_gen.unsafe_create x (singleton v) empty 2 
+  | Node {l; v; r} as t ->
     let c = compare_elt x v in
     if c = 0 then t else
     if c < 0 then Set_gen.internal_bal (add l x ) v r else Set_gen.internal_bal l v (add r x )
@@ -3106,7 +3221,18 @@ let rec union (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
   | (Empty, t2) -> t2
   | (t1, Empty) -> t1
-  | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
+  | Node _, Leaf v2 ->
+    add s1 v2 
+  | Leaf v1, Node _ -> 
+    add s2 v1 
+  | Leaf x, Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then s1 else     
+    if c < 0 then 
+      Set_gen.unsafe_create v (singleton x) empty 2 
+    else 
+      Set_gen.unsafe_create x (singleton v) empty 2     
+  | Node{l=l1; v=v1; r=r1; h=h1}, Node{l=l2; v=v2; r=r2; h=h2} ->
     if h1 >= h2 then
       if h2 = 1 then add s1 v2 else begin
         let (l2, _, r2) = split s2 v1 in
@@ -3120,9 +3246,11 @@ let rec union (s1 : t) (s2 : t) : t  =
 
 let rec inter (s1 : t)  (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, _) -> Empty
-  | (_, Empty) -> Empty
-  | (Node(l1, v1, r1, _), t2) ->
+  | (Empty, _) -> empty
+  | (_, Empty) -> empty  
+  | Leaf v, t2 -> 
+    if mem t2 v then s1 else empty
+  | (Node{l=l1; v=v1; r=r1}, t2) ->
     begin match split t2 v1 with
       | (l2, false, r2) ->
         Set_gen.internal_concat (inter l1 l2) (inter r1 r2)
@@ -3130,11 +3258,13 @@ let rec inter (s1 : t)  (s2 : t) : t  =
         Set_gen.internal_join (inter l1 l2) v1 (inter r1 r2)
     end 
 
-let rec diff (s1 : t) (s2 : t) : t  =
+and diff (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, _) -> Empty
+  | (Empty, _) -> empty
   | (t1, Empty) -> t1
-  | (Node(l1, v1, r1, _), t2) ->
+  | Leaf v, t2 -> 
+    if mem t2 v then empty else s1 
+  | (Node{l=l1; v=v1; r=r1}, t2) ->
     begin match split t2 v1 with
       | (l2, false, r2) ->
         Set_gen.internal_join (diff l1 l2) v1 (diff r1 r2)
@@ -3143,30 +3273,34 @@ let rec diff (s1 : t) (s2 : t) : t  =
     end
 
 
-let rec mem (tree : t) x =  match tree with 
+and mem (tree : t) x =  match tree with 
   | Empty -> false
-  | Node(l, v, r, _) ->
+  | Leaf v -> compare_elt x v = 0
+  | Node{l; v; r} ->
     let c = compare_elt x v in
     c = 0 || mem (if c < 0 then l else r) x
 
 let rec remove (tree : t)  x : t = match tree with 
-  | Empty -> Empty
-  | Node(l, v, r, _) ->
+  | Empty -> empty (* This case actually would be never reached *)
+  | Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then empty else tree    
+  | Node{l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then Set_gen.internal_merge l r else
     if c < 0 then Set_gen.internal_bal (remove l x) v r else Set_gen.internal_bal l v (remove r x )
 
-let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2 
+(* let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2  *)
 
 
-let equal s1 s2 =
-  compare s1 s2 = 0
 
 
 
 let rec find (tree : t) x = match tree with
   | Empty -> raise Not_found
-  | Node(l, v, r, _) ->
+  | Leaf v -> 
+    if compare_elt x v = 0 then v else raise Not_found
+  | Node{l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then v
     else find (if c < 0 then l else r) x 
@@ -3181,10 +3315,12 @@ let of_list l =
   | [x0; x1; x2] -> add (add (singleton x0)  x1) x2 
   | [x0; x1; x2; x3] -> add (add (add (singleton x0) x1 ) x2 ) x3 
   | [x0; x1; x2; x3; x4] -> add (add (add (add (singleton x0) x1) x2 ) x3 ) x4 
-  | _ -> of_sorted_list (List.sort_uniq compare_elt l)
+  | _ -> 
+    let arrs = Array.of_list l in 
+    Array.sort compare_elt arrs ; 
+    of_sorted_array arrs
 
-let of_array l = 
-  Ext_array.fold_left l empty (fun  acc x -> add acc x ) 
+
 
 (* also check order *)
 let invariant t =
@@ -3215,7 +3351,12 @@ let ((>::),
 
 let (=~) = OUnit.assert_equal
 
-module Set_poly = Set_int
+module Set_poly =  struct 
+  include Set_int
+let of_sorted_list xs = Array.of_list xs |> of_sorted_array 
+let of_array l = 
+  Ext_array.fold_left l empty add
+end
 let suites = 
   __FILE__ >:::
   [
@@ -3293,21 +3434,28 @@ let compare_ident x y =
     if b <> 0 then b 
     else compare (x.flags : int) y.flags     
 
-let rec add x (tree : _ Set_gen.t0) : _ Set_gen.t0 =
-  match tree with  
-    | Empty -> Node(Empty, x, Empty, 1)
-  | Node(l, v, r, _) as t ->
+
+let rec add (tree : _ Set_gen.t) x  =  match tree with 
+  | Empty -> Set_gen.singleton x
+  | Leaf v -> 
+    let c = compare_ident x v in
+    if c = 0 then tree else     
+    if c < 0 then 
+      Set_gen.unsafe_create v (Set_gen.singleton x) Set_gen.empty 2 
+    else 
+      Set_gen.unsafe_create x (Set_gen.singleton v) Set_gen.empty 2 
+  | Node {l; v; r} as t ->
     let c = compare_ident x v in
     if c = 0 then t else
-    if c < 0 then Set_gen.internal_bal (add x l) v r else Set_gen.internal_bal l v (add x r)
+    if c < 0 then Set_gen.internal_bal (add l x ) v r else Set_gen.internal_bal l v (add r x )
 
-let rec mem x (tree : _ Set_gen.t0) = 
-  match tree with 
-   | Empty -> false
-   | Node(l, v, r, _) ->
-    let c = compare_ident x v in
-    c = 0 || mem x (if c < 0 then l else r)
-
+let rec mem (tree : _ Set_gen.t) x =  match tree with 
+    | Empty -> false
+    | Leaf v -> compare_ident x v = 0
+    | Node{l; v; r} ->
+      let c = compare_ident x v in
+      c = 0 || mem (if c < 0 then l else r) x
+  
 module Ident_set2 = Set.Make(struct type t = ident 
     let compare  = compare_ident            
   end)
@@ -3346,10 +3494,10 @@ let bench () =
   Ounit_tests_util.time "poly set (specialized)" begin fun _ -> 
     let v = ref Set_gen.empty in  
     for i = 0 to  times do
-      v := add   {stamp = i ; name = "name"; flags = -1 } !v 
+      v := add  !v {stamp = i ; name = "name"; flags = -1 }  
     done;
     for i = 0 to times do
-      ignore @@ mem   {stamp = i; name = "name" ; flags = -1} !v 
+      ignore @@ mem  !v  {stamp = i; name = "name" ; flags = -1} 
     done 
 
   end ; 

@@ -46,12 +46,9 @@ let print_elt = Format.pp_print_int
 [%error "unknown type" ]
 #endif
 
-type ('a, 'id) t0 = ('a, 'id) Set_gen.t0 = 
-  | Empty 
-  | Node of ('a, 'id) t0 * 'a * ('a, 'id) t0 * int 
+type ('a ) t0 = 'a Set_gen.t 
 
-
-type  t = (elt, unit) t0
+type  t = elt t0
 
 let empty = Set_gen.empty 
 let is_empty = Set_gen.is_empty
@@ -63,19 +60,25 @@ let singleton = Set_gen.singleton
 let cardinal = Set_gen.cardinal
 let elements = Set_gen.elements
 let min_elt = Set_gen.min_elt
-let max_elt = Set_gen.max_elt
+(* let max_elt = Set_gen.max_elt *)
 let choose = Set_gen.choose 
 (* let of_sorted_list = Set_gen.of_sorted_list *)
 (* let of_sorted_array = Set_gen.of_sorted_array *)
-let partition = Set_gen.partition 
-let filter = Set_gen.filter 
-let of_sorted_list = Set_gen.of_sorted_list
+(* let partition = Set_gen.partition 
+let filter = Set_gen.filter  *)
 let of_sorted_array = Set_gen.of_sorted_array
 
 let rec split (tree : t) x : t * bool * t =  match tree with 
   | Empty ->
-    (Empty, false, Empty)
-  | Node(l, v, r, _) ->
+    (empty, false, empty)
+  | Leaf v ->   
+    let c = compare_elt x v in
+    if c = 0 then (empty, true, empty)
+    else if c < 0 then
+      (empty, false, tree)
+    else
+      (tree, false, empty)
+  | Node {l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then (l, true, r)
     else if c < 0 then
@@ -83,8 +86,15 @@ let rec split (tree : t) x : t * bool * t =  match tree with
     else
       let (lr, pres, rr) = split r x in (Set_gen.internal_join l v lr, pres, rr)
 let rec add (tree : t) x : t =  match tree with 
-  | Empty -> Node(Empty, x, Empty, 1)
-  | Node(l, v, r, _) as t ->
+  | Empty -> singleton x
+  | Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then tree else     
+    if c < 0 then 
+      Set_gen.unsafe_create v (singleton x) empty 2 
+    else 
+      Set_gen.unsafe_create x (singleton v) empty 2 
+  | Node {l; v; r} as t ->
     let c = compare_elt x v in
     if c = 0 then t else
     if c < 0 then Set_gen.internal_bal (add l x ) v r else Set_gen.internal_bal l v (add r x )
@@ -93,7 +103,18 @@ let rec union (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
   | (Empty, t2) -> t2
   | (t1, Empty) -> t1
-  | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
+  | Node _, Leaf v2 ->
+    add s1 v2 
+  | Leaf v1, Node _ -> 
+    add s2 v1 
+  | Leaf x, Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then s1 else     
+    if c < 0 then 
+      Set_gen.unsafe_create v (singleton x) empty 2 
+    else 
+      Set_gen.unsafe_create x (singleton v) empty 2     
+  | Node{l=l1; v=v1; r=r1; h=h1}, Node{l=l2; v=v2; r=r2; h=h2} ->
     if h1 >= h2 then
       if h2 = 1 then add s1 v2 else begin
         let (l2, _, r2) = split s2 v1 in
@@ -107,9 +128,11 @@ let rec union (s1 : t) (s2 : t) : t  =
 
 let rec inter (s1 : t)  (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, _) -> Empty
-  | (_, Empty) -> Empty
-  | (Node(l1, v1, r1, _), t2) ->
+  | (Empty, _) -> empty
+  | (_, Empty) -> empty  
+  | Leaf v, t2 -> 
+    if mem t2 v then s1 else empty
+  | (Node{l=l1; v=v1; r=r1}, t2) ->
     begin match split t2 v1 with
       | (l2, false, r2) ->
         Set_gen.internal_concat (inter l1 l2) (inter r1 r2)
@@ -117,11 +140,13 @@ let rec inter (s1 : t)  (s2 : t) : t  =
         Set_gen.internal_join (inter l1 l2) v1 (inter r1 r2)
     end 
 
-let rec diff (s1 : t) (s2 : t) : t  =
+and diff (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, _) -> Empty
+  | (Empty, _) -> empty
   | (t1, Empty) -> t1
-  | (Node(l1, v1, r1, _), t2) ->
+  | Leaf v, t2 -> 
+    if mem t2 v then empty else s1 
+  | (Node{l=l1; v=v1; r=r1}, t2) ->
     begin match split t2 v1 with
       | (l2, false, r2) ->
         Set_gen.internal_join (diff l1 l2) v1 (diff r1 r2)
@@ -130,30 +155,34 @@ let rec diff (s1 : t) (s2 : t) : t  =
     end
 
 
-let rec mem (tree : t) x =  match tree with 
+and mem (tree : t) x =  match tree with 
   | Empty -> false
-  | Node(l, v, r, _) ->
+  | Leaf v -> compare_elt x v = 0
+  | Node{l; v; r} ->
     let c = compare_elt x v in
     c = 0 || mem (if c < 0 then l else r) x
 
 let rec remove (tree : t)  x : t = match tree with 
-  | Empty -> Empty
-  | Node(l, v, r, _) ->
+  | Empty -> empty (* This case actually would be never reached *)
+  | Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then empty else tree    
+  | Node{l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then Set_gen.internal_merge l r else
     if c < 0 then Set_gen.internal_bal (remove l x) v r else Set_gen.internal_bal l v (remove r x )
 
-let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2 
+(* let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2  *)
 
 
-let equal s1 s2 =
-  compare s1 s2 = 0
 
 
 
 let rec find (tree : t) x = match tree with
   | Empty -> raise Not_found
-  | Node(l, v, r, _) ->
+  | Leaf v -> 
+    if compare_elt x v = 0 then v else raise Not_found
+  | Node{l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then v
     else find (if c < 0 then l else r) x 
@@ -168,10 +197,12 @@ let of_list l =
   | [x0; x1; x2] -> add (add (singleton x0)  x1) x2 
   | [x0; x1; x2; x3] -> add (add (add (singleton x0) x1 ) x2 ) x3 
   | [x0; x1; x2; x3; x4] -> add (add (add (add (singleton x0) x1) x2 ) x3 ) x4 
-  | _ -> of_sorted_list (List.sort_uniq compare_elt l)
+  | _ -> 
+    let arrs = Array.of_list l in 
+    Array.sort compare_elt arrs ; 
+    of_sorted_array arrs
 
-let of_array l = 
-  Ext_array.fold_left l empty (fun  acc x -> add acc x ) 
+
 
 (* also check order *)
 let invariant t =
