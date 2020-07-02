@@ -33,7 +33,7 @@ let [@inline] calc_height a b =
     2. l and r balanced 
     3. [height l] - [height r] <= 2
 *)
-let [@inline] unsafe_create v l  r h = 
+let [@inline] unsafe_node v l  r h = 
   if h = 1 then Leaf v   
   else Node{l;v;r; h }         
 
@@ -163,9 +163,9 @@ let internal_bal l v r : _ t =
     let hlr = height lr in 
     if hll >= hlr then
       let hnode = calc_height hlr hr in       
-      unsafe_create l.v 
+      unsafe_node l.v 
         ll  
-        (unsafe_create v lr  r hnode ) 
+        (unsafe_node v lr  r hnode ) 
         (calc_height hll hnode)
     else       
       let [@warning "-8"] Node ({l = lrl; r = lrr } as lr) = lr in 
@@ -173,9 +173,9 @@ let internal_bal l v r : _ t =
       let hlrr = height lrr in 
       let hlnode = calc_height hll hlrl in 
       let hrnode = calc_height hlrr hr in 
-      unsafe_create lr.v 
-        (unsafe_create l.v ll  lrl hlnode)  
-        (unsafe_create v lrr  r hrnode)
+      unsafe_node lr.v 
+        (unsafe_node l.v ll  lrl hlnode)  
+        (unsafe_node v lrr  r hrnode)
         (calc_height hlnode hrnode)
   else if hr > hl + 2 then begin    
     let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
@@ -183,8 +183,8 @@ let internal_bal l v r : _ t =
     let hrl = height rl in 
     if hrr >= hrl then
       let hnode = calc_height hl hrl in
-      unsafe_create r.v 
-        (unsafe_create v l  rl hnode) 
+      unsafe_node r.v 
+        (unsafe_node v l  rl hnode) 
         rr 
         (calc_height hnode hrr )
     else begin
@@ -193,13 +193,13 @@ let internal_bal l v r : _ t =
       let hrlr = height rlr in 
       let hlnode = (calc_height hl hrll) in
       let hrnode = (calc_height hrlr hrr) in
-      unsafe_create rl.v 
-        (unsafe_create v l rll hlnode)  
-        (unsafe_create r.v rlr rr hrnode)
+      unsafe_node rl.v 
+        (unsafe_node v l rll hlnode)  
+        (unsafe_node r.v rlr rr hrnode)
         (calc_height hlnode hrnode)
     end
   end else
-    unsafe_create v l  r (calc_height hl hr)
+    unsafe_node v l  r (calc_height hl hr)
 
 
 let rec remove_min_elt = function
@@ -231,13 +231,13 @@ let internal_merge l r =
 
 let rec add_min_element v = function
   | Empty -> singleton v
-  | Leaf x -> unsafe_create x (singleton v) empty 2 
+  | Leaf x -> unsafe_node x (singleton v) empty 2 
   | Node {l; v=x; r} ->
     internal_bal (add_min_element v l) x r
 
 let rec add_max_element v = function
   | Empty -> singleton v
-  | Leaf x -> unsafe_create v (singleton x) empty 2 
+  | Leaf x -> unsafe_node v (singleton x) empty 2 
   | Node {l; v=x; r} ->
     internal_bal l x (add_max_element v r)
 
@@ -257,13 +257,13 @@ let rec internal_join l v r =
   | Leaf lv, Node {h = rh} ->
     if rh > 3 then 
       add_min_element lv (add_min_element v r ) (* FIXME: could inlined *)
-    else unsafe_create  v l r (rh + 1)
+    else unsafe_node  v l r (rh + 1)
   | Leaf _, Leaf _ -> 
-    unsafe_create  v l r 2
+    unsafe_node  v l r 2
   | Node {h = lh}, Leaf rv ->
     if lh > 3 then       
       add_max_element rv (add_max_element v l)
-    else unsafe_create  v l r (lh + 1)    
+    else unsafe_node  v l r (lh + 1)    
   | (Node{l=ll;v= lv;r= lr;h= lh}, Node {l=rl; v=rv; r=rr; h=rh}) ->
     if lh > rh + 2 then 
       (* proof by induction:
@@ -272,7 +272,7 @@ let rec internal_join l v r =
       internal_bal ll lv (internal_join lr v r) 
     else
     if rh > lh + 2 then internal_bal (internal_join l v rl) rv rr 
-    else unsafe_create  v l r (calc_height lh rh)
+    else unsafe_node  v l r (calc_height lh rh)
 
 
 (*
@@ -317,19 +317,19 @@ let of_sorted_array l =
     else if n = 2 then     
       let x0 = Array.unsafe_get l start in 
       let x1 = Array.unsafe_get l (start + 1) in 
-      unsafe_create x1 (singleton x0)  empty 2 else
+      unsafe_node x1 (singleton x0)  empty 2 else
     if n = 3 then 
       let x0 = Array.unsafe_get l start in 
       let x1 = Array.unsafe_get l (start + 1) in
       let x2 = Array.unsafe_get l (start + 2) in
-      unsafe_create x1 (singleton x0)  (singleton x2) 2
+      unsafe_node x1 (singleton x0)  (singleton x2) 2
     else 
       let nl = n / 2 in
       let left = sub start nl l in
       let mid = start + nl in 
       let v = Array.unsafe_get l mid in 
       let right = sub (mid + 1) (n - nl - 1) l in        
-      unsafe_create v left  right (calc_height (height left) (height right))
+      unsafe_node v left  right (calc_height (height left) (height right))
   in
   sub 0 (Array.length l) l 
 

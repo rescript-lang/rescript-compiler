@@ -68,6 +68,9 @@ let choose = Set_gen.choose
 let filter = Set_gen.filter  *)
 let of_sorted_array = Set_gen.of_sorted_array
 
+let unsafe_two_elements x v = 
+  Set_gen.unsafe_node v (singleton x) empty 2 
+  
 let rec split (tree : t) x : t * bool * t =  match tree with 
   | Empty ->
     (empty, false, empty)
@@ -85,15 +88,16 @@ let rec split (tree : t) x : t * bool * t =  match tree with
       let (ll, pres, rl) = split l x in (ll, pres, Set_gen.internal_join rl v r)
     else
       let (lr, pres, rr) = split r x in (Set_gen.internal_join l v lr, pres, rr)
+
 let rec add (tree : t) x : t =  match tree with 
   | Empty -> singleton x
   | Leaf v -> 
     let c = compare_elt x v in
     if c = 0 then tree else     
     if c < 0 then 
-      Set_gen.unsafe_create v (singleton x) empty 2 
+      unsafe_two_elements x v
     else 
-      Set_gen.unsafe_create x (singleton v) empty 2 
+      unsafe_two_elements v x 
   | Node {l; v; r} as t ->
     let c = compare_elt x v in
     if c = 0 then t else
@@ -111,9 +115,9 @@ let rec union (s1 : t) (s2 : t) : t  =
     let c = compare_elt x v in
     if c = 0 then s1 else     
     if c < 0 then 
-      Set_gen.unsafe_create v (singleton x) empty 2 
+      unsafe_two_elements x v
     else 
-      Set_gen.unsafe_create x (singleton v) empty 2     
+      unsafe_two_elements v x
   | Node{l=l1; v=v1; r=r1; h=h1}, Node{l=l2; v=v2; r=r2; h=h2} ->
     if h1 >= h2 then
       if h2 = 1 then add s1 v2 else begin
