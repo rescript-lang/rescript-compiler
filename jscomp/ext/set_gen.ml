@@ -31,12 +31,13 @@ let [@inline] calc_height a b =
     2. l and r balanced 
     3. [height l] - [height r] <= 2
 *)
-let [@inline] create l v r  = 
-  let hl = height l  in
-  let hr = height r  in
-  Node{l;v;r; h = calc_height hl hr}         
+let [@inline] unsafe_create v l  r h = 
+  Node{l;v;r; h }         
 
-let singleton x = Node {l = Empty; v = x; r =  Empty; h =  1}      
+let [@inline] create v l  r  = 
+  Node{l;v;r; h = calc_height (height l)  (height r)}         
+
+let [@inline] singleton x = Node {l = Empty; v = x; r =  Empty; h =  1}      
 
 type 'a t = 'a t0 = private
   | Empty 
@@ -136,7 +137,7 @@ let check tree =
 
     Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
 *)
-let internal_bal l v r =
+let internal_bal l v r : _ t =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then 
@@ -219,7 +220,7 @@ let rec internal_join l v r =
       internal_bal ll lv (internal_join lr v r) 
     else
     if rh > lh + 2 then internal_bal (internal_join l v rl) rv rr 
-    else create l v r
+    else unsafe_create  v l r (calc_height lh rh)
 
 
 (*
@@ -258,9 +259,9 @@ let of_sorted_list l =
     match n, l with
     | 0, l -> empty, l
     | 1, x0 :: l -> singleton x0, l
-    | 2, x0 :: x1 :: l -> create (singleton x0) x1 empty, l
+    | 2, x0 :: x1 :: l -> unsafe_create x1 (singleton x0)  empty 2, l
     | 3, x0 :: x1 :: x2 :: l ->
-      create (singleton x0) x1 (singleton x2),l
+      unsafe_create x1 (singleton x0)  (singleton x2) 2,l
     | n, l ->
       let nl = n / 2 in
       let left, l = sub nl l in
@@ -268,7 +269,7 @@ let of_sorted_list l =
       | [] -> assert false
       | mid :: l ->
         let right, l = sub (n - nl - 1) l in
-        create left mid right, l
+        create mid left  right, l
   in
   fst (sub (List.length l) l)
 
@@ -281,19 +282,19 @@ let of_sorted_array l =
     else if n = 2 then     
       let x0 = Array.unsafe_get l start in 
       let x1 = Array.unsafe_get l (start + 1) in 
-      create (singleton x0) x1 empty else
+      unsafe_create x1 (singleton x0)  empty 2 else
     if n = 3 then 
       let x0 = Array.unsafe_get l start in 
       let x1 = Array.unsafe_get l (start + 1) in
       let x2 = Array.unsafe_get l (start + 2) in
-      create (singleton x0) x1 (singleton x2)
+      unsafe_create x1 (singleton x0)  (singleton x2) 2
     else 
       let nl = n / 2 in
       let left = sub start nl l in
       let mid = start + nl in 
       let v = Array.unsafe_get l mid in 
       let right = sub (mid + 1) (n - nl - 1) l in        
-      create left v right
+      create v left  right
   in
   sub 0 (Array.length l) l 
 
