@@ -71,6 +71,13 @@ let of_sorted_array = Set_gen.of_sorted_array
 let rec split (tree : t) x : t * bool * t =  match tree with 
   | Empty ->
     (empty, false, empty)
+  | Leaf v ->   
+    let c = compare_elt x v in
+    if c = 0 then (empty, true, empty)
+    else if c < 0 then
+      (empty, false, tree)
+    else
+      (tree, false, empty)
   | Node {l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then (l, true, r)
@@ -80,6 +87,13 @@ let rec split (tree : t) x : t * bool * t =  match tree with
       let (lr, pres, rr) = split r x in (Set_gen.internal_join l v lr, pres, rr)
 let rec add (tree : t) x : t =  match tree with 
   | Empty -> singleton x
+  | Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then tree else     
+    if c < 0 then 
+      Set_gen.unsafe_create v (singleton x) empty 2 
+    else 
+      Set_gen.unsafe_create x (singleton v) empty 2 
   | Node {l; v; r} as t ->
     let c = compare_elt x v in
     if c = 0 then t else
@@ -89,6 +103,17 @@ let rec union (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
   | (Empty, t2) -> t2
   | (t1, Empty) -> t1
+  | Node _, Leaf v2 ->
+    add s1 v2 
+  | Leaf v1, Node _ -> 
+    add s2 v1 
+  | Leaf x, Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then s1 else     
+    if c < 0 then 
+      Set_gen.unsafe_create v (singleton x) empty 2 
+    else 
+      Set_gen.unsafe_create x (singleton v) empty 2     
   | Node{l=l1; v=v1; r=r1; h=h1}, Node{l=l2; v=v2; r=r2; h=h2} ->
     if h1 >= h2 then
       if h2 = 1 then add s1 v2 else begin
@@ -104,7 +129,9 @@ let rec union (s1 : t) (s2 : t) : t  =
 let rec inter (s1 : t)  (s2 : t) : t  =
   match (s1, s2) with
   | (Empty, _) -> empty
-  | (_, Empty) -> empty
+  | (_, Empty) -> empty  
+  | Leaf v, t2 -> 
+    if mem t2 v then s1 else empty
   | (Node{l=l1; v=v1; r=r1}, t2) ->
     begin match split t2 v1 with
       | (l2, false, r2) ->
@@ -113,10 +140,12 @@ let rec inter (s1 : t)  (s2 : t) : t  =
         Set_gen.internal_join (inter l1 l2) v1 (inter r1 r2)
     end 
 
-let rec diff (s1 : t) (s2 : t) : t  =
+and diff (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
   | (Empty, _) -> empty
   | (t1, Empty) -> t1
+  | Leaf v, t2 -> 
+    if mem t2 v then empty else s1 
   | (Node{l=l1; v=v1; r=r1}, t2) ->
     begin match split t2 v1 with
       | (l2, false, r2) ->
@@ -126,14 +155,18 @@ let rec diff (s1 : t) (s2 : t) : t  =
     end
 
 
-let rec mem (tree : t) x =  match tree with 
+and mem (tree : t) x =  match tree with 
   | Empty -> false
+  | Leaf v -> compare_elt x v = 0
   | Node{l; v; r} ->
     let c = compare_elt x v in
     c = 0 || mem (if c < 0 then l else r) x
 
 let rec remove (tree : t)  x : t = match tree with 
-  | Empty -> empty
+  | Empty -> empty (* This case actually would be never reached *)
+  | Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then empty else tree    
   | Node{l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then Set_gen.internal_merge l r else
@@ -147,6 +180,8 @@ let rec remove (tree : t)  x : t = match tree with
 
 let rec find (tree : t) x = match tree with
   | Empty -> raise Not_found
+  | Leaf v -> 
+    if compare_elt x v = 0 then v else raise Not_found
   | Node{l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then v
@@ -162,7 +197,10 @@ let of_list l =
   | [x0; x1; x2] -> add (add (singleton x0)  x1) x2 
   | [x0; x1; x2; x3] -> add (add (add (singleton x0) x1 ) x2 ) x3 
   | [x0; x1; x2; x3; x4] -> add (add (add (add (singleton x0) x1) x2 ) x3 ) x4 
-  | _ -> of_sorted_list (List.sort_uniq compare_elt l)
+  | _ -> 
+    let arrs = Array.of_list l in 
+    Array.sort compare_elt arrs ; 
+    of_sorted_array arrs
 
 
 
