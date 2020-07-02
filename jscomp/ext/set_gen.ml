@@ -144,8 +144,10 @@ let internal_bal l v r : _ t =
     let [@warning "-8"] Node ({l=ll;r= lr} as l) = l in 
     let hll = height ll in 
     let hlr = height lr in 
-    if hll >= hlr then   
-      create ll l.v (create lr v r)        
+    if hll >= hlr then
+      let hnode = (calc_height hlr hr) in 
+      let node = unsafe_create v lr  r hnode in 
+      unsafe_create l.v ll  node (calc_height hll hnode)
     else       
       let [@warning "-8"] Node ({l = lrl; r = lrr } as lr) = lr in 
       create (create ll l.v lrl) lr.v (create lrr v r)
@@ -160,7 +162,7 @@ let internal_bal l v r : _ t =
       create (create l v rll) rl.v (create rlr r.v rr)
     end
   end else
-    create l v r 
+    unsafe_create v l  r (calc_height hl hr)
 
 
 let rec remove_min_elt = function
