@@ -21,6 +21,10 @@ let empty = Empty
 let  [@inline] height = function
   | Empty -> 0 
   | Node {h} -> h   
+
+let [@inline] calc_height a b =  
+  (if a >= b then a else b) + 1 
+
 (* 
     Invariants: 
     1. {[ l < v < r]}
@@ -30,7 +34,7 @@ let  [@inline] height = function
 let [@inline] create l v r  = 
   let hl = height l  in
   let hr = height r  in
-  Node{l;v;r; h = if hl >= hr then hl + 1 else hr + 1}         
+  Node{l;v;r; h = calc_height hl hr}         
 
 let singleton x = Node {l = Empty; v = x; r =  Empty; h =  1}      
 
@@ -101,8 +105,6 @@ let rec exists x p = match x with
   | Node {l; v; r} -> p v || exists l p  || exists r p
 
 
-let max_int_2 (a : int) b =  
-  if a >= b then a else b 
 
 
 
@@ -115,7 +117,7 @@ let rec check_height_and_diff =
   | Node{l;r;h} -> 
     let hl = check_height_and_diff l in
     let hr = check_height_and_diff r in
-    if h <>  max_int_2 hl hr + 1 then raise Height_invariant_broken
+    if h <>  calc_height hl hr  then raise Height_invariant_broken
     else  
       let diff = (abs (hl - hr)) in  
       if  diff > 2 then raise Height_diff_borken 
