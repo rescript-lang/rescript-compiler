@@ -93,9 +93,9 @@ let rec add (tree : _ Set_gen.t) x  =  match tree with
     let c = compare_ident x v in
     if c = 0 then tree else     
     if c < 0 then 
-      Set_gen.unsafe_node v (Set_gen.singleton x) Set_gen.empty 2 
+      Set_gen.unsafe_two_elements x v
     else 
-      Set_gen.unsafe_node x (Set_gen.singleton v) Set_gen.empty 2 
+      Set_gen.unsafe_two_elements v x
   | Node {l; v; r} as t ->
     let c = compare_ident x v in
     if c = 0 then t else

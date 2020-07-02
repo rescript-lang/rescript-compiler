@@ -34,12 +34,17 @@ let [@inline] calc_height a b =
     3. [height l] - [height r] <= 2
 *)
 let [@inline] unsafe_node v l  r h = 
+  Node{l;v;r; h }         
+
+let [@inline] unsafe_node_maybe_leaf v l r h =   
   if h = 1 then Leaf v   
   else Node{l;v;r; h }         
 
-
 let [@inline] singleton x = Leaf x
 
+let unsafe_two_elements x v = 
+  unsafe_node v (singleton x) empty 2 
+  
 type 'a t = 'a t0 = private
   | Empty 
   | Leaf of 'a
@@ -165,7 +170,7 @@ let internal_bal l v r : _ t =
       let hnode = calc_height hlr hr in       
       unsafe_node l.v 
         ll  
-        (unsafe_node v lr  r hnode ) 
+        (unsafe_node_maybe_leaf v lr  r hnode ) 
         (calc_height hll hnode)
     else       
       let [@warning "-8"] Node ({l = lrl; r = lrr } as lr) = lr in 
@@ -174,8 +179,8 @@ let internal_bal l v r : _ t =
       let hlnode = calc_height hll hlrl in 
       let hrnode = calc_height hlrr hr in 
       unsafe_node lr.v 
-        (unsafe_node l.v ll  lrl hlnode)  
-        (unsafe_node v lrr  r hrnode)
+        (unsafe_node_maybe_leaf l.v ll  lrl hlnode)  
+        (unsafe_node_maybe_leaf v lrr  r hrnode)
         (calc_height hlnode hrnode)
   else if hr > hl + 2 then begin    
     let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
@@ -184,7 +189,7 @@ let internal_bal l v r : _ t =
     if hrr >= hrl then
       let hnode = calc_height hl hrl in
       unsafe_node r.v 
-        (unsafe_node v l  rl hnode) 
+        (unsafe_node_maybe_leaf v l  rl hnode) 
         rr 
         (calc_height hnode hrr )
     else begin
@@ -194,12 +199,12 @@ let internal_bal l v r : _ t =
       let hlnode = (calc_height hl hrll) in
       let hrnode = (calc_height hrlr hrr) in
       unsafe_node rl.v 
-        (unsafe_node v l rll hlnode)  
-        (unsafe_node r.v rlr rr hrnode)
+        (unsafe_node_maybe_leaf v l rll hlnode)  
+        (unsafe_node_maybe_leaf r.v rlr rr hrnode)
         (calc_height hlnode hrnode)
     end
   end else
-    unsafe_node v l  r (calc_height hl hr)
+    unsafe_node_maybe_leaf v l  r (calc_height hl hr)
 
 
 let rec remove_min_elt = function
@@ -222,6 +227,7 @@ let internal_merge l r =
   | (t, Empty) -> t
   | (_, _) -> internal_bal l (min_elt r) (remove_min_elt r)
 
+
 (* Beware: those two functions assume that the added v is *strictly*
     smaller (or bigger) than all the present elements in the tree; it
     does not test for equality with the current min (or max) element.
@@ -231,13 +237,13 @@ let internal_merge l r =
 
 let rec add_min_element v = function
   | Empty -> singleton v
-  | Leaf x -> unsafe_node x (singleton v) empty 2 
+  | Leaf x -> unsafe_two_elements v x
   | Node {l; v=x; r} ->
     internal_bal (add_min_element v l) x r
 
 let rec add_max_element v = function
   | Empty -> singleton v
-  | Leaf x -> unsafe_node v (singleton x) empty 2 
+  | Leaf x -> unsafe_two_elements x v
   | Node {l; v=x; r} ->
     internal_bal l x (add_max_element v r)
 
