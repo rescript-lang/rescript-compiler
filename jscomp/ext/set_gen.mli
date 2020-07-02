@@ -1,5 +1,6 @@
 type 'a t =private
     Empty
+  | Leaf of 'a
   | Node of { l : 'a t; v : 'a; r : 'a t; h : int; }
 (* type ('a, 'id) enumeration0 =
     End
@@ -10,12 +11,14 @@ val min_elt : 'a t-> 'a
 val max_elt : 'a t-> 'a
 val empty : 'a t
 val is_empty : 'a t-> bool
+val unsafe_create : 
+  'a -> 'a t -> 'a t -> int -> 'a t
 (* val cardinal_aux : int -> 'a t-> int *)
 val cardinal : 'a t-> int
 (* val elements_aux : 'a list -> 'a t-> 'a list *)
 val elements : 'a t-> 'a list
 val choose : 'a t-> 'a
-val iter : 'a t-> ('a -> 'c) -> unit
+val iter : 'a t-> ('a -> unit) -> unit
 val fold : 'a t-> 'c -> ('a -> 'c -> 'c) -> 'c
 val for_all : 'a t-> ('a -> bool) -> bool
 val exists : 'a t-> ('a -> bool) -> bool
@@ -35,7 +38,6 @@ val internal_join : 'a t-> 'a -> 'a t-> 'a t
 val internal_concat : 'a t-> 'a t-> 'a t
 (* val filter : 'a t-> ('a -> bool) -> 'a t *)
 val partition : 'a t-> ('a -> bool) -> 'a t * 'a t
-val of_sorted_list : 'a list -> 'a t
 val of_sorted_array : 'a array -> 'a t
 val is_ordered : cmp:('a -> 'a -> int) -> 'a t-> bool
 val invariant : cmp:('a -> 'a -> int) -> 'a t-> bool
@@ -67,7 +69,6 @@ module type S =
     val diff : t -> t -> t
     val find : t -> elt -> elt
     val of_list : elt list -> t
-    val of_sorted_list : elt list -> t
     val of_sorted_array : elt array -> t
     (* val of_array : elt array -> t *)
     val invariant : t -> bool

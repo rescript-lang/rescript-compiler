@@ -66,7 +66,6 @@ let choose = Set_gen.choose
 (* let of_sorted_array = Set_gen.of_sorted_array *)
 (* let partition = Set_gen.partition 
 let filter = Set_gen.filter  *)
-let of_sorted_list = Set_gen.of_sorted_list
 let of_sorted_array = Set_gen.of_sorted_array
 
 let rec split (tree : t) x : t * bool * t =  match tree with 
