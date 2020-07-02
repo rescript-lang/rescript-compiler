@@ -145,21 +145,41 @@ let internal_bal l v r : _ t =
     let hll = height ll in 
     let hlr = height lr in 
     if hll >= hlr then
-      let hnode = (calc_height hlr hr) in 
-      let node = unsafe_create v lr  r hnode in 
-      unsafe_create l.v ll  node (calc_height hll hnode)
+      let hnode = calc_height hlr hr in       
+      unsafe_create l.v 
+        ll  
+        (unsafe_create v lr  r hnode ) 
+        (calc_height hll hnode)
     else       
       let [@warning "-8"] Node ({l = lrl; r = lrr } as lr) = lr in 
-      create (create ll l.v lrl) lr.v (create lrr v r)
+      let hlrl = height lrl in 
+      let hlrr = height lrr in 
+      let hlnode = calc_height hll hlrl in 
+      let hrnode = calc_height hlrr hr in 
+      unsafe_create lr.v 
+        (unsafe_create l.v ll  lrl hlnode)  
+        (unsafe_create v lrr  r hrnode)
+        (calc_height hlnode hrnode)
   else if hr > hl + 2 then begin    
     let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
     let hrr = height rr in 
     let hrl = height rl in 
     if hrr >= hrl then
-      create (create l v rl) r.v rr
+      let hnode = calc_height hl hrl in
+      unsafe_create r.v 
+        (unsafe_create v l  rl hnode) 
+        rr 
+        (calc_height hnode hrr )
     else begin
       let [@warning "-8"] Node ({l = rll ; r = rlr } as rl) = rl in 
-      create (create l v rll) rl.v (create rlr r.v rr)
+      let hrll = height rll in 
+      let hrlr = height rlr in 
+      let hlnode = (calc_height hl hrll) in
+      let hrnode = (calc_height hrlr hrr) in
+      unsafe_create rl.v 
+        (unsafe_create v l rll hlnode)  
+        (unsafe_create r.v rlr rr hrnode)
+        (calc_height hlnode hrnode)
     end
   end else
     unsafe_create v l  r (calc_height hl hr)
