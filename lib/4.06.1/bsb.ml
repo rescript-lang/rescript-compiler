@@ -3860,51 +3860,51 @@ type t = map cat
 end
 module Set_gen : sig 
 #1 "set_gen.mli"
-type 'a t0 =private
+type 'a t =private
     Empty
-  | Node of { l : 'a t0; v : 'a; r : 'a t0; h : int; }
+  | Node of { l : 'a t; v : 'a; r : 'a t; h : int; }
 (* type ('a, 'id) enumeration0 =
     End
-  | More of 'a * ('a, 'id) t0 * ('a, 'id) enumeration0 *)
-(* val cons_enum : 'a t0-> ('a, 'b) enumeration0 -> ('a, 'b) enumeration0 *)
-(* val height : 'a t0-> int *)
-val min_elt : 'a t0-> 'a
-val max_elt : 'a t0-> 'a
-val empty : 'a t0
-val is_empty : 'a t0-> bool
-(* val cardinal_aux : int -> 'a t0-> int *)
-val cardinal : 'a t0-> int
-(* val elements_aux : 'a list -> 'a t0-> 'a list *)
-val elements : 'a t0-> 'a list
-val choose : 'a t0-> 'a
-val iter : 'a t0-> ('a -> 'c) -> unit
-val fold : 'a t0-> 'c -> ('a -> 'c -> 'c) -> 'c
-val for_all : 'a t0-> ('a -> bool) -> bool
-val exists : 'a t0-> ('a -> bool) -> bool
+  | More of 'a * ('a, 'id) t * ('a, 'id) enumeration0 *)
+(* val cons_enum : 'a t-> ('a, 'b) enumeration0 -> ('a, 'b) enumeration0 *)
+(* val height : 'a t-> int *)
+val min_elt : 'a t-> 'a
+val max_elt : 'a t-> 'a
+val empty : 'a t
+val is_empty : 'a t-> bool
+(* val cardinal_aux : int -> 'a t-> int *)
+val cardinal : 'a t-> int
+(* val elements_aux : 'a list -> 'a t-> 'a list *)
+val elements : 'a t-> 'a list
+val choose : 'a t-> 'a
+val iter : 'a t-> ('a -> 'c) -> unit
+val fold : 'a t-> 'c -> ('a -> 'c -> 'c) -> 'c
+val for_all : 'a t-> ('a -> bool) -> bool
+val exists : 'a t-> ('a -> bool) -> bool
 (* val max_int_2 : int -> int -> int *)
 (* exception Height_invariant_broken
 exception Height_diff_borken *)
-(* val check_height_and_diff : 'a t0-> int *)
-val check : 'a t0-> unit
-(* val create : 'a t0-> 'a -> 'a t0-> 'a t0*)
-val internal_bal : 'a t0-> 'a -> 'a t0-> 'a t0
-val remove_min_elt : 'a t0-> 'a t0
-val singleton : 'a -> 'a t0
-val internal_merge : 'a t0-> 'a t0-> 'a t0
-val add_min_element : 'a -> 'a t0-> 'a t0
-val add_max_element : 'a -> 'a t0-> 'a t0
-val internal_join : 'a t0-> 'a -> 'a t0-> 'a t0
-val internal_concat : 'a t0-> 'a t0-> 'a t0
-(* val filter : 'a t0-> ('a -> bool) -> 'a t0 *)
-val partition : 'a t0-> ('a -> bool) -> 'a t0 * 'a t0
-val of_sorted_list : 'a list -> 'a t0
-val of_sorted_array : 'a array -> 'a t0
-val is_ordered : cmp:('a -> 'a -> int) -> 'a t0-> bool
-val invariant : cmp:('a -> 'a -> int) -> 'a t0-> bool
+(* val check_height_and_diff : 'a t-> int *)
+val check : 'a t-> unit
+(* val create : 'a t-> 'a -> 'a t-> 'a t*)
+val internal_bal : 'a t-> 'a -> 'a t-> 'a t
+val remove_min_elt : 'a t-> 'a t
+val singleton : 'a -> 'a t
+val internal_merge : 'a t-> 'a t-> 'a t
+val add_min_element : 'a -> 'a t-> 'a t
+val add_max_element : 'a -> 'a t-> 'a t
+val internal_join : 'a t-> 'a -> 'a t-> 'a t
+val internal_concat : 'a t-> 'a t-> 'a t
+(* val filter : 'a t-> ('a -> bool) -> 'a t *)
+val partition : 'a t-> ('a -> bool) -> 'a t * 'a t
+val of_sorted_list : 'a list -> 'a t
+val of_sorted_array : 'a array -> 'a t
+val is_ordered : cmp:('a -> 'a -> int) -> 'a t-> bool
+val invariant : cmp:('a -> 'a -> int) -> 'a t-> bool
 (* val compare_aux :
   cmp:('a -> 'b -> int) ->
   ('a, 'c) enumeration0 -> ('b, 'd) enumeration0 -> int *)
-(* val compare : cmp:('a -> 'b -> int) -> 'a t0 -> ('b, 'd) t0 -> int *)
+(* val compare : cmp:('a -> 'b -> int) -> 'a t -> ('b, 'd) t -> int *)
 module type S =
   sig
     type elt
@@ -3950,10 +3950,31 @@ end = struct
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
 (***********************************************************************)
-
+[@@@warnerror "+55"]
 (** balanced tree based on stdlib distribution *)
 
 type 'a t0 = 
+  | Empty 
+  | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
+
+let empty = Empty
+let  [@inline] height = function
+  | Empty -> 0 
+  | Node {h} -> h   
+(* 
+    Invariants: 
+    1. {[ l < v < r]}
+    2. l and r balanced 
+    3. [height l] - [height r] <= 2
+*)
+let [@inline] create l v r  = 
+  let hl = height l  in
+  let hr = height r  in
+  Node{l;v;r; h = if hl >= hr then hl + 1 else hr + 1}         
+
+let singleton x = Node {l = Empty; v = x; r =  Empty; h =  1}      
+
+type 'a t = 'a t0 = private
   | Empty 
   | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
 
@@ -3966,26 +3987,23 @@ type 'a t0 =
   | Empty -> e 
   | Node {l; v;r} -> cons_enum l (More(v,r,e)) *)
 
-let  [@inline always] height = function
-  | Empty -> 0 
-  | Node {h} -> h   
+
 
 (* Smallest and greatest element of a set *)
 
 let rec min_elt = function
   | Empty -> raise Not_found
   | Node{l; v} ->
-    if l = Empty then v else min_elt l
+    match l with Empty -> v | Node _ ->  min_elt l
 
 let rec max_elt = function
   |  Empty -> raise Not_found
   | Node{ v; r} -> 
-    if r = Empty then v else max_elt r
+    match r with Empty -> v | Node _ -> max_elt r
 
 
 
 
-let empty = Empty
 
 let is_empty = function Empty -> true | _ -> false
 
@@ -4045,16 +4063,6 @@ let rec check_height_and_diff =
 
 let check tree = 
   ignore (check_height_and_diff tree)
-(* 
-    Invariants: 
-    1. {[ l < v < r]}
-    2. l and r balanced 
-    3. [height l] - [height r] <= 2
-*)
-let create l v r = 
-  let hl = match l with Empty -> 0 | Node {h} -> h in
-  let hr = match r with Empty -> 0 | Node {h} -> h in
-  Node{l;v;r; h = if hl >= hr then hl + 1 else hr + 1}         
 
 (* Same as create, but performs one step of rebalancing if necessary.
     Invariants:
@@ -4067,41 +4075,37 @@ let create l v r =
     Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
 *)
 let internal_bal l v r =
-  let hl = match l with Empty -> 0 | Node{h} -> h in
-  let hr = match r with Empty -> 0 | Node{h} -> h in
-  if hl > hr + 2 then begin
-    match l with
-      Empty -> assert false
-    | Node{l=ll;v= lv;r= lr}->   
-      if height ll >= height lr then   
-        create ll lv (create lr v r)
-      else begin
-        match lr with
-          Empty -> assert false
-        | Node{l=lrl;v= lrv;r= lrr}->
-          create (create ll lv lrl) lrv (create lrr v r)
-      end
-  end else if hr > hl + 2 then begin
-    match r with
-      Empty -> assert false
-    | Node{l=rl;v= rv; r=rr} ->
-      if height rr >= height rl then
-        create (create l v rl) rv rr
-      else begin
-        match rl with
-          Empty -> assert false
-        | Node{l=rll;v= rlv;r= rlr} ->
-          create (create l v rll) rlv (create rlr rv rr)
-      end
+  let hl = height l in
+  let hr = height r in
+  if hl > hr + 2 then 
+    let [@warning "-8"] Node ({l=ll;r= lr} as l) = l in 
+    let hll = height ll in 
+    let hlr = height lr in 
+    if hll >= hlr then   
+      create ll l.v (create lr v r)        
+    else       
+      let [@warning "-8"] Node ({l = lrl; r = lrr } as lr) = lr in 
+      create (create ll l.v lrl) lr.v (create lrr v r)
+  else if hr > hl + 2 then begin    
+    let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
+    let hrr = height rr in 
+    let hrl = height rl in 
+    if hrr >= hrl then
+      create (create l v rl) r.v rr
+    else begin
+      let [@warning "-8"] Node ({l = rll ; r = rlr } as rl) = rl in 
+      create (create l v rll) rl.v (create rlr r.v rr)
+    end
   end else
-    Node{l; v; r; h = if hl >= hr then hl + 1 else hr + 1}
+    create l v r 
+
 
 let rec remove_min_elt = function
     Empty -> invalid_arg "Set.remove_min_elt"
   | Node{l=Empty; r} -> r
   | Node{l; v; r} -> internal_bal (remove_min_elt l) v r
 
-let singleton x = Node {l = Empty; v = x; r =  Empty; h =  1}    
+
 
 (* 
    All elements of l must precede the elements of r.
@@ -4177,7 +4181,7 @@ let internal_concat t1 t2 =
  *)
 
 let rec partition x p = match x with 
-  | Empty -> (Empty, Empty)
+  | Empty -> (empty, empty)
   | Node{l; v; r} ->
     (* call [p] in the expected left-to-right order *)
     let (lt, lf) = partition l p in
@@ -4190,11 +4194,11 @@ let rec partition x p = match x with
 let of_sorted_list l =
   let rec sub n l =
     match n, l with
-    | 0, l -> Empty, l
+    | 0, l -> empty, l
     | 1, x0 :: l -> singleton x0, l
-    | 2, x0 :: x1 :: l -> Node {l=singleton x0; v=x1; r=Empty;h = 2}, l
+    | 2, x0 :: x1 :: l -> create (singleton x0) x1 empty, l
     | 3, x0 :: x1 :: x2 :: l ->
-      Node {l=singleton x0; v=x1;r= singleton x2;h= 2},l
+      create (singleton x0) x1 (singleton x2),l
     | n, l ->
       let nl = n / 2 in
       let left, l = sub nl l in
@@ -4208,19 +4212,19 @@ let of_sorted_list l =
 
 let of_sorted_array l =   
   let rec sub start n l  =
-    if n = 0 then Empty else 
+    if n = 0 then empty else 
     if n = 1 then 
       let x0 = Array.unsafe_get l start in
       singleton x0
     else if n = 2 then     
       let x0 = Array.unsafe_get l start in 
       let x1 = Array.unsafe_get l (start + 1) in 
-      Node {l=singleton x0; v=x1;r= Empty;h= 2} else
+      create (singleton x0) x1 empty else
     if n = 3 then 
       let x0 = Array.unsafe_get l start in 
       let x1 = Array.unsafe_get l (start + 1) in
       let x2 = Array.unsafe_get l (start + 2) in
-      Node { l= singleton x0; v = x1; r= singleton x2; h=2}
+      create (singleton x0) x1 (singleton x2)
     else 
       let nl = n / 2 in
       let left = sub start nl l in
@@ -4353,7 +4357,6 @@ module Set_string : sig
 include Set_gen.S with type elt = string
 end = struct
 #1 "set_string.ml"
-# 1 "ext/set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4379,16 +4382,11 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-# 27 "ext/set.cppo.ml"
 type elt = string
 let compare_elt = Ext_string.compare 
 let print_elt = Format.pp_print_string
 
-# 49 "ext/set.cppo.ml"
-type ('a ) t0 = 'a Set_gen.t0 = private
-  | Empty 
-  | Node of { l : 'a t0 ; v : 'a ; r :  'a t0 ; h :  int }
-
+type ('a ) t0 = 'a Set_gen.t 
 
 type  t = elt t0
 
