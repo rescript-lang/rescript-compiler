@@ -5,7 +5,7 @@ let (=~) = OUnit.assert_equal
 
 module Set_poly =  struct 
   include Set_int
-
+let of_sorted_list xs = Array.of_list xs |> of_sorted_array 
 let of_array l = 
   Ext_array.fold_left l empty add
 end
@@ -86,21 +86,28 @@ let compare_ident x y =
     if b <> 0 then b 
     else compare (x.flags : int) y.flags     
 
-let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =
-  match tree with  
+
+let rec add (tree : _ Set_gen.t) x  =  match tree with 
   | Empty -> Set_gen.singleton x
-  | Node{l; v; r} as t ->
+  | Leaf v -> 
+    let c = compare_ident x v in
+    if c = 0 then tree else     
+    if c < 0 then 
+      Set_gen.unsafe_create v (Set_gen.singleton x) Set_gen.empty 2 
+    else 
+      Set_gen.unsafe_create x (Set_gen.singleton v) Set_gen.empty 2 
+  | Node {l; v; r} as t ->
     let c = compare_ident x v in
     if c = 0 then t else
-    if c < 0 then Set_gen.internal_bal (add x l) v r else Set_gen.internal_bal l v (add x r)
+    if c < 0 then Set_gen.internal_bal (add l x ) v r else Set_gen.internal_bal l v (add r x )
 
-let rec mem x (tree : _ Set_gen.t) = 
-  match tree with 
-   | Empty -> false
-   | Node {l; v; r} ->
-    let c = compare_ident x v in
-    c = 0 || mem x (if c < 0 then l else r)
-
+let rec mem (tree : _ Set_gen.t) x =  match tree with 
+    | Empty -> false
+    | Leaf v -> compare_ident x v = 0
+    | Node{l; v; r} ->
+      let c = compare_ident x v in
+      c = 0 || mem (if c < 0 then l else r) x
+  
 module Ident_set2 = Set.Make(struct type t = ident 
     let compare  = compare_ident            
   end)
@@ -139,10 +146,10 @@ let bench () =
   Ounit_tests_util.time "poly set (specialized)" begin fun _ -> 
     let v = ref Set_gen.empty in  
     for i = 0 to  times do
-      v := add   {stamp = i ; name = "name"; flags = -1 } !v 
+      v := add  !v {stamp = i ; name = "name"; flags = -1 }  
     done;
     for i = 0 to times do
-      ignore @@ mem   {stamp = i; name = "name" ; flags = -1} !v 
+      ignore @@ mem  !v  {stamp = i; name = "name" ; flags = -1} 
     done 
 
   end ; 
