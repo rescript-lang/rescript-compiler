@@ -3862,6 +3862,7 @@ module Set_gen : sig
 #1 "set_gen.mli"
 type 'a t =private
     Empty
+  | Leaf of 'a
   | Node of { l : 'a t; v : 'a; r : 'a t; h : int; }
 (* type ('a, 'id) enumeration0 =
     End
@@ -3872,12 +3873,14 @@ val min_elt : 'a t-> 'a
 val max_elt : 'a t-> 'a
 val empty : 'a t
 val is_empty : 'a t-> bool
+val unsafe_create : 
+  'a -> 'a t -> 'a t -> int -> 'a t
 (* val cardinal_aux : int -> 'a t-> int *)
 val cardinal : 'a t-> int
 (* val elements_aux : 'a list -> 'a t-> 'a list *)
 val elements : 'a t-> 'a list
 val choose : 'a t-> 'a
-val iter : 'a t-> ('a -> 'c) -> unit
+val iter : 'a t-> ('a -> unit) -> unit
 val fold : 'a t-> 'c -> ('a -> 'c -> 'c) -> 'c
 val for_all : 'a t-> ('a -> bool) -> bool
 val exists : 'a t-> ('a -> bool) -> bool
@@ -3897,7 +3900,6 @@ val internal_join : 'a t-> 'a -> 'a t-> 'a t
 val internal_concat : 'a t-> 'a t-> 'a t
 (* val filter : 'a t-> ('a -> bool) -> 'a t *)
 val partition : 'a t-> ('a -> bool) -> 'a t * 'a t
-val of_sorted_list : 'a list -> 'a t
 val of_sorted_array : 'a array -> 'a t
 val is_ordered : cmp:('a -> 'a -> int) -> 'a t-> bool
 val invariant : cmp:('a -> 'a -> int) -> 'a t-> bool
@@ -3929,7 +3931,6 @@ module type S =
     val diff : t -> t -> t
     val find : t -> elt -> elt
     val of_list : elt list -> t
-    val of_sorted_list : elt list -> t
     val of_sorted_array : elt array -> t
     (* val of_array : elt array -> t *)
     val invariant : t -> bool
@@ -3955,27 +3956,34 @@ end = struct
 
 type 'a t0 = 
   | Empty 
+  | Leaf of  'a 
   | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
 
 let empty = Empty
 let  [@inline] height = function
   | Empty -> 0 
+  | Leaf _ -> 1
   | Node {h} -> h   
+
+let [@inline] calc_height a b =  
+  (if a >= b then a else b) + 1 
+
 (* 
     Invariants: 
     1. {[ l < v < r]}
     2. l and r balanced 
     3. [height l] - [height r] <= 2
 *)
-let [@inline] create l v r  = 
-  let hl = height l  in
-  let hr = height r  in
-  Node{l;v;r; h = if hl >= hr then hl + 1 else hr + 1}         
+let [@inline] unsafe_create v l  r h = 
+  if h = 1 then Leaf v   
+  else Node{l;v;r; h }         
 
-let singleton x = Node {l = Empty; v = x; r =  Empty; h =  1}      
+
+let [@inline] singleton x = Leaf x
 
 type 'a t = 'a t0 = private
   | Empty 
+  | Leaf of 'a
   | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
 
 (* type 'a enumeration0 = 
@@ -3993,13 +4001,21 @@ type 'a t = 'a t0 = private
 
 let rec min_elt = function
   | Empty -> raise Not_found
+  | Leaf v -> v 
   | Node{l; v} ->
-    match l with Empty -> v | Node _ ->  min_elt l
+    match l with 
+    | Empty -> v 
+    | Leaf _
+    | Node _ ->  min_elt l
 
 let rec max_elt = function
-  |  Empty -> raise Not_found
+  | Empty -> raise Not_found
+  | Leaf v -> v 
   | Node{ v; r} -> 
-    match r with Empty -> v | Node _ -> max_elt r
+    match r with 
+    | Empty -> v 
+    | Leaf _
+    | Node _ -> max_elt r
 
 
 
@@ -4009,6 +4025,7 @@ let is_empty = function Empty -> true | _ -> false
 
 let rec cardinal_aux acc  = function
   | Empty -> acc 
+  | Leaf _ -> acc + 1
   | Node {l;r} -> 
     cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
 
@@ -4016,6 +4033,7 @@ let cardinal s = cardinal_aux 0 s
 
 let rec elements_aux accu = function
   | Empty -> accu
+  | Leaf v -> v :: accu
   | Node{l; v; r} -> elements_aux (v :: elements_aux accu r) l
 
 let elements s =
@@ -4025,24 +4043,26 @@ let choose = min_elt
 
 let rec iter  x f = match x with
   | Empty -> ()
+  | Leaf v -> f v 
   | Node {l; v; r} -> iter l f ; f v; iter r f 
 
 let rec fold s accu f =
   match s with
   | Empty -> accu
+  | Leaf v -> f v accu
   | Node{l; v; r} -> fold r (f v (fold l accu f)) f 
 
 let rec for_all x p = match x with
   | Empty -> true
+  | Leaf v -> p v 
   | Node{l; v; r} -> p v && for_all l p && for_all r p 
 
 let rec exists x p = match x with
   | Empty -> false
+  | Leaf v -> p v 
   | Node {l; v; r} -> p v || exists l p  || exists r p
 
 
-let max_int_2 (a : int) b =  
-  if a >= b then a else b 
 
 
 
@@ -4052,10 +4072,11 @@ exception Height_diff_borken
 let rec check_height_and_diff = 
   function 
   | Empty -> 0
+  | Leaf _ -> 1
   | Node{l;r;h} -> 
     let hl = check_height_and_diff l in
     let hr = check_height_and_diff r in
-    if h <>  max_int_2 hl hr + 1 then raise Height_invariant_broken
+    if h <>  calc_height hl hr  then raise Height_invariant_broken
     else  
       let diff = (abs (hl - hr)) in  
       if  diff > 2 then raise Height_diff_borken 
@@ -4074,34 +4095,57 @@ let check tree =
 
     Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
 *)
-let internal_bal l v r =
+let internal_bal l v r : _ t =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then 
     let [@warning "-8"] Node ({l=ll;r= lr} as l) = l in 
     let hll = height ll in 
     let hlr = height lr in 
-    if hll >= hlr then   
-      create ll l.v (create lr v r)        
+    if hll >= hlr then
+      let hnode = calc_height hlr hr in       
+      unsafe_create l.v 
+        ll  
+        (unsafe_create v lr  r hnode ) 
+        (calc_height hll hnode)
     else       
       let [@warning "-8"] Node ({l = lrl; r = lrr } as lr) = lr in 
-      create (create ll l.v lrl) lr.v (create lrr v r)
+      let hlrl = height lrl in 
+      let hlrr = height lrr in 
+      let hlnode = calc_height hll hlrl in 
+      let hrnode = calc_height hlrr hr in 
+      unsafe_create lr.v 
+        (unsafe_create l.v ll  lrl hlnode)  
+        (unsafe_create v lrr  r hrnode)
+        (calc_height hlnode hrnode)
   else if hr > hl + 2 then begin    
     let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
     let hrr = height rr in 
     let hrl = height rl in 
     if hrr >= hrl then
-      create (create l v rl) r.v rr
+      let hnode = calc_height hl hrl in
+      unsafe_create r.v 
+        (unsafe_create v l  rl hnode) 
+        rr 
+        (calc_height hnode hrr )
     else begin
       let [@warning "-8"] Node ({l = rll ; r = rlr } as rl) = rl in 
-      create (create l v rll) rl.v (create rlr r.v rr)
+      let hrll = height rll in 
+      let hrlr = height rlr in 
+      let hlnode = (calc_height hl hrll) in
+      let hrnode = (calc_height hrlr hrr) in
+      unsafe_create rl.v 
+        (unsafe_create v l rll hlnode)  
+        (unsafe_create r.v rlr rr hrnode)
+        (calc_height hlnode hrnode)
     end
   end else
-    create l v r 
+    unsafe_create v l  r (calc_height hl hr)
 
 
 let rec remove_min_elt = function
     Empty -> invalid_arg "Set.remove_min_elt"
+  | Leaf _ -> empty  
   | Node{l=Empty; r} -> r
   | Node{l; v; r} -> internal_bal (remove_min_elt l) v r
 
@@ -4128,11 +4172,13 @@ let internal_merge l r =
 
 let rec add_min_element v = function
   | Empty -> singleton v
+  | Leaf x -> unsafe_create x (singleton v) empty 2 
   | Node {l; v=x; r} ->
     internal_bal (add_min_element v l) x r
 
 let rec add_max_element v = function
   | Empty -> singleton v
+  | Leaf x -> unsafe_create v (singleton x) empty 2 
   | Node {l; v=x; r} ->
     internal_bal l x (add_max_element v r)
 
@@ -4149,6 +4195,16 @@ let rec internal_join l v r =
   match (l, r) with
     (Empty, _) -> add_min_element v r
   | (_, Empty) -> add_max_element v l
+  | Leaf lv, Node {h = rh} ->
+    if rh > 3 then 
+      add_min_element lv (add_min_element v r ) (* FIXME: could inlined *)
+    else unsafe_create  v l r (rh + 1)
+  | Leaf _, Leaf _ -> 
+    unsafe_create  v l r 2
+  | Node {h = lh}, Leaf rv ->
+    if lh > 3 then       
+      add_max_element rv (add_max_element v l)
+    else unsafe_create  v l r (lh + 1)    
   | (Node{l=ll;v= lv;r= lr;h= lh}, Node {l=rl; v=rv; r=rr; h=rh}) ->
     if lh > rh + 2 then 
       (* proof by induction:
@@ -4157,7 +4213,7 @@ let rec internal_join l v r =
       internal_bal ll lv (internal_join lr v r) 
     else
     if rh > lh + 2 then internal_bal (internal_join l v rl) rv rr 
-    else create l v r
+    else unsafe_create  v l r (calc_height lh rh)
 
 
 (*
@@ -4182,6 +4238,7 @@ let internal_concat t1 t2 =
 
 let rec partition x p = match x with 
   | Empty -> (empty, empty)
+  | Leaf v -> let pv = p v in if pv then x, empty else empty, x
   | Node{l; v; r} ->
     (* call [p] in the expected left-to-right order *)
     let (lt, lf) = partition l p in
@@ -4191,24 +4248,6 @@ let rec partition x p = match x with
     then (internal_join lt v rt, internal_concat lf rf)
     else (internal_concat lt rt, internal_join lf v rf)
 
-let of_sorted_list l =
-  let rec sub n l =
-    match n, l with
-    | 0, l -> empty, l
-    | 1, x0 :: l -> singleton x0, l
-    | 2, x0 :: x1 :: l -> create (singleton x0) x1 empty, l
-    | 3, x0 :: x1 :: x2 :: l ->
-      create (singleton x0) x1 (singleton x2),l
-    | n, l ->
-      let nl = n / 2 in
-      let left, l = sub nl l in
-      match l with
-      | [] -> assert false
-      | mid :: l ->
-        let right, l = sub (n - nl - 1) l in
-        create left mid right, l
-  in
-  fst (sub (List.length l) l)
 
 let of_sorted_array l =   
   let rec sub start n l  =
@@ -4219,19 +4258,19 @@ let of_sorted_array l =
     else if n = 2 then     
       let x0 = Array.unsafe_get l start in 
       let x1 = Array.unsafe_get l (start + 1) in 
-      create (singleton x0) x1 empty else
+      unsafe_create x1 (singleton x0)  empty 2 else
     if n = 3 then 
       let x0 = Array.unsafe_get l start in 
       let x1 = Array.unsafe_get l (start + 1) in
       let x2 = Array.unsafe_get l (start + 2) in
-      create (singleton x0) x1 (singleton x2)
+      unsafe_create x1 (singleton x0)  (singleton x2) 2
     else 
       let nl = n / 2 in
       let left = sub start nl l in
       let mid = start + nl in 
       let v = Array.unsafe_get l mid in 
       let right = sub (mid + 1) (n - nl - 1) l in        
-      create left v right
+      unsafe_create v left  right (calc_height (height left) (height right))
   in
   sub 0 (Array.length l) l 
 
@@ -4239,6 +4278,7 @@ let is_ordered ~cmp tree =
   let rec is_ordered_min_max tree =
     match tree with
     | Empty -> `Empty
+    | Leaf v -> `V (v,v)
     | Node {l;v;r} -> 
       begin match is_ordered_min_max l with
         | `No -> `No 
@@ -4317,7 +4357,6 @@ module type S = sig
 
   val find:  t -> elt -> elt
   val of_list: elt list -> t
-  val of_sorted_list : elt list ->  t
   val of_sorted_array : elt array -> t 
   (* val of_array : elt array -> t  *)
   val invariant : t -> bool 
@@ -4406,12 +4445,18 @@ let choose = Set_gen.choose
 (* let of_sorted_array = Set_gen.of_sorted_array *)
 (* let partition = Set_gen.partition 
 let filter = Set_gen.filter  *)
-let of_sorted_list = Set_gen.of_sorted_list
 let of_sorted_array = Set_gen.of_sorted_array
 
 let rec split (tree : t) x : t * bool * t =  match tree with 
   | Empty ->
     (empty, false, empty)
+  | Leaf v ->   
+    let c = compare_elt x v in
+    if c = 0 then (empty, true, empty)
+    else if c < 0 then
+      (empty, false, tree)
+    else
+      (tree, false, empty)
   | Node {l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then (l, true, r)
@@ -4421,6 +4466,13 @@ let rec split (tree : t) x : t * bool * t =  match tree with
       let (lr, pres, rr) = split r x in (Set_gen.internal_join l v lr, pres, rr)
 let rec add (tree : t) x : t =  match tree with 
   | Empty -> singleton x
+  | Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then tree else     
+    if c < 0 then 
+      Set_gen.unsafe_create v (singleton x) empty 2 
+    else 
+      Set_gen.unsafe_create x (singleton v) empty 2 
   | Node {l; v; r} as t ->
     let c = compare_elt x v in
     if c = 0 then t else
@@ -4430,6 +4482,17 @@ let rec union (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
   | (Empty, t2) -> t2
   | (t1, Empty) -> t1
+  | Node _, Leaf v2 ->
+    add s1 v2 
+  | Leaf v1, Node _ -> 
+    add s2 v1 
+  | Leaf x, Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then s1 else     
+    if c < 0 then 
+      Set_gen.unsafe_create v (singleton x) empty 2 
+    else 
+      Set_gen.unsafe_create x (singleton v) empty 2     
   | Node{l=l1; v=v1; r=r1; h=h1}, Node{l=l2; v=v2; r=r2; h=h2} ->
     if h1 >= h2 then
       if h2 = 1 then add s1 v2 else begin
@@ -4445,7 +4508,9 @@ let rec union (s1 : t) (s2 : t) : t  =
 let rec inter (s1 : t)  (s2 : t) : t  =
   match (s1, s2) with
   | (Empty, _) -> empty
-  | (_, Empty) -> empty
+  | (_, Empty) -> empty  
+  | Leaf v, t2 -> 
+    if mem t2 v then s1 else empty
   | (Node{l=l1; v=v1; r=r1}, t2) ->
     begin match split t2 v1 with
       | (l2, false, r2) ->
@@ -4454,10 +4519,12 @@ let rec inter (s1 : t)  (s2 : t) : t  =
         Set_gen.internal_join (inter l1 l2) v1 (inter r1 r2)
     end 
 
-let rec diff (s1 : t) (s2 : t) : t  =
+and diff (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
   | (Empty, _) -> empty
   | (t1, Empty) -> t1
+  | Leaf v, t2 -> 
+    if mem t2 v then empty else s1 
   | (Node{l=l1; v=v1; r=r1}, t2) ->
     begin match split t2 v1 with
       | (l2, false, r2) ->
@@ -4467,14 +4534,18 @@ let rec diff (s1 : t) (s2 : t) : t  =
     end
 
 
-let rec mem (tree : t) x =  match tree with 
+and mem (tree : t) x =  match tree with 
   | Empty -> false
+  | Leaf v -> compare_elt x v = 0
   | Node{l; v; r} ->
     let c = compare_elt x v in
     c = 0 || mem (if c < 0 then l else r) x
 
 let rec remove (tree : t)  x : t = match tree with 
-  | Empty -> empty
+  | Empty -> empty (* This case actually would be never reached *)
+  | Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then empty else tree    
   | Node{l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then Set_gen.internal_merge l r else
@@ -4488,6 +4559,8 @@ let rec remove (tree : t)  x : t = match tree with
 
 let rec find (tree : t) x = match tree with
   | Empty -> raise Not_found
+  | Leaf v -> 
+    if compare_elt x v = 0 then v else raise Not_found
   | Node{l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then v
@@ -4503,7 +4576,10 @@ let of_list l =
   | [x0; x1; x2] -> add (add (singleton x0)  x1) x2 
   | [x0; x1; x2; x3] -> add (add (add (singleton x0) x1 ) x2 ) x3 
   | [x0; x1; x2; x3; x4] -> add (add (add (add (singleton x0) x1) x2 ) x3 ) x4 
-  | _ -> of_sorted_list (List.sort_uniq compare_elt l)
+  | _ -> 
+    let arrs = Array.of_list l in 
+    Array.sort compare_elt arrs ; 
+    of_sorted_array arrs
 
 
 
