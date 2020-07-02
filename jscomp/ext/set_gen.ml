@@ -17,6 +17,27 @@ type 'a t0 =
   | Empty 
   | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
 
+let empty = Empty
+let  [@inline] height = function
+  | Empty -> 0 
+  | Node {h} -> h   
+(* 
+    Invariants: 
+    1. {[ l < v < r]}
+    2. l and r balanced 
+    3. [height l] - [height r] <= 2
+*)
+let [@inline] create l v r  = 
+  let hl = height l  in
+  let hr = height r  in
+  Node{l;v;r; h = if hl >= hr then hl + 1 else hr + 1}         
+
+let singleton x = Node {l = Empty; v = x; r =  Empty; h =  1}      
+
+type 'a t = 'a t0 = private
+  | Empty 
+  | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
+
 (* type 'a enumeration0 = 
   | End | More of 'a * 'a t0 * 'a enumeration0 *)
 
@@ -26,26 +47,23 @@ type 'a t0 =
   | Empty -> e 
   | Node {l; v;r} -> cons_enum l (More(v,r,e)) *)
 
-let  [@inline] height = function
-  | Empty -> 0 
-  | Node {h} -> h   
+
 
 (* Smallest and greatest element of a set *)
 
 let rec min_elt = function
   | Empty -> raise Not_found
   | Node{l; v} ->
-    if l = Empty then v else min_elt l
+    match l with Empty -> v | Node _ ->  min_elt l
 
 let rec max_elt = function
   |  Empty -> raise Not_found
   | Node{ v; r} -> 
-    if r = Empty then v else max_elt r
+    match r with Empty -> v | Node _ -> max_elt r
 
 
 
 
-let empty = Empty
 
 let is_empty = function Empty -> true | _ -> false
 
@@ -105,16 +123,6 @@ let rec check_height_and_diff =
 
 let check tree = 
   ignore (check_height_and_diff tree)
-(* 
-    Invariants: 
-    1. {[ l < v < r]}
-    2. l and r balanced 
-    3. [height l] - [height r] <= 2
-*)
-let [@inline] create l v r = 
-  let hl = height l  in
-  let hr = height r  in
-  Node{l;v;r; h = if hl >= hr then hl + 1 else hr + 1}         
 
 (* Same as create, but performs one step of rebalancing if necessary.
     Invariants:
@@ -149,14 +157,15 @@ let internal_bal l v r =
       create (create l v rl.l) rl.v (create rl.r r.v rr)
     end
   end else
-    Node{l; v; r; h = if hl >= hr then hl + 1 else hr + 1}
+    create l v r 
+
 
 let rec remove_min_elt = function
     Empty -> invalid_arg "Set.remove_min_elt"
   | Node{l=Empty; r} -> r
   | Node{l; v; r} -> internal_bal (remove_min_elt l) v r
 
-let singleton x = Node {l = Empty; v = x; r =  Empty; h =  1}    
+
 
 (* 
    All elements of l must precede the elements of r.
@@ -232,7 +241,7 @@ let internal_concat t1 t2 =
  *)
 
 let rec partition x p = match x with 
-  | Empty -> (Empty, Empty)
+  | Empty -> (empty, empty)
   | Node{l; v; r} ->
     (* call [p] in the expected left-to-right order *)
     let (lt, lf) = partition l p in
@@ -245,11 +254,11 @@ let rec partition x p = match x with
 let of_sorted_list l =
   let rec sub n l =
     match n, l with
-    | 0, l -> Empty, l
+    | 0, l -> empty, l
     | 1, x0 :: l -> singleton x0, l
-    | 2, x0 :: x1 :: l -> Node {l=singleton x0; v=x1; r=Empty;h = 2}, l
+    | 2, x0 :: x1 :: l -> create (singleton x0) x1 empty, l
     | 3, x0 :: x1 :: x2 :: l ->
-      Node {l=singleton x0; v=x1;r= singleton x2;h= 2},l
+      create (singleton x0) x1 (singleton x2),l
     | n, l ->
       let nl = n / 2 in
       let left, l = sub nl l in
@@ -263,19 +272,19 @@ let of_sorted_list l =
 
 let of_sorted_array l =   
   let rec sub start n l  =
-    if n = 0 then Empty else 
+    if n = 0 then empty else 
     if n = 1 then 
       let x0 = Array.unsafe_get l start in
       singleton x0
     else if n = 2 then     
       let x0 = Array.unsafe_get l start in 
       let x1 = Array.unsafe_get l (start + 1) in 
-      Node {l=singleton x0; v=x1;r= Empty;h= 2} else
+      create (singleton x0) x1 empty else
     if n = 3 then 
       let x0 = Array.unsafe_get l start in 
       let x1 = Array.unsafe_get l (start + 1) in
       let x2 = Array.unsafe_get l (start + 2) in
-      Node { l= singleton x0; v = x1; r= singleton x2; h=2}
+      create (singleton x0) x1 (singleton x2)
     else 
       let nl = n / 2 in
       let left = sub start nl l in

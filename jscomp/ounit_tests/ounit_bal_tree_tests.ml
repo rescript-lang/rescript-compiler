@@ -86,7 +86,7 @@ let compare_ident x y =
     if b <> 0 then b 
     else compare (x.flags : int) y.flags     
 
-let rec add x (tree : _ Set_gen.t0) : _ Set_gen.t0 =
+let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =
   match tree with  
   | Empty -> Set_gen.singleton x
   | Node{l; v; r} as t ->
@@ -94,7 +94,7 @@ let rec add x (tree : _ Set_gen.t0) : _ Set_gen.t0 =
     if c = 0 then t else
     if c < 0 then Set_gen.internal_bal (add x l) v r else Set_gen.internal_bal l v (add x r)
 
-let rec mem x (tree : _ Set_gen.t0) = 
+let rec mem x (tree : _ Set_gen.t) = 
   match tree with 
    | Empty -> false
    | Node {l; v; r} ->

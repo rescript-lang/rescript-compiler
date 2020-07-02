@@ -46,10 +46,7 @@ let print_elt = Format.pp_print_int
 [%error "unknown type" ]
 #endif
 
-type ('a ) t0 = 'a Set_gen.t0 = private
-  | Empty 
-  | Node of { l : 'a t0 ; v : 'a ; r :  'a t0 ; h :  int }
-
+type ('a ) t0 = 'a Set_gen.t 
 
 type  t = elt t0
 
