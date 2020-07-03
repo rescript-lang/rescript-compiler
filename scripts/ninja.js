@@ -1522,7 +1522,7 @@ rule link
 build ${cppoFile}: link ${cppoMonoFile}
     libs = unix.cmxa str.cmxa
     generator = true
-${cppoRule("-n")}
+${cppoRule()}
 ${cppoList("ext", [
   ["hash_set_string.ml", "hash_set.cppo.ml", dTypeString],
   ["hash_set_int.ml", "hash_set.cppo.ml", dTypeInt],

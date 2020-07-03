@@ -79,51 +79,6 @@ let obj s = Obj s
 let kvs s = 
   Obj (Map_string.of_list s)
   
-let rec equal 
-    (x : t)
-    (y : t) = 
-  match x with 
-  | Null  -> (* [%p? Null _ ] *)
-    begin match y with
-      | Null  -> true
-      | _ -> false end
-  | Str str  -> 
-    begin match y with 
-      | Str str2 -> str = str2
-      | _ -> false end
-  | Flo flo 
-    ->
-    begin match y with
-      |  Flo flo2 -> 
-        flo = flo2 
-      | _ -> false
-    end
-  | True  -> 
-    begin match y with 
-      | True  -> true 
-      | _ -> false 
-    end
-  | False  -> 
-    begin match y with 
-      | False  -> true 
-      | _ -> false 
-    end     
-  | Arr content 
-    -> 
-    begin match y with 
-      | Arr content2
-        ->
-        Ext_array.for_all2_no_exn content content2 equal 
-      | _ -> false 
-    end
-
-  | Obj map -> 
-    begin match y with 
-      | Obj map2 -> 
-        Map_string.equal map map2 equal 
-      | _ -> false 
-    end 
-
 let rec encode_buf (x : t ) 
     (buf : Buffer.t) : unit =  
   let a str = Buffer.add_string buf str in 

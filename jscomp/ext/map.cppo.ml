@@ -1,6 +1,6 @@
 
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
-
+[@@@warnerror"a"]
 
 #ifdef TYPE_FUNCTOR
 module Make(Ord: Map.OrderedType) = struct
@@ -35,14 +35,12 @@ let to_sorted_array = Map_gen.to_sorted_array
 let to_sorted_array_with_f = Map_gen.to_sorted_array_with_f
 let keys = Map_gen.keys
 let choose = Map_gen.choose 
-let partition = Map_gen.partition 
-let filter = Map_gen.filter 
+
+
 let map = Map_gen.map 
 let mapi = Map_gen.mapi
 let bal = Map_gen.bal 
 let height = Map_gen.height 
-let max_binding_exn = Map_gen.max_binding_exn
-let min_binding_exn = Map_gen.min_binding_exn
 
 
 let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with 
@@ -159,9 +157,8 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
 
 
 
-let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
 
-let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
+
 
 let add_list (xs : _ list ) init = 
   Ext_list.fold_left xs init (fun  acc (k,v) -> add acc k v )

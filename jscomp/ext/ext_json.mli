@@ -55,4 +55,4 @@ val test:
 
 val loc_of : Ext_json_types.t -> Ext_position.t
 
-val equal : Ext_json_types.t -> Ext_json_types.t -> bool 
+

@@ -3115,6 +3115,7 @@ module Set_int : sig
 include Set_gen.S with type elt = int 
 end = struct
 #1 "set_int.ml"
+# 1 "ext/set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3140,10 +3141,12 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+# 42 "ext/set.cppo.ml"
 type elt = int 
 let compare_elt = Ext_int.compare 
 let print_elt = Format.pp_print_int
 
+# 49 "ext/set.cppo.ml"
 type ('a ) t0 = 'a Set_gen.t 
 
 type  t = elt t0
@@ -4650,8 +4653,90 @@ let rec mem_string (xs : string list) (x : string) =
   | a::l ->  a = x  || mem_string l x
 
 end
-module Map_gen
-= struct
+module Map_gen : sig 
+#1 "map_gen.mli"
+type ('key, 'a) t =
+    Empty
+  | Node of ('key, 'a) t * 'key * 'a * ('key, 'a) t * int
+
+
+val cardinal : ('a, 'b) t -> int
+
+val bindings : ('a, 'b) t -> ('a * 'b) list
+val fill_array_with_f :
+  ('a, 'b) t -> int -> 'c array -> ('a -> 'b -> 'c) -> int
+val fill_array_aux : ('a, 'b) t -> int -> ('a * 'b) array -> int
+val to_sorted_array : ('key, 'a) t -> ('key * 'a) array
+val to_sorted_array_with_f : ('a, 'b) t -> ('a -> 'b -> 'c) -> 'c array
+
+val keys : ('a, 'b) t -> 'a list
+
+val height : ('a, 'b) t -> int
+val create : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+val singleton : 'a -> 'b -> ('a, 'b) t
+val bal : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+val empty : ('a, 'b) t
+val is_empty : ('a, 'b) t -> bool
+
+val choose : ('a, 'b) t -> 'a * 'b
+
+val remove_min_binding : ('a, 'b) t -> ('a, 'b) t
+val merge : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
+val iter : ('a, 'b) t -> ('a -> 'b -> 'c) -> unit
+val map : ('a, 'b) t -> ('b -> 'c) -> ('a, 'c) t
+val mapi : ('a, 'b) t -> ('a -> 'b -> 'c) -> ('a, 'c) t
+val fold : ('a, 'b) t -> 'c -> ('a -> 'b -> 'c -> 'c) -> 'c
+val for_all : ('a, 'b) t -> ('a -> 'b -> bool) -> bool
+val exists : ('a, 'b) t -> ('a -> 'b -> bool) -> bool
+val add_min_binding : 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+val add_max_binding : 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+val join : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+val concat : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
+val concat_or_join :
+  ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
+(* val filter : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t *)
+(* val partition : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t * ('a, 'b) t *)
+
+module type S =
+  sig
+    type key
+    type +'a t
+    val empty : 'a t
+    val compare_key : key -> key -> int
+    val is_empty : 'a t -> bool
+    val mem : 'a t -> key -> bool
+    val to_sorted_array : 'a t -> (key * 'a) array
+    val to_sorted_array_with_f : 'a t -> (key -> 'a -> 'b) -> 'b array
+    val add : 'a t -> key -> 'a -> 'a t
+    val adjust : 'a t -> key -> ('a option -> 'a) -> 'a t
+    val singleton : key -> 'a -> 'a t
+    val remove : 'a t -> key -> 'a t
+    val merge :
+      'a t -> 'b t -> (key -> 'a option -> 'b option -> 'c option) -> 'c t
+    val disjoint_merge : 'a t -> 'a t -> 'a t
+    
+    val iter : 'a t -> (key -> 'a -> unit) -> unit
+    val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
+    val for_all : 'a t -> (key -> 'a -> bool) -> bool
+    val exists : 'a t -> (key -> 'a -> bool) -> bool
+    (* val filter : 'a t -> (key -> 'a -> bool) -> 'a t *)
+    (* val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t *)
+    val cardinal : 'a t -> int
+    val bindings : 'a t -> (key * 'a) list
+    val keys : 'a t -> key list
+    val choose : 'a t -> key * 'a
+
+    val find_exn : 'a t -> key -> 'a
+    val find_opt : 'a t -> key -> 'a option
+    val find_default : 'a t -> key -> 'a -> 'a
+    val map : 'a t -> ('a -> 'b) -> 'b t
+    val mapi : 'a t -> (key -> 'a -> 'b) -> 'b t
+    val of_list : (key * 'a) list -> 'a t
+    val of_array : (key * 'a) array -> 'a t
+    val add_list : (key * 'b) list -> 'b t -> 'b t
+  end
+
+end = struct
 #1 "map_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
@@ -4671,9 +4756,6 @@ type ('key,'a) t =
   | Empty
   | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
 
-type ('key,'a) enumeration =
-  | End
-  | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
 
 let rec cardinal_aux acc  = function
   | Empty -> acc 
@@ -4736,11 +4818,6 @@ let keys s = keys_aux [] s
 
 
 
-let rec cons_enum m e =
-  match m with
-    Empty -> e
-  | Node(l, v, d, r, _) -> cons_enum l (More(v, d, r, e))
-
 
 let height = function
   | Empty -> 0
@@ -4793,10 +4870,6 @@ let rec min_binding_exn = function
 
 let choose = min_binding_exn
 
-let rec max_binding_exn = function
-    Empty -> raise Not_found
-  | Node(_, x, d, Empty, _) -> (x, d)
-  | Node(_, _, _, r, _) -> max_binding_exn r
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
@@ -4896,52 +4969,14 @@ let concat_or_join t1 v d t2 =
   | Some d -> join t1 v d t2
   | None -> concat t1 t2
 
-let rec filter x p = match x with
+(* let rec filter x p = match x with
     Empty -> Empty
   | Node(l, v, d, r, _) ->
     (* call [p] in the expected left-to-right order *)
     let l' = filter l p in
     let pvd = p v d in
     let r' = filter r p in
-    if pvd then join l' v d r' else concat l' r'
-
-let rec partition x p = match x with
-    Empty -> (Empty, Empty)
-  | Node(l, v, d, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition l p in
-    let pvd = p v d in
-    let (rt, rf) = partition r p in
-    if pvd
-    then (join lt v d rt, concat lf rf)
-    else (concat lt rt, join lf v d rf)
-
-let compare compare_key cmp_val m1 m2 =
-  let rec compare_aux e1  e2 =
-    match (e1, e2) with
-      (End, End) -> 0
-    | (End, _)  -> -1
-    | (_, End) -> 1
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      let c = compare_key v1 v2 in
-      if c <> 0 then c else
-        let c = cmp_val d1 d2 in
-        if c <> 0 then c else
-          compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
-  in compare_aux (cons_enum m1 End) (cons_enum m2 End)
-
-let equal compare_key cmp m1 m2 =
-  let rec equal_aux e1 e2 =
-    match (e1, e2) with
-      (End, End) -> true
-    | (End, _)  -> false
-    | (_, End) -> false
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      compare_key v1 v2 = 0 && cmp d1 d2 &&
-      equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
-  in equal_aux (cons_enum m1 End) (cons_enum m2 End)
-
-
+    if pvd then join l' v d r' else concat l' r' *)
 
     
 module type S =
@@ -4982,11 +5017,8 @@ module type S =
 
     val disjoint_merge : 'a t -> 'a t -> 'a t
      (* merge two maps, will raise if they have the same key *)
-    val compare: 'a t -> 'a t -> ('a -> 'a -> int) -> int
-    (** Total ordering between maps.  The first argument is a total ordering
-        used to compare data associated with equal keys in the two maps. *)
 
-    val equal: 'a t -> 'a t -> ('a -> 'a -> bool) ->  bool
+
 
     val iter: 'a t -> (key -> 'a -> unit) ->  unit
     (** [iter f m] applies [f] to all bindings in map [m].
@@ -5008,13 +5040,13 @@ module type S =
         order unspecified
      *)
 
-    val filter: 'a t -> (key -> 'a -> bool) -> 'a t
+    (* val filter: 'a t -> (key -> 'a -> bool) -> 'a t *)
     (** [filter p m] returns the map with all the bindings in [m]
         that satisfy predicate [p].
         order unspecified
      *)
 
-    val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t
+    (* val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t *)
     (** [partition p m] returns a pair of maps [(m1, m2)], where
         [m1] contains all the bindings of [s] that satisfy the
         predicate [p], and [m2] is the map with all the bindings of
@@ -5031,11 +5063,6 @@ module type S =
     val keys : 'a t -> key list 
     (* Increasing order *)
 
-    val min_binding_exn: 'a t -> (key * 'a)
-    (** raise [Not_found] if the map is empty. *)
-
-    val max_binding_exn: 'a t -> (key * 'a)
-    (** Same as {!Map.S.min_binding} *)
 
     val choose: 'a t -> (key * 'a)
     (** Return one binding of the given map, or raise [Not_found] if
@@ -5043,7 +5070,7 @@ module type S =
        but equal bindings will be chosen for equal maps.
      *)
 
-    val split: 'a t -> key -> 'a t * 'a option * 'a t
+    (* val split: 'a t -> key -> 'a t * 'a option * 'a t *)
     (** [split x m] returns a triple [(l, data, r)], where
           [l] is the map with all the bindings of [m] whose key
         is strictly less than [x];
@@ -5111,7 +5138,7 @@ end = struct
 
 # 2 "ext/map.cppo.ml"
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
-
+[@@@warnerror"a"]
 
   
 # 10 "ext/map.cppo.ml"
@@ -5135,14 +5162,12 @@ let to_sorted_array = Map_gen.to_sorted_array
 let to_sorted_array_with_f = Map_gen.to_sorted_array_with_f
 let keys = Map_gen.keys
 let choose = Map_gen.choose 
-let partition = Map_gen.partition 
-let filter = Map_gen.filter 
+
+
 let map = Map_gen.map 
 let mapi = Map_gen.mapi
 let bal = Map_gen.bal 
 let height = Map_gen.height 
-let max_binding_exn = Map_gen.max_binding_exn
-let min_binding_exn = Map_gen.min_binding_exn
 
 
 let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with 
@@ -5259,9 +5284,8 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
 
 
 
-let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
 
-let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
+
 
 let add_list (xs : _ list ) init = 
   Ext_list.fold_left xs init (fun  acc (k,v) -> add acc k v )
@@ -14020,7 +14044,7 @@ val test:
 
 val loc_of : Ext_json_types.t -> Ext_position.t
 
-val equal : Ext_json_types.t -> Ext_json_types.t -> bool 
+
 
 end = struct
 #1 "ext_json.ml"
@@ -14105,50 +14129,7 @@ let loc_of (x : Ext_json_types.t) =
   | Flo p -> p.loc
 
 
-let rec equal 
-    (x : Ext_json_types.t)
-    (y : Ext_json_types.t) = 
-  match x with 
-  | Null _ -> (* [%p? Null _ ] *)
-    begin match y with
-      | Null _ -> true
-      | _ -> false end
-  | Str {str } -> 
-    begin match y with 
-      | Str rhs -> str = rhs.str
-      | _ -> false end
-  | Flo {flo} 
-    ->
-    begin match y with
-      |  Flo rhs -> 
-        flo = rhs.flo
-      | _ -> false
-    end
-  | True _ -> 
-    begin match y with 
-      | True _ -> true 
-      | _ -> false 
-    end
-  | False _ -> 
-    begin match y with 
-      | False _ -> true 
-      | _ -> false 
-    end     
-  | Arr {content} 
-    -> 
-    begin match y with 
-      | Arr rhs
-        ->
-        Ext_array.for_all2_no_exn content rhs.content equal
-      | _ -> false 
-    end
 
-  | Obj {map} -> 
-    begin match y with 
-      | Obj rhs -> 
-        Map_string.equal map rhs.map equal
-      | _ -> false 
-    end 
 
 
 end
@@ -14179,7 +14160,14 @@ module Ext_json_noloc : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t 
+type t = private 
+  | True 
+  | False 
+  | Null 
+  | Flo of string 
+  | Str of string
+  | Arr of t array 
+  | Obj of t Map_string.t
 
 val true_  : t 
 val false_ : t 
@@ -14189,7 +14177,7 @@ val flo : string -> t
 val arr : t array -> t 
 val obj : t Map_string.t -> t 
 val kvs : (string * t) list -> t 
-val equal : t -> t -> bool 
+
 val to_string : t -> string 
 
 
@@ -14283,51 +14271,6 @@ let obj s = Obj s
 let kvs s = 
   Obj (Map_string.of_list s)
   
-let rec equal 
-    (x : t)
-    (y : t) = 
-  match x with 
-  | Null  -> (* [%p? Null _ ] *)
-    begin match y with
-      | Null  -> true
-      | _ -> false end
-  | Str str  -> 
-    begin match y with 
-      | Str str2 -> str = str2
-      | _ -> false end
-  | Flo flo 
-    ->
-    begin match y with
-      |  Flo flo2 -> 
-        flo = flo2 
-      | _ -> false
-    end
-  | True  -> 
-    begin match y with 
-      | True  -> true 
-      | _ -> false 
-    end
-  | False  -> 
-    begin match y with 
-      | False  -> true 
-      | _ -> false 
-    end     
-  | Arr content 
-    -> 
-    begin match y with 
-      | Arr content2
-        ->
-        Ext_array.for_all2_no_exn content content2 equal 
-      | _ -> false 
-    end
-
-  | Obj map -> 
-    begin match y with 
-      | Obj map2 -> 
-        Map_string.equal map map2 equal 
-      | _ -> false 
-    end 
-
 let rec encode_buf (x : t ) 
     (buf : Buffer.t) : unit =  
   let a str = Buffer.add_string buf str in 
@@ -15128,6 +15071,56 @@ module Ounit_json_tests
 
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
+type t = Ext_json_noloc.t     
+let rec equal 
+    (x : t)
+    (y : t) = 
+  match x with 
+  | Null  -> (* [%p? Null _ ] *)
+    begin match y with
+      | Null  -> true
+      | _ -> false end
+  | Str str  -> 
+    begin match y with 
+      | Str str2 -> str = str2
+      | _ -> false end
+  | Flo flo 
+    ->
+    begin match y with
+      |  Flo flo2 -> 
+        flo = flo2 
+      | _ -> false
+    end
+  | True  -> 
+    begin match y with 
+      | True  -> true 
+      | _ -> false 
+    end
+  | False  -> 
+    begin match y with 
+      | False  -> true 
+      | _ -> false 
+    end     
+  | Arr content 
+    -> 
+    begin match y with 
+      | Arr content2
+        ->
+        Ext_array.for_all2_no_exn content content2 equal 
+      | _ -> false 
+    end
+
+  | Obj map -> 
+    begin match y with 
+      | Obj map2 -> 
+        let xs = Map_string.bindings map 
+                 |> List.sort (fun (a,_) (b,_) -> compare a b) in 
+        let ys = Map_string.bindings map2 
+                 |> List.sort (fun (a,_) (b,_) -> compare a b) in 
+        Ext_list.for_all2_no_exn xs ys (fun (k0,v0) (k1,v1) -> k0=k1 && equal v0 v1)
+      | _ -> false 
+    end 
+
 
 open Ext_json_parse
 let (|?)  m (key, cb) =
@@ -15168,7 +15161,7 @@ let id_parsing_x2 x =
   let stru = Ext_json_parse.parse_json_from_string x |> strip in 
   let normal_s = Ext_json_noloc.to_string stru in 
   let normal_ss = strip (Ext_json_parse.parse_json_from_string normal_s) in 
-  if Ext_json_noloc.equal stru normal_ss then 
+  if equal stru normal_ss then 
     true
   else begin 
     prerr_endline "ERROR";
@@ -15451,7 +15444,7 @@ end = struct
 
 # 2 "ext/map.cppo.ml"
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
-
+[@@@warnerror"a"]
 
   
 # 13 "ext/map.cppo.ml"
@@ -15475,14 +15468,12 @@ let to_sorted_array = Map_gen.to_sorted_array
 let to_sorted_array_with_f = Map_gen.to_sorted_array_with_f
 let keys = Map_gen.keys
 let choose = Map_gen.choose 
-let partition = Map_gen.partition 
-let filter = Map_gen.filter 
+
+
 let map = Map_gen.map 
 let mapi = Map_gen.mapi
 let bal = Map_gen.bal 
 let height = Map_gen.height 
-let max_binding_exn = Map_gen.max_binding_exn
-let min_binding_exn = Map_gen.min_binding_exn
 
 
 let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with 
@@ -15599,9 +15590,8 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
 
 
 
-let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
 
-let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
+
 
 let add_list (xs : _ list ) init = 
   Ext_list.fold_left xs init (fun  acc (k,v) -> add acc k v )
