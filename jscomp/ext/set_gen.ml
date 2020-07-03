@@ -405,25 +405,15 @@ module type S = sig
   val cardinal: t -> int
   val elements: t -> elt list
   val min_elt: t -> elt
-  (* val max_elt: t -> elt *)
   val choose: t -> elt
-  (* val partition: t -> (elt -> bool) ->  t * t *)
-
   val mem: t -> elt -> bool
   val add: t -> elt -> t
   val remove: t -> elt -> t
   val union: t -> t -> t
   val inter: t -> t -> t
   val diff: t -> t -> t
-  (* val compare: t -> t -> int *)
-  (* val equal: t -> t -> bool *)
-  (* val subset: t -> t -> bool *)
-  (* val filter: t -> (elt -> bool) ->  t *)
-
-  val find:  t -> elt -> elt
   val of_list: elt list -> t
   val of_sorted_array : elt array -> t 
-  (* val of_array : elt array -> t  *)
   val invariant : t -> bool 
   val print : Format.formatter -> t -> unit 
 end 

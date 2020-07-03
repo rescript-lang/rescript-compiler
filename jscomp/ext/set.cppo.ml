@@ -179,19 +179,6 @@ let rec remove (tree : t)  x : t = match tree with
 
 
 
-
-
-let rec find (tree : t) x = match tree with
-  | Empty -> raise Not_found
-  | Leaf v -> 
-    if compare_elt x v = 0 then v else raise Not_found
-  | Node{l; v; r} ->
-    let c = compare_elt x v in
-    if c = 0 then v
-    else find (if c < 0 then l else r) x 
-
-
-
 let of_list l =
   match l with
   | [] -> empty

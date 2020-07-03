@@ -2563,32 +2563,23 @@ type 'a t =private
     Empty
   | Leaf of 'a
   | Node of { l : 'a t; v : 'a; r : 'a t; h : int; }
-(* type ('a, 'id) enumeration0 =
-    End
-  | More of 'a * ('a, 'id) t * ('a, 'id) enumeration0 *)
-(* val cons_enum : 'a t-> ('a, 'b) enumeration0 -> ('a, 'b) enumeration0 *)
-(* val height : 'a t-> int *)
+
 val min_elt : 'a t-> 'a
 val max_elt : 'a t-> 'a
 val empty : 'a t
 val is_empty : 'a t-> bool
 val unsafe_two_elements : 
   'a -> 'a -> 'a t
-(* val cardinal_aux : int -> 'a t-> int *)
+
 val cardinal : 'a t-> int
-(* val elements_aux : 'a list -> 'a t-> 'a list *)
+
 val elements : 'a t-> 'a list
 val choose : 'a t-> 'a
 val iter : 'a t-> ('a -> unit) -> unit
 val fold : 'a t-> 'c -> ('a -> 'c -> 'c) -> 'c
 val for_all : 'a t-> ('a -> bool) -> bool
 val exists : 'a t-> ('a -> bool) -> bool
-(* val max_int_2 : int -> int -> int *)
-(* exception Height_invariant_broken
-exception Height_diff_borken *)
-(* val check_height_and_diff : 'a t-> int *)
 val check : 'a t-> unit
-(* val create : 'a t-> 'a -> 'a t-> 'a t*)
 val internal_bal : 'a t-> 'a -> 'a t-> 'a t
 val remove_min_elt : 'a t-> 'a t
 val singleton : 'a -> 'a t
@@ -2597,15 +2588,11 @@ val add_min_element : 'a -> 'a t-> 'a t
 val add_max_element : 'a -> 'a t-> 'a t
 val internal_join : 'a t-> 'a -> 'a t-> 'a t
 val internal_concat : 'a t-> 'a t-> 'a t
-(* val filter : 'a t-> ('a -> bool) -> 'a t *)
 val partition : 'a t-> ('a -> bool) -> 'a t * 'a t
 val of_sorted_array : 'a array -> 'a t
 val is_ordered : cmp:('a -> 'a -> int) -> 'a t-> bool
 val invariant : cmp:('a -> 'a -> int) -> 'a t-> bool
-(* val compare_aux :
-  cmp:('a -> 'b -> int) ->
-  ('a, 'c) enumeration0 -> ('b, 'd) enumeration0 -> int *)
-(* val compare : cmp:('a -> 'b -> int) -> 'a t -> ('b, 'd) t -> int *)
+
 module type S =
   sig
     type elt
@@ -2620,18 +2607,15 @@ module type S =
     val cardinal : t -> int
     val elements : t -> elt list
     val min_elt : t -> elt
-    (* val max_elt : t -> elt *)
     val choose : t -> elt
     val mem : t -> elt -> bool
     val add : t -> elt -> t
     val remove : t -> elt -> t
     val union : t -> t -> t
     val inter : t -> t -> t
-    val diff : t -> t -> t
-    val find : t -> elt -> elt
+    val diff : t -> t -> t    
     val of_list : elt list -> t
     val of_sorted_array : elt array -> t
-    (* val of_array : elt array -> t *)
     val invariant : t -> bool
     val print : Format.formatter -> t -> unit
   end
@@ -3045,25 +3029,15 @@ module type S = sig
   val cardinal: t -> int
   val elements: t -> elt list
   val min_elt: t -> elt
-  (* val max_elt: t -> elt *)
   val choose: t -> elt
-  (* val partition: t -> (elt -> bool) ->  t * t *)
-
   val mem: t -> elt -> bool
   val add: t -> elt -> t
   val remove: t -> elt -> t
   val union: t -> t -> t
   val inter: t -> t -> t
   val diff: t -> t -> t
-  (* val compare: t -> t -> int *)
-  (* val equal: t -> t -> bool *)
-  (* val subset: t -> t -> bool *)
-  (* val filter: t -> (elt -> bool) ->  t *)
-
-  val find:  t -> elt -> elt
   val of_list: elt list -> t
   val of_sorted_array : elt array -> t 
-  (* val of_array : elt array -> t  *)
   val invariant : t -> bool 
   val print : Format.formatter -> t -> unit 
 end 
@@ -3300,19 +3274,6 @@ let rec remove (tree : t)  x : t = match tree with
     if c < 0 then Set_gen.internal_bal (remove l x) v r else Set_gen.internal_bal l v (remove r x )
 
 (* let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2  *)
-
-
-
-
-
-let rec find (tree : t) x = match tree with
-  | Empty -> raise Not_found
-  | Leaf v -> 
-    if compare_elt x v = 0 then v else raise Not_found
-  | Node{l; v; r} ->
-    let c = compare_elt x v in
-    if c = 0 then v
-    else find (if c < 0 then l else r) x 
 
 
 
