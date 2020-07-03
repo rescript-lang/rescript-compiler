@@ -10,11 +10,27 @@
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
 (***********************************************************************)
+
+[@@@warnerror "+55"]
 (** adapted from stdlib *)
 
 type ('key,'a) t =
   | Empty
   | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
+
+let  empty = Empty
+
+let [@inline] calc_height a b = (if a >= b  then a else b) + 1 
+
+let [@inline] singleton x d = Node(Empty, x, d, Empty, 1)
+let [@inline] height = function
+  | Empty -> 0
+  | Node(_,_,_,_,h) -> h
+
+let create l x d r =
+  Node(l, x, d, r, calc_height (height l) (height r))
+
+
 
 
 let rec cardinal_aux acc  = function
@@ -79,49 +95,30 @@ let keys s = keys_aux [] s
 
 
 
-let height = function
-  | Empty -> 0
-  | Node(_,_,_,_,h) -> h
-
-let create l x d r =
-  let hl = height l and hr = height r in
-  Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
-
-let singleton x d = Node(Empty, x, d, Empty, 1)
 
 let bal l x d r =
-  let hl = match l with Empty -> 0 | Node(_,_,_,_,h) -> h in
-  let hr = match r with Empty -> 0 | Node(_,_,_,_,h) -> h in
+  let hl = height l in
+  let hr = height r in
   if hl > hr + 2 then begin
-    match l with
-      Empty -> invalid_arg "Map.bal"
-    | Node(ll, lv, ld, lr, _) ->
-      if height ll >= height lr then
-        create ll lv ld (create lr x d r)
-      else begin
-        match lr with
-          Empty -> invalid_arg "Map.bal"
-        | Node(lrl, lrv, lrd, lrr, _)->
-          create (create ll lv ld lrl) lrv lrd (create lrr x d r)
-      end
+    let [@warning "-8"] Node(ll, lv, ld, lr, _) = l in
+    if height ll >= height lr then
+      create ll lv ld (create lr x d r)
+    else         
+      let [@warning "-8"] Node(lrl, lrv, lrd, lrr, _) = lr in 
+      create (create ll lv ld lrl) lrv lrd (create lrr x d r)      
   end else if hr > hl + 2 then begin
-    match r with
-      Empty -> invalid_arg "Map.bal"
-    | Node(rl, rv, rd, rr, _) ->
-      if height rr >= height rl then
-        create (create l x d rl) rv rd rr
-      else begin
-        match rl with
-          Empty -> invalid_arg "Map.bal"
-        | Node(rll, rlv, rld, rlr, _) ->
-          create (create l x d rll) rlv rld (create rlr rv rd rr)
-      end
+    let [@warning "-8"] Node(rl, rv, rd, rr, _) = r in 
+    if height rr >= height rl then
+      create (create l x d rl) rv rd rr
+    else 
+      let [@warning "-8"] Node(rll, rlv, rld, rlr, _) = rl in 
+      create (create l x d rll) rlv rld (create rlr rv rd rr)
   end else
-    Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
+    Node(l, x, d, r, calc_height hl hr)
 
-let empty = Empty
 
-let is_empty = function Empty -> true | _ -> false
+
+let [@inline] is_empty = function Empty -> true | _ -> false
 
 let rec min_binding_exn = function
     Empty -> raise Not_found
@@ -228,15 +225,6 @@ let concat_or_join t1 v d t2 =
   match d with
   | Some d -> join t1 v d t2
   | None -> concat t1 t2
-
-(* let rec filter x p = match x with
-    Empty -> Empty
-  | Node(l, v, d, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let l' = filter l p in
-    let pvd = p v d in
-    let r' = filter r p in
-    if pvd then join l' v d r' else concat l' r' *)
 
     
 module type S =
