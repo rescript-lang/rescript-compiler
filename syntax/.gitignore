@@ -5,6 +5,7 @@ esy.lock
 node_modules
 *.cm*
 *.o
+lib/bs
 lib/napkinscript.exe
 lib/refmt.exe
 lib/bench.exe
