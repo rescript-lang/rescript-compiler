@@ -996,7 +996,7 @@ let parseRegion p ~grammar ~f =
    (* ∣	 pattern |  pattern   *)
    (* ∣	 constr  pattern   *)
    (* ∣	 #variant variant-pattern *)
-   (* ∣	 ##type  *)
+   (* ∣	 #...type  *)
    (* ∣	 / pattern  { , pattern }+  /   *)
    (* ∣	 { field  [: typexpr]  [= pattern] { ; field  [: typexpr]  [= pattern] }  [; _ ] [ ; ] }   *)
    (* ∣	 [ pattern  { ; pattern }  [ ; ] ]   *)
@@ -1067,18 +1067,21 @@ let rec parsePattern ?(alias=true) ?(or_=true) p =
       Ast_helper.Pat.construct ~loc:constr.loc ~attrs constr None
     end
   | Hash ->
-    let (ident, loc) = parseHashIdent ~startPos p in
-    begin match p.Parser.token with
-    | Lparen ->
-      parseVariantPatternArgs p ident startPos attrs
-    | _ ->
-      Ast_helper.Pat.variant ~loc ~attrs ident None
-    end
-  | HashHash ->
     Parser.next p;
-    let ident = parseValuePath p in
-    let loc = mkLoc startPos ident.loc.loc_end in
-    Ast_helper.Pat.type_ ~loc ~attrs ident
+    if p.Parser.token == DotDotDot then (
+      Parser.next p;
+      let ident = parseValuePath p in
+      let loc = mkLoc startPos ident.loc.loc_end in
+      Ast_helper.Pat.type_ ~loc ~attrs ident
+    ) else (
+      let (ident, loc) = parseIdent ~msg:ErrorMessages.variantIdent ~startPos p in
+      begin match p.Parser.token with
+      | Lparen ->
+        parseVariantPatternArgs p ident startPos attrs
+      | _ ->
+        Ast_helper.Pat.variant ~loc ~attrs ident None
+      end
+    )
   | Exception ->
     Parser.next p;
     let pat = parsePattern ~alias:false ~or_:false p in

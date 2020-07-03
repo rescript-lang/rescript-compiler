@@ -1,5 +1,5 @@
-let #Instance = i; 
-let #Instance as inst = i; 
+let #Instance = i;
+let #Instance as inst = i;
 
 let #Instance(component) = i
 let #Instance(component) as inst = i
@@ -31,8 +31,8 @@ switch x {
 | #Instance as inst => ()
 | #Instance(comp) => ()
 | #Instance(comp) as inst => ()
-| #Instance({render, subtree}) => () 
-| #Instance({render, subtree}, inst) => () 
+| #Instance({render, subtree}) => ()
+| #Instance({render, subtree}, inst) => ()
 | #Instance({render, subtree} : Instance.t) => ()
 | #Instance(({render, subtree} : Instance.t)) => ()
 | #Instance(comp, tree) => ()
@@ -40,8 +40,8 @@ switch x {
 }
 
 
-let f = (#Instance) => i; 
-let f = (#Instance as i) => i; 
+let f = (#Instance) => i;
+let f = (#Instance as i) => i;
 
 let f = (#Instance(component)) => i
 let f = (#Instance(component,)) => i // trailing comma
@@ -79,22 +79,22 @@ for (#Point({x, y, z}) in x to y) { () }
 for (#Point({x, y, z}) as p in x to y) { () }
 
 switch x {
-    | ##typeVar => ()
+    | #...typeVar => ()
     | #lowercase => ()
     }
-    
+
 let cmp = (selectedChoice, value) =>
   switch (selectedChoice, value) {
-  | (##a, ##a) => true
-  | [##b, ##b] => true
-  | list[##b, ##b] => true
-  | {x: ##c, y: ##c} => true
-  | Constructor(##a, ##a) => true
-  | #Constuctor(##a, ##a) => true
-  | ##a as x => true
-  | ##a | ##b => true
-  | (##a : typ) => true
-  | lazy ##a => true
-  | exception ##a => true
+  | (#...a, #...a) => true
+  | [#...b, #...b] => true
+  | list[#...b, #...b] => true
+  | {x: #...c, y: #...c} => true
+  | Constructor(#...a, #...a) => true
+  | #Constuctor(#...a, #...a) => true
+  | #...a as x => true
+  | # ...a | # ... b => true
+  | (#...a : typ) => true
+  | lazy #...a => true
+  | exception #...a => true
   | _ => false
   }

@@ -92,7 +92,7 @@ let math = if discriminant < 0. {
 }
 
 switch x {
-| ##typevar => 42
+| #...typevar => 42
 }
 
 
