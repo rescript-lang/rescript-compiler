@@ -79,48 +79,5 @@ let loc_of (x : Ext_json_types.t) =
   | Flo p -> p.loc
 
 
-let rec equal 
-    (x : Ext_json_types.t)
-    (y : Ext_json_types.t) = 
-  match x with 
-  | Null _ -> (* [%p? Null _ ] *)
-    begin match y with
-      | Null _ -> true
-      | _ -> false end
-  | Str {str } -> 
-    begin match y with 
-      | Str rhs -> str = rhs.str
-      | _ -> false end
-  | Flo {flo} 
-    ->
-    begin match y with
-      |  Flo rhs -> 
-        flo = rhs.flo
-      | _ -> false
-    end
-  | True _ -> 
-    begin match y with 
-      | True _ -> true 
-      | _ -> false 
-    end
-  | False _ -> 
-    begin match y with 
-      | False _ -> true 
-      | _ -> false 
-    end     
-  | Arr {content} 
-    -> 
-    begin match y with 
-      | Arr rhs
-        ->
-        Ext_array.for_all2_no_exn content rhs.content equal
-      | _ -> false 
-    end
 
-  | Obj {map} -> 
-    begin match y with 
-      | Obj rhs -> 
-        Map_string.equal map rhs.map equal
-      | _ -> false 
-    end 
 
