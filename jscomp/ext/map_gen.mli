@@ -37,7 +37,7 @@ val join : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
 val concat : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
 val concat_or_join :
   ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
-val filter : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t
+(* val filter : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t *)
 (* val partition : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t * ('a, 'b) t *)
 
 module type S =
@@ -62,7 +62,7 @@ module type S =
     val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
     val for_all : 'a t -> (key -> 'a -> bool) -> bool
     val exists : 'a t -> (key -> 'a -> bool) -> bool
-    val filter : 'a t -> (key -> 'a -> bool) -> 'a t
+    (* val filter : 'a t -> (key -> 'a -> bool) -> 'a t *)
     (* val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t *)
     val cardinal : 'a t -> int
     val bindings : 'a t -> (key * 'a) list

@@ -229,14 +229,14 @@ let concat_or_join t1 v d t2 =
   | Some d -> join t1 v d t2
   | None -> concat t1 t2
 
-let rec filter x p = match x with
+(* let rec filter x p = match x with
     Empty -> Empty
   | Node(l, v, d, r, _) ->
     (* call [p] in the expected left-to-right order *)
     let l' = filter l p in
     let pvd = p v d in
     let r' = filter r p in
-    if pvd then join l' v d r' else concat l' r'
+    if pvd then join l' v d r' else concat l' r' *)
 
     
 module type S =
@@ -300,7 +300,7 @@ module type S =
         order unspecified
      *)
 
-    val filter: 'a t -> (key -> 'a -> bool) -> 'a t
+    (* val filter: 'a t -> (key -> 'a -> bool) -> 'a t *)
     (** [filter p m] returns the map with all the bindings in [m]
         that satisfy predicate [p].
         order unspecified

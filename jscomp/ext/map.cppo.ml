@@ -36,7 +36,7 @@ let to_sorted_array_with_f = Map_gen.to_sorted_array_with_f
 let keys = Map_gen.keys
 let choose = Map_gen.choose 
 
-let filter = Map_gen.filter 
+
 let map = Map_gen.map 
 let mapi = Map_gen.mapi
 let bal = Map_gen.bal 
