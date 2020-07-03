@@ -11,8 +11,8 @@ val min_elt : 'a t-> 'a
 val max_elt : 'a t-> 'a
 val empty : 'a t
 val is_empty : 'a t-> bool
-val unsafe_create : 
-  'a -> 'a t -> 'a t -> int -> 'a t
+val unsafe_two_elements : 
+  'a -> 'a -> 'a t
 (* val cardinal_aux : int -> 'a t-> int *)
 val cardinal : 'a t-> int
 (* val elements_aux : 'a list -> 'a t-> 'a list *)
