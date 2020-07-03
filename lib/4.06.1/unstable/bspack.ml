@@ -11435,9 +11435,9 @@ val singleton : 'a -> 'b -> ('a, 'b) t
 val bal : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
 val empty : ('a, 'b) t
 val is_empty : ('a, 'b) t -> bool
-val min_binding_exn : ('a, 'b) t -> 'a * 'b
+
 val choose : ('a, 'b) t -> 'a * 'b
-val max_binding_exn : ('a, 'b) t -> 'a * 'b
+
 val remove_min_binding : ('a, 'b) t -> ('a, 'b) t
 val merge : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
 val iter : ('a, 'b) t -> ('a -> 'b -> 'c) -> unit
@@ -11453,7 +11453,7 @@ val concat : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
 val concat_or_join :
   ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
 val filter : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t
-val partition : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t * ('a, 'b) t
+(* val partition : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t * ('a, 'b) t *)
 
 module type S =
   sig
@@ -11478,14 +11478,12 @@ module type S =
     val for_all : 'a t -> (key -> 'a -> bool) -> bool
     val exists : 'a t -> (key -> 'a -> bool) -> bool
     val filter : 'a t -> (key -> 'a -> bool) -> 'a t
-    val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t
+    (* val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t *)
     val cardinal : 'a t -> int
     val bindings : 'a t -> (key * 'a) list
     val keys : 'a t -> key list
-    val min_binding_exn : 'a t -> key * 'a
-    val max_binding_exn : 'a t -> key * 'a
     val choose : 'a t -> key * 'a
-    val split : 'a t -> key -> 'a t * 'a option * 'a t
+
     val find_exn : 'a t -> key -> 'a
     val find_opt : 'a t -> key -> 'a option
     val find_default : 'a t -> key -> 'a -> 'a
@@ -11630,10 +11628,6 @@ let rec min_binding_exn = function
 
 let choose = min_binding_exn
 
-let rec max_binding_exn = function
-    Empty -> raise Not_found
-  | Node(_, x, d, Empty, _) -> (x, d)
-  | Node(_, _, _, r, _) -> max_binding_exn r
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
@@ -11742,21 +11736,6 @@ let rec filter x p = match x with
     let r' = filter r p in
     if pvd then join l' v d r' else concat l' r'
 
-let rec partition x p = match x with
-    Empty -> (Empty, Empty)
-  | Node(l, v, d, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition l p in
-    let pvd = p v d in
-    let (rt, rf) = partition r p in
-    if pvd
-    then (join lt v d rt, concat lf rf)
-    else (concat lt rt, join lf v d rf)
-
-
-
-
-
     
 module type S =
   sig
@@ -11825,7 +11804,7 @@ module type S =
         order unspecified
      *)
 
-    val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t
+    (* val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t *)
     (** [partition p m] returns a pair of maps [(m1, m2)], where
         [m1] contains all the bindings of [s] that satisfy the
         predicate [p], and [m2] is the map with all the bindings of
@@ -11842,11 +11821,6 @@ module type S =
     val keys : 'a t -> key list 
     (* Increasing order *)
 
-    val min_binding_exn: 'a t -> (key * 'a)
-    (** raise [Not_found] if the map is empty. *)
-
-    val max_binding_exn: 'a t -> (key * 'a)
-    (** Same as {!Map.S.min_binding} *)
 
     val choose: 'a t -> (key * 'a)
     (** Return one binding of the given map, or raise [Not_found] if
@@ -11854,7 +11828,7 @@ module type S =
        but equal bindings will be chosen for equal maps.
      *)
 
-    val split: 'a t -> key -> 'a t * 'a option * 'a t
+    (* val split: 'a t -> key -> 'a t * 'a option * 'a t *)
     (** [split x m] returns a triple [(l, data, r)], where
           [l] is the map with all the bindings of [m] whose key
         is strictly less than [x];
@@ -11922,7 +11896,7 @@ end = struct
 
 # 2 "ext/map.cppo.ml"
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
-
+[@@@warnerror"a"]
 
   
 # 10 "ext/map.cppo.ml"
@@ -11946,14 +11920,12 @@ let to_sorted_array = Map_gen.to_sorted_array
 let to_sorted_array_with_f = Map_gen.to_sorted_array_with_f
 let keys = Map_gen.keys
 let choose = Map_gen.choose 
-let partition = Map_gen.partition 
+
 let filter = Map_gen.filter 
 let map = Map_gen.map 
 let mapi = Map_gen.mapi
 let bal = Map_gen.bal 
 let height = Map_gen.height 
-let max_binding_exn = Map_gen.max_binding_exn
-let min_binding_exn = Map_gen.min_binding_exn
 
 
 let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with 
