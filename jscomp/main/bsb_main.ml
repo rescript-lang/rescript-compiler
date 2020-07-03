@@ -273,7 +273,7 @@ let () =
       start.pos_fname start.pos_lnum
       Ext_json_parse.report_error e ;
     exit 2
-  | Arg.Bad s 
+  | Bsb_arg.Bad s 
   | Sys_error s -> 
     Format.fprintf Format.err_formatter
       "@{<error>Error:@} %s@."
