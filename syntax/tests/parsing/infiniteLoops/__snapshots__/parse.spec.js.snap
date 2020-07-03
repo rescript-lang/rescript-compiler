@@ -148,7 +148,7 @@ let removeNode rbt node =
   [@ns.braces ])
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/infiniteLoops/equalAfterBinaryExpr.js\\", line 169, characters 16-17:
+File \\"/syntax/tests/parsing/infiniteLoops/equalAfterBinaryExpr.js\\", line 169, characters 16-17:
 
 
 167 │    if isLeaf(. successor) {
@@ -174,7 +174,7 @@ let (a : action) = AddUser \\"test\\"
 ;;s = { x = ((list < i) > ([%napkinscript.exprhole ])) }
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/infiniteLoops/jsxChildren.js\\", line 1, characters 21-22:
+File \\"/syntax/tests/parsing/infiniteLoops/jsxChildren.js\\", line 1, characters 21-22:
 
 
 [31m1[0m │  type action = AddUser[31m<[0mstring>
@@ -184,7 +184,7 @@ File \\"/napkinscript/tests/parsing/infiniteLoops/jsxChildren.js\\", line 1, cha
 consecutive statements on a line must be separated by ';' or a newline
 
 
-File \\"/napkinscript/tests/parsing/infiniteLoops/jsxChildren.js\\", line 1, characters 21-29:
+File \\"/syntax/tests/parsing/infiniteLoops/jsxChildren.js\\", line 1, characters 21-29:
 
 
 [31m1[0m │  type action = AddUser[31m<string>[0m
@@ -594,7 +594,7 @@ include
   end
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 4, characters 28-36:
+File \\"/syntax/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 4, characters 28-36:
 
 
 2 │            include (
@@ -608,7 +608,7 @@ Type parameters require angle brackets:
 
 
 
-File \\"/napkinscript/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 19, characters 44-51:
+File \\"/syntax/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 19, characters 44-51:
 
 
 17 │                ~size: int,
@@ -620,7 +620,7 @@ File \\"/napkinscript/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 19, ch
 consecutive statements on a line must be separated by ';' or a newline
 
 
-File \\"/napkinscript/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 67, characters 25-29:
+File \\"/syntax/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 67, characters 25-29:
 
 
 65 │          };
@@ -632,7 +632,7 @@ File \\"/napkinscript/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 67, ch
 I'm not sure what to parse here when looking at \\"let\\".
 
 
-File \\"/napkinscript/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 68, characters 20-24:
+File \\"/syntax/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 68, characters 20-24:
 
 
 66 │  let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None;
@@ -644,7 +644,7 @@ File \\"/napkinscript/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 68, ch
 I'm not sure what to parse here when looking at \\"let\\".
 
 
-File \\"/napkinscript/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 434, characters 30-38:
+File \\"/syntax/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 434, characters 30-38:
 
 
 432 │      updateSum(Some(node), ~delta);

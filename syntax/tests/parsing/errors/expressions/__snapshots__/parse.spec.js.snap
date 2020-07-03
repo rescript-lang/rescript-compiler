@@ -7,7 +7,7 @@ let x = ((let a = 1 in let b = 2 in fun pattern -> (\\"test\\" : int))
   [@ns.braces ])
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/expressions/ambiguousArrow.js\\", line 1, characters 8-21:
+File \\"/syntax/tests/parsing/errors/expressions/ambiguousArrow.js\\", line 1, characters 8-21:
 
 
 [31m1[0m │  let a = [31mb:int => \\"hi\\"[0m
@@ -20,7 +20,7 @@ Did you mean to annotate the parameter type or the return type?
 
 
 
-File \\"/napkinscript/tests/parsing/errors/expressions/ambiguousArrow.js\\", line 6, characters 2-23:
+File \\"/syntax/tests/parsing/errors/expressions/ambiguousArrow.js\\", line 6, characters 2-23:
 
 
 4 │    let a = 1
@@ -43,7 +43,7 @@ exports[`array.js 1`] = `
 let xs = x.map (fun key -> [|key;(predicates.(key))|])
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/expressions/array.js\\", line 2, characters 43-44:
+File \\"/syntax/tests/parsing/errors/expressions/array.js\\", line 2, characters 43-44:
 
 
 1 │  // missing ] before )
@@ -64,7 +64,7 @@ exports[`arrow.js 1`] = `
        fun providerId -> ((let x = 1 in let b = 2 in x + b)[@ns.braces ]))
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/expressions/arrow.js\\", line 1, characters 51-52:
+File \\"/syntax/tests/parsing/errors/expressions/arrow.js\\", line 1, characters 51-52:
 
 
 [31m1[0m │  Object.keys(providers).reduce((elements, providerId] => {          
@@ -105,7 +105,7 @@ let pipeline =
   match scheduler with | Some -> [%napkinscript.exprhole ] | None -> ()
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/expressions/block.js\\", line 14, characters 3-5:
+File \\"/syntax/tests/parsing/errors/expressions/block.js\\", line 14, characters 3-5:
 
 
 12 │  
@@ -118,7 +118,7 @@ File \\"/napkinscript/tests/parsing/errors/expressions/block.js\\", line 14, cha
 Did you forget a \`)\` here? 
 
 
-File \\"/napkinscript/tests/parsing/errors/expressions/block.js\\", line 18, characters 24-26:
+File \\"/syntax/tests/parsing/errors/expressions/block.js\\", line 18, characters 24-26:
 
 
 16 │  
@@ -131,7 +131,7 @@ File \\"/napkinscript/tests/parsing/errors/expressions/block.js\\", line 18, cha
 Did you forget a \`)\` here? 
 
 
-File \\"/napkinscript/tests/parsing/errors/expressions/block.js\\", line 22, characters 10-12:
+File \\"/syntax/tests/parsing/errors/expressions/block.js\\", line 22, characters 10-12:
 
 
 20 │  
@@ -143,7 +143,7 @@ File \\"/napkinscript/tests/parsing/errors/expressions/block.js\\", line 22, cha
 Looks like there might be an expression missing here
 
 
-File \\"/napkinscript/tests/parsing/errors/expressions/block.js\\", line 26, characters 6-8:
+File \\"/syntax/tests/parsing/errors/expressions/block.js\\", line 26, characters 6-8:
 
 
 24 │  | Join(doc1, doc2) =>
@@ -156,7 +156,7 @@ File \\"/napkinscript/tests/parsing/errors/expressions/block.js\\", line 26, cha
 Did you forget a \`)\` here? 
 
 
-File \\"/napkinscript/tests/parsing/errors/expressions/block.js\\", line 30, characters 9-11:
+File \\"/syntax/tests/parsing/errors/expressions/block.js\\", line 30, characters 9-11:
 
 
 28 │  
@@ -181,7 +181,7 @@ let () = ((sideEffect1 (); sideEffect2 ())[@ns.braces ])
 let () = ((let open Foo in let exception End  in x ())[@ns.braces ])
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/expressions/consecutive.ns\\", line 1, characters 22-23:
+File \\"/syntax/tests/parsing/errors/expressions/consecutive.ns\\", line 1, characters 22-23:
 
 
 [31m1[0m │  let f = (a,b) => a + 3[31mb[0m;
@@ -191,7 +191,7 @@ File \\"/napkinscript/tests/parsing/errors/expressions/consecutive.ns\\", line 1
 consecutive statements on a line must be separated by ';' or a newline
 
 
-File \\"/napkinscript/tests/parsing/errors/expressions/consecutive.ns\\", line 4, characters 6-7:
+File \\"/syntax/tests/parsing/errors/expressions/consecutive.ns\\", line 4, characters 6-7:
 
 
 2 │  
@@ -203,7 +203,7 @@ File \\"/napkinscript/tests/parsing/errors/expressions/consecutive.ns\\", line 4
 consecutive expressions on a line must be separated by ';' or a newline
 
 
-File \\"/napkinscript/tests/parsing/errors/expressions/consecutive.ns\\", line 8, characters 15-27:
+File \\"/syntax/tests/parsing/errors/expressions/consecutive.ns\\", line 8, characters 15-27:
 
 
 6 │  
@@ -215,7 +215,7 @@ File \\"/napkinscript/tests/parsing/errors/expressions/consecutive.ns\\", line 8
 consecutive expressions on a line must be separated by ';' or a newline
 
 
-File \\"/napkinscript/tests/parsing/errors/expressions/consecutive.ns\\", line 12, characters 10-20:
+File \\"/syntax/tests/parsing/errors/expressions/consecutive.ns\\", line 12, characters 10-20:
 
 
 10 │  
@@ -237,7 +237,7 @@ let x = ((())[@ns.braces ])
 let f a b = ((())[@ns.braces ])
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/expressions/emptyBlock.js\\", line 1, characters 9-10:
+File \\"/syntax/tests/parsing/errors/expressions/emptyBlock.js\\", line 1, characters 9-10:
 
 
 [31m1[0m │  let x = {[31m}[0m
@@ -247,7 +247,7 @@ File \\"/napkinscript/tests/parsing/errors/expressions/emptyBlock.js\\", line 1,
 This let-binding misses an expression
 
 
-File \\"/napkinscript/tests/parsing/errors/expressions/emptyBlock.js\\", line 3, characters 19-20:
+File \\"/syntax/tests/parsing/errors/expressions/emptyBlock.js\\", line 3, characters 19-20:
 
 
 1 │  let x = {}
@@ -266,7 +266,7 @@ exports[`if.js 1`] = `
 ;;if match then let a = 1 in a + 1
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/expressions/if.js\\", line 2, characters 10-16:
+File \\"/syntax/tests/parsing/errors/expressions/if.js\\", line 2, characters 10-16:
 
 
 1 │  // missing brace below
@@ -287,7 +287,7 @@ exports[`misc.js 1`] = `
 let x = ([%napkinscript.exprhole ]) + 1
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/expressions/misc.js\\", line 1, characters 8-9:
+File \\"/syntax/tests/parsing/errors/expressions/misc.js\\", line 1, characters 8-9:
 
 
 [31m1[0m │  let x = [31m_[0m + 1
@@ -306,7 +306,7 @@ let newWrapper = { updateF; updateF2; value = (f xWrapper.currentValue) }
 let record = { field = ([%napkinscript.exprhole ]) }
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/expressions/record.js\\", line 2, characters 9-17:
+File \\"/syntax/tests/parsing/errors/expressions/record.js\\", line 2, characters 9-17:
 
 
 1 │  let newWrapper = {
@@ -318,7 +318,7 @@ File \\"/napkinscript/tests/parsing/errors/expressions/record.js\\", line 2, cha
 Did you forget a \`,\` here? 
 
 
-File \\"/napkinscript/tests/parsing/errors/expressions/record.js\\", line 8, characters 9-18:
+File \\"/syntax/tests/parsing/errors/expressions/record.js\\", line 8, characters 9-18:
 
 
 6 │  
@@ -331,7 +331,7 @@ File \\"/napkinscript/tests/parsing/errors/expressions/record.js\\", line 8, cha
 Did you forget a \`:\` here? 
 
 
-File \\"/napkinscript/tests/parsing/errors/expressions/record.js\\", line 13, characters 8-13:
+File \\"/syntax/tests/parsing/errors/expressions/record.js\\", line 13, characters 8-13:
 
 
 11 │  
@@ -355,7 +355,7 @@ exports[`setField.js 1`] = `
   else sideEffect ()
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/expressions/setField.js\\", line 4, characters 29-31:
+File \\"/syntax/tests/parsing/errors/expressions/setField.js\\", line 4, characters 29-31:
 
 
 2 │    let a = 1
@@ -376,7 +376,7 @@ exports[`taggedTemplateLiterals.js 1`] = `
 ;;{|null|}
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/expressions/taggedTemplateLiterals.js\\", line 1, characters 0-5:
+File \\"/syntax/tests/parsing/errors/expressions/taggedTemplateLiterals.js\\", line 1, characters 0-5:
 
 
 [31m1[0m │  [31mfoo()[0m\`null\`
@@ -393,7 +393,7 @@ exports[`try.js 1`] = `
 let parsedPayload = try Js.Json.parseExn response with | _ -> Js.Json.null
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/expressions/try.js\\", line 2, characters 36-38:
+File \\"/syntax/tests/parsing/errors/expressions/try.js\\", line 2, characters 36-38:
 
 
 1 │    let parsedPayload =
@@ -415,7 +415,7 @@ let x = ((let a = 1 in let b = 2 in (a + b : int))[@ns.braces ])
 let x = (\\"hi\\" : string)
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/expressions/unexpectedConstraint.js\\", line 4, characters 2-13:
+File \\"/syntax/tests/parsing/errors/expressions/unexpectedConstraint.js\\", line 4, characters 2-13:
 
 
 2 │    let a = 1
@@ -429,7 +429,7 @@ Expressions with type constraints need to be wrapped in parens:
 
 
 
-File \\"/napkinscript/tests/parsing/errors/expressions/unexpectedConstraint.js\\", line 7, characters 8-20:
+File \\"/syntax/tests/parsing/errors/expressions/unexpectedConstraint.js\\", line 7, characters 8-20:
 
 
 5 │  }

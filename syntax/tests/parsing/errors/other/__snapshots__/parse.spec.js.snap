@@ -5,7 +5,7 @@ exports[`patternMatching.js 1`] = `
 ;;match expr with
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/other/patternMatching.js\\", line 1, characters 13-15:
+File \\"/syntax/tests/parsing/errors/other/patternMatching.js\\", line 1, characters 13-15:
 
 
 [31m1[0m │  switch expr {
@@ -28,7 +28,7 @@ let myList = x :: y
 let x::y = myList
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/other/spread.js\\", line 1, characters 11-14:
+File \\"/syntax/tests/parsing/errors/other/spread.js\\", line 1, characters 11-14:
 
 
 [31m1[0m │  let arr = [[31m...[0mx, ...y]
@@ -38,7 +38,7 @@ File \\"/napkinscript/tests/parsing/errors/other/spread.js\\", line 1, character
 Arrays can't use the \`...\` spread currently. Please use \`concat\` or other Array helpers.
 
 
-File \\"/napkinscript/tests/parsing/errors/other/spread.js\\", line 2, characters 5-8:
+File \\"/syntax/tests/parsing/errors/other/spread.js\\", line 2, characters 5-8:
 
 
 1 │  let arr = [...x, ...y]
@@ -51,7 +51,7 @@ Explanation: such spread would create a subarray; out of performance concern, ou
 Solution: if it's to validate the first few elements, use a \`when\` clause + Array size check + \`get\` checks on the current pattern. If it's to obtain a subarray, use \`Array.sub\` or \`Belt.Array.slice\`.
 
 
-File \\"/napkinscript/tests/parsing/errors/other/spread.js\\", line 4, characters 20-23:
+File \\"/syntax/tests/parsing/errors/other/spread.js\\", line 4, characters 20-23:
 
 
 2 │  let [...arr, _] = [1, 2, 3]
@@ -64,7 +64,7 @@ Records can only have one \`...\` spread, at the beginning.
 Explanation: since records have a known, fixed shape, a spread like \`{a, ...b}\` wouldn't make sense, as \`b\` would override every field of \`a\` anyway.
 
 
-File \\"/napkinscript/tests/parsing/errors/other/spread.js\\", line 5, characters 14-18:
+File \\"/syntax/tests/parsing/errors/other/spread.js\\", line 5, characters 14-18:
 
 
 3 │  
@@ -78,7 +78,7 @@ Explanation: you can't collect a subset of a record's field into its own record,
 Solution: you need to pull out each field you want explicitly.
 
 
-File \\"/napkinscript/tests/parsing/errors/other/spread.js\\", line 8, characters 12-22:
+File \\"/syntax/tests/parsing/errors/other/spread.js\\", line 8, characters 12-22:
 
 
 6 │  

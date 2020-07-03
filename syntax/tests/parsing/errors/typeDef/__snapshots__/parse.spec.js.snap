@@ -8,7 +8,7 @@ type nonrec 'a node =
   } 
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/typeDef/emptyInlineRecord.ns\\", line 3, characters 9-11:
+File \\"/syntax/tests/parsing/errors/typeDef/emptyInlineRecord.ns\\", line 3, characters 9-11:
 
 
 1 │  type node<'a> =
@@ -28,7 +28,7 @@ type nonrec record = {
   }
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/typeDef/emptyRecord.js\\", line 1, characters 14-16:
+File \\"/syntax/tests/parsing/errors/typeDef/emptyRecord.js\\", line 1, characters 14-16:
 
 
 [31m1[0m │  type record = [31m{}[0m
@@ -45,7 +45,7 @@ exports[`namedParameters.js 1`] = `
 type nonrec draw = stroke:pencil -> unit
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/typeDef/namedParameters.js\\", line 1, characters 14-20:
+File \\"/syntax/tests/parsing/errors/typeDef/namedParameters.js\\", line 1, characters 14-20:
 
 
 [31m1[0m │  type  draw = ([31mstroke[0m: pencil) => unit
@@ -65,7 +65,7 @@ type nonrec z = [< \`A  | \`B ]
 type t = [ [%napkinscript.typehole ] | [%napkinscript.typehole ]]
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/typeDef/polyvariant.js\\", line 1, characters 13-19:
+File \\"/syntax/tests/parsing/errors/typeDef/polyvariant.js\\", line 1, characters 13-19:
 
 
 [31m1[0m │  type t = [< ]
@@ -75,7 +75,7 @@ File \\"/napkinscript/tests/parsing/errors/typeDef/polyvariant.js\\", line 1, ch
 I'm not sure what to parse here when looking at \\"]\\".
 
 
-File \\"/napkinscript/tests/parsing/errors/typeDef/polyvariant.js\\", line 3, characters 12-14:
+File \\"/syntax/tests/parsing/errors/typeDef/polyvariant.js\\", line 3, characters 12-14:
 
 
 1 │  type t = [< ]
@@ -88,7 +88,7 @@ File \\"/napkinscript/tests/parsing/errors/typeDef/polyvariant.js\\", line 3, ch
 Did you forget a \`|\` here? 
 
 
-File \\"/napkinscript/tests/parsing/errors/typeDef/polyvariant.js\\", line 7, characters 15-17:
+File \\"/syntax/tests/parsing/errors/typeDef/polyvariant.js\\", line 7, characters 15-17:
 
 
 5 │  type z = [< | #A | #B > ]
@@ -111,7 +111,7 @@ type nonrec observation =
   observer: [%napkinscript.typehole ] }
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/typeDef/record.ns\\", line 4, characters 1-2:
+File \\"/syntax/tests/parsing/errors/typeDef/record.ns\\", line 4, characters 1-2:
 
 
 2 │    observed: int,
@@ -133,7 +133,7 @@ type nonrec t = [%napkinscript.typehole ]
 type nonrec state = [%napkinscript.typehole ]
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/typeDef/typeDef.js\\", line 1, characters 14-18:
+File \\"/syntax/tests/parsing/errors/typeDef/typeDef.js\\", line 1, characters 14-18:
 
 
 [31m1[0m │  type rec stack          
@@ -144,7 +144,7 @@ File \\"/napkinscript/tests/parsing/errors/typeDef/typeDef.js\\", line 1, charac
 Did you forget a \`=\` here? 
 
 
-File \\"/napkinscript/tests/parsing/errors/typeDef/typeDef.js\\", line 5, characters 8-30:
+File \\"/syntax/tests/parsing/errors/typeDef/typeDef.js\\", line 5, characters 8-30:
 
 
 3 │  
@@ -156,7 +156,7 @@ File \\"/napkinscript/tests/parsing/errors/typeDef/typeDef.js\\", line 5, charac
 Missing a type here
 
 
-File \\"/napkinscript/tests/parsing/errors/typeDef/typeDef.js\\", line 8, characters 12-13:
+File \\"/syntax/tests/parsing/errors/typeDef/typeDef.js\\", line 8, characters 12-13:
 
 
 6 │  
@@ -180,7 +180,7 @@ type nonrec ('from, '_) derivedNode =
   updateF: 'from -> 'to_ }
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/typeDef/typeParams.js\\", line 1, characters 9-13:
+File \\"/syntax/tests/parsing/errors/typeDef/typeParams.js\\", line 1, characters 9-13:
 
 
 [31m1[0m │  type node[31m('a)[0m = {
@@ -192,7 +192,7 @@ Type parameters require angle brackets:
 
 
 
-File \\"/napkinscript/tests/parsing/errors/typeDef/typeParams.js\\", line 5, characters 25-27:
+File \\"/syntax/tests/parsing/errors/typeDef/typeParams.js\\", line 5, characters 25-27:
 
 
 3 │  }

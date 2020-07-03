@@ -6,7 +6,7 @@ let x = \\"\\\\\\\\0\\"
 let x = \\"\\\\\\\\0AAA\\"
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/scanner/escapeSequence.js\\", line 1, characters 9-11:
+File \\"/syntax/tests/parsing/errors/scanner/escapeSequence.js\\", line 1, characters 9-11:
 
 
 [31m1[0m │  let x = \\"[31m\\\\0[0m\\"
@@ -16,7 +16,7 @@ File \\"/napkinscript/tests/parsing/errors/scanner/escapeSequence.js\\", line 1,
 unknown escape sequence
 
 
-File \\"/napkinscript/tests/parsing/errors/scanner/escapeSequence.js\\", line 3, characters 9-11:
+File \\"/syntax/tests/parsing/errors/scanner/escapeSequence.js\\", line 3, characters 9-11:
 
 
 1 │  let x = \\"\\\\0\\"
@@ -36,7 +36,7 @@ let newVelocity = velocity +. (a *. secondPerFrame)
 let newX = x +. (newVelocity *. secondPerFrame)
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/scanner/oldDerefOp.js\\", line 1, characters 49-50:
+File \\"/syntax/tests/parsing/errors/scanner/oldDerefOp.js\\", line 1, characters 49-50:
 
 
 [31m1[0m │  let newVelocity = velocity +. a *. secondPerFrame[31m^[0m;
@@ -46,7 +46,7 @@ Hmm, not sure what I should do here with this character.
 If you're trying to deref an expression, use \`foo.contents\` instead.
 
 
-File \\"/napkinscript/tests/parsing/errors/scanner/oldDerefOp.js\\", line 2, characters 45-46:
+File \\"/syntax/tests/parsing/errors/scanner/oldDerefOp.js\\", line 2, characters 45-46:
 
 
 1 │  let newVelocity = velocity +. a *. secondPerFrame^;
@@ -65,7 +65,7 @@ exports[`unclosedComment.js 1`] = `
 
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/scanner/unclosedComment.js\\", line 1, characters 2-18:
+File \\"/syntax/tests/parsing/errors/scanner/unclosedComment.js\\", line 1, characters 2-18:
 
 
 [31m1[0m │  /*[31m eo[0mf
@@ -83,7 +83,7 @@ exports[`unclosedString.js 1`] = `
 let z = \\"eof\\"
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/scanner/unclosedString.js\\", line 1, characters 9-13:
+File \\"/syntax/tests/parsing/errors/scanner/unclosedString.js\\", line 1, characters 9-13:
 
 
 [31m1[0m │  let z = \\"[31meo[0mf

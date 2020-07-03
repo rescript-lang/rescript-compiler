@@ -6,7 +6,7 @@ val x : int
 val y : int
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/signature/closingBraces.nsi\\", line 3, characters 0-1:
+File \\"/syntax/tests/parsing/errors/signature/closingBraces.nsi\\", line 3, characters 0-1:
 
 
 1 │  let x: int
@@ -30,7 +30,7 @@ val z1 : int[@@genType ]
 val z2 : float[@@genType ]
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/signature/consecutive.nsi\\", line 1, characters 10-14:
+File \\"/syntax/tests/parsing/errors/signature/consecutive.nsi\\", line 1, characters 10-14:
 
 
 [31m1[0m │  let x: int[31m let[0m y: float
@@ -40,7 +40,7 @@ File \\"/napkinscript/tests/parsing/errors/signature/consecutive.nsi\\", line 1,
 consecutive specifications on a line must be separated by ';' or a newline
 
 
-File \\"/napkinscript/tests/parsing/errors/signature/consecutive.nsi\\", line 3, characters 14-21:
+File \\"/syntax/tests/parsing/errors/signature/consecutive.nsi\\", line 3, characters 14-21:
 
 
 1 │  let x: int let y: float

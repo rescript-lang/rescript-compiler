@@ -19,7 +19,7 @@ module Error3 =
   end
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/arrow.js\\", line 2, characters 21-24:
+File \\"/syntax/tests/parsing/errors/typexpr/arrow.js\\", line 2, characters 21-24:
 
 
 1 │  // notice usage of -> instead of =>
@@ -31,7 +31,7 @@ File \\"/napkinscript/tests/parsing/errors/typexpr/arrow.js\\", line 2, characte
 Did you forget a \`=>\` here? 
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/arrow.js\\", line 7, characters 26-30:
+File \\"/syntax/tests/parsing/errors/typexpr/arrow.js\\", line 7, characters 26-30:
 
 
 5 │    type observation ={
@@ -44,7 +44,7 @@ File \\"/napkinscript/tests/parsing/errors/typexpr/arrow.js\\", line 7, characte
 Did you forget a \`:\` here? It signals the start of a type
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/arrow.js\\", line 14, characters 25-29:
+File \\"/syntax/tests/parsing/errors/typexpr/arrow.js\\", line 14, characters 25-29:
 
 
 12 │    type observation ={
@@ -88,7 +88,7 @@ type nonrec websocket =
 type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 2, characters 7-21:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 2, characters 7-21:
 
 
 1 │  type state = {
@@ -100,7 +100,7 @@ File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 2, cha
 Did you forget a \`:\` here? It signals the start of a type
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 7, characters 13-27:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 7, characters 13-27:
 
 
 5 │  
@@ -113,7 +113,7 @@ File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 7, cha
 Did you forget a \`:\` here? It signals the start of a type
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 13, characters 13-27:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 13, characters 13-27:
 
 
 11 │  type state = {
@@ -126,7 +126,7 @@ File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 13, ch
 Did you forget a \`:\` here? It signals the start of a type
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 19, characters 13-15:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 19, characters 13-15:
 
 
 17 │  type state = {
@@ -139,7 +139,7 @@ File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 19, ch
 Did you forget a \`:\` here? It signals the start of a type
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 24, characters 19-21:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 24, characters 19-21:
 
 
 22 │  type state = {
@@ -151,7 +151,7 @@ File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 24, ch
 I'm missing a type here
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 28, characters 10-19:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 28, characters 10-19:
 
 
 26 │  
@@ -163,7 +163,7 @@ File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 28, ch
 I'm missing a type here
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 33, characters 18-27:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 33, characters 18-27:
 
 
 31 │  
@@ -175,7 +175,7 @@ File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 33, ch
 I'm missing a type here
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 37, characters 23-25:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 37, characters 23-25:
 
 
 35 │  }
@@ -187,7 +187,7 @@ File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 37, ch
 I'm missing a type here
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 40, characters 7-17:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 40, characters 7-17:
 
 
 38 │  type state = {
@@ -200,7 +200,7 @@ File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 40, ch
 Did you forget a \`:\` here? It signals the start of a type
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 45, characters 7-19:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 45, characters 7-19:
 
 
 43 │  
@@ -212,7 +212,7 @@ File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 45, ch
 I'm missing a type here
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 50, characters 6-7:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 50, characters 6-7:
 
 
 48 │  
@@ -237,7 +237,7 @@ type nonrec t = int node option
 type nonrec t = int node option
 =====Errors=============================================
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 2, characters 27-31:
+File \\"/syntax/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 2, characters 27-31:
 
 
 1 │  type node<'a> = {
@@ -250,7 +250,7 @@ Type parameters require angle brackets:
 
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 5, characters 23-27:
+File \\"/syntax/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 5, characters 23-27:
 
 
 3 │  }
@@ -264,7 +264,7 @@ Type parameters require angle brackets:
 
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 6, characters 31-35:
+File \\"/syntax/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 6, characters 31-35:
 
 
 4 │  
@@ -278,7 +278,7 @@ Type parameters require angle brackets:
 
 
 
-File \\"/napkinscript/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 9, characters 27-28:
+File \\"/syntax/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 9, characters 27-28:
 
 
 7 │  
