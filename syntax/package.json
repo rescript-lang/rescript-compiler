@@ -1,0 +1,29 @@
+{
+  "name": "napkinscript",
+  "version": "0.0.8-dev",
+  "description": "",
+  "main": "Napkinscript.ml",
+  "bin": {
+    "napkinscript": "./lib/napkinscript.exe"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "bs-platform": "^7.3.2",
+    "jest": "^24.9.0",
+    "reanalyze": "^2.6.0"
+  },
+  "scripts": {
+    "test": "make test",
+    "termination": "gentype -termination-cmt ./Napkinscript.cmt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IwanKaramazow/napkinscript.git"
+  },
+  "author": "Iwan (valcke.maxim@gmail.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/IwanKaramazow/napkinscript/issues"
+  },
+  "homepage": "https://github.com/IwanKaramazow/napkinscript#readme"
+}

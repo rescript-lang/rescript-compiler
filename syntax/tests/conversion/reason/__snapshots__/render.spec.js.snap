@@ -1,0 +1,1235 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`braces.re 1`] = `
+"let f = () => id
+let f = () => id
+
+if isArray(children) {
+  // Scenario 1
+  let code = children->asStringArray->Js.Array2.joinWith(\\"\\")
+  <InlineCode> {code->s} </InlineCode>
+} else if isObject(children) {
+  // Scenario 2
+  children->asElement
+} else {
+  // Scenario 3
+  let code = unknownAsString(children)
+  makeCodeElement(~code, ~metastring, ~lang)
+}
+
+let getDailyNewCases = x =>
+  switch x {
+  | First(ret) => ret
+  | Pair({prevRecord, record}) =>
+    let confirmed = record.confirmed - prevRecord.confirmed
+    let deaths = record.deaths - prevRecord.deaths
+    {confirmed: confirmed, deaths: deaths}
+  }
+"
+`;
+
+exports[`comments.re 1`] = `
+"// comment 1
+let /* a */ x /* b */ = /* c */ 1 /* comment 2 */
+
+// comment 3
+
+// comment 4
+let x = 1 /* 5 */
+/* 6 */
+
+let f = (
+  // 1
+  a, // 2
+  // 3
+  b,
+) => {
+  // 5
+  x: 1, // 6
+  // 7
+  y: 2, // 8
+}
+/* **** comment */
+/* ** comment */
+/* comment */
+/* ** comment */
+/* *** comment */
+/* **** comment */
+
+/* ** */
+/* *** */
+
+/* ** */
+
+/* (** comment *) */
+/* (*** comment *) */
+/* *(*** comment *) */
+
+/* comment * */
+/* comment ** */
+/* comment *** */
+/* comment **** */
+
+let testingNotQuiteEndOfLineComments = list[
+  \\"Item 1\\" /* Comment For First Item */,
+  \\"Item 2\\" /* Comment For Second Item */,
+  \\"Item 3\\" /* Comment For Third Item */,
+  \\"Item 4\\" /* Comment For Fourth Item - but no semi */,
+  /* Comment after last item in list. */
+] /* Comment after list bracket */
+
+let testingEndOfLineComments = list[
+  \\"Item 1\\" /* Comment For First Item */,
+  \\"Item 2\\" /* Comment For Second Item */,
+  \\"Item 3\\" /* Comment For Third Item */,
+  \\"Item 4\\" /* Comment For Fourth Item - but before semi */,
+  /* Comment after last item in list. */
+] /* Comment after list bracket */
+
+/* This time no space between bracket and comment */
+let testingEndOfLineComments = list[] /* Comment after list bracket */
+
+type t = (int, int) /* End of line on t */
+
+type t22 = /* End of t22 line on type t22 = */
+(int, int)
+
+type variant =
+  /* Comment above X */
+  | X(int) /* End of line on X */
+  /* Comment above Y */
+  | Y(int) /* End of line on Y */
+/* Comment on entire type def for variant */
+
+type rec x = {
+  /* not attached *above* x */
+  fieldOne: int,
+} /* Attached end of line after x */
+and y = {
+  /* not attached *above* y */
+  fieldTwo: int,
+} /* Attached end of line after y */
+
+let result = switch X(3) {
+| X(x) =>
+  /* Where does this comment go? */
+  let tmp = x
+  x + tmp
+| Y(x) =>
+  /* How about this one */
+  let tmp = x
+  x + tmp
+}
+
+let result = switch None {
+| Some({fieldOne: 20}) =>
+  /* Where does this comment go? */
+  let tmp = 0
+  2 + tmp
+| Some({fieldOne: n}) =>
+  /* How about this one */
+  let tmp = n
+  n + tmp
+| None => 20
+}
+
+type pointWithManyKindsOfComments = {
+  /* Line before x */
+  x: string /* x field */,
+  /* Line before y */
+  y: string /* y field */,
+  /* Final row of record */
+}
+
+type typeParamPointWithComments<'a> = {
+  /* Line before x */
+  x: 'a /* x field */,
+  /* Line before y */
+  y: 'a /* y field */,
+  /* Final row of record */
+}
+
+let name_equal = (x, y) => x == y
+
+let equal = (i1, i2) =>
+  i1.contents === i2.contents && true /* most unlikely first */
+
+let equal = (i1, i2) =>
+  compare(compare(0, 0), compare(1, 1)) /* END OF LINE HERE */
+
+module Temp = {
+  let v = true
+  let logIt = (str, ()) => print_string(str)
+}
+
+let store_attributes = arg => {
+  let attributes_file = \\"test\\"
+  let proc_name = attributes_file ++ \\".proc\\"
+  let should_write =
+    /* only overwrite defined procedures */
+    Temp.v || !Temp.v
+  if should_write {
+    Temp.logIt(proc_name, ())
+  }
+}
+3 // -
+3 // -
+
+3 // -
+
+3 /* - */
+// **** comment
+/* ** comment */
+@ocaml.doc(\\" docstring \\")
+@ocaml.doc(\\" docstring \\")
+@ocaml.doc(\\" \\")
+@ocaml.doc(\\"\\")
+@ocaml.doc(\\" (** comment *) \\")
+@ocaml.doc(\\" (*** comment *) \\")
+@ocaml.doc(\\"
+ * Multiline
+ \\")
+@ocaml.doc(\\" Multiline
+ *
+ \\")
+@ocaml.doc(\\"
+ **
+ \\")
+module // comment
+
+/* ** comment */
+/* *** comment */
+/* **** comment */
+
+/* ** */
+/* *** */
+
+/* ** */
+
+// (** comment *)
+// (*** comment *)
+// *(*** comment *)
+// comment *
+// comment **
+// comment ***
+// comment ****
+
+JustString = {
+  include Map.Make(Int32) // Comment eol include
+}
+
+let testingEndOfLineComments = list[
+  \\"Item 1\\" /* Comment For First Item */,
+  \\"Item 2\\" /* Comment For Second Item */,
+  \\"Item 3\\" /* Comment For Third Item */,
+  \\"Item 4\\" /* Comment For Fourth Item - but before trailing comma */,
+  // Comment after last item in list.
+] /* Comment after rbracket */
+
+// But if you place them after the comma at eol, they're preserved as such
+let testingEndOfLineComments = list[
+  \\"Item 1\\", // Comment For First Item
+  \\"Item 2\\", // Comment For Second Item
+  \\"Item 3\\", // Comment For Third Item
+  \\"Item 4\\" /* Comment For Fourth Item - but before trailing comma */,
+  // Comment after last item in list.
+] /* Comment after rbracket */
+
+// The space between ; and comment shoudn't matter
+let testPlacementOfTrailingComment = list[
+  \\"Item 0\\",
+  // Comment after last item in list.
+] // Comment after semi
+
+// The space between ; and comment shoudn't matter
+let testPlacementOfTrailingComment = list[
+  \\"Item 0\\",
+  // Comment after last item in list.
+] // Comment after semi
+
+// Try again but without other things in the list
+let testPlacementOfTrailingComment = list[\\"Item 0\\"] // Comment after semi
+
+// The space between ; and comment shoudn't matter
+let testPlacementOfTrailingComment = list[
+  \\"Item 0\\",
+  // Comment after last item in list.
+] // Comment after semi
+
+let testingEndOfLineComments = list[] // Comment after entire let binding
+
+// The following is not yet idempotent
+// let myFunction
+// withFirstArg  // First arg
+// andSecondArg  => { // Second Arg
+// withFirstArg + andSecondArg /* before semi */ ;
+// };
+
+let myFunction = // First arg
+(
+  withFirstArg,
+  // Second Arg
+  andSecondArg,
+) => withFirstArg + andSecondArg // After Semi
+
+type point = {
+  x: string, // x field
+  y: string, // y field
+}
+
+type pointWithManyKindsOfComments = {
+  // Line before x
+  x: string, // x field
+  // Line before y
+  y: string, // y field
+  // Final row of record
+}
+
+type typeParamPointWithComments<'a> = {
+  // Line before x
+  x: 'a, // x field
+  // Line before y
+  y: 'a, // y field
+  // Final row of record
+}
+
+// Now, interleaving comments in type params
+// Type name
+type typeParamPointWithComments2<
+  'a,
+  // The b type apram
+  'b,
+> = {
+  // Line before x
+  x: 'a, // x field
+  // Line before y
+  y: 'a, // y field
+  // Final row of record
+}
+
+/* The way the last row comment is formatted is suboptimal becuase
+ * record type definitions do not include enough location information */
+type anotherpoint = {
+  x: string, // x field
+  y: string, // y field
+  // comment as last row of record
+}
+
+type t = (int, int) // End of line on t
+type t2 = (int, int) // End of line on (int, int)
+
+type t3 = (int, int) // End of line on (int, int)
+
+type variant =
+  | X(int, int) // End of line on X
+  | Y(int, int) // End of line on Y
+// Comment on entire type def for variant
+
+// Before let
+let res = // Before switch
+switch X(2, 3) {
+// Above X line
+| X(_) => \\"result of X\\" // End of arrow and X line
+// Above Y line
+| Y(_) => \\"result of Y\\" // End of arrow and Y line
+} // After final semi in switch
+
+let res = switch X(2, 3) {
+| X(0, 0) => // After X arrow
+  \\"result of X\\" // End of X body line
+| X(1, 0) /* Before X's arrow */ => \\"result of X\\" // End of X body line
+| X(_) => // After X _ arrow
+  \\"result of X\\" // End of X body line
+// Above Y line
+| Y(_) => // Comment above Y body
+  \\"result of Y\\"
+}
+
+type variant2 =
+  // Comment above X
+  | X(int, int) // End of line on X
+  // Comment above Y
+  | Y(int, int)
+
+type variant3 =
+  // Comment above X
+  | X(int, int) // End of line on X
+  // Comment above Y
+  | Y(int, int) // End of line on Y
+
+type rec x = {
+  // not attached *above* x
+  fieldOne: int,
+  fieldA: int,
+} // Attached end of line after x
+and y = {
+  // not attached *above* y
+  fieldTwo: int,
+} // Attached end of line after y
+
+type rec x2 = {
+  // not attached *above* x2
+  fieldOne: int,
+  fieldA: int,
+} // Attached end of line after x2
+and y2 = {
+  // not attached *above* y2
+  fieldTwo: int,
+}
+
+let result = switch None {
+| Some({fieldOne: 20, fieldA: a}) =>
+  // Where does this comment go?
+  let tmp = 0
+  2 + tmp
+| Some({fieldOne: n, fieldA: a}) =>
+  // How about this one
+  let tmp = n
+  n + tmp
+| None => 20
+}
+
+let res = // Before switch
+switch X(2, 3) {
+// Above X line
+| X(_) => \\"result of X\\" // End of arrow and X line
+// Above Y line
+| Y(_) => \\"result of Y\\" // End of arrow and Y line
+}
+
+/*
+ * Now these end of line comments *should* be retained.
+ */
+let result = switch None {
+| Some({fieldOne: 20, fieldA: a}) =>
+  let tmp = 0
+  2 + tmp
+| Some({fieldOne: n, fieldA: a}) =>
+  let tmp = n
+  n + tmp
+| None => 20
+}
+
+/*
+ * These end of line comments *should* be retained.
+ * To get the simple expression eol comment to be retained, we just need to
+ * implement label breaking eol behavior much like we did with sequences.
+ * Otherwise, right now they are not idempotent.
+ */
+let res = switch X(2, 3) {
+// Above X line
+| X(_, _) => \\"result of X\\" // retain this // retain this
+
+// Above Y line
+| Y(_) => \\"result of Y\\" // End of arrow and Y line
+}
+
+/* type optionalTuple = */
+/* | OptTup( */
+/* option( */
+/* ( */
+/* int, */
+/* int */
+/* ), */
+/* ), */
+/* ); */
+
+type optionTuple = option<(int, int)> // First int // Second int
+
+type intPair = (int, int) // First int // Second int
+
+type intPair2 = (
+  // First int
+  int,
+  // Second int
+  int,
+)
+
+let result = @ocaml.doc(\\"\\") (2 + 3)
+
+// This is not yet idempotent
+// {
+// /**/
+// (+) 2 3
+// };
+
+let a = ()
+for i in 0 to 10 {
+  // bla
+  a
+}
+
+if true {
+  ()
+}
+
+type color =
+  | Red(int) // After red end of line
+  | Black(int) // After black end of line
+  | Green(int) // After green end of line
+// On next line after color type def
+
+let blahCurriedX = (x, x) =>
+  switch x {
+  | Red(10) | Black(20) | Green(10) => 1 // After or pattern green
+  | Red(x) => 0 // After red
+  | Black(x) => 0 // After black
+  | Green(x) => 0
+  } // After second green
+// On next line after blahCurriedX def
+
+let name_equal = (x, y) => x == y
+
+let equal = (i1, i2) => i1.contents === i2.contents && true // most unlikely first
+
+let equal = (i1, i2) => compare(compare(0, 0), compare(1, 1)) // END OF LINE HERE
+
+let tuple_equal = ((i1, i2)) => i1 == i2
+
+let tuple_equal = ((csu, mgd)) =>
+  // Some really long comments, see https://github.com/facebook/reason/issues/811
+  tuple_equal((csu, mgd))
+
+let trueThing = true
+
+for i in 0 to 1 {
+  // comment
+  print_newline()
+}
+
+while trueThing {
+  // comment
+  print_newline()
+}
+
+if trueThing {
+  // comment
+  print_newline()
+}
+
+// Comment before if test
+if trueThing {
+  // Comment before print
+  print_newline()
+  // Comment before print
+  print_newline()
+  // Comment after final print
+}
+
+// Comment before if test
+if trueThing {
+  // Comment before print
+  print_newline()
+}
+
+// Comment before if test
+if trueThing {
+  // Comment before print
+  print_newline()
+  // Comment before print
+  print_newline()
+  // Comment after final print
+} else {
+  // Comment before print
+  print_newline()
+  // Comment before print
+  print_newline()
+  // Comment after final print
+}
+
+// Comment before if test
+if trueThing {
+  // Comment before print
+  print_newline()
+} else {
+  // Comment before print
+  print_newline()
+}
+
+// Comment before while test
+while trueThing {
+  // Comment before print
+  print_newline()
+  // Comment before print
+  print_newline()
+  // Comment after final print
+}
+
+// Comment before while test
+while trueThing {
+  // Comment before print
+  print_newline()
+}
+
+// Comment before for test
+for i in 0 to 100 {
+  // Comment before print
+  print_newline()
+  // Comment before print
+  print_newline()
+  // Comment after final print
+}
+
+// Comment before for test
+for i in 0 to 100 {
+  // Comment before print
+  print_newline()
+}
+
+if trueThing {
+  // Comment before print
+  print_newline() // eol print
+  // Comment before print
+  print_newline() // eol print
+  // Comment after print
+}
+
+// Comment before if test
+if trueThing {
+  // Comment before print
+  print_newline()
+}
+
+// Comment before if test
+if trueThing {
+  // Comment before print
+  print_newline() // eol print
+  // Comment before print
+  print_newline() // eol print
+  // Comment after print
+} else {
+  // Comment before print
+  print_newline() // eol print
+  // Comment before print
+  print_newline() // eol print
+  // Comment after print
+}
+
+// Comment before if test
+if trueThing {
+  // Comment before print
+  print_newline()
+} else {
+  // Comment before print
+  print_newline() // eol print
+  // Comment before print
+  print_newline() // eol print
+  // Comment after print
+}
+
+// Comment before while test
+while trueThing {
+  // Comment before print
+  print_newline() // eol
+  // Comment before print
+  print_newline() // eol
+  // Comment after final print
+}
+
+// Comment before while test
+while trueThing {
+  // Comment before print
+  print_newline()
+}
+
+// Comment before for test
+for i in 0 to 100 {
+  // Comment before print
+  print_newline() // eol
+  // Comment before print
+  print_newline() // eol
+  // Comment after final print
+}
+
+// Comment before for test
+for i in 0 to 100 {
+  // Comment before print
+  print_newline()
+}
+
+let f = (a, b, c, d) => a + b + c + d
+
+while trueThing {
+  f(
+    // a
+    1,
+    // b
+    2,
+    // c
+    3,
+    // d
+    4,
+    // does work
+  )
+}
+while trueThing {
+  f(
+    // a
+    1,
+    // b
+    2,
+    // c
+    3,
+    // d
+    4, // does work
+  )
+}
+
+ignore((_really, _long, _printWidth, _exceeded, _here) => {
+  // First comment
+  let x = 0
+  x + x
+  // Closing comment
+})
+
+ignore((_xxx, _yyy) => {
+  // First comment
+  let x = 0
+  x + x
+  // Closing comment
+})
+
+type tester<'a, 'b> =
+  | TwoArgsConstructor('a, 'b)
+  | OneTupleArgConstructor(('a, 'b))
+let callFunctionTwoArgs = (a, b) => ()
+let callFunctionOneTuple = tuple => ()
+
+let y = TwoArgsConstructor(1, 2) // eol1 // eol2
+
+let y = callFunctionTwoArgs(1, 2) // eol1 // eol2
+
+let y = OneTupleArgConstructor((1, 2)) // eol1 // eol2
+
+let y = callFunctionOneTuple((1, 2)) // eol1 // eol2
+
+type polyRecord<'a, 'b> = {
+  fieldOne: 'a,
+  fieldTwo: 'b,
+}
+
+let r = {
+  fieldOne: 1, // eol1
+  fieldTwo: 2, // eol2
+}
+
+let r = {
+  fieldOne: 1, // eol1
+  fieldTwo: 2, // eol2 with trailing comma
+}
+
+let y = TwoArgsConstructor(\\"1\\", \\"2\\") // eol1 // eol2
+
+let y = callFunctionTwoArgs(\\"1\\", \\"2\\") // eol1 // eol2
+
+let y = OneTupleArgConstructor((\\"1\\", \\"2\\")) // eol1 // eol2
+
+let y = callFunctionOneTuple((\\"1\\", \\"2\\")) // eol1 // eol2
+
+let r = {
+  fieldOne: \\"1\\", // eol1
+  fieldTwo: \\"2\\", // eol2
+}
+
+let r = {
+  fieldOne: \\"1\\", // eol1
+  fieldTwo: \\"2\\", // eol2 with trailing comma
+}
+
+let identifier = \\"hello\\"
+
+let y = TwoArgsConstructor(identifier, identifier) // eol1 // eol2
+
+let y = callFunctionTwoArgs(identifier, identifier) // eol1 // eol2
+
+let y = OneTupleArgConstructor((identifier, identifier)) // eol1 // eol2
+
+let y = callFunctionOneTuple((identifier, identifier)) // eol1 // eol2
+
+let r = {
+  fieldOne: identifier, // eol1
+  fieldTwo: identifier, // eol2
+}
+
+let r = {
+  fieldOne: identifier, // eol1
+  fieldTwo: identifier, // eol2 with trailing comma
+}
+
+let y = TwoArgsConstructor((identifier: string), (identifier: string)) // eol1 // eol2
+
+let y = callFunctionTwoArgs((identifier: string), (identifier: string)) // eol1 // eol2
+
+let y = OneTupleArgConstructor(((identifier: string), (identifier: string))) // eol1 // eol2
+
+let y = callFunctionOneTuple(((identifier: string), (identifier: string))) // eol1 // eol2
+
+let r = {
+  fieldOne: (identifier: string), // eol1
+  fieldTwo: (identifier: string), // eol2
+}
+
+let r = {
+  fieldOne: (identifier: string), // eol1
+  fieldTwo: (identifier: string), // eol2 with trailing comma
+}
+
+// whitespace interleaving
+
+// comment1
+// comment2
+
+// whitespace above & below
+
+let r = {
+  fieldOne: (identifier: string), // eol1
+  // c1
+
+  // c2
+
+  // c3
+  // c4
+
+  // c5
+  fieldTwo: (identifier: string), // eol2 with trailing comma
+}
+// trailing
+
+// trailing whitespace above
+// attach
+
+// last comment
+"
+`;
+
+exports[`docComments.ml 1`] = `
+"@@ocaml.text(
+  \\" The first special comment of the file is the comment associated
+     to the whole module. \\"
+)
+
+@ocaml.doc(\\" The comment for function f \\")
+let f = (x, y) => x + y
+
+@@ocaml.text(
+  \\" This comment is not attached to any element since there is another
+     special comment just before the next element. \\"
+)
+
+/* A simple comment. */
+@ocaml.doc(
+  \\" Comment for exception My_exception, even with a simple comment
+     between the special comment and the exception.\\"
+)
+exception My_exception(int => int, int)
+
+@ocaml.doc(\\" Comment for type weather  \\")
+type weather =
+  | @ocaml.doc(\\" The comment for constructor Rain \\") Rain(int)
+  | @ocaml.doc(\\" The comment for constructor Sun \\") Sun
+
+@ocaml.doc(\\" The comment for type my_record \\")
+type my_record = {
+  @ocaml.doc(\\" Comment for field foo \\")
+  foo: int,
+  @ocaml.doc(\\" Comment for field bar \\")
+  bar: string,
+}
+
+@ocaml.doc(\\" The comment for module Foo \\")
+module Foo = {
+  @ocaml.doc(\\" The comment for x \\")
+  @ocaml.doc(
+    \\" A special comment in the class, but not associated to any element. \\"
+  )
+  let x = 0
+}
+
+@ocaml.doc(\\" The comment for module type my_module_type. \\")
+module type my_module_type = {
+  /* Comment for value x. */
+  let x: int
+  /* ... */
+}
+"
+`;
+
+exports[`docComments.mli 1`] = `
+"@@ocaml.text(
+  \\" The first special comment of the file is the comment associated
+     with the whole module.\\"
+)
+
+@@ocaml.text(
+  \\" Special comments can be placed between elements and are kept
+     by the OCamldoc tool, but are not associated to any element.
+     @-tags in these comments are ignored.\\"
+)
+
+@@ocaml.text(
+  /* ***************************************************************** */
+  \\" Comments like the one above, with more than two asterisks,
+     are ignored. \\"
+)
+
+@ocaml.doc(\\" The comment for function f. \\")
+@ocaml.doc(\\" The continuation of the comment for function f. \\")
+let f: (int, int) => int
+
+/* Hello, I'm a simple comment :-) */
+@ocaml.doc(
+  \\" Comment for exception My_exception, even with a simple comment
+     between the special comment and the exception.\\"
+)
+exception My_exception(int => int, int)
+
+@ocaml.doc(\\" Comment for type weather  \\")
+type weather =
+  | @ocaml.doc(\\" The comment for constructor Rain \\") Rain(int)
+  | @ocaml.doc(\\" The comment for constructor Sun \\") Sun
+
+@ocaml.doc(\\" Comment for type weather2  \\")
+@ocaml.doc(
+  \\" I can continue the comment for type weather2 here
+   because there is already a comment associated to the last constructor.\\"
+)
+type weather2 =
+  | @ocaml.doc(\\" The comment for constructor Rain \\") Rain(int)
+  | @ocaml.doc(\\" The comment for constructor Sun \\") Sun
+
+@ocaml.doc(\\" The comment for type my_record \\")
+@ocaml.doc(\\" Continuation of comment for type my_record \\")
+type my_record = {
+  @ocaml.doc(\\" Comment for field foo \\")
+  foo: int,
+  @ocaml.doc(\\" Comment for field bar \\")
+  bar: string,
+}
+
+@ocaml.doc(\\" Comment for foo \\")
+@ocaml.doc(\\" This comment is associated to foo and not to bar. \\")
+let foo: string
+
+@ocaml.doc(\\" This comment is associated to foo and not to bar. \\")
+@ocaml.doc(\\" This comment is associated to bar. \\")
+let bar: string
+
+@ocaml.doc(\\" The comment for module Foo \\")
+module Foo: {
+  @ocaml.doc(\\" The comment for x \\")
+  let x: int
+
+  @@ocaml.text(
+    \\" A special comment that is kept but not associated to any element \\"
+  )
+}
+
+@ocaml.doc(\\" The comment for module type my_module_type. \\")
+module type my_module_type = {
+  @ocaml.doc(\\" The comment for value x. \\")
+  let x: int
+
+  @ocaml.doc(\\" The comment for module M. \\")
+  module M: {
+    @ocaml.doc(\\" The comment for value y. \\")
+    let y: int
+    /* ... */
+  }
+}
+"
+`;
+
+exports[`docComments.re 1`] = `
+"@ocaml.doc(\\" foo \\")
+let x = 1
+
+@ocaml.doc(\\"\\")
+let x = 1
+
+/* ** foo */
+let x = 1
+
+/* **** foo */
+let x = 1
+"
+`;
+
+exports[`extension.re 1`] = `
+"// here
+%%bs.raw(\` eval(
+__gc,
+1,
+0
+)
+  \`)
+"
+`;
+
+exports[`fastPipe.re 1`] = `
+"a->f(b, c)->g(d, e)
+
+Element.querySelectorAll(selector, element)
+->NodeList.toArray
+->Array.keepMap(Element.ofNode)
+->Array.getBy(node => node->Element.textContent === content)
+
+let x = @attr (@attr2 a->f(b)->c(d))
+
+5->doStuff(3, _, 7)
+
+(event->target)[\\"value\\"]
+
+(Route.urlToRoute(url)->ChangeView->self).send
+Route.urlToRoute(url)->ChangeView->self.send
+
+let aggregateTotal = (forecast, ~audienceType) =>
+  Js.Nullable.toOption(forecast[\\"audiences\\"])
+  ->Option.flatMap(item => Js.Dict.get(item, audienceType))
+  ->Option.map(item => {
+    pages: item[\\"reach\\"][\\"pages\\"],
+    views: item[\\"reach\\"][\\"views\\"],
+    sample: item[\\"reach\\"][\\"sample\\"],
+  })
+"
+`;
+
+exports[`gentype.re 1`] = `
+"module M: {
+  @after
+  export type t
+
+  @after
+  export x: int
+
+  @foo
+  type e = ..
+} = {
+  type t
+  let x = 34
+  type e = ..
+}
+
+module type MT = {
+  @after
+  export type t
+
+  @after
+  export x: int
+
+  @foo
+  type e = ..
+}
+
+@genType(\\"ddd\\")
+let x = 42
+"
+`;
+
+exports[`gentype.rei 1`] = `
+"export x: int
+"
+`;
+
+exports[`jsObject.re 1`] = `
+"let component = props[\\"Component\\"]
+
+let element = props[\\"element\\"]
+"
+`;
+
+exports[`jsxProps.re 1`] = `
+"let handleClick = (href, event) =>
+  if !ReactEvent.Mouse.defaultPrevented(event) {
+    ReactEvent.Mouse.preventDefault(event)
+    ReasonReact.Router.push(href)
+  }
+
+@react.component
+let make = (~href, ~className=\\"\\", ~children) =>
+  <a href className onClick={event => handleClick(href, event)}> children </a>
+"
+`;
+
+exports[`letBinding.re 1`] = `
+"let deltaMode: t => Webapi__Dom__Types.deltaMode = self =>
+  Webapi__Dom__Types.decodeDeltaMode(deltaMode(self))
+
+let fromJs: ResourceIo.campaignWeeklyPlanning => t = weeklyPlanning => (
+  weeklyPlanning[\\"monday\\"]->dayFromJs,
+  weeklyPlanning[\\"tuesday\\"]->dayFromJs,
+  weeklyPlanning[\\"wednesday\\"]->dayFromJs,
+  weeklyPlanning[\\"thursday\\"]->dayFromJs,
+  weeklyPlanning[\\"friday\\"]->dayFromJs,
+  weeklyPlanning[\\"saturday\\"]->dayFromJs,
+  weeklyPlanning[\\"sunday\\"]->dayFromJs,
+)
+
+let newChapter: Video.chapter = {startTime: percent *. duration}
+"
+`;
+
+exports[`letprivate.re 1`] = `
+"%%private(let x = 34)
+"
+`;
+
+exports[`moduleLanguage.re 1`] = `
+"let someFunctorAsFunction = (x: module(MT)): module(ResT) =>
+  module(SomeFunctor(unpack(x)))
+"
+`;
+
+exports[`namedArgs.re 1`] = `
+"let wizard = Wizard.make(
+  ~spriteSheet=wizard,
+  ~hp=999999999999999,
+  ~mp=50,
+  // ~coordinates={x: 0., y:0. z: 0.},
+  ~coordinates={x: 40, y: 100., z: 0.},
+  // /* c0 */ ~gpuCoordinates= /* c1 */ gpuBuffer[10] /* c2 */, // trailing
+)
+
+apply(
+  // above
+  ~aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,
+  // below
+  ~bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,
+  // here
+  ~cccccccccccccccccccccccccccccccc,
+)
+
+applyOptional(
+  // above
+  ~aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?,
+  // below
+  ~bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb?,
+  // here
+  ~cccccccccccccccccccccccccccccccc?,
+)
+
+foo(
+  // c0
+  ~aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: int,
+  // c1
+  ~bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb: int,
+  // c2
+  ~cccccccccccccccccccccccccccccc: int,
+)
+
+let f = (
+  ~isItemActive=?,
+  // array((name, href))
+  ~headers: array<(string, string)>,
+  ~moduleName: string,
+  // foo
+  ~x,
+  // above
+  /* c0 */ ~d: /* c1 */ e, // end
+  ~from as // does it work
+  hometown,
+) => {
+  let a = 1
+  let b = 2
+  a + b
+}
+
+@react.component
+let make = (
+  ~theme: ColorTheme.t,
+  ~components: Mdx.Components.t,
+  ~sidebarState: (bool, (bool => bool) => unit),
+  // (Sidebar, toggleSidebar) ... for toggling sidebar in mobile view
+  ~sidebar: React.element,
+  ~breadcrumbs: option<list<UrlPath.breadcrumb>>=?,
+  ~children,
+) => ()
+"
+`;
+
+exports[`openPattern.re 1`] = `
+"let {T.a: a} = a()
+let [Color.Blue] = a()
+let list[Color.Blue] = a()
+let (Color.Blue, Red) = a()
+
+let Color.Blue = blue
+
+module Color = {
+  type t = Red | Blue | Green
+  let red = Red
+  let blue = Blue
+  let green = Green
+}
+
+let () = switch (Color.red, Color.blue, Color.green) {
+| (Color.Red, Blue, Green) => Js.log(\\"hello world\\")
+| _ => ()
+}
+
+let () = switch [Color.red, Color.blue, Color.green] {
+| [Color.Red, Blue, Green] => Js.log(\\"hello world\\")
+| _ => ()
+}
+"
+`;
+
+exports[`recursiveType.ml 1`] = `
+"type rec tree = {\\"label\\": string, \\"left\\": option<tree>, \\"right\\": option<tree>}
+"
+`;
+
+exports[`refSugar.ml 1`] = `
+"let x = foo.contents
+"
+`;
+
+exports[`refSugarReason.re 1`] = `
+"let x = foo.contents
+"
+`;
+
+exports[`singleLineComments.re 1`] = `
+"// This is the implementation of the _app.js file
+
+// Resources:
+// --------------
+// Really good article on state persistence within layouts:
+// https://adamwathan.me/2019/10/17/persistent-layout-patterns-in-nextjs/
+
+/*
+   a
+
+ */
+
+/*
+   a
+
+*/
+let x = 1
+// here
+"
+`;
+
+exports[`string.re 1`] = `
+"%%bs.raw(\\"define(x.y, 'userAgent', {value: 'USER_AGENT_STRING'})\\")
+"
+`;
+
+exports[`ternary.re 1`] = `
+"let a = x ? 1 : 2
+"
+`;
+
+exports[`unicode.re 1`] = `
+"let x = \\"✅ foo bar\\"
+
+let x = \\"\\\\n okokok\\"
+
+let z = \\"\\\\t \\\\b \\\\n okok 🙈\\"
+"
+`;
+
+exports[`variant.re 1`] = `
+"type t = | @foo X
+"
+`;

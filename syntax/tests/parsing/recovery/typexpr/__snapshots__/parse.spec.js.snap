@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`typeConstructorArgs.js 1`] = `
+"type nonrec 'a node = {
+  _value: 'a Js.Nullable.value }"
+`;

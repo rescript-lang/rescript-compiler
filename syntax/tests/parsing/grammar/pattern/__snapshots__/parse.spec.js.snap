@@ -1,0 +1,752 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`any.js 1`] = `
+"let _ = 1
+let _|_ = 1
+let (_ : int) = 1
+let ((_|_) : int) = 1
+let ((_|_) : int) = 1
+let (_ : unit)|(_ : unit) = 1
+let _ as _x = 1
+let _|_ as _x = 1
+let _|_ as _x = 1
+let _|_ as _x = 1
+let _ as _y|_ as _x = 1
+let _ as _y|_ as _x = 1
+;;match () with
+  | _ -> ()
+  | _|_ -> ()
+  | _ as _x -> ()
+  | _ as _x|_ as _x -> ()
+  | (_ : unit) -> ()
+  | (_ : unit)|(_ : unit) -> ()
+let f _ = ()
+let f (_ as _x) = ()
+let f (_ : unit) = ()
+let f (_ : unit) = ()
+let f ((_ : unit) as _x) = ()
+let g a _ = ()
+let g _ a = ()
+;;for _ = 0 to 10 do () done
+;;for _ as _x = 0 to 10 do () done
+;;for _ = 0 to 10 do () done
+;;for _ as _x = 0 to 10 do () done
+;;for (_ : int) = 0 to 10 do () done
+;;for (_ : int) as _x = 0 to 10 do () done"
+`;
+
+exports[`array.js 1`] = `
+"let [||] = ()
+let [|1;2|] = ()
+let [|1;2|] = ()
+let [|(1 : int);(2 : int)|] = ()
+let ([|(1 : int);(2 : int)|] : int array) = ()
+;;match x with
+  | [||] -> ()
+  | [|1;2|] -> ()
+  | [|1;2|] -> ()
+  | [|(1 : int);(2 : int)|] -> ()
+  | ([|(1 : int);(2 : int)|] : int) -> ()
+let f [||] = ()
+let f [|x|] = ()
+let f [|x;y|] = x + y
+let f ([|x|] : int) = ()
+let f ([|x|] : int) = ()
+;;for [||] = 0 to 10 do () done
+;;for [||] = 0 to 10 do () done
+;;for [||] = 0 to 10 do () done
+;;for [|x|] = 0 to 10 do () done
+;;for [|x|] = 0 to 10 do () done
+;;for [|x|] = 0 to 10 do () done
+;;for [|x;y|] = 0 to 10 do () done
+;;for [|x;y|] = 0 to 10 do () done
+;;for [|x;y|] = 0 to 10 do () done
+;;for ([|x|] : int array) = 0 to 10 do () done"
+`;
+
+exports[`constant.js 1`] = `
+"let \\"stringPattern\\" = ()
+let \\"stringPattern\\" as s = ()
+let (\\"stringPattern\\" : string) = ()
+let (\\"stringPattern\\" : string) as s = ()
+;;match x with
+  | \\"stringPattern\\" -> ()
+  | \\"stringPattern\\" as s -> ()
+  | (\\"stringPattern\\" : string) as s -> ()
+;;for \\"stringPattern\\" = 0 to 10 do () done
+;;for \\"stringPattern\\" as s = 0 to 10 do () done
+;;for \\"stringPattern\\" = 0 to 10 do () done
+;;for \\"stringPattern\\" as s = 0 to 10 do () done
+;;for \\"stringPattern\\" as s = 0 to 10 do () done
+let f \\"stringPattern\\" = ()
+let f (\\"stringPattern\\" as s) = ()
+let f (\\"stringPattern\\" as s) = ()
+let f (\\"stringPattern\\" : string) = ()
+let f ((\\"stringPattern\\" : string) as s) = ()
+let f (\\"stringPattern\\" : string) = ()
+let 1 = ()
+let 1 as x = ()
+let (1 : int) = ()
+let (1 : int) as x = ()
+;;match x with
+  | 1 -> ()
+  | 1 as x -> ()
+  | (1 : int) -> ()
+  | (1 : int) as x -> ()
+let f 1 = ()
+let f (1 as x) = ()
+let f (1 : int) = ()
+let f ((1 : int) as x) = ()
+let f (1 : int) = ()
+;;for i = 0 to 10 do () done
+;;for i as x = 0 to 10 do () done
+;;for i = 0 to 10 do () done
+;;for i as x = 0 to 10 do () done
+;;for i as x = 0 to 10 do () done
+;;match listPatterns with
+  | (true, pattern)::patterns ->
+      let patterns = (patterns |> (List.map filterSpread)) |> List.rev in
+      makeListPattern loc patterns (Some pattern)
+  | patterns ->
+      let patterns = (patterns |> (List.map filterSpread)) |> List.rev in
+      makeListPattern loc patterns None
+let _0 = 0x9A
+let print ppf i =
+  match i.stamp with
+  | 0 -> fprintf ppf \\"%s!\\" i.name
+  | (-1) -> fprintf ppf \\"%s#\\" i.name
+  | 1 -> fprintf ppf \\"%s#\\" i.name
+  | (-1.) -> fprintf ppf \\"%s#\\" i.name
+  | 1. -> fprintf ppf \\"%s#\\" i.name
+let (-1)..(-1.) = x
+;;match science with
+  | (1.12, (-3.13)) -> true
+  | [|1.12;(-3.13)|] -> true
+  | 1.12::(-3.13)::[] -> true
+  | { x = 1.12; y = (-3.13) } -> true
+  | Constructor (1.12, (-2.45)) -> true
+  | \`Constuctor (1.12, (-2.45)) -> true
+  | (-4.15) as x -> true
+  | (-4.15)|4.15 -> true
+  | ((-3.14) : float) -> true
+  | (lazy 5.678) -> true
+  | exception 19.34 -> true
+  | _ -> false"
+`;
+
+exports[`constructor.js 1`] = `
+"let Instance = i
+let Instance as inst = i
+let React.Instance = i
+let React.Instance as inst = i
+let Instance component = i
+let Instance component as inst = i
+let Instance component = i
+let Instance { render; subtree } = i
+let Instance { render; subtree } as x = i
+let Instance ({ render; subtree } as inst) = i
+let Instance ({ render; subtree }, inst) = i
+let Instance ({ render; subtree } : Instance.t) = i
+let Instance ({ render; subtree } : Instance.t) as inst = i
+let Instance ({ render; subtree } : Instance.t) = i
+let Instance (component, tree) = i
+let Instance (component, tree) as x = i
+let Instance ((component as x), (tree as y)) = i
+let Instance (component, tree) as inst = i
+let Instance (component, tree) = i
+let ((Instance) : React.t) = i
+let (Instance : React.t) as t = i
+let (Instance : React.t) as x = i
+let ((Instance (component : comp)) : React.t) = i
+let ((Instance (component : comp)) : React.t) = i
+;;match x with
+  | Instance -> ()
+  | Instance as inst -> ()
+  | Instance comp -> ()
+  | Instance comp as inst -> ()
+  | Instance { render; subtree } -> ()
+  | Instance ({ render; subtree }, inst) -> ()
+  | Instance ({ render; subtree } : Instance.t) -> ()
+  | Instance ({ render; subtree } : Instance.t) -> ()
+  | Instance (comp, tree) -> ()
+  | React.Instance (comp, tree) -> ()
+  | (Instance (comp : Component.t) : React.t) -> ()
+let f (Instance) = i
+let f (Instance as i) = i
+let f (React.Instance) = i
+let f (React.Instance as x) = i
+let f (Instance component) = i
+let f (Instance component) = i
+let f (Instance { render; subtree }) = i
+let f (Instance ({ render; subtree }, inst)) = i
+let f (Instance ({ render; subtree } : Instance.t)) = i
+let f (Instance ({ render; subtree } : Instance.t)) = i
+let f (Instance (component, tree)) = i
+let f (Instance (component, tree)) = i
+let f (Instance : React.t) = i
+let f (Instance : React.t) = i
+let f (Instance (comp : Component.t) : React.t) = ()
+;;for Blue = x to y do () done
+;;for Blue as c = x to y do () done
+;;for Blue = x to y do () done
+;;for Blue as c = x to y do () done
+;;for (Blue : Color.t) = x to y do () done
+;;for (Blue : Color.t) as c = x to y do () done
+;;for (Blue : Color.t) as c = x to y do () done
+;;for Rgba (r, g, b) = x to y do () done
+;;for Rgba (r, g, b) as c = x to y do () done
+;;for Rgba ((r : float), (g : float), (b : float)) = x to y do () done
+;;for Rgba ((r : float), (g : float), (b : float)) as c = x to y do () done
+;;for (Rgba (r, g, b) : Rgb.t) = x to y do () done
+;;for (Rgba (r, g, b) : Rgb.t) as c = x to y do () done
+;;for (Rgba (r, g, b) : Rgb.t) as c = x to y do () done
+;;for Colour.Rgba (r, g, b) = x to y do () done
+;;for Colour.Rgba ((r : float), (g : float), (b : float)) = x to y do () done
+;;for (Colour.Rgba (r, g, b) : Rgb.t) = x to y do () done
+;;for Point { x; y; z } = x to y do () done
+;;for Point { x; y; z } = x to y do () done
+;;for Point { x; y; z } as p = x to y do () done
+;;match truth with | true -> Js.log \\"true\\" | false -> Js.log \\"false\\""
+`;
+
+exports[`exception.js 1`] = `
+"let exception Foo = ()
+let exception Foo as e = ()
+let exception (Foo as e) = ()
+let exception Foo (a, b) = ()
+let exception Foo (a, b) as e = ()
+let exception (Foo (a, b) as e) = ()
+let exception Foo = ()
+let exception Foo as e = ()
+let exception Foo as e = ()
+let exception (Foo as e) = ()
+let exception Foo (a, b) = ()
+let exception Foo (a, b) as e = ()
+let exception Foo (a, b) as e = ()
+let (exception Foo : t exc) = ()
+let (exception Foo : t exc) as e = ()
+let exception (Foo : t exc) as e = ()
+let exception ((Foo : t exc) as e) = ()
+;;match x with
+  | exception Foo -> ()
+  | exception Foo as e -> ()
+  | exception (Foo as e) -> ()
+  | exception Foo (a, b) -> ()
+  | exception Foo -> ()
+  | exception Foo as e -> ()
+  | exception (Foo as e) -> ()
+  | exception Foo (a, b) -> ()
+  | (exception Foo : t exc) -> ()
+let f exception Foo = ()
+let f (exception Foo as e) = ()
+let f exception (Foo as e) = ()
+let f exception Foo (a, b) = ()
+let f exception Foo = ()
+let f (exception Foo as e) = ()
+let f exception Foo (a, b) = ()
+let f (exception Foo : t exc) = ()
+;;for exception Foo = 0 to 10 do () done
+;;for exception Foo as e = 0 to 10 do () done
+;;for exception Foo = 0 to 10 do () done
+;;for exception Foo as e = 0 to 10 do () done
+;;for exception Foo = 0 to 10 do () done
+;;for exception Foo (a, b) = 0 to 10 do () done
+;;for exception Foo (a, b) = 0 to 10 do () done
+;;for (exception Foo (a, b) : t exc) = 0 to 10 do () done"
+`;
+
+exports[`extension.js 1`] = `
+"let [%patternExtension ] = ()
+let [%pattern.extension ] = ()
+let [%bs.raw \\"x\\"] = ()
+let ([%bs.raw \\"x\\"] : unit) = ()
+let [%bs.raw \\"x\\"] as y = ()
+let [%patExt1 ]|[%patExt2 ] = ()
+;;match x with
+  | [%patternExtension ] -> ()
+  | [%pattern.extension ] -> ()
+  | [%pat.stuff test] -> ()
+  | [%pat.stuff test] as _x -> ()
+  | ([%pat.stuff test] : unit) -> ()
+  | [%patExt1 ]|[%patExt2 ] -> ()
+let f [%patternExtension ] = ()
+let f [%pattern.extension ] = ()
+let f [%bs.raw \\"x\\"] = ()
+let f [%bs.raw \\"x\\"] [%bs.raw \\"y\\"] = ()
+let f ([%bs.raw \\"x\\"] as _y) = ()
+let f ([%bs.raw \\"x\\"] : unit) = ()
+let f ([%patExt1 ]|[%patExt2 ]) = ()
+;;for [%ext ] = x to y do () done
+;;for [%ext1 ]|[%ext2 ] = x to y do () done
+;;for [%ext ] = x to y do () done
+;;for [%ext ] as e = x to y do () done
+;;for [%ext.pattern ] = x to y do () done
+;;for [%ext.pattern ] as e = x to y do () done
+;;for [%ext.pattern ] = x to y do () done
+;;for [%ext.pattern ] as e = x to y do () done
+;;for [%ext.pattern payload] = x to y do () done
+;;for [%ext.pattern payload] as e = x to y do () done
+;;for [%ext.pattern payload] = x to y do () done
+;;for [%ext.pattern payload] as e = x to y do () done
+;;for [%ext.pattern payload] as e|[%ext2 ] as bar = x to y do () done"
+`;
+
+exports[`firstClassModules.js 1`] = `
+"let sort (type s) (module Set)  l = ()
+let sort (type s) ((module Set)  : (module Set.S with type elt = s)) l = ()
+let sort (type s)
+  ((module Set)  : (module Set.S with type elt = s and type elt2 = t)) l = ()
+let foo (module Foo)  baz = Foo.bar baz
+let bump_list (type a) ((module B)  : (module Bumpable with type t = a))
+  (l : a list) = List.map ~f:((B.bump l)[@ns.namedArgLoc ])
+;;match x with
+  | (module Set)  -> ()
+  | ((module Set)  : (module Set.S with type elt = s)) -> ()
+  | ((module Set)  : (module Set.S with type elt = s and type elt2 = t)) ->
+      ()"
+`;
+
+exports[`lazy.js 1`] = `
+"let (lazy x) = ()
+let (lazy x) as l = ()
+let (lazy (x as l)) = ()
+let (lazy x) = ()
+let (lazy x) as l = ()
+let (lazy x) as l = ()
+let (lazy (x as l)) = ()
+let (lazy (x : int)) = ()
+let (lazy (x : int)) = ()
+let ((lazy x) : int Lazy.t) = ()
+let ((lazy x) : int Lazy.t) as l = ()
+let ((lazy (x as l)) : int Lazy.t) = ()
+let (lazy exception x) = ()
+let (lazy exception x) = ()
+;;match x with
+  | (lazy foo) -> ()
+  | (lazy foo) as l -> ()
+  | (lazy (foo as l)) -> ()
+  | ((lazy x) : int Lazy.t) -> ()
+let f (lazy x) = ()
+let f ((lazy x) as l) = ()
+let f (lazy (x as l)) = ()
+let f (lazy x) = ()
+let f ((lazy x) as l) = ()
+let f (lazy (x as l)) = ()
+let f ((lazy x) : int Lazy.t) = ()
+let f (((lazy x) : int Lazy.t) as x) = ()
+let f ((lazy (x : int Lazy.t)) as x) = ()
+let f (lazy ((x : int Lazy.t) as l)) = ()
+let f ((lazy x) : int Lazy.t) = ()
+;;for (lazy x) = z to g do () done
+;;for (lazy x) as l = z to g do () done
+;;for (lazy (x as l)) = z to g do () done
+;;for (lazy x) = z to g do () done
+;;for (lazy x) as l = z to g do () done
+;;for (lazy (x as l)) = z to g do () done
+;;for (lazy x) = z to g do () done
+;;for (lazy x) as l = z to g do () done
+;;for (lazy x) as l = z to g do () done
+;;for (lazy (x as l)) = z to g do () done
+;;for ((lazy x) : int Lazy.t) = z to g do () done
+;;for ((lazy x) : int Lazy.t) as l = z to g do () done
+;;for (lazy (x : int Lazy.t)) as l = z to g do () done
+;;for (lazy ((x : int Lazy.t) as l)) = z to g do () done"
+`;
+
+exports[`list.js 1`] = `
+"let [] = ()
+let [] as l = ()
+let x::[] = ()
+let (x as p1)::[] as l = ()
+let x::xs = ()
+let x::(xs as tail) = ()
+let x::y::tail = ()
+let x::y::[] = ()
+let (x as p1)::(y as p2)::[] = ()
+let x::y::[] = ()
+let x::xs = ()
+let x::y::tail = ()
+let x::(y::ys)::xs = ()
+let (x as p1)::((y as p2)::(ys as tail1) as l2)::(xs as tail2) = ()
+let (x : int)::((y : int)::(ys : int list))::xs = ()
+let ((x::xs) : int list) = ()
+let (x::xs : int list) as constrainedList = ()
+let (x::xs : int list) as clist = ()
+let ((x::xs : int list) : int list) = ()
+;;match x with
+  | [] -> ()
+  | [] as l -> ()
+  | (x as p1)::[] -> ()
+  | (x : int)::[] -> ()
+  | x::xs -> ()
+  | ((x : int)::(xs : int list) : int list) -> ()
+  | (x as p1)::(xs as p2) as l -> ()
+  | x::y::tail -> ()
+  | x::y::[] -> ()
+  | x::y::[] -> ()
+  | x::xs -> ()
+  | x::y::tail -> ()
+  | x::(y::ys)::xs -> ()
+  | (x as p1)::((y as p2)::(ys as tail1))::(xs as tail2) as l -> ()
+  | (x::xs : int list) -> ()
+let f [] = ()
+let f ([] as p) = ()
+let f (x::[]) = ()
+let f (((x : int) as p)::[]) = ()
+let f ((x as p)::[] as p2) = ()
+let f (x::xs) = ()
+let f (x::(xs as tail)) = ()
+let f (x::y::tail) = ()
+let f (x::y::[]) = ()
+let f (x::y::[]) = ()
+let f (x::xs) = ()
+let f (x::y::tail) = ()
+let f (x::(y::ys)::xs) = ()
+let f ((x as p1)::((y as p2)::(ys as tail1))::(xs as tail2) as l) = ()
+let f (x::xs : int list) = ()
+;;for [] = x to y do () done
+;;for [] as l = x to y do () done
+;;for [] = x to y do () done
+;;for [] as l = x to y do () done
+;;for [] = x to y do () done
+;;for [] as l = x to y do () done
+;;for [] as l = x to y do () done
+;;for x::[] = x to y do () done
+;;for (x as p)::[] = x to y do () done
+;;for ((x : int) as p)::[] = x to y do () done
+;;for ((x as p) : int)::[] = x to y do () done
+;;for x::[] = x to y do () done
+;;for x::[] = x to y do () done
+;;for x::xs = x to y do () done
+;;for x::xs = x to y do () done
+;;for x::xs = x to y do () done
+;;for (x as p1)::((y as p2)::(ys as tail1))::(xs as tail2) as l = x to y do
+    ()
+  done
+;;for (x::xs : int list) = x to y do () done"
+`;
+
+exports[`or.js 1`] = `
+";;match x with
+  | Blue|Red -> ()
+  | Blue|Red as colour -> ()
+  | Blue as c1|Red as c2 -> ()
+  | Blue as c1|Red as c2 -> ()
+  | exception Exit|exception Continue -> ()
+  | exception (Exit|exception Continue) -> ()
+  | (lazy x)|(lazy y) -> ()
+  | (lazy (x|(lazy y))) -> ()"
+`;
+
+exports[`polyvariants.js 1`] = `
+"let \`Instance = i
+let \`Instance as inst = i
+let \`Instance component = i
+let \`Instance component as inst = i
+let \`Instance component = i
+let \`Instance { render; subtree } = i
+let \`Instance { render; subtree } as x = i
+let \`Instance ({ render; subtree } as inst) = i
+let \`Instance ({ render; subtree }, inst) = i
+let \`Instance ({ render; subtree } : Instance.t) = i
+let \`Instance ({ render; subtree } : Instance.t) as inst = i
+let \`Instance ({ render; subtree } : Instance.t) = i
+let \`Instance (component, tree) = i
+let \`Instance (component, tree) as x = i
+let \`Instance ((component as x), (tree as y)) = i
+let \`Instance (component, tree) as inst = i
+let \`Instance (component, tree) = i
+let (\`Instance : React.t) = i
+let (\`Instance : React.t) as t = i
+let (\`Instance : React.t) as x = i
+let ((\`Instance (component : comp)) : React.t) = i
+let ((\`Instance (component : comp)) : React.t) = i
+;;match x with
+  | \`Instance -> ()
+  | \`Instance as inst -> ()
+  | \`Instance comp -> ()
+  | \`Instance comp as inst -> ()
+  | \`Instance { render; subtree } -> ()
+  | \`Instance ({ render; subtree }, inst) -> ()
+  | \`Instance ({ render; subtree } : Instance.t) -> ()
+  | \`Instance ({ render; subtree } : Instance.t) -> ()
+  | \`Instance (comp, tree) -> ()
+  | (\`Instance (comp : Component.t) : React.t) -> ()
+let f \`Instance = i
+let f (\`Instance as i) = i
+let f (\`Instance component) = i
+let f (\`Instance component) = i
+let f (\`Instance { render; subtree }) = i
+let f (\`Instance ({ render; subtree }, inst)) = i
+let f (\`Instance ({ render; subtree } : Instance.t)) = i
+let f (\`Instance ({ render; subtree } : Instance.t)) = i
+let f (\`Instance (component, tree)) = i
+let f (\`Instance (component, tree)) = i
+let f (\`Instance : React.t) = i
+let f (\`Instance : React.t) = i
+let f (\`Instance (comp : Component.t) : React.t) = ()
+;;for \`Blue = x to y do () done
+;;for \`Blue as c = x to y do () done
+;;for \`Blue = x to y do () done
+;;for \`Blue as c = x to y do () done
+;;for (\`Blue : Color.t) = x to y do () done
+;;for (\`Blue : Color.t) as c = x to y do () done
+;;for (\`Blue : Color.t) as c = x to y do () done
+;;for \`Rgba (r, g, b) = x to y do () done
+;;for \`Rgba (r, g, b) as c = x to y do () done
+;;for Rgba ((r : float), (g : float), (b : float)) = x to y do () done
+;;for \`Rgba ((r : float), (g : float), (b : float)) as c = x to y do () done
+;;for (\`Rgba (r, g, b) : Rgb.t) = x to y do () done
+;;for (\`Rgba (r, g, b) : Rgb.t) as c = x to y do () done
+;;for (\`Rgba (r, g, b) : Rgb.t) as c = x to y do () done
+;;for \`Point { x; y; z } = x to y do () done
+;;for \`Point { x; y; z } = x to y do () done
+;;for \`Point { x; y; z } as p = x to y do () done
+;;match x with | #typeVar -> () | \`lowercase -> ()
+let cmp selectedChoice value =
+  match (selectedChoice, value) with
+  | (#a, #a) -> true
+  | [|#b;#b|] -> true
+  | #b::#b::[] -> true
+  | { x = #c; y = #c } -> true
+  | Constructor (#a, #a) -> true
+  | \`Constuctor (#a, #a) -> true
+  | #a as x -> true
+  | #a|#b -> true
+  | (#a : typ) -> true
+  | (lazy #a) -> true
+  | exception #a -> true
+  | _ -> false"
+`;
+
+exports[`record.js 1`] = `
+"let { a } = x
+let { a } as p = x
+let { a } = x
+let { a; b } = x
+let { a = p1; b = p2 } = x
+let { a; b } = x
+let { ReasonReact.state = state } = x
+let { ReasonReact.state = (state as prevState) } = x
+let { ReasonReact.state = theState } = x
+let { a = u } = x
+let { a = (u : int) } = x
+let { a = ((u as p) : int) } = x
+let { a = { x; y } } = x
+let { a = { x = p1; y = p2 } } = x
+let { a;_} = x
+let { a;_} = x
+let ({ a } : myRecord) = x
+;;match x with
+  | { a } -> ()
+  | { a } as r -> ()
+  | { a } -> ()
+  | { a; b } -> ()
+  | { a; b } -> ()
+  | { ReasonReact.state = state } -> ()
+  | { ReasonReact.state = (state as prevState) } -> ()
+  | { ReasonReact.state = theState } -> ()
+  | { a = u } -> ()
+  | { a = (u : int) } -> ()
+  | { a = (((u as p) : int) as p2) } as p3 -> ()
+  | { a = { x; y } } -> ()
+  | { a = ({ x = p1; y = p2 } as p3) } -> ()
+  | { a;_} -> ()
+  | { a;_} -> ()
+  | ({ a } : myRecord) -> ()
+let f { a } = ()
+let f ({ a } as r) = ()
+let f { a } = ()
+let f { a; b } = ()
+let f { a; b } = ()
+let f { ReasonReact.state = state } = ()
+let f { ReasonReact.state = (state as prevState) } = ()
+let f { ReasonReact.state = theState } = ()
+let f { a = u } = ()
+let f { a = (u : int) } = ()
+let f { a = (((u as x) : int) as r) } = ()
+let f { a = { x; y } } = ()
+let f { a = { x = r; y = r2 } } = ()
+let f { a;_} = ()
+let f { a;_} = ()
+let f ({ a } : myRecord) = ()
+let f ({ a } : myRecord) = ()
+let f (({ a } : myRecord) as p) = ()
+;;for { a } = 0 to 10 do () done
+;;for { a } as p = 0 to 10 do () done
+;;for { a } = 0 to 10 do () done
+;;for { a } as p = 0 to 10 do () done
+;;for { a } = 0 to 10 do () done
+;;for { a } as p = 0 to 10 do () done
+;;for { ReasonReact.state = state } = 0 to 10 do () done
+;;for { ReasonReact.state = state } = 0 to 10 do () done
+;;for { ReasonReact.state = state } = 0 to 10 do () done
+;;for { ReasonReact.state = (state as prevState) } = 0 to 10 do () done
+;;for { ReasonReact.state = (state as prevState) } = 0 to 10 do () done
+;;for { ReasonReact.state = (state as prevState) } = 0 to 10 do () done
+;;for { ReasonReact.state = theState } = 0 to 10 do () done
+;;for { ReasonReact.state = theState } = 0 to 10 do () done
+;;for { ReasonReact.state = theState } = 0 to 10 do () done
+;;for { a = u } = 0 to 10 do () done
+;;for { a = u } = 0 to 10 do () done
+;;for { a = u } = 0 to 10 do () done
+;;for { a = (u : int) } = 0 to 10 do () done
+;;for { a = (((u as sp) : int) as p) } = 0 to 10 do () done
+;;for { a = (u : int) } = 0 to 10 do () done
+;;for { a = (u : int) } = 0 to 10 do () done
+;;for { a = { x; y } } = 0 to 10 do () done
+;;for { a = ({ x = p1; y = p2 } as p3) } = 0 to 10 do () done
+;;for { a = { x; y } } = 0 to 10 do () done
+;;for { a = { x; y } } as p as p2 = 0 to 10 do () done
+;;for { a = { x; y } } = 0 to 10 do () done
+;;for { a;_} = 0 to 10 do () done
+;;for { a;_} = 0 to 10 do () done
+;;for { a;_} = 0 to 10 do () done
+;;for ({ a } : myRecord) = 0 to 10 do () done"
+`;
+
+exports[`tuple.js 1`] = `
+"let (1, 2) = ()
+let (1, 2) as tup = ()
+let ((1 as p1), (2 as p2)) = ()
+let (1, 2) = ()
+let ((1 : int), (2 : int)) = ()
+let ((1 : int), (2 : int)) as tup = ()
+let (((1 : int), (2 : int)) : (int * int)) = ()
+let ((((1 : int), (2 : int)) as tup) : (int * int)) = ()
+let (((1 : int), (2 : int)) : (int * int)) as tup = ()
+;;match x with
+  | (1, 2) -> ()
+  | (1, 2) as tup -> ()
+  | (1, 2) -> ()
+  | ((1 : int), (2 : int)) -> ()
+  | (((1 as p1) : int), ((2 as p2) : int)) as tup -> ()
+  | (((1 : int), (2 : int)) : (int * int)) -> ()
+  | (((1 : int), (2 : int)) : (int * int)) as tup -> ()
+let f x = ()
+let f x = ()
+let f (x, y) = x + y
+let f (((x as p1), (y as p2)) as tup) = x + y
+let f ((x, y) : (int * int)) = ()
+let f ((x, y) : (int * int)) = ()
+let f ((((x, y) as tup1) : (int * int)) as tup) = ()
+;;for (x, y) = 0 to 10 do () done
+;;for (x, y) as tup = 0 to 10 do () done
+;;for (x, y) = 0 to 10 do () done
+;;for ((x as p1), (y as p2)) = 0 to 10 do () done
+;;for (x, y) as tup = 0 to 10 do () done
+;;for (x, y) = 0 to 10 do () done
+;;for (x, y) as tup = 0 to 10 do () done
+;;for ((x as p1), (y as p2)) as tup = 0 to 10 do () done
+;;for ((x, y) : (int * int)) = 0 to 10 do () done
+;;for ((x, y) : (int * int)) as ctup = 0 to 10 do () done
+;;for ((x, y) : (int * int)) as ctup = 0 to 10 do () done"
+`;
+
+exports[`unit.js 1`] = `
+"let () = ()
+let () as x = ()
+let () = ()
+let () as x = ()
+let () as x = ()
+let (() : unit) = ()
+let (() : unit) as x = ()
+let (() : unit) as x = ()
+;;match x with
+  | () -> ()
+  | () as _u -> ()
+  | () -> ()
+  | () as _u -> ()
+  | () as _u -> ()
+  | (() : unit) -> ()
+  | (() : unit) as _u -> ()
+  | (() : unit) as _u -> ()
+;;for () = () to () do () done
+;;for () as _u = () to () do () done
+;;for () = () to () do () done
+;;for () as _u = () to () do () done
+;;for () = () to () do () done
+;;for () as _u = () to () do () done
+;;for () as _u = () to () do () done
+;;for (() : unit) = () to () do () done
+;;for (() : unit) as _u = () to () do () done
+;;for ((() as _u) : unit) = () to () do () done
+;;for (() : unit) as _u = () to () do () done
+let f () = ()
+let f () = ()
+let f (() as _u) = ()
+let f () () = ()
+let f (() as _u) (() as _u) = ()
+let f (() : unit) = ()
+let f ((() as _u) : unit) = ()
+let f ((() : unit) as _u) = ()
+let f (() : unit) = ()
+let f ((() : unit) as _u) = ()"
+`;
+
+exports[`variants.js 1`] = `
+"let \`Instance = i
+let \`Instance as inst = i
+let \`Instance component = i
+let \`Instance component as inst = i
+let \`Instance component = i
+let \`Instance { render; subtree } = i
+let \`Instance { render; subtree } as x = i
+let \`Instance ({ render; subtree } as inst) = i
+let \`Instance ({ render; subtree }, inst) = i
+let \`Instance ({ render; subtree } : Instance.t) = i
+let \`Instance ({ render; subtree } : Instance.t) as inst = i
+let \`Instance ({ render; subtree } : Instance.t) = i
+let \`Instance (component, tree) = i
+let \`Instance (component, tree) as x = i
+let \`Instance ((component as x), (tree as y)) = i
+let \`Instance (component, tree) as inst = i
+let \`Instance (component, tree) = i
+let (\`Instance : React.t) = i
+let (\`Instance : React.t) as t = i
+let (\`Instance : React.t) as x = i
+let ((\`Instance (component : comp)) : React.t) = i
+let ((\`Instance (component : comp)) : React.t) = i
+;;match x with
+  | \`Instance -> ()
+  | \`Instance as inst -> ()
+  | \`Instance comp -> ()
+  | \`Instance comp as inst -> ()
+  | \`Instance { render; subtree } -> ()
+  | \`Instance ({ render; subtree }, inst) -> ()
+  | \`Instance ({ render; subtree } : Instance.t) -> ()
+  | \`Instance ({ render; subtree } : Instance.t) -> ()
+  | \`Instance (comp, tree) -> ()
+  | (\`Instance (comp : Component.t) : React.t) -> ()
+let f \`Instance = i
+let f (\`Instance as i) = i
+let f (\`Instance component) = i
+let f (\`Instance component) = i
+let f (\`Instance { render; subtree }) = i
+let f (\`Instance ({ render; subtree }, inst)) = i
+let f (\`Instance ({ render; subtree } : Instance.t)) = i
+let f (\`Instance ({ render; subtree } : Instance.t)) = i
+let f (\`Instance (component, tree)) = i
+let f (\`Instance (component, tree)) = i
+let f (\`Instance : React.t) = i
+let f (\`Instance : React.t) = i
+let f (\`Instance (comp : Component.t) : React.t) = ()
+;;for \`Blue = x to y do () done
+;;for \`Blue as c = x to y do () done
+;;for \`Blue = x to y do () done
+;;for \`Blue as c = x to y do () done
+;;for (\`Blue : Color.t) = x to y do () done
+;;for (\`Blue : Color.t) as c = x to y do () done
+;;for (\`Blue : Color.t) as c = x to y do () done
+;;for \`Rgba (r, g, b) = x to y do () done
+;;for \`Rgba (r, g, b) as c = x to y do () done
+;;for Rgba ((r : float), (g : float), (b : float)) = x to y do () done
+;;for \`Rgba ((r : float), (g : float), (b : float)) as c = x to y do () done
+;;for (\`Rgba (r, g, b) : Rgb.t) = x to y do () done
+;;for (\`Rgba (r, g, b) : Rgb.t) as c = x to y do () done
+;;for (\`Rgba (r, g, b) : Rgb.t) as c = x to y do () done
+;;for \`Point { x; y; z } = x to y do () done
+;;for \`Point { x; y; z } = x to y do () done
+;;for \`Point { x; y; z } as p = x to y do () done
+;;match x with | #typeVar -> () | \`lowercase -> ()"
+`;

@@ -1,0 +1,15 @@
+S src
+B src
+S +compiler-libs
+B +compiler-libs
+
+FLG -w +6+26+27+32+33+39
+
+####{BSB GENERATED: NO EDIT
+FLG -ppx '/Users/chenglou/github/syntax/node_modules/bs-platform/darwin/bsc.exe -as-ppx '
+S /Users/chenglou/github/syntax/node_modules/bs-platform/lib/ocaml
+B /Users/chenglou/github/syntax/node_modules/bs-platform/lib/ocaml
+FLG -w +a-4-9-20-40-41-42-50-61-102
+S src/406
+B lib/bs/src/406
+####BSB GENERATED: NO EDIT}

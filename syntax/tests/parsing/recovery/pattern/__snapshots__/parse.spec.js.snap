@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`array.js 1`] = `";;match x with | [|a;b|] -> () | [|a;[|c;d|]|] -> ()"`;
+
+exports[`constrained.js 1`] = `";;match x with | (a : int -> unit) -> [%napkinscript.exprhole ]"`;
+
+exports[`constructor.js 1`] = `
+";;match x with
+  | Rgb (r, g, b) -> ()
+  | Rgb (r, g, Color (a, b)) -> ()
+  | Rgb (r, g, 1::2::[]) -> ()"
+`;
+
+exports[`list.js 1`] = `";;match x with | [] -> () | 1::[]::[] -> () | 1::3::4::[] -> ()"`;
+
+exports[`parenthesized.js 1`] = `
+";;match x with
+  | a -> ()
+  | [|a;b|] -> ()
+  | { a; b } -> ()
+  | 1::[] -> ()
+  | (1, 2) -> ()"
+`;
+
+exports[`polyvariant.js 1`] = `
+";;match x with
+  | \`Rgb (r, g, b) -> ()
+  | \`Rgb (r, g, Color (a, b)) -> ()
+  | \`Rgb (r, g, 1::2::[]) -> ()"
+`;
+
+exports[`record.js 1`] = `";;match x with | { a; b = { x; y } } -> () | { x; y } -> () | { a; b } -> ()"`;
+
+exports[`tuple.js 1`] = `";;match x with | a -> () | (a, (b, c)) -> () | (a, (b, c)) -> ()"`;

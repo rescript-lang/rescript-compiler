@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`interface.jsi 1`] = `
+"val x : int
+val s : string"
+`;

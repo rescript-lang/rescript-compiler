@@ -1,0 +1,1259 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`apply.js 1`] = `
+";;foo (fun _ -> bla) blaz
+;;foo (fun _ -> bla) blaz
+;;foo ((fun _ -> bla)[@bs ]) blaz
+;;foo (fun _ -> bla) (fun _ -> blaz)
+;;List.map (fun x -> x + 1) myList
+;;List.reduce (fun acc -> fun curr -> acc + curr) 0 myList
+let unitUncurried = ((apply ())[@bs ])
+;;call ~a:(((((a)[@ns.namedArgLoc ]) : int))[@ns.namedArgLoc ])"
+`;
+
+exports[`argument.js 1`] = `
+"let foo ~a:((a)[@ns.namedArgLoc ])  = ((a ())[@bs ]) +. 1.
+let a = ((fun () -> 2)[@bs ])
+let bar = foo ~a:((a)[@ns.namedArgLoc ])
+let comparisonResult =
+  ((compare currentNode.value ~targetValue:((targetValue)[@ns.namedArgLoc ]))
+  [@bs ])
+;;((callback firstNode ~y:((y)[@ns.namedArgLoc ]))[@bs ])
+;;((document.createElementWithOptions \\"div\\"
+      (elementProps ~onClick:((fun _ -> Js.log \\"hello world\\")
+         [@ns.namedArgLoc ])))[@bs ])"
+`;
+
+exports[`array.js 1`] = `
+"let x = [|1;2;3|]
+let x = [|1;2;3|]
+let x = [|(1 : int);(2 : int);(3 : int)|]"
+`;
+
+exports[`arrow.js 1`] = `
+"let f x = x + 1
+let f _ = Js.log \\"test\\"
+let f () = Js.log \\"unit\\"
+let f (Reducer (inst, comp)) = inst.render comp
+let f (Instance) = ()
+let f a b = a + b
+let f 1 2 = ()
+let f \\"stringPattern\\" = ()
+let f \\"stringPattern\\" \\"stringPattern\\" = ()
+let f () = ()
+let f (a : int) (b : int) = a + b
+let f _ _ = ()
+let f [|a;b|] [|c;d|] = ((a + b) + c) + d
+let f { a } = a + 1
+let f { a; b } { c; d } = ((a + b) + c) + d
+let f (a) = a + 1
+let f (a, b) = a + b
+let f (a, b) (c, d) = ((a + b) + c) + d
+let f exception Terminate = ()
+let f exception Terminate exception Exit = ()
+let f (lazy x) = ()
+let f (lazy x) (lazy y) = ()
+let f [] = ()
+let f (x::xs) = x + (xs |. Belt.List.length)
+let f (x : int) (y : int) = x + y
+let f ~a:((a)[@ns.namedArgLoc ])  ~b:((b)[@ns.namedArgLoc ])  = a + b
+let f ~a:((x)[@ns.namedArgLoc ])  ~b:((y)[@ns.namedArgLoc ])  = x + y
+let f ~a:(((x : int))[@ns.namedArgLoc ])  ~b:(((y : int))[@ns.namedArgLoc ]) 
+  = x + y
+let f ?a:(((a)[@ns.namedArgLoc ])= 1)  ?b:(((b)[@ns.namedArgLoc ])= 2)  c =
+  (a + b) + c
+let f ?a:(((x)[@ns.namedArgLoc ])= 1)  ?b:(((y)[@ns.namedArgLoc ])= 2)  c =
+  (x + y) + c
+let f ?a:((((x : int))[@ns.namedArgLoc ])= 1) 
+  ?b:((((y : int))[@ns.namedArgLoc ])= 2)  c = (x + y) + c
+let f ?a:((a)[@ns.namedArgLoc ])  ?b:((b)[@ns.namedArgLoc ])  c =
+  match (a, b) with | (Some a, Some b) -> (a + b) + c | _ -> 3
+let f ?a:((x)[@ns.namedArgLoc ])  ?b:((y)[@ns.namedArgLoc ])  c =
+  match (x, y) with | (Some a, Some b) -> (a + b) + c | _ -> 3
+let f ?a:(((x : int option))[@ns.namedArgLoc ]) 
+  ?b:(((y : int option))[@ns.namedArgLoc ])  c =
+  match (x, y) with | (Some a, Some b) -> (a + b) + c | _ -> 3
+let f a b = a + b
+let f = ((fun () -> ())[@bs ])
+let f = ((fun () -> ())[@bs ])
+let f = ((fun a -> fun b -> fun c -> ())[@bs ])
+let f = ((fun a -> fun b -> ((fun c -> fun d -> ())[@bs ]))[@bs ])
+let f = ((fun a -> ((fun b -> ((fun c -> ())[@bs ]))[@bs ]))[@bs ])
+let f =
+  ((fun ~a:((a)[@ns.namedArgLoc ]) ->
+      fun b -> ((fun ~c:((c)[@ns.namedArgLoc ]) -> fun d -> ())
+        [@bs ][@attr ]))
+  [@bs ][@attr ])
+let f =
+  ((fun ~a:((a)[@ns.namedArgLoc ]) ->
+      fun ((b)[@attrOnB ]) ->
+        ((fun ~c:((c)[@ns.namedArgLoc ]) -> fun ((d)[@attrOnD ]) -> ())
+        [@bs ][@attr ]))
+  [@bs ][@attr ])
+let f list = list ()
+;;match colour with
+  | Red when
+      (l = l') ||
+        (Clflags.classic.contents &&
+           ((l = Nolabel) && (not (is_optional l'))))
+      -> (t1, t2)
+  | _ -> ()
+let arr =
+  [|((fun _ -> doThings ()));((fun _ -> doThings ()));((fun _ -> doThings ()))|]
+let list =
+  [(fun _ -> doThings ()); (fun _ -> doThings ()); (fun _ -> doThings ())]
+let tuple =
+  ((fun _ -> doThings ()), (fun _ -> doThings ()), (fun _ -> doThings ()))
+;;fun _ -> doThings ()
+let x =
+  Constructore
+    ((fun _ -> copyChecklistItemCB ()), (fun _ -> copyChecklistItemCB ()))
+let y =
+  \`Constructore
+    ((fun _ -> copyChecklistItemCB ()), (fun _ -> copyChecklistItemCB ()))"
+`;
+
+exports[`binary.js 1`] = `
+";;node := (if newBalance == 2 then avl |. (rotateRight node) else node)
+;;node := ((if newBalance == 2 then avl |. (rotateRight node) else node)
+    [@attr ])
+let x = z |> (match z with | _ -> false)
+let x = z |> ((match z with | _ -> false)[@attr ])
+let x = z |> (assert z)
+let x = z |> ((assert z)[@attr ])
+let x = z |> (lazy z)
+let x = z |> ((lazy z)[@attr ])
+let x = z |> (try sideEffect () with | _ -> f ())
+let x = z |> ((try sideEffect () with | _ -> f ())[@attr ])
+let x = z |> for i = 0 to 10 do () done
+let x = z |> ((for i = 0 to 10 do () done)[@attr ])
+let x = z |> while condition do () done
+let x = z |> ((while condition do () done)[@attr ])
+let x = (a + (-1)) + (-2)
+let x = (a + (((-1))[@attr ])) + (((-2))[@attr ])
+let x = a - b
+let x = a -. b
+;;Constructor (a, b)
+;;\`Constructor (a, b)
+let _ = ((Constructor (a, b); \`Constructor (a, b))[@ns.braces ])"
+`;
+
+exports[`binaryNoEs6Arrow.js 1`] = `
+";;if (color == Black) && ((sibling == None) || (parent == None)) then ()
+;;if
+    ((color == Black) && (color != Red)) &&
+      ((sibling == None) || (parent == None))
+  then ()
+;;match (color == Black) && ((sibling == None) || (parent == None)) with
+  | _ -> ()
+;;match ((color == Black) && (color != Red)) &&
+          ((sibling == None) || (parent == None))
+  with
+  | _ -> ()
+;;try (color == Black) && ((sibling == None) || (parent == None))
+  with | _ -> ()
+;;try
+    ((color == Black) && (color == Red)) &&
+      ((sibling == None) || (parent == None))
+  with | _ -> ()
+;;while (color == Black) && ((sibling == None) || (parent == None)) do ()
+    done
+;;while
+    ((color == Black) && (color == Red)) &&
+      ((sibling == None) || (parent == None))
+    do () done
+;;((div
+      ~onClick:((fun event ->
+                   ((match videoContainerRect with
+                     | Some videoContainerRect ->
+                         let newChapter =
+                           ({ startTime = (percent *. duration) } : Video.chapter) in
+                         { a; b } |. onChange
+                     | _ -> ())
+                   [@ns.braces ]))[@ns.namedArgLoc ][@ns.braces ])
+      ~children:[] ())[@JSX ])
+;;if inclusions.(index) <- (uid, url) then onChange inclusions"
+`;
+
+exports[`block.js 1`] = `
+"let b =
+  ((let module Array = Belt.Array in
+      ([|1;2|] |. (Array.map (fun x -> x + 1))) |. Js.log)
+  [@ns.braces ])
+let b =
+  ((let open Belt.Array in ([|1;2|] |. (map (fun x -> x + 1))) |. Js.log)
+  [@ns.braces ])
+let b = ((let exception QuitEarly  in raise QuitEarly)[@ns.braces ])
+let b = ((let a = 1 in let b = 2 in a + b)[@ns.braces ])
+let b = ((let _ = sideEffect () in ())[@ns.braces ])
+let b = ((let _ = sideEffect () in ())[@ns.braces ])
+let b = ((a (); b (); c ())[@ns.braces ])
+let b = ((a (); b (); (let a = 1 in f a))[@ns.braces ])
+let b = ((let a = 1 in let b = 2 in ())[@ns.braces ])
+let b =
+  ((let module Array = Belt.Array in
+      let open Array in
+        let exception Terminate of int  in
+          let a = 1 in
+          let b = 2 in
+          sideEffect ();
+          (let x = (1 + 2) |. (fun x -> x + 1) in raise (Terminate x)))
+  [@ns.braces ])
+let b = ((f (); g (); h (); (let arr = [|1;2;3|] in ()))[@ns.braces ])
+let res =
+  ((let a = \\"a starts out as\\" in
+    (((print_string a; (let a = 20 in print_int a)))
+    [@ns.braces ]);
+    print_string a)
+  [@ns.braces ])
+let res =
+  ((let a = \\"first its a string\\" in
+    let a = 20 in print_int a; print_int a; print_int a)
+  [@ns.braces ])
+let res =
+  ((let a = \\"a is always a string\\" in
+    print_string a; (let b = 30 in print_int b))
+  [@ns.braces ])
+let nestedLet = ((let _ = 1 in ())[@ns.braces ])
+let nestedLet = ((let _ = 1 in 2)[@ns.braces ])
+let init () = ((foo (1 == 1); [%assert 1 == 2])[@ns.braces ])
+let init () = (([%assert 1 == 2]; foo (1 == 1); [%assert 1 == 2])
+  [@ns.braces ])
+let f () = ((let x = 1 in fun _ -> ())[@ns.braces ])
+let reifyStyle (type a) (x : 'a) =
+  (((let module Internal =
+       struct
+         type constructor
+         external canvasGradient : constructor = \\"CanvasGradient\\"[@@bs.val ]
+         external canvasPattern : constructor = \\"CanvasPattern\\"[@@bs.val ]
+         let instanceOf =
+           ([%bs.raw {|function(x,y) {return +(x instanceof y)}|}] : 
+           'a -> constructor -> bool)
+       end in
+       ((if (Js.typeof x) = \\"string\\"
+         then Obj.magic String
+         else
+           if Internal.instanceOf x Internal.canvasGradient
+           then Obj.magic Gradient
+           else
+             if Internal.instanceOf x Internal.canvasPattern
+             then Obj.magic Pattern
+             else
+               raise
+                 (Invalid_argument
+                    \\"Unknown canvas style kind. Known values are: String, CanvasGradient, CanvasPattern\\")),
+         (Obj.magic x)))
+  [@ns.braces ]) : (a style * a))
+let calc_fps t0 t1 = ((let delta = (t1 -. t0) /. 1000. in 1. /. delta)
+  [@ns.braces ])"
+`;
+
+exports[`bracedOrRecord.js 1`] = `
+"let r = { expr with pexp_attributes = [||] }
+let r = { a }
+let r = { a = expr }
+let r = { a = expr }
+let r = { a = expr; b = expr2 }
+let r = { f = (fun x -> x + b) }
+let e = ((a)[@ns.braces ])
+let e = ((a)[@ns.braces ])
+let e = ((a; b ())[@ns.braces ])
+let e = ((- a)[@ns.braces ])
+let e = ((a + b)[@ns.braces ])
+let e = ((if a then true else false)[@ns.braces ][@ns.ternary ])
+let e = ((if a |> computation then true else false)
+  [@ns.braces ][@ns.ternary ])
+let e = ((a.(0))[@ns.braces ])
+let e = ((f b)[@ns.braces ])
+let e = (((a.b).c)[@ns.braces ])
+let e = ((arr.(x) <- 20)[@ns.braces ])
+let e = ((fun x -> (x + 1) |> (doStuff config))[@ns.braces ])
+let e = (((fun x -> x + 1) |> (doStuff config))[@ns.braces ])
+let e = ((if fun x -> x + 1 then true else false)[@ns.braces ][@ns.ternary ])
+let e = (((fun x -> x + 1) |> sideEffect; logToAnalytics Shady.ml)
+  [@ns.braces ])
+let f = ((fun event -> (event.target).value)[@ns.braces ])
+let f = ((fun event -> ((event.target).value : string))[@ns.braces ])
+let x = ((let a = 1 in let b = 2 in a + b)[@ns.braces ])"
+`;
+
+exports[`bsObject.js 1`] = `
+"let x = [%bs.obj { age = 30 }]
+let y = [%bs.obj { age = 30 }]
+let y = [%bs.obj { age = 30; name = \\"steve\\" }]
+let y = [%bs.obj { age = 30; name = \\"steve\\" }]
+let x = ((\\"age\\")[@ns.braces ])
+let x = ((\\"age\\".(0))[@ns.braces ])
+let x = ((\\"age\\" |. Js.log)[@ns.braces ])
+let x = ((if \\"age\\" then true else false)[@ns.braces ][@ns.ternary ])
+let x = ((\\"age\\" |. Js.log; (let foo = 1 in let bar = 2 in foo + bar))
+  [@ns.braces ])
+let x =
+  ((((if \\"age\\" then true else false)
+    [@ns.ternary ]);
+    (let foo = 1 in let bar = 2 in foo + bar))
+  [@ns.braces ])
+let x = ((\\"age\\".(0); (let foo = 1 in let bar = 2 in foo + bar))[@ns.braces ])"
+`;
+
+exports[`coerce.js 1`] = `
+"let foo (x : int) = (x :> int)
+let foo x = ((x : t) :> int)"
+`;
+
+exports[`constants.js 1`] = `
+"let x = true
+let y = false
+let txt = \\"a string\\"
+let txtWithEscapedChar = \\"foo\\\\nbar\\"
+let number = 1
+let template = {|amazing
+  multine
+  template
+     string
+|}
+let complexNumber = 1.6
+let x = 0b0000_0001
+let int32 = 42l
+let int64 = 42L
+let nativeint = 42n
+let x = (-44.20e99)
+let x = (-44.20_34e99)
+let x = (-44.20e+9)
+let x = (-44.20e-9)
+let x = (-44.20e-99_99)
+let x = (-444_444.20e99)
+let x = 44.20e99
+let x = 44.20_34e99
+let x = 44.20e+9
+let x = 44.20e-9
+let x = 44.20e-99_99
+let x = 44e99
+let x = 44_44e99
+let x = 0x0
+let x = 0X0
+let x = 0xAA
+let x = 0XA_A
+let x = 0xAA.ff
+let x = 0xAA.ff_ff
+let x = 0xAA.ff_ffp10
+let x = 0xAA.ff_ffp+10
+let x = 0xAA.ff_ffp-10
+let x = 0xAA.ff_ffp100_00
+let x = 0xAA.ff_ffp+100_00
+let x = 0xAA.ff_ffp-100_00
+let x = 'a'
+let x = '\\\\\\\\'
+let x = '\\\\''
+let x = '\\\\n'
+let x = '\\\\t'
+let x = '\\\\b'
+let x = '\\\\r'
+let x = ' '
+let x = '\\\\017'
+let x = '\\\\170'
+let x = '\\\\179'
+let () = ((getResult (); (-10))[@ns.braces ])
+let x = \\"foo\\\\nbar\\"
+let x = \\"foo\\\\nbar\\"
+let x = \\"foo\\\\nbar\\"
+let x = \\"\\\\\\\\abc\\"
+let x = \\"'bar\\"
+let x = \\"\\\\nbar\\"
+let x = \\"\\\\tbar\\"
+let x = \\"\\\\bbar\\"
+let x = \\"\\\\rbar\\"
+let x = \\" bar\\""
+`;
+
+exports[`constructor.js 1`] = `
+"let x = Red
+let y = Colors.Blue
+let z = Rgb ()
+let v = Vertex (1., 2., 3., 4.)
+let colour = Shades.Colors.White
+let u = ()"
+`;
+
+exports[`es6template.js 1`] = `
+"let s = {|foo|}
+let s = {|multi
+  line
+
+string
+|}
+let s = foo
+let s = {|before|} ^ foo
+let s = {|before |} ^ foo
+let s = {|before  |} ^ foo
+let s = foo ^ {|after|}
+let s = foo ^ {| after|}
+let s = foo ^ {|  after|}
+let s = foo ^ bar
+let s = (foo ^ bar) ^ baz
+let s = (foo ^ {| |}) ^ bar
+let s = (((foo ^ {| |}) ^ bar) ^ {| |}) ^ baz
+let s = ((({| before |} ^ foo) ^ {| |}) ^ bar) ^ {| after |}
+let s =
+  ((((({|before |} ^ foo) ^ {| middle |}) ^ bar) ^ {| |}) ^ baz) ^ {| wow |}
+let s =
+  {|
+  multiline
+
+  es6
+
+  template
+
+  expression
+
+  so convenient
+
+  :)
+|}
+let s = {|$dollar without $braces $interpolation|}
+let s = {json|null|json}
+let x = {|foo\`bar$\\\\foo|}
+let x = ((({|foo\`bar$\\\\foo|} ^ a) ^ {| \` |}) ^ b) ^ {| \` xx|}"
+`;
+
+exports[`extension.js 1`] = `
+";;[%expr ]
+;;[%expr.extension ]
+;;[%expr.extension.with.args \\"argument\\"]
+;;[%expr.extension.with.args fun x -> f x]
+let x = ([%bs.raw \\"1\\"]) + ([%bs.raw \\"2\\"])"
+`;
+
+exports[`firstClassModule.js 1`] = `
+"let makeSet (type s) cmp =
+  ((let module S = (Set.Make)(struct type nonrec t = s
+                                     let compare = cmp end) in ((module
+      S) : (module Set.S with type elt = s)))
+  [@ns.braces ])
+let three = ((module Three) : (module X_int))
+let numbers = [|three;(module Four)|]
+let numbers = (three, (module Four))
+let numbers = [three; (module Four)]
+let numbers = [|three;(module struct let x = 4 end)|]
+let numbers = (three, (module struct let x = 4 end))
+let numbers = [three; (module struct let x = 4 end)]
+let plus m1 m2 = ((((module
+  struct let x = (to_int m1) + (to_int m2) end) : (module X_int)))
+  [@ns.braces ])
+let plus m1 m2 = ((module
+  struct let x = (to_int m1) + (to_int m2) end) : (module X_int))
+let unique_instance = ((module
+  struct module Query_handler = Unique
+         let this = Unique.create 0 end) : (module Query_handler_instance))
+let build_instance (type a)
+  ((module Q)  : (module Query_handler with type config = a)) config =
+  ((module
+  struct module Query_handler = Q
+         let this = Q.create config end) : (module Query_handler_instance))
+let build_instance (type a)
+  ((module Q)  : (module Query_handler with type config = a)) config =
+  ((((module
+  struct module Query_handler = Q
+         let this = Q.create config end) : (module Query_handler_instance)))
+  [@ns.braces ])
+let unique_instance = build_instance (module Unique) 0
+let build_dispatch_table handlers =
+  ((let table = Hashtbl.create (module String) in
+    List.iter handlers
+      ~f:((fun (((module I)  : (module Query_handler_instance)) as instance)
+             ->
+             Hashtbl.set table ~key:((I.Query_handler.name)
+               [@ns.namedArgLoc ]) ~data:((instance)[@ns.namedArgLoc ]))
+      [@ns.namedArgLoc ]) table)
+  [@ns.braces ])
+;;(module Three)
+;;((module Three) : (module X_int))"
+`;
+
+exports[`float.js 1`] = `
+";;1. /. 2.
+;;3. *. 4.
+;;2. ** 2.
+;;10.2 +. 5.4
+;;28.9 -. 13.8"
+`;
+
+exports[`for.js 1`] = `
+";;for p = 0 to 10 do () done
+;;for p = 10 downto 0 do () done
+;;for p = a to b do () done
+;;for p = a to b do let a = 1 in let b = 2 in a + b done
+;;for p = 0 to x + 1 do () done"
+`;
+
+exports[`ident.js 1`] = `
+"let x = foo
+let y = Foo.Bar.x
+let x = _identWithUnderscore
+let x = _ident_ident
+let x = _ident_ident_
+let x = __ident__"
+`;
+
+exports[`if.js 1`] = `
+";;if foo then true else false
+;;if foo = 2 then let bar = 1 in let foo = 2 in bar + foo
+let ifThenElse = if foo then lala else doStuff x y z
+let ifElseIfThen =
+  if foo = bar
+  then f ()
+  else if foo = bar2 then f1 () else if foo = bar3 then f2 () else f3 ()
+let x = (if true then 1 else 2) + (if false then 2 else 3)"
+`;
+
+exports[`infix.js 1`] = `
+";;a |. (f b)
+;;\\"string1\\" ^ \\"string2\\"
+;;a <> b
+;;a != b
+;;a = b
+;;a == b"
+`;
+
+exports[`jsx.js 1`] = `
+"let _ = ((div ~children:[] ())[@JSX ])
+let _ = ((div ~children:[] ())[@JSX ])
+let _ = ((div ~className:((\\"menu\\")[@ns.namedArgLoc ]) ~children:[] ())
+  [@JSX ])
+let _ = ((div ~className:((\\"menu\\")[@ns.namedArgLoc ]) ~children:[] ())
+  [@JSX ])
+let _ = ((div ~className:((\\"menu\\")[@ns.namedArgLoc ]) ~children:[] ())
+  [@JSX ])
+let _ = ((div ~className:((\\"menu\\")[@ns.namedArgLoc ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((div ~className:((\\"menu\\")[@ns.namedArgLoc ])
+      ~onClick:((fun _ -> Js.log \\"click\\")[@ns.namedArgLoc ][@ns.braces ])
+      ~children:[] ())
+  [@JSX ])
+let _ =
+  ((div ~className:((\\"menu\\")[@ns.namedArgLoc ])
+      ~onClick:((fun _ -> Js.log \\"click\\")[@ns.namedArgLoc ][@ns.braces ])
+      ~children:[] ())
+  [@JSX ])
+let _ = ((Navbar.createElement ~children:[] ())[@JSX ])
+let _ = ((Nav.Navbar.createElement ~children:[] ())[@JSX ])
+let _ = ((el ~punned:((punned)[@ns.namedArgLoc ]) ~children:[] ())[@JSX ])
+let _ = ((el ?punned:((punned)[@ns.namedArgLoc ]) ~children:[] ())[@JSX ])
+let _ = ((el ~punned:((punned)[@ns.namedArgLoc ]) ~children:[] ())[@JSX ])
+let _ = ((el ?punned:((punned)[@ns.namedArgLoc ]) ~children:[] ())[@JSX ])
+let _ = ((el ?a:((b)[@ns.namedArgLoc ]) ~children:[] ())[@JSX ])
+let _ = ((el ?a:((b)[@ns.namedArgLoc ]) ~children:[] ())[@JSX ])
+let _ = (([])[@JSX ])
+let _ = (([])[@JSX ])
+let _ =
+  ((div ~className:((\\"menu\\")[@ns.namedArgLoc ])
+      ~children:[((div ~className:((\\"submenu\\")[@ns.namedArgLoc ])
+                     ~children:[sub1] ())
+                [@JSX ]);
+                ((div ~className:((\\"submenu\\")[@ns.namedArgLoc ])
+                    ~children:[sub2] ())
+                [@JSX ])] ())
+  [@JSX ])
+let _ =
+  ((div ~className:((\\"menu\\")[@ns.namedArgLoc ])
+      ~children:[((div ~className:((\\"submenu\\")[@ns.namedArgLoc ])
+                     ~children:[sub1] ())
+                [@JSX ]);
+                ((div ~className:((\\"submenu\\")[@ns.namedArgLoc ])
+                    ~children:[sub2] ())
+                [@JSX ])] ())
+  [@JSX ])
+let _ = ((div ~children:child ())[@JSX ])
+let _ = ((Foo.createElement ~children:(fun a -> 1) ())[@JSX ])
+let _ =
+  ((Foo.createElement ~children:((Foo2.createElement ~children:[] ())
+      [@JSX ]) ())
+  [@JSX ])
+let _ = ((Foo.createElement ~children:[|a|] ())[@JSX ])
+let _ = ((Foo.createElement ~children:(1, 2) ())[@JSX ])
+let _ = ((Foo.createElement ~children:(1, 2) ())[@JSX ])
+let _ =
+  ((div ~children:[ident; [|1;2;3|]; ((call a b)[@ns.braces ]); (x.y).z] ())
+  [@JSX ])
+let _ =
+  ((Outer.createElement ~inner:((Inner.createElement ~children:[] ())
+      [@ns.namedArgLoc ][@JSX ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((div ~onClick:((onClickHandler)[@ns.namedArgLoc ])
+      ~children:[(([\\"foobar\\"])[@JSX ])] ())
+  [@JSX ])
+let _ =
+  ((Window.createElement
+      ~style:(({
+                 width = 10;
+                 height = 10;
+                 paddingTop = 10;
+                 paddingLeft = 10;
+                 paddingRight = 10;
+                 paddingBottom = 10
+               })[@ns.namedArgLoc ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((OverEager.createElement ~fiber:((Metal.fiber)[@ns.namedArgLoc ])
+      ~children:[] ())
+  [@JSX ])
+let arrayOfListOfJsx = [|(([])[@JSX ])|]
+let arrayOfListOfJsx =
+  [|(([((Foo.createElement ~children:[] ())[@JSX ])])[@JSX ])|]
+let arrayOfListOfJsx =
+  [|(([((Foo.createElement ~children:[] ())[@JSX ])])
+    [@JSX ]);(([((Bar.createElement ~children:[] ())[@JSX ])])[@JSX ])|]
+let sameButWithSpaces = [|(([])[@JSX ])|]
+let sameButWithSpaces =
+  [|(([((Foo.createElement ~children:[] ())[@JSX ])])[@JSX ])|]
+let sameButWithSpaces =
+  [|(([((Foo.createElement ~children:[] ())[@JSX ])])
+    [@JSX ]);(([((Bar.createElement ~children:[] ())[@JSX ])])[@JSX ])|]
+let sameButWithSpaces =
+  [|(([((Foo.createElement ~children:[] ())[@JSX ])])
+    [@JSX ]);(([((Bar.createElement ~children:[] ())[@JSX ])])[@JSX ])|]
+let arrayOfJsx = [||]
+let arrayOfJsx = [|((Foo.createElement ~children:[] ())[@JSX ])|]
+let arrayOfJsx =
+  [|((Foo.createElement ~children:[] ())
+    [@JSX ]);((Bar.createElement ~children:[] ())[@JSX ])|]
+let sameButWithSpaces = [||]
+let sameButWithSpaces = [|((Foo.createElement ~children:[] ())[@JSX ])|]
+let sameButWithSpaces =
+  [|((Foo.createElement ~children:[] ())
+    [@JSX ]);((Bar.createElement ~children:[] ())[@JSX ])|]
+let _ = ((a ~children:[] ())[@JSX ]) < ((b ~children:[] ())[@JSX ])
+let _ = ((a ~children:[] ())[@JSX ]) > ((b ~children:[] ())[@JSX ])
+let _ = ((a ~children:[] ())[@JSX ]) < ((b ~children:[] ())[@JSX ])
+let _ = ((a ~children:[] ())[@JSX ]) > ((b ~children:[] ())[@JSX ])
+let y =
+  ((Routes.createElement ~path:((Routes.stateToPath state)[@ns.namedArgLoc ])
+      ~isHistorical:((true)[@ns.namedArgLoc ])
+      ~onHashChange:((fun _oldPath ->
+                        fun _oldUrl ->
+                          fun newUrl ->
+                            updater
+                              (fun latestComponentBag ->
+                                 fun _ ->
+                                   ((let currentActualPath =
+                                       Routes.hashOfUri newUrl in
+                                     let pathFromState =
+                                       Routes.stateToPath
+                                         latestComponentBag.state in
+                                     ((if currentActualPath = pathFromState
+                                       then None
+                                       else
+                                         dispatchEventless
+                                           (State.UriNavigated
+                                              currentActualPath)
+                                           latestComponentBag ())
+                                       [@ns.ternary ]))
+                                   [@ns.braces ])) ())
+      [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+  [@JSX ])
+let z =
+  ((div
+      ~style:((ReactDOMRe.Style.make ~width:((width)[@ns.namedArgLoc ])
+                 ~height:((height)[@ns.namedArgLoc ]) ~color:((color)
+                 [@ns.namedArgLoc ]) ~backgroundColor:((backgroundColor)
+                 [@ns.namedArgLoc ]) ~margin:((margin)[@ns.namedArgLoc ])
+                 ~padding:((padding)[@ns.namedArgLoc ]) ~border:((border)
+                 [@ns.namedArgLoc ]) ~borderColor:((borderColor)
+                 [@ns.namedArgLoc ])
+                 ~someOtherAttribute:((someOtherAttribute)[@ns.namedArgLoc ])
+                 ())[@ns.namedArgLoc ]) ~key:((string_of_int 1)
+      [@ns.namedArgLoc ]) ~children:[] ())
+  [@JSX ])
+let omega =
+  ((div
+      ~aList:(([width;
+               height;
+               color;
+               backgroundColor;
+               margin;
+               padding;
+               border;
+               borderColor;
+               someOtherAttribute])[@ns.namedArgLoc ])
+      ~key:((string_of_int 1)[@ns.namedArgLoc ]) ~children:[] ())
+  [@JSX ])
+let someArray =
+  ((div
+      ~anArray:(([|width;height;color;backgroundColor;margin;padding;border;borderColor;someOtherAttribute|])
+      [@ns.namedArgLoc ]) ~key:((string_of_int 1)[@ns.namedArgLoc ])
+      ~children:[] ())
+  [@JSX ])
+let tuples =
+  ((div
+      ~aTuple:(((width, height, color, backgroundColor, margin, padding,
+                  border, borderColor, someOtherAttribute,
+                  definitelyBreakere))[@ns.namedArgLoc ])
+      ~key:((string_of_int 1)[@ns.namedArgLoc ]) ~children:[] ())
+  [@JSX ])
+let icon =
+  ((Icon.createElement
+      ~name:((match state.volume with
+              | v when v < 0.1 -> \\"sound-off\\"
+              | v when v < 0.11 -> \\"sound-min\\"
+              | v when v < 0.51 -> \\"sound-med\\"
+              | _ -> \\"sound-max\\")[@ns.namedArgLoc ][@ns.braces ])
+      ~children:[] ())
+  [@JSX ])
+let _ =
+  ((MessengerSharedPhotosAlbumViewPhotoReact.createElement
+      ?ref:((if (foo ## bar) == baz
+             then Some (foooooooooooooooooooooooo setRefChild)
+             else None)[@ns.namedArgLoc ][@ns.ternary ])
+      ~key:((node ## legacy_attachment_id)[@ns.namedArgLoc ]) ~children:[] ())
+  [@JSX ])
+let _ = ((Foo.createElement ~bar:((bar)[@ns.namedArgLoc ]) ~children:[] ())
+  [@JSX ])
+let _ = ((Foo.createElement ?bar:((bar)[@ns.namedArgLoc ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((Foo.createElement ?bar:((Baz.bar)[@ns.namedArgLoc ]) ~children:[] ())
+  [@JSX ])
+let x = ((div ~children:[] ())[@JSX ])
+let _ = ((div ~asd:((1)[@ns.namedArgLoc ]) ~children:[] ())[@JSX ])
+;;(foo ## bar) #= ((bar ~children:[] ())[@JSX ])
+;;foo #= ((bar ~children:[] ())[@JSX ])
+;;foo #= ((bar ~children:[] ())[@JSX ])
+let x = [|((div ~children:[] ())[@JSX ])|]
+let z = ((div ~children:[] ())[@JSX ])
+let z =
+  (((Button.createElement ~onClick:((handleStaleClick)[@ns.namedArgLoc ])
+       ~children:[] ())[@JSX ]),
+    ((Button.createElement ~onClick:((handleStaleClick)[@ns.namedArgLoc ])
+        ~children:[] ())[@JSX ]))
+let y = [|((div ~children:[] ())[@JSX ]);((div ~children:[] ())[@JSX ])|]
+let y =
+  [|((Button.createElement ~onClick:((handleStaleClick)[@ns.namedArgLoc ])
+        ~children:[] ())
+    [@JSX ]);((Button.createElement ~onClick:((handleStaleClick)
+                 [@ns.namedArgLoc ]) ~children:[] ())
+    [@JSX ])|]
+let _ =
+  ((Description.createElement
+      ~term:((Text.createElement ~text:((\\"Age\\")[@ns.namedArgLoc ])
+                ~children:[] ())[@ns.namedArgLoc ][@ns.braces ][@JSX ])
+      ~children:[child] ())
+  [@JSX ])
+let _ =
+  ((Description.createElement
+      ~term:((Text.createElement ~text:((\\"Age\\")[@ns.namedArgLoc ])
+                ~children:(([||])[@ns.namedArgLoc ]) ())
+      [@ns.namedArgLoc ][@ns.braces ]) ~children:[child] ())
+  [@JSX ])
+let _ =
+  ((Description.createElement
+      ~term:((Text.createElement ~text:((\\"Age\\")[@ns.namedArgLoc ]) ())
+      [@ns.namedArgLoc ][@ns.braces ][@JSX ]) ~children:[child] ())
+  [@JSX ])
+let _ =
+  ((Description.createElement
+      ~term:((Text.createElement ~superLongPunnedProp:((superLongPunnedProp)
+                [@ns.namedArgLoc ])
+                ~anotherSuperLongOneCrazyLongThingHere:((anotherSuperLongOneCrazyLongThingHere)
+                [@ns.namedArgLoc ]) ~text:((\\"Age\\")[@ns.namedArgLoc ])
+                ~children:[] ())[@ns.namedArgLoc ][@ns.braces ][@JSX ])
+      ~children:[child] ())
+  [@JSX ])
+let _ =
+  ((Foo.createElement
+      ~bar:((Baz.createElement ~superLongPunnedProp:((superLongPunnedProp)
+               [@ns.namedArgLoc ])
+               ~anotherSuperLongOneCrazyLongThingHere:((anotherSuperLongOneCrazyLongThingHere)
+               [@ns.namedArgLoc ]) ~children:[] ())
+      [@ns.namedArgLoc ][@ns.braces ][@JSX ]) ~children:[] ())
+  [@JSX ])
+let _ = ((div ~children:[((span ~children:[str \\"hello\\"] ())[@JSX ])] ())
+  [@JSX ])
+let _ =
+  ((description
+      ~term:((text ~text:((\\"Age\\")[@ns.namedArgLoc ]) ~children:[] ())
+      [@ns.namedArgLoc ][@ns.braces ][@JSX ]) ~children:[child] ())
+  [@JSX ])
+let _ =
+  ((description
+      ~term:((text ~text:((\\"Age\\")[@ns.namedArgLoc ]) ~children:(([||])
+                [@ns.namedArgLoc ]) ())[@ns.namedArgLoc ][@ns.braces ])
+      ~children:[child] ())
+  [@JSX ])
+let _ =
+  ((description
+      ~term:((text ~text:((\\"Age\\")[@ns.namedArgLoc ]) ~children:(([||])
+                [@ns.namedArgLoc ]))[@ns.namedArgLoc ][@ns.braces ][@JSX ])
+      ~children:[child] ())
+  [@JSX ])
+let _ =
+  ((description ~term:((text ~text:((\\"Age\\")[@ns.namedArgLoc ]) ())
+      [@ns.namedArgLoc ][@ns.braces ][@JSX ]) ~children:[child] ())
+  [@JSX ])
+let _ =
+  ((description
+      ~term:((div ~superLongPunnedProp:((superLongPunnedProp)
+                [@ns.namedArgLoc ])
+                ~anotherSuperLongOneCrazyLongThingHere:((anotherSuperLongOneCrazyLongThingHere)
+                [@ns.namedArgLoc ]) ~text:((\\"Age\\")[@ns.namedArgLoc ])
+                ~children:[] ())[@ns.namedArgLoc ][@ns.braces ][@JSX ])
+      ~children:[child] ())
+  [@JSX ])
+let _ =
+  ((div ~onClick:((fun event -> handleChange event)
+      [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((div ~onClick:((fun eventWithLongIdent -> handleChange eventWithLongIdent)
+      [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((div
+      ~onClick:((fun event -> ((Js.log event; handleChange event)
+                   [@ns.braces ]))[@ns.namedArgLoc ][@ns.braces ])
+      ~children:[] ())
+  [@JSX ])
+let _ =
+  ((StaticDiv.createElement
+      ~onClick:((fun foo ->
+                   fun bar ->
+                     fun baz ->
+                       fun lineBreak ->
+                         fun identifier ->
+                           ((doStuff foo bar baz; bar lineBreak identifier)
+                           [@ns.braces ]))[@ns.namedArgLoc ][@ns.braces ])
+      ~children:[] ())
+  [@JSX ])
+let _ =
+  ((AttrDiv.createElement ~onClick:((fun event -> handleChange event)
+      [@ns.namedArgLoc ][@ns.braces ][@bar ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((AttrDiv.createElement
+      ~onClick:((fun eventLongIdentifier -> handleChange eventLongIdentifier)
+      [@ns.namedArgLoc ][@ns.braces ][@bar ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((StaticDivNamed.createElement
+      ~onClick:((fun ~foo:((foo)[@ns.namedArgLoc ]) ->
+                   fun ~bar:((bar)[@ns.namedArgLoc ]) ->
+                     fun ~baz:((baz)[@ns.namedArgLoc ]) ->
+                       fun ~lineBreak:((lineBreak)[@ns.namedArgLoc ]) ->
+                         fun ~identifier:((identifier)[@ns.namedArgLoc ]) ->
+                           fun () -> bar lineBreak identifier)
+      [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((div ~onClick:((fun e -> (((doStuff (); bar foo)[@ns.braces ]) : event))
+      [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((div
+      ~onClick:((fun e ->
+                   fun e2 -> (((doStuff (); bar foo)[@ns.braces ]) : event))
+      [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((div
+      ~onClick:((fun foo ->
+                   fun bar ->
+                     fun baz ->
+                       fun superLongIdent ->
+                         fun breakLine -> (((doStuff (); bar foo)
+                           [@ns.braces ]) : (event * event2 * event3 * event4
+                                              * event5)))
+      [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((div
+      ~onClick:((fun foo ->
+                   fun bar ->
+                     fun baz ->
+                       fun superLongIdent ->
+                         fun breakLine ->
+                           (doStuff () : (event * event2 * event3 * event4 *
+                                           event5)))
+      [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((div
+      ~children:[(((match color with
+                    | Black -> ReasonReact.string \\"black\\"
+                    | Red -> ReasonReact.string \\"red\\"))
+                [@ns.braces ])] ())
+  [@JSX ])
+let _ =
+  ((div
+      ~style:((ReactDOMRe.Style.make ~width:((\\"20px\\")[@ns.namedArgLoc ])
+                 ~height:((\\"20px\\")[@ns.namedArgLoc ]) ~borderRadius:((\\"100%\\")
+                 [@ns.namedArgLoc ]) ~backgroundColor:((\\"red\\")
+                 [@ns.namedArgLoc ]))[@ns.namedArgLoc ][@ns.braces ][@foo ])
+      ~children:[] ())
+  [@JSX ])
+let _ =
+  ((Animated.createElement ~initialValue:((0.0)[@ns.namedArgLoc ])
+      ~value:((value)[@ns.namedArgLoc ])
+      ~children:((ReactDOMRe.Style.make ~width:((\\"20px\\")[@ns.namedArgLoc ])
+                    ~height:((\\"20px\\")[@ns.namedArgLoc ])
+                    ~borderRadius:((\\"100%\\")[@ns.namedArgLoc ])
+                    ~backgroundColor:((\\"red\\")[@ns.namedArgLoc ]))
+      [@ns.braces ]) ())
+  [@JSX ])
+let _ =
+  ((Animated.createElement ~initialValue:((0.0)[@ns.namedArgLoc ])
+      ~value:((value)[@ns.namedArgLoc ])
+      ~children:((fun value ->
+                    ((div
+                        ~style:((ReactDOMRe.Style.make ~width:((\\"20px\\")
+                                   [@ns.namedArgLoc ]) ~height:((\\"20px\\")
+                                   [@ns.namedArgLoc ])
+                                   ~borderRadius:((\\"100%\\")[@ns.namedArgLoc ])
+                                   ~backgroundColor:((\\"red\\")
+                                   [@ns.namedArgLoc ]))
+                        [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+                    [@JSX ]))[@ns.braces ]) ())
+  [@JSX ])
+let _ =
+  ((Animated.createElement ~initialValue:((0.0)[@ns.namedArgLoc ])
+      ~value:((value)[@ns.namedArgLoc ])
+      ~children:((fun value ->
+                    (((div
+                         ~style:((ReactDOMRe.Style.make ~width:((\\"20px\\")
+                                    [@ns.namedArgLoc ]) ~height:((\\"20px\\")
+                                    [@ns.namedArgLoc ])
+                                    ~borderRadius:((\\"100%\\")
+                                    [@ns.namedArgLoc ])
+                                    ~backgroundColor:((\\"red\\")
+                                    [@ns.namedArgLoc ]))
+                         [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+                    [@JSX ]) : ReasonReact.element))[@ns.braces ]) ())
+  [@JSX ])
+let _ =
+  ((Animated.createElement ~initialValue:((0.0)[@ns.namedArgLoc ])
+      ~value:((value)[@ns.namedArgLoc ])
+      ~children:((fun value ->
+                    ((div
+                        ~style:((ReactDOMRe.Style.make ~width:((\\"20px\\")
+                                   [@ns.namedArgLoc ]) ~height:((\\"20px\\")
+                                   [@ns.namedArgLoc ])
+                                   ~borderRadius:((\\"100%\\")[@ns.namedArgLoc ])
+                                   ~backgroundColor:((\\"red\\")
+                                   [@ns.namedArgLoc ]))
+                        [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+                    [@ns.braces ][@JSX ]))[@ns.braces ][@foo ]) ())
+  [@JSX ])
+let _ =
+  ((Animated.createElement ~initialValue:((0.0)[@ns.namedArgLoc ])
+      ~value:((value)[@ns.namedArgLoc ])
+      ~children:((fun value ->
+                    ((let width = \\"20px\\" in
+                      let height = \\"20px\\" in
+                      ((div
+                          ~style:((ReactDOMRe.Style.make ~width:((width)
+                                     [@ns.namedArgLoc ]) ~height:((height)
+                                     [@ns.namedArgLoc ])
+                                     ~borderRadius:((\\"100%\\")
+                                     [@ns.namedArgLoc ])
+                                     ~backgroundColor:((\\"red\\")
+                                     [@ns.namedArgLoc ]))
+                          [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+                        [@JSX ]))
+                    [@ns.braces ]))[@ns.braces ]) ())
+  [@JSX ])
+let _ =
+  ((div ~callback:((reduce (fun () -> not state))
+      [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((button ?id:((id)[@ns.namedArgLoc ])
+      ~className:((Cn.make [|\\"button\\";\\"is-fullwidth\\"|])
+      [@ns.namedArgLoc ][@ns.braces ]) ~onClick:((onClick)[@ns.namedArgLoc ])
+      ~children:[((\\"Submit\\" |> ste)[@ns.braces ])] ())
+  [@JSX ])
+let _ =
+  ((button ?id:((id)[@ns.namedArgLoc ])
+      ~className:((Cn.make [\\"button\\"; \\"is-fullwidth\\"])
+      [@ns.namedArgLoc ][@ns.braces ]) ~onClick:((onClick)[@ns.namedArgLoc ])
+      ~children:[((\\"Submit\\" |> ste)[@ns.braces ])] ())
+  [@JSX ])
+let _ =
+  ((button ?id:((id)[@ns.namedArgLoc ])
+      ~className:((Cn.make (\\"button\\", \\"is-fullwidth\\"))
+      [@ns.namedArgLoc ][@ns.braces ]) ~onClick:((onClick)[@ns.namedArgLoc ])
+      ~children:[((\\"Submit\\" |> ste)[@ns.braces ])] ())
+  [@JSX ])
+let _ =
+  ((button ?id:((id)[@ns.namedArgLoc ]) ~className:((Cn.make { a = b })
+      [@ns.namedArgLoc ][@ns.braces ]) ~onClick:((onClick)[@ns.namedArgLoc ])
+      ~children:[((\\"Submit\\" |> ste)[@ns.braces ])] ())
+  [@JSX ])
+let _ =
+  ((X.createElement ~y:((z |. (Belt.Option.getWithDefault \\"\\"))
+      [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((div ~style:((getStyle ())[@ns.namedArgLoc ][@ns.braces ])
+      ~children:[((ReasonReact.string \\"BugTest\\")[@ns.braces ])] ())
+  [@JSX ])
+let _ =
+  ((div
+      ~children:[(((let left = limit |. Int.toString in
+                    (left ^ {| characters left|}) |. React.string))
+                [@ns.braces ])] ())
+  [@JSX ])
+let _ =
+  ((View.createElement ~style:((styles ## backgroundImageWrapper)
+      [@ns.namedArgLoc ])
+      ~children:[(((let uri = \\"/images/header-background.png\\" in
+                    ((Image.createElement ~resizeMode:((Contain)
+                        [@ns.namedArgLoc ])
+                        ~style:((styles ## backgroundImage)
+                        [@ns.namedArgLoc ]) ~uri:((uri)[@ns.namedArgLoc ])
+                        ~children:[] ())
+                      [@JSX ])))
+                [@ns.braces ])] ())
+  [@JSX ])
+;;((div
+      ~children:[(((((possibleGradeValues |>
+                        (List.filter (fun g -> g <= state.maxGrade)))
+                       |>
+                       (List.map
+                          (fun possibleGradeValue ->
+                             ((option
+                                 ~key:((possibleGradeValue |> string_of_int)
+                                 [@ns.namedArgLoc ][@ns.braces ])
+                                 ~value:((possibleGradeValue |> string_of_int)
+                                 [@ns.namedArgLoc ][@ns.braces ])
+                                 ~children:[(((possibleGradeValue |>
+                                                 string_of_int)
+                                                |> str)
+                                           [@ns.braces ])] ())
+                             [@JSX ]))))
+                      |> Array.of_list)
+                     |> ReasonReact.array)
+                [@ns.braces ])] ())[@JSX ])"
+`;
+
+exports[`list.js 1`] = `
+"let x = []
+let x = [1; 2; 3]
+let x = [1; 2; 3]
+let x = [(1 : int); (2 : int); (3 : int)]
+let x = 4 :: 5 :: y
+let x = 1 :: 2 :: (y : int list)"
+`;
+
+exports[`locallyAbstractTypes.js 1`] = `
+"let f (type t) (xs : t list) = ()
+let f (type t) (xs : t list) (type s) (ys : s list) = ()
+let f (type t) (type u) (type v) (xs : (t * u * v) list) = ()
+let f (type t) (type u) (type v) (xs : (t * u * v) list) (type s) (type w)
+  (type z) (ys : (s * w * z) list) = ()
+let f = ((fun (type t) -> fun (type u) -> fun (type v) ->
+  fun (xs : (t * u * v) list) -> ((fun (type s) -> fun (type w) -> fun (type
+    z) -> fun (ys : (s * w * z) list) -> ())[@attr2 ]))
+  [@attr ])
+let f = ((fun (type t) -> ((fun (type s) ->
+  fun (xs : (t * s) list) -> ((fun (type u) -> ((fun (type v) -> fun (type w)
+    -> fun (ys : (u * v * w) list) -> ())[@attr ]))[@attr ]))
+  [@attr ]))[@attr ])
+let cancel_and_collect_callbacks :
+  'a 'u 'c .
+    packed_callbacks list -> ('a, 'u, 'c) promise -> packed_callbacks list
+  = fun (type x) ->
+  fun callbacks_accumulator -> fun (p : (_, _, c) promise) -> ()"
+`;
+
+exports[`parenthesized.js 1`] = `
+"let x = 1
+let f = 1.3
+let truth = true
+let truth = false
+let constructor = None
+let longidentConstructor = Option.None
+let txt = \\"a string\\"
+let otherTxt = {|foo bar |} ^ txt
+let ident = myIdent
+let aList = [1; 2]
+let anArray = [|1;2|]
+let aTuple = (1, 2)
+let aRecord = { name = \\"steve\\"; age = 30 }
+let blockExpression = ((let a = 1 in let b = 2 in a + b)[@ns.braces ])
+let assertSmthing = assert true
+let lazyThing = lazy true
+let jsx = ((div ~className:((\\"cx\\")[@ns.namedArgLoc ]) ~children:[foo] ())
+  [@JSX ])
+let ifExpr = if true then Js.log true else Js.log false
+let forExpr = for p = 0 to 10 do () done
+let whileExpr = while true do doSomeImperativeThing () done
+let switchExpr = match myVar with | Blue -> \\"blue\\" | Red -> \\"red\\"
+let constrainedExpr = (x : int)"
+`;
+
+exports[`polyvariant.js 1`] = `""`;
+
+exports[`primary.js 1`] = `
+"let x = a.b
+let x = (a.b).c
+let x = H20.Water.water.h
+let x = p.Parser.token
+let x = (p.Lang.Parser.token).pos
+;;lexbuf.lnum <- (lexbuf.lnum + 1)
+;;(parser.lexbuf).lnum <- ((parser.lexbuf).lnum + 1)
+let x = arr.(0)
+let x = arr.((x : int))
+let x = (arr.(0)).(1)
+let x = (arr.((x : int))).((y : int))
+;;arr.(0) <- (a + b)
+;;f ()
+;;(f ()) ()
+;;f a
+;;(f a) a
+;;f a
+;;f (x : int)
+;;f a b c
+;;f a b c
+;;f ~a:((a)[@ns.namedArgLoc ]) ~b:((bArg)[@ns.namedArgLoc ]) ?c:((c)
+    [@ns.namedArgLoc ]) ?d:((expr)[@ns.namedArgLoc ])
+;;((f ~a:((a)[@ns.namedArgLoc ]) ~b:((bArg)[@ns.namedArgLoc ]) ?c:((c)
+      [@ns.namedArgLoc ]) ?d:((expr)[@ns.namedArgLoc ])) ~a:((a)
+     [@ns.namedArgLoc ]) ~b:((bArg)[@ns.namedArgLoc ]) ?c:((c)
+     [@ns.namedArgLoc ]) ?d:((expr)[@ns.namedArgLoc ])) ~a:((a)
+    [@ns.namedArgLoc ]) ~b:((bArg)[@ns.namedArgLoc ]) ?c:((c)
+    [@ns.namedArgLoc ]) ?d:((expr)[@ns.namedArgLoc ])
+;;f ~a:(((x : int))[@ns.namedArgLoc ]) ?b:(((y : int))[@ns.namedArgLoc ])
+;;connection ## platformId
+;;((connection ## left) ## account) ## accountName
+;;(john ## age) #= 99
+;;((john ## son) ## age) #= ((steve ## age) - 5)"
+`;
+
+exports[`record.js 1`] = `
+"let r = { a = expr }
+let r = { a = expr }
+let r = { Parsetree.pexp_attributes = [||]; Parsetree.loc = loc }
+let r = { a; b; c }
+let r = { Parsetree.pexp_attributes; Parsetree.loc }
+let r = { Parsetree.pexp_attributes; Parsetree.loc }
+let r = { a = (expr : int); b = (x : string) }
+let r = { expr with pexp_attributes = [||] }
+let r = { expr with pexp_attributes = [||]; pexp_loc = loc }
+let r = { expr with pexp_attributes = [||] }
+let r = { (make () : myRecord) with foo = bar }
+let r = { (make () : myRecord) with foo = bar }"
+`;
+
+exports[`sideEffects.js 1`] = `
+";;foo ()
+;;bar ()
+let () = ((foo (); bar ())[@ns.braces ])
+let () =
+  ((let x = 1 in
+    sideEffect ();
+    (let y = 2 in sideEffect2 (); (let z = 3 in sideEffect3 ())))
+  [@ns.braces ])
+;;while true do
+    sideEffect1 ();
+    (let x = 1 in sideEffect2 (); (let y = 2 in sideEffect3 ())) done
+;;match color with
+  | Blue -> (getResult (); sideEffect (); (let x = 1 in sideEffect2 ()))"
+`;
+
+exports[`switch.js 1`] = `
+";;match x with | A -> () | B -> ()
+;;match a + b with | _ -> ()
+;;match a + b with | _ -> ()
+;;match (a, b) with | (Some a, Some b) -> (a + b) + c | _ -> 3"
+`;
+
+exports[`try.js 1`] = `
+";;try ((let x = 1 in let y = 2 in dangerousCall (x + y))[@ns.braces ])
+  with | Foo -> Js.log \\"catched Foo\\" | Exit -> Js.log \\"catched exit\\"
+;;try myDangerousFn () with | Foo -> Js.log \\"catched Foo\\"[@@attr ]
+let x = ((let y = 1 in try ((apply y)[@ns.braces ]) with | _ -> 2)
+  [@ns.braces ])"
+`;
+
+exports[`tuple.js 1`] = `
+"let x = (1, 2, 3)
+let x = (1, 2, 3)
+let x = ((1 : int), (2 : int), (3 : int))"
+`;
+
+exports[`tupleVsDivision.js 1`] = `
+";;(foo ()) / 1
+;;foo ()
+;;(1, 2) |. printTuple
+let f () = (((foo ()) / 1; foo (); (1, 2) |. printTuple)[@ns.braces ])"
+`;
+
+exports[`unary.js 1`] = `
+"let x = not true
+let m = (-1)
+let m = (-2.5)
+let x = 5
+let x = 5.4
+let sum = (- a) - (- b)"
+`;
+
+exports[`unaryOrBinary.js 1`] = `
+";;- x
+let width =
+  (((w -. innerLeft) -. imageWidth) -. imageRightGap) -. rowInnerRight
+let width = (((w - innerLeft) - imageWidth) - imageRightGap) - rowInnerRight
+let width =
+  ((w; -. innerLeft; -. imageWidth; -. imageRightGap; -. rowInnerRight)
+  [@ns.braces ])
+let width = ((w; - innerLeft; - imageWidth; - imageRightGap; - rowInnerRight)
+  [@ns.braces ])"
+`;
+
+exports[`uncurried.js 1`] = `
+"let f = ((fun a -> fun b -> a + b)[@bs ])
+let f = ((fun a -> ((fun b -> a + b)[@bs ]))[@bs ])
+let f = ((fun a -> fun b -> ((fun c -> fun d -> ((a + b) + c) + d)[@bs ]))
+  [@bs ])
+let f =
+  ((fun a -> ((fun b -> ((fun c -> ((fun d -> ())[@attr4 ]))[@bs ][@attr3 ]))
+      [@attr2 ]))
+  [@bs ][@attr ])
+let f =
+  ((fun ((a)[@attr ]) ->
+      fun ((b)[@attr2 ]) -> ((fun ((c)[@attr3 ]) -> fun ((d)[@attr4 ]) -> ())
+        [@bs ]))
+  [@bs ])
+let f =
+  ((fun ((a)[@attr ]) ->
+      fun ((b)[@attr2 ]) -> ((fun ((c)[@attr3 ]) -> fun ((d)[@attr4 ]) -> ())
+        [@bs ]))
+  [@bs ])
+;;((add 1 2)[@bs ])
+;;((((((add 2 3 4)[@bs ]) 5 6 7)[@bs ]) 8 9 10)[@bs ])"
+`;
+
+exports[`underscoreApply.js 1`] = `
+"let l =
+  ([1; 2; 3] |. (fun __x -> List.map (fun i -> i + 1) __x)) |.
+    (fun __x -> List.filter (fun i -> i > 0) __x)
+let l = (fun i -> i + 1) |. (fun __x -> List.map __x [1; 2; 3])
+let x __x = List.length __x
+let nested x __x = List.length __x
+let incr ~v:((v)[@ns.namedArgLoc ])  = v + 1
+let l1 = ([1; 2; 3] |> (List.map (fun __x -> incr ~v:__x))) |> List.length
+let l2 = ([1; 2; 3] |> (List.map (fun __x -> incr ~v:__x))) |> List.length
+let optParam ?v:((v)[@ns.namedArgLoc ])  () = ((if v = None then 0 else 1)
+  [@ns.ternary ])
+let l1 =
+  ([Some 1; None; Some 2] |> (List.map (fun __x -> optParam ?v:__x ()))) |>
+    List.length
+let l2 =
+  ([Some 1; None; Some 2] |> (List.map (fun __x -> optParam ?v:__x ()))) |>
+    List.length"
+`;
+
+exports[`while.js 1`] = `
+";;while not eofReached do
+    let a = 1 in let b = 2 in Lexbuf.next (); (a + b) |. Js.log done
+;;while (not (isLineEnding buf)) && true do foo (); next () done"
+`;

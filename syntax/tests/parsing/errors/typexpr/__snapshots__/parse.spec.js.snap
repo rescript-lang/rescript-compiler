@@ -1,0 +1,293 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`arrow.js 1`] = `
+"=====Parsetree==========================================
+external add_nat : nat -> int = \\"add_nat_bytecode\\" \\"add_nat_native\\"
+module Error2 =
+  struct
+    type nonrec observation =
+      {
+      observed: int ;
+      onStep: currentValue:unit -> [%napkinscript.typehole ] }
+  end
+module Error3 =
+  struct
+    type nonrec observation =
+      {
+      observed: int ;
+      onStep: currentValue:unit -> [%napkinscript.typehole ] }
+  end
+=====Errors=============================================
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/arrow.js\\", line 2, characters 21-24:
+
+
+1 │  // notice usage of -> instead of =>
+[31m2[0m │  external add_nat: nat -> int = \\"add_nat_bytecode\\" \\"add_nat_native\\"          
+                           [31m^^[0m
+3 │  
+4 │  module Error2 = {
+
+Did you forget a \`=>\` here? 
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/arrow.js\\", line 7, characters 26-30:
+
+
+5 │    type observation ={
+6 │      observed: int,
+[31m7[0m │      onStep: (~currentValue   ) => unit          
+                                [31m^[0m
+8 │    }
+9 │  }
+
+Did you forget a \`:\` here? It signals the start of a type
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/arrow.js\\", line 14, characters 25-29:
+
+
+12 │    type observation ={
+13 │      observed: int,
+[31m14[0m │      onStep: ~currentValue  => unit          
+                               [31m^[0m
+15 │    }
+16 │  }
+
+Did you forget a \`:\` here? It signals the start of a type
+
+
+
+========================================================"
+`;
+
+exports[`bsObjSugar.js 1`] = `
+"=====Parsetree==========================================
+type nonrec state =
+  < url: [%napkinscript.typehole ]  ;protocols: string array   >  Js.t
+type nonrec state =
+  < url: [%napkinscript.typehole ] [@attr ] ;protocols: string array   > 
+    Js.t
+type nonrec state =
+  <
+    url: string  ;protocols: [%napkinscript.typehole ]  ;websocket: Websocket.t
+                                                             > 
+    Js.t
+type nonrec state =
+  < url: string  ;protocols: [%napkinscript.typehole ]   >  Js.t
+type nonrec state =
+  < send: string -> [%napkinscript.typehole ] [@bs.meth ]  >  Js.t
+type nonrec state = < age: [%napkinscript.typehole ]  ;name: string   >  Js.t
+type nonrec state =
+  < age: [%napkinscript.typehole ] [@bs.set ] ;name: string   >  Js.t
+type nonrec state = < age: [%napkinscript.typehole ]   ;.. >  Js.t
+type nonrec state =
+  < age: [%napkinscript.typehole ]  ;name: string   ;.. >  Js.t
+type nonrec websocket =
+  < id: [%napkinscript.typehole ]  ;channel: channelTyp   >  Js.t
+type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
+=====Errors=============================================
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 2, characters 7-21:
+
+
+1 │  type state = {
+[31m2[0m │    \\"url\\"          
+             [31m^[0m
+3 │    \\"protocols\\": array<string>
+4 │  }
+
+Did you forget a \`:\` here? It signals the start of a type
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 7, characters 13-27:
+
+
+5 │  
+6 │  type state = {
+[31m7[0m │    @attr \\"url\\"          
+                   [31m^[0m
+8 │    \\"protocols\\": array<string>
+9 │  }
+
+Did you forget a \`:\` here? It signals the start of a type
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 13, characters 13-27:
+
+
+11 │  type state = {
+12 │    \\"url\\": string,
+[31m13[0m │    \\"protocols\\"          
+                   [31m^[0m
+14 │    \\"websocket\\": Websocket.t,
+15 │  }
+
+Did you forget a \`:\` here? It signals the start of a type
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 19, characters 13-15:
+
+
+17 │  type state = {
+18 │    \\"url\\": string,
+[31m19[0m │    \\"protocols\\"          
+                   [31m^[0m
+20 │  }
+21 │  
+
+Did you forget a \`:\` here? It signals the start of a type
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 24, characters 19-21:
+
+
+22 │  type state = {
+23 │    @bs.meth
+[31m24[0m │    \\"send\\": string =>
+25 │  }
+26 │  
+
+I'm missing a type here
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 28, characters 10-19:
+
+
+26 │  
+27 │  type state = {
+[31m28[0m │    \\"age\\": ,
+29 │    \\"name\\": string
+30 │  }
+
+I'm missing a type here
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 33, characters 18-27:
+
+
+31 │  
+32 │  type state = {
+[31m33[0m │    @bs.set \\"age\\": ,
+34 │    \\"name\\": string
+35 │  }
+
+I'm missing a type here
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 37, characters 23-25:
+
+
+35 │  }
+36 │  
+[31m37[0m │  type state = {.. \\"age\\":[31m }[0m
+38 │  type state = {
+39 │    ..
+
+I'm missing a type here
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 40, characters 7-17:
+
+
+38 │  type state = {
+39 │    ..
+[31m40[0m │    \\"age\\"           
+             [31m^[0m
+41 │    \\"name\\": string
+42 │  }
+
+Did you forget a \`:\` here? It signals the start of a type
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 45, characters 7-19:
+
+
+43 │  
+44 │  type websocket = {
+[31m45[0m │    \\"id\\":
+46 │    \\"channel\\": channelTyp
+47 │  }
+
+I'm missing a type here
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 50, characters 6-7:
+
+
+48 │  
+49 │  type websocket = {
+[31m50[0m │    \\"id\\"          
+            [31m^[0m
+
+Did you forget a \`:\` here? It signals the start of a type
+
+
+
+========================================================"
+`;
+
+exports[`typeConstructorArgs.js 1`] = `
+"=====Parsetree==========================================
+type nonrec 'a node = {
+  _value: 'a Js.Nullable.value }
+type nonrec 'a t = 'a Belt.Map.t
+type nonrec 'a t = private 'a Belt.Map.t
+type nonrec t = int node option
+type nonrec t = int node option
+=====Errors=============================================
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 2, characters 27-31:
+
+
+1 │  type node<'a> = {
+[31m2[0m │    _value: Js.Nullable.value[31m('a)[0m
+3 │  }
+4 │  
+
+Type parameters require angle brackets:
+  Js.Nullable.value<'a>
+
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 5, characters 23-27:
+
+
+3 │  }
+4 │  
+[31m5[0m │  type t<'a> = Belt.Map.t[31m('a)[0m
+6 │  type t<'a> = private Belt.Map.t('a)
+7 │  
+
+Type parameters require angle brackets:
+  Belt.Map.t<'a>
+
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 6, characters 31-35:
+
+
+4 │  
+5 │  type t<'a> = Belt.Map.t('a)
+[31m6[0m │  type t<'a> = private Belt.Map.t[31m('a)[0m
+7 │  
+8 │  type t = option<<node<int>>
+
+Type parameters require angle brackets:
+  Belt.Map.t<'a>
+
+
+
+File \\"/napkinscript/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 9, characters 27-28:
+
+
+7 │  
+8 │  type t = option<<node<int>>
+[31m9[0m │  type t = option(<node<int>>[31m)[0m
+
+I'm not sure what to parse here when looking at \\")\\".
+
+
+
+========================================================"
+`;

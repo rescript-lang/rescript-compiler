@@ -1,0 +1,69 @@
+src/napkin_ast_conversion.cmx : src/napkin_ast_conversion.cmi
+src/napkin_ast_conversion.cmi :
+src/napkin_ast_debugger.cmx : src/napkin_driver.cmx src/napkin_doc.cmx \
+    src/napkin_ast_debugger.cmi
+src/napkin_ast_debugger.cmi : src/napkin_driver.cmi
+src/napkin_binary_driver.cmx : src/napkin_driver.cmx \
+    src/napkin_binary_driver.cmi
+src/napkin_binary_driver.cmi : src/napkin_driver.cmi
+src/napkin_character_codes.cmx :
+src/napkin_comment.cmx : src/napkin_comment.cmi
+src/napkin_comment.cmi :
+src/napkin_comments_table.cmx : src/napkin_doc.cmx src/napkin_comment.cmx
+src/napkin_core.cmx : src/napkin_token.cmx src/napkin_scanner.cmx \
+    src/napkin_printer.cmx src/napkin_parser.cmx src/napkin_js_ffi.cmx \
+    src/napkin_grammar.cmx src/napkin_doc.cmx src/napkin_diagnostics.cmx \
+    src/napkin_comments_table.cmx src/napkin_core.cmi
+src/napkin_core.cmi : src/napkin_parser.cmi
+src/napkin_diagnostics.cmx : src/napkin_token.cmx src/napkin_reporting.cmx \
+    src/napkin_grammar.cmx src/napkin_diagnostics.cmi
+src/napkin_diagnostics.cmi : src/napkin_token.cmx src/napkin_grammar.cmx
+src/napkin_doc.cmx : src/napkin_minibuffer.cmx src/napkin_doc.cmi
+src/napkin_doc.cmi :
+src/napkin_driver.cmx : src/napkin_printer.cmx src/napkin_parser.cmx \
+    src/napkin_diagnostics.cmx src/napkin_core.cmx src/napkin_comment.cmx \
+    src/napkin_driver.cmi
+src/napkin_driver.cmi : src/napkin_diagnostics.cmi src/napkin_comment.cmi
+src/napkin_grammar.cmx : src/napkin_token.cmx
+src/napkin_js_ffi.cmx :
+src/napkin_main.cmx : src/napkin_reason_binary_driver.cmx \
+    src/napkin_ml_parser_driver.cmx src/napkin_driver.cmx \
+    src/napkin_binary_driver.cmx src/napkin_ast_debugger.cmx
+src/napkin_minibuffer.cmx : src/napkin_minibuffer.cmi
+src/napkin_minibuffer.cmi :
+src/napkin_ml_parser_driver.cmx : src/napkin_driver.cmx \
+    src/napkin_comment.cmx src/napkin_ast_conversion.cmx \
+    src/napkin_ml_parser_driver.cmi
+src/napkin_ml_parser_driver.cmi : src/napkin_driver.cmi \
+    src/napkin_comment.cmi
+src/napkin_outcome_printer.cmx : src/napkin_doc.cmx \
+    src/napkin_outcome_printer.cmi
+src/napkin_outcome_printer.cmi :
+src/napkin_parens.cmx : src/napkin_parsetree_viewer.cmx \
+    src/napkin_parens.cmi
+src/napkin_parens.cmi :
+src/napkin_parser.cmx : src/napkin_token.cmx src/napkin_scanner.cmx \
+    src/napkin_reporting.cmx src/napkin_grammar.cmx \
+    src/napkin_diagnostics.cmx src/napkin_comment.cmx src/napkin_parser.cmi
+src/napkin_parser.cmi : src/napkin_token.cmx src/napkin_scanner.cmi \
+    src/napkin_reporting.cmx src/napkin_grammar.cmx \
+    src/napkin_diagnostics.cmi src/napkin_comment.cmi
+src/napkin_parsetree_viewer.cmx : src/napkin_parsetree_viewer.cmi
+src/napkin_parsetree_viewer.cmi :
+src/napkin_printer.cmx : src/napkin_token.cmx \
+    src/napkin_parsetree_viewer.cmx src/napkin_parens.cmx src/napkin_doc.cmx \
+    src/napkin_comments_table.cmx src/napkin_comment.cmx \
+    src/napkin_printer.cmi
+src/napkin_printer.cmi : src/napkin_doc.cmi src/napkin_comments_table.cmx \
+    src/napkin_comment.cmi
+src/napkin_reason_binary_driver.cmx : src/napkin_scanner.cmx \
+    src/napkin_driver.cmx src/napkin_comment.cmx \
+    src/napkin_ast_conversion.cmx src/napkin_reason_binary_driver.cmi
+src/napkin_reason_binary_driver.cmi : src/napkin_token.cmx \
+    src/napkin_driver.cmi src/napkin_comment.cmi
+src/napkin_reporting.cmx : src/napkin_token.cmx src/napkin_grammar.cmx
+src/napkin_scanner.cmx : src/napkin_token.cmx src/napkin_diagnostics.cmx \
+    src/napkin_comment.cmx src/napkin_character_codes.cmx \
+    src/napkin_scanner.cmi
+src/napkin_scanner.cmi : src/napkin_token.cmx src/napkin_diagnostics.cmi
+src/napkin_token.cmx : src/napkin_comment.cmx src/napkin_character_codes.cmx

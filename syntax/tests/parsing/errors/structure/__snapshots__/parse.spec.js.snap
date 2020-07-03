@@ -1,0 +1,186 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`closingBraces.ns 1`] = `
+"=====Parsetree==========================================
+let x = 1
+let y = 2
+=====Errors=============================================
+
+File \\"/napkinscript/tests/parsing/errors/structure/closingBraces.ns\\", line 3, characters 0-1:
+
+
+1 │  let x = 1
+2 │  
+[31m3[0m │  [31m}[0m}}
+4 │  
+5 │  let y = 2
+
+I'm not sure what to parse here when looking at \\"}\\".
+
+
+
+========================================================"
+`;
+
+exports[`consecutive.ns 1`] = `
+"=====Parsetree==========================================
+open Foo
+exception Bar 
+=====Errors=============================================
+
+File \\"/napkinscript/tests/parsing/errors/structure/consecutive.ns\\", line 1, characters 8-18:
+
+
+[31m1[0m │  open Foo[31m exception[0m Bar
+
+consecutive statements on a line must be separated by ';' or a newline
+
+
+
+========================================================"
+`;
+
+exports[`letBinding.js 1`] = `
+"=====Parsetree==========================================
+let rightResource =
+  (ur.resources).find
+    (fun r -> r.account_id == ((connection.left).account).id)
+let x = ((let field = p |. parseFieldDeclaration in field)[@ns.braces ])
+let t = ((let (_, _, token) = scanner |. scan in token)[@ns.braces ])
+let (keyTable : int Belt.Map.String.t) = [%napkinscript.exprhole ]
+let foo = [%napkinscript.exprhole ]
+let (x : int) = string = y
+let x = string = y
+let (x : int1) = (int2 = 3 :> int3)
+=====Errors=============================================
+
+File \\"/napkinscript/tests/parsing/errors/structure/letBinding.js\\", line 2, characters 17-20:
+
+
+1 │  // missing =
+[31m2[0m │  let rightResource ur.resources.find(          
+                       [31m^[0m
+3 │    r => r.account_id === connection.left.account.id
+4 │  )
+
+Did you forget a \`=\` here? 
+
+
+File \\"/napkinscript/tests/parsing/errors/structure/letBinding.js\\", line 8, characters 11-13:
+
+
+6 │  let x = {
+7 │    // missing =
+[31m8[0m │    let field p->parseFieldDeclaration           
+                 [31m^[0m
+9 │    field
+10 │  }
+
+Did you forget a \`=\` here? 
+
+
+File \\"/napkinscript/tests/parsing/errors/structure/letBinding.js\\", line 14, characters 18-26:
+
+
+12 │  let t = {
+13 │  	// missing =
+[31m14[0m │  	let (_, _, token) scanner->scan          
+                        [31m^[0m
+15 │    token
+16 │  }
+
+Did you forget a \`=\` here? 
+
+
+File \\"/napkinscript/tests/parsing/errors/structure/letBinding.js\\", line 18, characters 38-43:
+
+
+16 │  }
+17 │  
+[31m18[0m │  let keyTable: Belt.Map.String.t<int> =
+19 │  
+20 │  let foo = 
+
+This let-binding misses an expression
+
+
+File \\"/napkinscript/tests/parsing/errors/structure/letBinding.js\\", line 20, characters 9-41:
+
+
+18 │  let keyTable: Belt.Map.String.t<int> =
+19 │  
+[31m20[0m │  let foo =[31m[0m 
+21 │  
+22 │  // no magic in the syntax
+
+This let-binding misses an expression
+
+
+File \\"/napkinscript/tests/parsing/errors/structure/letBinding.js\\", line 23, characters 10-13:
+
+
+21 │  
+22 │  // no magic in the syntax
+[31m23[0m │  let x: int :> string = y          
+                [31m^[0m
+24 │  
+25 │  // no magic in the syntax
+
+Did you forget a \`=\` here? 
+
+
+File \\"/napkinscript/tests/parsing/errors/structure/letBinding.js\\", line 26, characters 5-8:
+
+
+24 │  
+25 │  // no magic in the syntax
+[31m26[0m │  let x :> string = y          
+           [31m^[0m
+27 │  
+28 │  // no magic in the syntax
+
+Did you forget a \`=\` here? 
+
+
+File \\"/napkinscript/tests/parsing/errors/structure/letBinding.js\\", line 29, characters 12-15:
+
+
+27 │  
+28 │  // no magic in the syntax
+[31m29[0m │  let x : int1 :> int2 = 3 :> int3          
+                  [31m^[0m
+
+Did you forget a \`=\` here? 
+
+
+
+========================================================"
+`;
+
+exports[`letBindingPatternKeyword.js 1`] = `
+"=====Parsetree==========================================
+let [%napkinscript.patternhole ] = 1
+let [%napkinscript.patternhole ] = 3
+=====Errors=============================================
+
+File \\"/napkinscript/tests/parsing/errors/structure/letBindingPatternKeyword.js\\", line 1, characters 4-8:
+
+
+[31m1[0m │  let [31mopen[0m = 1
+2 │  let to = 3
+
+\`open\` is a reserved keyword. Keywords need to be escaped: \\\\\\"open\\"
+
+
+File \\"/napkinscript/tests/parsing/errors/structure/letBindingPatternKeyword.js\\", line 2, characters 4-6:
+
+
+1 │  let open = 1
+[31m2[0m │  let [31mto[0m = 3
+
+\`to\` is a reserved keyword. Keywords need to be escaped: \\\\\\"to\\"
+
+
+
+========================================================"
+`;

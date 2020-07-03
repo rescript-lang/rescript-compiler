@@ -1,0 +1,100 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`exoticIdent.js 1`] = `
+"module type A = Foo with type Foo.\\\\\\"let\\"<'\\\\\\"type\\"> = \\\\\\"module\\"
+
+module type A = Foo with type Foo.\\\\\\"let\\"<'\\\\\\"type\\"> := \\\\\\"module\\"
+"
+`;
+
+exports[`extension.js 1`] = `
+"module type ReactInterface = %import(\\"react-bindings\\")
+"
+`;
+
+exports[`functor.js 1`] = `
+"module type Functor = SetLike => Set
+module type Functor = (S: SetLike, B: BtreeLike) => NeoTree
+module type Functor = (SetLike, BtreeLike) => NeoTree
+module type Functor = (SetLike, BtreeLike) => NeoTree
+module type Functor = (SetLike, BtreeLike) => NeoTree
+
+module type Functor = (@attr1 SetLike, @attr2 BtreeLike) => NeoTree
+module type Functor = (@attr1 @attr0 SetLike, @attr2 BtreeLike) => NeoTree
+
+module type Functor = (@attr1 SetLike, @attr2 BtreeLike) => @attr3 NeoTree
+module type Functor = (@attr1 SetLike, @attr2 BtreeLike) => @attr3 NeoTree
+
+module type Functor = (SetLike => Set) with type t = A.t
+module type Functor = SetLike => (Set with type t = A.t)
+"
+`;
+
+exports[`ident.js 1`] = `
+"module type T = Tree
+
+module type T = @attr
+Tree
+
+module type list = list
+module type t = s
+"
+`;
+
+exports[`moduleTypeOf.js 1`] = `
+"module type LinkedList = module type of List
+module type LinkedList = @attr
+module type of List
+"
+`;
+
+exports[`signature.js 1`] = `
+"module type Printable = {
+  type t
+  let print: (Format.formatter, t) => unit
+}
+
+module type Comparable = {
+  type t
+  let compare: (t, t) => int
+}
+"
+`;
+
+exports[`withConstraints.js 1`] = `
+"module type A = Foo with type t = string
+module type A = Foo with type Bar.t = string
+module type A = Foo with type t<'a> = string
+module type A = Foo with type t<'a, 'b> = string
+module type A = Foo with type t = 'st constraint 'st = int
+module type A = Foo with type t = 'st constraint 'st = int constraint 'x = int
+module type A = Foo
+  with type t = 'st constraint 'st = int constraint 'x = int
+  and type t = 'st constraint 'st = int constraint 'x = int
+  and type t = 'st constraint 'st = int constraint 'x = int
+
+module type A = Foo with type t := string
+module type A = Foo with type t<'a> := string
+module type A = Foo with type t<'a, 'b> := string
+module type A = Foo with type Bar.t<'a, 'b> := string
+module type A = Foo
+  with type Bar.t<'a, 'b> := string
+  and type Bar.t<'a, 'b> := string
+  and type Bar.t<'a, 'b> := string
+
+module type A = Foo with module Bar = Array
+module type A = Foo with module Bar = Belt.Array
+module type A = Foo with module X.Bar = Belt.Array
+module type A = Foo
+  with module X.Bar = Belt.Array
+  and module X.Bar = Belt.Array
+  and module X.Bar = Belt.Array
+
+module type A = Foo with module Bar := Array
+module type A = Foo with module Bar := Belt.Array
+module type A = Foo
+  with module X.Bar := Belt.Array
+  and module X.Bar := Belt.Array
+  and module X.Bar := Belt.Array
+"
+`;

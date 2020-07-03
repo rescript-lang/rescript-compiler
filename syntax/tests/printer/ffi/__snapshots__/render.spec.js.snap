@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`export.ns 1`] = `
+"export type callback = ReactEvent.Mouse.t => unit
+
+export type t = int and export s = string
+export type t = int and s = string
+type t = int and export s = string
+
+export callback = _ => Js.log(\\"Clicked\\")
+export callback = _ => Js.log(\\"Clicked\\")
+
+export x = \\"hello world\\" and export y = 2
+export x = \\"hello world\\" and export y = 2
+let x = \\"hello world\\" and export y = 2
+"
+`;
+
+exports[`import.ns 1`] = `
+"import {
+  @disableGc @disableJit
+  delimiter: string,
+  cwd as currentWorkingDirectory: unit => string,
+  isAbsolute: string => bool,
+  toNamespacedPath as \\\\\\"ToNamespacedPath\\": string => string,
+} from \\"path\\"
+
+import {
+  \\\\\\"*crazy_string*\\" as crazyString: float => timestamp,
+} from \\"firebase/app\\"
+
+import {document: Dom.document}
+"
+`;

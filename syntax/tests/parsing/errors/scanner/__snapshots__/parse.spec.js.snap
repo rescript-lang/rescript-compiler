@@ -1,0 +1,96 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`escapeSequence.js 1`] = `
+"=====Parsetree==========================================
+let x = \\"\\\\\\\\0\\"
+let x = \\"\\\\\\\\0AAA\\"
+=====Errors=============================================
+
+File \\"/napkinscript/tests/parsing/errors/scanner/escapeSequence.js\\", line 1, characters 9-11:
+
+
+[31m1[0m │  let x = \\"[31m\\\\0[0m\\"
+2 │  
+3 │  let x = \\"\\\\oAAA\\"
+
+unknown escape sequence
+
+
+File \\"/napkinscript/tests/parsing/errors/scanner/escapeSequence.js\\", line 3, characters 9-11:
+
+
+1 │  let x = \\"\\\\0\\"
+2 │  
+[31m3[0m │  let x = \\"[31m\\\\o[0mAAA\\"
+
+unknown escape sequence
+
+
+
+========================================================"
+`;
+
+exports[`oldDerefOp.js 1`] = `
+"=====Parsetree==========================================
+let newVelocity = velocity +. (a *. secondPerFrame)
+let newX = x +. (newVelocity *. secondPerFrame)
+=====Errors=============================================
+
+File \\"/napkinscript/tests/parsing/errors/scanner/oldDerefOp.js\\", line 1, characters 49-50:
+
+
+[31m1[0m │  let newVelocity = velocity +. a *. secondPerFrame[31m^[0m;
+2 │  let newX = x +. newVelocity *. secondPerFrame^;
+
+Hmm, not sure what I should do here with this character.
+If you're trying to deref an expression, use \`foo.contents\` instead.
+
+
+File \\"/napkinscript/tests/parsing/errors/scanner/oldDerefOp.js\\", line 2, characters 45-46:
+
+
+1 │  let newVelocity = velocity +. a *. secondPerFrame^;
+[31m2[0m │  let newX = x +. newVelocity *. secondPerFrame[31m^[0m;
+
+Hmm, not sure what I should do here with this character.
+If you're trying to deref an expression, use \`foo.contents\` instead.
+
+
+
+========================================================"
+`;
+
+exports[`unclosedComment.js 1`] = `
+"=====Parsetree==========================================
+
+=====Errors=============================================
+
+File \\"/napkinscript/tests/parsing/errors/scanner/unclosedComment.js\\", line 1, characters 2-18:
+
+
+[31m1[0m │  /*[31m eo[0mf
+2 │   * reached
+
+This comment seems to be missing a closing \`*/\`
+
+
+
+========================================================"
+`;
+
+exports[`unclosedString.js 1`] = `
+"=====Parsetree==========================================
+let z = \\"eof\\"
+=====Errors=============================================
+
+File \\"/napkinscript/tests/parsing/errors/scanner/unclosedString.js\\", line 1, characters 9-13:
+
+
+[31m1[0m │  let z = \\"[31meo[0mf
+
+This string is missing a double quote at the end
+
+
+
+========================================================"
+`;

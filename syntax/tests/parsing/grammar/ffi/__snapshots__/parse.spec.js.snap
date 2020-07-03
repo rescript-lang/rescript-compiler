@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`export.js 1`] = `
+"type nonrec callback = ReactEvent.Mouse.t -> unit[@@genType ]
+type nonrec t = int[@@genType ]
+and s = string[@@genType ]
+type nonrec t = int[@@genType ]
+and s = string
+type nonrec t = int
+and s = string[@@genType ]
+let callback _ = Js.log \\"Clicked\\"[@@genType ]
+let callback _ = Js.log \\"Clicked\\"[@@genType ]
+let x = \\"hello world\\"[@@genType ]
+and y = 2[@@genType ]
+let x = \\"hello world\\"[@@genType ]
+and y = 2[@@genType ]
+let x = \\"hello world\\"
+and y = 2[@@genType ]"
+`;
+
+exports[`import.js 1`] = `
+"include
+  struct
+    external realValue : complexNumber -> float = \\"realValue\\"[@@genType.import
+                                                               \\"./MyMath\\"]
+    external maxInt : unit -> int = \\"maxInt\\"[@@genType.import \\"./MyMath\\"]
+  end[@@ns.jsFfi ]
+include
+  struct
+    external realValue : complexNumber -> float = \\"realValue\\"[@@genType.import
+                                                               (\\"./MyMath\\",
+                                                                 \\"default\\")]
+  end[@@ns.jsFfi ]"
+`;

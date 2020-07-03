@@ -1,0 +1,16 @@
+{
+  "name": "napkinscript",
+  "version": "0.0.1",
+  "sources": {
+    "dir": "src/406"
+  },
+  "package-specs": {
+    "module": "commonjs",
+    "in-source": true
+  },
+  "suffix": ".bs.js",
+  "warnings": {
+    "error": "+101"
+  },
+  "bsc-flags": ["-bs-super-errors"]
+}

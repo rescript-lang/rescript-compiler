@@ -1,0 +1,230 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`alias.js 1`] = `
+"type nonrec t = string as 's
+type nonrec t = _ as 'underscore
+type nonrec t = parenthesizedType as 'parens
+type nonrec t = (int -> unit) as 'arrow
+type nonrec t = int -> unit as 'unitAlias
+type nonrec t = (int -> float -> unit) as 'arrowAlias
+type nonrec t = int -> float -> unit as 'unitAlias
+type nonrec t = int as 'myNumber
+type nonrec t = Mod.Sub.t as 'longidentAlias
+type nonrec t = (int as 'r, int as 'g, int as 'b) color as 'rgb
+type nonrec t = (int as 'r, int as 'g, int as 'b) Color.t as 'rgb
+type nonrec t = [%t ] as 'extension
+type nonrec t = [%t.typ ] as 'extension
+type nonrec t = [%ext.foo \\"raw\\"] as 'extension
+type nonrec tup = ((int as 'x) * (int as 'y)) as 'tupleAlias
+let (t : string as 's) = ()
+let (t : _ as 'underscore) = ()
+let (t : parenthesizedType as 'parens) = ()
+let (t : (int -> unit) as 'arrow) = ()
+let (t : int -> unit as 'unitAlias) = ()
+let (t : (int -> float -> unit) as 'arrowAlias) = ()
+let (t : int -> float -> unit as 'unitAlias) = ()
+let (t : int as 'myNumber) = ()
+let (t : Mod.Sub.t as 'longidentAlias) = ()
+let (t : (int as 'r, int as 'g, int as 'b) color as 'rgb) = ()
+let (t : (int as 'r, int as 'g, int as 'b) Color.t as 'rgb) = ()
+let (t : [%t ] as 'extension) = ()
+let (t : [%t.typ ] as 'extension) = ()
+let (t : [%ext.foo \\"raw\\"] as 'extension) = ()
+let (t : ((int as 'x) * (int as 'y)) as 'tupleAlias) = ()"
+`;
+
+exports[`any.js 1`] = `
+"type nonrec t = _
+let (t : _) = x"
+`;
+
+exports[`bsObject.js 1`] = `
+"type nonrec t = < age: int   >  Js.t
+type nonrec t = < age: int   >  Js.t
+type nonrec t = < age: int  ;name: string   >  Js.t
+type nonrec t = < age: int  ;name: string   >  Js.t
+type nonrec t =
+  < age: int [@attr ] ;name: ((string)[@onTypeString ]) [@attr2 ]  >  Js.t
+type nonrec t = <  >  Js.t
+type nonrec t = private <  >  Js.t
+type nonrec t = < .. >  Js.t"
+`;
+
+exports[`es6Arrow.js 1`] = `
+"type nonrec t = x -> unit
+type nonrec t = x -> unit
+type nonrec t = int -> string -> unit
+type nonrec t = a:int -> b:int -> int
+type nonrec t = ?a:int -> ?b:int -> int
+type nonrec t = int -> int -> int -> int
+type nonrec t = a:int -> b:int -> c:int -> int
+let (f : x -> unit) = xf
+let (f : x -> unit) = xf
+let (f : int -> string -> unit) = xf
+let (t : a:int -> b:int -> int) = xf
+let (t : ?a:int -> ?b:int -> int) = xf
+let (t : int -> int -> int -> int) = xf
+let (t : a:int -> b:int -> c:int -> int) = xf
+type nonrec t = f:int -> string
+type nonrec t = ?f:int -> string
+let (f : f:int -> string) = fx
+let (f : ?f:int -> string) = fx
+type nonrec t = f:int -> string
+type nonrec t = f:int -> string
+type nonrec t = f:(int -> string) -> float
+type nonrec t = f:(int -> string) -> float
+type nonrec t = f:int -> string -> float
+type nonrec t =
+  ((a:int -> ((b:int -> ((float)[@attr ]) -> unit)[@attrBeforeLblB ]))
+  [@attrBeforeLblA ])
+type nonrec t =
+  ((a:int -> ((b:int -> ((float)[@attr ]) -> unit)[@attrBeforeLblB ]))
+  [@attrBeforeLblA ])
+type nonrec t = ((a:int -> unit)[@attr ])
+type nonrec 'a getInitialPropsFn =
+  < query: string Js.Dict.t  ;req: 'a Js.t Js.Nullable.t   >  Js.t ->
+    'a Js.t Js.Promise.t"
+`;
+
+exports[`extension.js 1`] = `
+"type nonrec t = [%typ ]
+type nonrec t = [%raw.typ ]
+type nonrec t = [%raw.typ \\"existential\\"]
+let (t : [%typ ]) = x
+let (t : [%raw.typ ]) = x
+let (t : [%raw.typ \\"ex\\"]) = x"
+`;
+
+exports[`firstClassModules.js 1`] = `
+"type nonrec t = (module Hashmap)
+type nonrec t = (module Hashmap with type key = string)
+type nonrec t = (module Hashmap with type key = string and type value = int)
+type nonrec toValueLikeInstance =
+  'a t -> (module RxValueLikeInstance.S with type a = 'a)
+type nonrec 'a t = (module Test with type a = 'a)
+type nonrec t = (module Console) ref
+let (devices : (string, (module DEVICE)) Hastbl.t) = Hashtbl.creat 17"
+`;
+
+exports[`parenthesized.js 1`] = `"type nonrec t = ((a:int -> unit)[@attr ])"`;
+
+exports[`poly.js 1`] = `
+"external getLogger :
+  unit ->
+    <
+      log: 'a -> unit  ;log2: 'a . int -> int  ;log3: 'a 'b . 'a -> 'b -> int
+                                                    > 
+      Js.t = \\"./src/logger.mock.js\\""
+`;
+
+exports[`tuple.js 1`] = `
+"type nonrec t = (string * int)
+type nonrec t = (int option * string option)
+let (t : (string * int)) = x
+let (t : (int option * string option)) = x"
+`;
+
+exports[`typeconstr.js 1`] = `
+"type nonrec t = string
+type nonrec t = Parser.t
+type nonrec t = Lang.Parser.t
+type nonrec t = string option
+type nonrec t = string option
+type nonrec t = string Option.t
+type nonrec t = string Option.t
+type nonrec t = (a, b, c) Mod.Sub.t
+type nonrec t = (a, b, c) Mod.Sub.t
+type nonrec t = list
+type nonrec t = string list
+type nonrec t = < age: int   >  Js.t list
+type nonrec t = (< age: int   >  Js.t, < name: string   >  Js.t) list
+type nonrec t = < .. >  Js.t
+type nonrec t = < .. >  Js.t list
+type nonrec t = < age: int   ;.. >  Js.t
+type nonrec t = < age: int   ;.. >  Js.t list
+type nonrec t = < age: int [@attr ]  ;.. >  Js.t
+type nonrec t = < age: int [@attr ]  ;.. >  Js.t list
+type nonrec t = < age: int [@attr ] ;name: string [@attr ]  ;.. >  Js.t
+type nonrec t = < age: int [@attr ] ;name: string [@attr ]  ;.. >  Js.t list
+type nonrec t = < age: int   ;.. >  Js.t
+type nonrec t = < age: int   ;.. >  Js.t list
+type nonrec t = < age: int  ;name: string   ;.. >  Js.t
+type nonrec t = < age: int  ;name: string   ;.. >  Js.t list
+let (t : string) = x
+let (t : Parser.t) = x
+let (t : Lang.Parser.t) = x
+let (t : string option) = x
+let (t : string option) = x
+let (t : string Option.t) = x
+let (t : string Option.t) = x
+let (t : (a, b, c) Mod.Sub.t) = x
+let (t : (a, b, c) Mod.Sub.t) = x
+let (t : list) = x
+let (t : string list) = x
+let (t : < age: int   >  Js.t list) = x
+let (t : < age: int   >  Js.t list) = x
+let (t : < age: int [@attr ]  >  Js.t list) = x
+let (t : < age: int [@attr ]  >  Js.t list) = x
+let (t : < age: int [@attr ] ;name: string [@attr ]  >  Js.t list) = x
+let (t : (< age: int   >  Js.t, < name: string   >  Js.t) list) = x
+let (t :
+  (< age: int [@attr ]  >  Js.t, < name: string [@attr ]  >  Js.t) list) = x
+let (t :
+  (< age: int [@attr ] ;name: string [@attr ]  >  Js.t,
+    < name: string [@attr ] ;age: int [@attr ]  >  Js.t) list)
+  = x
+let (t : < .. >  Js.t list) = x
+let (t : <  >  Js.t list) = x
+let (t : < age: int   ;.. >  Js.t list) = x
+let (t : < age: int   >  Js.t list) = x
+let (t : < age: int   ;.. >  Js.t list) = x
+let (t : < age: int [@attr ]  ;.. >  Js.t list) = x
+let (t : < age: int [@attr ]  >  Js.t list) = x
+let (t : < age: int [@attr ]  ;.. >  Js.t list) = x
+let (t : < age: int  ;name: string   ;.. >  Js.t list) = x
+let (t : < age: int [@attr ] ;name: string [@attr ]  ;.. >  Js.t list) = x
+let (t : string list) = x"
+`;
+
+exports[`uncurried.js 1`] = `
+"type nonrec t = {
+  mutable field: ((float -> int -> bool -> unit)[@bs ]) }
+type nonrec t = ((float -> int -> bool -> unit)[@bs ])
+type nonrec t =
+  ((((float)[@attr ]) ->
+      ((int)[@attr2 ]) ->
+        ((((bool)[@attr3 ]) -> ((string)[@attr4 ]) -> unit)[@bs ]))[@bs ])
+type nonrec t =
+  ((float ->
+      ((int)[@attr2 ]) ->
+        ((bool -> ((string)[@attr4 ]) -> unit)[@bs ][@attr3 ]))[@bs ]
+  [@attr ])
+type nonrec t =
+  ((((float)[@attr ]) ->
+      ((int)[@attr2 ]) ->
+        ((((bool)[@attr3 ]) -> ((string)[@attr4 ]) -> unit)[@bs ]))[@bs ])
+external setTimeout : ((unit -> unit)[@bs ]) -> int -> timerId = \\"setTimeout\\"
+[@@bs.val ]
+external setTimeout :
+  (((unit -> unit) -> int -> timerId)[@bs ]) = \\"setTimeout\\""
+`;
+
+exports[`unit.js 1`] = `
+"type nonrec t = unit
+type nonrec t = unit -> unit
+type nonrec t = unit -> unit -> unit
+type nonrec t = unit -> unit
+let f (f : unit -> unit) = f ()
+let f (f : unit -> unit) = f ()
+let f (f : unit -> unit -> unit) = f () ()
+external svg : unit -> React.element = \\"svg\\"
+external thing : unit -> unit = \\"svg\\""
+`;
+
+exports[`var.js 1`] = `
+"type nonrec t = 'a
+let (t : 'a) = x
+let t : 'a . t = x
+let t : 'a 'b . t = x
+let t : 'a 'b 'c . t = x"
+`;

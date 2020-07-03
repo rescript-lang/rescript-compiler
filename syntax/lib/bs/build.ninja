@@ -1,0 +1,10 @@
+g_pkg_flg = -bs-package-name napkinscript
+src_root_dir = /Users/chenglou/github/syntax
+bsc = /Users/chenglou/github/syntax/node_modules/bs-platform/darwin/bsc.exe
+bsdep = /Users/chenglou/github/syntax/node_modules/bs-platform/darwin/bsb_helper.exe
+warnings =  -warn-error +101
+bsc_flags = -bs-super-errors
+ppx_flags = 
+g_dpkg_incls = 
+g_ns = 
+bsb_dir_group = 0

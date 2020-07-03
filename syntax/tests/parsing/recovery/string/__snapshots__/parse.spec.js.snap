@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`eof.js 1`] = `"let x = \\"eof here\\""`;
+
+exports[`es6template.js 1`] = `"let x = ({|this contains |} ^ foo) ^ {|, missing closin|}"`;
+
+exports[`unclosed.js 1`] = `
+"let x = \\"unclosed\\"
+let y = 1"
+`;

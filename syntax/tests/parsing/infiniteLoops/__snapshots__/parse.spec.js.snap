@@ -1,0 +1,663 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`equalAfterBinaryExpr.js 1`] = `
+"=====Parsetree==========================================
+let rec _addLoop rbt currentNode =
+  ((if (Some currentNode) == (rbt |. root)
+    then currentNode.color <- Black
+    else
+      if (currentNode.parent |. castNotOption).color == Black
+      then ()
+      else
+        if
+          (((let uncle = uncleOf currentNode in
+             (uncle != None) && ((uncle |. castNotOption).color == Red)))
+          [@ns.braces ])
+        then
+          ((currentNode.parent |. castNotOption).color <- Black;
+           ((uncleOf currentNode) |. castNotOption).color <- Black;
+           ((grandParentOf currentNode) |. castNotOption).color <- Red;
+           _addLoop rbt ((grandParentOf currentNode) |. castNotOption))
+        else
+          (let currentNode =
+             if
+               (not (isLeft currentNode)) &&
+                 (isLeft (currentNode.parent |. castNotOption))
+             then
+               (rotateLeft rbt (currentNode.parent |. castNotOption);
+                currentNode.left |. castNotOption)
+             else
+               if
+                 (isLeft currentNode) &&
+                   (not (isLeft (currentNode.parent |. castNotOption)))
+               then
+                 (rotateRight rbt (currentNode.parent |. castNotOption);
+                  currentNode.right |. castNotOption)
+               else currentNode in
+           (currentNode.parent |. castNotOption).color <- Black;
+           ((grandParentOf currentNode) |. castNotOption).color <- Red;
+           if isLeft currentNode
+           then
+             rotateRight rbt ((grandParentOf currentNode) |. castNotOption)
+           else rotateLeft rbt ((grandParentOf currentNode) |. castNotOption)))
+  [@ns.braces ])
+let removeNode rbt node =
+  ((if nodeToRemove.color == Black
+    then
+      (if successor.color == Red
+       then
+         (successor.color <- Black;
+          if successor.parent == None then rbt |. (rootSet (Some successor)))
+       else
+         (let break = ref false in
+          let successorRef = ref successor in
+          while not break.contents do
+            let successor = successorRef.contents in
+            match successor.parent with
+            | None ->
+                (rbt |. (rootSet (Some successor)); break.contents <- true)
+            | Some successorParent ->
+                let sibling = siblingOf successor in
+                (if
+                   (sibling != None) &&
+                     ((sibling |. castNotOption).color == Red)
+                 then
+                   (successorParent.color <- Red;
+                    (sibling |. castNotOption).color <- Black;
+                    if isLeft successor
+                    then rotateLeft rbt successorParent
+                    else rotateRight rbt successorParent);
+                 (let sibling = siblingOf successor in
+                  let siblingNN = sibling |. castNotOption in
+                  if
+                    (successorParent.color == Black) &&
+                      ((sibling == None) ||
+                         (((siblingNN.color == Black) &&
+                             ((siblingNN.left == None) ||
+                                ((siblingNN.left |. castNotOption).color ==
+                                   Black)))
+                            &&
+                            ((siblingNN.right == None) ||
+                               ((siblingNN.right |. castNotOption).color ==
+                                  Black))))
+                  then
+                    (if sibling != None then siblingNN.color <- Red;
+                     successorRef.contents <- successorParent)
+                  else
+                    if
+                      (successorParent.color == Red) &&
+                        ((sibling == None) ||
+                           (((siblingNN.color == Black) &&
+                               ((siblingNN.left == None) ||
+                                  ((siblingNN.left |. castNotOption).color ==
+                                     Black)))
+                              &&
+                              ((siblingNN.right == None) ||
+                                 ((siblingNN.right |. castNotOption).color ==
+                                    Black))))
+                    then
+                      (if sibling != None then siblingNN.color <- Red;
+                       successorParent.color <- Black;
+                       break.contents <- true)
+                    else
+                      if
+                        (sibling != None) &&
+                          ((sibling |. castNotOption).color == Black)
+                      then
+                        (let sibling = sibling |. castNotOption in
+                         if
+                           (((isLeft successor) &&
+                               ((sibling.right == None) ||
+                                  ((sibling.right |. castNotOption).color ==
+                                     Black)))
+                              && (sibling.left != None))
+                             &&
+                             ((sibling.left |. castNotOption).color == Red)
+                         then
+                           (sibling.color <- Red;
+                            (sibling.left |. castNotOption).color <- Black;
+                            rotateRight rbt sibling)
+                         else
+                           if
+                             (((not (isLeft successor)) &&
+                                 ((sibling.left == None) ||
+                                    ((sibling.left |. castNotOption).color ==
+                                       Black)))
+                                && (sibling.right != None))
+                               &&
+                               ((sibling.right |. castNotOption).color == Red)
+                           then
+                             (sibling.color <- Red;
+                              (sibling.right |. castNotOption).color <- Black;
+                              rotateLeft rbt sibling);
+                         break.contents <- true)
+                      else
+                        (let sibling = siblingOf successor in
+                         let sibling = sibling |. castNotOption in
+                         sibling.color <- (successorParent.color);
+                         if isLeft successor
+                         then
+                           ((sibling.right |. castNotOption).color <- Black;
+                            rotateRight rbt successorParent)
+                         else
+                           ((sibling.left |. castNotOption).color <- Black;
+                            rotateLeft rbt successorParent))))
+            done));
+    if ((isLeaf successor)[@bs ])
+    then (if (rbt |. root) == (Some successor) then (rbt |. root) = None))
+  [@ns.braces ])
+=====Errors=============================================
+
+File \\"/napkinscript/tests/parsing/infiniteLoops/equalAfterBinaryExpr.js\\", line 169, characters 16-17:
+
+
+167 │    if isLeaf(. successor) {
+168 │      if rbt->root === Some(successor) {
+[31m169[0m │        rbt->root [31m=[0m None
+170 │      }
+171 │    }
+
+Did you mean \`==\` here?
+
+
+
+========================================================"
+`;
+
+exports[`jsxChildren.js 1`] = `
+"=====Parsetree==========================================
+type nonrec action =
+  | AddUser 
+;;((string ~children:[] ())[@JSX ])
+let (a : action) = AddUser \\"test\\"
+;;etype
+;;s = { x = ((list < i) > ([%napkinscript.exprhole ])) }
+=====Errors=============================================
+
+File \\"/napkinscript/tests/parsing/infiniteLoops/jsxChildren.js\\", line 1, characters 21-22:
+
+
+[31m1[0m │  type action = AddUser[31m<[0mstring>
+2 │  
+3 │  let a: action = AddUser(\\"test\\")
+
+consecutive statements on a line must be separated by ';' or a newline
+
+
+File \\"/napkinscript/tests/parsing/infiniteLoops/jsxChildren.js\\", line 1, characters 21-29:
+
+
+[31m1[0m │  type action = AddUser[31m<string>[0m
+2 │  
+3 │  let a: action = AddUser(\\"test\\")
+
+Missing </string>
+
+
+
+========================================================"
+`;
+
+exports[`nonRecTypes.js 1`] = `
+"=====Parsetree==========================================
+include
+  struct
+    include
+      struct
+        type nonrec 'value t =
+          {
+          mutable size: int ;
+          mutable root: 'value node option ;
+          compare: [ [%napkinscript.typehole ]] Js.Internal.fn }
+        ;;{|Arity_2('value, 'value)], int),
+                      };
+                    }: {
+
+                    }
+                  );
+          type t('value);
+          external t:
+            (
+              ~size: int,
+              ~root: option(node('value)),
+              ~compare: Js.Internal.fn([ | |}
+        ;;Arity_2 (value, value)
+        ;;int
+        ;;(t value) = \\"\\"
+        ;;\\"BS:6.0.1\\\\132\\\\149\\\\166\\\\190\\\\000\\\\000\\\\000#\\\\000\\\\000\\\\000\\\\r\\\\000\\\\000\\\\000&\\\\000\\\\000\\\\000#\\\\145\\\\160\\\\160A\\\\160$size@\\\\160\\\\160A\\\\160$root@\\\\160\\\\160A\\\\160'compare@@\\"
+        external sizeSet :
+          'value t -> int -> unit = \\"size\\"
+            \\"BS:6.0.1\\\\\\\\132\\\\\\\\149\\\\\\\\166\\\\\\\\190\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\021\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\t\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\026\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\025\\\\\\\\176\\\\\\\\160\\\\\\\\160A\\\\\\\\145@\\\\\\\\160\\\\\\\\160A\\\\\\\\004\\\\\\\\003@E\\\\\\\\151\\\\\\\\160$size@\\"
+        ;;[|((\\"use sizeGet instead or use {abstract = light} explicitly\\")
+            [@ocaml.deprecated ])|]
+        ;;[|((1)[@internal.arity ])|]
+        external size :
+          'value t -> int = \\"\\"
+            \\"BS:6.0.1\\\\\\\\132\\\\\\\\149\\\\\\\\166\\\\\\\\190\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\016\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\007\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\020\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\019\\\\\\\\176\\\\\\\\160\\\\\\\\160A\\\\\\\\145@@A\\\\\\\\152\\\\\\\\160$size@\\"
+        ;;[|((1)[@internal.arity ])|]
+        external sizeGet :
+          'value t -> int = \\"\\"
+            \\"BS:6.0.1\\\\\\\\132\\\\\\\\149\\\\\\\\166\\\\\\\\190\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\016\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\007\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\020\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\019\\\\\\\\176\\\\\\\\160\\\\\\\\160A\\\\\\\\145@@A\\\\\\\\152\\\\\\\\160$size@\\"
+        external rootSet :
+          'value t -> 'value node option -> unit = \\"root\\"
+            \\"BS:6.0.1\\\\\\\\132\\\\\\\\149\\\\\\\\166\\\\\\\\190\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\021\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\t\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\026\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\025\\\\\\\\176\\\\\\\\160\\\\\\\\160A\\\\\\\\145@\\\\\\\\160\\\\\\\\160A\\\\\\\\004\\\\\\\\003@E\\\\\\\\151\\\\\\\\160$root@\\"
+        ;;[|((\\"use rootGet instead or use {abstract = light} explicitly\\")
+            [@ocaml.deprecated ])|]
+        ;;[|((1)[@internal.arity ])|]
+        external root :
+          'value t -> 'value node option = \\"\\"
+            \\"BS:6.0.1\\\\\\\\132\\\\\\\\149\\\\\\\\166\\\\\\\\190\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\016\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\007\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\020\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\019\\\\\\\\176\\\\\\\\160\\\\\\\\160A\\\\\\\\145@@A\\\\\\\\152\\\\\\\\160$root@\\"
+        ;;[|((1)[@internal.arity ])|]
+        external rootGet :
+          'value t -> 'value node option = \\"\\"
+            \\"BS:6.0.1\\\\\\\\132\\\\\\\\149\\\\\\\\166\\\\\\\\190\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\016\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\007\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\020\\\\\\\\000\\\\\\\\000\\\\\\\\000\\\\\\\\019\\\\\\\\176\\\\\\\\160\\\\\\\\160A\\\\\\\\145@@A\\\\\\\\152\\\\\\\\160$root@\\"
+        ;;[|((\\"use compareGet instead or use {abstract = light} explicitly\\")
+            [@ocaml.deprecated ])|]
+        ;;[|((1)[@internal.arity ])|]
+        external compare :
+          'value t -> [ [%napkinscript.typehole ]] Js.Internal.fn
+        ;;{|Arity_2('value, 'value)], int) =
+            \\"\\"
+            \\"BS:6.0.1\\\\132\\\\149\\\\166\\\\190\\\\000\\\\000\\\\000\\\\019\\\\000\\\\000\\\\000\\\\007\\\\000\\\\000\\\\000\\\\020\\\\000\\\\000\\\\000\\\\019\\\\176\\\\160\\\\160A\\\\145@@A\\\\152\\\\160'compare@\\";
+          [@internal.arity 1]
+          external compareGet:
+            t('value) => Js.Internal.fn([ | |}
+        ;;Arity_2 (value, value)
+        ;;int
+        ;;\\"\\"
+        ;;\\"BS:6.0.1\\\\132\\\\149\\\\166\\\\190\\\\000\\\\000\\\\000\\\\019\\\\000\\\\000\\\\000\\\\007\\\\000\\\\000\\\\000\\\\020\\\\000\\\\000\\\\000\\\\019\\\\176\\\\160\\\\160A\\\\145@@A\\\\152\\\\160'compare@\\"
+      end
+    let has rbt value = (_findNode rbt (rootGet rbt) value) != None
+    let rec minNode node = [%napkinscript.exprhole ]
+    let findMin rbt = [%napkinscript.exprhole ]
+    let removeNode rbt node =
+      ((let nodeToRemove =
+          match ((leftGet node), (rightGet node)) with
+          | (Some _, Some _) ->
+              let successor = castNotOption (minNode (rightGet node)) in
+              (valueSet node (valueGet successor);
+               heightSet node (heightGet successor);
+               successor)
+          | _ -> node in
+        let successor =
+          match leftGet nodeToRemove with
+          | None -> rightGet nodeToRemove
+          | left -> left in
+        let (successor, isLeaf) =
+          match successor with
+          | None ->
+              let leaf =
+                createNode ~value:((Js.Internal.raw_expr \\"0\\")
+                  [@ns.namedArgLoc ]) ~color:((Black)[@ns.namedArgLoc ])
+                  ~height:((0.)[@ns.namedArgLoc ]) in
+              let isLeaf = Js.Internal.fn_mk1 (fun x -> x == leaf) in
+              (leaf, isLeaf)
+          | Some successor ->
+              (successor, (Js.Internal.fn_mk1 (fun _ -> false))) in
+        let nodeParent = parentGet nodeToRemove in
+        parentSet successor nodeParent;
+        (match nodeParent with
+         | None -> ()
+         | Some parent ->
+             leftOrRightSet parent ~node:((nodeToRemove)[@ns.namedArgLoc ])
+               (Some successor));
+        updateSumRecursive rbt successor;
+        if (colorGet nodeToRemove) == Black
+        then
+          (if (colorGet successor) == Red
+           then
+             (colorSet successor Black;
+              if (parentGet successor) == None
+              then rootSet rbt (Some successor))
+           else
+             (let break = ref false in
+              let successorRef = ref successor in
+              while not break.contents do
+                let successor = successorRef.contents in
+                match parentGet successor with
+                | None ->
+                    (rootSet rbt (Some successor); break.contents <- true)
+                | Some successorParent ->
+                    let sibling = siblingOf successor in
+                    (if
+                       (sibling != None) &&
+                         ((colorGet (castNotOption sibling)) == Red)
+                     then
+                       (colorSet successorParent Red;
+                        colorSet (castNotOption sibling) Black;
+                        if isLeft successor
+                        then rotateLeft rbt successorParent
+                        else rotateRight rbt successorParent);
+                     (let sibling = siblingOf successor in
+                      let siblingNN = castNotOption sibling in
+                      if
+                        ((colorGet successorParent) == Black) &&
+                          ((sibling == None) ||
+                             ((((colorGet siblingNN) == Black) &&
+                                 (((leftGet siblingNN) == None) ||
+                                    ((colorGet
+                                        (castNotOption (leftGet siblingNN)))
+                                       == Black)))
+                                &&
+                                (((rightGet siblingNN) == None) ||
+                                   ((colorGet
+                                       (castNotOption (rightGet siblingNN)))
+                                      == Black))))
+                      then
+                        (if sibling != None then colorSet siblingNN Red;
+                         successorRef.contents <- successorParent)
+                      else
+                        if
+                          ((colorGet successorParent) == Red) &&
+                            ((sibling == None) ||
+                               ((((colorGet siblingNN) == Black) &&
+                                   (((leftGet siblingNN) == None) ||
+                                      ((colorGet
+                                          (castNotOption (leftGet siblingNN)))
+                                         == Black)))
+                                  &&
+                                  (((rightGet siblingNN) == None) ||
+                                     ((colorGet
+                                         (castNotOption (rightGet siblingNN)))
+                                        == Black))))
+                        then
+                          (if sibling != None then colorSet siblingNN Red;
+                           colorSet successorParent Black;
+                           break.contents <- true)
+                        else
+                          if
+                            (sibling != None) &&
+                              ((colorGet (castNotOption sibling)) == Black)
+                          then
+                            (let sibling = castNotOption sibling in
+                             if
+                               (((isLeft successor) &&
+                                   (((rightGet sibling) == None) ||
+                                      ((colorGet
+                                          (castNotOption (rightGet sibling)))
+                                         == Black)))
+                                  && ((leftGet sibling) != None))
+                                 &&
+                                 ((colorGet (castNotOption (leftGet sibling)))
+                                    == Red)
+                             then
+                               (colorSet sibling Red;
+                                colorSet (castNotOption (leftGet sibling))
+                                  Black;
+                                rotateRight rbt sibling)
+                             else
+                               if
+                                 (((not (isLeft successor)) &&
+                                     (((leftGet sibling) == None) ||
+                                        ((colorGet
+                                            (castNotOption (leftGet sibling)))
+                                           == Black)))
+                                    && ((rightGet sibling) != None))
+                                   &&
+                                   ((colorGet
+                                       (castNotOption (rightGet sibling)))
+                                      == Red)
+                               then
+                                 (colorSet sibling Red;
+                                  colorSet (castNotOption (rightGet sibling))
+                                    Black;
+                                  rotateLeft rbt sibling);
+                             break.contents <- true)
+                          else
+                            (let sibling = siblingOf successor in
+                             let sibling = castNotOption sibling in
+                             colorSet sibling (colorGet successorParent);
+                             if isLeft successor
+                             then
+                               (colorSet (castNotOption (rightGet sibling))
+                                  Black;
+                                rotateRight rbt successorParent)
+                             else
+                               (colorSet (castNotOption (leftGet sibling))
+                                  Black;
+                                rotateLeft rbt successorParent))))
+                done));
+        if Js.Internal.fn_run1 isLeaf successor
+        then
+          (if (rootGet rbt) == (Some successor) then rootSet rbt None;
+           (match parentGet successor with
+            | None -> ()
+            | Some parent ->
+                leftOrRightSet parent ~node:((successor)[@ns.namedArgLoc ])
+                  None)))
+      [@ns.braces ])
+    let remove rbt value =
+      match _findNode rbt (rootGet rbt) value with
+      | Some node ->
+          (removeNode rbt node;
+           sizeSet rbt ((sizeGet rbt) - 1);
+           Some (heightGet node))
+      | None -> None
+    let findThroughCallback rbt cb =
+      ((let rec findThroughCallback rbt node cb =
+          match node with
+          | None -> None
+          | Some node ->
+              let cmp = Js.Internal.fn_run1 cb (valueGet node) in
+              if cmp == 0
+              then Some node
+              else
+                if cmp < 0
+                then findThroughCallback rbt (leftGet node) cb
+                else findThroughCallback rbt (rightGet node) cb in
+        match findThroughCallback rbt (rootGet rbt) cb with
+        | None -> None
+        | Some node -> Some (valueGet node))
+      [@ns.braces ])
+    let make ~compare:((compare)[@ns.namedArgLoc ])  =
+      t ~size:((0)[@ns.namedArgLoc ]) ~root:((None)[@ns.namedArgLoc ])
+        ~compare:((compare)[@ns.namedArgLoc ])
+    let rec heightOfInterval rbt node lhs rhs =
+      match node with
+      | None -> 0.
+      | Some n ->
+          if (lhs == None) && (rhs == None)
+          then sumGet n
+          else
+            if
+              (lhs != None) &&
+                ((Js.Internal.fn_run2 (compareGet rbt) (valueGet n)
+                    (castNotOption lhs))
+                   < 0)
+            then heightOfInterval rbt (rightGet n) lhs rhs
+            else
+              if
+                (rhs != None) &&
+                  ((Js.Internal.fn_run2 (compareGet rbt) (valueGet n)
+                      (castNotOption rhs))
+                     > 0)
+              then heightOfInterval rbt (leftGet n) lhs rhs
+              else
+                ((heightGet n) +. (heightOfInterval rbt (leftGet n) lhs None))
+                  +. (heightOfInterval rbt (rightGet n) None rhs)
+    let heightOfInterval rbt lhs rhs =
+      heightOfInterval rbt (rootGet rbt) lhs rhs
+    let rec firstVisibleNode node offset =
+      match node with
+      | None -> None
+      | Some node ->
+          if (sumGet node) <= offset
+          then None
+          else
+            (let nodeHeight = heightGet node in
+             let sumLeft =
+               match leftGet node with
+               | None -> 0.0
+               | Some left -> sumGet left in
+             if sumLeft > offset
+             then firstVisibleNode (leftGet node) offset
+             else
+               if (sumLeft +. nodeHeight) > offset
+               then Some node
+               else
+                 firstVisibleNode (rightGet node)
+                   (offset -. (sumLeft +. nodeHeight)))
+    let lastVisibleNode node offset =
+      match firstVisibleNode node offset with
+      | None -> maxNode node
+      | first -> first
+    let firstVisible rbt ~offset:((offset)[@ns.namedArgLoc ])  =
+      match firstVisibleNode (rootGet rbt) offset with
+      | None -> None
+      | Some node -> Some (valueGet node)
+    let rec leftmost node =
+      match leftGet node with | None -> node | Some node -> leftmost node
+    let rec firstRightParent node =
+      match parentGet node with
+      | None -> None
+      | Some parent ->
+          if isLeft node then Some parent else firstRightParent parent
+    let nextNode node =
+      match rightGet node with
+      | None -> firstRightParent node
+      | Some right -> Some (leftmost right)
+    let rec sumLeftSpine node
+      ~fromRightChild:((fromRightChild)[@ns.namedArgLoc ])  =
+      ((let leftSpine =
+          match leftGet node with
+          | None -> heightGet node
+          | Some left ->
+              if fromRightChild
+              then (heightGet node) +. (sumGet left)
+              else 0.0 in
+        match parentGet node with
+        | None -> leftSpine
+        | Some parent ->
+            leftSpine +.
+              (sumLeftSpine parent
+                 ~fromRightChild:(((rightGet parent) == (Some node))
+                 [@ns.namedArgLoc ])))
+      [@ns.braces ])
+    let getY node =
+      (sumLeftSpine node ~fromRightChild:((true)[@ns.namedArgLoc ])) -.
+        (heightGet node)
+    let linearSearch rbt callback =
+      ((let rec find node callback =
+          if Js.Internal.fn_run1 callback (valueGet node)
+          then Some (valueGet node)
+          else
+            (match nextNode node with
+             | None -> None
+             | Some node -> find node callback) in
+        match minNode (rootGet rbt) with
+        | None -> None
+        | Some node -> find node callback)
+      [@ns.braces ])
+    let rec iterate ~inclusive:((inclusive)[@ns.namedArgLoc ])  firstNode
+      lastNode ~callback:((callback)[@ns.namedArgLoc ])  =
+      match firstNode with
+      | None -> ()
+      | Some node ->
+          (if inclusive then Js.Internal.fn_run1 callback node;
+           if firstNode != lastNode
+           then
+             (if not inclusive then Js.Internal.fn_run1 callback node;
+              iterate ~inclusive:((inclusive)[@ns.namedArgLoc ])
+                (nextNode node) lastNode ~callback:((callback)
+                [@ns.namedArgLoc ])))
+    let rec iterateWithY ?y:((y)[@ns.namedArgLoc ]) 
+      ~inclusive:((inclusive)[@ns.namedArgLoc ])  firstNode lastNode
+      ~callback:((callback)[@ns.namedArgLoc ])  =
+      match firstNode with
+      | None -> ()
+      | Some node ->
+          let y = match y with | None -> getY node | Some y -> y in
+          (if inclusive then Js.Internal.fn_run2 callback node y;
+           if firstNode != lastNode
+           then
+             (if not inclusive then Js.Internal.fn_run2 callback node y;
+              iterateWithY ~y:((y +. (heightGet node))[@ns.namedArgLoc ])
+                ~inclusive:((inclusive)[@ns.namedArgLoc ]) (nextNode node)
+                lastNode ~callback:((callback)[@ns.namedArgLoc ])))
+    let rec updateSum node ~delta:((delta)[@ns.namedArgLoc ])  =
+      match node with
+      | None -> ()
+      | Some node ->
+          (sumSet node ((sumGet node) +. delta);
+           updateSum (parentGet node) ~delta:((delta)[@ns.namedArgLoc ]))
+    let setHeight rbt value ~height:((height)[@ns.namedArgLoc ])  =
+      match _findNode rbt (rootGet rbt) value with
+      | None -> ()
+      | Some node ->
+          let delta = height -. (heightGet node) in
+          (heightSet node height;
+           updateSum (Some node) ~delta:((delta)[@ns.namedArgLoc ]))
+    type nonrec 'value oldNewVisibleNodes =
+      {
+      mutable old: 'value array ;
+      mutable new_: 'value array }
+  end
+=====Errors=============================================
+
+File \\"/napkinscript/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 4, characters 28-36:
+
+
+2 │            include (
+3 │                      {
+[31m4[0m │                        type t[31m('value)[0m = {
+5 │                          mutable size: int,
+6 │                          mutable root: option(node('value)),
+
+Type parameters require angle brackets:
+  t<'value>
+
+
+
+File \\"/napkinscript/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 19, characters 44-51:
+
+
+17 │                ~size: int,
+18 │                ~root: option(node('value)),
+[31m19[0m │                ~compare: Js.Internal.fn([ | \`[31mArity_2[0m('value, 'value)], int)
+20 │              ) =>
+21 │              t('value) =
+
+consecutive statements on a line must be separated by ';' or a newline
+
+
+File \\"/napkinscript/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 67, characters 25-29:
+
+
+65 │          };
+66 │  let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None;
+[31m67[0m │  let rec minNode = node =>
+68 │  let findMin = rbt =>
+69 │  let removeNode = (rbt, node) => {
+
+I'm not sure what to parse here when looking at \\"let\\".
+
+
+File \\"/napkinscript/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 68, characters 20-24:
+
+
+66 │  let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None;
+67 │  let rec minNode = node =>
+[31m68[0m │  let findMin = rbt =>
+69 │  let removeNode = (rbt, node) => {
+70 │    let nodeToRemove =
+
+I'm not sure what to parse here when looking at \\"let\\".
+
+
+File \\"/napkinscript/tests/parsing/infiniteLoops/nonRecTypes.js\\", line 434, characters 30-38:
+
+
+432 │      updateSum(Some(node), ~delta);
+433 │    };
+[31m434[0m │  type nonrec oldNewVisibleNodes[31m('value)[0m = {
+435 │    mutable old: array('value),
+436 │    mutable new_: array('value),
+
+Type parameters require angle brackets:
+  oldNewVisibleNodes<'value>
+
+
+
+
+========================================================"
+`;

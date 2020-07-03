@@ -1,0 +1,167 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`attributes.nsi 1`] = `
+"@@attr
+@@standaloneAttribute
+
+@@standaloneAttribute(paylod => f(payload))
+
+@@standalone(debugger)
+
+@@standalone(\\"eval_raw__\\")
+"
+`;
+
+exports[`exception.nsi 1`] = `
+"exception Exit
+
+@onConstructor exception ExitEarly
+
+exception Exit = Terminate
+exception Exit = Lib.Terminate
+exception Exit = Ns.Lib.Terminate
+"
+`;
+
+exports[`extension.nsi 1`] = `
+"%%bs.raw(\\"eval(js)\\")
+
+@attr
+%%extension(payload)
+"
+`;
+
+exports[`include.nsi 1`] = `
+"include Belt
+
+include {
+  let x: int
+  let y: int
+
+  let add: (int, int) => int
+}
+"
+`;
+
+exports[`modtype.nsi 1`] = `
+"module type IntSum = {
+  let x: int
+  let y: int
+
+  let add: (int, int) => int
+}
+
+module type LinkedList = module type of List
+
+module type Functoria = (X: Int, Y: Float) => Float
+
+module type Ext = %extension
+
+module type MyInt = Int
+
+module type X = A with type t = string
+
+module type LongNaaaaame = MyModule
+  with module X.Bar = Belt.Array
+  and module X.Bar = Belt.Array
+  and module X.Bar = Belt.Array
+
+@attr
+module type LinkedList = module type of List
+"
+`;
+
+exports[`module.nsi 1`] = `
+"module IntSum: {
+  let x: int
+  let y: int
+
+  let add: (int, int) => int
+}
+
+module LinkedList: module type of List
+
+module Functoria: (X: Int, Y: Float) => Float
+
+module Ext: %extension
+
+module MyInt = Int
+module MyInt: Int
+
+module X: A with type t = string
+
+module LongNaaaaame: MyModule
+  with module X.Bar = Belt.Array
+  and module X.Bar = Belt.Array
+  and module X.Bar = Belt.Array
+
+@attr
+module LinkedList: module type of List
+"
+`;
+
+exports[`open.nsi 1`] = `
+"open Belt
+
+open! Belt
+
+@attr
+open Belt
+"
+`;
+
+exports[`recModule.nsi 1`] = `
+"module type Signature = {
+  module rec A: {
+    type t = Leaf(string) | Node(ASet.t)
+    let compare: (t, t) => int
+  }
+  // notice the need for the parens on the module_type
+  // otherwise \`and\` signals the start another with-constraint
+  and ASet: (Set.S with type elt = A.t)
+  and BTree: (Btree.S with type elt = A.t)
+
+  @onFirstAttr
+  module rec A: {
+    type t = Leaf(string) | Node(ASet.t)
+    let compare: (t, t) => int
+  }
+  @onSecondAttr
+  and ASet: (Set.S with type elt = A.t)
+
+  @parsableOnNext
+  module rec A: Btree
+  and ASet: BSet
+}
+"
+`;
+
+exports[`type.nsi 1`] = `
+"type s = string
+
+type user = {name: string, age: int}
+
+type color =
+  | Red
+  | Blue
+  | Black
+"
+`;
+
+exports[`typext.nsi 1`] = `
+"type Rgb.color +=
+  | Red
+  | Blue
+  | Green
+"
+`;
+
+exports[`value.nsi 1`] = `
+"let x: int
+let add: (int, int) => int
+
+let y: float
+
+external eval: string => unit = \\"js_core_eval\\"
+"
+`;
