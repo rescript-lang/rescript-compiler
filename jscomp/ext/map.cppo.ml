@@ -41,8 +41,6 @@ let map = Map_gen.map
 let mapi = Map_gen.mapi
 let bal = Map_gen.bal 
 let height = Map_gen.height 
-let max_binding_exn = Map_gen.max_binding_exn
-let min_binding_exn = Map_gen.min_binding_exn
 
 
 let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with 

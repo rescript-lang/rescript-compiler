@@ -20,9 +20,9 @@ val singleton : 'a -> 'b -> ('a, 'b) t
 val bal : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
 val empty : ('a, 'b) t
 val is_empty : ('a, 'b) t -> bool
-val min_binding_exn : ('a, 'b) t -> 'a * 'b
+
 val choose : ('a, 'b) t -> 'a * 'b
-val max_binding_exn : ('a, 'b) t -> 'a * 'b
+
 val remove_min_binding : ('a, 'b) t -> ('a, 'b) t
 val merge : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
 val iter : ('a, 'b) t -> ('a -> 'b -> 'c) -> unit
@@ -67,8 +67,6 @@ module type S =
     val cardinal : 'a t -> int
     val bindings : 'a t -> (key * 'a) list
     val keys : 'a t -> key list
-    val min_binding_exn : 'a t -> key * 'a
-    val max_binding_exn : 'a t -> key * 'a
     val choose : 'a t -> key * 'a
     val split : 'a t -> key -> 'a t * 'a option * 'a t
     val find_exn : 'a t -> key -> 'a

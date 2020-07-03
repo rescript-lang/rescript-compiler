@@ -130,10 +130,6 @@ let rec min_binding_exn = function
 
 let choose = min_binding_exn
 
-let rec max_binding_exn = function
-    Empty -> raise Not_found
-  | Node(_, x, d, Empty, _) -> (x, d)
-  | Node(_, _, _, r, _) -> max_binding_exn r
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
@@ -342,11 +338,6 @@ module type S =
     val keys : 'a t -> key list 
     (* Increasing order *)
 
-    val min_binding_exn: 'a t -> (key * 'a)
-    (** raise [Not_found] if the map is empty. *)
-
-    val max_binding_exn: 'a t -> (key * 'a)
-    (** Same as {!Map.S.min_binding} *)
 
     val choose: 'a t -> (key * 'a)
     (** Return one binding of the given map, or raise [Not_found] if
