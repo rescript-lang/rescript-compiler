@@ -1,9 +1,7 @@
 type ('key, 'a) t =
     Empty
   | Node of ('key, 'a) t * 'key * 'a * ('key, 'a) t * int
-type ('key, 'a) enumeration =
-    End
-  | More of 'key * 'a * ('key, 'a) t * ('key, 'a) enumeration
+
 
 val cardinal : ('a, 'b) t -> int
 
@@ -15,7 +13,7 @@ val to_sorted_array : ('key, 'a) t -> ('key * 'a) array
 val to_sorted_array_with_f : ('a, 'b) t -> ('a -> 'b -> 'c) -> 'c array
 
 val keys : ('a, 'b) t -> 'a list
-val cons_enum : ('a, 'b) t -> ('a, 'b) enumeration -> ('a, 'b) enumeration
+
 val height : ('a, 'b) t -> int
 val create : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
 val singleton : 'a -> 'b -> ('a, 'b) t
@@ -41,10 +39,7 @@ val concat_or_join :
   ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
 val filter : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t
 val partition : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t * ('a, 'b) t
-val compare :
-  ('a -> 'b -> int) -> ('c -> 'd -> int) -> ('a, 'c) t -> ('b, 'd) t -> int
-val equal :
-  ('a -> 'b -> int) -> ('c -> 'd -> bool) -> ('a, 'c) t -> ('b, 'd) t -> bool
+
 module type S =
   sig
     type key
@@ -62,7 +57,7 @@ module type S =
     val merge :
       'a t -> 'b t -> (key -> 'a option -> 'b option -> 'c option) -> 'c t
     val disjoint_merge : 'a t -> 'a t -> 'a t
-    val equal : 'a t -> 'a t -> ('a -> 'a -> bool) -> bool
+    
     val iter : 'a t -> (key -> 'a -> unit) -> unit
     val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
     val for_all : 'a t -> (key -> 'a -> bool) -> bool

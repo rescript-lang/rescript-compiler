@@ -1,6 +1,56 @@
 
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
+type t = Ext_json_noloc.t     
+let rec equal 
+    (x : t)
+    (y : t) = 
+  match x with 
+  | Null  -> (* [%p? Null _ ] *)
+    begin match y with
+      | Null  -> true
+      | _ -> false end
+  | Str str  -> 
+    begin match y with 
+      | Str str2 -> str = str2
+      | _ -> false end
+  | Flo flo 
+    ->
+    begin match y with
+      |  Flo flo2 -> 
+        flo = flo2 
+      | _ -> false
+    end
+  | True  -> 
+    begin match y with 
+      | True  -> true 
+      | _ -> false 
+    end
+  | False  -> 
+    begin match y with 
+      | False  -> true 
+      | _ -> false 
+    end     
+  | Arr content 
+    -> 
+    begin match y with 
+      | Arr content2
+        ->
+        Ext_array.for_all2_no_exn content content2 equal 
+      | _ -> false 
+    end
+
+  | Obj map -> 
+    begin match y with 
+      | Obj map2 -> 
+        let xs = Map_string.bindings map 
+                 |> List.sort (fun (a,_) (b,_) -> compare a b) in 
+        let ys = Map_string.bindings map2 
+                 |> List.sort (fun (a,_) (b,_) -> compare a b) in 
+        Ext_list.for_all2_no_exn xs ys (fun (k0,v0) (k1,v1) -> k0=k1 && equal v0 v1)
+      | _ -> false 
+    end 
+
 
 open Ext_json_parse
 let (|?)  m (key, cb) =
@@ -41,7 +91,7 @@ let id_parsing_x2 x =
   let stru = Ext_json_parse.parse_json_from_string x |> strip in 
   let normal_s = Ext_json_noloc.to_string stru in 
   let normal_ss = strip (Ext_json_parse.parse_json_from_string normal_s) in 
-  if Ext_json_noloc.equal stru normal_ss then 
+  if equal stru normal_ss then 
     true
   else begin 
     prerr_endline "ERROR";

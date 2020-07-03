@@ -16,9 +16,6 @@ type ('key,'a) t =
   | Empty
   | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
 
-type ('key,'a) enumeration =
-  | End
-  | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
 
 let rec cardinal_aux acc  = function
   | Empty -> acc 
@@ -80,11 +77,6 @@ let rec keys_aux accu = function
 let keys s = keys_aux [] s
 
 
-
-let rec cons_enum m e =
-  match m with
-    Empty -> e
-  | Node(l, v, d, r, _) -> cons_enum l (More(v, d, r, e))
 
 
 let height = function
@@ -261,30 +253,7 @@ let rec partition x p = match x with
     then (join lt v d rt, concat lf rf)
     else (concat lt rt, join lf v d rf)
 
-let compare compare_key cmp_val m1 m2 =
-  let rec compare_aux e1  e2 =
-    match (e1, e2) with
-      (End, End) -> 0
-    | (End, _)  -> -1
-    | (_, End) -> 1
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      let c = compare_key v1 v2 in
-      if c <> 0 then c else
-        let c = cmp_val d1 d2 in
-        if c <> 0 then c else
-          compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
-  in compare_aux (cons_enum m1 End) (cons_enum m2 End)
 
-let equal compare_key cmp m1 m2 =
-  let rec equal_aux e1 e2 =
-    match (e1, e2) with
-      (End, End) -> true
-    | (End, _)  -> false
-    | (_, End) -> false
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      compare_key v1 v2 = 0 && cmp d1 d2 &&
-      equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
-  in equal_aux (cons_enum m1 End) (cons_enum m2 End)
 
 
 
@@ -328,7 +297,7 @@ module type S =
     val disjoint_merge : 'a t -> 'a t -> 'a t
      (* merge two maps, will raise if they have the same key *)
 
-    val equal: 'a t -> 'a t -> ('a -> 'a -> bool) ->  bool
+
 
     val iter: 'a t -> (key -> 'a -> unit) ->  unit
     (** [iter f m] applies [f] to all bindings in map [m].

@@ -23,7 +23,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t 
+type t = private 
+  | True 
+  | False 
+  | Null 
+  | Flo of string 
+  | Str of string
+  | Arr of t array 
+  | Obj of t Map_string.t
 
 val true_  : t 
 val false_ : t 
@@ -33,7 +40,7 @@ val flo : string -> t
 val arr : t array -> t 
 val obj : t Map_string.t -> t 
 val kvs : (string * t) list -> t 
-val equal : t -> t -> bool 
+
 val to_string : t -> string 
 
 

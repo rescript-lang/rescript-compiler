@@ -160,7 +160,7 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
 
 
 
-let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
+
 
 let add_list (xs : _ list ) init = 
   Ext_list.fold_left xs init (fun  acc (k,v) -> add acc k v )
