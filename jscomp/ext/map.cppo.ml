@@ -159,7 +159,6 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
 
 
 
-let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
 
 let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
 

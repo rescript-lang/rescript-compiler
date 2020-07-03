@@ -62,7 +62,6 @@ module type S =
     val merge :
       'a t -> 'b t -> (key -> 'a option -> 'b option -> 'c option) -> 'c t
     val disjoint_merge : 'a t -> 'a t -> 'a t
-    (* val compare : 'a t -> 'a t -> ('a -> 'a -> int) -> int *)
     val equal : 'a t -> 'a t -> ('a -> 'a -> bool) -> bool
     val iter : 'a t -> (key -> 'a -> unit) -> unit
     val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b

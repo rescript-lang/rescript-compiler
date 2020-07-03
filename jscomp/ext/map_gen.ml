@@ -327,9 +327,6 @@ module type S =
 
     val disjoint_merge : 'a t -> 'a t -> 'a t
      (* merge two maps, will raise if they have the same key *)
-    val compare: 'a t -> 'a t -> ('a -> 'a -> int) -> int
-    (** Total ordering between maps.  The first argument is a total ordering
-        used to compare data associated with equal keys in the two maps. *)
 
     val equal: 'a t -> 'a t -> ('a -> 'a -> bool) ->  bool
 
