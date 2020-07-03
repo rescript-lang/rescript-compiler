@@ -11411,8 +11411,92 @@ let as_ppx = ref false
 
 let mono_empty_array = ref true
 end
-module Map_gen
-= struct
+module Map_gen : sig 
+#1 "map_gen.mli"
+type ('key, 'a) t =
+    Empty
+  | Node of ('key, 'a) t * 'key * 'a * ('key, 'a) t * int
+
+
+val cardinal : ('a, 'b) t -> int
+
+val bindings : ('a, 'b) t -> ('a * 'b) list
+val fill_array_with_f :
+  ('a, 'b) t -> int -> 'c array -> ('a -> 'b -> 'c) -> int
+val fill_array_aux : ('a, 'b) t -> int -> ('a * 'b) array -> int
+val to_sorted_array : ('key, 'a) t -> ('key * 'a) array
+val to_sorted_array_with_f : ('a, 'b) t -> ('a -> 'b -> 'c) -> 'c array
+
+val keys : ('a, 'b) t -> 'a list
+
+val height : ('a, 'b) t -> int
+val create : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+val singleton : 'a -> 'b -> ('a, 'b) t
+val bal : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+val empty : ('a, 'b) t
+val is_empty : ('a, 'b) t -> bool
+val min_binding_exn : ('a, 'b) t -> 'a * 'b
+val choose : ('a, 'b) t -> 'a * 'b
+val max_binding_exn : ('a, 'b) t -> 'a * 'b
+val remove_min_binding : ('a, 'b) t -> ('a, 'b) t
+val merge : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
+val iter : ('a, 'b) t -> ('a -> 'b -> 'c) -> unit
+val map : ('a, 'b) t -> ('b -> 'c) -> ('a, 'c) t
+val mapi : ('a, 'b) t -> ('a -> 'b -> 'c) -> ('a, 'c) t
+val fold : ('a, 'b) t -> 'c -> ('a -> 'b -> 'c -> 'c) -> 'c
+val for_all : ('a, 'b) t -> ('a -> 'b -> bool) -> bool
+val exists : ('a, 'b) t -> ('a -> 'b -> bool) -> bool
+val add_min_binding : 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+val add_max_binding : 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+val join : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+val concat : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
+val concat_or_join :
+  ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
+val filter : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t
+val partition : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t * ('a, 'b) t
+
+module type S =
+  sig
+    type key
+    type +'a t
+    val empty : 'a t
+    val compare_key : key -> key -> int
+    val is_empty : 'a t -> bool
+    val mem : 'a t -> key -> bool
+    val to_sorted_array : 'a t -> (key * 'a) array
+    val to_sorted_array_with_f : 'a t -> (key -> 'a -> 'b) -> 'b array
+    val add : 'a t -> key -> 'a -> 'a t
+    val adjust : 'a t -> key -> ('a option -> 'a) -> 'a t
+    val singleton : key -> 'a -> 'a t
+    val remove : 'a t -> key -> 'a t
+    val merge :
+      'a t -> 'b t -> (key -> 'a option -> 'b option -> 'c option) -> 'c t
+    val disjoint_merge : 'a t -> 'a t -> 'a t
+    
+    val iter : 'a t -> (key -> 'a -> unit) -> unit
+    val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
+    val for_all : 'a t -> (key -> 'a -> bool) -> bool
+    val exists : 'a t -> (key -> 'a -> bool) -> bool
+    val filter : 'a t -> (key -> 'a -> bool) -> 'a t
+    val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t
+    val cardinal : 'a t -> int
+    val bindings : 'a t -> (key * 'a) list
+    val keys : 'a t -> key list
+    val min_binding_exn : 'a t -> key * 'a
+    val max_binding_exn : 'a t -> key * 'a
+    val choose : 'a t -> key * 'a
+    val split : 'a t -> key -> 'a t * 'a option * 'a t
+    val find_exn : 'a t -> key -> 'a
+    val find_opt : 'a t -> key -> 'a option
+    val find_default : 'a t -> key -> 'a -> 'a
+    val map : 'a t -> ('a -> 'b) -> 'b t
+    val mapi : 'a t -> (key -> 'a -> 'b) -> 'b t
+    val of_list : (key * 'a) list -> 'a t
+    val of_array : (key * 'a) array -> 'a t
+    val add_list : (key * 'b) list -> 'b t -> 'b t
+  end
+
+end = struct
 #1 "map_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
@@ -11432,9 +11516,6 @@ type ('key,'a) t =
   | Empty
   | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
 
-type ('key,'a) enumeration =
-  | End
-  | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
 
 let rec cardinal_aux acc  = function
   | Empty -> acc 
@@ -11496,11 +11577,6 @@ let rec keys_aux accu = function
 let keys s = keys_aux [] s
 
 
-
-let rec cons_enum m e =
-  match m with
-    Empty -> e
-  | Node(l, v, d, r, _) -> cons_enum l (More(v, d, r, e))
 
 
 let height = function
@@ -11677,30 +11753,7 @@ let rec partition x p = match x with
     then (join lt v d rt, concat lf rf)
     else (concat lt rt, join lf v d rf)
 
-let compare compare_key cmp_val m1 m2 =
-  let rec compare_aux e1  e2 =
-    match (e1, e2) with
-      (End, End) -> 0
-    | (End, _)  -> -1
-    | (_, End) -> 1
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      let c = compare_key v1 v2 in
-      if c <> 0 then c else
-        let c = cmp_val d1 d2 in
-        if c <> 0 then c else
-          compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
-  in compare_aux (cons_enum m1 End) (cons_enum m2 End)
 
-let equal compare_key cmp m1 m2 =
-  let rec equal_aux e1 e2 =
-    match (e1, e2) with
-      (End, End) -> true
-    | (End, _)  -> false
-    | (_, End) -> false
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      compare_key v1 v2 = 0 && cmp d1 d2 &&
-      equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
-  in equal_aux (cons_enum m1 End) (cons_enum m2 End)
 
 
 
@@ -11743,11 +11796,8 @@ module type S =
 
     val disjoint_merge : 'a t -> 'a t -> 'a t
      (* merge two maps, will raise if they have the same key *)
-    val compare: 'a t -> 'a t -> ('a -> 'a -> int) -> int
-    (** Total ordering between maps.  The first argument is a total ordering
-        used to compare data associated with equal keys in the two maps. *)
 
-    val equal: 'a t -> 'a t -> ('a -> 'a -> bool) ->  bool
+
 
     val iter: 'a t -> (key -> 'a -> unit) ->  unit
     (** [iter f m] applies [f] to all bindings in map [m].
@@ -12020,9 +12070,8 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
 
 
 
-let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
 
-let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
+
 
 let add_list (xs : _ list ) init = 
   Ext_list.fold_left xs init (fun  acc (k,v) -> add acc k v )
