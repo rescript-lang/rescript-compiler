@@ -42,18 +42,6 @@ open Parsetree
     in
     process false [] attrs
 
-  let collectIfExpressions expr =
-    let rec collect acc expr = match expr.pexp_desc with
-    | Pexp_ifthenelse (ifExpr, thenExpr, Some elseExpr) ->
-      collect ((ifExpr, thenExpr)::acc) elseExpr
-    | Pexp_ifthenelse (ifExpr, thenExpr, (None as elseExpr)) ->
-      let ifs = List.rev ((ifExpr, thenExpr)::acc) in
-      (ifs, elseExpr)
-    | _ ->
-      (List.rev acc, Some expr)
-    in
-    collect [] expr
-
   let collectListExpressions expr =
     let rec collect acc expr = match expr.pexp_desc with
     | Pexp_construct ({txt = Longident.Lident "[]"}, _) ->
@@ -165,7 +153,7 @@ open Parsetree
   let filterParsingAttrs attrs =
     List.filter (fun attr ->
       match attr with
-      | ({Location.txt = ("ns.ternary" | "ns.braces" | "bs" | "ns.namedArgLoc")}, _) -> false
+      | ({Location.txt = ("ns.ternary" | "ns.braces" | "bs" | "ns.iflet" | "ns.namedArgLoc")}, _) -> false
       | _ -> true
     ) attrs
 
@@ -269,7 +257,7 @@ open Parsetree
 
   let hasAttributes attrs =
     List.exists (fun attr -> match attr with
-      | ({Location.txt = "bs" | "ns.ternary" | "ns.braces"}, _) -> false
+      | ({Location.txt = "bs" | "ns.ternary" | "ns.braces" | "ns.iflet"}, _) -> false
       | _ -> true
     ) attrs
 
@@ -279,6 +267,52 @@ open Parsetree
         [Nolabel, _parentExpr; Nolabel, _memberExpr]
       ) -> true
     | _ -> false
+
+  let rec hasIfLetAttribute attrs =
+    match attrs with
+    | [] -> false
+    | ({Location.txt="ns.iflet"},_)::_ -> true
+    | _::attrs -> hasIfLetAttribute attrs
+
+  let isIfLetExpr expr = match expr with
+    | {
+        pexp_attributes = attrs;
+        pexp_desc = Pexp_match _
+      } when hasIfLetAttribute attrs -> true
+    | _ -> false
+
+  type ifConditionKind =
+  | If of Parsetree.expression
+  | IfLet of Parsetree.pattern * Parsetree.expression
+
+  let collectIfExpressions expr =
+    let rec collect acc expr = match expr.pexp_desc with
+    | Pexp_ifthenelse (ifExpr, thenExpr, Some elseExpr) ->
+      collect ((If(ifExpr), thenExpr)::acc) elseExpr
+    | Pexp_ifthenelse (ifExpr, thenExpr, (None as elseExpr)) ->
+      let ifs = List.rev ((If(ifExpr), thenExpr)::acc) in
+      (ifs, elseExpr)
+        | Pexp_match (condition, [{
+      pc_lhs = pattern;
+      pc_guard = None;
+      pc_rhs = thenExpr;
+    }; {
+      pc_rhs = {pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, _)}
+    }]) when isIfLetExpr expr ->
+      let ifs = List.rev ((IfLet(pattern, condition), thenExpr)::acc) in
+      (ifs, None)
+    | Pexp_match (condition, [{
+      pc_lhs = pattern;
+      pc_guard = None;
+      pc_rhs = thenExpr;
+    }; {
+      pc_rhs = elseExpr;
+    }]) when isIfLetExpr expr ->
+      collect ((IfLet(pattern, condition), thenExpr)::acc) elseExpr
+    | _ ->
+      (List.rev acc, Some expr)
+    in
+    collect [] expr
 
   let rec hasTernaryAttribute attrs =
     match attrs with
@@ -371,13 +405,13 @@ open Parsetree
 
   let filterPrinteableAttributes attrs =
     List.filter (fun attr -> match attr with
-      | ({Location.txt="bs" | "ns.ternary"}, _) -> false
+      | ({Location.txt="bs" | "ns.ternary" | "ns.iflet"}, _) -> false
       | _ -> true
     ) attrs
 
   let partitionPrinteableAttributes attrs =
     List.partition (fun attr -> match attr with
-      | ({Location.txt="bs" | "ns.ternary"}, _) -> false
+      | ({Location.txt="bs" | "ns.ternary" | "ns.iflet"}, _) -> false
       | _ -> true
     ) attrs
 

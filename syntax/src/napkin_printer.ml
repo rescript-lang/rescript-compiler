@@ -2365,6 +2365,58 @@ and printExpressionWithComments expr cmtTbl =
   let doc = printExpression expr cmtTbl in
   printComments doc cmtTbl expr.Parsetree.pexp_loc
 
+and printIfChain pexp_attributes ifs elseExpr cmtTbl =
+  let ifDocs = Doc.join ~sep:Doc.space (
+    List.mapi (fun i (ifExpr, thenExpr) ->
+      let ifTxt = if i > 0 then Doc.text "else if " else  Doc.text "if " in
+      match ifExpr with
+        | ParsetreeViewer.If ifExpr ->
+          let condition =
+            if ParsetreeViewer.isBlockExpr ifExpr then
+              printExpressionBlock ~braces:true ifExpr cmtTbl
+            else
+              let doc = printExpressionWithComments ifExpr cmtTbl in
+              match Parens.expr ifExpr with
+              | Parens.Parenthesized -> addParens doc
+              | Braced braces -> printBraces doc ifExpr braces
+              | Nothing -> Doc.ifBreaks (addParens doc) doc
+          in
+          Doc.concat [
+            ifTxt;
+            Doc.group (condition);
+            Doc.space;
+            let thenExpr = match ParsetreeViewer.processBracesAttr thenExpr with
+            (* This case only happens when coming from Reason, we strip braces *)
+            | (Some _, expr) -> expr
+            | _ -> thenExpr
+            in
+            printExpressionBlock ~braces:true thenExpr cmtTbl;
+          ]
+        | IfLet (pattern, conditionExpr) ->
+          Doc.concat [
+            ifTxt;
+            Doc.text "let ";
+            printPattern pattern cmtTbl;
+            Doc.text " = ";
+            printExpressionWithComments conditionExpr cmtTbl;
+            Doc.space;
+            printExpressionBlock ~braces:true thenExpr cmtTbl;
+          ]
+    ) ifs
+  ) in
+  let elseDoc = match elseExpr with
+  | None -> Doc.nil
+  | Some expr -> Doc.concat [
+      Doc.text " else ";
+      printExpressionBlock ~braces:true expr cmtTbl;
+    ]
+  in
+  Doc.concat [
+    printAttributes pexp_attributes cmtTbl;
+    ifDocs;
+    elseDoc;
+  ]
+
 and printExpression (e : Parsetree.expression) cmtTbl =
   let printedExpression = match e.pexp_desc with
   | Parsetree.Pexp_constant c -> printConstant c
@@ -2699,90 +2751,52 @@ and printExpression (e : Parsetree.expression) cmtTbl =
     ]
   | Pexp_setfield (expr1, longidentLoc, expr2) ->
     printSetFieldExpr e.pexp_attributes expr1 longidentLoc expr2 e.pexp_loc cmtTbl
-  | Pexp_ifthenelse (_ifExpr, _thenExpr, _elseExpr) ->
-    if ParsetreeViewer.isTernaryExpr e then
-      let (parts, alternate) = ParsetreeViewer.collectTernaryParts e in
-      let ternaryDoc = match parts with
-      | (condition1, consequent1)::rest ->
-        Doc.group (Doc.concat [
-          printTernaryOperand condition1 cmtTbl;
-          Doc.indent (
-            Doc.concat [
-              Doc.line;
-              Doc.indent (
+  | Pexp_ifthenelse (_ifExpr, _thenExpr, _elseExpr) when ParsetreeViewer.isTernaryExpr e ->
+    let (parts, alternate) = ParsetreeViewer.collectTernaryParts e in
+    let ternaryDoc = match parts with
+    | (condition1, consequent1)::rest ->
+      Doc.group (Doc.concat [
+        printTernaryOperand condition1 cmtTbl;
+        Doc.indent (
+          Doc.concat [
+            Doc.line;
+            Doc.indent (
+              Doc.concat [
+                Doc.text "? ";
+                printTernaryOperand consequent1 cmtTbl
+              ]
+            );
+            Doc.concat (
+              List.map (fun (condition, consequent) ->
                 Doc.concat [
+                  Doc.line;
+                  Doc.text ": ";
+                  printTernaryOperand condition cmtTbl;
+                  Doc.line;
                   Doc.text "? ";
-                  printTernaryOperand consequent1 cmtTbl
+                  printTernaryOperand consequent cmtTbl;
                 ]
-              );
-              Doc.concat (
-                List.map (fun (condition, consequent) ->
-                  Doc.concat [
-                    Doc.line;
-                    Doc.text ": ";
-                    printTernaryOperand condition cmtTbl;
-                    Doc.line;
-                    Doc.text "? ";
-                    printTernaryOperand consequent cmtTbl;
-                  ]
-                ) rest
-              );
-              Doc.line;
-              Doc.text ": ";
-              Doc.indent (printTernaryOperand alternate cmtTbl);
-            ]
-          )
-        ])
-      | _ -> Doc.nil
-      in
-      let attrs = ParsetreeViewer.filterTernaryAttributes e.pexp_attributes in
-      let needsParens = match ParsetreeViewer.filterParsingAttrs attrs with
-      | [] -> false | _ -> true
-      in
-      Doc.concat [
-        printAttributes attrs cmtTbl;
-        if needsParens then addParens ternaryDoc else ternaryDoc;
-      ]
-    else
-    let (ifs, elseExpr) = ParsetreeViewer.collectIfExpressions e in
-    let ifDocs = Doc.join ~sep:Doc.space (
-      List.mapi (fun i (ifExpr, thenExpr) ->
-        let ifTxt = if i > 0 then Doc.text "else if " else  Doc.text "if " in
-        let condition =
-          if ParsetreeViewer.isBlockExpr ifExpr then
-            printExpressionBlock ~braces:true ifExpr cmtTbl
-          else
-            let doc = printExpressionWithComments ifExpr cmtTbl in
-            match Parens.expr ifExpr with
-            | Parens.Parenthesized -> addParens doc
-            | Braced braces -> printBraces doc ifExpr braces
-            | Nothing -> Doc.ifBreaks (addParens doc) doc
-        in
-        Doc.concat [
-          ifTxt;
-          Doc.group (condition);
-          Doc.space;
-          let thenExpr = match ParsetreeViewer.processBracesAttr thenExpr with
-          (* This case only happens when coming from Reason, we strip braces *)
-          | (Some _, expr) -> expr
-          | _ -> thenExpr
-          in
-          printExpressionBlock ~braces:true thenExpr cmtTbl;
-        ]
-      ) ifs
-    ) in
-    let elseDoc = match elseExpr with
-    | None -> Doc.nil
-    | Some expr -> Doc.concat [
-        Doc.text " else ";
-        printExpressionBlock ~braces:true expr cmtTbl;
-      ]
+              ) rest
+            );
+            Doc.line;
+            Doc.text ": ";
+            Doc.indent (printTernaryOperand alternate cmtTbl);
+          ]
+        )
+      ])
+    | _ -> Doc.nil
+    in
+    let attrs = ParsetreeViewer.filterTernaryAttributes e.pexp_attributes in
+    let needsParens = match ParsetreeViewer.filterParsingAttrs attrs with
+    | [] -> false | _ -> true
     in
     Doc.concat [
-      printAttributes e.pexp_attributes cmtTbl;
-      ifDocs;
-      elseDoc;
+      printAttributes attrs cmtTbl;
+      if needsParens then addParens ternaryDoc else ternaryDoc;
     ]
+  | Pexp_ifthenelse (_ifExpr, _thenExpr, _elseExpr) ->
+    let (ifs, elseExpr) = ParsetreeViewer.collectIfExpressions e in
+    printIfChain e.pexp_attributes ifs elseExpr cmtTbl
   | Pexp_while (expr1, expr2) ->
     let condition =
       let doc = printExpressionWithComments expr1 cmtTbl in
@@ -3008,6 +3022,9 @@ and printExpression (e : Parsetree.expression) cmtTbl =
       Doc.text " catch ";
       printCases cases cmtTbl;
     ]
+  | Pexp_match (_, [_;_]) when ParsetreeViewer.isIfLetExpr e ->
+    let (ifs, elseExpr) = ParsetreeViewer.collectIfExpressions e in
+    printIfChain e.pexp_attributes ifs elseExpr cmtTbl
   | Pexp_match (expr, cases) ->
     let exprDoc =
       let doc = printExpressionWithComments expr cmtTbl in
