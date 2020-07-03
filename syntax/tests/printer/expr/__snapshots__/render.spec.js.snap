@@ -2826,7 +2826,7 @@ let math = if discriminant < 0. {
 }
 
 switch x {
-| ##typevar => 42
+| #...typevar => 42
 }
 
 let r = #\\\\\\"Reducer⛪️\\"

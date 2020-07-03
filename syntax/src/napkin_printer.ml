@@ -2204,7 +2204,7 @@ and printPattern (p : Parsetree.pattern) cmtTbl =
     in
     Doc.group(Doc.concat [variantName; argsDoc])
   | Ppat_type ident ->
-    Doc.concat [Doc.text "##"; printIdentPath ident cmtTbl]
+    Doc.concat [Doc.text "#..."; printIdentPath ident cmtTbl]
   | Ppat_record(rows, openFlag) ->
       Doc.group(
         Doc.concat([

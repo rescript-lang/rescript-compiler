@@ -633,10 +633,7 @@ let rec scan scanner =
         Token.LessThan
       )
     else if ch == CharacterCodes.hash then
-      if scanner.ch == CharacterCodes.hash then(
-        next scanner;
-        Token.HashHash
-      ) else if scanner.ch == CharacterCodes.equal then(
+      if scanner.ch == CharacterCodes.equal then(
         next scanner;
         Token.HashEqual
       ) else (
