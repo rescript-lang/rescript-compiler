@@ -38,7 +38,7 @@ val concat : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
 val concat_or_join :
   ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
 val filter : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t
-val partition : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t * ('a, 'b) t
+(* val partition : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t * ('a, 'b) t *)
 
 module type S =
   sig
@@ -63,12 +63,12 @@ module type S =
     val for_all : 'a t -> (key -> 'a -> bool) -> bool
     val exists : 'a t -> (key -> 'a -> bool) -> bool
     val filter : 'a t -> (key -> 'a -> bool) -> 'a t
-    val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t
+    (* val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t *)
     val cardinal : 'a t -> int
     val bindings : 'a t -> (key * 'a) list
     val keys : 'a t -> key list
     val choose : 'a t -> key * 'a
-    val split : 'a t -> key -> 'a t * 'a option * 'a t
+
     val find_exn : 'a t -> key -> 'a
     val find_opt : 'a t -> key -> 'a option
     val find_default : 'a t -> key -> 'a -> 'a

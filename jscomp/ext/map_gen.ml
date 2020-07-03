@@ -238,21 +238,6 @@ let rec filter x p = match x with
     let r' = filter r p in
     if pvd then join l' v d r' else concat l' r'
 
-let rec partition x p = match x with
-    Empty -> (Empty, Empty)
-  | Node(l, v, d, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition l p in
-    let pvd = p v d in
-    let (rt, rf) = partition r p in
-    if pvd
-    then (join lt v d rt, concat lf rf)
-    else (concat lt rt, join lf v d rf)
-
-
-
-
-
     
 module type S =
   sig
@@ -321,7 +306,7 @@ module type S =
         order unspecified
      *)
 
-    val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t
+    (* val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t *)
     (** [partition p m] returns a pair of maps [(m1, m2)], where
         [m1] contains all the bindings of [s] that satisfy the
         predicate [p], and [m2] is the map with all the bindings of
@@ -345,7 +330,7 @@ module type S =
        but equal bindings will be chosen for equal maps.
      *)
 
-    val split: 'a t -> key -> 'a t * 'a option * 'a t
+    (* val split: 'a t -> key -> 'a t * 'a option * 'a t *)
     (** [split x m] returns a triple [(l, data, r)], where
           [l] is the map with all the bindings of [m] whose key
         is strictly less than [x];

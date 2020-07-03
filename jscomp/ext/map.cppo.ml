@@ -1,6 +1,6 @@
 
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
-
+[@@@warnerror"a"]
 
 #ifdef TYPE_FUNCTOR
 module Make(Ord: Map.OrderedType) = struct
@@ -35,7 +35,7 @@ let to_sorted_array = Map_gen.to_sorted_array
 let to_sorted_array_with_f = Map_gen.to_sorted_array_with_f
 let keys = Map_gen.keys
 let choose = Map_gen.choose 
-let partition = Map_gen.partition 
+
 let filter = Map_gen.filter 
 let map = Map_gen.map 
 let mapi = Map_gen.mapi
