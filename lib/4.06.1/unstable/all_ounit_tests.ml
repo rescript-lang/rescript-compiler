@@ -4694,7 +4694,7 @@ val join : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
 val concat : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
 val concat_or_join :
   ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
-val filter : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t
+(* val filter : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t *)
 (* val partition : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t * ('a, 'b) t *)
 
 module type S =
@@ -4719,7 +4719,7 @@ module type S =
     val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
     val for_all : 'a t -> (key -> 'a -> bool) -> bool
     val exists : 'a t -> (key -> 'a -> bool) -> bool
-    val filter : 'a t -> (key -> 'a -> bool) -> 'a t
+    (* val filter : 'a t -> (key -> 'a -> bool) -> 'a t *)
     (* val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t *)
     val cardinal : 'a t -> int
     val bindings : 'a t -> (key * 'a) list
@@ -4969,14 +4969,14 @@ let concat_or_join t1 v d t2 =
   | Some d -> join t1 v d t2
   | None -> concat t1 t2
 
-let rec filter x p = match x with
+(* let rec filter x p = match x with
     Empty -> Empty
   | Node(l, v, d, r, _) ->
     (* call [p] in the expected left-to-right order *)
     let l' = filter l p in
     let pvd = p v d in
     let r' = filter r p in
-    if pvd then join l' v d r' else concat l' r'
+    if pvd then join l' v d r' else concat l' r' *)
 
     
 module type S =
@@ -5040,7 +5040,7 @@ module type S =
         order unspecified
      *)
 
-    val filter: 'a t -> (key -> 'a -> bool) -> 'a t
+    (* val filter: 'a t -> (key -> 'a -> bool) -> 'a t *)
     (** [filter p m] returns the map with all the bindings in [m]
         that satisfy predicate [p].
         order unspecified
@@ -5163,7 +5163,7 @@ let to_sorted_array_with_f = Map_gen.to_sorted_array_with_f
 let keys = Map_gen.keys
 let choose = Map_gen.choose 
 
-let filter = Map_gen.filter 
+
 let map = Map_gen.map 
 let mapi = Map_gen.mapi
 let bal = Map_gen.bal 
@@ -15469,7 +15469,7 @@ let to_sorted_array_with_f = Map_gen.to_sorted_array_with_f
 let keys = Map_gen.keys
 let choose = Map_gen.choose 
 
-let filter = Map_gen.filter 
+
 let map = Map_gen.map 
 let mapi = Map_gen.mapi
 let bal = Map_gen.bal 
