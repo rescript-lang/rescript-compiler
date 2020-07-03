@@ -3158,17 +3158,14 @@ let singleton = Set_gen.singleton
 let cardinal = Set_gen.cardinal
 let elements = Set_gen.elements
 let min_elt = Set_gen.min_elt
-(* let max_elt = Set_gen.max_elt *)
+
 let choose = Set_gen.choose 
-(* let of_sorted_list = Set_gen.of_sorted_list *)
-(* let of_sorted_array = Set_gen.of_sorted_array *)
-(* let partition = Set_gen.partition 
-let filter = Set_gen.filter  *)
+
 let of_sorted_array = Set_gen.of_sorted_array
 
-let rec mem (tree : t) x =  match tree with 
+let rec mem (tree : t) (x : elt) =  match tree with 
   | Empty -> false
-  | Leaf v -> compare_elt x v = 0
+  | Leaf v -> x = v 
   | Node{l; v; r} ->
     let c = compare_elt x v in
     c = 0 || mem (if c < 0 then l else r) x
@@ -3263,11 +3260,10 @@ let rec diff (s1 : t) (s2 : t) : t  =
 
 
 
-let rec remove (tree : t)  x : t = match tree with 
+let rec remove (tree : t)  (x : elt) : t = match tree with 
   | Empty -> empty (* This case actually would be never reached *)
-  | Leaf v -> 
-    let c = compare_elt x v in
-    if c = 0 then empty else tree    
+  | Leaf v ->     
+    if x = v then empty else tree    
   | Node{l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then Set_gen.internal_merge l r else
