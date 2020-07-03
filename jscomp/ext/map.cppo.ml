@@ -34,7 +34,7 @@ let bindings = Map_gen.bindings
 let to_sorted_array = Map_gen.to_sorted_array
 let to_sorted_array_with_f = Map_gen.to_sorted_array_with_f
 let keys = Map_gen.keys
-let choose = Map_gen.choose 
+
 
 
 let map = Map_gen.map 

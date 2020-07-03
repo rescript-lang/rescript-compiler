@@ -67,7 +67,7 @@ module type S =
     val cardinal : 'a t -> int
     val bindings : 'a t -> (key * 'a) list
     val keys : 'a t -> key list
-    val choose : 'a t -> key * 'a
+    (* val choose : 'a t -> key * 'a *)
 
     val find_exn : 'a t -> key -> 'a
     val find_opt : 'a t -> key -> 'a option

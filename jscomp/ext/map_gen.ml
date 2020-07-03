@@ -312,11 +312,6 @@ module type S =
     (* Increasing order *)
 
 
-    val choose: 'a t -> (key * 'a)
-    (** Return one binding of the given map, or raise [Not_found] if
-       the map is empty. Which binding is chosen is unspecified,
-       but equal bindings will be chosen for equal maps.
-     *)
 
     (* val split: 'a t -> key -> 'a t * 'a option * 'a t *)
     (** [split x m] returns a triple [(l, data, r)], where
