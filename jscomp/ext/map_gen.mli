@@ -1,4 +1,4 @@
-type ('key, 'a) t =
+type ('key, + 'a) t = private
     Empty
   | Node of ('key, 'a) t * 'key * 'a * ('key, 'a) t * int
 
@@ -17,6 +17,15 @@ val keys : ('a, 'b) t -> 'a list
 val height : ('a, 'b) t -> int
 val create : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
 val singleton : 'a -> 'b -> ('a, 'b) t
+
+val [@inline] unsafe_node : 
+  ('a, 'b ) t ->
+  'a -> 
+  'b -> 
+  ('a, 'b ) t ->
+  int -> 
+  ('a, 'b ) t
+
 val bal : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
 val empty : ('a, 'b) t
 val is_empty : ('a, 'b) t -> bool

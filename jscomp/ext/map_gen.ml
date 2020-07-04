@@ -21,12 +21,13 @@ type ('key,'a) t =
 let  empty = Empty
 
 let [@inline] calc_height a b = (if a >= b  then a else b) + 1 
-
 let [@inline] singleton x d = Node(Empty, x, d, Empty, 1)
 let [@inline] height = function
   | Empty -> 0
   | Node(_,_,_,_,h) -> h
 
+let [@inline] unsafe_node l x d r h =   
+  Node (l,x,d,r,h)  
 let create l x d r =
   Node(l, x, d, r, calc_height (height l) (height r))
 

@@ -19,7 +19,7 @@ module Make(Ord: Map.OrderedType) = struct
   [%error "unknown type"]
 #endif
 
-type 'a t = (key,'a) Map_gen.t
+type + 'a t = (key,'a) Map_gen.t
 exception Duplicate_key of key 
 
 let empty = Map_gen.empty 
@@ -45,11 +45,11 @@ let height = Map_gen.height
 
 let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with 
   | Empty ->
-    Node(Empty, x, data, Empty, 1)
+    singleton x data
   | Node(l, v, d, r, h) ->
     let c = compare_key x v in
     if c = 0 then
-      Node(l, x, data, r, h)
+      Map_gen.unsafe_node l x data r h
     else if c < 0 then
       bal (add l x data ) v d r
     else
@@ -59,11 +59,11 @@ let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with
 let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a = 
   match tree with 
   | Empty ->
-    Node(Empty, x, replace None, Empty, 1)
+    singleton x (replace None)
   | Node(l, v, d, r, h) ->
     let c = compare_key x v in
     if c = 0 then
-      Node(l, x, replace  (Some d) , r, h)
+      Map_gen.unsafe_node l x (replace  (Some d))  r h
     else if c < 0 then
       bal (adjust l x  replace ) v d r
     else
@@ -100,8 +100,7 @@ let rec mem (tree : _ Map_gen.t )  x= match tree with
     c = 0 || mem (if c < 0 then l else r) x 
 
 let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
-  | Empty ->
-    Empty
+  | Empty -> empty
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then
@@ -114,7 +113,7 @@ let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with
 
 let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = match tree with 
   | Empty ->
-    (Empty, None, Empty)
+    (empty, None, empty)
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then (l, Some d, r)
@@ -125,7 +124,7 @@ let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = match tree wi
 
 let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
   match (s1, s2) with
-  | (Empty, Empty) -> Empty
+  | (Empty, Empty) -> empty
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     let (l2, d2, r2) = split s2 v1 in
     Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
@@ -137,7 +136,7 @@ let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
 
 let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
   match (s1, s2) with
-  | (Empty, Empty) -> Empty
+  | (Empty, Empty) -> empty
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     begin match split s2 v1 with 
     | l2, None, r2 -> 
