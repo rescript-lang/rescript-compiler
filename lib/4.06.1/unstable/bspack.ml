@@ -12003,26 +12003,36 @@ let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with
       bal l v d (remove r x )
 
 
-let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = match tree with 
+let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = 
+  match tree with 
   | Empty ->
     (empty, None, empty)
-  | Node {l; k = v; v = d; r} ->
-    let c = compare_key x v in
-    if c = 0 then (l, Some d, r)
+  | Node {l; k ; v ; r} ->
+    let c = compare_key x k in
+    if c = 0 then (l, Some v, r)
     else if c < 0 then
-      let (ll, pres, rl) = split l x in (ll, pres, Map_gen.join rl v d r)
+      let (ll, pres, rl) = split l x in 
+      (ll, pres, Map_gen.join rl k v r)
     else
-      let (lr, pres, rr) = split r x in (Map_gen.join l v d lr, pres, rr)
+      let (lr, pres, rr) = split r x in 
+      (Map_gen.join l k v lr, pres, rr)
 
 let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
   match (s1, s2) with
   | (Empty, Empty) -> empty
-  | (Node {l = l1; k = v1; v = d1; r = r1; h = h1}, _) when h1 >= height s2 ->
-    let (l2, d2, r2) = split s2 v1 in
-    Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
-  | _, Node {l = l2; k = v2; v = d2; r = r2 } ->
-    let (l1, d1, r1) = split s1 v2 in
-    Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
+  | Node ({ k  } as s1), _ when s1.h >= height s2 ->
+    let (l, v, r) = split s2 k in
+    Map_gen.concat_or_join 
+      (merge s1.l l f) k 
+      (f k (Some s1.v) v) 
+      (merge s1.r r f)
+  | _, Node ({k  } as s2) ->
+    let (l, v, r) = split s1 k in
+    Map_gen.concat_or_join 
+      (merge l s2.l f) 
+      k
+      (f k v (Some s2.v)) 
+      (merge r s2.r f)
   | _ ->
     assert false
 
