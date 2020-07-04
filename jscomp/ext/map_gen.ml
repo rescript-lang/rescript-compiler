@@ -35,8 +35,8 @@ let [@inline] height = function
 let [@inline] unsafe_node l x d r h =   
   Node {l; k = x; v = d;r; h}
 
-let create l x d r =
-  Node{l; k=x; v = d; r; h= calc_height (height l) (height r)}
+let [@inline] create l k v r =
+  Node{l; k; v; r; h= calc_height (height l) (height r)}
 
 
 
