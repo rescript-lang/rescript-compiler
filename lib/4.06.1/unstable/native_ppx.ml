@@ -10640,19 +10640,19 @@ let bal l x d r =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then begin
-    let [@warning "-8"] Node {l=ll; k= lv; v= ld; r = lr} = l in
+    let [@warning "-8"] Node ({l=ll; r = lr} as l) = l in
     if height ll >= height lr then
-      create ll lv ld (create lr x d r)
+      create ll l.k l.v (create lr x d r)
     else         
-      let [@warning "-8"] Node {l=lrl; k=lrv;v= lrd; r=lrr} = lr in 
-      create (create ll lv ld lrl) lrv lrd (create lrr x d r)      
+      let [@warning "-8"] Node ({l=lrl; r=lrr} as lr) = lr in 
+      create (create ll l.k l.v lrl) lr.k lr.v (create lrr x d r)      
   end else if hr > hl + 2 then begin
-    let [@warning "-8"] Node{l=rl; k=rv; v=rd; r=rr} = r in 
+    let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
     if height rr >= height rl then
-      create (create l x d rl) rv rd rr
+      create (create l x d rl) r.k r.v rr
     else 
-      let [@warning "-8"] Node{l=rll; k=rlv; v=rld; r=rlr} = rl in 
-      create (create l x d rll) rlv rld (create rlr rv rd rr)
+      let [@warning "-8"] Node ({l=rll;  r=rlr} as rl) = rl in 
+      create (create l x d rll) rl.k rl.v (create rlr r.k r.v rr)
   end else
     Node{l; k=x; v=d; r; h=calc_height hl hr}
 
@@ -10744,9 +10744,10 @@ let rec join l v d r =
   match (l, r) with
     (Empty, _) -> add_min_binding v d r
   | (_, Empty) -> add_max_binding v d l
-  | (Node{l = ll; k = lv; v = ld; r = lr; h = lh}, Node{l = rl; k = rv; v = rd; r= rr; h = rh}) ->
-    if lh > rh + 2 then bal ll lv ld (join lr v d r) else
-    if rh > lh + 2 then bal (join l v d rl) rv rd rr else
+  | Node ({ h = lh} as xl), 
+    Node ({ h = rh} as xr) ->
+    if lh > rh + 2 then bal xl.l xl.k xl.v (join xl.r v d r) else
+    if rh > lh + 2 then bal (join l v d xr.l) xr.k xr.v xr.r else
       create l v d r
 
 (* Merge two trees l and r into one.
