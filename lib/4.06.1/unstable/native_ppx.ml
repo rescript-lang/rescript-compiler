@@ -11058,19 +11058,25 @@ let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
 let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
   match (s1, s2) with
   | (Empty, Empty) -> empty
-  | (Node {l = l1; k = v1; v = d1; r = r1; h = h1}, _) when h1 >= height s2 ->
-    begin match split s2 v1 with 
-    | l2, None, r2 -> 
-      Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
-    | _, Some _, _ ->
-      raise (Duplicate_key  v1)
+  | Node ({k} as s1), _ when s1.h >= height s2 ->
+    begin match split s2 k with 
+      | l, None, r -> 
+        Map_gen.join 
+          (disjoint_merge  s1.l l)
+          k 
+          s1.v 
+          (disjoint_merge s1.r r)
+      | _, Some _, _ ->
+        raise (Duplicate_key  k)
     end        
-  | (_, Node {l = l2; k = v2; v = d2; r = r2}) ->
-    begin match  split s1 v2 with 
-    | (l1, None, r1) -> 
-      Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
-    | (_, Some _, _) -> 
-      raise (Duplicate_key v2)
+  | _, Node ({k} as s2) ->
+    begin match  split s1 k with 
+      | (l, None, r) -> 
+        Map_gen.join 
+          (disjoint_merge  l s2.l) k s2.v 
+          (disjoint_merge  r s2.r)
+      | (_, Some _, _) -> 
+        raise (Duplicate_key k)
     end
   | _ ->
     assert false
