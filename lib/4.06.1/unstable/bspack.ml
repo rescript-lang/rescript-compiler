@@ -11548,8 +11548,8 @@ let [@inline] height = function
 let [@inline] unsafe_node l x d r h =   
   Node {l; k = x; v = d;r; h}
 
-let create l x d r =
-  Node{l; k=x; v = d; r; h= calc_height (height l) (height r)}
+let [@inline] create l k v r =
+  Node{l; k; v; r; h= calc_height (height l) (height r)}
 
 
 
@@ -11937,51 +11937,51 @@ let height = Map_gen.height
 let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with 
   | Empty ->
     singleton x data
-  | Node {l; k = v; v = d; r; h} ->
-    let c = compare_key x v in
+  | Node {l; k ; v ; r; h} ->
+    let c = compare_key x k in
     if c = 0 then
       Map_gen.unsafe_node l x data r h
     else if c < 0 then
-      bal (add l x data ) v d r
+      bal (add l x data ) k v r
     else
-      bal l v d (add r x data )
+      bal l k v (add r x data )
 
 
 let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a = 
   match tree with 
   | Empty ->
     singleton x (replace None)
-  | Node {l; k = v; v = d; r; h} ->
-    let c = compare_key x v in
+  | Node ({l; k ; r} as tree) ->
+    let c = compare_key x k in
     if c = 0 then
-      Map_gen.unsafe_node l x (replace  (Some d))  r h
+      Map_gen.unsafe_node l x (replace  (Some tree.v))  r tree.h
     else if c < 0 then
-      bal (adjust l x  replace ) v d r
+      bal (adjust l x  replace ) k tree.v r
     else
-      bal l v d (adjust r x  replace )
+      bal l k tree.v (adjust r x  replace )
 
 
 let rec find_exn (tree : _ Map_gen.t ) x = match tree with 
   | Empty ->
     raise Not_found
-  | Node {l; k = v; v = d; r} ->
-    let c = compare_key x v in
-    if c = 0 then d
-    else find_exn (if c < 0 then l else r) x
+  | Node tree ->
+    let c = compare_key x tree.k in
+    if c = 0 then tree.v
+    else find_exn (if c < 0 then tree.l else tree.r) x
 
 let rec find_opt (tree : _ Map_gen.t ) x = match tree with 
   | Empty -> None 
-  | Node {l; k = v; v = d; r} ->
-    let c = compare_key x v in
-    if c = 0 then Some d
-    else find_opt (if c < 0 then l else r) x
+  | Node tree ->
+    let c = compare_key x tree.k in
+    if c = 0 then Some tree.v
+    else find_opt (if c < 0 then tree.l else tree.r) x
 
 let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with 
   | Empty -> default  
-  | Node {l; k = v; v = d; r} ->
-    let c = compare_key x v in
-    if c = 0 then  d
-    else find_default (if c < 0 then l else r) x default
+  | Node tree ->
+    let c = compare_key x tree.k in
+    if c = 0 then tree.v
+    else find_default (if c < 0 then tree.l else tree.r) x default
 
 let rec mem (tree : _ Map_gen.t )  x= match tree with 
   | Empty ->
