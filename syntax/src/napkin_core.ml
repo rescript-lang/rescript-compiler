@@ -84,6 +84,7 @@ let jsxAttr = (Location.mknoloc "JSX", Parsetree.PStr [])
 let uncurryAttr = (Location.mknoloc "bs", Parsetree.PStr [])
 let ternaryAttr = (Location.mknoloc "ns.ternary", Parsetree.PStr [])
 let ifLetAttr = (Location.mknoloc "ns.iflet", Parsetree.PStr [])
+let suppressFragileMatchWarningAttr = (Location.mknoloc "warning", Parsetree.PStr [Ast_helper.Str.eval (Ast_helper.Exp.constant (Pconst_string ("-4", None)))])
 let makeBracesAttr loc = (Location.mkloc "ns.braces" loc, Parsetree.PStr [])
 
 type typDefOrExt =
@@ -3070,7 +3071,7 @@ and parseIfLetExpr startPos p =
     Ast_helper.Exp.construct ~loc (Location.mkloc (Longident.Lident "()") loc) None
   in
   let loc = mkLoc startPos p.prevEndPos in
-  Ast_helper.Exp.match_ ~attrs:[ifLetAttr] ~loc conditionExpr [
+  Ast_helper.Exp.match_ ~attrs:[ifLetAttr; suppressFragileMatchWarningAttr] ~loc conditionExpr [
     Ast_helper.Exp.case pattern thenExpr;
     Ast_helper.Exp.case (Ast_helper.Pat.any ()) elseExpr;
   ]

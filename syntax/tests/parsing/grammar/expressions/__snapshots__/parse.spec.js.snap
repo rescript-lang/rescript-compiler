@@ -504,35 +504,36 @@ let ifElseIfThen =
   then f ()
   else if foo = bar2 then f1 () else if foo = bar3 then f2 () else f3 ()
 let x = (if true then 1 else 2) + (if false then 2 else 3)
-;;((match foo () with | Some x -> doSomethingWithX x | _ -> ())[@ns.iflet ])
+;;((match foo () with | Some x -> doSomethingWithX x | _ -> ())
+  [@ns.iflet ][@warning \\"-4\\"])
 ;;((match foo () with
     | Some x -> doSomethingWithX x
-    | _ -> doSomethingElse ())[@ns.iflet ])
+    | _ -> doSomethingElse ())[@ns.iflet ][@warning \\"-4\\"])
 ;;((match foo () with
     | Some x -> doSomethingWithX x
     | _ ->
         (((match bar () with
            | Some y -> doSomethingWithY y
            | _ -> doSomethingElse ()))
-        [@ns.iflet ]))[@ns.iflet ])
+        [@ns.iflet ][@warning \\"-4\\"]))[@ns.iflet ][@warning \\"-4\\"])
 ;;((match foo () with
     | Some x -> doSomethingWithX x
     | _ -> if n > 10 then doSomethingWithForN () else doSomethingElse ())
-  [@ns.iflet ])
+  [@ns.iflet ][@warning \\"-4\\"])
 ;;if n > 10
   then doSomethingWithForN ()
   else
     (((match foo () with
        | Some x -> doSomethingWithX x
        | _ -> doSomethingElse ()))
-    [@ns.iflet ])
+    [@ns.iflet ][@warning \\"-4\\"])
 ;;if n > 10
   then ((doSomethingWithForN ())[@aa ])
   else
     (((match ((foo ())[@dd ]) with
        | ((Some ((x)[@cc ]))[@bb ]) -> ((doSomethingWithY x)[@ee ])
        | _ -> ((doSomethingElse ())[@ff ])))
-    [@ns.iflet ])
+    [@ns.iflet ][@warning \\"-4\\"])
 ;;((match foo () with
     | Some x -> doSomethingWithX x
     | _ ->
@@ -540,26 +541,27 @@ let x = (if true then 1 else 2) + (if false then 2 else 3)
            | Some y -> doSomethingWithY y
            | _ ->
                (((match baz () with | Some z -> doSomethingWithZ z | _ -> ()))
-               [@ns.iflet ])))
-        [@ns.iflet ]))[@ns.iflet ])
+               [@ns.iflet ][@warning \\"-4\\"])))
+        [@ns.iflet ][@warning \\"-4\\"]))[@ns.iflet ][@warning \\"-4\\"])
 ;;((match foo () with
     | Some (Thing (With { many = Internal [|Components;q|] })) as p ->
         doSomethingWithE e
-    | _ -> ())[@ns.iflet ])
-let a = ((match foo () with | Some x -> x | _ -> 123)[@ns.iflet ])
+    | _ -> ())[@ns.iflet ][@warning \\"-4\\"])
+let a = ((match foo () with | Some x -> x | _ -> 123)
+  [@ns.iflet ][@warning \\"-4\\"])
 let getZ nested =
   ((match nested.origin with
     | Some point -> (((match point.z with | Some z -> z | _ -> 0))
-        [@ns.iflet ])
+        [@ns.iflet ][@warning \\"-4\\"])
     | _ -> 0)
-  [@ns.iflet ])
+  [@ns.iflet ][@warning \\"-4\\"])
 ;;((match foo () with
     | Some (Thing (With { many = Internal [|Components;q|] })) as p ->
         ((((match foo () with
             | Other (Thing (With { many = Internal [|Components;q|] })) as p
                 -> doSomethingElse e
             | _ -> ()))
-         [@ns.iflet ]);
+         [@ns.iflet ][@warning \\"-4\\"]);
          doSomethingWithE e)
     | _ ->
         (((match foo () with
@@ -570,10 +572,13 @@ let getZ nested =
                   | Some (Thing (With { many = Internal [|Components;q|] }))
                       as p -> doSomethingWithE e
                   | _ -> ()))
-               [@ns.iflet ])))
-        [@ns.iflet ]))[@ns.iflet ])
+               [@ns.iflet ][@warning \\"-4\\"])))
+        [@ns.iflet ][@warning \\"-4\\"]))[@ns.iflet ][@warning \\"-4\\"])
 let a =
-  ((if b then ((match foo () with | Some x -> 1 | _ -> 2)[@ns.iflet ]) else 3)
+  ((if b
+    then ((match foo () with | Some x -> 1 | _ -> 2)
+      [@ns.iflet ][@warning \\"-4\\"])
+    else 3)
   [@ns.ternary ])"
 `;
 

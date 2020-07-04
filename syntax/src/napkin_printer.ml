@@ -2411,8 +2411,9 @@ and printIfChain pexp_attributes ifs elseExpr cmtTbl =
       printExpressionBlock ~braces:true expr cmtTbl;
     ]
   in
+  let attrs = ParsetreeViewer.filterFragileMatchAttributes pexp_attributes in
   Doc.concat [
-    printAttributes pexp_attributes cmtTbl;
+    printAttributes attrs cmtTbl;
     ifDocs;
     elseDoc;
   ]
@@ -3072,6 +3073,7 @@ and printExpression (e : Parsetree.expression) cmtTbl =
   | Pexp_newtype _
   | Pexp_setfield _
   | Pexp_ifthenelse _ -> true
+  | Pexp_match _ when ParsetreeViewer.isIfLetExpr e -> true
   | Pexp_construct _ when ParsetreeViewer.hasJsxAttribute e.pexp_attributes -> true
   | _ -> false
   in

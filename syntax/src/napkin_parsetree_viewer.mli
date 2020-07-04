@@ -74,6 +74,7 @@ val parametersShouldHug:
  funParamKind list -> bool
 
 val filterTernaryAttributes: Parsetree.attributes -> Parsetree.attributes
+val filterFragileMatchAttributes: Parsetree.attributes -> Parsetree.attributes
 
 val isJsxExpression: Parsetree.expression -> bool
 val hasJsxAttribute: Parsetree.attributes -> bool

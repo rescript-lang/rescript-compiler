@@ -255,19 +255,6 @@ open Parsetree
     else
       false
 
-  let hasAttributes attrs =
-    List.exists (fun attr -> match attr with
-      | ({Location.txt = "bs" | "ns.ternary" | "ns.braces" | "ns.iflet"}, _) -> false
-      | _ -> true
-    ) attrs
-
-  let isArrayAccess expr = match expr.pexp_desc with
-    | Pexp_apply (
-        {pexp_desc = Pexp_ident {txt = Longident.Ldot (Lident "Array", "get")}},
-        [Nolabel, _parentExpr; Nolabel, _memberExpr]
-      ) -> true
-    | _ -> false
-
   let rec hasIfLetAttribute attrs =
     match attrs with
     | [] -> false
@@ -280,6 +267,28 @@ open Parsetree
         pexp_desc = Pexp_match _
       } when hasIfLetAttribute attrs -> true
     | _ -> false
+
+  let hasAttributes attrs =
+    List.exists (fun attr -> match attr with
+      | ({Location.txt = "bs" | "ns.ternary" | "ns.braces" | "ns.iflet"}, _) -> false
+      (* Remove the fragile pattern warning for iflet expressions *)
+      | ({Location.txt="warning"}, PStr [{
+        pstr_desc = Pstr_eval ({
+          pexp_desc = Pexp_constant (
+            Pconst_string ("-4", None)
+          )
+        }, _)
+      }]) -> not (hasIfLetAttribute attrs)
+      | _ -> true
+    ) attrs
+
+  let isArrayAccess expr = match expr.pexp_desc with
+    | Pexp_apply (
+        {pexp_desc = Pexp_ident {txt = Longident.Ldot (Lident "Array", "get")}},
+        [Nolabel, _parentExpr; Nolabel, _memberExpr]
+      ) -> true
+    | _ -> false
+
 
   type ifConditionKind =
   | If of Parsetree.expression
@@ -349,6 +358,18 @@ open Parsetree
   let filterTernaryAttributes attrs =
     List.filter (fun attr -> match attr with
       |({Location.txt="ns.ternary"},_) -> false
+      | _ -> true
+    ) attrs
+
+  let filterFragileMatchAttributes attrs =
+    List.filter (fun attr -> match attr with
+      | ({Location.txt="warning"}, PStr [{
+        pstr_desc = Pstr_eval ({
+          pexp_desc = Pexp_constant (
+            Pconst_string ("-4", _)
+          )
+        }, _)
+      }]) -> false
       | _ -> true
     ) attrs
 
