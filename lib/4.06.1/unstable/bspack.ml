@@ -11525,13 +11525,13 @@ end = struct
 [@@@warnerror "+55"]
 (** adapted from stdlib *)
 
-type ('key,'a) t =
+type ('key,'a) t0 =
   | Empty
   | Node of {
-    l : ('key,'a) t ;
+    l : ('key,'a) t0 ;
     k : 'key ;
     v : 'a ;
-    r : ('key,'a) t ;
+    r : ('key,'a) t0 ;
     h : int
   }
 
@@ -11567,7 +11567,15 @@ let [@inline] create l k v r =
   Node{l; k; v; r; h= calc_height (height l) (height r)}
 
 
-
+  type ('key, + 'a) t = ('key,'a) t0 = private
+    | Empty
+    | Node of {
+      l : ('key,'a) t ;
+      k : 'key ;
+      v : 'a ;
+      r : ('key,'a) t ;
+      h : int
+    }
 
 let rec cardinal_aux acc  = function
   | Empty -> acc 
@@ -11650,7 +11658,7 @@ let bal l x d r =
       let [@warning "-8"] Node ({l=rll;  r=rlr} as rl) = rl in 
       create (create l x d rll) rl.k rl.v (create rlr r.k r.v rr)
   end else
-    Node{l; k=x; v=d; r; h=calc_height hl hr}
+    unsafe_node l x d r (calc_height hl hr)
 
 
 
