@@ -1,6 +1,12 @@
 type ('key, + 'a) t = private
-    Empty
-  | Node of ('key, 'a) t * 'key * 'a * ('key, 'a) t * int
+  | Empty
+  | Node of {
+      l : ('key,'a) t ;
+      k : 'key ;
+      v : 'a ;
+      r : ('key,'a) t ;
+      h : int
+    }
 
 
 val cardinal : ('a, 'b) t -> int

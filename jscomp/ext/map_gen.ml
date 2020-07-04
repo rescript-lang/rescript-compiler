@@ -16,34 +16,41 @@
 
 type ('key,'a) t =
   | Empty
-  | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
+  | Node of {
+    l : ('key,'a) t ;
+    k : 'key ;
+    v : 'a ;
+    r : ('key,'a) t ;
+    h : int
+  }
 
 let  empty = Empty
 
 let [@inline] calc_height a b = (if a >= b  then a else b) + 1 
-let [@inline] singleton x d = Node(Empty, x, d, Empty, 1)
+let [@inline] singleton x d = Node {l = Empty; k = x; v = d; r = Empty; h = 1}
 let [@inline] height = function
   | Empty -> 0
-  | Node(_,_,_,_,h) -> h
+  | Node {h} -> h
 
 let [@inline] unsafe_node l x d r h =   
-  Node (l,x,d,r,h)  
+  Node {l; k = x; v = d;r; h}
+
 let create l x d r =
-  Node(l, x, d, r, calc_height (height l) (height r))
+  Node{l; k=x; v = d; r; h= calc_height (height l) (height r)}
 
 
 
 
 let rec cardinal_aux acc  = function
   | Empty -> acc 
-  | Node (l,_,_,r, _) -> 
+  | Node {l; r} -> 
     cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
 
 let cardinal s = cardinal_aux 0 s 
 
 let rec bindings_aux accu = function
   | Empty -> accu
-  | Node(l, v, d, r, _) -> bindings_aux ((v, d) :: bindings_aux accu r) l
+  | Node {l;k;v;r} -> bindings_aux ((k, v) :: bindings_aux accu r) l
 
 let bindings s =
   bindings_aux [] s
@@ -51,7 +58,7 @@ let bindings s =
 let rec fill_array_with_f (s : _ t) i arr  f : int =    
   match s with 
   | Empty -> i 
-  | Node ( l ,k,v,r,_) -> 
+  | Node {l; k; v; r} -> 
     let inext = fill_array_with_f l i arr f in 
     Array.unsafe_set arr inext (f k v);
     fill_array_with_f r (inext + 1) arr f
@@ -59,7 +66,7 @@ let rec fill_array_with_f (s : _ t) i arr  f : int =
 let rec fill_array_aux (s : _ t) i arr : int =    
   match s with 
   | Empty -> i 
-  | Node (l,k,v,r,_) -> 
+  | Node {l;k;v;r} -> 
     let inext = fill_array_aux l i arr in 
     Array.unsafe_set arr inext (k,v);
     fill_array_aux r (inext + 1) arr 
@@ -68,7 +75,7 @@ let rec fill_array_aux (s : _ t) i arr : int =
 let to_sorted_array (s : ('key,'a) t)  : ('key * 'a ) array =    
   match s with 
   | Empty -> [||]
-  | Node(l,k,v,r,_) -> 
+  | Node {l;k;v;r} -> 
     let len = 
       cardinal_aux (cardinal_aux 1 r) l in 
     let arr =
@@ -79,7 +86,7 @@ let to_sorted_array (s : ('key,'a) t)  : ('key * 'a ) array =
 let to_sorted_array_with_f (type key a b ) (s : (key,a) t)  (f : key -> a -> b): b array =    
   match s with 
   | Empty -> [||]
-  | Node(l,k,v,r,_) -> 
+  | Node {l;k;v;r} -> 
     let len = 
       cardinal_aux (cardinal_aux 1 r) l in 
     let arr =
@@ -89,7 +96,7 @@ let to_sorted_array_with_f (type key a b ) (s : (key,a) t)  (f : key -> a -> b):
 
 let rec keys_aux accu = function
     Empty -> accu
-  | Node(l, v, _, r, _) -> keys_aux (v :: keys_aux accu r) l
+  | Node {l; k;r} -> keys_aux (k :: keys_aux accu r) l
 
 let keys s = keys_aux [] s
 
@@ -101,21 +108,21 @@ let bal l x d r =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then begin
-    let [@warning "-8"] Node(ll, lv, ld, lr, _) = l in
+    let [@warning "-8"] Node {l=ll; k= lv; v= ld; r = lr} = l in
     if height ll >= height lr then
       create ll lv ld (create lr x d r)
     else         
-      let [@warning "-8"] Node(lrl, lrv, lrd, lrr, _) = lr in 
+      let [@warning "-8"] Node {l=lrl; k=lrv;v= lrd; r=lrr} = lr in 
       create (create ll lv ld lrl) lrv lrd (create lrr x d r)      
   end else if hr > hl + 2 then begin
-    let [@warning "-8"] Node(rl, rv, rd, rr, _) = r in 
+    let [@warning "-8"] Node{l=rl; k=rv; v=rd; r=rr} = r in 
     if height rr >= height rl then
       create (create l x d rl) rv rd rr
     else 
-      let [@warning "-8"] Node(rll, rlv, rld, rlr, _) = rl in 
+      let [@warning "-8"] Node{l=rll; k=rlv; v=rld; r=rlr} = rl in 
       create (create l x d rll) rlv rld (create rlr rv rd rr)
   end else
-    Node(l, x, d, r, calc_height hl hr)
+    Node{l; k=x; v=d; r; h=calc_height hl hr}
 
 
 
@@ -123,16 +130,16 @@ let [@inline] is_empty = function Empty -> true | _ -> false
 
 let rec min_binding_exn = function
     Empty -> raise Not_found
-  | Node(Empty, x, d, _, _) -> (x, d)
-  | Node(l, _, _, _, _) -> min_binding_exn l
+  | Node{l=Empty; k=x; v=d} -> (x, d)
+  | Node{l} -> min_binding_exn l
 
 let choose = min_binding_exn
 
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
-  | Node(Empty, _, _, r, _) -> r
-  | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
+  | Node{l=Empty;r} -> r
+  | Node{l; k = x; v = d; r} -> bal (remove_min_binding l) x d r
 
 let merge t1 t2 =
   match (t1, t2) with
@@ -145,40 +152,40 @@ let merge t1 t2 =
 
 let rec iter x f = match x with 
     Empty -> ()
-  | Node(l, v, d, r, _) ->
+  | Node{l; k = v; v = d; r} ->
     iter l f; f v d; iter r f
 
 let rec map x f = match x with
     Empty ->
     Empty
-  | Node(l, v, d, r, h) ->
+  | Node{l; k = v; v = d; r; h} ->
     let l' = map l f in
     let d' = f d in
     let r' = map r f in
-    Node(l', v, d', r', h)
+    Node{ l = l'; k = v; v = d'; r = r'; h}
 
 let rec mapi x f = match x with
     Empty ->
     Empty
-  | Node(l, v, d, r, h) ->
+  | Node {l; k = v; v = d; r; h} ->
     let l' = mapi l f in
     let d' = f v d in
     let r' = mapi r f in
-    Node(l', v, d', r', h)
+    Node {l = l'; k = v; v = d'; r = r'; h}
 
 let rec fold m accu f =
   match m with
     Empty -> accu
-  | Node(l, v, d, r, _) ->
+  | Node {l; k = v; v = d; r} ->
     fold r (f v d (fold l accu f)) f 
 
 let rec for_all x p = match x with 
     Empty -> true
-  | Node(l, v, d, r, _) -> p v d && for_all l p && for_all r p
+  | Node{l; k = v; v = d; r} -> p v d && for_all l p && for_all r p
 
 let rec exists x p = match x with
     Empty -> false
-  | Node(l, v, d, r, _) -> p v d || exists l p || exists r p
+  | Node{l; k = v; v = d; r} -> p v d || exists l p || exists r p
 
 (* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
@@ -190,12 +197,12 @@ let rec exists x p = match x with
 
 let rec add_min_binding k v = function
   | Empty -> singleton k v
-  | Node (l, x, d, r, _) ->
+  | Node {l; k = x; v = d; r} ->
     bal (add_min_binding k v l) x d r
 
 let rec add_max_binding k v = function
   | Empty -> singleton k v
-  | Node (l, x, d, r, _) ->
+  | Node {l; k = x; v = d; r} ->
     bal l x d (add_max_binding k v r)
 
 (* Same as create and bal, but no assumptions are made on the
@@ -205,7 +212,7 @@ let rec join l v d r =
   match (l, r) with
     (Empty, _) -> add_min_binding v d r
   | (_, Empty) -> add_max_binding v d l
-  | (Node(ll, lv, ld, lr, lh), Node(rl, rv, rd, rr, rh)) ->
+  | (Node{l = ll; k = lv; v = ld; r = lr; h = lh}, Node{l = rl; k = rv; v = rd; r= rr; h = rh}) ->
     if lh > rh + 2 then bal ll lv ld (join lr v d r) else
     if rh > lh + 2 then bal (join l v d rl) rv rd rr else
       create l v d r
