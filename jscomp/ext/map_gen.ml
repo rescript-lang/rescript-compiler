@@ -130,7 +130,7 @@ let [@inline] is_empty = function Empty -> true | _ -> false
 
 let rec min_binding_exn = function
     Empty -> raise Not_found
-  | Node{l=Empty; k=x; v=d} -> (x, d)
+  | Node{l=Empty; k; v} -> (k, v)
   | Node{l} -> min_binding_exn l
 
 let choose = min_binding_exn
@@ -139,7 +139,7 @@ let choose = min_binding_exn
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
   | Node{l=Empty;r} -> r
-  | Node{l; k = x; v = d; r} -> bal (remove_min_binding l) x d r
+  | Node{l; k; v ; r} -> bal (remove_min_binding l) k v r
 
 let merge t1 t2 =
   match (t1, t2) with
@@ -152,32 +152,32 @@ let merge t1 t2 =
 
 let rec iter x f = match x with 
     Empty -> ()
-  | Node{l; k = v; v = d; r} ->
-    iter l f; f v d; iter r f
+  | Node{l; k ; v ; r} ->
+    iter l f; f k v; iter r f
 
 let rec map x f = match x with
     Empty ->
     Empty
-  | Node{l; k = v; v = d; r; h} ->
+  | Node ({l; v ; r} as x) ->
     let l' = map l f in
-    let d' = f d in
+    let d' = f v in
     let r' = map r f in
-    Node{ l = l'; k = v; v = d'; r = r'; h}
+    Node { x with  l = l';  v = d'; r = r'}
 
 let rec mapi x f = match x with
     Empty ->
     Empty
-  | Node {l; k = v; v = d; r; h} ->
+  | Node ({l; k ; v ; r} as x) ->
     let l' = mapi l f in
-    let d' = f v d in
+    let v' = f k v in
     let r' = mapi r f in
-    Node {l = l'; k = v; v = d'; r = r'; h}
+    Node {x with l = l'; v = v'; r = r'}
 
 let rec fold m accu f =
   match m with
     Empty -> accu
-  | Node {l; k = v; v = d; r} ->
-    fold r (f v d (fold l accu f)) f 
+  | Node {l; k; v; r} ->
+    fold r (f k v (fold l accu f)) f 
 
 let rec for_all x p = match x with 
     Empty -> true
@@ -197,13 +197,13 @@ let rec exists x p = match x with
 
 let rec add_min_binding k v = function
   | Empty -> singleton k v
-  | Node {l; k = x; v = d; r} ->
-    bal (add_min_binding k v l) x d r
+  | Node tree ->
+    bal (add_min_binding k v tree.l) tree.k tree.v tree.r
 
 let rec add_max_binding k v = function
   | Empty -> singleton k v
-  | Node {l; k = x; v = d; r} ->
-    bal l x d (add_max_binding k v r)
+  | Node tree ->
+    bal tree.l tree.k tree.v (add_max_binding k v tree.r)
 
 (* Same as create and bal, but no assumptions are made on the
    relative heights of l and r. *)
