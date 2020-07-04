@@ -3127,9 +3127,9 @@ val bal : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
 val empty : ('a, 'b) t
 val is_empty : ('a, 'b) t -> bool
 
-val choose : ('a, 'b) t -> 'a * 'b
 
-val remove_min_binding : ('a, 'b) t -> ('a, 'b) t
+
+
 val merge : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
 val iter : ('a, 'b) t -> ('a -> 'b -> 'c) -> unit
 val map : ('a, 'b) t -> ('b -> 'c) -> ('a, 'c) t
@@ -3137,14 +3137,12 @@ val mapi : ('a, 'b) t -> ('a -> 'b -> 'c) -> ('a, 'c) t
 val fold : ('a, 'b) t -> 'c -> ('a -> 'b -> 'c -> 'c) -> 'c
 val for_all : ('a, 'b) t -> ('a -> 'b -> bool) -> bool
 val exists : ('a, 'b) t -> ('a -> 'b -> bool) -> bool
-val add_min_binding : 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
-val add_max_binding : 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+
+
 val join : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
 val concat : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
 val concat_or_join :
   ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
-(* val filter : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t *)
-(* val partition : ('a, 'b) t -> ('a -> 'b -> bool) -> ('a, 'b) t * ('a, 'b) t *)
 
 module type S =
   sig
@@ -3214,6 +3212,23 @@ type ('key,'a) t =
   }
 
 let  empty = Empty
+let rec map x f = match x with
+    Empty ->
+    Empty
+  | Node ({l; v ; r} as x) ->
+    let l' = map l f in
+    let d' = f v in
+    let r' = map r f in
+    Node { x with  l = l';  v = d'; r = r'}
+
+let rec mapi x f = match x with
+    Empty ->
+    Empty
+  | Node ({l; k ; v ; r} as x) ->
+    let l' = mapi l f in
+    let v' = f k v in
+    let r' = mapi r f in
+    Node {x with l = l'; v = v'; r = r'}
 
 let [@inline] calc_height a b = (if a >= b  then a else b) + 1 
 let [@inline] singleton x d = Node {l = Empty; k = x; v = d; r = Empty; h = 1}
@@ -3322,8 +3337,6 @@ let rec min_binding_exn = function
   | Node{l=Empty; k; v} -> (k, v)
   | Node{l} -> min_binding_exn l
 
-let choose = min_binding_exn
-
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
@@ -3344,23 +3357,7 @@ let rec iter x f = match x with
   | Node{l; k ; v ; r} ->
     iter l f; f k v; iter r f
 
-let rec map x f = match x with
-    Empty ->
-    Empty
-  | Node ({l; v ; r} as x) ->
-    let l' = map l f in
-    let d' = f v in
-    let r' = map r f in
-    Node { x with  l = l';  v = d'; r = r'}
 
-let rec mapi x f = match x with
-    Empty ->
-    Empty
-  | Node ({l; k ; v ; r} as x) ->
-    let l' = mapi l f in
-    let v' = f k v in
-    let r' = mapi r f in
-    Node {x with l = l'; v = v'; r = r'}
 
 let rec fold m accu f =
   match m with
@@ -3384,28 +3381,31 @@ let rec exists x p = match x with
    respects this precondition.
 *)
 
-let rec add_min_binding k v = function
+let rec add_min k v = function
   | Empty -> singleton k v
   | Node tree ->
-    bal (add_min_binding k v tree.l) tree.k tree.v tree.r
+    bal (add_min k v tree.l) tree.k tree.v tree.r
 
-let rec add_max_binding k v = function
+let rec add_max k v = function
   | Empty -> singleton k v
   | Node tree ->
-    bal tree.l tree.k tree.v (add_max_binding k v tree.r)
+    bal tree.l tree.k tree.v (add_max k v tree.r)
 
 (* Same as create and bal, but no assumptions are made on the
    relative heights of l and r. *)
 
 let rec join l v d r =
-  match (l, r) with
-    (Empty, _) -> add_min_binding v d r
-  | (_, Empty) -> add_max_binding v d l
-  | Node ({ h = lh} as xl), 
-    Node ({ h = rh} as xr) ->
-    if lh > rh + 2 then bal xl.l xl.k xl.v (join xl.r v d r) else
-    if rh > lh + 2 then bal (join l v d xr.l) xr.k xr.v xr.r else
-      create l v d r
+  match l with
+  | Empty -> add_min v d r
+  | Node xl ->
+    match r with  
+    | Empty -> add_max v d l 
+    | Node  xr ->
+      let lh = xl.h in  
+      let rh = xr.h in 
+      if lh > rh + 2 then bal xl.l xl.k xl.v (join xl.r v d r) else
+      if rh > lh + 2 then bal (join l v d xr.l) xr.k xr.v xr.r else
+        create l v d r
 
 (* Merge two trees l and r into one.
    All elements of l must precede the elements of r.
@@ -3617,7 +3617,7 @@ let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with
   | Node {l; k ; v ; r; h} ->
     let c = compare_key x k in
     if c = 0 then
-      Map_gen.unsafe_node l x data r h
+      Map_gen.unsafe_node l x data r h (* at least need update data *)
     else if c < 0 then
       bal (add l x data ) k v r
     else
