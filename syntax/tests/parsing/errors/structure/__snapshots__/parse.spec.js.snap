@@ -40,6 +40,70 @@ consecutive statements on a line must be separated by ';' or a newline
 ========================================================"
 `;
 
+exports[`gh16A.ns 1`] = `
+"=====Parsetree==========================================
+module C = struct module T = (Fun)(struct ;;foo (a + c) (b + d) end) end
+;;Js.log \\"test\\"
+=====Errors=============================================
+
+File \\"/syntax/tests/parsing/errors/structure/gh16A.ns\\", line 6, characters 0-1:
+
+
+4 │    })
+5 │  }
+[31m6[0m │  [31m)[0m
+7 │  Js.log(\\"test\\"); // Is omitted from the compiled JS
+
+I'm not sure what to parse here when looking at \\")\\".
+
+
+
+========================================================"
+`;
+
+exports[`gh16B.ns 1`] = `
+"=====Parsetree==========================================
+open Ws
+let wss = Server.make { port = 82 }
+let address = wss |. Server.address
+let log msg = Js.log ({|> Server: |} ^ msg)
+;;log
+    (((((({|Running on: |} ^ address.address) ^ {|:|}) ^
+          (address.port |. string_of_int))
+         ^ {| (|})
+        ^ address.family)
+       ^ {|)|})
+module ClientSet =
+  struct
+    module T =
+      (Belt.Id.MakeComparable)(struct
+                                 type nonrec t = Client.t
+                                 let cmp a b =
+                                   ((compare (a |. Client.getUniqueId)
+                                       (b |. Client.getUniqueId))
+                                   [@ns.braces ])
+                               end)
+    let empty = Belt.Set.make ~id:(((module T))[@ns.namedArgLoc ])
+  end
+;;Js.log \\"test\\"
+=====Errors=============================================
+
+File \\"/syntax/tests/parsing/errors/structure/gh16B.ns\\", line 19, characters 1-2:
+
+
+17 │  
+18 │  
+[31m19[0m │  }[31m)[0m))))))))))))))))))))))))))))); // this \\")\\" here, this can even be \\"))))))))))))))))\\" and should error
+20 │  
+21 │  Js.log(\\"test\\") // should not be omitted
+
+I'm not sure what to parse here when looking at \\")\\".
+
+
+
+========================================================"
+`;
+
 exports[`letBinding.js 1`] = `
 "=====Parsetree==========================================
 let rightResource =
