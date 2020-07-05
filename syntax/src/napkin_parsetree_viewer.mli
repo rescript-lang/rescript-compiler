@@ -137,3 +137,5 @@ val rewriteUnderscoreApply: Parsetree.expression -> Parsetree.expression
 
 (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
 val isUnderscoreApplySugar: Parsetree.expression -> bool
+
+val hasIfLetAttribute: Parsetree.attributes -> bool

@@ -2393,12 +2393,19 @@ and printIfChain pexp_attributes ifs elseExpr cmtTbl =
             printExpressionBlock ~braces:true thenExpr cmtTbl;
           ]
         | IfLet (pattern, conditionExpr) ->
+          let conditionDoc =
+            let doc = printExpressionWithComments conditionExpr cmtTbl in
+            match Parens.expr conditionExpr with
+            | Parens.Parenthesized -> addParens doc
+            | Braced braces -> printBraces doc conditionExpr braces
+            | Nothing -> doc
+          in
           Doc.concat [
             ifTxt;
             Doc.text "let ";
             printPattern pattern cmtTbl;
             Doc.text " = ";
-            printExpressionWithComments conditionExpr cmtTbl;
+            conditionDoc;
             Doc.space;
             printExpressionBlock ~braces:true thenExpr cmtTbl;
           ]

@@ -215,3 +215,10 @@ let a = b
     } else {
       2
     }
+
+// print parens correct
+if let Some(x) = (3: option<int>) {
+  (x: int)
+} else {
+  (20: int)
+}
