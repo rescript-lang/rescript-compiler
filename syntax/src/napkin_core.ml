@@ -2068,6 +2068,7 @@ and parseBinaryExpr ?(context=OrdinaryExpr) ?a p prec =
         (makeInfixOperator p token startPos endPos)
         [Nolabel, a; Nolabel, b]
       in
+      Parser.eatBreadcrumb p;
       loop expr
     end
   in
