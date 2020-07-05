@@ -39,7 +39,7 @@ make # or: make -j9 for faster build
 
 This will produce the final binary `lib/napkinscript.exe`. "NapkinScript" is the placeholder name for the syntax. We'll change this later to avoid confusion.
 
-First build is super slow because we're also building our vendored `refmt` (only used for the conversion tool). Subsequent builds should be <1s. If not, please file an issue (build speed is a priority).
+First build is super slow because we're also building our vendored `refmt` (only used for the conversion tool). Subsequent builds should be <2s. If not, please file an issue (build speed is a priority).
 
 Production build (for benchmarking):
 
