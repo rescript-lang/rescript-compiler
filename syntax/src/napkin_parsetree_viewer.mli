@@ -13,12 +13,16 @@ val functorType: Parsetree.module_type ->
 (* filters @bs out of the provided attributes *)
 val processUncurriedAttribute: Parsetree.attributes -> bool * Parsetree.attributes
 
+type ifConditionKind =
+  | If of Parsetree.expression
+  | IfLet of Parsetree.pattern * Parsetree.expression
+
 (* if ... else if ... else ... is represented as nested expressions: if ... else { if ... }
 * The purpose of this function is to flatten nested ifs into one sequence.
 * Basically compute: ([if, else if, else if, else if], else) *)
 val collectIfExpressions:
  Parsetree.expression ->
-   (Parsetree.expression * Parsetree.expression) list * Parsetree.expression option
+   (ifConditionKind * Parsetree.expression) list * Parsetree.expression option
 
 val collectListExpressions:
  Parsetree.expression -> (Parsetree.expression list * Parsetree.expression option)
@@ -62,6 +66,7 @@ val hasAttributes: Parsetree.attributes -> bool
 
 val isArrayAccess: Parsetree.expression -> bool
 val isTernaryExpr: Parsetree.expression -> bool
+val isIfLetExpr: Parsetree.expression -> bool
 
 val collectTernaryParts: Parsetree.expression -> ((Parsetree.expression * Parsetree.expression) list * Parsetree.expression)
 
@@ -69,6 +74,7 @@ val parametersShouldHug:
  funParamKind list -> bool
 
 val filterTernaryAttributes: Parsetree.attributes -> Parsetree.attributes
+val filterFragileMatchAttributes: Parsetree.attributes -> Parsetree.attributes
 
 val isJsxExpression: Parsetree.expression -> bool
 val hasJsxAttribute: Parsetree.attributes -> bool
@@ -90,7 +96,7 @@ val modExprApply : Parsetree.module_expr -> (
  * Example: given a ptyp_arrow type, what are its arguments and what is the
  * returnType? *)
 
- 
+
 val modExprFunctor : Parsetree.module_expr -> (
  (Parsetree.attributes * string Asttypes.loc * Parsetree.module_type option) list *
  Parsetree.module_expr
