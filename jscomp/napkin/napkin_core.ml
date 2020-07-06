@@ -83,6 +83,8 @@ end
 let jsxAttr = (Location.mknoloc "JSX", Parsetree.PStr [])
 let uncurryAttr = (Location.mknoloc "bs", Parsetree.PStr [])
 let ternaryAttr = (Location.mknoloc "ns.ternary", Parsetree.PStr [])
+let ifLetAttr = (Location.mknoloc "ns.iflet", Parsetree.PStr [])
+let suppressFragileMatchWarningAttr = (Location.mknoloc "warning", Parsetree.PStr [Ast_helper.Str.eval (Ast_helper.Exp.constant (Pconst_string ("-4", None)))])
 let makeBracesAttr loc = (Location.mkloc "ns.braces" loc, Parsetree.PStr [])
 
 type typDefOrExt =
@@ -996,7 +998,7 @@ let parseRegion p ~grammar ~f =
    (* ∣	 pattern |  pattern   *)
    (* ∣	 constr  pattern   *)
    (* ∣	 #variant variant-pattern *)
-   (* ∣	 ##type  *)
+   (* ∣	 #...type  *)
    (* ∣	 / pattern  { , pattern }+  /   *)
    (* ∣	 { field  [: typexpr]  [= pattern] { ; field  [: typexpr]  [= pattern] }  [; _ ] [ ; ] }   *)
    (* ∣	 [ pattern  { ; pattern }  [ ; ] ]   *)
@@ -1067,18 +1069,21 @@ let rec parsePattern ?(alias=true) ?(or_=true) p =
       Ast_helper.Pat.construct ~loc:constr.loc ~attrs constr None
     end
   | Hash ->
-    let (ident, loc) = parseHashIdent ~startPos p in
-    begin match p.Parser.token with
-    | Lparen ->
-      parseVariantPatternArgs p ident startPos attrs
-    | _ ->
-      Ast_helper.Pat.variant ~loc ~attrs ident None
-    end
-  | HashHash ->
     Parser.next p;
-    let ident = parseValuePath p in
-    let loc = mkLoc startPos ident.loc.loc_end in
-    Ast_helper.Pat.type_ ~loc ~attrs ident
+    if p.Parser.token == DotDotDot then (
+      Parser.next p;
+      let ident = parseValuePath p in
+      let loc = mkLoc startPos ident.loc.loc_end in
+      Ast_helper.Pat.type_ ~loc ~attrs ident
+    ) else (
+      let (ident, loc) = parseIdent ~msg:ErrorMessages.variantIdent ~startPos p in
+      begin match p.Parser.token with
+      | Lparen ->
+        parseVariantPatternArgs p ident startPos attrs
+      | _ ->
+        Ast_helper.Pat.variant ~loc ~attrs ident None
+      end
+    )
   | Exception ->
     Parser.next p;
     let pat = parsePattern ~alias:false ~or_:false p in
@@ -1997,7 +2002,7 @@ and parseOperandExpr ~context p =
   | Try ->
     parseTryExpression p
   | If ->
-    parseIfExpression p
+    parseIfOrIfLetExpression p
   | For ->
     parseForExpression p
   | While ->
@@ -2063,6 +2068,7 @@ and parseBinaryExpr ?(context=OrdinaryExpr) ?a p prec =
         (makeInfixOperator p token startPos endPos)
         [Nolabel, a; Nolabel, b]
       in
+      Parser.eatBreadcrumb p;
       loop expr
     end
   in
@@ -2993,20 +2999,30 @@ and parseTryExpression p =
   let loc = mkLoc startPos p.prevEndPos in
   Ast_helper.Exp.try_ ~loc expr cases
 
-and parseIfExpression p =
-  Parser.beginRegion p;
-  Parser.leaveBreadcrumb p Grammar.ExprIf;
-  let startPos = p.Parser.startPos in
-  Parser.expect If p;
+and parseIfCondition p =
   Parser.leaveBreadcrumb p Grammar.IfCondition;
   (* doesn't make sense to try es6 arrow here? *)
   let conditionExpr = parseExpr ~context:WhenExpr p in
   Parser.eatBreadcrumb p;
+  conditionExpr
+
+and parseThenBranch p =
   Parser.leaveBreadcrumb p IfBranch;
   Parser.expect Lbrace p;
   let thenExpr = parseExprBlock p in
   Parser.expect Rbrace p;
   Parser.eatBreadcrumb p;
+  thenExpr
+
+and parseElseBranch p =
+  Parser.expect Lbrace p;
+  let blockExpr = parseExprBlock p in
+  Parser.expect Rbrace p;
+  blockExpr;
+
+and parseIfExpr startPos p =
+  let conditionExpr = parseIfCondition p in
+  let thenExpr = parseThenBranch p in
   let elseExpr = match p.Parser.token with
   | Else ->
     Parser.endRegion p;
@@ -3015,12 +3031,9 @@ and parseIfExpression p =
     Parser.beginRegion p;
     let elseExpr = match p.token with
     | If ->
-      parseIfExpression p
+      parseIfOrIfLetExpression p
     | _ ->
-      Parser.expect  Lbrace p;
-      let blockExpr = parseExprBlock p in
-      Parser.expect Rbrace p;
-      blockExpr
+      parseElseBranch p
     in
     Parser.eatBreadcrumb p;
     Parser.endRegion p;
@@ -3030,8 +3043,54 @@ and parseIfExpression p =
     None
   in
   let loc = mkLoc startPos p.prevEndPos in
-  Parser.eatBreadcrumb p;
   Ast_helper.Exp.ifthenelse ~loc conditionExpr thenExpr elseExpr
+
+and parseIfLetExpr startPos p =
+  let pattern = parsePattern p in
+  Parser.expect Equal p;
+  let conditionExpr = parseIfCondition p in
+  let thenExpr = parseThenBranch p in
+  let elseExpr = match p.Parser.token with
+  | Else ->
+    Parser.endRegion p;
+    Parser.leaveBreadcrumb p Grammar.ElseBranch;
+    Parser.next p;
+    Parser.beginRegion p;
+    let elseExpr = match p.token with
+    | If ->
+      parseIfOrIfLetExpression p
+    | _ ->
+      parseElseBranch p
+    in
+    Parser.eatBreadcrumb p;
+    Parser.endRegion p;
+    elseExpr
+  | _ ->
+    Parser.endRegion p;
+    let startPos = p.Parser.startPos in
+    let loc = mkLoc startPos p.prevEndPos in
+    Ast_helper.Exp.construct ~loc (Location.mkloc (Longident.Lident "()") loc) None
+  in
+  let loc = mkLoc startPos p.prevEndPos in
+  Ast_helper.Exp.match_ ~attrs:[ifLetAttr; suppressFragileMatchWarningAttr] ~loc conditionExpr [
+    Ast_helper.Exp.case pattern thenExpr;
+    Ast_helper.Exp.case (Ast_helper.Pat.any ()) elseExpr;
+  ]
+
+and parseIfOrIfLetExpression p =
+  Parser.beginRegion p;
+  Parser.leaveBreadcrumb p Grammar.ExprIf;
+  let startPos = p.Parser.startPos in
+  Parser.expect If p;
+  let expr = match p.Parser.token with
+    | Let ->
+      Parser.next p;
+      parseIfLetExpr startPos p
+    | _ ->
+      parseIfExpr startPos p
+  in
+  Parser.eatBreadcrumb p;
+  expr;
 
 and parseForRest hasOpeningParen pattern startPos p =
   Parser.expect In p;
@@ -3095,6 +3154,14 @@ and parseWhileExpression p =
   let loc = mkLoc startPos p.prevEndPos in
   Ast_helper.Exp.while_ ~loc expr1 expr2
 
+and parsePatternGuard p =
+  match p.Parser.token with
+    | When ->
+      Parser.next p;
+      Some (parseExpr ~context:WhenExpr p)
+    | _ ->
+      None
+
 and parsePatternMatchCase p =
   Parser.beginRegion p;
   Parser.leaveBreadcrumb p Grammar.PatternMatchCase;
@@ -3102,13 +3169,7 @@ and parsePatternMatchCase p =
   | Token.Bar ->
     Parser.next p;
     let lhs = parsePattern p in
-    let guard = match p.Parser.token with
-    | When ->
-      Parser.next p;
-      Some (parseExpr ~context:WhenExpr p)
-    | _ ->
-      None
-    in
+    let guard = parsePatternGuard p in
     let () = match p.token with
     | EqualGreater -> Parser.next p
     | _ -> Recover.recoverEqualGreater p

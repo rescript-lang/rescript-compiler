@@ -95,7 +95,7 @@ jscomp/compiler.ninja
 jscomp/runtime/build.ninja
 jscomp/others/build.ninja
 jscomp/stdlib-406/build.ninja
-
+jscomp/napkin.ninja
 jscomp/compilerEnv.ninja
 env.ninja
 jscomp/cppoVendor.ninja

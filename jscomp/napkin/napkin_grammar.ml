@@ -194,7 +194,7 @@ let isPatternStart = function
   | Token.Int _ | Float _ | String _ | Character _ | True | False | Minus | Plus
   | Lparen | Lbracket | Lbrace | List
   | Underscore
-  | Lident _ | Uident _ | Hash | HashHash
+  | Lident _ | Uident _ | Hash
   | Exception | Lazy | Percent | Module
   | At -> true
   | _ -> false
