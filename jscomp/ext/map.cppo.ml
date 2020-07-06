@@ -1,24 +1,22 @@
 
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
-[@@@warnerror"a"]
 
-#ifdef TYPE_FUNCTOR
-module Make(Ord: Map.OrderedType) = struct
-  type key = Ord.t
-  let compare_key = Ord.compare 
-#elif defined TYPE_STRING
+#ifdef TYPE_STRING
   type key = string 
   let compare_key = Ext_string.compare
+  let [@inline] eq_key (x : key) y = x = y
 #elif defined TYPE_INT
   type key = int
   let compare_key = Ext_int.compare
+  let [@inline] eq_key (x : key) y = x = y
 #elif defined TYPE_IDENT
   type key = Ident.t
   let compare_key = Ext_ident.compare
+  let [@inline] eq_key (x : key) y = Ident.same x y
 #else
   [%error "unknown type"]
 #endif
-
+(* let [@inline] (=) (a : int) b = a = b *)
 type + 'a t = (key,'a) Map_gen.t
 exception Duplicate_key of key 
 
@@ -46,6 +44,13 @@ let height = Map_gen.height
 let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with 
   | Empty ->
     singleton x data
+  | Leaf {k;v} ->
+    let c = compare_key x k in 
+    if c = 0 then singleton x data else
+    if c < 0 then 
+      Map_gen.unsafe_two_elements x data k v 
+    else 
+      Map_gen.unsafe_two_elements k v x data  
   | Node {l; k ; v ; r; h} ->
     let c = compare_key x k in
     if c = 0 then
@@ -60,6 +65,13 @@ let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a =
   match tree with 
   | Empty ->
     singleton x (replace None)
+  | Leaf {k ; v} -> 
+    let c = compare_key x k in 
+    if c = 0 then singleton x (replace (Some v)) else 
+    if c < 0 then 
+      Map_gen.unsafe_two_elements x (replace None) k v   
+    else
+      Map_gen.unsafe_two_elements k v x (replace None)   
   | Node ({l; k ; r} as tree) ->
     let c = compare_key x k in
     if c = 0 then
@@ -73,6 +85,8 @@ let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a =
 let rec find_exn (tree : _ Map_gen.t ) x = match tree with 
   | Empty ->
     raise Not_found
+  | Leaf leaf -> 
+    if eq_key x leaf.k then leaf.v else raise Not_found  
   | Node tree ->
     let c = compare_key x tree.k in
     if c = 0 then tree.v
@@ -80,6 +94,8 @@ let rec find_exn (tree : _ Map_gen.t ) x = match tree with
 
 let rec find_opt (tree : _ Map_gen.t ) x = match tree with 
   | Empty -> None 
+  | Leaf leaf -> 
+    if eq_key x leaf.k then Some leaf.v else None
   | Node tree ->
     let c = compare_key x tree.k in
     if c = 0 then Some tree.v
@@ -87,6 +103,8 @@ let rec find_opt (tree : _ Map_gen.t ) x = match tree with
 
 let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with 
   | Empty -> default  
+  | Leaf leaf -> 
+    if eq_key x leaf.k then  leaf.v else default
   | Node tree ->
     let c = compare_key x tree.k in
     if c = 0 then tree.v
@@ -95,12 +113,16 @@ let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with
 let rec mem (tree : _ Map_gen.t )  x= match tree with 
   | Empty ->
     false
+  | Leaf leaf -> eq_key x leaf.k 
   | Node{l; k ;  r} ->
     let c = compare_key x k in
     c = 0 || mem (if c < 0 then l else r) x 
 
 let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
   | Empty -> empty
+  | Leaf leaf -> 
+    if eq_key x leaf.k then empty 
+    else tree
   | Node{l; k ; v; r} ->
     let c = compare_key x k in
     if c = 0 then
@@ -115,6 +137,11 @@ let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  =
   match tree with 
   | Empty ->
     (empty, None, empty)
+  | Leaf leaf -> 
+    let c = compare_key x leaf.k in 
+    if c = 0 then empty, Some leaf.v, empty 
+    else if c < 0 then empty, None, tree 
+    else  tree, None, empty
   | Node {l; k ; v ; r} ->
     let c = compare_key x k in
     if c = 0 then (l, Some v, r)

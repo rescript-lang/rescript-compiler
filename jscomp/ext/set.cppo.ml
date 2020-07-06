@@ -48,6 +48,9 @@ let [@inline] eq_elt (x : elt) y = x = y
 [%error "unknown type" ]
 #endif
 
+
+(* let (=) (a:int) b = a = b *)
+
 type ('a ) t0 = 'a Set_gen.t 
 
 type  t = elt t0
