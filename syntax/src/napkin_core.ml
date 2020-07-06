@@ -110,6 +110,7 @@ let getClosingToken = function
   | Token.Lparen -> Token.Rparen
   | Lbrace -> Rbrace
   | Lbracket -> Rbracket
+  | List -> Rbrace
   | _ -> assert false
 
 let rec goToClosing closingToken state =
@@ -117,7 +118,7 @@ let rec goToClosing closingToken state =
   | (Rparen, Token.Rparen) | (Rbrace, Rbrace) | (Rbracket, Rbracket) ->
     Parser.next state;
     ()
-  | (Token.Lbracket | Lparen | Lbrace) as t, _ ->
+  | (Token.Lbracket | Lparen | Lbrace | List) as t, _ ->
     Parser.next state;
     goToClosing (getClosingToken t) state;
     goToClosing closingToken state
@@ -157,7 +158,6 @@ let isEs6ArrowExpression ~inTernary p =
       | Tilde -> true
       | Backtick -> false (* (` always indicates the start of an expr, can't be es6 parameter *)
       | _ ->
-        if (state.token = List) then goToClosing Rbrace state;
         goToClosing Rparen state;
         begin match state.Parser.token with
         | EqualGreater -> true
