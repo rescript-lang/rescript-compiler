@@ -16,6 +16,7 @@
 
 type ('key,'a) t0 =
   | Empty
+  | Leaf of {k : 'key ; v : 'a}
   | Node of {
     l : ('key,'a) t0 ;
     k : 'key ;
@@ -26,8 +27,8 @@ type ('key,'a) t0 =
 
 let  empty = Empty
 let rec map x f = match x with
-    Empty ->
-    Empty
+    Empty -> Empty
+  | Leaf {k;v} -> Leaf {k; v = f v}  
   | Node ({l; v ; r} as x) ->
     let l' = map l f in
     let d' = f v in
@@ -35,8 +36,8 @@ let rec map x f = match x with
     Node { x with  l = l';  v = d'; r = r'}
 
 let rec mapi x f = match x with
-    Empty ->
-    Empty
+    Empty -> Empty
+  | Leaf {k;v} -> Leaf {k; v = f k v}  
   | Node ({l; k ; v ; r} as x) ->
     let l' = mapi l f in
     let v' = f k v in
@@ -44,20 +45,27 @@ let rec mapi x f = match x with
     Node {x with l = l'; v = v'; r = r'}
 
 let [@inline] calc_height a b = (if a >= b  then a else b) + 1 
-let [@inline] singleton x d = Node {l = Empty; k = x; v = d; r = Empty; h = 1}
+let [@inline] singleton k v = Leaf {k;v}
 let [@inline] height = function
   | Empty -> 0
+  | Leaf _ -> 1
   | Node {h} -> h
 
 let [@inline] unsafe_node k v l  r h =   
   Node {l; k; v; r; h}
-
-let [@inline] create k v l  r =
-  Node{l; k; v; r; h= calc_height (height l) (height r)}
+let [@inline] unsafe_two_elements k1 v1 k2 v2 = 
+  unsafe_node k2 v2 (singleton k1 v1) empty 2   
+let [@inline] unsafe_node_maybe_leaf k v l r h =   
+  if h = 1 then Leaf {k ; v}   
+  else Node{l;k;v;r; h }           
 
 
   type ('key, + 'a) t = ('key,'a) t0 = private
     | Empty
+    | Leaf of {
+      k : 'key ;
+      v : 'a
+    }
     | Node of {
       l : ('key,'a) t ;
       k : 'key ;
@@ -68,6 +76,7 @@ let [@inline] create k v l  r =
 
 let rec cardinal_aux acc  = function
   | Empty -> acc 
+  | Leaf _ -> acc + 1
   | Node {l; r} -> 
     cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
 
@@ -75,6 +84,7 @@ let cardinal s = cardinal_aux 0 s
 
 let rec bindings_aux accu = function
   | Empty -> accu
+  | Leaf {k;v} -> (k,v) :: accu
   | Node {l;k;v;r} -> bindings_aux ((k, v) :: bindings_aux accu r) l
 
 let bindings s =
@@ -83,6 +93,8 @@ let bindings s =
 let rec fill_array_with_f (s : _ t) i arr  f : int =    
   match s with 
   | Empty -> i 
+  | Leaf  {k;v} -> 
+    Array.unsafe_set arr i (f k v); i + 1
   | Node {l; k; v; r} -> 
     let inext = fill_array_with_f l i arr f in 
     Array.unsafe_set arr inext (f k v);
@@ -91,6 +103,8 @@ let rec fill_array_with_f (s : _ t) i arr  f : int =
 let rec fill_array_aux (s : _ t) i arr : int =    
   match s with 
   | Empty -> i 
+  | Leaf {k;v} -> 
+    Array.unsafe_set arr i (k, v); i + 1
   | Node {l;k;v;r} -> 
     let inext = fill_array_aux l i arr in 
     Array.unsafe_set arr inext (k,v);
@@ -100,6 +114,7 @@ let rec fill_array_aux (s : _ t) i arr : int =
 let to_sorted_array (s : ('key,'a) t)  : ('key * 'a ) array =    
   match s with 
   | Empty -> [||]
+  | Leaf {k;v} -> [|k,v|]
   | Node {l;k;v;r} -> 
     let len = 
       cardinal_aux (cardinal_aux 1 r) l in 
@@ -111,6 +126,7 @@ let to_sorted_array (s : ('key,'a) t)  : ('key * 'a ) array =
 let to_sorted_array_with_f (type key a b ) (s : (key,a) t)  (f : key -> a -> b): b array =    
   match s with 
   | Empty -> [||]
+  | Leaf {k;v} -> [| f k v|]
   | Node {l;k;v;r} -> 
     let len = 
       cardinal_aux (cardinal_aux 1 r) l in 
@@ -121,6 +137,7 @@ let to_sorted_array_with_f (type key a b ) (s : (key,a) t)  (f : key -> a -> b):
 
 let rec keys_aux accu = function
     Empty -> accu
+  | Leaf {k} -> k :: accu
   | Node {l; k;r} -> keys_aux (k :: keys_aux accu r) l
 
 let keys s = keys_aux [] s
@@ -137,9 +154,11 @@ let bal l x d r =
     let hll = height ll in 
     let hlr = height lr in 
     if hll >= hlr then
-      create l.k l.v 
+      let hnode = calc_height hlr hr in       
+      unsafe_node l.k l.v 
         ll  
-        (create x d lr  r)
+        (unsafe_node_maybe_leaf x d lr  r hnode)
+        (calc_height hll hnode)
     else         
       let [@warning "-8"] Node ({l=lrl; r=lrr} as lr) = lr in 
       let hlrl = height lrl in 
