@@ -443,10 +443,6 @@ let rec parseLident p =
     Parser.next p;
     let loc = mkLoc startPos p.prevEndPos in
     (ident, loc)
-  | List ->
-    Parser.next p;
-    let loc = mkLoc startPos p.prevEndPos in
-    ("list", loc)
   | _ ->
     begin match recoverLident p with
     | Some () ->
@@ -462,10 +458,6 @@ let parseIdent ~msg ~startPos p =
     Parser.next p;
     let loc = mkLoc startPos p.prevEndPos in
     (ident, loc)
-  | List ->
-    Parser.next p;
-    let loc = mkLoc startPos p.prevEndPos in
-    ("list", loc)
   | _token ->
     Parser.err p (Diagnostics.message msg);
     Parser.next p;
@@ -480,7 +472,6 @@ let parseValuePath p =
   let startPos = p.Parser.startPos in
   let rec aux p path =
     match p.Parser.token with
-    | List -> Longident.Ldot(path, "list")
     | Lident ident -> Longident.Ldot(path, ident)
     | Uident uident ->
       Parser.next p;
@@ -491,7 +482,6 @@ let parseValuePath p =
       Longident.Lident "_"
   in
   let ident = match p.Parser.token with
-  | List -> Longident.Lident "list"
   | Lident ident -> Longident.Lident ident
   | Uident ident ->
     Parser.next p;
@@ -510,9 +500,6 @@ let parseValuePathTail p startPos ident =
     | Lident ident ->
       Parser.next p;
       Location.mkloc (Longident.Ldot(path, ident)) (mkLoc startPos p.prevEndPos)
-    | List ->
-      Parser.next p;
-      Location.mkloc (Longident.Ldot(path, "list")) (mkLoc startPos p.prevEndPos)
     | Uident ident ->
       Parser.next p;
       Parser.expect Dot p;
@@ -526,10 +513,6 @@ let parseValuePathTail p startPos ident =
 let parseModuleLongIdentTail ~lowercase p startPos ident =
   let rec loop p acc =
     match p.Parser.token with
-    | List when lowercase ->
-      Parser.next p;
-      let lident = (Longident.Ldot (acc, "list")) in
-      Location.mkloc lident (mkLoc startPos p.prevEndPos)
     | Lident ident when lowercase ->
       Parser.next p;
       let lident = (Longident.Ldot (acc, ident)) in
@@ -557,10 +540,6 @@ let parseModuleLongIdent ~lowercase p =
   (* Parser.leaveBreadcrumb p Reporting.ModuleLongIdent; *)
   let startPos = p.Parser.startPos in
   let moduleIdent = match p.Parser.token with
-  | List when lowercase ->
-    let loc = mkLoc startPos p.endPos in
-    Parser.next p;
-    Location.mkloc (Longident.Lident "list") loc
   | Lident ident when lowercase ->
     let loc = mkLoc startPos p.endPos in
     let lident = Longident.Lident ident in
@@ -3391,11 +3370,6 @@ and parseValueOrConstructor p =
       let loc = mkLoc startPos p.prevEndPos in
       let lident = buildLongident (ident::acc) in
       Ast_helper.Exp.ident ~loc (Location.mkloc lident loc)
-    | List ->
-      Parser.next p;
-      let loc = mkLoc startPos p.prevEndPos in
-      let lident = buildLongident ("list"::acc) in
-      Ast_helper.Exp.ident ~loc (Location.mkloc lident loc)
     | token ->
       Parser.next p;
       Parser.err p (Diagnostics.unexpected token p.breadcrumbs);
@@ -3992,10 +3966,6 @@ and parseFieldDeclaration p =
     Asttypes.Immutable
   in
   let (lident, loc) = match p.token with
-  | List ->
-    let loc = mkLoc p.startPos p.endPos in
-    Parser.next p;
-    ("list", loc)
   | _ -> parseLident p
   in
   let name = Location.mkloc lident loc in
@@ -4020,13 +3990,7 @@ and parseFieldDeclarationRegion p =
   in
   match p.token with
   | Lident _ | List ->
-    let (lident, loc) =  match p.token with
-    | List ->
-      let loc = mkLoc p.startPos p.endPos in
-      Parser.next p;
-      ("list", loc)
-    | _ -> parseLident p
-    in
+    let (lident, loc) = parseLident p in
     let name = Location.mkloc lident loc in
     let typ = match p.Parser.token with
     | Colon ->
@@ -5400,10 +5364,6 @@ and parseModuleTypeImpl ~attrs startPos p =
   Parser.expect Typ p;
   let nameStart = p.Parser.startPos in
   let name = match p.Parser.token with
-  | List ->
-    Parser.next p;
-    let loc = mkLoc nameStart p.prevEndPos in
-    Location.mkloc "list" loc
   | Lident ident ->
     Parser.next p;
     let loc = mkLoc nameStart p.prevEndPos in
