@@ -42,7 +42,7 @@ let [@inline] unsafe_node_maybe_leaf v l r h =
 
 let [@inline] singleton x = Leaf x
 
-let unsafe_two_elements x v = 
+let [@inline] unsafe_two_elements x v = 
   unsafe_node v (singleton x) empty 2 
   
 type 'a t = 'a t0 = private
