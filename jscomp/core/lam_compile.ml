@@ -1402,7 +1402,7 @@ and compile_apply
                   | Some v -> v, new_params  in
                 (i+1, (new_param, arg) :: assigns, m)
             ) in
-        ret.new_params <- Map_ident.disjoint_merge new_params ret.new_params;
+        ret.new_params <- Map_ident.disjoint_merge_exn new_params ret.new_params (fun _ _ _ -> assert false);
         let block = Ext_list.map_append assigned_params [S.continue_ ] (fun (param, arg) -> S.assign param arg) in 
         (* Note true and continue needed to be handled together*)
         Js_output.make  ~output_finished:True (Ext_list.append args_code block)

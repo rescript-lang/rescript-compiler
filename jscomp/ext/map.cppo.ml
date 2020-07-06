@@ -18,7 +18,6 @@
 #endif
 (* let [@inline] (=) (a : int) b = a = b *)
 type + 'a t = (key,'a) Map_gen.t
-exception Duplicate_key of key 
 
 let empty = Map_gen.empty 
 let is_empty = Map_gen.is_empty
@@ -152,50 +151,45 @@ let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  =
       let (lr, pres, rr) = split r x in 
       (Map_gen.join l k v lr, pres, rr)
 
-let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
-  match (s1, s2) with
-  | (Empty, Empty) -> empty
-  | Node ({ k  } as s1), _ when s1.h >= height s2 ->
-    let (l, v, r) = split s2 k in
-    Map_gen.concat_or_join 
-      (merge s1.l l f) k 
-      (f k (Some s1.v) v) 
-      (merge s1.r r f)
-  | _, Node ({k  } as s2) ->
-    let (l, v, r) = split s1 k in
-    Map_gen.concat_or_join 
-      (merge l s2.l f) 
-      k
-      (f k v (Some s2.v)) 
-      (merge r s2.r f)
-  | _ ->
-    assert false
 
-let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
-  match (s1, s2) with
-  | (Empty, Empty) -> empty
-  | Node ({k} as s1), _ when s1.h >= height s2 ->
-    begin match split s2 k with 
-      | l, None, r -> 
-        Map_gen.join 
-          (disjoint_merge  s1.l l)
-          k 
-          s1.v 
-          (disjoint_merge s1.r r)
-      | _, Some _, _ ->
-        raise (Duplicate_key  k)
-    end        
-  | _, Node ({k} as s2) ->
-    begin match  split s1 k with 
-      | (l, None, r) -> 
-        Map_gen.join 
-          (disjoint_merge  l s2.l) k s2.v 
-          (disjoint_merge  r s2.r)
-      | (_, Some _, _) -> 
-        raise (Duplicate_key k)
+
+let rec disjoint_merge_exn  
+    (s1 : _ Map_gen.t) 
+    (s2  : _ Map_gen.t) 
+    fail : _ Map_gen.t =
+  match s1 with
+  | Empty -> s2  
+  | Leaf ({k } as l1)  -> 
+    begin match s2 with 
+      | Empty -> s1 
+      | Leaf l2 -> 
+        let c = compare_key k l2.k in 
+        if c = 0 then raise_notrace (fail k l1.v l2.v)
+        else if c < 0 then Map_gen.unsafe_two_elements l1.k l1.v l2.k l2.v
+        else Map_gen.unsafe_two_elements l2.k l2.v k l1.v
+      | Node _ -> disjoint_merge_exn s2 s1 fail  (* delegated later, simplified a little bit *)
     end
-  | _ ->
-    assert false
+  | Node ({k} as xs1) -> 
+    if  xs1.h >= height s2 then
+      begin match split s2 k with 
+        | l, None, r -> 
+          Map_gen.join 
+            (disjoint_merge_exn  xs1.l l fail)
+            k 
+            xs1.v 
+            (disjoint_merge_exn xs1.r r fail)
+        | _, Some s2v, _ ->
+          raise_notrace (fail k xs1.v s2v)
+      end        
+    else let [@warning "-8"] (Node ({k} as s2) : _ Map_gen.t)  = s2 in 
+      begin match  split s1 k with 
+        | (l, None, r) -> 
+          Map_gen.join 
+            (disjoint_merge_exn  l s2.l fail) k s2.v 
+            (disjoint_merge_exn  r s2.r fail)
+        | (_, Some s1v, _) -> 
+          raise_notrace (fail k s1v s2.v)
+      end
 
 
 

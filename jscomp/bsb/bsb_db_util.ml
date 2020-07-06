@@ -36,17 +36,7 @@ let conflict_module_info modname (a : module_info) (b : module_info) =
 
 (* merge data info from two directories*)    
 let merge (acc : t) (sources : t) : t =
-  Map_string.merge acc sources (fun modname k1 k2 ->
-      match k1 , k2 with
-      | None , None ->
-        assert false
-      | Some a, Some b  ->
-        conflict_module_info modname 
-          a
-          b
-      | Some v, None  -> Some v
-      | None, Some v ->  Some v
-    )
+  Map_string.disjoint_merge_exn acc sources conflict_module_info
 
 let sanity_check (map : t) = 
   Map_string.iter map (fun m module_info -> 

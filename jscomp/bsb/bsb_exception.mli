@@ -33,7 +33,7 @@ val print : Format.formatter -> error -> unit
 val package_not_found : pkg:Bsb_pkg_types.t -> json:string option -> 'a
 
 val conflict_module:
-    string -> string -> string -> 'a 
+    string -> string -> string -> exn
     
 val errorf : loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
 

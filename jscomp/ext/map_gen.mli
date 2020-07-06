@@ -26,10 +26,6 @@ val keys : ('a, 'b) t -> 'a list
 
 val height : ('a, 'b) t -> int
 
-val create : 
-  'a -> 'b ->
-  ('a, 'b) t ->  
-  ('a, 'b) t -> ('a, 'b) t
 
 val singleton : 'a -> 'b -> ('a, 'b) t
 
@@ -41,6 +37,14 @@ val [@inline] unsafe_node :
   int -> 
   ('a, 'b ) t
 
+(** smaller comes first *)
+val [@inline] unsafe_two_elements :
+  'a -> 
+  'b -> 
+  'a -> 
+  'b -> 
+  ('a, 'b) t
+
 val bal : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
 val empty : ('a, 'b) t
 val is_empty : ('a, 'b) t -> bool
@@ -49,7 +53,7 @@ val is_empty : ('a, 'b) t -> bool
 
 
 val merge : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
-val iter : ('a, 'b) t -> ('a -> 'b -> 'c) -> unit
+val iter : ('a, 'b) t -> ('a -> 'b -> unit) -> unit
 val map : ('a, 'b) t -> ('b -> 'c) -> ('a, 'c) t
 val mapi : ('a, 'b) t -> ('a -> 'b -> 'c) -> ('a, 'c) t
 val fold : ('a, 'b) t -> 'c -> ('a -> 'b -> 'c -> 'c) -> 'c
@@ -76,9 +80,13 @@ module type S =
     val adjust : 'a t -> key -> ('a option -> 'a) -> 'a t
     val singleton : key -> 'a -> 'a t
     val remove : 'a t -> key -> 'a t
-    val merge :
-      'a t -> 'b t -> (key -> 'a option -> 'b option -> 'c option) -> 'c t
-    val disjoint_merge : 'a t -> 'a t -> 'a t
+    (* val merge :
+      'a t -> 'b t -> (key -> 'a option -> 'b option -> 'c option) -> 'c t *)
+    val disjoint_merge_exn : 
+    'a t -> 
+    'a t -> 
+    (key -> 'a -> 'a -> exn) -> 
+    'a t
     
     val iter : 'a t -> (key -> 'a -> unit) -> unit
     val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b

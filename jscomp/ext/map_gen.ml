@@ -166,8 +166,8 @@ let bal l x d r =
       let hlnode = calc_height hll hlrl in 
       let hrnode = calc_height hlrr hr in 
       unsafe_node lr.k lr.v 
-        (unsafe_node l.k l.v ll  lrl hlnode)  
-        (unsafe_node x d lrr r hrnode)      
+        (unsafe_node_maybe_leaf l.k l.v ll  lrl hlnode)  
+        (unsafe_node_maybe_leaf x d lrr r hrnode)      
         (calc_height hlnode hrnode)
   end else if hr > hl + 2 then begin
     let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
@@ -176,7 +176,7 @@ let bal l x d r =
     if hrr >= hrl then
       let hnode = calc_height hl hrl in
       unsafe_node r.k r.v 
-        (unsafe_node x d l rl hnode)
+        (unsafe_node_maybe_leaf x d l rl hnode)
         rr
         (calc_height hnode hrr)
     else 
@@ -186,11 +186,11 @@ let bal l x d r =
       let hlnode = (calc_height hl hrll) in
       let hrnode = (calc_height hrlr hrr) in      
       unsafe_node rl.k rl.v 
-        (unsafe_node x d l  rll hlnode)  
-        (unsafe_node r.k r.v rlr  rr hrnode)
+        (unsafe_node_maybe_leaf x d l  rll hlnode)  
+        (unsafe_node_maybe_leaf r.k r.v rlr  rr hrnode)
         (calc_height hlnode hrnode)
   end else
-    unsafe_node x d l r (calc_height hl hr)
+    unsafe_node_maybe_leaf x d l r (calc_height hl hr)
 
 
 
@@ -198,15 +198,18 @@ let [@inline] is_empty = function Empty -> true | _ -> false
 
 let rec min_binding_exn = function
     Empty -> raise Not_found
+  | Leaf {k;v} -> (k,v)  
   | Node{l; k; v} -> 
     match l with 
     | Empty -> (k, v) 
+    | Leaf _
     | Node _ -> 
       min_binding_exn l
 
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
+  | Leaf _ -> empty  
   | Node{l=Empty;r} -> r
   | Node{l; k; v ; r} -> bal (remove_min_binding l) k v r
 
@@ -221,6 +224,7 @@ let merge t1 t2 =
 
 let rec iter x f = match x with 
     Empty -> ()
+  | Leaf {k;v} -> (f k v : unit) 
   | Node{l; k ; v ; r} ->
     iter l f; f k v; iter r f
 
@@ -229,15 +233,18 @@ let rec iter x f = match x with
 let rec fold m accu f =
   match m with
     Empty -> accu
+  | Leaf {k;v} -> f k v accu  
   | Node {l; k; v; r} ->
     fold r (f k v (fold l accu f)) f 
 
 let rec for_all x p = match x with 
     Empty -> true
+  | Leaf {k; v} -> p k v   
   | Node{l; k; v ; r} -> p k v && for_all l p && for_all r p
 
 let rec exists x p = match x with
     Empty -> false
+  | Leaf {k; v} -> p k v   
   | Node{l; k; v; r} -> p k v || exists l p || exists r p
 
 (* Beware: those two functions assume that the added k is *strictly*
@@ -250,11 +257,13 @@ let rec exists x p = match x with
 
 let rec add_min k v = function
   | Empty -> singleton k v
+  | Leaf l -> unsafe_two_elements k v l.k l.v
   | Node tree ->
     bal (add_min k v tree.l) tree.k tree.v tree.r
 
 let rec add_max k v = function
   | Empty -> singleton k v
+  | Leaf l -> unsafe_two_elements l.k l.v k v
   | Node tree ->
     bal tree.l tree.k tree.v (add_max k v tree.r)
 
@@ -264,15 +273,19 @@ let rec add_max k v = function
 let rec join l v d r =
   match l with
   | Empty -> add_min v d r
+  | Leaf leaf ->
+      add_min leaf.k leaf.v (add_min v d r)
   | Node xl ->
     match r with  
-    | Empty -> add_max v d l 
+    | Empty -> add_max v d l
+    | Leaf leaf -> 
+      add_max leaf.k leaf.v (add_max v d l)  
     | Node  xr ->
       let lh = xl.h in  
       let rh = xr.h in 
       if lh > rh + 2 then bal xl.l xl.k xl.v (join xl.r v d r) else
       if rh > lh + 2 then bal (join l v d xr.l) xr.k xr.v xr.r else
-        create v d l  r
+        unsafe_node v d l  r (calc_height lh rh)
 
 (* Merge two trees l and r into one.
    All elements of l must precede the elements of r.
@@ -319,16 +332,20 @@ module type S =
     (** [remove x m] returns a map containing the same bindings as
        [m], except for [x] which is unbound in the returned map. *)
 
-    val merge:
+    (* val merge:
          'a t -> 'b t ->
-         (key -> 'a option -> 'b option -> 'c option) ->  'c t
+         (key -> 'a option -> 'b option -> 'c option) ->  'c t *)
     (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
         and of [m2]. The presence of each such binding, and the corresponding
         value, is determined with the function [f].
         @since 3.12.0
      *)
 
-    val disjoint_merge : 'a t -> 'a t -> 'a t
+    val disjoint_merge_exn : 
+      'a t 
+      -> 'a t 
+      -> (key -> 'a -> 'a -> exn)
+      -> 'a t
      (* merge two maps, will raise if they have the same key *)
 
 
