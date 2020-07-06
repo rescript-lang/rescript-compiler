@@ -44,7 +44,7 @@ type mode = ParseForTypeChecker | Default
     try p.regions <- List.tl p.regions with Failure _ -> ()
 
    (* Advance to the next non-comment token and store any encountered comment
-    * in the parser's state. Every comment contains the end position of it's
+    * in the parser's state. Every comment contains the end position of its
     * previous token to facilite comment interleaving *)
    let rec next ?prevEndPos p =
      let prevEndPos = match prevEndPos with Some pos -> pos | None -> p.endPos in
