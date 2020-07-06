@@ -1,5 +1,9 @@
 type ('key, + 'a) t = private
   | Empty
+  | Leaf of {
+      k : 'key ;
+      v : 'a
+    }
   | Node of {
       l : ('key,'a) t ;
       k : 'key ;
