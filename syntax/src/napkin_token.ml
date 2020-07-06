@@ -91,10 +91,10 @@ let precedence = function
 let toString = function
   | Open -> "open"
   | True -> "true" | False -> "false"
-  | Character c -> "'" ^ (Char.escaped c) ^ "'"
-  | String s -> s
-  | Lident str -> str
-  | Uident str -> str
+  | Character c -> "character '" ^ (Char.escaped c) ^ "'"
+  | String s -> "string \"" ^ s ^ "\""
+  | Lident str -> "lident \"" ^ str ^ "\""
+  | Uident str -> "uident \"" ^ str ^ "\""
   | Dot -> "." | DotDot -> ".." | DotDotDot -> "..."
   | Int {i} -> "int " ^ i
   | Float {f} -> "Float: " ^ f
