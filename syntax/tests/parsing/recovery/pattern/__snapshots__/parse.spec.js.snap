@@ -12,7 +12,8 @@ exports[`constructor.js 1`] = `
 `;
 
 exports[`list.js 1`] = `
-";;match x with | [] -> [%napkinscript.exprhole ]
+";;match x with | [] -> () | 1::[]::[] -> () | [] -> 1
+;;[3; 4]
 ;;()"
 `;
 

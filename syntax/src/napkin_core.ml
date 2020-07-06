@@ -131,7 +131,7 @@ let rec goToClosing closingToken state =
 let isEs6ArrowExpression ~inTernary p =
   Parser.lookahead p (fun state ->
     match state.Parser.token with
-    | Lident _ | List | Underscore ->
+    | Lident _ | Underscore ->
       Parser.next state;
       begin match state.Parser.token with
       (* Don't think that this valid
@@ -157,6 +157,7 @@ let isEs6ArrowExpression ~inTernary p =
       | Tilde -> true
       | Backtick -> false (* (` always indicates the start of an expr, can't be es6 parameter *)
       | _ ->
+        if (state.token = List) then goToClosing Rbrace state;
         goToClosing Rparen state;
         begin match state.Parser.token with
         | EqualGreater -> true
@@ -1352,7 +1353,7 @@ and parseListPattern ~startPos ~attrs p =
       ~closing:Rbrace
       ~f:parsePatternRegion
   in
-  Parser.expect Rbracket p;
+  Parser.expect Rbrace p;
   let loc = mkLoc startPos p.prevEndPos in
   let filterSpread (hasSpread, pattern) =
     if hasSpread then (
@@ -1634,17 +1635,6 @@ and parseParameters p =
       label = Asttypes.Nolabel;
       expr = None;
       pat = Ast_helper.Pat.var ~loc (Location.mkloc ident loc);
-      pos = startPos;
-    }]
-  | List ->
-    Parser.next p;
-    let loc = mkLoc startPos p.Parser.prevEndPos in
-    [TermParameter {
-      uncurried = false;
-      attrs = [];
-      label = Asttypes.Nolabel;
-      expr = None;
-      pat = Ast_helper.Pat.var ~loc (Location.mkloc "list" loc);
       pos = startPos;
     }]
   | Underscore ->

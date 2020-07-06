@@ -980,7 +980,95 @@ open /* leading */ React // trailing
 "
 `;
 
-exports[`pattern.ns 1`] = `""`;
+exports[`pattern.ns 1`] = `
+"// Ppat_any
+let /* before */ _ /* after */ = 1
+
+// Ppat_var
+let /* before */ x /* after */ = 1
+
+// Ppat_constant
+let /* before */ 123 /* after */ = 123
+
+// Ppat_interval not supported
+// Ppat_interval of constant * constant
+
+// Ppat_alias
+let /* before pat */ p /* after pat */ as /* before alias */ x /* after alias */ = ()
+let /* c0 */ (/* c1 */ p /* c2 */ as /* c3 */ x /* c4 */) as /* c5 */ y /* c6 */ = ()
+
+// Ppat_array
+let /* c0 */ [
+  /* c1 */ a /* c2 */,
+  /* c3 */ b /* c4 */,
+  /* c5 */ c /* c6 */,
+] /* c7 */ = [1, 2, 3]
+
+// Ppat_construct
+let /* here */ Black /* there */ = color
+
+let /* here */ Black(/* inside */) /* there */ = color
+let Black(/* inside */ /* inside2 */) = color
+let Black(/* inside */ /* inside2 */ /* inside 3 */) = color
+let Black(// singleLineComment
+) = color
+
+let module(/* c0 */ X /* c1 */: /* c2 */ X_int /* c3 */) /* c4 */ = x
+
+let /* before */ Rgb(
+  /* red */ r /* red2 */,
+  /* green */ g /* green2 */,
+  /* blue */ b /* blue2 */,
+) /* after */ = color
+
+let () = ()
+let [/* inside */] = []
+let list{/* inside */} = list{}
+
+let /* before */ list{
+  /* a1 */ a /* a2 */,
+  /* b1 */ b /* b2 */,
+} /* after */ = list{1, 2}
+let /* before */ list{
+  /* a1 */ a /* a2 */,
+  .../* b1 */ b /* b2 */,
+} /* after */ = list{1, 2}
+
+// Ppat_record
+let /* before */ {/* c0 */ name /* c1 */, /* c2 */ age /* c3 */} /* after */ = {
+  name: \\"steve\\",
+  age: 31,
+}
+
+let /* before */ {
+  /* c0 */ name /* c1 */: /* c2 */ firstName /* c3 */,
+  /* c3 */ age /* c4 */: /* c5 */ ageInYears /* c6 */,
+} /* after */ = {name: \\"steve\\", age: 31}
+
+// Ppat_or
+let /* b1 */ Blue /* b2 */ | /* c1 */ Red /* c2 */ = color
+let /* b1 */ Blue /* b2 */ | /* c1 */ Red | /* d1 */ Green /* d2 */ = color
+
+// Ppat_constraint
+let /* c0 */ number /* c1 */: /* c2 */ int /* c3 */ = 123
+
+// Ppat_lazy
+let /* before */ lazy /* a */ x /* b */ /* after */ = lazy 1
+
+// Ppat_unpack
+let /* before */ module(/* h1 */ Hashtbl /* h2 */) /* after */ = Hashtbl
+let /* before */ module(/* h1 */ Hashtbl /* h2 */: /* h3 */ MutableTable /* h4 */) /* after */ = Hashtbl
+
+// Ppat_exception
+let /* before */ exception /* c0 */ Exit /* c1 */ /* after */ = exc
+
+// Ppat_extension
+let /* before */ %bs.raw(\\"eval(gc())\\") /* after */ = stuff
+
+// Ppat_interval
+let /* c0 */ 'a' .. 'z' /* c1 */ = x
+"
+`;
 
 exports[`signatureItem.nsi 1`] = `
 "// Psig_value
@@ -1423,7 +1511,79 @@ type jsUser = /* before */ {
 "
 `;
 
-exports[`valueBindings.ns 1`] = `""`;
+exports[`valueBindings.ns 1`] = `
+"let x = 1
+// trailing first value-binding
+
+// leading snd value-binding
+and y = 2
+/* leading snd value-binding */
+
+let walkList: 'node. unit = comments => {
+  open Location
+  let x /* comment */ = 0
+}
+
+let walkList: 'node. (
+  ~prevLoc: Location.t=?,
+  ~getLoc: 'node => Location.t,
+  ~walkNode: ('node, t, list<Comment.t>) => unit,
+  list<'node>,
+  t,
+  list<Comment.t>,
+) => unit = (~prevLoc=?, ~getLoc, ~walkNode, l, t, comments) => {
+  open Location
+  switch l {
+  | _ when comments == list{} => ()
+  | list{} =>
+    switch prevLoc {
+    | Some(loc) => attach(t.trailing, loc, comments)
+    | None => ()
+    }
+  | list{node, ...rest} =>
+    let currLoc = getLoc(node)
+    let (leading, inside, trailing) = partitionByLoc(comments, currLoc)
+    switch prevLoc {
+    | None =>
+      /* first value binding, all leading comments attach here */
+      attach(t.leading, currLoc, leading)
+    | Some(prevLoc) =>
+      /* Same line */
+      if prevLoc.loc_end.pos_lnum === currLoc.loc_start.pos_lnum {
+        let (afterPrev, beforeCurr) = partitionAdjacentTrailing(
+          prevLoc,
+          leading,
+        )
+        let () = attach(t.trailing, prevLoc, afterPrev)
+        attach(t.leading, currLoc, beforeCurr)
+      } else {
+        let (onSameLineAsPrev, afterPrev) = partitionByOnSameLine(
+          prevLoc,
+          leading,
+        )
+        let () = attach(t.trailing, prevLoc, onSameLineAsPrev)
+        let (leading, _inside, _trailing) = partitionByLoc(afterPrev, currLoc)
+        attach(t.leading, currLoc, leading)
+      }
+    }
+    walkNode(node, t, inside)
+    walkList(~prevLoc=currLoc, ~getLoc, ~walkNode, rest, t, trailing)
+  }
+}
+
+let /* c0 */ number /* c1 */: /* c2 */ int /* c3 */ = /* c4 */ 123 /* c5 */
+
+// some comment
+
+/* leading 3th value-binding */ /* test */
+and z = 3
+/* cmt a */
+/* cmt b */
+/* cmt c */
+and z2 = 4
+// trailing structure
+"
+`;
 
 exports[`whitespaceCase1.ns 1`] = `
 "let x = 1
