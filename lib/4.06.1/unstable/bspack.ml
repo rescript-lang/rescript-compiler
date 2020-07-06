@@ -12149,7 +12149,12 @@ let rec disjoint_merge_exn
         if c = 0 then raise_notrace (fail k l1.v l2.v)
         else if c < 0 then Map_gen.unsafe_two_elements l1.k l1.v l2.k l2.v
         else Map_gen.unsafe_two_elements l2.k l2.v k l1.v
-      | Node _ -> disjoint_merge_exn s2 s1 fail  (* delegated later, simplified a little bit *)
+      | Node _ -> 
+        adjust s2 k (fun data -> 
+          match data with 
+          |  None -> l1.v
+          | Some s2v  -> raise_notrace (fail k l1.v s2v)
+        )        
     end
   | Node ({k} as xs1) -> 
     if  xs1.h >= height s2 then
