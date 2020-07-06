@@ -11,6 +11,7 @@ This repo is the source of truth for the new BuckleScript parser & printer. Issu
 ## Contribute
 
 ### Why
+
 A detailed discussion by Jonathan Blow and Casey Muratori on why you would hand-roll a parser for a production quality programming language
 [Discussion: Making Programming Language Parsers, etc](https://youtu.be/MnctEW1oL-E)
 
@@ -71,6 +72,10 @@ Benchmark:
 ```
 make bench
 ```
+
+### Development Docs
+
+`src/syntax` contains all the source code. Don't change folder structure without notice; BuckleScript uses this repo as a submodule and assumes `src/syntax`.
 
 ### Example File Conversion
 
