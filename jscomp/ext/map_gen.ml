@@ -10,23 +10,82 @@
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
 (***********************************************************************)
+
+[@@@warnerror "+55"]
 (** adapted from stdlib *)
 
-type ('key,'a) t =
+type ('key,'a) t0 =
   | Empty
-  | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
+  | Leaf of {k : 'key ; v : 'a}
+  | Node of {
+    l : ('key,'a) t0 ;
+    k : 'key ;
+    v : 'a ;
+    r : ('key,'a) t0 ;
+    h : int
+  }
 
+let  empty = Empty
+let rec map x f = match x with
+    Empty -> Empty
+  | Leaf {k;v} -> Leaf {k; v = f v}  
+  | Node ({l; v ; r} as x) ->
+    let l' = map l f in
+    let d' = f v in
+    let r' = map r f in
+    Node { x with  l = l';  v = d'; r = r'}
+
+let rec mapi x f = match x with
+    Empty -> Empty
+  | Leaf {k;v} -> Leaf {k; v = f k v}  
+  | Node ({l; k ; v ; r} as x) ->
+    let l' = mapi l f in
+    let v' = f k v in
+    let r' = mapi r f in
+    Node {x with l = l'; v = v'; r = r'}
+
+let [@inline] calc_height a b = (if a >= b  then a else b) + 1 
+let [@inline] singleton k v = Leaf {k;v}
+let [@inline] height = function
+  | Empty -> 0
+  | Leaf _ -> 1
+  | Node {h} -> h
+
+let [@inline] unsafe_node k v l  r h =   
+  Node {l; k; v; r; h}
+let [@inline] unsafe_two_elements k1 v1 k2 v2 = 
+  unsafe_node k2 v2 (singleton k1 v1) empty 2   
+let [@inline] unsafe_node_maybe_leaf k v l r h =   
+  if h = 1 then Leaf {k ; v}   
+  else Node{l;k;v;r; h }           
+
+
+  type ('key, + 'a) t = ('key,'a) t0 = private
+    | Empty
+    | Leaf of {
+      k : 'key ;
+      v : 'a
+    }
+    | Node of {
+      l : ('key,'a) t ;
+      k : 'key ;
+      v : 'a ;
+      r : ('key,'a) t ;
+      h : int
+    }
 
 let rec cardinal_aux acc  = function
   | Empty -> acc 
-  | Node (l,_,_,r, _) -> 
+  | Leaf _ -> acc + 1
+  | Node {l; r} -> 
     cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
 
 let cardinal s = cardinal_aux 0 s 
 
 let rec bindings_aux accu = function
   | Empty -> accu
-  | Node(l, v, d, r, _) -> bindings_aux ((v, d) :: bindings_aux accu r) l
+  | Leaf {k;v} -> (k,v) :: accu
+  | Node {l;k;v;r} -> bindings_aux ((k, v) :: bindings_aux accu r) l
 
 let bindings s =
   bindings_aux [] s
@@ -34,7 +93,9 @@ let bindings s =
 let rec fill_array_with_f (s : _ t) i arr  f : int =    
   match s with 
   | Empty -> i 
-  | Node ( l ,k,v,r,_) -> 
+  | Leaf  {k;v} -> 
+    Array.unsafe_set arr i (f k v); i + 1
+  | Node {l; k; v; r} -> 
     let inext = fill_array_with_f l i arr f in 
     Array.unsafe_set arr inext (f k v);
     fill_array_with_f r (inext + 1) arr f
@@ -42,7 +103,9 @@ let rec fill_array_with_f (s : _ t) i arr  f : int =
 let rec fill_array_aux (s : _ t) i arr : int =    
   match s with 
   | Empty -> i 
-  | Node (l,k,v,r,_) -> 
+  | Leaf {k;v} -> 
+    Array.unsafe_set arr i (k, v); i + 1
+  | Node {l;k;v;r} -> 
     let inext = fill_array_aux l i arr in 
     Array.unsafe_set arr inext (k,v);
     fill_array_aux r (inext + 1) arr 
@@ -51,7 +114,8 @@ let rec fill_array_aux (s : _ t) i arr : int =
 let to_sorted_array (s : ('key,'a) t)  : ('key * 'a ) array =    
   match s with 
   | Empty -> [||]
-  | Node(l,k,v,r,_) -> 
+  | Leaf {k;v} -> [|k,v|]
+  | Node {l;k;v;r} -> 
     let len = 
       cardinal_aux (cardinal_aux 1 r) l in 
     let arr =
@@ -62,7 +126,8 @@ let to_sorted_array (s : ('key,'a) t)  : ('key * 'a ) array =
 let to_sorted_array_with_f (type key a b ) (s : (key,a) t)  (f : key -> a -> b): b array =    
   match s with 
   | Empty -> [||]
-  | Node(l,k,v,r,_) -> 
+  | Leaf {k;v} -> [| f k v|]
+  | Node {l;k;v;r} -> 
     let len = 
       cardinal_aux (cardinal_aux 1 r) l in 
     let arr =
@@ -72,69 +137,81 @@ let to_sorted_array_with_f (type key a b ) (s : (key,a) t)  (f : key -> a -> b):
 
 let rec keys_aux accu = function
     Empty -> accu
-  | Node(l, v, _, r, _) -> keys_aux (v :: keys_aux accu r) l
+  | Leaf {k} -> k :: accu
+  | Node {l; k;r} -> keys_aux (k :: keys_aux accu r) l
 
 let keys s = keys_aux [] s
 
 
 
 
-let height = function
-  | Empty -> 0
-  | Node(_,_,_,_,h) -> h
-
-let create l x d r =
-  let hl = height l and hr = height r in
-  Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
-
-let singleton x d = Node(Empty, x, d, Empty, 1)
 
 let bal l x d r =
-  let hl = match l with Empty -> 0 | Node(_,_,_,_,h) -> h in
-  let hr = match r with Empty -> 0 | Node(_,_,_,_,h) -> h in
+  let hl = height l in
+  let hr = height r in
   if hl > hr + 2 then begin
-    match l with
-      Empty -> invalid_arg "Map.bal"
-    | Node(ll, lv, ld, lr, _) ->
-      if height ll >= height lr then
-        create ll lv ld (create lr x d r)
-      else begin
-        match lr with
-          Empty -> invalid_arg "Map.bal"
-        | Node(lrl, lrv, lrd, lrr, _)->
-          create (create ll lv ld lrl) lrv lrd (create lrr x d r)
-      end
+    let [@warning "-8"] Node ({l=ll; r = lr} as l) = l in
+    let hll = height ll in 
+    let hlr = height lr in 
+    if hll >= hlr then
+      let hnode = calc_height hlr hr in       
+      unsafe_node l.k l.v 
+        ll  
+        (unsafe_node_maybe_leaf x d lr  r hnode)
+        (calc_height hll hnode)
+    else         
+      let [@warning "-8"] Node ({l=lrl; r=lrr} as lr) = lr in 
+      let hlrl = height lrl in 
+      let hlrr = height lrr in 
+      let hlnode = calc_height hll hlrl in 
+      let hrnode = calc_height hlrr hr in 
+      unsafe_node lr.k lr.v 
+        (unsafe_node_maybe_leaf l.k l.v ll  lrl hlnode)  
+        (unsafe_node_maybe_leaf x d lrr r hrnode)      
+        (calc_height hlnode hrnode)
   end else if hr > hl + 2 then begin
-    match r with
-      Empty -> invalid_arg "Map.bal"
-    | Node(rl, rv, rd, rr, _) ->
-      if height rr >= height rl then
-        create (create l x d rl) rv rd rr
-      else begin
-        match rl with
-          Empty -> invalid_arg "Map.bal"
-        | Node(rll, rlv, rld, rlr, _) ->
-          create (create l x d rll) rlv rld (create rlr rv rd rr)
-      end
+    let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
+    let hrr = height rr in 
+    let hrl = height rl in 
+    if hrr >= hrl then
+      let hnode = calc_height hl hrl in
+      unsafe_node r.k r.v 
+        (unsafe_node_maybe_leaf x d l rl hnode)
+        rr
+        (calc_height hnode hrr)
+    else 
+      let [@warning "-8"] Node ({l=rll;  r=rlr} as rl) = rl in 
+      let hrll = height rll in 
+      let hrlr = height rlr in 
+      let hlnode = (calc_height hl hrll) in
+      let hrnode = (calc_height hrlr hrr) in      
+      unsafe_node rl.k rl.v 
+        (unsafe_node_maybe_leaf x d l  rll hlnode)  
+        (unsafe_node_maybe_leaf r.k r.v rlr  rr hrnode)
+        (calc_height hlnode hrnode)
   end else
-    Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
+    unsafe_node_maybe_leaf x d l r (calc_height hl hr)
 
-let empty = Empty
 
-let is_empty = function Empty -> true | _ -> false
+
+let [@inline] is_empty = function Empty -> true | _ -> false
 
 let rec min_binding_exn = function
     Empty -> raise Not_found
-  | Node(Empty, x, d, _, _) -> (x, d)
-  | Node(l, _, _, _, _) -> min_binding_exn l
-
-let choose = min_binding_exn
+  | Leaf {k;v} -> (k,v)  
+  | Node{l; k; v} -> 
+    match l with 
+    | Empty -> (k, v) 
+    | Leaf _
+    | Node _ -> 
+      min_binding_exn l
 
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
-  | Node(Empty, _, _, r, _) -> r
-  | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
+  | Leaf _ -> empty  
+  | Node{l=Empty;r} -> r
+  | Node{l; k; v ; r} -> bal (remove_min_binding l) k v r
 
 let merge t1 t2 =
   match (t1, t2) with
@@ -147,40 +224,28 @@ let merge t1 t2 =
 
 let rec iter x f = match x with 
     Empty -> ()
-  | Node(l, v, d, r, _) ->
-    iter l f; f v d; iter r f
+  | Leaf {k;v} -> (f k v : unit) 
+  | Node{l; k ; v ; r} ->
+    iter l f; f k v; iter r f
 
-let rec map x f = match x with
-    Empty ->
-    Empty
-  | Node(l, v, d, r, h) ->
-    let l' = map l f in
-    let d' = f d in
-    let r' = map r f in
-    Node(l', v, d', r', h)
 
-let rec mapi x f = match x with
-    Empty ->
-    Empty
-  | Node(l, v, d, r, h) ->
-    let l' = mapi l f in
-    let d' = f v d in
-    let r' = mapi r f in
-    Node(l', v, d', r', h)
 
 let rec fold m accu f =
   match m with
     Empty -> accu
-  | Node(l, v, d, r, _) ->
-    fold r (f v d (fold l accu f)) f 
+  | Leaf {k;v} -> f k v accu  
+  | Node {l; k; v; r} ->
+    fold r (f k v (fold l accu f)) f 
 
 let rec for_all x p = match x with 
     Empty -> true
-  | Node(l, v, d, r, _) -> p v d && for_all l p && for_all r p
+  | Leaf {k; v} -> p k v   
+  | Node{l; k; v ; r} -> p k v && for_all l p && for_all r p
 
 let rec exists x p = match x with
     Empty -> false
-  | Node(l, v, d, r, _) -> p v d || exists l p || exists r p
+  | Leaf {k; v} -> p k v   
+  | Node{l; k; v; r} -> p k v || exists l p || exists r p
 
 (* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
@@ -190,27 +255,37 @@ let rec exists x p = match x with
    respects this precondition.
 *)
 
-let rec add_min_binding k v = function
+let rec add_min k v = function
   | Empty -> singleton k v
-  | Node (l, x, d, r, _) ->
-    bal (add_min_binding k v l) x d r
+  | Leaf l -> unsafe_two_elements k v l.k l.v
+  | Node tree ->
+    bal (add_min k v tree.l) tree.k tree.v tree.r
 
-let rec add_max_binding k v = function
+let rec add_max k v = function
   | Empty -> singleton k v
-  | Node (l, x, d, r, _) ->
-    bal l x d (add_max_binding k v r)
+  | Leaf l -> unsafe_two_elements l.k l.v k v
+  | Node tree ->
+    bal tree.l tree.k tree.v (add_max k v tree.r)
 
 (* Same as create and bal, but no assumptions are made on the
    relative heights of l and r. *)
 
 let rec join l v d r =
-  match (l, r) with
-    (Empty, _) -> add_min_binding v d r
-  | (_, Empty) -> add_max_binding v d l
-  | (Node(ll, lv, ld, lr, lh), Node(rl, rv, rd, rr, rh)) ->
-    if lh > rh + 2 then bal ll lv ld (join lr v d r) else
-    if rh > lh + 2 then bal (join l v d rl) rv rd rr else
-      create l v d r
+  match l with
+  | Empty -> add_min v d r
+  | Leaf leaf ->
+      add_min leaf.k leaf.v (add_min v d r)
+  | Node xl ->
+    match r with  
+    | Empty -> add_max v d l
+    | Leaf leaf -> 
+      add_max leaf.k leaf.v (add_max v d l)  
+    | Node  xr ->
+      let lh = xl.h in  
+      let rh = xr.h in 
+      if lh > rh + 2 then bal xl.l xl.k xl.v (join xl.r v d r) else
+      if rh > lh + 2 then bal (join l v d xr.l) xr.k xr.v xr.r else
+        unsafe_node v d l  r (calc_height lh rh)
 
 (* Merge two trees l and r into one.
    All elements of l must precede the elements of r.
@@ -228,15 +303,6 @@ let concat_or_join t1 v d t2 =
   match d with
   | Some d -> join t1 v d t2
   | None -> concat t1 t2
-
-(* let rec filter x p = match x with
-    Empty -> Empty
-  | Node(l, v, d, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let l' = filter l p in
-    let pvd = p v d in
-    let r' = filter r p in
-    if pvd then join l' v d r' else concat l' r' *)
 
     
 module type S =
@@ -266,16 +332,20 @@ module type S =
     (** [remove x m] returns a map containing the same bindings as
        [m], except for [x] which is unbound in the returned map. *)
 
-    val merge:
+    (* val merge:
          'a t -> 'b t ->
-         (key -> 'a option -> 'b option -> 'c option) ->  'c t
+         (key -> 'a option -> 'b option -> 'c option) ->  'c t *)
     (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
         and of [m2]. The presence of each such binding, and the corresponding
         value, is determined with the function [f].
         @since 3.12.0
      *)
 
-    val disjoint_merge : 'a t -> 'a t -> 'a t
+    val disjoint_merge_exn : 
+      'a t 
+      -> 'a t 
+      -> (key -> 'a -> 'a -> exn)
+      -> 'a t
      (* merge two maps, will raise if they have the same key *)
 
 
@@ -324,11 +394,6 @@ module type S =
     (* Increasing order *)
 
 
-    val choose: 'a t -> (key * 'a)
-    (** Return one binding of the given map, or raise [Not_found] if
-       the map is empty. Which binding is chosen is unspecified,
-       but equal bindings will be chosen for equal maps.
-     *)
 
     (* val split: 'a t -> key -> 'a t * 'a option * 'a t *)
     (** [split x m] returns a triple [(l, data, r)], where

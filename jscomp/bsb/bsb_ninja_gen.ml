@@ -188,7 +188,7 @@ let output_ninja_and_namespace_map
   Map_string.iter dev 
     (fun k a -> 
        if Map_string.mem lib k  then 
-         Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)            
+         raise (Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k))
     ) ;
   if source_dirs.dev <> [] then
     Bsb_ninja_targets.output_kv 

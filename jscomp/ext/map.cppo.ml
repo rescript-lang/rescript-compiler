@@ -1,26 +1,23 @@
 
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
-[@@@warnerror"a"]
 
-#ifdef TYPE_FUNCTOR
-module Make(Ord: Map.OrderedType) = struct
-  type key = Ord.t
-  let compare_key = Ord.compare 
-#elif defined TYPE_STRING
+#ifdef TYPE_STRING
   type key = string 
   let compare_key = Ext_string.compare
+  let [@inline] eq_key (x : key) y = x = y
 #elif defined TYPE_INT
   type key = int
   let compare_key = Ext_int.compare
+  let [@inline] eq_key (x : key) y = x = y
 #elif defined TYPE_IDENT
   type key = Ident.t
   let compare_key = Ext_ident.compare
+  let [@inline] eq_key (x : key) y = Ident.same x y
 #else
   [%error "unknown type"]
 #endif
-
-type 'a t = (key,'a) Map_gen.t
-exception Duplicate_key of key 
+(* let [@inline] (=) (a : int) b = a = b *)
+type + 'a t = (key,'a) Map_gen.t
 
 let empty = Map_gen.empty 
 let is_empty = Map_gen.is_empty
@@ -34,7 +31,7 @@ let bindings = Map_gen.bindings
 let to_sorted_array = Map_gen.to_sorted_array
 let to_sorted_array_with_f = Map_gen.to_sorted_array_with_f
 let keys = Map_gen.keys
-let choose = Map_gen.choose 
+
 
 
 let map = Map_gen.map 
@@ -45,115 +42,159 @@ let height = Map_gen.height
 
 let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with 
   | Empty ->
-    Node(Empty, x, data, Empty, 1)
-  | Node(l, v, d, r, h) ->
-    let c = compare_key x v in
+    singleton x data
+  | Leaf {k;v} ->
+    let c = compare_key x k in 
+    if c = 0 then singleton x data else
+    if c < 0 then 
+      Map_gen.unsafe_two_elements x data k v 
+    else 
+      Map_gen.unsafe_two_elements k v x data  
+  | Node {l; k ; v ; r; h} ->
+    let c = compare_key x k in
     if c = 0 then
-      Node(l, x, data, r, h)
+      Map_gen.unsafe_node x data l r h (* at least need update data *)
     else if c < 0 then
-      bal (add l x data ) v d r
+      bal (add l x data ) k v r
     else
-      bal l v d (add r x data )
+      bal l k v (add r x data )
 
 
 let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a = 
   match tree with 
   | Empty ->
-    Node(Empty, x, replace None, Empty, 1)
-  | Node(l, v, d, r, h) ->
-    let c = compare_key x v in
-    if c = 0 then
-      Node(l, x, replace  (Some d) , r, h)
-    else if c < 0 then
-      bal (adjust l x  replace ) v d r
+    singleton x (replace None)
+  | Leaf {k ; v} -> 
+    let c = compare_key x k in 
+    if c = 0 then singleton x (replace (Some v)) else 
+    if c < 0 then 
+      Map_gen.unsafe_two_elements x (replace None) k v   
     else
-      bal l v d (adjust r x  replace )
+      Map_gen.unsafe_two_elements k v x (replace None)   
+  | Node ({l; k ; r} as tree) ->
+    let c = compare_key x k in
+    if c = 0 then
+      Map_gen.unsafe_node x (replace  (Some tree.v)) l r tree.h
+    else if c < 0 then
+      bal (adjust l x  replace ) k tree.v r
+    else
+      bal l k tree.v (adjust r x  replace )
 
 
 let rec find_exn (tree : _ Map_gen.t ) x = match tree with 
   | Empty ->
     raise Not_found
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then d
-    else find_exn (if c < 0 then l else r) x
+  | Leaf leaf -> 
+    if eq_key x leaf.k then leaf.v else raise Not_found  
+  | Node tree ->
+    let c = compare_key x tree.k in
+    if c = 0 then tree.v
+    else find_exn (if c < 0 then tree.l else tree.r) x
 
 let rec find_opt (tree : _ Map_gen.t ) x = match tree with 
   | Empty -> None 
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then Some d
-    else find_opt (if c < 0 then l else r) x
+  | Leaf leaf -> 
+    if eq_key x leaf.k then Some leaf.v else None
+  | Node tree ->
+    let c = compare_key x tree.k in
+    if c = 0 then Some tree.v
+    else find_opt (if c < 0 then tree.l else tree.r) x
 
 let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with 
   | Empty -> default  
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then  d
-    else find_default (if c < 0 then l else r) x default
+  | Leaf leaf -> 
+    if eq_key x leaf.k then  leaf.v else default
+  | Node tree ->
+    let c = compare_key x tree.k in
+    if c = 0 then tree.v
+    else find_default (if c < 0 then tree.l else tree.r) x default
 
 let rec mem (tree : _ Map_gen.t )  x= match tree with 
   | Empty ->
     false
-  | Node(l, v, _, r, _) ->
-    let c = compare_key x v in
+  | Leaf leaf -> eq_key x leaf.k 
+  | Node{l; k ;  r} ->
+    let c = compare_key x k in
     c = 0 || mem (if c < 0 then l else r) x 
 
 let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
-  | Empty ->
-    Empty
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
+  | Empty -> empty
+  | Leaf leaf -> 
+    if eq_key x leaf.k then empty 
+    else tree
+  | Node{l; k ; v; r} ->
+    let c = compare_key x k in
     if c = 0 then
       Map_gen.merge l r
     else if c < 0 then
-      bal (remove l x) v d r
+      bal (remove l x) k v r
     else
-      bal l v d (remove r x )
+      bal l k v (remove r x )
 
 
-let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = match tree with 
+let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = 
+  match tree with 
   | Empty ->
-    (Empty, None, Empty)
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then (l, Some d, r)
+    (empty, None, empty)
+  | Leaf leaf -> 
+    let c = compare_key x leaf.k in 
+    if c = 0 then empty, Some leaf.v, empty 
+    else if c < 0 then empty, None, tree 
+    else  tree, None, empty
+  | Node {l; k ; v ; r} ->
+    let c = compare_key x k in
+    if c = 0 then (l, Some v, r)
     else if c < 0 then
-      let (ll, pres, rl) = split l x in (ll, pres, Map_gen.join rl v d r)
+      let (ll, pres, rl) = split l x in 
+      (ll, pres, Map_gen.join rl k v r)
     else
-      let (lr, pres, rr) = split r x in (Map_gen.join l v d lr, pres, rr)
+      let (lr, pres, rr) = split r x in 
+      (Map_gen.join l k v lr, pres, rr)
 
-let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
-  match (s1, s2) with
-  | (Empty, Empty) -> Empty
-  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    let (l2, d2, r2) = split s2 v1 in
-    Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
-  | (_, Node (l2, v2, d2, r2, _)) ->
-    let (l1, d1, r1) = split s1 v2 in
-    Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
-  | _ ->
-    assert false
 
-let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
-  match (s1, s2) with
-  | (Empty, Empty) -> Empty
-  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    begin match split s2 v1 with 
-    | l2, None, r2 -> 
-      Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
-    | _, Some _, _ ->
-      raise (Duplicate_key  v1)
-    end        
-  | (_, Node (l2, v2, d2, r2, _)) ->
-    begin match  split s1 v2 with 
-    | (l1, None, r1) -> 
-      Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
-    | (_, Some _, _) -> 
-      raise (Duplicate_key v2)
+
+let rec disjoint_merge_exn  
+    (s1 : _ Map_gen.t) 
+    (s2  : _ Map_gen.t) 
+    fail : _ Map_gen.t =
+  match s1 with
+  | Empty -> s2  
+  | Leaf ({k } as l1)  -> 
+    begin match s2 with 
+      | Empty -> s1 
+      | Leaf l2 -> 
+        let c = compare_key k l2.k in 
+        if c = 0 then raise_notrace (fail k l1.v l2.v)
+        else if c < 0 then Map_gen.unsafe_two_elements l1.k l1.v l2.k l2.v
+        else Map_gen.unsafe_two_elements l2.k l2.v k l1.v
+      | Node _ -> 
+        adjust s2 k (fun data -> 
+          match data with 
+          |  None -> l1.v
+          | Some s2v  -> raise_notrace (fail k l1.v s2v)
+        )        
     end
-  | _ ->
-    assert false
+  | Node ({k} as xs1) -> 
+    if  xs1.h >= height s2 then
+      begin match split s2 k with 
+        | l, None, r -> 
+          Map_gen.join 
+            (disjoint_merge_exn  xs1.l l fail)
+            k 
+            xs1.v 
+            (disjoint_merge_exn xs1.r r fail)
+        | _, Some s2v, _ ->
+          raise_notrace (fail k xs1.v s2v)
+      end        
+    else let [@warning "-8"] (Node ({k} as s2) : _ Map_gen.t)  = s2 in 
+      begin match  split s1 k with 
+        | (l, None, r) -> 
+          Map_gen.join 
+            (disjoint_merge_exn  l s2.l fail) k s2.v 
+            (disjoint_merge_exn  r s2.r fail)
+        | (_, Some s1v, _) -> 
+          raise_notrace (fail k s1v s2.v)
+      end
 
 
 

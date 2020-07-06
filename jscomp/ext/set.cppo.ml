@@ -26,6 +26,7 @@
 #if defined TYPE_STRING 
 type elt = string
 let compare_elt = Ext_string.compare 
+let [@inline] eq_elt (x : elt) y = x = y
 let print_elt = Format.pp_print_string
 #elif defined TYPE_IDENT
 type elt = Ident.t
@@ -36,15 +37,19 @@ let compare_elt (x : elt) (y : elt) =
     let b = Pervasives.compare (x.name : string) y.name in 
     if b <> 0 then b 
     else Pervasives.compare (x.flags : int) y.flags     
-
+let [@inline] eq_elt (x : elt) y = Ident.same x y
 let print_elt = Ident.print
 #elif defined TYPE_INT
 type elt = int 
 let compare_elt = Ext_int.compare 
 let print_elt = Format.pp_print_int
+let [@inline] eq_elt (x : elt) y = x = y
 #else 
 [%error "unknown type" ]
 #endif
+
+
+(* let (=) (a:int) b = a = b *)
 
 type ('a ) t0 = 'a Set_gen.t 
 
@@ -67,7 +72,7 @@ let of_sorted_array = Set_gen.of_sorted_array
 
 let rec mem (tree : t) (x : elt) =  match tree with 
   | Empty -> false
-  | Leaf v -> x = v 
+  | Leaf v -> eq_elt x  v 
   | Node{l; v; r} ->
     let c = compare_elt x v in
     c = 0 || mem (if c < 0 then l else r) x
@@ -165,7 +170,7 @@ let rec diff (s1 : t) (s2 : t) : t  =
 let rec remove (tree : t)  (x : elt) : t = match tree with 
   | Empty -> empty (* This case actually would be never reached *)
   | Leaf v ->     
-    if x = v then empty else tree    
+    if eq_elt x  v then empty else tree    
   | Node{l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then Set_gen.internal_merge l r else

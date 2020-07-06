@@ -86,7 +86,7 @@ let print (fmt : Format.formatter) (x : error) =
     @{<error>Error: Invalid json format@}" s
 
 let conflict_module modname dir1 dir2 =
-  error (Conflict_module (modname,dir1,dir2))
+  Error (Conflict_module (modname,dir1,dir2))
 let no_implementation modname =   
   error (No_implementation modname)
 let not_consistent modname =   

@@ -29,7 +29,7 @@ val conflict_module_info:
   string ->
   Bsb_db.module_info -> 
   Bsb_db.module_info -> 
-  'a 
+  exn
 
 
 val merge : Bsb_db.map -> Bsb_db.map -> Bsb_db.map   

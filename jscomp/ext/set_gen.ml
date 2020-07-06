@@ -42,23 +42,13 @@ let [@inline] unsafe_node_maybe_leaf v l r h =
 
 let [@inline] singleton x = Leaf x
 
-let unsafe_two_elements x v = 
+let [@inline] unsafe_two_elements x v = 
   unsafe_node v (singleton x) empty 2 
   
 type 'a t = 'a t0 = private
   | Empty 
   | Leaf of 'a
   | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
-
-(* type 'a enumeration0 = 
-  | End | More of 'a * 'a t0 * 'a enumeration0 *)
-
-
-(* let rec cons_enum s e = 
-  match s with 
-  | Empty -> e 
-  | Node {l; v;r} -> cons_enum l (More(v,r,e)) *)
-
 
 
 (* Smallest and greatest element of a set *)
