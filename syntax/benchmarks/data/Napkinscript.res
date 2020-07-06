@@ -13513,11 +13513,11 @@ module NapkinScript = {
       }
       Parsetree.Pconst_float(floatTxt, suffix)
     | String(s) =>
-      (* let txt = if p.mode == ParseForTypeChecker { *)
-        (* parseStringLiteral(s) *)
-      (* } else { *)
-        (* s *)
-      (* } *)
+      /* let txt = if p.mode == ParseForTypeChecker { */
+        /* parseStringLiteral(s) */
+      /* } else { */
+        /* s */
+      /* } */
 
       Pconst_string(s, None)
     | Character(c) => Pconst_char(c)
