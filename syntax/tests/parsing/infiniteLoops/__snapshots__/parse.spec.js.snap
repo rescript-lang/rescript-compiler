@@ -209,7 +209,7 @@ include
           mutable size: int ;
           mutable root: 'value node option ;
           compare: [ [%napkinscript.typehole ]] Js.Internal.fn }
-        ;;{|Arity_2('value, 'value)], int),
+        ;;{js|Arity_2('value, 'value)], int),
                       };
                     }: {
 
@@ -220,7 +220,7 @@ include
             (
               ~size: int,
               ~root: option(node('value)),
-              ~compare: Js.Internal.fn([ | |}
+              ~compare: Js.Internal.fn([ | |js}
         ;;Arity_2 (value, value)
         ;;int
         ;;(t value) = \\"\\"
@@ -256,12 +256,12 @@ include
         ;;[|((1)[@internal.arity ])|]
         external compare :
           'value t -> [ [%napkinscript.typehole ]] Js.Internal.fn
-        ;;{|Arity_2('value, 'value)], int) =
+        ;;{js|Arity_2('value, 'value)], int) =
             \\"\\"
             \\"BS:6.0.1\\\\132\\\\149\\\\166\\\\190\\\\000\\\\000\\\\000\\\\019\\\\000\\\\000\\\\000\\\\007\\\\000\\\\000\\\\000\\\\020\\\\000\\\\000\\\\000\\\\019\\\\176\\\\160\\\\160A\\\\145@@A\\\\152\\\\160'compare@\\";
           [@internal.arity 1]
           external compareGet:
-            t('value) => Js.Internal.fn([ | |}
+            t('value) => Js.Internal.fn([ | |js}
         ;;Arity_2 (value, value)
         ;;int
         ;;\\"\\"

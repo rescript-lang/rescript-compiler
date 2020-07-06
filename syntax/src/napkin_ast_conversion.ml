@@ -349,7 +349,12 @@ let normalize =
         let s = Parsetree.Pconst_string (raw, None) in
         {expr with pexp_desc = Pexp_constant s}
       | Pexp_constant (Pconst_string (txt, tag)) ->
-        let s = Parsetree.Pconst_string ((escapeTemplateLiteral txt), tag) in
+        let newTag = match tag with
+        (* transform {|abc|} into {js|abc|js}, we want to preserve unicode by default *)
+        | Some "" -> Some "js"
+        | tag -> tag
+        in
+        let s = Parsetree.Pconst_string ((escapeTemplateLiteral txt), newTag) in
         {expr with
           pexp_attributes = mapper.attributes mapper expr.pexp_attributes;
           pexp_desc = Pexp_constant s

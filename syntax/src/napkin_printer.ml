@@ -398,7 +398,7 @@ let printConstant c = match c with
     Doc.text ("\"" ^ txt ^ "\"")
   | Pconst_string (txt, Some prefix) ->
     Doc.concat [
-      if prefix = "" then Doc.nil else Doc.text prefix;
+      if prefix = "js" then Doc.nil else Doc.text prefix;
       Doc.text ("`" ^ txt ^ "`")
     ]
   | Pconst_float (s, _) -> Doc.text s
@@ -3223,7 +3223,7 @@ and printSetFieldExpr attrs lhs longidentLoc rhs loc cmtTbl =
   printComments doc cmtTbl loc
 
 and printTemplateLiteral expr cmtTbl =
-  let tag = ref "j" in
+  let tag = ref "js" in
   let rec walkExpr expr =
     let open Parsetree in
     match expr.pexp_desc with
@@ -3243,7 +3243,7 @@ and printTemplateLiteral expr cmtTbl =
   in
   let content = walkExpr expr in
   Doc.concat [
-    if !tag = "j" then Doc.nil else Doc.text !tag;
+    if !tag = "js" then Doc.nil else Doc.text !tag;
     Doc.text "`";
     content;
     Doc.text "`"
