@@ -47,7 +47,7 @@ bootstrap: build-native
 	mv ./lib/napkinscript2.exe ./lib/napkinscript.exe
 
 lib/refmt.exe: vendor/refmt_main3.ml
-	$(OCAMLOPT) -O2 -I vendor -I +compiler-libs ocamlcommon.cmxa -o lib/refmt.exe vendor/refmt_main3.ml
+	$(OCAMLOPT) -w a -O2 -I vendor -I +compiler-libs ocamlcommon.cmxa -o lib/refmt.exe vendor/refmt_main3.ml
 
 
 bench: lib/bench.exe
