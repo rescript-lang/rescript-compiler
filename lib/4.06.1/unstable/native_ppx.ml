@@ -10685,8 +10685,11 @@ let [@inline] is_empty = function Empty -> true | _ -> false
 
 let rec min_binding_exn = function
     Empty -> raise Not_found
-  | Node{l=Empty; k; v} -> (k, v)
-  | Node{l} -> min_binding_exn l
+  | Node{l; k; v} -> 
+    match l with 
+    | Empty -> (k, v) 
+    | Node _ -> 
+      min_binding_exn l
 
 
 let rec remove_min_binding = function
@@ -10718,11 +10721,11 @@ let rec fold m accu f =
 
 let rec for_all x p = match x with 
     Empty -> true
-  | Node{l; k = v; v = d; r} -> p v d && for_all l p && for_all r p
+  | Node{l; k; v ; r} -> p k v && for_all l p && for_all r p
 
 let rec exists x p = match x with
     Empty -> false
-  | Node{l; k = v; v = d; r} -> p v d || exists l p || exists r p
+  | Node{l; k; v; r} -> p k v || exists l p || exists r p
 
 (* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
@@ -11014,20 +11017,20 @@ let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with
 let rec mem (tree : _ Map_gen.t )  x= match tree with 
   | Empty ->
     false
-  | Node{l; k = v;  r} ->
-    let c = compare_key x v in
+  | Node{l; k ;  r} ->
+    let c = compare_key x k in
     c = 0 || mem (if c < 0 then l else r) x 
 
 let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
   | Empty -> empty
-  | Node{l; k = v; v = d; r} ->
-    let c = compare_key x v in
+  | Node{l; k ; v; r} ->
+    let c = compare_key x k in
     if c = 0 then
       Map_gen.merge l r
     else if c < 0 then
-      bal (remove l x) v d r
+      bal (remove l x) k v r
     else
-      bal l v d (remove r x )
+      bal l k v (remove r x )
 
 
 let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = 
