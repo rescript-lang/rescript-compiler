@@ -345,7 +345,7 @@ let classifyIdentContent ?(allowUident=false) txt =
       else
         go (i + 1)
   in
-  if Token.isKeywordTxt txt && txt <> "list{" then
+  if Token.isKeywordTxt txt then
     ExoticIdent
   else
     go 0

@@ -2798,7 +2798,7 @@ and parseRecordRow p =
   | _ -> ()
   in
   match p.Parser.token with
-  | Lident _ | Uident _ | List ->
+  | Lident _ | Uident _ ->
     let field = parseValuePath p in
     begin match p.Parser.token with
     | Colon ->
@@ -3591,7 +3591,7 @@ and parseAtomicTypExpr ~attrs p =
     end
   | Lbracket ->
     parsePolymorphicVariantType ~attrs p
-  | Uident _ | Lident _ | List ->
+  | Uident _ | Lident _ ->
     let constr = parseValuePath p in
     let args =  parseTypeConstructorArgs ~constrName:constr p in
     Ast_helper.Typ.constr ~loc:(mkLoc startPos p.prevEndPos) ~attrs constr args
@@ -3730,7 +3730,7 @@ and parseTypeParameter p =
       | _ ->
         Some (uncurried, attrs, Asttypes.Labelled name, typ, startPos)
       end
-    | Lident _ | List ->
+    | Lident _ ->
       let (name, loc) = parseLident p in
       begin match p.token with
       | Colon ->
@@ -3989,7 +3989,7 @@ and parseFieldDeclarationRegion p =
     Asttypes.Immutable
   in
   match p.token with
-  | Lident _ | List ->
+  | Lident _ ->
     let (lident, loc) = parseLident p in
     let name = Location.mkloc lident loc in
     let typ = match p.Parser.token with
@@ -5452,7 +5452,7 @@ and parseModuleBindings ~attrs ~startPos p =
 and parseAtomicModuleType p =
   let startPos = p.Parser.startPos in
   let moduleType = match p.Parser.token with
-  | Uident _ | Lident _ | List ->
+  | Uident _ | Lident _ ->
     (* Ocaml allows module types to end with lowercase: module Foo : bar = { ... }
      * lets go with uppercase terminal for now *)
     let moduleLongIdent = parseModuleLongIdent ~lowercase:true p in
