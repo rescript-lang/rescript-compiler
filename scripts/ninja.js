@@ -1515,6 +1515,12 @@ function getPreprocessorFileName() {
  */
 function preprocessorNinjaSync() {
   var refmtMainPath = version6() ? "../lib/4.06.1" : "../lib/4.02.3";
+  var napkinFiles = fs
+    .readdirSync(path.join(jscompDir, "..", "syntax", "src"), "ascii")
+    .filter((x) => x.endsWith(".ml") || x.endsWith(".mli"));
+  var buildNapkinFiles = napkinFiles
+    .map((file) => `build napkin/${file} : copy ../syntax/src/${file}`)
+    .join("\n");
   var cppoNative = `
 ${useEnv ? getEnnvConfigNinja() : getVendorConfigNinja()}
 rule link
@@ -1561,6 +1567,10 @@ build ../${
     libs = ocamlcommon.cmxa
     flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30-3 -no-alias-deps
     generator = true
+rule copy
+  command = cp $in $out
+  description = $in -> $out    
+${buildNapkinFiles}    
 `;
   var cppoNinjaFile = getPreprocessorFileName();
   writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
