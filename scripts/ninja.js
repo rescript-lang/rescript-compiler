@@ -1832,7 +1832,7 @@ function main() {
           });
         } catch (e) {}
         cp.execSync(
-          `git clean -dfx jscomp ${process.platform} lib && rm -rf lib/js/*.js && rm -rf lib/es6/*.js`,
+          `git clean -dfx jscomp ${process.platform} lib && rm -rf lib/js/*.js && rm -rf lib/es6/*.js && rm -rf jscomp/napkin/*.ml* `,
           {
             encoding: "utf8",
             cwd: path.join(__dirname, ".."),
