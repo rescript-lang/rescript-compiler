@@ -223,7 +223,7 @@ Doc.concat(
   rows
   /* a */
 );
-Doc.concat(list{}
+Doc.concat(list{
   privateFlag,
   rows,
   /* a */
