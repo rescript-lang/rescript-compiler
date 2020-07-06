@@ -2107,7 +2107,7 @@ and parseBinaryExpr ?(context=OrdinaryExpr) ?a p prec =
     (* | _ -> false *)
   (* ) *)
 
-and parseTemplateExpr ?(prefix="") p =
+and parseTemplateExpr ?(prefix="js") p =
   let hiddenOperator =
     let op = Location.mknoloc (Longident.Lident "^") in
     Ast_helper.Exp.ident op

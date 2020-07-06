@@ -373,7 +373,7 @@ It seems that this record field mutation misses an expression
 
 exports[`taggedTemplateLiterals.js 1`] = `
 "=====Parsetree==========================================
-;;{|null|}
+;;{js|null|js}
 =====Errors=============================================
 
 File \\"/syntax/tests/parsing/errors/expressions/taggedTemplateLiterals.js\\", line 1, characters 0-5:

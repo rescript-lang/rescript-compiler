@@ -66,13 +66,13 @@ exports[`gh16B.ns 1`] = `
 open Ws
 let wss = Server.make { port = 82 }
 let address = wss |. Server.address
-let log msg = Js.log ({|> Server: |} ^ msg)
+let log msg = Js.log ({js|> Server: |js} ^ msg)
 ;;log
-    (((((({|Running on: |} ^ address.address) ^ {|:|}) ^
+    (((((({js|Running on: |js} ^ address.address) ^ {js|:|js}) ^
           (address.port |. string_of_int))
-         ^ {| (|})
+         ^ {js| (|js})
         ^ address.family)
-       ^ {|)|})
+       ^ {js|)|js})
 module ClientSet =
   struct
     module T =

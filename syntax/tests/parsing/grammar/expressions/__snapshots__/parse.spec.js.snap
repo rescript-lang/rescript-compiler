@@ -227,7 +227,7 @@ let reifyStyle (type a) (x : 'a) =
          external canvasGradient : constructor = \\"CanvasGradient\\"[@@bs.val ]
          external canvasPattern : constructor = \\"CanvasPattern\\"[@@bs.val ]
          let instanceOf =
-           ([%bs.raw {|function(x,y) {return +(x instanceof y)}|}] : 
+           ([%bs.raw {js|function(x,y) {return +(x instanceof y)}|js}] : 
            'a -> constructor -> bool)
        end in
        ((if (Js.typeof x) = \\"string\\"
@@ -307,11 +307,11 @@ let y = false
 let txt = \\"a string\\"
 let txtWithEscapedChar = \\"foo\\\\nbar\\"
 let number = 1
-let template = {|amazing
+let template = {js|amazing
   multine
   template
      string
-|}
+|js}
 let complexNumber = 1.6
 let x = 0b0000_0001
 let int32 = 42l
@@ -376,28 +376,29 @@ let u = ()"
 `;
 
 exports[`es6template.js 1`] = `
-"let s = {|foo|}
-let s = {|multi
+"let s = {js|foo|js}
+let s = {js|multi
   line
 
 string
-|}
+|js}
 let s = foo
-let s = {|before|} ^ foo
-let s = {|before |} ^ foo
-let s = {|before  |} ^ foo
-let s = foo ^ {|after|}
-let s = foo ^ {| after|}
-let s = foo ^ {|  after|}
+let s = {js|before|js} ^ foo
+let s = {js|before |js} ^ foo
+let s = {js|before  |js} ^ foo
+let s = foo ^ {js|after|js}
+let s = foo ^ {js| after|js}
+let s = foo ^ {js|  after|js}
 let s = foo ^ bar
 let s = (foo ^ bar) ^ baz
-let s = (foo ^ {| |}) ^ bar
-let s = (((foo ^ {| |}) ^ bar) ^ {| |}) ^ baz
-let s = ((({| before |} ^ foo) ^ {| |}) ^ bar) ^ {| after |}
+let s = (foo ^ {js| |js}) ^ bar
+let s = (((foo ^ {js| |js}) ^ bar) ^ {js| |js}) ^ baz
+let s = ((({js| before |js} ^ foo) ^ {js| |js}) ^ bar) ^ {js| after |js}
 let s =
-  ((((({|before |} ^ foo) ^ {| middle |}) ^ bar) ^ {| |}) ^ baz) ^ {| wow |}
+  ((((({js|before |js} ^ foo) ^ {js| middle |js}) ^ bar) ^ {js| |js}) ^ baz)
+    ^ {js| wow |js}
 let s =
-  {|
+  {js|
   multiline
 
   es6
@@ -409,11 +410,11 @@ let s =
   so convenient
 
   :)
-|}
-let s = {|$dollar without $braces $interpolation|}
+|js}
+let s = {js|$dollar without $braces $interpolation|js}
 let s = {json|null|json}
-let x = {|foo\`bar$\\\\foo|}
-let x = ((({|foo\`bar$\\\\foo|} ^ a) ^ {| \` |}) ^ b) ^ {| \` xx|}"
+let x = {js|foo\`bar$\\\\foo|js}
+let x = ((({js|foo\`bar$\\\\foo|js} ^ a) ^ {js| \` |js}) ^ b) ^ {js| \` xx|js}"
 `;
 
 exports[`extension.js 1`] = `
@@ -1075,7 +1076,7 @@ let _ =
 let _ =
   ((div
       ~children:[(((let left = limit |. Int.toString in
-                    (left ^ {| characters left|}) |. React.string))
+                    (left ^ {js| characters left|js}) |. React.string))
                 [@ns.braces ])] ())
   [@JSX ])
 let _ =
@@ -1149,7 +1150,7 @@ let truth = false
 let constructor = None
 let longidentConstructor = Option.None
 let txt = \\"a string\\"
-let otherTxt = {|foo bar |} ^ txt
+let otherTxt = {js|foo bar |js} ^ txt
 let ident = myIdent
 let aList = [1; 2]
 let anArray = [|1;2|]
