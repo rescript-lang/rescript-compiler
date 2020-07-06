@@ -25,4 +25,4 @@ switch sphere->intersect(~ray) {
 let Foo({superLongIdent: x, superLongIdent2: y, superLongIdent3: z, superLongIdent4: a}) = x 
 let Foo((superLongIdent, superLongIdent2, superLongIdent, superLongIdent4, superLongIdent5)) = x 
 let Foo([superLongIdent, superLongIdent2, superLongIdent, superLongIdent4, superLongIdent5]) = x 
-let Foo(list[superLongIdent, superLongIdent2, superLongIdent, superLongIdent4, superLongIdent5]) = x 
+let Foo(list{superLongIdent, superLongIdent2, superLongIdent, superLongIdent4, superLongIdent5}) = x 

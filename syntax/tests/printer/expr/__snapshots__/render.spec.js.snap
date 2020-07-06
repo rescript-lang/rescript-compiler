@@ -45,13 +45,13 @@ let coordinate = make3dCoordinateTuple((
   thisIsAPrettyLongNameHere,
 ))
 
-let coordinate = make2dCoordinateList(list[x, y])
-let coordinate = make3dCoordinateList(list[
+let coordinate = make2dCoordinateList(list{x, y})
+let coordinate = make3dCoordinateList(list{
   thisIsAPrettyLongNameHere,
   thisIsAPrettyLongNameHere,
   thisIsAPrettyLongNameHere,
   ...allCoords,
-])
+})
 
 let coordinate = makeJsCoordinate({\\"x\\": 1, \\"y\\": 1})
 let user = makeJsUser({
@@ -140,7 +140,7 @@ let x = assert true
 let x = assert 12
 let x = assert (12: int)
 let x = assert 12
-let x = assert list[1, 2, ...x]
+let x = assert list{1, 2, ...x}
 let x = assert module(Foo: Bar)
 let x = assert module(Foo)
 let x = assert Rgb(1, 2, 3)
@@ -902,10 +902,10 @@ let _ = [
   },
 ]
 
-let _ = {list[a, b, c]}
-let _ = {list[{a}, {b}, {c}]}
+let _ = {list{a, b, c}}
+let _ = {list{{a}, {b}, {c}}}
 let _ = {
-  list[
+  list{
     {
       a
     },
@@ -915,10 +915,10 @@ let _ = {
     {
       c
     },
-  ]
+  }
 }
 
-let _ = list[1, 2, ...{list2}]
+let _ = list{1, 2, ...{list2}}
 
 let _ = {true} ? {true} : {false}
 let _ = {{true} ? {true} : {false}}
@@ -1237,14 +1237,14 @@ let add = (y: coll, e: key) =>
   if List.exists(x => eq(x, e), y) {
     y
   } else {
-    list[e, ...y]
+    list{e, ...y}
   }
 
 let add2 = (y: coll, e: key) =>
   if List.exists(y, x => eq(x, e)) {
     y
   } else {
-    list[e, ...y]
+    list{e, ...y}
   }
 
 let add2 = (y: coll, e: key) =>
@@ -1255,7 +1255,7 @@ let add2 = (y: coll, e: key) =>
   ) {
     y
   } else {
-    list[e, ...y]
+    list{e, ...y}
   }
 
 let test =
@@ -1438,21 +1438,21 @@ let forceBreak = Cartesian({
   y: Theta.y,
 })
 
-let c = Constr(list[
+let c = Constr(list{
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   ...superLoooooooooooooooooooooooooooooongListHere,
-])
+})
 
-let c = Constr(list[
+let c = Constr(list{
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
-])
+})
 
 let c = ConstructorWithASuuuuuuuuuuuuuuuperLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer([])
-let c = ConstructorWithASuuuuuuuuuuuuuuuperLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer(list[])
+let c = ConstructorWithASuuuuuuuuuuuuuuuperLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer(list{})
 
 let coordinate = JsCoord({\\"x\\": 1, \\"y\\": 1})
 let user = JsUser({
@@ -1578,8 +1578,8 @@ while \\\\\\"let\\" {
 
 let x = (\\\\\\"type\\", \\\\\\"module\\")
 let x = [\\\\\\"type\\", \\\\\\"module\\"]
-let x = list[\\\\\\"type\\", \\\\\\"module\\"]
-let x = list[\\\\\\"type\\", \\\\\\"module\\", ...\\\\\\"let\\"]
+let x = list{\\\\\\"type\\", \\\\\\"module\\"}
+let x = list{\\\\\\"type\\", \\\\\\"module\\", ...\\\\\\"let\\"}
 
 Color(\\\\\\"let\\", \\\\\\"module\\")
 
@@ -1656,7 +1656,7 @@ let x = -a.bar
 
 let x = true.x
 let x = (12: int).x
-let x = list[1, 2, ...x].x
+let x = list{1, 2, ...x}.x
 let x = module(Foo: Bar).x
 let x = module(Foo).x
 let x = Rgb(1, 2, 3).x
@@ -1747,401 +1747,7 @@ let x =
 "
 `;
 
-exports[`fun.js 1`] = `
-"let f = (a, b) => ()
-let greet = (~person, ~from as hometown) => ()
-let greet = (~person=\\"Steve\\", ~from as hometown=\\"Cupertino\\") => ()
-
-let onChangedVisible = (
-  ~anchor=None,
-  rbt,
-  ~oldNewVisible,
-  ~top as top_,
-  ~bottom as bottom_,
-  ~appear,
-  ~remained,
-  ~disappear,
-) => ()
-
-let greet = (~person, ~from as hometown) =>
-  superLongIdentifiiiiiieeeeeeerExpression()
-
-let greet = (
-  ~person,
-  ~superLongIdentifiiiiiieeeeeeer as pat,
-  ~superLongIdentifiiiiiieeeeeeer2 as pat2,
-  ~from as hometown,
-) => superLongIdentifiiiiiieeeeeeerExpression()
-
-let greet = (
-  ~person,
-  ~superLongIdentifiiiiiieeeeeeer as pat,
-  ~superLongIdentifiiiiiieeeeeeer2 as pat2,
-  ~from as hometown,
-) =>
-  superLongIdentislkdjflksjdfljslkjdflksjdklfjlskdjfklffiiiiiieeeeeeerExpression()
-
-let greet = (
-  ~person,
-  ~superLongIdentifiiiiiieeeeeeer as pat,
-  ~superLongIdentifiiiiiieeeeeeer2 as pat2,
-  ~from as hometown,
-) => superLongIdentier
-
-let greet = (
-  ~person,
-  ~superLongIdentifiiiiiieeeeeeer as pat,
-  ~superLongIdentifiiiiiieeeeeeer2 as pat2,
-  ~from as hometown,
-) =>
-  superLongIdentislkdjflksjdfljslkjdflksjdklfjlskdjfklffiiiiiieeeeeeerExpression
-
-let greet = (
-  ~person,
-  ~superLongIdentifiiiiiieeeeeeer as pat,
-  ~superLongIdentifiiiiiieeeeeeer2 as pat2,
-  ~from as hometown,
-) => SuperLongConstructorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
-
-let greet = (
-  ~person,
-  ~superLongIdentifiiiiiieeeeeeer as pat,
-  ~superLongIdentifiiiiiieeeeeeer2 as pat2,
-  ~from as hometown,
-) =>
-  SuperLongConstructorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
-
-let f = () => ()
-let f = a => ()
-let f = _ => ()
-
-let f = (~a=?) => ()
-let f = (~from as hometown=?) => ()
-
-let f = (. a) => ()
-let f = (. a, b) => ()
-let f = (. ()) => ()
-
-let f = @attr (a, b) => @attr2 (c, d) => ()
-let f = @attr (@attrOnA a, @attrOnB b) => @attr2 (@attrOnC c, @attrOnD d) => ()
-let f = @attr (. a, b) => @attr2 (. c, d) => ()
-
-let f = (@attr ~a, @attr ~b) => ()
-let f = (. @attr ~a, . @attr ~b) => ()
-
-let f = (
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-) => ()
-
-let coordBuilder = (
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-) => {x: 1, y: 2}
-
-let coordBuilder = (
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-) => {x: 1, y: 2}
-
-let recordBuilder = (
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-) => {
-  ...fields,
-  firstField: superLongIdentiiiiiiiifffffffiiiiieeeeeeeer,
-  secondField: superLongIdentiiiiiiiifffffffiiiiieeeeeeeer,
-  thirdField: superLongIdentiiiiiiiifffffffiiiiieeeeeeeer,
-}
-
-let arrayBuilder = (
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-) => [1, 2, 3, 4]
-
-let arrayBuilder = (
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-) => [
-  superLongIdentiiiiiiiifffffffiiiiieeeeeeeer,
-  superLongIdentiiiiiiiifffffffiiiiieeeeeeeer,
-  superLongIdentiiiiiiiifffffffiiiiieeeeeeeer,
-]
-
-let tupleBuilder = (
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-) => (1, 2, 3)
-
-let tupleBuilder = (
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-) => (
-  superLongIdentiiiiiiiifffffffiiiiieeeeeeeer,
-  superLongIdentiiiiiiiifffffffiiiiieeeeeeeer,
-  superLongIdentiiiiiiiifffffffiiiiieeeeeeeer,
-)
-
-let constrBuilder = (
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-) => Cartesian({
-  x: Omega.x,
-  y: Theta.y,
-})
-
-let constrBuilder = (
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-  thisIsAVeryLongNaaaaaaaaaaaaaaaaaaameeeeeeeeeeeee,
-) => Reducer(
-  superLongIdentiiiiiiiifffffffiiiiieeeeeeeer,
-  superLongIdentiiiiiiiifffffffiiiiieeeeeeeer,
-  superLongIdentiiiiiiiifffffffiiiiieeeeeeeer,
-)
-
-let genName = () => \\"Steve\\"
-
-@react.component
-let make = (
-  ~onChange: option<(. {\\"testing\\": bool}, array<string>) => unit>=?,
-  children,
-) => {
-  let doSomething = () =>
-    switch onChange {
-    | None => ()
-    | Some(onChange) => onChange(. {\\"testing\\": true}, [\\"hey\\"])
-    }
-  <input onChange={_ => doSomething()} />
-}
-
-let add = (a, b): int => a + b
-
-let add = (a, b): {
-  \\"field1\\": int,
-  \\"field2\\": string,
-  \\"field3\\": int,
-  \\"field4\\": int,
-} => a + b
-let add = (
-  superLongParameterName1,
-  superLongParameterName2,
-  superLongParameterName3,
-): {\\"field1\\": int, \\"field2\\": string, \\"field3\\": int, \\"field4\\": int} => a + b
-
-let add = (
-  superLongParameterName1,
-  superLongParameterName2,
-  superLongParameterName3,
-): {
-  \\"field1\\": int,
-  \\"field2\\": string,
-  \\"field3\\": int,
-  \\"field4\\": int,
-  \\"field5\\": int,
-} => a + b
-
-let add = ((a, b)): (int, string, int, int) => a + b
-let add = ((a, b)): (
-  intWithSuperLongName,
-  stringWithSuperLongName,
-  intWithSuperLongName,
-  intWithSuperLongName,
-) => a + b
-let add = ((
-  superLongParameterName,
-  bsuperLongParameterName,
-  superLongParameterName,
-  superLongParameterName,
-)): (
-  intWithSuperLongName,
-  stringWithSuperLongName,
-  intWithSuperLongName,
-  intWithSuperLongName,
-) => a + b
-
-let add = (list[a, b]): list<
-  intWithSuperLongName,
-  stringWithSuperLongName,
-  intWithSuperLongName,
-  intWithSuperLongName,
-> => a + b
-let add = (list[
-  superLongParameterName,
-  bsuperLongParameterName,
-  superLongParameterName,
-  superLongParameterName,
-]): list<
-  intWithSuperLongName,
-  stringWithSuperLongName,
-  intWithSuperLongName,
-  intWithSuperLongName,
-> => a + b
-
-let add = ([a, b]): array<
-  intWithSuperLongName,
-  stringWithSuperLongName,
-  intWithSuperLongName,
-  intWithSuperLongName,
-> => a + b
-let add = ([
-  superLongParameterName,
-  bsuperLongParameterName,
-  superLongParameterName,
-  superLongParameterName,
-]): array<
-  intWithSuperLongName,
-  stringWithSuperLongName,
-  intWithSuperLongName,
-  intWithSuperLongName,
-> => a + b
-
-let add = ({
-  x: superLongParameterName,
-  y: superLongParameterName,
-  z: superLongParameterName,
-}) => x + y + z
-let add = ({
-  x: superLongParameterName,
-  y: superLongParameterName,
-  z: superLongParameterName,
-}) => x + y + z
-let add = ({
-  x: x as superLongParameterName,
-  y: y as superLongParameterName,
-  z: z as superLongParameterName,
-}) => x + y + z
-
-let add = (Color(
-  superLongParameterName,
-  superLongParameterName,
-  superLongParameterNameeeeeee,
-)) => x + y + z
-let add = (Color(
-  superLongParameterName,
-  superLongParameterName,
-  superLongParameterNameeeee,
-)): color<
-  superLongTypeIdent,
-  superLongType2,
-  anotherLongOne,
-  woooooooooooooooooooooooooooooooooooow,
-> => x + y + z
-
-let parseExceptionDef = (~attrs, p) => {
-  let startPos = p.Parser.startPos
-  Parser.expect(Token.Exception, p)
-  let (_, name, kind) = parseConstrDef(~parseAttrs=false, p)
-  let loc = mkLoc(startPos, p.prevEndPos)
-  Ast_helper.Te.constructor(~loc, ~attrs, name, kind)
-}
-
-and parseStructure = (p): Parsetree.structure =>
-  parseList(p, ~grammar=Grammar.Structure, ~f=parseStructureItem)
-
-and parseStructureItem = (_): Parsetree.structure_item => {
-  let startPos = p.Parser.startPos
-  let attrs = parseAttributes(p)
-  attrs
-}
-
-// block expressions should have braces on the same line as the =>
-let equals = (c1, c2) => {
-  open Float
-  c1.red->equals(c2.red) &&
-  c1.blue->equals(c2.blue) &&
-  c1.green->equals(c2.green)
-}
-
-let equals2 = (c1, c2) => {
-  module B = Belt
-  c1.red->equals(c2.red) &&
-  c1.blue->equals(c2.blue) &&
-  c1.green->equals(c2.green)
-}
-
-let equals3 = (c1, c2) => {
-  let a = 1
-  let b = 2
-  c1.red->equals(c2.red) &&
-  c1.blue->equals(c2.blue) &&
-  c1.green->equals(c2.green)
-}
-
-let equals4 = (c1, c2) => {
-  exception Foo
-  c1.red->equals(c2.red) &&
-  c1.blue->equals(c2.blue) &&
-  c1.green->equals(c2.green)
-}
-
-// ~d: e should stay ~d: e
-let a = (~b as c, ~d: e) => 1
-
-let f = list => list()
-let f = \\\\\\"switch\\" => \\\\\\"switch\\" + 20
-
-<div className=\\"max-w-3xl mx-auto\\">
-  <CoursesReview__SubmissionsTab
-    updateSubmissionsCB={(
-      ~submissions,
-      ~selectedTab,
-      ~hasNextPage,
-      ~totalCount,
-      ~endCursor,
-    ) =>
-      send(
-        SetSubmissions(
-          submissions,
-          selectedTab,
-          hasNextPage,
-          endCursor,
-          totalCount,
-        ),
-      )}
-  />
-</div>
-
-let f = (~\\\\\\"aria-b\\", ~\\\\\\"aria-c\\") => {
-  Js.log(\\\\\\"aria-b\\", \\\\\\"aria-c\\")
-}
-
-let f = (~\\\\\\"aria-b\\": string, ~\\\\\\"aria-d\\" as \\\\\\"aria-xyz\\") => {
-  Js.log(\\\\\\"aria-b\\", \\\\\\"aria-xyz\\")
-}
-
-let f = (type \\\\\\"😎\\", x) => Js.log(x)
-"
-`;
+exports[`fun.js 1`] = `""`;
 
 exports[`ident.js 1`] = `
 "let x = a
@@ -2565,9 +2171,9 @@ let x =
     }}
     tuple=(a, b, c)
     constr=Rgb(red, blue, green)
-    list1=list[]
-    list2=list[a, b]
-    list3=list[a, b, ...x]
+    list1=list{}
+    list2=list{a, b}
+    list3=list{a, b, ...x}
     array=[a, b, c]
     record={x: 1, y: 2}
     field=foo.bar
@@ -2645,9 +2251,9 @@ let x =
     }}
     {(a, b, c)}
     Rgb(red, blue, green)
-    list[]
-    list[a, b]
-    list[a, b, ...x]
+    list{}
+    list{a, b}
+    list{a, b, ...x}
     [a, b, c]
     {x: 1, y: 2}
     foo.bar
@@ -2717,7 +2323,7 @@ let x = lazy true
 let x = lazy 12
 let x = lazy (12: int)
 let x = lazy 12
-let x = lazy list[1, 2, ...x]
+let x = lazy list{1, 2, ...x}
 let x = lazy module(Foo: Bar)
 let x = lazy module(Foo)
 let x = lazy Rgb(1, 2, 3)
@@ -2843,25 +2449,25 @@ exports[`letmodule.js 1`] = `
 `;
 
 exports[`list.js 1`] = `
-"let x = list[]
-let x = list[1]
-let x = list[1, 2]
-let x = list[1, 2, 3]
+"let x = list{}
+let x = list{1}
+let x = list{1, 2}
+let x = list{1, 2, 3}
 
-let x = list[
+let x = list{
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
-]
+}
 
-let x = list[1, ...otherList]
+let x = list{1, ...otherList}
 
-let x = list[
+let x = list{
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   ...superLoooooooooooooooooooooooooooooongListHere,
-]
+}
 "
 `;
 
@@ -2893,7 +2499,7 @@ let mk_formatting_gen:
   fmting =>
     switch fmting {
     | Open_tag(Format(fmt', str')) =>
-      mk_constr(\\"Open_tag\\", list[mk_format(fmt', str')])
+      mk_constr(\\"Open_tag\\", list{mk_format(fmt', str')})
     }
 
 let cancel_and_collect_callbacks:
@@ -2946,21 +2552,21 @@ let forceBreak = #Cartesian({
   y: Theta.y,
 })
 
-let c = #Constr(list[
+let c = #Constr(list{
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   ...superLoooooooooooooooooooooooooooooongListHere,
-])
+})
 
-let c = #Constr(list[
+let c = #Constr(list{
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
   superLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer,
-])
+})
 
 let c = #ConstructorWithASuuuuuuuuuuuuuuuperLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer([])
-let c = #ConstructorWithASuuuuuuuuuuuuuuuperLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer(list[])
+let c = #ConstructorWithASuuuuuuuuuuuuuuuperLoooooooooooooooooooooooooooooongIiiiiiiiiideeeentifieeeeeeeeeeeeeeeeer(list{})
 
 let coordinate = #JsCoord({\\"x\\": 1, \\"y\\": 1})
 let user = #JsUser({
@@ -3288,18 +2894,18 @@ let arr = truth
       thisIsASuperLongIdentifieeeeeeeer3,
     ]
 
-let lst = truth ? list[1, 2, 3, 4] : list[4, 5, 6, 7]
+let lst = truth ? list{1, 2, 3, 4} : list{4, 5, 6, 7}
 let lst = truth
-  ? list[
+  ? list{
       thisIsASuperLongIdentifieeeeeeeer,
       thisIsASuperLongIdentifieeeeeeeer2,
       thisIsASuperLongIdentifieeeeeeeer3,
-    ]
-  : list[
+    }
+  : list{
       thisIsASuperLongIdentifieeeeeeeer,
       thisIsASuperLongIdentifieeeeeeeer2,
       thisIsASuperLongIdentifieeeeeeeer3,
-    ]
+    }
 
 let construct = truth ? Constructor(1, 2, 3, 4) : Constructor(4, 5, 6, 7)
 let construct = truth
@@ -3614,7 +3220,7 @@ let x = -apply(arg)
 let x = -apply(. arg)
 let x = -Foo(a, b, c)
 let x = -{x: 1, y: 2}
-let x = -list[1, 2, 3]
+let x = -list{1, 2, 3}
 let x = -(
   if true {
     1

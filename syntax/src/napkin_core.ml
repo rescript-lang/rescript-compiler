@@ -1096,13 +1096,7 @@ let rec parsePattern ?(alias=true) ?(or_=true) p =
     Ast_helper.Pat.lazy_ ~loc ~attrs pat
   | List ->
     Parser.next p;
-    begin match p.token with
-    | Lbracket ->
-      parseListPattern ~startPos ~attrs p
-    | _ ->
-      let loc = mkLoc startPos p.prevEndPos in
-      Ast_helper.Pat.var ~loc ~attrs (Location.mkloc "list" loc)
-    end
+    parseListPattern ~startPos ~attrs p
   | Module ->
     parseModulePattern ~attrs p
   | Percent ->
@@ -1352,11 +1346,10 @@ and parseModulePattern ~attrs p =
   end
 
 and parseListPattern ~startPos ~attrs p =
-  Parser.expect Lbracket p;
   let listPatterns =
     parseCommaDelimitedReversedList p
       ~grammar:Grammar.PatternOcamlList
-      ~closing:Rbracket
+      ~closing:Rbrace
       ~f:parsePatternRegion
   in
   Parser.expect Rbracket p;
@@ -1783,13 +1776,7 @@ and parseAtomicExpr p =
       end
     | List ->
       Parser.next p;
-      begin match p.token with
-      | Lbracket ->
-        parseListExpr ~startPos  p
-      | _ ->
-        let loc = mkLoc startPos p.prevEndPos in
-        Ast_helper.Exp.ident ~loc (Location.mkloc (Longident.Lident "list") loc)
-      end
+      parseListExpr ~startPos  p
     | Module ->
       Parser.next p;
       parseFirstClassModuleExpr ~startPos p
@@ -3490,12 +3477,11 @@ and parseSpreadExprRegion p =
   | _ -> None
 
 and parseListExpr ~startPos p =
-  Parser.expect Lbracket p;
   let listExprs =
     parseCommaDelimitedReversedList
-    p ~grammar:Grammar.ListExpr ~closing:Rbracket ~f:parseSpreadExprRegion
+    p ~grammar:Grammar.ListExpr ~closing:Rbrace ~f:parseSpreadExprRegion
   in
-  Parser.expect Rbracket p;
+  Parser.expect Rbrace p;
   let loc = mkLoc startPos p.prevEndPos in
   match listExprs with
   | (true, expr)::exprs ->

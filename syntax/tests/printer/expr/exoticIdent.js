@@ -21,8 +21,8 @@ while \"let" { () }
 
 let x = (\"type", \"module")
 let x = [\"type", \"module"]
-let x = list[\"type", \"module"]
-let x = list[\"type", \"module", ...\"let"]
+let x = list{\"type", \"module"}
+let x = list{\"type", \"module", ...\"let"}
 
 Color(\"let", \"module")
 

@@ -77,17 +77,17 @@ let x = /* before */ Red(/* c0 */ shade /* c1 */) /* after */
 let x = /* before */ Red /* after Red */(/* c0 */ r /* c1 */, /* c2 */ g /* c3 */, /* c4 */ b /* c5 */) /* after */
 
 // lists
-let x = /* c0 */ list[/* c1 */] /* c2 */
-/* c0 */ list[/* c1 */] /* c2 */
+let x = /* c0 */ list{/* c1 */} /* c2 */
+/* c0 */ list{/* c1 */} /* c2 */
 
-let x = /* c0 */ list[/* c1 */ a /* c2 */] /* c3 */
-/* c0 */ list[/* c1 */ a /* c2 */] /* c3 */
+let x = /* c0 */ list{/* c1 */ a /* c2 */} /* c3 */
+/* c0 */ list{/* c1 */ a /* c2 */} /* c3 */
 
-let x = /* c0 */ list[/* c1 */ a /* c2 */, /* c3 */ b /* c4 */] /* c5*/
-/* c0 */ list[/* c1 */ a /* c2 */, /* c3 */ b /* c4 */] /* c5*/
+let x = /* c0 */ list{/* c1 */ a /* c2 */, /* c3 */ b /* c4 */} /* c5*/
+/* c0 */ list{/* c1 */ a /* c2 */, /* c3 */ b /* c4 */} /* c5*/
 
-let x = /* c0 */ list[/* c1 */ a /* c2 */, /* c3 */ b /* c4 */, /* c5 */ c /* c6 */] /* c7 */
-/* c0 */ list[/* c1 */ a /* c2 */, /* c3 */ b /* c4 */, /* c5 */ c /* c6 */] /* c7 */
+let x = /* c0 */ list{/* c1 */ a /* c2 */, /* c3 */ b /* c4 */, /* c5 */ c /* c6 */} /* c7 */
+/* c0 */ list{/* c1 */ a /* c2 */, /* c3 */ b /* c4 */, /* c5 */ c /* c6 */} /* c7 */
 
 
 // Pexp_array
@@ -223,8 +223,8 @@ Doc.concat(
   rows
   /* a */
 );
-Doc.concat(list[
+Doc.concat(list{}
   privateFlag,
   rows,
   /* a */
-]);
+});

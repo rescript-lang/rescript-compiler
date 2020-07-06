@@ -12,7 +12,7 @@ let mk_formatting_gen:
   type a b c d e f. formatting_gen<a, b, c, d, e, f> => Parsetree.expression =
   fmting =>
     switch fmting {
-    | Open_tag(Format(fmt', str')) => mk_constr("Open_tag", list[mk_format(fmt', str')])
+    | Open_tag(Format(fmt', str')) => mk_constr("Open_tag", list{mk_format(fmt', str')})
     }
 
 let cancel_and_collect_callbacks:

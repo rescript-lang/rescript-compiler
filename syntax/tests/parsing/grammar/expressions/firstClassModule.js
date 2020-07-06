@@ -9,11 +9,11 @@ let makeSet = (type s, cmp) => {
 let three = module(Three : X_int)
 let numbers = [three, module(Four)]
 let numbers = (three, module(Four))
-let numbers = list[three, module( Four )]
+let numbers = list{three, module( Four )}
 
 let numbers = [three, module({let x = 4})]
 let numbers = (three, module({let x = 4}))
-let numbers = list[three, module({let x = 4})]
+let numbers = list{three, module({let x = 4})}
 
 let plus = (m1, m2) => {
   module({

@@ -119,7 +119,12 @@ let scanIdentifier scanner =
     next scanner
   done;
   let str = Bytes.sub_string scanner.src startOff (scanner.offset - startOff) in
-  Token.lookupKeyword str
+  if CharacterCodes.lbrace == scanner.ch && str = "list"
+  then begin
+    next scanner;
+    Token.lookupKeyword "list{"
+  end
+  else Token.lookupKeyword str
 
 let scanDigits scanner ~base =
   if base <= 10 then (

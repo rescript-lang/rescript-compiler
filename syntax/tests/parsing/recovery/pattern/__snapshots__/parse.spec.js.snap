@@ -11,7 +11,10 @@ exports[`constructor.js 1`] = `
   | Rgb (r, g, 1::2::[]) -> ()"
 `;
 
-exports[`list.js 1`] = `";;match x with | [] -> () | 1::[]::[] -> () | 1::3::4::[] -> ()"`;
+exports[`list.js 1`] = `
+";;match x with | [] -> [%napkinscript.exprhole ]
+;;()"
+`;
 
 exports[`parenthesized.js 1`] = `
 ";;match x with

@@ -198,8 +198,8 @@ let add = ((a, b)): (int, string, int, int)  => a + b
 let add = ((a, b)): (intWithSuperLongName, stringWithSuperLongName, intWithSuperLongName, intWithSuperLongName)  => a + b
 let add = ((superLongParameterName, bsuperLongParameterName, superLongParameterName, superLongParameterName)): (intWithSuperLongName, stringWithSuperLongName, intWithSuperLongName, intWithSuperLongName)  => a + b
 
-let add = (list[a, b]): list<intWithSuperLongName, stringWithSuperLongName, intWithSuperLongName, intWithSuperLongName>  => a + b
-let add = (list[superLongParameterName, bsuperLongParameterName, superLongParameterName, superLongParameterName]): list<intWithSuperLongName, stringWithSuperLongName, intWithSuperLongName, intWithSuperLongName>  => a + b
+let add = (list{a, b}): list<intWithSuperLongName, stringWithSuperLongName, intWithSuperLongName, intWithSuperLongName>  => a + b
+let add = (list{superLongParameterName, bsuperLongParameterName, superLongParameterName, superLongParameterName}): list<intWithSuperLongName, stringWithSuperLongName, intWithSuperLongName, intWithSuperLongName>  => a + b
 
 let add = ([a, b]): array<intWithSuperLongName, stringWithSuperLongName, intWithSuperLongName, intWithSuperLongName>  => a + b
 let add = ([superLongParameterName, bsuperLongParameterName, superLongParameterName, superLongParameterName]): array<intWithSuperLongName, stringWithSuperLongName, intWithSuperLongName, intWithSuperLongName>  => a + b

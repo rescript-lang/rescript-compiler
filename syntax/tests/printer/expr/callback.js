@@ -83,14 +83,14 @@ let add = (y: coll, e: key) =>
   if (List.exists(x => eq(x, e), y)) {
     y;
   } else {
-    list[e, ...y];
+    list{e, ...y};
   };
 
 let add2 = (y: coll, e: key) =>
   if (List.exists(y, x => eq(x, e) )) {
     y;
   } else {
-    list[e, ...y];
+    list{e, ...y};
   };
 
 
@@ -100,7 +100,7 @@ let add2 = (y: coll, e: key) =>
 ) {
     y;
   } else {
-    list[e, ...y];
+    list{e, ...y};
   };
 
 let test =

@@ -7,7 +7,7 @@ let x = -a.bar
 
 let x = true.x
 let x = (12: int).x
-let x = list[1, 2, ...x].x
+let x = list{1, 2, ...x}.x
 let x = module(Foo: Bar).x
 let x = module(Foo).x
 let x = Rgb(1, 2, 3).x

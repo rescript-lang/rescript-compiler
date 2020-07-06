@@ -70,24 +70,24 @@ let f = (
 /* comment *** */
 /* comment **** */
 
-let testingNotQuiteEndOfLineComments = list[
+let testingNotQuiteEndOfLineComments = list{
   \\"Item 1\\" /* Comment For First Item */,
   \\"Item 2\\" /* Comment For Second Item */,
   \\"Item 3\\" /* Comment For Third Item */,
   \\"Item 4\\" /* Comment For Fourth Item - but no semi */,
   /* Comment after last item in list. */
-] /* Comment after list bracket */
+} /* Comment after list bracket */
 
-let testingEndOfLineComments = list[
+let testingEndOfLineComments = list{
   \\"Item 1\\" /* Comment For First Item */,
   \\"Item 2\\" /* Comment For Second Item */,
   \\"Item 3\\" /* Comment For Third Item */,
   \\"Item 4\\" /* Comment For Fourth Item - but before semi */,
   /* Comment after last item in list. */
-] /* Comment after list bracket */
+} /* Comment after list bracket */
 
 /* This time no space between bracket and comment */
-let testingEndOfLineComments = list[] /* Comment after list bracket */
+let testingEndOfLineComments = list{} /* Comment after list bracket */
 
 type t = (int, int) /* End of line on t */
 
@@ -218,45 +218,45 @@ JustString = {
   include Map.Make(Int32) // Comment eol include
 }
 
-let testingEndOfLineComments = list[
+let testingEndOfLineComments = list{
   \\"Item 1\\" /* Comment For First Item */,
   \\"Item 2\\" /* Comment For Second Item */,
   \\"Item 3\\" /* Comment For Third Item */,
   \\"Item 4\\" /* Comment For Fourth Item - but before trailing comma */,
   // Comment after last item in list.
-] /* Comment after rbracket */
+} /* Comment after rbracket */
 
 // But if you place them after the comma at eol, they're preserved as such
-let testingEndOfLineComments = list[
+let testingEndOfLineComments = list{
   \\"Item 1\\", // Comment For First Item
   \\"Item 2\\", // Comment For Second Item
   \\"Item 3\\", // Comment For Third Item
   \\"Item 4\\" /* Comment For Fourth Item - but before trailing comma */,
   // Comment after last item in list.
-] /* Comment after rbracket */
+} /* Comment after rbracket */
 
 // The space between ; and comment shoudn't matter
-let testPlacementOfTrailingComment = list[
+let testPlacementOfTrailingComment = list{
   \\"Item 0\\",
   // Comment after last item in list.
-] // Comment after semi
+} // Comment after semi
 
 // The space between ; and comment shoudn't matter
-let testPlacementOfTrailingComment = list[
+let testPlacementOfTrailingComment = list{
   \\"Item 0\\",
   // Comment after last item in list.
-] // Comment after semi
+} // Comment after semi
 
 // Try again but without other things in the list
-let testPlacementOfTrailingComment = list[\\"Item 0\\"] // Comment after semi
+let testPlacementOfTrailingComment = list{\\"Item 0\\"} // Comment after semi
 
 // The space between ; and comment shoudn't matter
-let testPlacementOfTrailingComment = list[
+let testPlacementOfTrailingComment = list{
   \\"Item 0\\",
   // Comment after last item in list.
-] // Comment after semi
+} // Comment after semi
 
-let testingEndOfLineComments = list[] // Comment after entire let binding
+let testingEndOfLineComments = list{} // Comment after entire let binding
 
 // The following is not yet idempotent
 // let myFunction
@@ -1149,7 +1149,7 @@ let make = (
 exports[`openPattern.re 1`] = `
 "let {T.a: a} = a()
 let [Color.Blue] = a()
-let list[Color.Blue] = a()
+let list{Color.Blue} = a()
 let (Color.Blue, Red) = a()
 
 let Color.Blue = blue

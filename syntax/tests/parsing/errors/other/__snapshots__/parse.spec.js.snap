@@ -71,22 +71,22 @@ File \\"/syntax/tests/parsing/errors/other/spread.js\\", line 5, characters 14-1
 4 │  let record = {...x, ...y}
 [31m5[0m │  let {...x, ...[31my} =[0m myRecord
 6 │  
-7 │  let myList = list[...x, ...y]
+7 │  let myList = list{...x, ...y}
 
 Record's \`...\` spread is not supported in pattern matches.
 Explanation: you can't collect a subset of a record's field into its own record, since a record needs an explicit declaration and that subset wouldn't have one.
 Solution: you need to pull out each field you want explicitly.
 
 
-File \\"/syntax/tests/parsing/errors/other/spread.js\\", line 8, characters 12-22:
+File \\"/syntax/tests/parsing/errors/other/spread.js\\", line 8, characters 19-20:
 
 
 6 │  
-7 │  let myList = list[...x, ...y]
-[31m8[0m │  let list[...[31mx, ...y] =[0m myList
+7 │  let myList = list{...x, ...y}
+[31m8[0m │  let list{...x, ...y} = myList          
+                         [31m^[0m
 
-List pattern matches only supports one \`...\` spread, at the end.
-Explanation: a list spread at the tail is efficient, but a spread in the middle would create new list[s]; out of performance concern, our pattern matching currently guarantees to never create new intermediate data.
+Did you forget a \`]\` here? 
 
 
 

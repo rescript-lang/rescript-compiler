@@ -20,13 +20,13 @@ let walkList: 'node. (
 ) => unit = (~prevLoc=?, ~getLoc, ~walkNode, l, t, comments) => {
   open Location
   switch l {
-  | _ when comments == list[] => ()
-  | list[] =>
+  | _ when comments == list{} => ()
+  | list{} =>
     switch prevLoc {
     | Some(loc) => attach(t.trailing, loc, comments)
     | None => ()
     }
-  | list[node, ...rest] =>
+  | list{node, ...rest} =>
     let currLoc = getLoc(node)
     let (leading, inside, trailing) = partitionByLoc(comments, currLoc)
     switch prevLoc {

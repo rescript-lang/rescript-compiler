@@ -21,7 +21,7 @@ module TimeSignature = {
 let make = () => {
   let options = {
     open TimeSignature
-    list[TwoFour, ThreeFour, FourFour, SixEight]
+    list{TwoFour, ThreeFour, FourFour, SixEight}
   }
   
   <label className="flex items-center">
