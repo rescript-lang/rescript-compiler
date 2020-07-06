@@ -50,16 +50,6 @@ type 'a t = 'a t0 = private
   | Leaf of 'a
   | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
 
-(* type 'a enumeration0 = 
-  | End | More of 'a * 'a t0 * 'a enumeration0 *)
-
-
-(* let rec cons_enum s e = 
-  match s with 
-  | Empty -> e 
-  | Node {l; v;r} -> cons_enum l (More(v,r,e)) *)
-
-
 
 (* Smallest and greatest element of a set *)
 

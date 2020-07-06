@@ -95,20 +95,20 @@ let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with
 let rec mem (tree : _ Map_gen.t )  x= match tree with 
   | Empty ->
     false
-  | Node{l; k = v;  r} ->
-    let c = compare_key x v in
+  | Node{l; k ;  r} ->
+    let c = compare_key x k in
     c = 0 || mem (if c < 0 then l else r) x 
 
 let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
   | Empty -> empty
-  | Node{l; k = v; v = d; r} ->
-    let c = compare_key x v in
+  | Node{l; k ; v; r} ->
+    let c = compare_key x k in
     if c = 0 then
       Map_gen.merge l r
     else if c < 0 then
-      bal (remove l x) v d r
+      bal (remove l x) k v r
     else
-      bal l v d (remove r x )
+      bal l k v (remove r x )
 
 
 let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = 

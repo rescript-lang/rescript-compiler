@@ -155,8 +155,11 @@ let [@inline] is_empty = function Empty -> true | _ -> false
 
 let rec min_binding_exn = function
     Empty -> raise Not_found
-  | Node{l=Empty; k; v} -> (k, v)
-  | Node{l} -> min_binding_exn l
+  | Node{l; k; v} -> 
+    match l with 
+    | Empty -> (k, v) 
+    | Node _ -> 
+      min_binding_exn l
 
 
 let rec remove_min_binding = function
@@ -188,11 +191,11 @@ let rec fold m accu f =
 
 let rec for_all x p = match x with 
     Empty -> true
-  | Node{l; k = v; v = d; r} -> p v d && for_all l p && for_all r p
+  | Node{l; k; v ; r} -> p k v && for_all l p && for_all r p
 
 let rec exists x p = match x with
     Empty -> false
-  | Node{l; k = v; v = d; r} -> p v d || exists l p || exists r p
+  | Node{l; k; v; r} -> p k v || exists l p || exists r p
 
 (* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
