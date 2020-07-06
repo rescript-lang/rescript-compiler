@@ -49,7 +49,7 @@ let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with
   | Node {l; k ; v ; r; h} ->
     let c = compare_key x k in
     if c = 0 then
-      Map_gen.unsafe_node l x data r h (* at least need update data *)
+      Map_gen.unsafe_node x data l r h (* at least need update data *)
     else if c < 0 then
       bal (add l x data ) k v r
     else
@@ -63,7 +63,7 @@ let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a =
   | Node ({l; k ; r} as tree) ->
     let c = compare_key x k in
     if c = 0 then
-      Map_gen.unsafe_node l x (replace  (Some tree.v))  r tree.h
+      Map_gen.unsafe_node x (replace  (Some tree.v)) l r tree.h
     else if c < 0 then
       bal (adjust l x  replace ) k tree.v r
     else

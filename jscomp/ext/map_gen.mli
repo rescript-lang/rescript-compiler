@@ -21,13 +21,18 @@ val to_sorted_array_with_f : ('a, 'b) t -> ('a -> 'b -> 'c) -> 'c array
 val keys : ('a, 'b) t -> 'a list
 
 val height : ('a, 'b) t -> int
-val create : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+
+val create : 
+  'a -> 'b ->
+  ('a, 'b) t ->  
+  ('a, 'b) t -> ('a, 'b) t
+
 val singleton : 'a -> 'b -> ('a, 'b) t
 
 val [@inline] unsafe_node : 
-  ('a, 'b ) t ->
   'a -> 
   'b -> 
+  ('a, 'b ) t ->
   ('a, 'b ) t ->
   int -> 
   ('a, 'b ) t

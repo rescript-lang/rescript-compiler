@@ -49,10 +49,10 @@ let [@inline] height = function
   | Empty -> 0
   | Node {h} -> h
 
-let [@inline] unsafe_node l x d r h =   
-  Node {l; k = x; v = d;r; h}
+let [@inline] unsafe_node k v l  r h =   
+  Node {l; k; v; r; h}
 
-let [@inline] create l k v r =
+let [@inline] create k v l  r =
   Node{l; k; v; r; h= calc_height (height l) (height r)}
 
 
@@ -134,20 +134,44 @@ let bal l x d r =
   let hr = height r in
   if hl > hr + 2 then begin
     let [@warning "-8"] Node ({l=ll; r = lr} as l) = l in
-    if height ll >= height lr then
-      create ll l.k l.v (create lr x d r)
+    let hll = height ll in 
+    let hlr = height lr in 
+    if hll >= hlr then
+      create l.k l.v 
+        ll  
+        (create x d lr  r)
     else         
       let [@warning "-8"] Node ({l=lrl; r=lrr} as lr) = lr in 
-      create (create ll l.k l.v lrl) lr.k lr.v (create lrr x d r)      
+      let hlrl = height lrl in 
+      let hlrr = height lrr in 
+      let hlnode = calc_height hll hlrl in 
+      let hrnode = calc_height hlrr hr in 
+      unsafe_node lr.k lr.v 
+        (unsafe_node l.k l.v ll  lrl hlnode)  
+        (unsafe_node x d lrr r hrnode)      
+        (calc_height hlnode hrnode)
   end else if hr > hl + 2 then begin
     let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
-    if height rr >= height rl then
-      create (create l x d rl) r.k r.v rr
+    let hrr = height rr in 
+    let hrl = height rl in 
+    if hrr >= hrl then
+      let hnode = calc_height hl hrl in
+      unsafe_node r.k r.v 
+        (unsafe_node x d l rl hnode)
+        rr
+        (calc_height hnode hrr)
     else 
       let [@warning "-8"] Node ({l=rll;  r=rlr} as rl) = rl in 
-      create (create l x d rll) rl.k rl.v (create rlr r.k r.v rr)
+      let hrll = height rll in 
+      let hrlr = height rlr in 
+      let hlnode = (calc_height hl hrll) in
+      let hrnode = (calc_height hrlr hrr) in      
+      unsafe_node rl.k rl.v 
+        (unsafe_node x d l  rll hlnode)  
+        (unsafe_node r.k r.v rlr  rr hrnode)
+        (calc_height hlnode hrnode)
   end else
-    unsafe_node l x d r (calc_height hl hr)
+    unsafe_node x d l r (calc_height hl hr)
 
 
 
@@ -229,7 +253,7 @@ let rec join l v d r =
       let rh = xr.h in 
       if lh > rh + 2 then bal xl.l xl.k xl.v (join xl.r v d r) else
       if rh > lh + 2 then bal (join l v d xr.l) xr.k xr.v xr.r else
-        create l v d r
+        create v d l  r
 
 (* Merge two trees l and r into one.
    All elements of l must precede the elements of r.
