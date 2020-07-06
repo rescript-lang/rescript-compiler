@@ -24,7 +24,7 @@ let printExprFunParameters = (~uncurried, parameters) =>
       Doc.lparen
     }
     let shouldHug = ParsetreeViewer.parametersShouldHug(parameters)
-    let printedParamaters = Doc.concat(list{}
+    let printedParamaters = Doc.concat(list{
       if shouldHug {
         Doc.nil
       } else {
