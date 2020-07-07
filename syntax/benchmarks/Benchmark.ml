@@ -275,11 +275,13 @@ end = struct
 
   let run () =
     benchmark "./benchmarks/data/RedBlackTree.res" Napkin Parse;
-    benchmark "./benchmarks/data/RedBlackTreeOcaml.ml" Ocaml Parse;
+    benchmark "./benchmarks/data/RedBlackTree.ml" Ocaml Parse;
+    benchmark "./benchmarks/data/RedBlackTree.re" Reason Parse;
     benchmark "./benchmarks/data/RedBlackTree.res" Napkin Print;
     benchmark "./benchmarks/data/RedBlackTreeNoComments.res" Napkin Print;
     benchmark "./benchmarks/data/Napkinscript.res" Napkin Parse;
-    benchmark "./benchmarks/data/NapkinscriptOcaml.ml" Ocaml Parse;
+    benchmark "./benchmarks/data/Napkinscript.ml" Ocaml Parse;
+    benchmark "./benchmarks/data/Napkinscript.re" Reason Parse;
     benchmark "./benchmarks/data/Napkinscript.res" Napkin Print;
     benchmark "./benchmarks/data/HeroGraphic.res" Napkin Parse;
     benchmark "./benchmarks/data/HeroGraphic.ml" Ocaml Parse;

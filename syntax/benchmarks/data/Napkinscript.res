@@ -1,5 +1,5 @@
 module MiniBuffer: {
-  type rec t
+  type t
   let add_char: (t, char) => unit
   let add_string: (t, string) => unit
   let contents: t => string
@@ -8,7 +8,7 @@ module MiniBuffer: {
   let length: t => int
   let unsafe_get: (t, int) => char
 } = {
-  type rec t = {
+  type t = {
     mutable buffer: bytes,
     mutable position: int,
     mutable length: int,
@@ -83,9 +83,9 @@ module MiniBuffer: {
 }
 
 module Doc = {
-  type rec mode = Break | Flat
+  type mode = Break | Flat
 
-  type rec lineStyle =
+  type lineStyle =
     | Classic /* fits? -> replace with space */
     | Soft /* fits? -> replaced with nothing */
     | Hard /* always included, forces breaks in parents */
@@ -411,7 +411,7 @@ module Doc = {
 }
 
 module Sexp: {
-  type rec t
+  type t
 
   let atom: string => t
   let list: list<t> => t
@@ -1261,178 +1261,6 @@ module SexpAst: {
   let interface = signature
 }
 
-module Time: {
-  type rec t
-
-  let now: unit => t
-
-  @live let toUint64: t => int64
-
-  /* let of_uint64_ns ns = ns */
-
-  @live let nanosecond: t
-  @live let microsecond: t
-  @live let millisecond: t
-  @live let second: t
-  @live let minute: t
-  @live let hour: t
-
-  let zero: t
-
-  let diff: (t, t) => t
-  let add: (t, t) => t
-  let print: t => float
-} = {
-  /* nanoseconds */
-  type rec t = int64
-
-  let zero = 0L
-
-  let toUint64 = s => s
-
-  let nanosecond = 1L
-  let microsecond = Int64.mul(1000L, nanosecond)
-  let millisecond = Int64.mul(1000L, microsecond)
-  let second = Int64.mul(1000L, millisecond)
-  let minute = Int64.mul(60L, second)
-  let hour = Int64.mul(60L, minute)
-
-  /* TODO: we could do this inside caml_absolute_time */
-  external init: unit => unit = "caml_mach_initialize"
-  let () = init()
-  external now: unit => t = "caml_mach_absolute_time"
-
-  let diff = (t1, t2) => Int64.sub(t2, t1)
-  let add = (t1, t2) => Int64.add(t1, t2)
-  let print = t => Int64.to_float(t) *. 1e-6
-}
-
-module Benchmark: {
-  type rec t
-
-  let make: (~name: string, ~f: t => unit, unit) => t
-  let launch: t => unit
-  let report: t => unit
-} = {
-  type rec t = {
-    name: string,
-    mutable start: Time.t,
-    mutable n: int /* current iterations count */,
-    mutable duration: Time.t,
-    benchFunc: t => unit,
-    mutable timerOn: bool,
-    /* mutable result: benchmarkResult; */
-    /* The initial states */
-    mutable startAllocs: float,
-    mutable startBytes: float,
-    /* The net total of this test after being run. */
-    mutable netAllocs: float,
-    mutable netBytes: float,
-  }
-
-  let report = b => {
-    print_endline(Format.sprintf("Benchmark: %s", b.name))
-    print_endline(Format.sprintf("Nbr of iterations: %d", b.n))
-    print_endline(Format.sprintf("Benchmark ran during: %fms", Time.print(b.duration)))
-    print_endline(Format.sprintf("Avg time/op: %fms", Time.print(b.duration) /. float_of_int(b.n)))
-    print_endline(Format.sprintf("Allocs/op: %d", int_of_float(b.netAllocs /. float_of_int(b.n))))
-    print_endline(Format.sprintf("B/op: %d", int_of_float(b.netBytes /. float_of_int(b.n))))
-    /* return (float64(r.Bytes) * float64(r.N) / 1e6) / r.T.Seconds() */
-
-    print_newline()
-    ()
-  }
-
-  let make = (~name, ~f, ()) => {
-    name: name,
-    start: Time.zero,
-    n: 0,
-    benchFunc: f,
-    duration: Time.zero,
-    timerOn: false,
-    startAllocs: 0.,
-    startBytes: 0.,
-    netAllocs: 0.,
-    netBytes: 0.,
-  }
-
-  /* total amount of memory allocated by the program since it started in words */
-  let mallocs = () => {
-    let stats = Gc.quick_stat()
-    stats.minor_words +. stats.major_words -. stats.promoted_words
-  }
-
-  let startTimer = b =>
-    if !b.timerOn {
-      let allocatedWords = mallocs()
-      b.startAllocs = allocatedWords
-      b.startBytes = allocatedWords *. 8.
-      b.start = Time.now()
-      b.timerOn = true
-    }
-
-  let stopTimer = b =>
-    if b.timerOn {
-      let allocatedWords = mallocs()
-      let diff = Time.diff(b.start, Time.now())
-      b.duration = Time.add(b.duration, diff)
-      b.netAllocs = b.netAllocs +. (allocatedWords -. b.startAllocs)
-      b.netBytes = b.netBytes +. (allocatedWords *. 8. -. b.startBytes)
-      b.timerOn = false
-    }
-
-  let resetTimer = b => {
-    if b.timerOn {
-      let allocatedWords = mallocs()
-      b.startAllocs = allocatedWords
-      b.netAllocs = allocatedWords *. 8.
-      b.start = Time.now()
-    }
-    b.netAllocs = 0.
-    b.netBytes = 0.
-  }
-
-  let runIteration = (b, n) => {
-    Gc.full_major()
-    b.n = n
-    resetTimer(b)
-    startTimer(b)
-    b.benchFunc(b)
-    stopTimer(b)
-  }
-
-  let launch = b =>
-    /* 150 runs * all the benchmarks means around 1m of benchmark time */
-    for n in 1 to 150 {
-      runIteration(b, n)
-    }
-}
-
-module Profile: {
-  let record: (~name: string, unit => 'a) => 'a
-  let print: unit => unit
-} = {
-  let state = Hashtbl.create(2)
-
-  let record = (~name, f) => {
-    let startTime = Time.now()
-    let result = f()
-    let endTime = Time.now()
-
-    Hashtbl.add(state, name, Time.diff(startTime, endTime))
-    result
-  }
-
-  let print = () => {
-    let report = Hashtbl.fold((k, v, acc) => {
-      let line = Printf.sprintf("%s: %fms\n", k, Time.print(v))
-      acc ++ line
-    }, state, "\n\n")
-
-    print_endline(report)
-  }
-}
-
 module IO: {
   let readFile: string => string
   let readStdin: unit => string
@@ -1639,7 +1467,7 @@ module CharacterCodes = {
 }
 
 module Comment: {
-  type rec t
+  type t
 
   let toString: t => string
 
@@ -1654,10 +1482,9 @@ module Comment: {
   let makeSingleLineComment: (~loc: Location.t, string) => t
   let makeMultiLineComment: (~loc: Location.t, string) => t
   let fromOcamlComment: (~loc: Location.t, ~txt: string, ~prevTokEndPos: Lexing.position) => t
-  let fromReasonComment: (~loc: Location.t, ~txt: string, ~prevTokEndPos: Lexing.position) => t
   let trimSpaces: string => string
 } = {
-  type rec style =
+  type style =
     | SingleLine
     | MultiLine
 
@@ -1667,7 +1494,7 @@ module Comment: {
     | MultiLine => "MultiLine"
     }
 
-  type rec t = {
+  type t = {
     txt: string,
     style: style,
     loc: Location.t,
@@ -1716,41 +1543,6 @@ module Comment: {
     prevTokEndPos: prevTokEndPos,
   }
 
-  let looksLikeSingleLineComment = txt => {
-    let len = String.length(txt)
-    if len == 0 {
-      false
-    } else {
-      let rec loop = ix =>
-        if ix == len {
-          false
-        } else if (@doesNotRaise String.get)(txt, ix) == '\n' {
-          ix == len - 1
-        } else {
-          loop(ix + 1)
-        }
-
-      loop(0)
-    }
-  }
-
-  let fromReasonComment = (~loc, ~txt, ~prevTokEndPos) => {
-    let style = {
-      let len = String.length(txt)
-      if len > 0 {
-        if looksLikeSingleLineComment(txt) {
-          SingleLine
-        } else {
-          MultiLine
-        }
-      } else {
-        MultiLine
-      }
-    }
-
-    {txt: txt, loc: loc, style: style, prevTokEndPos: prevTokEndPos}
-  }
-
   let trimSpaces = s => {
     let len = String.length(s)
     if len == 0 {
@@ -1777,7 +1569,7 @@ module Comment: {
 }
 
 module Token = {
-  type rec t =
+  type t =
     | Open
     | True
     | False
@@ -2103,7 +1895,7 @@ module Token = {
 }
 
 module Grammar = {
-  type rec t =
+  type t =
     | OpenDescription /* open Belt */
     | @live ModuleLongIdent /* Foo or Foo.Bar */
     | Ternary /* condExpr ? trueExpr : falseExpr */
@@ -2617,8 +2409,7 @@ module Grammar = {
 
 module Reporting = {
   module TerminalDoc = {
-    type rec break =
-      | IfNeed
+    type break =
       | Never
       | Always
 
@@ -2629,7 +2420,7 @@ module Reporting = {
       | Indent({amount: int, doc: document})
       | Append({doc1: document, doc2: document})
 
-    let group = (~break=IfNeed, doc) => Group({break: break, doc: doc})
+    let group = (~break, doc) => Group({break: break, doc: doc})
     let text = txt => Text(txt)
     let indent = (i, d) => Indent({amount: i, doc: d})
     let append = (d1, d2) => Append({doc1: d1, doc2: d2})
@@ -2641,31 +2432,11 @@ module Reporting = {
 
     let push = (stack, doc) => Cons({doc: doc, stack: stack})
 
-    type rec mode =
+    type mode =
       | Flat
       | Break
 
-    let rec fits = (w, stack) =>
-      switch stack {
-      | _ when w < 0 => false
-      | Empty => true
-      | Cons({doc, stack}) =>
-        switch doc {
-        | Nil => fits(w, stack)
-        | Text(txt) => fits(w - String.length(txt), stack)
-        | Append({doc1: d1, doc2: d2}) =>
-          let stack = {
-            let stack = push(stack, d1)
-            push(stack, d2)
-          }
-
-          fits(w, stack)
-        | Group({break: _, doc: d}) => fits(w, push(stack, d))
-        | Indent({amount: i, doc: d}) => fits(w - i, push(stack, d))
-        }
-      }
-
-    let toString = (~width, doc: document) => {
+    let toString /* ~width */ = (doc: document) => {
       let buffer = Buffer.create(100)
       let rec loop = (stack, mode, offset) =>
         switch stack {
@@ -2691,12 +2462,6 @@ module Reporting = {
             switch break {
             | Always => loop(rest, Break, offset)
             | Never => loop(rest, Flat, offset)
-            | IfNeed =>
-              if fits(width - offset, rest) {
-                loop(rest, Flat, offset)
-              } else {
-                loop(rest, Break, offset)
-              }
             }
           }
         }
@@ -2706,11 +2471,11 @@ module Reporting = {
     }
   }
 
-  type rec color =
+  type color =
     | @live NoColor
     | @live Red
 
-  type rec style = {
+  type style = {
     @live underline: bool,
     @live color: color,
   }
@@ -2833,7 +2598,7 @@ module Reporting = {
         text(x)
       }
 
-      group(~break=Never, append(append(text(rowNr), text(" \226\148\130")), indent(2, line)))
+      group(~break=Never, append(append(text(rowNr), text(" │")), indent(2, line)))
     }
 
     let reportDoc = ref(TerminalDoc.nil)
@@ -2850,10 +2615,10 @@ module Reporting = {
         }
     }
 
-    TerminalDoc.toString(~width=80, reportDoc.contents)
+    TerminalDoc.toString(reportDoc.contents)
   }
 
-  type rec problem =
+  type problem =
     | @live Unexpected(Token.t)
     | @live Expected({token: Token.t, pos: Lexing.position, context: option<Grammar.t>})
     | @live Message(string)
@@ -2861,15 +2626,15 @@ module Reporting = {
     | @live Lident
     | @live Unbalanced(Token.t)
 
-  type rec parseError = (Lexing.position, problem)
+  type parseError = (Lexing.position, problem)
 }
 
 module Diagnostics: {
-  type rec t
-  type rec category
-  type rec report
+  type t
+  type category
+  type report
 
-  type rec reportStyle
+  type reportStyle
   let parseReportStyle: string => reportStyle
 
   let unexpected: (Token.t, list<(Grammar.t, Lexing.position)>) => category
@@ -2886,7 +2651,7 @@ module Diagnostics: {
 
   let stringOfReport: (~style: reportStyle, list<t>, string) => string
 } = {
-  type rec category =
+  type category =
     | Unexpected({token: Token.t, context: list<(Grammar.t, Lexing.position)>})
     | Expected({
         context: option<Grammar.t>,
@@ -2901,17 +2666,17 @@ module Diagnostics: {
     | UnclosedComment
     | UnknownUchar(int)
 
-  type rec t = {
+  type t = {
     filename: string,
     startPos: Lexing.position,
     endPos: Lexing.position,
     category: category,
   }
 
-  type rec report = list<t>
+  type report = list<t>
 
   /* TODO: add json here */
-  type rec reportStyle =
+  type reportStyle =
     | Pretty
     | Plain
 
@@ -2956,7 +2721,7 @@ module Diagnostics: {
     | UnknownUchar(uchar) =>
       switch uchar {
       | 94 /* ^ */ => "Hmm, not sure what I should do here with this character.\nIf you're trying to deref an expression, use `foo.contents` instead."
-      | _ => "Hmm, I have no idea what this character means\226\128\166"
+      | _ => "Hmm, I have no idea what this character means…"
       }
     | Expected({context, token: t}) =>
       let hint = switch context {
@@ -3125,7 +2890,7 @@ module ParsetreeViewer: {
     option<Parsetree.expression>,
   )
 
-  type rec funParamKind =
+  type funParamKind =
     | Parameter({
         attrs: Parsetree.attributes,
         lbl: Asttypes.arg_label,
@@ -3222,11 +2987,9 @@ module ParsetreeViewer: {
 
   let isPipeExpr: Parsetree.expression => bool
 
-  let unwrapMangledValueBinding: Parsetree.value_binding => Parsetree.value_binding
-
   let extractValueDescriptionFromModExpr: Parsetree.module_expr => list<Parsetree.value_description>
 
-  type rec jsImportScope =
+  type jsImportScope =
     | JsGlobalImport /* nothing */
     | JsModuleImport(string) /* from "path" */
     | JsScopedImport(list<string>) /* window.location */
@@ -3346,7 +3109,7 @@ module ParsetreeViewer: {
     | _ => expr
     }
 
-  type rec funParamKind =
+  type funParamKind =
     | Parameter({
         attrs: Parsetree.attributes,
         lbl: Asttypes.arg_label,
@@ -3804,25 +3567,6 @@ module ParsetreeViewer: {
     | _ => false
     }
 
-  let unwrapMangledValueBinding = vb => {
-    open Parsetree
-    switch (vb.pvb_pat, vb.pvb_expr) {
-    | (
-        {ppat_desc: Ppat_constraint(pat, {ptyp_desc: Ptyp_poly(list[], t)})},
-        {pexp_desc: Pexp_constraint(expr, _typ)},
-      ) => {
-        ...vb,
-        pvb_pat: Ast_helper.Pat.constraint_(
-          ~loc={...pat.ppat_loc, loc_end: t.Parsetree.ptyp_loc.loc_end},
-          pat,
-          t,
-        ),
-        pvb_expr: expr,
-      }
-    | _ => vb
-    }
-  }
-
   let extractValueDescriptionFromModExpr = modExpr => {
     let rec loop = (structure, acc) =>
       switch structure {
@@ -3840,7 +3584,7 @@ module ParsetreeViewer: {
     }
   }
 
-  type rec jsImportScope =
+  type jsImportScope =
     | JsGlobalImport /* nothing */
     | JsModuleImport(string) /* from "path" */
     | JsScopedImport(list<string>) /* window.location */
@@ -3901,7 +3645,7 @@ module ParsetreeViewer: {
 }
 
 module Parens: {
-  type rec kind = Parenthesized | Braced(Location.t) | Nothing
+  type kind = Parenthesized | Braced(Location.t) | Nothing
 
   let expr: Parsetree.expression => kind
   let structureExpr: Parsetree.expression => kind
@@ -3934,7 +3678,7 @@ module Parens: {
 
   let includeModExpr: Parsetree.module_expr => bool
 } = {
-  type rec kind = Parenthesized | Braced(Location.t) | Nothing
+  type kind = Parenthesized | Braced(Location.t) | Nothing
 
   let expr = expr => {
     let (optBraces, _) = ParsetreeViewer.processBracesAttr(expr)
@@ -4408,7 +4152,7 @@ module Parens: {
 }
 
 module CommentTable = {
-  type rec t = {
+  type t = {
     leading: Hashtbl.t<Location.t, list<Comment.t>>,
     inside: Hashtbl.t<Location.t, list<Comment.t>>,
     trailing: Hashtbl.t<Location.t, list<Comment.t>>,
@@ -6541,7 +6285,7 @@ module Printer = {
     | lid => Doc.join(~sep=Doc.dot, printLongidentAux(list[], lid))
     }
 
-  type rec identifierStyle =
+  type identifierStyle =
     | ExoticIdent
     | NormalIdent
 
@@ -8128,7 +7872,6 @@ module Printer = {
   }
 
   and printValueBinding = (~recFlag, vb, cmtTbl, i) => {
-    let vb = ParsetreeViewer.unwrapMangledValueBinding(vb)
     let (hasGenType, attrs) = ParsetreeViewer.splitGenTypeAttr(vb.pvb_attributes)
     let attrs = printAttributes(~loc=vb.pvb_pat.ppat_loc, attrs)
     let header = if i === 0 {
@@ -10405,7 +10148,7 @@ module Printer = {
       ) when lbl == name && !ParsetreeViewer.isBracedExpr(argExpr) =>
       let loc = switch arg.pexp_attributes {
       | list[({Location.txt: "ns.namedArgLoc", loc}, _), ..._] => loc
-      | _ => Location.none
+      | _ => arg.pexp_loc
       }
 
       let doc = Doc.concat(list[Doc.tilde, printIdentLike(lbl)])
@@ -10426,7 +10169,7 @@ module Printer = {
           ...loc,
           loc_end: pexp_loc.loc_end,
         }
-      | _ => Location.none
+      | _ => arg.pexp_loc
       }
 
       let doc = Doc.concat(list[
@@ -10446,7 +10189,7 @@ module Printer = {
       ) when lbl == name =>
       let loc = switch arg.pexp_attributes {
       | list[({Location.txt: "ns.namedArgLoc", loc}, _), ..._] => loc
-      | _ => Location.none
+      | _ => arg.pexp_loc
       }
 
       let doc = Doc.concat(list[Doc.tilde, printIdentLike(lbl), Doc.question])
@@ -10457,17 +10200,17 @@ module Printer = {
           loc,
           {...expr, pexp_attributes: attrs},
         )
-      | _ => (Location.none, expr)
+      | _ => (expr.pexp_loc, expr)
       }
 
       let printedLbl = switch argLbl {
       | Asttypes.Nolabel => Doc.nil
       | Asttypes.Labelled(lbl) =>
-        let lbl = printComments(printIdentLike(lbl), cmtTbl, argLoc)
-        Doc.concat(list[Doc.tilde, lbl, Doc.equal])
+        let doc = Doc.concat(list[Doc.tilde, printIdentLike(lbl), Doc.equal])
+        printComments(doc, cmtTbl, argLoc)
       | Asttypes.Optional(lbl) =>
-        let lbl = printComments(printIdentLike(lbl), cmtTbl, argLoc)
-        Doc.concat(list[Doc.tilde, lbl, Doc.equal, Doc.question])
+        let doc = Doc.concat(list[Doc.tilde, printIdentLike(lbl), Doc.equal, Doc.question])
+        printComments(doc, cmtTbl, argLoc)
       }
 
       let printedExpr = {
@@ -10652,7 +10395,7 @@ module Printer = {
           Doc.join(
             ~sep=Doc.space,
             List.map(
-              lbl => printComments(Doc.text(lbl.Asttypes.txt), cmtTbl, lbl.Asttypes.loc),
+              lbl => printComments(printIdentLike(lbl.Asttypes.txt), cmtTbl, lbl.Asttypes.loc),
               lbls,
             ),
           ),
@@ -10684,7 +10427,7 @@ module Printer = {
           },
         ) when lbl == stringLoc.txt =>
         /* ~d */
-        Doc.concat(list[Doc.text("~"), Doc.text(lbl)])
+        Doc.concat(list[Doc.text("~"), printIdentLike(lbl)])
       | (
           Asttypes.Labelled(lbl) | Optional(lbl),
           {
@@ -10703,7 +10446,7 @@ module Printer = {
         /* ~b as c */
         Doc.concat(list[
           Doc.text("~"),
-          Doc.text(lbl),
+          printIdentLike(lbl),
           Doc.text(" as "),
           printPattern(pattern, cmtTbl),
         ])
@@ -11311,9 +11054,9 @@ module Printer = {
 }
 
 module Scanner = {
-  type rec mode = Template | Jsx | Diamond
+  type mode = Template | Jsx | Diamond
 
-  type rec t = {
+  type t = {
     filename: string,
     src: bytes,
     mutable err: (
@@ -11578,18 +11321,16 @@ module Scanner = {
         let () = next(scanner)
         (2, 16, 255)
       } else {
-        /* unknown escape sequence */
-        let pos = position(scanner)
-        let () = {
-          let msg = if scanner.ch === -1 {
-            "unclosed escape sequence"
-          } else {
-            "unknown escape sequence"
-          }
-
-          scanner.err(~startPos, ~endPos=pos, Diagnostics.message(msg))
-        }
-
+        /* unknown escape sequence
+         * TODO: we should warn the user here. Let's not make it a hard error for now, for reason compat */
+        /* let pos = position scanner in */
+        /* let () = */
+        /* let msg = if scanner.ch == -1 then */
+        /* "unclosed escape sequence" */
+        /* else "unknown escape sequence" */
+        /* in */
+        /* scanner.err ~startPos ~endPos:pos (Diagnostics.message msg) */
+        /* in */
         (-1, -1, -1)
       }
 
@@ -11645,9 +11386,8 @@ module Scanner = {
       } else if CharacterCodes.isLineBreak(scanner.ch) {
         scanner.lineOffset = scanner.offset + 1
         scanner.lnum = scanner.lnum + 1
-        let endPos = position(scanner)
-        scanner.err(~startPos, ~endPos, Diagnostics.unclosedString)
         next(scanner)
+        scan()
       } else {
         next(scanner)
         scan()
@@ -12100,12 +11840,12 @@ module Scanner = {
 
 /* AST for js externals */
 module JsFfi = {
-  type rec scope =
+  type scope =
     | Global
     | Module(string) /* bs.module("path") */
     | Scope(Longident.t) /* bs.scope(/"window", "location"/) */
 
-  type rec label_declaration = {
+  type label_declaration = {
     @live jld_attributes: Parsetree.attributes,
     jld_name: string,
     jld_alias: string,
@@ -12113,11 +11853,11 @@ module JsFfi = {
     jld_loc: Location.t,
   }
 
-  type rec importSpec =
+  type importSpec =
     | Default(label_declaration)
     | Spec(list<label_declaration>)
 
-  type rec import_description = {
+  type import_description = {
     jid_loc: Location.t,
     jid_spec: importSpec,
     jid_scope: scope,
@@ -12216,6 +11956,76 @@ module JsFfi = {
 }
 
 module ParsetreeCompatibility = {
+  let concatLongidents = (l1, l2) => {
+    let parts1 = Longident.flatten(l1)
+    let parts2 = Longident.flatten(l2)
+    switch List.concat(list[parts1, parts2]) |> Longident.unflatten {
+    | Some(longident) => longident
+    | None => l2
+    }
+  }
+
+  /* TODO: support nested open's ? */
+  let rec rewritePpatOpen = (longidentOpen, pat) => {
+    open Parsetree
+    switch pat.ppat_desc {
+    | Ppat_array(list[first, ...rest]) => /* Color.[Red, Blue, Green] -> [Color.Red, Blue, Green] */
+      {...pat, ppat_desc: Ppat_array(list[rewritePpatOpen(longidentOpen, first), ...rest])}
+    | Ppat_tuple(list[first, ...rest]) => /* Color.(Red, Blue, Green) -> (Color.Red, Blue, Green) */
+      {...pat, ppat_desc: Ppat_tuple(list[rewritePpatOpen(longidentOpen, first), ...rest])}
+    | Ppat_construct(
+        {txt: Longident.Lident("::")} as listConstructor,
+        Some({ppat_desc: Ppat_tuple(list[pat, ...rest])} as element),
+      ) => /* Color.(list[Red, Blue, Green]) -> list[Color.Red, Blue, Green] */
+      {
+        ...pat,
+        ppat_desc: Ppat_construct(
+          listConstructor,
+          Some({
+            ...element,
+            ppat_desc: Ppat_tuple(list[rewritePpatOpen(longidentOpen, pat), ...rest]),
+          }),
+        ),
+      }
+    | Ppat_construct(
+        {txt: constructor} as longidentLoc,
+        optPattern,
+      ) => /* Foo.(Bar(a)) -> Foo.Bar(a) */
+      {
+        ...pat,
+        ppat_desc: Ppat_construct(
+          {...longidentLoc, txt: concatLongidents(longidentOpen, constructor)},
+          optPattern,
+        ),
+      }
+    | Ppat_record(list[({txt: lbl} as longidentLoc, firstPat), ...rest], flag) =>
+      /* Foo.{x} -> {Foo.x: x} */
+      let firstRow = ({...longidentLoc, txt: concatLongidents(longidentOpen, lbl)}, firstPat)
+      {...pat, ppat_desc: Ppat_record(list[firstRow, ...rest], flag)}
+    | Ppat_or(pat1, pat2) => {
+        ...pat,
+        ppat_desc: Ppat_or(
+          rewritePpatOpen(longidentOpen, pat1),
+          rewritePpatOpen(longidentOpen, pat2),
+        ),
+      }
+    | Ppat_constraint(pattern, typ) => {
+        ...pat,
+        ppat_desc: Ppat_constraint(rewritePpatOpen(longidentOpen, pattern), typ),
+      }
+    | Ppat_type({txt: constructor} as longidentLoc) => {
+        ...pat,
+        ppat_desc: Ppat_type({
+          ...longidentLoc,
+          txt: concatLongidents(longidentOpen, constructor),
+        }),
+      }
+    | Ppat_lazy(p) => {...pat, ppat_desc: Ppat_lazy(rewritePpatOpen(longidentOpen, p))}
+    | Ppat_exception(p) => {...pat, ppat_desc: Ppat_exception(rewritePpatOpen(longidentOpen, p))}
+    | _ => pat
+    }
+  }
+
   let rec rewriteReasonFastPipe = expr => {
     open Parsetree
     switch expr.pexp_desc {
@@ -12359,17 +12169,142 @@ module ParsetreeCompatibility = {
   let escapeStringContents = s => {
     let len = String.length(s)
     let b = Buffer.create(len)
-    for i in 0 to len - 1 {
-      let c = (@doesNotRaise String.get)(s, i)
-      if c == '"' {
-        Buffer.add_string(b, "\\\"")
-      } else if c == '\'' {
+
+    let i = ref(0)
+
+    while i.contents < len {
+      let c = String.unsafe_get(s, i.contents)
+      if c == '\\' {
+        incr(i)
         Buffer.add_char(b, c)
+        let c = String.unsafe_get(s, i.contents)
+        if i.contents < len {
+          let () = Buffer.add_char(b, c)
+          incr(i)
+        } else {
+          ()
+        }
+      } else if c == '"' {
+        Buffer.add_char(b, '\\')
+        Buffer.add_char(b, c)
+        incr(i)
       } else {
-        Buffer.add_string(b, Char.escaped(c))
+        Buffer.add_char(b, c)
+        incr(i)
       }
     }
     Buffer.contents(b)
+  }
+
+  let looksLikeRecursiveTypeDeclaration = typeDeclaration => {
+    open Parsetree
+    let name = typeDeclaration.ptype_name.txt
+    let rec checkKind = kind =>
+      switch kind {
+      | Ptype_abstract | Ptype_open => false
+      | Ptype_variant(constructorDeclarations) =>
+        List.exists(checkConstructorDeclaration, constructorDeclarations)
+      | Ptype_record(labelDeclarations) => List.exists(checkLabelDeclaration, labelDeclarations)
+      }
+
+    and checkConstructorDeclaration = constrDecl =>
+      checkConstructorArguments(constrDecl.pcd_args) ||
+      switch constrDecl.pcd_res {
+      | Some(typexpr) => checkTypExpr(typexpr)
+      | None => false
+      }
+
+    and checkLabelDeclaration = labelDeclaration => checkTypExpr(labelDeclaration.pld_type)
+
+    and checkConstructorArguments = constrArg =>
+      switch constrArg {
+      | Pcstr_tuple(types) => List.exists(checkTypExpr, types)
+      | Pcstr_record(labelDeclarations) => List.exists(checkLabelDeclaration, labelDeclarations)
+      }
+
+    and checkTypExpr = typ =>
+      switch typ.ptyp_desc {
+      | Ptyp_any => false
+      | Ptyp_var(_) => false
+      | Ptyp_object(_) => false
+      | Ptyp_class(_) => false
+      | Ptyp_package(_) => false
+      | Ptyp_extension(_) => false
+      | Ptyp_arrow(_lbl, typ1, typ2) => checkTypExpr(typ1) || checkTypExpr(typ2)
+      | Ptyp_tuple(types) => List.exists(checkTypExpr, types)
+      | Ptyp_constr({txt: longident}, types) =>
+        switch longident {
+        | Lident(ident) => ident == name
+        | _ => false
+        } ||
+        List.exists(checkTypExpr, types)
+      | Ptyp_alias(typ, _) => checkTypExpr(typ)
+      | Ptyp_variant(rowFields, _, _) => List.exists(checkRowFields, rowFields)
+      | Ptyp_poly(_, typ) => checkTypExpr(typ)
+      }
+
+    and checkRowFields = rowField =>
+      switch rowField {
+      | Rtag(_, _, _, types) => List.exists(checkTypExpr, types)
+      | Rinherit(typexpr) => checkTypExpr(typexpr)
+      }
+
+    checkKind(typeDeclaration.ptype_kind)
+  }
+
+  let filterReasonRawLiteral = attrs => List.filter(attr =>
+      switch attr {
+      | ({Location.txt: "reason.raw_literal"}, _) => false
+      | _ => true
+      }
+    , attrs)
+
+  let stringLiteralMapper = stringData => {
+    let isSameLocation = (l1, l2) => {
+      open Location
+      l1.loc_start.pos_cnum === l2.loc_start.pos_cnum
+    }
+
+    let remainingStringData = stringData
+    open Ast_mapper
+    {
+      ...default_mapper,
+      expr: (mapper, expr) =>
+        switch expr.pexp_desc {
+        | Pexp_constant(Pconst_string(_txt, None)) =>
+          switch List.find_opt(
+            ((_stringData, stringLoc)) => isSameLocation(stringLoc, expr.pexp_loc),
+            remainingStringData,
+          ) {
+          | Some(stringData, _) =>
+            let stringData = {
+              let attr = List.find_opt(attr =>
+                switch attr {
+                | ({Location.txt: "reason.raw_literal"}, _) => true
+                | _ => false
+                }
+              , expr.pexp_attributes)
+              switch attr {
+              | Some(
+                  _,
+                  PStr(list[{
+                    pstr_desc: Pstr_eval({pexp_desc: Pexp_constant(Pconst_string(raw, _))}, _),
+                  }]),
+                ) => raw
+              | _ => (@doesNotRaise String.sub)(stringData, 1, String.length(stringData) - 2)
+              }
+            }
+
+            {
+              ...expr,
+              pexp_attributes: filterReasonRawLiteral(expr.pexp_attributes),
+              pexp_desc: Pexp_constant(Pconst_string(stringData, None)),
+            }
+          | None => default_mapper.expr(mapper, expr)
+          }
+        | _ => default_mapper.expr(mapper, expr)
+        },
+    }
   }
 
   let normalize = {
@@ -12379,26 +12314,34 @@ module ParsetreeCompatibility = {
       attributes: (mapper, attrs) => attrs |> List.filter(attr =>
           switch attr {
           | (
-              {
-                Location.txt:
-                  "reason.preserve_braces"
-                  | "explicit_arity"
-                  | "implicity_arity"
-                  | "reason.raw_literal",
-              },
+              {Location.txt: "reason.preserve_braces" | "explicit_arity" | "implicity_arity"},
               _,
             ) => false
           | _ => true
           }
         ) |> default_mapper.attributes(mapper),
+      pat: (mapper, p) =>
+        switch p.ppat_desc {
+        | Ppat_open({txt: longidentOpen}, pattern) =>
+          let p = rewritePpatOpen(longidentOpen, pattern)
+          default_mapper.pat(mapper, p)
+        | _ => default_mapper.pat(mapper, p)
+        },
       expr: (mapper, expr) =>
         switch expr.pexp_desc {
         | Pexp_constant(Pconst_string(txt, None)) =>
-          let s = Parsetree.Pconst_string(escapeStringContents(txt), None)
-          Ast_helper.Exp.constant(~loc=expr.pexp_loc, s)
+          let raw = escapeStringContents(txt)
+          let s = Parsetree.Pconst_string(raw, None)
+          let expr = Ast_helper.Exp.constant(~attrs=expr.pexp_attributes, ~loc=expr.pexp_loc, s)
+
+          expr
         | Pexp_constant(Pconst_string(txt, tag)) =>
           let s = Parsetree.Pconst_string(escapeTemplateLiteral(txt), tag)
-          Ast_helper.Exp.constant(~loc=expr.pexp_loc, s)
+          Ast_helper.Exp.constant(
+            ~attrs=mapper.attributes(mapper, expr.pexp_attributes),
+            ~loc=expr.pexp_loc,
+            s,
+          )
         | Pexp_function(cases) =>
           let loc = switch (cases, List.rev(cases)) {
           | (list[first, ..._], list[last, ..._]) => {
@@ -12416,7 +12359,7 @@ module ParsetreeCompatibility = {
             Ast_helper.Exp.match_(
               ~loc,
               Ast_helper.Exp.ident(Location.mknoloc(Longident.Lident("x"))),
-              mapper.cases(mapper, cases),
+              default_mapper.cases(mapper, cases),
             ),
           )
         | Pexp_apply(
@@ -12488,26 +12431,135 @@ module ParsetreeCompatibility = {
           )
         | _ => default_mapper.expr(mapper, expr)
         },
+      structure_item: (mapper, structureItem) =>
+        switch structureItem.pstr_desc {
+        /* heuristic: if we have multiple type declarations, mark them recursive */
+        | Pstr_type(recFlag, typeDeclarations) =>
+          let flag = switch typeDeclarations {
+          | list[td] =>
+            if looksLikeRecursiveTypeDeclaration(td) {
+              Asttypes.Recursive
+            } else {
+              Asttypes.Nonrecursive
+            }
+          | _ => recFlag
+          }
+
+          {
+            ...structureItem,
+            pstr_desc: Pstr_type(
+              flag,
+              List.map(
+                typeDeclaration => default_mapper.type_declaration(mapper, typeDeclaration),
+                typeDeclarations,
+              ),
+            ),
+          }
+        | _ => default_mapper.structure_item(mapper, structureItem)
+        },
+      signature_item: (mapper, signatureItem) =>
+        switch signatureItem.psig_desc {
+        /* heuristic: if we have multiple type declarations, mark them recursive */
+        | Psig_type(recFlag, typeDeclarations) =>
+          let flag = switch typeDeclarations {
+          | list[td] =>
+            if looksLikeRecursiveTypeDeclaration(td) {
+              Asttypes.Recursive
+            } else {
+              Asttypes.Nonrecursive
+            }
+          | _ => recFlag
+          }
+
+          {
+            ...signatureItem,
+            psig_desc: Psig_type(
+              flag,
+              List.map(
+                typeDeclaration => default_mapper.type_declaration(mapper, typeDeclaration),
+                typeDeclarations,
+              ),
+            ),
+          }
+        | _ => default_mapper.signature_item(mapper, signatureItem)
+        },
+      value_binding: (mapper, vb) =>
+        switch vb {
+        | {
+            pvb_pat: {ppat_desc: Ppat_var(_)} as pat,
+            pvb_expr: {pexp_loc: expr_loc, pexp_desc: Pexp_constraint(expr, typ)},
+          } when expr_loc.loc_ghost =>
+          /* let t: t = (expr : t) -> let t: t = expr */
+          let typ = default_mapper.typ(mapper, typ)
+          let pat = default_mapper.pat(mapper, pat)
+          let expr = mapper.expr(mapper, expr)
+          let newPattern = Ast_helper.Pat.constraint_(
+            ~loc={...pat.ppat_loc, loc_end: typ.ptyp_loc.loc_end},
+            pat,
+            typ,
+          )
+          {
+            ...vb,
+            pvb_pat: newPattern,
+            pvb_expr: expr,
+            pvb_attributes: default_mapper.attributes(mapper, vb.pvb_attributes),
+          }
+        | {
+            pvb_pat: {ppat_desc: Ppat_constraint(pat, {ptyp_desc: Ptyp_poly(list[], _)})},
+            pvb_expr: {pexp_loc: expr_loc, pexp_desc: Pexp_constraint(expr, typ)},
+          } when expr_loc.loc_ghost =>
+          /* let t: . t = (expr : t) -> let t: t = expr */
+          let typ = default_mapper.typ(mapper, typ)
+          let pat = default_mapper.pat(mapper, pat)
+          let expr = mapper.expr(mapper, expr)
+          let newPattern = Ast_helper.Pat.constraint_(
+            ~loc={...pat.ppat_loc, loc_end: typ.ptyp_loc.loc_end},
+            pat,
+            typ,
+          )
+          {
+            ...vb,
+            pvb_pat: newPattern,
+            pvb_expr: expr,
+            pvb_attributes: default_mapper.attributes(mapper, vb.pvb_attributes),
+          }
+        | _ => default_mapper.value_binding(mapper, vb)
+        },
     }
   }
 
-  let normalizeReasonArity = (~forPrinter, s) => {
+  let normalizeReasonArityStructure = (~forPrinter, s) => {
     let mapper = makeReasonArityMapper(~forPrinter)
     mapper.Ast_mapper.structure(mapper, s)
   }
 
+  let normalizeReasonAritySignature = (~forPrinter, s) => {
+    let mapper = makeReasonArityMapper(~forPrinter)
+    mapper.Ast_mapper.signature(mapper, s)
+  }
+
   let structure = s => normalize.Ast_mapper.structure(normalize, s)
   let signature = s => normalize.Ast_mapper.signature(normalize, s)
+
+  let replaceStringLiteralStructure = (stringData, structure) => {
+    let mapper = stringLiteralMapper(stringData)
+    mapper.Ast_mapper.structure(mapper, structure)
+  }
+
+  let replaceStringLiteralSignature = (stringData, signature) => {
+    let mapper = stringLiteralMapper(stringData)
+    mapper.Ast_mapper.signature(mapper, signature)
+  }
 }
 
 module OcamlParser = Parser
 
 module Parser = {
-  type rec mode = ParseForTypeChecker | Default
+  type mode = ParseForTypeChecker | Default
 
-  type rec regionStatus = Report | Silent
+  type regionStatus = Report | Silent
 
-  type rec t = {
+  type t = {
     mode: mode,
     mutable scanner: Scanner.t,
     mutable token: Token.t,
@@ -12574,6 +12626,13 @@ module Parser = {
       p.endPos = endPos
     }
   }
+
+  let checkProgress = (~prevEndPos, ~result, p) =>
+    if p.endPos === prevEndPos {
+      None
+    } else {
+      Some(result)
+    }
 
   let make = (~mode=ParseForTypeChecker, src, filename) => {
     let scanner = Scanner.make(Bytes.of_string(src), filename)
@@ -12678,9 +12737,7 @@ module NapkinScript = {
   }
 
   module Recover = {
-    type rec action =
-      | Retry
-      | Abort
+    type action = option<unit> /* None is abort, Some () is retry */
 
     let defaultExpr = () => {
       let id = Location.mknoloc("napkinscript.exprhole")
@@ -12723,37 +12780,30 @@ module NapkinScript = {
 
       check(p.breadcrumbs)
     }
-
-    let skipTokensAndMaybeRetry = (p, ~isStartOfGrammar) =>
-      if Token.isKeyword(p.Parser.token) && p.Parser.prevEndPos.pos_lnum === p.startPos.pos_lnum {
-        Parser.next(p)
-        Abort
-      } else {
-        while !shouldAbortListParse(p) {
-          Parser.next(p)
-        }
-        if isStartOfGrammar(p.Parser.token) {
-          Retry
-        } else {
-          Abort
-        }
-      }
   }
 
   module ErrorMessages = {
-    let listPatternSpread = "List pattern matches only supports one `...` spread, at the end.\nExplanation: a list spread at the tail is efficient, but a spread in the middle would create new list[s]; out of performance concern, our pattern matching currently guarantees to never create new intermediate data."
+    let listPatternSpread = "List pattern matches only supports one `...` spread, at the end.
+Explanation: a list spread at the tail is efficient, but a spread in the middle would create new list[s]; out of performance concern, our pattern matching currently guarantees to never create new intermediate data."
 
-    let recordPatternSpread = "Record's `...` spread is not supported in pattern matches.\nExplanation: you can't collect a subset of a record's field into its own record, since a record needs an explicit declaration and that subset wouldn't have one.\nSolution: you need to pull out each field you want explicitly."
+    let recordPatternSpread = "Record's `...` spread is not supported in pattern matches.
+Explanation: you can't collect a subset of a record's field into its own record, since a record needs an explicit declaration and that subset wouldn't have one.
+Solution: you need to pull out each field you want explicitly."
 
     @live let recordPatternUnderscore = "Record patterns only support one `_`, at the end."
 
-    let arrayPatternSpread = "Array's `...` spread is not supported in pattern matches.\nExplanation: such spread would create a subarray; out of performance concern, our pattern matching currently guarantees to never create new intermediate data.\nSolution: if it's to validate the first few elements, use a `when` clause + Array size check + `get` checks on the current pattern. If it's to obtain a subarray, use `Array.sub` or `Belt.Array.slice`."
+    let arrayPatternSpread = "Array's `...` spread is not supported in pattern matches.
+Explanation: such spread would create a subarray; out of performance concern, our pattern matching currently guarantees to never create new intermediate data.
+Solution: if it's to validate the first few elements, use a `when` clause + Array size check + `get` checks on the current pattern. If it's to obtain a subarray, use `Array.sub` or `Belt.Array.slice`."
 
     let arrayExprSpread = "Arrays can't use the `...` spread currently. Please use `concat` or other Array helpers."
 
-    let recordExprSpread = "Records can only have one `...` spread, at the beginning.\nExplanation: since records have a known, fixed shape, a spread like `{a, ...b}` wouldn't make sense, as `b` would override every field of `a` anyway."
+    let recordExprSpread = "Records can only have one `...` spread, at the beginning.
+Explanation: since records have a known, fixed shape, a spread like `{a, ...b}` wouldn't make sense, as `b` would override every field of `a` anyway."
 
-    let listExprSpread = "Lists can only have one `...` spread, and at the end.\nExplanation: lists are singly-linked list, where a node contains a value and points to the next node. `list[a, ...bc]` efficiently creates a new item and links `bc` as its next nodes. `[...bc, a]` would be expensive, as it'd need to traverse `bc` and prepend each item to `a` one by one. We therefore disallow such syntax sugar.\nSolution: directly use `concat`."
+    let listExprSpread = "Lists can only have one `...` spread, and at the end.
+Explanation: lists are singly-linked list, where a node contains a value and points to the next node. `list[a, ...bc]` efficiently creates a new item and links `bc` as its next nodes. `[...bc, a]` would be expensive, as it'd need to traverse `bc` and prepend each item to `a` one by one. We therefore disallow such syntax sugar.
+Solution: directly use `concat`."
 
     let variantIdent = "A polymorphic variant (e.g. #id) must start with an alphabetical letter."
   }
@@ -12763,11 +12813,11 @@ module NapkinScript = {
   let ternaryAttr = (Location.mknoloc("ns.ternary"), Parsetree.PStr(list[]))
   let makeBracesAttr = loc => (Location.mkloc("ns.braces", loc), Parsetree.PStr(list[]))
 
-  type rec typDefOrExt =
+  type typDefOrExt =
     | TypeDef({recFlag: Asttypes.rec_flag, types: list<Parsetree.type_declaration>})
     | TypeExt(Parsetree.type_extension)
 
-  type rec labelledParameter =
+  type labelledParameter =
     | TermParameter({
         uncurried: bool,
         attrs: Parsetree.attributes,
@@ -12783,11 +12833,11 @@ module NapkinScript = {
         pos: Lexing.position,
       })
 
-  type rec recordPatternItem =
+  type recordPatternItem =
     | PatUnderscore
     | PatField((Ast_helper.lid, Parsetree.pattern))
 
-  type rec context =
+  type context =
     | OrdinaryExpr
     | TernaryTrueBranchExpr
     | WhenExpr
@@ -13095,7 +13145,12 @@ module NapkinScript = {
   }
 
   @ocaml.doc(
-    "\n    * process the occurrence of _ in the arguments of a function application\n    * replace _ with a new variable, currently __x, in the arguments\n    * return a wrapping function that wraps ((__x) => ...) around an expression\n    * e.g. foo(_, 3) becomes (__x) => foo(__x, 3)\n    "
+    "
+    * process the occurrence of _ in the arguments of a function application
+    * replace _ with a new variable, currently __x, in the arguments
+    * return a wrapping function that wraps ((__x) => ...) around an expression
+    * e.g. foo(_, 3) becomes (__x) => foo(__x, 3)
+    "
   )
   let processUnderscoreApplication = args => {
     open Parsetree
@@ -13128,7 +13183,7 @@ module NapkinScript = {
       if Token.isKeyword(p.Parser.token) && p.Parser.prevEndPos.pos_lnum === p.startPos.pos_lnum {
         Parser.err(p, Diagnostics.lident(p.Parser.token))
         Parser.next(p)
-        Recover.Abort
+        None
       } else {
         let rec loop = p =>
           if !Recover.shouldAbortListParse(p) {
@@ -13139,8 +13194,8 @@ module NapkinScript = {
         Parser.next(p)
         loop(p)
         switch p.Parser.token {
-        | Lident(_) => Retry
-        | _ => Abort
+        | Lident(_) => Some()
+        | _ => None
         }
       }
 
@@ -13156,8 +13211,8 @@ module NapkinScript = {
       ("list", loc)
     | _ =>
       switch recoverLident(p) {
-      | Retry => parseLident(p)
-      | Abort => ("_", mkLoc(startPos, p.prevEndPos))
+      | Some() => parseLident(p)
+      | None => ("_", mkLoc(startPos, p.prevEndPos))
       }
     }
   }
@@ -13180,11 +13235,6 @@ module NapkinScript = {
 
   let parseHashIdent = (~startPos, p) => {
     Parser.expect(Hash, p)
-    parseIdent(~startPos, ~msg=ErrorMessages.variantIdent, p)
-  }
-
-  let parseHashHashIdent = (~startPos, p) => {
-    Parser.expect(HashHash, p)
     parseIdent(~startPos, ~msg=ErrorMessages.variantIdent, p)
   }
 
@@ -13388,6 +13438,14 @@ module NapkinScript = {
     Ast_helper.Opn.mk(~loc, ~attrs, ~override, modident)
   }
 
+  let hexValue = x =>
+    switch x {
+    | '0' .. '9' => Char.code(x) - 48
+    | 'A' .. 'Z' => Char.code(x) - 55
+    | 'a' .. 'z' => Char.code(x) - 97
+    | _ => 16
+    }
+
   let parseStringLiteral = s => {
     let len = String.length(s)
     let b = Buffer.create(String.length(s))
@@ -13457,12 +13515,41 @@ module NapkinScript = {
                 let c2 = String.unsafe_get(s, nextIx + 3)
                 let c = 64 * (Char.code(c0) - 48) + 8 * (Char.code(c1) - 48) + (Char.code(c2) - 48)
 
-                Buffer.add_char(b, Char.chr(c))
-                loop(nextIx + 4)
+                if c < 0 || c > 255 {
+                  Buffer.add_char(b, '\\')
+                  Buffer.add_char(b, '0')
+                  Buffer.add_char(b, c0)
+                  Buffer.add_char(b, c1)
+                  Buffer.add_char(b, c2)
+                  loop(nextIx + 4)
+                } else {
+                  Buffer.add_char(b, Char.unsafe_chr(c))
+                  loop(nextIx + 4)
+                }
               } else {
                 Buffer.add_char(b, '\\')
                 Buffer.add_char(b, nextChar)
                 loop(nextIx + 1)
+              }
+            | 'x' as c =>
+              if nextIx + 2 < len {
+                let c0 = String.unsafe_get(s, nextIx + 1)
+                let c1 = String.unsafe_get(s, nextIx + 2)
+                let c = 16 * hexValue(c0) + hexValue(c1)
+                if c < 0 || c > 255 {
+                  Buffer.add_char(b, '\\')
+                  Buffer.add_char(b, 'x')
+                  Buffer.add_char(b, c0)
+                  Buffer.add_char(b, c1)
+                  loop(nextIx + 3)
+                } else {
+                  Buffer.add_char(b, Char.unsafe_chr(c))
+                  loop(nextIx + 3)
+                }
+              } else {
+                Buffer.add_char(b, '\\')
+                Buffer.add_char(b, c)
+                loop(nextIx + 2)
               }
             | _ =>
               Buffer.add_char(b, c)
@@ -13477,6 +13564,48 @@ module NapkinScript = {
           Buffer.add_char(b, c)
           loop(i + 1)
         }
+      }
+
+    loop(0)
+    Buffer.contents(b)
+  }
+
+  let parseTemplateStringLiteral = s => {
+    let len = String.length(s)
+    let b = Buffer.create(len)
+
+    let rec loop = i =>
+      if i < len {
+        let c = String.unsafe_get(s, i)
+        switch c {
+        | '\\' as c =>
+          if i + 1 < len {
+            let nextChar = String.unsafe_get(s, i + 1)
+            switch nextChar {
+            | '\\' as c =>
+              Buffer.add_char(b, c)
+              loop(i + 2)
+            | '$' as c =>
+              Buffer.add_char(b, c)
+              loop(i + 2)
+            | '`' as c =>
+              Buffer.add_char(b, c)
+              loop(i + 2)
+            | c =>
+              Buffer.add_char(b, '\\')
+              Buffer.add_char(b, c)
+              loop(i + 2)
+            }
+          } else {
+            Buffer.add_char(b, c)
+          }
+
+        | c =>
+          Buffer.add_char(b, c)
+          loop(i + 1)
+        }
+      } else {
+        ()
       }
 
     loop(0)
@@ -13513,13 +13642,13 @@ module NapkinScript = {
       }
       Parsetree.Pconst_float(floatTxt, suffix)
     | String(s) =>
-      /* let txt = if p.mode == ParseForTypeChecker { */
-        /* parseStringLiteral(s) */
-      /* } else { */
-        /* s */
-      /* } */
+      let txt = if p.mode == ParseForTypeChecker {
+        parseStringLiteral(s)
+      } else {
+        s
+      }
 
-      Pconst_string(s, None)
+      Pconst_string(txt, None)
     | Character(c) => Pconst_char(c)
     | token =>
       Parser.err(p, Diagnostics.unexpected(token, p.breadcrumbs))
@@ -13726,8 +13855,10 @@ module NapkinScript = {
       | _ => Ast_helper.Pat.variant(~loc, ~attrs, ident, None)
       }
     | HashHash =>
-      let (ident, loc) = parseHashHashIdent(~startPos, p)
-      Ast_helper.Pat.type_(~loc, ~attrs, Location.mkloc(Longident.Lident(ident), loc))
+      Parser.next(p)
+      let ident = parseValuePath(p)
+      let loc = mkLoc(startPos, ident.loc.loc_end)
+      Ast_helper.Pat.type_(~loc, ~attrs, ident)
     | Exception =>
       Parser.next(p)
       let pat = parsePattern(~alias=false, ~or_=false, p)
@@ -13753,9 +13884,9 @@ module NapkinScript = {
       Ast_helper.Pat.extension(~loc, ~attrs, extension)
     | token =>
       Parser.err(p, Diagnostics.unexpected(token, p.breadcrumbs))
-      switch Recover.skipTokensAndMaybeRetry(p, ~isStartOfGrammar=Grammar.isAtomicPatternStart) {
-      | Abort => Recover.defaultPattern()
-      | Retry => parsePattern(p)
+      switch skipTokensAndMaybeRetry(p, ~isStartOfGrammar=Grammar.isAtomicPatternStart) {
+      | None => Recover.defaultPattern()
+      | Some() => parsePattern(p)
       }
     }
 
@@ -13770,6 +13901,32 @@ module NapkinScript = {
       pat
     }
   }
+
+  and skipTokensAndMaybeRetry = (p, ~isStartOfGrammar) =>
+    if Token.isKeyword(p.Parser.token) && p.Parser.prevEndPos.pos_lnum === p.startPos.pos_lnum {
+      Parser.next(p)
+      None
+    } else if Recover.shouldAbortListParse(p) {
+      if isStartOfGrammar(p.Parser.token) {
+        Parser.next(p)
+        Some()
+      } else {
+        None
+      }
+    } else {
+      Parser.next(p)
+      let rec loop = p =>
+        if !Recover.shouldAbortListParse(p) {
+          Parser.next(p)
+          loop(p)
+        }
+      loop(p)
+      if isStartOfGrammar(p.Parser.token) {
+        Some()
+      } else {
+        None
+      }
+    }
 
   /* alias ::= pattern as lident */
   and parseAliasPattern = (~attrs, pattern, p) =>
@@ -14554,11 +14711,11 @@ module NapkinScript = {
       Recover.defaultExpr()
     | token =>
       let errPos = p.prevEndPos
-      switch Recover.skipTokensAndMaybeRetry(p, ~isStartOfGrammar=Grammar.isAtomicExprStart) {
-      | Abort =>
+      switch skipTokensAndMaybeRetry(p, ~isStartOfGrammar=Grammar.isAtomicExprStart) {
+      | None =>
         Parser.err(~startPos=errPos, p, Diagnostics.unexpected(token, p.breadcrumbs))
         Recover.defaultExpr()
-      | Retry => parseAtomicExpr(p)
+      | Some() => parseAtomicExpr(p)
       }
     }
 
@@ -14752,7 +14909,7 @@ module NapkinScript = {
   /* Represents an "operand" in a binary expression.
    * If you have `a + b`, `a` and `b` both represent
    * the operands of the binary expression with opeartor `+` */
-  and parseOperandExpr = (~context=OrdinaryExpr, p) => {
+  and parseOperandExpr = (~context, p) => {
     let startPos = p.Parser.startPos
     let attrs = parseAttributes(p)
     let expr = switch p.Parser.token {
@@ -14890,6 +15047,11 @@ module NapkinScript = {
         Parser.next(p)
         let loc = mkLoc(startPos, p.prevEndPos)
         if String.length(txt) > 0 {
+          let txt = if p.mode == ParseForTypeChecker {
+            parseTemplateStringLiteral(txt)
+          } else {
+            txt
+          }
           let str = Ast_helper.Exp.constant(~loc, Pconst_string(txt, Some(prefix)))
           Ast_helper.Exp.apply(~loc, hiddenOperator, list[(Nolabel, acc), (Nolabel, str)])
         } else {
@@ -14902,6 +15064,11 @@ module NapkinScript = {
         let fullLoc = mkLoc(startPos, p.prevEndPos)
         Scanner.setTemplateMode(p.scanner)
         Parser.expect(Rbrace, p)
+        let txt = if p.mode == ParseForTypeChecker {
+          parseTemplateStringLiteral(txt)
+        } else {
+          txt
+        }
         let str = Ast_helper.Exp.constant(~loc, Pconst_string(txt, Some(prefix)))
         let next = {
           let a = if String.length(txt) > 0 {
@@ -14927,6 +15094,11 @@ module NapkinScript = {
     | TemplateTail(txt) =>
       let loc = mkLoc(startPos, p.endPos)
       Parser.next(p)
+      let txt = if p.mode == ParseForTypeChecker {
+        parseTemplateStringLiteral(txt)
+      } else {
+        txt
+      }
       Ast_helper.Exp.constant(~loc, Pconst_string(txt, Some(prefix)))
     | TemplatePart(txt) =>
       let constantLoc = mkLoc(startPos, p.endPos)
@@ -14935,6 +15107,11 @@ module NapkinScript = {
       let fullLoc = mkLoc(startPos, p.prevEndPos)
       Scanner.setTemplateMode(p.scanner)
       Parser.expect(Rbrace, p)
+      let txt = if p.mode == ParseForTypeChecker {
+        parseTemplateStringLiteral(txt)
+      } else {
+        txt
+      }
       let str = Ast_helper.Exp.constant(~loc=constantLoc, Pconst_string(txt, Some(prefix)))
       let next = if String.length(txt) > 0 {
         Ast_helper.Exp.apply(~loc=fullLoc, hiddenOperator, list[(Nolabel, str), (Nolabel, expr)])
@@ -15071,37 +15248,10 @@ module NapkinScript = {
           (pat, exp)
         | _ =>
           let polyType = parsePolyTypeExpr(p)
-          let shouldMangleExpr = switch pat.ppat_desc {
-          | Ppat_var(_)
-            when switch polyType.Parsetree.ptyp_desc {
-            | Ptyp_poly(_) => false
-            | _ => true
-            } => true
-          | _ => false
-          }
-
           let loc = {...pat.ppat_loc, loc_end: polyType.Parsetree.ptyp_loc.loc_end}
-          let pat = {
-            let polyType = switch polyType.Parsetree.ptyp_desc {
-            | Parsetree.Ptyp_poly(_) => polyType
-            | _ when shouldMangleExpr => Ast_helper.Typ.poly(list[], polyType)
-            | _ => polyType
-            }
-
-            Ast_helper.Pat.constraint_(~loc, pat, polyType)
-          }
-
+          let pat = Ast_helper.Pat.constraint_(~loc, pat, polyType)
           Parser.expect(Token.Equal, p)
           let exp = parseExpr(p)
-          let exp = if shouldMangleExpr {
-            Ast_helper.Exp.constraint_(
-              ~loc={...pat.ppat_loc, loc_end: exp.pexp_loc.loc_end},
-              exp,
-              polyType,
-            )
-          } else {
-            exp
-          }
           let exp = overParseConstrainedOrCoercedOrArrowExpression(p, exp)
           (pat, exp)
         }
@@ -16539,9 +16689,9 @@ module NapkinScript = {
       Ast_helper.Typ.extension(~attrs, ~loc, extension)
     | Lbrace => parseBsObjectType(~attrs, p)
     | token =>
-      switch Recover.skipTokensAndMaybeRetry(p, ~isStartOfGrammar=Grammar.isAtomicTypExprStart) {
-      | Retry => parseAtomicTypExpr(~attrs, p)
-      | Abort =>
+      switch skipTokensAndMaybeRetry(p, ~isStartOfGrammar=Grammar.isAtomicTypExprStart) {
+      | Some() => parseAtomicTypExpr(~attrs, p)
+      | None =>
         Parser.err(~startPos=p.prevEndPos, p, Diagnostics.unexpected(token, p.breadcrumbs))
         Recover.defaultType()
       }
@@ -17657,7 +17807,7 @@ module NapkinScript = {
       let rowFields2 = parseTagSpecs(p)
       let variant = {
         let loc = mkLoc(startPos, p.prevEndPos)
-        Ast_helper.Typ.variant(~attrs, ~loc, List.append(rowFields1, rowFields2), Closed, None)
+        Ast_helper.Typ.variant(~attrs, ~loc, \"@"(rowFields1, rowFields2), Closed, None)
       }
       Parser.expect(Rbracket, p)
       variant
@@ -17738,7 +17888,7 @@ module NapkinScript = {
     | _ => (list[], true)
     }
 
-    let tuples = List.append(firstTuple, loop(p))
+    let tuples = \"@"(firstTuple, loop(p))
     Parsetree.Rtag(Location.mkloc(ident, loc), attrs, tagContainsAConstantEmptyConstructor, tuples)
   }
 
@@ -17798,12 +17948,9 @@ module NapkinScript = {
    * typedef	::=	typeconstr-name [type-params] type-information
    * type-information	::=	[type-equation]  [type-representation]  { type-constraint }
    * type-equation	::=	= typexpr */
-  and parseTypeDef = (~attrs=?, ~startPos, p) => {
+  and parseTypeDef = (~attrs, ~startPos, p) => {
     Parser.leaveBreadcrumb(p, Grammar.TypeDef)
-    let attrs = switch attrs {
-    | Some(attrs) => attrs
-    | None => parseAttributes(p)
-    }
+    /* let attrs = match attrs with | Some attrs -> attrs | None -> parseAttributes p in */
     Parser.leaveBreadcrumb(p, Grammar.TypeConstrName)
     let (name, loc) = parseLident(p)
     let typeConstrName = Location.mkloc(name, loc)
@@ -18021,7 +18168,7 @@ module NapkinScript = {
   }
 
   /* module structure on the file level */
-  @progress((Parser.next, Parser.expect, Recover.skipTokensAndMaybeRetry))
+  @progress((Parser.next, Parser.expect, Parser.checkProgress))
   and parseImplementation = (p): Parsetree.structure =>
     parseRegion(p, ~grammar=Grammar.Implementation, ~f=parseStructureItemRegion)
 
@@ -18095,10 +18242,11 @@ module NapkinScript = {
       let loc = mkLoc(startPos, p.prevEndPos)
       Some(Ast_helper.Str.extension(~attrs, ~loc, extension))
     | token when Grammar.isExprStart(token) =>
+      let prevEndPos = p.Parser.endPos
       let exp = parseExpr(p)
       Parser.optional(p, Semicolon) |> ignore
       let loc = mkLoc(startPos, p.prevEndPos)
-      Some(Ast_helper.Str.eval(~loc, ~attrs, exp))
+      Parser.checkProgress(~prevEndPos, ~result=Ast_helper.Str.eval(~loc, ~attrs, exp), p)
     | _ => None
     }
   }
@@ -18768,7 +18916,7 @@ module NapkinScript = {
   }
 
   /* module signature on the file level */
-  @progress((Parser.next, Parser.expect, Recover.skipTokensAndMaybeRetry))
+  @progress((Parser.next, Parser.expect, Parser.checkProgress))
   and parseSpecification = p =>
     parseRegion(~grammar=Grammar.Specification, ~f=parseSignatureItemRegion, p)
 
@@ -20124,8 +20272,6 @@ module Repl = {
 /* command line flags */
 module Clflags: {
   let recover: ref<bool>
-  let profile: ref<bool>
-  let bench: ref<bool>
   let print: ref<string>
   let width: ref<int>
   let origin: ref<string>
@@ -20137,8 +20283,6 @@ module Clflags: {
   let outcome: ref<bool>
 } = {
   let recover = ref(false)
-  let profile = ref(false)
-  let bench = ref(false)
   let width = ref(100)
 
   let files = ref(list[])
@@ -20154,10 +20298,8 @@ module Clflags: {
 
   let spec = list[
     ("-recover", Arg.Unit(() => recover := true), "Emit partial ast"),
-    ("-bench", Arg.Unit(() => bench := true), "Run internal benchmarks"),
     ("-print", Arg.String(txt => print := txt), "Print either binary, ocaml or ast"),
     ("-parse", Arg.String(txt => origin := txt), "Parse ocaml or napkinscript"),
-    ("-profile", Arg.Unit(() => profile := true), "Enable performance profiling"),
     ("-outcome", Arg.Bool(printOutcomeTree => outcome := printOutcomeTree), "print outcometree"),
     ("-width", Arg.Int(w => width := w), "Specify the line length that the printer will wrap on"),
     ("-interface", Arg.Unit(() => interface := true), "Parse as interface"),
@@ -20192,27 +20334,56 @@ module Driver: {
     | Signature => NapkinScript.parseSpecification(p)
     }
 
-  let parseOcaml = (type a, kind: file_kind<a>, lexbuf): a =>
-    switch kind {
-    | Structure => ParsetreeCompatibility.structure(Parse.implementation(lexbuf))
-    | Signature => ParsetreeCompatibility.signature(Parse.interface(lexbuf))
+  let extractOcamlStringData = filename => {
+    let lexbuf = if String.length(filename) > 0 {
+      IO.readFile(filename) |> Lexing.from_string
+    } else {
+      Lexing.from_channel(stdin)
     }
 
-  let parseReason = (type a, kind: file_kind<a>, lexbuf, parseForPrinter): a => {
-    open Refmt_main3.Migrate_parsetree
-    module Convert = Convert(OCaml_404, OCaml_406)
+    let stringLocs = ref(list[])
+    let rec next = () => {
+      let token = Lexer.token_with_comments(lexbuf)
+      switch token {
+      | OcamlParser.STRING(_txt, None) =>
+        open Location
+        let loc = {
+          loc_start: lexbuf.lex_start_p,
+          loc_end: lexbuf.Lexing.lex_curr_p,
+          loc_ghost: false,
+        }
+        let len = loc.loc_end.pos_cnum - loc.loc_start.pos_cnum
+        let txt = Bytes.to_string(
+          (@doesNotRaise Bytes.sub)(lexbuf.Lexing.lex_buffer, loc.loc_start.pos_cnum, len),
+        )
+        stringLocs := list[(txt, loc), ...stringLocs.contents]
+        next()
+      | OcamlParser.EOF => ()
+      | _ => next()
+      }
+    }
+
+    next()
+    List.rev(stringLocs.contents)
+  }
+
+  let parseOcaml = (type a, kind: file_kind<a>, filename): a => {
+    let lexbuf = if String.length(filename) > 0 {
+      IO.readFile(filename) |> Lexing.from_string
+    } else {
+      Lexing.from_channel(stdin)
+    }
+
+    let stringData = extractOcamlStringData(filename)
     switch kind {
     | Structure =>
-      let (ast, _) = Refmt_main3.Reason_toolchain_reason.implementation(lexbuf)
-
-      let ast = Convert.copy_structure(ast)
-      let ast = ParsetreeCompatibility.normalizeReasonArity(~forPrinter=parseForPrinter, ast)
-
-      ParsetreeCompatibility.structure(ast)
+      Parse.implementation(lexbuf)
+      |> ParsetreeCompatibility.replaceStringLiteralStructure(stringData)
+      |> ParsetreeCompatibility.structure
     | Signature =>
-      let (ast, _) = Refmt_main3.Reason_toolchain_reason.interface(lexbuf)
-
-      ParsetreeCompatibility.signature(Convert.copy_signature(ast))
+      Parse.interface(lexbuf)
+      |> ParsetreeCompatibility.replaceStringLiteralSignature(stringData)
+      |> ParsetreeCompatibility.signature
     }
   }
 
@@ -20236,21 +20407,12 @@ module Driver: {
     | list[] => None
     | diagnostics => Some(diagnostics)
     }
-    /* Some( */
-    /* Diagnostics.makeReport p.diagnostics (Bytes.to_string p.scanner.src) */
-    /* ) */
 
     (ast, report, p)
   }
 
   let parseOcamlFile = (kind, filename) => {
-    let lexbuf = if String.length(filename) > 0 {
-      IO.readFile(filename) |> Lexing.from_string
-    } else {
-      Lexing.from_channel(stdin)
-    }
-
-    let ast = parseOcaml(kind, lexbuf)
+    let ast = parseOcaml(kind, filename)
     let lexbuf2 = if String.length(filename) > 0 {
       IO.readFile(filename) |> Lexing.from_string
     } else {
@@ -20279,70 +20441,114 @@ module Driver: {
     (ast, None, p)
   }
 
-  let parseReasonFile = (~destination, kind, filename) => {
-    let lexbuf = if String.length(filename) > 0 {
-      IO.readFile(filename) |> Lexing.from_string
+  let reasonFilename = ref("")
+  let commentData = ref(list[])
+  let stringData = ref(list[])
+
+  let parseReasonBinaryFromStdin = (type a, kind: file_kind<a>, filename): a => {
+    let (chan, close) =
+      String.length(filename) === 0
+        ? (stdin, _ => ())
+        : {
+            let file_chan = open_in_bin(filename)
+            seek_in(file_chan, 0)
+            (file_chan, close_in_noerr)
+          }
+
+    let ic = chan
+    let magic = switch kind {
+    | Structure => Config.ast_impl_magic_number
+    | Signature => Config.ast_intf_magic_number
+    }
+
+    let buffer = (@doesNotRaise really_input_string)(ic, String.length(magic))
+    assert (buffer == magic)
+    let filename = input_value(ic)
+    reasonFilename := filename
+    let ast = input_value(ic)
+    close(chan)
+
+    let src = if String.length(filename) > 0 {
+      IO.readFile(filename)
     } else {
-      Lexing.from_channel(stdin)
+      IO.readStdin()
     }
 
-    let parseForNapkinPrinter = switch destination {
-    | "napkinscript" | "ns" | "sexp" => true
-    | _ => false
-    }
+    let scanner = Scanner.make(Bytes.of_string(src), filename)
 
-    let ast = {
-      let reasonLexer = Refmt_main3.Reason_lexer.init(lexbuf)
-      parseReason(kind, reasonLexer, parseForNapkinPrinter)
-    }
-
-    let lexbuf2 = if String.length(filename) > 0 {
-      IO.readFile(filename) |> Lexing.from_string
-    } else {
-      Lexing.from_channel(stdin)
-    }
-
-    let comments = {
-      module RawLex = Refmt_main3.Reason_declarative_lexer
-      let state = RawLex.make()
-      let rec next = (prevTokEndPos: Lexing.position, comments, state, lb) => {
-        let token = RawLex.token(state, lexbuf2)
-        switch token {
-        | Refmt_main3.Reason_parser.EOF => comments
-        | Refmt_main3.Reason_parser.COMMENT(txt, loc) =>
-          let comment = Comment.fromReasonComment(~loc, ~prevTokEndPos, ~txt)
-
-          next(loc.Location.loc_end, list[comment, ...comments], state, lb)
-        | _ => next(lb.Lexing.lex_curr_p, comments, state, lb)
-        }
+    let rec next = (prevEndPos, scanner) => {
+      let (startPos, endPos, token) = Scanner.scan(scanner)
+      switch token {
+      | Eof => ()
+      | Comment(c) =>
+        Comment.setPrevTokEndPos(c, prevEndPos)
+        commentData := list[c, ...commentData.contents]
+        next(endPos, scanner)
+      | String(_) =>
+        let loc = {Location.loc_start: startPos, loc_end: endPos, loc_ghost: false}
+        let len = endPos.pos_cnum - startPos.pos_cnum
+        let txt = (@doesNotRaise String.sub)(src, startPos.pos_cnum, len)
+        stringData := list[(txt, loc), ...stringData.contents]
+        next(endPos, scanner)
+      | _ => next(endPos, scanner)
       }
-
-      let cmts = next(lexbuf2.Lexing.lex_curr_p, list[], state, lexbuf2)
-      cmts
     }
 
-    let p = Parser.make("", filename)
-    p.comments = comments
+    next(Lexing.dummy_pos, scanner)
+
+    switch kind {
+    | Structure =>
+      ast
+      |> ParsetreeCompatibility.replaceStringLiteralStructure(stringData.contents)
+      |> ParsetreeCompatibility.normalizeReasonArityStructure(~forPrinter=true)
+      |> ParsetreeCompatibility.structure
+    | Signature =>
+      ast
+      |> ParsetreeCompatibility.replaceStringLiteralSignature(stringData.contents)
+      |> ParsetreeCompatibility.normalizeReasonAritySignature(~forPrinter=true)
+      |> ParsetreeCompatibility.signature
+    }
+  }
+
+  let isReasonDocComment = (comment: Comment.t) => {
+    let content = Comment.txt(comment)
+    let len = String.length(content)
+    if len == 0 {
+      true
+    } else if (
+      len >= 2 && (String.unsafe_get(content, 0) == '*' && String.unsafe_get(content, 1) == '*')
+    ) {
+      false
+    } else if len >= 1 && String.unsafe_get(content, 0) == '*' {
+      true
+    } else {
+      false
+    }
+  }
+
+  let parseReasonBinary = (kind, filename) => {
+    let ast = parseReasonBinaryFromStdin(kind, filename)
+    let p = Parser.make("", reasonFilename.contents)
+    p.comments = List.filter(c => !isReasonDocComment(c), commentData.contents)
     (ast, None, p)
   }
 
   let parseImplementation = (~origin, ~destination, filename) =>
     switch origin {
     | "ml" | "ocaml" => parseOcamlFile(Structure, filename)
-    | "re" | "reason" => parseReasonFile(~destination, Structure, filename)
+    | "reasonBinary" => parseReasonBinary(Structure, filename)
     | _ => parseNapkinFile(~destination, Structure, filename)
     }
 
   let parseInterface = (~destination, ~origin, filename) =>
     switch origin {
     | "ml" | "ocaml" => parseOcamlFile(Signature, filename)
-    | "re" | "reason" => parseReasonFile(~destination, Signature, filename)
+    | "reasonBinary" => parseReasonBinary(Signature, filename)
     | _ => parseNapkinFile(~destination, Signature, filename)
     }
 
   let process = (~reportStyle, parseFn, printFn, recover, filename) => {
-    let (ast, report, parserState) = Profile.record(~name="parser", () => parseFn(filename))
-
+    let (ast, report, parserState) = parseFn(filename)
     switch report {
     | Some(report) when recover == true =>
       printFn(ast, parserState)
@@ -20366,7 +20572,7 @@ module Driver: {
     }
   }
 
-  type rec action =
+  type action =
     | ProcessImplementation
     | ProcessInterface
 
@@ -20436,100 +20642,8 @@ module Driver: {
     }
 }
 
-module Benchmarks: {
-  let run: unit => unit
-} = {
-  type rec action = Parse | Print
-  let string_of_action = action =>
-    switch action {
-    | Parse => "parser"
-    | Print => "printer"
-    }
-
-  /* TODO: we could at Reason here */
-  type rec lang = Ocaml | Napkin | Reason
-  let string_of_lang = lang =>
-    switch lang {
-    | Ocaml => "ocaml"
-    | Napkin => "napkinscript"
-    | Reason => "reason"
-    }
-
-  let parseOcaml = (src, filename) => {
-    let lexbuf = Lexing.from_string(src)
-    Location.init(lexbuf, filename)
-    Parse.implementation(lexbuf)
-  }
-
-  let parseReason = (src, filename) => {
-    let lexbuf = Lexing.from_string(src)
-    let reasonLexer = Refmt_main3.Reason_lexer.init(lexbuf)
-    Location.init(lexbuf, filename)
-    Refmt_main3.Reason_toolchain_reason.implementation(reasonLexer)
-  }
-
-  let parseNapkin = (src, filename) => {
-    let p = Parser.make(src, filename)
-    NapkinScript.parseImplementation(p)
-  }
-
-  let benchmark = (filename, lang, action) => {
-    let src = IO.readFile(filename)
-    let name = filename ++ (" " ++ (string_of_lang(lang) ++ (" " ++ string_of_action(action))))
-
-    let benchmarkFn = switch (lang, action) {
-    | (Napkin, Parse) =>
-      _ => {
-        let _ = Sys.opaque_identity(parseNapkin(src, filename))
-      }
-    | (Ocaml, Parse) =>
-      _ => {
-        let _ = Sys.opaque_identity(parseOcaml(src, filename))
-      }
-    | (Reason, Parse) =>
-      _ => {
-        let _ = Sys.opaque_identity(parseReason(src, filename))
-      }
-    | (Napkin, Print) =>
-      let p = Parser.make(src, filename)
-      let ast = NapkinScript.parseImplementation(p)
-      _ => {
-        let _ = Sys.opaque_identity({
-          let cmtTbl = CommentTable.make()
-          let comments = List.rev(p.Parser.comments)
-          let () = CommentTable.walkStructure(ast, cmtTbl, comments)
-          Doc.toString(~width=80, Printer.printStructure(ast, cmtTbl))
-        })
-      }
-    | _ => _ => ()
-    }
-
-    let b = Benchmark.make(~name, ~f=benchmarkFn, ())
-    Benchmark.launch(b)
-    Benchmark.report(b)
-  }
-
-  let run = () => {
-    benchmark("./benchmarks/RedBlackTree.res", Napkin, Parse)
-    benchmark("./benchmarks/RedBlackTreeOcaml.ml", Ocaml, Parse)
-    benchmark("./benchmarks/RedBlackTree.res", Napkin, Print)
-    benchmark("./benchmarks/RedBlackTreeNoComments.res", Napkin, Print)
-    benchmark("./benchmarks/Napkinscript.res", Napkin, Parse)
-    benchmark("./benchmarks/NapkinscriptOcaml.ml", Ocaml, Parse)
-    benchmark("./benchmarks/Napkinscript.res", Napkin, Print)
-    benchmark("./benchmarks/HeroGraphic.res", Napkin, Parse)
-    benchmark("./benchmarks/HeroGraphic.ml", Ocaml, Parse)
-    benchmark("./benchmarks/HeroGraphic.re", Reason, Parse)
-    benchmark("./benchmarks/HeroGraphic.res", Napkin, Print)
-  }
-}
-
 let () = {
   Clflags.parse()
-  if Clflags.bench.contents {
-    Benchmarks.run()
-    exit(0)
-  }
   if Clflags.outcome.contents {
     Repl.typeAndPrintOutcome(List.hd(Clflags.files.contents))
   } else {
@@ -20560,12 +20674,6 @@ let () = {
       )
     }
 
-    if Clflags.profile.contents {
-      Profile.print()
-    }
-    if Clflags.bench.contents {
-      Benchmarks.run()
-    }
     exit(0)
   }
 }
