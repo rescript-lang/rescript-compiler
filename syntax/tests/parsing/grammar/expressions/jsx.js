@@ -148,7 +148,7 @@ let z =
 
 let omega =
   <div
-    aList=list[
+    aList=list{
       width,
       height,
       color,
@@ -158,7 +158,7 @@ let omega =
       border,
       borderColor,
       someOtherAttribute
-    ]
+    }
     key=string_of_int(1)
   />
 
@@ -430,7 +430,7 @@ let _ = <button ?id className={Cn.make(["button", "is-fullwidth"])} onClick>
   {"Submit" |> ste}
 </button>
 
-let _ = <button ?id className={Cn.make(list["button", "is-fullwidth"])} onClick>
+let _ = <button ?id className={Cn.make(list{"button", "is-fullwidth"})} onClick>
   {"Submit" |> ste}
 </button>
 

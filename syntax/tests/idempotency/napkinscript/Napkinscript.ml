@@ -104,7 +104,7 @@ module NapkinScript = struct
 
   module ErrorMessages = struct
     let listPatternSpread = "List pattern matches only supports one `...` spread, at the end.
-Explanation: a list spread at the tail is efficient, but a spread in the middle would create new list[s]; out of performance concern, our pattern matching currently guarantees to never create new intermediate data."
+Explanation: a list spread at the tail is efficient, but a spread in the middle would create new list{s}; out of performance concern, our pattern matching currently guarantees to never create new intermediate data."
 
     let recordPatternSpread = "Record's `...` spread is not supported in pattern matches.
 Explanation: you can't collect a subset of a record's field into its own record, since a record needs an explicit declaration and that subset wouldn't have one.
@@ -122,7 +122,7 @@ Solution: if it's to validate the first few elements, use a `when` clause + Arra
 Explanation: since records have a known, fixed shape, a spread like `{a, ...b}` wouldn't make sense, as `b` would override every field of `a` anyway."
 
     let listExprSpread =  "Lists can only have one `...` spread, and at the end.
-Explanation: lists are singly-linked list, where a node contains a value and points to the next node. `list[a, ...bc]` efficiently creates a new item and links `bc` as its next nodes. `[...bc, a]` would be expensive, as it'd need to traverse `bc` and prepend each item to `a` one by one. We therefore disallow such syntax sugar.
+Explanation: lists are singly-linked list, where a node contains a value and points to the next node. `list{a, ...bc}` efficiently creates a new item and links `bc` as its next nodes. `[...bc, a]` would be expensive, as it'd need to traverse `bc` and prepend each item to `a` one by one. We therefore disallow such syntax sugar.
 Solution: directly use `concat`."
   end
 

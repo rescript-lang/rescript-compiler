@@ -1,21 +1,21 @@
 let printExprFunParameters = (~uncurried, parameters) =>
   switch parameters {
-  | list[([], Asttypes.Nolabel, None, {Parsetree.ppat_desc: Ppat_any})]
+  | list{([], Asttypes.Nolabel, None, {Parsetree.ppat_desc: Ppat_any})}
     when !uncurried =>
     Doc.text("_")
-  | list[(
+  | list{(
       [],
       Asttypes.Nolabel,
       None,
       {Parsetree.ppat_desc: Ppat_var(stringLoc)}
-    )] when !uncurried =>
+    )} when !uncurried =>
     Doc.text(stringLoc.txt)
-  | list[(
+  | list{(
       [],
       Nolabel,
       None,
       {ppat_desc: Ppat_construct({txt: Longident.Lident("()")}, None)}
-    )] when !uncurried =>
+    )} when !uncurried =>
     Doc.text("()")
   | parameters =>
     let lparen = if uncurried {
@@ -24,19 +24,19 @@ let printExprFunParameters = (~uncurried, parameters) =>
       Doc.lparen
     }
     let shouldHug = ParsetreeViewer.parametersShouldHug(parameters)
-    let printedParamaters = Doc.concat(list[
+    let printedParamaters = Doc.concat(list{
       if shouldHug {
         Doc.nil
       } else {
         Doc.softLine
       },
       Doc.join(
-        ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+        ~sep=Doc.concat(list{Doc.comma, Doc.line}),
         List.map(printExpFunParameter, parameters),
       ),
-    ])
+      })
     Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         lparen,
         if shouldHug {
           printedParamaters
@@ -46,10 +46,10 @@ let printExprFunParameters = (~uncurried, parameters) =>
         if shouldHug {
           Doc.nil
         } else {
-          Doc.concat(list[Doc.trailingComma, Doc.softLine])
+          Doc.concat(list{Doc.trailingComma, Doc.softLine})
         },
         Doc.rparen,
-      ]),
+      }),
     )
   }
 

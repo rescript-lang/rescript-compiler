@@ -43,7 +43,7 @@ let x = -apply(arg)
 let x = -apply(. arg)
 let x = -Foo(a, b, c)
 let x = -{x:1, y: 2}
-let x = -list[1, 2, 3]
+let x = -list{1, 2, 3}
 let x = -(if true { 1 } else { 2 })
 let x = -(for i in 0 to 10 { () })
 let x = -(switch x {| Foo => 1})

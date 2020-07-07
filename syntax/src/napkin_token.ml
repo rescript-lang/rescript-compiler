@@ -156,7 +156,7 @@ let toString = function
   | At -> "@" | AtAt -> "@@"
   | Percent -> "%" | PercentPercent -> "%%"
   | Comment c -> "Comment(" ^ (Comment.toString c) ^ ")"
-  | List -> "list"
+  | List -> "list{"
   | TemplatePart text -> text ^ "${"
   | TemplateTail text -> "TemplateTail(" ^ text ^ ")"
   | Backtick -> "`"
@@ -193,7 +193,7 @@ let keywordTable = function
 | "include" -> Include
 | "module" -> Module
 | "of" -> Of
-| "list" -> List
+| "list{" -> List
 | "with" -> With
 | "try" -> Try
 | "catch" -> Catch

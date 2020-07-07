@@ -110,6 +110,7 @@ let getClosingToken = function
   | Token.Lparen -> Token.Rparen
   | Lbrace -> Rbrace
   | Lbracket -> Rbracket
+  | List -> Rbrace
   | _ -> assert false
 
 let rec goToClosing closingToken state =
@@ -117,7 +118,7 @@ let rec goToClosing closingToken state =
   | (Rparen, Token.Rparen) | (Rbrace, Rbrace) | (Rbracket, Rbracket) ->
     Parser.next state;
     ()
-  | (Token.Lbracket | Lparen | Lbrace) as t, _ ->
+  | (Token.Lbracket | Lparen | Lbrace | List) as t, _ ->
     Parser.next state;
     goToClosing (getClosingToken t) state;
     goToClosing closingToken state
@@ -131,7 +132,7 @@ let rec goToClosing closingToken state =
 let isEs6ArrowExpression ~inTernary p =
   Parser.lookahead p (fun state ->
     match state.Parser.token with
-    | Lident _ | List | Underscore ->
+    | Lident _ | Underscore ->
       Parser.next state;
       begin match state.Parser.token with
       (* Don't think that this valid
@@ -442,10 +443,6 @@ let rec parseLident p =
     Parser.next p;
     let loc = mkLoc startPos p.prevEndPos in
     (ident, loc)
-  | List ->
-    Parser.next p;
-    let loc = mkLoc startPos p.prevEndPos in
-    ("list", loc)
   | _ ->
     begin match recoverLident p with
     | Some () ->
@@ -461,10 +458,6 @@ let parseIdent ~msg ~startPos p =
     Parser.next p;
     let loc = mkLoc startPos p.prevEndPos in
     (ident, loc)
-  | List ->
-    Parser.next p;
-    let loc = mkLoc startPos p.prevEndPos in
-    ("list", loc)
   | _token ->
     Parser.err p (Diagnostics.message msg);
     Parser.next p;
@@ -479,7 +472,6 @@ let parseValuePath p =
   let startPos = p.Parser.startPos in
   let rec aux p path =
     match p.Parser.token with
-    | List -> Longident.Ldot(path, "list")
     | Lident ident -> Longident.Ldot(path, ident)
     | Uident uident ->
       Parser.next p;
@@ -490,7 +482,6 @@ let parseValuePath p =
       Longident.Lident "_"
   in
   let ident = match p.Parser.token with
-  | List -> Longident.Lident "list"
   | Lident ident -> Longident.Lident ident
   | Uident ident ->
     Parser.next p;
@@ -509,9 +500,6 @@ let parseValuePathTail p startPos ident =
     | Lident ident ->
       Parser.next p;
       Location.mkloc (Longident.Ldot(path, ident)) (mkLoc startPos p.prevEndPos)
-    | List ->
-      Parser.next p;
-      Location.mkloc (Longident.Ldot(path, "list")) (mkLoc startPos p.prevEndPos)
     | Uident ident ->
       Parser.next p;
       Parser.expect Dot p;
@@ -525,10 +513,6 @@ let parseValuePathTail p startPos ident =
 let parseModuleLongIdentTail ~lowercase p startPos ident =
   let rec loop p acc =
     match p.Parser.token with
-    | List when lowercase ->
-      Parser.next p;
-      let lident = (Longident.Ldot (acc, "list")) in
-      Location.mkloc lident (mkLoc startPos p.prevEndPos)
     | Lident ident when lowercase ->
       Parser.next p;
       let lident = (Longident.Ldot (acc, ident)) in
@@ -556,10 +540,6 @@ let parseModuleLongIdent ~lowercase p =
   (* Parser.leaveBreadcrumb p Reporting.ModuleLongIdent; *)
   let startPos = p.Parser.startPos in
   let moduleIdent = match p.Parser.token with
-  | List when lowercase ->
-    let loc = mkLoc startPos p.endPos in
-    Parser.next p;
-    Location.mkloc (Longident.Lident "list") loc
   | Lident ident when lowercase ->
     let loc = mkLoc startPos p.endPos in
     let lident = Longident.Lident ident in
@@ -1096,13 +1076,7 @@ let rec parsePattern ?(alias=true) ?(or_=true) p =
     Ast_helper.Pat.lazy_ ~loc ~attrs pat
   | List ->
     Parser.next p;
-    begin match p.token with
-    | Lbracket ->
-      parseListPattern ~startPos ~attrs p
-    | _ ->
-      let loc = mkLoc startPos p.prevEndPos in
-      Ast_helper.Pat.var ~loc ~attrs (Location.mkloc "list" loc)
-    end
+    parseListPattern ~startPos ~attrs p
   | Module ->
     parseModulePattern ~attrs p
   | Percent ->
@@ -1352,14 +1326,13 @@ and parseModulePattern ~attrs p =
   end
 
 and parseListPattern ~startPos ~attrs p =
-  Parser.expect Lbracket p;
   let listPatterns =
     parseCommaDelimitedReversedList p
       ~grammar:Grammar.PatternOcamlList
-      ~closing:Rbracket
+      ~closing:Rbrace
       ~f:parsePatternRegion
   in
-  Parser.expect Rbracket p;
+  Parser.expect Rbrace p;
   let loc = mkLoc startPos p.prevEndPos in
   let filterSpread (hasSpread, pattern) =
     if hasSpread then (
@@ -1643,17 +1616,6 @@ and parseParameters p =
       pat = Ast_helper.Pat.var ~loc (Location.mkloc ident loc);
       pos = startPos;
     }]
-  | List ->
-    Parser.next p;
-    let loc = mkLoc startPos p.Parser.prevEndPos in
-    [TermParameter {
-      uncurried = false;
-      attrs = [];
-      label = Asttypes.Nolabel;
-      expr = None;
-      pat = Ast_helper.Pat.var ~loc (Location.mkloc "list" loc);
-      pos = startPos;
-    }]
   | Underscore ->
     Parser.next p;
     let loc = mkLoc startPos p.Parser.prevEndPos in
@@ -1783,13 +1745,7 @@ and parseAtomicExpr p =
       end
     | List ->
       Parser.next p;
-      begin match p.token with
-      | Lbracket ->
-        parseListExpr ~startPos  p
-      | _ ->
-        let loc = mkLoc startPos p.prevEndPos in
-        Ast_helper.Exp.ident ~loc (Location.mkloc (Longident.Lident "list") loc)
-      end
+      parseListExpr ~startPos  p
     | Module ->
       Parser.next p;
       parseFirstClassModuleExpr ~startPos p
@@ -2842,7 +2798,7 @@ and parseRecordRow p =
   | _ -> ()
   in
   match p.Parser.token with
-  | Lident _ | Uident _ | List ->
+  | Lident _ | Uident _ ->
     let field = parseValuePath p in
     begin match p.Parser.token with
     | Colon ->
@@ -3414,11 +3370,6 @@ and parseValueOrConstructor p =
       let loc = mkLoc startPos p.prevEndPos in
       let lident = buildLongident (ident::acc) in
       Ast_helper.Exp.ident ~loc (Location.mkloc lident loc)
-    | List ->
-      Parser.next p;
-      let loc = mkLoc startPos p.prevEndPos in
-      let lident = buildLongident ("list"::acc) in
-      Ast_helper.Exp.ident ~loc (Location.mkloc lident loc)
     | token ->
       Parser.next p;
       Parser.err p (Diagnostics.unexpected token p.breadcrumbs);
@@ -3490,12 +3441,11 @@ and parseSpreadExprRegion p =
   | _ -> None
 
 and parseListExpr ~startPos p =
-  Parser.expect Lbracket p;
   let listExprs =
     parseCommaDelimitedReversedList
-    p ~grammar:Grammar.ListExpr ~closing:Rbracket ~f:parseSpreadExprRegion
+    p ~grammar:Grammar.ListExpr ~closing:Rbrace ~f:parseSpreadExprRegion
   in
-  Parser.expect Rbracket p;
+  Parser.expect Rbrace p;
   let loc = mkLoc startPos p.prevEndPos in
   match listExprs with
   | (true, expr)::exprs ->
@@ -3641,7 +3591,7 @@ and parseAtomicTypExpr ~attrs p =
     end
   | Lbracket ->
     parsePolymorphicVariantType ~attrs p
-  | Uident _ | Lident _ | List ->
+  | Uident _ | Lident _ ->
     let constr = parseValuePath p in
     let args =  parseTypeConstructorArgs ~constrName:constr p in
     Ast_helper.Typ.constr ~loc:(mkLoc startPos p.prevEndPos) ~attrs constr args
@@ -3780,7 +3730,7 @@ and parseTypeParameter p =
       | _ ->
         Some (uncurried, attrs, Asttypes.Labelled name, typ, startPos)
       end
-    | Lident _ | List ->
+    | Lident _ ->
       let (name, loc) = parseLident p in
       begin match p.token with
       | Colon ->
@@ -4016,10 +3966,6 @@ and parseFieldDeclaration p =
     Asttypes.Immutable
   in
   let (lident, loc) = match p.token with
-  | List ->
-    let loc = mkLoc p.startPos p.endPos in
-    Parser.next p;
-    ("list", loc)
   | _ -> parseLident p
   in
   let name = Location.mkloc lident loc in
@@ -4043,14 +3989,8 @@ and parseFieldDeclarationRegion p =
     Asttypes.Immutable
   in
   match p.token with
-  | Lident _ | List ->
-    let (lident, loc) =  match p.token with
-    | List ->
-      let loc = mkLoc p.startPos p.endPos in
-      Parser.next p;
-      ("list", loc)
-    | _ -> parseLident p
-    in
+  | Lident _ ->
+    let (lident, loc) = parseLident p in
     let name = Location.mkloc lident loc in
     let typ = match p.Parser.token with
     | Colon ->
@@ -5424,10 +5364,6 @@ and parseModuleTypeImpl ~attrs startPos p =
   Parser.expect Typ p;
   let nameStart = p.Parser.startPos in
   let name = match p.Parser.token with
-  | List ->
-    Parser.next p;
-    let loc = mkLoc nameStart p.prevEndPos in
-    Location.mkloc "list" loc
   | Lident ident ->
     Parser.next p;
     let loc = mkLoc nameStart p.prevEndPos in
@@ -5516,7 +5452,7 @@ and parseModuleBindings ~attrs ~startPos p =
 and parseAtomicModuleType p =
   let startPos = p.Parser.startPos in
   let moduleType = match p.Parser.token with
-  | Uident _ | Lident _ | List ->
+  | Uident _ | Lident _ ->
     (* Ocaml allows module types to end with lowercase: module Foo : bar = { ... }
      * lets go with uppercase terminal for now *)
     let moduleLongIdent = parseModuleLongIdent ~lowercase:true p in

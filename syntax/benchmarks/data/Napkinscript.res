@@ -163,8 +163,8 @@ module Doc = {
       | Concat(children) =>
         let (forceBreak, newChildren) = List.fold_left(((forceBreak, newChildren), child) => {
           let (childForcesBreak, newChild) = walk(child)
-          (forceBreak || childForcesBreak, list[newChild, ...newChildren])
-        }, (false, list[]), children)
+          (forceBreak || childForcesBreak, list{newChild, ...newChildren})
+        }, (false, list{}), children)
 
         (forceBreak, Concat(List.rev(newChildren)))
       | CustomLayout(children) =>
@@ -188,21 +188,21 @@ module Doc = {
   let join = (~sep, docs) => {
     let rec loop = (acc, sep, docs) =>
       switch docs {
-      | list[] => List.rev(acc)
-      | list[x] => List.rev(list[x, ...acc])
-      | list[x, ...xs] => loop(list[sep, x, ...acc], sep, xs)
+      | list{} => List.rev(acc)
+      | list{x} => List.rev(list{x, ...acc})
+      | list{x, ...xs} => loop(list{sep, x, ...acc}, sep, xs)
       }
 
-    Concat(loop(list[], sep, docs))
+    Concat(loop(list{}, sep, docs))
   }
 
   let rec fits = (w, doc) =>
     switch doc {
     | _ when w < 0 => false
-    | list[] => true
-    | list[(_ind, _mode, Text(txt)), ...rest] => fits(w - String.length(txt), rest)
-    | list[(ind, mode, Indent(doc)), ...rest] => fits(w, list[(ind + 2, mode, doc), ...rest])
-    | list[(_ind, Flat, LineBreak(break)), ...rest] =>
+    | list{} => true
+    | list{(_ind, _mode, Text(txt)), ...rest} => fits(w - String.length(txt), rest)
+    | list{(ind, mode, Indent(doc)), ...rest} => fits(w, list{(ind + 2, mode, doc), ...rest})
+    | list{(_ind, Flat, LineBreak(break)), ...rest} =>
       if break == Hard {
         true
       } else {
@@ -213,31 +213,31 @@ module Doc = {
         }
         fits(w, rest)
       }
-    | list[(_ind, _mode, Nil), ...rest] => fits(w, rest)
-    | list[(_ind, Break, LineBreak(_break)), ..._rest] => true
-    | list[(ind, mode, Group({shouldBreak: forceBreak, doc})), ...rest] =>
+    | list{(_ind, _mode, Nil), ...rest} => fits(w, rest)
+    | list{(_ind, Break, LineBreak(_break)), ..._rest} => true
+    | list{(ind, mode, Group({shouldBreak: forceBreak, doc})), ...rest} =>
       let mode = if forceBreak {
         Break
       } else {
         mode
       }
-      fits(w, list[(ind, mode, doc), ...rest])
-    | list[(ind, mode, IfBreaks({yes: breakDoc, no: flatDoc})), ...rest] =>
+      fits(w, list{(ind, mode, doc), ...rest})
+    | list{(ind, mode, IfBreaks({yes: breakDoc, no: flatDoc})), ...rest} =>
       if mode == Break {
-        fits(w, list[(ind, mode, breakDoc), ...rest])
+        fits(w, list{(ind, mode, breakDoc), ...rest})
       } else {
-        fits(w, list[(ind, mode, flatDoc), ...rest])
+        fits(w, list{(ind, mode, flatDoc), ...rest})
       }
-    | list[(ind, mode, Concat(docs)), ...rest] =>
+    | list{(ind, mode, Concat(docs)), ...rest} =>
       let ops = List.map(doc => (ind, mode, doc), docs)
       fits(w, List.append(ops, rest))
     /* | (_ind, _mode, Cursor)::rest -> fits w rest */
-    | list[(_ind, _mode, LineSuffix(_)), ...rest] => fits(w, rest)
-    | list[(_ind, _mode, BreakParent), ...rest] => fits(w, rest)
-    | list[(ind, mode, CustomLayout(list[hd, ..._])), ...rest] =>
+    | list{(_ind, _mode, LineSuffix(_)), ...rest} => fits(w, rest)
+    | list{(_ind, _mode, BreakParent), ...rest} => fits(w, rest)
+    | list{(ind, mode, CustomLayout(list{hd, ..._})), ...rest} =>
       /* TODO: if we have nested custom layouts, what we should do here? */
-      fits(w, list[(ind, mode, hd), ...rest])
-    | list[(_ind, _mode, CustomLayout(_)), ...rest] => fits(w, rest)
+      fits(w, list{(ind, mode, hd), ...rest})
+    | list{(_ind, _mode, CustomLayout(_)), ...rest} => fits(w, rest)
     }
 
   let toString = (~width, doc) => {
@@ -246,35 +246,35 @@ module Doc = {
 
     let rec process = (~pos, lineSuffices, stack) =>
       switch stack {
-      | list[(ind, mode, doc) as cmd, ...rest] =>
+      | list{(ind, mode, doc) as cmd, ...rest} =>
         switch doc {
         | Nil | BreakParent => process(~pos, lineSuffices, rest)
         | Text(txt) =>
           MiniBuffer.add_string(buffer, txt)
           process(~pos=String.length(txt) + pos, lineSuffices, rest)
-        | LineSuffix(doc) => process(~pos, list[(ind, mode, doc), ...lineSuffices], rest)
+        | LineSuffix(doc) => process(~pos, list{(ind, mode, doc), ...lineSuffices}, rest)
         | Concat(docs) =>
           let ops = List.map(doc => (ind, mode, doc), docs)
           process(~pos, lineSuffices, List.append(ops, rest))
-        | Indent(doc) => process(~pos, lineSuffices, list[(ind + 2, mode, doc), ...rest])
+        | Indent(doc) => process(~pos, lineSuffices, list{(ind + 2, mode, doc), ...rest})
         | IfBreaks({yes: breakDoc, no: flatDoc}) =>
           if mode == Break {
-            process(~pos, lineSuffices, list[(ind, mode, breakDoc), ...rest])
+            process(~pos, lineSuffices, list{(ind, mode, breakDoc), ...rest})
           } else {
-            process(~pos, lineSuffices, list[(ind, mode, flatDoc), ...rest])
+            process(~pos, lineSuffices, list{(ind, mode, flatDoc), ...rest})
           }
         | LineBreak(lineStyle) =>
           if mode == Break {
             switch lineSuffices {
-            | list[] =>
+            | list{} =>
               MiniBuffer.flush_newline(buffer)
               MiniBuffer.add_string(buffer, @doesNotRaise String.make(ind, ' '))
-              process(~pos=ind, list[], rest)
+              process(~pos=ind, list{}, rest)
             | _docs =>
               process(
                 ~pos=ind,
-                list[],
-                List.concat(list[List.rev(lineSuffices), list[cmd, ...rest]]),
+                list{},
+                List.concat(list{List.rev(lineSuffices), list{cmd, ...rest}}),
               )
             }
           } else {
@@ -292,18 +292,18 @@ module Doc = {
             process(~pos, lineSuffices, rest)
           }
         | Group({shouldBreak, doc}) =>
-          if shouldBreak || !fits(width - pos, list[(ind, Flat, doc), ...rest]) {
-            process(~pos, lineSuffices, list[(ind, Break, doc), ...rest])
+          if shouldBreak || !fits(width - pos, list{(ind, Flat, doc), ...rest}) {
+            process(~pos, lineSuffices, list{(ind, Break, doc), ...rest})
           } else {
-            process(~pos, lineSuffices, list[(ind, Flat, doc), ...rest])
+            process(~pos, lineSuffices, list{(ind, Flat, doc), ...rest})
           }
         | CustomLayout(docs) =>
           let rec findGroupThatFits = groups =>
             switch groups {
-            | list[] => Nil
-            | list[lastGroup] => lastGroup
-            | list[doc, ...docs] =>
-              if fits(width - pos, list[(ind, Flat, doc), ...rest]) {
+            | list{} => Nil
+            | list{lastGroup} => lastGroup
+            | list{doc, ...docs} =>
+              if fits(width - pos, list{(ind, Flat, doc), ...rest}) {
                 doc
               } else {
                 findGroupThatFits(docs)
@@ -311,16 +311,16 @@ module Doc = {
             }
 
           let doc = findGroupThatFits(docs)
-          process(~pos, lineSuffices, list[(ind, Flat, doc), ...rest])
+          process(~pos, lineSuffices, list{(ind, Flat, doc), ...rest})
         }
-      | list[] =>
+      | list{} =>
         switch lineSuffices {
-        | list[] => ()
-        | suffices => process(~pos=0, list[], List.rev(suffices))
+        | list{} => ()
+        | suffices => process(~pos=0, list{}, List.rev(suffices))
         }
       }
 
-    process(~pos=0, list[], list[(0, Flat, doc)])
+    process(~pos=0, list{}, list{(0, Flat, doc)})
 
     let len = MiniBuffer.length(buffer)
     if len > 0 && MiniBuffer.unsafe_get(buffer, len - 1) !== '\n' {
@@ -338,46 +338,46 @@ module Doc = {
       | Text(txt) => text("text(" ++ (txt ++ ")"))
       | LineSuffix(doc) =>
         group(
-          concat(list[
+          concat(list{
             text("linesuffix("),
-            indent(concat(list[line, toDoc(doc)])),
+            indent(concat(list{line, toDoc(doc)})),
             line,
             text(")"),
-          ]),
+          }),
         )
       | Concat(docs) =>
         group(
-          concat(list[
+          concat(list{
             text("concat("),
             indent(
-              concat(list[line, join(~sep=concat(list[text(","), line]), List.map(toDoc, docs))]),
+              concat(list{line, join(~sep=concat(list{text(","), line}), List.map(toDoc, docs))}),
             ),
             line,
             text(")"),
-          ]),
+          }),
         )
       | CustomLayout(docs) =>
         group(
-          concat(list[
+          concat(list{
             text("customLayout("),
             indent(
-              concat(list[line, join(~sep=concat(list[text(","), line]), List.map(toDoc, docs))]),
+              concat(list{line, join(~sep=concat(list{text(","), line}), List.map(toDoc, docs))}),
             ),
             line,
             text(")"),
-          ]),
+          }),
         )
-      | Indent(doc) => concat(list[text("indent("), softLine, toDoc(doc), softLine, text(")")])
+      | Indent(doc) => concat(list{text("indent("), softLine, toDoc(doc), softLine, text(")")})
       | IfBreaks({yes: trueDoc, no: falseDoc}) =>
         group(
-          concat(list[
+          concat(list{
             text("ifBreaks("),
             indent(
-              concat(list[line, toDoc(trueDoc), concat(list[text(","), line]), toDoc(falseDoc)]),
+              concat(list{line, toDoc(trueDoc), concat(list{text(","), line}), toDoc(falseDoc)}),
             ),
             line,
             text(")"),
-          ]),
+          }),
         )
       | LineBreak(break) =>
         let breakTxt = switch break {
@@ -389,19 +389,19 @@ module Doc = {
         text("LineBreak(" ++ (breakTxt ++ ")"))
       | Group({shouldBreak, doc}) =>
         group(
-          concat(list[
+          concat(list{
             text("Group("),
             indent(
-              concat(list[
+              concat(list{
                 line,
                 text("shouldBreak: " ++ string_of_bool(shouldBreak)),
-                concat(list[text(","), line]),
+                concat(list{text(","), line}),
                 toDoc(doc),
-              ]),
+              }),
             ),
             line,
             text(")"),
-          ]),
+          }),
         )
       }
 
@@ -427,16 +427,16 @@ module Sexp: {
   let rec toDoc = t =>
     switch t {
     | Atom(s) => Doc.text(s)
-    | List(list[]) => Doc.text("()")
-    | List(list[sexpr]) => Doc.concat(list[Doc.lparen, toDoc(sexpr), Doc.rparen])
-    | List(list[hd, ...tail]) =>
+    | List(list{}) => Doc.text("()")
+    | List(list{sexpr}) => Doc.concat(list{Doc.lparen, toDoc(sexpr), Doc.rparen})
+    | List(list{hd, ...tail}) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           toDoc(hd),
-          Doc.indent(Doc.concat(list[Doc.line, Doc.join(~sep=Doc.line, List.map(toDoc, tail))])),
+          Doc.indent(Doc.concat(list{Doc.line, Doc.join(~sep=Doc.line, List.map(toDoc, tail))})),
           Doc.rparen,
-        ]),
+        }),
       )
     }
 
@@ -454,7 +454,7 @@ module SexpAst: {
 
   let mapEmpty = (~f, items) =>
     switch items {
-    | list[] => list[Sexp.list(list[])]
+    | list{} => list{Sexp.list(list{})}
     | items => List.map(f, items)
     }
 
@@ -465,18 +465,18 @@ module SexpAst: {
   let optChar = oc =>
     switch oc {
     | None => Sexp.atom("None")
-    | Some(c) => Sexp.list(list[Sexp.atom("Some"), char(c)])
+    | Some(c) => Sexp.list(list{Sexp.atom("Some"), char(c)})
     }
 
   let longident = l => {
     let rec loop = l =>
       switch l {
-      | Longident.Lident(ident) => Sexp.list(list[Sexp.atom("Lident"), string(ident)])
-      | Longident.Ldot(lident, txt) => Sexp.list(list[Sexp.atom("Ldot"), loop(lident), string(txt)])
-      | Longident.Lapply(l1, l2) => Sexp.list(list[Sexp.atom("Lapply"), loop(l1), loop(l2)])
+      | Longident.Lident(ident) => Sexp.list(list{Sexp.atom("Lident"), string(ident)})
+      | Longident.Ldot(lident, txt) => Sexp.list(list{Sexp.atom("Ldot"), loop(lident), string(txt)})
+      | Longident.Lapply(l1, l2) => Sexp.list(list{Sexp.atom("Lapply"), loop(l1), loop(l2)})
       }
 
-    Sexp.list(list[Sexp.atom("longident"), loop(l)])
+    Sexp.list(list{Sexp.atom("longident"), loop(l)})
   }
 
   let closedFlag = flag =>
@@ -525,632 +525,632 @@ module SexpAst: {
   let argLabel = lbl =>
     switch lbl {
     | Asttypes.Nolabel => Sexp.atom("Nolabel")
-    | Labelled(txt) => Sexp.list(list[Sexp.atom("Labelled"), string(txt)])
-    | Optional(txt) => Sexp.list(list[Sexp.atom("Optional"), string(txt)])
+    | Labelled(txt) => Sexp.list(list{Sexp.atom("Labelled"), string(txt)})
+    | Optional(txt) => Sexp.list(list{Sexp.atom("Optional"), string(txt)})
     }
 
   let constant = c => {
     let sexpr = switch c {
     | Pconst_integer(txt, tag) =>
-      Sexp.list(list[Sexp.atom("Pconst_integer"), string(txt), optChar(tag)])
-    | Pconst_char(c) => Sexp.list(list[Sexp.atom("Pconst_char"), Sexp.atom(Char.escaped(c))])
+      Sexp.list(list{Sexp.atom("Pconst_integer"), string(txt), optChar(tag)})
+    | Pconst_char(c) => Sexp.list(list{Sexp.atom("Pconst_char"), Sexp.atom(Char.escaped(c))})
     | Pconst_string(txt, tag) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pconst_string"),
         string(txt),
         switch tag {
-        | Some(txt) => Sexp.list(list[Sexp.atom("Some"), string(txt)])
+        | Some(txt) => Sexp.list(list{Sexp.atom("Some"), string(txt)})
         | None => Sexp.atom("None")
         },
-      ])
+      })
     | Pconst_float(txt, tag) =>
-      Sexp.list(list[Sexp.atom("Pconst_float"), string(txt), optChar(tag)])
+      Sexp.list(list{Sexp.atom("Pconst_float"), string(txt), optChar(tag)})
     }
 
-    Sexp.list(list[Sexp.atom("constant"), sexpr])
+    Sexp.list(list{Sexp.atom("constant"), sexpr})
   }
 
-  let rec structure = s => Sexp.list(list[Sexp.atom("structure"), ...List.map(structureItem, s)])
+  let rec structure = s => Sexp.list(list{Sexp.atom("structure"), ...List.map(structureItem, s)})
 
   and structureItem = si => {
     let desc = switch si.pstr_desc {
     | Pstr_eval(expr, attrs) =>
-      Sexp.list(list[Sexp.atom("Pstr_eval"), expression(expr), attributes(attrs)])
+      Sexp.list(list{Sexp.atom("Pstr_eval"), expression(expr), attributes(attrs)})
     | Pstr_value(flag, vbs) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pstr_value"),
         recFlag(flag),
         Sexp.list(mapEmpty(~f=valueBinding, vbs)),
-      ])
-    | Pstr_primitive(vd) => Sexp.list(list[Sexp.atom("Pstr_primitive"), valueDescription(vd)])
+      })
+    | Pstr_primitive(vd) => Sexp.list(list{Sexp.atom("Pstr_primitive"), valueDescription(vd)})
     | Pstr_type(flag, tds) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pstr_type"),
         recFlag(flag),
         Sexp.list(mapEmpty(~f=typeDeclaration, tds)),
-      ])
-    | Pstr_typext(typext) => Sexp.list(list[Sexp.atom("Pstr_type"), typeExtension(typext)])
-    | Pstr_exception(ec) => Sexp.list(list[Sexp.atom("Pstr_exception"), extensionConstructor(ec)])
-    | Pstr_module(mb) => Sexp.list(list[Sexp.atom("Pstr_module"), moduleBinding(mb)])
+      })
+    | Pstr_typext(typext) => Sexp.list(list{Sexp.atom("Pstr_type"), typeExtension(typext)})
+    | Pstr_exception(ec) => Sexp.list(list{Sexp.atom("Pstr_exception"), extensionConstructor(ec)})
+    | Pstr_module(mb) => Sexp.list(list{Sexp.atom("Pstr_module"), moduleBinding(mb)})
     | Pstr_recmodule(mbs) =>
-      Sexp.list(list[Sexp.atom("Pstr_recmodule"), Sexp.list(mapEmpty(~f=moduleBinding, mbs))])
+      Sexp.list(list{Sexp.atom("Pstr_recmodule"), Sexp.list(mapEmpty(~f=moduleBinding, mbs))})
     | Pstr_modtype(modTypDecl) =>
-      Sexp.list(list[Sexp.atom("Pstr_modtype"), moduleTypeDeclaration(modTypDecl)])
-    | Pstr_open(openDesc) => Sexp.list(list[Sexp.atom("Pstr_open"), openDescription(openDesc)])
+      Sexp.list(list{Sexp.atom("Pstr_modtype"), moduleTypeDeclaration(modTypDecl)})
+    | Pstr_open(openDesc) => Sexp.list(list{Sexp.atom("Pstr_open"), openDescription(openDesc)})
     | Pstr_class(_) => Sexp.atom("Pstr_class")
     | Pstr_class_type(_) => Sexp.atom("Pstr_class_type")
-    | Pstr_include(id) => Sexp.list(list[Sexp.atom("Pstr_include"), includeDeclaration(id)])
-    | Pstr_attribute(attr) => Sexp.list(list[Sexp.atom("Pstr_attribute"), attribute(attr)])
+    | Pstr_include(id) => Sexp.list(list{Sexp.atom("Pstr_include"), includeDeclaration(id)})
+    | Pstr_attribute(attr) => Sexp.list(list{Sexp.atom("Pstr_attribute"), attribute(attr)})
     | Pstr_extension(ext, attrs) =>
-      Sexp.list(list[Sexp.atom("Pstr_extension"), extension(ext), attributes(attrs)])
+      Sexp.list(list{Sexp.atom("Pstr_extension"), extension(ext), attributes(attrs)})
     }
 
-    Sexp.list(list[Sexp.atom("structure_item"), desc])
+    Sexp.list(list{Sexp.atom("structure_item"), desc})
   }
 
   and includeDeclaration = id =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("include_declaration"),
       moduleExpression(id.pincl_mod),
       attributes(id.pincl_attributes),
-    ])
+    })
 
   and openDescription = od =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("open_description"),
       longident(od.popen_lid.Asttypes.txt),
       attributes(od.popen_attributes),
-    ])
+    })
 
   and moduleTypeDeclaration = mtd =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("module_type_declaration"),
       string(mtd.pmtd_name.Asttypes.txt),
       switch mtd.pmtd_type {
       | None => Sexp.atom("None")
-      | Some(modType) => Sexp.list(list[Sexp.atom("Some"), moduleType(modType)])
+      | Some(modType) => Sexp.list(list{Sexp.atom("Some"), moduleType(modType)})
       },
       attributes(mtd.pmtd_attributes),
-    ])
+    })
 
   and moduleBinding = mb =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("module_binding"),
       string(mb.pmb_name.Asttypes.txt),
       moduleExpression(mb.pmb_expr),
       attributes(mb.pmb_attributes),
-    ])
+    })
 
   and moduleExpression = me => {
     let desc = switch me.pmod_desc {
     | Pmod_ident(modName) =>
-      Sexp.list(list[Sexp.atom("Pmod_ident"), longident(modName.Asttypes.txt)])
-    | Pmod_structure(s) => Sexp.list(list[Sexp.atom("Pmod_structure"), structure(s)])
+      Sexp.list(list{Sexp.atom("Pmod_ident"), longident(modName.Asttypes.txt)})
+    | Pmod_structure(s) => Sexp.list(list{Sexp.atom("Pmod_structure"), structure(s)})
     | Pmod_functor(lbl, optModType, modExpr) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pmod_functor"),
         string(lbl.Asttypes.txt),
         switch optModType {
         | None => Sexp.atom("None")
-        | Some(modType) => Sexp.list(list[Sexp.atom("Some"), moduleType(modType)])
+        | Some(modType) => Sexp.list(list{Sexp.atom("Some"), moduleType(modType)})
         },
         moduleExpression(modExpr),
-      ])
+      })
     | Pmod_apply(callModExpr, modExprArg) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pmod_apply"),
         moduleExpression(callModExpr),
         moduleExpression(modExprArg),
-      ])
+      })
     | Pmod_constraint(modExpr, modType) =>
-      Sexp.list(list[Sexp.atom("Pmod_constraint"), moduleExpression(modExpr), moduleType(modType)])
-    | Pmod_unpack(expr) => Sexp.list(list[Sexp.atom("Pmod_unpack"), expression(expr)])
-    | Pmod_extension(ext) => Sexp.list(list[Sexp.atom("Pmod_extension"), extension(ext)])
+      Sexp.list(list{Sexp.atom("Pmod_constraint"), moduleExpression(modExpr), moduleType(modType)})
+    | Pmod_unpack(expr) => Sexp.list(list{Sexp.atom("Pmod_unpack"), expression(expr)})
+    | Pmod_extension(ext) => Sexp.list(list{Sexp.atom("Pmod_extension"), extension(ext)})
     }
 
-    Sexp.list(list[Sexp.atom("module_expr"), desc, attributes(me.pmod_attributes)])
+    Sexp.list(list{Sexp.atom("module_expr"), desc, attributes(me.pmod_attributes)})
   }
 
   and moduleType = mt => {
     let desc = switch mt.pmty_desc {
     | Pmty_ident(longidentLoc) =>
-      Sexp.list(list[Sexp.atom("Pmty_ident"), longident(longidentLoc.Asttypes.txt)])
-    | Pmty_signature(s) => Sexp.list(list[Sexp.atom("Pmty_signature"), signature(s)])
+      Sexp.list(list{Sexp.atom("Pmty_ident"), longident(longidentLoc.Asttypes.txt)})
+    | Pmty_signature(s) => Sexp.list(list{Sexp.atom("Pmty_signature"), signature(s)})
     | Pmty_functor(lbl, optModType, modType) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pmty_functor"),
         string(lbl.Asttypes.txt),
         switch optModType {
         | None => Sexp.atom("None")
-        | Some(modType) => Sexp.list(list[Sexp.atom("Some"), moduleType(modType)])
+        | Some(modType) => Sexp.list(list{Sexp.atom("Some"), moduleType(modType)})
         },
         moduleType(modType),
-      ])
+      })
     | Pmty_alias(longidentLoc) =>
-      Sexp.list(list[Sexp.atom("Pmty_alias"), longident(longidentLoc.Asttypes.txt)])
-    | Pmty_extension(ext) => Sexp.list(list[Sexp.atom("Pmty_extension"), extension(ext)])
-    | Pmty_typeof(modExpr) => Sexp.list(list[Sexp.atom("Pmty_typeof"), moduleExpression(modExpr)])
+      Sexp.list(list{Sexp.atom("Pmty_alias"), longident(longidentLoc.Asttypes.txt)})
+    | Pmty_extension(ext) => Sexp.list(list{Sexp.atom("Pmty_extension"), extension(ext)})
+    | Pmty_typeof(modExpr) => Sexp.list(list{Sexp.atom("Pmty_typeof"), moduleExpression(modExpr)})
     | Pmty_with(modType, withConstraints) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pmty_with"),
         moduleType(modType),
         Sexp.list(mapEmpty(~f=withConstraint, withConstraints)),
-      ])
+      })
     }
 
-    Sexp.list(list[Sexp.atom("module_type"), desc, attributes(mt.pmty_attributes)])
+    Sexp.list(list{Sexp.atom("module_type"), desc, attributes(mt.pmty_attributes)})
   }
 
   and withConstraint = wc =>
     switch wc {
     | Pwith_type(longidentLoc, td) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pmty_with"),
         longident(longidentLoc.Asttypes.txt),
         typeDeclaration(td),
-      ])
+      })
     | Pwith_module(l1, l2) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pwith_module"),
         longident(l1.Asttypes.txt),
         longident(l2.Asttypes.txt),
-      ])
+      })
     | Pwith_typesubst(longidentLoc, td) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pwith_typesubst"),
         longident(longidentLoc.Asttypes.txt),
         typeDeclaration(td),
-      ])
+      })
     | Pwith_modsubst(l1, l2) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pwith_modsubst"),
         longident(l1.Asttypes.txt),
         longident(l2.Asttypes.txt),
-      ])
+      })
     }
 
-  and signature = s => Sexp.list(list[Sexp.atom("signature"), ...List.map(signatureItem, s)])
+  and signature = s => Sexp.list(list{Sexp.atom("signature"), ...List.map(signatureItem, s)})
 
   and signatureItem = si => {
     let descr = switch si.psig_desc {
-    | Psig_value(vd) => Sexp.list(list[Sexp.atom("Psig_value"), valueDescription(vd)])
+    | Psig_value(vd) => Sexp.list(list{Sexp.atom("Psig_value"), valueDescription(vd)})
     | Psig_type(flag, typeDeclarations) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Psig_type"),
         recFlag(flag),
         Sexp.list(mapEmpty(~f=typeDeclaration, typeDeclarations)),
-      ])
-    | Psig_typext(typExt) => Sexp.list(list[Sexp.atom("Psig_typext"), typeExtension(typExt)])
+      })
+    | Psig_typext(typExt) => Sexp.list(list{Sexp.atom("Psig_typext"), typeExtension(typExt)})
     | Psig_exception(extConstr) =>
-      Sexp.list(list[Sexp.atom("Psig_exception"), extensionConstructor(extConstr)])
-    | Psig_module(modDecl) => Sexp.list(list[Sexp.atom("Psig_module"), moduleDeclaration(modDecl)])
+      Sexp.list(list{Sexp.atom("Psig_exception"), extensionConstructor(extConstr)})
+    | Psig_module(modDecl) => Sexp.list(list{Sexp.atom("Psig_module"), moduleDeclaration(modDecl)})
     | Psig_recmodule(modDecls) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Psig_recmodule"),
         Sexp.list(mapEmpty(~f=moduleDeclaration, modDecls)),
-      ])
+      })
     | Psig_modtype(modTypDecl) =>
-      Sexp.list(list[Sexp.atom("Psig_modtype"), moduleTypeDeclaration(modTypDecl)])
-    | Psig_open(openDesc) => Sexp.list(list[Sexp.atom("Psig_open"), openDescription(openDesc)])
+      Sexp.list(list{Sexp.atom("Psig_modtype"), moduleTypeDeclaration(modTypDecl)})
+    | Psig_open(openDesc) => Sexp.list(list{Sexp.atom("Psig_open"), openDescription(openDesc)})
     | Psig_include(inclDecl) =>
-      Sexp.list(list[Sexp.atom("Psig_include"), includeDescription(inclDecl)])
-    | Psig_class(_) => Sexp.list(list[Sexp.atom("Psig_class")])
-    | Psig_class_type(_) => Sexp.list(list[Sexp.atom("Psig_class_type")])
-    | Psig_attribute(attr) => Sexp.list(list[Sexp.atom("Psig_attribute"), attribute(attr)])
+      Sexp.list(list{Sexp.atom("Psig_include"), includeDescription(inclDecl)})
+    | Psig_class(_) => Sexp.list(list{Sexp.atom("Psig_class")})
+    | Psig_class_type(_) => Sexp.list(list{Sexp.atom("Psig_class_type")})
+    | Psig_attribute(attr) => Sexp.list(list{Sexp.atom("Psig_attribute"), attribute(attr)})
     | Psig_extension(ext, attrs) =>
-      Sexp.list(list[Sexp.atom("Psig_extension"), extension(ext), attributes(attrs)])
+      Sexp.list(list{Sexp.atom("Psig_extension"), extension(ext), attributes(attrs)})
     }
 
-    Sexp.list(list[Sexp.atom("signature_item"), descr])
+    Sexp.list(list{Sexp.atom("signature_item"), descr})
   }
 
   and includeDescription = id =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("include_description"),
       moduleType(id.pincl_mod),
       attributes(id.pincl_attributes),
-    ])
+    })
 
   and moduleDeclaration = md =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("module_declaration"),
       string(md.pmd_name.Asttypes.txt),
       moduleType(md.pmd_type),
       attributes(md.pmd_attributes),
-    ])
+    })
 
   and valueBinding = vb =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("value_binding"),
       pattern(vb.pvb_pat),
       expression(vb.pvb_expr),
       attributes(vb.pvb_attributes),
-    ])
+    })
 
   and valueDescription = vd =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("value_description"),
       string(vd.pval_name.Asttypes.txt),
       coreType(vd.pval_type),
       Sexp.list(mapEmpty(~f=string, vd.pval_prim)),
       attributes(vd.pval_attributes),
-    ])
+    })
 
   and typeDeclaration = td =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("type_declaration"),
       string(td.ptype_name.Asttypes.txt),
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("ptype_params"),
         Sexp.list(
           mapEmpty(
-            ~f=((typexpr, var)) => Sexp.list(list[coreType(typexpr), variance(var)]),
+            ~f=((typexpr, var)) => Sexp.list(list{coreType(typexpr), variance(var)}),
             td.ptype_params,
           ),
         ),
-      ]),
-      Sexp.list(list[
+      }),
+      Sexp.list(list{
         Sexp.atom("ptype_cstrs"),
         Sexp.list(
           mapEmpty(
-            ~f=((typ1, typ2, _loc)) => Sexp.list(list[coreType(typ1), coreType(typ2)]),
+            ~f=((typ1, typ2, _loc)) => Sexp.list(list{coreType(typ1), coreType(typ2)}),
             td.ptype_cstrs,
           ),
         ),
-      ]),
-      Sexp.list(list[Sexp.atom("ptype_kind"), typeKind(td.ptype_kind)]),
-      Sexp.list(list[
+      }),
+      Sexp.list(list{Sexp.atom("ptype_kind"), typeKind(td.ptype_kind)}),
+      Sexp.list(list{
         Sexp.atom("ptype_manifest"),
         switch td.ptype_manifest {
         | None => Sexp.atom("None")
-        | Some(typ) => Sexp.list(list[Sexp.atom("Some"), coreType(typ)])
+        | Some(typ) => Sexp.list(list{Sexp.atom("Some"), coreType(typ)})
         },
-      ]),
-      Sexp.list(list[Sexp.atom("ptype_private"), privateFlag(td.ptype_private)]),
+      }),
+      Sexp.list(list{Sexp.atom("ptype_private"), privateFlag(td.ptype_private)}),
       attributes(td.ptype_attributes),
-    ])
+    })
 
   and extensionConstructor = ec =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("extension_constructor"),
       string(ec.pext_name.Asttypes.txt),
       extensionConstructorKind(ec.pext_kind),
       attributes(ec.pext_attributes),
-    ])
+    })
 
   and extensionConstructorKind = kind =>
     switch kind {
     | Pext_decl(args, optTypExpr) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pext_decl"),
         constructorArguments(args),
         switch optTypExpr {
         | None => Sexp.atom("None")
-        | Some(typ) => Sexp.list(list[Sexp.atom("Some"), coreType(typ)])
+        | Some(typ) => Sexp.list(list{Sexp.atom("Some"), coreType(typ)})
         },
-      ])
+      })
     | Pext_rebind(longidentLoc) =>
-      Sexp.list(list[Sexp.atom("Pext_rebind"), longident(longidentLoc.Asttypes.txt)])
+      Sexp.list(list{Sexp.atom("Pext_rebind"), longident(longidentLoc.Asttypes.txt)})
     }
 
   and typeExtension = te =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("type_extension"),
-      Sexp.list(list[Sexp.atom("ptyext_path"), longident(te.ptyext_path.Asttypes.txt)]),
-      Sexp.list(list[
+      Sexp.list(list{Sexp.atom("ptyext_path"), longident(te.ptyext_path.Asttypes.txt)}),
+      Sexp.list(list{
         Sexp.atom("ptyext_parms"),
         Sexp.list(
           mapEmpty(
-            ~f=((typexpr, var)) => Sexp.list(list[coreType(typexpr), variance(var)]),
+            ~f=((typexpr, var)) => Sexp.list(list{coreType(typexpr), variance(var)}),
             te.ptyext_params,
           ),
         ),
-      ]),
-      Sexp.list(list[
+      }),
+      Sexp.list(list{
         Sexp.atom("ptyext_constructors"),
         Sexp.list(mapEmpty(~f=extensionConstructor, te.ptyext_constructors)),
-      ]),
-      Sexp.list(list[Sexp.atom("ptyext_private"), privateFlag(te.ptyext_private)]),
+      }),
+      Sexp.list(list{Sexp.atom("ptyext_private"), privateFlag(te.ptyext_private)}),
       attributes(te.ptyext_attributes),
-    ])
+    })
 
   and typeKind = kind =>
     switch kind {
     | Ptype_abstract => Sexp.atom("Ptype_abstract")
     | Ptype_variant(constrDecls) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Ptype_variant"),
         Sexp.list(mapEmpty(~f=constructorDeclaration, constrDecls)),
-      ])
+      })
     | Ptype_record(lblDecls) =>
-      Sexp.list(list[Sexp.atom("Ptype_record"), Sexp.list(mapEmpty(~f=labelDeclaration, lblDecls))])
+      Sexp.list(list{Sexp.atom("Ptype_record"), Sexp.list(mapEmpty(~f=labelDeclaration, lblDecls))})
     | Ptype_open => Sexp.atom("Ptype_open")
     }
 
   and constructorDeclaration = cd =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("constructor_declaration"),
       string(cd.pcd_name.Asttypes.txt),
-      Sexp.list(list[Sexp.atom("pcd_args"), constructorArguments(cd.pcd_args)]),
-      Sexp.list(list[
+      Sexp.list(list{Sexp.atom("pcd_args"), constructorArguments(cd.pcd_args)}),
+      Sexp.list(list{
         Sexp.atom("pcd_res"),
         switch cd.pcd_res {
         | None => Sexp.atom("None")
-        | Some(typ) => Sexp.list(list[Sexp.atom("Some"), coreType(typ)])
+        | Some(typ) => Sexp.list(list{Sexp.atom("Some"), coreType(typ)})
         },
-      ]),
+      }),
       attributes(cd.pcd_attributes),
-    ])
+    })
 
   and constructorArguments = args =>
     switch args {
     | Pcstr_tuple(types) =>
-      Sexp.list(list[Sexp.atom("Pcstr_tuple"), Sexp.list(mapEmpty(~f=coreType, types))])
+      Sexp.list(list{Sexp.atom("Pcstr_tuple"), Sexp.list(mapEmpty(~f=coreType, types))})
     | Pcstr_record(lds) =>
-      Sexp.list(list[Sexp.atom("Pcstr_record"), Sexp.list(mapEmpty(~f=labelDeclaration, lds))])
+      Sexp.list(list{Sexp.atom("Pcstr_record"), Sexp.list(mapEmpty(~f=labelDeclaration, lds))})
     }
 
   and labelDeclaration = ld =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("label_declaration"),
       string(ld.pld_name.Asttypes.txt),
       mutableFlag(ld.pld_mutable),
       coreType(ld.pld_type),
       attributes(ld.pld_attributes),
-    ])
+    })
 
   and expression = expr => {
     let desc = switch expr.pexp_desc {
     | Pexp_ident(longidentLoc) =>
-      Sexp.list(list[Sexp.atom("Pexp_ident"), longident(longidentLoc.Asttypes.txt)])
-    | Pexp_constant(c) => Sexp.list(list[Sexp.atom("Pexp_constant"), constant(c)])
+      Sexp.list(list{Sexp.atom("Pexp_ident"), longident(longidentLoc.Asttypes.txt)})
+    | Pexp_constant(c) => Sexp.list(list{Sexp.atom("Pexp_constant"), constant(c)})
     | Pexp_let(flag, vbs, expr) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_let"),
         recFlag(flag),
         Sexp.list(mapEmpty(~f=valueBinding, vbs)),
         expression(expr),
-      ])
+      })
     | Pexp_function(cases) =>
-      Sexp.list(list[Sexp.atom("Pexp_function"), Sexp.list(mapEmpty(~f=case, cases))])
+      Sexp.list(list{Sexp.atom("Pexp_function"), Sexp.list(mapEmpty(~f=case, cases))})
     | Pexp_fun(argLbl, exprOpt, pat, expr) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_fun"),
         argLabel(argLbl),
         switch exprOpt {
         | None => Sexp.atom("None")
-        | Some(expr) => Sexp.list(list[Sexp.atom("Some"), expression(expr)])
+        | Some(expr) => Sexp.list(list{Sexp.atom("Some"), expression(expr)})
         },
         pattern(pat),
         expression(expr),
-      ])
+      })
     | Pexp_apply(expr, args) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_apply"),
         expression(expr),
         Sexp.list(
           mapEmpty(
-            ~f=((argLbl, expr)) => Sexp.list(list[argLabel(argLbl), expression(expr)]),
+            ~f=((argLbl, expr)) => Sexp.list(list{argLabel(argLbl), expression(expr)}),
             args,
           ),
         ),
-      ])
+      })
     | Pexp_match(expr, cases) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_match"),
         expression(expr),
         Sexp.list(mapEmpty(~f=case, cases)),
-      ])
+      })
     | Pexp_try(expr, cases) =>
-      Sexp.list(list[Sexp.atom("Pexp_try"), expression(expr), Sexp.list(mapEmpty(~f=case, cases))])
+      Sexp.list(list{Sexp.atom("Pexp_try"), expression(expr), Sexp.list(mapEmpty(~f=case, cases))})
     | Pexp_tuple(exprs) =>
-      Sexp.list(list[Sexp.atom("Pexp_tuple"), Sexp.list(mapEmpty(~f=expression, exprs))])
+      Sexp.list(list{Sexp.atom("Pexp_tuple"), Sexp.list(mapEmpty(~f=expression, exprs))})
     | Pexp_construct(longidentLoc, exprOpt) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_construct"),
         longident(longidentLoc.Asttypes.txt),
         switch exprOpt {
         | None => Sexp.atom("None")
-        | Some(expr) => Sexp.list(list[Sexp.atom("Some"), expression(expr)])
+        | Some(expr) => Sexp.list(list{Sexp.atom("Some"), expression(expr)})
         },
-      ])
+      })
     | Pexp_variant(lbl, exprOpt) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_variant"),
         string(lbl),
         switch exprOpt {
         | None => Sexp.atom("None")
-        | Some(expr) => Sexp.list(list[Sexp.atom("Some"), expression(expr)])
+        | Some(expr) => Sexp.list(list{Sexp.atom("Some"), expression(expr)})
         },
-      ])
+      })
     | Pexp_record(rows, optExpr) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_record"),
         Sexp.list(
           mapEmpty(
             ~f=((longidentLoc, expr)) =>
-              Sexp.list(list[longident(longidentLoc.Asttypes.txt), expression(expr)]),
+              Sexp.list(list{longident(longidentLoc.Asttypes.txt), expression(expr)}),
             rows,
           ),
         ),
         switch optExpr {
         | None => Sexp.atom("None")
-        | Some(expr) => Sexp.list(list[Sexp.atom("Some"), expression(expr)])
+        | Some(expr) => Sexp.list(list{Sexp.atom("Some"), expression(expr)})
         },
-      ])
+      })
     | Pexp_field(expr, longidentLoc) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_field"),
         expression(expr),
         longident(longidentLoc.Asttypes.txt),
-      ])
+      })
     | Pexp_setfield(expr1, longidentLoc, expr2) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_setfield"),
         expression(expr1),
         longident(longidentLoc.Asttypes.txt),
         expression(expr2),
-      ])
+      })
     | Pexp_array(exprs) =>
-      Sexp.list(list[Sexp.atom("Pexp_array"), Sexp.list(mapEmpty(~f=expression, exprs))])
+      Sexp.list(list{Sexp.atom("Pexp_array"), Sexp.list(mapEmpty(~f=expression, exprs))})
     | Pexp_ifthenelse(expr1, expr2, optExpr) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_ifthenelse"),
         expression(expr1),
         expression(expr2),
         switch optExpr {
         | None => Sexp.atom("None")
-        | Some(expr) => Sexp.list(list[Sexp.atom("Some"), expression(expr)])
+        | Some(expr) => Sexp.list(list{Sexp.atom("Some"), expression(expr)})
         },
-      ])
+      })
     | Pexp_sequence(expr1, expr2) =>
-      Sexp.list(list[Sexp.atom("Pexp_sequence"), expression(expr1), expression(expr2)])
+      Sexp.list(list{Sexp.atom("Pexp_sequence"), expression(expr1), expression(expr2)})
     | Pexp_while(expr1, expr2) =>
-      Sexp.list(list[Sexp.atom("Pexp_while"), expression(expr1), expression(expr2)])
+      Sexp.list(list{Sexp.atom("Pexp_while"), expression(expr1), expression(expr2)})
     | Pexp_for(pat, e1, e2, flag, e3) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_for"),
         pattern(pat),
         expression(e1),
         expression(e2),
         directionFlag(flag),
         expression(e3),
-      ])
+      })
     | Pexp_constraint(expr, typexpr) =>
-      Sexp.list(list[Sexp.atom("Pexp_constraint"), expression(expr), coreType(typexpr)])
+      Sexp.list(list{Sexp.atom("Pexp_constraint"), expression(expr), coreType(typexpr)})
     | Pexp_coerce(expr, optTyp, typexpr) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_coerce"),
         expression(expr),
         switch optTyp {
         | None => Sexp.atom("None")
-        | Some(typ) => Sexp.list(list[Sexp.atom("Some"), coreType(typ)])
+        | Some(typ) => Sexp.list(list{Sexp.atom("Some"), coreType(typ)})
         },
         coreType(typexpr),
-      ])
-    | Pexp_send(_) => Sexp.list(list[Sexp.atom("Pexp_send")])
-    | Pexp_new(_) => Sexp.list(list[Sexp.atom("Pexp_new")])
-    | Pexp_setinstvar(_) => Sexp.list(list[Sexp.atom("Pexp_setinstvar")])
-    | Pexp_override(_) => Sexp.list(list[Sexp.atom("Pexp_override")])
+      })
+    | Pexp_send(_) => Sexp.list(list{Sexp.atom("Pexp_send")})
+    | Pexp_new(_) => Sexp.list(list{Sexp.atom("Pexp_new")})
+    | Pexp_setinstvar(_) => Sexp.list(list{Sexp.atom("Pexp_setinstvar")})
+    | Pexp_override(_) => Sexp.list(list{Sexp.atom("Pexp_override")})
     | Pexp_letmodule(modName, modExpr, expr) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_letmodule"),
         string(modName.Asttypes.txt),
         moduleExpression(modExpr),
         expression(expr),
-      ])
+      })
     | Pexp_letexception(extConstr, expr) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_letexception"),
         extensionConstructor(extConstr),
         expression(expr),
-      ])
-    | Pexp_assert(expr) => Sexp.list(list[Sexp.atom("Pexp_assert"), expression(expr)])
-    | Pexp_lazy(expr) => Sexp.list(list[Sexp.atom("Pexp_lazy"), expression(expr)])
-    | Pexp_poly(_) => Sexp.list(list[Sexp.atom("Pexp_poly")])
-    | Pexp_object(_) => Sexp.list(list[Sexp.atom("Pexp_object")])
+      })
+    | Pexp_assert(expr) => Sexp.list(list{Sexp.atom("Pexp_assert"), expression(expr)})
+    | Pexp_lazy(expr) => Sexp.list(list{Sexp.atom("Pexp_lazy"), expression(expr)})
+    | Pexp_poly(_) => Sexp.list(list{Sexp.atom("Pexp_poly")})
+    | Pexp_object(_) => Sexp.list(list{Sexp.atom("Pexp_object")})
     | Pexp_newtype(lbl, expr) =>
-      Sexp.list(list[Sexp.atom("Pexp_newtype"), string(lbl.Asttypes.txt), expression(expr)])
-    | Pexp_pack(modExpr) => Sexp.list(list[Sexp.atom("Pexp_pack"), moduleExpression(modExpr)])
+      Sexp.list(list{Sexp.atom("Pexp_newtype"), string(lbl.Asttypes.txt), expression(expr)})
+    | Pexp_pack(modExpr) => Sexp.list(list{Sexp.atom("Pexp_pack"), moduleExpression(modExpr)})
     | Pexp_open(flag, longidentLoc, expr) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Pexp_open"),
         overrideFlag(flag),
         longident(longidentLoc.Asttypes.txt),
         expression(expr),
-      ])
-    | Pexp_extension(ext) => Sexp.list(list[Sexp.atom("Pexp_extension"), extension(ext)])
+      })
+    | Pexp_extension(ext) => Sexp.list(list{Sexp.atom("Pexp_extension"), extension(ext)})
     | Pexp_unreachable => Sexp.atom("Pexp_unreachable")
     }
 
-    Sexp.list(list[Sexp.atom("expression"), desc])
+    Sexp.list(list{Sexp.atom("expression"), desc})
   }
 
   and case = c =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("case"),
-      Sexp.list(list[Sexp.atom("pc_lhs"), pattern(c.pc_lhs)]),
-      Sexp.list(list[
+      Sexp.list(list{Sexp.atom("pc_lhs"), pattern(c.pc_lhs)}),
+      Sexp.list(list{
         Sexp.atom("pc_guard"),
         switch c.pc_guard {
         | None => Sexp.atom("None")
-        | Some(expr) => Sexp.list(list[Sexp.atom("Some"), expression(expr)])
+        | Some(expr) => Sexp.list(list{Sexp.atom("Some"), expression(expr)})
         },
-      ]),
-      Sexp.list(list[Sexp.atom("pc_rhs"), expression(c.pc_rhs)]),
-    ])
+      }),
+      Sexp.list(list{Sexp.atom("pc_rhs"), expression(c.pc_rhs)}),
+    })
 
   and pattern = p => {
     let descr = switch p.ppat_desc {
     | Ppat_any => Sexp.atom("Ppat_any")
-    | Ppat_var(var) => Sexp.list(list[Sexp.atom("Ppat_var"), string(var.Location.txt)])
+    | Ppat_var(var) => Sexp.list(list{Sexp.atom("Ppat_var"), string(var.Location.txt)})
     | Ppat_alias(p, alias) =>
-      Sexp.list(list[Sexp.atom("Ppat_alias"), pattern(p), string(alias.txt)])
-    | Ppat_constant(c) => Sexp.list(list[Sexp.atom("Ppat_constant"), constant(c)])
+      Sexp.list(list{Sexp.atom("Ppat_alias"), pattern(p), string(alias.txt)})
+    | Ppat_constant(c) => Sexp.list(list{Sexp.atom("Ppat_constant"), constant(c)})
     | Ppat_interval(lo, hi) =>
-      Sexp.list(list[Sexp.atom("Ppat_interval"), constant(lo), constant(hi)])
+      Sexp.list(list{Sexp.atom("Ppat_interval"), constant(lo), constant(hi)})
     | Ppat_tuple(patterns) =>
-      Sexp.list(list[Sexp.atom("Ppat_tuple"), Sexp.list(mapEmpty(~f=pattern, patterns))])
+      Sexp.list(list{Sexp.atom("Ppat_tuple"), Sexp.list(mapEmpty(~f=pattern, patterns))})
     | Ppat_construct(longidentLoc, optPattern) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Ppat_construct"),
         longident(longidentLoc.Location.txt),
         switch optPattern {
         | None => Sexp.atom("None")
-        | Some(p) => Sexp.list(list[Sexp.atom("some"), pattern(p)])
+        | Some(p) => Sexp.list(list{Sexp.atom("some"), pattern(p)})
         },
-      ])
+      })
     | Ppat_variant(lbl, optPattern) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Ppat_variant"),
         string(lbl),
         switch optPattern {
         | None => Sexp.atom("None")
-        | Some(p) => Sexp.list(list[Sexp.atom("Some"), pattern(p)])
+        | Some(p) => Sexp.list(list{Sexp.atom("Some"), pattern(p)})
         },
-      ])
+      })
     | Ppat_record(rows, flag) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Ppat_record"),
         closedFlag(flag),
         Sexp.list(
           mapEmpty(
             ~f=((longidentLoc, p)) =>
-              Sexp.list(list[longident(longidentLoc.Location.txt), pattern(p)]),
+              Sexp.list(list{longident(longidentLoc.Location.txt), pattern(p)}),
             rows,
           ),
         ),
-      ])
+      })
     | Ppat_array(patterns) =>
-      Sexp.list(list[Sexp.atom("Ppat_array"), Sexp.list(mapEmpty(~f=pattern, patterns))])
-    | Ppat_or(p1, p2) => Sexp.list(list[Sexp.atom("Ppat_or"), pattern(p1), pattern(p2)])
+      Sexp.list(list{Sexp.atom("Ppat_array"), Sexp.list(mapEmpty(~f=pattern, patterns))})
+    | Ppat_or(p1, p2) => Sexp.list(list{Sexp.atom("Ppat_or"), pattern(p1), pattern(p2)})
     | Ppat_constraint(p, typexpr) =>
-      Sexp.list(list[Sexp.atom("Ppat_constraint"), pattern(p), coreType(typexpr)])
+      Sexp.list(list{Sexp.atom("Ppat_constraint"), pattern(p), coreType(typexpr)})
     | Ppat_type(longidentLoc) =>
-      Sexp.list(list[Sexp.atom("Ppat_type"), longident(longidentLoc.Location.txt)])
-    | Ppat_lazy(p) => Sexp.list(list[Sexp.atom("Ppat_lazy"), pattern(p)])
+      Sexp.list(list{Sexp.atom("Ppat_type"), longident(longidentLoc.Location.txt)})
+    | Ppat_lazy(p) => Sexp.list(list{Sexp.atom("Ppat_lazy"), pattern(p)})
     | Ppat_unpack(stringLoc) =>
-      Sexp.list(list[Sexp.atom("Ppat_unpack"), string(stringLoc.Location.txt)])
-    | Ppat_exception(p) => Sexp.list(list[Sexp.atom("Ppat_exception"), pattern(p)])
-    | Ppat_extension(ext) => Sexp.list(list[Sexp.atom("Ppat_extension"), extension(ext)])
+      Sexp.list(list{Sexp.atom("Ppat_unpack"), string(stringLoc.Location.txt)})
+    | Ppat_exception(p) => Sexp.list(list{Sexp.atom("Ppat_exception"), pattern(p)})
+    | Ppat_extension(ext) => Sexp.list(list{Sexp.atom("Ppat_extension"), extension(ext)})
     | Ppat_open(longidentLoc, p) =>
-      Sexp.list(list[Sexp.atom("Ppat_open"), longident(longidentLoc.Location.txt), pattern(p)])
+      Sexp.list(list{Sexp.atom("Ppat_open"), longident(longidentLoc.Location.txt), pattern(p)})
     }
 
-    Sexp.list(list[Sexp.atom("pattern"), descr])
+    Sexp.list(list{Sexp.atom("pattern"), descr})
   }
 
   and objectField = field =>
     switch field {
     | Otag(lblLoc, attrs, typexpr) =>
-      Sexp.list(list[Sexp.atom("Otag"), string(lblLoc.txt), attributes(attrs), coreType(typexpr)])
-    | Oinherit(typexpr) => Sexp.list(list[Sexp.atom("Oinherit"), coreType(typexpr)])
+      Sexp.list(list{Sexp.atom("Otag"), string(lblLoc.txt), attributes(attrs), coreType(typexpr)})
+    | Oinherit(typexpr) => Sexp.list(list{Sexp.atom("Oinherit"), coreType(typexpr)})
     }
 
   and rowField = field =>
     switch field {
     | Rtag(labelLoc, attrs, truth, types) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Rtag"),
         string(labelLoc.txt),
         attributes(attrs),
@@ -1162,53 +1162,53 @@ module SexpAst: {
           },
         ),
         Sexp.list(mapEmpty(~f=coreType, types)),
-      ])
-    | Rinherit(typexpr) => Sexp.list(list[Sexp.atom("Rinherit"), coreType(typexpr)])
+      })
+    | Rinherit(typexpr) => Sexp.list(list{Sexp.atom("Rinherit"), coreType(typexpr)})
     }
 
   and packageType = ((modNameLoc, packageConstraints)) =>
-    Sexp.list(list[
+    Sexp.list(list{
       Sexp.atom("package_type"),
       longident(modNameLoc.Asttypes.txt),
       Sexp.list(
         mapEmpty(
           ~f=((modNameLoc, typexpr)) =>
-            Sexp.list(list[longident(modNameLoc.Asttypes.txt), coreType(typexpr)]),
+            Sexp.list(list{longident(modNameLoc.Asttypes.txt), coreType(typexpr)}),
           packageConstraints,
         ),
       ),
-    ])
+    })
 
   and coreType = typexpr => {
     let desc = switch typexpr.ptyp_desc {
     | Ptyp_any => Sexp.atom("Ptyp_any")
-    | Ptyp_var(var) => Sexp.list(list[Sexp.atom("Ptyp_var"), string(var)])
+    | Ptyp_var(var) => Sexp.list(list{Sexp.atom("Ptyp_var"), string(var)})
     | Ptyp_arrow(argLbl, typ1, typ2) =>
-      Sexp.list(list[Sexp.atom("Ptyp_arrow"), argLabel(argLbl), coreType(typ1), coreType(typ2)])
+      Sexp.list(list{Sexp.atom("Ptyp_arrow"), argLabel(argLbl), coreType(typ1), coreType(typ2)})
     | Ptyp_tuple(types) =>
-      Sexp.list(list[Sexp.atom("Ptyp_tuple"), Sexp.list(mapEmpty(~f=coreType, types))])
+      Sexp.list(list{Sexp.atom("Ptyp_tuple"), Sexp.list(mapEmpty(~f=coreType, types))})
     | Ptyp_constr(longidentLoc, types) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Ptyp_constr"),
         longident(longidentLoc.txt),
         Sexp.list(mapEmpty(~f=coreType, types)),
-      ])
+      })
     | Ptyp_alias(typexpr, alias) =>
-      Sexp.list(list[Sexp.atom("Ptyp_alias"), coreType(typexpr), string(alias)])
+      Sexp.list(list{Sexp.atom("Ptyp_alias"), coreType(typexpr), string(alias)})
     | Ptyp_object(fields, flag) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Ptyp_object"),
         closedFlag(flag),
         Sexp.list(mapEmpty(~f=objectField, fields)),
-      ])
+      })
     | Ptyp_class(longidentLoc, types) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Ptyp_class"),
         longident(longidentLoc.Location.txt),
         Sexp.list(mapEmpty(~f=coreType, types)),
-      ])
+      })
     | Ptyp_variant(fields, flag, optLabels) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Ptyp_variant"),
         Sexp.list(mapEmpty(~f=rowField, fields)),
         closedFlag(flag),
@@ -1216,45 +1216,45 @@ module SexpAst: {
         | None => Sexp.atom("None")
         | Some(lbls) => Sexp.list(mapEmpty(~f=string, lbls))
         },
-      ])
+      })
     | Ptyp_poly(lbls, typexpr) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("Ptyp_poly"),
         Sexp.list(mapEmpty(~f=lbl => string(lbl.Asttypes.txt), lbls)),
         coreType(typexpr),
-      ])
-    | Ptyp_package(package) => Sexp.list(list[Sexp.atom("Ptyp_package"), packageType(package)])
-    | Ptyp_extension(ext) => Sexp.list(list[Sexp.atom("Ptyp_extension"), extension(ext)])
+      })
+    | Ptyp_package(package) => Sexp.list(list{Sexp.atom("Ptyp_package"), packageType(package)})
+    | Ptyp_extension(ext) => Sexp.list(list{Sexp.atom("Ptyp_extension"), extension(ext)})
     }
 
-    Sexp.list(list[Sexp.atom("core_type"), desc])
+    Sexp.list(list{Sexp.atom("core_type"), desc})
   }
 
   and payload = p =>
     switch p {
-    | PStr(s) => Sexp.list(list[Sexp.atom("PStr"), ...mapEmpty(~f=structureItem, s)])
-    | PSig(s) => Sexp.list(list[Sexp.atom("PSig"), signature(s)])
-    | PTyp(ct) => Sexp.list(list[Sexp.atom("PTyp"), coreType(ct)])
+    | PStr(s) => Sexp.list(list{Sexp.atom("PStr"), ...mapEmpty(~f=structureItem, s)})
+    | PSig(s) => Sexp.list(list{Sexp.atom("PSig"), signature(s)})
+    | PTyp(ct) => Sexp.list(list{Sexp.atom("PTyp"), coreType(ct)})
     | PPat(pat, optExpr) =>
-      Sexp.list(list[
+      Sexp.list(list{
         Sexp.atom("PPat"),
         pattern(pat),
         switch optExpr {
-        | Some(expr) => Sexp.list(list[Sexp.atom("Some"), expression(expr)])
+        | Some(expr) => Sexp.list(list{Sexp.atom("Some"), expression(expr)})
         | None => Sexp.atom("None")
         },
-      ])
+      })
     }
 
   and attribute = ((stringLoc, p)) =>
-    Sexp.list(list[Sexp.atom("attribute"), Sexp.atom(stringLoc.Asttypes.txt), payload(p)])
+    Sexp.list(list{Sexp.atom("attribute"), Sexp.atom(stringLoc.Asttypes.txt), payload(p)})
 
   and extension = ((stringLoc, p)) =>
-    Sexp.list(list[Sexp.atom("extension"), Sexp.atom(stringLoc.Asttypes.txt), payload(p)])
+    Sexp.list(list{Sexp.atom("extension"), Sexp.atom(stringLoc.Asttypes.txt), payload(p)})
 
   and attributes = attrs => {
     let sexprs = mapEmpty(~f=attribute, attrs)
-    Sexp.list(list[Sexp.atom("attributes"), ...sexprs])
+    Sexp.list(list{Sexp.atom("attributes"), ...sexprs})
   }
 
   let implementation = structure
@@ -2515,7 +2515,7 @@ module Reporting = {
       drop(
         n - 1,
         switch l {
-        | list[_x, ...xs] => xs
+        | list{_x, ...xs} => xs
         | _ => l
         },
       )
@@ -2523,9 +2523,9 @@ module Reporting = {
 
   let rec take = (n, l) =>
     switch l {
-    | _ when n === 0 => list[]
-    | list[] => list[]
-    | list[x, ...xs] => list[x, ...take(n - 1, xs)]
+    | _ when n === 0 => list{}
+    | list{} => list{}
+    | list{x, ...xs} => list{x, ...take(n - 1, xs)}
     }
 
   /* TODO: cleanup */
@@ -2733,37 +2733,37 @@ module Diagnostics: {
     | Unexpected({token: t, context: breadcrumbs}) =>
       let name = Token.toString(t)
       switch breadcrumbs {
-      | list[(AtomicTypExpr, _), ...breadcrumbs] =>
+      | list{(AtomicTypExpr, _), ...breadcrumbs} =>
         switch (breadcrumbs, t) {
         | (
-            list[(StringFieldDeclarations | FieldDeclarations, _), ..._],
+            list{(StringFieldDeclarations | FieldDeclarations, _), ..._},
             String(_) | At | Rbrace | Comma | Eof,
           ) => "I'm missing a type here"
         | (_, t) when Grammar.isStructureItemStart(t) || t == Eof => "Missing a type here"
         | _ => defaultUnexpected(t)
         }
-      | list[(ExprOperand, _), ...breadcrumbs] =>
+      | list{(ExprOperand, _), ...breadcrumbs} =>
         switch (breadcrumbs, t) {
-        | (list[(ExprBlock, _), ..._], Rbrace) => "It seems that this expression block is empty"
-        | (list[(ExprBlock, _), ..._], Bar) => /* Pattern matching */
+        | (list{(ExprBlock, _), ..._}, Rbrace) => "It seems that this expression block is empty"
+        | (list{(ExprBlock, _), ..._}, Bar) => /* Pattern matching */
           "Looks like there might be an expression missing here"
         | (
-            list[(ExprSetField, _), ..._],
+            list{(ExprSetField, _), ..._},
             _,
           ) => "It seems that this record field mutation misses an expression"
         | (
-            list[(ExprArrayMutation, _), ..._],
+            list{(ExprArrayMutation, _), ..._},
             _,
           ) => "Seems that an expression is missing, with what do I mutate the array?"
         | (
-            list[(ExprBinaryAfterOp(_) | ExprUnary, _), ..._],
+            list{(ExprBinaryAfterOp(_) | ExprUnary, _), ..._},
             _,
           ) => "Did you forget to write an expression here?"
-        | (list[(Grammar.LetBinding, _), ..._], _) => "This let-binding misses an expression"
-        | (list[_, ..._], Rbracket | Rbrace) => "Missing expression"
+        | (list{(Grammar.LetBinding, _), ..._}, _) => "This let-binding misses an expression"
+        | (list{_, ..._}, Rbracket | Rbrace) => "Missing expression"
         | _ => "I'm not sure what to parse here when looking at \"" ++ (name ++ "\".")
         }
-      | list[(TypeParam, _), ..._] =>
+      | list{(TypeParam, _), ..._} =>
         switch t {
         | Lident(ident) => "Did you mean '" ++ (ident ++ "? A Type parameter starts with a quote.")
         | _ => "I'm not sure what to parse here when looking at \"" ++ (name ++ "\".")
@@ -3007,15 +3007,15 @@ module ParsetreeViewer: {
   let arrowType = ct => {
     let rec process = (attrsBefore, acc, typ) =>
       switch typ {
-      | {ptyp_desc: Ptyp_arrow(Nolabel as lbl, typ1, typ2), ptyp_attributes: list[]} =>
-        let arg = (list[], lbl, typ1)
-        process(attrsBefore, list[arg, ...acc], typ2)
+      | {ptyp_desc: Ptyp_arrow(Nolabel as lbl, typ1, typ2), ptyp_attributes: list{}} =>
+        let arg = (list{}, lbl, typ1)
+        process(attrsBefore, list{arg, ...acc}, typ2)
       | {
           ptyp_desc: Ptyp_arrow(Nolabel as lbl, typ1, typ2),
-          ptyp_attributes: list[({txt: "bs"}, _)] as attrs,
+          ptyp_attributes: list{({txt: "bs"}, _)} as attrs,
         } =>
         let arg = (attrs, lbl, typ1)
-        process(attrsBefore, list[arg, ...acc], typ2)
+        process(attrsBefore, list{arg, ...acc}, typ2)
       | {ptyp_desc: Ptyp_arrow(Nolabel, _typ1, _typ2), ptyp_attributes: _attrs} as returnType =>
         let args = List.rev(acc)
         (attrsBefore, args, returnType)
@@ -3024,14 +3024,14 @@ module ParsetreeViewer: {
           ptyp_attributes: attrs,
         } =>
         let arg = (attrs, lbl, typ1)
-        process(attrsBefore, list[arg, ...acc], typ2)
+        process(attrsBefore, list{arg, ...acc}, typ2)
       | typ => (attrsBefore, List.rev(acc), typ)
       }
 
     switch ct {
     | {ptyp_desc: Ptyp_arrow(Nolabel, _typ1, _typ2), ptyp_attributes: attrs} as typ =>
-      process(attrs, list[], {...typ, ptyp_attributes: list[]})
-    | typ => process(list[], list[], typ)
+      process(attrs, list{}, {...typ, ptyp_attributes: list{}})
+    | typ => process(list{}, list{}, typ)
     }
   }
 
@@ -3040,36 +3040,36 @@ module ParsetreeViewer: {
       switch modtype {
       | {pmty_desc: Pmty_functor(lbl, argType, returnType), pmty_attributes: attrs} =>
         let arg = (attrs, lbl, argType)
-        process(list[arg, ...acc], returnType)
+        process(list{arg, ...acc}, returnType)
       | modType => (List.rev(acc), modType)
       }
 
-    process(list[], modtype)
+    process(list{}, modtype)
   }
 
   let processUncurriedAttribute = attrs => {
     let rec process = (uncurriedSpotted, acc, attrs) =>
       switch attrs {
-      | list[] => (uncurriedSpotted, List.rev(acc))
-      | list[({Location.txt: "bs"}, _), ...rest] => process(true, acc, rest)
-      | list[attr, ...rest] => process(uncurriedSpotted, list[attr, ...acc], rest)
+      | list{} => (uncurriedSpotted, List.rev(acc))
+      | list{({Location.txt: "bs"}, _), ...rest} => process(true, acc, rest)
+      | list{attr, ...rest} => process(uncurriedSpotted, list{attr, ...acc}, rest)
       }
 
-    process(false, list[], attrs)
+    process(false, list{}, attrs)
   }
 
   let collectIfExpressions = expr => {
     let rec collect = (acc, expr) =>
       switch expr.pexp_desc {
       | Pexp_ifthenelse(ifExpr, thenExpr, Some(elseExpr)) =>
-        collect(list[(ifExpr, thenExpr), ...acc], elseExpr)
+        collect(list{(ifExpr, thenExpr), ...acc}, elseExpr)
       | Pexp_ifthenelse(ifExpr, thenExpr, None as elseExpr) =>
-        let ifs = List.rev(list[(ifExpr, thenExpr), ...acc])
+        let ifs = List.rev(list{(ifExpr, thenExpr), ...acc})
         (ifs, elseExpr)
       | _ => (List.rev(acc), Some(expr))
       }
 
-    collect(list[], expr)
+    collect(list{}, expr)
   }
 
   let collectListExpressions = expr => {
@@ -3078,13 +3078,13 @@ module ParsetreeViewer: {
       | Pexp_construct({txt: Longident.Lident("[]")}, _) => (List.rev(acc), None)
       | Pexp_construct(
           {txt: Longident.Lident("::")},
-          Some({pexp_desc: Pexp_tuple(list[hd, tail])}),
+          Some({pexp_desc: Pexp_tuple(list{hd, tail})}),
         ) =>
-        collect(list[hd, ...acc], tail)
+        collect(list{hd, ...acc}, tail)
       | _ => (List.rev(acc), Some(expr))
       }
 
-    collect(list[], expr)
+    collect(list{}, expr)
   }
 
   /* (__x) => f(a, __x, c) -----> f(a, _, c) */
@@ -3122,8 +3122,8 @@ module ParsetreeViewer: {
     /* Turns (type t, type u, type z) into "type t u z" */
     let rec collectNewTypes = (acc, returnExpr) =>
       switch returnExpr {
-      | {pexp_desc: Pexp_newtype(stringLoc, returnExpr), pexp_attributes: list[]} =>
-        collectNewTypes(list[stringLoc, ...acc], returnExpr)
+      | {pexp_desc: Pexp_newtype(stringLoc, returnExpr), pexp_attributes: list{}} =>
+        collectNewTypes(list{stringLoc, ...acc}, returnExpr)
       | returnExpr => (List.rev(acc), returnExpr)
       }
 
@@ -3138,21 +3138,21 @@ module ParsetreeViewer: {
               {pexp_desc: Pexp_apply(_)},
             ),
         } => (attrsBefore, List.rev(acc), rewriteUnderscoreApply(expr))
-      | {pexp_desc: Pexp_fun(lbl, defaultExpr, pattern, returnExpr), pexp_attributes: list[]} =>
+      | {pexp_desc: Pexp_fun(lbl, defaultExpr, pattern, returnExpr), pexp_attributes: list{}} =>
         let parameter = Parameter({
-          attrs: list[],
+          attrs: list{},
           lbl: lbl,
           defaultExpr: defaultExpr,
           pat: pattern,
         })
-        collect(attrsBefore, list[parameter, ...acc], returnExpr)
+        collect(attrsBefore, list{parameter, ...acc}, returnExpr)
       | {pexp_desc: Pexp_newtype(stringLoc, rest), pexp_attributes: attrs} =>
-        let (stringLocs, returnExpr) = collectNewTypes(list[stringLoc], rest)
+        let (stringLocs, returnExpr) = collectNewTypes(list{stringLoc}, rest)
         let param = NewTypes({attrs: attrs, locs: stringLocs})
-        collect(attrsBefore, list[param, ...acc], returnExpr)
+        collect(attrsBefore, list{param, ...acc}, returnExpr)
       | {
           pexp_desc: Pexp_fun(lbl, defaultExpr, pattern, returnExpr),
-          pexp_attributes: list[({txt: "bs"}, _)] as attrs,
+          pexp_attributes: list{({txt: "bs"}, _)} as attrs,
         } =>
         let parameter = Parameter({
           attrs: attrs,
@@ -3160,7 +3160,7 @@ module ParsetreeViewer: {
           defaultExpr: defaultExpr,
           pat: pattern,
         })
-        collect(attrsBefore, list[parameter, ...acc], returnExpr)
+        collect(attrsBefore, list{parameter, ...acc}, returnExpr)
       | {
           pexp_desc: Pexp_fun((Labelled(_) | Optional(_)) as lbl, defaultExpr, pattern, returnExpr),
           pexp_attributes: attrs,
@@ -3171,7 +3171,7 @@ module ParsetreeViewer: {
           defaultExpr: defaultExpr,
           pat: pattern,
         })
-        collect(attrsBefore, list[parameter, ...acc], returnExpr)
+        collect(attrsBefore, list{parameter, ...acc}, returnExpr)
       | expr => (attrsBefore, List.rev(acc), expr)
       }
 
@@ -3180,14 +3180,14 @@ module ParsetreeViewer: {
         pexp_desc: Pexp_fun(Nolabel, _defaultExpr, _pattern, _returnExpr),
         pexp_attributes: attrs,
       } as expr =>
-      collect(attrs, list[], {...expr, pexp_attributes: list[]})
-    | expr => collect(list[], list[], expr)
+      collect(attrs, list{}, {...expr, pexp_attributes: list{}})
+    | expr => collect(list{}, list{}, expr)
     }
   }
 
   let processBracesAttr = expr =>
     switch expr.pexp_attributes {
-    | list[({txt: "ns.braces"}, _) as attr, ...attrs] => (
+    | list{({txt: "ns.braces"}, _) as attr, ...attrs} => (
         Some(attr),
         {...expr, pexp_attributes: attrs},
       )
@@ -3267,7 +3267,7 @@ module ParsetreeViewer: {
 
   let isUnaryExpression = expr =>
     switch expr.pexp_desc {
-    | Pexp_apply({pexp_desc: Pexp_ident({txt: Longident.Lident(operator)})}, list[(Nolabel, _arg)])
+    | Pexp_apply({pexp_desc: Pexp_ident({txt: Longident.Lident(operator)})}, list{(Nolabel, _arg)})
       when isUnaryOperator(operator) => true
     | _ => false
     }
@@ -3305,7 +3305,7 @@ module ParsetreeViewer: {
     switch expr.pexp_desc {
     | Pexp_apply(
         {pexp_desc: Pexp_ident({txt: Longident.Lident(operator)})},
-        list[(Nolabel, _operand1), (Nolabel, _operand2)],
+        list{(Nolabel, _operand1), (Nolabel, _operand2)},
       ) when isBinaryOperator(operator) => true
     | _ => false
     }
@@ -3337,16 +3337,16 @@ module ParsetreeViewer: {
     switch expr.pexp_desc {
     | Pexp_apply(
         {pexp_desc: Pexp_ident({txt: Longident.Ldot(Lident("Array"), "get")})},
-        list[(Nolabel, _parentExpr), (Nolabel, _memberExpr)],
+        list{(Nolabel, _parentExpr), (Nolabel, _memberExpr)},
       ) => true
     | _ => false
     }
 
   let rec hasTernaryAttribute = attrs =>
     switch attrs {
-    | list[] => false
-    | list[({Location.txt: "ns.ternary"}, _), ..._] => true
-    | list[_, ...attrs] => hasTernaryAttribute(attrs)
+    | list{} => false
+    | list{({Location.txt: "ns.ternary"}, _), ..._} => true
+    | list{_, ...attrs} => hasTernaryAttribute(attrs)
     }
 
   let isTernaryExpr = expr =>
@@ -3361,16 +3361,16 @@ module ParsetreeViewer: {
       switch expr {
       | {pexp_attributes: attrs, pexp_desc: Pexp_ifthenelse(condition, consequent, Some(alternate))}
         when hasTernaryAttribute(attrs) =>
-        collect(list[(condition, consequent), ...acc], alternate)
+        collect(list{(condition, consequent), ...acc}, alternate)
       | alternate => (List.rev(acc), alternate)
       }
 
-    collect(list[], expr)
+    collect(list{}, expr)
   }
 
   let parametersShouldHug = parameters =>
     switch parameters {
-    | list[Parameter({attrs: list[], lbl: Asttypes.Nolabel, defaultExpr: None, pat})]
+    | list{Parameter({attrs: list{}, lbl: Asttypes.Nolabel, defaultExpr: None, pat})}
       when isHuggablePattern(pat) => true
     | _ => false
     }
@@ -3385,9 +3385,9 @@ module ParsetreeViewer: {
   let isJsxExpression = expr => {
     let rec loop = attrs =>
       switch attrs {
-      | list[] => false
-      | list[({Location.txt: "JSX"}, _), ..._] => true
-      | list[_, ...attrs] => loop(attrs)
+      | list{} => false
+      | list{({Location.txt: "JSX"}, _), ..._} => true
+      | list{_, ...attrs} => loop(attrs)
       }
 
     switch expr.pexp_desc {
@@ -3398,7 +3398,7 @@ module ParsetreeViewer: {
 
   let hasJsxAttribute = attributes =>
     switch attributes {
-    | list[({Location.txt: "JSX"}, _), ..._] => true
+    | list{({Location.txt: "JSX"}, _), ..._} => true
     | _ => false
     }
 
@@ -3409,7 +3409,7 @@ module ParsetreeViewer: {
           pexp_desc:
             Pexp_apply(
               {pexp_desc: Pexp_ident({txt: Longident.Lident(subOperator)})},
-              list[(Nolabel, _lhs), (Nolabel, _rhs)],
+              list{(Nolabel, _lhs), (Nolabel, _rhs)},
             ),
         } when isBinaryOperator(subOperator) =>
         flattenableOperators(operator, subOperator)
@@ -3421,7 +3421,7 @@ module ParsetreeViewer: {
         pexp_desc:
           Pexp_apply(
             {pexp_desc: Pexp_ident({txt: Longident.Lident(operator)})},
-            list[(Nolabel, lhs), (Nolabel, _rhs)],
+            list{(Nolabel, lhs), (Nolabel, _rhs)},
           ),
       } when isBinaryOperator(operator) =>
       isEqualityOperator(operator) ||
@@ -3465,10 +3465,10 @@ module ParsetreeViewer: {
   let requiresSpecialCallbackPrintingLastArg = args => {
     let rec loop = args =>
       switch args {
-      | list[] => false
-      | list[(_, {pexp_desc: Pexp_fun(_) | Pexp_newtype(_)})] => true
-      | list[(_, {pexp_desc: Pexp_fun(_) | Pexp_newtype(_)}), ..._] => false
-      | list[_, ...rest] => loop(rest)
+      | list{} => false
+      | list{(_, {pexp_desc: Pexp_fun(_) | Pexp_newtype(_)})} => true
+      | list{(_, {pexp_desc: Pexp_fun(_) | Pexp_newtype(_)}), ..._} => false
+      | list{_, ...rest} => loop(rest)
       }
 
     loop(args)
@@ -3477,14 +3477,14 @@ module ParsetreeViewer: {
   let requiresSpecialCallbackPrintingFirstArg = args => {
     let rec loop = args =>
       switch args {
-      | list[] => true
-      | list[(_, {pexp_desc: Pexp_fun(_) | Pexp_newtype(_)}), ..._] => false
-      | list[_, ...rest] => loop(rest)
+      | list{} => true
+      | list{(_, {pexp_desc: Pexp_fun(_) | Pexp_newtype(_)}), ..._} => false
+      | list{_, ...rest} => loop(rest)
       }
 
     switch args {
-    | list[(_, {pexp_desc: Pexp_fun(_) | Pexp_newtype(_)})] => false
-    | list[(_, {pexp_desc: Pexp_fun(_) | Pexp_newtype(_)}), ...rest] => loop(rest)
+    | list{(_, {pexp_desc: Pexp_fun(_) | Pexp_newtype(_)})} => false
+    | list{(_, {pexp_desc: Pexp_fun(_) | Pexp_newtype(_)}), ...rest} => loop(rest)
     | _ => false
     }
   }
@@ -3492,11 +3492,11 @@ module ParsetreeViewer: {
   let modExprApply = modExpr => {
     let rec loop = (acc, modExpr) =>
       switch modExpr {
-      | {pmod_desc: Pmod_apply(next, arg)} => loop(list[arg, ...acc], next)
+      | {pmod_desc: Pmod_apply(next, arg)} => loop(list{arg, ...acc}, next)
       | _ => (acc, modExpr)
       }
 
-    loop(list[], modExpr)
+    loop(list{}, modExpr)
   }
 
   let modExprFunctor = modExpr => {
@@ -3504,16 +3504,16 @@ module ParsetreeViewer: {
       switch modExpr {
       | {pmod_desc: Pmod_functor(lbl, modType, returnModExpr), pmod_attributes: attrs} =>
         let param = (attrs, lbl, modType)
-        loop(list[param, ...acc], returnModExpr)
+        loop(list{param, ...acc}, returnModExpr)
       | returnModExpr => (List.rev(acc), returnModExpr)
       }
 
-    loop(list[], modExpr)
+    loop(list{}, modExpr)
   }
 
   let splitGenTypeAttr = attrs =>
     switch attrs {
-    | list[({Location.txt: "genType"}, _), ...attrs] => (true, attrs)
+    | list{({Location.txt: "genType"}, _), ...attrs} => (true, attrs)
     | attrs => (false, attrs)
     }
 
@@ -3522,9 +3522,9 @@ module ParsetreeViewer: {
     switch pattern.ppat_desc {
     | Ppat_construct(
         {txt: Longident.Lident("::")},
-        Some({ppat_desc: Ppat_tuple(list[pat, rest])}),
+        Some({ppat_desc: Ppat_tuple(list{pat, rest})}),
       ) =>
-      collectPatternsFromListConstruct(list[pat, ...acc], rest)
+      collectPatternsFromListConstruct(list{pat, ...acc}, rest)
     | _ => (List.rev(acc), pattern)
     }
   }
@@ -3539,7 +3539,7 @@ module ParsetreeViewer: {
     switch expr.pexp_desc {
     | Pexp_apply(
         {pexp_desc: Pexp_ident({txt: Longident.Lident("^")})},
-        list[(Nolabel, arg1), (Nolabel, arg2)],
+        list{(Nolabel, arg1), (Nolabel, arg2)},
       ) when !(isPexpConstantString(arg1) && isPexpConstantString(arg2)) =>
       isTemplateLiteral(arg1) || isTemplateLiteral(arg2)
     | Pexp_constant(Pconst_string(_, Some(_))) => true
@@ -3551,18 +3551,18 @@ module ParsetreeViewer: {
   let collectOrPatternChain = pat => {
     let rec loop = (pattern, chain) =>
       switch pattern.ppat_desc {
-      | Ppat_or(left, right) => loop(left, list[right, ...chain])
-      | _ => list[pattern, ...chain]
+      | Ppat_or(left, right) => loop(left, list{right, ...chain})
+      | _ => list{pattern, ...chain}
       }
 
-    loop(pat, list[])
+    loop(pat, list{})
   }
 
   let isPipeExpr = expr =>
     switch expr.pexp_desc {
     | Pexp_apply(
         {pexp_desc: Pexp_ident({txt: Longident.Lident("|." | "|>")})},
-        list[(Nolabel, _operand1), (Nolabel, _operand2)],
+        list{(Nolabel, _operand1), (Nolabel, _operand2)},
       ) => true
     | _ => false
     }
@@ -3570,17 +3570,17 @@ module ParsetreeViewer: {
   let extractValueDescriptionFromModExpr = modExpr => {
     let rec loop = (structure, acc) =>
       switch structure {
-      | list[] => List.rev(acc)
-      | list[structureItem, ...structure] =>
+      | list{} => List.rev(acc)
+      | list{structureItem, ...structure} =>
         switch structureItem.Parsetree.pstr_desc {
-        | Pstr_primitive(vd) => loop(structure, list[vd, ...acc])
+        | Pstr_primitive(vd) => loop(structure, list{vd, ...acc})
         | _ => loop(structure, acc)
         }
       }
 
     switch modExpr.pmod_desc {
-    | Pmod_structure(structure) => loop(structure, list[])
-    | _ => list[]
+    | Pmod_structure(structure) => loop(structure, list{})
+    | _ => list{}
     }
   }
 
@@ -3593,39 +3593,39 @@ module ParsetreeViewer: {
     let rec loop = attrs => {
       open Parsetree
       switch attrs {
-      | list[] => JsGlobalImport
-      | list[
+      | list{} => JsGlobalImport
+      | list{
           (
             {Location.txt: "bs.scope"},
-            PStr(list[{pstr_desc: Pstr_eval({pexp_desc: Pexp_constant(Pconst_string(s, _))}, _)}]),
+            PStr(list{{pstr_desc: Pstr_eval({pexp_desc: Pexp_constant(Pconst_string(s, _))}, _)}}),
           ),
           ..._,
-        ] =>
-        JsScopedImport(list[s])
-      | list[
+        } =>
+        JsScopedImport(list{s})
+      | list{
           (
             {Location.txt: "genType.import"},
-            PStr(list[{pstr_desc: Pstr_eval({pexp_desc: Pexp_constant(Pconst_string(s, _))}, _)}]),
+            PStr(list{{pstr_desc: Pstr_eval({pexp_desc: Pexp_constant(Pconst_string(s, _))}, _)}}),
           ),
           ..._,
-        ] =>
+        } =>
         JsModuleImport(s)
-      | list[
+      | list{
           (
             {Location.txt: "bs.scope"},
-            PStr(list[{pstr_desc: Pstr_eval({pexp_desc: Pexp_tuple(exprs)}, _)}]),
+            PStr(list{{pstr_desc: Pstr_eval({pexp_desc: Pexp_tuple(exprs)}, _)}}),
           ),
           ..._,
-        ] =>
+        } =>
         let scopes = List.fold_left((acc, curr) =>
           switch curr.Parsetree.pexp_desc {
-          | Pexp_constant(Pconst_string(s, _)) => list[s, ...acc]
+          | Pexp_constant(Pconst_string(s, _)) => list{s, ...acc}
           | _ => acc
           }
-        , list[], exprs)
+        , list{}, exprs)
 
         JsScopedImport(List.rev(scopes))
-      | list[_, ...attrs] => loop(attrs)
+      | list{_, ...attrs} => loop(attrs)
       }
     }
 
@@ -3705,8 +3705,8 @@ module Parens: {
       switch expr {
       | {Parsetree.pexp_attributes: attrs}
         when switch ParsetreeViewer.filterParsingAttrs(attrs) {
-        | list[_, ..._] => true
-        | list[] => false
+        | list{_, ..._} => true
+        | list{} => false
         } =>
         Parenthesized
       | _
@@ -3768,8 +3768,8 @@ module Parens: {
       switch expr {
       | {Parsetree.pexp_attributes: attrs}
         when switch ParsetreeViewer.filterParsingAttrs(attrs) {
-        | list[_, ..._] => true
-        | list[] => false
+        | list{_, ..._} => true
+        | list{} => false
         } =>
         Parenthesized
       | expr
@@ -3835,8 +3835,8 @@ module Parens: {
   let rhsBinaryExprOperand = (parentOperator, rhs) =>
     switch rhs.Parsetree.pexp_desc {
     | Parsetree.Pexp_apply(
-        {pexp_attributes: list[], pexp_desc: Pexp_ident({txt: Longident.Lident(operator)})},
-        list[(_, _left), (_, _right)],
+        {pexp_attributes: list{}, pexp_desc: Pexp_ident({txt: Longident.Lident(operator)})},
+        list{(_, _left), (_, _right)},
       ) when ParsetreeViewer.isBinaryOperator(operator) =>
       let precParent = ParsetreeViewer.operatorPrecedence(parentOperator)
       let precChild = ParsetreeViewer.operatorPrecedence(operator)
@@ -3848,11 +3848,11 @@ module Parens: {
     switch rhs.Parsetree.pexp_desc {
     | Parsetree.Pexp_apply(
         {pexp_desc: Pexp_ident({txt: Longident.Lident(operator)})},
-        list[(_, _left), (_, _right)],
+        list{(_, _left), (_, _right)},
       ) when ParsetreeViewer.isBinaryOperator(operator) =>
       let precParent = ParsetreeViewer.operatorPrecedence(parentOperator)
       let precChild = ParsetreeViewer.operatorPrecedence(operator)
-      precParent >= precChild || rhs.pexp_attributes != list[]
+      precParent >= precChild || rhs.pexp_attributes != list{}
     | Pexp_constraint({pexp_desc: Pexp_pack(_)}, {ptyp_desc: Ptyp_package(_)}) => false
     | Pexp_fun(_) when ParsetreeViewer.isUnderscoreApplySugar(rhs) => false
     | Pexp_fun(_) | Pexp_newtype(_) | Pexp_setfield(_) | Pexp_constraint(_) => true
@@ -3868,8 +3868,8 @@ module Parens: {
       switch expr {
       | {Parsetree.pexp_attributes: attrs}
         when switch ParsetreeViewer.filterParsingAttrs(attrs) {
-        | list[_, ..._] => true
-        | list[] => false
+        | list{_, ..._} => true
+        | list{} => false
         } =>
         Parenthesized
       | expr when ParsetreeViewer.isBinaryExpression(expr) => Parenthesized
@@ -3917,8 +3917,8 @@ module Parens: {
       switch expr {
       | {Parsetree.pexp_attributes: attrs}
         when switch ParsetreeViewer.filterParsingAttrs(attrs) {
-        | list[_, ..._] => true
-        | list[] => false
+        | list{_, ..._} => true
+        | list{} => false
         } =>
         Parenthesized
       | expr
@@ -4016,7 +4016,7 @@ module Parens: {
         switch expr {
         | {
             Parsetree.pexp_desc: Pexp_constant(Pconst_integer(x, _) | Pconst_float(x, _)),
-            pexp_attributes: list[],
+            pexp_attributes: list{},
           } when startsWithMinus(x) =>
           Parenthesized
         | {
@@ -4036,13 +4036,13 @@ module Parens: {
               | Pexp_sequence(_)
               | Pexp_let(_)
               | Pexp_tuple(_),
-            pexp_attributes: list[],
+            pexp_attributes: list{},
           } =>
           Nothing
         | {
             Parsetree.pexp_desc:
               Pexp_constraint({pexp_desc: Pexp_pack(_)}, {ptyp_desc: Ptyp_package(_)}),
-            pexp_attributes: list[],
+            pexp_attributes: list{},
           } =>
           Nothing
         | _ => Parenthesized
@@ -4066,7 +4066,7 @@ module Parens: {
         switch expr {
         | {
             Parsetree.pexp_desc: Pexp_constant(Pconst_integer(x, _) | Pconst_float(x, _)),
-            pexp_attributes: list[],
+            pexp_attributes: list{},
           } when startsWithMinus(x) =>
           Parenthesized
         | {
@@ -4085,13 +4085,13 @@ module Parens: {
               | Pexp_open(_)
               | Pexp_sequence(_)
               | Pexp_let(_),
-            pexp_attributes: list[],
+            pexp_attributes: list{},
           } =>
           Nothing
         | {
             Parsetree.pexp_desc:
               Pexp_constraint({pexp_desc: Pexp_pack(_)}, {ptyp_desc: Ptyp_package(_)}),
-            pexp_attributes: list[],
+            pexp_attributes: list{},
           } =>
           Nothing
         | expr when ParsetreeViewer.isJsxExpression(expr) => Nothing
@@ -4106,7 +4106,7 @@ module Parens: {
     | Some({Location.loc: bracesLoc}, _) => Braced(bracesLoc)
     | None =>
       switch expr {
-      | {Parsetree.pexp_attributes: list[_, ..._]} as expr
+      | {Parsetree.pexp_attributes: list{_, ..._}} as expr
         when ParsetreeViewer.isBinaryExpression(expr) =>
         Parenthesized
       | _ => Nothing
@@ -4170,7 +4170,7 @@ module CommentTable = {
   let log = t => {
     open Location
     let leadingStuff = Hashtbl.fold((k: Location.t, v: list<Comment.t>, acc) => {
-      let loc = Doc.concat(list[
+      let loc = Doc.concat(list{
         Doc.lbracket,
         Doc.text(string_of_int(k.loc_start.pos_lnum)),
         Doc.text(":"),
@@ -4180,25 +4180,25 @@ module CommentTable = {
         Doc.text(":"),
         Doc.text(string_of_int(k.loc_end.pos_cnum - k.loc_end.pos_bol)),
         Doc.rbracket,
-      ])
+      })
       let doc = Doc.breakableGroup(
         ~forceBreak=true,
-        Doc.concat(list[
+        Doc.concat(list{
           loc,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.line,
               Doc.join(~sep=Doc.comma, List.map(c => Doc.text(Comment.txt(c)), v)),
-            ]),
+            }),
           ),
           Doc.line,
-        ]),
+        }),
       )
-      list[doc, ...acc]
-    }, t.leading, list[])
+      list{doc, ...acc}
+    }, t.leading, list{})
 
     let trailingStuff = Hashtbl.fold((k: Location.t, v: list<Comment.t>, acc) => {
-      let loc = Doc.concat(list[
+      let loc = Doc.concat(list{
         Doc.lbracket,
         Doc.text(string_of_int(k.loc_start.pos_lnum)),
         Doc.text(":"),
@@ -4208,29 +4208,29 @@ module CommentTable = {
         Doc.text(":"),
         Doc.text(string_of_int(k.loc_end.pos_cnum - k.loc_end.pos_bol)),
         Doc.rbracket,
-      ])
+      })
       let doc = Doc.breakableGroup(
         ~forceBreak=true,
-        Doc.concat(list[
+        Doc.concat(list{
           loc,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.line,
               Doc.join(
-                ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                 List.map(c => Doc.text(Comment.txt(c)), v),
               ),
-            ]),
+            }),
           ),
           Doc.line,
-        ]),
+        }),
       )
-      list[doc, ...acc]
-    }, t.trailing, list[])
+      list{doc, ...acc}
+    }, t.trailing, list{})
 
     Doc.breakableGroup(
       ~forceBreak=true,
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text("leading comments:"),
         Doc.line,
         Doc.indent(Doc.concat(leadingStuff)),
@@ -4240,14 +4240,14 @@ module CommentTable = {
         Doc.indent(Doc.concat(trailingStuff)),
         Doc.line,
         Doc.line,
-      ]),
+      }),
     )
     |> Doc.toString(~width=80)
     |> print_endline
   }
   let attach = (tbl, loc, comments) =>
     switch comments {
-    | list[] => ()
+    | list{} => ()
     | comments => Hashtbl.replace(tbl, loc, comments)
     }
 
@@ -4255,56 +4255,56 @@ module CommentTable = {
     let rec loop = ((leading, inside, trailing), comments) => {
       open Location
       switch comments {
-      | list[comment, ...rest] =>
+      | list{comment, ...rest} =>
         let cmtLoc = Comment.loc(comment)
         if cmtLoc.loc_end.pos_cnum <= loc.loc_start.pos_cnum {
-          loop((list[comment, ...leading], inside, trailing), rest)
+          loop((list{comment, ...leading}, inside, trailing), rest)
         } else if cmtLoc.loc_start.pos_cnum >= loc.loc_end.pos_cnum {
-          loop((leading, inside, list[comment, ...trailing]), rest)
+          loop((leading, inside, list{comment, ...trailing}), rest)
         } else {
-          loop((leading, list[comment, ...inside], trailing), rest)
+          loop((leading, list{comment, ...inside}, trailing), rest)
         }
-      | list[] => (List.rev(leading), List.rev(inside), List.rev(trailing))
+      | list{} => (List.rev(leading), List.rev(inside), List.rev(trailing))
       }
     }
 
-    loop((list[], list[], list[]), comments)
+    loop((list{}, list{}, list{}), comments)
   }
 
   let partitionLeadingTrailing = (comments, loc) => {
     let rec loop = ((leading, trailing), comments) => {
       open Location
       switch comments {
-      | list[comment, ...rest] =>
+      | list{comment, ...rest} =>
         let cmtLoc = Comment.loc(comment)
         if cmtLoc.loc_end.pos_cnum <= loc.loc_start.pos_cnum {
-          loop((list[comment, ...leading], trailing), rest)
+          loop((list{comment, ...leading}, trailing), rest)
         } else {
-          loop((leading, list[comment, ...trailing]), rest)
+          loop((leading, list{comment, ...trailing}), rest)
         }
-      | list[] => (List.rev(leading), List.rev(trailing))
+      | list{} => (List.rev(leading), List.rev(trailing))
       }
     }
 
-    loop((list[], list[]), comments)
+    loop((list{}, list{}), comments)
   }
 
   let partitionByOnSameLine = (loc, comments) => {
     let rec loop = ((onSameLine, onOtherLine), comments) => {
       open Location
       switch comments {
-      | list[] => (List.rev(onSameLine), List.rev(onOtherLine))
-      | list[comment, ...rest] =>
+      | list{} => (List.rev(onSameLine), List.rev(onOtherLine))
+      | list{comment, ...rest} =>
         let cmtLoc = Comment.loc(comment)
         if cmtLoc.loc_start.pos_lnum === loc.loc_end.pos_lnum {
-          loop((list[comment, ...onSameLine], onOtherLine), rest)
+          loop((list{comment, ...onSameLine}, onOtherLine), rest)
         } else {
-          loop((onSameLine, list[comment, ...onOtherLine]), rest)
+          loop((onSameLine, list{comment, ...onOtherLine}), rest)
         }
       }
     }
 
-    loop((list[], list[]), comments)
+    loop((list{}, list{}), comments)
   }
 
   let partitionAdjacentTrailing = (loc1, comments) => {
@@ -4312,18 +4312,18 @@ module CommentTable = {
     open Lexing
     let rec loop = (~prevEndPos, afterLoc1, comments) =>
       switch comments {
-      | list[] => (List.rev(afterLoc1), list[])
-      | list[comment, ...rest] as comments =>
+      | list{} => (List.rev(afterLoc1), list{})
+      | list{comment, ...rest} as comments =>
         let cmtPrevEndPos = Comment.prevTokEndPos(comment)
         if prevEndPos.Lexing.pos_cnum === cmtPrevEndPos.pos_cnum {
           let commentEnd = Comment.loc(comment).loc_end
-          loop(~prevEndPos=commentEnd, list[comment, ...afterLoc1], rest)
+          loop(~prevEndPos=commentEnd, list{comment, ...afterLoc1}, rest)
         } else {
           (List.rev(afterLoc1), comments)
         }
       }
 
-    loop(~prevEndPos=loc1.loc_end, list[], comments)
+    loop(~prevEndPos=loc1.loc_end, list{}, comments)
   }
 
   let rec collectListPatterns = (acc, pattern) => {
@@ -4331,11 +4331,11 @@ module CommentTable = {
     switch pattern.ppat_desc {
     | Ppat_construct(
         {txt: Longident.Lident("::")},
-        Some({ppat_desc: Ppat_tuple(list[pat, rest])}),
+        Some({ppat_desc: Ppat_tuple(list{pat, rest})}),
       ) =>
-      collectListPatterns(list[pat, ...acc], rest)
+      collectListPatterns(list{pat, ...acc}, rest)
     | Ppat_construct({txt: Longident.Lident("[]")}, None) => List.rev(acc)
-    | _ => List.rev(list[pattern, ...acc])
+    | _ => List.rev(list{pattern, ...acc})
     }
   }
 
@@ -4344,11 +4344,11 @@ module CommentTable = {
     switch expr.pexp_desc {
     | Pexp_construct(
         {txt: Longident.Lident("::")},
-        Some({pexp_desc: Pexp_tuple(list[expr, rest])}),
+        Some({pexp_desc: Pexp_tuple(list{expr, rest})}),
       ) =>
-      collectListExprs(list[expr, ...acc], rest)
+      collectListExprs(list{expr, ...acc}, rest)
     | Pexp_construct({txt: Longident.Lident("[]")}, _) => List.rev(acc)
-    | _ => List.rev(list[expr, ...acc])
+    | _ => List.rev(list{expr, ...acc})
     }
   }
 
@@ -4357,15 +4357,15 @@ module CommentTable = {
     open Parsetree
     let rec process = (attrsBefore, acc, typ) =>
       switch typ {
-      | {ptyp_desc: Ptyp_arrow(Nolabel as lbl, typ1, typ2), ptyp_attributes: list[]} =>
-        let arg = (list[], lbl, typ1)
-        process(attrsBefore, list[arg, ...acc], typ2)
+      | {ptyp_desc: Ptyp_arrow(Nolabel as lbl, typ1, typ2), ptyp_attributes: list{}} =>
+        let arg = (list{}, lbl, typ1)
+        process(attrsBefore, list{arg, ...acc}, typ2)
       | {
           ptyp_desc: Ptyp_arrow(Nolabel as lbl, typ1, typ2),
-          ptyp_attributes: list[({txt: "bs"}, _)] as attrs,
+          ptyp_attributes: list{({txt: "bs"}, _)} as attrs,
         } =>
         let arg = (attrs, lbl, typ1)
-        process(attrsBefore, list[arg, ...acc], typ2)
+        process(attrsBefore, list{arg, ...acc}, typ2)
       | {ptyp_desc: Ptyp_arrow(Nolabel, _typ1, _typ2), ptyp_attributes: _attrs} as returnType =>
         let args = List.rev(acc)
         (attrsBefore, args, returnType)
@@ -4374,14 +4374,14 @@ module CommentTable = {
           ptyp_attributes: attrs,
         } =>
         let arg = (attrs, lbl, typ1)
-        process(attrsBefore, list[arg, ...acc], typ2)
+        process(attrsBefore, list{arg, ...acc}, typ2)
       | typ => (attrsBefore, List.rev(acc), typ)
       }
 
     switch ct {
     | {ptyp_desc: Ptyp_arrow(Nolabel, _typ1, _typ2), ptyp_attributes: attrs} as typ =>
-      process(attrs, list[], {...typ, ptyp_attributes: list[]})
-    | typ => process(list[], list[], typ)
+      process(attrs, list{}, {...typ, ptyp_attributes: list{}})
+    | typ => process(list{}, list{}, typ)
     }
   }
 
@@ -4389,11 +4389,11 @@ module CommentTable = {
   let modExprApply = modExpr => {
     let rec loop = (acc, modExpr) =>
       switch modExpr {
-      | {Parsetree.pmod_desc: Pmod_apply(next, arg)} => loop(list[arg, ...acc], next)
-      | _ => list[modExpr, ...acc]
+      | {Parsetree.pmod_desc: Pmod_apply(next, arg)} => loop(list{arg, ...acc}, next)
+      | _ => list{modExpr, ...acc}
       }
 
-    loop(list[], modExpr)
+    loop(list{}, modExpr)
   }
 
   /* TODO: avoiding the dependency on ParsetreeViewer here, is this a good idea? */
@@ -4402,11 +4402,11 @@ module CommentTable = {
       switch modExpr {
       | {Parsetree.pmod_desc: Pmod_functor(lbl, modType, returnModExpr), pmod_attributes: attrs} =>
         let param = (attrs, lbl, modType)
-        loop(list[param, ...acc], returnModExpr)
+        loop(list{param, ...acc}, returnModExpr)
       | returnModExpr => (List.rev(acc), returnModExpr)
       }
 
-    loop(list[], modExpr)
+    loop(list{}, modExpr)
   }
 
   let functorType = modtype => {
@@ -4414,11 +4414,11 @@ module CommentTable = {
       switch modtype {
       | {Parsetree.pmty_desc: Pmty_functor(lbl, argType, returnType), pmty_attributes: attrs} =>
         let arg = (attrs, lbl, argType)
-        process(list[arg, ...acc], returnType)
+        process(list{arg, ...acc}, returnType)
       | modType => (List.rev(acc), modType)
       }
 
-    process(list[], modtype)
+    process(list{}, modtype)
   }
 
   let funExpr = expr => {
@@ -4426,11 +4426,11 @@ module CommentTable = {
     /* Turns (type t, type u, type z) into "type t u z" */
     let rec collectNewTypes = (acc, returnExpr) =>
       switch returnExpr {
-      | {pexp_desc: Pexp_newtype(stringLoc, returnExpr), pexp_attributes: list[]} =>
-        collectNewTypes(list[stringLoc, ...acc], returnExpr)
+      | {pexp_desc: Pexp_newtype(stringLoc, returnExpr), pexp_attributes: list{}} =>
+        collectNewTypes(list{stringLoc, ...acc}, returnExpr)
       | returnExpr =>
         let loc = switch (acc, List.rev(acc)) {
-        | (list[_startLoc, ..._], list[endLoc, ..._]) => {
+        | (list{_startLoc, ..._}, list{endLoc, ..._}) => {
             ...endLoc.loc,
             loc_end: endLoc.loc.loc_end,
           }
@@ -4449,25 +4449,25 @@ module CommentTable = {
      * that is not often used. Lets just keep it simple for now */
     let rec collect = (attrsBefore, acc, expr) =>
       switch expr {
-      | {pexp_desc: Pexp_fun(lbl, defaultExpr, pattern, returnExpr), pexp_attributes: list[]} =>
-        let parameter = (list[], lbl, defaultExpr, pattern)
-        collect(attrsBefore, list[parameter, ...acc], returnExpr)
+      | {pexp_desc: Pexp_fun(lbl, defaultExpr, pattern, returnExpr), pexp_attributes: list{}} =>
+        let parameter = (list{}, lbl, defaultExpr, pattern)
+        collect(attrsBefore, list{parameter, ...acc}, returnExpr)
       | {pexp_desc: Pexp_newtype(stringLoc, rest), pexp_attributes: attrs} =>
-        let (var, returnExpr) = collectNewTypes(list[stringLoc], rest)
+        let (var, returnExpr) = collectNewTypes(list{stringLoc}, rest)
         let parameter = (attrs, Asttypes.Nolabel, None, Ast_helper.Pat.var(~loc=stringLoc.loc, var))
-        collect(attrsBefore, list[parameter, ...acc], returnExpr)
+        collect(attrsBefore, list{parameter, ...acc}, returnExpr)
       | {
           pexp_desc: Pexp_fun(lbl, defaultExpr, pattern, returnExpr),
-          pexp_attributes: list[({txt: "bs"}, _)] as attrs,
+          pexp_attributes: list{({txt: "bs"}, _)} as attrs,
         } =>
         let parameter = (attrs, lbl, defaultExpr, pattern)
-        collect(attrsBefore, list[parameter, ...acc], returnExpr)
+        collect(attrsBefore, list{parameter, ...acc}, returnExpr)
       | {
           pexp_desc: Pexp_fun((Labelled(_) | Optional(_)) as lbl, defaultExpr, pattern, returnExpr),
           pexp_attributes: attrs,
         } =>
         let parameter = (attrs, lbl, defaultExpr, pattern)
-        collect(attrsBefore, list[parameter, ...acc], returnExpr)
+        collect(attrsBefore, list{parameter, ...acc}, returnExpr)
       | expr => (attrsBefore, List.rev(acc), expr)
       }
 
@@ -4476,8 +4476,8 @@ module CommentTable = {
         pexp_desc: Pexp_fun(Nolabel, _defaultExpr, _pattern, _returnExpr),
         pexp_attributes: attrs,
       } as expr =>
-      collect(attrs, list[], {...expr, pexp_attributes: list[]})
-    | expr => collect(list[], list[], expr)
+      collect(attrs, list{}, {...expr, pexp_attributes: list{}})
+    | expr => collect(list{}, list{}, expr)
     }
   }
 
@@ -4499,14 +4499,14 @@ module CommentTable = {
 
   let rec walkStructure = (s, t, comments) =>
     switch s {
-    | _ when comments == list[] => ()
-    | list[] => attach(t.inside, Location.none, comments)
+    | _ when comments == list{} => ()
+    | list{} => attach(t.inside, Location.none, comments)
     | s => walkList(~getLoc=n => n.Parsetree.pstr_loc, ~walkNode=walkStructureItem, s, t, comments)
     }
 
   and walkStructureItem = (si, t, comments) =>
     switch si.Parsetree.pstr_desc {
-    | _ when comments == list[] => ()
+    | _ when comments == list{} => ()
     | Pstr_primitive(valueDescription) => walkValueDescription(valueDescription, t, comments)
     | Pstr_open(openDescription) => walkOpenDescription(openDescription, t, comments)
     | Pstr_value(_, valueBindings) => walkValueBindings(valueBindings, t, comments)
@@ -4550,7 +4550,7 @@ module CommentTable = {
 
     /* type params */
     let rest = switch te.ptyext_params {
-    | list[] => rest
+    | list{} => rest
     | typeParams =>
       visitListButContinueWithRemainingComments(
         ~getLoc=((typexpr, _variance)) => typexpr.Parsetree.ptyp_loc,
@@ -4600,7 +4600,7 @@ module CommentTable = {
     attach(t.trailing, mb.pmb_name.loc, afterName)
     let (leading, inside, trailing) = partitionByLoc(rest, mb.pmb_expr.pmod_loc)
     switch mb.pmb_expr.pmod_desc {
-    | Pmod_constraint(_) => walkModExpr(mb.pmb_expr, t, List.concat(list[leading, inside]))
+    | Pmod_constraint(_) => walkModExpr(mb.pmb_expr, t, List.concat(list{leading, inside}))
     | _ =>
       attach(t.leading, mb.pmb_expr.pmod_loc, leading)
       walkModExpr(mb.pmb_expr, t, inside)
@@ -4610,8 +4610,8 @@ module CommentTable = {
 
   and walkSignature = (signature, t, comments) =>
     switch signature {
-    | _ when comments == list[] => ()
-    | list[] => attach(t.inside, Location.none, comments)
+    | _ when comments == list{} => ()
+    | list{} => attach(t.inside, Location.none, comments)
     | _s =>
       walkList(
         ~getLoc=n => n.Parsetree.psig_loc,
@@ -4624,7 +4624,7 @@ module CommentTable = {
 
   and walkSignatureItem = (si, t, comments) =>
     switch si.psig_desc {
-    | _ when comments == list[] => ()
+    | _ when comments == list{} => ()
     | Psig_value(valueDescription) => walkValueDescription(valueDescription, t, comments)
     | Psig_type(_, typeDeclarations) => walkTypeDeclarations(typeDeclarations, t, comments)
     | Psig_typext(typeExtension) => walkTypeExtension(typeExtension, t, comments)
@@ -4675,13 +4675,13 @@ module CommentTable = {
   ) => unit = (~prevLoc=?, ~getLoc, ~walkNode, l, t, comments) => {
     open Location
     switch l {
-    | _ when comments == list[] => ()
-    | list[] =>
+    | _ when comments == list{} => ()
+    | list{} =>
       switch prevLoc {
       | Some(loc) => attach(t.trailing, loc, comments)
       | None => ()
       }
-    | list[node, ...rest] =>
+    | list{node, ...rest} =>
       let currLoc = getLoc(node)
       let (leading, inside, trailing) = partitionByLoc(comments, currLoc)
       switch prevLoc {
@@ -4720,8 +4720,8 @@ module CommentTable = {
   ) => list<Comment.t> = (~prevLoc=?, ~newlineDelimited, ~getLoc, ~walkNode, l, t, comments) => {
     open Location
     switch l {
-    | _ when comments == list[] => list[]
-    | list[] =>
+    | _ when comments == list{} => list{}
+    | list{} =>
       switch prevLoc {
       | Some(loc) =>
         let (afterPrev, rest) = if newlineDelimited {
@@ -4734,7 +4734,7 @@ module CommentTable = {
         rest
       | None => comments
       }
-    | list[node, ...rest] =>
+    | list{node, ...rest} =>
       let currLoc = getLoc(node)
       let (leading, inside, trailing) = partitionByLoc(comments, currLoc)
       let () = switch prevLoc {
@@ -4799,7 +4799,7 @@ module CommentTable = {
 
     /* type params */
     let rest = switch td.ptype_params {
-    | list[] => rest
+    | list{} => rest
     | typeParams =>
       visitListButContinueWithRemainingComments(
         ~getLoc=((typexpr, _variance)) => typexpr.Parsetree.ptyp_loc,
@@ -4834,7 +4834,7 @@ module CommentTable = {
         rest,
       )
 
-      list[]
+      list{}
     | Ptype_variant(constructorDeclarations) =>
       walkConstructorDeclarations(constructorDeclarations, t, rest)
     }
@@ -4915,7 +4915,7 @@ module CommentTable = {
       open Parsetree
       switch (vb.pvb_pat, vb.pvb_expr) {
       | (
-          {ppat_desc: Ppat_constraint(pat, {ptyp_desc: Ptyp_poly(list[], t)})},
+          {ppat_desc: Ppat_constraint(pat, {ptyp_desc: Ptyp_poly(list{}, t)})},
           {pexp_desc: Pexp_constraint(expr, _typ)},
         ) => {
           ...vb,
@@ -4927,7 +4927,7 @@ module CommentTable = {
           pvb_expr: expr,
         }
       | (
-          {ppat_desc: Ppat_constraint(pat, {ptyp_desc: Ptyp_poly(list[_, ..._], t)})},
+          {ppat_desc: Ppat_constraint(pat, {ptyp_desc: Ptyp_poly(list{_, ..._}, t)})},
           {pexp_desc: Pexp_fun(_)},
         ) => {
           ...vb,
@@ -4956,7 +4956,7 @@ module CommentTable = {
     attach(t.trailing, patternLoc, afterPat)
     let (beforeExpr, insideExpr, afterExpr) = partitionByLoc(surroundingExpr, exprLoc)
     if isBlockExpr(vb.pvb_expr) {
-      walkExpr(vb.pvb_expr, t, List.concat(list[beforeExpr, insideExpr, afterExpr]))
+      walkExpr(vb.pvb_expr, t, List.concat(list{beforeExpr, insideExpr, afterExpr}))
     } else {
       attach(t.leading, exprLoc, beforeExpr)
       walkExpr(vb.Parsetree.pvb_expr, t, insideExpr)
@@ -4967,7 +4967,7 @@ module CommentTable = {
   and walkExpr = (expr, t, comments) => {
     open Location
     switch expr.Parsetree.pexp_desc {
-    | _ when comments == list[] => ()
+    | _ when comments == list{} => ()
     | Pexp_constant(_) =>
       let (leading, trailing) = partitionLeadingTrailing(comments, expr.pexp_loc)
       attach(t.leading, expr.pexp_loc, leading)
@@ -4997,7 +4997,7 @@ module CommentTable = {
       let (leading, inside, trailing) = partitionByLoc(comments, expr1.pexp_loc)
       let comments = if isBlockExpr(expr1) {
         let (afterExpr, comments) = partitionByOnSameLine(expr1.pexp_loc, trailing)
-        walkExpr(expr1, t, List.concat(list[leading, inside, afterExpr]))
+        walkExpr(expr1, t, List.concat(list{leading, inside, afterExpr}))
         comments
       } else {
         attach(t.leading, expr1.pexp_loc, leading)
@@ -5031,7 +5031,7 @@ module CommentTable = {
       }
     | Pexp_extension(
         {txt: "bs.obj"},
-        PStr(list[{pstr_desc: Pstr_eval({pexp_desc: Pexp_record(rows, _)}, list[])}]),
+        PStr(list{{pstr_desc: Pstr_eval({pexp_desc: Pexp_record(rows, _)}, list{})}}),
       ) =>
       walkList(~getLoc=((longident, expr): (Asttypes.loc<Longident.t>, Parsetree.expression)) => {
         ...longident.loc,
@@ -5114,13 +5114,13 @@ module CommentTable = {
       attach(t.leading, typexpr.ptyp_loc, leading)
       walkTypExpr(typexpr, t, inside)
       attach(t.trailing, typexpr.ptyp_loc, trailing)
-    | Pexp_tuple(list[]) | Pexp_array(list[]) | Pexp_construct({txt: Longident.Lident("[]")}, _) =>
+    | Pexp_tuple(list{}) | Pexp_array(list{}) | Pexp_construct({txt: Longident.Lident("[]")}, _) =>
       attach(t.inside, expr.pexp_loc, comments)
     | Pexp_construct({txt: Longident.Lident("::")}, _) =>
       walkList(
         ~getLoc=n => n.Parsetree.pexp_loc,
         ~walkNode=walkExpr,
-        collectListExprs(list[], expr),
+        collectListExprs(list{}, expr),
         t,
         comments,
       )
@@ -5158,7 +5158,7 @@ module CommentTable = {
       let (leading, inside, trailing) = partitionByLoc(comments, expr.pexp_loc)
       let trailing = if isBlockExpr(expr) {
         let (afterExpr, rest) = partitionAdjacentTrailing(expr.pexp_loc, trailing)
-        walkExpr(expr, t, List.concat(list[leading, inside, afterExpr]))
+        walkExpr(expr, t, List.concat(list{leading, inside, afterExpr}))
         rest
       } else {
         attach(t.leading, expr.pexp_loc, leading)
@@ -5174,7 +5174,7 @@ module CommentTable = {
       let (leading, inside, trailing) = partitionByLoc(comments, expr1.pexp_loc)
       let rest = if isBlockExpr(expr1) {
         let (afterExpr, rest) = partitionAdjacentTrailing(expr1.pexp_loc, trailing)
-        walkExpr(expr1, t, List.concat(list[leading, inside, afterExpr]))
+        walkExpr(expr1, t, List.concat(list{leading, inside, afterExpr}))
         rest
       } else {
         let (afterExpr, rest) = partitionAdjacentTrailing(expr1.pexp_loc, trailing)
@@ -5199,7 +5199,7 @@ module CommentTable = {
       let (leading, inside, trailing) = partitionByLoc(comments, ifExpr.pexp_loc)
       let comments = if isBlockExpr(ifExpr) {
         let (afterExpr, comments) = partitionAdjacentTrailing(ifExpr.pexp_loc, trailing)
-        walkExpr(ifExpr, t, List.concat(list[leading, inside, afterExpr]))
+        walkExpr(ifExpr, t, List.concat(list{leading, inside, afterExpr}))
         comments
       } else {
         attach(t.leading, ifExpr.pexp_loc, leading)
@@ -5211,7 +5211,7 @@ module CommentTable = {
       let (leading, inside, trailing) = partitionByLoc(comments, thenExpr.pexp_loc)
       let comments = if isBlockExpr(thenExpr) {
         let (afterExpr, trailing) = partitionAdjacentTrailing(thenExpr.pexp_loc, trailing)
-        walkExpr(thenExpr, t, List.concat(list[leading, inside, afterExpr]))
+        walkExpr(thenExpr, t, List.concat(list{leading, inside, afterExpr}))
         trailing
       } else {
         attach(t.leading, thenExpr.pexp_loc, leading)
@@ -5236,7 +5236,7 @@ module CommentTable = {
       let (leading, inside, trailing) = partitionByLoc(comments, expr1.pexp_loc)
       let rest = if isBlockExpr(expr1) {
         let (afterExpr, rest) = partitionAdjacentTrailing(expr1.pexp_loc, trailing)
-        walkExpr(expr1, t, List.concat(list[leading, inside, afterExpr]))
+        walkExpr(expr1, t, List.concat(list{leading, inside, afterExpr}))
         rest
       } else {
         attach(t.leading, expr1.pexp_loc, leading)
@@ -5286,7 +5286,7 @@ module CommentTable = {
       let (before, inside, after) = partitionByLoc(comments, expr.pexp_loc)
       let after = if isBlockExpr(expr) {
         let (afterExpr, rest) = partitionAdjacentTrailing(expr.pexp_loc, after)
-        walkExpr(expr, t, List.concat(list[before, inside, afterExpr]))
+        walkExpr(expr, t, List.concat(list{before, inside, afterExpr}))
         rest
       } else {
         attach(t.leading, expr.pexp_loc, before)
@@ -5302,7 +5302,7 @@ module CommentTable = {
     /* unary expression: todo use parsetreeviewer */
     | Pexp_apply(
         {pexp_desc: Pexp_ident({txt: Longident.Lident("~+" | "~+." | "~-" | "~-." | "not" | "!")})},
-        list[(Nolabel, argExpr)],
+        list{(Nolabel, argExpr)},
       ) =>
       let (before, inside, after) = partitionByLoc(comments, argExpr.pexp_loc)
       attach(t.leading, argExpr.pexp_loc, before)
@@ -5343,7 +5343,7 @@ module CommentTable = {
                 ),
             }),
         },
-        list[(Nolabel, operand1), (Nolabel, operand2)],
+        list{(Nolabel, operand1), (Nolabel, operand2)},
       ) =>
       let (before, inside, after) = partitionByLoc(comments, operand1.pexp_loc)
       attach(t.leading, operand1.pexp_loc, before)
@@ -5358,7 +5358,7 @@ module CommentTable = {
       let (before, inside, after) = partitionByLoc(comments, callExpr.pexp_loc)
       let after = if isBlockExpr(callExpr) {
         let (afterExpr, rest) = partitionAdjacentTrailing(callExpr.pexp_loc, after)
-        walkExpr(callExpr, t, List.concat(list[before, inside, afterExpr]))
+        walkExpr(callExpr, t, List.concat(list{before, inside, afterExpr}))
         rest
       } else {
         attach(t.leading, callExpr.pexp_loc, before)
@@ -5369,7 +5369,7 @@ module CommentTable = {
       attach(t.trailing, callExpr.pexp_loc, afterExpr)
       walkList(~getLoc=((_argLabel, expr)) => {
         let loc = switch expr.Parsetree.pexp_attributes {
-        | list[({Location.txt: "ns.namedArgLoc", loc}, _), ..._attrs] => {
+        | list{({Location.txt: "ns.namedArgLoc", loc}, _), ..._attrs} => {
             ...loc,
             loc_end: expr.pexp_loc.loc_end,
           }
@@ -5386,7 +5386,7 @@ module CommentTable = {
         ~getLoc=((_attrs, _argLbl, exprOpt, pattern)) => {
           open Parsetree
           let startPos = switch pattern.ppat_attributes {
-          | list[({Location.txt: "ns.namedArgLoc", loc}, _), ..._attrs] => loc.loc_start
+          | list{({Location.txt: "ns.namedArgLoc", loc}, _), ..._attrs} => loc.loc_start
           | _ => pattern.ppat_loc.loc_start
           }
 
@@ -5456,7 +5456,7 @@ module CommentTable = {
 
   and walkExprArgument = ((_argLabel, expr), t, comments) =>
     switch expr.Parsetree.pexp_attributes {
-    | list[({Location.txt: "ns.namedArgLoc", loc}, _), ..._attrs] =>
+    | list{({Location.txt: "ns.namedArgLoc", loc}, _), ..._attrs} =>
       let (leading, trailing) = partitionLeadingTrailing(comments, loc)
       attach(t.leading, loc, leading)
       let (afterLabel, rest) = partitionAdjacentTrailing(loc, trailing)
@@ -5476,7 +5476,7 @@ module CommentTable = {
     let (before, inside, after) = partitionByLoc(comments, case.pc_lhs.ppat_loc)
     /* cases don't have a location on their own, leading comments should go
      * after the bar on the pattern */
-    walkPattern(case.pc_lhs, t, List.concat(list[before, inside]))
+    walkPattern(case.pc_lhs, t, List.concat(list{before, inside}))
     let (afterPat, rest) = partitionAdjacentTrailing(case.pc_lhs.ppat_loc, after)
     attach(t.trailing, case.pc_lhs.ppat_loc, afterPat)
     let comments = switch case.pc_guard {
@@ -5484,7 +5484,7 @@ module CommentTable = {
       let (before, inside, after) = partitionByLoc(rest, expr.pexp_loc)
       let (afterExpr, rest) = partitionAdjacentTrailing(expr.pexp_loc, after)
       if isBlockExpr(expr) {
-        walkExpr(expr, t, List.concat(list[before, inside, afterExpr]))
+        walkExpr(expr, t, List.concat(list{before, inside, afterExpr}))
       } else {
         attach(t.leading, expr.pexp_loc, before)
         walkExpr(expr, t, inside)
@@ -5682,7 +5682,7 @@ module CommentTable = {
   and walkPattern = (pat, t, comments) => {
     open Location
     switch pat.Parsetree.ppat_desc {
-    | _ when comments == list[] => ()
+    | _ when comments == list{} => ()
     | Ppat_alias(pat, alias) =>
       let (leading, inside, trailing) = partitionByLoc(comments, pat.ppat_loc)
       attach(t.leading, pat.ppat_loc, leading)
@@ -5693,8 +5693,8 @@ module CommentTable = {
       let (beforeAlias, afterAlias) = partitionLeadingTrailing(rest, alias.loc)
       attach(t.leading, alias.loc, beforeAlias)
       attach(t.trailing, alias.loc, afterAlias)
-    | Ppat_tuple(list[])
-    | Ppat_array(list[])
+    | Ppat_tuple(list{})
+    | Ppat_array(list{})
     | Ppat_construct({txt: Longident.Lident("()")}, _)
     | Ppat_construct({txt: Longident.Lident("[]")}, _) =>
       attach(t.inside, pat.ppat_loc, comments)
@@ -5706,7 +5706,7 @@ module CommentTable = {
       walkList(
         ~getLoc=n => n.Parsetree.ppat_loc,
         ~walkNode=walkPattern,
-        collectListPatterns(list[], pat),
+        collectListPatterns(list{}, pat),
         t,
         comments,
       )
@@ -5801,7 +5801,7 @@ module CommentTable = {
 
   and walkTypExpr = (typ, t, comments) =>
     switch typ.Parsetree.ptyp_desc {
-    | _ when comments == list[] => ()
+    | _ when comments == list{} => ()
     | Ptyp_tuple(typexprs) =>
       walkList(~getLoc=n => n.Parsetree.ptyp_loc, ~walkNode=walkTypExpr, typexprs, t, comments)
     | Ptyp_extension(extension) => walkExtension(extension, t, comments)
@@ -5940,20 +5940,20 @@ module CommentTable = {
 module Printer = {
   let addParens = doc =>
     Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.lparen,
-        Doc.indent(Doc.concat(list[Doc.softLine, doc])),
+        Doc.indent(Doc.concat(list{Doc.softLine, doc})),
         Doc.softLine,
         Doc.rparen,
-      ]),
+      }),
     )
 
-  let addBraces = doc => Doc.group(Doc.concat(list[Doc.lbrace, doc, Doc.rbrace]))
+  let addBraces = doc => Doc.group(Doc.concat(list{Doc.lbrace, doc, Doc.rbrace}))
 
   let getFirstLeadingComment = (tbl, loc) =>
     switch Hashtbl.find(tbl.CommentTable.leading, loc) {
-    | list[comment, ..._] => Some(comment)
-    | list[] => None
+    | list{comment, ..._} => Some(comment)
+    | list{} => None
     | exception Not_found => None
     }
 
@@ -5972,8 +5972,8 @@ module Printer = {
      */
     let rec indentStars = (lines, acc) =>
       switch lines {
-      | list[] => Doc.nil
-      | list[lastLine] =>
+      | list{} => Doc.nil
+      | list{lastLine} =>
         let line = String.trim(lastLine)
         let doc = Doc.text(" " ++ line)
         let trailingSpace = if String.length(line) > 0 {
@@ -5981,13 +5981,13 @@ module Printer = {
         } else {
           Doc.nil
         }
-        List.rev(list[trailingSpace, doc, ...acc]) |> Doc.concat
-      | list[line, ...lines] =>
+        List.rev(list{trailingSpace, doc, ...acc}) |> Doc.concat
+      | list{line, ...lines} =>
         let line = String.trim(line)
         let len = String.length(line)
         if len > 0 && (@doesNotRaise String.get)(line, 0) === '*' {
           let doc = Doc.text(" " ++ String.trim(line))
-          indentStars(lines, list[Doc.hardLine, doc, ...acc])
+          indentStars(lines, list{Doc.hardLine, doc, ...acc})
         } else {
           let trailingSpace = {
             let len = String.length(txt)
@@ -5999,27 +5999,27 @@ module Printer = {
           }
 
           let content = Comment.trimSpaces(txt)
-          Doc.concat(list[Doc.text(content), trailingSpace])
+          Doc.concat(list{Doc.text(content), trailingSpace})
         }
       }
 
     let lines = String.split_on_char('\n', txt)
     switch lines {
-    | list[] => Doc.text("/* */")
-    | list[line] =>
-      Doc.concat(list[Doc.text("/* "), Doc.text(Comment.trimSpaces(line)), Doc.text(" */")])
-    | list[first, ...rest] =>
+    | list{} => Doc.text("/* */")
+    | list{line} =>
+      Doc.concat(list{Doc.text("/* "), Doc.text(Comment.trimSpaces(line)), Doc.text(" */")})
+    | list{first, ...rest} =>
       let firstLine = Comment.trimSpaces(first)
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text("/*"),
         if String.length(firstLine) > 0 && !String.equal(firstLine, "*") {
           Doc.space
         } else {
           Doc.nil
         },
-        indentStars(rest, list[Doc.hardLine, Doc.text(firstLine)]),
+        indentStars(rest, list{Doc.hardLine, Doc.text(firstLine)}),
         Doc.text("*/"),
-      ])
+      })
     }
   }
 
@@ -6042,10 +6042,10 @@ module Printer = {
 
     let isBelow = Comment.loc(comment).loc_start.pos_lnum > nodeLoc.loc_end.pos_lnum
     if diff > 0 || isBelow {
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.breakParent,
         Doc.lineSuffix(
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.hardLine,
             if diff > 1 {
               Doc.hardLine
@@ -6053,13 +6053,13 @@ module Printer = {
               Doc.nil
             },
             content,
-          ]),
+          }),
         ),
-      ])
+      })
     } else if !singleLine {
-      Doc.concat(list[Doc.space, content])
+      Doc.concat(list{Doc.space, content})
     } else {
-      Doc.lineSuffix(Doc.concat(list[Doc.space, content]))
+      Doc.lineSuffix(Doc.concat(list{Doc.space, content}))
     }
   }
 
@@ -6074,9 +6074,9 @@ module Printer = {
       }
     }
 
-    let separator = Doc.concat(list[
+    let separator = Doc.concat(list{
       if singleLine {
-        Doc.concat(list[Doc.hardLine, Doc.breakParent])
+        Doc.concat(list{Doc.hardLine, Doc.breakParent})
       } else {
         Doc.nil
       },
@@ -6100,7 +6100,7 @@ module Printer = {
             Doc.nil
           }
         } else if diff > 1 {
-          Doc.concat(list[Doc.hardLine, Doc.hardLine])
+          Doc.concat(list{Doc.hardLine, Doc.hardLine})
         } else if diff === 1 {
           Doc.hardLine
         } else {
@@ -6108,38 +6108,38 @@ module Printer = {
         }
       | None => Doc.nil
       },
-    ])
+    })
 
-    Doc.concat(list[content, separator])
+    Doc.concat(list{content, separator})
   }
 
   let printCommentsInside = (cmtTbl, loc) => {
     let rec loop = (acc, comments) =>
       switch comments {
-      | list[] => Doc.nil
-      | list[comment] =>
+      | list{} => Doc.nil
+      | list{comment} =>
         let cmtDoc = printLeadingComment(comment)
-        let doc = Doc.group(Doc.concat(list[Doc.concat(List.rev(list[cmtDoc, ...acc]))]))
+        let doc = Doc.group(Doc.concat(list{Doc.concat(List.rev(list{cmtDoc, ...acc}))}))
 
         doc
-      | list[comment, ...list[nextComment, ..._comments] as rest] =>
+      | list{comment, ...list{nextComment, ..._comments} as rest} =>
         let cmtDoc = printLeadingComment(~nextComment, comment)
-        loop(list[cmtDoc, ...acc], rest)
+        loop(list{cmtDoc, ...acc}, rest)
       }
 
     switch Hashtbl.find(cmtTbl.CommentTable.inside, loc) {
     | exception Not_found => Doc.nil
     | comments =>
       Hashtbl.remove(cmtTbl.inside, loc)
-      Doc.group(loop(list[], comments))
+      Doc.group(loop(list{}, comments))
     }
   }
 
   let printLeadingComments = (node, tbl, loc) => {
     let rec loop = (acc, comments) =>
       switch comments {
-      | list[] => node
-      | list[comment] =>
+      | list{} => node
+      | list{comment} =>
         let cmtDoc = printLeadingComment(comment)
         let diff = loc.Location.loc_start.pos_lnum - Comment.loc(comment).Location.loc_end.pos_lnum
 
@@ -6152,19 +6152,19 @@ module Printer = {
         } else if diff === 0 {
           Doc.space
         } else if diff > 1 {
-          Doc.concat(list[Doc.hardLine, Doc.hardLine])
+          Doc.concat(list{Doc.hardLine, Doc.hardLine})
         } else {
           Doc.hardLine
         }
 
         let doc = Doc.group(
-          Doc.concat(list[Doc.concat(List.rev(list[cmtDoc, ...acc])), separator, node]),
+          Doc.concat(list{Doc.concat(List.rev(list{cmtDoc, ...acc})), separator, node}),
         )
 
         doc
-      | list[comment, ...list[nextComment, ..._comments] as rest] =>
+      | list{comment, ...list{nextComment, ..._comments} as rest} =>
         let cmtDoc = printLeadingComment(~nextComment, comment)
-        loop(list[cmtDoc, ...acc], rest)
+        loop(list{cmtDoc, ...acc}, rest)
       }
 
     switch Hashtbl.find(tbl, loc) {
@@ -6173,28 +6173,28 @@ module Printer = {
       /* Remove comments from tbl: Some ast nodes have the same location.
        * We only want to print comments once */
       Hashtbl.remove(tbl, loc)
-      loop(list[], comments)
+      loop(list{}, comments)
     }
   }
 
   let printTrailingComments = (node, tbl, loc) => {
     let rec loop = (acc, comments) =>
       switch comments {
-      | list[] => Doc.concat(List.rev(acc))
-      | list[comment, ...comments] =>
+      | list{} => Doc.concat(List.rev(acc))
+      | list{comment, ...comments} =>
         let cmtDoc = printTrailingComment(loc, comment)
-        loop(list[cmtDoc, ...acc], comments)
+        loop(list{cmtDoc, ...acc}, comments)
       }
 
     switch Hashtbl.find(tbl, loc) {
     | exception Not_found => node
-    | list[] => node
-    | list[_first, ..._] as comments =>
+    | list{} => node
+    | list{_first, ..._} as comments =>
       /* Remove comments from tbl: Some ast nodes have the same location.
        * We only want to print comments once */
       Hashtbl.remove(tbl, loc)
-      let cmtsDoc = loop(list[], comments)
-      Doc.concat(list[node, cmtsDoc])
+      let cmtsDoc = loop(list{}, comments)
+      Doc.concat(list{node, cmtsDoc})
     }
   }
 
@@ -6206,8 +6206,8 @@ module Printer = {
   let printList = (~getLoc, ~nodes, ~print, ~forceBreak=false, t) => {
     let rec loop = (prevLoc: Location.t, acc, nodes) =>
       switch nodes {
-      | list[] => (prevLoc, Doc.concat(List.rev(acc)))
-      | list[node, ...nodes] =>
+      | list{} => (prevLoc, Doc.concat(List.rev(acc)))
+      | list{node, ...nodes} =>
         let loc = getLoc(node)
         let startPos = switch getFirstLeadingComment(t, loc) {
         | None => loc.loc_start
@@ -6215,21 +6215,21 @@ module Printer = {
         }
 
         let sep = if startPos.pos_lnum - prevLoc.loc_end.pos_lnum > 1 {
-          Doc.concat(list[Doc.hardLine, Doc.hardLine])
+          Doc.concat(list{Doc.hardLine, Doc.hardLine})
         } else {
           Doc.hardLine
         }
 
         let doc = printComments(print(node, t), t, loc)
-        loop(loc, list[doc, sep, ...acc], nodes)
+        loop(loc, list{doc, sep, ...acc}, nodes)
       }
 
     switch nodes {
-    | list[] => Doc.nil
-    | list[node, ...nodes] =>
+    | list{} => Doc.nil
+    | list{node, ...nodes} =>
       let firstLoc = getLoc(node)
       let doc = printComments(print(node, t), t, firstLoc)
-      let (lastLoc, docs) = loop(firstLoc, list[doc], nodes)
+      let (lastLoc, docs) = loop(firstLoc, list{doc}, nodes)
       let forceBreak = forceBreak || firstLoc.loc_start.pos_lnum !== lastLoc.loc_end.pos_lnum
 
       Doc.breakableGroup(~forceBreak, docs)
@@ -6239,8 +6239,8 @@ module Printer = {
   let printListi = (~getLoc, ~nodes, ~print, ~forceBreak=false, t) => {
     let rec loop = (i, prevLoc: Location.t, acc, nodes) =>
       switch nodes {
-      | list[] => (prevLoc, Doc.concat(List.rev(acc)))
-      | list[node, ...nodes] =>
+      | list{} => (prevLoc, Doc.concat(List.rev(acc)))
+      | list{node, ...nodes} =>
         let loc = getLoc(node)
         let startPos = switch getFirstLeadingComment(t, loc) {
         | None => loc.loc_start
@@ -6248,21 +6248,21 @@ module Printer = {
         }
 
         let sep = if startPos.pos_lnum - prevLoc.loc_end.pos_lnum > 1 {
-          Doc.concat(list[Doc.hardLine, Doc.hardLine])
+          Doc.concat(list{Doc.hardLine, Doc.hardLine})
         } else {
           Doc.line
         }
 
         let doc = printComments(print(node, t, i), t, loc)
-        loop(i + 1, loc, list[doc, sep, ...acc], nodes)
+        loop(i + 1, loc, list{doc, sep, ...acc}, nodes)
       }
 
     switch nodes {
-    | list[] => Doc.nil
-    | list[node, ...nodes] =>
+    | list{} => Doc.nil
+    | list{node, ...nodes} =>
       let firstLoc = getLoc(node)
       let doc = printComments(print(node, t, 0), t, firstLoc)
-      let (lastLoc, docs) = loop(1, firstLoc, list[doc], nodes)
+      let (lastLoc, docs) = loop(1, firstLoc, list{doc}, nodes)
       let forceBreak = forceBreak || firstLoc.loc_start.pos_lnum !== lastLoc.loc_end.pos_lnum
 
       Doc.breakableGroup(~forceBreak, docs)
@@ -6271,18 +6271,18 @@ module Printer = {
 
   let rec printLongidentAux = (accu, x) =>
     switch x {
-    | Longident.Lident(s) => list[Doc.text(s), ...accu]
-    | Ldot(lid, s) => printLongidentAux(list[Doc.text(s), ...accu], lid)
+    | Longident.Lident(s) => list{Doc.text(s), ...accu}
+    | Ldot(lid, s) => printLongidentAux(list{Doc.text(s), ...accu}, lid)
     | Lapply(lid1, lid2) =>
-      let d1 = Doc.join(~sep=Doc.dot, printLongidentAux(list[], lid1))
-      let d2 = Doc.join(~sep=Doc.dot, printLongidentAux(list[], lid2))
-      list[Doc.concat(list[d1, Doc.lparen, d2, Doc.rparen]), ...accu]
+      let d1 = Doc.join(~sep=Doc.dot, printLongidentAux(list{}, lid1))
+      let d2 = Doc.join(~sep=Doc.dot, printLongidentAux(list{}, lid2))
+      list{Doc.concat(list{d1, Doc.lparen, d2, Doc.rparen}), ...accu}
     }
 
   let printLongident = x =>
     switch x {
     | Longident.Lident(txt) => Doc.text(txt)
-    | lid => Doc.join(~sep=Doc.dot, printLongidentAux(list[], lid))
+    | lid => Doc.join(~sep=Doc.dot, printLongidentAux(list{}, lid))
     }
 
   type identifierStyle =
@@ -6327,7 +6327,7 @@ module Printer = {
 
   let printIdentLike = (~allowUident=?, txt) =>
     switch classifyIdentContent(~allowUident?, txt) {
-    | ExoticIdent => Doc.concat(list[Doc.text("\\\""), Doc.text(txt), Doc.text("\"")])
+    | ExoticIdent => Doc.concat(list{Doc.text("\\\""), Doc.text(txt), Doc.text("\"")})
     | NormalIdent => Doc.text(txt)
     }
 
@@ -6336,11 +6336,11 @@ module Printer = {
     | Longident.Lident(txt) => printIdentLike(txt)
     | Longident.Ldot(path, txt) =>
       let txts = Longident.flatten(path)
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.join(~sep=Doc.dot, List.map(Doc.text, txts)),
         Doc.dot,
         printIdentLike(txt),
-      ])
+      })
     | _ => Doc.text("printLident: Longident.Lapply is not supported")
     }
 
@@ -6375,21 +6375,21 @@ module Printer = {
       }
     | Pconst_string(txt, None) => Doc.text("\"" ++ (txt ++ "\""))
     | Pconst_string(txt, Some(prefix)) =>
-      Doc.concat(list[
+      Doc.concat(list{
         if prefix == "" {
           Doc.nil
         } else {
           Doc.text(prefix)
         },
         Doc.text("`" ++ (txt ++ "`")),
-      ])
+      })
     | Pconst_float(s, _) => Doc.text(s)
     | Pconst_char(c) => Doc.text("'" ++ (Char.escaped(c) ++ "'"))
     }
 
   let rec printStructure = (s: Parsetree.structure, t) =>
     switch s {
-    | list[] => printCommentsInside(t, Location.none)
+    | list{} => printCommentsInside(t, Location.none)
     | structure =>
       printList(~getLoc=s => s.Parsetree.pstr_loc, ~nodes=structure, ~print=printStructureItem, t)
     }
@@ -6421,14 +6421,14 @@ module Printer = {
         }
       }
 
-      Doc.concat(list[printAttributes(attrs), exprDoc])
+      Doc.concat(list{printAttributes(attrs), exprDoc})
     | Pstr_attribute(attr) =>
-      Doc.concat(list[Doc.text("@"), printAttributeWithComments(attr, cmtTbl)])
+      Doc.concat(list{Doc.text("@"), printAttributeWithComments(attr, cmtTbl)})
     | Pstr_extension(extension, attrs) =>
-      Doc.concat(list[
+      Doc.concat(list{
         printAttributes(attrs),
-        Doc.concat(list[printExtensionWithComments(~atModuleLvl=true, extension, cmtTbl)]),
-      ])
+        Doc.concat(list{printExtensionWithComments(~atModuleLvl=true, extension, cmtTbl)}),
+      })
     | Pstr_include(includeDeclaration) => printIncludeDeclaration(includeDeclaration, cmtTbl)
     | Pstr_open(openDescription) => printOpenDescription(openDescription, cmtTbl)
     | Pstr_modtype(modTypeDecl) => printModuleTypeDeclaration(modTypeDecl, cmtTbl)
@@ -6452,14 +6452,14 @@ module Printer = {
     let extensionConstructors = {
       let ecs = te.ptyext_constructors
       let forceBreak = switch (ecs, List.rev(ecs)) {
-      | (list[first, ..._], list[last, ..._]) =>
+      | (list{first, ..._}, list{last, ..._}) =>
         first.pext_loc.loc_start.pos_lnum > te.ptyext_path.loc.loc_end.pos_lnum ||
           first.pext_loc.loc_start.pos_lnum < last.pext_loc.loc_end.pos_lnum
       | _ => false
       }
 
       let privateFlag = switch te.ptyext_private {
-      | Asttypes.Private => Doc.concat(list[Doc.text("private"), Doc.line])
+      | Asttypes.Private => Doc.concat(list{Doc.text("private"), Doc.line})
       | Public => Doc.nil
       }
 
@@ -6474,40 +6474,40 @@ module Printer = {
       Doc.breakableGroup(
         ~forceBreak,
         Doc.indent(
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.line,
             privateFlag,
             rows,
             /* Doc.join ~sep:Doc.line ( */
             /* List.mapi printExtensionConstructor ecs */
             /* ) */
-          ]),
+          }),
         ),
       )
     }
 
     Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         printAttributes(~loc=te.ptyext_path.loc, te.ptyext_attributes),
         prefix,
         name,
         typeParams,
         Doc.text(" +="),
         extensionConstructors,
-      ]),
+      }),
     )
   }
 
   and printModuleBinding = (~isRec, moduleBinding, cmtTbl, i) => {
     let prefix = if i == 0 {
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text("module "),
         if isRec {
           Doc.text("rec ")
         } else {
           Doc.nil
         },
-      ])
+      })
     } else {
       Doc.text("and ")
     }
@@ -6515,7 +6515,7 @@ module Printer = {
     let (modExprDoc, modConstraintDoc) = switch moduleBinding.pmb_expr {
     | {pmod_desc: Pmod_constraint(modExpr, modType)} => (
         printModExpr(modExpr, cmtTbl),
-        Doc.concat(list[Doc.text(": "), printModType(modType, cmtTbl)]),
+        Doc.concat(list{Doc.text(": "), printModType(modType, cmtTbl)}),
       )
     | modExpr => (printModExpr(modExpr, cmtTbl), Doc.nil)
     }
@@ -6525,14 +6525,14 @@ module Printer = {
       printComments(doc, cmtTbl, moduleBinding.pmb_name.loc)
     }
 
-    let doc = Doc.concat(list[
+    let doc = Doc.concat(list{
       printAttributes(~loc=moduleBinding.pmb_name.loc, moduleBinding.pmb_attributes),
       prefix,
       modName,
       modConstraintDoc,
       Doc.text(" = "),
       modExprDoc,
-    ])
+    })
     printComments(doc, cmtTbl, moduleBinding.pmb_loc)
   }
 
@@ -6542,57 +6542,57 @@ module Printer = {
       printComments(doc, cmtTbl, modTypeDecl.pmtd_name.loc)
     }
 
-    Doc.concat(list[
+    Doc.concat(list{
       printAttributes(modTypeDecl.pmtd_attributes),
       Doc.text("module type "),
       modName,
       switch modTypeDecl.pmtd_type {
       | None => Doc.nil
-      | Some(modType) => Doc.concat(list[Doc.text(" = "), printModType(modType, cmtTbl)])
+      | Some(modType) => Doc.concat(list{Doc.text(" = "), printModType(modType, cmtTbl)})
       },
-    ])
+    })
   }
 
   and printModType = (modType, cmtTbl) => {
     let modTypeDoc = switch modType.pmty_desc {
     | Parsetree.Pmty_ident(longident) =>
-      Doc.concat(list[
+      Doc.concat(list{
         printAttributes(~loc=longident.loc, modType.pmty_attributes),
         printLongidentLocation(longident, cmtTbl),
-      ])
+      })
     | Pmty_signature(signature) =>
       let signatureDoc = Doc.breakableGroup(
         ~forceBreak=true,
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lbrace,
-          Doc.indent(Doc.concat(list[Doc.line, printSignature(signature, cmtTbl)])),
+          Doc.indent(Doc.concat(list{Doc.line, printSignature(signature, cmtTbl)})),
           Doc.line,
           Doc.rbrace,
-        ]),
+        }),
       )
-      Doc.concat(list[printAttributes(modType.pmty_attributes), signatureDoc])
+      Doc.concat(list{printAttributes(modType.pmty_attributes), signatureDoc})
     | Pmty_functor(_) =>
       let (parameters, returnType) = ParsetreeViewer.functorType(modType)
       let parametersDoc = switch parameters {
-      | list[] => Doc.nil
-      | list[(attrs, {Location.txt: "_", loc}, Some(modType))] =>
+      | list{} => Doc.nil
+      | list{(attrs, {Location.txt: "_", loc}, Some(modType))} =>
         let cmtLoc = {...loc, loc_end: modType.Parsetree.pmty_loc.loc_end}
 
         let attrs = switch attrs {
-        | list[] => Doc.nil
+        | list{} => Doc.nil
         | attrs =>
-          Doc.concat(list[Doc.join(~sep=Doc.line, List.map(printAttribute, attrs)), Doc.line])
+          Doc.concat(list{Doc.join(~sep=Doc.line, List.map(printAttribute, attrs)), Doc.line})
         }
-        let doc = Doc.concat(list[attrs, printModType(modType, cmtTbl)])
+        let doc = Doc.concat(list{attrs, printModType(modType, cmtTbl)})
         printComments(doc, cmtTbl, cmtLoc)
       | params =>
         Doc.group(
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.lparen,
             Doc.indent(
-              Doc.concat(list[
+              Doc.concat(list{
                 Doc.softLine,
-                Doc.join(~sep=Doc.concat(list[Doc.comma, Doc.line]), List.map(((
+                Doc.join(~sep=Doc.concat(list{Doc.comma, Doc.line}), List.map(((
                     attrs,
                     lbl,
                     modType,
@@ -6606,12 +6606,12 @@ module Printer = {
                     }
 
                     let attrs = switch attrs {
-                    | list[] => Doc.nil
+                    | list{} => Doc.nil
                     | attrs =>
-                      Doc.concat(list[
+                      Doc.concat(list{
                         Doc.join(~sep=Doc.line, List.map(printAttribute, attrs)),
                         Doc.line,
-                      ])
+                      })
                     }
                     let lblDoc = if lbl.Location.txt == "_" {
                       Doc.nil
@@ -6620,30 +6620,30 @@ module Printer = {
                       printComments(doc, cmtTbl, lbl.loc)
                     }
 
-                    let doc = Doc.concat(list[
+                    let doc = Doc.concat(list{
                       attrs,
                       lblDoc,
                       switch modType {
                       | None => Doc.nil
                       | Some(modType) =>
-                        Doc.concat(list[
+                        Doc.concat(list{
                           if lbl.txt == "_" {
                             Doc.nil
                           } else {
                             Doc.text(": ")
                           },
                           printModType(modType, cmtTbl),
-                        ])
+                        })
                       },
-                    ])
+                    })
                     printComments(doc, cmtTbl, cmtLoc)
                   }, params)),
-              ]),
+              }),
             ),
             Doc.trailingComma,
             Doc.softLine,
             Doc.rparen,
-          ]),
+          }),
         )
       }
 
@@ -6657,16 +6657,16 @@ module Printer = {
       }
 
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           parametersDoc,
-          Doc.group(Doc.concat(list[Doc.text(" =>"), Doc.line, returnDoc])),
-        ]),
+          Doc.group(Doc.concat(list{Doc.text(" =>"), Doc.line, returnDoc})),
+        }),
       )
     | Pmty_typeof(modExpr) =>
-      Doc.concat(list[Doc.text("module type of "), printModExpr(modExpr, cmtTbl)])
+      Doc.concat(list{Doc.text("module type of "), printModExpr(modExpr, cmtTbl)})
     | Pmty_extension(extension) => printExtensionWithComments(~atModuleLvl=false, extension, cmtTbl)
     | Pmty_alias(longident) =>
-      Doc.concat(list[Doc.text("module "), printLongidentLocation(longident, cmtTbl)])
+      Doc.concat(list{Doc.text("module "), printLongidentLocation(longident, cmtTbl)})
     | Pmty_with(modType, withConstraints) =>
       let operand = {
         let doc = printModType(modType, cmtTbl)
@@ -6678,10 +6678,10 @@ module Printer = {
       }
 
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           operand,
-          Doc.indent(Doc.concat(list[Doc.line, printWithConstraints(withConstraints, cmtTbl)])),
-        ]),
+          Doc.indent(Doc.concat(list{Doc.line, printWithConstraints(withConstraints, cmtTbl)})),
+        }),
       )
     }
 
@@ -6690,28 +6690,28 @@ module Printer = {
     | _ => false
     }
 
-    let doc = Doc.concat(list[
+    let doc = Doc.concat(list{
       if attrsAlreadyPrinted {
         Doc.nil
       } else {
         printAttributes(modType.pmty_attributes)
       },
       modTypeDoc,
-    ])
+    })
     printComments(doc, cmtTbl, modType.pmty_loc)
   }
 
   and printWithConstraints = (withConstraints, cmtTbl) => {
     let rows = List.mapi((i, withConstraint) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           if i === 0 {
             Doc.text("with ")
           } else {
             Doc.text("and ")
           },
           printWithConstraint(withConstraint, cmtTbl),
-        ]),
+        }),
       )
     , withConstraints)
 
@@ -6734,12 +6734,12 @@ module Printer = {
       )
     /* with module X.Y = Z */
     | Pwith_module({txt: longident1}, {txt: longident2}) =>
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text("module "),
         printLongident(longident1),
         Doc.text(" ="),
-        Doc.indent(Doc.concat(list[Doc.line, printLongident(longident2)])),
-      ])
+        Doc.indent(Doc.concat(list{Doc.line, printLongident(longident2)})),
+      })
     /* with type X.t := ..., same format as [Pwith_type] */
     | Pwith_typesubst(longident, typeDeclaration) =>
       Doc.group(
@@ -6753,17 +6753,17 @@ module Printer = {
         ),
       )
     | Pwith_modsubst({txt: longident1}, {txt: longident2}) =>
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text("module "),
         printLongident(longident1),
         Doc.text(" :="),
-        Doc.indent(Doc.concat(list[Doc.line, printLongident(longident2)])),
-      ])
+        Doc.indent(Doc.concat(list{Doc.line, printLongident(longident2)})),
+      })
     }
 
   and printSignature = (signature, cmtTbl) =>
     switch signature {
-    | list[] => printCommentsInside(cmtTbl, Location.none)
+    | list{} => printCommentsInside(cmtTbl, Location.none)
     | signature =>
       printList(
         ~getLoc=s => s.Parsetree.psig_loc,
@@ -6791,12 +6791,12 @@ module Printer = {
     | Psig_open(openDescription) => printOpenDescription(openDescription, cmtTbl)
     | Psig_include(includeDescription) => printIncludeDescription(includeDescription, cmtTbl)
     | Psig_attribute(attr) =>
-      Doc.concat(list[Doc.text("@"), printAttributeWithComments(attr, cmtTbl)])
+      Doc.concat(list{Doc.text("@"), printAttributeWithComments(attr, cmtTbl)})
     | Psig_extension(extension, attrs) =>
-      Doc.concat(list[
+      Doc.concat(list{
         printAttributes(attrs),
-        Doc.concat(list[printExtensionWithComments(~atModuleLvl=true, extension, cmtTbl)]),
-      ])
+        Doc.concat(list{printExtensionWithComments(~atModuleLvl=true, extension, cmtTbl)}),
+      })
     | Psig_class(_) | Psig_class_type(_) => Doc.nil
     }
 
@@ -6811,7 +6811,7 @@ module Printer = {
   and printRecModuleDeclaration = (md, cmtTbl, i) => {
     let body = switch md.pmd_type.pmty_desc {
     | Parsetree.Pmty_alias(longident) =>
-      Doc.concat(list[Doc.text(" = "), printLongidentLocation(longident, cmtTbl)])
+      Doc.concat(list{Doc.text(" = "), printLongidentLocation(longident, cmtTbl)})
     | _ =>
       let needsParens = switch md.pmd_type.pmty_desc {
       | Pmty_with(_) => true
@@ -6827,7 +6827,7 @@ module Printer = {
         }
       }
 
-      Doc.concat(list[Doc.text(": "), modTypeDoc])
+      Doc.concat(list{Doc.text(": "), modTypeDoc})
     }
 
     let prefix = if i < 1 {
@@ -6835,31 +6835,31 @@ module Printer = {
     } else {
       "and "
     }
-    Doc.concat(list[
+    Doc.concat(list{
       printAttributes(~loc=md.pmd_name.loc, md.pmd_attributes),
       Doc.text(prefix),
       printComments(Doc.text(md.pmd_name.txt), cmtTbl, md.pmd_name.loc),
       body,
-    ])
+    })
   }
 
   and printModuleDeclaration = (md: Parsetree.module_declaration, cmtTbl) => {
     let body = switch md.pmd_type.pmty_desc {
     | Parsetree.Pmty_alias(longident) =>
-      Doc.concat(list[Doc.text(" = "), printLongidentLocation(longident, cmtTbl)])
-    | _ => Doc.concat(list[Doc.text(": "), printModType(md.pmd_type, cmtTbl)])
+      Doc.concat(list{Doc.text(" = "), printLongidentLocation(longident, cmtTbl)})
+    | _ => Doc.concat(list{Doc.text(": "), printModType(md.pmd_type, cmtTbl)})
     }
 
-    Doc.concat(list[
+    Doc.concat(list{
       printAttributes(~loc=md.pmd_name.loc, md.pmd_attributes),
       Doc.text("module "),
       printComments(Doc.text(md.pmd_name.txt), cmtTbl, md.pmd_name.loc),
       body,
-    ])
+    })
   }
 
   and printOpenDescription = (openDescription: Parsetree.open_description, p) =>
-    Doc.concat(list[
+    Doc.concat(list{
       printAttributes(openDescription.popen_attributes),
       Doc.text("open"),
       switch openDescription.popen_override {
@@ -6867,14 +6867,14 @@ module Printer = {
       | Asttypes.Override => Doc.text("! ")
       },
       printLongidentLocation(openDescription.popen_lid, p),
-    ])
+    })
 
   and printIncludeDescription = (includeDescription: Parsetree.include_description, cmtTbl) =>
-    Doc.concat(list[
+    Doc.concat(list{
       printAttributes(includeDescription.pincl_attributes),
       Doc.text("include "),
       printModType(includeDescription.pincl_mod, cmtTbl),
-    ])
+    })
 
   and printIncludeDeclaration = (includeDeclaration: Parsetree.include_declaration, cmtTbl) => {
     let isJsFfiImport = List.exists(attr =>
@@ -6887,7 +6887,7 @@ module Printer = {
     if isJsFfiImport {
       printJsFfiImportDeclaration(includeDeclaration, cmtTbl)
     } else {
-      Doc.concat(list[
+      Doc.concat(list{
         printAttributes(includeDeclaration.pincl_attributes),
         Doc.text("include "),
         {
@@ -6899,7 +6899,7 @@ module Printer = {
             includeDoc
           }
         },
-      ])
+      })
     }
   }
 
@@ -6911,11 +6911,11 @@ module Printer = {
       }
     , valueDescription.pval_attributes)
     let (ident, alias) = switch valueDescription.pval_prim {
-    | list[primitive, ..._] =>
+    | list{primitive, ..._} =>
       if primitive != valueDescription.pval_name.txt {
         (
           printIdentLike(primitive),
-          Doc.concat(list[Doc.text(" as "), printIdentLike(valueDescription.pval_name.txt)]),
+          Doc.concat(list{Doc.text(" as "), printIdentLike(valueDescription.pval_name.txt)}),
         )
       } else {
         (printIdentLike(primitive), Doc.nil)
@@ -6923,22 +6923,22 @@ module Printer = {
     | _ => (printIdentLike(valueDescription.pval_name.txt), Doc.nil)
     }
 
-    Doc.concat(list[
+    Doc.concat(list{
       printAttributes(~loc=valueDescription.pval_name.loc, attrs),
       ident,
       alias,
       Doc.text(": "),
       printTypExpr(valueDescription.pval_type, cmtTbl),
-    ])
+    })
   }
 
   and printJsFfiImportScope = (scope: ParsetreeViewer.jsImportScope) =>
     switch scope {
     | JsGlobalImport => Doc.nil
     | JsModuleImport(modName) =>
-      Doc.concat(list[Doc.text(" from "), Doc.doubleQuote, Doc.text(modName), Doc.doubleQuote])
+      Doc.concat(list{Doc.text(" from "), Doc.doubleQuote, Doc.text(modName), Doc.doubleQuote})
     | JsScopedImport(idents) =>
-      Doc.concat(list[Doc.text(" from "), Doc.join(~sep=Doc.dot, List.map(Doc.text, idents))])
+      Doc.concat(list{Doc.text(" from "), Doc.join(~sep=Doc.dot, List.map(Doc.text, idents))})
     }
 
   and printJsFfiImportDeclaration = (includeDeclaration: Parsetree.include_declaration, cmtTbl) => {
@@ -6951,34 +6951,34 @@ module Printer = {
 
     let imports = ParsetreeViewer.extractValueDescriptionFromModExpr(includeDeclaration.pincl_mod)
     let scope = switch imports {
-    | list[vd, ..._] => ParsetreeViewer.classifyJsImport(vd)
-    | list[] => ParsetreeViewer.JsGlobalImport
+    | list{vd, ..._} => ParsetreeViewer.classifyJsImport(vd)
+    | list{} => ParsetreeViewer.JsGlobalImport
     }
 
     let scopeDoc = printJsFfiImportScope(scope)
     Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         printAttributes(attrs),
         Doc.text("import "),
         Doc.group(
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.lbrace,
             Doc.indent(
-              Doc.concat(list[
+              Doc.concat(list{
                 Doc.softLine,
                 Doc.join(
-                  ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                  ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                   List.map(vd => printJsFfiImport(vd, cmtTbl), imports),
                 ),
-              ]),
+              }),
             ),
             Doc.trailingComma,
             Doc.softLine,
             Doc.rbrace,
-          ]),
+          }),
         ),
         scopeDoc,
-      ]),
+      }),
     )
   }
 
@@ -6992,12 +6992,12 @@ module Printer = {
 
   and printValueDescription = (valueDescription, cmtTbl) => {
     let isExternal = switch valueDescription.pval_prim {
-    | list[] => false
+    | list{} => false
     | _ => true
     }
 
     Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         printAttributes(valueDescription.pval_attributes),
         Doc.text(
           if isExternal {
@@ -7015,26 +7015,26 @@ module Printer = {
         printTypExpr(valueDescription.pval_type, cmtTbl),
         if isExternal {
           Doc.group(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.text(" ="),
               Doc.indent(
-                Doc.concat(list[
+                Doc.concat(list{
                   Doc.line,
                   Doc.join(
                     ~sep=Doc.line,
                     List.map(
-                      s => Doc.concat(list[Doc.text("\""), Doc.text(s), Doc.text("\"")]),
+                      s => Doc.concat(list{Doc.text("\""), Doc.text(s), Doc.text("\"")}),
                       valueDescription.pval_prim,
                     ),
                   ),
-                ]),
+                }),
               ),
-            ]),
+            }),
           )
         } else {
           Doc.nil
         },
-      ]),
+      }),
     )
   }
 
@@ -7089,16 +7089,16 @@ module Printer = {
     let (hasGenType, attrs) = ParsetreeViewer.splitGenTypeAttr(td.ptype_attributes)
     let attrs = printAttributes(~loc=td.ptype_loc, attrs)
     let prefix = if i > 0 {
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text("and "),
         if hasGenType {
           Doc.text("export ")
         } else {
           Doc.nil
         },
-      ])
+      })
     } else {
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text(
           if hasGenType {
             "export type "
@@ -7107,7 +7107,7 @@ module Printer = {
           },
         ),
         recFlag,
-      ])
+      })
     }
 
     let typeName = name
@@ -7117,53 +7117,53 @@ module Printer = {
       switch td.ptype_manifest {
       | None => Doc.nil
       | Some(typ) =>
-        Doc.concat(list[
-          Doc.concat(list[Doc.space, Doc.text(equalSign), Doc.space]),
+        Doc.concat(list{
+          Doc.concat(list{Doc.space, Doc.text(equalSign), Doc.space}),
           printPrivateFlag(td.ptype_private),
           printTypExpr(typ, cmtTbl),
-        ])
+        })
       }
     | Ptype_open =>
-      Doc.concat(list[
-        Doc.concat(list[Doc.space, Doc.text(equalSign), Doc.space]),
+      Doc.concat(list{
+        Doc.concat(list{Doc.space, Doc.text(equalSign), Doc.space}),
         printPrivateFlag(td.ptype_private),
         Doc.text(".."),
-      ])
+      })
     | Ptype_record(lds) =>
       let manifest = switch td.ptype_manifest {
       | None => Doc.nil
       | Some(typ) =>
-        Doc.concat(list[
-          Doc.concat(list[Doc.space, Doc.text(equalSign), Doc.space]),
+        Doc.concat(list{
+          Doc.concat(list{Doc.space, Doc.text(equalSign), Doc.space}),
           printTypExpr(typ, cmtTbl),
-        ])
+        })
       }
 
-      Doc.concat(list[
+      Doc.concat(list{
         manifest,
-        Doc.concat(list[Doc.space, Doc.text(equalSign), Doc.space]),
+        Doc.concat(list{Doc.space, Doc.text(equalSign), Doc.space}),
         printPrivateFlag(td.ptype_private),
         printRecordDeclaration(lds, cmtTbl),
-      ])
+      })
     | Ptype_variant(cds) =>
       let manifest = switch td.ptype_manifest {
       | None => Doc.nil
       | Some(typ) =>
-        Doc.concat(list[
-          Doc.concat(list[Doc.space, Doc.text(equalSign), Doc.space]),
+        Doc.concat(list{
+          Doc.concat(list{Doc.space, Doc.text(equalSign), Doc.space}),
           printTypExpr(typ, cmtTbl),
-        ])
+        })
       }
 
-      Doc.concat(list[
+      Doc.concat(list{
         manifest,
-        Doc.concat(list[Doc.space, Doc.text(equalSign)]),
+        Doc.concat(list{Doc.space, Doc.text(equalSign)}),
         printConstructorDeclarations(~privateFlag=td.ptype_private, cds, cmtTbl),
-      ])
+      })
     }
 
     let constraints = printTypeDefinitionConstraints(td.ptype_cstrs)
-    Doc.group(Doc.concat(list[attrs, prefix, typeName, typeParams, manifestAndKind, constraints]))
+    Doc.group(Doc.concat(list{attrs, prefix, typeName, typeParams, manifestAndKind, constraints}))
   }
 
   and printTypeDeclaration2 = (~recFlag, td: Parsetree.type_declaration, cmtTbl, i) => {
@@ -7176,16 +7176,16 @@ module Printer = {
     let (hasGenType, attrs) = ParsetreeViewer.splitGenTypeAttr(td.ptype_attributes)
     let attrs = printAttributes(~loc=td.ptype_loc, attrs)
     let prefix = if i > 0 {
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text("and "),
         if hasGenType {
           Doc.text("export ")
         } else {
           Doc.nil
         },
-      ])
+      })
     } else {
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text(
           if hasGenType {
             "export type "
@@ -7194,7 +7194,7 @@ module Printer = {
           },
         ),
         recFlag,
-      ])
+      })
     }
 
     let typeName = name
@@ -7204,65 +7204,65 @@ module Printer = {
       switch td.ptype_manifest {
       | None => Doc.nil
       | Some(typ) =>
-        Doc.concat(list[
-          Doc.concat(list[Doc.space, Doc.text(equalSign), Doc.space]),
+        Doc.concat(list{
+          Doc.concat(list{Doc.space, Doc.text(equalSign), Doc.space}),
           printPrivateFlag(td.ptype_private),
           printTypExpr(typ, cmtTbl),
-        ])
+        })
       }
     | Ptype_open =>
-      Doc.concat(list[
-        Doc.concat(list[Doc.space, Doc.text(equalSign), Doc.space]),
+      Doc.concat(list{
+        Doc.concat(list{Doc.space, Doc.text(equalSign), Doc.space}),
         printPrivateFlag(td.ptype_private),
         Doc.text(".."),
-      ])
+      })
     | Ptype_record(lds) =>
       let manifest = switch td.ptype_manifest {
       | None => Doc.nil
       | Some(typ) =>
-        Doc.concat(list[
-          Doc.concat(list[Doc.space, Doc.text(equalSign), Doc.space]),
+        Doc.concat(list{
+          Doc.concat(list{Doc.space, Doc.text(equalSign), Doc.space}),
           printTypExpr(typ, cmtTbl),
-        ])
+        })
       }
 
-      Doc.concat(list[
+      Doc.concat(list{
         manifest,
-        Doc.concat(list[Doc.space, Doc.text(equalSign), Doc.space]),
+        Doc.concat(list{Doc.space, Doc.text(equalSign), Doc.space}),
         printPrivateFlag(td.ptype_private),
         printRecordDeclaration(lds, cmtTbl),
-      ])
+      })
     | Ptype_variant(cds) =>
       let manifest = switch td.ptype_manifest {
       | None => Doc.nil
       | Some(typ) =>
-        Doc.concat(list[
-          Doc.concat(list[Doc.space, Doc.text(equalSign), Doc.space]),
+        Doc.concat(list{
+          Doc.concat(list{Doc.space, Doc.text(equalSign), Doc.space}),
           printTypExpr(typ, cmtTbl),
-        ])
+        })
       }
 
-      Doc.concat(list[
+      Doc.concat(list{
         manifest,
-        Doc.concat(list[Doc.space, Doc.text(equalSign)]),
+        Doc.concat(list{Doc.space, Doc.text(equalSign)}),
         printConstructorDeclarations(~privateFlag=td.ptype_private, cds, cmtTbl),
-      ])
+      })
     }
 
     let constraints = printTypeDefinitionConstraints(td.ptype_cstrs)
-    Doc.group(Doc.concat(list[attrs, prefix, typeName, typeParams, manifestAndKind, constraints]))
+    Doc.group(Doc.concat(list{attrs, prefix, typeName, typeParams, manifestAndKind, constraints}))
   }
 
   and printTypeDefinitionConstraints = cstrs =>
     switch cstrs {
-    | list[] => Doc.nil
+    | list{} => Doc.nil
     | cstrs =>
       Doc.indent(
         Doc.group(
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.line,
             Doc.group(Doc.join(~sep=Doc.line, List.map(printTypeDefinitionConstraint, cstrs))),
-          ]),
+          }),
         ),
       )
     }
@@ -7270,12 +7270,12 @@ module Printer = {
   and printTypeDefinitionConstraint = (
     (typ1, typ2, _loc): (Parsetree.core_type, Parsetree.core_type, Location.t),
   ) =>
-    Doc.concat(list[
+    Doc.concat(list{
       Doc.text("constraint "),
       printTypExpr(typ1, CommentTable.empty),
       Doc.text(" = "),
       printTypExpr(typ2, CommentTable.empty),
-    ])
+    })
 
   and printPrivateFlag = (flag: Asttypes.private_flag) =>
     switch flag {
@@ -7285,24 +7285,24 @@ module Printer = {
 
   and printTypeParams = (typeParams, cmtTbl) =>
     switch typeParams {
-    | list[] => Doc.nil
+    | list{} => Doc.nil
     | typeParams =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lessThan,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
-              Doc.join(~sep=Doc.concat(list[Doc.comma, Doc.line]), List.map(typeParam => {
+              Doc.join(~sep=Doc.concat(list{Doc.comma, Doc.line}), List.map(typeParam => {
                   let doc = printTypeParam(typeParam, cmtTbl)
                   printComments(doc, cmtTbl, fst(typeParam).Parsetree.ptyp_loc)
                 }, typeParams)),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.greaterThan,
-        ]),
+        }),
       )
     }
 
@@ -7314,33 +7314,33 @@ module Printer = {
     | Invariant => Doc.nil
     }
 
-    Doc.concat(list[printedVariance, printTypExpr(typ, cmtTbl)])
+    Doc.concat(list{printedVariance, printTypExpr(typ, cmtTbl)})
   }
 
   and printRecordDeclaration = (lds: list<Parsetree.label_declaration>, cmtTbl) => {
     let forceBreak = switch (lds, List.rev(lds)) {
-    | (list[first, ..._], list[last, ..._]) =>
+    | (list{first, ..._}, list{last, ..._}) =>
       first.pld_loc.loc_start.pos_lnum < last.pld_loc.loc_end.pos_lnum
     | _ => false
     }
 
     Doc.breakableGroup(
       ~forceBreak,
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.lbrace,
         Doc.indent(
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.softLine,
-            Doc.join(~sep=Doc.concat(list[Doc.comma, Doc.line]), List.map(ld => {
+            Doc.join(~sep=Doc.concat(list{Doc.comma, Doc.line}), List.map(ld => {
                 let doc = printLabelDeclaration(ld, cmtTbl)
                 printComments(doc, cmtTbl, ld.Parsetree.pld_loc)
               }, lds)),
-          ]),
+          }),
         ),
         Doc.trailingComma,
         Doc.softLine,
         Doc.rbrace,
-      ]),
+      }),
     )
   }
 
@@ -7350,13 +7350,13 @@ module Printer = {
     cmtTbl,
   ) => {
     let forceBreak = switch (cds, List.rev(cds)) {
-    | (list[first, ..._], list[last, ..._]) =>
+    | (list{first, ..._}, list{last, ..._}) =>
       first.pcd_loc.loc_start.pos_lnum < last.pcd_loc.loc_end.pos_lnum
     | _ => false
     }
 
     let privateFlag = switch privateFlag {
-    | Asttypes.Private => Doc.concat(list[Doc.text("private"), Doc.line])
+    | Asttypes.Private => Doc.concat(list{Doc.text("private"), Doc.line})
     | Public => Doc.nil
     }
 
@@ -7371,7 +7371,7 @@ module Printer = {
       cmtTbl,
     )
 
-    Doc.breakableGroup(~forceBreak, Doc.indent(Doc.concat(list[Doc.line, privateFlag, rows])))
+    Doc.breakableGroup(~forceBreak, Doc.indent(Doc.concat(list{Doc.line, privateFlag, rows})))
   }
 
   and printConstructorDeclaration2 = (i, cd: Parsetree.constructor_declaration, cmtTbl) => {
@@ -7390,41 +7390,41 @@ module Printer = {
     let constrArgs = printConstructorArguments(~indent=true, cd.pcd_args, cmtTbl)
     let gadt = switch cd.pcd_res {
     | None => Doc.nil
-    | Some(typ) => Doc.indent(Doc.concat(list[Doc.text(": "), printTypExpr(typ, cmtTbl)]))
+    | Some(typ) => Doc.indent(Doc.concat(list{Doc.text(": "), printTypExpr(typ, cmtTbl)}))
     }
 
-    Doc.concat(list[
+    Doc.concat(list{
       bar,
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           attrs /* TODO: fix parsing of attributes, so when can print them above the bar? */,
           constrName,
           constrArgs,
           gadt,
-        ]),
+        }),
       ),
-    ])
+    })
   }
 
   and printConstructorArguments = (~indent, cdArgs: Parsetree.constructor_arguments, cmtTbl) =>
     switch cdArgs {
-    | Pcstr_tuple(list[]) => Doc.nil
+    | Pcstr_tuple(list{}) => Doc.nil
     | Pcstr_tuple(types) =>
-      let args = Doc.concat(list[
+      let args = Doc.concat(list{
         Doc.lparen,
         Doc.indent(
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.softLine,
             Doc.join(
-              ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+              ~sep=Doc.concat(list{Doc.comma, Doc.line}),
               List.map(typexpr => printTypExpr(typexpr, cmtTbl), types),
             ),
-          ]),
+          }),
         ),
         Doc.trailingComma,
         Doc.softLine,
         Doc.rparen,
-      ])
+      })
       Doc.group(
         if indent {
           Doc.indent(args)
@@ -7433,24 +7433,24 @@ module Printer = {
         },
       )
     | Pcstr_record(lds) =>
-      let args = Doc.concat(list[
+      let args = Doc.concat(list{
         Doc.lparen,
         /* manually inline the printRecordDeclaration, gives better layout */
         Doc.lbrace,
         Doc.indent(
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.softLine,
-            Doc.join(~sep=Doc.concat(list[Doc.comma, Doc.line]), List.map(ld => {
+            Doc.join(~sep=Doc.concat(list{Doc.comma, Doc.line}), List.map(ld => {
                 let doc = printLabelDeclaration(ld, cmtTbl)
                 printComments(doc, cmtTbl, ld.Parsetree.pld_loc)
               }, lds)),
-          ]),
+          }),
         ),
         Doc.trailingComma,
         Doc.softLine,
         Doc.rbrace,
         Doc.rparen,
-      ])
+      })
       if indent {
         Doc.indent(args)
       } else {
@@ -7471,14 +7471,14 @@ module Printer = {
     }
 
     Doc.group(
-      Doc.concat(list[attrs, mutableFlag, name, Doc.text(": "), printTypExpr(ld.pld_type, cmtTbl)]),
+      Doc.concat(list{attrs, mutableFlag, name, Doc.text(": "), printTypExpr(ld.pld_type, cmtTbl)}),
     )
   }
 
   and printTypExpr = (typExpr: Parsetree.core_type, cmtTbl) => {
     let renderedType = switch typExpr.ptyp_desc {
     | Ptyp_any => Doc.text("_")
-    | Ptyp_var(var) => Doc.concat(list[Doc.text("'"), printIdentLike(var)])
+    | Ptyp_var(var) => Doc.concat(list{Doc.text("'"), printIdentLike(var)})
     | Ptyp_extension(extension) => printExtensionWithComments(~atModuleLvl=false, extension, cmtTbl)
     | Ptyp_alias(typ, alias) =>
       let typ = {
@@ -7493,76 +7493,76 @@ module Printer = {
 
         let doc = printTypExpr(typ, cmtTbl)
         if needsParens {
-          Doc.concat(list[Doc.lparen, doc, Doc.rparen])
+          Doc.concat(list{Doc.lparen, doc, Doc.rparen})
         } else {
           doc
         }
       }
 
-      Doc.concat(list[
+      Doc.concat(list{
         typ,
         Doc.text(" as "),
-        Doc.concat(list[Doc.text("'"), printIdentLike(alias)]),
-      ])
+        Doc.concat(list{Doc.text("'"), printIdentLike(alias)}),
+      })
     | Ptyp_constr(
         {txt: Longident.Ldot(Longident.Lident("Js"), "t")},
-        list[{ptyp_desc: Ptyp_object(_fields, _openFlag)} as typ],
+        list{{ptyp_desc: Ptyp_object(_fields, _openFlag)} as typ},
       ) =>
       let bsObject = printTypExpr(typ, cmtTbl)
       switch typExpr.ptyp_attributes {
-      | list[] => bsObject
+      | list{} => bsObject
       | attrs =>
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.group(Doc.join(~sep=Doc.line, List.map(printAttribute, attrs))),
           Doc.space,
           printTypExpr(typ, cmtTbl),
-        ])
+        })
       }
-    | Ptyp_constr(longidentLoc, list[{ptyp_desc: Parsetree.Ptyp_tuple(tuple)}]) =>
+    | Ptyp_constr(longidentLoc, list{{ptyp_desc: Parsetree.Ptyp_tuple(tuple)}}) =>
       let constrName = printLidentPath(longidentLoc, cmtTbl)
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           constrName,
           Doc.lessThan,
           printTupleType(~inline=true, tuple, cmtTbl),
           Doc.greaterThan,
-        ]),
+        }),
       )
     | Ptyp_constr(longidentLoc, constrArgs) =>
       let constrName = printLidentPath(longidentLoc, cmtTbl)
       switch constrArgs {
-      | list[] => constrName
-      | list[{
+      | list{} => constrName
+      | list{{
           Parsetree.ptyp_desc:
             Ptyp_constr(
               {txt: Longident.Ldot(Longident.Lident("Js"), "t")},
-              list[{ptyp_desc: Ptyp_object(fields, openFlag)}],
+              list{{ptyp_desc: Ptyp_object(fields, openFlag)}},
             ),
-        }] =>
-        Doc.concat(list[
+        }} =>
+        Doc.concat(list{
           constrName,
           Doc.lessThan,
           printBsObjectSugar(~inline=true, fields, openFlag, cmtTbl),
           Doc.greaterThan,
-        ])
+        })
       | _args =>
         Doc.group(
-          Doc.concat(list[
+          Doc.concat(list{
             constrName,
             Doc.lessThan,
             Doc.indent(
-              Doc.concat(list[
+              Doc.concat(list{
                 Doc.softLine,
                 Doc.join(
-                  ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                  ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                   List.map(typexpr => printTypExpr(typexpr, cmtTbl), constrArgs),
                 ),
-              ]),
+              }),
             ),
             Doc.trailingComma,
             Doc.softLine,
             Doc.greaterThan,
-          ]),
+          }),
         )
       }
     | Ptyp_arrow(_) =>
@@ -7575,7 +7575,7 @@ module Printer = {
       let returnDoc = {
         let doc = printTypExpr(returnType, cmtTbl)
         if returnTypeNeedsParens {
-          Doc.concat(list[Doc.lparen, doc, Doc.rparen])
+          Doc.concat(list{Doc.lparen, doc, Doc.rparen})
         } else {
           doc
         }
@@ -7584,14 +7584,14 @@ module Printer = {
       let (isUncurried, attrs) = ParsetreeViewer.processUncurriedAttribute(attrsBefore)
 
       switch args {
-      | list[] => Doc.nil
-      | list[(list[], Nolabel, n)] when !isUncurried =>
-        let hasAttrsBefore = !(attrs == list[])
+      | list{} => Doc.nil
+      | list{(list{}, Nolabel, n)} when !isUncurried =>
+        let hasAttrsBefore = !(attrs == list{})
         let attrs = if hasAttrsBefore {
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.join(~sep=Doc.line, List.map(printAttribute, attrsBefore)),
             Doc.space,
-          ])
+          })
         } else {
           Doc.nil
         }
@@ -7605,103 +7605,103 @@ module Printer = {
         }
 
         Doc.group(
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.group(attrs),
             Doc.group(
               if hasAttrsBefore {
-                Doc.concat(list[
+                Doc.concat(list{
                   Doc.lparen,
-                  Doc.indent(Doc.concat(list[Doc.softLine, typDoc, Doc.text(" => "), returnDoc])),
+                  Doc.indent(Doc.concat(list{Doc.softLine, typDoc, Doc.text(" => "), returnDoc})),
                   Doc.softLine,
                   Doc.rparen,
-                ])
+                })
               } else {
-                Doc.concat(list[typDoc, Doc.text(" => "), returnDoc])
+                Doc.concat(list{typDoc, Doc.text(" => "), returnDoc})
               },
             ),
-          ]),
+          }),
         )
       | args =>
         let attrs = switch attrs {
-        | list[] => Doc.nil
+        | list{} => Doc.nil
         | attrs =>
-          Doc.concat(list[Doc.join(~sep=Doc.line, List.map(printAttribute, attrs)), Doc.space])
+          Doc.concat(list{Doc.join(~sep=Doc.line, List.map(printAttribute, attrs)), Doc.space})
         }
 
-        let renderedArgs = Doc.concat(list[
+        let renderedArgs = Doc.concat(list{
           attrs,
           Doc.text("("),
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               if isUncurried {
-                Doc.concat(list[Doc.dot, Doc.space])
+                Doc.concat(list{Doc.dot, Doc.space})
               } else {
                 Doc.nil
               },
               Doc.join(
-                ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                 List.map(tp => printTypeParameter(tp, cmtTbl), args),
               ),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.text(")"),
-        ])
-        Doc.group(Doc.concat(list[renderedArgs, Doc.text(" => "), returnDoc]))
+        })
+        Doc.group(Doc.concat(list{renderedArgs, Doc.text(" => "), returnDoc}))
       }
     | Ptyp_tuple(types) => printTupleType(~inline=false, types, cmtTbl)
     | Ptyp_object(fields, openFlag) => printBsObjectSugar(~inline=false, fields, openFlag, cmtTbl)
-    | Ptyp_poly(list[], typ) => printTypExpr(typ, cmtTbl)
-    | Ptyp_poly(stringLocs, typ) => Doc.concat(list[Doc.join(~sep=Doc.space, List.map(({
+    | Ptyp_poly(list{}, typ) => printTypExpr(typ, cmtTbl)
+    | Ptyp_poly(stringLocs, typ) => Doc.concat(list{Doc.join(~sep=Doc.space, List.map(({
             Location.txt: txt,
             loc,
           }) => {
-            let doc = Doc.concat(list[Doc.text("'"), Doc.text(txt)])
+            let doc = Doc.concat(list{Doc.text("'"), Doc.text(txt)})
             printComments(doc, cmtTbl, loc)
-          }, stringLocs)), Doc.dot, Doc.space, printTypExpr(typ, cmtTbl)])
+          }, stringLocs)), Doc.dot, Doc.space, printTypExpr(typ, cmtTbl)})
     | Ptyp_package(packageType) =>
       printPackageType(~printModuleKeywordAndParens=true, packageType, cmtTbl)
     | Ptyp_class(_) => Doc.text("classes are not supported in types")
     | Ptyp_variant(rowFields, closedFlag, labelsOpt) =>
       let printRowField = x =>
         switch x {
-        | Parsetree.Rtag({txt}, attrs, true, list[]) =>
-          Doc.concat(list[
+        | Parsetree.Rtag({txt}, attrs, true, list{}) =>
+          Doc.concat(list{
             printAttributes(attrs),
-            Doc.concat(list[Doc.text("#"), printIdentLike(~allowUident=true, txt)]),
-          ])
+            Doc.concat(list{Doc.text("#"), printIdentLike(~allowUident=true, txt)}),
+          })
         | Rtag({txt}, attrs, truth, types) =>
           let doType = t =>
             switch t.Parsetree.ptyp_desc {
             | Ptyp_tuple(_) => printTypExpr(t, cmtTbl)
-            | _ => Doc.concat(list[Doc.lparen, printTypExpr(t, cmtTbl), Doc.rparen])
+            | _ => Doc.concat(list{Doc.lparen, printTypExpr(t, cmtTbl), Doc.rparen})
             }
 
           let printedTypes = List.map(doType, types)
-          let cases = Doc.join(~sep=Doc.concat(list[Doc.line, Doc.text("& ")]), printedTypes)
+          let cases = Doc.join(~sep=Doc.concat(list{Doc.line, Doc.text("& ")}), printedTypes)
           let cases = if truth {
-            Doc.concat(list[Doc.line, Doc.text("& "), cases])
+            Doc.concat(list{Doc.line, Doc.text("& "), cases})
           } else {
             cases
           }
           Doc.group(
-            Doc.concat(list[
+            Doc.concat(list{
               printAttributes(attrs),
-              Doc.concat(list[Doc.text("#"), printIdentLike(~allowUident=true, txt)]),
+              Doc.concat(list{Doc.text("#"), printIdentLike(~allowUident=true, txt)}),
               cases,
-            ]),
+            }),
           )
         | Rinherit(coreType) => printTypExpr(coreType, cmtTbl)
         }
 
       let docs = List.map(printRowField, rowFields)
-      let cases = Doc.join(~sep=Doc.concat(list[Doc.line, Doc.text("| ")]), docs)
-      let cases = if docs == list[] {
+      let cases = Doc.join(~sep=Doc.concat(list{Doc.line, Doc.text("| ")}), docs)
+      let cases = if docs == list{} {
         cases
       } else {
-        Doc.concat(list[Doc.text("| "), cases])
+        Doc.concat(list{Doc.text("| "), cases})
       }
       let openingSymbol = if closedFlag == Open {
         Doc.greaterThan
@@ -7710,14 +7710,14 @@ module Printer = {
       } else {
         Doc.lessThan
       }
-      let hasLabels = labelsOpt != None && labelsOpt != Some(list[])
+      let hasLabels = labelsOpt != None && labelsOpt != Some(list{})
       let labels = switch labelsOpt {
-      | None | Some(list[]) => Doc.nil
+      | None | Some(list{}) => Doc.nil
       | Some(labels) =>
         Doc.concat(
           List.map(
             label =>
-              Doc.concat(list[Doc.line, Doc.text("#"), printIdentLike(~allowUident=true, label)]),
+              Doc.concat(list{Doc.line, Doc.text("#"), printIdentLike(~allowUident=true, label)}),
             labels,
           ),
         )
@@ -7729,7 +7729,7 @@ module Printer = {
         Doc.nil
       }
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lbracket,
           openingSymbol,
           Doc.line,
@@ -7738,7 +7738,7 @@ module Printer = {
           labels,
           Doc.line,
           Doc.rbracket,
-        ]),
+        }),
       )
     }
 
@@ -7749,8 +7749,8 @@ module Printer = {
     }
 
     let doc = switch typExpr.ptyp_attributes {
-    | list[_, ..._] as attrs when !shouldPrintItsOwnAttributes =>
-      Doc.group(Doc.concat(list[printAttributes(attrs), renderedType]))
+    | list{_, ..._} as attrs when !shouldPrintItsOwnAttributes =>
+      Doc.group(Doc.concat(list{printAttributes(attrs), renderedType}))
     | _ => renderedType
     }
 
@@ -7759,35 +7759,35 @@ module Printer = {
 
   and printBsObjectSugar = (~inline, fields, openFlag, cmtTbl) => {
     let doc = switch fields {
-    | list[] =>
-      Doc.concat(list[
+    | list{} =>
+      Doc.concat(list{
         Doc.lbrace,
         switch openFlag {
         | Asttypes.Closed => Doc.dot
         | Open => Doc.dotdot
         },
         Doc.rbrace,
-      ])
+      })
     | fields =>
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.lbrace,
         switch openFlag {
         | Asttypes.Closed => Doc.nil
         | Open => Doc.dotdot
         },
         Doc.indent(
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.softLine,
             Doc.join(
-              ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+              ~sep=Doc.concat(list{Doc.comma, Doc.line}),
               List.map(field => printObjectField(field, cmtTbl), fields),
             ),
-          ]),
+          }),
         ),
         Doc.trailingComma,
         Doc.softLine,
         Doc.rbrace,
-      ])
+      })
     }
 
     if inline {
@@ -7798,21 +7798,21 @@ module Printer = {
   }
 
   and printTupleType = (~inline, types: list<Parsetree.core_type>, cmtTbl) => {
-    let tuple = Doc.concat(list[
+    let tuple = Doc.concat(list{
       Doc.lparen,
       Doc.indent(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.softLine,
           Doc.join(
-            ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+            ~sep=Doc.concat(list{Doc.comma, Doc.line}),
             List.map(typexpr => printTypExpr(typexpr, cmtTbl), types),
           ),
-        ]),
+        }),
       ),
       Doc.trailingComma,
       Doc.softLine,
       Doc.rparen,
-    ])
+    })
 
     if inline === false {
       Doc.group(tuple)
@@ -7829,12 +7829,12 @@ module Printer = {
         printComments(doc, cmtTbl, labelLoc.loc)
       }
 
-      let doc = Doc.concat(list[
+      let doc = Doc.concat(list{
         printAttributes(~loc=labelLoc.loc, attrs),
         lbl,
         Doc.text(": "),
         printTypExpr(typ, cmtTbl),
-      ])
+      })
       let cmtLoc = {...labelLoc.loc, loc_end: typ.ptyp_loc.loc_end}
       printComments(doc, cmtTbl, cmtLoc)
     | _ => Doc.nil
@@ -7846,18 +7846,18 @@ module Printer = {
   and printTypeParameter = ((attrs, lbl, typ), cmtTbl) => {
     let (isUncurried, attrs) = ParsetreeViewer.processUncurriedAttribute(attrs)
     let uncurried = if isUncurried {
-      Doc.concat(list[Doc.dot, Doc.space])
+      Doc.concat(list{Doc.dot, Doc.space})
     } else {
       Doc.nil
     }
     let attrs = switch attrs {
-    | list[] => Doc.nil
-    | attrs => Doc.concat(list[Doc.join(~sep=Doc.line, List.map(printAttribute, attrs)), Doc.line])
+    | list{} => Doc.nil
+    | attrs => Doc.concat(list{Doc.join(~sep=Doc.line, List.map(printAttribute, attrs)), Doc.line})
     }
     let label = switch lbl {
     | Asttypes.Nolabel => Doc.nil
-    | Labelled(lbl) => Doc.concat(list[Doc.text("~"), printIdentLike(lbl), Doc.text(": ")])
-    | Optional(lbl) => Doc.concat(list[Doc.text("~"), printIdentLike(lbl), Doc.text(": ")])
+    | Labelled(lbl) => Doc.concat(list{Doc.text("~"), printIdentLike(lbl), Doc.text(": ")})
+    | Optional(lbl) => Doc.concat(list{Doc.text("~"), printIdentLike(lbl), Doc.text(": ")})
     }
 
     let optionalIndicator = switch lbl {
@@ -7866,7 +7866,7 @@ module Printer = {
     }
 
     let doc = Doc.group(
-      Doc.concat(list[uncurried, attrs, label, printTypExpr(typ, cmtTbl), optionalIndicator]),
+      Doc.concat(list{uncurried, attrs, label, printTypExpr(typ, cmtTbl), optionalIndicator}),
     )
     printComments(doc, cmtTbl, typ.ptyp_loc)
   }
@@ -7875,23 +7875,23 @@ module Printer = {
     let (hasGenType, attrs) = ParsetreeViewer.splitGenTypeAttr(vb.pvb_attributes)
     let attrs = printAttributes(~loc=vb.pvb_pat.ppat_loc, attrs)
     let header = if i === 0 {
-      Doc.concat(list[
+      Doc.concat(list{
         if hasGenType {
           Doc.text("export ")
         } else {
           Doc.text("let ")
         },
         recFlag,
-      ])
+      })
     } else {
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text("and "),
         if hasGenType {
           Doc.text("export ")
         } else {
           Doc.nil
         },
-      ])
+      })
     }
 
     switch vb {
@@ -7901,34 +7901,34 @@ module Printer = {
       } =>
       let (_attrs, parameters, returnExpr) = ParsetreeViewer.funExpr(expr)
       let abstractType = switch parameters {
-      | list[NewTypes({locs: vars})] =>
-        Doc.concat(list[
+      | list{NewTypes({locs: vars})} =>
+        Doc.concat(list{
           Doc.text("type "),
           Doc.join(~sep=Doc.space, List.map(var => Doc.text(var.Asttypes.txt), vars)),
           Doc.dot,
-        ])
+        })
       | _ => Doc.nil
       }
 
       switch returnExpr.pexp_desc {
       | Pexp_constraint(expr, typ) =>
         Doc.group(
-          Doc.concat(list[
+          Doc.concat(list{
             attrs,
             header,
             printPattern(pattern, cmtTbl),
             Doc.text(":"),
             Doc.indent(
-              Doc.concat(list[
+              Doc.concat(list{
                 Doc.line,
                 abstractType,
                 Doc.space,
                 printTypExpr(typ, cmtTbl),
                 Doc.text(" ="),
-                Doc.concat(list[Doc.line, printExpressionWithComments(expr, cmtTbl)]),
-              ]),
+                Doc.concat(list{Doc.line, printExpressionWithComments(expr, cmtTbl)}),
+              }),
             ),
-          ]),
+          }),
         )
       | _ => Doc.nil
       }
@@ -7944,27 +7944,27 @@ module Printer = {
       }
 
       if ParsetreeViewer.isPipeExpr(vb.pvb_expr) {
-        Doc.customLayout(list[
+        Doc.customLayout(list{
           Doc.group(
-            Doc.concat(list[
+            Doc.concat(list{
               attrs,
               header,
               printPattern(vb.pvb_pat, cmtTbl),
               Doc.text(" ="),
               Doc.space,
               printedExpr,
-            ]),
+            }),
           ),
           Doc.group(
-            Doc.concat(list[
+            Doc.concat(list{
               attrs,
               header,
               printPattern(vb.pvb_pat, cmtTbl),
               Doc.text(" ="),
-              Doc.indent(Doc.concat(list[Doc.line, printedExpr])),
-            ]),
+              Doc.indent(Doc.concat(list{Doc.line, printedExpr})),
+            }),
           ),
-        ])
+        })
       } else {
         let shouldIndent = switch optBraces {
         | Some(_) => false
@@ -7972,7 +7972,7 @@ module Printer = {
           ParsetreeViewer.isBinaryExpression(expr) ||
           switch vb.pvb_expr {
           | {
-              pexp_attributes: list[({Location.txt: "ns.ternary"}, _)],
+              pexp_attributes: list{({Location.txt: "ns.ternary"}, _)},
               pexp_desc: Pexp_ifthenelse(ifExpr, _, _),
             } =>
             ParsetreeViewer.isBinaryExpression(ifExpr) ||
@@ -7984,17 +7984,17 @@ module Printer = {
         }
 
         Doc.group(
-          Doc.concat(list[
+          Doc.concat(list{
             attrs,
             header,
             printPattern(vb.pvb_pat, cmtTbl),
             Doc.text(" ="),
             if shouldIndent {
-              Doc.indent(Doc.concat(list[Doc.line, printedExpr]))
+              Doc.indent(Doc.concat(list{Doc.line, printedExpr}))
             } else {
-              Doc.concat(list[Doc.space, printedExpr])
+              Doc.concat(list{Doc.space, printedExpr})
             },
-          ]),
+          }),
         )
       }
     }
@@ -8006,29 +8006,29 @@ module Printer = {
     cmtTbl,
   ) => {
     let doc = switch packageType {
-    | (longidentLoc, list[]) =>
-      Doc.group(Doc.concat(list[printLongidentLocation(longidentLoc, cmtTbl)]))
+    | (longidentLoc, list{}) =>
+      Doc.group(Doc.concat(list{printLongidentLocation(longidentLoc, cmtTbl)}))
     | (longidentLoc, packageConstraints) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           printLongidentLocation(longidentLoc, cmtTbl),
           printPackageConstraints(packageConstraints, cmtTbl),
           Doc.softLine,
-        ]),
+        }),
       )
     }
 
     if printModuleKeywordAndParens {
-      Doc.concat(list[Doc.text("module("), doc, Doc.rparen])
+      Doc.concat(list{Doc.text("module("), doc, Doc.rparen})
     } else {
       doc
     }
   }
 
   and printPackageConstraints = (packageConstraints, cmtTbl) =>
-    Doc.concat(list[
+    Doc.concat(list{
       Doc.text(" with"),
-      Doc.indent(Doc.concat(list[Doc.line, Doc.join(~sep=Doc.line, List.mapi((i, pc) => {
+      Doc.indent(Doc.concat(list{Doc.line, Doc.join(~sep=Doc.line, List.mapi((i, pc) => {
               let (longident, typexpr) = pc
               let cmtLoc = {
                 ...longident.Asttypes.loc,
@@ -8036,8 +8036,8 @@ module Printer = {
               }
               let doc = printPackageConstraint(i, cmtTbl, pc)
               printComments(doc, cmtTbl, cmtLoc)
-            }, packageConstraints))])),
-    ])
+            }, packageConstraints))})),
+    })
 
   and printPackageConstraint = (i, cmtTbl, (longidentLoc, typ)) => {
     let prefix = if i === 0 {
@@ -8045,17 +8045,17 @@ module Printer = {
     } else {
       Doc.text("and type ")
     }
-    Doc.concat(list[
+    Doc.concat(list{
       prefix,
       printLongidentLocation(longidentLoc, cmtTbl),
       Doc.text(" = "),
       printTypExpr(typ, cmtTbl),
-    ])
+    })
   }
 
   and printExtensionWithComments = (~atModuleLvl, (stringLoc, payload), cmtTbl) => {
     let extName = {
-      let doc = Doc.concat(list[
+      let doc = Doc.concat(list{
         Doc.text("%"),
         if atModuleLvl {
           Doc.text("%")
@@ -8063,31 +8063,31 @@ module Printer = {
           Doc.nil
         },
         Doc.text(stringLoc.Location.txt),
-      ])
+      })
       printComments(doc, cmtTbl, stringLoc.Location.loc)
     }
 
     switch payload {
-    | Parsetree.PStr(list[{pstr_desc: Pstr_eval(expr, attrs)}]) =>
+    | Parsetree.PStr(list{{pstr_desc: Pstr_eval(expr, attrs)}}) =>
       let exprDoc = printExpressionWithComments(expr, cmtTbl)
       let needsParens = switch attrs {
-      | list[] => false
+      | list{} => false
       | _ => true
       }
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           extName,
           addParens(
-            Doc.concat(list[
+            Doc.concat(list{
               printAttributes(attrs),
               if needsParens {
                 addParens(exprDoc)
               } else {
                 exprDoc
               },
-            ]),
+            }),
           ),
-        ]),
+        }),
       )
     | _ => extName
     }
@@ -8100,202 +8100,202 @@ module Printer = {
     | Ppat_constant(c) => printConstant(c)
     | Ppat_tuple(patterns) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               Doc.join(
-                ~sep=Doc.concat(list[Doc.text(","), Doc.line]),
+                ~sep=Doc.concat(list{Doc.text(","), Doc.line}),
                 List.map(pat => printPattern(pat, cmtTbl), patterns),
               ),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rparen,
-        ]),
+        }),
       )
-    | Ppat_array(list[]) =>
-      Doc.concat(list[Doc.lbracket, printCommentsInside(cmtTbl, p.ppat_loc), Doc.rbracket])
+    | Ppat_array(list{}) =>
+      Doc.concat(list{Doc.lbracket, printCommentsInside(cmtTbl, p.ppat_loc), Doc.rbracket})
     | Ppat_array(patterns) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text("["),
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               Doc.join(
-                ~sep=Doc.concat(list[Doc.text(","), Doc.line]),
+                ~sep=Doc.concat(list{Doc.text(","), Doc.line}),
                 List.map(pat => printPattern(pat, cmtTbl), patterns),
               ),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.text("]"),
-        ]),
+        }),
       )
     | Ppat_construct({txt: Longident.Lident("()")}, _) =>
-      Doc.concat(list[Doc.lparen, printCommentsInside(cmtTbl, p.ppat_loc), Doc.rparen])
+      Doc.concat(list{Doc.lparen, printCommentsInside(cmtTbl, p.ppat_loc), Doc.rparen})
     | Ppat_construct({txt: Longident.Lident("[]")}, _) =>
-      Doc.concat(list[Doc.text("list["), printCommentsInside(cmtTbl, p.ppat_loc), Doc.rbracket])
+      Doc.concat(list{Doc.text("list["), printCommentsInside(cmtTbl, p.ppat_loc), Doc.rbracket})
     | Ppat_construct({txt: Longident.Lident("::")}, _) =>
-      let (patterns, tail) = ParsetreeViewer.collectPatternsFromListConstruct(list[], p)
+      let (patterns, tail) = ParsetreeViewer.collectPatternsFromListConstruct(list{}, p)
       let shouldHug = switch (patterns, tail) {
-      | (list[pat], {ppat_desc: Ppat_construct({txt: Longident.Lident("[]")}, _)})
+      | (list{pat}, {ppat_desc: Ppat_construct({txt: Longident.Lident("[]")}, _)})
         when ParsetreeViewer.isHuggablePattern(pat) => true
       | _ => false
       }
 
-      let children = Doc.concat(list[
+      let children = Doc.concat(list{
         if shouldHug {
           Doc.nil
         } else {
           Doc.softLine
         },
         Doc.join(
-          ~sep=Doc.concat(list[Doc.text(","), Doc.line]),
+          ~sep=Doc.concat(list{Doc.text(","), Doc.line}),
           List.map(pat => printPattern(pat, cmtTbl), patterns),
         ),
         switch tail.Parsetree.ppat_desc {
         | Ppat_construct({txt: Longident.Lident("[]")}, _) => Doc.nil
         | _ =>
-          let doc = Doc.concat(list[Doc.text("..."), printPattern(tail, cmtTbl)])
+          let doc = Doc.concat(list{Doc.text("..."), printPattern(tail, cmtTbl)})
           let tail = printComments(doc, cmtTbl, tail.ppat_loc)
-          Doc.concat(list[Doc.text(","), Doc.line, tail])
+          Doc.concat(list{Doc.text(","), Doc.line, tail})
         },
-      ])
+      })
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text("list["),
           if shouldHug {
             children
           } else {
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.indent(children),
               Doc.ifBreaks(Doc.text(","), Doc.nil),
               Doc.softLine,
-            ])
+            })
           },
           Doc.rbracket,
-        ]),
+        }),
       )
     | Ppat_construct(constrName, constructorArgs) =>
       let constrName = printLongident(constrName.txt)
       let argsDoc = switch constructorArgs {
       | None => Doc.nil
       | Some({ppat_loc, ppat_desc: Ppat_construct({txt: Longident.Lident("()")}, _)}) =>
-        Doc.concat(list[Doc.lparen, printCommentsInside(cmtTbl, ppat_loc), Doc.rparen])
-      | Some({ppat_desc: Ppat_tuple(list[]), ppat_loc: loc}) =>
-        Doc.concat(list[Doc.lparen, Doc.softLine, printCommentsInside(cmtTbl, loc), Doc.rparen])
+        Doc.concat(list{Doc.lparen, printCommentsInside(cmtTbl, ppat_loc), Doc.rparen})
+      | Some({ppat_desc: Ppat_tuple(list{}), ppat_loc: loc}) =>
+        Doc.concat(list{Doc.lparen, Doc.softLine, printCommentsInside(cmtTbl, loc), Doc.rparen})
       /* Some((1, 2) */
-      | Some({ppat_desc: Ppat_tuple(list[{ppat_desc: Ppat_tuple(_)} as arg])}) =>
-        Doc.concat(list[Doc.lparen, printPattern(arg, cmtTbl), Doc.rparen])
+      | Some({ppat_desc: Ppat_tuple(list{{ppat_desc: Ppat_tuple(_)} as arg})}) =>
+        Doc.concat(list{Doc.lparen, printPattern(arg, cmtTbl), Doc.rparen})
       | Some({ppat_desc: Ppat_tuple(patterns)}) =>
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               Doc.join(
-                ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                 List.map(pat => printPattern(pat, cmtTbl), patterns),
               ),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rparen,
-        ])
+        })
       | Some(arg) =>
         let argDoc = printPattern(arg, cmtTbl)
         let shouldHug = ParsetreeViewer.isHuggablePattern(arg)
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           if shouldHug {
             argDoc
           } else {
-            Doc.concat(list[
-              Doc.indent(Doc.concat(list[Doc.softLine, argDoc])),
+            Doc.concat(list{
+              Doc.indent(Doc.concat(list{Doc.softLine, argDoc})),
               Doc.trailingComma,
               Doc.softLine,
-            ])
+            })
           },
           Doc.rparen,
-        ])
+        })
       }
 
-      Doc.group(Doc.concat(list[constrName, argsDoc]))
+      Doc.group(Doc.concat(list{constrName, argsDoc}))
     | Ppat_variant(label, None) =>
-      Doc.concat(list[Doc.text("#"), printIdentLike(~allowUident=true, label)])
+      Doc.concat(list{Doc.text("#"), printIdentLike(~allowUident=true, label)})
     | Ppat_variant(label, variantArgs) =>
-      let variantName = Doc.concat(list[Doc.text("#"), printIdentLike(~allowUident=true, label)])
+      let variantName = Doc.concat(list{Doc.text("#"), printIdentLike(~allowUident=true, label)})
       let argsDoc = switch variantArgs {
       | None => Doc.nil
       | Some({ppat_desc: Ppat_construct({txt: Longident.Lident("()")}, _)}) => Doc.text("()")
-      | Some({ppat_desc: Ppat_tuple(list[]), ppat_loc: loc}) =>
-        Doc.concat(list[Doc.lparen, Doc.softLine, printCommentsInside(cmtTbl, loc), Doc.rparen])
+      | Some({ppat_desc: Ppat_tuple(list{}), ppat_loc: loc}) =>
+        Doc.concat(list{Doc.lparen, Doc.softLine, printCommentsInside(cmtTbl, loc), Doc.rparen})
       /* Some((1, 2) */
-      | Some({ppat_desc: Ppat_tuple(list[{ppat_desc: Ppat_tuple(_)} as arg])}) =>
-        Doc.concat(list[Doc.lparen, printPattern(arg, cmtTbl), Doc.rparen])
+      | Some({ppat_desc: Ppat_tuple(list{{ppat_desc: Ppat_tuple(_)} as arg})}) =>
+        Doc.concat(list{Doc.lparen, printPattern(arg, cmtTbl), Doc.rparen})
       | Some({ppat_desc: Ppat_tuple(patterns)}) =>
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               Doc.join(
-                ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                 List.map(pat => printPattern(pat, cmtTbl), patterns),
               ),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rparen,
-        ])
+        })
       | Some(arg) =>
         let argDoc = printPattern(arg, cmtTbl)
         let shouldHug = ParsetreeViewer.isHuggablePattern(arg)
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           if shouldHug {
             argDoc
           } else {
-            Doc.concat(list[
-              Doc.indent(Doc.concat(list[Doc.softLine, argDoc])),
+            Doc.concat(list{
+              Doc.indent(Doc.concat(list{Doc.softLine, argDoc})),
               Doc.trailingComma,
               Doc.softLine,
-            ])
+            })
           },
           Doc.rparen,
-        ])
+        })
       }
 
-      Doc.group(Doc.concat(list[variantName, argsDoc]))
-    | Ppat_type(ident) => Doc.concat(list[Doc.text("##"), printIdentPath(ident, cmtTbl)])
+      Doc.group(Doc.concat(list{variantName, argsDoc}))
+    | Ppat_type(ident) => Doc.concat(list{Doc.text("##"), printIdentPath(ident, cmtTbl)})
     | Ppat_record(rows, openFlag) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lbrace,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               Doc.join(
-                ~sep=Doc.concat(list[Doc.text(","), Doc.line]),
+                ~sep=Doc.concat(list{Doc.text(","), Doc.line}),
                 List.map(row => printPatternRecordRow(row, cmtTbl), rows),
               ),
               switch openFlag {
-              | Open => Doc.concat(list[Doc.text(","), Doc.line, Doc.text("_")])
+              | Open => Doc.concat(list{Doc.text(","), Doc.line, Doc.text("_")})
               | Closed => Doc.nil
               },
-            ]),
+            }),
           ),
           Doc.ifBreaks(Doc.text(","), Doc.nil),
           Doc.softLine,
           Doc.rbrace,
-        ]),
+        }),
       )
 
     | Ppat_exception(p) =>
@@ -8307,30 +8307,30 @@ module Printer = {
       let pat = {
         let p = printPattern(p, cmtTbl)
         if needsParens {
-          Doc.concat(list[Doc.text("("), p, Doc.text(")")])
+          Doc.concat(list{Doc.text("("), p, Doc.text(")")})
         } else {
           p
         }
       }
 
-      Doc.group(Doc.concat(list[Doc.text("exception"), Doc.line, pat]))
+      Doc.group(Doc.concat(list{Doc.text("exception"), Doc.line, pat}))
     | Ppat_or(_) =>
       /* Blue | Red | Green -> [Blue; Red; Green] */
       let orChain = ParsetreeViewer.collectOrPatternChain(p)
       let docs = List.mapi((i, pat) => {
         let patternDoc = printPattern(pat, cmtTbl)
-        Doc.concat(list[
+        Doc.concat(list{
           if i === 0 {
             Doc.nil
           } else {
-            Doc.concat(list[Doc.line, Doc.text("| ")])
+            Doc.concat(list{Doc.line, Doc.text("| ")})
           },
           switch pat.ppat_desc {
           /* (Blue | Red) | (Green | Black) | White */
           | Ppat_or(_) => addParens(patternDoc)
           | _ => patternDoc
           },
-        ])
+        })
       }, orChain)
       Doc.group(Doc.concat(docs))
     | Ppat_extension(ext) => printExtensionWithComments(~atModuleLvl=false, ext, cmtTbl)
@@ -8343,13 +8343,13 @@ module Printer = {
       let pat = {
         let p = printPattern(p, cmtTbl)
         if needsParens {
-          Doc.concat(list[Doc.text("("), p, Doc.text(")")])
+          Doc.concat(list{Doc.text("("), p, Doc.text(")")})
         } else {
           p
         }
       }
 
-      Doc.concat(list[Doc.text("lazy "), pat])
+      Doc.concat(list{Doc.text("lazy "), pat})
     | Ppat_alias(p, aliasLoc) =>
       let needsParens = switch p.ppat_desc {
       | Ppat_or(_, _) | Ppat_alias(_, _) => true
@@ -8359,13 +8359,13 @@ module Printer = {
       let renderedPattern = {
         let p = printPattern(p, cmtTbl)
         if needsParens {
-          Doc.concat(list[Doc.text("("), p, Doc.text(")")])
+          Doc.concat(list{Doc.text("("), p, Doc.text(")")})
         } else {
           p
         }
       }
 
-      Doc.concat(list[renderedPattern, Doc.text(" as "), printStringLoc(aliasLoc, cmtTbl)])
+      Doc.concat(list{renderedPattern, Doc.text(" as "), printStringLoc(aliasLoc, cmtTbl)})
 
     /* Note: module(P : S) is represented as */
     /* Ppat_constraint(Ppat_unpack, Ptyp_package) */
@@ -8373,7 +8373,7 @@ module Printer = {
         {ppat_desc: Ppat_unpack(stringLoc)},
         {ptyp_desc: Ptyp_package(packageType), ptyp_loc},
       ) =>
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text("module("),
         printComments(Doc.text(stringLoc.txt), cmtTbl, stringLoc.loc),
         Doc.text(": "),
@@ -8383,25 +8383,25 @@ module Printer = {
           ptyp_loc,
         ),
         Doc.rparen,
-      ])
+      })
     | Ppat_constraint(pattern, typ) =>
-      Doc.concat(list[printPattern(pattern, cmtTbl), Doc.text(": "), printTypExpr(typ, cmtTbl)])
+      Doc.concat(list{printPattern(pattern, cmtTbl), Doc.text(": "), printTypExpr(typ, cmtTbl)})
 
     /* Note: module(P : S) is represented as */
     /* Ppat_constraint(Ppat_unpack, Ptyp_package) */
     | Ppat_unpack(stringLoc) =>
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text("module("),
         printComments(Doc.text(stringLoc.txt), cmtTbl, stringLoc.loc),
         Doc.rparen,
-      ])
-    | Ppat_interval(a, b) => Doc.concat(list[printConstant(a), Doc.text(" .. "), printConstant(b)])
+      })
+    | Ppat_interval(a, b) => Doc.concat(list{printConstant(a), Doc.text(" .. "), printConstant(b)})
     | Ppat_open(_) => Doc.nil
     }
 
     let doc = switch p.ppat_attributes {
-    | list[] => patternWithoutAttributes
-    | attrs => Doc.group(Doc.concat(list[printAttributes(attrs), patternWithoutAttributes]))
+    | list{} => patternWithoutAttributes
+    | attrs => Doc.group(Doc.concat(list{printAttributes(attrs), patternWithoutAttributes}))
     }
 
     printComments(doc, cmtTbl, p.ppat_loc)
@@ -8421,11 +8421,11 @@ module Printer = {
         loc_end: pattern.Parsetree.ppat_loc.loc_end,
       }
       let doc = Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           printLidentPath(longident, cmtTbl),
           Doc.text(": "),
-          Doc.indent(Doc.concat(list[Doc.softLine, printPattern(pattern, cmtTbl)])),
-        ]),
+          Doc.indent(Doc.concat(list{Doc.softLine, printPattern(pattern, cmtTbl)})),
+        }),
       )
       printComments(doc, cmtTbl, locForComments)
     }
@@ -8442,12 +8442,12 @@ module Printer = {
       printJsxFragment(e, cmtTbl)
     | Pexp_construct({txt: Longident.Lident("()")}, _) => Doc.text("()")
     | Pexp_construct({txt: Longident.Lident("[]")}, _) =>
-      Doc.concat(list[Doc.text("list["), printCommentsInside(cmtTbl, e.pexp_loc), Doc.rbracket])
+      Doc.concat(list{Doc.text("list["), printCommentsInside(cmtTbl, e.pexp_loc), Doc.rbracket})
     | Pexp_construct({txt: Longident.Lident("::")}, _) =>
       let (expressions, spread) = ParsetreeViewer.collectListExpressions(e)
       let spreadDoc = switch spread {
       | Some(expr) =>
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text(","),
           Doc.line,
           Doc.dotdotdot,
@@ -8459,17 +8459,17 @@ module Printer = {
             | Nothing => doc
             }
           },
-        ])
+        })
       | None => Doc.nil
       }
 
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text("list["),
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
-              Doc.join(~sep=Doc.concat(list[Doc.text(","), Doc.line]), List.map(expr => {
+              Doc.join(~sep=Doc.concat(list{Doc.text(","), Doc.line}), List.map(expr => {
                   let doc = printExpressionWithComments(expr, cmtTbl)
                   switch Parens.expr(expr) {
                   | Parens.Parenthesized => addParens(doc)
@@ -8478,12 +8478,12 @@ module Printer = {
                   }
                 }, expressions)),
               spreadDoc,
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rbracket,
-        ]),
+        }),
       )
     | Pexp_construct(longidentLoc, args) =>
       let constr = printLongidentLocation(longidentLoc, cmtTbl)
@@ -8491,8 +8491,8 @@ module Printer = {
       | None => Doc.nil
       | Some({pexp_desc: Pexp_construct({txt: Longident.Lident("()")}, _)}) => Doc.text("()")
       /* Some((1, 2)) */
-      | Some({pexp_desc: Pexp_tuple(list[{pexp_desc: Pexp_tuple(_)} as arg])}) =>
-        Doc.concat(list[
+      | Some({pexp_desc: Pexp_tuple(list{{pexp_desc: Pexp_tuple(_)} as arg})}) =>
+        Doc.concat(list{
           Doc.lparen,
           {
             let doc = printExpressionWithComments(arg, cmtTbl)
@@ -8503,14 +8503,14 @@ module Printer = {
             }
           },
           Doc.rparen,
-        ])
+        })
       | Some({pexp_desc: Pexp_tuple(args)}) =>
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
-              Doc.join(~sep=Doc.concat(list[Doc.comma, Doc.line]), List.map(expr => {
+              Doc.join(~sep=Doc.concat(list{Doc.comma, Doc.line}), List.map(expr => {
                   let doc = printExpressionWithComments(expr, cmtTbl)
                   switch Parens.expr(expr) {
                   | Parens.Parenthesized => addParens(doc)
@@ -8518,12 +8518,12 @@ module Printer = {
                   | Nothing => doc
                   }
                 }, args)),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rparen,
-        ])
+        })
       | Some(arg) =>
         let argDoc = {
           let doc = printExpressionWithComments(arg, cmtTbl)
@@ -8535,31 +8535,31 @@ module Printer = {
         }
 
         let shouldHug = ParsetreeViewer.isHuggableExpression(arg)
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           if shouldHug {
             argDoc
           } else {
-            Doc.concat(list[
-              Doc.indent(Doc.concat(list[Doc.softLine, argDoc])),
+            Doc.concat(list{
+              Doc.indent(Doc.concat(list{Doc.softLine, argDoc})),
               Doc.trailingComma,
               Doc.softLine,
-            ])
+            })
           },
           Doc.rparen,
-        ])
+        })
       }
 
-      Doc.group(Doc.concat(list[constr, args]))
+      Doc.group(Doc.concat(list{constr, args}))
     | Pexp_ident(path) => printLidentPath(path, cmtTbl)
     | Pexp_tuple(exprs) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
-              Doc.join(~sep=Doc.concat(list[Doc.text(","), Doc.line]), List.map(expr => {
+              Doc.join(~sep=Doc.concat(list{Doc.text(","), Doc.line}), List.map(expr => {
                   let doc = printExpressionWithComments(expr, cmtTbl)
                   switch Parens.expr(expr) {
                   | Parens.Parenthesized => addParens(doc)
@@ -8567,23 +8567,23 @@ module Printer = {
                   | Nothing => doc
                   }
                 }, exprs)),
-            ]),
+            }),
           ),
           Doc.ifBreaks(Doc.text(","), Doc.nil),
           Doc.softLine,
           Doc.rparen,
-        ]),
+        }),
       )
-    | Pexp_array(list[]) =>
-      Doc.concat(list[Doc.lbracket, printCommentsInside(cmtTbl, e.pexp_loc), Doc.rbracket])
+    | Pexp_array(list{}) =>
+      Doc.concat(list{Doc.lbracket, printCommentsInside(cmtTbl, e.pexp_loc), Doc.rbracket})
     | Pexp_array(exprs) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lbracket,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
-              Doc.join(~sep=Doc.concat(list[Doc.text(","), Doc.line]), List.map(expr => {
+              Doc.join(~sep=Doc.concat(list{Doc.text(","), Doc.line}), List.map(expr => {
                   let doc = printExpressionWithComments(expr, cmtTbl)
                   switch Parens.expr(expr) {
                   | Parens.Parenthesized => addParens(doc)
@@ -8591,21 +8591,21 @@ module Printer = {
                   | Nothing => doc
                   }
                 }, exprs)),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rbracket,
-        ]),
+        }),
       )
     | Pexp_variant(label, args) =>
-      let variantName = Doc.concat(list[Doc.text("#"), printIdentLike(~allowUident=true, label)])
+      let variantName = Doc.concat(list{Doc.text("#"), printIdentLike(~allowUident=true, label)})
       let args = switch args {
       | None => Doc.nil
       | Some({pexp_desc: Pexp_construct({txt: Longident.Lident("()")}, _)}) => Doc.text("()")
       /* #poly((1, 2) */
-      | Some({pexp_desc: Pexp_tuple(list[{pexp_desc: Pexp_tuple(_)} as arg])}) =>
-        Doc.concat(list[
+      | Some({pexp_desc: Pexp_tuple(list{{pexp_desc: Pexp_tuple(_)} as arg})}) =>
+        Doc.concat(list{
           Doc.lparen,
           {
             let doc = printExpressionWithComments(arg, cmtTbl)
@@ -8616,14 +8616,14 @@ module Printer = {
             }
           },
           Doc.rparen,
-        ])
+        })
       | Some({pexp_desc: Pexp_tuple(args)}) =>
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
-              Doc.join(~sep=Doc.concat(list[Doc.comma, Doc.line]), List.map(expr => {
+              Doc.join(~sep=Doc.concat(list{Doc.comma, Doc.line}), List.map(expr => {
                   let doc = printExpressionWithComments(expr, cmtTbl)
                   switch Parens.expr(expr) {
                   | Parens.Parenthesized => addParens(doc)
@@ -8631,12 +8631,12 @@ module Printer = {
                   | Nothing => doc
                   }
                 }, args)),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rparen,
-        ])
+        })
       | Some(arg) =>
         let argDoc = {
           let doc = printExpressionWithComments(arg, cmtTbl)
@@ -8648,27 +8648,27 @@ module Printer = {
         }
 
         let shouldHug = ParsetreeViewer.isHuggableExpression(arg)
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           if shouldHug {
             argDoc
           } else {
-            Doc.concat(list[
-              Doc.indent(Doc.concat(list[Doc.softLine, argDoc])),
+            Doc.concat(list{
+              Doc.indent(Doc.concat(list{Doc.softLine, argDoc})),
               Doc.trailingComma,
               Doc.softLine,
-            ])
+            })
           },
           Doc.rparen,
-        ])
+        })
       }
 
-      Doc.group(Doc.concat(list[variantName, args]))
+      Doc.group(Doc.concat(list{variantName, args}))
     | Pexp_record(rows, spreadExpr) =>
       let spread = switch spreadExpr {
       | None => Doc.nil
       | Some(expr) =>
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.dotdotdot,
           {
             let doc = printExpressionWithComments(expr, cmtTbl)
@@ -8680,7 +8680,7 @@ module Printer = {
           },
           Doc.comma,
           Doc.line,
-        ])
+        })
       }
 
       /* If the record is written over multiple lines, break automatically
@@ -8693,31 +8693,31 @@ module Printer = {
 
       Doc.breakableGroup(
         ~forceBreak,
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lbrace,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               spread,
               Doc.join(
-                ~sep=Doc.concat(list[Doc.text(","), Doc.line]),
+                ~sep=Doc.concat(list{Doc.text(","), Doc.line}),
                 List.map(row => printRecordRow(row, cmtTbl), rows),
               ),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rbrace,
-        ]),
+        }),
       )
     | Pexp_extension(extension) =>
       switch extension {
       | (
           {txt: "bs.obj"},
-          PStr(list[{
+          PStr(list{{
             pstr_loc: loc,
-            pstr_desc: Pstr_eval({pexp_desc: Pexp_record(rows, _)}, list[]),
-          }]),
+            pstr_desc: Pstr_eval({pexp_desc: Pexp_record(rows, _)}, list{}),
+          }}),
         ) =>
         /* If the object is written over multiple lines, break automatically
          * `let x = {"a": 1, "b": 3}` -> same line, break when line-width exceeded
@@ -8729,21 +8729,21 @@ module Printer = {
 
         Doc.breakableGroup(
           ~forceBreak,
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.lbrace,
             Doc.indent(
-              Doc.concat(list[
+              Doc.concat(list{
                 Doc.softLine,
                 Doc.join(
-                  ~sep=Doc.concat(list[Doc.text(","), Doc.line]),
+                  ~sep=Doc.concat(list{Doc.text(","), Doc.line}),
                   List.map(row => printBsObjectRow(row, cmtTbl), rows),
                 ),
-              ]),
+              }),
             ),
             Doc.trailingComma,
             Doc.softLine,
             Doc.rbrace,
-          ]),
+          }),
         )
       | extension => printExtensionWithComments(~atModuleLvl=false, extension, cmtTbl)
       }
@@ -8768,61 +8768,61 @@ module Printer = {
         }
       }
 
-      Doc.concat(list[lhs, Doc.dot, printLidentPath(longidentLoc, cmtTbl)])
+      Doc.concat(list{lhs, Doc.dot, printLidentPath(longidentLoc, cmtTbl)})
     | Pexp_setfield(expr1, longidentLoc, expr2) =>
       printSetFieldExpr(e.pexp_attributes, expr1, longidentLoc, expr2, e.pexp_loc, cmtTbl)
     | Pexp_ifthenelse(_ifExpr, _thenExpr, _elseExpr) =>
       if ParsetreeViewer.isTernaryExpr(e) {
         let (parts, alternate) = ParsetreeViewer.collectTernaryParts(e)
         let ternaryDoc = switch parts {
-        | list[(condition1, consequent1), ...rest] =>
+        | list{(condition1, consequent1), ...rest} =>
           Doc.group(
-            Doc.concat(list[
+            Doc.concat(list{
               printTernaryOperand(condition1, cmtTbl),
               Doc.indent(
-                Doc.concat(list[
+                Doc.concat(list{
                   Doc.line,
                   Doc.indent(
-                    Doc.concat(list[Doc.text("? "), printTernaryOperand(consequent1, cmtTbl)]),
+                    Doc.concat(list{Doc.text("? "), printTernaryOperand(consequent1, cmtTbl)}),
                   ),
                   Doc.concat(
                     List.map(
                       ((condition, consequent)) =>
-                        Doc.concat(list[
+                        Doc.concat(list{
                           Doc.line,
                           Doc.text(": "),
                           printTernaryOperand(condition, cmtTbl),
                           Doc.line,
                           Doc.text("? "),
                           printTernaryOperand(consequent, cmtTbl),
-                        ]),
+                        }),
                       rest,
                     ),
                   ),
                   Doc.line,
                   Doc.text(": "),
                   Doc.indent(printTernaryOperand(alternate, cmtTbl)),
-                ]),
+                }),
               ),
-            ]),
+            }),
           )
         | _ => Doc.nil
         }
 
         let attrs = ParsetreeViewer.filterTernaryAttributes(e.pexp_attributes)
         let needsParens = switch ParsetreeViewer.filterParsingAttrs(attrs) {
-        | list[] => false
+        | list{} => false
         | _ => true
         }
 
-        Doc.concat(list[
+        Doc.concat(list{
           printAttributes(attrs),
           if needsParens {
             addParens(ternaryDoc)
           } else {
             ternaryDoc
           },
-        ])
+        })
       } else {
         let (ifs, elseExpr) = ParsetreeViewer.collectIfExpressions(e)
         let ifDocs = Doc.join(~sep=Doc.space, List.mapi((i, (ifExpr, thenExpr)) => {
@@ -8842,7 +8842,7 @@ module Printer = {
               }
             }
 
-            Doc.concat(list[
+            Doc.concat(list{
               ifTxt,
               Doc.group(condition),
               Doc.space,
@@ -8855,15 +8855,15 @@ module Printer = {
 
                 printExpressionBlock(~braces=true, thenExpr, cmtTbl)
               },
-            ])
+            })
           }, ifs))
         let elseDoc = switch elseExpr {
         | None => Doc.nil
         | Some(expr) =>
-          Doc.concat(list[Doc.text(" else "), printExpressionBlock(~braces=true, expr, cmtTbl)])
+          Doc.concat(list{Doc.text(" else "), printExpressionBlock(~braces=true, expr, cmtTbl)})
         }
 
-        Doc.concat(list[printAttributes(e.pexp_attributes), ifDocs, elseDoc])
+        Doc.concat(list{printAttributes(e.pexp_attributes), ifDocs, elseDoc})
       }
     | Pexp_while(expr1, expr2) =>
       let condition = {
@@ -8877,7 +8877,7 @@ module Printer = {
 
       Doc.breakableGroup(
         ~forceBreak=true,
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text("while "),
           if ParsetreeViewer.isBlockExpr(expr1) {
             condition
@@ -8886,12 +8886,12 @@ module Printer = {
           },
           Doc.space,
           printExpressionBlock(~braces=true, expr2, cmtTbl),
-        ]),
+        }),
       )
     | Pexp_for(pattern, fromExpr, toExpr, directionFlag, body) =>
       Doc.breakableGroup(
         ~forceBreak=true,
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text("for "),
           printPattern(pattern, cmtTbl),
           Doc.text(" in "),
@@ -8914,17 +8914,17 @@ module Printer = {
           },
           Doc.space,
           printExpressionBlock(~braces=true, body, cmtTbl),
-        ]),
+        }),
       )
     | Pexp_constraint(
         {pexp_desc: Pexp_pack(modExpr)},
         {ptyp_desc: Ptyp_package(packageType), ptyp_loc},
       ) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text("module("),
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               printModExpr(modExpr, cmtTbl),
               Doc.text(": "),
@@ -8933,11 +8933,11 @@ module Printer = {
                 cmtTbl,
                 ptyp_loc,
               ),
-            ]),
+            }),
           ),
           Doc.softLine,
           Doc.rparen,
-        ]),
+        }),
       )
 
     | Pexp_constraint(expr, typ) =>
@@ -8950,7 +8950,7 @@ module Printer = {
         }
       }
 
-      Doc.concat(list[exprDoc, Doc.text(": "), printTypExpr(typ, cmtTbl)])
+      Doc.concat(list{exprDoc, Doc.text(": "), printTypExpr(typ, cmtTbl)})
     | Pexp_letmodule({txt: _modName}, _modExpr, _expr) =>
       printExpressionBlock(~braces=true, e, cmtTbl)
     | Pexp_letexception(_extensionConstructor, _expr) =>
@@ -8965,7 +8965,7 @@ module Printer = {
         }
       }
 
-      Doc.concat(list[Doc.text("assert "), rhs])
+      Doc.concat(list{Doc.text("assert "), rhs})
     | Pexp_lazy(expr) =>
       let rhs = {
         let doc = printExpressionWithComments(expr, cmtTbl)
@@ -8976,17 +8976,17 @@ module Printer = {
         }
       }
 
-      Doc.group(Doc.concat(list[Doc.text("lazy "), rhs]))
+      Doc.group(Doc.concat(list{Doc.text("lazy "), rhs}))
     | Pexp_open(_overrideFlag, _longidentLoc, _expr) =>
       printExpressionBlock(~braces=true, e, cmtTbl)
     | Pexp_pack(modExpr) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text("module("),
-          Doc.indent(Doc.concat(list[Doc.softLine, printModExpr(modExpr, cmtTbl)])),
+          Doc.indent(Doc.concat(list{Doc.softLine, printModExpr(modExpr, cmtTbl)})),
           Doc.softLine,
           Doc.rparen,
-        ]),
+        }),
       )
     | Pexp_sequence(_) => printExpressionBlock(~braces=true, e, cmtTbl)
     | Pexp_let(_) => printExpressionBlock(~braces=true, e, cmtTbl)
@@ -9001,7 +9001,7 @@ module Printer = {
       | Pexp_constraint(expr, typ) => (
           {
             ...expr,
-            pexp_attributes: List.concat(list[expr.pexp_attributes, returnExpr.pexp_attributes]),
+            pexp_attributes: List.concat(list{expr.pexp_attributes, returnExpr.pexp_attributes}),
           },
           Some(typ),
         )
@@ -9047,26 +9047,26 @@ module Printer = {
         }
 
         if shouldInline {
-          Doc.concat(list[Doc.space, returnDoc])
+          Doc.concat(list{Doc.space, returnDoc})
         } else {
           Doc.group(
             if shouldIndent {
-              Doc.indent(Doc.concat(list[Doc.line, returnDoc]))
+              Doc.indent(Doc.concat(list{Doc.line, returnDoc}))
             } else {
-              Doc.concat(list[Doc.space, returnDoc])
+              Doc.concat(list{Doc.space, returnDoc})
             },
           )
         }
       }
 
       let typConstraintDoc = switch typConstraint {
-      | Some(typ) => Doc.concat(list[Doc.text(": "), printTypExpr(typ, cmtTbl)])
+      | Some(typ) => Doc.concat(list{Doc.text(": "), printTypExpr(typ, cmtTbl)})
       | _ => Doc.nil
       }
 
       let attrs = printAttributes(attrs)
       Doc.group(
-        Doc.concat(list[attrs, parametersDoc, typConstraintDoc, Doc.text(" =>"), returnExprDoc]),
+        Doc.concat(list{attrs, parametersDoc, typConstraintDoc, Doc.text(" =>"), returnExprDoc}),
       )
     | Pexp_try(expr, cases) =>
       let exprDoc = {
@@ -9078,7 +9078,7 @@ module Printer = {
         }
       }
 
-      Doc.concat(list[Doc.text("try "), exprDoc, Doc.text(" catch "), printCases(cases, cmtTbl)])
+      Doc.concat(list{Doc.text("try "), exprDoc, Doc.text(" catch "), printCases(cases, cmtTbl)})
     | Pexp_match(expr, cases) =>
       let exprDoc = {
         let doc = printExpressionWithComments(expr, cmtTbl)
@@ -9089,18 +9089,18 @@ module Printer = {
         }
       }
 
-      Doc.concat(list[Doc.text("switch "), exprDoc, Doc.space, printCases(cases, cmtTbl)])
+      Doc.concat(list{Doc.text("switch "), exprDoc, Doc.space, printCases(cases, cmtTbl)})
     | Pexp_function(cases) =>
-      Doc.concat(list[Doc.text("x => switch x "), printCases(cases, cmtTbl)])
+      Doc.concat(list{Doc.text("x => switch x "), printCases(cases, cmtTbl)})
     | Pexp_coerce(expr, typOpt, typ) =>
       let docExpr = printExpressionWithComments(expr, cmtTbl)
       let docTyp = printTypExpr(typ, cmtTbl)
       let ofType = switch typOpt {
       | None => Doc.nil
-      | Some(typ1) => Doc.concat(list[Doc.text(": "), printTypExpr(typ1, cmtTbl)])
+      | Some(typ1) => Doc.concat(list{Doc.text(": "), printTypExpr(typ1, cmtTbl)})
       }
 
-      Doc.concat(list[Doc.lparen, docExpr, ofType, Doc.text(" :> "), docTyp, Doc.rparen])
+      Doc.concat(list{Doc.lparen, docExpr, ofType, Doc.text(" :> "), docTyp, Doc.rparen})
     | Pexp_send(_) => Doc.text("Pexp_send not impemented in printer")
     | Pexp_new(_) => Doc.text("Pexp_new not impemented in printer")
     | Pexp_setinstvar(_) => Doc.text("Pexp_setinstvar not impemented in printer")
@@ -9116,9 +9116,9 @@ module Printer = {
     }
 
     switch e.pexp_attributes {
-    | list[] => printedExpression
+    | list{} => printedExpression
     | attrs when !shouldPrintItsOwnAttributes =>
-      Doc.group(Doc.concat(list[printAttributes(attrs), printedExpression]))
+      Doc.group(Doc.concat(list{printAttributes(attrs), printedExpression}))
     | _ => printedExpression
     }
   }
@@ -9131,7 +9131,7 @@ module Printer = {
     | Pexp_constraint(expr, typ) => (
         {
           ...expr,
-          pexp_attributes: List.concat(list[expr.pexp_attributes, returnExpr.pexp_attributes]),
+          pexp_attributes: List.concat(list{expr.pexp_attributes, returnExpr.pexp_attributes}),
         },
         Some(typ),
       )
@@ -9175,38 +9175,38 @@ module Printer = {
       }
 
       if shouldInline {
-        Doc.concat(list[Doc.space, returnDoc])
+        Doc.concat(list{Doc.space, returnDoc})
       } else {
         Doc.group(
           if returnShouldIndent {
-            Doc.concat(list[
-              Doc.indent(Doc.concat(list[Doc.line, returnDoc])),
+            Doc.concat(list{
+              Doc.indent(Doc.concat(list{Doc.line, returnDoc})),
               if inCallback {
                 Doc.softLine
               } else {
                 Doc.nil
               },
-            ])
+            })
           } else {
-            Doc.concat(list[Doc.space, returnDoc])
+            Doc.concat(list{Doc.space, returnDoc})
           },
         )
       }
     }
 
     let typConstraintDoc = switch typConstraint {
-    | Some(typ) => Doc.concat(list[Doc.text(": "), printTypExpr(typ, cmtTbl)])
+    | Some(typ) => Doc.concat(list{Doc.text(": "), printTypExpr(typ, cmtTbl)})
     | _ => Doc.nil
     }
 
     Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         printAttributes(attrs),
         parametersDoc,
         typConstraintDoc,
         Doc.text(" =>"),
         returnExprDoc,
-      ]),
+      }),
     )
   }
 
@@ -9240,21 +9240,21 @@ module Printer = {
 
     let shouldIndent = ParsetreeViewer.isBinaryExpression(rhs)
     let doc = Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         lhsDoc,
         Doc.dot,
         printLidentPath(longidentLoc, cmtTbl),
         Doc.text(" ="),
         if shouldIndent {
-          Doc.group(Doc.indent(Doc.concat(list[Doc.line, rhsDoc])))
+          Doc.group(Doc.indent(Doc.concat(list{Doc.line, rhsDoc})))
         } else {
-          Doc.concat(list[Doc.space, rhsDoc])
+          Doc.concat(list{Doc.space, rhsDoc})
         },
-      ]),
+      }),
     )
     let doc = switch attrs {
-    | list[] => doc
-    | attrs => Doc.group(Doc.concat(list[printAttributes(attrs), doc]))
+    | list{} => doc
+    | attrs => Doc.group(Doc.concat(list{printAttributes(attrs), doc}))
     }
 
     printComments(doc, cmtTbl, loc)
@@ -9267,22 +9267,22 @@ module Printer = {
       switch expr.pexp_desc {
       | Pexp_apply(
           {pexp_desc: Pexp_ident({txt: Longident.Lident("^")})},
-          list[(Nolabel, arg1), (Nolabel, arg2)],
+          list{(Nolabel, arg1), (Nolabel, arg2)},
         ) =>
         let lhs = walkExpr(arg1)
         let rhs = walkExpr(arg2)
-        Doc.concat(list[lhs, rhs])
+        Doc.concat(list{lhs, rhs})
       | Pexp_constant(Pconst_string(txt, Some(prefix))) =>
         tag := prefix
         Doc.text(txt)
       | _ =>
         let doc = printExpressionWithComments(expr, cmtTbl)
-        Doc.concat(list[Doc.text("${"), doc, Doc.rbrace])
+        Doc.concat(list{Doc.text("${"), doc, Doc.rbrace})
       }
     }
 
     let content = walkExpr(expr)
-    Doc.concat(list[
+    Doc.concat(list{
       if tag.contents == "j" {
         Doc.nil
       } else {
@@ -9291,7 +9291,7 @@ module Printer = {
       Doc.text("`"),
       content,
       Doc.text("`"),
-    ])
+    })
   }
 
   and printUnaryExpression = (expr, cmtTbl) => {
@@ -9309,7 +9309,7 @@ module Printer = {
     switch expr.pexp_desc {
     | Pexp_apply(
         {pexp_desc: Pexp_ident({txt: Longident.Lident(operator)})},
-        list[(Nolabel, operand)],
+        list{(Nolabel, operand)},
       ) =>
       let printedOperand = {
         let doc = printExpressionWithComments(operand, cmtTbl)
@@ -9320,7 +9320,7 @@ module Printer = {
         }
       }
 
-      let doc = Doc.concat(list[printUnaryOperator(operator), printedOperand])
+      let doc = Doc.concat(list{printUnaryOperator(operator), printedOperand})
       printComments(doc, cmtTbl, expr.pexp_loc)
     | _ => assert false
     }
@@ -9356,7 +9356,7 @@ module Printer = {
         Doc.line
       }
 
-      Doc.concat(list[spacingBeforeOperator, Doc.text(operatorTxt), spacingAfterOperator])
+      Doc.concat(list{spacingBeforeOperator, Doc.text(operatorTxt), spacingAfterOperator})
     }
 
     let printOperand = (~isLhs, expr, parentOperator) => {
@@ -9367,7 +9367,7 @@ module Printer = {
               pexp_desc:
                 Pexp_apply(
                   {pexp_desc: Pexp_ident({txt: Longident.Lident(operator)})},
-                  list[(_, left), (_, right)],
+                  list{(_, left), (_, right)},
                 ),
             } =>
             if (
@@ -9386,7 +9386,7 @@ module Printer = {
                 )
 
                 let doc = if Parens.flattenOperandRhs(parentOperator, right) {
-                  Doc.concat(list[Doc.lparen, doc, Doc.rparen])
+                  Doc.concat(list{Doc.lparen, doc, Doc.rparen})
                 } else {
                   doc
                 }
@@ -9395,33 +9395,33 @@ module Printer = {
                   right.pexp_attributes,
                 )
 
-                Doc.concat(list[printAttributes(printeableAttrs), doc])
+                Doc.concat(list{printAttributes(printeableAttrs), doc})
               }
 
-              let doc = Doc.concat(list[
+              let doc = Doc.concat(list{
                 leftPrinted,
                 printBinaryOperator(~inlineRhs=false, operator),
                 rightPrinted,
-              ])
+              })
               let doc = if !isLhs && Parens.rhsBinaryExprOperand(operator, expr) {
-                Doc.concat(list[Doc.lparen, doc, Doc.rparen])
+                Doc.concat(list{Doc.lparen, doc, Doc.rparen})
               } else {
                 doc
               }
 
               printComments(doc, cmtTbl, expr.pexp_loc)
             } else {
-              let doc = printExpressionWithComments({...expr, pexp_attributes: list[]}, cmtTbl)
+              let doc = printExpressionWithComments({...expr, pexp_attributes: list{}}, cmtTbl)
               let doc = if (
                 Parens.subBinaryExprOperand(parentOperator, operator) ||
-                (expr.pexp_attributes != list[] &&
+                (expr.pexp_attributes != list{} &&
                   (ParsetreeViewer.isBinaryExpression(expr) || ParsetreeViewer.isTernaryExpr(expr)))
               ) {
-                Doc.concat(list[Doc.lparen, doc, Doc.rparen])
+                Doc.concat(list{Doc.lparen, doc, Doc.rparen})
               } else {
                 doc
               }
-              Doc.concat(list[printAttributes(expr.pexp_attributes), doc])
+              Doc.concat(list{printAttributes(expr.pexp_attributes), doc})
             }
           | _ => assert false
           }
@@ -9443,26 +9443,26 @@ module Printer = {
             }
           | Pexp_apply(
               {pexp_desc: Pexp_ident({txt: Longident.Lident("#=")})},
-              list[(Nolabel, lhs), (Nolabel, rhs)],
+              list{(Nolabel, lhs), (Nolabel, rhs)},
             ) =>
             let rhsDoc = printExpressionWithComments(rhs, cmtTbl)
             let lhsDoc = printExpressionWithComments(lhs, cmtTbl)
             /* TODO: unify indentation of "=" */
             let shouldIndent = ParsetreeViewer.isBinaryExpression(rhs)
             let doc = Doc.group(
-              Doc.concat(list[
+              Doc.concat(list{
                 lhsDoc,
                 Doc.text(" ="),
                 if shouldIndent {
-                  Doc.group(Doc.indent(Doc.concat(list[Doc.line, rhsDoc])))
+                  Doc.group(Doc.indent(Doc.concat(list{Doc.line, rhsDoc})))
                 } else {
-                  Doc.concat(list[Doc.space, rhsDoc])
+                  Doc.concat(list{Doc.space, rhsDoc})
                 },
-              ]),
+              }),
             )
             let doc = switch expr.pexp_attributes {
-            | list[] => doc
-            | attrs => Doc.group(Doc.concat(list[printAttributes(attrs), doc]))
+            | list{} => doc
+            | attrs => Doc.group(Doc.concat(list{printAttributes(attrs), doc}))
             }
 
             if isLhs {
@@ -9486,13 +9486,13 @@ module Printer = {
     switch expr.pexp_desc {
     | Pexp_apply(
         {pexp_desc: Pexp_ident({txt: Longident.Lident(("|." | "|>") as op)})},
-        list[(Nolabel, lhs), (Nolabel, rhs)],
+        list{(Nolabel, lhs), (Nolabel, rhs)},
       )
       when !(ParsetreeViewer.isBinaryExpression(lhs) || ParsetreeViewer.isBinaryExpression(rhs)) =>
       let lhsDoc = printOperand(~isLhs=true, lhs, op)
       let rhsDoc = printOperand(~isLhs=false, rhs, op)
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           lhsDoc,
           switch op {
           | "|." => Doc.text("->")
@@ -9500,22 +9500,22 @@ module Printer = {
           | _ => assert false
           },
           rhsDoc,
-        ]),
+        }),
       )
     | Pexp_apply(
         {pexp_desc: Pexp_ident({txt: Longident.Lident(operator)})},
-        list[(Nolabel, lhs), (Nolabel, rhs)],
+        list{(Nolabel, lhs), (Nolabel, rhs)},
       ) =>
       let right = {
         let operatorWithRhs = {
           let rhsDoc = printOperand(~isLhs=false, rhs, operator)
-          Doc.concat(list[
+          Doc.concat(list{
             printBinaryOperator(
               ~inlineRhs=ParsetreeViewer.shouldInlineRhsBinaryExpr(rhs),
               operator,
             ),
             rhsDoc,
-          ])
+          })
         }
         if ParsetreeViewer.shouldIndentBinaryExpr(expr) {
           Doc.group(Doc.indent(operatorWithRhs))
@@ -9524,9 +9524,9 @@ module Printer = {
         }
       }
 
-      let doc = Doc.group(Doc.concat(list[printOperand(~isLhs=true, lhs, operator), right]))
+      let doc = Doc.group(Doc.concat(list{printOperand(~isLhs=true, lhs, operator), right}))
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           printAttributes(expr.pexp_attributes),
           switch Parens.binaryExpr({
             ...expr,
@@ -9541,7 +9541,7 @@ module Printer = {
           | Parenthesized => addParens(doc)
           | Nothing => doc
           },
-        ]),
+        }),
       )
     | _ => Doc.nil
     }
@@ -9552,7 +9552,7 @@ module Printer = {
     switch expr.pexp_desc {
     | Pexp_apply(
         {pexp_desc: Pexp_ident({txt: Longident.Lident("##")})},
-        list[(Nolabel, parentExpr), (Nolabel, memberExpr)],
+        list{(Nolabel, parentExpr), (Nolabel, memberExpr)},
       ) =>
       let parentDoc = {
         let doc = printExpressionWithComments(parentExpr, cmtTbl)
@@ -9570,21 +9570,21 @@ module Printer = {
         | _ => printExpressionWithComments(memberExpr, cmtTbl)
         }
 
-        Doc.concat(list[Doc.text("\""), memberDoc, Doc.text("\"")])
+        Doc.concat(list{Doc.text("\""), memberDoc, Doc.text("\"")})
       }
 
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           printAttributes(expr.pexp_attributes),
           parentDoc,
           Doc.lbracket,
           member,
           Doc.rbracket,
-        ]),
+        }),
       )
     | Pexp_apply(
         {pexp_desc: Pexp_ident({txt: Longident.Lident("#=")})},
-        list[(Nolabel, lhs), (Nolabel, rhs)],
+        list{(Nolabel, lhs), (Nolabel, rhs)},
       ) =>
       let rhsDoc = {
         let doc = printExpressionWithComments(rhs, cmtTbl)
@@ -9599,23 +9599,23 @@ module Printer = {
       let shouldIndent =
         !ParsetreeViewer.isBracedExpr(rhs) && ParsetreeViewer.isBinaryExpression(rhs)
       let doc = Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           printExpressionWithComments(lhs, cmtTbl),
           Doc.text(" ="),
           if shouldIndent {
-            Doc.group(Doc.indent(Doc.concat(list[Doc.line, rhsDoc])))
+            Doc.group(Doc.indent(Doc.concat(list{Doc.line, rhsDoc})))
           } else {
-            Doc.concat(list[Doc.space, rhsDoc])
+            Doc.concat(list{Doc.space, rhsDoc})
           },
-        ]),
+        }),
       )
       switch expr.pexp_attributes {
-      | list[] => doc
-      | attrs => Doc.group(Doc.concat(list[printAttributes(attrs), doc]))
+      | list{} => doc
+      | attrs => Doc.group(Doc.concat(list{printAttributes(attrs), doc}))
       }
     | Pexp_apply(
         {pexp_desc: Pexp_ident({txt: Longident.Ldot(Lident("Array"), "get")})},
-        list[(Nolabel, parentExpr), (Nolabel, memberExpr)],
+        list{(Nolabel, parentExpr), (Nolabel, memberExpr)},
       ) =>
       let member = {
         let memberDoc = {
@@ -9635,7 +9635,7 @@ module Printer = {
         if shouldInline {
           memberDoc
         } else {
-          Doc.concat(list[Doc.indent(Doc.concat(list[Doc.softLine, memberDoc])), Doc.softLine])
+          Doc.concat(list{Doc.indent(Doc.concat(list{Doc.softLine, memberDoc})), Doc.softLine})
         }
       }
 
@@ -9649,17 +9649,17 @@ module Printer = {
       }
 
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           printAttributes(expr.pexp_attributes),
           parentDoc,
           Doc.lbracket,
           member,
           Doc.rbracket,
-        ]),
+        }),
       )
     | Pexp_apply(
         {pexp_desc: Pexp_ident({txt: Longident.Ldot(Lident("Array"), "set")})},
-        list[(Nolabel, parentExpr), (Nolabel, memberExpr), (Nolabel, targetExpr)],
+        list{(Nolabel, parentExpr), (Nolabel, memberExpr), (Nolabel, targetExpr)},
       ) =>
       let member = {
         let memberDoc = {
@@ -9679,7 +9679,7 @@ module Printer = {
         if shouldInline {
           memberDoc
         } else {
-          Doc.concat(list[Doc.indent(Doc.concat(list[Doc.softLine, memberDoc])), Doc.softLine])
+          Doc.concat(list{Doc.indent(Doc.concat(list{Doc.softLine, memberDoc})), Doc.softLine})
         }
       }
 
@@ -9689,7 +9689,7 @@ module Printer = {
         ParsetreeViewer.isBinaryExpression(targetExpr) ||
         switch targetExpr {
         | {
-            pexp_attributes: list[({Location.txt: "ns.ternary"}, _)],
+            pexp_attributes: list{({Location.txt: "ns.ternary"}, _)},
             pexp_desc: Pexp_ifthenelse(ifExpr, _, _),
           } =>
           ParsetreeViewer.isBinaryExpression(ifExpr) ||
@@ -9718,7 +9718,7 @@ module Printer = {
       }
 
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           printAttributes(expr.pexp_attributes),
           parentDoc,
           Doc.lbracket,
@@ -9726,11 +9726,11 @@ module Printer = {
           Doc.rbracket,
           Doc.text(" ="),
           if shouldIndentTargetExpr {
-            Doc.indent(Doc.concat(list[Doc.line, targetExpr]))
+            Doc.indent(Doc.concat(list{Doc.line, targetExpr}))
           } else {
-            Doc.concat(list[Doc.space, targetExpr])
+            Doc.concat(list{Doc.space, targetExpr})
           },
-        ]),
+        }),
       )
     /* TODO: cleanup, are those branches even remotely performant? */
     | Pexp_apply({pexp_desc: Pexp_ident(lident)}, args)
@@ -9753,14 +9753,14 @@ module Printer = {
       if ParsetreeViewer.requiresSpecialCallbackPrintingFirstArg(args) {
         let argsDoc = printArgumentsWithCallbackInFirstPosition(~uncurried, args, cmtTbl)
 
-        Doc.concat(list[printAttributes(attrs), callExprDoc, argsDoc])
+        Doc.concat(list{printAttributes(attrs), callExprDoc, argsDoc})
       } else if ParsetreeViewer.requiresSpecialCallbackPrintingLastArg(args) {
         let argsDoc = printArgumentsWithCallbackInLastPosition(~uncurried, args, cmtTbl)
 
-        Doc.concat(list[printAttributes(attrs), callExprDoc, argsDoc])
+        Doc.concat(list{printAttributes(attrs), callExprDoc, argsDoc})
       } else {
         let argsDoc = printArguments(~uncurried, args, cmtTbl)
-        Doc.concat(list[printAttributes(attrs), callExprDoc, argsDoc])
+        Doc.concat(list{printAttributes(attrs), callExprDoc, argsDoc})
       }
     | _ => assert false
     }
@@ -9770,35 +9770,35 @@ module Printer = {
     let (formattedProps, children) = printJsxProps(args, cmtTbl)
     /* <div className="test" /> */
     let isSelfClosing = switch children {
-    | list[] => true
+    | list{} => true
     | _ => false
     }
     Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.group(
-          Doc.concat(list[
-            printComments(Doc.concat(list[Doc.lessThan, name]), cmtTbl, lident.Asttypes.loc),
+          Doc.concat(list{
+            printComments(Doc.concat(list{Doc.lessThan, name}), cmtTbl, lident.Asttypes.loc),
             formattedProps,
             if isSelfClosing {
-              Doc.concat(list[Doc.line, Doc.text("/>")])
+              Doc.concat(list{Doc.line, Doc.text("/>")})
             } else {
               Doc.nil
             },
-          ]),
+          }),
         ),
         if isSelfClosing {
           Doc.nil
         } else {
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.greaterThan,
-            Doc.indent(Doc.concat(list[Doc.line, printJsxChildren(children, cmtTbl)])),
+            Doc.indent(Doc.concat(list{Doc.line, printJsxChildren(children, cmtTbl)})),
             Doc.line,
             Doc.text("</"),
             name,
             Doc.greaterThan,
-          ])
+          })
         },
-      ]),
+      }),
     )
   }
 
@@ -9807,15 +9807,15 @@ module Printer = {
     let closing = Doc.text("</>")
     let (children, _) = ParsetreeViewer.collectListExpressions(expr)
     Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         opening,
         switch children {
-        | list[] => Doc.nil
-        | children => Doc.indent(Doc.concat(list[Doc.line, printJsxChildren(children, cmtTbl)]))
+        | list{} => Doc.nil
+        | children => Doc.indent(Doc.concat(list{Doc.line, printJsxChildren(children, cmtTbl)}))
         },
         Doc.line,
         closing,
-      ]),
+      }),
     )
   }
 
@@ -9839,29 +9839,29 @@ module Printer = {
   and printJsxProps = (args, cmtTbl) => {
     let rec loop = (props, args) =>
       switch args {
-      | list[] => (Doc.nil, list[])
-      | list[
+      | list{} => (Doc.nil, list{})
+      | list{
           (Asttypes.Labelled("children"), children),
           (
             Asttypes.Nolabel,
             {Parsetree.pexp_desc: Pexp_construct({txt: Longident.Lident("()")}, None)},
           ),
-        ] =>
+        } =>
         let formattedProps = Doc.indent(
           switch props {
-          | list[] => Doc.nil
+          | list{} => Doc.nil
           | props =>
-            Doc.concat(list[Doc.line, Doc.group(Doc.join(~sep=Doc.line, props |> List.rev))])
+            Doc.concat(list{Doc.line, Doc.group(Doc.join(~sep=Doc.line, props |> List.rev))})
           },
         )
         let (children, _) = ParsetreeViewer.collectListExpressions(children)
         (formattedProps, children)
-      | list[arg, ...args] =>
+      | list{arg, ...args} =>
         let propDoc = printJsxProp(arg, cmtTbl)
-        loop(list[propDoc, ...props], args)
+        loop(list{propDoc, ...props}, args)
       }
 
-    loop(list[], args)
+    loop(list{}, args)
   }
 
   and printJsxProp = (arg, cmtTbl) =>
@@ -9869,7 +9869,7 @@ module Printer = {
     | (
         (Asttypes.Labelled(lblTxt) | Optional(lblTxt)) as lbl,
         {
-          Parsetree.pexp_attributes: list[({Location.txt: "ns.namedArgLoc", loc: argLoc}, _)],
+          Parsetree.pexp_attributes: list{({Location.txt: "ns.namedArgLoc", loc: argLoc}, _)},
           pexp_desc: Pexp_ident({txt: Longident.Lident(ident)}),
         },
       ) when lblTxt == ident /* jsx punning */ =>
@@ -9877,21 +9877,21 @@ module Printer = {
       | Nolabel => Doc.nil
       | Labelled(_lbl) => printComments(printIdentLike(ident), cmtTbl, argLoc)
       | Optional(_lbl) =>
-        let doc = Doc.concat(list[Doc.question, printIdentLike(ident)])
+        let doc = Doc.concat(list{Doc.question, printIdentLike(ident)})
         printComments(doc, cmtTbl, argLoc)
       }
     | (
         (Asttypes.Labelled(lblTxt) | Optional(lblTxt)) as lbl,
-        {Parsetree.pexp_attributes: list[], pexp_desc: Pexp_ident({txt: Longident.Lident(ident)})},
+        {Parsetree.pexp_attributes: list{}, pexp_desc: Pexp_ident({txt: Longident.Lident(ident)})},
       ) when lblTxt == ident /* jsx punning when printing from Reason */ =>
       switch lbl {
       | Nolabel => Doc.nil
       | Labelled(_lbl) => printIdentLike(ident)
-      | Optional(_lbl) => Doc.concat(list[Doc.question, printIdentLike(ident)])
+      | Optional(_lbl) => Doc.concat(list{Doc.question, printIdentLike(ident)})
       }
     | (lbl, expr) =>
       let (argLoc, expr) = switch expr.pexp_attributes {
-      | list[({Location.txt: "ns.namedArgLoc", loc}, _), ...attrs] => (
+      | list{({Location.txt: "ns.namedArgLoc", loc}, _), ...attrs} => (
           loc,
           {...expr, pexp_attributes: attrs},
         )
@@ -9901,10 +9901,10 @@ module Printer = {
       let lblDoc = switch lbl {
       | Asttypes.Labelled(lbl) =>
         let lbl = printComments(printIdentLike(lbl), cmtTbl, argLoc)
-        Doc.concat(list[lbl, Doc.equal])
+        Doc.concat(list{lbl, Doc.equal})
       | Asttypes.Optional(lbl) =>
         let lbl = printComments(printIdentLike(lbl), cmtTbl, argLoc)
-        Doc.concat(list[lbl, Doc.equal, Doc.question])
+        Doc.concat(list{lbl, Doc.equal, Doc.question})
       | Nolabel => Doc.nil
       }
 
@@ -9925,7 +9925,7 @@ module Printer = {
       }
 
       let fullLoc = {...argLoc, loc_end: expr.pexp_loc.loc_end}
-      printComments(Doc.concat(list[lblDoc, exprDoc]), cmtTbl, fullLoc)
+      printComments(Doc.concat(list{lblDoc, exprDoc}), cmtTbl, fullLoc)
     }
 
   /* div -> div.
@@ -9934,12 +9934,12 @@ module Printer = {
   and printJsxName = ({txt: lident}) => {
     let rec flatten = (acc, lident) =>
       switch lident {
-      | Longident.Lident(txt) => list[txt, ...acc]
+      | Longident.Lident(txt) => list{txt, ...acc}
       | Ldot(lident, txt) =>
         let acc = if txt == "createElement" {
           acc
         } else {
-          list[txt, ...acc]
+          list{txt, ...acc}
         }
         flatten(acc, lident)
       | _ => acc
@@ -9948,25 +9948,25 @@ module Printer = {
     switch lident {
     | Longident.Lident(txt) => Doc.text(txt)
     | _ as lident =>
-      let segments = flatten(list[], lident)
+      let segments = flatten(list{}, lident)
       Doc.join(~sep=Doc.dot, List.map(Doc.text, segments))
     }
   }
 
   and printArgumentsWithCallbackInFirstPosition = (~uncurried, args, cmtTbl) => {
     let (callback, printedArgs) = switch args {
-    | list[(lbl, expr), ...args] =>
+    | list{(lbl, expr), ...args} =>
       let lblDoc = switch lbl {
       | Asttypes.Nolabel => Doc.nil
-      | Asttypes.Labelled(txt) => Doc.concat(list[Doc.tilde, printIdentLike(txt), Doc.equal])
+      | Asttypes.Labelled(txt) => Doc.concat(list{Doc.tilde, printIdentLike(txt), Doc.equal})
       | Asttypes.Optional(txt) =>
-        Doc.concat(list[Doc.tilde, printIdentLike(txt), Doc.equal, Doc.question])
+        Doc.concat(list{Doc.tilde, printIdentLike(txt), Doc.equal, Doc.question})
       }
 
-      let callback = Doc.concat(list[lblDoc, printPexpFun(~inCallback=true, expr, cmtTbl)])
+      let callback = Doc.concat(list{lblDoc, printPexpFun(~inCallback=true, expr, cmtTbl)})
       let printedArgs =
         List.map(arg => printArgument(arg, cmtTbl), args) |> Doc.join(
-          ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+          ~sep=Doc.concat(list{Doc.comma, Doc.line}),
         )
 
       (callback, printedArgs)
@@ -9978,7 +9978,7 @@ module Printer = {
      *   MyModuleBlah.toList(argument)
      * }, longArgumet, veryLooooongArgument)
      */
-    let fitsOnOneLine = Doc.concat(list[
+    let fitsOnOneLine = Doc.concat(list{
       if uncurried {
         Doc.text("(. ")
       } else {
@@ -9989,7 +9989,7 @@ module Printer = {
       Doc.line,
       printedArgs,
       Doc.rparen,
-    ])
+    })
 
     /* Thing.map(
      *   (param1, parm2) => doStuff(param1, parm2),
@@ -9999,32 +9999,32 @@ module Printer = {
      * )
      */
     let breakAllArgs = printArguments(~uncurried, args, cmtTbl)
-    Doc.customLayout(list[fitsOnOneLine, breakAllArgs])
+    Doc.customLayout(list{fitsOnOneLine, breakAllArgs})
   }
 
   and printArgumentsWithCallbackInLastPosition = (~uncurried, args, cmtTbl) => {
     let rec loop = (acc, args) =>
       switch args {
-      | list[] => (Doc.nil, Doc.nil)
-      | list[(lbl, expr)] =>
+      | list{} => (Doc.nil, Doc.nil)
+      | list{(lbl, expr)} =>
         let lblDoc = switch lbl {
         | Asttypes.Nolabel => Doc.nil
-        | Asttypes.Labelled(txt) => Doc.concat(list[Doc.tilde, printIdentLike(txt), Doc.equal])
+        | Asttypes.Labelled(txt) => Doc.concat(list{Doc.tilde, printIdentLike(txt), Doc.equal})
         | Asttypes.Optional(txt) =>
-          Doc.concat(list[Doc.tilde, printIdentLike(txt), Doc.equal, Doc.question])
+          Doc.concat(list{Doc.tilde, printIdentLike(txt), Doc.equal, Doc.question})
         }
 
         let callback = printPexpFun(~inCallback=true, expr, cmtTbl)
-        (Doc.concat(List.rev(acc)), Doc.concat(list[lblDoc, callback]))
-      | list[arg, ...args] =>
+        (Doc.concat(List.rev(acc)), Doc.concat(list{lblDoc, callback}))
+      | list{arg, ...args} =>
         let argDoc = printArgument(arg, cmtTbl)
-        loop(list[Doc.line, Doc.comma, argDoc, ...acc], args)
+        loop(list{Doc.line, Doc.comma, argDoc, ...acc}, args)
       }
 
-    let (printedArgs, callback) = loop(list[], args)
+    let (printedArgs, callback) = loop(list{}, args)
 
     /* Thing.map(foo, (arg1, arg2) => MyModuleBlah.toList(argument)) */
-    let fitsOnOneLine = Doc.concat(list[
+    let fitsOnOneLine = Doc.concat(list{
       if uncurried {
         Doc.text("(.")
       } else {
@@ -10033,13 +10033,13 @@ module Printer = {
       printedArgs,
       callback,
       Doc.rparen,
-    ])
+    })
 
     /* Thing.map(longArgumet, veryLooooongArgument, (arg1, arg2) =>
      *   MyModuleBlah.toList(argument)
      * )
      */
-    let arugmentsFitOnOneLine = Doc.concat(list[
+    let arugmentsFitOnOneLine = Doc.concat(list{
       if uncurried {
         Doc.text("(.")
       } else {
@@ -10050,7 +10050,7 @@ module Printer = {
       Doc.breakableGroup(~forceBreak=true, callback),
       Doc.softLine,
       Doc.rparen,
-    ])
+    })
 
     /* Thing.map(
      *   arg1,
@@ -10060,7 +10060,7 @@ module Printer = {
      * )
      */
     let breakAllArgs = printArguments(~uncurried, args, cmtTbl)
-    Doc.customLayout(list[fitsOnOneLine, arugmentsFitOnOneLine, breakAllArgs])
+    Doc.customLayout(list{fitsOnOneLine, arugmentsFitOnOneLine, breakAllArgs})
   }
 
   and printArguments = (
@@ -10069,13 +10069,13 @@ module Printer = {
     cmtTbl,
   ) =>
     switch args {
-    | list[(Nolabel, {pexp_desc: Pexp_construct({txt: Longident.Lident("()")}, _)})] =>
+    | list{(Nolabel, {pexp_desc: Pexp_construct({txt: Longident.Lident("()")}, _)})} =>
       if uncurried {
         Doc.text("(.)")
       } else {
         Doc.text("()")
       }
-    | list[(Nolabel, arg)] when ParsetreeViewer.isHuggableExpression(arg) =>
+    | list{(Nolabel, arg)} when ParsetreeViewer.isHuggableExpression(arg) =>
       let argDoc = {
         let doc = printExpressionWithComments(arg, cmtTbl)
         switch Parens.expr(arg) {
@@ -10085,7 +10085,7 @@ module Printer = {
         }
       }
 
-      Doc.concat(list[
+      Doc.concat(list{
         if uncurried {
           Doc.text("(.")
         } else {
@@ -10093,32 +10093,32 @@ module Printer = {
         },
         argDoc,
         Doc.rparen,
-      ])
+      })
     | args =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           if uncurried {
             Doc.text("(.")
           } else {
             Doc.lparen
           },
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               if uncurried {
                 Doc.line
               } else {
                 Doc.softLine
               },
               Doc.join(
-                ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                 List.map(arg => printArgument(arg, cmtTbl), args),
               ),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rparen,
-        ]),
+        }),
       )
     }
 
@@ -10143,15 +10143,15 @@ module Printer = {
         Asttypes.Labelled(lbl),
         {
           pexp_desc: Pexp_ident({txt: Longident.Lident(name)}),
-          pexp_attributes: list[] | list[({Location.txt: "ns.namedArgLoc"}, _)],
+          pexp_attributes: list{} | list{({Location.txt: "ns.namedArgLoc"}, _)},
         } as argExpr,
       ) when lbl == name && !ParsetreeViewer.isBracedExpr(argExpr) =>
       let loc = switch arg.pexp_attributes {
-      | list[({Location.txt: "ns.namedArgLoc", loc}, _), ..._] => loc
+      | list{({Location.txt: "ns.namedArgLoc", loc}, _), ..._} => loc
       | _ => arg.pexp_loc
       }
 
-      let doc = Doc.concat(list[Doc.tilde, printIdentLike(lbl)])
+      let doc = Doc.concat(list{Doc.tilde, printIdentLike(lbl)})
       printComments(doc, cmtTbl, loc)
 
     /* ~a: int (punned) */
@@ -10161,42 +10161,42 @@ module Printer = {
           pexp_desc:
             Pexp_constraint({pexp_desc: Pexp_ident({txt: Longident.Lident(name)})} as argExpr, typ),
           pexp_loc,
-          pexp_attributes: (list[] | list[({Location.txt: "ns.namedArgLoc"}, _)]) as attrs,
+          pexp_attributes: (list{} | list{({Location.txt: "ns.namedArgLoc"}, _)}) as attrs,
         },
       ) when lbl == name && !ParsetreeViewer.isBracedExpr(argExpr) =>
       let loc = switch attrs {
-      | list[({Location.txt: "ns.namedArgLoc", loc}, _), ..._] => {
+      | list{({Location.txt: "ns.namedArgLoc", loc}, _), ..._} => {
           ...loc,
           loc_end: pexp_loc.loc_end,
         }
       | _ => arg.pexp_loc
       }
 
-      let doc = Doc.concat(list[
+      let doc = Doc.concat(list{
         Doc.tilde,
         printIdentLike(lbl),
         Doc.text(": "),
         printTypExpr(typ, cmtTbl),
-      ])
+      })
       printComments(doc, cmtTbl, loc)
     /* ~a? (optional lbl punned) */
     | (
         Asttypes.Optional(lbl),
         {
           pexp_desc: Pexp_ident({txt: Longident.Lident(name)}),
-          pexp_attributes: list[] | list[({Location.txt: "ns.namedArgLoc"}, _)],
+          pexp_attributes: list{} | list{({Location.txt: "ns.namedArgLoc"}, _)},
         },
       ) when lbl == name =>
       let loc = switch arg.pexp_attributes {
-      | list[({Location.txt: "ns.namedArgLoc", loc}, _), ..._] => loc
+      | list{({Location.txt: "ns.namedArgLoc", loc}, _), ..._} => loc
       | _ => arg.pexp_loc
       }
 
-      let doc = Doc.concat(list[Doc.tilde, printIdentLike(lbl), Doc.question])
+      let doc = Doc.concat(list{Doc.tilde, printIdentLike(lbl), Doc.question})
       printComments(doc, cmtTbl, loc)
     | (_lbl, expr) =>
       let (argLoc, expr) = switch expr.pexp_attributes {
-      | list[({Location.txt: "ns.namedArgLoc", loc}, _), ...attrs] => (
+      | list{({Location.txt: "ns.namedArgLoc", loc}, _), ...attrs} => (
           loc,
           {...expr, pexp_attributes: attrs},
         )
@@ -10206,10 +10206,10 @@ module Printer = {
       let printedLbl = switch argLbl {
       | Asttypes.Nolabel => Doc.nil
       | Asttypes.Labelled(lbl) =>
-        let doc = Doc.concat(list[Doc.tilde, printIdentLike(lbl), Doc.equal])
+        let doc = Doc.concat(list{Doc.tilde, printIdentLike(lbl), Doc.equal})
         printComments(doc, cmtTbl, argLoc)
       | Asttypes.Optional(lbl) =>
-        let doc = Doc.concat(list[Doc.tilde, printIdentLike(lbl), Doc.equal, Doc.question])
+        let doc = Doc.concat(list{Doc.tilde, printIdentLike(lbl), Doc.equal, Doc.question})
         printComments(doc, cmtTbl, argLoc)
       }
 
@@ -10223,20 +10223,20 @@ module Printer = {
       }
 
       let loc = {...argLoc, loc_end: expr.pexp_loc.loc_end}
-      let doc = Doc.concat(list[printedLbl, printedExpr])
+      let doc = Doc.concat(list{printedLbl, printedExpr})
       printComments(doc, cmtTbl, loc)
     }
 
   and printCases = (cases: list<Parsetree.case>, cmtTbl) =>
     Doc.breakableGroup(
       ~forceBreak=true,
-      Doc.concat(list[Doc.lbrace, Doc.concat(list[Doc.line, printList(~getLoc=n => {
+      Doc.concat(list{Doc.lbrace, Doc.concat(list{Doc.line, printList(~getLoc=n => {
             ...n.Parsetree.pc_lhs.ppat_loc,
             loc_end: switch ParsetreeViewer.processBracesAttr(n.Parsetree.pc_rhs) {
             | (None, _) => n.pc_rhs.pexp_loc.loc_end
             | (Some({loc}, _), _) => loc.Location.loc_end
             },
-          }, ~print=printCase, ~nodes=cases, cmtTbl)]), Doc.line, Doc.rbrace]),
+          }, ~print=printCase, ~nodes=cases, cmtTbl)}), Doc.line, Doc.rbrace}),
     )
 
   and printCase = (case: Parsetree.case, cmtTbl) => {
@@ -10255,7 +10255,7 @@ module Printer = {
     | None => Doc.nil
     | Some(expr) =>
       Doc.group(
-        Doc.concat(list[Doc.line, Doc.text("when "), printExpressionWithComments(expr, cmtTbl)]),
+        Doc.concat(list{Doc.line, Doc.text("when "), printExpressionWithComments(expr, cmtTbl)}),
       )
     }
 
@@ -10280,7 +10280,7 @@ module Printer = {
       }
     }
 
-    let content = Doc.concat(list[
+    let content = Doc.concat(list{
       if shouldIndentPattern {
         Doc.indent(patternDoc)
       } else {
@@ -10289,40 +10289,40 @@ module Printer = {
       Doc.indent(guard),
       Doc.text(" =>"),
       Doc.indent(
-        Doc.concat(list[
+        Doc.concat(list{
           if shouldInlineRhs {
             Doc.space
           } else {
             Doc.line
           },
           rhs,
-        ]),
+        }),
       ),
-    ])
-    Doc.group(Doc.concat(list[Doc.text("| "), content]))
+    })
+    Doc.group(Doc.concat(list{Doc.text("| "), content}))
   }
 
   and printExprFunParameters = (~inCallback, ~uncurried, ~hasConstraint, parameters, cmtTbl) =>
     switch parameters {
     /* let f = _ => () */
-    | list[ParsetreeViewer.Parameter({
-        attrs: list[],
+    | list{ParsetreeViewer.Parameter({
+        attrs: list{},
         lbl: Asttypes.Nolabel,
         defaultExpr: None,
         pat: {Parsetree.ppat_desc: Ppat_any},
-      })] when !uncurried =>
+      })} when !uncurried =>
       if hasConstraint {
         Doc.text("(_)")
       } else {
         Doc.text("_")
       }
     /* let f = a => () */
-    | list[ParsetreeViewer.Parameter({
-        attrs: list[],
+    | list{ParsetreeViewer.Parameter({
+        attrs: list{},
         lbl: Asttypes.Nolabel,
         defaultExpr: None,
         pat: {Parsetree.ppat_desc: Ppat_var(stringLoc)},
-      })] when !uncurried =>
+      })} when !uncurried =>
       let txtDoc = {
         let var = printIdentLike(stringLoc.txt)
         if hasConstraint {
@@ -10334,12 +10334,12 @@ module Printer = {
 
       printComments(txtDoc, cmtTbl, stringLoc.loc)
     /* let f = () => () */
-    | list[ParsetreeViewer.Parameter({
-        attrs: list[],
+    | list{ParsetreeViewer.Parameter({
+        attrs: list{},
         lbl: Asttypes.Nolabel,
         defaultExpr: None,
         pat: {ppat_desc: Ppat_construct({txt: Longident.Lident("()")}, None)},
-      })] when !uncurried =>
+      })} when !uncurried =>
       Doc.text("()")
     /* let f = (~greeting, ~from as hometown, ~x=?) => () */
     | parameters =>
@@ -10349,26 +10349,26 @@ module Printer = {
         Doc.lparen
       }
       let shouldHug = ParsetreeViewer.parametersShouldHug(parameters)
-      let printedParamaters = Doc.concat(list[
+      let printedParamaters = Doc.concat(list{
         if shouldHug || inCallback {
           Doc.nil
         } else {
           Doc.softLine
         },
         Doc.join(
-          ~sep=Doc.concat(list[
+          ~sep=Doc.concat(list{
             Doc.comma,
             if inCallback {
               Doc.space
             } else {
               Doc.line
             },
-          ]),
+          }),
           List.map(p => printExpFunParameter(p, cmtTbl), parameters),
         ),
-      ])
+      })
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           lparen,
           if shouldHug || inCallback {
             printedParamaters
@@ -10378,10 +10378,10 @@ module Printer = {
           if shouldHug || inCallback {
             Doc.nil
           } else {
-            Doc.concat(list[Doc.trailingComma, Doc.softLine])
+            Doc.concat(list{Doc.trailingComma, Doc.softLine})
           },
           Doc.rparen,
-        ]),
+        }),
       )
     }
 
@@ -10389,7 +10389,7 @@ module Printer = {
     switch parameter {
     | ParsetreeViewer.NewTypes({attrs, locs: lbls}) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           printAttributes(attrs),
           Doc.text("type "),
           Doc.join(
@@ -10399,19 +10399,19 @@ module Printer = {
               lbls,
             ),
           ),
-        ]),
+        }),
       )
     | Parameter({attrs, lbl, defaultExpr, pat: pattern}) =>
       let (isUncurried, attrs) = ParsetreeViewer.processUncurriedAttribute(attrs)
       let uncurried = if isUncurried {
-        Doc.concat(list[Doc.dot, Doc.space])
+        Doc.concat(list{Doc.dot, Doc.space})
       } else {
         Doc.nil
       }
       let attrs = printAttributes(attrs)
       /* =defaultValue */
       let defaultExprDoc = switch defaultExpr {
-      | Some(expr) => Doc.concat(list[Doc.text("="), printExpressionWithComments(expr, cmtTbl)])
+      | Some(expr) => Doc.concat(list{Doc.text("="), printExpressionWithComments(expr, cmtTbl)})
       | None => Doc.nil
       }
 
@@ -10423,33 +10423,33 @@ module Printer = {
           Asttypes.Labelled(lbl) | Optional(lbl),
           {
             ppat_desc: Ppat_var(stringLoc),
-            ppat_attributes: list[] | list[({Location.txt: "ns.namedArgLoc"}, _)],
+            ppat_attributes: list{} | list{({Location.txt: "ns.namedArgLoc"}, _)},
           },
         ) when lbl == stringLoc.txt =>
         /* ~d */
-        Doc.concat(list[Doc.text("~"), printIdentLike(lbl)])
+        Doc.concat(list{Doc.text("~"), printIdentLike(lbl)})
       | (
           Asttypes.Labelled(lbl) | Optional(lbl),
           {
             ppat_desc: Ppat_constraint({ppat_desc: Ppat_var({txt})}, typ),
-            ppat_attributes: list[] | list[({Location.txt: "ns.namedArgLoc"}, _)],
+            ppat_attributes: list{} | list{({Location.txt: "ns.namedArgLoc"}, _)},
           },
         ) when lbl == txt =>
         /* ~d: e */
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text("~"),
           printIdentLike(lbl),
           Doc.text(": "),
           printTypExpr(typ, cmtTbl),
-        ])
+        })
       | (Asttypes.Labelled(lbl) | Optional(lbl), pattern) =>
         /* ~b as c */
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text("~"),
           printIdentLike(lbl),
           Doc.text(" as "),
           printPattern(pattern, cmtTbl),
-        ])
+        })
       }
 
       let optionalLabelSuffix = switch (lbl, defaultExpr) {
@@ -10458,12 +10458,12 @@ module Printer = {
       }
 
       let doc = Doc.group(
-        Doc.concat(list[uncurried, attrs, labelWithPattern, defaultExprDoc, optionalLabelSuffix]),
+        Doc.concat(list{uncurried, attrs, labelWithPattern, defaultExprDoc, optionalLabelSuffix}),
       )
       let cmtLoc = switch defaultExpr {
       | None =>
         switch pattern.ppat_attributes {
-        | list[({Location.txt: "ns.namedArgLoc", loc}, _), ..._] => {
+        | list{({Location.txt: "ns.namedArgLoc", loc}, _), ..._} => {
             ...loc,
             loc_end: pattern.ppat_loc.loc_end,
           }
@@ -10471,7 +10471,7 @@ module Printer = {
         }
       | Some(expr) =>
         let startPos = switch pattern.ppat_attributes {
-        | list[({Location.txt: "ns.namedArgLoc", loc}, _), ..._] => loc.loc_start
+        | list{({Location.txt: "ns.namedArgLoc", loc}, _), ..._} => loc.loc_start
         | _ => pattern.ppat_loc.loc_start
         }
         {
@@ -10493,14 +10493,14 @@ module Printer = {
           printComments(doc, cmtTbl, modName.loc)
         }
 
-        let letModuleDoc = Doc.concat(list[
+        let letModuleDoc = Doc.concat(list{
           Doc.text("module "),
           name,
           Doc.text(" = "),
           printModExpr(modExpr, cmtTbl),
-        ])
+        })
         let loc = {...expr.pexp_loc, loc_end: modExpr.pmod_loc.loc_end}
-        collectRows(list[(loc, letModuleDoc), ...acc], expr2)
+        collectRows(list{(loc, letModuleDoc), ...acc}, expr2)
       | Pexp_letexception(extensionConstructor, expr2) =>
         let loc = {
           let loc = {...expr.pexp_loc, loc_end: extensionConstructor.pext_loc.loc_end}
@@ -10513,16 +10513,16 @@ module Printer = {
         }
 
         let letExceptionDoc = printExceptionDef(extensionConstructor, cmtTbl)
-        collectRows(list[(loc, letExceptionDoc), ...acc], expr2)
+        collectRows(list{(loc, letExceptionDoc), ...acc}, expr2)
       | Pexp_open(overrideFlag, longidentLoc, expr2) =>
-        let openDoc = Doc.concat(list[
+        let openDoc = Doc.concat(list{
           Doc.text("open"),
           printOverrideFlag(overrideFlag),
           Doc.space,
           printLongidentLocation(longidentLoc, cmtTbl),
-        ])
+        })
         let loc = {...expr.pexp_loc, loc_end: longidentLoc.loc.loc_end}
-        collectRows(list[(loc, openDoc), ...acc], expr2)
+        collectRows(list{(loc, openDoc), ...acc}, expr2)
       | Pexp_sequence(expr1, expr2) =>
         let exprDoc = {
           let doc = printExpression(expr1, cmtTbl)
@@ -10534,11 +10534,11 @@ module Printer = {
         }
 
         let loc = expr1.pexp_loc
-        collectRows(list[(loc, exprDoc), ...acc], expr2)
+        collectRows(list{(loc, exprDoc), ...acc}, expr2)
       | Pexp_let(recFlag, valueBindings, expr2) =>
         let loc = {
           let loc = switch (valueBindings, List.rev(valueBindings)) {
-          | (list[vb, ..._], list[lastVb, ..._]) => {...vb.pvb_loc, loc_end: lastVb.pvb_loc.loc_end}
+          | (list{vb, ..._}, list{lastVb, ..._}) => {...vb.pvb_loc, loc_end: lastVb.pvb_loc.loc_end}
           | _ => Location.none
           }
 
@@ -10563,8 +10563,8 @@ module Printer = {
          * We don't need to print the () on the last line of the block
          */
         switch expr2.pexp_desc {
-        | Pexp_construct({txt: Longident.Lident("()")}, _) => List.rev(list[(loc, letDoc), ...acc])
-        | _ => collectRows(list[(loc, letDoc), ...acc], expr2)
+        | Pexp_construct({txt: Longident.Lident("()")}, _) => List.rev(list{(loc, letDoc), ...acc})
+        | _ => collectRows(list{(loc, letDoc), ...acc}, expr2)
         }
       | _ =>
         let exprDoc = {
@@ -10576,10 +10576,10 @@ module Printer = {
           }
         }
 
-        List.rev(list[(expr.pexp_loc, exprDoc), ...acc])
+        List.rev(list{(expr.pexp_loc, exprDoc), ...acc})
       }
 
-    let rows = collectRows(list[], expr)
+    let rows = collectRows(list{}, expr)
     let block = printList(
       ~getLoc=fst,
       ~nodes=rows,
@@ -10591,12 +10591,12 @@ module Printer = {
     Doc.breakableGroup(
       ~forceBreak=true,
       if braces {
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lbrace,
-          Doc.indent(Doc.concat(list[Doc.line, block])),
+          Doc.indent(Doc.concat(list{Doc.line, block})),
           Doc.line,
           Doc.rbrace,
-        ])
+        })
       } else {
         block
       },
@@ -10636,21 +10636,21 @@ module Printer = {
     | _ =>
       Doc.breakableGroup(
         ~forceBreak=overMultipleLines,
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lbrace,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               if Parens.bracedExpr(expr) {
                 addParens(doc)
               } else {
                 doc
               },
-            ]),
+            }),
           ),
           Doc.softLine,
           Doc.rbrace,
-        ]),
+        }),
       )
     }
   }
@@ -10670,7 +10670,7 @@ module Printer = {
   and printRecordRow = ((lbl, expr), cmtTbl) => {
     let cmtLoc = {...lbl.loc, loc_end: expr.pexp_loc.loc_end}
     let doc = Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         printLidentPath(lbl, cmtTbl),
         Doc.text(": "),
         {
@@ -10681,7 +10681,7 @@ module Printer = {
           | Nothing => doc
           }
         },
-      ]),
+      }),
     )
     printComments(doc, cmtTbl, cmtLoc)
   }
@@ -10689,11 +10689,11 @@ module Printer = {
   and printBsObjectRow = ((lbl, expr), cmtTbl) => {
     let cmtLoc = {...lbl.loc, loc_end: expr.pexp_loc.loc_end}
     let lblDoc = {
-      let doc = Doc.concat(list[Doc.text("\""), printLongident(lbl.txt), Doc.text("\"")])
+      let doc = Doc.concat(list{Doc.text("\""), printLongident(lbl.txt), Doc.text("\"")})
       printComments(doc, cmtTbl, lbl.loc)
     }
 
-    let doc = Doc.concat(list[lblDoc, Doc.text(": "), printExpressionWithComments(expr, cmtTbl)])
+    let doc = Doc.concat(list{lblDoc, Doc.text(": "), printExpressionWithComments(expr, cmtTbl)})
     printComments(doc, cmtTbl, cmtLoc)
   }
 
@@ -10705,59 +10705,59 @@ module Printer = {
    *   with a line break between, we respect the users' original layout */
   and printAttributes = (~loc=?, attrs: Parsetree.attributes) =>
     switch ParsetreeViewer.filterParsingAttrs(attrs) {
-    | list[] => Doc.nil
+    | list{} => Doc.nil
     | attrs =>
       let lineBreak = switch loc {
       | None => Doc.line
       | Some(loc) =>
         switch List.rev(attrs) {
-        | list[({loc: firstLoc}, _), ..._]
+        | list{({loc: firstLoc}, _), ..._}
           when loc.loc_start.pos_lnum > firstLoc.loc_end.pos_lnum => Doc.hardLine
         | _ => Doc.line
         }
       }
 
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.group(Doc.join(~sep=Doc.line, List.map(printAttribute, attrs))),
         lineBreak,
-      ])
+      })
     }
 
   and printAttribute = ((id, payload): Parsetree.attribute) => {
-    let attrName = Doc.concat(list[Doc.text("@"), Doc.text(id.txt)])
+    let attrName = Doc.concat(list{Doc.text("@"), Doc.text(id.txt)})
     switch payload {
-    | PStr(list[{pstr_desc: Pstr_eval(expr, attrs)}]) =>
+    | PStr(list{{pstr_desc: Pstr_eval(expr, attrs)}}) =>
       let exprDoc = printExpression(expr, CommentTable.empty)
       let needsParens = switch attrs {
-      | list[] => false
+      | list{} => false
       | _ => true
       }
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           attrName,
           addParens(
-            Doc.concat(list[
+            Doc.concat(list{
               printAttributes(attrs),
               if needsParens {
                 addParens(exprDoc)
               } else {
                 exprDoc
               },
-            ]),
+            }),
           ),
-        ]),
+        }),
       )
     | PTyp(typ) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           attrName,
           Doc.lparen,
           Doc.indent(
-            Doc.concat(list[Doc.softLine, Doc.text(": "), printTypExpr(typ, CommentTable.empty)]),
+            Doc.concat(list{Doc.softLine, Doc.text(": "), printTypExpr(typ, CommentTable.empty)}),
           ),
           Doc.softLine,
           Doc.rparen,
-        ]),
+        }),
       )
     | _ => attrName
     }
@@ -10766,26 +10766,26 @@ module Printer = {
   and printAttributeWithComments = ((id, payload): Parsetree.attribute, cmtTbl) => {
     let attrName = Doc.text("@" ++ id.txt)
     switch payload {
-    | PStr(list[{pstr_desc: Pstr_eval(expr, attrs)}]) =>
+    | PStr(list{{pstr_desc: Pstr_eval(expr, attrs)}}) =>
       let exprDoc = printExpressionWithComments(expr, cmtTbl)
       let needsParens = switch attrs {
-      | list[] => false
+      | list{} => false
       | _ => true
       }
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           attrName,
           addParens(
-            Doc.concat(list[
+            Doc.concat(list{
               printAttributes(attrs),
               if needsParens {
                 addParens(exprDoc)
               } else {
                 exprDoc
               },
-            ]),
+            }),
           ),
-        ]),
+        }),
       )
     | _ => attrName
     }
@@ -10797,12 +10797,12 @@ module Printer = {
     | Pmod_structure(structure) =>
       Doc.breakableGroup(
         ~forceBreak=true,
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lbrace,
-          Doc.indent(Doc.concat(list[Doc.softLine, printStructure(structure, cmtTbl)])),
+          Doc.indent(Doc.concat(list{Doc.softLine, printStructure(structure, cmtTbl)})),
           Doc.softLine,
           Doc.rbrace,
-        ]),
+        }),
       )
     | Pmod_unpack(expr) =>
       let shouldHug = switch expr.pexp_desc {
@@ -10819,72 +10819,72 @@ module Printer = {
         }
 
         let typeDoc = Doc.group(
-          Doc.concat(list[Doc.text(":"), Doc.indent(Doc.concat(list[Doc.line, packageDoc]))]),
+          Doc.concat(list{Doc.text(":"), Doc.indent(Doc.concat(list{Doc.line, packageDoc}))}),
         )
         (expr, typeDoc)
       | _ => (expr, Doc.nil)
       }
 
       let unpackDoc = Doc.group(
-        Doc.concat(list[printExpressionWithComments(expr, cmtTbl), moduleConstraint]),
+        Doc.concat(list{printExpressionWithComments(expr, cmtTbl), moduleConstraint}),
       )
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text("unpack("),
           if shouldHug {
             unpackDoc
           } else {
-            Doc.concat(list[Doc.indent(Doc.concat(list[Doc.softLine, unpackDoc])), Doc.softLine])
+            Doc.concat(list{Doc.indent(Doc.concat(list{Doc.softLine, unpackDoc})), Doc.softLine})
           },
           Doc.rparen,
-        ]),
+        }),
       )
     | Pmod_extension(extension) => printExtensionWithComments(~atModuleLvl=false, extension, cmtTbl)
     | Pmod_apply(_) =>
       let (args, callExpr) = ParsetreeViewer.modExprApply(modExpr)
       let isUnitSugar = switch args {
-      | list[{pmod_desc: Pmod_structure(list[])}] => true
+      | list{{pmod_desc: Pmod_structure(list{})}} => true
       | _ => false
       }
 
       let shouldHug = switch args {
-      | list[{pmod_desc: Pmod_structure(_)}] => true
+      | list{{pmod_desc: Pmod_structure(_)}} => true
       | _ => false
       }
 
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           printModExpr(callExpr, cmtTbl),
           if isUnitSugar {
             printModApplyArg(@doesNotRaise List.hd(args), cmtTbl)
           } else {
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.lparen,
               if shouldHug {
                 printModApplyArg(@doesNotRaise List.hd(args), cmtTbl)
               } else {
                 Doc.indent(
-                  Doc.concat(list[
+                  Doc.concat(list{
                     Doc.softLine,
                     Doc.join(
-                      ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                      ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                       List.map(modArg => printModApplyArg(modArg, cmtTbl), args),
                     ),
-                  ]),
+                  }),
                 )
               },
               if !shouldHug {
-                Doc.concat(list[Doc.trailingComma, Doc.softLine])
+                Doc.concat(list{Doc.trailingComma, Doc.softLine})
               } else {
                 Doc.nil
               },
               Doc.rparen,
-            ])
+            })
           },
-        ]),
+        }),
       )
     | Pmod_constraint(modExpr, modType) =>
-      Doc.concat(list[printModExpr(modExpr, cmtTbl), Doc.text(": "), printModType(modType, cmtTbl)])
+      Doc.concat(list{printModExpr(modExpr, cmtTbl), Doc.text(": "), printModType(modType, cmtTbl)})
     | Pmod_functor(_) => printModFunctor(modExpr, cmtTbl)
     }
 
@@ -10909,41 +10909,41 @@ module Printer = {
         }
       }
 
-      let modConstraint = Doc.concat(list[Doc.text(": "), constraintDoc])
+      let modConstraint = Doc.concat(list{Doc.text(": "), constraintDoc})
       (modConstraint, printModExpr(modExpr, cmtTbl))
     | _ => (Doc.nil, printModExpr(returnModExpr, cmtTbl))
     }
 
     let parametersDoc = switch parameters {
-    | list[(attrs, {txt: "*"}, None)] =>
+    | list{(attrs, {txt: "*"}, None)} =>
       let attrs = switch attrs {
-      | list[] => Doc.nil
+      | list{} => Doc.nil
       | attrs =>
-        Doc.concat(list[Doc.join(~sep=Doc.line, List.map(printAttribute, attrs)), Doc.line])
+        Doc.concat(list{Doc.join(~sep=Doc.line, List.map(printAttribute, attrs)), Doc.line})
       }
-      Doc.group(Doc.concat(list[attrs, Doc.text("()")]))
-    | list[(list[], {txt: lbl}, None)] => Doc.text(lbl)
+      Doc.group(Doc.concat(list{attrs, Doc.text("()")}))
+    | list{(list{}, {txt: lbl}, None)} => Doc.text(lbl)
     | parameters =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               Doc.join(
-                ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                 List.map(param => printModFunctorParam(param, cmtTbl), parameters),
               ),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rparen,
-        ]),
+        }),
       )
     }
 
-    Doc.group(Doc.concat(list[parametersDoc, returnConstraint, Doc.text(" => "), returnModExpr]))
+    Doc.group(Doc.concat(list{parametersDoc, returnConstraint, Doc.text(" => "), returnModExpr}))
   }
 
   and printModFunctorParam = ((attrs, lbl, optModType), cmtTbl) => {
@@ -10956,8 +10956,8 @@ module Printer = {
     }
 
     let attrs = switch attrs {
-    | list[] => Doc.nil
-    | attrs => Doc.concat(list[Doc.join(~sep=Doc.line, List.map(printAttribute, attrs)), Doc.line])
+    | list{} => Doc.nil
+    | attrs => Doc.concat(list{Doc.join(~sep=Doc.line, List.map(printAttribute, attrs)), Doc.line})
     }
     let lblDoc = {
       let doc = Doc.text(lbl.txt)
@@ -10965,21 +10965,21 @@ module Printer = {
     }
 
     let doc = Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         attrs,
         lblDoc,
         switch optModType {
         | None => Doc.nil
-        | Some(modType) => Doc.concat(list[Doc.text(": "), printModType(modType, cmtTbl)])
+        | Some(modType) => Doc.concat(list{Doc.text(": "), printModType(modType, cmtTbl)})
         },
-      ]),
+      }),
     )
     printComments(doc, cmtTbl, cmtLoc)
   }
 
   and printModApplyArg = (modExpr, cmtTbl) =>
     switch modExpr.pmod_desc {
-    | Pmod_structure(list[]) => Doc.text("()")
+    | Pmod_structure(list{}) => Doc.text("()")
     | _ => printModExpr(modExpr, cmtTbl)
     }
 
@@ -10987,22 +10987,22 @@ module Printer = {
     let kind = switch constr.pext_kind {
     | Pext_rebind(longident) =>
       Doc.indent(
-        Doc.concat(list[Doc.text(" ="), Doc.line, printLongidentLocation(longident, cmtTbl)]),
+        Doc.concat(list{Doc.text(" ="), Doc.line, printLongidentLocation(longident, cmtTbl)}),
       )
-    | Pext_decl(Pcstr_tuple(list[]), None) => Doc.nil
+    | Pext_decl(Pcstr_tuple(list{}), None) => Doc.nil
     | Pext_decl(args, gadt) =>
       let gadtDoc = switch gadt {
-      | Some(typ) => Doc.concat(list[Doc.text(": "), printTypExpr(typ, cmtTbl)])
+      | Some(typ) => Doc.concat(list{Doc.text(": "), printTypExpr(typ, cmtTbl)})
       | None => Doc.nil
       }
 
-      Doc.concat(list[printConstructorArguments(~indent=false, args, cmtTbl), gadtDoc])
+      Doc.concat(list{printConstructorArguments(~indent=false, args, cmtTbl), gadtDoc})
     }
 
     let name = printComments(Doc.text(constr.pext_name.txt), cmtTbl, constr.pext_name.loc)
 
     let doc = Doc.group(
-      Doc.concat(list[printAttributes(constr.pext_attributes), Doc.text("exception "), name, kind]),
+      Doc.concat(list{printAttributes(constr.pext_attributes), Doc.text("exception "), name, kind}),
     )
     printComments(doc, cmtTbl, constr.pext_loc)
   }
@@ -11018,21 +11018,21 @@ module Printer = {
     let kind = switch constr.pext_kind {
     | Pext_rebind(longident) =>
       Doc.indent(
-        Doc.concat(list[Doc.text(" ="), Doc.line, printLongidentLocation(longident, cmtTbl)]),
+        Doc.concat(list{Doc.text(" ="), Doc.line, printLongidentLocation(longident, cmtTbl)}),
       )
-    | Pext_decl(Pcstr_tuple(list[]), None) => Doc.nil
+    | Pext_decl(Pcstr_tuple(list{}), None) => Doc.nil
     | Pext_decl(args, gadt) =>
       let gadtDoc = switch gadt {
-      | Some(typ) => Doc.concat(list[Doc.text(": "), printTypExpr(typ, cmtTbl)])
+      | Some(typ) => Doc.concat(list{Doc.text(": "), printTypExpr(typ, cmtTbl)})
       | None => Doc.nil
       }
 
-      Doc.concat(list[printConstructorArguments(~indent=false, args, cmtTbl), gadtDoc])
+      Doc.concat(list{printConstructorArguments(~indent=false, args, cmtTbl), gadtDoc})
     }
 
     let name = printComments(Doc.text(constr.pext_name.txt), cmtTbl, constr.pext_name.loc)
 
-    Doc.concat(list[bar, Doc.group(Doc.concat(list[attrs, name, kind]))])
+    Doc.concat(list{bar, Doc.group(Doc.concat(list{attrs, name, kind}))})
   }
 
   let printImplementation = (~width, s: Parsetree.structure, comments) => {
@@ -11072,33 +11072,33 @@ module Scanner = {
     mutable mode: list<mode>,
   }
 
-  let setDiamondMode = scanner => scanner.mode = list[Diamond, ...scanner.mode]
+  let setDiamondMode = scanner => scanner.mode = list{Diamond, ...scanner.mode}
 
-  let setTemplateMode = scanner => scanner.mode = list[Template, ...scanner.mode]
+  let setTemplateMode = scanner => scanner.mode = list{Template, ...scanner.mode}
 
-  let setJsxMode = scanner => scanner.mode = list[Jsx, ...scanner.mode]
+  let setJsxMode = scanner => scanner.mode = list{Jsx, ...scanner.mode}
 
   let popMode = (scanner, mode) =>
     switch scanner.mode {
-    | list[m, ...ms] when m == mode => scanner.mode = ms
+    | list{m, ...ms} when m == mode => scanner.mode = ms
     | _ => ()
     }
 
   let inDiamondMode = scanner =>
     switch scanner.mode {
-    | list[Diamond, ..._] => true
+    | list{Diamond, ..._} => true
     | _ => false
     }
 
   let inJsxMode = scanner =>
     switch scanner.mode {
-    | list[Jsx, ..._] => true
+    | list{Jsx, ..._} => true
     | _ => false
     }
 
   let inTemplateMode = scanner =>
     switch scanner.mode {
-    | list[Template, ..._] => true
+    | list{Template, ..._} => true
     | _ => false
     }
 
@@ -11146,7 +11146,7 @@ module Scanner = {
       rdOffset: 0,
       lineOffset: 0,
       lnum: 1,
-      mode: list[],
+      mode: list{},
     }
     next(scanner)
     scanner
@@ -11590,9 +11590,10 @@ module Scanner = {
         scanString(scanner)
       } else if ch === CharacterCodes.singleQuote {
         if (
-          scanner.ch === CharacterCodes.backslash &&
-            !(peek(scanner) === CharacterCodes.doubleQuote) /* start of exotic ident */
+          scanner.ch === CharacterCodes.backslash && !(peek(scanner) === CharacterCodes.doubleQuote)
         ) {
+          /* start of exotic ident */
+
           next(scanner)
           scanEscape(scanner)
         } else if peek(scanner) === CharacterCodes.singleQuote {
@@ -11880,53 +11881,53 @@ module JsFfi = {
   }
 
   let toParsetree = importDescr => {
-    let bsVal = (Location.mknoloc("bs.val"), Parsetree.PStr(list[]))
+    let bsVal = (Location.mknoloc("bs.val"), Parsetree.PStr(list{}))
     let attrs = switch importDescr.jid_scope {
-    | Global => list[bsVal]
+    | Global => list{bsVal}
     /* @genType.import("./MyMath"),
      * @genType.import(/"./MyMath", "default"/) */
     | Module(s) =>
-      let structure = list[
+      let structure = list{
         Parsetree.Pconst_string(s, None) |> Ast_helper.Exp.constant |> Ast_helper.Str.eval,
-      ]
+      }
       let genType = (Location.mknoloc("genType.import"), Parsetree.PStr(structure))
-      list[genType]
+      list{genType}
     | Scope(longident) =>
       let structureItem = {
         let expr = switch Longident.flatten(longident) |> List.map(s =>
           Ast_helper.Exp.constant(Parsetree.Pconst_string(s, None))
         ) {
-        | list[expr] => expr
-        | list[] as exprs | _ as exprs => exprs |> Ast_helper.Exp.tuple
+        | list{expr} => expr
+        | list{} as exprs | _ as exprs => exprs |> Ast_helper.Exp.tuple
         }
 
         Ast_helper.Str.eval(expr)
       }
 
-      let bsScope = (Location.mknoloc("bs.scope"), Parsetree.PStr(list[structureItem]))
-      list[bsVal, bsScope]
+      let bsScope = (Location.mknoloc("bs.scope"), Parsetree.PStr(list{structureItem}))
+      list{bsVal, bsScope}
     }
 
     let valueDescrs = switch importDescr.jid_spec {
     | Default(decl) =>
-      let prim = list[decl.jld_name]
-      let allAttrs = List.concat(list[attrs, importDescr.jid_attributes]) |> List.map(attr =>
+      let prim = list{decl.jld_name}
+      let allAttrs = List.concat(list{attrs, importDescr.jid_attributes}) |> List.map(attr =>
         switch attr {
         | (
             {Location.txt: "genType.import"} as id,
-            Parsetree.PStr(list[{pstr_desc: Parsetree.Pstr_eval(moduleName, _)}]),
+            Parsetree.PStr(list{{pstr_desc: Parsetree.Pstr_eval(moduleName, _)}}),
           ) =>
           let default = Parsetree.Pconst_string("default", None) |> Ast_helper.Exp.constant
 
           let structureItem =
-            list[moduleName, default] |> Ast_helper.Exp.tuple |> Ast_helper.Str.eval
+            list{moduleName, default} |> Ast_helper.Exp.tuple |> Ast_helper.Str.eval
 
-          (id, Parsetree.PStr(list[structureItem]))
+          (id, Parsetree.PStr(list{structureItem}))
         | attr => attr
         }
       )
 
-      list[
+      list{
         Ast_helper.Val.mk(
           ~loc=importDescr.jid_loc,
           ~prim,
@@ -11934,10 +11935,10 @@ module JsFfi = {
           Location.mknoloc(decl.jld_alias),
           decl.jld_type,
         ) |> Ast_helper.Str.primitive,
-      ]
+      }
     | Spec(decls) => List.map(decl => {
-        let prim = list[decl.jld_name]
-        let allAttrs = List.concat(list[attrs, decl.jld_attributes])
+        let prim = list{decl.jld_name}
+        let allAttrs = List.concat(list{attrs, decl.jld_attributes})
         Ast_helper.Val.mk(
           ~loc=importDescr.jid_loc,
           ~prim,
@@ -11948,9 +11949,9 @@ module JsFfi = {
       }, decls)
     }
 
-    let jsFfiAttr = (Location.mknoloc("ns.jsFfi"), Parsetree.PStr(list[]))
+    let jsFfiAttr = (Location.mknoloc("ns.jsFfi"), Parsetree.PStr(list{}))
     Ast_helper.Mod.structure(~loc=importDescr.jid_loc, valueDescrs)
-    |> Ast_helper.Incl.mk(~attrs=list[jsFfiAttr], ~loc=importDescr.jid_loc)
+    |> Ast_helper.Incl.mk(~attrs=list{jsFfiAttr}, ~loc=importDescr.jid_loc)
     |> Ast_helper.Str.include_(~loc=importDescr.jid_loc)
   }
 }
@@ -11959,7 +11960,7 @@ module ParsetreeCompatibility = {
   let concatLongidents = (l1, l2) => {
     let parts1 = Longident.flatten(l1)
     let parts2 = Longident.flatten(l2)
-    switch List.concat(list[parts1, parts2]) |> Longident.unflatten {
+    switch List.concat(list{parts1, parts2}) |> Longident.unflatten {
     | Some(longident) => longident
     | None => l2
     }
@@ -11969,21 +11970,21 @@ module ParsetreeCompatibility = {
   let rec rewritePpatOpen = (longidentOpen, pat) => {
     open Parsetree
     switch pat.ppat_desc {
-    | Ppat_array(list[first, ...rest]) => /* Color.[Red, Blue, Green] -> [Color.Red, Blue, Green] */
-      {...pat, ppat_desc: Ppat_array(list[rewritePpatOpen(longidentOpen, first), ...rest])}
-    | Ppat_tuple(list[first, ...rest]) => /* Color.(Red, Blue, Green) -> (Color.Red, Blue, Green) */
-      {...pat, ppat_desc: Ppat_tuple(list[rewritePpatOpen(longidentOpen, first), ...rest])}
+    | Ppat_array(list{first, ...rest}) => /* Color.[Red, Blue, Green] -> [Color.Red, Blue, Green] */
+      {...pat, ppat_desc: Ppat_array(list{rewritePpatOpen(longidentOpen, first), ...rest})}
+    | Ppat_tuple(list{first, ...rest}) => /* Color.(Red, Blue, Green) -> (Color.Red, Blue, Green) */
+      {...pat, ppat_desc: Ppat_tuple(list{rewritePpatOpen(longidentOpen, first), ...rest})}
     | Ppat_construct(
         {txt: Longident.Lident("::")} as listConstructor,
-        Some({ppat_desc: Ppat_tuple(list[pat, ...rest])} as element),
-      ) => /* Color.(list[Red, Blue, Green]) -> list[Color.Red, Blue, Green] */
+        Some({ppat_desc: Ppat_tuple(list{pat, ...rest})} as element),
+      ) => /* Color.(list{Red, Blue, Green}) -> list{Color.Red, Blue, Green} */
       {
         ...pat,
         ppat_desc: Ppat_construct(
           listConstructor,
           Some({
             ...element,
-            ppat_desc: Ppat_tuple(list[rewritePpatOpen(longidentOpen, pat), ...rest]),
+            ppat_desc: Ppat_tuple(list{rewritePpatOpen(longidentOpen, pat), ...rest}),
           }),
         ),
       }
@@ -11998,10 +11999,10 @@ module ParsetreeCompatibility = {
           optPattern,
         ),
       }
-    | Ppat_record(list[({txt: lbl} as longidentLoc, firstPat), ...rest], flag) =>
+    | Ppat_record(list{({txt: lbl} as longidentLoc, firstPat), ...rest}, flag) =>
       /* Foo.{x} -> {Foo.x: x} */
       let firstRow = ({...longidentLoc, txt: concatLongidents(longidentOpen, lbl)}, firstPat)
-      {...pat, ppat_desc: Ppat_record(list[firstRow, ...rest], flag)}
+      {...pat, ppat_desc: Ppat_record(list{firstRow, ...rest}, flag)}
     | Ppat_or(pat1, pat2) => {
         ...pat,
         ppat_desc: Ppat_or(
@@ -12034,7 +12035,7 @@ module ParsetreeCompatibility = {
           pexp_desc:
             Pexp_apply(
               {pexp_desc: Pexp_ident({txt: Longident.Lident("|.")})} as op,
-              list[(Asttypes.Nolabel, lhs), (Nolabel, rhs)],
+              list{(Asttypes.Nolabel, lhs), (Nolabel, rhs)},
             ),
           pexp_attributes: subAttrs,
         },
@@ -12046,10 +12047,10 @@ module ParsetreeCompatibility = {
         {...expr, pexp_attributes: subAttrs}
       }
 
-      let allArgs = list[
+      let allArgs = list{
         (Asttypes.Nolabel, newLhs),
         (Asttypes.Nolabel, Ast_helper.Exp.apply(~loc=rhsLoc, rhs, args)),
-      ]
+      }
 
       Ast_helper.Exp.apply(~attrs=expr.pexp_attributes, ~loc=expr.pexp_loc, op, allArgs)
     | _ => expr
@@ -12073,13 +12074,13 @@ module ParsetreeCompatibility = {
         /* default_mapper.expr mapper {pexp_desc=Pexp_variant(lbl, newArgs); pexp_loc; pexp_attributes} */
         | {pexp_desc: Pexp_construct(lid, args), pexp_loc, pexp_attributes} =>
           let newArgs = switch args {
-          | Some({pexp_desc: Pexp_tuple(list[{pexp_desc: Pexp_tuple(_)} as sp])}) as args =>
+          | Some({pexp_desc: Pexp_tuple(list{{pexp_desc: Pexp_tuple(_)} as sp})}) as args =>
             if forPrinter {
               args
             } else {
               Some(sp)
             }
-          | Some({pexp_desc: Pexp_tuple(list[sp])}) => Some(sp)
+          | Some({pexp_desc: Pexp_tuple(list{sp})}) => Some(sp)
           | _ => args
           }
 
@@ -12106,13 +12107,13 @@ module ParsetreeCompatibility = {
         /* default_mapper.pat mapper {ppat_desc = Ppat_variant (lbl, newArgs); ppat_loc; ppat_attributes;} */
         | {ppat_desc: Ppat_construct(lid, args), ppat_loc, ppat_attributes} =>
           let new_args = switch args {
-          | Some({ppat_desc: Ppat_tuple(list[{ppat_desc: Ppat_tuple(_)} as sp])}) as args =>
+          | Some({ppat_desc: Ppat_tuple(list{{ppat_desc: Ppat_tuple(_)} as sp})}) as args =>
             if forPrinter {
               args
             } else {
               Some(sp)
             }
-          | Some({ppat_desc: Ppat_tuple(list[sp])}) => Some(sp)
+          | Some({ppat_desc: Ppat_tuple(list{sp})}) => Some(sp)
           | _ => args
           }
           default_mapper.pat(
@@ -12287,9 +12288,9 @@ module ParsetreeCompatibility = {
               switch attr {
               | Some(
                   _,
-                  PStr(list[{
+                  PStr(list{{
                     pstr_desc: Pstr_eval({pexp_desc: Pexp_constant(Pconst_string(raw, _))}, _),
-                  }]),
+                  }}),
                 ) => raw
               | _ => (@doesNotRaise String.sub)(stringData, 1, String.length(stringData) - 2)
               }
@@ -12344,7 +12345,7 @@ module ParsetreeCompatibility = {
           )
         | Pexp_function(cases) =>
           let loc = switch (cases, List.rev(cases)) {
-          | (list[first, ..._], list[last, ..._]) => {
+          | (list{first, ..._}, list{last, ..._}) => {
               ...first.pc_lhs.ppat_loc,
               loc_end: last.pc_rhs.pexp_loc.loc_end,
             }
@@ -12364,7 +12365,7 @@ module ParsetreeCompatibility = {
           )
         | Pexp_apply(
             {pexp_desc: Pexp_ident({txt: Longident.Lident("!")})},
-            list[(Asttypes.Nolabel, operand)],
+            list{(Asttypes.Nolabel, operand)},
           ) =>
           /* turn `!foo` into `foo.contents` */
           Ast_helper.Exp.field(
@@ -12375,10 +12376,10 @@ module ParsetreeCompatibility = {
           )
         | Pexp_apply(
             {pexp_desc: Pexp_ident({txt: Longident.Lident("##")})} as op,
-            list[
+            list{
               (Asttypes.Nolabel, lhs),
               (Nolabel, {pexp_desc: Pexp_constant(Pconst_string(txt, None))} as stringExpr),
-            ],
+            },
           ) =>
           let ident = Ast_helper.Exp.ident(
             ~loc=stringExpr.pexp_loc,
@@ -12389,28 +12390,28 @@ module ParsetreeCompatibility = {
             ~loc=expr.pexp_loc,
             ~attrs=expr.pexp_attributes,
             op,
-            list[(Asttypes.Nolabel, lhs), (Nolabel, ident)],
+            list{(Asttypes.Nolabel, lhs), (Nolabel, ident)},
           )
         | Pexp_apply(
             {pexp_desc: Pexp_ident({txt: Longident.Lident("@@")})},
-            list[(Asttypes.Nolabel, callExpr), (Nolabel, argExpr)],
+            list{(Asttypes.Nolabel, callExpr), (Nolabel, argExpr)},
           ) =>
           Ast_helper.Exp.apply(
             mapper.expr(mapper, callExpr),
-            list[(Asttypes.Nolabel, mapper.expr(mapper, argExpr))],
+            list{(Asttypes.Nolabel, mapper.expr(mapper, argExpr))},
           )
         | Pexp_apply(
             {pexp_desc: Pexp_ident({txt: Longident.Lident("@")})},
-            list[(Nolabel, arg1), (Nolabel, arg2)],
+            list{(Nolabel, arg1), (Nolabel, arg2)},
           ) =>
           let listConcat = Longident.Ldot(Longident.Lident("List"), "append")
           Ast_helper.Exp.apply(
             Ast_helper.Exp.ident(Location.mknoloc(listConcat)),
-            list[(Nolabel, mapper.expr(mapper, arg1)), (Nolabel, mapper.expr(mapper, arg2))],
+            list{(Nolabel, mapper.expr(mapper, arg1)), (Nolabel, mapper.expr(mapper, arg2))},
           )
         | Pexp_match(
             condition,
-            list[
+            list{
               {
                 pc_lhs: {ppat_desc: Ppat_construct({txt: Longident.Lident("true")}, None)},
                 pc_rhs: thenExpr,
@@ -12419,12 +12420,12 @@ module ParsetreeCompatibility = {
                 pc_lhs: {ppat_desc: Ppat_construct({txt: Longident.Lident("false")}, None)},
                 pc_rhs: elseExpr,
               },
-            ],
+            },
           ) =>
-          let ternaryMarker = (Location.mknoloc("ns.ternary"), Parsetree.PStr(list[]))
+          let ternaryMarker = (Location.mknoloc("ns.ternary"), Parsetree.PStr(list{}))
           Ast_helper.Exp.ifthenelse(
             ~loc=expr.pexp_loc,
-            ~attrs=list[ternaryMarker, ...expr.pexp_attributes],
+            ~attrs=list{ternaryMarker, ...expr.pexp_attributes},
             default_mapper.expr(mapper, condition),
             default_mapper.expr(mapper, thenExpr),
             Some(default_mapper.expr(mapper, elseExpr)),
@@ -12436,7 +12437,7 @@ module ParsetreeCompatibility = {
         /* heuristic: if we have multiple type declarations, mark them recursive */
         | Pstr_type(recFlag, typeDeclarations) =>
           let flag = switch typeDeclarations {
-          | list[td] =>
+          | list{td} =>
             if looksLikeRecursiveTypeDeclaration(td) {
               Asttypes.Recursive
             } else {
@@ -12462,7 +12463,7 @@ module ParsetreeCompatibility = {
         /* heuristic: if we have multiple type declarations, mark them recursive */
         | Psig_type(recFlag, typeDeclarations) =>
           let flag = switch typeDeclarations {
-          | list[td] =>
+          | list{td} =>
             if looksLikeRecursiveTypeDeclaration(td) {
               Asttypes.Recursive
             } else {
@@ -12505,7 +12506,7 @@ module ParsetreeCompatibility = {
             pvb_attributes: default_mapper.attributes(mapper, vb.pvb_attributes),
           }
         | {
-            pvb_pat: {ppat_desc: Ppat_constraint(pat, {ptyp_desc: Ptyp_poly(list[], _)})},
+            pvb_pat: {ppat_desc: Ppat_constraint(pat, {ptyp_desc: Ptyp_poly(list{}, _)})},
             pvb_expr: {pexp_loc: expr_loc, pexp_desc: Pexp_constraint(expr, typ)},
           } when expr_loc.loc_ghost =>
           /* let t: . t = (expr : t) -> let t: t = expr */
@@ -12588,14 +12589,14 @@ module Parser = {
     )
 
     try if List.hd(p.regions).contents == Report {
-      p.diagnostics = list[d, ...p.diagnostics]
+      p.diagnostics = list{d, ...p.diagnostics}
       List.hd(p.regions) := Silent
     } catch {
     | Failure(_) => ()
     }
   }
 
-  let beginRegion = p => p.regions = list[ref(Report), ...p.regions]
+  let beginRegion = p => p.regions = list{ref(Report), ...p.regions}
   let endRegion = p =>
     try p.regions = List.tl(p.regions) catch {
     | Failure(_) => ()
@@ -12613,7 +12614,7 @@ module Parser = {
     switch token {
     | Comment(c) =>
       Comment.setPrevTokEndPos(c, p.endPos)
-      p.comments = list[c, ...p.comments]
+      p.comments = list{c, ...p.comments}
       p.prevEndPos = p.endPos
       p.endPos = endPos
       next(~prevEndPos, p)
@@ -12643,16 +12644,16 @@ module Parser = {
       startPos: Lexing.dummy_pos,
       prevEndPos: Lexing.dummy_pos,
       endPos: Lexing.dummy_pos,
-      breadcrumbs: list[],
-      errors: list[],
-      diagnostics: list[],
-      comments: list[],
-      regions: list[ref(Report)],
+      breadcrumbs: list{},
+      errors: list{},
+      diagnostics: list{},
+      comments: list{},
+      regions: list{ref(Report)},
     }
     parserState.scanner.err = (~startPos, ~endPos, error) => {
       let diagnostic = Diagnostics.make(~filename, ~startPos, ~endPos, error)
 
-      parserState.diagnostics = list[diagnostic, ...parserState.diagnostics]
+      parserState.diagnostics = list{diagnostic, ...parserState.diagnostics}
     }
     next(parserState)
     parserState
@@ -12660,13 +12661,13 @@ module Parser = {
 
   let leaveBreadcrumb = (p, circumstance) => {
     let crumb = (circumstance, p.startPos)
-    p.breadcrumbs = list[crumb, ...p.breadcrumbs]
+    p.breadcrumbs = list{crumb, ...p.breadcrumbs}
   }
 
   let eatBreadcrumb = p =>
     switch p.breadcrumbs {
-    | list[] => ()
-    | list[_, ...crumbs] => p.breadcrumbs = crumbs
+    | list{} => ()
+    | list{_, ...crumbs} => p.breadcrumbs = crumbs
     }
 
   let optional = (p, token) =>
@@ -12741,22 +12742,22 @@ module NapkinScript = {
 
     let defaultExpr = () => {
       let id = Location.mknoloc("napkinscript.exprhole")
-      Ast_helper.Exp.mk(Pexp_extension(id, PStr(list[])))
+      Ast_helper.Exp.mk(Pexp_extension(id, PStr(list{})))
     }
 
     let defaultType = () => {
       let id = Location.mknoloc("napkinscript.typehole")
-      Ast_helper.Typ.extension((id, PStr(list[])))
+      Ast_helper.Typ.extension((id, PStr(list{})))
     }
 
     let defaultPattern = () => {
       let id = Location.mknoloc("napkinscript.patternhole")
-      Ast_helper.Pat.extension((id, PStr(list[])))
+      Ast_helper.Pat.extension((id, PStr(list{})))
     }
     /* Ast_helper.Pat.any  () */
 
-    let defaultModuleExpr = () => Ast_helper.Mod.structure(list[])
-    let defaultModuleType = () => Ast_helper.Mty.signature(list[])
+    let defaultModuleExpr = () => Ast_helper.Mod.structure(list{})
+    let defaultModuleType = () => Ast_helper.Mty.signature(list{})
 
     let recoverEqualGreater = p => {
       Parser.expect(EqualGreater, p)
@@ -12769,8 +12770,8 @@ module NapkinScript = {
     let shouldAbortListParse = p => {
       let rec check = breadcrumbs =>
         switch breadcrumbs {
-        | list[] => false
-        | list[(grammar, _), ...rest] =>
+        | list{} => false
+        | list{(grammar, _), ...rest} =>
           if Grammar.isPartOfList(grammar, p.Parser.token) {
             true
           } else {
@@ -12784,7 +12785,7 @@ module NapkinScript = {
 
   module ErrorMessages = {
     let listPatternSpread = "List pattern matches only supports one `...` spread, at the end.
-Explanation: a list spread at the tail is efficient, but a spread in the middle would create new list[s]; out of performance concern, our pattern matching currently guarantees to never create new intermediate data."
+Explanation: a list spread at the tail is efficient, but a spread in the middle would create new list{s}; out of performance concern, our pattern matching currently guarantees to never create new intermediate data."
 
     let recordPatternSpread = "Record's `...` spread is not supported in pattern matches.
 Explanation: you can't collect a subset of a record's field into its own record, since a record needs an explicit declaration and that subset wouldn't have one.
@@ -12802,16 +12803,16 @@ Solution: if it's to validate the first few elements, use a `when` clause + Arra
 Explanation: since records have a known, fixed shape, a spread like `{a, ...b}` wouldn't make sense, as `b` would override every field of `a` anyway."
 
     let listExprSpread = "Lists can only have one `...` spread, and at the end.
-Explanation: lists are singly-linked list, where a node contains a value and points to the next node. `list[a, ...bc]` efficiently creates a new item and links `bc` as its next nodes. `[...bc, a]` would be expensive, as it'd need to traverse `bc` and prepend each item to `a` one by one. We therefore disallow such syntax sugar.
+Explanation: lists are singly-linked list, where a node contains a value and points to the next node. `list{a, ...bc}` efficiently creates a new item and links `bc` as its next nodes. `[...bc, a]` would be expensive, as it'd need to traverse `bc` and prepend each item to `a` one by one. We therefore disallow such syntax sugar.
 Solution: directly use `concat`."
 
     let variantIdent = "A polymorphic variant (e.g. #id) must start with an alphabetical letter."
   }
 
-  let jsxAttr = (Location.mknoloc("JSX"), Parsetree.PStr(list[]))
-  let uncurryAttr = (Location.mknoloc("bs"), Parsetree.PStr(list[]))
-  let ternaryAttr = (Location.mknoloc("ns.ternary"), Parsetree.PStr(list[]))
-  let makeBracesAttr = loc => (Location.mkloc("ns.braces", loc), Parsetree.PStr(list[]))
+  let jsxAttr = (Location.mknoloc("JSX"), Parsetree.PStr(list{}))
+  let uncurryAttr = (Location.mknoloc("bs"), Parsetree.PStr(list{}))
+  let ternaryAttr = (Location.mknoloc("ns.ternary"), Parsetree.PStr(list{}))
+  let makeBracesAttr = loc => (Location.mkloc("ns.braces", loc), Parsetree.PStr(list{}))
 
   type typDefOrExt =
     | TypeDef({recFlag: Asttypes.rec_flag, types: list<Parsetree.type_declaration>})
@@ -12979,8 +12980,8 @@ Solution: directly use `concat`."
 
   let buildLongident = words =>
     switch List.rev(words) {
-    | list[] => assert false
-    | list[hd, ...tl] => List.fold_left((p, s) => Longident.Ldot(p, s), Lident(hd), tl)
+    | list{} => assert false
+    | list{hd, ...tl} => List.fold_left((p, s) => Longident.Ldot(p, s), Lident(hd), tl)
     }
 
   let makeInfixOperator = (p, token, startPos, endPos) => {
@@ -13034,14 +13035,14 @@ Solution: directly use `concat`."
       Ast_helper.Exp.apply(
         ~loc=mkLoc(startPos, operand.Parsetree.pexp_loc.loc_end),
         Ast_helper.Exp.ident(~loc=tokenLoc, Location.mkloc(Longident.Lident(operator), tokenLoc)),
-        list[(Nolabel, operand)],
+        list{(Nolabel, operand)},
       )
     | (Token.Bang, _) =>
       let tokenLoc = mkLoc(startPos, tokenEnd)
       Ast_helper.Exp.apply(
         ~loc=mkLoc(startPos, operand.Parsetree.pexp_loc.loc_end),
         Ast_helper.Exp.ident(~loc=tokenLoc, Location.mkloc(Longident.Lident("not"), tokenLoc)),
-        list[(Nolabel, operand)],
+        list{(Nolabel, operand)},
       )
     | _ => operand
     }
@@ -13049,7 +13050,7 @@ Solution: directly use `concat`."
   let makeListExpression = (loc, seq, extOpt) => {
     let rec handleSeq = x =>
       switch x {
-      | list[] =>
+      | list{} =>
         switch extOpt {
         | Some(ext) => ext
         | None =>
@@ -13057,11 +13058,11 @@ Solution: directly use `concat`."
           let nil = Location.mkloc(Longident.Lident("[]"), loc)
           Ast_helper.Exp.construct(~loc, nil, None)
         }
-      | list[e1, ...el] =>
+      | list{e1, ...el} =>
         let exp_el = handleSeq(el)
         let loc = mkLoc(e1.Parsetree.pexp_loc.Location.loc_start, exp_el.pexp_loc.loc_end)
 
-        let arg = Ast_helper.Exp.tuple(~loc, list[e1, exp_el])
+        let arg = Ast_helper.Exp.tuple(~loc, list{e1, exp_el})
         Ast_helper.Exp.construct(~loc, Location.mkloc(Longident.Lident("::"), loc), Some(arg))
       }
 
@@ -13072,7 +13073,7 @@ Solution: directly use `concat`."
   let makeListPattern = (loc, seq, ext_opt) => {
     let rec handle_seq = x =>
       switch x {
-      | list[] =>
+      | list{} =>
         let base_case = switch ext_opt {
         | Some(ext) => ext
         | None =>
@@ -13082,10 +13083,10 @@ Solution: directly use `concat`."
         }
 
         base_case
-      | list[p1, ...pl] =>
+      | list{p1, ...pl} =>
         let pat_pl = handle_seq(pl)
         let loc = mkLoc(p1.Parsetree.ppat_loc.loc_start, pat_pl.ppat_loc.loc_end)
-        let arg = Ast_helper.Pat.mk(~loc, Ppat_tuple(list[p1, pat_pl]))
+        let arg = Ast_helper.Pat.mk(~loc, Ppat_tuple(list{p1, pat_pl}))
         Ast_helper.Pat.mk(
           ~loc,
           Ppat_construct(Location.mkloc(Longident.Lident("::"), loc), Some(arg)),
@@ -13102,14 +13103,14 @@ Solution: directly use `concat`."
     let obj = Ast_helper.Typ.object_(~loc, rows, closed)
     let jsDotTCtor = Location.mkloc(Longident.Ldot(Longident.Lident("Js"), "t"), loc)
 
-    Ast_helper.Typ.constr(~loc, ~attrs, jsDotTCtor, list[obj])
+    Ast_helper.Typ.constr(~loc, ~attrs, jsDotTCtor, list{obj})
   }
 
   /* TODO: diagnostic reporting */
   let lidentOfPath = longident =>
     switch Longident.flatten(longident) |> List.rev {
-    | list[] => ""
-    | list[ident, ..._] => ident
+    | list{} => ""
+    | list{ident, ..._} => ident
     }
 
   let makeNewtypes = (~attrs, ~loc, newtypes, exp) => {
@@ -13129,7 +13130,7 @@ Solution: directly use `concat`."
    */
   let wrapTypeAnnotation = (~loc, newtypes, core_type, body) => {
     let exp = makeNewtypes(
-      ~attrs=list[],
+      ~attrs=list{},
       ~loc,
       newtypes,
       Ast_helper.Exp.constraint_(~loc, body, core_type),
@@ -13667,8 +13668,8 @@ Solution: directly use `concat`."
         switch p.Parser.token {
         | Comma =>
           Parser.next(p)
-          loop(list[node, ...nodes])
-        | token when token == closing || token == Eof => List.rev(list[node, ...nodes])
+          loop(list{node, ...nodes})
+        | token when token == closing || token == Eof => List.rev(list{node, ...nodes})
         | _ =>
           if !(p.token == Eof || (p.token == closing || Recover.shouldAbortListParse(p))) {
             Parser.expect(Comma, p)
@@ -13676,7 +13677,7 @@ Solution: directly use `concat`."
           if p.token == Semicolon {
             Parser.next(p)
           }
-          loop(list[node, ...nodes])
+          loop(list{node, ...nodes})
         }
       | None =>
         if p.token == Eof || (p.token == closing || Recover.shouldAbortListParse(p)) {
@@ -13688,7 +13689,7 @@ Solution: directly use `concat`."
         }
       }
 
-    let nodes = loop(list[])
+    let nodes = loop(list{})
     Parser.eatBreadcrumb(p)
     nodes
   }
@@ -13701,8 +13702,8 @@ Solution: directly use `concat`."
         switch p.Parser.token {
         | Comma =>
           Parser.next(p)
-          loop(list[node, ...nodes])
-        | token when token == closing || token == Eof => list[node, ...nodes]
+          loop(list{node, ...nodes})
+        | token when token == closing || token == Eof => list{node, ...nodes}
         | _ =>
           if !(p.token == Eof || (p.token == closing || Recover.shouldAbortListParse(p))) {
             Parser.expect(Comma, p)
@@ -13710,7 +13711,7 @@ Solution: directly use `concat`."
           if p.token == Semicolon {
             Parser.next(p)
           }
-          loop(list[node, ...nodes])
+          loop(list{node, ...nodes})
         }
       | None =>
         if p.token == Eof || (p.token == closing || Recover.shouldAbortListParse(p)) {
@@ -13722,7 +13723,7 @@ Solution: directly use `concat`."
         }
       }
 
-    let nodes = loop(list[])
+    let nodes = loop(list{})
     Parser.eatBreadcrumb(p)
     nodes
   }
@@ -13731,7 +13732,7 @@ Solution: directly use `concat`."
     Parser.leaveBreadcrumb(p, grammar)
     let rec loop = nodes =>
       switch f(p) {
-      | Some(node) => loop(list[node, ...nodes])
+      | Some(node) => loop(list{node, ...nodes})
       | None =>
         if p.Parser.token == Token.Eof || (p.token == closing || Recover.shouldAbortListParse(p)) {
           List.rev(nodes)
@@ -13742,7 +13743,7 @@ Solution: directly use `concat`."
         }
       }
 
-    let nodes = loop(list[])
+    let nodes = loop(list{})
     Parser.eatBreadcrumb(p)
     nodes
   }
@@ -13751,7 +13752,7 @@ Solution: directly use `concat`."
     Parser.leaveBreadcrumb(p, grammar)
     let rec loop = nodes =>
       switch f(p) {
-      | Some(node) => loop(list[node, ...nodes])
+      | Some(node) => loop(list{node, ...nodes})
       | None =>
         if p.Parser.token == Token.Eof || Recover.shouldAbortListParse(p) {
           List.rev(nodes)
@@ -13762,7 +13763,7 @@ Solution: directly use `concat`."
         }
       }
 
-    let nodes = loop(list[])
+    let nodes = loop(list{})
     Parser.eatBreadcrumb(p)
     nodes
   }
@@ -14057,7 +14058,7 @@ Solution: directly use `concat`."
     Parser.expect(Rbrace, p)
     let (fields, closedFlag) = {
       let (rawFields, flag) = switch rawFields {
-      | list[(_hasSpread, PatUnderscore), ...rest] => (rest, Asttypes.Open)
+      | list{(_hasSpread, PatUnderscore), ...rest} => (rest, Asttypes.Open)
       | rawFields => (rawFields, Asttypes.Closed)
       }
 
@@ -14073,10 +14074,10 @@ Solution: directly use `concat`."
               Diagnostics.message(ErrorMessages.recordPatternSpread),
             )
           }
-          (list[field, ...fields], flag)
+          (list{field, ...fields}, flag)
         | PatUnderscore => (fields, flag)
         }
-      }, (list[], flag), rawFields)
+      }, (list{}, flag), rawFields)
     }
 
     let loc = mkLoc(startPos, p.prevEndPos)
@@ -14093,7 +14094,7 @@ Solution: directly use `concat`."
 
     Parser.expect(Rparen, p)
     let loc = mkLoc(startPos, p.prevEndPos)
-    Ast_helper.Pat.tuple(~loc, ~attrs, list[first, ...patterns])
+    Ast_helper.Pat.tuple(~loc, ~attrs, list{first, ...patterns})
   }
 
   and parsePatternRegion = p =>
@@ -14160,7 +14161,7 @@ Solution: directly use `concat`."
       }
 
     switch listPatterns {
-    | list[(true, pattern), ...patterns] =>
+    | list{(true, pattern), ...patterns} =>
       let patterns = patterns |> List.map(filterSpread) |> List.rev
       let pat = makeListPattern(loc, patterns, Some(pattern))
       {...pat, ppat_loc: loc, ppat_attributes: attrs}
@@ -14198,10 +14199,10 @@ Solution: directly use `concat`."
 
     Parser.expect(Rparen, p)
     let args = switch args {
-    | list[] =>
+    | list{} =>
       let loc = mkLoc(lparen, p.prevEndPos)
       Some(Ast_helper.Pat.construct(~loc, Location.mkloc(Longident.Lident("()"), loc), None))
-    | list[{ppat_desc: Ppat_tuple(_)} as pat] as patterns =>
+    | list{{ppat_desc: Ppat_tuple(_)} as pat} as patterns =>
       if p.mode == ParseForTypeChecker {
         /* Some(1, 2) for type-checker */
         Some(pat)
@@ -14209,7 +14210,7 @@ Solution: directly use `concat`."
         /* Some((1, 2)) for printer */
         Some(Ast_helper.Pat.tuple(~loc=mkLoc(lparen, p.endPos), patterns))
       }
-    | list[pattern] => Some(pattern)
+    | list{pattern} => Some(pattern)
     | patterns => Some(Ast_helper.Pat.tuple(~loc=mkLoc(lparen, p.endPos), patterns))
     }
 
@@ -14226,7 +14227,7 @@ Solution: directly use `concat`."
       ~f=parseConstrainedPatternRegion,
     )
     let args = switch patterns {
-    | list[{ppat_desc: Ppat_tuple(_)} as pat] as patterns =>
+    | list{{ppat_desc: Ppat_tuple(_)} as pat} as patterns =>
       if p.mode == ParseForTypeChecker {
         /* #ident(1, 2) for type-checker */
         Some(pat)
@@ -14234,7 +14235,7 @@ Solution: directly use `concat`."
         /* #ident((1, 2)) for printer */
         Some(Ast_helper.Pat.tuple(~loc=mkLoc(lparen, p.endPos), patterns))
       }
-    | list[pattern] => Some(pattern)
+    | list{pattern} => Some(pattern)
     | patterns => Some(Ast_helper.Pat.tuple(~loc=mkLoc(lparen, p.endPos), patterns))
     }
 
@@ -14264,7 +14265,7 @@ Solution: directly use `concat`."
         loc_end: falseBranch.Parsetree.pexp_loc.loc_end,
       }
       Ast_helper.Exp.ifthenelse(
-        ~attrs=list[ternaryAttr],
+        ~attrs=list{ternaryAttr},
         ~loc,
         leftOperand,
         trueBranch,
@@ -14308,14 +14309,14 @@ Solution: directly use `concat`."
       switch parameter {
       | TermParameter({uncurried, attrs, label: lbl, expr: defaultExpr, pat, pos: startPos}) =>
         let attrs = if uncurried {
-          list[uncurryAttr, ...attrs]
+          list{uncurryAttr, ...attrs}
         } else {
           attrs
         }
         Ast_helper.Exp.fun_(~loc=mkLoc(startPos, endPos), ~attrs, lbl, defaultExpr, pat, expr)
       | TypeParameter({uncurried, attrs, locs: newtypes, pos: startPos}) =>
         let attrs = if uncurried {
-          list[uncurryAttr, ...attrs]
+          list{uncurryAttr, ...attrs}
         } else {
           attrs
         }
@@ -14369,14 +14370,14 @@ Solution: directly use `concat`."
         | Tilde =>
           Parser.next(p)
           let (lblName, loc) = parseLident(p)
-          let propLocAttr = (Location.mkloc("ns.namedArgLoc", loc), Parsetree.PStr(list[]))
+          let propLocAttr = (Location.mkloc("ns.namedArgLoc", loc), Parsetree.PStr(list{}))
           switch p.Parser.token {
           | Comma | Equal | Rparen =>
             let loc = mkLoc(startPos, p.prevEndPos)
             (
               attrs,
               Asttypes.Labelled(lblName),
-              Ast_helper.Pat.var(~attrs=list[propLocAttr], ~loc, Location.mkloc(lblName, loc)),
+              Ast_helper.Pat.var(~attrs=list{propLocAttr}, ~loc, Location.mkloc(lblName, loc)),
             )
           | Colon =>
             let lblEnd = p.prevEndPos
@@ -14386,14 +14387,14 @@ Solution: directly use `concat`."
             let pat = {
               let pat = Ast_helper.Pat.var(~loc, Location.mkloc(lblName, loc))
               let loc = mkLoc(startPos, p.prevEndPos)
-              Ast_helper.Pat.constraint_(~attrs=list[propLocAttr], ~loc, pat, typ)
+              Ast_helper.Pat.constraint_(~attrs=list{propLocAttr}, ~loc, pat, typ)
             }
             (attrs, Asttypes.Labelled(lblName), pat)
           | As =>
             Parser.next(p)
             let pat = {
               let pat = parseConstrainedPattern(p)
-              {...pat, ppat_attributes: list[propLocAttr, ...pat.ppat_attributes]}
+              {...pat, ppat_attributes: list{propLocAttr, ...pat.ppat_attributes}}
             }
 
             (attrs, Asttypes.Labelled(lblName), pat)
@@ -14408,8 +14409,8 @@ Solution: directly use `concat`."
           }
         | _ =>
           let pattern = parseConstrainedPattern(p)
-          let attrs = List.concat(list[attrs, pattern.ppat_attributes])
-          (list[], Asttypes.Nolabel, {...pattern, ppat_attributes: attrs})
+          let attrs = List.concat(list{attrs, pattern.ppat_attributes})
+          (list{}, Asttypes.Nolabel, {...pattern, ppat_attributes: attrs})
         }
 
         switch p.Parser.token {
@@ -14489,42 +14490,42 @@ Solution: directly use `concat`."
     | Lident(ident) =>
       Parser.next(p)
       let loc = mkLoc(startPos, p.Parser.prevEndPos)
-      list[
+      list{
         TermParameter({
           uncurried: false,
-          attrs: list[],
+          attrs: list{},
           label: Asttypes.Nolabel,
           expr: None,
           pat: Ast_helper.Pat.var(~loc, Location.mkloc(ident, loc)),
           pos: startPos,
         }),
-      ]
+      }
     | List =>
       Parser.next(p)
       let loc = mkLoc(startPos, p.Parser.prevEndPos)
-      list[
+      list{
         TermParameter({
           uncurried: false,
-          attrs: list[],
+          attrs: list{},
           label: Asttypes.Nolabel,
           expr: None,
           pat: Ast_helper.Pat.var(~loc, Location.mkloc("list", loc)),
           pos: startPos,
         }),
-      ]
+      }
     | Underscore =>
       Parser.next(p)
       let loc = mkLoc(startPos, p.Parser.prevEndPos)
-      list[
+      list{
         TermParameter({
           uncurried: false,
-          attrs: list[],
+          attrs: list{},
           label: Asttypes.Nolabel,
           expr: None,
           pat: Ast_helper.Pat.any(~loc, ()),
           pos: startPos,
         }),
-      ]
+      }
     | Lparen =>
       Parser.next(p)
       switch p.Parser.token {
@@ -14537,16 +14538,16 @@ Solution: directly use `concat`."
           None,
         )
 
-        list[
+        list{
           TermParameter({
             uncurried: false,
-            attrs: list[],
+            attrs: list{},
             label: Asttypes.Nolabel,
             expr: None,
             pat: unitPattern,
             pos: startPos,
           }),
-        ]
+        }
       | Dot =>
         Parser.next(p)
         switch p.token {
@@ -14559,22 +14560,22 @@ Solution: directly use `concat`."
             None,
           )
 
-          list[
+          list{
             TermParameter({
               uncurried: true,
-              attrs: list[],
+              attrs: list{},
               label: Asttypes.Nolabel,
               expr: None,
               pat: unitPattern,
               pos: startPos,
             }),
-          ]
+          }
         | _ =>
           switch parseParameterList(p) {
-          | list[
+          | list{
               TermParameter({attrs, label: lbl, expr: defaultExpr, pat: pattern, pos: startPos}),
               ...rest,
-            ] => list[
+            } => list{
               TermParameter({
                 uncurried: true,
                 attrs: attrs,
@@ -14584,7 +14585,7 @@ Solution: directly use `concat`."
                 pos: startPos,
               }),
               ...rest,
-            ]
+            }
           | parameters => parameters
           }
         }
@@ -14592,7 +14593,7 @@ Solution: directly use `concat`."
       }
     | token =>
       Parser.err(p, Diagnostics.unexpected(token, p.breadcrumbs))
-      list[]
+      list{}
     }
   }
 
@@ -14765,13 +14766,13 @@ Solution: directly use `concat`."
         Ast_helper.Exp.apply(
           ~loc,
           Ast_helper.Exp.ident(~loc, Location.mkloc(Longident.Lident("##"), loc)),
-          list[
+          list{
             (Nolabel, expr),
             (
               Nolabel,
               Ast_helper.Exp.ident(~loc=identLoc, Location.mkloc(Longident.Lident(s), identLoc)),
             ),
-          ],
+          },
         )
       }
 
@@ -14790,7 +14791,7 @@ Solution: directly use `concat`."
             ~loc=operatorLoc,
             Location.mkloc(Longident.Lident("#="), operatorLoc),
           ),
-          list[(Nolabel, e), (Nolabel, rhsExpr)],
+          list{(Nolabel, e), (Nolabel, rhsExpr)},
         )
       | _ => e
       }
@@ -14810,7 +14811,7 @@ Solution: directly use `concat`."
         let arraySet = Ast_helper.Exp.apply(
           ~loc=mkLoc(startPos, endPos),
           Ast_helper.Exp.ident(~loc=arrayLoc, arraySet),
-          list[(Nolabel, expr), (Nolabel, accessExpr), (Nolabel, rhsExpr)],
+          list{(Nolabel, expr), (Nolabel, accessExpr), (Nolabel, rhsExpr)},
         )
 
         Parser.eatBreadcrumb(p)
@@ -14823,7 +14824,7 @@ Solution: directly use `concat`."
             ~loc=arrayLoc,
             Location.mkloc(Longident.Ldot(Lident("Array"), "get"), arrayLoc),
           ),
-          list[(Nolabel, expr), (Nolabel, accessExpr)],
+          list{(Nolabel, expr), (Nolabel, accessExpr)},
         )
 
         Parser.eatBreadcrumb(p)
@@ -14941,7 +14942,7 @@ Solution: directly use `concat`."
     /* let endPos = p.Parser.prevEndPos in */
     {
       ...expr,
-      pexp_attributes: List.concat(list[expr.Parsetree.pexp_attributes, attrs]),
+      pexp_attributes: List.concat(list{expr.Parsetree.pexp_attributes, attrs}),
       /* pexp_loc = mkLoc startPos endPos */
     }
   }
@@ -14991,7 +14992,7 @@ Solution: directly use `concat`."
         let expr = Ast_helper.Exp.apply(
           ~loc,
           makeInfixOperator(p, token, startPos, endPos),
-          list[(Nolabel, a), (Nolabel, b)],
+          list{(Nolabel, a), (Nolabel, b)},
         )
 
         loop(expr)
@@ -15053,7 +15054,7 @@ Solution: directly use `concat`."
             txt
           }
           let str = Ast_helper.Exp.constant(~loc, Pconst_string(txt, Some(prefix)))
-          Ast_helper.Exp.apply(~loc, hiddenOperator, list[(Nolabel, acc), (Nolabel, str)])
+          Ast_helper.Exp.apply(~loc, hiddenOperator, list{(Nolabel, acc), (Nolabel, str)})
         } else {
           acc
         }
@@ -15072,12 +15073,12 @@ Solution: directly use `concat`."
         let str = Ast_helper.Exp.constant(~loc, Pconst_string(txt, Some(prefix)))
         let next = {
           let a = if String.length(txt) > 0 {
-            Ast_helper.Exp.apply(~loc=fullLoc, hiddenOperator, list[(Nolabel, acc), (Nolabel, str)])
+            Ast_helper.Exp.apply(~loc=fullLoc, hiddenOperator, list{(Nolabel, acc), (Nolabel, str)})
           } else {
             acc
           }
 
-          Ast_helper.Exp.apply(~loc=fullLoc, hiddenOperator, list[(Nolabel, a), (Nolabel, expr)])
+          Ast_helper.Exp.apply(~loc=fullLoc, hiddenOperator, list{(Nolabel, a), (Nolabel, expr)})
         }
 
         loop(next, p)
@@ -15114,7 +15115,7 @@ Solution: directly use `concat`."
       }
       let str = Ast_helper.Exp.constant(~loc=constantLoc, Pconst_string(txt, Some(prefix)))
       let next = if String.length(txt) > 0 {
-        Ast_helper.Exp.apply(~loc=fullLoc, hiddenOperator, list[(Nolabel, str), (Nolabel, expr)])
+        Ast_helper.Exp.apply(~loc=fullLoc, hiddenOperator, list{(Nolabel, str), (Nolabel, expr)})
       } else {
         expr
       }
@@ -15174,19 +15175,19 @@ Solution: directly use `concat`."
         let msg =
           Doc.breakableGroup(
             ~forceBreak=true,
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.text("Did you mean to annotate the parameter type or the return type?"),
               Doc.indent(
-                Doc.concat(list[
+                Doc.concat(list{
                   Doc.line,
                   Doc.text("1) "),
                   Printer.printExpression(arrow1, CommentTable.empty),
                   Doc.line,
                   Doc.text("2) "),
                   Printer.printExpression(arrow2, CommentTable.empty),
-                ]),
+                }),
               ),
-            ]),
+            }),
           ) |> Doc.toString(~width=80)
 
         Parser.err(
@@ -15207,15 +15208,15 @@ Solution: directly use `concat`."
           Diagnostics.message(
             Doc.breakableGroup(
               ~forceBreak=true,
-              Doc.concat(list[
+              Doc.concat(list{
                 Doc.text("Expressions with type constraints need to be wrapped in parens:"),
                 Doc.indent(
-                  Doc.concat(list[
+                  Doc.concat(list{
                     Doc.line,
                     Printer.addParens(Printer.printExpression(expr, CommentTable.empty)),
-                  ]),
+                  }),
                 ),
-              ]),
+              }),
             ) |> Doc.toString(~width=80),
           ),
         )
@@ -15322,9 +15323,9 @@ Solution: directly use `concat`."
         p.errors = errors
         p.diagnostics = diagnostics
         p.comments = comments
-        list[]
+        list{}
       }
-    | _ => list[]
+    | _ => list{}
     }
   }
 
@@ -15350,19 +15351,19 @@ Solution: directly use `concat`."
         | Export =>
           let exportLoc = mkLoc(p.startPos, p.endPos)
           Parser.next(p)
-          let genTypeAttr = (Location.mkloc("genType", exportLoc), Parsetree.PStr(list[]))
-          list[genTypeAttr, ...attrs]
+          let genTypeAttr = (Location.mkloc("genType", exportLoc), Parsetree.PStr(list{}))
+          list{genTypeAttr, ...attrs}
         | _ => attrs
         }
 
         ignore(Parser.optional(p, Let)) /* overparse for fault tolerance */
         let letBinding = parseLetBindingBody(~startPos, ~attrs, p)
-        loop(p, list[letBinding, ...bindings])
+        loop(p, list{letBinding, ...bindings})
       | _ => List.rev(bindings)
       }
     }
 
-    (recFlag, loop(p, list[first]))
+    (recFlag, loop(p, list{first}))
   }
 
   /*
@@ -15403,7 +15404,7 @@ Solution: directly use `concat`."
       let childrenEndPos = p.Parser.startPos
       Parser.expect(GreaterThan, p)
       let loc = mkLoc(childrenStartPos, childrenEndPos)
-      makeListExpression(loc, list[], None) /* no children */
+      makeListExpression(loc, list{}, None) /* no children */
     | GreaterThan =>
       /* <foo a=b> bar </foo> */
       let childrenStartPos = p.Parser.startPos
@@ -15425,7 +15426,7 @@ Solution: directly use `concat`."
         Parser.expect(GreaterThan, p)
         let loc = mkLoc(childrenStartPos, childrenEndPos)
         switch (spread, children) {
-        | (true, list[child, ..._]) => child
+        | (true, list{child, ..._}) => child
         | _ => makeListExpression(loc, children, None)
         }
       | token =>
@@ -15445,13 +15446,13 @@ Solution: directly use `concat`."
 
         let loc = mkLoc(childrenStartPos, childrenEndPos)
         switch (spread, children) {
-        | (true, list[child, ..._]) => child
+        | (true, list{child, ..._}) => child
         | _ => makeListExpression(loc, children, None)
         }
       }
     | token =>
       Parser.err(p, Diagnostics.unexpected(token, p.breadcrumbs))
-      makeListExpression(Location.none, list[], None)
+      makeListExpression(Location.none, list{}, None)
     }
 
     let jsxEndPos = p.prevEndPos
@@ -15459,16 +15460,16 @@ Solution: directly use `concat`."
     Ast_helper.Exp.apply(
       ~loc,
       name,
-      List.concat(list[
+      List.concat(list{
         jsxProps,
-        list[
+        list{
           (Asttypes.Labelled("children"), children),
           (
             Asttypes.Nolabel,
             Ast_helper.Exp.construct(Location.mknoloc(Longident.Lident("()")), None),
           ),
-        ],
-      ]),
+        },
+      }),
     )
   }
 
@@ -15492,7 +15493,7 @@ Solution: directly use `concat`."
     | _ => parseJsxName(p)
     }
 
-    {...jsxExpr, pexp_attributes: list[jsxAttr]}
+    {...jsxExpr, pexp_attributes: list{jsxAttr}}
   }
 
   /*
@@ -15525,13 +15526,13 @@ Solution: directly use `concat`."
     | Question | Lident(_) =>
       let optional = Parser.optional(p, Question)
       let (name, loc) = parseLident(p)
-      let propLocAttr = (Location.mkloc("ns.namedArgLoc", loc), Parsetree.PStr(list[]))
+      let propLocAttr = (Location.mkloc("ns.namedArgLoc", loc), Parsetree.PStr(list{}))
       /* optional punning: <foo ?a /> */
       if optional {
         Some(
           Asttypes.Optional(name),
           Ast_helper.Exp.ident(
-            ~attrs=list[propLocAttr],
+            ~attrs=list{propLocAttr},
             ~loc,
             Location.mkloc(Longident.Lident(name), loc),
           ),
@@ -15544,7 +15545,7 @@ Solution: directly use `concat`."
           let optional = Parser.optional(p, Question)
           let attrExpr = {
             let e = parsePrimaryExpr(~operand=parseAtomicExpr(p), p)
-            {...e, pexp_attributes: list[propLocAttr, ...e.pexp_attributes]}
+            {...e, pexp_attributes: list{propLocAttr, ...e.pexp_attributes}}
           }
 
           let label = if optional {
@@ -15557,7 +15558,7 @@ Solution: directly use `concat`."
         | _ =>
           let attrExpr = Ast_helper.Exp.ident(
             ~loc,
-            ~attrs=list[propLocAttr],
+            ~attrs=list{propLocAttr},
             Location.mknoloc(Longident.Lident(name)),
           )
           let label = if optional {
@@ -15590,7 +15591,7 @@ Solution: directly use `concat`."
         let token = Scanner.reconsiderLessThan(p.scanner)
         if token == LessThan {
           let child = parsePrimaryExpr(~operand=parseAtomicExpr(p), ~noCall=true, p)
-          loop(p, list[child, ...children])
+          loop(p, list{child, ...children})
         } else {
           /* LessThanSlash */
           let () = p.token = token
@@ -15600,7 +15601,7 @@ Solution: directly use `concat`."
       | token when Grammar.isJsxChildStart(token) =>
         let () = Scanner.popMode(p.scanner, Jsx)
         let child = parsePrimaryExpr(~operand=parseAtomicExpr(p), ~noCall=true, p)
-        loop(p, list[child, ...children])
+        loop(p, list{child, ...children})
       | _ =>
         Scanner.popMode(p.scanner, Jsx)
         List.rev(children)
@@ -15609,8 +15610,8 @@ Solution: directly use `concat`."
     switch p.Parser.token {
     | DotDotDot =>
       Parser.next(p)
-      (true, list[parsePrimaryExpr(~operand=parseAtomicExpr(p), ~noCall=true, p)])
-    | _ => (false, loop(p, list[]))
+      (true, list{parsePrimaryExpr(~operand=parseAtomicExpr(p), ~noCall=true, p)})
+    | _ => (false, loop(p, list{}))
     }
   }
 
@@ -15624,7 +15625,7 @@ Solution: directly use `concat`."
       let loc = mkLoc(startPos, p.prevEndPos)
       let braces = makeBracesAttr(loc)
       Ast_helper.Exp.construct(
-        ~attrs=list[braces],
+        ~attrs=list{braces},
         ~loc,
         Location.mkloc(Longident.Lident("()"), loc),
         None,
@@ -15634,7 +15635,7 @@ Solution: directly use `concat`."
       Parser.next(p)
       let spreadExpr = parseConstrainedOrCoercedExpr(p)
       Parser.expect(Comma, p)
-      let expr = parseRecordExpr(~startPos, ~spread=Some(spreadExpr), list[], p)
+      let expr = parseRecordExpr(~startPos, ~spread=Some(spreadExpr), list{}, p)
       Parser.expect(Rbrace, p)
       expr
     | String(s) =>
@@ -15664,18 +15665,18 @@ Solution: directly use `concat`."
           Parser.expect(Rbrace, p)
           let loc = mkLoc(startPos, p.prevEndPos)
           let braces = makeBracesAttr(loc)
-          {...expr, pexp_attributes: list[braces, ...expr.pexp_attributes]}
+          {...expr, pexp_attributes: list{braces, ...expr.pexp_attributes}}
         | Rbrace =>
           Parser.next(p)
           let loc = mkLoc(startPos, p.prevEndPos)
           let braces = makeBracesAttr(loc)
-          {...e, pexp_attributes: list[braces, ...e.pexp_attributes]}
+          {...e, pexp_attributes: list{braces, ...e.pexp_attributes}}
         | _ =>
           let expr = parseExprBlock(~first=e, p)
           Parser.expect(Rbrace, p)
           let loc = mkLoc(startPos, p.prevEndPos)
           let braces = makeBracesAttr(loc)
-          {...expr, pexp_attributes: list[braces, ...expr.pexp_attributes]}
+          {...expr, pexp_attributes: list{braces, ...expr.pexp_attributes}}
         }
       }
     | Uident(_) | Lident(_) =>
@@ -15686,7 +15687,7 @@ Solution: directly use `concat`."
         switch p.Parser.token {
         | Comma =>
           Parser.next(p)
-          let expr = parseRecordExpr(~startPos, list[(pathIdent, valueOrConstructor)], p)
+          let expr = parseRecordExpr(~startPos, list{(pathIdent, valueOrConstructor)}, p)
           Parser.expect(Rbrace, p)
           expr
         | Colon =>
@@ -15696,10 +15697,10 @@ Solution: directly use `concat`."
           | Rbrace =>
             Parser.next(p)
             let loc = mkLoc(startPos, p.prevEndPos)
-            Ast_helper.Exp.record(~loc, list[(pathIdent, fieldExpr)], None)
+            Ast_helper.Exp.record(~loc, list{(pathIdent, fieldExpr)}, None)
           | _ =>
             Parser.expect(Comma, p)
-            let expr = parseRecordExpr(~startPos, list[(pathIdent, fieldExpr)], p)
+            let expr = parseRecordExpr(~startPos, list{(pathIdent, fieldExpr)}, p)
             Parser.expect(Rbrace, p)
             expr
           }
@@ -15707,12 +15708,12 @@ Solution: directly use `concat`."
         | Lident(_) =>
           if p.prevEndPos.pos_lnum < p.startPos.pos_lnum {
             Parser.expect(Comma, p)
-            let expr = parseRecordExpr(~startPos, list[(pathIdent, valueOrConstructor)], p)
+            let expr = parseRecordExpr(~startPos, list{(pathIdent, valueOrConstructor)}, p)
             Parser.expect(Rbrace, p)
             expr
           } else {
             Parser.expect(Colon, p)
-            let expr = parseRecordExpr(~startPos, list[(pathIdent, valueOrConstructor)], p)
+            let expr = parseRecordExpr(~startPos, list{(pathIdent, valueOrConstructor)}, p)
             Parser.expect(Rbrace, p)
             expr
           }
@@ -15722,27 +15723,27 @@ Solution: directly use `concat`."
           Parser.expect(Rbrace, p)
           let loc = mkLoc(startPos, p.prevEndPos)
           let braces = makeBracesAttr(loc)
-          {...expr, pexp_attributes: list[braces, ...expr.pexp_attributes]}
+          {...expr, pexp_attributes: list{braces, ...expr.pexp_attributes}}
         | Rbrace =>
           Parser.next(p)
           let expr = Ast_helper.Exp.ident(~loc=pathIdent.loc, pathIdent)
           let loc = mkLoc(startPos, p.prevEndPos)
           let braces = makeBracesAttr(loc)
-          {...expr, pexp_attributes: list[braces, ...expr.pexp_attributes]}
+          {...expr, pexp_attributes: list{braces, ...expr.pexp_attributes}}
         | EqualGreater =>
           let loc = mkLoc(startPos, identEndPos)
           let ident = Location.mkloc(Longident.last(pathIdent.txt), loc)
           let a = parseEs6ArrowExpression(
-            ~parameters=list[
+            ~parameters=list{
               TermParameter({
                 uncurried: false,
-                attrs: list[],
+                attrs: list{},
                 label: Asttypes.Nolabel,
                 expr: None,
                 pat: Ast_helper.Pat.var(ident),
                 pos: startPos,
               }),
-            ],
+            },
             p,
           )
 
@@ -15755,18 +15756,18 @@ Solution: directly use `concat`."
             Parser.expect(Rbrace, p)
             let loc = mkLoc(startPos, p.prevEndPos)
             let braces = makeBracesAttr(loc)
-            {...expr, pexp_attributes: list[braces, ...expr.pexp_attributes]}
+            {...expr, pexp_attributes: list{braces, ...expr.pexp_attributes}}
           | Rbrace =>
             Parser.next(p)
             let loc = mkLoc(startPos, p.prevEndPos)
             let braces = makeBracesAttr(loc)
-            {...e, pexp_attributes: list[braces, ...e.pexp_attributes]}
+            {...e, pexp_attributes: list{braces, ...e.pexp_attributes}}
           | _ =>
             let expr = parseExprBlock(~first=e, p)
             Parser.expect(Rbrace, p)
             let loc = mkLoc(startPos, p.prevEndPos)
             let braces = makeBracesAttr(loc)
-            {...expr, pexp_attributes: list[braces, ...expr.pexp_attributes]}
+            {...expr, pexp_attributes: list{braces, ...expr.pexp_attributes}}
           }
         | _ =>
           Parser.leaveBreadcrumb(p, Grammar.ExprBlock)
@@ -15781,18 +15782,18 @@ Solution: directly use `concat`."
             Parser.expect(Rbrace, p)
             let loc = mkLoc(startPos, p.prevEndPos)
             let braces = makeBracesAttr(loc)
-            {...expr, pexp_attributes: list[braces, ...expr.pexp_attributes]}
+            {...expr, pexp_attributes: list{braces, ...expr.pexp_attributes}}
           | Rbrace =>
             Parser.next(p)
             let loc = mkLoc(startPos, p.prevEndPos)
             let braces = makeBracesAttr(loc)
-            {...e, pexp_attributes: list[braces, ...e.pexp_attributes]}
+            {...e, pexp_attributes: list{braces, ...e.pexp_attributes}}
           | _ =>
             let expr = parseExprBlock(~first=e, p)
             Parser.expect(Rbrace, p)
             let loc = mkLoc(startPos, p.prevEndPos)
             let braces = makeBracesAttr(loc)
-            {...expr, pexp_attributes: list[braces, ...expr.pexp_attributes]}
+            {...expr, pexp_attributes: list{braces, ...expr.pexp_attributes}}
           }
         }
       | _ =>
@@ -15808,18 +15809,18 @@ Solution: directly use `concat`."
           Parser.expect(Rbrace, p)
           let loc = mkLoc(startPos, p.prevEndPos)
           let braces = makeBracesAttr(loc)
-          {...expr, pexp_attributes: list[braces, ...expr.pexp_attributes]}
+          {...expr, pexp_attributes: list{braces, ...expr.pexp_attributes}}
         | Rbrace =>
           Parser.next(p)
           let loc = mkLoc(startPos, p.prevEndPos)
           let braces = makeBracesAttr(loc)
-          {...e, pexp_attributes: list[braces, ...e.pexp_attributes]}
+          {...e, pexp_attributes: list{braces, ...e.pexp_attributes}}
         | _ =>
           let expr = parseExprBlock(~first=e, p)
           Parser.expect(Rbrace, p)
           let loc = mkLoc(startPos, p.prevEndPos)
           let braces = makeBracesAttr(loc)
-          {...expr, pexp_attributes: list[braces, ...expr.pexp_attributes]}
+          {...expr, pexp_attributes: list{braces, ...expr.pexp_attributes}}
         }
       }
     | _ =>
@@ -15827,7 +15828,7 @@ Solution: directly use `concat`."
       Parser.expect(Rbrace, p)
       let loc = mkLoc(startPos, p.prevEndPos)
       let braces = makeBracesAttr(loc)
-      {...expr, pexp_attributes: list[braces, ...expr.pexp_attributes]}
+      {...expr, pexp_attributes: list{braces, ...expr.pexp_attributes}}
     }
   }
 
@@ -15870,7 +15871,7 @@ Solution: directly use `concat`."
   }
 
   and parseRecordExprWithStringKeys = (~startPos, firstRow, p) => {
-    let rows = list[
+    let rows = list{
       firstRow,
       ...parseCommaDelimitedRegion(
         ~grammar=Grammar.RecordRowsStringKey,
@@ -15878,12 +15879,12 @@ Solution: directly use `concat`."
         ~f=parseRecordRowWithStringKey,
         p,
       ),
-    ]
+    }
     let loc = mkLoc(startPos, p.endPos)
     let recordStrExpr = Ast_helper.Str.eval(~loc, Ast_helper.Exp.record(~loc, rows, None))
     Ast_helper.Exp.extension(
       ~loc,
-      (Location.mkloc("bs.obj", loc), Parsetree.PStr(list[recordStrExpr])),
+      (Location.mkloc("bs.obj", loc), Parsetree.PStr(list{recordStrExpr})),
     )
   }
 
@@ -15895,9 +15896,9 @@ Solution: directly use `concat`."
       p,
     )
 
-    let rows = List.concat(list[rows, exprs])
+    let rows = List.concat(list{rows, exprs})
     let () = switch rows {
-    | list[] =>
+    | list{} =>
       let msg = "Record spread needs at least one field that's updated"
       Parser.err(p, Diagnostics.message(msg))
     | _rows => ()
@@ -15966,7 +15967,7 @@ Solution: directly use `concat`."
     | _ =>
       let e1 = {
         let expr = parseExpr(p)
-        {...expr, pexp_attributes: List.concat(list[attrs, expr.pexp_attributes])}
+        {...expr, pexp_attributes: List.concat(list{attrs, expr.pexp_attributes})}
       }
 
       ignore(Parser.optional(p, Semicolon))
@@ -16116,15 +16117,15 @@ Solution: directly use `concat`."
           Ast_helper.Pat.construct(lid, None)
         }
 
-        parseForRest(false, parseAliasPattern(~attrs=list[], unitPattern, p), startPos, p)
+        parseForRest(false, parseAliasPattern(~attrs=list{}, unitPattern, p), startPos, p)
       | _ =>
         let pat = parsePattern(p)
         switch p.token {
         | Comma =>
           Parser.next(p)
-          let tuplePattern = parseTuplePattern(~attrs=list[], ~startPos=lparen, ~first=pat, p)
+          let tuplePattern = parseTuplePattern(~attrs=list{}, ~startPos=lparen, ~first=pat, p)
 
-          let pattern = parseAliasPattern(~attrs=list[], tuplePattern, p)
+          let pattern = parseAliasPattern(~attrs=list{}, tuplePattern, p)
           parseForRest(false, pattern, startPos, p)
         | _ => parseForRest(true, pat, startPos, p)
         }
@@ -16183,7 +16184,7 @@ Solution: directly use `concat`."
     )
 
     let () = switch cases {
-    | list[] =>
+    | list{} =>
       Parser.err(
         ~startPos=p.prevEndPos,
         p,
@@ -16271,9 +16272,9 @@ Solution: directly use `concat`."
         Parser.next(p)
         let endPos = p.prevEndPos
         let loc = mkLoc(startPos, endPos)
-        let propLocAttr = (Location.mkloc("ns.namedArgLoc", loc), Parsetree.PStr(list[]))
+        let propLocAttr = (Location.mkloc("ns.namedArgLoc", loc), Parsetree.PStr(list{}))
         let identExpr = Ast_helper.Exp.ident(
-          ~attrs=list[propLocAttr],
+          ~attrs=list{propLocAttr},
           ~loc,
           Location.mkloc(Longident.Lident(ident), loc),
         )
@@ -16297,7 +16298,7 @@ Solution: directly use `concat`."
             Ast_helper.Exp.ident(~loc, Location.mkloc(Longident.Lident("_"), loc))
           | _ =>
             let expr = parseConstrainedOrCoercedExpr(p)
-            {...expr, pexp_attributes: list[propLocAttr, ...expr.pexp_attributes]}
+            {...expr, pexp_attributes: list{propLocAttr, ...expr.pexp_attributes}}
           }
 
           Some(uncurried, label, expr)
@@ -16305,7 +16306,7 @@ Solution: directly use `concat`."
           Parser.next(p)
           let typ = parseTypExpr(p)
           let loc = mkLoc(startPos, p.prevEndPos)
-          let expr = Ast_helper.Exp.constraint_(~attrs=list[propLocAttr], ~loc, identExpr, typ)
+          let expr = Ast_helper.Exp.constraint_(~attrs=list{propLocAttr}, ~loc, identExpr, typ)
           Some(uncurried, Labelled(ident), expr)
         | _ => Some(uncurried, Labelled(ident), identExpr)
         }
@@ -16329,41 +16330,41 @@ Solution: directly use `concat`."
 
     Parser.expect(Rparen, p)
     let args = switch args {
-    | list[] =>
+    | list{} =>
       let loc = mkLoc(startPos, p.prevEndPos)
       /* No args -> unit sugar: `foo()` */
-      list[
+      list{
         (
           false,
           Asttypes.Nolabel,
           Ast_helper.Exp.construct(~loc, Location.mkloc(Longident.Lident("()"), loc), None),
         ),
-      ]
+      }
     | args => args
     }
 
     let loc = {...funExpr.pexp_loc, loc_end: p.prevEndPos}
     let args = switch args {
-    | list[(u, lbl, expr), ...args] =>
+    | list{(u, lbl, expr), ...args} =>
       let group = ((grp, acc), (uncurried, lbl, expr)) => {
         let (_u, grp) = grp
         if uncurried === true {
-          ((true, list[(lbl, expr)]), list[(_u, List.rev(grp)), ...acc])
+          ((true, list{(lbl, expr)}), list{(_u, List.rev(grp)), ...acc})
         } else {
-          ((_u, list[(lbl, expr), ...grp]), acc)
+          ((_u, list{(lbl, expr), ...grp}), acc)
         }
       }
 
-      let ((_u, grp), acc) = List.fold_left(group, ((u, list[(lbl, expr)]), list[]), args)
-      List.rev(list[(_u, List.rev(grp)), ...acc])
-    | list[] => list[]
+      let ((_u, grp), acc) = List.fold_left(group, ((u, list{(lbl, expr)}), list{}), args)
+      List.rev(list{(_u, List.rev(grp)), ...acc})
+    | list{} => list{}
     }
 
     let apply = List.fold_left((callBody, group) => {
       let (uncurried, args) = group
       let (args, wrap) = processUnderscoreApplication(args)
       let exp = if uncurried {
-        let attrs = list[uncurryAttr]
+        let attrs = list{uncurryAttr}
         Ast_helper.Exp.apply(~loc, ~attrs, callBody, args)
       } else {
         Ast_helper.Exp.apply(~loc, callBody, args)
@@ -16386,15 +16387,15 @@ Solution: directly use `concat`."
         switch p.Parser.token {
         | Dot =>
           Parser.next(p)
-          aux(p, list[ident, ...acc])
+          aux(p, list{ident, ...acc})
         | Lparen when p.prevEndPos.pos_lnum === p.startPos.pos_lnum =>
           let lparen = p.startPos
           let args = parseConstructorArgs(p)
           let rparen = p.prevEndPos
-          let lident = buildLongident(list[ident, ...acc])
+          let lident = buildLongident(list{ident, ...acc})
           let tail = switch args {
-          | list[] => None
-          | list[{Parsetree.pexp_desc: Pexp_tuple(_)} as arg] as args =>
+          | list{} => None
+          | list{{Parsetree.pexp_desc: Pexp_tuple(_)} as arg} as args =>
             let loc = mkLoc(lparen, rparen)
             if p.mode == ParseForTypeChecker {
               /* Some(1, 2) for type-checker */
@@ -16403,7 +16404,7 @@ Solution: directly use `concat`."
               /* Some((1, 2)) for printer */
               Some(Ast_helper.Exp.tuple(~loc, args))
             }
-          | list[arg] => Some(arg)
+          | list{arg} => Some(arg)
           | args =>
             let loc = mkLoc(lparen, rparen)
             Some(Ast_helper.Exp.tuple(~loc, args))
@@ -16414,18 +16415,18 @@ Solution: directly use `concat`."
           Ast_helper.Exp.construct(~loc, Location.mkloc(lident, identLoc), tail)
         | _ =>
           let loc = mkLoc(startPos, p.prevEndPos)
-          let lident = buildLongident(list[ident, ...acc])
+          let lident = buildLongident(list{ident, ...acc})
           Ast_helper.Exp.construct(~loc, Location.mkloc(lident, loc), None)
         }
       | Lident(ident) =>
         Parser.next(p)
         let loc = mkLoc(startPos, p.prevEndPos)
-        let lident = buildLongident(list[ident, ...acc])
+        let lident = buildLongident(list{ident, ...acc})
         Ast_helper.Exp.ident(~loc, Location.mkloc(lident, loc))
       | List =>
         Parser.next(p)
         let loc = mkLoc(startPos, p.prevEndPos)
-        let lident = buildLongident(list["list", ...acc])
+        let lident = buildLongident(list{"list", ...acc})
         Ast_helper.Exp.ident(~loc, Location.mkloc(lident, loc))
       | token =>
         Parser.next(p)
@@ -16433,7 +16434,7 @@ Solution: directly use `concat`."
         Recover.defaultExpr()
       }
 
-    aux(p, list[])
+    aux(p, list{})
   }
 
   and parsePolyVariantExpr = p => {
@@ -16446,8 +16447,8 @@ Solution: directly use `concat`."
       let rparen = p.prevEndPos
       let loc_paren = mkLoc(lparen, rparen)
       let tail = switch args {
-      | list[] => None
-      | list[{Parsetree.pexp_desc: Pexp_tuple(_)} as expr] as args =>
+      | list{} => None
+      | list{{Parsetree.pexp_desc: Pexp_tuple(_)} as expr} as args =>
         if p.mode == ParseForTypeChecker {
           /* #a(1, 2) for type-checker */
           Some(expr)
@@ -16455,7 +16456,7 @@ Solution: directly use `concat`."
           /* #a((1, 2)) for type-checker */
           Some(Ast_helper.Exp.tuple(~loc=loc_paren, args))
         }
-      | list[arg] => Some(arg)
+      | list{arg} => Some(arg)
       | args =>
         /* #a((1, 2)) for printer */
         Some(Ast_helper.Exp.tuple(~loc=loc_paren, args))
@@ -16481,9 +16482,9 @@ Solution: directly use `concat`."
 
     Parser.expect(Rparen, p)
     switch args {
-    | list[] =>
+    | list{} =>
       let loc = mkLoc(lparen, p.prevEndPos)
-      list[Ast_helper.Exp.construct(~loc, Location.mkloc(Longident.Lident("()"), loc), None)]
+      list{Ast_helper.Exp.construct(~loc, Location.mkloc(Longident.Lident("()"), loc), None)}
     | args => args
     }
   }
@@ -16497,7 +16498,7 @@ Solution: directly use `concat`."
     )
 
     Parser.expect(Rparen, p)
-    Ast_helper.Exp.tuple(~loc=mkLoc(startPos, p.prevEndPos), list[first, ...exprs])
+    Ast_helper.Exp.tuple(~loc=mkLoc(startPos, p.prevEndPos), list{first, ...exprs})
   }
 
   and parseSpreadExprRegion = p =>
@@ -16522,7 +16523,7 @@ Solution: directly use `concat`."
     Parser.expect(Rbracket, p)
     let loc = mkLoc(startPos, p.prevEndPos)
     switch listExprs {
-    | list[(true, expr), ...exprs] =>
+    | list{(true, expr), ...exprs} =>
       let exprs = exprs |> List.map(snd) |> List.rev
       makeListExpression(loc, exprs, Some(expr))
     | exprs =>
@@ -16583,12 +16584,12 @@ Solution: directly use `concat`."
     | SingleQuote =>
       let vars = parseTypeVarList(p)
       switch vars {
-      | list[_v1, _v2, ..._] =>
+      | list{_v1, _v2, ..._} =>
         Parser.expect(Dot, p)
         let typ = parseTypExpr(p)
         let loc = mkLoc(startPos, p.prevEndPos)
         Ast_helper.Typ.poly(~loc, vars, typ)
-      | list[var] =>
+      | list{var} =>
         switch p.Parser.token {
         | Dot =>
           Parser.next(p)
@@ -16617,11 +16618,11 @@ Solution: directly use `concat`."
         Parser.next(p)
         let (lident, loc) = parseLident(p)
         let var = Location.mkloc(lident, loc)
-        loop(p, list[var, ...vars])
+        loop(p, list{var, ...vars})
       | _ => List.rev(vars)
       }
 
-    loop(p, list[])
+    loop(p, list{})
   }
 
   and parseLidentList = p => {
@@ -16630,11 +16631,11 @@ Solution: directly use `concat`."
       | Lident(lident) =>
         let loc = mkLoc(p.startPos, p.endPos)
         Parser.next(p)
-        loop(p, list[Location.mkloc(lident, loc), ...ls])
+        loop(p, list{Location.mkloc(lident, loc), ...ls})
       | _ => List.rev(ls)
       }
 
-    loop(p, list[])
+    loop(p, list{})
   }
 
   and parseAtomicTypExpr = (~attrs, p) => {
@@ -16656,7 +16657,7 @@ Solution: directly use `concat`."
         Parser.next(p)
         let loc = mkLoc(startPos, p.prevEndPos)
         let unitConstr = Location.mkloc(Longident.Lident("unit"), loc)
-        Ast_helper.Typ.constr(~attrs, unitConstr, list[])
+        Ast_helper.Typ.constr(~attrs, unitConstr, list{})
       | _ =>
         let t = parseTypExpr(p)
         switch p.token {
@@ -16668,7 +16669,7 @@ Solution: directly use `concat`."
           {
             ...t,
             ptyp_loc: mkLoc(startPos, p.prevEndPos),
-            ptyp_attributes: List.concat(list[attrs, t.ptyp_attributes]),
+            ptyp_attributes: List.concat(list{attrs, t.ptyp_attributes}),
           }
         }
       }
@@ -16715,7 +16716,7 @@ Solution: directly use `concat`."
       Ast_helper.Typ.package(~loc, ~attrs, modTypePath, constraints)
     | _ =>
       let loc = mkLoc(startPos, p.prevEndPos)
-      Ast_helper.Typ.package(~loc, ~attrs, modTypePath, list[])
+      Ast_helper.Typ.package(~loc, ~attrs, modTypePath, list{})
     }
   }
 
@@ -16731,7 +16732,7 @@ Solution: directly use `concat`."
 
     let rest = parseRegion(~grammar=Grammar.PackageConstraint, ~f=parsePackageConstraint, p)
 
-    list[first, ...rest]
+    list{first, ...rest}
   }
 
   /* and type typeconstr = typexpr */
@@ -16840,15 +16841,15 @@ Solution: directly use `concat`."
 
           let typ = parseArrowTypeRest(~es6Arrow=true, ~startPos, typ, p)
           let typ = parseTypeAlias(p, typ)
-          Some(uncurried, list[], Asttypes.Nolabel, typ, startPos)
+          Some(uncurried, list{}, Asttypes.Nolabel, typ, startPos)
         }
       | _ =>
         let typ = parseTypExpr(p)
         let typWithAttributes = {
           ...typ,
-          ptyp_attributes: List.concat(list[attrs, typ.ptyp_attributes]),
+          ptyp_attributes: List.concat(list{attrs, typ.ptyp_attributes}),
         }
-        Some(uncurried, list[], Asttypes.Nolabel, typWithAttributes, startPos)
+        Some(uncurried, list{}, Asttypes.Nolabel, typWithAttributes, startPos)
       }
     } else {
       None
@@ -16863,8 +16864,8 @@ Solution: directly use `concat`."
       Parser.next(p)
       let loc = mkLoc(startPos, p.prevEndPos)
       let unitConstr = Location.mkloc(Longident.Lident("unit"), loc)
-      let typ = Ast_helper.Typ.constr(unitConstr, list[])
-      list[(false, list[], Asttypes.Nolabel, typ, startPos)]
+      let typ = Ast_helper.Typ.constr(unitConstr, list{})
+      list{(false, list{}, Asttypes.Nolabel, typ, startPos)}
     | _ =>
       let params = parseCommaDelimitedRegion(
         ~grammar=Grammar.TypeParameters,
@@ -16904,7 +16905,7 @@ Solution: directly use `concat`."
       let endPos = p.prevEndPos
       let typ = List.fold_right(((uncurried, attrs, argLbl, typ, startPos), t) => {
         let attrs = if uncurried {
-          list[uncurryAttr, ...attrs]
+          list{uncurryAttr, ...attrs}
         } else {
           attrs
         }
@@ -16913,7 +16914,7 @@ Solution: directly use `concat`."
 
       {
         ...typ,
-        ptyp_attributes: List.concat(list[typ.ptyp_attributes, attrs]),
+        ptyp_attributes: List.concat(list{typ.ptyp_attributes, attrs}),
         ptyp_loc: mkLoc(startPos, p.prevEndPos),
       }
     }
@@ -16994,7 +16995,7 @@ Solution: directly use `concat`."
 
     Parser.expect(Rparen, p)
     let tupleLoc = mkLoc(startPos, p.prevEndPos)
-    Ast_helper.Typ.tuple(~attrs, ~loc=tupleLoc, list[first, ...typexprs])
+    Ast_helper.Typ.tuple(~attrs, ~loc=tupleLoc, list{first, ...typexprs})
   }
 
   and parseTypeConstructorArgRegion = p =>
@@ -17029,10 +17030,10 @@ Solution: directly use `concat`."
         let msg =
           Doc.breakableGroup(
             ~forceBreak=true,
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.text("Type parameters require angle brackets:"),
-              Doc.indent(Doc.concat(list[Doc.line, Printer.printTypExpr(typ, CommentTable.empty)])),
-            ]),
+              Doc.indent(Doc.concat(list{Doc.line, Printer.printTypExpr(typ, CommentTable.empty)})),
+            }),
           ) |> Doc.toString(~width=80)
 
         Parser.err(~startPos=openingStartPos, p, Diagnostics.message(msg))
@@ -17042,7 +17043,7 @@ Solution: directly use `concat`."
 
       Scanner.popMode(p.scanner, Diamond)
       typeArgs
-    | _ => list[]
+    | _ => list{}
     }
   }
 
@@ -17089,7 +17090,7 @@ Solution: directly use `concat`."
     | Colon =>
       Parser.next(p)
       parsePolyTypeExpr(p)
-    | _ => Ast_helper.Typ.constr(~loc=name.loc, {...name, txt: Lident(name.txt)}, list[])
+    | _ => Ast_helper.Typ.constr(~loc=name.loc, {...name, txt: Lident(name.txt)}, list{})
     }
 
     let loc = mkLoc(startPos, typ.ptyp_loc.loc_end)
@@ -17120,7 +17121,7 @@ Solution: directly use `concat`."
       | Colon =>
         Parser.next(p)
         parsePolyTypeExpr(p)
-      | _ => Ast_helper.Typ.constr(~loc=name.loc, {...name, txt: Lident(name.txt)}, list[])
+      | _ => Ast_helper.Typ.constr(~loc=name.loc, {...name, txt: Lident(name.txt)}, list{})
       }
 
       let loc = mkLoc(startPos, typ.ptyp_loc.loc_end)
@@ -17189,7 +17190,7 @@ Solution: directly use `concat`."
 
           Parser.expect(Rbrace, p)
           let loc = mkLoc(startPos, p.prevEndPos)
-          let typ = makeBsObjType(~attrs=list[], ~loc, ~closed=closedFlag, fields)
+          let typ = makeBsObjType(~attrs=list{}, ~loc, ~closed=closedFlag, fields)
           Parser.optional(p, Comma) |> ignore
           let moreArgs = parseCommaDelimitedRegion(
             ~grammar=Grammar.TypExprList,
@@ -17199,14 +17200,14 @@ Solution: directly use `concat`."
           )
 
           Parser.expect(Rparen, p)
-          Parsetree.Pcstr_tuple(list[typ, ...moreArgs])
+          Parsetree.Pcstr_tuple(list{typ, ...moreArgs})
         | _ =>
           let attrs = parseAttributes(p)
           switch p.Parser.token {
           | String(_) =>
             let closedFlag = Asttypes.Closed
             let fields = switch attrs {
-            | list[] =>
+            | list{} =>
               parseCommaDelimitedRegion(
                 ~grammar=Grammar.StringFieldDeclarations,
                 ~closing=Rbrace,
@@ -17235,7 +17236,7 @@ Solution: directly use `concat`."
                 }
               }
 
-              list[
+              list{
                 first,
                 ...parseCommaDelimitedRegion(
                   ~grammar=Grammar.StringFieldDeclarations,
@@ -17243,11 +17244,11 @@ Solution: directly use `concat`."
                   ~f=parseStringFieldDeclaration,
                   p,
                 ),
-              ]
+              }
             }
             Parser.expect(Rbrace, p)
             let loc = mkLoc(startPos, p.prevEndPos)
-            let typ = makeBsObjType(~attrs=list[], ~loc, ~closed=closedFlag, fields)
+            let typ = makeBsObjType(~attrs=list{}, ~loc, ~closed=closedFlag, fields)
             Parser.optional(p, Comma) |> ignore
             let moreArgs = parseCommaDelimitedRegion(
               ~grammar=Grammar.TypExprList,
@@ -17257,10 +17258,10 @@ Solution: directly use `concat`."
             )
 
             Parser.expect(Rparen, p)
-            Parsetree.Pcstr_tuple(list[typ, ...moreArgs])
+            Parsetree.Pcstr_tuple(list{typ, ...moreArgs})
           | _ =>
             let fields = switch attrs {
-            | list[] =>
+            | list{} =>
               parseCommaDelimitedRegion(
                 ~grammar=Grammar.FieldDeclarations,
                 ~closing=Rbrace,
@@ -17274,7 +17275,7 @@ Solution: directly use `concat`."
                 {...field, Parsetree.pld_attributes: attrs}
               }
 
-              list[
+              list{
                 first,
                 ...parseCommaDelimitedRegion(
                   ~grammar=Grammar.FieldDeclarations,
@@ -17282,11 +17283,11 @@ Solution: directly use `concat`."
                   ~f=parseFieldDeclarationRegion,
                   p,
                 ),
-              ]
+              }
             }
 
             let () = switch fields {
-            | list[] =>
+            | list{} =>
               Parser.err(
                 ~startPos=lbrace,
                 p,
@@ -17312,7 +17313,7 @@ Solution: directly use `concat`."
         Parser.expect(Rparen, p)
         Parsetree.Pcstr_tuple(args)
       }
-    | _ => Pcstr_tuple(list[])
+    | _ => Pcstr_tuple(list{})
     }
 
     let res = switch p.Parser.token {
@@ -17366,14 +17367,14 @@ Solution: directly use `concat`."
     | Some(firstConstrDecl) => firstConstrDecl
     }
 
-    list[
+    list{
       firstConstrDecl,
       ...parseRegion(
         ~grammar=Grammar.ConstructorDeclaration,
         ~f=parseTypeConstructorDeclarationWithBar,
         p,
       ),
-    ]
+    }
   }
 
   /*
@@ -17404,7 +17405,7 @@ Solution: directly use `concat`."
     | token =>
       Parser.err(p, Diagnostics.unexpected(token, p.breadcrumbs))
       /* TODO: I have no idea if this is even remotely a good idea */
-      Parsetree.Ptype_variant(list[])
+      Parsetree.Ptype_variant(list{})
     }
 
     Parser.eatBreadcrumb(p)
@@ -17473,18 +17474,18 @@ Solution: directly use `concat`."
         let msg =
           Doc.breakableGroup(
             ~forceBreak=true,
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.text("Type parameters require angle brackets:"),
               Doc.indent(
-                Doc.concat(list[
+                Doc.concat(list{
                   Doc.line,
-                  Doc.concat(list[
+                  Doc.concat(list{
                     Printer.printLongident(parent.Location.txt),
                     Printer.printTypeParams(params, CommentTable.empty),
-                  ]),
-                ]),
+                  }),
+                }),
               ),
-            ]),
+            }),
           ) |> Doc.toString(~width=80)
 
         Parser.err(~startPos=openingStartPos, p, Diagnostics.message(msg))
@@ -17495,7 +17496,7 @@ Solution: directly use `concat`."
       Scanner.popMode(p.scanner, Diamond)
       Parser.eatBreadcrumb(p)
       params
-    | _ => list[]
+    | _ => list{}
     }
   }
 
@@ -17614,7 +17615,7 @@ Solution: directly use `concat`."
 
       Parser.expect(Rbrace, p)
       let loc = mkLoc(startPos, p.prevEndPos)
-      let typ = makeBsObjType(~attrs=list[], ~loc, ~closed=closedFlag, fields) |> parseTypeAlias(p)
+      let typ = makeBsObjType(~attrs=list{}, ~loc, ~closed=closedFlag, fields) |> parseTypeAlias(p)
 
       let typ = parseArrowTypeRest(~es6Arrow=true, ~startPos, typ, p)
       (Some(typ), Asttypes.Public, Parsetree.Ptype_abstract)
@@ -17624,7 +17625,7 @@ Solution: directly use `concat`."
       | String(_) =>
         let closedFlag = Asttypes.Closed
         let fields = switch attrs {
-        | list[] =>
+        | list{} =>
           parseCommaDelimitedRegion(
             ~grammar=Grammar.StringFieldDeclarations,
             ~closing=Rbrace,
@@ -17653,7 +17654,7 @@ Solution: directly use `concat`."
             }
           }
 
-          list[
+          list{
             first,
             ...parseCommaDelimitedRegion(
               ~grammar=Grammar.StringFieldDeclarations,
@@ -17661,27 +17662,27 @@ Solution: directly use `concat`."
               ~f=parseStringFieldDeclaration,
               p,
             ),
-          ]
+          }
         }
 
         Parser.expect(Rbrace, p)
         let loc = mkLoc(startPos, p.prevEndPos)
         let typ =
-          makeBsObjType(~attrs=list[], ~loc, ~closed=closedFlag, fields) |> parseTypeAlias(p)
+          makeBsObjType(~attrs=list{}, ~loc, ~closed=closedFlag, fields) |> parseTypeAlias(p)
 
         let typ = parseArrowTypeRest(~es6Arrow=true, ~startPos, typ, p)
         (Some(typ), Asttypes.Public, Parsetree.Ptype_abstract)
       | _ =>
         Parser.leaveBreadcrumb(p, Grammar.RecordDecl)
         let fields = switch attrs {
-        | list[] =>
+        | list{} =>
           parseCommaDelimitedRegion(
             ~grammar=Grammar.FieldDeclarations,
             ~closing=Rbrace,
             ~f=parseFieldDeclarationRegion,
             p,
           )
-        | list[attr, ..._] as attrs =>
+        | list{attr, ..._} as attrs =>
           let first = {
             let field = parseFieldDeclaration(p)
             Parser.optional(p, Comma) |> ignore
@@ -17695,7 +17696,7 @@ Solution: directly use `concat`."
             }
           }
 
-          list[
+          list{
             first,
             ...parseCommaDelimitedRegion(
               ~grammar=Grammar.FieldDeclarations,
@@ -17703,11 +17704,11 @@ Solution: directly use `concat`."
               ~f=parseFieldDeclarationRegion,
               p,
             ),
-          ]
+          }
         }
 
         let () = switch fields {
-        | list[] =>
+        | list{} =>
           Parser.err(~startPos, p, Diagnostics.message("A record needs at least one field"))
         | _ => ()
         }
@@ -17764,11 +17765,11 @@ Solution: directly use `concat`."
     | GreaterThan =>
       Parser.next(p)
       let rowFields = switch p.token {
-      | Rbracket => list[]
+      | Rbracket => list{}
       | Bar => parseTagSpecs(p)
       | _ =>
         let rowField = parseTagSpec(p)
-        list[rowField, ...parseTagSpecs(p)]
+        list{rowField, ...parseTagSpecs(p)}
       }
 
       let variant = {
@@ -17786,19 +17787,19 @@ Solution: directly use `concat`."
         Parser.next(p)
         let rec loop = p =>
           switch p.Parser.token {
-          | Rbracket => list[]
+          | Rbracket => list{}
           | _ =>
             let (ident, _loc) = parseHashIdent(~startPos=p.startPos, p)
-            list[ident, ...loop(p)]
+            list{ident, ...loop(p)}
           }
 
         loop(p)
       } else {
-        list[]
+        list{}
       }
       let variant = {
         let loc = mkLoc(startPos, p.prevEndPos)
-        Ast_helper.Typ.variant(~attrs, ~loc, list[rowField, ...rowFields], Closed, Some(tagNames))
+        Ast_helper.Typ.variant(~attrs, ~loc, list{rowField, ...rowFields}, Closed, Some(tagNames))
       }
       Parser.expect(Rbracket, p)
       variant
@@ -17816,13 +17817,13 @@ Solution: directly use `concat`."
 
   and parseTagSpecFulls = p =>
     switch p.Parser.token {
-    | Rbracket => list[]
-    | GreaterThan => list[]
+    | Rbracket => list{}
+    | GreaterThan => list{}
     | Bar =>
       Parser.next(p)
       let rowField = parseTagSpecFull(p)
-      list[rowField, ...parseTagSpecFulls(p)]
-    | _ => list[]
+      list{rowField, ...parseTagSpecFulls(p)}
+    | _ => list{}
     }
 
   and parseTagSpecFull = p => {
@@ -17840,8 +17841,8 @@ Solution: directly use `concat`."
     | Bar =>
       Parser.next(p)
       let rowField = parseTagSpec(p)
-      list[rowField, ...parseTagSpecs(p)]
-    | _ => list[]
+      list{rowField, ...parseTagSpecs(p)}
+    | _ => list{}
     }
 
   and parseTagSpec = p => {
@@ -17859,12 +17860,12 @@ Solution: directly use `concat`."
     switch p.Parser.token {
     | Bar =>
       Parser.next(p)
-      list[parseTagSpec(p)]
-    | Hash => list[parsePolymorphicVariantTypeSpecHash(~attrs, ~full=false, p)]
+      list{parseTagSpec(p)}
+    | Hash => list{parsePolymorphicVariantTypeSpecHash(~attrs, ~full=false, p)}
     | _ =>
       let typ = parseTypExpr(~attrs, p)
       Parser.expect(Bar, p)
-      list[Parsetree.Rinherit(typ), parseTagSpec(p)]
+      list{Parsetree.Rinherit(typ), parseTagSpec(p)}
     }
   }
 
@@ -17876,16 +17877,16 @@ Solution: directly use `concat`."
       | Band when full =>
         Parser.next(p)
         let rowField = parsePolymorphicVariantTypeArgs(p)
-        list[rowField, ...loop(p)]
-      | _ => list[]
+        list{rowField, ...loop(p)}
+      | _ => list{}
       }
 
     let (firstTuple, tagContainsAConstantEmptyConstructor) = switch p.Parser.token {
     | Band when full =>
       Parser.next(p)
-      (list[parsePolymorphicVariantTypeArgs(p)], true)
-    | Lparen => (list[parsePolymorphicVariantTypeArgs(p)], false)
-    | _ => (list[], true)
+      (list{parsePolymorphicVariantTypeArgs(p)}, true)
+    | Lparen => (list{parsePolymorphicVariantTypeArgs(p)}, false)
+    | _ => (list{}, true)
     }
 
     let tuples = \"@"(firstTuple, loop(p))
@@ -17903,16 +17904,16 @@ Solution: directly use `concat`."
     )
 
     Parser.expect(Rparen, p)
-    let attrs = list[]
+    let attrs = list{}
     let loc = mkLoc(startPos, p.prevEndPos)
     switch args {
-    | list[{ptyp_desc: Ptyp_tuple(_)} as typ] as types =>
+    | list{{ptyp_desc: Ptyp_tuple(_)} as typ} as types =>
       if p.mode == ParseForTypeChecker {
         typ
       } else {
         Ast_helper.Typ.tuple(~loc, ~attrs, types)
       }
-    | list[typ] => typ
+    | list{typ} => typ
     | types => Ast_helper.Typ.tuple(~loc, ~attrs, types)
     }
   }
@@ -18005,11 +18006,11 @@ Solution: directly use `concat`."
           kind,
         )
 
-        loop(p, list[extConstr, ...cs])
+        loop(p, list{extConstr, ...cs})
       | _ => List.rev(cs)
       }
 
-    let constructors = loop(p, list[first])
+    let constructors = loop(p, list{first})
     Ast_helper.Te.mk(~attrs, ~params, ~priv, name, constructors)
   }
 
@@ -18040,18 +18041,18 @@ Solution: directly use `concat`."
         | Export =>
           let exportLoc = mkLoc(p.startPos, p.endPos)
           Parser.next(p)
-          let genTypeAttr = (Location.mkloc("genType", exportLoc), Parsetree.PStr(list[]))
-          list[genTypeAttr, ...attrs]
+          let genTypeAttr = (Location.mkloc("genType", exportLoc), Parsetree.PStr(list{}))
+          list{genTypeAttr, ...attrs}
         | _ => attrs
         }
 
         let typeDef = parseTypeDef(~attrs, ~startPos, p)
-        loop(p, list[typeDef, ...defs])
+        loop(p, list{typeDef, ...defs})
       | _ => List.rev(defs)
       }
     }
 
-    loop(p, list[typeDef])
+    loop(p, list{typeDef})
   }
 
   /* TODO: decide if we really want type extensions (eg. type x += Blue)
@@ -18091,10 +18092,10 @@ Solution: directly use `concat`."
 
   and parsePrimitives = p =>
     switch parseRegion(~grammar=Grammar.Primitive, ~f=parsePrimitive, p) {
-    | list[] =>
+    | list{} =>
       let msg = "An external definition should have at least one primitive. Example: \"setTimeout\""
       Parser.err(p, Diagnostics.message(msg))
-      list[]
+      list{}
     | primitives => primitives
     }
 
@@ -18126,7 +18127,7 @@ Solution: directly use `concat`."
     let attrs = if parseAttrs {
       parseAttributes(p)
     } else {
-      list[]
+      list{}
     }
     let name = switch p.Parser.token {
     | Uident(name) =>
@@ -18146,7 +18147,7 @@ Solution: directly use `concat`."
       Parser.next(p)
       let longident = parseModuleLongIdent(~lowercase=false, p)
       Parsetree.Pext_rebind(longident)
-    | _ => Parsetree.Pext_decl(Pcstr_tuple(list[]), None)
+    | _ => Parsetree.Pext_decl(Pcstr_tuple(list{}), None)
     }
 
     (attrs, name, kind)
@@ -18273,8 +18274,8 @@ Solution: directly use `concat`."
     let exportStart = p.Parser.startPos
     Parser.expect(Token.Export, p)
     let exportLoc = mkLoc(exportStart, p.prevEndPos)
-    let genTypeAttr = (Location.mkloc("genType", exportLoc), Parsetree.PStr(list[]))
-    let attrs = list[genTypeAttr, ...attrs]
+    let genTypeAttr = (Location.mkloc("genType", exportLoc), Parsetree.PStr(list{}))
+    let attrs = list{genTypeAttr, ...attrs}
     switch p.Parser.token {
     | Typ =>
       switch parseTypeDefinitionOrExtension(~attrs, p) {
@@ -18369,7 +18370,7 @@ Solution: directly use `concat`."
     | Lparen =>
       Parser.next(p)
       let modExpr = switch p.token {
-      | Rparen => Ast_helper.Mod.structure(~loc=mkLoc(startPos, p.prevEndPos), list[])
+      | Rparen => Ast_helper.Mod.structure(~loc=mkLoc(startPos, p.prevEndPos), list{})
       | _ => parseConstrainedModExpr(p)
       }
 
@@ -18484,7 +18485,7 @@ Solution: directly use `concat`."
 
     Parser.expect(Rparen, p)
     switch args {
-    | list[] => list[(list[], Location.mkloc("*", mkLoc(startPos, p.prevEndPos)), None, startPos)]
+    | list{} => list{(list{}, Location.mkloc("*", mkLoc(startPos, p.prevEndPos)), None, startPos)}
     | args => args
     }
   }
@@ -18541,7 +18542,7 @@ Solution: directly use `concat`."
       parsePrimaryModExpr(p)
     }
 
-    {...modExpr, pmod_attributes: List.concat(list[modExpr.pmod_attributes, attrs])}
+    {...modExpr, pmod_attributes: List.concat(list{modExpr.pmod_attributes, attrs})}
   }
 
   and parseConstrainedModExpr = p => {
@@ -18575,9 +18576,9 @@ Solution: directly use `concat`."
 
     Parser.expect(Rparen, p)
     let args = switch args {
-    | list[] =>
+    | list{} =>
       let loc = mkLoc(startPos, p.prevEndPos)
-      list[Ast_helper.Mod.structure(~loc, list[])]
+      list{Ast_helper.Mod.structure(~loc, list{})}
     | args => args
     }
 
@@ -18700,13 +18701,13 @@ Solution: directly use `concat`."
         Parser.next(p)
         ignore(Parser.optional(p, Module)) /* over-parse for fault-tolerance */
         let modBinding = parseModuleBinding(~attrs, ~startPos, p)
-        loop(p, list[modBinding, ...acc])
+        loop(p, list{modBinding, ...acc})
       | _ => List.rev(acc)
       }
     }
 
     let first = parseModuleBinding(~attrs, ~startPos, p)
-    loop(p, list[first])
+    loop(p, list{first})
   }
 
   and parseAtomicModuleType = p => {
@@ -18799,7 +18800,7 @@ Solution: directly use `concat`."
 
     let moduleType = {
       ...modty,
-      pmty_attributes: List.concat(list[modty.pmty_attributes, attrs]),
+      pmty_attributes: List.concat(list{modty.pmty_attributes, attrs}),
     }
     if with_ {
       parseWithConstraints(moduleType, p)
@@ -18817,11 +18818,11 @@ Solution: directly use `concat`."
         switch p.Parser.token {
         | And =>
           Parser.next(p)
-          loop(p, list[parseWithConstraint(p), ...acc])
+          loop(p, list{parseWithConstraint(p), ...acc})
         | _ => List.rev(acc)
         }
 
-      let constraints = loop(p, list[first])
+      let constraints = loop(p, list{first})
       let loc = mkLoc(moduleType.pmty_loc.loc_start, p.prevEndPos)
       Ast_helper.Mty.with_(~loc, moduleType, constraints)
     | _ => moduleType
@@ -19025,13 +19026,13 @@ Solution: directly use `concat`."
          */
         Parser.expect(And, p)
         let decl = parseRecModuleDeclaration(~attrs, ~startPos, p)
-        loop(p, list[decl, ...spec])
+        loop(p, list{decl, ...spec})
       | _ => List.rev(spec)
       }
     }
 
     let first = parseRecModuleDeclaration(~attrs, ~startPos, p)
-    loop(p, list[first])
+    loop(p, list{first})
   }
 
   /* module-name : module-type */
@@ -19184,7 +19185,7 @@ Solution: directly use `concat`."
         Parser.expect(Rparen, p)
         Parsetree.PStr(items)
       }
-    | _ => Parsetree.PStr(list[])
+    | _ => Parsetree.PStr(list{})
     }
 
   /* type attribute = string loc * payload */
@@ -19322,29 +19323,29 @@ module OutcomePrinter: {
   let rec printOutIdentDoc = (ident: Outcometree.out_ident) =>
     switch ident {
     | Oide_ident(s) => Doc.text(s)
-    | Oide_dot(ident, s) => Doc.concat(list[printOutIdentDoc(ident), Doc.dot, Doc.text(s)])
+    | Oide_dot(ident, s) => Doc.concat(list{printOutIdentDoc(ident), Doc.dot, Doc.text(s)})
     | Oide_apply(call, arg) =>
-      Doc.concat(list[printOutIdentDoc(call), Doc.lparen, printOutIdentDoc(arg), Doc.rparen])
+      Doc.concat(list{printOutIdentDoc(call), Doc.lparen, printOutIdentDoc(arg), Doc.rparen})
     }
 
   let printOutAttributeDoc = (outAttribute: Outcometree.out_attribute) =>
-    Doc.concat(list[Doc.text("@"), Doc.text(outAttribute.oattr_name)])
+    Doc.concat(list{Doc.text("@"), Doc.text(outAttribute.oattr_name)})
 
   let printOutAttributesDoc = (attrs: list<Outcometree.out_attribute>) =>
     switch attrs {
-    | list[] => Doc.nil
+    | list{} => Doc.nil
     | attrs =>
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.group(Doc.join(~sep=Doc.line, List.map(printOutAttributeDoc, attrs))),
         Doc.line,
-      ])
+      })
     }
 
   let rec collectArrowArgs = (outType: Outcometree.out_type, args) =>
     switch outType {
     | Otyp_arrow(label, argType, returnType) =>
       let arg = (label, argType)
-      collectArrowArgs(returnType, list[arg, ...args])
+      collectArrowArgs(returnType, list{arg, ...args})
     | _ as returnType => (List.rev(args), returnType)
     }
 
@@ -19352,7 +19353,7 @@ module OutcomePrinter: {
     switch outModuleType {
     | Omty_functor(lbl, optModType, returnModType) =>
       let arg = (lbl, optModType)
-      collectFunctorArgs(returnModType, list[arg, ...args])
+      collectFunctorArgs(returnModType, list{arg, ...args})
     | _ => (List.rev(args), outModuleType)
     }
 
@@ -19360,14 +19361,14 @@ module OutcomePrinter: {
     switch outType {
     | Otyp_abstract | Otyp_variant(_) | Otyp_open => Doc.nil
     | Otyp_alias(typ, aliasTxt) =>
-      Doc.concat(list[printOutTypeDoc(typ), Doc.text(" as '"), Doc.text(aliasTxt)])
-    | Otyp_constr(outIdent, list[]) => printOutIdentDoc(outIdent)
+      Doc.concat(list{printOutTypeDoc(typ), Doc.text(" as '"), Doc.text(aliasTxt)})
+    | Otyp_constr(outIdent, list{}) => printOutIdentDoc(outIdent)
     | Otyp_manifest(typ1, typ2) =>
-      Doc.concat(list[printOutTypeDoc(typ1), Doc.text(" = "), printOutTypeDoc(typ2)])
+      Doc.concat(list{printOutTypeDoc(typ1), Doc.text(" = "), printOutTypeDoc(typ2)})
     | Otyp_record(record) => printRecordDeclarationDoc(~inline=true, record)
     | Otyp_stuff(txt) => Doc.text(txt)
     | Otyp_var(ng, s) =>
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text(
           "'" ++ if ng {
             "_"
@@ -19376,96 +19377,96 @@ module OutcomePrinter: {
           },
         ),
         Doc.text(s),
-      ])
+      })
     | Otyp_object(fields, rest) => printObjectFields(fields, rest)
     | Otyp_class(_) => Doc.nil
     | Otyp_attribute(typ, attribute) =>
-      Doc.group(Doc.concat(list[printOutAttributeDoc(attribute), Doc.line, printOutTypeDoc(typ)]))
+      Doc.group(Doc.concat(list{printOutAttributeDoc(attribute), Doc.line, printOutTypeDoc(typ)}))
     /* example: Red | Blue | Green | CustomColour(float, float, float) */
     | Otyp_sum(constructors) => printOutConstructorsDoc(constructors)
 
     /* example: {"name": string, "age": int} */
-    | Otyp_constr(Oide_dot(Oide_ident("Js"), "t"), list[Otyp_object(fields, rest)]) =>
+    | Otyp_constr(Oide_dot(Oide_ident("Js"), "t"), list{Otyp_object(fields, rest)}) =>
       printObjectFields(fields, rest)
 
     /* example: node<root, 'value> */
     | Otyp_constr(outIdent, args) =>
       let argsDoc = switch args {
-      | list[] => Doc.nil
+      | list{} => Doc.nil
       | args =>
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lessThan,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
-              Doc.join(~sep=Doc.concat(list[Doc.comma, Doc.line]), List.map(printOutTypeDoc, args)),
-            ]),
+              Doc.join(~sep=Doc.concat(list{Doc.comma, Doc.line}), List.map(printOutTypeDoc, args)),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.greaterThan,
-        ])
+        })
       }
 
-      Doc.group(Doc.concat(list[printOutIdentDoc(outIdent), argsDoc]))
+      Doc.group(Doc.concat(list{printOutIdentDoc(outIdent), argsDoc}))
     | Otyp_tuple(tupleArgs) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               Doc.join(
-                ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                 List.map(printOutTypeDoc, tupleArgs),
               ),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rparen,
-        ]),
+        }),
       )
     | Otyp_poly(vars, outType) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.join(~sep=Doc.space, List.map(var => Doc.text("'" ++ var), vars)),
           printOutTypeDoc(outType),
-        ]),
+        }),
       )
     | Otyp_arrow(_) as typ =>
-      let (typArgs, typ) = collectArrowArgs(typ, list[])
-      let args = Doc.join(~sep=Doc.concat(list[Doc.comma, Doc.line]), List.map(((lbl, typ)) =>
+      let (typArgs, typ) = collectArrowArgs(typ, list{})
+      let args = Doc.join(~sep=Doc.concat(list{Doc.comma, Doc.line}), List.map(((lbl, typ)) =>
           if lbl == "" {
             printOutTypeDoc(typ)
           } else {
-            Doc.group(Doc.concat(list[Doc.text("~" ++ (lbl ++ ": ")), printOutTypeDoc(typ)]))
+            Doc.group(Doc.concat(list{Doc.text("~" ++ (lbl ++ ": ")), printOutTypeDoc(typ)}))
           }
         , typArgs))
       let argsDoc = {
         let needsParens = switch typArgs {
-        | list[(_, Otyp_tuple(_) | Otyp_arrow(_))] => true
+        | list{(_, Otyp_tuple(_) | Otyp_arrow(_))} => true
         /* single argument should not be wrapped */
-        | list[("", _)] => false
+        | list{("", _)} => false
         | _ => true
         }
 
         if needsParens {
           Doc.group(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.lparen,
-              Doc.indent(Doc.concat(list[Doc.softLine, args])),
+              Doc.indent(Doc.concat(list{Doc.softLine, args})),
               Doc.trailingComma,
               Doc.softLine,
               Doc.rparen,
-            ]),
+            }),
           )
         } else {
           args
         }
       }
 
-      Doc.concat(list[argsDoc, Doc.text(" => "), printOutTypeDoc(typ)])
+      Doc.concat(list{argsDoc, Doc.text(" => "), printOutTypeDoc(typ)})
     | Otyp_module(_modName, _stringList, _outTypes) => Doc.nil
     }
 
@@ -19483,88 +19484,88 @@ module OutcomePrinter: {
     }
 
     Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.lbrace,
         dots,
         Doc.indent(
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.softLine,
             Doc.join(
-              ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+              ~sep=Doc.concat(list{Doc.comma, Doc.line}),
               List.map(
                 ((lbl, outType)) =>
                   Doc.group(
-                    Doc.concat(list[Doc.text("\"" ++ (lbl ++ "\": ")), printOutTypeDoc(outType)]),
+                    Doc.concat(list{Doc.text("\"" ++ (lbl ++ "\": ")), printOutTypeDoc(outType)}),
                   ),
                 fields,
               ),
             ),
-          ]),
+          }),
         ),
         Doc.softLine,
         Doc.trailingComma,
         Doc.rbrace,
-      ]),
+      }),
     )
   }
 
   and printOutConstructorsDoc = constructors =>
     Doc.group(
-      Doc.indent(Doc.concat(list[Doc.line, Doc.join(~sep=Doc.line, List.mapi((i, constructor) =>
-              Doc.concat(list[
+      Doc.indent(Doc.concat(list{Doc.line, Doc.join(~sep=Doc.line, List.mapi((i, constructor) =>
+              Doc.concat(list{
                 if i > 0 {
                   Doc.text("| ")
                 } else {
                   Doc.ifBreaks(Doc.text("| "), Doc.nil)
                 },
                 printOutConstructorDoc(constructor),
-              ])
-            , constructors))])),
+              })
+            , constructors))})),
     )
 
   and printOutConstructorDoc = ((name, args, gadt)) => {
     let gadtDoc = switch gadt {
-    | Some(outType) => Doc.concat(list[Doc.text(": "), printOutTypeDoc(outType)])
+    | Some(outType) => Doc.concat(list{Doc.text(": "), printOutTypeDoc(outType)})
     | None => Doc.nil
     }
 
     let argsDoc = switch args {
-    | list[] => Doc.nil
-    | list[Otyp_record(record)] =>
+    | list{} => Doc.nil
+    | list{Otyp_record(record)} =>
       /* inline records
        *   | Root({
        *      mutable value: 'value,
        *      mutable updatedTime: float,
        *    })
        */
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.lparen,
         Doc.indent(printRecordDeclarationDoc(~inline=true, record)),
         Doc.rparen,
-      ])
+      })
     | _types =>
       Doc.indent(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
-              Doc.join(~sep=Doc.concat(list[Doc.comma, Doc.line]), List.map(printOutTypeDoc, args)),
-            ]),
+              Doc.join(~sep=Doc.concat(list{Doc.comma, Doc.line}), List.map(printOutTypeDoc, args)),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rparen,
-        ]),
+        }),
       )
     }
 
-    Doc.group(Doc.concat(list[Doc.text(name), argsDoc, gadtDoc]))
+    Doc.group(Doc.concat(list{Doc.text(name), argsDoc, gadtDoc}))
   }
 
   and printRecordDeclRowDoc = ((name, mut, arg)) =>
     Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         if mut {
           Doc.text("mutable ")
         } else {
@@ -19573,25 +19574,25 @@ module OutcomePrinter: {
         Doc.text(name),
         Doc.text(": "),
         printOutTypeDoc(arg),
-      ]),
+      }),
     )
 
   and printRecordDeclarationDoc = (~inline, rows) => {
-    let content = Doc.concat(list[
+    let content = Doc.concat(list{
       Doc.lbrace,
       Doc.indent(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.softLine,
           Doc.join(
-            ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+            ~sep=Doc.concat(list{Doc.comma, Doc.line}),
             List.map(printRecordDeclRowDoc, rows),
           ),
-        ]),
+        }),
       ),
       Doc.trailingComma,
       Doc.softLine,
       Doc.rbrace,
-    ])
+    })
     if !inline {
       Doc.group(content)
     } else {
@@ -19603,7 +19604,7 @@ module OutcomePrinter: {
     Format.pp_print_string(fmt, Doc.toString(~width=80, printOutTypeDoc(outType)))
 
   let printTypeParameterDoc = ((typ, (co, cn))) =>
-    Doc.concat(list[
+    Doc.concat(list{
       if !cn {
         Doc.text("+")
       } else if !co {
@@ -19616,7 +19617,7 @@ module OutcomePrinter: {
       } else {
         Doc.text("'" ++ typ)
       },
-    ])
+    })
 
   let rec printOutSigItemDoc = (outSigItem: Outcometree.out_sig_item) =>
     switch outSigItem {
@@ -19624,11 +19625,11 @@ module OutcomePrinter: {
     | Osig_ellipsis => Doc.dotdotdot
     | Osig_value(valueDecl) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           printOutAttributesDoc(valueDecl.oval_attributes),
           Doc.text(
             switch valueDecl.oval_prims {
-            | list[] => "let "
+            | list{} => "let "
             | _ => "external "
             },
           ),
@@ -19637,10 +19638,10 @@ module OutcomePrinter: {
           Doc.space,
           printOutTypeDoc(valueDecl.oval_type),
           switch valueDecl.oval_prims {
-          | list[] => Doc.nil
+          | list{} => Doc.nil
           | primitives =>
             Doc.indent(
-              Doc.concat(list[
+              Doc.concat(list{
                 Doc.text(" ="),
                 Doc.line,
                 Doc.group(
@@ -19649,37 +19650,37 @@ module OutcomePrinter: {
                     List.map(prim => Doc.text("\"" ++ (prim ++ "\"")), primitives),
                   ),
                 ),
-              ]),
+              }),
             )
           },
-        ]),
+        }),
       )
     | Osig_typext(outExtensionConstructor, _outExtStatus) =>
       printOutExtensionConstructorDoc(outExtensionConstructor)
-    | Osig_modtype(modName, Omty_signature(list[])) =>
-      Doc.concat(list[Doc.text("module type "), Doc.text(modName)])
+    | Osig_modtype(modName, Omty_signature(list{})) =>
+      Doc.concat(list{Doc.text("module type "), Doc.text(modName)})
     | Osig_modtype(modName, outModuleType) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text("module type "),
           Doc.text(modName),
           Doc.text(" = "),
           printOutModuleTypeDoc(outModuleType),
-        ]),
+        }),
       )
     | Osig_module(modName, Omty_alias(ident), _) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text("module "),
           Doc.text(modName),
           Doc.text(" ="),
           Doc.line,
           printOutIdentDoc(ident),
-        ]),
+        }),
       )
     | Osig_module(modName, outModType, outRecStatus) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text(
             switch outRecStatus {
             | Orec_not => "module "
@@ -19690,15 +19691,15 @@ module OutcomePrinter: {
           Doc.text(modName),
           Doc.text(" = "),
           printOutModuleTypeDoc(outModType),
-        ]),
+        }),
       )
     | Osig_type(outTypeDecl, outRecStatus) =>
       /* TODO: manifest ? */
       let attrs = switch (outTypeDecl.otype_immediate, outTypeDecl.otype_unboxed) {
       | (false, false) => Doc.nil
-      | (true, false) => Doc.concat(list[Doc.text("@immediate"), Doc.line])
-      | (false, true) => Doc.concat(list[Doc.text("@unboxed"), Doc.line])
-      | (true, true) => Doc.concat(list[Doc.text("@immediate @unboxed"), Doc.line])
+      | (true, false) => Doc.concat(list{Doc.text("@immediate"), Doc.line})
+      | (false, true) => Doc.concat(list{Doc.text("@unboxed"), Doc.line})
+      | (true, true) => Doc.concat(list{Doc.text("@immediate @unboxed"), Doc.line})
       }
 
       let kw = Doc.text(
@@ -19709,24 +19710,24 @@ module OutcomePrinter: {
         },
       )
       let typeParams = switch outTypeDecl.otype_params {
-      | list[] => Doc.nil
+      | list{} => Doc.nil
       | _params =>
         Doc.group(
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.lessThan,
             Doc.indent(
-              Doc.concat(list[
+              Doc.concat(list{
                 Doc.softLine,
                 Doc.join(
-                  ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                  ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                   List.map(printTypeParameterDoc, outTypeDecl.otype_params),
                 ),
-              ]),
+              }),
             ),
             Doc.trailingComma,
             Doc.softLine,
             Doc.greaterThan,
-          ]),
+          }),
         )
       }
 
@@ -19736,54 +19737,54 @@ module OutcomePrinter: {
       }
 
       let kind = switch outTypeDecl.otype_type {
-      | Otyp_open => Doc.concat(list[Doc.text(" = "), privateDoc, Doc.text("..")])
+      | Otyp_open => Doc.concat(list{Doc.text(" = "), privateDoc, Doc.text("..")})
       | Otyp_abstract => Doc.nil
       | Otyp_record(record) =>
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text(" = "),
           privateDoc,
           printRecordDeclarationDoc(~inline=false, record),
-        ])
-      | typ => Doc.concat(list[Doc.text(" = "), printOutTypeDoc(typ)])
+        })
+      | typ => Doc.concat(list{Doc.text(" = "), printOutTypeDoc(typ)})
       }
 
       let constraints = switch outTypeDecl.otype_cstrs {
-      | list[] => Doc.nil
+      | list{} => Doc.nil
       | _ =>
         Doc.group(
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.line,
             Doc.indent(
-              Doc.concat(list[
+              Doc.concat(list{
                 Doc.hardLine,
                 Doc.join(
                   ~sep=Doc.line,
                   List.map(
                     ((typ1, typ2)) =>
                       Doc.group(
-                        Doc.concat(list[
+                        Doc.concat(list{
                           Doc.text("constraint "),
                           printOutTypeDoc(typ1),
                           Doc.text(" ="),
-                          Doc.indent(Doc.concat(list[Doc.line, printOutTypeDoc(typ2)])),
-                        ]),
+                          Doc.indent(Doc.concat(list{Doc.line, printOutTypeDoc(typ2)})),
+                        }),
                       ),
                     outTypeDecl.otype_cstrs,
                   ),
                 ),
-              ]),
+              }),
             ),
-          ]),
+          }),
         )
       }
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           attrs,
           Doc.group(
-            Doc.concat(list[attrs, kw, Doc.text(outTypeDecl.otype_name), typeParams, kind]),
+            Doc.concat(list{attrs, kw, Doc.text(outTypeDecl.otype_name), typeParams, kind}),
           ),
           constraints,
-        ]),
+        }),
       )
     }
 
@@ -19793,48 +19794,48 @@ module OutcomePrinter: {
     | Omty_ident(ident) => printOutIdentDoc(ident)
     /* example: module Increment = (M: X_int) => X_int */
     | Omty_functor(_) =>
-      let (args, returnModType) = collectFunctorArgs(outModType, list[])
+      let (args, returnModType) = collectFunctorArgs(outModType, list{})
       let argsDoc = switch args {
-      | list[(_, None)] => Doc.text("()")
+      | list{(_, None)} => Doc.text("()")
       | args =>
         Doc.group(
-          Doc.concat(list[
+          Doc.concat(list{
             Doc.lparen,
             Doc.indent(
-              Doc.concat(list[
+              Doc.concat(list{
                 Doc.softLine,
-                Doc.join(~sep=Doc.concat(list[Doc.comma, Doc.line]), List.map(((lbl, optModType)) =>
+                Doc.join(~sep=Doc.concat(list{Doc.comma, Doc.line}), List.map(((lbl, optModType)) =>
                     Doc.group(
-                      Doc.concat(list[
+                      Doc.concat(list{
                         Doc.text(lbl),
                         switch optModType {
                         | None => Doc.nil
                         | Some(modType) =>
-                          Doc.concat(list[Doc.text(": "), printOutModuleTypeDoc(modType)])
+                          Doc.concat(list{Doc.text(": "), printOutModuleTypeDoc(modType)})
                         },
-                      ]),
+                      }),
                     )
                   , args)),
-              ]),
+              }),
             ),
             Doc.trailingComma,
             Doc.softLine,
             Doc.rparen,
-          ]),
+          }),
         )
       }
 
-      Doc.group(Doc.concat(list[argsDoc, Doc.text(" => "), printOutModuleTypeDoc(returnModType)]))
-    | Omty_signature(list[]) => Doc.nil
+      Doc.group(Doc.concat(list{argsDoc, Doc.text(" => "), printOutModuleTypeDoc(returnModType)}))
+    | Omty_signature(list{}) => Doc.nil
     | Omty_signature(signature) =>
       Doc.breakableGroup(
         ~forceBreak=true,
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lbrace,
-          Doc.indent(Doc.concat(list[Doc.line, printOutSignatureDoc(signature)])),
+          Doc.indent(Doc.concat(list{Doc.line, printOutSignatureDoc(signature)})),
           Doc.softLine,
           Doc.rbrace,
-        ]),
+        }),
       )
     | Omty_alias(_ident) => Doc.nil
     }
@@ -19842,21 +19843,21 @@ module OutcomePrinter: {
   and printOutSignatureDoc = (signature: list<Outcometree.out_sig_item>) => {
     let rec loop = (signature, acc) =>
       switch signature {
-      | list[] => List.rev(acc)
-      | list[Outcometree.Osig_typext(ext, Oext_first), ...items] =>
+      | list{} => List.rev(acc)
+      | list{Outcometree.Osig_typext(ext, Oext_first), ...items} =>
         /* Gather together the extension constructors */
         let rec gather_extensions = (acc, items) =>
           switch items {
-          | list[Outcometree.Osig_typext(ext, Oext_next), ...items] =>
+          | list{Outcometree.Osig_typext(ext, Oext_next), ...items} =>
             gather_extensions(
-              list[(ext.oext_name, ext.oext_args, ext.oext_ret_type), ...acc],
+              list{(ext.oext_name, ext.oext_args, ext.oext_ret_type), ...acc},
               items,
             )
           | _ => (List.rev(acc), items)
           }
 
         let (exts, items) = gather_extensions(
-          list[(ext.oext_name, ext.oext_args, ext.oext_ret_type)],
+          list{(ext.oext_name, ext.oext_args, ext.oext_ret_type)},
           items,
         )
 
@@ -19868,29 +19869,29 @@ module OutcomePrinter: {
         }
 
         let doc = printOutTypeExtensionDoc(te)
-        loop(items, list[doc, ...acc])
-      | list[item, ...items] =>
+        loop(items, list{doc, ...acc})
+      | list{item, ...items} =>
         let doc = printOutSigItemDoc(item)
-        loop(items, list[doc, ...acc])
+        loop(items, list{doc, ...acc})
       }
 
-    switch loop(signature, list[]) {
-    | list[doc] => doc
+    switch loop(signature, list{}) {
+    | list{doc} => doc
     | docs => Doc.breakableGroup(~forceBreak=true, Doc.join(~sep=Doc.line, docs))
     }
   }
 
   and printOutExtensionConstructorDoc = (outExt: Outcometree.out_extension_constructor) => {
     let typeParams = switch outExt.oext_type_params {
-    | list[] => Doc.nil
+    | list{} => Doc.nil
     | params =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lessThan,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
-              Doc.join(~sep=Doc.concat(list[Doc.comma, Doc.line]), List.map(ty =>
+              Doc.join(~sep=Doc.concat(list{Doc.comma, Doc.line}), List.map(ty =>
                   Doc.text(
                     if ty == "_" {
                       ty
@@ -19899,16 +19900,16 @@ module OutcomePrinter: {
                     },
                   )
                 , params)),
-            ]),
+            }),
           ),
           Doc.softLine,
           Doc.greaterThan,
-        ]),
+        }),
       )
     }
 
     Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text("type "),
         Doc.text(outExt.oext_type_name),
         typeParams,
@@ -19920,21 +19921,21 @@ module OutcomePrinter: {
           Doc.nil
         },
         printOutConstructorDoc((outExt.oext_name, outExt.oext_args, outExt.oext_ret_type)),
-      ]),
+      }),
     )
   }
 
   and printOutTypeExtensionDoc = (typeExtension: Outcometree.out_type_extension) => {
     let typeParams = switch typeExtension.otyext_params {
-    | list[] => Doc.nil
+    | list{} => Doc.nil
     | params =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lessThan,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
-              Doc.join(~sep=Doc.concat(list[Doc.comma, Doc.line]), List.map(ty =>
+              Doc.join(~sep=Doc.concat(list{Doc.comma, Doc.line}), List.map(ty =>
                   Doc.text(
                     if ty == "_" {
                       ty
@@ -19943,16 +19944,16 @@ module OutcomePrinter: {
                     },
                   )
                 , params)),
-            ]),
+            }),
           ),
           Doc.softLine,
           Doc.greaterThan,
-        ]),
+        }),
       )
     }
 
     Doc.group(
-      Doc.concat(list[
+      Doc.concat(list{
         Doc.text("type "),
         Doc.text(typeExtension.otyext_name),
         typeParams,
@@ -19963,7 +19964,7 @@ module OutcomePrinter: {
           Doc.nil
         },
         printOutConstructorsDoc(typeExtension.otyext_constructors),
-      ]),
+      }),
     )
   }
 
@@ -20018,41 +20019,41 @@ module OutcomePrinter: {
     switch outValue {
     | Oval_array(outValues) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lbracket,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               Doc.join(
-                ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                 List.map(printOutValueDoc, outValues),
               ),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rbracket,
-        ]),
+        }),
       )
     | Oval_char(c) => Doc.text("'" ++ (Char.escaped(c) ++ "'"))
     | Oval_constr(outIdent, outValues) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           printOutIdentDoc(outIdent),
           Doc.lparen,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               Doc.join(
-                ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                 List.map(printOutValueDoc, outValues),
               ),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rparen,
-        ]),
+        }),
       )
     | Oval_ellipsis => Doc.text("...")
     | Oval_int(i) => Doc.text(Format.sprintf("%i", i))
@@ -20062,21 +20063,21 @@ module OutcomePrinter: {
     | Oval_float(f) => Doc.text(floatRepres(f))
     | Oval_list(outValues) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text("list["),
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               Doc.join(
-                ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                 List.map(printOutValueDoc, outValues),
               ),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rbracket,
-        ]),
+        }),
       )
     | Oval_printer(fn) =>
       let fmt = Format.str_formatter
@@ -20085,51 +20086,51 @@ module OutcomePrinter: {
       Doc.text(str)
     | Oval_record(rows) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               Doc.join(
-                ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                 List.map(
                   ((outIdent, outValue)) =>
                     Doc.group(
-                      Doc.concat(list[
+                      Doc.concat(list{
                         printOutIdentDoc(outIdent),
                         Doc.text(": "),
                         printOutValueDoc(outValue),
-                      ]),
+                      }),
                     ),
                   rows,
                 ),
               ),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rparen,
-        ]),
+        }),
       )
     | Oval_string(txt, _sizeToPrint, _kind) => Doc.text(escapeStringContents(txt))
     | Oval_stuff(txt) => Doc.text(txt)
     | Oval_tuple(outValues) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.lparen,
           Doc.indent(
-            Doc.concat(list[
+            Doc.concat(list{
               Doc.softLine,
               Doc.join(
-                ~sep=Doc.concat(list[Doc.comma, Doc.line]),
+                ~sep=Doc.concat(list{Doc.comma, Doc.line}),
                 List.map(printOutValueDoc, outValues),
               ),
-            ]),
+            }),
           ),
           Doc.trailingComma,
           Doc.softLine,
           Doc.rparen,
-        ]),
+        }),
       )
     /* Not supported by NapkinScript */
     | Oval_variant(_) => Doc.nil
@@ -20142,28 +20143,28 @@ module OutcomePrinter: {
     | Stack_overflow => Doc.text("Stack overflow during evaluation (looping recursion?).")
     | _ =>
       Doc.group(
-        Doc.indent(Doc.concat(list[Doc.text("Exception:"), Doc.line, printOutValueDoc(outValue)])),
+        Doc.indent(Doc.concat(list{Doc.text("Exception:"), Doc.line, printOutValueDoc(outValue)})),
       )
     }
 
   let printOutPhraseSignature = signature => {
     let rec loop = (signature, acc) =>
       switch signature {
-      | list[] => List.rev(acc)
-      | list[(Outcometree.Osig_typext(ext, Oext_first), None), ...signature] =>
+      | list{} => List.rev(acc)
+      | list{(Outcometree.Osig_typext(ext, Oext_first), None), ...signature} =>
         /* Gather together extension constructors */
         let rec gather_extensions = (acc, items) =>
           switch items {
-          | list[(Outcometree.Osig_typext(ext, Oext_next), None), ...items] =>
+          | list{(Outcometree.Osig_typext(ext, Oext_next), None), ...items} =>
             gather_extensions(
-              list[(ext.oext_name, ext.oext_args, ext.oext_ret_type), ...acc],
+              list{(ext.oext_name, ext.oext_args, ext.oext_ret_type), ...acc},
               items,
             )
           | _ => (List.rev(acc), items)
           }
 
         let (exts, signature) = gather_extensions(
-          list[(ext.oext_name, ext.oext_args, ext.oext_ret_type)],
+          list{(ext.oext_name, ext.oext_args, ext.oext_ret_type)},
           signature,
         )
 
@@ -20175,38 +20176,38 @@ module OutcomePrinter: {
         }
 
         let doc = printOutTypeExtensionDoc(te)
-        loop(signature, list[doc, ...acc])
-      | list[(sigItem, optOutValue), ...signature] =>
+        loop(signature, list{doc, ...acc})
+      | list{(sigItem, optOutValue), ...signature} =>
         let doc = switch optOutValue {
         | None => printOutSigItemDoc(sigItem)
         | Some(outValue) =>
           Doc.group(
-            Doc.concat(list[
+            Doc.concat(list{
               printOutSigItemDoc(sigItem),
               Doc.text(" = "),
               printOutValueDoc(outValue),
-            ]),
+            }),
           )
         }
 
-        loop(signature, list[doc, ...acc])
+        loop(signature, list{doc, ...acc})
       }
 
-    Doc.breakableGroup(~forceBreak=true, Doc.join(~sep=Doc.line, loop(signature, list[])))
+    Doc.breakableGroup(~forceBreak=true, Doc.join(~sep=Doc.line, loop(signature, list{})))
   }
 
   let printOutPhraseDoc = (outPhrase: Outcometree.out_phrase) =>
     switch outPhrase {
     | Ophr_eval(outValue, outType) =>
       Doc.group(
-        Doc.concat(list[
+        Doc.concat(list{
           Doc.text("- : "),
           printOutTypeDoc(outType),
           Doc.text(" ="),
-          Doc.indent(Doc.concat(list[Doc.line, printOutValueDoc(outValue)])),
-        ]),
+          Doc.indent(Doc.concat(list{Doc.line, printOutValueDoc(outValue)})),
+        }),
       )
-    | Ophr_signature(list[]) => Doc.nil
+    | Ophr_signature(list{}) => Doc.nil
     | Ophr_signature(signature) => printOutPhraseSignature(signature)
     | Ophr_exception(exc, outValue) => printOutExceptionDoc(exc, outValue)
     }
@@ -20285,8 +20286,8 @@ module Clflags: {
   let recover = ref(false)
   let width = ref(100)
 
-  let files = ref(list[])
-  let addFilename = filename => files := list[filename, ...files.contents]
+  let files = ref(list{})
+  let addFilename = filename => files := list{filename, ...files.contents}
 
   let print = ref("")
   let outcome = ref(false)
@@ -20296,7 +20297,7 @@ module Clflags: {
 
   let usage = "Usage: napkinscript <options> <file>\nOptions are:"
 
-  let spec = list[
+  let spec = list{
     ("-recover", Arg.Unit(() => recover := true), "Emit partial ast"),
     ("-print", Arg.String(txt => print := txt), "Print either binary, ocaml or ast"),
     ("-parse", Arg.String(txt => origin := txt), "Parse ocaml or napkinscript"),
@@ -20308,7 +20309,7 @@ module Clflags: {
       Arg.String(txt => report := txt),
       "Stylize errors and messages using color and context. Accepts `Pretty` and `Plain`. Default `Plain`",
     ),
-  ]
+  }
 
   let parse = () => Arg.parse(spec, addFilename, usage)
 }
@@ -20341,7 +20342,7 @@ module Driver: {
       Lexing.from_channel(stdin)
     }
 
-    let stringLocs = ref(list[])
+    let stringLocs = ref(list{})
     let rec next = () => {
       let token = Lexer.token_with_comments(lexbuf)
       switch token {
@@ -20356,7 +20357,7 @@ module Driver: {
         let txt = Bytes.to_string(
           (@doesNotRaise Bytes.sub)(lexbuf.Lexing.lex_buffer, loc.loc_start.pos_cnum, len),
         )
-        stringLocs := list[(txt, loc), ...stringLocs.contents]
+        stringLocs := list{(txt, loc), ...stringLocs.contents}
         next()
       | OcamlParser.EOF => ()
       | _ => next()
@@ -20404,7 +20405,7 @@ module Driver: {
     }
     let ast = parseNapkin(kind, p)
     let report = switch p.diagnostics {
-    | list[] => None
+    | list{} => None
     | diagnostics => Some(diagnostics)
     }
 
@@ -20427,12 +20428,12 @@ module Driver: {
         | OcamlParser.COMMENT(txt, loc) =>
           let comment = Comment.fromOcamlComment(~loc, ~prevTokEndPos, ~txt)
 
-          next(loc.Location.loc_end, list[comment, ...comments], lb)
+          next(loc.Location.loc_end, list{comment, ...comments}, lb)
         | _ => next(lb.Lexing.lex_curr_p, comments, lb)
         }
       }
 
-      let cmts = next(lexbuf2.Lexing.lex_start_p, list[], lexbuf2)
+      let cmts = next(lexbuf2.Lexing.lex_start_p, list{}, lexbuf2)
       cmts
     }
 
@@ -20442,8 +20443,8 @@ module Driver: {
   }
 
   let reasonFilename = ref("")
-  let commentData = ref(list[])
-  let stringData = ref(list[])
+  let commentData = ref(list{})
+  let stringData = ref(list{})
 
   let parseReasonBinaryFromStdin = (type a, kind: file_kind<a>, filename): a => {
     let (chan, close) =
@@ -20482,13 +20483,13 @@ module Driver: {
       | Eof => ()
       | Comment(c) =>
         Comment.setPrevTokEndPos(c, prevEndPos)
-        commentData := list[c, ...commentData.contents]
+        commentData := list{c, ...commentData.contents}
         next(endPos, scanner)
       | String(_) =>
         let loc = {Location.loc_start: startPos, loc_end: endPos, loc_ghost: false}
         let len = endPos.pos_cnum - startPos.pos_cnum
         let txt = (@doesNotRaise String.sub)(src, startPos.pos_cnum, len)
-        stringData := list[(txt, loc), ...stringData.contents]
+        stringData := list{(txt, loc), ...stringData.contents}
         next(endPos, scanner)
       | _ => next(endPos, scanner)
       }
@@ -20648,7 +20649,7 @@ let () = {
     Repl.typeAndPrintOutcome(List.hd(Clflags.files.contents))
   } else {
     let () = switch Clflags.files.contents {
-    | list[_file, ..._] as files =>
+    | list{_file, ..._} as files =>
       List.iter(
         filename =>
           Driver.processFile(
@@ -20662,7 +20663,7 @@ let () = {
           ),
         files,
       )
-    | list[] =>
+    | list{} =>
       Driver.processFile(
         ~isInterface=Clflags.interface.contents,
         ~width=Clflags.width.contents,

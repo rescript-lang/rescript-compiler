@@ -33,10 +33,10 @@ let /* before */ Rgb /* after constr */ (/* red */ r /* red2 */, /* green */ g/*
 
 let () = ()
 let [/* inside */] = []
-let list[/* inside */] = list[]
+let list{/* inside */} = list{}
 
-let /* before */ list[/* a1 */ a /* a2 */, /* b1 */ b /* b2 */] /* after */ = list[1, 2]
-let /* before */ list[/* a1 */ a /* a2 */, /* b1 */ ...b /* b2 */] /* after */ = list[1, 2]
+let /* before */ list{/* a1 */ a /* a2 */, /* b1 */ b /* b2 */} /* after */ = list{1, 2}
+let /* before */ list{/* a1 */ a /* a2 */, /* b1 */ ...b /* b2 */} /* after */ = list{1, 2}
 
 // Ppat_record
 let /* before */ {/* c0 */ name /* c1 */, /* c2 */ age /* c3 */} /* after */ = {

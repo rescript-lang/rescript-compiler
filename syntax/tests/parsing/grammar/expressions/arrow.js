@@ -24,8 +24,8 @@ let f = (exception Terminate) => ()
 let f = (exception Terminate, exception Exit) => ()
 let f = (lazy x) => ()
 let f = (lazy x, lazy y) => ()
-let f = (list[]) => ()
-let f = (list[x, ...xs]) => x + xs->Belt.List.length
+let f = (list{}) => ()
+let f = (list{x, ...xs}) => x + xs->Belt.List.length
 
 // constrained pattern
 let f = (x: int, y: int) => x + y
@@ -87,10 +87,12 @@ switch colour {
 }
 
 let arr = [_ => doThings(), _ => doThings(), _ => doThings()]
-let list = list[_ => doThings(), _ => doThings(), _ => doThings()]
+let list = list{_ => doThings(), _ => doThings(), _ => doThings()}
 let tuple = (_ => doThings(), _ => doThings(), _ => doThings())
 
 _ => doThings()
 
 let x = Constructore(_ => copyChecklistItemCB(), _ => copyChecklistItemCB())
 let y = #Constructore(_ => copyChecklistItemCB(), _ => copyChecklistItemCB())
+
+let f = (list) => list + 1

@@ -48,7 +48,7 @@ for ((i) as x in 0 to 10) { () }
 for ((i as x) in 0 to 10) { () }
 
 switch listPatterns {
-| list[(true, pattern), ...patterns] =>
+| list{(true, pattern), ...patterns} =>
   let patterns = patterns |> List.map(filterSpread) |> List.rev
   makeListPattern(loc, patterns, Some(pattern))
 | patterns =>
@@ -72,7 +72,7 @@ let -1 .. -1. = x
 switch science {
 | (1.12, -3.13) => true
 | [1.12, -3.13] => true
-| list[1.12, -3.13] => true
+| list{1.12, -3.13} => true
 | {x: 1.12, y: -3.13} => true
 | Constructor(1.12, -2.45) => true
 | #Constuctor(1.12, -2.45) => true

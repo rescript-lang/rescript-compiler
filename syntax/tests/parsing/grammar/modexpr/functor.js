@@ -33,11 +33,11 @@ module Make = (
   open Cmp;
   type key = t;
   type coll = list<key>;
-  let empty = list[];
+  let empty = list{};
   let add = (y: coll, e: key) =>
     if (List.exists(x => eq(x, e), y)) {
       y;
     } else {
-      list[e, ...y];
+      list{e, ...y};
     };
 }

@@ -64,14 +64,14 @@ let _ =  [{
     b}, {
       c}] 
 
-let _ = { list[a, b, c] }
-let _ = { list[{a}, {b}, {c}] }
-let _ = { list[{
+let _ = { list{a, b, c} }
+let _ = { list{{a}, {b}, {c}} }
+let _ = { list{{
   a}, {
     b}, {
-      c}] }
+      c}} }
 
-let _ = list[1, 2, ...{list2}]
+let _ = list{1, 2, ...{list2}}
 
 let _ = {true} ? {true} : {false}
 let _ = {{true} ? {true} : {false}}

@@ -87,7 +87,7 @@ let cmp = (selectedChoice, value) =>
   switch (selectedChoice, value) {
   | (#...a, #...a) => true
   | [#...b, #...b] => true
-  | list[#...b, #...b] => true
+  | list{#...b, #...b} => true
   | {x: #...c, y: #...c} => true
   | Constructor(#...a, #...a) => true
   | #Constuctor(#...a, #...a) => true

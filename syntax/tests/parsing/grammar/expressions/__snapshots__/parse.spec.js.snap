@@ -110,7 +110,8 @@ let x =
     ((fun _ -> copyChecklistItemCB ()), (fun _ -> copyChecklistItemCB ()))
 let y =
   \`Constructore
-    ((fun _ -> copyChecklistItemCB ()), (fun _ -> copyChecklistItemCB ()))"
+    ((fun _ -> copyChecklistItemCB ()), (fun _ -> copyChecklistItemCB ()))
+let f list = list + 1"
 `;
 
 exports[`binary.js 1`] = `
@@ -493,7 +494,9 @@ let y = Foo.Bar.x
 let x = _identWithUnderscore
 let x = _ident_ident
 let x = _ident_ident_
-let x = __ident__"
+let x = __ident__
+let x = list
+let x = Foo.Bar.list"
 `;
 
 exports[`if.js 1`] = `

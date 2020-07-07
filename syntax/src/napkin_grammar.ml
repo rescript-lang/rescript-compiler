@@ -156,7 +156,7 @@ let isAtomicExprStart = function
 let isAtomicTypExprStart = function
   | Token.SingleQuote | Underscore
   | Lparen | Lbrace
-  | Uident _ | Lident _ | List
+  | Uident _ | Lident _
   | Percent -> true
   | _ -> false
 
@@ -211,7 +211,7 @@ let isStringFieldDeclStart = function
 
 (* TODO: overparse Uident ? *)
 let isFieldDeclStart = function
-  | Token.At | Mutable | Lident _ | List  -> true
+  | Token.At | Mutable | Lident _  -> true
   (* recovery, TODO: this is not ideal… *)
   | Uident _ -> true
   | t when Token.isKeyword t -> true
@@ -220,7 +220,7 @@ let isFieldDeclStart = function
 let isRecordDeclStart = function
   | Token.At
   | Mutable
-  | Lident _ | List -> true
+  | Lident _ -> true
   | _ -> false
 
 let isTypExprStart = function
@@ -228,7 +228,7 @@ let isTypExprStart = function
   | SingleQuote
   | Underscore
   | Lparen | Lbracket
-  | Uident _ | Lident _ | List
+  | Uident _ | Lident _
   | Module
   | Percent
   | Lbrace -> true
@@ -258,7 +258,7 @@ let isModExprStart = function
 
 let isRecordRowStart = function
   | Token.DotDotDot -> true
-  | Token.Uident _ | Lident _ | List -> true
+  | Token.Uident _ | Lident _ -> true
   (* TODO *)
   | t when Token.isKeyword t -> true
   | _ -> false
@@ -283,7 +283,7 @@ let isPatternOcamlListStart = function
   | _ -> false
 
 let isPatternRecordItemStart = function
-  | Token.DotDotDot | Uident _ | Lident _ | List | Underscore -> true
+  | Token.DotDotDot | Uident _ | Lident _ | Underscore -> true
   | _ -> false
 
 let isAttributeStart = function

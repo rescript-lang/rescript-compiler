@@ -42,7 +42,7 @@ let [-1, 1, 1] = x
 switch science {
 | (1.12, -3.13) => true
 | [1.12, -3.13] => true
-| list[1.12, -3.13] => true
+| list{1.12, -3.13} => true
 | {x: 1.12, y: -3.13} => true
 | Constructor(1.12, -2.45) => true
 | #Constuctor(1.12, -2.45) => true
@@ -115,13 +115,13 @@ let Foo([
   superLongIdent4,
   superLongIdent5,
 ]) = x
-let Foo(list[
+let Foo(list{
   superLongIdent,
   superLongIdent2,
   superLongIdent,
   superLongIdent4,
   superLongIdent5,
-]) = x
+}) = x
 "
 `;
 
@@ -178,23 +178,23 @@ let lazy (x as y) = 1
 `;
 
 exports[`list.ns 1`] = `
-"let list[] = 1
-let list[1] = 1
-let list[1, 2] = 1
-let list[1, 2, 3] = 1
-let list[1, 2, ...tail] = 1
+"let list{} = 1
+let list{1} = 1
+let list{1, 2} = 1
+let list{1, 2, 3} = 1
+let list{1, 2, ...tail} = 1
 
-let list[
+let list{
   aaaaaaaaaaaaaaaaaaaaaaaaaa,
   bbbbbbbbbbbbbbbbbbbbbbbbbb,
   cccccccccccccccccccccccccc,
-] = 1
-let list[
+} = 1
+let list{
   aaaaaaaaaaaaaaaaaaaaaaaaaa,
   bbbbbbbbbbbbbbbbbbbbbbbbbb,
   cccccccccccccccccccccccccc,
   ...tail,
-] = 1
+} = 1
 "
 `;
 
@@ -275,6 +275,8 @@ exports[`var.ns 1`] = `
 "let foo = 1
 
 let superLongIdentifierLongSoooooooooooooLooooooooooooooooooooooooooooooooooooooong = 1
+
+let list = 3
 "
 `;
 
@@ -294,7 +296,7 @@ let cmp = (selectedChoice, value) =>
   switch (selectedChoice, value) {
   | (#...a, #...a) => true
   | [#...b, #...b] => true
-  | list[#...b, #...b] => true
+  | list{#...b, #...b} => true
   | {x: #...c, y: #...c} => true
   | Constructor(#...a, #...a) => true
   | #Constuctor(#...a, #...a) => true

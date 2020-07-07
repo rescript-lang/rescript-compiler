@@ -16,7 +16,7 @@ let [-1, +1, 1] = x
 switch science {
 | (1.12, -3.13) => true
 | [1.12, -3.13] => true
-| list[1.12, -3.13] => true
+| list{1.12, -3.13} => true
 | {x: 1.12, y: -3.13} => true
 | Constructor(1.12, -2.45) => true
 | #Constuctor(1.12, -2.45) => true
