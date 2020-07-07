@@ -228,7 +228,7 @@ let isTypExprStart = function
   | SingleQuote
   | Underscore
   | Lparen | Lbracket
-  | Uident _ | Lident _ | List
+  | Uident _ | Lident _
   | Module
   | Percent
   | Lbrace -> true
