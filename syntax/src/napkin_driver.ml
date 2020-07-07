@@ -32,13 +32,6 @@ type printEngine = {
     -> unit;
 }
 
-
-
-
-
-
-
-
 module IO: sig
   val readFile: string -> string
   val readStdin: unit -> string
@@ -124,12 +117,10 @@ let parsingEngine = {
 
 let printEngine = {
   printImplementation = begin fun ~width ~filename:_ ~comments structure ->
-    Napkin_printer.printImplementation
-      ~width structure comments
+    print_string (Napkin_printer.printImplementation ~width structure comments)
   end;
   printInterface = begin fun ~width ~filename:_ ~comments signature ->
-    Napkin_printer.printInterface
-      ~width signature comments
+    print_string (Napkin_printer.printInterface ~width signature comments)
   end;
 }
 

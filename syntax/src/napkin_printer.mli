@@ -4,7 +4,7 @@ val printTypeParams :
 
 val printLongident : Longident.t -> Napkin_doc.t
 
-val printTypExpr : Parsetree.core_type -> Napkin_comments_table.t -> Napkin_doc.t  
+val printTypExpr : Parsetree.core_type -> Napkin_comments_table.t -> Napkin_doc.t
 
 val addParens : Napkin_doc.t -> Napkin_doc.t
 
@@ -13,6 +13,6 @@ val printExpression : Parsetree.expression -> Napkin_comments_table.t -> Napkin_
 val printStructure : Parsetree.structure -> Napkin_comments_table.t -> Napkin_doc.t [@@live]
 
 val printImplementation :
-  width:int -> Parsetree.structure -> Napkin_comment.t list -> unit
+  width:int -> Parsetree.structure -> Napkin_comment.t list -> string
 val printInterface :
-  width:int -> Parsetree.signature -> Napkin_comment.t list -> unit
+  width:int -> Parsetree.signature -> Napkin_comment.t list -> string
