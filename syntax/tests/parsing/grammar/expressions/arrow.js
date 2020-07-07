@@ -94,3 +94,5 @@ _ => doThings()
 
 let x = Constructore(_ => copyChecklistItemCB(), _ => copyChecklistItemCB())
 let y = #Constructore(_ => copyChecklistItemCB(), _ => copyChecklistItemCB())
+
+let f = (list) => list + 1

@@ -684,6 +684,11 @@ let f (() : unit) = ()
 let f ((() : unit) as _u) = ()"
 `;
 
+exports[`var.res 1`] = `
+"let x = 1
+let list = 2"
+`;
+
 exports[`variants.js 1`] = `
 "let \`Instance = i
 let \`Instance as inst = i

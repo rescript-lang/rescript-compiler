@@ -6,3 +6,6 @@ let x = _identWithUnderscore
 let x = _ident_ident
 let x = _ident_ident_
 let x = __ident__
+
+let x = list
+let x = Foo.Bar.list
