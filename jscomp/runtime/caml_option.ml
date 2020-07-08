@@ -29,7 +29,8 @@ type nested = {
 
 (* INPUT: [x] should not be nullable *)
 let isNested (x : Obj.t) : bool = 
-  Obj.repr ((Obj.magic x : nested).depth) != Obj.repr Js.undefined 
+  try Obj.repr ((Obj.magic x : nested).depth) != Obj.repr Js.undefined with
+  _ -> false
 
 let some ( x : Obj.t) : Obj.t = 
   if Obj.magic x =  None then 
