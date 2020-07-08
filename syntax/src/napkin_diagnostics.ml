@@ -30,6 +30,9 @@ let parseReportStyle txt = match (String.lowercase_ascii txt) with
   | "plain" -> Plain
   | _ -> Pretty
 
+let getStartPos t = t.startPos
+let getEndPos t = t.endPos
+
 let defaultUnexpected token =
   "I'm not sure what to parse here when looking at \"" ^ (Token.toString token) ^ "\"."
 
