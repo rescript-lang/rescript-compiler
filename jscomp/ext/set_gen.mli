@@ -19,7 +19,7 @@ val fold : 'a t-> 'c -> ('a -> 'c -> 'c) -> 'c
 val for_all : 'a t-> ('a -> bool) -> bool
 val exists : 'a t-> ('a -> bool) -> bool
 val check : 'a t-> unit
-val internal_bal : 'a t-> 'a -> 'a t-> 'a t
+val bal : 'a t-> 'a -> 'a t-> 'a t
 val remove_min_elt : 'a t-> 'a t
 val singleton : 'a -> 'a t
 val internal_merge : 'a t-> 'a t-> 'a t

@@ -107,7 +107,7 @@ let rec add (tree : t) x : t =  match tree with
   | Node {l; v; r} as t ->
     let c = compare_elt x v in
     if c = 0 then t else
-    if c < 0 then Set_gen.internal_bal (add l x ) v r else Set_gen.internal_bal l v (add r x )
+    if c < 0 then Set_gen.bal (add l x ) v r else Set_gen.bal l v (add r x )
 
 let rec union (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
@@ -174,7 +174,7 @@ let rec remove (tree : t)  (x : elt) : t = match tree with
   | Node{l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then Set_gen.internal_merge l r else
-    if c < 0 then Set_gen.internal_bal (remove l x) v r else Set_gen.internal_bal l v (remove r x )
+    if c < 0 then Set_gen.bal (remove l x) v r else Set_gen.bal l v (remove r x )
 
 (* let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2  *)
 

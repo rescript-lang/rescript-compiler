@@ -149,7 +149,7 @@ let check tree =
 
     Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
 *)
-let internal_bal l v r : _ t =
+let bal l v r : _ t =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then 
@@ -201,7 +201,7 @@ let rec remove_min_elt = function
     Empty -> invalid_arg "Set.remove_min_elt"
   | Leaf _ -> empty  
   | Node{l=Empty; r} -> r
-  | Node{l; v; r} -> internal_bal (remove_min_elt l) v r
+  | Node{l; v; r} -> bal (remove_min_elt l) v r
 
 
 
@@ -215,7 +215,7 @@ let internal_merge l r =
   match (l, r) with
   | (Empty, t) -> t
   | (t, Empty) -> t
-  | (_, _) -> internal_bal l (min_elt r) (remove_min_elt r)
+  | (_, _) -> bal l (min_elt r) (remove_min_elt r)
 
 
 (* Beware: those two functions assume that the added v is *strictly*
@@ -228,14 +228,14 @@ let internal_merge l r =
 let rec add_min_element v = function
   | Empty -> singleton v
   | Leaf x -> unsafe_two_elements v x
-  | Node {l; v=x; r} ->
-    internal_bal (add_min_element v l) x r
+  | Node n ->
+    bal (add_min_element v n.l) n.v n.r
 
 let rec add_max_element v = function
   | Empty -> singleton v
   | Leaf x -> unsafe_two_elements x v
-  | Node {l; v=x; r} ->
-    internal_bal l x (add_max_element v r)
+  | Node n  ->
+    bal n.l n.v (add_max_element v n.r)
 
 (** 
     Invariants:
@@ -265,9 +265,9 @@ let rec internal_join l v r =
       (* proof by induction:
          now [height of ll] is [lh - 1] 
       *)
-      internal_bal ll lv (internal_join lr v r) 
+      bal ll lv (internal_join lr v r) 
     else
-    if rh > lh + 2 then internal_bal (internal_join l v rl) rv rr 
+    if rh > lh + 2 then bal (internal_join l v rl) rv rr 
     else unsafe_node  v l r (calc_height lh rh)
 
 
