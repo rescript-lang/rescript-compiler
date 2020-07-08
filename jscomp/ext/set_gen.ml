@@ -53,29 +53,17 @@ type 'a t = 'a t0 = private
 
 (* Smallest and greatest element of a set *)
 
-let rec min_elt = function
+let rec min_exn = function
   | Empty -> raise Not_found
   | Leaf v -> v 
   | Node{l; v} ->
     match l with 
     | Empty -> v 
     | Leaf _
-    | Node _ ->  min_elt l
-
-let rec max_elt = function
-  | Empty -> raise Not_found
-  | Leaf v -> v 
-  | Node{ v; r} -> 
-    match r with 
-    | Empty -> v 
-    | Leaf _
-    | Node _ -> max_elt r
+    | Node _ ->  min_exn l
 
 
-
-
-
-let is_empty = function Empty -> true | _ -> false
+let [@inline] is_empty = function Empty -> true | _ -> false
 
 let rec cardinal_aux acc  = function
   | Empty -> acc 
@@ -93,7 +81,7 @@ let rec elements_aux accu = function
 let elements s =
   elements_aux [] s
 
-let choose = min_elt
+let choose = min_exn
 
 let rec iter  x f = match x with
   | Empty -> ()
@@ -215,7 +203,7 @@ let internal_merge l r =
   match (l, r) with
   | (Empty, t) -> t
   | (t, Empty) -> t
-  | (_, _) -> bal l (min_elt r) (remove_min_elt r)
+  | (_, _) -> bal l (min_exn r) (remove_min_elt r)
 
 
 (* Beware: those two functions assume that the added v is *strictly*
@@ -279,17 +267,8 @@ let internal_concat t1 t2 =
   match (t1, t2) with
   | (Empty, t) -> t
   | (t, Empty) -> t
-  | (_, _) -> internal_join t1 (min_elt t2) (remove_min_elt t2)
+  | (_, _) -> internal_join t1 (min_exn t2) (remove_min_elt t2)
 
-(* let rec filter x p = match x with 
-  | Empty -> Empty
-  | Node {l; v; r} ->
-    (* call [p] in the expected left-to-right order *)
-    let l' = filter l p in
-    let pv = p v in
-    let r' = filter r p in
-    if pv then internal_join l' v r' else internal_concat l' r'
- *)
 
 let rec partition x p = match x with 
   | Empty -> (empty, empty)
@@ -367,20 +346,6 @@ let invariant ~cmp t =
   check t ; 
   is_ordered ~cmp t 
 
-(* let rec compare_aux ~cmp e1 e2 =
-  match (e1, e2) with
-    (End, End) -> 0
-  | (End, _)  -> -1
-  | (_, End) -> 1
-  | (More(v1, r1, e1), More(v2, r2, e2)) ->
-    let c = cmp v1 v2 in
-    if c <> 0
-    then c
-    else compare_aux ~cmp (cons_enum r1 e1) (cons_enum r2 e2)
-
-let compare ~cmp s1 s2 =
-  compare_aux ~cmp (cons_enum s1 End) (cons_enum s2 End) *)
-
 
 module type S = sig
   type elt 
@@ -394,7 +359,6 @@ module type S = sig
   val singleton: elt -> t
   val cardinal: t -> int
   val elements: t -> elt list
-  val min_elt: t -> elt
   val choose: t -> elt
   val mem: t -> elt -> bool
   val add: t -> elt -> t

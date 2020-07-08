@@ -3,10 +3,9 @@ type 'a t =private
   | Leaf of 'a
   | Node of { l : 'a t; v : 'a; r : 'a t; h : int; }
 
-val min_elt : 'a t-> 'a
-val max_elt : 'a t-> 'a
+
 val empty : 'a t
-val is_empty : 'a t-> bool
+val [@inline] is_empty : 'a t-> bool
 val unsafe_two_elements : 
   'a -> 'a -> 'a t
 
@@ -23,8 +22,6 @@ val bal : 'a t-> 'a -> 'a t-> 'a t
 val remove_min_elt : 'a t-> 'a t
 val singleton : 'a -> 'a t
 val internal_merge : 'a t-> 'a t-> 'a t
-(* val add_min : 'a -> 'a t-> 'a t *)
-(* val add_max : 'a -> 'a t-> 'a t *)
 val internal_join : 'a t-> 'a -> 'a t-> 'a t
 val internal_concat : 'a t-> 'a t-> 'a t
 val partition : 'a t-> ('a -> bool) -> 'a t * 'a t
@@ -45,7 +42,6 @@ module type S =
     val singleton : elt -> t
     val cardinal : t -> int
     val elements : t -> elt list
-    val min_elt : t -> elt
     val choose : t -> elt
     val mem : t -> elt -> bool
     val add : t -> elt -> t

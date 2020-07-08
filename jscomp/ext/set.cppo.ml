@@ -64,7 +64,7 @@ let exists = Set_gen.exists
 let singleton = Set_gen.singleton 
 let cardinal = Set_gen.cardinal
 let elements = Set_gen.elements
-let min_elt = Set_gen.min_elt
+(* let min_elt = Set_gen.min_exn *)
 
 let choose = Set_gen.choose 
 
