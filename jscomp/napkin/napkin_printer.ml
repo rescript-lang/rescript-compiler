@@ -345,7 +345,7 @@ let classifyIdentContent ?(allowUident=false) txt =
       else
         go (i + 1)
   in
-  if Token.isKeywordTxt txt && txt <> "list" then
+  if Token.isKeywordTxt txt then
     ExoticIdent
   else
     go 0
@@ -398,7 +398,7 @@ let printConstant c = match c with
     Doc.text ("\"" ^ txt ^ "\"")
   | Pconst_string (txt, Some prefix) ->
     Doc.concat [
-      if prefix = "" then Doc.nil else Doc.text prefix;
+      if prefix = "js" then Doc.nil else Doc.text prefix;
       Doc.text ("`" ^ txt ^ "`")
     ]
   | Pconst_float (s, _) -> Doc.text s
@@ -2049,9 +2049,9 @@ and printPattern (p : Parsetree.pattern) cmtTbl =
     ]
   | Ppat_construct({txt = Longident.Lident "[]"}, _) ->
     Doc.concat [
-      Doc.text "list[";
+      Doc.text "list{";
       printCommentsInside cmtTbl p.ppat_loc;
-      Doc.rbracket;
+      Doc.rbrace;
     ]
   | Ppat_construct({txt = Longident.Lident "::"}, _) ->
     let (patterns, tail) = ParsetreeViewer.collectPatternsFromListConstruct [] p in
@@ -2075,13 +2075,13 @@ and printPattern (p : Parsetree.pattern) cmtTbl =
     ]) in
     Doc.group(
       Doc.concat([
-        Doc.text "list[";
+        Doc.text "list{";
         if shouldHug then children else Doc.concat [
           Doc.indent children;
           Doc.ifBreaks (Doc.text ",") Doc.nil;
           Doc.softLine;
         ];
-        Doc.rbracket;
+        Doc.rbrace;
       ])
     )
   | Ppat_construct(constrName, constructorArgs) ->
@@ -2433,9 +2433,9 @@ and printExpression (e : Parsetree.expression) cmtTbl =
   | Pexp_construct ({txt = Longident.Lident "()"}, _) -> Doc.text "()"
   | Pexp_construct ({txt = Longident.Lident "[]"}, _) ->
     Doc.concat [
-      Doc.text "list[";
+      Doc.text "list{";
       printCommentsInside cmtTbl e.pexp_loc;
-      Doc.rbracket;
+      Doc.rbrace;
     ]
   | Pexp_construct ({txt = Longident.Lident "::"}, _) ->
     let (expressions, spread) = ParsetreeViewer.collectListExpressions e in
@@ -2454,7 +2454,7 @@ and printExpression (e : Parsetree.expression) cmtTbl =
     in
     Doc.group(
       Doc.concat([
-        Doc.text "list[";
+        Doc.text "list{";
         Doc.indent (
           Doc.concat([
             Doc.softLine;
@@ -2473,7 +2473,7 @@ and printExpression (e : Parsetree.expression) cmtTbl =
         );
         Doc.trailingComma;
         Doc.softLine;
-        Doc.rbracket;
+        Doc.rbrace;
       ])
     )
   | Pexp_construct (longidentLoc, args) ->
@@ -3223,7 +3223,7 @@ and printSetFieldExpr attrs lhs longidentLoc rhs loc cmtTbl =
   printComments doc cmtTbl loc
 
 and printTemplateLiteral expr cmtTbl =
-  let tag = ref "j" in
+  let tag = ref "js" in
   let rec walkExpr expr =
     let open Parsetree in
     match expr.pexp_desc with
@@ -3243,7 +3243,7 @@ and printTemplateLiteral expr cmtTbl =
   in
   let content = walkExpr expr in
   Doc.concat [
-    if !tag = "j" then Doc.nil else Doc.text !tag;
+    if !tag = "js" then Doc.nil else Doc.text !tag;
     Doc.text "`";
     content;
     Doc.text "`"
