@@ -11,31 +11,33 @@ let print flavor ~input =
       let parseResult =
         Napkin_driver.parsingEngine.parseInterface ~forPrinter:true ~filename:input
       in
-      if parseResult.valid then
-        Napkin_printer.printInterface
-          ~width:defaultPrintWidth
-          ~filename:parseResult.filename
-          ~comments:parseResult.comments
-          parseResult.parsetree
-      else
+      if parseResult.invalid then
         let msg =
           let style = Napkin_diagnostics.parseReportStyle "" in
           Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source
         in
         raise (Location.Error (Location.error msg))
+      else
+        Napkin_printer.printInterface
+          ~width:defaultPrintWidth
+          (* ~filename:parseResult.filename *)
+          ~comments:parseResult.comments
+          parseResult.parsetree
     else
       let parseResult =
         Napkin_driver.parsingEngine.parseImplementation ~forPrinter:true ~filename:input
       in
-      if parseResult.valid then
-        Napkin_printer.printImplementation
-          ~width:defaultPrintWidth
-          ~filename:parseResult.filename
-          ~comments:parseResult.comments
-          parseResult.parsetree
-      else
+      if parseResult.invalid then
         let msg =
           let style = Napkin_diagnostics.parseReportStyle "" in
           Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source
         in
         raise (Location.Error (Location.error msg))
+      else
+        Napkin_printer.printImplementation
+          ~width:defaultPrintWidth
+          (* ~filename:parseResult.filename *)
+          ~comments:parseResult.comments
+          parseResult.parsetree
+[@@raises Location.Error]
+

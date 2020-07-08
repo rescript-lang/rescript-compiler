@@ -9,7 +9,8 @@ src/napkin_binary_driver.cmi : src/napkin_driver.cmi
 src/napkin_character_codes.cmx :
 src/napkin_comment.cmx : src/napkin_comment.cmi
 src/napkin_comment.cmi :
-src/napkin_comments_table.cmx : src/napkin_doc.cmx src/napkin_comment.cmx
+src/napkin_comments_table.cmx : src/napkin_parsetree_viewer.cmx \
+    src/napkin_doc.cmx src/napkin_comment.cmx
 src/napkin_core.cmx : src/napkin_token.cmx src/napkin_scanner.cmx \
     src/napkin_printer.cmx src/napkin_parser.cmx src/napkin_js_ffi.cmx \
     src/napkin_grammar.cmx src/napkin_doc.cmx src/napkin_diagnostics.cmx \
@@ -36,6 +37,9 @@ src/napkin_ml_parser_driver.cmx : src/napkin_driver.cmx \
     src/napkin_ml_parser_driver.cmi
 src/napkin_ml_parser_driver.cmi : src/napkin_driver.cmi \
     src/napkin_comment.cmi
+src/napkin_multi_printer.cmx : src/napkin_printer.cmx src/napkin_driver.cmx \
+    src/napkin_diagnostics.cmx src/napkin_multi_printer.cmi
+src/napkin_multi_printer.cmi :
 src/napkin_outcome_printer.cmx : src/napkin_doc.cmx \
     src/napkin_outcome_printer.cmi
 src/napkin_outcome_printer.cmi :

@@ -117,10 +117,10 @@ let parsingEngine = {
 
 let printEngine = {
   printImplementation = begin fun ~width ~filename:_ ~comments structure ->
-    print_string (Napkin_printer.printImplementation ~width structure comments)
+    print_string (Napkin_printer.printImplementation ~width structure ~comments)
   end;
   printInterface = begin fun ~width ~filename:_ ~comments signature ->
-    print_string (Napkin_printer.printInterface ~width signature comments)
+    print_string (Napkin_printer.printInterface ~width signature ~comments)
   end;
 }
 

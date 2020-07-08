@@ -13,6 +13,6 @@ val printExpression : Parsetree.expression -> Napkin_comments_table.t -> Napkin_
 val printStructure : Parsetree.structure -> Napkin_comments_table.t -> Napkin_doc.t [@@live]
 
 val printImplementation :
-  width:int -> Parsetree.structure -> Napkin_comment.t list -> string
+  width:int -> Parsetree.structure -> comments:Napkin_comment.t list -> string
 val printInterface :
-  width:int -> Parsetree.signature -> Napkin_comment.t list -> string
+  width:int -> Parsetree.signature -> comments:Napkin_comment.t list -> string
