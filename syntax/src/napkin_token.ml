@@ -93,8 +93,8 @@ let toString = function
   | True -> "true" | False -> "false"
   | Character c -> "character '" ^ (Char.escaped c) ^ "'"
   | String s -> "string \"" ^ s ^ "\""
-  | Lident str -> "lident \"" ^ str ^ "\""
-  | Uident str -> "uident \"" ^ str ^ "\""
+  | Lident str -> str
+  | Uident str -> str
   | Dot -> "." | DotDot -> ".." | DotDotDot -> "..."
   | Int {i} -> "int " ^ i
   | Float {f} -> "Float: " ^ f
@@ -220,3 +220,5 @@ let lookupKeyword str =
 let isKeywordTxt str =
   try let _ = keywordTable str in true with
   | Not_found -> false
+
+let catch = Lident "catch"
