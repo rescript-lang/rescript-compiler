@@ -102,7 +102,7 @@ let _ = switch a {
 "
 `;
 
-exports[`attributes.ns 1`] = `
+exports[`attributes.res 1`] = `
 "@attr(: int)
 let x = 1
 
@@ -234,7 +234,7 @@ let x = '\\\\179'
 "
 `;
 
-exports[`comments.ns 1`] = `
+exports[`comments.res 1`] = `
 "/* nested /* comments */ */
 
 /* lvl 0 /* lvl 1 /* lvl 2 */ */ */
@@ -242,7 +242,7 @@ let x = 1
 "
 `;
 
-exports[`fatSlider.ns 1`] = `
+exports[`fatSlider.res 1`] = `
 "open React
 
 module Range = {
@@ -303,7 +303,7 @@ let make = (~min=50, ~max=250, ~meterSuffix=?) => {
 "
 `;
 
-exports[`home.ns 1`] = `
+exports[`home.res 1`] = `
 "open React
 let logo: string = %raw(\\"require('./assets/logo.png')\\")
 
@@ -348,7 +348,7 @@ exports[`moduleData.ml 1`] = `
 "
 `;
 
-exports[`nesting.ns 1`] = `
+exports[`nesting.res 1`] = `
 "let unitsCommands = state.units->Js.Array2.mapi(({
   unit: targetUnit,
   coordinates: targetCoordinates,
@@ -516,7 +516,7 @@ let x = j\`foo \\\\\\\\\\\\\${bar\`
 "
 `;
 
-exports[`signaturePicker.ns 1`] = `
+exports[`signaturePicker.res 1`] = `
 "open React
 
 module TimeSignature = {

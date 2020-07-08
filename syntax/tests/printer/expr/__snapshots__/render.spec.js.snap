@@ -3660,7 +3660,7 @@ let x = (!truths)[0]
 "
 `;
 
-exports[`underscoreApply.ns 1`] = `
+exports[`underscoreApply.res 1`] = `
 "let x = f(a, _, c)
 let x = f(a, g(x, _, z), _)
 let x = f(_, x, c)
