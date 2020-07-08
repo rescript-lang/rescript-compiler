@@ -62,8 +62,8 @@ function buildFinished(code, signal) {
     rebuild();
   } else {
     if (code !== 0) {
-      console.log(`File "BUILD", line 1, characters 1-1:`);
-      console.log(`Error: Failed to build ${showDate(new Date())}`);
+      // console.log(`File "package.json", line 1, characters 1-1:`);
+      // console.log(`Error: Failed to build ${showDate(new Date())}`);
     }
     console.log(">>>> Finish compiling (options: R|clean|config)");
     // TODO: check ninja exit error code
