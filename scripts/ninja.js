@@ -1822,6 +1822,10 @@ function main() {
           console.log(`please run "./scripts/ninja.js config" first`);
           process.exit(2);
         }
+        cp.execSync(`node ${__filename} config`, {
+          cwd: __dirname,
+          stdio: [0, 1, 2],
+        });
         break;
       case "clean":
         try {
@@ -1832,7 +1836,7 @@ function main() {
           });
         } catch (e) {}
         cp.execSync(
-          `git clean -dfx jscomp ${process.platform} lib && rm -rf lib/js/*.js && rm -rf lib/es6/*.js && rm -rf jscomp/napkin/*.ml* `,
+          `git clean -dfx jscomp ${process.platform} lib && rm -rf lib/js/*.js && rm -rf lib/es6/*.js`,
           {
             encoding: "utf8",
             cwd: path.join(__dirname, ".."),
@@ -1857,10 +1861,6 @@ function main() {
           stdio: [0, 1, 2],
         });
         cp.execSync(`node ${__filename} build`, {
-          cwd: __dirname,
-          stdio: [0, 1, 2],
-        });
-        cp.execSync(`node ${__filename} config`, {
           cwd: __dirname,
           stdio: [0, 1, 2],
         });
