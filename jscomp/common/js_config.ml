@@ -109,3 +109,5 @@ let record_as_js_object = ref false (* otherwise has an attribute *)
 let as_ppx = ref false
 
 let mono_empty_array = ref true
+
+let napkin = ref false

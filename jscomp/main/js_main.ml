@@ -26,6 +26,7 @@ let setup_reason_error_printer () =
   Lazy.force Reason_outcome_printer_main.setup
 
 let setup_napkin_error_printer () =  
+  Js_config.napkin := true;
   Lazy.force Super_main.setup;  
   Lazy.force Napkin_outcome_printer.setup
 
