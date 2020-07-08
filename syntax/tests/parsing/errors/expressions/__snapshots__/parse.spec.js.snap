@@ -172,7 +172,7 @@ Looks like there might be an expression missing here
 ========================================================"
 `;
 
-exports[`consecutive.ns 1`] = `
+exports[`consecutive.res 1`] = `
 "=====Parsetree==========================================
 let f a b = a + 3
 ;;b
@@ -181,7 +181,7 @@ let () = ((sideEffect1 (); sideEffect2 ())[@ns.braces ])
 let () = ((let open Foo in let exception End  in x ())[@ns.braces ])
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/expressions/consecutive.ns\\", line 1, characters 22-23:
+File \\"/syntax/tests/parsing/errors/expressions/consecutive.res\\", line 1, characters 22-23:
 
 
 [31m1[0m │  let f = (a,b) => a + 3[31mb[0m;
@@ -191,7 +191,7 @@ File \\"/syntax/tests/parsing/errors/expressions/consecutive.ns\\", line 1, char
 consecutive statements on a line must be separated by ';' or a newline
 
 
-File \\"/syntax/tests/parsing/errors/expressions/consecutive.ns\\", line 4, characters 6-7:
+File \\"/syntax/tests/parsing/errors/expressions/consecutive.res\\", line 4, characters 6-7:
 
 
 2 │  
@@ -203,7 +203,7 @@ File \\"/syntax/tests/parsing/errors/expressions/consecutive.ns\\", line 4, char
 consecutive expressions on a line must be separated by ';' or a newline
 
 
-File \\"/syntax/tests/parsing/errors/expressions/consecutive.ns\\", line 8, characters 15-27:
+File \\"/syntax/tests/parsing/errors/expressions/consecutive.res\\", line 8, characters 15-27:
 
 
 6 │  
@@ -215,7 +215,7 @@ File \\"/syntax/tests/parsing/errors/expressions/consecutive.ns\\", line 8, char
 consecutive expressions on a line must be separated by ';' or a newline
 
 
-File \\"/syntax/tests/parsing/errors/expressions/consecutive.ns\\", line 12, characters 10-20:
+File \\"/syntax/tests/parsing/errors/expressions/consecutive.res\\", line 12, characters 10-20:
 
 
 10 │  

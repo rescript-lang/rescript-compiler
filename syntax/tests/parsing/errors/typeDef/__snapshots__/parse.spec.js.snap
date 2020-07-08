@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`emptyInlineRecord.ns 1`] = `
+exports[`emptyInlineRecord.res 1`] = `
 "=====Parsetree==========================================
 type nonrec 'a node =
   | Nil 
@@ -8,7 +8,7 @@ type nonrec 'a node =
   } 
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typeDef/emptyInlineRecord.ns\\", line 3, characters 9-11:
+File \\"/syntax/tests/parsing/errors/typeDef/emptyInlineRecord.res\\", line 3, characters 9-11:
 
 
 1 │  type node<'a> =
@@ -103,7 +103,7 @@ I'm not sure what to parse here when looking at \\"]\\".
 ========================================================"
 `;
 
-exports[`record.ns 1`] = `
+exports[`record.res 1`] = `
 "=====Parsetree==========================================
 type nonrec observation =
   {
@@ -111,7 +111,7 @@ type nonrec observation =
   observer: [%napkinscript.typehole ] }
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typeDef/record.ns\\", line 4, characters 1-2:
+File \\"/syntax/tests/parsing/errors/typeDef/record.res\\", line 4, characters 1-2:
 
 
 2 │    observed: int,

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`export.ns 1`] = `
+exports[`export.res 1`] = `
 "export type callback = ReactEvent.Mouse.t => unit
 
 export type t = int and export s = string
@@ -16,7 +16,7 @@ let x = \\"hello world\\" and export y = 2
 "
 `;
 
-exports[`import.ns 1`] = `
+exports[`import.res 1`] = `
 "import {
   @disableGc @disableJit
   delimiter: string,

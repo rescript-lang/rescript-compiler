@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`binaryExpr.ns 1`] = `
+exports[`binaryExpr.res 1`] = `
 "/* with comments */
 compilation->Plugin.buildAssets // after
 /* below compilation */ // trailing
@@ -40,7 +40,7 @@ let truth =
 "
 `;
 
-exports[`blockExpr.ns 1`] = `
+exports[`blockExpr.res 1`] = `
 "let () = /* c0 */ sideEffect1() /* c1 */
 
 let () = {
@@ -560,7 +560,7 @@ switch x {
 "
 `;
 
-exports[`case.ns 1`] = `
+exports[`case.res 1`] = `
 "let rec mergeU = (s1, s2, f) =>
   switch {
     open N
@@ -604,7 +604,7 @@ exports[`case.ns 1`] = `
 "
 `;
 
-exports[`expr.ns 1`] = `
+exports[`expr.res 1`] = `
 "// Pexp_ident
 let pi = /* before */ Math.pi // after
 
@@ -868,7 +868,7 @@ Doc.concat(list{
 "
 `;
 
-exports[`extensionConstructor.ns 1`] = `
+exports[`extensionConstructor.res 1`] = `
 "/* c0 */ exception /* c1 */ Exit /* c2 */ = /* c3 */ Terminate /* c4 */
 
 /* c0 */ exception /* c1 */ ExitEarly /* c2 */(
@@ -896,12 +896,12 @@ exports[`extensionConstructor.ns 1`] = `
 "
 `;
 
-exports[`fileWithOneSingleLineComment.ns 1`] = `
+exports[`fileWithOneSingleLineComment.res 1`] = `
 "// retain this comment
 "
 `;
 
-exports[`fileWithOnlyComments.ns 1`] = `
+exports[`fileWithOnlyComments.res 1`] = `
 "// test
 
 /* multi
@@ -955,7 +955,7 @@ exports[`interfaceWithOnlyComments.nsi 1`] = `
 "
 `;
 
-exports[`jsx.ns 1`] = `
+exports[`jsx.res 1`] = `
 "module Cite = {
   @react.component
   let make = (~author: option<string>, ~children) => {
@@ -967,7 +967,7 @@ exports[`jsx.ns 1`] = `
 "
 `;
 
-exports[`modExpr.ns 1`] = `
+exports[`modExpr.res 1`] = `
 "// Pmod_ident
 /* c0 */ module /* c1 */ X /* c2 */ = /* c3 */ Y /* c4 */
 
@@ -1028,7 +1028,7 @@ module Make = /* before parameters */ (
 "
 `;
 
-exports[`modType.ns 1`] = `
+exports[`modType.res 1`] = `
 "// Pmty_ident
 /* c0 */ module type /* c1 */ T /* c2 */ = /* c3 */ Tree /* c4 */
 
@@ -1070,7 +1070,7 @@ module type Functor = /* before */ (
 "
 `;
 
-exports[`multiline.ns 1`] = `
+exports[`multiline.res 1`] = `
 "/* first line
  * the leading stars
  * should align here.
@@ -1166,7 +1166,7 @@ comment */
 "
 `;
 
-exports[`namedArgs.ns 1`] = `
+exports[`namedArgs.res 1`] = `
 "let wizard = Wizard.make(
   ~spriteSheet=wizard,
   ~hp=999999999999999,
@@ -1235,14 +1235,14 @@ let make = (
 "
 `;
 
-exports[`openDescription.ns 1`] = `
+exports[`openDescription.res 1`] = `
 "open /* leading */ React /* trailing */
 open /* leading */ React /* trailing */
 open /* leading */ React // trailing
 "
 `;
 
-exports[`pattern.ns 1`] = `
+exports[`pattern.res 1`] = `
 "// Ppat_any
 let /* before */ _ /* after */ = 1
 
@@ -1404,7 +1404,7 @@ and /* c4 */ Xn /* c5 */: /* c6 */ MTn /* c7 */
 "
 `;
 
-exports[`structure1.ns 1`] = `
+exports[`structure1.res 1`] = `
 "// leading single line 1a
 // leading single line 1b
 /* leading multiline 1c */
@@ -1434,7 +1434,7 @@ open /* here */ React // after
 "
 `;
 
-exports[`structure2.ns 1`] = `
+exports[`structure2.res 1`] = `
 "let b = 2
 /* test */ // sldkfj
 
@@ -1447,7 +1447,7 @@ open /* before lident */ React
 "
 `;
 
-exports[`structure3.ns 1`] = `
+exports[`structure3.res 1`] = `
 "node.left->peekMinNode
 // same as the above
 node.left->peekMinNode
@@ -1464,7 +1464,7 @@ let b = 2
 "
 `;
 
-exports[`structure4.ns 1`] = `
+exports[`structure4.res 1`] = `
 "let user = {
   name: \\"steve\\",
   age: 31,
@@ -1493,7 +1493,7 @@ exports[`structure4.ns 1`] = `
 "
 `;
 
-exports[`structureItem.ns 1`] = `
+exports[`structureItem.res 1`] = `
 "// Pstr_attribute
 @@attr(/* c0 */ \\"here\\" /* c1 */)
 
@@ -1563,7 +1563,7 @@ and /* c6 */ s /* c7 */ = /* c8 */ int /* c9 */
 "
 `;
 
-exports[`trailingComments.ns 1`] = `
+exports[`trailingComments.res 1`] = `
 "let user = {
   name: \\"steve\\",
   age: 31 /* here */, // test
@@ -1712,7 +1712,7 @@ type rec t = {
 "
 `;
 
-exports[`typexpr.ns 1`] = `
+exports[`typexpr.res 1`] = `
 "// Ptyp_any
 type t = /* before */ _ /* after */
 
@@ -1773,7 +1773,7 @@ type jsUser = /* before */ {
 "
 `;
 
-exports[`valueBindings.ns 1`] = `
+exports[`valueBindings.res 1`] = `
 "let x = 1
 // trailing first value-binding
 
@@ -1847,7 +1847,7 @@ and z2 = 4
 "
 `;
 
-exports[`whitespaceCase1.ns 1`] = `
+exports[`whitespaceCase1.res 1`] = `
 "let x = 1
 // comment
 
@@ -1857,14 +1857,14 @@ let f = ()
 "
 `;
 
-exports[`whitespaceCase2.ns 1`] = `
+exports[`whitespaceCase2.res 1`] = `
 "let a = 2 // c2
 
 let b = 1
 "
 `;
 
-exports[`whitespaceLeadingComment.ns 1`] = `
+exports[`whitespaceLeadingComment.res 1`] = `
 "// the comment \\"assert Tuple\\" should contain whitespace before/after
 let () = {
   let point = Tuple.makePoint(0., 1., 0.)
@@ -1881,7 +1881,7 @@ let () = {
 "
 `;
 
-exports[`whitespaceTrailingLeading.ns 1`] = `
+exports[`whitespaceTrailingLeading.res 1`] = `
 "let a = 1 // single line trailing
 // leading
 let b = 2

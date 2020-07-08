@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`closingBraces.ns 1`] = `
+exports[`closingBraces.res 1`] = `
 "=====Parsetree==========================================
 let x = 1
 let y = 2
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/structure/closingBraces.ns\\", line 3, characters 0-1:
+File \\"/syntax/tests/parsing/errors/structure/closingBraces.res\\", line 3, characters 0-1:
 
 
 1 │  let x = 1
@@ -22,13 +22,13 @@ I'm not sure what to parse here when looking at \\"}\\".
 ========================================================"
 `;
 
-exports[`consecutive.ns 1`] = `
+exports[`consecutive.res 1`] = `
 "=====Parsetree==========================================
 open Foo
 exception Bar 
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/structure/consecutive.ns\\", line 1, characters 8-18:
+File \\"/syntax/tests/parsing/errors/structure/consecutive.res\\", line 1, characters 8-18:
 
 
 [31m1[0m │  open Foo[31m exception[0m Bar
@@ -40,13 +40,13 @@ consecutive statements on a line must be separated by ';' or a newline
 ========================================================"
 `;
 
-exports[`gh16A.ns 1`] = `
+exports[`gh16A.res 1`] = `
 "=====Parsetree==========================================
 module C = struct module T = (Fun)(struct ;;foo (a + c) (b + d) end) end
 ;;Js.log \\"test\\"
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/structure/gh16A.ns\\", line 6, characters 0-1:
+File \\"/syntax/tests/parsing/errors/structure/gh16A.res\\", line 6, characters 0-1:
 
 
 4 │    })
@@ -61,7 +61,7 @@ I'm not sure what to parse here when looking at \\")\\".
 ========================================================"
 `;
 
-exports[`gh16B.ns 1`] = `
+exports[`gh16B.res 1`] = `
 "=====Parsetree==========================================
 open Ws
 let wss = Server.make { port = 82 }
@@ -88,7 +88,7 @@ module ClientSet =
 ;;Js.log \\"test\\"
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/structure/gh16B.ns\\", line 19, characters 1-2:
+File \\"/syntax/tests/parsing/errors/structure/gh16B.res\\", line 19, characters 1-2:
 
 
 17 │  
