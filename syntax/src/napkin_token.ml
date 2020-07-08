@@ -71,7 +71,7 @@ type t =
   | TemplatePart of string
   | Backtick
   | BarGreater
-  | Try | Catch
+  | Try
   | Import
   | Export
 
@@ -93,8 +93,8 @@ let toString = function
   | True -> "true" | False -> "false"
   | Character c -> "character '" ^ (Char.escaped c) ^ "'"
   | String s -> "string \"" ^ s ^ "\""
-  | Lident str -> "lident \"" ^ str ^ "\""
-  | Uident str -> "uident \"" ^ str ^ "\""
+  | Lident str -> str
+  | Uident str -> str
   | Dot -> "." | DotDot -> ".." | DotDotDot -> "..."
   | Int {i} -> "int " ^ i
   | Float {f} -> "Float: " ^ f
@@ -161,7 +161,7 @@ let toString = function
   | TemplateTail text -> "TemplateTail(" ^ text ^ ")"
   | Backtick -> "`"
   | BarGreater -> "|>"
-  | Try -> "try" | Catch -> "catch"
+  | Try -> "try"
   | Import -> "import"
   | Export -> "export"
 
@@ -196,7 +196,6 @@ let keywordTable = function
 | "list{" -> List
 | "with" -> With
 | "try" -> Try
-| "catch" -> Catch
 | "import" -> Import
 | "export" -> Export
 | _ -> raise Not_found
@@ -208,7 +207,7 @@ let isKeyword = function
   | Downto | While | Switch | When | External | Typ | Private
   | Mutable | Constraint | Include | Module | Of
   | Land | Lor | List | With
-  | Try | Catch | Import | Export -> true
+  | Try | Import | Export -> true
   | _ -> false
 
 let lookupKeyword str =
@@ -221,3 +220,5 @@ let lookupKeyword str =
 let isKeywordTxt str =
   try let _ = keywordTable str in true with
   | Not_found -> false
+
+let catch = Lident "catch"

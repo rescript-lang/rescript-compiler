@@ -511,3 +511,7 @@ switch x {
 
  } => ()
 }
+
+let catch = 34
+
+let promiseCatch = x => Js.Promise.catch(x)

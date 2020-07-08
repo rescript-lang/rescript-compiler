@@ -2948,7 +2948,7 @@ and parseTryExpression p =
   let startPos = p.Parser.startPos in
   Parser.expect Try p;
   let expr = parseExpr ~context:WhenExpr p in
-  Parser.expect Catch p;
+  Parser.expect Napkin_token.catch p;
   Parser.expect Lbrace p;
   let cases = parsePatternMatching p in
   Parser.expect Rbrace p;
