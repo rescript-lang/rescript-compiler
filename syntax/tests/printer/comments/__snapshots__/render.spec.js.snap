@@ -941,12 +941,12 @@ let getZ2 = nested =>
 "
 `;
 
-exports[`interfaceWithOneSingleComment.nsi 1`] = `
+exports[`interfaceWithOneSingleComment.resi 1`] = `
 "// retain this comment
 "
 `;
 
-exports[`interfaceWithOnlyComments.nsi 1`] = `
+exports[`interfaceWithOnlyComments.resi 1`] = `
 "// test
 
 /* test */
@@ -1332,7 +1332,7 @@ let /* c0 */ 'a' .. 'z' /* c1 */ = x
 "
 `;
 
-exports[`signatureItem.nsi 1`] = `
+exports[`signatureItem.resi 1`] = `
 "// Psig_value
 /* c0 */ external /* c1 */ force_gc /* c2 */: /* c3 */ unit /* c4 */ => /* c5 */ unit /* c6 */ =
   \\"gc\\" // trailing

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`attributes.nsi 1`] = `
+exports[`attributes.resi 1`] = `
 "@@attr
 @@standaloneAttribute
 
@@ -12,7 +12,7 @@ exports[`attributes.nsi 1`] = `
 "
 `;
 
-exports[`exception.nsi 1`] = `
+exports[`exception.resi 1`] = `
 "exception Exit
 
 @onConstructor exception ExitEarly
@@ -23,7 +23,7 @@ exception Exit = Ns.Lib.Terminate
 "
 `;
 
-exports[`extension.nsi 1`] = `
+exports[`extension.resi 1`] = `
 "%%bs.raw(\\"eval(js)\\")
 
 @attr
@@ -31,7 +31,7 @@ exports[`extension.nsi 1`] = `
 "
 `;
 
-exports[`include.nsi 1`] = `
+exports[`include.resi 1`] = `
 "include Belt
 
 include {
@@ -43,7 +43,7 @@ include {
 "
 `;
 
-exports[`modtype.nsi 1`] = `
+exports[`modtype.resi 1`] = `
 "module type IntSum = {
   let x: int
   let y: int
@@ -71,7 +71,7 @@ module type LinkedList = module type of List
 "
 `;
 
-exports[`module.nsi 1`] = `
+exports[`module.resi 1`] = `
 "module IntSum: {
   let x: int
   let y: int
@@ -100,7 +100,7 @@ module LinkedList: module type of List
 "
 `;
 
-exports[`open.nsi 1`] = `
+exports[`open.resi 1`] = `
 "open Belt
 
 open! Belt
@@ -110,7 +110,7 @@ open Belt
 "
 `;
 
-exports[`recModule.nsi 1`] = `
+exports[`recModule.resi 1`] = `
 "module type Signature = {
   module rec A: {
     type t = Leaf(string) | Node(ASet.t)
@@ -136,7 +136,7 @@ exports[`recModule.nsi 1`] = `
 "
 `;
 
-exports[`type.nsi 1`] = `
+exports[`type.resi 1`] = `
 "type s = string
 
 type user = {name: string, age: int}
@@ -148,7 +148,7 @@ type color =
 "
 `;
 
-exports[`typext.nsi 1`] = `
+exports[`typext.resi 1`] = `
 "type Rgb.color +=
   | Red
   | Blue
@@ -156,7 +156,7 @@ exports[`typext.nsi 1`] = `
 "
 `;
 
-exports[`value.nsi 1`] = `
+exports[`value.resi 1`] = `
 "let x: int
 let add: (int, int) => int
 
