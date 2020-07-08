@@ -225,17 +225,17 @@ let internal_merge l r =
     respects this precondition.
 *)
 
-let rec add_min_element v = function
+let rec add_min v = function
   | Empty -> singleton v
   | Leaf x -> unsafe_two_elements v x
   | Node n ->
-    bal (add_min_element v n.l) n.v n.r
+    bal (add_min v n.l) n.v n.r
 
-let rec add_max_element v = function
+let rec add_max v = function
   | Empty -> singleton v
   | Leaf x -> unsafe_two_elements x v
   | Node n  ->
-    bal n.l n.v (add_max_element v n.r)
+    bal n.l n.v (add_max v n.r)
 
 (** 
     Invariants:
@@ -248,17 +248,17 @@ let rec add_max_element v = function
 *)
 let rec internal_join l v r =
   match (l, r) with
-    (Empty, _) -> add_min_element v r
-  | (_, Empty) -> add_max_element v l
+    (Empty, _) -> add_min v r
+  | (_, Empty) -> add_max v l
   | Leaf lv, Node {h = rh} ->
     if rh > 3 then 
-      add_min_element lv (add_min_element v r ) (* FIXME: could inlined *)
+      add_min lv (add_min v r ) (* FIXME: could inlined *)
     else unsafe_node  v l r (rh + 1)
   | Leaf _, Leaf _ -> 
     unsafe_node  v l r 2
   | Node {h = lh}, Leaf rv ->
     if lh > 3 then       
-      add_max_element rv (add_max_element v l)
+      add_max rv (add_max v l)
     else unsafe_node  v l r (lh + 1)    
   | (Node{l=ll;v= lv;r= lr;h= lh}, Node {l=rl; v=rv; r=rr; h=rh}) ->
     if lh > rh + 2 then 

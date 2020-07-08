@@ -23,8 +23,8 @@ val bal : 'a t-> 'a -> 'a t-> 'a t
 val remove_min_elt : 'a t-> 'a t
 val singleton : 'a -> 'a t
 val internal_merge : 'a t-> 'a t-> 'a t
-val add_min_element : 'a -> 'a t-> 'a t
-val add_max_element : 'a -> 'a t-> 'a t
+(* val add_min : 'a -> 'a t-> 'a t *)
+(* val add_max : 'a -> 'a t-> 'a t *)
 val internal_join : 'a t-> 'a -> 'a t-> 'a t
 val internal_concat : 'a t-> 'a t-> 'a t
 val partition : 'a t-> ('a -> bool) -> 'a t * 'a t
