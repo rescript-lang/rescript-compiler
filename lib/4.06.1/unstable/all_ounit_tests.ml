@@ -2564,10 +2564,9 @@ type 'a t =private
   | Leaf of 'a
   | Node of { l : 'a t; v : 'a; r : 'a t; h : int; }
 
-val min_elt : 'a t-> 'a
-val max_elt : 'a t-> 'a
+
 val empty : 'a t
-val is_empty : 'a t-> bool
+val [@inline] is_empty : 'a t-> bool
 val unsafe_two_elements : 
   'a -> 'a -> 'a t
 
@@ -2580,12 +2579,10 @@ val fold : 'a t-> 'c -> ('a -> 'c -> 'c) -> 'c
 val for_all : 'a t-> ('a -> bool) -> bool
 val exists : 'a t-> ('a -> bool) -> bool
 val check : 'a t-> unit
-val internal_bal : 'a t-> 'a -> 'a t-> 'a t
+val bal : 'a t-> 'a -> 'a t-> 'a t
 val remove_min_elt : 'a t-> 'a t
 val singleton : 'a -> 'a t
 val internal_merge : 'a t-> 'a t-> 'a t
-val add_min_element : 'a -> 'a t-> 'a t
-val add_max_element : 'a -> 'a t-> 'a t
 val internal_join : 'a t-> 'a -> 'a t-> 'a t
 val internal_concat : 'a t-> 'a t-> 'a t
 val partition : 'a t-> ('a -> bool) -> 'a t * 'a t
@@ -2606,7 +2603,6 @@ module type S =
     val singleton : elt -> t
     val cardinal : t -> int
     val elements : t -> elt list
-    val min_elt : t -> elt
     val choose : t -> elt
     val mem : t -> elt -> bool
     val add : t -> elt -> t
@@ -2677,29 +2673,17 @@ type 'a t = 'a t0 = private
 
 (* Smallest and greatest element of a set *)
 
-let rec min_elt = function
+let rec min_exn = function
   | Empty -> raise Not_found
   | Leaf v -> v 
   | Node{l; v} ->
     match l with 
     | Empty -> v 
     | Leaf _
-    | Node _ ->  min_elt l
-
-let rec max_elt = function
-  | Empty -> raise Not_found
-  | Leaf v -> v 
-  | Node{ v; r} -> 
-    match r with 
-    | Empty -> v 
-    | Leaf _
-    | Node _ -> max_elt r
+    | Node _ ->  min_exn l
 
 
-
-
-
-let is_empty = function Empty -> true | _ -> false
+let [@inline] is_empty = function Empty -> true | _ -> false
 
 let rec cardinal_aux acc  = function
   | Empty -> acc 
@@ -2717,7 +2701,7 @@ let rec elements_aux accu = function
 let elements s =
   elements_aux [] s
 
-let choose = min_elt
+let choose = min_exn
 
 let rec iter  x f = match x with
   | Empty -> ()
@@ -2773,7 +2757,7 @@ let check tree =
 
     Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
 *)
-let internal_bal l v r : _ t =
+let bal l v r : _ t =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then 
@@ -2825,7 +2809,7 @@ let rec remove_min_elt = function
     Empty -> invalid_arg "Set.remove_min_elt"
   | Leaf _ -> empty  
   | Node{l=Empty; r} -> r
-  | Node{l; v; r} -> internal_bal (remove_min_elt l) v r
+  | Node{l; v; r} -> bal (remove_min_elt l) v r
 
 
 
@@ -2839,7 +2823,7 @@ let internal_merge l r =
   match (l, r) with
   | (Empty, t) -> t
   | (t, Empty) -> t
-  | (_, _) -> internal_bal l (min_elt r) (remove_min_elt r)
+  | (_, _) -> bal l (min_exn r) (remove_min_elt r)
 
 
 (* Beware: those two functions assume that the added v is *strictly*
@@ -2849,17 +2833,17 @@ let internal_merge l r =
     respects this precondition.
 *)
 
-let rec add_min_element v = function
+let rec add_min v = function
   | Empty -> singleton v
   | Leaf x -> unsafe_two_elements v x
-  | Node {l; v=x; r} ->
-    internal_bal (add_min_element v l) x r
+  | Node n ->
+    bal (add_min v n.l) n.v n.r
 
-let rec add_max_element v = function
+let rec add_max v = function
   | Empty -> singleton v
   | Leaf x -> unsafe_two_elements x v
-  | Node {l; v=x; r} ->
-    internal_bal l x (add_max_element v r)
+  | Node n  ->
+    bal n.l n.v (add_max v n.r)
 
 (** 
     Invariants:
@@ -2872,26 +2856,26 @@ let rec add_max_element v = function
 *)
 let rec internal_join l v r =
   match (l, r) with
-    (Empty, _) -> add_min_element v r
-  | (_, Empty) -> add_max_element v l
+    (Empty, _) -> add_min v r
+  | (_, Empty) -> add_max v l
   | Leaf lv, Node {h = rh} ->
     if rh > 3 then 
-      add_min_element lv (add_min_element v r ) (* FIXME: could inlined *)
+      add_min lv (add_min v r ) (* FIXME: could inlined *)
     else unsafe_node  v l r (rh + 1)
   | Leaf _, Leaf _ -> 
     unsafe_node  v l r 2
   | Node {h = lh}, Leaf rv ->
     if lh > 3 then       
-      add_max_element rv (add_max_element v l)
+      add_max rv (add_max v l)
     else unsafe_node  v l r (lh + 1)    
   | (Node{l=ll;v= lv;r= lr;h= lh}, Node {l=rl; v=rv; r=rr; h=rh}) ->
     if lh > rh + 2 then 
       (* proof by induction:
          now [height of ll] is [lh - 1] 
       *)
-      internal_bal ll lv (internal_join lr v r) 
+      bal ll lv (internal_join lr v r) 
     else
-    if rh > lh + 2 then internal_bal (internal_join l v rl) rv rr 
+    if rh > lh + 2 then bal (internal_join l v rl) rv rr 
     else unsafe_node  v l r (calc_height lh rh)
 
 
@@ -2903,17 +2887,8 @@ let internal_concat t1 t2 =
   match (t1, t2) with
   | (Empty, t) -> t
   | (t, Empty) -> t
-  | (_, _) -> internal_join t1 (min_elt t2) (remove_min_elt t2)
+  | (_, _) -> internal_join t1 (min_exn t2) (remove_min_elt t2)
 
-(* let rec filter x p = match x with 
-  | Empty -> Empty
-  | Node {l; v; r} ->
-    (* call [p] in the expected left-to-right order *)
-    let l' = filter l p in
-    let pv = p v in
-    let r' = filter r p in
-    if pv then internal_join l' v r' else internal_concat l' r'
- *)
 
 let rec partition x p = match x with 
   | Empty -> (empty, empty)
@@ -2991,20 +2966,6 @@ let invariant ~cmp t =
   check t ; 
   is_ordered ~cmp t 
 
-(* let rec compare_aux ~cmp e1 e2 =
-  match (e1, e2) with
-    (End, End) -> 0
-  | (End, _)  -> -1
-  | (_, End) -> 1
-  | (More(v1, r1, e1), More(v2, r2, e2)) ->
-    let c = cmp v1 v2 in
-    if c <> 0
-    then c
-    else compare_aux ~cmp (cons_enum r1 e1) (cons_enum r2 e2)
-
-let compare ~cmp s1 s2 =
-  compare_aux ~cmp (cons_enum s1 End) (cons_enum s2 End) *)
-
 
 module type S = sig
   type elt 
@@ -3018,7 +2979,6 @@ module type S = sig
   val singleton: elt -> t
   val cardinal: t -> int
   val elements: t -> elt list
-  val min_elt: t -> elt
   val choose: t -> elt
   val mem: t -> elt -> bool
   val add: t -> elt -> t
@@ -3154,7 +3114,7 @@ let exists = Set_gen.exists
 let singleton = Set_gen.singleton 
 let cardinal = Set_gen.cardinal
 let elements = Set_gen.elements
-let min_elt = Set_gen.min_elt
+(* let min_elt = Set_gen.min_exn *)
 
 let choose = Set_gen.choose 
 
@@ -3197,7 +3157,7 @@ let rec add (tree : t) x : t =  match tree with
   | Node {l; v; r} as t ->
     let c = compare_elt x v in
     if c = 0 then t else
-    if c < 0 then Set_gen.internal_bal (add l x ) v r else Set_gen.internal_bal l v (add r x )
+    if c < 0 then Set_gen.bal (add l x ) v r else Set_gen.bal l v (add r x )
 
 let rec union (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
@@ -3264,7 +3224,7 @@ let rec remove (tree : t)  (x : elt) : t = match tree with
   | Node{l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then Set_gen.internal_merge l r else
-    if c < 0 then Set_gen.internal_bal (remove l x) v r else Set_gen.internal_bal l v (remove r x )
+    if c < 0 then Set_gen.bal (remove l x) v r else Set_gen.bal l v (remove r x )
 
 (* let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2  *)
 
@@ -3410,7 +3370,7 @@ let rec add (tree : _ Set_gen.t) x  =  match tree with
   | Node {l; v; r} as t ->
     let c = compare_ident x v in
     if c = 0 then t else
-    if c < 0 then Set_gen.internal_bal (add l x ) v r else Set_gen.internal_bal l v (add r x )
+    if c < 0 then Set_gen.bal (add l x ) v r else Set_gen.bal l v (add r x )
 
 let rec mem (tree : _ Set_gen.t) x =  match tree with 
     | Empty -> false
