@@ -2564,10 +2564,9 @@ type 'a t =private
   | Leaf of 'a
   | Node of { l : 'a t; v : 'a; r : 'a t; h : int; }
 
-val min_elt : 'a t-> 'a
-val max_elt : 'a t-> 'a
+
 val empty : 'a t
-val is_empty : 'a t-> bool
+val [@inline] is_empty : 'a t-> bool
 val unsafe_two_elements : 
   'a -> 'a -> 'a t
 
@@ -2580,12 +2579,10 @@ val fold : 'a t-> 'c -> ('a -> 'c -> 'c) -> 'c
 val for_all : 'a t-> ('a -> bool) -> bool
 val exists : 'a t-> ('a -> bool) -> bool
 val check : 'a t-> unit
-val internal_bal : 'a t-> 'a -> 'a t-> 'a t
+val bal : 'a t-> 'a -> 'a t-> 'a t
 val remove_min_elt : 'a t-> 'a t
 val singleton : 'a -> 'a t
 val internal_merge : 'a t-> 'a t-> 'a t
-val add_min_element : 'a -> 'a t-> 'a t
-val add_max_element : 'a -> 'a t-> 'a t
 val internal_join : 'a t-> 'a -> 'a t-> 'a t
 val internal_concat : 'a t-> 'a t-> 'a t
 val partition : 'a t-> ('a -> bool) -> 'a t * 'a t
@@ -2606,7 +2603,6 @@ module type S =
     val singleton : elt -> t
     val cardinal : t -> int
     val elements : t -> elt list
-    val min_elt : t -> elt
     val choose : t -> elt
     val mem : t -> elt -> bool
     val add : t -> elt -> t
@@ -2677,29 +2673,17 @@ type 'a t = 'a t0 = private
 
 (* Smallest and greatest element of a set *)
 
-let rec min_elt = function
+let rec min_exn = function
   | Empty -> raise Not_found
   | Leaf v -> v 
   | Node{l; v} ->
     match l with 
     | Empty -> v 
     | Leaf _
-    | Node _ ->  min_elt l
-
-let rec max_elt = function
-  | Empty -> raise Not_found
-  | Leaf v -> v 
-  | Node{ v; r} -> 
-    match r with 
-    | Empty -> v 
-    | Leaf _
-    | Node _ -> max_elt r
+    | Node _ ->  min_exn l
 
 
-
-
-
-let is_empty = function Empty -> true | _ -> false
+let [@inline] is_empty = function Empty -> true | _ -> false
 
 let rec cardinal_aux acc  = function
   | Empty -> acc 
@@ -2717,7 +2701,7 @@ let rec elements_aux accu = function
 let elements s =
   elements_aux [] s
 
-let choose = min_elt
+let choose = min_exn
 
 let rec iter  x f = match x with
   | Empty -> ()
@@ -2773,7 +2757,7 @@ let check tree =
 
     Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
 *)
-let internal_bal l v r : _ t =
+let bal l v r : _ t =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then 
@@ -2825,7 +2809,7 @@ let rec remove_min_elt = function
     Empty -> invalid_arg "Set.remove_min_elt"
   | Leaf _ -> empty  
   | Node{l=Empty; r} -> r
-  | Node{l; v; r} -> internal_bal (remove_min_elt l) v r
+  | Node{l; v; r} -> bal (remove_min_elt l) v r
 
 
 
@@ -2839,7 +2823,7 @@ let internal_merge l r =
   match (l, r) with
   | (Empty, t) -> t
   | (t, Empty) -> t
-  | (_, _) -> internal_bal l (min_elt r) (remove_min_elt r)
+  | (_, _) -> bal l (min_exn r) (remove_min_elt r)
 
 
 (* Beware: those two functions assume that the added v is *strictly*
@@ -2849,17 +2833,17 @@ let internal_merge l r =
     respects this precondition.
 *)
 
-let rec add_min_element v = function
+let rec add_min v = function
   | Empty -> singleton v
   | Leaf x -> unsafe_two_elements v x
-  | Node {l; v=x; r} ->
-    internal_bal (add_min_element v l) x r
+  | Node n ->
+    bal (add_min v n.l) n.v n.r
 
-let rec add_max_element v = function
+let rec add_max v = function
   | Empty -> singleton v
   | Leaf x -> unsafe_two_elements x v
-  | Node {l; v=x; r} ->
-    internal_bal l x (add_max_element v r)
+  | Node n  ->
+    bal n.l n.v (add_max v n.r)
 
 (** 
     Invariants:
@@ -2872,26 +2856,26 @@ let rec add_max_element v = function
 *)
 let rec internal_join l v r =
   match (l, r) with
-    (Empty, _) -> add_min_element v r
-  | (_, Empty) -> add_max_element v l
+    (Empty, _) -> add_min v r
+  | (_, Empty) -> add_max v l
   | Leaf lv, Node {h = rh} ->
     if rh > 3 then 
-      add_min_element lv (add_min_element v r ) (* FIXME: could inlined *)
+      add_min lv (add_min v r ) (* FIXME: could inlined *)
     else unsafe_node  v l r (rh + 1)
   | Leaf _, Leaf _ -> 
     unsafe_node  v l r 2
   | Node {h = lh}, Leaf rv ->
     if lh > 3 then       
-      add_max_element rv (add_max_element v l)
+      add_max rv (add_max v l)
     else unsafe_node  v l r (lh + 1)    
   | (Node{l=ll;v= lv;r= lr;h= lh}, Node {l=rl; v=rv; r=rr; h=rh}) ->
     if lh > rh + 2 then 
       (* proof by induction:
          now [height of ll] is [lh - 1] 
       *)
-      internal_bal ll lv (internal_join lr v r) 
+      bal ll lv (internal_join lr v r) 
     else
-    if rh > lh + 2 then internal_bal (internal_join l v rl) rv rr 
+    if rh > lh + 2 then bal (internal_join l v rl) rv rr 
     else unsafe_node  v l r (calc_height lh rh)
 
 
@@ -2903,17 +2887,8 @@ let internal_concat t1 t2 =
   match (t1, t2) with
   | (Empty, t) -> t
   | (t, Empty) -> t
-  | (_, _) -> internal_join t1 (min_elt t2) (remove_min_elt t2)
+  | (_, _) -> internal_join t1 (min_exn t2) (remove_min_elt t2)
 
-(* let rec filter x p = match x with 
-  | Empty -> Empty
-  | Node {l; v; r} ->
-    (* call [p] in the expected left-to-right order *)
-    let l' = filter l p in
-    let pv = p v in
-    let r' = filter r p in
-    if pv then internal_join l' v r' else internal_concat l' r'
- *)
 
 let rec partition x p = match x with 
   | Empty -> (empty, empty)
@@ -2991,20 +2966,6 @@ let invariant ~cmp t =
   check t ; 
   is_ordered ~cmp t 
 
-(* let rec compare_aux ~cmp e1 e2 =
-  match (e1, e2) with
-    (End, End) -> 0
-  | (End, _)  -> -1
-  | (_, End) -> 1
-  | (More(v1, r1, e1), More(v2, r2, e2)) ->
-    let c = cmp v1 v2 in
-    if c <> 0
-    then c
-    else compare_aux ~cmp (cons_enum r1 e1) (cons_enum r2 e2)
-
-let compare ~cmp s1 s2 =
-  compare_aux ~cmp (cons_enum s1 End) (cons_enum s2 End) *)
-
 
 module type S = sig
   type elt 
@@ -3018,7 +2979,6 @@ module type S = sig
   val singleton: elt -> t
   val cardinal: t -> int
   val elements: t -> elt list
-  val min_elt: t -> elt
   val choose: t -> elt
   val mem: t -> elt -> bool
   val add: t -> elt -> t
@@ -3154,8 +3114,6 @@ let exists = Set_gen.exists
 let singleton = Set_gen.singleton 
 let cardinal = Set_gen.cardinal
 let elements = Set_gen.elements
-let min_elt = Set_gen.min_elt
-
 let choose = Set_gen.choose 
 
 let of_sorted_array = Set_gen.of_sorted_array
@@ -3167,23 +3125,45 @@ let rec mem (tree : t) (x : elt) =  match tree with
     let c = compare_elt x v in
     c = 0 || mem (if c < 0 then l else r) x
 
-let rec split (tree : t) x : t * bool * t =  match tree with 
+type split = 
+  | Yes of  {l : t ;  r :  t }
+  | No of { l : t; r : t}  
+
+let [@inline] split_l (x : split) = 
+  match x with 
+  | Yes {l} | No {l} -> l 
+
+let [@inline] split_r (x : split) = 
+  match x with 
+  | Yes {r} | No {r} -> r       
+
+let [@inline] split_pres (x : split) = match x with | Yes _ -> true | No _ -> false   
+
+let rec split (tree : t) x : split =  match tree with 
   | Empty ->
-    (empty, false, empty)
+     No {l = empty;  r = empty}
   | Leaf v ->   
     let c = compare_elt x v in
-    if c = 0 then (empty, true, empty)
+    if c = 0 then Yes {l = empty; r = empty}
     else if c < 0 then
-      (empty, false, tree)
+      No {l = empty;  r = tree}
     else
-      (tree, false, empty)
+      No {l = tree;  r = empty}
   | Node {l; v; r} ->
     let c = compare_elt x v in
-    if c = 0 then (l, true, r)
+    if c = 0 then Yes {l; r}
     else if c < 0 then
-      let (ll, pres, rl) = split l x in (ll, pres, Set_gen.internal_join rl v r)
+      match split l x with 
+      | Yes result -> 
+        Yes { result with r = Set_gen.internal_join result.r v r }
+      | No result ->
+        No { result with r= Set_gen.internal_join result.r v r }
     else
-      let (lr, pres, rr) = split r x in (Set_gen.internal_join l v lr, pres, rr)
+      match split r x with
+      | Yes result -> 
+        Yes {result with l = Set_gen.internal_join l v result.l}
+      | No result ->   
+        No {result with l = Set_gen.internal_join l v result.l}
 
 let rec add (tree : t) x : t =  match tree with 
   | Empty -> singleton x
@@ -3197,12 +3177,12 @@ let rec add (tree : t) x : t =  match tree with
   | Node {l; v; r} as t ->
     let c = compare_elt x v in
     if c = 0 then t else
-    if c < 0 then Set_gen.internal_bal (add l x ) v r else Set_gen.internal_bal l v (add r x )
+    if c < 0 then Set_gen.bal (add l x ) v r else Set_gen.bal l v (add r x )
 
 let rec union (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, t2) -> t2
-  | (t1, Empty) -> t1
+  | (Empty, t) 
+  | (t, Empty) -> t
   | Node _, Leaf v2 ->
     add s1 v2 
   | Leaf v1, Node _ -> 
@@ -3215,44 +3195,57 @@ let rec union (s1 : t) (s2 : t) : t  =
     else 
       Set_gen.unsafe_two_elements v x
   | Node{l=l1; v=v1; r=r1; h=h1}, Node{l=l2; v=v2; r=r2; h=h2} ->
-    if h1 >= h2 then
-      if h2 = 1 then add s1 v2 else begin
-        let (l2, _, r2) = split s2 v1 in
-        Set_gen.internal_join (union l1 l2) v1 (union r1 r2)
-      end
-    else
-    if h1 = 1 then add s2 v1 else begin
-      let (l1, _, r1) = split s1 v2 in
-      Set_gen.internal_join (union l1 l2) v2 (union r1 r2)
-    end    
+    if h1 >= h2 then    
+      let split_result =  split s2 v1 in
+      Set_gen.internal_join 
+        (union l1 (split_l split_result)) v1 
+        (union r1 (split_r split_result))  
+    else    
+      let split_result =  split s1 v2 in
+      Set_gen.internal_join 
+        (union (split_l split_result) l2) v2 
+        (union (split_r split_result) r2)
+
 
 let rec inter (s1 : t)  (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, _) -> empty
+  | (Empty, _) 
   | (_, Empty) -> empty  
-  | Leaf v, t2 -> 
-    if mem t2 v then s1 else empty
-  | (Node{l=l1; v=v1; r=r1}, t2) ->
-    begin match split t2 v1 with
-      | (l2, false, r2) ->
-        Set_gen.internal_concat (inter l1 l2) (inter r1 r2)
-      | (l2, true, r2) ->
-        Set_gen.internal_join (inter l1 l2) v1 (inter r1 r2)
-    end 
+  | Leaf v, _ -> 
+    if mem s2 v then s1 else empty
+  | Node ({ v } as s1), _ ->
+    let result = split s2 v in 
+    if split_pres result then 
+      Set_gen.internal_join 
+        (inter s1.l (split_l result)) 
+        v 
+        (inter s1.r (split_r result))
+    else
+      Set_gen.internal_concat 
+        (inter s1.l (split_l result)) 
+        (inter s1.r (split_r result))
+
 
 let rec diff (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
   | (Empty, _) -> empty
   | (t1, Empty) -> t1
-  | Leaf v, t2 -> 
-    if mem t2 v then empty else s1 
-  | (Node{l=l1; v=v1; r=r1}, t2) ->
-    begin match split t2 v1 with
-      | (l2, false, r2) ->
-        Set_gen.internal_join (diff l1 l2) v1 (diff r1 r2)
-      | (l2, true, r2) ->
-        Set_gen.internal_concat (diff l1 l2) (diff r1 r2)    
-    end
+  | Leaf v, _-> 
+    if mem s2 v then empty else s1 
+  | (Node({ v} as s1), _) ->
+    let result =  split s2 v in
+    if split_pres result then 
+      Set_gen.internal_concat 
+        (diff s1.l (split_l result)) 
+        (diff s1.r (split_r result))    
+    else
+      Set_gen.internal_join 
+        (diff s1.l (split_l result))
+        v 
+        (diff s1.r (split_r result))
+
+
+
 
 
 
@@ -3264,7 +3257,7 @@ let rec remove (tree : t)  (x : elt) : t = match tree with
   | Node{l; v; r} ->
     let c = compare_elt x v in
     if c = 0 then Set_gen.internal_merge l r else
-    if c < 0 then Set_gen.internal_bal (remove l x) v r else Set_gen.internal_bal l v (remove r x )
+    if c < 0 then Set_gen.bal (remove l x) v r else Set_gen.bal l v (remove r x )
 
 (* let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2  *)
 
@@ -3410,7 +3403,7 @@ let rec add (tree : _ Set_gen.t) x  =  match tree with
   | Node {l; v; r} as t ->
     let c = compare_ident x v in
     if c = 0 then t else
-    if c < 0 then Set_gen.internal_bal (add l x ) v r else Set_gen.internal_bal l v (add r x )
+    if c < 0 then Set_gen.bal (add l x ) v r else Set_gen.bal l v (add r x )
 
 let rec mem (tree : _ Set_gen.t) x =  match tree with 
     | Empty -> false
@@ -5349,26 +5342,33 @@ let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with
     else
       bal l k v (remove r x )
 
+type 'a split = 
+    | Yes of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t ; v : 'a}
+    | No of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t }
 
-let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = 
+
+let rec split  (tree : (key,'a) Map_gen.t) x : 'a split  = 
   match tree with 
   | Empty ->
-    (empty, None, empty)
+    No {l = empty; r = empty}
   | Leaf leaf -> 
     let c = compare_key x leaf.k in 
-    if c = 0 then empty, Some leaf.v, empty 
-    else if c < 0 then empty, None, tree 
-    else  tree, None, empty
+    if c = 0 then Yes {l = empty; v= leaf.v; r = empty} 
+    else if c < 0 then No { l = empty; r = tree }
+    else  No { l = tree; r = empty}
   | Node {l; k ; v ; r} ->
     let c = compare_key x k in
-    if c = 0 then (l, Some v, r)
-    else if c < 0 then
-      let (ll, pres, rl) = split l x in 
-      (ll, pres, Map_gen.join rl k v r)
+    if c = 0 then Yes {l; v; r}
+    else if c < 0 then      
+      match  split l x with 
+      | Yes result -> Yes {result with r = Map_gen.join result.r k v r }
+      | No result -> No {result with r = Map_gen.join result.r k v r } 
     else
-      let (lr, pres, rr) = split r x in 
-      (Map_gen.join l k v lr, pres, rr)
-
+      match split r x with 
+      | Yes result -> 
+        Yes {result with l = Map_gen.join l k v result.l}
+      | No result -> 
+        No {result with l = Map_gen.join l k v result.l}
 
 
 let rec disjoint_merge_exn  
@@ -5395,22 +5395,22 @@ let rec disjoint_merge_exn
   | Node ({k} as xs1) -> 
     if  xs1.h >= height s2 then
       begin match split s2 k with 
-        | l, None, r -> 
+        | No {l; r} -> 
           Map_gen.join 
             (disjoint_merge_exn  xs1.l l fail)
             k 
             xs1.v 
             (disjoint_merge_exn xs1.r r fail)
-        | _, Some s2v, _ ->
+        | Yes { v =  s2v} ->
           raise_notrace (fail k xs1.v s2v)
       end        
     else let [@warning "-8"] (Node ({k} as s2) : _ Map_gen.t)  = s2 in 
       begin match  split s1 k with 
-        | (l, None, r) -> 
+        | No {l;  r} -> 
           Map_gen.join 
             (disjoint_merge_exn  l s2.l fail) k s2.v 
             (disjoint_merge_exn  r s2.r fail)
-        | (_, Some s1v, _) -> 
+        | Yes { v = s1v} -> 
           raise_notrace (fail k s1v s2.v)
       end
 
@@ -15701,26 +15701,33 @@ let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with
     else
       bal l k v (remove r x )
 
+type 'a split = 
+    | Yes of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t ; v : 'a}
+    | No of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t }
 
-let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = 
+
+let rec split  (tree : (key,'a) Map_gen.t) x : 'a split  = 
   match tree with 
   | Empty ->
-    (empty, None, empty)
+    No {l = empty; r = empty}
   | Leaf leaf -> 
     let c = compare_key x leaf.k in 
-    if c = 0 then empty, Some leaf.v, empty 
-    else if c < 0 then empty, None, tree 
-    else  tree, None, empty
+    if c = 0 then Yes {l = empty; v= leaf.v; r = empty} 
+    else if c < 0 then No { l = empty; r = tree }
+    else  No { l = tree; r = empty}
   | Node {l; k ; v ; r} ->
     let c = compare_key x k in
-    if c = 0 then (l, Some v, r)
-    else if c < 0 then
-      let (ll, pres, rl) = split l x in 
-      (ll, pres, Map_gen.join rl k v r)
+    if c = 0 then Yes {l; v; r}
+    else if c < 0 then      
+      match  split l x with 
+      | Yes result -> Yes {result with r = Map_gen.join result.r k v r }
+      | No result -> No {result with r = Map_gen.join result.r k v r } 
     else
-      let (lr, pres, rr) = split r x in 
-      (Map_gen.join l k v lr, pres, rr)
-
+      match split r x with 
+      | Yes result -> 
+        Yes {result with l = Map_gen.join l k v result.l}
+      | No result -> 
+        No {result with l = Map_gen.join l k v result.l}
 
 
 let rec disjoint_merge_exn  
@@ -15747,22 +15754,22 @@ let rec disjoint_merge_exn
   | Node ({k} as xs1) -> 
     if  xs1.h >= height s2 then
       begin match split s2 k with 
-        | l, None, r -> 
+        | No {l; r} -> 
           Map_gen.join 
             (disjoint_merge_exn  xs1.l l fail)
             k 
             xs1.v 
             (disjoint_merge_exn xs1.r r fail)
-        | _, Some s2v, _ ->
+        | Yes { v =  s2v} ->
           raise_notrace (fail k xs1.v s2v)
       end        
     else let [@warning "-8"] (Node ({k} as s2) : _ Map_gen.t)  = s2 in 
       begin match  split s1 k with 
-        | (l, None, r) -> 
+        | No {l;  r} -> 
           Map_gen.join 
             (disjoint_merge_exn  l s2.l fail) k s2.v 
             (disjoint_merge_exn  r s2.r fail)
-        | (_, Some s1v, _) -> 
+        | Yes { v = s1v} -> 
           raise_notrace (fail k s1v s2.v)
       end
 
