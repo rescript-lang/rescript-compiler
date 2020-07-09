@@ -3789,26 +3789,33 @@ let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with
     else
       bal l k v (remove r x )
 
+type 'a split = 
+    | Yes of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t ; v : 'a}
+    | No of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t }
 
-let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = 
+
+let rec split  (tree : (key,'a) Map_gen.t) x : 'a split  = 
   match tree with 
   | Empty ->
-    (empty, None, empty)
+    No {l = empty; r = empty}
   | Leaf leaf -> 
     let c = compare_key x leaf.k in 
-    if c = 0 then empty, Some leaf.v, empty 
-    else if c < 0 then empty, None, tree 
-    else  tree, None, empty
+    if c = 0 then Yes {l = empty; v= leaf.v; r = empty} 
+    else if c < 0 then No { l = empty; r = tree }
+    else  No { l = tree; r = empty}
   | Node {l; k ; v ; r} ->
     let c = compare_key x k in
-    if c = 0 then (l, Some v, r)
-    else if c < 0 then
-      let (ll, pres, rl) = split l x in 
-      (ll, pres, Map_gen.join rl k v r)
+    if c = 0 then Yes {l; v; r}
+    else if c < 0 then      
+      match  split l x with 
+      | Yes result -> Yes {result with r = Map_gen.join result.r k v r }
+      | No result -> No {result with r = Map_gen.join result.r k v r } 
     else
-      let (lr, pres, rr) = split r x in 
-      (Map_gen.join l k v lr, pres, rr)
-
+      match split r x with 
+      | Yes result -> 
+        Yes {result with l = Map_gen.join l k v result.l}
+      | No result -> 
+        No {result with l = Map_gen.join l k v result.l}
 
 
 let rec disjoint_merge_exn  
@@ -3835,22 +3842,22 @@ let rec disjoint_merge_exn
   | Node ({k} as xs1) -> 
     if  xs1.h >= height s2 then
       begin match split s2 k with 
-        | l, None, r -> 
+        | No {l; r} -> 
           Map_gen.join 
             (disjoint_merge_exn  xs1.l l fail)
             k 
             xs1.v 
             (disjoint_merge_exn xs1.r r fail)
-        | _, Some s2v, _ ->
+        | Yes { v =  s2v} ->
           raise_notrace (fail k xs1.v s2v)
       end        
     else let [@warning "-8"] (Node ({k} as s2) : _ Map_gen.t)  = s2 in 
       begin match  split s1 k with 
-        | (l, None, r) -> 
+        | No {l;  r} -> 
           Map_gen.join 
             (disjoint_merge_exn  l s2.l fail) k s2.v 
             (disjoint_merge_exn  r s2.r fail)
-        | (_, Some s1v, _) -> 
+        | Yes { v = s1v} -> 
           raise_notrace (fail k s1v s2.v)
       end
 
