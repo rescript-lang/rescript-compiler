@@ -3114,8 +3114,6 @@ let exists = Set_gen.exists
 let singleton = Set_gen.singleton 
 let cardinal = Set_gen.cardinal
 let elements = Set_gen.elements
-(* let min_elt = Set_gen.min_exn *)
-
 let choose = Set_gen.choose 
 
 let of_sorted_array = Set_gen.of_sorted_array
@@ -3128,30 +3126,44 @@ let rec mem (tree : t) (x : elt) =  match tree with
     c = 0 || mem (if c < 0 then l else r) x
 
 type split = 
-   {l : t ;  r :  t ; pres : bool}
-  
+  | Yes of  {l : t ;  r :  t }
+  | No of { l : t; r : t}  
 
+let [@inline] split_l (x : split) = 
+  match x with 
+  | Yes {l} | No {l} -> l 
+
+let [@inline] split_r (x : split) = 
+  match x with 
+  | Yes {r} | No {r} -> r       
+
+let [@inline] split_pres (x : split) = match x with | Yes _ -> true | No _ -> false   
 
 let rec split (tree : t) x : split =  match tree with 
   | Empty ->
-    {l = empty; pres =  false; r = empty}
+     No {l = empty;  r = empty}
   | Leaf v ->   
     let c = compare_elt x v in
-    if c = 0 then {l = empty; pres = true; r = empty}
+    if c = 0 then Yes {l = empty; r = empty}
     else if c < 0 then
-      {l = empty; pres = false; r = tree}
+      No {l = empty;  r = tree}
     else
-      {l = tree; pres = false; r = empty}
+      No {l = tree;  r = empty}
   | Node {l; v; r} ->
     let c = compare_elt x v in
-    if c = 0 then {l; pres = true; r}
+    if c = 0 then Yes {l; r}
     else if c < 0 then
-      let result = split l x in 
-      {result with r = Set_gen.internal_join result.r v r }
+      match split l x with 
+      | Yes result -> 
+        Yes { result with r = Set_gen.internal_join result.r v r }
+      | No result ->
+        No { result with r= Set_gen.internal_join result.r v r }
     else
-      let result = split r x in 
-      {result with l = Set_gen.internal_join l v result.l}
-      
+      match split r x with
+      | Yes result -> 
+        Yes {result with l = Set_gen.internal_join l v result.l}
+      | No result ->   
+        No {result with l = Set_gen.internal_join l v result.l}
 
 let rec add (tree : t) x : t =  match tree with 
   | Empty -> singleton x
@@ -3169,8 +3181,8 @@ let rec add (tree : t) x : t =  match tree with
 
 let rec union (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, t2) -> t2
-  | (t1, Empty) -> t1
+  | (Empty, t) 
+  | (t, Empty) -> t
   | Node _, Leaf v2 ->
     add s1 v2 
   | Leaf v1, Node _ -> 
@@ -3183,44 +3195,57 @@ let rec union (s1 : t) (s2 : t) : t  =
     else 
       Set_gen.unsafe_two_elements v x
   | Node{l=l1; v=v1; r=r1; h=h1}, Node{l=l2; v=v2; r=r2; h=h2} ->
-    if h1 >= h2 then
-      if h2 = 1 then add s1 v2 else begin
-        let split_result =  split s2 v1 in
-        Set_gen.internal_join (union l1 split_result.l) v1 (union r1 split_result.r)
-      end
-    else
-    if h1 = 1 then add s2 v1 else begin
+    if h1 >= h2 then    
+      let split_result =  split s2 v1 in
+      Set_gen.internal_join 
+        (union l1 (split_l split_result)) v1 
+        (union r1 (split_r split_result))  
+    else    
       let split_result =  split s1 v2 in
-      Set_gen.internal_join (union split_result.l l2) v2 (union split_result.r r2)
-    end    
+      Set_gen.internal_join 
+        (union (split_l split_result) l2) v2 
+        (union (split_r split_result) r2)
+
 
 let rec inter (s1 : t)  (s2 : t) : t  =
   match (s1, s2) with
-  | (Empty, _) -> empty
+  | (Empty, _) 
   | (_, Empty) -> empty  
-  | Leaf v, t2 -> 
-    if mem t2 v then s1 else empty
-  | (Node{l=l1; v=v1; r=r1}, t2) ->
-    begin match split t2 v1 with
-      | {l = l2; pres = false; r = r2} ->
-        Set_gen.internal_concat (inter l1 l2) (inter r1 r2)
-      | {l = l2; pres = true; r = r2} ->
-        Set_gen.internal_join (inter l1 l2) v1 (inter r1 r2)
-    end 
+  | Leaf v, _ -> 
+    if mem s2 v then s1 else empty
+  | Node ({ v } as s1), _ ->
+    let result = split s2 v in 
+    if split_pres result then 
+      Set_gen.internal_join 
+        (inter s1.l (split_l result)) 
+        v 
+        (inter s1.r (split_r result))
+    else
+      Set_gen.internal_concat 
+        (inter s1.l (split_l result)) 
+        (inter s1.r (split_r result))
+
 
 let rec diff (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
   | (Empty, _) -> empty
   | (t1, Empty) -> t1
-  | Leaf v, t2 -> 
-    if mem t2 v then empty else s1 
-  | (Node{l=l1; v=v1; r=r1}, t2) ->
-    begin match split t2 v1 with
-      | {l = l2; pres = false; r = r2} ->
-        Set_gen.internal_join (diff l1 l2) v1 (diff r1 r2)
-      | {l = l2; pres = true; r = r2} ->
-        Set_gen.internal_concat (diff l1 l2) (diff r1 r2)    
-    end
+  | Leaf v, _-> 
+    if mem s2 v then empty else s1 
+  | (Node({ v} as s1), _) ->
+    let result =  split s2 v in
+    if split_pres result then 
+      Set_gen.internal_concat 
+        (diff s1.l (split_l result)) 
+        (diff s1.r (split_r result))    
+    else
+      Set_gen.internal_join 
+        (diff s1.l (split_l result))
+        v 
+        (diff s1.r (split_r result))
+
+
+
 
 
 
