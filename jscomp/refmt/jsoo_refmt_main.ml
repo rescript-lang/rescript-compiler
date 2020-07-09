@@ -29,6 +29,24 @@ This is usually the file you want to build for the full playground experience.
 
 module Js = Jsoo_common.Js
 
+exception NapkinParsingErrors of Location.error list
+
+let mk_js_error (loc: Location.t) (msg: string) = 
+  let (_file,line,startchar) = Location.get_pos_info loc.Location.loc_start in
+  let (_file,endline,endchar) = Location.get_pos_info loc.Location.loc_end in
+  Js.Unsafe.(obj
+               [|
+                 "js_error_msg",
+                 inject @@ Js.string (Printf.sprintf "Line %d, %d:\n  %s"  line startchar msg);
+                 "row"    , inject (line - 1);
+                 "column" , inject startchar;
+                 "endRow" , inject (endline - 1);
+                 "endColumn" , inject endchar;
+                 "text" , inject @@ Js.string msg;
+                 "type" , inject @@ Js.string "error"
+               |]
+            )
+
 let () =  
   Bs_conditional_initial.setup_env ();
   Clflags.binary_annotations := false
@@ -56,7 +74,7 @@ let implementation ~use_super_errors impl str  : Js.Unsafe.obj =
 
   try
     Js_config.jsx_version :=  3 ; (* default *)
-    let ast = impl (Lexing.from_string str) in     
+    let ast = impl (str) in     
     let ast = Ppx_entry.rewrite_implementation ast in 
     let typed_tree = 
       let (a,b,_,signature) = Typemod.type_implementation_more modulename modulename modulename env ast in
@@ -84,19 +102,27 @@ let implementation ~use_super_errors impl str  : Js.Unsafe.obj =
       begin match error_of_exn e with
       | Some error ->
         Location.report_error Format.err_formatter  error;
-        Jsoo_common.mk_js_error error.loc error.msg
+        mk_js_error error.loc error.msg
       | None ->
-        let msg = Printexc.to_string e in
-        match e with
-        | Refmt_api.Migrate_parsetree.Def.Migration_error (_,loc)
-        | Refmt_api.Reason_errors.Reason_error (_,loc) ->
-          Jsoo_common.mk_js_error loc msg
-        | _ -> 
+        match e with 
+        | NapkinParsingErrors errors -> 
+          let jsErrors = List.map (fun (e: Location.error) -> mk_js_error e.loc e.msg) errors |> Array.of_list in
           Js.Unsafe.(obj [|
-            "js_error_msg" , inject @@ Js.string msg;
+            "errors" , inject @@ Js.array jsErrors;
             "type" , inject @@ Js.string "error"
           |])
-      end
+        | _ ->
+          let msg = Printexc.to_string e in
+          match e with
+          | Refmt_api.Migrate_parsetree.Def.Migration_error (_,loc)
+          | Refmt_api.Reason_errors.Reason_error (_,loc) ->
+            mk_js_error loc msg
+          | _ -> 
+            Js.Unsafe.(obj [|
+                "js_error_msg" , inject @@ Js.string msg;
+                "type" , inject @@ Js.string "error"
+              |])
+end
 
 
 let compile ~use_super_errors impl =
@@ -114,10 +140,87 @@ let () =
 
 module Converter = Refmt_api.Migrate_parsetree.Convert(Refmt_api.Migrate_parsetree.OCaml_404)(Refmt_api.Migrate_parsetree.OCaml_406)
 
-let reason_parse lexbuf = 
-  Refmt_api.Reason_toolchain.RE.implementation lexbuf |> Converter.copy_structure;;
+let reason_parse str = 
+  str |> Lexing.from_string |> Refmt_api.Reason_toolchain.RE.implementation |> Converter.copy_structure;;
 
-let make_compiler ~name impl=
+let ocaml_parse str =
+  Lexing.from_string str |> Parse.implementation;;
+
+module NapkinDriver = struct
+  (* For now we are basically overriding functionality from Napkin_driver *)
+  open Napkin_driver
+
+  (* needed to override parseImplementation with a ~src parameter *)
+  type ('diagnostics) parsingEngine = {
+    parseImplementation:
+      forPrinter:bool -> filename:string -> src:string
+      -> (Parsetree.structure, 'diagnostics) parseResult;
+    stringOfDiagnostics: source:string -> filename:string -> 'diagnostics  -> string
+  }
+
+  (* adds ~src parameter *)
+  let setup ~src ~filename ~forPrinter () =
+    let mode = if forPrinter then Napkin_parser.Default
+      else ParseForTypeChecker
+    in
+    Napkin_parser.make ~mode src filename
+
+  let parsingEngine = {
+    parseImplementation = begin fun ~forPrinter ~filename ~src ->
+      let engine = setup ~filename ~forPrinter ~src () in
+      let structure = Napkin_core.parseImplementation engine in
+      let (invalid, diagnostics) = match engine.diagnostics with
+        | [] as diagnostics -> (false, diagnostics)
+        | _ as diagnostics -> (true, diagnostics)
+      in {
+        filename = engine.scanner.filename;
+        source = Bytes.to_string engine.scanner.src;
+        parsetree = structure;
+        diagnostics;
+        invalid;
+        comments = List.rev engine.comments;
+      }
+    end;
+    stringOfDiagnostics = begin fun ~source ~filename:_ diagnostics ->
+      let style = Napkin_diagnostics.parseReportStyle "" in
+      Napkin_diagnostics.stringOfReport ~style diagnostics source
+    end;
+  }
+  
+  let parse_implementation ~sourcefile ~src =
+    Location.input_name := sourcefile;
+    let parseResult =
+      parsingEngine.parseImplementation ~forPrinter:false ~filename:sourcefile ~src
+    in
+    let () = if parseResult.invalid then
+        (*let msg =*)
+        (*let style = Napkin_diagnostics.parseReportStyle "" in*)
+        (*Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source*)
+        (*in*)
+
+        let errors = List.map (fun d -> 
+            let msg =
+              let style = Napkin_diagnostics.parseReportStyle "" in
+              Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source
+            in
+            let loc = {
+              Location.loc_start = Napkin_diagnostics.getStartPos d;
+              Location.loc_end = Napkin_diagnostics.getEndPos d;
+              loc_ghost = false
+            } in
+            (Location.error ~loc msg)
+          ) parseResult.diagnostics
+        in
+        raise (NapkinParsingErrors errors)
+    in
+    parseResult.parsetree
+    [@@raises Location.Error]
+end
+
+let napkin_parse str =
+  NapkinDriver.parse_implementation ~sourcefile:"playground.res" ~src:str;;
+
+let make_compiler ~name impl =
   export name
     (Js.Unsafe.(obj
                   [|"compile",
@@ -133,8 +236,9 @@ let make_compiler ~name impl=
                     "version", Js.Unsafe.inject (Js.string (match name with | "reason" -> Refmt_api.version | _ -> Bs_version.version));
                   |]))
 
-let () = make_compiler ~name:"ocaml" Parse.implementation
+let () = make_compiler ~name:"ocaml" ocaml_parse
 let () = make_compiler ~name:"reason" reason_parse
+let () = make_compiler ~name:"napkin" napkin_parse
 
 (* local variables: *)
 (* compile-command: "ocamlbuild -use-ocamlfind -pkg compiler-libs -no-hygiene driver.cmo" *)
