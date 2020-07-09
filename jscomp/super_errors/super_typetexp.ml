@@ -38,7 +38,7 @@ let report_error env ppf = function
     Format.fprintf ppf "@[<v>This type constructor, `%a`, can't be found.@ "  Printtyp.longident lid;
     let has_candidate = spellcheck ppf Env.fold_types env lid in
     if !Js_config.napkin && not has_candidate then 
-      Format.fprintf ppf "For recursive type declaration, you may forget rec in `type rec` ?@]"
+      Format.fprintf ppf "If you wanted to write a recursive type, don't forget the `rec` in `type rec`@]"
   | Unbound_value lid ->
       (* modified *)
       begin
