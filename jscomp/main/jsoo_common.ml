@@ -19,6 +19,9 @@ module Js = struct
   external to_string : js_string t -> string = "caml_js_to_string"
   external create_file : js_string t -> js_string t -> unit = "caml_create_file"
   external to_bytestring : js_string t -> string = "caml_js_to_byte_string"
+
+  type 'a js_array
+  external array : 'a array -> 'a js_array = "caml_js_from_array"
 end
 
 let mk_js_error (loc: Location.t) (msg: string) = 

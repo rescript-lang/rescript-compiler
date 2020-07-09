@@ -38,14 +38,21 @@ let mk_js_error (loc: Location.t) (msg: string) =
                [|
                  "js_error_msg",
                  inject @@ Js.string (Printf.sprintf "Line %d, %d:\n  %s"  line startchar msg);
-                 "row"    , inject (line - 1);
+                 "row"    , inject line;
                  "column" , inject startchar;
-                 "endRow" , inject (endline - 1);
+                 "endRow" , inject endline;
                  "endColumn" , inject endchar;
                  "text" , inject @@ Js.string msg;
                  "type" , inject @@ Js.string "error"
                |]
             )
+
+let mk_error_ret (errors: Location.error array) =
+  let jsErrors = Array.map (fun (e: Location.error) -> mk_js_error e.loc e.msg) errors  in
+  Js.Unsafe.(obj [|
+      "errors" , inject @@ Js.array jsErrors;
+      "type" , inject @@ Js.string "error"
+    |])
 
 let () =  
   Bs_conditional_initial.setup_env ();
@@ -95,35 +102,40 @@ let implementation ~use_super_errors impl str  : Js.Unsafe.obj =
                               lam)
                           (Ext_pp.from_buffer buffer) in
       let v = Buffer.contents buffer in
-      Js.Unsafe.(obj [| "js_code", inject @@ Js.string v |]) )
-      (* Format.fprintf output_ppf {| { "js_code" : %S }|} v ) *)
+      Js.Unsafe.(obj [|
+          "js_code", inject @@ Js.string v;
+          "type" , inject @@ Js.string "success"
+        |]))
   with
   | e ->
       begin match error_of_exn e with
       | Some error ->
         Location.report_error Format.err_formatter  error;
-        mk_js_error error.loc error.msg
+        (*mk_js_error error.loc error.msg*)
+        mk_error_ret [|error|]
       | None ->
         match e with 
         | NapkinParsingErrors errors -> 
-          let jsErrors = List.map (fun (e: Location.error) -> mk_js_error e.loc e.msg) errors |> Array.of_list in
-          Js.Unsafe.(obj [|
-            "errors" , inject @@ Js.array jsErrors;
-            "type" , inject @@ Js.string "error"
-          |])
+          (*let jsErrors = List.map (fun (e: Location.error) -> mk_js_error e.loc e.msg) errors |> List.rev |>  Array.of_list in*)
+          (*Js.Unsafe.(obj [|*)
+            (*"errors" , inject @@ Js.array jsErrors;*)
+            (*"type" , inject @@ Js.string "error"*)
+          (*|])*)
+          mk_error_ret (Array.of_list errors)
         | _ ->
           let msg = Printexc.to_string e in
           match e with
           | Refmt_api.Migrate_parsetree.Def.Migration_error (_,loc)
           | Refmt_api.Reason_errors.Reason_error (_,loc) ->
-            mk_js_error loc msg
+            (*mk_js_error loc msg*)
+            let error = Location.error ~loc msg in
+            mk_error_ret [|error|]
           | _ -> 
             Js.Unsafe.(obj [|
                 "js_error_msg" , inject @@ Js.string msg;
-                "type" , inject @@ Js.string "error"
+                "type" , inject @@ Js.string "unexpected_error"
               |])
 end
-
 
 let compile ~use_super_errors impl =
     implementation ~use_super_errors impl
@@ -165,6 +177,25 @@ module NapkinDriver = struct
     in
     Napkin_parser.make ~mode src filename
 
+  let parseImplementation ~forPrinter ~filename ~src =
+    let engine = setup ~filename ~forPrinter ~src () in
+    let structure = Napkin_core.parseImplementation engine in
+    let (invalid, diagnostics) = match engine.diagnostics with
+      | [] as diagnostics -> (false, diagnostics)
+      | _ as diagnostics -> (true, diagnostics)
+    in {
+      filename = engine.scanner.filename;
+      source = Bytes.to_string engine.scanner.src;
+      parsetree = structure;
+      diagnostics;
+      invalid;
+      comments = List.rev engine.comments;
+    }
+
+  let stringOfDiagnostics ~source ~filename:_ diagnostics =
+    let style = Napkin_diagnostics.parseReportStyle "" in
+    Napkin_diagnostics.stringOfReport ~style diagnostics source
+
   let parsingEngine = {
     parseImplementation = begin fun ~forPrinter ~filename ~src ->
       let engine = setup ~filename ~forPrinter ~src () in
@@ -198,18 +229,20 @@ module NapkinDriver = struct
         (*Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source*)
         (*in*)
 
-        let errors = List.map (fun d -> 
-            let msg =
-              let style = Napkin_diagnostics.parseReportStyle "" in
-              Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source
-            in
-            let loc = {
-              Location.loc_start = Napkin_diagnostics.getStartPos d;
-              Location.loc_end = Napkin_diagnostics.getEndPos d;
-              loc_ghost = false
-            } in
-            (Location.error ~loc msg)
-          ) parseResult.diagnostics
+        let errors = parseResult.diagnostics
+                     |> List.map (fun d -> 
+                         let msg =
+                           let style = Napkin_diagnostics.parseReportStyle "" in
+                           Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source
+                         in
+                         let loc = {
+                           Location.loc_start = Napkin_diagnostics.getStartPos d;
+                           Location.loc_end = Napkin_diagnostics.getEndPos d;
+                           loc_ghost = false
+                         } in
+                         (Location.error ~loc msg)
+                       )
+                     |> List.rev
         in
         raise (NapkinParsingErrors errors)
     in
