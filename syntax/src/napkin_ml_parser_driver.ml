@@ -1,54 +1,16 @@
 module OcamlParser = Parser
-
-module IO: sig
-  val readFile: string -> string
-  val readStdin: unit -> string
-end = struct
-  (* random chunk size: 2^15, TODO: why do we guess randomly? *)
-  let chunkSize = 32768
-
-  let readFile filename =
-    let chan = open_in filename in
-    let buffer = Buffer.create chunkSize in
-    let chunk = (Bytes.create [@doesNotRaise]) chunkSize in
-    let rec loop () =
-      let len = try input chan chunk 0 chunkSize with Invalid_argument _ -> 0 in
-      if len == 0 then (
-        close_in_noerr chan;
-        Buffer.contents buffer
-      ) else (
-        Buffer.add_subbytes buffer chunk 0 len;
-        loop ()
-      )
-    in
-    loop ()
-
-  let readStdin () =
-    let buffer = Buffer.create chunkSize in
-    let chunk = (Bytes.create [@doesNotRaise]) chunkSize in
-    let rec loop () =
-      let len = try input stdin chunk 0 chunkSize with Invalid_argument _ -> 0 in
-      if len == 0 then (
-        close_in_noerr stdin;
-        Buffer.contents buffer
-      ) else (
-        Buffer.add_subbytes buffer chunk 0 len;
-        loop ()
-      )
-    in
-    loop ()
-end
+module IO = Napkin_io
 
 let setup ~filename =
   if String.length filename > 0 then (
     Location.input_name := filename;
-    IO.readFile filename |> Lexing.from_string
+    IO.readFile ~filename |> Lexing.from_string
   ) else
     Lexing.from_channel stdin
 
 let extractOcamlConcreteSyntax filename =
   let lexbuf = if String.length filename > 0 then
-    IO.readFile filename |> Lexing.from_string
+    IO.readFile ~filename |> Lexing.from_string
   else
     Lexing.from_channel stdin
   in

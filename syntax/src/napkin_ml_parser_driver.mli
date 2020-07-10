@@ -1,9 +1,3 @@
-
-module IO : sig
-  val readFile : string -> string [@@live]
-  val readStdin : unit -> string [@@live]
-end
-
 val setup : filename:string -> Lexing.lexbuf [@@live]
 
 val extractOcamlConcreteSyntax :
