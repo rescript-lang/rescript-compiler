@@ -7,8 +7,8 @@ type report
 type reportStyle = Pretty | Plain
 val parseReportStyle: string -> reportStyle
 
-val getStartPos: t -> Lexing.position
-val getEndPos: t -> Lexing.position
+val getStartPos: t -> Lexing.position [@@live]
+val getEndPos: t -> Lexing.position [@@live]
 
 val unexpected: Token.t -> (Grammar.t * Lexing.position) list -> category
 val expected:  ?grammar:Grammar.t -> Lexing.position -> Token.t -> category
