@@ -35,8 +35,7 @@ FILES = \
 	src/napkin_reason_binary_driver.cmx \
 	src/napkin_binary_driver.cmx \
 	src/napkin_ast_debugger.cmx \
-	src/napkin_outcome_printer.cmx \
-	src/napkin_multi_printer.cmx
+	src/napkin_outcome_printer.cmx
 
 .DEFAULT_GOAL := build-native
 build-native: lib/refmt.exe $(FILES) src/napkin_main.cmx
@@ -62,7 +61,7 @@ benchmarks/refmt_main3b.cmx: benchmarks/refmt_main3b.ml
 	$(OCAMLOPT) -c -O2 -I +compiler-libs ocamlcommon.cmxa benchmarks/refmt_main3b.ml
 
 lib/test.exe: tests/napkin_test.cmx
-	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/test.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa -I src $(FILES) tests/napkin_test.ml
+	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/test.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa unix.cmxa -I src $(FILES) src/napkin_multi_printer.cmx tests/napkin_test.ml
 
 test: build-native lib/test.exe
 	./node_modules/.bin/jest
