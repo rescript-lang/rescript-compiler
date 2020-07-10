@@ -29,30 +29,45 @@ This is usually the file you want to build for the full playground experience.
 
 module Js = Jsoo_common.Js
 
-exception NapkinParsingErrors of Location.error list
+type napkinError = {
+  fullMsg: string; (* Full report string with all context *)
+  text: string; (* simple explain message without any extra context *)
+  loc: Location.t;
+}
 
-let mk_js_error (loc: Location.t) (msg: string) = 
-  let (_file,line,startchar) = Location.get_pos_info loc.Location.loc_start in
-  let (_file,endline,endchar) = Location.get_pos_info loc.Location.loc_end in
-  Js.Unsafe.(obj
-               [|
-                 "js_error_msg",
-                 inject @@ Js.string (Printf.sprintf "Line %d, %d:\n  %s"  line startchar msg);
-                 "row"    , inject line;
-                 "column" , inject startchar;
-                 "endRow" , inject endline;
-                 "endColumn" , inject endchar;
-                 "text" , inject @@ Js.string msg;
-                 "type" , inject @@ Js.string "error"
-               |]
-            )
+exception NapkinParsingErrors of napkinError list
 
-let mk_error_ret (errors: Location.error array) =
-  let jsErrors = Array.map (fun (e: Location.error) -> mk_js_error e.loc e.msg) errors  in
-  Js.Unsafe.(obj [|
-      "errors" , inject @@ Js.array jsErrors;
-      "type" , inject @@ Js.string "error"
-    |])
+
+module ErrorRet = struct
+  let makeJsError ~(js_error_msg: string) ~(text: string) (loc: Location.t) =
+    let (_file,line,startchar) = Location.get_pos_info loc.Location.loc_start in
+    let (_file,endline,endchar) = Location.get_pos_info loc.Location.loc_end in
+    Js.Unsafe.(obj
+                 [|
+                   "js_error_msg",
+                   inject @@ Js.string js_error_msg;
+                   "row"    , inject line;
+                   "column" , inject startchar;
+                   "endRow" , inject endline;
+                   "endColumn" , inject endchar;
+                   "text" , inject @@ Js.string text;
+                   "type" , inject @@ Js.string "error"
+                 |]
+              )
+  let fromLocErrors (errors: Location.error array) =
+    let jsErrors = Array.map (fun (e: Location.error) -> makeJsError ~js_error_msg:e.msg ~text:e.msg e.loc) errors  in
+    Js.Unsafe.(obj [|
+        "errors" , inject @@ Js.array jsErrors;
+        "type" , inject @@ Js.string "error"
+      |])
+
+  let fromNapkinErrors (errors: napkinError array) =
+    let jsErrors = Array.map (fun (e: napkinError) -> makeJsError ~js_error_msg:e.fullMsg ~text:e.text e.loc) errors in
+    Js.Unsafe.(obj [|
+        "errors" , inject @@ Js.array jsErrors;
+        "type" , inject @@ Js.string "error"
+      |])
+end
 
 let () =  
   Bs_conditional_initial.setup_env ();
@@ -111,25 +126,18 @@ let implementation ~use_super_errors impl str  : Js.Unsafe.obj =
       begin match error_of_exn e with
       | Some error ->
         Location.report_error Format.err_formatter  error;
-        (*mk_js_error error.loc error.msg*)
-        mk_error_ret [|error|]
+        ErrorRet.fromLocErrors [|error|]
       | None ->
         match e with 
         | NapkinParsingErrors errors -> 
-          (*let jsErrors = List.map (fun (e: Location.error) -> mk_js_error e.loc e.msg) errors |> List.rev |>  Array.of_list in*)
-          (*Js.Unsafe.(obj [|*)
-            (*"errors" , inject @@ Js.array jsErrors;*)
-            (*"type" , inject @@ Js.string "error"*)
-          (*|])*)
-          mk_error_ret (Array.of_list errors)
+          ErrorRet.fromNapkinErrors(Array.of_list errors)
         | _ ->
           let msg = Printexc.to_string e in
           match e with
           | Refmt_api.Migrate_parsetree.Def.Migration_error (_,loc)
           | Refmt_api.Reason_errors.Reason_error (_,loc) ->
-            (*mk_js_error loc msg*)
             let error = Location.error ~loc msg in
-            mk_error_ret [|error|]
+            ErrorRet.fromLocErrors [|error|]
           | _ -> 
             Js.Unsafe.(obj [|
                 "js_error_msg" , inject @@ Js.string msg;
@@ -177,25 +185,6 @@ module NapkinDriver = struct
     in
     Napkin_parser.make ~mode src filename
 
-  let parseImplementation ~forPrinter ~filename ~src =
-    let engine = setup ~filename ~forPrinter ~src () in
-    let structure = Napkin_core.parseImplementation engine in
-    let (invalid, diagnostics) = match engine.diagnostics with
-      | [] as diagnostics -> (false, diagnostics)
-      | _ as diagnostics -> (true, diagnostics)
-    in {
-      filename = engine.scanner.filename;
-      source = Bytes.to_string engine.scanner.src;
-      parsetree = structure;
-      diagnostics;
-      invalid;
-      comments = List.rev engine.comments;
-    }
-
-  let stringOfDiagnostics ~source ~filename:_ diagnostics =
-    let style = Napkin_diagnostics.parseReportStyle "" in
-    Napkin_diagnostics.stringOfReport ~style diagnostics source
-
   let parsingEngine = {
     parseImplementation = begin fun ~forPrinter ~filename ~src ->
       let engine = setup ~filename ~forPrinter ~src () in
@@ -212,6 +201,7 @@ module NapkinDriver = struct
         comments = List.rev engine.comments;
       }
     end;
+
     stringOfDiagnostics = begin fun ~source ~filename:_ diagnostics ->
       let style = Napkin_diagnostics.parseReportStyle "" in
       Napkin_diagnostics.stringOfReport ~style diagnostics source
@@ -224,23 +214,21 @@ module NapkinDriver = struct
       parsingEngine.parseImplementation ~forPrinter:false ~filename:sourcefile ~src
     in
     let () = if parseResult.invalid then
-        (*let msg =*)
-        (*let style = Napkin_diagnostics.parseReportStyle "" in*)
-        (*Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source*)
-        (*in*)
-
         let errors = parseResult.diagnostics
                      |> List.map (fun d -> 
-                         let msg =
-                           let style = Napkin_diagnostics.parseReportStyle "" in
-                           Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source
-                         in
+                         let fullMsg = Napkin_diagnostics.toString d parseResult.source in
+                         let text = Napkin_diagnostics.explain d in
                          let loc = {
                            Location.loc_start = Napkin_diagnostics.getStartPos d;
                            Location.loc_end = Napkin_diagnostics.getEndPos d;
                            loc_ghost = false
                          } in
-                         (Location.error ~loc msg)
+                         {
+                           fullMsg;
+                           text;
+                           loc;
+                         }
+                         
                        )
                      |> List.rev
         in
