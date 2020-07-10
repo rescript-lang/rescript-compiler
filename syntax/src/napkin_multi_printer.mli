@@ -1,1 +1,1 @@
-val print: [ (* `refmt of string (* path to refmt *) | `ml *) `res ] -> input: string -> string [@@live]
+val print: [ (* `ml *) `res | `refmt of string (* path to refmt *) ] -> input: string -> string [@@live]
