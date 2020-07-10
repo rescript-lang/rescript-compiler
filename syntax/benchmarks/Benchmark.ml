@@ -239,7 +239,9 @@ end = struct
 
   let parseNapkin src filename =
     let p = Parser.make src filename in
-    NapkinscriptParser.parseImplementation p
+    let structure = NapkinscriptParser.parseImplementation p in
+    assert(p.diagnostics == []);
+    structure
 
   let benchmark filename lang action =
     let src = IO.readFile filename in
