@@ -1,6 +1,7 @@
-val isReasonDocComment : Napkin_comment.t -> bool [@@live]
+(* This module represents a general interface to parse marshalled reason ast *)
 
+(* extracts comments and the original string data from a reason file *)
 val extractConcreteSyntax :
-  string -> Napkin_token.Comment.t list * (string * Location.t) list [@@live]
+  string -> Napkin_token.Comment.t list * (string * Location.t) list
 
 val parsingEngine : unit Napkin_driver.parsingEngine

@@ -1,5 +1,6 @@
-val setup : filename:string -> Lexing.lexbuf [@@live]
+(* This module represents a general interface to parse marshalled reason ast *)
 
+(* extracts comments and the original string data from an ocaml file *)
 val extractOcamlConcreteSyntax :
   string -> (string * Location.t) list * Napkin_comment.t list [@@live]
 
