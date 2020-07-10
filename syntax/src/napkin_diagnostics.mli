@@ -10,6 +10,9 @@ val parseReportStyle: string -> reportStyle
 val getStartPos: t -> Lexing.position [@@live] (* for playground *)
 val getEndPos: t -> Lexing.position [@@live] (* for playground *)
 
+val toString: t -> string -> string (* for playground *)
+val explain: t -> string (* for playground *)
+
 val unexpected: Token.t -> (Grammar.t * Lexing.position) list -> category
 val expected:  ?grammar:Grammar.t -> Lexing.position -> Token.t -> category
 val uident: Token.t -> category
