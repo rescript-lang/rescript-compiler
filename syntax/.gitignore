@@ -8,6 +8,7 @@ node_modules
 lib/bs
 lib/napkinscript.exe
 lib/refmt.exe
+lib/test.exe
 lib/bench.exe
 Napkinscript2.ml
 ./lib/napkinscript2.exe

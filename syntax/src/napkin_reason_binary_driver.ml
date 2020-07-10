@@ -1,44 +1,4 @@
-
-
-
-module IO: sig
-  val readFile: string -> string
-  val readStdin: unit -> string
-end = struct
-  (* random chunk size: 2^15, TODO: why do we guess randomly? *)
-  let chunkSize = 32768
-
-  let readFile filename =
-    let chan = open_in filename in
-    let buffer = Buffer.create chunkSize in
-    let chunk = (Bytes.create [@doesNotRaise]) chunkSize in
-    let rec loop () =
-      let len = try input chan chunk 0 chunkSize with Invalid_argument _ -> 0 in
-      if len == 0 then (
-        close_in_noerr chan;
-        Buffer.contents buffer
-      ) else (
-        Buffer.add_subbytes buffer chunk 0 len;
-        loop ()
-      )
-    in
-    loop ()
-
-  let readStdin () =
-    let buffer = Buffer.create chunkSize in
-    let chunk = (Bytes.create [@doesNotRaise]) chunkSize in
-    let rec loop () =
-      let len = try input stdin chunk 0 chunkSize with Invalid_argument _ -> 0 in
-      if len == 0 then (
-        close_in_noerr stdin;
-        Buffer.contents buffer
-      ) else (
-        Buffer.add_subbytes buffer chunk 0 len;
-        loop ()
-      )
-    in
-    loop ()
-end
+module IO = Napkin_io
 
 let isReasonDocComment (comment: Napkin_comment.t) =
   let content = Napkin_comment.txt comment in
@@ -52,7 +12,7 @@ let extractConcreteSyntax filename =
   let commentData = ref [] in
   let stringData = ref [] in
   let src =
-    if String.length filename > 0 then IO.readFile filename
+    if String.length filename > 0 then IO.readFile ~filename
     else IO.readStdin ()
   in
   let scanner = Napkin_scanner.make (Bytes.of_string src) filename in
@@ -83,12 +43,20 @@ let extractConcreteSyntax filename =
   (comments, !stringData)
 
 let parsingEngine = {
-  Napkin_driver.parseImplementation = begin fun ~forPrinter:_ ~filename:_ ->
+  Napkin_driver.parseImplementation = begin fun ~forPrinter:_ ~filename ->
+   let (chan, close) = if (String.length filename) == 0 then
+     (stdin, fun _ -> ())
+    else
+      let file_chan = open_in_bin filename in
+      let () = seek_in file_chan 0 in
+      file_chan, close_in_noerr
+    in
    let magic = Config.ast_impl_magic_number in
-    ignore ((really_input_string [@doesNotRaise]) stdin (String.length magic));
-    let filename = input_value stdin in
-    let (comments, stringData) = extractConcreteSyntax filename in
-    let ast = input_value stdin in
+    ignore ((really_input_string [@doesNotRaise]) chan (String.length magic));
+    let filename = input_value chan in
+    let (comments, stringData) = if filename <> "" then extractConcreteSyntax filename else ([], []) in
+    let ast = input_value chan in
+    close chan;
     let structure = ast
     |> Napkin_ast_conversion.replaceStringLiteralStructure stringData
     |> Napkin_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
@@ -102,12 +70,20 @@ let parsingEngine = {
       comments = comments;
     }
   end;
-  parseInterface = begin fun  ~forPrinter:_ ~filename:_ ->
+  parseInterface = begin fun  ~forPrinter:_ ~filename ->
+   let (chan, close) = if String.length filename == 0 then
+     (stdin, fun _ -> ())
+    else
+      let file_chan = open_in_bin filename in
+      let () = seek_in file_chan 0 in
+      file_chan, close_in_noerr
+    in
     let magic = Config.ast_intf_magic_number in
-    ignore ((really_input_string [@doesNotRaise]) stdin (String.length magic));
-    let filename = input_value stdin in
-    let (comments, stringData) = extractConcreteSyntax filename in
-    let ast = input_value stdin in
+    ignore ((really_input_string [@doesNotRaise]) chan (String.length magic));
+    let filename = input_value chan in
+    let (comments, stringData) = if filename <> "" then extractConcreteSyntax filename else ([], []) in
+    let ast = input_value chan in
+    close chan;
     let signature = ast
     |> Napkin_ast_conversion.replaceStringLiteralSignature stringData
     |> Napkin_ast_conversion.normalizeReasonAritySignature ~forPrinter:true

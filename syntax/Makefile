@@ -9,9 +9,10 @@ OCAMLDEP=ocamldep.opt
 include .depend
 .PHONY: depend
 depend:
-	$(OCAMLDEP)  -native -I src src/*.ml src/*.mli > .depend
+	$(OCAMLDEP)  -native -I tests -I src src/*.ml src/*.mli tests/*.ml tests/*.mli > .depend
 
 FILES = \
+	src/napkin_io.cmx\
 	src/napkin_minibuffer.cmx\
 	src/napkin_doc.cmx\
 	src/napkin_character_codes.cmx\
@@ -34,10 +35,11 @@ FILES = \
 	src/napkin_reason_binary_driver.cmx \
 	src/napkin_binary_driver.cmx \
 	src/napkin_ast_debugger.cmx \
-	src/napkin_outcome_printer.cmx
+	src/napkin_outcome_printer.cmx \
+	src/napkin_multi_printer.cmx
 
 .DEFAULT_GOAL := build-native
-build-native: lib/refmt.exe $(FILES) src/napkin_main.cmx 
+build-native: lib/refmt.exe $(FILES) src/napkin_main.cmx
 	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/napkinscript.exe -I +compiler-libs ocamlcommon.cmxa  -I src $(FILES) src/napkin_main.cmx
 
 bootstrap: build-native
@@ -59,13 +61,18 @@ lib/bench.exe: benchmarks/refmt_main3b.cmx benchmarks/Benchmark.ml $(FILES)
 benchmarks/refmt_main3b.cmx: benchmarks/refmt_main3b.ml
 	$(OCAMLOPT) -c -O2 -I +compiler-libs ocamlcommon.cmxa benchmarks/refmt_main3b.ml
 
-test: build-native
+lib/test.exe: tests/napkin_test.cmx
+	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/test.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa -I src $(FILES) tests/napkin_test.ml
+
+test: build-native lib/test.exe
 	./node_modules/.bin/jest
 	./node_modules/.bin/reanalyze -all-cmt ./src
+	./lib/test.exe
 
-roundtrip-test: bootstrap
+roundtrip-test: bootstrap lib/test.exe
 	ROUNDTRIP_TEST=1 ./node_modules/.bin/jest
 	./node_modules/.bin/reanalyze -all-cmt ./Napkinscript.cmt
+	./lib/test.exe
 
 termination:
 	./node_modules/.bin/reanalyze -termination-cmt ./src
@@ -82,9 +89,12 @@ reanalyze:
 clean:
 	rm -rf src/*.cm*
 	rm -rf src/*.o
+	rm -rf tests/*.cm*
+	rm -rf tests/*.o
 	rm -rf benchmarks/*.cm*
 	rm -rf benchmarks/*.o
 	rm -rf lib/bench.exe
 	rm -rf lib/napkinscript.exe
+	rm -rf tests/test.exe
 	git clean -dfx src
 .PHONY: clean test roundtrip-test termination dce exception reanalyze bootstrap build build-native

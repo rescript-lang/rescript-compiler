@@ -36,13 +36,13 @@ val parsingEngine: (Napkin_diagnostics.t list) parsingEngine
 
 val printEngine: printEngine
 
-(* Napkin implementation parsing compatible with ocaml pparse driver *)
+(* Napkin implementation parsing compatible with ocaml pparse driver. Used by the compiler. *)
 val parse_implementation:
    string -> Parsetree.structure
 [@@live]
 [@@raises Location.Error]
 
-(* Napkin interface parsing compatible with ocaml pparse driver *)
+(* Napkin interface parsing compatible with ocaml pparse driver. Used by the compiler *)
 val parse_interface:
    string -> Parsetree.signature
 [@@live]

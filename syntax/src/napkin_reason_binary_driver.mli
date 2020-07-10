@@ -1,11 +1,7 @@
-module IO : sig 
-  val readFile : string -> string [@@live]
-  val readStdin : unit -> string [@@live]
-end
+(* This module represents a general interface to parse marshalled reason ast *)
 
-val isReasonDocComment : Napkin_comment.t -> bool [@@live]
-
+(* extracts comments and the original string data from a reason file *)
 val extractConcreteSyntax :
-  string -> Napkin_token.Comment.t list * (string * Location.t) list [@@live]
+  string -> Napkin_token.Comment.t list * (string * Location.t) list
 
 val parsingEngine : unit Napkin_driver.parsingEngine
