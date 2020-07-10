@@ -34,7 +34,8 @@ FILES = \
 	src/napkin_reason_binary_driver.cmx \
 	src/napkin_binary_driver.cmx \
 	src/napkin_ast_debugger.cmx \
-	src/napkin_outcome_printer.cmx
+	src/napkin_outcome_printer.cmx \
+	src/napkin_multi_printer.cmx
 
 .DEFAULT_GOAL := build-native
 build-native: lib/refmt.exe $(FILES) src/napkin_main.cmx 
