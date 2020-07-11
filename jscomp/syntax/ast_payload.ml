@@ -124,7 +124,7 @@ let raw_as_string_exp_exn
         | Raw_program ->  
           snd (Parser_flow.parse_program false None str)
       );
-    Some e 
+    Some {e with pexp_desc = Pexp_constant (Pconst_string (str,None))} 
   | _  -> None
 
 let as_core_type loc (x : t) =
