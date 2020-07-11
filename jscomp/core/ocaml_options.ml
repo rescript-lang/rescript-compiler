@@ -16,9 +16,7 @@ let mk_absname f =
   "-absname", Arg.Unit f, " Show absolute filenames in error messages"
 ;;
 
-(* let mk_annot f =
-  "-annot", Arg.Unit f, " Save information in <filename>.annot"
-;; *)
+
 
 let mk_binannot f =
   "-bin-annot", Arg.Unit f, " Save typedtree in <filename>.cmt"
@@ -32,9 +30,6 @@ let mk_config f =
   "-config", Arg.Unit f, " Print configuration values and exit"
 ;;
 
-(* let mk_g_byt f =
-  "-g", Arg.Unit f, " Save debugging information"
-;; *)
 
 let mk_i f =
   "-i", Arg.Unit f, " Print inferred interface"
@@ -44,13 +39,6 @@ let mk_I f =
   "-I", Arg.String f, "<dir>  Add <dir> to the list of include directories"
 ;;
 
-(* let mk_impl f =
-  "-impl", Arg.String f, "<file>  Compile <file> as a .ml file"
-;; *)
-
-(* let mk_intf f =
-  "-intf", Arg.String f, "<file>  Compile <file> as a .mli file"
-;; *)
 
 let mk_intf_suffix f =
   "-intf-suffix", Arg.String f,
@@ -81,9 +69,7 @@ let mk_no_app_funct f =
   "-no-app-funct", Arg.Unit f, " Deactivate applicative functors"
 ;;
 
-(* let mk_no_check_prims f =
-  "-no-check-prims", Arg.Unit f, " Do not check runtime for primitives"
-;; *)
+
 
 let mk_noassert f =
   "-noassert", Arg.Unit f, " Do not compile assertion checks"
@@ -93,10 +79,6 @@ let mk_nolabels f =
   "-nolabels", Arg.Unit f, " Ignore non-optional labels in types"
 ;;
 
-(* let mk_nostdlib f =
-  "-nostdlib", Arg.Unit f,
-  " Do not add default directory to the list of include directories"
-;; *)
 
 let mk_o f =
   "-o", Arg.String f, "<file>  Set output file name to <file>"
@@ -122,17 +104,13 @@ let mk_rectypes f =
   "-rectypes", Arg.Unit f, " Allow arbitrary recursive types"
 ;;
 
-(* let mk_safe_string f =
-  "-safe-string", Arg.Unit f, " Make strings immutable"
-;; *)
+
 
 let mk_short_paths f =
   "-short-paths", Arg.Unit f, " Shorten paths in types"
 ;;
 
-(* let mk_stdin f =
-  "-stdin", Arg.Unit f, " Read script from standard input"
-;; *)
+
 
 
 let mk_unsafe f =
@@ -222,17 +200,6 @@ let mk_dsource f =
 ;;
 
 
-(* let mk_opaque f =
-  "-opaque", Arg.Unit f,
-  " Does not generate cross-module optimization information\n\
-  \     (reduces necessary recompilation on module change)"
-;; *)
-
-
-(* let mk__ f =
-  "-", Arg.String f,
-  "<file>  Treat <file> as a file name (even if it starts with `-')"
-;; *)
 
 let show_config () =
   Config.print_config stdout;
