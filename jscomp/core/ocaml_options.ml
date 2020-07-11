@@ -128,9 +128,6 @@ let mk_version f =
   "-version", Arg.Unit f, " Print version and exit"
 ;;
 
-let mk_vnum f =
-  "-vnum", Arg.Unit f, " Print version number and exit"
-;;
 
 let mk_w f =
   "-w", Arg.String f,
@@ -258,7 +255,6 @@ let ocaml_options =
   (* let _v () = print_version_and_library "compiler" in  *)
   let _v = print_version_string in 
   let _version = print_version_string in 
-  let _vnum = print_version_string in 
   let _w = (Warnings.parse_options false) in
   let _warn_error = (Warnings.parse_options true) in
   let _warn_help = Warnings.help_warnings in
@@ -305,7 +301,6 @@ let ocaml_options =
     mk_v _v;
     mk_verbose _verbose;
     mk_version _version;
-    mk_vnum _vnum;
     mk_w _w;
     mk_warn_error _warn_error;
     mk_warn_help _warn_help;
