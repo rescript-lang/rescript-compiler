@@ -26,9 +26,6 @@ let mk_c f =
   "-c", Arg.Unit f, " Compile only (do not link)"
 ;;
 
-let mk_config f =
-  "-config", Arg.Unit f, " Print configuration values and exit"
-;;
 
 
 let mk_i f =
@@ -201,10 +198,6 @@ let mk_dsource f =
 
 
 
-let show_config () =
-  Config.print_config stdout;
-  exit 0;
-;;
 
 let bs_version_string = 
   "BuckleScript " ^ Bs_version.version ^
@@ -237,7 +230,6 @@ let ocaml_options =
   (* let _annot = set annotations in  *)
   let _binannot = set Clflags.binary_annotations in 
   let _c = set Clflags.compile_only in 
-  let _config = show_config in 
   (* let _g = set debug in  *)
   let _i () = Clflags.print_types := true; Clflags.compile_only := true in 
   let _I s = Clflags.include_dirs := s :: !Clflags.include_dirs in 
@@ -284,7 +276,7 @@ let ocaml_options =
     (* mk_annot _annot; *)
     mk_binannot _binannot;
     mk_c _c;
-    mk_config _config;
+
     (* mk_g_byt _g; *)
     mk_i _i;
     mk_I _I;
