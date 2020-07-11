@@ -51,6 +51,10 @@ function test5(x) {
   return "" + x;
 }
 
+var js_in_raw = ("hello" + "你好");
+
+var j_in_raw = ("hello" + "你好");
+
 var b = "test";
 
 var c = "test";
@@ -85,4 +89,6 @@ exports.hello_world = hello_world;
 exports.test1 = test1;
 exports.test3 = test3;
 exports.test5 = test5;
-/* No side effect */
+exports.js_in_raw = js_in_raw;
+exports.j_in_raw = j_in_raw;
+/* js_in_raw Not a pure module */
