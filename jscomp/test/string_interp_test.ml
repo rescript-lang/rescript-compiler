@@ -52,3 +52,9 @@ let test3 _xg = {j|你好，$_xg|j}
 
 
 let test5 x  = {j|$(x)|j}
+
+
+let js_in_raw = [%raw{js|"hello" + "你好"|js}]
+let j_in_raw = [%raw{j|"hello" + "你好"|j}]
+
+
