@@ -5,6 +5,3 @@ val readFile: filename: string -> string
 
 (* read the contents of stdin into a string*)
 val readStdin: unit -> string
-
-(* writes "content" into file with name "filename" *)
-val writeFile: filename: string -> content: string -> unit
