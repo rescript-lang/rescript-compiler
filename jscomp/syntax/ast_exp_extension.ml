@@ -24,74 +24,14 @@
 open Ast_helper
 
 
-let rec unroll_function_aux 
-  (acc : string list)
-  (body : Parsetree.expression) : string list * string =
-  match body.pexp_desc with
-  | Pexp_constant(
-    Pconst_string
-    (block,_)) -> acc, block
-  | Pexp_fun(Nolabel,_,pat,cont)
-     -> 
-    (match pat.ppat_desc with 
-    | Ppat_var s -> 
-      unroll_function_aux (s.txt::acc) cont
-    | Ppat_any -> 
-      unroll_function_aux ("_"::acc) cont
-    | Ppat_constraint _ -> 
-      Location.raise_errorf ~loc:body.pexp_loc  
-      "type annotation around bs.raw arguments is invalid, please put in this form: let f : t1 -> t2 = fun%%raw param1 param2 -> .."
-    | _ -> 
-      Location.raise_errorf ~loc:body.pexp_loc  
-      "bs.raw can only be applied to a string or a special function form "
-    )
-  | _ -> 
-    Location.raise_errorf ~loc:body.pexp_loc  
-    "bs.raw can only be applied to a string or a special function form "
 
-type t = { args : string list ; block :  string }
 
-let toString (x : t) = 
-   Marshal.to_string x []
-
-(* exception handling*)
-let fromString (x : string) : t =   
-    Ext_marshal.from_string_uncheck x 
   
 let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
     (({txt ; loc} as lid , payload) : Parsetree.extension) = 
   begin match txt with
     | "bs.raw" | "raw" -> 
-      begin match payload with 
-      | PStr [
-        {pstr_desc = Pstr_eval({pexp_desc = Pexp_fun(Nolabel,_,pat,body)} as e,_)}]        
-         -> 
-        Location.prerr_warning loc (Preprocessor "Special raw form for function is deprecated, plain [%raw \"..\"] is recommended"); 
-        let str_exp : Parsetree.expression = 
-         begin match pat.ppat_desc, body.pexp_desc with 
-         | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(
-          Pconst_string
-           (block,_))
-           -> 
-           Ast_compatible.const_exp_string ~loc ( toString {args = [] ; block } )             
-         | ppat_desc, _ -> 
-            let txt = 
-              match ppat_desc with 
-              | Ppat_var {txt} -> txt 
-              | Ppat_any -> "_"
-              | _ -> 
-                Location.raise_errorf ~loc "bs.raw can only be applied to a string or a special function form "
-            in 
-            let acc, block = unroll_function_aux [txt] body in 
-            Ast_compatible.const_exp_string ~loc (toString {args = List.rev acc ; block })
-         end in 
-        let any_type = Typ.any () in 
-        {e with pexp_desc = Ast_external_mk.local_external_apply
-                    loc ~pval_prim:["#raw_function"]
-                    ~pval_type:(Typ.arrow Nolabel any_type any_type)
-                    [str_exp]} 
-      | _ ->   Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload
-      end
+       Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload      
     | "bs.re" | "re" ->
       Exp.constraint_ ~loc
         (Ast_exp_handle_external.handle_raw ~kind:Raw_re loc payload)
