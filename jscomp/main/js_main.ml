@@ -70,6 +70,8 @@ type valid_input =
   | Mlmap
   | Cmi
 
+let bad_arg s = raise_notrace (Arg.Bad(s))
+
 (** This is per-file based, 
     when [ocamlc] [-c -o another_dir/xx.cmi] 
     it will return (another_dir/xx)
@@ -111,7 +113,7 @@ let process_file ppf sourcefile =
       Resi    
     | _ when ext = Literals.suffix_resast -> Resast   
     | _ when ext = Literals.suffix_resiast -> Resiast
-    | _ -> raise(Arg.Bad("don't know what to do with " ^ sourcefile)) in 
+    | _ -> bad_arg ("don't know what to do with " ^ sourcefile) in 
   let opref = Compenv.output_prefix sourcefile in 
   match input with 
   | Re -> handle_reason Ml sourcefile ppf opref     
@@ -205,13 +207,13 @@ let define_variable s =
   match Ext_string.split ~keep_empty:true s '=' with
   | [key; v] -> 
     if not (Lexer.define_key_value key v)  then 
-      raise (Arg.Bad ("illegal definition: " ^ s))
-  | _ -> raise (Arg.Bad ("illegal definition: " ^ s))
+       bad_arg ("illegal definition: " ^ s)
+  | _ -> bad_arg ("illegal definition: " ^ s)
 
   
 let buckle_script_flags : (string * Arg.spec * string) list =
   ("-bs-super-errors",
-    Arg.Unit 
+     Unit 
       (* needs to be set here instead of, say, setting a
         Js_config.better_errors flag; otherwise, when `anonymous` runs, we
         don't have time to set the custom printer before it starts outputting
@@ -222,117 +224,117 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   ) 
   ::
   ("-unboxed-types",
-    Arg.Set Clflags.unboxed_types,
+     Set Clflags.unboxed_types,
     " unannotated unboxable types will be unboxed"
   )
    :: 
   ("-bs-re-out",
-    Arg.Unit (fun _ -> Lazy.force Reason_outcome_printer_main.setup),
+     Unit (fun _ -> Lazy.force Reason_outcome_printer_main.setup),
    " Print compiler output in Reason syntax"
   )
   ::
   ("-bs-jsx",
-    Arg.Int (fun i -> 
-      (if i <> 3 then raise (Arg.Bad (" Not supported jsx version : " ^ string_of_int i)));
+     Int (fun i -> 
+      (if i <> 3 then bad_arg (" Not supported jsx version : " ^ string_of_int i));
       Js_config.jsx_version := i),
     " Set jsx version"
   )
   :: 
   ("-bs-refmt",
-    Arg.String (fun s -> Js_config.refmt := Some s),
+     String (fun s -> Js_config.refmt := Some s),
     " Set customized refmt path"
   )
  
   ::
   (
     "-bs-gentype",
-    Arg.String (fun s -> Clflags.bs_gentype := Some s),
+     String (fun s -> Clflags.bs_gentype := Some s),
     " Pass gentype command"
   )
   ::
   ("-bs-suffix",
-    Arg.Set Js_config.bs_suffix,
+     Set Js_config.bs_suffix,
     " Set suffix to .bs.js"
   )  
   :: 
-  ("-bs-no-implicit-include", Arg.Set Clflags.no_implicit_current_dir
+  ("-bs-no-implicit-include",  Set Clflags.no_implicit_current_dir
   , " Don't include current dir implicitly")
   ::
-  ("-bs-read-cmi", Arg.Unit (fun _ -> Clflags.assume_no_mli := Clflags.Mli_exists), 
+  ("-bs-read-cmi",  Unit (fun _ -> Clflags.assume_no_mli := Clflags.Mli_exists), 
     " (internal) Assume mli always exist ")
   ::
-  ("-bs-D", Arg.String define_variable,
+  ("-bs-D",  String define_variable,
      " Define conditional variable e.g, -D DEBUG=true"
   )
   ::
-  ("-bs-unsafe-empty-array", Arg.Clear Js_config.mono_empty_array,
+  ("-bs-unsafe-empty-array",  Clear Js_config.mono_empty_array,
     " Allow [||] to be polymorphic"
   )
   ::
-  ("-nostdlib", Arg.Set Js_config.no_stdlib,
+  ("-nostdlib",  Set Js_config.no_stdlib,
     " Don't use stdlib")
   ::
-  ("-bs-internal-check", Arg.Unit (Bs_cmi_load.check ),
+  ("-bs-internal-check",  Unit (Bs_cmi_load.check ),
     " Built in check corrupted data"
   )
   ::  
   ("-bs-list-conditionals",
-   Arg.Unit (fun () -> Lexer.list_variables Format.err_formatter),
+    Unit (fun () -> Lexer.list_variables Format.err_formatter),
    " List existing conditional variables")
   ::
   (
-    "-bs-binary-ast", Arg.Set Js_config.binary_ast,
+    "-bs-binary-ast",  Set Js_config.binary_ast,
     " Generate binary .mli_ast and ml_ast"
   )
   ::
   (
-    "-bs-simple-binary-ast", Arg.Set Js_config.simple_binary_ast,
+    "-bs-simple-binary-ast",  Set Js_config.simple_binary_ast,
     " Generate binary .mliast_simple and mlast_simple"
   )
   ::
   ("-bs-syntax-only", 
-   Arg.Set Js_config.syntax_only,
+    Set Js_config.syntax_only,
    " only check syntax"
   )
   ::
-  ("-bs-no-bin-annot", Arg.Clear Clflags.binary_annotations, 
+  ("-bs-no-bin-annot",  Clear Clflags.binary_annotations, 
    " disable binary annotations (by default on)")
   ::
   ("-bs-eval", 
-   Arg.String (fun  s -> eval s ~suffix:Literals.suffix_ml), 
+    String (fun  s -> eval s ~suffix:Literals.suffix_ml), 
    " (experimental) Set the string to be evaluated in OCaml syntax"
   )
   ::
   ("-e", 
-   Arg.String (fun  s -> eval s ~suffix:Literals.suffix_re), 
+    String (fun  s -> eval s ~suffix:Literals.suffix_re), 
    " (experimental) Set the string to be evaluated in ReasonML syntax"
   )
   ::
   (
     "-bs-cmi-only",
-    Arg.Set Js_config.cmi_only,
+     Set Js_config.cmi_only,
     " Stop after generating cmi file"
   )
   ::
   (
   "-bs-cmi",
-    Arg.Set Js_config.force_cmi,
+     Set Js_config.force_cmi,
     " Not using cached cmi, always generate cmi"
   )
   ::
   ("-bs-cmj", 
-    Arg.Set Js_config.force_cmj,
+     Set Js_config.force_cmj,
     " Not using cached cmj, always generate cmj"
   )
   ::
   (
     "-as-ppx",
-    Arg.Set Js_config.as_ppx,
+     Set Js_config.as_ppx,
     " As ppx for editor integration"
   )
   ::
   ("-bs-g",
-    Arg.Unit 
+     Unit 
     (fun _ -> Js_config.debug := true;
       Lexer.replace_directive_bool "DEBUG" true
     ),
@@ -341,70 +343,70 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   ::
   (
     "-bs-sort-imports",
-    Arg.Set Js_config.sort_imports,
+     Set Js_config.sort_imports,
     " Sort the imports by lexical order so the output will be more stable (default false)"
   )
   ::
   ( "-bs-no-sort-imports", 
-    Arg.Clear Js_config.sort_imports,
+     Clear Js_config.sort_imports,
     " No sort (see -bs-sort-imports)"
   )
   ::
   ("-bs-package-name", 
-   Arg.String Js_packages_state.set_package_name, 
+    String Js_packages_state.set_package_name, 
    " set package name, useful when you want to produce npm packages")
   ::
   ( "-bs-ns", 
-   Arg.String Js_packages_state.set_package_map, 
+    String Js_packages_state.set_package_map, 
    " set package map, not only set package name but also use it as a namespace"    
   )
   :: 
   ("-bs-no-version-header", 
-   Arg.Set Js_config.no_version_header,
+    Set Js_config.no_version_header,
    " Don't print version header"
   )
   ::
   ("-bs-package-output", 
-   Arg.String 
+    String 
     Js_packages_state.update_npm_package_path, 
    " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ")
   ::
   ("-bs-no-builtin-ppx", 
-   Arg.Set Js_config.no_builtin_ppx,
+    Set Js_config.no_builtin_ppx,
    "disable built-in ppx (internal use)")
   :: 
   ("-bs-cross-module-opt", 
-   Arg.Set Js_config.cross_module_inline, 
+    Set Js_config.cross_module_inline, 
    "enable cross module inlining(experimental), default(false)")
    :: 
    ("-bs-no-cross-module-opt", 
-    Arg.Clear Js_config.cross_module_inline, 
+     Clear Js_config.cross_module_inline, 
     "disable cross module inlining(experimental)")  
   :: 
   ("-bs-diagnose",
-   Arg.Set Js_config.diagnose, 
+    Set Js_config.diagnose, 
    " More verbose output")
   :: 
   ("-bs-no-check-div-by-zero",
-   Arg.Clear Js_config.check_div_by_zero, 
+    Clear Js_config.check_div_by_zero, 
    " unsafe mode, don't check div by zero and mod by zero")
   ::
   ("-bs-noassertfalse",
-    Arg.Set Clflags.no_assert_false,
+     Set Clflags.no_assert_false,
     " no code for assert false"
   )  
   ::
   ("-bs-loc",
-    Arg.Set Clflags.dump_location, 
+     Set Clflags.dump_location, 
   " dont display location with -dtypedtree, -dparsetree"
   )
   :: 
-  ("-impl", Arg.String
+  ("-impl",  String
      (fun file  ->  Js_config.js_stdout := false;  impl file ),
    "<file>  Compile <file> as a .ml file"
   )  
   ::
-  ("-intf", Arg.String 
+  ("-intf",  String 
      (fun file -> Js_config.js_stdout := false ; intf file),
    "<file>  Compile <file> as a .mli file")
   (* :: Ocaml_options.mk__ anonymous *)
@@ -448,7 +450,7 @@ let _ : unit =
             ~target:output
             Ppx_entry.rewrite_implementation
             Ppx_entry.rewrite_signature
-      | _ -> raise_notrace (Arg.Bad "Wrong format when use -as-ppx") 
+      | _ -> bad_arg "Wrong format when use -as-ppx"
       end  
   with x -> 
     begin
