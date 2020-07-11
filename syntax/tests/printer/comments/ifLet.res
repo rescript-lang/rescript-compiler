@@ -1,3 +1,4 @@
+/*
 if /* c0 */ let /* c1 */ Some(/* c2 */ x /* c3 */) /* c4 */ = /* c5 */ makeOpt() /* c6 */ {
   /* c7 */ foo() /* c8 */
 } else {
@@ -20,3 +21,4 @@ let getZ2 = nested =>
     let e /* inside5 */ = 42.3 // trailing8
     pi *. e // trailing9
   }
+  */

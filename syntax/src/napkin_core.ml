@@ -77,6 +77,19 @@ Explanation: lists are singly-linked list, where a node contains a value and poi
 Solution: directly use `concat`."
 
   let variantIdent = "A polymorphic variant (e.g. #id) must start with an alphabetical letter."
+
+  let experimentalIfLet expr =
+    let switchExpr = {expr with Parsetree.pexp_attributes = []} in
+    Doc.concat [
+      Doc.text "If-let is currently highly experimental.";
+      Doc.line;
+      Doc.text "Use a regular `switch` with pattern matching instead:";
+      Doc.concat [
+        Doc.hardLine;
+        Doc.hardLine;
+        NapkinscriptPrinter.printExpression switchExpr (CommentTable.empty);
+      ]
+    ] |> Doc.toString ~width:80
 end
 
 
@@ -3041,7 +3054,13 @@ and parseIfOrIfLetExpression p =
   let expr = match p.Parser.token with
     | Let ->
       Parser.next p;
-      parseIfLetExpr startPos p
+      let ifLetExpr = parseIfLetExpr startPos p in
+      Parser.err
+        ~startPos:ifLetExpr.pexp_loc.loc_start
+        ~endPos:ifLetExpr.pexp_loc.loc_end
+        p
+        (Diagnostics.message (ErrorMessages.experimentalIfLet ifLetExpr));
+      ifLetExpr
     | _ ->
       parseIfExpr startPos p
   in

@@ -282,6 +282,55 @@ Did you forget a \`{\` here?
 ========================================================"
 `;
 
+exports[`ifLet.res 1`] = `
+"=====Parsetree==========================================
+;;((match result with | Some x -> Js.log \\"The sky is blue\\" | _ -> ())
+  [@ns.iflet ][@warning \\"-4\\"])
+;;((match result with
+    | Error x -> Js.log \\"The sky is red\\"
+    | _ ->
+        (((match result with | Ok y -> Js.log \\"The sky is blue\\" | _ -> ()))
+        [@ns.iflet ][@warning \\"-4\\"]))[@ns.iflet ][@warning \\"-4\\"])
+=====Errors=============================================
+
+File \\"/syntax/tests/parsing/errors/expressions/ifLet.res\\", line 1, characters 0-55:
+
+
+[31m1[0m │  [31mif let Some(x) = result [0m{
+2 │    Js.log(\\"The sky is blue\\")
+3 │  }
+
+If-let is currently highly experimental. Use a regular \`switch\` with pattern matching instead:
+
+switch result {
+| Some(x) => Js.log(\\"The sky is blue\\")
+| _ => ()
+}
+
+
+
+File \\"/syntax/tests/parsing/errors/expressions/ifLet.res\\", line 7, characters 7-74:
+
+
+5 │  if let Error(x) = result {
+6 │    Js.log(\\"The sky is red\\")
+[31m7[0m │  } else [31mif let Ok(y) = result [0m{
+8 │    Js.log(\\"The sky is blue\\")
+9 │  } else {
+
+If-let is currently highly experimental. Use a regular \`switch\` with pattern matching instead:
+
+switch result {
+| Ok(y) => Js.log(\\"The sky is blue\\")
+| _ => ()
+}
+
+
+
+
+========================================================"
+`;
+
 exports[`misc.js 1`] = `
 "=====Parsetree==========================================
 let x = ([%napkinscript.exprhole ]) + 1
