@@ -1,4 +1,3 @@
-OCAMLC=ocamlc.opt
 OCAMLOPT=ocamlopt.opt
 OCAMLFLAGS= -w +a-4-42-40-9-48 -warn-error +a -bin-annot -I +compiler-libs -I src
 OCAMLDEP=ocamldep.opt
@@ -9,7 +8,7 @@ OCAMLDEP=ocamldep.opt
 include .depend
 .PHONY: depend
 depend:
-	$(OCAMLDEP)  -native -I tests -I src src/*.ml src/*.mli tests/*.ml tests/*.mli > .depend
+	$(OCAMLDEP) -native -I tests -I src src/*.ml src/*.mli tests/*.ml tests/*.mli > .depend
 
 FILES = \
 	src/napkin_io.cmx\
@@ -38,7 +37,7 @@ FILES = \
 	src/napkin_outcome_printer.cmx
 
 .DEFAULT_GOAL := build-native
-build-native: lib/refmt.exe $(FILES) src/napkin_main.cmx
+build-native: lib/refmt.exe $(FILES) src/napkin_main.cmx depend
 	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/napkinscript.exe -I +compiler-libs ocamlcommon.cmxa  -I src $(FILES) src/napkin_main.cmx
 
 bootstrap: build-native
@@ -49,7 +48,6 @@ bootstrap: build-native
 
 lib/refmt.exe: vendor/refmt_main3.ml
 	$(OCAMLOPT) -w a -O2 -I vendor -I +compiler-libs ocamlcommon.cmxa -o lib/refmt.exe vendor/refmt_main3.ml
-
 
 bench: lib/bench.exe
 	./lib/bench.exe
@@ -96,4 +94,4 @@ clean:
 	rm -rf lib/napkinscript.exe
 	rm -rf tests/test.exe
 	git clean -dfx src
-.PHONY: clean test roundtrip-test termination dce exception reanalyze bootstrap build build-native
+.PHONY: clean test roundtrip-test termination dce exception reanalyze bootstrap build-native

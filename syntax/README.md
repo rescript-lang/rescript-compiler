@@ -42,26 +42,26 @@ This will produce the final binary `lib/napkinscript.exe`. "NapkinScript" is the
 
 First build is super slow because we're also building our vendored `refmt` (only used for the conversion tool). Subsequent builds should be <2s. If not, please file an issue (build speed is a priority).
 
-Production build (for benchmarking):
+We only build production binary, even in dev mode. No need for a separate dev binary when the build is fast enough. Plus, this encourages proper benchmarking of the (production) binary each diff.
 
-```
-make build-native
+After you make a change:
+```sh
+make
 ```
 
 Run the core tests:
-```
+```sh
 make test
 ```
 
 Run the extended tests:
-```
+```sh
 make roundtrip-test
 ```
 
 Debug a file:
-```
+```sh
 # write code in test.js
-make build # build bytecode for fast dev iteration
 ./lib/napkinscript.exe -print ns test.js # test printer
 ./lib/napkinscript.exe -print ast test.js # print ast
 ./lib/napkinscript.exe -print ml test.js # show ocaml code
@@ -69,7 +69,7 @@ make build # build bytecode for fast dev iteration
 ```
 
 Benchmark:
-```
+```sh
 make bench
 ```
 
