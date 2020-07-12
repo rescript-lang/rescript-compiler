@@ -224,14 +224,10 @@ let ocaml_options =
     match Clflags.parse_color_setting option with
     | None -> ()
     | Some setting -> Clflags.color := Some setting in 
-  (* let _annot = set annotations in  *)
   let _binannot = set Clflags.binary_annotations in 
   let _c = set Clflags.compile_only in 
-  (* let _g = set debug in  *)
   let _i () = Clflags.print_types := true; Clflags.compile_only := true in 
   let _I s = Clflags.include_dirs := s :: !Clflags.include_dirs in 
-  (* let _impl = impl in  *)
-  (* let _intf = intf in  *)
   let _intf_suffix s = Config.interface_suffix := s in 
   let _keep_docs = set Clflags.keep_docs in 
   let _keep_locs = set Clflags.keep_locs in 
@@ -241,18 +237,14 @@ let ocaml_options =
   let _no_app_funct = unset Clflags.applicative_functors in 
   let _noassert = set Clflags.noassert in 
   let _nolabels = set Clflags.classic in 
-  (* let _nostdlib = set Clflags.no_std_include in  *)
   let _o s = Clflags.output_name := Some s in 
   let _open s = Clflags.open_modules := s :: !Clflags.open_modules in 
   let _pp s = Clflags.preprocessor := Some s in 
   let _ppx s = Compenv.first_ppx := s :: !Compenv.first_ppx in 
   let _principal = set Clflags.principal in 
   let _rectypes = set Clflags.recursive_types in 
-  (* let _safe_string = unset unsafe_string in  *)
   let _short_paths = unset Clflags.real_paths in 
   let _unsafe = set Clflags.fast in 
-  (* let _unsafe_string = set unsafe_string in  *)
-  (* let _v () = print_version_and_library "compiler" in  *)
   let _v = print_version_string in 
   let _version = print_version_string in 
   let _w = (Warnings.parse_options false) in
@@ -265,20 +257,12 @@ let ocaml_options =
   let _dparsetree = set Clflags.dump_parsetree in 
   let _dtypedtree = set Clflags.dump_typedtree in
   let _drawlambda = set Clflags.dump_rawlambda in
-  
-  (* let anonymous = anonymous in *)
-
   [ mk_absname _absname;
-    (* mk_annot _annot; *)
     mk_binannot _binannot;
     mk_c _c;
-
-    (* mk_g_byt _g; *)
     mk_i _i;
     mk_I _I;
     mk_color _color;
-    (* mk_impl _impl; *)
-    (* mk_intf _intf; *)
     mk_intf_suffix _intf_suffix;
     mk_keep_docs _keep_docs;
     mk_keep_locs _keep_locs;
@@ -288,14 +272,12 @@ let ocaml_options =
     mk_no_app_funct _no_app_funct;
     mk_noassert _noassert;
     mk_nolabels _nolabels;
-    (* mk_nostdlib _nostdlib; *)
     mk_o _o;
     mk_open _open;
     mk_pp _pp;
     mk_ppx _ppx;
     mk_principal _principal;
     mk_rectypes _rectypes;
-    (* mk_safe_string _safe_string; *)
     mk_short_paths _short_paths;
     mk_unsafe _unsafe;
     mk_v _v;
@@ -306,7 +288,6 @@ let ocaml_options =
     mk_warn_help _warn_help;
     mk_where _where;
     mk_color _color;
-    (* mk__ anonymous; *)
     mk_nopervasives _nopervasives;
     mk_dsource _dsource;
     mk_dparsetree _dparsetree;
