@@ -12,26 +12,15 @@
 
 (** Need sync up with {!Main_args} and {!Optmain} *)
 
-let mk_absname f =
-  "-absname", Arg.Unit f, " Show absolute filenames in error messages"
-;;
-
-
-
-let mk_binannot f =
-  "-bin-annot", Arg.Unit f, " Save typedtree in <filename>.cmt"
-;;
 
 
 
 
-let mk_i f =
-  "-i", Arg.Unit f, " Print inferred interface"
-;;
 
-let mk_I f =
-  "-I", Arg.String f, "<dir>  Add <dir> to the list of include directories"
-;;
+
+
+
+
 
 
 let mk_intf_suffix f =
@@ -39,16 +28,7 @@ let mk_intf_suffix f =
   "<string>  Suffix for interface files (default: .mli)"
 ;;
 
-let mk_keep_docs f =
-  "-keep-docs", Arg.Unit f, " Keep documentation strings in .cmi files"
-;;
 
-let mk_keep_locs f =
-  "-keep-locs", Arg.Unit f, " Keep locations in .cmi files"
-;;
-let mk_no_keep_locs f =
-  "-no-keep-locs", Arg.Unit f, " Do not keep locations in .cmi files"
-;;
 
 let mk_labels f =
   "-labels", Arg.Unit f, " Use commuting label mode"
@@ -65,9 +45,7 @@ let mk_no_app_funct f =
 
 
 
-let mk_noassert f =
-  "-noassert", Arg.Unit f, " Do not compile assertion checks"
-;;
+
 
 let mk_nolabels f =
   "-nolabels", Arg.Unit f, " Ignore non-optional labels in types"
@@ -78,12 +56,7 @@ let mk_o f =
   "-o", Arg.String f, "<file>  Set output file name to <file>"
 ;;
 
-let mk_open f =
-  "-open", Arg.String f, "<module>  Opens the module <module> before typing"
 
-let mk_pp f =
-  "-pp", Arg.String f, "<command>  Pipe sources through preprocessor <command>"
-;;
 
 
 let mk_principal f =
@@ -106,19 +79,6 @@ let mk_short_paths f =
 let mk_unsafe f =
   "-unsafe", Arg.Unit f,
   " Do not compile bounds checking on array and string access"
-;;
-
-let mk_v f =
-  "-v", Arg.Unit f,
-  " Print compiler version and location of standard library and exit"
-;;
-
-let mk_verbose f =
-  "-verbose", Arg.Unit f, " Print calls to external commands"
-;;
-
-let mk_version f =
-  "-version", Arg.Unit f, " Print version and exit"
 ;;
 
 
@@ -163,25 +123,12 @@ let mk_color f =
 ;;
 
 
-let mk_nopervasives f =
-  "-nopervasives", Arg.Unit f, " (undocumented)"
-;;
 
 
 
 
 
 
-let bs_version_string = 
-  "BuckleScript " ^ Bs_version.version ^
-  " ( Using OCaml:" ^ Config.version ^ " )" 
-
-let print_version_string () = 
-#if undefined BS_RELEASE_BUILD then 
-  print_string "DEV VERSION: ";
-#end  
-  print_endline bs_version_string;
-  exit 0 
 
 
 
@@ -189,72 +136,67 @@ let print_version_string () =
 let ocaml_options = 
   let set r () = r := true in 
   let unset r () = r := false in 
-  let _absname = set Location.absname in 
+
   let _color option = 
     match Clflags.parse_color_setting option with
     | None -> ()
     | Some setting -> Clflags.color := Some setting in 
-  let _binannot = set Clflags.binary_annotations in 
-  let _i () = Clflags.print_types := true in 
-  let _I s = Clflags.include_dirs := s :: !Clflags.include_dirs in 
+
   let _intf_suffix s = Config.interface_suffix := s in 
-  let _keep_docs = set Clflags.keep_docs in 
-  let _keep_locs = set Clflags.keep_locs in 
-  let _no_keep_locs = unset Clflags.keep_locs in 
+
+
+
   let _labels = unset Clflags.classic in 
   let _no_alias_deps = set Clflags.transparent_modules in 
   let _no_app_funct = unset Clflags.applicative_functors in 
-  let _noassert = set Clflags.noassert in 
+
   let _nolabels = set Clflags.classic in 
   let _o s = Clflags.output_name := Some s in 
-  let _open s = Clflags.open_modules := s :: !Clflags.open_modules in 
-  let _pp s = Clflags.preprocessor := Some s in 
 
+  
   let _principal = set Clflags.principal in 
   let _rectypes = set Clflags.recursive_types in 
   let _short_paths = unset Clflags.real_paths in 
   let _unsafe = set Clflags.fast in 
-  let _v = print_version_string in 
-  let _version = print_version_string in 
   let _w = (Warnings.parse_options false) in
   let _warn_error = (Warnings.parse_options true) in
   let _warn_help = Warnings.help_warnings in
   
-  let _verbose = set Clflags.verbose in 
-  let _nopervasives = set Clflags.nopervasives in
-  let _dsource = set  in 
-  [ mk_absname _absname;
-    mk_binannot _binannot;
 
-    mk_i _i;
-    mk_I _I;
+
+
+  [ 
+    
+
+
+    
     mk_color _color;
     mk_intf_suffix _intf_suffix;
-    mk_keep_docs _keep_docs;
-    mk_keep_locs _keep_locs;
-    mk_no_keep_locs _no_keep_locs;
+
+
+
     mk_labels _labels;
     mk_no_alias_deps _no_alias_deps;
     mk_no_app_funct _no_app_funct;
-    mk_noassert _noassert;
+
     mk_nolabels _nolabels;
     mk_o _o;
-    mk_open _open;
-    mk_pp _pp;
+
+    
 
     mk_principal _principal;
     mk_rectypes _rectypes;
     mk_short_paths _short_paths;
     mk_unsafe _unsafe;
-    mk_v _v;
-    mk_verbose _verbose;
-    mk_version _version;
+    
+
+
     mk_w _w;
     mk_warn_error _warn_error;
     mk_warn_help _warn_help;
   
     mk_color _color;
-    mk_nopervasives _nopervasives;
+    
     
      ]
 

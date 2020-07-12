@@ -218,6 +218,18 @@ let print_standard_library () =
   print_string standard_library; print_newline(); 
   exit 0  
 
+let bs_version_string = 
+  "BuckleScript " ^ Bs_version.version ^
+  " ( Using OCaml:" ^ Config.version ^ " )" 
+
+let print_version_string () = 
+#if undefined BS_RELEASE_BUILD then 
+    print_string "DEV VERSION: ";
+#end  
+    print_endline bs_version_string;
+    exit 0 
+  
+
 let buckle_script_flags : (string * Arg.spec * string) list =
   ("-bs-super-errors",
      Unit 
@@ -403,6 +415,9 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     " no code for assert false"
   )  
   ::
+  ("-noassert", Set Clflags.noassert, 
+  " Do not compile assertion checks")
+  ::
   ("-bs-loc",
      Set Clflags.dump_location, 
   " dont display location with -dtypedtree, -dparsetree"
@@ -438,6 +453,36 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   ::
   ( "-ppx", String (fun s -> Compenv.first_ppx := s ::!Compenv.first_ppx),
   "<command>  Pipe abstract syntax trees through preprocessor <command>")
+  ::
+  ("-open", String (fun s -> Clflags.open_modules := s :: !Clflags.open_modules ),
+     "<module>  Opens the module <module> before typing"
+  )
+  ::
+  ("-verbose", Set Clflags.verbose, " Print calls to external commands")
+  ::
+  ("-keep-locs", Set Clflags.keep_locs, " Keep locations in .cmi files")
+  ::
+  ("-no-keep-locs", Clear Clflags.keep_locs, " Do not keep locations in .cmi files")
+  ::
+  ("-nopervasives", Set Clflags.nopervasives, " (undocumented)")
+  ::
+  ("-v", Unit print_version_string,
+   " Print compiler version and location of standard library and exit")
+  ::
+  ("-version", Unit print_version_string,
+     " Print version and exit")
+  ::
+  ("-I", String (fun s -> Clflags.include_dirs := s :: !Clflags.include_dirs),
+   "<dir>  Add <dir> to the list of include directories" )
+  ::
+  ("-pp", String (fun s -> Clflags.preprocessor := Some s),
+   "<command>  Pipe sources through preprocessor <command>") 
+  ::
+  ("-absname", Set Location.absname, " Show absolute filenames in error messages") 
+  ::
+  ("-bin-annot", Set Clflags.binary_annotations, " Save typedtree in <filename>.cmt")
+  ::
+  ("-i", Set Clflags.print_types, " Print inferred interface")
   :: Ocaml_options.ocaml_options
 
 
