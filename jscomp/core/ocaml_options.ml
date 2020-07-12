@@ -174,17 +174,6 @@ let mk_nopervasives f =
   "-nopervasives", Arg.Unit f, " (undocumented)"
 ;;
 
-let mk_dparsetree f =
-  "-dparsetree", Arg.Unit f, " (undocumented)"
-;;
-
-let mk_dtypedtree f =
-  "-dtypedtree", Arg.Unit f, " (undocumented)"
-;;
-
-let mk_drawlambda f =
-  "-drawlambda", Arg.Unit f, " (undocumented)"
-;;
 
 let mk_dsource f =
   "-dsource", Arg.Unit f, " (undocumented)"
@@ -250,9 +239,6 @@ let ocaml_options =
   let _verbose = set Clflags.verbose in 
   let _nopervasives = set Clflags.nopervasives in
   let _dsource = set Clflags.dump_source in 
-  let _dparsetree = set Clflags.dump_parsetree in 
-  let _dtypedtree = set Clflags.dump_typedtree in
-  let _drawlambda = set Clflags.dump_rawlambda in
   [ mk_absname _absname;
     mk_binannot _binannot;
 
@@ -286,8 +272,5 @@ let ocaml_options =
     mk_color _color;
     mk_nopervasives _nopervasives;
     mk_dsource _dsource;
-    mk_dparsetree _dparsetree;
-    mk_dtypedtree _dtypedtree;
-    mk_drawlambda _drawlambda;
      ]
 

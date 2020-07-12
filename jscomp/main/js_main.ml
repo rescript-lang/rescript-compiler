@@ -409,7 +409,17 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   ("-intf",  String 
      (fun file -> Js_config.js_stdout := false ; intf file),
    "<file>  Compile <file> as a .mli file")
-  (* :: Ocaml_options.mk__ anonymous *)
+  ::
+  ("-dtypedtree", Set Clflags.dump_typedtree, 
+    " debug typedtree")
+  ::   
+  ("-dparsetree", Set Clflags.dump_parsetree,
+    " debug parsetree"
+  )
+  ::
+  ("-drawlambda", Set Clflags.dump_rawlambda,
+    " debug raw lambda"
+  )
   :: Ocaml_options.ocaml_options
 
 
