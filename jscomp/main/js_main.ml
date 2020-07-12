@@ -231,7 +231,7 @@ let print_version_string () =
   
 
 let buckle_script_flags : (string * Arg.spec * string) list =
-  ("-bs-super-errors",
+  ["-bs-super-errors",
      Unit 
       (* needs to be set here instead of, say, setting a
         Js_config.better_errors flag; otherwise, when `anonymous` runs, we
@@ -240,250 +240,252 @@ let buckle_script_flags : (string * Arg.spec * string) list =
       (fun _ -> Lazy.force Super_main.setup)
      ,
    " Better error message combined with other tools "
-  ) 
-  ::
-  ("-unboxed-types",
+  ;
+  "-unboxed-types",
      Set Clflags.unboxed_types,
     " unannotated unboxable types will be unboxed"
-  )
-   :: 
-  ("-bs-re-out",
+  ;
+  "-bs-re-out",
      Unit (fun _ -> Lazy.force Reason_outcome_printer_main.setup),
    " Print compiler output in Reason syntax"
-  )
-  ::
-  ("-bs-jsx",
+  ;
+  "-bs-jsx",
      Int (fun i -> 
       (if i <> 3 then bad_arg (" Not supported jsx version : " ^ string_of_int i));
       Js_config.jsx_version := i),
     " Set jsx version"
-  )
-  :: 
-  ("-bs-refmt",
+  ;
+  "-bs-refmt",
      String (fun s -> Js_config.refmt := Some s),
     " Set customized refmt path"
-  )
- 
-  ::
-  (
+  ;
     "-bs-gentype",
      String (fun s -> Clflags.bs_gentype := Some s),
     " Pass gentype command"
-  )
-  ::
-  ("-bs-suffix",
+  ;
+  "-bs-suffix",
      Set Js_config.bs_suffix,
     " Set suffix to .bs.js"
-  )  
-  :: 
-  ("-bs-no-implicit-include",  Set Clflags.no_implicit_current_dir
-  , " Don't include current dir implicitly")
-  ::
-  ("-bs-read-cmi",  Unit (fun _ -> Clflags.assume_no_mli := Clflags.Mli_exists), 
-    " (internal) Assume mli always exist ")
-  ::
-  ("-bs-D",  String define_variable,
+  ;
+  "-bs-no-implicit-include",  Set Clflags.no_implicit_current_dir
+  , " Don't include current dir implicitly"
+  ;
+  "-bs-read-cmi",  Unit (fun _ -> Clflags.assume_no_mli := Clflags.Mli_exists), 
+    " (internal) Assume mli always exist "
+  ;
+  "-bs-D",  String define_variable,
      " Define conditional variable e.g, -D DEBUG=true"
-  )
-  ::
-  ("-bs-unsafe-empty-array",  Clear Js_config.mono_empty_array,
+  ;
+  
+  "-bs-unsafe-empty-array",  Clear Js_config.mono_empty_array,
     " Allow [||] to be polymorphic"
-  )
-  ::
-  ("-nostdlib",  Set Js_config.no_stdlib,
-    " Don't use stdlib")
-  ::
-  ("-bs-internal-check",  Unit (Bs_cmi_load.check ),
+  ;
+  "-nostdlib",  Set Js_config.no_stdlib,
+    " Don't use stdlib"
+  ;
+  "-bs-internal-check",  Unit (Bs_cmi_load.check ),
     " Built in check corrupted data"
-  )
-  ::  
-  ("-bs-list-conditionals",
+  ;  
+  "-bs-list-conditionals",
     Unit (fun () -> Lexer.list_variables Format.err_formatter),
-   " List existing conditional variables")
-  ::
-  (
+   " List existing conditional variables"
+  ;
+  
     "-bs-binary-ast",  Set Js_config.binary_ast,
     " Generate binary .mli_ast and ml_ast"
-  )
-  ::
-  (
+  ;
+  
     "-bs-simple-binary-ast",  Set Js_config.simple_binary_ast,
     " Generate binary .mliast_simple and mlast_simple"
-  )
-  ::
-  ("-bs-syntax-only", 
+  ;
+  "-bs-syntax-only", 
     Set Js_config.syntax_only,
-   " only check syntax"
-  )
-  ::
-  ("-bs-no-bin-annot",  Clear Clflags.binary_annotations, 
-   " disable binary annotations (by default on)")
-  ::
-  ("-bs-eval", 
+   " only check syntax"  
+  ;
+  "-bs-no-bin-annot",  Clear Clflags.binary_annotations, 
+   " disable binary annotations (by default on)";
+  "-bs-eval", 
     String (fun  s -> eval s ~suffix:Literals.suffix_ml), 
    " (experimental) Set the string to be evaluated in OCaml syntax"
-  )
-  ::
-  ("-e", 
+  ;
+  
+  "-e", 
     String (fun  s -> eval s ~suffix:Literals.suffix_re), 
    " (experimental) Set the string to be evaluated in ReasonML syntax"
-  )
-  ::
-  (
+  ;
+  
     "-bs-cmi-only",
      Set Js_config.cmi_only,
     " Stop after generating cmi file"
-  )
-  ::
-  (
+  ;
+  
   "-bs-cmi",
      Set Js_config.force_cmi,
     " Not using cached cmi, always generate cmi"
-  )
-  ::
-  ("-bs-cmj", 
+  ;
+  "-bs-cmj", 
      Set Js_config.force_cmj,
     " Not using cached cmj, always generate cmj"
-  )
-  ::
-  (
+  ;
+  
+  
     "-as-ppx",
      Set Js_config.as_ppx,
     " As ppx for editor integration"
-  )
-  ::
-  ("-bs-g",
+  ;
+  "-bs-g",
      Unit 
     (fun _ -> Js_config.debug := true;
       Lexer.replace_directive_bool "DEBUG" true
     ),
     " debug mode"
-  )
-  ::
-  (
+  ;
+  
+  
     "-bs-sort-imports",
      Set Js_config.sort_imports,
     " Sort the imports by lexical order so the output will be more stable (default false)"
-  )
-  ::
-  ( "-bs-no-sort-imports", 
+  ;  
+   "-bs-no-sort-imports", 
      Clear Js_config.sort_imports,
     " No sort (see -bs-sort-imports)"
-  )
-  ::
-  ("-bs-package-name", 
+  ;
+  "-bs-package-name", 
     String Js_packages_state.set_package_name, 
-   " set package name, useful when you want to produce npm packages")
-  ::
-  ( "-bs-ns", 
+   " set package name, useful when you want to produce npm packages"
+  ;
+  "-bs-ns", 
     String Js_packages_state.set_package_map, 
    " set package map, not only set package name but also use it as a namespace"    
-  )
-  :: 
-  ("-bs-no-version-header", 
+  ;
+  "-bs-no-version-header", 
     Set Js_config.no_version_header,
    " Don't print version header"
-  )
-  ::
-  ("-bs-package-output", 
+  ;
+  "-bs-package-output", 
     String 
     Js_packages_state.update_npm_package_path, 
-   " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ")
-  ::
-  ("-bs-no-builtin-ppx", 
+   " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' "
+  ;
+  "-bs-no-builtin-ppx", 
     Set Js_config.no_builtin_ppx,
-   "disable built-in ppx (internal use)")
-  :: 
-  ("-bs-cross-module-opt", 
+   "disable built-in ppx (internal use)"
+  ;  
+  "-bs-cross-module-opt", 
     Set Js_config.cross_module_inline, 
-   "enable cross module inlining(experimental), default(false)")
-   :: 
-   ("-bs-no-cross-module-opt", 
+   "enable cross module inlining(experimental), default(false)"
+  ;
+   "-bs-no-cross-module-opt", 
      Clear Js_config.cross_module_inline, 
-    "disable cross module inlining(experimental)")  
-  :: 
-  ("-bs-diagnose",
+    "disable cross module inlining(experimental)"
+  ;
+  "-bs-diagnose",
     Set Js_config.diagnose, 
-   " More verbose output")
-  :: 
-  ("-bs-no-check-div-by-zero",
+   " More verbose output"
+  ;
+  "-bs-no-check-div-by-zero",
     Clear Js_config.check_div_by_zero, 
-   " unsafe mode, don't check div by zero and mod by zero")
-  ::
-  ("-bs-noassertfalse",
+   " unsafe mode, don't check div by zero and mod by zero"
+  ;
+  "-bs-noassertfalse",
      Set Clflags.no_assert_false,
     " no code for assert false"
-  )  
-  ::
-  ("-noassert", Set Clflags.noassert, 
-  " Do not compile assertion checks")
-  ::
-  ("-bs-loc",
+  ;
+  "-noassert", Set Clflags.noassert, 
+  " Do not compile assertion checks"
+  ;
+  "-bs-loc",
      Set Clflags.dump_location, 
   " dont display location with -dtypedtree, -dparsetree"
-  )
-  :: 
-  ("-impl",  String
+  ;
+
+  "-impl",  String
      (fun file  ->  Js_config.js_stdout := false;  impl file ),
    "<file>  Compile <file> as a .ml file"
-  )  
-  ::
-  ("-intf",  String 
+  ;
+  "-intf",  String 
      (fun file -> Js_config.js_stdout := false ; intf file),
-   "<file>  Compile <file> as a .mli file")
-  ::
-  ("-dtypedtree", Set Clflags.dump_typedtree, 
-    " debug typedtree")
-  ::   
-  ("-dparsetree", Set Clflags.dump_parsetree,
+   "<file>  Compile <file> as a .mli file"
+  ;
+  "-dtypedtree", Set Clflags.dump_typedtree, 
+    " debug typedtree"
+  ;
+  "-dparsetree", Set Clflags.dump_parsetree,
     " debug parsetree"
-  )
-  ::
-  ("-drawlambda", Set Clflags.dump_rawlambda,
+  ;
+  "-drawlambda", Set Clflags.dump_rawlambda,
     " debug raw lambda"
-  )
-  ::
-  ("-dsource", Set Clflags.dump_source, 
+  ;
+  "-dsource", Set Clflags.dump_source, 
     " print source"
-  )
-  ::
-  ("-where", Unit print_standard_library, 
+  ;
+  "-where", Unit print_standard_library, 
   " Print location of standard library and exit"
-  )
-  ::
-  ( "-ppx", String (fun s -> Compenv.first_ppx := s ::!Compenv.first_ppx),
-  "<command>  Pipe abstract syntax trees through preprocessor <command>")
-  ::
-  ("-open", String (fun s -> Clflags.open_modules := s :: !Clflags.open_modules ),
+  ;
+   "-ppx", String (fun s -> Compenv.first_ppx := s ::!Compenv.first_ppx),
+  "<command>  Pipe abstract syntax trees through preprocessor <command>"
+  ;
+  "-open", String (fun s -> Clflags.open_modules := s :: !Clflags.open_modules ),
      "<module>  Opens the module <module> before typing"
-  )
-  ::
-  ("-verbose", Set Clflags.verbose, " Print calls to external commands")
-  ::
-  ("-keep-locs", Set Clflags.keep_locs, " Keep locations in .cmi files")
-  ::
-  ("-no-keep-locs", Clear Clflags.keep_locs, " Do not keep locations in .cmi files")
-  ::
-  ("-nopervasives", Set Clflags.nopervasives, " (undocumented)")
-  ::
-  ("-v", Unit print_version_string,
-   " Print compiler version and location of standard library and exit")
-  ::
-  ("-version", Unit print_version_string,
-     " Print version and exit")
-  ::
-  ("-I", String (fun s -> Clflags.include_dirs := s :: !Clflags.include_dirs),
-   "<dir>  Add <dir> to the list of include directories" )
-  ::
-  ("-pp", String (fun s -> Clflags.preprocessor := Some s),
-   "<command>  Pipe sources through preprocessor <command>") 
-  ::
-  ("-absname", Set Location.absname, " Show absolute filenames in error messages") 
-  ::
-  ("-bin-annot", Set Clflags.binary_annotations, " Save typedtree in <filename>.cmt")
-  ::
-  ("-i", Set Clflags.print_types, " Print inferred interface")
-  :: Ocaml_options.ocaml_options
+  ;
+  "-verbose", Set Clflags.verbose, " Print calls to external commands"
+  ;
+  "-keep-locs", Set Clflags.keep_locs, " Keep locations in .cmi files"
+  ;
+  "-no-keep-locs", Clear Clflags.keep_locs, " Do not keep locations in .cmi files";
+  "-nopervasives", Set Clflags.nopervasives, " (undocumented)";
+  "-v", Unit print_version_string,
+   " Print compiler version and location of standard library and exit";  
+  "-version", Unit print_version_string, " Print version and exit";
+  
+  "-I", String (fun s -> Clflags.include_dirs := s :: !Clflags.include_dirs),
+   "<dir>  Add <dir> to the list of include directories" ;
+  "-pp", String (fun s -> Clflags.preprocessor := Some s),
+   "<command>  Pipe sources through preprocessor <command>";
+  "-absname", Set Location.absname, " Show absolute filenames in error messages";  
+  "-bin-annot", Set Clflags.binary_annotations, " Save typedtree in <filename>.cmt";
+  "-i", Set Clflags.print_types, " Print inferred interface";  
+  "-intf-suffix", String (fun s -> Config.interface_suffix := s),
+  "<string>  Suffix for interface files (default: .mli)";
+  "-nolabels", Set Clflags.classic, " Ignore non-optional labels in types";
+  "-labels", Clear Clflags.classic, " Use commuting label mode";
+  "-no-alias-deps", Set Clflags.transparent_modules, " Do not record dependencies for module aliases";
+  "-no-app-funct", Clear Clflags.applicative_functors, " Deactivate applicative functors";  
+  "-o", String (fun s -> Clflags.output_name := Some s), "<file>  Set output file name to <file>";
+  "-principal", Set Clflags.principal, " Check principality of type inference";  
+  "-rectypes", Set Clflags.recursive_types, " Allow arbitrary recursive types";
+  "-short-paths", Clear Clflags.real_paths, " Shorten paths in types";
+  "-unsafe", Set Clflags.fast, " Do not compile bounds checking on array and string access";
+  "-w", String (Warnings.parse_options false),
+  Printf.sprintf
+  "<list>  Enable or disable warnings according to <list>:\n\
+  \        +<spec>   enable warnings in <spec>\n\
+  \        -<spec>   disable warnings in <spec>\n\
+  \        @<spec>   enable warnings in <spec> and treat them as errors\n\
+  \     <spec> can be:\n\
+  \        <num>             a single warning number\n\
+  \        <num1>..<num2>    a range of consecutive warning numbers\n\
+  \        <letter>          a predefined set\n\
+  \     default setting is %S" Bsc_warnings.defaults_w;  
+  "-warn-error", String (Warnings.parse_options true),
+  Printf.sprintf
+  "<list>  Enable or disable error status for warnings according\n\
+  \     to <list>.  See option -w for the syntax of <list>.\n\
+  \     Default setting is %S" Bsc_warnings.defaults_warn_error;
+    "-warn-help", Unit (Warnings.help_warnings), " Show description of warning numbers";
+    "-color", Symbol (["auto"; "always"; "never"], (fun option -> match Clflags.parse_color_setting option with
+| None -> ()
+| Some setting -> Clflags.color := Some setting)),
+Printf.sprintf
+"  Enable or disable colors in compiler messages\n\
+\    The following settings are supported:\n\
+\      auto    use heuristics to enable colors only if supported\n\
+\      always  enable colors\n\
+\      never   disable colors\n\
+\    The default setting is 'auto', and the current heuristic\n\
+\    checks that the TERM environment variable exists and is\n\
+\    not empty or \"dumb\", and that isatty(stderr) holds."
+  ]
 
 
   
