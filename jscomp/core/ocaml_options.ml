@@ -22,9 +22,6 @@ let mk_binannot f =
   "-bin-annot", Arg.Unit f, " Save typedtree in <filename>.cmt"
 ;;
 
-let mk_c f =
-  "-c", Arg.Unit f, " Compile only (do not link)"
-;;
 
 
 
@@ -225,8 +222,7 @@ let ocaml_options =
     | None -> ()
     | Some setting -> Clflags.color := Some setting in 
   let _binannot = set Clflags.binary_annotations in 
-  let _c = set Clflags.compile_only in 
-  let _i () = Clflags.print_types := true; Clflags.compile_only := true in 
+  let _i () = Clflags.print_types := true in 
   let _I s = Clflags.include_dirs := s :: !Clflags.include_dirs in 
   let _intf_suffix s = Config.interface_suffix := s in 
   let _keep_docs = set Clflags.keep_docs in 
@@ -259,7 +255,7 @@ let ocaml_options =
   let _drawlambda = set Clflags.dump_rawlambda in
   [ mk_absname _absname;
     mk_binannot _binannot;
-    mk_c _c;
+
     mk_i _i;
     mk_I _I;
     mk_color _color;

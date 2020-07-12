@@ -13,6 +13,7 @@ var pairs = [
   ["Clflags.strict_sequence", "true"],
   ["Clflags.strict_formats", "true"],
   ["Location.absname", "true"],
+  ["Clflags.compile_only", "true"],
 ];
 
 var regexp = RegExp(
