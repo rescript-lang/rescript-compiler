@@ -69,7 +69,7 @@ type valid_input =
   | Reiast
   | Mlmap
   | Cmi
-
+  | Unknown
 let bad_arg s = raise_notrace (Arg.Bad(s))
 
 (** This is per-file based, 
@@ -77,6 +77,36 @@ let bad_arg s = raise_notrace (Arg.Bad(s))
     it will return (another_dir/xx)
 *)    
 
+let classify_input ext = 
+
+  match () with 
+  | _ when ext = Literals.suffix_ml ->   
+    Ml
+  | _ when ext = Literals.suffix_re ->
+    Re
+  | _ when ext = !Config.interface_suffix ->
+    Mli  
+  | _ when ext = Literals.suffix_rei ->
+    Rei
+  | _ when ext =  Literals.suffix_mlast ->
+    Mlast 
+  | _ when ext = Literals.suffix_mliast ->
+    Mliast
+  | _ when ext = Literals.suffix_reast ->
+    Reast 
+  | _ when ext = Literals.suffix_reiast ->
+    Reiast
+  | _ when ext =  Literals.suffix_mlmap ->
+    Mlmap 
+  | _ when ext =  Literals.suffix_cmi ->
+    Cmi
+  | _ when ext = Literals.suffix_res -> 
+    Res
+  | _ when ext = Literals.suffix_resi -> 
+    Resi    
+  | _ when ext = Literals.suffix_resast -> Resast   
+  | _ when ext = Literals.suffix_resiast -> Resiast
+  | _ -> Unknown
 
 let process_file ppf sourcefile = 
   (* This is a better default then "", it will be changed later 
@@ -85,35 +115,7 @@ let process_file ppf sourcefile =
   *)
   Location.set_input_name  sourcefile;  
   let ext = Ext_filename.get_extension_maybe sourcefile in 
-  let input = 
-    match () with 
-    | _ when ext = Literals.suffix_ml ->   
-      Ml
-    | _ when ext = Literals.suffix_re ->
-      Re
-    | _ when ext = !Config.interface_suffix ->
-      Mli  
-    | _ when ext = Literals.suffix_rei ->
-      Rei
-    | _ when ext =  Literals.suffix_mlast ->
-      Mlast 
-    | _ when ext = Literals.suffix_mliast ->
-      Mliast
-    | _ when ext = Literals.suffix_reast ->
-      Reast 
-    | _ when ext = Literals.suffix_reiast ->
-      Reiast
-    | _ when ext =  Literals.suffix_mlmap ->
-      Mlmap 
-    | _ when ext =  Literals.suffix_cmi ->
-      Cmi
-    | _ when ext = Literals.suffix_res -> 
-      Res
-    | _ when ext = Literals.suffix_resi -> 
-      Resi    
-    | _ when ext = Literals.suffix_resast -> Resast   
-    | _ when ext = Literals.suffix_resiast -> Resiast
-    | _ -> bad_arg ("don't know what to do with " ^ sourcefile) in 
+  let input = classify_input ext in 
   let opref = Compenv.output_prefix sourcefile in 
   match input with 
   | Re -> handle_reason Ml sourcefile ppf opref     
@@ -163,9 +165,9 @@ let process_file ppf sourcefile =
     ->
     let cmi_sign = (Cmi_format.read_cmi sourcefile).cmi_sign in 
     Printtyp.signature Format.std_formatter cmi_sign ; 
-    Format.pp_print_newline Format.std_formatter ()
-      
-
+    Format.pp_print_newline Format.std_formatter ()      
+  | Unknown -> 
+    bad_arg ("don't know what to do with " ^ sourcefile)
 let usage = "Usage: bsc <options> <files>\nOptions are:"
 
 let ppf = Format.err_formatter
@@ -402,8 +404,7 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   "-drawlambda", Set Clflags.dump_rawlambda,
     " debug raw lambda"
   ;
-  "-dsource", Set Clflags.dump_source, 
-    " print source"
+  "-dsource", Set Clflags.dump_source, " print source";
   ;
   "-where", Unit print_standard_library, 
   " Print location of standard library and exit"
