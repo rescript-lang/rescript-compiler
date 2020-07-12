@@ -447,13 +447,10 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   "-i", Set Clflags.print_types, " Print inferred interface";  
   "-intf-suffix", String (fun s -> Config.interface_suffix := s),
   "<string>  Suffix for interface files (default: .mli)";
-  "-nolabels", Set Clflags.classic, " Ignore non-optional labels in types";
-  "-labels", Clear Clflags.classic, " Use commuting label mode";
+  "-nolabels", Set Clflags.classic, " Ignore non-optional labels in types";  
   "-no-alias-deps", Set Clflags.transparent_modules, " Do not record dependencies for module aliases";
-  "-no-app-funct", Clear Clflags.applicative_functors, " Deactivate applicative functors";  
   "-o", String (fun s -> Clflags.output_name := Some s), "<file>  Set output file name to <file>";
   "-principal", Set Clflags.principal, " Check principality of type inference";  
-  "-rectypes", Set Clflags.recursive_types, " Allow arbitrary recursive types";
   "-short-paths", Clear Clflags.real_paths, " Shorten paths in types";
   "-unsafe", Set Clflags.fast, " Do not compile bounds checking on array and string access";
   "-w", String (Warnings.parse_options false),
