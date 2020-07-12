@@ -270,7 +270,7 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   "-bs-no-implicit-include",  Set Clflags.no_implicit_current_dir
   , " Don't include current dir implicitly"
   ;
-  "-bs-read-cmi",  Unit (fun _ -> Clflags.assume_no_mli := Clflags.Mli_exists), 
+  "-bs-read-cmi",  Unit (fun _ -> Clflags.assume_no_mli := Mli_exists), 
     " (internal) Assume mli always exist "
   ;
   "-bs-D",  String define_variable,
@@ -302,36 +302,22 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     Set Js_config.syntax_only,
    " only check syntax"  
   ;
-  "-bs-no-bin-annot",  Clear Clflags.binary_annotations, 
-   " disable binary annotations (by default on)";
   "-bs-eval", 
     String (fun  s -> eval s ~suffix:Literals.suffix_ml), 
    " (experimental) Set the string to be evaluated in OCaml syntax"
   ;
   
-  "-e", 
-    String (fun  s -> eval s ~suffix:Literals.suffix_re), 
-   " (experimental) Set the string to be evaluated in ReasonML syntax"
+  "-e", String (fun  s -> eval s ~suffix:Literals.suffix_re), 
+    " (experimental) Set the string to be evaluated in ReasonML syntax";
+  
+  "-bs-cmi-only", Set Js_config.cmi_only, " Stop after generating cmi file"
   ;
   
-    "-bs-cmi-only",
-     Set Js_config.cmi_only,
-    " Stop after generating cmi file"
+  "-bs-cmi", Set Js_config.force_cmi, " Not using cached cmi, always generate cmi"
   ;
-  
-  "-bs-cmi",
-     Set Js_config.force_cmi,
-    " Not using cached cmi, always generate cmi"
-  ;
-  "-bs-cmj", 
-     Set Js_config.force_cmj,
-    " Not using cached cmj, always generate cmj"
-  ;
-  
-  
-    "-as-ppx",
-     Set Js_config.as_ppx,
-    " As ppx for editor integration"
+  "-bs-cmj", Set Js_config.force_cmj, " Not using cached cmj, always generate cmj"
+  ;    
+  "-as-ppx", Set Js_config.as_ppx, " As ppx for editor integration"
   ;
   "-bs-g",
      Unit 
@@ -444,6 +430,8 @@ let buckle_script_flags : (string * Arg.spec * string) list =
    "<command>  Pipe sources through preprocessor <command>";
   "-absname", Set Location.absname, " Show absolute filenames in error messages";  
   "-bin-annot", Set Clflags.binary_annotations, " Save typedtree in <filename>.cmt";
+  "-bs-no-bin-annot",  Clear Clflags.binary_annotations, 
+    " disable binary annotations (by default on)";
   "-i", Set Clflags.print_types, " Print inferred interface";  
   "-nolabels", Set Clflags.classic, " Ignore non-optional labels in types";  
   "-no-alias-deps", Set Clflags.transparent_modules, " Do not record dependencies for module aliases";
@@ -471,7 +459,7 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     "-color", Symbol (["auto"; "always"; "never"], (fun option -> match Clflags.parse_color_setting option with
 | None -> ()
 | Some setting -> Clflags.color := Some setting)),
-Printf.sprintf
+
 "  Enable or disable colors in compiler messages\n\
 \    The following settings are supported:\n\
 \      auto    use heuristics to enable colors only if supported\n\
