@@ -63,25 +63,25 @@ lib/test.exe: tests/napkin_test.cmx
 
 test: build-native lib/test.exe
 	./node_modules/.bin/jest
-	./node_modules/.bin/reanalyze -all-cmt ./src
+	./node_modules/.bin/reanalyze -all-cmt . -suppress tests
 	./lib/test.exe
 
 roundtrip-test: bootstrap lib/test.exe
 	ROUNDTRIP_TEST=1 ./node_modules/.bin/jest
-	./node_modules/.bin/reanalyze -all-cmt ./Napkinscript.cmt
+	./node_modules/.bin/reanalyze -all-cmt . -suppress tests
 	./lib/test.exe
 
 termination:
-	./node_modules/.bin/reanalyze -termination-cmt ./src
+	./node_modules/.bin/reanalyze -termination-cmt . -suppress tests
 
 dce:
-	./node_modules/.bin/reanalyze -dce-cmt ./src
+	./node_modules/.bin/reanalyze -dce-cmt . -suppress tests
 
 exception:
-	./node_modules/.bin/reanalyze -exception-cmt ./src
+	./node_modules/.bin/reanalyze -exception-cmt . -suppress tests
 
 reanalyze:
-	./node_modules/.bin/reanalyze -all-cmt ./src
+	./node_modules/.bin/reanalyze -all-cmt . -suppress tests
 
 clean:
 	rm -rf src/*.cm*
