@@ -429,7 +429,6 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   "-pp", String (fun s -> Clflags.preprocessor := Some s),
    "<command>  Pipe sources through preprocessor <command>";
   "-absname", Set Location.absname, " Show absolute filenames in error messages";  
-  "-bin-annot", Set Clflags.binary_annotations, " Save typedtree in <filename>.cmt";
   "-bs-no-bin-annot",  Clear Clflags.binary_annotations, 
     " disable binary annotations (by default on)";
   "-i", Set Clflags.print_types, " Print inferred interface";  
@@ -440,7 +439,6 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   "-short-paths", Clear Clflags.real_paths, " Shorten paths in types";
   "-unsafe", Set Clflags.fast, " Do not compile bounds checking on array and string access";
   "-w", String (Warnings.parse_options false),
-  Printf.sprintf
   "<list>  Enable or disable warnings according to <list>:\n\
   \        +<spec>   enable warnings in <spec>\n\
   \        -<spec>   disable warnings in <spec>\n\
@@ -449,12 +447,11 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   \        <num>             a single warning number\n\
   \        <num1>..<num2>    a range of consecutive warning numbers\n\
   \        <letter>          a predefined set\n\
-  \     default setting is %S" Bsc_warnings.defaults_w;  
+  \     default setting is " ^ Bsc_warnings.defaults_w;  
   "-warn-error", String (Warnings.parse_options true),
-  Printf.sprintf
   "<list>  Enable or disable error status for warnings according\n\
   \     to <list>.  See option -w for the syntax of <list>.\n\
-  \     Default setting is %S" Bsc_warnings.defaults_warn_error;
+  \     Default setting is " ^ Bsc_warnings.defaults_warn_error;
     "-warn-help", Unit (Warnings.help_warnings), " Show description of warning numbers";
     "-color", Symbol (["auto"; "always"; "never"], (fun option -> match Clflags.parse_color_setting option with
 | None -> ()
