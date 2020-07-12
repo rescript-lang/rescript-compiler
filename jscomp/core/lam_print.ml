@@ -113,7 +113,7 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pnull_undefined_to_opt -> 
     fprintf ppf "[null/undefined->opt]"         
   | Pis_null -> fprintf ppf "[?null]"
-  | Pis_not_none -> fprintf ppf "[?none]"
+  | Pis_not_none -> fprintf ppf "[?is-not-none]"
   | Psome -> fprintf ppf "[some]"
   | Psome_not_nest -> fprintf ppf "[some-not-nest]"
   | Pval_from_option -> fprintf ppf "[?unbox]"
