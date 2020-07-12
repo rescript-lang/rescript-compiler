@@ -270,7 +270,7 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   "-bs-no-implicit-include",  Set Clflags.no_implicit_current_dir
   , " Don't include current dir implicitly"
   ;
-  "-bs-read-cmi",  Unit (fun _ -> Clflags.assume_no_mli := Clflags.Mli_exists), 
+  "-bs-read-cmi",  Unit (fun _ -> Clflags.assume_no_mli := Mli_exists), 
     " (internal) Assume mli always exist "
   ;
   "-bs-D",  String define_variable,
@@ -302,36 +302,22 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     Set Js_config.syntax_only,
    " only check syntax"  
   ;
-  "-bs-no-bin-annot",  Clear Clflags.binary_annotations, 
-   " disable binary annotations (by default on)";
   "-bs-eval", 
     String (fun  s -> eval s ~suffix:Literals.suffix_ml), 
    " (experimental) Set the string to be evaluated in OCaml syntax"
   ;
   
-  "-e", 
-    String (fun  s -> eval s ~suffix:Literals.suffix_re), 
-   " (experimental) Set the string to be evaluated in ReasonML syntax"
+  "-e", String (fun  s -> eval s ~suffix:Literals.suffix_re), 
+    " (experimental) Set the string to be evaluated in ReasonML syntax";
+  
+  "-bs-cmi-only", Set Js_config.cmi_only, " Stop after generating cmi file"
   ;
   
-    "-bs-cmi-only",
-     Set Js_config.cmi_only,
-    " Stop after generating cmi file"
+  "-bs-cmi", Set Js_config.force_cmi, " Not using cached cmi, always generate cmi"
   ;
-  
-  "-bs-cmi",
-     Set Js_config.force_cmi,
-    " Not using cached cmi, always generate cmi"
-  ;
-  "-bs-cmj", 
-     Set Js_config.force_cmj,
-    " Not using cached cmj, always generate cmj"
-  ;
-  
-  
-    "-as-ppx",
-     Set Js_config.as_ppx,
-    " As ppx for editor integration"
+  "-bs-cmj", Set Js_config.force_cmj, " Not using cached cmj, always generate cmj"
+  ;    
+  "-as-ppx", Set Js_config.as_ppx, " As ppx for editor integration"
   ;
   "-bs-g",
      Unit 
@@ -443,21 +429,16 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   "-pp", String (fun s -> Clflags.preprocessor := Some s),
    "<command>  Pipe sources through preprocessor <command>";
   "-absname", Set Location.absname, " Show absolute filenames in error messages";  
-  "-bin-annot", Set Clflags.binary_annotations, " Save typedtree in <filename>.cmt";
+  "-bs-no-bin-annot",  Clear Clflags.binary_annotations, 
+    " disable binary annotations (by default on)";
   "-i", Set Clflags.print_types, " Print inferred interface";  
-  "-intf-suffix", String (fun s -> Config.interface_suffix := s),
-  "<string>  Suffix for interface files (default: .mli)";
-  "-nolabels", Set Clflags.classic, " Ignore non-optional labels in types";
-  "-labels", Clear Clflags.classic, " Use commuting label mode";
+  "-nolabels", Set Clflags.classic, " Ignore non-optional labels in types";  
   "-no-alias-deps", Set Clflags.transparent_modules, " Do not record dependencies for module aliases";
-  "-no-app-funct", Clear Clflags.applicative_functors, " Deactivate applicative functors";  
   "-o", String (fun s -> Clflags.output_name := Some s), "<file>  Set output file name to <file>";
   "-principal", Set Clflags.principal, " Check principality of type inference";  
-  "-rectypes", Set Clflags.recursive_types, " Allow arbitrary recursive types";
   "-short-paths", Clear Clflags.real_paths, " Shorten paths in types";
   "-unsafe", Set Clflags.fast, " Do not compile bounds checking on array and string access";
   "-w", String (Warnings.parse_options false),
-  Printf.sprintf
   "<list>  Enable or disable warnings according to <list>:\n\
   \        +<spec>   enable warnings in <spec>\n\
   \        -<spec>   disable warnings in <spec>\n\
@@ -466,17 +447,16 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   \        <num>             a single warning number\n\
   \        <num1>..<num2>    a range of consecutive warning numbers\n\
   \        <letter>          a predefined set\n\
-  \     default setting is %S" Bsc_warnings.defaults_w;  
+  \     default setting is " ^ Bsc_warnings.defaults_w;  
   "-warn-error", String (Warnings.parse_options true),
-  Printf.sprintf
   "<list>  Enable or disable error status for warnings according\n\
   \     to <list>.  See option -w for the syntax of <list>.\n\
-  \     Default setting is %S" Bsc_warnings.defaults_warn_error;
+  \     Default setting is " ^ Bsc_warnings.defaults_warn_error;
     "-warn-help", Unit (Warnings.help_warnings), " Show description of warning numbers";
     "-color", Symbol (["auto"; "always"; "never"], (fun option -> match Clflags.parse_color_setting option with
 | None -> ()
 | Some setting -> Clflags.color := Some setting)),
-Printf.sprintf
+
 "  Enable or disable colors in compiler messages\n\
 \    The following settings are supported:\n\
 \      auto    use heuristics to enable colors only if supported\n\
