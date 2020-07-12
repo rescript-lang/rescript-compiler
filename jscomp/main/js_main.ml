@@ -445,8 +445,6 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   "-absname", Set Location.absname, " Show absolute filenames in error messages";  
   "-bin-annot", Set Clflags.binary_annotations, " Save typedtree in <filename>.cmt";
   "-i", Set Clflags.print_types, " Print inferred interface";  
-  "-intf-suffix", String (fun s -> Config.interface_suffix := s),
-  "<string>  Suffix for interface files (default: .mli)";
   "-nolabels", Set Clflags.classic, " Ignore non-optional labels in types";  
   "-no-alias-deps", Set Clflags.transparent_modules, " Do not record dependencies for module aliases";
   "-o", String (fun s -> Clflags.output_name := Some s), "<file>  Set output file name to <file>";
