@@ -184,6 +184,16 @@ and fake_inline_minus n =
 
 
 let fake_inline_inlie2 = fake_inline_minus 3 
+
+
+type t = { x : int * t } [@@unboxed]
+
+let rec u = {x = (1,u)}
+
+let () = 
+  let (!) u = snd (u.x) in 
+   assert  (fst (! (! (! (!u)))).x   = 1 )
+
  ;; Mt.from_pair_suites __MODULE__ suites 
 
 

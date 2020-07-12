@@ -576,6 +576,13 @@ var fake_inline = fake_inline_minus;
 
 var fake_inline_inlie2 = fake_inline_minus(3);
 
+var u = [];
+
+Caml_obj.update_dummy(u, [
+      1,
+      u
+    ]);
+
 Mt.from_pair_suites("Rec_value_test", suites);
 
 var v$1 = 3;
@@ -616,4 +623,5 @@ exports.fake_minus = fake_minus;
 exports.fake_inline = fake_inline;
 exports.fake_inline_minus = fake_inline_minus;
 exports.fake_inline_inlie2 = fake_inline_inlie2;
+exports.u = u;
 /* fake_z2 Not a pure module */
