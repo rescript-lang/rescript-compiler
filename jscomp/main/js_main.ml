@@ -405,6 +405,17 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     " debug raw lambda"
   ;
   "-dsource", Set Clflags.dump_source, " print source";
+  "-fmt", String (fun input -> 
+    let ext = classify_input (Ext_filename.get_extension_maybe input) in 
+    let syntax = 
+      match ext with 
+      | Ml | Mli -> `ml
+      | Res | Resi -> `res 
+      | Re | Rei -> `refmt (Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe") 
+      | _ -> bad_arg ("don't know what to do with " ^ input) in   
+    output_string stdout (Napkin_multi_printer.print syntax ~input)
+    ),
+    " (internal) format as Res syntax"
   ;
   "-where", Unit print_standard_library, 
   " Print location of standard library and exit"
