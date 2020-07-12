@@ -85,10 +85,6 @@ let mk_pp f =
   "-pp", Arg.String f, "<command>  Pipe sources through preprocessor <command>"
 ;;
 
-let mk_ppx f =
-  "-ppx", Arg.String f,
-  "<command>  Pipe abstract syntax trees through preprocessor <command>"
-;;
 
 let mk_principal f =
   "-principal", Arg.Unit f, " Check principality of type inference"
@@ -152,9 +148,6 @@ let mk_warn_help f =
   "-warn-help", Arg.Unit f, " Show description of warning numbers"
 ;;
 
-let mk_where f =
-  "-where", Arg.Unit f, " Print location of standard library and exit"
-;;
 
 let mk_color f =
   "-color", Arg.Symbol (["auto"; "always"; "never"], f),
@@ -175,9 +168,6 @@ let mk_nopervasives f =
 ;;
 
 
-let mk_dsource f =
-  "-dsource", Arg.Unit f, " (undocumented)"
-;;
 
 
 
@@ -194,13 +184,7 @@ let print_version_string () =
   exit 0 
 
 
-let print_standard_library () = 
-  let (//) = Filename.concat in   
-  let standard_library = 
-    Filename.dirname Sys.executable_name
-    // Filename.parent_dir_name // "lib"// "ocaml"  in 
-  print_string standard_library; print_newline(); 
-  exit 0
+
 
 let ocaml_options = 
   let set r () = r := true in 
@@ -225,7 +209,7 @@ let ocaml_options =
   let _o s = Clflags.output_name := Some s in 
   let _open s = Clflags.open_modules := s :: !Clflags.open_modules in 
   let _pp s = Clflags.preprocessor := Some s in 
-  let _ppx s = Compenv.first_ppx := s :: !Compenv.first_ppx in 
+
   let _principal = set Clflags.principal in 
   let _rectypes = set Clflags.recursive_types in 
   let _short_paths = unset Clflags.real_paths in 
@@ -235,10 +219,10 @@ let ocaml_options =
   let _w = (Warnings.parse_options false) in
   let _warn_error = (Warnings.parse_options true) in
   let _warn_help = Warnings.help_warnings in
-  let _where = print_standard_library in 
+  
   let _verbose = set Clflags.verbose in 
   let _nopervasives = set Clflags.nopervasives in
-  let _dsource = set Clflags.dump_source in 
+  let _dsource = set  in 
   [ mk_absname _absname;
     mk_binannot _binannot;
 
@@ -257,7 +241,7 @@ let ocaml_options =
     mk_o _o;
     mk_open _open;
     mk_pp _pp;
-    mk_ppx _ppx;
+
     mk_principal _principal;
     mk_rectypes _rectypes;
     mk_short_paths _short_paths;
@@ -268,9 +252,9 @@ let ocaml_options =
     mk_w _w;
     mk_warn_error _warn_error;
     mk_warn_help _warn_help;
-    mk_where _where;
+  
     mk_color _color;
     mk_nopervasives _nopervasives;
-    mk_dsource _dsource;
+    
      ]
 

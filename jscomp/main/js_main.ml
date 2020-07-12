@@ -210,7 +210,14 @@ let define_variable s =
        bad_arg ("illegal definition: " ^ s)
   | _ -> bad_arg ("illegal definition: " ^ s)
 
-  
+let print_standard_library () = 
+  let (//) = Filename.concat in   
+  let standard_library = 
+    Filename.dirname Sys.executable_name
+    // Filename.parent_dir_name // "lib"// "ocaml"  in 
+  print_string standard_library; print_newline(); 
+  exit 0  
+
 let buckle_script_flags : (string * Arg.spec * string) list =
   ("-bs-super-errors",
      Unit 
@@ -420,6 +427,17 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   ("-drawlambda", Set Clflags.dump_rawlambda,
     " debug raw lambda"
   )
+  ::
+  ("-dsource", Set Clflags.dump_source, 
+    " print source"
+  )
+  ::
+  ("-where", Unit print_standard_library, 
+  " Print location of standard library and exit"
+  )
+  ::
+  ( "-ppx", String (fun s -> Compenv.first_ppx := s ::!Compenv.first_ppx),
+  "<command>  Pipe abstract syntax trees through preprocessor <command>")
   :: Ocaml_options.ocaml_options
 
 
