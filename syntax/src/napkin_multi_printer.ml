@@ -54,60 +54,67 @@ let printMl ~isInterface ~filename =
       parseResult.parsetree
 
 (* How does printing Reason to Res work?
- * -> Run refmt in parallel with the program,
- *    the standard input and standard output of the refmt command are redirected
- *    to pipes connected to the two returned channels
- * -> Read the source code of "filename"
- * -> Write the source code to output channel (i.e. the input of refmt)
- * -> Read the marshalled ast from the input channel (i.e. the output of refmt)
+ * -> open a tempfile
+ * -> write the source code found in "filename" into the tempfile
+ * -> run refmt in-place in binary mode on the tempfile,
+ *    mutates contents tempfile with marshalled AST.j
+ * -> read the marshalled ast (from the binary output in the tempfile)
  * -> re-read the original "filename" and extract string + comment data
  * -> put the comment- and string data back into the unmarshalled parsetree
- * -> normalize the ast to conform to the napkin printer
  * -> pretty print to res
  * -> take a deep breath and exhale slowly *)
 let printReason ~refmtPath ~isInterface ~filename =
-  (* Run refmt in parallel with the program *)
-  let refmtCmd = Printf.sprintf "%s --print=binary --interface=%b" refmtPath isInterface in
-  let (refmtOutput, refmtInput) = Unix.open_process refmtCmd in
-  (* Read the source code of "filename" *)
-  let source = IO.readFile ~filename in
-  (* Write the source code to output channel (i.e. the input of refmt) *)
-  output_string refmtInput source;
-  close_out refmtInput;
-  (* Read the marshalled ast from the input channel (i.e. the output of refmt) *)
-  let magic = if isInterface then Config.ast_intf_magic_number else Config.ast_impl_magic_number in
-  ignore ((really_input_string [@doesNotRaise]) refmtOutput (String.length magic));
-  ignore (input_value refmtOutput);
-  let ast = input_value refmtOutput in
-  close_in refmtOutput;
-  (* re-read the original "filename" and extract string + comment data *)
-  let (comments, stringData) = Napkin_reason_binary_driver.extractConcreteSyntax filename in
-  if isInterface then
-    let ast = ast
+  (* open a tempfile *)
+  let (tempFilename, chan) =
+    (* refmt is just a prefix, `open_temp_file` takes care of providing a random name
+     * It tries 1000 times in the case of a name conflict.
+     * In practise this means that we shouldn't worry too much about filesystem races *)
+    Filename.open_temp_file "refmt" (if isInterface then ".rei" else ".re") in
+  close_out chan;
+  (* Write the source code found in "filename" into the tempfile *)
+  IO.writeFile ~filename:tempFilename ~content:(IO.readFile ~filename);
+  let cmd = Printf.sprintf "%s --print=binary --in-place --interface=%b %s" refmtPath isInterface tempFilename in
+  (* run refmt in-place in binary mode on the tempfile *)
+  ignore (Sys.command cmd);
+  let result =
+    if isInterface then
+      let parseResult =
+        (* read the marshalled ast (from the binary output in the tempfile) *)
+        Napkin_reason_binary_driver.parsingEngine.parseInterface ~forPrinter:true ~filename:tempFilename in
+      (* re-read the original "filename" and extract string + comment data *)
+      let (comments, stringData) = Napkin_reason_binary_driver.extractConcreteSyntax filename in
       (* put the comment- and string data back into the unmarshalled parsetree *)
-      |> Napkin_ast_conversion.replaceStringLiteralSignature stringData
-      (* normalize the ast to conform to the napkin printer *)
-      |> Napkin_ast_conversion.normalizeReasonAritySignature ~forPrinter:true
-      |> Napkin_ast_conversion.signature
-    in
-    (* pretty print to res *)
-    Napkin_printer.printInterface
-      ~width:defaultPrintWidth
-      ~comments:comments
-      ast
-  else
-    let ast = ast
+      let parseResult = {
+        parseResult with
+        parsetree =
+          parseResult.parsetree |> Napkin_ast_conversion.replaceStringLiteralSignature stringData;
+        comments = comments;
+      } in
+      (* pretty print to res *)
+      Napkin_printer.printInterface
+        ~width:defaultPrintWidth
+        ~comments:parseResult.comments
+        parseResult.parsetree
+    else
+      let parseResult =
+        (* read the marshalled ast (from the binary output in the tempfile) *)
+        Napkin_reason_binary_driver.parsingEngine.parseImplementation ~forPrinter:true ~filename:tempFilename in
+      let (comments, stringData) = Napkin_reason_binary_driver.extractConcreteSyntax filename in
       (* put the comment- and string data back into the unmarshalled parsetree *)
-      |> Napkin_ast_conversion.replaceStringLiteralStructure stringData
-      (* normalize the ast to conform to the napkin printer *)
-      |> Napkin_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
-      |> Napkin_ast_conversion.structure
-    in
-    (* pretty print to res *)
-    Napkin_printer.printImplementation
-      ~width:defaultPrintWidth
-      ~comments:comments
-      ast
+      let parseResult = {
+        parseResult with
+        parsetree =
+          parseResult.parsetree |> Napkin_ast_conversion.replaceStringLiteralStructure stringData;
+        comments = comments;
+      } in
+      (* pretty print to res *)
+      Napkin_printer.printImplementation
+        ~width:defaultPrintWidth
+        ~comments:parseResult.comments
+        parseResult.parsetree
+  in
+  Sys.remove tempFilename;
+  result
 [@@raises Sys_error]
 
 (* print the given file named input to from "language" to res, general interface exposed by the compiler *)
