@@ -15,7 +15,7 @@ try {
 var output = p.spawnSync(`npm pack --dry-run`, {
   cwd: root,
   encoding: "utf8",
-  shell: true
+  shell: true,
   // stdio: [0, 1, 2]
 });
 
@@ -30,9 +30,9 @@ function parseOutput(output) {
       output.lastIndexOf("npm notice === Tarball Details ===")
     )
     .split("\n")
-    .map(x => x.split(" ").filter(Boolean))
-    .filter(x => x[0] === "npm" && x[1] === "notice")
-    .map(x => x[x.length - 1]);
+    .map((x) => x.split(" ").filter(Boolean))
+    .filter((x) => x[0] === "npm" && x[1] === "notice")
+    .map((x) => x[x.length - 1]);
   return publishedFiles;
 }
 
@@ -70,15 +70,15 @@ function check(map) {
   // since it's already snapshot
 
   // make sure the remote and current are on the same commit
-  var currentBranch = (p.execSync(`git branch --show-current`) + "").trim()
-  var command = `git fetch origin && git diff ${currentBranch} origin/${currentBranch}`
-  console.log(`Running '${command}'`)
-  var remoteDiffs = p.execSync(command) + ""
-  if(remoteDiffs){
-    console.warn(`diffs with remote`)
-    console.log(remoteDiffs)
+  var currentBranch = (p.execSync(`git branch --show-current`) + "").trim();
+  var command = `git fetch origin && git diff ${currentBranch} origin/${currentBranch}`;
+  console.log(`Running '${command}'`);
+  var remoteDiffs = p.execSync(command) + "";
+  if (remoteDiffs) {
+    console.warn(`diffs with remote`);
+    console.log(remoteDiffs);
   } else {
-    console.log(`remote diffs looking good`)
+    console.log(`remote diffs looking good`);
   }
 }
 
@@ -107,9 +107,11 @@ if (!process.argv.includes("-nocheck")) {
   check(map);
 }
 
-
 var output = p.spawnSync(`git diff jscomp/artifacts.json`, {
   cwd: root,
-  encoding: "utf8"
+  encoding: "utf8",
+  shell: true,
 });
-console.log("The diff of artifacts",output.stdout);
+
+assert(output.status === 0);
+console.log("The diff of artifacts", output.stdout);
