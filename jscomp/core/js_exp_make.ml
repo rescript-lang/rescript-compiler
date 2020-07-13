@@ -749,7 +749,7 @@ let rec econd ?comment (pred : t) (ifso : t) (ifnot : t) : t =
   | Bool false,  _, _ -> ifnot
   | Number ((Int { i = 0l; _}) ), _, _ 
     -> ifnot  
-  | (Number _ | Array _ | Caml_block _ | Optional_block _), _, _ 
+  | (Number _ | Array _ | Caml_block _ ), _, _ 
     when no_side_effect pred 
     -> ifso  (* a block can not be false in OCAML, CF - relies on flow inference*)
   | Bool true, _, _ -> ifso   

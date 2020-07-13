@@ -705,36 +705,37 @@ let rec complete_range  (sw_consts : (int * _) list) ~(start : int) ~finish=
       i = start &&
       complete_range  rest ~start:(start + 1) ~finish
 
+let rec eval_const_as_bool (v : Lam_constant.t ) : bool = 
+  match v with
+  | Const_pointer (x, _)  | (Const_int {value = x})
+    ->
+    x <> 0 
+  | (Const_char x) ->
+    Char.code x <> 0 
+  | (Const_int32 x) ->
+    x <> 0l 
+  |  (Const_int64 x) ->
+    x <> 0L 
+  | (Const_nativeint x) ->
+    x <> 0n 
+  | Const_js_false 
+  | Const_js_null
+  | Const_module_alias
+  | Const_js_undefined -> false
+  | Const_js_true
+  | Const_string _
+  | Const_float _
+  | Const_unicode _
+  | Const_block _
+  | Const_float_array _
+  | Const_immstring _ -> true
+  | Const_some b -> eval_const_as_bool b
+
 
 let if_ (a : t) (b : t) (c : t) : t =
   match a with
   | Lconst v ->
-    begin match v with
-      | Const_pointer (x, _)  | (Const_int {value = x})
-        ->
-        if x <> 0 then b else c
-      | (Const_char x) ->
-        if Char.code x <> 0 then b else c
-      | (Const_int32 x) ->
-        if x <> 0l then b else c
-      |  (Const_int64 x) ->
-        if x <> 0L then b else c
-      | (Const_nativeint x) ->
-        if x <> 0n then b else c
-      | Const_js_false
-      | Const_js_null
-      | Const_module_alias
-      | Const_js_undefined -> c
-      | Const_js_true
-      | Const_string _
-      | Const_float _
-      | Const_unicode _
-      | Const_block _
-      | Const_some _ 
-      | Const_float_array _
-      | Const_immstring _ -> b
-    end
-  
+    if eval_const_as_bool v then b else c
   | _ -> 
     match  b, c with 
     | _, Lconst (Const_pointer (_, Pt_assertfalse))

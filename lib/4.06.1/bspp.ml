@@ -4026,7 +4026,7 @@ let message = function
   | Bs_integer_literal_overflow -> 
       "BuckleScript warning: Integer literal exceeds the range of representable integers of type int"
   | Bs_uninterpreted_delimiters s -> 
-      "BuckleScript warning: Uninterpreted delimiters" ^ s  
+      "BuckleScript warning: Uninterpreted delimiters " ^ s  
       
 ;;
 

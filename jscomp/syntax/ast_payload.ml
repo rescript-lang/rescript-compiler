@@ -77,20 +77,20 @@ let offset_pos
     pos_cnum =  pos_bol + column
   }
 
-
+let flow_deli_off_set deli = 
+  (match deli with 
+  | None -> 1  (* length of '"'*)
+  | Some deli ->
+     String.length deli + 2 (* length of "{|"*)
+  )
 (* Here the loc is  the payload loc *)
 let check_flow_errors ~(loc : Location.t)
-  deli (errors : (Loc.t * Parse_error.t) list) = 
+  ~offset(errors : (Loc.t * Parse_error.t) list) = 
   match errors with 
   | [] ->  ()
   | ({start ;
      _end },first_error) :: _ -> 
-    let offset =  
-      (match deli with 
-      | None -> 1  (* length of '"'*)
-      | Some deli ->
-         String.length deli + 2 (* length of "{|"*)
-      ) in   
+  
     Location.raise_errorf ~loc:{loc with 
       loc_start = offset_pos loc.loc_start start 
         offset ;
@@ -111,7 +111,7 @@ let raw_as_string_exp_exn
                ;
            pexp_loc = loc} as e ,_);
       _}] -> 
-    check_flow_errors ~loc deli (match kind with 
+    check_flow_errors ~loc ~offset:(flow_deli_off_set deli) (match kind with 
         | Raw_re 
         | Raw_exp ->  
           let (_loc,e),errors =  (Parser_flow.parse_expression (Parser_env.init_env None str) false) in 
@@ -124,7 +124,7 @@ let raw_as_string_exp_exn
         | Raw_program ->  
           snd (Parser_flow.parse_program false None str)
       );
-    Some e 
+    Some {e with pexp_desc = Pexp_constant (Pconst_string (str,None))} 
   | _  -> None
 
 let as_core_type loc (x : t) =

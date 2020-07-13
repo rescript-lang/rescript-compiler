@@ -99,7 +99,7 @@ let rec add (tree : _ Set_gen.t) x  =  match tree with
   | Node {l; v; r} as t ->
     let c = compare_ident x v in
     if c = 0 then t else
-    if c < 0 then Set_gen.internal_bal (add l x ) v r else Set_gen.internal_bal l v (add r x )
+    if c < 0 then Set_gen.bal (add l x ) v r else Set_gen.bal l v (add r x )
 
 let rec mem (tree : _ Set_gen.t) x =  match tree with 
     | Empty -> false
