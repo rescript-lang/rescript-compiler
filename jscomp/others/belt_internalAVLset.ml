@@ -172,10 +172,9 @@ let rec reduceU s accu f =
   match s with
   | None -> accu
   | Some n  ->
-    let {left = l; value = k; right = r} = n  in
     reduceU
-      r
-      (f (reduceU  l accu f) k [@bs]) f
+      n.right
+      (f (reduceU  n.left accu f) n.value [@bs]) f
 
 let reduce s accu f = reduceU s accu (fun [@bs] a b -> f a b)
 
