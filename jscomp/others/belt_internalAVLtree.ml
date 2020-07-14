@@ -38,7 +38,7 @@ let rec copy n =
   match  n with
   | None -> n
   | Some n ->    
-    Some { n with left = (copy n.left);  right = (copy n.right)}
+    Some { n with left = copy n.left;  right = copy n.right}
 
 let create l x d r =
   let hl, hr  = treeHeight l,  treeHeight r in
@@ -66,14 +66,13 @@ let bal l x d r =
   let hl = match  l with None -> 0 | Some n -> n.height in
   let hr = match  r with None -> 0 | Some n -> n.height in
   if hl > hr + 2 then begin
-    match l with None -> assert false 
-    | Some {left = ll; key = lv; value = ld; right = lr} ->
+    match l with None -> assert false  | Some ({left = ll;   right = lr} as l) ->
     if treeHeight ll >= treeHeight lr then
-      create ll lv ld (create lr x d r)
+      create ll l.key l.value (create lr x d r)
     else begin
       match lr with None -> assert false 
       | Some lr -> 
-      create (create ll lv ld lr.left) lr.key lr.value (create lr.right x d r)
+      create (create ll l.key l.value lr.left) lr.key lr.value (create lr.right x d r)
     end
   end else if hr > hl + 2 then begin
     match r with None -> assert false
