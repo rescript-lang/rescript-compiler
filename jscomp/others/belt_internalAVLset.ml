@@ -24,10 +24,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 [@@@bs.config {flags = [|"-bs-noassertfalse" |] }]
 type 'value node  = {
-  mutable value : 'value;
-  mutable height : int;
-  mutable left : 'value t;
-  mutable right : 'value t;
+  mutable value : 'value; [@bs.as "v"]
+  mutable height : int; [@bs.as "h"]
+  mutable left : 'value t; [@bs.as "l"]
+  mutable right : 'value t; [@bs.as "r"]
 }
 and 'value t =  'value node option
 
@@ -181,9 +181,9 @@ let rec someU n p =
   match n with
   | None -> false
   | Some n  ->
-    p (n.value) [@bs] ||
-    n .left|. someU  p ||
-    n .right |. someU  p
+    p n.value [@bs] ||
+    someU n.left  p ||
+    someU n.right p
 
 let some n p = someU n (fun[@bs] a -> p a )
 (* [addMinElement v n] and [addMaxElement v n]
@@ -197,7 +197,7 @@ let rec addMinElement n v =
   match n with
   | None -> singleton v
   | Some n  ->
-    bal (addMinElement n.left v)  (n.value) n.right
+    bal (addMinElement n.left v) n.value n.right
 
 let rec addMaxElement n v =
   match n with
