@@ -143,12 +143,11 @@ let maxUndefined n =
   | None -> Js.undefined
   | Some n -> Js.Undefined.return (maxKV0Aux n)
 
-
+(* TODO: use kv ref *)
 let rec removeMinAuxWithRef n kr vr =
-  let ln, rn, kn, vn = n.left, n.right, n.key , n.value in
-  match  ln with
-  | None ->  kr .contents<- kn; vr .contents<- vn; rn
-  | Some ln -> bal (removeMinAuxWithRef ln kr vr) kn vn rn
+  match n.left with
+  | None ->  kr .contents<- n.key; vr.contents<- n.value; n.right
+  | Some ln -> bal (removeMinAuxWithRef ln kr vr) n.key n.value n.right
 
 
 
