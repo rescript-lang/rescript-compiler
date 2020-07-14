@@ -29,6 +29,22 @@ This is usually the file you want to build for the full playground experience.
 
 module Js = Jsoo_common.Js
 
+
+module Lang = struct
+  type t = OCaml | Reason | Res
+
+  let fromString t = match t with
+    | "ocaml" | "ml" -> Some OCaml
+    | "reason" | "re" -> Some Reason
+    | "res" -> Some Res
+    | _ -> None
+
+  let toString t = match t with
+    | OCaml -> "ml"
+    | Reason -> "re"
+    | Res -> "res"
+end
+
 type napkinError = {
   fullMsg: string; (* Full report string with all context *)
   text: string; (* simple explain message without any extra context *)
@@ -67,17 +83,42 @@ module ErrorRet = struct
         "errors" , inject @@ Js.array jsErrors;
         "type" , inject @@ Js.string "error"
       |])
+
+  let makeUnexpectedError msg =
+    Js.Unsafe.(obj [|
+        "js_error_msg" , inject @@ Js.string msg;
+        "type" , inject @@ Js.string "unexpected_error"
+      |])
 end
 
-let () =  
+let () =
   Bs_conditional_initial.setup_env ();
   Clflags.binary_annotations := false
 
-let error_of_exn e =   
-  match Location.error_of_exn e with 
-  | Some (`Ok e) -> Some e 
+let error_of_exn e =
+  match Location.error_of_exn e with
+  | Some (`Ok e) -> Some e
   | Some `Already_displayed
   | None -> None
+
+(* Handles parse / type check errors / unexpected errors and converts them to Js.object results *)
+let handle_err e =
+  (match error_of_exn e with
+   | Some error ->
+     Location.report_error Format.err_formatter  error;
+     ErrorRet.fromLocErrors [|error|]
+   | None ->
+     match e with
+     | NapkinParsingErrors errors ->
+       ErrorRet.fromNapkinErrors(Array.of_list errors)
+     | _ ->
+       let msg = Printexc.to_string e in
+       match e with
+       | Refmt_api.Migrate_parsetree.Def.Migration_error (_,loc)
+       | Refmt_api.Reason_errors.Reason_error (_,loc) ->
+         let error = Location.error ~loc msg in
+         ErrorRet.fromLocErrors [|error|]
+       | _ -> ErrorRet.makeUnexpectedError msg)
 
 let implementation ~use_super_errors impl str  : Js.Unsafe.obj =
   let modulename = "Test" in
@@ -96,19 +137,16 @@ let implementation ~use_super_errors impl str  : Js.Unsafe.obj =
 
   try
     Js_config.jsx_version :=  3 ; (* default *)
-    let ast = impl (str) in     
-    let ast = Ppx_entry.rewrite_implementation ast in 
-    let typed_tree = 
+    let ast = impl (str) in
+    let ast = Ppx_entry.rewrite_implementation ast in
+    let typed_tree =
       let (a,b,_,signature) = Typemod.type_implementation_more modulename modulename modulename env ast in
       (* finalenv := c ; *)
       types_signature := signature;
-      (a,b) in      
+      (a,b) in
   typed_tree
   |>  Translmod.transl_implementation modulename
-  |> (* Printlambda.lambda ppf *) (fun 
-    {Lambda.code = lam}
-
-    ->
+  |> (* Printlambda.lambda ppf *) (fun {Lambda.code = lam} ->
       let buffer = Buffer.create 1000 in
       let () = Js_dump_program.pp_deps_program
                           ~output_prefix:"" (* does not matter here *)
@@ -122,28 +160,7 @@ let implementation ~use_super_errors impl str  : Js.Unsafe.obj =
           "type" , inject @@ Js.string "success"
         |]))
   with
-  | e ->
-      begin match error_of_exn e with
-      | Some error ->
-        Location.report_error Format.err_formatter  error;
-        ErrorRet.fromLocErrors [|error|]
-      | None ->
-        match e with 
-        | NapkinParsingErrors errors -> 
-          ErrorRet.fromNapkinErrors(Array.of_list errors)
-        | _ ->
-          let msg = Printexc.to_string e in
-          match e with
-          | Refmt_api.Migrate_parsetree.Def.Migration_error (_,loc)
-          | Refmt_api.Reason_errors.Reason_error (_,loc) ->
-            let error = Location.error ~loc msg in
-            ErrorRet.fromLocErrors [|error|]
-          | _ -> 
-            Js.Unsafe.(obj [|
-                "js_error_msg" , inject @@ Js.string msg;
-                "type" , inject @@ Js.string "unexpected_error"
-              |])
-end
+  | e -> handle_err e;;
 
 let compile ~use_super_errors impl =
     implementation ~use_super_errors impl
@@ -159,8 +176,9 @@ let () =
   dir_directory "/static"
 
 module Converter = Refmt_api.Migrate_parsetree.Convert(Refmt_api.Migrate_parsetree.OCaml_404)(Refmt_api.Migrate_parsetree.OCaml_406)
+module Converter404 = Refmt_api.Migrate_parsetree.Convert(Refmt_api.Migrate_parsetree.OCaml_406)(Refmt_api.Migrate_parsetree.OCaml_404)
 
-let reason_parse str = 
+let reason_parse str =
   str |> Lexing.from_string |> Refmt_api.Reason_toolchain.RE.implementation |> Converter.copy_structure;;
 
 let ocaml_parse str =
@@ -170,14 +188,6 @@ module NapkinDriver = struct
   (* For now we are basically overriding functionality from Napkin_driver *)
   open Napkin_driver
 
-  (* needed to override parseImplementation with a ~src parameter *)
-  type ('diagnostics) parsingEngine = {
-    parseImplementation:
-      forPrinter:bool -> filename:string -> src:string
-      -> (Parsetree.structure, 'diagnostics) parseResult;
-    stringOfDiagnostics: source:string -> filename:string -> 'diagnostics  -> string
-  }
-
   (* adds ~src parameter *)
   let setup ~src ~filename ~forPrinter () =
     let mode = if forPrinter then Napkin_parser.Default
@@ -185,9 +195,10 @@ module NapkinDriver = struct
     in
     Napkin_parser.make ~mode src filename
 
-  let parsingEngine = {
-    parseImplementation = begin fun ~forPrinter ~filename ~src ->
-      let engine = setup ~filename ~forPrinter ~src () in
+  let parse_implementation ~sourcefile ~forPrinter ~src =
+    Location.input_name := sourcefile;
+    let parseResult =
+      let engine = setup ~filename:sourcefile ~forPrinter ~src () in
       let structure = Napkin_core.parseImplementation engine in
       let (invalid, diagnostics) = match engine.diagnostics with
         | [] as diagnostics -> (false, diagnostics)
@@ -200,22 +211,10 @@ module NapkinDriver = struct
         invalid;
         comments = List.rev engine.comments;
       }
-    end;
-
-    stringOfDiagnostics = begin fun ~source ~filename:_ diagnostics ->
-      let style = Napkin_diagnostics.parseReportStyle "" in
-      Napkin_diagnostics.stringOfReport ~style diagnostics source
-    end;
-  }
-  
-  let parse_implementation ~sourcefile ~src =
-    Location.input_name := sourcefile;
-    let parseResult =
-      parsingEngine.parseImplementation ~forPrinter:false ~filename:sourcefile ~src
     in
     let () = if parseResult.invalid then
         let errors = parseResult.diagnostics
-                     |> List.map (fun d -> 
+                     |> List.map (fun d ->
                          let fullMsg = Napkin_diagnostics.toString d parseResult.source in
                          let text = Napkin_diagnostics.explain d in
                          let loc = {
@@ -228,18 +227,90 @@ module NapkinDriver = struct
                            text;
                            loc;
                          }
-                         
+
                        )
                      |> List.rev
         in
         raise (NapkinParsingErrors errors)
     in
-    parseResult.parsetree
+    (parseResult.parsetree, parseResult.comments)
     [@@raises Location.Error]
 end
 
-let napkin_parse str =
-  NapkinDriver.parse_implementation ~sourcefile:"playground.res" ~src:str;;
+let napkin_parse src =
+  let (structure, _ ) = NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile:"playground.res" ~src
+  in
+  structure
+
+let parse_and_print ~(from:Lang.t) ~(to_:Lang.t) (src: string) =
+  let open Lang in
+  let sourcefile = "playground.res" in
+  let handle_ret ~lang str =
+    Js.Unsafe.(obj [|
+        "code", inject @@ Js.string str;
+        "lang", inject @@ Js.string (Lang.toString lang);
+        "type" , inject @@ Js.string "success"
+      |])
+  in
+  try
+    (match (from, to_) with
+     | (Reason, OCaml) ->
+       src |>
+       Lexing.from_string
+       |> Refmt_api.Reason_toolchain.RE.implementation_with_comments
+       |> Refmt_api.Reason_toolchain.ML.print_implementation_with_comments Format.str_formatter;
+       handle_ret ~lang:OCaml (Format.flush_str_formatter ())
+     | (OCaml, Reason) ->
+       src
+       |> Lexing.from_string
+       |> Refmt_api.Reason_toolchain.ML.implementation_with_comments
+       |> Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter;
+       handle_ret ~lang:Reason (Format.flush_str_formatter ())
+     | (Reason, Res) ->
+       let ast = src
+                 |> Lexing.from_string
+                 |> Refmt_api.Reason_toolchain.RE.implementation
+                 |> Converter.copy_structure
+       in
+       let structure = ast
+                       |> Napkin_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
+                       |> Napkin_ast_conversion.structure
+       in
+       handle_ret ~lang:Res (Napkin_printer.printImplementation ~width:80 structure ~comments:[])
+     | (Res, Reason) ->
+       let (structure, _) =
+         NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile ~src
+       in
+       Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter (Converter404.copy_structure structure, []);
+       handle_ret ~lang:Reason (Format.flush_str_formatter ())
+     | (OCaml, Res) ->
+       let structure = Lexing.from_string src |> Parse.implementation in
+       handle_ret ~lang:Res (Napkin_printer.printImplementation ~width:80 structure ~comments:[])
+     | (Res, OCaml) ->
+       let (structure, _) =
+         NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile ~src
+       in
+       Pprintast.structure Format.str_formatter structure;
+       handle_ret ~lang:OCaml (Format.flush_str_formatter ())
+     | (Res, Res) ->
+       (* Basically pretty printing *)
+       let (structure, comments) =
+         NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile ~src
+       in
+       handle_ret ~lang:Res (Napkin_printer.printImplementation ~width:80 structure ~comments)
+     | (OCaml, OCaml) ->
+       handle_ret ~lang:OCaml src
+     | (Reason, Reason) ->
+       let astAndComments = src
+                            |> Lexing.from_string
+                            |> Refmt_api.Reason_toolchain.RE.implementation_with_comments
+       in
+       Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter astAndComments;
+       handle_ret ~lang:Reason (Format.flush_str_formatter ())
+    )
+  with
+  | e -> handle_err e
+
 
 let make_compiler ~name impl =
   export name
@@ -254,12 +325,55 @@ let make_compiler ~name impl =
                     Js.wrap_meth_callback
                       (fun _ code ->
                          (compile impl ~use_super_errors:true (Js.to_string code)));
+                    "pretty_print",
+                    inject @@
+                    Js.wrap_meth_callback
+                      (fun _ code ->
+                         (match name with
+                          | "reason" -> parse_and_print ~from:Lang.Reason ~to_:Lang.Reason (Js.to_string code)
+                          | "napkin" -> parse_and_print ~from:Lang.Res ~to_:Lang.Res (Js.to_string code)
+                          | n -> ErrorRet.makeUnexpectedError (n ^ " pretty printing not supported")));
                     "version", Js.Unsafe.inject (Js.string (match name with | "reason" -> Refmt_api.version | _ -> Bs_version.version));
                   |]))
 
 let () = make_compiler ~name:"ocaml" ocaml_parse
 let () = make_compiler ~name:"reason" reason_parse
 let () = make_compiler ~name:"napkin" napkin_parse
+
+let () =
+  export "convert"
+    (Js.Unsafe.(obj
+                  [|"reason_to_ocaml",
+                    inject @@
+                    Js.wrap_meth_callback
+                      (fun _ code ->
+                         (parse_and_print ~from:Lang.Reason ~to_:Lang.OCaml (Js.to_string code)));
+                    "ocaml_to_reason",
+                    inject @@
+                    Js.wrap_meth_callback
+                      (fun _ code ->
+                         (parse_and_print ~from:Lang.OCaml ~to_:Lang.Reason (Js.to_string code)));
+                    "reason_to_res",
+                    inject @@
+                    Js.wrap_meth_callback
+                      (fun _ code ->
+                         (parse_and_print ~from:Lang.Reason ~to_:Lang.Res (Js.to_string code)));
+                    "res_to_reason",
+                    inject @@
+                    Js.wrap_meth_callback
+                      (fun _ code ->
+                         (parse_and_print ~from:Lang.Res ~to_:Lang.Reason (Js.to_string code)));
+                    "res_to_ocaml",
+                    inject @@
+                    Js.wrap_meth_callback
+                      (fun _ code ->
+                         (parse_and_print ~from:Lang.Res ~to_:Lang.OCaml (Js.to_string code)));
+                    "ocaml_to_res",
+                    inject @@
+                    Js.wrap_meth_callback
+                      (fun _ code ->
+                         (parse_and_print ~from:Lang.OCaml ~to_:Lang.Res (Js.to_string code)));
+                  |]))
 
 (* local variables: *)
 (* compile-command: "ocamlbuild -use-ocamlfind -pkg compiler-libs -no-hygiene driver.cmo" *)
