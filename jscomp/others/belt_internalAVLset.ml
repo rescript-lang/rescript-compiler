@@ -24,10 +24,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 [@@@bs.config {flags = [|"-bs-noassertfalse" |] }]
 type 'value node  = {
-  mutable value : 'value;
-  mutable height : int;
-  mutable left : 'value t;
-  mutable right : 'value t;
+  mutable value : 'value; [@bs.as "v"]
+  mutable height : int; [@bs.as "h"]
+  mutable left : 'value t; [@bs.as "l"]
+  mutable right : 'value t; [@bs.as "r"]
 }
 and 'value t =  'value node option
 
@@ -80,30 +80,20 @@ let bal l v r =
   let hl = match l with None -> 0 | Some n -> n.height in
   let hr = match r with None -> 0 | Some n -> n.height in
   if hl > hr + 2 then begin
-    (* [l] could not be None *)
-    match l with None -> assert false
-    | Some {left = ll; value = lv; right = lr} ->
-    if heightGe ll  lr then
-      create ll lv (create lr v r)
-    else begin
-      (* [lr] could not be None*)
-      match lr with None -> assert false 
-      | Some lr -> 
-      create (create ll lv lr.left) lr.value (create lr.right v r)
-    end
-  end else if hr > hl + 2 then begin
-    (* [r] could not be None *)
-    match r with None -> assert false
-    | Some {left = rl; value = rv; right = rr} ->
-    if heightGe rr  rl then
-      create (create l v rl) rv rr
-    else begin
-      (* [rl] could not be None *)
-      match rl with None -> assert false 
-      | Some rl -> 
-      create (create l v rl.left) rl.value (create rl.right rv rr)
-    end
-  end else
+    match l with None -> assert false | Some ({left = ll;  right = lr} as l) ->
+      if heightGe ll  lr then
+        create ll l.value (create lr v r)
+      else 
+        match lr with None -> assert false | Some lr -> 
+          create (create ll l.value lr.left) lr.value (create lr.right v r)    
+  end else if hr > hl + 2 then 
+    match r with None -> assert false | Some ({left = rl; right = rr} as r) ->
+      if heightGe rr  rl then
+        create (create l v rl) r.value rr
+      else 
+        match rl with None -> assert false | Some rl -> 
+          create (create l v rl.left) rl.value (create rl.right r.value rr)
+  else
     Some {left = l ; value = v ; right = r; height = (if hl >= hr then hl + 1 else hr + 1)}
 
 
@@ -140,10 +130,9 @@ let maxUndefined n =
   | Some n -> Js.Undefined.return (max0Aux n)
 
 let rec removeMinAuxWithRef n v =
-  let {left = ln; right = rn; value = kn} = n  in
-  match ln with
-  | None ->  v.contents<- kn ; rn
-  | Some ln -> bal (removeMinAuxWithRef ln v) kn rn
+  match n.left with
+  | None ->  v.contents<- n.value ; n.right
+  | Some ln -> bal (removeMinAuxWithRef ln v) n.value n.right
 
 
 
@@ -172,10 +161,9 @@ let rec reduceU s accu f =
   match s with
   | None -> accu
   | Some n  ->
-    let {left = l; value = k; right = r} = n  in
     reduceU
-      r
-      (f (reduceU  l accu f) k [@bs]) f
+      n.right
+      (f (reduceU  n.left accu f) n.value [@bs]) f
 
 let reduce s accu f = reduceU s accu (fun [@bs] a b -> f a b)
 
@@ -193,9 +181,9 @@ let rec someU n p =
   match n with
   | None -> false
   | Some n  ->
-    p (n.value) [@bs] ||
-    n .left|. someU  p ||
-    n .right |. someU  p
+    p n.value [@bs] ||
+    someU n.left  p ||
+    someU n.right p
 
 let some n p = someU n (fun[@bs] a -> p a )
 (* [addMinElement v n] and [addMaxElement v n]
@@ -209,7 +197,7 @@ let rec addMinElement n v =
   match n with
   | None -> singleton v
   | Some n  ->
-    bal (addMinElement n.left v)  (n.value) n.right
+    bal (addMinElement n.left v) n.value n.right
 
 let rec addMaxElement n v =
   match n with
