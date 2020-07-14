@@ -14,11 +14,11 @@
 
 [@@@bs.config {flags = [|"-bs-noassertfalse" |] }]
 type ('k, 'v) node  = {
-  mutable key : 'k;
-  mutable value : 'v;
-  mutable height : int;
-  mutable left : ('k,'v) t;
-  mutable right : ('k,'v) t
+  mutable key : 'k; [@bs.as "k"]
+  mutable value : 'v; [@bs.as "v"]
+  mutable height : int; [@bs.as "h"]
+  mutable left : ('k,'v) t; [@bs.as "l"]
+  mutable right : ('k,'v) t [@bs.as "r"]
 }
 and ('key, 'a) t = ('key, 'a) node option
 
