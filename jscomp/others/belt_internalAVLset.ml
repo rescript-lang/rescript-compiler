@@ -80,25 +80,21 @@ let bal l v r =
   let hl = match l with None -> 0 | Some n -> n.height in
   let hr = match r with None -> 0 | Some n -> n.height in
   if hl > hr + 2 then begin
-    (* [l] could not be None *)
     match l with None -> assert false
     | Some {left = ll; value = lv; right = lr} ->
     if heightGe ll  lr then
       create ll lv (create lr v r)
     else begin
-      (* [lr] could not be None*)
       match lr with None -> assert false 
       | Some lr -> 
       create (create ll lv lr.left) lr.value (create lr.right v r)
     end
   end else if hr > hl + 2 then begin
-    (* [r] could not be None *)
     match r with None -> assert false
     | Some {left = rl; value = rv; right = rr} ->
     if heightGe rr  rl then
       create (create l v rl) rv rr
     else begin
-      (* [rl] could not be None *)
       match rl with None -> assert false 
       | Some rl -> 
       create (create l v rl.left) rl.value (create rl.right rv rr)
@@ -140,10 +136,9 @@ let maxUndefined n =
   | Some n -> Js.Undefined.return (max0Aux n)
 
 let rec removeMinAuxWithRef n v =
-  let {left = ln; right = rn; value = kn} = n  in
-  match ln with
-  | None ->  v.contents<- kn ; rn
-  | Some ln -> bal (removeMinAuxWithRef ln v) kn rn
+  match n.left with
+  | None ->  v.contents<- n.value ; n.right
+  | Some ln -> bal (removeMinAuxWithRef ln v) n.value n.right
 
 
 
