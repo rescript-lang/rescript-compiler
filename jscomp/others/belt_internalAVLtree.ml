@@ -65,26 +65,21 @@ let updateValue n newValue =
 let bal l x d r =
   let hl = match  l with None -> 0 | Some n -> n.height in
   let hr = match  r with None -> 0 | Some n -> n.height in
-  if hl > hr + 2 then begin
+  if hl > hr + 2 then 
     match l with None -> assert false  | Some ({left = ll;   right = lr} as l) ->
-    if treeHeight ll >= treeHeight lr then
-      create ll l.key l.value (create lr x d r)
-    else begin
-      match lr with None -> assert false 
-      | Some lr -> 
-      create (create ll l.key l.value lr.left) lr.key lr.value (create lr.right x d r)
-    end
-  end else if hr > hl + 2 then begin
-    match r with None -> assert false
-    | Some {left = rl; key = rv; value = rd; right = rr} -> 
-    if treeHeight rr >= treeHeight rl then
-      create (create l x d rl) rv rd rr
-    else begin
-      match rl with None -> assert false 
-      | Some rl ->
-      create (create l x d rl.left) rl.key rl.value (create rl.right rv rd rr)
-    end
-  end else
+      if treeHeight ll >= treeHeight lr then
+        create ll l.key l.value (create lr x d r)
+      else 
+        match lr with None -> assert false | Some lr -> 
+          create (create ll l.key l.value lr.left) lr.key lr.value (create lr.right x d r)
+  else if hr > hl + 2 then
+    match r with None -> assert false | Some ({left = rl; right = rr} as r) -> 
+      if treeHeight rr >= treeHeight rl then
+        create (create l x d rl) r.key r.value rr
+      else
+        match rl with None -> assert false | Some rl ->
+          create (create l x d rl.left) rl.key rl.value (create rl.right r.key r.value rr)
+  else
     Some { left = l; key = x ; value = d ; right = r ; height = (if hl >= hr then hl + 1 else hr + 1)}
 
 
