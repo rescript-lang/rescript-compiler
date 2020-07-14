@@ -72,7 +72,7 @@ let printReason ~refmtPath ~isInterface ~filename =
     Filename.open_temp_file "refmt" (if isInterface then ".rei" else ".re") in
   close_out chan;
   (* Write the source code found in "filename" into the tempfile *)
-  IO.writeFile ~filename:tempFilename ~content:(IO.readFile ~filename);
+  IO.writeFile ~filename:tempFilename ~contents:(IO.readFile ~filename);
   let cmd = Printf.sprintf "%s --print=binary --in-place --interface=%b %s" refmtPath isInterface tempFilename in
   (* run refmt in-place in binary mode on the tempfile *)
   ignore (Sys.command cmd);

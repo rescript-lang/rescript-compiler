@@ -7,4 +7,4 @@ val readFile: filename: string -> string
 val readStdin: unit -> string
 
 (* writes "content" into file with name "filename" *)
-val writeFile: filename: string -> content: string -> unit
+val writeFile: filename: string -> contents: string -> unit

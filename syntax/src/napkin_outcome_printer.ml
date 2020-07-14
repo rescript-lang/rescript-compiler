@@ -32,7 +32,7 @@
        );
      done;
      Buffer.contents b
- 
+
    (* let rec print_ident fmt ident = match ident with
      | Outcometree.Oide_ident s -> Format.pp_print_string fmt s
      | Oide_dot (id, s) ->
@@ -44,7 +44,7 @@
        Format.pp_print_char fmt '(';
        print_ident fmt id2;
        Format.pp_print_char fmt ')' *)
- 
+
      let rec printOutIdentDoc (ident : Outcometree.out_ident) =
        match ident with
        | Oide_ident s -> Doc.text s
@@ -59,13 +59,13 @@
            printOutIdentDoc arg;
            Doc.rparen;
          ]
- 
+
    let printOutAttributeDoc (outAttribute: Outcometree.out_attribute) =
      Doc.concat [
        Doc.text "@";
        Doc.text outAttribute.oattr_name;
      ]
- 
+
    let printOutAttributesDoc (attrs: Outcometree.out_attribute list) =
      match attrs with
      | [] -> Doc.nil
@@ -76,7 +76,7 @@
          );
          Doc.line;
        ]
- 
+
    let rec collectArrowArgs (outType: Outcometree.out_type) args =
      match outType with
      | Otyp_arrow (label, argType, returnType) ->
@@ -84,7 +84,7 @@
        collectArrowArgs returnType (arg::args)
      | _ as returnType ->
        (List.rev args, returnType)
- 
+
    let rec collectFunctorArgs (outModuleType: Outcometree.out_module_type) args =
      match outModuleType with
      | Omty_functor (lbl, optModType, returnModType) ->
@@ -92,7 +92,7 @@
        collectFunctorArgs returnModType (arg::args)
      | _ ->
        (List.rev args, outModuleType)
- 
+
    let rec printOutTypeDoc (outType: Outcometree.out_type) =
      match outType with
      | Otyp_abstract | Otyp_variant _ (* don't support poly-variants atm *) | Otyp_open -> Doc.nil
@@ -130,13 +130,13 @@
      (* example: Red | Blue | Green | CustomColour(float, float, float) *)
      | Otyp_sum constructors ->
        printOutConstructorsDoc constructors
- 
+
      (* example: {"name": string, "age": int} *)
      | Otyp_constr (
          (Oide_dot ((Oide_ident "Js"), "t")),
          [Otyp_object (fields, rest)]
        ) -> printObjectFields fields rest
- 
+
      (* example: node<root, 'value> *)
      | Otyp_constr (outIdent, args) ->
        let argsDoc = match args with
@@ -235,7 +235,7 @@
        ]
      | Otyp_module (_modName, _stringList, _outTypes) ->
          Doc.nil
- 
+
    and printObjectFields fields rest =
      let dots = match rest with
      | Some non_gen -> Doc.text ((if non_gen then "_" else "") ^ "..")
@@ -263,8 +263,8 @@
          Doc.rbrace;
        ]
      )
- 
- 
+
+
    and printOutConstructorsDoc constructors =
      Doc.group (
        Doc.indent (
@@ -281,7 +281,7 @@
          ]
        )
      )
- 
+
    and printOutConstructorDoc (name, args, gadt) =
        let gadtDoc = match gadt with
        | Some outType ->
@@ -332,7 +332,7 @@
            gadtDoc
          ]
        )
- 
+
    and printRecordDeclRowDoc (name, mut, arg) =
      Doc.group (
        Doc.concat [
@@ -342,7 +342,7 @@
          printOutTypeDoc arg;
        ]
      )
- 
+
    and printRecordDeclarationDoc ~inline rows =
      let content = Doc.concat [
        Doc.lbrace;
@@ -361,18 +361,18 @@
      if not inline then
        Doc.group content
      else content
- 
+
    let printOutType fmt outType =
      Format.pp_print_string fmt
        (Doc.toString ~width:80 (printOutTypeDoc outType))
- 
+
    let printTypeParameterDoc (typ, (co, cn)) =
      Doc.concat [
        if not cn then Doc.text "+" else if not co then Doc.text "-" else Doc.nil;
        if typ = "_" then Doc.text "_" else Doc.text ("'" ^ typ)
      ]
- 
- 
+
+
    let rec printOutSigItemDoc (outSigItem : Outcometree.out_sig_item) =
      match outSigItem with
      | Osig_class _ | Osig_class_type _ -> Doc.nil
@@ -540,7 +540,7 @@
          constraints
        ]
      )
- 
+
    and printOutModuleTypeDoc (outModType : Outcometree.out_module_type) =
      match outModType with
      | Omty_abstract -> Doc.nil
@@ -601,7 +601,7 @@
          ]
        )
      | Omty_alias _ident -> Doc.nil
- 
+
    and printOutSignatureDoc (signature : Outcometree.out_sig_item list) =
      let rec loop signature acc =
        match signature with
@@ -639,7 +639,7 @@
        Doc.breakableGroup ~forceBreak:true (
          Doc.join ~sep:Doc.line docs
        )
- 
+
    and printOutExtensionConstructorDoc (outExt : Outcometree.out_extension_constructor) =
      let typeParams = match outExt.oext_type_params with
      | [] -> Doc.nil
@@ -653,7 +653,7 @@
                Doc.join ~sep:(Doc.concat [Doc.comma; Doc.line]) (List.map
                  (fun ty -> Doc.text (if ty = "_" then ty else "'" ^ ty))
                  params
- 
+
                )
              ]
            );
@@ -661,14 +661,14 @@
            Doc.greaterThan;
          ]
        )
- 
+
      in
      Doc.group (
        Doc.concat [
          Doc.text "type ";
          Doc.text outExt.oext_type_name;
          typeParams;
-         Doc.text " +=";
+         Doc.text " += ";
          Doc.line;
          if outExt.oext_private = Asttypes.Private then
            Doc.text "private "
@@ -678,7 +678,7 @@
            (outExt.oext_name, outExt.oext_args, outExt.oext_ret_type)
        ]
      )
- 
+
    and printOutTypeExtensionDoc (typeExtension : Outcometree.out_type_extension) =
      let typeParams = match typeExtension.otyext_params with
      | [] -> Doc.nil
@@ -692,7 +692,7 @@
                Doc.join ~sep:(Doc.concat [Doc.comma; Doc.line]) (List.map
                  (fun ty -> Doc.text (if ty = "_" then ty else "'" ^ ty))
                  params
- 
+
                )
              ]
            );
@@ -700,14 +700,14 @@
            Doc.greaterThan;
          ]
        )
- 
+
      in
      Doc.group (
        Doc.concat [
          Doc.text "type ";
          Doc.text typeExtension.otyext_name;
          typeParams;
-         Doc.text " +=";
+         Doc.text " += ";
          if typeExtension.otyext_private = Asttypes.Private then
            Doc.text "private "
          else
@@ -715,15 +715,15 @@
          printOutConstructorsDoc typeExtension.otyext_constructors;
        ]
      )
- 
+
    let printOutSigItem fmt outSigItem =
      Format.pp_print_string fmt
        (Doc.toString ~width:80 (printOutSigItemDoc outSigItem))
- 
+
    let printOutSignature fmt signature =
      Format.pp_print_string fmt
        (Doc.toString ~width:80 (printOutSignatureDoc signature))
- 
+
    let validFloatLexeme s =
      let l = String.length s in
      let rec loop i =
@@ -732,7 +732,7 @@
        | '0' .. '9' | '-' -> loop (i+1)
        | _ -> s
      in loop 0
- 
+
    let floatRepres f =
      match classify_float f with
      | FP_nan -> "nan"
@@ -746,7 +746,7 @@
          if f = (float_of_string [@doesNotRaise]) s2 then s2 else
          Printf.sprintf "%.18g" f
        in validFloatLexeme float_val
- 
+
    let rec printOutValueDoc (outValue : Outcometree.out_value) =
      match outValue with
      | Oval_array outValues ->
@@ -859,7 +859,7 @@
        )
      (* Not supported by NapkinScript *)
      | Oval_variant _ -> Doc.nil
- 
+
    let printOutExceptionDoc exc outValue =
      match exc with
      | Sys.Break -> Doc.text "Interrupted."
@@ -876,7 +876,7 @@
            ]
          )
        )
- 
+
    let printOutPhraseSignature signature =
      let rec loop signature acc =
       match signature with
@@ -922,7 +922,7 @@
       Doc.breakableGroup ~forceBreak:true (
         Doc.join ~sep:Doc.line (loop signature [])
       )
- 
+
    let printOutPhraseDoc (outPhrase : Outcometree.out_phrase) =
      match outPhrase with
      | Ophr_eval (outValue, outType) ->
@@ -943,27 +943,27 @@
      | Ophr_signature signature -> printOutPhraseSignature signature
      | Ophr_exception (exc, outValue) ->
        printOutExceptionDoc exc outValue
- 
+
    let printOutPhrase fmt outPhrase =
      Format.pp_print_string fmt
        (Doc.toString ~width:80 (printOutPhraseDoc outPhrase))
- 
+
    let printOutModuleType fmt outModuleType =
      Format.pp_print_string fmt
        (Doc.toString ~width:80 (printOutModuleTypeDoc outModuleType))
- 
+
    let printOutTypeExtension fmt typeExtension =
      Format.pp_print_string fmt
        (Doc.toString ~width:80 (printOutTypeExtensionDoc typeExtension))
- 
+
    let printOutValue fmt outValue =
      Format.pp_print_string fmt
        (Doc.toString ~width:80 (printOutValueDoc outValue))
- 
-   
 
- 
-   
+
+
+
+
 (* Not supported in Napkin *)
 (* Oprint.out_class_type *)
    let setup  = lazy begin
@@ -974,5 +974,5 @@
     Oprint.out_signature := printOutSignature;
     Oprint.out_type_extension := printOutTypeExtension;
     Oprint.out_phrase := printOutPhrase
-  end  
-     
+  end
+

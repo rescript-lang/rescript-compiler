@@ -32,8 +32,8 @@ let readStdin () =
   in
   loop ()
 
-let writeFile ~filename ~content =
+let writeFile ~filename ~contents:txt =
   let chan = open_out_bin filename in
-  output_string chan content;
+  output_string chan txt;
   close_out chan
 [@@raises Sys_error]
