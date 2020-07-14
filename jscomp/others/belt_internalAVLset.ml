@@ -80,26 +80,20 @@ let bal l v r =
   let hl = match l with None -> 0 | Some n -> n.height in
   let hr = match r with None -> 0 | Some n -> n.height in
   if hl > hr + 2 then begin
-    match l with None -> assert false
-    | Some {left = ll; value = lv; right = lr} ->
-    if heightGe ll  lr then
-      create ll lv (create lr v r)
-    else begin
-      match lr with None -> assert false 
-      | Some lr -> 
-      create (create ll lv lr.left) lr.value (create lr.right v r)
-    end
-  end else if hr > hl + 2 then begin
-    match r with None -> assert false
-    | Some {left = rl; value = rv; right = rr} ->
-    if heightGe rr  rl then
-      create (create l v rl) rv rr
-    else begin
-      match rl with None -> assert false 
-      | Some rl -> 
-      create (create l v rl.left) rl.value (create rl.right rv rr)
-    end
-  end else
+    match l with None -> assert false | Some ({left = ll;  right = lr} as l) ->
+      if heightGe ll  lr then
+        create ll l.value (create lr v r)
+      else 
+        match lr with None -> assert false | Some lr -> 
+          create (create ll l.value lr.left) lr.value (create lr.right v r)    
+  end else if hr > hl + 2 then 
+    match r with None -> assert false | Some ({left = rl; right = rr} as r) ->
+      if heightGe rr  rl then
+        create (create l v rl) r.value rr
+      else 
+        match rl with None -> assert false | Some rl -> 
+          create (create l v rl.left) rl.value (create rl.right r.value rr)
+  else
     Some {left = l ; value = v ; right = r; height = (if hl >= hr then hl + 1 else hr + 1)}
 
 
