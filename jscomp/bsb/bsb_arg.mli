@@ -30,7 +30,7 @@ type unit_action =
   | Unit_call of (unit -> unit) 
   | Unit_set of bool ref 
 
-exception Bad of string
+exception Bsb_bad_arg of string
 
 type spec =
   | Unit of unit_action

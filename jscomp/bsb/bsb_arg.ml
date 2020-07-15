@@ -42,7 +42,7 @@
    | String of string_action 
  
  
- exception Bad of string
+ exception Bsb_bad_arg of string
  
  
  type error =
@@ -122,7 +122,7 @@ let rec unsafe_loop i (l : t) n x =
        b +> "' needs an argument.\n"      
    end;
    usage_b b ~usage speclist ;
-   raise (Bad (Ext_buffer.contents b))
+   raise (Bsb_bad_arg (Ext_buffer.contents b))
  
  
  let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) anonfun = 
