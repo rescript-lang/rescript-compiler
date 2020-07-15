@@ -465,9 +465,9 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   \     to <list>.  See option -w for the syntax of <list>.\n\
   \     Default setting is " ^ Bsc_warnings.defaults_warn_error;
     "-warn-help", Unit (Warnings.help_warnings), " Show description of warning numbers";
-    "-color", Symbol (["auto"; "always"; "never"], (fun option -> match Clflags.parse_color_setting option with
+    "-color", String (fun option -> match Clflags.parse_color_setting option with
 | None -> ()
-| Some setting -> Clflags.color := Some setting)),
+| Some setting -> Clflags.color := Some setting),
 
 "  Enable or disable colors in compiler messages\n\
 \    The following settings are supported:\n\

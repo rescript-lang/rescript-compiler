@@ -41,8 +41,8 @@ let  unit_set_spec b : spec = Unit (Unit_set b)
 
 
 let force_regenerate = ref false
-let bsb_main_flags : (string * spec * string) list=
-  [
+let bsb_main_flags : (string * spec * string) array =
+  [|
     "-v", call_spec print_version_string, 
     "Print version and exit";
     "-version", call_spec print_version_string, 
@@ -97,7 +97,7 @@ let bsb_main_flags : (string * spec * string) list=
       )),
     "Builds the entries specified in the bsconfig that match the given backend. Can be either 'js', 'bytecode' or 'native'.";
 #end
-  ]
+  |]
 
 
 (*Note that [keepdepfile] only makes sense when combined with [deps] for optimization*)

@@ -49,27 +49,32 @@
    | Unknown of string
    | Missing of string
  
- type t = (string * spec * string) list 
- 
- let rec assoc3 (x : string) (l : t) =
-   match l with
-   | [] -> None
-   | (y1, y2, _) :: _ when y1 = x -> Some y2
-   | _ :: t -> assoc3 x t
+type t = (string * spec * string) array
+
+let rec unsafe_loop i (l : t) n x = 
+  if i = n then None
+  else 
+    let (y1,y2,_) =  Array.unsafe_get l i in
+    if y1 = x then  Some y2
+    else unsafe_loop (i + 1) l n x 
+
+ let assoc3 (x : string) (l : t) =
+   let n = Array.length l in 
+   unsafe_loop 0 l n x 
  ;;
  
  
  let (+>) = Ext_buffer.add_string
  
- let usage_b (buf : Ext_buffer.t) ~usage speclist  =
+ let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
    buf +> usage;
    buf +> "\nOptions:\n";
    let max_col = ref 0 in 
-   Ext_list.iter speclist (fun (key,_,_) -> 
+   Ext_array.iter speclist (fun (key,_,_) -> 
        if String.length key > !max_col then 
          max_col := String.length key
      );
-   Ext_list.iter speclist (fun (key,_,doc) -> 
+   Ext_array.iter speclist (fun (key,_,doc) -> 
        if not (Ext_string.starts_with doc "*internal*") then begin 
          buf +> "  ";
          buf +> key ; 
@@ -100,7 +105,7 @@
  
  
    
- let stop_raise ~usage ~(error : error) speclist   =
+ let stop_raise ~usage ~(error : error) (speclist : t )  =
    let b = Ext_buffer.create 200 in  
    begin match error with
      | Unknown ("-help" | "--help" | "-h") -> 

@@ -46,5 +46,5 @@ val parse_exn :
   argv:string array -> 
   ?start:int ->
   ?finish:int ->
-  (key * spec * doc) list -> 
+  (key * spec * doc) array -> 
   anon_fun  -> unit
