@@ -151,7 +151,7 @@ let handle_anonymous_arg ~rev_args =
   match rev_args with 
   | [] -> ()  
   | arg:: _ ->
-    raise (Bsb_arg.Bsb_bad_arg ("Unknown arg \"" ^ arg ^ "\""))
+    Ext_arg.bad_arg ("Unknown arg \"" ^ arg ^ "\"")
 
 
 let program_exit () =
@@ -273,7 +273,7 @@ let () =
       start.pos_fname start.pos_lnum
       Ext_json_parse.report_error e ;
     exit 2
-  | Bsb_arg.Bsb_bad_arg s 
+  | Ext_arg.Bad_arg s 
   | Sys_error s -> 
     Format.fprintf Format.err_formatter
       "@{<error>Error:@} %s@."

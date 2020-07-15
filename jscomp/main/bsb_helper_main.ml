@@ -34,15 +34,13 @@ let () =
   ~progname:Sys.argv.(0)
   ~argv:Sys.argv
   ~start:1
-  [
-    "-g",  Bool dev_group ,
-    "Set the dev group (default to be 0)"
-    ;
+  [|
+    "-hash",  String hash, "Set hash(internal)";
+    "-g",  Bool dev_group, "Set the dev group (default to be 0)";
     "-bs-ns",  String (Call (fun s -> namespace := Some s)),
     "Set namespace";
-    "-hash",  String hash,
-    "Set hash(internal)";
-  ] (fun ~rev_args -> 
+
+  |] (fun ~rev_args -> 
       match rev_args with
       | [x]
         ->  Bsb_helper_depfile_gen.emit_d

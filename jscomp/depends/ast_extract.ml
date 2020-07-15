@@ -141,7 +141,7 @@ let check_suffix  name  =
   else if Ext_path.check_suffix_case name !Config.interface_suffix then 
     `Mli,   Ext_filename.chop_extension_maybe  name 
   else 
-    raise(Arg.Bad("don't know what to do with " ^ name))
+    Ext_arg.bad_arg ("don't know what to do with " ^ name)
 
 
 let collect_ast_map ppf files parse_implementation parse_interface  =

@@ -71,7 +71,7 @@ type valid_input =
   | Cmi
   | Unknown
 
-let bad_arg s = raise_notrace (Bsc_args.Bsc_bad_arg s)
+
 
 (** This is per-file based, 
     when [ocamlc] [-c -o another_dir/xx.cmi] 
@@ -168,7 +168,7 @@ let process_file ppf sourcefile =
     Printtyp.signature Format.std_formatter cmi_sign ; 
     Format.pp_print_newline Format.std_formatter ()      
   | Unknown -> 
-    bad_arg ("don't know what to do with " ^ sourcefile)
+    Ext_arg.bad_arg ("don't know what to do with " ^ sourcefile)
 let usage = "Usage: bsc <options> <files>\nOptions are:"
 
 let ppf = Format.err_formatter
@@ -184,7 +184,7 @@ let anonymous ~(rev_args : string list) =
         ~target:output
         Ppx_entry.rewrite_implementation
         Ppx_entry.rewrite_signature
-    | _ -> bad_arg "Wrong format when use -as-ppx"
+    | _ -> Ext_arg.bad_arg "Wrong format when use -as-ppx"
   else 
     begin 
       match rev_args with 
@@ -224,8 +224,8 @@ let define_variable s =
   match Ext_string.split ~keep_empty:true s '=' with
   | [key; v] -> 
     if not (Lexer.define_key_value key v)  then 
-       bad_arg ("illegal definition: " ^ s)
-  | _ -> bad_arg ("illegal definition: " ^ s)
+       Ext_arg.bad_arg ("illegal definition: " ^ s)
+  | _ -> Ext_arg.bad_arg ("illegal definition: " ^ s)
 
 let print_standard_library () = 
   let (//) = Filename.concat in   
@@ -258,14 +258,21 @@ let [@inline] unit_call s : Bsc_args.spec =
     Unit (Unit_call s)   
 let [@inline] string_list_add s : Bsc_args.spec = 
     String (String_list_add s)
+
+(* mostly common used to list in the beginning to make search fast
+*)
 let buckle_script_flags : (string * Bsc_args.spec * string) array =
-  [|"-bs-super-errors",
+  [|
+  "-I", string_list_add  Clflags.include_dirs ,
+  "<dir>  Add <dir> to the list of include directories" ;
+
+  "-bs-super-errors",
      unit_lazy Super_main.setup
       (* needs to be set here instead of, say, setting a
         Js_config.better_errors flag; otherwise, when `anonymous` runs, we
         don't have time to set the custom printer before it starts outputting
         warnings *)
-
+      (* FIXME: the order should no longer matter*)
      ,
    "Better error message combined with other tools "
   ;
@@ -278,7 +285,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
   ;
   "-bs-jsx",
       string_call (fun i -> 
-      (if i <> "3" then bad_arg (" Not supported jsx version : " ^  i));
+      (if i <> "3" then Ext_arg.bad_arg (" Not supported jsx version : " ^  i));
       Js_config.jsx_version := 3),
     "*internal* Set jsx version"
   ;
@@ -327,12 +334,11 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     set Js_config.syntax_only,
    "Only check syntax"  
   ;
-  "-bs-eval", 
-    String (String_call (fun  s -> eval s ~suffix:Literals.suffix_ml)), 
+  "-bs-eval", string_call (fun  s -> eval s ~suffix:Literals.suffix_ml), 
    "*internal* (experimental) set the string to be evaluated in OCaml syntax"
   ;
   
-  "-e", String (String_call (fun  s -> eval s ~suffix:Literals.suffix_re)), 
+  "-e",  string_call (fun  s -> eval s ~suffix:Literals.suffix_re), 
     " (experimental) set the string to be evaluated in ReasonML syntax";
   
   "-bs-cmi-only", 
@@ -433,7 +439,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
       | Ml | Mli -> `ml
       | Res | Resi -> `res 
       | Re | Rei -> `refmt (Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe") 
-      | _ -> bad_arg ("don't know what to do with " ^ input) in   
+      | _ -> Ext_arg.bad_arg ("don't know what to do with " ^ input) in   
     output_string stdout (Napkin_multi_printer.print syntax ~input)
     ),
     " (internal) format as Res syntax"
@@ -457,8 +463,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
    " Print compiler version and location of standard library and exit";  
   "-version", unit_call print_version_string, " Print version and exit";
   
-  "-I", string_list_add  Clflags.include_dirs ,
-   "<dir>  Add <dir> to the list of include directories" ;
   "-pp", string_optional_set Clflags.preprocessor,
    "<command>  Pipe sources through preprocessor <command>";
   "-absname", set Location.absname, " Show absolute filenames in error messages";  
@@ -531,10 +535,10 @@ let _ : unit =
       ~argv:Sys.argv 
       buckle_script_flags anonymous ~usage;
   with 
-  | Bsc_args.Bsc_bad_arg msg ->   
+  | Ext_arg.Bad_arg msg ->   
     Format.eprintf "%s" msg ;
     exit 2
-  |x -> 
+  | x -> 
     begin
 #if undefined BS_RELEASE_BUILD then      
       Ext_obj.bt ();

@@ -25,8 +25,6 @@
 
 
 
- type key = string
- type doc = string
  type anon_fun = rev_args:string list -> unit
  
  type string_action = 
@@ -42,26 +40,14 @@
    | String of string_action 
  
  
- exception Bsb_bad_arg of string
- 
+
  
  type error =
    | Unknown of string
    | Missing of string
  
-type t = (string * spec * string) array
+type t = spec Ext_arg.t
 
-let rec unsafe_loop i (l : t) n x = 
-  if i = n then None
-  else 
-    let (y1,y2,_) =  Array.unsafe_get l i in
-    if y1 = x then  Some y2
-    else unsafe_loop (i + 1) l n x 
-
- let assoc3 (x : string) (l : t) =
-   let n = Array.length l in 
-   unsafe_loop 0 l n x 
- ;;
  
  
  let (+>) = Ext_buffer.add_string
@@ -122,7 +108,7 @@ let rec unsafe_loop i (l : t) n x =
        b +> "' needs an argument.\n"      
    end;
    usage_b b ~usage speclist ;
-   raise (Bsb_bad_arg (Ext_buffer.contents b))
+   Ext_arg.bad_arg (Ext_buffer.contents b)
  
  
  let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) anonfun = 
@@ -132,7 +118,7 @@ let rec unsafe_loop i (l : t) n x =
      let s = argv.(!current) in
      incr current;  
      if s <> "" && s.[0] = '-' then begin
-       match assoc3 s speclist with 
+       match Ext_arg.assoc3 speclist s with 
        | Some action -> begin       
            begin match action with 
              | Unit r -> 

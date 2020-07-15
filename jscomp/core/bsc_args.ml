@@ -25,8 +25,7 @@
 
 
 
- type key = string
- type doc = string
+ 
  type anon_fun = rev_args:string list -> unit
  
  type string_action = 
@@ -46,89 +45,77 @@
    | String of string_action 
  
  
- exception Bsc_bad_arg of string
+ 
  
  
  type error =
    | Unknown of string
    | Missing of string
  
-type t = (string * spec * string) array
+type t = spec Ext_arg.t 
 
-let rec unsafe_loop i (l : t) n x = 
-  if i = n then None
-  else 
-    let (y1,y2,_) =  Array.unsafe_get l i in
-    if y1 = x then  Some y2
-    else unsafe_loop (i + 1) l n x 
+ 
+let (+>) = Ext_buffer.add_string
 
- let assoc3 (x : string) (l : t) =
-   let n = Array.length l in 
-   unsafe_loop 0 l n x 
- ;;
- 
- 
- let (+>) = Ext_buffer.add_string
- 
- let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
-   buf +> usage;
-   buf +> "\nOptions:\n";
-   let max_col = ref 0 in 
-   Ext_array.iter speclist (fun (key,_,_) -> 
-       if String.length key > !max_col then 
-         max_col := String.length key
-     );
-   Ext_array.iter speclist (fun (key,_,doc) -> 
-       if not (Ext_string.starts_with doc "*internal*") then begin 
-         buf +> "  ";
-         buf +> key ; 
-         buf +> (String.make (!max_col - String.length key + 2 ) ' ');
-         let cur = ref 0 in 
-         let doc_length = String.length doc in 
-         while !cur < doc_length do 
-           match String.index_from_opt doc !cur '\n' with 
-           | None -> 
-             if !cur <> 0 then begin 
-               buf +>  "\n";
-               buf +> String.make (!max_col + 4) ' ' ;
-             end;
-             buf +> String.sub doc !cur (String.length doc - !cur );
-             cur := doc_length
-           | Some new_line_pos -> 
-             if !cur <> 0 then begin 
-               buf +>  "\n";
-               buf +> String.make (!max_col + 4) ' ' ;
-             end;
-             buf +> String.sub doc !cur (new_line_pos - !cur );
-             cur := new_line_pos + 1
-         done ;
-         buf +> "\n"
-       end
-     )
- ;;
- 
- 
-   
- let stop_raise ~usage ~(error : error) (speclist : t )  =
-   let b = Ext_buffer.create 200 in  
-   begin match error with
-     | Unknown ("-help" | "--help" | "-h") -> 
-       usage_b b ~usage speclist ;
-       Ext_buffer.output_buffer stdout b;
-       exit 0      
-     | Unknown s ->
-       b +> "unknown option: '";
-       b +> s ;
-       b +> "'.\n"
-     | Missing s ->
-       b +> "option '";
-       b +> s;
-       b +> "' needs an argument.\n"      
-   end;
-   usage_b b ~usage speclist ;
-   raise (Bsc_bad_arg (Ext_buffer.contents b))
- 
- 
+let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
+  buf +> usage;
+  buf +> "\nOptions:\n";
+  let max_col = ref 0 in 
+  Ext_array.iter speclist (fun (key,_,_) -> 
+      if String.length key > !max_col then 
+        max_col := String.length key
+    );
+  Ext_array.iter speclist (fun (key,_,doc) -> 
+      if not (Ext_string.starts_with doc "*internal*") then begin 
+        buf +> "  ";
+        buf +> key ; 
+        buf +> (String.make (!max_col - String.length key + 2 ) ' ');
+        let cur = ref 0 in 
+        let doc_length = String.length doc in 
+        while !cur < doc_length do 
+          match String.index_from_opt doc !cur '\n' with 
+          | None -> 
+            if !cur <> 0 then begin 
+              buf +>  "\n";
+              buf +> String.make (!max_col + 4) ' ' ;
+            end;
+            buf +> String.sub doc !cur (String.length doc - !cur );
+            cur := doc_length
+          | Some new_line_pos -> 
+            if !cur <> 0 then begin 
+              buf +>  "\n";
+              buf +> String.make (!max_col + 4) ' ' ;
+            end;
+            buf +> String.sub doc !cur (new_line_pos - !cur );
+            cur := new_line_pos + 1
+        done ;
+        buf +> "\n"
+      end
+    )
+;;
+
+
+
+let stop_raise ~usage ~(error : error) (speclist : t )  =
+  let b = Ext_buffer.create 200 in  
+  begin match error with
+    | Unknown ("-help" | "--help" | "-h") -> 
+      usage_b b ~usage speclist ;
+      Ext_buffer.output_buffer stdout b;
+      exit 0      
+    | Unknown s ->
+      b +> "unknown option: '";
+      b +> s ;
+      b +> "'.\n"
+    | Missing s ->
+      b +> "option '";
+      b +> s;
+      b +> "' needs an argument.\n"      
+  end;
+  usage_b b ~usage speclist ;
+  Ext_arg.bad_arg (Ext_buffer.contents b)
+
+
 let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) 
     (anonfun : rev_args:string list -> unit) =
   let current = ref start in 
@@ -137,7 +124,7 @@ let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t
     let s = argv.(!current) in
     incr current;  
     if s <> "" && s.[0] = '-' then begin
-      match assoc3 s speclist with 
+      match Ext_arg.assoc3 speclist s with 
       | Some action -> begin       
           begin match action with 
             | Unit r -> 
