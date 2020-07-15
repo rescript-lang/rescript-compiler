@@ -252,9 +252,9 @@ let buckle_script_flags : (string * Arg.spec * string) list =
    " Print compiler output in Reason syntax"
   ;
   "-bs-jsx",
-     Int (fun i -> 
-      (if i <> 3 then bad_arg (" Not supported jsx version : " ^ string_of_int i));
-      Js_config.jsx_version := i),
+     String (fun i -> 
+      (if i <> "3" then bad_arg (" Not supported jsx version : " ^  i));
+      Js_config.jsx_version := 3),
     " Set jsx version"
   ;
   "-bs-refmt",
@@ -481,7 +481,7 @@ let buckle_script_flags : (string * Arg.spec * string) list =
 
 
   
-
+(** parse flags in bs.config *)
 let file_level_flags_handler (e : Parsetree.expression option) = 
   match e with 
   | None -> ()
@@ -494,18 +494,16 @@ let file_level_flags_handler (e : Parsetree.expression option) =
     (try Arg.parse_argv ~current:(ref 0)
       args buckle_script_flags ignore usage
     with _ -> Location.prerr_warning pexp_loc (Preprocessor "invalid flags for bsc"))  
-  (* ;Format.fprintf Format.err_formatter "%a %b@." 
-      Ext_obj.pp_any args !Js_config.cross_module_inline; *)
   | Some e -> 
     Location.raise_errorf ~loc:e.pexp_loc "string array expected"
 
 let _ : unit =   
   Bs_conditional_initial.setup_env ();
   let flags = "flags" in 
-  Ast_config.structural_config_table := Map_string.add !Ast_config.structural_config_table
-      flags file_level_flags_handler;    
-  Ast_config.signature_config_table := Map_string.add !Ast_config.signature_config_table
-      flags file_level_flags_handler;    
+  Ast_config.add_structure 
+    flags file_level_flags_handler;    
+  Ast_config.add_signature 
+    flags file_level_flags_handler;    
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
