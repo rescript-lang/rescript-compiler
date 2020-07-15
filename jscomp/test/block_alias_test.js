@@ -38,7 +38,7 @@ var v1 = {
 
 var N = {
   Block: Block$1,
-  v1: v1
+  v1
 };
 
 var Caml_obj$1 = {};

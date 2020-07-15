@@ -38,7 +38,7 @@ var XX = {
   stable_sort: $$Array.stable_sort,
   fast_sort: $$Array.fast_sort,
   Floatarray: $$Array.Floatarray,
-  f: f
+  f
 };
 
 var u = [$$String];

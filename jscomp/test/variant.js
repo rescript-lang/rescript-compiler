@@ -59,8 +59,8 @@ var same = Caml_obj.caml_equal;
 var compare = Caml_obj.caml_compare;
 
 var Path = {
-  same: same,
-  compare: compare
+  same,
+  compare
 };
 
 function Make(M) {
@@ -68,7 +68,7 @@ function Make(M) {
     
   };
   return {
-          find: find
+          find
         };
 }
 
@@ -77,7 +77,7 @@ function find(x) {
 }
 
 var M = {
-  find: find
+  find
 };
 
 function rollback_path(subst, p) {

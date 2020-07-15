@@ -287,18 +287,18 @@ function of_array(arr) {
 var equal = Caml_obj.caml_equal;
 
 var Int_array = {
-  empty: empty,
-  get: get,
-  set: set,
-  push_front: push_front,
-  pop_front: pop_front,
-  push_back: push_back,
-  pop_back: pop_back,
-  pp: pp,
-  append: append,
-  sort: sort,
-  of_array: of_array,
-  equal: equal
+  empty,
+  get,
+  set,
+  push_front,
+  pop_front,
+  push_back,
+  pop_back,
+  pp,
+  append,
+  sort,
+  of_array,
+  equal
 };
 
 function $eq$tilde(x, y) {

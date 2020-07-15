@@ -10,7 +10,7 @@ v.contents = 0;
 
 var N = {
   a: 3,
-  v: v
+  v
 };
 
 var v$1 = {

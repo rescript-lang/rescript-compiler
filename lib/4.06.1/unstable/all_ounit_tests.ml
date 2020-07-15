@@ -6399,7 +6399,7 @@ val clear : t -> unit
 (** Empty the buffer. *)
 
 
-val add_char : t -> char -> unit
+val [@inline] add_char : t -> char -> unit
 (** [add_char b c] appends the character [c] at the end of the buffer [b]. *)
 
 val add_string : t -> string -> unit
@@ -6544,7 +6544,7 @@ let resize b more =
   b.length <- !new_len ;
   assert (b.position + more <= b.length)
 
-let add_char b c =
+let [@inline] add_char b c =
   let pos = b.position in
   if pos >= b.length then resize b 1;
   Bytes.unsafe_set b.buffer pos c;

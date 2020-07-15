@@ -31,7 +31,7 @@ var Q = {
   iter: Queue.iter,
   fold: Queue.fold,
   transfer: Queue.transfer,
-  to_list: to_list
+  to_list
 };
 
 function does_raise(f, q) {

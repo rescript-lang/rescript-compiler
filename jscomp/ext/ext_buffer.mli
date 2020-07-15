@@ -51,7 +51,7 @@ val clear : t -> unit
 (** Empty the buffer. *)
 
 
-val add_char : t -> char -> unit
+val [@inline] add_char : t -> char -> unit
 (** [add_char b c] appends the character [c] at the end of the buffer [b]. *)
 
 val add_string : t -> string -> unit

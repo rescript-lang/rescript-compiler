@@ -36,18 +36,18 @@ let array_conv =
     "e"; "f"|]
 
  (* https://mathiasbynens.be/notes/javascript-escapes *)
-
- let pp_string f  (* ?(utf=false)*) s =
+let (+>) = Ext_buffer.add_string
+ let escape_to_buffer f  (* ?(utf=false)*) s =
   let pp_raw_string f (* ?(utf=false)*) s = 
     let l = String.length s in
     for i = 0 to l - 1 do
       let c = String.unsafe_get s i in
       match c with
-      | '\b' -> P.string f "\\b"
-      | '\012' -> P.string f "\\f"
-      | '\n' -> P.string f "\\n"
-      | '\r' -> P.string f "\\r"
-      | '\t' -> P.string f "\\t"
+      | '\b' -> f +> "\\b"
+      | '\012' -> f +> "\\f"
+      | '\n' -> f +> "\\n"
+      | '\r' -> f +> "\\r"
+      | '\t' -> f +> "\\t"
       (* This escape sequence is not supported by IE < 9
                | '\011' -> "\\v"
          IE < 9 treats '\v' as 'v' instead of a vertical tab ('\x0B'). 
@@ -56,32 +56,38 @@ let array_conv =
          Another thing to note is that the \v and \0 escapes are not allowed in JSON strings.
       *)
       | '\000' when i = l - 1 || (let next = String.unsafe_get s (i + 1) in (next < '0' || next > '9'))
-        -> P.string f "\\0"
+        -> f +> "\\0"
 
-      | '\\' (* when not utf*) -> P.string f "\\\\"
+      | '\\' (* when not utf*) -> f +> "\\\\"
 
 
       | '\000' .. '\031'  | '\127'->
         let c = Char.code c in
-        P.string f "\\x";
-        P.string f (Array.unsafe_get array_conv (c lsr 4));
-        P.string f (Array.unsafe_get array_conv (c land 0xf))
+        f +> "\\x";
+        f +> (Array.unsafe_get array_conv (c lsr 4));
+        f +> (Array.unsafe_get array_conv (c land 0xf))
       | '\128' .. '\255' (* when not utf*) ->
         let c = Char.code c in
-        P.string f "\\x";
-        P.string f (Array.unsafe_get array_conv (c lsr 4));
-        P.string f (Array.unsafe_get array_conv (c land 0xf))
-      | '\"' -> P.string f "\\\"" (* quote*)
+        f +> "\\x";
+        f +> (Array.unsafe_get array_conv (c lsr 4));
+        f +> (Array.unsafe_get array_conv (c land 0xf))
+      | '\"' -> f +> "\\\"" (* quote*)
       | _ ->
-        P.string f (Array.unsafe_get array_str1 (Char.code c))
+        f +> (Array.unsafe_get array_str1 (Char.code c))
     done
   in
-  P.string f "\"";
+  f +> "\"";
   pp_raw_string f (*~utf*) s ;
-  P.string f "\""
+  f +> "\""
 ;;
 
+let escape_to_string s = 
+  let buf = Ext_buffer.create (String.length s * 2 ) in 
+  escape_to_buffer buf s;  
+  (Ext_buffer.contents buf)
 
+let pp_string f s = 
+    P.string f (escape_to_string s)
 (* let _best_string_quote s =
   let simple = ref 0 in
   let double = ref 0 in

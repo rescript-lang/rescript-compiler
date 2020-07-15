@@ -16,10 +16,10 @@ function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
   return /* Node */{
-          l: l,
+          l,
           v: x,
-          d: d,
-          r: r,
+          d,
+          r,
           h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         };
 }
@@ -28,7 +28,7 @@ function singleton(x, d) {
   return /* Node */{
           l: /* Empty */0,
           v: x,
-          d: d,
+          d,
           r: /* Empty */0,
           h: 1
         };
@@ -63,10 +63,10 @@ function bal(l, x, d, r) {
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */{
-            l: l,
+            l,
             v: x,
-            d: d,
-            r: r,
+            d,
+            r,
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
@@ -122,10 +122,10 @@ function add(x, data, m) {
       return m;
     } else {
       return /* Node */{
-              l: l,
+              l,
               v: x,
               d: data,
-              r: r,
+              r,
               h: m.h
             };
     }
@@ -498,10 +498,10 @@ function update(x, f, m) {
         return m;
       } else {
         return /* Node */{
-                l: l,
+                l,
                 v: x,
                 d: data$1,
-                r: r,
+                r,
                 h: m.h
               };
       }
@@ -574,7 +574,7 @@ function mapi(f, param) {
   var r$prime = mapi(f, param.r);
   return /* Node */{
           l: l$prime,
-          v: v,
+          v,
           d: d$prime,
           r: r$prime,
           h: param.h
@@ -937,39 +937,39 @@ function bindings(s) {
 
 var IntMap = {
   empty: /* Empty */0,
-  is_empty: is_empty,
-  mem: mem,
-  add: add,
-  update: update,
-  singleton: singleton,
-  remove: remove,
+  is_empty,
+  mem,
+  add,
+  update,
+  singleton,
+  remove,
   merge: merge$1,
-  union: union,
-  compare: compare,
-  equal: equal,
-  iter: iter,
-  fold: fold,
-  for_all: for_all,
-  exists: exists,
-  filter: filter,
-  partition: partition,
-  cardinal: cardinal,
-  bindings: bindings,
-  min_binding: min_binding,
-  min_binding_opt: min_binding_opt,
-  max_binding: max_binding,
-  max_binding_opt: max_binding_opt,
+  union,
+  compare,
+  equal,
+  iter,
+  fold,
+  for_all,
+  exists,
+  filter,
+  partition,
+  cardinal,
+  bindings,
+  min_binding,
+  min_binding_opt,
+  max_binding,
+  max_binding_opt,
   choose: min_binding,
   choose_opt: min_binding_opt,
-  split: split,
-  find: find,
-  find_opt: find_opt,
-  find_first: find_first,
-  find_first_opt: find_first_opt,
-  find_last: find_last,
-  find_last_opt: find_last_opt,
-  map: map,
-  mapi: mapi
+  split,
+  find,
+  find_opt,
+  find_first,
+  find_first_opt,
+  find_last,
+  find_last_opt,
+  map,
+  mapi
 };
 
 function assertion_test(param) {

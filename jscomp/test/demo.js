@@ -49,7 +49,7 @@ function ui_layout(compile, lookup, appContext) {
   var mk_titleRow = function (text) {
     return {
             label: {
-              text: text
+              text
             }
           };
   };
@@ -109,8 +109,8 @@ function ui_layout(compile, lookup, appContext) {
                   var bid = price + 20 * Math.random();
                   var ask = price + 20 * Math.random();
                   var result = Curry._1(computeFunction.contents, {
-                        bid: bid,
-                        ask: ask
+                        bid,
+                        ask
                       });
                   return [
                           mk_titleRow(param.ticker),

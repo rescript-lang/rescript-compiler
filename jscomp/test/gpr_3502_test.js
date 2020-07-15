@@ -10,8 +10,8 @@ function name(param) {
 }
 
 var Language = {
-  toString: toString,
-  name: name
+  toString,
+  name
 };
 
 var language = "a";

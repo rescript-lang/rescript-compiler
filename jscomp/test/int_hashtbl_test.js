@@ -53,8 +53,8 @@ function equal(x, y) {
 }
 
 var Int_hash = Hashtbl.Make({
-      equal: equal,
-      hash: hash
+      equal,
+      hash
     });
 
 var suites_0 = [

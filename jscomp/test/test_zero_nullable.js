@@ -102,17 +102,17 @@ function f10(x) {
 var f11 = false;
 
 var Test_null = {
-  f1: f1,
-  f2: f2,
-  f5: f5,
-  f4: f4,
-  f6: f6,
-  f7: f7,
-  f8: f8,
-  u: u,
-  f9: f9,
-  f10: f10,
-  f11: f11
+  f1,
+  f2,
+  f5,
+  f4,
+  f6,
+  f7,
+  f8,
+  u,
+  f9,
+  f10,
+  f11
 };
 
 function f1$1(x) {

@@ -4,7 +4,7 @@
 function M(U) {
   var v = U.f(100, "x");
   return {
-          v: v
+          v
         };
 }
 

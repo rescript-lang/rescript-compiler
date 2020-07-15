@@ -66,7 +66,7 @@ var List$1 = {
   fast_sort: List.fast_sort,
   sort_uniq: List.sort_uniq,
   merge: List.merge,
-  b: b,
+  b,
   length: 3
 };
 

@@ -314,12 +314,12 @@ function setup(o) {
 }
 
 var Misc_Color = {
-  ansi_of_style_l: ansi_of_style_l,
-  default_styles: default_styles,
-  get_styles: get_styles,
-  set_styles: set_styles,
-  setup: setup,
-  set_color_tag_handling: set_color_tag_handling
+  ansi_of_style_l,
+  default_styles,
+  get_styles,
+  set_styles,
+  setup,
+  set_color_tag_handling
 };
 
 function number(param) {
@@ -807,8 +807,8 @@ function parse_options(errflag, s) {
   var active = $$Array.copy(current.contents.active);
   parse_opt(error, active, errflag ? error : active, s);
   current.contents = {
-    active: active,
-    error: error
+    active,
+    error
   };
   
 }
@@ -1881,7 +1881,7 @@ function prerr_warning(loc, w) {
     return Curry._3(out_functions.out_string, str, start, len);
   };
   Format.pp_set_formatter_out_functions(ppf, {
-        out_string: out_string,
+        out_string,
         out_flush: out_functions.out_flush,
         out_newline: out_functions.out_newline,
         out_spaces: out_functions.out_spaces,
@@ -1903,10 +1903,10 @@ function errorf(locOpt, subOpt, if_highlightOpt, fmt) {
   var before = print_phanton_error_prefix;
   var k = function (msg) {
     return {
-            loc: loc,
-            msg: msg,
-            sub: sub,
-            if_highlight: if_highlight
+            loc,
+            msg,
+            sub,
+            if_highlight
           };
   };
   var buf = $$Buffer.create(64);
@@ -3475,52 +3475,52 @@ function rebind(locOpt, attrsOpt, docsOpt, infoOpt, name, lid) {
 var Ast_helper_Exp = {
   mk: mk$2,
   attr: attr$2,
-  ident: ident,
-  constant: constant,
-  let_: let_,
-  fun_: fun_,
-  function_: function_,
-  apply: apply,
-  match_: match_,
-  try_: try_,
-  tuple: tuple,
-  construct: construct,
-  variant: variant,
-  record: record,
-  field: field,
-  setfield: setfield,
-  array: array,
-  ifthenelse: ifthenelse,
-  sequence: sequence,
-  while_: while_,
-  for_: for_,
-  coerce: coerce,
-  constraint_: constraint_,
-  send: send,
-  new_: new_,
-  setinstvar: setinstvar,
-  override: override,
-  letmodule: letmodule,
-  assert_: assert_,
-  lazy_: lazy_,
-  poly: poly,
-  object_: object_,
-  newtype: newtype,
-  pack: pack,
-  open_: open_,
-  extension: extension,
-  $$case: $$case
+  ident,
+  constant,
+  let_,
+  fun_,
+  function_,
+  apply,
+  match_,
+  try_,
+  tuple,
+  construct,
+  variant,
+  record,
+  field,
+  setfield,
+  array,
+  ifthenelse,
+  sequence,
+  while_,
+  for_,
+  coerce,
+  constraint_,
+  send,
+  new_,
+  setinstvar,
+  override,
+  letmodule,
+  assert_,
+  lazy_,
+  poly,
+  object_,
+  newtype,
+  pack,
+  open_,
+  extension,
+  $$case
 };
 
 var Ast_helper_Ctf = {
   mk: mk$9,
   attr: attr$7,
-  inherit_: inherit_,
-  val_: val_,
-  method_: method_,
+  inherit_,
+  val_,
+  method_,
   constraint_: constraint_$1,
   extension: extension$1,
-  attribute: attribute,
+  attribute,
   text: text$2
 };
 
@@ -3531,12 +3531,12 @@ var Ast_helper_Cf = {
   val_: val_$1,
   method_: method_$1,
   constraint_: constraint_$2,
-  initializer_: initializer_,
+  initializer_,
   extension: extension$2,
   attribute: attribute$1,
   text: text$3,
-  virtual_: virtual_,
-  concrete: concrete
+  virtual_,
+  concrete
 };
 
 var $$Error$1 = Caml_exceptions.create("Ocaml_parsetree_test.Syntaxerr.Error");
@@ -3771,7 +3771,7 @@ function mkoption(d) {
                   },
                   _1: "option"
                 },
-                loc: loc
+                loc
               },
               _1: {
                 hd: d,
@@ -3805,7 +3805,7 @@ function mkoperator(name, pos) {
                   TAG: /* Lident */0,
                   _0: name
                 },
-                loc: loc
+                loc
               }
             });
 }
@@ -5135,7 +5135,7 @@ var yyact = [
                   TAG: /* Pmod_functor */2,
                   _0: _1[0],
                   _1: _1[1],
-                  _2: _2
+                  _2
                 });
     }),
   (function (__caml_parser_env) {
@@ -5557,7 +5557,7 @@ var yyact = [
                   _0: _1[0],
                   _1: _1[1],
                   _2: _1[2],
-                  _3: _3
+                  _3
                 });
     }),
   (function (__caml_parser_env) {
@@ -6032,7 +6032,7 @@ var yyact = [
       return mkcty({
                   TAG: /* Pcty_arrow */2,
                   _0: "",
-                  _1: _1,
+                  _1,
                   _2: _3
                 });
     }),
@@ -9265,7 +9265,7 @@ var yyact = [
       return mktyp({
                   TAG: /* Ptyp_arrow */1,
                   _0: "",
-                  _1: _1,
+                  _1,
                   _2: _3
                 });
     }),

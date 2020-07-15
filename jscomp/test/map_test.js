@@ -17,10 +17,10 @@ function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
   return /* Node */{
-          l: l,
+          l,
           v: x,
-          d: d,
-          r: r,
+          d,
+          r,
           h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         };
 }
@@ -54,10 +54,10 @@ function bal(l, x, d, r) {
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */{
-            l: l,
+            l,
             v: x,
-            d: d,
-            r: r,
+            d,
+            r,
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
@@ -105,10 +105,10 @@ function add(x, data, m) {
       return m;
     } else {
       return /* Node */{
-              l: l,
+              l,
               v: x,
               d: data,
-              r: r,
+              r,
               h: m.h
             };
     }
@@ -225,10 +225,10 @@ function create$1(l, x, d, r) {
   var hl = height$1(l);
   var hr = height$1(r);
   return /* Node */{
-          l: l,
+          l,
           v: x,
-          d: d,
-          r: r,
+          d,
+          r,
           h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         };
 }
@@ -262,10 +262,10 @@ function bal$1(l, x, d, r) {
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */{
-            l: l,
+            l,
             v: x,
-            d: d,
-            r: r,
+            d,
+            r,
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
@@ -313,10 +313,10 @@ function add$1(x, data, m) {
       return m;
     } else {
       return /* Node */{
-              l: l,
+              l,
               v: x,
               d: data,
-              r: r,
+              r,
               h: m.h
             };
     }

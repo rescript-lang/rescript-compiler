@@ -10,7 +10,7 @@ function make(param, param$1) {
 }
 
 var Foo = {
-  make: make
+  make
 };
 
 exports.React = React;

@@ -30,6 +30,5 @@ val property_access :
 
 
 val property_key : 
-  Ext_pp.t -> 
   J.property_name -> 
-  unit 
+  string

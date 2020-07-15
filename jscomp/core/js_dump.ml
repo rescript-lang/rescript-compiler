@@ -965,11 +965,26 @@ and expression_desc cxt ~(level:int) f x : cxt  =
 
 and property_name_and_value_list cxt f (l : J.property_map) =     
   iter_lst cxt f l (fun cxt f (pn,e) -> 
-    Js_dump_property.property_key f pn ;
-    P.string f L.colon;
-    P.space f;
-    expression ~level:1 cxt f e
-  ) comma_nl      
+      match e.expression_desc with  
+      | Var (Id v | Qualified (v,_,None)) -> 
+        let key = Js_dump_property.property_key pn in 
+        let str, cxt = Ext_pp_scope.str_of_ident cxt v in 
+        if key = str then 
+          P.string f key
+        else begin 
+          P.string f key;
+          P.string f L.colon;
+          P.space f;
+          P.string f str ;
+        end;
+        cxt 
+      | _ -> 
+        let key = Js_dump_property.property_key pn in 
+        P.string f key;
+        P.string f L.colon;
+        P.space f;
+        expression ~level:1 cxt f e
+    ) comma_nl      
 
 and array_element_list cxt f (el : E.t list) : cxt =
   iter_lst cxt f el (expression ~level:1) comma_nl
