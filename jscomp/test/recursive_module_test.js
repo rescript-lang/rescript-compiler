@@ -85,13 +85,13 @@ Caml_module.update_mod({
           "fact"
         ]]
     }, M, {
-      fact: fact
+      fact
     });
 
 var fact$1 = M.fact;
 
 var Fact = {
-  M: M,
+  M,
   fact: fact$1
 };
 

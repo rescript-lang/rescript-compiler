@@ -48,7 +48,7 @@ Caml_module.update_mod({
           "even"
         ]]
     }, A, {
-      even: even
+      even
     });
 
 function odd(n) {
@@ -68,7 +68,7 @@ Caml_module.update_mod({
           "odd"
         ]]
     }, B, {
-      odd: odd
+      odd
     });
 
 var AA = Caml_module.init_mod([
@@ -135,7 +135,7 @@ Caml_module.update_mod({
       ]
     }, AA, {
       even: even$1,
-      x: x
+      x
     });
 
 function odd$1(n) {
@@ -166,7 +166,7 @@ Caml_module.update_mod({
       ]
     }, BB, {
       odd: odd$1,
-      y: y
+      y
     });
 
 var AAA = Caml_module.init_mod([
@@ -193,9 +193,9 @@ function create(l, v, r) {
   var hl = l ? l.h : 0;
   var hr = r ? r.h : 0;
   return /* Node */{
-          l: l,
-          v: v,
-          r: r,
+          l,
+          v,
+          r,
           h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         };
 }
@@ -228,9 +228,9 @@ function bal(l, v, r) {
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */{
-            l: l,
-            v: v,
-            r: r,
+            l,
+            v,
+            r,
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
@@ -1130,40 +1130,40 @@ function of_list(l) {
 
 var ASet = {
   empty: /* Empty */0,
-  is_empty: is_empty,
-  mem: mem,
-  add: add,
-  singleton: singleton,
-  remove: remove,
-  union: union,
-  inter: inter,
-  diff: diff,
-  compare: compare,
-  equal: equal,
-  subset: subset,
-  iter: iter,
-  map: map,
-  fold: fold,
-  for_all: for_all,
-  exists: exists,
-  filter: filter,
-  partition: partition,
-  cardinal: cardinal,
-  elements: elements,
-  min_elt: min_elt,
-  min_elt_opt: min_elt_opt,
-  max_elt: max_elt,
-  max_elt_opt: max_elt_opt,
+  is_empty,
+  mem,
+  add,
+  singleton,
+  remove,
+  union,
+  inter,
+  diff,
+  compare,
+  equal,
+  subset,
+  iter,
+  map,
+  fold,
+  for_all,
+  exists,
+  filter,
+  partition,
+  cardinal,
+  elements,
+  min_elt,
+  min_elt_opt,
+  max_elt,
+  max_elt_opt,
   choose: min_elt,
   choose_opt: min_elt_opt,
-  split: split,
-  find: find,
-  find_opt: find_opt,
-  find_first: find_first,
-  find_first_opt: find_first_opt,
-  find_last: find_last,
-  find_last_opt: find_last_opt,
-  of_list: of_list
+  split,
+  find,
+  find_opt,
+  find_first,
+  find_first_opt,
+  find_last,
+  find_last_opt,
+  of_list
 };
 
 function compare$1(t1, t2) {

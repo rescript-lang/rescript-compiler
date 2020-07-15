@@ -1068,7 +1068,7 @@ function unary(stk) {
           var loc = opos.contents;
           le(64, g.loc);
           Caml_array.caml_array_set(globs, i$1, {
-                loc: loc,
+                loc,
                 va: g.va
               });
           read(/* Int */0);
@@ -1265,7 +1265,7 @@ function decl(g, _n, _stk) {
               var va = (gpos.contents + 232 | 0) + 4194304 | 0;
               Caml_array.caml_array_set(globs, s$1, {
                     loc: glo.loc,
-                    va: va
+                    va
                   });
               gpos.contents = gpos.contents + 8 | 0;
               stk$prime = stk;

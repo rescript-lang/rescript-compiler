@@ -264,8 +264,8 @@ function v0(x) {
 }
 
 var N0 = {
-  v: v,
-  v0: v0
+  v,
+  v0
 };
 
 Mt.from_pair_suites("Option_repr_test", suites.contents);

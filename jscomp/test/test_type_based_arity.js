@@ -64,7 +64,7 @@ function f13(g, x) {
 }
 
 var X2 = {
-  f13: f13
+  f13
 };
 
 function f14(h, g, x) {

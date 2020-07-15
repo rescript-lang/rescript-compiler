@@ -34,11 +34,11 @@ var a = {};
 var b = {};
 
 Caml_obj.update_dummy(a, {
-      b: b
+      b
     });
 
 Caml_obj.update_dummy(b, {
-      a: a
+      a
     });
 
 function is_inifite(x) {
