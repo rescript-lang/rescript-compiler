@@ -74,7 +74,7 @@ let resize b more =
   b.length <- !new_len ;
   assert (b.position + more <= b.length)
 
-let add_char b c =
+let [@inline] add_char b c =
   let pos = b.position in
   if pos >= b.length then resize b 1;
   Bytes.unsafe_set b.buffer pos c;
