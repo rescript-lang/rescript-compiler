@@ -22,13 +22,17 @@ let (=~) = OUnit.assert_equal
 let perform_bsc = Ounit_cmd_util.perform_bsc
 let bsc_check_eval = Ounit_cmd_util.bsc_check_eval
 
+let ok b output = 
+  if not b then 
+    Ounit_cmd_util.debug_output output;
+  OUnit.assert_bool __LOC__ b  
 
 let suites =
   __FILE__
   >::: [
     __LOC__ >:: begin fun _ ->
       let v_output = perform_bsc  [| "-v" |] in
-      OUnit.assert_bool __LOC__ ((perform_bsc [| "-h" |]).exit_code  <> 0  );
+      OUnit.assert_bool __LOC__ ((perform_bsc [| "-h" |]).exit_code  = 0  );
       OUnit.assert_bool __LOC__ (v_output.exit_code = 0);
       (* Printf.printf "\n*>%s" v_output.stdout; *)
       (* Printf.printf "\n*>%s" v_output.stderr ; *)
@@ -36,7 +40,7 @@ let suites =
     __LOC__ >:: begin fun _ ->
       let v_output =
         perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in
-      OUnit.assert_bool __LOC__ (v_output.exit_code = 0)
+      ok (v_output.exit_code = 0) v_output
     end;
     __LOC__ >:: begin fun _ -> 
     let v_output = perform_bsc [|"-bs-eval"; {|type 'a arra = 'a array

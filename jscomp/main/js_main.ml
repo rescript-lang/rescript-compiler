@@ -192,7 +192,9 @@ let anonymous ~(rev_args : string list) =
         Compenv.readenv ppf 
           (Before_compile filename); 
         process_file ppf filename
-      | _ -> assert false  
+      | [] -> ()  
+      | _ -> 
+        Ext_arg.bad_arg "can not handle multiple files"
     end
 
 (** used by -impl -intf *)
