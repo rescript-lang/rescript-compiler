@@ -61,6 +61,96 @@ let header =
 let package_name = "bs-platform"   
     
 end
+module Ext_arg : sig 
+#1 "ext_arg.mli"
+(* Copyright (C) 2020- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type 'a t = (string * 'a * string) array
+
+exception Bad_arg of string 
+
+val assoc3 : 
+  'a t -> 
+  string -> 
+  'a option
+
+
+  
+val bad_arg : 
+  string -> 
+  'a  
+end = struct
+#1 "ext_arg.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* A small module which is also used by {!Bsb_helper} *)
+type 'a t = (string * 'a * string) array
+
+let rec unsafe_loop i (l : 'a t) n x = 
+  if i = n then None
+  else 
+    let (y1,y2,_) =  Array.unsafe_get l i in
+    if y1 = x then  Some y2
+    else unsafe_loop (i + 1) l n x 
+
+let assoc3 (l : 'a t) (x : string)  : 'a option =
+  let n = Array.length l in 
+  unsafe_loop 0 l n x 
+
+
+exception Bad_arg of string  
+
+
+let bad_arg s = 
+  raise_notrace (Bad_arg s)    
+end
 module Ext_array : sig 
 #1 "ext_array.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1625,14 +1715,13 @@ type unit_action =
   | Unit_call of (unit -> unit) 
   | Unit_set of bool ref 
 
-exception Bad of string
+
 
 type spec =
   | Unit of unit_action
   | String of string_action 
 
-type key = string
-type doc = string
+
 
 type anon_fun = rev_args:string list -> unit
 
@@ -1641,7 +1730,7 @@ val parse_exn :
   argv:string array -> 
   ?start:int ->
   ?finish:int ->
-  (key * spec * doc) array -> 
+  (string * spec * string) array -> 
   anon_fun  -> unit
 end = struct
 #1 "bsb_arg.ml"
@@ -1672,8 +1761,6 @@ end = struct
 
 
 
- type key = string
- type doc = string
  type anon_fun = rev_args:string list -> unit
  
  type string_action = 
@@ -1689,26 +1776,14 @@ end = struct
    | String of string_action 
  
  
- exception Bad of string
- 
+
  
  type error =
    | Unknown of string
    | Missing of string
  
-type t = (string * spec * string) array
+type t = spec Ext_arg.t
 
-let rec unsafe_loop i (l : t) n x = 
-  if i = n then None
-  else 
-    let (y1,y2,_) =  Array.unsafe_get l i in
-    if y1 = x then  Some y2
-    else unsafe_loop (i + 1) l n x 
-
- let assoc3 (x : string) (l : t) =
-   let n = Array.length l in 
-   unsafe_loop 0 l n x 
- ;;
  
  
  let (+>) = Ext_buffer.add_string
@@ -1769,7 +1844,7 @@ let rec unsafe_loop i (l : t) n x =
        b +> "' needs an argument.\n"      
    end;
    usage_b b ~usage speclist ;
-   raise (Bad (Ext_buffer.contents b))
+   Ext_arg.bad_arg (Ext_buffer.contents b)
  
  
  let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) anonfun = 
@@ -1779,7 +1854,7 @@ let rec unsafe_loop i (l : t) n x =
      let s = argv.(!current) in
      incr current;  
      if s <> "" && s.[0] = '-' then begin
-       match assoc3 s speclist with 
+       match Ext_arg.assoc3 speclist s with 
        | Some action -> begin       
            begin match action with 
              | Unit r -> 
@@ -16557,7 +16632,7 @@ let process_themes env theme proj_dir (themes : OCamlRes.Res.node list ) =
     )  with
   | None ->
     list_themes ();
-    raise (Arg.Bad( "theme " ^ theme ^ " not found")  )
+    Ext_arg.bad_arg ( "theme " ^ theme ^ " not found")
   | Some (Dir(_theme, nodes )) ->
     List.iter (fun node -> process_theme_aux env proj_dir node ) nodes
   | Some _ -> assert false
@@ -16985,7 +17060,7 @@ let handle_anonymous_arg ~rev_args =
   match rev_args with 
   | [] -> ()  
   | arg:: _ ->
-    raise (Bsb_arg.Bad ("Unknown arg \"" ^ arg ^ "\""))
+    Ext_arg.bad_arg ("Unknown arg \"" ^ arg ^ "\"")
 
 
 let program_exit () =
@@ -17107,7 +17182,7 @@ let () =
       start.pos_fname start.pos_lnum
       Ext_json_parse.report_error e ;
     exit 2
-  | Bsb_arg.Bad s 
+  | Ext_arg.Bad_arg s 
   | Sys_error s -> 
     Format.fprintf Format.err_formatter
       "@{<error>Error:@} %s@."

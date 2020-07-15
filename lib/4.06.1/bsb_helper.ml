@@ -3231,11 +3231,11 @@ let () =
   ~argv:Sys.argv
   ~start:1
   [|
+    "-hash",  String hash, "Set hash(internal)";
     "-g",  Bool dev_group, "Set the dev group (default to be 0)";
     "-bs-ns",  String (Call (fun s -> namespace := Some s)),
     "Set namespace";
-    "-hash",  String hash,
-    "Set hash(internal)";
+
   |] (fun ~rev_args -> 
       match rev_args with
       | [x]
