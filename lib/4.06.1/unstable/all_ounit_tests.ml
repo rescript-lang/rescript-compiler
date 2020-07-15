@@ -6495,9 +6495,6 @@ type t =
 
 let create n =
  let n = if n < 1 then 1 else n in
- 
- let n = if n > Sys.max_string_length then Sys.max_string_length else n in
- 
  let s = Bytes.create n in
  {buffer = s; position = 0; length = n; initial_buffer = s}
 
@@ -6529,13 +6526,6 @@ let resize b more =
   let len = b.length in
   let new_len = ref len in
   while b.position + more > !new_len do new_len := 2 * !new_len done;
-   
-  if !new_len > Sys.max_string_length then begin
-    if b.position + more <= Sys.max_string_length
-    then new_len := Sys.max_string_length
-    else failwith "Ext_buffer.add: cannot grow buffer"
-  end;
-  
   let new_buffer = Bytes.create !new_len in
   (* PR#6148: let's keep using [blit] rather than [unsafe_blit] in
      this tricky function that is slow anyway. *)
