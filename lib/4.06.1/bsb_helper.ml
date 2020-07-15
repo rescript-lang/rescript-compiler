@@ -902,9 +902,9 @@ module Bsb_helper_arg : sig
 
 
 type string_action = 
-  | Call of (string -> unit)  
-  | Set of {mutable contents : string}
-
+  | Dummy  
+  | Optional_set of 
+    string option ref
 type spec =
   | Bool of bool ref            
   | String of string_action 
@@ -929,13 +929,12 @@ end = struct
 type anon_fun = rev_args:string list -> unit
 
 type string_action = 
-  | Call of (string -> unit)  
-  | Set of {mutable contents : string}
-
+  | Dummy  
+  | Optional_set of string option ref 
 type spec =
   | Bool of bool ref            
   | String of string_action 
-
+  
 
 type error =
   | Unknown of string
@@ -1006,9 +1005,9 @@ let parse_exn  ~progname ~argv ~start (speclist : t) anonfun  =
                 let arg = argv.(!current) in 
                 incr current;  
                 match f with 
-                | Call f ->   
-                  f arg
-                | Set u -> u.contents <- arg
+                | Optional_set u -> 
+                  u.contents <- Some arg 
+                | Dummy -> ()  
               end             
           end;      
         end;      
@@ -3219,11 +3218,13 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 let compilation_kind = ref Bsb_helper_depfile_gen.Js
 
-let hash : Bsb_helper_arg.string_action = 
-  Set {contents = ""}
+
+let namespace = ref None 
+let ns : Bsb_helper_arg.string_action = 
+  Optional_set namespace
 
 let dev_group = ref false
-let namespace = ref None
+
  
 let () =
   Bsb_helper_arg.parse_exn 
@@ -3231,9 +3232,9 @@ let () =
   ~argv:Sys.argv
   ~start:1
   [|
-    "-hash",  String hash, "Set hash(internal)";
+    "-hash",  String Dummy, "Set hash(internal)";
     "-g",  Bool dev_group, "Set the dev group (default to be 0)";
-    "-bs-ns",  String (Call (fun s -> namespace := Some s)),
+    "-bs-ns",  String ns,
     "Set namespace";
 
   |] (fun ~rev_args -> 

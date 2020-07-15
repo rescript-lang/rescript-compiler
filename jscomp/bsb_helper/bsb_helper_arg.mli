@@ -2,9 +2,9 @@
 
 
 type string_action = 
-  | Call of (string -> unit)  
-  | Set of {mutable contents : string}
-
+  | Dummy  
+  | Optional_set of 
+    string option ref
 type spec =
   | Bool of bool ref            
   | String of string_action 
