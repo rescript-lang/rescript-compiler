@@ -965,7 +965,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
 
 and property_name_and_value_list cxt f (l : J.property_map) =     
   iter_lst cxt f l (fun cxt f (pn,e) -> 
-    Js_dump_property.property_key f pn ;
+    P.string f (Js_dump_property.property_key pn) ;
     P.string f L.colon;
     P.space f;
     expression ~level:1 cxt f e
