@@ -46,11 +46,14 @@
    | Unknown of string
    | Missing of string
  
-type t = spec Ext_arg.t
+type t = spec Ext_spec.t
 
  
- 
- let (+>) = Ext_buffer.add_string
+exception Bad of string 
+
+let bad_arg s = raise_notrace (Bad s)
+
+let (+>) = Ext_buffer.add_string
  
  let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
    buf +> usage;
@@ -108,7 +111,7 @@ type t = spec Ext_arg.t
        b +> "' needs an argument.\n"      
    end;
    usage_b b ~usage speclist ;
-   Ext_arg.bad_arg (Ext_buffer.contents b)
+   bad_arg (Ext_buffer.contents b)
  
  
  let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) anonfun = 
@@ -118,7 +121,7 @@ type t = spec Ext_arg.t
      let s = argv.(!current) in
      incr current;  
      if s <> "" && s.[0] = '-' then begin
-       match Ext_arg.assoc3 speclist s with 
+       match Ext_spec.assoc3 speclist s with 
        | Some action -> begin       
            begin match action with 
              | Unit r -> 

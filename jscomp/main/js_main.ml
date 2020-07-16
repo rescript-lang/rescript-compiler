@@ -168,7 +168,7 @@ let process_file ppf sourcefile =
     Printtyp.signature Format.std_formatter cmi_sign ; 
     Format.pp_print_newline Format.std_formatter ()      
   | Unknown -> 
-    Ext_arg.bad_arg ("don't know what to do with " ^ sourcefile)
+    Bsc_args.bad_arg ("don't know what to do with " ^ sourcefile)
 let usage = "Usage: bsc <options> <files>\nOptions are:"
 
 let ppf = Format.err_formatter
@@ -184,7 +184,7 @@ let anonymous ~(rev_args : string list) =
         ~target:output
         Ppx_entry.rewrite_implementation
         Ppx_entry.rewrite_signature
-    | _ -> Ext_arg.bad_arg "Wrong format when use -as-ppx"
+    | _ -> Bsc_args.bad_arg "Wrong format when use -as-ppx"
   else 
     begin 
       match rev_args with 
@@ -194,7 +194,7 @@ let anonymous ~(rev_args : string list) =
         process_file ppf filename
       | [] -> ()  
       | _ -> 
-        Ext_arg.bad_arg "can not handle multiple files"
+        Bsc_args.bad_arg "can not handle multiple files"
     end
 
 (** used by -impl -intf *)
@@ -217,7 +217,7 @@ let fmt_file input =
     | Ml | Mli -> `ml
     | Res | Resi -> `res 
     | Re | Rei -> `refmt (Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe") 
-    | _ -> Ext_arg.bad_arg ("don't know what to do with " ^ input) in   
+    | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) in   
   output_string stdout (Napkin_multi_printer.print syntax ~input)
 
 let set_color_option option = 
@@ -242,8 +242,8 @@ let define_variable s =
   match Ext_string.split ~keep_empty:true s '=' with
   | [key; v] -> 
     if not (Lexer.define_key_value key v)  then 
-       Ext_arg.bad_arg ("illegal definition: " ^ s)
-  | _ -> Ext_arg.bad_arg ("illegal definition: " ^ s)
+       Bsc_args.bad_arg ("illegal definition: " ^ s)
+  | _ -> Bsc_args.bad_arg ("illegal definition: " ^ s)
 
 let print_standard_library () = 
   let (//) = Filename.concat in   
@@ -322,7 +322,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "<module>  Opens the module <module> before typing";
 
     "-bs-jsx", string_call (fun i -> 
-        (if i <> "3" then Ext_arg.bad_arg (" Not supported jsx version : " ^  i));
+        (if i <> "3" then Bsc_args.bad_arg (" Not supported jsx version : " ^  i));
         Js_config.jsx_version := 3),
     "*internal* Set jsx version";
 
@@ -532,8 +532,8 @@ let _ : unit =
       ~argv:Sys.argv 
       buckle_script_flags anonymous ~usage;
   with 
-  | Ext_arg.Bad_arg msg ->   
-    Format.eprintf "%s" msg ;
+  | Bsc_args.Bad msg ->   
+    Format.eprintf "%s@." msg ;
     exit 2
   | x -> 
     begin
