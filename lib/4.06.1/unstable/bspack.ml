@@ -6908,14 +6908,10 @@ module Ext_arg : sig
 
 
 
-type 'a t = (string * 'a * string) array
+
 
 exception Bad_arg of string 
 
-val assoc3 : 
-  'a t -> 
-  string -> 
-  'a option
 
 
   
@@ -6949,22 +6945,9 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* A small module which is also used by {!Bsb_helper} *)
-type 'a t = (string * 'a * string) array
-
-let rec unsafe_loop i (l : 'a t) n x = 
-  if i = n then None
-  else 
-    let (y1,y2,_) =  Array.unsafe_get l i in
-    if y1 = x then  Some y2
-    else unsafe_loop (i + 1) l n x 
-
-let assoc3 (l : 'a t) (x : string)  : 'a option =
-  let n = Array.length l in 
-  unsafe_loop 0 l n x 
 
 
-exception Bad_arg of string  
+exception Bad_arg = Arg.Bad
 
 
 let bad_arg s = 

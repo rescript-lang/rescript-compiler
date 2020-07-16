@@ -89,14 +89,10 @@ module Ext_arg : sig
 
 
 
-type 'a t = (string * 'a * string) array
+
 
 exception Bad_arg of string 
 
-val assoc3 : 
-  'a t -> 
-  string -> 
-  'a option
 
 
   
@@ -130,22 +126,9 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* A small module which is also used by {!Bsb_helper} *)
-type 'a t = (string * 'a * string) array
-
-let rec unsafe_loop i (l : 'a t) n x = 
-  if i = n then None
-  else 
-    let (y1,y2,_) =  Array.unsafe_get l i in
-    if y1 = x then  Some y2
-    else unsafe_loop (i + 1) l n x 
-
-let assoc3 (l : 'a t) (x : string)  : 'a option =
-  let n = Array.length l in 
-  unsafe_loop 0 l n x 
 
 
-exception Bad_arg of string  
+exception Bad_arg = Arg.Bad
 
 
 let bad_arg s = 
@@ -958,6 +941,56 @@ let add_int_4 (b : t ) (x : int ) =
 
 
 
+end
+module Ext_spec : sig 
+#1 "ext_spec.mli"
+type 'a t = (string * 'a * string) array
+
+val assoc3 : 
+  'a t -> 
+  string -> 
+  'a option
+
+end = struct
+#1 "ext_spec.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* A small module which is also used by {!Bsb_helper} *)
+type 'a t = (string * 'a * string) array
+
+let rec unsafe_loop i (l : 'a t) n x = 
+  if i = n then None
+  else 
+    let (y1,y2,_) =  Array.unsafe_get l i in
+    if y1 = x then  Some y2
+    else unsafe_loop (i + 1) l n x 
+
+let assoc3 (l : 'a t) (x : string)  : 'a option =
+  let n = Array.length l in 
+  unsafe_loop 0 l n x 
 end
 module Ext_string : sig 
 #1 "ext_string.mli"
@@ -1782,7 +1815,7 @@ end = struct
    | Unknown of string
    | Missing of string
  
-type t = spec Ext_arg.t
+type t = spec Ext_spec.t
 
  
  
@@ -1854,7 +1887,7 @@ type t = spec Ext_arg.t
      let s = argv.(!current) in
      incr current;  
      if s <> "" && s.[0] = '-' then begin
-       match Ext_arg.assoc3 speclist s with 
+       match Ext_spec.assoc3 speclist s with 
        | Some action -> begin       
            begin match action with 
              | Unit r -> 

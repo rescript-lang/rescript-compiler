@@ -40,6 +40,8 @@ type spec =
 
 type anon_fun = rev_args:string list -> unit
 
+exception Bad of string 
+
 val parse_exn :
   usage:string -> 
   argv:string array -> 
@@ -47,3 +49,5 @@ val parse_exn :
   ?finish:int ->
   (string * spec * string) array -> 
   anon_fun  -> unit
+
+val bad_arg : string -> 'a  

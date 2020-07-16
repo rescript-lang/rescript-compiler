@@ -14,7 +14,7 @@ type error =
   | Unknown of string
   | Missing of string
 
-type t = spec Ext_arg.t 
+type t = spec Ext_spec.t 
 
 
 
@@ -58,7 +58,8 @@ let stop_raise ~progname ~(error : error) (speclist : t)  =
       b +> "' needs an argument.\n"      
   end;
   usage_b b progname speclist ;
-  Ext_arg.bad_arg (Ext_buffer.contents b)
+  prerr_endline (Ext_buffer.contents b);
+  exit 2
 
 
 let parse_exn  ~progname ~argv ~start (speclist : t) anonfun  =    
@@ -69,7 +70,7 @@ let parse_exn  ~progname ~argv ~start (speclist : t) anonfun  =
     let s = argv.(!current) in
     incr current;  
     if s <> "" && s.[0] = '-' then begin
-      match Ext_arg.assoc3 speclist s with 
+      match Ext_spec.assoc3 speclist s with 
       | Some action -> begin       
           begin match action with 
             | Bool r -> r := true;
