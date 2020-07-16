@@ -41,8 +41,8 @@ let  unit_set_spec b : spec = Unit (Unit_set b)
 
 
 let force_regenerate = ref false
-let bsb_main_flags : (string * spec * string) list=
-  [
+let bsb_main_flags : (string * spec * string) array =
+  [|
     "-v", call_spec print_version_string, 
     "Print version and exit";
     "-version", call_spec print_version_string, 
@@ -97,7 +97,7 @@ let bsb_main_flags : (string * spec * string) list=
       )),
     "Builds the entries specified in the bsconfig that match the given backend. Can be either 'js', 'bytecode' or 'native'.";
 #end
-  ]
+  |]
 
 
 (*Note that [keepdepfile] only makes sense when combined with [deps] for optimization*)
@@ -151,7 +151,7 @@ let handle_anonymous_arg ~rev_args =
   match rev_args with 
   | [] -> ()  
   | arg:: _ ->
-    raise (Bsb_arg.Bad ("Unknown arg \"" ^ arg ^ "\""))
+    Ext_arg.bad_arg ("Unknown arg \"" ^ arg ^ "\"")
 
 
 let program_exit () =
@@ -273,7 +273,7 @@ let () =
       start.pos_fname start.pos_lnum
       Ext_json_parse.report_error e ;
     exit 2
-  | Bsb_arg.Bad s 
+  | Ext_arg.Bad_arg s 
   | Sys_error s -> 
     Format.fprintf Format.err_formatter
       "@{<error>Error:@} %s@."

@@ -1,45 +1,34 @@
 
-type key = string
-type doc = string
+
 type anon_fun = rev_args:string list -> unit
 
 type string_action = 
-  | Call of (string -> unit)  
-  | Set of {mutable contents : string}
-
+  | Dummy  
+  | Optional_set of string option ref 
 type spec =
   | Bool of bool ref            
   | String of string_action 
-
-
-exception Bad of string
-
+  
 
 type error =
   | Unknown of string
   | Missing of string
 
-type t = (string * spec * string) list 
+type t = spec Ext_arg.t 
 
-let rec assoc3 (x : string) (l : t) =
-  match l with
-  | [] -> None
-  | (y1, y2, _) :: _ when y1 = x -> Some y2
-  | _ :: t -> assoc3 x t
-;;
 
 
 let (+>) = Ext_buffer.add_string
 
-let usage_b (buf : Ext_buffer.t) progname speclist  =
+let usage_b (buf : Ext_buffer.t) progname (speclist : t) =
   buf +> progname;
   buf +> " options:\n";
   let max_col = ref 0 in 
-  Ext_list.iter speclist (fun (key,_,_) -> 
+  Ext_array.iter speclist (fun (key,_,_) -> 
       if String.length key > !max_col then 
         max_col := String.length key
     );
-  Ext_list.iter speclist (fun (key,_,doc) -> 
+  Ext_array.iter speclist (fun (key,_,doc) -> 
       buf +> "  ";
       buf +> key ; 
       buf +> (String.make (!max_col - String.length key + 1 ) ' ');
@@ -50,7 +39,7 @@ let usage_b (buf : Ext_buffer.t) progname speclist  =
 
 
   
-let stop_raise ~progname ~(error : error) speclist   =
+let stop_raise ~progname ~(error : error) (speclist : t)  =
   let b = Ext_buffer.create 200 in  
   begin match error with
     | Unknown ("-help" | "--help" | "-h") -> 
@@ -69,7 +58,7 @@ let stop_raise ~progname ~(error : error) speclist   =
       b +> "' needs an argument.\n"      
   end;
   usage_b b progname speclist ;
-  raise (Bad (Ext_buffer.contents b))
+  Ext_arg.bad_arg (Ext_buffer.contents b)
 
 
 let parse_exn  ~progname ~argv ~start (speclist : t) anonfun  =    
@@ -80,7 +69,7 @@ let parse_exn  ~progname ~argv ~start (speclist : t) anonfun  =
     let s = argv.(!current) in
     incr current;  
     if s <> "" && s.[0] = '-' then begin
-      match assoc3 s speclist with 
+      match Ext_arg.assoc3 speclist s with 
       | Some action -> begin       
           begin match action with 
             | Bool r -> r := true;
@@ -90,9 +79,9 @@ let parse_exn  ~progname ~argv ~start (speclist : t) anonfun  =
                 let arg = argv.(!current) in 
                 incr current;  
                 match f with 
-                | Call f ->   
-                  f arg
-                | Set u -> u.contents <- arg
+                | Optional_set u -> 
+                  u.contents <- Some arg 
+                | Dummy -> ()  
               end             
           end;      
         end;      

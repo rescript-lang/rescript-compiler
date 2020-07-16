@@ -25,8 +25,6 @@
 
 
 
- type key = string
- type doc = string
  type anon_fun = rev_args:string list -> unit
  
  type string_action = 
@@ -42,34 +40,27 @@
    | String of string_action 
  
  
- exception Bad of string
- 
+
  
  type error =
    | Unknown of string
    | Missing of string
  
- type t = (string * spec * string) list 
- 
- let rec assoc3 (x : string) (l : t) =
-   match l with
-   | [] -> None
-   | (y1, y2, _) :: _ when y1 = x -> Some y2
-   | _ :: t -> assoc3 x t
- ;;
+type t = spec Ext_arg.t
+
  
  
  let (+>) = Ext_buffer.add_string
  
- let usage_b (buf : Ext_buffer.t) ~usage speclist  =
+ let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
    buf +> usage;
    buf +> "\nOptions:\n";
    let max_col = ref 0 in 
-   Ext_list.iter speclist (fun (key,_,_) -> 
+   Ext_array.iter speclist (fun (key,_,_) -> 
        if String.length key > !max_col then 
          max_col := String.length key
      );
-   Ext_list.iter speclist (fun (key,_,doc) -> 
+   Ext_array.iter speclist (fun (key,_,doc) -> 
        if not (Ext_string.starts_with doc "*internal*") then begin 
          buf +> "  ";
          buf +> key ; 
@@ -100,7 +91,7 @@
  
  
    
- let stop_raise ~usage ~(error : error) speclist   =
+ let stop_raise ~usage ~(error : error) (speclist : t )  =
    let b = Ext_buffer.create 200 in  
    begin match error with
      | Unknown ("-help" | "--help" | "-h") -> 
@@ -117,7 +108,7 @@
        b +> "' needs an argument.\n"      
    end;
    usage_b b ~usage speclist ;
-   raise (Bad (Ext_buffer.contents b))
+   Ext_arg.bad_arg (Ext_buffer.contents b)
  
  
  let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) anonfun = 
@@ -127,7 +118,7 @@
      let s = argv.(!current) in
      incr current;  
      if s <> "" && s.[0] = '-' then begin
-       match assoc3 s speclist with 
+       match Ext_arg.assoc3 speclist s with 
        | Some action -> begin       
            begin match action with 
              | Unit r -> 

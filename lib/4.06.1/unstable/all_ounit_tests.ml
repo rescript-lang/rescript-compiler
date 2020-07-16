@@ -6495,9 +6495,6 @@ type t =
 
 let create n =
  let n = if n < 1 then 1 else n in
- 
- let n = if n > Sys.max_string_length then Sys.max_string_length else n in
- 
  let s = Bytes.create n in
  {buffer = s; position = 0; length = n; initial_buffer = s}
 
@@ -6529,13 +6526,6 @@ let resize b more =
   let len = b.length in
   let new_len = ref len in
   while b.position + more > !new_len do new_len := 2 * !new_len done;
-   
-  if !new_len > Sys.max_string_length then begin
-    if b.position + more <= Sys.max_string_length
-    then new_len := Sys.max_string_length
-    else failwith "Ext_buffer.add: cannot grow buffer"
-  end;
-  
   let new_buffer = Bytes.create !new_len in
   (* PR#6148: let's keep using [blit] rather than [unsafe_blit] in
      this tricky function that is slow anyway. *)
@@ -8076,13 +8066,17 @@ let (=~) = OUnit.assert_equal
 let perform_bsc = Ounit_cmd_util.perform_bsc
 let bsc_check_eval = Ounit_cmd_util.bsc_check_eval
 
+let ok b output = 
+  if not b then 
+    Ounit_cmd_util.debug_output output;
+  OUnit.assert_bool __LOC__ b  
 
 let suites =
   __FILE__
   >::: [
     __LOC__ >:: begin fun _ ->
       let v_output = perform_bsc  [| "-v" |] in
-      OUnit.assert_bool __LOC__ ((perform_bsc [| "-h" |]).exit_code  <> 0  );
+      OUnit.assert_bool __LOC__ ((perform_bsc [| "-h" |]).exit_code  = 0  );
       OUnit.assert_bool __LOC__ (v_output.exit_code = 0);
       (* Printf.printf "\n*>%s" v_output.stdout; *)
       (* Printf.printf "\n*>%s" v_output.stderr ; *)
@@ -8090,7 +8084,7 @@ let suites =
     __LOC__ >:: begin fun _ ->
       let v_output =
         perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in
-      OUnit.assert_bool __LOC__ (v_output.exit_code = 0)
+      ok (v_output.exit_code = 0) v_output
     end;
     __LOC__ >:: begin fun _ -> 
     let v_output = perform_bsc [|"-bs-eval"; {|type 'a arra = 'a array
@@ -8502,6 +8496,96 @@ let () =
       | _ -> None
     )
 
+end
+module Ext_arg : sig 
+#1 "ext_arg.mli"
+(* Copyright (C) 2020- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type 'a t = (string * 'a * string) array
+
+exception Bad_arg of string 
+
+val assoc3 : 
+  'a t -> 
+  string -> 
+  'a option
+
+
+  
+val bad_arg : 
+  string -> 
+  'a  
+end = struct
+#1 "ext_arg.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* A small module which is also used by {!Bsb_helper} *)
+type 'a t = (string * 'a * string) array
+
+let rec unsafe_loop i (l : 'a t) n x = 
+  if i = n then None
+  else 
+    let (y1,y2,_) =  Array.unsafe_get l i in
+    if y1 = x then  Some y2
+    else unsafe_loop (i + 1) l n x 
+
+let assoc3 (l : 'a t) (x : string)  : 'a option =
+  let n = Array.length l in 
+  unsafe_loop 0 l n x 
+
+
+exception Bad_arg of string  
+
+
+let bad_arg s = 
+  raise_notrace (Bad_arg s)    
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
@@ -9675,8 +9759,6 @@ val get_check_div_by_zero : unit -> bool
 val tool_name : string
 
 
-val sort_imports : bool ref 
-
 val syntax_only  : bool ref
 val binary_ast : bool ref
 val simple_binary_ast : bool ref
@@ -9737,24 +9819,7 @@ end = struct
 
 
 
-(* let add_npm_package_path s =
-  match !packages_info  with
-  | Empty ->
-    Ext_arg.bad_argf "please set package name first using -bs-package-name ";
-  | NonBrowser(name,  envs) ->
-    let env, path =
-      match Ext_string.split ~keep_empty:false s ':' with
-      | [ package_name; path]  ->
-        (match Js_packages_info.module_system_of_string package_name with
-         | Some x -> x
-         | None ->
-           Ext_arg.bad_argf "invalid module system %s" package_name), path
-      | [path] ->
-        NodeJS, path
-      | _ ->
-        Ext_arg.bad_argf "invalid npm package path: %s" s
-    in
-    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
+
 (** Browser is not set via command line only for internal use *)
 
 
@@ -9783,9 +9848,6 @@ let check_div_by_zero = ref true
 let get_check_div_by_zero () = !check_div_by_zero
 
 
-
-
-let sort_imports = ref true
 
 let syntax_only = ref false
 let binary_ast = ref false
@@ -10173,7 +10235,7 @@ let check_suffix  name  =
   else if Ext_path.check_suffix_case name !Config.interface_suffix then 
     `Mli,   Ext_filename.chop_extension_maybe  name 
   else 
-    raise(Arg.Bad("don't know what to do with " ^ name))
+    Ext_arg.bad_arg ("don't know what to do with " ^ name)
 
 
 let collect_ast_map ppf files parse_implementation parse_interface  =

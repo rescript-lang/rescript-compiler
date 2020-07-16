@@ -23,26 +23,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 let compilation_kind = ref Bsb_helper_depfile_gen.Js
 
-let hash : Bsb_helper_arg.string_action = 
-  Set {contents = ""}
+
+let namespace = ref None 
+let ns : Bsb_helper_arg.string_action = 
+  Optional_set namespace
 
 let dev_group = ref false
-let namespace = ref None
+
  
 let () =
   Bsb_helper_arg.parse_exn 
   ~progname:Sys.argv.(0)
   ~argv:Sys.argv
   ~start:1
-  [
-    "-g",  Bool dev_group ,
-    "Set the dev group (default to be 0)"
-    ;
-    "-bs-ns",  String (Call (fun s -> namespace := Some s)),
+  [|
+    "-hash",  String Dummy, "Set hash(internal)";
+    "-g",  Bool dev_group, "Set the dev group (default to be 0)";
+    "-bs-ns",  String ns,
     "Set namespace";
-    "-hash",  String hash,
-    "Set hash(internal)";
-  ] (fun ~rev_args -> 
+
+  |] (fun ~rev_args -> 
       match rev_args with
       | [x]
         ->  Bsb_helper_depfile_gen.emit_d

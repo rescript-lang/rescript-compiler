@@ -72,8 +72,6 @@ val get_check_div_by_zero : unit -> bool
 val tool_name : string
 
 
-val sort_imports : bool ref 
-
 val syntax_only  : bool ref
 val binary_ast : bool ref
 val simple_binary_ast : bool ref

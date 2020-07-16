@@ -37,10 +37,16 @@ let structural_config_table : action_table ref =
             | None -> true)
        ))
      
+let add_structure k v = 
+  structural_config_table := 
+    Map_string.add !structural_config_table k v 
 
 let signature_config_table : action_table ref =
   ref Map_string.empty
 
+let add_signature k v = 
+  signature_config_table :=
+    Map_string.add !signature_config_table k v 
 
 let rec iter_on_bs_config_stru (x :Parsetree.structure) =   
   match x with 
