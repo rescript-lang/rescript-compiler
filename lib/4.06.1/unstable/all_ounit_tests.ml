@@ -9759,8 +9759,6 @@ val get_check_div_by_zero : unit -> bool
 val tool_name : string
 
 
-val sort_imports : bool ref 
-
 val syntax_only  : bool ref
 val binary_ast : bool ref
 val simple_binary_ast : bool ref
@@ -9850,9 +9848,6 @@ let check_div_by_zero = ref true
 let get_check_div_by_zero () = !check_div_by_zero
 
 
-
-
-let sort_imports = ref true
 
 let syntax_only = ref false
 let binary_ast = ref false
