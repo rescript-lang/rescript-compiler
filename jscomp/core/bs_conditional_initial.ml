@@ -36,7 +36,8 @@ let setup_env () =
   Clflags.compile_only := true;
   Config.bs_only := true;  
   Clflags.no_implicit_current_dir := true; 
-  (* default true 
+  Clflags.color := Some Always;
+  (* default true
      otherwise [bsc -I sc src/hello.ml ] will include current directory to search path
   *)
   Clflags.assume_no_mli := Clflags.Mli_non_exists;

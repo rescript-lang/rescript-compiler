@@ -302,16 +302,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-o", string_optional_set Clflags.output_name, 
     "<file>  set output file name to <file>";
 
-    "-color", string_call set_color_option,
-    "Enable or disable colors in compiler messages\n\
-     The following settings are supported:\n\
-     auto    use heuristics to enable colors only if supported\n\
-     always  enable colors\n\
-     never   disable colors\n\
-     The default setting is 'auto', and the current heuristic\n\
-     checks that the TERM environment variable exists and is\n\
-     not empty or \"dumb\", and that isatty(stderr) holds.";    
-
      "-bs-read-cmi",  unit_call (fun _ -> Clflags.assume_no_mli := Mli_exists), 
      "*internal* Assume mli always exist ";
 
@@ -357,6 +347,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal* Pass gentype command";
 
     (******************************************************************************)
+
+         
     "-bs-super-errors", unit_lazy Super_main.setup,
     "Better error message combined with other tools ";
 
@@ -380,6 +372,17 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-bs-internal-check",  unit_call Bs_cmi_load.check,
     "*internal* Built in check corrupted data";  
+
+    "-color", string_call set_color_option,
+    "Enable or disable colors in compiler messages\n\
+     The following settings are supported:\n\
+     auto    use heuristics to enable colors only if supported\n\
+     always  enable colors\n\
+     never   disable colors\n\
+     The default setting is 'always'\n\
+     The current heuristic for 'auto'\n\
+     checks that the TERM environment variable exists and is\n\
+     not empty or \"dumb\", and that isatty(stderr) holds.";    
 
     "-bs-list-conditionals", unit_call (fun () -> Lexer.list_variables Format.err_formatter),
     "List existing conditional variables";  
