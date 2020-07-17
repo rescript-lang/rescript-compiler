@@ -281,7 +281,11 @@ let parse_and_print ~(from:Lang.t) ~(to_:Lang.t) (src: string) =
        let (structure, _) =
          NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile ~src
        in
-       Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter (Converter404.copy_structure structure, []);
+       let sanitized = structure
+                       |> Napkin_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
+                       |> Napkin_ast_conversion.structure
+       in
+       Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter (Converter404.copy_structure sanitized, []);
        handle_ret ~lang:Reason (Format.flush_str_formatter ())
      | (OCaml, Res) ->
        let structure = Lexing.from_string src |> Parse.implementation in
