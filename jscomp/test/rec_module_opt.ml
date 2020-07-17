@@ -40,3 +40,13 @@ and Y0 : sig
 end   = struct 
   type t   
 end    
+module type S = sig 
+  val f : int -> int    
+end   
+
+module rec X1 : S = struct 
+  let f x = x + 1
+end  
+and Y1 : S = struct 
+  let f x = x + 2  
+end  

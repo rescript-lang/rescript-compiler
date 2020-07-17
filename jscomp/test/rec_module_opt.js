@@ -28,6 +28,22 @@ var X0 = {};
 
 var Y0 = {};
 
+function f(x) {
+  return x + 1 | 0;
+}
+
+var X1 = {
+  f
+};
+
+function f$1(x) {
+  return x + 2 | 0;
+}
+
+var Y1 = {
+  f: f$1
+};
+
 var X;
 
 exports.A = A;
@@ -35,4 +51,6 @@ exports.ASet = ASet;
 exports.X = X;
 exports.X0 = X0;
 exports.Y0 = Y0;
+exports.X1 = X1;
+exports.Y1 = Y1;
 /* ASet Not a pure module */
