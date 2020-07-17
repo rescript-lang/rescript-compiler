@@ -2809,6 +2809,7 @@ val color : Misc.Color.setting option ref
 
 val unboxed_types : bool ref
 
+
 val arg_spec : (string * Arg.spec * string) list ref
 
 (* [add_arguments __LOC__ args] will add the arguments from [args] at
@@ -3215,6 +3216,7 @@ let color = ref None ;; (* -color *)
 
 let unboxed_types = ref false
 
+
 let arg_spec = ref []
 let arg_names = ref Misc.StringMap.empty
 
@@ -3249,6 +3251,7 @@ let parse_arguments f msg =
   with
   | Arg.Bad msg -> Printf.eprintf "%s" msg; exit 2
   | Arg.Help msg -> Printf.printf "%s" msg; exit 0
+
 
 
 type mli_status = Mli_na | Mli_exists | Mli_non_exists

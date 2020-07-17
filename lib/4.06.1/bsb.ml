@@ -13147,7 +13147,7 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
-    Ext_buffer.add_string buf "$bsc -color always";
+    Ext_buffer.add_string buf "$bsc";
     Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
     if bs_suffix then
       Ext_buffer.add_string buf " -bs-suffix";
@@ -13170,7 +13170,7 @@ let make_custom_rules
   in   
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
-    Ext_buffer.add_string buf "$bsc  $warnings -color always";
+    Ext_buffer.add_string buf "$bsc  $warnings";
     (match refmt with 
     | None -> ()
     | Some x ->
