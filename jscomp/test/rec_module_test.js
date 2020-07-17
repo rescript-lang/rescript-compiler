@@ -3,33 +3,8 @@
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
-var Caml_module = require("../../lib/js/caml_module.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
-
-var A = Caml_module.init_mod([
-      "rec_module_test.ml",
-      3,
-      6
-    ], {
-      TAG: /* Module */0,
-      _0: [[
-          /* Function */0,
-          "even"
-        ]]
-    });
-
-var B = Caml_module.init_mod([
-      "rec_module_test.ml",
-      11,
-      6
-    ], {
-      TAG: /* Module */0,
-      _0: [[
-          /* Function */0,
-          "odd"
-        ]]
-    });
 
 function even(n) {
   if (n === 0) {
@@ -41,15 +16,9 @@ function even(n) {
   }
 }
 
-Caml_module.update_mod({
-      TAG: /* Module */0,
-      _0: [[
-          /* Function */0,
-          "even"
-        ]]
-    }, A, {
-      even
-    });
+var A = {
+  even
+};
 
 function odd(n) {
   if (n === 1) {
@@ -61,51 +30,9 @@ function odd(n) {
   }
 }
 
-Caml_module.update_mod({
-      TAG: /* Module */0,
-      _0: [[
-          /* Function */0,
-          "odd"
-        ]]
-    }, B, {
-      odd
-    });
-
-var AA = Caml_module.init_mod([
-      "rec_module_test.ml",
-      21,
-      6
-    ], {
-      TAG: /* Module */0,
-      _0: [
-        [
-          /* Function */0,
-          "even"
-        ],
-        [
-          /* Function */0,
-          "x"
-        ]
-      ]
-    });
-
-var BB = Caml_module.init_mod([
-      "rec_module_test.ml",
-      31,
-      6
-    ], {
-      TAG: /* Module */0,
-      _0: [
-        [
-          /* Function */0,
-          "odd"
-        ],
-        [
-          /* Function */0,
-          "y"
-        ]
-      ]
-    });
+var B = {
+  odd
+};
 
 function even$1(n) {
   if (n === 0) {
@@ -121,22 +48,10 @@ function x(param) {
   return Curry._1(BB.y, undefined) + 3 | 0;
 }
 
-Caml_module.update_mod({
-      TAG: /* Module */0,
-      _0: [
-        [
-          /* Function */0,
-          "even"
-        ],
-        [
-          /* Function */0,
-          "x"
-        ]
-      ]
-    }, AA, {
-      even: even$1,
-      x
-    });
+var AA = {
+  even: even$1,
+  x
+};
 
 function odd$1(n) {
   if (n === 1) {
@@ -144,7 +59,7 @@ function odd$1(n) {
   } else if (n === 0) {
     return false;
   } else {
-    return Curry._1(AA.even, n - 1 | 0);
+    return Curry._1(even$1, n - 1 | 0);
   }
 }
 
@@ -152,34 +67,32 @@ function y(param) {
   return 32;
 }
 
-Caml_module.update_mod({
-      TAG: /* Module */0,
-      _0: [
-        [
-          /* Function */0,
-          "odd"
-        ],
-        [
-          /* Function */0,
-          "y"
-        ]
-      ]
-    }, BB, {
-      odd: odd$1,
-      y
-    });
+var BB = {
+  odd: odd$1,
+  y
+};
 
-var AAA = Caml_module.init_mod([
-      "rec_module_test.ml",
-      55,
-      2
-    ], {
-      TAG: /* Module */0,
-      _0: [[
-          /* Function */0,
-          "compare"
-        ]]
-    });
+var Even = {};
+
+var Odd = {};
+
+function compare(t1, t2) {
+  if (t1.TAG) {
+    if (t2.TAG) {
+      return Curry._2(ASet.compare, t1._0, t2._0);
+    } else {
+      return -1;
+    }
+  } else if (t2.TAG) {
+    return 1;
+  } else {
+    return Caml_primitive.caml_string_compare(t1._0, t2._0);
+  }
+}
+
+var AAA = {
+  compare
+};
 
 function height(param) {
   if (param) {
@@ -599,7 +512,7 @@ function cons_enum(_s, _e) {
   };
 }
 
-function compare(s1, s2) {
+function compare$1(s1, s2) {
   var _e1 = cons_enum(s1, /* End */0);
   var _e2 = cons_enum(s2, /* End */0);
   while(true) {
@@ -626,7 +539,7 @@ function compare(s1, s2) {
 }
 
 function equal(s1, s2) {
-  return compare(s1, s2) === 0;
+  return compare$1(s1, s2) === 0;
 }
 
 function subset(_s1, _s2) {
@@ -1138,7 +1051,7 @@ var ASet = {
   union,
   inter,
   diff,
-  compare,
+  compare: compare$1,
   equal,
   subset,
   iter,
@@ -1166,30 +1079,6 @@ var ASet = {
   of_list
 };
 
-function compare$1(t1, t2) {
-  if (t1.TAG) {
-    if (t2.TAG) {
-      return compare(t1._0, t2._0);
-    } else {
-      return -1;
-    }
-  } else if (t2.TAG) {
-    return 1;
-  } else {
-    return Caml_primitive.caml_string_compare(t1._0, t2._0);
-  }
-}
-
-Caml_module.update_mod({
-      TAG: /* Module */0,
-      _0: [[
-          /* Function */0,
-          "compare"
-        ]]
-    }, AAA, {
-      compare: compare$1
-    });
-
 var suites_0 = [
   "test1",
   (function (param) {
@@ -1203,9 +1092,9 @@ var suites_0 = [
               ],
               _1: [
                 Curry._1(A.even, 2),
-                Curry._1(AA.even, 4),
+                Curry._1(even$1, 4),
                 Curry._1(B.odd, 2),
-                Curry._1(BB.odd, 4)
+                Curry._1(odd$1, 4)
               ]
             };
     })
@@ -1217,7 +1106,7 @@ var suites_1 = {
     (function (param) {
         return {
                 TAG: /* Eq */0,
-                _0: Curry._1(BB.y, undefined),
+                _0: Curry._1(y, undefined),
                 _1: 32
               };
       })
@@ -1228,7 +1117,7 @@ var suites_1 = {
       (function (param) {
           return {
                   TAG: /* Eq */0,
-                  _0: Curry._1(AA.x, undefined),
+                  _0: Curry._1(x, undefined),
                   _1: 35
                 };
         })
@@ -1251,7 +1140,7 @@ var suites_1 = {
               return {
                       TAG: /* Eq */0,
                       _0: true,
-                      _1: Curry._1(AA.even, 4)
+                      _1: Curry._1(even$1, 4)
                     };
             })
         ],
@@ -1273,7 +1162,7 @@ var suites_1 = {
                   return {
                           TAG: /* Eq */0,
                           _0: 2,
-                          _1: cardinal(of_list({
+                          _1: Curry._1(cardinal, Curry._1(of_list, {
                                     hd: {
                                       TAG: /* Leaf */0,
                                       _0: "a"
@@ -1310,10 +1199,6 @@ var suites = {
 
 Mt.from_pair_suites("Rec_module_test", suites);
 
-var Even;
-
-var Odd;
-
 exports.A = A;
 exports.B = B;
 exports.AA = AA;
@@ -1323,4 +1208,4 @@ exports.Odd = Odd;
 exports.AAA = AAA;
 exports.ASet = ASet;
 exports.suites = suites;
-/* A Not a pure module */
+/*  Not a pure module */

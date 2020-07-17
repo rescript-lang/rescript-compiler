@@ -534,6 +534,7 @@ build test/reasonReactRouter.cmi : cc test/reasonReactRouter.rei | $stdlib
 build test/rebind_module.cmi test/rebind_module.cmj : cc test/rebind_module.ml | $stdlib
 build test/rebind_module_test.cmi test/rebind_module_test.cmj : cc test/rebind_module_test.ml | test/rebind_module.cmj $stdlib
 build test/rec_fun_test.cmi test/rec_fun_test.cmj : cc test/rec_fun_test.ml | test/mt.cmj $stdlib
+build test/rec_module_opt.cmi test/rec_module_opt.cmj : cc test/rec_module_opt.ml | $stdlib
 build test/rec_module_test.cmi test/rec_module_test.cmj : cc test/rec_module_test.ml | test/mt.cmj $stdlib
 build test/rec_value_test.cmi test/rec_value_test.cmj : cc test/rec_value_test.ml | test/mt.cmj $stdlib
 build test/record_debug_test.cmi test/record_debug_test.cmj : cc test/record_debug_test.ml | test/mt.cmj $stdlib
