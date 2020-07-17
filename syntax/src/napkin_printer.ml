@@ -985,7 +985,7 @@ and printValueDescription valueDescription cmtTbl =
     match valueDescription.pval_prim with | [] -> false | _ -> true
   in
   let (hasGenType, attrs) = ParsetreeViewer.splitGenTypeAttr valueDescription.pval_attributes in
-  let attrs = printAttributes ~loc:valueDescription.pval_loc attrs cmtTbl in
+  let attrs = printAttributes ~loc:valueDescription.pval_name.loc attrs cmtTbl in
   let header =
     if isExternal then "external " else (if hasGenType then "export " else "let ") in
   Doc.group (

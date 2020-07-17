@@ -22,3 +22,8 @@ let make = () => <div />
 @react.component let make = () => <div />
 @react.recursiveComponent
 and otherMake = () => <div />
+
+@ocaml.doc(" {b See} {!length} ")
+external size: array<'a> => int = "%array_length"
+
+@ocaml.doc(" {b See} {!length} ") external size: array<'a> => int = "%array_length"
