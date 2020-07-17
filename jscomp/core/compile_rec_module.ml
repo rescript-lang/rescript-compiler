@@ -17,12 +17,7 @@ let bs_update_mod (args : t list) loc : t =
                   ~arity:3
                   ~alloc:true), args, loc)
 
-let mod_prim name args loc =  
-  if name = "init_mod" then
-    bs_init_mod args loc
-  else if name = "update_mod" then
-    bs_update_mod args loc
-  else assert false
+
 
 type loc = t 
 type shape = t 
@@ -40,7 +35,7 @@ let eval_rec_bindings_aux
       bind_inits rem acc 
     | (id, Some(loc, shape), _rhs) :: rem ->
       Lambda.Llet(Strict, Pgenval, id,
-                  mod_prim "init_mod" [loc; shape] Location.none,       
+                  bs_init_mod [loc; shape] Location.none,       
                   bind_inits rem acc) in 
   let rec  bind_strict args acc = 
     match args with 
@@ -57,7 +52,7 @@ let eval_rec_bindings_aux
       patch_forwards rem
     | (id, Some(_loc, shape), rhs) :: rem ->
       Lsequence(
-        mod_prim "update_mod" [shape; Lvar id; rhs] Location.none,
+        bs_update_mod [shape; Lvar id; rhs] Location.none,
         patch_forwards rem)
   in
   bind_inits bindings 
