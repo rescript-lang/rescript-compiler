@@ -28,3 +28,15 @@ and ASet
   = Set.Make(A)
 
 module rec X : sig end = X  
+
+
+module rec X0 : sig 
+  type t   
+end   = struct 
+  type t  
+end   
+and Y0 : sig 
+  type t   
+end   = struct 
+  type t   
+end    

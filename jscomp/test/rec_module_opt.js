@@ -24,9 +24,15 @@ var A = {
 
 var ASet = $$Set.Make(A);
 
+var X0 = {};
+
+var Y0 = {};
+
 var X;
 
 exports.A = A;
 exports.ASet = ASet;
 exports.X = X;
+exports.X0 = X0;
+exports.Y0 = Y0;
 /* ASet Not a pure module */
