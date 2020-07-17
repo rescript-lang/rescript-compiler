@@ -174,7 +174,19 @@ exports[`typeParams.js 1`] = `
 "=====Parsetree==========================================
 type nonrec 'a node = {
   _value: 'a Js.Nullable.value }
-type nonrec ('from, '_) derivedNode =
+type nonrec ('from, 'to) derivedNode =
+  {
+  mutable value: 'to_ ;
+  updateF: 'from -> 'to_ }
+type nonrec ('from, ') derivedNode =
+  {
+  mutable value: 'to_ ;
+  updateF: 'from -> 'to_ }
+type nonrec ('from, ') derivedNode =
+  {
+  mutable value: 'to_ ;
+  updateF: 'from -> 'to_ }
+type nonrec ('from, 'foo) derivedNode =
   {
   mutable value: 'to_ ;
   updateF: 'from -> 'to_ }
@@ -202,6 +214,42 @@ File \\"/syntax/tests/parsing/errors/typeDef/typeParams.js\\", line 5, character
 7 │    updateF: 'from => 'to_,
 
 \`to\` is a reserved keyword. Keywords need to be escaped: \\\\\\"to\\"
+
+
+File \\"/syntax/tests/parsing/errors/typeDef/typeParams.js\\", line 10, characters 25-26:
+
+
+8 │  }
+9 │  
+[31m10[0m │  type derivedNode<'from, '[31m+[0m> = {
+11 │    mutable value: 'to_,
+12 │    updateF: 'from => 'to_,
+
+A type param consists of a singlequote followed by a name like \`'a\` or \`'A\`
+
+
+File \\"/syntax/tests/parsing/errors/typeDef/typeParams.js\\", line 15, characters 25-26:
+
+
+13 │  }
+14 │  
+[31m15[0m │  type derivedNode<'from, '[31m_[0m> = {
+16 │    mutable value: 'to_,
+17 │    updateF: 'from => 'to_,
+
+A type param consists of a singlequote followed by a name like \`'a\` or \`'A\`
+
+
+File \\"/syntax/tests/parsing/errors/typeDef/typeParams.js\\", line 21, characters 24-27:
+
+
+19 │  
+20 │  
+[31m21[0m │  type derivedNode<'from, [31mfoo[0m> = {
+22 │    mutable value: 'to_,
+23 │    updateF: 'from => 'to_,
+
+Type params start with a singlequote: 'foo
 
 
 

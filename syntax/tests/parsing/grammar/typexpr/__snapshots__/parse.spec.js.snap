@@ -226,5 +226,6 @@ exports[`var.js 1`] = `
 let (t : 'a) = x
 let t : 'a . t = x
 let t : 'a 'b . t = x
-let t : 'a 'b 'c . t = x"
+let t : 'a 'b 'c . t = x
+type nonrec 'A x = 'A"
 `;

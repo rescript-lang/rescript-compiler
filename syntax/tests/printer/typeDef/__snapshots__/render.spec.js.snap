@@ -80,7 +80,7 @@ type \\\\\\"Color\\" =
 
 type \\\\\\"type\\"<'\\\\\\"😱 gadt\\", '\\\\\\"😻\\"> constraint '\\\\\\"type\\" = \\\\\\"let\\"
 
-type \\\\\\"type\\"<'\\\\\\"SuperIdent\\"> += Blue(\\\\\\"type\\", \\\\\\"ExtremeType\\")
+type \\\\\\"type\\"<'\\\\\\"😆SuperIdent\\"> += Blue(\\\\\\"type\\", \\\\\\"ExtremeType\\")
 "
 `;
 
@@ -210,6 +210,11 @@ type t<
   -'superlongthing,
   +'superlongthing,
 > constraint 't = ('state, 'action) => 'nextSubtree
+
+module Test = {
+  type x<'A> = 'A
+  type y = x<string>
+}
 "
 `;
 

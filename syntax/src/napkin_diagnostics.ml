@@ -1,6 +1,7 @@
 module Reporting = Napkin_reporting
 module Grammar = Napkin_grammar
 module Token = Napkin_token
+
 type category =
   | Unexpected of {token: Token.t; context: (Grammar.t * Lexing.position) list}
   | Expected of {context: Grammar.t option; pos: Lexing.position (* prev token end*); token: Token.t}

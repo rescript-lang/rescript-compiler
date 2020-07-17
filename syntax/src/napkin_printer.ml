@@ -1435,7 +1435,7 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
   | Ptyp_any -> Doc.text "_"
   | Ptyp_var var -> Doc.concat [
       Doc.text "'";
-      printIdentLike var;
+      printIdentLike ~allowUident:true var;
     ]
   | Ptyp_extension(extension) ->
     printExtension ~atModuleLvl:false extension cmtTbl

@@ -291,3 +291,31 @@ I'm not sure what to parse here when looking at \\")\\".
 
 ========================================================"
 `;
+
+exports[`typeVar.res 1`] = `
+"=====Parsetree==========================================
+type nonrec 'A x = '
+type nonrec 'A x = 'let
+=====Errors=============================================
+
+File \\"/syntax/tests/parsing/errors/typexpr/typeVar.res\\", line 1, characters 14-15:
+
+
+[31m1[0m │  type x<'A> = '[31m_[0m
+2 │  type x<'A> = 'let
+
+A type variable consists of a singlequote followed by a name like \`'a\` or \`'A\`
+
+
+File \\"/syntax/tests/parsing/errors/typexpr/typeVar.res\\", line 2, characters 14-17:
+
+
+1 │  type x<'A> = '_
+[31m2[0m │  type x<'A> = '[31mlet[0m
+
+\`let\` is a reserved keyword. Keywords need to be escaped: \\\\\\"let\\"
+
+
+
+========================================================"
+`;

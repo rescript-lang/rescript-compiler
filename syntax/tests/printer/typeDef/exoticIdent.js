@@ -10,4 +10,4 @@ type \"Color" =
 type \"type"<'\"😱 gadt", '\"😻">
   constraint '\"type" = \"let"
 
-type \"type"<'\"SuperIdent"> += Blue(\"type", \"ExtremeType") 
+type \"type"<'\"😆SuperIdent"> += Blue(\"type", \"ExtremeType") 

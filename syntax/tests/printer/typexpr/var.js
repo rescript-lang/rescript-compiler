@@ -8,3 +8,5 @@ external foo: @attr 'foo = "primitive"
 
 let x: 'a = y
 let x: @attr 'a = y
+
+type x<'A> = 'A

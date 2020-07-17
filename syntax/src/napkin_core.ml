@@ -90,6 +90,9 @@ Solution: directly use `concat`."
         NapkinscriptPrinter.printExpression switchExpr (CommentTable.empty);
       ]
     ] |> Doc.toString ~width:80
+
+  let typeParam = "A type param consists of a singlequote followed by a name like `'a` or `'A`"
+  let typeVar = "A type variable consists of a singlequote followed by a name like `'a` or `'A`"
 end
 
 
@@ -471,10 +474,19 @@ let parseIdent ~msg ~startPos p =
     Parser.next p;
     let loc = mkLoc startPos p.prevEndPos in
     (ident, loc)
-  | _token ->
-    Parser.err p (Diagnostics.message msg);
+  | token when Token.isKeyword token &&
+      p.prevEndPos.pos_lnum == p.startPos.pos_lnum ->
+    let tokenTxt = Token.toString token in
+    let msg =
+      "`" ^ tokenTxt ^ "` is a reserved keyword. Keywords need to be escaped: \\\"" ^ tokenTxt ^ "\""
+    in
+    Parser.err ~startPos p (Diagnostics.message msg);
     Parser.next p;
-    ("_", mkLoc startPos p.prevEndPos)
+    (tokenTxt, mkLoc startPos p.prevEndPos)
+  | _token ->
+    Parser.err ~startPos p (Diagnostics.message msg);
+    Parser.next p;
+    ("", mkLoc startPos p.prevEndPos)
 
 let parseHashIdent ~startPos p =
   Parser.expect Hash p;
@@ -3581,7 +3593,7 @@ and parseAtomicTypExpr ~attrs p =
   let typ = match p.Parser.token with
   | SingleQuote ->
     Parser.next p;
-    let (ident, loc) = parseLident p in
+    let (ident, loc) = parseIdent ~msg:ErrorMessages.typeVar ~startPos:p.startPos p in
     Ast_helper.Typ.var ~loc ~attrs ident
   | Underscore ->
     let endPos = p.endPos in
@@ -4274,6 +4286,7 @@ and parseTypeRepresentation p =
 
 (* type-param	::=
  *  | variance 'lident
+ *  | variance 'uident
  *  | variance _
  *
  * variance ::=
@@ -4290,13 +4303,20 @@ and parseTypeParam p =
   match p.Parser.token with
   | SingleQuote ->
     Parser.next p;
-    let (ident, loc) = parseLident p in
+    let (ident, loc) =
+      parseIdent ~msg:ErrorMessages.typeParam ~startPos:p.startPos p in
     Some (Ast_helper.Typ.var ~loc ident, variance)
   | Underscore ->
     let loc = mkLoc p.startPos p.endPos in
     Parser.next p;
     Some (Ast_helper.Typ.any ~loc (), variance)
-  (* TODO: should we try parsing lident as 'ident ? *)
+  | (Uident _ | Lident _) as token ->
+    Parser.err p (Diagnostics.message (
+      "Type params start with a singlequote: '" ^ (Token.toString token)
+    ));
+    let (ident, loc) =
+      parseIdent ~msg:ErrorMessages.typeParam ~startPos:p.startPos p in
+    Some (Ast_helper.Typ.var ~loc ident, variance)
   | _token ->
     None
 
