@@ -4847,6 +4847,3407 @@ let deprecated ?(def = none) ?(use = none) loc msg =
   prerr_warning loc (Warnings.Deprecated (msg, def, use))
 
 end
+(** Interface as module  *)
+module Asttypes
+= struct
+#1 "asttypes.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(** Auxiliary AST types used by parsetree and typedtree. *)
+
+type constant =
+    Const_int of int
+  | Const_char of char
+  | Const_string of string * string option
+  | Const_float of string
+  | Const_int32 of int32
+  | Const_int64 of int64
+  | Const_nativeint of nativeint
+
+type rec_flag = Nonrecursive | Recursive
+
+type direction_flag = Upto | Downto
+
+(* Order matters, used in polymorphic comparison *)
+type private_flag = Private | Public
+
+type mutable_flag = Immutable | Mutable
+
+type virtual_flag = Virtual | Concrete
+
+type override_flag = Override | Fresh
+
+type closed_flag = Closed | Open
+
+type label = string
+
+type arg_label =
+    Nolabel
+  | Labelled of string (*  label:T -> ... *)
+  | Optional of string (* ?label:T -> ... *)
+
+type 'a loc = 'a Location.loc = {
+  txt : 'a;
+  loc : Location.t;
+}
+
+
+type variance =
+  | Covariant
+  | Contravariant
+  | Invariant
+
+end
+module Longident : sig 
+#1 "longident.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(** Long identifiers, used in parsetree. *)
+
+type t =
+    Lident of string
+  | Ldot of t * string
+  | Lapply of t * t
+
+val flatten: t -> string list
+val unflatten: string list -> t option
+val last: t -> string
+val parse: string -> t
+
+end = struct
+#1 "longident.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+type t =
+    Lident of string
+  | Ldot of t * string
+  | Lapply of t * t
+
+let rec flat accu = function
+    Lident s -> s :: accu
+  | Ldot(lid, s) -> flat (s :: accu) lid
+  | Lapply(_, _) -> Misc.fatal_error "Longident.flat"
+
+let flatten lid = flat [] lid
+
+let last = function
+    Lident s -> s
+  | Ldot(_, s) -> s
+  | Lapply(_, _) -> Misc.fatal_error "Longident.last"
+
+let rec split_at_dots s pos =
+  try
+    let dot = String.index_from s pos '.' in
+    String.sub s pos (dot - pos) :: split_at_dots s (dot + 1)
+  with Not_found ->
+    [String.sub s pos (String.length s - pos)]
+
+let unflatten l =
+  match l with
+  | [] -> None
+  | hd :: tl -> Some (List.fold_left (fun p s -> Ldot(p, s)) (Lident hd) tl)
+
+let parse s =
+  match unflatten (split_at_dots s 0) with
+  | None -> Lident ""  (* should not happen, but don't put assert false
+                          so as not to crash the toplevel (see Genprintval) *)
+  | Some v -> v
+
+end
+(** Interface as module  *)
+module Parsetree
+= struct
+#1 "parsetree.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(** Abstract syntax tree produced by parsing *)
+
+open Asttypes
+
+type constant =
+    Pconst_integer of string * char option
+  (* 3 3l 3L 3n
+
+     Suffixes [g-z][G-Z] are accepted by the parser.
+     Suffixes except 'l', 'L' and 'n' are rejected by the typechecker
+  *)
+  | Pconst_char of char
+  (* 'c' *)
+  | Pconst_string of string * string option
+  (* "constant"
+     {delim|other constant|delim}
+  *)
+  | Pconst_float of string * char option
+  (* 3.4 2e5 1.4e-4
+
+     Suffixes [g-z][G-Z] are accepted by the parser.
+     Suffixes are rejected by the typechecker.
+  *)
+
+(** {1 Extension points} *)
+
+type attribute = string loc * payload
+       (* [@id ARG]
+          [@@id ARG]
+
+          Metadata containers passed around within the AST.
+          The compiler ignores unknown attributes.
+       *)
+
+and extension = string loc * payload
+      (* [%id ARG]
+         [%%id ARG]
+
+         Sub-language placeholder -- rejected by the typechecker.
+      *)
+
+and attributes = attribute list
+
+and payload =
+  | PStr of structure
+  | PSig of signature (* : SIG *)
+  | PTyp of core_type  (* : T *)
+  | PPat of pattern * expression option  (* ? P  or  ? P when E *)
+
+(** {1 Core language} *)
+
+(* Type expressions *)
+
+and core_type =
+    {
+     ptyp_desc: core_type_desc;
+     ptyp_loc: Location.t;
+     ptyp_attributes: attributes; (* ... [@id1] [@id2] *)
+    }
+
+and core_type_desc =
+  | Ptyp_any
+        (*  _ *)
+  | Ptyp_var of string
+        (* 'a *)
+  | Ptyp_arrow of arg_label * core_type * core_type
+        (* T1 -> T2       Simple
+           ~l:T1 -> T2    Labelled
+           ?l:T1 -> T2    Optional
+         *)
+  | Ptyp_tuple of core_type list
+        (* T1 * ... * Tn
+
+           Invariant: n >= 2
+        *)
+  | Ptyp_constr of Longident.t loc * core_type list
+        (* tconstr
+           T tconstr
+           (T1, ..., Tn) tconstr
+         *)
+  | Ptyp_object of object_field list * closed_flag
+        (* < l1:T1; ...; ln:Tn >     (flag = Closed)
+           < l1:T1; ...; ln:Tn; .. > (flag = Open)
+         *)
+  | Ptyp_class of Longident.t loc * core_type list
+        (* #tconstr
+           T #tconstr
+           (T1, ..., Tn) #tconstr
+         *)
+  | Ptyp_alias of core_type * string
+        (* T as 'a *)
+  | Ptyp_variant of row_field list * closed_flag * label list option
+        (* [ `A|`B ]         (flag = Closed; labels = None)
+           [> `A|`B ]        (flag = Open;   labels = None)
+           [< `A|`B ]        (flag = Closed; labels = Some [])
+           [< `A|`B > `X `Y ](flag = Closed; labels = Some ["X";"Y"])
+         *)
+  | Ptyp_poly of string loc list * core_type
+        (* 'a1 ... 'an. T
+
+           Can only appear in the following context:
+
+           - As the core_type of a Ppat_constraint node corresponding
+             to a constraint on a let-binding: let x : 'a1 ... 'an. T
+             = e ...
+
+           - Under Cfk_virtual for methods (not values).
+
+           - As the core_type of a Pctf_method node.
+
+           - As the core_type of a Pexp_poly node.
+
+           - As the pld_type field of a label_declaration.
+
+           - As a core_type of a Ptyp_object node.
+         *)
+
+  | Ptyp_package of package_type
+        (* (module S) *)
+  | Ptyp_extension of extension
+        (* [%id] *)
+
+and package_type = Longident.t loc * (Longident.t loc * core_type) list
+      (*
+        (module S)
+        (module S with type t1 = T1 and ... and tn = Tn)
+       *)
+
+and row_field =
+  | Rtag of label loc * attributes * bool * core_type list
+        (* [`A]                   ( true,  [] )
+           [`A of T]              ( false, [T] )
+           [`A of T1 & .. & Tn]   ( false, [T1;...Tn] )
+           [`A of & T1 & .. & Tn] ( true,  [T1;...Tn] )
+
+          - The 2nd field is true if the tag contains a
+            constant (empty) constructor.
+          - '&' occurs when several types are used for the same constructor
+            (see 4.2 in the manual)
+
+          - TODO: switch to a record representation, and keep location
+        *)
+  | Rinherit of core_type
+        (* [ T ] *)
+
+and object_field =
+  | Otag of label loc * attributes * core_type
+  | Oinherit of core_type
+
+(* Patterns *)
+
+and pattern =
+    {
+     ppat_desc: pattern_desc;
+     ppat_loc: Location.t;
+     ppat_attributes: attributes; (* ... [@id1] [@id2] *)
+    }
+
+and pattern_desc =
+  | Ppat_any
+        (* _ *)
+  | Ppat_var of string loc
+        (* x *)
+  | Ppat_alias of pattern * string loc
+        (* P as 'a *)
+  | Ppat_constant of constant
+        (* 1, 'a', "true", 1.0, 1l, 1L, 1n *)
+  | Ppat_interval of constant * constant
+        (* 'a'..'z'
+
+           Other forms of interval are recognized by the parser
+           but rejected by the type-checker. *)
+  | Ppat_tuple of pattern list
+        (* (P1, ..., Pn)
+
+           Invariant: n >= 2
+        *)
+  | Ppat_construct of Longident.t loc * pattern option
+        (* C                None
+           C P              Some P
+           C (P1, ..., Pn)  Some (Ppat_tuple [P1; ...; Pn])
+         *)
+  | Ppat_variant of label * pattern option
+        (* `A             (None)
+           `A P           (Some P)
+         *)
+  | Ppat_record of (Longident.t loc * pattern) list * closed_flag
+        (* { l1=P1; ...; ln=Pn }     (flag = Closed)
+           { l1=P1; ...; ln=Pn; _}   (flag = Open)
+
+           Invariant: n > 0
+         *)
+  | Ppat_array of pattern list
+        (* [| P1; ...; Pn |] *)
+  | Ppat_or of pattern * pattern
+        (* P1 | P2 *)
+  | Ppat_constraint of pattern * core_type
+        (* (P : T) *)
+  | Ppat_type of Longident.t loc
+        (* #tconst *)
+  | Ppat_lazy of pattern
+        (* lazy P *)
+  | Ppat_unpack of string loc
+        (* (module P)
+           Note: (module P : S) is represented as
+           Ppat_constraint(Ppat_unpack, Ptyp_package)
+         *)
+  | Ppat_exception of pattern
+        (* exception P *)
+  | Ppat_extension of extension
+        (* [%id] *)
+  | Ppat_open of Longident.t loc * pattern
+        (* M.(P) *)
+
+(* Value expressions *)
+
+and expression =
+    {
+     pexp_desc: expression_desc;
+     pexp_loc: Location.t;
+     pexp_attributes: attributes; (* ... [@id1] [@id2] *)
+    }
+
+and expression_desc =
+  | Pexp_ident of Longident.t loc
+        (* x
+           M.x
+         *)
+  | Pexp_constant of constant
+        (* 1, 'a', "true", 1.0, 1l, 1L, 1n *)
+  | Pexp_let of rec_flag * value_binding list * expression
+        (* let P1 = E1 and ... and Pn = EN in E       (flag = Nonrecursive)
+           let rec P1 = E1 and ... and Pn = EN in E   (flag = Recursive)
+         *)
+  | Pexp_function of case list
+        (* function P1 -> E1 | ... | Pn -> En *)
+  | Pexp_fun of arg_label * expression option * pattern * expression
+        (* fun P -> E1                          (Simple, None)
+           fun ~l:P -> E1                       (Labelled l, None)
+           fun ?l:P -> E1                       (Optional l, None)
+           fun ?l:(P = E0) -> E1                (Optional l, Some E0)
+
+           Notes:
+           - If E0 is provided, only Optional is allowed.
+           - "fun P1 P2 .. Pn -> E1" is represented as nested Pexp_fun.
+           - "let f P = E" is represented using Pexp_fun.
+         *)
+  | Pexp_apply of expression * (arg_label * expression) list
+        (* E0 ~l1:E1 ... ~ln:En
+           li can be empty (non labeled argument) or start with '?'
+           (optional argument).
+
+           Invariant: n > 0
+         *)
+  | Pexp_match of expression * case list
+        (* match E0 with P1 -> E1 | ... | Pn -> En *)
+  | Pexp_try of expression * case list
+        (* try E0 with P1 -> E1 | ... | Pn -> En *)
+  | Pexp_tuple of expression list
+        (* (E1, ..., En)
+
+           Invariant: n >= 2
+        *)
+  | Pexp_construct of Longident.t loc * expression option
+        (* C                None
+           C E              Some E
+           C (E1, ..., En)  Some (Pexp_tuple[E1;...;En])
+        *)
+  | Pexp_variant of label * expression option
+        (* `A             (None)
+           `A E           (Some E)
+         *)
+  | Pexp_record of (Longident.t loc * expression) list * expression option
+        (* { l1=P1; ...; ln=Pn }     (None)
+           { E0 with l1=P1; ...; ln=Pn }   (Some E0)
+
+           Invariant: n > 0
+         *)
+  | Pexp_field of expression * Longident.t loc
+        (* E.l *)
+  | Pexp_setfield of expression * Longident.t loc * expression
+        (* E1.l <- E2 *)
+  | Pexp_array of expression list
+        (* [| E1; ...; En |] *)
+  | Pexp_ifthenelse of expression * expression * expression option
+        (* if E1 then E2 else E3 *)
+  | Pexp_sequence of expression * expression
+        (* E1; E2 *)
+  | Pexp_while of expression * expression
+        (* while E1 do E2 done *)
+  | Pexp_for of
+      pattern *  expression * expression * direction_flag * expression
+        (* for i = E1 to E2 do E3 done      (flag = Upto)
+           for i = E1 downto E2 do E3 done  (flag = Downto)
+         *)
+  | Pexp_constraint of expression * core_type
+        (* (E : T) *)
+  | Pexp_coerce of expression * core_type option * core_type
+        (* (E :> T)        (None, T)
+           (E : T0 :> T)   (Some T0, T)
+         *)
+  | Pexp_send of expression * label loc
+        (*  E # m *)
+  | Pexp_new of Longident.t loc
+        (* new M.c *)
+  | Pexp_setinstvar of label loc * expression
+        (* x <- 2 *)
+  | Pexp_override of (label loc * expression) list
+        (* {< x1 = E1; ...; Xn = En >} *)
+  | Pexp_letmodule of string loc * module_expr * expression
+        (* let module M = ME in E *)
+  | Pexp_letexception of extension_constructor * expression
+        (* let exception C in E *)
+  | Pexp_assert of expression
+        (* assert E
+           Note: "assert false" is treated in a special way by the
+           type-checker. *)
+  | Pexp_lazy of expression
+        (* lazy E *)
+  | Pexp_poly of expression * core_type option
+        (* Used for method bodies.
+
+           Can only be used as the expression under Cfk_concrete
+           for methods (not values). *)
+  | Pexp_object of class_structure
+        (* object ... end *)
+  | Pexp_newtype of string loc * expression
+        (* fun (type t) -> E *)
+  | Pexp_pack of module_expr
+        (* (module ME)
+
+           (module ME : S) is represented as
+           Pexp_constraint(Pexp_pack, Ptyp_package S) *)
+  | Pexp_open of override_flag * Longident.t loc * expression
+        (* M.(E)
+           let open M in E
+           let! open M in E *)
+  | Pexp_extension of extension
+        (* [%id] *)
+  | Pexp_unreachable
+        (* . *)
+
+and case =   (* (P -> E) or (P when E0 -> E) *)
+    {
+     pc_lhs: pattern;
+     pc_guard: expression option;
+     pc_rhs: expression;
+    }
+
+(* Value descriptions *)
+
+and value_description =
+    {
+     pval_name: string loc;
+     pval_type: core_type;
+     pval_prim: string list;
+     pval_attributes: attributes;  (* ... [@@id1] [@@id2] *)
+     pval_loc: Location.t;
+    }
+
+(*
+  val x: T                            (prim = [])
+  external x: T = "s1" ... "sn"       (prim = ["s1";..."sn"])
+*)
+
+(* Type declarations *)
+
+and type_declaration =
+    {
+     ptype_name: string loc;
+     ptype_params: (core_type * variance) list;
+           (* ('a1,...'an) t; None represents  _*)
+     ptype_cstrs: (core_type * core_type * Location.t) list;
+           (* ... constraint T1=T1'  ... constraint Tn=Tn' *)
+     ptype_kind: type_kind;
+     ptype_private: private_flag;   (* = private ... *)
+     ptype_manifest: core_type option;  (* = T *)
+     ptype_attributes: attributes;   (* ... [@@id1] [@@id2] *)
+     ptype_loc: Location.t;
+    }
+
+(*
+  type t                     (abstract, no manifest)
+  type t = T0                (abstract, manifest=T0)
+  type t = C of T | ...      (variant,  no manifest)
+  type t = T0 = C of T | ... (variant,  manifest=T0)
+  type t = {l: T; ...}       (record,   no manifest)
+  type t = T0 = {l : T; ...} (record,   manifest=T0)
+  type t = ..                (open,     no manifest)
+*)
+
+and type_kind =
+  | Ptype_abstract
+  | Ptype_variant of constructor_declaration list
+        (* Invariant: non-empty list *)
+  | Ptype_record of label_declaration list
+        (* Invariant: non-empty list *)
+  | Ptype_open
+
+and label_declaration =
+    {
+     pld_name: string loc;
+     pld_mutable: mutable_flag;
+     pld_type: core_type;
+     pld_loc: Location.t;
+     pld_attributes: attributes; (* l : T [@id1] [@id2] *)
+    }
+
+(*  { ...; l: T; ... }            (mutable=Immutable)
+    { ...; mutable l: T; ... }    (mutable=Mutable)
+
+    Note: T can be a Ptyp_poly.
+*)
+
+and constructor_declaration =
+    {
+     pcd_name: string loc;
+     pcd_args: constructor_arguments;
+     pcd_res: core_type option;
+     pcd_loc: Location.t;
+     pcd_attributes: attributes; (* C of ... [@id1] [@id2] *)
+    }
+
+and constructor_arguments =
+  | Pcstr_tuple of core_type list
+  | Pcstr_record of label_declaration list
+
+(*
+  | C of T1 * ... * Tn     (res = None,    args = Pcstr_tuple [])
+  | C: T0                  (res = Some T0, args = [])
+  | C: T1 * ... * Tn -> T0 (res = Some T0, args = Pcstr_tuple)
+  | C of {...}             (res = None,    args = Pcstr_record)
+  | C: {...} -> T0         (res = Some T0, args = Pcstr_record)
+  | C of {...} as t        (res = None,    args = Pcstr_record)
+*)
+
+and type_extension =
+    {
+     ptyext_path: Longident.t loc;
+     ptyext_params: (core_type * variance) list;
+     ptyext_constructors: extension_constructor list;
+     ptyext_private: private_flag;
+     ptyext_attributes: attributes;   (* ... [@@id1] [@@id2] *)
+    }
+(*
+  type t += ...
+*)
+
+and extension_constructor =
+    {
+     pext_name: string loc;
+     pext_kind : extension_constructor_kind;
+     pext_loc : Location.t;
+     pext_attributes: attributes; (* C of ... [@id1] [@id2] *)
+    }
+
+and extension_constructor_kind =
+    Pext_decl of constructor_arguments * core_type option
+      (*
+         | C of T1 * ... * Tn     ([T1; ...; Tn], None)
+         | C: T0                  ([], Some T0)
+         | C: T1 * ... * Tn -> T0 ([T1; ...; Tn], Some T0)
+       *)
+  | Pext_rebind of Longident.t loc
+      (*
+         | C = D
+       *)
+
+(** {1 Class language} *)
+
+(* Type expressions for the class language *)
+
+and class_type =
+    {
+     pcty_desc: class_type_desc;
+     pcty_loc: Location.t;
+     pcty_attributes: attributes; (* ... [@id1] [@id2] *)
+    }
+
+and class_type_desc =
+  | Pcty_constr of Longident.t loc * core_type list
+        (* c
+           ['a1, ..., 'an] c *)
+  | Pcty_signature of class_signature
+        (* object ... end *)
+  | Pcty_arrow of arg_label * core_type * class_type
+        (* T -> CT       Simple
+           ~l:T -> CT    Labelled l
+           ?l:T -> CT    Optional l
+         *)
+  | Pcty_extension of extension
+        (* [%id] *)
+  | Pcty_open of override_flag * Longident.t loc * class_type
+        (* let open M in CT *)
+
+and class_signature =
+    {
+     pcsig_self: core_type;
+     pcsig_fields: class_type_field list;
+    }
+(* object('selfpat) ... end
+   object ... end             (self = Ptyp_any)
+ *)
+
+and class_type_field =
+    {
+     pctf_desc: class_type_field_desc;
+     pctf_loc: Location.t;
+     pctf_attributes: attributes; (* ... [@@id1] [@@id2] *)
+    }
+
+and class_type_field_desc =
+  | Pctf_inherit of class_type
+        (* inherit CT *)
+  | Pctf_val of (label loc * mutable_flag * virtual_flag * core_type)
+        (* val x: T *)
+  | Pctf_method  of (label loc * private_flag * virtual_flag * core_type)
+        (* method x: T
+
+           Note: T can be a Ptyp_poly.
+         *)
+  | Pctf_constraint  of (core_type * core_type)
+        (* constraint T1 = T2 *)
+  | Pctf_attribute of attribute
+        (* [@@@id] *)
+  | Pctf_extension of extension
+        (* [%%id] *)
+
+and 'a class_infos =
+    {
+     pci_virt: virtual_flag;
+     pci_params: (core_type * variance) list;
+     pci_name: string loc;
+     pci_expr: 'a;
+     pci_loc: Location.t;
+     pci_attributes: attributes;  (* ... [@@id1] [@@id2] *)
+    }
+(* class c = ...
+   class ['a1,...,'an] c = ...
+   class virtual c = ...
+
+   Also used for "class type" declaration.
+*)
+
+and class_description = class_type class_infos
+
+and class_type_declaration = class_type class_infos
+
+(* Value expressions for the class language *)
+
+and class_expr =
+    {
+     pcl_desc: class_expr_desc;
+     pcl_loc: Location.t;
+     pcl_attributes: attributes; (* ... [@id1] [@id2] *)
+    }
+
+and class_expr_desc =
+  | Pcl_constr of Longident.t loc * core_type list
+        (* c
+           ['a1, ..., 'an] c *)
+  | Pcl_structure of class_structure
+        (* object ... end *)
+  | Pcl_fun of arg_label * expression option * pattern * class_expr
+        (* fun P -> CE                          (Simple, None)
+           fun ~l:P -> CE                       (Labelled l, None)
+           fun ?l:P -> CE                       (Optional l, None)
+           fun ?l:(P = E0) -> CE                (Optional l, Some E0)
+         *)
+  | Pcl_apply of class_expr * (arg_label * expression) list
+        (* CE ~l1:E1 ... ~ln:En
+           li can be empty (non labeled argument) or start with '?'
+           (optional argument).
+
+           Invariant: n > 0
+         *)
+  | Pcl_let of rec_flag * value_binding list * class_expr
+        (* let P1 = E1 and ... and Pn = EN in CE      (flag = Nonrecursive)
+           let rec P1 = E1 and ... and Pn = EN in CE  (flag = Recursive)
+         *)
+  | Pcl_constraint of class_expr * class_type
+        (* (CE : CT) *)
+  | Pcl_extension of extension
+  (* [%id] *)
+  | Pcl_open of override_flag * Longident.t loc * class_expr
+  (* let open M in CE *)
+
+
+and class_structure =
+    {
+     pcstr_self: pattern;
+     pcstr_fields: class_field list;
+    }
+(* object(selfpat) ... end
+   object ... end           (self = Ppat_any)
+ *)
+
+and class_field =
+    {
+     pcf_desc: class_field_desc;
+     pcf_loc: Location.t;
+     pcf_attributes: attributes; (* ... [@@id1] [@@id2] *)
+    }
+
+and class_field_desc =
+  | Pcf_inherit of override_flag * class_expr * string loc option
+        (* inherit CE
+           inherit CE as x
+           inherit! CE
+           inherit! CE as x
+         *)
+  | Pcf_val of (label loc * mutable_flag * class_field_kind)
+        (* val x = E
+           val virtual x: T
+         *)
+  | Pcf_method of (label loc * private_flag * class_field_kind)
+        (* method x = E            (E can be a Pexp_poly)
+           method virtual x: T     (T can be a Ptyp_poly)
+         *)
+  | Pcf_constraint of (core_type * core_type)
+        (* constraint T1 = T2 *)
+  | Pcf_initializer of expression
+        (* initializer E *)
+  | Pcf_attribute of attribute
+        (* [@@@id] *)
+  | Pcf_extension of extension
+        (* [%%id] *)
+
+and class_field_kind =
+  | Cfk_virtual of core_type
+  | Cfk_concrete of override_flag * expression
+
+and class_declaration = class_expr class_infos
+
+(** {1 Module language} *)
+
+(* Type expressions for the module language *)
+
+and module_type =
+    {
+     pmty_desc: module_type_desc;
+     pmty_loc: Location.t;
+     pmty_attributes: attributes; (* ... [@id1] [@id2] *)
+    }
+
+and module_type_desc =
+  | Pmty_ident of Longident.t loc
+        (* S *)
+  | Pmty_signature of signature
+        (* sig ... end *)
+  | Pmty_functor of string loc * module_type option * module_type
+        (* functor(X : MT1) -> MT2 *)
+  | Pmty_with of module_type * with_constraint list
+        (* MT with ... *)
+  | Pmty_typeof of module_expr
+        (* module type of ME *)
+  | Pmty_extension of extension
+        (* [%id] *)
+  | Pmty_alias of Longident.t loc
+        (* (module M) *)
+
+and signature = signature_item list
+
+and signature_item =
+    {
+     psig_desc: signature_item_desc;
+     psig_loc: Location.t;
+    }
+
+and signature_item_desc =
+  | Psig_value of value_description
+        (*
+          val x: T
+          external x: T = "s1" ... "sn"
+         *)
+  | Psig_type of rec_flag * type_declaration list
+        (* type t1 = ... and ... and tn = ... *)
+  | Psig_typext of type_extension
+        (* type t1 += ... *)
+  | Psig_exception of extension_constructor
+        (* exception C of T *)
+  | Psig_module of module_declaration
+        (* module X : MT *)
+  | Psig_recmodule of module_declaration list
+        (* module rec X1 : MT1 and ... and Xn : MTn *)
+  | Psig_modtype of module_type_declaration
+        (* module type S = MT
+           module type S *)
+  | Psig_open of open_description
+        (* open X *)
+  | Psig_include of include_description
+        (* include MT *)
+  | Psig_class of class_description list
+        (* class c1 : ... and ... and cn : ... *)
+  | Psig_class_type of class_type_declaration list
+        (* class type ct1 = ... and ... and ctn = ... *)
+  | Psig_attribute of attribute
+        (* [@@@id] *)
+  | Psig_extension of extension * attributes
+        (* [%%id] *)
+
+and module_declaration =
+    {
+     pmd_name: string loc;
+     pmd_type: module_type;
+     pmd_attributes: attributes; (* ... [@@id1] [@@id2] *)
+     pmd_loc: Location.t;
+    }
+(* S : MT *)
+
+and module_type_declaration =
+    {
+     pmtd_name: string loc;
+     pmtd_type: module_type option;
+     pmtd_attributes: attributes; (* ... [@@id1] [@@id2] *)
+     pmtd_loc: Location.t;
+    }
+(* S = MT
+   S       (abstract module type declaration, pmtd_type = None)
+*)
+
+and open_description =
+    {
+     popen_lid: Longident.t loc;
+     popen_override: override_flag;
+     popen_loc: Location.t;
+     popen_attributes: attributes;
+    }
+(* open! X - popen_override = Override (silences the 'used identifier
+                              shadowing' warning)
+   open  X - popen_override = Fresh
+ *)
+
+and 'a include_infos =
+    {
+     pincl_mod: 'a;
+     pincl_loc: Location.t;
+     pincl_attributes: attributes;
+    }
+
+and include_description = module_type include_infos
+(* include MT *)
+
+and include_declaration = module_expr include_infos
+(* include ME *)
+
+and with_constraint =
+  | Pwith_type of Longident.t loc * type_declaration
+        (* with type X.t = ...
+
+           Note: the last component of the longident must match
+           the name of the type_declaration. *)
+  | Pwith_module of Longident.t loc * Longident.t loc
+        (* with module X.Y = Z *)
+  | Pwith_typesubst of Longident.t loc * type_declaration
+        (* with type X.t := ..., same format as [Pwith_type] *)
+  | Pwith_modsubst of Longident.t loc * Longident.t loc
+        (* with module X.Y := Z *)
+
+(* Value expressions for the module language *)
+
+and module_expr =
+    {
+     pmod_desc: module_expr_desc;
+     pmod_loc: Location.t;
+     pmod_attributes: attributes; (* ... [@id1] [@id2] *)
+    }
+
+and module_expr_desc =
+  | Pmod_ident of Longident.t loc
+        (* X *)
+  | Pmod_structure of structure
+        (* struct ... end *)
+  | Pmod_functor of string loc * module_type option * module_expr
+        (* functor(X : MT1) -> ME *)
+  | Pmod_apply of module_expr * module_expr
+        (* ME1(ME2) *)
+  | Pmod_constraint of module_expr * module_type
+        (* (ME : MT) *)
+  | Pmod_unpack of expression
+        (* (val E) *)
+  | Pmod_extension of extension
+        (* [%id] *)
+
+and structure = structure_item list
+
+and structure_item =
+    {
+     pstr_desc: structure_item_desc;
+     pstr_loc: Location.t;
+    }
+
+and structure_item_desc =
+  | Pstr_eval of expression * attributes
+        (* E *)
+  | Pstr_value of rec_flag * value_binding list
+        (* let P1 = E1 and ... and Pn = EN       (flag = Nonrecursive)
+           let rec P1 = E1 and ... and Pn = EN   (flag = Recursive)
+         *)
+  | Pstr_primitive of value_description
+        (*  val x: T
+            external x: T = "s1" ... "sn" *)
+  | Pstr_type of rec_flag * type_declaration list
+        (* type t1 = ... and ... and tn = ... *)
+  | Pstr_typext of type_extension
+        (* type t1 += ... *)
+  | Pstr_exception of extension_constructor
+        (* exception C of T
+           exception C = M.X *)
+  | Pstr_module of module_binding
+        (* module X = ME *)
+  | Pstr_recmodule of module_binding list
+        (* module rec X1 = ME1 and ... and Xn = MEn *)
+  | Pstr_modtype of module_type_declaration
+        (* module type S = MT *)
+  | Pstr_open of open_description
+        (* open X *)
+  | Pstr_class of class_declaration list
+        (* class c1 = ... and ... and cn = ... *)
+  | Pstr_class_type of class_type_declaration list
+        (* class type ct1 = ... and ... and ctn = ... *)
+  | Pstr_include of include_declaration
+        (* include ME *)
+  | Pstr_attribute of attribute
+        (* [@@@id] *)
+  | Pstr_extension of extension * attributes
+        (* [%%id] *)
+
+and value_binding =
+  {
+    pvb_pat: pattern;
+    pvb_expr: expression;
+    pvb_attributes: attributes;
+    pvb_loc: Location.t;
+  }
+
+and module_binding =
+    {
+     pmb_name: string loc;
+     pmb_expr: module_expr;
+     pmb_attributes: attributes;
+     pmb_loc: Location.t;
+    }
+(* X = ME *)
+
+(** {1 Toplevel} *)
+
+(* Toplevel phrases *)
+
+type toplevel_phrase =
+  | Ptop_def of structure
+  | Ptop_dir of string * directive_argument
+     (* #use, #load ... *)
+
+and directive_argument =
+  | Pdir_none
+  | Pdir_string of string
+  | Pdir_int of string * char option
+  | Pdir_ident of Longident.t
+  | Pdir_bool of bool
+
+end
+module Builtin_attributes : sig 
+#1 "builtin_attributes.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*                         Alain Frisch, LexiFi                           *)
+(*                                                                        *)
+(*   Copyright 2012 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Support for some of the builtin attributes:
+
+   ocaml.deprecated
+   ocaml.error
+   ocaml.ppwarning
+   ocaml.warning
+   ocaml.warnerror
+   ocaml.explicit_arity (for camlp4/camlp5)
+   ocaml.warn_on_literal_pattern
+   ocaml.deprecated_mutable
+   ocaml.immediate
+   ocaml.boxed / ocaml.unboxed
+*)
+
+
+val check_deprecated: Location.t -> Parsetree.attributes -> string -> unit
+val check_deprecated_inclusion:
+  def:Location.t -> use:Location.t -> Location.t -> Parsetree.attributes ->
+  Parsetree.attributes -> string -> unit
+val deprecated_of_attrs: Parsetree.attributes -> string option
+val deprecated_of_sig: Parsetree.signature -> string option
+val deprecated_of_str: Parsetree.structure -> string option
+
+val check_deprecated_mutable:
+    Location.t -> Parsetree.attributes -> string -> unit
+val check_deprecated_mutable_inclusion:
+  def:Location.t -> use:Location.t -> Location.t -> Parsetree.attributes ->
+  Parsetree.attributes -> string -> unit
+
+val check_bs_attributes_inclusion:
+  (Parsetree.attributes ->
+  Parsetree.attributes -> string -> (string*string) option ) ref
+
+val check_duplicated_labels: 
+  (Parsetree.label_declaration list ->
+    string Asttypes.loc option
+  ) ref    
+val error_of_extension: Parsetree.extension -> Location.error
+
+val warning_attribute: ?ppwarning:bool -> Parsetree.attribute -> unit
+  (** Apply warning settings from the specified attribute.
+      "ocaml.warning"/"ocaml.warnerror" (and variants without the prefix)
+      are processed and other attributes are ignored.
+
+      Also implement ocaml.ppwarning (unless ~ppwarning:false is
+      passed).
+  *)
+
+val warning_scope:
+  ?ppwarning:bool ->
+  Parsetree.attributes -> (unit -> 'a) -> 'a
+  (** Execute a function in a new scope for warning settings.  This
+      means that the effect of any call to [warning_attribute] during
+      the execution of this function will be discarded after
+      execution.
+
+      The function also takes a list of attributes which are processed
+      with [warning_attribute] in the fresh scope before the function
+      is executed.
+  *)
+
+val warn_on_literal_pattern: Parsetree.attributes -> bool
+val explicit_arity: Parsetree.attributes -> bool
+
+
+val immediate: Parsetree.attributes -> bool
+
+val has_unboxed: Parsetree.attributes -> bool
+val has_boxed: Parsetree.attributes -> bool
+
+end = struct
+#1 "builtin_attributes.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*                         Alain Frisch, LexiFi                           *)
+(*                                                                        *)
+(*   Copyright 2012 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+open Asttypes
+open Parsetree
+
+let string_of_cst = function
+  | Pconst_string(s, _) -> Some s
+  | _ -> None
+
+let string_of_payload = function
+  | PStr[{pstr_desc=Pstr_eval({pexp_desc=Pexp_constant c},_)}] ->
+      string_of_cst c
+  | _ -> None
+
+let string_of_opt_payload p =
+  match string_of_payload p with
+  | Some s -> s
+  | None -> ""
+
+let rec error_of_extension ext =
+  match ext with
+  | ({txt = ("ocaml.error"|"error") as txt; loc}, p) ->
+    let rec sub_from inner =
+      match inner with
+      | {pstr_desc=Pstr_extension (ext, _)} :: rest ->
+          error_of_extension ext :: sub_from rest
+      | _ :: rest ->
+          (Location.errorf ~loc
+             "Invalid syntax for sub-error of extension '%s'." txt) ::
+            sub_from rest
+      | [] -> []
+    in
+    begin match p with
+    | PStr [] -> raise Location.Already_displayed_error
+    | PStr({pstr_desc=Pstr_eval
+              ({pexp_desc=Pexp_constant(Pconst_string(msg,_))}, _)}::
+           {pstr_desc=Pstr_eval
+              ({pexp_desc=Pexp_constant(Pconst_string(if_highlight,_))}, _)}::
+           inner) ->
+        Location.error ~loc ~if_highlight ~sub:(sub_from inner) msg
+    | PStr({pstr_desc=Pstr_eval
+              ({pexp_desc=Pexp_constant(Pconst_string(msg,_))}, _)}::inner) ->
+        Location.error ~loc ~sub:(sub_from inner) msg
+    | _ -> Location.errorf ~loc "Invalid syntax for extension '%s'." txt
+    end
+  | ({txt; loc}, _) ->
+      Location.errorf ~loc "Uninterpreted extension '%s'." txt
+
+let cat s1 s2 =
+  if s2 = "" then s1 else
+ 
+    if Clflags.bs_vscode then s1 ^ " " ^ s2
+    else s1 ^ "\n" ^ s2 
+    
+
+let rec deprecated_of_attrs = function
+  | [] -> None
+  | ({txt = "ocaml.deprecated"|"deprecated"; _}, p) :: _ ->
+      Some (string_of_opt_payload p)
+  | _ :: tl -> deprecated_of_attrs tl
+
+let check_deprecated loc attrs s =
+  match deprecated_of_attrs attrs with
+  | None -> ()
+  | Some txt -> Location.deprecated loc (cat s txt)
+
+let check_deprecated_inclusion ~def ~use loc attrs1 attrs2 s =
+  match deprecated_of_attrs attrs1, deprecated_of_attrs attrs2 with
+  | None, _ | Some _, Some _ -> ()
+  | Some txt, None -> Location.deprecated ~def ~use loc (cat s txt)
+
+let rec deprecated_mutable_of_attrs = function
+  | [] -> None
+  | ({txt = "ocaml.deprecated_mutable"|"deprecated_mutable"; _}, p) :: _ ->
+      Some (string_of_opt_payload p)
+  | _ :: tl -> deprecated_mutable_of_attrs tl
+
+let check_deprecated_mutable loc attrs s =
+  match deprecated_mutable_of_attrs attrs with
+  | None -> ()
+  | Some txt ->
+      Location.deprecated loc (Printf.sprintf "mutating field %s" (cat s txt))
+
+let check_deprecated_mutable_inclusion ~def ~use loc attrs1 attrs2 s =
+  match deprecated_mutable_of_attrs attrs1,
+        deprecated_mutable_of_attrs attrs2
+  with
+  | None, _ | Some _, Some _ -> ()
+  | Some txt, None ->
+      Location.deprecated ~def ~use loc
+        (Printf.sprintf "mutating field %s" (cat s txt))
+
+let check_bs_attributes_inclusion = 
+  ref (fun _attrs1 _attrs2 _s -> 
+      None
+    )  
+
+let check_duplicated_labels : (_ -> _ option ) ref = ref (fun _lbls -> 
+  None
+)
+
+let rec deprecated_of_sig = function
+  | {psig_desc = Psig_attribute a} :: tl ->
+      begin match deprecated_of_attrs [a] with
+      | None -> deprecated_of_sig tl
+      | Some _ as r -> r
+      end
+  | _ -> None
+
+
+let rec deprecated_of_str = function
+  | {pstr_desc = Pstr_attribute a} :: tl ->
+      begin match deprecated_of_attrs [a] with
+      | None -> deprecated_of_str tl
+      | Some _ as r -> r
+      end
+  | _ -> None
+
+
+let warning_attribute ?(ppwarning = true) =
+  let process loc txt errflag payload =
+    match string_of_payload payload with
+    | Some s ->
+        begin try Warnings.parse_options errflag s
+        with Arg.Bad _ ->
+          Location.prerr_warning loc
+            (Warnings.Attribute_payload
+               (txt, "Ill-formed list of warnings"))
+        end
+    | None ->
+        Location.prerr_warning loc
+          (Warnings.Attribute_payload
+             (txt, "A single string literal is expected"))
+  in
+  function
+  | ({txt = ("ocaml.warning"|"warning") as txt; loc}, payload) ->
+      process loc txt false payload
+  | ({txt = ("ocaml.warnerror"|"warnerror") as txt; loc}, payload) ->
+      process loc txt true payload
+  | {txt="ocaml.ppwarning"|"ppwarning"},
+    PStr[{pstr_desc=Pstr_eval({pexp_desc=Pexp_constant
+                                   (Pconst_string (s, _))},_);
+          pstr_loc}] when ppwarning ->
+      Location.prerr_warning pstr_loc (Warnings.Preprocessor s)
+  | _ ->
+      ()
+
+let warning_scope ?ppwarning attrs f =
+  let prev = Warnings.backup () in
+  try
+    List.iter (warning_attribute ?ppwarning) (List.rev attrs);
+    let ret = f () in
+    Warnings.restore prev;
+    ret
+  with exn ->
+    Warnings.restore prev;
+    raise exn
+
+
+let warn_on_literal_pattern =
+  List.exists
+    (function
+      | ({txt="ocaml.warn_on_literal_pattern"|"warn_on_literal_pattern"; _}, _)
+        -> true
+      | _ -> false
+    )
+
+let explicit_arity =
+  List.exists
+    (function
+      | ({txt="ocaml.explicit_arity"|"explicit_arity"; _}, _) -> true
+      | _ -> false
+    )
+
+let immediate =
+  List.exists
+    (function
+      | ({txt="ocaml.immediate"|"immediate"; _}, _) -> true
+      | _ -> false
+    )
+
+(* The "ocaml.boxed (default)" and "ocaml.unboxed (default)"
+   attributes cannot be input by the user, they are added by the
+   compiler when applying the default setting. This is done to record
+   in the .cmi the default used by the compiler when compiling the
+   source file because the default can change between compiler
+   invocations. *)
+
+let check l (x, _) = List.mem x.txt l
+
+let has_unboxed attr =
+  List.exists (check ["ocaml.unboxed"; "unboxed"])
+    attr
+
+let has_boxed attr =
+  List.exists (check ["ocaml.boxed"; "boxed"]) attr
+
+end
+module Depend : sig 
+#1 "depend.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1999 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(** Module dependencies. *)
+
+module StringSet : Set.S with type elt = string
+module StringMap : Map.S with type key = string
+
+type map_tree = Node of StringSet.t * bound_map
+and  bound_map = map_tree StringMap.t
+val make_leaf : string -> map_tree
+val make_node : bound_map -> map_tree
+val weaken_map : StringSet.t -> map_tree -> map_tree
+
+val free_structure_names : StringSet.t ref
+
+(* dependencies found by preprocessing tools (plugins) *)
+val pp_deps : string list ref
+
+val open_module : bound_map -> Longident.t -> bound_map
+
+val add_use_file : bound_map -> Parsetree.toplevel_phrase list -> unit
+
+val add_signature : bound_map -> Parsetree.signature -> unit
+
+val add_implementation : bound_map -> Parsetree.structure -> unit
+
+val add_implementation_binding : bound_map -> Parsetree.structure -> bound_map
+val add_signature_binding : bound_map -> Parsetree.signature -> bound_map
+
+end = struct
+#1 "depend.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1999 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+open Asttypes
+open Location
+open Longident
+open Parsetree
+
+let pp_deps = ref []
+
+module StringSet = Set.Make(struct type t = string let compare = compare end)
+module StringMap = Map.Make(String)
+
+(* Module resolution map *)
+(* Node (set of imports for this path, map for submodules) *)
+type map_tree = Node of StringSet.t * bound_map
+and  bound_map = map_tree StringMap.t
+let bound = Node (StringSet.empty, StringMap.empty)
+
+(*let get_free (Node (s, _m)) = s*)
+let get_map (Node (_s, m)) = m
+let make_leaf s = Node (StringSet.singleton s, StringMap.empty)
+let make_node m =  Node (StringSet.empty, m)
+let rec weaken_map s (Node(s0,m0)) =
+  Node (StringSet.union s s0, StringMap.map (weaken_map s) m0)
+let rec collect_free (Node (s, m)) =
+  StringMap.fold (fun _ n -> StringSet.union (collect_free n)) m s
+
+(* Returns the imports required to access the structure at path p *)
+(* Only raises Not_found if the head of p is not in the toplevel map *)
+let rec lookup_free p m =
+  match p with
+    [] -> raise Not_found
+  | s::p ->
+      let Node (f, m') = StringMap.find s m  in
+      try lookup_free p m' with Not_found -> f
+
+(* Returns the node corresponding to the structure at path p *)
+let rec lookup_map lid m =
+  match lid with
+    Lident s    -> StringMap.find s m
+  | Ldot (l, s) -> StringMap.find s (get_map (lookup_map l m))
+  | Lapply _    -> raise Not_found
+
+(* Collect free module identifiers in the a.s.t. *)
+
+let free_structure_names = ref StringSet.empty
+
+let add_names s =
+  free_structure_names := StringSet.union s !free_structure_names
+
+let rec add_path bv ?(p=[]) = function
+  | Lident s ->
+      let free =
+        try lookup_free (s::p) bv with Not_found -> StringSet.singleton s
+      in
+      (*StringSet.iter (fun s -> Printf.eprintf "%s " s) free;
+        prerr_endline "";*)
+      add_names free
+  | Ldot(l, s) -> add_path bv ~p:(s::p) l
+  | Lapply(l1, l2) -> add_path bv l1; add_path bv l2
+
+let open_module bv lid =
+  match lookup_map lid bv with
+  | Node (s, m) ->
+      add_names s;
+      StringMap.fold StringMap.add m bv
+  | exception Not_found ->
+      add_path bv lid; bv
+
+let add_parent bv lid =
+  match lid.txt with
+    Ldot(l, _s) -> add_path bv l
+  | _ -> ()
+
+let add = add_parent
+
+let addmodule bv lid = add_path bv lid.txt
+
+let handle_extension ext =
+  match (fst ext).txt with
+  | "error" | "ocaml.error" ->
+    raise (Location.Error
+             (Builtin_attributes.error_of_extension ext))
+  | _ ->
+    ()
+
+let rec add_type bv ty =
+  match ty.ptyp_desc with
+    Ptyp_any -> ()
+  | Ptyp_var _ -> ()
+  | Ptyp_arrow(_, t1, t2) -> add_type bv t1; add_type bv t2
+  | Ptyp_tuple tl -> List.iter (add_type bv) tl
+  | Ptyp_constr(c, tl) -> add bv c; List.iter (add_type bv) tl
+  | Ptyp_object (fl, _) ->
+      List.iter
+       (function Otag (_, _, t) -> add_type bv t
+         | Oinherit t -> add_type bv t) fl
+  | Ptyp_class(c, tl) -> add bv c; List.iter (add_type bv) tl
+  | Ptyp_alias(t, _) -> add_type bv t
+  | Ptyp_variant(fl, _, _) ->
+      List.iter
+        (function Rtag(_,_,_,stl) -> List.iter (add_type bv) stl
+          | Rinherit sty -> add_type bv sty)
+        fl
+  | Ptyp_poly(_, t) -> add_type bv t
+  | Ptyp_package pt -> add_package_type bv pt
+  | Ptyp_extension e -> handle_extension e
+
+and add_package_type bv (lid, l) =
+  add bv lid;
+  List.iter (add_type bv) (List.map (fun (_, e) -> e) l)
+
+let add_opt add_fn bv = function
+    None -> ()
+  | Some x -> add_fn bv x
+
+let add_constructor_arguments bv = function
+  | Pcstr_tuple l -> List.iter (add_type bv) l
+  | Pcstr_record l -> List.iter (fun l -> add_type bv l.pld_type) l
+
+let add_constructor_decl bv pcd =
+  add_constructor_arguments bv pcd.pcd_args;
+  Misc.may (add_type bv) pcd.pcd_res
+
+let add_type_declaration bv td =
+  List.iter
+    (fun (ty1, ty2, _) -> add_type bv ty1; add_type bv ty2)
+    td.ptype_cstrs;
+  add_opt add_type bv td.ptype_manifest;
+  let add_tkind = function
+    Ptype_abstract -> ()
+  | Ptype_variant cstrs ->
+      List.iter (add_constructor_decl bv) cstrs
+  | Ptype_record lbls ->
+      List.iter (fun pld -> add_type bv pld.pld_type) lbls
+  | Ptype_open -> () in
+  add_tkind td.ptype_kind
+
+let add_extension_constructor bv ext =
+  match ext.pext_kind with
+    Pext_decl(args, rty) ->
+      add_constructor_arguments bv args;
+      Misc.may (add_type bv) rty
+  | Pext_rebind lid -> add bv lid
+
+let add_type_extension bv te =
+  add bv te.ptyext_path;
+  List.iter (add_extension_constructor bv) te.ptyext_constructors
+
+let rec add_class_type bv cty =
+  match cty.pcty_desc with
+    Pcty_constr(l, tyl) ->
+      add bv l; List.iter (add_type bv) tyl
+  | Pcty_signature { pcsig_self = ty; pcsig_fields = fieldl } ->
+      add_type bv ty;
+      List.iter (add_class_type_field bv) fieldl
+  | Pcty_arrow(_, ty1, cty2) ->
+      add_type bv ty1; add_class_type bv cty2
+  | Pcty_extension e -> handle_extension e
+  | Pcty_open (_ovf, m, e) ->
+      let bv = open_module bv m.txt in add_class_type bv e
+
+and add_class_type_field bv pctf =
+  match pctf.pctf_desc with
+    Pctf_inherit cty -> add_class_type bv cty
+  | Pctf_val(_, _, _, ty) -> add_type bv ty
+  | Pctf_method(_, _, _, ty) -> add_type bv ty
+  | Pctf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
+  | Pctf_attribute _ -> ()
+  | Pctf_extension e -> handle_extension e
+
+let add_class_description bv infos =
+  add_class_type bv infos.pci_expr
+
+let add_class_type_declaration = add_class_description
+
+let pattern_bv = ref StringMap.empty
+
+let rec add_pattern bv pat =
+  match pat.ppat_desc with
+    Ppat_any -> ()
+  | Ppat_var _ -> ()
+  | Ppat_alias(p, _) -> add_pattern bv p
+  | Ppat_interval _
+  | Ppat_constant _ -> ()
+  | Ppat_tuple pl -> List.iter (add_pattern bv) pl
+  | Ppat_construct(c, op) -> add bv c; add_opt add_pattern bv op
+  | Ppat_record(pl, _) ->
+      List.iter (fun (lbl, p) -> add bv lbl; add_pattern bv p) pl
+  | Ppat_array pl -> List.iter (add_pattern bv) pl
+  | Ppat_or(p1, p2) -> add_pattern bv p1; add_pattern bv p2
+  | Ppat_constraint(p, ty) -> add_pattern bv p; add_type bv ty
+  | Ppat_variant(_, op) -> add_opt add_pattern bv op
+  | Ppat_type li -> add bv li
+  | Ppat_lazy p -> add_pattern bv p
+  | Ppat_unpack id -> pattern_bv := StringMap.add id.txt bound !pattern_bv
+  | Ppat_open ( m, p) -> let bv = open_module bv m.txt in add_pattern bv p
+  | Ppat_exception p -> add_pattern bv p
+  | Ppat_extension e -> handle_extension e
+
+let add_pattern bv pat =
+  pattern_bv := bv;
+  add_pattern bv pat;
+  !pattern_bv
+
+let rec add_expr bv exp =
+  match exp.pexp_desc with
+    Pexp_ident l -> add bv l
+  | Pexp_constant _ -> ()
+  | Pexp_let(rf, pel, e) ->
+      let bv = add_bindings rf bv pel in add_expr bv e
+  | Pexp_fun (_, opte, p, e) ->
+      add_opt add_expr bv opte; add_expr (add_pattern bv p) e
+  | Pexp_function pel ->
+      add_cases bv pel
+  | Pexp_apply(e, el) ->
+      add_expr bv e; List.iter (fun (_,e) -> add_expr bv e) el
+  | Pexp_match(e, pel) -> add_expr bv e; add_cases bv pel
+  | Pexp_try(e, pel) -> add_expr bv e; add_cases bv pel
+  | Pexp_tuple el -> List.iter (add_expr bv) el
+  | Pexp_construct(c, opte) -> add bv c; add_opt add_expr bv opte
+  | Pexp_variant(_, opte) -> add_opt add_expr bv opte
+  | Pexp_record(lblel, opte) ->
+      List.iter (fun (lbl, e) -> add bv lbl; add_expr bv e) lblel;
+      add_opt add_expr bv opte
+  | Pexp_field(e, fld) -> add_expr bv e; add bv fld
+  | Pexp_setfield(e1, fld, e2) -> add_expr bv e1; add bv fld; add_expr bv e2
+  | Pexp_array el -> List.iter (add_expr bv) el
+  | Pexp_ifthenelse(e1, e2, opte3) ->
+      add_expr bv e1; add_expr bv e2; add_opt add_expr bv opte3
+  | Pexp_sequence(e1, e2) -> add_expr bv e1; add_expr bv e2
+  | Pexp_while(e1, e2) -> add_expr bv e1; add_expr bv e2
+  | Pexp_for( _, e1, e2, _, e3) ->
+      add_expr bv e1; add_expr bv e2; add_expr bv e3
+  | Pexp_coerce(e1, oty2, ty3) ->
+      add_expr bv e1;
+      add_opt add_type bv oty2;
+      add_type bv ty3
+  | Pexp_constraint(e1, ty2) ->
+      add_expr bv e1;
+      add_type bv ty2
+  | Pexp_send(e, _m) -> add_expr bv e
+  | Pexp_new li -> add bv li
+  | Pexp_setinstvar(_v, e) -> add_expr bv e
+  | Pexp_override sel -> List.iter (fun (_s, e) -> add_expr bv e) sel
+  | Pexp_letmodule(id, m, e) ->
+      let b = add_module_binding bv m in
+      add_expr (StringMap.add id.txt b bv) e
+  | Pexp_letexception(_, e) -> add_expr bv e
+  | Pexp_assert (e) -> add_expr bv e
+  | Pexp_lazy (e) -> add_expr bv e
+  | Pexp_poly (e, t) -> add_expr bv e; add_opt add_type bv t
+  | Pexp_object { pcstr_self = pat; pcstr_fields = fieldl } ->
+      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
+  | Pexp_newtype (_, e) -> add_expr bv e
+  | Pexp_pack m -> add_module bv m
+  | Pexp_open (_ovf, m, e) ->
+      let bv = open_module bv m.txt in add_expr bv e
+  | Pexp_extension (({ txt = ("ocaml.extension_constructor"|
+                              "extension_constructor"); _ },
+                     PStr [item]) as e) ->
+      begin match item.pstr_desc with
+      | Pstr_eval ({ pexp_desc = Pexp_construct (c, None) }, _) -> add bv c
+      | _ -> handle_extension e
+      end
+  | Pexp_extension e -> handle_extension e
+  | Pexp_unreachable -> ()
+
+and add_cases bv cases =
+  List.iter (add_case bv) cases
+
+and add_case bv {pc_lhs; pc_guard; pc_rhs} =
+  let bv = add_pattern bv pc_lhs in
+  add_opt add_expr bv pc_guard;
+  add_expr bv pc_rhs
+
+and add_bindings recf bv pel =
+  let bv' = List.fold_left (fun bv x -> add_pattern bv x.pvb_pat) bv pel in
+  let bv = if recf = Recursive then bv' else bv in
+  List.iter (fun x -> add_expr bv x.pvb_expr) pel;
+  bv'
+
+and add_modtype bv mty =
+  match mty.pmty_desc with
+    Pmty_ident l -> add bv l
+  | Pmty_alias l -> addmodule bv l
+  | Pmty_signature s -> add_signature bv s
+  | Pmty_functor(id, mty1, mty2) ->
+      Misc.may (add_modtype bv) mty1;
+      add_modtype (StringMap.add id.txt bound bv) mty2
+  | Pmty_with(mty, cstrl) ->
+      add_modtype bv mty;
+      List.iter
+        (function
+          | Pwith_type (_, td) -> add_type_declaration bv td
+          | Pwith_module (_, lid) -> addmodule bv lid
+          | Pwith_typesubst (_, td) -> add_type_declaration bv td
+          | Pwith_modsubst (_, lid) -> addmodule bv lid
+        )
+        cstrl
+  | Pmty_typeof m -> add_module bv m
+  | Pmty_extension e -> handle_extension e
+
+and add_module_alias bv l =
+  try
+    add_parent bv l;
+    lookup_map l.txt bv
+  with Not_found ->
+    match l.txt with
+      Lident s -> make_leaf s
+    | _ -> addmodule bv l; bound (* cannot delay *)
+
+and add_modtype_binding bv mty =
+  if not !Clflags.transparent_modules then add_modtype bv mty;
+  match mty.pmty_desc with
+    Pmty_alias l ->
+      add_module_alias bv l
+  | Pmty_signature s ->
+      make_node (add_signature_binding bv s)
+  | Pmty_typeof modl ->
+      add_module_binding bv modl
+  | _ ->
+      if !Clflags.transparent_modules then add_modtype bv mty; bound
+
+and add_signature bv sg =
+  ignore (add_signature_binding bv sg)
+
+and add_signature_binding bv sg =
+  snd (List.fold_left add_sig_item (bv, StringMap.empty) sg)
+
+and add_sig_item (bv, m) item =
+  match item.psig_desc with
+    Psig_value vd ->
+      add_type bv vd.pval_type; (bv, m)
+  | Psig_type (_, dcls) ->
+      List.iter (add_type_declaration bv) dcls; (bv, m)
+  | Psig_typext te ->
+      add_type_extension bv te; (bv, m)
+  | Psig_exception pext ->
+      add_extension_constructor bv pext; (bv, m)
+  | Psig_module pmd ->
+      let m' = add_modtype_binding bv pmd.pmd_type in
+      let add = StringMap.add pmd.pmd_name.txt m' in
+      (add bv, add m)
+  | Psig_recmodule decls ->
+      let add =
+        List.fold_right (fun pmd -> StringMap.add pmd.pmd_name.txt bound)
+                        decls
+      in
+      let bv' = add bv and m' = add m in
+      List.iter (fun pmd -> add_modtype bv' pmd.pmd_type) decls;
+      (bv', m')
+  | Psig_modtype x ->
+      begin match x.pmtd_type with
+        None -> ()
+      | Some mty -> add_modtype bv mty
+      end;
+      (bv, m)
+  | Psig_open od ->
+      (open_module bv od.popen_lid.txt, m)
+  | Psig_include incl ->
+      let Node (s, m') = add_modtype_binding bv incl.pincl_mod in
+      add_names s;
+      let add = StringMap.fold StringMap.add m' in
+      (add bv, add m)
+  | Psig_class cdl ->
+      List.iter (add_class_description bv) cdl; (bv, m)
+  | Psig_class_type cdtl ->
+      List.iter (add_class_type_declaration bv) cdtl; (bv, m)
+  | Psig_attribute _ -> (bv, m)
+  | Psig_extension (e, _) ->
+      handle_extension e;
+      (bv, m)
+
+and add_module_binding bv modl =
+  if not !Clflags.transparent_modules then add_module bv modl;
+  match modl.pmod_desc with
+    Pmod_ident l ->
+      begin try
+        add_parent bv l;
+        lookup_map l.txt bv
+      with Not_found ->
+        match l.txt with
+          Lident s -> make_leaf s
+        | _ ->  addmodule bv l; bound
+      end
+  | Pmod_structure s ->
+      make_node (snd (add_structure_binding bv s))
+  | _ ->
+      if !Clflags.transparent_modules then add_module bv modl; bound
+
+and add_module bv modl =
+  match modl.pmod_desc with
+    Pmod_ident l -> addmodule bv l
+  | Pmod_structure s -> ignore (add_structure bv s)
+  | Pmod_functor(id, mty, modl) ->
+      Misc.may (add_modtype bv) mty;
+      add_module (StringMap.add id.txt bound bv) modl
+  | Pmod_apply(mod1, mod2) ->
+      add_module bv mod1; add_module bv mod2
+  | Pmod_constraint(modl, mty) ->
+      add_module bv modl; add_modtype bv mty
+  | Pmod_unpack(e) ->
+      add_expr bv e
+  | Pmod_extension e ->
+      handle_extension e
+
+and add_structure bv item_list =
+  let (bv, m) = add_structure_binding bv item_list in
+  add_names (collect_free (make_node m));
+  bv
+
+and add_structure_binding bv item_list =
+  List.fold_left add_struct_item (bv, StringMap.empty) item_list
+
+and add_struct_item (bv, m) item : _ StringMap.t * _ StringMap.t =
+  match item.pstr_desc with
+    Pstr_eval (e, _attrs) ->
+      add_expr bv e; (bv, m)
+  | Pstr_value(rf, pel) ->
+      let bv = add_bindings rf bv pel in (bv, m)
+  | Pstr_primitive vd ->
+      add_type bv vd.pval_type; (bv, m)
+  | Pstr_type (_, dcls) ->
+      List.iter (add_type_declaration bv) dcls; (bv, m)
+  | Pstr_typext te ->
+      add_type_extension bv te;
+      (bv, m)
+  | Pstr_exception pext ->
+      add_extension_constructor bv pext; (bv, m)
+  | Pstr_module x ->
+      let b = add_module_binding bv x.pmb_expr in
+      let add = StringMap.add x.pmb_name.txt b in
+      (add bv, add m)
+  | Pstr_recmodule bindings ->
+      let add =
+        List.fold_right (fun x -> StringMap.add x.pmb_name.txt bound) bindings
+      in
+      let bv' = add bv and m = add m in
+      List.iter
+        (fun x -> add_module bv' x.pmb_expr)
+        bindings;
+      (bv', m)
+  | Pstr_modtype x ->
+      begin match x.pmtd_type with
+        None -> ()
+      | Some mty -> add_modtype bv mty
+      end;
+      (bv, m)
+  | Pstr_open od ->
+      (open_module bv od.popen_lid.txt, m)
+  | Pstr_class cdl ->
+      List.iter (add_class_declaration bv) cdl; (bv, m)
+  | Pstr_class_type cdtl ->
+      List.iter (add_class_type_declaration bv) cdtl; (bv, m)
+  | Pstr_include incl ->
+      let Node (s, m') = add_module_binding bv incl.pincl_mod in
+      add_names s;
+      let add = StringMap.fold StringMap.add m' in
+      (add bv, add m)
+  | Pstr_attribute _ -> (bv, m)
+  | Pstr_extension (e, _) ->
+      handle_extension e;
+      (bv, m)
+
+and add_use_file bv top_phrs =
+  ignore (List.fold_left add_top_phrase bv top_phrs)
+
+and add_implementation bv l =
+  if !Clflags.transparent_modules then
+    ignore (add_structure_binding bv l)
+  else ignore (add_structure bv l)
+
+and add_implementation_binding bv l =
+  snd (add_structure_binding bv l)
+
+and add_top_phrase bv = function
+  | Ptop_def str -> add_structure bv str
+  | Ptop_dir (_, _) -> bv
+
+and add_class_expr bv ce =
+  match ce.pcl_desc with
+    Pcl_constr(l, tyl) ->
+      add bv l; List.iter (add_type bv) tyl
+  | Pcl_structure { pcstr_self = pat; pcstr_fields = fieldl } ->
+      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
+  | Pcl_fun(_, opte, pat, ce) ->
+      add_opt add_expr bv opte;
+      let bv = add_pattern bv pat in add_class_expr bv ce
+  | Pcl_apply(ce, exprl) ->
+      add_class_expr bv ce; List.iter (fun (_,e) -> add_expr bv e) exprl
+  | Pcl_let(rf, pel, ce) ->
+      let bv = add_bindings rf bv pel in add_class_expr bv ce
+  | Pcl_constraint(ce, ct) ->
+      add_class_expr bv ce; add_class_type bv ct
+  | Pcl_extension e -> handle_extension e
+  | Pcl_open (_ovf, m, e) ->
+      let bv = open_module bv m.txt in add_class_expr bv e
+
+and add_class_field bv pcf =
+  match pcf.pcf_desc with
+    Pcf_inherit(_, ce, _) -> add_class_expr bv ce
+  | Pcf_val(_, _, Cfk_concrete (_, e))
+  | Pcf_method(_, _, Cfk_concrete (_, e)) -> add_expr bv e
+  | Pcf_val(_, _, Cfk_virtual ty)
+  | Pcf_method(_, _, Cfk_virtual ty) -> add_type bv ty
+  | Pcf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
+  | Pcf_initializer e -> add_expr bv e
+  | Pcf_attribute _ -> ()
+  | Pcf_extension e -> handle_extension e
+
+and add_class_declaration bv decl =
+  add_class_expr bv decl.pci_expr
+
+end
+module Ext_list : sig 
+#1 "ext_list.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val map : 
+  'a list -> 
+  ('a -> 'b) -> 
+  'b list 
+
+val map_combine :  
+  'a list -> 
+  'b list -> 
+  ('a -> 'c) -> 
+  ('c * 'b) list 
+
+val combine_array:
+  'a array ->
+  'b list -> 
+  ('a -> 'c) ->
+  ('c * 'b) list   
+
+val combine_array_append:
+  'a array ->
+  'b list ->
+  ('c * 'b) list -> 
+  ('a -> 'c) ->
+  ('c * 'b) list   
+  
+val has_string :   
+  string list ->
+  string -> 
+  bool
+
+
+val map_split_opt :  
+  'a list ->
+  ('a -> 'b option * 'c option) ->
+  'b list * 'c list 
+
+val mapi :
+  'a list -> 
+  (int -> 'a -> 'b) -> 
+  'b list 
+
+val mapi_append :
+  'a list -> 
+  (int -> 'a -> 'b) -> 
+  'b list -> 
+  'b list 
+
+val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
+
+(** [map_last f xs ]
+    will pass [true] to [f] for the last element, 
+    [false] otherwise. 
+    For empty list, it returns empty
+*)
+val map_last : 
+    'a list -> 
+    (bool -> 'a -> 'b) -> 'b list
+
+(** [last l]
+    return the last element
+    raise if the list is empty
+*)
+val last : 'a list -> 'a
+
+val append : 
+  'a list -> 
+  'a list -> 
+  'a list 
+
+val append_one :  
+  'a list -> 
+  'a -> 
+  'a list
+
+val map_append :  
+  'b list -> 
+  'a list -> 
+  ('b -> 'a) -> 
+  'a list
+
+val fold_right : 
+  'a list -> 
+  'b -> 
+  ('a -> 'b -> 'b) -> 
+  'b
+
+val fold_right2 : 
+  'a list -> 
+  'b list -> 
+  'c -> 
+  ('a -> 'b -> 'c -> 'c) ->  'c
+
+val fold_right3 : 
+  'a list -> 
+  'b list -> 
+  'c list -> 
+  'd -> 
+  ('a -> 'b -> 'c -> 'd -> 'd) -> 
+  'd
+  
+  
+val map2 : 
+  'a list ->
+  'b list ->
+  ('a -> 'b -> 'c) ->
+  'c list
+
+val fold_left_with_offset : 
+  'a list -> 
+  'acc -> 
+  int -> 
+  ('a -> 'acc ->  int ->  'acc) ->   
+  'acc 
+
+
+(** @unused *)
+val filter_map : 
+  'a list -> 
+  ('a -> 'b option) -> 
+  'b list  
+
+(** [exclude p l] is the opposite of [filter p l] *)
+val exclude : 
+  'a list -> 
+  ('a -> bool) -> 
+  'a list 
+
+(** [excludes p l]
+    return a tuple [excluded,newl]
+    where [exluded] is true indicates that at least one  
+    element is removed,[newl] is the new list where all [p x] for [x] is false
+
+*)
+val exclude_with_val : 
+  'a list -> 
+  ('a -> bool) -> 
+  'a list option
+
+
+val same_length : 'a list -> 'b list -> bool
+
+val init : int -> (int -> 'a) -> 'a list
+
+(** [split_at n l]
+    will split [l] into two lists [a,b], [a] will be of length [n], 
+    otherwise, it will raise
+*)
+val split_at : 
+  'a list -> 
+  int -> 
+  'a list * 'a list
+
+
+(** [split_at_last l]
+    It is equivalent to [split_at (List.length l - 1) l ]
+*)
+val split_at_last : 'a list -> 'a list * 'a
+
+val filter_mapi : 
+  'a list -> 
+  ('a -> int ->  'b option) -> 
+  'b list
+
+val filter_map2 : 
+  'a list -> 
+  'b list -> 
+  ('a -> 'b -> 'c option) -> 
+  'c list
+
+
+val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
+
+val length_ge : 'a list -> int -> bool
+
+(**
+
+   {[length xs = length ys + n ]}
+   input n should be positive 
+   TODO: input checking
+*)
+
+val length_larger_than_n : 
+  'a list -> 
+  'a list -> 
+   int -> 
+   bool
+
+
+(**
+   [rev_map_append f l1 l2]
+   [map f l1] and reverse it to append [l2]
+   This weird semantics is due to it is the most efficient operation
+   we can do
+*)
+val rev_map_append : 
+  'a list -> 
+  'b list -> 
+  ('a -> 'b) -> 
+  'b list
+
+
+val flat_map : 
+  'a list -> 
+  ('a -> 'b list) -> 
+  'b list
+
+val flat_map_append : 
+  'a list -> 
+  'b list  ->
+  ('a -> 'b list) -> 
+  'b list
+
+
+(**
+    [stable_group eq lst]
+    Example:
+    Input:
+   {[
+     stable_group (=) [1;2;3;4;3]
+   ]}
+    Output:
+   {[
+     [[1];[2];[4];[3;3]]
+   ]}
+    TODO: this is O(n^2) behavior 
+    which could be improved later
+*)
+val stable_group : 
+  'a list -> 
+  ('a -> 'a -> bool) -> 
+  'a list list 
+
+(** [drop n list]
+    raise when [n] is negative
+    raise when list's length is less than [n]
+*)
+val drop : 
+  'a list -> 
+  int -> 
+  'a list 
+
+val find_first :   
+    'a list ->
+    ('a -> bool) ->
+    'a option 
+    
+(** [find_first_not p lst ]
+    if all elements in [lst] pass, return [None] 
+    otherwise return the first element [e] as [Some e] which
+    fails the predicate
+*)
+val find_first_not : 
+  'a list -> 
+  ('a -> bool) -> 
+  'a option 
+
+(** [find_opt f l] returns [None] if all return [None],  
+    otherwise returns the first one. 
+*)
+
+val find_opt : 
+  'a list -> 
+  ('a -> 'b option) -> 
+  'b option 
+
+val find_def : 
+    'a list -> 
+    ('a -> 'b option) ->
+    'b ->
+    'b 
+
+    
+val rev_iter : 
+  'a list -> 
+  ('a -> unit) -> 
+  unit 
+
+val iter:   
+   'a list ->  
+   ('a -> unit) -> 
+   unit
+   
+val for_all:  
+    'a list -> 
+    ('a -> bool) -> 
+    bool
+val for_all_snd:    
+    ('a * 'b) list -> 
+    ('b -> bool) -> 
+    bool
+
+(** [for_all2_no_exn p xs ys]
+    return [true] if all satisfied,
+    [false] otherwise or length not equal
+*)
+val for_all2_no_exn : 
+  'a list -> 
+  'b list -> 
+  ('a -> 'b -> bool) -> 
+  bool
+
+
+
+(** [f] is applied follow the list order *)
+val split_map : 
+  'a list -> 
+  ('a -> 'b * 'c) -> 
+  'b list * 'c list       
+
+(** [fn] is applied from left to right *)
+val reduce_from_left : 
+  'a list -> 
+  ('a -> 'a -> 'a) ->
+  'a
+
+val sort_via_array :
+  'a list -> 
+  ('a -> 'a -> int) -> 
+  'a list  
+
+
+
+
+(** [assoc_by_string default key lst]
+    if  [key] is found in the list  return that val,
+    other unbox the [default], 
+    otherwise [assert false ]
+*)
+val assoc_by_string : 
+  (string * 'a) list -> 
+  string -> 
+  'a  option ->   
+  'a  
+
+val assoc_by_int : 
+  (int * 'a) list -> 
+  int -> 
+  'a  option ->   
+  'a   
+
+
+val nth_opt : 'a list -> int -> 'a option  
+
+val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit 
+
+val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
+
+val exists : 'a list -> ('a -> bool) -> bool 
+
+val exists_fst : 
+  ('a * 'b) list ->
+  ('a -> bool) ->
+  bool
+
+val exists_snd : 
+  ('a * 'b) list -> 
+  ('b -> bool) -> 
+  bool
+
+val concat_append:
+    'a list list -> 
+    'a list -> 
+    'a list
+
+val fold_left2:
+    'a list -> 
+    'b list -> 
+    'c -> 
+    ('a -> 'b -> 'c -> 'c)
+    -> 'c 
+
+val fold_left:    
+    'a list -> 
+    'b -> 
+    ('b -> 'a -> 'b) -> 
+    'b
+
+val singleton_exn:     
+    'a list -> 'a
+
+val mem_string :     
+    string list -> 
+    string -> 
+    bool
+end = struct
+#1 "ext_list.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+let rec map l f =
+  match l with
+  | [] ->
+    []
+  | [x1] ->
+    let y1 = f x1 in
+    [y1]
+  | [x1; x2] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    [y1; y2]
+  | [x1; x2; x3] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    [y1; y2; y3]
+  | [x1; x2; x3; x4] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    [y1; y2; y3; y4]
+  | x1::x2::x3::x4::x5::tail ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    let y5 = f x5 in
+    y1::y2::y3::y4::y5::(map tail f)
+
+let rec has_string l f =
+  match l with
+  | [] ->
+    false
+  | [x1] ->
+    x1 = f
+  | [x1; x2] ->
+    x1 = f || x2 = f
+  | [x1; x2; x3] ->
+    x1 = f || x2 = f || x3 = f
+  | x1 :: x2 :: x3 :: x4 ->
+    x1 = f || x2 = f || x3 = f || has_string x4 f 
+  
+let rec map_combine l1 l2 f =
+  match (l1, l2) with
+    ([], []) -> []
+  | (a1::l1, a2::l2) -> 
+    (f a1, a2) :: map_combine l1 l2 f 
+  | (_, _) -> 
+    invalid_arg "Ext_list.map_combine"
+
+let rec combine_array_unsafe arr l i j acc f =    
+  if i = j then acc
+  else 
+    match l with
+    | [] -> invalid_arg "Ext_list.combine"
+    | h :: tl ->
+      (f (Array.unsafe_get arr i) , h) ::
+      combine_array_unsafe arr tl (i + 1) j acc f
+
+let combine_array_append arr l acc f = 
+  let len = Array.length arr in
+  combine_array_unsafe arr l 0 len acc f
+
+let combine_array arr l f = 
+  let len = Array.length arr in
+  combine_array_unsafe arr l 0 len [] f 
+
+let rec map_split_opt 
+  (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
+  : 'b list * 'c list = 
+  match xs with 
+  | [] -> [], []
+  | x::xs ->
+    let c,d = f x in 
+    let cs,ds = map_split_opt xs f in 
+    (match c with Some c -> c::cs | None -> cs),
+    (match d with Some d -> d::ds | None -> ds)
+
+let rec map_snd l f =
+  match l with
+  | [] ->
+    []
+  | [ v1,x1 ] ->
+    let y1 = f x1 in
+    [v1,y1]
+  | [v1, x1; v2, x2] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    [v1, y1; v2, y2]
+  | [ v1, x1; v2, x2; v3, x3] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    [v1, y1; v2, y2; v3, y3]
+  | [ v1, x1; v2, x2; v3, x3; v4, x4] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    [v1, y1; v2, y2; v3, y3; v4, y4]
+  | (v1, x1) ::(v2, x2) :: (v3, x3)::(v4, x4) :: (v5, x5) ::tail ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    let y5 = f x5 in
+    (v1, y1)::(v2, y2) :: (v3, y3) :: (v4, y4) :: (v5, y5) :: (map_snd tail f)
+
+
+let rec map_last l f=
+  match l with
+  | [] ->
+    []
+  | [x1] ->
+    let y1 = f true x1 in
+    [y1]
+  | [x1; x2] ->
+    let y1 = f false x1 in
+    let y2 = f true x2 in
+    [y1; y2]
+  | [x1; x2; x3] ->
+    let y1 = f false x1 in
+    let y2 = f false x2 in
+    let y3 = f true x3 in
+    [y1; y2; y3]
+  | [x1; x2; x3; x4] ->
+    let y1 = f false x1 in
+    let y2 = f false x2 in
+    let y3 = f false x3 in
+    let y4 = f true x4 in
+    [y1; y2; y3; y4]
+  | x1::x2::x3::x4::tail ->
+    (* make sure that tail is not empty *)    
+    let y1 = f false x1 in
+    let y2 = f false x2 in
+    let y3 = f false x3 in
+    let y4 = f false x4 in
+    y1::y2::y3::y4::(map_last tail f)
+
+let rec mapi_aux lst i f tail = 
+  match lst with
+    [] -> tail
+  | a::l -> 
+    let r = f i a in r :: mapi_aux l (i + 1) f tail
+
+let mapi lst f = mapi_aux lst 0 f []
+let mapi_append lst f tail = mapi_aux lst 0 f tail
+let rec last xs =
+  match xs with 
+  | [x] -> x 
+  | _ :: tl -> last tl 
+  | [] -> invalid_arg "Ext_list.last"    
+
+
+
+let rec append_aux l1 l2 = 
+  match l1 with
+  | [] -> l2
+  | [a0] -> a0::l2
+  | [a0;a1] -> a0::a1::l2
+  | [a0;a1;a2] -> a0::a1::a2::l2
+  | [a0;a1;a2;a3] -> a0::a1::a2::a3::l2
+  | [a0;a1;a2;a3;a4] -> a0::a1::a2::a3::a4::l2
+  | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append_aux rest l2
+
+let append l1 l2 =   
+  match l2 with 
+  | [] -> l1 
+  | _ -> append_aux l1 l2  
+
+let append_one l1 x = append_aux l1 [x]  
+
+let rec map_append l1 l2 f =   
+  match l1 with
+  | [] -> l2
+  | [a0] -> f a0::l2
+  | [a0;a1] -> 
+    let b0 = f a0 in 
+    let b1 = f a1 in 
+    b0::b1::l2
+  | [a0;a1;a2] -> 
+    let b0 = f a0 in 
+    let b1 = f a1 in  
+    let b2 = f a2 in 
+    b0::b1::b2::l2
+  | [a0;a1;a2;a3] -> 
+    let b0 = f a0 in 
+    let b1 = f a1 in 
+    let b2 = f a2 in 
+    let b3 = f a3 in 
+    b0::b1::b2::b3::l2
+  | [a0;a1;a2;a3;a4] -> 
+    let b0 = f a0 in 
+    let b1 = f a1 in 
+    let b2 = f a2 in 
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    b0::b1::b2::b3::b4::l2
+
+  | a0::a1::a2::a3::a4::rest ->
+    let b0 = f a0 in 
+    let b1 = f a1 in 
+    let b2 = f a2 in 
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    b0::b1::b2::b3::b4::map_append rest l2 f
+
+
+
+let rec fold_right l acc f  = 
+  match l with  
+  | [] -> acc 
+  | [a0] -> f a0 acc 
+  | [a0;a1] -> f a0 (f a1 acc)
+  | [a0;a1;a2] -> f a0 (f a1 (f a2 acc))
+  | [a0;a1;a2;a3] -> f a0 (f a1 (f a2 (f a3 acc))) 
+  | [a0;a1;a2;a3;a4] -> 
+    f a0 (f a1 (f a2 (f a3 (f a4 acc))))
+  | a0::a1::a2::a3::a4::rest -> 
+    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right rest acc f )))))  
+
+let rec fold_right2 l r acc f = 
+  match l,r  with  
+  | [],[] -> acc 
+  | [a0],[b0] -> f a0 b0 acc 
+  | [a0;a1],[b0;b1] -> f a0 b0 (f a1 b1 acc)
+  | [a0;a1;a2],[b0;b1;b2] -> f a0 b0 (f a1 b1 (f a2 b2 acc))
+  | [a0;a1;a2;a3],[b0;b1;b2;b3] ->
+    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 acc))) 
+  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
+    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 acc))))
+  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
+    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 (fold_right2 arest brest acc f )))))  
+  | _, _ -> invalid_arg "Ext_list.fold_right2"
+
+let rec fold_right3 l r last acc f = 
+  match l,r,last  with  
+  | [],[],[] -> acc 
+  | [a0],[b0],[c0] -> f a0 b0 c0 acc 
+  | [a0;a1],[b0;b1],[c0; c1] -> f a0 b0 c0 (f a1 b1 c1 acc)
+  | [a0;a1;a2],[b0;b1;b2],[c0;c1;c2] -> f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 acc))
+  | [a0;a1;a2;a3],[b0;b1;b2;b3],[c0;c1;c2;c3] ->
+    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 acc))) 
+  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4], [c0;c1;c2;c3;c4] -> 
+    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 acc))))
+  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest, c0::c1::c2::c3::c4::crest -> 
+    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 (fold_right3 arest brest crest acc f )))))  
+  | _, _, _ -> invalid_arg "Ext_list.fold_right2"
+
+let rec map2  l r f = 
+  match l,r  with  
+  | [],[] -> []
+  | [a0],[b0] -> [f a0 b0]
+  | [a0;a1],[b0;b1] -> 
+    let c0 = f a0 b0 in 
+    let c1 = f a1 b1 in 
+    [c0; c1]
+  | [a0;a1;a2],[b0;b1;b2] -> 
+    let c0 = f a0 b0 in 
+    let c1 = f a1 b1 in 
+    let c2 = f a2 b2 in 
+    [c0;c1;c2]
+  | [a0;a1;a2;a3],[b0;b1;b2;b3] ->
+    let c0 = f a0 b0 in 
+    let c1 = f a1 b1 in 
+    let c2 = f a2 b2 in 
+    let c3 = f a3 b3 in 
+    [c0;c1;c2;c3]
+  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
+    let c0 = f a0 b0 in 
+    let c1 = f a1 b1 in 
+    let c2 = f a2 b2 in 
+    let c3 = f a3 b3 in 
+    let c4 = f a4 b4 in 
+    [c0;c1;c2;c3;c4]
+  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
+    let c0 = f a0 b0 in 
+    let c1 = f a1 b1 in 
+    let c2 = f a2 b2 in 
+    let c3 = f a3 b3 in 
+    let c4 = f a4 b4 in 
+    c0::c1::c2::c3::c4::map2 arest brest f
+  | _, _ -> invalid_arg "Ext_list.map2"
+
+let rec fold_left_with_offset l accu i f =
+  match l with
+  | [] -> accu
+  | a::l -> 
+    fold_left_with_offset 
+    l     
+    (f  a accu  i)  
+    (i + 1)
+    f  
+
+
+let rec filter_map xs (f: 'a -> 'b option)= 
+  match xs with 
+  | [] -> []
+  | y :: ys -> 
+    begin match f y with 
+      | None -> filter_map ys f 
+      | Some z -> z :: filter_map ys f 
+    end
+
+let rec exclude (xs : 'a list) (p : 'a -> bool) : 'a list =   
+  match xs with 
+  | [] ->  []
+  | x::xs -> 
+    if p x then exclude xs p
+    else x:: exclude xs p
+
+let rec exclude_with_val l p =
+  match l with 
+  | [] ->  None
+  | a0::xs -> 
+    if p a0 then Some (exclude xs p)
+    else 
+      match xs with 
+      | [] -> None
+      | a1::rest -> 
+        if p a1 then 
+          Some (a0:: exclude rest p)
+        else 
+          match exclude_with_val rest p with 
+          | None -> None 
+          | Some  rest -> Some (a0::a1::rest)
+
+
+
+let rec same_length xs ys = 
+  match xs, ys with 
+  | [], [] -> true
+  | _::xs, _::ys -> same_length xs ys 
+  | _, _ -> false 
+
+
+let init n f = 
+  match n with 
+  | 0 -> []
+  | 1 -> 
+    let a0 = f 0 in  
+    [a0]
+  | 2 -> 
+    let a0 = f 0 in 
+    let a1 = f 1 in 
+    [a0; a1]
+  | 3 -> 
+    let a0 = f 0 in 
+    let a1 = f 1 in 
+    let a2 = f 2 in 
+    [a0; a1; a2]
+  | 4 -> 
+    let a0 = f 0 in 
+    let a1 = f 1 in 
+    let a2 = f 2 in 
+    let a3 = f 3 in 
+    [a0; a1; a2; a3]
+  | 5 -> 
+    let a0 = f 0 in 
+    let a1 = f 1 in 
+    let a2 = f 2 in 
+    let a3 = f 3 in 
+    let a4 = f 4 in  
+    [a0; a1; a2; a3; a4]
+  | _ ->
+    Array.to_list (Array.init n f)
+
+let rec rev_append l1 l2 =
+  match l1 with
+  | [] -> l2
+  | [a0] -> a0::l2 (* single element is common *)
+  | [a0 ; a1] -> a1 :: a0 :: l2 
+  |  a0::a1::a2::rest -> rev_append rest (a2::a1::a0::l2) 
+
+let rev l = rev_append l []      
+
+let rec small_split_at n acc l = 
+  if n <= 0 then rev acc , l 
+  else 
+    match l with 
+    | x::xs -> small_split_at (n - 1) (x ::acc) xs 
+    | _ -> invalid_arg "Ext_list.split_at"
+
+let split_at l n = 
+  small_split_at n [] l 
+
+let rec split_at_last_aux acc x = 
+  match x with 
+  | [] -> invalid_arg "Ext_list.split_at_last"
+  | [ x] -> rev acc, x
+  | y0::ys -> split_at_last_aux (y0::acc) ys   
+
+let split_at_last (x : 'a list) = 
+  match x with 
+  | [] -> invalid_arg "Ext_list.split_at_last"
+  | [a0] -> 
+    [], a0
+  | [a0;a1] -> 
+    [a0], a1  
+  | [a0;a1;a2] -> 
+    [a0;a1], a2 
+  | [a0;a1;a2;a3] -> 
+    [a0;a1;a2], a3 
+  | [a0;a1;a2;a3;a4] ->
+    [a0;a1;a2;a3], a4 
+  | a0::a1::a2::a3::a4::rest  ->  
+    let rev, last = split_at_last_aux [] rest
+    in 
+    a0::a1::a2::a3::a4::  rev , last
+
+(**
+   can not do loop unroll due to state combination
+*)  
+let  filter_mapi xs f  = 
+  let rec aux i xs = 
+    match xs with 
+    | [] -> []
+    | y :: ys -> 
+      begin match f y i with 
+        | None -> aux (i + 1) ys
+        | Some z -> z :: aux (i + 1) ys
+      end in
+  aux 0 xs 
+
+let rec filter_map2  xs ys (f: 'a -> 'b -> 'c option) = 
+  match xs,ys with 
+  | [],[] -> []
+  | u::us, v :: vs -> 
+    begin match f u v with 
+      | None -> filter_map2 us vs f (* idea: rec f us vs instead? *)
+      | Some z -> z :: filter_map2  us vs f
+    end
+  | _ -> invalid_arg "Ext_list.filter_map2"
+
+
+let rec rev_map_append l1 l2 f =
+  match l1 with
+  | [] -> l2
+  | a :: l -> rev_map_append l (f a :: l2) f
+
+
+
+(** It is not worth loop unrolling, 
+    it is already tail-call, and we need to be careful 
+    about evaluation order when unroll
+*)
+let rec flat_map_aux f acc append lx =
+  match lx with
+  | [] -> rev_append acc  append
+  | a0::rest -> 
+    let new_acc = 
+      match f a0 with 
+      | [] -> acc 
+      | [a0] -> a0::acc
+      | [a0;a1] -> a1::a0::acc
+      | a0::a1::a2::rest -> 
+        rev_append rest (a2::a1::a0::acc)  
+    in 
+    flat_map_aux f  new_acc append rest 
+
+let flat_map lx f  =
+  flat_map_aux f [] [] lx
+
+let flat_map_append lx append f =
+  flat_map_aux f [] append lx  
+
+
+let rec length_compare l n = 
+  if n < 0 then `Gt 
+  else 
+    begin match l with 
+      | _ ::xs -> length_compare xs (n - 1)
+      | [] ->  
+        if n = 0 then `Eq 
+        else `Lt 
+    end
+
+let rec length_ge l n =   
+  if n > 0 then
+    match l with 
+    | _ :: tl -> length_ge tl (n - 1)
+    | [] -> false
+  else true
+  
+(**
+   {[length xs = length ys + n ]}
+*)
+let rec length_larger_than_n xs ys n =
+  match xs, ys with 
+  | _, [] -> length_compare xs n = `Eq   
+  | _::xs, _::ys -> 
+    length_larger_than_n xs ys n
+  | [], _ -> false 
+
+
+
+
+let rec group (eq : 'a -> 'a -> bool) lst =
+  match lst with 
+  | [] -> []
+  | x::xs -> 
+    aux eq x (group eq xs )
+
+and aux eq (x : 'a)  (xss : 'a list list) : 'a list list = 
+  match xss with 
+  | [] -> [[x]]
+  | (y0::_ as y)::ys -> (* cannot be empty *) 
+    if eq x y0 then
+      (x::y) :: ys 
+    else
+      y :: aux eq x ys                                 
+  | _ :: _ -> assert false    
+
+let stable_group lst eq =  group eq lst |> rev  
+
+let rec drop h n = 
+  if n < 0 then invalid_arg "Ext_list.drop"
+  else
+  if n = 0 then h 
+  else 
+    match h with 
+    | [] ->
+      invalid_arg "Ext_list.drop"
+    | _ :: tl ->   
+      drop tl (n - 1)
+
+let rec find_first x p = 
+  match x with 
+  | [] -> None
+  | x :: l -> 
+    if p x then Some x 
+    else find_first l p
+
+let rec find_first_not  xs p = 
+  match xs with 
+  | [] -> None
+  | a::l -> 
+    if p a 
+    then find_first_not l p 
+    else Some a 
+
+
+let rec rev_iter l f = 
+  match l with
+  | [] -> ()    
+  | [x1] ->
+    f x1 
+  | [x1; x2] ->
+    f x2 ; f x1 
+  | [x1; x2; x3] ->
+    f x3 ; f x2 ; f x1 
+  | [x1; x2; x3; x4] ->
+    f x4; f x3; f x2; f x1 
+  | x1::x2::x3::x4::x5::tail ->
+    rev_iter tail f;
+    f x5; f x4 ; f x3; f x2 ; f x1
+
+let rec iter l f = 
+  match l with
+  | [] -> ()    
+  | [x1] ->
+    f x1 
+  | [x1; x2] ->
+    f x1 ; f x2
+  | [x1; x2; x3] ->
+    f x1 ; f x2 ; f x3
+  | [x1; x2; x3; x4] ->
+    f x1; f x2; f x3; f x4
+  | x1::x2::x3::x4::x5::tail ->
+    f x1; f x2 ; f x3; f x4 ; f x5;
+    iter tail f 
+
+
+let rec for_all lst p = 
+  match lst with 
+    [] -> true
+  | a::l -> p a && for_all l p
+
+let rec for_all_snd lst p = 
+  match lst with 
+    [] -> true
+  | (_,a)::l -> p a && for_all_snd l p
+
+
+let rec for_all2_no_exn  l1 l2 p = 
+  match (l1, l2) with
+  | ([], []) -> true
+  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn l1 l2 p
+  | (_, _) -> false
+
+
+let rec find_opt xs p = 
+  match xs with 
+  | [] -> None
+  | x :: l -> 
+    match  p x with 
+    | Some _ as v  ->  v
+    | None -> find_opt l p
+
+let rec find_def xs p def =
+  match xs with 
+  | [] -> def
+  | x::l -> 
+    match p x with 
+    | Some v -> v 
+    | None -> find_def l p def   
+
+let rec split_map l f = 
+  match l with
+  | [] ->
+    [],[]
+  | [x1] ->
+    let a0,b0 = f x1 in
+    [a0],[b0]
+  | [x1; x2] ->
+    let a1,b1 = f x1 in
+    let a2,b2 = f x2 in
+    [a1;a2],[b1;b2]
+  | [x1; x2; x3] ->
+    let a1,b1 = f x1 in
+    let a2,b2 = f x2 in
+    let a3,b3 = f x3 in
+    [a1;a2;a3], [b1;b2;b3]
+  | [x1; x2; x3; x4] ->
+    let a1,b1 = f x1 in
+    let a2,b2 = f x2 in
+    let a3,b3 = f x3 in
+    let a4,b4 = f x4 in
+    [a1;a2;a3;a4], [b1;b2;b3;b4] 
+  | x1::x2::x3::x4::x5::tail ->
+    let a1,b1 = f x1 in
+    let a2,b2 = f x2 in
+    let a3,b3 = f x3 in
+    let a4,b4 = f x4 in
+    let a5,b5 = f x5 in
+    let ass,bss = split_map tail f in 
+    a1::a2::a3::a4::a5::ass,
+    b1::b2::b3::b4::b5::bss
+
+
+
+
+let sort_via_array lst cmp =
+  let arr = Array.of_list lst  in
+  Array.sort cmp arr;
+  Array.to_list arr
+
+
+
+
+let rec assoc_by_string lst (k : string) def  = 
+  match lst with 
+  | [] -> 
+    begin match def with 
+      | None -> assert false 
+      | Some x -> x end
+  | (k1,v1)::rest -> 
+    if  k1 = k then v1 else 
+      assoc_by_string  rest k def 
+
+let rec assoc_by_int lst (k : int) def = 
+  match lst with 
+  | [] -> 
+    begin match def with
+      | None -> assert false 
+      | Some x -> x end
+  | (k1,v1)::rest -> 
+    if k1 = k then v1 else 
+      assoc_by_int rest k def 
+
+
+let rec nth_aux l n =
+  match l with
+  | [] -> None
+  | a::l -> if n = 0 then Some a else nth_aux l (n-1)
+
+let nth_opt l n =
+  if n < 0 then None 
+  else
+    nth_aux l n
+
+let rec iter_snd lst f =     
+  match lst with
+  | [] -> ()
+  | (_,x)::xs -> 
+    f x ; 
+    iter_snd xs f 
+    
+let rec iter_fst lst f =     
+  match lst with
+  | [] -> ()
+  | (x,_)::xs -> 
+    f x ; 
+    iter_fst xs f 
+
+let rec exists l p =     
+  match l with 
+    [] -> false  
+  | x :: xs -> p x || exists xs p
+
+let rec exists_fst l p = 
+  match l with 
+    [] -> false
+  | (a,_)::l -> p a || exists_fst l p 
+
+let rec exists_snd l p = 
+  match l with 
+    [] -> false
+  | (_, a)::l -> p a || exists_snd l p 
+
+let rec concat_append 
+  (xss : 'a list list)  
+  (xs : 'a list) : 'a list = 
+  match xss with 
+  | [] -> xs 
+  | l::r -> append l (concat_append r xs)
+
+let rec fold_left l accu f =
+  match l with
+    [] -> accu
+  | a::l -> fold_left l (f accu a) f 
+  
+let reduce_from_left lst fn = 
+  match lst with 
+  | first :: rest ->  fold_left rest first fn 
+  | _ -> invalid_arg "Ext_list.reduce_from_left"
+
+let rec fold_left2 l1 l2 accu f =
+  match (l1, l2) with
+    ([], []) -> accu
+  | (a1::l1, a2::l2) -> fold_left2  l1 l2 (f a1 a2 accu) f 
+  | (_, _) -> invalid_arg "Ext_list.fold_left2"
+
+let singleton_exn xs = match xs with [x] -> x | _ -> assert false
+
+let rec mem_string (xs : string list) (x : string) = 
+  match xs with 
+    [] -> false
+  | a::l ->  a = x  || mem_string l x
+
+end
+module Ext_ref : sig 
+#1 "ext_ref.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** [non_exn_protect ref value f] assusme [f()] 
+    would not raise
+*)
+
+val non_exn_protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
+val protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
+
+val protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
+
+(** [non_exn_protect2 refa refb va vb f ]
+    assume [f ()] would not raise
+*)
+val non_exn_protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
+
+val protect_list : ('a ref * 'a) list -> (unit -> 'b) -> 'b
+
+end = struct
+#1 "ext_ref.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let non_exn_protect r v body = 
+  let old = !r in
+  r := v;
+  let res = body() in
+  r := old;
+  res
+
+let protect r v body =
+  let old = !r in
+  try
+    r := v;
+    let res = body() in
+    r := old;
+    res
+  with x ->
+    r := old;
+    raise x
+
+let non_exn_protect2 r1 r2 v1 v2 body = 
+  let old1 = !r1 in
+  let old2 = !r2 in  
+  r1 := v1;
+  r2 := v2;
+  let res = body() in
+  r1 := old1;
+  r2 := old2;
+  res
+
+let protect2 r1 r2 v1 v2 body =
+  let old1 = !r1 in
+  let old2 = !r2 in  
+  try
+    r1 := v1;
+    r2 := v2;
+    let res = body() in
+    r1 := old1;
+    r2 := old2;
+    res
+  with x ->
+    r1 := old1;
+    r2 := old2;
+    raise x
+
+let protect_list rvs body = 
+  let olds =  Ext_list.map  rvs (fun (x,_) -> !x) in 
+  let () = List.iter (fun (x,y) -> x:=y) rvs in 
+  try 
+    let res = body () in 
+    List.iter2 (fun (x,_) old -> x := old) rvs olds;
+    res 
+  with e -> 
+    List.iter2 (fun (x,_) old -> x := old) rvs olds;
+    raise e 
+
+end
+module Ml_binary : sig 
+#1 "ml_binary.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type _ kind = 
+  | Ml : Parsetree.structure kind 
+  | Mli : Parsetree.signature kind
+
+
+val read_ast : 'a kind -> in_channel -> 'a 
+
+val write_ast :
+   'a kind -> string -> 'a -> out_channel -> unit
+
+val magic_of_kind : 'a kind -> string   
+end = struct
+#1 "ml_binary.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type _ kind = 
+  | Ml : Parsetree.structure kind 
+  | Mli : Parsetree.signature kind
+
+(** [read_ast kind ic] assume [ic] channel is 
+    in the right position *)
+let read_ast (type t ) (kind : t  kind) ic : t  =
+  let magic =
+    match kind with 
+    | Ml -> Config.ast_impl_magic_number
+    | Mli -> Config.ast_intf_magic_number in 
+  let buffer = really_input_string ic (String.length magic) in
+  assert(buffer = magic); (* already checked by apply_rewriter *)
+  Location.set_input_name @@ input_value ic;
+  input_value ic 
+
+let write_ast (type t) (kind : t kind) 
+    (fname : string)
+    (pt : t) oc = 
+  let magic = 
+    match kind with 
+    | Ml -> Config.ast_impl_magic_number
+    | Mli -> Config.ast_intf_magic_number in
+  output_string oc magic ;
+  output_value oc fname;
+  output_value oc pt
+
+let magic_of_kind : type a . a kind -> string = function
+  | Ml -> Config.ast_impl_magic_number
+  | Mli -> Config.ast_intf_magic_number
+
+  
+end
+module Ast_extract : sig 
+#1 "ast_extract.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+
+module Set_string = Depend.StringSet
+
+val read_parse_and_extract : 'a Ml_binary.kind -> 'a -> Set_string.t
+
+
+end = struct
+#1 "ast_extract.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(* type module_name = private string *)
+
+module Set_string = Depend.StringSet
+
+(* FIXME: [Clflags.open_modules] seems not to be properly used *)
+module SMap = Depend.StringMap
+let bound_vars = SMap.empty 
+
+
+type 'a kind = 'a Ml_binary.kind 
+
+
+let read_parse_and_extract (type t) (k : t kind) (ast : t) : Set_string.t =
+  Depend.free_structure_names := Set_string.empty;
+  Ext_ref.protect Clflags.transparent_modules false begin fun _ -> 
+  List.iter (* check *)
+    (fun modname  ->
+       ignore @@ 
+       Depend.open_module bound_vars (Longident.Lident modname))
+    (!Clflags.open_modules);
+  (match k with
+   | Ml_binary.Ml  -> Depend.add_implementation bound_vars ast
+   | Ml_binary.Mli  -> Depend.add_signature bound_vars ast  ); 
+  !Depend.free_structure_names
+  end
+
+
+
+
+
+
+end
 module Bs_exception : sig 
 #1 "bs_exception.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6803,1907 +10204,6 @@ let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t
 
 
 end
-(** Interface as module  *)
-module Asttypes
-= struct
-#1 "asttypes.mli"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
-(*                                                                        *)
-(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(** Auxiliary AST types used by parsetree and typedtree. *)
-
-type constant =
-    Const_int of int
-  | Const_char of char
-  | Const_string of string * string option
-  | Const_float of string
-  | Const_int32 of int32
-  | Const_int64 of int64
-  | Const_nativeint of nativeint
-
-type rec_flag = Nonrecursive | Recursive
-
-type direction_flag = Upto | Downto
-
-(* Order matters, used in polymorphic comparison *)
-type private_flag = Private | Public
-
-type mutable_flag = Immutable | Mutable
-
-type virtual_flag = Virtual | Concrete
-
-type override_flag = Override | Fresh
-
-type closed_flag = Closed | Open
-
-type label = string
-
-type arg_label =
-    Nolabel
-  | Labelled of string (*  label:T -> ... *)
-  | Optional of string (* ?label:T -> ... *)
-
-type 'a loc = 'a Location.loc = {
-  txt : 'a;
-  loc : Location.t;
-}
-
-
-type variance =
-  | Covariant
-  | Contravariant
-  | Invariant
-
-end
-module Longident : sig 
-#1 "longident.mli"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
-(*                                                                        *)
-(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(** Long identifiers, used in parsetree. *)
-
-type t =
-    Lident of string
-  | Ldot of t * string
-  | Lapply of t * t
-
-val flatten: t -> string list
-val unflatten: string list -> t option
-val last: t -> string
-val parse: string -> t
-
-end = struct
-#1 "longident.ml"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
-(*                                                                        *)
-(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-type t =
-    Lident of string
-  | Ldot of t * string
-  | Lapply of t * t
-
-let rec flat accu = function
-    Lident s -> s :: accu
-  | Ldot(lid, s) -> flat (s :: accu) lid
-  | Lapply(_, _) -> Misc.fatal_error "Longident.flat"
-
-let flatten lid = flat [] lid
-
-let last = function
-    Lident s -> s
-  | Ldot(_, s) -> s
-  | Lapply(_, _) -> Misc.fatal_error "Longident.last"
-
-let rec split_at_dots s pos =
-  try
-    let dot = String.index_from s pos '.' in
-    String.sub s pos (dot - pos) :: split_at_dots s (dot + 1)
-  with Not_found ->
-    [String.sub s pos (String.length s - pos)]
-
-let unflatten l =
-  match l with
-  | [] -> None
-  | hd :: tl -> Some (List.fold_left (fun p s -> Ldot(p, s)) (Lident hd) tl)
-
-let parse s =
-  match unflatten (split_at_dots s 0) with
-  | None -> Lident ""  (* should not happen, but don't put assert false
-                          so as not to crash the toplevel (see Genprintval) *)
-  | Some v -> v
-
-end
-(** Interface as module  *)
-module Parsetree
-= struct
-#1 "parsetree.mli"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
-(*                                                                        *)
-(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(** Abstract syntax tree produced by parsing *)
-
-open Asttypes
-
-type constant =
-    Pconst_integer of string * char option
-  (* 3 3l 3L 3n
-
-     Suffixes [g-z][G-Z] are accepted by the parser.
-     Suffixes except 'l', 'L' and 'n' are rejected by the typechecker
-  *)
-  | Pconst_char of char
-  (* 'c' *)
-  | Pconst_string of string * string option
-  (* "constant"
-     {delim|other constant|delim}
-  *)
-  | Pconst_float of string * char option
-  (* 3.4 2e5 1.4e-4
-
-     Suffixes [g-z][G-Z] are accepted by the parser.
-     Suffixes are rejected by the typechecker.
-  *)
-
-(** {1 Extension points} *)
-
-type attribute = string loc * payload
-       (* [@id ARG]
-          [@@id ARG]
-
-          Metadata containers passed around within the AST.
-          The compiler ignores unknown attributes.
-       *)
-
-and extension = string loc * payload
-      (* [%id ARG]
-         [%%id ARG]
-
-         Sub-language placeholder -- rejected by the typechecker.
-      *)
-
-and attributes = attribute list
-
-and payload =
-  | PStr of structure
-  | PSig of signature (* : SIG *)
-  | PTyp of core_type  (* : T *)
-  | PPat of pattern * expression option  (* ? P  or  ? P when E *)
-
-(** {1 Core language} *)
-
-(* Type expressions *)
-
-and core_type =
-    {
-     ptyp_desc: core_type_desc;
-     ptyp_loc: Location.t;
-     ptyp_attributes: attributes; (* ... [@id1] [@id2] *)
-    }
-
-and core_type_desc =
-  | Ptyp_any
-        (*  _ *)
-  | Ptyp_var of string
-        (* 'a *)
-  | Ptyp_arrow of arg_label * core_type * core_type
-        (* T1 -> T2       Simple
-           ~l:T1 -> T2    Labelled
-           ?l:T1 -> T2    Optional
-         *)
-  | Ptyp_tuple of core_type list
-        (* T1 * ... * Tn
-
-           Invariant: n >= 2
-        *)
-  | Ptyp_constr of Longident.t loc * core_type list
-        (* tconstr
-           T tconstr
-           (T1, ..., Tn) tconstr
-         *)
-  | Ptyp_object of object_field list * closed_flag
-        (* < l1:T1; ...; ln:Tn >     (flag = Closed)
-           < l1:T1; ...; ln:Tn; .. > (flag = Open)
-         *)
-  | Ptyp_class of Longident.t loc * core_type list
-        (* #tconstr
-           T #tconstr
-           (T1, ..., Tn) #tconstr
-         *)
-  | Ptyp_alias of core_type * string
-        (* T as 'a *)
-  | Ptyp_variant of row_field list * closed_flag * label list option
-        (* [ `A|`B ]         (flag = Closed; labels = None)
-           [> `A|`B ]        (flag = Open;   labels = None)
-           [< `A|`B ]        (flag = Closed; labels = Some [])
-           [< `A|`B > `X `Y ](flag = Closed; labels = Some ["X";"Y"])
-         *)
-  | Ptyp_poly of string loc list * core_type
-        (* 'a1 ... 'an. T
-
-           Can only appear in the following context:
-
-           - As the core_type of a Ppat_constraint node corresponding
-             to a constraint on a let-binding: let x : 'a1 ... 'an. T
-             = e ...
-
-           - Under Cfk_virtual for methods (not values).
-
-           - As the core_type of a Pctf_method node.
-
-           - As the core_type of a Pexp_poly node.
-
-           - As the pld_type field of a label_declaration.
-
-           - As a core_type of a Ptyp_object node.
-         *)
-
-  | Ptyp_package of package_type
-        (* (module S) *)
-  | Ptyp_extension of extension
-        (* [%id] *)
-
-and package_type = Longident.t loc * (Longident.t loc * core_type) list
-      (*
-        (module S)
-        (module S with type t1 = T1 and ... and tn = Tn)
-       *)
-
-and row_field =
-  | Rtag of label loc * attributes * bool * core_type list
-        (* [`A]                   ( true,  [] )
-           [`A of T]              ( false, [T] )
-           [`A of T1 & .. & Tn]   ( false, [T1;...Tn] )
-           [`A of & T1 & .. & Tn] ( true,  [T1;...Tn] )
-
-          - The 2nd field is true if the tag contains a
-            constant (empty) constructor.
-          - '&' occurs when several types are used for the same constructor
-            (see 4.2 in the manual)
-
-          - TODO: switch to a record representation, and keep location
-        *)
-  | Rinherit of core_type
-        (* [ T ] *)
-
-and object_field =
-  | Otag of label loc * attributes * core_type
-  | Oinherit of core_type
-
-(* Patterns *)
-
-and pattern =
-    {
-     ppat_desc: pattern_desc;
-     ppat_loc: Location.t;
-     ppat_attributes: attributes; (* ... [@id1] [@id2] *)
-    }
-
-and pattern_desc =
-  | Ppat_any
-        (* _ *)
-  | Ppat_var of string loc
-        (* x *)
-  | Ppat_alias of pattern * string loc
-        (* P as 'a *)
-  | Ppat_constant of constant
-        (* 1, 'a', "true", 1.0, 1l, 1L, 1n *)
-  | Ppat_interval of constant * constant
-        (* 'a'..'z'
-
-           Other forms of interval are recognized by the parser
-           but rejected by the type-checker. *)
-  | Ppat_tuple of pattern list
-        (* (P1, ..., Pn)
-
-           Invariant: n >= 2
-        *)
-  | Ppat_construct of Longident.t loc * pattern option
-        (* C                None
-           C P              Some P
-           C (P1, ..., Pn)  Some (Ppat_tuple [P1; ...; Pn])
-         *)
-  | Ppat_variant of label * pattern option
-        (* `A             (None)
-           `A P           (Some P)
-         *)
-  | Ppat_record of (Longident.t loc * pattern) list * closed_flag
-        (* { l1=P1; ...; ln=Pn }     (flag = Closed)
-           { l1=P1; ...; ln=Pn; _}   (flag = Open)
-
-           Invariant: n > 0
-         *)
-  | Ppat_array of pattern list
-        (* [| P1; ...; Pn |] *)
-  | Ppat_or of pattern * pattern
-        (* P1 | P2 *)
-  | Ppat_constraint of pattern * core_type
-        (* (P : T) *)
-  | Ppat_type of Longident.t loc
-        (* #tconst *)
-  | Ppat_lazy of pattern
-        (* lazy P *)
-  | Ppat_unpack of string loc
-        (* (module P)
-           Note: (module P : S) is represented as
-           Ppat_constraint(Ppat_unpack, Ptyp_package)
-         *)
-  | Ppat_exception of pattern
-        (* exception P *)
-  | Ppat_extension of extension
-        (* [%id] *)
-  | Ppat_open of Longident.t loc * pattern
-        (* M.(P) *)
-
-(* Value expressions *)
-
-and expression =
-    {
-     pexp_desc: expression_desc;
-     pexp_loc: Location.t;
-     pexp_attributes: attributes; (* ... [@id1] [@id2] *)
-    }
-
-and expression_desc =
-  | Pexp_ident of Longident.t loc
-        (* x
-           M.x
-         *)
-  | Pexp_constant of constant
-        (* 1, 'a', "true", 1.0, 1l, 1L, 1n *)
-  | Pexp_let of rec_flag * value_binding list * expression
-        (* let P1 = E1 and ... and Pn = EN in E       (flag = Nonrecursive)
-           let rec P1 = E1 and ... and Pn = EN in E   (flag = Recursive)
-         *)
-  | Pexp_function of case list
-        (* function P1 -> E1 | ... | Pn -> En *)
-  | Pexp_fun of arg_label * expression option * pattern * expression
-        (* fun P -> E1                          (Simple, None)
-           fun ~l:P -> E1                       (Labelled l, None)
-           fun ?l:P -> E1                       (Optional l, None)
-           fun ?l:(P = E0) -> E1                (Optional l, Some E0)
-
-           Notes:
-           - If E0 is provided, only Optional is allowed.
-           - "fun P1 P2 .. Pn -> E1" is represented as nested Pexp_fun.
-           - "let f P = E" is represented using Pexp_fun.
-         *)
-  | Pexp_apply of expression * (arg_label * expression) list
-        (* E0 ~l1:E1 ... ~ln:En
-           li can be empty (non labeled argument) or start with '?'
-           (optional argument).
-
-           Invariant: n > 0
-         *)
-  | Pexp_match of expression * case list
-        (* match E0 with P1 -> E1 | ... | Pn -> En *)
-  | Pexp_try of expression * case list
-        (* try E0 with P1 -> E1 | ... | Pn -> En *)
-  | Pexp_tuple of expression list
-        (* (E1, ..., En)
-
-           Invariant: n >= 2
-        *)
-  | Pexp_construct of Longident.t loc * expression option
-        (* C                None
-           C E              Some E
-           C (E1, ..., En)  Some (Pexp_tuple[E1;...;En])
-        *)
-  | Pexp_variant of label * expression option
-        (* `A             (None)
-           `A E           (Some E)
-         *)
-  | Pexp_record of (Longident.t loc * expression) list * expression option
-        (* { l1=P1; ...; ln=Pn }     (None)
-           { E0 with l1=P1; ...; ln=Pn }   (Some E0)
-
-           Invariant: n > 0
-         *)
-  | Pexp_field of expression * Longident.t loc
-        (* E.l *)
-  | Pexp_setfield of expression * Longident.t loc * expression
-        (* E1.l <- E2 *)
-  | Pexp_array of expression list
-        (* [| E1; ...; En |] *)
-  | Pexp_ifthenelse of expression * expression * expression option
-        (* if E1 then E2 else E3 *)
-  | Pexp_sequence of expression * expression
-        (* E1; E2 *)
-  | Pexp_while of expression * expression
-        (* while E1 do E2 done *)
-  | Pexp_for of
-      pattern *  expression * expression * direction_flag * expression
-        (* for i = E1 to E2 do E3 done      (flag = Upto)
-           for i = E1 downto E2 do E3 done  (flag = Downto)
-         *)
-  | Pexp_constraint of expression * core_type
-        (* (E : T) *)
-  | Pexp_coerce of expression * core_type option * core_type
-        (* (E :> T)        (None, T)
-           (E : T0 :> T)   (Some T0, T)
-         *)
-  | Pexp_send of expression * label loc
-        (*  E # m *)
-  | Pexp_new of Longident.t loc
-        (* new M.c *)
-  | Pexp_setinstvar of label loc * expression
-        (* x <- 2 *)
-  | Pexp_override of (label loc * expression) list
-        (* {< x1 = E1; ...; Xn = En >} *)
-  | Pexp_letmodule of string loc * module_expr * expression
-        (* let module M = ME in E *)
-  | Pexp_letexception of extension_constructor * expression
-        (* let exception C in E *)
-  | Pexp_assert of expression
-        (* assert E
-           Note: "assert false" is treated in a special way by the
-           type-checker. *)
-  | Pexp_lazy of expression
-        (* lazy E *)
-  | Pexp_poly of expression * core_type option
-        (* Used for method bodies.
-
-           Can only be used as the expression under Cfk_concrete
-           for methods (not values). *)
-  | Pexp_object of class_structure
-        (* object ... end *)
-  | Pexp_newtype of string loc * expression
-        (* fun (type t) -> E *)
-  | Pexp_pack of module_expr
-        (* (module ME)
-
-           (module ME : S) is represented as
-           Pexp_constraint(Pexp_pack, Ptyp_package S) *)
-  | Pexp_open of override_flag * Longident.t loc * expression
-        (* M.(E)
-           let open M in E
-           let! open M in E *)
-  | Pexp_extension of extension
-        (* [%id] *)
-  | Pexp_unreachable
-        (* . *)
-
-and case =   (* (P -> E) or (P when E0 -> E) *)
-    {
-     pc_lhs: pattern;
-     pc_guard: expression option;
-     pc_rhs: expression;
-    }
-
-(* Value descriptions *)
-
-and value_description =
-    {
-     pval_name: string loc;
-     pval_type: core_type;
-     pval_prim: string list;
-     pval_attributes: attributes;  (* ... [@@id1] [@@id2] *)
-     pval_loc: Location.t;
-    }
-
-(*
-  val x: T                            (prim = [])
-  external x: T = "s1" ... "sn"       (prim = ["s1";..."sn"])
-*)
-
-(* Type declarations *)
-
-and type_declaration =
-    {
-     ptype_name: string loc;
-     ptype_params: (core_type * variance) list;
-           (* ('a1,...'an) t; None represents  _*)
-     ptype_cstrs: (core_type * core_type * Location.t) list;
-           (* ... constraint T1=T1'  ... constraint Tn=Tn' *)
-     ptype_kind: type_kind;
-     ptype_private: private_flag;   (* = private ... *)
-     ptype_manifest: core_type option;  (* = T *)
-     ptype_attributes: attributes;   (* ... [@@id1] [@@id2] *)
-     ptype_loc: Location.t;
-    }
-
-(*
-  type t                     (abstract, no manifest)
-  type t = T0                (abstract, manifest=T0)
-  type t = C of T | ...      (variant,  no manifest)
-  type t = T0 = C of T | ... (variant,  manifest=T0)
-  type t = {l: T; ...}       (record,   no manifest)
-  type t = T0 = {l : T; ...} (record,   manifest=T0)
-  type t = ..                (open,     no manifest)
-*)
-
-and type_kind =
-  | Ptype_abstract
-  | Ptype_variant of constructor_declaration list
-        (* Invariant: non-empty list *)
-  | Ptype_record of label_declaration list
-        (* Invariant: non-empty list *)
-  | Ptype_open
-
-and label_declaration =
-    {
-     pld_name: string loc;
-     pld_mutable: mutable_flag;
-     pld_type: core_type;
-     pld_loc: Location.t;
-     pld_attributes: attributes; (* l : T [@id1] [@id2] *)
-    }
-
-(*  { ...; l: T; ... }            (mutable=Immutable)
-    { ...; mutable l: T; ... }    (mutable=Mutable)
-
-    Note: T can be a Ptyp_poly.
-*)
-
-and constructor_declaration =
-    {
-     pcd_name: string loc;
-     pcd_args: constructor_arguments;
-     pcd_res: core_type option;
-     pcd_loc: Location.t;
-     pcd_attributes: attributes; (* C of ... [@id1] [@id2] *)
-    }
-
-and constructor_arguments =
-  | Pcstr_tuple of core_type list
-  | Pcstr_record of label_declaration list
-
-(*
-  | C of T1 * ... * Tn     (res = None,    args = Pcstr_tuple [])
-  | C: T0                  (res = Some T0, args = [])
-  | C: T1 * ... * Tn -> T0 (res = Some T0, args = Pcstr_tuple)
-  | C of {...}             (res = None,    args = Pcstr_record)
-  | C: {...} -> T0         (res = Some T0, args = Pcstr_record)
-  | C of {...} as t        (res = None,    args = Pcstr_record)
-*)
-
-and type_extension =
-    {
-     ptyext_path: Longident.t loc;
-     ptyext_params: (core_type * variance) list;
-     ptyext_constructors: extension_constructor list;
-     ptyext_private: private_flag;
-     ptyext_attributes: attributes;   (* ... [@@id1] [@@id2] *)
-    }
-(*
-  type t += ...
-*)
-
-and extension_constructor =
-    {
-     pext_name: string loc;
-     pext_kind : extension_constructor_kind;
-     pext_loc : Location.t;
-     pext_attributes: attributes; (* C of ... [@id1] [@id2] *)
-    }
-
-and extension_constructor_kind =
-    Pext_decl of constructor_arguments * core_type option
-      (*
-         | C of T1 * ... * Tn     ([T1; ...; Tn], None)
-         | C: T0                  ([], Some T0)
-         | C: T1 * ... * Tn -> T0 ([T1; ...; Tn], Some T0)
-       *)
-  | Pext_rebind of Longident.t loc
-      (*
-         | C = D
-       *)
-
-(** {1 Class language} *)
-
-(* Type expressions for the class language *)
-
-and class_type =
-    {
-     pcty_desc: class_type_desc;
-     pcty_loc: Location.t;
-     pcty_attributes: attributes; (* ... [@id1] [@id2] *)
-    }
-
-and class_type_desc =
-  | Pcty_constr of Longident.t loc * core_type list
-        (* c
-           ['a1, ..., 'an] c *)
-  | Pcty_signature of class_signature
-        (* object ... end *)
-  | Pcty_arrow of arg_label * core_type * class_type
-        (* T -> CT       Simple
-           ~l:T -> CT    Labelled l
-           ?l:T -> CT    Optional l
-         *)
-  | Pcty_extension of extension
-        (* [%id] *)
-  | Pcty_open of override_flag * Longident.t loc * class_type
-        (* let open M in CT *)
-
-and class_signature =
-    {
-     pcsig_self: core_type;
-     pcsig_fields: class_type_field list;
-    }
-(* object('selfpat) ... end
-   object ... end             (self = Ptyp_any)
- *)
-
-and class_type_field =
-    {
-     pctf_desc: class_type_field_desc;
-     pctf_loc: Location.t;
-     pctf_attributes: attributes; (* ... [@@id1] [@@id2] *)
-    }
-
-and class_type_field_desc =
-  | Pctf_inherit of class_type
-        (* inherit CT *)
-  | Pctf_val of (label loc * mutable_flag * virtual_flag * core_type)
-        (* val x: T *)
-  | Pctf_method  of (label loc * private_flag * virtual_flag * core_type)
-        (* method x: T
-
-           Note: T can be a Ptyp_poly.
-         *)
-  | Pctf_constraint  of (core_type * core_type)
-        (* constraint T1 = T2 *)
-  | Pctf_attribute of attribute
-        (* [@@@id] *)
-  | Pctf_extension of extension
-        (* [%%id] *)
-
-and 'a class_infos =
-    {
-     pci_virt: virtual_flag;
-     pci_params: (core_type * variance) list;
-     pci_name: string loc;
-     pci_expr: 'a;
-     pci_loc: Location.t;
-     pci_attributes: attributes;  (* ... [@@id1] [@@id2] *)
-    }
-(* class c = ...
-   class ['a1,...,'an] c = ...
-   class virtual c = ...
-
-   Also used for "class type" declaration.
-*)
-
-and class_description = class_type class_infos
-
-and class_type_declaration = class_type class_infos
-
-(* Value expressions for the class language *)
-
-and class_expr =
-    {
-     pcl_desc: class_expr_desc;
-     pcl_loc: Location.t;
-     pcl_attributes: attributes; (* ... [@id1] [@id2] *)
-    }
-
-and class_expr_desc =
-  | Pcl_constr of Longident.t loc * core_type list
-        (* c
-           ['a1, ..., 'an] c *)
-  | Pcl_structure of class_structure
-        (* object ... end *)
-  | Pcl_fun of arg_label * expression option * pattern * class_expr
-        (* fun P -> CE                          (Simple, None)
-           fun ~l:P -> CE                       (Labelled l, None)
-           fun ?l:P -> CE                       (Optional l, None)
-           fun ?l:(P = E0) -> CE                (Optional l, Some E0)
-         *)
-  | Pcl_apply of class_expr * (arg_label * expression) list
-        (* CE ~l1:E1 ... ~ln:En
-           li can be empty (non labeled argument) or start with '?'
-           (optional argument).
-
-           Invariant: n > 0
-         *)
-  | Pcl_let of rec_flag * value_binding list * class_expr
-        (* let P1 = E1 and ... and Pn = EN in CE      (flag = Nonrecursive)
-           let rec P1 = E1 and ... and Pn = EN in CE  (flag = Recursive)
-         *)
-  | Pcl_constraint of class_expr * class_type
-        (* (CE : CT) *)
-  | Pcl_extension of extension
-  (* [%id] *)
-  | Pcl_open of override_flag * Longident.t loc * class_expr
-  (* let open M in CE *)
-
-
-and class_structure =
-    {
-     pcstr_self: pattern;
-     pcstr_fields: class_field list;
-    }
-(* object(selfpat) ... end
-   object ... end           (self = Ppat_any)
- *)
-
-and class_field =
-    {
-     pcf_desc: class_field_desc;
-     pcf_loc: Location.t;
-     pcf_attributes: attributes; (* ... [@@id1] [@@id2] *)
-    }
-
-and class_field_desc =
-  | Pcf_inherit of override_flag * class_expr * string loc option
-        (* inherit CE
-           inherit CE as x
-           inherit! CE
-           inherit! CE as x
-         *)
-  | Pcf_val of (label loc * mutable_flag * class_field_kind)
-        (* val x = E
-           val virtual x: T
-         *)
-  | Pcf_method of (label loc * private_flag * class_field_kind)
-        (* method x = E            (E can be a Pexp_poly)
-           method virtual x: T     (T can be a Ptyp_poly)
-         *)
-  | Pcf_constraint of (core_type * core_type)
-        (* constraint T1 = T2 *)
-  | Pcf_initializer of expression
-        (* initializer E *)
-  | Pcf_attribute of attribute
-        (* [@@@id] *)
-  | Pcf_extension of extension
-        (* [%%id] *)
-
-and class_field_kind =
-  | Cfk_virtual of core_type
-  | Cfk_concrete of override_flag * expression
-
-and class_declaration = class_expr class_infos
-
-(** {1 Module language} *)
-
-(* Type expressions for the module language *)
-
-and module_type =
-    {
-     pmty_desc: module_type_desc;
-     pmty_loc: Location.t;
-     pmty_attributes: attributes; (* ... [@id1] [@id2] *)
-    }
-
-and module_type_desc =
-  | Pmty_ident of Longident.t loc
-        (* S *)
-  | Pmty_signature of signature
-        (* sig ... end *)
-  | Pmty_functor of string loc * module_type option * module_type
-        (* functor(X : MT1) -> MT2 *)
-  | Pmty_with of module_type * with_constraint list
-        (* MT with ... *)
-  | Pmty_typeof of module_expr
-        (* module type of ME *)
-  | Pmty_extension of extension
-        (* [%id] *)
-  | Pmty_alias of Longident.t loc
-        (* (module M) *)
-
-and signature = signature_item list
-
-and signature_item =
-    {
-     psig_desc: signature_item_desc;
-     psig_loc: Location.t;
-    }
-
-and signature_item_desc =
-  | Psig_value of value_description
-        (*
-          val x: T
-          external x: T = "s1" ... "sn"
-         *)
-  | Psig_type of rec_flag * type_declaration list
-        (* type t1 = ... and ... and tn = ... *)
-  | Psig_typext of type_extension
-        (* type t1 += ... *)
-  | Psig_exception of extension_constructor
-        (* exception C of T *)
-  | Psig_module of module_declaration
-        (* module X : MT *)
-  | Psig_recmodule of module_declaration list
-        (* module rec X1 : MT1 and ... and Xn : MTn *)
-  | Psig_modtype of module_type_declaration
-        (* module type S = MT
-           module type S *)
-  | Psig_open of open_description
-        (* open X *)
-  | Psig_include of include_description
-        (* include MT *)
-  | Psig_class of class_description list
-        (* class c1 : ... and ... and cn : ... *)
-  | Psig_class_type of class_type_declaration list
-        (* class type ct1 = ... and ... and ctn = ... *)
-  | Psig_attribute of attribute
-        (* [@@@id] *)
-  | Psig_extension of extension * attributes
-        (* [%%id] *)
-
-and module_declaration =
-    {
-     pmd_name: string loc;
-     pmd_type: module_type;
-     pmd_attributes: attributes; (* ... [@@id1] [@@id2] *)
-     pmd_loc: Location.t;
-    }
-(* S : MT *)
-
-and module_type_declaration =
-    {
-     pmtd_name: string loc;
-     pmtd_type: module_type option;
-     pmtd_attributes: attributes; (* ... [@@id1] [@@id2] *)
-     pmtd_loc: Location.t;
-    }
-(* S = MT
-   S       (abstract module type declaration, pmtd_type = None)
-*)
-
-and open_description =
-    {
-     popen_lid: Longident.t loc;
-     popen_override: override_flag;
-     popen_loc: Location.t;
-     popen_attributes: attributes;
-    }
-(* open! X - popen_override = Override (silences the 'used identifier
-                              shadowing' warning)
-   open  X - popen_override = Fresh
- *)
-
-and 'a include_infos =
-    {
-     pincl_mod: 'a;
-     pincl_loc: Location.t;
-     pincl_attributes: attributes;
-    }
-
-and include_description = module_type include_infos
-(* include MT *)
-
-and include_declaration = module_expr include_infos
-(* include ME *)
-
-and with_constraint =
-  | Pwith_type of Longident.t loc * type_declaration
-        (* with type X.t = ...
-
-           Note: the last component of the longident must match
-           the name of the type_declaration. *)
-  | Pwith_module of Longident.t loc * Longident.t loc
-        (* with module X.Y = Z *)
-  | Pwith_typesubst of Longident.t loc * type_declaration
-        (* with type X.t := ..., same format as [Pwith_type] *)
-  | Pwith_modsubst of Longident.t loc * Longident.t loc
-        (* with module X.Y := Z *)
-
-(* Value expressions for the module language *)
-
-and module_expr =
-    {
-     pmod_desc: module_expr_desc;
-     pmod_loc: Location.t;
-     pmod_attributes: attributes; (* ... [@id1] [@id2] *)
-    }
-
-and module_expr_desc =
-  | Pmod_ident of Longident.t loc
-        (* X *)
-  | Pmod_structure of structure
-        (* struct ... end *)
-  | Pmod_functor of string loc * module_type option * module_expr
-        (* functor(X : MT1) -> ME *)
-  | Pmod_apply of module_expr * module_expr
-        (* ME1(ME2) *)
-  | Pmod_constraint of module_expr * module_type
-        (* (ME : MT) *)
-  | Pmod_unpack of expression
-        (* (val E) *)
-  | Pmod_extension of extension
-        (* [%id] *)
-
-and structure = structure_item list
-
-and structure_item =
-    {
-     pstr_desc: structure_item_desc;
-     pstr_loc: Location.t;
-    }
-
-and structure_item_desc =
-  | Pstr_eval of expression * attributes
-        (* E *)
-  | Pstr_value of rec_flag * value_binding list
-        (* let P1 = E1 and ... and Pn = EN       (flag = Nonrecursive)
-           let rec P1 = E1 and ... and Pn = EN   (flag = Recursive)
-         *)
-  | Pstr_primitive of value_description
-        (*  val x: T
-            external x: T = "s1" ... "sn" *)
-  | Pstr_type of rec_flag * type_declaration list
-        (* type t1 = ... and ... and tn = ... *)
-  | Pstr_typext of type_extension
-        (* type t1 += ... *)
-  | Pstr_exception of extension_constructor
-        (* exception C of T
-           exception C = M.X *)
-  | Pstr_module of module_binding
-        (* module X = ME *)
-  | Pstr_recmodule of module_binding list
-        (* module rec X1 = ME1 and ... and Xn = MEn *)
-  | Pstr_modtype of module_type_declaration
-        (* module type S = MT *)
-  | Pstr_open of open_description
-        (* open X *)
-  | Pstr_class of class_declaration list
-        (* class c1 = ... and ... and cn = ... *)
-  | Pstr_class_type of class_type_declaration list
-        (* class type ct1 = ... and ... and ctn = ... *)
-  | Pstr_include of include_declaration
-        (* include ME *)
-  | Pstr_attribute of attribute
-        (* [@@@id] *)
-  | Pstr_extension of extension * attributes
-        (* [%%id] *)
-
-and value_binding =
-  {
-    pvb_pat: pattern;
-    pvb_expr: expression;
-    pvb_attributes: attributes;
-    pvb_loc: Location.t;
-  }
-
-and module_binding =
-    {
-     pmb_name: string loc;
-     pmb_expr: module_expr;
-     pmb_attributes: attributes;
-     pmb_loc: Location.t;
-    }
-(* X = ME *)
-
-(** {1 Toplevel} *)
-
-(* Toplevel phrases *)
-
-type toplevel_phrase =
-  | Ptop_def of structure
-  | Ptop_dir of string * directive_argument
-     (* #use, #load ... *)
-
-and directive_argument =
-  | Pdir_none
-  | Pdir_string of string
-  | Pdir_int of string * char option
-  | Pdir_ident of Longident.t
-  | Pdir_bool of bool
-
-end
-module Builtin_attributes : sig 
-#1 "builtin_attributes.mli"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*                         Alain Frisch, LexiFi                           *)
-(*                                                                        *)
-(*   Copyright 2012 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(* Support for some of the builtin attributes:
-
-   ocaml.deprecated
-   ocaml.error
-   ocaml.ppwarning
-   ocaml.warning
-   ocaml.warnerror
-   ocaml.explicit_arity (for camlp4/camlp5)
-   ocaml.warn_on_literal_pattern
-   ocaml.deprecated_mutable
-   ocaml.immediate
-   ocaml.boxed / ocaml.unboxed
-*)
-
-
-val check_deprecated: Location.t -> Parsetree.attributes -> string -> unit
-val check_deprecated_inclusion:
-  def:Location.t -> use:Location.t -> Location.t -> Parsetree.attributes ->
-  Parsetree.attributes -> string -> unit
-val deprecated_of_attrs: Parsetree.attributes -> string option
-val deprecated_of_sig: Parsetree.signature -> string option
-val deprecated_of_str: Parsetree.structure -> string option
-
-val check_deprecated_mutable:
-    Location.t -> Parsetree.attributes -> string -> unit
-val check_deprecated_mutable_inclusion:
-  def:Location.t -> use:Location.t -> Location.t -> Parsetree.attributes ->
-  Parsetree.attributes -> string -> unit
-
-val check_bs_attributes_inclusion:
-  (Parsetree.attributes ->
-  Parsetree.attributes -> string -> (string*string) option ) ref
-
-val check_duplicated_labels: 
-  (Parsetree.label_declaration list ->
-    string Asttypes.loc option
-  ) ref    
-val error_of_extension: Parsetree.extension -> Location.error
-
-val warning_attribute: ?ppwarning:bool -> Parsetree.attribute -> unit
-  (** Apply warning settings from the specified attribute.
-      "ocaml.warning"/"ocaml.warnerror" (and variants without the prefix)
-      are processed and other attributes are ignored.
-
-      Also implement ocaml.ppwarning (unless ~ppwarning:false is
-      passed).
-  *)
-
-val warning_scope:
-  ?ppwarning:bool ->
-  Parsetree.attributes -> (unit -> 'a) -> 'a
-  (** Execute a function in a new scope for warning settings.  This
-      means that the effect of any call to [warning_attribute] during
-      the execution of this function will be discarded after
-      execution.
-
-      The function also takes a list of attributes which are processed
-      with [warning_attribute] in the fresh scope before the function
-      is executed.
-  *)
-
-val warn_on_literal_pattern: Parsetree.attributes -> bool
-val explicit_arity: Parsetree.attributes -> bool
-
-
-val immediate: Parsetree.attributes -> bool
-
-val has_unboxed: Parsetree.attributes -> bool
-val has_boxed: Parsetree.attributes -> bool
-
-end = struct
-#1 "builtin_attributes.ml"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*                         Alain Frisch, LexiFi                           *)
-(*                                                                        *)
-(*   Copyright 2012 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-open Asttypes
-open Parsetree
-
-let string_of_cst = function
-  | Pconst_string(s, _) -> Some s
-  | _ -> None
-
-let string_of_payload = function
-  | PStr[{pstr_desc=Pstr_eval({pexp_desc=Pexp_constant c},_)}] ->
-      string_of_cst c
-  | _ -> None
-
-let string_of_opt_payload p =
-  match string_of_payload p with
-  | Some s -> s
-  | None -> ""
-
-let rec error_of_extension ext =
-  match ext with
-  | ({txt = ("ocaml.error"|"error") as txt; loc}, p) ->
-    let rec sub_from inner =
-      match inner with
-      | {pstr_desc=Pstr_extension (ext, _)} :: rest ->
-          error_of_extension ext :: sub_from rest
-      | _ :: rest ->
-          (Location.errorf ~loc
-             "Invalid syntax for sub-error of extension '%s'." txt) ::
-            sub_from rest
-      | [] -> []
-    in
-    begin match p with
-    | PStr [] -> raise Location.Already_displayed_error
-    | PStr({pstr_desc=Pstr_eval
-              ({pexp_desc=Pexp_constant(Pconst_string(msg,_))}, _)}::
-           {pstr_desc=Pstr_eval
-              ({pexp_desc=Pexp_constant(Pconst_string(if_highlight,_))}, _)}::
-           inner) ->
-        Location.error ~loc ~if_highlight ~sub:(sub_from inner) msg
-    | PStr({pstr_desc=Pstr_eval
-              ({pexp_desc=Pexp_constant(Pconst_string(msg,_))}, _)}::inner) ->
-        Location.error ~loc ~sub:(sub_from inner) msg
-    | _ -> Location.errorf ~loc "Invalid syntax for extension '%s'." txt
-    end
-  | ({txt; loc}, _) ->
-      Location.errorf ~loc "Uninterpreted extension '%s'." txt
-
-let cat s1 s2 =
-  if s2 = "" then s1 else
- 
-    if Clflags.bs_vscode then s1 ^ " " ^ s2
-    else s1 ^ "\n" ^ s2 
-    
-
-let rec deprecated_of_attrs = function
-  | [] -> None
-  | ({txt = "ocaml.deprecated"|"deprecated"; _}, p) :: _ ->
-      Some (string_of_opt_payload p)
-  | _ :: tl -> deprecated_of_attrs tl
-
-let check_deprecated loc attrs s =
-  match deprecated_of_attrs attrs with
-  | None -> ()
-  | Some txt -> Location.deprecated loc (cat s txt)
-
-let check_deprecated_inclusion ~def ~use loc attrs1 attrs2 s =
-  match deprecated_of_attrs attrs1, deprecated_of_attrs attrs2 with
-  | None, _ | Some _, Some _ -> ()
-  | Some txt, None -> Location.deprecated ~def ~use loc (cat s txt)
-
-let rec deprecated_mutable_of_attrs = function
-  | [] -> None
-  | ({txt = "ocaml.deprecated_mutable"|"deprecated_mutable"; _}, p) :: _ ->
-      Some (string_of_opt_payload p)
-  | _ :: tl -> deprecated_mutable_of_attrs tl
-
-let check_deprecated_mutable loc attrs s =
-  match deprecated_mutable_of_attrs attrs with
-  | None -> ()
-  | Some txt ->
-      Location.deprecated loc (Printf.sprintf "mutating field %s" (cat s txt))
-
-let check_deprecated_mutable_inclusion ~def ~use loc attrs1 attrs2 s =
-  match deprecated_mutable_of_attrs attrs1,
-        deprecated_mutable_of_attrs attrs2
-  with
-  | None, _ | Some _, Some _ -> ()
-  | Some txt, None ->
-      Location.deprecated ~def ~use loc
-        (Printf.sprintf "mutating field %s" (cat s txt))
-
-let check_bs_attributes_inclusion = 
-  ref (fun _attrs1 _attrs2 _s -> 
-      None
-    )  
-
-let check_duplicated_labels : (_ -> _ option ) ref = ref (fun _lbls -> 
-  None
-)
-
-let rec deprecated_of_sig = function
-  | {psig_desc = Psig_attribute a} :: tl ->
-      begin match deprecated_of_attrs [a] with
-      | None -> deprecated_of_sig tl
-      | Some _ as r -> r
-      end
-  | _ -> None
-
-
-let rec deprecated_of_str = function
-  | {pstr_desc = Pstr_attribute a} :: tl ->
-      begin match deprecated_of_attrs [a] with
-      | None -> deprecated_of_str tl
-      | Some _ as r -> r
-      end
-  | _ -> None
-
-
-let warning_attribute ?(ppwarning = true) =
-  let process loc txt errflag payload =
-    match string_of_payload payload with
-    | Some s ->
-        begin try Warnings.parse_options errflag s
-        with Arg.Bad _ ->
-          Location.prerr_warning loc
-            (Warnings.Attribute_payload
-               (txt, "Ill-formed list of warnings"))
-        end
-    | None ->
-        Location.prerr_warning loc
-          (Warnings.Attribute_payload
-             (txt, "A single string literal is expected"))
-  in
-  function
-  | ({txt = ("ocaml.warning"|"warning") as txt; loc}, payload) ->
-      process loc txt false payload
-  | ({txt = ("ocaml.warnerror"|"warnerror") as txt; loc}, payload) ->
-      process loc txt true payload
-  | {txt="ocaml.ppwarning"|"ppwarning"},
-    PStr[{pstr_desc=Pstr_eval({pexp_desc=Pexp_constant
-                                   (Pconst_string (s, _))},_);
-          pstr_loc}] when ppwarning ->
-      Location.prerr_warning pstr_loc (Warnings.Preprocessor s)
-  | _ ->
-      ()
-
-let warning_scope ?ppwarning attrs f =
-  let prev = Warnings.backup () in
-  try
-    List.iter (warning_attribute ?ppwarning) (List.rev attrs);
-    let ret = f () in
-    Warnings.restore prev;
-    ret
-  with exn ->
-    Warnings.restore prev;
-    raise exn
-
-
-let warn_on_literal_pattern =
-  List.exists
-    (function
-      | ({txt="ocaml.warn_on_literal_pattern"|"warn_on_literal_pattern"; _}, _)
-        -> true
-      | _ -> false
-    )
-
-let explicit_arity =
-  List.exists
-    (function
-      | ({txt="ocaml.explicit_arity"|"explicit_arity"; _}, _) -> true
-      | _ -> false
-    )
-
-let immediate =
-  List.exists
-    (function
-      | ({txt="ocaml.immediate"|"immediate"; _}, _) -> true
-      | _ -> false
-    )
-
-(* The "ocaml.boxed (default)" and "ocaml.unboxed (default)"
-   attributes cannot be input by the user, they are added by the
-   compiler when applying the default setting. This is done to record
-   in the .cmi the default used by the compiler when compiling the
-   source file because the default can change between compiler
-   invocations. *)
-
-let check l (x, _) = List.mem x.txt l
-
-let has_unboxed attr =
-  List.exists (check ["ocaml.unboxed"; "unboxed"])
-    attr
-
-let has_boxed attr =
-  List.exists (check ["ocaml.boxed"; "boxed"]) attr
-
-end
-module Depend : sig 
-#1 "depend.mli"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
-(*                                                                        *)
-(*   Copyright 1999 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(** Module dependencies. *)
-
-module StringSet : Set.S with type elt = string
-module StringMap : Map.S with type key = string
-
-type map_tree = Node of StringSet.t * bound_map
-and  bound_map = map_tree StringMap.t
-val make_leaf : string -> map_tree
-val make_node : bound_map -> map_tree
-val weaken_map : StringSet.t -> map_tree -> map_tree
-
-val free_structure_names : StringSet.t ref
-
-(* dependencies found by preprocessing tools (plugins) *)
-val pp_deps : string list ref
-
-val open_module : bound_map -> Longident.t -> bound_map
-
-val add_use_file : bound_map -> Parsetree.toplevel_phrase list -> unit
-
-val add_signature : bound_map -> Parsetree.signature -> unit
-
-val add_implementation : bound_map -> Parsetree.structure -> unit
-
-val add_implementation_binding : bound_map -> Parsetree.structure -> bound_map
-val add_signature_binding : bound_map -> Parsetree.signature -> bound_map
-
-end = struct
-#1 "depend.ml"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
-(*                                                                        *)
-(*   Copyright 1999 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-open Asttypes
-open Location
-open Longident
-open Parsetree
-
-let pp_deps = ref []
-
-module StringSet = Set.Make(struct type t = string let compare = compare end)
-module StringMap = Map.Make(String)
-
-(* Module resolution map *)
-(* Node (set of imports for this path, map for submodules) *)
-type map_tree = Node of StringSet.t * bound_map
-and  bound_map = map_tree StringMap.t
-let bound = Node (StringSet.empty, StringMap.empty)
-
-(*let get_free (Node (s, _m)) = s*)
-let get_map (Node (_s, m)) = m
-let make_leaf s = Node (StringSet.singleton s, StringMap.empty)
-let make_node m =  Node (StringSet.empty, m)
-let rec weaken_map s (Node(s0,m0)) =
-  Node (StringSet.union s s0, StringMap.map (weaken_map s) m0)
-let rec collect_free (Node (s, m)) =
-  StringMap.fold (fun _ n -> StringSet.union (collect_free n)) m s
-
-(* Returns the imports required to access the structure at path p *)
-(* Only raises Not_found if the head of p is not in the toplevel map *)
-let rec lookup_free p m =
-  match p with
-    [] -> raise Not_found
-  | s::p ->
-      let Node (f, m') = StringMap.find s m  in
-      try lookup_free p m' with Not_found -> f
-
-(* Returns the node corresponding to the structure at path p *)
-let rec lookup_map lid m =
-  match lid with
-    Lident s    -> StringMap.find s m
-  | Ldot (l, s) -> StringMap.find s (get_map (lookup_map l m))
-  | Lapply _    -> raise Not_found
-
-(* Collect free module identifiers in the a.s.t. *)
-
-let free_structure_names = ref StringSet.empty
-
-let add_names s =
-  free_structure_names := StringSet.union s !free_structure_names
-
-let rec add_path bv ?(p=[]) = function
-  | Lident s ->
-      let free =
-        try lookup_free (s::p) bv with Not_found -> StringSet.singleton s
-      in
-      (*StringSet.iter (fun s -> Printf.eprintf "%s " s) free;
-        prerr_endline "";*)
-      add_names free
-  | Ldot(l, s) -> add_path bv ~p:(s::p) l
-  | Lapply(l1, l2) -> add_path bv l1; add_path bv l2
-
-let open_module bv lid =
-  match lookup_map lid bv with
-  | Node (s, m) ->
-      add_names s;
-      StringMap.fold StringMap.add m bv
-  | exception Not_found ->
-      add_path bv lid; bv
-
-let add_parent bv lid =
-  match lid.txt with
-    Ldot(l, _s) -> add_path bv l
-  | _ -> ()
-
-let add = add_parent
-
-let addmodule bv lid = add_path bv lid.txt
-
-let handle_extension ext =
-  match (fst ext).txt with
-  | "error" | "ocaml.error" ->
-    raise (Location.Error
-             (Builtin_attributes.error_of_extension ext))
-  | _ ->
-    ()
-
-let rec add_type bv ty =
-  match ty.ptyp_desc with
-    Ptyp_any -> ()
-  | Ptyp_var _ -> ()
-  | Ptyp_arrow(_, t1, t2) -> add_type bv t1; add_type bv t2
-  | Ptyp_tuple tl -> List.iter (add_type bv) tl
-  | Ptyp_constr(c, tl) -> add bv c; List.iter (add_type bv) tl
-  | Ptyp_object (fl, _) ->
-      List.iter
-       (function Otag (_, _, t) -> add_type bv t
-         | Oinherit t -> add_type bv t) fl
-  | Ptyp_class(c, tl) -> add bv c; List.iter (add_type bv) tl
-  | Ptyp_alias(t, _) -> add_type bv t
-  | Ptyp_variant(fl, _, _) ->
-      List.iter
-        (function Rtag(_,_,_,stl) -> List.iter (add_type bv) stl
-          | Rinherit sty -> add_type bv sty)
-        fl
-  | Ptyp_poly(_, t) -> add_type bv t
-  | Ptyp_package pt -> add_package_type bv pt
-  | Ptyp_extension e -> handle_extension e
-
-and add_package_type bv (lid, l) =
-  add bv lid;
-  List.iter (add_type bv) (List.map (fun (_, e) -> e) l)
-
-let add_opt add_fn bv = function
-    None -> ()
-  | Some x -> add_fn bv x
-
-let add_constructor_arguments bv = function
-  | Pcstr_tuple l -> List.iter (add_type bv) l
-  | Pcstr_record l -> List.iter (fun l -> add_type bv l.pld_type) l
-
-let add_constructor_decl bv pcd =
-  add_constructor_arguments bv pcd.pcd_args;
-  Misc.may (add_type bv) pcd.pcd_res
-
-let add_type_declaration bv td =
-  List.iter
-    (fun (ty1, ty2, _) -> add_type bv ty1; add_type bv ty2)
-    td.ptype_cstrs;
-  add_opt add_type bv td.ptype_manifest;
-  let add_tkind = function
-    Ptype_abstract -> ()
-  | Ptype_variant cstrs ->
-      List.iter (add_constructor_decl bv) cstrs
-  | Ptype_record lbls ->
-      List.iter (fun pld -> add_type bv pld.pld_type) lbls
-  | Ptype_open -> () in
-  add_tkind td.ptype_kind
-
-let add_extension_constructor bv ext =
-  match ext.pext_kind with
-    Pext_decl(args, rty) ->
-      add_constructor_arguments bv args;
-      Misc.may (add_type bv) rty
-  | Pext_rebind lid -> add bv lid
-
-let add_type_extension bv te =
-  add bv te.ptyext_path;
-  List.iter (add_extension_constructor bv) te.ptyext_constructors
-
-let rec add_class_type bv cty =
-  match cty.pcty_desc with
-    Pcty_constr(l, tyl) ->
-      add bv l; List.iter (add_type bv) tyl
-  | Pcty_signature { pcsig_self = ty; pcsig_fields = fieldl } ->
-      add_type bv ty;
-      List.iter (add_class_type_field bv) fieldl
-  | Pcty_arrow(_, ty1, cty2) ->
-      add_type bv ty1; add_class_type bv cty2
-  | Pcty_extension e -> handle_extension e
-  | Pcty_open (_ovf, m, e) ->
-      let bv = open_module bv m.txt in add_class_type bv e
-
-and add_class_type_field bv pctf =
-  match pctf.pctf_desc with
-    Pctf_inherit cty -> add_class_type bv cty
-  | Pctf_val(_, _, _, ty) -> add_type bv ty
-  | Pctf_method(_, _, _, ty) -> add_type bv ty
-  | Pctf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
-  | Pctf_attribute _ -> ()
-  | Pctf_extension e -> handle_extension e
-
-let add_class_description bv infos =
-  add_class_type bv infos.pci_expr
-
-let add_class_type_declaration = add_class_description
-
-let pattern_bv = ref StringMap.empty
-
-let rec add_pattern bv pat =
-  match pat.ppat_desc with
-    Ppat_any -> ()
-  | Ppat_var _ -> ()
-  | Ppat_alias(p, _) -> add_pattern bv p
-  | Ppat_interval _
-  | Ppat_constant _ -> ()
-  | Ppat_tuple pl -> List.iter (add_pattern bv) pl
-  | Ppat_construct(c, op) -> add bv c; add_opt add_pattern bv op
-  | Ppat_record(pl, _) ->
-      List.iter (fun (lbl, p) -> add bv lbl; add_pattern bv p) pl
-  | Ppat_array pl -> List.iter (add_pattern bv) pl
-  | Ppat_or(p1, p2) -> add_pattern bv p1; add_pattern bv p2
-  | Ppat_constraint(p, ty) -> add_pattern bv p; add_type bv ty
-  | Ppat_variant(_, op) -> add_opt add_pattern bv op
-  | Ppat_type li -> add bv li
-  | Ppat_lazy p -> add_pattern bv p
-  | Ppat_unpack id -> pattern_bv := StringMap.add id.txt bound !pattern_bv
-  | Ppat_open ( m, p) -> let bv = open_module bv m.txt in add_pattern bv p
-  | Ppat_exception p -> add_pattern bv p
-  | Ppat_extension e -> handle_extension e
-
-let add_pattern bv pat =
-  pattern_bv := bv;
-  add_pattern bv pat;
-  !pattern_bv
-
-let rec add_expr bv exp =
-  match exp.pexp_desc with
-    Pexp_ident l -> add bv l
-  | Pexp_constant _ -> ()
-  | Pexp_let(rf, pel, e) ->
-      let bv = add_bindings rf bv pel in add_expr bv e
-  | Pexp_fun (_, opte, p, e) ->
-      add_opt add_expr bv opte; add_expr (add_pattern bv p) e
-  | Pexp_function pel ->
-      add_cases bv pel
-  | Pexp_apply(e, el) ->
-      add_expr bv e; List.iter (fun (_,e) -> add_expr bv e) el
-  | Pexp_match(e, pel) -> add_expr bv e; add_cases bv pel
-  | Pexp_try(e, pel) -> add_expr bv e; add_cases bv pel
-  | Pexp_tuple el -> List.iter (add_expr bv) el
-  | Pexp_construct(c, opte) -> add bv c; add_opt add_expr bv opte
-  | Pexp_variant(_, opte) -> add_opt add_expr bv opte
-  | Pexp_record(lblel, opte) ->
-      List.iter (fun (lbl, e) -> add bv lbl; add_expr bv e) lblel;
-      add_opt add_expr bv opte
-  | Pexp_field(e, fld) -> add_expr bv e; add bv fld
-  | Pexp_setfield(e1, fld, e2) -> add_expr bv e1; add bv fld; add_expr bv e2
-  | Pexp_array el -> List.iter (add_expr bv) el
-  | Pexp_ifthenelse(e1, e2, opte3) ->
-      add_expr bv e1; add_expr bv e2; add_opt add_expr bv opte3
-  | Pexp_sequence(e1, e2) -> add_expr bv e1; add_expr bv e2
-  | Pexp_while(e1, e2) -> add_expr bv e1; add_expr bv e2
-  | Pexp_for( _, e1, e2, _, e3) ->
-      add_expr bv e1; add_expr bv e2; add_expr bv e3
-  | Pexp_coerce(e1, oty2, ty3) ->
-      add_expr bv e1;
-      add_opt add_type bv oty2;
-      add_type bv ty3
-  | Pexp_constraint(e1, ty2) ->
-      add_expr bv e1;
-      add_type bv ty2
-  | Pexp_send(e, _m) -> add_expr bv e
-  | Pexp_new li -> add bv li
-  | Pexp_setinstvar(_v, e) -> add_expr bv e
-  | Pexp_override sel -> List.iter (fun (_s, e) -> add_expr bv e) sel
-  | Pexp_letmodule(id, m, e) ->
-      let b = add_module_binding bv m in
-      add_expr (StringMap.add id.txt b bv) e
-  | Pexp_letexception(_, e) -> add_expr bv e
-  | Pexp_assert (e) -> add_expr bv e
-  | Pexp_lazy (e) -> add_expr bv e
-  | Pexp_poly (e, t) -> add_expr bv e; add_opt add_type bv t
-  | Pexp_object { pcstr_self = pat; pcstr_fields = fieldl } ->
-      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
-  | Pexp_newtype (_, e) -> add_expr bv e
-  | Pexp_pack m -> add_module bv m
-  | Pexp_open (_ovf, m, e) ->
-      let bv = open_module bv m.txt in add_expr bv e
-  | Pexp_extension (({ txt = ("ocaml.extension_constructor"|
-                              "extension_constructor"); _ },
-                     PStr [item]) as e) ->
-      begin match item.pstr_desc with
-      | Pstr_eval ({ pexp_desc = Pexp_construct (c, None) }, _) -> add bv c
-      | _ -> handle_extension e
-      end
-  | Pexp_extension e -> handle_extension e
-  | Pexp_unreachable -> ()
-
-and add_cases bv cases =
-  List.iter (add_case bv) cases
-
-and add_case bv {pc_lhs; pc_guard; pc_rhs} =
-  let bv = add_pattern bv pc_lhs in
-  add_opt add_expr bv pc_guard;
-  add_expr bv pc_rhs
-
-and add_bindings recf bv pel =
-  let bv' = List.fold_left (fun bv x -> add_pattern bv x.pvb_pat) bv pel in
-  let bv = if recf = Recursive then bv' else bv in
-  List.iter (fun x -> add_expr bv x.pvb_expr) pel;
-  bv'
-
-and add_modtype bv mty =
-  match mty.pmty_desc with
-    Pmty_ident l -> add bv l
-  | Pmty_alias l -> addmodule bv l
-  | Pmty_signature s -> add_signature bv s
-  | Pmty_functor(id, mty1, mty2) ->
-      Misc.may (add_modtype bv) mty1;
-      add_modtype (StringMap.add id.txt bound bv) mty2
-  | Pmty_with(mty, cstrl) ->
-      add_modtype bv mty;
-      List.iter
-        (function
-          | Pwith_type (_, td) -> add_type_declaration bv td
-          | Pwith_module (_, lid) -> addmodule bv lid
-          | Pwith_typesubst (_, td) -> add_type_declaration bv td
-          | Pwith_modsubst (_, lid) -> addmodule bv lid
-        )
-        cstrl
-  | Pmty_typeof m -> add_module bv m
-  | Pmty_extension e -> handle_extension e
-
-and add_module_alias bv l =
-  try
-    add_parent bv l;
-    lookup_map l.txt bv
-  with Not_found ->
-    match l.txt with
-      Lident s -> make_leaf s
-    | _ -> addmodule bv l; bound (* cannot delay *)
-
-and add_modtype_binding bv mty =
-  if not !Clflags.transparent_modules then add_modtype bv mty;
-  match mty.pmty_desc with
-    Pmty_alias l ->
-      add_module_alias bv l
-  | Pmty_signature s ->
-      make_node (add_signature_binding bv s)
-  | Pmty_typeof modl ->
-      add_module_binding bv modl
-  | _ ->
-      if !Clflags.transparent_modules then add_modtype bv mty; bound
-
-and add_signature bv sg =
-  ignore (add_signature_binding bv sg)
-
-and add_signature_binding bv sg =
-  snd (List.fold_left add_sig_item (bv, StringMap.empty) sg)
-
-and add_sig_item (bv, m) item =
-  match item.psig_desc with
-    Psig_value vd ->
-      add_type bv vd.pval_type; (bv, m)
-  | Psig_type (_, dcls) ->
-      List.iter (add_type_declaration bv) dcls; (bv, m)
-  | Psig_typext te ->
-      add_type_extension bv te; (bv, m)
-  | Psig_exception pext ->
-      add_extension_constructor bv pext; (bv, m)
-  | Psig_module pmd ->
-      let m' = add_modtype_binding bv pmd.pmd_type in
-      let add = StringMap.add pmd.pmd_name.txt m' in
-      (add bv, add m)
-  | Psig_recmodule decls ->
-      let add =
-        List.fold_right (fun pmd -> StringMap.add pmd.pmd_name.txt bound)
-                        decls
-      in
-      let bv' = add bv and m' = add m in
-      List.iter (fun pmd -> add_modtype bv' pmd.pmd_type) decls;
-      (bv', m')
-  | Psig_modtype x ->
-      begin match x.pmtd_type with
-        None -> ()
-      | Some mty -> add_modtype bv mty
-      end;
-      (bv, m)
-  | Psig_open od ->
-      (open_module bv od.popen_lid.txt, m)
-  | Psig_include incl ->
-      let Node (s, m') = add_modtype_binding bv incl.pincl_mod in
-      add_names s;
-      let add = StringMap.fold StringMap.add m' in
-      (add bv, add m)
-  | Psig_class cdl ->
-      List.iter (add_class_description bv) cdl; (bv, m)
-  | Psig_class_type cdtl ->
-      List.iter (add_class_type_declaration bv) cdtl; (bv, m)
-  | Psig_attribute _ -> (bv, m)
-  | Psig_extension (e, _) ->
-      handle_extension e;
-      (bv, m)
-
-and add_module_binding bv modl =
-  if not !Clflags.transparent_modules then add_module bv modl;
-  match modl.pmod_desc with
-    Pmod_ident l ->
-      begin try
-        add_parent bv l;
-        lookup_map l.txt bv
-      with Not_found ->
-        match l.txt with
-          Lident s -> make_leaf s
-        | _ ->  addmodule bv l; bound
-      end
-  | Pmod_structure s ->
-      make_node (snd (add_structure_binding bv s))
-  | _ ->
-      if !Clflags.transparent_modules then add_module bv modl; bound
-
-and add_module bv modl =
-  match modl.pmod_desc with
-    Pmod_ident l -> addmodule bv l
-  | Pmod_structure s -> ignore (add_structure bv s)
-  | Pmod_functor(id, mty, modl) ->
-      Misc.may (add_modtype bv) mty;
-      add_module (StringMap.add id.txt bound bv) modl
-  | Pmod_apply(mod1, mod2) ->
-      add_module bv mod1; add_module bv mod2
-  | Pmod_constraint(modl, mty) ->
-      add_module bv modl; add_modtype bv mty
-  | Pmod_unpack(e) ->
-      add_expr bv e
-  | Pmod_extension e ->
-      handle_extension e
-
-and add_structure bv item_list =
-  let (bv, m) = add_structure_binding bv item_list in
-  add_names (collect_free (make_node m));
-  bv
-
-and add_structure_binding bv item_list =
-  List.fold_left add_struct_item (bv, StringMap.empty) item_list
-
-and add_struct_item (bv, m) item : _ StringMap.t * _ StringMap.t =
-  match item.pstr_desc with
-    Pstr_eval (e, _attrs) ->
-      add_expr bv e; (bv, m)
-  | Pstr_value(rf, pel) ->
-      let bv = add_bindings rf bv pel in (bv, m)
-  | Pstr_primitive vd ->
-      add_type bv vd.pval_type; (bv, m)
-  | Pstr_type (_, dcls) ->
-      List.iter (add_type_declaration bv) dcls; (bv, m)
-  | Pstr_typext te ->
-      add_type_extension bv te;
-      (bv, m)
-  | Pstr_exception pext ->
-      add_extension_constructor bv pext; (bv, m)
-  | Pstr_module x ->
-      let b = add_module_binding bv x.pmb_expr in
-      let add = StringMap.add x.pmb_name.txt b in
-      (add bv, add m)
-  | Pstr_recmodule bindings ->
-      let add =
-        List.fold_right (fun x -> StringMap.add x.pmb_name.txt bound) bindings
-      in
-      let bv' = add bv and m = add m in
-      List.iter
-        (fun x -> add_module bv' x.pmb_expr)
-        bindings;
-      (bv', m)
-  | Pstr_modtype x ->
-      begin match x.pmtd_type with
-        None -> ()
-      | Some mty -> add_modtype bv mty
-      end;
-      (bv, m)
-  | Pstr_open od ->
-      (open_module bv od.popen_lid.txt, m)
-  | Pstr_class cdl ->
-      List.iter (add_class_declaration bv) cdl; (bv, m)
-  | Pstr_class_type cdtl ->
-      List.iter (add_class_type_declaration bv) cdtl; (bv, m)
-  | Pstr_include incl ->
-      let Node (s, m') = add_module_binding bv incl.pincl_mod in
-      add_names s;
-      let add = StringMap.fold StringMap.add m' in
-      (add bv, add m)
-  | Pstr_attribute _ -> (bv, m)
-  | Pstr_extension (e, _) ->
-      handle_extension e;
-      (bv, m)
-
-and add_use_file bv top_phrs =
-  ignore (List.fold_left add_top_phrase bv top_phrs)
-
-and add_implementation bv l =
-  if !Clflags.transparent_modules then
-    ignore (add_structure_binding bv l)
-  else ignore (add_structure bv l)
-
-and add_implementation_binding bv l =
-  snd (add_structure_binding bv l)
-
-and add_top_phrase bv = function
-  | Ptop_def str -> add_structure bv str
-  | Ptop_dir (_, _) -> bv
-
-and add_class_expr bv ce =
-  match ce.pcl_desc with
-    Pcl_constr(l, tyl) ->
-      add bv l; List.iter (add_type bv) tyl
-  | Pcl_structure { pcstr_self = pat; pcstr_fields = fieldl } ->
-      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
-  | Pcl_fun(_, opte, pat, ce) ->
-      add_opt add_expr bv opte;
-      let bv = add_pattern bv pat in add_class_expr bv ce
-  | Pcl_apply(ce, exprl) ->
-      add_class_expr bv ce; List.iter (fun (_,e) -> add_expr bv e) exprl
-  | Pcl_let(rf, pel, ce) ->
-      let bv = add_bindings rf bv pel in add_class_expr bv ce
-  | Pcl_constraint(ce, ct) ->
-      add_class_expr bv ce; add_class_type bv ct
-  | Pcl_extension e -> handle_extension e
-  | Pcl_open (_ovf, m, e) ->
-      let bv = open_module bv m.txt in add_class_expr bv e
-
-and add_class_field bv pcf =
-  match pcf.pcf_desc with
-    Pcf_inherit(_, ce, _) -> add_class_expr bv ce
-  | Pcf_val(_, _, Cfk_concrete (_, e))
-  | Pcf_method(_, _, Cfk_concrete (_, e)) -> add_expr bv e
-  | Pcf_val(_, _, Cfk_virtual ty)
-  | Pcf_method(_, _, Cfk_virtual ty) -> add_type bv ty
-  | Pcf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
-  | Pcf_initializer e -> add_expr bv e
-  | Pcf_attribute _ -> ()
-  | Pcf_extension e -> handle_extension e
-
-and add_class_declaration bv decl =
-  add_class_expr bv decl.pci_expr
-
-end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9150,1187 +10650,6 @@ let flush = pp_print_flush
 
 let pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
   Queue.iter (fun q -> pp_v ppf q ;  pp_sep ppf ()) q 
-
-end
-module Ext_list : sig 
-#1 "ext_list.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val map : 
-  'a list -> 
-  ('a -> 'b) -> 
-  'b list 
-
-val map_combine :  
-  'a list -> 
-  'b list -> 
-  ('a -> 'c) -> 
-  ('c * 'b) list 
-
-val combine_array:
-  'a array ->
-  'b list -> 
-  ('a -> 'c) ->
-  ('c * 'b) list   
-
-val combine_array_append:
-  'a array ->
-  'b list ->
-  ('c * 'b) list -> 
-  ('a -> 'c) ->
-  ('c * 'b) list   
-  
-val has_string :   
-  string list ->
-  string -> 
-  bool
-
-
-val map_split_opt :  
-  'a list ->
-  ('a -> 'b option * 'c option) ->
-  'b list * 'c list 
-
-val mapi :
-  'a list -> 
-  (int -> 'a -> 'b) -> 
-  'b list 
-
-val mapi_append :
-  'a list -> 
-  (int -> 'a -> 'b) -> 
-  'b list -> 
-  'b list 
-
-val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
-
-(** [map_last f xs ]
-    will pass [true] to [f] for the last element, 
-    [false] otherwise. 
-    For empty list, it returns empty
-*)
-val map_last : 
-    'a list -> 
-    (bool -> 'a -> 'b) -> 'b list
-
-(** [last l]
-    return the last element
-    raise if the list is empty
-*)
-val last : 'a list -> 'a
-
-val append : 
-  'a list -> 
-  'a list -> 
-  'a list 
-
-val append_one :  
-  'a list -> 
-  'a -> 
-  'a list
-
-val map_append :  
-  'b list -> 
-  'a list -> 
-  ('b -> 'a) -> 
-  'a list
-
-val fold_right : 
-  'a list -> 
-  'b -> 
-  ('a -> 'b -> 'b) -> 
-  'b
-
-val fold_right2 : 
-  'a list -> 
-  'b list -> 
-  'c -> 
-  ('a -> 'b -> 'c -> 'c) ->  'c
-
-val fold_right3 : 
-  'a list -> 
-  'b list -> 
-  'c list -> 
-  'd -> 
-  ('a -> 'b -> 'c -> 'd -> 'd) -> 
-  'd
-  
-  
-val map2 : 
-  'a list ->
-  'b list ->
-  ('a -> 'b -> 'c) ->
-  'c list
-
-val fold_left_with_offset : 
-  'a list -> 
-  'acc -> 
-  int -> 
-  ('a -> 'acc ->  int ->  'acc) ->   
-  'acc 
-
-
-(** @unused *)
-val filter_map : 
-  'a list -> 
-  ('a -> 'b option) -> 
-  'b list  
-
-(** [exclude p l] is the opposite of [filter p l] *)
-val exclude : 
-  'a list -> 
-  ('a -> bool) -> 
-  'a list 
-
-(** [excludes p l]
-    return a tuple [excluded,newl]
-    where [exluded] is true indicates that at least one  
-    element is removed,[newl] is the new list where all [p x] for [x] is false
-
-*)
-val exclude_with_val : 
-  'a list -> 
-  ('a -> bool) -> 
-  'a list option
-
-
-val same_length : 'a list -> 'b list -> bool
-
-val init : int -> (int -> 'a) -> 'a list
-
-(** [split_at n l]
-    will split [l] into two lists [a,b], [a] will be of length [n], 
-    otherwise, it will raise
-*)
-val split_at : 
-  'a list -> 
-  int -> 
-  'a list * 'a list
-
-
-(** [split_at_last l]
-    It is equivalent to [split_at (List.length l - 1) l ]
-*)
-val split_at_last : 'a list -> 'a list * 'a
-
-val filter_mapi : 
-  'a list -> 
-  ('a -> int ->  'b option) -> 
-  'b list
-
-val filter_map2 : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b -> 'c option) -> 
-  'c list
-
-
-val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
-
-val length_ge : 'a list -> int -> bool
-
-(**
-
-   {[length xs = length ys + n ]}
-   input n should be positive 
-   TODO: input checking
-*)
-
-val length_larger_than_n : 
-  'a list -> 
-  'a list -> 
-   int -> 
-   bool
-
-
-(**
-   [rev_map_append f l1 l2]
-   [map f l1] and reverse it to append [l2]
-   This weird semantics is due to it is the most efficient operation
-   we can do
-*)
-val rev_map_append : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b) -> 
-  'b list
-
-
-val flat_map : 
-  'a list -> 
-  ('a -> 'b list) -> 
-  'b list
-
-val flat_map_append : 
-  'a list -> 
-  'b list  ->
-  ('a -> 'b list) -> 
-  'b list
-
-
-(**
-    [stable_group eq lst]
-    Example:
-    Input:
-   {[
-     stable_group (=) [1;2;3;4;3]
-   ]}
-    Output:
-   {[
-     [[1];[2];[4];[3;3]]
-   ]}
-    TODO: this is O(n^2) behavior 
-    which could be improved later
-*)
-val stable_group : 
-  'a list -> 
-  ('a -> 'a -> bool) -> 
-  'a list list 
-
-(** [drop n list]
-    raise when [n] is negative
-    raise when list's length is less than [n]
-*)
-val drop : 
-  'a list -> 
-  int -> 
-  'a list 
-
-val find_first :   
-    'a list ->
-    ('a -> bool) ->
-    'a option 
-    
-(** [find_first_not p lst ]
-    if all elements in [lst] pass, return [None] 
-    otherwise return the first element [e] as [Some e] which
-    fails the predicate
-*)
-val find_first_not : 
-  'a list -> 
-  ('a -> bool) -> 
-  'a option 
-
-(** [find_opt f l] returns [None] if all return [None],  
-    otherwise returns the first one. 
-*)
-
-val find_opt : 
-  'a list -> 
-  ('a -> 'b option) -> 
-  'b option 
-
-val find_def : 
-    'a list -> 
-    ('a -> 'b option) ->
-    'b ->
-    'b 
-
-    
-val rev_iter : 
-  'a list -> 
-  ('a -> unit) -> 
-  unit 
-
-val iter:   
-   'a list ->  
-   ('a -> unit) -> 
-   unit
-   
-val for_all:  
-    'a list -> 
-    ('a -> bool) -> 
-    bool
-val for_all_snd:    
-    ('a * 'b) list -> 
-    ('b -> bool) -> 
-    bool
-
-(** [for_all2_no_exn p xs ys]
-    return [true] if all satisfied,
-    [false] otherwise or length not equal
-*)
-val for_all2_no_exn : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b -> bool) -> 
-  bool
-
-
-
-(** [f] is applied follow the list order *)
-val split_map : 
-  'a list -> 
-  ('a -> 'b * 'c) -> 
-  'b list * 'c list       
-
-(** [fn] is applied from left to right *)
-val reduce_from_left : 
-  'a list -> 
-  ('a -> 'a -> 'a) ->
-  'a
-
-val sort_via_array :
-  'a list -> 
-  ('a -> 'a -> int) -> 
-  'a list  
-
-
-
-
-(** [assoc_by_string default key lst]
-    if  [key] is found in the list  return that val,
-    other unbox the [default], 
-    otherwise [assert false ]
-*)
-val assoc_by_string : 
-  (string * 'a) list -> 
-  string -> 
-  'a  option ->   
-  'a  
-
-val assoc_by_int : 
-  (int * 'a) list -> 
-  int -> 
-  'a  option ->   
-  'a   
-
-
-val nth_opt : 'a list -> int -> 'a option  
-
-val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit 
-
-val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
-
-val exists : 'a list -> ('a -> bool) -> bool 
-
-val exists_fst : 
-  ('a * 'b) list ->
-  ('a -> bool) ->
-  bool
-
-val exists_snd : 
-  ('a * 'b) list -> 
-  ('b -> bool) -> 
-  bool
-
-val concat_append:
-    'a list list -> 
-    'a list -> 
-    'a list
-
-val fold_left2:
-    'a list -> 
-    'b list -> 
-    'c -> 
-    ('a -> 'b -> 'c -> 'c)
-    -> 'c 
-
-val fold_left:    
-    'a list -> 
-    'b -> 
-    ('b -> 'a -> 'b) -> 
-    'b
-
-val singleton_exn:     
-    'a list -> 'a
-
-val mem_string :     
-    string list -> 
-    string -> 
-    bool
-end = struct
-#1 "ext_list.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-let rec map l f =
-  match l with
-  | [] ->
-    []
-  | [x1] ->
-    let y1 = f x1 in
-    [y1]
-  | [x1; x2] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    [y1; y2]
-  | [x1; x2; x3] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    [y1; y2; y3]
-  | [x1; x2; x3; x4] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    [y1; y2; y3; y4]
-  | x1::x2::x3::x4::x5::tail ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    let y5 = f x5 in
-    y1::y2::y3::y4::y5::(map tail f)
-
-let rec has_string l f =
-  match l with
-  | [] ->
-    false
-  | [x1] ->
-    x1 = f
-  | [x1; x2] ->
-    x1 = f || x2 = f
-  | [x1; x2; x3] ->
-    x1 = f || x2 = f || x3 = f
-  | x1 :: x2 :: x3 :: x4 ->
-    x1 = f || x2 = f || x3 = f || has_string x4 f 
-  
-let rec map_combine l1 l2 f =
-  match (l1, l2) with
-    ([], []) -> []
-  | (a1::l1, a2::l2) -> 
-    (f a1, a2) :: map_combine l1 l2 f 
-  | (_, _) -> 
-    invalid_arg "Ext_list.map_combine"
-
-let rec combine_array_unsafe arr l i j acc f =    
-  if i = j then acc
-  else 
-    match l with
-    | [] -> invalid_arg "Ext_list.combine"
-    | h :: tl ->
-      (f (Array.unsafe_get arr i) , h) ::
-      combine_array_unsafe arr tl (i + 1) j acc f
-
-let combine_array_append arr l acc f = 
-  let len = Array.length arr in
-  combine_array_unsafe arr l 0 len acc f
-
-let combine_array arr l f = 
-  let len = Array.length arr in
-  combine_array_unsafe arr l 0 len [] f 
-
-let rec map_split_opt 
-  (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
-  : 'b list * 'c list = 
-  match xs with 
-  | [] -> [], []
-  | x::xs ->
-    let c,d = f x in 
-    let cs,ds = map_split_opt xs f in 
-    (match c with Some c -> c::cs | None -> cs),
-    (match d with Some d -> d::ds | None -> ds)
-
-let rec map_snd l f =
-  match l with
-  | [] ->
-    []
-  | [ v1,x1 ] ->
-    let y1 = f x1 in
-    [v1,y1]
-  | [v1, x1; v2, x2] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    [v1, y1; v2, y2]
-  | [ v1, x1; v2, x2; v3, x3] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    [v1, y1; v2, y2; v3, y3]
-  | [ v1, x1; v2, x2; v3, x3; v4, x4] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    [v1, y1; v2, y2; v3, y3; v4, y4]
-  | (v1, x1) ::(v2, x2) :: (v3, x3)::(v4, x4) :: (v5, x5) ::tail ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    let y5 = f x5 in
-    (v1, y1)::(v2, y2) :: (v3, y3) :: (v4, y4) :: (v5, y5) :: (map_snd tail f)
-
-
-let rec map_last l f=
-  match l with
-  | [] ->
-    []
-  | [x1] ->
-    let y1 = f true x1 in
-    [y1]
-  | [x1; x2] ->
-    let y1 = f false x1 in
-    let y2 = f true x2 in
-    [y1; y2]
-  | [x1; x2; x3] ->
-    let y1 = f false x1 in
-    let y2 = f false x2 in
-    let y3 = f true x3 in
-    [y1; y2; y3]
-  | [x1; x2; x3; x4] ->
-    let y1 = f false x1 in
-    let y2 = f false x2 in
-    let y3 = f false x3 in
-    let y4 = f true x4 in
-    [y1; y2; y3; y4]
-  | x1::x2::x3::x4::tail ->
-    (* make sure that tail is not empty *)    
-    let y1 = f false x1 in
-    let y2 = f false x2 in
-    let y3 = f false x3 in
-    let y4 = f false x4 in
-    y1::y2::y3::y4::(map_last tail f)
-
-let rec mapi_aux lst i f tail = 
-  match lst with
-    [] -> tail
-  | a::l -> 
-    let r = f i a in r :: mapi_aux l (i + 1) f tail
-
-let mapi lst f = mapi_aux lst 0 f []
-let mapi_append lst f tail = mapi_aux lst 0 f tail
-let rec last xs =
-  match xs with 
-  | [x] -> x 
-  | _ :: tl -> last tl 
-  | [] -> invalid_arg "Ext_list.last"    
-
-
-
-let rec append_aux l1 l2 = 
-  match l1 with
-  | [] -> l2
-  | [a0] -> a0::l2
-  | [a0;a1] -> a0::a1::l2
-  | [a0;a1;a2] -> a0::a1::a2::l2
-  | [a0;a1;a2;a3] -> a0::a1::a2::a3::l2
-  | [a0;a1;a2;a3;a4] -> a0::a1::a2::a3::a4::l2
-  | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append_aux rest l2
-
-let append l1 l2 =   
-  match l2 with 
-  | [] -> l1 
-  | _ -> append_aux l1 l2  
-
-let append_one l1 x = append_aux l1 [x]  
-
-let rec map_append l1 l2 f =   
-  match l1 with
-  | [] -> l2
-  | [a0] -> f a0::l2
-  | [a0;a1] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    b0::b1::l2
-  | [a0;a1;a2] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in  
-    let b2 = f a2 in 
-    b0::b1::b2::l2
-  | [a0;a1;a2;a3] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    let b2 = f a2 in 
-    let b3 = f a3 in 
-    b0::b1::b2::b3::l2
-  | [a0;a1;a2;a3;a4] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    let b2 = f a2 in 
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    b0::b1::b2::b3::b4::l2
-
-  | a0::a1::a2::a3::a4::rest ->
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    let b2 = f a2 in 
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    b0::b1::b2::b3::b4::map_append rest l2 f
-
-
-
-let rec fold_right l acc f  = 
-  match l with  
-  | [] -> acc 
-  | [a0] -> f a0 acc 
-  | [a0;a1] -> f a0 (f a1 acc)
-  | [a0;a1;a2] -> f a0 (f a1 (f a2 acc))
-  | [a0;a1;a2;a3] -> f a0 (f a1 (f a2 (f a3 acc))) 
-  | [a0;a1;a2;a3;a4] -> 
-    f a0 (f a1 (f a2 (f a3 (f a4 acc))))
-  | a0::a1::a2::a3::a4::rest -> 
-    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right rest acc f )))))  
-
-let rec fold_right2 l r acc f = 
-  match l,r  with  
-  | [],[] -> acc 
-  | [a0],[b0] -> f a0 b0 acc 
-  | [a0;a1],[b0;b1] -> f a0 b0 (f a1 b1 acc)
-  | [a0;a1;a2],[b0;b1;b2] -> f a0 b0 (f a1 b1 (f a2 b2 acc))
-  | [a0;a1;a2;a3],[b0;b1;b2;b3] ->
-    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 acc))) 
-  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
-    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 acc))))
-  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
-    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 (fold_right2 arest brest acc f )))))  
-  | _, _ -> invalid_arg "Ext_list.fold_right2"
-
-let rec fold_right3 l r last acc f = 
-  match l,r,last  with  
-  | [],[],[] -> acc 
-  | [a0],[b0],[c0] -> f a0 b0 c0 acc 
-  | [a0;a1],[b0;b1],[c0; c1] -> f a0 b0 c0 (f a1 b1 c1 acc)
-  | [a0;a1;a2],[b0;b1;b2],[c0;c1;c2] -> f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 acc))
-  | [a0;a1;a2;a3],[b0;b1;b2;b3],[c0;c1;c2;c3] ->
-    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 acc))) 
-  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4], [c0;c1;c2;c3;c4] -> 
-    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 acc))))
-  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest, c0::c1::c2::c3::c4::crest -> 
-    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 (fold_right3 arest brest crest acc f )))))  
-  | _, _, _ -> invalid_arg "Ext_list.fold_right2"
-
-let rec map2  l r f = 
-  match l,r  with  
-  | [],[] -> []
-  | [a0],[b0] -> [f a0 b0]
-  | [a0;a1],[b0;b1] -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    [c0; c1]
-  | [a0;a1;a2],[b0;b1;b2] -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    [c0;c1;c2]
-  | [a0;a1;a2;a3],[b0;b1;b2;b3] ->
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    let c3 = f a3 b3 in 
-    [c0;c1;c2;c3]
-  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    let c3 = f a3 b3 in 
-    let c4 = f a4 b4 in 
-    [c0;c1;c2;c3;c4]
-  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    let c3 = f a3 b3 in 
-    let c4 = f a4 b4 in 
-    c0::c1::c2::c3::c4::map2 arest brest f
-  | _, _ -> invalid_arg "Ext_list.map2"
-
-let rec fold_left_with_offset l accu i f =
-  match l with
-  | [] -> accu
-  | a::l -> 
-    fold_left_with_offset 
-    l     
-    (f  a accu  i)  
-    (i + 1)
-    f  
-
-
-let rec filter_map xs (f: 'a -> 'b option)= 
-  match xs with 
-  | [] -> []
-  | y :: ys -> 
-    begin match f y with 
-      | None -> filter_map ys f 
-      | Some z -> z :: filter_map ys f 
-    end
-
-let rec exclude (xs : 'a list) (p : 'a -> bool) : 'a list =   
-  match xs with 
-  | [] ->  []
-  | x::xs -> 
-    if p x then exclude xs p
-    else x:: exclude xs p
-
-let rec exclude_with_val l p =
-  match l with 
-  | [] ->  None
-  | a0::xs -> 
-    if p a0 then Some (exclude xs p)
-    else 
-      match xs with 
-      | [] -> None
-      | a1::rest -> 
-        if p a1 then 
-          Some (a0:: exclude rest p)
-        else 
-          match exclude_with_val rest p with 
-          | None -> None 
-          | Some  rest -> Some (a0::a1::rest)
-
-
-
-let rec same_length xs ys = 
-  match xs, ys with 
-  | [], [] -> true
-  | _::xs, _::ys -> same_length xs ys 
-  | _, _ -> false 
-
-
-let init n f = 
-  match n with 
-  | 0 -> []
-  | 1 -> 
-    let a0 = f 0 in  
-    [a0]
-  | 2 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    [a0; a1]
-  | 3 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    let a2 = f 2 in 
-    [a0; a1; a2]
-  | 4 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    let a2 = f 2 in 
-    let a3 = f 3 in 
-    [a0; a1; a2; a3]
-  | 5 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    let a2 = f 2 in 
-    let a3 = f 3 in 
-    let a4 = f 4 in  
-    [a0; a1; a2; a3; a4]
-  | _ ->
-    Array.to_list (Array.init n f)
-
-let rec rev_append l1 l2 =
-  match l1 with
-  | [] -> l2
-  | [a0] -> a0::l2 (* single element is common *)
-  | [a0 ; a1] -> a1 :: a0 :: l2 
-  |  a0::a1::a2::rest -> rev_append rest (a2::a1::a0::l2) 
-
-let rev l = rev_append l []      
-
-let rec small_split_at n acc l = 
-  if n <= 0 then rev acc , l 
-  else 
-    match l with 
-    | x::xs -> small_split_at (n - 1) (x ::acc) xs 
-    | _ -> invalid_arg "Ext_list.split_at"
-
-let split_at l n = 
-  small_split_at n [] l 
-
-let rec split_at_last_aux acc x = 
-  match x with 
-  | [] -> invalid_arg "Ext_list.split_at_last"
-  | [ x] -> rev acc, x
-  | y0::ys -> split_at_last_aux (y0::acc) ys   
-
-let split_at_last (x : 'a list) = 
-  match x with 
-  | [] -> invalid_arg "Ext_list.split_at_last"
-  | [a0] -> 
-    [], a0
-  | [a0;a1] -> 
-    [a0], a1  
-  | [a0;a1;a2] -> 
-    [a0;a1], a2 
-  | [a0;a1;a2;a3] -> 
-    [a0;a1;a2], a3 
-  | [a0;a1;a2;a3;a4] ->
-    [a0;a1;a2;a3], a4 
-  | a0::a1::a2::a3::a4::rest  ->  
-    let rev, last = split_at_last_aux [] rest
-    in 
-    a0::a1::a2::a3::a4::  rev , last
-
-(**
-   can not do loop unroll due to state combination
-*)  
-let  filter_mapi xs f  = 
-  let rec aux i xs = 
-    match xs with 
-    | [] -> []
-    | y :: ys -> 
-      begin match f y i with 
-        | None -> aux (i + 1) ys
-        | Some z -> z :: aux (i + 1) ys
-      end in
-  aux 0 xs 
-
-let rec filter_map2  xs ys (f: 'a -> 'b -> 'c option) = 
-  match xs,ys with 
-  | [],[] -> []
-  | u::us, v :: vs -> 
-    begin match f u v with 
-      | None -> filter_map2 us vs f (* idea: rec f us vs instead? *)
-      | Some z -> z :: filter_map2  us vs f
-    end
-  | _ -> invalid_arg "Ext_list.filter_map2"
-
-
-let rec rev_map_append l1 l2 f =
-  match l1 with
-  | [] -> l2
-  | a :: l -> rev_map_append l (f a :: l2) f
-
-
-
-(** It is not worth loop unrolling, 
-    it is already tail-call, and we need to be careful 
-    about evaluation order when unroll
-*)
-let rec flat_map_aux f acc append lx =
-  match lx with
-  | [] -> rev_append acc  append
-  | a0::rest -> 
-    let new_acc = 
-      match f a0 with 
-      | [] -> acc 
-      | [a0] -> a0::acc
-      | [a0;a1] -> a1::a0::acc
-      | a0::a1::a2::rest -> 
-        rev_append rest (a2::a1::a0::acc)  
-    in 
-    flat_map_aux f  new_acc append rest 
-
-let flat_map lx f  =
-  flat_map_aux f [] [] lx
-
-let flat_map_append lx append f =
-  flat_map_aux f [] append lx  
-
-
-let rec length_compare l n = 
-  if n < 0 then `Gt 
-  else 
-    begin match l with 
-      | _ ::xs -> length_compare xs (n - 1)
-      | [] ->  
-        if n = 0 then `Eq 
-        else `Lt 
-    end
-
-let rec length_ge l n =   
-  if n > 0 then
-    match l with 
-    | _ :: tl -> length_ge tl (n - 1)
-    | [] -> false
-  else true
-  
-(**
-   {[length xs = length ys + n ]}
-*)
-let rec length_larger_than_n xs ys n =
-  match xs, ys with 
-  | _, [] -> length_compare xs n = `Eq   
-  | _::xs, _::ys -> 
-    length_larger_than_n xs ys n
-  | [], _ -> false 
-
-
-
-
-let rec group (eq : 'a -> 'a -> bool) lst =
-  match lst with 
-  | [] -> []
-  | x::xs -> 
-    aux eq x (group eq xs )
-
-and aux eq (x : 'a)  (xss : 'a list list) : 'a list list = 
-  match xss with 
-  | [] -> [[x]]
-  | (y0::_ as y)::ys -> (* cannot be empty *) 
-    if eq x y0 then
-      (x::y) :: ys 
-    else
-      y :: aux eq x ys                                 
-  | _ :: _ -> assert false    
-
-let stable_group lst eq =  group eq lst |> rev  
-
-let rec drop h n = 
-  if n < 0 then invalid_arg "Ext_list.drop"
-  else
-  if n = 0 then h 
-  else 
-    match h with 
-    | [] ->
-      invalid_arg "Ext_list.drop"
-    | _ :: tl ->   
-      drop tl (n - 1)
-
-let rec find_first x p = 
-  match x with 
-  | [] -> None
-  | x :: l -> 
-    if p x then Some x 
-    else find_first l p
-
-let rec find_first_not  xs p = 
-  match xs with 
-  | [] -> None
-  | a::l -> 
-    if p a 
-    then find_first_not l p 
-    else Some a 
-
-
-let rec rev_iter l f = 
-  match l with
-  | [] -> ()    
-  | [x1] ->
-    f x1 
-  | [x1; x2] ->
-    f x2 ; f x1 
-  | [x1; x2; x3] ->
-    f x3 ; f x2 ; f x1 
-  | [x1; x2; x3; x4] ->
-    f x4; f x3; f x2; f x1 
-  | x1::x2::x3::x4::x5::tail ->
-    rev_iter tail f;
-    f x5; f x4 ; f x3; f x2 ; f x1
-
-let rec iter l f = 
-  match l with
-  | [] -> ()    
-  | [x1] ->
-    f x1 
-  | [x1; x2] ->
-    f x1 ; f x2
-  | [x1; x2; x3] ->
-    f x1 ; f x2 ; f x3
-  | [x1; x2; x3; x4] ->
-    f x1; f x2; f x3; f x4
-  | x1::x2::x3::x4::x5::tail ->
-    f x1; f x2 ; f x3; f x4 ; f x5;
-    iter tail f 
-
-
-let rec for_all lst p = 
-  match lst with 
-    [] -> true
-  | a::l -> p a && for_all l p
-
-let rec for_all_snd lst p = 
-  match lst with 
-    [] -> true
-  | (_,a)::l -> p a && for_all_snd l p
-
-
-let rec for_all2_no_exn  l1 l2 p = 
-  match (l1, l2) with
-  | ([], []) -> true
-  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn l1 l2 p
-  | (_, _) -> false
-
-
-let rec find_opt xs p = 
-  match xs with 
-  | [] -> None
-  | x :: l -> 
-    match  p x with 
-    | Some _ as v  ->  v
-    | None -> find_opt l p
-
-let rec find_def xs p def =
-  match xs with 
-  | [] -> def
-  | x::l -> 
-    match p x with 
-    | Some v -> v 
-    | None -> find_def l p def   
-
-let rec split_map l f = 
-  match l with
-  | [] ->
-    [],[]
-  | [x1] ->
-    let a0,b0 = f x1 in
-    [a0],[b0]
-  | [x1; x2] ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    [a1;a2],[b1;b2]
-  | [x1; x2; x3] ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    let a3,b3 = f x3 in
-    [a1;a2;a3], [b1;b2;b3]
-  | [x1; x2; x3; x4] ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    let a3,b3 = f x3 in
-    let a4,b4 = f x4 in
-    [a1;a2;a3;a4], [b1;b2;b3;b4] 
-  | x1::x2::x3::x4::x5::tail ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    let a3,b3 = f x3 in
-    let a4,b4 = f x4 in
-    let a5,b5 = f x5 in
-    let ass,bss = split_map tail f in 
-    a1::a2::a3::a4::a5::ass,
-    b1::b2::b3::b4::b5::bss
-
-
-
-
-let sort_via_array lst cmp =
-  let arr = Array.of_list lst  in
-  Array.sort cmp arr;
-  Array.to_list arr
-
-
-
-
-let rec assoc_by_string lst (k : string) def  = 
-  match lst with 
-  | [] -> 
-    begin match def with 
-      | None -> assert false 
-      | Some x -> x end
-  | (k1,v1)::rest -> 
-    if  k1 = k then v1 else 
-      assoc_by_string  rest k def 
-
-let rec assoc_by_int lst (k : int) def = 
-  match lst with 
-  | [] -> 
-    begin match def with
-      | None -> assert false 
-      | Some x -> x end
-  | (k1,v1)::rest -> 
-    if k1 = k then v1 else 
-      assoc_by_int rest k def 
-
-
-let rec nth_aux l n =
-  match l with
-  | [] -> None
-  | a::l -> if n = 0 then Some a else nth_aux l (n-1)
-
-let nth_opt l n =
-  if n < 0 then None 
-  else
-    nth_aux l n
-
-let rec iter_snd lst f =     
-  match lst with
-  | [] -> ()
-  | (_,x)::xs -> 
-    f x ; 
-    iter_snd xs f 
-    
-let rec iter_fst lst f =     
-  match lst with
-  | [] -> ()
-  | (x,_)::xs -> 
-    f x ; 
-    iter_fst xs f 
-
-let rec exists l p =     
-  match l with 
-    [] -> false  
-  | x :: xs -> p x || exists xs p
-
-let rec exists_fst l p = 
-  match l with 
-    [] -> false
-  | (a,_)::l -> p a || exists_fst l p 
-
-let rec exists_snd l p = 
-  match l with 
-    [] -> false
-  | (_, a)::l -> p a || exists_snd l p 
-
-let rec concat_append 
-  (xss : 'a list list)  
-  (xs : 'a list) : 'a list = 
-  match xss with 
-  | [] -> xs 
-  | l::r -> append l (concat_append r xs)
-
-let rec fold_left l accu f =
-  match l with
-    [] -> accu
-  | a::l -> fold_left l (f accu a) f 
-  
-let reduce_from_left lst fn = 
-  match lst with 
-  | first :: rest ->  fold_left rest first fn 
-  | _ -> invalid_arg "Ext_list.reduce_from_left"
-
-let rec fold_left2 l1 l2 accu f =
-  match (l1, l2) with
-    ([], []) -> accu
-  | (a1::l1, a2::l2) -> fold_left2  l1 l2 (f a1 a2 accu) f 
-  | (_, _) -> invalid_arg "Ext_list.fold_left2"
-
-let singleton_exn xs = match xs with [x] -> x | _ -> assert false
-
-let rec mem_string (xs : string list) (x : string) = 
-  match xs with 
-    [] -> false
-  | a::l ->  a = x  || mem_string l x
 
 end
 module Ext_pervasives : sig 
@@ -11192,129 +11511,6 @@ let find_package_json_dir cwd  =
   find_root_filename ~cwd  Literals.bsconfig_json
 
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
-
-end
-module Ext_ref : sig 
-#1 "ext_ref.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** [non_exn_protect ref value f] assusme [f()] 
-    would not raise
-*)
-
-val non_exn_protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
-val protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
-
-val protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
-
-(** [non_exn_protect2 refa refb va vb f ]
-    assume [f ()] would not raise
-*)
-val non_exn_protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
-
-val protect_list : ('a ref * 'a) list -> (unit -> 'b) -> 'b
-
-end = struct
-#1 "ext_ref.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let non_exn_protect r v body = 
-  let old = !r in
-  r := v;
-  let res = body() in
-  r := old;
-  res
-
-let protect r v body =
-  let old = !r in
-  try
-    r := v;
-    let res = body() in
-    r := old;
-    res
-  with x ->
-    r := old;
-    raise x
-
-let non_exn_protect2 r1 r2 v1 v2 body = 
-  let old1 = !r1 in
-  let old2 = !r2 in  
-  r1 := v1;
-  r2 := v2;
-  let res = body() in
-  r1 := old1;
-  r2 := old2;
-  res
-
-let protect2 r1 r2 v1 v2 body =
-  let old1 = !r1 in
-  let old2 = !r2 in  
-  try
-    r1 := v1;
-    r2 := v2;
-    let res = body() in
-    r1 := old1;
-    r2 := old2;
-    res
-  with x ->
-    r1 := old1;
-    r2 := old2;
-    raise x
-
-let protect_list rvs body = 
-  let olds =  Ext_list.map  rvs (fun (x,_) -> !x) in 
-  let () = List.iter (fun (x,y) -> x:=y) rvs in 
-  try 
-    let res = body () in 
-    List.iter2 (fun (x,_) old -> x := old) rvs olds;
-    res 
-  with e -> 
-    List.iter2 (fun (x,_) old -> x := old) rvs olds;
-    raise e 
 
 end
 module Ext_util : sig 
@@ -12794,107 +12990,444 @@ let of_array xs =
   Ext_array.fold_left xs empty (fun acc (k,v) -> add acc k v ) 
 
 end
-module Ml_binary : sig 
-#1 "ml_binary.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+module Set_gen : sig 
+#1 "set_gen.mli"
+type 'a t =private
+    Empty
+  | Leaf of 'a
+  | Node of { l : 'a t; v : 'a; r : 'a t; h : int; }
 
 
+val empty : 'a t
+val [@inline] is_empty : 'a t-> bool
+val unsafe_two_elements : 
+  'a -> 'a -> 'a t
 
-type _ kind = 
-  | Ml : Parsetree.structure kind 
-  | Mli : Parsetree.signature kind
+val cardinal : 'a t-> int
 
+val elements : 'a t-> 'a list
+val choose : 'a t-> 'a
+val iter : 'a t-> ('a -> unit) -> unit
+val fold : 'a t-> 'c -> ('a -> 'c -> 'c) -> 'c
+val for_all : 'a t-> ('a -> bool) -> bool
+val exists : 'a t-> ('a -> bool) -> bool
+val check : 'a t-> unit
+val bal : 'a t-> 'a -> 'a t-> 'a t
+val remove_min_elt : 'a t-> 'a t
+val singleton : 'a -> 'a t
+val internal_merge : 'a t-> 'a t-> 'a t
+val internal_join : 'a t-> 'a -> 'a t-> 'a t
+val internal_concat : 'a t-> 'a t-> 'a t
+val partition : 'a t-> ('a -> bool) -> 'a t * 'a t
+val of_sorted_array : 'a array -> 'a t
+val is_ordered : cmp:('a -> 'a -> int) -> 'a t-> bool
+val invariant : cmp:('a -> 'a -> int) -> 'a t-> bool
 
-val read_ast : 'a kind -> in_channel -> 'a 
+module type S =
+  sig
+    type elt
+    type t
+    val empty : t
+    val is_empty : t -> bool
+    val iter : t -> (elt -> unit) -> unit
+    val fold : t -> 'a -> (elt -> 'a -> 'a) -> 'a
+    val for_all : t -> (elt -> bool) -> bool
+    val exists : t -> (elt -> bool) -> bool
+    val singleton : elt -> t
+    val cardinal : t -> int
+    val elements : t -> elt list
+    val choose : t -> elt
+    val mem : t -> elt -> bool
+    val add : t -> elt -> t
+    val remove : t -> elt -> t
+    val union : t -> t -> t
+    val inter : t -> t -> t
+    val diff : t -> t -> t    
+    val of_list : elt list -> t
+    val of_sorted_array : elt array -> t
+    val invariant : t -> bool
+    val print : Format.formatter -> t -> unit
+  end
 
-val write_ast :
-   'a kind -> string -> 'a -> out_channel -> unit
-
-val magic_of_kind : 'a kind -> string   
 end = struct
-#1 "ml_binary.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+#1 "set_gen.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+[@@@warnerror "+55"]
+(** balanced tree based on stdlib distribution *)
 
+type 'a t0 = 
+  | Empty 
+  | Leaf of  'a 
+  | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
 
-type _ kind = 
-  | Ml : Parsetree.structure kind 
-  | Mli : Parsetree.signature kind
+let empty = Empty
+let  [@inline] height = function
+  | Empty -> 0 
+  | Leaf _ -> 1
+  | Node {h} -> h   
 
-(** [read_ast kind ic] assume [ic] channel is 
-    in the right position *)
-let read_ast (type t ) (kind : t  kind) ic : t  =
-  let magic =
-    match kind with 
-    | Ml -> Config.ast_impl_magic_number
-    | Mli -> Config.ast_intf_magic_number in 
-  let buffer = really_input_string ic (String.length magic) in
-  assert(buffer = magic); (* already checked by apply_rewriter *)
-  Location.set_input_name @@ input_value ic;
-  input_value ic 
+let [@inline] calc_height a b =  
+  (if a >= b then a else b) + 1 
 
-let write_ast (type t) (kind : t kind) 
-    (fname : string)
-    (pt : t) oc = 
-  let magic = 
-    match kind with 
-    | Ml -> Config.ast_impl_magic_number
-    | Mli -> Config.ast_intf_magic_number in
-  output_string oc magic ;
-  output_value oc fname;
-  output_value oc pt
+(* 
+    Invariants: 
+    1. {[ l < v < r]}
+    2. l and r balanced 
+    3. [height l] - [height r] <= 2
+*)
+let [@inline] unsafe_node v l  r h = 
+  Node{l;v;r; h }         
 
-let magic_of_kind : type a . a kind -> string = function
-  | Ml -> Config.ast_impl_magic_number
-  | Mli -> Config.ast_intf_magic_number
+let [@inline] unsafe_node_maybe_leaf v l r h =   
+  if h = 1 then Leaf v   
+  else Node{l;v;r; h }         
 
+let [@inline] singleton x = Leaf x
+
+let [@inline] unsafe_two_elements x v = 
+  unsafe_node v (singleton x) empty 2 
   
+type 'a t = 'a t0 = private
+  | Empty 
+  | Leaf of 'a
+  | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
+
+
+(* Smallest and greatest element of a set *)
+
+let rec min_exn = function
+  | Empty -> raise Not_found
+  | Leaf v -> v 
+  | Node{l; v} ->
+    match l with 
+    | Empty -> v 
+    | Leaf _
+    | Node _ ->  min_exn l
+
+
+let [@inline] is_empty = function Empty -> true | _ -> false
+
+let rec cardinal_aux acc  = function
+  | Empty -> acc 
+  | Leaf _ -> acc + 1
+  | Node {l;r} -> 
+    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
+
+let cardinal s = cardinal_aux 0 s 
+
+let rec elements_aux accu = function
+  | Empty -> accu
+  | Leaf v -> v :: accu
+  | Node{l; v; r} -> elements_aux (v :: elements_aux accu r) l
+
+let elements s =
+  elements_aux [] s
+
+let choose = min_exn
+
+let rec iter  x f = match x with
+  | Empty -> ()
+  | Leaf v -> f v 
+  | Node {l; v; r} -> iter l f ; f v; iter r f 
+
+let rec fold s accu f =
+  match s with
+  | Empty -> accu
+  | Leaf v -> f v accu
+  | Node{l; v; r} -> fold r (f v (fold l accu f)) f 
+
+let rec for_all x p = match x with
+  | Empty -> true
+  | Leaf v -> p v 
+  | Node{l; v; r} -> p v && for_all l p && for_all r p 
+
+let rec exists x p = match x with
+  | Empty -> false
+  | Leaf v -> p v 
+  | Node {l; v; r} -> p v || exists l p  || exists r p
+
+
+
+
+
+exception Height_invariant_broken
+exception Height_diff_borken 
+
+let rec check_height_and_diff = 
+  function 
+  | Empty -> 0
+  | Leaf _ -> 1
+  | Node{l;r;h} -> 
+    let hl = check_height_and_diff l in
+    let hr = check_height_and_diff r in
+    if h <>  calc_height hl hr  then raise Height_invariant_broken
+    else  
+      let diff = (abs (hl - hr)) in  
+      if  diff > 2 then raise Height_diff_borken 
+      else h     
+
+let check tree = 
+  ignore (check_height_and_diff tree)
+
+(* Same as create, but performs one step of rebalancing if necessary.
+    Invariants:
+    1. {[ l < v < r ]}
+    2. l and r balanced 
+    3. | height l - height r | <= 3.
+
+    Proof by indunction
+
+    Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
+*)
+let bal l v r : _ t =
+  let hl = height l in
+  let hr = height r in
+  if hl > hr + 2 then 
+    let [@warning "-8"] Node ({l=ll;r= lr} as l) = l in 
+    let hll = height ll in 
+    let hlr = height lr in 
+    if hll >= hlr then
+      let hnode = calc_height hlr hr in       
+      unsafe_node l.v 
+        ll  
+        (unsafe_node_maybe_leaf v lr  r hnode ) 
+        (calc_height hll hnode)
+    else       
+      let [@warning "-8"] Node ({l = lrl; r = lrr } as lr) = lr in 
+      let hlrl = height lrl in 
+      let hlrr = height lrr in 
+      let hlnode = calc_height hll hlrl in 
+      let hrnode = calc_height hlrr hr in 
+      unsafe_node lr.v 
+        (unsafe_node_maybe_leaf l.v ll  lrl hlnode)  
+        (unsafe_node_maybe_leaf v lrr  r hrnode)
+        (calc_height hlnode hrnode)
+  else if hr > hl + 2 then begin    
+    let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
+    let hrr = height rr in 
+    let hrl = height rl in 
+    if hrr >= hrl then
+      let hnode = calc_height hl hrl in
+      unsafe_node r.v 
+        (unsafe_node_maybe_leaf v l  rl hnode) 
+        rr 
+        (calc_height hnode hrr )
+    else begin
+      let [@warning "-8"] Node ({l = rll ; r = rlr } as rl) = rl in 
+      let hrll = height rll in 
+      let hrlr = height rlr in 
+      let hlnode = (calc_height hl hrll) in
+      let hrnode = (calc_height hrlr hrr) in
+      unsafe_node rl.v 
+        (unsafe_node_maybe_leaf v l rll hlnode)  
+        (unsafe_node_maybe_leaf r.v rlr rr hrnode)
+        (calc_height hlnode hrnode)
+    end
+  end else
+    unsafe_node_maybe_leaf v l  r (calc_height hl hr)
+
+
+let rec remove_min_elt = function
+    Empty -> invalid_arg "Set.remove_min_elt"
+  | Leaf _ -> empty  
+  | Node{l=Empty; r} -> r
+  | Node{l; v; r} -> bal (remove_min_elt l) v r
+
+
+
+(* 
+   All elements of l must precede the elements of r.
+       Assume | height l - height r | <= 2.
+   weak form of [concat] 
+*)
+
+let internal_merge l r =
+  match (l, r) with
+  | (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) -> bal l (min_exn r) (remove_min_elt r)
+
+
+(* Beware: those two functions assume that the added v is *strictly*
+    smaller (or bigger) than all the present elements in the tree; it
+    does not test for equality with the current min (or max) element.
+    Indeed, they are only used during the "join" operation which
+    respects this precondition.
+*)
+
+let rec add_min v = function
+  | Empty -> singleton v
+  | Leaf x -> unsafe_two_elements v x
+  | Node n ->
+    bal (add_min v n.l) n.v n.r
+
+let rec add_max v = function
+  | Empty -> singleton v
+  | Leaf x -> unsafe_two_elements x v
+  | Node n  ->
+    bal n.l n.v (add_max v n.r)
+
+(** 
+    Invariants:
+    1. l < v < r 
+    2. l and r are balanced 
+
+    Proof by induction
+    The height of output will be ~~ (max (height l) (height r) + 2)
+    Also use the lemma from [bal]
+*)
+let rec internal_join l v r =
+  match (l, r) with
+    (Empty, _) -> add_min v r
+  | (_, Empty) -> add_max v l
+  | Leaf lv, Node {h = rh} ->
+    if rh > 3 then 
+      add_min lv (add_min v r ) (* FIXME: could inlined *)
+    else unsafe_node  v l r (rh + 1)
+  | Leaf _, Leaf _ -> 
+    unsafe_node  v l r 2
+  | Node {h = lh}, Leaf rv ->
+    if lh > 3 then       
+      add_max rv (add_max v l)
+    else unsafe_node  v l r (lh + 1)    
+  | (Node{l=ll;v= lv;r= lr;h= lh}, Node {l=rl; v=rv; r=rr; h=rh}) ->
+    if lh > rh + 2 then 
+      (* proof by induction:
+         now [height of ll] is [lh - 1] 
+      *)
+      bal ll lv (internal_join lr v r) 
+    else
+    if rh > lh + 2 then bal (internal_join l v rl) rv rr 
+    else unsafe_node  v l r (calc_height lh rh)
+
+
+(*
+    Required Invariants: 
+    [t1] < [t2]  
+*)
+let internal_concat t1 t2 =
+  match (t1, t2) with
+  | (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) -> internal_join t1 (min_exn t2) (remove_min_elt t2)
+
+
+let rec partition x p = match x with 
+  | Empty -> (empty, empty)
+  | Leaf v -> let pv = p v in if pv then x, empty else empty, x
+  | Node{l; v; r} ->
+    (* call [p] in the expected left-to-right order *)
+    let (lt, lf) = partition l p in
+    let pv = p v in
+    let (rt, rf) = partition r p in
+    if pv
+    then (internal_join lt v rt, internal_concat lf rf)
+    else (internal_concat lt rt, internal_join lf v rf)
+
+
+let of_sorted_array l =   
+  let rec sub start n l  =
+    if n = 0 then empty else 
+    if n = 1 then 
+      let x0 = Array.unsafe_get l start in
+      singleton x0
+    else if n = 2 then     
+      let x0 = Array.unsafe_get l start in 
+      let x1 = Array.unsafe_get l (start + 1) in 
+      unsafe_node x1 (singleton x0)  empty 2 else
+    if n = 3 then 
+      let x0 = Array.unsafe_get l start in 
+      let x1 = Array.unsafe_get l (start + 1) in
+      let x2 = Array.unsafe_get l (start + 2) in
+      unsafe_node x1 (singleton x0)  (singleton x2) 2
+    else 
+      let nl = n / 2 in
+      let left = sub start nl l in
+      let mid = start + nl in 
+      let v = Array.unsafe_get l mid in 
+      let right = sub (mid + 1) (n - nl - 1) l in        
+      unsafe_node v left  right (calc_height (height left) (height right))
+  in
+  sub 0 (Array.length l) l 
+
+let is_ordered ~cmp tree =
+  let rec is_ordered_min_max tree =
+    match tree with
+    | Empty -> `Empty
+    | Leaf v -> `V (v,v)
+    | Node {l;v;r} -> 
+      begin match is_ordered_min_max l with
+        | `No -> `No 
+        | `Empty ->
+          begin match is_ordered_min_max r with
+            | `No  -> `No
+            | `Empty -> `V (v,v)
+            | `V(l,r) ->
+              if cmp v l < 0 then
+                `V(v,r)
+              else
+                `No
+          end
+        | `V(min_v,max_v)->
+          begin match is_ordered_min_max r with
+            | `No -> `No
+            | `Empty -> 
+              if cmp max_v v < 0 then 
+                `V(min_v,v)
+              else
+                `No 
+            | `V(min_v_r, max_v_r) ->
+              if cmp max_v min_v_r < 0 then
+                `V(min_v,max_v_r)
+              else `No
+          end
+      end  in 
+  is_ordered_min_max tree <> `No 
+
+let invariant ~cmp t = 
+  check t ; 
+  is_ordered ~cmp t 
+
+
+module type S = sig
+  type elt 
+  type t
+  val empty: t
+  val is_empty: t -> bool
+  val iter: t ->  (elt -> unit) -> unit
+  val fold: t -> 'a -> (elt -> 'a -> 'a) -> 'a
+  val for_all: t -> (elt -> bool) ->  bool
+  val exists: t -> (elt -> bool) -> bool
+  val singleton: elt -> t
+  val cardinal: t -> int
+  val elements: t -> elt list
+  val choose: t -> elt
+  val mem: t -> elt -> bool
+  val add: t -> elt -> t
+  val remove: t -> elt -> t
+  val union: t -> t -> t
+  val inter: t -> t -> t
+  val diff: t -> t -> t
+  val of_list: elt list -> t
+  val of_sorted_array : elt array -> t 
+  val invariant : t -> bool 
+  val print : Format.formatter -> t -> unit 
+end 
+
 end
-module Ast_extract : sig 
-#1 "ast_extract.mli"
+module Set_string : sig 
+#1 "set_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -12922,19 +13455,272 @@ module Ast_extract : sig
 
 
 
+include Set_gen.S with type elt = string
+end = struct
+#1 "set_string.ml"
+# 1 "ext/set.cppo.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+# 27 "ext/set.cppo.ml"
+type elt = string
+let compare_elt = Ext_string.compare 
+let [@inline] eq_elt (x : elt) y = x = y
+let print_elt = Format.pp_print_string
+
+
+# 52 "ext/set.cppo.ml"
+(* let (=) (a:int) b = a = b *)
+
+type ('a ) t0 = 'a Set_gen.t 
+
+type  t = elt t0
+
+let empty = Set_gen.empty 
+let is_empty = Set_gen.is_empty
+let iter = Set_gen.iter
+let fold = Set_gen.fold
+let for_all = Set_gen.for_all 
+let exists = Set_gen.exists 
+let singleton = Set_gen.singleton 
+let cardinal = Set_gen.cardinal
+let elements = Set_gen.elements
+let choose = Set_gen.choose 
+
+let of_sorted_array = Set_gen.of_sorted_array
+
+let rec mem (tree : t) (x : elt) =  match tree with 
+  | Empty -> false
+  | Leaf v -> eq_elt x  v 
+  | Node{l; v; r} ->
+    let c = compare_elt x v in
+    c = 0 || mem (if c < 0 then l else r) x
+
+type split = 
+  | Yes of  {l : t ;  r :  t }
+  | No of { l : t; r : t}  
+
+let [@inline] split_l (x : split) = 
+  match x with 
+  | Yes {l} | No {l} -> l 
+
+let [@inline] split_r (x : split) = 
+  match x with 
+  | Yes {r} | No {r} -> r       
+
+let [@inline] split_pres (x : split) = match x with | Yes _ -> true | No _ -> false   
+
+let rec split (tree : t) x : split =  match tree with 
+  | Empty ->
+     No {l = empty;  r = empty}
+  | Leaf v ->   
+    let c = compare_elt x v in
+    if c = 0 then Yes {l = empty; r = empty}
+    else if c < 0 then
+      No {l = empty;  r = tree}
+    else
+      No {l = tree;  r = empty}
+  | Node {l; v; r} ->
+    let c = compare_elt x v in
+    if c = 0 then Yes {l; r}
+    else if c < 0 then
+      match split l x with 
+      | Yes result -> 
+        Yes { result with r = Set_gen.internal_join result.r v r }
+      | No result ->
+        No { result with r= Set_gen.internal_join result.r v r }
+    else
+      match split r x with
+      | Yes result -> 
+        Yes {result with l = Set_gen.internal_join l v result.l}
+      | No result ->   
+        No {result with l = Set_gen.internal_join l v result.l}
+
+let rec add (tree : t) x : t =  match tree with 
+  | Empty -> singleton x
+  | Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then tree else     
+    if c < 0 then 
+      Set_gen.unsafe_two_elements x v
+    else 
+      Set_gen.unsafe_two_elements v x 
+  | Node {l; v; r} as t ->
+    let c = compare_elt x v in
+    if c = 0 then t else
+    if c < 0 then Set_gen.bal (add l x ) v r else Set_gen.bal l v (add r x )
+
+let rec union (s1 : t) (s2 : t) : t  =
+  match (s1, s2) with
+  | (Empty, t) 
+  | (t, Empty) -> t
+  | Node _, Leaf v2 ->
+    add s1 v2 
+  | Leaf v1, Node _ -> 
+    add s2 v1 
+  | Leaf x, Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then s1 else     
+    if c < 0 then 
+      Set_gen.unsafe_two_elements x v
+    else 
+      Set_gen.unsafe_two_elements v x
+  | Node{l=l1; v=v1; r=r1; h=h1}, Node{l=l2; v=v2; r=r2; h=h2} ->
+    if h1 >= h2 then    
+      let split_result =  split s2 v1 in
+      Set_gen.internal_join 
+        (union l1 (split_l split_result)) v1 
+        (union r1 (split_r split_result))  
+    else    
+      let split_result =  split s1 v2 in
+      Set_gen.internal_join 
+        (union (split_l split_result) l2) v2 
+        (union (split_r split_result) r2)
+
+
+let rec inter (s1 : t)  (s2 : t) : t  =
+  match (s1, s2) with
+  | (Empty, _) 
+  | (_, Empty) -> empty  
+  | Leaf v, _ -> 
+    if mem s2 v then s1 else empty
+  | Node ({ v } as s1), _ ->
+    let result = split s2 v in 
+    if split_pres result then 
+      Set_gen.internal_join 
+        (inter s1.l (split_l result)) 
+        v 
+        (inter s1.r (split_r result))
+    else
+      Set_gen.internal_concat 
+        (inter s1.l (split_l result)) 
+        (inter s1.r (split_r result))
+
+
+let rec diff (s1 : t) (s2 : t) : t  =
+  match (s1, s2) with
+  | (Empty, _) -> empty
+  | (t1, Empty) -> t1
+  | Leaf v, _-> 
+    if mem s2 v then empty else s1 
+  | (Node({ v} as s1), _) ->
+    let result =  split s2 v in
+    if split_pres result then 
+      Set_gen.internal_concat 
+        (diff s1.l (split_l result)) 
+        (diff s1.r (split_r result))    
+    else
+      Set_gen.internal_join 
+        (diff s1.l (split_l result))
+        v 
+        (diff s1.r (split_r result))
 
 
 
 
 
-module Set_string = Depend.StringSet
 
-val read_parse_and_extract : 'a Ml_binary.kind -> 'a -> Set_string.t
+
+let rec remove (tree : t)  (x : elt) : t = match tree with 
+  | Empty -> empty (* This case actually would be never reached *)
+  | Leaf v ->     
+    if eq_elt x  v then empty else tree    
+  | Node{l; v; r} ->
+    let c = compare_elt x v in
+    if c = 0 then Set_gen.internal_merge l r else
+    if c < 0 then Set_gen.bal (remove l x) v r else Set_gen.bal l v (remove r x )
+
+(* let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2  *)
+
+
+
+let of_list l =
+  match l with
+  | [] -> empty
+  | [x0] -> singleton x0
+  | [x0; x1] -> add (singleton x0) x1 
+  | [x0; x1; x2] -> add (add (singleton x0)  x1) x2 
+  | [x0; x1; x2; x3] -> add (add (add (singleton x0) x1 ) x2 ) x3 
+  | [x0; x1; x2; x3; x4] -> add (add (add (add (singleton x0) x1) x2 ) x3 ) x4 
+  | _ -> 
+    let arrs = Array.of_list l in 
+    Array.sort compare_elt arrs ; 
+    of_sorted_array arrs
+
+
+
+(* also check order *)
+let invariant t =
+  Set_gen.check t ;
+  Set_gen.is_ordered ~cmp:compare_elt t          
+
+let print fmt s = 
+  Format.fprintf 
+   fmt   "@[<v>{%a}@]@."
+    (fun fmt s   -> 
+       iter s
+         (fun e -> Format.fprintf fmt "@[<v>%a@],@ " 
+         print_elt e) 
+    )
+    s     
+
+
+
+
+
+
+end
+module Bspack_ast_extract : sig 
+#1 "bspack_ast_extract.mli"
+(* Copyright (C) 2020 - Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
 
 type ('a,'b) t 
 
-(* val sort_files_by_dependencies :
-  domain:Set_string.t -> Set_string.t Map_string.t -> string Queue.t *)
 
 
 val sort :
@@ -13001,8 +13787,8 @@ val build_lazy_queue :
 
 
 end = struct
-#1 "ast_extract.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+#1 "bspack_ast_extract.ml"
+(* Copyright (C) 2020 - Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13026,33 +13812,9 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* type module_name = private string *)
+open Ast_extract
 
-module Set_string = Depend.StringSet
-
-(* FIXME: [Clflags.open_modules] seems not to be properly used *)
-module SMap = Depend.StringMap
-let bound_vars = SMap.empty 
-
-
-type 'a kind = 'a Ml_binary.kind 
-
-
-let read_parse_and_extract (type t) (k : t kind) (ast : t) : Set_string.t =
-  Depend.free_structure_names := Set_string.empty;
-  Ext_ref.protect Clflags.transparent_modules false begin fun _ -> 
-  List.iter (* check *)
-    (fun modname  ->
-       ignore @@ 
-       Depend.open_module bound_vars (Longident.Lident modname))
-    (!Clflags.open_modules);
-  (match k with
-   | Ml_binary.Ml  -> Depend.add_implementation bound_vars ast
-   | Ml_binary.Mli  -> Depend.add_signature bound_vars ast  ); 
-  !Depend.free_structure_names
-  end
-
-type ('a,'b) ast_info =
+ type ('a,'b) ast_info =
   | Ml of
       string * (* sourcefile *)
       'a *
@@ -13309,12 +14071,11 @@ let build_queue ppf queue
        | exception Not_found -> assert false 
     )
 
-
 let handle_queue 
-  queue ast_table 
-  decorate_module_only 
-  decorate_interface_only 
-  decorate_module = 
+    queue ast_table 
+    decorate_module_only 
+    decorate_interface_only 
+    decorate_module = 
   queue 
   |> Queue.iter
     (fun base ->
@@ -13331,28 +14092,26 @@ let handle_queue
 
     )
 
-
-
-let build_lazy_queue ppf queue (ast_table : _ t Map_string.t)
-    after_parsing_impl
-    after_parsing_sig    
-  =
-  queue |> Queue.iter (fun modname -> 
-      match Map_string.find_exn ast_table modname  with
-      | {ast_info = Ml(source_file,lazy ast, opref)}
-        -> 
-        after_parsing_impl ppf source_file opref ast 
-      | {ast_info = Mli (source_file,lazy ast,opref) ; }  
-        ->
-        after_parsing_sig ppf source_file opref ast 
-      | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
-        -> 
-        after_parsing_sig ppf source_file1 opref1 intf ;
-        after_parsing_impl ppf source_file2 opref2 impl
-      | exception Not_found -> assert false 
-    )
-
-
+  
+  
+  let build_lazy_queue ppf queue (ast_table : _ t Map_string.t)
+      after_parsing_impl
+      after_parsing_sig    
+    =
+    queue |> Queue.iter (fun modname -> 
+        match Map_string.find_exn ast_table modname  with
+        | {ast_info = Ml(source_file,lazy ast, opref)}
+          -> 
+          after_parsing_impl ppf source_file opref ast 
+        | {ast_info = Mli (source_file,lazy ast,opref) ; }  
+          ->
+          after_parsing_sig ppf source_file opref ast 
+        | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
+          -> 
+          after_parsing_sig ppf source_file1 opref1 intf ;
+          after_parsing_impl ppf source_file2 opref2 impl
+        | exception Not_found -> assert false 
+      )
 end
 module Ext_io : sig 
 #1 "ext_io.mli"
@@ -32569,8 +33328,9 @@ let cwd = Sys.getcwd ()
 
 let normalize s = 
   Ext_path.normalize_absolute_path (Ext_path.combine cwd s )
+type dir_spec = Bspack_ast_extract.dir_spec 
 
-let process_include s : Ast_extract.dir_spec = 
+let process_include s : dir_spec = 
   let i = Ext_string.rindex_neg s '?'   in 
   if i < 0 then   
     { dir = normalize s; excludes = []}
@@ -32581,9 +33341,9 @@ let process_include s : Ast_extract.dir_spec =
           (String.sub s (i + 1) (String.length s - i - 1)    )
           ','}
 
-let deduplicate_dirs (xs : Ast_extract.dir_spec list) =
-  let set :  Ast_extract.dir_spec Hash_string.t = Hash_string.create 64 in 
-  List.filter (fun ({Ast_extract.dir ; excludes = new_excludes } as y) -> 
+let deduplicate_dirs (xs : dir_spec list) =
+  let set :  dir_spec Hash_string.t = Hash_string.create 64 in 
+  List.filter (fun ({dir ; excludes = new_excludes } as y : dir_spec) -> 
       match Hash_string.find_opt set dir with
       | None ->  
         Hash_string.add set dir y;
@@ -32734,11 +33494,11 @@ let () =
            Ext_list.flat_map xs (fun x -> [x ^ ".ml" ; x ^ ".mli"] ) in 
        let extra_dirs = 
          deduplicate_dirs @@
-         if not !no_implicit_include then {Ast_extract.dir =  cwd; excludes = []} :: !includes 
+         if not !no_implicit_include then {dir =  cwd; excludes = []} :: !includes 
          else !includes 
        in  
        let ast_table, tasks =
-         Ast_extract.collect_from_main ~excludes ~extra_dirs ~alias_map
+         Bspack_ast_extract.collect_from_main ~excludes ~extra_dirs ~alias_map
            Format.err_formatter
            (fun _ppf sourcefile -> lazy (implementation sourcefile))
            (fun _ppf sourcefile -> lazy (interface sourcefile))
@@ -32756,7 +33516,7 @@ let () =
        let task_length = Queue.length tasks in 
        emit_header out_chan ;
        begin 
-         Ast_extract.handle_queue tasks ast_table
+         Bspack_ast_extract.handle_queue tasks ast_table
            (fun base ml_name (lazy(_, ml_content)) -> 
               incr count ;  
               if collect_module_by_filenames then 
@@ -32846,15 +33606,15 @@ let () =
        end
      | None, _ -> 
        let ast_table =
-         Ast_extract.collect_ast_map
+         Bspack_ast_extract.collect_ast_map
            Format.err_formatter files
            (fun _ppf sourcefile -> implementation sourcefile
            )
            (fun _ppf sourcefile -> interface sourcefile) in
-       let tasks = Ast_extract.sort fst  fst ast_table in
+       let tasks = Bspack_ast_extract.sort fst  fst ast_table in
        let out_chan = (Lazy.force out_chan) in
        emit_header out_chan ;
-       Ast_extract.handle_queue tasks ast_table 
+       Bspack_ast_extract.handle_queue tasks ast_table 
          (fun base ml_name (_, ml_content) -> decorate_module_only  out_chan base ml_name ml_content)
          (fun base mli_name (_, mli_content)  -> decorate_interface_only out_chan base mli_name mli_content )
          (fun base mli_name ml_name (_, mli_content) (_, ml_content)

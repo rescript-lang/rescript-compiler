@@ -2612,10 +2612,10 @@ end = struct
 
 
 
-let namespace = ref None 
-let dev_group = ref false
 
 let () =    
+  let namespace = ref None in
+  let dev_group = ref false in   
   let argv = Sys.argv in 
   let l = Array.length argv in
   let current = ref 1 in 
