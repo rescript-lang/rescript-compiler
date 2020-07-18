@@ -17072,7 +17072,12 @@ type unit_action =
   | Unit_lazy of unit lazy_t
   | Unit_set of bool ref
   | Unit_clear of bool ref
-type spec = Unit of unit_action | String of string_action
+
+
+type spec = 
+  | Unit_dummy  
+  | Unit of unit_action   
+  | String of string_action
 
 
 type t = (string * spec * string) array
@@ -17134,6 +17139,7 @@ end = struct
     | Unit_clear of bool ref 
 
  type spec =
+   | Unit_dummy  
    | Unit of unit_action
    | String of string_action 
  
@@ -17221,6 +17227,7 @@ let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t
       match Ext_spec.assoc3 speclist s with 
       | Some action -> begin       
           begin match action with 
+            | Unit_dummy -> ()
             | Unit r -> 
               begin match r with 
                 | Unit_set r -> r := true
