@@ -37,6 +37,10 @@ let getEndPos t = t.endPos
 let defaultUnexpected token =
   "I'm not sure what to parse here when looking at \"" ^ (Token.toString token) ^ "\"."
 
+let reservedKeyword token =
+  let tokenTxt = Token.toString token in
+  "`" ^ tokenTxt ^ "` is a reserved keyword. Keywords need to be escaped: \\\"" ^ tokenTxt ^ "\""
+
 let explain t =
   match t.category with
   | Uident currentToken ->
@@ -121,6 +125,19 @@ let explain t =
         | _ ->
           "I'm not sure what to parse here when looking at \"" ^ name ^ "\"."
         end
+    | (Pattern, _)::breadcrumbs ->
+      begin match t, breadcrumbs with
+      | (Equal, (LetBinding,_)::_) ->
+        "I was expecting a name for this let-binding. Example: `let message = \"hello\"`"
+      | (In, (ExprFor,_)::_) ->
+        "A for-loop has the following form: `for i in 0 to 10`. Did you forget to supply a name before `in`?"
+      | (EqualGreater, (PatternMatchCase,_)::_) ->
+        "I was expecting a pattern to match on before the `=>`"
+      | (token, _) when Token.isKeyword t ->
+        reservedKeyword token
+      | (token, _) ->
+        defaultUnexpected token
+      end
     | _ ->
       (* TODO: match on circumstance to verify Lident needed ? *)
       if Token.isKeyword t then

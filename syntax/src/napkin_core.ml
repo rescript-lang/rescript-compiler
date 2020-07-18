@@ -2252,7 +2252,9 @@ and parseLetBindingBody ~startPos ~attrs p =
   Parser.beginRegion p;
   Parser.leaveBreadcrumb p Grammar.LetBinding;
   let pat, exp =
+    Parser.leaveBreadcrumb p Grammar.Pattern;
     let pat = parsePattern p in
+    Parser.eatBreadcrumb p;
     match p.Parser.token with
     | Colon ->
       Parser.next p;
@@ -3100,8 +3102,10 @@ and parseForRest hasOpeningParen pattern startPos p =
 
 and parseForExpression p =
   let startPos = p.Parser.startPos in
+  Parser.leaveBreadcrumb p Grammar.ExprFor;
   Parser.expect For p;
-  match p.token with
+  Parser.beginRegion p;
+  let forExpr = match p.token with
   | Lparen ->
     let lparen = p.startPos in
     Parser.next p;
@@ -3115,7 +3119,9 @@ and parseForExpression p =
       in
       parseForRest false (parseAliasPattern ~attrs:[] unitPattern p) startPos p
     | _ ->
+      Parser.leaveBreadcrumb p Grammar.Pattern;
       let pat = parsePattern p in
+      Parser.eatBreadcrumb p;
       begin match p.token with
       | Comma ->
         Parser.next p;
@@ -3129,7 +3135,15 @@ and parseForExpression p =
       end
     end
   | _ ->
-    parseForRest false (parsePattern p) startPos p
+    Parser.leaveBreadcrumb p Grammar.Pattern;
+    let pat = parsePattern p in
+    Parser.eatBreadcrumb p;
+    parseForRest false pat startPos p
+  in
+  Parser.eatBreadcrumb p;
+  Parser.endRegion p;
+  forExpr
+
 
 and parseWhileExpression p =
   let startPos = p.Parser.startPos in
@@ -3155,7 +3169,9 @@ and parsePatternMatchCase p =
   match p.Parser.token with
   | Token.Bar ->
     Parser.next p;
+    Parser.leaveBreadcrumb p Grammar.Pattern;
     let lhs = parsePattern p in
+    Parser.eatBreadcrumb p;
     let guard = parsePatternGuard p in
     let () = match p.token with
     | EqualGreater -> Parser.next p
@@ -3167,10 +3183,10 @@ and parsePatternMatchCase p =
     Some (Ast_helper.Exp.case lhs ?guard rhs)
   | _ ->
     Parser.endRegion p;
+    Parser.eatBreadcrumb p;
     None
 
 and parsePatternMatching p =
-  Parser.leaveBreadcrumb p Grammar.PatternMatching;
   let cases =
     parseDelimitedRegion
       ~grammar:Grammar.PatternMatching

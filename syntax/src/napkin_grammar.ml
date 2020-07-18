@@ -1,4 +1,5 @@
 module Token = Napkin_token
+
 type t =
   | OpenDescription (* open Belt *)
   | ModuleLongIdent (* Foo or Foo.Bar *) [@live]
@@ -17,6 +18,7 @@ type t =
   | ExprArrayAccess
   | ExprArrayMutation
   | ExprIf
+  | ExprFor
   | IfCondition | IfBranch | ElseBranch
   | TypeExpression
   | External
@@ -32,9 +34,7 @@ type t =
   | TypeParams
   | TypeParam [@live]
   | PackageConstraint
-
   | TypeRepresentation
-
   | RecordDecl
   | ConstructorDeclaration
   | ParameterList
@@ -57,6 +57,7 @@ type t =
   | AtomicTypExpr
   | ListExpr
   | JsFfiImport
+  | Pattern
 
 let toString = function
   | OpenDescription -> "an open description"
@@ -115,6 +116,8 @@ let toString = function
   | PackageConstraint -> "a package constraint"
   | JsFfiImport -> "js ffi import"
   | JsxChild -> "jsx child"
+  | Pattern -> "pattern"
+  | ExprFor -> "a for expression"
 
 let isSignatureItemStart = function
   | Token.At
