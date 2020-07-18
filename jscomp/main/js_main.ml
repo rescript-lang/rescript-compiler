@@ -502,6 +502,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-warn-help", unit_call Warnings.help_warnings, 
     "Show description of warning numbers";
 
+    "-c", Unit_dummy,
+    "*internal* keep the compatibility with RLS"
   |]
 
 

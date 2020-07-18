@@ -34,7 +34,12 @@ type unit_action =
   | Unit_lazy of unit lazy_t
   | Unit_set of bool ref
   | Unit_clear of bool ref
-type spec = Unit of unit_action | String of string_action
+
+
+type spec = 
+  | Unit_dummy  
+  | Unit of unit_action   
+  | String of string_action
 
 
 type t = (string * spec * string) array
