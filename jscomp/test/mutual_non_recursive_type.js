@@ -6,7 +6,7 @@ function f(x) {
 }
 
 var U = {
-  f
+  f: f
 };
 
 var v = /* H */{

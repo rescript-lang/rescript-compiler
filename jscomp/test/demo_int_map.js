@@ -13,10 +13,10 @@ function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
   return /* Node */{
-          l,
+          l: l,
           v: x,
-          d,
-          r,
+          d: d,
+          r: r,
           h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         };
 }
@@ -50,10 +50,10 @@ function bal(l, x, d, r) {
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */{
-            l,
+            l: l,
             v: x,
-            d,
-            r,
+            d: d,
+            r: r,
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
@@ -101,10 +101,10 @@ function add(x, data, m) {
       return m;
     } else {
       return /* Node */{
-              l,
+              l: l,
               v: x,
               d: data,
-              r,
+              r: r,
               h: m.h
             };
     }

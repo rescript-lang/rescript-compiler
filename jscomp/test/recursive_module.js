@@ -84,7 +84,7 @@ Caml_module.update_mod({
           "a"
         ]]
     }, Inta, {
-      a
+      a: a
     });
 
 var a$1 = {

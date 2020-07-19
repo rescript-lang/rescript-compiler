@@ -10,8 +10,8 @@ function O(X) {
     return 1 + Curry._1(X.foo, x) | 0;
   };
   return {
-          cow,
-          sheep
+          cow: cow,
+          sheep: sheep
         };
 }
 
@@ -23,8 +23,8 @@ function F(X, Y) {
     return 1 + Curry._1(Y.foo, Curry._1(X.foo, x)) | 0;
   };
   return {
-          cow,
-          sheep
+          cow: cow,
+          sheep: sheep
         };
 }
 
@@ -33,7 +33,7 @@ function F1(X, Y) {
     return 1 + Curry._1(Y.foo, Curry._1(X.foo, x)) | 0;
   };
   return {
-          sheep
+          sheep: sheep
         };
 }
 
@@ -42,7 +42,7 @@ function F2(X, Y) {
     return 1 + Curry._1(Y.foo, Curry._1(X.foo, x)) | 0;
   };
   return {
-          sheep
+          sheep: sheep
         };
 }
 
@@ -52,7 +52,7 @@ var M = {
         return 1 + Curry._1(funarg$1.foo, Curry._1(funarg.foo, x)) | 0;
       };
       return {
-              sheep
+              sheep: sheep
             };
     })
 };

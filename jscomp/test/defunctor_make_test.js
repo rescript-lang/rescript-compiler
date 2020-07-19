@@ -11,8 +11,8 @@ function Make(M) {
 }
 
 var Comparable = {
-  getcompare,
-  Make
+  getcompare: getcompare,
+  Make: Make
 };
 
 function height(param) {
@@ -143,7 +143,7 @@ function empty(v) {
 var compare = Caml_primitive.caml_int_compare;
 
 var V0 = {
-  compare
+  compare: compare
 };
 
 var compare$1 = Caml_primitive.caml_int_compare;

@@ -39,7 +39,7 @@ Caml_module.update_mod({
           "print"
         ]]
     }, PA, {
-      print
+      print: print
     });
 
 function print$1(i) {

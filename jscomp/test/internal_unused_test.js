@@ -30,7 +30,7 @@ var h5 = h4 + 1 | 0;
 var b = 5;
 
 var N = {
-  b
+  b: b
 };
 
 console.log(h5);

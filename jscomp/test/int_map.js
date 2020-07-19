@@ -16,10 +16,10 @@ function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
   return /* Node */{
-          l,
+          l: l,
           v: x,
-          d,
-          r,
+          d: d,
+          r: r,
           h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         };
 }
@@ -28,7 +28,7 @@ function singleton(x, d) {
   return /* Node */{
           l: /* Empty */0,
           v: x,
-          d,
+          d: d,
           r: /* Empty */0,
           h: 1
         };
@@ -63,10 +63,10 @@ function bal(l, x, d, r) {
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */{
-            l,
+            l: l,
             v: x,
-            d,
-            r,
+            d: d,
+            r: r,
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
@@ -122,10 +122,10 @@ function add(x, data, m) {
       return m;
     } else {
       return /* Node */{
-              l,
+              l: l,
               v: x,
               d: data,
-              r,
+              r: r,
               h: m.h
             };
     }
@@ -498,10 +498,10 @@ function update(x, f, m) {
         return m;
       } else {
         return /* Node */{
-                l,
+                l: l,
                 v: x,
                 d: data$1,
-                r,
+                r: r,
                 h: m.h
               };
       }
@@ -574,7 +574,7 @@ function mapi(f, param) {
   var r$prime = mapi(f, param.r);
   return /* Node */{
           l: l$prime,
-          v,
+          v: v,
           d: d$prime,
           r: r$prime,
           h: param.h

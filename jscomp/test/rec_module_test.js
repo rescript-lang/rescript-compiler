@@ -17,7 +17,7 @@ function even(n) {
 }
 
 var A = {
-  even
+  even: even
 };
 
 function odd(n) {
@@ -31,7 +31,7 @@ function odd(n) {
 }
 
 var B = {
-  odd
+  odd: odd
 };
 
 function even$1(n) {
@@ -50,7 +50,7 @@ function x(param) {
 
 var AA = {
   even: even$1,
-  x
+  x: x
 };
 
 function odd$1(n) {
@@ -69,7 +69,7 @@ function y(param) {
 
 var BB = {
   odd: odd$1,
-  y
+  y: y
 };
 
 var Even = {};
@@ -91,7 +91,7 @@ function compare(t1, t2) {
 }
 
 var AAA = {
-  compare
+  compare: compare
 };
 
 function height(param) {
@@ -106,9 +106,9 @@ function create(l, v, r) {
   var hl = l ? l.h : 0;
   var hr = r ? r.h : 0;
   return /* Node */{
-          l,
-          v,
-          r,
+          l: l,
+          v: v,
+          r: r,
           h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         };
 }
@@ -141,9 +141,9 @@ function bal(l, v, r) {
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */{
-            l,
-            v,
-            r,
+            l: l,
+            v: v,
+            r: r,
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
@@ -1043,40 +1043,40 @@ function of_list(l) {
 
 var ASet = {
   empty: /* Empty */0,
-  is_empty,
-  mem,
-  add,
-  singleton,
-  remove,
-  union,
-  inter,
-  diff,
+  is_empty: is_empty,
+  mem: mem,
+  add: add,
+  singleton: singleton,
+  remove: remove,
+  union: union,
+  inter: inter,
+  diff: diff,
   compare: compare$1,
-  equal,
-  subset,
-  iter,
-  map,
-  fold,
-  for_all,
-  exists,
-  filter,
-  partition,
-  cardinal,
-  elements,
-  min_elt,
-  min_elt_opt,
-  max_elt,
-  max_elt_opt,
+  equal: equal,
+  subset: subset,
+  iter: iter,
+  map: map,
+  fold: fold,
+  for_all: for_all,
+  exists: exists,
+  filter: filter,
+  partition: partition,
+  cardinal: cardinal,
+  elements: elements,
+  min_elt: min_elt,
+  min_elt_opt: min_elt_opt,
+  max_elt: max_elt,
+  max_elt_opt: max_elt_opt,
   choose: min_elt,
   choose_opt: min_elt_opt,
-  split,
-  find,
-  find_opt,
-  find_first,
-  find_first_opt,
-  find_last,
-  find_last_opt,
-  of_list
+  split: split,
+  find: find,
+  find_opt: find_opt,
+  find_first: find_first,
+  find_first_opt: find_first_opt,
+  find_last: find_last,
+  find_last_opt: find_last_opt,
+  of_list: of_list
 };
 
 var suites_0 = [

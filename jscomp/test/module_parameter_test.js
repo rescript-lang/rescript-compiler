@@ -10,7 +10,7 @@ function u(v) {
 var s = $$String;
 
 var N = {
-  s
+  s: s
 };
 
 function v(x) {

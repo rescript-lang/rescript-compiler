@@ -84,10 +84,10 @@ function extract(queue) {
 
 var PrioQueue = {
   empty: /* Empty */0,
-  insert,
-  Queue_is_empty,
-  remove_top,
-  extract
+  insert: insert,
+  Queue_is_empty: Queue_is_empty,
+  remove_top: remove_top,
+  extract: extract
 };
 
 exports.PrioQueue = PrioQueue;

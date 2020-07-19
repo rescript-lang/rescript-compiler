@@ -40,7 +40,7 @@ var v = {
   hi: (function (x, y) {
       var self = this ;
       var u = {
-        x
+        x: x
       };
       return self.say(u.x) + y + x;
     }),
