@@ -968,8 +968,9 @@ and property_name_and_value_list cxt f (l : J.property_map) =
         let key = Js_dump_property.property_key pn in 
         let str, cxt = Ext_pp_scope.str_of_ident cxt v in 
         let content = 
-          if key = str then key 
-          else  key ^ L.colon_space ^ str  in 
+          (* if key = str then key 
+          else   *)
+          key ^ L.colon_space ^ str  in 
         P.string f content ; 
         cxt 
       | _ -> 
