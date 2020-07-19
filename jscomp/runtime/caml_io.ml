@@ -28,12 +28,12 @@ let stdin = Caml_undefined_extern.empty
 
 type out_channel  = {
   mutable buffer :  string;
-  output :   out_channel  -> string -> unit 
+  output :   (out_channel  -> string -> unit [@bs])
 }
 
 let stdout = {
   buffer = "";
-  output = (fun _ s ->
+  output = (fun [@bs] _ s ->
     let module String = Caml_string_extern in
     let v =Caml_string_extern.length s - 1 in
     if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write|}] then
@@ -46,7 +46,7 @@ let stdout = {
 
 let stderr = {
   buffer = "";
-  output = fun _ s ->
+  output = fun [@bs] _ s ->
     let module String = Caml_string_extern in
     let v =Caml_string_extern.length s - 1 in     
     if s.[v] = '\n' then
@@ -71,7 +71,7 @@ let caml_ml_input_char (ic : in_channel) : char =
 let caml_ml_flush (oc : out_channel)  : unit = 
   if oc.buffer  <> "" then
     begin     
-      oc.output oc oc.buffer;
+      oc.output oc oc.buffer [@bs];
       oc.buffer <- ""      
     end      
 

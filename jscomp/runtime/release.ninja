@@ -31,7 +31,7 @@ build runtime/caml_int32.cmj : cc_cmi runtime/caml_int32.ml | runtime/caml_int32
 build runtime/caml_int32.cmi : cc runtime/caml_int32.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 build runtime/caml_int64.cmj : cc_cmi runtime/caml_int64.ml | runtime/caml_float.cmj runtime/caml_float_extern.cmj runtime/caml_int64.cmi runtime/caml_nativeint_extern.cmj runtime/caml_primitive.cmj runtime/caml_string_extern.cmj runtime/js.cmj
 build runtime/caml_int64.cmi : cc runtime/caml_int64.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
-build runtime/caml_io.cmj : cc_cmi runtime/caml_io.ml | runtime/caml_io.cmi runtime/caml_string_extern.cmj runtime/caml_undefined_extern.cmj runtime/curry.cmj runtime/js.cmj
+build runtime/caml_io.cmj : cc_cmi runtime/caml_io.ml | runtime/caml_io.cmi runtime/caml_string_extern.cmj runtime/caml_undefined_extern.cmj runtime/js.cmj
 build runtime/caml_io.cmi : cc runtime/caml_io.mli | runtime/bs_stdlib_mini.cmi runtime/caml_undefined_extern.cmj runtime/js.cmi runtime/js.cmj
 build runtime/caml_lexer.cmj : cc_cmi runtime/caml_lexer.ml | runtime/caml_lexer.cmi
 build runtime/caml_lexer.cmi : cc runtime/caml_lexer.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
