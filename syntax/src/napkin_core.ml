@@ -3655,6 +3655,7 @@ and parseAtomicTypExpr ~attrs p =
   | Lbrace ->
     parseBsObjectType ~attrs p
   | token ->
+    Parser.err p (Diagnostics.unexpected token p.breadcrumbs);
     begin match skipTokensAndMaybeRetry p ~isStartOfGrammar:Grammar.isAtomicTypExprStart with
     | Some () ->
       parseAtomicTypExpr ~attrs p

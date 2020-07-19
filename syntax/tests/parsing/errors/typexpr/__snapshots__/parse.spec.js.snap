@@ -139,48 +139,48 @@ File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 19, characte
 Did you forget a \`:\` here? It signals the start of a type
 
 
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 24, characters 19-21:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 25, characters 0-1:
 
 
-22 │  type state = {
 23 │    @bs.meth
-[31m24[0m │    \\"send\\": string =>
-25 │  }
+24 │    \\"send\\": string =>
+[31m25[0m │  [31m}[0m
 26 │  
+27 │  type state = {
 
 I'm missing a type here
 
 
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 28, characters 10-19:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 28, characters 9-10:
 
 
 26 │  
 27 │  type state = {
-[31m28[0m │    \\"age\\": ,
+[31m28[0m │    \\"age\\": [31m,[0m
 29 │    \\"name\\": string
 30 │  }
 
 I'm missing a type here
 
 
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 33, characters 18-27:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 33, characters 17-18:
 
 
 31 │  
 32 │  type state = {
-[31m33[0m │    @bs.set \\"age\\": ,
+[31m33[0m │    @bs.set \\"age\\": [31m,[0m
 34 │    \\"name\\": string
 35 │  }
 
 I'm missing a type here
 
 
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 37, characters 23-25:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 37, characters 24-25:
 
 
 35 │  }
 36 │  
-[31m37[0m │  type state = {.. \\"age\\":[31m }[0m
+[31m37[0m │  type state = {.. \\"age\\": [31m}[0m
 38 │  type state = {
 39 │    ..
 
@@ -200,14 +200,14 @@ File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 40, characte
 Did you forget a \`:\` here? It signals the start of a type
 
 
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 45, characters 7-19:
+File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 46, characters 2-11:
 
 
-43 │  
 44 │  type websocket = {
-[31m45[0m │    \\"id\\":
-46 │    \\"channel\\": channelTyp
+45 │    \\"id\\":
+[31m46[0m │    [31m\\"channel\\"[0m: channelTyp
 47 │  }
+48 │  
 
 I'm missing a type here
 
@@ -221,6 +221,25 @@ File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 50, characte
             [31m^[0m
 
 Did you forget a \`:\` here? It signals the start of a type
+
+
+
+========================================================"
+`;
+
+exports[`garbage.res 1`] = `
+"=====Parsetree==========================================
+external printName : name:unit -> unit = \\"printName\\"[@@bs.module
+                                                      \\"moduleName\\"]
+=====Errors=============================================
+
+File \\"/syntax/tests/parsing/errors/typexpr/garbage.res\\", line 2, characters 27-28:
+
+
+1 │  @bs.module(\\"moduleName\\")
+[31m2[0m │  external printName: (~name:[31m?[0m, unit) => unit = \\"printName\\"
+
+I'm not sure what to parse here when looking at \\"?\\".
 
 
 

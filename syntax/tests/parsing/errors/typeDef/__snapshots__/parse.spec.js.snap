@@ -65,10 +65,10 @@ type nonrec z = [< \`A  | \`B ]
 type t = [ [%napkinscript.typehole ] | [%napkinscript.typehole ]]
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typeDef/polyvariant.js\\", line 1, characters 13-19:
+File \\"/syntax/tests/parsing/errors/typeDef/polyvariant.js\\", line 1, characters 12-13:
 
 
-[31m1[0m │  type t = [< ]
+[31m1[0m │  type t = [< [31m][0m
 2 │  
 3 │  type t = [ s ]
 
@@ -88,12 +88,12 @@ File \\"/syntax/tests/parsing/errors/typeDef/polyvariant.js\\", line 3, characte
 Did you forget a \`|\` here? 
 
 
-File \\"/syntax/tests/parsing/errors/typeDef/polyvariant.js\\", line 7, characters 15-17:
+File \\"/syntax/tests/parsing/errors/typeDef/polyvariant.js\\", line 7, characters 14-15:
 
 
 5 │  type z = [< | #A | #B > ]
 6 │  
-[31m7[0m │  type rec t = []
+[31m7[0m │  type rec t = [[31m][0m
 8 │  
 
 I'm not sure what to parse here when looking at \\"]\\".
@@ -111,12 +111,12 @@ type nonrec observation =
   observer: [%napkinscript.typehole ] }
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typeDef/record.res\\", line 4, characters 1-2:
+File \\"/syntax/tests/parsing/errors/typeDef/record.res\\", line 4, characters 0-1:
 
 
 2 │    observed: int,
 3 │    observer:
-[31m4[0m │  }
+[31m4[0m │  [31m}[0m
 
 I'm missing a type here
 
@@ -144,24 +144,21 @@ File \\"/syntax/tests/parsing/errors/typeDef/typeDef.js\\", line 1, characters 1
 Did you forget a \`=\` here? 
 
 
-File \\"/syntax/tests/parsing/errors/typeDef/typeDef.js\\", line 5, characters 8-30:
+File \\"/syntax/tests/parsing/errors/typeDef/typeDef.js\\", line 8, characters 0-4:
 
 
-3 │  
-4 │  // missing type
-[31m5[0m │  type t =
 6 │  
 7 │  // missing type
+[31m8[0m │  [31mtype[0m state =
 
 Missing a type here
 
 
-File \\"/syntax/tests/parsing/errors/typeDef/typeDef.js\\", line 8, characters 12-13:
+File \\"/syntax/tests/parsing/errors/typeDef/typeDef.js\\", line 9, characters 0-0:
 
 
-6 │  
 7 │  // missing type
-[31m8[0m │  type state =
+8 │  type state =
 
 Missing a type here
 
