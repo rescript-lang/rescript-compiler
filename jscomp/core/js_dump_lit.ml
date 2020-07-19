@@ -38,6 +38,7 @@ let exports = "exports"
 let dot = "."
 let comma = ","
 let colon = Ext_string.single_colon
+let colon_space = ": "
 let throw = "throw"
 let default = "default"
 let length = "length"
