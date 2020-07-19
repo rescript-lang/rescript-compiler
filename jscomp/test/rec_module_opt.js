@@ -19,7 +19,7 @@ function compare(t1, t2) {
 }
 
 var A = {
-  compare
+  compare: compare
 };
 
 var ASet = $$Set.Make(A);
@@ -33,7 +33,7 @@ function f(x) {
 }
 
 var X1 = {
-  f
+  f: f
 };
 
 function f$1(x) {

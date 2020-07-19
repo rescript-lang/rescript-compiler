@@ -115,7 +115,7 @@ function Make(funarg) {
     return step2(first_node, /* [] */0);
   };
   return {
-          min_cutset
+          min_cutset: min_cutset
         };
 }
 

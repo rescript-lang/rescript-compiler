@@ -42,7 +42,7 @@ var none = {
 
 function from_lb_p(source, start, _end) {
   return {
-          source,
+          source: source,
           start: {
             line: start.pos_lnum,
             column: start.pos_cnum - start.pos_bol | 0,
@@ -1961,8 +1961,8 @@ var empty_lex_state = {
 
 function new_lex_env(lex_source, lex_lb, enable_types_in_comments) {
   return {
-          lex_source,
-          lex_lb,
+          lex_source: lex_source,
+          lex_lb: lex_lb,
           lex_in_comment_syntax: false,
           lex_enable_comment_syntax: enable_types_in_comments,
           lex_state: empty_lex_state
@@ -2060,7 +2060,7 @@ function get_result_and_clear_state(param) {
   return [
           env,
           {
-            lex_token,
+            lex_token: lex_token,
             lex_loc: match$1[0],
             lex_value: match$1[1],
             lex_errors: List.rev(state.lex_errors_acc),
@@ -2086,7 +2086,7 @@ function lex_error(env, loc, err) {
           lex_in_comment_syntax: env.lex_in_comment_syntax,
           lex_enable_comment_syntax: env.lex_enable_comment_syntax,
           lex_state: {
-            lex_errors_acc,
+            lex_errors_acc: lex_errors_acc,
             lex_comments_acc: init.lex_comments_acc
           }
         };
@@ -2236,7 +2236,7 @@ function parse_exponent(f) {
   return {
           negative: f.negative,
           mantissa: f.mantissa,
-          exponent,
+          exponent: exponent,
           decimal_exponent: f.decimal_exponent,
           todo: /* [] */0
         };
@@ -2302,9 +2302,9 @@ function parse_body(_f) {
     var init$1 = eat(f);
     _f = {
       negative: init$1.negative,
-      mantissa,
+      mantissa: mantissa,
       exponent: init$1.exponent,
-      decimal_exponent,
+      decimal_exponent: decimal_exponent,
       todo: init$1.todo
     };
     continue ;
@@ -2380,7 +2380,7 @@ function save_comment(env, start, _end, buf, multiline) {
           lex_enable_comment_syntax: env.lex_enable_comment_syntax,
           lex_state: {
             lex_errors_acc: init.lex_errors_acc,
-            lex_comments_acc
+            lex_comments_acc: lex_comments_acc
           }
         };
 }
@@ -3523,7 +3523,7 @@ function line_comment(env, buf, lexbuf) {
                   {
                     source: match.source,
                     start: match.start,
-                    _end
+                    _end: _end
                   }
                 ];
       case 2 :
@@ -5477,9 +5477,9 @@ function create(l, v, r) {
   var hl = l ? l.h : 0;
   var hr = r ? r.h : 0;
   return /* Node */{
-          l,
-          v,
-          r,
+          l: l,
+          v: v,
+          r: r,
           h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         };
 }
@@ -5512,9 +5512,9 @@ function bal(l, v, r) {
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */{
-            l,
-            v,
-            r,
+            l: l,
+            v: v,
+            r: r,
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
@@ -5767,7 +5767,7 @@ function init_env(token_sinkOpt, parse_optionsOpt, source, content) {
             contents: token_sink
           },
           parse_options: parse_options$1,
-          source
+          source: source
         };
 }
 
@@ -6172,10 +6172,10 @@ function token$3(env) {
     var token$4 = token$2(undefined, env);
     var token_value = value(undefined, env);
     Curry._1(token_sink, {
-          token_loc,
+          token_loc: token_loc,
           token: token$4,
           token_context: List.hd(env.lex_mode_stack.contents),
-          token_value
+          token_value: token_value
         });
   }
   env.lex_env.contents = lex_env(undefined, env);
@@ -6305,7 +6305,7 @@ function save_state(env) {
           saved_last_loc: env.last_loc.contents,
           saved_lex_mode_stack: env.lex_mode_stack.contents,
           saved_lex_env: env.lex_env.contents,
-          token_buffer
+          token_buffer: token_buffer
         };
 }
 
@@ -6348,21 +6348,21 @@ function to_parse(env, parse) {
 
 var Parser_env_Peek = {
   token: token$2,
-  value,
-  loc,
-  errors,
-  comments,
-  is_line_terminator,
-  is_implicit_semicolon,
-  semicolon_loc,
-  is_identifier,
-  is_function,
-  is_class
+  value: value,
+  loc: loc,
+  errors: errors,
+  comments: comments,
+  is_line_terminator: is_line_terminator,
+  is_implicit_semicolon: is_implicit_semicolon,
+  semicolon_loc: semicolon_loc,
+  is_identifier: is_identifier,
+  is_function: is_function,
+  is_class: is_class
 };
 
 var Parser_env_Try = {
-  Rollback,
-  to_parse
+  Rollback: Rollback,
+  to_parse: to_parse
 };
 
 function height$1(param) {
@@ -6377,9 +6377,9 @@ function create$2(l, v, r) {
   var hl = l ? l.h : 0;
   var hr = r ? r.h : 0;
   return /* Node */{
-          l,
-          v,
-          r,
+          l: l,
+          v: v,
+          r: r,
           h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         };
 }
@@ -6412,9 +6412,9 @@ function bal$1(l, v, r) {
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */{
-            l,
-            v,
-            r,
+            l: l,
+            v: v,
+            r: r,
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
@@ -6500,10 +6500,10 @@ function create$3(l, x, d, r) {
   var hl = height$2(l);
   var hr = height$2(r);
   return /* Node */{
-          l,
+          l: l,
           v: x,
-          d,
-          r,
+          d: d,
+          r: r,
           h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         };
 }
@@ -6537,10 +6537,10 @@ function bal$2(l, x, d, r) {
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */{
-            l,
+            l: l,
             v: x,
-            d,
-            r,
+            d: d,
+            r: r,
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
@@ -6588,10 +6588,10 @@ function add$2(x, data, m) {
       return m;
     } else {
       return /* Node */{
-              l,
+              l: l,
               v: x,
               d: data,
-              r,
+              r: r,
               h: m.h
             };
     }
@@ -6651,9 +6651,9 @@ function create$4(l, v, r) {
   var hl = l ? l.h : 0;
   var hr = r ? r.h : 0;
   return /* Node */{
-          l,
-          v,
-          r,
+          l: l,
+          v: v,
+          r: r,
           h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
         };
 }
@@ -6686,9 +6686,9 @@ function bal$3(l, v, r) {
   }
   if (hr <= (hl + 2 | 0)) {
     return /* Node */{
-            l,
-            v,
-            r,
+            l: l,
+            v: v,
+            r: r,
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
@@ -6954,7 +6954,7 @@ function primary(env) {
                     TAG: /* Function */1,
                     _0: {
                       params: match$2[1],
-                      returnType,
+                      returnType: returnType,
                       rest: match$2[0],
                       typeParameters: undefined
                     }
@@ -7003,7 +7003,7 @@ function primary(env) {
                       params: match$3[1],
                       returnType: returnType$1,
                       rest: match$3[0],
-                      typeParameters
+                      typeParameters: typeParameters
                     }
                   }
                 ];
@@ -7041,8 +7041,8 @@ function primary(env) {
                   {
                     TAG: /* StringLiteral */9,
                     _0: {
-                      value,
-                      raw
+                      value: value,
+                      raw: raw
                     }
                   }
                 ];
@@ -7167,9 +7167,9 @@ function function_param_with_id(env, name) {
   return [
           btwn(name[0], typeAnnotation[0]),
           {
-            name,
-            typeAnnotation,
-            optional
+            name: name,
+            typeAnnotation: typeAnnotation,
+            optional: optional
           }
         ];
 }
@@ -7340,9 +7340,9 @@ function param_list_or_type(env) {
         }
         var param_0 = btwn(name[0], typeAnnotation[0]);
         var param_1 = {
-          name,
-          typeAnnotation,
-          optional
+          name: name,
+          typeAnnotation: typeAnnotation,
+          optional: optional
         };
         var param = [
           param_0,
@@ -7418,9 +7418,9 @@ function methodish(env, start_loc) {
           loc,
           {
             params: match[1],
-            returnType,
+            returnType: returnType,
             rest: match[0],
-            typeParameters
+            typeParameters: typeParameters
           }
         ];
 }
@@ -7439,7 +7439,7 @@ function method_property(env, start_loc, $$static, key) {
   return [
           value_0,
           {
-            key,
+            key: key,
             value: value$1,
             optional: false,
             static: $$static,
@@ -7453,7 +7453,7 @@ function call_property(env, start_loc, $$static) {
   return [
           btwn(start_loc, value[0]),
           {
-            value,
+            value: value,
             static: $$static
           }
         ];
@@ -7469,9 +7469,9 @@ function property(env, start_loc, $$static, key) {
   return [
           btwn(start_loc, value[0]),
           {
-            key,
-            value,
-            optional,
+            key: key,
+            value: value,
+            optional: optional,
             static: $$static,
             _method: false
           }
@@ -7490,8 +7490,8 @@ function indexer_property(env, start_loc, $$static) {
           btwn(start_loc, value[0]),
           {
             id: match[0],
-            key,
-            value,
+            key: key,
+            value: value,
             static: $$static
           }
         ];
@@ -7861,7 +7861,7 @@ function params$1(env, allow_default, _require_default, _acc) {
     var param_1 = {
       name: id.name,
       bound: id.typeAnnotation,
-      variance,
+      variance: variance,
       default: match$3[0]
     };
     var param = [
@@ -7931,8 +7931,8 @@ function identifier(env, _param) {
       _0: [
         loc,
         {
-          qualification,
-          id
+          qualification: qualification,
+          id: id
         }
       ]
     };
@@ -7962,7 +7962,7 @@ function raw_generic_with_identifier(env, id) {
           loc,
           {
             id: match[1],
-            typeParameters
+            typeParameters: typeParameters
           }
         ];
 }
@@ -8346,15 +8346,15 @@ function _function(env) {
             TAG: /* FunctionDeclaration */18,
             _0: {
               id: id$2,
-              params,
-              defaults,
-              rest,
-              body,
-              async,
+              params: params,
+              defaults: defaults,
+              rest: rest,
+              body: body,
+              async: async,
               generator: generator$1,
-              predicate,
+              predicate: predicate,
               expression: match$5[1],
-              returnType,
+              returnType: returnType,
               typeParameters: match$2[0]
             }
           }
@@ -8391,8 +8391,8 @@ function variable_declaration(env) {
           [
             btwn(id[0], end_loc),
             {
-              id,
-              init
+              id: id,
+              init: init
             }
           ],
           match[1]
@@ -8436,7 +8436,7 @@ function declarations(token$5, kind, env) {
             btwn(start_loc, match[0]),
             {
               declarations: match[1],
-              kind
+              kind: kind
             }
           ],
           match[2]
@@ -8626,7 +8626,7 @@ function conditional(env) {
             TAG: /* Conditional */10,
             _0: {
               test: expr,
-              consequent,
+              consequent: consequent,
               alternate: match[1]
             }
           }
@@ -8705,7 +8705,7 @@ function unary(env) {
               _0: {
                 operator: op,
                 prefix: true,
-                argument
+                argument: argument
               }
             }
           ];
@@ -8908,7 +8908,7 @@ function _new(env, _finish_fn) {
         var callee$prime_1 = {
           TAG: /* New */11,
           _0: {
-            callee,
+            callee: callee,
             arguments: match[1]
           }
         };
@@ -9019,15 +9019,15 @@ function _function$1(env) {
             TAG: /* Function */2,
             _0: {
               id: id$1,
-              params,
-              defaults,
-              rest,
-              body,
-              async,
+              params: params,
+              defaults: defaults,
+              rest: rest,
+              body: body,
+              async: async,
               generator: generator$1,
-              predicate,
-              expression,
-              returnType,
+              predicate: predicate,
+              expression: expression,
+              returnType: returnType,
               typeParameters: match[1]
             }
           }
@@ -9102,8 +9102,8 @@ function primary$1(env) {
                   {
                     TAG: /* TypeCast */24,
                     _0: {
-                      expression,
-                      typeAnnotation
+                      expression: expression,
+                      typeAnnotation: typeAnnotation
                     }
                   }
                 ];
@@ -9143,7 +9143,7 @@ function primary$1(env) {
                     TAG: /* Literal */19,
                     _0: {
                       value: /* Null */0,
-                      raw
+                      raw: raw
                     }
                   }
                 ];
@@ -9256,7 +9256,7 @@ function primary$1(env) {
             TAG: /* RegExp */3,
             _0: {
               pattern: match$5[1],
-              flags
+              flags: flags
             }
           };
           return [
@@ -9264,7 +9264,7 @@ function primary$1(env) {
                   {
                     TAG: /* Literal */19,
                     _0: {
-                      value,
+                      value: value,
                       raw: match$5[0]
                     }
                   }
@@ -9389,8 +9389,8 @@ function tagged_template(env, tag, part) {
           {
             TAG: /* TaggedTemplate */21,
             _0: {
-              tag,
-              quasi
+              tag: tag,
+              quasi: quasi
             }
           }
         ];
@@ -9417,7 +9417,7 @@ function sequence(env, _acc) {
             {
               TAG: /* Sequence */4,
               _0: {
-                expressions
+                expressions: expressions
               }
             }
           ];
@@ -9527,9 +9527,9 @@ function assignment_but_not_arrow_function(env) {
           {
             TAG: /* Assignment */7,
             _0: {
-              operator,
-              left,
-              right
+              operator: operator,
+              left: left,
+              right: right
             }
           }
         ];
@@ -9627,8 +9627,8 @@ function assignment(env) {
                 {
                   TAG: /* Yield */14,
                   _0: {
-                    argument,
-                    delegate
+                    argument: argument,
+                    delegate: delegate
                   }
                 }
               ];
@@ -9659,9 +9659,9 @@ function make_logical(left, right, operator, loc) {
           {
             TAG: /* Logical */9,
             _0: {
-              operator,
-              left,
-              right
+              operator: operator,
+              left: left,
+              right: right
             }
           }
         ];
@@ -9963,9 +9963,9 @@ function make_binary(left, right, operator, loc) {
           {
             TAG: /* Binary */6,
             _0: {
-              operator,
-              left,
-              right
+              operator: operator,
+              left: left,
+              right: right
             }
           }
         ];
@@ -10166,7 +10166,7 @@ function template_parts(env, _quasis, _expressions) {
               raw: match$4.raw,
               cooked: match$4.cooked
             },
-            tail
+            tail: tail
           },
           tail
         ];
@@ -10305,7 +10305,7 @@ function elements(env, _acc) {
                 _0: [
                   loc,
                   {
-                    argument
+                    argument: argument
                   }
                 ]
               };
@@ -10453,16 +10453,16 @@ function try_arrow_function(env) {
             TAG: /* ArrowFunction */3,
             _0: {
               id: undefined,
-              params,
-              defaults,
-              rest,
-              body,
-              async,
+              params: params,
+              defaults: defaults,
+              rest: rest,
+              body: body,
+              async: async,
               generator: false,
-              predicate,
-              expression,
+              predicate: predicate,
+              expression: expression,
               returnType: match[3],
-              typeParameters
+              typeParameters: typeParameters
             }
           }
         ];
@@ -10531,7 +10531,7 @@ function key(env) {
                       loc,
                       {
                         value: value$1,
-                        raw
+                        raw: raw
                       }
                     ]
                   }
@@ -10638,16 +10638,16 @@ function _method(env, kind) {
   var value_0 = match$2[0];
   var value_1 = {
     id: undefined,
-    params,
+    params: params,
     defaults: /* [] */0,
     rest: undefined,
-    body,
+    body: body,
     async: false,
     generator: generator$1,
     predicate: undefined,
     expression: match$2[1],
-    returnType,
-    typeParameters
+    returnType: returnType,
+    typeParameters: typeParameters
   };
   var value = [
     value_0,
@@ -10669,7 +10669,7 @@ function property$1(env) {
             _0: [
               btwn(start_loc, argument[0]),
               {
-                argument
+                argument: argument
               }
             ]
           };
@@ -10748,7 +10748,7 @@ function get(env, start_loc) {
           btwn(start_loc, end_loc),
           {
             key: match[0],
-            value,
+            value: value,
             kind: /* Get */1,
             _method: false,
             shorthand: false
@@ -10772,7 +10772,7 @@ function set(env, start_loc) {
           btwn(start_loc, end_loc),
           {
             key: match[0],
-            value,
+            value: value,
             kind: /* Set */2,
             _method: false,
             shorthand: false
@@ -10881,16 +10881,16 @@ function init(env, start_loc, key, async, generator) {
           TAG: /* Function */2,
           _0: {
             id: undefined,
-            params,
-            defaults,
-            rest,
-            body,
-            async,
-            generator,
+            params: params,
+            defaults: defaults,
+            rest: rest,
+            body: body,
+            async: async,
+            generator: generator,
             predicate: undefined,
             expression: match$4[1],
-            returnType,
-            typeParameters
+            returnType: returnType,
+            typeParameters: typeParameters
           }
         };
         var value = [
@@ -10909,7 +10909,7 @@ function init(env, start_loc, key, async, generator) {
   return [
           btwn(start_loc, value$1[0]),
           {
-            key,
+            key: key,
             value: value$1,
             kind: /* Init */0,
             _method: match$1[2],
@@ -11102,8 +11102,8 @@ function class_implements(env, _acc) {
     var typeParameters = wrap(type_parameter_instantiation, env);
     var loc = typeParameters !== undefined ? btwn(id[0], typeParameters[0]) : id[0];
     var implement_1 = {
-      id,
-      typeParameters
+      id: id,
+      typeParameters: typeParameters
     };
     var implement = [
       loc,
@@ -11157,9 +11157,9 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
             _0: [
               loc,
               {
-                key,
-                value,
-                typeAnnotation,
+                key: key,
+                value: value,
+                typeAnnotation: typeAnnotation,
                 static: $$static
               }
             ]
@@ -11186,16 +11186,16 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
   var end_loc$1 = match$3[0];
   var value_1 = {
     id: undefined,
-    params,
-    defaults,
-    rest,
-    body,
-    async,
-    generator,
+    params: params,
+    defaults: defaults,
+    rest: rest,
+    body: body,
+    async: async,
+    generator: generator,
     predicate: undefined,
     expression: match$3[1],
-    returnType,
-    typeParameters
+    returnType: returnType,
+    typeParameters: typeParameters
   };
   var value$1 = [
     end_loc$1,
@@ -11220,11 +11220,11 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
           _0: [
             btwn(start_loc, end_loc$1),
             {
-              kind,
-              key,
+              kind: kind,
+              key: key,
               value: value$1,
               static: $$static,
-              decorators
+              decorators: decorators
             }
           ]
         };
@@ -11267,9 +11267,9 @@ function class_element(env) {
                                 {
                                   kind: /* Get */2,
                                   key: match$2[0],
-                                  value,
+                                  value: value,
                                   static: $$static,
-                                  decorators
+                                  decorators: decorators
                                 }
                               ]
                             };
@@ -11305,7 +11305,7 @@ function class_element(env) {
                                   key: match$4[0],
                                   value: value$1,
                                   static: $$static,
-                                  decorators
+                                  decorators: decorators
                                 }
                               ]
                             };
@@ -11361,7 +11361,7 @@ function class_body(env) {
   return [
           btwn(start_loc, end_loc),
           {
-            body
+            body: body
           }
         ];
 }
@@ -11410,10 +11410,10 @@ function class_declaration(env, decorators) {
           {
             TAG: /* ClassDeclaration */20,
             _0: {
-              id,
-              body,
+              id: id,
+              body: body,
               superClass: match$2[1],
-              typeParameters,
+              typeParameters: typeParameters,
               superTypeParameters: match$2[2],
               implements: match$2[3],
               classDecorators: decorators$1
@@ -11468,7 +11468,7 @@ function class_expression(env) {
             TAG: /* Class */23,
             _0: {
               id: match$1[0],
-              body,
+              body: body,
               superClass: match$2[1],
               typeParameters: match$1[1],
               superTypeParameters: match$2[2],
@@ -11508,7 +11508,7 @@ function export_source(env) {
             loc,
             {
               value: value$1,
-              raw
+              raw: raw
             }
           ];
   }
@@ -11560,9 +11560,9 @@ function declare_function(env, start_loc) {
     TAG: /* Function */1,
     _0: {
       params: match[1],
-      returnType,
+      returnType: returnType,
       rest: match[0],
-      typeParameters
+      typeParameters: typeParameters
     }
   };
   var value = [
@@ -11577,7 +11577,7 @@ function declare_function(env, start_loc) {
   var id_0 = btwn(id[0], end_loc);
   var id_1 = {
     name: init.name,
-    typeAnnotation,
+    typeAnnotation: typeAnnotation,
     optional: init.optional
   };
   var id$1 = [
@@ -11593,7 +11593,7 @@ function declare_function(env, start_loc) {
           loc$1,
           {
             id: id$1,
-            predicate
+            predicate: predicate
           }
         ];
 }
@@ -11649,7 +11649,7 @@ function export_specifiers_and_errs(env, _specifiers, _errs) {
     var err = match$2[1];
     var loc$1 = btwn(id[0], match$2[2]);
     var specifier_1 = {
-      id,
+      id: id,
       name: match$2[0]
     };
     var specifier = [
@@ -11690,9 +11690,9 @@ function type_alias_helper(env) {
   return [
           btwn(start_loc, end_loc$1),
           {
-            id,
-            typeParameters,
-            right
+            id: id,
+            typeParameters: typeParameters,
+            right: right
           }
         ];
 }
@@ -11707,7 +11707,7 @@ function declare_var(env, start_loc) {
   return [
           loc$1,
           {
-            id
+            id: id
           }
         ];
 }
@@ -11764,7 +11764,7 @@ function declare_export_declaration(allow_export_typeOpt, env) {
                     _0: {
                       default: false,
                       declaration: undefined,
-                      specifiers,
+                      specifiers: specifiers,
                       source: source$1
                     }
                   }
@@ -12208,7 +12208,7 @@ function declare(in_moduleOpt, env) {
                 loc$2,
                 {
                   value: value$1,
-                  raw
+                  raw: raw
                 }
               ]
             };
@@ -12237,9 +12237,9 @@ function declare(in_moduleOpt, env) {
                   {
                     TAG: /* DeclareModule */25,
                     _0: {
-                      id,
-                      body,
-                      kind
+                      id: id,
+                      body: body,
+                      kind: kind
                     }
                   }
                 ];
@@ -12298,9 +12298,9 @@ function interface_helper(env) {
   return [
           loc,
           {
-            id,
-            typeParameters,
-            body,
+            id: id,
+            typeParameters: typeParameters,
+            body: body,
             extends: $$extends,
             mixins: /* [] */0
           }
@@ -12340,11 +12340,11 @@ function declare_class(env, start_loc) {
   return [
           loc,
           {
-            id,
-            typeParameters,
-            body,
+            id: id,
+            typeParameters: typeParameters,
+            body: body,
             extends: $$extends,
-            mixins
+            mixins: mixins
           }
         ];
 }
@@ -12545,9 +12545,9 @@ function _if(env) {
           {
             TAG: /* If */2,
             _0: {
-              test,
-              consequent,
-              alternate
+              test: test,
+              consequent: consequent,
+              alternate: alternate
             }
           }
         ];
@@ -12591,8 +12591,8 @@ function case_list(env, _param) {
     var acc_0 = [
       btwn(start_loc, end_loc$1),
       {
-        test,
-        consequent
+        test: test,
+        consequent: consequent
       }
     ];
     var acc$1 = {
@@ -12652,7 +12652,7 @@ function source(env) {
             loc,
             {
               value: value$1,
-              raw
+              raw: raw
             }
           ];
   }
@@ -12697,8 +12697,8 @@ function specifier_list(env, _acc) {
       specifier = {
         TAG: /* ImportNamedSpecifier */0,
         _0: {
-          local,
-          remote
+          local: local,
+          remote: remote
         }
       };
     } else {
@@ -12709,7 +12709,7 @@ function specifier_list(env, _acc) {
         TAG: /* ImportNamedSpecifier */0,
         _0: {
           local: undefined,
-          remote
+          remote: remote
         }
       };
     }
@@ -12770,7 +12770,7 @@ function from_expr(env, param) {
                             _0: [
                               match[0],
                               {
-                                argument
+                                argument: argument
                               }
                             ]
                           };
@@ -12789,7 +12789,7 @@ function from_expr(env, param) {
                   {
                     TAG: /* Array */1,
                     _0: {
-                      elements,
+                      elements: elements,
                       typeAnnotation: undefined
                     }
                   }
@@ -12808,7 +12808,7 @@ function from_expr(env, param) {
                             _0: [
                               match[0],
                               {
-                                argument
+                                argument: argument
                               }
                             ]
                           };
@@ -12845,7 +12845,7 @@ function from_expr(env, param) {
                             match$1[0],
                             {
                               key: key$1,
-                              pattern,
+                              pattern: pattern,
                               shorthand: match$2.shorthand
                             }
                           ]
@@ -12856,7 +12856,7 @@ function from_expr(env, param) {
                   {
                     TAG: /* Object */0,
                     _0: {
-                      properties,
+                      properties: properties,
                       typeAnnotation: undefined
                     }
                   }
@@ -12911,7 +12911,7 @@ function _object$2(restricted_error) {
               _0: [
                 loc,
                 {
-                  argument
+                  argument: argument
                 }
               ]
             };
@@ -13007,7 +13007,7 @@ function _object$2(restricted_error) {
             _0: [
               loc$2,
               {
-                key,
+                key: key,
                 pattern: pattern$4,
                 shorthand: prop[1]
               }
@@ -13113,7 +13113,7 @@ function _array(restricted_error) {
                   _0: [
                     loc,
                     {
-                      argument
+                      argument: argument
                     }
                   ]
                 };
@@ -13226,7 +13226,7 @@ function spread_attribute(env) {
   return [
           btwn(start_loc, end_loc),
           {
-            argument
+            argument: argument
           }
         ];
 }
@@ -13254,7 +13254,7 @@ function expression_container(env) {
   return [
           btwn(start_loc, end_loc),
           {
-            expression
+            expression: expression
           }
         ];
 }
@@ -13266,7 +13266,7 @@ function identifier$1(env) {
   return [
           loc,
           {
-            name
+            name: name
           }
         ];
 }
@@ -13289,8 +13289,8 @@ function member_expression(env, _member) {
     var property = identifier$1(env);
     var loc = btwn(member[0], property[0]);
     var member_1 = {
-      _object,
-      property
+      _object: _object,
+      property: property
     };
     var member$1 = [
       loc,
@@ -13339,8 +13339,8 @@ function name(env) {
   var property = identifier$1(env);
   var loc$1 = btwn(name$1[0], property[0]);
   var member_1 = {
-    _object,
-    property
+    _object: _object,
+    property: property
   };
   var member = [
     loc$1,
@@ -13421,7 +13421,7 @@ function attribute(env) {
           TAG: /* Literal */0,
           _0: loc$2,
           _1: {
-            value,
+            value: value,
             raw: match$4[2]
           }
         }
@@ -13519,7 +13519,7 @@ function opening_element_without_lt(env, start_loc) {
           btwn(start_loc, end_loc),
           {
             name: name$1,
-            selfClosing,
+            selfClosing: selfClosing,
             attributes: attributes$1
           }
         ];
@@ -13695,8 +13695,8 @@ function element_without_lt(env, start_loc) {
   return [
           btwn(openingElement[0], end_loc),
           {
-            openingElement,
-            closingElement,
+            openingElement: openingElement,
+            closingElement: closingElement,
             children: match[0]
           }
         ];
@@ -13738,8 +13738,8 @@ function statement_list_item(decoratorsOpt, env) {
                 {
                   TAG: /* Let */17,
                   _0: {
-                    head,
-                    body
+                    head: head,
+                    body: body
                   }
                 }
               ];
@@ -13939,7 +13939,7 @@ function module_item(env) {
                         _0: {
                           default: false,
                           declaration: undefined,
-                          specifiers,
+                          specifiers: specifiers,
                           source: source$2,
                           exportKind: /* ExportValue */1
                         }
@@ -14072,7 +14072,7 @@ function module_item(env) {
                           declaration: undefined,
                           specifiers: specifiers$1,
                           source: source$3,
-                          exportKind
+                          exportKind: exportKind
                         }
                       }
                     ];
@@ -14155,7 +14155,7 @@ function module_item(env) {
                         TAG: /* ExportDeclaration */28,
                         _0: {
                           default: false,
-                          declaration,
+                          declaration: declaration,
                           specifiers: undefined,
                           source: undefined,
                           exportKind: /* ExportValue */1
@@ -14224,7 +14224,7 @@ function module_item(env) {
             };
             var source_1 = {
               value: value$1,
-              raw
+              raw: raw
             };
             var source$4 = [
               str_loc,
@@ -14238,7 +14238,7 @@ function module_item(env) {
                     {
                       TAG: /* ImportDeclaration */29,
                       _0: {
-                        importKind,
+                        importKind: importKind,
                         source: source$4,
                         specifiers: /* [] */0
                       }
@@ -14263,7 +14263,7 @@ function module_item(env) {
                     {
                       TAG: /* ImportDeclaration */29,
                       _0: {
-                        importKind,
+                        importKind: importKind,
                         source: source$5,
                         specifiers: specifiers$2
                       }
@@ -14384,7 +14384,7 @@ function statement(env) {
                         {
                           TAG: /* Return */9,
                           _0: {
-                            argument
+                            argument: argument
                           }
                         }
                       ];
@@ -14406,8 +14406,8 @@ function statement(env) {
                         {
                           TAG: /* Switch */8,
                           _0: {
-                            discriminant,
-                            cases,
+                            discriminant: discriminant,
+                            cases: cases,
                             lexical: false
                           }
                         }
@@ -14460,9 +14460,9 @@ function statement(env) {
                   handler = [
                     loc$3,
                     {
-                      param,
+                      param: param,
                       guard: undefined,
-                      body
+                      body: body
                     }
                   ];
                 } else {
@@ -14481,10 +14481,10 @@ function statement(env) {
                         {
                           TAG: /* Try */11,
                           _0: {
-                            block,
-                            handler,
+                            block: block,
+                            handler: handler,
                             guardedHandlers: /* [] */0,
-                            finalizer
+                            finalizer: finalizer
                           }
                         }
                       ];
@@ -14502,7 +14502,7 @@ function statement(env) {
                         {
                           TAG: /* While */12,
                           _0: {
-                            test,
+                            test: test,
                             body: body$1
                           }
                         }
@@ -14524,7 +14524,7 @@ function statement(env) {
                         {
                           TAG: /* With */6,
                           _0: {
-                            _object,
+                            _object: _object,
                             body: body$2
                           }
                         }
@@ -14563,7 +14563,7 @@ function statement(env) {
                         {
                           TAG: /* Break */4,
                           _0: {
-                            label
+                            label: label
                           }
                         }
                       ];
@@ -14735,8 +14735,8 @@ function statement(env) {
                               {
                                 TAG: /* ForOf */16,
                                 _0: {
-                                  left,
-                                  right,
+                                  left: left,
+                                  right: right,
                                   body: body$4
                                 }
                               }
@@ -14799,9 +14799,9 @@ function statement(env) {
                         {
                           TAG: /* For */14,
                           _0: {
-                            init,
+                            init: init,
                             test: test$2,
-                            update,
+                            update: update,
                             body: body$6
                           }
                         }
@@ -15212,7 +15212,7 @@ function identifier$2(restricted_error, env) {
   return [
           loc,
           {
-            name,
+            name: name,
             typeAnnotation: undefined,
             optional: false
           }
@@ -15316,7 +15316,7 @@ function block_body(env) {
   return [
           btwn(start_loc, end_loc),
           {
-            body
+            body: body
           }
         ];
 }
@@ -15460,29 +15460,29 @@ Caml_module.update_mod({
         ]
       ]
     }, Parse, {
-      program,
-      statement,
-      statement_list_item,
+      program: program,
+      statement: statement,
+      statement_list_item: statement_list_item,
       statement_list: statement_list$1,
-      statement_list_with_directives,
-      module_body,
+      statement_list_with_directives: statement_list_with_directives,
+      module_body: module_body,
       expression: expression$1,
-      assignment,
+      assignment: assignment,
       object_initializer: _initializer,
-      array_initializer,
+      array_initializer: array_initializer,
       identifier: identifier$2,
-      identifier_or_reserved_keyword,
-      identifier_with_type,
-      block_body,
-      function_block_body,
+      identifier_or_reserved_keyword: identifier_or_reserved_keyword,
+      identifier_with_type: identifier_with_type,
+      block_body: block_body,
+      function_block_body: function_block_body,
       jsx_element: element,
       pattern: pattern$1,
       pattern_from_expr: from_expr,
       object_key: key,
       class_declaration: class_declaration$1,
-      class_expression,
-      is_assignable_lhs,
-      predicate
+      class_expression: class_expression,
+      is_assignable_lhs: is_assignable_lhs,
+      predicate: predicate
     });
 
 function program$1(failOpt, token_sinkOpt, parse_optionsOpt, content) {

@@ -11,15 +11,15 @@ function g(x) {
 
 function ff(v, u) {
   return {
-          v,
-          u
+          v: v,
+          u: u
         };
 }
 
 function fff(vv, uu) {
   return {
-          vv,
-          uu
+          vv: vv,
+          uu: uu
         };
 }
 

@@ -6,7 +6,7 @@ var List = {
 };
 
 var X = {
-  List
+  List: List
 };
 
 var Hashtbl;

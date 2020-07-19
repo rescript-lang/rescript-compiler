@@ -11,7 +11,7 @@ var WebpackMiddlewareConfigJs = require("../../../webpack.middleware.config.js")
 var configx = WebpackConfigJs;
 
 var WebpackConfig = {
-  configx
+  configx: configx
 };
 
 var configx$1 = WebpackMiddlewareConfigJs;

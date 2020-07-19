@@ -6,11 +6,11 @@ function get_uint8(str, off) {
 }
 
 var BigEndian = {
-  get_uint8
+  get_uint8: get_uint8
 };
 
 var ExtUnixAll = {
-  BigEndian
+  BigEndian: BigEndian
 };
 
 var ExtUnix = {
@@ -24,8 +24,8 @@ function test_endian_string(x) {
 var v = 33;
 
 var Test = {
-  test_endian_string,
-  v
+  test_endian_string: test_endian_string,
+  v: v
 };
 
 exports.ExtUnixAll = ExtUnixAll;

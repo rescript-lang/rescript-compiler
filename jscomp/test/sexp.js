@@ -498,27 +498,27 @@ var of_unit = {
 };
 
 var Traverse = {
-  map_opt,
-  list_any,
-  list_all,
-  to_int,
-  to_string,
-  to_bool,
-  to_float,
-  to_list,
-  to_list_with,
-  to_pair,
-  to_pair_with,
-  to_triple,
-  to_triple_with,
-  get_field,
-  field,
-  get_variant,
-  field_list,
-  $great$great$eq,
-  $great$pipe$eq,
-  $$return,
-  get_exn
+  map_opt: map_opt,
+  list_any: list_any,
+  list_all: list_all,
+  to_int: to_int,
+  to_string: to_string,
+  to_bool: to_bool,
+  to_float: to_float,
+  to_list: to_list,
+  to_list_with: to_list_with,
+  to_pair: to_pair,
+  to_pair_with: to_pair_with,
+  to_triple: to_triple,
+  to_triple_with: to_triple_with,
+  get_field: get_field,
+  field: field,
+  get_variant: get_variant,
+  field_list: field_list,
+  $great$great$eq: $great$great$eq,
+  $great$pipe$eq: $great$pipe$eq,
+  $$return: $$return,
+  get_exn: get_exn
 };
 
 exports.equal = equal;

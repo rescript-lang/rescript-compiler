@@ -18,7 +18,7 @@ catch (exn){
 }
 
 var N = {
-  f
+  f: f
 };
 
 exports.N = N;

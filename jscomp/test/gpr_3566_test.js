@@ -24,10 +24,10 @@ function Test($star) {
         _0: 3
       }, u);
   return {
-          u,
-          Block,
+          u: u,
+          Block: Block,
           y: 32,
-          b
+          b: b
         };
 }
 
@@ -42,9 +42,9 @@ function Test2($star) {
         _0: 3
       });
   return {
-          Block,
+          Block: Block,
           y: 32,
-          b
+          b: b
         };
 }
 
@@ -60,7 +60,7 @@ function Test3($star) {
   var f = Caml_obj.caml_equal;
   var Caml_obj$1 = {};
   return {
-          f,
+          f: f,
           Caml_obj: Caml_obj$1
         };
 }
@@ -70,7 +70,7 @@ function Test4($star) {
   var f = Caml_obj.caml_equal;
   return {
           Caml_obj: Caml_obj$1,
-          f
+          f: f
         };
 }
 
@@ -80,7 +80,7 @@ function Test5($star) {
   };
   var Caml_option$1 = {};
   return {
-          f,
+          f: f,
           Caml_option: Caml_option$1
         };
 }
@@ -92,14 +92,14 @@ function Test6($star) {
   };
   return {
           Caml_option: Caml_option$1,
-          f
+          f: f
         };
 }
 
 function Test7($star) {
   var Caml_option = {};
   return {
-          Caml_option
+          Caml_option: Caml_option
         };
 }
 
@@ -110,7 +110,7 @@ function Test8($star) {
   };
   return {
           Curry: Curry$1,
-          f
+          f: f
         };
 }
 
@@ -120,7 +120,7 @@ function Test9($star) {
   };
   var Curry$1 = {};
   return {
-          f,
+          f: f,
           Curry: Curry$1
         };
 }
@@ -128,7 +128,7 @@ function Test9($star) {
 function Test10($star) {
   var Curry = {};
   return {
-          Curry
+          Curry: Curry
         };
 }
 

@@ -53,7 +53,7 @@ var S = {
   length: Stack.length,
   iter: Stack.iter,
   fold: Stack.fold,
-  to_list
+  to_list: to_list
 };
 
 function does_raise(f, s) {
