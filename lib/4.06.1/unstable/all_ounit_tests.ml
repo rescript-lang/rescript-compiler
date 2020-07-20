@@ -3805,6 +3805,11 @@ val sort_via_array :
   ('a -> 'a -> int) -> 
   'a list  
 
+val sort_via_arrayf:
+  'a list -> 
+  ('a -> 'b ) -> 
+  ('a -> 'a -> int) ->
+   'b list  
 
 
 
@@ -4546,7 +4551,10 @@ let sort_via_array lst cmp =
   Array.sort cmp arr;
   Array.to_list arr
 
-
+let sort_via_arrayf lst f cmp = 
+  let arr = Array.of_list lst  in
+  Array.sort cmp arr;
+  Ext_array.to_list_f arr f 
 
 
 let rec assoc_by_string lst (k : string) def  = 

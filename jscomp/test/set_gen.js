@@ -604,12 +604,12 @@ function is_ordered(cmp, tree) {
     var v = tree._1;
     var match = is_ordered_min_max(tree._0);
     if (typeof match === "number") {
-      if (match < 50834029) {
+      if (match !== /* Empty */50834029) {
         return /* No */17505;
       }
       var match$1 = is_ordered_min_max(r);
       if (typeof match$1 === "number") {
-        if (match$1 >= 50834029) {
+        if (match$1 === /* Empty */50834029) {
           return {
                   HASH: /* V */86,
                   VAL: [
@@ -639,7 +639,7 @@ function is_ordered(cmp, tree) {
     var min_v = match$3[0];
     var match$4 = is_ordered_min_max(r);
     if (typeof match$4 === "number") {
-      if (match$4 >= 50834029 && Curry._2(cmp, max_v, v) < 0) {
+      if (match$4 === /* Empty */50834029 && Curry._2(cmp, max_v, v) < 0) {
         return {
                 HASH: /* V */86,
                 VAL: [

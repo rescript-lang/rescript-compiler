@@ -108,7 +108,7 @@ function _must_escape(s) {
 }
 
 function to_buf(b, t) {
-  if (t.HASH >= 848054398) {
+  if (t.HASH === /* List */848054398) {
     var l = t.VAL;
     if (l) {
       if (l.tl) {
@@ -171,7 +171,7 @@ function to_string(t) {
 }
 
 function print(fmt, t) {
-  if (t.HASH >= 848054398) {
+  if (t.HASH === /* List */848054398) {
     var l = t.VAL;
     if (l) {
       if (l.tl) {
@@ -290,7 +290,7 @@ function print(fmt, t) {
 }
 
 function print_noindent(fmt, t) {
-  if (t.HASH >= 848054398) {
+  if (t.HASH === /* List */848054398) {
     var l = t.VAL;
     if (l) {
       if (l.tl) {
@@ -935,6 +935,7 @@ function parse_string(s) {
             VAL: "unexpected end of file"
           };
   } else {
+    res.HASH === /* Error */106380200;
     return res;
   }
 }
@@ -950,6 +951,7 @@ function parse_chan(bufsize, ic) {
             VAL: "unexpected end of file"
           };
   } else {
+    res.HASH === /* Error */106380200;
     return res;
   }
 }
@@ -963,6 +965,7 @@ function parse_chan_gen(bufsize, ic) {
     if (typeof e === "number") {
       return ;
     } else {
+      e.HASH === /* Error */106380200;
       return e;
     }
   };
@@ -982,7 +985,7 @@ function parse_chan_list(bufsize, ic) {
               VAL: List.rev(acc)
             };
     }
-    if (e.HASH >= 106380200) {
+    if (e.HASH === /* Error */106380200) {
       return e;
     }
     _acc = {

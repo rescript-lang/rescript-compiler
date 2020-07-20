@@ -342,6 +342,11 @@ val sort_via_array :
   ('a -> 'a -> int) -> 
   'a list  
 
+val sort_via_arrayf:
+  'a list -> 
+  ('a -> 'b ) -> 
+  ('a -> 'a -> int) ->
+   'b list  
 
 
 
