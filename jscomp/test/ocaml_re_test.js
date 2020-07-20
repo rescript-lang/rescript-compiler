@@ -1248,7 +1248,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
             marks
           ];
         var y$prime$prime = match[0];
-        if (s._0 === /* Non_greedy */620821490) {
+        if (s._0 >= 620821490) {
           return {
                   hd: {
                     TAG: /* TMatch */2,
@@ -1358,10 +1358,10 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
   if (marks === undefined) {
     return tseq(kind, y, z, rem);
   }
-  if (kind === /* Longest */-730718166) {
+  if (kind === -730718166) {
     return tseq(kind, Curry._1(remove_matches, y), z, delta_1(marks, c, next_cat, prev_cat, z, rem));
   }
-  if (kind !== /* First */332064784) {
+  if (kind < 332064784) {
     return delta_1(marks, c, next_cat, prev_cat, z, tseq(kind, Curry._1(remove_matches, y), z, rem));
   }
   var match = split_at_match_rec(/* [] */0, y);
@@ -2253,10 +2253,10 @@ function merge_sequences(_param) {
 }
 
 function enforce_kind(ids, kind, kind$prime, cr) {
-  if (kind === /* First */332064784 && kind$prime !== /* First */332064784) {
-    return seq$1(ids, kind$prime, cr, mk_expr(ids, /* Eps */0));
-  } else {
+  if (kind !== 332064784 || kind$prime === 332064784) {
     return cr;
+  } else {
+    return seq$1(ids, kind$prime, cr, mk_expr(ids, /* Eps */0));
   }
 }
 
@@ -2415,7 +2415,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
             var cr = match$1[0];
             var rem;
             if (j !== undefined) {
-              var f = greedy === /* Non_greedy */620821490 ? (function(cr,kind$prime){
+              var f = greedy >= 620821490 ? (function(cr,kind$prime){
                 return function (rem) {
                   return alt(ids, {
                               hd: mk_expr(ids, /* Eps */0),
@@ -4070,7 +4070,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         return s;
       }
       var match = $$char(undefined);
-      if (match.HASH === /* Char */748194550) {
+      if (match.HASH >= 748194550) {
         var c = match.VAL;
         if (accept(/* "-" */45)) {
           if (accept(/* "]" */93)) {
@@ -4095,7 +4095,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                   };
           }
           var match$1 = $$char(undefined);
-          if (match$1.HASH !== /* Char */748194550) {
+          if (match$1.HASH < 748194550) {
             return {
                     hd: {
                       TAG: /* Set */0,
@@ -4157,12 +4157,14 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
 function re(flagsOpt, pat) {
   var flags = flagsOpt !== undefined ? flagsOpt : /* [] */0;
   var opts = List.map((function (param) {
-          if (param === /* CASELESS */601676297) {
-            return /* Caseless */604571177;
-          } else if (param === /* ANCHORED */613575188) {
-            return /* Anchored */616470068;
+          if (param !== 601676297) {
+            if (param >= 613575188) {
+              return /* Anchored */616470068;
+            } else {
+              return /* Multiline */1071952589;
+            }
           } else {
-            return /* Multiline */1071952589;
+            return /* Caseless */604571177;
           }
         }), flags);
   var optsOpt = opts;

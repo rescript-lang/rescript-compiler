@@ -134,7 +134,7 @@ eq("File \"poly_variant_test.ml\", line 143, characters 5-12", 3, p_is_int_test(
         }));
 
 function hey(x) {
-  if (x === /* h */104 || x === /* f */102 || x === /* e */101) {
+  if (x >= 101) {
     console.log("v");
     console.log(x);
   } else {

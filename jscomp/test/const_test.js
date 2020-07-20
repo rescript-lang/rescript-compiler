@@ -26,12 +26,14 @@ function fff(x) {
 }
 
 function h(x) {
-  if (x === /* B */66) {
-    return 1;
-  } else if (x === /* C */67) {
-    return 2;
+  if (x !== 66) {
+    if (x >= 67) {
+      return 2;
+    } else {
+      return 0;
+    }
   } else {
-    return 0;
+    return 1;
   }
 }
 

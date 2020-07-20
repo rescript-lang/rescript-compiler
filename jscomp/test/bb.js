@@ -2,12 +2,14 @@
 
 
 function f(x) {
-  if (x === /* b */98) {
-    return "b";
-  } else if (x === /* c */99) {
-    return "c";
+  if (x !== 98) {
+    if (x >= 99) {
+      return "c";
+    } else {
+      return "a";
+    }
   } else {
-    return "a";
+    return "b";
   }
 }
 
@@ -55,12 +57,14 @@ function test(x) {
             Error: new Error()
           };
   }
-  if (match === /* b */98) {
-    return "b";
-  } else if (match === /* c */99) {
-    return "c";
+  if (match !== 98) {
+    if (match >= 99) {
+      return "c";
+    } else {
+      return "a";
+    }
   } else {
-    return "a";
+    return "b";
   }
 }
 

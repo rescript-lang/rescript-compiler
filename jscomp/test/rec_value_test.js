@@ -255,18 +255,18 @@ function phd(l) {
           Error: new Error()
         };
   }
-  if (l.HASH === /* Cons */748545553) {
-    return l.VAL[0];
+  if (l.HASH !== 748545553) {
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "rec_value_test.ml",
+            105,
+            9
+          ],
+          Error: new Error()
+        };
   }
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "rec_value_test.ml",
-          105,
-          9
-        ],
-        Error: new Error()
-      };
+  return l.VAL[0];
 }
 
 function ptl(l) {
@@ -281,18 +281,18 @@ function ptl(l) {
           Error: new Error()
         };
   }
-  if (l.HASH === /* Cons */748545553) {
-    return l.VAL[1];
+  if (l.HASH !== 748545553) {
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "rec_value_test.ml",
+            110,
+            9
+          ],
+          Error: new Error()
+        };
   }
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "rec_value_test.ml",
-          110,
-          9
-        ],
-        Error: new Error()
-      };
+  return l.VAL[1];
 }
 
 var y00 = {};
