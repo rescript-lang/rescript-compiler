@@ -935,7 +935,6 @@ function parse_string(s) {
             VAL: "unexpected end of file"
           };
   } else {
-    res.HASH === /* Error */106380200;
     return res;
   }
 }
@@ -951,7 +950,6 @@ function parse_chan(bufsize, ic) {
             VAL: "unexpected end of file"
           };
   } else {
-    res.HASH === /* Error */106380200;
     return res;
   }
 }
@@ -965,7 +963,6 @@ function parse_chan_gen(bufsize, ic) {
     if (typeof e === "number") {
       return ;
     } else {
-      e.HASH === /* Error */106380200;
       return e;
     }
   };

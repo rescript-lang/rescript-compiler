@@ -35,23 +35,24 @@ function string(s) {
 }
 
 function fn(authState, route) {
-  var exit = 0;
   var onboardingRoute;
   if (typeof authState === "number") {
-    var exit$1 = 0;
+    var exit = 0;
     if (typeof route === "number") {
-      if (route === /* PasswordReset */-799423340 || route === /* Invite */-730831383 || route === /* SignIn */-384135774 || route === /* SignUp */-384133096) {
-        exit = 2;
-      } else {
-        exit$1 = 3;
+      if (route === /* SignUp */-384133096 || route === /* SignIn */-384135774 || route === /* Invite */-730831383 || route === /* PasswordReset */-799423340) {
+        div({
+              hd: string("LoggedOut"),
+              tl: /* [] */0
+            }, undefined);
+        return 1;
       }
+      exit = 2;
     } else if (route.HASH === /* Onboarding */378129979) {
       onboardingRoute = route.VAL;
-      exit = 1;
     } else {
-      exit$1 = 3;
+      exit = 2;
     }
-    if (exit$1 === 3) {
+    if (exit === 2) {
       div({
             hd: string("Redirect"),
             tl: /* [] */0
@@ -60,14 +61,13 @@ function fn(authState, route) {
     }
     
   } else {
-    var exit$2 = 0;
+    var exit$1 = 0;
     if (typeof route === "number" || route.HASH !== /* Onboarding */378129979) {
-      exit$2 = 3;
+      exit$1 = 2;
     } else {
       onboardingRoute = route.VAL;
-      exit = 1;
     }
-    if (exit$2 === 3) {
+    if (exit$1 === 2) {
       console.log(authState.VAL);
       div({
             hd: string("VerifyEmail"),
@@ -77,22 +77,12 @@ function fn(authState, route) {
     }
     
   }
-  switch (exit) {
-    case 1 :
-        console.log(onboardingRoute);
-        div({
-              hd: string("Onboarding"),
-              tl: /* [] */0
-            }, undefined);
-        return 0;
-    case 2 :
-        div({
-              hd: string("LoggedOut"),
-              tl: /* [] */0
-            }, undefined);
-        return 1;
-    
-  }
+  console.log(onboardingRoute);
+  div({
+        hd: string("Onboarding"),
+        tl: /* [] */0
+      }, undefined);
+  return 0;
 }
 
 eq("File \"gpr_4280_test.ml\", line 46, characters 6-13", fn(/* Unauthenticated */-54822762, /* Invite */-730831383), 1);

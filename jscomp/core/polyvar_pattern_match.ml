@@ -80,8 +80,25 @@ module Map_lambda = struct
       (fun (_,_,d0) (_,_,d1) -> compare d0 d1)
 end 
 
+let or_list (arg : lam) (hash_names : (int * string) list) = 
+  match hash_names with 
+  | (hash,name):: rest ->  
+    let init : lam = 
+      Lprim(Pintcomp Ceq, 
+            [arg; Lconst ((Const_pointer (hash, Pt_variant{name})))],
+            Location.none) in 
+    Ext_list.fold_left rest init (fun acc (hash,name) -> 
+        Lambda.Lprim 
+          (Psequor , 
+           [acc ;
+            Lprim(Pintcomp Ceq, 
+                  [arg; 
+                   Lconst ((Const_pointer (hash, Pt_variant{name})))],
+                  Location.none)], Location.none)
+      )
+  | _ -> assert false 
 
-let make_test_sequence_variant_constant_2 
+let make_test_sequence_variant_constant
     (fail : lam option) (arg : lam) 
     (int_lambda_list : (int * (string * lam) ) list) : lam =
   let int_lambda_list : ((int * string) list * lam) list = 
@@ -90,26 +107,11 @@ let make_test_sequence_variant_constant_2
   | (_, act) :: rest, None 
   | rest, Some act ->                     
     Ext_list.fold_right rest act (fun (hash_names,act1) acc -> 
-        let predicate  : lam =
-          match hash_names with 
-          | (hash,name):: rest ->  
-            let init : lam = Lprim(Pintcomp Ceq, 
-                                   [arg; Lconst ((Const_pointer (hash, Pt_variant{name})))],
-                                   Location.none) in 
-            Ext_list.fold_left rest init (fun acc (hash,name) -> 
-                Lambda.Lprim 
-                  (Psequor , 
-                   [acc ;
-                    Lprim(Pintcomp Ceq, 
-                          [arg; 
-                           Lconst ((Const_pointer (hash, Pt_variant{name})))],
-                          Location.none)], Location.none)
-              )
-          | _ -> assert false in    
+        let predicate  : lam = or_list arg hash_names in    
         Lifthenelse (predicate,act1, acc))
   | [], None -> assert false
 
-let make_test_sequence_variant_constant 
+let make_test_sequence_variant_constant_2 
   (fail : lam option) (arg : lam) 
   (int_lambda_list : (int * (string * lam) ) list) : lam=
   match int_lambda_list, fail with 
@@ -123,23 +125,27 @@ let make_test_sequence_variant_constant
       )
   | [], None -> assert false    
 
-let call_switcher_variant_constant 
+let call_switcher_variant_constant
     (_loc : Location.t) 
     (fail : lam option) 
     (arg : lam) 
     (int_lambda_list :  (int * (string * lam)) list) 
     (_names : Lambda.switch_names option) =
-  Ext_log.dwarn ~__POS__ "%a@." Ext_obj.pp_any _names;
+  
+  let int_lambda_list : ((int * string) list * lam) list = 
+    Map_lambda.(values (of_list int_lambda_list)) in 
   match int_lambda_list, fail with 
-  | (_, (_,act)) :: rest, None 
+  | (_,act) :: rest, None 
   | rest, Some act -> 
-    Ext_list.fold_right rest act (fun (hash1,(name,act1)) acc -> 
-        Lifthenelse (Lprim(Pintcomp Ceq, 
-                           [arg; Lconst (Const_pointer(hash1, Pt_variant{name}))], Location.none),
+    Ext_list.fold_right rest act (fun (hash_names,act1) acc -> 
+        let predicate  = or_list arg hash_names in 
+        Lifthenelse (predicate,
                      act1, acc
                     )
       )
   | [], None -> assert false    
+
+
 
 
 let call_switcher_variant_constr 
