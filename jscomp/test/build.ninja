@@ -440,6 +440,7 @@ build test/module_as_function.cmi test/module_as_function.cmj : cc test/module_a
 build test/module_missing_conversion.cmi test/module_missing_conversion.cmj : cc test/module_missing_conversion.ml | $stdlib
 build test/module_parameter_test.cmi test/module_parameter_test.cmj : cc test/module_parameter_test.ml | test/mt.cmj $stdlib
 build test/module_splice_test.cmi test/module_splice_test.cmj : cc test/module_splice_test.ml | test/mt.cmj $stdlib
+build test/more_poly_variant_test.cmi test/more_poly_variant_test.cmj : cc test/more_poly_variant_test.ml | $stdlib
 build test/more_uncurry.cmi test/more_uncurry.cmj : cc test/more_uncurry.ml | $stdlib
 build test/mpr_6033_test.cmi test/mpr_6033_test.cmj : cc test/mpr_6033_test.ml | test/mt.cmj $stdlib
 build test/mt.cmj : cc_cmi test/mt.ml | test/mt.cmi $stdlib
