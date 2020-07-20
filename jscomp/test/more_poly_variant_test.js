@@ -61,10 +61,31 @@ function f1(param) {
   }
 }
 
+function f2(x) {
+  if (typeof x === "number") {
+    if (x >= 616641298) {
+      if (x >= 936370362) {
+        console.log(x);
+        return 2;
+      } else {
+        return 3;
+      }
+    } else if (x >= 104) {
+      return 2;
+    } else {
+      return 333;
+    }
+  } else {
+    console.log(x);
+    return 2;
+  }
+}
+
 exports.map = map;
 exports.split_cases = split_cases;
 exports.f = f;
 exports.g1 = g1;
 exports.g = g;
 exports.f1 = f1;
+exports.f2 = f2;
 /* No side effect */

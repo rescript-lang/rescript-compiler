@@ -31,3 +31,12 @@ let rec map f : 'a vlist -> 'b vlist = function
  let f1 = function
  | `As -> "A"
  | #abc -> "other" ;;
+
+type myvariant2 = [`Tag3 of int | `Tag4 | myvariant] 
+type x = [`a | `b | `c ]
+let f2 x = 
+  match x with 
+  | #myvariant2 as x -> Js.log x ; 2 
+  | `hello -> 3 
+  | `h -> 2 
+  | #x -> 333
