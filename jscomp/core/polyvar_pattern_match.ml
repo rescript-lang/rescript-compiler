@@ -22,21 +22,103 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type lam = Lambda.lambda
 
- 
-let make_test_sequence_variant_constant 
-  (fail : Lambda.lambda option) (arg : Lambda.lambda) 
-  (int_lambda_list : (int * (string * Lambda.lambda) ) list) : Lambda.lambda=
-  match int_lambda_list, fail with 
-  | (_, (_,act)) :: rest, None -> 
-    Ext_list.fold_right rest act (fun (hash1,(name,act1)) acc -> 
-        Lifthenelse (Lprim(Pintcomp Ceq, 
-          [arg; Lconst ((Const_pointer (hash1, Pt_variant{name})))], Location.none),
-          act1, acc
-          )
+
+module Map_lambda = struct 
+  open Map_gen  
+  type key = 
+    | Bottom of int   
+    | Normalized of lam   
+
+  let bottom_id = ref (-1)  
+  let bottom () = incr bottom_id ; Bottom !bottom_id 
+  let compare_key (x : key) (y : key) = Pervasives.compare x y  
+  let old_order = ref 1 
+  let next_id () = 
+    incr old_order; !old_order  
+  let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a = 
+    match tree with 
+    | Empty ->
+      singleton x (replace None)
+    | Leaf {k ; v} -> 
+      let c = compare_key x k in 
+      if c = 0 then singleton x (replace (Some v)) else 
+      if c < 0 then 
+        Map_gen.unsafe_two_elements x (replace None) k v   
+      else
+        Map_gen.unsafe_two_elements k v x (replace None)   
+    | Node ({l; k ; r} as tree) ->
+      let c = compare_key x k in
+      if c = 0 then
+        Map_gen.unsafe_node x (replace  (Some tree.v)) l r tree.h
+      else if c < 0 then
+        bal (adjust l x  replace ) k tree.v r
+      else
+        bal l k tree.v (adjust r x  replace )
+
+  
+  let of_list (int_lambda_list : (int * (string * lam)) list) : (key, (int * string) list * lam * int ) t= 
+    Ext_list.fold_left int_lambda_list  empty (fun acc (hash,(name,lam)) -> 
+        let key = 
+          match Lambda.make_key lam with 
+          | None -> bottom ()
+          | Some key -> Normalized key in 
+        adjust acc key (function 
+          | None -> [hash, name], lam, next_id ()
+          | Some (acc,action,stamp) -> (hash,name) :: acc, action, stamp
+      ))
+  let rec values_aux s acc = 
+    match s with 
+    | Empty -> acc
+    | Leaf {v} -> v :: acc 
+    | Node {l;v;r} ->      
+       values_aux l (v ::values_aux r acc)         
+  let values s : ((int * string) list * lam) list = 
+      Ext_list.sort_via_arrayf ( values_aux s []) 
+      (fun (_,_,d0) (_,_,d1) -> compare d0 d1)
+      (fun (a,b,_) -> (a,b))
+      
+end 
+
+let or_list (arg : lam) (hash_names : (int * string) list) = 
+  match hash_names with 
+  | (hash,name):: rest ->  
+    let init : lam = 
+      Lprim(Pintcomp Ceq, 
+            [arg; Lconst ((Const_pointer (hash, Pt_variant{name})))],
+            Location.none) in 
+    Ext_list.fold_left rest init (fun acc (hash,name) -> 
+        Lambda.Lprim 
+          (Psequor , 
+           [acc ;
+            Lprim(Pintcomp Ceq, 
+                  [arg; 
+                   Lconst ((Const_pointer (hash, Pt_variant{name})))],
+                  Location.none)], Location.none)
       )
-  | _, Some fail -> 
-    Ext_list.fold_right int_lambda_list fail (fun (hash1,(name,act1)) acc -> 
+  | _ -> assert false 
+
+let make_test_sequence_variant_constant
+    (fail : lam option) (arg : lam) 
+    (int_lambda_list : (int * (string * lam) ) list) : lam =
+  let int_lambda_list : ((int * string) list * lam) list = 
+    Map_lambda.(values (of_list int_lambda_list)) in 
+  match int_lambda_list, fail with 
+  | (_, act) :: rest, None 
+  | rest, Some act ->                     
+    Ext_list.fold_right rest act (fun (hash_names,act1) acc -> 
+        let predicate  : lam = or_list arg hash_names in    
+        Lifthenelse (predicate,act1, acc))
+  | [], None -> assert false
+
+let make_test_sequence_variant_constant_2 
+  (fail : lam option) (arg : lam) 
+  (int_lambda_list : (int * (string * lam) ) list) : lam=
+  match int_lambda_list, fail with 
+  | (_, (_,act)) :: rest, None 
+  | rest , Some act -> 
+    Ext_list.fold_right rest act (fun (hash1,(name,act1)) acc -> 
         Lifthenelse (Lprim(Pintcomp Ceq, 
                            [arg; Lconst (Const_pointer(hash1, Pt_variant{name}))], Location.none),
                      act1, acc
@@ -44,37 +126,35 @@ let make_test_sequence_variant_constant
       )
   | [], None -> assert false    
 
-let call_switcher_variant_constant 
+let call_switcher_variant_constant
     (_loc : Location.t) 
-    (fail : Lambda.lambda option) 
-    (arg : Lambda.lambda) 
-    (int_lambda_list :  (int * (string * Lambda.lambda)) list) 
+    (fail : lam option) 
+    (arg : lam) 
+    (int_lambda_list :  (int * (string * lam)) list) 
     (_names : Lambda.switch_names option) =
-  Ext_log.dwarn ~__POS__ "%a@." Ext_obj.pp_any _names;
+  
+  let int_lambda_list : ((int * string) list * lam) list = 
+    Map_lambda.(values (of_list int_lambda_list)) in 
   match int_lambda_list, fail with 
-  | (_, (_,act)) :: rest, None -> 
-    Ext_list.fold_right rest act (fun (hash1,(name,act1)) acc -> 
-        Lifthenelse (Lprim(Pintcomp Ceq, 
-                           [arg; Lconst (Const_pointer(hash1, Pt_variant{name}))], Location.none),
-                     act1, acc
-                    )
-      )
-  | _, Some fail -> 
-    Ext_list.fold_right int_lambda_list fail (fun (hash1,(name,act1)) acc -> 
-        Lifthenelse (Lprim(Pintcomp Ceq, 
-                           [arg; Lconst (Const_pointer(hash1, Pt_variant{name}))], Location.none),
+  | (_,act) :: rest, None 
+  | rest, Some act -> 
+    Ext_list.fold_right rest act (fun (hash_names,act1) acc -> 
+        let predicate  = or_list arg hash_names in 
+        Lifthenelse (predicate,
                      act1, acc
                     )
       )
   | [], None -> assert false    
+
+
 
 
 let call_switcher_variant_constr 
     (loc : Location.t) 
-    (fail : Lambda.lambda option) 
-    (arg  : Lambda.lambda) 
+    (fail : lam option) 
+    (arg  : lam) 
     int_lambda_list 
-    (names : Lambda.switch_names option) : Lambda.lambda =
+    (names : Lambda.switch_names option) : lam =
   let v = Ident.create "variant" in
   Llet(Alias, Pgenval, v, Lprim(Pfield (0, Fld_poly_var_tag), [arg], loc),
        call_switcher_variant_constant

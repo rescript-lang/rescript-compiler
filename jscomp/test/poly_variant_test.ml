@@ -142,4 +142,19 @@ let () =
   eq __LOC__ 2 (p_is_int_test `a);
   eq __LOC__ 3 (p_is_int_test u)
 
+
+let hey x =
+  match x with 
+  | `a 
+  | `b 
+  | `d
+  | `c as u -> 
+    Js.log "u";
+    Js.log u
+
+  | `e 
+  | `f 
+  | `h as v -> 
+    Js.log "v";
+    Js.log v  
 let () = Mt.from_pair_suites __MODULE__ !suites

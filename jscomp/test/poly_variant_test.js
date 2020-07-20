@@ -133,6 +133,17 @@ eq("File \"poly_variant_test.ml\", line 143, characters 5-12", 3, p_is_int_test(
           VAL: 2
         }));
 
+function hey(x) {
+  if (x >= 101) {
+    console.log("v");
+    console.log(x);
+  } else {
+    console.log("u");
+    console.log(x);
+  }
+  
+}
+
 Mt.from_pair_suites("Poly_variant_test", suites.contents);
 
 function on2(prim, prim$1) {
@@ -158,4 +169,5 @@ exports.on2 = on2;
 exports.read = read;
 exports.readN = readN;
 exports.p_is_int_test = p_is_int_test;
+exports.hey = hey;
 /*  Not a pure module */

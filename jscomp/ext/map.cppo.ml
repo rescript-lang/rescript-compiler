@@ -215,6 +215,3 @@ let of_list xs = add_list xs empty
 
 let of_array xs = 
   Ext_array.fold_left xs empty (fun acc (k,v) -> add acc k v ) 
-#ifdef TYPE_FUNCTOR
-end
-#endif
