@@ -16,7 +16,7 @@ function map(f, param) {
 }
 
 function split_cases(x) {
-  if (typeof x === "number" || x.HASH < 925929103) {
+  if (typeof x === "number" || x.HASH !== /* Snoc */925929103) {
     return {
             HASH: /* A */65,
             VAL: x
@@ -38,7 +38,7 @@ function f(param) {
 }
 
 function g1(param) {
-  if (param.HASH >= 936370360) {
+  if (param.HASH === /* Tag2 */936370360) {
     return "Tag2";
   } else {
     return "Tag1";
@@ -54,7 +54,7 @@ function g(x) {
 }
 
 function f1(param) {
-  if (param >= 14610) {
+  if (param === /* As */14610) {
     return "A";
   } else {
     return "other";
@@ -63,14 +63,12 @@ function f1(param) {
 
 function f2(x) {
   if (typeof x === "number") {
-    if (x >= 616641298) {
-      if (x >= 936370362) {
-        console.log(x);
-        return 2;
-      } else {
-        return 3;
-      }
-    } else if (x >= 104) {
+    if (x === /* h */104) {
+      return 2;
+    } else if (x === /* hello */616641298) {
+      return 3;
+    } else if (x === /* Tag4 */936370362) {
+      console.log(x);
       return 2;
     } else {
       return 333;

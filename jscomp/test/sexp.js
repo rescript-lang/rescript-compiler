@@ -183,7 +183,7 @@ function map_opt(f, l) {
 }
 
 function list_any(f, e) {
-  if (e.HASH >= 848054398) {
+  if (e.HASH === /* List */848054398) {
     var _l = e.VAL;
     while(true) {
       var l = _l;
@@ -202,7 +202,7 @@ function list_any(f, e) {
 }
 
 function list_all(f, e) {
-  if (e.HASH >= 848054398) {
+  if (e.HASH === /* List */848054398) {
     var _acc = /* [] */0;
     var _l = e.VAL;
     while(true) {
@@ -230,7 +230,7 @@ function list_all(f, e) {
 }
 
 function _try_atom(e, f) {
-  if (e.HASH >= 848054398) {
+  if (e.HASH === /* List */848054398) {
     return ;
   }
   try {
@@ -263,7 +263,7 @@ function to_pair(e) {
   if (typeof e === "number") {
     return ;
   }
-  if (e.HASH !== 848054398) {
+  if (e.HASH !== /* List */848054398) {
     return ;
   }
   var match = e.VAL;
@@ -298,7 +298,7 @@ function to_triple(e) {
   if (typeof e === "number") {
     return ;
   }
-  if (e.HASH !== 848054398) {
+  if (e.HASH !== /* List */848054398) {
     return ;
   }
   var match = e.VAL;
@@ -339,21 +339,21 @@ function to_triple_with(f1, f2, f3, e) {
 }
 
 function to_list(e) {
-  if (e.HASH >= 848054398) {
+  if (e.HASH === /* List */848054398) {
     return Caml_option.some(e.VAL);
   }
   
 }
 
 function to_list_with(f, e) {
-  if (e.HASH >= 848054398) {
+  if (e.HASH === /* List */848054398) {
     return map_opt(f, e.VAL);
   }
   
 }
 
 function get_field(name, e) {
-  if (e.HASH >= 848054398) {
+  if (e.HASH === /* List */848054398) {
     var _l = e.VAL;
     while(true) {
       var l = _l;
@@ -365,29 +365,29 @@ function get_field(name, e) {
         _l = l.tl;
         continue ;
       }
-      if (match.HASH !== 848054398) {
-        _l = l.tl;
-        continue ;
-      }
-      var match$1 = match.VAL;
-      if (match$1) {
-        var match$2 = match$1.hd;
-        if (typeof match$2 === "number") {
-          _l = l.tl;
-          continue ;
-        }
-        if (match$2.HASH !== 726615281) {
-          _l = l.tl;
-          continue ;
-        }
-        var match$3 = match$1.tl;
-        if (match$3) {
-          if (match$3.tl) {
+      if (match.HASH === /* List */848054398) {
+        var match$1 = match.VAL;
+        if (match$1) {
+          var match$2 = match$1.hd;
+          if (typeof match$2 === "number") {
             _l = l.tl;
             continue ;
           }
-          if (Caml_obj.caml_equal(name, match$2.VAL)) {
-            return match$3.hd;
+          if (match$2.HASH === /* Atom */726615281) {
+            var match$3 = match$1.tl;
+            if (match$3) {
+              if (match$3.tl) {
+                _l = l.tl;
+                continue ;
+              }
+              if (Caml_obj.caml_equal(name, match$2.VAL)) {
+                return match$3.hd;
+              }
+              _l = l.tl;
+              continue ;
+            }
+            _l = l.tl;
+            continue ;
           }
           _l = l.tl;
           continue ;
@@ -417,23 +417,23 @@ function _get_field_list(name, _l) {
       _l = l.tl;
       continue ;
     }
-    if (match.HASH !== 848054398) {
-      _l = l.tl;
-      continue ;
-    }
-    var match$1 = match.VAL;
-    if (match$1) {
-      var match$2 = match$1.hd;
-      if (typeof match$2 === "number") {
+    if (match.HASH === /* List */848054398) {
+      var match$1 = match.VAL;
+      if (match$1) {
+        var match$2 = match$1.hd;
+        if (typeof match$2 === "number") {
+          _l = l.tl;
+          continue ;
+        }
+        if (match$2.HASH === /* Atom */726615281) {
+          if (Caml_obj.caml_equal(name, match$2.VAL)) {
+            return match$1.tl;
+          }
+          _l = l.tl;
+          continue ;
+        }
         _l = l.tl;
         continue ;
-      }
-      if (match$2.HASH !== 726615281) {
-        _l = l.tl;
-        continue ;
-      }
-      if (Caml_obj.caml_equal(name, match$2.VAL)) {
-        return match$1.tl;
       }
       _l = l.tl;
       continue ;
@@ -444,7 +444,7 @@ function _get_field_list(name, _l) {
 }
 
 function field_list(name, f, e) {
-  if (e.HASH >= 848054398) {
+  if (e.HASH === /* List */848054398) {
     return $great$great$eq(_get_field_list(name, e.VAL), f);
   }
   
@@ -466,7 +466,7 @@ function _get_variant(s, args, _l) {
 }
 
 function get_variant(l, e) {
-  if (e.HASH < 848054398) {
+  if (e.HASH !== /* List */848054398) {
     return _get_variant(e.VAL, /* [] */0, l);
   }
   var match = e.VAL;
@@ -474,7 +474,7 @@ function get_variant(l, e) {
     return ;
   }
   var match$1 = match.hd;
-  if (typeof match$1 === "number" || match$1.HASH !== 726615281) {
+  if (typeof match$1 === "number" || match$1.HASH !== /* Atom */726615281) {
     return ;
   } else {
     return _get_variant(match$1.VAL, match.tl, l);

@@ -30,11 +30,9 @@ let setup_env () =
   Translcore.wrap_single_field_record := Transl_single_field_record.wrap_single_field_record;
   Translmod.eval_rec_bindings := Compile_rec_module.eval_rec_bindings;
   Typemod.should_hide := Typemod_hide.should_hide;
-#if 0 then   
   Matching.make_test_sequence_variant_constant := Polyvar_pattern_match.make_test_sequence_variant_constant;
   Matching.call_switcher_variant_constant := Polyvar_pattern_match.call_switcher_variant_constant;
   Matching.call_switcher_variant_constr := Polyvar_pattern_match.call_switcher_variant_constr;
-#end  
   Clflags.no_std_include := true;
   Warnings.parse_options false Bsc_warnings.defaults_w;
   Warnings.parse_options true Bsc_warnings.defaults_warn_error;
