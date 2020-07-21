@@ -83,7 +83,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
           let name =  "emptyArray" in 
           let unit : _ Asttypes.loc  = {txt = Ast_literal.Lid.val_unit ; loc  } in 
           let open Ast_helper in 
-          Exp.let_ Nonrecursive
+          Exp.let_ Nonrecursive ~loc 
             [{pvb_pat =
                 Pat.var  {txt = name ; loc} ~loc ;
               pvb_expr =
@@ -91,8 +91,8 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
                   (Pat.construct unit None)
                   (Exp.array [] ~attrs:[{txt = ""; loc}, PStr []]);
               pvb_loc  = loc; pvb_attributes = []}]
-            (Exp.apply
-               (Exp.ident {txt = Lident name; loc})
+            (Exp.apply ~loc
+               (Exp.ident ~loc {txt = Lident name; loc})
                [Nolabel,
                 Exp.construct unit None ~loc;
                ])

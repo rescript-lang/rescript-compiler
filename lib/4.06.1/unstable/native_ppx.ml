@@ -4592,6 +4592,7 @@ let absolute_path s = (* This function could go into Filename *)
   aux s
 
 let show_filename file =
+  let file = if file = "_none_"  then !input_name else file in 
   if !absname then absolute_path file else file
 
 let print_filename ppf file =
