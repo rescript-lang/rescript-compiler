@@ -28,7 +28,7 @@ function _with_in(filename, f) {
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
     Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
     return {
-            HASH: /* Error */106380200,
+            HASH: "Error",
             VAL: Printexc.to_string(e)
           };
   }
@@ -108,7 +108,7 @@ function _must_escape(s) {
 }
 
 function to_buf(b, t) {
-  if (t.HASH === /* List */848054398) {
+  if (t.HASH === "List") {
     var l = t.VAL;
     if (l) {
       if (l.tl) {
@@ -171,7 +171,7 @@ function to_string(t) {
 }
 
 function print(fmt, t) {
-  if (t.HASH === /* List */848054398) {
+  if (t.HASH === "List") {
     var l = t.VAL;
     if (l) {
       if (l.tl) {
@@ -290,7 +290,7 @@ function print(fmt, t) {
 }
 
 function print_noindent(fmt, t) {
-  if (t.HASH === /* List */848054398) {
+  if (t.HASH === "List") {
     var l = t.VAL;
     if (l) {
       if (l.tl) {
@@ -481,7 +481,7 @@ function _error(t, msg) {
   return Printf.kbprintf((function (b) {
                 var msg$prime = $$Buffer.contents(b);
                 return {
-                        HASH: /* Error */106380200,
+                        HASH: "Error",
                         VAL: msg$prime
                       };
               }), b, msg);
@@ -601,7 +601,7 @@ function expr_list(acc, k, t) {
     if (switcher > 23 || switcher < 0) {
       if (switcher === 32) {
         return Curry._2(k, undefined, {
-                    HASH: /* List */848054398,
+                    HASH: "List",
                     VAL: List.rev(acc)
                   });
       }
@@ -619,7 +619,7 @@ function expr_list(acc, k, t) {
                                   }, k, t);
                       } else {
                         return Curry._2(k, undefined, {
-                                    HASH: /* List */848054398,
+                                    HASH: "List",
                                     VAL: List.rev({
                                           hd: e,
                                           tl: acc
@@ -648,7 +648,7 @@ function _return_atom(last, k, t) {
   var s = $$Buffer.contents(t.atom);
   t.atom.position = 0;
   return Curry._2(k, last, {
-              HASH: /* Atom */726615281,
+              HASH: "Atom",
               VAL: s
             });
 }
@@ -887,7 +887,7 @@ function expr_or_end(k, t) {
       return _refill(t, (function (param) {
                     return expr_or_end(k, param);
                   }), (function (param) {
-                    return /* End */3455931;
+                    return "End";
                   }));
     }
     var c = _get(t);
@@ -907,7 +907,7 @@ function expr_or_end(k, t) {
 function next(t) {
   return expr_or_end((function (param, x) {
                 return {
-                        HASH: /* Ok */17724,
+                        HASH: "Ok",
                         VAL: x
                       };
               }), t);
@@ -929,9 +929,9 @@ function parse_string(s) {
   };
   var d = make(n, refill);
   var res = next(d);
-  if (typeof res === "number") {
+  if (typeof res === "string") {
     return {
-            HASH: /* Error */106380200,
+            HASH: "Error",
             VAL: "unexpected end of file"
           };
   } else {
@@ -944,9 +944,9 @@ function parse_chan(bufsize, ic) {
           return Pervasives.input(ic, param, param$1, param$2);
         }));
   var res = next(d);
-  if (typeof res === "number") {
+  if (typeof res === "string") {
     return {
-            HASH: /* Error */106380200,
+            HASH: "Error",
             VAL: "unexpected end of file"
           };
   } else {
@@ -960,7 +960,7 @@ function parse_chan_gen(bufsize, ic) {
         }));
   return function (param) {
     var e = next(d);
-    if (typeof e === "number") {
+    if (typeof e === "string") {
       return ;
     } else {
       return e;
@@ -976,13 +976,13 @@ function parse_chan_list(bufsize, ic) {
   while(true) {
     var acc = _acc;
     var e = next(d);
-    if (typeof e === "number") {
+    if (typeof e === "string") {
       return {
-              HASH: /* Ok */17724,
+              HASH: "Ok",
               VAL: List.rev(acc)
             };
     }
-    if (e.HASH === /* Error */106380200) {
+    if (e.HASH === "Error") {
       return e;
     }
     _acc = {
@@ -1093,7 +1093,7 @@ function MakeDecode(funarg) {
     return Printf.kbprintf((function (b) {
                   var msg$prime = $$Buffer.contents(b);
                   return Curry._1(funarg.$$return, {
-                              HASH: /* Error */106380200,
+                              HASH: "Error",
                               VAL: msg$prime
                             });
                 }), b, msg);
@@ -1209,7 +1209,7 @@ function MakeDecode(funarg) {
       if (switcher > 23 || switcher < 0) {
         if (switcher === 32) {
           return Curry._2(k, undefined, {
-                      HASH: /* List */848054398,
+                      HASH: "List",
                       VAL: List.rev(acc)
                     });
         }
@@ -1227,7 +1227,7 @@ function MakeDecode(funarg) {
                                     }, k, t);
                         } else {
                           return Curry._2(k, undefined, {
-                                      HASH: /* List */848054398,
+                                      HASH: "List",
                                       VAL: List.rev({
                                             hd: e,
                                             tl: acc
@@ -1255,7 +1255,7 @@ function MakeDecode(funarg) {
     var s = $$Buffer.contents(t.atom);
     t.atom.position = 0;
     return Curry._2(k, last, {
-                HASH: /* Atom */726615281,
+                HASH: "Atom",
                 VAL: s
               });
   };
@@ -1487,7 +1487,7 @@ function MakeDecode(funarg) {
         return _refill(t, (function (param) {
                       return expr_or_end(k, param);
                     }), (function (param) {
-                      return Curry._1(funarg.$$return, /* End */3455931);
+                      return Curry._1(funarg.$$return, "End");
                     }));
       }
       var c = _get(t);
@@ -1506,7 +1506,7 @@ function MakeDecode(funarg) {
   var next = function (t) {
     return expr_or_end((function (param, x) {
                   return Curry._1(funarg.$$return, {
-                              HASH: /* Ok */17724,
+                              HASH: "Ok",
                               VAL: x
                             });
                 }), t);

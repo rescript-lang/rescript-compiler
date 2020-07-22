@@ -89,6 +89,7 @@ type t =
   | Parraysets
   (* Test if the argument is a block or an immediate integer *)
   | Pisint
+  | Pis_poly_var_const
   (* Test if the (integer) argument is outside an interval *)
   | Pisout  
   (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
@@ -229,6 +230,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pis_null_undefined -> rhs = Pis_null_undefined
   | Pjs_typeof -> rhs = Pjs_typeof
   | Pisint -> rhs = Pisint
+  | Pis_poly_var_const -> rhs = Pis_poly_var_const 
   | Pisout -> rhs = Pisout
   | Pdebugger -> rhs = Pdebugger    
   | Pinit_mod -> rhs = Pinit_mod

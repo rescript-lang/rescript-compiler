@@ -825,15 +825,16 @@ and expression_desc cxt ~(level:int) f x : cxt  =
         
   | Caml_block(el,_,_, Blk_poly_var name) ->
     begin match el with 
-      | [hash;value] -> 
+      | [_hash;value] -> 
         expression_desc 
           cxt 
           ~level 
           f 
           (Object 
              ((Js_op.Lit Literals.polyvar_hash, 
-               if !Js_config.debug then hash
-               else {hash with comment = Some name}
+              E.str name
+               (* if !Js_config.debug then hash
+               else {hash with comment = Some name} *)
               ) ::
               (Js_op.Lit Literals.polyvar_value, value) ::
               if !Js_config.debug then 

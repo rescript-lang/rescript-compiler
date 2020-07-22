@@ -9140,6 +9140,7 @@ type poly_var_label = Asttypes.label Asttypes.loc
 
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
+type hash_label = string 
 open Parsetree
 
 
@@ -9155,6 +9156,13 @@ val const_exp_int:
   ?attrs:attrs -> 
   int -> 
   expression 
+
+val const_hash_label : 
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  string -> 
+  expression 
+
 
 val const_exp_int_list_as_array:  
   int list -> 
@@ -9295,7 +9303,9 @@ type object_field =
   Parsetree.object_field 
 val object_field : Asttypes.label Asttypes.loc ->  attributes -> core_type -> object_field
 
-val hash_label : poly_var_label -> int 
+
+val hash_label : poly_var_label -> hash_label
+
 val label_of_name : poly_var_label -> string 
 
 type args  = 
@@ -9424,7 +9434,7 @@ let fun_
     pexp_attributes = attrs;
     pexp_desc = Pexp_fun(label, None, pat, exp)
   } *)
-
+type hash_label = string 
 
 
 let const_exp_string 
@@ -9438,6 +9448,15 @@ let const_exp_string
     pexp_desc = Pexp_constant(Pconst_string(s,delimiter))
   }
 
+let const_hash_label 
+    ?(loc = default_loc)
+    ?(attrs = [])
+    (s : hash_label) : expression = 
+  {
+    pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_constant(Pconst_string(s,None))
+  }
 
 let const_exp_int 
   ?(loc = default_loc)
@@ -9569,7 +9588,7 @@ let object_field   l attrs ty =
 
 
 
-let hash_label (x : poly_var_label) : int = Btype.hash_variant x.txt
+let hash_label (x : poly_var_label) : hash_label =  x.txt
 let label_of_name (x : poly_var_label) : string = x.txt
 
 type args  = 
@@ -17254,9 +17273,9 @@ type label = private
   (* it will be ignored , side effect will be recorded *)
 
 type attr = 
-  | NullString of (int * string) list (* `a does not have any value*)
-  | NonNullString of (int * string) list (* `a of int *)
-  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
+  | NullString of (Ast_compatible.hash_label * string) list (* `a does not have any value*)
+  | NonNullString of (Ast_compatible.hash_label * string) list (* `a of int *)
+  | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
@@ -17345,9 +17364,9 @@ type label =
   (* it will be ignored , side effect will be recorded *)
 
 type attr = 
-  | NullString of (int * string) list (* `a does not have any value*)
-  | NonNullString of (int * string) list (* `a of int *)
-  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
+  | NullString of (Ast_compatible.hash_label * string) list (* `a does not have any value*)
+  | NonNullString of (Ast_compatible.hash_label * string) list (* `a of int *)
+  | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
     (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
@@ -17445,7 +17464,7 @@ module Ast_polyvar : sig
 val map_row_fields_into_ints:
   Location.t -> 
   Parsetree.row_field list -> 
-  (int * int ) list 
+  (Ast_compatible.hash_label * int ) list 
 
 val map_constructor_declarations_into_ints:
   Parsetree.constructor_declaration list ->

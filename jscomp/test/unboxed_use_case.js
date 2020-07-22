@@ -32,13 +32,13 @@ console.log("x");
 var v0 = {};
 
 Caml_obj.update_dummy(v0, {
-      HASH: /* A */65,
+      HASH: "A",
       VAL: v0
     });
 
 var v1 = {
-  HASH: /* A */65,
-  VAL: /* B */66
+  HASH: "A",
+  VAL: "B"
 };
 
 exports.hi = hi;

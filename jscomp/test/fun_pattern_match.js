@@ -72,7 +72,7 @@ function f4(param) {
 }
 
 var x = {
-  HASH: /* A */65,
+  HASH: "A",
   VAL: r
 };
 

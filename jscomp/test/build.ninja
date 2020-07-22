@@ -515,7 +515,7 @@ build test/raw_hash_tbl_bench.cmi test/raw_hash_tbl_bench.cmj : cc test/raw_hash
 build test/raw_output_test.cmi test/raw_output_test.cmj : cc test/raw_output_test.ml | $stdlib
 build test/raw_pure_test.cmi test/raw_pure_test.cmj : cc test/raw_pure_test.ml | $stdlib
 build test/rbset.cmi test/rbset.cmj : cc test/rbset.ml | $stdlib
-build test/re_first_test.cmi test/re_first_test.cmj : cc test/re_first_test.re | test/mt.cmj $stdlib
+build test/re_first_test.cmi test/re_first_test.cmj : cc test/re_first_test.re | $stdlib
 build test/react.cmi test/react.cmj : cc test/react.re | $stdlib
 build test/reactDOMRe.cmi test/reactDOMRe.cmj : cc test/reactDOMRe.re | test/react.cmj test/reactEvent.cmj test/reasonReact.cmj $stdlib
 build test/reactDOMServerRe.cmi test/reactDOMServerRe.cmj : cc test/reactDOMServerRe.re | test/react.cmj $stdlib

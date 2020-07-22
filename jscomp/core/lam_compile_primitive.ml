@@ -579,6 +579,8 @@ let translate  loc
   (** FIXME, this can be removed later *)
   | Pisint -> 
     E.is_type_number (Ext_list.singleton_exn args)
+  | Pis_poly_var_const -> 
+    E.is_type_string (Ext_list.singleton_exn args)  
   | Pctconst ct -> 
     (match ct with 
      | Big_endian -> E.bool Sys.big_endian

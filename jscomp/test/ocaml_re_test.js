@@ -719,7 +719,7 @@ function seq$1(ids, kind, x, y) {
   }
   if (exit === 2) {
     if (typeof match$1 === "number") {
-      if (kind === /* First */332064784) {
+      if (kind === "First") {
         return x;
       }
       
@@ -1248,7 +1248,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
             marks
           ];
         var y$prime$prime = match[0];
-        if (s._0 === /* Non_greedy */620821490) {
+        if (s._0 === "Non_greedy") {
           return {
                   hd: {
                     TAG: /* TMatch */2,
@@ -1358,10 +1358,10 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
   if (marks === undefined) {
     return tseq(kind, y, z, rem);
   }
-  if (kind === /* Longest */-730718166) {
+  if (kind === "Longest") {
     return tseq(kind, Curry._1(remove_matches, y), z, delta_1(marks, c, next_cat, prev_cat, z, rem));
   }
-  if (kind !== /* First */332064784) {
+  if (kind !== "First") {
     return delta_1(marks, c, next_cat, prev_cat, z, tseq(kind, Curry._1(remove_matches, y), z, rem));
   }
   var match = split_at_match_rec(/* [] */0, y);
@@ -2253,7 +2253,7 @@ function merge_sequences(_param) {
 }
 
 function enforce_kind(ids, kind, kind$prime, cr) {
-  if (kind === /* First */332064784 && kind$prime !== /* First */332064784) {
+  if (kind === "First" && kind$prime !== "First") {
     return seq$1(ids, kind$prime, cr, mk_expr(ids, /* Eps */0));
   } else {
     return cr;
@@ -2289,7 +2289,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
             var c$3 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.not_letter);
             var c$4 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.letter);
             return [
-                    seq$1(ids, /* First */332064784, mk_expr(ids, {
+                    seq$1(ids, "First", mk_expr(ids, {
                               TAG: /* After */7,
                               _0: c$3
                             }), mk_expr(ids, {
@@ -2302,7 +2302,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
             var c$5 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.letter);
             var c$6 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.not_letter);
             return [
-                    seq$1(ids, /* First */332064784, mk_expr(ids, {
+                    seq$1(ids, "First", mk_expr(ids, {
                               TAG: /* After */7,
                               _0: c$5
                             }), mk_expr(ids, {
@@ -2314,7 +2314,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
         case /* Not_bound */4 :
             return [
                     alt(ids, {
-                          hd: seq$1(ids, /* First */332064784, mk_expr(ids, {
+                          hd: seq$1(ids, "First", mk_expr(ids, {
                                     TAG: /* After */7,
                                     _0: Re_automata_Category.letter
                                   }), mk_expr(ids, {
@@ -2322,7 +2322,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
                                     _0: Re_automata_Category.letter
                                   })),
                           tl: {
-                            hd: seq$1(ids, /* First */332064784, mk_expr(ids, {
+                            hd: seq$1(ids, "First", mk_expr(ids, {
                                       TAG: /* After */7,
                                       _0: Re_automata_Category.letter
                                     }), mk_expr(ids, {
@@ -2415,7 +2415,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
             var cr = match$1[0];
             var rem;
             if (j !== undefined) {
-              var f = greedy === /* Non_greedy */620821490 ? (function(cr,kind$prime){
+              var f = greedy === "Non_greedy" ? (function(cr,kind$prime){
                 return function (rem) {
                   return alt(ids, {
                               hd: mk_expr(ids, /* Eps */0),
@@ -2469,10 +2469,10 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
             pos.contents = pos.contents + 2 | 0;
             var match$3 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$prime);
             return [
-                    seq$1(ids, /* First */332064784, mk_expr(ids, {
+                    seq$1(ids, "First", mk_expr(ids, {
                               TAG: /* Mark */4,
                               _0: p
-                            }), seq$1(ids, /* First */332064784, match$3[0], mk_expr(ids, {
+                            }), seq$1(ids, "First", match$3[0], mk_expr(ids, {
                                   TAG: /* Mark */4,
                                   _0: p + 1 | 0
                                 }))),
@@ -2495,14 +2495,14 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
                     ];
             } else {
               return [
-                      seq$1(ids, /* First */332064784, erase(ids, b, e), cr$1),
+                      seq$1(ids, "First", erase(ids, b, e), cr$1),
                       kind$prime$2
                     ];
             }
         case /* Pmark */14 :
             var match$5 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, s._1);
             return [
-                    seq$1(ids, /* First */332064784, mk_expr(ids, {
+                    seq$1(ids, "First", mk_expr(ids, {
                               TAG: /* Pmark */8,
                               _0: s._0
                             }), match$5[0]),
@@ -3137,7 +3137,7 @@ function compile(r) {
       }) : seq$2({
           hd: {
             TAG: /* Sem */4,
-            _0: /* Shortest */-1034406550,
+            _0: "Shortest",
             _1: repn(any, 0, undefined)
           },
           tl: {
@@ -3162,10 +3162,10 @@ function compile(r) {
   var pos = {
     contents: 0
   };
-  var match$1 = translate(ids, /* First */332064784, false, false, /* Greedy */-904640576, pos, {
+  var match$1 = translate(ids, "First", false, false, "Greedy", pos, {
         contents: /* Empty */0
       }, col, regexp$1);
-  var r$1 = enforce_kind(ids, /* First */332064784, match$1[1], match$1[0]);
+  var r$1 = enforce_kind(ids, "First", match$1[1], match$1[0]);
   var col_repr = match[1];
   var group_count = pos.contents / 2 | 0;
   return {
@@ -3385,13 +3385,13 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (gr$1) {
       return {
               TAG: /* Sem_greedy */5,
-              _0: /* Non_greedy */620821490,
+              _0: "Non_greedy",
               _1: r
             };
     } else {
       return {
               TAG: /* Sem_greedy */5,
-              _0: /* Greedy */-904640576,
+              _0: "Greedy",
               _1: r
             };
     }
@@ -3850,13 +3850,13 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                 tl: /* [] */0
               }) : posix_class;
         return {
-                HASH: /* Set */4150146,
+                HASH: "Set",
                 VAL: re
               };
       }
       if (!accept(/* "." */46)) {
         return {
-                HASH: /* Char */748194550,
+                HASH: "Char",
                 VAL: c
               };
       }
@@ -3880,13 +3880,13 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             };
       }
       return {
-              HASH: /* Char */748194550,
+              HASH: "Char",
               VAL: c$1
             };
     }
     if (c !== /* "\\" */92) {
       return {
-              HASH: /* Char */748194550,
+              HASH: "Char",
               VAL: c
             };
     }
@@ -3894,14 +3894,14 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (c$2 >= 58) {
       if (c$2 >= 123) {
         return {
-                HASH: /* Char */748194550,
+                HASH: "Char",
                 VAL: c$2
               };
       }
       switch (c$2 - 58 | 0) {
         case 10 :
             return {
-                    HASH: /* Set */4150146,
+                    HASH: "Set",
                     VAL: compl({
                           hd: digit,
                           tl: /* [] */0
@@ -3909,7 +3909,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                   };
         case 25 :
             return {
-                    HASH: /* Set */4150146,
+                    HASH: "Set",
                     VAL: compl({
                           hd: space,
                           tl: /* [] */0
@@ -3917,7 +3917,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                   };
         case 29 :
             return {
-                    HASH: /* Set */4150146,
+                    HASH: "Set",
                     VAL: compl({
                           hd: alnum,
                           tl: {
@@ -3949,42 +3949,42 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 37 :
         case 38 :
             return {
-                    HASH: /* Char */748194550,
+                    HASH: "Char",
                     VAL: c$2
                   };
         case 40 :
             return {
-                    HASH: /* Char */748194550,
+                    HASH: "Char",
                     VAL: /* "\b" */8
                   };
         case 42 :
             return {
-                    HASH: /* Set */4150146,
+                    HASH: "Set",
                     VAL: digit
                   };
         case 52 :
             return {
-                    HASH: /* Char */748194550,
+                    HASH: "Char",
                     VAL: /* "\n" */10
                   };
         case 56 :
             return {
-                    HASH: /* Char */748194550,
+                    HASH: "Char",
                     VAL: /* "\r" */13
                   };
         case 57 :
             return {
-                    HASH: /* Set */4150146,
+                    HASH: "Set",
                     VAL: space
                   };
         case 58 :
             return {
-                    HASH: /* Char */748194550,
+                    HASH: "Char",
                     VAL: /* "\t" */9
                   };
         case 61 :
             return {
-                    HASH: /* Set */4150146,
+                    HASH: "Set",
                     VAL: alt$1({
                           hd: alnum,
                           tl: {
@@ -4058,7 +4058,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             };
       }
       return {
-              HASH: /* Char */748194550,
+              HASH: "Char",
               VAL: c$2
             };
     }
@@ -4070,7 +4070,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         return s;
       }
       var match = $$char(undefined);
-      if (match.HASH === /* Char */748194550) {
+      if (match.HASH === "Char") {
         var c = match.VAL;
         if (accept(/* "-" */45)) {
           if (accept(/* "]" */93)) {
@@ -4095,7 +4095,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                   };
           }
           var match$1 = $$char(undefined);
-          if (match$1.HASH !== /* Char */748194550) {
+          if (match$1.HASH !== "Char") {
             return {
                     hd: {
                       TAG: /* Set */0,
@@ -4157,25 +4157,25 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
 function re(flagsOpt, pat) {
   var flags = flagsOpt !== undefined ? flagsOpt : /* [] */0;
   var opts = List.map((function (param) {
-          if (param === /* CASELESS */601676297) {
-            return /* Caseless */604571177;
-          } else if (param === /* ANCHORED */613575188) {
-            return /* Anchored */616470068;
+          if (param === "CASELESS") {
+            return "Caseless";
+          } else if (param === "ANCHORED") {
+            return "Anchored";
           } else {
-            return /* Multiline */1071952589;
+            return "Multiline";
           }
         }), flags);
   var optsOpt = opts;
   var opts$1 = optsOpt !== undefined ? optsOpt : /* [] */0;
-  var r = parse(List.memq(/* Multiline */1071952589, opts$1), List.memq(/* Dollar_endonly */-712595228, opts$1), List.memq(/* Dotall */-424303016, opts$1), List.memq(/* Ungreedy */-243745063, opts$1), pat);
-  var r$1 = List.memq(/* Anchored */616470068, opts$1) ? seq$2({
+  var r = parse(List.memq("Multiline", opts$1), List.memq("Dollar_endonly", opts$1), List.memq("Dotall", opts$1), List.memq("Ungreedy", opts$1), pat);
+  var r$1 = List.memq("Anchored", opts$1) ? seq$2({
           hd: /* Start */8,
           tl: {
             hd: r,
             tl: /* [] */0
           }
         }) : r;
-  if (List.memq(/* Caseless */604571177, opts$1)) {
+  if (List.memq("Caseless", opts$1)) {
     return {
             TAG: /* No_case */10,
             _0: r$1
