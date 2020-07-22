@@ -50,7 +50,7 @@ let eval (arg : J.expression) (dispatches : (Ast_compatible.hash_label * string)
 (** arg is a polyvar *)
 let eval_as_event (arg : J.expression) (dispatches : (Ast_compatible.hash_label * string) list ) =
   match arg.expression_desc with
-  | Caml_block([_hash; cb], _, _, Blk_poly_var s) when Js_analyzer.no_side_effect_expression cb 
+  | Caml_block([{expression_desc = Str(_,s)}; cb], _, _, Blk_poly_var ) when Js_analyzer.no_side_effect_expression cb 
     -> 
     let v = Ext_list.assoc_by_string dispatches s None in
     Splice2(E.str v , cb )

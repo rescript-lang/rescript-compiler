@@ -167,7 +167,7 @@ let exp_need_paren  (e : J.expression) =
 
   | Raw_js_code {code_info = Exp _}
   | Fun _ 
-  | Caml_block (_,_,_, (Blk_record _ | Blk_module _ | Blk_poly_var _ | Blk_extension | Blk_record_ext _ | Blk_record_inlined _ | Blk_constructor _ ))
+  | Caml_block (_,_,_, (Blk_record _ | Blk_module _ | Blk_poly_var  | Blk_extension | Blk_record_ext _ | Blk_record_inlined _ | Blk_constructor _ ))
   | Object _ -> true
   | Raw_js_code {code_info = Stmt _ }
   | Length _
@@ -823,9 +823,9 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       expression_desc cxt ~level f (Object 
         ((Ext_list.combine_array fields el  (fun i -> Js_op.Lit i))))      
         
-  | Caml_block(el,_,_, Blk_poly_var name) ->
+  | Caml_block(el,_,_, Blk_poly_var ) ->
     begin match el with 
-      | [_;value] -> 
+      | [{expression_desc = Str (_,name)};value] -> 
         expression_desc 
           cxt 
           ~level 

@@ -30,7 +30,7 @@
 type t =   
   | Blk_tuple
   | Blk_array
-  | Blk_poly_var of string 
+  | Blk_poly_var
   | Blk_record of string array 
   | Blk_module of string list
   | Blk_extension
