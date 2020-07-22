@@ -72,7 +72,7 @@ function f4(param) {
 }
 
 var x = {
-  HASH: "A",
+  NAME: "A",
   VAL: r
 };
 

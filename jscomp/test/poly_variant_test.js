@@ -95,7 +95,7 @@ function p_is_int_test(x) {
 eq("File \"poly_variant_test.ml\", line 142, characters 5-12", 2, 2);
 
 eq("File \"poly_variant_test.ml\", line 143, characters 5-12", 3, p_is_int_test({
-          HASH: "b",
+          NAME: "b",
           VAL: 2
         }));
 

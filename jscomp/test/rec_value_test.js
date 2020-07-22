@@ -15,7 +15,7 @@ x.tl = x;
 var x0 = {};
 
 Caml_obj.update_dummy(x0, {
-      HASH: "Cons",
+      NAME: "Cons",
       VAL: [
         1,
         x0
@@ -25,7 +25,7 @@ Caml_obj.update_dummy(x0, {
 var y0 = {};
 
 Caml_obj.update_dummy(y0, {
-      HASH: "Cons",
+      NAME: "Cons",
       VAL: y0
     });
 
@@ -255,7 +255,7 @@ function phd(l) {
           Error: new Error()
         };
   }
-  if (l.HASH === "Cons") {
+  if (l.NAME === "Cons") {
     return l.VAL[0];
   }
   throw {
@@ -281,7 +281,7 @@ function ptl(l) {
           Error: new Error()
         };
   }
-  if (l.HASH === "Cons") {
+  if (l.NAME === "Cons") {
     return l.VAL[1];
   }
   throw {

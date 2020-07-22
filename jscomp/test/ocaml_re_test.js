@@ -3850,13 +3850,13 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                 tl: /* [] */0
               }) : posix_class;
         return {
-                HASH: "Set",
+                NAME: "Set",
                 VAL: re
               };
       }
       if (!accept(/* "." */46)) {
         return {
-                HASH: "Char",
+                NAME: "Char",
                 VAL: c
               };
       }
@@ -3880,13 +3880,13 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             };
       }
       return {
-              HASH: "Char",
+              NAME: "Char",
               VAL: c$1
             };
     }
     if (c !== /* "\\" */92) {
       return {
-              HASH: "Char",
+              NAME: "Char",
               VAL: c
             };
     }
@@ -3894,14 +3894,14 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (c$2 >= 58) {
       if (c$2 >= 123) {
         return {
-                HASH: "Char",
+                NAME: "Char",
                 VAL: c$2
               };
       }
       switch (c$2 - 58 | 0) {
         case 10 :
             return {
-                    HASH: "Set",
+                    NAME: "Set",
                     VAL: compl({
                           hd: digit,
                           tl: /* [] */0
@@ -3909,7 +3909,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                   };
         case 25 :
             return {
-                    HASH: "Set",
+                    NAME: "Set",
                     VAL: compl({
                           hd: space,
                           tl: /* [] */0
@@ -3917,7 +3917,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                   };
         case 29 :
             return {
-                    HASH: "Set",
+                    NAME: "Set",
                     VAL: compl({
                           hd: alnum,
                           tl: {
@@ -3949,42 +3949,42 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         case 37 :
         case 38 :
             return {
-                    HASH: "Char",
+                    NAME: "Char",
                     VAL: c$2
                   };
         case 40 :
             return {
-                    HASH: "Char",
+                    NAME: "Char",
                     VAL: /* "\b" */8
                   };
         case 42 :
             return {
-                    HASH: "Set",
+                    NAME: "Set",
                     VAL: digit
                   };
         case 52 :
             return {
-                    HASH: "Char",
+                    NAME: "Char",
                     VAL: /* "\n" */10
                   };
         case 56 :
             return {
-                    HASH: "Char",
+                    NAME: "Char",
                     VAL: /* "\r" */13
                   };
         case 57 :
             return {
-                    HASH: "Set",
+                    NAME: "Set",
                     VAL: space
                   };
         case 58 :
             return {
-                    HASH: "Char",
+                    NAME: "Char",
                     VAL: /* "\t" */9
                   };
         case 61 :
             return {
-                    HASH: "Set",
+                    NAME: "Set",
                     VAL: alt$1({
                           hd: alnum,
                           tl: {
@@ -4058,7 +4058,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             };
       }
       return {
-              HASH: "Char",
+              NAME: "Char",
               VAL: c$2
             };
     }
@@ -4070,7 +4070,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         return s;
       }
       var match = $$char(undefined);
-      if (match.HASH === "Char") {
+      if (match.NAME === "Char") {
         var c = match.VAL;
         if (accept(/* "-" */45)) {
           if (accept(/* "]" */93)) {
@@ -4095,7 +4095,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                   };
           }
           var match$1 = $$char(undefined);
-          if (match$1.HASH !== "Char") {
+          if (match$1.NAME !== "Char") {
             return {
                     hd: {
                       TAG: /* Set */0,

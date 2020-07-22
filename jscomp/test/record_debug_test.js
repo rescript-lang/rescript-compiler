@@ -133,12 +133,12 @@ var h = {
 };
 
 var v2 = {
-  HASH: "C",
+  NAME: "C",
   VAL: 2
 };
 
 var v3 = {
-  HASH: "C",
+  NAME: "C",
   VAL: [
     2,
     3

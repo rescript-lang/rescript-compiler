@@ -6132,7 +6132,7 @@ let ns_sep_char = '-'
 let ns_sep = "-"
 let exception_id = "RE_EXN_ID"
 
-let polyvar_hash = "HASH"
+let polyvar_hash = "NAME"
 let polyvar_value = "VAL"
 
 let cons = "::"

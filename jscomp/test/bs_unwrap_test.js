@@ -13,14 +13,14 @@ console.log(1337);
 console.log("hello world");
 
 var arg_string = {
-  HASH: "String",
+  NAME: "String",
   VAL: "hi runtime"
 };
 
 console.log(arg_string.VAL);
 
 var arg_pair = {
-  HASH: "Pair",
+  NAME: "Pair",
   VAL: [
     "hi",
     1
@@ -40,7 +40,7 @@ console.log(3, "hi");
 console.log(4, undefined);
 
 var some_arg = {
-  HASH: "Bool",
+  NAME: "Bool",
   VAL: true
 };
 
@@ -56,10 +56,10 @@ function dyn_log3(prim, prim$1, prim$2) {
 }
 
 dyn_log3({
-      HASH: "Int",
+      NAME: "Int",
       VAL: 8
     }, {
-      HASH: "Bool",
+      NAME: "Bool",
       VAL: true
     }, undefined);
 

@@ -7,7 +7,7 @@ function map(f, param) {
   }
   var match = param.VAL;
   return {
-          HASH: "Cons",
+          NAME: "Cons",
           VAL: [
             f(match[0]),
             map(f, match[1])
@@ -16,14 +16,14 @@ function map(f, param) {
 }
 
 function split_cases(x) {
-  if (typeof x === "string" || x.HASH !== "Snoc") {
+  if (typeof x === "string" || x.NAME !== "Snoc") {
     return {
-            HASH: "A",
+            NAME: "A",
             VAL: x
           };
   } else {
     return {
-            HASH: "B",
+            NAME: "B",
             VAL: x
           };
   }
@@ -38,7 +38,7 @@ function f(param) {
 }
 
 function g1(param) {
-  if (param.HASH === "Tag2") {
+  if (param.NAME === "Tag2") {
     return "Tag2";
   } else {
     return "Tag1";

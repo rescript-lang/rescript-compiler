@@ -47,7 +47,7 @@ function fn(authState, route) {
         return 1;
       }
       exit = 2;
-    } else if (route.HASH === "Onboarding") {
+    } else if (route.NAME === "Onboarding") {
       onboardingRoute = route.VAL;
     } else {
       exit = 2;
@@ -62,7 +62,7 @@ function fn(authState, route) {
     
   } else {
     var exit$1 = 0;
-    if (typeof route === "string" || route.HASH !== "Onboarding") {
+    if (typeof route === "string" || route.NAME !== "Onboarding") {
       exit$1 = 2;
     } else {
       onboardingRoute = route.VAL;
@@ -88,12 +88,12 @@ function fn(authState, route) {
 eq("File \"gpr_4280_test.ml\", line 46, characters 6-13", fn("Unauthenticated", "Invite"), 1);
 
 eq("File \"gpr_4280_test.ml\", line 47, characters 6-13", fn("Unauthenticated", {
-          HASH: "Onboarding",
+          NAME: "Onboarding",
           VAL: 0
         }), 0);
 
 eq("File \"gpr_4280_test.ml\", line 48, characters 6-13", fn({
-          HASH: "Unverified",
+          NAME: "Unverified",
           VAL: 0
         }, "Invite"), 2);
 

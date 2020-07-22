@@ -15497,7 +15497,7 @@ let ns_sep_char = '-'
 let ns_sep = "-"
 let exception_id = "RE_EXN_ID"
 
-let polyvar_hash = "HASH"
+let polyvar_hash = "NAME"
 let polyvar_value = "VAL"
 
 let cons = "::"
@@ -18186,7 +18186,7 @@ module Lam_tag_info
 type t =   
   | Blk_tuple
   | Blk_array
-  | Blk_poly_var of string 
+  | Blk_poly_var
   | Blk_record of string array 
   | Blk_module of string list
   | Blk_extension

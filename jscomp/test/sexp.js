@@ -16,49 +16,49 @@ var hash = Hashtbl.hash;
 
 function of_int(x) {
   return {
-          HASH: "Atom",
+          NAME: "Atom",
           VAL: String(x)
         };
 }
 
 function of_float(x) {
   return {
-          HASH: "Atom",
+          NAME: "Atom",
           VAL: Pervasives.string_of_float(x)
         };
 }
 
 function of_bool(x) {
   return {
-          HASH: "Atom",
+          NAME: "Atom",
           VAL: x ? "true" : "false"
         };
 }
 
 function atom(x) {
   return {
-          HASH: "Atom",
+          NAME: "Atom",
           VAL: x
         };
 }
 
 function of_list(l) {
   return {
-          HASH: "List",
+          NAME: "List",
           VAL: l
         };
 }
 
 function of_rev_list(l) {
   return {
-          HASH: "List",
+          NAME: "List",
           VAL: List.rev(l)
         };
 }
 
 function of_pair(param) {
   return {
-          HASH: "List",
+          NAME: "List",
           VAL: {
             hd: param[0],
             tl: {
@@ -71,7 +71,7 @@ function of_pair(param) {
 
 function of_triple(param) {
   return {
-          HASH: "List",
+          NAME: "List",
           VAL: {
             hd: param[0],
             tl: {
@@ -87,7 +87,7 @@ function of_triple(param) {
 
 function of_quad(param) {
   return {
-          HASH: "List",
+          NAME: "List",
           VAL: {
             hd: param[0],
             tl: {
@@ -106,10 +106,10 @@ function of_quad(param) {
 
 function of_variant(name, args) {
   return {
-          HASH: "List",
+          NAME: "List",
           VAL: {
             hd: {
-              HASH: "Atom",
+              NAME: "Atom",
               VAL: name
             },
             tl: args
@@ -119,10 +119,10 @@ function of_variant(name, args) {
 
 function of_field(name, t) {
   return {
-          HASH: "List",
+          NAME: "List",
           VAL: {
             hd: {
-              HASH: "Atom",
+              NAME: "Atom",
               VAL: name
             },
             tl: {
@@ -135,7 +135,7 @@ function of_field(name, t) {
 
 function of_record(l) {
   return {
-          HASH: "List",
+          NAME: "List",
           VAL: List.map((function (param) {
                   return of_field(param[0], param[1]);
                 }), l)
@@ -183,7 +183,7 @@ function map_opt(f, l) {
 }
 
 function list_any(f, e) {
-  if (e.HASH === "List") {
+  if (e.NAME === "List") {
     var _l = e.VAL;
     while(true) {
       var l = _l;
@@ -202,7 +202,7 @@ function list_any(f, e) {
 }
 
 function list_all(f, e) {
-  if (e.HASH === "List") {
+  if (e.NAME === "List") {
     var _acc = /* [] */0;
     var _l = e.VAL;
     while(true) {
@@ -230,7 +230,7 @@ function list_all(f, e) {
 }
 
 function _try_atom(e, f) {
-  if (e.HASH === "List") {
+  if (e.NAME === "List") {
     return ;
   }
   try {
@@ -263,7 +263,7 @@ function to_pair(e) {
   if (typeof e === "string") {
     return ;
   }
-  if (e.HASH !== "List") {
+  if (e.NAME !== "List") {
     return ;
   }
   var match = e.VAL;
@@ -298,7 +298,7 @@ function to_triple(e) {
   if (typeof e === "string") {
     return ;
   }
-  if (e.HASH !== "List") {
+  if (e.NAME !== "List") {
     return ;
   }
   var match = e.VAL;
@@ -339,21 +339,21 @@ function to_triple_with(f1, f2, f3, e) {
 }
 
 function to_list(e) {
-  if (e.HASH === "List") {
+  if (e.NAME === "List") {
     return Caml_option.some(e.VAL);
   }
   
 }
 
 function to_list_with(f, e) {
-  if (e.HASH === "List") {
+  if (e.NAME === "List") {
     return map_opt(f, e.VAL);
   }
   
 }
 
 function get_field(name, e) {
-  if (e.HASH === "List") {
+  if (e.NAME === "List") {
     var _l = e.VAL;
     while(true) {
       var l = _l;
@@ -365,7 +365,7 @@ function get_field(name, e) {
         _l = l.tl;
         continue ;
       }
-      if (match.HASH === "List") {
+      if (match.NAME === "List") {
         var match$1 = match.VAL;
         if (match$1) {
           var match$2 = match$1.hd;
@@ -373,7 +373,7 @@ function get_field(name, e) {
             _l = l.tl;
             continue ;
           }
-          if (match$2.HASH === "Atom") {
+          if (match$2.NAME === "Atom") {
             var match$3 = match$1.tl;
             if (match$3) {
               if (match$3.tl) {
@@ -417,7 +417,7 @@ function _get_field_list(name, _l) {
       _l = l.tl;
       continue ;
     }
-    if (match.HASH === "List") {
+    if (match.NAME === "List") {
       var match$1 = match.VAL;
       if (match$1) {
         var match$2 = match$1.hd;
@@ -425,7 +425,7 @@ function _get_field_list(name, _l) {
           _l = l.tl;
           continue ;
         }
-        if (match$2.HASH === "Atom") {
+        if (match$2.NAME === "Atom") {
           if (Caml_obj.caml_equal(name, match$2.VAL)) {
             return match$1.tl;
           }
@@ -444,7 +444,7 @@ function _get_field_list(name, _l) {
 }
 
 function field_list(name, f, e) {
-  if (e.HASH === "List") {
+  if (e.NAME === "List") {
     return $great$great$eq(_get_field_list(name, e.VAL), f);
   }
   
@@ -466,7 +466,7 @@ function _get_variant(s, args, _l) {
 }
 
 function get_variant(l, e) {
-  if (e.HASH !== "List") {
+  if (e.NAME !== "List") {
     return _get_variant(e.VAL, /* [] */0, l);
   }
   var match = e.VAL;
@@ -474,7 +474,7 @@ function get_variant(l, e) {
     return ;
   }
   var match$1 = match.hd;
-  if (typeof match$1 === "string" || match$1.HASH !== "Atom") {
+  if (typeof match$1 === "string" || match$1.NAME !== "Atom") {
     return ;
   } else {
     return _get_variant(match$1.VAL, match.tl, l);
@@ -493,7 +493,7 @@ function get_exn(e) {
 }
 
 var of_unit = {
-  HASH: "List",
+  NAME: "List",
   VAL: /* [] */0
 };
 

@@ -611,7 +611,7 @@ function is_ordered(cmp, tree) {
       if (typeof match$1 === "string") {
         if (match$1 === "Empty") {
           return {
-                  HASH: "V",
+                  NAME: "V",
                   VAL: [
                     v,
                     v
@@ -624,7 +624,7 @@ function is_ordered(cmp, tree) {
       var match$2 = match$1.VAL;
       if (Curry._2(cmp, v, match$2[0]) < 0) {
         return {
-                HASH: "V",
+                NAME: "V",
                 VAL: [
                   v,
                   match$2[1]
@@ -641,7 +641,7 @@ function is_ordered(cmp, tree) {
     if (typeof match$4 === "string") {
       if (match$4 === "Empty" && Curry._2(cmp, max_v, v) < 0) {
         return {
-                HASH: "V",
+                NAME: "V",
                 VAL: [
                   min_v,
                   v
@@ -654,7 +654,7 @@ function is_ordered(cmp, tree) {
     var match$5 = match$4.VAL;
     if (Curry._2(cmp, max_v, match$5[0]) < 0) {
       return {
-              HASH: "V",
+              NAME: "V",
               VAL: [
                 min_v,
                 match$5[1]

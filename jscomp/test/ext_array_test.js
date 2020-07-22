@@ -202,7 +202,7 @@ function rfind_and_split(arr, cmp, v) {
     return "No_split";
   } else {
     return {
-            HASH: "Split",
+            NAME: "Split",
             VAL: [
               $$Array.sub(arr, 0, i),
               $$Array.sub(arr, i + 1 | 0, (arr.length - i | 0) - 1 | 0)
@@ -233,7 +233,7 @@ function find_and_split(arr, cmp, v) {
     return "No_split";
   } else {
     return {
-            HASH: "Split",
+            NAME: "Split",
             VAL: [
               $$Array.sub(arr, 0, i),
               $$Array.sub(arr, i + 1 | 0, (arr.length - i | 0) - 1 | 0)

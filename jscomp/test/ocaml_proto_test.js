@@ -1103,7 +1103,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return extension_range_range(_1, {
-                  HASH: "Number",
+                  NAME: "Number",
                   VAL: _3
                 });
     }),

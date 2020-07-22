@@ -28,7 +28,7 @@ function _with_in(filename, f) {
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
     Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
     return {
-            HASH: "Error",
+            NAME: "Error",
             VAL: Printexc.to_string(e)
           };
   }
@@ -108,7 +108,7 @@ function _must_escape(s) {
 }
 
 function to_buf(b, t) {
-  if (t.HASH === "List") {
+  if (t.NAME === "List") {
     var l = t.VAL;
     if (l) {
       if (l.tl) {
@@ -171,7 +171,7 @@ function to_string(t) {
 }
 
 function print(fmt, t) {
-  if (t.HASH === "List") {
+  if (t.NAME === "List") {
     var l = t.VAL;
     if (l) {
       if (l.tl) {
@@ -290,7 +290,7 @@ function print(fmt, t) {
 }
 
 function print_noindent(fmt, t) {
-  if (t.HASH === "List") {
+  if (t.NAME === "List") {
     var l = t.VAL;
     if (l) {
       if (l.tl) {
@@ -481,7 +481,7 @@ function _error(t, msg) {
   return Printf.kbprintf((function (b) {
                 var msg$prime = $$Buffer.contents(b);
                 return {
-                        HASH: "Error",
+                        NAME: "Error",
                         VAL: msg$prime
                       };
               }), b, msg);
@@ -601,7 +601,7 @@ function expr_list(acc, k, t) {
     if (switcher > 23 || switcher < 0) {
       if (switcher === 32) {
         return Curry._2(k, undefined, {
-                    HASH: "List",
+                    NAME: "List",
                     VAL: List.rev(acc)
                   });
       }
@@ -619,7 +619,7 @@ function expr_list(acc, k, t) {
                                   }, k, t);
                       } else {
                         return Curry._2(k, undefined, {
-                                    HASH: "List",
+                                    NAME: "List",
                                     VAL: List.rev({
                                           hd: e,
                                           tl: acc
@@ -648,7 +648,7 @@ function _return_atom(last, k, t) {
   var s = $$Buffer.contents(t.atom);
   t.atom.position = 0;
   return Curry._2(k, last, {
-              HASH: "Atom",
+              NAME: "Atom",
               VAL: s
             });
 }
@@ -907,7 +907,7 @@ function expr_or_end(k, t) {
 function next(t) {
   return expr_or_end((function (param, x) {
                 return {
-                        HASH: "Ok",
+                        NAME: "Ok",
                         VAL: x
                       };
               }), t);
@@ -931,7 +931,7 @@ function parse_string(s) {
   var res = next(d);
   if (typeof res === "string") {
     return {
-            HASH: "Error",
+            NAME: "Error",
             VAL: "unexpected end of file"
           };
   } else {
@@ -946,7 +946,7 @@ function parse_chan(bufsize, ic) {
   var res = next(d);
   if (typeof res === "string") {
     return {
-            HASH: "Error",
+            NAME: "Error",
             VAL: "unexpected end of file"
           };
   } else {
@@ -978,11 +978,11 @@ function parse_chan_list(bufsize, ic) {
     var e = next(d);
     if (typeof e === "string") {
       return {
-              HASH: "Ok",
+              NAME: "Ok",
               VAL: List.rev(acc)
             };
     }
-    if (e.HASH === "Error") {
+    if (e.NAME === "Error") {
       return e;
     }
     _acc = {
@@ -1093,7 +1093,7 @@ function MakeDecode(funarg) {
     return Printf.kbprintf((function (b) {
                   var msg$prime = $$Buffer.contents(b);
                   return Curry._1(funarg.$$return, {
-                              HASH: "Error",
+                              NAME: "Error",
                               VAL: msg$prime
                             });
                 }), b, msg);
@@ -1209,7 +1209,7 @@ function MakeDecode(funarg) {
       if (switcher > 23 || switcher < 0) {
         if (switcher === 32) {
           return Curry._2(k, undefined, {
-                      HASH: "List",
+                      NAME: "List",
                       VAL: List.rev(acc)
                     });
         }
@@ -1227,7 +1227,7 @@ function MakeDecode(funarg) {
                                     }, k, t);
                         } else {
                           return Curry._2(k, undefined, {
-                                      HASH: "List",
+                                      NAME: "List",
                                       VAL: List.rev({
                                             hd: e,
                                             tl: acc
@@ -1255,7 +1255,7 @@ function MakeDecode(funarg) {
     var s = $$Buffer.contents(t.atom);
     t.atom.position = 0;
     return Curry._2(k, last, {
-                HASH: "Atom",
+                NAME: "Atom",
                 VAL: s
               });
   };
@@ -1506,7 +1506,7 @@ function MakeDecode(funarg) {
   var next = function (t) {
     return expr_or_end((function (param, x) {
                   return Curry._1(funarg.$$return, {
-                              HASH: "Ok",
+                              NAME: "Ok",
                               VAL: x
                             });
                 }), t);

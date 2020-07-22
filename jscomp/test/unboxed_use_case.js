@@ -32,12 +32,12 @@ console.log("x");
 var v0 = {};
 
 Caml_obj.update_dummy(v0, {
-      HASH: "A",
+      NAME: "A",
       VAL: v0
     });
 
 var v1 = {
-  HASH: "A",
+  NAME: "A",
   VAL: "B"
 };
 
