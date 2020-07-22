@@ -77,7 +77,7 @@ let peek scanner =
   else
     -1
 
-let make b filename =
+let make ?(line=1) ~filename b =
   let scanner = {
     filename;
     src = b;
@@ -86,7 +86,7 @@ let make b filename =
     offset = 0;
     rdOffset = 0;
     lineOffset = 0;
-    lnum = 1;
+    lnum = line;
     mode = [];
   } in
   next scanner;

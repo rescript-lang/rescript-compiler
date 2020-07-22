@@ -22,7 +22,8 @@ type t = {
   mutable regions: regionStatus ref list;
 }
 
-val make: ?mode: mode -> string -> string -> t
+(* `line` seeds the parser's state with an initial line number. *)
+val make: ?mode:mode -> ?line:int -> string -> string -> t
 
 val expect: ?grammar:Grammar.t -> Token.t -> t -> unit
 val optional: t -> Token.t -> bool

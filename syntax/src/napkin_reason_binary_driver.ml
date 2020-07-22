@@ -15,7 +15,7 @@ let extractConcreteSyntax filename =
     if String.length filename > 0 then IO.readFile ~filename
     else IO.readStdin ()
   in
-  let scanner = Napkin_scanner.make (Bytes.of_string src) filename in
+  let scanner = Napkin_scanner.make (Bytes.of_string src) ~filename in
 
   let rec next prevEndPos scanner =
     let (startPos, endPos, token) = Napkin_scanner.scan scanner in
