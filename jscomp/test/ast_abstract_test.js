@@ -59,15 +59,15 @@ var v1 = {
 
 var jsMapperConstantArray = [
   [
-    97,
+    "a",
     "a"
   ],
   [
-    98,
+    "b",
     "b"
   ],
   [
-    99,
+    "c",
     "c"
   ]
 ];
@@ -84,15 +84,15 @@ function idx(v) {
   return eq("File \"ast_abstract_test.ml\", line 32, characters 17-24", xFromJs(xToJs(v)), v);
 }
 
-var x0 = xToJs(/* a */97);
+var x0 = xToJs("a");
 
-var x1 = xToJs(/* b */98);
+var x1 = xToJs("b");
 
-idx(/* a */97);
+idx("a");
 
-idx(/* b */98);
+idx("b");
 
-idx(/* c */99);
+idx("c");
 
 var jsMapperConstantArray$1 = [
   0,

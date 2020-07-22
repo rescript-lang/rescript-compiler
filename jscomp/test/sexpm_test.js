@@ -34,7 +34,7 @@ function eq(loc, param) {
 }
 
 function print_or_error(fmt, x) {
-  if (x.HASH === /* Error */106380200) {
+  if (x.HASH === "Error") {
     return Curry._1(Format.fprintf(fmt, /* Format */{
                     _0: {
                       TAG: /* Formatting_gen */18,
@@ -102,32 +102,32 @@ var a = Sexpm.parse_string("(x x gh 3 3)");
 
 eq("File \"sexpm_test.ml\", line 17, characters 7-14", [
       {
-        HASH: /* Ok */17724,
+        HASH: "Ok",
         VAL: {
-          HASH: /* List */848054398,
+          HASH: "List",
           VAL: {
             hd: {
-              HASH: /* Atom */726615281,
+              HASH: "Atom",
               VAL: "x"
             },
             tl: {
               hd: {
-                HASH: /* Atom */726615281,
+                HASH: "Atom",
                 VAL: "x"
               },
               tl: {
                 hd: {
-                  HASH: /* Atom */726615281,
+                  HASH: "Atom",
                   VAL: "gh"
                 },
                 tl: {
                   hd: {
-                    HASH: /* Atom */726615281,
+                    HASH: "Atom",
                     VAL: "3"
                   },
                   tl: {
                     hd: {
-                      HASH: /* Atom */726615281,
+                      HASH: "Atom",
                       VAL: "3"
                     },
                     tl: /* [] */0

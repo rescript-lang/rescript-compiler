@@ -199,10 +199,10 @@ function rfind_with_index(arr, cmp, v) {
 function rfind_and_split(arr, cmp, v) {
   var i = rfind_with_index(arr, cmp, v);
   if (i < 0) {
-    return /* No_split */-226265796;
+    return "No_split";
   } else {
     return {
-            HASH: /* Split */345791162,
+            HASH: "Split",
             VAL: [
               $$Array.sub(arr, 0, i),
               $$Array.sub(arr, i + 1 | 0, (arr.length - i | 0) - 1 | 0)
@@ -230,10 +230,10 @@ function find_with_index(arr, cmp, v) {
 function find_and_split(arr, cmp, v) {
   var i = find_with_index(arr, cmp, v);
   if (i < 0) {
-    return /* No_split */-226265796;
+    return "No_split";
   } else {
     return {
-            HASH: /* Split */345791162,
+            HASH: "Split",
             VAL: [
               $$Array.sub(arr, 0, i),
               $$Array.sub(arr, i + 1 | 0, (arr.length - i | 0) - 1 | 0)

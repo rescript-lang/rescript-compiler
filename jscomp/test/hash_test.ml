@@ -28,7 +28,7 @@ let () =
 
 let () =
   eq __LOC__ (Hashtbl.hash "xy" |> normalize) 194127723
-
+#if 0 then 
 let () =
   eq __LOC__ (caml_hash `A) 381663642;
   eq __LOC__ (caml_hash (`A, 3)) 294279345;
@@ -38,6 +38,6 @@ let () =
 
 let () =
   eq __LOC__ (caml_hash ([ `A (0,2,1), `B [| "x", "y"|]])) 100650590
-
+#end
 let () =
   Mt.from_pair_suites __MODULE__ !suites

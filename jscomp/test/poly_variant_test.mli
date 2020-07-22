@@ -1,4 +1,4 @@
-
+#if 0 then
 
 
 external test_string_type : flag:([`on_closed | `on_open | `in_ [@bs.as "in"]]
@@ -44,3 +44,4 @@ val p_is_int_test
 val hey :  
   [ `a | `b | `c | `d | `e | `f | `h ] -> unit
 
+#end

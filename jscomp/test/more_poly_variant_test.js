@@ -2,12 +2,12 @@
 
 
 function map(f, param) {
-  if (typeof param === "number") {
-    return /* Nil */3902385;
+  if (typeof param === "string") {
+    return "Nil";
   }
   var match = param.VAL;
   return {
-          HASH: /* Cons */748545553,
+          HASH: "Cons",
           VAL: [
             f(match[0]),
             map(f, match[1])
@@ -16,21 +16,21 @@ function map(f, param) {
 }
 
 function split_cases(x) {
-  if (typeof x === "number" || x.HASH !== /* Snoc */925929103) {
+  if (typeof x === "string" || x.HASH !== "Snoc") {
     return {
-            HASH: /* A */65,
+            HASH: "A",
             VAL: x
           };
   } else {
     return {
-            HASH: /* B */66,
+            HASH: "B",
             VAL: x
           };
   }
 }
 
 function f(param) {
-  if (typeof param === "number") {
+  if (typeof param === "string") {
     return "Tag3";
   } else {
     return "myvariant";
@@ -38,7 +38,7 @@ function f(param) {
 }
 
 function g1(param) {
-  if (param.HASH === /* Tag2 */936370360) {
+  if (param.HASH === "Tag2") {
     return "Tag2";
   } else {
     return "Tag1";
@@ -46,7 +46,7 @@ function g1(param) {
 }
 
 function g(x) {
-  if (typeof x === "number") {
+  if (typeof x === "string") {
     return "Tag3";
   } else {
     return g1(x);
@@ -54,7 +54,7 @@ function g(x) {
 }
 
 function f1(param) {
-  if (param === /* As */14610) {
+  if (param === "As") {
     return "A";
   } else {
     return "other";
@@ -62,12 +62,12 @@ function f1(param) {
 }
 
 function f2(x) {
-  if (typeof x === "number") {
-    if (x === /* h */104) {
+  if (typeof x === "string") {
+    if (x === "h") {
       return 2;
-    } else if (x === /* hello */616641298) {
+    } else if (x === "hello") {
       return 3;
-    } else if (x === /* Tag4 */936370362) {
+    } else if (x === "Tag4") {
       console.log(x);
       return 2;
     } else {
