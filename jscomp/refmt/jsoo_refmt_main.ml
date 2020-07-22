@@ -28,10 +28,12 @@ This is usually the file you want to build for the full playground experience.
 *)
 
 module Js = Jsoo_common.Js
+module Sys_js = Jsoo_common.Sys_js
 
 let export (field : string) v =
   Js.Unsafe.set (Js.Unsafe.global) field v
 ;;
+
 
 module Lang = struct
   type t = OCaml | Reason | Res
@@ -52,11 +54,15 @@ module BundleConfig = struct
   type t = {
     mutable module_system: Js_packages_info.module_system;
     mutable filename: string option;
+    mutable warn_flags: string;
+    mutable warn_error_flags: string;
   }
 
   let make () = {
     module_system=Js_packages_info.NodeJS;
     filename=None;
+    warn_flags=Bsc_warnings.defaults_w;
+    warn_error_flags=Bsc_warnings.defaults_warn_error;
   }
 
 
@@ -68,42 +74,74 @@ module BundleConfig = struct
     | Es6_global -> "es6_global")
 end
 
-type napkinError = {
+type locErrInfo = {
   fullMsg: string; (* Full report string with all context *)
-  text: string; (* simple explain message without any extra context *)
+  shortMsg: string; (* simple explain message without any extra context *)
   loc: Location.t;
 }
 
-exception NapkinParsingErrors of napkinError list
+exception NapkinParsingErrors of locErrInfo list
 
 module ErrorRet = struct
-  let makeJsError ~(js_error_msg: string) ~(text: string) (loc: Location.t) =
+  type err =
+    | SyntaxErr of locErrInfo array
+    | TypecheckErr of locErrInfo array
+    | WarningFlagErr of string * string (* warning, warning_error flags *)
+    | WarningErr of string (* captured stderr output *)
+    | UnexpectedErr of string
+
+  let makeLocError ~(type_: string) ~(fullMsg: string) ~(shortMsg: string) (loc: Location.t) =
     let (_file,line,startchar) = Location.get_pos_info loc.Location.loc_start in
     let (_file,endline,endchar) = Location.get_pos_info loc.Location.loc_end in
     Js.Unsafe.(obj
                  [|
-                   "js_error_msg",
-                   inject @@ Js.string js_error_msg;
+                   "fullMsg", inject @@ Js.string fullMsg;
                    "row"    , inject line;
                    "column" , inject startchar;
                    "endRow" , inject endline;
                    "endColumn" , inject endchar;
-                   "text" , inject @@ Js.string text;
-                   "type" , inject @@ Js.string "error"
+                   "shortMsg" , inject @@ Js.string shortMsg;
+                   "type" , inject @@ Js.string type_;
                  |]
               )
-  let fromLocErrors (errors: Location.error array) =
-    let jsErrors = Array.map (fun (e: Location.error) -> makeJsError ~js_error_msg:e.msg ~text:e.msg e.loc) errors  in
+
+
+  let fromLocErrors ~(type_: string) (errors: locErrInfo array) =
+    let jsErrors = Array.map
+        (fun (e: locErrInfo) ->
+           makeLocError
+             ~type_
+             ~fullMsg:e.fullMsg
+             ~shortMsg:e.shortMsg e.loc) errors
+    in
     Js.Unsafe.(obj [|
         "errors" , inject @@ Js.array jsErrors;
-        "type" , inject @@ Js.string "error"
+        "type" , inject @@ Js.string type_
       |])
 
-  let fromNapkinErrors (errors: napkinError array) =
-    let jsErrors = Array.map (fun (e: napkinError) -> makeJsError ~js_error_msg:e.fullMsg ~text:e.text e.loc) errors in
+  let fromTypingError (errors: locErrInfo array) =
+    fromLocErrors ~type_:"type_error" errors
+
+  let fromSyntaxErrors (errors: locErrInfo array) =
+    fromLocErrors ~type_:"syntax_error" errors
+
+  (* for raised errors caused by malformed warning / warning_error flags *)
+  let makeWarningFlagError ~(warn_flags: string) ~(warn_error_flags: string) (msg: string)  =
     Js.Unsafe.(obj [|
-        "errors" , inject @@ Js.array jsErrors;
-        "type" , inject @@ Js.string "error"
+        "msg" , inject @@ Js.string msg;
+        "warn_flags", inject @@ Js.string warn_flags;
+        "warn_error_flags", inject @@ Js.string warn_error_flags;
+        "type" , inject @@ Js.string "warning_flag_error"
+      |])
+
+  let fromWarningErrors(errors: locErrInfo array) =
+    fromLocErrors ~type_:"warning_error" errors
+
+  (* for raised errors caused by warn-error enabled flags *)
+  let makeWarningError msg =
+    Js.Unsafe.(obj [|
+        "msg" , inject @@ Js.string msg;
+        "type" , inject @@ Js.string "warning_error"
       |])
 
   let makeUnexpectedError msg =
@@ -111,6 +149,7 @@ module ErrorRet = struct
         "js_error_msg" , inject @@ Js.string msg;
         "type" , inject @@ Js.string "unexpected_error"
       |])
+
 end
 
 let () =
@@ -124,25 +163,6 @@ let error_of_exn e =
   | Some (`Ok e) -> Some e
   | Some `Already_displayed
   | None -> None)
-
-(* Handles parse / type check errors / unexpected errors and converts them to Js.object results *)
-let handle_err e =
-  (match error_of_exn e with
-   | Some error ->
-     Location.report_error Format.err_formatter  error;
-     ErrorRet.fromLocErrors [|error|]
-   | None ->
-     match e with
-     | NapkinParsingErrors errors ->
-       ErrorRet.fromNapkinErrors(Array.of_list errors)
-     | _ ->
-       let msg = Printexc.to_string e in
-       match e with
-       | Refmt_api.Migrate_parsetree.Def.Migration_error (_,loc)
-       | Refmt_api.Reason_errors.Reason_error (_,loc) ->
-         let error = Location.error ~loc msg in
-         ErrorRet.fromLocErrors [|error|]
-       | _ -> ErrorRet.makeUnexpectedError msg)
 
 module Converter = Refmt_api.Migrate_parsetree.Convert(Refmt_api.Migrate_parsetree.OCaml_404)(Refmt_api.Migrate_parsetree.OCaml_406)
 module Converter404 = Refmt_api.Migrate_parsetree.Convert(Refmt_api.Migrate_parsetree.OCaml_406)(Refmt_api.Migrate_parsetree.OCaml_404)
@@ -196,7 +216,7 @@ module NapkinDriver = struct
         let errors = parseResult.diagnostics
                      |> List.map (fun d ->
                          let fullMsg = Napkin_diagnostics.toString d parseResult.source in
-                         let text = Napkin_diagnostics.explain d in
+                         let shortMsg = Napkin_diagnostics.explain d in
                          let loc = {
                            Location.loc_start = Napkin_diagnostics.getStartPos d;
                            Location.loc_end = Napkin_diagnostics.getEndPos d;
@@ -204,7 +224,7 @@ module NapkinDriver = struct
                          } in
                          {
                            fullMsg;
-                           text;
+                           shortMsg;
                            loc;
                          }
 
@@ -214,7 +234,6 @@ module NapkinDriver = struct
         raise (NapkinParsingErrors errors)
     in
     (parseResult.parsetree, parseResult.comments)
-    [@@raises Location.Error]
 end
 
 let napkin_parse ~filename src =
@@ -222,49 +241,241 @@ let napkin_parse ~filename src =
   in
   structure
 
-let implementation ~(config: BundleConfig.t) ~lang str  : Js.Unsafe.obj =
-  let {BundleConfig.module_system} = config in
-  let filename = get_filename ~lang config.filename in
-  let modulename = "Playground" in
-  let impl = match lang with
-    | Lang.OCaml -> ocaml_parse ~filename
-    | Reason -> reason_parse ~filename
-    | Res -> napkin_parse ~filename
-  in
-  (* let env = !Toploop.toplevel_env in *)
-  (* Compmisc.init_path false; *)
-  (* let modulename = module_of_filename ppf sourcefile outputprefix in *)
-  (* Env.set_unit_name modulename; *)
-  Lam_compile_env.reset () ;
-  let env = Compmisc.initial_env() in (* Question ?? *)
-  (* let finalenv = ref Env.empty in *)
-  let types_signature = ref [] in
-  try
-    Js_config.jsx_version := 3; (* default *)
-    let ast = impl (str) in
-    let ast = Ppx_entry.rewrite_implementation ast in
-    let typed_tree =
-      let (a,b,_,signature) = Typemod.type_implementation_more modulename modulename modulename env ast in
-      (* finalenv := c ; *)
-      types_signature := signature;
-      (a,b) in
-  typed_tree
-  |>  Translmod.transl_implementation modulename
-  |> (* Printlambda.lambda ppf *) (fun {Lambda.code = lam} ->
-      let buffer = Buffer.create 1000 in
-      let () = Js_dump_program.pp_deps_program
-                          ~output_prefix:"" (* does not matter here *)
-                          module_system
-                          (Lam_compile_main.compile ""
-                              lam)
-                          (Ext_pp.from_buffer buffer) in
-      let v = Buffer.contents buffer in
+module Compile = struct
+
+
+  (* Apparently it's not possible to retrieve the loc info from 
+   * Location.error_of_exn properly, so we need to do some extra
+   * overloading action
+   * *)
+  let warning_loc: Location.t option ref = ref None
+  let warning_buffer = Buffer.create 512
+  let warning_ppf = Format.formatter_of_buffer warning_buffer
+
+  let clear_warning_loc () = warning_loc := None
+
+  let super_warning_printer loc ppf w =
+    (* TODO: maybe instead of tracking single states, maybe better
+     * to track whole an array of locErrInfo for each print? *)
+    warning_loc := Some loc;
+    Super_location.super_warning_printer loc ppf w
+
+  (*
+     We need to maintain separate stdout / stderr buffers
+     since I had no idea on how to replace the `ppf` being
+     injected in the compiler (the same ppf that is passed
+     to the Warnings module etc.)
+
+     UPDATE: I might just have found the solution with overriding
+             the Location.warning_printer
+  *)
+  (*
+  let stdout_buffer = Buffer.create(1000)
+  let stderr_buffer = Buffer.create(1000)
+
+   let () =
+      Sys_js.set_channel_flusher stdout (fun str ->
+          Buffer.add_string stdout_buffer str;
+        );
+      Sys_js.set_channel_flusher stderr (fun str ->
+          Buffer.add_string stderr_buffer str;
+        );
+
+  let clear_stdout_stderr () =
+    Buffer.clear stdout_buffer;
+    Buffer.clear stderr_buffer
+
+  let flush_stdout_stderr () =
+    let out = Buffer.contents stdout_buffer in
+    let err = Buffer.contents stderr_buffer in
+    clear_stdout_stderr ();
+    (out, err)
+  *)
+
+  let () =
+    Location.formatter_for_warnings := warning_ppf;
+    Location.warning_printer := super_warning_printer
+
+  let handle_err e =
+    (match error_of_exn e with
+     | Some error ->
+       (* This branch handles all 
+        * errors handled by the Location error reporting
+        * system.
+        *
+        * Here we can differentiate between the different kinds
+        * of error types just by looking at the raised exn names *)
+       let type_ = match e with 
+         | Typetexp.Error _
+         | Typecore.Error _
+         | Typemod.Error _ -> "type_error"
+         | Lexer.Error _
+         | Syntaxerr.Error _ -> "syntax_error"
+         | _ -> "other_error"
+       in
+       let fullMsg = 
+         Location.report_error Format.str_formatter error;
+         Format.flush_str_formatter ()
+       in
+       let err = { fullMsg; shortMsg=error.msg; loc=error.loc; } in
+       ErrorRet.fromLocErrors ~type_ [|err|]
+     | None ->
+       match e with
+       | NapkinParsingErrors errors ->
+         ErrorRet.fromSyntaxErrors(Array.of_list errors)
+       | _ ->
+         let msg = Printexc.to_string e in
+         match e with
+         | Warnings.Errors ->
+           let fullMsg = Buffer.contents warning_buffer in
+           let error = Location.error ?loc:!warning_loc msg in
+           let err = { fullMsg; shortMsg=error.msg; loc=error.loc; } in
+           ErrorRet.fromWarningErrors [|err|]
+         | Refmt_api.Migrate_parsetree.Def.Migration_error (_,loc) ->
+           let error = { fullMsg=msg; shortMsg=msg; loc; } in
+           ErrorRet.fromSyntaxErrors [|error|]
+         | Refmt_api.Reason_errors.Reason_error (reason_error,loc) ->
+           let fullMsg =
+             Refmt_api.Reason_errors.report_error Format.str_formatter ~loc reason_error;
+             Format.flush_str_formatter ()
+           in
+           let error = { fullMsg; shortMsg=msg; loc; } in
+           ErrorRet.fromSyntaxErrors [|error|]
+         | _ -> ErrorRet.makeUnexpectedError msg)
+
+  let implementation ~(config: BundleConfig.t) ~lang str  : Js.Unsafe.obj =
+    let {BundleConfig.module_system; warn_flags; warn_error_flags} = config in
+    try
+      (* Wanna make sure that we don't carry any uncleared stdout / stderr here *)
+      (*clear_stdout_stderr ();*)
+      clear_warning_loc ();
+
+      Warnings.parse_options false warn_flags;
+      Warnings.parse_options true warn_error_flags;
+      let filename = get_filename ~lang config.filename in
+      let modulename = "Playground" in
+      let impl = match lang with
+        | Lang.OCaml -> ocaml_parse ~filename
+        | Reason -> reason_parse ~filename
+        | Res -> napkin_parse ~filename
+      in
+      (* let env = !Toploop.toplevel_env in *)
+      (* Compmisc.init_path false; *)
+      (* let modulename = module_of_filename ppf sourcefile outputprefix in *)
+      (* Env.set_unit_name modulename; *)
+      Lam_compile_env.reset () ;
+      let env = Compmisc.initial_env() in (* Question ?? *)
+      (* let finalenv = ref Env.empty in *)
+      let types_signature = ref [] in
+      Js_config.jsx_version := 3; (* default *)
+      let ast = impl (str) in
+      let ast = Ppx_entry.rewrite_implementation ast in
+      let typed_tree =
+        let (a,b,_,signature) = Typemod.type_implementation_more modulename modulename modulename env ast in
+        (* finalenv := c ; *)
+        types_signature := signature;
+        (a,b) in
+      typed_tree
+      |>  Translmod.transl_implementation modulename
+      |> (* Printlambda.lambda ppf *) (fun {Lambda.code = lam} ->
+          let buffer = Buffer.create 1000 in
+          let () = Js_dump_program.pp_deps_program
+              ~output_prefix:"" (* does not matter here *)
+              module_system
+              (Lam_compile_main.compile ""
+                 lam)
+              (Ext_pp.from_buffer buffer) in
+          let v = Buffer.contents buffer in
+          Js.Unsafe.(obj [|
+              "js_code", inject @@ Js.string v;
+              "type" , inject @@ Js.string "success"
+            |]))
+    with
+    | e -> 
+      match e with
+      | Arg.Bad msg ->
+        ErrorRet.makeWarningFlagError ~warn_flags ~warn_error_flags msg
+      | _ -> handle_err e;;
+
+  let parse_and_print ?(filename: string option) ~(from:Lang.t) ~(to_:Lang.t) (src: string) =
+    let open Lang in
+    let filename = get_filename ~lang:from filename in
+    let handle_ret ~lang str =
       Js.Unsafe.(obj [|
-          "js_code", inject @@ Js.string v;
+          "code", inject @@ Js.string str;
+          "lang", inject @@ Js.string (Lang.toString lang);
           "type" , inject @@ Js.string "success"
-        |]))
-  with
-  | e -> handle_err e;;
+        |])
+    in
+    try
+      (match (from, to_) with
+       | (Reason, OCaml) ->
+         src
+         |> lexbuf_from_string ~filename
+         |> Refmt_api.Reason_toolchain.RE.implementation_with_comments
+         |> Refmt_api.Reason_toolchain.ML.print_implementation_with_comments Format.str_formatter;
+         handle_ret ~lang:OCaml (Format.flush_str_formatter ())
+       | (OCaml, Reason) ->
+         src
+         |> lexbuf_from_string ~filename
+         |> Refmt_api.Reason_toolchain.ML.implementation_with_comments
+         |> Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter;
+         handle_ret ~lang:Reason (Format.flush_str_formatter ())
+       | (Reason, Res) ->
+         let ast = 
+           src
+           |> lexbuf_from_string ~filename
+           |> Refmt_api.Reason_toolchain.RE.implementation
+           |> Converter.copy_structure
+         in
+         let structure = ast
+                         |> Napkin_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
+                         |> Napkin_ast_conversion.structure
+         in
+         handle_ret ~lang:Res (Napkin_printer.printImplementation ~width:80 structure ~comments:[])
+       | (Res, Reason) ->
+         let (structure, _) =
+           NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
+         in
+         let sanitized = structure
+                         |> Napkin_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
+                         |> Napkin_ast_conversion.structure
+         in
+         Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter (Converter404.copy_structure sanitized, []);
+         handle_ret ~lang:Reason (Format.flush_str_formatter ())
+       | (OCaml, Res) ->
+         let structure = 
+           src
+           |> lexbuf_from_string ~filename
+           |> Parse.implementation
+         in
+         handle_ret ~lang:Res (Napkin_printer.printImplementation ~width:80 structure ~comments:[])
+       | (Res, OCaml) ->
+         let (structure, _) =
+           NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
+         in
+         Pprintast.structure Format.str_formatter structure;
+         handle_ret ~lang:OCaml (Format.flush_str_formatter ())
+       | (Res, Res) ->
+         (* Basically pretty printing *)
+         let (structure, comments) =
+           NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
+         in
+         handle_ret ~lang:Res (Napkin_printer.printImplementation ~width:80 structure ~comments)
+       | (OCaml, OCaml) ->
+         handle_ret ~lang:OCaml src
+       | (Reason, Reason) ->
+         let astAndComments = src
+                              |> lexbuf_from_string ~filename
+                              |> Refmt_api.Reason_toolchain.RE.implementation_with_comments
+         in
+         Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter astAndComments;
+         handle_ret ~lang:Reason (Format.flush_str_formatter ())
+      )
+    with
+    | e -> handle_err e
+end
+
 
 
 (* To add a directory to the load path *)
@@ -272,85 +483,6 @@ let dir_directory d =
   Config.load_path := d :: !Config.load_path
 let () =
   dir_directory "/static"
-
-let parse_and_print ?(filename: string option) ~(from:Lang.t) ~(to_:Lang.t) (src: string) =
-  let open Lang in
-  let filename = get_filename ~lang:from filename in
-  let handle_ret ~lang str =
-    Js.Unsafe.(obj [|
-        "code", inject @@ Js.string str;
-        "lang", inject @@ Js.string (Lang.toString lang);
-        "type" , inject @@ Js.string "success"
-      |])
-  in
-  try
-    (match (from, to_) with
-     | (Reason, OCaml) ->
-       src
-       |> lexbuf_from_string ~filename
-       |> Refmt_api.Reason_toolchain.RE.implementation_with_comments
-       |> Refmt_api.Reason_toolchain.ML.print_implementation_with_comments Format.str_formatter;
-       handle_ret ~lang:OCaml (Format.flush_str_formatter ())
-     | (OCaml, Reason) ->
-       src
-       |> lexbuf_from_string ~filename
-       |> Refmt_api.Reason_toolchain.ML.implementation_with_comments
-       |> Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter;
-       handle_ret ~lang:Reason (Format.flush_str_formatter ())
-     | (Reason, Res) ->
-       let ast = 
-         src
-         |> lexbuf_from_string ~filename
-         |> Refmt_api.Reason_toolchain.RE.implementation
-         |> Converter.copy_structure
-       in
-       let structure = ast
-                       |> Napkin_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
-                       |> Napkin_ast_conversion.structure
-       in
-       handle_ret ~lang:Res (Napkin_printer.printImplementation ~width:80 structure ~comments:[])
-     | (Res, Reason) ->
-       let (structure, _) =
-         NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
-       in
-       let sanitized = structure
-                       |> Napkin_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
-                       |> Napkin_ast_conversion.structure
-       in
-       Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter (Converter404.copy_structure sanitized, []);
-       handle_ret ~lang:Reason (Format.flush_str_formatter ())
-     | (OCaml, Res) ->
-       let structure = 
-         src
-         |> lexbuf_from_string ~filename
-         |> Parse.implementation
-       in
-       handle_ret ~lang:Res (Napkin_printer.printImplementation ~width:80 structure ~comments:[])
-     | (Res, OCaml) ->
-       let (structure, _) =
-         NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
-       in
-       Pprintast.structure Format.str_formatter structure;
-       handle_ret ~lang:OCaml (Format.flush_str_formatter ())
-     | (Res, Res) ->
-       (* Basically pretty printing *)
-       let (structure, comments) =
-         NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
-       in
-       handle_ret ~lang:Res (Napkin_printer.printImplementation ~width:80 structure ~comments)
-     | (OCaml, OCaml) ->
-       handle_ret ~lang:OCaml src
-     | (Reason, Reason) ->
-       let astAndComments = src
-                            |> lexbuf_from_string ~filename
-                            |> Refmt_api.Reason_toolchain.RE.implementation_with_comments
-       in
-       Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter astAndComments;
-       handle_ret ~lang:Reason (Format.flush_str_formatter ())
-    )
-  with
-  | e -> handle_err e
-
 
 module Export = struct
   let make_compiler ~config ~lang =
@@ -361,7 +493,7 @@ module Export = struct
         inject @@
         Js.wrap_meth_callback
           (fun _ code ->
-             (implementation ~config ~lang (Js.to_string code)));
+             (Compile.implementation ~config ~lang (Js.to_string code)));
         "version",
         inject @@
         Js.string 
@@ -379,7 +511,7 @@ module Export = struct
              (fun _ code ->
                 (match lang with
                  | OCaml -> ErrorRet.makeUnexpectedError ("OCaml pretty printing not supported")
-                 | _ -> parse_and_print ?filename:config.filename ~from:lang ~to_:lang (Js.to_string code))))
+                 | _ -> Compile.parse_and_print ?filename:config.filename ~from:lang ~to_:lang (Js.to_string code))))
         |]
       else
         baseAttrs
@@ -398,6 +530,12 @@ module Export = struct
     let set_filename value =
       config.filename <- Some value; true
     in
+    let set_warn_flags value =
+      config.warn_flags <- value; true
+    in
+    let set_warn_error_flags value =
+      config.warn_error_flags <- value; true
+    in
     (Js.Unsafe.(obj
                   [|
                     "setModuleSystem",
@@ -412,6 +550,18 @@ module Export = struct
                       (fun _ value ->
                          (Js.bool (set_filename (Js.to_string value)))
                       );
+                    "setWarnFlags",
+                    inject @@
+                    Js.wrap_meth_callback
+                      (fun _ value ->
+                         (Js.bool (set_warn_flags (Js.to_string value)))
+                      );
+                    "setWarnErrorFlags",
+                    inject @@
+                    Js.wrap_meth_callback
+                      (fun _ value ->
+                         (Js.bool (set_warn_error_flags (Js.to_string value)))
+                      );
                     "list",
                     inject @@
                     Js.wrap_meth_callback
@@ -424,6 +574,10 @@ module Export = struct
                                            |> BundleConfig.string_of_module_system
                                            |> Js.string
                                          );
+                                         "warn_flags",
+                                         inject @@ (Js.string config.warn_flags);
+                                         "warn_error_flags",
+                                         inject @@ (Js.string config.warn_error_flags);
                                        |]))
                       );
 
@@ -436,32 +590,31 @@ module Export = struct
                     inject @@
                     Js.wrap_meth_callback
                       (fun _ code ->
-                         (parse_and_print ?filename:config.filename ~from:Reason ~to_:OCaml (Js.to_string code)));
-                    "ocaml_to_reason",
-                    inject @@
+                         (Compile.parse_and_print ?filename:config.filename ~from:Reason ~to_:OCaml (Js.to_string code)));
+                    "ocaml_to_reason", inject @@
                     Js.wrap_meth_callback
                       (fun _ code ->
-                         (parse_and_print ?filename:config.filename ~from:OCaml ~to_:Reason (Js.to_string code)));
+                         (Compile.parse_and_print ?filename:config.filename ~from:OCaml ~to_:Reason (Js.to_string code)));
                     "reason_to_res",
                     inject @@
                     Js.wrap_meth_callback
                       (fun _ code ->
-                         (parse_and_print ?filename:config.filename ~from:Reason ~to_:Res (Js.to_string code)));
+                         (Compile.parse_and_print ?filename:config.filename ~from:Reason ~to_:Res (Js.to_string code)));
                     "res_to_reason",
                     inject @@
                     Js.wrap_meth_callback
                       (fun _ code ->
-                         (parse_and_print ?filename:config.filename ~from:Res ~to_:Reason (Js.to_string code)));
+                         (Compile.parse_and_print ?filename:config.filename ~from:Res ~to_:Reason (Js.to_string code)));
                     "res_to_ocaml",
                     inject @@
                     Js.wrap_meth_callback
                       (fun _ code ->
-                         (parse_and_print ?filename:config.filename ~from:Res ~to_:OCaml (Js.to_string code)));
+                         (Compile.parse_and_print ?filename:config.filename ~from:Res ~to_:OCaml (Js.to_string code)));
                     "ocaml_to_res",
                     inject @@
                     Js.wrap_meth_callback
                       (fun _ code ->
-                         (parse_and_print ?filename:config.filename ~from:OCaml ~to_:Res (Js.to_string code)));
+                         (Compile.parse_and_print ?filename:config.filename ~from:OCaml ~to_:Res (Js.to_string code)));
                   |]))
 
   let make () =
