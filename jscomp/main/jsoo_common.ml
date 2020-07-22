@@ -40,6 +40,18 @@ module Js = struct
   external to_bytestring : js_string t -> string = "caml_js_to_byte_string"
 end
 
+module Sys_js = struct
+  external set_channel_output' :
+    out_channel -> (Js.js_string Js.t -> unit) Js.callback -> unit
+    = "caml_ml_set_channel_output"
+
+  let set_channel_flusher (out_channel : out_channel) (f : string -> unit) =
+    let f' : (Js.js_string Js.t -> unit) Js.callback =
+      Js.wrap_callback (fun s -> f (Js.to_bytestring s))
+    in
+    set_channel_output' out_channel f'
+end
+
 let mk_js_error (loc: Location.t) (msg: string) = 
   let (_file,line,startchar) = Location.get_pos_info loc.Location.loc_start in
   let (_file,endline,endchar) = Location.get_pos_info loc.Location.loc_end in

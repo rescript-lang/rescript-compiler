@@ -15,6 +15,7 @@ module Js :
         type obj
         external obj : (string * any) array -> obj = "caml_js_object"
       end
+
     type (-'a, +'b) meth_callback
     type 'a callback = (unit, 'a) meth_callback
 
@@ -44,6 +45,14 @@ module Js :
     external to_bytestring : js_string t -> string = "caml_js_to_byte_string"
 
   end
+
+module Sys_js :
+sig
+  val set_channel_flusher : out_channel -> (string -> unit) -> unit
+  (** Set a callback to be called when an out_channel flush its buffer.
+        [set_channel_flusher chan cb] install the callback [cb] for [chan] out_channel.
+        [cb] will be called with the string to flush. *)
+end
 
 (*
 Creates a Js Error object for given location with and a certain error message
