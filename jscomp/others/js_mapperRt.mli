@@ -29,9 +29,9 @@
 *)
 val binarySearch:
   int ->
-  int -> 
-  (int * 'a) array ->
-  'a
+  string -> 
+  (string * string) array ->
+  string
 
 (**
   [revSearch len assocArray value]
@@ -39,15 +39,15 @@ val binarySearch:
 *)  
 val revSearch:  
   int -> 
-  (int * string) array ->
+  (string * string) array ->
   string ->
-  int option
+  string option
 
 val revSearchAssert:  
   int -> (* len *)
-  (int * string) array ->
+  ('a * string) array ->
   string ->
-  int 
+  'a
   
 (**
   [toInt enum array]

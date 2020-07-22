@@ -31,14 +31,14 @@ type arg_expression =
   | Splice2 of E.t * E.t
 
 (* we need destruct [undefined] when input is optional *)
-let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t =
+let eval (arg : J.expression) (dispatches : (Ast_compatible.hash_label * string) list ) : E.t =
   if arg == E.undefined then E.undefined else
   match arg.expression_desc with
-  | Number (Int {i} | Uint i) ->
-    E.str (Ext_list.assoc_by_int  dispatches (Int32.to_int i) None)
+  | Str (_,s) -> 
+    E.str (Ext_list.assoc_by_string  dispatches s None)
   | _ ->
     E.of_block
-      [(S.int_switch arg
+      [(S.string_switch arg
       (Ext_list.map dispatches (fun (i,r) ->
               {J.switch_case = i ;
                switch_body = [S.return_stmt (E.str r)];
@@ -48,17 +48,16 @@ let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t =
 
 (** invariant: optional is not allowed in this case *)
 (** arg is a polyvar *)
-let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
+let eval_as_event (arg : J.expression) (dispatches : (Ast_compatible.hash_label * string) list ) =
   match arg.expression_desc with
-  | Array ([{expression_desc = Number (Int {i} | Uint i)}; cb], _)
-  | Caml_block([{expression_desc = Number (Int {i} | Uint i)}; cb], _, _, _)
-    -> (* FIXME - to polyvar*)
-    let v = Ext_list.assoc_by_int dispatches (Int32.to_int i) None in
+  | Caml_block([_hash; cb], _, _, Blk_poly_var s) when Js_analyzer.no_side_effect_expression cb 
+    -> 
+    let v = Ext_list.assoc_by_string dispatches s None in
     Splice2(E.str v , cb )
   | _ ->
     Splice2
       (E.of_block
-      [(S.int_switch (E.poly_var_tag_access arg)
+      [(S.string_switch (E.poly_var_tag_access arg)
       (Ext_list.map dispatches (fun (i,r) ->
               {J.switch_case = i ;
                switch_body = [S.return_stmt (E.str r)];
@@ -80,14 +79,14 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
       *)
 
 (* we need destruct [undefined] when input is optional *)
-let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  =
+let eval_as_int (arg : J.expression) (dispatches : (Ast_compatible.hash_label * int) list ) : E.t  =
   if arg == E.undefined then E.undefined else
   match arg.expression_desc with
-  | Number (Int {i} | Uint i) ->
-    E.int (Int32.of_int (Ext_list.assoc_by_int dispatches (Int32.to_int i) None))
+  | Str(_,i) ->
+    E.int (Int32.of_int (Ext_list.assoc_by_string dispatches i None))
   | _ ->
     E.of_block
-      [(S.int_switch arg
+      [(S.string_switch arg
       (Ext_list.map dispatches (fun (i,r) ->
               {J.switch_case = i ;
                switch_body = [S.return_stmt (E.int (Int32.of_int  r))];
