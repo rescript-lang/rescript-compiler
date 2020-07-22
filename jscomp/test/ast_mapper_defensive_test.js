@@ -55,15 +55,15 @@ function bFromJs(param) {
 
 var jsMapperConstantArray$1 = [
   [
-    22125,
+    "c0",
     "c0"
   ],
   [
-    22126,
+    "c1",
     "c1"
   ],
   [
-    22127,
+    "c2",
     "c2"
   ]
 ];

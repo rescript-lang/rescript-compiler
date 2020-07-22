@@ -69,19 +69,19 @@ function aFromJs(param) {
 
 var jsMapperConstantArray$1 = [
   [
-    21902,
+    "b0",
     "b0"
   ],
   [
-    21903,
+    "b1",
     "b1"
   ],
   [
-    21904,
+    "b2",
     "b2"
   ],
   [
-    21905,
+    "b3",
     "b3"
   ]
 ];
@@ -94,7 +94,7 @@ function bFromJs(param) {
   return Js_mapperRt.revSearchAssert(4, jsMapperConstantArray$1, param);
 }
 
-bToJs(/* b0 */21902);
+bToJs("b0");
 
 exports.tToJs = tToJs;
 exports.tFromJs = tFromJs;

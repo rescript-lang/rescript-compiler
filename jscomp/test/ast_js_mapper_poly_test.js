@@ -32,15 +32,15 @@ function eq(loc, x, y) {
 
 var jsMapperConstantArray = [
   [
-    67,
+    "C",
     "C"
   ],
   [
-    68,
+    "D",
     "D"
   ],
   [
-    102,
+    "f",
     "x"
   ]
 ];
@@ -69,18 +69,18 @@ function eqUOpt(x, y) {
   }
 }
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 25, characters 5-12", eqUOpt(uFromJs("x"), /* f */102), true);
+eq("File \"ast_js_mapper_poly_test.ml\", line 25, characters 5-12", eqUOpt(uFromJs("x"), "f"), true);
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 26, characters 5-12", eqUOpt(uFromJs("D"), /* D */68), true);
+eq("File \"ast_js_mapper_poly_test.ml\", line 26, characters 5-12", eqUOpt(uFromJs("D"), "D"), true);
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 27, characters 5-12", eqUOpt(uFromJs("C"), /* C */67), true);
+eq("File \"ast_js_mapper_poly_test.ml\", line 27, characters 5-12", eqUOpt(uFromJs("C"), "C"), true);
 
 eq("File \"ast_js_mapper_poly_test.ml\", line 28, characters 5-12", eqUOpt(uFromJs("f"), undefined), true);
 
 eq("File \"ast_js_mapper_poly_test.ml\", line 29, characters 5-12", $$Array.map(uToJs, [
-          /* D */68,
-          /* C */67,
-          /* f */102
+          "D",
+          "C",
+          "f"
         ]), [
       "D",
       "C",

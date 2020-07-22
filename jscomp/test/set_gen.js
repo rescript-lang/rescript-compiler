@@ -598,73 +598,73 @@ function of_sorted_array(l) {
 function is_ordered(cmp, tree) {
   var is_ordered_min_max = function (tree) {
     if (!tree) {
-      return /* Empty */50834029;
+      return "Empty";
     }
     var r = tree._2;
     var v = tree._1;
     var match = is_ordered_min_max(tree._0);
-    if (typeof match === "number") {
-      if (match !== /* Empty */50834029) {
-        return /* No */17505;
+    if (typeof match === "string") {
+      if (match !== "Empty") {
+        return "No";
       }
       var match$1 = is_ordered_min_max(r);
-      if (typeof match$1 === "number") {
-        if (match$1 === /* Empty */50834029) {
+      if (typeof match$1 === "string") {
+        if (match$1 === "Empty") {
           return {
-                  HASH: /* V */86,
+                  NAME: "V",
                   VAL: [
                     v,
                     v
                   ]
                 };
         } else {
-          return /* No */17505;
+          return "No";
         }
       }
       var match$2 = match$1.VAL;
       if (Curry._2(cmp, v, match$2[0]) < 0) {
         return {
-                HASH: /* V */86,
+                NAME: "V",
                 VAL: [
                   v,
                   match$2[1]
                 ]
               };
       } else {
-        return /* No */17505;
+        return "No";
       }
     }
     var match$3 = match.VAL;
     var max_v = match$3[1];
     var min_v = match$3[0];
     var match$4 = is_ordered_min_max(r);
-    if (typeof match$4 === "number") {
-      if (match$4 === /* Empty */50834029 && Curry._2(cmp, max_v, v) < 0) {
+    if (typeof match$4 === "string") {
+      if (match$4 === "Empty" && Curry._2(cmp, max_v, v) < 0) {
         return {
-                HASH: /* V */86,
+                NAME: "V",
                 VAL: [
                   min_v,
                   v
                 ]
               };
       } else {
-        return /* No */17505;
+        return "No";
       }
     }
     var match$5 = match$4.VAL;
     if (Curry._2(cmp, max_v, match$5[0]) < 0) {
       return {
-              HASH: /* V */86,
+              NAME: "V",
               VAL: [
                 min_v,
                 match$5[1]
               ]
             };
     } else {
-      return /* No */17505;
+      return "No";
     }
   };
-  return is_ordered_min_max(tree) !== /* No */17505;
+  return is_ordered_min_max(tree) !== "No";
 }
 
 function invariant(cmp, t) {

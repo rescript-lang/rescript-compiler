@@ -24,9 +24,9 @@ function makeWrapper(foo, param) {
   if (foo !== undefined) {
     tmp.foo = (function () {
           switch (Caml_option.valFromOption(foo)) {
-            case 97 :
+            case "a" :
                 return "a";
-            case 98 :
+            case "b" :
                 return "b";
             
           }
@@ -40,9 +40,9 @@ function makeWrapper2(foo, param) {
   console.log({
         foo: (function () {
               switch (foo) {
-                case 97 :
+                case "a" :
                     return "a";
-                case 98 :
+                case "b" :
                     return "b";
                 
               }
@@ -51,7 +51,7 @@ function makeWrapper2(foo, param) {
   
 }
 
-makeWrapper2(/* a */97, undefined);
+makeWrapper2("a", undefined);
 
 function makeWrapper3(foo, param) {
   console.log(2);
@@ -59,9 +59,9 @@ function makeWrapper3(foo, param) {
   if (foo !== undefined) {
     tmp.foo = (function () {
           switch (Caml_option.valFromOption(foo)) {
-            case 97 :
+            case "a" :
                 return "a";
-            case 98 :
+            case "b" :
                 return "b";
             
           }
@@ -74,14 +74,14 @@ function makeWrapper4(foo, param) {
   console.log(2);
   var tmp = {};
   var tmp$1 = foo > 100 ? undefined : (
-      foo > 10 ? /* b */98 : /* a */97
+      foo > 10 ? "b" : "a"
     );
   if (tmp$1 !== undefined) {
     tmp.foo = (function () {
           switch (Caml_option.valFromOption(tmp$1)) {
-            case 97 :
+            case "a" :
                 return "a";
-            case 98 :
+            case "b" :
                 return "b";
             
           }
@@ -90,7 +90,7 @@ function makeWrapper4(foo, param) {
   return tmp;
 }
 
-b("File \"gpr_2503_test.ml\", line 31, characters 5-12", "a" === makeWrapper3(/* a */97, undefined).foo);
+b("File \"gpr_2503_test.ml\", line 31, characters 5-12", "a" === makeWrapper3("a", undefined).foo);
 
 b("File \"gpr_2503_test.ml\", line 34, characters 5-12", undefined === makeWrapper3(undefined, undefined).foo);
 

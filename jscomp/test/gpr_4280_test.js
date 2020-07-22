@@ -36,10 +36,10 @@ function string(s) {
 
 function fn(authState, route) {
   var onboardingRoute;
-  if (typeof authState === "number") {
+  if (typeof authState === "string") {
     var exit = 0;
-    if (typeof route === "number") {
-      if (route === /* SignUp */-384133096 || route === /* SignIn */-384135774 || route === /* Invite */-730831383 || route === /* PasswordReset */-799423340) {
+    if (typeof route === "string") {
+      if (route === "SignUp" || route === "SignIn" || route === "Invite" || route === "PasswordReset") {
         div({
               hd: string("LoggedOut"),
               tl: /* [] */0
@@ -47,7 +47,7 @@ function fn(authState, route) {
         return 1;
       }
       exit = 2;
-    } else if (route.HASH === /* Onboarding */378129979) {
+    } else if (route.NAME === "Onboarding") {
       onboardingRoute = route.VAL;
     } else {
       exit = 2;
@@ -62,7 +62,7 @@ function fn(authState, route) {
     
   } else {
     var exit$1 = 0;
-    if (typeof route === "number" || route.HASH !== /* Onboarding */378129979) {
+    if (typeof route === "string" || route.NAME !== "Onboarding") {
       exit$1 = 2;
     } else {
       onboardingRoute = route.VAL;
@@ -85,19 +85,19 @@ function fn(authState, route) {
   return 0;
 }
 
-eq("File \"gpr_4280_test.ml\", line 46, characters 6-13", fn(/* Unauthenticated */-54822762, /* Invite */-730831383), 1);
+eq("File \"gpr_4280_test.ml\", line 46, characters 6-13", fn("Unauthenticated", "Invite"), 1);
 
-eq("File \"gpr_4280_test.ml\", line 47, characters 6-13", fn(/* Unauthenticated */-54822762, {
-          HASH: /* Onboarding */378129979,
+eq("File \"gpr_4280_test.ml\", line 47, characters 6-13", fn("Unauthenticated", {
+          NAME: "Onboarding",
           VAL: 0
         }), 0);
 
 eq("File \"gpr_4280_test.ml\", line 48, characters 6-13", fn({
-          HASH: /* Unverified */254489473,
+          NAME: "Unverified",
           VAL: 0
-        }, /* Invite */-730831383), 2);
+        }, "Invite"), 2);
 
-eq("File \"gpr_4280_test.ml\", line 49, characters 6-13", fn(/* Unauthenticated */-54822762, /* xx */26880), 3);
+eq("File \"gpr_4280_test.ml\", line 49, characters 6-13", fn("Unauthenticated", "xx"), 3);
 
 Mt.from_pair_suites("gpr_4280_test.ml", suites.contents);
 

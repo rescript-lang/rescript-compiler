@@ -15,7 +15,7 @@ x.tl = x;
 var x0 = {};
 
 Caml_obj.update_dummy(x0, {
-      HASH: /* Cons */748545553,
+      NAME: "Cons",
       VAL: [
         1,
         x0
@@ -25,7 +25,7 @@ Caml_obj.update_dummy(x0, {
 var y0 = {};
 
 Caml_obj.update_dummy(y0, {
-      HASH: /* Cons */748545553,
+      NAME: "Cons",
       VAL: y0
     });
 
@@ -244,7 +244,7 @@ var rec_variant_a = {
 };
 
 function phd(l) {
-  if (typeof l === "number") {
+  if (typeof l === "string") {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
@@ -255,7 +255,7 @@ function phd(l) {
           Error: new Error()
         };
   }
-  if (l.HASH === /* Cons */748545553) {
+  if (l.NAME === "Cons") {
     return l.VAL[0];
   }
   throw {
@@ -270,7 +270,7 @@ function phd(l) {
 }
 
 function ptl(l) {
-  if (typeof l === "number") {
+  if (typeof l === "string") {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
@@ -281,7 +281,7 @@ function ptl(l) {
           Error: new Error()
         };
   }
-  if (l.HASH === /* Cons */748545553) {
+  if (l.NAME === "Cons") {
     return l.VAL[1];
   }
   throw {

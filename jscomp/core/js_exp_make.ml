@@ -255,7 +255,7 @@ let dummy_obj ?comment (info : Lam_tag_info.t)  : t =
   | Blk_module _ 
   | Blk_constructor _ 
   | Blk_record_inlined _ 
-  | Blk_poly_var _ 
+  | Blk_poly_var  
   | Blk_extension 
   | Blk_record_ext _ 
     -> 
@@ -856,6 +856,8 @@ let  string_equal ?comment (e0 : t) (e1 : t) : t =
 let is_type_number ?comment (e : t) : t = 
   string_equal ?comment (typeof e) (str "number")    
 
+let is_type_string ?comment (e : t) : t = 
+  string_equal ?comment (typeof e) (str "string")    
 
 (* we are calling [Caml_primitive.primitive_name], since it's under our
    control, we should make it follow the javascript name convention, and

@@ -119,7 +119,7 @@ let fun_
     pexp_attributes = attrs;
     pexp_desc = Pexp_fun(label, None, pat, exp)
   } *)
-
+type hash_label = string 
 
 
 let const_exp_string 
@@ -133,6 +133,15 @@ let const_exp_string
     pexp_desc = Pexp_constant(Pconst_string(s,delimiter))
   }
 
+let const_hash_label 
+    ?(loc = default_loc)
+    ?(attrs = [])
+    (s : hash_label) : expression = 
+  {
+    pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_constant(Pconst_string(s,None))
+  }
 
 let const_exp_int 
   ?(loc = default_loc)
@@ -264,7 +273,7 @@ let object_field   l attrs ty =
 
 
 
-let hash_label (x : poly_var_label) : int = Btype.hash_variant x.txt
+let hash_label (x : poly_var_label) : hash_label =  x.txt
 let label_of_name (x : poly_var_label) : string = x.txt
 
 type args  = 

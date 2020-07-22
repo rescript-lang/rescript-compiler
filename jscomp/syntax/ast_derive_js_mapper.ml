@@ -266,11 +266,11 @@ let init () =
                       Ast_comb.single_non_rec_value 
                         {loc; txt = constantArray}
                         (Exp.array
-                           (Ext_list.map (List.sort (fun (a,_) (b,_) -> compare (a:int) b) result)
+                           (Ext_list.map (List.sort (fun (a,_) (b,_) -> compare (a: Ast_compatible.hash_label) b) result)
                               (fun (i,str) -> 
                                  Exp.tuple 
                                    [
-                                     Ast_compatible.const_exp_int i;
+                                     Ast_compatible.const_hash_label i;
                                      str
                                    ]
                               ) ));

@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Fs = require("fs");
 
 var suites = {
   contents: /* [] */0
@@ -85,41 +84,8 @@ hey_string("on_closed");
 
 hey_string("in");
 
-function register(readline) {
-  readline.on("line", (function (s) {
-          console.log(s);
-          
-        }));
-  readline.on("close", (function () {
-          console.log("finished");
-          
-        }));
-  
-}
-
-function read(name) {
-  return Fs.readFileSync(name, "utf8");
-}
-
-function read$1(name) {
-  return Fs.readFileSync(name, "utf8");
-}
-
-function test(readline, x) {
-  readline.on((function () {
-            switch (x.HASH) {
-              case -944564236 :
-                  return "line";
-              case -933029960 :
-                  return "close";
-              
-            }
-          })(), x.VAL);
-  
-}
-
 function p_is_int_test(x) {
-  if (typeof x === "number") {
+  if (typeof x === "string") {
     return 2;
   } else {
     return 3;
@@ -129,45 +95,10 @@ function p_is_int_test(x) {
 eq("File \"poly_variant_test.ml\", line 142, characters 5-12", 2, 2);
 
 eq("File \"poly_variant_test.ml\", line 143, characters 5-12", 3, p_is_int_test({
-          HASH: /* b */98,
+          NAME: "b",
           VAL: 2
         }));
 
-function hey(x) {
-  if (x === /* h */104 || x === /* f */102 || x === /* e */101) {
-    console.log("v");
-    console.log(x);
-  } else {
-    console.log("u");
-    console.log(x);
-  }
-  
-}
-
 Mt.from_pair_suites("Poly_variant_test", suites.contents);
 
-function on2(prim, prim$1) {
-  prim.on2((function () {
-            switch (prim$1.HASH) {
-              case -944564236 :
-                  return "line";
-              case -933029960 :
-                  return "close";
-              
-            }
-          })(), prim$1.VAL);
-  
-}
-
-var readN = read$1;
-
-exports.uu = uu;
-exports.vv = vv;
-exports.register = register;
-exports.test = test;
-exports.on2 = on2;
-exports.read = read;
-exports.readN = readN;
-exports.p_is_int_test = p_is_int_test;
-exports.hey = hey;
 /*  Not a pure module */

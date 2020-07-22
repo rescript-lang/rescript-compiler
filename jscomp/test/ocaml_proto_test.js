@@ -47,7 +47,7 @@ function oneof_field(optionsOpt, number, type_, name) {
   return {
           field_name: name,
           field_number: number,
-          field_label: /* Oneof */-978693923,
+          field_label: "Oneof",
           field_type: type_,
           field_options: options
         };
@@ -58,7 +58,7 @@ var message_counter = {
 };
 
 function extension_range_range(from, to_) {
-  var to_$1 = typeof to_ === "number" ? /* To_max */0 : /* To_number */({
+  var to_$1 = typeof to_ === "string" ? /* To_max */0 : /* To_number */({
         _0: to_.VAL
       });
   return {
@@ -1103,13 +1103,13 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return extension_range_range(_1, {
-                  HASH: /* Number */-703661335,
+                  NAME: "Number",
                   VAL: _3
                 });
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
-      return extension_range_range(_1, /* Max */3850884);
+      return extension_range_range(_1, "Max");
     }),
   (function (__caml_parser_env) {
       Parsing.peek_val(__caml_parser_env, 4);
@@ -1277,13 +1277,13 @@ var yyact = [
       return "map";
     }),
   (function (__caml_parser_env) {
-      return /* Required */202657151;
+      return "Required";
     }),
   (function (__caml_parser_env) {
-      return /* Repeated */-368609126;
+      return "Repeated";
     }),
   (function (__caml_parser_env) {
-      return /* Optional */-132092992;
+      return "Optional";
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -2134,7 +2134,7 @@ function print(scope) {
 
 function runtime_function(param) {
   var match = param[0];
-  if (match === /* Decode */427938126) {
+  if (match === "Decode") {
     var match$1 = param[1];
     if (typeof match$1 === "number") {
       switch (match$1) {
@@ -2231,7 +2231,7 @@ function runtime_function(param) {
         
       }
     }
-  } else if (match === /* Encode */779642422) {
+  } else if (match === "Encode") {
     var match$3 = param[1];
     if (typeof match$3 === "number") {
       switch (match$3) {
@@ -2339,7 +2339,7 @@ function runtime_function(param) {
 
 function decode_basic_type(bt, pk) {
   return runtime_function([
-              /* Decode */427938126,
+              "Decode",
               pk,
               bt
             ]);
@@ -5492,7 +5492,7 @@ function gen_encode_field_key(sc, number, pk, is_packed) {
 
 function encode_basic_type(bt, pk) {
   return runtime_function([
-              /* Encode */779642422,
+              "Encode",
               pk,
               bt
             ]);
@@ -7205,7 +7205,7 @@ function encoding_of_field(all_types, field) {
 
 function compile_field_type(field_name, all_types, file_options, field_options, file_name, field_type) {
   var match = find_field_option(field_options, "ocaml_type");
-  var ocaml_type = match !== undefined && match.TAG === /* Constant_litteral */4 && match._0 === "int_t" ? /* Int_t */-783406652 : /* None */870530776;
+  var ocaml_type = match !== undefined && match.TAG === /* Constant_litteral */4 && match._0 === "int_t" ? "Int_t" : "None";
   var match$1 = file_option(file_options, "int32_type");
   var int32_type = match$1 !== undefined && match$1.TAG === /* Constant_litteral */4 && match$1._0 === "int_t" ? ({
         TAG: /* Ft_basic_type */0,
@@ -7282,7 +7282,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
     case /* Field_type_uint32 */4 :
     case /* Field_type_sint32 */6 :
     case /* Field_type_fixed32 */8 :
-        if (ocaml_type === /* Int_t */-783406652) {
+        if (ocaml_type === "Int_t") {
           return {
                   TAG: /* Ft_basic_type */0,
                   _0: /* Bt_int */2
@@ -7294,7 +7294,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
     case /* Field_type_uint64 */5 :
     case /* Field_type_sint64 */7 :
     case /* Field_type_fixed64 */9 :
-        if (ocaml_type === /* Int_t */-783406652) {
+        if (ocaml_type === "Int_t") {
           return {
                   TAG: /* Ft_basic_type */0,
                   _0: /* Bt_int */2
@@ -7508,7 +7508,7 @@ function compile(proto_definition) {
                                         var mutable_ = is_mutable(field_name$1, field_options$1);
                                         var match$1 = field_label(field$1);
                                         var record_field_type;
-                                        if (match$1 === /* Optional */-132092992) {
+                                        if (match$1 === "Optional") {
                                           record_field_type = {
                                             TAG: /* Rft_optional */1,
                                             _0: [
@@ -7518,7 +7518,7 @@ function compile(proto_definition) {
                                               field_default$1
                                             ]
                                           };
-                                        } else if (match$1 === /* Required */202657151) {
+                                        } else if (match$1 === "Required") {
                                           record_field_type = {
                                             TAG: /* Rft_required */0,
                                             _0: [

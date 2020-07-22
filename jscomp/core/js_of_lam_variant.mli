@@ -30,9 +30,9 @@ type arg_expression =
   | Splice2 of J.expression * J.expression
   
 val eval :
-   J.expression -> (int * string) list -> J.expression
+   J.expression -> (Ast_compatible.hash_label * string) list -> J.expression
 val eval_as_event : 
-  J.expression -> (int * string) list -> arg_expression
+  J.expression -> (Ast_compatible.hash_label * string) list -> arg_expression
 val eval_as_int : 
-  J.expression -> (int * int) list -> J.expression
+  J.expression -> (Ast_compatible.hash_label * int) list -> J.expression
 val eval_as_unwrap : J.expression -> J.expression
