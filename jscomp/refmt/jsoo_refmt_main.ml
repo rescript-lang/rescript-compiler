@@ -27,13 +27,35 @@
 This is usually the file you want to build for the full playground experience.
 *)
 
+
+(*
+ * The API version is giving information about the feature set
+ * of the resulting BS bundle API.
+ *
+ * It follows the semver format {major.minor} which means:
+ * - Whenever there is a breaking change, raise the major version
+ * - Whenever there is a feature addition, raise the minor version
+ *
+ * Whenever you are changing functionality in here, please double check
+ * if you are breaking any APIs. If yes, make sure to update this apiVersion
+ * value accordingly.
+ *
+ * Reason:
+ * We ship BuckleScript bindings that bind to this API. To be able to handle
+ * different bundles with different API versions, we need a way to tell the
+ * consumer on what interface the bundle provides.
+ *
+ * This will allow the frontend to have different sets of the same bindings,
+ * and use the proper interfaces as stated by the apiVersion.
+ * *)
+let apiVersion = "1.0"
+
 module Js = Jsoo_common.Js
 module Sys_js = Jsoo_common.Sys_js
 
 let export (field : string) v =
   Js.Unsafe.set (Js.Unsafe.global) field v
 ;;
-
 
 module Lang = struct
   type t = OCaml | Reason | Res
@@ -165,19 +187,9 @@ module ErrorRet = struct
         "type" , inject @@ Js.string type_
       |])
 
-
-  (* for raised errors caused by warn-error enabled flags *)
-      (*
-  let makeWarningError msg =
-    Js.Unsafe.(obj [|
-        "msg" , inject @@ Js.string msg;
-        "type" , inject @@ Js.string "warning_error"
-      |])
-         *)
-
   let makeUnexpectedError msg =
     Js.Unsafe.(obj [|
-        "js_error_msg" , inject @@ Js.string msg;
+        "msg" , inject @@ Js.string msg;
         "type" , inject @@ Js.string "unexpected_error"
       |])
 
@@ -402,7 +414,7 @@ module Compile = struct
                 |> Js.array
                 |> inject
               );
-              "type" , inject @@ Js.string "success"
+              "type" , inject @@ Js.string "compile_success"
             |]))
     with
     | e -> 
@@ -417,8 +429,9 @@ module Compile = struct
     let handle_ret ~lang str =
       Js.Unsafe.(obj [|
           "code", inject @@ Js.string str;
-          "lang", inject @@ Js.string (Lang.toString lang);
-          "type" , inject @@ Js.string "success"
+          "fromLang", inject @@ Js.string (Lang.toString lang);
+          "toLang", inject @@ Js.string (Lang.toString to_);
+          "type" , inject @@ Js.string "parse_print_success"
         |])
     in
     try
@@ -656,6 +669,8 @@ let () =
   export "bs_platform"
     (Js.Unsafe.(obj
                   [|
+                    "api_version",
+                    inject @@ Js.string apiVersion;
                     "make",
                     inject @@ Export.make
                   |]))
