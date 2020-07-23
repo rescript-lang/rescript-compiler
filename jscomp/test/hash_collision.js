@@ -30,6 +30,11 @@ function f1(x) {
   }
 }
 
+var hi = [
+  "Eric_Cooper",
+  "azdwbie"
+];
+
 eq("File \"hash_collision.ml\", line 24, characters 9-16", 1, 0);
 
 eq("File \"hash_collision.ml\", line 25, characters 9-16", 1, 1);
@@ -51,4 +56,5 @@ exports.test_id = test_id;
 exports.eq = eq;
 exports.f0 = f0;
 exports.f1 = f1;
+exports.hi = hi;
 /*  Not a pure module */

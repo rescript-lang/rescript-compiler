@@ -1,8 +1,8 @@
-#if BS then
+
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
-#end
+
 type collision = [`Eric_Cooper | `azdwbie];;    
 
 let f0 x = 
@@ -20,7 +20,7 @@ let f1 x =
 
 
 
-#if BS then
+let hi : collision array = [| `Eric_Cooper; `azdwbie |]
   ;;  eq __LOC__ (f0 `Eric_Cooper) 0 
   ;;  eq __LOC__ (f0 `azdwbie) 1
 
@@ -29,4 +29,3 @@ let f1 x =
   ;;  eq __LOC__ (f1 (`azdwbie (-2))) 0   
 
 ;; Mt.from_pair_suites __FILE__ !suites  
-#end
