@@ -80,6 +80,17 @@ type locErrInfo = {
   loc: Location.t;
 }
 
+module LocWarnInfo = struct
+  type t = {
+    fullMsg: string; (* Full super_error related warn string *)
+    shortMsg: string; (* Plain warn message without any context *)
+    warnNumber: int;
+    isError: bool;
+    loc: Location.t;
+  }
+end
+
+
 exception NapkinParsingErrors of locErrInfo list
 
 module ErrorRet = struct
@@ -87,32 +98,44 @@ module ErrorRet = struct
     | SyntaxErr of locErrInfo array
     | TypecheckErr of locErrInfo array
     | WarningFlagErr of string * string (* warning, warning_error flags *)
-    | WarningErr of string (* captured stderr output *)
+    | WarningErrs of LocWarnInfo.t array 
     | UnexpectedErr of string
 
-  let makeLocError ~(type_: string) ~(fullMsg: string) ~(shortMsg: string) (loc: Location.t) =
+  let locErrorAttributes ~(type_: string) ~(fullMsg: string) ~(shortMsg: string) (loc: Location.t) = 
     let (_file,line,startchar) = Location.get_pos_info loc.Location.loc_start in
     let (_file,endline,endchar) = Location.get_pos_info loc.Location.loc_end in
-    Js.Unsafe.(obj
-                 [|
-                   "fullMsg", inject @@ Js.string fullMsg;
-                   "row"    , inject line;
-                   "column" , inject startchar;
-                   "endRow" , inject endline;
-                   "endColumn" , inject endchar;
-                   "shortMsg" , inject @@ Js.string shortMsg;
-                   "type" , inject @@ Js.string type_;
-                 |]
-              )
+    Js.Unsafe.([|
+      "fullMsg", inject @@ Js.string fullMsg;
+      "row"    , inject line;
+      "column" , inject startchar;
+      "endRow" , inject endline;
+      "endColumn" , inject endchar;
+      "shortMsg" , inject @@ Js.string shortMsg;
+      "type" , inject @@ Js.string type_;
+    |])
 
+  let makeWarning ~(type_: string) (e: LocWarnInfo.t) =
+    let locAttrs = locErrorAttributes
+        ~type_
+        ~fullMsg: e.fullMsg
+        ~shortMsg: e.shortMsg
+        e.loc in
+    let warnAttrs =  Js.Unsafe.([|
+        "warnNumber", inject @@ (e.warnNumber |> float_of_int |> Js.number_of_float);
+        "isError", inject @@ Js.bool e.isError;
+      |]) in
+    let attrs = Array.append locAttrs warnAttrs in
+    Js.Unsafe.obj attrs
 
   let fromLocErrors ~(type_: string) (errors: locErrInfo array) =
     let jsErrors = Array.map
         (fun (e: locErrInfo) ->
-           makeLocError
-             ~type_
-             ~fullMsg:e.fullMsg
-             ~shortMsg:e.shortMsg e.loc) errors
+           Js.Unsafe.(obj
+                        (locErrorAttributes
+                           ~type_
+                           ~fullMsg: e.fullMsg
+                           ~shortMsg: e.shortMsg
+                           e.loc))) errors
     in
     Js.Unsafe.(obj [|
         "errors" , inject @@ Js.array jsErrors;
@@ -134,15 +157,23 @@ module ErrorRet = struct
         "type" , inject @@ Js.string "warning_flag_error"
       |])
 
-  let fromWarningErrors(errors: locErrInfo array) =
-    fromLocErrors ~type_:"warning_error" errors
+  let makeWarningError (errors: LocWarnInfo.t array) =
+    let type_ = "warning_error" in
+    let jsErrors = Array.map (makeWarning ~type_) errors in
+    Js.Unsafe.(obj [|
+        "errors" , inject @@ Js.array jsErrors;
+        "type" , inject @@ Js.string type_
+      |])
+
 
   (* for raised errors caused by warn-error enabled flags *)
+      (*
   let makeWarningError msg =
     Js.Unsafe.(obj [|
         "msg" , inject @@ Js.string msg;
         "type" , inject @@ Js.string "warning_error"
       |])
+         *)
 
   let makeUnexpectedError msg =
     Js.Unsafe.(obj [|
@@ -242,55 +273,35 @@ let napkin_parse ~filename src =
   structure
 
 module Compile = struct
-
-
   (* Apparently it's not possible to retrieve the loc info from 
    * Location.error_of_exn properly, so we need to do some extra
    * overloading action
    * *)
-  let warning_loc: Location.t option ref = ref None
+  let warning_infos: LocWarnInfo.t array ref = ref [||]
   let warning_buffer = Buffer.create 512
   let warning_ppf = Format.formatter_of_buffer warning_buffer
 
-  let clear_warning_loc () = warning_loc := None
+
+  let flush_warning_buffer () =
+    Format.pp_print_flush warning_ppf ();
+    Buffer.contents warning_buffer
 
   let super_warning_printer loc ppf w =
-    (* TODO: maybe instead of tracking single states, maybe better
-     * to track whole an array of locErrInfo for each print? *)
-    warning_loc := Some loc;
-    Super_location.super_warning_printer loc ppf w
-
-  (*
-     We need to maintain separate stdout / stderr buffers
-     since I had no idea on how to replace the `ppf` being
-     injected in the compiler (the same ppf that is passed
-     to the Warnings module etc.)
-
-     UPDATE: I might just have found the solution with overriding
-             the Location.warning_printer
-  *)
-  (*
-  let stdout_buffer = Buffer.create(1000)
-  let stderr_buffer = Buffer.create(1000)
-
-   let () =
-      Sys_js.set_channel_flusher stdout (fun str ->
-          Buffer.add_string stdout_buffer str;
-        );
-      Sys_js.set_channel_flusher stderr (fun str ->
-          Buffer.add_string stderr_buffer str;
-        );
-
-  let clear_stdout_stderr () =
-    Buffer.clear stdout_buffer;
-    Buffer.clear stderr_buffer
-
-  let flush_stdout_stderr () =
-    let out = Buffer.contents stdout_buffer in
-    let err = Buffer.contents stderr_buffer in
-    clear_stdout_stderr ();
-    (out, err)
-  *)
+    match Warnings.report w with
+      | `Inactive -> ()
+      | `Active { Warnings. number; is_error; } ->
+        Super_location.super_warning_printer loc ppf w;
+        let open LocWarnInfo in
+        let fullMsg = flush_warning_buffer () in
+        let shortMsg = Super_warnings.message w in
+        let info = {
+          fullMsg;
+          shortMsg;
+          warnNumber=number;
+          isError=is_error;
+          loc;
+        } in
+        warning_infos := Array.append !warning_infos [|info|]
 
   let () =
     Location.formatter_for_warnings := warning_ppf;
@@ -327,10 +338,7 @@ module Compile = struct
          let msg = Printexc.to_string e in
          match e with
          | Warnings.Errors ->
-           let fullMsg = Buffer.contents warning_buffer in
-           let error = Location.error ?loc:!warning_loc msg in
-           let err = { fullMsg; shortMsg=error.msg; loc=error.loc; } in
-           ErrorRet.fromWarningErrors [|err|]
+           ErrorRet.makeWarningError !warning_infos
          | Refmt_api.Migrate_parsetree.Def.Migration_error (_,loc) ->
            let error = { fullMsg=msg; shortMsg=msg; loc; } in
            ErrorRet.fromSyntaxErrors [|error|]
@@ -346,9 +354,8 @@ module Compile = struct
   let implementation ~(config: BundleConfig.t) ~lang str  : Js.Unsafe.obj =
     let {BundleConfig.module_system; warn_flags; warn_error_flags} = config in
     try
-      (* Wanna make sure that we don't carry any uncleared stdout / stderr here *)
-      (*clear_stdout_stderr ();*)
-      clear_warning_loc ();
+      (* Wanna make sure that we don't carry any uncleared warnings *)
+      warning_infos := [||];
 
       Warnings.parse_options false warn_flags;
       Warnings.parse_options true warn_error_flags;
@@ -388,6 +395,13 @@ module Compile = struct
           let v = Buffer.contents buffer in
           Js.Unsafe.(obj [|
               "js_code", inject @@ Js.string v;
+              "warnings",
+              inject @@ (
+                !warning_infos
+                |> Array.map (ErrorRet.makeWarning ~type_:"warning")
+                |> Js.array
+                |> inject
+              );
               "type" , inject @@ Js.string "success"
             |]))
     with
