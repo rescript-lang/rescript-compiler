@@ -340,6 +340,7 @@ build test/gpr_return_type_unused_attribute.cmi test/gpr_return_type_unused_attr
 build test/gray_code_test.cmi test/gray_code_test.cmj : cc test/gray_code_test.ml | $stdlib
 build test/guide_for_ext.cmi test/guide_for_ext.cmj : cc test/guide_for_ext.ml | $stdlib
 build test/hamming_test.cmi test/hamming_test.cmj : cc test/hamming_test.ml | test/mt.cmj $stdlib
+build test/hash_collision.cmi test/hash_collision.cmj : cc test/hash_collision.ml | test/mt.cmj $stdlib
 build test/hash_test.cmi test/hash_test.cmj : cc test/hash_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
 build test/hashtbl_test.cmi test/hashtbl_test.cmj : cc test/hashtbl_test.ml | test/mt.cmj $stdlib
 build test/hello.foo.cmi test/hello.foo.cmj : cc test/hello.foo.ml | $stdlib
