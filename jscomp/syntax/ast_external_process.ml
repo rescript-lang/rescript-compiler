@@ -440,7 +440,7 @@ let process_obj
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
-                 | NullString _ ->
+                 | Poly_var { has_payload = false ; _} ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty }::arg_types,
@@ -449,7 +449,7 @@ let process_obj
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
                  | Extern_unit -> assert false
-                 | NonNullString _
+                 | Poly_var { has_payload = true ; _} 
                    ->
                    Location.raise_errorf ~loc
                      "bs.obj label %s does not support such arg type" name
@@ -473,7 +473,7 @@ let process_obj
                    {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type :: arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
-                 | NullString _  ->
+                 | Poly_var {has_payload = false ; _} ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type::arg_types,
@@ -485,7 +485,7 @@ let process_obj
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
                  | Extern_unit   -> assert false
-                 | NonNullString _
+                 | Poly_var {has_payload = true; _}
                    ->
                    Location.raise_errorf ~loc
                      "bs.obj label %s does not support such arg type" name
@@ -899,7 +899,7 @@ let handle_attributes
              | Optional s  ->
                let arg_type = get_opt_arg_type ~nolabel:false ty in
                begin match arg_type with
-                 | NonNullString _ ->
+                 | Poly_var {has_payload = true; _} ->
                    (* ?x:([`x of int ] [@bs.string]) does not make sense *)
                    Location.raise_errorf
                      ~loc
