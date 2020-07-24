@@ -22,7 +22,7 @@ function b(loc, b$1) {
 function makeWrapper(foo, param) {
   var tmp = {};
   if (foo !== undefined) {
-    tmp.foo = Caml_option.valFromOption(foo).NAME;
+    tmp.foo = Caml_option.valFromOption(foo);
   }
   console.log(tmp);
   
@@ -30,7 +30,7 @@ function makeWrapper(foo, param) {
 
 function makeWrapper2(foo, param) {
   console.log({
-        foo: foo.NAME
+        foo: foo
       });
   
 }
@@ -41,7 +41,7 @@ function makeWrapper3(foo, param) {
   console.log(2);
   var tmp = {};
   if (foo !== undefined) {
-    tmp.foo = Caml_option.valFromOption(foo).NAME;
+    tmp.foo = Caml_option.valFromOption(foo);
   }
   return tmp;
 }
@@ -53,7 +53,7 @@ function makeWrapper4(foo, param) {
       foo > 10 ? "b" : "a"
     );
   if (tmp$1 !== undefined) {
-    tmp.foo = Caml_option.valFromOption(tmp$1).NAME;
+    tmp.foo = Caml_option.valFromOption(tmp$1);
   }
   return tmp;
 }

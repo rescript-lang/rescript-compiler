@@ -32,27 +32,25 @@ type arg_expression =
 
 (* we need destruct [undefined] when input is optional *)
 let eval (arg : J.expression) (dispatches : (Ast_compatible.hash_label * string) list option) : E.t =
-  if arg == E.undefined then E.undefined else
-  match arg.expression_desc with
-  | Str (_,s) ->     
-    let s = match dispatches with 
-    | None -> s 
-    | Some dispatches ->
-      (Ext_list.assoc_by_string  dispatches s None) in 
-    E.str s 
-  | _ -> 
-    match dispatches with 
-    | None -> 
-      E.poly_var_tag_access arg
-    | Some dispatches ->
-      E.of_block
-        [(S.string_switch arg
-            (Ext_list.map dispatches (fun (i,r) ->
-                 {J.switch_case = i ;
-                  switch_body = [S.return_stmt (E.str r)];
-                  should_break = false; (* FIXME: if true, still print break*)
-                  comment = None;
-                 })))]
+  match dispatches with 
+  | None -> arg 
+  | Some dispatches -> 
+    if arg == E.undefined then E.undefined 
+    else
+      match arg.expression_desc with
+      | Str (_,s) ->     
+        let s = 
+          (Ext_list.assoc_by_string  dispatches s None) in 
+        E.str s 
+      | _ -> 
+        E.of_block
+          [(S.string_switch arg
+              (Ext_list.map dispatches (fun (i,r) ->
+                   {J.switch_case = i ;
+                    switch_body = [S.return_stmt (E.str r)];
+                    should_break = false; (* FIXME: if true, still print break*)
+                    comment = None;
+                   })))]
 
 (** invariant: optional is not allowed in this case *)
 (** arg is a polyvar *)
