@@ -45,9 +45,16 @@ type label =
   | Obj_optional of {name : string }
   (* it will be ignored , side effect will be recorded *)
 
+
+
 type attr = 
-  | NullString of (Ast_compatible.hash_label * string) list (* `a does not have any value*)
-  | NonNullString of (Ast_compatible.hash_label * string) list (* `a of int *)
+  | Poly_var of { 
+    has_payload : bool ; 
+    descr :
+    (Ast_compatible.hash_label * string) list
+    option
+  }  
+   (* `a does not have any value*)
   | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)

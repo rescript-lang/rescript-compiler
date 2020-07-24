@@ -84,35 +84,36 @@ let map_constructor_declarations_into_ints
 *)  
 let map_row_fields_into_strings ptyp_loc 
     (row_fields : Parsetree.row_field list) : External_arg_spec.attr = 
+  let has_bs_as = ref false in 
   let case, result = 
     Ext_list.fold_right row_fields (`Nothing, []) (fun tag (nullary, acc) -> 
         match nullary, tag with 
         | (`Nothing | `Null), 
           Rtag (label, attrs, true,  [])
           -> 
-          begin match Ast_attributes.iter_process_bs_string_as attrs with 
+          let name = 
+            match Ast_attributes.iter_process_bs_string_as attrs with 
             | Some name -> 
-              `Null, ((Ast_compatible.hash_label label, name) :: acc )
-
-            | None -> 
-              `Null, ((Ast_compatible.hash_label label, Ast_compatible.label_of_name label) :: acc )
-          end
+              has_bs_as := true; name
+            | None -> label.txt 
+          in `Null, (label.txt, name) :: acc 
         | (`Nothing | `NonNull), Rtag(label, attrs, false, ([ _ ])) 
           -> 
-          begin match Ast_attributes.iter_process_bs_string_as attrs with 
+          let name = 
+            match Ast_attributes.iter_process_bs_string_as attrs with 
             | Some name -> 
-              `NonNull, ((Ast_compatible.hash_label label, name) :: acc)
-            | None -> 
-              `NonNull, ((Ast_compatible.hash_label label, Ast_compatible.label_of_name label) :: acc)
-          end
+              has_bs_as := true; name
+            | None -> label.txt
+          in `NonNull, (label.txt, name) :: acc
         | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
 
       )  in 
   match case with 
   | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
-  | `Null -> External_arg_spec.NullString result 
-  | `NonNull -> NonNullString result
-
+  | `Null 
+  | `NonNull -> 
+    External_arg_spec.Poly_var {has_payload = case = `NonNull ; 
+    descr = if !has_bs_as then Some result else None }
 
 let is_enum row_fields = 
   List.for_all (fun (x : Parsetree.row_field) -> 

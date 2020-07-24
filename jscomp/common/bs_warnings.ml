@@ -24,24 +24,10 @@
 
 
 
-type t =
-  | Unsafe_poly_variant_type
-  (* for users write code like this:
-     {[ external f : [`a of int ] -> string = ""]}
-     Here users forget about `[@bs.string]` or `[@bs.int]`
-  *)    
 
 
 
-let to_string t =
-  match t with
-  | Unsafe_poly_variant_type 
-    -> 
-    "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
 
-
-let prerr_bs_ffi_warning loc x =  
-    Location.prerr_warning loc (Bs_ffi_warning (to_string x))
 
 
 

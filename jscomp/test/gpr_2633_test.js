@@ -3,28 +3,12 @@
 var Curry = require("../../lib/js/curry.js");
 
 function on1(foo, $$event) {
-  foo.on((function () {
-            switch ($$event.NAME) {
-              case "bar" :
-                  return "bar";
-              case "foo" :
-                  return "foo";
-              
-            }
-          })(), $$event.VAL);
+  foo.on($$event.NAME, $$event.VAL);
   
 }
 
 function on2(foo, h, $$event) {
-  foo.on((function () {
-            switch (Curry._1(h, $$event).NAME) {
-              case "bar" :
-                  return "bar";
-              case "foo" :
-                  return "foo";
-              
-            }
-          })(), Curry._1(h, $$event).VAL);
+  foo.on(Curry._1(h, $$event).NAME, Curry._1(h, $$event).VAL);
   
 }
 
