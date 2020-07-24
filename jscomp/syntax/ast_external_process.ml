@@ -90,9 +90,6 @@ let spec_of_ptyp
     begin match ptyp_desc with
       | Ptyp_constr ({txt = Lident "unit"; _}, [])
         -> if nolabel then Extern_unit else  Nothing
-      | Ptyp_variant _ ->
-        Bs_warnings.prerr_bs_ffi_warning ptyp.ptyp_loc Unsafe_poly_variant_type;
-        Nothing
       | _ ->
         Nothing
     end
