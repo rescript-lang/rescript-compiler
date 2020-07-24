@@ -17266,15 +17266,20 @@ type cst = private
 
 type label = private
   | Obj_label of {name : string}
-  (* | Obj_labelCst of {name : string ; cst : cst} *)
   | Obj_empty 
   
   | Obj_optional of {name : string}
   (* it will be ignored , side effect will be recorded *)
 
+
+
 type attr = 
-  | NullString of (Ast_compatible.hash_label * string) list (* `a does not have any value*)
-  | NonNullString of (Ast_compatible.hash_label * string) list (* `a of int *)
+  | Poly_var of  {
+      has_payload : bool ; 
+      descr :
+        (Ast_compatible.hash_label * string) 
+          list option
+    }  
   | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
@@ -17363,9 +17368,16 @@ type label =
   | Obj_optional of {name : string }
   (* it will be ignored , side effect will be recorded *)
 
+
+
 type attr = 
-  | NullString of (Ast_compatible.hash_label * string) list (* `a does not have any value*)
-  | NonNullString of (Ast_compatible.hash_label * string) list (* `a of int *)
+  | Poly_var of { 
+    has_payload : bool ; 
+    descr :
+    (Ast_compatible.hash_label * string) list
+    option
+  }  
+   (* `a does not have any value*)
   | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
@@ -17575,35 +17587,36 @@ let map_constructor_declarations_into_ints
 *)  
 let map_row_fields_into_strings ptyp_loc 
     (row_fields : Parsetree.row_field list) : External_arg_spec.attr = 
+  let has_bs_as = ref false in 
   let case, result = 
     Ext_list.fold_right row_fields (`Nothing, []) (fun tag (nullary, acc) -> 
         match nullary, tag with 
         | (`Nothing | `Null), 
           Rtag (label, attrs, true,  [])
           -> 
-          begin match Ast_attributes.iter_process_bs_string_as attrs with 
+          let name = 
+            match Ast_attributes.iter_process_bs_string_as attrs with 
             | Some name -> 
-              `Null, ((Ast_compatible.hash_label label, name) :: acc )
-
-            | None -> 
-              `Null, ((Ast_compatible.hash_label label, Ast_compatible.label_of_name label) :: acc )
-          end
+              has_bs_as := true; name
+            | None -> label.txt 
+          in `Null, (label.txt, name) :: acc 
         | (`Nothing | `NonNull), Rtag(label, attrs, false, ([ _ ])) 
           -> 
-          begin match Ast_attributes.iter_process_bs_string_as attrs with 
+          let name = 
+            match Ast_attributes.iter_process_bs_string_as attrs with 
             | Some name -> 
-              `NonNull, ((Ast_compatible.hash_label label, name) :: acc)
-            | None -> 
-              `NonNull, ((Ast_compatible.hash_label label, Ast_compatible.label_of_name label) :: acc)
-          end
+              has_bs_as := true; name
+            | None -> label.txt
+          in `NonNull, (label.txt, name) :: acc
         | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
 
       )  in 
   match case with 
   | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
-  | `Null -> External_arg_spec.NullString result 
-  | `NonNull -> NonNullString result
-
+  | `Null 
+  | `NonNull -> 
+    External_arg_spec.Poly_var {has_payload = case = `NonNull ; 
+    descr = if !has_bs_as then Some result else None }
 
 let is_enum row_fields = 
   List.for_all (fun (x : Parsetree.row_field) -> 
@@ -19700,7 +19713,7 @@ let process_obj
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
-                 | NullString _ ->
+                 | Poly_var { has_payload = false ; _} ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty }::arg_types,
@@ -19709,7 +19722,7 @@ let process_obj
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
                  | Extern_unit -> assert false
-                 | NonNullString _
+                 | Poly_var { has_payload = true ; _} 
                    ->
                    Location.raise_errorf ~loc
                      "bs.obj label %s does not support such arg type" name
@@ -19733,7 +19746,7 @@ let process_obj
                    {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type :: arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
-                 | NullString _  ->
+                 | Poly_var {has_payload = false ; _} ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type::arg_types,
@@ -19745,7 +19758,7 @@ let process_obj
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
                  | Extern_unit   -> assert false
-                 | NonNullString _
+                 | Poly_var {has_payload = true; _}
                    ->
                    Location.raise_errorf ~loc
                      "bs.obj label %s does not support such arg type" name
@@ -20159,7 +20172,7 @@ let handle_attributes
              | Optional s  ->
                let arg_type = get_opt_arg_type ~nolabel:false ty in
                begin match arg_type with
-                 | NonNullString _ ->
+                 | Poly_var {has_payload = true; _} ->
                    (* ?x:([`x of int ] [@bs.string]) does not make sense *)
                    Location.raise_errorf
                      ~loc

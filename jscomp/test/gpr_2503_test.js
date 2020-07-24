@@ -22,15 +22,7 @@ function b(loc, b$1) {
 function makeWrapper(foo, param) {
   var tmp = {};
   if (foo !== undefined) {
-    tmp.foo = (function () {
-          switch (Caml_option.valFromOption(foo)) {
-            case "a" :
-                return "a";
-            case "b" :
-                return "b";
-            
-          }
-        })();
+    tmp.foo = Caml_option.valFromOption(foo).NAME;
   }
   console.log(tmp);
   
@@ -38,15 +30,7 @@ function makeWrapper(foo, param) {
 
 function makeWrapper2(foo, param) {
   console.log({
-        foo: (function () {
-              switch (foo) {
-                case "a" :
-                    return "a";
-                case "b" :
-                    return "b";
-                
-              }
-            })()
+        foo: foo.NAME
       });
   
 }
@@ -57,15 +41,7 @@ function makeWrapper3(foo, param) {
   console.log(2);
   var tmp = {};
   if (foo !== undefined) {
-    tmp.foo = (function () {
-          switch (Caml_option.valFromOption(foo)) {
-            case "a" :
-                return "a";
-            case "b" :
-                return "b";
-            
-          }
-        })();
+    tmp.foo = Caml_option.valFromOption(foo).NAME;
   }
   return tmp;
 }
@@ -77,15 +53,7 @@ function makeWrapper4(foo, param) {
       foo > 10 ? "b" : "a"
     );
   if (tmp$1 !== undefined) {
-    tmp.foo = (function () {
-          switch (Caml_option.valFromOption(tmp$1)) {
-            case "a" :
-                return "a";
-            case "b" :
-                return "b";
-            
-          }
-        })();
+    tmp.foo = Caml_option.valFromOption(tmp$1).NAME;
   }
   return tmp;
 }
