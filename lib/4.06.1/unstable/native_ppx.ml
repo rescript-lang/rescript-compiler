@@ -14330,10 +14330,6 @@ module Bs_warnings : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t =
-  | Unsafe_poly_variant_type
-
-val prerr_bs_ffi_warning : Location.t -> t -> unit
 
 
 val warn_missing_primitive : Location.t -> string -> unit 
@@ -14371,24 +14367,10 @@ end = struct
 
 
 
-type t =
-  | Unsafe_poly_variant_type
-  (* for users write code like this:
-     {[ external f : [`a of int ] -> string = ""]}
-     Here users forget about `[@bs.string]` or `[@bs.int]`
-  *)    
 
 
 
-let to_string t =
-  match t with
-  | Unsafe_poly_variant_type 
-    -> 
-    "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
 
-
-let prerr_bs_ffi_warning loc x =  
-    Location.prerr_warning loc (Bs_ffi_warning (to_string x))
 
 
 
@@ -19363,9 +19345,6 @@ let spec_of_ptyp
     begin match ptyp_desc with
       | Ptyp_constr ({txt = Lident "unit"; _}, [])
         -> if nolabel then Extern_unit else  Nothing
-      | Ptyp_variant _ ->
-        Bs_warnings.prerr_bs_ffi_warning ptyp.ptyp_loc Unsafe_poly_variant_type;
-        Nothing
       | _ ->
         Nothing
     end
