@@ -17924,7 +17924,7 @@ function parse(content, options) {
       var e = new Error(String(List.length(l._1)) + " errors");
       e["name"] = "Parse Error";
       throw(e);
-      return ({});
+      return {};
     }
     throw l;
   }

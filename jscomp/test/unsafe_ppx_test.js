@@ -92,7 +92,7 @@ Mt.from_pair_suites("Unsafe_ppx_test", {
                   return {
                           TAG: /* Eq */0,
                           _0: ["a"],
-                          _1: Ffi_js_test.keys(({a : 3}))
+                          _1: Ffi_js_test.keys({a : 3})
                         };
                 })
             ],
