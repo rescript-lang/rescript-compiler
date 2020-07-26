@@ -246,16 +246,17 @@ let init () =
                   | Some row_fields ->               
                     let expConstantArray =   
                       Exp.ident {loc; txt = Longident.Lident constantArray} in 
+                    (* let has_bs_as = ref false in    *)
                     let result :  _ list = 
                       Ext_list.map row_fields (fun tag -> 
                           match tag with 
-                          | Rtag (label, attrs, _, []) -> 
-                            (Ast_compatible.hash_label label,
+                          | Rtag ({txt}, attrs, _, []) -> 
+                            (txt,
                              match Ast_attributes.iter_process_bs_string_as_ast attrs with 
                              | Some name -> 
                                name
                              | None -> 
-                               Ast_compatible.const_exp_string(Ast_compatible.label_of_name label)
+                               Ast_compatible.const_exp_string txt
                             )
                           | _ -> assert false (* checked by [is_enum_polyvar] *)
                         ) in 

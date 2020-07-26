@@ -30,16 +30,14 @@ let map_row_fields_into_ints ptyp_loc
     Ext_list.fold_left row_fields (0, []) 
        (fun (i,acc) rtag -> 
           match rtag with 
-          | Rtag (label, attrs, true,  [])
+          | Rtag ({txt}, attrs, true,  [])
             -> 
-            begin match Ast_attributes.iter_process_bs_int_as attrs with 
-              | Some i -> 
-                i + 1, 
-                ((Ast_compatible.hash_label label , i):: acc ) 
-              | None -> 
-                i + 1 , 
-                ((Ast_compatible.hash_label label , i):: acc )
-            end
+            let i = 
+              match Ast_attributes.iter_process_bs_int_as attrs with 
+              | Some i ->  i | None -> i 
+            in 
+            i + 1, 
+            ((txt , i):: acc )
           | _ -> 
             Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
        )  in 
@@ -89,22 +87,22 @@ let map_row_fields_into_strings ptyp_loc
     Ext_list.fold_right row_fields (`Nothing, []) (fun tag (nullary, acc) -> 
         match nullary, tag with 
         | (`Nothing | `Null), 
-          Rtag (label, attrs, true,  [])
+          Rtag ({txt}, attrs, true,  [])
           -> 
           let name = 
             match Ast_attributes.iter_process_bs_string_as attrs with 
             | Some name -> 
               has_bs_as := true; name
-            | None -> label.txt 
-          in `Null, (label.txt, name) :: acc 
-        | (`Nothing | `NonNull), Rtag(label, attrs, false, ([ _ ])) 
+            | None -> txt 
+          in `Null, (txt, name) :: acc 
+        | (`Nothing | `NonNull), Rtag({txt}, attrs, false, ([ _ ])) 
           -> 
           let name = 
             match Ast_attributes.iter_process_bs_string_as attrs with 
             | Some name -> 
               has_bs_as := true; name
-            | None -> label.txt
-          in `NonNull, (label.txt, name) :: acc
+            | None -> txt
+          in `NonNull, (txt, name) :: acc
         | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
 
       )  in 

@@ -273,8 +273,6 @@ let object_field   l attrs ty =
 
 
 
-let hash_label (x : poly_var_label) : hash_label =  x.txt
-let label_of_name (x : poly_var_label) : string = x.txt
 
 type args  = 
   (Asttypes.arg_label * Parsetree.expression) list 
