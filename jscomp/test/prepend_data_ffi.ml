@@ -81,7 +81,7 @@ external on_exit_slice4 :
     -> (_ [@bs.as 3]) 
     -> (_ [@bs.as "xxx"]) 
     -> ([`a|`b|`c] [@bs.int])
-    -> ([`a|`b|`c] [@bs.string])
+    -> ([`a|`b|`c] )
     -> int array
     -> unit 
     = 
@@ -100,7 +100,7 @@ external on_exit_slice5 :
     -> (_ [@bs.as "xxx"]) 
     -> ([`a|`b|`c] [@bs.int])
     -> (_ [@bs.as "yyy"]) 
-    -> ([`a|`b|`c] [@bs.string])
+    -> ([`a|`b|`c] )
     -> int array
     -> unit 
     = 

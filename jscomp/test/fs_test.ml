@@ -6,7 +6,7 @@ let eq loc (x, y) =
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
 
-external readFileSync : string -> ([`utf8 | `ascii] [@bs.string]) -> string
+external readFileSync : string -> ([`utf8 | `ascii] ) -> string
   = "readFileSync" [@@bs.module "fs"]
 
 
