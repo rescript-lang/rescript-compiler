@@ -32,13 +32,15 @@ external isBuffer : 'a -> bool = "Buffer.isBuffer"
 external fromString : string -> t = "Buffer.from"
 [@@bs.val]
 
-external fromStringWithEncoding : string -> ([ `ascii  | `utf8  | `utf16le  | `usc2  | `base64  | `latin1 | `binary  | `hex ] [@bs.string]) -> t = "from"
+type encoding = 
+  [ `ascii  | `utf8  | `utf16le  | `usc2  | `base64  | `latin1 | `binary  | `hex ]  
+external fromStringWithEncoding : string -> encoding -> t = "from"
 [@@bs.val] [@@bs.scope "Buffer"]
 
 external toString : t -> string = "toString"
 [@@bs.send]
 
-external toStringWithEncoding : t -> ([ `ascii  | `utf8  | `utf16le  | `usc2  | `base64  | `latin1 | `binary  | `hex ] [@bs.string]) -> string = "toString"
+external toStringWithEncoding : t -> encoding -> string = "toString"
 [@@bs.send]
 
 external concat : t array -> t = "Buffer.concat"

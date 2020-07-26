@@ -17597,8 +17597,14 @@ let map_row_fields_into_strings ptyp_loc
   | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
   | `Null 
   | `NonNull -> 
-    External_arg_spec.Poly_var {has_payload = case = `NonNull ; 
-    descr = if !has_bs_as then Some result else None }
+    let has_payload = case = `NonNull in 
+    let descr = if !has_bs_as then Some result else None in    
+    if not has_payload && descr = None then begin
+      Location.prerr_warning ptyp_loc (Bs_ffi_warning "bs.string is redundant here, you can safely remove it")   
+    end;
+    External_arg_spec.Poly_var 
+      {has_payload  ; 
+       descr  }
 
 let is_enum row_fields = 
   List.for_all (fun (x : Parsetree.row_field) -> 
