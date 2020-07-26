@@ -16,15 +16,15 @@ module Snapshot = struct
       ) else (
         (* snapshot file exists *)
         let snapContents = IO.readFile ~filename:snapFilename in
-        (* poor man's diff algorithm *)
+        (* check for equality, do diffing later if needed *)
         if contents = snapContents then None else Some snapContents
       )
     in
     match diff with
-    | Some contents ->
+    | Some snapContents ->
       prerr_string ("❌ snapshot " ^ filename);
       prerr_newline();
-      prerr_string contents;
+      Napkin_diff.diffTwoStrings snapContents contents;
       exit 1
     | None ->
       print_endline (

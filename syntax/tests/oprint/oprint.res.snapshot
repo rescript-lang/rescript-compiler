@@ -1,5 +1,6 @@
 let name: string
 let x: int
+let pi: float
 let numbersArray: array<int>
 let numbersTuple: (int, int, int, int, int)
 let numbersList: list<int>

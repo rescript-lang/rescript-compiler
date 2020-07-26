@@ -1,5 +1,6 @@
 let name = "Steve"
 let x = 42
+let pi = 3.14
 
 let numbersArray = [1, 2, 3, 4, 5]
 let numbersTuple = (1, 2, 3, 4, 5)

@@ -75,6 +75,8 @@ src/napkin_scanner.cmx : src/napkin_token.cmx src/napkin_diagnostics.cmx \
     src/napkin_scanner.cmi
 src/napkin_scanner.cmi : src/napkin_token.cmx src/napkin_diagnostics.cmi
 src/napkin_token.cmx : src/napkin_comment.cmx src/napkin_character_codes.cmx
+tests/napkin_diff.cmx : tests/napkin_diff.cmi
+tests/napkin_diff.cmi :
 tests/napkin_test.cmx : src/napkin_token.cmx src/napkin_parser.cmx \
     src/napkin_outcome_printer.cmx src/napkin_multi_printer.cmx \
-    src/napkin_io.cmx src/napkin_driver.cmx
+    src/napkin_io.cmx src/napkin_driver.cmx tests/napkin_diff.cmx

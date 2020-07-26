@@ -1,5 +1,5 @@
 OCAMLOPT=ocamlopt.opt
-OCAMLFLAGS= -w +a-4-42-40-9-48 -warn-error +a -bin-annot -I +compiler-libs -I src
+OCAMLFLAGS= -w +a-4-42-40-9-48 -warn-error +a -bin-annot -I +compiler-libs -I src -I tests
 OCAMLDEP=ocamldep.opt
 %.cmi : %.mli
 	$(OCAMLOPT) $(OCAMLFLAGS) -c $<
@@ -37,6 +37,9 @@ FILES = \
 	src/napkin_outcome_printer.cmx \
 	src/napkin_multi_printer.cmx
 
+TEST_FILES = \
+	tests/napkin_diff.cmx
+
 .DEFAULT_GOAL := build-native
 build-native: lib/refmt.exe $(FILES) src/napkin_main.cmx depend
 	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/napkinscript.exe -I +compiler-libs ocamlcommon.cmxa  -I src $(FILES) src/napkin_main.cmx
@@ -59,8 +62,8 @@ lib/bench.exe: benchmarks/refmt_main3b.cmx benchmarks/Benchmark.ml $(FILES)
 benchmarks/refmt_main3b.cmx: benchmarks/refmt_main3b.ml
 	$(OCAMLOPT) -c -O2 -I +compiler-libs ocamlcommon.cmxa benchmarks/refmt_main3b.ml
 
-lib/test.exe: tests/napkin_test.cmx
-	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/test.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa -I src $(FILES) tests/napkin_test.ml
+lib/test.exe: $(TEST_FILES) tests/napkin_test.cmx depend
+	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/test.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa -I src -I tests $(FILES) $(TEST_FILES) tests/napkin_test.cmx
 
 test: build-native lib/test.exe
 	./node_modules/.bin/jest
