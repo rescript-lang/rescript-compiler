@@ -22,6 +22,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
+let rec is_obj_literal ( x : _ Flow_ast.Expression.t) : bool = 
+  match snd x with   
+  |  Literal _ -> true 
+  |  Object {properties} -> 
+    Ext_list.for_all properties is_literal_kv 
+  | Array  {elements} ->  
+    Ext_list.for_all elements (fun x -> 
+      match x with 
+      | None -> true
+      | Some (Expression x) -> is_obj_literal x 
+      | Some _ -> false
+      ) 
+  | _ -> false
+and is_literal_kv (x  : _ Flow_ast.Expression.Object.property) = 
+  match x with 
+  | Property (_ , Init {value}) -> is_obj_literal value
+  | _ -> false
+
+
 let classify (prog : string) : Js_raw_info.exp = 
   match Parser_flow.parse_expression 
     (Parser_env.init_env None prog) false with 
@@ -51,6 +71,8 @@ let classify (prog : string) : Js_raw_info.exp =
     | Some _ -> None
   in   
   Js_literal {comment}   
+ | (_,Object _) as exp , _ -> 
+    if is_obj_literal exp then Js_literal {comment = None} else Js_exp_unknown
  | _ -> 
   Js_exp_unknown
  | exception _ -> 
