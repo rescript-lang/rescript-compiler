@@ -45,9 +45,9 @@ val revSearch:
 
 val revSearchAssert:  
   int -> (* len *)
-  ('a * string) array ->
+  (string * string) array ->
   string ->
-  'a
+  string
   
 (**
   [toInt enum array]

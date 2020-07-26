@@ -89,32 +89,10 @@ let (->~) a b = Ast_compatible.arrow a b
 let jsMapperRt =     
   Longident.Ldot (Lident "Js", "MapperRt")
 
-let search upper polyvar array = 
-  app3
-    (Exp.ident ({loc = noloc; 
-                 txt = Longident.Ldot (jsMapperRt,"binarySearch") })
-    )                                 
-    upper
-    (eraseType polyvar)
-    array
 
-let revSearch len constantArray exp =   
-  app3 
-    (Exp.ident 
-       {loc= noloc; 
-        txt = Longident.Ldot (jsMapperRt, "revSearch")})
-    len
-    constantArray
-    exp
 
-let revSearchAssert  len constantArray exp =   
-  app3 
-    (Exp.ident 
-       {loc= noloc; 
-        txt = Longident.Ldot (jsMapperRt, "revSearchAssert")})
-    len
-    constantArray
-    exp
+
+
 
 let toInt exp array =     
   app2
@@ -262,6 +240,31 @@ let init () =
                         ) in 
                     let result_len = List.length result in 
                     let exp_len = Ast_compatible.const_exp_int result_len in 
+                    let search upper polyvar array = 
+                      app3
+                        (Exp.ident ({loc = noloc; 
+                                     txt = Longident.Ldot (jsMapperRt,"binarySearch") })
+                        )                                 
+                        upper
+                        (eraseType polyvar)
+                        array in 
+                    let revSearch len constantArray exp =   
+                      app3 
+                        (Exp.ident 
+                           {loc= noloc; 
+                            txt = Longident.Ldot (jsMapperRt, "revSearch")})
+                        len
+                        constantArray
+                        exp in        
+                    let revSearchAssert  len constantArray exp =   
+                      app3 
+                        (Exp.ident 
+                           {loc= noloc; 
+                            txt = Longident.Ldot (jsMapperRt, "revSearchAssert")})
+                        len
+                        constantArray
+                        exp in 
+                        
                     let v = [
                       eraseTypeStr;
                       Ast_comb.single_non_rec_value 
