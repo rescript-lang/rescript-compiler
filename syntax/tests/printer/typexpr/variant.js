@@ -47,3 +47,23 @@ external make: (
   ~name: string=?,
   ~connectNulls: bool=?,
 ) => React.element = "Line"
+
+type empty_conj =
+  | X([< | #X&('a) &(int, float)]): empty_conj
+
+type conj =
+  | X([< | #X(int) &([< | #B(int) &(float)])]): conj
+
+module type Conjunctive = {
+  type u1 = [ | #A | #B]
+  type u2 = [ | #A | #B | #C]
+
+  let f: [< | #T([< u2]) & ([< u2]) & ([< u1])] => unit
+  let g: [< | #S&([< u2]) & ([< u2]) & ([< u1])] => unit;
+}
+
+type x = [
+  #Fooooooooooooooooooooooooooooooooooooooo
+  | #Baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaar
+  | #Baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaz
+]

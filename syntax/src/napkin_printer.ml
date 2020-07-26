@@ -1635,13 +1635,13 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
     in
     let docs = List.map printRowField rowFields in
     let cases = Doc.join ~sep:(Doc.concat [Doc.line; Doc.text "| "]) docs in
-    let cases = if docs = [] then cases else Doc.concat [Doc.text "| "; cases] in
+    let cases = if docs = [] then cases else Doc.concat [Doc.ifBreaks (Doc.text "| ") Doc.nil; cases] in
     let openingSymbol =
       if closedFlag = Open
-      then Doc.greaterThan
+      then Doc.concat [Doc.greaterThan; Doc.line]
       else if labelsOpt = None
-      then Doc.nil
-      else Doc.lessThan in
+      then Doc.softLine
+      else Doc.concat [Doc.lessThan; Doc.line] in
     let hasLabels = labelsOpt <> None && labelsOpt <> Some [] in
     let labels = match labelsOpt with
     | None
@@ -1651,7 +1651,21 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
       Doc.concat (List.map (fun label -> Doc.concat [Doc.line; Doc.text "#" ; printIdentLike ~allowUident:true label] ) labels)
     in
     let closingSymbol = if hasLabels then Doc.text " >" else Doc.nil in
-    Doc.group (Doc.concat [Doc.lbracket; openingSymbol; Doc.line; cases; closingSymbol; labels; Doc.line; Doc.rbracket])
+    Doc.group (
+      Doc.concat [
+        Doc.lbracket;
+        Doc.indent (
+          Doc.concat [
+            openingSymbol;
+            cases;
+            closingSymbol;
+            labels;
+          ]
+        );
+        Doc.softLine;
+        Doc.rbracket
+      ]
+    )
   in
   let shouldPrintItsOwnAttributes = match typExpr.ptyp_desc with
   | Ptyp_arrow _ (* es6 arrow types print their own attributes *)

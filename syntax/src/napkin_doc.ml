@@ -1,4 +1,5 @@
 module MiniBuffer = Napkin_minibuffer
+
 type mode = Break | Flat
 
 type lineStyle =

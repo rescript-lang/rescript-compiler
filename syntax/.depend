@@ -44,7 +44,7 @@ src/napkin_multi_printer.cmx : src/napkin_reason_binary_driver.cmx \
     src/napkin_driver.cmx src/napkin_diagnostics.cmx \
     src/napkin_ast_conversion.cmx src/napkin_multi_printer.cmi
 src/napkin_multi_printer.cmi :
-src/napkin_outcome_printer.cmx : src/napkin_doc.cmx \
+src/napkin_outcome_printer.cmx : src/napkin_token.cmx src/napkin_doc.cmx \
     src/napkin_outcome_printer.cmi
 src/napkin_outcome_printer.cmi :
 src/napkin_parens.cmx : src/napkin_parsetree_viewer.cmx \

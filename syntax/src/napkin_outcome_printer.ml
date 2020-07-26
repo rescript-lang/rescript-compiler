@@ -1,4 +1,54 @@
-  module Doc = Napkin_doc
+(* For the curious: the outcome printer is a printer to print data
+ * from the outcometree.mli file in the ocaml compiler.
+ * The outcome tree is used by:
+ *  - ocaml's toplevel/repl, print results/errors
+ *  - super errors, print nice errors
+ *  - editor tooling, e.g. show type on hover
+ *
+ * In general it represent messages to show results or errors to the user. *)
+
+module Doc = Napkin_doc
+module Token = Napkin_token
+
+type identifierStyle =
+  | ExoticIdent
+  | NormalIdent
+
+let classifyIdentContent ~allowUident txt =
+  let len = String.length txt in
+  let rec go i =
+    if i == len then NormalIdent
+    else
+      let c = String.unsafe_get txt i in
+      if i == 0 && not (
+        (allowUident && (c >= 'A' && c <= 'Z')) ||
+        (c >= 'a' && c <= 'z') || c = '_' || (c >= '0' && c <= '9')) then
+        ExoticIdent
+      else if not (
+           (c >= 'a' && c <= 'z')
+        || (c >= 'A' && c <= 'Z')
+        || c = '\''
+        || c = '_'
+        || (c >= '0' && c <= '9'))
+      then
+        ExoticIdent
+      else
+        go (i + 1)
+  in
+  if Token.isKeywordTxt txt then
+    ExoticIdent
+  else
+    go 0
+
+let printIdentLike ~allowUident txt =
+  match classifyIdentContent ~allowUident txt with
+  | ExoticIdent -> Doc.concat [
+      Doc.text "\\\"";
+      Doc.text txt;
+      Doc.text"\""
+    ]
+  | NormalIdent -> Doc.text txt
+
   (* Napkin doesn't have parenthesized identifiers.
    * We don't support custom operators. *)
    let parenthesized_ident _name = true
@@ -45,9 +95,9 @@
        print_ident fmt id2;
        Format.pp_print_char fmt ')' *)
 
-     let rec printOutIdentDoc (ident : Outcometree.out_ident) =
+     let rec printOutIdentDoc ?(allowUident=true) (ident : Outcometree.out_ident) =
        match ident with
-       | Oide_ident s -> Doc.text s
+       | Oide_ident s -> printIdentLike ~allowUident s
        | Oide_dot (ident, s) -> Doc.concat [
            printOutIdentDoc ident;
            Doc.dot;
@@ -95,7 +145,50 @@
 
    let rec printOutTypeDoc (outType: Outcometree.out_type) =
      match outType with
-     | Otyp_abstract | Otyp_variant _ (* don't support poly-variants atm *) | Otyp_open -> Doc.nil
+     | Otyp_abstract | Otyp_open -> Doc.nil
+     | Otyp_variant (nonGen, outVariant, closed, labels) ->
+       (* bool * out_variant * bool * (string list) option *)
+      let opening = match (closed, labels) with
+      | (true, None) -> (* [#A | #B] *) Doc.softLine
+      | (false, None) ->
+        (* [> #A | #B] *)
+        Doc.concat [Doc.greaterThan; Doc.line]
+      | (true, Some []) ->
+        (* [< #A | #B] *)
+        Doc.concat [Doc.lessThan; Doc.line]
+      | (true, Some _) ->
+        (* [< #A | #B > #X #Y ] *)
+        Doc.concat [Doc.lessThan; Doc.line]
+      | (false, Some _) ->
+       (* impossible!? ocaml seems to print ?, see oprint.ml in 4.06 *)
+        Doc.concat [Doc.text "?"; Doc.line]
+      in
+      Doc.group (
+         Doc.concat [
+           if nonGen then Doc.text "_" else Doc.nil;
+           Doc.lbracket;
+           Doc.indent (
+             Doc.concat [
+               opening;
+               printOutVariant outVariant
+             ]
+           );
+           begin match labels with
+           | None | Some [] -> Doc.nil
+           | Some tags ->
+             Doc.group (
+               Doc.concat [
+                 Doc.space;
+                 Doc.join ~sep:Doc.space (
+                   List.map (fun lbl -> printIdentLike ~allowUident:true lbl) tags
+                 )
+               ]
+             )
+           end;
+           Doc.softLine;
+           Doc.rbracket;
+         ]
+       )
      | Otyp_alias (typ, aliasTxt) ->
        Doc.concat [
          printOutTypeDoc typ;
@@ -103,7 +196,7 @@
          Doc.text aliasTxt
        ]
      | Otyp_constr (outIdent, []) ->
-       printOutIdentDoc outIdent
+       printOutIdentDoc ~allowUident:false outIdent
      | Otyp_manifest (typ1, typ2) ->
          Doc.concat [
            printOutTypeDoc typ1;
@@ -236,6 +329,52 @@
      | Otyp_module (_modName, _stringList, _outTypes) ->
          Doc.nil
 
+   and printOutVariant variant = match variant with
+     | Ovar_fields fields -> (* (string * bool * out_type list) list *)
+       Doc.join ~sep:Doc.line (
+        (*
+         * [< | #T([< u2]) & ([< u2]) & ([< u1])]  --> no ampersand
+         * [< | #S & ([< u2]) & ([< u2]) & ([< u1])] --> ampersand
+         *)
+         List.mapi (fun i (name, ampersand, types) ->
+           let needsParens = match types with
+           | [(Outcometree.Otyp_tuple _)] -> false
+           | _ -> true
+           in
+           Doc.concat [
+             if i > 0 then
+               Doc.text "| "
+             else
+               Doc.ifBreaks (Doc.text "| ") Doc.nil;
+             Doc.group (
+               Doc.concat [
+                 Doc.text "#";
+                 printIdentLike ~allowUident:true name;
+                 match types with
+                 | [] -> Doc.nil
+                 | types ->
+                   Doc.concat [
+                     if ampersand then Doc.text " & " else Doc.nil;
+                     Doc.indent (
+                       Doc.concat [
+                         Doc.join ~sep:(Doc.concat [Doc.text " &"; Doc.line])
+                          (List.map (fun typ ->
+                            let outTypeDoc = printOutTypeDoc typ in
+                            if needsParens then
+                              Doc.concat [Doc.lparen; outTypeDoc; Doc.rparen]
+                            else
+                              outTypeDoc
+                          ) types)
+                       ];
+                     );
+                   ]
+               ]
+             )
+           ]
+         ) fields
+       )
+     | Ovar_typ typ -> printOutTypeDoc typ
+
    and printObjectFields fields rest =
      let dots = match rest with
      | Some non_gen -> Doc.text ((if non_gen then "_" else "") ^ "..")
@@ -337,7 +476,7 @@
      Doc.group (
        Doc.concat [
          if mut then Doc.text "mutable " else Doc.nil;
-         Doc.text name;
+         printIdentLike ~allowUident:false name;
          Doc.text ": ";
          printOutTypeDoc arg;
        ]
@@ -532,7 +671,7 @@
            Doc.concat [
              attrs;
              kw;
-             Doc.text outTypeDecl.otype_name;
+             printIdentLike ~allowUident:false outTypeDecl.otype_name;
              typeParams;
              kind
            ]
@@ -666,7 +805,7 @@
      Doc.group (
        Doc.concat [
          Doc.text "type ";
-         Doc.text outExt.oext_type_name;
+         printIdentLike ~allowUident:false outExt.oext_type_name;
          typeParams;
          Doc.text " += ";
          Doc.line;
@@ -705,7 +844,7 @@
      Doc.group (
        Doc.concat [
          Doc.text "type ";
-         Doc.text typeExtension.otyext_name;
+         printIdentLike ~allowUident:false typeExtension.otyext_name;
          typeParams;
          Doc.text " += ";
          if typeExtension.otyext_private = Asttypes.Private then
