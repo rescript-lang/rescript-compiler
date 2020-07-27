@@ -23,31 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(** [serach polyvar assocArray]
-   Search hashvariant of [polyvar] to get the returned string,
-   assume that  [polvar] exists in the array
-*)
-val binarySearch:
-  int ->
-  string -> 
-  (string * string) array ->
-  string
 
-(**
-  [revSearch len assocArray value]
-  Based on the value to find the associated key, i.e, polyvar
-*)  
-val revSearch:  
-  int -> 
-  (string * string) array ->
-  string ->
-  string option
-
-val revSearchAssert:  
-  int -> (* len *)
-  (string * string) array ->
-  string ->
-  string
   
 (**
   [toInt enum array]

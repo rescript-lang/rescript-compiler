@@ -23,52 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(*
-   [lower, upper)
-   when [lower] = [upper], impossible
-   [upper - lower] = 1
-   [mid = lower], it should hit
-   [uper -lower > 1], [mid <> lower]
- *)
-let rec binarySearchAux lower upper xs (k : string) =
-  if not (lower < upper) then Js_exn.raiseError "binarySearchAux";
-  let mid = (lower + upper) / 2 in
-  let i,v = Js_array2.unsafe_get xs mid in
-  if i = k then v
-  else if i < k then
-    binarySearchAux (mid + 1) upper xs k
-  else
-    binarySearchAux lower mid  xs k  (*Invariant: mid < upper *)
 
-
-
-let binarySearch upper (id : string) array : string =
-  binarySearchAux 0 upper array id
-
-let rec revSearchAux
-    i len (xs : ('a * string) array) (k : string) =
-  if i = len then None
-  else
-    let (idx,s) = Js.Array2.unsafe_get xs i  in
-    if s = k then
-      Some (idx : string)
-    else
-      revSearchAux (i + 1) len xs k
-
-let revSearch len array (x : string)  : _ option =
-  revSearchAux 0 len array x
-
-let rec revSearchAssertAux len
-    i  (xs : (_ * string) array) (k : string) =
-  [%assert i < len];
-  let (idx,s) = Js.Array2.unsafe_get xs i  in
-  if s = k then
-    idx
-  else
-    revSearchAssertAux len (i + 1)  xs k
-
-let revSearchAssert len  array (x : string)  =
-  revSearchAssertAux len 0 array x
 
 let toInt (i : int) (xs : int array) =
   Js.Array2.unsafe_get xs i
