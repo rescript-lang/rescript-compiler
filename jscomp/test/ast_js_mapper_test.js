@@ -67,34 +67,15 @@ function aFromJs(param) {
   return Js_mapperRt.fromIntAssert(4, jsMapperConstantArray, param);
 }
 
-var jsMapperConstantArray$1 = [
-  [
-    "b0",
-    "b0"
-  ],
-  [
-    "b1",
-    "b1"
-  ],
-  [
-    "b2",
-    "b2"
-  ],
-  [
-    "b3",
-    "b3"
-  ]
-];
+var _map = {"b0":"b0","b1":"b1","b2":"b2","b3":"b3"};
 
 function bToJs(param) {
-  return Js_mapperRt.binarySearch(4, param, jsMapperConstantArray$1);
+  return param;
 }
 
 function bFromJs(param) {
-  return Js_mapperRt.revSearchAssert(4, jsMapperConstantArray$1, param);
+  return _map[param];
 }
-
-bToJs("b0");
 
 exports.tToJs = tToJs;
 exports.tFromJs = tFromJs;

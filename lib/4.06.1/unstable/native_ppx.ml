@@ -15595,6 +15595,7 @@ val is_bs_as : attr -> bool *)
 
 
 val bs_get : attr
+val bs_get_index : attr
 val bs_get_arity : attr 
 val bs_set : attr
 val bs_return_undefined : attr
@@ -15962,7 +15963,10 @@ let is_bs (attr : attr) =
 
 
 let bs_get : attr
-  =  {txt = "bs.get"; loc = locg}, Ast_payload.empty
+=  {txt = "bs.get"; loc = locg}, Ast_payload.empty
+
+let bs_get_index : attr =  
+   {txt = "bs.get_index"; loc = locg}, Ast_payload.empty  
 
 let bs_get_arity : attr
   =  {txt = "internal.arity"; loc = locg}, 
