@@ -1,24 +1,16 @@
 'use strict';
 
-var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
 
-var jsMapperConstantArray = [
-  [
-    "Horizontal",
-    "horizontal"
-  ],
-  [
-    "Vertical",
-    "vertical"
-  ]
-];
+var _map = {"Horizontal":"horizontal","Vertical":"vertical"};
+
+var _revMap = {"horizontal":"Horizontal","vertical":"Vertical"};
 
 function orientationToJs(param) {
-  return Js_mapperRt.binarySearch(2, param, jsMapperConstantArray);
+  return _map[param];
 }
 
 function orientationFromJs(param) {
-  return Js_mapperRt.revSearch(2, jsMapperConstantArray, param);
+  return _revMap[param];
 }
 
 console.log(orientationToJs("Horizontal"));

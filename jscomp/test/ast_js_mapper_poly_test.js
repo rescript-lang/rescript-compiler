@@ -30,27 +30,16 @@ function eq(loc, x, y) {
   
 }
 
-var jsMapperConstantArray = [
-  [
-    "C",
-    "C"
-  ],
-  [
-    "D",
-    "D"
-  ],
-  [
-    "f",
-    "x"
-  ]
-];
+var _map = {"D":"D","C":"C","f":"x"};
+
+var _revMap = {"D":"D","C":"C","x":"f"};
 
 function uToJs(param) {
-  return Js_mapperRt.binarySearch(3, param, jsMapperConstantArray);
+  return _map[param];
 }
 
 function uFromJs(param) {
-  return Js_mapperRt.revSearch(3, jsMapperConstantArray, param);
+  return _revMap[param];
 }
 
 function eqU(x, y) {
@@ -87,7 +76,7 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 29, characters 5-12", $$Array.map(
       "x"
     ]);
 
-var jsMapperConstantArray$1 = [
+var jsMapperConstantArray = [
   0,
   3,
   4,
@@ -95,11 +84,11 @@ var jsMapperConstantArray$1 = [
 ];
 
 function vToJs(param) {
-  return jsMapperConstantArray$1[param];
+  return jsMapperConstantArray[param];
 }
 
 function vFromJs(param) {
-  return Js_mapperRt.fromInt(4, jsMapperConstantArray$1, param);
+  return Js_mapperRt.fromInt(4, jsMapperConstantArray, param);
 }
 
 function eqV(x, y) {

@@ -197,9 +197,6 @@ type object_field =
 val object_field : Asttypes.label Asttypes.loc ->  attributes -> core_type -> object_field
 
 
-val hash_label : poly_var_label -> hash_label
-
-val label_of_name : poly_var_label -> string 
 
 type args  = 
   (Asttypes.arg_label * Parsetree.expression) list 

@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
 
 var suites = {
   contents: /* [] */0
@@ -15,31 +14,16 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var jsMapperConstantArray = [
-  [
-    "a",
-    "x"
-  ],
-  [
-    "b",
-    "你"
-  ],
-  [
-    "c",
-    "我"
-  ],
-  [
-    "u",
-    "hi"
-  ]
-];
+var _map = {"a":"x","u":"hi","b":"你","c":"我"};
+
+var _revMap = {"x":"a","hi":"u","你":"b","我":"c"};
 
 function tToJs(param) {
-  return Js_mapperRt.binarySearch(4, param, jsMapperConstantArray);
+  return _map[param];
 }
 
 function tFromJs(param) {
-  return Js_mapperRt.revSearch(4, jsMapperConstantArray, param);
+  return _revMap[param];
 }
 
 eq("File \"gpr_3142_test.ml\", line 25, characters 6-13", tToJs("a"), "x");
