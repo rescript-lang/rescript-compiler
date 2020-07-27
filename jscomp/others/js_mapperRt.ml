@@ -23,7 +23,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
+let raiseWhenNotFound x =
+  if Js.testAny x then raise Not_found 
+  else x 
+    
 let rec fromIntAux (enum : int) i len xs =
   if i = len then None
   else
@@ -35,11 +38,11 @@ let fromInt len (xs : int array) (enum : int )  : 'variant option =
   fromIntAux enum 0 len xs
 
 let rec fromIntAssertAux len (enum : int) i  xs =
-  [%assert i < len];
-  (*TODO: replaced by [%assert i < len ]*)
-  let k = Js.Array2.unsafe_get xs i in
-  if k = enum then  i
-  else fromIntAssertAux len enum (i + 1)  xs
+  if i = len then raise Not_found
+  else
+    let k = Js.Array2.unsafe_get xs i in
+    if k = enum then  i
+    else fromIntAssertAux len enum (i + 1)  xs
 
 (** [length] is not relevant any more *)
 let fromIntAssert  len (xs : int array) (enum : int )=

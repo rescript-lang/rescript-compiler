@@ -64,7 +64,7 @@ function xToJs(param) {
 }
 
 function xFromJs(param) {
-  return _map[param];
+  return Js_mapperRt.raiseWhenNotFound(_map[param]);
 }
 
 function idx(v) {

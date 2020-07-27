@@ -60,7 +60,7 @@ function cToJs(param) {
 }
 
 function cFromJs(param) {
-  return _map[param];
+  return Js_mapperRt.raiseWhenNotFound(_map[param]);
 }
 
 $$throw("File \"ast_mapper_defensive_test.ml\", line 28, characters 16-23", (function (param) {

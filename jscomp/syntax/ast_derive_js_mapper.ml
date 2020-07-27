@@ -157,8 +157,12 @@ let fromIntAssert len array exp =
     len
     array
     exp
-
-
+let raiseWhenNotFound x =
+  app1  
+    (Exp.ident 
+       {loc = noloc; 
+        txt = Longident.Ldot (jsMapperRt,"raiseWhenNotFound")})
+  x
 let assertExp e = 
   Exp.extension 
     ({Asttypes.loc = noloc; txt = "assert"},
@@ -287,10 +291,14 @@ let init () =
                         (Ast_compatible.fun_
                            (Pat.var pat_param)
                            (
+                           let result = 
                               app2 
                                 unsafeIndexGetExp
                                 revExpMap
-                                exp_param                                      
+                                exp_param in 
+                           if createType then 
+                            raiseWhenNotFound result
+                            else result     
                            )
                         )
                     ] in 

@@ -74,7 +74,7 @@ function bToJs(param) {
 }
 
 function bFromJs(param) {
-  return _map[param];
+  return Js_mapperRt.raiseWhenNotFound(_map[param]);
 }
 
 exports.tToJs = tToJs;
