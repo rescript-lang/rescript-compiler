@@ -76,7 +76,7 @@ let unsafeIndexGet =
     (Val.mk ~prim:[""] {loc = noloc; txt = unsafeIndex} ~attrs:[Ast_attributes.bs_get_index]
        (Ast_compatible.arrow (Typ.var "b") (Ast_compatible.arrow (Typ.var "a") (Typ.var "c")))
     )
-
+let unsafeIndexGetExp = (Exp.ident {loc = noloc; txt = Lident unsafeIndex}) 
 (* JavaScript has allowed trailing commas in array literals since the beginning, 
    and later added them to object literals (ECMAScript 5) and most recently (ECMAScript 2017)
    to function parameters. *)    
@@ -136,21 +136,10 @@ let (&&~) a b =
   app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","&&")})
     a b 
 let (->~) a b = Ast_compatible.arrow a b 
+
 let jsMapperRt =     
   Longident.Ldot (Lident "Js", "MapperRt")
 
-
-
-
-
-
-let toInt exp array =     
-  app2
-    (Exp.ident 
-       { loc=noloc; 
-         txt = Longident.Ldot (jsMapperRt, "toInt")})
-    (eraseType exp)
-    array
 let fromInt len array exp = 
   app3
     (Exp.ident 
@@ -276,7 +265,7 @@ let init () =
                     let expMap =  Exp.ident {loc; txt = Lident map} in                       
                     let revExpMap = Exp.ident {loc ; txt = Lident revMap} in                     
                     let data, revData, has_bs_as = buildMap row_fields in 
-                    let exp_get = (Exp.ident {loc ; txt = Lident unsafeIndex}) in 
+
                     let v = [
                       eraseTypeStr;  
                       unsafeIndexGet;
@@ -290,7 +279,7 @@ let init () =
                          else expMap);
                       toJsBody
                       (if has_bs_as then
-                        app2  exp_get expMap exp_param 
+                        app2  unsafeIndexGetExp expMap exp_param 
                       else  app1 eraseTypeExp exp_param)
                       ;
                       Ast_comb.single_non_rec_value
@@ -299,7 +288,7 @@ let init () =
                            (Pat.var pat_param)
                            (
                               app2 
-                                exp_get
+                                unsafeIndexGetExp
                                 revExpMap
                                 exp_param                                      
                            )
@@ -323,6 +312,7 @@ let init () =
                      let constantArrayExp = Exp.ident {loc; txt = Lident constantArray} in
                      let exp_len = Ast_compatible.const_exp_int (List.length ctors) in
                      let v = [
+                       unsafeIndexGet;  
                        eraseTypeStr;
                        Ast_comb.single_non_rec_value 
                          {loc; txt = constantArray}
@@ -330,10 +320,9 @@ let init () =
                        ;
                        toJsBody                        
                          (
-                           coerceResultToNewType @@
-                           toInt
-                             exp_param
-                             constantArrayExp
+                           app2 unsafeIndexGetExp
+                            constantArrayExp
+                             exp_param                             
                          )                       
                        ;
                        Ast_comb.single_non_rec_value

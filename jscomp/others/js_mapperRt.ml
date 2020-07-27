@@ -24,10 +24,6 @@
 
 
 
-
-let toInt (i : int) (xs : int array) =
-  Js.Array2.unsafe_get xs i
-
 let rec fromIntAux (enum : int) i len xs =
   if i = len then None
   else

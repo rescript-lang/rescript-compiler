@@ -24,13 +24,6 @@
 
 
 
-  
-(**
-  [toInt enum array]
-  Based on the value of [enum], return its mapped int
-*)  
-val toInt :   
-  int -> int array -> int 
 
 (**
   [fromInt len array int]
