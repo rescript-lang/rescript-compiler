@@ -30,9 +30,6 @@ let print_loc ~normalizedRange ppf (loc : Location.t) =
 ;;
 
 let print ~message_kind intro ppf (loc : Location.t) =
-  if loc.loc_start.pos_fname = "//toplevel//"
-  && Location.highlight_locations ppf [loc] then ()
-  else
     begin match message_kind with
     | `warning -> fprintf ppf "@[@{<info>%s@}@]@," intro
     | `warning_as_error -> fprintf ppf "@[@{<error>%s@} (configured as error) @]@," intro
