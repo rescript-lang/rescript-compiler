@@ -1,18 +1,10 @@
-(* open Misc
-open Asttypes
-open Parsetree
-open Types
-open Typedtree
-open Btype
-open Ctype *)
 
-open Format
-(* open Printtyp *)
 
-open Location
+let fprintf = Format.fprintf
+
+
 
 let file_lines filePath =
-  (* open_in_bin works on windows, as opposed to open_in, afaik? *)
   let chan = open_in_bin filePath in
   let lines = ref [] in
   try
@@ -37,11 +29,11 @@ let print_filename ppf file =
   | "" -> Format.fprintf ppf "(No file name)"
   | real_file -> Format.fprintf ppf "%s" (Location.show_filename real_file)
 
-let print_loc ~normalizedRange ppf loc =
+let print_loc ~normalizedRange ppf (loc : Location.t) =
   setup_colors ();
   let (file, _, _) = Location.get_pos_info loc.loc_start in
   if file = "//toplevel//" then begin
-    if highlight_locations ppf [loc] then () else
+    if Location.highlight_locations ppf [loc] then () else
       fprintf ppf "Characters %i-%i"
               loc.loc_start.pos_cnum loc.loc_end.pos_cnum
   end else
@@ -59,9 +51,9 @@ let print_loc ~normalizedRange ppf loc =
     fprintf ppf "@{<filename>%a@}%a" print_filename file dim_loc normalizedRange
 ;;
 
-let print ~message_kind intro ppf loc =
+let print ~message_kind intro ppf (loc : Location.t) =
   if loc.loc_start.pos_fname = "//toplevel//"
-  && highlight_locations ppf [loc] then ()
+  && Location.highlight_locations ppf [loc] then ()
   else
     begin match message_kind with
     | `warning -> fprintf ppf "@[@{<info>%s@}@]@," intro
@@ -155,17 +147,17 @@ let print_phanton_error_prefix ppf =
     (see super_error_reporter above) *)
   Format.pp_print_as ppf 2 ""
 
-let errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") fmt =
+let errorf ?(loc = Location.none) ?(sub = []) ?(if_highlight = "") fmt =
   Location.pp_ksprintf
     ~before:print_phanton_error_prefix
-    (fun msg -> {loc; msg; sub; if_highlight})
+    (fun msg -> Location.{loc; msg; sub; if_highlight})
     fmt
 
 let error_of_printer loc print x =
   errorf ~loc "%a@?" print x
 
 let error_of_printer_file print x =
-  error_of_printer (in_file !input_name) print x
+  error_of_printer (Location.in_file !Location.input_name) print x
 
 (* This will be called in super_main. This is how you override the default error and warning printers *)
 let setup () =
