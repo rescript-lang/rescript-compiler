@@ -95,10 +95,10 @@ let parse_implementation sourcefile =
   if parseResult.invalid then begin
     let style = Napkin_diagnostics.parseReportStyle "" in
     let msg = Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source in
-    raise (Location.Error (Location.error msg))
+    print_endline msg;
+    exit 1
   end;
   parseResult.parsetree
-  [@@raises Location.Error]
 
 let parse_interface sourcefile =
   Location.input_name := sourcefile;
@@ -106,7 +106,7 @@ let parse_interface sourcefile =
   if parseResult.invalid then begin
     let style = Napkin_diagnostics.parseReportStyle "" in
     let msg = Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source in
-    raise (Location.Error (Location.error msg))
+    print_endline msg;
+    exit 1
   end;
   parseResult.parsetree
-  [@@raises Location.Error]

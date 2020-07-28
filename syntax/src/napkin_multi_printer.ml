@@ -9,9 +9,12 @@ let printRes ~isInterface ~filename =
       Napkin_driver.parsingEngine.parseInterface ~forPrinter:true ~filename
     in
     if parseResult.invalid then
-      let style = Napkin_diagnostics.parseReportStyle "" in
-      let msg = Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source in
-      raise (Location.Error (Location.error msg))
+      begin
+        let style = Napkin_diagnostics.parseReportStyle "" in
+        let msg = Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source in
+        print_endline msg;
+        exit 1
+      end
     else
       Napkin_printer.printInterface
         ~width:defaultPrintWidth
@@ -22,15 +25,17 @@ let printRes ~isInterface ~filename =
       Napkin_driver.parsingEngine.parseImplementation ~forPrinter:true ~filename
     in
     if parseResult.invalid then
-      let style = Napkin_diagnostics.parseReportStyle "" in
-      let msg = Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source in
-      raise (Location.Error (Location.error msg))
+      begin
+        let style = Napkin_diagnostics.parseReportStyle "" in
+        let msg = Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source in
+        print_endline msg;
+        exit 1
+      end
     else
       Napkin_printer.printImplementation
         ~width:defaultPrintWidth
         ~comments:parseResult.comments
         parseResult.parsetree
-[@@raises Location.Error]
 
 (* print ocaml files to res syntax *)
 let printMl ~isInterface ~filename =
@@ -123,4 +128,4 @@ let print language ~input =
   | `res -> printRes ~isInterface ~filename:input
   | `ml -> printMl ~isInterface ~filename:input
   | `refmt path -> printReason ~refmtPath:path ~isInterface ~filename:input
-[@@raises Location.Error, Sys_error]
+[@@raises Sys_error]
