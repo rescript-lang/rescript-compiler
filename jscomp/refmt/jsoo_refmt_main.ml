@@ -303,7 +303,9 @@ module Compile = struct
 
   let flush_warning_buffer () =
     Format.pp_print_flush warning_ppf ();
-    Buffer.contents warning_buffer
+    let str = Buffer.contents warning_buffer in
+    Buffer.reset warning_buffer;
+    str
 
   let super_warning_printer loc ppf w =
     match Warnings.report w with
@@ -370,12 +372,19 @@ module Compile = struct
            ErrorRet.fromSyntaxErrors [|error|]
          | _ -> ErrorRet.makeUnexpectedError msg)
 
+  (* Responsible for resetting all compiler state as if it were a new instance *)
+  let reset_compiler () =
+    warning_infos := [||];
+    flush_warning_buffer () |> ignore;
+    Location.reset();
+    Warnings.reset_fatal ();
+    Env.reset_cache_toplevel ()
+
+
   let implementation ~(config: BundleConfig.t) ~lang str  : Js.Unsafe.obj =
     let {BundleConfig.module_system; warn_flags; warn_error_flags} = config in
     try
-      (* Wanna make sure that we don't carry any uncleared warnings *)
-      warning_infos := [||];
-
+      reset_compiler ();
       Warnings.parse_options false warn_flags;
       Warnings.parse_options true warn_error_flags;
       let filename = get_filename ~lang config.filename in
