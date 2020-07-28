@@ -372,7 +372,7 @@ version.
 
 ## Contributing to the Documentation
 
-See https://github.com/reason-association/reasonml.org/issues
+See https://github.com/reason-association/reasonml.org/
 
 ## Contributing to the API Reference
 
