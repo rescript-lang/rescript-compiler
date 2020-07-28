@@ -129,4 +129,4 @@ let print language ~input =
   | `res -> printRes ~isInterface ~filename:input
   | `ml -> printMl ~isInterface ~filename:input
   | `refmt path -> printReason ~refmtPath:path ~isInterface ~filename:input
-[@@raises (Sys_error, exit)]
+[@@raises Sys_error, exit]

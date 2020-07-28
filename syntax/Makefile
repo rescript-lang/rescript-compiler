@@ -66,8 +66,8 @@ lib/test.exe: $(TEST_FILES) tests/napkin_test.cmx depend
 	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/test.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa -I src -I tests $(FILES) $(TEST_FILES) tests/napkin_test.cmx
 
 test: build-native lib/test.exe
-	./node_modules/.bin/jest
 	./node_modules/.bin/reanalyze -all-cmt . -suppress tests
+	./node_modules/.bin/jest
 	./lib/test.exe
 
 roundtrip-test: bootstrap lib/test.exe
