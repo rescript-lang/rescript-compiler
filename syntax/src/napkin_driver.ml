@@ -92,25 +92,21 @@ let parse_implementation sourcefile =
   let parseResult =
     parsingEngine.parseImplementation ~forPrinter:false ~filename:sourcefile
   in
-  let () = if parseResult.invalid then
-    let msg =
-      let style = Napkin_diagnostics.parseReportStyle "" in
-      Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source
-    in
+  if parseResult.invalid then begin
+    let style = Napkin_diagnostics.parseReportStyle "" in
+    let msg = Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source in
     raise (Location.Error (Location.error msg))
-  in
+  end;
   parseResult.parsetree
   [@@raises Location.Error]
 
 let parse_interface sourcefile =
   Location.input_name := sourcefile;
   let parseResult = parsingEngine.parseInterface ~forPrinter:false ~filename:sourcefile in
-  let () = if parseResult.invalid then
-    let msg =
-      let style = Napkin_diagnostics.parseReportStyle "" in
-      Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source
-    in
+  if parseResult.invalid then begin
+    let style = Napkin_diagnostics.parseReportStyle "" in
+    let msg = Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source in
     raise (Location.Error (Location.error msg))
-  in
+  end;
   parseResult.parsetree
   [@@raises Location.Error]

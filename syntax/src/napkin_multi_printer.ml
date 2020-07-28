@@ -8,32 +8,28 @@ let printRes ~isInterface ~filename =
     let parseResult =
       Napkin_driver.parsingEngine.parseInterface ~forPrinter:true ~filename
     in
-    if not parseResult.invalid then
+    if parseResult.invalid then
+      let style = Napkin_diagnostics.parseReportStyle "" in
+      let msg = Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source in
+      raise (Location.Error (Location.error msg))
+    else
       Napkin_printer.printInterface
         ~width:defaultPrintWidth
         ~comments:parseResult.comments
         parseResult.parsetree
-    else
-      let msg =
-        let style = Napkin_diagnostics.parseReportStyle "" in
-        Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source
-      in
-      raise (Location.Error (Location.error msg))
   else
     let parseResult =
       Napkin_driver.parsingEngine.parseImplementation ~forPrinter:true ~filename
     in
-    if not parseResult.invalid then
+    if parseResult.invalid then
+      let style = Napkin_diagnostics.parseReportStyle "" in
+      let msg = Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source in
+      raise (Location.Error (Location.error msg))
+    else
       Napkin_printer.printImplementation
         ~width:defaultPrintWidth
         ~comments:parseResult.comments
         parseResult.parsetree
-    else
-      let msg =
-        let style = Napkin_diagnostics.parseReportStyle "" in
-        Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source
-      in
-      raise (Location.Error (Location.error msg))
 [@@raises Location.Error]
 
 (* print ocaml files to res syntax *)
