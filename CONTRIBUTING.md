@@ -33,7 +33,7 @@ JS testing framework, etc.
 npm install
 ```
 
-### Editor support
+### Editor support for developing this project
 
 Use this deprecated [VSCode extension](https://marketplace.visualstudio.com/items?itemName=hackwaly.ocaml).
 The extension requires using an opam switch for ocaml 4.02.3, where `merlin` and `ocp-indent` are installed.
@@ -259,7 +259,7 @@ As soon as the bundle is loaded, you will get access to following functions (as 
   - `compile_super_errors(code: string)`: Compiles given code and outputs `super_errors` related messages on `console.error`
   - `compile_super_errors_ppx_v2(code: string)`: Compiles given code with the React v2 syntax
   - `compile_super_errors_ppx_v3(code: string)`: Compiles given code with the React v3 syntax
-  - `load_module(cmi_path: string, cmi_content: string, cmj_name: string, cmj_content: string)`: Loads a module into the compiler (see notes on `cmj` / `cmi` below) 
+  - `load_module(cmi_path: string, cmi_content: string, cmj_name: string, cmj_content: string)`: Loads a module into the compiler (see notes on `cmj` / `cmi` below)
 
 For each compile every successful operation will return `{js_code: string}`.
 On compile errors, the returned object will be `{js_error_msg: string}`.
@@ -372,7 +372,7 @@ version.
 
 ## Contributing to the Documentation
 
-See https://github.com/BuckleScript/bucklescript.github.io
+See https://github.com/reason-association/reasonml.org/
 
 ## Contributing to the API Reference
 
@@ -416,11 +416,6 @@ install the binaries into `bin` and lib files into `lib`.
 First it will try to generate `bin/config_whole_compiler.ml` based on existing
 OCaml installation, if it fails, it will try to invoke `node scripts/buildocaml.js` to
 install an OCaml compiler from scratch, and retry again.
-
-### Publish Process
-
-- Run `make force-snapshotml`
-- Bump the compiler version
 
 ## Code structure
 
