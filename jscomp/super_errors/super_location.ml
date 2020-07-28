@@ -4,20 +4,9 @@ let fprintf = Format.fprintf
 
 
 
-let file_lines filePath =
-  let chan = open_in_bin filePath in
-  let lines = ref [] in
-  try
-    while true do
-      lines := (input_line chan) :: !lines
-     done;
-     (* leave this here to make things type. The loop will definitly raise *)
-     [||]
-  with
-  | End_of_file -> begin
-      close_in chan;
-      List.rev (!lines) |> Array.of_list
-    end
+let file_lines filePath = 
+  Ext_array.reverse_of_list
+    (Ext_io.rev_lines_of_file filePath)
 
 let setup_colors () =
   Misc.Color.setup !Clflags.color
