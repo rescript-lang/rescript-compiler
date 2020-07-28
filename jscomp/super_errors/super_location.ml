@@ -11,22 +11,11 @@ let file_lines filePath =
 let setup_colors () =
   Misc.Color.setup !Clflags.color
 
-let print_filename ppf file =
-  match file with
-  (* modified *)
-  | "_none_"
-  | "" -> Format.fprintf ppf "(No file name)"
-  | real_file -> Format.fprintf ppf "%s" (Location.show_filename real_file)
+let print_filename = Location.print_filename
 
 let print_loc ~normalizedRange ppf (loc : Location.t) =
   setup_colors ();
-  let (file, _, _) = Location.get_pos_info loc.loc_start in
-  if file = "//toplevel//" then begin
-    if Location.highlight_locations ppf [loc] then () else
-      fprintf ppf "Characters %i-%i"
-              loc.loc_start.pos_cnum loc.loc_end.pos_cnum
-  end else
-    let dim_loc ppf = function
+  let dim_loc ppf = function
     | None -> ()
     | Some ((start_line, start_line_start_char), (end_line, end_line_end_char)) ->
       if start_line = end_line then
@@ -36,8 +25,8 @@ let print_loc ~normalizedRange ppf (loc : Location.t) =
           fprintf ppf " @{<dim>%i:%i-%i@}" start_line start_line_start_char end_line_end_char
       else
         fprintf ppf " @{<dim>%i:%i-%i:%i@}" start_line start_line_start_char end_line end_line_end_char
-    in
-    fprintf ppf "@{<filename>%a@}%a" print_filename file dim_loc normalizedRange
+  in
+  fprintf ppf "@{<filename>%a@}%a" print_filename loc.loc_start.pos_fname dim_loc normalizedRange
 ;;
 
 let print ~message_kind intro ppf (loc : Location.t) =
