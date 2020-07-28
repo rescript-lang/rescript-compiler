@@ -5686,7 +5686,7 @@ and parseWithConstraint p =
     end
   | token ->
     Parser.err p (Diagnostics.unexpected token p.breadcrumbs);
-    exit (-1) (* TODO: handle this case *)
+    exit (-1) [@doesNotRaise] (* TODO: handle this case *)
 
 and parseModuleTypeOf p =
   let startPos = p.Parser.startPos in

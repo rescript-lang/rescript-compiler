@@ -36,6 +36,7 @@ let printRes ~isInterface ~filename =
         ~width:defaultPrintWidth
         ~comments:parseResult.comments
         parseResult.parsetree
+[@@raises exit]
 
 (* print ocaml files to res syntax *)
 let printMl ~isInterface ~filename =
@@ -128,4 +129,4 @@ let print language ~input =
   | `res -> printRes ~isInterface ~filename:input
   | `ml -> printMl ~isInterface ~filename:input
   | `refmt path -> printReason ~refmtPath:path ~isInterface ~filename:input
-[@@raises Sys_error]
+[@@raises (Sys_error, exit)]

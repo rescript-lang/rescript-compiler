@@ -105,7 +105,9 @@ module CliArgProcessor = struct
       prerr_newline();
       exit 1
     | _ -> exit 1
+  [@@raises exit]
 end
+
 
 let () =
   if not !Sys.interactive then begin

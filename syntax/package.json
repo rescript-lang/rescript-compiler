@@ -10,7 +10,7 @@
   "devDependencies": {
     "bs-platform": "^7.3.2",
     "jest": "^24.9.0",
-    "reanalyze": "^2.6.0"
+    "reanalyze": "^2.9.0"
   },
   "scripts": {
     "test": "make test",

@@ -99,6 +99,7 @@ let parse_implementation sourcefile =
     exit 1
   end;
   parseResult.parsetree
+[@@raises exit]
 
 let parse_interface sourcefile =
   Location.input_name := sourcefile;
@@ -110,3 +111,4 @@ let parse_interface sourcefile =
     exit 1
   end;
   parseResult.parsetree
+[@@raises exit]
