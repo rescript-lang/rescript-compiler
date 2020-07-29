@@ -41,11 +41,11 @@ TEST_FILES = \
 	tests/napkin_diff.cmx
 
 .DEFAULT_GOAL := build-native
-build-native: lib/refmt.exe $(FILES) src/napkin_main.cmx depend
-	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/napkinscript.exe -I +compiler-libs ocamlcommon.cmxa  -I src $(FILES) src/napkin_main.cmx
+build-native: lib/refmt.exe $(FILES) src/napkin_cli.cmx depend
+	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/napkinscript.exe -I +compiler-libs ocamlcommon.cmxa  -I src $(FILES) src/napkin_cli.cmx
 
 bootstrap: build-native
-	ocaml unix.cma ./scripts/bspack.ml -bs-main Napkin_main -I src -o ./lib/napkinscript.ml
+	ocaml unix.cma ./scripts/bspack.ml -bs-main Napkin_cli -I src -o ./lib/napkinscript.ml
 	./lib/napkinscript.exe -parse ml -print ns ./lib/Napkinscript.ml > ./lib/Napkinscript2.ml
 	$(OCAMLOPT) -w a -pp "./lib/napkinscript.exe" -O2 -o ./lib/napkinscript2.exe -I +compiler-libs ocamlcommon.cmxa -I lib ./lib/Napkinscript2.ml
 	mv ./lib/napkinscript2.exe ./lib/napkinscript.exe

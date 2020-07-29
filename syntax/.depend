@@ -7,6 +7,9 @@ src/napkin_binary_driver.cmx : src/napkin_driver.cmx \
     src/napkin_binary_driver.cmi
 src/napkin_binary_driver.cmi : src/napkin_driver.cmi
 src/napkin_character_codes.cmx :
+src/napkin_cli.cmx : src/napkin_reason_binary_driver.cmx \
+    src/napkin_ml_parser_driver.cmx src/napkin_driver.cmx \
+    src/napkin_binary_driver.cmx src/napkin_ast_debugger.cmx
 src/napkin_comment.cmx : src/napkin_comment.cmi
 src/napkin_comment.cmi :
 src/napkin_comments_table.cmx : src/napkin_parsetree_viewer.cmx \
@@ -29,9 +32,6 @@ src/napkin_grammar.cmx : src/napkin_token.cmx
 src/napkin_io.cmx : src/napkin_io.cmi
 src/napkin_io.cmi :
 src/napkin_js_ffi.cmx :
-src/napkin_main.cmx : src/napkin_reason_binary_driver.cmx \
-    src/napkin_ml_parser_driver.cmx src/napkin_driver.cmx \
-    src/napkin_binary_driver.cmx src/napkin_ast_debugger.cmx
 src/napkin_minibuffer.cmx : src/napkin_minibuffer.cmi
 src/napkin_minibuffer.cmi :
 src/napkin_ml_parser_driver.cmx : src/napkin_io.cmx src/napkin_driver.cmx \
