@@ -400,7 +400,7 @@ let process_obj
   } ->
     if String.length prim_name <> 0 then
       Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
-    let arg_kinds, new_arg_types_ty, result_types =
+    let arg_kinds, new_arg_types_ty, (result_types : Parsetree.object_field list) =
       Ext_list.fold_right arg_types_ty ( [], [], [])
         (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
            let arg_label = param_type.label in
@@ -426,22 +426,22 @@ let process_obj
                    {obj_arg_label = External_arg_spec.obj_label s;
                     obj_arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
-                   (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
+                   (Parsetree.Otag({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Nothing  ->
                    let s = (Lam_methname.translate  name) in
                    {obj_arg_label = External_arg_spec.obj_label s ; obj_arg_type },
                    {param_type with ty = new_ty}::arg_types,
-                   (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
+                   (Otag ({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Int _  ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty}::arg_types,
-                   (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
+                   (Otag ({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
                  | Poly_var_string _ ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty }::arg_types,
-                   (({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
+                   (Otag({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
@@ -464,17 +464,17 @@ let process_obj
                    let s = (Lam_methname.translate  name) in
                    {obj_arg_label = External_arg_spec.optional s; obj_arg_type},
                    param_type :: arg_types,
-                   ( ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
+                   ( Parsetree.Otag ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
                  | Int _  ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type :: arg_types,
-                   (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
+                   (Otag ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
                  | Poly_var_string _ ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type::arg_types,
-                   (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
+                   (Otag ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
                  | Arg_cst _
                    ->
                    Location.raise_errorf ~loc "bs.as is not supported with optional yet"

@@ -143,12 +143,6 @@ val opt_arrow:
   core_type ->
   core_type
 
-val object_: 
-  ?loc:loc -> 
-  ?attrs:attrs ->
-  (string Asttypes.loc * attributes * core_type) list -> 
-  Asttypes.closed_flag ->
-  core_type  
 
 
 (* val nonrec_type_str:  
