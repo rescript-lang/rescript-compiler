@@ -46,14 +46,22 @@ type label =
   (* it will be ignored , side effect will be recorded *)
 
 
-
+(* This type is used to give some meta info on each argument *)
 type attr = 
-  | Poly_var of { 
-    has_payload : bool ; 
+  | Poly_var_string of { 
     descr :
     (Ast_compatible.hash_label * string) list
-    option
-  }  
+   (* introduced by attributes bs.string
+    and bs.as 
+   *)
+  } 
+  | Poly_var of {
+    descr : 
+    (Ast_compatible.hash_label * string) list option 
+      (* introduced by attributes bs.string
+         and bs.as 
+      *)
+  } 
    (* `a does not have any value*)
   | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst

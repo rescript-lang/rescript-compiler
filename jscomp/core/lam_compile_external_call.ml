@@ -118,10 +118,10 @@ let ocaml_to_js_eff
        []
      else 
        [arg])
-  | Poly_var {has_payload = false ; descr = dispatches} -> 
-    Splice1 (Js_of_lam_variant.eval arg dispatches),[]
-  | Poly_var {has_payload = true ; descr = dispatches} -> 
-    Js_of_lam_variant.eval_as_event arg dispatches,[]    
+  | Poly_var_string {descr } -> 
+    Splice1 (Js_of_lam_variant.eval arg descr),[]
+  | Poly_var {descr} -> 
+    Js_of_lam_variant.eval_as_event arg descr,[]    
     (* FIXME: encode invariant below in the signature*)
     (* length of 2
       - the poly var tag 
