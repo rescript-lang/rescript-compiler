@@ -96,7 +96,7 @@ let process_themes env theme proj_dir (themes : OCamlRes.Res.node list ) =
     )  with
   | None ->
     list_themes ();
-    raise (Arg.Bad( "theme " ^ theme ^ " not found")  )
+    Bsb_arg.bad_arg ( "theme " ^ theme ^ " not found")
   | Some (Dir(_theme, nodes )) ->
     List.iter (fun node -> process_theme_aux env proj_dir node ) nodes
   | Some _ -> assert false

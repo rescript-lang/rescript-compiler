@@ -261,10 +261,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
     | Blk_array -> 
       let info : Lam_tag_info.t = Blk_array in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-    | Blk_poly_var s -> 
-      let info : Lam_tag_info.t = Blk_poly_var s in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    
     | Blk_record s -> 
       let info : Lam_tag_info.t = Blk_record s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    
@@ -277,6 +274,13 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     | Blk_module_export _ -> 
       let info : Lam_tag_info.t = Blk_module_export in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
+    | Blk_poly_var s -> 
+      begin match args with 
+      | [_; value] -> 
+        let info : Lam_tag_info.t = Blk_poly_var  in
+        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args:[Lam.const (Const_string s); value] loc      
+      | _ -> assert false  
+      end
     | Blk_lazy_general  
       ->
       begin match args with 
@@ -499,6 +503,10 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | _ when s = "#val_from_option" 
       -> 
       prim ~primitive:Pval_from_option
+        ~args:(Ext_list.map args convert_aux ) loc
+    | _ when s = "#is_poly_var_const"
+      ->     
+      prim ~primitive:Pis_poly_var_const
         ~args:(Ext_list.map args convert_aux ) loc
     | _ when s = "#raw_expr" ->
       (match args with

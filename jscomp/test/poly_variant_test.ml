@@ -97,7 +97,7 @@ external on2 :
   "on2" [@@bs.send]
 
 external readFileSync :
-  string -> ([`utf8 | `ascii] [@bs.string]) ->
+  string -> ([`utf8 | `ascii] ) ->
   string = "readFileSync"
   [@@bs.module "fs"]
 
@@ -106,7 +106,7 @@ let read name =
 
 module N = struct
   external readFileSync :
-    string -> ([`utf8 | `ascii] [@bs.string]) ->
+    string -> ([`utf8 | `ascii] ) ->
     string = "readFileSync"
       [@@bs.module "fs"]
   let read name = 
@@ -142,4 +142,23 @@ let () =
   eq __LOC__ 2 (p_is_int_test `a);
   eq __LOC__ 3 (p_is_int_test u)
 
+
+let hey x =
+  match x with 
+  | `a 
+  | `b 
+  | `d
+  | `c as u -> 
+    Js.log "u";
+    Js.log u
+
+  | `e 
+  | `f 
+  | `h as v -> 
+    Js.log "v";
+    Js.log v  
+;;
+
+  
+  
 let () = Mt.from_pair_suites __MODULE__ !suites

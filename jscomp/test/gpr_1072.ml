@@ -88,25 +88,25 @@ let int_expects : int_expect2 list  =
     [ int_test3 () ; int_test3 ~x__ignore:`a () ; int_test3 ~x__ignore:`b ()]
 
 
-
+type flavor = [`vanilla | `chocolate]
 external ice :
-  flavour:([`vanilla | `chocolate] [@bs.string]) ->
+  flavour:flavor ->
   num:int -> unit -> 
   _ =
   "" [@@bs.obj]
 
-let mk_ice  : < flavour : string  ; num : int > Js.t  = 
+let mk_ice  : < flavour : flavor  ; num : int > Js.t  = 
     ice ~flavour:`vanilla ~num:3 ()
 
 external ice2 :
-  ?flavour:([`vanilla | `chocolate] [@bs.string]) ->
+  ?flavour:(flavor ) ->
   num:int -> unit -> 
   _ =
   "" [@@bs.obj]
   
-let my_ice2 : < flavour : string Js.Undefined.t  ; num : int > Js.t = ice2 ~flavour:`vanilla ~num:1  ()
+let my_ice2 : < flavour : flavor Js.Undefined.t  ; num : int > Js.t = ice2 ~flavour:`vanilla ~num:1  ()
 
-let my_ice3  : < flavour : string Js.Undefined.t  ; num : int > Js.t = ice2 ~num:2 ()
+let my_ice3  : < flavour : flavor Js.Undefined.t  ; num : int > Js.t = ice2 ~num:2 ()
 
 
 external mk4:x__ignore:([`a|`b][@bs.ignore]) -> y:int -> unit -> _ = "" [@@bs.obj]
@@ -139,7 +139,7 @@ let v_mk7   :  < y : int > Js.t list   = [
 ]
 
 
-external again : ?x__ignore:([`a|`b][@bs.string]) -> int -> unit = "again" [@@bs.val]
+external again : ?x__ignore:([`a|`b]) -> int -> unit = "again" [@@bs.val]
 
 let () =
      again ~x__ignore:`a 3 ;
@@ -147,7 +147,7 @@ let () =
      again ?x__ignore:None 3 ;
      again ?x__ignore:(ignore 3 ; None) 3 
 
-external again2 : x__ignore:([`a|`b][@bs.string]) -> int -> unit = "again2" [@@bs.val]
+external again2 : x__ignore:([`a|`b]) -> int -> unit = "again2" [@@bs.val]
 
 let () = 
     again2 ~x__ignore:`a 3 

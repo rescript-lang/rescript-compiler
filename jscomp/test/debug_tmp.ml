@@ -5,7 +5,8 @@
   (* "-dlambda";  *)
   (* "-dtypedtree"; *)
   (* "-bs-diagnose" *)
-  
+  (* "-bs-diagnose"; *)
+  (* "-dsource"; *)
   |]
 }]
 

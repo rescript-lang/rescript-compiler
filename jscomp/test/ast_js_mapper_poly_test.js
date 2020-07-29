@@ -30,27 +30,16 @@ function eq(loc, x, y) {
   
 }
 
-var jsMapperConstantArray = [
-  [
-    67,
-    "C"
-  ],
-  [
-    68,
-    "D"
-  ],
-  [
-    102,
-    "x"
-  ]
-];
+var _map = {"D":"D","C":"C","f":"x"};
+
+var _revMap = {"D":"D","C":"C","x":"f"};
 
 function uToJs(param) {
-  return Js_mapperRt.binarySearch(3, param, jsMapperConstantArray);
+  return _map[param];
 }
 
 function uFromJs(param) {
-  return Js_mapperRt.revSearch(3, jsMapperConstantArray, param);
+  return _revMap[param];
 }
 
 function eqU(x, y) {
@@ -69,25 +58,25 @@ function eqUOpt(x, y) {
   }
 }
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 25, characters 5-12", eqUOpt(uFromJs("x"), /* f */102), true);
+eq("File \"ast_js_mapper_poly_test.ml\", line 25, characters 5-12", eqUOpt(uFromJs("x"), "f"), true);
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 26, characters 5-12", eqUOpt(uFromJs("D"), /* D */68), true);
+eq("File \"ast_js_mapper_poly_test.ml\", line 26, characters 5-12", eqUOpt(uFromJs("D"), "D"), true);
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 27, characters 5-12", eqUOpt(uFromJs("C"), /* C */67), true);
+eq("File \"ast_js_mapper_poly_test.ml\", line 27, characters 5-12", eqUOpt(uFromJs("C"), "C"), true);
 
 eq("File \"ast_js_mapper_poly_test.ml\", line 28, characters 5-12", eqUOpt(uFromJs("f"), undefined), true);
 
 eq("File \"ast_js_mapper_poly_test.ml\", line 29, characters 5-12", $$Array.map(uToJs, [
-          /* D */68,
-          /* C */67,
-          /* f */102
+          "D",
+          "C",
+          "f"
         ]), [
       "D",
       "C",
       "x"
     ]);
 
-var jsMapperConstantArray$1 = [
+var jsMapperConstantArray = [
   0,
   3,
   4,
@@ -95,11 +84,11 @@ var jsMapperConstantArray$1 = [
 ];
 
 function vToJs(param) {
-  return jsMapperConstantArray$1[param];
+  return jsMapperConstantArray[param];
 }
 
 function vFromJs(param) {
-  return Js_mapperRt.fromInt(4, jsMapperConstantArray$1, param);
+  return Js_mapperRt.fromInt(4, jsMapperConstantArray, param);
 }
 
 function eqV(x, y) {

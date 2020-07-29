@@ -60,7 +60,7 @@ let handle_config (config : Parsetree.expression option) =
   | None -> false
 let noloc = Location.none
 (* [eraseType] will be instrumented, be careful about the name conflict*)  
-let eraseTypeLit = "jsMapperEraseType"
+let eraseTypeLit = "_eraseType"
 let eraseTypeExp = Exp.ident {loc = noloc; txt = Lident eraseTypeLit}
 let eraseType x = 
   Ast_compatible.app1 eraseTypeExp  x
@@ -70,7 +70,57 @@ let eraseTypeStr =
     (Val.mk ~prim:["%identity"] {loc = noloc; txt = eraseTypeLit}
        (Ast_compatible.arrow any any)
     )
+let unsafeIndex = "_index"    
+let unsafeIndexGet = 
+  Str.primitive
+    (Val.mk ~prim:[""] {loc = noloc; txt = unsafeIndex} ~attrs:[Ast_attributes.bs_get_index]
+       (Ast_compatible.arrow (Typ.var "b") (Ast_compatible.arrow (Typ.var "a") (Typ.var "c")))
+    )
+let unsafeIndexGetExp = (Exp.ident {loc = noloc; txt = Lident unsafeIndex}) 
+(* JavaScript has allowed trailing commas in array literals since the beginning, 
+   and later added them to object literals (ECMAScript 5) and most recently (ECMAScript 2017)
+   to function parameters. *)    
+let add_key_value buf key value last =   
+  Ext_buffer.add_char_string buf '"' key;
+  Ext_buffer.add_string buf "\":\"";     
+  Ext_buffer.add_string buf  value;      
+  if last then 
+    Ext_buffer.add_string buf "\""  
+  else  
+    Ext_buffer.add_string buf "\","  
 
+let buildMap (row_fields : Parsetree.row_field list) = 
+  let has_bs_as  = ref false  in
+  let data, revData =                       
+    let buf = Ext_buffer.create 50 in 
+    let revBuf = Ext_buffer.create 50 in 
+    Ext_buffer.add_string buf "{";  
+    Ext_buffer.add_string revBuf "{"; 
+    let rec aux (row_fields : Parsetree.row_field list) =
+      match row_fields with 
+      | []  -> ()
+      | tag :: rest ->      
+        (match tag with 
+        | Rtag ({txt}, attrs, _, []) ->                                                     
+          let name : string = 
+            match Ast_attributes.iter_process_bs_string_as attrs with 
+            | Some name -> 
+              has_bs_as := true;
+              name
+            | None -> txt in
+          let last = rest = [] in 
+          add_key_value buf txt name last ;
+          add_key_value revBuf name txt last
+        | _ -> assert false (* checked by [is_enum_polyvar] *)
+        ); aux rest
+    in 
+    aux row_fields;
+    Ext_buffer.add_string buf "}" ;
+    Ext_buffer.add_string revBuf "}" ;
+    Ext_buffer.contents buf, Ext_buffer.contents revBuf 
+  in      
+  data,revData, !has_bs_as    
+let app1 = Ast_compatible.app1  
 let app2 = Ast_compatible.app2
 let app3 = Ast_compatible.app3
 
@@ -86,43 +136,10 @@ let (&&~) a b =
   app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","&&")})
     a b 
 let (->~) a b = Ast_compatible.arrow a b 
+
 let jsMapperRt =     
   Longident.Ldot (Lident "Js", "MapperRt")
 
-let search upper polyvar array = 
-  app3
-    (Exp.ident ({loc = noloc; 
-                 txt = Longident.Ldot (jsMapperRt,"binarySearch") })
-    )                                 
-    upper
-    (eraseType polyvar)
-    array
-
-let revSearch len constantArray exp =   
-  app3 
-    (Exp.ident 
-       {loc= noloc; 
-        txt = Longident.Ldot (jsMapperRt, "revSearch")})
-    len
-    constantArray
-    exp
-
-let revSearchAssert  len constantArray exp =   
-  app3 
-    (Exp.ident 
-       {loc= noloc; 
-        txt = Longident.Ldot (jsMapperRt, "revSearchAssert")})
-    len
-    constantArray
-    exp
-
-let toInt exp array =     
-  app2
-    (Exp.ident 
-       { loc=noloc; 
-         txt = Longident.Ldot (jsMapperRt, "toInt")})
-    (eraseType exp)
-    array
 let fromInt len array exp = 
   app3
     (Exp.ident 
@@ -140,8 +157,12 @@ let fromIntAssert len array exp =
     len
     array
     exp
-
-
+let raiseWhenNotFound x =
+  app1  
+    (Exp.ident 
+       {loc = noloc; 
+        txt = Longident.Ldot (jsMapperRt,"raiseWhenNotFound")})
+  x
 let assertExp e = 
   Exp.extension 
     ({Asttypes.loc = noloc; txt = "assert"},
@@ -244,63 +265,40 @@ let init () =
                | Ptype_abstract -> 
                  (match Ast_polyvar.is_enum_polyvar tdcl with 
                   | Some row_fields ->               
-                    let expConstantArray =   
-                      Exp.ident {loc; txt = Longident.Lident constantArray} in 
-                    let result :  _ list = 
-                      Ext_list.map row_fields (fun tag -> 
-                          match tag with 
-                          | Rtag (label, attrs, _, []) -> 
-                            (Ast_compatible.hash_label label,
-                             match Ast_attributes.iter_process_bs_string_as_ast attrs with 
-                             | Some name -> 
-                               name
-                             | None -> 
-                               Ast_compatible.const_exp_string(Ast_compatible.label_of_name label)
-                            )
-                          | _ -> assert false (* checked by [is_enum_polyvar] *)
-                        ) in 
-                    let result_len = List.length result in 
-                    let exp_len = Ast_compatible.const_exp_int result_len in 
+                    let map, revMap = "_map", "_revMap" in 
+                    let expMap =  Exp.ident {loc; txt = Lident map} in                       
+                    let revExpMap = Exp.ident {loc ; txt = Lident revMap} in                     
+                    let data, revData, has_bs_as = buildMap row_fields in 
+
                     let v = [
-                      eraseTypeStr;
+                      eraseTypeStr;  
+                      unsafeIndexGet;
                       Ast_comb.single_non_rec_value 
-                        {loc; txt = constantArray}
-                        (Exp.array
-                           (Ext_list.map (List.sort (fun (a,_) (b,_) -> compare (a:int) b) result)
-                              (fun (i,str) -> 
-                                 Exp.tuple 
-                                   [
-                                     Ast_compatible.const_exp_int i;
-                                     str
-                                   ]
-                              ) ));
-                      (
-                        toJsBody
-                          (coerceResultToNewType 
-                             (search
-                                exp_len
-                                exp_param
-                                expConstantArray 
-                             ))
-                      );
+                        {loc; txt = map}
+                        (Exp.extension ({txt = "raw";loc}, PStr [Str.eval (Exp.constant(Const.string data))]));
+                      Ast_comb.single_non_rec_value 
+                        {loc; txt = revMap}
+                        (if has_bs_as then
+                           (Exp.extension ({txt = "raw";loc}, PStr [Str.eval (Exp.constant(Const.string revData))]))
+                         else expMap);
+                      toJsBody
+                      (if has_bs_as then
+                        app2  unsafeIndexGetExp expMap exp_param 
+                      else  app1 eraseTypeExp exp_param)
+                      ;
                       Ast_comb.single_non_rec_value
                         patFromJs
                         (Ast_compatible.fun_
                            (Pat.var pat_param)
-                           (if createType then 
-                              revSearchAssert
-                                exp_len
-                                expConstantArray
-                                (exp_param +: newType)
-                              +>
-                              core_type
-                            else 
-                              revSearch                                      
-                                exp_len
-                                expConstantArray
-                                exp_param                                      
-                              +>
-                              Ast_core_type.lift_option_type core_type
+                           (
+                           let result = 
+                              app2 
+                                unsafeIndexGetExp
+                                revExpMap
+                                exp_param in 
+                           if createType then 
+                            raiseWhenNotFound result
+                            else result     
                            )
                         )
                     ] in 
@@ -322,6 +320,7 @@ let init () =
                      let constantArrayExp = Exp.ident {loc; txt = Lident constantArray} in
                      let exp_len = Ast_compatible.const_exp_int (List.length ctors) in
                      let v = [
+                       unsafeIndexGet;  
                        eraseTypeStr;
                        Ast_comb.single_non_rec_value 
                          {loc; txt = constantArray}
@@ -329,10 +328,9 @@ let init () =
                        ;
                        toJsBody                        
                          (
-                           coerceResultToNewType @@
-                           toInt
-                             exp_param
-                             constantArrayExp
+                           app2 unsafeIndexGetExp
+                            constantArrayExp
+                             exp_param                             
                          )                       
                        ;
                        Ast_comb.single_non_rec_value

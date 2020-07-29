@@ -30,21 +30,24 @@ type unit_action =
   | Unit_call of (unit -> unit) 
   | Unit_set of bool ref 
 
-exception Bad of string
+
 
 type spec =
   | Unit of unit_action
   | String of string_action 
 
-type key = string
-type doc = string
+
 
 type anon_fun = rev_args:string list -> unit
+
+exception Bad of string 
 
 val parse_exn :
   usage:string -> 
   argv:string array -> 
   ?start:int ->
   ?finish:int ->
-  (key * spec * doc) list -> 
+  (string * spec * string) array -> 
   anon_fun  -> unit
+
+val bad_arg : string -> 'a  

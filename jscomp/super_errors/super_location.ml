@@ -1,51 +1,21 @@
-(* open Misc
-open Asttypes
-open Parsetree
-open Types
-open Typedtree
-open Btype
-open Ctype *)
 
-open Format
-(* open Printtyp *)
 
-open Location
+let fprintf = Format.fprintf
 
-let file_lines filePath =
-  (* open_in_bin works on windows, as opposed to open_in, afaik? *)
-  let chan = open_in_bin filePath in
-  let lines = ref [] in
-  try
-    while true do
-      lines := (input_line chan) :: !lines
-     done;
-     (* leave this here to make things type. The loop will definitly raise *)
-     [||]
-  with
-  | End_of_file -> begin
-      close_in chan;
-      List.rev (!lines) |> Array.of_list
-    end
+
+
+let file_lines filePath = 
+  Ext_array.reverse_of_list
+    (Ext_io.rev_lines_of_file filePath)
 
 let setup_colors () =
   Misc.Color.setup !Clflags.color
 
-let print_filename ppf file =
-  match file with
-  (* modified *)
-  | "_none_"
-  | "" -> Format.fprintf ppf "(No file name)"
-  | real_file -> Format.fprintf ppf "%s" (Location.show_filename real_file)
+let print_filename = Location.print_filename
 
-let print_loc ~normalizedRange ppf loc =
+let print_loc ~normalizedRange ppf (loc : Location.t) =
   setup_colors ();
-  let (file, _, _) = Location.get_pos_info loc.loc_start in
-  if file = "//toplevel//" then begin
-    if highlight_locations ppf [loc] then () else
-      fprintf ppf "Characters %i-%i"
-              loc.loc_start.pos_cnum loc.loc_end.pos_cnum
-  end else
-    let dim_loc ppf = function
+  let dim_loc ppf = function
     | None -> ()
     | Some ((start_line, start_line_start_char), (end_line, end_line_end_char)) ->
       if start_line = end_line then
@@ -55,14 +25,11 @@ let print_loc ~normalizedRange ppf loc =
           fprintf ppf " @{<dim>%i:%i-%i@}" start_line start_line_start_char end_line_end_char
       else
         fprintf ppf " @{<dim>%i:%i-%i:%i@}" start_line start_line_start_char end_line end_line_end_char
-    in
-    fprintf ppf "@{<filename>%a@}%a" print_filename file dim_loc normalizedRange
+  in
+  fprintf ppf "@{<filename>%a@}%a" print_filename loc.loc_start.pos_fname dim_loc normalizedRange
 ;;
 
-let print ~message_kind intro ppf loc =
-  if loc.loc_start.pos_fname = "//toplevel//"
-  && highlight_locations ppf [loc] then ()
-  else
+let print ~message_kind intro ppf (loc : Location.t) =
     begin match message_kind with
     | `warning -> fprintf ppf "@[@{<info>%s@}@]@," intro
     | `warning_as_error -> fprintf ppf "@[@{<error>%s@} (configured as error) @]@," intro
@@ -155,17 +122,17 @@ let print_phanton_error_prefix ppf =
     (see super_error_reporter above) *)
   Format.pp_print_as ppf 2 ""
 
-let errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") fmt =
+let errorf ?(loc = Location.none) ?(sub = []) ?(if_highlight = "") fmt =
   Location.pp_ksprintf
     ~before:print_phanton_error_prefix
-    (fun msg -> {loc; msg; sub; if_highlight})
+    (fun msg -> Location.{loc; msg; sub; if_highlight})
     fmt
 
 let error_of_printer loc print x =
   errorf ~loc "%a@?" print x
 
 let error_of_printer_file print x =
-  error_of_printer (in_file !input_name) print x
+  error_of_printer (Location.in_file !Location.input_name) print x
 
 (* This will be called in super_main. This is how you override the default error and warning printers *)
 let setup () =

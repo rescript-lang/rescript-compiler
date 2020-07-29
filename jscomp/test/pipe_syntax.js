@@ -87,7 +87,7 @@ function hi(x) {
 }
 
 var with_poly = {
-  HASH: /* Foo */3505894,
+  NAME: "Foo",
   VAL: 1
 };
 

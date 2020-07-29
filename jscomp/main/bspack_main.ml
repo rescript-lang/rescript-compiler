@@ -253,8 +253,9 @@ let cwd = Sys.getcwd ()
 
 let normalize s = 
   Ext_path.normalize_absolute_path (Ext_path.combine cwd s )
+type dir_spec = Bspack_ast_extract.dir_spec 
 
-let process_include s : Ast_extract.dir_spec = 
+let process_include s : dir_spec = 
   let i = Ext_string.rindex_neg s '?'   in 
   if i < 0 then   
     { dir = normalize s; excludes = []}
@@ -265,9 +266,9 @@ let process_include s : Ast_extract.dir_spec =
           (String.sub s (i + 1) (String.length s - i - 1)    )
           ','}
 
-let deduplicate_dirs (xs : Ast_extract.dir_spec list) =
-  let set :  Ast_extract.dir_spec Hash_string.t = Hash_string.create 64 in 
-  List.filter (fun ({Ast_extract.dir ; excludes = new_excludes } as y) -> 
+let deduplicate_dirs (xs : dir_spec list) =
+  let set :  dir_spec Hash_string.t = Hash_string.create 64 in 
+  List.filter (fun ({dir ; excludes = new_excludes } as y : dir_spec) -> 
       match Hash_string.find_opt set dir with
       | None ->  
         Hash_string.add set dir y;
@@ -418,11 +419,11 @@ let () =
            Ext_list.flat_map xs (fun x -> [x ^ ".ml" ; x ^ ".mli"] ) in 
        let extra_dirs = 
          deduplicate_dirs @@
-         if not !no_implicit_include then {Ast_extract.dir =  cwd; excludes = []} :: !includes 
+         if not !no_implicit_include then {dir =  cwd; excludes = []} :: !includes 
          else !includes 
        in  
        let ast_table, tasks =
-         Ast_extract.collect_from_main ~excludes ~extra_dirs ~alias_map
+         Bspack_ast_extract.collect_from_main ~excludes ~extra_dirs ~alias_map
            Format.err_formatter
            (fun _ppf sourcefile -> lazy (implementation sourcefile))
            (fun _ppf sourcefile -> lazy (interface sourcefile))
@@ -440,7 +441,7 @@ let () =
        let task_length = Queue.length tasks in 
        emit_header out_chan ;
        begin 
-         Ast_extract.handle_queue tasks ast_table
+         Bspack_ast_extract.handle_queue tasks ast_table
            (fun base ml_name (lazy(_, ml_content)) -> 
               incr count ;  
               if collect_module_by_filenames then 
@@ -530,15 +531,15 @@ let () =
        end
      | None, _ -> 
        let ast_table =
-         Ast_extract.collect_ast_map
+         Bspack_ast_extract.collect_ast_map
            Format.err_formatter files
            (fun _ppf sourcefile -> implementation sourcefile
            )
            (fun _ppf sourcefile -> interface sourcefile) in
-       let tasks = Ast_extract.sort fst  fst ast_table in
+       let tasks = Bspack_ast_extract.sort fst  fst ast_table in
        let out_chan = (Lazy.force out_chan) in
        emit_header out_chan ;
-       Ast_extract.handle_queue tasks ast_table 
+       Bspack_ast_extract.handle_queue tasks ast_table 
          (fun base ml_name (_, ml_content) -> decorate_module_only  out_chan base ml_name ml_content)
          (fun base mli_name (_, mli_content)  -> decorate_interface_only out_chan base mli_name mli_content )
          (fun base mli_name ml_name (_, mli_content) (_, ml_content)

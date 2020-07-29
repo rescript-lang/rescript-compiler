@@ -6,7 +6,7 @@ let message (warning : Warnings.t)  =
   | Partial_match "" ->
       "You forgot to handle a possible case here, though we don't have more information on the value."
   | Partial_match s ->
-      "You forgot to handle a possible case here, for example: \n" ^ s
+      "You forgot to handle a possible case here, for example: \n  " ^ s
   | Unerasable_optional_argument ->
       String.concat ""
         ["This optional parameter in final position will, in practice, not be optional.\n";

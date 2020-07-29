@@ -3,7 +3,7 @@
 var Curry = require("../../lib/js/curry.js");
 
 function foo(x) {
-  if (typeof x === "number" || x.HASH !== 3505894 || x.VAL !== 3) {
+  if (typeof x === "string" || !(x.NAME === "Foo" && x.VAL === 3)) {
     console.log("2");
   } else {
     console.log("1");
@@ -12,7 +12,7 @@ function foo(x) {
 }
 
 function foo2(x) {
-  if (typeof x === "number" || x.HASH !== 3505894 || x.VAL !== 3) {
+  if (typeof x === "string" || !(x.NAME === "Foo" && x.VAL === 3)) {
     return "xxx";
   } else {
     return "xxxx";
@@ -20,7 +20,7 @@ function foo2(x) {
 }
 
 function foo3(x) {
-  if (typeof x === "number" || x.HASH !== 3505894 || x.VAL !== 3) {
+  if (typeof x === "string" || !(x.NAME === "Foo" && x.VAL === 3)) {
     return 2;
   } else {
     return 1;
@@ -28,7 +28,7 @@ function foo3(x) {
 }
 
 function foo4(x, h) {
-  if (typeof x === "number" || x.HASH !== 3505894 || x.VAL !== 3) {
+  if (typeof x === "string" || !(x.NAME === "Foo" && x.VAL === 3)) {
     return ;
   } else {
     return Curry._1(h, undefined);
@@ -36,7 +36,7 @@ function foo4(x, h) {
 }
 
 function foo5(x) {
-  if (typeof x === "number" || x.HASH !== 3505894 || x.VAL !== 3) {
+  if (typeof x === "string" || !(x.NAME === "Foo" && x.VAL === 3)) {
     console.log("x");
   } else {
     console.log("hi");

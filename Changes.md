@@ -1,4 +1,35 @@
 `*` means  potential break changes
+# 8.2
+
+- #4570 refine purity analysis so that object literals in raw will be considered pure
+
+- #4573, #4565, #4559, #4558, #4556, #4554, #4553, #4550 introudce string literal types
+
+- #4548 #4555 fix ghost locaption in empty array
+
+- #4540 optimize code generation for recursive modules
+- #4530 internal -color option default to always 
+
+- #4569 emit a warning for use of ``( [ `a| `b] [@bs.string]) `` since it is no longer needed
+- #4531 better generated js code for belt
+- #4526 add `bsc -fmt file` option, format into the new syntax
+- #4495 enable newish es syntax in raw
+
+- #4491, #4492, #4493 fix a bug when printing a single object literal as statement, optimize this case into a nop
+
+- #4482, #4480 disable user to redefine `unit`, `true`, `false`
+- #4474 #4465 [reactjs] add support for ref argument inside of React.forwardRef type applciations
+- #4473 adding an experimental new syntax
+- #4470 tweak error message for not found record fields/constructors
+
+* bug fixes
+- #4524, #4519 fix an inlining bug
+- #4505 #4502, fix bad error message in bsb -bla
+
+* internal
+- #4497 #4507, #4516 compiler performance improvement
+
+
 # 8.0
 
 * Code generation

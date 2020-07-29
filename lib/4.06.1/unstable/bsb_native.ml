@@ -61,6 +61,397 @@ let header =
 let package_name = "bs-platform"   
     
 end
+module Ext_array : sig 
+#1 "ext_array.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Some utilities for {!Array} operations *)
+val reverse_range : 'a array -> int -> int -> unit
+val reverse_in_place : 'a array -> unit
+val reverse : 'a array -> 'a array 
+val reverse_of_list : 'a list -> 'a array
+
+val filter : ('a -> bool) -> 'a array -> 'a array
+
+val filter_map : 
+'a array -> 
+('a -> 'b option) -> 
+'b array
+
+val range : int -> int -> int array
+
+val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
+
+val to_list_f : 
+  'a array -> 
+  ('a -> 'b) -> 
+  'b list 
+
+val to_list_map : 
+'a array -> ('a -> 'b option) -> 'b list 
+
+val to_list_map_acc : 
+  'a array -> 
+  'b list -> 
+  ('a -> 'b option) -> 
+  'b list 
+
+val of_list_map : 
+  'a list -> 
+  ('a -> 'b) -> 
+  'b array 
+
+val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
+
+
+
+type 'a split = No_split | Split of  'a array *  'a array 
+
+
+val find_and_split : 
+  'a array ->
+  ('a -> 'b -> bool) ->
+  'b -> 'a split
+
+val exists : ('a -> bool) -> 'a array -> bool 
+
+val is_empty : 'a array -> bool 
+
+val for_all2_no_exn : 
+  'a array ->
+  'b array -> 
+  ('a -> 'b -> bool) -> 
+  bool
+
+val for_alli : 
+  'a array -> 
+  (int -> 'a -> bool) -> 
+  bool 
+    
+val map :   
+  'a array -> 
+  ('a -> 'b) -> 
+  'b array
+
+val iter :
+  'a array -> 
+  ('a -> unit) -> 
+  unit
+
+val fold_left :   
+  'b array -> 
+  'a -> 
+  ('a -> 'b -> 'a) ->   
+  'a
+
+val get_or :   
+  'a array -> 
+  int -> 
+  (unit -> 'a) -> 
+  'a
+end = struct
+#1 "ext_array.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+let reverse_range a i len =
+  if len = 0 then ()
+  else
+    for k = 0 to (len-1)/2 do
+      let t = Array.unsafe_get a (i+k) in
+      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
+      Array.unsafe_set a (i+len-1-k) t;
+    done
+
+
+let reverse_in_place a =
+  reverse_range a 0 (Array.length a)
+
+let reverse a =
+  let b_len = Array.length a in
+  if b_len = 0 then [||] else  
+    let b = Array.copy a in  
+    for i = 0 to  b_len - 1 do
+      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
+    done;
+    b  
+
+let reverse_of_list =  function
+  | [] -> [||]
+  | hd::tl as l ->
+    let len = List.length l in
+    let a = Array.make len hd in
+    let rec fill i = function
+      | [] -> a
+      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
+    fill 0 tl
+
+let filter f a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      if f  v then 
+        aux (v::acc) (i+1)
+      else aux acc (i + 1) 
+  in aux [] 0
+
+
+let filter_map a (f : _ -> _ option)  =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      match f  v with 
+      | Some v -> 
+        aux (v::acc) (i+1)
+      | None -> 
+        aux acc (i + 1) 
+  in aux [] 0
+
+let range from to_ =
+  if from > to_ then invalid_arg "Ext_array.range"  
+  else Array.init (to_ - from + 1) (fun i -> i + from)
+
+let map2i f a b = 
+  let len = Array.length a in 
+  if len <> Array.length b then 
+    invalid_arg "Ext_array.map2i"  
+  else
+    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
+
+let rec tolist_f_aux a f  i res =
+  if i < 0 then res else
+    let v = Array.unsafe_get a i in
+    tolist_f_aux a f  (i - 1)
+      (f v :: res)
+       
+let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
+
+let rec tolist_aux a f  i res =
+  if i < 0 then res else
+    let v = Array.unsafe_get a i in
+    tolist_aux a f  (i - 1)
+      (match f v with
+       | Some v -> v :: res
+       | None -> res) 
+
+let to_list_map a f  = 
+  tolist_aux a f (Array.length a - 1) []
+
+let to_list_map_acc a acc f = 
+  tolist_aux a f (Array.length a - 1) acc
+
+
+let of_list_map a f = 
+  match a with 
+  | [] -> [||]
+  | [a0] -> 
+    let b0 = f a0 in
+    [|b0|]
+  | [a0;a1] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    [|b0;b1|]
+  | [a0;a1;a2] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    [|b0;b1;b2|]
+  | [a0;a1;a2;a3] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    [|b0;b1;b2;b3|]
+  | [a0;a1;a2;a3;a4] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    [|b0;b1;b2;b3;b4|]
+
+  | a0::a1::a2::a3::a4::tl -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    let len = List.length tl + 5 in 
+    let arr = Array.make len b0  in
+    Array.unsafe_set arr 1 b1 ;  
+    Array.unsafe_set arr 2 b2 ;
+    Array.unsafe_set arr 3 b3 ; 
+    Array.unsafe_set arr 4 b4 ; 
+    let rec fill i = function
+      | [] -> arr 
+      | hd :: tl -> 
+        Array.unsafe_set arr i (f hd); 
+        fill (i + 1) tl in 
+    fill 5 tl
+
+(**
+   {[
+     # rfind_with_index [|1;2;3|] (=) 2;;
+     - : int = 1
+               # rfind_with_index [|1;2;3|] (=) 1;;
+     - : int = 0
+               # rfind_with_index [|1;2;3|] (=) 3;;
+     - : int = 2
+               # rfind_with_index [|1;2;3|] (=) 4;;
+     - : int = -1
+   ]}
+*)
+let rfind_with_index arr cmp v = 
+  let len = Array.length arr in 
+  let rec aux i = 
+    if i < 0 then i
+    else if  cmp (Array.unsafe_get arr i) v then i
+    else aux (i - 1) in 
+  aux (len - 1)
+
+type 'a split = No_split | Split of  'a array *  'a array 
+
+
+let find_with_index arr cmp v = 
+  let len  = Array.length arr in 
+  let rec aux i len = 
+    if i >= len then -1 
+    else if cmp (Array.unsafe_get arr i ) v then i 
+    else aux (i + 1) len in 
+  aux 0 len
+
+let find_and_split arr cmp v : _ split = 
+  let i = find_with_index arr cmp v in 
+  if i < 0 then 
+    No_split
+  else
+    Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))
+
+(** TODO: available since 4.03, use {!Array.exists} *)
+
+let exists p a =
+  let n = Array.length a in
+  let rec loop i =
+    if i = n then false
+    else if p (Array.unsafe_get a i) then true
+    else loop (succ i) in
+  loop 0
+
+
+let is_empty arr =
+  Array.length arr = 0
+
+
+let rec unsafe_loop index len p xs ys  = 
+  if index >= len then true
+  else 
+    p 
+      (Array.unsafe_get xs index)
+      (Array.unsafe_get ys index) &&
+    unsafe_loop (succ index) len p xs ys 
+
+let for_alli a p =
+  let n = Array.length a in
+  let rec loop i =
+    if i = n then true
+    else if p i (Array.unsafe_get a i) then loop (succ i)
+    else false in
+  loop 0
+
+let for_all2_no_exn xs ys p = 
+  let len_xs = Array.length xs in 
+  let len_ys = Array.length ys in 
+  len_xs = len_ys &&    
+  unsafe_loop 0 len_xs p xs ys
+
+
+let map a f =
+  let open Array in 
+  let l = length a in
+  if l = 0 then [||] else begin
+    let r = make l (f(unsafe_get a 0)) in
+    for i = 1 to l - 1 do
+      unsafe_set r i (f(unsafe_get a i))
+    done;
+    r
+  end
+
+let iter a f =
+  let open Array in 
+  for i = 0 to length a - 1 do f(unsafe_get a i) done
+
+
+  let fold_left a x f =
+    let open Array in 
+    let r = ref x in    
+    for i = 0 to length a - 1 do
+      r := f !r (unsafe_get a i)
+    done;
+    !r
+  
+let get_or arr i cb =     
+  if i >=0 && i < Array.length arr then 
+    Array.unsafe_get arr i 
+  else cb ()  
+end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -191,7 +582,7 @@ val clear : t -> unit
 (** Empty the buffer. *)
 
 
-val add_char : t -> char -> unit
+val [@inline] add_char : t -> char -> unit
 (** [add_char b c] appends the character [c] at the end of the buffer [b]. *)
 
 val add_string : t -> string -> unit
@@ -287,9 +678,6 @@ type t =
 
 let create n =
  let n = if n < 1 then 1 else n in
- 
- let n = if n > Sys.max_string_length then Sys.max_string_length else n in
- 
  let s = Bytes.create n in
  {buffer = s; position = 0; length = n; initial_buffer = s}
 
@@ -321,13 +709,6 @@ let resize b more =
   let len = b.length in
   let new_len = ref len in
   while b.position + more > !new_len do new_len := 2 * !new_len done;
-   
-  if !new_len > Sys.max_string_length then begin
-    if b.position + more <= Sys.max_string_length
-    then new_len := Sys.max_string_length
-    else failwith "Ext_buffer.add: cannot grow buffer"
-  end;
-  
   let new_buffer = Bytes.create !new_len in
   (* PR#6148: let's keep using [blit] rather than [unsafe_blit] in
      this tricky function that is slow anyway. *)
@@ -336,7 +717,7 @@ let resize b more =
   b.length <- !new_len ;
   assert (b.position + more <= b.length)
 
-let add_char b c =
+let [@inline] add_char b c =
   let pos = b.position in
   if pos >= b.length then resize b 1;
   Bytes.unsafe_set b.buffer pos c;
@@ -488,420 +869,19 @@ let add_int_4 (b : t ) (x : int ) =
 
 
 end
-module Ext_list : sig 
-#1 "ext_list.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+module Ext_spec : sig 
+#1 "ext_spec.mli"
+type 'a t = (string * 'a * string) array
 
-
-val map : 
-  'a list -> 
-  ('a -> 'b) -> 
-  'b list 
-
-val map_combine :  
-  'a list -> 
-  'b list -> 
-  ('a -> 'c) -> 
-  ('c * 'b) list 
-
-val combine_array:
-  'a array ->
-  'b list -> 
-  ('a -> 'c) ->
-  ('c * 'b) list   
-
-val combine_array_append:
-  'a array ->
-  'b list ->
-  ('c * 'b) list -> 
-  ('a -> 'c) ->
-  ('c * 'b) list   
-  
-val has_string :   
-  string list ->
+val assoc3 : 
+  'a t -> 
   string -> 
-  bool
+  'a option
 
-
-val map_split_opt :  
-  'a list ->
-  ('a -> 'b option * 'c option) ->
-  'b list * 'c list 
-
-val mapi :
-  'a list -> 
-  (int -> 'a -> 'b) -> 
-  'b list 
-
-val mapi_append :
-  'a list -> 
-  (int -> 'a -> 'b) -> 
-  'b list -> 
-  'b list 
-
-val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
-
-(** [map_last f xs ]
-    will pass [true] to [f] for the last element, 
-    [false] otherwise. 
-    For empty list, it returns empty
-*)
-val map_last : 
-    'a list -> 
-    (bool -> 'a -> 'b) -> 'b list
-
-(** [last l]
-    return the last element
-    raise if the list is empty
-*)
-val last : 'a list -> 'a
-
-val append : 
-  'a list -> 
-  'a list -> 
-  'a list 
-
-val append_one :  
-  'a list -> 
-  'a -> 
-  'a list
-
-val map_append :  
-  'b list -> 
-  'a list -> 
-  ('b -> 'a) -> 
-  'a list
-
-val fold_right : 
-  'a list -> 
-  'b -> 
-  ('a -> 'b -> 'b) -> 
-  'b
-
-val fold_right2 : 
-  'a list -> 
-  'b list -> 
-  'c -> 
-  ('a -> 'b -> 'c -> 'c) ->  'c
-
-val fold_right3 : 
-  'a list -> 
-  'b list -> 
-  'c list -> 
-  'd -> 
-  ('a -> 'b -> 'c -> 'd -> 'd) -> 
-  'd
-  
-  
-val map2 : 
-  'a list ->
-  'b list ->
-  ('a -> 'b -> 'c) ->
-  'c list
-
-val fold_left_with_offset : 
-  'a list -> 
-  'acc -> 
-  int -> 
-  ('a -> 'acc ->  int ->  'acc) ->   
-  'acc 
-
-
-(** @unused *)
-val filter_map : 
-  'a list -> 
-  ('a -> 'b option) -> 
-  'b list  
-
-(** [exclude p l] is the opposite of [filter p l] *)
-val exclude : 
-  'a list -> 
-  ('a -> bool) -> 
-  'a list 
-
-(** [excludes p l]
-    return a tuple [excluded,newl]
-    where [exluded] is true indicates that at least one  
-    element is removed,[newl] is the new list where all [p x] for [x] is false
-
-*)
-val exclude_with_val : 
-  'a list -> 
-  ('a -> bool) -> 
-  'a list option
-
-
-val same_length : 'a list -> 'b list -> bool
-
-val init : int -> (int -> 'a) -> 'a list
-
-(** [split_at n l]
-    will split [l] into two lists [a,b], [a] will be of length [n], 
-    otherwise, it will raise
-*)
-val split_at : 
-  'a list -> 
-  int -> 
-  'a list * 'a list
-
-
-(** [split_at_last l]
-    It is equivalent to [split_at (List.length l - 1) l ]
-*)
-val split_at_last : 'a list -> 'a list * 'a
-
-val filter_mapi : 
-  'a list -> 
-  ('a -> int ->  'b option) -> 
-  'b list
-
-val filter_map2 : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b -> 'c option) -> 
-  'c list
-
-
-val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
-
-val length_ge : 'a list -> int -> bool
-
-(**
-
-   {[length xs = length ys + n ]}
-   input n should be positive 
-   TODO: input checking
-*)
-
-val length_larger_than_n : 
-  'a list -> 
-  'a list -> 
-   int -> 
-   bool
-
-
-(**
-   [rev_map_append f l1 l2]
-   [map f l1] and reverse it to append [l2]
-   This weird semantics is due to it is the most efficient operation
-   we can do
-*)
-val rev_map_append : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b) -> 
-  'b list
-
-
-val flat_map : 
-  'a list -> 
-  ('a -> 'b list) -> 
-  'b list
-
-val flat_map_append : 
-  'a list -> 
-  'b list  ->
-  ('a -> 'b list) -> 
-  'b list
-
-
-(**
-    [stable_group eq lst]
-    Example:
-    Input:
-   {[
-     stable_group (=) [1;2;3;4;3]
-   ]}
-    Output:
-   {[
-     [[1];[2];[4];[3;3]]
-   ]}
-    TODO: this is O(n^2) behavior 
-    which could be improved later
-*)
-val stable_group : 
-  'a list -> 
-  ('a -> 'a -> bool) -> 
-  'a list list 
-
-(** [drop n list]
-    raise when [n] is negative
-    raise when list's length is less than [n]
-*)
-val drop : 
-  'a list -> 
-  int -> 
-  'a list 
-
-val find_first :   
-    'a list ->
-    ('a -> bool) ->
-    'a option 
-    
-(** [find_first_not p lst ]
-    if all elements in [lst] pass, return [None] 
-    otherwise return the first element [e] as [Some e] which
-    fails the predicate
-*)
-val find_first_not : 
-  'a list -> 
-  ('a -> bool) -> 
-  'a option 
-
-(** [find_opt f l] returns [None] if all return [None],  
-    otherwise returns the first one. 
-*)
-
-val find_opt : 
-  'a list -> 
-  ('a -> 'b option) -> 
-  'b option 
-
-val find_def : 
-    'a list -> 
-    ('a -> 'b option) ->
-    'b ->
-    'b 
-
-    
-val rev_iter : 
-  'a list -> 
-  ('a -> unit) -> 
-  unit 
-
-val iter:   
-   'a list ->  
-   ('a -> unit) -> 
-   unit
-   
-val for_all:  
-    'a list -> 
-    ('a -> bool) -> 
-    bool
-val for_all_snd:    
-    ('a * 'b) list -> 
-    ('b -> bool) -> 
-    bool
-
-(** [for_all2_no_exn p xs ys]
-    return [true] if all satisfied,
-    [false] otherwise or length not equal
-*)
-val for_all2_no_exn : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b -> bool) -> 
-  bool
-
-
-
-(** [f] is applied follow the list order *)
-val split_map : 
-  'a list -> 
-  ('a -> 'b * 'c) -> 
-  'b list * 'c list       
-
-(** [fn] is applied from left to right *)
-val reduce_from_left : 
-  'a list -> 
-  ('a -> 'a -> 'a) ->
-  'a
-
-val sort_via_array :
-  'a list -> 
-  ('a -> 'a -> int) -> 
-  'a list  
-
-
-
-
-(** [assoc_by_string default key lst]
-    if  [key] is found in the list  return that val,
-    other unbox the [default], 
-    otherwise [assert false ]
-*)
-val assoc_by_string : 
-  (string * 'a) list -> 
-  string -> 
-  'a  option ->   
-  'a  
-
-val assoc_by_int : 
-  (int * 'a) list -> 
-  int -> 
-  'a  option ->   
-  'a   
-
-
-val nth_opt : 'a list -> int -> 'a option  
-
-val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit 
-
-val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
-
-val exists : 'a list -> ('a -> bool) -> bool 
-
-val exists_fst : 
-  ('a * 'b) list ->
-  ('a -> bool) ->
-  bool
-
-val exists_snd : 
-  ('a * 'b) list -> 
-  ('b -> bool) -> 
-  bool
-
-val concat_append:
-    'a list list -> 
-    'a list -> 
-    'a list
-
-val fold_left2:
-    'a list -> 
-    'b list -> 
-    'c -> 
-    ('a -> 'b -> 'c -> 'c)
-    -> 'c 
-
-val fold_left:    
-    'a list -> 
-    'b -> 
-    ('b -> 'a -> 'b) -> 
-    'b
-
-val singleton_exn:     
-    'a list -> 'a
-
-val mem_string :     
-    string list -> 
-    string -> 
-    bool
 end = struct
-#1 "ext_list.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+#1 "ext_spec.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -919,755 +899,25 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(* A small module which is also used by {!Bsb_helper} *)
+type 'a t = (string * 'a * string) array
 
-
-let rec map l f =
-  match l with
-  | [] ->
-    []
-  | [x1] ->
-    let y1 = f x1 in
-    [y1]
-  | [x1; x2] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    [y1; y2]
-  | [x1; x2; x3] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    [y1; y2; y3]
-  | [x1; x2; x3; x4] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    [y1; y2; y3; y4]
-  | x1::x2::x3::x4::x5::tail ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    let y5 = f x5 in
-    y1::y2::y3::y4::y5::(map tail f)
-
-let rec has_string l f =
-  match l with
-  | [] ->
-    false
-  | [x1] ->
-    x1 = f
-  | [x1; x2] ->
-    x1 = f || x2 = f
-  | [x1; x2; x3] ->
-    x1 = f || x2 = f || x3 = f
-  | x1 :: x2 :: x3 :: x4 ->
-    x1 = f || x2 = f || x3 = f || has_string x4 f 
-  
-let rec map_combine l1 l2 f =
-  match (l1, l2) with
-    ([], []) -> []
-  | (a1::l1, a2::l2) -> 
-    (f a1, a2) :: map_combine l1 l2 f 
-  | (_, _) -> 
-    invalid_arg "Ext_list.map_combine"
-
-let rec combine_array_unsafe arr l i j acc f =    
-  if i = j then acc
+let rec unsafe_loop i (l : 'a t) n x = 
+  if i = n then None
   else 
-    match l with
-    | [] -> invalid_arg "Ext_list.combine"
-    | h :: tl ->
-      (f (Array.unsafe_get arr i) , h) ::
-      combine_array_unsafe arr tl (i + 1) j acc f
-
-let combine_array_append arr l acc f = 
-  let len = Array.length arr in
-  combine_array_unsafe arr l 0 len acc f
-
-let combine_array arr l f = 
-  let len = Array.length arr in
-  combine_array_unsafe arr l 0 len [] f 
-
-let rec map_split_opt 
-  (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
-  : 'b list * 'c list = 
-  match xs with 
-  | [] -> [], []
-  | x::xs ->
-    let c,d = f x in 
-    let cs,ds = map_split_opt xs f in 
-    (match c with Some c -> c::cs | None -> cs),
-    (match d with Some d -> d::ds | None -> ds)
-
-let rec map_snd l f =
-  match l with
-  | [] ->
-    []
-  | [ v1,x1 ] ->
-    let y1 = f x1 in
-    [v1,y1]
-  | [v1, x1; v2, x2] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    [v1, y1; v2, y2]
-  | [ v1, x1; v2, x2; v3, x3] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    [v1, y1; v2, y2; v3, y3]
-  | [ v1, x1; v2, x2; v3, x3; v4, x4] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    [v1, y1; v2, y2; v3, y3; v4, y4]
-  | (v1, x1) ::(v2, x2) :: (v3, x3)::(v4, x4) :: (v5, x5) ::tail ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    let y5 = f x5 in
-    (v1, y1)::(v2, y2) :: (v3, y3) :: (v4, y4) :: (v5, y5) :: (map_snd tail f)
-
-
-let rec map_last l f=
-  match l with
-  | [] ->
-    []
-  | [x1] ->
-    let y1 = f true x1 in
-    [y1]
-  | [x1; x2] ->
-    let y1 = f false x1 in
-    let y2 = f true x2 in
-    [y1; y2]
-  | [x1; x2; x3] ->
-    let y1 = f false x1 in
-    let y2 = f false x2 in
-    let y3 = f true x3 in
-    [y1; y2; y3]
-  | [x1; x2; x3; x4] ->
-    let y1 = f false x1 in
-    let y2 = f false x2 in
-    let y3 = f false x3 in
-    let y4 = f true x4 in
-    [y1; y2; y3; y4]
-  | x1::x2::x3::x4::tail ->
-    (* make sure that tail is not empty *)    
-    let y1 = f false x1 in
-    let y2 = f false x2 in
-    let y3 = f false x3 in
-    let y4 = f false x4 in
-    y1::y2::y3::y4::(map_last tail f)
-
-let rec mapi_aux lst i f tail = 
-  match lst with
-    [] -> tail
-  | a::l -> 
-    let r = f i a in r :: mapi_aux l (i + 1) f tail
-
-let mapi lst f = mapi_aux lst 0 f []
-let mapi_append lst f tail = mapi_aux lst 0 f tail
-let rec last xs =
-  match xs with 
-  | [x] -> x 
-  | _ :: tl -> last tl 
-  | [] -> invalid_arg "Ext_list.last"    
-
-
-
-let rec append_aux l1 l2 = 
-  match l1 with
-  | [] -> l2
-  | [a0] -> a0::l2
-  | [a0;a1] -> a0::a1::l2
-  | [a0;a1;a2] -> a0::a1::a2::l2
-  | [a0;a1;a2;a3] -> a0::a1::a2::a3::l2
-  | [a0;a1;a2;a3;a4] -> a0::a1::a2::a3::a4::l2
-  | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append_aux rest l2
-
-let append l1 l2 =   
-  match l2 with 
-  | [] -> l1 
-  | _ -> append_aux l1 l2  
-
-let append_one l1 x = append_aux l1 [x]  
-
-let rec map_append l1 l2 f =   
-  match l1 with
-  | [] -> l2
-  | [a0] -> f a0::l2
-  | [a0;a1] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    b0::b1::l2
-  | [a0;a1;a2] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in  
-    let b2 = f a2 in 
-    b0::b1::b2::l2
-  | [a0;a1;a2;a3] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    let b2 = f a2 in 
-    let b3 = f a3 in 
-    b0::b1::b2::b3::l2
-  | [a0;a1;a2;a3;a4] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    let b2 = f a2 in 
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    b0::b1::b2::b3::b4::l2
-
-  | a0::a1::a2::a3::a4::rest ->
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    let b2 = f a2 in 
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    b0::b1::b2::b3::b4::map_append rest l2 f
-
-
-
-let rec fold_right l acc f  = 
-  match l with  
-  | [] -> acc 
-  | [a0] -> f a0 acc 
-  | [a0;a1] -> f a0 (f a1 acc)
-  | [a0;a1;a2] -> f a0 (f a1 (f a2 acc))
-  | [a0;a1;a2;a3] -> f a0 (f a1 (f a2 (f a3 acc))) 
-  | [a0;a1;a2;a3;a4] -> 
-    f a0 (f a1 (f a2 (f a3 (f a4 acc))))
-  | a0::a1::a2::a3::a4::rest -> 
-    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right rest acc f )))))  
-
-let rec fold_right2 l r acc f = 
-  match l,r  with  
-  | [],[] -> acc 
-  | [a0],[b0] -> f a0 b0 acc 
-  | [a0;a1],[b0;b1] -> f a0 b0 (f a1 b1 acc)
-  | [a0;a1;a2],[b0;b1;b2] -> f a0 b0 (f a1 b1 (f a2 b2 acc))
-  | [a0;a1;a2;a3],[b0;b1;b2;b3] ->
-    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 acc))) 
-  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
-    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 acc))))
-  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
-    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 (fold_right2 arest brest acc f )))))  
-  | _, _ -> invalid_arg "Ext_list.fold_right2"
-
-let rec fold_right3 l r last acc f = 
-  match l,r,last  with  
-  | [],[],[] -> acc 
-  | [a0],[b0],[c0] -> f a0 b0 c0 acc 
-  | [a0;a1],[b0;b1],[c0; c1] -> f a0 b0 c0 (f a1 b1 c1 acc)
-  | [a0;a1;a2],[b0;b1;b2],[c0;c1;c2] -> f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 acc))
-  | [a0;a1;a2;a3],[b0;b1;b2;b3],[c0;c1;c2;c3] ->
-    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 acc))) 
-  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4], [c0;c1;c2;c3;c4] -> 
-    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 acc))))
-  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest, c0::c1::c2::c3::c4::crest -> 
-    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 (fold_right3 arest brest crest acc f )))))  
-  | _, _, _ -> invalid_arg "Ext_list.fold_right2"
-
-let rec map2  l r f = 
-  match l,r  with  
-  | [],[] -> []
-  | [a0],[b0] -> [f a0 b0]
-  | [a0;a1],[b0;b1] -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    [c0; c1]
-  | [a0;a1;a2],[b0;b1;b2] -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    [c0;c1;c2]
-  | [a0;a1;a2;a3],[b0;b1;b2;b3] ->
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    let c3 = f a3 b3 in 
-    [c0;c1;c2;c3]
-  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    let c3 = f a3 b3 in 
-    let c4 = f a4 b4 in 
-    [c0;c1;c2;c3;c4]
-  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    let c3 = f a3 b3 in 
-    let c4 = f a4 b4 in 
-    c0::c1::c2::c3::c4::map2 arest brest f
-  | _, _ -> invalid_arg "Ext_list.map2"
-
-let rec fold_left_with_offset l accu i f =
-  match l with
-  | [] -> accu
-  | a::l -> 
-    fold_left_with_offset 
-    l     
-    (f  a accu  i)  
-    (i + 1)
-    f  
-
-
-let rec filter_map xs (f: 'a -> 'b option)= 
-  match xs with 
-  | [] -> []
-  | y :: ys -> 
-    begin match f y with 
-      | None -> filter_map ys f 
-      | Some z -> z :: filter_map ys f 
-    end
-
-let rec exclude (xs : 'a list) (p : 'a -> bool) : 'a list =   
-  match xs with 
-  | [] ->  []
-  | x::xs -> 
-    if p x then exclude xs p
-    else x:: exclude xs p
-
-let rec exclude_with_val l p =
-  match l with 
-  | [] ->  None
-  | a0::xs -> 
-    if p a0 then Some (exclude xs p)
-    else 
-      match xs with 
-      | [] -> None
-      | a1::rest -> 
-        if p a1 then 
-          Some (a0:: exclude rest p)
-        else 
-          match exclude_with_val rest p with 
-          | None -> None 
-          | Some  rest -> Some (a0::a1::rest)
-
-
-
-let rec same_length xs ys = 
-  match xs, ys with 
-  | [], [] -> true
-  | _::xs, _::ys -> same_length xs ys 
-  | _, _ -> false 
-
-
-let init n f = 
-  match n with 
-  | 0 -> []
-  | 1 -> 
-    let a0 = f 0 in  
-    [a0]
-  | 2 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    [a0; a1]
-  | 3 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    let a2 = f 2 in 
-    [a0; a1; a2]
-  | 4 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    let a2 = f 2 in 
-    let a3 = f 3 in 
-    [a0; a1; a2; a3]
-  | 5 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    let a2 = f 2 in 
-    let a3 = f 3 in 
-    let a4 = f 4 in  
-    [a0; a1; a2; a3; a4]
-  | _ ->
-    Array.to_list (Array.init n f)
-
-let rec rev_append l1 l2 =
-  match l1 with
-  | [] -> l2
-  | [a0] -> a0::l2 (* single element is common *)
-  | [a0 ; a1] -> a1 :: a0 :: l2 
-  |  a0::a1::a2::rest -> rev_append rest (a2::a1::a0::l2) 
-
-let rev l = rev_append l []      
-
-let rec small_split_at n acc l = 
-  if n <= 0 then rev acc , l 
-  else 
-    match l with 
-    | x::xs -> small_split_at (n - 1) (x ::acc) xs 
-    | _ -> invalid_arg "Ext_list.split_at"
-
-let split_at l n = 
-  small_split_at n [] l 
-
-let rec split_at_last_aux acc x = 
-  match x with 
-  | [] -> invalid_arg "Ext_list.split_at_last"
-  | [ x] -> rev acc, x
-  | y0::ys -> split_at_last_aux (y0::acc) ys   
-
-let split_at_last (x : 'a list) = 
-  match x with 
-  | [] -> invalid_arg "Ext_list.split_at_last"
-  | [a0] -> 
-    [], a0
-  | [a0;a1] -> 
-    [a0], a1  
-  | [a0;a1;a2] -> 
-    [a0;a1], a2 
-  | [a0;a1;a2;a3] -> 
-    [a0;a1;a2], a3 
-  | [a0;a1;a2;a3;a4] ->
-    [a0;a1;a2;a3], a4 
-  | a0::a1::a2::a3::a4::rest  ->  
-    let rev, last = split_at_last_aux [] rest
-    in 
-    a0::a1::a2::a3::a4::  rev , last
-
-(**
-   can not do loop unroll due to state combination
-*)  
-let  filter_mapi xs f  = 
-  let rec aux i xs = 
-    match xs with 
-    | [] -> []
-    | y :: ys -> 
-      begin match f y i with 
-        | None -> aux (i + 1) ys
-        | Some z -> z :: aux (i + 1) ys
-      end in
-  aux 0 xs 
-
-let rec filter_map2  xs ys (f: 'a -> 'b -> 'c option) = 
-  match xs,ys with 
-  | [],[] -> []
-  | u::us, v :: vs -> 
-    begin match f u v with 
-      | None -> filter_map2 us vs f (* idea: rec f us vs instead? *)
-      | Some z -> z :: filter_map2  us vs f
-    end
-  | _ -> invalid_arg "Ext_list.filter_map2"
-
-
-let rec rev_map_append l1 l2 f =
-  match l1 with
-  | [] -> l2
-  | a :: l -> rev_map_append l (f a :: l2) f
-
-
-
-(** It is not worth loop unrolling, 
-    it is already tail-call, and we need to be careful 
-    about evaluation order when unroll
-*)
-let rec flat_map_aux f acc append lx =
-  match lx with
-  | [] -> rev_append acc  append
-  | a0::rest -> 
-    let new_acc = 
-      match f a0 with 
-      | [] -> acc 
-      | [a0] -> a0::acc
-      | [a0;a1] -> a1::a0::acc
-      | a0::a1::a2::rest -> 
-        rev_append rest (a2::a1::a0::acc)  
-    in 
-    flat_map_aux f  new_acc append rest 
-
-let flat_map lx f  =
-  flat_map_aux f [] [] lx
-
-let flat_map_append lx append f =
-  flat_map_aux f [] append lx  
-
-
-let rec length_compare l n = 
-  if n < 0 then `Gt 
-  else 
-    begin match l with 
-      | _ ::xs -> length_compare xs (n - 1)
-      | [] ->  
-        if n = 0 then `Eq 
-        else `Lt 
-    end
-
-let rec length_ge l n =   
-  if n > 0 then
-    match l with 
-    | _ :: tl -> length_ge tl (n - 1)
-    | [] -> false
-  else true
-  
-(**
-   {[length xs = length ys + n ]}
-*)
-let rec length_larger_than_n xs ys n =
-  match xs, ys with 
-  | _, [] -> length_compare xs n = `Eq   
-  | _::xs, _::ys -> 
-    length_larger_than_n xs ys n
-  | [], _ -> false 
-
-
-
-
-let rec group (eq : 'a -> 'a -> bool) lst =
-  match lst with 
-  | [] -> []
-  | x::xs -> 
-    aux eq x (group eq xs )
-
-and aux eq (x : 'a)  (xss : 'a list list) : 'a list list = 
-  match xss with 
-  | [] -> [[x]]
-  | (y0::_ as y)::ys -> (* cannot be empty *) 
-    if eq x y0 then
-      (x::y) :: ys 
-    else
-      y :: aux eq x ys                                 
-  | _ :: _ -> assert false    
-
-let stable_group lst eq =  group eq lst |> rev  
-
-let rec drop h n = 
-  if n < 0 then invalid_arg "Ext_list.drop"
-  else
-  if n = 0 then h 
-  else 
-    match h with 
-    | [] ->
-      invalid_arg "Ext_list.drop"
-    | _ :: tl ->   
-      drop tl (n - 1)
-
-let rec find_first x p = 
-  match x with 
-  | [] -> None
-  | x :: l -> 
-    if p x then Some x 
-    else find_first l p
-
-let rec find_first_not  xs p = 
-  match xs with 
-  | [] -> None
-  | a::l -> 
-    if p a 
-    then find_first_not l p 
-    else Some a 
-
-
-let rec rev_iter l f = 
-  match l with
-  | [] -> ()    
-  | [x1] ->
-    f x1 
-  | [x1; x2] ->
-    f x2 ; f x1 
-  | [x1; x2; x3] ->
-    f x3 ; f x2 ; f x1 
-  | [x1; x2; x3; x4] ->
-    f x4; f x3; f x2; f x1 
-  | x1::x2::x3::x4::x5::tail ->
-    rev_iter tail f;
-    f x5; f x4 ; f x3; f x2 ; f x1
-
-let rec iter l f = 
-  match l with
-  | [] -> ()    
-  | [x1] ->
-    f x1 
-  | [x1; x2] ->
-    f x1 ; f x2
-  | [x1; x2; x3] ->
-    f x1 ; f x2 ; f x3
-  | [x1; x2; x3; x4] ->
-    f x1; f x2; f x3; f x4
-  | x1::x2::x3::x4::x5::tail ->
-    f x1; f x2 ; f x3; f x4 ; f x5;
-    iter tail f 
-
-
-let rec for_all lst p = 
-  match lst with 
-    [] -> true
-  | a::l -> p a && for_all l p
-
-let rec for_all_snd lst p = 
-  match lst with 
-    [] -> true
-  | (_,a)::l -> p a && for_all_snd l p
-
-
-let rec for_all2_no_exn  l1 l2 p = 
-  match (l1, l2) with
-  | ([], []) -> true
-  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn l1 l2 p
-  | (_, _) -> false
-
-
-let rec find_opt xs p = 
-  match xs with 
-  | [] -> None
-  | x :: l -> 
-    match  p x with 
-    | Some _ as v  ->  v
-    | None -> find_opt l p
-
-let rec find_def xs p def =
-  match xs with 
-  | [] -> def
-  | x::l -> 
-    match p x with 
-    | Some v -> v 
-    | None -> find_def l p def   
-
-let rec split_map l f = 
-  match l with
-  | [] ->
-    [],[]
-  | [x1] ->
-    let a0,b0 = f x1 in
-    [a0],[b0]
-  | [x1; x2] ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    [a1;a2],[b1;b2]
-  | [x1; x2; x3] ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    let a3,b3 = f x3 in
-    [a1;a2;a3], [b1;b2;b3]
-  | [x1; x2; x3; x4] ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    let a3,b3 = f x3 in
-    let a4,b4 = f x4 in
-    [a1;a2;a3;a4], [b1;b2;b3;b4] 
-  | x1::x2::x3::x4::x5::tail ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    let a3,b3 = f x3 in
-    let a4,b4 = f x4 in
-    let a5,b5 = f x5 in
-    let ass,bss = split_map tail f in 
-    a1::a2::a3::a4::a5::ass,
-    b1::b2::b3::b4::b5::bss
-
-
-
-
-let sort_via_array lst cmp =
-  let arr = Array.of_list lst  in
-  Array.sort cmp arr;
-  Array.to_list arr
-
-
-
-
-let rec assoc_by_string lst (k : string) def  = 
-  match lst with 
-  | [] -> 
-    begin match def with 
-      | None -> assert false 
-      | Some x -> x end
-  | (k1,v1)::rest -> 
-    if  k1 = k then v1 else 
-      assoc_by_string  rest k def 
-
-let rec assoc_by_int lst (k : int) def = 
-  match lst with 
-  | [] -> 
-    begin match def with
-      | None -> assert false 
-      | Some x -> x end
-  | (k1,v1)::rest -> 
-    if k1 = k then v1 else 
-      assoc_by_int rest k def 
-
-
-let rec nth_aux l n =
-  match l with
-  | [] -> None
-  | a::l -> if n = 0 then Some a else nth_aux l (n-1)
-
-let nth_opt l n =
-  if n < 0 then None 
-  else
-    nth_aux l n
-
-let rec iter_snd lst f =     
-  match lst with
-  | [] -> ()
-  | (_,x)::xs -> 
-    f x ; 
-    iter_snd xs f 
-    
-let rec iter_fst lst f =     
-  match lst with
-  | [] -> ()
-  | (x,_)::xs -> 
-    f x ; 
-    iter_fst xs f 
-
-let rec exists l p =     
-  match l with 
-    [] -> false  
-  | x :: xs -> p x || exists xs p
-
-let rec exists_fst l p = 
-  match l with 
-    [] -> false
-  | (a,_)::l -> p a || exists_fst l p 
-
-let rec exists_snd l p = 
-  match l with 
-    [] -> false
-  | (_, a)::l -> p a || exists_snd l p 
-
-let rec concat_append 
-  (xss : 'a list list)  
-  (xs : 'a list) : 'a list = 
-  match xss with 
-  | [] -> xs 
-  | l::r -> append l (concat_append r xs)
-
-let rec fold_left l accu f =
-  match l with
-    [] -> accu
-  | a::l -> fold_left l (f accu a) f 
-  
-let reduce_from_left lst fn = 
-  match lst with 
-  | first :: rest ->  fold_left rest first fn 
-  | _ -> invalid_arg "Ext_list.reduce_from_left"
-
-let rec fold_left2 l1 l2 accu f =
-  match (l1, l2) with
-    ([], []) -> accu
-  | (a1::l1, a2::l2) -> fold_left2  l1 l2 (f a1 a2 accu) f 
-  | (_, _) -> invalid_arg "Ext_list.fold_left2"
-
-let singleton_exn xs = match xs with [x] -> x | _ -> assert false
-
-let rec mem_string (xs : string list) (x : string) = 
-  match xs with 
-    [] -> false
-  | a::l ->  a = x  || mem_string l x
-
+    let (y1,y2,_) =  Array.unsafe_get l i in
+    if y1 = x then  Some y2
+    else unsafe_loop (i + 1) l n x 
+
+let assoc3 (l : 'a t) (x : string)  : 'a option =
+  let n = Array.length l in 
+  unsafe_loop 0 l n x 
 end
 module Ext_string : sig 
 #1 "ext_string.mli"
@@ -2425,24 +1675,27 @@ type unit_action =
   | Unit_call of (unit -> unit) 
   | Unit_set of bool ref 
 
-exception Bad of string
+
 
 type spec =
   | Unit of unit_action
   | String of string_action 
 
-type key = string
-type doc = string
+
 
 type anon_fun = rev_args:string list -> unit
+
+exception Bad of string 
 
 val parse_exn :
   usage:string -> 
   argv:string array -> 
   ?start:int ->
   ?finish:int ->
-  (key * spec * doc) list -> 
+  (string * spec * string) array -> 
   anon_fun  -> unit
+
+val bad_arg : string -> 'a  
 end = struct
 #1 "bsb_arg.ml"
 (* Copyright (C) 2020- Authors of BuckleScript
@@ -2472,8 +1725,6 @@ end = struct
 
 
 
- type key = string
- type doc = string
  type anon_fun = rev_args:string list -> unit
  
  type string_action = 
@@ -2489,34 +1740,30 @@ end = struct
    | String of string_action 
  
  
- exception Bad of string
- 
+
  
  type error =
    | Unknown of string
    | Missing of string
  
- type t = (string * spec * string) list 
+type t = spec Ext_spec.t
+
  
- let rec assoc3 (x : string) (l : t) =
-   match l with
-   | [] -> None
-   | (y1, y2, _) :: _ when y1 = x -> Some y2
-   | _ :: t -> assoc3 x t
- ;;
+exception Bad of string 
+
+let bad_arg s = raise_notrace (Bad s)
+
+let (+>) = Ext_buffer.add_string
  
- 
- let (+>) = Ext_buffer.add_string
- 
- let usage_b (buf : Ext_buffer.t) ~usage speclist  =
+ let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
    buf +> usage;
    buf +> "\nOptions:\n";
    let max_col = ref 0 in 
-   Ext_list.iter speclist (fun (key,_,_) -> 
+   Ext_array.iter speclist (fun (key,_,_) -> 
        if String.length key > !max_col then 
          max_col := String.length key
      );
-   Ext_list.iter speclist (fun (key,_,doc) -> 
+   Ext_array.iter speclist (fun (key,_,doc) -> 
        if not (Ext_string.starts_with doc "*internal*") then begin 
          buf +> "  ";
          buf +> key ; 
@@ -2547,7 +1794,7 @@ end = struct
  
  
    
- let stop_raise ~usage ~(error : error) speclist   =
+ let stop_raise ~usage ~(error : error) (speclist : t )  =
    let b = Ext_buffer.create 200 in  
    begin match error with
      | Unknown ("-help" | "--help" | "-h") -> 
@@ -2564,7 +1811,7 @@ end = struct
        b +> "' needs an argument.\n"      
    end;
    usage_b b ~usage speclist ;
-   raise (Bad (Ext_buffer.contents b))
+   bad_arg (Ext_buffer.contents b)
  
  
  let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) anonfun = 
@@ -2574,7 +1821,7 @@ end = struct
      let s = argv.(!current) in
      incr current;  
      if s <> "" && s.[0] = '-' then begin
-       match assoc3 s speclist with 
+       match Ext_spec.assoc3 speclist s with 
        | Some action -> begin       
            begin match action with 
              | Unit r -> 
@@ -2696,8 +1943,8 @@ let path = "path"
 let ignored_dirs = "ignored-dirs"
 
 end
-module Ext_array : sig 
-#1 "ext_array.mli"
+module Ext_list : sig 
+#1 "ext_list.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2723,96 +1970,396 @@ module Ext_array : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-
-
-(** Some utilities for {!Array} operations *)
-val reverse_range : 'a array -> int -> int -> unit
-val reverse_in_place : 'a array -> unit
-val reverse : 'a array -> 'a array 
-val reverse_of_list : 'a list -> 'a array
-
-val filter : ('a -> bool) -> 'a array -> 'a array
-
-val filter_map : 
-'a array -> 
-('a -> 'b option) -> 
-'b array
-
-val range : int -> int -> int array
-
-val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
-
-val to_list_f : 
-  'a array -> 
-  ('a -> 'b) -> 
-  'b list 
-
-val to_list_map : 
-'a array -> ('a -> 'b option) -> 'b list 
-
-val to_list_map_acc : 
-  'a array -> 
-  'b list -> 
-  ('a -> 'b option) -> 
-  'b list 
-
-val of_list_map : 
+val map : 
   'a list -> 
   ('a -> 'b) -> 
-  'b array 
+  'b list 
 
-val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
+val map_combine :  
+  'a list -> 
+  'b list -> 
+  ('a -> 'c) -> 
+  ('c * 'b) list 
 
-
-
-type 'a split = No_split | Split of  'a array *  'a array 
-
-
-val find_and_split : 
+val combine_array:
   'a array ->
-  ('a -> 'b -> bool) ->
-  'b -> 'a split
+  'b list -> 
+  ('a -> 'c) ->
+  ('c * 'b) list   
 
-val exists : ('a -> bool) -> 'a array -> bool 
+val combine_array_append:
+  'a array ->
+  'b list ->
+  ('c * 'b) list -> 
+  ('a -> 'c) ->
+  ('c * 'b) list   
+  
+val has_string :   
+  string list ->
+  string -> 
+  bool
 
-val is_empty : 'a array -> bool 
 
+val map_split_opt :  
+  'a list ->
+  ('a -> 'b option * 'c option) ->
+  'b list * 'c list 
+
+val mapi :
+  'a list -> 
+  (int -> 'a -> 'b) -> 
+  'b list 
+
+val mapi_append :
+  'a list -> 
+  (int -> 'a -> 'b) -> 
+  'b list -> 
+  'b list 
+
+val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
+
+(** [map_last f xs ]
+    will pass [true] to [f] for the last element, 
+    [false] otherwise. 
+    For empty list, it returns empty
+*)
+val map_last : 
+    'a list -> 
+    (bool -> 'a -> 'b) -> 'b list
+
+(** [last l]
+    return the last element
+    raise if the list is empty
+*)
+val last : 'a list -> 'a
+
+val append : 
+  'a list -> 
+  'a list -> 
+  'a list 
+
+val append_one :  
+  'a list -> 
+  'a -> 
+  'a list
+
+val map_append :  
+  'b list -> 
+  'a list -> 
+  ('b -> 'a) -> 
+  'a list
+
+val fold_right : 
+  'a list -> 
+  'b -> 
+  ('a -> 'b -> 'b) -> 
+  'b
+
+val fold_right2 : 
+  'a list -> 
+  'b list -> 
+  'c -> 
+  ('a -> 'b -> 'c -> 'c) ->  'c
+
+val fold_right3 : 
+  'a list -> 
+  'b list -> 
+  'c list -> 
+  'd -> 
+  ('a -> 'b -> 'c -> 'd -> 'd) -> 
+  'd
+  
+  
+val map2 : 
+  'a list ->
+  'b list ->
+  ('a -> 'b -> 'c) ->
+  'c list
+
+val fold_left_with_offset : 
+  'a list -> 
+  'acc -> 
+  int -> 
+  ('a -> 'acc ->  int ->  'acc) ->   
+  'acc 
+
+
+(** @unused *)
+val filter_map : 
+  'a list -> 
+  ('a -> 'b option) -> 
+  'b list  
+
+(** [exclude p l] is the opposite of [filter p l] *)
+val exclude : 
+  'a list -> 
+  ('a -> bool) -> 
+  'a list 
+
+(** [excludes p l]
+    return a tuple [excluded,newl]
+    where [exluded] is true indicates that at least one  
+    element is removed,[newl] is the new list where all [p x] for [x] is false
+
+*)
+val exclude_with_val : 
+  'a list -> 
+  ('a -> bool) -> 
+  'a list option
+
+
+val same_length : 'a list -> 'b list -> bool
+
+val init : int -> (int -> 'a) -> 'a list
+
+(** [split_at n l]
+    will split [l] into two lists [a,b], [a] will be of length [n], 
+    otherwise, it will raise
+*)
+val split_at : 
+  'a list -> 
+  int -> 
+  'a list * 'a list
+
+
+(** [split_at_last l]
+    It is equivalent to [split_at (List.length l - 1) l ]
+*)
+val split_at_last : 'a list -> 'a list * 'a
+
+val filter_mapi : 
+  'a list -> 
+  ('a -> int ->  'b option) -> 
+  'b list
+
+val filter_map2 : 
+  'a list -> 
+  'b list -> 
+  ('a -> 'b -> 'c option) -> 
+  'c list
+
+
+val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
+
+val length_ge : 'a list -> int -> bool
+
+(**
+
+   {[length xs = length ys + n ]}
+   input n should be positive 
+   TODO: input checking
+*)
+
+val length_larger_than_n : 
+  'a list -> 
+  'a list -> 
+   int -> 
+   bool
+
+
+(**
+   [rev_map_append f l1 l2]
+   [map f l1] and reverse it to append [l2]
+   This weird semantics is due to it is the most efficient operation
+   we can do
+*)
+val rev_map_append : 
+  'a list -> 
+  'b list -> 
+  ('a -> 'b) -> 
+  'b list
+
+
+val flat_map : 
+  'a list -> 
+  ('a -> 'b list) -> 
+  'b list
+
+val flat_map_append : 
+  'a list -> 
+  'b list  ->
+  ('a -> 'b list) -> 
+  'b list
+
+
+(**
+    [stable_group eq lst]
+    Example:
+    Input:
+   {[
+     stable_group (=) [1;2;3;4;3]
+   ]}
+    Output:
+   {[
+     [[1];[2];[4];[3;3]]
+   ]}
+    TODO: this is O(n^2) behavior 
+    which could be improved later
+*)
+val stable_group : 
+  'a list -> 
+  ('a -> 'a -> bool) -> 
+  'a list list 
+
+(** [drop n list]
+    raise when [n] is negative
+    raise when list's length is less than [n]
+*)
+val drop : 
+  'a list -> 
+  int -> 
+  'a list 
+
+val find_first :   
+    'a list ->
+    ('a -> bool) ->
+    'a option 
+    
+(** [find_first_not p lst ]
+    if all elements in [lst] pass, return [None] 
+    otherwise return the first element [e] as [Some e] which
+    fails the predicate
+*)
+val find_first_not : 
+  'a list -> 
+  ('a -> bool) -> 
+  'a option 
+
+(** [find_opt f l] returns [None] if all return [None],  
+    otherwise returns the first one. 
+*)
+
+val find_opt : 
+  'a list -> 
+  ('a -> 'b option) -> 
+  'b option 
+
+val find_def : 
+    'a list -> 
+    ('a -> 'b option) ->
+    'b ->
+    'b 
+
+    
+val rev_iter : 
+  'a list -> 
+  ('a -> unit) -> 
+  unit 
+
+val iter:   
+   'a list ->  
+   ('a -> unit) -> 
+   unit
+   
+val for_all:  
+    'a list -> 
+    ('a -> bool) -> 
+    bool
+val for_all_snd:    
+    ('a * 'b) list -> 
+    ('b -> bool) -> 
+    bool
+
+(** [for_all2_no_exn p xs ys]
+    return [true] if all satisfied,
+    [false] otherwise or length not equal
+*)
 val for_all2_no_exn : 
-  'a array ->
-  'b array -> 
+  'a list -> 
+  'b list -> 
   ('a -> 'b -> bool) -> 
   bool
 
-val for_alli : 
-  'a array -> 
-  (int -> 'a -> bool) -> 
-  bool 
-    
-val map :   
-  'a array -> 
-  ('a -> 'b) -> 
-  'b array
 
-val iter :
-  'a array -> 
-  ('a -> unit) -> 
-  unit
 
-val fold_left :   
-  'b array -> 
-  'a -> 
-  ('a -> 'b -> 'a) ->   
+(** [f] is applied follow the list order *)
+val split_map : 
+  'a list -> 
+  ('a -> 'b * 'c) -> 
+  'b list * 'c list       
+
+(** [fn] is applied from left to right *)
+val reduce_from_left : 
+  'a list -> 
+  ('a -> 'a -> 'a) ->
   'a
 
-val get_or :   
-  'a array -> 
+val sort_via_array :
+  'a list -> 
+  ('a -> 'a -> int) -> 
+  'a list  
+
+val sort_via_arrayf:
+  'a list -> 
+  ('a -> 'a -> int) ->
+  ('a -> 'b ) -> 
+   'b list  
+
+
+
+(** [assoc_by_string default key lst]
+    if  [key] is found in the list  return that val,
+    other unbox the [default], 
+    otherwise [assert false ]
+*)
+val assoc_by_string : 
+  (string * 'a) list -> 
+  string -> 
+  'a  option ->   
+  'a  
+
+val assoc_by_int : 
+  (int * 'a) list -> 
   int -> 
-  (unit -> 'a) -> 
-  'a
+  'a  option ->   
+  'a   
+
+
+val nth_opt : 'a list -> int -> 'a option  
+
+val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit 
+
+val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
+
+val exists : 'a list -> ('a -> bool) -> bool 
+
+val exists_fst : 
+  ('a * 'b) list ->
+  ('a -> bool) ->
+  bool
+
+val exists_snd : 
+  ('a * 'b) list -> 
+  ('b -> bool) -> 
+  bool
+
+val concat_append:
+    'a list list -> 
+    'a list -> 
+    'a list
+
+val fold_left2:
+    'a list -> 
+    'b list -> 
+    'c -> 
+    ('a -> 'b -> 'c -> 'c)
+    -> 'c 
+
+val fold_left:    
+    'a list -> 
+    'b -> 
+    ('b -> 'a -> 'b) -> 
+    'b
+
+val singleton_exn:     
+    'a list -> 'a
+
+val mem_string :     
+    string list -> 
+    string -> 
+    bool
 end = struct
-#1 "ext_array.ml"
+#1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2840,252 +2387,750 @@ end = struct
 
 
 
+let rec map l f =
+  match l with
+  | [] ->
+    []
+  | [x1] ->
+    let y1 = f x1 in
+    [y1]
+  | [x1; x2] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    [y1; y2]
+  | [x1; x2; x3] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    [y1; y2; y3]
+  | [x1; x2; x3; x4] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    [y1; y2; y3; y4]
+  | x1::x2::x3::x4::x5::tail ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    let y5 = f x5 in
+    y1::y2::y3::y4::y5::(map tail f)
 
-let reverse_range a i len =
-  if len = 0 then ()
-  else
-    for k = 0 to (len-1)/2 do
-      let t = Array.unsafe_get a (i+k) in
-      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
-      Array.unsafe_set a (i+len-1-k) t;
-    done
+let rec has_string l f =
+  match l with
+  | [] ->
+    false
+  | [x1] ->
+    x1 = f
+  | [x1; x2] ->
+    x1 = f || x2 = f
+  | [x1; x2; x3] ->
+    x1 = f || x2 = f || x3 = f
+  | x1 :: x2 :: x3 :: x4 ->
+    x1 = f || x2 = f || x3 = f || has_string x4 f 
+  
+let rec map_combine l1 l2 f =
+  match (l1, l2) with
+    ([], []) -> []
+  | (a1::l1, a2::l2) -> 
+    (f a1, a2) :: map_combine l1 l2 f 
+  | (_, _) -> 
+    invalid_arg "Ext_list.map_combine"
+
+let rec combine_array_unsafe arr l i j acc f =    
+  if i = j then acc
+  else 
+    match l with
+    | [] -> invalid_arg "Ext_list.combine"
+    | h :: tl ->
+      (f (Array.unsafe_get arr i) , h) ::
+      combine_array_unsafe arr tl (i + 1) j acc f
+
+let combine_array_append arr l acc f = 
+  let len = Array.length arr in
+  combine_array_unsafe arr l 0 len acc f
+
+let combine_array arr l f = 
+  let len = Array.length arr in
+  combine_array_unsafe arr l 0 len [] f 
+
+let rec map_split_opt 
+  (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
+  : 'b list * 'c list = 
+  match xs with 
+  | [] -> [], []
+  | x::xs ->
+    let c,d = f x in 
+    let cs,ds = map_split_opt xs f in 
+    (match c with Some c -> c::cs | None -> cs),
+    (match d with Some d -> d::ds | None -> ds)
+
+let rec map_snd l f =
+  match l with
+  | [] ->
+    []
+  | [ v1,x1 ] ->
+    let y1 = f x1 in
+    [v1,y1]
+  | [v1, x1; v2, x2] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    [v1, y1; v2, y2]
+  | [ v1, x1; v2, x2; v3, x3] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    [v1, y1; v2, y2; v3, y3]
+  | [ v1, x1; v2, x2; v3, x3; v4, x4] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    [v1, y1; v2, y2; v3, y3; v4, y4]
+  | (v1, x1) ::(v2, x2) :: (v3, x3)::(v4, x4) :: (v5, x5) ::tail ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    let y5 = f x5 in
+    (v1, y1)::(v2, y2) :: (v3, y3) :: (v4, y4) :: (v5, y5) :: (map_snd tail f)
 
 
-let reverse_in_place a =
-  reverse_range a 0 (Array.length a)
+let rec map_last l f=
+  match l with
+  | [] ->
+    []
+  | [x1] ->
+    let y1 = f true x1 in
+    [y1]
+  | [x1; x2] ->
+    let y1 = f false x1 in
+    let y2 = f true x2 in
+    [y1; y2]
+  | [x1; x2; x3] ->
+    let y1 = f false x1 in
+    let y2 = f false x2 in
+    let y3 = f true x3 in
+    [y1; y2; y3]
+  | [x1; x2; x3; x4] ->
+    let y1 = f false x1 in
+    let y2 = f false x2 in
+    let y3 = f false x3 in
+    let y4 = f true x4 in
+    [y1; y2; y3; y4]
+  | x1::x2::x3::x4::tail ->
+    (* make sure that tail is not empty *)    
+    let y1 = f false x1 in
+    let y2 = f false x2 in
+    let y3 = f false x3 in
+    let y4 = f false x4 in
+    y1::y2::y3::y4::(map_last tail f)
 
-let reverse a =
-  let b_len = Array.length a in
-  if b_len = 0 then [||] else  
-    let b = Array.copy a in  
-    for i = 0 to  b_len - 1 do
-      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
-    done;
-    b  
+let rec mapi_aux lst i f tail = 
+  match lst with
+    [] -> tail
+  | a::l -> 
+    let r = f i a in r :: mapi_aux l (i + 1) f tail
 
-let reverse_of_list =  function
-  | [] -> [||]
-  | hd::tl as l ->
-    let len = List.length l in
-    let a = Array.make len hd in
-    let rec fill i = function
-      | [] -> a
-      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
-    fill 0 tl
-
-let filter f a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      if f  v then 
-        aux (v::acc) (i+1)
-      else aux acc (i + 1) 
-  in aux [] 0
-
-
-let filter_map a (f : _ -> _ option)  =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      match f  v with 
-      | Some v -> 
-        aux (v::acc) (i+1)
-      | None -> 
-        aux acc (i + 1) 
-  in aux [] 0
-
-let range from to_ =
-  if from > to_ then invalid_arg "Ext_array.range"  
-  else Array.init (to_ - from + 1) (fun i -> i + from)
-
-let map2i f a b = 
-  let len = Array.length a in 
-  if len <> Array.length b then 
-    invalid_arg "Ext_array.map2i"  
-  else
-    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
-
-let rec tolist_f_aux a f  i res =
-  if i < 0 then res else
-    let v = Array.unsafe_get a i in
-    tolist_f_aux a f  (i - 1)
-      (f v :: res)
-       
-let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
-
-let rec tolist_aux a f  i res =
-  if i < 0 then res else
-    let v = Array.unsafe_get a i in
-    tolist_aux a f  (i - 1)
-      (match f v with
-       | Some v -> v :: res
-       | None -> res) 
-
-let to_list_map a f  = 
-  tolist_aux a f (Array.length a - 1) []
-
-let to_list_map_acc a acc f = 
-  tolist_aux a f (Array.length a - 1) acc
+let mapi lst f = mapi_aux lst 0 f []
+let mapi_append lst f tail = mapi_aux lst 0 f tail
+let rec last xs =
+  match xs with 
+  | [x] -> x 
+  | _ :: tl -> last tl 
+  | [] -> invalid_arg "Ext_list.last"    
 
 
-let of_list_map a f = 
-  match a with 
-  | [] -> [||]
-  | [a0] -> 
-    let b0 = f a0 in
-    [|b0|]
+
+let rec append_aux l1 l2 = 
+  match l1 with
+  | [] -> l2
+  | [a0] -> a0::l2
+  | [a0;a1] -> a0::a1::l2
+  | [a0;a1;a2] -> a0::a1::a2::l2
+  | [a0;a1;a2;a3] -> a0::a1::a2::a3::l2
+  | [a0;a1;a2;a3;a4] -> a0::a1::a2::a3::a4::l2
+  | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append_aux rest l2
+
+let append l1 l2 =   
+  match l2 with 
+  | [] -> l1 
+  | _ -> append_aux l1 l2  
+
+let append_one l1 x = append_aux l1 [x]  
+
+let rec map_append l1 l2 f =   
+  match l1 with
+  | [] -> l2
+  | [a0] -> f a0::l2
   | [a0;a1] -> 
-    let b0 = f a0 in  
+    let b0 = f a0 in 
     let b1 = f a1 in 
-    [|b0;b1|]
+    b0::b1::l2
   | [a0;a1;a2] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    [|b0;b1;b2|]
+    let b0 = f a0 in 
+    let b1 = f a1 in  
+    let b2 = f a2 in 
+    b0::b1::b2::l2
   | [a0;a1;a2;a3] -> 
-    let b0 = f a0 in  
+    let b0 = f a0 in 
     let b1 = f a1 in 
-    let b2 = f a2 in  
+    let b2 = f a2 in 
     let b3 = f a3 in 
-    [|b0;b1;b2;b3|]
+    b0::b1::b2::b3::l2
   | [a0;a1;a2;a3;a4] -> 
-    let b0 = f a0 in  
+    let b0 = f a0 in 
     let b1 = f a1 in 
-    let b2 = f a2 in  
+    let b2 = f a2 in 
     let b3 = f a3 in 
     let b4 = f a4 in 
-    [|b0;b1;b2;b3;b4|]
+    b0::b1::b2::b3::b4::l2
 
-  | a0::a1::a2::a3::a4::tl -> 
-    let b0 = f a0 in  
+  | a0::a1::a2::a3::a4::rest ->
+    let b0 = f a0 in 
     let b1 = f a1 in 
-    let b2 = f a2 in  
+    let b2 = f a2 in 
     let b3 = f a3 in 
     let b4 = f a4 in 
-    let len = List.length tl + 5 in 
-    let arr = Array.make len b0  in
-    Array.unsafe_set arr 1 b1 ;  
-    Array.unsafe_set arr 2 b2 ;
-    Array.unsafe_set arr 3 b3 ; 
-    Array.unsafe_set arr 4 b4 ; 
-    let rec fill i = function
-      | [] -> arr 
-      | hd :: tl -> 
-        Array.unsafe_set arr i (f hd); 
-        fill (i + 1) tl in 
-    fill 5 tl
+    b0::b1::b2::b3::b4::map_append rest l2 f
+
+
+
+let rec fold_right l acc f  = 
+  match l with  
+  | [] -> acc 
+  | [a0] -> f a0 acc 
+  | [a0;a1] -> f a0 (f a1 acc)
+  | [a0;a1;a2] -> f a0 (f a1 (f a2 acc))
+  | [a0;a1;a2;a3] -> f a0 (f a1 (f a2 (f a3 acc))) 
+  | [a0;a1;a2;a3;a4] -> 
+    f a0 (f a1 (f a2 (f a3 (f a4 acc))))
+  | a0::a1::a2::a3::a4::rest -> 
+    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right rest acc f )))))  
+
+let rec fold_right2 l r acc f = 
+  match l,r  with  
+  | [],[] -> acc 
+  | [a0],[b0] -> f a0 b0 acc 
+  | [a0;a1],[b0;b1] -> f a0 b0 (f a1 b1 acc)
+  | [a0;a1;a2],[b0;b1;b2] -> f a0 b0 (f a1 b1 (f a2 b2 acc))
+  | [a0;a1;a2;a3],[b0;b1;b2;b3] ->
+    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 acc))) 
+  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
+    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 acc))))
+  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
+    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 (fold_right2 arest brest acc f )))))  
+  | _, _ -> invalid_arg "Ext_list.fold_right2"
+
+let rec fold_right3 l r last acc f = 
+  match l,r,last  with  
+  | [],[],[] -> acc 
+  | [a0],[b0],[c0] -> f a0 b0 c0 acc 
+  | [a0;a1],[b0;b1],[c0; c1] -> f a0 b0 c0 (f a1 b1 c1 acc)
+  | [a0;a1;a2],[b0;b1;b2],[c0;c1;c2] -> f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 acc))
+  | [a0;a1;a2;a3],[b0;b1;b2;b3],[c0;c1;c2;c3] ->
+    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 acc))) 
+  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4], [c0;c1;c2;c3;c4] -> 
+    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 acc))))
+  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest, c0::c1::c2::c3::c4::crest -> 
+    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 (fold_right3 arest brest crest acc f )))))  
+  | _, _, _ -> invalid_arg "Ext_list.fold_right2"
+
+let rec map2  l r f = 
+  match l,r  with  
+  | [],[] -> []
+  | [a0],[b0] -> [f a0 b0]
+  | [a0;a1],[b0;b1] -> 
+    let c0 = f a0 b0 in 
+    let c1 = f a1 b1 in 
+    [c0; c1]
+  | [a0;a1;a2],[b0;b1;b2] -> 
+    let c0 = f a0 b0 in 
+    let c1 = f a1 b1 in 
+    let c2 = f a2 b2 in 
+    [c0;c1;c2]
+  | [a0;a1;a2;a3],[b0;b1;b2;b3] ->
+    let c0 = f a0 b0 in 
+    let c1 = f a1 b1 in 
+    let c2 = f a2 b2 in 
+    let c3 = f a3 b3 in 
+    [c0;c1;c2;c3]
+  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
+    let c0 = f a0 b0 in 
+    let c1 = f a1 b1 in 
+    let c2 = f a2 b2 in 
+    let c3 = f a3 b3 in 
+    let c4 = f a4 b4 in 
+    [c0;c1;c2;c3;c4]
+  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
+    let c0 = f a0 b0 in 
+    let c1 = f a1 b1 in 
+    let c2 = f a2 b2 in 
+    let c3 = f a3 b3 in 
+    let c4 = f a4 b4 in 
+    c0::c1::c2::c3::c4::map2 arest brest f
+  | _, _ -> invalid_arg "Ext_list.map2"
+
+let rec fold_left_with_offset l accu i f =
+  match l with
+  | [] -> accu
+  | a::l -> 
+    fold_left_with_offset 
+    l     
+    (f  a accu  i)  
+    (i + 1)
+    f  
+
+
+let rec filter_map xs (f: 'a -> 'b option)= 
+  match xs with 
+  | [] -> []
+  | y :: ys -> 
+    begin match f y with 
+      | None -> filter_map ys f 
+      | Some z -> z :: filter_map ys f 
+    end
+
+let rec exclude (xs : 'a list) (p : 'a -> bool) : 'a list =   
+  match xs with 
+  | [] ->  []
+  | x::xs -> 
+    if p x then exclude xs p
+    else x:: exclude xs p
+
+let rec exclude_with_val l p =
+  match l with 
+  | [] ->  None
+  | a0::xs -> 
+    if p a0 then Some (exclude xs p)
+    else 
+      match xs with 
+      | [] -> None
+      | a1::rest -> 
+        if p a1 then 
+          Some (a0:: exclude rest p)
+        else 
+          match exclude_with_val rest p with 
+          | None -> None 
+          | Some  rest -> Some (a0::a1::rest)
+
+
+
+let rec same_length xs ys = 
+  match xs, ys with 
+  | [], [] -> true
+  | _::xs, _::ys -> same_length xs ys 
+  | _, _ -> false 
+
+
+let init n f = 
+  match n with 
+  | 0 -> []
+  | 1 -> 
+    let a0 = f 0 in  
+    [a0]
+  | 2 -> 
+    let a0 = f 0 in 
+    let a1 = f 1 in 
+    [a0; a1]
+  | 3 -> 
+    let a0 = f 0 in 
+    let a1 = f 1 in 
+    let a2 = f 2 in 
+    [a0; a1; a2]
+  | 4 -> 
+    let a0 = f 0 in 
+    let a1 = f 1 in 
+    let a2 = f 2 in 
+    let a3 = f 3 in 
+    [a0; a1; a2; a3]
+  | 5 -> 
+    let a0 = f 0 in 
+    let a1 = f 1 in 
+    let a2 = f 2 in 
+    let a3 = f 3 in 
+    let a4 = f 4 in  
+    [a0; a1; a2; a3; a4]
+  | _ ->
+    Array.to_list (Array.init n f)
+
+let rec rev_append l1 l2 =
+  match l1 with
+  | [] -> l2
+  | [a0] -> a0::l2 (* single element is common *)
+  | [a0 ; a1] -> a1 :: a0 :: l2 
+  |  a0::a1::a2::rest -> rev_append rest (a2::a1::a0::l2) 
+
+let rev l = rev_append l []      
+
+let rec small_split_at n acc l = 
+  if n <= 0 then rev acc , l 
+  else 
+    match l with 
+    | x::xs -> small_split_at (n - 1) (x ::acc) xs 
+    | _ -> invalid_arg "Ext_list.split_at"
+
+let split_at l n = 
+  small_split_at n [] l 
+
+let rec split_at_last_aux acc x = 
+  match x with 
+  | [] -> invalid_arg "Ext_list.split_at_last"
+  | [ x] -> rev acc, x
+  | y0::ys -> split_at_last_aux (y0::acc) ys   
+
+let split_at_last (x : 'a list) = 
+  match x with 
+  | [] -> invalid_arg "Ext_list.split_at_last"
+  | [a0] -> 
+    [], a0
+  | [a0;a1] -> 
+    [a0], a1  
+  | [a0;a1;a2] -> 
+    [a0;a1], a2 
+  | [a0;a1;a2;a3] -> 
+    [a0;a1;a2], a3 
+  | [a0;a1;a2;a3;a4] ->
+    [a0;a1;a2;a3], a4 
+  | a0::a1::a2::a3::a4::rest  ->  
+    let rev, last = split_at_last_aux [] rest
+    in 
+    a0::a1::a2::a3::a4::  rev , last
 
 (**
-   {[
-     # rfind_with_index [|1;2;3|] (=) 2;;
-     - : int = 1
-               # rfind_with_index [|1;2;3|] (=) 1;;
-     - : int = 0
-               # rfind_with_index [|1;2;3|] (=) 3;;
-     - : int = 2
-               # rfind_with_index [|1;2;3|] (=) 4;;
-     - : int = -1
-   ]}
+   can not do loop unroll due to state combination
+*)  
+let  filter_mapi xs f  = 
+  let rec aux i xs = 
+    match xs with 
+    | [] -> []
+    | y :: ys -> 
+      begin match f y i with 
+        | None -> aux (i + 1) ys
+        | Some z -> z :: aux (i + 1) ys
+      end in
+  aux 0 xs 
+
+let rec filter_map2  xs ys (f: 'a -> 'b -> 'c option) = 
+  match xs,ys with 
+  | [],[] -> []
+  | u::us, v :: vs -> 
+    begin match f u v with 
+      | None -> filter_map2 us vs f (* idea: rec f us vs instead? *)
+      | Some z -> z :: filter_map2  us vs f
+    end
+  | _ -> invalid_arg "Ext_list.filter_map2"
+
+
+let rec rev_map_append l1 l2 f =
+  match l1 with
+  | [] -> l2
+  | a :: l -> rev_map_append l (f a :: l2) f
+
+
+
+(** It is not worth loop unrolling, 
+    it is already tail-call, and we need to be careful 
+    about evaluation order when unroll
 *)
-let rfind_with_index arr cmp v = 
-  let len = Array.length arr in 
-  let rec aux i = 
-    if i < 0 then i
-    else if  cmp (Array.unsafe_get arr i) v then i
-    else aux (i - 1) in 
-  aux (len - 1)
+let rec flat_map_aux f acc append lx =
+  match lx with
+  | [] -> rev_append acc  append
+  | a0::rest -> 
+    let new_acc = 
+      match f a0 with 
+      | [] -> acc 
+      | [a0] -> a0::acc
+      | [a0;a1] -> a1::a0::acc
+      | a0::a1::a2::rest -> 
+        rev_append rest (a2::a1::a0::acc)  
+    in 
+    flat_map_aux f  new_acc append rest 
 
-type 'a split = No_split | Split of  'a array *  'a array 
+let flat_map lx f  =
+  flat_map_aux f [] [] lx
 
-
-let find_with_index arr cmp v = 
-  let len  = Array.length arr in 
-  let rec aux i len = 
-    if i >= len then -1 
-    else if cmp (Array.unsafe_get arr i ) v then i 
-    else aux (i + 1) len in 
-  aux 0 len
-
-let find_and_split arr cmp v : _ split = 
-  let i = find_with_index arr cmp v in 
-  if i < 0 then 
-    No_split
-  else
-    Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))
-
-(** TODO: available since 4.03, use {!Array.exists} *)
-
-let exists p a =
-  let n = Array.length a in
-  let rec loop i =
-    if i = n then false
-    else if p (Array.unsafe_get a i) then true
-    else loop (succ i) in
-  loop 0
+let flat_map_append lx append f =
+  flat_map_aux f [] append lx  
 
 
-let is_empty arr =
-  Array.length arr = 0
-
-
-let rec unsafe_loop index len p xs ys  = 
-  if index >= len then true
+let rec length_compare l n = 
+  if n < 0 then `Gt 
   else 
-    p 
-      (Array.unsafe_get xs index)
-      (Array.unsafe_get ys index) &&
-    unsafe_loop (succ index) len p xs ys 
+    begin match l with 
+      | _ ::xs -> length_compare xs (n - 1)
+      | [] ->  
+        if n = 0 then `Eq 
+        else `Lt 
+    end
 
-let for_alli a p =
-  let n = Array.length a in
-  let rec loop i =
-    if i = n then true
-    else if p i (Array.unsafe_get a i) then loop (succ i)
-    else false in
-  loop 0
-
-let for_all2_no_exn xs ys p = 
-  let len_xs = Array.length xs in 
-  let len_ys = Array.length ys in 
-  len_xs = len_ys &&    
-  unsafe_loop 0 len_xs p xs ys
-
-
-let map a f =
-  let open Array in 
-  let l = length a in
-  if l = 0 then [||] else begin
-    let r = make l (f(unsafe_get a 0)) in
-    for i = 1 to l - 1 do
-      unsafe_set r i (f(unsafe_get a i))
-    done;
-    r
-  end
-
-let iter a f =
-  let open Array in 
-  for i = 0 to length a - 1 do f(unsafe_get a i) done
-
-
-  let fold_left a x f =
-    let open Array in 
-    let r = ref x in    
-    for i = 0 to length a - 1 do
-      r := f !r (unsafe_get a i)
-    done;
-    !r
+let rec length_ge l n =   
+  if n > 0 then
+    match l with 
+    | _ :: tl -> length_ge tl (n - 1)
+    | [] -> false
+  else true
   
-let get_or arr i cb =     
-  if i >=0 && i < Array.length arr then 
-    Array.unsafe_get arr i 
-  else cb ()  
+(**
+   {[length xs = length ys + n ]}
+*)
+let rec length_larger_than_n xs ys n =
+  match xs, ys with 
+  | _, [] -> length_compare xs n = `Eq   
+  | _::xs, _::ys -> 
+    length_larger_than_n xs ys n
+  | [], _ -> false 
+
+
+
+
+let rec group (eq : 'a -> 'a -> bool) lst =
+  match lst with 
+  | [] -> []
+  | x::xs -> 
+    aux eq x (group eq xs )
+
+and aux eq (x : 'a)  (xss : 'a list list) : 'a list list = 
+  match xss with 
+  | [] -> [[x]]
+  | (y0::_ as y)::ys -> (* cannot be empty *) 
+    if eq x y0 then
+      (x::y) :: ys 
+    else
+      y :: aux eq x ys                                 
+  | _ :: _ -> assert false    
+
+let stable_group lst eq =  group eq lst |> rev  
+
+let rec drop h n = 
+  if n < 0 then invalid_arg "Ext_list.drop"
+  else
+  if n = 0 then h 
+  else 
+    match h with 
+    | [] ->
+      invalid_arg "Ext_list.drop"
+    | _ :: tl ->   
+      drop tl (n - 1)
+
+let rec find_first x p = 
+  match x with 
+  | [] -> None
+  | x :: l -> 
+    if p x then Some x 
+    else find_first l p
+
+let rec find_first_not  xs p = 
+  match xs with 
+  | [] -> None
+  | a::l -> 
+    if p a 
+    then find_first_not l p 
+    else Some a 
+
+
+let rec rev_iter l f = 
+  match l with
+  | [] -> ()    
+  | [x1] ->
+    f x1 
+  | [x1; x2] ->
+    f x2 ; f x1 
+  | [x1; x2; x3] ->
+    f x3 ; f x2 ; f x1 
+  | [x1; x2; x3; x4] ->
+    f x4; f x3; f x2; f x1 
+  | x1::x2::x3::x4::x5::tail ->
+    rev_iter tail f;
+    f x5; f x4 ; f x3; f x2 ; f x1
+
+let rec iter l f = 
+  match l with
+  | [] -> ()    
+  | [x1] ->
+    f x1 
+  | [x1; x2] ->
+    f x1 ; f x2
+  | [x1; x2; x3] ->
+    f x1 ; f x2 ; f x3
+  | [x1; x2; x3; x4] ->
+    f x1; f x2; f x3; f x4
+  | x1::x2::x3::x4::x5::tail ->
+    f x1; f x2 ; f x3; f x4 ; f x5;
+    iter tail f 
+
+
+let rec for_all lst p = 
+  match lst with 
+    [] -> true
+  | a::l -> p a && for_all l p
+
+let rec for_all_snd lst p = 
+  match lst with 
+    [] -> true
+  | (_,a)::l -> p a && for_all_snd l p
+
+
+let rec for_all2_no_exn  l1 l2 p = 
+  match (l1, l2) with
+  | ([], []) -> true
+  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn l1 l2 p
+  | (_, _) -> false
+
+
+let rec find_opt xs p = 
+  match xs with 
+  | [] -> None
+  | x :: l -> 
+    match  p x with 
+    | Some _ as v  ->  v
+    | None -> find_opt l p
+
+let rec find_def xs p def =
+  match xs with 
+  | [] -> def
+  | x::l -> 
+    match p x with 
+    | Some v -> v 
+    | None -> find_def l p def   
+
+let rec split_map l f = 
+  match l with
+  | [] ->
+    [],[]
+  | [x1] ->
+    let a0,b0 = f x1 in
+    [a0],[b0]
+  | [x1; x2] ->
+    let a1,b1 = f x1 in
+    let a2,b2 = f x2 in
+    [a1;a2],[b1;b2]
+  | [x1; x2; x3] ->
+    let a1,b1 = f x1 in
+    let a2,b2 = f x2 in
+    let a3,b3 = f x3 in
+    [a1;a2;a3], [b1;b2;b3]
+  | [x1; x2; x3; x4] ->
+    let a1,b1 = f x1 in
+    let a2,b2 = f x2 in
+    let a3,b3 = f x3 in
+    let a4,b4 = f x4 in
+    [a1;a2;a3;a4], [b1;b2;b3;b4] 
+  | x1::x2::x3::x4::x5::tail ->
+    let a1,b1 = f x1 in
+    let a2,b2 = f x2 in
+    let a3,b3 = f x3 in
+    let a4,b4 = f x4 in
+    let a5,b5 = f x5 in
+    let ass,bss = split_map tail f in 
+    a1::a2::a3::a4::a5::ass,
+    b1::b2::b3::b4::b5::bss
+
+
+
+
+let sort_via_array lst cmp =
+  let arr = Array.of_list lst  in
+  Array.sort cmp arr;
+  Array.to_list arr
+
+let sort_via_arrayf lst cmp f  = 
+  let arr = Array.of_list lst  in
+  Array.sort cmp arr;
+  Ext_array.to_list_f arr f 
+
+
+let rec assoc_by_string lst (k : string) def  = 
+  match lst with 
+  | [] -> 
+    begin match def with 
+      | None -> assert false 
+      | Some x -> x end
+  | (k1,v1)::rest -> 
+    if  k1 = k then v1 else 
+      assoc_by_string  rest k def 
+
+let rec assoc_by_int lst (k : int) def = 
+  match lst with 
+  | [] -> 
+    begin match def with
+      | None -> assert false 
+      | Some x -> x end
+  | (k1,v1)::rest -> 
+    if k1 = k then v1 else 
+      assoc_by_int rest k def 
+
+
+let rec nth_aux l n =
+  match l with
+  | [] -> None
+  | a::l -> if n = 0 then Some a else nth_aux l (n-1)
+
+let nth_opt l n =
+  if n < 0 then None 
+  else
+    nth_aux l n
+
+let rec iter_snd lst f =     
+  match lst with
+  | [] -> ()
+  | (_,x)::xs -> 
+    f x ; 
+    iter_snd xs f 
+    
+let rec iter_fst lst f =     
+  match lst with
+  | [] -> ()
+  | (x,_)::xs -> 
+    f x ; 
+    iter_fst xs f 
+
+let rec exists l p =     
+  match l with 
+    [] -> false  
+  | x :: xs -> p x || exists xs p
+
+let rec exists_fst l p = 
+  match l with 
+    [] -> false
+  | (a,_)::l -> p a || exists_fst l p 
+
+let rec exists_snd l p = 
+  match l with 
+    [] -> false
+  | (_, a)::l -> p a || exists_snd l p 
+
+let rec concat_append 
+  (xss : 'a list list)  
+  (xs : 'a list) : 'a list = 
+  match xss with 
+  | [] -> xs 
+  | l::r -> append l (concat_append r xs)
+
+let rec fold_left l accu f =
+  match l with
+    [] -> accu
+  | a::l -> fold_left l (f accu a) f 
+  
+let reduce_from_left lst fn = 
+  match lst with 
+  | first :: rest ->  fold_left rest first fn 
+  | _ -> invalid_arg "Ext_list.reduce_from_left"
+
+let rec fold_left2 l1 l2 accu f =
+  match (l1, l2) with
+    ([], []) -> accu
+  | (a1::l1, a2::l2) -> fold_left2  l1 l2 (f a1 a2 accu) f 
+  | (_, _) -> invalid_arg "Ext_list.fold_left2"
+
+let singleton_exn xs = match xs with [x] -> x | _ -> assert false
+
+let rec mem_string (xs : string list) (x : string) = 
+  match xs with 
+    [] -> false
+  | a::l ->  a = x  || mem_string l x
+
 end
 module Map_gen : sig 
 #1 "map_gen.mli"
@@ -5311,7 +5356,7 @@ let ns_sep_char = '-'
 let ns_sep = "-"
 let exception_id = "RE_EXN_ID"
 
-let polyvar_hash = "HASH"
+let polyvar_hash = "NAME"
 let polyvar_value = "VAL"
 
 let cons = "::"
@@ -13259,7 +13304,7 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
-    Ext_buffer.add_string buf "$bsc -color always";
+    Ext_buffer.add_string buf "$bsc";
     Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
     if bs_suffix then
       Ext_buffer.add_string buf " -bs-suffix";
@@ -13282,7 +13327,7 @@ let make_custom_rules
   in   
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
-    Ext_buffer.add_string buf "$bsc  $warnings -color always";
+    Ext_buffer.add_string buf "$bsc  $warnings";
     (match refmt with 
     | None -> ()
     | Some x ->
@@ -16719,7 +16764,7 @@ let process_themes env theme proj_dir (themes : OCamlRes.Res.node list ) =
     )  with
   | None ->
     list_themes ();
-    raise (Arg.Bad( "theme " ^ theme ^ " not found")  )
+    Bsb_arg.bad_arg ( "theme " ^ theme ^ " not found")
   | Some (Dir(_theme, nodes )) ->
     List.iter (fun node -> process_theme_aux env proj_dir node ) nodes
   | Some _ -> assert false
@@ -16997,6 +17042,232 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
   build_bs_deps cwd deps ninja_args
 
 end
+module Bsc_args : sig 
+#1 "bsc_args.mli"
+(* Copyright (C) 2020- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type anon_fun = rev_args:string list -> unit
+
+type string_action =
+    String_call of (string -> unit)
+  | String_set of string ref
+  | String_optional_set of string option ref
+  | String_list_add of string list ref
+type unit_action =
+    Unit_call of (unit -> unit)
+  | Unit_lazy of unit lazy_t
+  | Unit_set of bool ref
+  | Unit_clear of bool ref
+
+
+type spec = 
+  | Unit_dummy  
+  | Unit of unit_action   
+  | String of string_action
+
+
+type t = (string * spec * string) array
+
+exception Bad of string
+val bad_arg : 
+  string -> 'a
+
+
+val parse_exn :
+  usage:string ->
+  argv:string array ->
+  ?start:int -> ?finish:int -> t -> (rev_args:string list -> unit) -> unit
+
+
+
+end = struct
+#1 "bsc_args.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+ 
+ type anon_fun = rev_args:string list -> unit
+ 
+ type string_action = 
+   | String_call of (string -> unit)  
+   | String_set of string ref
+   | String_optional_set of string option ref 
+   | String_list_add of string list ref 
+
+ type unit_action = 
+    | Unit_call of (unit -> unit) 
+    | Unit_lazy of unit lazy_t
+    | Unit_set of bool ref
+    | Unit_clear of bool ref 
+
+ type spec =
+   | Unit_dummy  
+   | Unit of unit_action
+   | String of string_action 
+ 
+ 
+ exception Bad = Arg.Bad
+ 
+ let bad_arg s = raise_notrace (Bad s)
+
+ type error =
+   | Unknown of string
+   | Missing of string
+ 
+type t = spec Ext_spec.t 
+
+ 
+let (+>) = Ext_buffer.add_string
+
+let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
+  buf +> usage;
+  buf +> "\nOptions:\n";
+  let max_col = ref 0 in 
+  Ext_array.iter speclist (fun (key,_,_) -> 
+      if String.length key > !max_col then 
+        max_col := String.length key
+    );
+  Ext_array.iter speclist (fun (key,_,doc) -> 
+      if not (Ext_string.starts_with doc "*internal*") then begin 
+        buf +> "  ";
+        buf +> key ; 
+        buf +> (String.make (!max_col - String.length key + 2 ) ' ');
+        let cur = ref 0 in 
+        let doc_length = String.length doc in 
+        while !cur < doc_length do 
+          match String.index_from_opt doc !cur '\n' with 
+          | None -> 
+            if !cur <> 0 then begin 
+              buf +>  "\n";
+              buf +> String.make (!max_col + 4) ' ' ;
+            end;
+            buf +> String.sub doc !cur (String.length doc - !cur );
+            cur := doc_length
+          | Some new_line_pos -> 
+            if !cur <> 0 then begin 
+              buf +>  "\n";
+              buf +> String.make (!max_col + 4) ' ' ;
+            end;
+            buf +> String.sub doc !cur (new_line_pos - !cur );
+            cur := new_line_pos + 1
+        done ;
+        buf +> "\n"
+      end
+    )
+;;
+
+
+
+let stop_raise ~usage ~(error : error) (speclist : t )  =
+  let b = Ext_buffer.create 200 in  
+  begin match error with
+    | Unknown ("-help" | "--help" | "-h") -> 
+      usage_b b ~usage speclist ;
+      Ext_buffer.output_buffer stdout b;
+      exit 0      
+    | Unknown s ->
+      b +> "unknown option: '";
+      b +> s ;
+      b +> "'.\n"
+    | Missing s ->
+      b +> "option '";
+      b +> s;
+      b +> "' needs an argument.\n"      
+  end;
+  usage_b b ~usage speclist ;
+  bad_arg (Ext_buffer.contents b)
+
+
+let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) 
+    (anonfun : rev_args:string list -> unit) =
+  let current = ref start in 
+  let rev_list = ref [] in 
+  while !current < finish do
+    let s = argv.(!current) in
+    incr current;  
+    if s <> "" && s.[0] = '-' then begin
+      match Ext_spec.assoc3 speclist s with 
+      | Some action -> begin       
+          begin match action with 
+            | Unit_dummy -> ()
+            | Unit r -> 
+              begin match r with 
+                | Unit_set r -> r := true
+                | Unit_clear r -> r := false
+                | Unit_call f -> f ()
+                | Unit_lazy f -> Lazy.force f
+              end
+            | String f  ->
+              if !current >= finish then stop_raise ~usage ~error:(Missing s) speclist 
+              else begin                 
+                let arg = argv.(!current) in 
+                incr current;  
+                match f with 
+                | String_call f ->   
+                  f arg
+                | String_set u -> u := arg
+                | String_optional_set s -> s := Some arg
+                | String_list_add s -> s := arg :: !s
+              end             
+          end;      
+        end;      
+      | None -> stop_raise ~usage ~error:(Unknown s) speclist 
+    end else begin
+      rev_list := s :: !rev_list;      
+    end;
+  done;
+  anonfun ~rev_args:!rev_list
+;;
+
+
+
+end
 module Bsb_main : sig 
 #1 "bsb_main.mli"
 (* *)
@@ -17046,8 +17317,8 @@ let  unit_set_spec b : spec = Unit (Unit_set b)
 
 
 let force_regenerate = ref false
-let bsb_main_flags : (string * spec * string) list=
-  [
+let bsb_main_flags : (string * spec * string) array =
+  [|
     "-v", call_spec print_version_string, 
     "Print version and exit";
     "-version", call_spec print_version_string, 
@@ -17102,7 +17373,7 @@ let bsb_main_flags : (string * spec * string) list=
       )),
     "Builds the entries specified in the bsconfig that match the given backend. Can be either 'js', 'bytecode' or 'native'.";
 
-  ]
+  |]
 
 
 (*Note that [keepdepfile] only makes sense when combined with [deps] for optimization*)
@@ -17156,7 +17427,7 @@ let handle_anonymous_arg ~rev_args =
   match rev_args with 
   | [] -> ()  
   | arg:: _ ->
-    raise (Bsb_arg.Bad ("Unknown arg \"" ^ arg ^ "\""))
+    Bsc_args.bad_arg ("Unknown arg \"" ^ arg ^ "\"")
 
 
 let program_exit () =

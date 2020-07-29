@@ -31,10 +31,10 @@
 *)
 type 'value t = 'value node option
 and 'value node  =  {
-  mutable value : 'value; 
-  mutable height : int;
-  mutable left : 'value t;
-  mutable right : 'value t;
+  mutable value : 'value; [@bs.as "v"]
+  mutable height : int; [@bs.as "h"]
+  mutable left : 'value t; [@bs.as "l"]
+  mutable right : 'value t; [@bs.as "r"]
 } 
 
 type ('a, 'b) cmp = ('a, 'b) Belt_Id.cmp

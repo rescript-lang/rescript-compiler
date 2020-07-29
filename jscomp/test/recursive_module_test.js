@@ -58,18 +58,6 @@ Caml_module.update_mod({
         ]]
     }, Int3, Int3);
 
-var M = Caml_module.init_mod([
-      "recursive_module_test.ml",
-      20,
-      20
-    ], {
-      TAG: /* Module */0,
-      _0: [[
-          /* Function */0,
-          "fact"
-        ]]
-    });
-
 function fact(n) {
   if (n <= 1) {
     return 1;
@@ -78,15 +66,9 @@ function fact(n) {
   }
 }
 
-Caml_module.update_mod({
-      TAG: /* Module */0,
-      _0: [[
-          /* Function */0,
-          "fact"
-        ]]
-    }, M, {
-      fact: fact
-    });
+var M = {
+  fact: fact
+};
 
 var fact$1 = M.fact;
 

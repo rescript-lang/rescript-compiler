@@ -95,50 +95,50 @@ var C = Caml_exceptions.create("Js_exception_catch_test.C");
 function test(f) {
   try {
     Curry._1(f, undefined);
-    return /* No_error */-465676758;
+    return "No_error";
   }
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
     if (e.RE_EXN_ID === "Not_found") {
-      return /* Not_found */-358247754;
+      return "Not_found";
     } else if (e.RE_EXN_ID === "Invalid_argument") {
       if (e._1 === "x") {
-        return /* Invalid_argument */-50278363;
+        return "Invalid_argument";
       } else {
-        return /* Invalid_any */545126980;
+        return "Invalid_any";
       }
     } else if (e.RE_EXN_ID === A) {
       if (e._1 !== 2) {
-        return /* A_any */740357294;
+        return "A_any";
       } else {
-        return /* A2 */14545;
+        return "A2";
       }
     } else if (e.RE_EXN_ID === B) {
-      return /* B */66;
+      return "B";
     } else if (e.RE_EXN_ID === C) {
       if (e._1 !== 1 || e._2 !== 2) {
-        return /* C_any */-756146768;
+        return "C_any";
       } else {
-        return /* C */67;
+        return "C";
       }
     } else if (e.RE_EXN_ID === Js_exn.$$Error) {
-      return /* Js_error */634022066;
+      return "Js_error";
     } else {
-      return /* Any */3257036;
+      return "Any";
     }
   }
 }
 
 eq("File \"js_exception_catch_test.ml\", line 43, characters 5-12", test(function (param) {
           
-        }), /* No_error */-465676758);
+        }), "No_error");
 
 eq("File \"js_exception_catch_test.ml\", line 44, characters 5-12", test(function (param) {
           throw {
                 RE_EXN_ID: "Not_found",
                 Error: new Error()
               };
-        }), /* Not_found */-358247754);
+        }), "Not_found");
 
 eq("File \"js_exception_catch_test.ml\", line 45, characters 5-12", test(function (param) {
           throw {
@@ -146,7 +146,7 @@ eq("File \"js_exception_catch_test.ml\", line 45, characters 5-12", test(functio
                 _1: "x",
                 Error: new Error()
               };
-        }), /* Invalid_argument */-50278363);
+        }), "Invalid_argument");
 
 eq("File \"js_exception_catch_test.ml\", line 46, characters 5-12", test(function (param) {
           throw {
@@ -154,7 +154,7 @@ eq("File \"js_exception_catch_test.ml\", line 46, characters 5-12", test(functio
                 _1: "",
                 Error: new Error()
               };
-        }), /* Invalid_any */545126980);
+        }), "Invalid_any");
 
 eq("File \"js_exception_catch_test.ml\", line 47, characters 5-12", test(function (param) {
           throw {
@@ -162,7 +162,7 @@ eq("File \"js_exception_catch_test.ml\", line 47, characters 5-12", test(functio
                 _1: 2,
                 Error: new Error()
               };
-        }), /* A2 */14545);
+        }), "A2");
 
 eq("File \"js_exception_catch_test.ml\", line 48, characters 5-12", test(function (param) {
           throw {
@@ -170,14 +170,14 @@ eq("File \"js_exception_catch_test.ml\", line 48, characters 5-12", test(functio
                 _1: 3,
                 Error: new Error()
               };
-        }), /* A_any */740357294);
+        }), "A_any");
 
 eq("File \"js_exception_catch_test.ml\", line 49, characters 5-12", test(function (param) {
           throw {
                 RE_EXN_ID: B,
                 Error: new Error()
               };
-        }), /* B */66);
+        }), "B");
 
 eq("File \"js_exception_catch_test.ml\", line 50, characters 5-12", test(function (param) {
           throw {
@@ -186,7 +186,7 @@ eq("File \"js_exception_catch_test.ml\", line 50, characters 5-12", test(functio
                 _2: 2,
                 Error: new Error()
               };
-        }), /* C */67);
+        }), "C");
 
 eq("File \"js_exception_catch_test.ml\", line 51, characters 5-12", test(function (param) {
           throw {
@@ -195,11 +195,11 @@ eq("File \"js_exception_catch_test.ml\", line 51, characters 5-12", test(functio
                 _2: 2,
                 Error: new Error()
               };
-        }), /* C_any */-756146768);
+        }), "C_any");
 
 eq("File \"js_exception_catch_test.ml\", line 52, characters 5-12", test(function (param) {
           throw new Error("x");
-        }), /* Js_error */634022066);
+        }), "Js_error");
 
 eq("File \"js_exception_catch_test.ml\", line 53, characters 5-12", test(function (param) {
           throw {
@@ -207,7 +207,7 @@ eq("File \"js_exception_catch_test.ml\", line 53, characters 5-12", test(functio
                 _1: "x",
                 Error: new Error()
               };
-        }), /* Any */3257036);
+        }), "Any");
 
 Mt.from_pair_suites("Js_exception_catch_test", suites.contents);
 

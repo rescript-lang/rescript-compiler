@@ -120,20 +120,20 @@ external openSync :
     ] [@bs.string]) ->
   unit = "openSync"  [@@bs.module "fs"]
 
-
+type encoding = 
+  [
+    `hex
+  | `utf8
+  | `ascii
+  | `latin1
+  | `base64
+  | `ucs2
+  | `base64
+  | `binary
+  | `utf16le ]  
 external readFileSync :
   string ->
-  (
-    [
-      `hex
-    | `utf8
-    | `ascii
-    | `latin1
-    | `base64
-    | `ucs2
-    | `base64
-    | `binary
-    | `utf16le ][@bs.string]) ->
+  encoding ->
   string = "readFileSync"
 [@@bs.val] [@@bs.module "fs"]
 
@@ -148,16 +148,7 @@ external existsSync : string -> bool = "existsSync"
 external writeFileSync :
   string ->
   string ->
-  (
-    [ `hex
-    | `utf8
-    | `ascii
-    | `latin1
-    | `base64
-    | `ucs2
-    | `base64
-    | `binary
-    | `utf16le ][@bs.string]) ->
+  encoding ->
   unit = "writeFileSync"
 [@@bs.val] [@@bs.module "fs"]
 

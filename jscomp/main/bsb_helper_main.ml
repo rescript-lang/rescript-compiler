@@ -21,42 +21,53 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-let compilation_kind = ref Bsb_helper_depfile_gen.Js
 
-let hash : Bsb_helper_arg.string_action = 
-  Set {contents = ""}
 
-let dev_group = ref false
-let namespace = ref None
+
+
+let () =    
+  let namespace = ref None in
+  let dev_group = ref false in   
+  let argv = Sys.argv in 
+  let l = Array.length argv in
+  let current = ref 1 in 
+  let rev_list = ref [] in 
+  while !current < l do
+    let s = argv.(!current) in
+    incr current;  
+    if s <> "" && s.[0] = '-' then begin
+      match s with 
+      | "-hash" ->
+        incr current
+      | "-bs-ns" ->
+        let ns = argv.(!current) in
+        namespace := Some ns;
+        incr current     
+      | "-g"  ->
+        dev_group := true
+      | s -> 
+        prerr_endline ("unknown options: " ^ s);
+        prerr_endline ("available options: -hash [hash]; -bs-ns [ns]; -g");
+        exit 2
+    end else 
+      rev_list := s :: !rev_list    
+  done;
+  (
+    match !rev_list with
+    | [x]
+      ->  Bsb_helper_depfile_gen.emit_d
+            Js
+            !dev_group
+            !namespace x ""
+    | [y; x] (* reverse order *)
+      -> 
+      Bsb_helper_depfile_gen.emit_d
+        Js
+        !dev_group
+        !namespace x y
+    | _ -> 
+      ()
+  ) 
+;;
  
-let () =
-  Bsb_helper_arg.parse_exn 
-  ~progname:Sys.argv.(0)
-  ~argv:Sys.argv
-  ~start:1
-  [
-    "-g",  Bool dev_group ,
-    "Set the dev group (default to be 0)"
-    ;
-    "-bs-ns",  String (Call (fun s -> namespace := Some s)),
-    "Set namespace";
-    "-hash",  String hash,
-    "Set hash(internal)";
-  ] (fun ~rev_args -> 
-      match rev_args with
-      | [x]
-        ->  Bsb_helper_depfile_gen.emit_d
-              !compilation_kind
-              !dev_group
-              !namespace x ""
-      | [y; x] (* reverse order *)
-        -> 
-        Bsb_helper_depfile_gen.emit_d
-          !compilation_kind
-          !dev_group
-          !namespace x y
-      | _ -> 
-        ()
-    ) ;
-  (* arrange with mlast comes first *)
   

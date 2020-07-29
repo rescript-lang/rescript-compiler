@@ -97,12 +97,11 @@ let property_access f s =
     )
     end
 
-let property_key f (s : J.property_name) =     
+let property_key (s : J.property_name) : string =     
   match s with 
   | Lit s ->
     if obj_property_no_need_quot s then 
-      P.string f s 
-    else Js_dump_string.pp_string f s  
+      s 
+    else Js_dump_string.escape_to_string  s  
  | Symbol_name -> 
-    P.string f 
        {|[Symbol.for("name")]|}

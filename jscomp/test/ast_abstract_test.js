@@ -57,55 +57,38 @@ var v1 = {
   z: ""
 };
 
-var jsMapperConstantArray = [
-  [
-    97,
-    "a"
-  ],
-  [
-    98,
-    "b"
-  ],
-  [
-    99,
-    "c"
-  ]
-];
+var _map = {"a":"a","b":"b","c":"c"};
 
 function xToJs(param) {
-  return Js_mapperRt.binarySearch(3, param, jsMapperConstantArray);
+  return param;
 }
 
 function xFromJs(param) {
-  return Js_mapperRt.revSearchAssert(3, jsMapperConstantArray, param);
+  return Js_mapperRt.raiseWhenNotFound(_map[param]);
 }
 
 function idx(v) {
-  return eq("File \"ast_abstract_test.ml\", line 32, characters 17-24", xFromJs(xToJs(v)), v);
+  return eq("File \"ast_abstract_test.ml\", line 32, characters 17-24", xFromJs(v), v);
 }
 
-var x0 = xToJs(/* a */97);
+idx("a");
 
-var x1 = xToJs(/* b */98);
+idx("b");
 
-idx(/* a */97);
+idx("c");
 
-idx(/* b */98);
-
-idx(/* c */99);
-
-var jsMapperConstantArray$1 = [
+var jsMapperConstantArray = [
   0,
   3,
   4
 ];
 
 function aToJs(param) {
-  return jsMapperConstantArray$1[param];
+  return jsMapperConstantArray[param];
 }
 
 function aFromJs(param) {
-  return Js_mapperRt.fromIntAssert(3, jsMapperConstantArray$1, param);
+  return Js_mapperRt.fromIntAssert(3, jsMapperConstantArray, param);
 }
 
 function id(x) {
@@ -198,6 +181,10 @@ function zFromJs(param) {
 
 Mt.from_pair_suites("Ast_abstract_test", suites.contents);
 
+var x0 = "a";
+
+var x1 = "b";
+
 var jsMapperEraseType = /* JsMapperEraseType */0;
 
 var b = /* B */1;
@@ -237,4 +224,4 @@ exports.hFromJs = hFromJs;
 exports.zXx = zXx;
 exports.zToJs = zToJs;
 exports.zFromJs = zFromJs;
-/* x0 Not a pure module */
+/*  Not a pure module */

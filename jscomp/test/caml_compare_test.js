@@ -622,7 +622,7 @@ var suites = {
                                                   (function (param) {
                                                       return {
                                                               TAG: /* Eq */0,
-                                                              _0: Caml_obj.caml_compare(({}), ({})),
+                                                              _0: Caml_obj.caml_compare({}, {}),
                                                               _1: 0
                                                             };
                                                     })
@@ -633,7 +633,7 @@ var suites = {
                                                     (function (param) {
                                                         return {
                                                                 TAG: /* Eq */0,
-                                                                _0: Caml_obj.caml_compare(({}), ({x:1})),
+                                                                _0: Caml_obj.caml_compare({}, {x:1}),
                                                                 _1: -1
                                                               };
                                                       })
@@ -661,7 +661,7 @@ var suites = {
                                                         (function (param) {
                                                             return {
                                                                     TAG: /* Eq */0,
-                                                                    _0: Caml_obj.caml_compare(({x:1}), ({x:1, y:2})),
+                                                                    _0: Caml_obj.caml_compare({x:1}, {x:1, y:2}),
                                                                     _1: -1
                                                                   };
                                                           })
@@ -672,7 +672,7 @@ var suites = {
                                                           (function (param) {
                                                               return {
                                                                       TAG: /* Eq */0,
-                                                                      _0: Caml_obj.caml_compare(({x:1, y:2}), ({x:1})),
+                                                                      _0: Caml_obj.caml_compare({x:1, y:2}, {x:1}),
                                                                       _1: 1
                                                                     };
                                                             })
@@ -847,7 +847,7 @@ var suites = {
                                                                               (function (param) {
                                                                                   return {
                                                                                           TAG: /* Eq */0,
-                                                                                          _0: Caml_obj.caml_equal(({}), ({})),
+                                                                                          _0: Caml_obj.caml_equal({}, {}),
                                                                                           _1: true
                                                                                         };
                                                                                 })
@@ -858,7 +858,7 @@ var suites = {
                                                                                 (function (param) {
                                                                                     return {
                                                                                             TAG: /* Eq */0,
-                                                                                            _0: Caml_obj.caml_equal(({}), ({x:1})),
+                                                                                            _0: Caml_obj.caml_equal({}, {x:1}),
                                                                                             _1: false
                                                                                           };
                                                                                   })
@@ -885,7 +885,7 @@ var suites = {
                                                                                     (function (param) {
                                                                                         return {
                                                                                                 TAG: /* Eq */0,
-                                                                                                _0: Caml_obj.caml_equal(({x:1}), ({x:1, y:2})),
+                                                                                                _0: Caml_obj.caml_equal({x:1}, {x:1, y:2}),
                                                                                                 _1: false
                                                                                               };
                                                                                       })
@@ -896,7 +896,7 @@ var suites = {
                                                                                       (function (param) {
                                                                                           return {
                                                                                                   TAG: /* Eq */0,
-                                                                                                  _0: Caml_obj.caml_equal(({x:1, y:2}), ({x:1})),
+                                                                                                  _0: Caml_obj.caml_equal({x:1, y:2}, {x:1}),
                                                                                                   _1: false
                                                                                                 };
                                                                                         })

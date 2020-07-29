@@ -1,1750 +1,3 @@
-module Ext_bytes : sig 
-#1 "ext_bytes.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-                     = "caml_blit_string" 
-[@@noalloc]
-    
-
-
-
-end = struct
-#1 "ext_bytes.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-                     = "caml_blit_string" 
-[@@noalloc]                     
-
-
-end
-module Ext_buffer : sig 
-#1 "ext_buffer.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*  Pierre Weis and Xavier Leroy, projet Cristal, INRIA Rocquencourt   *)
-(*                                                                     *)
-(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the GNU Library General Public License, with    *)
-(*  the special exception on linking described in file ../LICENSE.     *)
-(*                                                                     *)
-(***********************************************************************)
-
-(** Extensible buffers.
-
-   This module implements buffers that automatically expand
-   as necessary.  It provides accumulative concatenation of strings
-   in quasi-linear time (instead of quadratic time when strings are
-   concatenated pairwise).
-*)
-
-(* BuckleScript customization: customized for efficient digest *)
-
-type t
-(** The abstract type of buffers. *)
-
-val create : int -> t
-(** [create n] returns a fresh buffer, initially empty.
-   The [n] parameter is the initial size of the internal byte sequence
-   that holds the buffer contents. That byte sequence is automatically
-   reallocated when more than [n] characters are stored in the buffer,
-   but shrinks back to [n] characters when [reset] is called.
-   For best performance, [n] should be of the same order of magnitude
-   as the number of characters that are expected to be stored in
-   the buffer (for instance, 80 for a buffer that holds one output
-   line).  Nothing bad will happen if the buffer grows beyond that
-   limit, however. In doubt, take [n = 16] for instance.
-   If [n] is not between 1 and {!Sys.max_string_length}, it will
-   be clipped to that interval. *)
-
-val contents : t -> string
-(** Return a copy of the current contents of the buffer.
-    The buffer itself is unchanged. *)
-
-val length : t -> int
-(** Return the number of characters currently contained in the buffer. *)
-
-val is_empty : t -> bool
-
-val clear : t -> unit
-(** Empty the buffer. *)
-
-
-val add_char : t -> char -> unit
-(** [add_char b c] appends the character [c] at the end of the buffer [b]. *)
-
-val add_string : t -> string -> unit
-(** [add_string b s] appends the string [s] at the end of the buffer [b]. *)
-
-(* val add_bytes : t -> bytes -> unit *)
-(** [add_string b s] appends the string [s] at the end of the buffer [b].
-    @since 4.02 *)
-
-(* val add_substring : t -> string -> int -> int -> unit *)
-(** [add_substring b s ofs len] takes [len] characters from offset
-   [ofs] in string [s] and appends them at the end of the buffer [b]. *)
-
-(* val add_subbytes : t -> bytes -> int -> int -> unit *)
-(** [add_substring b s ofs len] takes [len] characters from offset
-    [ofs] in byte sequence [s] and appends them at the end of the buffer [b].
-    @since 4.02 *)
-
-(* val add_buffer : t -> t -> unit *)
-(** [add_buffer b1 b2] appends the current contents of buffer [b2]
-   at the end of buffer [b1].  [b2] is not modified. *)    
-
-(* val add_channel : t -> in_channel -> int -> unit *)
-(** [add_channel b ic n] reads exactly [n] character from the
-   input channel [ic] and stores them at the end of buffer [b].
-   Raise [End_of_file] if the channel contains fewer than [n]
-   characters. *)
-
-val output_buffer : out_channel -> t -> unit
-(** [output_buffer oc b] writes the current contents of buffer [b]
-   on the output channel [oc]. *)   
-
-val digest : t -> Digest.t   
-
-val not_equal : 
-  t -> 
-  string -> 
-  bool 
-
-val add_int_1 :    
-   t -> int -> unit 
-
-val add_int_2 :    
-   t -> int -> unit 
-
-val add_int_3 :    
-   t -> int -> unit 
-
-val add_int_4 :    
-   t -> int -> unit 
-
-val add_string_char :    
-   t -> 
-   string ->
-   char -> 
-   unit
-   
-val add_ninja_prefix_var : 
-   t -> 
-   string -> 
-   unit 
-   
-   
-val add_char_string :    
-   t -> 
-   char -> 
-   string -> 
-   unit
-end = struct
-#1 "ext_buffer.ml"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*    Pierre Weis and Xavier Leroy, projet Cristal, INRIA Rocquencourt    *)
-(*                                                                        *)
-(*   Copyright 1999 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(* Extensible buffers *)
-
-type t =
- {mutable buffer : bytes;
-  mutable position : int;
-  mutable length : int;
-  initial_buffer : bytes}
-
-let create n =
- let n = if n < 1 then 1 else n in
- 
- let n = if n > Sys.max_string_length then Sys.max_string_length else n in
- 
- let s = Bytes.create n in
- {buffer = s; position = 0; length = n; initial_buffer = s}
-
-let contents b = Bytes.sub_string b.buffer 0 b.position
-(* let to_bytes b = Bytes.sub b.buffer 0 b.position  *)
-
-(* let sub b ofs len =
-  if ofs < 0 || len < 0 || ofs > b.position - len
-  then invalid_arg "Ext_buffer.sub"
-  else Bytes.sub_string b.buffer ofs len *)
-
-
-(* let blit src srcoff dst dstoff len =
-  if len < 0 || srcoff < 0 || srcoff > src.position - len
-             || dstoff < 0 || dstoff > (Bytes.length dst) - len
-  then invalid_arg "Ext_buffer.blit"
-  else
-    Bytes.unsafe_blit src.buffer srcoff dst dstoff len *)
-
-let length b = b.position
-let is_empty b = b.position = 0
-let clear b = b.position <- 0
-
-(* let reset b =
-  b.position <- 0; b.buffer <- b.initial_buffer;
-  b.length <- Bytes.length b.buffer *)
-
-let resize b more =
-  let len = b.length in
-  let new_len = ref len in
-  while b.position + more > !new_len do new_len := 2 * !new_len done;
-   
-  if !new_len > Sys.max_string_length then begin
-    if b.position + more <= Sys.max_string_length
-    then new_len := Sys.max_string_length
-    else failwith "Ext_buffer.add: cannot grow buffer"
-  end;
-  
-  let new_buffer = Bytes.create !new_len in
-  (* PR#6148: let's keep using [blit] rather than [unsafe_blit] in
-     this tricky function that is slow anyway. *)
-  Bytes.blit b.buffer 0 new_buffer 0 b.position;
-  b.buffer <- new_buffer;
-  b.length <- !new_len ;
-  assert (b.position + more <= b.length)
-
-let add_char b c =
-  let pos = b.position in
-  if pos >= b.length then resize b 1;
-  Bytes.unsafe_set b.buffer pos c;
-  b.position <- pos + 1  
-
-(* let add_substring b s offset len =
-  if offset < 0 || len < 0 || offset > String.length s - len
-  then invalid_arg "Ext_buffer.add_substring/add_subbytes";
-  let new_position = b.position + len in
-  if new_position > b.length then resize b len;
-  Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
-  b.position <- new_position   *)
-
-
-(* let add_subbytes b s offset len =
-  add_substring b (Bytes.unsafe_to_string s) offset len *)
-
-let add_string b s =
-  let len = String.length s in
-  let new_position = b.position + len in
-  if new_position > b.length then resize b len;
-  Ext_bytes.unsafe_blit_string s 0 b.buffer b.position len;
-  b.position <- new_position  
-
-(* TODO: micro-optimzie *)
-let add_string_char b s c =
-  let s_len = String.length s in
-  let len = s_len + 1 in 
-  let new_position = b.position + len in
-  if new_position > b.length then resize b len;
-  let b_buffer = b.buffer in 
-  Ext_bytes.unsafe_blit_string s 0 b_buffer b.position s_len;
-  Bytes.unsafe_set b_buffer (new_position - 1) c;
-  b.position <- new_position 
-
-let add_char_string b c s  =
-  let s_len = String.length s in
-  let len = s_len + 1 in 
-  let new_position = b.position + len in
-  if new_position > b.length then resize b len;
-  let b_buffer = b.buffer in 
-  let b_position = b.position in 
-  Bytes.unsafe_set b_buffer b_position c ; 
-  Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 1) s_len;
-  b.position <- new_position
-
-(* equivalent to add_char " "; add_char "$"; add_string s  *)
-let add_ninja_prefix_var b s =  
-  let s_len = String.length s in
-  let len = s_len + 2 in 
-  let new_position = b.position + len in
-  if new_position > b.length then resize b len;
-  let b_buffer = b.buffer in 
-  let b_position = b.position in 
-  Bytes.unsafe_set b_buffer b_position ' ' ; 
-  Bytes.unsafe_set b_buffer (b_position + 1) '$' ; 
-  Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 2) s_len;
-  b.position <- new_position
-
-
-(* let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
-
-let add_buffer b bs =
-  add_subbytes b bs.buffer 0 bs.position *)
-
-(* let add_channel b ic len =
-  if len < 0 
-    || len > Sys.max_string_length 
-    then   (* PR#5004 *)
-    invalid_arg "Ext_buffer.add_channel";
-  if b.position + len > b.length then resize b len;
-  really_input ic b.buffer b.position len;
-  b.position <- b.position + len *)
-
-let output_buffer oc b =
-  output oc b.buffer 0 b.position  
-
-external unsafe_string: bytes -> int -> int -> Digest.t = "caml_md5_string"
-
-let digest b = 
-  unsafe_string 
-  b.buffer 0 b.position    
-
-let rec not_equal_aux (b : bytes) (s : string) i len = 
-    if i >= len then false
-    else 
-      (Bytes.unsafe_get b i 
-      <>
-      String.unsafe_get s i )
-      || not_equal_aux b s (i + 1) len 
-
-(** avoid a large copy *)
-let not_equal  (b : t) (s : string) = 
-  let b_len = b.position in 
-  let s_len = String.length s in 
-  b_len <> s_len 
-  || not_equal_aux b.buffer s 0 s_len
-
-
-(**
-  It could be one byte, two bytes, three bytes and four bytes 
-  TODO: inline for better performance
-*)
-let add_int_1 (b : t ) (x : int ) = 
-  let c = (Char.unsafe_chr (x land 0xff)) in 
-  let pos = b.position in
-  if pos >= b.length then resize b 1;
-  Bytes.unsafe_set b.buffer pos c;
-  b.position <- pos + 1  
-  
-let add_int_2 (b : t ) (x : int ) = 
-  let c1 = (Char.unsafe_chr (x land 0xff)) in 
-  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
-  let pos = b.position in
-  if pos + 1 >= b.length then resize b 2;
-  let b_buffer = b.buffer in 
-  Bytes.unsafe_set b_buffer pos c1;
-  Bytes.unsafe_set b_buffer (pos + 1) c2;
-  b.position <- pos + 2
-
-let add_int_3 (b : t ) (x : int ) = 
-  let c1 = (Char.unsafe_chr (x land 0xff)) in 
-  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
-  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
-  let pos = b.position in
-  if pos + 2 >= b.length then resize b 3;
-  let b_buffer = b.buffer in 
-  Bytes.unsafe_set b_buffer pos c1;
-  Bytes.unsafe_set b_buffer (pos + 1) c2;
-  Bytes.unsafe_set b_buffer (pos + 2) c3;
-  b.position <- pos + 3
-
-
-let add_int_4 (b : t ) (x : int ) = 
-  let c1 = (Char.unsafe_chr (x land 0xff)) in 
-  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
-  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
-  let c4 = (Char.unsafe_chr (x lsr 24 land 0xff)) in
-  let pos = b.position in
-  if pos + 3 >= b.length then resize b 4;
-  let b_buffer = b.buffer in 
-  Bytes.unsafe_set b_buffer pos c1;
-  Bytes.unsafe_set b_buffer (pos + 1) c2;
-  Bytes.unsafe_set b_buffer (pos + 2) c3;
-  Bytes.unsafe_set b_buffer (pos + 3) c4;
-  b.position <- pos + 4
-
-
-
-
-end
-module Ext_list : sig 
-#1 "ext_list.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val map : 
-  'a list -> 
-  ('a -> 'b) -> 
-  'b list 
-
-val map_combine :  
-  'a list -> 
-  'b list -> 
-  ('a -> 'c) -> 
-  ('c * 'b) list 
-
-val combine_array:
-  'a array ->
-  'b list -> 
-  ('a -> 'c) ->
-  ('c * 'b) list   
-
-val combine_array_append:
-  'a array ->
-  'b list ->
-  ('c * 'b) list -> 
-  ('a -> 'c) ->
-  ('c * 'b) list   
-  
-val has_string :   
-  string list ->
-  string -> 
-  bool
-
-
-val map_split_opt :  
-  'a list ->
-  ('a -> 'b option * 'c option) ->
-  'b list * 'c list 
-
-val mapi :
-  'a list -> 
-  (int -> 'a -> 'b) -> 
-  'b list 
-
-val mapi_append :
-  'a list -> 
-  (int -> 'a -> 'b) -> 
-  'b list -> 
-  'b list 
-
-val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
-
-(** [map_last f xs ]
-    will pass [true] to [f] for the last element, 
-    [false] otherwise. 
-    For empty list, it returns empty
-*)
-val map_last : 
-    'a list -> 
-    (bool -> 'a -> 'b) -> 'b list
-
-(** [last l]
-    return the last element
-    raise if the list is empty
-*)
-val last : 'a list -> 'a
-
-val append : 
-  'a list -> 
-  'a list -> 
-  'a list 
-
-val append_one :  
-  'a list -> 
-  'a -> 
-  'a list
-
-val map_append :  
-  'b list -> 
-  'a list -> 
-  ('b -> 'a) -> 
-  'a list
-
-val fold_right : 
-  'a list -> 
-  'b -> 
-  ('a -> 'b -> 'b) -> 
-  'b
-
-val fold_right2 : 
-  'a list -> 
-  'b list -> 
-  'c -> 
-  ('a -> 'b -> 'c -> 'c) ->  'c
-
-val fold_right3 : 
-  'a list -> 
-  'b list -> 
-  'c list -> 
-  'd -> 
-  ('a -> 'b -> 'c -> 'd -> 'd) -> 
-  'd
-  
-  
-val map2 : 
-  'a list ->
-  'b list ->
-  ('a -> 'b -> 'c) ->
-  'c list
-
-val fold_left_with_offset : 
-  'a list -> 
-  'acc -> 
-  int -> 
-  ('a -> 'acc ->  int ->  'acc) ->   
-  'acc 
-
-
-(** @unused *)
-val filter_map : 
-  'a list -> 
-  ('a -> 'b option) -> 
-  'b list  
-
-(** [exclude p l] is the opposite of [filter p l] *)
-val exclude : 
-  'a list -> 
-  ('a -> bool) -> 
-  'a list 
-
-(** [excludes p l]
-    return a tuple [excluded,newl]
-    where [exluded] is true indicates that at least one  
-    element is removed,[newl] is the new list where all [p x] for [x] is false
-
-*)
-val exclude_with_val : 
-  'a list -> 
-  ('a -> bool) -> 
-  'a list option
-
-
-val same_length : 'a list -> 'b list -> bool
-
-val init : int -> (int -> 'a) -> 'a list
-
-(** [split_at n l]
-    will split [l] into two lists [a,b], [a] will be of length [n], 
-    otherwise, it will raise
-*)
-val split_at : 
-  'a list -> 
-  int -> 
-  'a list * 'a list
-
-
-(** [split_at_last l]
-    It is equivalent to [split_at (List.length l - 1) l ]
-*)
-val split_at_last : 'a list -> 'a list * 'a
-
-val filter_mapi : 
-  'a list -> 
-  ('a -> int ->  'b option) -> 
-  'b list
-
-val filter_map2 : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b -> 'c option) -> 
-  'c list
-
-
-val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
-
-val length_ge : 'a list -> int -> bool
-
-(**
-
-   {[length xs = length ys + n ]}
-   input n should be positive 
-   TODO: input checking
-*)
-
-val length_larger_than_n : 
-  'a list -> 
-  'a list -> 
-   int -> 
-   bool
-
-
-(**
-   [rev_map_append f l1 l2]
-   [map f l1] and reverse it to append [l2]
-   This weird semantics is due to it is the most efficient operation
-   we can do
-*)
-val rev_map_append : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b) -> 
-  'b list
-
-
-val flat_map : 
-  'a list -> 
-  ('a -> 'b list) -> 
-  'b list
-
-val flat_map_append : 
-  'a list -> 
-  'b list  ->
-  ('a -> 'b list) -> 
-  'b list
-
-
-(**
-    [stable_group eq lst]
-    Example:
-    Input:
-   {[
-     stable_group (=) [1;2;3;4;3]
-   ]}
-    Output:
-   {[
-     [[1];[2];[4];[3;3]]
-   ]}
-    TODO: this is O(n^2) behavior 
-    which could be improved later
-*)
-val stable_group : 
-  'a list -> 
-  ('a -> 'a -> bool) -> 
-  'a list list 
-
-(** [drop n list]
-    raise when [n] is negative
-    raise when list's length is less than [n]
-*)
-val drop : 
-  'a list -> 
-  int -> 
-  'a list 
-
-val find_first :   
-    'a list ->
-    ('a -> bool) ->
-    'a option 
-    
-(** [find_first_not p lst ]
-    if all elements in [lst] pass, return [None] 
-    otherwise return the first element [e] as [Some e] which
-    fails the predicate
-*)
-val find_first_not : 
-  'a list -> 
-  ('a -> bool) -> 
-  'a option 
-
-(** [find_opt f l] returns [None] if all return [None],  
-    otherwise returns the first one. 
-*)
-
-val find_opt : 
-  'a list -> 
-  ('a -> 'b option) -> 
-  'b option 
-
-val find_def : 
-    'a list -> 
-    ('a -> 'b option) ->
-    'b ->
-    'b 
-
-    
-val rev_iter : 
-  'a list -> 
-  ('a -> unit) -> 
-  unit 
-
-val iter:   
-   'a list ->  
-   ('a -> unit) -> 
-   unit
-   
-val for_all:  
-    'a list -> 
-    ('a -> bool) -> 
-    bool
-val for_all_snd:    
-    ('a * 'b) list -> 
-    ('b -> bool) -> 
-    bool
-
-(** [for_all2_no_exn p xs ys]
-    return [true] if all satisfied,
-    [false] otherwise or length not equal
-*)
-val for_all2_no_exn : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b -> bool) -> 
-  bool
-
-
-
-(** [f] is applied follow the list order *)
-val split_map : 
-  'a list -> 
-  ('a -> 'b * 'c) -> 
-  'b list * 'c list       
-
-(** [fn] is applied from left to right *)
-val reduce_from_left : 
-  'a list -> 
-  ('a -> 'a -> 'a) ->
-  'a
-
-val sort_via_array :
-  'a list -> 
-  ('a -> 'a -> int) -> 
-  'a list  
-
-
-
-
-(** [assoc_by_string default key lst]
-    if  [key] is found in the list  return that val,
-    other unbox the [default], 
-    otherwise [assert false ]
-*)
-val assoc_by_string : 
-  (string * 'a) list -> 
-  string -> 
-  'a  option ->   
-  'a  
-
-val assoc_by_int : 
-  (int * 'a) list -> 
-  int -> 
-  'a  option ->   
-  'a   
-
-
-val nth_opt : 'a list -> int -> 'a option  
-
-val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit 
-
-val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
-
-val exists : 'a list -> ('a -> bool) -> bool 
-
-val exists_fst : 
-  ('a * 'b) list ->
-  ('a -> bool) ->
-  bool
-
-val exists_snd : 
-  ('a * 'b) list -> 
-  ('b -> bool) -> 
-  bool
-
-val concat_append:
-    'a list list -> 
-    'a list -> 
-    'a list
-
-val fold_left2:
-    'a list -> 
-    'b list -> 
-    'c -> 
-    ('a -> 'b -> 'c -> 'c)
-    -> 'c 
-
-val fold_left:    
-    'a list -> 
-    'b -> 
-    ('b -> 'a -> 'b) -> 
-    'b
-
-val singleton_exn:     
-    'a list -> 'a
-
-val mem_string :     
-    string list -> 
-    string -> 
-    bool
-end = struct
-#1 "ext_list.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-let rec map l f =
-  match l with
-  | [] ->
-    []
-  | [x1] ->
-    let y1 = f x1 in
-    [y1]
-  | [x1; x2] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    [y1; y2]
-  | [x1; x2; x3] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    [y1; y2; y3]
-  | [x1; x2; x3; x4] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    [y1; y2; y3; y4]
-  | x1::x2::x3::x4::x5::tail ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    let y5 = f x5 in
-    y1::y2::y3::y4::y5::(map tail f)
-
-let rec has_string l f =
-  match l with
-  | [] ->
-    false
-  | [x1] ->
-    x1 = f
-  | [x1; x2] ->
-    x1 = f || x2 = f
-  | [x1; x2; x3] ->
-    x1 = f || x2 = f || x3 = f
-  | x1 :: x2 :: x3 :: x4 ->
-    x1 = f || x2 = f || x3 = f || has_string x4 f 
-  
-let rec map_combine l1 l2 f =
-  match (l1, l2) with
-    ([], []) -> []
-  | (a1::l1, a2::l2) -> 
-    (f a1, a2) :: map_combine l1 l2 f 
-  | (_, _) -> 
-    invalid_arg "Ext_list.map_combine"
-
-let rec combine_array_unsafe arr l i j acc f =    
-  if i = j then acc
-  else 
-    match l with
-    | [] -> invalid_arg "Ext_list.combine"
-    | h :: tl ->
-      (f (Array.unsafe_get arr i) , h) ::
-      combine_array_unsafe arr tl (i + 1) j acc f
-
-let combine_array_append arr l acc f = 
-  let len = Array.length arr in
-  combine_array_unsafe arr l 0 len acc f
-
-let combine_array arr l f = 
-  let len = Array.length arr in
-  combine_array_unsafe arr l 0 len [] f 
-
-let rec map_split_opt 
-  (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
-  : 'b list * 'c list = 
-  match xs with 
-  | [] -> [], []
-  | x::xs ->
-    let c,d = f x in 
-    let cs,ds = map_split_opt xs f in 
-    (match c with Some c -> c::cs | None -> cs),
-    (match d with Some d -> d::ds | None -> ds)
-
-let rec map_snd l f =
-  match l with
-  | [] ->
-    []
-  | [ v1,x1 ] ->
-    let y1 = f x1 in
-    [v1,y1]
-  | [v1, x1; v2, x2] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    [v1, y1; v2, y2]
-  | [ v1, x1; v2, x2; v3, x3] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    [v1, y1; v2, y2; v3, y3]
-  | [ v1, x1; v2, x2; v3, x3; v4, x4] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    [v1, y1; v2, y2; v3, y3; v4, y4]
-  | (v1, x1) ::(v2, x2) :: (v3, x3)::(v4, x4) :: (v5, x5) ::tail ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    let y5 = f x5 in
-    (v1, y1)::(v2, y2) :: (v3, y3) :: (v4, y4) :: (v5, y5) :: (map_snd tail f)
-
-
-let rec map_last l f=
-  match l with
-  | [] ->
-    []
-  | [x1] ->
-    let y1 = f true x1 in
-    [y1]
-  | [x1; x2] ->
-    let y1 = f false x1 in
-    let y2 = f true x2 in
-    [y1; y2]
-  | [x1; x2; x3] ->
-    let y1 = f false x1 in
-    let y2 = f false x2 in
-    let y3 = f true x3 in
-    [y1; y2; y3]
-  | [x1; x2; x3; x4] ->
-    let y1 = f false x1 in
-    let y2 = f false x2 in
-    let y3 = f false x3 in
-    let y4 = f true x4 in
-    [y1; y2; y3; y4]
-  | x1::x2::x3::x4::tail ->
-    (* make sure that tail is not empty *)    
-    let y1 = f false x1 in
-    let y2 = f false x2 in
-    let y3 = f false x3 in
-    let y4 = f false x4 in
-    y1::y2::y3::y4::(map_last tail f)
-
-let rec mapi_aux lst i f tail = 
-  match lst with
-    [] -> tail
-  | a::l -> 
-    let r = f i a in r :: mapi_aux l (i + 1) f tail
-
-let mapi lst f = mapi_aux lst 0 f []
-let mapi_append lst f tail = mapi_aux lst 0 f tail
-let rec last xs =
-  match xs with 
-  | [x] -> x 
-  | _ :: tl -> last tl 
-  | [] -> invalid_arg "Ext_list.last"    
-
-
-
-let rec append_aux l1 l2 = 
-  match l1 with
-  | [] -> l2
-  | [a0] -> a0::l2
-  | [a0;a1] -> a0::a1::l2
-  | [a0;a1;a2] -> a0::a1::a2::l2
-  | [a0;a1;a2;a3] -> a0::a1::a2::a3::l2
-  | [a0;a1;a2;a3;a4] -> a0::a1::a2::a3::a4::l2
-  | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append_aux rest l2
-
-let append l1 l2 =   
-  match l2 with 
-  | [] -> l1 
-  | _ -> append_aux l1 l2  
-
-let append_one l1 x = append_aux l1 [x]  
-
-let rec map_append l1 l2 f =   
-  match l1 with
-  | [] -> l2
-  | [a0] -> f a0::l2
-  | [a0;a1] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    b0::b1::l2
-  | [a0;a1;a2] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in  
-    let b2 = f a2 in 
-    b0::b1::b2::l2
-  | [a0;a1;a2;a3] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    let b2 = f a2 in 
-    let b3 = f a3 in 
-    b0::b1::b2::b3::l2
-  | [a0;a1;a2;a3;a4] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    let b2 = f a2 in 
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    b0::b1::b2::b3::b4::l2
-
-  | a0::a1::a2::a3::a4::rest ->
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    let b2 = f a2 in 
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    b0::b1::b2::b3::b4::map_append rest l2 f
-
-
-
-let rec fold_right l acc f  = 
-  match l with  
-  | [] -> acc 
-  | [a0] -> f a0 acc 
-  | [a0;a1] -> f a0 (f a1 acc)
-  | [a0;a1;a2] -> f a0 (f a1 (f a2 acc))
-  | [a0;a1;a2;a3] -> f a0 (f a1 (f a2 (f a3 acc))) 
-  | [a0;a1;a2;a3;a4] -> 
-    f a0 (f a1 (f a2 (f a3 (f a4 acc))))
-  | a0::a1::a2::a3::a4::rest -> 
-    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right rest acc f )))))  
-
-let rec fold_right2 l r acc f = 
-  match l,r  with  
-  | [],[] -> acc 
-  | [a0],[b0] -> f a0 b0 acc 
-  | [a0;a1],[b0;b1] -> f a0 b0 (f a1 b1 acc)
-  | [a0;a1;a2],[b0;b1;b2] -> f a0 b0 (f a1 b1 (f a2 b2 acc))
-  | [a0;a1;a2;a3],[b0;b1;b2;b3] ->
-    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 acc))) 
-  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
-    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 acc))))
-  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
-    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 (fold_right2 arest brest acc f )))))  
-  | _, _ -> invalid_arg "Ext_list.fold_right2"
-
-let rec fold_right3 l r last acc f = 
-  match l,r,last  with  
-  | [],[],[] -> acc 
-  | [a0],[b0],[c0] -> f a0 b0 c0 acc 
-  | [a0;a1],[b0;b1],[c0; c1] -> f a0 b0 c0 (f a1 b1 c1 acc)
-  | [a0;a1;a2],[b0;b1;b2],[c0;c1;c2] -> f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 acc))
-  | [a0;a1;a2;a3],[b0;b1;b2;b3],[c0;c1;c2;c3] ->
-    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 acc))) 
-  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4], [c0;c1;c2;c3;c4] -> 
-    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 acc))))
-  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest, c0::c1::c2::c3::c4::crest -> 
-    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 (fold_right3 arest brest crest acc f )))))  
-  | _, _, _ -> invalid_arg "Ext_list.fold_right2"
-
-let rec map2  l r f = 
-  match l,r  with  
-  | [],[] -> []
-  | [a0],[b0] -> [f a0 b0]
-  | [a0;a1],[b0;b1] -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    [c0; c1]
-  | [a0;a1;a2],[b0;b1;b2] -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    [c0;c1;c2]
-  | [a0;a1;a2;a3],[b0;b1;b2;b3] ->
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    let c3 = f a3 b3 in 
-    [c0;c1;c2;c3]
-  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    let c3 = f a3 b3 in 
-    let c4 = f a4 b4 in 
-    [c0;c1;c2;c3;c4]
-  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    let c3 = f a3 b3 in 
-    let c4 = f a4 b4 in 
-    c0::c1::c2::c3::c4::map2 arest brest f
-  | _, _ -> invalid_arg "Ext_list.map2"
-
-let rec fold_left_with_offset l accu i f =
-  match l with
-  | [] -> accu
-  | a::l -> 
-    fold_left_with_offset 
-    l     
-    (f  a accu  i)  
-    (i + 1)
-    f  
-
-
-let rec filter_map xs (f: 'a -> 'b option)= 
-  match xs with 
-  | [] -> []
-  | y :: ys -> 
-    begin match f y with 
-      | None -> filter_map ys f 
-      | Some z -> z :: filter_map ys f 
-    end
-
-let rec exclude (xs : 'a list) (p : 'a -> bool) : 'a list =   
-  match xs with 
-  | [] ->  []
-  | x::xs -> 
-    if p x then exclude xs p
-    else x:: exclude xs p
-
-let rec exclude_with_val l p =
-  match l with 
-  | [] ->  None
-  | a0::xs -> 
-    if p a0 then Some (exclude xs p)
-    else 
-      match xs with 
-      | [] -> None
-      | a1::rest -> 
-        if p a1 then 
-          Some (a0:: exclude rest p)
-        else 
-          match exclude_with_val rest p with 
-          | None -> None 
-          | Some  rest -> Some (a0::a1::rest)
-
-
-
-let rec same_length xs ys = 
-  match xs, ys with 
-  | [], [] -> true
-  | _::xs, _::ys -> same_length xs ys 
-  | _, _ -> false 
-
-
-let init n f = 
-  match n with 
-  | 0 -> []
-  | 1 -> 
-    let a0 = f 0 in  
-    [a0]
-  | 2 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    [a0; a1]
-  | 3 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    let a2 = f 2 in 
-    [a0; a1; a2]
-  | 4 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    let a2 = f 2 in 
-    let a3 = f 3 in 
-    [a0; a1; a2; a3]
-  | 5 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    let a2 = f 2 in 
-    let a3 = f 3 in 
-    let a4 = f 4 in  
-    [a0; a1; a2; a3; a4]
-  | _ ->
-    Array.to_list (Array.init n f)
-
-let rec rev_append l1 l2 =
-  match l1 with
-  | [] -> l2
-  | [a0] -> a0::l2 (* single element is common *)
-  | [a0 ; a1] -> a1 :: a0 :: l2 
-  |  a0::a1::a2::rest -> rev_append rest (a2::a1::a0::l2) 
-
-let rev l = rev_append l []      
-
-let rec small_split_at n acc l = 
-  if n <= 0 then rev acc , l 
-  else 
-    match l with 
-    | x::xs -> small_split_at (n - 1) (x ::acc) xs 
-    | _ -> invalid_arg "Ext_list.split_at"
-
-let split_at l n = 
-  small_split_at n [] l 
-
-let rec split_at_last_aux acc x = 
-  match x with 
-  | [] -> invalid_arg "Ext_list.split_at_last"
-  | [ x] -> rev acc, x
-  | y0::ys -> split_at_last_aux (y0::acc) ys   
-
-let split_at_last (x : 'a list) = 
-  match x with 
-  | [] -> invalid_arg "Ext_list.split_at_last"
-  | [a0] -> 
-    [], a0
-  | [a0;a1] -> 
-    [a0], a1  
-  | [a0;a1;a2] -> 
-    [a0;a1], a2 
-  | [a0;a1;a2;a3] -> 
-    [a0;a1;a2], a3 
-  | [a0;a1;a2;a3;a4] ->
-    [a0;a1;a2;a3], a4 
-  | a0::a1::a2::a3::a4::rest  ->  
-    let rev, last = split_at_last_aux [] rest
-    in 
-    a0::a1::a2::a3::a4::  rev , last
-
-(**
-   can not do loop unroll due to state combination
-*)  
-let  filter_mapi xs f  = 
-  let rec aux i xs = 
-    match xs with 
-    | [] -> []
-    | y :: ys -> 
-      begin match f y i with 
-        | None -> aux (i + 1) ys
-        | Some z -> z :: aux (i + 1) ys
-      end in
-  aux 0 xs 
-
-let rec filter_map2  xs ys (f: 'a -> 'b -> 'c option) = 
-  match xs,ys with 
-  | [],[] -> []
-  | u::us, v :: vs -> 
-    begin match f u v with 
-      | None -> filter_map2 us vs f (* idea: rec f us vs instead? *)
-      | Some z -> z :: filter_map2  us vs f
-    end
-  | _ -> invalid_arg "Ext_list.filter_map2"
-
-
-let rec rev_map_append l1 l2 f =
-  match l1 with
-  | [] -> l2
-  | a :: l -> rev_map_append l (f a :: l2) f
-
-
-
-(** It is not worth loop unrolling, 
-    it is already tail-call, and we need to be careful 
-    about evaluation order when unroll
-*)
-let rec flat_map_aux f acc append lx =
-  match lx with
-  | [] -> rev_append acc  append
-  | a0::rest -> 
-    let new_acc = 
-      match f a0 with 
-      | [] -> acc 
-      | [a0] -> a0::acc
-      | [a0;a1] -> a1::a0::acc
-      | a0::a1::a2::rest -> 
-        rev_append rest (a2::a1::a0::acc)  
-    in 
-    flat_map_aux f  new_acc append rest 
-
-let flat_map lx f  =
-  flat_map_aux f [] [] lx
-
-let flat_map_append lx append f =
-  flat_map_aux f [] append lx  
-
-
-let rec length_compare l n = 
-  if n < 0 then `Gt 
-  else 
-    begin match l with 
-      | _ ::xs -> length_compare xs (n - 1)
-      | [] ->  
-        if n = 0 then `Eq 
-        else `Lt 
-    end
-
-let rec length_ge l n =   
-  if n > 0 then
-    match l with 
-    | _ :: tl -> length_ge tl (n - 1)
-    | [] -> false
-  else true
-  
-(**
-   {[length xs = length ys + n ]}
-*)
-let rec length_larger_than_n xs ys n =
-  match xs, ys with 
-  | _, [] -> length_compare xs n = `Eq   
-  | _::xs, _::ys -> 
-    length_larger_than_n xs ys n
-  | [], _ -> false 
-
-
-
-
-let rec group (eq : 'a -> 'a -> bool) lst =
-  match lst with 
-  | [] -> []
-  | x::xs -> 
-    aux eq x (group eq xs )
-
-and aux eq (x : 'a)  (xss : 'a list list) : 'a list list = 
-  match xss with 
-  | [] -> [[x]]
-  | (y0::_ as y)::ys -> (* cannot be empty *) 
-    if eq x y0 then
-      (x::y) :: ys 
-    else
-      y :: aux eq x ys                                 
-  | _ :: _ -> assert false    
-
-let stable_group lst eq =  group eq lst |> rev  
-
-let rec drop h n = 
-  if n < 0 then invalid_arg "Ext_list.drop"
-  else
-  if n = 0 then h 
-  else 
-    match h with 
-    | [] ->
-      invalid_arg "Ext_list.drop"
-    | _ :: tl ->   
-      drop tl (n - 1)
-
-let rec find_first x p = 
-  match x with 
-  | [] -> None
-  | x :: l -> 
-    if p x then Some x 
-    else find_first l p
-
-let rec find_first_not  xs p = 
-  match xs with 
-  | [] -> None
-  | a::l -> 
-    if p a 
-    then find_first_not l p 
-    else Some a 
-
-
-let rec rev_iter l f = 
-  match l with
-  | [] -> ()    
-  | [x1] ->
-    f x1 
-  | [x1; x2] ->
-    f x2 ; f x1 
-  | [x1; x2; x3] ->
-    f x3 ; f x2 ; f x1 
-  | [x1; x2; x3; x4] ->
-    f x4; f x3; f x2; f x1 
-  | x1::x2::x3::x4::x5::tail ->
-    rev_iter tail f;
-    f x5; f x4 ; f x3; f x2 ; f x1
-
-let rec iter l f = 
-  match l with
-  | [] -> ()    
-  | [x1] ->
-    f x1 
-  | [x1; x2] ->
-    f x1 ; f x2
-  | [x1; x2; x3] ->
-    f x1 ; f x2 ; f x3
-  | [x1; x2; x3; x4] ->
-    f x1; f x2; f x3; f x4
-  | x1::x2::x3::x4::x5::tail ->
-    f x1; f x2 ; f x3; f x4 ; f x5;
-    iter tail f 
-
-
-let rec for_all lst p = 
-  match lst with 
-    [] -> true
-  | a::l -> p a && for_all l p
-
-let rec for_all_snd lst p = 
-  match lst with 
-    [] -> true
-  | (_,a)::l -> p a && for_all_snd l p
-
-
-let rec for_all2_no_exn  l1 l2 p = 
-  match (l1, l2) with
-  | ([], []) -> true
-  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn l1 l2 p
-  | (_, _) -> false
-
-
-let rec find_opt xs p = 
-  match xs with 
-  | [] -> None
-  | x :: l -> 
-    match  p x with 
-    | Some _ as v  ->  v
-    | None -> find_opt l p
-
-let rec find_def xs p def =
-  match xs with 
-  | [] -> def
-  | x::l -> 
-    match p x with 
-    | Some v -> v 
-    | None -> find_def l p def   
-
-let rec split_map l f = 
-  match l with
-  | [] ->
-    [],[]
-  | [x1] ->
-    let a0,b0 = f x1 in
-    [a0],[b0]
-  | [x1; x2] ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    [a1;a2],[b1;b2]
-  | [x1; x2; x3] ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    let a3,b3 = f x3 in
-    [a1;a2;a3], [b1;b2;b3]
-  | [x1; x2; x3; x4] ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    let a3,b3 = f x3 in
-    let a4,b4 = f x4 in
-    [a1;a2;a3;a4], [b1;b2;b3;b4] 
-  | x1::x2::x3::x4::x5::tail ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    let a3,b3 = f x3 in
-    let a4,b4 = f x4 in
-    let a5,b5 = f x5 in
-    let ass,bss = split_map tail f in 
-    a1::a2::a3::a4::a5::ass,
-    b1::b2::b3::b4::b5::bss
-
-
-
-
-let sort_via_array lst cmp =
-  let arr = Array.of_list lst  in
-  Array.sort cmp arr;
-  Array.to_list arr
-
-
-
-
-let rec assoc_by_string lst (k : string) def  = 
-  match lst with 
-  | [] -> 
-    begin match def with 
-      | None -> assert false 
-      | Some x -> x end
-  | (k1,v1)::rest -> 
-    if  k1 = k then v1 else 
-      assoc_by_string  rest k def 
-
-let rec assoc_by_int lst (k : int) def = 
-  match lst with 
-  | [] -> 
-    begin match def with
-      | None -> assert false 
-      | Some x -> x end
-  | (k1,v1)::rest -> 
-    if k1 = k then v1 else 
-      assoc_by_int rest k def 
-
-
-let rec nth_aux l n =
-  match l with
-  | [] -> None
-  | a::l -> if n = 0 then Some a else nth_aux l (n-1)
-
-let nth_opt l n =
-  if n < 0 then None 
-  else
-    nth_aux l n
-
-let rec iter_snd lst f =     
-  match lst with
-  | [] -> ()
-  | (_,x)::xs -> 
-    f x ; 
-    iter_snd xs f 
-    
-let rec iter_fst lst f =     
-  match lst with
-  | [] -> ()
-  | (x,_)::xs -> 
-    f x ; 
-    iter_fst xs f 
-
-let rec exists l p =     
-  match l with 
-    [] -> false  
-  | x :: xs -> p x || exists xs p
-
-let rec exists_fst l p = 
-  match l with 
-    [] -> false
-  | (a,_)::l -> p a || exists_fst l p 
-
-let rec exists_snd l p = 
-  match l with 
-    [] -> false
-  | (_, a)::l -> p a || exists_snd l p 
-
-let rec concat_append 
-  (xss : 'a list list)  
-  (xs : 'a list) : 'a list = 
-  match xss with 
-  | [] -> xs 
-  | l::r -> append l (concat_append r xs)
-
-let rec fold_left l accu f =
-  match l with
-    [] -> accu
-  | a::l -> fold_left l (f accu a) f 
-  
-let reduce_from_left lst fn = 
-  match lst with 
-  | first :: rest ->  fold_left rest first fn 
-  | _ -> invalid_arg "Ext_list.reduce_from_left"
-
-let rec fold_left2 l1 l2 accu f =
-  match (l1, l2) with
-    ([], []) -> accu
-  | (a1::l1, a2::l2) -> fold_left2  l1 l2 (f a1 a2 accu) f 
-  | (_, _) -> invalid_arg "Ext_list.fold_left2"
-
-let singleton_exn xs = match xs with [x] -> x | _ -> assert false
-
-let rec mem_string (xs : string list) (x : string) = 
-  match xs with 
-    [] -> false
-  | a::l ->  a = x  || mem_string l x
-
-end
-module Bsb_helper_arg : sig 
-#1 "bsb_helper_arg.mli"
-
-
-
-type string_action = 
-  | Call of (string -> unit)  
-  | Set of {mutable contents : string}
-
-type spec =
-  | Bool of bool ref            
-  | String of string_action 
-
-type key = string
-type doc = string
-
-type anon_fun = rev_args:string list -> unit
-
-val parse_exn :
-  progname:string -> 
-  argv:string array -> 
-  start:int ->
-  (key * spec * doc) list -> 
-  anon_fun  -> unit
-
-
-
-
-end = struct
-#1 "bsb_helper_arg.ml"
-
-type key = string
-type doc = string
-type anon_fun = rev_args:string list -> unit
-
-type string_action = 
-  | Call of (string -> unit)  
-  | Set of {mutable contents : string}
-
-type spec =
-  | Bool of bool ref            
-  | String of string_action 
-
-
-exception Bad of string
-
-
-type error =
-  | Unknown of string
-  | Missing of string
-
-type t = (string * spec * string) list 
-
-let rec assoc3 (x : string) (l : t) =
-  match l with
-  | [] -> None
-  | (y1, y2, _) :: _ when y1 = x -> Some y2
-  | _ :: t -> assoc3 x t
-;;
-
-
-let (+>) = Ext_buffer.add_string
-
-let usage_b (buf : Ext_buffer.t) progname speclist  =
-  buf +> progname;
-  buf +> " options:\n";
-  let max_col = ref 0 in 
-  Ext_list.iter speclist (fun (key,_,_) -> 
-      if String.length key > !max_col then 
-        max_col := String.length key
-    );
-  Ext_list.iter speclist (fun (key,_,doc) -> 
-      buf +> "  ";
-      buf +> key ; 
-      buf +> (String.make (!max_col - String.length key + 1 ) ' ');
-      buf +> doc;
-      buf +> "\n"
-    )
-;;
-
-
-  
-let stop_raise ~progname ~(error : error) speclist   =
-  let b = Ext_buffer.create 200 in  
-  begin match error with
-    | Unknown ("-help" | "--help" | "-h") -> 
-      usage_b b progname speclist ;
-      Ext_buffer.output_buffer stdout b;
-      exit 0      
-    | Unknown s ->
-      b +> progname ;
-      b +> ": unknown option '";
-      b +> s ;
-      b +> "'.\n"
-    | Missing s ->
-      b +> progname ;
-      b +> ": option '";
-      b +> s;
-      b +> "' needs an argument.\n"      
-  end;
-  usage_b b progname speclist ;
-  raise (Bad (Ext_buffer.contents b))
-
-
-let parse_exn  ~progname ~argv ~start (speclist : t) anonfun  =    
-  let l = Array.length argv in
-  let current = ref start in 
-  let rev_list = ref [] in 
-  while !current < l do
-    let s = argv.(!current) in
-    incr current;  
-    if s <> "" && s.[0] = '-' then begin
-      match assoc3 s speclist with 
-      | Some action -> begin       
-          begin match action with 
-            | Bool r -> r := true;
-            | String f  ->
-              if !current >= l then stop_raise ~progname ~error:(Missing s) speclist 
-              else begin                 
-                let arg = argv.(!current) in 
-                incr current;  
-                match f with 
-                | Call f ->   
-                  f arg
-                | Set u -> u.contents <- arg
-              end             
-          end;      
-        end;      
-      | None -> stop_raise ~progname ~error:(Unknown s) speclist 
-    end else begin
-      rev_list := s :: !rev_list;      
-    end;
-  done;
-  anonfun ~rev_args:!rev_list
-;;
-
-
-
-end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2011,6 +264,81 @@ let write_file f content =
     (open_out_bin f)  begin fun oc ->   
     output_string oc content
   end
+
+end
+module Ext_bytes : sig 
+#1 "ext_bytes.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
+                     = "caml_blit_string" 
+[@@noalloc]
+    
+
+
+
+end = struct
+#1 "ext_bytes.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
+                     = "caml_blit_string" 
+[@@noalloc]                     
+
 
 end
 module Ext_string : sig 
@@ -3014,7 +1342,7 @@ let ns_sep_char = '-'
 let ns_sep = "-"
 let exception_id = "RE_EXN_ID"
 
-let polyvar_hash = "HASH"
+let polyvar_hash = "NAME"
 let polyvar_value = "VAL"
 
 let cons = "::"
@@ -3233,6 +1561,348 @@ let find db dependent_module is_not_lib_dir =
     if is_not_lib_dir then 
       find_opt db false dependent_module 
     else None       
+end
+module Ext_buffer : sig 
+#1 "ext_buffer.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*  Pierre Weis and Xavier Leroy, projet Cristal, INRIA Rocquencourt   *)
+(*                                                                     *)
+(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+
+(** Extensible buffers.
+
+   This module implements buffers that automatically expand
+   as necessary.  It provides accumulative concatenation of strings
+   in quasi-linear time (instead of quadratic time when strings are
+   concatenated pairwise).
+*)
+
+(* BuckleScript customization: customized for efficient digest *)
+
+type t
+(** The abstract type of buffers. *)
+
+val create : int -> t
+(** [create n] returns a fresh buffer, initially empty.
+   The [n] parameter is the initial size of the internal byte sequence
+   that holds the buffer contents. That byte sequence is automatically
+   reallocated when more than [n] characters are stored in the buffer,
+   but shrinks back to [n] characters when [reset] is called.
+   For best performance, [n] should be of the same order of magnitude
+   as the number of characters that are expected to be stored in
+   the buffer (for instance, 80 for a buffer that holds one output
+   line).  Nothing bad will happen if the buffer grows beyond that
+   limit, however. In doubt, take [n = 16] for instance.
+   If [n] is not between 1 and {!Sys.max_string_length}, it will
+   be clipped to that interval. *)
+
+val contents : t -> string
+(** Return a copy of the current contents of the buffer.
+    The buffer itself is unchanged. *)
+
+val length : t -> int
+(** Return the number of characters currently contained in the buffer. *)
+
+val is_empty : t -> bool
+
+val clear : t -> unit
+(** Empty the buffer. *)
+
+
+val [@inline] add_char : t -> char -> unit
+(** [add_char b c] appends the character [c] at the end of the buffer [b]. *)
+
+val add_string : t -> string -> unit
+(** [add_string b s] appends the string [s] at the end of the buffer [b]. *)
+
+(* val add_bytes : t -> bytes -> unit *)
+(** [add_string b s] appends the string [s] at the end of the buffer [b].
+    @since 4.02 *)
+
+(* val add_substring : t -> string -> int -> int -> unit *)
+(** [add_substring b s ofs len] takes [len] characters from offset
+   [ofs] in string [s] and appends them at the end of the buffer [b]. *)
+
+(* val add_subbytes : t -> bytes -> int -> int -> unit *)
+(** [add_substring b s ofs len] takes [len] characters from offset
+    [ofs] in byte sequence [s] and appends them at the end of the buffer [b].
+    @since 4.02 *)
+
+(* val add_buffer : t -> t -> unit *)
+(** [add_buffer b1 b2] appends the current contents of buffer [b2]
+   at the end of buffer [b1].  [b2] is not modified. *)    
+
+(* val add_channel : t -> in_channel -> int -> unit *)
+(** [add_channel b ic n] reads exactly [n] character from the
+   input channel [ic] and stores them at the end of buffer [b].
+   Raise [End_of_file] if the channel contains fewer than [n]
+   characters. *)
+
+val output_buffer : out_channel -> t -> unit
+(** [output_buffer oc b] writes the current contents of buffer [b]
+   on the output channel [oc]. *)   
+
+val digest : t -> Digest.t   
+
+val not_equal : 
+  t -> 
+  string -> 
+  bool 
+
+val add_int_1 :    
+   t -> int -> unit 
+
+val add_int_2 :    
+   t -> int -> unit 
+
+val add_int_3 :    
+   t -> int -> unit 
+
+val add_int_4 :    
+   t -> int -> unit 
+
+val add_string_char :    
+   t -> 
+   string ->
+   char -> 
+   unit
+   
+val add_ninja_prefix_var : 
+   t -> 
+   string -> 
+   unit 
+   
+   
+val add_char_string :    
+   t -> 
+   char -> 
+   string -> 
+   unit
+end = struct
+#1 "ext_buffer.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*    Pierre Weis and Xavier Leroy, projet Cristal, INRIA Rocquencourt    *)
+(*                                                                        *)
+(*   Copyright 1999 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Extensible buffers *)
+
+type t =
+ {mutable buffer : bytes;
+  mutable position : int;
+  mutable length : int;
+  initial_buffer : bytes}
+
+let create n =
+ let n = if n < 1 then 1 else n in
+ let s = Bytes.create n in
+ {buffer = s; position = 0; length = n; initial_buffer = s}
+
+let contents b = Bytes.sub_string b.buffer 0 b.position
+(* let to_bytes b = Bytes.sub b.buffer 0 b.position  *)
+
+(* let sub b ofs len =
+  if ofs < 0 || len < 0 || ofs > b.position - len
+  then invalid_arg "Ext_buffer.sub"
+  else Bytes.sub_string b.buffer ofs len *)
+
+
+(* let blit src srcoff dst dstoff len =
+  if len < 0 || srcoff < 0 || srcoff > src.position - len
+             || dstoff < 0 || dstoff > (Bytes.length dst) - len
+  then invalid_arg "Ext_buffer.blit"
+  else
+    Bytes.unsafe_blit src.buffer srcoff dst dstoff len *)
+
+let length b = b.position
+let is_empty b = b.position = 0
+let clear b = b.position <- 0
+
+(* let reset b =
+  b.position <- 0; b.buffer <- b.initial_buffer;
+  b.length <- Bytes.length b.buffer *)
+
+let resize b more =
+  let len = b.length in
+  let new_len = ref len in
+  while b.position + more > !new_len do new_len := 2 * !new_len done;
+  let new_buffer = Bytes.create !new_len in
+  (* PR#6148: let's keep using [blit] rather than [unsafe_blit] in
+     this tricky function that is slow anyway. *)
+  Bytes.blit b.buffer 0 new_buffer 0 b.position;
+  b.buffer <- new_buffer;
+  b.length <- !new_len ;
+  assert (b.position + more <= b.length)
+
+let [@inline] add_char b c =
+  let pos = b.position in
+  if pos >= b.length then resize b 1;
+  Bytes.unsafe_set b.buffer pos c;
+  b.position <- pos + 1  
+
+(* let add_substring b s offset len =
+  if offset < 0 || len < 0 || offset > String.length s - len
+  then invalid_arg "Ext_buffer.add_substring/add_subbytes";
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
+  b.position <- new_position   *)
+
+
+(* let add_subbytes b s offset len =
+  add_substring b (Bytes.unsafe_to_string s) offset len *)
+
+let add_string b s =
+  let len = String.length s in
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  Ext_bytes.unsafe_blit_string s 0 b.buffer b.position len;
+  b.position <- new_position  
+
+(* TODO: micro-optimzie *)
+let add_string_char b s c =
+  let s_len = String.length s in
+  let len = s_len + 1 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  Ext_bytes.unsafe_blit_string s 0 b_buffer b.position s_len;
+  Bytes.unsafe_set b_buffer (new_position - 1) c;
+  b.position <- new_position 
+
+let add_char_string b c s  =
+  let s_len = String.length s in
+  let len = s_len + 1 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  let b_position = b.position in 
+  Bytes.unsafe_set b_buffer b_position c ; 
+  Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 1) s_len;
+  b.position <- new_position
+
+(* equivalent to add_char " "; add_char "$"; add_string s  *)
+let add_ninja_prefix_var b s =  
+  let s_len = String.length s in
+  let len = s_len + 2 in 
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  let b_buffer = b.buffer in 
+  let b_position = b.position in 
+  Bytes.unsafe_set b_buffer b_position ' ' ; 
+  Bytes.unsafe_set b_buffer (b_position + 1) '$' ; 
+  Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 2) s_len;
+  b.position <- new_position
+
+
+(* let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
+
+let add_buffer b bs =
+  add_subbytes b bs.buffer 0 bs.position *)
+
+(* let add_channel b ic len =
+  if len < 0 
+    || len > Sys.max_string_length 
+    then   (* PR#5004 *)
+    invalid_arg "Ext_buffer.add_channel";
+  if b.position + len > b.length then resize b len;
+  really_input ic b.buffer b.position len;
+  b.position <- b.position + len *)
+
+let output_buffer oc b =
+  output oc b.buffer 0 b.position  
+
+external unsafe_string: bytes -> int -> int -> Digest.t = "caml_md5_string"
+
+let digest b = 
+  unsafe_string 
+  b.buffer 0 b.position    
+
+let rec not_equal_aux (b : bytes) (s : string) i len = 
+    if i >= len then false
+    else 
+      (Bytes.unsafe_get b i 
+      <>
+      String.unsafe_get s i )
+      || not_equal_aux b s (i + 1) len 
+
+(** avoid a large copy *)
+let not_equal  (b : t) (s : string) = 
+  let b_len = b.position in 
+  let s_len = String.length s in 
+  b_len <> s_len 
+  || not_equal_aux b.buffer s 0 s_len
+
+
+(**
+  It could be one byte, two bytes, three bytes and four bytes 
+  TODO: inline for better performance
+*)
+let add_int_1 (b : t ) (x : int ) = 
+  let c = (Char.unsafe_chr (x land 0xff)) in 
+  let pos = b.position in
+  if pos >= b.length then resize b 1;
+  Bytes.unsafe_set b.buffer pos c;
+  b.position <- pos + 1  
+  
+let add_int_2 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let pos = b.position in
+  if pos + 1 >= b.length then resize b 2;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  b.position <- pos + 2
+
+let add_int_3 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let pos = b.position in
+  if pos + 2 >= b.length then resize b 3;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  Bytes.unsafe_set b_buffer (pos + 2) c3;
+  b.position <- pos + 3
+
+
+let add_int_4 (b : t ) (x : int ) = 
+  let c1 = (Char.unsafe_chr (x land 0xff)) in 
+  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+  let c4 = (Char.unsafe_chr (x lsr 24 land 0xff)) in
+  let pos = b.position in
+  if pos + 3 >= b.length then resize b 4;
+  let b_buffer = b.buffer in 
+  Bytes.unsafe_set b_buffer pos c1;
+  Bytes.unsafe_set b_buffer (pos + 1) c2;
+  Bytes.unsafe_set b_buffer (pos + 2) c3;
+  Bytes.unsafe_set b_buffer (pos + 3) c4;
+  b.position <- pos + 4
+
+
+
+
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
@@ -3939,43 +2609,54 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-let compilation_kind = ref Bsb_helper_depfile_gen.Js
 
-let hash : Bsb_helper_arg.string_action = 
-  Set {contents = ""}
 
-let dev_group = ref false
-let namespace = ref None
+
+
+let () =    
+  let namespace = ref None in
+  let dev_group = ref false in   
+  let argv = Sys.argv in 
+  let l = Array.length argv in
+  let current = ref 1 in 
+  let rev_list = ref [] in 
+  while !current < l do
+    let s = argv.(!current) in
+    incr current;  
+    if s <> "" && s.[0] = '-' then begin
+      match s with 
+      | "-hash" ->
+        incr current
+      | "-bs-ns" ->
+        let ns = argv.(!current) in
+        namespace := Some ns;
+        incr current     
+      | "-g"  ->
+        dev_group := true
+      | s -> 
+        prerr_endline ("unknown options: " ^ s);
+        prerr_endline ("available options: -hash [hash]; -bs-ns [ns]; -g");
+        exit 2
+    end else 
+      rev_list := s :: !rev_list    
+  done;
+  (
+    match !rev_list with
+    | [x]
+      ->  Bsb_helper_depfile_gen.emit_d
+            Js
+            !dev_group
+            !namespace x ""
+    | [y; x] (* reverse order *)
+      -> 
+      Bsb_helper_depfile_gen.emit_d
+        Js
+        !dev_group
+        !namespace x y
+    | _ -> 
+      ()
+  ) 
+;;
  
-let () =
-  Bsb_helper_arg.parse_exn 
-  ~progname:Sys.argv.(0)
-  ~argv:Sys.argv
-  ~start:1
-  [
-    "-g",  Bool dev_group ,
-    "Set the dev group (default to be 0)"
-    ;
-    "-bs-ns",  String (Call (fun s -> namespace := Some s)),
-    "Set namespace";
-    "-hash",  String hash,
-    "Set hash(internal)";
-  ] (fun ~rev_args -> 
-      match rev_args with
-      | [x]
-        ->  Bsb_helper_depfile_gen.emit_d
-              !compilation_kind
-              !dev_group
-              !namespace x ""
-      | [y; x] (* reverse order *)
-        -> 
-        Bsb_helper_depfile_gen.emit_d
-          !compilation_kind
-          !dev_group
-          !namespace x y
-      | _ -> 
-        ()
-    ) ;
-  (* arrange with mlast comes first *)
   
 end

@@ -31,7 +31,7 @@ let set_package_name name =
   if Js_packages_info.is_empty !packages_info then 
       packages_info := Js_packages_info.from_name name
   else
-    Ext_arg.bad_argf "duplicated flag for -bs-package-name"
+    Bsc_args.bad_arg "duplicated flag for -bs-package-name"
 
 let set_package_map module_name = 
     (* set_package_name name ; 

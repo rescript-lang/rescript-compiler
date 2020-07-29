@@ -26,14 +26,12 @@ function fff(x) {
 }
 
 function h(x) {
-  if (x !== 66) {
-    if (x >= 67) {
-      return 2;
-    } else {
-      return 0;
-    }
-  } else {
+  if (x === "B") {
     return 1;
+  } else if (x === "C") {
+    return 2;
+  } else {
+    return 0;
   }
 }
 
@@ -41,7 +39,7 @@ function hh(param) {
   return 3;
 }
 
-var g = h(/* A */65);
+var g = h("A");
 
 exports.f = f;
 exports.ff = ff;

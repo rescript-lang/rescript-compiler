@@ -11,8 +11,8 @@
     ?formatMatcher:
       ([`basic | `best_fit [@bs.as "best fit"]] [@bs.string]) ->
 
-    ?weekday:([`narrow | `short | `long] [@bs.string]) ->
-    ?era:([`narrow | `short | `long] [@bs.string]) ->
+    ?weekday:([`narrow | `short | `long] ) ->
+    ?era:([`narrow | `short | `long] ) ->
     ?year:([`numeric | `two_digit [@bs.as "2-digit"]] [@bs.string]) ->
     ?month:
       ([`narrow |
@@ -25,7 +25,7 @@
     ?hour:([`numeric | `two_digit [@bs.as "2-digit"]] [@bs.string]) ->
     ?minute:([`numeric | `two_digit [@bs.as "2-digit"]] [@bs.string]) ->
     ?second:([`numeric | `two_digit [@bs.as "2-digit"]] [@bs.string]) ->
-    ?timeZoneName:([`short | `long] [@bs.string]) ->
+    ?timeZoneName:([`short | `long] ) ->
     unit ->
     t =
     "" [@@bs.obj]

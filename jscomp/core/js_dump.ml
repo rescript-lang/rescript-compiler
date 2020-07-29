@@ -167,7 +167,7 @@ let exp_need_paren  (e : J.expression) =
 
   | Raw_js_code {code_info = Exp _}
   | Fun _ 
-  | Caml_block (_,_,_, (Blk_record _ | Blk_module _ | Blk_poly_var _ | Blk_extension | Blk_record_ext _ | Blk_record_inlined _ | Blk_constructor _ ))
+  | Caml_block (_,_,_, (Blk_record _ | Blk_module _ | Blk_poly_var  | Blk_extension | Blk_record_ext _ | Blk_record_inlined _ | Blk_constructor _ ))
   | Object _ -> true
   | Raw_js_code {code_info = Stmt _ }
   | Length _
@@ -823,23 +823,17 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       expression_desc cxt ~level f (Object 
         ((Ext_list.combine_array fields el  (fun i -> Js_op.Lit i))))      
         
-  | Caml_block(el,_,_, Blk_poly_var name) ->
+  | Caml_block(el,_,_, Blk_poly_var ) ->
     begin match el with 
-      | [hash;value] -> 
+      | [{expression_desc = Str (_,name)};value] -> 
         expression_desc 
           cxt 
           ~level 
           f 
-          (Object 
-             ((Js_op.Lit Literals.polyvar_hash, 
-               if !Js_config.debug then hash
-               else {hash with comment = Some name}
-              ) ::
-              (Js_op.Lit Literals.polyvar_value, value) ::
-              if !Js_config.debug then 
-                [name_symbol, E.str name]
-              else []
-             )          
+          (Object [
+             Js_op.Lit Literals.polyvar_hash, E.str name;
+              Lit Literals.polyvar_value, value
+          ]                       
           )
       | _ -> assert false
     end       
@@ -940,19 +934,13 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       let cxt = P.group f 1 (fun _ -> expression ~level:3 cxt f e1) in
 
       P.space f;
-      P.string f L.colon;
-      P.space f ;
+      P.string f L.colon_space;
       (* idem *)
       P.group f 1 (fun _ -> expression ~level:3 cxt f e2)
     in
     if level > 2 then P.paren_vgroup f 1 action else action ()
 
-  | Object lst ->    
-    let action () =
-      if lst = [] then begin P.string f "{}" ; cxt end else      
-        P.brace_vgroup f 1 (fun _ ->
-            property_name_and_value_list cxt f lst) in
-    if level > 1 then
+  | Object lst ->        
       (* #1946 object literal is easy to be
          interpreted as block statement
          here we avoid parens in such case
@@ -960,16 +948,31 @@ and expression_desc cxt ~(level:int) f x : cxt  =
            var f = { x : 2 , y : 2}
          ]}
       *)
-      P.paren_group f 1 action
-    else action ()
+    P.cond_paren_group f (level > 1 ) 1 (fun _ -> 
+        if lst = [] then begin P.string f "{}" ; cxt end else      
+          P.brace_vgroup f 1 (fun _ ->
+              property_name_and_value_list cxt f lst) 
+      )
+
 
 and property_name_and_value_list cxt f (l : J.property_map) =     
   iter_lst cxt f l (fun cxt f (pn,e) -> 
-    Js_dump_property.property_key f pn ;
-    P.string f L.colon;
-    P.space f;
-    expression ~level:1 cxt f e
-  ) comma_nl      
+      match e.expression_desc with  
+      | Var (Id v | Qualified (v,_,None)) -> 
+        let key = Js_dump_property.property_key pn in 
+        let str, cxt = Ext_pp_scope.str_of_ident cxt v in 
+        let content = 
+          (* if key = str then key 
+          else   *)
+          key ^ L.colon_space ^ str  in 
+        P.string f content ; 
+        cxt 
+      | _ -> 
+        let key = Js_dump_property.property_key pn in 
+        P.string f key;
+        P.string f L.colon_space;
+        expression ~level:1 cxt f e
+    ) comma_nl      
 
 and array_element_list cxt f (el : E.t list) : cxt =
   iter_lst cxt f el (expression ~level:1) comma_nl

@@ -22308,7 +22308,7 @@ function directive_parse(token_with_comments, lexbuf) {
                         exit$3 = 1;
                       } else {
                         match = [
-                          /* Approximate */-617782220,
+                          "Approximate",
                           semantic_version_parse(str, 1, last_index)
                         ];
                       }
@@ -22327,10 +22327,10 @@ function directive_parse(token_with_comments, lexbuf) {
                                   };
                             }
                             match = str[1] === "=" ? [
-                                /* Le */17049,
+                                "Le",
                                 semantic_version_parse(str, 2, last_index)
                               ] : [
-                                /* Lt */17064,
+                                "Lt",
                                 semantic_version_parse(str, 1, last_index)
                               ];
                             break;
@@ -22350,10 +22350,10 @@ function directive_parse(token_with_comments, lexbuf) {
                                   };
                             }
                             match = str[1] === "=" ? [
-                                /* Ge */15934,
+                                "Ge",
                                 semantic_version_parse(str, 2, last_index)
                               ] : [
-                                /* Gt */15949,
+                                "Gt",
                                 semantic_version_parse(str, 1, last_index)
                               ];
                             break;
@@ -22364,13 +22364,13 @@ function directive_parse(token_with_comments, lexbuf) {
                     }
                   } else {
                     match = [
-                      /* Compatible */785637236,
+                      "Compatible",
                       semantic_version_parse(str, 1, last_index)
                     ];
                   }
                   if (exit$3 === 1) {
                     match = [
-                      /* Exact */172069535,
+                      "Exact",
                       semantic_version_parse(str, 0, last_index)
                     ];
                   }
@@ -22379,29 +22379,28 @@ function directive_parse(token_with_comments, lexbuf) {
                   var pred = match[0];
                   var match$1 = semantic_version_parse(lhs$1, 0, lhs$1.length - 1 | 0);
                   var lversion = match$1[0];
-                  var l_major = lversion[0];
-                  if (pred >= 17049) {
-                    if (pred >= 172069535) {
-                      if (pred >= 785637236) {
-                        return major === l_major;
-                      } else {
-                        return Caml_obj.caml_equal(lversion, version);
-                      }
-                    } else if (pred >= 17064) {
-                      return Caml_obj.caml_lessthan(lversion, version);
-                    } else {
-                      return Caml_obj.caml_lessequal(lversion, version);
-                    }
-                  } else if (pred !== 15934) {
-                    if (pred >= 15949) {
-                      return Caml_obj.caml_greaterthan(lversion, version);
-                    } else if (major === l_major) {
-                      return version[1] === lversion[1];
-                    } else {
-                      return false;
-                    }
-                  } else {
+                  if (pred === "Ge") {
                     return Caml_obj.caml_greaterequal(lversion, version);
+                  }
+                  if (pred === "Gt") {
+                    return Caml_obj.caml_greaterthan(lversion, version);
+                  }
+                  if (pred === "Le") {
+                    return Caml_obj.caml_lessequal(lversion, version);
+                  }
+                  if (pred === "Lt") {
+                    return Caml_obj.caml_lessthan(lversion, version);
+                  }
+                  if (pred === "Exact") {
+                    return Caml_obj.caml_equal(lversion, version);
+                  }
+                  var l_major = lversion[0];
+                  if (pred === "Compatible") {
+                    return major === l_major;
+                  } else if (major === l_major) {
+                    return version[1] === lversion[1];
+                  } else {
+                    return false;
                   }
                 }
                 exit$2 = 3;

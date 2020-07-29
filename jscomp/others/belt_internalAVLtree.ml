@@ -14,11 +14,11 @@
 
 [@@@bs.config {flags = [|"-bs-noassertfalse" |] }]
 type ('k, 'v) node  = {
-  mutable key : 'k;
-  mutable value : 'v;
-  mutable height : int;
-  mutable left : ('k,'v) t;
-  mutable right : ('k,'v) t
+  mutable key : 'k; [@bs.as "k"]
+  mutable value : 'v; [@bs.as "v"]
+  mutable height : int; [@bs.as "h"]
+  mutable left : ('k,'v) t; [@bs.as "l"]
+  mutable right : ('k,'v) t [@bs.as "r"]
 }
 and ('key, 'a) t = ('key, 'a) node option
 
@@ -38,7 +38,7 @@ let rec copy n =
   match  n with
   | None -> n
   | Some n ->    
-    Some { n with left = (copy n.left);  right = (copy n.right)}
+    Some { n with left = copy n.left;  right = copy n.right}
 
 let create l x d r =
   let hl, hr  = treeHeight l,  treeHeight r in
@@ -65,27 +65,21 @@ let updateValue n newValue =
 let bal l x d r =
   let hl = match  l with None -> 0 | Some n -> n.height in
   let hr = match  r with None -> 0 | Some n -> n.height in
-  if hl > hr + 2 then begin
-    match l with None -> assert false 
-    | Some {left = ll; key = lv; value = ld; right = lr} ->
-    if treeHeight ll >= treeHeight lr then
-      create ll lv ld (create lr x d r)
-    else begin
-      match lr with None -> assert false 
-      | Some lr -> 
-      create (create ll lv ld lr.left) lr.key lr.value (create lr.right x d r)
-    end
-  end else if hr > hl + 2 then begin
-    match r with None -> assert false
-    | Some {left = rl; key = rv; value = rd; right = rr} -> 
-    if treeHeight rr >= treeHeight rl then
-      create (create l x d rl) rv rd rr
-    else begin
-      match rl with None -> assert false 
-      | Some rl ->
-      create (create l x d rl.left) rl.key rl.value (create rl.right rv rd rr)
-    end
-  end else
+  if hl > hr + 2 then 
+    match l with None -> assert false  | Some ({left = ll;   right = lr} as l) ->
+      if treeHeight ll >= treeHeight lr then
+        create ll l.key l.value (create lr x d r)
+      else 
+        match lr with None -> assert false | Some lr -> 
+          create (create ll l.key l.value lr.left) lr.key lr.value (create lr.right x d r)
+  else if hr > hl + 2 then
+    match r with None -> assert false | Some ({left = rl; right = rr} as r) -> 
+      if treeHeight rr >= treeHeight rl then
+        create (create l x d rl) r.key r.value rr
+      else
+        match rl with None -> assert false | Some rl ->
+          create (create l x d rl.left) rl.key rl.value (create rl.right r.key r.value rr)
+  else
     Some { left = l; key = x ; value = d ; right = r ; height = (if hl >= hr then hl + 1 else hr + 1)}
 
 
@@ -149,12 +143,11 @@ let maxUndefined n =
   | None -> Js.undefined
   | Some n -> Js.Undefined.return (maxKV0Aux n)
 
-
+(* TODO: use kv ref *)
 let rec removeMinAuxWithRef n kr vr =
-  let ln, rn, kn, vn = n.left, n.right, n.key , n.value in
-  match  ln with
-  | None ->  kr .contents<- kn; vr .contents<- vn; rn
-  | Some ln -> bal (removeMinAuxWithRef ln kr vr) kn vn rn
+  match n.left with
+  | None ->  kr .contents<- n.key; vr.contents<- n.value; n.right
+  | Some ln -> bal (removeMinAuxWithRef ln kr vr) n.key n.value n.right
 
 
 

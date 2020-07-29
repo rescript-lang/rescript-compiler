@@ -1,4 +1,4 @@
-
+#if 0 then
 
 
 external test_string_type : flag:([`on_closed | `on_open | `in_ [@bs.as "in"]]
@@ -33,10 +33,15 @@ val on2 :
   ([ `line of (string -> unit [@bs]) 
    | `close of (unit -> unit [@bs])] 
      ) ->
-  unit
+unit
 
 val read : string -> string
 val readN : string -> string
 
 val p_is_int_test 
   : [`a | `b of int] -> int
+
+val hey :  
+  [ `a | `b | `c | `d | `e | `f | `h ] -> unit
+
+#end

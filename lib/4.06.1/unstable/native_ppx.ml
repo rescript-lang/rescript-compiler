@@ -2809,6 +2809,7 @@ val color : Misc.Color.setting option ref
 
 val unboxed_types : bool ref
 
+
 val arg_spec : (string * Arg.spec * string) list ref
 
 (* [add_arguments __LOC__ args] will add the arguments from [args] at
@@ -3215,6 +3216,7 @@ let color = ref None ;; (* -color *)
 
 let unboxed_types = ref false
 
+
 let arg_spec = ref []
 let arg_names = ref Misc.StringMap.empty
 
@@ -3249,6 +3251,7 @@ let parse_arguments f msg =
   with
   | Arg.Bad msg -> Printf.eprintf "%s" msg; exit 2
   | Arg.Help msg -> Printf.printf "%s" msg; exit 0
+
 
 
 type mli_status = Mli_na | Mli_exists | Mli_non_exists
@@ -4589,6 +4592,7 @@ let absolute_path s = (* This function could go into Filename *)
   aux s
 
 let show_filename file =
+  let file = if file = "_none_"  then !input_name else file in 
   if !absname then absolute_path file else file
 
 let print_filename ppf file =
@@ -7519,6 +7523,397 @@ module Cstr = struct
 end
 
 end
+module Ext_array : sig 
+#1 "ext_array.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Some utilities for {!Array} operations *)
+val reverse_range : 'a array -> int -> int -> unit
+val reverse_in_place : 'a array -> unit
+val reverse : 'a array -> 'a array 
+val reverse_of_list : 'a list -> 'a array
+
+val filter : ('a -> bool) -> 'a array -> 'a array
+
+val filter_map : 
+'a array -> 
+('a -> 'b option) -> 
+'b array
+
+val range : int -> int -> int array
+
+val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
+
+val to_list_f : 
+  'a array -> 
+  ('a -> 'b) -> 
+  'b list 
+
+val to_list_map : 
+'a array -> ('a -> 'b option) -> 'b list 
+
+val to_list_map_acc : 
+  'a array -> 
+  'b list -> 
+  ('a -> 'b option) -> 
+  'b list 
+
+val of_list_map : 
+  'a list -> 
+  ('a -> 'b) -> 
+  'b array 
+
+val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
+
+
+
+type 'a split = No_split | Split of  'a array *  'a array 
+
+
+val find_and_split : 
+  'a array ->
+  ('a -> 'b -> bool) ->
+  'b -> 'a split
+
+val exists : ('a -> bool) -> 'a array -> bool 
+
+val is_empty : 'a array -> bool 
+
+val for_all2_no_exn : 
+  'a array ->
+  'b array -> 
+  ('a -> 'b -> bool) -> 
+  bool
+
+val for_alli : 
+  'a array -> 
+  (int -> 'a -> bool) -> 
+  bool 
+    
+val map :   
+  'a array -> 
+  ('a -> 'b) -> 
+  'b array
+
+val iter :
+  'a array -> 
+  ('a -> unit) -> 
+  unit
+
+val fold_left :   
+  'b array -> 
+  'a -> 
+  ('a -> 'b -> 'a) ->   
+  'a
+
+val get_or :   
+  'a array -> 
+  int -> 
+  (unit -> 'a) -> 
+  'a
+end = struct
+#1 "ext_array.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+let reverse_range a i len =
+  if len = 0 then ()
+  else
+    for k = 0 to (len-1)/2 do
+      let t = Array.unsafe_get a (i+k) in
+      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
+      Array.unsafe_set a (i+len-1-k) t;
+    done
+
+
+let reverse_in_place a =
+  reverse_range a 0 (Array.length a)
+
+let reverse a =
+  let b_len = Array.length a in
+  if b_len = 0 then [||] else  
+    let b = Array.copy a in  
+    for i = 0 to  b_len - 1 do
+      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
+    done;
+    b  
+
+let reverse_of_list =  function
+  | [] -> [||]
+  | hd::tl as l ->
+    let len = List.length l in
+    let a = Array.make len hd in
+    let rec fill i = function
+      | [] -> a
+      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
+    fill 0 tl
+
+let filter f a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      if f  v then 
+        aux (v::acc) (i+1)
+      else aux acc (i + 1) 
+  in aux [] 0
+
+
+let filter_map a (f : _ -> _ option)  =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      match f  v with 
+      | Some v -> 
+        aux (v::acc) (i+1)
+      | None -> 
+        aux acc (i + 1) 
+  in aux [] 0
+
+let range from to_ =
+  if from > to_ then invalid_arg "Ext_array.range"  
+  else Array.init (to_ - from + 1) (fun i -> i + from)
+
+let map2i f a b = 
+  let len = Array.length a in 
+  if len <> Array.length b then 
+    invalid_arg "Ext_array.map2i"  
+  else
+    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
+
+let rec tolist_f_aux a f  i res =
+  if i < 0 then res else
+    let v = Array.unsafe_get a i in
+    tolist_f_aux a f  (i - 1)
+      (f v :: res)
+       
+let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
+
+let rec tolist_aux a f  i res =
+  if i < 0 then res else
+    let v = Array.unsafe_get a i in
+    tolist_aux a f  (i - 1)
+      (match f v with
+       | Some v -> v :: res
+       | None -> res) 
+
+let to_list_map a f  = 
+  tolist_aux a f (Array.length a - 1) []
+
+let to_list_map_acc a acc f = 
+  tolist_aux a f (Array.length a - 1) acc
+
+
+let of_list_map a f = 
+  match a with 
+  | [] -> [||]
+  | [a0] -> 
+    let b0 = f a0 in
+    [|b0|]
+  | [a0;a1] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    [|b0;b1|]
+  | [a0;a1;a2] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    [|b0;b1;b2|]
+  | [a0;a1;a2;a3] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    [|b0;b1;b2;b3|]
+  | [a0;a1;a2;a3;a4] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    [|b0;b1;b2;b3;b4|]
+
+  | a0::a1::a2::a3::a4::tl -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    let len = List.length tl + 5 in 
+    let arr = Array.make len b0  in
+    Array.unsafe_set arr 1 b1 ;  
+    Array.unsafe_set arr 2 b2 ;
+    Array.unsafe_set arr 3 b3 ; 
+    Array.unsafe_set arr 4 b4 ; 
+    let rec fill i = function
+      | [] -> arr 
+      | hd :: tl -> 
+        Array.unsafe_set arr i (f hd); 
+        fill (i + 1) tl in 
+    fill 5 tl
+
+(**
+   {[
+     # rfind_with_index [|1;2;3|] (=) 2;;
+     - : int = 1
+               # rfind_with_index [|1;2;3|] (=) 1;;
+     - : int = 0
+               # rfind_with_index [|1;2;3|] (=) 3;;
+     - : int = 2
+               # rfind_with_index [|1;2;3|] (=) 4;;
+     - : int = -1
+   ]}
+*)
+let rfind_with_index arr cmp v = 
+  let len = Array.length arr in 
+  let rec aux i = 
+    if i < 0 then i
+    else if  cmp (Array.unsafe_get arr i) v then i
+    else aux (i - 1) in 
+  aux (len - 1)
+
+type 'a split = No_split | Split of  'a array *  'a array 
+
+
+let find_with_index arr cmp v = 
+  let len  = Array.length arr in 
+  let rec aux i len = 
+    if i >= len then -1 
+    else if cmp (Array.unsafe_get arr i ) v then i 
+    else aux (i + 1) len in 
+  aux 0 len
+
+let find_and_split arr cmp v : _ split = 
+  let i = find_with_index arr cmp v in 
+  if i < 0 then 
+    No_split
+  else
+    Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))
+
+(** TODO: available since 4.03, use {!Array.exists} *)
+
+let exists p a =
+  let n = Array.length a in
+  let rec loop i =
+    if i = n then false
+    else if p (Array.unsafe_get a i) then true
+    else loop (succ i) in
+  loop 0
+
+
+let is_empty arr =
+  Array.length arr = 0
+
+
+let rec unsafe_loop index len p xs ys  = 
+  if index >= len then true
+  else 
+    p 
+      (Array.unsafe_get xs index)
+      (Array.unsafe_get ys index) &&
+    unsafe_loop (succ index) len p xs ys 
+
+let for_alli a p =
+  let n = Array.length a in
+  let rec loop i =
+    if i = n then true
+    else if p i (Array.unsafe_get a i) then loop (succ i)
+    else false in
+  loop 0
+
+let for_all2_no_exn xs ys p = 
+  let len_xs = Array.length xs in 
+  let len_ys = Array.length ys in 
+  len_xs = len_ys &&    
+  unsafe_loop 0 len_xs p xs ys
+
+
+let map a f =
+  let open Array in 
+  let l = length a in
+  if l = 0 then [||] else begin
+    let r = make l (f(unsafe_get a 0)) in
+    for i = 1 to l - 1 do
+      unsafe_set r i (f(unsafe_get a i))
+    done;
+    r
+  end
+
+let iter a f =
+  let open Array in 
+  for i = 0 to length a - 1 do f(unsafe_get a i) done
+
+
+  let fold_left a x f =
+    let open Array in 
+    let r = ref x in    
+    for i = 0 to length a - 1 do
+      r := f !r (unsafe_get a i)
+    done;
+    !r
+  
+let get_or arr i cb =     
+  if i >=0 && i < Array.length arr then 
+    Array.unsafe_get arr i 
+  else cb ()  
+end
 module Ext_list : sig 
 #1 "ext_list.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7865,6 +8260,11 @@ val sort_via_array :
   ('a -> 'a -> int) -> 
   'a list  
 
+val sort_via_arrayf:
+  'a list -> 
+  ('a -> 'a -> int) ->
+  ('a -> 'b ) -> 
+   'b list  
 
 
 
@@ -8606,7 +9006,10 @@ let sort_via_array lst cmp =
   Array.sort cmp arr;
   Array.to_list arr
 
-
+let sort_via_arrayf lst cmp f  = 
+  let arr = Array.of_list lst  in
+  Array.sort cmp arr;
+  Ext_array.to_list_f arr f 
 
 
 let rec assoc_by_string lst (k : string) def  = 
@@ -8737,6 +9140,7 @@ type poly_var_label = Asttypes.label Asttypes.loc
 
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
+type hash_label = string 
 open Parsetree
 
 
@@ -8752,6 +9156,13 @@ val const_exp_int:
   ?attrs:attrs -> 
   int -> 
   expression 
+
+val const_hash_label : 
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  string -> 
+  expression 
+
 
 val const_exp_int_list_as_array:  
   int list -> 
@@ -8892,8 +9303,7 @@ type object_field =
   Parsetree.object_field 
 val object_field : Asttypes.label Asttypes.loc ->  attributes -> core_type -> object_field
 
-val hash_label : poly_var_label -> int 
-val label_of_name : poly_var_label -> string 
+
 
 type args  = 
   (Asttypes.arg_label * Parsetree.expression) list 
@@ -9021,7 +9431,7 @@ let fun_
     pexp_attributes = attrs;
     pexp_desc = Pexp_fun(label, None, pat, exp)
   } *)
-
+type hash_label = string 
 
 
 let const_exp_string 
@@ -9035,6 +9445,15 @@ let const_exp_string
     pexp_desc = Pexp_constant(Pconst_string(s,delimiter))
   }
 
+let const_hash_label 
+    ?(loc = default_loc)
+    ?(attrs = [])
+    (s : hash_label) : expression = 
+  {
+    pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_constant(Pconst_string(s,None))
+  }
 
 let const_exp_int 
   ?(loc = default_loc)
@@ -9166,8 +9585,6 @@ let object_field   l attrs ty =
 
 
 
-let hash_label (x : poly_var_label) : int = Btype.hash_variant x.txt
-let label_of_name (x : poly_var_label) : string = x.txt
 
 type args  = 
   (Asttypes.arg_label * Parsetree.expression) list 
@@ -9241,397 +9658,6 @@ type t = {
   code_info : code_info
 }
 
-end
-module Ext_array : sig 
-#1 "ext_array.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** Some utilities for {!Array} operations *)
-val reverse_range : 'a array -> int -> int -> unit
-val reverse_in_place : 'a array -> unit
-val reverse : 'a array -> 'a array 
-val reverse_of_list : 'a list -> 'a array
-
-val filter : ('a -> bool) -> 'a array -> 'a array
-
-val filter_map : 
-'a array -> 
-('a -> 'b option) -> 
-'b array
-
-val range : int -> int -> int array
-
-val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
-
-val to_list_f : 
-  'a array -> 
-  ('a -> 'b) -> 
-  'b list 
-
-val to_list_map : 
-'a array -> ('a -> 'b option) -> 'b list 
-
-val to_list_map_acc : 
-  'a array -> 
-  'b list -> 
-  ('a -> 'b option) -> 
-  'b list 
-
-val of_list_map : 
-  'a list -> 
-  ('a -> 'b) -> 
-  'b array 
-
-val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
-
-
-
-type 'a split = No_split | Split of  'a array *  'a array 
-
-
-val find_and_split : 
-  'a array ->
-  ('a -> 'b -> bool) ->
-  'b -> 'a split
-
-val exists : ('a -> bool) -> 'a array -> bool 
-
-val is_empty : 'a array -> bool 
-
-val for_all2_no_exn : 
-  'a array ->
-  'b array -> 
-  ('a -> 'b -> bool) -> 
-  bool
-
-val for_alli : 
-  'a array -> 
-  (int -> 'a -> bool) -> 
-  bool 
-    
-val map :   
-  'a array -> 
-  ('a -> 'b) -> 
-  'b array
-
-val iter :
-  'a array -> 
-  ('a -> unit) -> 
-  unit
-
-val fold_left :   
-  'b array -> 
-  'a -> 
-  ('a -> 'b -> 'a) ->   
-  'a
-
-val get_or :   
-  'a array -> 
-  int -> 
-  (unit -> 'a) -> 
-  'a
-end = struct
-#1 "ext_array.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-let reverse_range a i len =
-  if len = 0 then ()
-  else
-    for k = 0 to (len-1)/2 do
-      let t = Array.unsafe_get a (i+k) in
-      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
-      Array.unsafe_set a (i+len-1-k) t;
-    done
-
-
-let reverse_in_place a =
-  reverse_range a 0 (Array.length a)
-
-let reverse a =
-  let b_len = Array.length a in
-  if b_len = 0 then [||] else  
-    let b = Array.copy a in  
-    for i = 0 to  b_len - 1 do
-      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
-    done;
-    b  
-
-let reverse_of_list =  function
-  | [] -> [||]
-  | hd::tl as l ->
-    let len = List.length l in
-    let a = Array.make len hd in
-    let rec fill i = function
-      | [] -> a
-      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
-    fill 0 tl
-
-let filter f a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      if f  v then 
-        aux (v::acc) (i+1)
-      else aux acc (i + 1) 
-  in aux [] 0
-
-
-let filter_map a (f : _ -> _ option)  =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      match f  v with 
-      | Some v -> 
-        aux (v::acc) (i+1)
-      | None -> 
-        aux acc (i + 1) 
-  in aux [] 0
-
-let range from to_ =
-  if from > to_ then invalid_arg "Ext_array.range"  
-  else Array.init (to_ - from + 1) (fun i -> i + from)
-
-let map2i f a b = 
-  let len = Array.length a in 
-  if len <> Array.length b then 
-    invalid_arg "Ext_array.map2i"  
-  else
-    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
-
-let rec tolist_f_aux a f  i res =
-  if i < 0 then res else
-    let v = Array.unsafe_get a i in
-    tolist_f_aux a f  (i - 1)
-      (f v :: res)
-       
-let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
-
-let rec tolist_aux a f  i res =
-  if i < 0 then res else
-    let v = Array.unsafe_get a i in
-    tolist_aux a f  (i - 1)
-      (match f v with
-       | Some v -> v :: res
-       | None -> res) 
-
-let to_list_map a f  = 
-  tolist_aux a f (Array.length a - 1) []
-
-let to_list_map_acc a acc f = 
-  tolist_aux a f (Array.length a - 1) acc
-
-
-let of_list_map a f = 
-  match a with 
-  | [] -> [||]
-  | [a0] -> 
-    let b0 = f a0 in
-    [|b0|]
-  | [a0;a1] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    [|b0;b1|]
-  | [a0;a1;a2] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    [|b0;b1;b2|]
-  | [a0;a1;a2;a3] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    [|b0;b1;b2;b3|]
-  | [a0;a1;a2;a3;a4] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    [|b0;b1;b2;b3;b4|]
-
-  | a0::a1::a2::a3::a4::tl -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    let len = List.length tl + 5 in 
-    let arr = Array.make len b0  in
-    Array.unsafe_set arr 1 b1 ;  
-    Array.unsafe_set arr 2 b2 ;
-    Array.unsafe_set arr 3 b3 ; 
-    Array.unsafe_set arr 4 b4 ; 
-    let rec fill i = function
-      | [] -> arr 
-      | hd :: tl -> 
-        Array.unsafe_set arr i (f hd); 
-        fill (i + 1) tl in 
-    fill 5 tl
-
-(**
-   {[
-     # rfind_with_index [|1;2;3|] (=) 2;;
-     - : int = 1
-               # rfind_with_index [|1;2;3|] (=) 1;;
-     - : int = 0
-               # rfind_with_index [|1;2;3|] (=) 3;;
-     - : int = 2
-               # rfind_with_index [|1;2;3|] (=) 4;;
-     - : int = -1
-   ]}
-*)
-let rfind_with_index arr cmp v = 
-  let len = Array.length arr in 
-  let rec aux i = 
-    if i < 0 then i
-    else if  cmp (Array.unsafe_get arr i) v then i
-    else aux (i - 1) in 
-  aux (len - 1)
-
-type 'a split = No_split | Split of  'a array *  'a array 
-
-
-let find_with_index arr cmp v = 
-  let len  = Array.length arr in 
-  let rec aux i len = 
-    if i >= len then -1 
-    else if cmp (Array.unsafe_get arr i ) v then i 
-    else aux (i + 1) len in 
-  aux 0 len
-
-let find_and_split arr cmp v : _ split = 
-  let i = find_with_index arr cmp v in 
-  if i < 0 then 
-    No_split
-  else
-    Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))
-
-(** TODO: available since 4.03, use {!Array.exists} *)
-
-let exists p a =
-  let n = Array.length a in
-  let rec loop i =
-    if i = n then false
-    else if p (Array.unsafe_get a i) then true
-    else loop (succ i) in
-  loop 0
-
-
-let is_empty arr =
-  Array.length arr = 0
-
-
-let rec unsafe_loop index len p xs ys  = 
-  if index >= len then true
-  else 
-    p 
-      (Array.unsafe_get xs index)
-      (Array.unsafe_get ys index) &&
-    unsafe_loop (succ index) len p xs ys 
-
-let for_alli a p =
-  let n = Array.length a in
-  let rec loop i =
-    if i = n then true
-    else if p i (Array.unsafe_get a i) then loop (succ i)
-    else false in
-  loop 0
-
-let for_all2_no_exn xs ys p = 
-  let len_xs = Array.length xs in 
-  let len_ys = Array.length ys in 
-  len_xs = len_ys &&    
-  unsafe_loop 0 len_xs p xs ys
-
-
-let map a f =
-  let open Array in 
-  let l = length a in
-  if l = 0 then [||] else begin
-    let r = make l (f(unsafe_get a 0)) in
-    for i = 1 to l - 1 do
-      unsafe_set r i (f(unsafe_get a i))
-    done;
-    r
-  end
-
-let iter a f =
-  let open Array in 
-  for i = 0 to length a - 1 do f(unsafe_get a i) done
-
-
-  let fold_left a x f =
-    let open Array in 
-    let r = ref x in    
-    for i = 0 to length a - 1 do
-      r := f !r (unsafe_get a i)
-    done;
-    !r
-  
-let get_or arr i cb =     
-  if i >=0 && i < Array.length arr then 
-    Array.unsafe_get arr i 
-  else cb ()  
 end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
@@ -14299,10 +14325,6 @@ module Bs_warnings : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t =
-  | Unsafe_poly_variant_type
-
-val prerr_bs_ffi_warning : Location.t -> t -> unit
 
 
 val warn_missing_primitive : Location.t -> string -> unit 
@@ -14340,24 +14362,10 @@ end = struct
 
 
 
-type t =
-  | Unsafe_poly_variant_type
-  (* for users write code like this:
-     {[ external f : [`a of int ] -> string = ""]}
-     Here users forget about `[@bs.string]` or `[@bs.int]`
-  *)    
 
 
 
-let to_string t =
-  match t with
-  | Unsafe_poly_variant_type 
-    -> 
-    "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
 
-
-let prerr_bs_ffi_warning loc x =  
-    Location.prerr_warning loc (Bs_ffi_warning (to_string x))
 
 
 
@@ -15466,7 +15474,7 @@ let ns_sep_char = '-'
 let ns_sep = "-"
 let exception_id = "RE_EXN_ID"
 
-let polyvar_hash = "HASH"
+let polyvar_hash = "NAME"
 let polyvar_value = "VAL"
 
 let cons = "::"
@@ -15587,6 +15595,7 @@ val is_bs_as : attr -> bool *)
 
 
 val bs_get : attr
+val bs_get_index : attr
 val bs_get_arity : attr 
 val bs_set : attr
 val bs_return_undefined : attr
@@ -15954,7 +15963,10 @@ let is_bs (attr : attr) =
 
 
 let bs_get : attr
-  =  {txt = "bs.get"; loc = locg}, Ast_payload.empty
+=  {txt = "bs.get"; loc = locg}, Ast_payload.empty
+
+let bs_get_index : attr =  
+   {txt = "bs.get_index"; loc = locg}, Ast_payload.empty  
 
 let bs_get_arity : attr
   =  {txt = "internal.arity"; loc = locg}, 
@@ -17235,16 +17247,21 @@ type cst = private
 
 type label = private
   | Obj_label of {name : string}
-  (* | Obj_labelCst of {name : string ; cst : cst} *)
   | Obj_empty 
   
   | Obj_optional of {name : string}
   (* it will be ignored , side effect will be recorded *)
 
+
+
 type attr = 
-  | NullString of (int * string) list (* `a does not have any value*)
-  | NonNullString of (int * string) list (* `a of int *)
-  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Poly_var of  {
+      has_payload : bool ; 
+      descr :
+        (Ast_compatible.hash_label * string) 
+          list option
+    }  
+  | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
@@ -17332,10 +17349,17 @@ type label =
   | Obj_optional of {name : string }
   (* it will be ignored , side effect will be recorded *)
 
+
+
 type attr = 
-  | NullString of (int * string) list (* `a does not have any value*)
-  | NonNullString of (int * string) list (* `a of int *)
-  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Poly_var of { 
+    has_payload : bool ; 
+    descr :
+    (Ast_compatible.hash_label * string) list
+    option
+  }  
+   (* `a does not have any value*)
+  | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
     (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
@@ -17433,7 +17457,7 @@ module Ast_polyvar : sig
 val map_row_fields_into_ints:
   Location.t -> 
   Parsetree.row_field list -> 
-  (int * int ) list 
+  (Ast_compatible.hash_label * int ) list 
 
 val map_constructor_declarations_into_ints:
   Parsetree.constructor_declaration list ->
@@ -17490,16 +17514,14 @@ let map_row_fields_into_ints ptyp_loc
     Ext_list.fold_left row_fields (0, []) 
        (fun (i,acc) rtag -> 
           match rtag with 
-          | Rtag (label, attrs, true,  [])
+          | Rtag ({txt}, attrs, true,  [])
             -> 
-            begin match Ast_attributes.iter_process_bs_int_as attrs with 
-              | Some i -> 
-                i + 1, 
-                ((Ast_compatible.hash_label label , i):: acc ) 
-              | None -> 
-                i + 1 , 
-                ((Ast_compatible.hash_label label , i):: acc )
-            end
+            let i = 
+              match Ast_attributes.iter_process_bs_int_as attrs with 
+              | Some i ->  i | None -> i 
+            in 
+            i + 1, 
+            ((txt , i):: acc )
           | _ -> 
             Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
        )  in 
@@ -17544,35 +17566,42 @@ let map_constructor_declarations_into_ints
 *)  
 let map_row_fields_into_strings ptyp_loc 
     (row_fields : Parsetree.row_field list) : External_arg_spec.attr = 
+  let has_bs_as = ref false in 
   let case, result = 
     Ext_list.fold_right row_fields (`Nothing, []) (fun tag (nullary, acc) -> 
         match nullary, tag with 
         | (`Nothing | `Null), 
-          Rtag (label, attrs, true,  [])
+          Rtag ({txt}, attrs, true,  [])
           -> 
-          begin match Ast_attributes.iter_process_bs_string_as attrs with 
+          let name = 
+            match Ast_attributes.iter_process_bs_string_as attrs with 
             | Some name -> 
-              `Null, ((Ast_compatible.hash_label label, name) :: acc )
-
-            | None -> 
-              `Null, ((Ast_compatible.hash_label label, Ast_compatible.label_of_name label) :: acc )
-          end
-        | (`Nothing | `NonNull), Rtag(label, attrs, false, ([ _ ])) 
+              has_bs_as := true; name
+            | None -> txt 
+          in `Null, (txt, name) :: acc 
+        | (`Nothing | `NonNull), Rtag({txt}, attrs, false, ([ _ ])) 
           -> 
-          begin match Ast_attributes.iter_process_bs_string_as attrs with 
+          let name = 
+            match Ast_attributes.iter_process_bs_string_as attrs with 
             | Some name -> 
-              `NonNull, ((Ast_compatible.hash_label label, name) :: acc)
-            | None -> 
-              `NonNull, ((Ast_compatible.hash_label label, Ast_compatible.label_of_name label) :: acc)
-          end
+              has_bs_as := true; name
+            | None -> txt
+          in `NonNull, (txt, name) :: acc
         | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
 
       )  in 
   match case with 
   | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
-  | `Null -> External_arg_spec.NullString result 
-  | `NonNull -> NonNullString result
-
+  | `Null 
+  | `NonNull -> 
+    let has_payload = case = `NonNull in 
+    let descr = if !has_bs_as then Some result else None in    
+    if not has_payload && descr = None then begin
+      Location.prerr_warning ptyp_loc (Bs_ffi_warning "bs.string is redundant here, you can safely remove it")   
+    end;
+    External_arg_spec.Poly_var 
+      {has_payload  ; 
+       descr  }
 
 let is_enum row_fields = 
   List.for_all (fun (x : Parsetree.row_field) -> 
@@ -18155,7 +18184,7 @@ module Lam_tag_info
 type t =   
   | Blk_tuple
   | Blk_array
-  | Blk_poly_var of string 
+  | Blk_poly_var
   | Blk_record of string array 
   | Blk_module of string list
   | Blk_extension
@@ -19319,9 +19348,6 @@ let spec_of_ptyp
     begin match ptyp_desc with
       | Ptyp_constr ({txt = Lident "unit"; _}, [])
         -> if nolabel then Extern_unit else  Nothing
-      | Ptyp_variant _ ->
-        Bs_warnings.prerr_bs_ffi_warning ptyp.ptyp_loc Unsafe_poly_variant_type;
-        Nothing
       | _ ->
         Nothing
     end
@@ -19669,7 +19695,7 @@ let process_obj
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
-                 | NullString _ ->
+                 | Poly_var { has_payload = false ; _} ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty }::arg_types,
@@ -19678,7 +19704,7 @@ let process_obj
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
                  | Extern_unit -> assert false
-                 | NonNullString _
+                 | Poly_var { has_payload = true ; _} 
                    ->
                    Location.raise_errorf ~loc
                      "bs.obj label %s does not support such arg type" name
@@ -19702,7 +19728,7 @@ let process_obj
                    {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type :: arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
-                 | NullString _  ->
+                 | Poly_var {has_payload = false ; _} ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type::arg_types,
@@ -19714,7 +19740,7 @@ let process_obj
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
                  | Extern_unit   -> assert false
-                 | NonNullString _
+                 | Poly_var {has_payload = true; _}
                    ->
                    Location.raise_errorf ~loc
                      "bs.obj label %s does not support such arg type" name
@@ -20128,7 +20154,7 @@ let handle_attributes
              | Optional s  ->
                let arg_type = get_opt_arg_type ~nolabel:false ty in
                begin match arg_type with
-                 | NonNullString _ ->
+                 | Poly_var {has_payload = true; _} ->
                    (* ?x:([`x of int ] [@bs.string]) does not make sense *)
                    Location.raise_errorf
                      ~loc
@@ -23386,8 +23412,6 @@ val get_check_div_by_zero : unit -> bool
 val tool_name : string
 
 
-val sort_imports : bool ref 
-
 val syntax_only  : bool ref
 val binary_ast : bool ref
 val simple_binary_ast : bool ref
@@ -23448,24 +23472,7 @@ end = struct
 
 
 
-(* let add_npm_package_path s =
-  match !packages_info  with
-  | Empty ->
-    Ext_arg.bad_argf "please set package name first using -bs-package-name ";
-  | NonBrowser(name,  envs) ->
-    let env, path =
-      match Ext_string.split ~keep_empty:false s ':' with
-      | [ package_name; path]  ->
-        (match Js_packages_info.module_system_of_string package_name with
-         | Some x -> x
-         | None ->
-           Ext_arg.bad_argf "invalid module system %s" package_name), path
-      | [path] ->
-        NodeJS, path
-      | _ ->
-        Ext_arg.bad_argf "invalid npm package path: %s" s
-    in
-    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
+
 (** Browser is not set via command line only for internal use *)
 
 
@@ -23494,9 +23501,6 @@ let check_div_by_zero = ref true
 let get_check_div_by_zero () = !check_div_by_zero
 
 
-
-
-let sort_imports = ref true
 
 let syntax_only = ref false
 let binary_ast = ref false

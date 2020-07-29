@@ -33,16 +33,21 @@ type cst = private
 
 type label = private
   | Obj_label of {name : string}
-  (* | Obj_labelCst of {name : string ; cst : cst} *)
   | Obj_empty 
   
   | Obj_optional of {name : string}
   (* it will be ignored , side effect will be recorded *)
 
+
+
 type attr = 
-  | NullString of (int * string) list (* `a does not have any value*)
-  | NonNullString of (int * string) list (* `a of int *)
-  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Poly_var of  {
+      has_payload : bool ; 
+      descr :
+        (Ast_compatible.hash_label * string) 
+          list option
+    }  
+  | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)

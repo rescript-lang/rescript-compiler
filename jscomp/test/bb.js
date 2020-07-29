@@ -2,25 +2,23 @@
 
 
 function f(x) {
-  if (x !== 98) {
-    if (x >= 99) {
-      return "c";
-    } else {
-      return "a";
-    }
-  } else {
+  if (x === "b") {
     return "b";
+  } else if (x === "c") {
+    return "c";
+  } else {
+    return "a";
   }
 }
 
 function ff(x) {
   switch (x) {
     case "a" :
-        return /* a */97;
+        return "a";
     case "b" :
-        return /* b */98;
+        return "b";
     case "c" :
-        return /* c */99;
+        return "c";
     default:
       throw {
             RE_EXN_ID: "Assert_failure",
@@ -38,13 +36,13 @@ function test(x) {
   var match;
   switch (x) {
     case "a" :
-        match = /* a */97;
+        match = "a";
         break;
     case "b" :
-        match = /* b */98;
+        match = "b";
         break;
     case "c" :
-        match = /* c */99;
+        match = "c";
         break;
     default:
       throw {
@@ -57,24 +55,22 @@ function test(x) {
             Error: new Error()
           };
   }
-  if (match !== 98) {
-    if (match >= 99) {
-      return "c";
-    } else {
-      return "a";
-    }
-  } else {
+  if (match === "b") {
     return "b";
+  } else if (match === "c") {
+    return "c";
+  } else {
+    return "a";
   }
 }
 
 var test_poly = "a";
 
-var c = f(/* a */97);
+var c = f("a");
 
-var d = f(/* b */98);
+var d = f("b");
 
-var e = f(/* c */99);
+var e = f("c");
 
 exports.f = f;
 exports.ff = ff;

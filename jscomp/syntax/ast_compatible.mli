@@ -33,6 +33,7 @@ type poly_var_label = Asttypes.label Asttypes.loc
 
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
+type hash_label = string 
 open Parsetree
 
 
@@ -48,6 +49,13 @@ val const_exp_int:
   ?attrs:attrs -> 
   int -> 
   expression 
+
+val const_hash_label : 
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  string -> 
+  expression 
+
 
 val const_exp_int_list_as_array:  
   int list -> 
@@ -188,8 +196,7 @@ type object_field =
   Parsetree.object_field 
 val object_field : Asttypes.label Asttypes.loc ->  attributes -> core_type -> object_field
 
-val hash_label : poly_var_label -> int 
-val label_of_name : poly_var_label -> string 
+
 
 type args  = 
   (Asttypes.arg_label * Parsetree.expression) list 

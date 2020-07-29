@@ -473,13 +473,13 @@ function length_compare(_l, _n) {
     var n = _n;
     var l = _l;
     if (n < 0) {
-      return /* Gt */15949;
+      return "Gt";
     }
     if (!l) {
       if (n === 0) {
-        return /* Eq */15500;
+        return "Eq";
       } else {
-        return /* Lt */17064;
+        return "Lt";
       }
     }
     _n = n - 1 | 0;
@@ -493,7 +493,7 @@ function length_larger_than_n(n, _xs, _ys) {
     var ys = _ys;
     var xs = _xs;
     if (!ys) {
-      return length_compare(xs, n) === /* Eq */15500;
+      return length_compare(xs, n) === "Eq";
     }
     if (!xs) {
       return false;
