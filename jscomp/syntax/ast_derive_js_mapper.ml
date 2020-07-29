@@ -435,10 +435,10 @@ let init () =
 
                   let objType flag =                     
                     Ast_comb.to_js_type loc @@  
-                    Ast_compatible.object_
+                    Typ.object_
                       (Ext_list.map label_declarations
                          (fun {pld_name ; pld_type } -> 
-                            pld_name, [], pld_type)) 
+                            Parsetree.Otag(pld_name, [], pld_type))) 
                       flag in                   
                   newTypeStr +? 
                   [

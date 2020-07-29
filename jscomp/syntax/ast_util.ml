@@ -66,10 +66,10 @@ let ocaml_obj_as_js_object
 
     let result = Typ.var ~loc val_name.txt in 
     result , 
-    ((val_name , [], result ) ::
+    (Parsetree.Otag (val_name , [], result ) ::
      (if is_mutable then 
-        [{val_name with txt = val_name.txt ^ Literals.setter_suffix},[],
-         Ast_typ_uncurry.to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ()) ]
+        [ Otag ({val_name with txt = val_name.txt ^ Literals.setter_suffix},[],
+         Ast_typ_uncurry.to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ())) ]
       else 
         []) )
   in 
@@ -84,7 +84,8 @@ let ocaml_obj_as_js_object
       for public object type its [@bs.meth] it does not depend on itself
       while for label argument it is [@bs.this] which depends internal object
   *)
-  let internal_label_attr_types, public_label_attr_types  = 
+  let (internal_label_attr_types : Parsetree.object_field list), 
+      (public_label_attr_types : Parsetree.object_field list) = 
     Ext_list.fold_right clfs ([], []) 
       (fun ({pcf_loc  = loc} as x  : Parsetree.class_field) 
         (label_attr_types, public_label_attr_types) ->
@@ -102,9 +103,9 @@ let ocaml_obj_as_js_object
               ->  
               let method_type =
                 Ast_typ_uncurry.generate_arg_type x.pcf_loc mapper label.txt lbl pat e in 
-              ((label, [], method_type) :: label_attr_types),
+              (Parsetree.Otag(label, [], method_type) :: label_attr_types),
               (if public_flag = Public then
-                 (label, [], method_type) :: public_label_attr_types
+                 Parsetree.Otag (label, [], method_type) :: public_label_attr_types
                else 
                  public_label_attr_types)
 
