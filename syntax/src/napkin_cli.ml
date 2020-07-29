@@ -51,16 +51,16 @@ module CliArgProcessor = struct
       in
       let parsingEngine =
           match origin with
-          | "reasonBinary" -> Parser Napkin_reason_binary_driver.parsingEngine
-          | "ml" | "ocaml" -> Parser Napkin_ml_parser_driver.parsingEngine
+          | "reasonBinary" -> Parser Napkin_driver_reason_binary.parsingEngine
+          | "ml" | "ocaml" -> Parser Napkin_driver_ml_parser.parsingEngine
           | _ -> Parser Napkin_driver.parsingEngine
       in
       let printEngine =
         match target with
-        | "ml" | "ocaml" -> Napkin_ml_parser_driver.printEngine
+        | "ml" | "ocaml" -> Napkin_driver_ml_parser.printEngine
         | "ast" -> Napkin_ast_debugger.printEngine
         | "sexp" -> Napkin_ast_debugger.sexpPrintEngine
-        | "binary" -> Napkin_binary_driver.printEngine
+        | "binary" -> Napkin_driver_binary.printEngine
         | _  -> Napkin_driver.printEngine
       in
 

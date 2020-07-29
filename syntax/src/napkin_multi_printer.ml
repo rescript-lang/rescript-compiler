@@ -42,14 +42,14 @@ let printRes ~isInterface ~filename =
 let printMl ~isInterface ~filename =
   if isInterface then
     let parseResult =
-      Napkin_ml_parser_driver.parsingEngine.parseInterface ~forPrinter:true ~filename in
+      Napkin_driver_ml_parser.parsingEngine.parseInterface ~forPrinter:true ~filename in
     Napkin_printer.printInterface
       ~width:defaultPrintWidth
       ~comments:parseResult.comments
       parseResult.parsetree
   else
     let parseResult =
-      Napkin_ml_parser_driver.parsingEngine.parseImplementation ~forPrinter:true ~filename in
+      Napkin_driver_ml_parser.parsingEngine.parseImplementation ~forPrinter:true ~filename in
     Napkin_printer.printImplementation
       ~width:defaultPrintWidth
       ~comments:parseResult.comments
@@ -82,9 +82,9 @@ let printReason ~refmtPath ~isInterface ~filename =
     if isInterface then
       let parseResult =
         (* read the marshalled ast (from the binary output in the tempfile) *)
-        Napkin_reason_binary_driver.parsingEngine.parseInterface ~forPrinter:true ~filename:tempFilename in
+        Napkin_driver_reason_binary.parsingEngine.parseInterface ~forPrinter:true ~filename:tempFilename in
       (* re-read the original "filename" and extract string + comment data *)
-      let (comments, stringData) = Napkin_reason_binary_driver.extractConcreteSyntax filename in
+      let (comments, stringData) = Napkin_driver_reason_binary.extractConcreteSyntax filename in
       (* put the comment- and string data back into the unmarshalled parsetree *)
       let parseResult = {
         parseResult with
@@ -100,8 +100,8 @@ let printReason ~refmtPath ~isInterface ~filename =
     else
       let parseResult =
         (* read the marshalled ast (from the binary output in the tempfile) *)
-        Napkin_reason_binary_driver.parsingEngine.parseImplementation ~forPrinter:true ~filename:tempFilename in
-      let (comments, stringData) = Napkin_reason_binary_driver.extractConcreteSyntax filename in
+        Napkin_driver_reason_binary.parsingEngine.parseImplementation ~forPrinter:true ~filename:tempFilename in
+      let (comments, stringData) = Napkin_driver_reason_binary.extractConcreteSyntax filename in
       (* put the comment- and string data back into the unmarshalled parsetree *)
       let parseResult = {
         parseResult with

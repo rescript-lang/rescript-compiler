@@ -30,9 +30,9 @@ FILES = \
 	src/napkin_core.cmx\
 	src/napkin_driver.cmx \
 	src/napkin_ast_conversion.cmx \
-	src/napkin_ml_parser_driver.cmx \
-	src/napkin_reason_binary_driver.cmx \
-	src/napkin_binary_driver.cmx \
+	src/napkin_driver_ml_parser.cmx \
+	src/napkin_driver_reason_binary.cmx \
+	src/napkin_driver_binary.cmx \
 	src/napkin_ast_debugger.cmx \
 	src/napkin_outcome_printer.cmx \
 	src/napkin_multi_printer.cmx
