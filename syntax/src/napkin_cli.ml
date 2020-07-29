@@ -21,13 +21,18 @@ end = struct
   let interface = ref false
   let report = ref "pretty"
 
-  let usage = "Usage: napkinscript <options> <file>\nOptions are:"
+  let usage = "Usage:\n  napkinscript <options> <file>\n\n" ^
+  "Examples:\n" ^
+  "  napkinscript myFile.res\n" ^
+  "  napkinscript -parse ml -print ns myFile.ml\n" ^
+  "  napkinscript -parse ns -print binary -interface myFile.resi\n\n" ^
+  "Options are:"
 
   let spec = [
     ("-recover", Arg.Unit (fun () -> recover := true), "Emit partial ast");
-    ("-print", Arg.String (fun txt -> print := txt), "Print either binary or napkinscript");
-    ("-parse", Arg.String (fun txt -> origin := txt), "Parse reasonBinary or napkinscript");
-    ("-width", Arg.Int (fun w -> width := w), "Specify the line length that the printer will wrap on" );
+    ("-parse", Arg.String (fun txt -> origin := txt), "Parse reasonBinary, ml or ns. Default: ns");
+    ("-print", Arg.String (fun txt -> print := txt), "Print either binary or ns. Default: ns");
+    ("-width", Arg.Int (fun w -> width := w), "Specify the line length for the printer (formatter)");
     ("-interface", Arg.Unit (fun () -> interface := true), "Parse as interface");
     (* ("-report", Arg.String (fun txt -> report := txt), "Stylize errors and messages using color and context. Accepts `Pretty` and `Plain`. Default `Plain`") *)
   ]
@@ -52,11 +57,11 @@ module CliArgProcessor = struct
       in
       let printEngine =
         match target with
-        | "ns" | "napkinscript" -> Napkin_driver.printEngine
         | "ml" | "ocaml" -> Napkin_ml_parser_driver.printEngine
         | "ast" -> Napkin_ast_debugger.printEngine
         | "sexp" -> Napkin_ast_debugger.sexpPrintEngine
-        | _  -> Napkin_binary_driver.printEngine
+        | "binary" -> Napkin_binary_driver.printEngine
+        | _  -> Napkin_driver.printEngine
       in
 
       let forPrinter = match target with
@@ -124,14 +129,14 @@ let () =
         ""
     | files ->
       List.iter (fun filename ->
-          CliArgProcessor.processFile
-            ~isInterface:!NapkinClflags.interface
-            ~width:!NapkinClflags.width
-            ~recover:!NapkinClflags.recover
-            ~target:!NapkinClflags.print
-            ~origin:!NapkinClflags.origin
-            ~report:!NapkinClflags.report
-            filename
+        CliArgProcessor.processFile
+          ~isInterface:!NapkinClflags.interface
+          ~width:!NapkinClflags.width
+          ~recover:!NapkinClflags.recover
+          ~target:!NapkinClflags.print
+          ~origin:!NapkinClflags.origin
+          ~report:!NapkinClflags.report
+          filename
         ) files
 
   end
