@@ -71,20 +71,11 @@ test: build-native lib/test.exe
 	./lib/test.exe
 
 roundtrip-test: bootstrap lib/test.exe
-	ROUNDTRIP_TEST=1 ./node_modules/.bin/jest
 	./node_modules/.bin/reanalyze -all-cmt . -suppress tests
+	ROUNDTRIP_TEST=1 ./node_modules/.bin/jest
 	./lib/test.exe
 
-termination:
-	./node_modules/.bin/reanalyze -termination-cmt . -suppress tests
-
-dce:
-	./node_modules/.bin/reanalyze -dce-cmt . -suppress tests
-
-exception:
-	./node_modules/.bin/reanalyze -exception-cmt . -suppress tests
-
-reanalyze:
+reanalyze: build-native lib/test.exe
 	./node_modules/.bin/reanalyze -all-cmt . -suppress tests
 
 clean:
