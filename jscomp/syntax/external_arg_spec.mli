@@ -41,12 +41,14 @@ type label = private
 
 
 type attr = 
-  | Poly_var of  {
-      has_payload : bool ; 
-      descr :
-        (Ast_compatible.hash_label * string) 
-          list option
-    }  
+  | Poly_var_string of { 
+    descr :
+    (Ast_compatible.hash_label * string) list
+  } 
+  | Poly_var of {
+    descr : 
+    (Ast_compatible.hash_label * string) list option 
+  }   
   | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)

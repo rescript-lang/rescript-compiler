@@ -174,31 +174,6 @@ let process_derive_type (attrs : t) : derive_attr * t =
         st, attr::acc
     ) 
 
-(* let iter_process_derive_type (attrs : t) =
-  let st = ref {explict_nonrec = false; bs_deriving = None } in
-  Ext_list.iter attrs
-    (fun ({txt ; loc}, payload  as attr)  ->
-      match  txt  with
-      |  "bs.deriving"
-        ->
-        let ost = !st in
-        (match ost with
-         | {bs_deriving = None } ->
-           Bs_ast_invariant.mark_used_bs_attribute attr ;
-           st :=
-             {ost with
-              bs_deriving = Some
-                  (Ast_payload.ident_or_record_as_config loc payload)}
-         | {bs_deriving = Some _} ->
-           Bs_syntaxerr.err loc Duplicated_bs_deriving)
-
-      | "nonrec" ->
-        st :=
-          { !st with explict_nonrec = true }
-      (* non bs attribute, no need to mark its use *)
-      | _ -> ()
-    ) ;
-  !st *)
 
 
 (* duplicated [bs.uncurry] [bs.string] not allowed,
@@ -253,26 +228,6 @@ let iter_process_bs_string_as  (attrs : t) : string option =
     ) ;
   !st
 
-let iter_process_bs_string_as_ast  (attrs : t) : Parsetree.expression option =
-  let st = ref None in
-  Ext_list.iter attrs
-    (fun
-      (({txt ; loc}, payload ) as attr )  ->
-      match  txt with
-      | "bs.as"
-        ->
-        if !st = None then
-          match Ast_payload.is_single_string_as_ast payload with
-          | None ->
-            Bs_syntaxerr.err loc Expect_string_literal
-          | Some _ as v ->            
-            Bs_ast_invariant.mark_used_bs_attribute attr ;
-            st:=  v
-        else
-          Bs_syntaxerr.err loc Duplicated_bs_as
-      | _  -> ()
-    ) ;
-  !st  
 
 let has_bs_optional  (attrs : t) : bool =
   Ext_list.exists attrs (fun

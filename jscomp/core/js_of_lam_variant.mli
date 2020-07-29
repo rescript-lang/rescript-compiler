@@ -31,7 +31,7 @@ type arg_expression =
   
 val eval :
    J.expression -> 
-   (Ast_compatible.hash_label * string) list option
+   (Ast_compatible.hash_label * string) list
    -> J.expression
 
 val eval_as_event : 

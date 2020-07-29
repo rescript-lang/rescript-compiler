@@ -15559,9 +15559,7 @@ val iter_process_bs_string_int_unwrap_uncurry :
 val iter_process_bs_string_as :
   t -> string option
 
-val iter_process_bs_string_as_ast :   
-  t -> 
-  Parsetree.expression option
+
   
 val has_bs_optional :
   t -> bool 
@@ -15780,31 +15778,6 @@ let process_derive_type (attrs : t) : derive_attr * t =
         st, attr::acc
     ) 
 
-(* let iter_process_derive_type (attrs : t) =
-  let st = ref {explict_nonrec = false; bs_deriving = None } in
-  Ext_list.iter attrs
-    (fun ({txt ; loc}, payload  as attr)  ->
-      match  txt  with
-      |  "bs.deriving"
-        ->
-        let ost = !st in
-        (match ost with
-         | {bs_deriving = None } ->
-           Bs_ast_invariant.mark_used_bs_attribute attr ;
-           st :=
-             {ost with
-              bs_deriving = Some
-                  (Ast_payload.ident_or_record_as_config loc payload)}
-         | {bs_deriving = Some _} ->
-           Bs_syntaxerr.err loc Duplicated_bs_deriving)
-
-      | "nonrec" ->
-        st :=
-          { !st with explict_nonrec = true }
-      (* non bs attribute, no need to mark its use *)
-      | _ -> ()
-    ) ;
-  !st *)
 
 
 (* duplicated [bs.uncurry] [bs.string] not allowed,
@@ -15859,26 +15832,6 @@ let iter_process_bs_string_as  (attrs : t) : string option =
     ) ;
   !st
 
-let iter_process_bs_string_as_ast  (attrs : t) : Parsetree.expression option =
-  let st = ref None in
-  Ext_list.iter attrs
-    (fun
-      (({txt ; loc}, payload ) as attr )  ->
-      match  txt with
-      | "bs.as"
-        ->
-        if !st = None then
-          match Ast_payload.is_single_string_as_ast payload with
-          | None ->
-            Bs_syntaxerr.err loc Expect_string_literal
-          | Some _ as v ->            
-            Bs_ast_invariant.mark_used_bs_attribute attr ;
-            st:=  v
-        else
-          Bs_syntaxerr.err loc Duplicated_bs_as
-      | _  -> ()
-    ) ;
-  !st  
 
 let has_bs_optional  (attrs : t) : bool =
   Ext_list.exists attrs (fun
@@ -17255,12 +17208,14 @@ type label = private
 
 
 type attr = 
-  | Poly_var of  {
-      has_payload : bool ; 
-      descr :
-        (Ast_compatible.hash_label * string) 
-          list option
-    }  
+  | Poly_var_string of { 
+    descr :
+    (Ast_compatible.hash_label * string) list
+  } 
+  | Poly_var of {
+    descr : 
+    (Ast_compatible.hash_label * string) list option 
+  }   
   | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
@@ -17350,14 +17305,22 @@ type label =
   (* it will be ignored , side effect will be recorded *)
 
 
-
+(* This type is used to give some meta info on each argument *)
 type attr = 
-  | Poly_var of { 
-    has_payload : bool ; 
+  | Poly_var_string of { 
     descr :
     (Ast_compatible.hash_label * string) list
-    option
-  }  
+   (* introduced by attributes bs.string
+    and bs.as 
+   *)
+  } 
+  | Poly_var of {
+    descr : 
+    (Ast_compatible.hash_label * string) list option 
+      (* introduced by attributes bs.string
+         and bs.as 
+      *)
+  } 
    (* `a does not have any value*)
   | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
@@ -17596,12 +17559,15 @@ let map_row_fields_into_strings ptyp_loc
   | `NonNull -> 
     let has_payload = case = `NonNull in 
     let descr = if !has_bs_as then Some result else None in    
-    if not has_payload && descr = None then begin
-      Location.prerr_warning ptyp_loc (Bs_ffi_warning "bs.string is redundant here, you can safely remove it")   
-    end;
-    External_arg_spec.Poly_var 
-      {has_payload  ; 
-       descr  }
+    match has_payload, descr with 
+    | false, None ->    
+      Location.prerr_warning ptyp_loc (Bs_ffi_warning "bs.string is redundant here, you can safely remove it");
+      Nothing         
+    | false , Some descr -> 
+      External_arg_spec.Poly_var_string {descr } 
+    | true, _ ->             
+      External_arg_spec.Poly_var 
+        { descr  }
 
 let is_enum row_fields = 
   List.for_all (fun (x : Parsetree.row_field) -> 
@@ -19695,7 +19661,7 @@ let process_obj
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty}::arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
-                 | Poly_var { has_payload = false ; _} ->
+                 | Poly_var_string _ ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty }::arg_types,
@@ -19704,7 +19670,7 @@ let process_obj
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
                  | Extern_unit -> assert false
-                 | Poly_var { has_payload = true ; _} 
+                 | Poly_var _ 
                    ->
                    Location.raise_errorf ~loc
                      "bs.obj label %s does not support such arg type" name
@@ -19728,7 +19694,7 @@ let process_obj
                    {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type :: arg_types,
                    (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
-                 | Poly_var {has_payload = false ; _} ->
+                 | Poly_var_string _ ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type::arg_types,
@@ -19740,7 +19706,7 @@ let process_obj
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
                  | Extern_unit   -> assert false
-                 | Poly_var {has_payload = true; _}
+                 | Poly_var _
                    ->
                    Location.raise_errorf ~loc
                      "bs.obj label %s does not support such arg type" name
@@ -20154,7 +20120,7 @@ let handle_attributes
              | Optional s  ->
                let arg_type = get_opt_arg_type ~nolabel:false ty in
                begin match arg_type with
-                 | Poly_var {has_payload = true; _} ->
+                 | Poly_var _ ->
                    (* ?x:([`x of int ] [@bs.string]) does not make sense *)
                    Location.raise_errorf
                      ~loc
