@@ -9130,7 +9130,7 @@ module Ast_compatible : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type poly_var_label = Asttypes.label Asttypes.loc
+
 
 
 
@@ -9140,7 +9140,7 @@ type poly_var_label = Asttypes.label Asttypes.loc
 
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
-type hash_label = string 
+
 open Parsetree
 
 
@@ -9157,20 +9157,13 @@ val const_exp_int:
   int -> 
   expression 
 
-val const_hash_label : 
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  string -> 
-  expression 
 
 
 val const_exp_int_list_as_array:  
   int list -> 
   expression 
 
-(* val const_exp_string_list_as_array:  
-  string list -> 
-  expression  *)
+
 
   
 val apply_simple:
@@ -9257,12 +9250,6 @@ val opt_arrow:
   core_type ->
   core_type
 
-val object_: 
-  ?loc:loc -> 
-  ?attrs:attrs ->
-  (string Asttypes.loc * attributes * core_type) list -> 
-  Asttypes.closed_flag ->
-  core_type  
 
 
 (* val nonrec_type_str:  
@@ -9340,7 +9327,6 @@ open Parsetree
 let default_loc = Location.none
 
 
-type poly_var_label = Asttypes.label Asttypes.loc
 
 
 
@@ -9349,8 +9335,9 @@ type poly_var_label = Asttypes.label Asttypes.loc
 
 
 
-let arrow ?(loc=default_loc) ?(attrs = []) a b  =
-  Ast_helper.Typ.arrow ~loc ~attrs Nolabel a b  
+
+let arrow ?loc ?attrs a b  =
+  Ast_helper.Typ.arrow ?loc ?attrs Nolabel a b  
 
 let apply_simple
  ?(loc = default_loc) 
@@ -9417,21 +9404,6 @@ let fun_
     pexp_desc = Pexp_fun(Nolabel,None, pat, exp)
   }
 
-(* let opt_label s =
-  Asttypes.Optional s *)
-
-(* let label_fun
-  ?(loc = default_loc)
-  ?(attrs = [])
-  ~label
-  pat
-  exp =
-  {
-    pexp_loc = loc;
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_fun(label, None, pat, exp)
-  } *)
-type hash_label = string 
 
 
 let const_exp_string 
@@ -9445,15 +9417,7 @@ let const_exp_string
     pexp_desc = Pexp_constant(Pconst_string(s,delimiter))
   }
 
-let const_hash_label 
-    ?(loc = default_loc)
-    ?(attrs = [])
-    (s : hash_label) : expression = 
-  {
-    pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_constant(Pconst_string(s,None))
-  }
+
 
 let const_exp_int 
   ?(loc = default_loc)
@@ -9477,19 +9441,6 @@ let apply_labels
         fn, 
         Ext_list.map args (fun (l,a) -> Asttypes.Labelled l, a)   ) }
 
-let object_ 
-  ?(loc= default_loc)
-  ?(attrs = [])
-  (fields : (Asttypes.label Asttypes.loc * attributes * core_type) list)
-  flg : core_type = 
-  {
-    ptyp_desc = 
-      Ptyp_object(
-        Ext_list.map fields (fun (a,b,c) -> 
-          Parsetree.Otag (a,b,c)),flg);
-    ptyp_loc = loc;
-    ptyp_attributes = attrs
-  }
 
 
 
@@ -12259,7 +12210,7 @@ val from_labels :
 
 val make_obj :
   loc:Location.t ->
-  (string Asttypes.loc * Parsetree.attributes * t) list ->
+  Parsetree.object_field list ->
   t
 
 val is_user_option : t -> bool
@@ -12394,8 +12345,9 @@ let from_labels ~loc arity labels
          Typ.var ~loc ("a" ^ string_of_int i)))) in
   let result_type =
     Ast_comb.to_js_type loc
-      (Ast_compatible.object_ ~loc
-         (Ext_list.map2 labels tyvars (fun x y -> x ,[], y)) Closed)
+      (Typ.object_ ~loc
+         (Ext_list.map2 labels tyvars 
+          (fun x y -> Parsetree.Otag (x ,[], y))) Closed)
   in
   Ext_list.fold_right2 labels tyvars  result_type
     (fun label (* {loc ; txt = label }*)
@@ -12405,7 +12357,7 @@ let from_labels ~loc arity labels
 
 let make_obj ~loc xs =
   Ast_comb.to_js_type loc
-    (Ast_compatible.object_  ~loc xs Closed)
+    (Typ.object_  ~loc xs Closed)
 
 
 
@@ -17210,13 +17162,13 @@ type label = private
 type attr = 
   | Poly_var_string of { 
     descr :
-    (Ast_compatible.hash_label * string) list
+    (string * string) list
   } 
   | Poly_var of {
     descr : 
-    (Ast_compatible.hash_label * string) list option 
+    (string * string) list option 
   }   
-  | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Int of (string * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
@@ -17309,20 +17261,20 @@ type label =
 type attr = 
   | Poly_var_string of { 
     descr :
-    (Ast_compatible.hash_label * string) list
+    (string * string) list
    (* introduced by attributes bs.string
     and bs.as 
    *)
   } 
   | Poly_var of {
     descr : 
-    (Ast_compatible.hash_label * string) list option 
+    (string * string) list option 
       (* introduced by attributes bs.string
          and bs.as 
       *)
   } 
    (* `a does not have any value*)
-  | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Int of (string * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
     (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
@@ -17420,7 +17372,7 @@ module Ast_polyvar : sig
 val map_row_fields_into_ints:
   Location.t -> 
   Parsetree.row_field list -> 
-  (Ast_compatible.hash_label * int ) list 
+  (string * int ) list 
 
 val map_constructor_declarations_into_ints:
   Parsetree.constructor_declaration list ->
@@ -19624,7 +19576,7 @@ let process_obj
   } ->
     if String.length prim_name <> 0 then
       Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
-    let arg_kinds, new_arg_types_ty, result_types =
+    let arg_kinds, new_arg_types_ty, (result_types : Parsetree.object_field list) =
       Ext_list.fold_right arg_types_ty ( [], [], [])
         (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
            let arg_label = param_type.label in
@@ -19650,22 +19602,22 @@ let process_obj
                    {obj_arg_label = External_arg_spec.obj_label s;
                     obj_arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
-                   (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
+                   (Parsetree.Otag({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Nothing  ->
                    let s = (Lam_methname.translate  name) in
                    {obj_arg_label = External_arg_spec.obj_label s ; obj_arg_type },
                    {param_type with ty = new_ty}::arg_types,
-                   (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
+                   (Otag ({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
                  | Int _  ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty}::arg_types,
-                   (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
+                   (Otag ({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
                  | Poly_var_string _ ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
                    {param_type with ty = new_ty }::arg_types,
-                   (({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
+                   (Otag({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
@@ -19688,17 +19640,17 @@ let process_obj
                    let s = (Lam_methname.translate  name) in
                    {obj_arg_label = External_arg_spec.optional s; obj_arg_type},
                    param_type :: arg_types,
-                   ( ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
+                   ( Parsetree.Otag ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
                  | Int _  ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type :: arg_types,
-                   (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
+                   (Otag ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
                  | Poly_var_string _ ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type::arg_types,
-                   (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
+                   (Otag ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
                  | Arg_cst _
                    ->
                    Location.raise_errorf ~loc "bs.as is not supported with optional yet"
@@ -21725,10 +21677,10 @@ let ocaml_obj_as_js_object
 
     let result = Typ.var ~loc val_name.txt in 
     result , 
-    ((val_name , [], result ) ::
+    (Parsetree.Otag (val_name , [], result ) ::
      (if is_mutable then 
-        [{val_name with txt = val_name.txt ^ Literals.setter_suffix},[],
-         Ast_typ_uncurry.to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ()) ]
+        [ Otag ({val_name with txt = val_name.txt ^ Literals.setter_suffix},[],
+         Ast_typ_uncurry.to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ())) ]
       else 
         []) )
   in 
@@ -21743,7 +21695,8 @@ let ocaml_obj_as_js_object
       for public object type its [@bs.meth] it does not depend on itself
       while for label argument it is [@bs.this] which depends internal object
   *)
-  let internal_label_attr_types, public_label_attr_types  = 
+  let (internal_label_attr_types : Parsetree.object_field list), 
+      (public_label_attr_types : Parsetree.object_field list) = 
     Ext_list.fold_right clfs ([], []) 
       (fun ({pcf_loc  = loc} as x  : Parsetree.class_field) 
         (label_attr_types, public_label_attr_types) ->
@@ -21761,9 +21714,9 @@ let ocaml_obj_as_js_object
               ->  
               let method_type =
                 Ast_typ_uncurry.generate_arg_type x.pcf_loc mapper label.txt lbl pat e in 
-              ((label, [], method_type) :: label_attr_types),
+              (Parsetree.Otag(label, [], method_type) :: label_attr_types),
               (if public_flag = Public then
-                 (label, [], method_type) :: public_label_attr_types
+                 Parsetree.Otag (label, [], method_type) :: public_label_attr_types
                else 
                  public_label_attr_types)
 
