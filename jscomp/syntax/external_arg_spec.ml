@@ -50,20 +50,20 @@ type label =
 type attr = 
   | Poly_var_string of { 
     descr :
-    (Ast_compatible.hash_label * string) list
+    (string * string) list
    (* introduced by attributes bs.string
     and bs.as 
    *)
   } 
   | Poly_var of {
     descr : 
-    (Ast_compatible.hash_label * string) list option 
+    (string * string) list option 
       (* introduced by attributes bs.string
          and bs.as 
       *)
   } 
    (* `a does not have any value*)
-  | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Int of (string * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
     (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)

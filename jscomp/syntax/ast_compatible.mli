@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type poly_var_label = Asttypes.label Asttypes.loc
+
 
 
 
@@ -33,7 +33,7 @@ type poly_var_label = Asttypes.label Asttypes.loc
 
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
-type hash_label = string 
+
 open Parsetree
 
 
@@ -50,20 +50,13 @@ val const_exp_int:
   int -> 
   expression 
 
-val const_hash_label : 
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  string -> 
-  expression 
 
 
 val const_exp_int_list_as_array:  
   int list -> 
   expression 
 
-(* val const_exp_string_list_as_array:  
-  string list -> 
-  expression  *)
+
 
   
 val apply_simple:
