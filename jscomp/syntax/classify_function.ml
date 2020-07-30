@@ -72,7 +72,7 @@ let classify_exp (prog : _ Flow_ast.Expression.t  )  : Js_raw_info.exp =
   in   
   Js_literal {comment}   
  | (_, Identifier(_,{name = "undefined"})) -> Js_literal {comment =None} 
- | (_,Object _)  -> 
+ | (_, (Object _ | Array _ ))  -> 
     if is_obj_literal prog then Js_literal {comment = None} else Js_exp_unknown
  | _ -> 
   Js_exp_unknown
