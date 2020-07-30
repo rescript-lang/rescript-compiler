@@ -119,7 +119,7 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
   else (* ([`a|`b] [@bs.string]) *)
     ptyp, spec_of_ptyp nolabel ptyp   
 
-  
+let refine_obj_arg_type = refine_arg_type  
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
     and result type in [@@bs.obj]
@@ -409,14 +409,14 @@ let process_obj
            let new_arg_label, new_arg_types,  output_tys =
              match arg_label with
              | Nolabel ->
-               let new_ty, arg_type = refine_arg_type ~nolabel:true  ty in
+               let new_ty, arg_type = refine_obj_arg_type ~nolabel:true  ty in
                if arg_type = Extern_unit then
                  External_arg_spec.empty_kind arg_type, 
                  {param_type with ty = new_ty}::arg_types, result_types
                else
                  Location.raise_errorf ~loc "expect label, optional, or unit here"
              | Labelled name ->
-               let new_ty, obj_arg_type = refine_arg_type ~nolabel:false  ty in
+               let new_ty, obj_arg_type = refine_obj_arg_type ~nolabel:false  ty in
                begin match obj_arg_type with
                  | Ignore ->
                    External_arg_spec.empty_kind obj_arg_type,
@@ -499,7 +499,8 @@ let process_obj
       if result_type.ptyp_desc = Ptyp_any then
         Ast_core_type.make_obj ~loc result_types
       else
-        fst (refine_arg_type ~nolabel:true result_type) 
+        result_type
+        (* TODO: do we need do some error checking here *)
         (* result type can not be labeled *)
     in
     Ast_compatible.mk_fn_type new_arg_types_ty result,
