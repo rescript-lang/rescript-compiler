@@ -12191,7 +12191,7 @@ type t = Parsetree.core_type
 
 
 val lift_option_type : t -> t
-val is_any : t -> bool
+
 (* val replace_result : t -> t -> t *)
 
 (* val opt_arrow: Location.t -> string -> t -> t -> t *)
@@ -12283,8 +12283,6 @@ let lift_option_type ({ptyp_loc} as ty:t) : t =
       ptyp_attributes = []
     }
 
-let is_any (ty : t) =
-  ty.ptyp_desc = Ptyp_any
 
 open Ast_helper
 
@@ -19272,8 +19270,33 @@ let spec_of_ptyp
 (* is_optional = false 
 *)
 let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t) 
+  :  External_arg_spec.attr = 
+  (if ptyp.ptyp_desc = Ptyp_any then 
+     let ptyp_attrs = ptyp.ptyp_attributes in
+     let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
+     (* when ppx start dropping attributes
+        we should warn, there is a trade off whether
+        we should warn dropped non bs attribute or not
+     *)
+     Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
+     match result with
+     |  None ->
+       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
+     | Some (Int i) -> (* (_[@bs.as ])*)
+       (* This type is used in bs.obj only to construct obj type*)
+       Arg_cst(External_arg_spec.cst_int i)
+     | Some (Str i)->
+       Arg_cst (External_arg_spec.cst_string i)
+     | Some (Json_str s) ->
+       (* FIXME: This seems to be wrong in bs.obj, we should disable such payload in bs.obj *)
+       Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
+   else (* ([`a|`b] [@bs.string]) *)
+     spec_of_ptyp nolabel ptyp   
+  )
+
+let refine_obj_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t) 
   : Ast_core_type.t * External_arg_spec.attr = 
-  if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
+  if ptyp.ptyp_desc = Ptyp_any then 
     let ptyp_attrs = ptyp.ptyp_attributes in
     let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
     (* when ppx start dropping attributes
@@ -19284,18 +19307,16 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
     match result with
     |  None ->
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-    | Some (Int i) ->
+    | Some (Int i) -> (* (_[@bs.as ])*)
       (* This type is used in bs.obj only to construct obj type*)
       Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
     | Some (Str i)->
       Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
-    | Some (Json_str s) ->
-      (* FIXME: This seems to be wrong in bs.obj, we should disable such payload in bs.obj *)
-      Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
+    | Some (Json_str _) ->
+      Location.raise_errorf ~loc:ptyp.ptyp_loc "json payload is not supported in bs.obj since its type can not be inferred"
   else (* ([`a|`b] [@bs.string]) *)
-    ptyp, spec_of_ptyp nolabel ptyp   
+    ptyp, spec_of_ptyp nolabel ptyp      
 
-  
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
     and result type in [@@bs.obj]
@@ -19309,7 +19330,7 @@ let get_opt_arg_type
     ~(nolabel : bool)
     (ptyp : Ast_core_type.t) :
   External_arg_spec.attr  =
-  if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
+  if ptyp.ptyp_desc = Ptyp_any then (* (_[@bs.as ])*)
     (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
   (* ([`a|`b] [@bs.string]) *)    
@@ -19585,14 +19606,15 @@ let process_obj
            let new_arg_label, new_arg_types,  output_tys =
              match arg_label with
              | Nolabel ->
-               let new_ty, arg_type = refine_arg_type ~nolabel:true  ty in
-               if arg_type = Extern_unit then
-                 External_arg_spec.empty_kind arg_type, 
-                 {param_type with ty = new_ty}::arg_types, result_types
-               else
-                 Location.raise_errorf ~loc "expect label, optional, or unit here"
+               begin match ty.ptyp_desc with 
+                 | Ptyp_constr({txt = Lident "unit";_}, []) -> 
+                   External_arg_spec.empty_kind Extern_unit, 
+                   param_type ::arg_types, result_types
+                 | _ -> 
+                   Location.raise_errorf ~loc "expect label, optional, or unit here"
+               end 
              | Labelled name ->
-               let new_ty, obj_arg_type = refine_arg_type ~nolabel:false  ty in
+               let new_ty, obj_arg_type = refine_obj_arg_type ~nolabel:false  ty in
                begin match obj_arg_type with
                  | Ignore ->
                    External_arg_spec.empty_kind obj_arg_type,
@@ -19672,10 +19694,11 @@ let process_obj
            output_tys) in
 
     let result =
-      if Ast_core_type.is_any  result_type then
+      if result_type.ptyp_desc = Ptyp_any then
         Ast_core_type.make_obj ~loc result_types
       else
-        fst (refine_arg_type ~nolabel:true result_type) 
+        result_type
+        (* TODO: do we need do some error checking here *)
         (* result type can not be labeled *)
     in
     Ast_compatible.mk_fn_type new_arg_types_ty result,
@@ -20034,7 +20057,7 @@ let handle_attributes
       let init : External_arg_spec.params * Ast_compatible.param_type list * int  = 
         match external_desc.val_send_pipe with
         | Some obj ->
-          let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
+          let arg_type = refine_arg_type ~nolabel:true obj in
           begin match arg_type with
             | Arg_cst _ ->
               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
@@ -20042,7 +20065,7 @@ let handle_attributes
               (* more error checking *)
               [{arg_label = Arg_empty; arg_type}],
               [{label = Nolabel;
-                ty = new_ty;
+                ty = obj;
                 attr =  [];
                 loc = obj.ptyp_loc} ],
               0           
@@ -20058,7 +20081,7 @@ let handle_attributes
                  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be a non optional"
                | Labelled _ | Nolabel 
                 -> 
-                if Ast_core_type.is_any ty then 
+                if ty.ptyp_desc = Ptyp_any then 
                   Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";                  
                 if spec_of_ptyp true ty <> Nothing then 
                   Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
@@ -20081,20 +20104,20 @@ let handle_attributes
                    Arg_optional, arg_type,
                    param_type :: arg_types end
              | Labelled _  ->
-               begin match refine_arg_type ~nolabel:false ty with
-                 | _, (Arg_cst _ as arg_type)  ->
-                   Arg_label , arg_type, arg_types
-                 | new_ty, arg_type ->
-                   Arg_label , arg_type, 
-                   {param_type with ty = new_ty} :: arg_types
-               end
+               let arg_type = refine_arg_type ~nolabel:false ty in
+               Arg_label , arg_type,
+               (match arg_type with
+                | Arg_cst _   ->
+                  arg_types
+                |  _ ->                   
+                  param_type :: arg_types)               
              | Nolabel ->
-               begin match refine_arg_type ~nolabel:true ty with
-                 | _ , (Arg_cst _ as arg_type) ->
-                   Arg_empty , arg_type,  arg_types
-                 | new_ty , arg_type ->
-                   Arg_empty, arg_type, {param_type with ty = new_ty} :: arg_types
-               end
+               let arg_type = refine_arg_type ~nolabel:true ty in 
+               Arg_empty , arg_type, (match arg_type with
+                   | Arg_cst _  ->
+                     arg_types
+                   | _ ->
+                     param_type :: arg_types)
            in
            ({ arg_label  ;
               arg_type
