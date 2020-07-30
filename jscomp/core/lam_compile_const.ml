@@ -131,8 +131,8 @@ let translate_arg_cst (cst : External_arg_spec.cst) =
    | Arg_string_lit i -> 
      E.str i
    | Arg_js_null  -> E.nil
-   | Arg_js_json s 
-     -> E.raw_js_code (Exp Js_raw_json) s
+   | Arg_js_literal s 
+     -> E.raw_js_code (Exp (Js_literal {comment = None})) s
 
    | Arg_js_true  -> E.bool true
    | Arg_js_false -> E.bool false 

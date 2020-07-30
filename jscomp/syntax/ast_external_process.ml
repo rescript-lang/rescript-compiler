@@ -112,8 +112,8 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
        (* This type is used in bs.obj only to construct obj type*)
        Arg_cst(External_arg_spec.cst_int i)
      | Some (Str i)->
-       Arg_cst (External_arg_spec.cst_string i)
-     | Some (Json_str s) ->
+       Arg_cst (External_arg_spec.cst_string i)     
+     | Some (Js_literal_str s) ->
        (* FIXME: This seems to be wrong in bs.obj, we should disable such payload in bs.obj *)
        Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
    else (* ([`a|`b] [@bs.string]) *)
@@ -138,7 +138,7 @@ let refine_obj_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
       Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
     | Some (Str i)->
       Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
-    | Some (Json_str _) ->
+    | Some (Js_literal_str _ ) ->
       Location.raise_errorf ~loc:ptyp.ptyp_loc "json payload is not supported in bs.obj since its type can not be inferred"
   else (* ([`a|`b] [@bs.string]) *)
     ptyp, spec_of_ptyp nolabel ptyp      

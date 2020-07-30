@@ -265,8 +265,7 @@ let iter_process_bs_int_as  (attrs : t) =
 type as_const_payload = 
   | Int of int
   | Str of string
-  | Json_str of string  
-
+  | Js_literal_str of string
 let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   let st = ref None in
   Ext_list.iter attrs
@@ -283,10 +282,9 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
                | Some (s,None) ->
                  st := Some (Str (s))
                | Some (s, Some "json") ->
-                 st := Some (Json_str s )
+                 st := Some (Js_literal_str s )
                | None | Some (_, Some _) ->
                  Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
-
              end
            | Some   v->
              st := (Some (Int v))

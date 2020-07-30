@@ -31,7 +31,7 @@ type cst =
   | Arg_js_null
   | Arg_js_true
   | Arg_js_false
-  | Arg_js_json of string
+  | Arg_js_literal of string
 
 type label_noname = 
   | Arg_label 
@@ -106,7 +106,7 @@ let cst_json (loc : Location.t) s : cst  =
   | True _ -> Arg_js_true
   | False _ -> Arg_js_false 
   | Null _ -> Arg_js_null 
-  | _ -> Arg_js_json s 
+  | _ -> Arg_js_literal s 
   | exception Ext_json_parse.Error (start,finish,error_info)
     ->
     let loc1 = {
@@ -117,7 +117,7 @@ let cst_json (loc : Location.t) s : cst  =
        Ext_position.offset loc.loc_start finish;
     } in 
      raise (Error (loc1 , error_info))
-
+let cst_obj_literal s = Arg_js_literal s
 let cst_int i = Arg_int_lit i 
 let cst_string s = Arg_string_lit s 
 let empty_label = Obj_empty 

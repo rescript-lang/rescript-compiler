@@ -79,6 +79,10 @@ let classify_exp (prog : _ Flow_ast.Expression.t  )  : Js_raw_info.exp =
  | exception _ -> 
   Js_exp_unknown
 
+(** It seems we do the parse twice
+    - in parsing
+    - in code generation
+ *)
 let classify (prog : string) : Js_raw_info.exp = 
   let prog, errors  =
     Parser_flow.parse_expression 
