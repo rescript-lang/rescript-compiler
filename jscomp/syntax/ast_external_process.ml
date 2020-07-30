@@ -119,7 +119,29 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
   else (* ([`a|`b] [@bs.string]) *)
     ptyp, spec_of_ptyp nolabel ptyp   
 
-let refine_obj_arg_type = refine_arg_type  
+let refine_obj_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t) 
+  : Ast_core_type.t * External_arg_spec.attr = 
+  if ptyp.ptyp_desc = Ptyp_any then 
+    let ptyp_attrs = ptyp.ptyp_attributes in
+    let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
+    (* when ppx start dropping attributes
+       we should warn, there is a trade off whether
+       we should warn dropped non bs attribute or not
+    *)
+    Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
+    match result with
+    |  None ->
+      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
+    | Some (Int i) -> (* (_[@bs.as ])*)
+      (* This type is used in bs.obj only to construct obj type*)
+      Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
+    | Some (Str i)->
+      Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
+    | Some (Json_str _) ->
+      Location.raise_errorf ~loc:ptyp.ptyp_loc "json payload is not supported in bs.obj since its type can not be inferred"
+  else (* ([`a|`b] [@bs.string]) *)
+    ptyp, spec_of_ptyp nolabel ptyp      
+
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
     and result type in [@@bs.obj]
