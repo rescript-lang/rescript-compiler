@@ -25,7 +25,8 @@
 
 let rec is_obj_literal ( x : _ Flow_ast.Expression.t) : bool = 
   match snd x with   
-  |  Literal _ -> true 
+  | Identifier (_, {name = "undefined"})
+  | Literal _ -> true   
   |  Object {properties} -> 
     Ext_list.for_all properties is_literal_kv 
   | Array  {elements} ->  
@@ -42,16 +43,15 @@ and is_literal_kv (x  : _ Flow_ast.Expression.Object.property) =
   | _ -> false
 
 
-let classify (prog : string) : Js_raw_info.exp = 
-  match Parser_flow.parse_expression 
-    (Parser_env.init_env None prog) false with 
+let classify_exp (prog : _ Flow_ast.Expression.t  )  : Js_raw_info.exp = 
+  match  prog with 
   | (_, Function {
     id = _;
     params = (_, {params});
     async = false;
     generator = false;
     predicate = None
-  }) , [] -> 
+  })  -> 
     Js_function {arity = List.length params; arrow = false}
   | (_, ArrowFunction {
     id = None;
@@ -59,10 +59,10 @@ let classify (prog : string) : Js_raw_info.exp =
     async = false;
     generator = false;
     predicate = None
-  }) , [] -> 
+  })  -> 
     Js_function
       {arity = List.length params; arrow = true} 
- |(_, Literal {comments}), [] -> 
+ |(_, Literal {comments}) -> 
   let comment = 
     match comments with 
     | None -> None 
@@ -71,12 +71,22 @@ let classify (prog : string) : Js_raw_info.exp =
     | Some _ -> None
   in   
   Js_literal {comment}   
- | (_,Object _) as exp , _ -> 
-    if is_obj_literal exp then Js_literal {comment = None} else Js_exp_unknown
+ | (_, Identifier(_,{name = "undefined"})) -> Js_literal {comment =None} 
+ | (_,Object _)  -> 
+    if is_obj_literal prog then Js_literal {comment = None} else Js_exp_unknown
  | _ -> 
   Js_exp_unknown
  | exception _ -> 
   Js_exp_unknown
+
+let classify (prog : string) : Js_raw_info.exp = 
+  let prog, errors  =
+    Parser_flow.parse_expression 
+      (Parser_env.init_env None prog) false in  
+  if errors <> [] then 
+    assert false (* in the calling API, we already asked flow to raise*)
+  else classify_exp prog
+
 
 let classify_stmt (prog : string) : Js_raw_info.stmt = 
   let result =  Parser_flow.parse_program false None prog in 
