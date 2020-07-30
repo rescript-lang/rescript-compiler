@@ -409,12 +409,13 @@ let process_obj
            let new_arg_label, new_arg_types,  output_tys =
              match arg_label with
              | Nolabel ->
-               let new_ty, arg_type = refine_obj_arg_type ~nolabel:true  ty in
-               if arg_type = Extern_unit then
-                 External_arg_spec.empty_kind arg_type, 
-                 {param_type with ty = new_ty}::arg_types, result_types
-               else
-                 Location.raise_errorf ~loc "expect label, optional, or unit here"
+               begin match ty.ptyp_desc with 
+                 | Ptyp_constr({txt = Lident "unit";_}, []) -> 
+                   External_arg_spec.empty_kind Extern_unit, 
+                   param_type ::arg_types, result_types
+                 | _ -> 
+                   Location.raise_errorf ~loc "expect label, optional, or unit here"
+               end 
              | Labelled name ->
                let new_ty, obj_arg_type = refine_obj_arg_type ~nolabel:false  ty in
                begin match obj_arg_type with
