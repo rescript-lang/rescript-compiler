@@ -1,5 +1,5 @@
-(* Copyright (C) 2020- Authors of BuckleScript
- * 
+(* Copyright (C) 2020 - Authors of BuckleScript 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,16 +17,37 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val classify :
-  ?check:(Location.t * int) -> 
-  string -> 
-  Js_raw_info.exp 
+ let offset_pos 
+  ({pos_lnum; pos_bol; pos_cnum} as loc : Lexing.position) 
+  ({line; column} : Loc.position) 
+  first_line_offset : Lexing.position = 
+ if line = 1 then 
+   {loc with pos_cnum = pos_cnum + column + first_line_offset }
+ else {
+   loc with 
+   pos_lnum = pos_lnum + line - 1;
+   pos_cnum =  pos_bol + column
+ } 
 
-val classify_stmt :  
-  string -> Js_raw_info.stmt
+(* Here the loc is  the payload loc *)
+let check_flow_errors ~(loc : Location.t)
+    ~offset
+    (errors : (Loc.t * Parse_error.t) list) = 
+  match errors with 
+  | [] ->  ()
+  | ({start ;
+      _end },first_error) :: _ -> 
+    let loc_start = loc.loc_start in     
+    Location.raise_errorf 
+      ~loc:{loc with 
+            loc_start = offset_pos loc_start start 
+                offset ;
+            loc_end = offset_pos loc_start _end 
+                offset } "%s"
+      (Parse_error.PP.error first_error)  

@@ -83,13 +83,16 @@ let classify_exp (prog : _ Flow_ast.Expression.t  )  : Js_raw_info.exp =
     - in parsing
     - in code generation
  *)
-let classify (prog : string) : Js_raw_info.exp = 
+let classify ?check (prog : string) : Js_raw_info.exp = 
   let prog, errors  =
     Parser_flow.parse_expression 
       (Parser_env.init_env None prog) false in  
-  if errors <> [] then 
-    assert false (* in the calling API, we already asked flow to raise*)
-  else classify_exp prog
+  (match check with 
+  | Some (loc,offset) -> 
+    Bs_flow_ast_utils.check_flow_errors
+    ~loc ~offset errors 
+  | None -> ());
+  classify_exp prog
 
 
 let classify_stmt (prog : string) : Js_raw_info.stmt = 

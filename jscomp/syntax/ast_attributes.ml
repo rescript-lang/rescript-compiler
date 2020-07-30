@@ -278,15 +278,24 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
           (Bs_ast_invariant.mark_used_bs_attribute attr ;
            match Ast_payload.is_single_int payload with
            | None ->
-             begin match Ast_payload.is_single_string payload with
-               | Some (s,None) ->
-                 st := Some (Str (s))
-               | Some (s, Some "json") ->
-                 st := Some (Js_literal_str s )
-               | None | Some (_, Some _) ->
+             begin match  payload with
+               | PStr [ {
+                   pstr_desc =  
+                     Pstr_eval (
+                       {pexp_desc = 
+                          Pexp_constant 
+                            (Pconst_string(s, (None | Some "json" as dec)))
+                       ;
+                         _},_);
+                   _}] -> 
+                 if dec = None then
+                   st := Some (Str (s))
+                 else
+                   st := Some (Js_literal_str s )
+               | _ -> 
                  Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
              end
-           | Some   v->
+           | Some v->
              st := (Some (Int v))
           )
         else
