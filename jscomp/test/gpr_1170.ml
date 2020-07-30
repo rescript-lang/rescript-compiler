@@ -8,6 +8,13 @@ external set_hi :
     "hi"
 [@@bs.set]    
 
+
+#if 0 then
+external ff_json  : hi:int -> lo:(_[@bs.as {json|null|json}]) -> _ = "" [@@bs.obj]
+
+let uu : < hi : int; lo : string > Js.t = ff_json ~hi:3
+#end
+
 let f resp =
     set_okay resp ;
     set_hi resp 

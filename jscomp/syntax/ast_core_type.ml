@@ -42,8 +42,6 @@ let lift_option_type ({ptyp_loc} as ty:t) : t =
       ptyp_attributes = []
     }
 
-let is_any (ty : t) =
-  ty.ptyp_desc = Ptyp_any
 
 open Ast_helper
 
