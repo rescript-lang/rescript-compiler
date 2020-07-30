@@ -97,7 +97,7 @@ let spec_of_ptyp
 *)
 let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t) 
   : Ast_core_type.t * External_arg_spec.attr = 
-  if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
+  if ptyp.ptyp_desc = Ptyp_any then 
     let ptyp_attrs = ptyp.ptyp_attributes in
     let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
     (* when ppx start dropping attributes
@@ -108,7 +108,7 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
     match result with
     |  None ->
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-    | Some (Int i) ->
+    | Some (Int i) -> (* (_[@bs.as ])*)
       (* This type is used in bs.obj only to construct obj type*)
       Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
     | Some (Str i)->
@@ -133,7 +133,7 @@ let get_opt_arg_type
     ~(nolabel : bool)
     (ptyp : Ast_core_type.t) :
   External_arg_spec.attr  =
-  if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
+  if ptyp.ptyp_desc = Ptyp_any then (* (_[@bs.as ])*)
     (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
   (* ([`a|`b] [@bs.string]) *)    
@@ -496,7 +496,7 @@ let process_obj
            output_tys) in
 
     let result =
-      if Ast_core_type.is_any  result_type then
+      if result_type.ptyp_desc = Ptyp_any then
         Ast_core_type.make_obj ~loc result_types
       else
         fst (refine_arg_type ~nolabel:true result_type) 
@@ -882,7 +882,7 @@ let handle_attributes
                  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be a non optional"
                | Labelled _ | Nolabel 
                 -> 
-                if Ast_core_type.is_any ty then 
+                if ty.ptyp_desc = Ptyp_any then 
                   Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";                  
                 if spec_of_ptyp true ty <> Nothing then 
                   Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
