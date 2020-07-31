@@ -1,5 +1,5 @@
 {
-  "name": "napkinscript",
+  "name": "bucklescript-syntax",
   "version": "0.0.8-dev",
   "description": "",
   "main": "Napkinscript.ml",
@@ -8,22 +8,19 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "bs-platform": "^7.3.2",
     "jest": "^24.9.0",
     "reanalyze": "^2.9.0"
   },
-  "scripts": {
-    "test": "make test",
-    "termination": "gentype -termination-cmt ./Napkinscript.cmt"
-  },
+  "private": true,
+  "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/IwanKaramazow/napkinscript.git"
+    "url": "git+https://github.com/BuckleScript/syntax.git"
   },
   "author": "Iwan (valcke.maxim@gmail.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/IwanKaramazow/napkinscript/issues"
+    "url": "https://github.com/BuckleScript/syntax/issues"
   },
-  "homepage": "https://github.com/IwanKaramazow/napkinscript#readme"
+  "homepage": "https://github.com/BuckleScript/syntax#readme"
 }

@@ -59,6 +59,11 @@ Run the extended tests:
 make roundtrip-test
 ```
 
+Update jest snapshots:
+```sh
+./node_modules/.bin/jest -u
+```
+
 Debug a file:
 ```sh
 # write code in test.js
