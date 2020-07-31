@@ -218,6 +218,7 @@ let fmt_file input =
     | Res | Resi -> `res 
     | Re | Rei -> `refmt (Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe") 
     | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) in   
+  Clflags.color := None;
   output_string stdout (Napkin_multi_printer.print syntax ~input)
 
 let set_color_option option = 
