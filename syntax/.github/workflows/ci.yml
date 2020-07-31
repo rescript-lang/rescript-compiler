@@ -16,7 +16,7 @@ jobs:
     - name: Use OCaml
       uses: avsm/setup-ocaml@v1
       with:
-        ocaml-version: 4.06
+        ocaml-version: 4.06.1
 
     - name: Use Node.js
       uses: actions/setup-node@v1
