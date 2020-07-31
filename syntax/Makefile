@@ -45,9 +45,8 @@ TEST_FILES = \
 
 lib/napkinscript.exe: $(FILES)
 	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/napkinscript.exe -I +compiler-libs ocamlcommon.cmxa  -I src $(FILES)
-	
-build-native: lib/refmt.exe lib/napkinscript.exe  depend
 
+build-native: lib/refmt.exe lib/napkinscript.exe depend
 
 bootstrap: build-native
 	ocaml unix.cma ./scripts/bspack.ml -bs-main Napkin_cli -I src -o ./lib/napkinscript.ml
@@ -67,7 +66,7 @@ lib/bench.exe: benchmarks/refmt_main3b.cmx benchmarks/Benchmark.ml $(FILES)
 benchmarks/refmt_main3b.cmx: benchmarks/refmt_main3b.ml
 	$(OCAMLOPT) -c -O2 -I +compiler-libs ocamlcommon.cmxa benchmarks/refmt_main3b.ml
 
-lib/test.exe: $(TEST_FILES) tests/napkin_test.cmx depend
+lib/test.exe: $(TEST_FILES) build-native tests/napkin_test.cmx
 	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/test.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa -I src -I tests $(FILES) $(TEST_FILES) tests/napkin_test.cmx
 
 test: build-native lib/test.exe
