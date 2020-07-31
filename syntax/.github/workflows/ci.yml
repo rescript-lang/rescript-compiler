@@ -13,6 +13,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Cache OCaml's opam
+      uses: actions/cache@v2.1.0
+      with:
+        path: ~/.opam
+        key: macos-latest-ocaml-4.06.1
+
+    - name: Cache npm
+      uses: actions/cache@v2.1.0
+      with:
+        path: ~/.npm
+        key: macos-latest-node-14.4.0-${{hashFiles('package-lock.json')}}
+
     - name: Use OCaml
       uses: avsm/setup-ocaml@v1
       with:
@@ -21,7 +33,7 @@ jobs:
     - name: Use Node.js
       uses: actions/setup-node@v1
       with:
-        node-version: 14.x
+        node-version: 14.4.0
 
     - run: npm install
 
