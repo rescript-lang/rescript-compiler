@@ -10,9 +10,7 @@ let printRes ~isInterface ~filename =
     in
     if parseResult.invalid then
       begin
-        let style = Napkin_diagnostics.parseReportStyle "" in
-        let msg = Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source in
-        print_endline msg;
+        Napkin_diagnostics.printReport parseResult.diagnostics parseResult.source;
         exit 1
       end
     else
@@ -26,9 +24,7 @@ let printRes ~isInterface ~filename =
     in
     if parseResult.invalid then
       begin
-        let style = Napkin_diagnostics.parseReportStyle "" in
-        let msg = Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source in
-        print_endline msg;
+        Napkin_diagnostics.printReport parseResult.diagnostics parseResult.source;
         exit 1
       end
     else

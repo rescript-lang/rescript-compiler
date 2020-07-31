@@ -19,6 +19,7 @@ API_FILES = \
 	src/napkin_token.cmx\
 	src/napkin_grammar.cmx\
 	src/napkin_reporting.cmx\
+	src/napkin_diagnostics_printing_utils.cmx \
 	src/napkin_diagnostics.cmx\
 	src/napkin_parsetree_viewer.cmx\
 	src/napkin_parens.cmx\

@@ -7,50 +7,42 @@ let 4 = for [%napkinscript.patternhole ] = 0 to 10 do Js.log \\"for\\" done
 ;;match x with | () -> [%napkinscript.exprhole ]
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/pattern/missing.res\\", line 1, characters 4-5:
-
-
-[31m1[0m │  let [31m=[0m 2
-2 │  let = 4
-3 │  
-
-I was expecting a name for this let-binding. Example: \`let message = \\"hello\\"\`
-
-
-File \\"/syntax/tests/parsing/errors/pattern/missing.res\\", line 2, characters 4-5:
-
-
-1 │  let = 2
-[31m2[0m │  let [31m=[0m 4
-3 │  
-4 │  for in 0 to 10 {
-
-I was expecting a name for this let-binding. Example: \`let message = \\"hello\\"\`
-
-
-File \\"/syntax/tests/parsing/errors/pattern/missing.res\\", line 4, characters 4-6:
-
-
-2 │  let = 4
-3 │  
-[31m4[0m │  for [31min[0m 0 to 10 {
-5 │    Js.log(\\"for\\")
-6 │  }
-
-A for-loop has the following form: \`for i in 0 to 10\`. Did you forget to supply a name before \`in\`?
-
-
-File \\"/syntax/tests/parsing/errors/pattern/missing.res\\", line 9, characters 2-4:
-
-
-7 │  
-8 │  switch x {
-[31m9[0m │  | [31m=>[0m ()
-10 │  }
-
-I was expecting a pattern to match on before the \`=>\`
-
-
-
+  Syntax error!
+  parsing/errors/pattern/missing.res 1:5  
+  1 │ let = 2
+  2 │ let = 4
+  3 │ 
+  
+  I was expecting a name for this let-binding. Example: \`let message = \\"hello\\"\`
+  
+  Syntax error!
+  parsing/errors/pattern/missing.res 2:5  
+  1 │ let = 2
+  2 │ let = 4
+  3 │ 
+  4 │ for in 0 to 10 {
+  
+  I was expecting a name for this let-binding. Example: \`let message = \\"hello\\"\`
+  
+  Syntax error!
+  parsing/errors/pattern/missing.res 4:5-6  
+  2 │ let = 4
+  3 │ 
+  4 │ for in 0 to 10 {
+  5 │   Js.log(\\"for\\")
+  6 │ }
+  
+  A for-loop has the following form: \`for i in 0 to 10\`. Did you forget to supply a name before \`in\`?
+  
+  Syntax error!
+  parsing/errors/pattern/missing.res 9:3-4  
+   7 │ 
+   8 │ switch x {
+   9 │ | => ()
+  10 │ }
+  11 │ 
+  
+  I was expecting a pattern to match on before the \`=>\`
+  
 ========================================================"
 `;

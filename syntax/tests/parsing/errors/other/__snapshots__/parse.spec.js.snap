@@ -5,16 +5,14 @@ exports[`patternMatching.js 1`] = `
 ;;match expr with
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/other/patternMatching.js\\", line 1, characters 13-15:
-
-
-[31m1[0m │  switch expr {
-2 │  }
-
-Pattern matching needs at least one case
-
-
-
+  Syntax error!
+  parsing/errors/other/patternMatching.js 1:14-2:1  
+  1 │ switch expr {
+  2 │ }
+  3 │ 
+  
+  Pattern matching needs at least one case
+  
 ========================================================"
 `;
 
@@ -28,67 +26,57 @@ let myList = x :: y
 let x::y = myList
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/other/spread.js\\", line 1, characters 11-14:
-
-
-[31m1[0m │  let arr = [[31m...[0mx, ...y]
-2 │  let [...arr, _] = [1, 2, 3]
-3 │  
-
-Arrays can't use the \`...\` spread currently. Please use \`concat\` or other Array helpers.
-
-
-File \\"/syntax/tests/parsing/errors/other/spread.js\\", line 2, characters 5-8:
-
-
-1 │  let arr = [...x, ...y]
-[31m2[0m │  let [[31m...[0marr, _] = [1, 2, 3]
-3 │  
-4 │  let record = {...x, ...y}
-
-Array's \`...\` spread is not supported in pattern matches.
+  Syntax error!
+  parsing/errors/other/spread.js 1:12-14  
+  1 │ let arr = [...x, ...y]
+  2 │ let [...arr, _] = [1, 2, 3]
+  3 │ 
+  
+  Arrays can't use the \`...\` spread currently. Please use \`concat\` or other Array helpers.
+  
+  Syntax error!
+  parsing/errors/other/spread.js 2:6-8  
+  1 │ let arr = [...x, ...y]
+  2 │ let [...arr, _] = [1, 2, 3]
+  3 │ 
+  4 │ let record = {...x, ...y}
+  
+  Array's \`...\` spread is not supported in pattern matches.
 Explanation: such spread would create a subarray; out of performance concern, our pattern matching currently guarantees to never create new intermediate data.
 Solution: if it's to validate the first few elements, use a \`when\` clause + Array size check + \`get\` checks on the current pattern. If it's to obtain a subarray, use \`Array.sub\` or \`Belt.Array.slice\`.
-
-
-File \\"/syntax/tests/parsing/errors/other/spread.js\\", line 4, characters 20-23:
-
-
-2 │  let [...arr, _] = [1, 2, 3]
-3 │  
-[31m4[0m │  let record = {...x, [31m...[0my}
-5 │  let {...x, ...y} = myRecord
-6 │  
-
-Records can only have one \`...\` spread, at the beginning.
+  
+  Syntax error!
+  parsing/errors/other/spread.js 4:21-23  
+  2 │ let [...arr, _] = [1, 2, 3]
+  3 │ 
+  4 │ let record = {...x, ...y}
+  5 │ let {...x, ...y} = myRecord
+  6 │ 
+  
+  Records can only have one \`...\` spread, at the beginning.
 Explanation: since records have a known, fixed shape, a spread like \`{a, ...b}\` wouldn't make sense, as \`b\` would override every field of \`a\` anyway.
-
-
-File \\"/syntax/tests/parsing/errors/other/spread.js\\", line 5, characters 14-18:
-
-
-3 │  
-4 │  let record = {...x, ...y}
-[31m5[0m │  let {...x, ...[31my} =[0m myRecord
-6 │  
-7 │  let myList = list{...x, ...y}
-
-Record's \`...\` spread is not supported in pattern matches.
+  
+  Syntax error!
+  parsing/errors/other/spread.js 5:15-18  
+  3 │ 
+  4 │ let record = {...x, ...y}
+  5 │ let {...x, ...y} = myRecord
+  6 │ 
+  7 │ let myList = list{...x, ...y}
+  
+  Record's \`...\` spread is not supported in pattern matches.
 Explanation: you can't collect a subset of a record's field into its own record, since a record needs an explicit declaration and that subset wouldn't have one.
 Solution: you need to pull out each field you want explicitly.
-
-
-File \\"/syntax/tests/parsing/errors/other/spread.js\\", line 8, characters 12-22:
-
-
-6 │  
-7 │  let myList = list{...x, ...y}
-[31m8[0m │  let list{...[31mx, ...y} =[0m myList
-
-List pattern matches only supports one \`...\` spread, at the end.
+  
+  Syntax error!
+  parsing/errors/other/spread.js 8:13-22  
+  6 │ 
+  7 │ let myList = list{...x, ...y}
+  8 │ let list{...x, ...y} = myList
+  9 │ 
+  
+  List pattern matches only supports one \`...\` spread, at the end.
 Explanation: a list spread at the tail is efficient, but a spread in the middle would create new list[s]; out of performance concern, our pattern matching currently guarantees to never create new intermediate data.
-
-
-
+  
 ========================================================"
 `;

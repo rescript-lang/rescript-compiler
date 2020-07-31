@@ -19,45 +19,35 @@ module Error3 =
   end
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typexpr/arrow.js\\", line 2, characters 21-24:
-
-
-1 │  // notice usage of -> instead of =>
-[31m2[0m │  external add_nat: nat -> int = \\"add_nat_bytecode\\" \\"add_nat_native\\"          
-                           [31m^^[0m
-3 │  
-4 │  module Error2 = {
-
-Did you forget a \`=>\` here? 
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/arrow.js\\", line 7, characters 26-30:
-
-
-5 │    type observation ={
-6 │      observed: int,
-[31m7[0m │      onStep: (~currentValue   ) => unit          
-                                [31m^[0m
-8 │    }
-9 │  }
-
-Did you forget a \`:\` here? It signals the start of a type
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/arrow.js\\", line 14, characters 25-29:
-
-
-12 │    type observation ={
-13 │      observed: int,
-[31m14[0m │      onStep: ~currentValue  => unit          
-                               [31m^[0m
-15 │    }
-16 │  }
-
-Did you forget a \`:\` here? It signals the start of a type
-
-
-
+  Syntax error!
+  parsing/errors/typexpr/arrow.js 2:22-24  
+  1 │ // notice usage of -> instead of =>
+  2 │ external add_nat: nat -> int = \\"add_nat_bytecode\\" \\"add_nat_native\\"
+  3 │ 
+  4 │ module Error2 = {
+  
+  Did you forget a \`=>\` here? 
+  
+  Syntax error!
+  parsing/errors/typexpr/arrow.js 7:27-30  
+  5 │   type observation ={
+  6 │     observed: int,
+  7 │     onStep: (~currentValue   ) => unit
+  8 │   }
+  9 │ }
+  
+  Did you forget a \`:\` here? It signals the start of a type
+  
+  Syntax error!
+  parsing/errors/typexpr/arrow.js 14:26-29  
+  12 │   type observation ={
+  13 │     observed: int,
+  14 │     onStep: ~currentValue  => unit
+  15 │   }
+  16 │ }
+  
+  Did you forget a \`:\` here? It signals the start of a type
+  
 ========================================================"
 `;
 
@@ -88,142 +78,119 @@ type nonrec websocket =
 type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 2, characters 7-21:
-
-
-1 │  type state = {
-[31m2[0m │    \\"url\\"          
-             [31m^[0m
-3 │    \\"protocols\\": array<string>
-4 │  }
-
-Did you forget a \`:\` here? It signals the start of a type
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 7, characters 13-27:
-
-
-5 │  
-6 │  type state = {
-[31m7[0m │    @attr \\"url\\"          
-                   [31m^[0m
-8 │    \\"protocols\\": array<string>
-9 │  }
-
-Did you forget a \`:\` here? It signals the start of a type
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 13, characters 13-27:
-
-
-11 │  type state = {
-12 │    \\"url\\": string,
-[31m13[0m │    \\"protocols\\"          
-                   [31m^[0m
-14 │    \\"websocket\\": Websocket.t,
-15 │  }
-
-Did you forget a \`:\` here? It signals the start of a type
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 19, characters 13-15:
-
-
-17 │  type state = {
-18 │    \\"url\\": string,
-[31m19[0m │    \\"protocols\\"          
-                   [31m^[0m
-20 │  }
-21 │  
-
-Did you forget a \`:\` here? It signals the start of a type
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 25, characters 0-1:
-
-
-23 │    @bs.meth
-24 │    \\"send\\": string =>
-[31m25[0m │  [31m}[0m
-26 │  
-27 │  type state = {
-
-I'm missing a type here
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 28, characters 9-10:
-
-
-26 │  
-27 │  type state = {
-[31m28[0m │    \\"age\\": [31m,[0m
-29 │    \\"name\\": string
-30 │  }
-
-I'm missing a type here
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 33, characters 17-18:
-
-
-31 │  
-32 │  type state = {
-[31m33[0m │    @bs.set \\"age\\": [31m,[0m
-34 │    \\"name\\": string
-35 │  }
-
-I'm missing a type here
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 37, characters 24-25:
-
-
-35 │  }
-36 │  
-[31m37[0m │  type state = {.. \\"age\\": [31m}[0m
-38 │  type state = {
-39 │    ..
-
-I'm missing a type here
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 40, characters 7-17:
-
-
-38 │  type state = {
-39 │    ..
-[31m40[0m │    \\"age\\"           
-             [31m^[0m
-41 │    \\"name\\": string
-42 │  }
-
-Did you forget a \`:\` here? It signals the start of a type
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 46, characters 2-11:
-
-
-44 │  type websocket = {
-45 │    \\"id\\":
-[31m46[0m │    [31m\\"channel\\"[0m: channelTyp
-47 │  }
-48 │  
-
-I'm missing a type here
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/bsObjSugar.js\\", line 50, characters 6-7:
-
-
-48 │  
-49 │  type websocket = {
-[31m50[0m │    \\"id\\"          
-            [31m^[0m
-
-Did you forget a \`:\` here? It signals the start of a type
-
-
-
+  Syntax error!
+  parsing/errors/typexpr/bsObjSugar.js 2:8-3:13  
+  1 │ type state = {
+  2 │   \\"url\\"
+  3 │   \\"protocols\\": array<string>
+  4 │ }
+  5 │ 
+  
+  Did you forget a \`:\` here? It signals the start of a type
+  
+  Syntax error!
+  parsing/errors/typexpr/bsObjSugar.js 7:14-8:13  
+   5 │ 
+   6 │ type state = {
+   7 │   @attr \\"url\\"
+   8 │   \\"protocols\\": array<string>
+   9 │ }
+  10 │ 
+  
+  Did you forget a \`:\` here? It signals the start of a type
+  
+  Syntax error!
+  parsing/errors/typexpr/bsObjSugar.js 13:14-14:13  
+  11 │ type state = {
+  12 │   \\"url\\": string,
+  13 │   \\"protocols\\"
+  14 │   \\"websocket\\": Websocket.t,
+  15 │ }
+  16 │ 
+  
+  Did you forget a \`:\` here? It signals the start of a type
+  
+  Syntax error!
+  parsing/errors/typexpr/bsObjSugar.js 19:14-20:1  
+  17 │ type state = {
+  18 │   \\"url\\": string,
+  19 │   \\"protocols\\"
+  20 │ }
+  21 │ 
+  22 │ type state = {
+  
+  Did you forget a \`:\` here? It signals the start of a type
+  
+  Syntax error!
+  parsing/errors/typexpr/bsObjSugar.js 25:1  
+  23 │   @bs.meth
+  24 │   \\"send\\": string =>
+  25 │ }
+  26 │ 
+  27 │ type state = {
+  
+  I'm missing a type here
+  
+  Syntax error!
+  parsing/errors/typexpr/bsObjSugar.js 28:10  
+  26 │ 
+  27 │ type state = {
+  28 │   \\"age\\": ,
+  29 │   \\"name\\": string
+  30 │ }
+  
+  I'm missing a type here
+  
+  Syntax error!
+  parsing/errors/typexpr/bsObjSugar.js 33:18  
+  31 │ 
+  32 │ type state = {
+  33 │   @bs.set \\"age\\": ,
+  34 │   \\"name\\": string
+  35 │ }
+  
+  I'm missing a type here
+  
+  Syntax error!
+  parsing/errors/typexpr/bsObjSugar.js 37:25  
+  35 │ }
+  36 │ 
+  37 │ type state = {.. \\"age\\": }
+  38 │ type state = {
+  39 │   ..
+  
+  I'm missing a type here
+  
+  Syntax error!
+  parsing/errors/typexpr/bsObjSugar.js 40:8-41:8  
+  38 │ type state = {
+  39 │   ..
+  40 │   \\"age\\" 
+  41 │   \\"name\\": string
+  42 │ }
+  43 │ 
+  
+  Did you forget a \`:\` here? It signals the start of a type
+  
+  Syntax error!
+  parsing/errors/typexpr/bsObjSugar.js 46:3-11  
+  44 │ type websocket = {
+  45 │   \\"id\\":
+  46 │   \\"channel\\": channelTyp
+  47 │ }
+  48 │ 
+  
+  I'm missing a type here
+  
+  Syntax error!
+  parsing/errors/typexpr/bsObjSugar.js 50:7-51:0  
+  48 │ 
+  49 │ type websocket = {
+  50 │   \\"id\\"
+  51 │ 
+  
+  Did you forget a \`:\` here? It signals the start of a type
+  
 ========================================================"
 `;
 
@@ -233,16 +200,14 @@ external printName : name:unit -> unit = \\"printName\\"[@@bs.module
                                                       \\"moduleName\\"]
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typexpr/garbage.res\\", line 2, characters 27-28:
-
-
-1 │  @bs.module(\\"moduleName\\")
-[31m2[0m │  external printName: (~name:[31m?[0m, unit) => unit = \\"printName\\"
-
-I'm not sure what to parse here when looking at \\"?\\".
-
-
-
+  Syntax error!
+  parsing/errors/typexpr/garbage.res 2:28  
+  1 │ @bs.module(\\"moduleName\\")
+  2 │ external printName: (~name:?, unit) => unit = \\"printName\\"
+  3 │ 
+  
+  I'm not sure what to parse here when looking at \\"?\\".
+  
 ========================================================"
 `;
 
@@ -256,58 +221,50 @@ type nonrec t = int node option
 type nonrec t = int node option
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 2, characters 27-31:
-
-
-1 │  type node<'a> = {
-[31m2[0m │    _value: Js.Nullable.value[31m('a)[0m
-3 │  }
-4 │  
-
-Type parameters require angle brackets:
+  Syntax error!
+  parsing/errors/typexpr/typeConstructorArgs.js 2:28-31  
+  1 │ type node<'a> = {
+  2 │   _value: Js.Nullable.value('a)
+  3 │ }
+  4 │ 
+  
+  Type parameters require angle brackets:
   Js.Nullable.value<'a>
 
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 5, characters 23-27:
-
-
-3 │  }
-4 │  
-[31m5[0m │  type t<'a> = Belt.Map.t[31m('a)[0m
-6 │  type t<'a> = private Belt.Map.t('a)
-7 │  
-
-Type parameters require angle brackets:
+  
+  Syntax error!
+  parsing/errors/typexpr/typeConstructorArgs.js 5:24-27  
+  3 │ }
+  4 │ 
+  5 │ type t<'a> = Belt.Map.t('a)
+  6 │ type t<'a> = private Belt.Map.t('a)
+  7 │ 
+  
+  Type parameters require angle brackets:
   Belt.Map.t<'a>
 
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 6, characters 31-35:
-
-
-4 │  
-5 │  type t<'a> = Belt.Map.t('a)
-[31m6[0m │  type t<'a> = private Belt.Map.t[31m('a)[0m
-7 │  
-8 │  type t = option<<node<int>>
-
-Type parameters require angle brackets:
+  
+  Syntax error!
+  parsing/errors/typexpr/typeConstructorArgs.js 6:32-35  
+  4 │ 
+  5 │ type t<'a> = Belt.Map.t('a)
+  6 │ type t<'a> = private Belt.Map.t('a)
+  7 │ 
+  8 │ type t = option<<node<int>>
+  
+  Type parameters require angle brackets:
   Belt.Map.t<'a>
 
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/typeConstructorArgs.js\\", line 9, characters 27-28:
-
-
-7 │  
-8 │  type t = option<<node<int>>
-[31m9[0m │  type t = option(<node<int>>[31m)[0m
-
-I'm not sure what to parse here when looking at \\")\\".
-
-
-
+  
+  Syntax error!
+  parsing/errors/typexpr/typeConstructorArgs.js 9:28  
+   7 │ 
+   8 │ type t = option<<node<int>>
+   9 │ type t = option(<node<int>>)
+  10 │ 
+  
+  I'm not sure what to parse here when looking at \\")\\".
+  
 ========================================================"
 `;
 
@@ -317,24 +274,21 @@ type nonrec 'A x = '
 type nonrec 'A x = 'let
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typexpr/typeVar.res\\", line 1, characters 14-15:
-
-
-[31m1[0m │  type x<'A> = '[31m_[0m
-2 │  type x<'A> = 'let
-
-A type variable consists of a singlequote followed by a name like \`'a\` or \`'A\`
-
-
-File \\"/syntax/tests/parsing/errors/typexpr/typeVar.res\\", line 2, characters 14-17:
-
-
-1 │  type x<'A> = '_
-[31m2[0m │  type x<'A> = '[31mlet[0m
-
-\`let\` is a reserved keyword. Keywords need to be escaped: \\\\\\"let\\"
-
-
-
+  Syntax error!
+  parsing/errors/typexpr/typeVar.res 1:15  
+  1 │ type x<'A> = '_
+  2 │ type x<'A> = 'let
+  3 │ 
+  
+  A type variable consists of a singlequote followed by a name like \`'a\` or \`'A\`
+  
+  Syntax error!
+  parsing/errors/typexpr/typeVar.res 2:15-17  
+  1 │ type x<'A> = '_
+  2 │ type x<'A> = 'let
+  3 │ 
+  
+  \`let\` is a reserved keyword. Keywords need to be escaped: \\\\\\"let\\"
+  
 ========================================================"
 `;

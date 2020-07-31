@@ -176,27 +176,16 @@ function printFile(filename) {
   return cp.spawnSync(parser, args).stdout.toString("utf8");
 }
 
-// File "/home/travis/build/IwanKaramazow/syntax/tests/parsing/errors/scanner/oldDerefOp.js", line: 1, characters 4-5:
-// test output contains the full path of the file
-// this differs between multiple machines
-// Just drop "/home/travis/build/IwanKaramazow" to make the file path machine independent
+/* Parser error output format:
+   /home/travis/build/IwanKaramazow/syntax/tests/parsing/errors/scanner/oldDerefOp.js 1:4-5
+
+   test output contains the file's absolute path. Turn it relative to make it
+   machine-independent
+*/
 let makeReproducibleFilename = (txt) => {
-  // "Parse error: "
-  let lines = txt.split("\n");
-  for (let i = 0; i < lines.length; i++) {
-    let txt = lines[i];
-    if (
-      txt.indexOf("File") === -1 ||
-      txt.indexOf("line") === -1 ||
-      txt.indexOf("characters") === -1
-    ) {
-      continue;
-    }
-    let prefix = txt.substring(0, 6); // Keep `File "`-prefix
-    let suffix = txt.substring(txt.indexOf("/syntax"), txt.length);
-    lines[i] = prefix + suffix;
-  }
-  return lines.join("\n");
+  return txt.replace(/(  Syntax error!\n  )(.+)( .+)\n/g, (match, intro, filepath, loc) => {
+    return intro + path.relative(__dirname, filepath) + loc
+  })
 };
 
 global.runPrinter = (dirname) => {

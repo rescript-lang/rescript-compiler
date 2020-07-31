@@ -16,7 +16,7 @@ type ('diagnostics) parsingEngine = {
   parseInterface:
     forPrinter:bool -> filename:string
     -> (Parsetree.signature, 'diagnostics) parseResult;
-  stringOfDiagnostics: source:string -> filename:string -> 'diagnostics  -> string
+  stringOfDiagnostics: source:string -> filename:string -> 'diagnostics  -> unit
 }
 
 type printEngine = {
@@ -73,8 +73,7 @@ let parsingEngine = {
     }
   end;
   stringOfDiagnostics = begin fun ~source ~filename:_ diagnostics ->
-    let style = Napkin_diagnostics.parseReportStyle "" in
-    Napkin_diagnostics.stringOfReport ~style diagnostics source
+    Napkin_diagnostics.printReport diagnostics source
   end;
 }
 
@@ -93,9 +92,7 @@ let parse_implementation sourcefile =
     parsingEngine.parseImplementation ~forPrinter:false ~filename:sourcefile
   in
   if parseResult.invalid then begin
-    let style = Napkin_diagnostics.parseReportStyle "" in
-    let msg = Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source in
-    print_endline msg;
+    Napkin_diagnostics.printReport parseResult.diagnostics parseResult.source;
     exit 1
   end;
   parseResult.parsetree
@@ -105,9 +102,7 @@ let parse_interface sourcefile =
   Location.input_name := sourcefile;
   let parseResult = parsingEngine.parseInterface ~forPrinter:false ~filename:sourcefile in
   if parseResult.invalid then begin
-    let style = Napkin_diagnostics.parseReportStyle "" in
-    let msg = Napkin_diagnostics.stringOfReport ~style parseResult.diagnostics parseResult.source in
-    print_endline msg;
+    Napkin_diagnostics.printReport parseResult.diagnostics parseResult.source;
     exit 1
   end;
   parseResult.parsetree

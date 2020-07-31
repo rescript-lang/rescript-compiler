@@ -133,10 +133,10 @@ module OutcomePrinterTests = struct
     let result = Napkin_driver.parsingEngine.parseImplementation ~forPrinter:false ~filename in
 
     if result.Napkin_driver.invalid then (
-      prerr_string (
-        Napkin_driver.parsingEngine.stringOfDiagnostics
-          ~source:(result.source) ~filename:result.filename result.diagnostics
-      );
+      Napkin_driver.parsingEngine.stringOfDiagnostics
+        ~source:(result.source)
+        ~filename:result.filename
+        result.diagnostics;
       exit 1
     ) else
      result.Napkin_driver.parsetree

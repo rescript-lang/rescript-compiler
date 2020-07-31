@@ -14,7 +14,7 @@ type ('diagnostics) parsingEngine = {
   parseInterface:
     forPrinter:bool -> filename:string
     -> (Parsetree.signature, 'diagnostics) parseResult;
-  stringOfDiagnostics: source:string -> filename:string -> 'diagnostics  -> string
+  stringOfDiagnostics: source:string -> filename:string -> 'diagnostics  -> unit
 }
 
 type printEngine = {

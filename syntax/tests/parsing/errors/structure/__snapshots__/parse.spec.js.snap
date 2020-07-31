@@ -6,19 +6,16 @@ let x = 1
 let y = 2
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/structure/closingBraces.res\\", line 3, characters 0-1:
-
-
-1 │  let x = 1
-2 │  
-[31m3[0m │  [31m}[0m}}
-4 │  
-5 │  let y = 2
-
-I'm not sure what to parse here when looking at \\"}\\".
-
-
-
+  Syntax error!
+  parsing/errors/structure/closingBraces.res 3:1  
+  1 │ let x = 1
+  2 │ 
+  3 │ }}}
+  4 │ 
+  5 │ let y = 2
+  
+  I'm not sure what to parse here when looking at \\"}\\".
+  
 ========================================================"
 `;
 
@@ -28,15 +25,13 @@ open Foo
 exception Bar 
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/structure/consecutive.res\\", line 1, characters 8-18:
-
-
-[31m1[0m │  open Foo[31m exception[0m Bar
-
-consecutive statements on a line must be separated by ';' or a newline
-
-
-
+  Syntax error!
+  parsing/errors/structure/consecutive.res 1:9-18  
+  1 │ open Foo exception Bar
+  2 │ 
+  
+  consecutive statements on a line must be separated by ';' or a newline
+  
 ========================================================"
 `;
 
@@ -46,18 +41,16 @@ module C = struct module T = (Fun)(struct ;;foo (a + c) (b + d) end) end
 ;;Js.log \\"test\\"
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/structure/gh16A.res\\", line 6, characters 0-1:
-
-
-4 │    })
-5 │  }
-[31m6[0m │  [31m)[0m
-7 │  Js.log(\\"test\\"); // Is omitted from the compiled JS
-
-I'm not sure what to parse here when looking at \\")\\".
-
-
-
+  Syntax error!
+  parsing/errors/structure/gh16A.res 6:1  
+  4 │   })
+  5 │ }
+  6 │ )
+  7 │ Js.log(\\"test\\"); // Is omitted from the compiled JS
+  8 │ 
+  
+  I'm not sure what to parse here when looking at \\")\\".
+  
 ========================================================"
 `;
 
@@ -88,19 +81,17 @@ module ClientSet =
 ;;Js.log \\"test\\"
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/structure/gh16B.res\\", line 19, characters 1-2:
-
-
-17 │  
-18 │  
-[31m19[0m │  }[31m)[0m))))))))))))))))))))))))))))); // this \\")\\" here, this can even be \\"))))))))))))))))\\" and should error
-20 │  
-21 │  Js.log(\\"test\\") // should not be omitted
-
-I'm not sure what to parse here when looking at \\")\\".
-
-
-
+  Syntax error!
+  parsing/errors/structure/gh16B.res 19:2  
+  17 │ 
+  18 │ 
+  19 │ })))))))))))))))))))))))))))))); // this \\")\\" here, this can even be \\")
+       )))))))))))))))\\" and should error
+  20 │ 
+  21 │ Js.log(\\"test\\") // should not be omitted
+  
+  I'm not sure what to parse here when looking at \\")\\".
+  
 ========================================================"
 `;
 
@@ -118,106 +109,89 @@ let x = string = y
 let (x : int1) = (int2 = 3 :> int3)
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/structure/letBinding.js\\", line 2, characters 17-20:
-
-
-1 │  // missing =
-[31m2[0m │  let rightResource ur.resources.find(          
-                       [31m^[0m
-3 │    r => r.account_id === connection.left.account.id
-4 │  )
-
-Did you forget a \`=\` here? 
-
-
-File \\"/syntax/tests/parsing/errors/structure/letBinding.js\\", line 8, characters 11-13:
-
-
-6 │  let x = {
-7 │    // missing =
-[31m8[0m │    let field p->parseFieldDeclaration           
-                 [31m^[0m
-9 │    field
-10 │  }
-
-Did you forget a \`=\` here? 
-
-
-File \\"/syntax/tests/parsing/errors/structure/letBinding.js\\", line 14, characters 18-26:
-
-
-12 │  let t = {
-13 │  	// missing =
-[31m14[0m │  	let (_, _, token) scanner->scan          
-                        [31m^[0m
-15 │    token
-16 │  }
-
-Did you forget a \`=\` here? 
-
-
-File \\"/syntax/tests/parsing/errors/structure/letBinding.js\\", line 18, characters 38-43:
-
-
-16 │  }
-17 │  
-[31m18[0m │  let keyTable: Belt.Map.String.t<int> =
-19 │  
-20 │  let foo = 
-
-This let-binding misses an expression
-
-
-File \\"/syntax/tests/parsing/errors/structure/letBinding.js\\", line 20, characters 9-41:
-
-
-18 │  let keyTable: Belt.Map.String.t<int> =
-19 │  
-[31m20[0m │  let foo =[31m[0m 
-21 │  
-22 │  // no magic in the syntax
-
-This let-binding misses an expression
-
-
-File \\"/syntax/tests/parsing/errors/structure/letBinding.js\\", line 23, characters 10-13:
-
-
-21 │  
-22 │  // no magic in the syntax
-[31m23[0m │  let x: int :> string = y          
-                [31m^[0m
-24 │  
-25 │  // no magic in the syntax
-
-Did you forget a \`=\` here? 
-
-
-File \\"/syntax/tests/parsing/errors/structure/letBinding.js\\", line 26, characters 5-8:
-
-
-24 │  
-25 │  // no magic in the syntax
-[31m26[0m │  let x :> string = y          
-           [31m^[0m
-27 │  
-28 │  // no magic in the syntax
-
-Did you forget a \`=\` here? 
-
-
-File \\"/syntax/tests/parsing/errors/structure/letBinding.js\\", line 29, characters 12-15:
-
-
-27 │  
-28 │  // no magic in the syntax
-[31m29[0m │  let x : int1 :> int2 = 3 :> int3          
-                  [31m^[0m
-
-Did you forget a \`=\` here? 
-
-
-
+  Syntax error!
+  parsing/errors/structure/letBinding.js 2:18-20  
+  1 │ // missing =
+  2 │ let rightResource ur.resources.find(
+  3 │   r => r.account_id === connection.left.account.id
+  4 │ )
+  
+  Did you forget a \`=\` here? 
+  
+  Syntax error!
+  parsing/errors/structure/letBinding.js 8:12-13  
+   6 │ let x = {
+   7 │   // missing =
+   8 │   let field p->parseFieldDeclaration 
+   9 │   field
+  10 │ }
+  
+  Did you forget a \`=\` here? 
+  
+  Syntax error!
+  parsing/errors/structure/letBinding.js 14:19-26  
+  12 │ let t = {
+  13 │ 	// missing =
+  14 │ 	let (_, _, token) scanner->scan
+  15 │   token
+  16 │ }
+  
+  Did you forget a \`=\` here? 
+  
+  Syntax error!
+  parsing/errors/structure/letBinding.js 18:39-20:3  
+  16 │ }
+  17 │ 
+  18 │ let keyTable: Belt.Map.String.t<int> =
+  19 │ 
+  20 │ let foo = 
+  21 │ 
+  22 │ // no magic in the syntax
+  
+  This let-binding misses an expression
+  
+  Syntax error!
+  parsing/errors/structure/letBinding.js 20:10-23:3  
+  18 │ let keyTable: Belt.Map.String.t<int> =
+  19 │ 
+  20 │ let foo = 
+  21 │ 
+  22 │ // no magic in the syntax
+  23 │ let x: int :> string = y
+  24 │ 
+  25 │ // no magic in the syntax
+  
+  This let-binding misses an expression
+  
+  Syntax error!
+  parsing/errors/structure/letBinding.js 23:11-13  
+  21 │ 
+  22 │ // no magic in the syntax
+  23 │ let x: int :> string = y
+  24 │ 
+  25 │ // no magic in the syntax
+  
+  Did you forget a \`=\` here? 
+  
+  Syntax error!
+  parsing/errors/structure/letBinding.js 26:6-8  
+  24 │ 
+  25 │ // no magic in the syntax
+  26 │ let x :> string = y
+  27 │ 
+  28 │ // no magic in the syntax
+  
+  Did you forget a \`=\` here? 
+  
+  Syntax error!
+  parsing/errors/structure/letBinding.js 29:13-15  
+  27 │ 
+  28 │ // no magic in the syntax
+  29 │ let x : int1 :> int2 = 3 :> int3
+  30 │ 
+  
+  Did you forget a \`=\` here? 
+  
 ========================================================"
 `;
 
@@ -227,24 +201,21 @@ let [%napkinscript.patternhole ] = 1
 let [%napkinscript.patternhole ] = 3
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/structure/letBindingPatternKeyword.js\\", line 1, characters 4-8:
-
-
-[31m1[0m │  let [31mopen[0m = 1
-2 │  let to = 3
-
-\`open\` is a reserved keyword. Keywords need to be escaped: \\\\\\"open\\"
-
-
-File \\"/syntax/tests/parsing/errors/structure/letBindingPatternKeyword.js\\", line 2, characters 4-6:
-
-
-1 │  let open = 1
-[31m2[0m │  let [31mto[0m = 3
-
-\`to\` is a reserved keyword. Keywords need to be escaped: \\\\\\"to\\"
-
-
-
+  Syntax error!
+  parsing/errors/structure/letBindingPatternKeyword.js 1:5-8  
+  1 │ let open = 1
+  2 │ let to = 3
+  3 │ 
+  
+  \`open\` is a reserved keyword. Keywords need to be escaped: \\\\\\"open\\"
+  
+  Syntax error!
+  parsing/errors/structure/letBindingPatternKeyword.js 2:5-6  
+  1 │ let open = 1
+  2 │ let to = 3
+  3 │ 
+  
+  \`to\` is a reserved keyword. Keywords need to be escaped: \\\\\\"to\\"
+  
 ========================================================"
 `;

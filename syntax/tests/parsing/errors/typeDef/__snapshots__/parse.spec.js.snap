@@ -8,17 +8,15 @@ type nonrec 'a node =
   } 
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typeDef/emptyInlineRecord.res\\", line 3, characters 9-11:
-
-
-1 │  type node<'a> =
-2 │    | Nil
-[31m3[0m │    | Node([31m{}[0m)
-
-An inline record declaration needs at least one field
-
-
-
+  Syntax error!
+  parsing/errors/typeDef/emptyInlineRecord.res 3:10-11  
+  1 │ type node<'a> =
+  2 │   | Nil
+  3 │   | Node({})
+  4 │ 
+  
+  An inline record declaration needs at least one field
+  
 ========================================================"
 `;
 
@@ -28,15 +26,13 @@ type nonrec record = {
   }
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typeDef/emptyRecord.js\\", line 1, characters 14-16:
-
-
-[31m1[0m │  type record = [31m{}[0m
-
-A record needs at least one field
-
-
-
+  Syntax error!
+  parsing/errors/typeDef/emptyRecord.js 1:15-16  
+  1 │ type record = {}
+  2 │ 
+  
+  A record needs at least one field
+  
 ========================================================"
 `;
 
@@ -45,15 +41,13 @@ exports[`namedParameters.js 1`] = `
 type nonrec draw = stroke:pencil -> unit
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typeDef/namedParameters.js\\", line 1, characters 14-20:
-
-
-[31m1[0m │  type  draw = ([31mstroke[0m: pencil) => unit
-
-Parameter names start with a \`~\`, like: ~stroke
-
-
-
+  Syntax error!
+  parsing/errors/typeDef/namedParameters.js 1:15-20  
+  1 │ type  draw = (stroke: pencil) => unit
+  2 │ 
+  
+  Parameter names start with a \`~\`, like: ~stroke
+  
 ========================================================"
 `;
 
@@ -65,41 +59,34 @@ type nonrec z = [< \`A  | \`B ]
 type t = [ [%napkinscript.typehole ] | [%napkinscript.typehole ]]
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typeDef/polyvariant.js\\", line 1, characters 12-13:
-
-
-[31m1[0m │  type t = [< [31m][0m
-2 │  
-3 │  type t = [ s ]
-
-I'm not sure what to parse here when looking at \\"]\\".
-
-
-File \\"/syntax/tests/parsing/errors/typeDef/polyvariant.js\\", line 3, characters 12-14:
-
-
-1 │  type t = [< ]
-2 │  
-[31m3[0m │  type t = [ s ]          
-                  [31m^[0m
-4 │  
-5 │  type z = [< | #A | #B > ]
-
-Did you forget a \`|\` here? 
-
-
-File \\"/syntax/tests/parsing/errors/typeDef/polyvariant.js\\", line 7, characters 14-15:
-
-
-5 │  type z = [< | #A | #B > ]
-6 │  
-[31m7[0m │  type rec t = [[31m][0m
-8 │  
-
-I'm not sure what to parse here when looking at \\"]\\".
-
-
-
+  Syntax error!
+  parsing/errors/typeDef/polyvariant.js 1:13  
+  1 │ type t = [< ]
+  2 │ 
+  3 │ type t = [ s ]
+  
+  I'm not sure what to parse here when looking at \\"]\\".
+  
+  Syntax error!
+  parsing/errors/typeDef/polyvariant.js 3:13-14  
+  1 │ type t = [< ]
+  2 │ 
+  3 │ type t = [ s ]
+  4 │ 
+  5 │ type z = [< | #A | #B > ]
+  
+  Did you forget a \`|\` here? 
+  
+  Syntax error!
+  parsing/errors/typeDef/polyvariant.js 7:15  
+  5 │ type z = [< | #A | #B > ]
+  6 │ 
+  7 │ type rec t = []
+  8 │ 
+  9 │ 
+  
+  I'm not sure what to parse here when looking at \\"]\\".
+  
 ========================================================"
 `;
 
@@ -111,17 +98,15 @@ type nonrec observation =
   observer: [%napkinscript.typehole ] }
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typeDef/record.res\\", line 4, characters 0-1:
-
-
-2 │    observed: int,
-3 │    observer:
-[31m4[0m │  [31m}[0m
-
-I'm missing a type here
-
-
-
+  Syntax error!
+  parsing/errors/typeDef/record.res 4:1  
+  2 │   observed: int,
+  3 │   observer:
+  4 │ }
+  5 │ 
+  
+  I'm missing a type here
+  
 ========================================================"
 `;
 
@@ -133,37 +118,32 @@ type nonrec t = [%napkinscript.typehole ]
 type nonrec state = [%napkinscript.typehole ]
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typeDef/typeDef.js\\", line 1, characters 14-18:
-
-
-[31m1[0m │  type rec stack          
-                    [31m^[0m
-2 │    | Empty
-3 │  
-
-Did you forget a \`=\` here? 
-
-
-File \\"/syntax/tests/parsing/errors/typeDef/typeDef.js\\", line 8, characters 0-4:
-
-
-6 │  
-7 │  // missing type
-[31m8[0m │  [31mtype[0m state =
-
-Missing a type here
-
-
-File \\"/syntax/tests/parsing/errors/typeDef/typeDef.js\\", line 9, characters 0-0:
-
-
-7 │  // missing type
-8 │  type state =
-
-Missing a type here
-
-
-
+  Syntax error!
+  parsing/errors/typeDef/typeDef.js 1:15-2:3  
+  1 │ type rec stack
+  2 │   | Empty
+  3 │ 
+  4 │ // missing type
+  
+  Did you forget a \`=\` here? 
+  
+  Syntax error!
+  parsing/errors/typeDef/typeDef.js 8:1-4  
+  6 │ 
+  7 │ // missing type
+  8 │ type state =
+  9 │ 
+  
+  Missing a type here
+  
+  Syntax error!
+  parsing/errors/typeDef/typeDef.js 9:1  
+  7 │ // missing type
+  8 │ type state =
+  9 │ 
+  
+  Missing a type here
+  
 ========================================================"
 `;
 
@@ -189,66 +169,55 @@ type nonrec ('from, 'foo) derivedNode =
   updateF: 'from -> 'to_ }
 =====Errors=============================================
 
-File \\"/syntax/tests/parsing/errors/typeDef/typeParams.js\\", line 1, characters 9-13:
-
-
-[31m1[0m │  type node[31m('a)[0m = {
-2 │    _value: Js.Nullable.value<'a>
-3 │  }
-
-Type parameters require angle brackets:
+  Syntax error!
+  parsing/errors/typeDef/typeParams.js 1:10-13  
+  1 │ type node('a) = {
+  2 │   _value: Js.Nullable.value<'a>
+  3 │ }
+  
+  Type parameters require angle brackets:
   node<'a>
 
-
-
-File \\"/syntax/tests/parsing/errors/typeDef/typeParams.js\\", line 5, characters 25-27:
-
-
-3 │  }
-4 │  
-[31m5[0m │  type derivedNode<'from, '[31mto[0m> = {
-6 │    mutable value: 'to_,
-7 │    updateF: 'from => 'to_,
-
-\`to\` is a reserved keyword. Keywords need to be escaped: \\\\\\"to\\"
-
-
-File \\"/syntax/tests/parsing/errors/typeDef/typeParams.js\\", line 10, characters 25-26:
-
-
-8 │  }
-9 │  
-[31m10[0m │  type derivedNode<'from, '[31m+[0m> = {
-11 │    mutable value: 'to_,
-12 │    updateF: 'from => 'to_,
-
-A type param consists of a singlequote followed by a name like \`'a\` or \`'A\`
-
-
-File \\"/syntax/tests/parsing/errors/typeDef/typeParams.js\\", line 15, characters 25-26:
-
-
-13 │  }
-14 │  
-[31m15[0m │  type derivedNode<'from, '[31m_[0m> = {
-16 │    mutable value: 'to_,
-17 │    updateF: 'from => 'to_,
-
-A type param consists of a singlequote followed by a name like \`'a\` or \`'A\`
-
-
-File \\"/syntax/tests/parsing/errors/typeDef/typeParams.js\\", line 21, characters 24-27:
-
-
-19 │  
-20 │  
-[31m21[0m │  type derivedNode<'from, [31mfoo[0m> = {
-22 │    mutable value: 'to_,
-23 │    updateF: 'from => 'to_,
-
-Type params start with a singlequote: 'foo
-
-
-
+  
+  Syntax error!
+  parsing/errors/typeDef/typeParams.js 5:26-27  
+  3 │ }
+  4 │ 
+  5 │ type derivedNode<'from, 'to> = {
+  6 │   mutable value: 'to_,
+  7 │   updateF: 'from => 'to_,
+  
+  \`to\` is a reserved keyword. Keywords need to be escaped: \\\\\\"to\\"
+  
+  Syntax error!
+  parsing/errors/typeDef/typeParams.js 10:26  
+   8 │ }
+   9 │ 
+  10 │ type derivedNode<'from, '+> = {
+  11 │   mutable value: 'to_,
+  12 │   updateF: 'from => 'to_,
+  
+  A type param consists of a singlequote followed by a name like \`'a\` or \`'A\`
+  
+  Syntax error!
+  parsing/errors/typeDef/typeParams.js 15:26  
+  13 │ }
+  14 │ 
+  15 │ type derivedNode<'from, '_> = {
+  16 │   mutable value: 'to_,
+  17 │   updateF: 'from => 'to_,
+  
+  A type param consists of a singlequote followed by a name like \`'a\` or \`'A\`
+  
+  Syntax error!
+  parsing/errors/typeDef/typeParams.js 21:25-27  
+  19 │ 
+  20 │ 
+  21 │ type derivedNode<'from, foo> = {
+  22 │   mutable value: 'to_,
+  23 │   updateF: 'from => 'to_,
+  
+  Type params start with a singlequote: 'foo
+  
 ========================================================"
 `;

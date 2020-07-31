@@ -16,9 +16,10 @@ src/napkin_core.cmx : src/napkin_token.cmx src/napkin_scanner.cmx \
     src/napkin_grammar.cmx src/napkin_doc.cmx src/napkin_diagnostics.cmx \
     src/napkin_comments_table.cmx src/napkin_core.cmi
 src/napkin_core.cmi : src/napkin_parser.cmi
-src/napkin_diagnostics.cmx : src/napkin_token.cmx src/napkin_reporting.cmx \
-    src/napkin_grammar.cmx src/napkin_diagnostics.cmi
+src/napkin_diagnostics.cmx : src/napkin_token.cmx src/napkin_grammar.cmx \
+    src/napkin_diagnostics_printing_utils.cmx src/napkin_diagnostics.cmi
 src/napkin_diagnostics.cmi : src/napkin_token.cmx src/napkin_grammar.cmx
+src/napkin_diagnostics_printing_utils.cmx :
 src/napkin_doc.cmx : src/napkin_minibuffer.cmx src/napkin_doc.cmi
 src/napkin_doc.cmi :
 src/napkin_driver.cmx : src/napkin_printer.cmx src/napkin_parser.cmx \

@@ -26,7 +26,6 @@ type t = {
 
 let err ?startPos ?endPos p error =
   let d = Diagnostics.make
-    ~filename:p.scanner.filename
     ~startPos:(match startPos with | Some pos -> pos | None -> p.startPos)
     ~endPos:(match endPos with | Some pos -> pos | None -> p.endPos)
     error
@@ -85,7 +84,6 @@ let make ?(mode=ParseForTypeChecker) ?line src filename =
   } in
   parserState.scanner.err <- (fun ~startPos ~endPos error ->
     let diagnostic = Diagnostics.make
-      ~filename
       ~startPos
       ~endPos
       error

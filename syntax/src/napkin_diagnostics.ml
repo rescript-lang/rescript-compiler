@@ -1,4 +1,3 @@
-module Reporting = Napkin_reporting
 module Grammar = Napkin_grammar
 module Token = Napkin_token
 
@@ -14,22 +13,12 @@ type category =
   | UnknownUchar of int
 
 type t = {
-  filename: string;
   startPos: Lexing.position;
   endPos: Lexing.position;
   category: category;
 }
 
 type report = t list
-
-(* TODO: add json here *)
-type reportStyle =
-  | Pretty
-  | Plain
-
-let parseReportStyle txt = match (String.lowercase_ascii txt) with
-  | "plain" -> Plain
-  | _ -> Pretty
 
 let getStartPos t = t.startPos
 let getEndPos t = t.endPos
@@ -146,59 +135,24 @@ let explain t =
       "I'm not sure what to parse here when looking at \"" ^ name ^ "\"."
     end
 
-let toPlainString t buffer =
-  Buffer.add_string buffer t.filename;
-  Buffer.add_char buffer '(';
-  Buffer.add_string buffer (string_of_int t.startPos.pos_cnum);
-  Buffer.add_char buffer ',';
-  Buffer.add_string buffer (string_of_int t.endPos.pos_cnum);
-  Buffer.add_char buffer ')';
-  Buffer.add_char buffer ':';
-  Buffer.add_string buffer (explain t)
-
 let toString t src =
-  let open Lexing in
-  let  startchar = t.startPos.pos_cnum - t.startPos.pos_bol in
-  let endchar = t.endPos.pos_cnum - t.startPos.pos_cnum + startchar in
-  let locationInfo =
-    Printf.sprintf (* ReasonLanguageServer requires the following format *)
-      "File \"%s\", line %d, characters %d-%d:"
-      t.filename
-      t.startPos.pos_lnum
-      startchar
-      endchar
-  in
-  let code =
-    let missing = match t.category with
-    | Expected {token = t} ->
-      Some (String.length (Token.toString t))
-    | _ -> None
-    in
-    Reporting.renderCodeContext ~missing src t.startPos t.endPos
-  in
-  let explanation = explain t in
-  Printf.sprintf "%s\n\n%s\n\n%s\n\n" locationInfo code explanation
+  let ppf = Format.err_formatter in
+  Napkin_diagnostics_printing_utils.Super_location.super_error_reporter
+    ppf
+    ~src
+    ~startPos:t.startPos
+    ~endPos:t.endPos
+    ~msg:(explain t);
+  Format.pp_print_flush ppf ()
 
-let make ~filename ~startPos ~endPos category = {
-  filename;
+let make ~startPos ~endPos category = {
   startPos;
   endPos;
   category
 }
 
-let stringOfReport ~style diagnostics src =
-  match style with
-  | Pretty ->
-    List.fold_left (fun report diagnostic ->
-      report ^ (toString diagnostic src) ^ "\n"
-    ) "\n" (List.rev diagnostics)
-  | Plain ->
-    let buffer = Buffer.create 100 in
-    List.iter (fun diagnostic ->
-      toPlainString diagnostic buffer;
-      Buffer.add_char buffer '\n';
-    ) diagnostics;
-    Buffer.contents buffer
+let printReport diagnostics src =
+  List.rev diagnostics |> List.iter (fun d -> toString d src)
 
 let unexpected token context =
   Unexpected {token; context}

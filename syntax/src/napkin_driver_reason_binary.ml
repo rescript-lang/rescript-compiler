@@ -97,5 +97,5 @@ let parsingEngine = {
       comments = comments;
     }
   end;
-  stringOfDiagnostics = begin fun ~source:_ ~filename:_ _diagnostics -> "" end;
+  stringOfDiagnostics = begin fun ~source:_ ~filename:_ _diagnostics -> () end;
 }
