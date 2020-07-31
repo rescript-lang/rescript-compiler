@@ -35,6 +35,17 @@
    pos_cnum =  pos_bol + column
  } 
 
+
+let flow_deli_offset deli = 
+  (match deli with 
+   | None -> 1  (* length of '"'*)
+   | Some deli ->
+     String.length deli + 2 (* length of "{|"*)
+  )
+
+;;      
+
+
 (* Here the loc is  the payload loc *)
 let check_flow_errors ~(loc : Location.t)
     ~offset

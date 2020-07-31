@@ -27,10 +27,6 @@
 type cst = 
   | Arg_int_lit of int 
   | Arg_string_lit of string 
-
-  | Arg_js_null
-  | Arg_js_true
-  | Arg_js_false
   | Arg_js_literal of string
 
 type label_noname = 
@@ -87,36 +83,6 @@ type obj_param =
 type obj_params = obj_param list 
 type params = param list 
 
-exception Error of Location.t * Ext_json_parse.error
-
-let pp_invaild_json fmt err = 
-  Format.fprintf fmt "@[Invalid json literal:  %a@]@." 
-    Ext_json_parse.report_error err
-
-let () = 
-  Location.register_error_of_exn (function 
-    | Error (loc,err) ->       
-      Some (Location.error_of_printer loc pp_invaild_json err)
-    | _ -> None
-    )
-
-
-let cst_json (loc : Location.t) s : cst  =
-  match Ext_json_parse.parse_json_from_string s with 
-  | True _ -> Arg_js_true
-  | False _ -> Arg_js_false 
-  | Null _ -> Arg_js_null 
-  | _ -> Arg_js_literal s 
-  | exception Ext_json_parse.Error (start,finish,error_info)
-    ->
-    let loc1 = {
-      loc with
-       loc_start = 
-        Ext_position.offset loc.loc_start start; 
-       loc_end =   
-       Ext_position.offset loc.loc_start finish;
-    } in 
-     raise (Error (loc1 , error_info))
 let cst_obj_literal s = Arg_js_literal s
 let cst_int i = Arg_int_lit i 
 let cst_string s = Arg_string_lit s 

@@ -68,14 +68,7 @@ let is_single_int (x : t ) : int option =
 
 
 
-let flow_deli_off_set deli = 
-  (match deli with 
-  | None -> 1  (* length of '"'*)
-  | Some deli ->
-     String.length deli + 2 (* length of "{|"*)
-  )
 
-;;      
 let raw_as_string_exp_exn 
   ~(kind: Js_raw_info.raw_kind)
   (x : t ) : _ option = 
@@ -89,7 +82,7 @@ let raw_as_string_exp_exn
                ;
            pexp_loc = loc} as e ,_);
       _}] -> 
-    Bs_flow_ast_utils.check_flow_errors ~loc ~offset:(flow_deli_off_set deli) (match kind with 
+    Bs_flow_ast_utils.check_flow_errors ~loc ~offset:(Bs_flow_ast_utils.flow_deli_offset deli) (match kind with 
         | Raw_re 
         | Raw_exp ->  
           let (_loc,e),errors =  (Parser_flow.parse_expression (Parser_env.init_env None str) false) in 

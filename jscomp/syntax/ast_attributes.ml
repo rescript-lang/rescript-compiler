@@ -285,13 +285,20 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
                        {pexp_desc = 
                           Pexp_constant 
                             (Pconst_string(s, (None | Some "json" as dec)))
-                       ;
+                       ; pexp_loc ;
                          _},_);
                    _}] -> 
                  if dec = None then
                    st := Some (Str (s))
                  else
+                 begin 
+                   (match Classify_function.classify ~check:(pexp_loc, Bs_flow_ast_utils.flow_deli_offset dec)
+                            s with 
+                   | Js_literal _ -> ()
+                   | _ -> 
+                    Location.raise_errorf ~loc:pexp_loc "an object literal expected");
                    st := Some (Js_literal_str s )
+                 end
                | _ -> 
                  Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
              end

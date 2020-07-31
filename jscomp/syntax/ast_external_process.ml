@@ -114,8 +114,7 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
      | Some (Str i)->
        Arg_cst (External_arg_spec.cst_string i)     
      | Some (Js_literal_str s) ->
-       (* FIXME: This seems to be wrong in bs.obj, we should disable such payload in bs.obj *)
-       Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
+       Arg_cst (External_arg_spec.cst_obj_literal  s)
    else (* ([`a|`b] [@bs.string]) *)
      spec_of_ptyp nolabel ptyp   
   )
