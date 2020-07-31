@@ -14,3 +14,5 @@ Napkinscript2.ml
 ./lib/napkinscript2.exe
 ./lib/Napkinscript.ml
 lib/napkinscript.ml
+.vscode/settings.json
+ # each person has its own preferences

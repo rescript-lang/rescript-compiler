@@ -1,5 +1,5 @@
 OCAMLOPT=ocamlopt.opt
-OCAMLFLAGS= -w +a-4-42-40-9-48 -warn-error +a -bin-annot -I +compiler-libs -I src -I tests
+OCAMLFLAGS= -w +a-4-42-40-9-48 -warn-error +a -bin-annot -I +compiler-libs -I src -I tests -absname
 OCAMLDEP=ocamldep.opt
 %.cmi : %.mli
 	$(OCAMLOPT) $(OCAMLFLAGS) -c $<
@@ -35,14 +35,19 @@ FILES = \
 	src/napkin_driver_binary.cmx \
 	src/napkin_ast_debugger.cmx \
 	src/napkin_outcome_printer.cmx \
-	src/napkin_multi_printer.cmx
+	src/napkin_multi_printer.cmx \
+	src/napkin_cli.cmx
 
 TEST_FILES = \
 	tests/napkin_diff.cmx
 
 .DEFAULT_GOAL := build-native
-build-native: lib/refmt.exe $(FILES) src/napkin_cli.cmx depend
-	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/napkinscript.exe -I +compiler-libs ocamlcommon.cmxa  -I src $(FILES) src/napkin_cli.cmx
+
+lib/napkinscript.exe: $(FILES)
+	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/napkinscript.exe -I +compiler-libs ocamlcommon.cmxa  -I src $(FILES)
+	
+build-native: lib/refmt.exe lib/napkinscript.exe  depend
+
 
 bootstrap: build-native
 	ocaml unix.cma ./scripts/bspack.ml -bs-main Napkin_cli -I src -o ./lib/napkinscript.ml
