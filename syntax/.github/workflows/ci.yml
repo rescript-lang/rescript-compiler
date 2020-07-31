@@ -25,4 +25,4 @@ jobs:
 
     - run: npm install
 
-    - run: make test
+    - run: eval $(opam env) && make test
