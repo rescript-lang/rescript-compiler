@@ -9541,6 +9541,108 @@ type args  =
   (Asttypes.arg_label * Parsetree.expression) list 
 
 end
+module Bs_flow_ast_utils : sig 
+#1 "bs_flow_ast_utils.mli"
+(* Copyright (C) 2020 - Authors of BuckleScript 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val flow_deli_offset:
+  string option -> 
+  int
+
+val check_flow_errors:
+  loc:Location.t -> 
+  offset:int -> 
+  (Loc.t * Parse_error.t) list ->    
+  unit
+end = struct
+#1 "bs_flow_ast_utils.ml"
+(* Copyright (C) 2020 - Authors of BuckleScript 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ let offset_pos 
+  ({pos_lnum; pos_bol; pos_cnum} as loc : Lexing.position) 
+  ({line; column} : Loc.position) 
+  first_line_offset : Lexing.position = 
+ if line = 1 then 
+   {loc with pos_cnum = pos_cnum + column + first_line_offset }
+ else {
+   loc with 
+   pos_lnum = pos_lnum + line - 1;
+   pos_cnum =  pos_bol + column
+ } 
+
+
+let flow_deli_offset deli = 
+  (match deli with 
+   | None -> 1  (* length of '"'*)
+   | Some deli ->
+     String.length deli + 2 (* length of "{|"*)
+  )
+
+;;      
+
+
+(* Here the loc is  the payload loc *)
+let check_flow_errors ~(loc : Location.t)
+    ~offset
+    (errors : (Loc.t * Parse_error.t) list) = 
+  match errors with 
+  | [] ->  ()
+  | ({start ;
+      _end },first_error) :: _ -> 
+    let loc_start = loc.loc_start in     
+    Location.raise_errorf 
+      ~loc:{loc with 
+            loc_start = offset_pos loc_start start 
+                offset ;
+            loc_end = offset_pos loc_start _end 
+                offset } "%s"
+      (Parse_error.PP.error first_error)  
+end
 module Js_raw_info
 = struct
 #1 "js_raw_info.ml"
@@ -9586,7 +9688,6 @@ type exp =
     | RegExp of RegExp.t
   ]}
   *)
-  | Js_raw_json
   | Js_exp_unknown
 
 
@@ -11353,38 +11454,9 @@ let is_single_int (x : t ) : int option =
   | _  -> None
 
 
-let offset_pos 
-  ({pos_lnum; pos_bol; pos_cnum} as loc : Lexing.position) 
-    ({line; column} : Loc.position) first_line_offset : Lexing.position = 
-  if line = 1 then 
-    {loc with pos_cnum = pos_cnum + column + first_line_offset }
-  else {
-    loc with 
-    pos_lnum = pos_lnum + line - 1;
-    pos_cnum =  pos_bol + column
-  }
 
-let flow_deli_off_set deli = 
-  (match deli with 
-  | None -> 1  (* length of '"'*)
-  | Some deli ->
-     String.length deli + 2 (* length of "{|"*)
-  )
-(* Here the loc is  the payload loc *)
-let check_flow_errors ~(loc : Location.t)
-  ~offset(errors : (Loc.t * Parse_error.t) list) = 
-  match errors with 
-  | [] ->  ()
-  | ({start ;
-     _end },first_error) :: _ -> 
-  
-    Location.raise_errorf ~loc:{loc with 
-      loc_start = offset_pos loc.loc_start start 
-        offset ;
-      loc_end = offset_pos loc.loc_start _end 
-        offset } "%s"
-      (Parse_error.PP.error first_error)  
-;;      
+
+
 let raw_as_string_exp_exn 
   ~(kind: Js_raw_info.raw_kind)
   (x : t ) : _ option = 
@@ -11398,7 +11470,7 @@ let raw_as_string_exp_exn
                ;
            pexp_loc = loc} as e ,_);
       _}] -> 
-    check_flow_errors ~loc ~offset:(flow_deli_off_set deli) (match kind with 
+    Bs_flow_ast_utils.check_flow_errors ~loc ~offset:(Bs_flow_ast_utils.flow_deli_offset deli) (match kind with 
         | Raw_re 
         | Raw_exp ->  
           let (_loc,e),errors =  (Parser_flow.parse_expression (Parser_env.init_env None str) false) in 
@@ -15274,6 +15346,149 @@ let emit_external_warnings_on_signature  (sigi : Parsetree.signature) =
   if Warnings.is_active dummy_unused_attribute then 
     emit_external_warnings.signature emit_external_warnings sigi
 end
+module Classify_function : sig 
+#1 "classify_function.mli"
+(* Copyright (C) 2020- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val classify :
+  ?check:(Location.t * int) -> 
+  string -> 
+  Js_raw_info.exp 
+
+val classify_stmt :  
+  string -> Js_raw_info.stmt
+end = struct
+#1 "classify_function.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let rec is_obj_literal ( x : _ Flow_ast.Expression.t) : bool = 
+  match snd x with   
+  | Identifier (_, {name = "undefined"})
+  | Literal _ -> true   
+  |  Object {properties} -> 
+    Ext_list.for_all properties is_literal_kv 
+  | Array  {elements} ->  
+    Ext_list.for_all elements (fun x -> 
+      match x with 
+      | None -> true
+      | Some (Expression x) -> is_obj_literal x 
+      | Some _ -> false
+      ) 
+  | _ -> false
+and is_literal_kv (x  : _ Flow_ast.Expression.Object.property) = 
+  match x with 
+  | Property (_ , Init {value}) -> is_obj_literal value
+  | _ -> false
+
+
+let classify_exp (prog : _ Flow_ast.Expression.t  )  : Js_raw_info.exp = 
+  match  prog with 
+  | (_, Function {
+    id = _;
+    params = (_, {params});
+    async = false;
+    generator = false;
+    predicate = None
+  })  -> 
+    Js_function {arity = List.length params; arrow = false}
+  | (_, ArrowFunction {
+    id = None;
+    params = (_, {params});
+    async = false;
+    generator = false;
+    predicate = None
+  })  -> 
+    Js_function
+      {arity = List.length params; arrow = true} 
+ |(_, Literal {comments}) -> 
+  let comment = 
+    match comments with 
+    | None -> None 
+    | Some {leading = [_, Block comment]} -> Some ("/*" ^ comment ^ "*/")
+    | Some {leading = [_, Line comment]} -> Some ("//" ^ comment)
+    | Some _ -> None
+  in   
+  Js_literal {comment}   
+ | (_, Identifier(_,{name = "undefined"})) -> Js_literal {comment =None} 
+ | (_, (Object _ | Array _ ))  -> 
+    if is_obj_literal prog then Js_literal {comment = None} else Js_exp_unknown
+ | _ -> 
+  Js_exp_unknown
+ | exception _ -> 
+  Js_exp_unknown
+
+(** It seems we do the parse twice
+    - in parsing
+    - in code generation
+ *)
+let classify ?check (prog : string) : Js_raw_info.exp = 
+  let prog, errors  =
+    Parser_flow.parse_expression 
+      (Parser_env.init_env None prog) false in  
+  (match check with 
+  | Some (loc,offset) -> 
+    Bs_flow_ast_utils.check_flow_errors
+    ~loc ~offset errors 
+  | None -> ());
+  classify_exp prog
+
+
+let classify_stmt (prog : string) : Js_raw_info.stmt = 
+  let result =  Parser_flow.parse_program false None prog in 
+  match fst result with 
+  | (_loc, [], _) -> 
+    Js_stmt_comment 
+  | _ -> Js_stmt_unknown
+(* we can also analayze throw
+  x.x pure access
+ *)
+end
 module Literals
 = struct
 #1 "literals.ml"
@@ -15520,8 +15735,7 @@ val iter_process_bs_int_as :
 type as_const_payload = 
   | Int of int
   | Str of string
-  | Json_str of string  
-
+  | Js_literal_str of string
 
 val iter_process_bs_string_or_int_as :
     t ->
@@ -15819,8 +16033,7 @@ let iter_process_bs_int_as  (attrs : t) =
 type as_const_payload = 
   | Int of int
   | Str of string
-  | Json_str of string  
-
+  | Js_literal_str of string
 let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   let st = ref None in
   Ext_list.iter attrs
@@ -15833,16 +16046,31 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
           (Bs_ast_invariant.mark_used_bs_attribute attr ;
            match Ast_payload.is_single_int payload with
            | None ->
-             begin match Ast_payload.is_single_string payload with
-               | Some (s,None) ->
-                 st := Some (Str (s))
-               | Some (s, Some "json") ->
-                 st := Some (Json_str s )
-               | None | Some (_, Some _) ->
+             begin match  payload with
+               | PStr [ {
+                   pstr_desc =  
+                     Pstr_eval (
+                       {pexp_desc = 
+                          Pexp_constant 
+                            (Pconst_string(s, (None | Some "json" as dec)))
+                       ; pexp_loc ;
+                         _},_);
+                   _}] -> 
+                 if dec = None then
+                   st := Some (Str (s))
+                 else
+                 begin 
+                   (match Classify_function.classify ~check:(pexp_loc, Bs_flow_ast_utils.flow_deli_offset dec)
+                            s with 
+                   | Js_literal _ -> ()
+                   | _ -> 
+                    Location.raise_errorf ~loc:pexp_loc "an object literal expected");
+                   st := Some (Js_literal_str s )
+                 end
+               | _ -> 
                  Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
-
              end
-           | Some   v->
+           | Some v->
              st := (Some (Int v))
           )
         else
@@ -16216,903 +16444,6 @@ let local_extern_cont loc
 )
 
 end
-module Ext_json_types
-= struct
-#1 "ext_json_types.ml"
-(* Copyright (C) 2015-2017 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type loc = Lexing.position
-type json_str = 
-  { str : string ; loc : loc}
-
-type json_flo  =
-  { flo : string ; loc : loc}
-type json_array =
-  { content : t array ; 
-    loc_start : loc ; 
-    loc_end : loc ; 
-  }
-
-and json_map = 
-  { map : t Map_string.t ; loc :  loc }
-and t = 
-  | True of loc 
-  | False of loc 
-  | Null of loc 
-  | Flo of json_flo
-  | Str of json_str
-  | Arr  of json_array
-  | Obj of json_map
-   
-
-end
-module Ext_position : sig 
-#1 "ext_position.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = Lexing.position = {
-    pos_fname : string ;
-    pos_lnum : int ;
-    pos_bol : int ;
-    pos_cnum : int
-}
-
-(** [offset pos newpos]
-    return a new position
-    here [newpos] is zero based, the use case is that
-    at position [pos], we get a string and Lexing from that string,
-    therefore, we get a [newpos] and we need rebase it on top of 
-    [pos]
-*)
-val offset : t -> t -> t 
-
-val lexbuf_from_channel_with_fname:
-    in_channel -> string -> 
-    Lexing.lexbuf
-
-val print : Format.formatter -> t -> unit 
-end = struct
-#1 "ext_position.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = Lexing.position = {
-    pos_fname : string ;
-    pos_lnum : int ;
-    pos_bol : int ;
-    pos_cnum : int
-}
-
-let offset (x : t) (y:t) =
-  {
-    x with 
-    pos_lnum =
-       x.pos_lnum + y.pos_lnum - 1;
-    pos_cnum = 
-      x.pos_cnum + y.pos_cnum;
-    pos_bol = 
-      if y.pos_lnum = 1 then 
-        x.pos_bol
-      else x.pos_cnum + y.pos_bol
-  }
-
-let print fmt (pos : t) =
-  Format.fprintf fmt "(line %d, column %d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
-
-
-
-let lexbuf_from_channel_with_fname ic fname = 
-  let x = Lexing.from_function (fun buf n -> input ic buf 0 n) in 
-  let pos : t = {
-    pos_fname = fname ; 
-    pos_lnum = 1; 
-    pos_bol = 0;
-    pos_cnum = 0 (* copied from zero_pos*)
-  } in 
-  x.lex_start_p <- pos;
-  x.lex_curr_p <- pos ; 
-  x
-
-
-end
-module Ext_json_parse : sig 
-#1 "ext_json_parse.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type error
-
-val report_error : Format.formatter -> error -> unit 
-
-exception Error of Lexing.position * Lexing.position * error
-
-val parse_json_from_string : string -> Ext_json_types.t 
-
-val parse_json_from_chan :
-  string ->  in_channel -> Ext_json_types.t 
-
-val parse_json_from_file  : string -> Ext_json_types.t
-
-
-end = struct
-#1 "ext_json_parse.ml"
-# 1 "ext/ext_json_parse.mll"
- 
-type error =
-  | Illegal_character of char
-  | Unterminated_string
-  | Unterminated_comment
-  | Illegal_escape of string
-  | Unexpected_token 
-  | Expect_comma_or_rbracket
-  | Expect_comma_or_rbrace
-  | Expect_colon
-  | Expect_string_or_rbrace 
-  | Expect_eof 
-  (* | Trailing_comma_in_obj *)
-  (* | Trailing_comma_in_array *)
-
-
-let fprintf  = Format.fprintf
-let report_error ppf = function
-  | Illegal_character c ->
-      fprintf ppf "Illegal character (%s)" (Char.escaped c)
-  | Illegal_escape s ->
-      fprintf ppf "Illegal backslash escape in string or character (%s)" s
-  | Unterminated_string -> 
-      fprintf ppf "Unterminated_string"
-  | Expect_comma_or_rbracket ->
-    fprintf ppf "Expect_comma_or_rbracket"
-  | Expect_comma_or_rbrace -> 
-    fprintf ppf "Expect_comma_or_rbrace"
-  | Expect_colon -> 
-    fprintf ppf "Expect_colon"
-  | Expect_string_or_rbrace  -> 
-    fprintf ppf "Expect_string_or_rbrace"
-  | Expect_eof  -> 
-    fprintf ppf "Expect_eof"
-  | Unexpected_token 
-    ->
-    fprintf ppf "Unexpected_token"
-  (* | Trailing_comma_in_obj  *)
-  (*   -> fprintf ppf "Trailing_comma_in_obj" *)
-  (* | Trailing_comma_in_array  *)
-  (*   -> fprintf ppf "Trailing_comma_in_array" *)
-  | Unterminated_comment 
-    -> fprintf ppf "Unterminated_comment"
-         
-
-exception Error of Lexing.position * Lexing.position * error
-
-
-let () = 
-  Printexc.register_printer
-    (function x -> 
-     match x with 
-     | Error (loc_start,loc_end,error) -> 
-       Some (Format.asprintf 
-          "@[%a:@ %a@ -@ %a)@]" 
-          report_error  error
-          Ext_position.print loc_start
-          Ext_position.print loc_end
-       )
-
-     | _ -> None
-    )
-
-
-
-
-
-type token = 
-  | Comma
-  | Eof
-  | False
-  | Lbrace
-  | Lbracket
-  | Null
-  | Colon
-  | Number of string
-  | Rbrace
-  | Rbracket
-  | String of string
-  | True   
-  
-let error  (lexbuf : Lexing.lexbuf) e = 
-  raise (Error (lexbuf.lex_start_p, lexbuf.lex_curr_p, e))
-
-
-let lexeme_len (x : Lexing.lexbuf) =
-  x.lex_curr_pos - x.lex_start_pos
-
-let update_loc ({ lex_curr_p; _ } as lexbuf : Lexing.lexbuf) diff =
-  lexbuf.lex_curr_p <-
-    {
-      lex_curr_p with
-      pos_lnum = lex_curr_p.pos_lnum + 1;
-      pos_bol = lex_curr_p.pos_cnum - diff;
-    }
-
-let char_for_backslash = function
-  | 'n' -> '\010'
-  | 'r' -> '\013'
-  | 'b' -> '\008'
-  | 't' -> '\009'
-  | c -> c
-
-let dec_code c1 c2 c3 =
-  100 * (Char.code c1 - 48) + 10 * (Char.code c2 - 48) + (Char.code c3 - 48)
-
-let hex_code c1 c2 =
-  let d1 = Char.code c1 in
-  let val1 =
-    if d1 >= 97 then d1 - 87
-    else if d1 >= 65 then d1 - 55
-    else d1 - 48 in
-  let d2 = Char.code c2 in
-  let val2 =
-    if d2 >= 97 then d2 - 87
-    else if d2 >= 65 then d2 - 55
-    else d2 - 48 in
-  val1 * 16 + val2
-
-let lf = '\010'
-
-# 124 "ext/ext_json_parse.ml"
-let __ocaml_lex_tables = {
-  Lexing.lex_base =
-   "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
-    \245\255\246\255\247\255\248\255\249\255\000\000\000\000\000\000\
-    \041\000\001\000\254\255\005\000\005\000\253\255\001\000\002\000\
-    \252\255\000\000\000\000\003\000\251\255\001\000\003\000\250\255\
-    \079\000\089\000\099\000\121\000\131\000\141\000\153\000\163\000\
-    \001\000\253\255\254\255\023\000\255\255\006\000\246\255\189\000\
-    \248\255\215\000\255\255\249\255\249\000\181\000\252\255\009\000\
-    \063\000\075\000\234\000\251\255\032\001\250\255";
-  Lexing.lex_backtrk =
-   "\255\255\255\255\255\255\255\255\013\000\013\000\016\000\255\255\
-    \255\255\255\255\255\255\255\255\255\255\016\000\016\000\016\000\
-    \016\000\016\000\255\255\000\000\012\000\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\013\000\255\255\013\000\255\255\013\000\255\255\
-    \255\255\255\255\255\255\001\000\255\255\255\255\255\255\008\000\
-    \255\255\255\255\255\255\255\255\006\000\006\000\255\255\006\000\
-    \001\000\002\000\255\255\255\255\255\255\255\255";
-  Lexing.lex_default =
-   "\001\000\000\000\000\000\000\000\255\255\255\255\255\255\000\000\
-    \000\000\000\000\000\000\000\000\000\000\255\255\255\255\255\255\
-    \255\255\255\255\000\000\255\255\020\000\000\000\255\255\255\255\
-    \000\000\255\255\255\255\255\255\000\000\255\255\255\255\000\000\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \042\000\000\000\000\000\255\255\000\000\047\000\000\000\047\000\
-    \000\000\051\000\000\000\000\000\255\255\255\255\000\000\255\255\
-    \255\255\255\255\255\255\000\000\255\255\000\000";
-  Lexing.lex_trans =
-   "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\019\000\018\000\018\000\019\000\017\000\019\000\255\255\
-    \048\000\019\000\255\255\057\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \019\000\000\000\003\000\000\000\000\000\019\000\000\000\000\000\
-    \050\000\000\000\000\000\043\000\008\000\006\000\033\000\016\000\
-    \004\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
-    \005\000\005\000\007\000\004\000\005\000\005\000\005\000\005\000\
-    \005\000\005\000\005\000\005\000\005\000\032\000\044\000\033\000\
-    \056\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
-    \005\000\005\000\005\000\021\000\057\000\000\000\000\000\000\000\
-    \020\000\000\000\000\000\012\000\000\000\011\000\032\000\056\000\
-    \000\000\025\000\049\000\000\000\000\000\032\000\014\000\024\000\
-    \028\000\000\000\000\000\057\000\026\000\030\000\013\000\031\000\
-    \000\000\000\000\022\000\027\000\015\000\029\000\023\000\000\000\
-    \000\000\000\000\039\000\010\000\039\000\009\000\032\000\038\000\
-    \038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\037\000\000\000\037\000\000\000\
-    \035\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\255\255\
-    \035\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\038\000\038\000\000\000\000\000\255\255\
-    \000\000\056\000\000\000\000\000\055\000\058\000\058\000\058\000\
-    \058\000\058\000\058\000\058\000\058\000\058\000\058\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\054\000\
-    \000\000\054\000\000\000\000\000\000\000\000\000\054\000\000\000\
-    \002\000\041\000\000\000\000\000\000\000\255\255\046\000\053\000\
-    \053\000\053\000\053\000\053\000\053\000\053\000\053\000\053\000\
-    \053\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\255\255\059\000\059\000\059\000\059\000\059\000\059\000\
-    \059\000\059\000\059\000\059\000\000\000\000\000\000\000\000\000\
-    \000\000\060\000\060\000\060\000\060\000\060\000\060\000\060\000\
-    \060\000\060\000\060\000\054\000\000\000\000\000\000\000\000\000\
-    \000\000\054\000\060\000\060\000\060\000\060\000\060\000\060\000\
-    \000\000\000\000\000\000\000\000\000\000\054\000\000\000\000\000\
-    \000\000\054\000\000\000\054\000\000\000\000\000\000\000\052\000\
-    \061\000\061\000\061\000\061\000\061\000\061\000\061\000\061\000\
-    \061\000\061\000\060\000\060\000\060\000\060\000\060\000\060\000\
-    \000\000\061\000\061\000\061\000\061\000\061\000\061\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\061\000\061\000\061\000\061\000\061\000\061\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\255\255\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\255\255\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000";
-  Lexing.lex_check =
-   "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\000\000\000\000\017\000\000\000\000\000\019\000\020\000\
-    \045\000\019\000\020\000\055\000\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \000\000\255\255\000\000\255\255\255\255\019\000\255\255\255\255\
-    \045\000\255\255\255\255\040\000\000\000\000\000\004\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\006\000\006\000\006\000\006\000\006\000\
-    \006\000\006\000\006\000\006\000\006\000\004\000\043\000\005\000\
-    \056\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
-    \005\000\005\000\005\000\016\000\057\000\255\255\255\255\255\255\
-    \016\000\255\255\255\255\000\000\255\255\000\000\005\000\056\000\
-    \255\255\014\000\045\000\255\255\255\255\004\000\000\000\023\000\
-    \027\000\255\255\255\255\057\000\025\000\029\000\000\000\030\000\
-    \255\255\255\255\015\000\026\000\000\000\013\000\022\000\255\255\
-    \255\255\255\255\032\000\000\000\032\000\000\000\005\000\032\000\
-    \032\000\032\000\032\000\032\000\032\000\032\000\032\000\032\000\
-    \032\000\033\000\033\000\033\000\033\000\033\000\033\000\033\000\
-    \033\000\033\000\033\000\034\000\034\000\034\000\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\035\000\255\255\035\000\255\255\
-    \034\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\047\000\
-    \034\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\039\000\039\000\039\000\039\000\039\000\
-    \039\000\039\000\039\000\039\000\039\000\255\255\255\255\047\000\
-    \255\255\049\000\255\255\255\255\049\000\053\000\053\000\053\000\
-    \053\000\053\000\053\000\053\000\053\000\053\000\053\000\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\049\000\
-    \255\255\049\000\255\255\255\255\255\255\255\255\049\000\255\255\
-    \000\000\040\000\255\255\255\255\255\255\020\000\045\000\049\000\
-    \049\000\049\000\049\000\049\000\049\000\049\000\049\000\049\000\
-    \049\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\047\000\058\000\058\000\058\000\058\000\058\000\058\000\
-    \058\000\058\000\058\000\058\000\255\255\255\255\255\255\255\255\
-    \255\255\052\000\052\000\052\000\052\000\052\000\052\000\052\000\
-    \052\000\052\000\052\000\049\000\255\255\255\255\255\255\255\255\
-    \255\255\049\000\052\000\052\000\052\000\052\000\052\000\052\000\
-    \255\255\255\255\255\255\255\255\255\255\049\000\255\255\255\255\
-    \255\255\049\000\255\255\049\000\255\255\255\255\255\255\049\000\
-    \060\000\060\000\060\000\060\000\060\000\060\000\060\000\060\000\
-    \060\000\060\000\052\000\052\000\052\000\052\000\052\000\052\000\
-    \255\255\060\000\060\000\060\000\060\000\060\000\060\000\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\060\000\060\000\060\000\060\000\060\000\060\000\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\047\000\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\049\000\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255";
-  Lexing.lex_base_code =
-   "";
-  Lexing.lex_backtrk_code =
-   "";
-  Lexing.lex_default_code =
-   "";
-  Lexing.lex_trans_code =
-   "";
-  Lexing.lex_check_code =
-   "";
-  Lexing.lex_code =
-   "";
-}
-
-let rec lex_json buf lexbuf =
-   __ocaml_lex_lex_json_rec buf lexbuf 0
-and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
-  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
-# 142 "ext/ext_json_parse.mll"
-          ( lex_json buf lexbuf)
-# 314 "ext/ext_json_parse.ml"
-
-  | 1 ->
-# 143 "ext/ext_json_parse.mll"
-                   ( 
-    update_loc lexbuf 0;
-    lex_json buf  lexbuf
-  )
-# 322 "ext/ext_json_parse.ml"
-
-  | 2 ->
-# 147 "ext/ext_json_parse.mll"
-                ( comment buf lexbuf)
-# 327 "ext/ext_json_parse.ml"
-
-  | 3 ->
-# 148 "ext/ext_json_parse.mll"
-         ( True)
-# 332 "ext/ext_json_parse.ml"
-
-  | 4 ->
-# 149 "ext/ext_json_parse.mll"
-          (False)
-# 337 "ext/ext_json_parse.ml"
-
-  | 5 ->
-# 150 "ext/ext_json_parse.mll"
-         (Null)
-# 342 "ext/ext_json_parse.ml"
-
-  | 6 ->
-# 151 "ext/ext_json_parse.mll"
-       (Lbracket)
-# 347 "ext/ext_json_parse.ml"
-
-  | 7 ->
-# 152 "ext/ext_json_parse.mll"
-       (Rbracket)
-# 352 "ext/ext_json_parse.ml"
-
-  | 8 ->
-# 153 "ext/ext_json_parse.mll"
-       (Lbrace)
-# 357 "ext/ext_json_parse.ml"
-
-  | 9 ->
-# 154 "ext/ext_json_parse.mll"
-       (Rbrace)
-# 362 "ext/ext_json_parse.ml"
-
-  | 10 ->
-# 155 "ext/ext_json_parse.mll"
-       (Comma)
-# 367 "ext/ext_json_parse.ml"
-
-  | 11 ->
-# 156 "ext/ext_json_parse.mll"
-        (Colon)
-# 372 "ext/ext_json_parse.ml"
-
-  | 12 ->
-# 157 "ext/ext_json_parse.mll"
-                      (lex_json buf lexbuf)
-# 377 "ext/ext_json_parse.ml"
-
-  | 13 ->
-# 159 "ext/ext_json_parse.mll"
-         ( Number (Lexing.lexeme lexbuf))
-# 382 "ext/ext_json_parse.ml"
-
-  | 14 ->
-# 161 "ext/ext_json_parse.mll"
-      (
-  let pos = Lexing.lexeme_start_p lexbuf in
-  scan_string buf pos lexbuf;
-  let content = (Buffer.contents  buf) in 
-  Buffer.clear buf ;
-  String content 
-)
-# 393 "ext/ext_json_parse.ml"
-
-  | 15 ->
-# 168 "ext/ext_json_parse.mll"
-       (Eof )
-# 398 "ext/ext_json_parse.ml"
-
-  | 16 ->
-let
-# 169 "ext/ext_json_parse.mll"
-       c
-# 404 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 169 "ext/ext_json_parse.mll"
-          ( error lexbuf (Illegal_character c ))
-# 408 "ext/ext_json_parse.ml"
-
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
-      __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
-
-and comment buf lexbuf =
-   __ocaml_lex_comment_rec buf lexbuf 40
-and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
-  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
-# 171 "ext/ext_json_parse.mll"
-              (lex_json buf lexbuf)
-# 420 "ext/ext_json_parse.ml"
-
-  | 1 ->
-# 172 "ext/ext_json_parse.mll"
-     (comment buf lexbuf)
-# 425 "ext/ext_json_parse.ml"
-
-  | 2 ->
-# 173 "ext/ext_json_parse.mll"
-       (error lexbuf Unterminated_comment)
-# 430 "ext/ext_json_parse.ml"
-
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
-      __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
-
-and scan_string buf start lexbuf =
-   __ocaml_lex_scan_string_rec buf start lexbuf 45
-and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
-  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
-# 177 "ext/ext_json_parse.mll"
-      ( () )
-# 442 "ext/ext_json_parse.ml"
-
-  | 1 ->
-# 179 "ext/ext_json_parse.mll"
-  (
-        let len = lexeme_len lexbuf - 2 in
-        update_loc lexbuf len;
-
-        scan_string buf start lexbuf
-      )
-# 452 "ext/ext_json_parse.ml"
-
-  | 2 ->
-# 186 "ext/ext_json_parse.mll"
-      (
-        let len = lexeme_len lexbuf - 3 in
-        update_loc lexbuf len;
-        scan_string buf start lexbuf
-      )
-# 461 "ext/ext_json_parse.ml"
-
-  | 3 ->
-let
-# 191 "ext/ext_json_parse.mll"
-                                               c
-# 467 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 192 "ext/ext_json_parse.mll"
-      (
-        Buffer.add_char buf (char_for_backslash c);
-        scan_string buf start lexbuf
-      )
-# 474 "ext/ext_json_parse.ml"
-
-  | 4 ->
-let
-# 196 "ext/ext_json_parse.mll"
-                 c1
-# 480 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
-and
-# 196 "ext/ext_json_parse.mll"
-                               c2
-# 485 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
-and
-# 196 "ext/ext_json_parse.mll"
-                                             c3
-# 490 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
-and
-# 196 "ext/ext_json_parse.mll"
-                                                    s
-# 495 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
-# 197 "ext/ext_json_parse.mll"
-      (
-        let v = dec_code c1 c2 c3 in
-        if v > 255 then
-          error lexbuf (Illegal_escape s) ;
-        Buffer.add_char buf (Char.chr v);
-
-        scan_string buf start lexbuf
-      )
-# 506 "ext/ext_json_parse.ml"
-
-  | 5 ->
-let
-# 205 "ext/ext_json_parse.mll"
-                        c1
-# 512 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
-and
-# 205 "ext/ext_json_parse.mll"
-                                         c2
-# 517 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
-# 206 "ext/ext_json_parse.mll"
-      (
-        let v = hex_code c1 c2 in
-        Buffer.add_char buf (Char.chr v);
-
-        scan_string buf start lexbuf
-      )
-# 526 "ext/ext_json_parse.ml"
-
-  | 6 ->
-let
-# 212 "ext/ext_json_parse.mll"
-             c
-# 532 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 213 "ext/ext_json_parse.mll"
-      (
-        Buffer.add_char buf '\\';
-        Buffer.add_char buf c;
-
-        scan_string buf start lexbuf
-      )
-# 541 "ext/ext_json_parse.ml"
-
-  | 7 ->
-# 220 "ext/ext_json_parse.mll"
-      (
-        update_loc lexbuf 0;
-        Buffer.add_char buf lf;
-
-        scan_string buf start lexbuf
-      )
-# 551 "ext/ext_json_parse.ml"
-
-  | 8 ->
-# 227 "ext/ext_json_parse.mll"
-      (
-        let ofs = lexbuf.lex_start_pos in
-        let len = lexbuf.lex_curr_pos - ofs in
-        Buffer.add_subbytes buf lexbuf.lex_buffer ofs len;
-
-        scan_string buf start lexbuf
-      )
-# 562 "ext/ext_json_parse.ml"
-
-  | 9 ->
-# 235 "ext/ext_json_parse.mll"
-      (
-        error lexbuf Unterminated_string
-      )
-# 569 "ext/ext_json_parse.ml"
-
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
-      __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
-
-;;
-
-# 239 "ext/ext_json_parse.mll"
- 
-
-
-
-
-
-
-let  parse_json lexbuf =
-  let buf = Buffer.create 64 in 
-  let look_ahead = ref None in
-  let token () : token = 
-    match !look_ahead with 
-    | None ->  
-      lex_json buf lexbuf 
-    | Some x -> 
-      look_ahead := None ;
-      x 
-  in
-  let push e = look_ahead := Some e in 
-  let rec json (lexbuf : Lexing.lexbuf) : Ext_json_types.t = 
-    match token () with 
-    | True -> True lexbuf.lex_start_p
-    | False -> False lexbuf.lex_start_p
-    | Null -> Null lexbuf.lex_start_p
-    | Number s ->  Flo {flo = s; loc = lexbuf.lex_start_p}  
-    | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
-    | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
-    | Lbrace -> parse_map lexbuf.lex_start_p Map_string.empty lexbuf
-    |  _ -> error lexbuf Unexpected_token
-(** Note if we remove [trailing_comma] support 
-    we should report errors (actually more work), for example 
-    {[
-    match token () with 
-    | Rbracket ->
-      if trailing_comma then
-        error lexbuf Trailing_comma_in_array
-      else
-    ]} 
-    {[
-    match token () with 
-    | Rbrace -> 
-      if trailing_comma then
-        error lexbuf Trailing_comma_in_obj
-      else
-
-    ]}   
- *)
-  and parse_array   loc_start loc_finish acc lexbuf 
-    : Ext_json_types.t =
-    match token () with 
-    | Rbracket ->
-        Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
-              loc_end = lexbuf.lex_curr_p }
-    | x -> 
-      push x ;
-      let new_one = json lexbuf in 
-      begin match token ()  with 
-      | Comma -> 
-          parse_array  loc_start loc_finish (new_one :: acc) lexbuf 
-      | Rbracket 
-        -> Arr {content = (Ext_array.reverse_of_list (new_one::acc));
-                     loc_start ; 
-                     loc_end = lexbuf.lex_curr_p }
-      | _ -> 
-        error lexbuf Expect_comma_or_rbracket
-      end
-  and parse_map loc_start  acc lexbuf : Ext_json_types.t = 
-    match token () with 
-    | Rbrace -> 
-        Obj { map = acc ; loc = loc_start}
-    | String key -> 
-      begin match token () with 
-      | Colon ->
-        let value = json lexbuf in
-        begin match token () with 
-        | Rbrace -> Obj {map = Map_string.add acc key value  ; loc = loc_start}
-        | Comma -> 
-          parse_map loc_start  (Map_string.add acc key value ) lexbuf 
-        | _ -> error lexbuf Expect_comma_or_rbrace
-        end
-      | _ -> error lexbuf Expect_colon
-      end
-    | _ -> error lexbuf Expect_string_or_rbrace
-  in 
-  let v = json lexbuf in 
-  match token () with 
-  | Eof -> v 
-  | _ -> error lexbuf Expect_eof
-
-let parse_json_from_string s = 
-  parse_json (Lexing.from_string s )
-
-let parse_json_from_chan fname in_chan = 
-  let lexbuf = 
-    Ext_position.lexbuf_from_channel_with_fname
-    in_chan fname in 
-  parse_json lexbuf 
-
-let parse_json_from_file s = 
-  let in_chan = open_in s in 
-  let lexbuf = 
-    Ext_position.lexbuf_from_channel_with_fname
-    in_chan s in 
-  match parse_json lexbuf with 
-  | exception e -> close_in in_chan ; raise e
-  | v  -> close_in in_chan;  v
-
-
-
-
-
-# 688 "ext/ext_json_parse.ml"
-
-end
 module External_arg_spec : sig 
 #1 "external_arg_spec.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -17142,10 +16473,7 @@ module External_arg_spec : sig
 type cst = private
   | Arg_int_lit of int 
   | Arg_string_lit of string 
-  | Arg_js_null
-  | Arg_js_true
-  | Arg_js_false
-  | Arg_js_json of string
+  | Arg_js_literal of string
 
 
 type label = private
@@ -17195,7 +16523,8 @@ type param = {
 type obj_params = obj_param list 
 type params = param list 
 
-val cst_json : Location.t -> string -> cst 
+val cst_obj_literal : string -> cst 
+
 val cst_int : int -> cst 
 val cst_string : string -> cst 
 
@@ -17236,11 +16565,7 @@ end = struct
 type cst = 
   | Arg_int_lit of int 
   | Arg_string_lit of string 
-
-  | Arg_js_null
-  | Arg_js_true
-  | Arg_js_false
-  | Arg_js_json of string
+  | Arg_js_literal of string
 
 type label_noname = 
   | Arg_label 
@@ -17296,37 +16621,7 @@ type obj_param =
 type obj_params = obj_param list 
 type params = param list 
 
-exception Error of Location.t * Ext_json_parse.error
-
-let pp_invaild_json fmt err = 
-  Format.fprintf fmt "@[Invalid json literal:  %a@]@." 
-    Ext_json_parse.report_error err
-
-let () = 
-  Location.register_error_of_exn (function 
-    | Error (loc,err) ->       
-      Some (Location.error_of_printer loc pp_invaild_json err)
-    | _ -> None
-    )
-
-
-let cst_json (loc : Location.t) s : cst  =
-  match Ext_json_parse.parse_json_from_string s with 
-  | True _ -> Arg_js_true
-  | False _ -> Arg_js_false 
-  | Null _ -> Arg_js_null 
-  | _ -> Arg_js_json s 
-  | exception Ext_json_parse.Error (start,finish,error_info)
-    ->
-    let loc1 = {
-      loc with
-       loc_start = 
-        Ext_position.offset loc.loc_start start; 
-       loc_end =   
-       Ext_position.offset loc.loc_start finish;
-    } in 
-     raise (Error (loc1 , error_info))
-
+let cst_obj_literal s = Arg_js_literal s
 let cst_int i = Arg_int_lit i 
 let cst_string s = Arg_string_lit s 
 let empty_label = Obj_empty 
@@ -19286,10 +18581,9 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
        (* This type is used in bs.obj only to construct obj type*)
        Arg_cst(External_arg_spec.cst_int i)
      | Some (Str i)->
-       Arg_cst (External_arg_spec.cst_string i)
-     | Some (Json_str s) ->
-       (* FIXME: This seems to be wrong in bs.obj, we should disable such payload in bs.obj *)
-       Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
+       Arg_cst (External_arg_spec.cst_string i)     
+     | Some (Js_literal_str s) ->
+       Arg_cst (External_arg_spec.cst_obj_literal  s)
    else (* ([`a|`b] [@bs.string]) *)
      spec_of_ptyp nolabel ptyp   
   )
@@ -19312,7 +18606,7 @@ let refine_obj_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
       Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
     | Some (Str i)->
       Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
-    | Some (Json_str _) ->
+    | Some (Js_literal_str _ ) ->
       Location.raise_errorf ~loc:ptyp.ptyp_loc "json payload is not supported in bs.obj since its type can not be inferred"
   else (* ([`a|`b] [@bs.string]) *)
     ptyp, spec_of_ptyp nolabel ptyp      

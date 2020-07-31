@@ -265,8 +265,7 @@ let iter_process_bs_int_as  (attrs : t) =
 type as_const_payload = 
   | Int of int
   | Str of string
-  | Json_str of string  
-
+  | Js_literal_str of string
 let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   let st = ref None in
   Ext_list.iter attrs
@@ -279,16 +278,31 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
           (Bs_ast_invariant.mark_used_bs_attribute attr ;
            match Ast_payload.is_single_int payload with
            | None ->
-             begin match Ast_payload.is_single_string payload with
-               | Some (s,None) ->
-                 st := Some (Str (s))
-               | Some (s, Some "json") ->
-                 st := Some (Json_str s )
-               | None | Some (_, Some _) ->
+             begin match  payload with
+               | PStr [ {
+                   pstr_desc =  
+                     Pstr_eval (
+                       {pexp_desc = 
+                          Pexp_constant 
+                            (Pconst_string(s, (None | Some "json" as dec)))
+                       ; pexp_loc ;
+                         _},_);
+                   _}] -> 
+                 if dec = None then
+                   st := Some (Str (s))
+                 else
+                 begin 
+                   (match Classify_function.classify ~check:(pexp_loc, Bs_flow_ast_utils.flow_deli_offset dec)
+                            s with 
+                   | Js_literal _ -> ()
+                   | _ -> 
+                    Location.raise_errorf ~loc:pexp_loc "an object literal expected");
+                   st := Some (Js_literal_str s )
+                 end
+               | _ -> 
                  Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
-
              end
-           | Some   v->
+           | Some v->
              st := (Some (Int v))
           )
         else

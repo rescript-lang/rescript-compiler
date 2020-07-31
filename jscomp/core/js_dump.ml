@@ -650,7 +650,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
      | Exp exp_info ->
        let raw_paren =
           not (match exp_info with  
-            | Js_literal _ | Js_raw_json -> true 
+            | Js_literal _  -> true 
             | Js_function _ | Js_exp_unknown -> false || raw_snippet_exp_simple_enough s) in 
        if raw_paren then P.string f L.lparen;
        P.string f s ;       

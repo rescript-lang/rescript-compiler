@@ -66,38 +66,9 @@ let is_single_int (x : t ) : int option =
   | _  -> None
 
 
-let offset_pos 
-  ({pos_lnum; pos_bol; pos_cnum} as loc : Lexing.position) 
-    ({line; column} : Loc.position) first_line_offset : Lexing.position = 
-  if line = 1 then 
-    {loc with pos_cnum = pos_cnum + column + first_line_offset }
-  else {
-    loc with 
-    pos_lnum = pos_lnum + line - 1;
-    pos_cnum =  pos_bol + column
-  }
 
-let flow_deli_off_set deli = 
-  (match deli with 
-  | None -> 1  (* length of '"'*)
-  | Some deli ->
-     String.length deli + 2 (* length of "{|"*)
-  )
-(* Here the loc is  the payload loc *)
-let check_flow_errors ~(loc : Location.t)
-  ~offset(errors : (Loc.t * Parse_error.t) list) = 
-  match errors with 
-  | [] ->  ()
-  | ({start ;
-     _end },first_error) :: _ -> 
-  
-    Location.raise_errorf ~loc:{loc with 
-      loc_start = offset_pos loc.loc_start start 
-        offset ;
-      loc_end = offset_pos loc.loc_start _end 
-        offset } "%s"
-      (Parse_error.PP.error first_error)  
-;;      
+
+
 let raw_as_string_exp_exn 
   ~(kind: Js_raw_info.raw_kind)
   (x : t ) : _ option = 
@@ -111,7 +82,7 @@ let raw_as_string_exp_exn
                ;
            pexp_loc = loc} as e ,_);
       _}] -> 
-    check_flow_errors ~loc ~offset:(flow_deli_off_set deli) (match kind with 
+    Bs_flow_ast_utils.check_flow_errors ~loc ~offset:(Bs_flow_ast_utils.flow_deli_offset deli) (match kind with 
         | Raw_re 
         | Raw_exp ->  
           let (_loc,e),errors =  (Parser_flow.parse_expression (Parser_env.init_env None str) false) in 

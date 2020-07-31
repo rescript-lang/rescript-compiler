@@ -25,10 +25,7 @@
 type cst = private
   | Arg_int_lit of int 
   | Arg_string_lit of string 
-  | Arg_js_null
-  | Arg_js_true
-  | Arg_js_false
-  | Arg_js_json of string
+  | Arg_js_literal of string
 
 
 type label = private
@@ -78,7 +75,8 @@ type param = {
 type obj_params = obj_param list 
 type params = param list 
 
-val cst_json : Location.t -> string -> cst 
+val cst_obj_literal : string -> cst 
+
 val cst_int : int -> cst 
 val cst_string : string -> cst 
 
