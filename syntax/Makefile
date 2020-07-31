@@ -10,7 +10,7 @@ include .depend
 depend:
 	$(OCAMLDEP) -native -I tests -I src src/*.ml src/*.mli tests/*.ml tests/*.mli > .depend
 
-FILES = \
+API_FILES = \
 	src/napkin_io.cmx\
 	src/napkin_minibuffer.cmx\
 	src/napkin_doc.cmx\
@@ -35,16 +35,16 @@ FILES = \
 	src/napkin_driver_binary.cmx \
 	src/napkin_ast_debugger.cmx \
 	src/napkin_outcome_printer.cmx \
-	src/napkin_multi_printer.cmx \
-	src/napkin_cli.cmx
+	src/napkin_multi_printer.cmx
 
-TEST_FILES = \
-	tests/napkin_diff.cmx
+CLI_FILES = $(API_FILES) src/napkin_cli.cmx
+
+TEST_FILES = $(API_FILES) tests/napkin_diff.cmx tests/napkin_test.cmx
 
 .DEFAULT_GOAL := build-native
 
-lib/napkinscript.exe: $(FILES)
-	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/napkinscript.exe -I +compiler-libs ocamlcommon.cmxa  -I src $(FILES)
+lib/napkinscript.exe: $(CLI_FILES)
+	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/napkinscript.exe -I +compiler-libs ocamlcommon.cmxa  -I src $(CLI_FILES)
 
 build-native: lib/refmt.exe lib/napkinscript.exe depend
 
@@ -60,14 +60,14 @@ lib/refmt.exe: vendor/refmt_main3.ml
 bench: lib/bench.exe
 	./lib/bench.exe
 
-lib/bench.exe: benchmarks/refmt_main3b.cmx benchmarks/Benchmark.ml $(FILES)
-	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/bench.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa benchmarks/mac_osx_time.c -I benchmarks -I src $(FILES) benchmarks/refmt_main3b.cmx benchmarks/Benchmark.ml
+lib/bench.exe: benchmarks/refmt_main3b.cmx benchmarks/Benchmark.ml $(CLI_FILES)
+	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/bench.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa benchmarks/mac_osx_time.c -I benchmarks -I src $(CLI_FILES) benchmarks/refmt_main3b.cmx benchmarks/Benchmark.ml
 
 benchmarks/refmt_main3b.cmx: benchmarks/refmt_main3b.ml
 	$(OCAMLOPT) -c -O2 -I +compiler-libs ocamlcommon.cmxa benchmarks/refmt_main3b.ml
 
-lib/test.exe: $(TEST_FILES) build-native tests/napkin_test.cmx
-	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/test.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa -I src -I tests $(FILES) $(TEST_FILES) tests/napkin_test.cmx
+lib/test.exe: $(TEST_FILES)
+	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/test.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa -I src -I tests $(TEST_FILES)
 
 test: build-native lib/test.exe
 	./node_modules/.bin/reanalyze -all-cmt . -suppress tests
@@ -91,6 +91,6 @@ clean:
 	rm -rf benchmarks/*.o
 	rm -rf lib/bench.exe
 	rm -rf lib/napkinscript.exe
-	rm -rf tests/test.exe
+	rm -rf lib/test.exe
 	git clean -dfx src
 .PHONY: clean test roundtrip-test termination dce exception reanalyze bootstrap build-native
