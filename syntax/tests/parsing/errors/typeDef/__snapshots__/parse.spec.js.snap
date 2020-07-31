@@ -16,7 +16,8 @@ type nonrec 'a node =
   4 │ 
   
   An inline record declaration needs at least one field
-  
+
+
 ========================================================"
 `;
 
@@ -32,7 +33,8 @@ type nonrec record = {
   2 │ 
   
   A record needs at least one field
-  
+
+
 ========================================================"
 `;
 
@@ -47,7 +49,8 @@ type nonrec draw = stroke:pencil -> unit
   2 │ 
   
   Parameter names start with a \`~\`, like: ~stroke
-  
+
+
 ========================================================"
 `;
 
@@ -66,7 +69,7 @@ type t = [ [%napkinscript.typehole ] | [%napkinscript.typehole ]]
   3 │ type t = [ s ]
   
   I'm not sure what to parse here when looking at \\"]\\".
-  
+
   Syntax error!
   parsing/errors/typeDef/polyvariant.js 3:13-14  
   1 │ type t = [< ]
@@ -76,7 +79,7 @@ type t = [ [%napkinscript.typehole ] | [%napkinscript.typehole ]]
   5 │ type z = [< | #A | #B > ]
   
   Did you forget a \`|\` here? 
-  
+
   Syntax error!
   parsing/errors/typeDef/polyvariant.js 7:15  
   5 │ type z = [< | #A | #B > ]
@@ -86,7 +89,8 @@ type t = [ [%napkinscript.typehole ] | [%napkinscript.typehole ]]
   9 │ 
   
   I'm not sure what to parse here when looking at \\"]\\".
-  
+
+
 ========================================================"
 `;
 
@@ -106,7 +110,8 @@ type nonrec observation =
   5 │ 
   
   I'm missing a type here
-  
+
+
 ========================================================"
 `;
 
@@ -126,7 +131,7 @@ type nonrec state = [%napkinscript.typehole ]
   4 │ // missing type
   
   Did you forget a \`=\` here? 
-  
+
   Syntax error!
   parsing/errors/typeDef/typeDef.js 8:1-4  
   6 │ 
@@ -135,7 +140,7 @@ type nonrec state = [%napkinscript.typehole ]
   9 │ 
   
   Missing a type here
-  
+
   Syntax error!
   parsing/errors/typeDef/typeDef.js 9:1  
   7 │ // missing type
@@ -143,7 +148,8 @@ type nonrec state = [%napkinscript.typehole ]
   9 │ 
   
   Missing a type here
-  
+
+
 ========================================================"
 `;
 
@@ -178,7 +184,7 @@ type nonrec ('from, 'foo) derivedNode =
   Type parameters require angle brackets:
   node<'a>
 
-  
+
   Syntax error!
   parsing/errors/typeDef/typeParams.js 5:26-27  
   3 │ }
@@ -188,7 +194,7 @@ type nonrec ('from, 'foo) derivedNode =
   7 │   updateF: 'from => 'to_,
   
   \`to\` is a reserved keyword. Keywords need to be escaped: \\\\\\"to\\"
-  
+
   Syntax error!
   parsing/errors/typeDef/typeParams.js 10:26  
    8 │ }
@@ -198,7 +204,7 @@ type nonrec ('from, 'foo) derivedNode =
   12 │   updateF: 'from => 'to_,
   
   A type param consists of a singlequote followed by a name like \`'a\` or \`'A\`
-  
+
   Syntax error!
   parsing/errors/typeDef/typeParams.js 15:26  
   13 │ }
@@ -208,7 +214,7 @@ type nonrec ('from, 'foo) derivedNode =
   17 │   updateF: 'from => 'to_,
   
   A type param consists of a singlequote followed by a name like \`'a\` or \`'A\`
-  
+
   Syntax error!
   parsing/errors/typeDef/typeParams.js 21:25-27  
   19 │ 
@@ -218,6 +224,7 @@ type nonrec ('from, 'foo) derivedNode =
   23 │   updateF: 'from => 'to_,
   
   Type params start with a singlequote: 'foo
-  
+
+
 ========================================================"
 `;

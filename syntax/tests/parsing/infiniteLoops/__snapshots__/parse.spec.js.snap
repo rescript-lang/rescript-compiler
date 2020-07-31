@@ -157,7 +157,8 @@ let removeNode rbt node =
   171 ┆ }
   
   Did you mean \`==\` here?
-  
+
+
 ========================================================"
 `;
 
@@ -178,7 +179,7 @@ let (a : action) = AddUser \\"test\\"
   3 │ let a: action = AddUser(\\"test\\")
   
   consecutive statements on a line must be separated by ';' or a newline
-  
+
   Syntax error!
   parsing/infiniteLoops/jsxChildren.js 1:22-29  
   1 │ type action = AddUser<string>
@@ -186,7 +187,8 @@ let (a : action) = AddUser \\"test\\"
   3 │ let a: action = AddUser(\\"test\\")
   
   Missing </string>
-  
+
+
 ========================================================"
 `;
 
@@ -597,7 +599,7 @@ include
   Type parameters require angle brackets:
   t<'value>
 
-  
+
   Syntax error!
   parsing/infiniteLoops/nonRecTypes.js 19:45-51  
   17 ┆   ~size: int,
@@ -607,7 +609,7 @@ include
   21 ┆ t('value) =
   
   consecutive statements on a line must be separated by ';' or a newline
-  
+
   Syntax error!
   parsing/infiniteLoops/nonRecTypes.js 67:26-68:3  
   65 │         };
@@ -619,7 +621,7 @@ include
   70 │   let nodeToRemove =
   
   I'm not sure what to parse here when looking at \\"let\\".
-  
+
   Syntax error!
   parsing/infiniteLoops/nonRecTypes.js 68:21-69:3  
   66 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None
@@ -631,7 +633,7 @@ include
   71 │     switch (leftGet(node), rightGet(node)) {
   
   I'm not sure what to parse here when looking at \\"let\\".
-  
+
   Syntax error!
   parsing/infiniteLoops/nonRecTypes.js 434:31-38  
   432 │     updateSum(Some(node), ~delta);
@@ -643,6 +645,7 @@ include
   Type parameters require angle brackets:
   oldNewVisibleNodes<'value>
 
-  
+
+
 ========================================================"
 `;

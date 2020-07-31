@@ -14,7 +14,7 @@ let 4 = for [%napkinscript.patternhole ] = 0 to 10 do Js.log \\"for\\" done
   3 │ 
   
   I was expecting a name for this let-binding. Example: \`let message = \\"hello\\"\`
-  
+
   Syntax error!
   parsing/errors/pattern/missing.res 2:5  
   1 │ let = 2
@@ -23,7 +23,7 @@ let 4 = for [%napkinscript.patternhole ] = 0 to 10 do Js.log \\"for\\" done
   4 │ for in 0 to 10 {
   
   I was expecting a name for this let-binding. Example: \`let message = \\"hello\\"\`
-  
+
   Syntax error!
   parsing/errors/pattern/missing.res 4:5-6  
   2 │ let = 4
@@ -33,7 +33,7 @@ let 4 = for [%napkinscript.patternhole ] = 0 to 10 do Js.log \\"for\\" done
   6 │ }
   
   A for-loop has the following form: \`for i in 0 to 10\`. Did you forget to supply a name before \`in\`?
-  
+
   Syntax error!
   parsing/errors/pattern/missing.res 9:3-4  
    7 │ 
@@ -43,6 +43,7 @@ let 4 = for [%napkinscript.patternhole ] = 0 to 10 do Js.log \\"for\\" done
   11 │ 
   
   I was expecting a pattern to match on before the \`=>\`
-  
+
+
 ========================================================"
 `;

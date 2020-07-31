@@ -15,7 +15,8 @@ val y : int
   5 │ let y: int
   
   I'm not sure what to parse here when looking at \\"}\\".
-  
+
+
 ========================================================"
 `;
 
@@ -34,7 +35,7 @@ val z2 : float[@@genType ]
   3 │ export z1: int export z2: float
   
   consecutive specifications on a line must be separated by ';' or a newline
-  
+
   Syntax error!
   parsing/errors/signature/consecutive.resi 3:15-21  
   1 │ let x: int let y: float
@@ -43,6 +44,7 @@ val z2 : float[@@genType ]
   4 │ 
   
   consecutive specifications on a line must be separated by ';' or a newline
-  
+
+
 ========================================================"
 `;

@@ -12,7 +12,8 @@ exports[`patternMatching.js 1`] = `
   3 │ 
   
   Pattern matching needs at least one case
-  
+
+
 ========================================================"
 `;
 
@@ -33,7 +34,7 @@ let x::y = myList
   3 │ 
   
   Arrays can't use the \`...\` spread currently. Please use \`concat\` or other Array helpers.
-  
+
   Syntax error!
   parsing/errors/other/spread.js 2:6-8  
   1 │ let arr = [...x, ...y]
@@ -44,7 +45,7 @@ let x::y = myList
   Array's \`...\` spread is not supported in pattern matches.
 Explanation: such spread would create a subarray; out of performance concern, our pattern matching currently guarantees to never create new intermediate data.
 Solution: if it's to validate the first few elements, use a \`when\` clause + Array size check + \`get\` checks on the current pattern. If it's to obtain a subarray, use \`Array.sub\` or \`Belt.Array.slice\`.
-  
+
   Syntax error!
   parsing/errors/other/spread.js 4:21-23  
   2 │ let [...arr, _] = [1, 2, 3]
@@ -55,7 +56,7 @@ Solution: if it's to validate the first few elements, use a \`when\` clause + Ar
   
   Records can only have one \`...\` spread, at the beginning.
 Explanation: since records have a known, fixed shape, a spread like \`{a, ...b}\` wouldn't make sense, as \`b\` would override every field of \`a\` anyway.
-  
+
   Syntax error!
   parsing/errors/other/spread.js 5:15-18  
   3 │ 
@@ -67,7 +68,7 @@ Explanation: since records have a known, fixed shape, a spread like \`{a, ...b}\
   Record's \`...\` spread is not supported in pattern matches.
 Explanation: you can't collect a subset of a record's field into its own record, since a record needs an explicit declaration and that subset wouldn't have one.
 Solution: you need to pull out each field you want explicitly.
-  
+
   Syntax error!
   parsing/errors/other/spread.js 8:13-22  
   6 │ 
@@ -77,6 +78,7 @@ Solution: you need to pull out each field you want explicitly.
   
   List pattern matches only supports one \`...\` spread, at the end.
 Explanation: a list spread at the tail is efficient, but a spread in the middle would create new list[s]; out of performance concern, our pattern matching currently guarantees to never create new intermediate data.
-  
+
+
 ========================================================"
 `;

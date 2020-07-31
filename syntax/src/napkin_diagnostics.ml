@@ -136,14 +136,12 @@ let explain t =
     end
 
 let toString t src =
-  let ppf = Format.err_formatter in
   Napkin_diagnostics_printing_utils.Super_location.super_error_reporter
-    ppf
+    Format.err_formatter
     ~src
     ~startPos:t.startPos
     ~endPos:t.endPos
-    ~msg:(explain t);
-  Format.pp_print_flush ppf ()
+    ~msg:(explain t)
 
 let make ~startPos ~endPos category = {
   startPos;
@@ -152,7 +150,9 @@ let make ~startPos ~endPos category = {
 }
 
 let printReport diagnostics src =
-  List.rev diagnostics |> List.iter (fun d -> toString d src)
+  Format.fprintf Format.err_formatter "@[<v>";
+  List.rev diagnostics |> List.iter (fun d -> toString d src);
+  Format.fprintf Format.err_formatter "@]@."
 
 let unexpected token context =
   Unexpected {token; context}

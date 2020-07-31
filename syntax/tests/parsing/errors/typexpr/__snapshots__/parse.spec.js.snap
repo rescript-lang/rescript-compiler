@@ -27,7 +27,7 @@ module Error3 =
   4 │ module Error2 = {
   
   Did you forget a \`=>\` here? 
-  
+
   Syntax error!
   parsing/errors/typexpr/arrow.js 7:27-30  
   5 │   type observation ={
@@ -37,7 +37,7 @@ module Error3 =
   9 │ }
   
   Did you forget a \`:\` here? It signals the start of a type
-  
+
   Syntax error!
   parsing/errors/typexpr/arrow.js 14:26-29  
   12 │   type observation ={
@@ -47,7 +47,8 @@ module Error3 =
   16 │ }
   
   Did you forget a \`:\` here? It signals the start of a type
-  
+
+
 ========================================================"
 `;
 
@@ -87,7 +88,7 @@ type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
   5 │ 
   
   Did you forget a \`:\` here? It signals the start of a type
-  
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js 7:14-8:13  
    5 │ 
@@ -98,7 +99,7 @@ type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
   10 │ 
   
   Did you forget a \`:\` here? It signals the start of a type
-  
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js 13:14-14:13  
   11 │ type state = {
@@ -109,7 +110,7 @@ type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
   16 │ 
   
   Did you forget a \`:\` here? It signals the start of a type
-  
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js 19:14-20:1  
   17 │ type state = {
@@ -120,7 +121,7 @@ type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
   22 │ type state = {
   
   Did you forget a \`:\` here? It signals the start of a type
-  
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js 25:1  
   23 │   @bs.meth
@@ -130,7 +131,7 @@ type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
   27 │ type state = {
   
   I'm missing a type here
-  
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js 28:10  
   26 │ 
@@ -140,7 +141,7 @@ type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
   30 │ }
   
   I'm missing a type here
-  
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js 33:18  
   31 │ 
@@ -150,7 +151,7 @@ type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
   35 │ }
   
   I'm missing a type here
-  
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js 37:25  
   35 │ }
@@ -160,7 +161,7 @@ type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
   39 │   ..
   
   I'm missing a type here
-  
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js 40:8-41:8  
   38 │ type state = {
@@ -171,7 +172,7 @@ type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
   43 │ 
   
   Did you forget a \`:\` here? It signals the start of a type
-  
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js 46:3-11  
   44 │ type websocket = {
@@ -181,7 +182,7 @@ type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
   48 │ 
   
   I'm missing a type here
-  
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js 50:7-51:0  
   48 │ 
@@ -190,7 +191,8 @@ type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
   51 │ 
   
   Did you forget a \`:\` here? It signals the start of a type
-  
+
+
 ========================================================"
 `;
 
@@ -207,7 +209,8 @@ external printName : name:unit -> unit = \\"printName\\"[@@bs.module
   3 │ 
   
   I'm not sure what to parse here when looking at \\"?\\".
-  
+
+
 ========================================================"
 `;
 
@@ -231,7 +234,7 @@ type nonrec t = int node option
   Type parameters require angle brackets:
   Js.Nullable.value<'a>
 
-  
+
   Syntax error!
   parsing/errors/typexpr/typeConstructorArgs.js 5:24-27  
   3 │ }
@@ -243,7 +246,7 @@ type nonrec t = int node option
   Type parameters require angle brackets:
   Belt.Map.t<'a>
 
-  
+
   Syntax error!
   parsing/errors/typexpr/typeConstructorArgs.js 6:32-35  
   4 │ 
@@ -255,7 +258,7 @@ type nonrec t = int node option
   Type parameters require angle brackets:
   Belt.Map.t<'a>
 
-  
+
   Syntax error!
   parsing/errors/typexpr/typeConstructorArgs.js 9:28  
    7 │ 
@@ -264,7 +267,8 @@ type nonrec t = int node option
   10 │ 
   
   I'm not sure what to parse here when looking at \\")\\".
-  
+
+
 ========================================================"
 `;
 
@@ -281,7 +285,7 @@ type nonrec 'A x = 'let
   3 │ 
   
   A type variable consists of a singlequote followed by a name like \`'a\` or \`'A\`
-  
+
   Syntax error!
   parsing/errors/typexpr/typeVar.res 2:15-17  
   1 │ type x<'A> = '_
@@ -289,6 +293,7 @@ type nonrec 'A x = 'let
   3 │ 
   
   \`let\` is a reserved keyword. Keywords need to be escaped: \\\\\\"let\\"
-  
+
+
 ========================================================"
 `;

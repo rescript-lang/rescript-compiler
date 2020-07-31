@@ -229,6 +229,6 @@ let print src startPos endPos ppf () =
 let super_error_reporter ppf ~src ~startPos ~endPos ~msg =
   setup_colors ();
   (* open a vertical box. Everything in our message is indented 2 spaces *)
-  Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print src startPos endPos) () msg;
+  Format.fprintf ppf "@[<v 2>@,%a@,%s@]@," (print src startPos endPos) () msg;
 
 end

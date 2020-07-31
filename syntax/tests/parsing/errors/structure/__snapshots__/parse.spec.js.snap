@@ -15,7 +15,8 @@ let y = 2
   5 │ let y = 2
   
   I'm not sure what to parse here when looking at \\"}\\".
-  
+
+
 ========================================================"
 `;
 
@@ -31,7 +32,8 @@ exception Bar
   2 │ 
   
   consecutive statements on a line must be separated by ';' or a newline
-  
+
+
 ========================================================"
 `;
 
@@ -50,7 +52,8 @@ module C = struct module T = (Fun)(struct ;;foo (a + c) (b + d) end) end
   8 │ 
   
   I'm not sure what to parse here when looking at \\")\\".
-  
+
+
 ========================================================"
 `;
 
@@ -91,7 +94,8 @@ module ClientSet =
   21 │ Js.log(\\"test\\") // should not be omitted
   
   I'm not sure what to parse here when looking at \\")\\".
-  
+
+
 ========================================================"
 `;
 
@@ -117,7 +121,7 @@ let (x : int1) = (int2 = 3 :> int3)
   4 │ )
   
   Did you forget a \`=\` here? 
-  
+
   Syntax error!
   parsing/errors/structure/letBinding.js 8:12-13  
    6 │ let x = {
@@ -127,7 +131,7 @@ let (x : int1) = (int2 = 3 :> int3)
   10 │ }
   
   Did you forget a \`=\` here? 
-  
+
   Syntax error!
   parsing/errors/structure/letBinding.js 14:19-26  
   12 │ let t = {
@@ -137,7 +141,7 @@ let (x : int1) = (int2 = 3 :> int3)
   16 │ }
   
   Did you forget a \`=\` here? 
-  
+
   Syntax error!
   parsing/errors/structure/letBinding.js 18:39-20:3  
   16 │ }
@@ -149,7 +153,7 @@ let (x : int1) = (int2 = 3 :> int3)
   22 │ // no magic in the syntax
   
   This let-binding misses an expression
-  
+
   Syntax error!
   parsing/errors/structure/letBinding.js 20:10-23:3  
   18 │ let keyTable: Belt.Map.String.t<int> =
@@ -162,7 +166,7 @@ let (x : int1) = (int2 = 3 :> int3)
   25 │ // no magic in the syntax
   
   This let-binding misses an expression
-  
+
   Syntax error!
   parsing/errors/structure/letBinding.js 23:11-13  
   21 │ 
@@ -172,7 +176,7 @@ let (x : int1) = (int2 = 3 :> int3)
   25 │ // no magic in the syntax
   
   Did you forget a \`=\` here? 
-  
+
   Syntax error!
   parsing/errors/structure/letBinding.js 26:6-8  
   24 │ 
@@ -182,7 +186,7 @@ let (x : int1) = (int2 = 3 :> int3)
   28 │ // no magic in the syntax
   
   Did you forget a \`=\` here? 
-  
+
   Syntax error!
   parsing/errors/structure/letBinding.js 29:13-15  
   27 │ 
@@ -191,7 +195,8 @@ let (x : int1) = (int2 = 3 :> int3)
   30 │ 
   
   Did you forget a \`=\` here? 
-  
+
+
 ========================================================"
 `;
 
@@ -208,7 +213,7 @@ let [%napkinscript.patternhole ] = 3
   3 │ 
   
   \`open\` is a reserved keyword. Keywords need to be escaped: \\\\\\"open\\"
-  
+
   Syntax error!
   parsing/errors/structure/letBindingPatternKeyword.js 2:5-6  
   1 │ let open = 1
@@ -216,6 +221,7 @@ let [%napkinscript.patternhole ] = 3
   3 │ 
   
   \`to\` is a reserved keyword. Keywords need to be escaped: \\\\\\"to\\"
-  
+
+
 ========================================================"
 `;
