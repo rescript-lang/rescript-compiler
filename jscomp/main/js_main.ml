@@ -210,7 +210,7 @@ let intf filename =
   ; process_interface_file ppf filename;;
 
 
-let fmt_file input =  
+let format_file input =  
   let ext = classify_input (Ext_filename.get_extension_maybe input) in 
   let syntax = 
     match ext with 
@@ -450,7 +450,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-dsource", set Clflags.dump_source, 
     "*internal* print source";
 
-    "-fmt", string_call fmt_file,
+    "-format", string_call format_file,
     "Format as Res syntax";
 
     "-where", unit_call print_standard_library, 
