@@ -9,7 +9,7 @@
   "dependencies": {},
   "devDependencies": {
     "jest": "^24.9.0",
-    "reanalyze": "^2.9.0"
+    "reanalyze": "^2.10.0"
   },
   "private": true,
   "scripts": {},

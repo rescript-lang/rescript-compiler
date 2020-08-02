@@ -296,3 +296,4 @@ let () =
         ) files
 
   end
+[@@raises exit]
