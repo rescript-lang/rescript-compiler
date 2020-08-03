@@ -1,9 +1,18 @@
 `*` means  potential break changes
 # 8.2
 
+- #4573, #4565, #4559, #4558, #4556, #4554, #4553, #4550 introudce string literal types
+
+- #4580 #4581, #4582, #4463, #4583 relax bs.as to allow object literals instead of json, so FFI below is allowed:
+  ```ocaml
+  external fff0 : int -> int -> (_[@bs.as {json|[undefined,undefined]|json}]) -> int = "say"    
+  [@@bs.val]
+
+  let testUndefined () = 
+    fff0 1 2 
+  ```
 - #4570 refine purity analysis so that object literals in raw will be considered pure
 
-- #4573, #4565, #4559, #4558, #4556, #4554, #4553, #4550 introudce string literal types
 
 - #4548 #4555 fix ghost locaption in empty array
 
@@ -23,6 +32,11 @@
 - #4470 tweak error message for not found record fields/constructors
 
 * bug fixes
+- #4572, #4585 fix a corner case for ffi to allow such bindings:
+  ```ocaml
+  external get : _ -> _ -> _ = ""[@@bs.get_index]
+  ```
+- #4589 fix building failure on freebsd
 - #4524, #4519 fix an inlining bug
 - #4505 #4502, fix bad error message in bsb -bla
 
