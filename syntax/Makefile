@@ -52,7 +52,7 @@ build-native: lib/refmt.exe lib/napkinscript.exe depend
 bootstrap: build-native
 	ocaml unix.cma ./scripts/bspack.ml -bs-main Napkin_cli -I src -o ./lib/napkinscript.ml
 	./lib/napkinscript.exe -parse ml -print ns ./lib/Napkinscript.ml > ./lib/Napkinscript2.ml
-	$(OCAMLOPT) -w a -pp "./lib/napkinscript.exe" -O2 -o ./lib/napkinscript2.exe -I +compiler-libs ocamlcommon.cmxa -I lib ./lib/Napkinscript2.ml
+	$(OCAMLOPT) -w a -pp "./lib/napkinscript.exe -print binary" -O2 -o ./lib/napkinscript2.exe -I +compiler-libs ocamlcommon.cmxa -I lib ./lib/Napkinscript2.ml
 	mv ./lib/napkinscript2.exe ./lib/napkinscript.exe
 
 lib/refmt.exe: vendor/refmt_main3.ml
@@ -61,8 +61,8 @@ lib/refmt.exe: vendor/refmt_main3.ml
 bench: lib/bench.exe
 	./lib/bench.exe
 
-lib/bench.exe: benchmarks/refmt_main3b.cmx benchmarks/Benchmark.ml $(CLI_FILES)
-	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/bench.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa benchmarks/mac_osx_time.c -I benchmarks -I src $(CLI_FILES) benchmarks/refmt_main3b.cmx benchmarks/Benchmark.ml
+lib/bench.exe: benchmarks/refmt_main3b.cmx benchmarks/Benchmark.ml $(API_FILES)
+	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/bench.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa benchmarks/mac_osx_time.c -I benchmarks -I src $(API_FILES) benchmarks/refmt_main3b.cmx benchmarks/Benchmark.ml
 
 benchmarks/refmt_main3b.cmx: benchmarks/refmt_main3b.ml
 	$(OCAMLOPT) -c -O2 -I +compiler-libs ocamlcommon.cmxa benchmarks/refmt_main3b.ml
