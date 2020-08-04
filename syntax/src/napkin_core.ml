@@ -2093,9 +2093,10 @@ and parseTemplateExpr ?(prefix="js") p =
     let op = Location.mknoloc (Longident.Lident "^") in
     Ast_helper.Exp.ident op
   in
-  let rec loop acc p =
+  let rec parseParts acc =
     let startPos = p.Parser.startPos in
-    match p.Parser.token with
+    Parser.nextTemplateLiteralToken p;
+    match p.token with
     | TemplateTail txt ->
       Parser.next p;
       let loc = mkLoc startPos p.prevEndPos in
@@ -2111,8 +2112,6 @@ and parseTemplateExpr ?(prefix="js") p =
       let loc = mkLoc startPos p.prevEndPos in
       let expr = parseExprBlock p in
       let fullLoc = mkLoc startPos p.prevEndPos in
-      Scanner.setTemplateMode p.scanner;
-      Parser.expect Rbrace p;
       let txt = if p.mode = ParseForTypeChecker then parseTemplateStringLiteral txt else txt in
       let str = Ast_helper.Exp.constant ~loc (Pconst_string(txt, Some prefix)) in
       let next =
@@ -2123,27 +2122,23 @@ and parseTemplateExpr ?(prefix="js") p =
         Ast_helper.Exp.apply ~loc:fullLoc hiddenOperator
           [Nolabel, a; Nolabel, expr]
       in
-      loop next p
-    | token ->
-      Parser.err p (Diagnostics.unexpected token p.breadcrumbs);
-      acc
+      parseParts next
+   | token ->
+     Parser.err p (Diagnostics.unexpected token p.breadcrumbs);
+     Ast_helper.Exp.constant (Pconst_string("", None))
   in
-  Scanner.setTemplateMode p.scanner;
-  Parser.expect Backtick p;
-  let startPos = p.Parser.startPos in
-  match p.Parser.token with
+  let startPos = p.startPos in
+  Parser.nextTemplateLiteralToken p;
+  match p.token with
   | TemplateTail txt ->
-    let loc = mkLoc startPos p.endPos in
     Parser.next p;
     let txt = if p.mode = ParseForTypeChecker then parseTemplateStringLiteral txt else txt in
-    Ast_helper.Exp.constant ~loc (Pconst_string(txt, Some prefix))
+    Ast_helper.Exp.constant ~loc:(mkLoc startPos p.prevEndPos) (Pconst_string(txt, Some prefix))
   | TemplatePart txt ->
-    let constantLoc = mkLoc startPos p.endPos in
     Parser.next p;
+    let constantLoc = mkLoc startPos p.prevEndPos in
     let expr = parseExprBlock p in
     let fullLoc = mkLoc startPos p.prevEndPos in
-    Scanner.setTemplateMode p.scanner;
-    Parser.expect Rbrace p;
     let txt = if p.mode = ParseForTypeChecker then parseTemplateStringLiteral txt else txt in
     let str = Ast_helper.Exp.constant ~loc:constantLoc (Pconst_string(txt, Some prefix)) in
     let next =
@@ -2152,7 +2147,7 @@ and parseTemplateExpr ?(prefix="js") p =
       else
         expr
     in
-    loop next p
+    parseParts next
  | token ->
    Parser.err p (Diagnostics.unexpected token p.breadcrumbs);
    Ast_helper.Exp.constant (Pconst_string("", None))
@@ -2643,7 +2638,7 @@ and parseBracedOrRecordExpr  p =
         Parser.expect Rbrace p;
         let loc = mkLoc startPos p.prevEndPos in
         let braces = makeBracesAttr loc in
-        {expr with pexp_attributes = braces::expr.pexp_attributes}
+        {expr with Parsetree.pexp_attributes = braces::expr.Parsetree.pexp_attributes}
       | Rbrace ->
         Parser.next p;
         let loc = mkLoc startPos p.prevEndPos in

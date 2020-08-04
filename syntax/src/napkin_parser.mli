@@ -28,6 +28,7 @@ val make: ?mode:mode -> ?line:int -> string -> string -> t
 val expect: ?grammar:Grammar.t -> Token.t -> t -> unit
 val optional: t -> Token.t -> bool
 val next: ?prevEndPos:Lexing.position -> t -> unit
+val nextTemplateLiteralToken: t -> unit
 val lookahead: t -> (t -> 'a) -> 'a
 val err:
   ?startPos:Lexing.position ->

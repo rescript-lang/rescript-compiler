@@ -2,7 +2,7 @@
 
 exports[`eof.js 1`] = `"let x = \\"eof here\\""`;
 
-exports[`es6template.js 1`] = `"let x = ({js|this contains |js} ^ foo) ^ {js|, missing closin|js}"`;
+exports[`es6template.js 1`] = `"let x = ({js|this contains |js} ^ foo) ^ {js|, missing closing|js}"`;
 
 exports[`unclosed.js 1`] = `
 "let x = \\"unclosed\\"

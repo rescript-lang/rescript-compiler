@@ -29,3 +29,5 @@ val setDiamondMode: t -> unit
 val popMode: t -> mode -> unit
 
 val reconsiderLessThan: t -> Napkin_token.t
+
+val scanTemplateLiteralToken: t -> (Lexing.position * Lexing.position * Napkin_token.t)

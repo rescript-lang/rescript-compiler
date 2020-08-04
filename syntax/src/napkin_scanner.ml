@@ -43,10 +43,6 @@ let inJsxMode scanner = match scanner.mode with
   | Jsx::_ -> true
   | _ -> false
 
-let inTemplateMode scanner = match scanner.mode with
-  | Template::_ -> true
-  | _ -> false
-
 let position scanner = Lexing.{
   pos_fname = scanner.filename;
   (* line number *)
@@ -405,43 +401,42 @@ let scanMultiLineComment scanner =
       (Bytes.sub_string scanner.src startOff (scanner.offset - 2 - startOff))
   )
 
-let scanTemplate scanner =
+let scanTemplateLiteralToken scanner =
   let startOff = scanner.offset in
+
+  (* if starting } here, consume it *)
+  if scanner.ch == CharacterCodes.rbrace then (
+    next scanner
+  );
   let startPos = position scanner in
 
   let rec scan () =
     if scanner.ch == CharacterCodes.eof then (
       let endPos = position scanner in
       scanner.err ~startPos ~endPos Diagnostics.unclosedTemplate;
-      popMode scanner Template;
       Token.TemplateTail(
-        Bytes.sub_string scanner.src startOff (scanner.offset - 2 - startOff)
+        Bytes.sub_string scanner.src startOff (scanner.offset - 1 - startOff)
       )
-    )
-    else if scanner.ch == CharacterCodes.backslash then (
+    ) else if scanner.ch == CharacterCodes.backtick then (
       next scanner;
-      if   scanner.ch == CharacterCodes.backtick
+      Token.TemplateTail(
+        Bytes.sub_string scanner.src startOff (scanner.offset - 1 - startOff)
+      )
+    ) else if scanner.ch == CharacterCodes.dollar &&
+              (peek scanner) == CharacterCodes.lbrace then (
+      next scanner; (* consume $ *)
+      next scanner; (* consume { *)
+      let contents =
+        Bytes.sub_string scanner.src startOff (scanner.offset - 2 - startOff)
+      in
+      Token.TemplatePart contents
+    ) else if scanner.ch == CharacterCodes.backslash then (
+      next scanner;
+      if scanner.ch == CharacterCodes.backtick
         || scanner.ch == CharacterCodes.backslash
         || scanner.ch == CharacterCodes.dollar
       then next scanner;
       scan()
-    ) else if scanner.ch == CharacterCodes.backtick then (
-      next scanner;
-      let contents =
-        Bytes.sub_string scanner.src startOff (scanner.offset - 1 - startOff)
-      in
-      popMode scanner Template;
-      Token.TemplateTail contents
-    ) else if scanner.ch == CharacterCodes.dollar &&
-              peek scanner == CharacterCodes.lbrace
-      then (
-        next scanner; (* consume $ *)
-        next scanner; (* consume { *)
-        let contents =
-          Bytes.sub_string scanner.src startOff (scanner.offset - 2 - startOff)
-        in
-        popMode scanner Template;
-        Token.TemplatePart contents
     ) else (
       if CharacterCodes.isLineBreak scanner.ch then (
         scanner.lineOffset <- scanner.offset + 1;
@@ -451,15 +446,15 @@ let scanTemplate scanner =
       scan()
     )
   in
-  scan()
+  let token = scan() in
+  let endPos = position scanner in
+  (startPos, endPos, token)
 
 let rec scan scanner =
-  if not (inTemplateMode scanner) then skipWhitespace scanner;
+  skipWhitespace scanner;
   let startPos = position scanner in
   let ch = scanner.ch in
-  let token = if inTemplateMode scanner then
-    scanTemplate scanner
-  else if ch == CharacterCodes.underscore then (
+  let token = if ch == CharacterCodes.underscore then (
     let nextCh = peek scanner in
     if nextCh == CharacterCodes.underscore || CharacterCodes.isDigit nextCh || CharacterCodes.isLetter nextCh then
       scanIdentifier scanner

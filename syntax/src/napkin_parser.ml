@@ -62,6 +62,13 @@ let rec next ?prevEndPos p =
    p.startPos <- startPos;
    p.endPos <- endPos
 
+let nextTemplateLiteralToken p =
+  let (startPos, endPos, token) = Scanner.scanTemplateLiteralToken p.scanner in
+  p.token <- token;
+  p.prevEndPos <- p.endPos;
+  p.startPos <- startPos;
+  p.endPos <- endPos
+
 let checkProgress ~prevEndPos ~result p =
   if p.endPos == prevEndPos
   then None

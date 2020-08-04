@@ -1,4 +1,3 @@
-
 module Comment = Napkin_comment
 module CharacterCodes = Napkin_character_codes
 
