@@ -1,4 +1,4 @@
-# BuckleScript New Syntax
+# BuckleScript New Syntax ![Tests](https://github.com/BuckleScript/syntax/workflows/CI/badge.svg)
 
 Blog post: https://reasonml.org/blog/bucklescript-8-1-new-syntax
 
