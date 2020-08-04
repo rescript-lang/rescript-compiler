@@ -37,4 +37,4 @@ jobs:
 
     - run: npm install
 
-    - run: eval $(opam env) && make test
+    - run: eval $(opam env) && make roundtrip-test

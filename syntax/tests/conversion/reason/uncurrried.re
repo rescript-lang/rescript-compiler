@@ -4,14 +4,14 @@ let updateBriefletNarrative = (. updateObj) => {
 }
 
 // this is a bug in Reason, the . will be parsed wrong and disappear.
-updateBriefletNarrative(. briefletNarrativeUpdateObj);
+/* updateBriefletNarrative(. briefletNarrativeUpdateObj); */
 
 // this is a bug in Reason, the . will be parsed wrong and disappear.
-foo(. 3);
+/* foo(. 3); */
 
 module D = {
   // this is a bug in Reason, the . will be parsed wrong and disappear.
-  foo(. 3);
+  /* foo(. 3); */
 };
 
 // ok
