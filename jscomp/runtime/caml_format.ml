@@ -24,7 +24,16 @@
 
 
 
+external (.![]) : string -> int -> int = "%string_unsafe_get" 
 
+let code_0 = "0".![0]
+let code_a = "a".![0]
+let code_A = "A".![0]
+
+module Caml_char = struct 
+  external code : char -> int = "%identity"  
+  external unsafe_chr : int -> char = "%identity"
+end  
 
 let caml_failwith s = raise (Failure  s)
 (* let caml_invalid_argument s= raise (Invalid_argument s ) *)
@@ -39,11 +48,11 @@ let ( *~ ) = Caml_nativeint_extern.mul
 let parse_digit c = 
   match c with 
   | '0' .. '9' 
-    -> Caml_char.code c - Caml_char.code '0'
+    -> Caml_char.code c - code_0
   | 'A' .. 'Z'
-    -> Caml_char.code c - (Caml_char.code 'A' - 10)
+    -> Caml_char.code c - (code_A - 10)
   | 'a' .. 'z'
-    -> Caml_char.code c - (Caml_char.code 'a' - 10 )
+    -> Caml_char.code c - (code_a - 10 )
   | _ -> -1
 
 type of_string_base =
@@ -183,7 +192,7 @@ type fmt = {
   mutable conv : string
 }
 
-let lowercase c =
+let lowercase (c : char) : char =
   if (c >= 'A' && c <= 'Z')
   || (c >= '\192' && c <= '\214')
   || (c >= '\216' && c <= '\222')
@@ -219,8 +228,8 @@ let parse_format fmt =
           f.width <- 0;
           let j = ref i in 
 
-          while (let w = Caml_char.code fmt.[j.contents] - Caml_char.code '0' in w >=0 && w <= 9  ) do 
-            f.width <- f.width * 10 + Caml_char.code fmt.[j.contents] - Caml_char.code '0';
+          while (let w = fmt.![j.contents] - code_0  in w >=0 && w <= 9  ) do 
+            f.width <- f.width * 10 + fmt.![j.contents] - code_0;
             j.contents <- j.contents + 1
           done;
           aux f j.contents
@@ -229,8 +238,8 @@ let parse_format fmt =
         -> 
         f.prec <- 0;
         let j = ref (i + 1 ) in 
-        while (let w = Caml_char.code fmt.[j.contents] - Caml_char.code '0' in w >=0 && w <= 9  ) do 
-          f.prec <- f.prec * 10 + Caml_char.code fmt.[j.contents] - Caml_char.code '0';
+        while (let w = fmt.![j.contents] - code_0 in w >=0 && w <= 9  ) do 
+          f.prec <- f.prec * 10 + fmt.![j.contents] - code_0;
           j.contents <- j.contents + 1;
         done;
         aux f j.contents 
