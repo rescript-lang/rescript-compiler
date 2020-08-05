@@ -31,7 +31,7 @@ type 'a array_like = 'a Js_array2.array_like
 type 'a array_iter = 'a array_like
 *)
 
-external from : 'a array_like -> 'b array = "Array.from" [@@bs.val] (* ES2015 *)
+external from : 'a array_like -> 'a array = "Array.from" [@@bs.val] (* ES2015 *)
 external fromMap : 'a array_like -> ('a -> 'b [@bs.uncurry]) -> 'b array = "Array.from" [@@bs.val] (* ES2015 *)
 external isArray : 'a -> bool = "Array.isArray" [@@bs.val] (* ES2015 *)
 (* Array.of: seems pointless unless you can bind *) (* ES2015 *)
