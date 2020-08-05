@@ -24,7 +24,8 @@
 
 
 
-external (.![]) : string -> int -> int = "%string_unsafe_get" 
+ external (.![]) : string -> int -> int = "%string_unsafe_get" 
+ external (.!()) : string -> int -> char = "%string_unsafe_get" 
 
 let code_0 = "0".![0]
 let code_a = "a".![0]
@@ -35,7 +36,7 @@ module Caml_char = struct
   external unsafe_chr : int -> char = "%identity"
 end  
 
-let caml_failwith s = raise (Failure  s)
+let failwith s = raise (Failure  s)
 (* let caml_invalid_argument s= raise (Invalid_argument s ) *)
 
 let (>>>) = Caml_nativeint_extern.shift_right_logical
@@ -94,41 +95,39 @@ let parse_sign_and_base (s : string) =
 
 
 let caml_int_of_string s = 
-  let module String = Caml_string_extern in 
   let i, sign, hbase = parse_sign_and_base s in
   let base  = Caml_nativeint_extern.of_int (int_of_string_base hbase) in
   let threshold = (-1n >>> 0) in 
   let len =Caml_string_extern.length s in  
-  let c = if i < len then s.[i] else '\000' in
+  let c = if i < len then s.!(i) else '\000' in
   let d = to_nat (parse_digit c) in
   let () =
     if d < 0n || d >=  base then
-      caml_failwith "int_of_string" in
+      failwith "int_of_string" in
   (* let () = [%bs.debugger]  in *)
   let rec aux acc k = 
     if k = len then acc 
     else 
-      let a = s.[k] in
+      let a = s.!(k) in
       if a  = '_' then aux acc ( k +  1) 
       else 
         let v = to_nat  (parse_digit a) in  
         if v < 0n || v >=  base then 
-          caml_failwith "int_of_string"
+          failwith "int_of_string"
         else 
           let acc = base *~ acc +~  v in 
           if acc > threshold then 
-            caml_failwith "int_of_string"
+            failwith "int_of_string"
           else aux acc  ( k +   1)
   in 
   let res = sign *~ aux d (i + 1) in 
   let or_res = Caml_nativeint_extern.logor res 0n in 
   (if base = 10n && res <> or_res then 
-    caml_failwith "int_of_string");
+    failwith "int_of_string");
   or_res
 
 
 let caml_int64_of_string s = 
-  let module String = Caml_string_extern in 
   let i, sign, hbase = parse_sign_and_base s in
   let base  = Caml_int64_extern.of_int (int_of_string_base hbase) in
   let sign = Caml_int64_extern.of_nativeint sign in
@@ -144,23 +143,23 @@ let caml_int64_of_string s =
       9223372036854775807L
   in 
   let len =Caml_string_extern.length s in  
-  let c = if i < len then s.[i] else '\000' in
+  let c = if i < len then s.!(i) else '\000' in
   let d = Caml_int64_extern.of_int (parse_digit c) in
   let () =
     if d < 0L || d >=  base then
-      caml_failwith "int64_of_string" in
+      failwith "int64_of_string" in
   let (+~) = Caml_int64_extern.add  in
   let ( *~ ) = Caml_int64_extern.mul  in
 
   let rec aux acc k = 
     if k = len then acc 
     else             
-      let a = s.[k] in
+      let a = s.!(k) in
       if a  = '_' then aux acc ( k +  1) 
       else     
         let v = Caml_int64_extern.of_int (parse_digit a) in  
         if v < 0L || v >=  base || acc > threshold then 
-          caml_failwith "int64_of_string"
+          failwith "int64_of_string"
         else 
           let acc = base *~ acc +~  v in 
           aux acc  ( k +   1)
@@ -168,7 +167,7 @@ let caml_int64_of_string s =
   let res = sign *~ aux d (i + 1) in 
   let or_res = Caml_int64_extern.logor res 0L in 
   (if base = 10L && res <> or_res then 
-    caml_failwith "int64_of_string");
+    failwith "int64_of_string");
   or_res
 
 type base = 
