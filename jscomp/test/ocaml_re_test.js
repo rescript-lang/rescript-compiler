@@ -1781,9 +1781,8 @@ function is_charset(_param) {
 function split(s, cm) {
   var _t = s;
   var f = function (i, j) {
-    cm[i] = /* "\001" */1;
-    cm[j + 1 | 0] = /* "\001" */1;
-    
+    Caml_bytes.set(cm, i, /* "\001" */1);
+    return Caml_bytes.set(cm, j + 1 | 0, /* "\001" */1);
   };
   while(true) {
     var t = _t;
@@ -1902,14 +1901,14 @@ function flatten_cmap(cm) {
   var c = Caml_bytes.caml_create_bytes(256);
   var col_repr = Caml_bytes.caml_create_bytes(256);
   var v = 0;
-  c[0] = /* "\000" */0;
-  col_repr[0] = /* "\000" */0;
+  Caml_bytes.set(c, 0, /* "\000" */0);
+  Caml_bytes.set(col_repr, 0, /* "\000" */0);
   for(var i = 1; i <= 255; ++i){
     if (Caml_bytes.get(cm, i) !== /* "\000" */0) {
       v = v + 1 | 0;
     }
-    c[i] = Char.chr(v);
-    col_repr[v] = Char.chr(i);
+    Caml_bytes.set(c, i, Char.chr(v));
+    Caml_bytes.set(col_repr, v, Char.chr(i));
   }
   return [
           c,

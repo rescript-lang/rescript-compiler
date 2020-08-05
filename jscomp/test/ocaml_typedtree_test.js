@@ -23255,7 +23255,7 @@ function remove_underscores(s) {
     }
     var c = Caml_string.get(s, src);
     if (c !== 95) {
-      b[dst] = c;
+      Caml_bytes.set(b, dst, c);
       _dst = dst + 1 | 0;
       _src = src + 1 | 0;
       continue ;

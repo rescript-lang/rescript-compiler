@@ -1,6 +1,7 @@
 'use strict';
 
 var Bytes = require("../../lib/js/bytes.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
 
 function gray_encode(b) {
   return b ^ (b >>> 1);
@@ -29,7 +30,7 @@ function bool_string(len, n) {
     var n$1 = _n;
     var i = _i;
     if ((n$1 & 1) === 1) {
-      s[i] = /* "1" */49;
+      Caml_bytes.set(s, i, /* "1" */49);
     }
     if (i <= 0) {
       return s;

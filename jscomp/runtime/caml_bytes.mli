@@ -26,6 +26,11 @@
 val caml_create_bytes : int -> bytes
 val caml_fill_bytes :  bytes -> int -> int -> char -> unit
 val get : bytes -> int -> char
+val set : 
+  bytes -> 
+  int -> 
+  char -> 
+  unit
 val bytes_to_string : bytes -> string 
 val caml_blit_bytes : bytes -> int -> bytes -> int -> int -> unit
 

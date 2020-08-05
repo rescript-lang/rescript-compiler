@@ -214,7 +214,7 @@ function next(param) {
       var e = _e;
       var match = peekch(undefined);
       if (match !== 34) {
-        glo[e] = getq(undefined);
+        Caml_bytes.set(glo, e, getq(undefined));
         _e = e + 1 | 0;
         continue ;
       }
@@ -265,7 +265,7 @@ function next(param) {
     while(true) {
       var ch$1 = _ch;
       var n$1 = _n$1;
-      s[n$1] = ch$1;
+      Caml_bytes.set(s, n$1, ch$1);
       if (!isid(peekch(undefined))) {
         return {
                 TAG: /* Sym */3,
@@ -351,7 +351,7 @@ var opos = {
 function out(x) {
   if (x !== 0) {
     out(x / 256 | 0);
-    obuf[opos.contents] = Char.chr(x & 255);
+    Caml_bytes.set(obuf, opos.contents, Char.chr(x & 255));
     opos.contents = opos.contents + 1 | 0;
     return ;
   }
@@ -361,7 +361,7 @@ function out(x) {
 function le(n, x) {
   for(var i = 0 ,i_finish = n / 8 | 0; i < i_finish; ++i){
     var $$byte = (x >>> (i << 3)) & 255;
-    obuf[opos.contents] = Char.chr($$byte);
+    Caml_bytes.set(obuf, opos.contents, Char.chr($$byte));
     opos.contents = opos.contents + 1 | 0;
   }
   
@@ -490,10 +490,10 @@ function patchlval(param) {
   var n = lval.contents[0];
   if (n.TAG) {
     opos.contents = opos.contents - n._0 | 0;
+    return ;
   } else {
-    obuf[opos.contents - n._0 | 0] = /* "\141" */141;
+    return Caml_bytes.set(obuf, opos.contents - n._0 | 0, /* "\141" */141);
   }
-  
 }
 
 function read(param) {

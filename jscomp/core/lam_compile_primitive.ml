@@ -492,25 +492,22 @@ let translate  loc
      Bytes is an int array in javascript
   *)
   | Pbytessetu
-  | Pbytessets -> 
+    -> 
     (match args with
      | [e;e0;e1] -> ensure_value_unit cxt.continuation 
                       (Js_of_lam_string.set_byte e e0 e1)
      | _ -> assert false)
+  | Pbytessets ->
+    E.runtime_call Js_runtime_modules.bytes "set" args
   | Pbytesrefu ->
     (match args with
      | [e;e1] -> Js_of_lam_string.ref_byte e e1
      | _ -> assert false)
-
-
   | Pbytesrefs ->
-    begin match args with
-      | [e ; e1] ->
-        if !Clflags.fast then
-          Js_of_lam_string.ref_byte e e1
-        else E.runtime_call Js_runtime_modules.bytes "get" args            
-      | _ -> assert false         
-    end
+    E.runtime_call Js_runtime_modules.bytes "get" args            
+  | Pstringrefs ->
+    E.runtime_call Js_runtime_modules.string "get" args          
+
   (* For bytes and string, they both return [int] in ocaml 
       we need tell Pbyteref from Pstringref
       1. Pbyteref -> a[i]
@@ -521,19 +518,8 @@ let translate  loc
       | [e;e1] -> Js_of_lam_string.ref_string e e1 
       | _ -> assert false
     end
-
-  | Pstringrefs ->
-    begin match args with
-      | [e;e1] ->
-        if !Clflags.fast then
-          Js_of_lam_string.ref_string e e1             
-        else       
-          E.runtime_call Js_runtime_modules.string "get" args          
-      | _ -> assert false
-    end
   (** only when Lapply -> expand = true*)
   | Praise  -> assert false (* handled before here *)
-
   (* Runtime encoding relevant *)
   | Parraylength -> 
     E.array_length (Ext_list.singleton_exn args)      
