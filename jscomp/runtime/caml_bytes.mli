@@ -37,3 +37,5 @@ val caml_blit_string :
   int -> 
   unit
 val bytes_of_string : string -> bytes
+val caml_bytes_compare: bytes -> bytes -> int
+val caml_bytes_equal : bytes -> bytes -> bool 

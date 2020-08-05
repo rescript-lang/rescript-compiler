@@ -47,7 +47,7 @@ build runtime/caml_option.cmj : cc_cmi runtime/caml_option.ml | runtime/caml_opt
 build runtime/caml_option.cmi : cc runtime/caml_option.mli | runtime/bs_stdlib_mini.cmi runtime/caml_undefined_extern.cmj runtime/js.cmi runtime/js.cmj
 build runtime/caml_parser.cmj : cc_cmi runtime/caml_parser.ml | runtime/caml_parser.cmi
 build runtime/caml_parser.cmi : cc runtime/caml_parser.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
-build runtime/caml_primitive.cmj : cc_cmi runtime/caml_primitive.ml | runtime/caml_bytes_extern.cmj runtime/caml_primitive.cmi
+build runtime/caml_primitive.cmj : cc_cmi runtime/caml_primitive.ml | runtime/caml_primitive.cmi
 build runtime/caml_primitive.cmi : cc runtime/caml_primitive.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 build runtime/caml_splice_call.cmj : cc_cmi runtime/caml_splice_call.ml | runtime/caml_splice_call.cmi
 build runtime/caml_splice_call.cmi : cc runtime/caml_splice_call.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj

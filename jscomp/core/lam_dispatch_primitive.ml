@@ -293,8 +293,10 @@ let translate loc (prim_name : string)
         | [e0; e1] -> E.float_mul e0 e1 
         | _ -> assert false  
       end
-    | "caml_bytes_equal" ->   
-      call Js_runtime_modules.caml_primitive
+    | "caml_bytes_compare"
+    | "caml_bytes_equal" 
+      -> 
+      call Js_runtime_modules.bytes
     | "caml_int64_succ" -> 
       E.runtime_call Js_runtime_modules.int64 "succ" args 
     | "caml_int64_to_string" -> 
@@ -524,11 +526,10 @@ let translate loc (prim_name : string)
     | "caml_int32_compare"
     | "caml_nativeint_compare"
     | "caml_float_compare"
-    | "caml_bytes_compare"
+
     | "caml_string_compare" 
     -> 
       call Js_runtime_modules.caml_primitive
-
     | "caml_bool_min"  
     | "caml_int_min"
     | "caml_float_min"
