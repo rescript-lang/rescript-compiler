@@ -30,6 +30,10 @@ external (.![]<-) : bytes -> int -> char -> unit = "%bytes_unsafe_set"
 external length : bytes -> int = "%bytes_length" 
 
 
+let set s i ch =
+  if i < 0 || i >= length s then  
+    raise (Invalid_argument "index out of bounds")
+  else s.![i] <- ch 
 
 let get s i =
   if i < 0 || i >= length s then

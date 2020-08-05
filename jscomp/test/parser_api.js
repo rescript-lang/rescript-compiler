@@ -1330,8 +1330,7 @@ function get(tbl, ind) {
 }
 
 function set(tbl, ind, c) {
-  Caml_array.caml_array_get(tbl, Caml_int32.div(ind, Sys.max_string_length))[Caml_int32.mod_(ind, Sys.max_string_length)] = c;
-  
+  return Caml_bytes.set(Caml_array.caml_array_get(tbl, Caml_int32.div(ind, Sys.max_string_length)), Caml_int32.mod_(ind, Sys.max_string_length), c);
 }
 
 function blit(src, srcoff, dst, dstoff, len) {
@@ -15261,7 +15260,7 @@ function remove_underscores(s) {
     }
     var c = Caml_string.get(s, src);
     if (c !== 95) {
-      b[dst] = c;
+      Caml_bytes.set(b, dst, c);
       _dst = dst + 1 | 0;
       _src = src + 1 | 0;
       continue ;
