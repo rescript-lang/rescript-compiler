@@ -30,7 +30,7 @@ external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
 external unsafe_blit : string -> int ->  bytes -> int -> int -> unit
                      = "caml_blit_string" [@@noalloc]
 external unsafe_fill : bytes -> int -> int -> char -> unit
-                     = "caml_fill_string" [@@noalloc]
+                     = "caml_fill_bytes" [@@noalloc]
 
 module B = Bytes
 
