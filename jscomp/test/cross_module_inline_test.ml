@@ -1,2 +1,2 @@
-external is_printable: char -> bool = "caml_is_printable"
-let v = is_printable 'a'
+open Test_char
+let v = caml_is_printable 'a'
