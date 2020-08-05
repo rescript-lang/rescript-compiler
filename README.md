@@ -24,7 +24,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 See [COPYING](./COPYING) and [COPYING.LESSER](./COPYING.LESSER)
 
-The [`ocaml`](ocaml) directory contains the official [OCaml](https://ocaml.org) compiler (version 4.02.3).
+The [`ocaml`](ocaml) directory contains the official [OCaml](https://ocaml.org) compiler (version 4.06.1).
 Refer to its copyright and license notices for information about its licensing.
 
 The `vendor/ninja.tar.gz` contains the vendored [ninja](https://github.com/ninja-build/ninja).
