@@ -139,7 +139,7 @@ build test/const_defs_test.cmi test/const_defs_test.cmj : cc test/const_defs_tes
 build test/const_test.cmi test/const_test.cmj : cc test/const_test.ml | $stdlib
 build test/cont_int_fold_test.cmi test/cont_int_fold_test.cmj : cc test/cont_int_fold_test.ml | $stdlib
 build test/cps_test.cmi test/cps_test.cmj : cc test/cps_test.ml | test/mt.cmj $stdlib
-build test/cross_module_inline_test.cmi test/cross_module_inline_test.cmj : cc test/cross_module_inline_test.ml | $stdlib
+build test/cross_module_inline_test.cmi test/cross_module_inline_test.cmj : cc test/cross_module_inline_test.ml | test/test_char.cmj $stdlib
 build test/custom_error_test.cmi test/custom_error_test.cmj : cc test/custom_error_test.ml | $stdlib
 build test/debug_keep_test.cmi test/debug_keep_test.cmj : cc test/debug_keep_test.ml | $stdlib
 build test/debug_mode_value.cmi test/debug_mode_value.cmj : cc test/debug_mode_value.ml | $stdlib
@@ -583,7 +583,7 @@ build test/string_bound_get_test.cmi test/string_bound_get_test.cmj : cc test/st
 build test/string_get_set_test.cmi test/string_get_set_test.cmj : cc test/string_get_set_test.ml | test/mt.cmj $stdlib
 build test/string_interp_test.cmi test/string_interp_test.cmj : cc test/string_interp_test.ml | $stdlib
 build test/string_literal_print_test.cmi test/string_literal_print_test.cmj : cc test/string_literal_print_test.ml | test/mt.cmj $stdlib
-build test/string_runtime_test.cmi test/string_runtime_test.cmj : cc test/string_runtime_test.ml | test/mt.cmj $stdlib
+build test/string_runtime_test.cmi test/string_runtime_test.cmj : cc test/string_runtime_test.ml | test/mt.cmj test/test_char.cmj $stdlib
 build test/string_set.cmi test/string_set.cmj : cc test/string_set.ml | test/set_gen.cmj $stdlib
 build test/string_set_test.cmi test/string_set_test.cmj : cc test/string_set_test.ml | test/mt.cmj test/string_set.cmj $stdlib
 build test/string_test.cmi test/string_test.cmj : cc test/string_test.ml | test/ext_string_test.cmj test/mt.cmj $stdlib
@@ -602,7 +602,7 @@ build test/test_array_append.cmi test/test_array_append.cmj : cc test/test_array
 build test/test_array_primitive.cmi test/test_array_primitive.cmj : cc test/test_array_primitive.ml | $stdlib
 build test/test_bool_equal.cmi test/test_bool_equal.cmj : cc test/test_bool_equal.ml | $stdlib
 build test/test_bs_this.cmi test/test_bs_this.cmj : cc test/test_bs_this.ml | $stdlib
-build test/test_bug.cmi test/test_bug.cmj : cc test/test_bug.ml | $stdlib
+build test/test_bug.cmi test/test_bug.cmj : cc test/test_bug.ml | test/test_char.cmj $stdlib
 build test/test_bytes.cmi test/test_bytes.cmj : cc test/test_bytes.ml | $stdlib
 build test/test_case_opt_collision.cmi test/test_case_opt_collision.cmj : cc test/test_case_opt_collision.ml | test/mt.cmj $stdlib
 build test/test_case_set.cmi test/test_case_set.cmj : cc test/test_case_set.ml | $stdlib
