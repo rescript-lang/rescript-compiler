@@ -110,8 +110,10 @@ let string_of_large_bytes (bytes : bytes) i len =
       while s_len.contents > 0 do 
         let next = if s_len.contents < 1024 then s_len.contents else seg in
         let tmp_bytes = new_uninitialized next in
-        let () = caml_blit_bytes bytes offset.contents tmp_bytes 0 next in 
-        s .contents <- s.contents ^ Caml_string_extern.of_small_int_array (to_int_array tmp_bytes);
+        for k = 0 to next - 1 do 
+          tmp_bytes.![k] <- bytes.![k + offset.contents]  
+        done;   
+        s.contents <- s.contents ^ Caml_string_extern.of_small_int_array (to_int_array tmp_bytes);
         s_len.contents <- s_len.contents - next ; 
         offset.contents <- offset.contents + next;
       done;
