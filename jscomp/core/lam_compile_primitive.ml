@@ -535,15 +535,15 @@ let translate  loc
      | [e;e1] -> Js_of_lam_array.ref_array e e1 (* Todo: Constant Folding *)
      | _ -> assert false)    
   | Parrayrefs ->
-    Lam_dispatch_primitive.translate loc "caml_array_get" args
+    E.runtime_call Js_runtime_modules.array "caml_array_get" args
+  | Parraysets  -> 
+    E.runtime_call Js_runtime_modules.array "caml_array_set" args
   | Pmakearray  -> 
     Js_of_lam_array.make_array Mutable  args 
   | Parraysetu  -> 
       (match args with (* wrong*)
       | [e;e0;e1] -> ensure_value_unit cxt.continuation (Js_of_lam_array.set_array  e e0 e1)
       | _ -> assert false)    
-  | Parraysets  -> 
-    Lam_dispatch_primitive.translate loc "caml_array_set" args
   | Pccall prim -> 
     Lam_dispatch_primitive.translate loc prim.prim_name  args
   (* Lam_compile_external_call.translate loc cxt prim args *)
