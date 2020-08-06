@@ -120,6 +120,10 @@ let translate loc (prim_name : string)
         | [e] -> e (* TODO: do more checking when [to_int32]*)
         | _ -> assert false 
       end
+    | "caml_bytes_greaterthan"  
+    | "caml_bytes_greaterequal"
+    | "caml_bytes_lessthan"
+    | "caml_bytes_lessequal"
     | "caml_bytes_compare"
     | "caml_bytes_equal" 
       -> 

@@ -41,6 +41,23 @@ val caml_blit_string :
   int -> 
   int -> 
   unit
+
 val bytes_of_string : string -> bytes
-val caml_bytes_compare: bytes -> bytes -> int
-val caml_bytes_equal : bytes -> bytes -> bool 
+
+val caml_bytes_compare: 
+  bytes -> bytes -> int
+
+val caml_bytes_greaterthan:
+  bytes -> bytes -> bool 
+
+val caml_bytes_greaterequal:
+  bytes -> bytes -> bool 
+
+val caml_bytes_lessthan:
+  bytes -> bytes -> bool 
+
+val caml_bytes_lessequal:
+  bytes -> bytes -> bool 
+
+val caml_bytes_equal : 
+  bytes -> bytes -> bool 

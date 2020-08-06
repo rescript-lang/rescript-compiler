@@ -113,5 +113,12 @@ let () =
     let s1 = Bytes.to_string s in 
     let s2 = Bytes.of_string s1 in 
     eq __LOC__ s s2 
+
+let f (a : bytes) b =     
+  a > b, a >= b , a < b, a <= b, a = b  
+
+let f_0 (a : int64) b =     
+  a > b, a >= b , a < b, a <= b, a = b  
+
 let () =    
     Mt.from_pair_suites __MODULE__ !suites

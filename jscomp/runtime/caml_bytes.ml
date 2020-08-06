@@ -193,3 +193,14 @@ let caml_bytes_equal (s1 : bytes) (s2 : bytes) : bool =
   len1 = len2 &&
   caml_bytes_equal_aux s1 s2 0 len1 
 
+let caml_bytes_greaterthan (s1 : bytes) s2 = 
+  caml_bytes_compare s1 s2 > 0  
+
+let caml_bytes_greaterequal (s1 : bytes) s2 = 
+  caml_bytes_compare s1 s2 >= 0  
+
+let caml_bytes_lessthan (s1 : bytes) s2 = 
+  caml_bytes_compare s1 s2 < 0
+  
+let caml_bytes_lessequal (s1 : bytes) s2 =    
+  caml_bytes_compare s1 s2 <= 0  
