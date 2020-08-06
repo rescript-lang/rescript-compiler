@@ -535,9 +535,9 @@ let translate  loc
      | [e;e1] -> Js_of_lam_array.ref_array e e1 (* Todo: Constant Folding *)
      | _ -> assert false)    
   | Parrayrefs ->
-    E.runtime_call Js_runtime_modules.array "caml_array_get" args
+    E.runtime_call Js_runtime_modules.array "get" args
   | Parraysets  -> 
-    E.runtime_call Js_runtime_modules.array "caml_array_set" args
+    E.runtime_call Js_runtime_modules.array "set" args
   | Pmakearray  -> 
     Js_of_lam_array.make_array Mutable  args 
   | Parraysetu  -> 

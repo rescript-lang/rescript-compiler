@@ -84,7 +84,7 @@ function find(s, _n) {
       syms.contents = syms.contents + 1 | 0;
       return n;
     }
-    if (Caml_array.caml_array_get(symtab, n) === s) {
+    if (Caml_array.get(symtab, n) === s) {
       return n;
     }
     _n = n + 1 | 0;
@@ -94,7 +94,7 @@ function find(s, _n) {
 
 function addsym(s) {
   var sid = find(s, 0);
-  Caml_array.caml_array_set(symtab, sid, s);
+  Caml_array.set(symtab, sid, s);
   return sid;
 }
 
@@ -110,12 +110,12 @@ function symstr(n) {
           Error: new Error()
         };
   }
-  return Caml_array.caml_array_get(symtab, n);
+  return Caml_array.get(symtab, n);
 }
 
 function symitr(f) {
   for(var i = 0 ,i_finish = syms.contents; i < i_finish; ++i){
-    Curry._2(f, i, Caml_array.caml_array_get(symtab, i));
+    Curry._2(f, i, Caml_array.get(symtab, i));
   }
   
 }
@@ -1064,10 +1064,10 @@ function unary(stk) {
           ];
         } else {
           out(18616);
-          var g = Caml_array.caml_array_get(globs, i$1);
+          var g = Caml_array.get(globs, i$1);
           var loc = opos.contents;
           le(64, g.loc);
-          Caml_array.caml_array_set(globs, i$1, {
+          Caml_array.set(globs, i$1, {
                 loc: loc,
                 va: g.va
               });
@@ -1254,7 +1254,7 @@ function decl(g, _n, _stk) {
             var n$prime = n + 1 | 0;
             var stk$prime;
             if (g) {
-              var glo = Caml_array.caml_array_get(globs, s$1);
+              var glo = Caml_array.get(globs, s$1);
               if (glo.va >= 0) {
                 throw {
                       RE_EXN_ID: "Failure",
@@ -1263,7 +1263,7 @@ function decl(g, _n, _stk) {
                     };
               }
               var va = (gpos.contents + 232 | 0) + 4194304 | 0;
-              Caml_array.caml_array_set(globs, s$1, {
+              Caml_array.set(globs, s$1, {
                     loc: glo.loc,
                     va: va
                   });
@@ -1530,7 +1530,7 @@ function top(_param) {
     var f = Curry._1(next$1, undefined);
     if (f.TAG === /* Sym */3) {
       var f$1 = f._0;
-      var g = Caml_array.caml_array_get(globs, f$1);
+      var g = Caml_array.get(globs, f$1);
       if (g.va >= 0) {
         throw {
               RE_EXN_ID: "Failure",
@@ -1538,7 +1538,7 @@ function top(_param) {
               Error: new Error()
             };
       }
-      Caml_array.caml_array_set(globs, f$1, {
+      Caml_array.set(globs, f$1, {
             loc: g.loc,
             va: opos.contents
           });
@@ -1718,12 +1718,12 @@ function elfphdr(ty, off, sz, align) {
 function elfgen(outf) {
   var entry = opos.contents;
   var main = addsym("main");
-  var gmain = Caml_array.caml_array_get(globs, main);
+  var gmain = Caml_array.get(globs, main);
   out(1217084452);
   out(-1921768440);
   out(18616);
   le(64, gmain.loc);
-  Caml_array.caml_array_set(globs, main, {
+  Caml_array.set(globs, main, {
         loc: opos.contents - 8 | 0,
         va: gmain.va
       });
@@ -1734,7 +1734,7 @@ function elfgen(outf) {
   var off = 232 + gpos.contents | 0;
   var itr = function (f) {
     return symitr(function (i, s) {
-                var g = Caml_array.caml_array_get(globs, i);
+                var g = Caml_array.get(globs, i);
                 if (g.va < 0 && g.loc !== 0) {
                   return Curry._3(f, s, s.length, g.loc);
                 }
@@ -1745,7 +1745,7 @@ function elfgen(outf) {
     return (x + off | 0) + 4194304 | 0;
   };
   var patchloc = function (i, param) {
-    var g = Caml_array.caml_array_get(globs, i);
+    var g = Caml_array.get(globs, i);
     if (g.va >= 0 && g.va < 4194304) {
       return patch(false, g.loc, va(g.va));
     } else if (g.va >= 0) {
@@ -1980,7 +1980,7 @@ function main(param) {
       
     }
   };
-  var f = Sys.argv.length < 2 ? "-blk" : Caml_array.caml_array_get(Sys.argv, 1);
+  var f = Sys.argv.length < 2 ? "-blk" : Caml_array.get(Sys.argv, 1);
   switch (f) {
     case "-blk" :
         var partial_arg_0 = {

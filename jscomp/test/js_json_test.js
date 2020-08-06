@@ -364,7 +364,7 @@ function eq_at_i(loc, json, i, kind, expected) {
                         };
                 }));
   }
-  var ty$1 = Js_json.classify(Caml_array.caml_array_get(ty._0, i));
+  var ty$1 = Js_json.classify(Caml_array.get(ty._0, i));
   switch (kind) {
     case /* String */0 :
         if (typeof ty$1 === "number") {
@@ -524,11 +524,11 @@ var a = [
 
 var json$7 = JSON.parse(JSON.stringify(a));
 
-eq_at_i("File \"js_json_test.ml\", line 220, characters 10-17", json$7, 0, /* Number */1, Caml_array.caml_array_get(a, 0));
+eq_at_i("File \"js_json_test.ml\", line 220, characters 10-17", json$7, 0, /* Number */1, Caml_array.get(a, 0));
 
-eq_at_i("File \"js_json_test.ml\", line 221, characters 10-17", json$7, 1, /* Number */1, Caml_array.caml_array_get(a, 1));
+eq_at_i("File \"js_json_test.ml\", line 221, characters 10-17", json$7, 1, /* Number */1, Caml_array.get(a, 1));
 
-eq_at_i("File \"js_json_test.ml\", line 222, characters 10-17", json$7, 2, /* Number */1, Caml_array.caml_array_get(a, 2));
+eq_at_i("File \"js_json_test.ml\", line 222, characters 10-17", json$7, 2, /* Number */1, Caml_array.get(a, 2));
 
 var a$1 = [
   0,
@@ -540,11 +540,11 @@ var json$8 = JSON.parse(JSON.stringify($$Array.map((function (prim) {
                 return prim;
               }), a$1)));
 
-eq_at_i("File \"js_json_test.ml\", line 235, characters 10-17", json$8, 0, /* Number */1, Caml_array.caml_array_get(a$1, 0));
+eq_at_i("File \"js_json_test.ml\", line 235, characters 10-17", json$8, 0, /* Number */1, Caml_array.get(a$1, 0));
 
-eq_at_i("File \"js_json_test.ml\", line 236, characters 10-17", json$8, 1, /* Number */1, Caml_array.caml_array_get(a$1, 1));
+eq_at_i("File \"js_json_test.ml\", line 236, characters 10-17", json$8, 1, /* Number */1, Caml_array.get(a$1, 1));
 
-eq_at_i("File \"js_json_test.ml\", line 237, characters 10-17", json$8, 2, /* Number */1, Caml_array.caml_array_get(a$1, 2));
+eq_at_i("File \"js_json_test.ml\", line 237, characters 10-17", json$8, 2, /* Number */1, Caml_array.get(a$1, 2));
 
 var a$2 = [
   true,
@@ -554,11 +554,11 @@ var a$2 = [
 
 var json$9 = JSON.parse(JSON.stringify(a$2));
 
-eq_at_i("File \"js_json_test.ml\", line 249, characters 10-17", json$9, 0, /* Boolean */4, Caml_array.caml_array_get(a$2, 0));
+eq_at_i("File \"js_json_test.ml\", line 249, characters 10-17", json$9, 0, /* Boolean */4, Caml_array.get(a$2, 0));
 
-eq_at_i("File \"js_json_test.ml\", line 250, characters 10-17", json$9, 1, /* Boolean */4, Caml_array.caml_array_get(a$2, 1));
+eq_at_i("File \"js_json_test.ml\", line 250, characters 10-17", json$9, 1, /* Boolean */4, Caml_array.get(a$2, 1));
 
-eq_at_i("File \"js_json_test.ml\", line 251, characters 10-17", json$9, 2, /* Boolean */4, Caml_array.caml_array_get(a$2, 2));
+eq_at_i("File \"js_json_test.ml\", line 251, characters 10-17", json$9, 2, /* Boolean */4, Caml_array.get(a$2, 2));
 
 function make_d(s, i) {
   var d = {};
@@ -584,7 +584,7 @@ if (typeof ty$6 === "number") {
                 };
         }));
 } else if (ty$6.TAG === /* JSONArray */3) {
-  var ty$7 = Js_json.classify(Caml_array.caml_array_get(ty$6._0, 1));
+  var ty$7 = Js_json.classify(Caml_array.get(ty$6._0, 1));
   if (typeof ty$7 === "number") {
     add_test("File \"js_json_test.ml\", line 281, characters 18-25", (function (param) {
             return {

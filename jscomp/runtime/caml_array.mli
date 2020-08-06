@@ -34,6 +34,6 @@ val caml_make_float_vect : int -> float array
 
 val caml_array_blit : 'a array -> int -> 'a array -> int -> int -> unit
 
-val caml_array_get: 'a array -> int -> 'a
+val get: 'a array -> int -> 'a
 
-val caml_array_set: 'a array -> int -> 'a -> unit
+val set: 'a array -> int -> 'a -> unit

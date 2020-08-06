@@ -25,8 +25,8 @@ var c = [
 ];
 
 function f(param) {
-  Caml_array.caml_array_set(a, 0, 3.0);
-  return Caml_array.caml_array_set(b, 0, 3);
+  Caml_array.set(a, 0, 3.0);
+  return Caml_array.set(b, 0, 3);
 }
 
 function h(param) {
@@ -38,8 +38,8 @@ function g(param) {
   return {
           TAG: /* Eq */0,
           _0: [
-            Caml_array.caml_array_get(a, 0),
-            Caml_array.caml_array_get(b, 0)
+            Caml_array.get(a, 0),
+            Caml_array.get(b, 0)
           ],
           _1: [
             3.0,
@@ -57,8 +57,8 @@ var suites_1 = {
   hd: [
     "avoid_mutable_inline_test",
     (function (param) {
-        Caml_array.caml_array_set(c, 0, 3);
-        Caml_array.caml_array_set(c, 1, 4);
+        Caml_array.set(c, 0, 3);
+        Caml_array.set(c, 1, 4);
         return {
                 TAG: /* Eq */0,
                 _0: [

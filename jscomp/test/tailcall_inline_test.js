@@ -19,7 +19,7 @@ function f(param) {
   };
   var v = Caml_array.caml_make_vect(10, 0);
   for(var i = 0; i <= 9; ++i){
-    Caml_array.caml_array_set(v, i, f$1(0, i));
+    Caml_array.set(v, i, f$1(0, i));
   }
   return v;
 }

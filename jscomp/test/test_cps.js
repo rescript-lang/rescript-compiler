@@ -26,7 +26,7 @@ function test_closure(param) {
           return x;
         }));
   for(var i = 0; i <= 6; ++i){
-    Caml_array.caml_array_set(arr, i, (function(i){
+    Caml_array.set(arr, i, (function(i){
         return function (param) {
           return i;
         }

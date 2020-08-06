@@ -2971,10 +2971,10 @@ function new_table(pub_labels) {
   table_count.contents = table_count.contents + 1 | 0;
   var len = pub_labels.length;
   var methods = Caml_array.caml_make_vect((len << 1) + 2 | 0, /* DummyA */0);
-  Caml_array.caml_array_set(methods, 0, len);
-  Caml_array.caml_array_set(methods, 1, (Math.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0);
+  Caml_array.set(methods, 0, len);
+  Caml_array.set(methods, 1, (Math.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0);
   for(var i = 0; i < len; ++i){
-    Caml_array.caml_array_set(methods, (i << 1) + 3 | 0, Caml_array.caml_array_get(pub_labels, i));
+    Caml_array.set(methods, (i << 1) + 3 | 0, Caml_array.get(pub_labels, i));
   }
   return {
           size: 2,
@@ -3001,7 +3001,7 @@ function resize(array, new_size) {
 
 function put(array, label, element) {
   resize(array, label + 1 | 0);
-  return Caml_array.caml_array_set(array.methods, label, element);
+  return Caml_array.set(array.methods, label, element);
 }
 
 var method_count = {
@@ -3063,7 +3063,7 @@ function get_method(table, label) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
-      return Caml_array.caml_array_get(table.methods, label);
+      return Caml_array.get(table.methods, label);
     }
     throw exn;
   }
@@ -3207,10 +3207,10 @@ function new_methods_variables(table, meths, vals) {
   var nvals = vals.length;
   var res = Caml_array.caml_make_vect(nmeths + nvals | 0, 0);
   for(var i = 0; i < nmeths; ++i){
-    Caml_array.caml_array_set(res, i, get_method_label(table, Caml_array.caml_array_get(meths$1, i)));
+    Caml_array.set(res, i, get_method_label(table, Caml_array.get(meths$1, i)));
   }
   for(var i$1 = 0; i$1 < nvals; ++i$1){
-    Caml_array.caml_array_set(res, i$1 + nmeths | 0, new_variable(table, Caml_array.caml_array_get(vals, i$1)));
+    Caml_array.set(res, i$1 + nmeths | 0, new_variable(table, Caml_array.get(vals, i$1)));
   }
   return res;
 }
@@ -3268,7 +3268,7 @@ function create_table(public_methods) {
 function init_class(table) {
   inst_var_count.contents = (inst_var_count.contents + table.size | 0) - 1 | 0;
   table.initializers = List.rev(table.initializers);
-  return resize(table, 3 + Caml_int32.div((Caml_array.caml_array_get(table.methods, 1) << 4), Sys.word_size) | 0);
+  return resize(table, 3 + Caml_int32.div((Caml_array.get(table.methods, 1) << 4), Sys.word_size) | 0);
 }
 
 function inherits(cla, vals, virt_meths, concr_meths, param, top) {
@@ -3369,7 +3369,7 @@ function build_path(n, keys, tables) {
   var r = res;
   for(var i = 0; i <= n; ++i){
     r = /* Cons */{
-      _0: Caml_array.caml_array_get(keys, i),
+      _0: Caml_array.get(keys, i),
       _1: r,
       _2: /* Empty */0
     };
@@ -3382,7 +3382,7 @@ function lookup_keys(i, keys, tables) {
   if (i < 0) {
     return tables;
   }
-  var key = Caml_array.caml_array_get(keys, i);
+  var key = Caml_array.get(keys, i);
   var _tables = tables;
   while(true) {
     var tables$1 = _tables;
@@ -3561,15 +3561,15 @@ function send_meth(m, n, c) {
 
 function new_cache(table) {
   var n = new_method(table);
-  var n$1 = n % 2 === 0 || n > (2 + Caml_int32.div((Caml_array.caml_array_get(table.methods, 1) << 4), Sys.word_size) | 0) ? n : new_method(table);
-  Caml_array.caml_array_set(table.methods, n$1, 0);
+  var n$1 = n % 2 === 0 || n > (2 + Caml_int32.div((Caml_array.get(table.methods, 1) << 4), Sys.word_size) | 0) ? n : new_method(table);
+  Caml_array.set(table.methods, n$1, 0);
   return n$1;
 }
 
 function method_impl(table, i, arr) {
   var next = function (param) {
     i.contents = i.contents + 1 | 0;
-    return Caml_array.caml_array_get(arr, i.contents);
+    return Caml_array.get(arr, i.contents);
   };
   var clo = next(undefined);
   if (typeof clo !== "number") {
@@ -3702,7 +3702,7 @@ function set_methods(table, methods) {
     contents: 0
   };
   while(i.contents < len) {
-    var label = Caml_array.caml_array_get(methods, i.contents);
+    var label = Caml_array.get(methods, i.contents);
     var clo = method_impl(table, i, methods);
     set_method(table, label, clo);
     i.contents = i.contents + 1 | 0;

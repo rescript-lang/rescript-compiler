@@ -16,7 +16,7 @@ function f(param) {
   var n = 0;
   while(n < 10) {
     var j = n;
-    Caml_array.caml_array_set(arr, j, (function(j){
+    Caml_array.set(arr, j, (function(j){
         return function (param) {
           v.contents = v.contents + j | 0;
           

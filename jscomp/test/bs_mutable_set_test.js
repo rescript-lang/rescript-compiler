@@ -463,7 +463,7 @@ eq("File \"bs_mutable_set_test.ml\", line 200, characters 5-12", Belt_internalAV
 var vv = Array_data_util.randomRange(0, 100000);
 
 for(var i$4 = 0 ,i_finish$2 = vv.length; i$4 < i_finish$2; ++i$4){
-  Belt_MutableSetInt.remove(v$3, Caml_array.caml_array_get(vv, i$4));
+  Belt_MutableSetInt.remove(v$3, Caml_array.get(vv, i$4));
 }
 
 eq("File \"bs_mutable_set_test.ml\", line 206, characters 5-12", Belt_internalAVLset.size(v$3.data), 0);
@@ -493,7 +493,7 @@ eq("File \"bs_mutable_set_test.ml\", line 216, characters 5-12", Belt_internalAV
 var vv$1 = Array_data_util.randomRange(1, 28);
 
 for(var i$5 = 0 ,i_finish$3 = vv$1.length; i$5 < i_finish$3; ++i$5){
-  Belt_MutableSetInt.remove(v$4, Caml_array.caml_array_get(vv$1, i$5));
+  Belt_MutableSetInt.remove(v$4, Caml_array.get(vv$1, i$5));
 }
 
 eq("File \"bs_mutable_set_test.ml\", line 221, characters 5-12", Belt_internalAVLset.size(v$4.data), 0);

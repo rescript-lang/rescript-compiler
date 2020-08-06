@@ -40,7 +40,7 @@ function test_closure(param) {
           return x;
         }));
   for(var i = 0; i <= 5; ++i){
-    Caml_array.caml_array_set(arr, i, (function(i){
+    Caml_array.set(arr, i, (function(i){
         return function (param) {
           return i;
         }
@@ -62,7 +62,7 @@ function test_closure2(param) {
         }));
   for(var i = 0; i <= 5; ++i){
     var j = i + i | 0;
-    Caml_array.caml_array_set(arr, i, (function(j){
+    Caml_array.set(arr, i, (function(j){
         return function (param) {
           return j;
         }

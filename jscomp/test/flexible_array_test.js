@@ -279,7 +279,7 @@ function sort(s) {
 function of_array(arr) {
   var v = empty;
   for(var i = 0 ,i_finish = arr.length; i < i_finish; ++i){
-    v = push_back(v, Caml_array.caml_array_get(arr, i));
+    v = push_back(v, Caml_array.get(arr, i));
   }
   return v;
 }

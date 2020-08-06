@@ -21,12 +21,12 @@ for(var i = 0; i <= 4; ++i){
   v[i] = 0;
 }
 
-Caml_array.caml_array_set(v, 2, 15.5);
+Caml_array.set(v, 2, 15.5);
 
 eq("File \"floatarray_test.ml\", line 17, characters 5-12", [
       v.length,
       v[2],
-      Caml_array.caml_array_get(v, 1)
+      Caml_array.get(v, 1)
     ], [
       5,
       15.5,
