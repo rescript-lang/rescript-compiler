@@ -15,8 +15,8 @@ var suites_0 = [
                 _0: undefined
               };
       }
-      var defined = Caml_array.caml_array_get(result, 1);
-      var $$undefined = Caml_array.caml_array_get(result, 2);
+      var defined = Caml_array.get(result, 1);
+      var $$undefined = Caml_array.get(result, 2);
       return {
               TAG: /* Eq */0,
               _0: [
@@ -38,7 +38,7 @@ var suites_1 = {
         var contentOf = function (tag, xmlString) {
           var result = new RegExp("<" + (tag + (">(.*?)<\\/" + (tag + ">")))).exec(xmlString);
           if (result !== null) {
-            return Caml_option.nullable_to_opt(Caml_array.caml_array_get(result, 1));
+            return Caml_option.nullable_to_opt(Caml_array.get(result, 1));
           }
           
         };
@@ -58,7 +58,7 @@ var suites_1 = {
             return {
                     TAG: /* Eq */0,
                     _0: "http://xxx",
-                    _1: Caml_array.caml_array_get(res, 0)
+                    _1: Caml_array.get(res, 0)
                   };
           } else {
             return {

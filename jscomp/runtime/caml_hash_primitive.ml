@@ -29,8 +29,8 @@ let (>>>) = Caml_nativeint_extern.shift_right_logical
 let (|~) = Caml_nativeint_extern.logor
 let (^) = Caml_nativeint_extern.logxor
 
-external ( *~ ) : nativeint -> nativeint -> nativeint = "caml_int32_mul" 
-external ( +~ ) : nativeint -> nativeint -> nativeint = "caml_int32_add"
+external ( *~ ) : nativeint -> nativeint -> nativeint = "%int32_mul" 
+external ( +~ ) : nativeint -> nativeint -> nativeint = "%int32_add"
 
 
 

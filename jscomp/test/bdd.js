@@ -8,7 +8,7 @@ function $$eval(_bdd, vars) {
     if (typeof bdd === "number") {
       return bdd === 0;
     }
-    if (Caml_array.caml_array_get(vars, bdd._1)) {
+    if (Caml_array.get(vars, bdd._1)) {
       _bdd = bdd._3;
       continue ;
     }
@@ -72,16 +72,16 @@ function resize(newSize) {
             };
       }
       var ind = hashVal(getId(n._0), getId(n._3), n._1) & newSz_1;
-      Caml_array.caml_array_set(newArr, ind, {
+      Caml_array.set(newArr, ind, {
             hd: n,
-            tl: Caml_array.caml_array_get(newArr, ind)
+            tl: Caml_array.get(newArr, ind)
           });
       _bucket = bucket.tl;
       continue ;
     };
   };
   for(var n = 0 ,n_finish = sz_1.contents; n <= n_finish; ++n){
-    copyBucket(Caml_array.caml_array_get(arr, n));
+    copyBucket(Caml_array.get(arr, n));
   }
   htab.contents = newArr;
   sz_1.contents = newSz_1;
@@ -90,7 +90,7 @@ function resize(newSize) {
 
 function insert(idl, idh, v, ind, bucket, newNode) {
   if (n_items.contents <= sz_1.contents) {
-    Caml_array.caml_array_set(htab.contents, ind, {
+    Caml_array.set(htab.contents, ind, {
           hd: newNode,
           tl: bucket
         });
@@ -99,9 +99,9 @@ function insert(idl, idh, v, ind, bucket, newNode) {
   }
   resize((sz_1.contents + sz_1.contents | 0) + 2 | 0);
   var ind$1 = hashVal(idl, idh, v) & sz_1.contents;
-  return Caml_array.caml_array_set(htab.contents, ind$1, {
+  return Caml_array.set(htab.contents, ind$1, {
               hd: newNode,
-              tl: Caml_array.caml_array_get(htab.contents, ind$1)
+              tl: Caml_array.get(htab.contents, ind$1)
             });
 }
 
@@ -120,7 +120,7 @@ function mkNode(low, v, high) {
     return low;
   }
   var ind = hashVal(idl, idh, v) & sz_1.contents;
-  var bucket = Caml_array.caml_array_get(htab.contents, ind);
+  var bucket = Caml_array.get(htab.contents, ind);
   var _b = bucket;
   while(true) {
     var b = _b;
@@ -199,12 +199,12 @@ function not(n) {
   }
   var id = n._2;
   var h = id % 1999;
-  if (id === Caml_array.caml_array_get(notslot1, h)) {
-    return Caml_array.caml_array_get(notslot2, h);
+  if (id === Caml_array.get(notslot1, h)) {
+    return Caml_array.get(notslot2, h);
   }
   var f = mkNode(not(n._0), n._1, not(n._3));
-  Caml_array.caml_array_set(notslot1, h, id);
-  Caml_array.caml_array_set(notslot2, h, f);
+  Caml_array.set(notslot1, h, id);
+  Caml_array.set(notslot2, h, f);
   return f;
 }
 
@@ -232,8 +232,8 @@ function and2(n1, n2) {
   var v2 = n2._1;
   var l2 = n2._0;
   var h = hash(i1, i2);
-  if (i1 === Caml_array.caml_array_get(andslot1, h) && i2 === Caml_array.caml_array_get(andslot2, h)) {
-    return Caml_array.caml_array_get(andslot3, h);
+  if (i1 === Caml_array.get(andslot1, h) && i2 === Caml_array.get(andslot2, h)) {
+    return Caml_array.get(andslot3, h);
   }
   var match = cmpVar(v1, v2);
   var f;
@@ -249,9 +249,9 @@ function and2(n1, n2) {
         break;
     
   }
-  Caml_array.caml_array_set(andslot1, h, i1);
-  Caml_array.caml_array_set(andslot2, h, i2);
-  Caml_array.caml_array_set(andslot3, h, f);
+  Caml_array.set(andslot1, h, i1);
+  Caml_array.set(andslot2, h, i2);
+  Caml_array.set(andslot3, h, f);
   return f;
 }
 
@@ -279,8 +279,8 @@ function xor(n1, n2) {
   var v2 = n2._1;
   var l2 = n2._0;
   var h = hash(i1, i2);
-  if (i1 === Caml_array.caml_array_get(andslot1, h) && i2 === Caml_array.caml_array_get(andslot2, h)) {
-    return Caml_array.caml_array_get(andslot3, h);
+  if (i1 === Caml_array.get(andslot1, h) && i2 === Caml_array.get(andslot2, h)) {
+    return Caml_array.get(andslot3, h);
   }
   var match = cmpVar(v1, v2);
   var f;
@@ -296,9 +296,9 @@ function xor(n1, n2) {
         break;
     
   }
-  Caml_array.caml_array_set(andslot1, h, i1);
-  Caml_array.caml_array_set(andslot2, h, i2);
-  Caml_array.caml_array_set(andslot3, h, f);
+  Caml_array.set(andslot1, h, i1);
+  Caml_array.set(andslot2, h, i2);
+  Caml_array.set(andslot3, h, f);
   return f;
 }
 
@@ -332,7 +332,7 @@ function random(param) {
 function random_vars(n) {
   var vars = Caml_array.caml_make_vect(n, false);
   for(var i = 0; i < n; ++i){
-    Caml_array.caml_array_set(vars, i, random(undefined));
+    Caml_array.set(vars, i, random(undefined));
   }
   return vars;
 }
@@ -354,12 +354,12 @@ function bool_equal(a, b) {
 function test_hwb(bdd, vars) {
   var ntrue = 0;
   for(var i = 0 ,i_finish = vars.length; i < i_finish; ++i){
-    if (Caml_array.caml_array_get(vars, i)) {
+    if (Caml_array.get(vars, i)) {
       ntrue = ntrue + 1 | 0;
     }
     
   }
-  return bool_equal($$eval(bdd, vars), ntrue > 0 ? Caml_array.caml_array_get(vars, ntrue - 1 | 0) : false);
+  return bool_equal($$eval(bdd, vars), ntrue > 0 ? Caml_array.get(vars, ntrue - 1 | 0) : false);
 }
 
 function main(param) {

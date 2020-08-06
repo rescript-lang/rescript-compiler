@@ -78,7 +78,7 @@ let unsafe_pop (q : 'a t) =
 
 
 external ( +~ ) : nativeint -> nativeint -> nativeint =
-   "caml_int32_add"
+   "%int32_add"
 
 
 open Caml_hash_primitive

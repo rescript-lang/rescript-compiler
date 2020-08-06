@@ -11,7 +11,7 @@ var x = [
 var y;
 
 try {
-  y = Caml_array.caml_array_get(x, 3);
+  y = Caml_array.get(x, 3);
 }
 catch (raw_msg){
   var msg = Caml_js_exceptions.internalToOCamlException(raw_msg);

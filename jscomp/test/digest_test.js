@@ -234,7 +234,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
                                 return {
                                         TAG: /* Eq */0,
                                         _0: Digest.to_hex(Digest.string("a".repeat(i))),
-                                        _1: Caml_array.caml_array_get(ref, i)
+                                        _1: Caml_array.get(ref, i)
                                       };
                               })
                           ];

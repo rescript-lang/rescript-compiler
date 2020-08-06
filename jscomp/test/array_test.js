@@ -19,7 +19,7 @@ function starts_with(xs, prefix, p) {
   }
   try {
     for(var i = 0; i < len2; ++i){
-      if (!Curry._2(p, Caml_array.caml_array_get(xs, i), Caml_array.caml_array_get(prefix, i))) {
+      if (!Curry._2(p, Caml_array.get(xs, i), Caml_array.get(prefix, i))) {
         throw {
               RE_EXN_ID: H,
               Error: new Error()
@@ -46,7 +46,7 @@ function is_sorted(x) {
     if (i >= (len - 1 | 0)) {
       return true;
     }
-    if (!Caml_obj.caml_lessthan(Caml_array.caml_array_get(x, i), Caml_array.caml_array_get(x, i + 1 | 0))) {
+    if (!Caml_obj.caml_lessthan(Caml_array.get(x, i), Caml_array.get(x, i + 1 | 0))) {
       return false;
     }
     _i = i + 1 | 0;

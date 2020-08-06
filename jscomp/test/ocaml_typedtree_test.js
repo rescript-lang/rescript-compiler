@@ -344,22 +344,22 @@ function edit_distance(a, b, cutoff) {
     return ;
   }
   var m = $$Array.make_matrix(la + 1 | 0, lb + 1 | 0, cutoff$1 + 1 | 0);
-  Caml_array.caml_array_set(Caml_array.caml_array_get(m, 0), 0, 0);
+  Caml_array.set(Caml_array.get(m, 0), 0, 0);
   for(var i = 1; i <= la; ++i){
-    Caml_array.caml_array_set(Caml_array.caml_array_get(m, i), 0, i);
+    Caml_array.set(Caml_array.get(m, i), 0, i);
   }
   for(var j = 1; j <= lb; ++j){
-    Caml_array.caml_array_set(Caml_array.caml_array_get(m, 0), j, j);
+    Caml_array.set(Caml_array.get(m, 0), j, j);
   }
   for(var i$1 = 1; i$1 <= la; ++i$1){
     for(var j$1 = Caml_primitive.caml_int_max(1, (i$1 - cutoff$1 | 0) - 1 | 0) ,j_finish = Caml_primitive.caml_int_min(lb, (i$1 + cutoff$1 | 0) + 1 | 0); j$1 <= j_finish; ++j$1){
       var cost = Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? 0 : 1;
-      var best = Caml_primitive.caml_int_min(1 + Caml_primitive.caml_int_min(Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 1 | 0), j$1), Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1), j$1 - 1 | 0)) | 0, Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 1 | 0), j$1 - 1 | 0) + cost | 0);
-      var best$1 = i$1 > 1 && j$1 > 1 && Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 2 | 0) && Caml_string.get(a, i$1 - 2 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? Caml_primitive.caml_int_min(best, Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 2 | 0), j$1 - 2 | 0) + cost | 0) : best;
-      Caml_array.caml_array_set(Caml_array.caml_array_get(m, i$1), j$1, best$1);
+      var best = Caml_primitive.caml_int_min(1 + Caml_primitive.caml_int_min(Caml_array.get(Caml_array.get(m, i$1 - 1 | 0), j$1), Caml_array.get(Caml_array.get(m, i$1), j$1 - 1 | 0)) | 0, Caml_array.get(Caml_array.get(m, i$1 - 1 | 0), j$1 - 1 | 0) + cost | 0);
+      var best$1 = i$1 > 1 && j$1 > 1 && Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 2 | 0) && Caml_string.get(a, i$1 - 2 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? Caml_primitive.caml_int_min(best, Caml_array.get(Caml_array.get(m, i$1 - 2 | 0), j$1 - 2 | 0) + cost | 0) : best;
+      Caml_array.set(Caml_array.get(m, i$1), j$1, best$1);
     }
   }
-  var result = Caml_array.caml_array_get(Caml_array.caml_array_get(m, la), lb);
+  var result = Caml_array.get(Caml_array.get(m, la), lb);
   if (result > cutoff$1) {
     return ;
   } else {
@@ -910,19 +910,19 @@ var current = {
 };
 
 function is_active(x) {
-  return Caml_array.caml_array_get(current.contents.active, number(x));
+  return Caml_array.get(current.contents.active, number(x));
 }
 
 function parse_opt(error, active, flags, s) {
   var set = function (i) {
-    return Caml_array.caml_array_set(flags, i, true);
+    return Caml_array.set(flags, i, true);
   };
   var clear = function (i) {
-    return Caml_array.caml_array_set(flags, i, false);
+    return Caml_array.set(flags, i, false);
   };
   var set_all = function (i) {
-    Caml_array.caml_array_set(active, i, true);
-    return Caml_array.caml_array_set(error, i, true);
+    Caml_array.set(active, i, true);
+    return Caml_array.set(error, i, true);
   };
   var get_num = function (_n, _i) {
     while(true) {
@@ -1528,7 +1528,7 @@ function print(ppf, w) {
             _1: "%d: %s"
           }), num, msg);
   Format.pp_print_flush(ppf, undefined);
-  if (Caml_array.caml_array_get(current.contents.error, num)) {
+  if (Caml_array.get(current.contents.error, num)) {
     nerrors.contents = nerrors.contents + 1 | 0;
     return ;
   }
@@ -5397,7 +5397,7 @@ var last_snapshot = {
 };
 
 function log_change(ch) {
-  var r = Caml_array.caml_array_get(trail, 0);
+  var r = Caml_array.get(trail, 0);
   if (r === undefined) {
     return ;
   }
@@ -5408,7 +5408,7 @@ function log_change(ch) {
     _0: ch,
     _1: r$prime
   };
-  return Caml_array.caml_array_set(trail, 0, r$prime);
+  return Caml_array.set(trail, 0, r$prime);
 }
 
 function log_type(ty) {
@@ -5529,7 +5529,7 @@ function set_typeset(rs, s) {
 function snapshot(param) {
   var old = last_snapshot.contents;
   last_snapshot.contents = new_id.contents;
-  var r = Caml_array.caml_array_get(trail, 0);
+  var r = Caml_array.get(trail, 0);
   if (r !== undefined) {
     return [
             r,
@@ -5539,7 +5539,7 @@ function snapshot(param) {
   var r$1 = {
     contents: /* Unchanged */0
   };
-  Caml_array.caml_array_set(trail, 0, r$1);
+  Caml_array.set(trail, 0, r$1);
   return [
           r$1,
           old
@@ -5596,7 +5596,7 @@ function backtrack(param) {
   List.iter(undo_change, backlog);
   changes.contents = /* Unchanged */0;
   last_snapshot.contents = old;
-  return Caml_array.caml_array_set(trail, 0, changes);
+  return Caml_array.set(trail, 0, changes);
 }
 
 var $$Error$1 = Caml_exceptions.create("Ocaml_typedtree_test.Cmi_format.Error");
@@ -12652,7 +12652,7 @@ function labels_of_type(ty_path, decl) {
         lbl_loc: lbl_lbl_loc,
         lbl_attributes: lbl_lbl_attributes
       };
-      Caml_array.caml_array_set(all_labels, num, lbl);
+      Caml_array.set(all_labels, num, lbl);
       return {
               hd: [
                 l.ld_id,
@@ -23873,8 +23873,8 @@ function token(lexbuf) {
           };
           return /* STAR */86;
       case 33 :
-          var num = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), Caml_array.caml_array_get(lexbuf.lex_mem, 1));
-          var name = Lexing.sub_lexeme_opt(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 3), Caml_array.caml_array_get(lexbuf.lex_mem, 2));
+          var num = Lexing.sub_lexeme(lexbuf, Caml_array.get(lexbuf.lex_mem, 0), Caml_array.get(lexbuf.lex_mem, 1));
+          var name = Lexing.sub_lexeme_opt(lexbuf, Caml_array.get(lexbuf.lex_mem, 3), Caml_array.get(lexbuf.lex_mem, 2));
           update_loc(lexbuf, name, Caml_format.caml_int_of_string(num), true, 0);
           return token(lexbuf);
       case 34 :
@@ -24058,7 +24058,7 @@ function string(lexbuf) {
       case 0 :
           return ;
       case 1 :
-          var space = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
+          var space = Lexing.sub_lexeme(lexbuf, Caml_array.get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
           update_loc(lexbuf, undefined, 1, false, space.length);
           return string(lexbuf);
       case 2 :
@@ -56264,9 +56264,9 @@ function complete_tags(nconsts, nconstrs, tags) {
   List.iter((function (i) {
           switch (i.TAG | 0) {
             case /* Cstr_constant */0 :
-                return Caml_array.caml_array_set(seen_const, i._0, true);
+                return Caml_array.set(seen_const, i._0, true);
             case /* Cstr_block */1 :
-                return Caml_array.caml_array_set(seen_constr, i._0, true);
+                return Caml_array.set(seen_constr, i._0, true);
             case /* Cstr_extension */2 :
                 throw {
                       RE_EXN_ID: "Assert_failure",
@@ -56282,7 +56282,7 @@ function complete_tags(nconsts, nconstrs, tags) {
         }), tags);
   var r = /* [] */0;
   for(var i = 0; i < nconsts; ++i){
-    if (!Caml_array.caml_array_get(seen_const, i)) {
+    if (!Caml_array.get(seen_const, i)) {
       r = {
         hd: {
           TAG: /* Cstr_constant */0,
@@ -56294,7 +56294,7 @@ function complete_tags(nconsts, nconstrs, tags) {
     
   }
   for(var i$1 = 0; i$1 < nconstrs; ++i$1){
-    if (!Caml_array.caml_array_get(seen_constr, i$1)) {
+    if (!Caml_array.get(seen_constr, i$1)) {
       r = {
         hd: {
           TAG: /* Cstr_block */1,
@@ -63706,7 +63706,7 @@ function check_recordpat_labels(loc, lbl_pat_list, closed) {
   var defined = Caml_array.caml_make_vect(all.length, false);
   var check_defined = function (param) {
     var label = param[1];
-    if (Caml_array.caml_array_get(defined, label.lbl_pos)) {
+    if (Caml_array.get(defined, label.lbl_pos)) {
       throw {
             RE_EXN_ID: $$Error$7,
             _1: loc,
@@ -63718,7 +63718,7 @@ function check_recordpat_labels(loc, lbl_pat_list, closed) {
             Error: new Error()
           };
     }
-    return Caml_array.caml_array_set(defined, label.lbl_pos, true);
+    return Caml_array.set(defined, label.lbl_pos, true);
   };
   List.iter(check_defined, lbl_pat_list);
   if (!(closed === /* Closed */0 && is_active({
@@ -63729,9 +63729,9 @@ function check_recordpat_labels(loc, lbl_pat_list, closed) {
   }
   var $$undefined = /* [] */0;
   for(var i = 0 ,i_finish = all.length; i < i_finish; ++i){
-    if (!Caml_array.caml_array_get(defined, i)) {
+    if (!Caml_array.get(defined, i)) {
       $$undefined = {
-        hd: Caml_array.caml_array_get(all, i).lbl_name,
+        hd: Caml_array.get(all, i).lbl_name,
         tl: $$undefined
       };
     }

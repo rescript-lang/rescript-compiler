@@ -629,19 +629,19 @@ var current = {
 };
 
 function is_active(x) {
-  return Caml_array.caml_array_get(current.contents.active, number(x));
+  return Caml_array.get(current.contents.active, number(x));
 }
 
 function parse_opt(error, active, flags, s) {
   var set = function (i) {
-    return Caml_array.caml_array_set(flags, i, true);
+    return Caml_array.set(flags, i, true);
   };
   var clear = function (i) {
-    return Caml_array.caml_array_set(flags, i, false);
+    return Caml_array.set(flags, i, false);
   };
   var set_all = function (i) {
-    Caml_array.caml_array_set(active, i, true);
-    return Caml_array.caml_array_set(error, i, true);
+    Caml_array.set(active, i, true);
+    return Caml_array.set(error, i, true);
   };
   var get_num = function (_n, _i) {
     while(true) {
@@ -1247,7 +1247,7 @@ function print(ppf, w) {
             _1: "%d: %s"
           }), num, msg);
   Format.pp_print_flush(ppf, undefined);
-  if (Caml_array.caml_array_get(current.contents.error, num)) {
+  if (Caml_array.get(current.contents.error, num)) {
     nerrors.contents = nerrors.contents + 1 | 0;
     return ;
   }
@@ -12636,8 +12636,8 @@ function token(lexbuf) {
           };
           return /* STAR */86;
       case 33 :
-          var num = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), Caml_array.caml_array_get(lexbuf.lex_mem, 1));
-          var name = Lexing.sub_lexeme_opt(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 3), Caml_array.caml_array_get(lexbuf.lex_mem, 2));
+          var num = Lexing.sub_lexeme(lexbuf, Caml_array.get(lexbuf.lex_mem, 0), Caml_array.get(lexbuf.lex_mem, 1));
+          var name = Lexing.sub_lexeme_opt(lexbuf, Caml_array.get(lexbuf.lex_mem, 3), Caml_array.get(lexbuf.lex_mem, 2));
           update_loc(lexbuf, name, Caml_format.caml_int_of_string(num), true, 0);
           return token(lexbuf);
       case 34 :
@@ -12821,7 +12821,7 @@ function string(lexbuf) {
       case 0 :
           return ;
       case 1 :
-          var space = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
+          var space = Lexing.sub_lexeme(lexbuf, Caml_array.get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
           update_loc(lexbuf, undefined, 1, false, space.length);
           return string(lexbuf);
       case 2 :

@@ -199,9 +199,9 @@ function allResolvedTest(param) {
     p3
   ];
   return Promise.all(promises).then(function (resolved) {
-              assert_bool(Caml_array.caml_array_get(resolved, 0) === 1);
-              assert_bool(Caml_array.caml_array_get(resolved, 1) === 2);
-              assert_bool(Caml_array.caml_array_get(resolved, 2) === 3);
+              assert_bool(Caml_array.get(resolved, 0) === 1);
+              assert_bool(Caml_array.get(resolved, 1) === 2);
+              assert_bool(Caml_array.get(resolved, 2) === 3);
               return h;
             });
 }

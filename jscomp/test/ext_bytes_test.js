@@ -5,6 +5,7 @@ var Char = require("../../lib/js/char.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -188,6 +189,26 @@ var s2 = Bytes.of_string(s1);
 
 eq("File \"ext_bytes_test.ml\", line 115, characters 7-14", s, s2);
 
+function f$1(a, b) {
+  return [
+          Caml_bytes.caml_bytes_greaterthan(a, b),
+          Caml_bytes.caml_bytes_greaterequal(a, b),
+          Caml_bytes.caml_bytes_lessthan(a, b),
+          Caml_bytes.caml_bytes_lessequal(a, b),
+          Caml_bytes.caml_bytes_equal(a, b)
+        ];
+}
+
+function f_0(a, b) {
+  return [
+          Caml_int64.gt(a, b),
+          Caml_int64.ge(a, b),
+          Caml_int64.lt(a, b),
+          Caml_int64.le(a, b),
+          Caml_int64.eq(a, b)
+        ];
+}
+
 Mt.from_pair_suites("Ext_bytes_test", suites.contents);
 
 exports.suites = suites;
@@ -195,4 +216,6 @@ exports.test_id = test_id;
 exports.eq = eq;
 exports.escaped = escaped;
 exports.starts_with = starts_with;
+exports.f = f$1;
+exports.f_0 = f_0;
 /* a Not a pure module */
