@@ -99,19 +99,10 @@ let translate loc (prim_name : string)
       end
     | "caml_array_get" -> 
       call Js_runtime_modules.array
-    | "caml_array_unsafe_get"
-    | "caml_array_unsafe_get_float" -> 
-      begin match args with 
-        | [e0;e1] -> Js_of_lam_array.ref_array e0 e1
-        | _ -> assert false
-      end
     | "caml_array_set" ->
       call Js_runtime_modules.array
-    | "caml_array_set_addr"
-    | "caml_array_set_float"
     | "caml_array_unsafe_set"
-    | "caml_array_unsafe_set_addr"
-    | "caml_array_unsafe_set_float" -> 
+     -> 
       begin match args with 
         | [e0;e1;e2] -> 
           Js_of_lam_array.set_array e0 e1 e2
