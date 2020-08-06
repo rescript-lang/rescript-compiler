@@ -92,52 +92,13 @@ let translate loc (prim_name : string)
         | [e0;e1] -> E.float_comp Cgt  e0 e1
         | _ -> assert false 
       end
-    (* | "caml_tan_float"  ->
-      E.math "tan" args 
-    | "caml_tanh_float"  ->
-      E.math "tanh" args 
-    | "caml_asin_float"  -> 
-      E.math "asin" args 
-    | "caml_atan2_float" -> 
-      E.math "atan2" args
-    | "caml_atan_float" -> 
-      E.math "atan" args 
-    | "caml_ceil_float" -> 
-      E.math "ceil" args 
-    | "caml_cos_float" -> 
-      E.math "cos" args 
-    | "caml_cosh_float" -> 
-      E.math "cosh" args
-    | "caml_exp_float" -> 
-      E.math "exp" args
-    | "caml_sin_float" -> 
-      E.math "sin" args
-    | "caml_sinh_float"-> 
-      E.math "sinh" args
-    | "caml_sqrt_float" -> 
-      E.math "sqrt" args
-
- *)
     | "caml_float_of_int" -> 
       begin match args with 
         | [e] -> e 
         | _ -> assert false 
       end
-    (* | "caml_floor_float" ->
-      E.math "floor" args 
-    | "caml_log_float" -> 
-      E.math "log" args 
-    | "caml_log10_float" -> 
-      E.math "log10" args 
-    | "caml_log1p_float" -> 
-      E.math "log1p" args 
-    | "caml_power_float"  -> 
-      E.math "pow" args *)
-
     | "caml_array_get" -> 
       call Js_runtime_modules.array
-    | "caml_array_get_addr"
-    | "caml_array_get_float"
     | "caml_array_unsafe_get"
     | "caml_array_unsafe_get_float" -> 
       begin match args with 
