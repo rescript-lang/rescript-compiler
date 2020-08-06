@@ -160,3 +160,5 @@ let lookahead p callback =
   p.comments <- comments;
 
   res
+
+let comments p = Array.of_list (List.rev p.comments)

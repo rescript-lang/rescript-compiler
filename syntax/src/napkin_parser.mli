@@ -4,6 +4,7 @@ module Grammar = Napkin_grammar
 module Reporting = Napkin_reporting
 module Diagnostics = Napkin_diagnostics
 module Comment = Napkin_comment
+
 type mode = ParseForTypeChecker | Default
 
 type regionStatus = Report | Silent
@@ -46,3 +47,5 @@ val checkProgress:
   result: 'a ->
   t ->
   'a option
+
+val comments: t -> Comment.t array
