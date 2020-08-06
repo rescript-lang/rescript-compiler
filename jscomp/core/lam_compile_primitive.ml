@@ -435,13 +435,6 @@ let translate  loc
     -> Ext_list.singleton_exn args     
   | Pintofbint Pint64
     -> Js_long.to_int32 args
-  (* | Pabsfloat -> 
-    begin match args with 
-      | [e] ->
-        E.math "abs" [e]
-      (* GCC treat built-ins like Math in a dirfferent way*)
-      | _ -> assert false
-    end *)
   | Pnot ->
     E.not  (Ext_list.singleton_exn args)       
   | Poffsetint n ->
