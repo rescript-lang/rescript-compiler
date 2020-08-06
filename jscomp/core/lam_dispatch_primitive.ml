@@ -62,23 +62,6 @@ let translate loc (prim_name : string)
   let call m = 
     E.runtime_call m prim_name args in 
   begin match prim_name with 
-    (* | "caml_gc_stat" 
-    | "caml_gc_quick_stat"  
-    | "caml_gc_get" *)
-    | "caml_gc_counters"
-    | "caml_gc_set"
-    | "caml_gc_minor"
-    | "caml_gc_major_slice"
-    | "caml_gc_major"
-    | "caml_gc_full_major"
-    | "caml_gc_compaction"
-    | "caml_final_register"
-    | "caml_final_release"
-      ->  call Js_runtime_modules.gc
-    (* | "caml_abs_float" -> 
-      E.math "abs" args  *)
-    (* | "caml_acos_float" -> 
-      E.math "acos" args  *)
     |  "caml_add_float" -> 
       begin match args with 
         | [e0;e1] -> E.float_add e0 e1 (** TODO float plus*)

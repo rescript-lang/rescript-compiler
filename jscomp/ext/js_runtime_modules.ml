@@ -42,7 +42,6 @@ let caml_oo_curry = "Caml_oo_curry"
 let caml_primitive = "Caml_primitive"
 let int64 = "Caml_int64"
 let md5 = "Caml_md5"
-let gc = "Caml_gc"
 let int32 = "Caml_int32"
 
 
