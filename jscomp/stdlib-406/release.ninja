@@ -91,8 +91,8 @@ build stdlib-406/printf.cmj : cc_cmi stdlib-406/printf.ml | stdlib-406/buffer.cm
 build stdlib-406/printf.cmi : cc stdlib-406/printf.mli | stdlib-406/buffer.cmi stdlib-406/pervasives.cmj others
 build stdlib-406/queue.cmj : cc_cmi stdlib-406/queue.ml | stdlib-406/queue.cmi others
 build stdlib-406/queue.cmi : cc stdlib-406/queue.mli | stdlib-406/pervasives.cmj others
-build stdlib-406/random.cmj : cc_cmi stdlib-406/random.ml | stdlib-406/array.cmj stdlib-406/char.cmj stdlib-406/digest.cmj stdlib-406/int32.cmj stdlib-406/int64.cmj stdlib-406/nativeint.cmj stdlib-406/pervasives.cmj stdlib-406/random.cmi stdlib-406/string.cmj others
-build stdlib-406/random.cmi : cc stdlib-406/random.mli | stdlib-406/int32.cmi stdlib-406/int64.cmi stdlib-406/nativeint.cmi stdlib-406/pervasives.cmj others
+build stdlib-406/random.cmj : cc_cmi stdlib-406/random.ml | stdlib-406/array.cmj stdlib-406/char.cmj stdlib-406/digest.cmj stdlib-406/int32.cmj stdlib-406/int64.cmj stdlib-406/pervasives.cmj stdlib-406/random.cmi stdlib-406/string.cmj others
+build stdlib-406/random.cmi : cc stdlib-406/random.mli | stdlib-406/int32.cmi stdlib-406/int64.cmi stdlib-406/pervasives.cmj others
 build stdlib-406/scanf.cmj : cc_cmi stdlib-406/scanf.ml | stdlib-406/buffer.cmj stdlib-406/bytes.cmj stdlib-406/camlinternalFormat.cmj stdlib-406/camlinternalFormatBasics.cmj stdlib-406/list.cmj stdlib-406/pervasives.cmj stdlib-406/printf.cmj stdlib-406/scanf.cmi stdlib-406/string.cmj others
 build stdlib-406/scanf.cmi : cc stdlib-406/scanf.mli | stdlib-406/pervasives.cmi stdlib-406/pervasives.cmj others
 build stdlib-406/set.cmj : cc_cmi stdlib-406/set.ml | stdlib-406/list.cmj stdlib-406/set.cmi others

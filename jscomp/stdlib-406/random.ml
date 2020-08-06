@@ -25,7 +25,9 @@
    passes all the Diehard tests.
 *)
 
-external random_seed: unit -> int array = "caml_sys_random_seed"
+let random_seed: unit -> int array = fun _ -> 
+  let seed :int = [%raw "Math.floor(Math.random()*0x7fff_ffff)"] in
+  [|seed|]
 
 module State = struct
 
@@ -124,12 +126,12 @@ module State = struct
     then invalid_arg "Random.int64"
     else int64aux s bound
 
-
+#if 0 then
   let nativeint =
     if Nativeint.size = 32
     then fun s bound -> Nativeint.of_int32 (int32 s (Nativeint.to_int32 bound))
     else fun s bound -> Int64.to_nativeint (int64 s (Int64.of_nativeint bound))
-
+#end
 
   (* Returns a float 0 <= x <= 1 with at most 60 bits of precision. *)
   let rawfloat s =
@@ -166,7 +168,9 @@ let default = {
 let bits () = State.bits default
 let int bound = State.int default bound
 let int32 bound = State.int32 default bound
+#if 0 then
 let nativeint bound = State.nativeint default bound
+#end
 let int64 bound = State.int64 default bound
 let float scale = State.float default scale
 let bool () = State.bool default

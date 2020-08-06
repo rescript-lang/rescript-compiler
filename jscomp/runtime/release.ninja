@@ -53,7 +53,7 @@ build runtime/caml_splice_call.cmj : cc_cmi runtime/caml_splice_call.ml | runtim
 build runtime/caml_splice_call.cmi : cc runtime/caml_splice_call.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 build runtime/caml_string.cmj : cc_cmi runtime/caml_string.ml | runtime/caml_string.cmi runtime/caml_string_extern.cmj
 build runtime/caml_string.cmi : cc runtime/caml_string.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
-build runtime/caml_sys.cmj : cc_cmi runtime/caml_sys.ml | runtime/caml_array_extern.cmj runtime/caml_nativeint_extern.cmj runtime/caml_sys.cmi runtime/caml_undefined_extern.cmj runtime/js.cmj
+build runtime/caml_sys.cmj : cc_cmi runtime/caml_sys.ml | runtime/caml_array_extern.cmj runtime/caml_sys.cmi runtime/caml_undefined_extern.cmj runtime/js.cmj
 build runtime/caml_sys.cmi : cc runtime/caml_sys.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 build runtime/caml_array_extern.cmi runtime/caml_array_extern.cmj : cc runtime/caml_array_extern.ml | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 build runtime/caml_exceptions.cmi runtime/caml_exceptions.cmj : cc runtime/caml_exceptions.ml | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj

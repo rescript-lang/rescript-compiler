@@ -434,7 +434,6 @@ let translate loc (prim_name : string)
     (*                       Js_of_lam_array.make_array NA Pgenarray [] *)
     (*                      ] *)
     | "caml_sys_time"
-    | "caml_sys_random_seed"
     | "caml_sys_getenv"
     | "caml_sys_system_command" 
     | "caml_sys_getcwd" (* check browser or nodejs *)
