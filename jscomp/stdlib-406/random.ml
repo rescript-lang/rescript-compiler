@@ -26,7 +26,7 @@
 *)
 
 let random_seed: unit -> int array = fun _ -> 
-  let seed :int = [%raw "Math.floor(Math.random()*0x7fff_ffff)"] in
+  let seed :int = [%raw "Math.floor(Math.random()*0x7fffffff)"] in
   [|seed|]
 
 module State = struct
