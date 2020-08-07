@@ -24,10 +24,16 @@
 
 
 
-type function_attribute = 
+type inline_attribute = 
   | Always_inline
   | Never_inline
   | Default_inline  
+
+type function_attribute = {
+  inline : inline_attribute
+}  
+
+val default_fn_attr : function_attribute
 
 type ident = Ident.t
 

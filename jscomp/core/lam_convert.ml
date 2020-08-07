@@ -295,7 +295,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
           [ Lam.const Const_js_false ; 
             (* FIXME: arity 0 does not get proper supported*)
             prim ~primitive:(Pjs_fn_make 0) ~args:[Lam.function_ ~arity:1 ~params:[Ident.create "param"] ~body:computation 
-            ~attr:Default_inline] 
+            ~attr:Lam.default_fn_attr] 
             loc             
           ] in 
         prim ~primitive:(Pmakeblock (tag,lazy_block_info,Mutable)) ~args loc  
@@ -441,11 +441,13 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
 
 
 let convert_fn_attribute (attr : Lambda.function_attribute) : Lam.function_attribute = 
+  let inline : Lam.inline_attribute = 
     match attr.inline with 
     | Always_inline -> Always_inline
     | Never_inline -> Never_inline
     | Unroll _
-    | Default_inline -> Default_inline
+    | Default_inline -> Default_inline in 
+  Lam.{inline}
 
 
 

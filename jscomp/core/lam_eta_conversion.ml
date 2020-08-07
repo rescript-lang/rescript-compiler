@@ -66,7 +66,7 @@ let transform_under_supply n loc status fn args =
        of an existing function which may cause inconsistency
     *)
     Lam.function_ ~arity:n  ~params:extra_args
-      ~attr:Default_inline
+      ~attr:Lam.default_fn_attr
       ~body:(Lam.apply fn (Ext_list.append args  extra_lambdas) 
                loc 
                status
@@ -75,7 +75,7 @@ let transform_under_supply n loc status fn args =
 
     let rest : Lam.t = 
       Lam.function_ ~arity:n  ~params:extra_args
-        ~attr:Default_inline
+        ~attr:Lam.default_fn_attr
         ~body:(Lam.apply fn (Ext_list.append args  extra_lambdas) 
                  loc 
                  status
@@ -133,7 +133,7 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
         match fn with 
         | Lfunction{params = [param]; body} -> 
           Lam.function_ ~arity:0 
-            ~attr:Default_inline
+            ~attr:Lam.default_fn_attr
             ~params:[]
             ~body:(
               Lam.let_ Alias param Lam.unit body  
@@ -153,7 +153,7 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
               Some partial_arg, Lam.var partial_arg in 
 
           let cont = Lam.function_ 
-              ~attr:Default_inline
+              ~attr:Lam.default_fn_attr
               ~arity:0
               ~params:[]
               ~body:(
@@ -172,7 +172,7 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
              {[ fun x y -> f y ]}
           *)
           let extra_args = Ext_list.init (to_ - from) (fun _ -> Ident.create Literals.param) in 
-          Lam.function_ ~attr:Default_inline
+          Lam.function_ ~attr:Lam.default_fn_attr
             ~arity:to_ 
             ~params:(Ext_list.append params  extra_args )
             ~body:(Lam.apply body (Ext_list.map extra_args Lam.var) loc App_na)
@@ -190,7 +190,7 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
           in   
           let cont = 
             Lam.function_ 
-              ~arity ~attr:Default_inline
+              ~arity ~attr:Lam.default_fn_attr
 
               ~params:extra_args 
               ~body:(
@@ -218,10 +218,10 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
             let extra_outer_args, extra_inner_args = Ext_list.split_at params arity in 
             Lam.function_ 
               ~arity 
-              ~attr:Default_inline
+              ~attr:Lam.default_fn_attr
               ~params:extra_outer_args 
               ~body:(
-                Lam.function_ ~arity:(from - to_) ~attr:Default_inline
+                Lam.function_ ~arity:(from - to_) ~attr:Lam.default_fn_attr
                   ~params:extra_inner_args ~body:body)
           | _
             -> 
@@ -238,12 +238,12 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
                 Some partial_arg, Lam.var partial_arg
             in   
             let cont = 
-              Lam.function_ ~arity:to_ ~params:extra_outer_args ~attr:Default_inline
+              Lam.function_ ~arity:to_ ~params:extra_outer_args ~attr:Lam.default_fn_attr
                 ~body:(
                   let arity = from - to_ in 
                   let extra_inner_args =
                     Ext_list.init arity (fun _ -> Ident.create Literals.param ) in 
-                  Lam.function_ ~arity ~params:extra_inner_args  ~attr:Default_inline
+                  Lam.function_ ~arity ~params:extra_inner_args  ~attr:Lam.default_fn_attr
                     ~body:(Lam.apply new_fn 
                              (Ext_list.map_append extra_outer_args 
                                 (Ext_list.map extra_inner_args Lam.var) 
@@ -269,7 +269,7 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
             let partial_arg = Ext_ident.create Literals.partial_arg in 
             Some partial_arg, Lam.var partial_arg in 
 
-        let cont = Lam.function_ ~attr:Default_inline
+        let cont = Lam.function_ ~attr:Lam.default_fn_attr
             ~arity:0
             ~params:[]
             ~body:(

@@ -29,11 +29,19 @@ type apply_status =
   | App_infer_full
   | App_uncurry
 
-type function_attribute = 
+
+type inline_attribute = 
   | Always_inline
   | Never_inline
   | Default_inline
 
+type function_attribute = {
+  inline : inline_attribute
+}  
+
+let default_fn_attr : function_attribute = {
+  inline = Default_inline
+}
 module Types = struct
 
   type lambda_switch =
