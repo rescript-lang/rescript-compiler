@@ -43,6 +43,12 @@ module Types = struct
       sw_blocks: (int * t) list;
       sw_failaction : t option;
       sw_names : Lambda.switch_names option }
+  and lfunction = { 
+    arity : int ;
+    params : ident list ;
+    body : t;
+    attr : function_attribute
+  }    
   (* 
     Invariant: 
     length (sw_consts) <= sw_consts_full 
@@ -90,11 +96,7 @@ module Types = struct
     | Lglobal_module of ident
     | Lconst of Lam_constant.t
     | Lapply of apply_info
-    | Lfunction of { arity : int ;
-                     params : ident list ;
-                     body : t;
-                     attr : function_attribute
-                   }
+    | Lfunction of lfunction
     | Llet of Lam_compat.let_kind * ident * t * t
     | Lletrec of (ident * t) list * t
     | Lprim of prim_info
@@ -137,6 +139,13 @@ module X = struct
         ap_loc : Location.t;
         ap_status : apply_status
       }
+  and lfunction = Types.lfunction = 
+    { 
+      arity : int ;
+      params : ident list ;
+      body : t;
+      attr : function_attribute
+    }   
   and t
     = Types.t
     =
@@ -144,11 +153,7 @@ module X = struct
       | Lglobal_module of ident
       | Lconst of Lam_constant.t
       | Lapply of apply_info
-      | Lfunction of { arity : int ;
-                       params : ident list ;
-                       body : t;
-                       attr : function_attribute
-                     }      
+      | Lfunction of lfunction      
       | Llet of Lam_compat.let_kind * ident * t * t
       | Lletrec of (ident * t) list * t
       | Lprim of prim_info

@@ -48,7 +48,12 @@ and apply_info = private
     ap_loc : Location.t;
     ap_status : apply_status
   }
-
+and lfunction =  {
+  arity : int ; 
+  params : ident list ;
+  body : t ;
+  attr : function_attribute;
+}
 and prim_info = private
   { primitive : Lam_primitive.t ; 
     args : t list ; 
@@ -59,11 +64,7 @@ and  t =  private
   | Lglobal_module of ident
   | Lconst of Lam_constant.t
   | Lapply of apply_info
-  | Lfunction of   { arity : int ; 
-                     params : ident list ;
-                     body : t ;
-                     attr : function_attribute;
-                   }
+  | Lfunction of lfunction
   | Llet of Lam_compat.let_kind * ident * t * t
   | Lletrec of (ident * t) list * t
   | Lprim of prim_info
