@@ -50,7 +50,7 @@ let rec copy n =
   match n with
   | None -> n
   | Some n ->
-    Some { left = (copy n.left) ; right = (copy n.right);
+    Some { left = copy n.left ; right = copy n.right;
       value = n.value; height = n.height}
     
 (* Creates a new node with leftGet son l, value v and right son r.
@@ -58,12 +58,15 @@ let rec copy n =
    l and r must be balanced and | treeHeight l - treeHeight r | <= 2.
    Inline expansion of treeHeight for better speed. *)
 
+let [@inline] calcHeight (hl : int) hr = 
+  (if hl >= hr then hl  else hr) + 1
+
 let create (l : _ t) v (r : _ t) =
   let hl = height l in
   let hr = height r in
-  Some { left = l; value = v; right = r; height = (if hl >= hr then hl + 1 else hr + 1)}
+  Some { left = l; value = v; right = r; height = calcHeight hl hr}
   
-
+  
 let singleton x = Some { left = None; value = x; right = None; height = 1} 
 
 let heightGe l r =
@@ -77,8 +80,7 @@ let heightGe l r =
    where no rebalancing is required. *)
 (* TODO: inline all [create] operation, save duplicated [heightGet] calcuation *)
 let bal l v r =
-  let hl = match l with None -> 0 | Some n -> n.height in
-  let hr = match r with None -> 0 | Some n -> n.height in
+  let hl,hr = height l, height r in 
   if hl > hr + 2 then begin
     match l with None -> assert false | Some ({left = ll;  right = lr} as l) ->
       if heightGe ll  lr then
@@ -94,7 +96,7 @@ let bal l v r =
         match rl with None -> assert false | Some rl -> 
           create (create l v rl.left) rl.value (create rl.right r.value rr)
   else
-    Some {left = l ; value = v ; right = r; height = (if hl >= hr then hl + 1 else hr + 1)}
+    Some {left = l ; value = v ; right = r; height = calcHeight hl hr}
 
 
 
