@@ -155,7 +155,7 @@ let simplify_alias
       let normal () = Lam.apply ( simpl fn) (Ext_list.map args simpl) loc status in
       begin 
         match Hash_ident.find_opt meta.ident_tbl v with
-        | Some (FunctionId {lambda = Some(Lfunction {params; body} as _m,
+        | Some (FunctionId {lambda = Some(Lfunction ({params; body} as m),
                                           rec_flag)
                            })
           -> 
@@ -177,7 +177,7 @@ let simplify_alias
               end
             else 
             if (* Lam_analysis.size body < Lam_analysis.small_inline_size *)
-              Lam_analysis.ok_to_inline_fun_when_app ~body params args 
+              Lam_analysis.ok_to_inline_fun_when_app m args 
             then 
 
               (* let param_map =  *)

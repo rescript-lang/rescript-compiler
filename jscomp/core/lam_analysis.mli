@@ -34,7 +34,10 @@ val no_side_effects : Lam.t -> bool
 
 val size : Lam.t -> int
 
-val ok_to_inline_fun_when_app : body:Lam.t -> Lam.ident list -> Lam.t list -> bool
+val ok_to_inline_fun_when_app :
+   Lam.lfunction -> 
+   Lam.t list -> 
+   bool
   
 
 
