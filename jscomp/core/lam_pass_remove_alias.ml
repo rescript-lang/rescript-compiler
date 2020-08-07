@@ -155,14 +155,14 @@ let simplify_alias
       let normal () = Lam.apply ( simpl fn) (Ext_list.map args simpl) loc status in
       begin 
         match Hash_ident.find_opt meta.ident_tbl v with
-        | Some (FunctionId {lambda = Some(Lfunction ({params; body} as m),
+        | Some (FunctionId {lambda = Some(Lfunction ({params; body; attr = {is_a_functor}} as m),
                                           rec_flag)
                            })
           -> 
 
           if Ext_list.same_length args params (* && false *)
           then               
-            if Lam_inline_util.maybe_functor v.name  
+            if is_a_functor = Functor_yes
             (* && (Set_ident.mem v meta.export_idents) && false *)
             then 
               (* TODO: check l1 if it is exported, 

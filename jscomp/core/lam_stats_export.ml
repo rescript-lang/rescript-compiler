@@ -74,12 +74,12 @@ let values_of_export
               only truly immutable values can be inlined
            *)
            then
-             if Lam_inline_util.should_be_functor x.name lambda (* can also be submodule *)
-             then
+             match lambda with 
+             | Lfunction {attr = {is_a_functor = Functor_yes}} -> 
                if Lam_closure.is_closed lambda (* TODO: seriealize more*)
                then Some lambda
                else None
-             else 
+             | _ -> 
                let lam_size = Lam_analysis.size lambda in
                (* TODO:
                   1. global need re-assocate when do the beta reduction 
