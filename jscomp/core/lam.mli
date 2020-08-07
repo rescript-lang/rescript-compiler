@@ -29,8 +29,14 @@ type inline_attribute =
   | Never_inline
   | Default_inline  
 
+type is_a_functor = 
+  | Functor_yes
+  | Functor_no 
+  | Functor_na  
+
 type function_attribute = {
-  inline : inline_attribute
+  inline : inline_attribute;
+  is_a_functor : is_a_functor
 }  
 
 val default_fn_attr : function_attribute

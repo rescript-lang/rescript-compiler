@@ -33,4 +33,4 @@
 
 val maybe_functor : string -> bool
 
-val should_be_functor : string -> Lam.t -> bool 
+val should_be_functor :  Lam.t -> bool 

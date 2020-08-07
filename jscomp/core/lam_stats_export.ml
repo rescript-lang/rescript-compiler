@@ -74,7 +74,7 @@ let values_of_export
               only truly immutable values can be inlined
            *)
            then
-             if Lam_inline_util.should_be_functor x.name lambda (* can also be submodule *)
+             if Lam_inline_util.should_be_functor lambda (* can also be submodule *)
              then
                if Lam_closure.is_closed lambda (* TODO: seriealize more*)
                then Some lambda

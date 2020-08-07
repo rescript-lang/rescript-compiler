@@ -38,8 +38,7 @@ let maybe_functor (name : string) =
   name.[0] >= 'A' && name.[0] <= 'Z'
 
 
-let should_be_functor (name : string) (lam : Lam.t) = 
-  maybe_functor name  &&
-  (match lam with Lfunction _ -> true | _ -> false)
+let should_be_functor (lam : Lam.t) =   
+  (match lam with Lfunction {attr = {is_a_functor = Functor_yes}} -> true | _ -> false)
 
 

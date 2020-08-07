@@ -447,7 +447,9 @@ let convert_fn_attribute (attr : Lambda.function_attribute) : Lam.function_attri
     | Never_inline -> Never_inline
     | Unroll _
     | Default_inline -> Default_inline in 
-  Lam.{inline}
+  let is_a_functor =
+    if attr.is_a_functor then Lam.Functor_yes else Functor_no in     
+  Lam.{inline; is_a_functor}
 
 
 
