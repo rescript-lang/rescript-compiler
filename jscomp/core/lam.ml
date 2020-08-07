@@ -29,6 +29,10 @@ type apply_status =
   | App_infer_full
   | App_uncurry
 
+type function_attribute = 
+  | Always_inline
+  | Never_inline
+  | Default_inline
 
 module Types = struct
 
@@ -88,7 +92,8 @@ module Types = struct
     | Lapply of apply_info
     | Lfunction of { arity : int ;
                      params : ident list ;
-                     body : t
+                     body : t;
+                     attr : function_attribute
                    }
     | Llet of Lam_compat.let_kind * ident * t * t
     | Lletrec of (ident * t) list * t
@@ -141,7 +146,8 @@ module X = struct
       | Lapply of apply_info
       | Lfunction of { arity : int ;
                        params : ident list ;
-                       body : t
+                       body : t;
+                       attr : function_attribute
                      }      
       | Llet of Lam_compat.let_kind * ident * t * t
       | Lletrec of (ident * t) list * t
@@ -175,9 +181,9 @@ let inner_map
     let ap_func = f ap_func in
     let ap_args = Ext_list.map ap_args f in
     Lapply { ap_func ; ap_args; ap_loc; ap_status }
-  | Lfunction({body; arity;  params } ) ->
+  | Lfunction({body; arity;  params ; attr } ) ->
     let body = f body in
-    Lfunction {body; arity;  params}
+    Lfunction {body; arity;  params; attr}
   | Llet(str, id, arg, body) ->
     let arg = f arg in let body =  f body in
     Llet(str,id,arg,body)
@@ -428,8 +434,8 @@ let rec seq (a : t) b : t =
 let var id : t = Lvar id
 let global_module id = Lglobal_module id
 let const ct : t = Lconst ct
-let function_ ~arity  ~params ~body : t =
-  Lfunction { arity;  params ; body}
+let function_ ~attr ~arity  ~params ~body : t =
+  Lfunction { arity;  params ; body; attr}
 
 let let_ kind id e body :  t
   = Llet (kind,id,e,body)

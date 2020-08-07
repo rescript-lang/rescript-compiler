@@ -24,7 +24,10 @@
 
 
 
-
+type function_attribute = 
+  | Always_inline
+  | Never_inline
+  | Default_inline  
 
 type ident = Ident.t
 
@@ -58,7 +61,8 @@ and  t =  private
   | Lapply of apply_info
   | Lfunction of   { arity : int ; 
                      params : ident list ;
-                     body : t 
+                     body : t ;
+                     attr : function_attribute;
                    }
   | Llet of Lam_compat.let_kind * ident * t * t
   | Lletrec of (ident * t) list * t
@@ -102,6 +106,7 @@ val const : Lam_constant.t -> t
 
 val apply : t -> t list -> Location.t -> apply_status -> t
 val function_ : 
+  attr:function_attribute ->
   arity:int ->
   params:ident list -> 
   body:t -> t

@@ -294,7 +294,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
         let args = 
           [ Lam.const Const_js_false ; 
             (* FIXME: arity 0 does not get proper supported*)
-            prim ~primitive:(Pjs_fn_make 0) ~args:[Lam.function_ ~arity:1 ~params:[Ident.create "param"] ~body:computation] 
+            prim ~primitive:(Pjs_fn_make 0) ~args:[Lam.function_ ~arity:1 ~params:[Ident.create "param"] ~body:computation 
+            ~attr:Default_inline] 
             loc             
           ] in 
         prim ~primitive:(Pmakeblock (tag,lazy_block_info,Mutable)) ~args loc  
@@ -439,6 +440,12 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     (* Does not exist since we compile array in js backend unlike native backend *)
 
 
+let convert_fn_attribute (attr : Lambda.function_attribute) : Lam.function_attribute = 
+    match attr.inline with 
+    | Always_inline -> Always_inline
+    | Never_inline -> Never_inline
+    | Unroll _
+    | Default_inline -> Default_inline
 
 
 
@@ -624,17 +631,18 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
           (** we need do this eargly in case [aux fn] add some wrapper *)
           Lam.apply (convert_aux fn) (Ext_list.map args convert_aux ) loc App_na  
     | Lfunction 
-    {kind; params; body }
+    {kind; params; body ; attr }
       ->  
       assert (kind = Curried);
       let new_map,body = rename_optional_parameters Map_ident.empty params body in 
+      let attr = convert_fn_attribute attr in 
       if Map_ident.is_empty new_map then
-        Lam.function_
+        Lam.function_ ~attr
           ~arity:(List.length params)  ~params
           ~body:(convert_aux body)
       else 
         let params = Ext_list.map params (fun x -> Map_ident.find_default new_map x x) in 
-        Lam.function_
+        Lam.function_ ~attr
           ~arity:(List.length params)  ~params
           ~body:(convert_aux body)
 
