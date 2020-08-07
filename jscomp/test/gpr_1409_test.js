@@ -75,7 +75,6 @@ var test2 = {
 };
 
 function test3(_open, xx__hi) {
-  console.log("no inlin");
   var tmp = {
     hi: 2
   };
@@ -142,7 +141,9 @@ function keys(xs, ys) {
 eq("File \"gpr_1409_test.ml\", line 69, characters 6-13", keys({
           hd: "hi",
           tl: /* [] */0
-        }, Object.keys(test3(undefined, undefined))), true);
+        }, Object.keys({
+              hi: 2
+            })), true);
 
 eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys({
           hd: "hi",
@@ -150,7 +151,10 @@ eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys({
             hd: "open",
             tl: /* [] */0
           }
-        }, Object.keys(test3(2, undefined))), true);
+        }, Object.keys({
+              open: 2,
+              hi: 2
+            })), true);
 
 eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys({
           hd: "hi",
@@ -161,7 +165,11 @@ eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys({
               tl: /* [] */0
             }
           }
-        }, Object.keys(test3(2, 2))), true);
+        }, Object.keys({
+              open: 2,
+              xx: 2,
+              hi: 2
+            })), true);
 
 Mt.from_pair_suites("Gpr_1409_test", suites.contents);
 
