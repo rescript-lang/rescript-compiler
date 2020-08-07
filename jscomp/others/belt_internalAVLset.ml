@@ -41,7 +41,7 @@ type ('a, 'b) cmp = ('a, 'b) Belt_Id.cmp
    children differ by at most 2 *)
 
 
-let treeHeight (n : _ t) =
+let [@inline] height (n : _ t) =
   match n with
   | None -> 0
   | Some n -> n.height
@@ -50,7 +50,7 @@ let rec copy n =
   match n with
   | None -> n
   | Some n ->
-    Some { left = (copy n.left) ; right = (copy n.right);
+    Some { left = copy n.left ; right = copy n.right;
       value = n.value; height = n.height}
     
 (* Creates a new node with leftGet son l, value v and right son r.
@@ -58,12 +58,15 @@ let rec copy n =
    l and r must be balanced and | treeHeight l - treeHeight r | <= 2.
    Inline expansion of treeHeight for better speed. *)
 
-let create (l : _ t) v (r : _ t) =
-  let hl = match l with None -> 0 | Some n -> n.height in
-  let hr = match r with None -> 0 | Some n -> n.height in
-  Some { left = l; value = v; right = r; height = (if hl >= hr then hl + 1 else hr + 1)}
-  
+let [@inline] calcHeight (hl : int) hr = 
+  (if hl >= hr then hl  else hr) + 1
 
+let create (l : _ t) v (r : _ t) =
+  let hl = height l in
+  let hr = height r in
+  Some { left = l; value = v; right = r; height = calcHeight hl hr}
+  
+  
 let singleton x = Some { left = None; value = x; right = None; height = 1} 
 
 let heightGe l r =
@@ -77,8 +80,7 @@ let heightGe l r =
    where no rebalancing is required. *)
 (* TODO: inline all [create] operation, save duplicated [heightGet] calcuation *)
 let bal l v r =
-  let hl = match l with None -> 0 | Some n -> n.height in
-  let hr = match r with None -> 0 | Some n -> n.height in
+  let hl,hr = height l, height r in 
   if hl > hr + 2 then begin
     match l with None -> assert false | Some ({left = ll;  right = lr} as l) ->
       if heightGe ll  lr then
@@ -94,7 +96,7 @@ let bal l v r =
         match rl with None -> assert false | Some rl -> 
           create (create l v rl.left) rl.value (create rl.right r.value rr)
   else
-    Some {left = l ; value = v ; right = r; height = (if hl >= hr then hl + 1 else hr + 1)}
+    Some {left = l ; value = v ; right = r; height = calcHeight hl hr}
 
 
 
@@ -284,7 +286,7 @@ let rec checkInvariantInternal (v : _ t) =
   | None -> ()
   | Some n ->
     let {left = l; right = r} = n   in
-    let diff = treeHeight l - treeHeight r  in
+    let diff = height l - height r  in
     [%assert diff <=2 && diff >= -2];
     checkInvariantInternal l;
     checkInvariantInternal r
@@ -546,9 +548,9 @@ let rotateWithLeftChild k2 =
   | Some k1 -> 
     k2 .left <- k1 .right;
     k1 .right <-  Some k2 ;
-    let hlk2, hrk2 = k2 .left|. treeHeight , k2 .right |. treeHeight in
+    let hlk2, hrk2 = k2 .left|. height , k2 .right |. height in
     k2 .height <-  (Pervasives.max hlk2 hrk2 + 1);
-    let hlk1, hk2 = k1 .left|. treeHeight , k2 .height  in
+    let hlk1, hk2 = k1 .left|. height , k2 .height  in
     k1 .height <-  (Pervasives.max hlk1 hk2 + 1);
     k1
 (* right rotation *)
@@ -557,9 +559,9 @@ let rotateWithRightChild k1 =
   | Some k2 -> 
   k1 .right <- k2 .left;
   k2 .left <-  Some k1;
-  let hlk1, hrk1 = k1.left |. treeHeight, k1 .right |. treeHeight in
+  let hlk1, hrk1 = k1.left |. height, k1 .right |. height in
   k1 .height <-   (Pervasives.max  hlk1 hrk1 + 1);
-  let hrk2, hk1 = k2 .right |. treeHeight, k1 .height in
+  let hrk2, hk1 = k2 .right |. height, k1 .height in
   k2 .height <-  (Pervasives.max  hrk2 hk1 + 1);
   k2
 
@@ -584,13 +586,13 @@ let doubleWithRightChild k2 =
     rotateWithRightChild k2
 
 let heightUpdateMutate t =
-  let hlt, hrt = t .left|. treeHeight, t .right |. treeHeight  in
+  let hlt, hrt = t .left|. height, t .right |. height  in
   t .height <-  (Pervasives.max hlt hrt  + 1);
   t
 
 let balMutate nt  =
   let {left = l; right = r} = nt  in
-  let hl, hr =  (treeHeight l, treeHeight r) in
+  let hl, hr =  (height l, height r) in
   if hl > 2 +  hr then
     match l with None -> assert false 
     | Some {left = ll; right = lr} -> 

@@ -42,8 +42,8 @@ external mangle : ?_open:int -> ?xx__hi:int -> hi:int -> unit -> _ = ""
 
 let test2 = mangle ~hi:2 ()
 
-let test3 _open xx__hi = 
-  Js.log "no inlin";
+let [@inline never] test3 _open xx__hi = 
+  (* Js.log "no inlin"; *)
   mangle ?_open ?xx__hi ~hi:2 ()
 
 let test4 _open xx__hi = 

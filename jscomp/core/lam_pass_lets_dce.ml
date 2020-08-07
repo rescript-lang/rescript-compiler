@@ -159,8 +159,8 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
 
     | Lapply{ap_func = l1; ap_args =  ll; ap_loc = loc; ap_status = status} -> 
       Lam.apply (simplif l1) (Ext_list.map  ll simplif) loc status
-    | Lfunction{arity; params; body = l} ->
-      Lam.function_ ~arity ~params ~body:(simplif l)
+    | Lfunction{arity; params; body; attr} ->
+      Lam.function_ ~arity ~params ~body:(simplif body) ~attr
     | Lconst _ -> lam
     | Lletrec(bindings, body) ->
       Lam.letrec 

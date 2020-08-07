@@ -155,7 +155,7 @@ let simplify_alias
       let normal () = Lam.apply ( simpl fn) (Ext_list.map args simpl) loc status in
       begin 
         match Hash_ident.find_opt meta.ident_tbl v with
-        | Some (FunctionId {lambda = Some(Lfunction {params; body} as _m,
+        | Some (FunctionId {lambda = Some(Lfunction ({params; body} as m),
                                           rec_flag)
                            })
           -> 
@@ -177,7 +177,7 @@ let simplify_alias
               end
             else 
             if (* Lam_analysis.size body < Lam_analysis.small_inline_size *)
-              Lam_analysis.ok_to_inline_fun_when_app ~body params args 
+              Lam_analysis.ok_to_inline_fun_when_app m args 
             then 
 
               (* let param_map =  *)
@@ -223,8 +223,8 @@ let simplify_alias
 
     | Lapply { ap_func = l1; ap_args =  ll;  ap_loc = loc; ap_status = status} ->
       Lam.apply (simpl  l1) (Ext_list.map ll simpl) loc status
-    | Lfunction {arity; params; body = l}
-      -> Lam.function_ ~arity ~params  ~body:(simpl  l)
+    | Lfunction {arity; params; body; attr}
+      -> Lam.function_ ~arity ~params  ~body:(simpl body) ~attr
     | Lswitch (l, {sw_failaction; 
                    sw_consts; 
                    sw_blocks;
