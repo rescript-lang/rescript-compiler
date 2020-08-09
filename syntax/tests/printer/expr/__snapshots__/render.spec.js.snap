@@ -3013,13 +3013,13 @@ switch x {
 | #...typevar => 42
 }
 
-let r = #\\\\\\"Reducer⛪️\\"
-let r = #\\\\\\"type\\"(\\\\\\"module\\", \\\\\\"let\\")
+let r = #\\"Reducer⛪️\\"
+let r = #\\"type\\"(\\\\\\"module\\", \\\\\\"let\\")
 
 let r = #lident
 let r = #lident(a, b)
-let r = #\\\\\\"exotic lident\\"
-let r = #\\\\\\"exotic lident\\"(a, b)
+let r = #\\"exotic lident\\"
+let r = #\\"exotic lident\\"(a, b)
 "
 `;
 

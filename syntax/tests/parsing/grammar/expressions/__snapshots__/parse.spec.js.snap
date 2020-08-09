@@ -1095,7 +1095,12 @@ let switchExpr = match myVar with | Blue -> \\"blue\\" | Red -> \\"red\\"
 let constrainedExpr = (x : int)"
 `;
 
-exports[`polyvariant.js 1`] = `""`;
+exports[`polyvariant.js 1`] = `
+"let x = \`Red
+let z = \`Rgb ()
+let v = \`Vertex (1., 2., 3., 4.)
+let animation = \`ease-in"
+`;
 
 exports[`primary.js 1`] = `
 "let x = a.b

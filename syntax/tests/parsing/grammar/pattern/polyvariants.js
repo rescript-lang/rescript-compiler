@@ -98,3 +98,9 @@ let cmp = (selectedChoice, value) =>
   | exception #...a => true
   | _ => false
   }
+
+switch polyVar {
+| #"ease-in" => ()
+| #"ease-out⛰" => ()
+| _ => ()
+}

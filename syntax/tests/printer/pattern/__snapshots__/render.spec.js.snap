@@ -283,14 +283,14 @@ let list = 3
 exports[`variant.res 1`] = `
 "let #shape = x
 let #Shape = x
-let #\\\\\\"type\\" = x
-let #\\\\\\"test 🏚\\" = x
-let #\\\\\\"Shape✅\\" = x
+let #\\"type\\" = x
+let #\\"test 🏚\\" = x
+let #\\"Shape✅\\" = x
 
 let #Shape(\\\\\\"module\\", \\\\\\"ExoticIdent\\") = x
 
-let #\\\\\\"type\\"(\\\\\\"module\\", \\\\\\"ExoticIdent\\") = x
-let #\\\\\\"Shape🎡\\"(\\\\\\"module\\", \\\\\\"ExoticIdent\\") = x
+let #\\"type\\"(\\\\\\"module\\", \\\\\\"ExoticIdent\\") = x
+let #\\"Shape🎡\\"(\\\\\\"module\\", \\\\\\"ExoticIdent\\") = x
 
 let cmp = (selectedChoice, value) =>
   switch (selectedChoice, value) {

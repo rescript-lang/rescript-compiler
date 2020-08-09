@@ -117,6 +117,8 @@ exports[`poly.js 1`] = `
       Js.t = \\"./src/logger.mock.js\\""
 `;
 
+exports[`polyVariant.res 1`] = `"type nonrec animation = [ \`ease-in  | \`ease-out  | \`never ease ✍️ ]"`;
+
 exports[`tuple.js 1`] = `
 "type nonrec t = (string * int)
 type nonrec t = (int option * string option)

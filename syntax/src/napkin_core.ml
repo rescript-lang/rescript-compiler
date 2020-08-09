@@ -490,7 +490,12 @@ let parseIdent ~msg ~startPos p =
 
 let parseHashIdent ~startPos p =
   Parser.expect Hash p;
-  parseIdent ~startPos ~msg:ErrorMessages.variantIdent p
+  match p.token with
+  | String text ->
+    Parser.next p;
+    (text, mkLoc startPos p.prevEndPos)
+  | _ ->
+    parseIdent ~startPos ~msg:ErrorMessages.variantIdent p
 
 (* Ldot (Ldot (Lident "Foo", "Bar"), "baz") *)
 let parseValuePath p =
@@ -1081,7 +1086,13 @@ let rec parsePattern ?(alias=true) ?(or_=true) p =
       let loc = mkLoc startPos ident.loc.loc_end in
       Ast_helper.Pat.type_ ~loc ~attrs ident
     ) else (
-      let (ident, loc) = parseIdent ~msg:ErrorMessages.variantIdent ~startPos p in
+      let (ident, loc) = match p.token with
+      | String text ->
+        Parser.next p;
+        (text, mkLoc startPos p.prevEndPos)
+      | _ ->
+        parseIdent ~msg:ErrorMessages.variantIdent ~startPos p
+      in
       begin match p.Parser.token with
       | Lparen ->
         parseVariantPatternArgs p ident startPos attrs
