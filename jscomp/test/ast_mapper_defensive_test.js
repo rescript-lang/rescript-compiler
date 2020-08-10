@@ -34,7 +34,15 @@ function aToJs(param) {
 
 function aFromJs(param) {
   if (!(param <= 2 && 0 <= param)) {
-    throw new Error("ASSERT FAILURE");
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "_none_",
+            1,
+            -1
+          ],
+          Error: new Error()
+        };
   }
   return param - 0 | 0;
 }

@@ -287,7 +287,7 @@ let rec checkInvariantInternal (v : _ t) =
   | Some n ->
     let {left = l; right = r} = n   in
     let diff = height l - height r  in
-    [%assert diff <=2 && diff >= -2];
+    assert (diff <=2 && diff >= -2);
     checkInvariantInternal l;
     checkInvariantInternal r
 
@@ -529,7 +529,7 @@ let rec getUndefined (n : _ t) x ~cmp  =
 
 let rec getExn  (n : _ t) x ~cmp =
   match n with
-    None -> [%assert "getExn0"]
+    None -> raise Not_found
   | Some t (* Node(l, v, r, _) *) ->
     let v = t.value in
     let c = (Belt_Id.getCmpInternal cmp) x v [@bs] in

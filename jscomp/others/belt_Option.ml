@@ -30,7 +30,7 @@ let forEach opt f = forEachU opt (fun[@bs] x -> f x)
 
 let getExn = function
   | Some x -> x
-  | None -> [%assert "getExn"]
+  | None -> raise Not_found
 
 external getUnsafe : 'a option -> 'a = "%identity"  
 

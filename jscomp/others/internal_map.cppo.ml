@@ -49,7 +49,7 @@ let rec getUndefined n (x : key) =
 
 let rec getExn n (x : key) =
   match n with 
-  | None -> [%assert "getExn"]
+  | None -> raise Not_found
   | Some n -> 
     let v = n.N.key in 
     if x = v then n.N.value

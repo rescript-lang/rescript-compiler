@@ -82,7 +82,7 @@ let rec getUndefined (n :t) (x : value)   =
 
 let rec getExn  (n :t) (x : value) = 
   match n with 
-  | None -> [%assert "getExn"]
+  | None -> raise Not_found
   | Some t  ->    
     let v = t.value in     
     if x = v then  v

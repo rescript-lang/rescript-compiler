@@ -390,7 +390,15 @@ function addone(x) {
 
 function makeMatrixExn(sx, sy, init) {
   if (!(sx >= 0 && sy >= 0)) {
-    throw new Error("File \"bs_array_test.ml\", line 109, characters 4-10");
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "bs_array_test.ml",
+            109,
+            2
+          ],
+          Error: new Error()
+        };
   }
   var res = new Array(sx);
   for(var x = 0; x < sx; ++x){

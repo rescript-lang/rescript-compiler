@@ -92,7 +92,7 @@ let head x =
 
 let headExn x =
   match x with
-  | [] -> [%assert "headExn"]
+  | [] -> raise Not_found
   | x::_ -> x
 
 let tail x =
@@ -102,7 +102,7 @@ let tail x =
 
 let tailExn x =
   match x with
-  | [] -> [%assert "tailExn"]
+  | [] -> raise Not_found
   | _::t -> t
 
 let add xs x  = x :: xs
@@ -116,14 +116,14 @@ let rec nthAux x n =
 let rec nthAuxAssert x n =
   match x with
   | h::t -> if n = 0 then h else nthAuxAssert t (n - 1)
-  | _ -> [%assert "getExn"]
+  | _ -> raise Not_found
 
 let get x n =
   if n < 0 then None
   else nthAux x n
 
 let getExn x n =
-  if n < 0 then [%assert "getExn"]
+  if n < 0 then raise Not_found
   else nthAuxAssert x n
 
 let rec partitionAux p cell precX precY =
@@ -447,22 +447,7 @@ let shuffle xs =
    2. raise JS exception, how to pattern match
 *)
 
-(* let fromJson j f =    *)
-(*   match J.decodeArray j with  *)
-(*   | Some arr ->      *)
-(*     let len = Belt_Array.length arr in  *)
-(*     if len = 0 then [] *)
-(*     else  *)
-(*       let head = (mutableCell (f (A.getUnsafe arr 0) [@bs]) []) in  *)
-(*       let cell = ref head in    *)
-(*       for i = 1 to len - 1 do    *)
-(*         let next = mutableCell (f (A.getUnsafe arr i) [@bs]) [] in  *)
-(*         unsafeMutateTail.unsafeMutateTail !cell next ; *)
-(*         cell .contents<- next  *)
-(*       done ; *)
-(*       head *)
-(*   | None -> *)
-(*     [%assert "Not array when decoding list"] *)
+
 
 let rec reverseConcat l1 l2 =
   match l1 with
