@@ -1,12 +1,12 @@
-# ReScript New Syntax ![Tests](https://github.com/BuckleScript/syntax/workflows/CI/badge.svg)
+# ReScript Syntax ![Tests](https://github.com/BuckleScript/syntax/workflows/CI/badge.svg)
 
 Blog post: https://reasonml.org/blog/bucklescript-8-1-new-syntax
 
 Documentation: https://reasonml.org/docs/reason-compiler/latest/new-bucklescript-syntax
 
-This repo is the source of truth for the new ReScript parser & printer. Issues go here.
+This repo is the source of truth for the ReScript parser & printer. Issues go here.
 
-**You don't need this repo to use the new syntax**. This comes with BuckleScript 8.1. This repo is for syntax contributors.
+**You don't need this repo to use the ReScript syntax**. This comes with BuckleScript 8.1. This repo is for syntax contributors.
 
 ## Contribute
 
