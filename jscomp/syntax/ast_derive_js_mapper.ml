@@ -165,12 +165,9 @@ let raiseWhenNotFound x =
         txt = Longident.Ldot (jsMapperRt,"raiseWhenNotFound")})
   x
 let assertExp e = 
-  Exp.extension 
-    ({Asttypes.loc = noloc; txt = "assert"},
-     (PStr 
-        [Str.eval e ]
-     )
-    )
+  Exp.assert_
+    e
+        
 let derivingName = "jsConverter"
 
 (* let notApplicable loc = 

@@ -529,7 +529,7 @@ let rec getUndefined (n : _ t) x ~cmp  =
 
 let rec getExn  (n : _ t) x ~cmp =
   match n with
-    None -> [%assert "getExn0"]
+    None -> raise Not_found
   | Some t (* Node(l, v, r, _) *) ->
     let v = t.value in
     let c = (Belt_Id.getCmpInternal cmp) x v [@bs] in

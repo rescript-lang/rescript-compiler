@@ -88,65 +88,6 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
           Location.raise_errorf 
             ~loc "expect a boolean expression in the payload"
       )
-    | "bs.assert" | "assert" ->
-      (
-        match payload with 
-        | PStr [ {pstr_desc = Pstr_eval( e,_)}] -> 
-
-          let locString = 
-            if loc.loc_ghost then 
-              "ASSERT FAILURE"
-            else 
-              let loc_start = loc.loc_start in 
-              let (file, lnum, cnum) = Location.get_pos_info loc_start in
-              let file = Filename.basename file in 
-              let enum = 
-                loc.Location.loc_end.Lexing.pos_cnum -
-                loc_start.Lexing.pos_cnum + cnum in
-              Printf.sprintf "File %S, line %d, characters %d-%d"
-                file lnum cnum enum in   
-          let raiseWithString  locString =      
-              Ast_compatible.app1 ~loc 
-               (Exp.ident ~loc {loc; txt = 
-                                       Ldot(Ldot (Lident "Js","Exn"),"raiseError")})               
-                (Ast_compatible.const_exp_string locString)               
-          in 
-          (match e.pexp_desc with
-           | Pexp_construct({txt = Lident "false"},None) -> 
-             (* The backend will convert [assert false] into a nop later *)
-             if !Clflags.no_assert_false  then 
-               Exp.assert_ ~loc 
-                 (Exp.construct ~loc {txt = Lident "false";loc} None)
-             else 
-               (raiseWithString locString)
-           | Pexp_constant (
-    Pconst_string
-              (r, _)) -> 
-             if !Clflags.noassert then 
-               Exp.assert_ ~loc (Exp.construct ~loc {txt = Lident "true"; loc} None)
-               (* Need special handling to make it type check*)
-             else   
-               raiseWithString r
-           | _ ->    
-             let e = self.expr self  e in 
-             if !Clflags.noassert then 
-               (* pass down so that it still type check, but the backend will
-                  make it a nop
-               *)
-               Exp.assert_ ~loc e
-             else 
-               Exp.ifthenelse ~loc
-                 (Ast_compatible.app1 ~loc
-                    (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
-                    e
-                 )
-                 (raiseWithString locString)
-                 None
-          )
-        | _ -> 
-          Location.raise_errorf 
-            ~loc "expect a boolean expression in the payload"
-      )
     | "bs.node" | "node" ->
       let strip s =
         match s with 
