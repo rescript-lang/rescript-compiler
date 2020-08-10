@@ -370,7 +370,7 @@ let rec checkInvariantInternal (v : _ t) =
   | Some n ->
     let l,r = n.left , n.right in
     let diff = treeHeight l - treeHeight r  in
-    [%assert diff <=2 && diff >= -2 ];
+    assert (diff <=2 && diff >= -2 );
     checkInvariantInternal l;
     checkInvariantInternal r
 

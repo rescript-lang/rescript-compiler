@@ -287,7 +287,7 @@ let rec checkInvariantInternal (v : _ t) =
   | Some n ->
     let {left = l; right = r} = n   in
     let diff = height l - height r  in
-    [%assert diff <=2 && diff >= -2];
+    assert (diff <=2 && diff >= -2);
     checkInvariantInternal l;
     checkInvariantInternal r
 
