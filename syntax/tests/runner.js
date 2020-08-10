@@ -2,7 +2,7 @@ let path = require("path");
 let fs = require("fs");
 let cp = require("child_process");
 
-let parser = path.join(process.cwd(), "./lib/napkinscript.exe");
+let parser = path.join(process.cwd(), "./lib/rescript.exe");
 
 let refmt = path.join(process.cwd(), "lib", "refmt.exe");
 
@@ -29,7 +29,7 @@ function classifyLang(filename) {
       return "ocaml";
     }
   }
-  return "napkinscript";
+  return "rescript";
 }
 
 function isInterface(filename) {
@@ -52,7 +52,7 @@ function parseOcamlFileToNapkin(filename) {
     "-parse",
     "ml",
     "-print",
-    "ns",
+    "res",
     filename,
   ]);
   return stdout.toString();
@@ -84,7 +84,7 @@ function parseReasonFileToSexp(filename) {
 function parseNapkinFileToSexp(filename) {
   let { stdout } = cp.spawnSync(parser, [
     "-parse",
-    "ns",
+    "res",
     "-print",
     "sexp",
     filename,
@@ -110,7 +110,7 @@ function parseFileToSexp(filename) {
 function parseReasonFileToNapkin(filename, width = 100) {
   let intf = isInterface(filename);
   let reasonBinary = parseBinaryReason(filename);
-  let args = ["-parse", "reasonBinary", "-print", "ns", "-width", width.toString()];
+  let args = ["-parse", "reasonBinary", "-print", "res", "-width", width.toString()];
 
   if (intf) {
     args.push("-interface");
@@ -122,7 +122,7 @@ function parseReasonFileToNapkin(filename, width = 100) {
 }
 
 function parseNapkinStdinToSexp(src, isInterface) {
-  let args = ["-parse", "ns", "-print", "sexp"];
+  let args = ["-parse", "res", "-print", "sexp"];
   if (isInterface) {
     args.push("-interface");
   }
@@ -134,7 +134,7 @@ function parseNapkinStdinToSexp(src, isInterface) {
 }
 
 function parseNapkinStdinToNapkin(src, isInterface, width = 100) {
-  let args = ["-parse", "ns", "-print", "ns", "-width", width];
+  let args = ["-parse", "res", "-print", "res", "-width", width];
   if (isInterface) {
     args.push("-interface");
   }
@@ -157,15 +157,15 @@ function printFile(filename) {
       return parseReasonFileToNapkin(filename, 80);
       break;
 
-    case "napkinscript":
+    case "rescript":
     default:
-      parserSrc = "ns";
+      parserSrc = "res";
       break;
   }
 
   let intf = isInterface(filename);
 
-  let args = ["-parse", parserSrc, "-print", "ns", "-width", "80"];
+  let args = ["-parse", parserSrc, "-print", "res", "-width", "80"];
 
   if (intf) {
     args.push("-interface");

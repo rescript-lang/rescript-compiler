@@ -1,5 +1,5 @@
-module Comment = Napkin_comment
-module Doc = Napkin_doc
+module Comment = Res_comment
+module Doc = Res_doc
 
 type t = {
   leading: (Location.t, Comment.t list) Hashtbl.t;
@@ -1135,7 +1135,7 @@ let rec walkStructure s t comments =
       walkModExpr modExpr t inside;
       attach t.trailing modExpr.pmod_loc after
     | Pexp_match (expr1, [case; elseBranch])
-      when Napkin_parsetree_viewer.hasIfLetAttribute expr.pexp_attributes ->
+      when Res_parsetree_viewer.hasIfLetAttribute expr.pexp_attributes ->
       let (before, inside, after) = partitionByLoc comments case.pc_lhs.ppat_loc in
       attach t.leading case.pc_lhs.ppat_loc before;
       walkPattern case.pc_lhs t inside;

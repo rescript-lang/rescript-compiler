@@ -1,4 +1,4 @@
-module Token = Napkin_token
+module Token = Res_token
 
 type t =
   | OpenDescription (* open Belt *)

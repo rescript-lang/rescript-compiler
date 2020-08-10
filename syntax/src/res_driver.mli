@@ -4,7 +4,7 @@ type ('ast, 'diagnostics) parseResult = {
   parsetree: 'ast;
   diagnostics: 'diagnostics;
   invalid: bool;
-  comments: Napkin_comment.t list
+  comments: Res_comment.t list
 }
 
 type ('diagnostics) parsingEngine = {
@@ -21,22 +21,22 @@ type printEngine = {
   printImplementation:
     width: int
     -> filename: string
-    -> comments: Napkin_comment.t list
+    -> comments: Res_comment.t list
     -> Parsetree.structure
     -> unit;
   printInterface:
     width: int
     -> filename: string
-    -> comments: Napkin_comment.t list
+    -> comments: Res_comment.t list
     -> Parsetree.signature
     -> unit;
 }
 
-val parsingEngine: (Napkin_diagnostics.t list) parsingEngine
+val parsingEngine: (Res_diagnostics.t list) parsingEngine
 
 val printEngine: printEngine
 
-(* Napkin implementation parsing compatible with ocaml pparse driver. Used by the compiler. *)
+(* ReScript implementation parsing compatible with ocaml pparse driver. Used by the compiler. *)
 val parse_implementation:
    string -> Parsetree.structure
 [@@live]

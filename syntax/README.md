@@ -1,10 +1,10 @@
-# BuckleScript New Syntax ![Tests](https://github.com/BuckleScript/syntax/workflows/CI/badge.svg)
+# ReScript New Syntax ![Tests](https://github.com/BuckleScript/syntax/workflows/CI/badge.svg)
 
 Blog post: https://reasonml.org/blog/bucklescript-8-1-new-syntax
 
 Documentation: https://reasonml.org/docs/reason-compiler/latest/new-bucklescript-syntax
 
-This repo is the source of truth for the new BuckleScript parser & printer. Issues go here.
+This repo is the source of truth for the new ReScript parser & printer. Issues go here.
 
 **You don't need this repo to use the new syntax**. This comes with BuckleScript 8.1. This repo is for syntax contributors.
 
@@ -38,7 +38,7 @@ npm install
 make # or: make -j9 for faster build
 ```
 
-This will produce the final binary `lib/napkinscript.exe`. "NapkinScript" is the placeholder name for the syntax. We'll change this later to avoid confusion.
+This will produce the final binary `lib/rescript.exe` used for testing
 
 First build is super slow because we're also building our vendored `refmt` (only used for the conversion tool). Subsequent builds should be <2s. If not, please file an issue (build speed is a priority).
 
@@ -67,10 +67,10 @@ Update jest snapshots:
 Debug a file:
 ```sh
 # write code in test.js
-./lib/napkinscript.exe -print ns test.js # test printer
-./lib/napkinscript.exe -print ast test.js # print ast
-./lib/napkinscript.exe -print ml test.js # show ocaml code
-./lib/napkinscript.exe -print ns -width 80 test.js # test printer and change default print width
+./lib/rescript.exe test.js # test printer
+./lib/rescript.exe -print ast test.js # print ast
+./lib/rescript.exe -print ml test.js # show ocaml code
+./lib/rescript.exe -print res -width 80 test.js # test printer and change default print width
 ```
 
 Benchmark:
@@ -87,16 +87,16 @@ make bench
 In a random project of yours:
 
 ```sh
-node_modules/.bin/bsrefmt --print=binary myFile.re | your/path/to/napkinscript.exe -parse reasonBinary -print ns > myFile.res
-node_modules/.bin/bsrefmt --print=binary --interface=true myFile.rei | your/path/to/napkinscript.exe -parse reasonBinary -print ns -interface > myFile.resi
+node_modules/.bin/bsrefmt --print=binary myFile.re | your/path/to/rescript.exe -parse reasonBinary -print ns > myFile.res
+node_modules/.bin/bsrefmt --print=binary --interface=true myFile.rei | your/path/to/rescript.exe -parse reasonBinary -print ns -interface > myFile.resi
 mv myFile.re myFile.re.backup # random backup name. Could be anything
 ```
 
 ### Example API usage
 
 ```
-module Parser = NapkinscriptCore.Parser
-module Diagnostics = NapkinscriptCore.Diagnostics
+module Parser = ResCore.Parser
+module Diagnostics = ResCore.Diagnostics
 
 let filename = "foo.res"
 let src = FS.readFile filename
@@ -107,8 +107,8 @@ let p =
   (* if you want to target the printer use: let mode = Parser.Default in*)
   Parser.make ~mode src filename
 
-let structure = NapkinscriptParser.parseImplementation p
-let signature = NapkinscriptParser.parseInterface p
+let structure = ResParser.parseImplementation p
+let signature = ResParser.parseInterface p
 
 let () = match p.Parser.diagnostics with
 | [] -> () (* no problems *)

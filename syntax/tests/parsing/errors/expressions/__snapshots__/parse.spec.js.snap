@@ -90,11 +90,11 @@ let findThreadByIdLinearScan ~threads:((threads)[@ns.namedArgLoc ])
   [@ns.braces ])
 let x = ((loop 0 (Nil |. (push doc)))[@ns.braces ])
 ;;match stack with
-  | Empty -> [%napkinscript.exprhole ]
+  | Empty -> [%rescript.exprhole ]
   | Cons (doc, rest) -> ()
   | Join (doc1, doc2) -> (buffer |. (Buffer.add_string indentation); loop ())
 let pipeline =
-  match scheduler with | Some -> [%napkinscript.exprhole ] | None -> ()
+  match scheduler with | Some -> [%rescript.exprhole ] | None -> ()
 =====Errors=============================================
 
   Syntax error!
@@ -305,7 +305,7 @@ switch result {
 
 exports[`misc.js 1`] = `
 "=====Parsetree==========================================
-let x = ([%napkinscript.exprhole ]) + 1
+let x = ([%rescript.exprhole ]) + 1
 =====Errors=============================================
 
   Syntax error!
@@ -323,7 +323,7 @@ exports[`record.js 1`] = `
 "=====Parsetree==========================================
 let newWrapper = { updateF; value = (f xWrapper.currentValue) }
 let newWrapper = { updateF; updateF2; value = (f xWrapper.currentValue) }
-let record = { field = ([%napkinscript.exprhole ]) }
+let record = { field = ([%rescript.exprhole ]) }
 =====Errors=============================================
 
   Syntax error!
@@ -365,8 +365,7 @@ let record = { field = ([%napkinscript.exprhole ]) }
 exports[`setField.js 1`] = `
 "=====Parsetree==========================================
 ;;if match
-  then
-    let a = 1 in (m.left).compatibleTypeArgs <- ([%napkinscript.exprhole ])
+  then let a = 1 in (m.left).compatibleTypeArgs <- ([%rescript.exprhole ])
   else sideEffect ()
 =====Errors=============================================
 

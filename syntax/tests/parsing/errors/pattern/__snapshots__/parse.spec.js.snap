@@ -2,9 +2,9 @@
 
 exports[`missing.res 1`] = `
 "=====Parsetree==========================================
-let 2 = [%napkinscript.exprhole ]
-let 4 = for [%napkinscript.patternhole ] = 0 to 10 do Js.log \\"for\\" done
-;;match x with | () -> [%napkinscript.exprhole ]
+let 2 = [%rescript.exprhole ]
+let 4 = for [%rescript.patternhole ] = 0 to 10 do Js.log \\"for\\" done
+;;match x with | () -> [%rescript.exprhole ]
 =====Errors=============================================
 
   Syntax error!

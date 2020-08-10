@@ -1,5 +1,5 @@
-module Comment = Napkin_comment
-module CharacterCodes = Napkin_character_codes
+module Comment = Res_comment
+module CharacterCodes = Res_character_codes
 
 type t =
   | Open

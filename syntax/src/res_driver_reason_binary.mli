@@ -2,6 +2,6 @@
 
 (* extracts comments and the original string data from a reason file *)
 val extractConcreteSyntax :
-  string -> Napkin_token.Comment.t list * (string * Location.t) list
+  string -> Res_token.Comment.t list * (string * Location.t) list
 
-val parsingEngine : unit Napkin_driver.parsingEngine
+val parsingEngine : unit Res_driver.parsingEngine

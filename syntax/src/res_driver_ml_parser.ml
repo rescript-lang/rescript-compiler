@@ -1,5 +1,5 @@
 module OcamlParser = Parser
-module IO = Napkin_io
+module IO = Res_io
 
 let setup ~filename =
   if String.length filename > 0 then (
@@ -20,7 +20,7 @@ let extractOcamlConcreteSyntax filename =
     let token = Lexer.token_with_comments lexbuf in
     match token with
     | OcamlParser.COMMENT (txt, loc) ->
-      let comment = Napkin_comment.fromOcamlComment
+      let comment = Res_comment.fromOcamlComment
         ~loc
         ~prevTokEndPos
         ~txt
@@ -47,13 +47,13 @@ let extractOcamlConcreteSyntax filename =
   (List.rev !stringLocs, List.rev !commentData)
 
 let parsingEngine = {
-  Napkin_driver.parseImplementation = begin fun ~forPrinter:_ ~filename ->
+  Res_driver.parseImplementation = begin fun ~forPrinter:_ ~filename ->
     let lexbuf = setup ~filename in
     let (stringData, comments) = extractOcamlConcreteSyntax !Location.input_name in
     let structure =
       Parse.implementation lexbuf
-      |> Napkin_ast_conversion.replaceStringLiteralStructure stringData
-      |> Napkin_ast_conversion.structure
+      |> Res_ast_conversion.replaceStringLiteralStructure stringData
+      |> Res_ast_conversion.structure
     in {
       filename = !Location.input_name;
       source = Bytes.to_string lexbuf.lex_buffer;
@@ -68,8 +68,8 @@ let parsingEngine = {
     let (stringData, comments) = extractOcamlConcreteSyntax !Location.input_name in
     let signature =
       Parse.interface lexbuf
-      |> Napkin_ast_conversion.replaceStringLiteralSignature stringData
-      |> Napkin_ast_conversion.signature
+      |> Res_ast_conversion.replaceStringLiteralSignature stringData
+      |> Res_ast_conversion.signature
     in {
       filename = !Location.input_name;
       source = Bytes.to_string lexbuf.lex_buffer;
@@ -82,7 +82,7 @@ let parsingEngine = {
   stringOfDiagnostics = begin fun ~source:_ ~filename:_ _diagnostics -> () end;
 }
 
-let printEngine = Napkin_driver.{
+let printEngine = Res_driver.{
   printImplementation = begin fun ~width:_ ~filename:_ ~comments:_ structure ->
     Pprintast.structure Format.std_formatter structure
   end;

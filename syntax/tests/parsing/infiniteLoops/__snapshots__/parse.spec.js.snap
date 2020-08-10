@@ -169,7 +169,7 @@ type nonrec action =
 ;;((string ~children:[] ())[@JSX ])
 let (a : action) = AddUser \\"test\\"
 ;;etype
-;;s = { x = ((list < i) > ([%napkinscript.exprhole ])) }
+;;s = { x = ((list < i) > ([%rescript.exprhole ])) }
 =====Errors=============================================
 
   Syntax error!
@@ -202,7 +202,7 @@ include
           {
           mutable size: int ;
           mutable root: 'value node option ;
-          compare: [ [%napkinscript.typehole ]] Js.Internal.fn }
+          compare: [ [%rescript.typehole ]] Js.Internal.fn }
         ;;{js|Arity_2('value, 'value)], int),
                       };
                     }: {
@@ -249,7 +249,7 @@ include
             [@ocaml.deprecated ])|]
         ;;[|((1)[@internal.arity ])|]
         external compare :
-          'value t -> [ [%napkinscript.typehole ]] Js.Internal.fn
+          'value t -> [ [%rescript.typehole ]] Js.Internal.fn
         ;;{js|Arity_2('value, 'value)], int) =
             \\"\\"
             \\"BS:6.0.1\\\\132\\\\149\\\\166\\\\190\\\\000\\\\000\\\\000\\\\019\\\\000\\\\000\\\\000\\\\007\\\\000\\\\000\\\\000\\\\020\\\\000\\\\000\\\\000\\\\019\\\\176\\\\160\\\\160A\\\\145@@A\\\\152\\\\160'compare@\\";
@@ -262,8 +262,8 @@ include
         ;;\\"BS:6.0.1\\\\132\\\\149\\\\166\\\\190\\\\000\\\\000\\\\000\\\\019\\\\000\\\\000\\\\000\\\\007\\\\000\\\\000\\\\000\\\\020\\\\000\\\\000\\\\000\\\\019\\\\176\\\\160\\\\160A\\\\145@@A\\\\152\\\\160'compare@\\"
       end
     let has rbt value = (_findNode rbt (rootGet rbt) value) != None
-    let rec minNode node = [%napkinscript.exprhole ]
-    let findMin rbt = [%napkinscript.exprhole ]
+    let rec minNode node = [%rescript.exprhole ]
+    let findMin rbt = [%rescript.exprhole ]
     let removeNode rbt node =
       ((let nodeToRemove =
           match ((leftGet node), (rightGet node)) with

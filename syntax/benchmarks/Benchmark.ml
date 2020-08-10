@@ -1,8 +1,8 @@
-module NapkinscriptParser = Napkin_core
-module Doc = Napkin_doc
-module CommentTable = Napkin_comments_table
-module Parser = Napkin_parser
-module Printer = Napkin_printer
+module ResParser = Res_core
+module Doc = Res_doc
+module CommentTable = Res_comments_table
+module Parser = Res_parser
+module Printer = Res_printer
 
 module IO: sig
   val readFile: string -> string
@@ -220,10 +220,10 @@ end = struct
    | Print -> "printer"
 
   (* TODO: we could at Reason here *)
-  type lang = Ocaml | Napkin | Reason
+  type lang = Ocaml | Rescript | Reason
   let string_of_lang lang = match lang with
     | Ocaml -> "ocaml"
-    | Napkin -> "napkinscript"
+    | Rescript -> "rescript"
     | Reason -> "reason"
 
   let parseOcaml src filename =
@@ -237,9 +237,9 @@ end = struct
     Location.init lexbuf filename;
     Refmt_main3b.Reason_toolchain_reason.implementation reasonLexer
 
-  let parseNapkin src filename =
+  let parseRescript src filename =
     let p = Parser.make src filename in
-    let structure = NapkinscriptParser.parseImplementation p in
+    let structure = ResParser.parseImplementation p in
     assert(p.diagnostics == []);
     structure
 
@@ -249,8 +249,8 @@ end = struct
       filename ^ " " ^ (string_of_lang lang) ^ " " ^ (string_of_action action)
     in
     let benchmarkFn = match (lang, action) with
-    | (Napkin, Parse) -> (fun _ ->
-        let _ = Sys.opaque_identity (parseNapkin src filename) in ()
+    | (Rescript, Parse) -> (fun _ ->
+        let _ = Sys.opaque_identity (parseRescript src filename) in ()
       )
     | (Ocaml, Parse) -> (fun _ ->
         let _ = Sys.opaque_identity (parseOcaml src filename) in ()
@@ -258,9 +258,9 @@ end = struct
     | (Reason, Parse) -> (fun _ ->
         let _ = Sys.opaque_identity (parseReason src filename) in ()
       )
-    | (Napkin, Print) ->
+    | (Rescript, Print) ->
       let p = Parser.make src filename in
-      let ast = NapkinscriptParser.parseImplementation p in
+      let ast = ResParser.parseImplementation p in
       (fun _ ->
         let _ = Sys.opaque_identity (
           let cmtTbl = CommentTable.make () in
@@ -276,19 +276,19 @@ end = struct
     Benchmark.report b
 
   let run () =
-    benchmark "./benchmarks/data/RedBlackTree.res" Napkin Parse;
+    benchmark "./benchmarks/data/RedBlackTree.res" Rescript Parse;
     benchmark "./benchmarks/data/RedBlackTree.ml" Ocaml Parse;
     benchmark "./benchmarks/data/RedBlackTree.re" Reason Parse;
-    benchmark "./benchmarks/data/RedBlackTree.res" Napkin Print;
-    benchmark "./benchmarks/data/RedBlackTreeNoComments.res" Napkin Print;
-    benchmark "./benchmarks/data/Napkinscript.res" Napkin Parse;
+    benchmark "./benchmarks/data/RedBlackTree.res" Rescript Print;
+    benchmark "./benchmarks/data/RedBlackTreeNoComments.res" Rescript Print;
+    benchmark "./benchmarks/data/Napkinscript.res" Rescript Parse;
     benchmark "./benchmarks/data/Napkinscript.ml" Ocaml Parse;
     benchmark "./benchmarks/data/Napkinscript.re" Reason Parse;
-    benchmark "./benchmarks/data/Napkinscript.res" Napkin Print;
-    benchmark "./benchmarks/data/HeroGraphic.res" Napkin Parse;
+    benchmark "./benchmarks/data/Napkinscript.res" Rescript Print;
+    benchmark "./benchmarks/data/HeroGraphic.res" Rescript Parse;
     benchmark "./benchmarks/data/HeroGraphic.ml" Ocaml Parse;
     benchmark "./benchmarks/data/HeroGraphic.re" Reason Parse;
-    benchmark "./benchmarks/data/HeroGraphic.res" Napkin Print;
+    benchmark "./benchmarks/data/HeroGraphic.res" Rescript Print;
 end
 
 let () = Benchmarks.run()

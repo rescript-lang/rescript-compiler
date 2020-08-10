@@ -1,7 +1,7 @@
-module CharacterCodes = Napkin_character_codes
-module Diagnostics = Napkin_diagnostics
-module Token = Napkin_token
-module Comment = Napkin_comment
+module CharacterCodes = Res_character_codes
+module Diagnostics = Res_diagnostics
+module Token = Res_token
+module Comment = Res_comment
 type mode = Template | Jsx | Diamond
 
 type t = {

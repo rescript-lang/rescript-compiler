@@ -157,7 +157,7 @@ module Color = struct
 end
 
 (* command line flags *)
-module NapkinClflags: sig
+module ResClflags: sig
   val recover: bool ref
   val print: string ref
   val width: int ref
@@ -179,11 +179,11 @@ end = struct
   let interface = ref false
   let report = ref "pretty"
 
-  let usage = "Usage:\n  napkinscript <options> <file>\n\n" ^
+  let usage = "Usage:\n  rescript <options> <file>\n\n" ^
   "Examples:\n" ^
-  "  napkinscript myFile.res\n" ^
-  "  napkinscript -parse ml -print ns myFile.ml\n" ^
-  "  napkinscript -parse ns -print binary -interface myFile.resi\n\n" ^
+  "  rescript myFile.res\n" ^
+  "  rescript -parse ml -print ns myFile.ml\n" ^
+  "  rescript -parse ns -print binary -interface myFile.resi\n\n" ^
   "Options are:"
 
   let spec = [
@@ -199,7 +199,7 @@ end = struct
 end
 
 module CliArgProcessor = struct
-  type backend = Parser: ('diagnostics) Napkin_driver.parsingEngine -> backend [@@unboxed]
+  type backend = Parser: ('diagnostics) Res_driver.parsingEngine -> backend [@@unboxed]
 
   let processFile ~isInterface ~width ~recover ~origin ~target ~report:_ filename =
     try
@@ -209,21 +209,21 @@ module CliArgProcessor = struct
       in
       let parsingEngine =
           match origin with
-          | "reasonBinary" -> Parser Napkin_driver_reason_binary.parsingEngine
-          | "ml" | "ocaml" -> Parser Napkin_driver_ml_parser.parsingEngine
-          | _ -> Parser Napkin_driver.parsingEngine
+          | "reasonBinary" -> Parser Res_driver_reason_binary.parsingEngine
+          | "ml" | "ocaml" -> Parser Res_driver_ml_parser.parsingEngine
+          | _ -> Parser Res_driver.parsingEngine
       in
       let printEngine =
         match target with
-        | "ml" | "ocaml" -> Napkin_driver_ml_parser.printEngine
-        | "ast" -> Napkin_ast_debugger.printEngine
-        | "sexp" -> Napkin_ast_debugger.sexpPrintEngine
-        | "binary" -> Napkin_driver_binary.printEngine
-        | _  -> Napkin_driver.printEngine
+        | "ml" | "ocaml" -> Res_driver_ml_parser.printEngine
+        | "ast" -> Res_ast_debugger.printEngine
+        | "sexp" -> Res_ast_debugger.sexpPrintEngine
+        | "binary" -> Res_driver_binary.printEngine
+        | _  -> Res_driver.printEngine
       in
 
       let forPrinter = match target with
-      | "ns" | "napkinscript" | "sexp" -> true
+      | "res" | "rescript" | "sexp" -> true
       | _ -> false
       in
 
@@ -272,26 +272,26 @@ end
 
 let () =
   if not !Sys.interactive then begin
-    NapkinClflags.parse ();
-    match !NapkinClflags.files with
+    ResClflags.parse ();
+    match !ResClflags.files with
     | [] -> (* stdin *)
       CliArgProcessor.processFile
-        ~isInterface:!NapkinClflags.interface
-        ~width:!NapkinClflags.width
-        ~recover:!NapkinClflags.recover
-        ~target:!NapkinClflags.print
-        ~origin:!NapkinClflags.origin
-        ~report:!NapkinClflags.report
+        ~isInterface:!ResClflags.interface
+        ~width:!ResClflags.width
+        ~recover:!ResClflags.recover
+        ~target:!ResClflags.print
+        ~origin:!ResClflags.origin
+        ~report:!ResClflags.report
         ""
     | files ->
       List.iter (fun filename ->
         CliArgProcessor.processFile
-          ~isInterface:!NapkinClflags.interface
-          ~width:!NapkinClflags.width
-          ~recover:!NapkinClflags.recover
-          ~target:!NapkinClflags.print
-          ~origin:!NapkinClflags.origin
-          ~report:!NapkinClflags.report
+          ~isInterface:!ResClflags.interface
+          ~width:!ResClflags.width
+          ~recover:!ResClflags.recover
+          ~target:!ResClflags.print
+          ~origin:!ResClflags.origin
+          ~report:!ResClflags.report
           filename
         ) files
 

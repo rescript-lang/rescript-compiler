@@ -1,6 +1,6 @@
-module Doc = Napkin_doc
+module Doc = Res_doc
 
-let printEngine = Napkin_driver.{
+let printEngine = Res_driver.{
   printImplementation = begin fun ~width:_ ~filename:_ ~comments:_ structure ->
     Printast.implementation Format.std_formatter structure
   end;
@@ -1222,7 +1222,7 @@ module SexpAst = struct
     let sexprs = mapEmpty ~f:attribute attrs in
     Sexp.list ((Sexp.atom "attributes")::sexprs)
 
-  let printEngine = Napkin_driver.{
+  let printEngine = Res_driver.{
     printImplementation = begin fun ~width:_ ~filename:_ ~comments:_ parsetree ->
       parsetree |> structure |> Sexp.toString |> print_string
     end;

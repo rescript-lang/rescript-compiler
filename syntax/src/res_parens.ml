@@ -1,4 +1,4 @@
-module ParsetreeViewer = Napkin_parsetree_viewer
+module ParsetreeViewer = Res_parsetree_viewer
 type kind = Parenthesized | Braced of Location.t | Nothing
 
   let expr expr =

@@ -56,10 +56,10 @@ type nonrec draw = stroke:pencil -> unit
 
 exports[`polyvariant.js 1`] = `
 "=====Parsetree==========================================
-type nonrec t = [< [%napkinscript.typehole ]]
-type nonrec t = [ s | [%napkinscript.typehole ]]
+type nonrec t = [< [%rescript.typehole ]]
+type nonrec t = [ s | [%rescript.typehole ]]
 type nonrec z = [< \`A  | \`B ]
-type t = [ [%napkinscript.typehole ] | [%napkinscript.typehole ]]
+type t = [ [%rescript.typehole ] | [%rescript.typehole ]]
 =====Errors=============================================
 
   Syntax error!
@@ -96,10 +96,9 @@ type t = [ [%napkinscript.typehole ] | [%napkinscript.typehole ]]
 
 exports[`record.res 1`] = `
 "=====Parsetree==========================================
-type nonrec observation =
-  {
+type nonrec observation = {
   observed: int ;
-  observer: [%napkinscript.typehole ] }
+  observer: [%rescript.typehole ] }
 =====Errors=============================================
 
   Syntax error!
@@ -119,8 +118,8 @@ exports[`typeDef.js 1`] = `
 "=====Parsetree==========================================
 type stack =
   | Empty 
-type nonrec t = [%napkinscript.typehole ]
-type nonrec state = [%napkinscript.typehole ]
+type nonrec t = [%rescript.typehole ]
+type nonrec state = [%rescript.typehole ]
 =====Errors=============================================
 
   Syntax error!

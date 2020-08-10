@@ -7,8 +7,8 @@
  *
  * In general it represent messages to show results or errors to the user. *)
 
-module Doc = Napkin_doc
-module Token = Napkin_token
+module Doc = Res_doc
+module Token = Res_token
 
 type identifierStyle =
   | ExoticIdent
@@ -49,7 +49,7 @@ let printIdentLike ~allowUident txt =
     ]
   | NormalIdent -> Doc.text txt
 
-  (* Napkin doesn't have parenthesized identifiers.
+  (* ReScript doesn't have parenthesized identifiers.
    * We don't support custom operators. *)
    let parenthesized_ident _name = true
 

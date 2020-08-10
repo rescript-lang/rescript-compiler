@@ -6,13 +6,12 @@ node_modules
 *.cm*
 *.o
 lib/bs
-lib/napkinscript.exe
+lib/rescript.exe
 lib/refmt.exe
 lib/test.exe
 lib/bench.exe
-Napkinscript2.ml
-./lib/napkinscript2.exe
-./lib/Napkinscript.ml
-lib/napkinscript.ml
+Rescript2.ml
+./lib/rescript2.exe
+lib/Rescript.ml
 .vscode/settings.json
  # each person has its own preferences

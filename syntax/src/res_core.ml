@@ -1,12 +1,12 @@
-module Doc = Napkin_doc
-module Grammar = Napkin_grammar
-module Token = Napkin_token
-module Diagnostics = Napkin_diagnostics
-module CommentTable = Napkin_comments_table
-module NapkinscriptPrinter =  Napkin_printer
-module Scanner = Napkin_scanner
-module JsFfi = Napkin_js_ffi
-module Parser = Napkin_parser
+module Doc = Res_doc
+module Grammar = Res_grammar
+module Token = Res_token
+module Diagnostics = Res_diagnostics
+module CommentTable = Res_comments_table
+module ResPrinter =  Res_printer
+module Scanner = Res_scanner
+module JsFfi = Res_js_ffi
+module Parser = Res_parser
 
 let mkLoc startLoc endLoc = Location.{
   loc_start = startLoc;
@@ -18,15 +18,15 @@ module Recover = struct
   (* type action = unit option None is abort, Some () is retry *)
 
   let defaultExpr () =
-    let id = Location.mknoloc "napkinscript.exprhole" in
+    let id = Location.mknoloc "rescript.exprhole" in
     Ast_helper.Exp.mk (Pexp_extension (id, PStr []))
 
   let defaultType () =
-    let id = Location.mknoloc "napkinscript.typehole" in
+    let id = Location.mknoloc "rescript.typehole" in
     Ast_helper.Typ.extension (id, PStr [])
 
   let defaultPattern () =
-    let id = Location.mknoloc "napkinscript.patternhole" in
+    let id = Location.mknoloc "rescript.patternhole" in
     Ast_helper.Pat.extension (id, PStr [])
     (* Ast_helper.Pat.any  () *)
 
@@ -87,7 +87,7 @@ Solution: directly use `concat`."
       Doc.concat [
         Doc.hardLine;
         Doc.hardLine;
-        NapkinscriptPrinter.printExpression switchExpr (CommentTable.empty);
+        ResPrinter.printExpression switchExpr (CommentTable.empty);
       ]
     ] |> Doc.toString ~width:80
 
@@ -2215,10 +2215,10 @@ and overParseConstrainedOrCoercedOrArrowExpression p expr =
               Doc.concat [
                 Doc.line;
                 Doc.text "1) ";
-                NapkinscriptPrinter.printExpression arrow1 CommentTable.empty;
+                ResPrinter.printExpression arrow1 CommentTable.empty;
                 Doc.line;
                 Doc.text "2) ";
-                NapkinscriptPrinter.printExpression arrow2 CommentTable.empty;
+                ResPrinter.printExpression arrow2 CommentTable.empty;
               ]
             )
           ]
@@ -2244,7 +2244,7 @@ and overParseConstrainedOrCoercedOrArrowExpression p expr =
             Doc.indent (
               Doc.concat [
               Doc.line;
-              NapkinscriptPrinter.addParens (NapkinscriptPrinter.printExpression expr CommentTable.empty);
+              ResPrinter.addParens (ResPrinter.printExpression expr CommentTable.empty);
               ]
             )
           ]) |> Doc.toString ~width:80
@@ -2981,7 +2981,7 @@ and parseTryExpression p =
   let startPos = p.Parser.startPos in
   Parser.expect Try p;
   let expr = parseExpr ~context:WhenExpr p in
-  Parser.expect Napkin_token.catch p;
+  Parser.expect Res_token.catch p;
   Parser.expect Lbrace p;
   let cases = parsePatternMatching p in
   Parser.expect Rbrace p;
@@ -3976,7 +3976,7 @@ and parseTypeConstructorArgs ~constrName p =
             Doc.indent (
               Doc.concat [
                 Doc.line;
-                NapkinscriptPrinter.printTypExpr typ CommentTable.empty;
+                ResPrinter.printTypExpr typ CommentTable.empty;
               ]
             )
           ]
@@ -4376,8 +4376,8 @@ and parseTypeParams ~parent p =
               Doc.concat [
                 Doc.line;
                 Doc.concat [
-                  NapkinscriptPrinter.printLongident parent.Location.txt;
-                  NapkinscriptPrinter.printTypeParams params CommentTable.empty;
+                  ResPrinter.printLongident parent.Location.txt;
+                  ResPrinter.printTypeParams params CommentTable.empty;
                 ]
               ]
             )

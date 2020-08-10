@@ -106,8 +106,8 @@ let rightResource =
     (fun r -> r.account_id == ((connection.left).account).id)
 let x = ((let field = p |. parseFieldDeclaration in field)[@ns.braces ])
 let t = ((let (_, _, token) = scanner |. scan in token)[@ns.braces ])
-let (keyTable : int Belt.Map.String.t) = [%napkinscript.exprhole ]
-let foo = [%napkinscript.exprhole ]
+let (keyTable : int Belt.Map.String.t) = [%rescript.exprhole ]
+let foo = [%rescript.exprhole ]
 let (x : int) = string = y
 let x = string = y
 let (x : int1) = (int2 = 3 :> int3)
@@ -202,8 +202,8 @@ let (x : int1) = (int2 = 3 :> int3)
 
 exports[`letBindingPatternKeyword.js 1`] = `
 "=====Parsetree==========================================
-let [%napkinscript.patternhole ] = 1
-let [%napkinscript.patternhole ] = 3
+let [%rescript.patternhole ] = 1
+let [%rescript.patternhole ] = 3
 =====Errors=============================================
 
   Syntax error!

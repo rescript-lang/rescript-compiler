@@ -1,5 +1,5 @@
-module Grammar = Napkin_grammar
-module Token = Napkin_token
+module Grammar = Res_grammar
+module Token = Res_token
 
 type category =
   | Unexpected of {token: Token.t; context: (Grammar.t * Lexing.position) list}
@@ -136,7 +136,7 @@ let explain t =
     end
 
 let toString t src =
-  Napkin_diagnostics_printing_utils.Super_location.super_error_reporter
+  Res_diagnostics_printing_utils.Super_location.super_error_reporter
     Format.err_formatter
     ~src
     ~startPos:t.startPos

@@ -1,9 +1,9 @@
-module Scanner = Napkin_scanner
-module Token = Napkin_token
-module Grammar = Napkin_grammar
-module Reporting = Napkin_reporting
-module Diagnostics = Napkin_diagnostics
-module Comment = Napkin_comment
+module Scanner = Res_scanner
+module Token = Res_token
+module Grammar = Res_grammar
+module Reporting = Res_reporting
+module Diagnostics = Res_diagnostics
+module Comment = Res_comment
 
 type mode = ParseForTypeChecker | Default
 

@@ -1,4 +1,4 @@
-let printEngine = Napkin_driver.{
+let printEngine = Res_driver.{
   printImplementation = begin fun ~width:_ ~filename ~comments:_ structure ->
     output_string stdout Config.ast_impl_magic_number;
     output_value stdout filename;

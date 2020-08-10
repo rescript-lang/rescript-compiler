@@ -8,14 +8,14 @@ module Error2 =
     type nonrec observation =
       {
       observed: int ;
-      onStep: currentValue:unit -> [%napkinscript.typehole ] }
+      onStep: currentValue:unit -> [%rescript.typehole ] }
   end
 module Error3 =
   struct
     type nonrec observation =
       {
       observed: int ;
-      onStep: currentValue:unit -> [%napkinscript.typehole ] }
+      onStep: currentValue:unit -> [%rescript.typehole ] }
   end
 =====Errors=============================================
 
@@ -55,28 +55,24 @@ module Error3 =
 exports[`bsObjSugar.js 1`] = `
 "=====Parsetree==========================================
 type nonrec state =
-  < url: [%napkinscript.typehole ]  ;protocols: string array   >  Js.t
+  < url: [%rescript.typehole ]  ;protocols: string array   >  Js.t
 type nonrec state =
-  < url: [%napkinscript.typehole ] [@attr ] ;protocols: string array   > 
-    Js.t
+  < url: [%rescript.typehole ] [@attr ] ;protocols: string array   >  Js.t
 type nonrec state =
-  <
-    url: string  ;protocols: [%napkinscript.typehole ]  ;websocket: Websocket.t
-                                                             > 
-    Js.t
+  < url: string  ;protocols: [%rescript.typehole ]  ;websocket: Websocket.t  
+    >  Js.t
 type nonrec state =
-  < url: string  ;protocols: [%napkinscript.typehole ]   >  Js.t
+  < url: string  ;protocols: [%rescript.typehole ]   >  Js.t
 type nonrec state =
-  < send: string -> [%napkinscript.typehole ] [@bs.meth ]  >  Js.t
-type nonrec state = < age: [%napkinscript.typehole ]  ;name: string   >  Js.t
+  < send: string -> [%rescript.typehole ] [@bs.meth ]  >  Js.t
+type nonrec state = < age: [%rescript.typehole ]  ;name: string   >  Js.t
 type nonrec state =
-  < age: [%napkinscript.typehole ] [@bs.set ] ;name: string   >  Js.t
-type nonrec state = < age: [%napkinscript.typehole ]   ;.. >  Js.t
-type nonrec state =
-  < age: [%napkinscript.typehole ]  ;name: string   ;.. >  Js.t
+  < age: [%rescript.typehole ] [@bs.set ] ;name: string   >  Js.t
+type nonrec state = < age: [%rescript.typehole ]   ;.. >  Js.t
+type nonrec state = < age: [%rescript.typehole ]  ;name: string   ;.. >  Js.t
 type nonrec websocket =
-  < id: [%napkinscript.typehole ]  ;channel: channelTyp   >  Js.t
-type nonrec websocket = < id: [%napkinscript.typehole ]   >  Js.t
+  < id: [%rescript.typehole ]  ;channel: channelTyp   >  Js.t
+type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
 =====Errors=============================================
 
   Syntax error!

@@ -1,5 +1,5 @@
-module Token = Napkin_token
-module Grammar = Napkin_grammar
+module Token = Res_token
+module Grammar = Res_grammar
 
 type problem =
   | Unexpected of Token.t [@live]

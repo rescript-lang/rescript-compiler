@@ -1,4 +1,4 @@
-module MiniBuffer = Napkin_minibuffer
+module MiniBuffer = Res_minibuffer
 
 type mode = Break | Flat
 

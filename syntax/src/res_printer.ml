@@ -1,9 +1,9 @@
-module Doc = Napkin_doc
-module CommentTable = Napkin_comments_table
-module  Comment = Napkin_comment
-module Token = Napkin_token
-module Parens = Napkin_parens
-module ParsetreeViewer = Napkin_parsetree_viewer
+module Doc = Res_doc
+module CommentTable = Res_comments_table
+module  Comment = Res_comment
+module Token = Res_token
+module Parens = Res_parens
+module ParsetreeViewer = Res_parsetree_viewer
 
 let addParens doc =
   Doc.group (
