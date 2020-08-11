@@ -111,10 +111,10 @@ let rewrite (map :   _ Hash_ident.t)
       (* here it makes sure that global vars are not rebound *)      
       Lam.prim ~primitive ~args:(Ext_list.map args aux) loc
     | Lglobal_module _ -> lam 
-    | Lapply {ap_func;  ap_args; ap_loc;  ap_status } ->
+    | Lapply {ap_func;  ap_args; ap_loc;  ap_status ; ap_inlined} ->
       let fn = aux ap_func in       
       let args = Ext_list.map ap_args aux in 
-      Lam.apply fn  args ap_loc ap_status
+      Lam.apply fn  args ap_loc ap_status ap_inlined
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;

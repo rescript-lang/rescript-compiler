@@ -336,10 +336,10 @@ let lambda ppf v  =
       fprintf ppf "global %a" Ident.print id
     | Lconst cst ->
       struct_const ppf cst
-    | Lapply { ap_func; ap_args; } ->
+    | Lapply { ap_func; ap_args; ap_inlined} ->
       let lams ppf args =
         List.iter (fun l -> fprintf ppf "@ %a" lam l) args in
-      fprintf ppf "@[<2>(apply@ %a%a)@]" lam ap_func lams ap_args
+      fprintf ppf "@[<2>(apply%s@ %a%a)@]" (match ap_inlined with Always_inline -> "%inlned" | _ -> "") lam ap_func lams ap_args
     | Lfunction{params; body; _} ->
       let pr_params ppf params =
           List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params

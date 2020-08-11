@@ -58,7 +58,8 @@ and apply_info = private
   { ap_func : t ; 
     ap_args : t list ; 
     ap_loc : Location.t;
-    ap_status : apply_status
+    ap_status : apply_status;
+    ap_inlined : inline_attribute
   }
 and lfunction =  {
   arity : int ; 
@@ -117,7 +118,14 @@ val var : ident -> t
 val global_module : ident -> t 
 val const : Lam_constant.t -> t
 
-val apply : t -> t list -> Location.t -> apply_status -> t
+val apply : 
+  t -> 
+  t list -> 
+  Location.t -> 
+  apply_status ->
+  inline_attribute -> 
+  t
+
 val function_ : 
   attr:function_attribute ->
   arity:int ->
