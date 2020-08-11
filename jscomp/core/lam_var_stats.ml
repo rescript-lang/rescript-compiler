@@ -55,7 +55,7 @@ type position =
   | Sink (* loop = true *)
 
 
-let update (pos : position) (v : stats) : stats =  
+let update (v : stats) (pos : position): stats =  
   match pos with 
   | Begin -> { v with times = v.times + 1}
   | Not_begin -> { top = false;  times = v.times + 1}

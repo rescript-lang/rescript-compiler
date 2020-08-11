@@ -35,4 +35,7 @@ val new_position_after_lam: Lam.t -> position -> position
 
 (** The variable used stats update depend 
     on the position of the variable*)
-val update : position -> stats -> stats 
+val update : 
+  stats ->  
+  position -> 
+  stats 
