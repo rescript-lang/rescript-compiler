@@ -340,7 +340,8 @@ let ok_to_inline_fun_when_app
   | Always_inline -> true
   | Never_inline -> false
   | Default_inline ->
-    let Lam.{body; params} = m in 
+    match m with 
+    | {body; params} -> 
     let s = size body in
     s < small_inline_size ||
     (destruct_pattern body params args) ||  
