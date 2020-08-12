@@ -3,10 +3,10 @@ name: "bspack"
 version: "1.0.0"
 maintainer: "Hongbo Zhang <bobzhang1988@gmail.com>"
 authors: "Hongbo Zhang <bobzhang1988@gmail.com>"
-homepage: "https://github.com/bucklescript/bucklescript#readme"
-bug-reports: "https://github.com/bucklescript/bucklescript/issues"
+homepage: "https://github.com/rescript-lang/rescript-compiler#readme"
+bug-reports: "https://github.com/rescript-lang/rescript-compiler/issues"
 license: "SEE LICENSE IN LICENSE"
-dev-repo: "git+https://github.com/bucklescript/bucklescript.git"
+dev-repo: "git+https://github.com/rescript-lang/rescript-compiler.git"
 build: [
   [make "bspack.exe"]
 ]

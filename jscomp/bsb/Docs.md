@@ -18,7 +18,7 @@ opam install ocp-ocamlres
 
 ## Testing a template locally
 
-Do the following setup steps to build the compiler: [build ocaml compiler](https://github.com/BuckleScript/bucklescript/blob/master/CONTRIBUTING.md#build-the-vendored-ocaml-compiler) and [build everything in dev mode](https://github.com/BuckleScript/bucklescript/blob/master/CONTRIBUTING.md#build-everything-in-dev-mode-using-vendored-compiler).
+Do the following setup steps to build the compiler: [build ocaml compiler](https://github.com/rescript-lang/rescript-compiler/blob/master/CONTRIBUTING.md#build-the-vendored-ocaml-compiler) and [build everything in dev mode](https://github.com/rescript-lang/rescript-compiler/blob/master/CONTRIBUTING.md#build-everything-in-dev-mode-using-vendored-compiler).
 
 The built binaries will end up under `lib` where you can run local `bsb`:
 
