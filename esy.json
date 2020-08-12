@@ -69,7 +69,7 @@
   "description": "bucklescript compiler for use in esy, ocaml standard libary by bucklescript and its required runtime support",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bucklescript/bucklescript.git"
+    "url": "git+https://github.com/rescript-lang/rescript-compiler.git"
   },
   "keywords": ["ocaml", "bucklescript", "stdlib", "functional programming"],
   "author": {
@@ -83,7 +83,7 @@
   ],
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/bucklescript/bucklescript/issues"
+    "url": "https://github.com/rescript-lang/rescript-compiler/issues"
   },
-  "homepage": "https://github.com/bucklescript/bucklescript#readme"
+  "homepage": "https://github.com/rescript-lang/rescript-compiler#readme"
 }
