@@ -59,7 +59,7 @@ module MakeComparable (M : sig
 struct
   type identity
   type t = M.t
-  (* see https://github.com/BuckleScript/bucklescript/pull/2589/files/5ef875b7665ee08cfdc59af368fc52bac1fe9130#r173330825 *)
+  (* see https://github.com/rescript-lang/rescript-compiler/pull/2589/files/5ef875b7665ee08cfdc59af368fc52bac1fe9130#r173330825 *)
   let cmp =
     let cmp = M.cmp in fun[@bs] a b -> cmp a b
 end

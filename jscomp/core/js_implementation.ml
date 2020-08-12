@@ -10,7 +10,7 @@
 (*                                                                     *)
 (***********************************************************************)
 
-(* adapted by bucklescript from [driver/compile.ml] for convenience    *)
+(* adapted by rescript from [driver/compile.ml] for convenience    *)
 
 open Format
 open Typedtree

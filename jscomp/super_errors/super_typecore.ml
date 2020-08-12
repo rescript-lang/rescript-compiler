@@ -60,7 +60,7 @@ end
 
 (* given type1 is foo => bar => baz(qux) and type 2 is bar => baz(qux), return Some(foo) *)
 let rec collect_missing_arguments env type1 type2 = match type1 with
-  (* why do we use Ctype.matches here? Please see https://github.com/BuckleScript/bucklescript/pull/2554 *)
+  (* why do we use Ctype.matches here? Please see https://github.com/rescript-lang/rescript-compiler/pull/2554 *)
   | {Types.desc=Tarrow (label, argtype, typ, _)} when Ctype.matches env typ type2 ->
     Some [(label, argtype)]
   | {desc=Tarrow (label, argtype, typ, _)} -> begin

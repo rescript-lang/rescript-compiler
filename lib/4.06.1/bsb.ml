@@ -17187,7 +17187,7 @@ let bsb_main_flags : (string * spec * string) array =
     "-theme", String (String_set current_theme),
     "The theme for project initialization. \n\
     default is basic:\n\
-    https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates";
+    https://github.com/rescript-lang/rescript-compiler/tree/master/jscomp/bsb/templates";
     
     "-regen", unit_set_spec force_regenerate,
     "*internal* \n\

@@ -1,4 +1,4 @@
-Hello! This is the main directory for BuckleScript. `jscomp` is just a name that mirrors OCaml's own `bytecomp` and `asmcomp` (bytecode compilation and native compilation logic respectively). For building it, please see [CONTRIBUTING.md](../CONTRIBUTING.md).
+Hello! This is the main directory for ReScript. `jscomp` is just a name that mirrors OCaml's own `bytecomp` and `asmcomp` (bytecode compilation and native compilation logic respectively). For building it, please see [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## Sub directories
 

@@ -66,12 +66,12 @@
       }
     }
   },
-  "description": "bucklescript compiler for use in esy, ocaml standard libary by bucklescript and its required runtime support",
+  "description": "ReScript compiler for use in esy, ocaml standard libary by ReScript and its required runtime support",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rescript-lang/rescript-compiler.git"
   },
-  "keywords": ["ocaml", "bucklescript", "stdlib", "functional programming"],
+  "keywords": ["ocaml", "rescript", "stdlib", "functional programming"],
   "author": {
     "name": "Hongbo Zhang"
   },
