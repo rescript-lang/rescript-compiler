@@ -1,5 +1,0 @@
-
-# Bloomberg announcing BuckleScript 1.0
-
-
-The BuckleScript announcement can be found  on  the https://www.techatbloomberg.com/blog/bucklescript-1-0-release-arrived/[Tech at Bloomberg blog]

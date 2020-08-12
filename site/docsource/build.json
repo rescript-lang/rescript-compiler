@@ -1,8 +1,0 @@
-[
-    "trigger", ".", {
-        "name": "build",
-        "expression": ["pcre", "(\\.(ml|rst|md|json|py|sh|adoc)$|bsc.exe$|Makefile)"],
-        "command": ["./build.sh"],
-        "append_files" : true
-    }
-]
