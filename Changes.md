@@ -5,11 +5,11 @@
 
 - #4580 #4581, #4582, #4463, #4583 relax bs.as to allow object literals instead of json, so FFI below is allowed:
   ```ocaml
-  external fff0 : int -> int -> (_[@bs.as {json|[undefined,undefined]|json}]) -> int = "say"    
+  external fff0 : int -> int -> (_[@bs.as {json|[undefined,undefined]|json}]) -> int = "say"
   [@@bs.val]
 
-  let testUndefined () = 
-    fff0 1 2 
+  let testUndefined () =
+    fff0 1 2
   ```
 - #4570 refine purity analysis so that object literals in raw will be considered pure
 
@@ -17,7 +17,7 @@
 - #4548 #4555 fix ghost locaption in empty array
 
 - #4540 optimize code generation for recursive modules
-- #4530 internal -color option default to always 
+- #4530 internal -color option default to always
 
 - #4569 emit a warning for use of ``( [ `a| `b] [@bs.string]) `` since it is no longer needed
 - #4531 better generated js code for belt
@@ -51,16 +51,16 @@
   ```
   A (0,1)
   ```
-  now is 
+  now is
   ```js
   { TAG : /*A*/0, _0 : 0, _1:1 }
   ```
-- #4399 remove magics in Belt.List to prepare new data representations  
+- #4399 remove magics in Belt.List to prepare new data representations
 - #4405 polyvar as objects
   ```
   A 1
-  ```  
-  now is 
+  ```
+  now is
   ```js
   {HASH:MAGIC_NUMBER, VAL:1}
   ```
@@ -83,14 +83,14 @@
 - #4390 less parens for `bs.as` json literals
 - #4245, #4385 breaking changes: enable strict-sequence, strict-formats by default
 - #4304, #4293 better code generated for string interpolation
-* Fix 
+* Fix
 
 - #4451, #4454 fix imprecise locations over pipe
 - #4442 fix gentypeconfig.language parsing
 - #4430 when cleaning generated files, use `langauge` from `gentypeconfig`
 - #4324 fix react-hooks theme name field
 
-* Libs 
+* Libs
 
 - #4443 provide a best effort generic seralization mechanism
 - #4427 better error message for non-existing module in `sources[n].public`
@@ -168,38 +168,38 @@
   ```ocaml
   let %private  x = 3
   ```
-  `x` will not be exported 
+  `x` will not be exported
   ```ocaml
   module N = struct
     let %private x = 3
   end
   ```
   `x` will not be exported by N
-- #4196 fix printing indexed operators    
+- #4196 fix printing indexed operators
 - #4177 #4180 support `[@@@bs.config {flags = [| ".." |] }]` per file level to allow file level special flags
 
 - #4158 #4157 #4166 #4168 loading stdlib from memory, no postinstall needed
-- #4152 support copyright style comments preserved in JS 
+- #4152 support copyright style comments preserved in JS
   ```
   [%%raw "//copyright ]
   ```
-  copyright will be preserved in output js 
+  copyright will be preserved in output js
 - #4191 #4189 add a flag -bs-unsafe-empty-array for easy transition (regain polymorphism for empty array), this is a temporary flag which will be removed eventually
 
 - #4190 (internal) remove bsdep which is not used
-- #4188 better encoding around internals for performance and size  
+- #4188 better encoding around internals for performance and size
 - #4155 fix React PPX regressions from 7.1.0 which caused a type error when writing recursive components.
 - #4185 remove staled tasks.json in bsb themes for vscode, leave it for users to keep it  up to date
 - #4159 #4161 #4182 improve the startup time, reducing both the size of cmi and cmj
 - #4179 (internal) remove bsppx, use "bsc.exe -as-ppx" for editor tooling
 - #4171 add a warning for using `fun%raw`, use `[%raw]` directly
-- #4169 An escape hatch for function level comments 
+- #4169 An escape hatch for function level comments
 - #4164 #4162 #4165 make code generation  platform agnostic (not depending on printf either)
 - #4164 add Node.Buffer.toStringWithEncoding
 - #4150 Grab the hostname from window.location when conntecting to websocket for react-hooks theme
 - #4143 better compilation of optional arguments
 - #4142 fix yarn start command
-- #4140 docs: update README in basic reason template 
+- #4140 docs: update README in basic reason template
 
 # 7.1.0
 (it was 7.0.2 but bumped into 7.1.0 due to a breaking  change introduced in 7.0.2)
@@ -210,7 +210,7 @@
 - #4117 Upgrade to Reason 3.6.0 @ 8f71db0
 - #4097 introduce a js parser for syntax checking inside raw.
 
-    We can now tell whether the code inside raw is a function or not and  the arity of raw function, so 
+    We can now tell whether the code inside raw is a function or not and  the arity of raw function, so
     ```ocaml
     let f = [%raw{|function(x){return x}|}]
     ```
@@ -239,18 +239,18 @@
     101 BuckleScript warning: Unused bs attributes
     102 BuckleScript warning: polymorphic comparison introduced (maybe unsafe)
     103 BuckleScript warning: about fragile FFI definitions
-    104 BuckleScript warning: bs.deriving warning with customized message 
+    104 BuckleScript warning: bs.deriving warning with customized message
     105 BuckleScript warning: the external name is inferred from val name is unsafe from refactoring when changing value name
     106 BuckleScript warning: Unimplemented primitive used:
     107 BuckleScript warning: Integer literal exceeds the range of representable integers of type int
     108 BuckleScript warning: Uninterpreted delimiters (for unicode)
     ```
-- #4060 #4057 add unboxed type support 
+- #4060 #4057 add unboxed type support
 
 - #4078, #4069 better code generated for cases like `match x with true -> ..| false -> ..`
 - #4075, #4065 allow emoji in folder name
 - #4074 allow defining a custom hostname for websocket
-- #4064 fix shake_compile prefix & code param order 
+- #4064 fix shake_compile prefix & code param order
 - #4053 use setImmediate for rebuilding to fix watch mode for some specific editors
 - #4050 support pipe first poly variant
 - #4049 Add support for custom underscored namespace
@@ -266,7 +266,7 @@
 - #4000 #4010 add react-starter theme
 - #4005 fix windows installing issues
 
-# 7.0.0 
+# 7.0.0
 - #4003 not doing ast invariant checking, leave it for bucklescript (faster compilation)
 - #4002 upgrade ocamldoc in 4.06, fix document build
 - #4001 tweak error message
@@ -274,7 +274,7 @@
 - #3998 #3996 less strict check for duplication in record labels
 - #3996 #3969 fix refmt upgrade regressions
 - #3982 bs.as for record support (language level feature)
-- #3989 #3993 check renamed label is unique when using bs.as 
+- #3989 #3993 check renamed label is unique when using bs.as
 - #3985 more precise runtime information passed down from upstream, fix a corner case of compiling ocaml class
 - #3986 more precise runtime information passed down from upstream, add module alias comments in generated code
 - #3991 #3980 fix a corner case when printing js object in statement position
@@ -313,7 +313,7 @@
 - #3959 internal, remove alias_table which is not needed
 - #3960 add test case for functor coercion
 - #3962 #3960 set env var `BSB_PROJECT_ROOT` for bsb
-- #3965 better inline heruistics 
+- #3965 better inline heruistics
 - #3966 #3897 improve module coercion code gen in strict subtyping
 Deprecations
 - #3889 remove deprecated light names in bs.deriving abstract
@@ -325,11 +325,11 @@ Fixes
 - #3884  (not using temp file when creating cmt for ocaml 4.06 only)
 - #3877, #3881 Pattern match bug over list of integers
 - #3875, #3879 regression introduced in 5.2.0 over pattern match optimization
-- #3865 consistent name mangling when compiling modules into object 
+- #3865 consistent name mangling when compiling modules into object
 - #3852, #3870 for module with all module aliases and no interface file, always make it pure (treat it the same as namespace file)
-- #3874 internal bug fix for ocaml cmpiler    
+- #3874 internal bug fix for ocaml cmpiler
 Codegen
-- #3880 optimize pattern match for (string|int) option 
+- #3880 optimize pattern match for (string|int) option
 - #3866 update react-hooks template
 - #3843 mitigate windows anti-virius issue
 
@@ -358,9 +358,9 @@ Fixes
 - #3781 #3783 quote package path properly
 - #3793 pass bs-version to genType
 - #3674 installation from master works out of box
-- #3823 fix reason language server 
+- #3823 fix reason language server
 
-Docs 
+Docs
 - #3795 Fix docs for stringifyAny
 - #3788 Rename getUnasfe to getUnsafe
 - #3830 fix isSortedExample
@@ -379,12 +379,12 @@ Features
 - #3671 add tool `bstracing` to visualize the building process
 - #3730 #3738 Code gen: simplify `return undefined` as `return`
 - #3713 support ppx with arguments (extended the schema)
-- #3708 #3701 respect NODE_PATH when resolving node modules 
+- #3708 #3701 respect NODE_PATH when resolving node modules
 
-Fixes 
+Fixes
 - #3699 Exit code from bsb in watch mode should be 0 instead of 2
 - #3692, #3693 fix "cyclic dependencies error is swallowed"
-- #3530, #3690 best effort support for shared library support 
+- #3530, #3690 best effort support for shared library support
 - #3683, #3678 Docs: fix example in Belt.Array
 - #3657, #3669 Fix "For dependencies with namespace, the namespace file is always rebuilt"
 - #3666, #3668 Fix "Ninja fails to compile on alpine linux "
@@ -396,9 +396,9 @@ Fixes
 - #3651 Fix "React PPX: Show warning 26 on unused props with default value"
 Internal
 - #3711 not inlining self recursive functions
-- #3740 enable backtrace by default for compiler in dev mode 
+- #3740 enable backtrace by default for compiler in dev mode
 - #3705 dump package path in .sourcedirs.json for troubleshooting
-- #3698 better data format for .bsdeps 
+- #3698 better data format for .bsdeps
 - #3680, #3684, #3677, #3675, #3672 better encoding for .bsbuild
 - #3673 strip the binary by default on *nix platform
 - #3658 #3545 fix a bunch of edge cases with dev build
@@ -453,7 +453,7 @@ Features
 external f : int -> int = "" [@@bs.val]
 ```
 Such ffi declaration is fragile to refactoring when changing names of `f`
-- #3587, #3571, #3568 simplify debugger mode, `debugger.chrome` is not needed to turn on debug mode 
+- #3587, #3571, #3568 simplify debugger mode, `debugger.chrome` is not needed to turn on debug mode
 
 Internals
 
@@ -463,7 +463,7 @@ Internals
 
 # 5.0.4
 Features
-- #3523, #3516 Fusing react-jsx ppx as a flag (details https://bucklescript.github.io/blog/2019/04/22/release-5-0-4)
+- #3523, #3516 Fusing react-jsx ppx as a flag
 
 Docs
 - #3522 add BS_VSCODE variable docs
@@ -474,8 +474,8 @@ Fixes
 - #3538, #3532 update docs
 - #3536, #3537 fix nesting (|.) ppx issues
 - #3519, #3535 fix external declarations that can not be generalized (uncovered by react jsx ppx v3)
-- #3534 fix commands building from ocaml.tar.gz 
-- #3527, #3525, #3504, #3500 playground upgrade 
+- #3534 fix commands building from ocaml.tar.gz
+- #3527, #3525, #3504, #3500 playground upgrade
 - #3518, #3507, #3517 not emit warnings for dependencies
 - #3515 fix on binding renameSync
 - #3508 tweak error message for syntax error
@@ -493,20 +493,20 @@ Features
 
 Fixes
 - #3455 fix polymorphic comparison and equality for js date
-- #3465 fix brutal console.clear 
+- #3465 fix brutal console.clear
 - #3468 add BS_VSCODE to disable -super-errors, which works better with vscode problem matcher
 # 5.0.0
 
 Features
-- #3418 sync up with refmt 681c491ba760cdf3b49f92297c3dab1703682808 
+- #3418 sync up with refmt 681c491ba760cdf3b49f92297c3dab1703682808
 - #3395, #3417 better gentype support (gentype.import)
 - #3412,#3416 Warning against usage of `string_of_float`
-- #3414, #3415, #2893 allow usage of ` a |. M.(f a b)` 
-- #3403 first class bs.variadic support 
+- #3414, #3415, #2893 allow usage of ` a |. M.(f a b)`
+- #3403 first class bs.variadic support
 - #3402 in watch mode, clear the screen upon rebuilding
 - #3397 add ignored-dirs support in bsconfig.json
 - #3377, #3376 add Linux prebuilt support for official release
-- #3372 add Belt.Array.getIndexBy 
+- #3372 add Belt.Array.getIndexBy
 - #3357, add `-bs-cmi-only` flag support to bsc so that no js emitted
 - #3356, #3354 add gentypeconfig support in bsconfig.json
 - #3352 fix minor mistake in Js.Dict.values doc
@@ -520,7 +520,7 @@ Fixes
 - #3393  deprecate Node.Fs.Watch.on in favor of Node.Fs.Watch.on_
 - #3315  depercate Js.Re.test, Js.Re.exec in favor of Js.Re.test_, Js.Re.exec_
 - #3386, #3387 fix a codegen in with bs.raw
-- #3386 make it more forgiving when interact with Js functions with arity 0 
+- #3386 make it more forgiving when interact with Js functions with arity 0
 - #3381 remove golang as a dev dependency
 * #3388 (breaking) Fix Js.Re.(splitbyReAtMost, splitByRe) binding
 - #3332 remove `-bs-gen-tds` from docs in favor of gentype
@@ -531,7 +531,7 @@ Features
 
 - #3229 true seperate compilation, incredible perf for incremental build
 
-Fixes 
+Fixes
 - #3226, #3223 absolute path generated in recursive module path and `assert false`
 - #3220 ppx-flags & scoped packages
 - #3214 shadowing of js Promise constructor
@@ -539,7 +539,7 @@ Fixes
 
 
 
-# 4.0.10 
+# 4.0.10
 Fixes
 - upstream a bug fix for refmt
 - Fix installation issues
@@ -555,7 +555,7 @@ Features
 - #3185 better performance in compilation, not reading runtime cmj files when not needed
 
 Code gen
-- #3134 Better arity infer when using first class module as function 
+- #3134 Better arity infer when using first class module as function
 - #3169 allow _ in bs.raw so that `fun%raw a _ -> ` works
 - #3170, #3171 better code gen for bs.raw
 - #2967 bs.variadic attribute (bs.splice still works)
@@ -569,7 +569,7 @@ Fixes
 Docs
 - #3133 Tweak Belt docs
 - #3136 Fix typo in react and react-lite tempaltes
-- #3161 improve perf of some functions in String module 
+- #3161 improve perf of some functions in String module
 
 # 4.0.7
 
@@ -577,7 +577,7 @@ Features
 - #3072 Add List.filter/WithIndex and List.keep/WithIndex
 
 Fix
-- #3084,#3083 optimization triggers exception 
+- #3084,#3083 optimization triggers exception
 - #3085 Wrong optimizer
 - #3105 A corner case of optional encoding
 
@@ -610,7 +610,7 @@ Docs
 Fixes
 - #3001 fix regressios in refmt
 - #2986 #2973 #2974 fix bsb websocket exit error
-- #2983 #2988 determinsic behavior 
+- #2983 #2988 determinsic behavior
   when NINJA_ANSI_FORCED=0 no color
   when NINJA_ANSI_FORCED=1 yes color
 
@@ -625,9 +625,9 @@ Fixes
 - #2963 fix ppx-flags quoting issue
 
 Features
-- #2951 sync up with reason 
+- #2951 sync up with reason
 - #2964 customize ninja to make output less verbose
-        Add NINJA_ANSI_FORCE env variable support so that third party tools running bsb can still preserve colors  
+        Add NINJA_ANSI_FORCE env variable support so that third party tools running bsb can still preserve colors
 - #2960 add tea theme support
 - #2959 less verbose bsb output
 - #2958 make `bsb -init` more forgiving
@@ -639,7 +639,7 @@ Fixes:
 - #2946 fix react-lite theme on Linux
 # 4.0.0
 
-Fixes: 
+Fixes:
 - #2832 fix compiler crash
 - #2837 `toFixed`, `toExponential` too strict
 - #2841 fix some inconsistency betweeen debug mode and release mode
@@ -651,22 +651,22 @@ Fixes:
 - #2921 bs.deriving label -> labelGet, the `label` accessor is deprecated
 - #2924 rename Js.Nullable.test -> Js.Nullable.isNullable
 - #2923 fix ghost location in error message
-- #2931 fix a codegen bug in optimization pattern match 
+- #2931 fix a codegen bug in optimization pattern match
 
 Features:
 
-- #2280 prettier output in debug mode (chrome custom formatter) 
+- #2280 prettier output in debug mode (chrome custom formatter)
 - #2823 add build-success hook
 ```
 bsb -make-world -w -build-success 'your_script'
 ```
-- #2856 provide websocket intergration with bsb 
+- #2856 provide websocket intergration with bsb
 - #2858 add  react-lite theme hot module reloading without webpack
 - #2873 add Belt.Array.sliceToEnd
 - #2825 Add Belt.Array.partition
 - #2882, #2885, #2886, #2889, #2890,#2894, #2896, #2897,#2898, #2900
   #2901, #2905, #2907, #2908, #2909, #2912, #2913
-  unbox optional and code optimization based on type kinds 
+  unbox optional and code optimization based on type kinds
 
 - #2910 fix optional inline regression, better codegen for optional equality
 - #2904 fix Js.Date.parse binding
@@ -717,10 +717,9 @@ Fixes:
 
 Features:
 
-- #2740, #2726 Generalized safe/cleaner embedding raw function (https://bucklescript.github.io/docs/en/interop-cheatsheet.html#generaizlied-raw-js-since-300)
+- #2740, #2726 Generalized safe/cleaner embedding raw function (https://rescript-lang.org/docs/manual/latest/embed-raw-javascript)
 
 - #2687, #2665, #2663 bs.deriving abstract type, a powerful way for idiomatic JS and FFI
-  (https://bucklescript.github.io/docs/en/generate-converters-accessors.html#abstract-type)
 
 - #2696, #2742, #2706, #2711, compile OCaml boolean as JS boolean
   Breaking change to your code path relying on `Obj.magic` and `bs.raw`
@@ -810,7 +809,6 @@ Fixes:
 Features:
 - #2282, #2280,#2272,#2271,#2270,#2262,#2260,#2255,#2253
   Automatically derive js converter between ocaml and Js values
-  see docs: https://bucklescript.github.io/bucklescript/Manual.html#_mapping_between_js_values_and_ocaml_values_since_2_1_0
 - #2238, #2225, #2221
   Make the compiler relocatable
   prebuilt compiler (this release for Mac/Win)
@@ -945,7 +943,7 @@ Fixes
 Features:
 - #1798 make `default` the same semantics as ES6 exports
 - #1785 upgrade playground
-- #1758 [generator support](https://bucklescript.github.io/bucklescript/Manual.html#_customize_rules_generators_support_since_1_7_4)
+- #1758 generator support
 - #1826 add `bsb -where` support so that bsb.exe can be located and cached in a more robust way
 
 Optimizations:
