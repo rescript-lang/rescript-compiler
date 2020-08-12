@@ -147,7 +147,7 @@ let spellcheck ppf unbound_name valid_names =
   Misc.did_you_mean ppf (fun () ->
     Misc.spellcheck valid_names unbound_name
   )
-(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
+(* taken from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
 (* modified branches are commented *)
 let report_error env ppf = function
   | Typecore.Constructor_arity_mismatch(lid, expected, provided) ->
@@ -225,7 +225,7 @@ let report_error env ppf = function
             Like this: @{<info>foo(. a, b)@}@,\
             Not like this: @{<dim>foo(a, b)@}@,@,\
             This guarantees that your function is fully applied. More info here:@,\
-            https://bucklescript.github.io/docs/en/function.html#solution-guaranteed-uncurrying@]"
+            https://rescript-lang.org/docs/manual/latest/function#uncurried-function@]"
       | _ ->
           fprintf ppf "@[<v>@[<2>This expression has type@ %a@]@ %s@]"
             type_expr typ

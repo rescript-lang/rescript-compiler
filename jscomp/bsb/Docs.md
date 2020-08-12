@@ -1,6 +1,6 @@
 # BSB
 
-Bsb is ReScript's build system. User-facing documentations are [here](https://bucklescript.github.io/docs/en/build-overview.html).
+Bsb is ReScript's build system. User-facing documentations are [here](https://rescript-lang.org/docs/manual/latest/build-overview).
 
 This directory hosts its implementation. It reads into `bsconfig.json`, uses some BS/OCaml/Reason-specific logic, and generates a [ninja](https://ninja-build.org) build file then calls `ninja` on it. So much of the incremental build and perf work is delegated to Ninja.
 

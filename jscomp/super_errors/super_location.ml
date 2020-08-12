@@ -77,7 +77,7 @@ let print ~message_kind intro ppf (loc : Location.t) =
     end
 ;;
 
-(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L380 *)
+(* taken from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L380 *)
 (* This is the error report entry point. We'll replace the default reporter with this one. *)
 let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err) =
   let highlighted =
@@ -100,7 +100,7 @@ let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err)
     (* no need to flush here; location's report_exception (which uses this ultimately) flushes *)
   end
 
-(* extracted from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L299 *)
+(* extracted from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L299 *)
 (* This is the warning report entry point. We'll replace the default printer with this one *)
 let super_warning_printer loc ppf w =
   match Warnings.report w with
@@ -116,7 +116,7 @@ let super_warning_printer loc ppf w =
       but we won't bother for now *)
 ;;
 
-(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L354 *)
+(* taken from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L354 *)
 let print_phanton_error_prefix ppf =
   (* modified from the original. We use only 2 indentations for error report
     (see super_error_reporter above) *)

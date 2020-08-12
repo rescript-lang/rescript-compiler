@@ -1,6 +1,6 @@
 let fprintf = Format.fprintf
 
-(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/driver/pparse.ml#L170 *)
+(* taken from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/driver/pparse.ml#L170 *)
 (* modified branches are commented *)
 let report_error ppf () = 
       fprintf ppf

@@ -1,5 +1,5 @@
 let fprintf = Format.fprintf
-(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/utils/warnings.ml#L251 *)
+(* taken from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/utils/warnings.ml#L251 *)
 (* actual modified message branches are commented *)
 let message (warning : Warnings.t)  =
   match warning with
