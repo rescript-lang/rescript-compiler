@@ -63,7 +63,7 @@ The extension requires using an opam switch for ocaml 4.02.3, with `merlin` and 
 
 ## Contribute to the Documentation
 
-See https://github.com/reason-association/reasonml.org/
+See https://github.com/reason-association/rescript-lang.org
 
 ## Contribute to the API Reference
 
