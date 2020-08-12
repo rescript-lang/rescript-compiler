@@ -7,7 +7,7 @@
     "watch": "bsb -make-world -w"
   },
   "keywords": [
-    "BuckleScript"
+    "rescript"
   ],
   "license": "MIT",
   "devDependencies": {
