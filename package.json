@@ -19,7 +19,7 @@
   },
   "name": "bs-platform",
   "version": "8.2.0",
-  "description": "bucklescript compiler, ocaml standard libary by bucklescript and its required runtime support",
+  "description": "ReScript compiler, OCAml standard libary by ReScript and its required runtime support",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bucklescript/bucklescript.git"

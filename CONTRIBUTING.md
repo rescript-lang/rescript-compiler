@@ -1,12 +1,12 @@
 # Contributing
 
-Thanks for your help! Due to BuckleScript's nature, the contribution setup isn't all straightforward. If something isn't working, please file an issue!
+Thanks for your help! Due to ReScript's nature, the contribution setup isn't all straightforward. If something isn't working, please file an issue!
 
 ## Prerequisites
 
 - [NodeJS](https://nodejs.org/)
 - C compiler toolchain (you probably already have it installed)
-- OS: Mac/Linux (BuckleScript works on Windows, but developing the repo using Windows isn't tested. Contribution welcome!)
+- OS: Mac/Linux (ReScript works on Windows, but developing the repo using Windows isn't tested. Contribution welcome!)
 
 ## Build
 
@@ -42,7 +42,7 @@ In the rare case there you're making changes to the vendored OCaml fork, rebuild
 
 ### Integration Test
 
-If you'd like to use your modified BuckleScript like an end-user, try:
+If you'd like to use your modified ReScript like an end-user, try:
 
 ```sh
 BS_TRAVIS_CI=1 npm install -g .
@@ -67,7 +67,7 @@ See https://github.com/reason-association/reasonml.org/
 
 ## Contribute to the API Reference
 
-The API reference is generated from doc comments in the source code. [Here](https://github.com/bucklescript/bucklescript/blob/99650/jscomp/others/js_re.mli#L146-L161)'s a good example.
+The API reference is generated from doc comments in the source code. [Here](https://github.com/rescript-lang/rescript-compiler/blob/99650/jscomp/others/js_re.mli#L146-L161)'s a good example.
 
 Some tips:
 
@@ -94,7 +94,7 @@ To generate the html:
 
 ## Contributing to the Runtime
 
-BuckleScript runtime implementation is written in pure OCaml with some raw JS code embedded (`jscomp/runtime` directory).
+Our runtime implementation is written in pure OCaml with some raw JS code embedded (`jscomp/runtime` directory).
 
 The goal is to implement the runtime **purely in OCaml**. This includes removing all existing occurrences of embedded raw JS code as well, and you can help!
 
@@ -138,11 +138,11 @@ This is usually the file you want to create to test certain compile behavior wit
 
 ## Contribute to the BS Playground Bundle
 
-> Note: These instructions are designed for building the 4.06 based version of BuckleScript (BS v6).
+> Note: These instructions are designed for building the 4.06 based version of ReScript (ReScript v6).
 
-The "BuckleScript Playground bundle" is the BS compiler compiled to JavaScript, including all necessary dependency files (stdlib / belt etc). It is useful for building tools where you want to compile and execute arbitrary Reason / OCaml in the browser.
+The "Playground bundle" is the BS compiler compiled to JavaScript, including all necessary dependency files (stdlib / belt etc). It is useful for building tools where you want to compile and execute arbitrary Reason / OCaml in the browser.
 
-The BuckleScript source code is compiled with a tool called [JSOO (js_of_ocaml)](https://ocsigen.org/js_of_ocaml/3.5.1/manual/overview), which uses OCaml bytecode to compile to JavaScript and is part of the bigger OCaml ecosystem. Before we can compile anything, we need to install the required tools (requires [`opam`](https://opam.ocaml.org/doc/Install.html) to be installed):
+The ReScript source code is compiled with a tool called [JSOO (js_of_ocaml)](https://ocsigen.org/js_of_ocaml/3.5.1/manual/overview), which uses OCaml bytecode to compile to JavaScript and is part of the bigger OCaml ecosystem. Before we can compile anything, we need to install the required tools (requires [`opam`](https://opam.ocaml.org/doc/Install.html) to be installed):
 
 ```sh
 # Create the right switch, if not created yet (first install)
@@ -163,7 +163,7 @@ The entry point of the JSOO bundle is located in `jscomp/main/jsoo_main.ml` and 
 # We create a target directory for storing the bundle / stdlib files
 mkdir playground && mkdir playground/stdlib
 
-# We build the BuckleScript source code and also the bytecode for jsoo_main.ml
+# We build the ReScript source code and also the bytecode for jsoo_main.ml
 node scripts/ninja.js config && node scripts/ninja.js build
 
 # Now we run the repl.js script pointing to our playground directory (note how it needs to be relative to the repl.js file)
@@ -174,8 +174,8 @@ _Troubleshooting: if ninja build step failed with `Error: cannot find file '+run
 
 **You should now find following files:**
 
-- `playground/exports.js` -> This is the BuckleScript compiler, which binds the BuckleScript API to the `window` object.
-- `playground/stdlib/*.js` -> All the BuckleScript runtime files.
+- `playground/exports.js` -> This is the ReScript compiler, which binds the ReScript API to the `window` object.
+- `playground/stdlib/*.js` -> All the ReScript runtime files.
 
 You can now use the `exports.js` file either directly by using a `<script src="/path/to/exports.js"/>` inside a html file, use a browser bundler infrastructure to optimize it, or you can even use it with `nodejs`:
 
@@ -206,7 +206,7 @@ For each compile every successful operation will return `{js_code: string}`. On 
 
 ### Working on the Playground JS API
 
-Whenever you are modifying any files in the BuckleScript compiler, or in the `jsoo_main.ml` file, you'll need to rebuild the source and recreate the JS bundle.
+Whenever you are modifying any files in the ReScript compiler, or in the `jsoo_main.ml` file, you'll need to rebuild the source and recreate the JS bundle.
 
 ```sh
 node scripts/ninja.js config && node scripts/ninja.js build
@@ -215,15 +215,15 @@ BS_PLAYGROUND=../playground node scripts/repl.js
 
 **.cmj files in the Web**
 
-A `.cmj` file contains compile information and JS package information of BuckleScript build artifacts (your `.re / .ml` modules) and are generated on build (`scripts/ninja.js build`).
+A `.cmj` file contains compile information and JS package information of ReScript build artifacts (your `.re / .ml` modules) and are generated on build (`scripts/ninja.js build`).
 
 A `.cmi` file is an [OCaml originated file extension](https://waleedkhan.name/blog/ocaml-file-extensions/) and contains all interface information of a certain module without any implementation.
 
 In this repo, these files usually sit right next to each compiled `.ml` / `.re` file. The structure of a `.cmj` file is defined in [js_cmj_format.ml](jscomp/core/js_cmj_format.ml). You can run a tool called `./jscomp/bin/cmjdump.exe [some-file.cmj]` to inspect the contents of given `.cmj` file.
 
-`.cmj` files are required for making BuckleScript compile modules (this includes modules like ReasonReact). BuckleScript includes a subset of modules by default, which can be found in `jscomp/stdlib-406` and `jscomp/others`. You can also find those modules listed in the `jsoo` call in `scripts/repl.js`. As you probably noticed, the generated `playground` files are all plain `.js`, so how are the `cmj` / `cmi` files embedded?
+`.cmj` files are required for making ReScript compile modules (this includes modules like ReasonReact). ReScript includes a subset of modules by default, which can be found in `jscomp/stdlib-406` and `jscomp/others`. You can also find those modules listed in the `jsoo` call in `scripts/repl.js`. As you probably noticed, the generated `playground` files are all plain `.js`, so how are the `cmj` / `cmi` files embedded?
 
-`repl.js` calls an executable called `cmjbrowser.exe` on every build, which is a compile artifact from `jscomp/main/jscmj_main.ml`. It is used to serialize `cmj` / `cmi` artifacts into two files called `jscomp/core/js_cmj_datasets.ml`. These files are only linked for the browser target, where BuckleScript doesn't have access to the filesystem. When working on BS, you'll see diffs on those files whenever there are changes on core modules, e.g. stdlib modules or when the ocaml version was changed. We usually check in these files to keep it in sync with the most recent compiler implementation. JSOO will pick up those files to encode them into the `exports.js` bundle.
+`repl.js` calls an executable called `cmjbrowser.exe` on every build, which is a compile artifact from `jscomp/main/jscmj_main.ml`. It is used to serialize `cmj` / `cmi` artifacts into two files called `jscomp/core/js_cmj_datasets.ml`. These files are only linked for the browser target, where ReScript doesn't have access to the filesystem. When working on BS, you'll see diffs on those files whenever there are changes on core modules, e.g. stdlib modules or when the ocaml version was changed. We usually check in these files to keep it in sync with the most recent compiler implementation. JSOO will pick up those files to encode them into the `exports.js` bundle.
 
 For any other dependency needed in the playground, such as `ReasonReact`, you will be required to serialize your `.cmi` / `.cmt` files accordingly from binary to hex encoded strings so that BS Playground's `ocaml.load` function can load the data. Right now we don't provide any instructions inside here yet, but [here's how the official ReasonML playground did it](https://github.com/reasonml/reasonml.github.io/blob/source/website/setupSomeArtifacts.js#L65).
 
@@ -259,7 +259,7 @@ Note that there is one design goal to keep in mind, never introduce any meaningl
 
 ## Contribution Licensing
 
-Since BuckleScript is distributed under the terms of the [LGPL Version 3](LICENSE), contributions that you make are licensed under the same terms. In order for us to be able to accept your contributions, we will need explicit confirmation from you that you are able and willing to provide them under these terms, and the mechanism we use to do this is called a Developer's Certificate of Origin [DCO](DCO.md). This is very similar to the process used by the Linux(R) kernel, Samba, and many other major open source projects.
+Since ReScript is distributed under the terms of the [LGPL Version 3](LICENSE), contributions that you make are licensed under the same terms. In order for us to be able to accept your contributions, we will need explicit confirmation from you that you are able and willing to provide them under these terms, and the mechanism we use to do this is called a Developer's Certificate of Origin [DCO](DCO.md). This is very similar to the process used by the Linux(R) kernel, Samba, and many other major open source projects.
 
 To participate under these terms, all that you must do is include a line like the following as the last line of the commit message for each commit in your contribution:
 

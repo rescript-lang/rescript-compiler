@@ -232,9 +232,9 @@
 - #4114 fix SPA mode watcher path in react-hooks template
 
 - #4199 Change ReactJS PPX to avoid modifying locations of existing code (better integration with editors)
-- #4122 toplevel [@@@warning "+101"] works for bucklescript warnings
+- #4122 toplevel [@@@warning "+101"] works for our own warnings (apart from OCaml ones)
 
-    `bsc -warn-help` listed several warnings for BuckleScript
+    `bsc -warn-help` listed several of our own warnings
     ```
     101 BuckleScript warning: Unused bs attributes
     102 BuckleScript warning: polymorphic comparison introduced (maybe unsafe)
@@ -267,7 +267,7 @@
 - #4005 fix windows installing issues
 
 # 7.0.0
-- #4003 not doing ast invariant checking, leave it for bucklescript (faster compilation)
+- #4003 not doing ast invariant checking, leave it to us (faster compilation)
 - #4002 upgrade ocamldoc in 4.06, fix document build
 - #4001 tweak error message
 - #3999 #3987 fix ppx reactjs regression keep attributes on object fields
@@ -278,13 +278,13 @@
 - #3985 more precise runtime information passed down from upstream, fix a corner case of compiling ocaml class
 - #3986 more precise runtime information passed down from upstream, add module alias comments in generated code
 - #3991 #3980 fix a corner case when printing js object in statement position
-- #3977 #3978 not relying on ref internal for bucklescript runtime
+- #3977 #3978 not relying on ref internal for the runtime
 - #3976 add bs js playground reason support
 - #3974 bsb tweak react hooks template README
 - #3971 docs about format of lib/bs/.bsbuild
 - #3967 #3973 fix recursive value initialization
 - #3972 upgrade repl.js to 4.06.1
-- #3890 Fix typo in bucklescript readme
+- #3890 Fix typo in readme
 - #3898 #3900 #3911 #3913 #3915 #3925 #3928 #3929 #3932 #3936 #3934 OCaml record as Js object
 - #3945 sync refmt 3.5.3
 - #3916 add large ocaml object test
