@@ -904,6 +904,21 @@ let parseCommaDelimitedRegion p ~grammar ~closing ~f =
         loop (node::nodes)
       | token when token = closing || token = Eof ->
         List.rev (node::nodes)
+      | _ when Grammar.isListElement grammar p.token ->
+        (* missing comma between nodes in the region and the current token
+         * looks like the start of something valid in the current region.
+         * Example:
+         *   type student<'extraInfo> = {
+         *     name: string,
+         *     age: int
+         *     otherInfo: 'extraInfo
+         *   }
+         * There is a missing comma between `int` and `otherInfo`.
+         * `otherInfo` looks like a valid start of the record declaration.
+         * We report the error here and then continue parsing the region.
+         *)
+        Parser.expect Comma p;
+        loop (node::nodes)
       | _ ->
         if not (p.token = Eof || p.token = closing || Recover.shouldAbortListParse p) then
           Parser.expect Comma p;
@@ -934,6 +949,21 @@ let parseCommaDelimitedReversedList p ~grammar ~closing ~f =
         loop (node::nodes)
       | token when token = closing || token = Eof ->
         (node::nodes)
+      | _ when Grammar.isListElement grammar p.token ->
+        (* missing comma between nodes in the region and the current token
+         * looks like the start of something valid in the current region.
+         * Example:
+         *   type student<'extraInfo> = {
+         *     name: string,
+         *     age: int
+         *     otherInfo: 'extraInfo
+         *   }
+         * There is a missing comma between `int` and `otherInfo`.
+         * `otherInfo` looks like a valid start of the record declaration.
+         * We report the error here and then continue parsing the region.
+         *)
+        Parser.expect Comma p;
+        loop (node::nodes)
       | _ ->
         if not (p.token = Eof || p.token = closing || Recover.shouldAbortListParse p) then
           Parser.expect Comma p;

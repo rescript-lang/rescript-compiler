@@ -3,7 +3,7 @@ let x = Extension.Type.\"type"
 
 let \"+++" = (a, b) => a + b 
 
-\"+++"(~a=\"let", \"module" ~\"type")
+\"+++"(~a=\"let", \"module", ~\"type")
 
 switch \"type" {
 | () => ()

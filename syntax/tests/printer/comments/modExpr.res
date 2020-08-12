@@ -35,7 +35,7 @@
 // Pmod_functor
 /* c0 */ module /* c1 */ F /* c2 */ = /* before parameters */ (
 /* c3 */ A /* c4 */: /* c5 */ X /* c6 */,
-/* c7 */ B /* c8 */: /* c9 */ Y /* c 10 */
+/* c7 */ B /* c8 */: /* c9 */ Y /* c 10 */,
 /* c7 */ C /* c8 */: /* c9 */ Z /* c 10 */
 ) => /* c11 */ ReturnMod /* c12 */ 
 

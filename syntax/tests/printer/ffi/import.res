@@ -1,7 +1,7 @@
 import {
   @disableGc @disableJit
   delimiter: string,
-  cwd as currentWorkingDirectory : unit => string 
+  cwd as currentWorkingDirectory : unit => string,
   isAbsolute: string => bool,
   toNamespacedPath as \"ToNamespacedPath": string => string,
 } from "path"
