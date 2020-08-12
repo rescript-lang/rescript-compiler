@@ -302,7 +302,7 @@ module NapkinDriver = struct
     (parseResult.parsetree, parseResult.comments)
 end
 
-let napkin_parse ~filename src =
+let rescript_parse ~filename src =
   let (structure, _ ) = NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
   in
   structure
@@ -407,7 +407,7 @@ module Compile = struct
       let impl = match lang with
         | Lang.OCaml -> ocaml_parse ~filename
         | Reason -> reason_parse ~filename
-        | Res -> napkin_parse ~filename
+        | Res -> rescript_parse ~filename
       in
       (* let env = !Toploop.toplevel_env in *)
       (* Compmisc.init_path false; *)
@@ -683,7 +683,7 @@ module Export = struct
         inject @@ make_compiler ~config ~lang:OCaml;
         "reason",
         inject @@ make_compiler ~config ~lang:Reason;
-        "napkin",
+        "rescript",
         inject @@ make_compiler ~config ~lang:Res;
         "convertSyntax",
         inject @@
@@ -739,11 +739,13 @@ end
 
 let () =
   let open Lang in
-  export "bs_platform"
+  export "rescript_compiler"
     (Js.Unsafe.(obj
                   [|
                     "api_version",
                     inject @@ Js.string apiVersion;
+                    "version",
+                    inject @@ Js.string Bs_version.version;
                     "make",
                     inject @@ Export.make
                   |]))
