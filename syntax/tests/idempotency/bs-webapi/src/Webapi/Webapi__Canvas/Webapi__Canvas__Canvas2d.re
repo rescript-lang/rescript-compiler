@@ -103,7 +103,7 @@ type style(_) =
 [@bs.set] external setStrokeStyle : (t, 'a) => unit = "strokeStyle";
 
 /* in re unused warnings
-   awaiting release of https://github.com/bloomberg/bucklescript/issues/1656
+   awaiting release of https://github.com/rescript-lang/rescript-compiler/issues/1656
    to just use [@@bs.set] directly with an ignored (style a) */
 let setStrokeStyle = (type a, ctx: t, _: style(a), v: a) =>
   setStrokeStyle(ctx, v);

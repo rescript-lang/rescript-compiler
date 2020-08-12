@@ -5,8 +5,8 @@
 
 (*
   This is OCaml's Misc.ml's Color module. More specifically, this is
-  BuckleScript's OCaml fork's Misc.ml's Color module:
-  https://github.com/BuckleScript/ocaml/blob/92e58bedced8d7e3e177677800a38922327ab860/utils/misc.ml#L540
+  ReScript's OCaml fork's Misc.ml's Color module:
+  https://github.com/rescript-lang/ocaml/blob/92e58bedced8d7e3e177677800a38922327ab860/utils/misc.ml#L540
 
   The syntax's printing's coloring logic depends on:
     1. a global mutable variable that's set in the compiler: Misc.Color.color_enabled
@@ -14,12 +14,12 @@
       tags like @{<error>hello@} use
     3. etc.
 
-  When this syntax is programmatically used inside BuckleScript, the various
+  When this syntax is programmatically used inside ReScript, the various
   Format tags like <error> and <dim> get properly colored depending on the
   above points.
 
   But when used by this cli file, that coloring logic doesn't render properly
-  because we're compiling against vanilla OCaml 4.06 instead of BuckleScript's
+  because we're compiling against vanilla OCaml 4.06 instead of ReScript's
   OCaml fork. For example, the vanilla compiler doesn't support the `dim`
   color (grey). So we emulate the right coloring logic by copy pasting how BS'
   OCaml does it.

@@ -23,14 +23,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(** A stdlib shipped with BuckleScript
+(** A stdlib shipped with ReScript
 
     This stdlib is still in {i beta} but we encourage you to try it out and
     give us feedback.
 
     {b Motivation }
 
-    The motivation for creating such library is to provide BuckleScript users a
+    The motivation for creating such library is to provide ReScript users a
     better end-to-end user experience, since the original OCaml stdlib was not
     written with JS in mind. Below is a list of areas this lib aims to
     improve:

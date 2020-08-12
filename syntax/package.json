@@ -1,5 +1,5 @@
 {
-  "name": "bucklescript-syntax",
+  "name": "rescript-syntax",
   "version": "0.0.8-dev",
   "description": "",
   "main": "Napkinscript.ml",
@@ -15,12 +15,12 @@
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BuckleScript/syntax.git"
+    "url": "git+https://github.com/rescript-lang/syntax.git"
   },
   "author": "Iwan (valcke.maxim@gmail.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/BuckleScript/syntax/issues"
+    "url": "https://github.com/rescript-lang/syntax/issues"
   },
-  "homepage": "https://github.com/BuckleScript/syntax#readme"
+  "homepage": "https://github.com/rescript-lang/syntax#readme"
 }

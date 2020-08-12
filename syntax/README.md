@@ -1,8 +1,8 @@
-# ReScript Syntax ![Tests](https://github.com/BuckleScript/syntax/workflows/CI/badge.svg)
+# ReScript Syntax ![Tests](https://github.com/rescript-lang/syntax/workflows/CI/badge.svg)
 
 Blog post: https://reasonml.org/blog/bucklescript-8-1-new-syntax
 
-Documentation: https://reasonml.org/docs/reason-compiler/latest/new-bucklescript-syntax
+Documentation: https://rescript-lang.org/docs/manual/latest/overview
 
 This repo is the source of truth for the ReScript parser & printer. Issues go here.
 
@@ -32,7 +32,7 @@ Required:
 
 ```sh
 opam switch create 4.06.1 && eval $(opam env)
-git clone https://github.com/bucklescript/syntax.git
+git clone https://github.com/rescript-lang/syntax.git
 cd syntax
 npm install
 make # or: make -j9 for faster build

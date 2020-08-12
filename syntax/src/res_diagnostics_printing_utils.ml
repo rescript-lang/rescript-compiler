@@ -1,7 +1,7 @@
 (*
-  This file is taken from BuckleScript's super_misc.ml and super_location.ml
-  We're copying the look of BuckleScript's terminal error reporting.
-  See https://github.com/BuckleScript/syntax/pull/77 for the rationale.
+  This file is taken from ReScript's super_misc.ml and super_location.ml
+  We're copying the look of ReScript's terminal error reporting.
+  See https://github.com/rescript-lang/syntax/pull/77 for the rationale.
 *)
 
 (* ===== super_misc.ml *)
@@ -224,7 +224,7 @@ let print src startPos endPos ppf () =
   end
 ;;
 
-(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L380 *)
+(* taken from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L380 *)
 (* This is the error report entry point. We'll replace the default reporter with this one. *)
 let super_error_reporter ppf ~src ~startPos ~endPos ~msg =
   setup_colors ();
