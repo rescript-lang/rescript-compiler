@@ -12,4 +12,4 @@
   Not like this: [2mfoo(a, b)[0m
   
   This guarantees that your function is fully applied. More info here:
-  https://bucklescript.github.io/docs/en/function.html#solution-guaranteed-uncurrying
+  https://rescript-lang.org/docs/manual/latest/function#uncurried-function
