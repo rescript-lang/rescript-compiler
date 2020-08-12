@@ -15409,9 +15409,11 @@ end = struct
 
 let rec is_obj_literal ( x : _ Flow_ast.Expression.t) : bool = 
   match snd x with   
-  | Identifier (_, {name = "undefined"})
+  | Identifier (_, {name = "undefined"})  
   | Literal _ -> true   
-  |  Object {properties} -> 
+  | Unary {operator = Minus ; argument } 
+    -> is_obj_literal argument 
+  | Object {properties} -> 
     Ext_list.for_all properties is_literal_kv 
   | Array  {elements} ->  
     Ext_list.for_all elements (fun x -> 
@@ -15456,10 +15458,8 @@ let classify_exp (prog : _ Flow_ast.Expression.t  )  : Js_raw_info.exp =
   in   
   Js_literal {comment}   
  | (_, Identifier(_,{name = "undefined"})) -> Js_literal {comment =None} 
- | (_, (Object _ | Array _ ))  -> 
+ | (_, _)  -> 
     if is_obj_literal prog then Js_literal {comment = None} else Js_exp_unknown
- | _ -> 
-  Js_exp_unknown
  | exception _ -> 
   Js_exp_unknown
 
