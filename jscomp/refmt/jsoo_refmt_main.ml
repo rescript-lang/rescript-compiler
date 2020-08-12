@@ -202,6 +202,7 @@ module ErrorRet = struct
 
 end
 
+(* One time setup for all relevant modules *)
 let () =
   Bs_conditional_initial.setup_env ();
   Clflags.binary_annotations := false;
@@ -229,8 +230,22 @@ let lexbuf_from_string ~filename str =
   lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename };
   lexbuf
 
+(* We need this for a specific parsing issue in Reason: Whenever you are
+ * parsing a source where the last line is a comment (and not a \n) the parser
+ * enters an infinite loop. To prevent this, we need to make sure to append a
+ * newline before doing any parsing attempt *)
+let maybe_add_newline str =
+  let last = (String.length str) - 1 in
+  match String.get str last with
+  | '\n' -> str
+  | _ -> str ^ "\n"
+
 let reason_parse ~filename str =
-  lexbuf_from_string ~filename str |> Refmt_api.Reason_toolchain.RE.implementation |> Converter.copy_structure;;
+  str
+  |> maybe_add_newline
+  |> lexbuf_from_string ~filename
+  |> Refmt_api.Reason_toolchain.RE.implementation
+  |> Converter.copy_structure;;
 
 let ocaml_parse ~filename str =
   lexbuf_from_string ~filename str |> Parse.implementation
@@ -441,6 +456,10 @@ module Compile = struct
 
   let syntax_format ?(filename: string option) ~(from:Lang.t) ~(to_:Lang.t) (src: string) =
     let open Lang in
+    let src = match from with
+      | Reason -> maybe_add_newline src
+      | _ -> src
+    in
     let filename = get_filename ~lang:from filename in
     try
       let code = match (from, to_) with
@@ -653,6 +672,7 @@ module Export = struct
           | (None, None) -> "Unknown from / to language: " ^ fromLang ^ ", " ^ toLang
           | (None, Some _) -> "Unknown from language: " ^ fromLang
           | (Some _, None) -> "Unknown to language: " ^ toLang
+          | (Some _, Some _) -> "Can't convert from " ^ fromLang ^ " to " ^ toLang
         in
         ErrorRet.makeUnexpectedError(msg)
     in
