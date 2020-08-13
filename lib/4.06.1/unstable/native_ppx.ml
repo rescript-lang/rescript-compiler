@@ -15409,9 +15409,11 @@ end = struct
 
 let rec is_obj_literal ( x : _ Flow_ast.Expression.t) : bool = 
   match snd x with   
-  | Identifier (_, {name = "undefined"})
+  | Identifier (_, {name = "undefined"})  
   | Literal _ -> true   
-  |  Object {properties} -> 
+  | Unary {operator = Minus ; argument } 
+    -> is_obj_literal argument 
+  | Object {properties} -> 
     Ext_list.for_all properties is_literal_kv 
   | Array  {elements} ->  
     Ext_list.for_all elements (fun x -> 
@@ -15456,10 +15458,8 @@ let classify_exp (prog : _ Flow_ast.Expression.t  )  : Js_raw_info.exp =
   in   
   Js_literal {comment}   
  | (_, Identifier(_,{name = "undefined"})) -> Js_literal {comment =None} 
- | (_, (Object _ | Array _ ))  -> 
+ | (_, _)  -> 
     if is_obj_literal prog then Js_literal {comment = None} else Js_exp_unknown
- | _ -> 
-  Js_exp_unknown
  | exception _ -> 
   Js_exp_unknown
 
@@ -18592,7 +18592,7 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
   )
 
 let refine_obj_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t) 
-  : Ast_core_type.t * External_arg_spec.attr = 
+  :  External_arg_spec.attr = 
   if ptyp.ptyp_desc = Ptyp_any then 
     let ptyp_attrs = ptyp.ptyp_attributes in
     let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
@@ -18606,13 +18606,13 @@ let refine_obj_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
     | Some (Int i) -> (* (_[@bs.as ])*)
       (* This type is used in bs.obj only to construct obj type*)
-      Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
+       Arg_cst(External_arg_spec.cst_int i)
     | Some (Str i)->
-      Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
-    | Some (Js_literal_str _ ) ->
-      Location.raise_errorf ~loc:ptyp.ptyp_loc "json payload is not supported in bs.obj since its type can not be inferred"
+       Arg_cst (External_arg_spec.cst_string i)
+    | Some (Js_literal_str s ) ->
+       Arg_cst (External_arg_spec.cst_obj_literal s)
   else (* ([`a|`b] [@bs.string]) *)
-    ptyp, spec_of_ptyp nolabel ptyp      
+     spec_of_ptyp nolabel ptyp      
 
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
@@ -18911,31 +18911,31 @@ let process_obj
                    Location.raise_errorf ~loc "expect label, optional, or unit here"
                end 
              | Labelled name ->
-               let new_ty, obj_arg_type = refine_obj_arg_type ~nolabel:false  ty in
+               let obj_arg_type = refine_obj_arg_type ~nolabel:false  ty in
                begin match obj_arg_type with
                  | Ignore ->
                    External_arg_spec.empty_kind obj_arg_type,
-                   {param_type with ty = new_ty}::arg_types, result_types
+                   param_type :: arg_types, result_types
                  | Arg_cst  _  ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.obj_label s;
                     obj_arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
-                   (Parsetree.Otag({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
+                   result_types
                  | Nothing  ->
                    let s = (Lam_methname.translate  name) in
                    {obj_arg_label = External_arg_spec.obj_label s ; obj_arg_type },
-                   {param_type with ty = new_ty}::arg_types,
-                   (Otag ({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
+                   param_type ::arg_types,
+                   (Parsetree.Otag ({Asttypes.txt = name; loc} , [], ty) :: result_types)
                  | Int _  ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
-                   {param_type with ty = new_ty}::arg_types,
+                   param_type ::arg_types,
                    (Otag ({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
                  | Poly_var_string _ ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
-                   {param_type with ty = new_ty }::arg_types,
+                   param_type ::arg_types,
                    (Otag({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc

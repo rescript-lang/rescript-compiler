@@ -17,4 +17,14 @@ external opt_make :
   "" [@@bs.obj]
 
 
+external ff : 
+    hi:int -> 
+    lo:(_ [@bs.as 3]) -> 
+    lo2:(_ [@bs.as {json|{hi:-3 }|json}]) ->
+    lo3:(_ [@bs.as -1]) ->
+    lo4:(_ [@bs.as {json|-3|json}]) ->
+     _ = "" [@@bs.obj]
+
+let u = ff ~hi:2     
+
 external f : int -> int = "f" [@@genType.import "hh"]  
