@@ -1415,6 +1415,10 @@ build all: phony runtime others $stdlib test
 `
     );
   } else {
+    // ASK: should I change something in the other branch ?
+    // ASK: Do you want a less destructive way by generating a .ninja file to include
+    const snapshot_ninja = fs.readFileSync(path.join(jscompDir, "snapshot.ninja"), "utf8");
+    fs.writeFileSync(path.join(jscompDir, "snapshot.ninja"), snapshot_ninja.replace(/^native_ocaml_path.*/m, "native_ocaml_path = " + (process.env.ESY === "true" ? path.join(process.env.OCAMLLIB, "/../..") : "../ocaml/")), "utf8");
     writeFileAscii(
       path.join(jscompDir, "build.ninja"),
       `
