@@ -359,17 +359,6 @@ let printIdentLike ?allowUident txt =
     ]
   | NormalIdent -> Doc.text txt
 
-(* Exotic identifiers in poly-vars have a "lighter" syntax: #"ease-in" *)
-let printPolyVarIdent txt =
-  match classifyIdentContent ~allowUident:true txt with
-  | ExoticIdent -> Doc.concat [
-      Doc.text "\"";
-      Doc.text txt;
-      Doc.text"\""
-    ]
-  | NormalIdent -> Doc.text txt
-
-
 let printLident l = match l with
   | Longident.Lident txt -> printIdentLike txt
   | Longident.Ldot (path, txt) ->
@@ -1626,7 +1615,7 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
     | Parsetree.Rtag ({txt}, attrs, true, []) ->
       Doc.concat [
         printAttributes attrs cmtTbl;
-        Doc.concat [Doc.text "#"; printPolyVarIdent txt]
+        Doc.concat [Doc.text "#"; printIdentLike ~allowUident:true txt]
       ]
     | Rtag ({txt}, attrs, truth, types) ->
       let doType t = match t.Parsetree.ptyp_desc with
@@ -1638,7 +1627,7 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
       let cases = if truth then Doc.concat [Doc.line; Doc.text "& "; cases] else cases in
       Doc.group (Doc.concat [
         printAttributes attrs cmtTbl;
-        Doc.concat [Doc.text "#"; printPolyVarIdent txt];
+        Doc.concat [Doc.text "#"; printIdentLike ~allowUident:true txt];
         cases
       ])
     | Rinherit coreType ->
@@ -1659,7 +1648,7 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
     | Some([]) ->
       Doc.nil
     | Some(labels) ->
-      Doc.concat (List.map (fun label -> Doc.concat [Doc.line; Doc.text "#" ; printPolyVarIdent label] ) labels)
+      Doc.concat (List.map (fun label -> Doc.concat [Doc.line; Doc.text "#" ; printIdentLike ~allowUident:true label] ) labels)
     in
     let closingSymbol = if hasLabels then Doc.text " >" else Doc.nil in
     Doc.group (
@@ -2170,10 +2159,10 @@ and printPattern (p : Parsetree.pattern) cmtTbl =
     in
     Doc.group(Doc.concat [constrName; argsDoc])
   | Ppat_variant (label, None) ->
-    Doc.concat [Doc.text "#"; printPolyVarIdent label]
+    Doc.concat [Doc.text "#"; printIdentLike ~allowUident:true label]
   | Ppat_variant (label, variantArgs) ->
     let variantName =
-      Doc.concat [Doc.text "#"; printPolyVarIdent label] in
+      Doc.concat [Doc.text "#"; printIdentLike ~allowUident:true label] in
     let argsDoc = match variantArgs with
     | None -> Doc.nil
     | Some({ppat_desc = Ppat_construct ({txt = Longident.Lident "()"}, _)}) ->
@@ -2620,7 +2609,7 @@ and printExpression (e : Parsetree.expression) cmtTbl =
     )
   | Pexp_variant (label, args) ->
     let variantName =
-      Doc.concat [Doc.text "#"; printPolyVarIdent label] in
+      Doc.concat [Doc.text "#"; printIdentLike ~allowUident:true label] in
     let args = match args with
     | None -> Doc.nil
     | Some({pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, _)}) ->
