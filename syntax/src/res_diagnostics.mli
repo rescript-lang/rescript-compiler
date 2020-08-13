@@ -8,7 +8,6 @@ type report
 val getStartPos: t -> Lexing.position [@@live] (* for playground *)
 val getEndPos: t -> Lexing.position [@@live] (* for playground *)
 
-val toString: t -> string -> unit [@@live] (* for playground *)
 val explain: t -> string [@@live] (* for playground *)
 
 val unexpected: Token.t -> (Grammar.t * Lexing.position) list -> category

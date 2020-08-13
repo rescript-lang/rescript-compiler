@@ -135,14 +135,6 @@ let explain t =
       "I'm not sure what to parse here when looking at \"" ^ name ^ "\"."
     end
 
-let toString t src =
-  Res_diagnostics_printing_utils.Super_location.super_error_reporter
-    Format.err_formatter
-    ~src
-    ~startPos:t.startPos
-    ~endPos:t.endPos
-    ~msg:(explain t)
-
 let make ~startPos ~endPos category = {
   startPos;
   endPos;
@@ -151,7 +143,14 @@ let make ~startPos ~endPos category = {
 
 let printReport diagnostics src =
   Format.fprintf Format.err_formatter "@[<v>";
-  List.rev diagnostics |> List.iter (fun d -> toString d src);
+  List.rev diagnostics |> List.iter (fun d -> 
+    Res_diagnostics_printing_utils.Super_location.super_error_reporter
+      Format.err_formatter
+      ~src
+      ~startPos:d.startPos
+      ~endPos:d.endPos
+      ~msg:(explain d)
+  );
   Format.fprintf Format.err_formatter "@]@."
 
 let unexpected token context =
