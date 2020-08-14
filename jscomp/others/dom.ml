@@ -86,8 +86,8 @@ type _htmlBodyElement
 type htmlBodyElement = _htmlBodyElement htmlElement_like
 type _htmlBrElement
 type htmlBrElement = _htmlBrElement htmlElement_like
-type _htmlButtonELement
-type htmlButtonELement = _htmlButtonELement htmlElement_like
+type _htmlButtonElement
+type htmlButtonElement = _htmlButtonElement htmlElement_like
 type _htmlCanvasElement
 type htmlCanvasElement = _htmlCanvasElement htmlElement_like
 type _htmlDataElement
