@@ -172,7 +172,10 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
                        {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident"true"}, None)};pc_guard=None;pc_rhs=t_exp}
                      ])   
           -> 
-            default_expr_mapper self {e with pexp_desc = Pexp_ifthenelse (b,t_exp,Some f_exp)}     
+            default_expr_mapper self {e with pexp_desc = Pexp_ifthenelse (b,t_exp,Some f_exp)}    
+        | Pexp_let (Nonrecursive, [{pvb_pat = {ppat_desc = Ppat_record _ } as p; pvb_expr; pvb_attributes = _ ; pvb_loc = _}], body)             
+          -> 
+            default_expr_mapper self {e with pexp_desc = Pexp_match(pvb_expr,[{pc_lhs = p; pc_guard = None; pc_rhs = body}])}
         | _ ->  default_expr_mapper self e
 
 
