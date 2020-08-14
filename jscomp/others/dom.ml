@@ -43,8 +43,16 @@ type element = _baseClass element_like
 type htmlCollection
 type htmlFormControlsCollection
 type htmlOptionsCollection
+type intersectionObserver
+type intersectionObserverEntry
 type mutationObserver
 type mutationRecord
+type performanceObserver
+type performanceObserverEntryList
+type reportingObserver
+type reportingObserverOptions
+type resizeObserver
+type resizeObserverEntry
 type namedNodeMap
 type nodeList
 type radioNodeList
