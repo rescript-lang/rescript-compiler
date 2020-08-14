@@ -717,6 +717,7 @@ build test/topsort_test.cmi test/topsort_test.cmj : cc test/topsort_test.ml | $s
 build test/tramp_fib.cmi test/tramp_fib.cmj : cc test/tramp_fib.ml | test/mt.cmj $stdlib
 build test/tscanf_test.cmi test/tscanf_test.cmj : cc test/tscanf_test.ml | test/mt.cmj test/mt_global.cmj test/testing.cmj $stdlib
 build test/tuple_alloc.cmi test/tuple_alloc.cmj : cc test/tuple_alloc.ml | $stdlib
+build test/type_disambiguate.cmi test/type_disambiguate.cmj : cc test/type_disambiguate.ml | $stdlib
 build test/typeof_test.cmi test/typeof_test.cmj : cc test/typeof_test.ml | test/mt.cmj $stdlib
 build test/ui_defs.cmi : cc test/ui_defs.mli | $stdlib
 build test/unboxed_attribute_test.cmi test/unboxed_attribute_test.cmj : cc test/unboxed_attribute_test.ml | test/mt.cmj $stdlib
