@@ -30,6 +30,11 @@ In the rare case there you're making changes to the vendored OCaml fork, rebuild
 ./scripts/ninja.js build
 ```
 
+If this doesn't work (rare), then:
+- Save your changes
+- `git clean -xdf .` to wipe all artifacts
+- Then do a clean build as instructed above
+
 ## Test
 
 ```sh
