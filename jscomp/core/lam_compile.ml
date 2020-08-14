@@ -1340,11 +1340,12 @@ and compile_apply
   (lambda_cxt : Lam_compile_context.t) = 
     match appinfo with 
     | {
-      ap_func = Lapply{ ap_func; ap_args ; ap_status = App_na ; ap_inlined};    
-      ap_status = App_na;}
+      ap_func = Lapply{ ap_func; ap_args ; ap_status = App_na ; ap_info};    
+      ap_status = App_na; ap_info = {ap_loc}}
       ->
       (* After inlining, we can generate such code, see {!Ari_regress_test}*)
-      compile_lambda  lambda_cxt (Lam.apply ap_func (Ext_list.append ap_args  appinfo.ap_args)  appinfo.ap_loc  App_na ap_inlined)
+      compile_lambda  lambda_cxt (Lam.apply ap_func (Ext_list.append ap_args  appinfo.ap_args)  
+        {ap_loc; ap_inlined = ap_info.ap_inlined}  App_na )
     (* External function call: it can not be tailcall in this case*)
     | { ap_func = 
           Lprim{primitive = Pfield (_, fld_info);
@@ -1512,7 +1513,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
       (match args with
        | fn :: rest ->
          compile_lambda lambda_cxt
-           (Lam.apply fn rest loc App_uncurry Default_inline)
+           (Lam.apply fn rest {ap_loc = loc; ap_inlined = Default_inline} App_uncurry )
            (*FIXME: should pass info down: `f a [@bs][@inlined]`*)
        | [] -> assert false)
       

@@ -39,6 +39,11 @@ type function_attribute = {
   is_a_functor : is_a_functor
 }  
 
+type ap_info = {
+  ap_loc : Location.t ; 
+  ap_inlined : inline_attribute
+}  
+
 val default_fn_attr : function_attribute
 
 type ident = Ident.t
@@ -57,9 +62,8 @@ and apply_status =
 and apply_info = private
   { ap_func : t ; 
     ap_args : t list ; 
-    ap_loc : Location.t;
+    ap_info : ap_info;
     ap_status : apply_status;
-    ap_inlined : inline_attribute
   }
 and lfunction =  {
   arity : int ; 
@@ -121,9 +125,8 @@ val const : Lam_constant.t -> t
 val apply : 
   t -> 
   t list -> 
-  Location.t -> 
+  ap_info -> 
   apply_status ->
-  inline_attribute -> 
   t
 
 val function_ : 

@@ -31,11 +31,10 @@
 
 val transform_under_supply : 
   int ->
-  Location.t -> 
+  Lam.ap_info -> 
   Lam.apply_status -> 
   Lam.t -> 
   Lam.t list -> 
-  Lam.inline_attribute ->
   Lam.t
 
 

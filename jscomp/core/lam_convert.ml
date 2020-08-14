@@ -635,7 +635,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         {ap_func = fn; ap_args = args; ap_loc = loc; ap_inlined}
       ->
           (** we need do this eargly in case [aux fn] add some wrapper *)
-          Lam.apply (convert_aux fn) (Ext_list.map args convert_aux ) loc App_na  (convert_inline_attr ap_inlined)
+          Lam.apply (convert_aux fn) (Ext_list.map args convert_aux ) {ap_loc = loc; ap_inlined = (convert_inline_attr ap_inlined)}  App_na
     | Lfunction 
     {kind; params; body ; attr }
       ->  
@@ -809,10 +809,10 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
              Ext_list.length_larger_than_n inner_args args 1 
         ->
         Lam.prim ~primitive ~args:(Ext_list.append_one args x) outer_loc
-      | Lapply{ap_func;ap_args; ap_inlined} ->
-        Lam.apply ap_func (Ext_list.append_one ap_args x) outer_loc App_na ap_inlined
+      | Lapply{ap_func;ap_args; ap_info} ->
+        Lam.apply ap_func (Ext_list.append_one ap_args x) {ap_loc = outer_loc; ap_inlined = ap_info.ap_inlined} App_na 
       | _ ->
-        Lam.apply f [x] outer_loc App_na Default_inline
+        Lam.apply f [x] {ap_loc = outer_loc; ap_inlined = Default_inline} App_na 
     and convert_switch (e : Lambda.lambda) (s : Lambda.lambda_switch) = 
         let  e = convert_aux e in
         match s with
