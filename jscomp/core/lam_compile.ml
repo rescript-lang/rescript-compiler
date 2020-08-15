@@ -248,7 +248,7 @@ let rec
 *)
 
 and compile_external_field_apply    
-    (appinfo : Lam.apply_info)
+    (appinfo : Lam.apply)
     (module_id : Ident.t)
     (field_name : string)
     (lambda_cxt : Lam_compile_context.t): Js_output.t =
@@ -1336,7 +1336,7 @@ and compile_ifthenelse
                 then_output
                 ~else_:else_output)))
 and compile_apply 
-  (appinfo : Lam.apply_info) 
+  (appinfo : Lam.apply) 
   (lambda_cxt : Lam_compile_context.t) = 
     match appinfo with 
     | {

@@ -105,7 +105,7 @@ module Types = struct
       loc : Location.t;
     }
 
-  and apply_info =
+  and apply =
     { ap_func : t ;
       ap_args : t list ;
       ap_info : ap_info;
@@ -116,7 +116,7 @@ module Types = struct
     | Lvar of ident
     | Lglobal_module of ident
     | Lconst of Lam_constant.t
-    | Lapply of apply_info
+    | Lapply of apply
     | Lfunction of lfunction
     | Llet of Lam_compat.let_kind * ident * t * t
     | Lletrec of (ident * t) list * t
@@ -152,8 +152,8 @@ module X = struct
         args : t list ;
         loc : Location.t;
       }
-  and apply_info
-    = Types.apply_info
+  and apply
+    = Types.apply
     =
       { ap_func : t ;
         ap_args : t list ;
@@ -173,7 +173,7 @@ module X = struct
       | Lvar of ident
       | Lglobal_module of ident
       | Lconst of Lam_constant.t
-      | Lapply of apply_info
+      | Lapply of apply
       | Lfunction of lfunction      
       | Llet of Lam_compat.let_kind * ident * t * t
       | Lletrec of (ident * t) list * t
