@@ -31,38 +31,38 @@
 
 let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t = 
   let rec 
-    populateApplyInfo (args_arity : int list) (len : int) (fn : Lam.t) (args : Lam.t list) loc status : Lam.t = 
+    populateApplyInfo (args_arity : int list) (len : int) (fn : Lam.t) (args : Lam.t list) loc status ap_inlined : Lam.t = 
     match args_arity with 
     | 0 :: _ 
-    | [] -> Lam.apply (simpl fn) (Ext_list.map args simpl)  loc status
+    | [] -> Lam.apply (simpl fn) (Ext_list.map args simpl)  loc status ap_inlined
     | x :: _ -> 
       if x = len 
       then 
-        Lam.apply (simpl fn) (Ext_list.map args simpl) loc App_infer_full
+        Lam.apply (simpl fn) (Ext_list.map args simpl) loc App_infer_full ap_inlined
       else if x > len  
       then 
         let fn = simpl fn in
         let args = Ext_list.map args simpl in
         Lam_eta_conversion.transform_under_supply (x - len) loc App_infer_full
-          fn args 
+          fn args ap_inlined
       else 
         let first,rest = Ext_list.split_at args x in 
         Lam.apply (
           Lam.apply (simpl fn) 
             (Ext_list.map first simpl ) 
-            loc App_infer_full
+            loc App_infer_full ap_inlined
         )
-          (Ext_list.map rest simpl ) loc status (* TODO refien *)
+          (Ext_list.map rest simpl ) loc status Default_inline (* TODO refien *)
     
   and simpl  (lam : Lam.t) = 
     match lam with 
     | Lconst _ -> lam
     | Lvar _ -> lam 
-    | Lapply {ap_func = l1; ap_args =  ll;  ap_loc = loc ; ap_status = status} 
+    | Lapply {ap_func = l1; ap_args =  ll;  ap_loc = loc ; ap_status = status; ap_inlined} 
       -> (* detect functor application *)
       let args_arity =  Lam_arity.extract_arity (Lam_arity_analysis.get_arity meta l1) in
       let len = List.length ll in         
-      populateApplyInfo args_arity len l1 ll loc status
+      populateApplyInfo args_arity len l1 ll loc status ap_inlined
     | Llet (str, v, l1, l2) ->
       Lam.let_ str v (simpl l1) (simpl l2 )
     | Lletrec (bindings, body) ->
