@@ -1,8 +1,0 @@
-{
-  "source": "./esy.json",
-  "override": {
-    "resolutions": {
-      "ocaml": "Et7f3/ocaml:package.json#cee7129b58afcb987cc1741acf4a786414502a57"
-    }
-  }
-}

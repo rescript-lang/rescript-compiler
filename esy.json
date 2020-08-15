@@ -1,6 +1,6 @@
 {
   "name": "bs-platform",
-  "version": "7.2.0",
+  "version": "8.3.0-dev.2",
   "dependencies": {
     "ocaml": "4.6.1000+BS"
   },
@@ -8,13 +8,14 @@
     "ocaml": "4.6.1000+BS"
   },
   "resolutions": {
-    "ocaml": "bucklescript/ocaml:package.json#bf88fbf88d4e305bab82259def35a4492e475400"
+    "ocaml": "Et7f3/ocaml:package.json#cee7129b58afcb987cc1741acf4a786414502a57"
   },
   "scripts": {
+    "doc": "echo here we can generate doc for rescript-lang and push",
+    "test": "echo here we can actually test the binary work maybe with bsc -e 'code'",
     "clean": "node ./scripts/ninja.js clean"
   },
   "esy": {
-    "buildsInSource": true,
     "build": [
       ["node", "./scripts/install.js"],
       ["cp", "-r", "-f", "#{self.root / 'bsconfig.json'}", "#{self.install}"],
