@@ -239,8 +239,8 @@ let deep_flatten
     (*   when  List.length params = List.length args -> *)
     (*       aux (beta_reduce params body args) *)
 
-    | Lapply{ap_func = l1; ap_args  = ll; ap_info; ap_status = status} ->
-      Lam.apply (aux l1) (Ext_list.map ll aux) ap_info status 
+    | Lapply{ap_func = l1; ap_args  = ll; ap_info} ->
+      Lam.apply (aux l1) (Ext_list.map ll aux) ap_info 
 
     (* This kind of simple optimizations should be done each time
        and as early as possible *)

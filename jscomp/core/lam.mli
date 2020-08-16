@@ -39,9 +39,15 @@ type function_attribute = {
   is_a_functor : is_a_functor
 }  
 
+type apply_status =
+  | App_na
+  | App_infer_full
+  | App_uncurry      
+
 type ap_info = {
   ap_loc : Location.t ; 
-  ap_inlined : inline_attribute
+  ap_inlined : inline_attribute;
+  ap_status : apply_status;
 }  
 
 val default_fn_attr : function_attribute
@@ -55,15 +61,10 @@ type lambda_switch  =
     sw_blocks: (int * t) list;
     sw_failaction: t option;
     sw_names: Lambda.switch_names option }
-and apply_status =
-  | App_na
-  | App_infer_full
-  | App_uncurry      
 and apply = private
   { ap_func : t ; 
     ap_args : t list ; 
     ap_info : ap_info;
-    ap_status : apply_status;
   }
 and lfunction =  {
   arity : int ; 
@@ -126,7 +127,6 @@ val apply :
   t -> 
   t list -> 
   ap_info -> 
-  apply_status ->
   t
 
 val function_ : 

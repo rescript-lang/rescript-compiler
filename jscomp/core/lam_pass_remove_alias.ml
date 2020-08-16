@@ -118,7 +118,7 @@ let simplify_alias
                Lprim {primitive = Pfield (_, Fld_module {name = fld_name}) ;
                       args = [ Lglobal_module ident ];
                       _} as l1;
-             ap_args = args; ap_info ; ap_status = status } ->
+             ap_args = args; ap_info } ->
       begin
         match  Lam_compile_env.query_external_id_info ident fld_name with                   
         | {persistent_closed_lambda=Some Lfunction{params; body; _} } 
@@ -138,7 +138,7 @@ let simplify_alias
           simpl (Lam_beta_reduce.propogate_beta_reduce
                    meta params body args)
         | _ -> 
-          Lam.apply (simpl l1) (Ext_list.map args simpl) ap_info status 
+          Lam.apply (simpl l1) (Ext_list.map args simpl) ap_info 
 
 
       end
@@ -148,11 +148,11 @@ let simplify_alias
         - scope issues 
         - code bloat 
     *)      
-    | Lapply{ap_func = (Lvar v as fn);  ap_args = args; ap_info ; ap_status = status } ->
+    | Lapply{ap_func = (Lvar v as fn);  ap_args = args; ap_info } ->
       (* Check info for always inlining *)
 
       (* Ext_log.dwarn __LOC__ "%s/%d" v.name v.stamp;     *)
-      let normal () = Lam.apply ( simpl fn) (Ext_list.map args simpl) ap_info status  in
+      let normal () = Lam.apply ( simpl fn) (Ext_list.map args simpl) ap_info  in
       begin 
         match Hash_ident.find_opt meta.ident_tbl v with
         | Some (FunctionId {lambda = Some(Lfunction ({params; body; attr = {is_a_functor}} as m),
@@ -222,8 +222,8 @@ let simplify_alias
     (*   when  Ext_list.same_length params args -> *)
     (*   simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args) *)
 
-    | Lapply { ap_func = l1; ap_args =  ll;  ap_info; ap_status = status; } ->
-      Lam.apply (simpl  l1) (Ext_list.map ll simpl) ap_info status 
+    | Lapply { ap_func = l1; ap_args =  ll;  ap_info; } ->
+      Lam.apply (simpl  l1) (Ext_list.map ll simpl) ap_info
     | Lfunction {arity; params; body; attr}
       -> Lam.function_ ~arity ~params  ~body:(simpl body) ~attr
     | Lswitch (l, {sw_failaction; 

@@ -37,8 +37,8 @@
     | Lvar id ->
       Map_ident.find_default s id  x
     | Lconst _ -> x
-    | Lapply{ap_func; ap_args; ap_info; ap_status} -> 
-      Lam.apply (subst_aux ap_func) (Ext_list.map ap_args subst_aux ) ap_info ap_status 
+    | Lapply{ap_func; ap_args; ap_info} -> 
+      Lam.apply (subst_aux ap_func) (Ext_list.map ap_args subst_aux ) ap_info
     | Lfunction {arity; params; body; attr} -> 
       Lam.function_ ~arity  ~params ~body:(subst_aux body) ~attr
     | Llet(str, id, arg, body) -> 

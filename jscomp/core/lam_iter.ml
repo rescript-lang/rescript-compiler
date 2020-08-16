@@ -30,7 +30,7 @@ let inner_iter (l : t) (f : t -> unit ) : unit =
   match l  with
   | Lvar (_ : ident)
   | Lconst (_ : Lam_constant.t) -> ()
-  | Lapply ({ap_func; ap_args; ap_info =_; ap_status=_} )  ->
+  | Lapply ({ap_func; ap_args; ap_info =_} )  ->
     f ap_func;
     List.iter f ap_args
   | Lfunction({body; arity = _; params = _ } ) ->
@@ -82,7 +82,7 @@ let inner_exists (l : t) (f : t -> bool) : bool =
   | Lvar (_ : ident)
   | Lglobal_module (_ )
   | Lconst (_ : Lam_constant.t) -> false
-  | Lapply ({ap_func; ap_args; ap_info =_; ap_status=_} )  ->
+  | Lapply {ap_func; ap_args; ap_info =_;}   ->
     f ap_func ||
     Ext_list.exists ap_args f 
   | Lfunction({body; arity = _;  params = _} ) ->

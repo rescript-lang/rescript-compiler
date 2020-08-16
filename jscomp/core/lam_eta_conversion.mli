@@ -32,7 +32,6 @@
 val transform_under_supply : 
   int ->
   Lam.ap_info -> 
-  Lam.apply_status -> 
   Lam.t -> 
   Lam.t list -> 
   Lam.t
