@@ -4613,13 +4613,15 @@ and printPayload (payload : Parsetree.payload) cmtTbl =
     ]
   | PStr [{pstr_desc = Pstr_value (_recFlag, _bindings)} as si] ->
     addParens(printStructureItem si cmtTbl)
+  | PStr structure ->
+    addParens(printStructure structure cmtTbl)
   | PTyp typ ->
     Doc.concat [
       Doc.lparen;
+      Doc.text ":";
       Doc.indent (
         Doc.concat [
-          Doc.softLine;
-          Doc.text ": ";
+          Doc.line;
           printTypExpr typ cmtTbl;
         ];
       );
@@ -4649,7 +4651,19 @@ and printPayload (payload : Parsetree.payload) cmtTbl =
       Doc.softLine;
       Doc.rparen;
     ]
-  | _ -> Doc.nil
+  | PSig signature ->
+    Doc.concat [
+      Doc.lparen;
+      Doc.text ":";
+      Doc.indent (
+        Doc.concat [
+          Doc.line;
+          printSignature signature cmtTbl;
+        ];
+      );
+      Doc.softLine;
+      Doc.rparen;
+    ]
 
 and printAttribute ((id, payload) : Parsetree.attribute) cmtTbl =
   Doc.group (

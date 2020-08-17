@@ -5977,9 +5977,19 @@ and parsePayload p =
     begin match p.token with
     | Colon ->
       Parser.next p;
-      let typ = parseTypExpr p in
+      let payload = if Grammar.isSignatureItemStart p.token then
+        Parsetree.PSig (
+          parseDelimitedRegion
+            ~grammar:Grammar.Signature
+            ~closing:Rparen
+            ~f:parseSignatureItemRegion
+            p
+          )
+      else
+        Parsetree.PTyp (parseTypExpr p)
+      in
       Parser.expect Rparen p;
-      Parsetree.PTyp typ
+      payload
     | Question ->
       Parser.next p;
       let pattern = parsePattern p in
