@@ -40,7 +40,7 @@ let x = 1 /* 5 */
 
 let f = (
   // 1
-  a, // 2
+  a, //2
   // 3
   b,
 ) => {
@@ -173,9 +173,9 @@ let store_attributes = arg => {
   }
 }
 3 // -
-3 // -
+3 //-
 
-3 // -
+3 //-
 
 3 /* - */
 // **** comment
@@ -260,9 +260,9 @@ let testingEndOfLineComments = list{} // Comment after entire let binding
 
 // The following is not yet idempotent
 // let myFunction
-// withFirstArg  // First arg
-// andSecondArg  => { // Second Arg
-// withFirstArg + andSecondArg /* before semi */ ;
+//     withFirstArg  // First arg
+//     andSecondArg  => { // Second Arg
+//   withFirstArg + andSecondArg /* before semi */ ;
 // };
 
 let myFunction = // First arg
@@ -449,8 +449,8 @@ let result = @ocaml.doc(\\"\\") (2 + 3)
 
 // This is not yet idempotent
 // {
-// /**/
-// (+) 2 3
+//   /**/
+//   (+) 2 3
 // };
 
 let a = ()
@@ -695,13 +695,13 @@ type tester<'a, 'b> =
 let callFunctionTwoArgs = (a, b) => ()
 let callFunctionOneTuple = tuple => ()
 
-let y = TwoArgsConstructor(1, 2) // eol1 // eol2
+let y = TwoArgsConstructor(1, 2) //eol1 // eol2
 
-let y = callFunctionTwoArgs(1, 2) // eol1 // eol2
+let y = callFunctionTwoArgs(1, 2) //eol1 // eol2
 
-let y = OneTupleArgConstructor((1, 2)) // eol1 // eol2
+let y = OneTupleArgConstructor((1, 2)) //eol1 // eol2
 
-let y = callFunctionOneTuple((1, 2)) // eol1 // eol2
+let y = callFunctionOneTuple((1, 2)) //eol1 // eol2
 
 type polyRecord<'a, 'b> = {
   fieldOne: 'a,
@@ -709,68 +709,68 @@ type polyRecord<'a, 'b> = {
 }
 
 let r = {
-  fieldOne: 1, // eol1
+  fieldOne: 1, //eol1
   fieldTwo: 2, // eol2
 }
 
 let r = {
-  fieldOne: 1, // eol1
+  fieldOne: 1, //eol1
   fieldTwo: 2, // eol2 with trailing comma
 }
 
-let y = TwoArgsConstructor(\\"1\\", \\"2\\") // eol1 // eol2
+let y = TwoArgsConstructor(\\"1\\", \\"2\\") //eol1 // eol2
 
-let y = callFunctionTwoArgs(\\"1\\", \\"2\\") // eol1 // eol2
+let y = callFunctionTwoArgs(\\"1\\", \\"2\\") //eol1 // eol2
 
-let y = OneTupleArgConstructor((\\"1\\", \\"2\\")) // eol1 // eol2
+let y = OneTupleArgConstructor((\\"1\\", \\"2\\")) //eol1 // eol2
 
-let y = callFunctionOneTuple((\\"1\\", \\"2\\")) // eol1 // eol2
+let y = callFunctionOneTuple((\\"1\\", \\"2\\")) //eol1 // eol2
 
 let r = {
-  fieldOne: \\"1\\", // eol1
+  fieldOne: \\"1\\", //eol1
   fieldTwo: \\"2\\", // eol2
 }
 
 let r = {
-  fieldOne: \\"1\\", // eol1
+  fieldOne: \\"1\\", //eol1
   fieldTwo: \\"2\\", // eol2 with trailing comma
 }
 
 let identifier = \\"hello\\"
 
-let y = TwoArgsConstructor(identifier, identifier) // eol1 // eol2
+let y = TwoArgsConstructor(identifier, identifier) //eol1 // eol2
 
-let y = callFunctionTwoArgs(identifier, identifier) // eol1 // eol2
+let y = callFunctionTwoArgs(identifier, identifier) //eol1 // eol2
 
-let y = OneTupleArgConstructor((identifier, identifier)) // eol1 // eol2
+let y = OneTupleArgConstructor((identifier, identifier)) //eol1 // eol2
 
-let y = callFunctionOneTuple((identifier, identifier)) // eol1 // eol2
+let y = callFunctionOneTuple((identifier, identifier)) //eol1 // eol2
 
 let r = {
-  fieldOne: identifier, // eol1
+  fieldOne: identifier, //eol1
   fieldTwo: identifier, // eol2
 }
 
 let r = {
-  fieldOne: identifier, // eol1
+  fieldOne: identifier, //eol1
   fieldTwo: identifier, // eol2 with trailing comma
 }
 
-let y = TwoArgsConstructor((identifier: string), (identifier: string)) // eol1 // eol2
+let y = TwoArgsConstructor((identifier: string), (identifier: string)) //eol1 // eol2
 
-let y = callFunctionTwoArgs((identifier: string), (identifier: string)) // eol1 // eol2
+let y = callFunctionTwoArgs((identifier: string), (identifier: string)) //eol1 // eol2
 
-let y = OneTupleArgConstructor(((identifier: string), (identifier: string))) // eol1 // eol2
+let y = OneTupleArgConstructor(((identifier: string), (identifier: string))) //eol1 // eol2
 
-let y = callFunctionOneTuple(((identifier: string), (identifier: string))) // eol1 // eol2
+let y = callFunctionOneTuple(((identifier: string), (identifier: string))) //eol1 // eol2
 
 let r = {
-  fieldOne: (identifier: string), // eol1
+  fieldOne: (identifier: string), //eol1
   fieldTwo: (identifier: string), // eol2
 }
 
 let r = {
-  fieldOne: (identifier: string), // eol1
+  fieldOne: (identifier: string), //eol1
   fieldTwo: (identifier: string), // eol2 with trailing comma
 }
 
@@ -782,7 +782,7 @@ let r = {
 // whitespace above & below
 
 let r = {
-  fieldOne: (identifier: string), // eol1
+  fieldOne: (identifier: string), //eol1
   // c1
 
   // c2
@@ -1148,9 +1148,9 @@ exports[`namedArgs.re 1`] = `
   ~spriteSheet=wizard,
   ~hp=999999999999999,
   ~mp=50,
-  // ~coordinates={x: 0., y:0. z: 0.},
+  //~coordinates={x: 0., y:0. z: 0.},
   ~coordinates={x: 40, y: 100., z: 0.},
-  // /* c0 */ ~gpuCoordinates= /* c1 */ gpuBuffer[10] /* c2 */, // trailing
+  //  /* c0 */ ~gpuCoordinates= /* c1 */ gpuBuffer[10] /* c2 */, // trailing
 )
 
 apply(

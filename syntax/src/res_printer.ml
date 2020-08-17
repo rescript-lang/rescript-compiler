@@ -95,7 +95,7 @@ let printTrailingComment (nodeLoc : Location.t) comment =
   let content =
     let txt = Comment.txt comment in
     if singleLine then
-       Doc.text ("// " ^ String.trim txt)
+       Doc.text ("//" ^ txt)
     else
       printMultilineCommentContent txt
   in
@@ -123,7 +123,7 @@ let printLeadingComment ?nextComment comment =
   let content =
     let txt = Comment.txt comment in
     if singleLine then
-       Doc.text ("// " ^ String.trim txt)
+       Doc.text ("//" ^ txt)
     else
       printMultilineCommentContent txt
   in
