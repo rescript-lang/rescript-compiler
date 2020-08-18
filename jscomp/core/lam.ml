@@ -49,6 +49,12 @@ let default_fn_attr : function_attribute = {
   inline = Default_inline;
   is_a_functor = Functor_na
 }
+
+type ap_info = {
+  ap_loc : Location.t ; 
+  ap_inlined : inline_attribute;
+  ap_status : apply_status;
+}  
 module Types = struct
 
   type lambda_switch =
@@ -99,19 +105,18 @@ module Types = struct
       args : t list ;
       loc : Location.t;
     }
-  and apply_info =
+
+  and apply =
     { ap_func : t ;
       ap_args : t list ;
-      ap_loc : Location.t;
-      ap_status : apply_status;
-      ap_inlined : inline_attribute
+      ap_info : ap_info;
     }
 
   and t =
     | Lvar of ident
     | Lglobal_module of ident
     | Lconst of Lam_constant.t
-    | Lapply of apply_info
+    | Lapply of apply
     | Lfunction of lfunction
     | Llet of Lam_compat.let_kind * ident * t * t
     | Lletrec of (ident * t) list * t
@@ -147,14 +152,12 @@ module X = struct
         args : t list ;
         loc : Location.t;
       }
-  and apply_info
-    = Types.apply_info
+  and apply
+    = Types.apply
     =
       { ap_func : t ;
         ap_args : t list ;
-        ap_loc : Location.t;
-        ap_status : apply_status;
-        ap_inlined : inline_attribute
+        ap_info : ap_info;  
       }
   and lfunction = Types.lfunction = 
     { 
@@ -169,7 +172,7 @@ module X = struct
       | Lvar of ident
       | Lglobal_module of ident
       | Lconst of Lam_constant.t
-      | Lapply of apply_info
+      | Lapply of apply
       | Lfunction of lfunction      
       | Llet of Lam_compat.let_kind * ident * t * t
       | Lletrec of (ident * t) list * t
@@ -199,10 +202,10 @@ let inner_map
   | Lvar (_ : ident)
   | Lconst (_ : Lam_constant.t) ->
     ( (* Obj.magic *) l : X.t)
-  | Lapply ({ap_func; ap_args; ap_loc; ap_status; ap_inlined} )  ->
+  | Lapply ({ap_func; ap_args; ap_info} )  ->
     let ap_func = f ap_func in
     let ap_args = Ext_list.map ap_args f in
-    Lapply { ap_func ; ap_args; ap_loc; ap_status ; ap_inlined}
+    Lapply { ap_func ; ap_args; ap_info }
   | Lfunction({body; arity;  params ; attr } ) ->
     let body = f body in
     Lfunction {body; arity;  params; attr}
@@ -303,7 +306,7 @@ let rec is_eta_conversion_exn
   | _, _, _ -> raise_notrace Not_simple_form
 
 (** FIXME: more robust inlining check later, we should inline it before we add stub code*)
-let rec apply fn args loc status ap_inlined : t =
+let rec apply fn args (ap_info : ap_info) : t =
   match fn with
   | Lfunction {
                params;
@@ -320,9 +323,10 @@ let rec apply fn args loc status ap_inlined : t =
     begin match is_eta_conversion_exn params inner_args args with
       | args
         ->
-        Lprim {primitive = wrap ; args = [Lprim { primitive_call with args ; loc = loc }] ; loc }
+        let loc = ap_info.ap_loc in 
+        Lprim {primitive = wrap ; args = [Lprim { primitive_call with args ; loc  }] ; loc }
       | exception Not_simple_form ->
-        Lapply { ap_func = fn; ap_args = args; ap_loc = loc; ap_status = status ; ap_inlined}
+        Lapply { ap_func = fn; ap_args = args; ap_info; }
     end
   | Lfunction {
                params;
@@ -331,9 +335,9 @@ let rec apply fn args loc status ap_inlined : t =
     begin match is_eta_conversion_exn params inner_args args with
       | args
         ->
-        Lprim { primitive_call with args ; loc = loc }
+        Lprim { primitive_call with args ; loc = ap_info.ap_loc }
       | exception _ ->
-        Lapply { ap_func = fn; ap_args = args;  ap_loc = loc;   ap_status = status ; ap_inlined}
+        Lapply { ap_func = fn; ap_args = args;  ap_info;}
     end
   | Lfunction {
                params;
@@ -342,20 +346,20 @@ let rec apply fn args loc status ap_inlined : t =
     begin match is_eta_conversion_exn params inner_args args with
       | args
         ->
-        Lsequence(Lprim { primitive_call with args ; loc = loc }, const)
+        Lsequence(Lprim { primitive_call with args ; loc = ap_info.ap_loc }, const)
       | exception _ ->
-        Lapply { ap_func = fn; ap_args = args;  ap_loc = loc;  ap_status = status ; ap_inlined}
+        Lapply { ap_func = fn; ap_args = args;  ap_info; }
     end
   (* | Lfunction {params;body} when Ext_list.same_length params args ->
       Ext_list.fold_right2 (fun p arg acc ->
         Llet(Strict,p,arg,acc)
       ) params args body *) (* TODO: more rigirous analysis on [let_kind] *)
   | Llet (kind,id, e, (Lfunction _ as fn)) -> 
-    Llet (kind, id, e, apply fn args loc status ap_inlined)    
+    Llet (kind, id, e, apply fn args ap_info )    
   (* | Llet (kind0, id0, e0, Llet (kind,id, e, (Lfunction _ as fn))) -> 
     Llet(kind0,id0,e0,Llet (kind, id, e, apply fn args loc status))       *)
   | _ ->
-    Lapply { ap_func = fn; ap_args = args;  ap_loc = loc  ; ap_status = status; ap_inlined }
+    Lapply { ap_func = fn; ap_args = args;  ap_info}
 
 
 let rec 

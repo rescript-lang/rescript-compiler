@@ -248,7 +248,7 @@ let rec
 *)
 
 and compile_external_field_apply    
-    (appinfo : Lam.apply_info)
+    (appinfo : Lam.apply)
     (module_id : Ident.t)
     (field_name : string)
     (lambda_cxt : Lam_compile_context.t): Js_output.t =
@@ -280,7 +280,7 @@ and compile_external_field_apply
 
     let fn = E.ml_var_dot module_id ident_info.name in     
     let expression = 
-      match appinfo.ap_status with 
+      match appinfo.ap_info.ap_status with 
       | App_infer_full | App_uncurry as ap_status -> 
         E.call ~info:(call_info_of_ap_status ap_status) fn args 
       | App_na ->   
@@ -1336,15 +1336,20 @@ and compile_ifthenelse
                 then_output
                 ~else_:else_output)))
 and compile_apply 
-  (appinfo : Lam.apply_info) 
+  (appinfo : Lam.apply) 
   (lambda_cxt : Lam_compile_context.t) = 
     match appinfo with 
     | {
-      ap_func = Lapply{ ap_func; ap_args ; ap_status = App_na ; ap_inlined};    
-      ap_status = App_na;}
+      ap_func = Lapply{ ap_func; ap_args ;  ap_info = {ap_status = App_na ; ap_inlined}};    
+      ap_info = {ap_status = App_na} as outer_ap_info}
       ->
       (* After inlining, we can generate such code, see {!Ari_regress_test}*)
-      compile_lambda  lambda_cxt (Lam.apply ap_func (Ext_list.append ap_args  appinfo.ap_args)  appinfo.ap_loc  App_na ap_inlined)
+      let  ap_info =
+        if outer_ap_info.ap_inlined = ap_inlined then 
+          outer_ap_info 
+        else   
+          {outer_ap_info with  ap_inlined} in 
+      compile_lambda  lambda_cxt (Lam.apply ap_func (Ext_list.append ap_args  appinfo.ap_args) ap_info)
     (* External function call: it can not be tailcall in this case*)
     | { ap_func = 
           Lprim{primitive = Pfield (_, fld_info);
@@ -1408,7 +1413,7 @@ and compile_apply
         Js_output.make  ~output_finished:True (Ext_list.append args_code block)
       | _ ->
         Js_output.output_of_block_and_expression lambda_cxt.continuation args_code
-          (E.call ~info:(call_info_of_ap_status  appinfo.ap_status) fn_code args)
+          (E.call ~info:(call_info_of_ap_status  appinfo.ap_info.ap_status) fn_code args)
 and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t) =     
     match prim_info with 
     | {primitive = Pfield (_, fld_info); args = [ Lglobal_module id ]; _}
@@ -1512,7 +1517,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
       (match args with
        | fn :: rest ->
          compile_lambda lambda_cxt
-           (Lam.apply fn rest loc App_uncurry Default_inline)
+           (Lam.apply fn rest {ap_loc = loc; ap_inlined = Default_inline; ap_status = App_uncurry} )
            (*FIXME: should pass info down: `f a [@bs][@inlined]`*)
        | [] -> assert false)
       
