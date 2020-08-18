@@ -71,17 +71,17 @@ lib/test.exe: $(TEST_FILES)
 	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/test.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa -I src -I tests $(TEST_FILES)
 
 test: build-native lib/test.exe
-	./node_modules/.bin/reanalyze -all-cmt . -suppress tests
+	./node_modules/.bin/reanalyze -all-cmt . -suppress tests -suppress benchmarks
 	./node_modules/.bin/jest
 	./lib/test.exe
 
 roundtrip-test: bootstrap lib/test.exe
-	./node_modules/.bin/reanalyze -all-cmt . -suppress tests
+	./node_modules/.bin/reanalyze -all-cmt . -suppress tests -suppress benchmarks
 	ROUNDTRIP_TEST=1 ./node_modules/.bin/jest
 	./lib/test.exe
 
 reanalyze: build-native lib/test.exe
-	./node_modules/.bin/reanalyze -all-cmt . -suppress tests
+	./node_modules/.bin/reanalyze -all-cmt . -suppress tests -suppress benchmarks
 
 clean:
 	rm -rf src/*.cm*

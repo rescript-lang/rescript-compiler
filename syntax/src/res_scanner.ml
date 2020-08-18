@@ -2,7 +2,7 @@ module CharacterCodes = Res_character_codes
 module Diagnostics = Res_diagnostics
 module Token = Res_token
 module Comment = Res_comment
-type mode = Template | Jsx | Diamond
+type mode = Jsx | Diamond
 
 type t = {
   filename: string;
@@ -22,9 +22,6 @@ type t = {
 
 let setDiamondMode scanner =
   scanner.mode <- Diamond::scanner.mode
-
-let setTemplateMode scanner =
-  scanner.mode <- Template::scanner.mode
 
 let setJsxMode scanner =
   scanner.mode <- Jsx::scanner.mode

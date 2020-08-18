@@ -5710,8 +5710,16 @@ and parseWithConstraint p =
       )
     end
   | token ->
+    (* TODO: implement recovery strategy *)
     Parser.err p (Diagnostics.unexpected token p.breadcrumbs);
-    exit (-1) [@doesNotRaise] (* TODO: handle this case *)
+    Parsetree.Pwith_type (
+      (Location.mknoloc (Longident.Lident "")),
+      Ast_helper.Type.mk
+        ~params:[]
+        ~manifest:(Recover.defaultType ())
+        ~cstrs:[]
+        (Location.mknoloc "")
+    )
 
 and parseModuleTypeOf p =
   let startPos = p.Parser.startPos in

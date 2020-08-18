@@ -1,4 +1,4 @@
-type mode = Template | Jsx | Diamond
+type mode = Jsx | Diamond
 
 type t = {
   filename: string;
@@ -23,7 +23,6 @@ val scan: t -> (Lexing.position * Lexing.position * Res_token.t)
 
 val isBinaryOp: bytes -> int -> int -> bool
 
-val setTemplateMode: t -> unit
 val setJsxMode: t -> unit
 val setDiamondMode: t -> unit
 val popMode: t -> mode -> unit

@@ -47,5 +47,3 @@ val checkProgress:
   result: 'a ->
   t ->
   'a option
-
-val comments: t -> Comment.t array

@@ -270,7 +270,7 @@ module CliArgProcessor = struct
 end
 
 
-let () =
+let [@raises exit] () =
   if not !Sys.interactive then begin
     ResClflags.parse ();
     match !ResClflags.files with
@@ -294,6 +294,4 @@ let () =
           ~report:!ResClflags.report
           filename
         ) files
-
-  end
-[@@raises exit]
+end
