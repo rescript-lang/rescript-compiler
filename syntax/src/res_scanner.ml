@@ -624,7 +624,10 @@ let rec scan scanner =
         if scanner.ch == CharacterCodes.forwardslash then
           let () = next scanner in
           Token.LessThanSlash
-        else
+        else if scanner.ch == CharacterCodes.equal then (
+          next scanner;
+          Token.LessEqual
+        ) else
           Token.LessThan
       ) else if scanner.ch == CharacterCodes.equal then (
         next scanner;

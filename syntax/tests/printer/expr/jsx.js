@@ -261,3 +261,8 @@ let x = <MyComponent sidebar=<div> test </div> nav=<Navbar /> />
   |> Array.of_list
   |> ReasonReact.array}
 </div>
+
+// https://github.com/rescript-lang/syntax/issues/113
+<div>  {Js.log(a <= 10)} </div>
+<div> <div> {Js.log(a <= 10)} </div> </div>
+<div> <div onClick={_ => Js.log(a <= 10) }> <div> {Js.log(a <= 10)} </div> </div> </div>

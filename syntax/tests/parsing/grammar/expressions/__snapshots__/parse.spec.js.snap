@@ -1036,7 +1036,19 @@ let _ =
                              [@JSX ]))))
                       |> Array.of_list)
                      |> ReasonReact.array)
-                [@ns.braces ])] ())[@JSX ])"
+                [@ns.braces ])] ())[@JSX ])
+;;((div ~children:[((Js.log (a <= 10))[@ns.braces ])] ())[@JSX ])
+;;((div
+      ~children:[((div ~children:[((Js.log (a <= 10))[@ns.braces ])] ())
+                [@JSX ])] ())[@JSX ])
+;;((div
+      ~children:[((div ~onClick:((fun _ -> Js.log (a <= 10))
+                     [@ns.namedArgLoc ][@ns.braces ])
+                     ~children:[((div
+                                    ~children:[((Js.log (a <= 10))
+                                              [@ns.braces ])] ())
+                               [@JSX ])] ())
+                [@JSX ])] ())[@JSX ])"
 `;
 
 exports[`list.js 1`] = `
