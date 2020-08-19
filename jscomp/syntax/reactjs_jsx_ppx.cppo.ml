@@ -396,16 +396,7 @@ let jsxMapper () =
       let (children, nonChildrenProps) = extractChildren ~loc callArguments in
       let componentNameExpr = constantString ~loc id in
       let childrenExpr = transformChildrenIfList ~loc ~mapper children in
-      let createElementCall = match children with
-        (* [@JSX] div(~children=[a]), coming from <div> a </div> *)
-        | {
-            pexp_desc =
-             Pexp_construct ({txt = Lident "::"}, Some {pexp_desc = Pexp_tuple _ })
-             | Pexp_construct ({txt = Lident "[]"}, None)
-          } -> "createDOMElementVariadic"
-        (* [@JSX] div(~children= value), coming from <div> ...(value) </div> *)
-        | _ -> raise (Invalid_argument "A spread as a DOM element's \
-          children don't make sense written together. You can simply remove the spread.")
+      let createElementCall = "createDOMElementVariadic"
       in
       let args = match nonChildrenProps with
         | [_justTheUnitArgumentAtEnd] ->
