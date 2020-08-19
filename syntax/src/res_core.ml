@@ -4024,6 +4024,14 @@ and parseStringFieldDeclaration p =
     Parser.expect ~grammar:Grammar.TypeExpression Colon p;
     let typ = parsePolyTypeExpr p in
     Some(Parsetree.Otag (fieldName, attrs, typ))
+  | Lident name ->
+    let nameLoc = mkLoc p.startPos p.endPos in
+    Parser.err p (Diagnostics.message "An inline record type declaration is only allowed in a variant constructor's declaration");
+    Parser.next p;
+    let fieldName = Location.mkloc name nameLoc in
+    Parser.expect ~grammar:Grammar.TypeExpression Colon p;
+    let typ = parsePolyTypeExpr p in
+    Some(Parsetree.Otag (fieldName, attrs, typ))
   | _token ->
     None
 

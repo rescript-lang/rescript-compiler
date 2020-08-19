@@ -38,6 +38,56 @@ type nonrec record = {
 ========================================================"
 `;
 
+exports[`inlineRecord.res 1`] = `
+"=====Parsetree==========================================
+type nonrec entity =
+  | Director 
+  | Student of
+  {
+  name: string ;
+  reportCard: < passing: bool  ;score: int   >  Js.t } 
+type nonrec user =
+  {
+  name: string ;
+  address: < street: string  ;country: string   >  Js.t }
+let make (props : < handleClick: Click.t -> unit  ;value: string   >  Js.t) =
+  render props
+=====Errors=============================================
+
+  Syntax error!
+  parsing/errors/typeDef/inlineRecord.res 6:9-15  
+  4 ┆ name: string,
+  5 ┆ reportCard: {
+  6 ┆   passing: bool,
+  7 ┆   score: int
+  8 ┆ }
+  
+  An inline record type declaration is only allowed in a variant constructor's declaration
+
+  Syntax error!
+  parsing/errors/typeDef/inlineRecord.res 14:5-10  
+  12 ┆ name: string,
+  13 ┆ address: {
+  14 ┆   street: string,
+  15 ┆   country: string,
+  16 ┆ }
+  
+  An inline record type declaration is only allowed in a variant constructor's declaration
+
+  Syntax error!
+  parsing/errors/typeDef/inlineRecord.res 19:21-31  
+  17 │ }
+  18 │ 
+  19 │ let make = (props: {handleClick: Click.t => unit, value: string}) => r
+       ender(props)
+  20 │ 
+  
+  An inline record type declaration is only allowed in a variant constructor's declaration
+
+
+========================================================"
+`;
+
 exports[`namedParameters.js 1`] = `
 "=====Parsetree==========================================
 type nonrec draw = stroke:pencil -> unit
