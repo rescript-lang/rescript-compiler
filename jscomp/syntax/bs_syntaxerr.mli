@@ -48,7 +48,7 @@ type error
   *)
   | Not_supported_directive_in_bs_return
   | Expect_opt_in_bs_return_to_opt
-  | Label_in_uncurried_bs_attribute
+  | Misplaced_label_syntax
   | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
   | Bs_uncurried_arity_too_large
