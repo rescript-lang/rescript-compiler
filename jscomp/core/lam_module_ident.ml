@@ -30,7 +30,7 @@
 
 
 
-type t = Js_op.module_id = 
+type t = J.module_id = 
   { id : Ident.t ; kind : Js_op.kind }
 
 
@@ -42,8 +42,6 @@ let of_ml id = { id ; kind =  Ml}
 let of_external id name =  {id ; kind = External name}
 
 let of_runtime id = { id ; kind = Runtime }
-
-let mk kind id = {id; kind}
 
 let name  (x : t) : string  = 
   match x.kind  with 

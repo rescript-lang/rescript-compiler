@@ -56,8 +56,8 @@ class count_hard_dependencies =
     val hard_dependencies =  create 17
     method! vident vid = 
       match vid with 
-      | Qualified (id,kind,_) ->
-          add_lam_module_ident  hard_dependencies (Lam_module_ident.mk kind id); self
+      | Qualified (vid,_) ->
+          add_lam_module_ident  hard_dependencies vid; self
       | Id _ -> 
         self
     method! expression x : 'self_type  = 

@@ -136,7 +136,7 @@ let same_str_opt ( x : string option  ) (y : string option) =
 let same_vident (x : J.vident) (y : J.vident) = 
   match x, y with 
   | Id x0, Id y0 -> Ident.same x0 y0
-  | Qualified(x0,k0,str_opt0), Qualified(y0,k1,str_opt1) -> 
+  | Qualified({id = x0; kind = k0},str_opt0), Qualified({id = y0; kind = k1},str_opt1) -> 
       Ident.same x0 y0 && same_kind k0 k1 && same_str_opt str_opt0 str_opt1
   | Id _, Qualified _ 
   | Qualified _, Id _ -> false

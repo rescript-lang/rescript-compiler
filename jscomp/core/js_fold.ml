@@ -37,10 +37,9 @@ class virtual fold =
     method vident : vident -> 'self_type =
       function
       | Id _x -> let o = o#ident _x in o
-      | Qualified (_x, _x_i1, _x_i2) ->
-          let o = o#ident _x in
-          let o = o#kind _x_i1 in
-          let o = o#option (fun o -> o#string) _x_i2 in o
+      | Qualified (_x, _x_i1) ->
+          let o = o#module_id _x in
+          let o = o#option (fun o -> o#string) _x_i1 in o
     method variable_declaration : variable_declaration -> 'self_type =
       fun { ident = _x; value = _x_i1; property = _x_i2; ident_info = _x_i3 }
         ->
@@ -297,7 +296,8 @@ class virtual fold =
       fun { statement_desc = _x; comment = _x_i1 } ->
         let o = o#statement_desc _x in
         let o = o#option (fun o -> o#string) _x_i1 in o
-    method required_modules : required_modules -> 'self_type = o#unknown
+    method required_modules : required_modules -> 'self_type =
+      o#list (fun o -> o#module_id)
     method property_name : property_name -> 'self_type = o#unknown
     method property_map : property_map -> 'self_type =
       o#list
@@ -310,6 +310,9 @@ class virtual fold =
         let o = o#exports _x_i1 in let o = o#unknown _x_i2 in o
     method number : number -> 'self_type = o#unknown
     method mutable_flag : mutable_flag -> 'self_type = o#unknown
+    method module_id : module_id -> 'self_type =
+      fun { id = _x; kind = _x_i1 } ->
+        let o = o#ident _x in let o = o#unknown _x_i1 in o
     method length_object : length_object -> 'self_type = o#unknown
     method label : label -> 'self_type = o#string
     method kind : kind -> 'self_type = o#unknown

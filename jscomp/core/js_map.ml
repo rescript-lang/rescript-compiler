@@ -40,11 +40,10 @@ class virtual map =
     method vident : vident -> vident =
       function
       | Id _x -> let _x = o#ident _x in Id _x
-      | Qualified (_x, _x_i1, _x_i2) ->
-          let _x = o#ident _x in
-          let _x_i1 = o#kind _x_i1 in
-          let _x_i2 = o#option (fun o -> o#string) _x_i2
-          in Qualified (_x, _x_i1, _x_i2)
+      | Qualified (_x, _x_i1) ->
+          let _x = o#module_id _x in
+          let _x_i1 = o#option (fun o -> o#string) _x_i1
+          in Qualified (_x, _x_i1)
     method variable_declaration :
       variable_declaration -> variable_declaration =
       fun { ident = _x; value = _x_i1; property = _x_i2; ident_info = _x_i3 }
@@ -316,7 +315,7 @@ class virtual map =
         let _x_i1 = o#option (fun o -> o#string) _x_i1
         in { statement_desc = _x; comment = _x_i1; }
     method required_modules : required_modules -> required_modules =
-      o#unknown
+      o#list (fun o -> o#module_id)
     method property_name : property_name -> property_name = o#unknown
     method property_map : property_map -> property_map =
       o#list
@@ -332,6 +331,10 @@ class virtual map =
         in { block = _x; exports = _x_i1; export_set = _x_i2; }
     method number : number -> number = o#unknown
     method mutable_flag : mutable_flag -> mutable_flag = o#unknown
+    method module_id : module_id -> module_id =
+      fun { id = _x; kind = _x_i1 } ->
+        let _x = o#ident _x in
+        let _x_i1 = o#unknown _x_i1 in { id = _x; kind = _x_i1; }
     method length_object : length_object -> length_object = o#unknown
     method label : label -> label = o#string
     method kind : kind -> kind = o#unknown

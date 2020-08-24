@@ -229,9 +229,7 @@ type ident_info = {
 
 type exports = Ident.t list 
 
-type module_id = { id : Ident.t; kind  : kind}
 
-type required_modules = module_id list
 
 
 type tag_info = Lam_tag_info.t
