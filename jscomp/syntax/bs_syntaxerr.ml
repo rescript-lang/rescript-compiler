@@ -57,11 +57,11 @@ type error
 let pp_error fmt err =
   Format.pp_print_string fmt (match err with
   | Bs_uncurried_arity_too_large
-    -> "BuckleScript support uncurried function up to arity 22"
+    -> "Uncurried function supports only up to arity 22"
   | Label_in_uncurried_bs_attribute
-    -> "BuckleScript uncurried function doesn't support labeled arguments yet"
+    -> "Uncurried function doesn't support labeled arguments yet"
   | Optional_in_uncurried_bs_attribute
-    -> "BuckleScript uncurried function doesn't support optional arguments yet"  
+    -> "Uncurried function doesn't support optional arguments yet"  
   | Expect_opt_in_bs_return_to_opt
       ->
         "bs.return directive *_to_opt expect return type to be \n\
