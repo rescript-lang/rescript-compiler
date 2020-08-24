@@ -184,15 +184,15 @@ let is_pure_module (oid : Lam_module_ident.t)  =
     end 
     
 
-let get_required_modules 
+let populate_required_modules 
     extras 
     (hard_dependencies 
-     : Lam_module_ident.Hash_set.t) : Lam_module_ident.t list =  
+     : Lam_module_ident.Hash_set.t) =  
   Lam_module_ident.Hash.iter cached_tbl (fun id  _  ->
       if not (is_pure_module id)
       then add  hard_dependencies id);
   Lam_module_ident.Hash_set.iter extras (fun id  -> 
       (if not (is_pure_module  id)
        then add hard_dependencies id : unit)
-    );
-  Lam_module_ident.Hash_set.elements hard_dependencies
+    )
+  (* Lam_module_ident.Hash_set.elements hard_dependencies *)
