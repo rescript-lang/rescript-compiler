@@ -205,10 +205,10 @@ let rec eq_expression
           eq_expression a0 b0 &&  eq_expression_list args00 args10
         | _ -> false 
       end 
-    | Var (Id i) -> 
+    | Var x ->         
       begin match y0 with 
-        | Var (Id j) ->
-          Ident.same i j
+        | Var y ->
+          Js_op_util.same_vident x y
         | _ -> false
       end
     | Bin (op0, a0,b0) -> 
@@ -222,14 +222,6 @@ let rec eq_expression
         | Str(a1,b1) -> a0 = a1  && b0 = b1
         | _ -> false 
       end     
-    | Var (Qualified (id0,k0,opts0)) -> 
-      begin match y0 with 
-        | Var (Qualified (id1,k1,opts1)) ->
-          Ident.same id0 id1 &&
-          k0 = k1 &&
-          opts0 = opts1
-        | _ -> false
-      end
     | Static_index (e0,p0,off0) -> 
       begin match y0 with 
         | Static_index(e1,p1,off1) -> 
