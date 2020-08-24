@@ -12056,7 +12056,7 @@ type error
   *)
   | Not_supported_directive_in_bs_return
   | Expect_opt_in_bs_return_to_opt
-  | Label_in_uncurried_bs_attribute
+  | Misplaced_label_syntax
   | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
   | Bs_uncurried_arity_too_large
@@ -12131,7 +12131,7 @@ type error
   *)
   | Not_supported_directive_in_bs_return
   | Expect_opt_in_bs_return_to_opt
-  | Label_in_uncurried_bs_attribute
+  | Misplaced_label_syntax
   | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
   | Bs_uncurried_arity_too_large
@@ -12139,8 +12139,11 @@ let pp_error fmt err =
   Format.pp_print_string fmt (match err with
   | Bs_uncurried_arity_too_large
     -> "Uncurried function supports only up to arity 22"
-  | Label_in_uncurried_bs_attribute
-    -> "Uncurried function doesn't support labeled arguments yet"
+  | Misplaced_label_syntax
+    -> "Label syntax is not support in this position"
+    (*
+    let fn x = ((##) x ~hi)  ~lo:1 ~hi:2 
+    *)
   | Optional_in_uncurried_bs_attribute
     -> "Uncurried function doesn't support optional arguments yet"  
   | Expect_opt_in_bs_return_to_opt
@@ -12225,7 +12228,7 @@ let optional_err loc (lbl : Asttypes.arg_label) =
 
 let err_if_label loc (lbl : Asttypes.arg_label) =  
   if lbl <> Nolabel then 
-    raise (Error (loc, Label_in_uncurried_bs_attribute))
+    raise (Error (loc, Misplaced_label_syntax))
 
 let err_large_arity loc arity = 
   if arity > 22 then 
@@ -21456,7 +21459,7 @@ let sane_property_name_check loc s =
     Location.raise_errorf ~loc 
       "property name (%s) can not contain speical character #" s 
 (* match fn as *)   
-let view_as_app (fn : exp) s : app_pattern option =      
+let view_as_app (fn : exp) (s : string list) : app_pattern option =      
   match fn.pexp_desc with 
   | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident op; _}}, args ) 
     when Ext_list.has_string s op
