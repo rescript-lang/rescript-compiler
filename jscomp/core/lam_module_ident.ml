@@ -67,7 +67,7 @@ module Cmp = struct
      that we have more assumptions about [Runtime] module, 
      like its purity etc, and its name uniqueues, in the pattern match 
      {[
-       Qualified (_,Runtime, Some "caml_int_compare")
+       {Runtime, "caml_int_compare"}
      ]}
      and we could do more optimziations.
      However, here if it is [hit] 
@@ -75,9 +75,6 @@ module Cmp = struct
      so adding either does not matter
      if it is not hit, fine
   *)
-  (* | Ml -> y.kind = Ml &&  *)
-  (* | Runtime ->  *)
-  (*   y.kind = Runtime  && Ext_ident.equal x.id y.id *)
   let hash (x : t) = 
     match x.kind with 
     | External x_kind -> Bs_hash_stubs.hash_string x_kind 

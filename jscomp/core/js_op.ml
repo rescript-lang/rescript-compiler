@@ -164,7 +164,8 @@ type int_or_char =
     }
 
  (* literal char *)
-type float_lit = { f :  string }
+type float_lit = { f :  string } [@@unboxed]
+
 type number = 
   | Float of float_lit 
   | Int of int_or_char

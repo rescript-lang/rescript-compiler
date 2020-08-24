@@ -280,7 +280,7 @@ let compile
           coerced_input.export_map
           (get_cmj_case output_prefix)
       in
-      (if not @@ !Clflags.dont_write_files then
+      (if not !Clflags.dont_write_files then
          Js_cmj_format.to_file 
           ~check_exists:(not !Js_config.force_cmj)
            (output_prefix ^ Literals.suffix_cmj) v);
