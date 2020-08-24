@@ -230,27 +230,26 @@ let assemble_args_has_splice  (arg_types : specs) (args : exprs)
       Some (E.fuse_to_seq x xs)), !dynamic
   
 
-let translate_scoped_module_val module_name fn  scopes = 
+let translate_scoped_module_val 
+  module_name (fn: string)  
+  (scopes :string list) = 
   match handle_external_opt module_name with 
   | Some (id,external_name) ->
     begin match scopes with 
       | [] -> 
-        E.external_var_dot ~external_name ~dot:fn id 
-        (* E.dot (E.var id) fn *)
+        E.external_var_field ~external_name ~dot:fn id 
       | x :: rest -> 
-        (* let start = E.dot (E.var id )  x in  *)
-        let start = E.external_var_dot ~external_name ~dot:x id in 
+        let start = E.external_var_field ~external_name ~dot:x id in 
         Ext_list.fold_left (Ext_list.append rest  [fn]) start E.dot
     end
   | None ->  
     (*  no [@@bs.module], assume it's global *)
     begin match scopes with 
       | [] -> 
-        (* E.external_var_dot ~external_name ~dot:fn id  *)
         E.js_global fn
       | x::rest -> 
         let start = E.js_global x  in 
-        Ext_list.fold_left (Ext_list.append rest  [fn]) start E.dot
+        Ext_list.fold_left (Ext_list.append_one rest  fn) start E.dot
     end
 
 let translate_scoped_access scopes obj =
@@ -284,7 +283,7 @@ let translate_ffi
   | Js_module_as_fn {external_module_name = module_name; splice} ->
     let fn =
       let (id, name) = handle_external  module_name  in
-      E.external_var_dot id ~external_name:name 
+      E.external_var id ~external_name:name 
     in           
     if splice then 
       let args, eff, dynamic = 
@@ -373,7 +372,7 @@ let translate_ffi
 
   | Js_module_as_var module_name -> 
     let (id, name) =  handle_external  module_name  in
-    E.external_var_dot id ~external_name:name 
+    E.external_var id ~external_name:name 
 
   | Js_var {name; external_module_name; scopes} -> 
 
@@ -388,7 +387,7 @@ let translate_ffi
   | Js_module_as_class module_name ->
     let fn =
       let (id,name) = handle_external  module_name in
-      E.external_var_dot id ~external_name:name  in           
+      E.external_var id ~external_name:name  in           
     let args,eff = assemble_args_no_splice  arg_types args in 
     (* TODO: fix in rest calling convention *)   
     add_eff eff        

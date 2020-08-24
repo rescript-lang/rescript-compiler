@@ -260,14 +260,15 @@ let compile
   |> ( fun (program:  J.program) -> 
       let external_module_ids : Lam_module_ident.t list = 
         if !Js_config.all_module_aliases then []
-        else 
-        let x = Lam_compile_env.get_required_modules  
-            may_required_modules  
-            (Js_fold_basic.calculate_hard_dependencies program.block) in 
-        Ext_list.sort_via_array x
-          (fun id1 id2 ->
-             Ext_string.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
-          ) 
+        else
+          let hard_deps = 
+            Js_fold_basic.calculate_hard_dependencies program.block in  
+          Lam_compile_env.populate_required_modules  
+            may_required_modules hard_deps ;        
+          Ext_list.sort_via_array (Lam_module_ident.Hash_set.to_list hard_deps)
+            (fun id1 id2 ->
+               Ext_string.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
+            ) 
       in
       Warnings.check_fatal ();  
       let effect = 
@@ -280,7 +281,7 @@ let compile
           coerced_input.export_map
           (get_cmj_case output_prefix)
       in
-      (if not @@ !Clflags.dont_write_files then
+      (if not !Clflags.dont_write_files then
          Js_cmj_format.to_file 
           ~check_exists:(not !Js_config.force_cmj)
            (output_prefix ^ Literals.suffix_cmj) v);

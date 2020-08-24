@@ -36,7 +36,6 @@ type label_noname =
   
 type label = 
   | Obj_label of {name : string }
-  (* | Obj_labelCst of {name : string} *)
   | Obj_empty 
   | Obj_optional of {name : string }
   (* it will be ignored , side effect will be recorded *)

@@ -54,12 +54,8 @@ class count_hard_dependencies =
   object(self : 'self_type)
     inherit  Js_fold.fold as super
     val hard_dependencies =  create 17
-    method! vident vid = 
-      match vid with 
-      | Qualified (id,kind,_) ->
-          add_lam_module_ident  hard_dependencies (Lam_module_ident.mk kind id); self
-      | Id _ -> 
-        self
+    method! module_id vid = 
+        add_lam_module_ident  hard_dependencies vid; self
     method! expression x : 'self_type  = 
       (* check {!Js_pass_scope} when making changes *)
       (match  Js_block_runtime.check_additional_id x with
