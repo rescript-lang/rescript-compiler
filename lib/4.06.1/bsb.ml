@@ -7722,10 +7722,10 @@ let fold h init f =
   !accu
 
 
-let elements set = 
+let to_list set = 
   fold set [] List.cons
 
-
+  
 
 
 let rec small_bucket_mem eq key lst =
@@ -7780,7 +7780,7 @@ sig
   val fold: t -> 'b  -> (key -> 'b -> 'b) -> 'b
   val length:  t -> int
   (* val stats:  t -> Hashtbl.statistics *)
-  val elements : t -> key list 
+  val to_list : t -> key list 
 end
 
 
@@ -7859,7 +7859,7 @@ let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
 (* let stats = Hash_set_gen.stats *)
-let elements = Hash_set_gen.elements
+let to_list = Hash_set_gen.to_list
 
 
 

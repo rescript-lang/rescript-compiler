@@ -116,10 +116,10 @@ let fold h init f =
   !accu
 
 
-let elements set = 
+let to_list set = 
   fold set [] List.cons
 
-
+  
 
 
 let rec small_bucket_mem eq key lst =
@@ -174,7 +174,7 @@ sig
   val fold: t -> 'b  -> (key -> 'b -> 'b) -> 'b
   val length:  t -> int
   (* val stats:  t -> Hashtbl.statistics *)
-  val elements : t -> key list 
+  val to_list : t -> key list 
 end
 
 

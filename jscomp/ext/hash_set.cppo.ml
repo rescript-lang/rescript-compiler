@@ -70,7 +70,7 @@ let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
 (* let stats = Hash_set_gen.stats *)
-let elements = Hash_set_gen.elements
+let to_list = Hash_set_gen.to_list
 
 
 
