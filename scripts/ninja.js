@@ -44,6 +44,7 @@ build core/js_map.ml: p4of core/js_map.mlp | core/j.ml
  * @returns {boolean}
  */
 function hasCamlp4() {
+  // console.log(`camlp4of ${process.env.PATH}`)  
   try {
     console.log(cp.execSync(`camlp4of -v`, { encoding: "ascii" }));
     return true;

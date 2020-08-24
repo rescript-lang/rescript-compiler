@@ -45,8 +45,8 @@ let of_runtime id = { id ; kind = Runtime }
 
 let mk kind id = {id; kind}
 
-let name  x : string  = 
-  match (x.kind : J.kind) with 
+let name  (x : t) : string  = 
+  match x.kind  with 
   | Ml  | Runtime ->  x.id.name
   | External v -> v  
 

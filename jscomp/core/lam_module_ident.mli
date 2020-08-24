@@ -46,7 +46,7 @@ val id : t -> Ident.t
 
 val name : t -> string
 
-val mk : J.kind -> Ident.t -> t
+val mk : Js_op.kind -> Ident.t -> t
 
 val of_ml : Ident.t -> t
 
