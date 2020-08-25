@@ -39,7 +39,6 @@ let id x = x.id
 
 let of_ml id = { id ; kind =  Ml}
 
-let of_external id name =  {id ; kind = External name}
 
 let of_runtime id = { id ; kind = Runtime }
 

@@ -245,6 +245,7 @@ let translate_scoped_module_val
       | [] -> 
         E.external_var_field ~external_name ~field:fn id 
       | x :: rest -> 
+        (* TODO: what happens when scope contains "default" ?*)
         let start = E.external_var_field ~external_name ~field:x id in 
         Ext_list.fold_left (Ext_list.append rest  [fn]) start E.dot
     end

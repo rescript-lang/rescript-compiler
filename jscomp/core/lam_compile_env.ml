@@ -94,8 +94,8 @@ let add_js_module
          Ext_modulename.js_id_name_of_hint_name module_name
       )
   in
-  let lam_module_ident = 
-    Lam_module_ident.of_external id module_name in  
+  let lam_module_ident : J.module_id = 
+     {id ; kind = External module_name} in  
   match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with   
   | None ->   
     lam_module_ident +> External;
