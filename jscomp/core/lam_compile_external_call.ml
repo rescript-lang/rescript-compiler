@@ -43,20 +43,24 @@ let splice_obj_fn_apply obj name args =
    [bind_name] is a hint to the compiler to generate 
    better names for external module 
 *)
-let handle_external 
+(* let handle_external 
     ({bundle ; module_bind_name} : External_ffi_types.external_module_name)
   : Ident.t * string 
   =
   Lam_compile_env.add_js_module module_bind_name bundle , 
-  bundle
+  bundle *)
 
-let handle_external_opt 
+let external_var ({bundle ; module_bind_name} : External_ffi_types.external_module_name) =
+  let id =  Lam_compile_env.add_js_module module_bind_name bundle false in 
+  E.external_var id ~external_name:bundle 
+
+(* let handle_external_opt 
     (module_name : External_ffi_types.external_module_name option) 
   : (Ident.t * string) option = 
   match module_name with 
   | Some module_name -> Some (handle_external module_name) 
   | None -> None 
-
+ *)
 
 type arg_expression = Js_of_lam_variant.arg_expression = 
   | Splice0
@@ -231,15 +235,20 @@ let assemble_args_has_splice  (arg_types : specs) (args : exprs)
   
 
 let translate_scoped_module_val 
-  module_name (fn: string)  
+  (module_name : External_ffi_types.external_module_name option) (fn: string)  
   (scopes :string list) = 
-  match handle_external_opt module_name with 
-  | Some (id,external_name) ->
+  match  module_name with 
+  | Some {bundle; module_bind_name} ->     
     begin match scopes with 
       | [] -> 
-        E.external_var_field ~external_name ~dot:fn id 
+        let default = fn = "default" in 
+        let id = Lam_compile_env.add_js_module module_bind_name bundle default in
+        E.external_var_field ~external_name:bundle ~field:fn ~default id 
       | x :: rest -> 
-        let start = E.external_var_field ~external_name ~dot:x id in 
+        (* TODO: what happens when scope contains "default" ?*)
+        let default = false in 
+        let id = Lam_compile_env.add_js_module module_bind_name bundle default in
+        let start = E.external_var_field ~external_name:bundle ~field:x ~default id  in 
         Ext_list.fold_left (Ext_list.append rest  [fn]) start E.dot
     end
   | None ->  
@@ -280,11 +289,8 @@ let translate_ffi
       add_eff eff @@              
       E.call ~info:{arity=Full; call_info = Call_na} fn args
 
-  | Js_module_as_fn {external_module_name = module_name; splice} ->
-    let fn =
-      let (id, name) = handle_external  module_name  in
-      E.external_var id ~external_name:name 
-    in           
+  | Js_module_as_fn {external_module_name; splice} ->
+    let fn = external_var external_module_name in           
     if splice then 
       let args, eff, dynamic = 
           assemble_args_has_splice  arg_types args in 
@@ -371,9 +377,7 @@ let translate_ffi
       end
 
   | Js_module_as_var module_name -> 
-    let (id, name) =  handle_external  module_name  in
-    E.external_var id ~external_name:name 
-
+    external_var module_name  
   | Js_var {name; external_module_name; scopes} -> 
 
     (* TODO #11
@@ -385,9 +389,7 @@ let translate_ffi
 
 
   | Js_module_as_class module_name ->
-    let fn =
-      let (id,name) = handle_external  module_name in
-      E.external_var id ~external_name:name  in           
+    let fn =  external_var module_name  in           
     let args,eff = assemble_args_no_splice  arg_types args in 
     (* TODO: fix in rest calling convention *)   
     add_eff eff        

@@ -39,23 +39,23 @@ let id x = x.id
 
 let of_ml id = { id ; kind =  Ml}
 
-let of_external id name =  {id ; kind = External name}
 
 let of_runtime id = { id ; kind = Runtime }
 
 let name  (x : t) : string  = 
   match x.kind  with 
   | Ml  | Runtime ->  x.id.name
-  | External v -> v  
+  | External {name = v} -> v  
 
 module Cmp = struct 
+  [@@@warning "+9"]  
   type nonrec t = t
   let equal (x : t) y = 
     match x.kind with 
-    | External x_kind-> 
+    | External {name = x_kind; default = x_default}-> 
       begin match y.kind with 
-        | External y_kind -> 
-          x_kind = (y_kind : string)
+        | External {name = y_kind; default = y_default} -> 
+          x_kind = (y_kind : string) && x_default = y_default
         | _ -> false 
       end
     | Ml 
@@ -75,7 +75,9 @@ module Cmp = struct
   *)
   let hash (x : t) = 
     match x.kind with 
-    | External x_kind -> Bs_hash_stubs.hash_string x_kind 
+    | External {name = x_kind ; _} ->   
+      (* The hash collision is rare? *)
+      Bs_hash_stubs.hash_string x_kind 
     | Ml 
     | Runtime -> 
       let x_id = x.id in 

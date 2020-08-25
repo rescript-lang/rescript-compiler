@@ -54,7 +54,10 @@ val reset : unit -> unit
     any [id] as long as put in the [cached_tbl] should be always valid,
 *)  
 val add_js_module : 
-    External_ffi_types.module_bind_name -> string  -> Ident.t 
+    External_ffi_types.module_bind_name -> 
+    string  -> 
+    bool -> 
+    Ident.t 
 
 
 (* The other dependencies are captured by querying 

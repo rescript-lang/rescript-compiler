@@ -90,6 +90,8 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Unicode _ -> true 
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
+  | Static_index (obj,(_name : string),(_pos : int32 option)) -> 
+    no_side_effect obj
   | String_index (a,b)
   | Array_index (a,b) -> no_side_effect a && no_side_effect b 
   | Is_null_or_undefined b -> no_side_effect b 
@@ -120,7 +122,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Cond _ 
   | FlatCall _ 
   | Call _ 
-  | Static_index _ 
+  
   | New _ 
   | Raw_js_code _ 
   (* | Caml_block_set_tag _  *)

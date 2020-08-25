@@ -137,7 +137,7 @@ type level =
 type kind = 
   | Ml
   | Runtime 
-  | External of string
+  | External of {name : string; default : bool}
 
 type property = Lam_compat.let_kind = 
   | Strict

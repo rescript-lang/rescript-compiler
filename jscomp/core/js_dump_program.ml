@@ -72,6 +72,8 @@ let program f cxt   ( x : J.program ) =
 let dump_program (x : J.program) oc = 
   ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x )
 
+let [@inline] is_default (x : Js_op.kind) =  
+  match x with External {default} -> default | _ -> false
 
 let node_program ~output_dir f ( x : J.deps_program) = 
   P.string f L.strict_directive; 
@@ -83,11 +85,12 @@ let node_program ~output_dir f ( x : J.deps_program) =
       f
       (Ext_list.map x.modules 
          (fun x -> 
-            Lam_module_ident.id x,
+            x.id,
             Js_name_of_module_id.string_of_module_id 
               x
               ~output_dir
-              NodeJS 
+              NodeJS,
+            is_default x.kind
          ))
   in
   program f cxt x.program  
@@ -102,9 +105,10 @@ let es6_program  ~output_dir fmt f (  x : J.deps_program) =
       f
       (Ext_list.map x.modules
          (fun x -> 
-            Lam_module_ident.id x,
+            x.id,
             Js_name_of_module_id.string_of_module_id x ~output_dir
-              fmt 
+              fmt,
+            is_default x.kind
               ))
   in
   let () = P.force_newline f in 

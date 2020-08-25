@@ -6,8 +6,6 @@ var hh = {
   lo: 20
 };
 
-hh.width;
-
 var v = {
   hi: 32,
   lo: 3

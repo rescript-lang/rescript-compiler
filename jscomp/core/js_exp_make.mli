@@ -72,7 +72,8 @@ val external_var_field :
   ?comment:string ->  
   external_name:string -> 
   Ident.t ->
-  dot:string -> 
+  field:string -> 
+  default:bool ->
   t
 
 val external_var : 

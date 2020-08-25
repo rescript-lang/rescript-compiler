@@ -1,10 +1,23 @@
+(* [@@@bs.config {flags = [|
+  "-bs-package-output"; "es6:jscomp/test"
+|]}] 
+*)
+(* FIXME it does not work*)
+
 
 type t 
 
 
 external default :   t = "default" [@@bs.module "some-es6-module"]
+external default2 :   t = "default2" [@@bs.module "some-es6-module"]
+let default,default2  = default, default2
 
-let default  = default
+
+external oefault :   t = "default" [@@bs.module "./ome-es6-module"]
+external oefault2 :   t = "default2" [@@bs.module "./ome-es6-module"]
+let oefault,oefault2  = oefault, oefault2
+
+
 type window
 external window : window = "window" [@@bs.val] [@@bs.module "vscode"]
 
