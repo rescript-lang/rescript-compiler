@@ -50,6 +50,10 @@ let handle_external
   Lam_compile_env.add_js_module module_bind_name bundle , 
   bundle
 
+let external_var ({bundle ; module_bind_name} : External_ffi_types.external_module_name) =
+  let id =  Lam_compile_env.add_js_module module_bind_name bundle in 
+  E.external_var id ~external_name:bundle
+
 let handle_external_opt 
     (module_name : External_ffi_types.external_module_name option) 
   : (Ident.t * string) option = 
@@ -280,11 +284,8 @@ let translate_ffi
       add_eff eff @@              
       E.call ~info:{arity=Full; call_info = Call_na} fn args
 
-  | Js_module_as_fn {external_module_name = module_name; splice} ->
-    let fn =
-      let (id, name) = handle_external  module_name  in
-      E.external_var id ~external_name:name 
-    in           
+  | Js_module_as_fn {external_module_name; splice} ->
+    let fn = external_var external_module_name in           
     if splice then 
       let args, eff, dynamic = 
           assemble_args_has_splice  arg_types args in 
@@ -371,9 +372,7 @@ let translate_ffi
       end
 
   | Js_module_as_var module_name -> 
-    let (id, name) =  handle_external  module_name  in
-    E.external_var id ~external_name:name 
-
+    external_var module_name  
   | Js_var {name; external_module_name; scopes} -> 
 
     (* TODO #11
@@ -385,9 +384,7 @@ let translate_ffi
 
 
   | Js_module_as_class module_name ->
-    let fn =
-      let (id,name) = handle_external  module_name in
-      E.external_var id ~external_name:name  in           
+    let fn =  external_var module_name  in           
     let args,eff = assemble_args_no_splice  arg_types args in 
     (* TODO: fix in rest calling convention *)   
     add_eff eff        
