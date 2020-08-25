@@ -56,7 +56,7 @@ BS_TRAVIS_CI=1 npm install -g .
 Then go somewhere and create a dummy project:
 
 ```sh
-bsb -init foo -theme basic-reason
+bsb -init foo -theme basic
 cd foo
 npm run build
 ```
