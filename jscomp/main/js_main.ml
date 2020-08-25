@@ -393,8 +393,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-eval", string_call (fun  s -> eval s ~suffix:Literals.suffix_ml), 
     "*internal* (experimental) set the string to be evaluated in OCaml syntax";
 
-    "-e",  string_call (fun  s -> eval s ~suffix:Literals.suffix_re), 
-    "(experimental) set the string to be evaluated in ReasonML syntax";  
+    "-e",  string_call (fun  s -> eval s ~suffix:Literals.suffix_res), 
+    "(experimental) set the string to be evaluated in ReScript syntax";  
 
     "-bs-cmi-only", set Js_config.cmi_only, 
     "*internal* Stop after generating cmi file";  
