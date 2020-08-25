@@ -25,7 +25,7 @@
 
 
 
-
+[@@@warning "+9"]
 
 
 
@@ -118,12 +118,6 @@ let update_used_stats (ident_info : J.ident_info) used_stats =
   | NA  -> 
     ident_info.used_stats <- used_stats
 
-let same_kind (x : Js_op.kind) (y : Js_op.kind)  =
-  match x , y with
-  | Ml, Ml
-  | Runtime, Runtime -> true
-  | External (u : string), External v ->  u = v 
-  | _, _ -> false
 
 let same_str_opt ( x : string option  ) (y : string option) = 
   match x ,y with
@@ -137,7 +131,14 @@ let same_vident (x : J.vident) (y : J.vident) =
   match x, y with 
   | Id x0, Id y0 -> Ident.same x0 y0
   | Qualified(x,str_opt0), Qualified(y,str_opt1) -> 
-      Ident.same x.id y.id && same_kind x.kind y.kind && same_str_opt str_opt0 str_opt1
+    let same_kind (x : Js_op.kind) (y : Js_op.kind)  =
+      match x , y with
+      | Ml, Ml
+      | Runtime, Runtime -> true
+      | External {name = u;_} , External {name = v;_} 
+        ->  u = v  (* not comparing Default since we will do it later *)
+      | _, _ -> false in 
+    Ident.same x.id y.id && same_kind x.kind y.kind && same_str_opt str_opt0 str_opt1
   | Id _, Qualified _ 
   | Qualified _, Id _ -> false
 

@@ -80,7 +80,7 @@ let reset () =
 *)
 let add_js_module 
     (hint_name : External_ffi_types.module_bind_name)
-    (module_name : string) : Ident.t 
+    (module_name : string) default  : Ident.t 
   = 
   let id = 
     Ident.create 
@@ -95,7 +95,7 @@ let add_js_module
       )
   in
   let lam_module_ident : J.module_id = 
-     {id ; kind = External module_name} in  
+     {id ; kind = External {name = module_name; default}} in  
   match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with   
   | None ->   
     lam_module_ident +> External;

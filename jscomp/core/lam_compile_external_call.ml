@@ -51,8 +51,8 @@ let splice_obj_fn_apply obj name args =
   bundle *)
 
 let external_var ({bundle ; module_bind_name} : External_ffi_types.external_module_name) =
-  let id =  Lam_compile_env.add_js_module module_bind_name bundle in 
-  E.external_var id ~external_name:bundle
+  let id =  Lam_compile_env.add_js_module module_bind_name bundle false in 
+  E.external_var id ~external_name:bundle 
 
 (* let handle_external_opt 
     (module_name : External_ffi_types.external_module_name option) 
@@ -238,15 +238,17 @@ let translate_scoped_module_val
   (module_name : External_ffi_types.external_module_name option) (fn: string)  
   (scopes :string list) = 
   match  module_name with 
-  | Some {bundle; module_bind_name} -> 
-    let id = Lam_compile_env.add_js_module module_bind_name bundle in
-    let external_name = bundle in 
+  | Some {bundle; module_bind_name} ->     
     begin match scopes with 
       | [] -> 
-        E.external_var_field ~external_name ~field:fn id 
+        let default = fn = "default" in 
+        let id = Lam_compile_env.add_js_module module_bind_name bundle default in
+        E.external_var_field ~external_name:bundle ~field:fn ~default id 
       | x :: rest -> 
         (* TODO: what happens when scope contains "default" ?*)
-        let start = E.external_var_field ~external_name ~field:x id in 
+        let default = false in 
+        let id = Lam_compile_env.add_js_module module_bind_name bundle default in
+        let start = E.external_var_field ~external_name:bundle ~field:x ~default id  in 
         Ext_list.fold_left (Ext_list.append rest  [fn]) start E.dot
     end
   | None ->  
