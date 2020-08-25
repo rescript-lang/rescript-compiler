@@ -102,8 +102,8 @@ let ml_var_dot ?comment ( id  : Ident.t) e : J.expression =
      var http = require("http")
    ]}
 *)
-let external_var_field ?comment  ~external_name:name (id : Ident.t)  ~dot : t = 
-  {expression_desc = Var (Qualified({id; kind = External name},  Some dot)); comment }
+let external_var_field ?comment  ~external_name:name (id : Ident.t)  ~field : t = 
+  {expression_desc = Var (Qualified({id; kind = External name},  Some field)); comment }
 
 
 let external_var ?comment ~external_name (id : Ident.t) : t =   

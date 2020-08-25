@@ -43,24 +43,24 @@ let splice_obj_fn_apply obj name args =
    [bind_name] is a hint to the compiler to generate 
    better names for external module 
 *)
-let handle_external 
+(* let handle_external 
     ({bundle ; module_bind_name} : External_ffi_types.external_module_name)
   : Ident.t * string 
   =
   Lam_compile_env.add_js_module module_bind_name bundle , 
-  bundle
+  bundle *)
 
 let external_var ({bundle ; module_bind_name} : External_ffi_types.external_module_name) =
   let id =  Lam_compile_env.add_js_module module_bind_name bundle in 
   E.external_var id ~external_name:bundle
 
-let handle_external_opt 
+(* let handle_external_opt 
     (module_name : External_ffi_types.external_module_name option) 
   : (Ident.t * string) option = 
   match module_name with 
   | Some module_name -> Some (handle_external module_name) 
   | None -> None 
-
+ *)
 
 type arg_expression = Js_of_lam_variant.arg_expression = 
   | Splice0
@@ -235,15 +235,17 @@ let assemble_args_has_splice  (arg_types : specs) (args : exprs)
   
 
 let translate_scoped_module_val 
-  module_name (fn: string)  
+  (module_name : External_ffi_types.external_module_name option) (fn: string)  
   (scopes :string list) = 
-  match handle_external_opt module_name with 
-  | Some (id,external_name) ->
+  match  module_name with 
+  | Some {bundle; module_bind_name} -> 
+    let id = Lam_compile_env.add_js_module module_bind_name bundle in
+    let external_name = bundle in 
     begin match scopes with 
       | [] -> 
-        E.external_var_field ~external_name ~dot:fn id 
+        E.external_var_field ~external_name ~field:fn id 
       | x :: rest -> 
-        let start = E.external_var_field ~external_name ~dot:x id in 
+        let start = E.external_var_field ~external_name ~field:x id in 
         Ext_list.fold_left (Ext_list.append rest  [fn]) start E.dot
     end
   | None ->  
