@@ -8,8 +8,6 @@ var v = {
   open: 2
 };
 
-v["Content-Type"];
-
 var b = v.l;
 
 var c = v.open;

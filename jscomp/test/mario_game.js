@@ -832,7 +832,6 @@ function make_type$2(t) {
           return setup_obj(undefined, undefined, undefined);
         }
     case /* SBlock */3 :
-        t._0;
         return setup_obj(false, undefined, undefined);
     
   }

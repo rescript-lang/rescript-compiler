@@ -46462,13 +46462,8 @@ function tree_of_signature_rec(env$prime, in_type_group, param) {
     exit = 1;
   }
   if (exit === 1) {
-    if (item.TAG === /* Sig_type */1 && item._2 < 2) {
-      set_printing_env(env$prime);
-      in_type_group$1 = true;
-    } else {
-      set_printing_env(env$prime);
-      in_type_group$1 = false;
-    }
+    set_printing_env(env$prime);
+    in_type_group$1 = item.TAG === /* Sig_type */1 && item._2 < 2 ? true : false;
   }
   var match = filter_rem_sig(item, param.tl);
   var rem = match[1];
