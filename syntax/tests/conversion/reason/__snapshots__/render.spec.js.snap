@@ -1276,6 +1276,9 @@ let x = 1
 
 exports[`string.re 1`] = `
 "%%bs.raw(\\"define(x.y, 'userAgent', {value: 'USER_AGENT_STRING'})\\")
+
+let x = \`This is a long string with a slash and line break \\\\\\\\
+carriage return\`
 "
 `;
 

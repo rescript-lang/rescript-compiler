@@ -432,6 +432,7 @@ let scanTemplateLiteralToken scanner =
       if scanner.ch == CharacterCodes.backtick
         || scanner.ch == CharacterCodes.backslash
         || scanner.ch == CharacterCodes.dollar
+        || CharacterCodes.isLineBreak scanner.ch
       then next scanner;
       scan()
     ) else (

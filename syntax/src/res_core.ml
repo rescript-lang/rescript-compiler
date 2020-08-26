@@ -838,6 +838,8 @@ let parseTemplateStringLiteral s =
           | '`' as c ->
             Buffer.add_char b c;
             loop (i + 2)
+          | c when Res_character_codes.isLineBreak (Char.code c) ->
+            loop (i + 2)
           | c ->
             Buffer.add_char b '\\';
             Buffer.add_char b c;
