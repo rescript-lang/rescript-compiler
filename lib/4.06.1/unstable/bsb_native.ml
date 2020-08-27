@@ -14846,9 +14846,6 @@ let root = OCamlRes.Res.([
       \  \"suffix\": \".bs.js\",\n\
       \  \"bs-dependencies\": [\n\
       \  ],\n\
-      \  \"warnings\": {\n\
-      \    \"error\" : \"+101\"\n\
-      \  },\n\
       \  \"refmt\": 3\n\
        }\n\
        ") ;
