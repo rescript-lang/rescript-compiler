@@ -54,5 +54,6 @@
             "command": "ocamlyacc $in"
         }
     ],
+    "bsc-flags" : ["-w", "a"],
     "namespace": true
 }
