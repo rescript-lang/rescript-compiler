@@ -5,7 +5,7 @@ type nothingYet
 external stringify : 't -> nothingYet Js.null -> int -> string = "JSON.stringify" [@@bs.val]
 
 let string_of_json ?(indent=2) value =
-  match Js.Undefined.to_opt value with
+  match Js.Undefined.toOption value with
   | None -> "undefined"
   | Some v ->
     try stringify v Js.Null.empty indent

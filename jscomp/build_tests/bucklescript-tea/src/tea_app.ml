@@ -195,7 +195,7 @@ let programLoop update view subscriptions initModel initCmd = function
     (* We own the passed in node, clear it out TODO:  Clear it out properly *)
     (* let () = Js.log ("Blah", Web.Node.firstChild parentNode, Js.Null.test (Web.Node.firstChild parentNode), false, true) in *)
     let clearPnode () = while (Js.Array.length (Web.Node.childNodes parentNode)) > 0 do
-        match Js.Null.to_opt (Web.Node.firstChild parentNode) with
+        match Js.Null.toOption (Web.Node.firstChild parentNode) with
         | None -> ()
         | Some firstChild -> let _removedChild = Web.Node.removeChild parentNode firstChild in ()
       done in
@@ -256,7 +256,7 @@ let program : ('flags, 'model, 'msg) program -> Web.Node.t Js.null_undefined -> 
   fun {init; update; view; subscriptions; shutdown} pnode flags ->
   let () = Web.polyfills () in
   let initModel, initCmd = init flags in
-  let opnode = Js.Null_undefined.to_opt pnode in
+  let opnode = Js.Null_undefined.toOption pnode in
   let pumpInterface = programLoop update view subscriptions initModel initCmd opnode in
   programStateWrapper initModel pumpInterface shutdown
 
@@ -286,7 +286,7 @@ let map func vnode =
   Vdom.map func vnode
 
 (* let fullProgram program pnode flags =
-  match Js.Null_undefined.to_opt pnode with
+  match Js.Null_undefined.toOption pnode with
   | None -> Web.Document.body ()
    | Some parentNode -> parentNode *)
 
@@ -346,7 +346,7 @@ let programLoop = function
 
 let program {init; update; view} pnode flags =
   let initModel, initCmd = init flags in
-  let opnode = Js.Null_undefined.to_opt pnode in
+  let opnode = Js.Null_undefined.toOption pnode in
   let modelState = programStateWrapperInit initModel in
   let rec viewState msgHandler = programLoopInit msgHandler view initModel opnode
   and pump_unfixed msgHandler = programLoop viewState update view initModel msgHandler in
@@ -360,17 +360,17 @@ let program {init; update; view} pnode flags =
     initModel
     initCmds
     view
-    (Js.Null_undefined.to_opt pnode) *)
+    (Js.Null_undefined.toOption pnode) *)
 
     (* {
     internal = (fun () -> Js.log "internal update");
     init = init;
     update = update;
     view = view;
-  } (Js.Null_undefined.to_opt pnode) flags *)
+  } (Js.Null_undefined.toOption pnode) flags *)
 
 
-  (* match Js.Null_undefined.to_opt pnode with
+  (* match Js.Null_undefined.toOption pnode with
   | None -> Web.Document.body ()
   | Some parentNode -> parentNode *)
 
@@ -379,11 +379,11 @@ let program {init; update; view} pnode flags =
   | None -> Js.log 42
   | Some parentNode -> Js.log 84 *)
 
-(* let beginnerProgram program pnode = match Js.Null_undefined.to_opt pnode with
+(* let beginnerProgram program pnode = match Js.Null_undefined.toOption pnode with
   | None -> Web.Document.body ()
   | Some node -> node *)
 
-(* let beginnerPrograms pnode = match Js.Null_undefined.to_opt pnode with
+(* let beginnerPrograms pnode = match Js.Null_undefined.toOption pnode with
   | None -> Web.Document.body ()
   | Some node -> Web.Node.style node *)
 
