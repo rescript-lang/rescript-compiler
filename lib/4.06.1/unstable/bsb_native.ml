@@ -7332,7 +7332,6 @@ module Bsc_warnings
   - 102 Bs_polymorphic_comparison
 *)
 let defaults_w = "+a-4-9-20-40-41-42-50-61-102"
-let defaults_warn_error = "-a+5+6+101";;
 (*TODO: add +10*)
 
 end
