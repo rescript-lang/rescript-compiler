@@ -2520,6 +2520,7 @@ and parseJsx p =
   | _ ->
     parseJsxName p
   in
+  Parser.eatBreadcrumb p;
   {jsxExpr with pexp_attributes = [jsxAttr]}
 
 (*
@@ -2547,7 +2548,6 @@ and parseJsxFragment p =
  *   |  lident = ?jsx_expr
  *)
 and parseJsxProp p =
-  Parser.leaveBreadcrumb p Grammar.JsxAttribute;
   match p.Parser.token with
   | Question | Lident _ ->
     let optional = Parser.optional p Question in

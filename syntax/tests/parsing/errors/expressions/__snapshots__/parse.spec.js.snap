@@ -303,6 +303,30 @@ switch result {
 ========================================================"
 `;
 
+exports[`implementation.res 1`] = `
+"=====Parsetree==========================================
+module InstallerDownload =
+  struct
+    let make () = ((div ~children:[] ())[@ns.braces ][@JSX ])[@@react.component
+                                                               ]
+  end
+module LicenseList = struct  end
+=====Errors=============================================
+
+  Syntax error!
+  parsing/errors/expressions/implementation.res 7:1  
+  5 │   }
+  6 │ }
+  7 │ }
+  8 │ module LicenseList = {
+  9 │ 
+  
+  I'm not sure what to parse here when looking at \\"}\\".
+
+
+========================================================"
+`;
+
 exports[`misc.js 1`] = `
 "=====Parsetree==========================================
 let x = ([%rescript.exprhole ]) + 1
