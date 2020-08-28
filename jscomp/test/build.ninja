@@ -547,6 +547,7 @@ build test/record_name_test.cmi test/record_name_test.cmj : cc test/record_name_
 build test/record_with_test.cmi test/record_with_test.cmj : cc test/record_with_test.ml | test/mt.cmj $stdlib
 build test/recursive_module.cmi test/recursive_module.cmj : cc test/recursive_module.ml | test/mt.cmj $stdlib
 build test/recursive_module_test.cmi test/recursive_module_test.cmj : cc test/recursive_module_test.ml | test/mt.cmj $stdlib
+build test/recursive_react_component.cmi test/recursive_react_component.cmj : cc test/recursive_react_component.re | test/react.cmj $stdlib
 build test/recursive_records_test.cmi test/recursive_records_test.cmj : cc test/recursive_records_test.ml | test/mt.cmj $stdlib
 build test/recursive_unbound_module_test.cmi test/recursive_unbound_module_test.cmj : cc test/recursive_unbound_module_test.ml | $stdlib
 build test/regression_print.cmi test/regression_print.cmj : cc test/regression_print.ml | $stdlib

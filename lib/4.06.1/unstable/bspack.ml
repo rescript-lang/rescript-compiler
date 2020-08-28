@@ -4040,23 +4040,23 @@ let message = function
 
 
   | Bs_unused_attribute s ->
-      "Unused BuckleScript attribute: " ^ s ^ "\n\
+      "Unused attribute: " ^ s ^ "\n\
       This means such annotation is not annotated properly. \n\
       for example, some annotations is only meaningful in externals \n"
   | Bs_polymorphic_comparison ->
-      "polymorphic comparison introduced (maybe unsafe)"
+      "Polymorphic comparison introduced (maybe unsafe)"
   | Bs_ffi_warning s ->
-      "BuckleScript FFI warning: " ^ s
+      "FFI warning: " ^ s
   | Bs_derive_warning s ->
-      "BuckleScript bs.deriving warning: " ^ s 
+      "bs.deriving warning: " ^ s 
   | Bs_fragile_external s ->     
-      "BuckleScript warning: " ^ s ^" : the external name is inferred from val name is unsafe from refactoring when changing value name"
+      s ^ " : the external name is inferred from val name is unsafe from refactoring when changing value name"
   | Bs_unimplemented_primitive s -> 
-      "BuckleScript warning: Unimplemented primitive used:" ^ s
+      "Unimplemented primitive used:" ^ s
   | Bs_integer_literal_overflow -> 
-      "BuckleScript warning: Integer literal exceeds the range of representable integers of type int"
+      "Integer literal exceeds the range of representable integers of type int"
   | Bs_uninterpreted_delimiters s -> 
-      "BuckleScript warning: Uninterpreted delimiters " ^ s  
+      "Uninterpreted delimiters " ^ s  
       
 ;;
 
@@ -4193,14 +4193,14 @@ let descriptions =
    62, "Type constraint on GADT type declaration";
     
     
-   101, "BuckleScript warning: Unused bs attributes";
-   102, "BuckleScript warning: polymorphic comparison introduced (maybe unsafe)";
-   103, "BuckleScript warning: about fragile FFI definitions" ;
-   104, "BuckleScript warning: bs.deriving warning with customized message ";
-   105, "BuckleScript warning: the external name is inferred from val name is unsafe from refactoring when changing value name";
-   106, "BuckleScript warning: Unimplemented primitive used:";
-   107, "BuckleScript warning: Integer literal exceeds the range of representable integers of type int";
-   108, "BuckleScript warning: Uninterpreted delimiters (for unicode)"  
+   101, "Unused bs attributes";
+   102, "Polymorphic comparison introduced (maybe unsafe)";
+   103, "Fragile FFI definitions" ;
+   104, "bs.deriving warning with customized message ";
+   105, "External name is inferred from val name is unsafe from refactoring when changing value name";
+   106, "Unimplemented primitive used:";
+   107, "Integer literal exceeds the range of representable integers of type int";
+   108, "Uninterpreted delimiters (for unicode)"  
    
   ]
 ;;
