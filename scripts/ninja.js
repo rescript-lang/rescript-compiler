@@ -1559,9 +1559,6 @@ ${cppoList("outcome_printer", [
   ["reason_syntax_util.ml", "reason_syntax_util.cppo.ml", ""],
   ["reason_syntax_util.mli", "reason_syntax_util.cppo.mli", ""],
 ])}
-${cppoList("syntax", [
-  ["reactjs_jsx_ppx_v3.ml", "reactjs_jsx_ppx.cppo.ml", ""],
-])}
 build ../${
     process.platform
   }/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
@@ -1647,7 +1644,7 @@ build common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
 build ../${
     process.platform
-  }/bsc: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa napkin/napkin.cmxa main/js_main.cmx
+  }/bsc: link napkin/napkin.cmxa js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
 build ../${
     process.platform
