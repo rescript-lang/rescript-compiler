@@ -3461,6 +3461,7 @@ val mk_lazy: (unit -> 'a) -> 'a Lazy.t
         the warning settings at the time [mk_lazy] is called. *)
 
 
+val nerrors : int ref
 val message : t -> string 
 val number: t -> int
 val super_report :

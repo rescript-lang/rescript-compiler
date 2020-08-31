@@ -270,7 +270,6 @@ let compile
                Ext_string.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
             ) 
       in
-      Warnings.check_fatal ();  
       let effect = 
         Lam_stats_export.get_dependent_module_effect
         maybe_pure external_module_ids in 
@@ -302,29 +301,38 @@ let lambda_as_module
       (if !Js_config.bs_suffix then Literals.suffix_bs_js else Literals.suffix_js) 
   in
   let package_info = Js_packages_state.get_packages_info () in 
-  if Js_packages_info.is_empty package_info && !Js_config.js_stdout then     
-    Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout      
-  else
+  if Js_packages_info.is_empty package_info && !Js_config.js_stdout then begin    
+    Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout;
+    if !Warnings.nerrors > 0 then begin 
+      Warnings.nerrors := 0;
+      exit 77
+    end  
+  end else
     Js_packages_info.iter package_info (fun {module_system; path = _path} -> 
         let output_chan chan  = 
           Js_dump_program.dump_deps_program ~output_prefix
             module_system 
             lambda_output
             chan in
+        let target_file = 
+          (Lazy.force Ext_path.package_dir //
+           _path //
+           basename
+           (* #913 only generate little-case js file *)
+          ) in     
+        if !Warnings.nerrors > 0 then begin 
+          Warnings.nerrors := 0 ;
+          if Sys.file_exists target_file then Sys.remove target_file;
+          exit 77
+          (* don't write js file, we need remove js files 
+            otherwise the js files are out-of-date
+            exit 177 *)
+        end else   
         if not @@ !Clflags.dont_write_files then 
           Ext_pervasives.with_file_as_chan
-#if BS_NATIVE then
-            (if Filename.is_relative _path then Lazy.force Ext_path.package_dir // _path // basename
-             (* #913 only generate little-case js file *)
-            else _path // basename) output_chan )
-#else
-            (Lazy.force Ext_path.package_dir //
-             _path //
-             basename
-             (* #913 only generate little-case js file *)
-            ) output_chan )
+            target_file output_chan )
   
-#end
+
 
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 
     We need handle some definitions in standard libraries in a special way, most are io specific, 
