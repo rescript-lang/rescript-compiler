@@ -9,33 +9,33 @@ type t = <
   setItem : string -> string -> unit [@bs.meth];
 > Js.t
 
-let length window = match Js.Undefined.to_opt window##localStorage with
+let length window = match Js.Undefined.toOption window##localStorage with
   | None -> None
   | Some localStorage -> Some (localStorage##length)
 
 
-let clear window = match Js.Undefined.to_opt window##localStorage with
+let clear window = match Js.Undefined.toOption window##localStorage with
   | None -> None
   | Some localStorage -> Some (localStorage##clear ())
 
 
-let key window idx = match Js.Undefined.to_opt window##localStorage with
+let key window idx = match Js.Undefined.toOption window##localStorage with
   | None -> None
   | Some localStorage -> Some (localStorage##key idx)
 
 
-let getItem window key = match Js.Undefined.to_opt window##localStorage with
+let getItem window key = match Js.Undefined.toOption window##localStorage with
   | None -> None
   | Some localStorage ->
     try Some (localStorage##getItem key)
     with _ -> None
 
 
-let removeItem window key = match Js.Undefined.to_opt window##localStorage with
+let removeItem window key = match Js.Undefined.toOption window##localStorage with
   | None -> None
   | Some localStorage -> Some (localStorage##removeItem key)
 
 
-let setItem window key value = match Js.Undefined.to_opt window##localStorage with
+let setItem window key value = match Js.Undefined.toOption window##localStorage with
   | None -> None
   | Some localStorage -> Some (localStorage##setItem key value)

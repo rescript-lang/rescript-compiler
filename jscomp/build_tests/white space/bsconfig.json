@@ -9,7 +9,6 @@
         ,"in-source": true
     }],
     "warnings": {
-        "number": "A",
-        "error" : true
+        "number": "A"
     }
 }

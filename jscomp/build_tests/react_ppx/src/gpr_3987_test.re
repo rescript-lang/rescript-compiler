@@ -48,7 +48,7 @@ module BuckleScript3987ReproOk2 = {
   type onChange = (. string, int) => unit;
 
   [@react.component]
-  let make = (~value: string, ~onChange: onChange) => {
+  let make = (~value as _, ~onChange as _ : onChange) => {
     React.null;
   };
 };
@@ -59,7 +59,7 @@ let _ = <BuckleScript3987ReproOk2 value="test" onChange={(. _, _) => ()} />;
 /* Inline uncurried prop type causes an error */
 module BuckleScript3987ReproError = {
   [@react.component]
-  let make = (~value: string, ~onChange: (. string, int) => unit) => {
+  let make = (~value as _: string, ~onChange as _ : (. string, int) => unit) => {
     React.null;
   };
 };

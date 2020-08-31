@@ -294,10 +294,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
           <num1>..<num2>    a range of consecutive warning numbers\n\
        default setting is " ^ Bsc_warnings.defaults_w;  
 
-  "-warn-error", string_call (Warnings.parse_options true),
-  "<list>  Enable or disable error status for warnings according\n\
-       to <list>.  See option -w for the syntax of <list>.\n\
-       Default setting is " ^ Bsc_warnings.defaults_warn_error;
+  "-warn-error", string_call (fun _ -> ()),
+  "Deprecated: warnings are errors";
 
     "-o", string_optional_set Clflags.output_name, 
     "<file>  set output file name to <file>";

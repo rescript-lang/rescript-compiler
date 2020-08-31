@@ -11,30 +11,30 @@ type t = <
 > Js.t
 
 
-let length window = match Js.Undefined.to_opt window##history with
+let length window = match Js.Undefined.toOption window##history with
   | None -> -1
   | Some history -> history##length
 
-let back window = match Js.Undefined.to_opt window##history with
+let back window = match Js.Undefined.toOption window##history with
   | None -> ()
   | Some history -> history##back
 
-let forward window = match Js.Undefined.to_opt window##history with
+let forward window = match Js.Undefined.toOption window##history with
   | None -> ()
   | Some history -> history##forward
 
-let go window to' = match Js.Undefined.to_opt window##history with
+let go window to' = match Js.Undefined.toOption window##history with
   | None -> ()
   | Some history -> history##go to'
 
-let pushState window state title url = match Js.Undefined.to_opt window##history with
+let pushState window state title url = match Js.Undefined.toOption window##history with
   | None -> ()
   | Some history -> history##pushState state title url
 
-let replaceState window state title url = match Js.Undefined.to_opt window##history with
+let replaceState window state title url = match Js.Undefined.toOption window##history with
   | None -> ()
   | Some history -> history##replaceState state title url
 
-let state window = match Js.Undefined.to_opt window##history with
+let state window = match Js.Undefined.toOption window##history with
   | None -> Js.Undefined.empty
   | Some history -> history##state

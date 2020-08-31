@@ -1,10 +1,9 @@
 var p = require("child_process");
+const { assert } = require("console");
 
 var o = p.spawnSync(`bsb`);
 
 console.log(o.stderr + "");
 console.log("-----");
 console.log(o.stdout + "");
-if (o.error) {
-  throw o.error;
-}
+assert(o.status === 0)
