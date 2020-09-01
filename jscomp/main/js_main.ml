@@ -10,15 +10,22 @@
 (*                                                                     *)
 (***********************************************************************)
 
+let output_prefix name =
+  let oname =
+    match !Clflags.output_name with
+    | None -> name
+    | Some n -> (Clflags.output_name := None; n) in
+  Filename.remove_extension oname
+
 
 let process_interface_file ppf name =
   Js_implementation.interface ppf name 
   ~parser:Pparse_driver.parse_interface
-  (Compenv.output_prefix name)
+  (output_prefix name)
 let process_implementation_file ppf name =
   Js_implementation.implementation ppf name 
   ~parser:Pparse_driver.parse_implementation
-  (Compenv.output_prefix name)
+  (output_prefix name)
 
 
 let setup_reason_error_printer () = 
@@ -117,7 +124,7 @@ let process_file ppf sourcefile =
   Location.set_input_name  sourcefile;  
   let ext = Ext_filename.get_extension_maybe sourcefile in 
   let input = classify_input ext in 
-  let opref = Compenv.output_prefix sourcefile in 
+  let opref = output_prefix sourcefile in 
   match input with 
   | Re -> handle_reason Ml sourcefile ppf opref     
   | Rei ->
@@ -189,8 +196,6 @@ let anonymous ~(rev_args : string list) =
     begin 
       match rev_args with 
       | [filename] ->   
-        Compenv.readenv ppf 
-          (Before_compile filename); 
         process_file ppf filename
       | [] -> ()  
       | _ -> 
@@ -200,14 +205,10 @@ let anonymous ~(rev_args : string list) =
 (** used by -impl -intf *)
 let impl filename =
   Js_config.js_stdout := false;  
-  Compenv.readenv ppf 
-    (Before_compile filename)
-  ; process_implementation_file ppf filename;;
+  process_implementation_file ppf filename;;
 let intf filename =
   Js_config.js_stdout := false ;  
-  Compenv.readenv ppf 
-    (Before_compile filename)
-  ; process_interface_file ppf filename;;
+  process_interface_file ppf filename;;
 
 
 let format_file input =  
@@ -303,7 +304,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
      "-bs-read-cmi",  unit_call (fun _ -> Clflags.assume_no_mli := Mli_exists), 
      "*internal* Assume mli always exist ";
 
-    "-ppx", string_list_add Compenv.first_ppx,
+    "-ppx", string_list_add Clflags.all_ppx,
     "<command>  Pipe abstract syntax trees through preprocessor <command>";
 
     "-open", string_list_add Clflags.open_modules,
@@ -531,7 +532,6 @@ let _ : unit =
   Ast_config.add_signature 
     flags file_level_flags_handler;    
   try
-    Compenv.readenv ppf Before_args;
     Bsc_args.parse_exn 
       ~argv:Sys.argv 
       buckle_script_flags anonymous ~usage;

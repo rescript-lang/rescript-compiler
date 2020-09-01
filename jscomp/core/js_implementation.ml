@@ -73,7 +73,7 @@ let after_parsing_sig ppf  outputprefix ast  =
     begin 
       let modulename = module_of_filename ppf !Location.input_name outputprefix in
       Lam_compile_env.reset () ;
-      let initial_env = Compmisc.initial_env () in
+      let initial_env = Res_compmisc.initial_env () in
       Env.set_unit_name modulename;
 
       let tsg = Typemod.type_interface 
@@ -103,7 +103,7 @@ let after_parsing_sig ppf  outputprefix ast  =
 
 
 let interface ~parser ppf fname outputprefix =
-  Compmisc.init_path false;
+  Res_compmisc.init_path ();
   parser fname
   |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Mli 
   |> Ppx_entry.rewrite_signature
@@ -112,7 +112,7 @@ let interface ~parser ppf fname outputprefix =
   |> after_parsing_sig ppf  outputprefix 
 
 let interface_mliast ppf fname outputprefix  = 
-  Compmisc.init_path false;
+  Res_compmisc.init_path ();
   Binary_ast.read_ast Mli fname 
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.interface
   |> print_if_pipe ppf Clflags.dump_source Pprintast.signature 
@@ -177,7 +177,7 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
     begin
       let modulename = Ext_filename.module_name outputprefix in
       Lam_compile_env.reset () ;
-      let env = Compmisc.initial_env() in
+      let env = Res_compmisc.initial_env() in
       Env.set_unit_name modulename;
       let (typedtree, coercion, _, _) =
         Typemod.type_implementation_more 
@@ -202,7 +202,7 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
       process_with_gentype (outputprefix ^ ".cmt")        
     end
 let implementation ~parser ppf fname outputprefix  =
-  Compmisc.init_path false;  
+  Res_compmisc.init_path ();  
   parser fname
   |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Ml  
   |> Ppx_entry.rewrite_implementation
@@ -211,7 +211,7 @@ let implementation ~parser ppf fname outputprefix  =
   |> after_parsing_impl ppf outputprefix 
 
 let implementation_mlast ppf fname outputprefix = 
-  Compmisc.init_path false;
+  Res_compmisc.init_path ();
   Binary_ast.read_ast Ml fname
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.implementation
   |> print_if_pipe ppf Clflags.dump_source Pprintast.structure
@@ -248,7 +248,7 @@ let implementation_map ppf sourcefile outputprefix =
       if Ext_string.is_empty line then acc 
       else make_structure_item ~ns line :: acc 
     )  in 
-  Compmisc.init_path false;
+  Res_compmisc.init_path ();
   ml_ast
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.implementation
   |> print_if_pipe ppf Clflags.dump_source Pprintast.structure
