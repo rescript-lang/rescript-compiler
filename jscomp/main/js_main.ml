@@ -304,7 +304,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
      "-bs-read-cmi",  unit_call (fun _ -> Clflags.assume_no_mli := Mli_exists), 
      "*internal* Assume mli always exist ";
 
-    "-ppx", string_list_add Compenv.first_ppx,
+    "-ppx", string_list_add Clflags.all_ppx,
     "<command>  Pipe abstract syntax trees through preprocessor <command>";
 
     "-open", string_list_add Clflags.open_modules,

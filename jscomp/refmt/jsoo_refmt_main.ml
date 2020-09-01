@@ -42,11 +42,11 @@ let error_of_exn e =
 let implementation ~use_super_errors impl str  : Js.Unsafe.obj =
   let modulename = "Test" in
   (* let env = !Toploop.toplevel_env in *)
-  (* Compmisc.init_path false; *)
+  (* Res_compmisc.init_path false; *)
   (* let modulename = module_of_filename ppf sourcefile outputprefix in *)
   (* Env.set_unit_name modulename; *)
   Lam_compile_env.reset () ;
-  let env = Compmisc.initial_env() in (* Question ?? *)
+  let env = Res_compmisc.initial_env() in (* Question ?? *)
   (* let finalenv = ref Env.empty in *)
   let types_signature = ref [] in
   if use_super_errors then begin
