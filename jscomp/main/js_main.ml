@@ -28,7 +28,7 @@ let setup_reason_error_printer () =
 let setup_napkin_error_printer () =  
   Js_config.napkin := true;
   Lazy.force Super_main.setup;  
-  Lazy.force Napkin_outcome_printer.setup
+  Lazy.force Res_outcome_printer.setup
 
 let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf opref = 
   setup_reason_error_printer ();
@@ -133,12 +133,12 @@ let process_file ppf sourcefile =
   | Res -> 
     setup_napkin_error_printer ();
     Js_implementation.implementation 
-      ~parser:Napkin_driver.parse_implementation
+      ~parser:Res_driver.parse_implementation
       ppf sourcefile opref 
   | Resi ->   
     setup_napkin_error_printer ();
     Js_implementation.interface 
-      ~parser:Napkin_driver.parse_interface
+      ~parser:Res_driver.parse_interface
       ppf sourcefile opref       
   | Ml ->
     Js_implementation.implementation 
@@ -218,7 +218,7 @@ let format_file input =
     | Res | Resi -> `res 
     | Re | Rei -> `refmt (Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe") 
     | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) in   
-  output_string stdout (Napkin_multi_printer.print syntax ~input)
+  output_string stdout (Res_multi_printer.print syntax ~input)
 
 let set_color_option option = 
   match Clflags.parse_color_setting option with
