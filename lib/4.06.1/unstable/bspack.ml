@@ -9298,6 +9298,9 @@ let int_unsafe_blit: int array -> int -> int array -> int -> int -> unit =
     Array.blit
 
 
+
+
+external set_as_old_file : string -> unit = "caml_stale_file"
 end
 module Ext_string : sig 
 #1 "ext_string.mli"

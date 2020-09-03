@@ -18116,6 +18116,9 @@ external
 
     
 
+
+
+external set_as_old_file : string -> unit = "caml_stale_file"
 end
 module Hash_set_string : sig 
 #1 "hash_set_string.mli"

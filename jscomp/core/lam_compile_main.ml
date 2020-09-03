@@ -320,17 +320,20 @@ let lambda_as_module
            basename
            (* #913 only generate little-case js file *)
           ) in     
+        (if not !Clflags.dont_write_files then 
+          Ext_pervasives.with_file_as_chan
+            target_file output_chan );
         if !Warnings.nerrors > 0 then begin 
           Warnings.nerrors := 0 ;
-          if Sys.file_exists target_file then Sys.remove target_file;
+          if Sys.file_exists target_file then begin 
+            Bs_hash_stubs.set_as_old_file target_file
+          end;
           exit 77
           (* don't write js file, we need remove js files 
-            otherwise the js files are out-of-date
-            exit 177 *)
-        end else   
-        if not @@ !Clflags.dont_write_files then 
-          Ext_pervasives.with_file_as_chan
-            target_file output_chan )
+             otherwise the js files are out-of-date
+             exit 177 *)
+        end             
+        )
   
 
 
