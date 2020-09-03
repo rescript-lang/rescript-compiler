@@ -6719,6 +6719,9 @@ external
 
     
 
+
+
+external set_as_old_file : string -> unit = "caml_stale_file"
 end
 module Ext_util : sig 
 #1 "ext_util.mli"
