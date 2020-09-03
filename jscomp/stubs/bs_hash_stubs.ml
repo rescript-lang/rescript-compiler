@@ -36,3 +36,6 @@ external
 
     
 #end
+
+
+external set_as_old_file : string -> unit = "caml_stale_file"

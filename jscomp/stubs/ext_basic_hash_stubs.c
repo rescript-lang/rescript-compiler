@@ -2,6 +2,8 @@
 #include "caml/mlvalues.h"
 #include <string.h>
 #include <stdint.h>
+#include "caml/memory.h"
+#include "caml/signals.h"
 typedef uint32_t uint32;
 
 #define FINAL_MIX(h) \
@@ -137,8 +139,39 @@ CAMLprim value caml_string_length_based_compare(value s1, value s2)
 
 
 
-
-
+#include <sys/time.h>
+#ifdef _WIN32
+#include <sys/utime.h>
+CAMLprim value caml_stale_file(value path)
+{
+  CAMLparam1(path);
+  struct _utimbuf tv;
+  char * p = caml_stat_strdup(String_val(path));
+  tv.modtime = 0;  
+  caml_enter_blocking_section();
+  _utime(p, &tv);
+  caml_leave_blocking_section();
+  caml_stat_free(p);
+  CAMLreturn(Val_unit);
+}
+#else
+CAMLprim value caml_stale_file(value path)
+{
+  CAMLparam1(path);
+  struct timeval tv[2];
+  char * p = caml_stat_strdup(String_val(path));
+  tv[0].tv_sec = 0.0;
+  tv[0].tv_usec = 0.0;
+  tv[1].tv_sec = 0.0;
+  tv[1].tv_usec = 0.0;
+  caml_enter_blocking_section();
+  utimes(p, tv);
+  caml_leave_blocking_section();
+  caml_stat_free(p);
+  // TODO: error checking
+  CAMLreturn(Val_unit);
+}
+#endif
 /* local variables: */
 /* compile-command: "ocamlopt.opt -c ext_basic_hash_stubs.c" */
 /* end: */
