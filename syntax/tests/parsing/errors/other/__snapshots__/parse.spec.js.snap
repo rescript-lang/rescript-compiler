@@ -6,7 +6,8 @@ exports[`patternMatching.js 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/other/patternMatching.js 1:14-2:1  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/other/patternMatching.js:1:14-2:1
+  
   1 │ switch expr {
   2 │ }
   3 │ 
@@ -30,7 +31,8 @@ type nonrec 'extraInfo student =
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/other/regionMissingComma.res 2:31  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/other/regionMissingComma.res:2:31
+  
   1 │ external make: (
   2 │   ~style: ReactDOMRe.Style.t=?.
   3 │   ~image: bool=?,
@@ -39,7 +41,8 @@ type nonrec 'extraInfo student =
   Did you forget a \`,\` here? 
 
   Syntax error!
-  parsing/errors/other/regionMissingComma.res 8:11-9:11  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/other/regionMissingComma.res:8:11-9:11
+  
    6 │ type student<'extraInfo> = {
    7 │   name: string,
    8 │   age: int
@@ -64,7 +67,8 @@ let x::y = myList
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/other/spread.js 1:12-14  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/other/spread.js:1:12-14
+  
   1 │ let arr = [...x, ...y]
   2 │ let [...arr, _] = [1, 2, 3]
   3 │ 
@@ -72,7 +76,8 @@ let x::y = myList
   Arrays can't use the \`...\` spread currently. Please use \`concat\` or other Array helpers.
 
   Syntax error!
-  parsing/errors/other/spread.js 2:6-8  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/other/spread.js:2:6-8
+  
   1 │ let arr = [...x, ...y]
   2 │ let [...arr, _] = [1, 2, 3]
   3 │ 
@@ -83,7 +88,8 @@ Explanation: such spread would create a subarray; out of performance concern, ou
 Solution: if it's to validate the first few elements, use a \`when\` clause + Array size check + \`get\` checks on the current pattern. If it's to obtain a subarray, use \`Array.sub\` or \`Belt.Array.slice\`.
 
   Syntax error!
-  parsing/errors/other/spread.js 4:21-23  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/other/spread.js:4:21-23
+  
   2 │ let [...arr, _] = [1, 2, 3]
   3 │ 
   4 │ let record = {...x, ...y}
@@ -94,7 +100,8 @@ Solution: if it's to validate the first few elements, use a \`when\` clause + Ar
 Explanation: since records have a known, fixed shape, a spread like \`{a, ...b}\` wouldn't make sense, as \`b\` would override every field of \`a\` anyway.
 
   Syntax error!
-  parsing/errors/other/spread.js 5:15-18  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/other/spread.js:5:15-18
+  
   3 │ 
   4 │ let record = {...x, ...y}
   5 │ let {...x, ...y} = myRecord
@@ -106,7 +113,8 @@ Explanation: you can't collect a subset of a record's field into its own record,
 Solution: you need to pull out each field you want explicitly.
 
   Syntax error!
-  parsing/errors/other/spread.js 8:13-22  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/other/spread.js:8:13-22
+  
   6 │ 
   7 │ let myList = list{...x, ...y}
   8 │ let list{...x, ...y} = myList

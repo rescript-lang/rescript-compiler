@@ -20,7 +20,8 @@ module Error3 =
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/typexpr/arrow.js 2:22-24  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/arrow.js:2:22-24
+  
   1 │ // notice usage of -> instead of =>
   2 │ external add_nat: nat -> int = \\"add_nat_bytecode\\" \\"add_nat_native\\"
   3 │ 
@@ -29,7 +30,8 @@ module Error3 =
   Did you forget a \`=>\` here? 
 
   Syntax error!
-  parsing/errors/typexpr/arrow.js 7:27-30  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/arrow.js:7:27-30
+  
   5 │   type observation ={
   6 │     observed: int,
   7 │     onStep: (~currentValue   ) => unit
@@ -39,7 +41,8 @@ module Error3 =
   Did you forget a \`:\` here? It signals the start of a type
 
   Syntax error!
-  parsing/errors/typexpr/arrow.js 14:26-29  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/arrow.js:14:26-29
+  
   12 │   type observation ={
   13 │     observed: int,
   14 │     onStep: ~currentValue  => unit
@@ -76,7 +79,8 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js 2:8-3:13  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/bsObjSugar.js:2:8-3:13
+  
   1 │ type state = {
   2 │   \\"url\\"
   3 │   \\"protocols\\": array<string>
@@ -86,7 +90,8 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   Did you forget a \`:\` here? It signals the start of a type
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js 7:14-8:13  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/bsObjSugar.js:7:14-8:13
+  
    5 │ 
    6 │ type state = {
    7 │   @attr \\"url\\"
@@ -97,7 +102,8 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   Did you forget a \`:\` here? It signals the start of a type
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js 13:14-14:13  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/bsObjSugar.js:13:14-14:13
+  
   11 │ type state = {
   12 │   \\"url\\": string,
   13 │   \\"protocols\\"
@@ -108,7 +114,8 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   Did you forget a \`:\` here? It signals the start of a type
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js 19:14-20:1  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/bsObjSugar.js:19:14-20:1
+  
   17 │ type state = {
   18 │   \\"url\\": string,
   19 │   \\"protocols\\"
@@ -119,7 +126,8 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   Did you forget a \`:\` here? It signals the start of a type
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js 25:1  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/bsObjSugar.js:25:1
+  
   23 │   @bs.meth
   24 │   \\"send\\": string =>
   25 │ }
@@ -129,7 +137,8 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   I'm missing a type here
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js 28:10  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/bsObjSugar.js:28:10
+  
   26 │ 
   27 │ type state = {
   28 │   \\"age\\": ,
@@ -139,7 +148,8 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   I'm missing a type here
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js 33:18  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/bsObjSugar.js:33:18
+  
   31 │ 
   32 │ type state = {
   33 │   @bs.set \\"age\\": ,
@@ -149,7 +159,8 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   I'm missing a type here
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js 37:25  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/bsObjSugar.js:37:25
+  
   35 │ }
   36 │ 
   37 │ type state = {.. \\"age\\": }
@@ -159,7 +170,8 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   I'm missing a type here
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js 40:8-41:8  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/bsObjSugar.js:40:8-41:8
+  
   38 │ type state = {
   39 │   ..
   40 │   \\"age\\" 
@@ -170,7 +182,8 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   Did you forget a \`:\` here? It signals the start of a type
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js 46:3-11  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/bsObjSugar.js:46:3-11
+  
   44 │ type websocket = {
   45 │   \\"id\\":
   46 │   \\"channel\\": channelTyp
@@ -180,7 +193,8 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   I'm missing a type here
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js 50:7-51:0  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/bsObjSugar.js:50:7-51:0
+  
   48 │ 
   49 │ type websocket = {
   50 │   \\"id\\"
@@ -199,7 +213,8 @@ external printName : name:unit -> unit = \\"printName\\"[@@bs.module
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/typexpr/garbage.res 2:28  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/garbage.res:2:28
+  
   1 │ @bs.module(\\"moduleName\\")
   2 │ external printName: (~name:?, unit) => unit = \\"printName\\"
   3 │ 
@@ -221,7 +236,8 @@ type nonrec t = int node option
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/typexpr/typeConstructorArgs.js 2:28-31  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/typeConstructorArgs.js:2:28-31
+  
   1 │ type node<'a> = {
   2 │   _value: Js.Nullable.value('a)
   3 │ }
@@ -232,7 +248,8 @@ type nonrec t = int node option
 
 
   Syntax error!
-  parsing/errors/typexpr/typeConstructorArgs.js 5:24-27  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/typeConstructorArgs.js:5:24-27
+  
   3 │ }
   4 │ 
   5 │ type t<'a> = Belt.Map.t('a)
@@ -244,7 +261,8 @@ type nonrec t = int node option
 
 
   Syntax error!
-  parsing/errors/typexpr/typeConstructorArgs.js 6:32-35  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/typeConstructorArgs.js:6:32-35
+  
   4 │ 
   5 │ type t<'a> = Belt.Map.t('a)
   6 │ type t<'a> = private Belt.Map.t('a)
@@ -256,7 +274,8 @@ type nonrec t = int node option
 
 
   Syntax error!
-  parsing/errors/typexpr/typeConstructorArgs.js 9:28  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/typeConstructorArgs.js:9:28
+  
    7 │ 
    8 │ type t = option<<node<int>>
    9 │ type t = option(<node<int>>)
@@ -275,7 +294,8 @@ type nonrec 'A x = 'let
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/typexpr/typeVar.res 1:15  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/typeVar.res:1:15
+  
   1 │ type x<'A> = '_
   2 │ type x<'A> = 'let
   3 │ 
@@ -283,7 +303,8 @@ type nonrec 'A x = 'let
   A type variable consists of a singlequote followed by a name like \`'a\` or \`'A\`
 
   Syntax error!
-  parsing/errors/typexpr/typeVar.res 2:15-17  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/typexpr/typeVar.res:2:15-17
+  
   1 │ type x<'A> = '_
   2 │ type x<'A> = 'let
   3 │ 

@@ -8,7 +8,8 @@ let 4 = for [%rescript.patternhole ] = 0 to 10 do Js.log \\"for\\" done
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/pattern/missing.res 1:5  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/pattern/missing.res:1:5
+  
   1 │ let = 2
   2 │ let = 4
   3 │ 
@@ -16,7 +17,8 @@ let 4 = for [%rescript.patternhole ] = 0 to 10 do Js.log \\"for\\" done
   I was expecting a name for this let-binding. Example: \`let message = \\"hello\\"\`
 
   Syntax error!
-  parsing/errors/pattern/missing.res 2:5  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/pattern/missing.res:2:5
+  
   1 │ let = 2
   2 │ let = 4
   3 │ 
@@ -25,7 +27,8 @@ let 4 = for [%rescript.patternhole ] = 0 to 10 do Js.log \\"for\\" done
   I was expecting a name for this let-binding. Example: \`let message = \\"hello\\"\`
 
   Syntax error!
-  parsing/errors/pattern/missing.res 4:5-6  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/pattern/missing.res:4:5-6
+  
   2 │ let = 4
   3 │ 
   4 │ for in 0 to 10 {
@@ -35,7 +38,8 @@ let 4 = for [%rescript.patternhole ] = 0 to 10 do Js.log \\"for\\" done
   A for-loop has the following form: \`for i in 0 to 10\`. Did you forget to supply a name before \`in\`?
 
   Syntax error!
-  parsing/errors/pattern/missing.res 9:3-4  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/pattern/missing.res:9:3-4
+  
    7 │ 
    8 │ switch x {
    9 │ | => ()

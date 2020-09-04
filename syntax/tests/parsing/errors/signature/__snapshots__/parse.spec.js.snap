@@ -7,7 +7,8 @@ val y : int
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/signature/closingBraces.resi 3:1  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/signature/closingBraces.resi:3:1
+  
   1 │ let x: int
   2 │ 
   3 │ }}}
@@ -29,7 +30,8 @@ val z2 : float[@@genType ]
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/signature/consecutive.resi 1:11-14  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/signature/consecutive.resi:1:11-14
+  
   1 │ let x: int let y: float
   2 │ 
   3 │ export z1: int export z2: float
@@ -37,7 +39,8 @@ val z2 : float[@@genType ]
   consecutive specifications on a line must be separated by ';' or a newline
 
   Syntax error!
-  parsing/errors/signature/consecutive.resi 3:15-21  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/signature/consecutive.resi:3:15-21
+  
   1 │ let x: int let y: float
   2 │ 
   3 │ export z1: int export z2: float

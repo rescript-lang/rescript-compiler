@@ -7,7 +7,8 @@ let x = \\"\\\\\\\\0AAA\\"
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/scanner/escapeSequence.js 1:10-11  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/scanner/escapeSequence.js:1:10-11
+  
   1 │ let x = \\"\\\\0\\"
   2 │ 
   3 │ let x = \\"\\\\oAAA\\"
@@ -15,7 +16,8 @@ let x = \\"\\\\\\\\0AAA\\"
   unknown escape sequence
 
   Syntax error!
-  parsing/errors/scanner/escapeSequence.js 3:10-11  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/scanner/escapeSequence.js:3:10-11
+  
   1 │ let x = \\"\\\\0\\"
   2 │ 
   3 │ let x = \\"\\\\oAAA\\"
@@ -34,7 +36,8 @@ let newX = x +. (newVelocity *. secondPerFrame)
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/scanner/oldDerefOp.js 1:50  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/scanner/oldDerefOp.js:1:50
+  
   1 │ let newVelocity = velocity +. a *. secondPerFrame^;
   2 │ let newX = x +. newVelocity *. secondPerFrame^;
   3 │ 
@@ -43,7 +46,8 @@ let newX = x +. (newVelocity *. secondPerFrame)
 If you're trying to deref an expression, use \`foo.contents\` instead.
 
   Syntax error!
-  parsing/errors/scanner/oldDerefOp.js 2:46  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/scanner/oldDerefOp.js:2:46
+  
   1 │ let newVelocity = velocity +. a *. secondPerFrame^;
   2 │ let newX = x +. newVelocity *. secondPerFrame^;
   3 │ 
@@ -61,7 +65,8 @@ exports[`unclosedComment.js 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/scanner/unclosedComment.js 1:3-3:0  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/scanner/unclosedComment.js:1:3-3:0
+  
   1 │ /* eof
   2 │  * reached
   3 │ 
@@ -78,7 +83,8 @@ let z = \\"eof\\"
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/scanner/unclosedString.js 1:10-2:0  
+  /Users/mvalcke/Development/syntax/tests/parsing/errors/scanner/unclosedString.js:1:10-2:0
+  
   1 │ let z = \\"eof
   2 │ 
   
