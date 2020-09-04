@@ -113,7 +113,7 @@ module LocWarnInfo = struct
 end
 
 
-exception NapkinParsingErrors of locErrInfo list
+exception RescriptParsingErrors of locErrInfo list
 
 module ErrorRet = struct
   type err =
@@ -250,22 +250,36 @@ let reason_parse ~filename str =
 let ocaml_parse ~filename str =
   lexbuf_from_string ~filename str |> Parse.implementation
 
-module NapkinDriver = struct
-  (* For now we are basically overriding functionality from Napkin_driver *)
-  open Napkin_driver
+module ResDriver = struct
+  (* For now we are basically overriding functionality from Res_driver *)
+  open Res_driver
 
   (* adds ~src parameter *)
   let setup ~src ~filename ~forPrinter () =
-    let mode = if forPrinter then Napkin_parser.Default
+    let mode = if forPrinter
+      then Res_parser.Default
       else ParseForTypeChecker
     in
-    Napkin_parser.make ~mode src filename
+    Res_parser.make ~mode src filename
+
+  (* get full super error message *)
+  let diagnosticToString ~src (d: Res_diagnostics.t) =
+    let startPos = Res_diagnostics.getStartPos(d) in
+    let endPos = Res_diagnostics.getEndPos(d) in
+    let msg = Res_diagnostics.explain(d) in
+    Res_diagnostics_printing_utils.Super_location.super_error_reporter
+      Format.str_formatter
+      ~src
+      ~startPos
+      ~endPos
+      ~msg;
+    Format.flush_str_formatter ()
 
   let parse_implementation ~sourcefile ~forPrinter ~src =
     Location.input_name := sourcefile;
     let parseResult =
       let engine = setup ~filename:sourcefile ~forPrinter ~src () in
-      let structure = Napkin_core.parseImplementation engine in
+      let structure = Res_core.parseImplementation engine in
       let (invalid, diagnostics) = match engine.diagnostics with
         | [] as diagnostics -> (false, diagnostics)
         | _ as diagnostics -> (true, diagnostics)
@@ -281,11 +295,11 @@ module NapkinDriver = struct
     let () = if parseResult.invalid then
         let errors = parseResult.diagnostics
                      |> List.map (fun d ->
-                         let fullMsg = Napkin_diagnostics.toString d parseResult.source in
-                         let shortMsg = Napkin_diagnostics.explain d in
+                         let fullMsg = diagnosticToString ~src:parseResult.source d in
+                         let shortMsg = Res_diagnostics.explain d in
                          let loc = {
-                           Location.loc_start = Napkin_diagnostics.getStartPos d;
-                           Location.loc_end = Napkin_diagnostics.getEndPos d;
+                           Location.loc_start = Res_diagnostics.getStartPos d;
+                           Location.loc_end = Res_diagnostics.getEndPos d;
                            loc_ghost = false
                          } in
                          {
@@ -293,17 +307,16 @@ module NapkinDriver = struct
                            shortMsg;
                            loc;
                          }
-
                        )
                      |> List.rev
         in
-        raise (NapkinParsingErrors errors)
+        raise (RescriptParsingErrors errors)
     in
     (parseResult.parsetree, parseResult.comments)
 end
 
 let rescript_parse ~filename src =
-  let (structure, _ ) = NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
+  let (structure, _ ) = ResDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
   in
   structure
 
@@ -368,7 +381,7 @@ module Compile = struct
        ErrorRet.fromLocErrors ~type_ [|err|]
      | None ->
        match e with
-       | NapkinParsingErrors errors ->
+       | RescriptParsingErrors errors ->
          ErrorRet.fromSyntaxErrors(Array.of_list errors)
        | _ ->
          let msg = Printexc.to_string e in
@@ -483,17 +496,17 @@ module Compile = struct
             |> Converter.copy_structure
           in
           let structure = ast
-                          |> Napkin_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
-                          |> Napkin_ast_conversion.structure
+                          |> Res_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
+                          |> Res_ast_conversion.structure
           in
-          Napkin_printer.printImplementation ~width:80 structure ~comments:[]
+          Res_printer.printImplementation ~width:80 structure ~comments:[]
         | (Res, Reason) ->
           let (structure, _) =
-            NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
+            ResDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
           in
           let sanitized = structure
-                          |> Napkin_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
-                          |> Napkin_ast_conversion.structure
+                          |> Res_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
+                          |> Res_ast_conversion.structure
           in
           Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter (Converter404.copy_structure sanitized, []);
           Format.flush_str_formatter ()
@@ -503,19 +516,19 @@ module Compile = struct
             |> lexbuf_from_string ~filename
             |> Parse.implementation
           in
-          Napkin_printer.printImplementation ~width:80 structure ~comments:[]
+          Res_printer.printImplementation ~width:80 structure ~comments:[]
         | (Res, OCaml) ->
           let (structure, _) =
-            NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
+            ResDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
           in
           Pprintast.structure Format.str_formatter structure;
           Format.flush_str_formatter ()
         | (Res, Res) ->
           (* Basically pretty printing *)
           let (structure, comments) =
-            NapkinDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
+            ResDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
           in
-          Napkin_printer.printImplementation ~width:80 structure ~comments
+          Res_printer.printImplementation ~width:80 structure ~comments
         | (OCaml, OCaml) -> src
         | (Reason, Reason) ->
           (* Pretty printing *)
