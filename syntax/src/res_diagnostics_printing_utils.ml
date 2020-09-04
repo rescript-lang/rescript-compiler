@@ -176,13 +176,13 @@ let print_loc ~normalizedRange ppf (startPos: Lexing.position) =
     | Some ((start_line, start_line_start_char), (end_line, end_line_end_char)) ->
       if start_line = end_line then
         if start_line_start_char = end_line_end_char then
-          fprintf ppf "@{<dim>%i:%i@}" start_line start_line_start_char
+          fprintf ppf ":@{<dim>%i:%i@}" start_line start_line_start_char
         else
-          fprintf ppf "@{<dim>%i:%i-%i@}" start_line start_line_start_char end_line_end_char
+          fprintf ppf ":@{<dim>%i:%i-%i@}" start_line start_line_start_char end_line_end_char
       else
-        fprintf ppf "@{<dim>%i:%i-%i:%i@}" start_line start_line_start_char end_line end_line_end_char
+        fprintf ppf ":@{<dim>%i:%i-%i:%i@}" start_line start_line_start_char end_line end_line_end_char
   in
-  fprintf ppf "@{<filename>%a@}:%a" Location.print_filename startPos.pos_fname dim_loc normalizedRange
+  fprintf ppf "@{<filename>%a@}%a" Location.print_filename startPos.pos_fname dim_loc normalizedRange
 ;;
 
 let print src startPos endPos ppf () =
