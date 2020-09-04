@@ -29,15 +29,15 @@ let (>>>) = Caml_nativeint_extern.shift_right_logical
 let (|~) = Caml_nativeint_extern.logor
 let (^) = Caml_nativeint_extern.logxor
 
-external ( *~ ) : nativeint -> nativeint -> nativeint = "caml_int32_mul" 
-external ( +~ ) : nativeint -> nativeint -> nativeint = "caml_int32_add"
+external ( *~ ) : nativeint -> nativeint -> nativeint = "%int32_mul" 
+external ( +~ ) : nativeint -> nativeint -> nativeint = "%int32_add"
 
 
 
 let rotl32 (x : nativeint) n  = 
   (x << n) |~ (x >>> (32 - n))
 
-
+external (.![]) : string -> int -> int = "charCodeAt" [@@bs.send]
 let caml_hash_mix_int h  d = 
   let d = ref d in 
   d.contents <- d.contents *~ 0xcc9e2d51n ;
@@ -63,10 +63,10 @@ let caml_hash_mix_string h  s =
   for i = 0 to block  do 
     let j = 4 * i in 
     let w = 
-      Caml_char.code s.[j] lor 
-      (Caml_char.code s.[j+1] lsl 8) lor 
-      (Caml_char.code s.[j+2] lsl 16) lor 
-      (Caml_char.code s.[j+3] lsl 24)
+      s.![j] lor 
+      (s.![j+1] lsl 8) lor 
+      (s.![j+2] lsl 16) lor 
+      (s.![j+3] lsl 24)
     in
     hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int w)
   done ;
@@ -75,13 +75,13 @@ let caml_hash_mix_string h  s =
     begin 
       let w =
         if modulo = 3 then 
-          (Caml_char.code s.[len - 1] lsl 16) lor 
-          (Caml_char.code s.[len - 2] lsl 8) lor
-          (Caml_char.code s.[len - 3])
+          (s.![len - 1] lsl 16) lor 
+          (s.![len - 2] lsl 8) lor
+          s.![len - 3]
         else if modulo = 2 then 
-          (Caml_char.code s.[len -1] lsl 8) lor 
-          Caml_char.code s.[len -2]
-        else Caml_char.code s.[len - 1] 
+          (s.![len -1] lsl 8) lor 
+           s.![len -2]
+        else  s.![len - 1] 
       in 
       hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int w)
     end;

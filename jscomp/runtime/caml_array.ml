@@ -65,12 +65,12 @@ let  caml_array_concat (l : 'a array list) : 'a array =
   fill result 0 l ;
   result
 
-let caml_array_set xs index newval = 
+let set xs index newval = 
   if index <0 || index >= Caml_array_extern.length xs
   then raise (Invalid_argument "index out of bounds")
   else  xs.!( index)<-  newval
 
-let caml_array_get xs index =  
+let get xs index =  
   if index <0 || index >= Caml_array_extern.length xs then
     raise (Invalid_argument "index out of bounds")
   else  xs.!( index)

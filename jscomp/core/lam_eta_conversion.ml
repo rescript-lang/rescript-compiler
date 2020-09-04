@@ -35,7 +35,7 @@
    n is the number of missing arguments required for [fn].
    Return a function of airty [n]
 *) 
-let transform_under_supply n loc status fn args = 
+let transform_under_supply n ap_info fn args = 
   let extra_args = Ext_list.init n
       (fun _ ->   (Ident.create Literals.param)) in
   let extra_lambdas = Ext_list.map  extra_args Lam.var in
@@ -66,17 +66,17 @@ let transform_under_supply n loc status fn args =
        of an existing function which may cause inconsistency
     *)
     Lam.function_ ~arity:n  ~params:extra_args
+      ~attr:Lam.default_fn_attr
       ~body:(Lam.apply fn (Ext_list.append args  extra_lambdas) 
-               loc 
-               status
+               ap_info
             ) 
   | fn::args , bindings ->
 
     let rest : Lam.t = 
       Lam.function_ ~arity:n  ~params:extra_args
+        ~attr:Lam.default_fn_attr
         ~body:(Lam.apply fn (Ext_list.append args  extra_lambdas) 
-                 loc 
-                 status
+                 ap_info
               ) in
     Ext_list.fold_left bindings rest (fun lam (id,x) ->
         Lam.let_ Strict id x lam
@@ -122,6 +122,7 @@ let transform_under_supply n loc status fn args =
     A typical use case is to pass an OCaml function to JS side as a callback (i.e, [@bs.uncurry])
 *)
 let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : Lam.t = 
+  let ap_info : Lam.ap_info = {ap_loc = loc; ap_inlined = Default_inline; ap_status = App_na } in
   begin match from, fn  with 
     | Some from, _ 
     | None, Lfunction{arity=from} ->
@@ -131,6 +132,7 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
         match fn with 
         | Lfunction{params = [param]; body} -> 
           Lam.function_ ~arity:0 
+            ~attr:Lam.default_fn_attr
             ~params:[]
             ~body:(
               Lam.let_ Alias param Lam.unit body  
@@ -150,10 +152,11 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
               Some partial_arg, Lam.var partial_arg in 
 
           let cont = Lam.function_ 
+              ~attr:Lam.default_fn_attr
               ~arity:0
               ~params:[]
               ~body:(
-                Lam.apply new_fn [Lam.unit ] loc App_na
+                Lam.apply new_fn [Lam.unit ] ap_info 
               ) in 
 
           match wrapper with 
@@ -168,10 +171,10 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
              {[ fun x y -> f y ]}
           *)
           let extra_args = Ext_list.init (to_ - from) (fun _ -> Ident.create Literals.param) in 
-          Lam.function_
+          Lam.function_ ~attr:Lam.default_fn_attr
             ~arity:to_ 
             ~params:(Ext_list.append params  extra_args )
-            ~body:(Lam.apply body (Ext_list.map extra_args Lam.var) loc App_na)
+            ~body:(Lam.apply body (Ext_list.map extra_args Lam.var) ap_info )
         | _ -> 
           let arity = to_ in 
           let extra_args = Ext_list.init to_  (fun _ -> Ident.create Literals.param ) in 
@@ -186,12 +189,12 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
           in   
           let cont = 
             Lam.function_ 
-              ~arity
+              ~arity ~attr:Lam.default_fn_attr
 
               ~params:extra_args 
               ~body:(
                 let first_args, rest_args = Ext_list.split_at extra_args from in 
-                Lam.apply (Lam.apply new_fn (Ext_list.map first_args  Lam.var) loc App_infer_full) (Ext_list.map rest_args Lam.var) loc App_na ) in 
+                Lam.apply (Lam.apply new_fn (Ext_list.map first_args  Lam.var) {ap_info with ap_status = App_infer_full} ) (Ext_list.map rest_args Lam.var) ap_info  ) in 
           begin match wrapper with 
             | None -> cont 
             | Some partial_arg -> 
@@ -214,10 +217,10 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
             let extra_outer_args, extra_inner_args = Ext_list.split_at params arity in 
             Lam.function_ 
               ~arity 
-
+              ~attr:Lam.default_fn_attr
               ~params:extra_outer_args 
               ~body:(
-                Lam.function_ ~arity:(from - to_)
+                Lam.function_ ~arity:(from - to_) ~attr:Lam.default_fn_attr
                   ~params:extra_inner_args ~body:body)
           | _
             -> 
@@ -234,18 +237,18 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
                 Some partial_arg, Lam.var partial_arg
             in   
             let cont = 
-              Lam.function_ ~arity:to_ ~params:extra_outer_args 
+              Lam.function_ ~arity:to_ ~params:extra_outer_args ~attr:Lam.default_fn_attr
                 ~body:(
                   let arity = from - to_ in 
                   let extra_inner_args =
                     Ext_list.init arity (fun _ -> Ident.create Literals.param ) in 
-                  Lam.function_ ~arity ~params:extra_inner_args 
+                  Lam.function_ ~arity ~params:extra_inner_args  ~attr:Lam.default_fn_attr
                     ~body:(Lam.apply new_fn 
                              (Ext_list.map_append extra_outer_args 
                                 (Ext_list.map extra_inner_args Lam.var) 
                                 Lam.var 
                              )      
-                             loc App_infer_full)
+                             {ap_info with ap_status = App_infer_full} )
                 )  in 
             begin match wrapper with 
               | None -> cont 
@@ -265,11 +268,11 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
             let partial_arg = Ext_ident.create Literals.partial_arg in 
             Some partial_arg, Lam.var partial_arg in 
 
-        let cont = Lam.function_ 
+        let cont = Lam.function_ ~attr:Lam.default_fn_attr
             ~arity:0
             ~params:[]
             ~body:(
-              Lam.apply new_fn [Lam.unit] loc App_na
+              Lam.apply new_fn [Lam.unit] ap_info 
             ) in 
 
         match wrapper with 
@@ -277,7 +280,7 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
         | Some partial_arg 
           -> Lam.let_ Strict partial_arg fn cont 
       else   
-        transform_under_supply to_ loc App_na fn []
+        transform_under_supply to_ ap_info  fn [] 
   end 
 
 

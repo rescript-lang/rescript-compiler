@@ -31,7 +31,10 @@
 
 val transform_under_supply : 
   int ->
-  Location.t -> Lam.apply_status -> Lam.t -> Lam.t list -> Lam.t
+  Lam.ap_info -> 
+  Lam.t -> 
+  Lam.t list -> 
+  Lam.t
 
 
 val unsafe_adjust_to_arity :

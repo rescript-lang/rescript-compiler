@@ -1,6 +1,6 @@
 # BSB
 
-Bsb is BuckleScript's build system. User-facing documentations are [here](https://bucklescript.github.io/docs/en/build-overview.html).
+Bsb is ReScript's build system. User-facing documentations are [here](https://rescript-lang.org/docs/manual/latest/build-overview).
 
 This directory hosts its implementation. It reads into `bsconfig.json`, uses some BS/OCaml/Reason-specific logic, and generates a [ninja](https://ninja-build.org) build file then calls `ninja` on it. So much of the incremental build and perf work is delegated to Ninja.
 
@@ -18,7 +18,7 @@ opam install ocp-ocamlres
 
 ## Testing a template locally
 
-Do the following setup steps to build the compiler: [build ocaml compiler](https://github.com/BuckleScript/bucklescript/blob/master/CONTRIBUTING.md#build-the-vendored-ocaml-compiler) and [build everything in dev mode](https://github.com/BuckleScript/bucklescript/blob/master/CONTRIBUTING.md#build-everything-in-dev-mode-using-vendored-compiler).
+Do the following setup steps to build the compiler: [build ocaml compiler](https://github.com/rescript-lang/rescript-compiler/blob/master/CONTRIBUTING.md#build-the-vendored-ocaml-compiler) and [build everything in dev mode](https://github.com/rescript-lang/rescript-compiler/blob/master/CONTRIBUTING.md#build-everything-in-dev-mode-using-vendored-compiler).
 
 The built binaries will end up under `lib` where you can run local `bsb`:
 

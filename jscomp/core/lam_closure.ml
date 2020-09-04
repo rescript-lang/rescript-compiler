@@ -29,11 +29,11 @@
 type position = Lam_var_stats.position
 type stats = Lam_var_stats.stats
 
-let adjust ( pos : position) (v : Ident.t) (fv : stats Map_ident.t) : stats Map_ident.t = 
+let adjust (fv : stats Map_ident.t) (pos : position) (v : Ident.t)  : stats Map_ident.t = 
   Map_ident.adjust fv v
     (fun v -> 
       let stat = match v with None -> Lam_var_stats.fresh_stats | Some v -> v in 
-      Lam_var_stats.update pos stat)
+      Lam_var_stats.update stat pos )
     
     
 
@@ -72,7 +72,7 @@ let free_variables
   let used (cur_pos : position) (v : Ident.t) = 
 
     if not (Set_ident.mem !local_set v) then 
-      fv := adjust cur_pos v !fv in
+      fv := adjust !fv cur_pos v  in
 
   let rec iter (top : position) (lam : Lam.t) =
     match lam with 

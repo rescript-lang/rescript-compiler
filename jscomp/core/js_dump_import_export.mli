@@ -32,11 +32,11 @@ val es6_export :
 
 val requires :  
   string -> Ext_pp_scope.t ->
-  Ext_pp.t -> (Ident.t * string) list -> 
+  Ext_pp.t -> (Ident.t * string * bool) list -> 
   Ext_pp_scope.t 
 
 val imports : 
   Ext_pp_scope.t -> 
   Ext_pp.t -> 
-  (Ident.t * string) list -> 
+  (Ident.t * string * bool) list -> 
   Ext_pp_scope.t

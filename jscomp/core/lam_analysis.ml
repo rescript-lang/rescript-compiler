@@ -334,14 +334,19 @@ let destruct_pattern (body : Lam.t) params args =
     
 (** Hints to inlining *)
 let ok_to_inline_fun_when_app 
-  ~(body : Lam.t) 
-  (params : Ident.t list)
+  (m : Lam.lfunction)
   (args : Lam.t list) =
-  let s = size body in
-  s < small_inline_size ||
-  (destruct_pattern body params args) ||  
-  (args_all_const args &&
-   (s < 10 && no_side_effects body )) 
+  match m.attr.inline with
+  | Always_inline -> true
+  | Never_inline -> false
+  | Default_inline ->
+    match m with 
+    | {body; params} -> 
+    let s = size body in
+    s < small_inline_size ||
+    (destruct_pattern body params args) ||  
+    (args_all_const args &&
+     (s < 10 && no_side_effects body )) 
 
 
 

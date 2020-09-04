@@ -26,7 +26,7 @@
 val map_row_fields_into_ints:
   Location.t -> 
   Parsetree.row_field list -> 
-  (Ast_compatible.hash_label * int ) list 
+  (string * int ) list 
 
 val map_constructor_declarations_into_ints:
   Parsetree.constructor_declaration list ->

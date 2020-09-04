@@ -65,16 +65,24 @@ val runtime_var_dot : ?comment:string -> string -> string -> t
 *)
 val ml_var_dot : ?comment:string -> Ident.t -> string -> t
 
-(** [external_var_dot ~external_name ~dot id]
+(** [external_var_field ~external_name ~dot id]
   Used in FFI
 *)
-val external_var_dot : 
+val external_var_field : 
   ?comment:string ->  
   external_name:string -> 
-  ?dot:string -> 
   Ident.t ->
+  field:string -> 
+  default:bool ->
   t
 
+val external_var : 
+  ?comment:string -> 
+  external_name:string ->
+  Ident.t -> 
+  t
+  
+  
 val ml_module_as_var :  
   ?comment:string -> 
   Ident.t -> 

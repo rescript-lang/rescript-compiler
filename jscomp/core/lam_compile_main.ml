@@ -260,16 +260,16 @@ let compile
   |> ( fun (program:  J.program) -> 
       let external_module_ids : Lam_module_ident.t list = 
         if !Js_config.all_module_aliases then []
-        else 
-        let x = Lam_compile_env.get_required_modules  
-            may_required_modules  
-            (Js_fold_basic.calculate_hard_dependencies program.block) in 
-        Ext_list.sort_via_array x
-          (fun id1 id2 ->
-             Ext_string.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
-          ) 
+        else
+          let hard_deps = 
+            Js_fold_basic.calculate_hard_dependencies program.block in  
+          Lam_compile_env.populate_required_modules  
+            may_required_modules hard_deps ;        
+          Ext_list.sort_via_array (Lam_module_ident.Hash_set.to_list hard_deps)
+            (fun id1 id2 ->
+               Ext_string.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
+            ) 
       in
-      Warnings.check_fatal ();  
       let effect = 
         Lam_stats_export.get_dependent_module_effect
         maybe_pure external_module_ids in 
@@ -280,7 +280,7 @@ let compile
           coerced_input.export_map
           (get_cmj_case output_prefix)
       in
-      (if not @@ !Clflags.dont_write_files then
+      (if not !Clflags.dont_write_files then
          Js_cmj_format.to_file 
           ~check_exists:(not !Js_config.force_cmj)
            (output_prefix ^ Literals.suffix_cmj) v);
@@ -301,29 +301,41 @@ let lambda_as_module
       (if !Js_config.bs_suffix then Literals.suffix_bs_js else Literals.suffix_js) 
   in
   let package_info = Js_packages_state.get_packages_info () in 
-  if Js_packages_info.is_empty package_info && !Js_config.js_stdout then     
-    Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout      
-  else
+  if Js_packages_info.is_empty package_info && !Js_config.js_stdout then begin    
+    Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout;
+    if !Warnings.nerrors > 0 then begin 
+      Warnings.nerrors := 0;
+      exit 77
+    end  
+  end else
     Js_packages_info.iter package_info (fun {module_system; path = _path} -> 
         let output_chan chan  = 
           Js_dump_program.dump_deps_program ~output_prefix
             module_system 
             lambda_output
             chan in
-        if not @@ !Clflags.dont_write_files then 
+        let target_file = 
+          (Lazy.force Ext_path.package_dir //
+           _path //
+           basename
+           (* #913 only generate little-case js file *)
+          ) in     
+        (if not !Clflags.dont_write_files then 
           Ext_pervasives.with_file_as_chan
-#if BS_NATIVE then
-            (if Filename.is_relative _path then Lazy.force Ext_path.package_dir // _path // basename
-             (* #913 only generate little-case js file *)
-            else _path // basename) output_chan )
-#else
-            (Lazy.force Ext_path.package_dir //
-             _path //
-             basename
-             (* #913 only generate little-case js file *)
-            ) output_chan )
+            target_file output_chan );
+        if !Warnings.nerrors > 0 then begin 
+          Warnings.nerrors := 0 ;
+          if Sys.file_exists target_file then begin 
+            Bs_hash_stubs.set_as_old_file target_file
+          end;
+          exit 77
+          (* don't write js file, we need remove js files 
+             otherwise the js files are out-of-date
+             exit 177 *)
+        end             
+        )
   
-#end
+
 
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 
     We need handle some definitions in standard libraries in a special way, most are io specific, 

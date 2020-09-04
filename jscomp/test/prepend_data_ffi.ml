@@ -1,10 +1,10 @@
 
-type config1_expect = < stdio : string ; v : int >  Js.t
+type config1_expect = <  v : int >  Js.t
 external config1 : stdio:(_ [@bs.as "inherit"]) -> v:int -> unit ->  _  = "" [@@bs.obj]
 
 let v1 : config1_expect = config1 ~v:3 ()
 
-type config2_expect = < stdio : int ; v : int >  Js.t
+type config2_expect = <  v : int >  Js.t
 
 external config2 : stdio:(_ [@bs.as 1 ]) -> v:int -> unit ->  _  = "" [@@bs.obj]
 let v2 : config2_expect = config2 ~v:2 () 

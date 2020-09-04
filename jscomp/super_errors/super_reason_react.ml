@@ -82,7 +82,7 @@ let check_each_trace_chunk_bottom_up f = fun t ->
 
 
 let state_escape_scope = check_each_trace_chunk_bottom_up (function
-  (* https://github.com/BuckleScript/ocaml/blob/ddf5a739cc0978dab5e553443825791ba7b0cef9/typing/printtyp.ml?#L1348 *)
+  (* https://github.com/rescript-lang/ocaml/blob/ddf5a739cc0978dab5e553443825791ba7b0cef9/typing/printtyp.ml?#L1348 *)
   (* so apparently that's the logic for detecting "the constructor out of scope" error *)
   | ({desc = Tconstr (p, _, _)}, {desc = Tvar _; level})
     when level < Path.binding_time p -> true

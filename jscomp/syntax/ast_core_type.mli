@@ -28,7 +28,7 @@ type t = Parsetree.core_type
 
 
 val lift_option_type : t -> t
-val is_any : t -> bool
+
 (* val replace_result : t -> t -> t *)
 
 (* val opt_arrow: Location.t -> string -> t -> t -> t *)
@@ -47,7 +47,7 @@ val from_labels :
 
 val make_obj :
   loc:Location.t ->
-  (string Asttypes.loc * Parsetree.attributes * t) list ->
+  Parsetree.object_field list ->
   t
 
 val is_user_option : t -> bool

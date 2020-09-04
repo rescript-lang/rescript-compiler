@@ -31,17 +31,17 @@ type arg_expression =
   
 val eval :
    J.expression -> 
-   (Ast_compatible.hash_label * string) list option
+   (string * string) list
    -> J.expression
 
 val eval_as_event : 
   J.expression -> 
-  (Ast_compatible.hash_label * string) list option 
+  (string * string) list option 
   -> arg_expression
 
 val eval_as_int : 
   J.expression -> 
-  (Ast_compatible.hash_label * int) list -> 
+  (string * int) list -> 
   J.expression
 
 val eval_as_unwrap : J.expression -> J.expression

@@ -66,4 +66,9 @@ external v : u = "v" [@@bs.val]
 
 let f  x = 
     ignore @@ (v x [@bs]) 
-    
+
+external fff0 : int -> int -> (_[@bs.as {json|[undefined,undefined]|json}]) -> int = "say"    
+[@@bs.val]
+
+let testUndefined () = 
+    fff0 1 2 

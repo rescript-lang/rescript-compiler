@@ -1,7 +1,7 @@
 external string_length : string -> int = "%string_length"
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
                      = "caml_blit_string" "noalloc"
-external is_printable: char -> bool = "caml_is_printable"
+
 external char_code: char -> int = "%identity"
 external char_chr: int -> char = "%identity"
 open Bytes
@@ -11,7 +11,7 @@ let escaped s =
     n := !n +
       (match unsafe_get s i with
        | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
-       | c -> if is_printable c then 1 else 4)
+       | c -> if Test_char.caml_is_printable c then 1 else 4)
   done;
   if !n = length s then copy s else begin
     let s' = create !n in
@@ -29,7 +29,7 @@ let escaped s =
       | '\b' ->
           unsafe_set s' !n '\\'; incr n; unsafe_set s' !n 'b'
       | c ->
-          if is_printable c then
+          if Test_char.caml_is_printable c then
             unsafe_set s' !n c
           else begin
             let a = char_code c in

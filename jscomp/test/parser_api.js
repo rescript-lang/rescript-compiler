@@ -1314,24 +1314,23 @@ function create(str_size) {
   var tbl_size = Caml_int32.div(str_size, Sys.max_string_length) + 1 | 0;
   var tbl = Caml_array.caml_make_vect(tbl_size, Bytes.empty);
   for(var i = 0 ,i_finish = tbl_size - 2 | 0; i <= i_finish; ++i){
-    Caml_array.caml_array_set(tbl, i, Caml_bytes.caml_create_bytes(Sys.max_string_length));
+    Caml_array.set(tbl, i, Caml_bytes.caml_create_bytes(Sys.max_string_length));
   }
-  Caml_array.caml_array_set(tbl, tbl_size - 1 | 0, Caml_bytes.caml_create_bytes(Caml_int32.mod_(str_size, Sys.max_string_length)));
+  Caml_array.set(tbl, tbl_size - 1 | 0, Caml_bytes.caml_create_bytes(Caml_int32.mod_(str_size, Sys.max_string_length)));
   return tbl;
 }
 
 function length(tbl) {
   var tbl_size = tbl.length;
-  return Math.imul(Sys.max_string_length, tbl_size - 1 | 0) + Caml_array.caml_array_get(tbl, tbl_size - 1 | 0).length | 0;
+  return Math.imul(Sys.max_string_length, tbl_size - 1 | 0) + Caml_array.get(tbl, tbl_size - 1 | 0).length | 0;
 }
 
 function get(tbl, ind) {
-  return Caml_bytes.get(Caml_array.caml_array_get(tbl, Caml_int32.div(ind, Sys.max_string_length)), Caml_int32.mod_(ind, Sys.max_string_length));
+  return Caml_bytes.get(Caml_array.get(tbl, Caml_int32.div(ind, Sys.max_string_length)), Caml_int32.mod_(ind, Sys.max_string_length));
 }
 
 function set(tbl, ind, c) {
-  Caml_array.caml_array_get(tbl, Caml_int32.div(ind, Sys.max_string_length))[Caml_int32.mod_(ind, Sys.max_string_length)] = c;
-  
+  return Caml_bytes.set(Caml_array.get(tbl, Caml_int32.div(ind, Sys.max_string_length)), Caml_int32.mod_(ind, Sys.max_string_length), c);
 }
 
 function blit(src, srcoff, dst, dstoff, len) {
@@ -1382,22 +1381,22 @@ function edit_distance(a, b, cutoff) {
     return ;
   }
   var m = $$Array.make_matrix(la + 1 | 0, lb + 1 | 0, cutoff$1 + 1 | 0);
-  Caml_array.caml_array_set(Caml_array.caml_array_get(m, 0), 0, 0);
+  Caml_array.set(Caml_array.get(m, 0), 0, 0);
   for(var i = 1; i <= la; ++i){
-    Caml_array.caml_array_set(Caml_array.caml_array_get(m, i), 0, i);
+    Caml_array.set(Caml_array.get(m, i), 0, i);
   }
   for(var j = 1; j <= lb; ++j){
-    Caml_array.caml_array_set(Caml_array.caml_array_get(m, 0), j, j);
+    Caml_array.set(Caml_array.get(m, 0), j, j);
   }
   for(var i$1 = 1; i$1 <= la; ++i$1){
     for(var j$1 = Caml_primitive.caml_int_max(1, (i$1 - cutoff$1 | 0) - 1 | 0) ,j_finish = Caml_primitive.caml_int_min(lb, (i$1 + cutoff$1 | 0) + 1 | 0); j$1 <= j_finish; ++j$1){
       var cost = Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? 0 : 1;
-      var best = Caml_primitive.caml_int_min(1 + Caml_primitive.caml_int_min(Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 1 | 0), j$1), Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1), j$1 - 1 | 0)) | 0, Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 1 | 0), j$1 - 1 | 0) + cost | 0);
-      var best$1 = i$1 > 1 && j$1 > 1 && Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 2 | 0) && Caml_string.get(a, i$1 - 2 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? Caml_primitive.caml_int_min(best, Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 2 | 0), j$1 - 2 | 0) + cost | 0) : best;
-      Caml_array.caml_array_set(Caml_array.caml_array_get(m, i$1), j$1, best$1);
+      var best = Caml_primitive.caml_int_min(1 + Caml_primitive.caml_int_min(Caml_array.get(Caml_array.get(m, i$1 - 1 | 0), j$1), Caml_array.get(Caml_array.get(m, i$1), j$1 - 1 | 0)) | 0, Caml_array.get(Caml_array.get(m, i$1 - 1 | 0), j$1 - 1 | 0) + cost | 0);
+      var best$1 = i$1 > 1 && j$1 > 1 && Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 2 | 0) && Caml_string.get(a, i$1 - 2 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? Caml_primitive.caml_int_min(best, Caml_array.get(Caml_array.get(m, i$1 - 2 | 0), j$1 - 2 | 0) + cost | 0) : best;
+      Caml_array.set(Caml_array.get(m, i$1), j$1, best$1);
     }
   }
-  var result = Caml_array.caml_array_get(Caml_array.caml_array_get(m, la), lb);
+  var result = Caml_array.get(Caml_array.get(m, la), lb);
   if (result > cutoff$1) {
     return ;
   } else {
@@ -2062,23 +2061,23 @@ function restore(x) {
 }
 
 function is_active(x) {
-  return Caml_array.caml_array_get(current.contents.active, number(x));
+  return Caml_array.get(current.contents.active, number(x));
 }
 
 function is_error(x) {
-  return Caml_array.caml_array_get(current.contents.error, number(x));
+  return Caml_array.get(current.contents.error, number(x));
 }
 
 function parse_opt(error, active, flags, s) {
   var set = function (i) {
-    return Caml_array.caml_array_set(flags, i, true);
+    return Caml_array.set(flags, i, true);
   };
   var clear = function (i) {
-    return Caml_array.caml_array_set(flags, i, false);
+    return Caml_array.set(flags, i, false);
   };
   var set_all = function (i) {
-    Caml_array.caml_array_set(active, i, true);
-    return Caml_array.caml_array_set(error, i, true);
+    Caml_array.set(active, i, true);
+    return Caml_array.set(error, i, true);
   };
   var get_num = function (_n, _i) {
     while(true) {
@@ -2688,7 +2687,7 @@ function print(ppf, w) {
             _1: "%d: %s"
           }), num, msg);
   Format.pp_print_flush(ppf, undefined);
-  if (Caml_array.caml_array_get(current.contents.error, num)) {
+  if (Caml_array.get(current.contents.error, num)) {
     nerrors.contents = nerrors.contents + 1 | 0;
     return ;
   }
@@ -2707,7 +2706,7 @@ function super_print(message, ppf, w) {
             _1: "%s"
           }), msg);
   Format.pp_print_flush(ppf, undefined);
-  if (Caml_array.caml_array_get(current.contents.error, num)) {
+  if (Caml_array.get(current.contents.error, num)) {
     nerrors.contents = nerrors.contents + 1 | 0;
     return ;
   }
@@ -15261,7 +15260,7 @@ function remove_underscores(s) {
     }
     var c = Caml_string.get(s, src);
     if (c !== 95) {
-      b[dst] = c;
+      Caml_bytes.set(b, dst, c);
       _dst = dst + 1 | 0;
       _src = src + 1 | 0;
       continue ;
@@ -15883,8 +15882,8 @@ function token(lexbuf) {
           };
           return /* STAR */86;
       case 33 :
-          var num = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), Caml_array.caml_array_get(lexbuf.lex_mem, 1));
-          var name = Lexing.sub_lexeme_opt(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 3), Caml_array.caml_array_get(lexbuf.lex_mem, 2));
+          var num = Lexing.sub_lexeme(lexbuf, Caml_array.get(lexbuf.lex_mem, 0), Caml_array.get(lexbuf.lex_mem, 1));
+          var name = Lexing.sub_lexeme_opt(lexbuf, Caml_array.get(lexbuf.lex_mem, 3), Caml_array.get(lexbuf.lex_mem, 2));
           update_loc(lexbuf, name, Caml_format.caml_int_of_string(num), true, 0);
           return token(lexbuf);
       case 34 :
@@ -16068,7 +16067,7 @@ function string(lexbuf) {
       case 0 :
           return ;
       case 1 :
-          var space = Lexing.sub_lexeme(lexbuf, Caml_array.caml_array_get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
+          var space = Lexing.sub_lexeme(lexbuf, Caml_array.get(lexbuf.lex_mem, 0), lexbuf.lex_curr_pos);
           update_loc(lexbuf, undefined, 1, false, space.length);
           return string(lexbuf);
       case 2 :

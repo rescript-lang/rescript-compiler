@@ -1,7 +1,7 @@
 'use strict';
 
 var Bytes = require("../../lib/js/bytes.js");
-var Caml_char = require("../../lib/js/caml_char.js");
+var Test_char = require("./test_char.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 
 function escaped(s) {
@@ -28,7 +28,7 @@ function escaped(s) {
       exit = 1;
     }
     if (exit === 1) {
-      tmp = Caml_char.caml_is_printable(c) ? 1 : 4;
+      tmp = Test_char.caml_is_printable(c) ? 1 : 4;
     }
     n = n + tmp | 0;
   }
@@ -89,7 +89,7 @@ function escaped(s) {
       exit$1 = 1;
     }
     if (exit$1 === 1) {
-      if (Caml_char.caml_is_printable(c$1)) {
+      if (Test_char.caml_is_printable(c$1)) {
         s$prime[n] = c$1;
       } else {
         s$prime[n] = /* "\\" */92;

@@ -28,7 +28,6 @@ open Parsetree
 let default_loc = Location.none
 
 
-type poly_var_label = Asttypes.label Asttypes.loc
 
 
 
@@ -37,8 +36,9 @@ type poly_var_label = Asttypes.label Asttypes.loc
 
 
 
-let arrow ?(loc=default_loc) ?(attrs = []) a b  =
-  Ast_helper.Typ.arrow ~loc ~attrs Nolabel a b  
+
+let arrow ?loc ?attrs a b  =
+  Ast_helper.Typ.arrow ?loc ?attrs Nolabel a b  
 
 let apply_simple
  ?(loc = default_loc) 
@@ -105,21 +105,6 @@ let fun_
     pexp_desc = Pexp_fun(Nolabel,None, pat, exp)
   }
 
-(* let opt_label s =
-  Asttypes.Optional s *)
-
-(* let label_fun
-  ?(loc = default_loc)
-  ?(attrs = [])
-  ~label
-  pat
-  exp =
-  {
-    pexp_loc = loc;
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_fun(label, None, pat, exp)
-  } *)
-type hash_label = string 
 
 
 let const_exp_string 
@@ -133,15 +118,7 @@ let const_exp_string
     pexp_desc = Pexp_constant(Pconst_string(s,delimiter))
   }
 
-let const_hash_label 
-    ?(loc = default_loc)
-    ?(attrs = [])
-    (s : hash_label) : expression = 
-  {
-    pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_constant(Pconst_string(s,None))
-  }
+
 
 let const_exp_int 
   ?(loc = default_loc)
@@ -165,19 +142,6 @@ let apply_labels
         fn, 
         Ext_list.map args (fun (l,a) -> Asttypes.Labelled l, a)   ) }
 
-let object_ 
-  ?(loc= default_loc)
-  ?(attrs = [])
-  (fields : (Asttypes.label Asttypes.loc * attributes * core_type) list)
-  flg : core_type = 
-  {
-    ptyp_desc = 
-      Ptyp_object(
-        Ext_list.map fields (fun (a,b,c) -> 
-          Parsetree.Otag (a,b,c)),flg);
-    ptyp_loc = loc;
-    ptyp_attributes = attrs
-  }
 
 
 

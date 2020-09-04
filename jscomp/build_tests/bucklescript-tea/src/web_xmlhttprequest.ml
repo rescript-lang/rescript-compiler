@@ -73,14 +73,14 @@ type body =
 let abort x = x##abort ()
 
 let getAllResponseHeaders x =
-  let open Tea_result in
-  match Js.Null.to_opt (x##getAllResponseHeaders ()) with
+  let open! Tea_result in
+  match Js.Null.toOption (x##getAllResponseHeaders ()) with
   | None -> Error IncompleteResponse
   | Some "" -> Error NetworkError
   | Some s -> Ok s
 
 let getAllResponseHeadersAsList x =
-  let open Tea_result in
+  let open! Tea_result in
   match getAllResponseHeaders x with
   | Error _ as err -> err
   | Ok s -> Ok
@@ -104,7 +104,7 @@ let getAllResponseHeadersAsDict x =
     let insert d (k, v) = StringMap.add k v d in
     Tea_result.Ok (List.fold_left insert StringMap.empty l)
 
-let getResponseHeader key x = Js.Null.to_opt (x##getResponse key)
+let getResponseHeader key x = Js.Null.toOption (x##getResponse key)
 
 let open_ method' url ?(async=true) ?(user="") ?(password="") x =
   x##_open method' url async user password
@@ -193,7 +193,7 @@ let get_responseType x =
   | s -> RawResponseType s
 
 let get_response x =
-  match Js.Null.to_opt x##response with
+  match Js.Null.toOption x##response with
   | None -> NoResponse
   | Some resp ->
     match get_responseType x with
@@ -209,7 +209,7 @@ let get_responseText x = x##responseText
 
 let get_responseURL x = x##responseURL
 
-let get_responseXML x = Js.Null.to_opt x##responseXML
+let get_responseXML x = Js.Null.toOption x##responseXML
 
 let get_status x = x##status
 

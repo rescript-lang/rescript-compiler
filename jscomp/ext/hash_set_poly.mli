@@ -40,7 +40,7 @@ val mem : 'a t -> 'a -> bool
 
 val iter : 'a t -> ('a -> unit) -> unit
 
-val elements : 'a t -> 'a list
+val to_list : 'a t -> 'a list
 
 val length : 'a t -> int 
 

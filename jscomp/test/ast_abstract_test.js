@@ -111,7 +111,15 @@ function bToJs(param) {
 
 function bFromJs(param) {
   if (!(param <= 3 && 0 <= param)) {
-    throw new Error("ASSERT FAILURE");
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "_none_",
+            1,
+            -1
+          ],
+          Error: new Error()
+        };
   }
   return param - 0 | 0;
 }
@@ -138,7 +146,15 @@ function cToJs(param) {
 
 function cFromJs(param) {
   if (!(param <= 6 && 3 <= param)) {
-    throw new Error("ASSERT FAILURE");
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "_none_",
+            1,
+            -1
+          ],
+          Error: new Error()
+        };
   }
   return param - 3 | 0;
 }
@@ -163,7 +179,15 @@ function hToJs(param) {
 
 function hFromJs(param) {
   if (!(param <= 1 && 0 <= param)) {
-    throw new Error("ASSERT FAILURE");
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "_none_",
+            1,
+            -1
+          ],
+          Error: new Error()
+        };
   }
   return param - 0 | 0;
 }

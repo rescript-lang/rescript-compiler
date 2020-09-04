@@ -33,6 +33,8 @@ let rec struct_const ppf (cst : Lam_constant.t) =
   |  (Const_int32 n) -> fprintf ppf "%lil" n
   |  (Const_int64 n) -> fprintf ppf "%LiL" n
   |  (Const_nativeint n) -> fprintf ppf "%nin" n
+  | Const_pointer(_, Pt_variant{name}) ->
+    fprintf ppf "`%s" name 
   | Const_pointer (n,_) -> fprintf ppf "%ia" n
   | Const_some n -> fprintf ppf "[some-c]%a" struct_const n
   | Const_block(tag,_, []) ->
@@ -336,10 +338,10 @@ let lambda ppf v  =
       fprintf ppf "global %a" Ident.print id
     | Lconst cst ->
       struct_const ppf cst
-    | Lapply { ap_func; ap_args; } ->
+    | Lapply { ap_func; ap_args; ap_info = {ap_inlined}} ->
       let lams ppf args =
         List.iter (fun l -> fprintf ppf "@ %a" lam l) args in
-      fprintf ppf "@[<2>(apply@ %a%a)@]" lam ap_func lams ap_args
+      fprintf ppf "@[<2>(apply%s@ %a%a)@]" (match ap_inlined with Always_inline -> "%inlned" | _ -> "") lam ap_func lams ap_args
     | Lfunction{params; body; _} ->
       let pr_params ppf params =
           List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params

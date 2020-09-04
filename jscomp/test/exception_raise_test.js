@@ -30,7 +30,6 @@ function appf(g, x) {
       return 2;
     }
     if (exn.RE_EXN_ID === A) {
-      exn._1 !== 32;
       return 3;
     }
     if (exn.RE_EXN_ID !== B) {

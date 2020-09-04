@@ -49,7 +49,6 @@ let os_type : unit -> string = [%raw{|function(_){
 }|}]
 (* TODO: improve [js_pass_scope] to avoid remove unused n here *)
 
-external now : unit -> float = "" [@@bs.val "Date.now"]
 
 
 (* let caml_initial_time = now ()  *. 0.001 *)
@@ -64,14 +63,6 @@ let caml_sys_time () =
   then -1.
   else uptime [%raw{|process|}] ()
   
-
-external random : unit -> float = "Math.random" [@@bs.val]
-
-let caml_sys_random_seed () : nativeint array = 
-   [|
-     Caml_nativeint_extern.of_float 
-     ((Caml_nativeint_extern.to_float (Caml_nativeint_extern.logxor (Caml_nativeint_extern.of_float (now ()))
-                             0xffffffffn)) *. random ()) |]
 
 
 

@@ -26,6 +26,11 @@
 val caml_create_bytes : int -> bytes
 val caml_fill_bytes :  bytes -> int -> int -> char -> unit
 val get : bytes -> int -> char
+val set : 
+  bytes -> 
+  int -> 
+  char -> 
+  unit
 val bytes_to_string : bytes -> string 
 val caml_blit_bytes : bytes -> int -> bytes -> int -> int -> unit
 
@@ -36,4 +41,23 @@ val caml_blit_string :
   int -> 
   int -> 
   unit
+
 val bytes_of_string : string -> bytes
+
+val caml_bytes_compare: 
+  bytes -> bytes -> int
+
+val caml_bytes_greaterthan:
+  bytes -> bytes -> bool 
+
+val caml_bytes_greaterequal:
+  bytes -> bytes -> bool 
+
+val caml_bytes_lessthan:
+  bytes -> bytes -> bool 
+
+val caml_bytes_lessequal:
+  bytes -> bytes -> bool 
+
+val caml_bytes_equal : 
+  bytes -> bytes -> bool 

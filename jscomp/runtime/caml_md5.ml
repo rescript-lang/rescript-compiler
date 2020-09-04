@@ -143,8 +143,9 @@ let md5blk = [|
     0l;0l;0l;0l; 
     0l;0l;0l;0l
   |] 
+external (.![]) : string -> int -> int32 = "charCodeAt" [@@bs.send]
 
-let caml_md5_string s start len = 
+let caml_md5_string (s : string) start len = 
   let module String = Caml_string_extern in 
   let module Array = Caml_array_extern (* reuse the sugar .. *)
   in 
@@ -166,10 +167,10 @@ let caml_md5_string s start len =
   for  i = 1 to  i_end do 
     for j = 0 to 16 - 1 do 
       let k = i * 64 - 64 + j * 4 in 
-      md5blk.(j) <- (Caml_int32_extern.of_int (Caml_char.code s.[k])) +~
-                    (Caml_int32_extern.of_int (Caml_char.code s.[k+1]) <<~ 8 ) +~        
-                    (Caml_int32_extern.of_int (Caml_char.code s.[k+2]) <<~ 16 ) +~        
-                    (Caml_int32_extern.of_int (Caml_char.code s.[k+3]) <<~ 24 )
+      md5blk.(j) <- s.![k] +~
+                   (s.![k+1] <<~ 8 ) +~        
+                   (s.![k+2] <<~ 16 ) +~        
+                   (s.![k+3] <<~ 24 )
     done ;
     cycle state md5blk
   done ;
@@ -181,7 +182,7 @@ let caml_md5_string s start len =
   let i_end =Caml_string_extern.length s_tail - 1 in
   for i = 0 to  i_end do 
     md5blk.(i / 4 ) <- 
-      md5blk.(i / 4) |~ (Caml_int32_extern.of_int (Caml_char.code s_tail.[i]) <<~ ((i mod 4) lsl 3))
+      md5blk.(i / 4) |~ ( s_tail.![i] <<~ ((i mod 4) lsl 3))
   done ;
   let i = i_end + 1 in
   md5blk.(i / 4 ) <-  md5blk.(i / 4 ) |~ (0x80l <<~ ((i mod 4) lsl 3)) ;

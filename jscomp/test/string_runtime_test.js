@@ -3,7 +3,7 @@
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Bytes = require("../../lib/js/bytes.js");
-var Caml_char = require("../../lib/js/caml_char.js");
+var Test_char = require("./test_char.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 
 var suites_0 = [
@@ -11,7 +11,7 @@ var suites_0 = [
   (function (param) {
       return {
               TAG: /* Eq */0,
-              _0: Caml_char.caml_is_printable(/* "a" */97),
+              _0: Test_char.caml_is_printable(/* "a" */97),
               _1: true
             };
     })

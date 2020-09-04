@@ -52,7 +52,7 @@ let setStyle n key value = setStyle n##style key value
 
 let setStyleProperty n ?(priority=false) key value =
   let style = n##style in
-  match Js.Undefined.to_opt style##setProperty with
+  match Js.Undefined.toOption style##setProperty with
   | None -> setStyle n key value (* TODO:  Change this to setAttribute sometime, maybe... *)
   | Some _valid -> style##setProperty__ key value (if priority then (Js.Null.return "important") else Js.Null.empty)
 

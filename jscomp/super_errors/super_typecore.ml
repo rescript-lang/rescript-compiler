@@ -26,18 +26,19 @@ let rec bottom_aliases = function
   | _ -> None
 
 let simple_conversions = [
-  (("float", "int"), "int_of_float");
-  (("int", "float"), "float_of_int");
-  (("int", "string"), "string_of_int");
-  (("float", "string"), "string_of_float");
+  (("float", "int"), "Belt.Float.toInt");
+  (("float", "string"), "Belt.Float.toString");
+  (("int", "float"), "Belt.Int.toFloat");
+  (("int", "string"), "Belt.Int.toString");
+  (("string", "float"), "Belt.Float.fromString");
+  (("string", "int"), "Belt.Int.fromString");
 ]
 
 let print_simple_conversion ppf (actual, expected) =
   try (
     let converter = List.assoc (actual, expected) simple_conversions in
     Format.pp_print_newline ppf ();
-    Format.pp_print_newline ppf ();
-    fprintf ppf "You can convert a @{<info>%s@} to a @{<info>%s@} with @{<info>%s@}." actual expected converter
+    fprintf ppf "@[<v 2>@,You can convert @{<info>%s@} to @{<info>%s@} with @{<info>%s@}.@]" actual expected converter
   ) with | Not_found -> ()
 
 let print_simple_message ppf = function
@@ -60,7 +61,7 @@ end
 
 (* given type1 is foo => bar => baz(qux) and type 2 is bar => baz(qux), return Some(foo) *)
 let rec collect_missing_arguments env type1 type2 = match type1 with
-  (* why do we use Ctype.matches here? Please see https://github.com/BuckleScript/bucklescript/pull/2554 *)
+  (* why do we use Ctype.matches here? Please see https://github.com/rescript-lang/rescript-compiler/pull/2554 *)
   | {Types.desc=Tarrow (label, argtype, typ, _)} when Ctype.matches env typ type2 ->
     Some [(label, argtype)]
   | {desc=Tarrow (label, argtype, typ, _)} -> begin
@@ -147,7 +148,7 @@ let spellcheck ppf unbound_name valid_names =
   Misc.did_you_mean ppf (fun () ->
     Misc.spellcheck valid_names unbound_name
   )
-(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
+(* taken from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
 (* modified branches are commented *)
 let report_error env ppf = function
   | Typecore.Constructor_arity_mismatch(lid, expected, provided) ->
@@ -225,7 +226,7 @@ let report_error env ppf = function
             Like this: @{<info>foo(. a, b)@}@,\
             Not like this: @{<dim>foo(a, b)@}@,@,\
             This guarantees that your function is fully applied. More info here:@,\
-            https://bucklescript.github.io/docs/en/function.html#solution-guaranteed-uncurrying@]"
+            https://rescript-lang.org/docs/manual/latest/function#uncurried-function@]"
       | _ ->
           fprintf ppf "@[<v>@[<2>This expression has type@ %a@]@ %s@]"
             type_expr typ

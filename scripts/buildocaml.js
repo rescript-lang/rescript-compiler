@@ -62,15 +62,16 @@ function build(config) {
     );
 
     if (config) {
+      var { make } = require("./config.js");
       cp.execSync(
         "./configure -flambda -prefix " +
           prefix +
-          " -no-ocamlbuild  -no-curses -no-graph -no-pthread -no-debugger && make clean",
+          ` -no-ocamlbuild  -no-curses -no-graph -no-pthread -no-debugger && ${make} clean`,
         { cwd: ocamlSrcDir, stdio: [0, 1, 2] }
       );
     }
 
-    cp.execSync("make -j9 world.opt && make install ", {
+    cp.execSync(`${make} -j9 world.opt && ${make} install `, {
       cwd: ocamlSrcDir,
       stdio: [0, 1, 2]
     });

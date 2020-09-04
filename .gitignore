@@ -144,3 +144,4 @@ tracing*.json
 darwin/bsc
 .nyc_output
 themes
+.vscode/settings.json

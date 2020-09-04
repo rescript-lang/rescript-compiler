@@ -75,7 +75,6 @@ var test2 = {
 };
 
 function test3(_open, xx__hi) {
-  console.log("no inlin");
   var tmp = {
     hi: 2
   };

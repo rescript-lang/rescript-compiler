@@ -89,12 +89,12 @@ let flat_call ?comment e0 es : t =
 
 let runtime_var_dot ?comment (x : string)  (e1 : string) : J.expression = 
   { expression_desc = 
-     Var (Qualified(Ident.create_persistent x,Runtime, Some e1));
+     Var (Qualified({id = Ident.create_persistent x; kind = Runtime}, Some e1));
     comment }
 
 
 let ml_var_dot ?comment ( id  : Ident.t) e : J.expression =     
-  {expression_desc = Var (Qualified(id, Ml, Some e)); comment }
+  {expression_desc = Var (Qualified({id; kind = Ml}, Some e)); comment }
 
 (** 
    module as a value 
@@ -102,12 +102,16 @@ let ml_var_dot ?comment ( id  : Ident.t) e : J.expression =
      var http = require("http")
    ]}
 *)
-let external_var_dot ?comment  ~external_name:name ?dot (id : Ident.t) : t = 
-  {expression_desc = Var (Qualified(id, External name,  dot)); comment }
+let external_var_field ?comment  ~external_name:name (id : Ident.t)  ~field ~default : t = 
+  {expression_desc = Var (Qualified({id; kind = External {name; default}},  Some field)); comment }
 
+
+let external_var ?comment ~external_name (id : Ident.t) : t =   
+  {expression_desc = 
+    Var (Qualified({id; kind = External {name=external_name; default = false}},  None)); comment }
 
 let ml_module_as_var ?comment (id : Ident.t) : t  = 
-  {expression_desc = Var (Qualified (id, Ml, None)); comment}
+  {expression_desc = Var (Qualified ({id; kind = Ml}, None)); comment}
 
 (* Static_index .....................**)        
 let runtime_call ?comment module_name fn_name args = 
@@ -967,7 +971,7 @@ let rec int_comp (cmp : Lam_compat.comparison) ?comment  (e0 : t) (e1 : t) =
   | _, Call ({
       expression_desc = 
         Var (Qualified 
-               (_, Runtime, 
+               ({kind = Runtime}, 
                 Some ("caml_int_compare" | "caml_int32_compare"))); _}, 
       [l;r], _), 
     Number (Int {i = 0l})
@@ -975,7 +979,7 @@ let rec int_comp (cmp : Lam_compat.comparison) ?comment  (e0 : t) (e1 : t) =
   | Ceq, Call ({
       expression_desc = 
         Var (Qualified 
-               (ident, Runtime, 
+               ({id = _; kind = Runtime} as iid, 
                 Some ("caml_compare"))); _} as fn, 
       ([_;_] as args), call_info), 
     Number (Int {i = 0l})
@@ -983,7 +987,7 @@ let rec int_comp (cmp : Lam_compat.comparison) ?comment  (e0 : t) (e1 : t) =
       {e0 with expression_desc =
          Call( 
             {fn with expression_desc = 
-              Var(Qualified (ident,Runtime, Some "caml_equal")) 
+              Var(Qualified (iid, Some "caml_equal")) 
             } , args, call_info)}
   | Ceq, Optional_block _,  Undefined
   | Ceq, Undefined, Optional_block _

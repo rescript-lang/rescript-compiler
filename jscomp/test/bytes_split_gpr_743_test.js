@@ -38,11 +38,11 @@ var b = [
   0
 ];
 
-b[0] = /* "a" */97;
+Caml_bytes.set(b, 0, /* "a" */97);
 
-b[1] = /* "b" */98;
+Caml_bytes.set(b, 1, /* "b" */98);
 
-b[2] = /* "c" */99;
+Caml_bytes.set(b, 2, /* "c" */99);
 
 Bytes.blit(b, 0, b, 1, 2);
 
@@ -61,11 +61,11 @@ var b$1 = [
   0
 ];
 
-b$1[0] = /* "a" */97;
+Caml_bytes.set(b$1, 0, /* "a" */97);
 
-b$1[1] = /* "b" */98;
+Caml_bytes.set(b$1, 1, /* "b" */98);
 
-b$1[2] = /* "c" */99;
+Caml_bytes.set(b$1, 2, /* "c" */99);
 
 Bytes.blit(b$1, 1, b$1, 0, 2);
 

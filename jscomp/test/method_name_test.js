@@ -37,8 +37,6 @@ function f(x, i, file, v) {
 }
 
 function ff(x, i, v) {
-  x.make;
-  x.make_config;
   x.make = v;
   x.make_config = v;
   x.case(i);

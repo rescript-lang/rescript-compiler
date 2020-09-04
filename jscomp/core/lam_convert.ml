@@ -294,7 +294,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
         let args = 
           [ Lam.const Const_js_false ; 
             (* FIXME: arity 0 does not get proper supported*)
-            prim ~primitive:(Pjs_fn_make 0) ~args:[Lam.function_ ~arity:1 ~params:[Ident.create "param"] ~body:computation] 
+            prim ~primitive:(Pjs_fn_make 0) ~args:[Lam.function_ ~arity:1 ~params:[Ident.create "param"] ~body:computation 
+            ~attr:Lam.default_fn_attr] 
             loc             
           ] in 
         prim ~primitive:(Pmakeblock (tag,lazy_block_info,Mutable)) ~args loc  
@@ -438,7 +439,19 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pduparray _ ->  assert false 
     (* Does not exist since we compile array in js backend unlike native backend *)
 
+let convert_inline_attr (inline : Lambda.inline_attribute) : Lam.inline_attribute = 
+  match inline with    
+  | Always_inline -> Always_inline
+  | Never_inline -> Never_inline
+  | Unroll _
+  | Default_inline -> Default_inline 
 
+let convert_fn_attribute (attr : Lambda.function_attribute) : Lam.function_attribute = 
+  let inline : Lam.inline_attribute = 
+    convert_inline_attr attr.inline in
+  let is_a_functor =
+    if attr.is_a_functor then Lam.Functor_yes else Functor_no in     
+  Lam.{inline; is_a_functor}
 
 
 
@@ -619,22 +632,23 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | Lconst x ->
       Lam.const (Lam_constant_convert.convert_constant x )
     | Lapply 
-        {ap_func = fn; ap_args = args; ap_loc = loc; }
+        {ap_func = fn; ap_args = args; ap_loc = loc; ap_inlined}
       ->
           (** we need do this eargly in case [aux fn] add some wrapper *)
-          Lam.apply (convert_aux fn) (Ext_list.map args convert_aux ) loc App_na  
+          Lam.apply (convert_aux fn) (Ext_list.map args convert_aux ) {ap_loc = loc; ap_inlined = (convert_inline_attr ap_inlined); ap_status =  App_na}
     | Lfunction 
-    {kind; params; body }
+    {kind; params; body ; attr }
       ->  
       assert (kind = Curried);
       let new_map,body = rename_optional_parameters Map_ident.empty params body in 
+      let attr = convert_fn_attribute attr in 
       if Map_ident.is_empty new_map then
-        Lam.function_
+        Lam.function_ ~attr
           ~arity:(List.length params)  ~params
           ~body:(convert_aux body)
       else 
         let params = Ext_list.map params (fun x -> Map_ident.find_default new_map x x) in 
-        Lam.function_
+        Lam.function_ ~attr
           ~arity:(List.length params)  ~params
           ~body:(convert_aux body)
 
@@ -795,10 +809,10 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
              Ext_list.length_larger_than_n inner_args args 1 
         ->
         Lam.prim ~primitive ~args:(Ext_list.append_one args x) outer_loc
-      | Lapply{ap_func;ap_args} ->
-        Lam.apply ap_func (Ext_list.append_one ap_args x) outer_loc App_na
+      | Lapply{ap_func;ap_args; ap_info} ->
+        Lam.apply ap_func (Ext_list.append_one ap_args x) {ap_loc = outer_loc; ap_inlined = ap_info.ap_inlined; ap_status =  App_na }
       | _ ->
-        Lam.apply f [x] outer_loc App_na
+        Lam.apply f [x] {ap_loc = outer_loc; ap_inlined = Default_inline; ap_status = App_na}
     and convert_switch (e : Lambda.lambda) (s : Lambda.lambda_switch) = 
         let  e = convert_aux e in
         match s with

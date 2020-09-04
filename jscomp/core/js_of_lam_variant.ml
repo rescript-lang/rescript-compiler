@@ -31,30 +31,27 @@ type arg_expression =
   | Splice2 of E.t * E.t
 
 (* we need destruct [undefined] when input is optional *)
-let eval (arg : J.expression) (dispatches : (Ast_compatible.hash_label * string) list option) : E.t =
-  match dispatches with 
-  | None -> arg 
-  | Some dispatches -> 
-    if arg == E.undefined then E.undefined 
-    else
-      match arg.expression_desc with
-      | Str (_,s) ->     
-        let s = 
-          (Ext_list.assoc_by_string  dispatches s None) in 
-        E.str s 
-      | _ -> 
-        E.of_block
-          [(S.string_switch arg
-              (Ext_list.map dispatches (fun (i,r) ->
-                   {J.switch_case = i ;
-                    switch_body = [S.return_stmt (E.str r)];
-                    should_break = false; (* FIXME: if true, still print break*)
-                    comment = None;
-                   })))]
+let eval (arg : J.expression) (dispatches : (string * string) list ) : E.t =
+  if arg == E.undefined then E.undefined 
+  else
+    match arg.expression_desc with
+    | Str (_,s) ->     
+      let s = 
+        (Ext_list.assoc_by_string  dispatches s None) in 
+      E.str s 
+    | _ -> 
+      E.of_block
+        [(S.string_switch arg
+            (Ext_list.map dispatches (fun (i,r) ->
+                 {J.switch_case = i ;
+                  switch_body = [S.return_stmt (E.str r)];
+                  should_break = false; (* FIXME: if true, still print break*)
+                  comment = None;
+                 })))]
 
 (** invariant: optional is not allowed in this case *)
 (** arg is a polyvar *)
-let eval_as_event (arg : J.expression) (dispatches : (Ast_compatible.hash_label * string) list option) =
+let eval_as_event (arg : J.expression) (dispatches : (string * string) list option) =
   match arg.expression_desc with
   | Caml_block([{expression_desc = Str(_,s)}; cb], _, _, Blk_poly_var ) when Js_analyzer.no_side_effect_expression cb 
     -> 
@@ -97,7 +94,7 @@ let eval_as_event (arg : J.expression) (dispatches : (Ast_compatible.hash_label 
       *)
 
 (* we need destruct [undefined] when input is optional *)
-let eval_as_int (arg : J.expression) (dispatches : (Ast_compatible.hash_label * int) list ) : E.t  =
+let eval_as_int (arg : J.expression) (dispatches : (string * int) list ) : E.t  =
   if arg == E.undefined then E.undefined else
   match arg.expression_desc with
   | Str(_,i) ->

@@ -57,7 +57,7 @@ function f2(h, b, param) {
   return Curry._1(h, b ? 32 : 7);
 }
 
-Caml_array.caml_array_set(v, 1, 3.0);
+Caml_array.set(v, 1, 3.0);
 
 var unboxed_x = {
   u: 0,

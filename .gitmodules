@@ -1,7 +1,7 @@
 [submodule "ocaml"]
 	path = ocaml
-	url = https://github.com/BuckleScript/ocaml
+	url = https://github.com/rescript-lang/ocaml
 [submodule "syntax"]
 	path = syntax
-	url = https://github.com/BuckleScript/syntax
+	url = https://github.com/rescript-lang/syntax
 	branch = master

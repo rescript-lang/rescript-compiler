@@ -45,7 +45,7 @@ let non_generalizable_msg ppf ~result ~is_module print_fallback_msg =
       More info:@ https://realworldocaml.org/v1/en/html/imperative-programming-1.html#side-effects-and-weak-polymorphism@]"
     print_fallback_msg ()
 
-(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typemod.ml#L1754 *)
+(* taken from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typemod.ml#L1754 *)
 (* modified branches are commented *)
 let report_error ppf = function
   | Typemod.Non_generalizable typ ->

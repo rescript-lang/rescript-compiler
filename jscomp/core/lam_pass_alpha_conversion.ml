@@ -31,38 +31,38 @@
 
 let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t = 
   let rec 
-    populateApplyInfo (args_arity : int list) (len : int) (fn : Lam.t) (args : Lam.t list) loc status : Lam.t = 
+    populateApplyInfo (args_arity : int list) (len : int) (fn : Lam.t) (args : Lam.t list) ap_info : Lam.t = 
     match args_arity with 
     | 0 :: _ 
-    | [] -> Lam.apply (simpl fn) (Ext_list.map args simpl)  loc status
+    | [] -> Lam.apply (simpl fn) (Ext_list.map args simpl)  ap_info
     | x :: _ -> 
       if x = len 
       then 
-        Lam.apply (simpl fn) (Ext_list.map args simpl) loc App_infer_full
+        Lam.apply (simpl fn) (Ext_list.map args simpl) {ap_info with ap_status = App_infer_full}
       else if x > len  
       then 
         let fn = simpl fn in
         let args = Ext_list.map args simpl in
-        Lam_eta_conversion.transform_under_supply (x - len) loc App_infer_full
-          fn args 
+        Lam_eta_conversion.transform_under_supply (x - len) {ap_info with ap_status = App_infer_full}
+          fn args
       else 
         let first,rest = Ext_list.split_at args x in 
         Lam.apply (
           Lam.apply (simpl fn) 
             (Ext_list.map first simpl ) 
-            loc App_infer_full
+            {ap_info with ap_status = App_infer_full}
         )
-          (Ext_list.map rest simpl ) loc status (* TODO refien *)
+          (Ext_list.map rest simpl ) ap_info  (* TODO refien *)
     
   and simpl  (lam : Lam.t) = 
     match lam with 
     | Lconst _ -> lam
     | Lvar _ -> lam 
-    | Lapply {ap_func = l1; ap_args =  ll;  ap_loc = loc ; ap_status = status} 
+    | Lapply {ap_func = l1; ap_args =  ll;  ap_info } 
       -> (* detect functor application *)
       let args_arity =  Lam_arity.extract_arity (Lam_arity_analysis.get_arity meta l1) in
       let len = List.length ll in         
-      populateApplyInfo args_arity len l1 ll loc status
+      populateApplyInfo args_arity len l1 ll ap_info
     | Llet (str, v, l1, l2) ->
       Lam.let_ str v (simpl l1) (simpl l2 )
     | Lletrec (bindings, body) ->
@@ -86,9 +86,9 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
       end
     | Lprim {primitive; args ; loc} -> 
       Lam.prim ~primitive ~args:(Ext_list.map args simpl) loc
-    | Lfunction {arity; params; body = l} ->
+    | Lfunction {arity; params; body; attr} ->
       (* Lam_mk.lfunction kind params (simpl l) *)
-      Lam.function_ ~arity  ~params  ~body:(simpl  l)
+      Lam.function_ ~arity  ~params  ~body:(simpl body) ~attr
     | Lswitch (l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;

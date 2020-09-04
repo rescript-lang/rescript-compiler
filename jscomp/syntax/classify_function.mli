@@ -24,7 +24,9 @@
 
 
 val classify :
-  string -> Js_raw_info.exp 
+  ?check:(Location.t * int) -> 
+  string -> 
+  Js_raw_info.exp 
 
 val classify_stmt :  
   string -> Js_raw_info.stmt

@@ -22,7 +22,7 @@ var arr = $$Array.init(2, (function (param) {
       }));
 
 for(var i = 0; i <= 1; ++i){
-  Caml_array.caml_array_set(arr, i, i + 1 | 0);
+  Caml_array.set(arr, i, i + 1 | 0);
 }
 
 console.log([

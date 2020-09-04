@@ -54,7 +54,10 @@ val reset : unit -> unit
     any [id] as long as put in the [cached_tbl] should be always valid,
 *)  
 val add_js_module : 
-    External_ffi_types.module_bind_name -> string  -> Ident.t 
+    External_ffi_types.module_bind_name -> 
+    string  -> 
+    bool -> 
+    Ident.t 
 
 
 (* The other dependencies are captured by querying 
@@ -91,10 +94,10 @@ val get_package_path_from_cmj :
 
 (* The second argument is mostly from [runtime] modules 
     will change the input [hard_dependencies]
-    [get_required_modules extra hard_dependencies]
+    [populate_required_modules extra hard_dependencies]
     [extra] maybe removed if it is pure and not in [hard_dependencies]
 *)
-val get_required_modules : 
+val populate_required_modules : 
   Lam_module_ident.Hash_set.t  ->
   Lam_module_ident.Hash_set.t -> 
-  Lam_module_ident.t list
+  unit

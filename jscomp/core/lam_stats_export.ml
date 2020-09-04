@@ -64,9 +64,11 @@ let values_of_export
            end
        in
        let persistent_closed_lambda = 
-          match Map_ident.find_opt export_map x with 
-         | Some Lconst (Const_js_null | Const_js_undefined | Const_js_true | Const_js_false ) | None  as optlam  -> optlam
-         | Some lambda as optlam ->
+         let optlam = Map_ident.find_opt export_map x in
+          match optlam with 
+         | Some Lconst (Const_js_null | Const_js_undefined | Const_js_true | Const_js_false ) 
+         | None  -> optlam
+         | Some lambda  ->
          if not !Js_config.cross_module_inline then None
          else
            if Lam_analysis.safe_to_inline lambda
@@ -74,12 +76,18 @@ let values_of_export
               only truly immutable values can be inlined
            *)
            then
-             if Lam_inline_util.should_be_functor x.name lambda (* can also be submodule *)
-             then
+             match lambda with 
+             | Lfunction {attr = {inline = Always_inline}} 
+              (* FIXME: is_closed lambda is too restrictive 
+                It precludes ues cases
+                - inline forEach but not forEachU
+              *)
+             | Lfunction {attr = {is_a_functor = Functor_yes}}
+              ->
                if Lam_closure.is_closed lambda (* TODO: seriealize more*)
-               then Some lambda
+               then optlam
                else None
-             else 
+             | _ -> 
                let lam_size = Lam_analysis.size lambda in
                (* TODO:
                   1. global need re-assocate when do the beta reduction 

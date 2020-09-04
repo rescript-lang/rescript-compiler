@@ -14,7 +14,7 @@ function for_3(x) {
         }), x);
   for(var i = 0 ,i_finish = x.length; i < i_finish; ++i){
     var j = (i << 1);
-    Caml_array.caml_array_set(arr, i, (function(j){
+    Caml_array.set(arr, i, (function(j){
         return function (param) {
           v.contents = v.contents + j | 0;
           
@@ -37,7 +37,7 @@ function for_4(x) {
   for(var i = 0 ,i_finish = x.length; i < i_finish; ++i){
     var j = (i << 1);
     var k = (j << 1);
-    Caml_array.caml_array_set(arr, i, (function(k){
+    Caml_array.set(arr, i, (function(k){
         return function (param) {
           v.contents = v.contents + k | 0;
           
@@ -59,7 +59,7 @@ function for_5(x, u) {
         }), x);
   for(var i = 0 ,i_finish = x.length; i < i_finish; ++i){
     var k = Math.imul((u << 1), u);
-    Caml_array.caml_array_set(arr, i, (function(k){
+    Caml_array.set(arr, i, (function(k){
         return function (param) {
           v.contents = v.contents + k | 0;
           
@@ -97,7 +97,7 @@ function for_6(x, u) {
       var k = Math.imul((u << 1), u);
       var h = (v5.contents << 1);
       v2.contents = v2.contents + 1 | 0;
-      Caml_array.caml_array_set(arr, i, (function(k,h){
+      Caml_array.set(arr, i, (function(k,h){
           return function (param) {
             v.contents = (((((v.contents + k | 0) + v2.contents | 0) + v4.contents | 0) + v5.contents | 0) + h | 0) + u | 0;
             
@@ -128,7 +128,7 @@ function for_7(param) {
   for(var i = 0; i <= 6; ++i){
     (function(i){
     for(var j = 0; j <= 2; ++j){
-      Caml_array.caml_array_set(arr, Math.imul(i, 3) + j | 0, (function(j){
+      Caml_array.set(arr, Math.imul(i, 3) + j | 0, (function(j){
           return function (param) {
             v.contents = (v.contents + i | 0) + j | 0;
             
@@ -155,7 +155,7 @@ function for_8(param) {
     (function(i,k){
     for(var j = 0; j <= 2; ++j){
       var h = i + j | 0;
-      Caml_array.caml_array_set(arr, Math.imul(i, 3) + j | 0, (function(j,h){
+      Caml_array.set(arr, Math.imul(i, 3) + j | 0, (function(j,h){
           return function (param) {
             v.contents = (((v.contents + i | 0) + j | 0) + h | 0) + k | 0;
             
@@ -202,13 +202,13 @@ function for_9(param) {
     for(var j = 0; j <= 1; ++j){
       v$1.contents = v$1.contents + 1 | 0;
       collect(v$1.contents);
-      Caml_array.caml_array_set(arr, (i << 1) + j | 0, (function (param) {
+      Caml_array.set(arr, (i << 1) + j | 0, (function (param) {
               vv.contents = vv.contents + v$1.contents | 0;
               
             }));
     }
     }(v$1));
-    Caml_array.caml_array_set(arr2, i, (function(v$1){
+    Caml_array.set(arr2, i, (function(v$1){
         return function (param) {
           vv2.contents = vv2.contents + v$1.contents | 0;
           

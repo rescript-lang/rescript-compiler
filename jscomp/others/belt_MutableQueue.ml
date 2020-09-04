@@ -71,7 +71,7 @@ let peekUndefined q =
 
 let peekExn q =
   match  q.first with
-  | None -> [%assert "Belt.Queue.Empty"]
+  | None -> raise Not_found
   | Some v -> v.content
 
 let pop q =
@@ -92,7 +92,7 @@ let pop q =
 
 let popExn q = (* TO fix *)
   match  q.first with 
-  | None -> [%assert "Empty"]
+  | None -> raise Not_found
   | Some x  ->
     let next = x.next in 
     if next = None then 

@@ -6719,6 +6719,9 @@ external
 
     
 
+
+
+external set_as_old_file : string -> unit = "caml_stale_file"
 end
 module Ext_util : sig 
 #1 "ext_util.mli"
@@ -8200,7 +8203,7 @@ external ff :
       type t
       external mk : int -> (_ [@bs.as {json| { x : 3 } |json}]) ->  t = "mk" [@@bs.val]
       |} in
-      OUnit.assert_bool __LOC__ (Ext_string.contain_substring should_err.stderr "Invalid json literal")
+      OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
     end
     ;
     __LOC__ >:: begin fun _ ->
@@ -8917,10 +8920,10 @@ let fold h init f =
   !accu
 
 
-let elements set = 
+let to_list set = 
   fold set [] List.cons
 
-
+  
 
 
 let rec small_bucket_mem eq key lst =
@@ -8975,7 +8978,7 @@ sig
   val fold: t -> 'b  -> (key -> 'b -> 'b) -> 'b
   val length:  t -> int
   (* val stats:  t -> Hashtbl.statistics *)
-  val elements : t -> key list 
+  val to_list : t -> key list 
 end
 
 
@@ -9067,7 +9070,7 @@ let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
 (* let stats = Hash_set_gen.stats *)
-let elements = Hash_set_gen.elements
+let to_list = Hash_set_gen.to_list
 
 
 
@@ -9164,7 +9167,7 @@ val mem : 'a t -> 'a -> bool
 
 val iter : 'a t -> ('a -> unit) -> unit
 
-val elements : 'a t -> 'a list
+val to_list : 'a t -> 'a list
 
 val length : 'a t -> int 
 
@@ -9217,7 +9220,7 @@ let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
 (* let stats = Hash_set_gen.stats *)
-let elements = Hash_set_gen.elements
+let to_list = Hash_set_gen.to_list
 
 
 
@@ -9341,7 +9344,7 @@ let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
 (* let stats = Hash_set_gen.stats *)
-let elements = Hash_set_gen.elements
+let to_list = Hash_set_gen.to_list
 
 
 
@@ -9592,7 +9595,7 @@ let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
 (* let stats = Hash_set_gen.stats *)
-let elements = Hash_set_gen.elements
+let to_list = Hash_set_gen.to_list
 
 
 
@@ -17769,7 +17772,7 @@ module Ast_compatible : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type poly_var_label = Asttypes.label Asttypes.loc
+
 
 
 
@@ -17779,7 +17782,7 @@ type poly_var_label = Asttypes.label Asttypes.loc
 
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
-type hash_label = string 
+
 open Parsetree
 
 
@@ -17796,20 +17799,13 @@ val const_exp_int:
   int -> 
   expression 
 
-val const_hash_label : 
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  string -> 
-  expression 
 
 
 val const_exp_int_list_as_array:  
   int list -> 
   expression 
 
-(* val const_exp_string_list_as_array:  
-  string list -> 
-  expression  *)
+
 
   
 val apply_simple:
@@ -17896,12 +17892,6 @@ val opt_arrow:
   core_type ->
   core_type
 
-val object_: 
-  ?loc:loc -> 
-  ?attrs:attrs ->
-  (string Asttypes.loc * attributes * core_type) list -> 
-  Asttypes.closed_flag ->
-  core_type  
 
 
 (* val nonrec_type_str:  
@@ -17979,7 +17969,6 @@ open Parsetree
 let default_loc = Location.none
 
 
-type poly_var_label = Asttypes.label Asttypes.loc
 
 
 
@@ -17988,8 +17977,9 @@ type poly_var_label = Asttypes.label Asttypes.loc
 
 
 
-let arrow ?(loc=default_loc) ?(attrs = []) a b  =
-  Ast_helper.Typ.arrow ~loc ~attrs Nolabel a b  
+
+let arrow ?loc ?attrs a b  =
+  Ast_helper.Typ.arrow ?loc ?attrs Nolabel a b  
 
 let apply_simple
  ?(loc = default_loc) 
@@ -18056,21 +18046,6 @@ let fun_
     pexp_desc = Pexp_fun(Nolabel,None, pat, exp)
   }
 
-(* let opt_label s =
-  Asttypes.Optional s *)
-
-(* let label_fun
-  ?(loc = default_loc)
-  ?(attrs = [])
-  ~label
-  pat
-  exp =
-  {
-    pexp_loc = loc;
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_fun(label, None, pat, exp)
-  } *)
-type hash_label = string 
 
 
 let const_exp_string 
@@ -18084,15 +18059,7 @@ let const_exp_string
     pexp_desc = Pexp_constant(Pconst_string(s,delimiter))
   }
 
-let const_hash_label 
-    ?(loc = default_loc)
-    ?(attrs = [])
-    (s : hash_label) : expression = 
-  {
-    pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_constant(Pconst_string(s,None))
-  }
+
 
 let const_exp_int 
   ?(loc = default_loc)
@@ -18116,19 +18083,6 @@ let apply_labels
         fn, 
         Ext_list.map args (fun (l,a) -> Asttypes.Labelled l, a)   ) }
 
-let object_ 
-  ?(loc= default_loc)
-  ?(attrs = [])
-  (fields : (Asttypes.label Asttypes.loc * attributes * core_type) list)
-  flg : core_type = 
-  {
-    ptyp_desc = 
-      Ptyp_object(
-        Ext_list.map fields (fun (a,b,c) -> 
-          Parsetree.Otag (a,b,c)),flg);
-    ptyp_loc = loc;
-    ptyp_attributes = attrs
-  }
 
 
 

@@ -62,23 +62,6 @@ let translate loc (prim_name : string)
   let call m = 
     E.runtime_call m prim_name args in 
   begin match prim_name with 
-    (* | "caml_gc_stat" 
-    | "caml_gc_quick_stat"  
-    | "caml_gc_get" *)
-    | "caml_gc_counters"
-    | "caml_gc_set"
-    | "caml_gc_minor"
-    | "caml_gc_major_slice"
-    | "caml_gc_major"
-    | "caml_gc_full_major"
-    | "caml_gc_compaction"
-    | "caml_final_register"
-    | "caml_final_release"
-      ->  call Js_runtime_modules.gc
-    (* | "caml_abs_float" -> 
-      E.math "abs" args  *)
-    (* | "caml_acos_float" -> 
-      E.math "acos" args  *)
     |  "caml_add_float" -> 
       begin match args with 
         | [e0;e1] -> E.float_add e0 e1 (** TODO float plus*)
@@ -109,108 +92,9 @@ let translate loc (prim_name : string)
         | [e0;e1] -> E.float_comp Cgt  e0 e1
         | _ -> assert false 
       end
-    (* | "caml_tan_float"  ->
-      E.math "tan" args 
-    | "caml_tanh_float"  ->
-      E.math "tanh" args 
-    | "caml_asin_float"  -> 
-      E.math "asin" args 
-    | "caml_atan2_float" -> 
-      E.math "atan2" args
-    | "caml_atan_float" -> 
-      E.math "atan" args 
-    | "caml_ceil_float" -> 
-      E.math "ceil" args 
-    | "caml_cos_float" -> 
-      E.math "cos" args 
-    | "caml_cosh_float" -> 
-      E.math "cosh" args
-    | "caml_exp_float" -> 
-      E.math "exp" args
-    | "caml_sin_float" -> 
-      E.math "sin" args
-    | "caml_sinh_float"-> 
-      E.math "sinh" args
-    | "caml_sqrt_float" -> 
-      E.math "sqrt" args
-
- *)
     | "caml_float_of_int" -> 
       begin match args with 
         | [e] -> e 
-        | _ -> assert false 
-      end
-    (* | "caml_floor_float" ->
-      E.math "floor" args 
-    | "caml_log_float" -> 
-      E.math "log" args 
-    | "caml_log10_float" -> 
-      E.math "log10" args 
-    | "caml_log1p_float" -> 
-      E.math "log1p" args 
-    | "caml_power_float"  -> 
-      E.math "pow" args *)
-
-    | "caml_array_get" -> 
-      call Js_runtime_modules.array
-    | "caml_array_get_addr"
-    | "caml_array_get_float"
-    | "caml_array_unsafe_get"
-    | "caml_array_unsafe_get_float" -> 
-      begin match args with 
-        | [e0;e1] -> Js_of_lam_array.ref_array e0 e1
-        | _ -> assert false
-      end
-    | "caml_array_set" ->
-      call Js_runtime_modules.array
-    | "caml_array_set_addr"
-    | "caml_array_set_float"
-    | "caml_array_unsafe_set"
-    | "caml_array_unsafe_set_addr"
-    | "caml_array_unsafe_set_float" -> 
-      begin match args with 
-        | [e0;e1;e2] -> 
-          Js_of_lam_array.set_array e0 e1 e2
-        | _ -> assert false
-      end
-
-    | "caml_int32_add"
-      -> 
-      begin match args with 
-        | [e0;e1] -> E.int32_add e0 e1 
-        | _ -> assert false 
-      end
-
-    | "caml_nativeint_add" 
-      -> 
-      begin match args with 
-        | [e0;e1] -> E.unchecked_int32_add e0 e1 
-        | _ -> assert false 
-      end
-    | "caml_int32_div" 
-      -> 
-      begin match args with 
-        | [e0;e1] -> 
-          E.int32_div  ~checked:(!Js_config.check_div_by_zero) e0 e1
-        | _ -> assert false 
-      end
-
-    | "caml_nativeint_div" 
-      -> (* nativeint behaves exactly the same as js numbers except division *)
-      begin match args with 
-        | [e0;e1] -> E.int32_div  ~checked:false e0 e1
-        | _ -> assert false 
-      end
-
-    | "caml_int32_mul"
-      -> 
-      begin match args with 
-        | [e0;e1] -> E.int32_mul e0 e1 
-        | _ -> assert false 
-      end
-    | "caml_nativeint_mul"  -> 
-      begin match args with 
-        | [e0;e1] -> E.unchecked_int32_mul e0 e1 
         | _ -> assert false 
       end
     | "caml_int32_of_int"
@@ -236,65 +120,14 @@ let translate loc (prim_name : string)
         | [e] -> e (* TODO: do more checking when [to_int32]*)
         | _ -> assert false 
       end
-    | "caml_int32_sub" -> 
-      begin match args with 
-        | [e0;e1] -> E.int32_minus e0 e1 
-        | _ -> assert false 
-      end
-
-    | "caml_nativeint_sub" ->
-      begin match args with 
-        | [e0;e1] -> E.unchecked_int32_minus e0 e1 
-        | _ -> assert false 
-      end
-    | "caml_int32_xor" 
-    | "caml_nativeint_xor" -> 
-      begin match args with 
-        | [e0; e1] -> E.int32_bxor e0 e1 
-        | _ -> assert false 
-      end
-
-    | "caml_int32_and"
-    | "caml_nativeint_and" -> 
-      begin match args with 
-        | [e0;e1] -> E.int32_band e0 e1 
-        | _ -> assert false 
-      end
-    | "caml_int32_or"
-    | "caml_nativeint_or" ->
-      begin match args with
-        | [e0;e1] -> E.int32_bor e0 e1 
-        | _ -> assert false  
-      end
-    | "caml_le_float" ->
-      begin match args with 
-        | [e0;e1] -> E.float_comp Cle e0 e1 
-        | _ -> assert false 
-      end
-    | "caml_lt_float" ->
-      begin match args with 
-        | [e0;e1] -> E.float_comp Clt e0 e1 
-        | _ -> assert false 
-      end
-    |  "caml_neg_float" -> 
-      begin match args with 
-        | [e] -> 
-          (** TODO: use float.. *)
-          E.int32_minus E.zero_int_literal e 
-        | _ -> assert false
-      end
-    | "caml_neq_float" -> 
-      begin match args with 
-        | [e0;e1] -> E.float_notequal e0 e1
-        | _ -> assert false 
-      end
-    | "caml_mul_float" -> 
-      begin match args with 
-        | [e0; e1] -> E.float_mul e0 e1 
-        | _ -> assert false  
-      end
-    | "caml_bytes_equal" ->   
-      call Js_runtime_modules.caml_primitive
+    | "caml_bytes_greaterthan"  
+    | "caml_bytes_greaterequal"
+    | "caml_bytes_lessthan"
+    | "caml_bytes_lessequal"
+    | "caml_bytes_compare"
+    | "caml_bytes_equal" 
+      -> 
+      call Js_runtime_modules.bytes
     | "caml_int64_succ" -> 
       E.runtime_call Js_runtime_modules.int64 "succ" args 
     | "caml_int64_to_string" -> 
@@ -515,7 +348,7 @@ let translate loc (prim_name : string)
       begin match args with 
       | [{expression_desc = Bool a} ; {expression_desc = Bool b} ] 
         ->  
-          let c = compare a b in 
+          let c = compare (a : bool) b in 
           E.int (if c = 0 then 0l else if c > 0 then 1l else -1l)
       | _ -> 
         call Js_runtime_modules.caml_primitive
@@ -524,11 +357,10 @@ let translate loc (prim_name : string)
     | "caml_int32_compare"
     | "caml_nativeint_compare"
     | "caml_float_compare"
-    | "caml_bytes_compare"
+
     | "caml_string_compare" 
     -> 
       call Js_runtime_modules.caml_primitive
-
     | "caml_bool_min"  
     | "caml_int_min"
     | "caml_float_min"
@@ -560,17 +392,10 @@ let translate loc (prim_name : string)
             call Js_runtime_modules.caml_primitive
         | _ -> assert false 
       end
-    | "caml_fill_string"
-    | "caml_fill_bytes"
-      -> 
-        E.runtime_call 
-          Js_runtime_modules.bytes "caml_fill_bytes" args
-    | "caml_is_printable" 
-      -> 
-      call Js_runtime_modules.char
     | "caml_string_get"    
       -> 
         E.runtime_call Js_runtime_modules.string "get" args
+    | "caml_fill_bytes"
     | "bytes_to_string"
     | "bytes_of_string"
     | "caml_blit_string" 
@@ -609,7 +434,6 @@ let translate loc (prim_name : string)
     (*                       Js_of_lam_array.make_array NA Pgenarray [] *)
     (*                      ] *)
     | "caml_sys_time"
-    | "caml_sys_random_seed"
     | "caml_sys_getenv"
     | "caml_sys_system_command" 
     | "caml_sys_getcwd" (* check browser or nodejs *)

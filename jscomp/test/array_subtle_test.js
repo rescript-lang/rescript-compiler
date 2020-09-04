@@ -60,14 +60,14 @@ eq("File \"array_subtle_test.ml\", line 17, characters 5-12", [
 
 eq("File \"array_subtle_test.ml\", line 21, characters 5-12", [
       3,
-      Caml_array.caml_array_get(v, 2)
+      Caml_array.get(v, 2)
     ]);
 
-Caml_array.caml_array_set(v, 2, 4);
+Caml_array.set(v, 2, 4);
 
 eq("File \"array_subtle_test.ml\", line 23, characters 5-12", [
       4,
-      Caml_array.caml_array_get(v, 2)
+      Caml_array.get(v, 2)
     ]);
 
 while(v.length > 0) {

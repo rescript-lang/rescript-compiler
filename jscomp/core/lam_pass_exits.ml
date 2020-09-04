@@ -215,10 +215,10 @@ let subst_helper (subst : subst_tbl) (query : int -> int) (lam : Lam.t) : Lam.t 
        | None -> Lam.staticraise i ls
       )
     | Lvar _|Lconst _  -> lam
-    | Lapply {ap_func; ap_args;  ap_loc; ap_status } -> 
-      Lam.apply (simplif ap_func) (Ext_list.map ap_args simplif) ap_loc ap_status
-    | Lfunction {arity; params; body} -> 
-      Lam.function_ ~arity  ~params ~body:(simplif body)
+    | Lapply {ap_func; ap_args;  ap_info } -> 
+      Lam.apply (simplif ap_func) (Ext_list.map ap_args simplif) ap_info
+    | Lfunction {arity; params; body; attr} -> 
+      Lam.function_ ~arity  ~params ~body:(simplif body) ~attr
     | Llet (kind, v, l1, l2) -> 
       Lam.let_ kind v (simplif l1) (simplif l2)
     | Lletrec (bindings, body) ->

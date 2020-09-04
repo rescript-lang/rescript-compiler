@@ -63,7 +63,7 @@ and exports = Js_op.exports
 
 and tag_info = Js_op.tag_info 
  
-and required_modules = Js_op.required_modules
+and required_modules = module_id list
 
 
 
@@ -75,10 +75,12 @@ and required_modules = Js_op.required_modules
 and property_name =  Js_op.property_name
 and jsint = Js_op.jsint
 and ident = Ident.t 
-
+and module_id = {
+  id : ident; kind : Js_op.kind
+}
 and vident = 
   | Id of ident
-  | Qualified of ident * kind * string option
+  | Qualified of module_id * string option
     (* Since camldot is only available for toplevel module accessors,
        we don't need print  `A.length$2`
        just print `A.length` - it's guarateed to be unique

@@ -18,8 +18,5 @@
   "bs-dependencies": [
   ],
   "bs-dev-dependencies": ["weird"],
-  "warnings": {
-    "error" : "+101"
-  },
   "refmt": 3
 }

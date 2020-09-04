@@ -42,8 +42,6 @@ let lift_option_type ({ptyp_loc} as ty:t) : t =
       ptyp_attributes = []
     }
 
-let is_any (ty : t) =
-  ty.ptyp_desc = Ptyp_any
 
 open Ast_helper
 
@@ -104,8 +102,9 @@ let from_labels ~loc arity labels
          Typ.var ~loc ("a" ^ string_of_int i)))) in
   let result_type =
     Ast_comb.to_js_type loc
-      (Ast_compatible.object_ ~loc
-         (Ext_list.map2 labels tyvars (fun x y -> x ,[], y)) Closed)
+      (Typ.object_ ~loc
+         (Ext_list.map2 labels tyvars 
+          (fun x y -> Parsetree.Otag (x ,[], y))) Closed)
   in
   Ext_list.fold_right2 labels tyvars  result_type
     (fun label (* {loc ; txt = label }*)
@@ -115,7 +114,7 @@ let from_labels ~loc arity labels
 
 let make_obj ~loc xs =
   Ast_comb.to_js_type loc
-    (Ast_compatible.object_  ~loc xs Closed)
+    (Typ.object_  ~loc xs Closed)
 
 
 

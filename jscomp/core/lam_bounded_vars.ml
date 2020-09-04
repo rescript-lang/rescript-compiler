@@ -91,10 +91,10 @@ let rewrite (map :   _ Hash_ident.t)
       let bindings = Ext_list.map2 vars bindings (fun var (_,l) -> var, aux l) in 
       let body = aux body in       
       Lam.letrec bindings body
-    | Lfunction{arity;  params; body} -> 
+    | Lfunction{arity;  params; body; attr} -> 
       let params =  Ext_list.map params rebind in
       let body = aux body in      
-      Lam.function_ ~arity ~params ~body
+      Lam.function_ ~arity ~params ~body ~attr
     | Lstaticcatch(l1, (i,xs), l2) -> 
       let l1 = aux l1 in
       let xs = Ext_list.map xs rebind in
@@ -111,10 +111,10 @@ let rewrite (map :   _ Hash_ident.t)
       (* here it makes sure that global vars are not rebound *)      
       Lam.prim ~primitive ~args:(Ext_list.map args aux) loc
     | Lglobal_module _ -> lam 
-    | Lapply {ap_func;  ap_args; ap_loc;  ap_status } ->
+    | Lapply {ap_func;  ap_args; ap_info;} ->
       let fn = aux ap_func in       
       let args = Ext_list.map ap_args aux in 
-      Lam.apply fn  args ap_loc ap_status
+      Lam.apply fn  args ap_info 
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;

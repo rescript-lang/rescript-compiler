@@ -299,7 +299,7 @@ function printable_point2_init($$class) {
       ]);
   CamlinternalOO.add_initializer($$class, (function (self$6) {
           console.log("initializingFile \"class3_test.ml\", line 76, characters 50-57");
-          return Caml_array.caml_array_set(v, 0, self$6[x]);
+          return Caml_array.set(v, 0, self$6[x]);
         }));
   return function (env, self, x_init$1) {
     var origin$1 = Math.imul(x_init$1 / 10 | 0, 10);

@@ -1000,7 +1000,7 @@ function mark_used_indices(tbl) {
                   return List.iter((function (param) {
                                 var i = param[1];
                                 if (i >= 0) {
-                                  return Caml_array.caml_array_set(tbl, i, true);
+                                  return Caml_array.set(tbl, i, true);
                                 }
                                 
                               }), param._0.marks);
@@ -1011,7 +1011,7 @@ function mark_used_indices(tbl) {
 function find_free(tbl, _idx, len) {
   while(true) {
     var idx = _idx;
-    if (idx === len || !Caml_array.caml_array_get(tbl, idx)) {
+    if (idx === len || !Caml_array.get(tbl, idx)) {
       return idx;
     }
     _idx = idx + 1 | 0;
@@ -1405,7 +1405,7 @@ function flatten_match(m) {
         }), -1, m);
   var res = Caml_array.caml_make_vect(ma + 1 | 0, -1);
   List.iter((function (param) {
-          return Caml_array.caml_array_set(res, param[0], param[1]);
+          return Caml_array.set(res, param[0], param[1]);
         }), m);
   return res;
 }
@@ -1533,14 +1533,14 @@ function validate(info, s, pos, st) {
   var cat = category(info.re, c);
   var desc$prime = delta$1(info, cat, c, st);
   var st$prime = find_state(info.re, desc$prime);
-  return Caml_array.caml_array_set(st.next, c, st$prime);
+  return Caml_array.set(st.next, c, st$prime);
 }
 
 function loop(info, s, pos, st) {
   if (pos >= info.last) {
     return st;
   }
-  var st$prime = Caml_array.caml_array_get(st.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos)));
+  var st$prime = Caml_array.get(st.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos)));
   var _pos = pos;
   var _st = st;
   var _st$prime = st$prime;
@@ -1550,7 +1550,7 @@ function loop(info, s, pos, st) {
     var pos$1 = _pos;
     if (st$prime$1.idx < 0) {
       if (st$prime$1.idx === -3) {
-        Caml_array.caml_array_set(info.positions, st$prime$1.real_idx, pos$1 + 1 | 0);
+        Caml_array.set(info.positions, st$prime$1.real_idx, pos$1 + 1 | 0);
         return st$prime$1;
       } else {
         validate(info, s, pos$1, st$1);
@@ -1559,14 +1559,14 @@ function loop(info, s, pos, st) {
     }
     var pos$2 = pos$1 + 1 | 0;
     if (pos$2 < info.last) {
-      var st$prime$prime = Caml_array.caml_array_get(st$prime$1.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos$2)));
-      Caml_array.caml_array_set(info.positions, st$prime$1.idx, pos$2);
+      var st$prime$prime = Caml_array.get(st$prime$1.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos$2)));
+      Caml_array.set(info.positions, st$prime$1.idx, pos$2);
       _st$prime = st$prime$prime;
       _st = st$prime$1;
       _pos = pos$2;
       continue ;
     }
-    Caml_array.caml_array_set(info.positions, st$prime$1.idx, pos$2);
+    Caml_array.set(info.positions, st$prime$1.idx, pos$2);
     return st$prime$1;
   };
 }
@@ -1648,7 +1648,7 @@ function scan_str(info, s, initial_state, groups) {
         if (pos$1 >= last) {
           return st;
         }
-        var st$prime = Caml_array.caml_array_get(st.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos$1)));
+        var st$prime = Caml_array.get(st.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos$1)));
         if (st$prime.idx >= 0) {
           _st = st$prime;
           _pos = pos$1 + 1 | 0;
@@ -1675,16 +1675,16 @@ function scan_str(info, s, initial_state, groups) {
   } else {
     var pos$2 = last - 1 | 0;
     while(true) {
-      var st$prime$1 = Caml_array.caml_array_get(st$1.next, info$1.re.lnl);
+      var st$prime$1 = Caml_array.get(st$1.next, info$1.re.lnl);
       if (st$prime$1.idx >= 0) {
         if (groups) {
-          Caml_array.caml_array_set(info$1.positions, st$prime$1.idx, pos$2 + 1 | 0);
+          Caml_array.set(info$1.positions, st$prime$1.idx, pos$2 + 1 | 0);
         }
         return st$prime$1;
       }
       if (st$prime$1.idx === -3) {
         if (groups) {
-          Caml_array.caml_array_set(info$1.positions, st$prime$1.real_idx, pos$2 + 1 | 0);
+          Caml_array.set(info$1.positions, st$prime$1.real_idx, pos$2 + 1 | 0);
         }
         return st$prime$1;
       }
@@ -1693,7 +1693,7 @@ function scan_str(info, s, initial_state, groups) {
       var cat = category(info$1.re, c);
       var desc$prime = delta$1(info$1, cat, real_c, st$1);
       var st$prime$2 = find_state(info$1.re, desc$prime);
-      Caml_array.caml_array_set(st$1.next, c, st$prime$2);
+      Caml_array.set(st$1.next, c, st$prime$2);
       continue ;
     };
   }
@@ -1781,9 +1781,8 @@ function is_charset(_param) {
 function split(s, cm) {
   var _t = s;
   var f = function (i, j) {
-    cm[i] = /* "\001" */1;
-    cm[j + 1 | 0] = /* "\001" */1;
-    
+    Caml_bytes.set(cm, i, /* "\001" */1);
+    return Caml_bytes.set(cm, j + 1 | 0, /* "\001" */1);
   };
   while(true) {
     var t = _t;
@@ -1902,14 +1901,14 @@ function flatten_cmap(cm) {
   var c = Caml_bytes.caml_create_bytes(256);
   var col_repr = Caml_bytes.caml_create_bytes(256);
   var v = 0;
-  c[0] = /* "\000" */0;
-  col_repr[0] = /* "\000" */0;
+  Caml_bytes.set(c, 0, /* "\000" */0);
+  Caml_bytes.set(col_repr, 0, /* "\000" */0);
   for(var i = 1; i <= 255; ++i){
     if (Caml_bytes.get(cm, i) !== /* "\000" */0) {
       v = v + 1 | 0;
     }
-    c[i] = Char.chr(v);
-    col_repr[v] = Char.chr(i);
+    Caml_bytes.set(c, i, Char.chr(v));
+    Caml_bytes.set(col_repr, v, Char.chr(i));
   }
   return [
           c,
@@ -3231,7 +3230,7 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
     var final_cat = last === slen ? Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, Re_automata_Category.inexistant) : Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.search_boundary, category(re, get_color(re, s, last)));
     var match = $$final(info, st, final_cat);
     if (groups) {
-      Caml_array.caml_array_set(info.positions, match[0], last + 1 | 0);
+      Caml_array.set(info.positions, match[0], last + 1 | 0);
     }
     res = match[1];
   }
@@ -3261,15 +3260,15 @@ function offset$1(t, i) {
           Error: new Error()
         };
   }
-  var m1 = Caml_array.caml_array_get(t.marks, (i << 1));
+  var m1 = Caml_array.get(t.marks, (i << 1));
   if (m1 === -1) {
     throw {
           RE_EXN_ID: "Not_found",
           Error: new Error()
         };
   }
-  var p1 = Caml_array.caml_array_get(t.gpos, m1) - 1 | 0;
-  var p2 = Caml_array.caml_array_get(t.gpos, Caml_array.caml_array_get(t.marks, (i << 1) + 1 | 0)) - 1 | 0;
+  var p1 = Caml_array.get(t.gpos, m1) - 1 | 0;
+  var p2 = Caml_array.get(t.gpos, Caml_array.get(t.marks, (i << 1) + 1 | 0)) - 1 | 0;
   return [
           p1,
           p2

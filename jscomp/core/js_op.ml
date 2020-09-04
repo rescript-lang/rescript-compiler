@@ -137,7 +137,7 @@ type level =
 type kind = 
   | Ml
   | Runtime 
-  | External of string
+  | External of {name : string; default : bool}
 
 type property = Lam_compat.let_kind = 
   | Strict
@@ -164,7 +164,8 @@ type int_or_char =
     }
 
  (* literal char *)
-type float_lit = { f :  string }
+type float_lit = { f :  string } [@@unboxed]
+
 type number = 
   | Float of float_lit 
   | Int of int_or_char
@@ -228,9 +229,7 @@ type ident_info = {
 
 type exports = Ident.t list 
 
-type module_id = { id : Ident.t; kind  : kind}
 
-type required_modules = module_id list
 
 
 type tag_info = Lam_tag_info.t

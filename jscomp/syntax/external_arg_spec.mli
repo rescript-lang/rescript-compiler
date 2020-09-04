@@ -25,10 +25,7 @@
 type cst = private
   | Arg_int_lit of int 
   | Arg_string_lit of string 
-  | Arg_js_null
-  | Arg_js_true
-  | Arg_js_false
-  | Arg_js_json of string
+  | Arg_js_literal of string
 
 
 type label = private
@@ -41,13 +38,15 @@ type label = private
 
 
 type attr = 
-  | Poly_var of  {
-      has_payload : bool ; 
-      descr :
-        (Ast_compatible.hash_label * string) 
-          list option
-    }  
-  | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Poly_var_string of { 
+    descr :
+    (string * string) list
+  } 
+  | Poly_var of {
+    descr : 
+    (string * string) list option 
+  }   
+  | Int of (string * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
@@ -76,7 +75,8 @@ type param = {
 type obj_params = obj_param list 
 type params = param list 
 
-val cst_json : Location.t -> string -> cst 
+val cst_obj_literal : string -> cst 
+
 val cst_int : int -> cst 
 val cst_string : string -> cst 
 

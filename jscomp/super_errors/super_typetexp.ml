@@ -30,7 +30,7 @@ let fold_descr fold get_name f = fold (fun descr acc -> f (get_name descr) acc)
 let fold_constructors x  = fold_descr Env.fold_constructors (fun d -> d.cstr_name) x
 let fold_labels x = fold_descr Env.fold_labels (fun d -> d.lbl_name) x
 
-(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typetexp.ml#L918 *)
+(* taken from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typetexp.ml#L918 *)
 (* modified branches are commented *)
 let report_error env ppf = function
   | Typetexp.Unbound_type_constructor lid ->

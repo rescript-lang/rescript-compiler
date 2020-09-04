@@ -10,15 +10,22 @@
 (*                                                                     *)
 (***********************************************************************)
 
+let output_prefix name =
+  let oname =
+    match !Clflags.output_name with
+    | None -> name
+    | Some n -> (Clflags.output_name := None; n) in
+  Filename.remove_extension oname
+
 
 let process_interface_file ppf name =
   Js_implementation.interface ppf name 
   ~parser:Pparse_driver.parse_interface
-  (Compenv.output_prefix name)
+  (output_prefix name)
 let process_implementation_file ppf name =
   Js_implementation.implementation ppf name 
   ~parser:Pparse_driver.parse_implementation
-  (Compenv.output_prefix name)
+  (output_prefix name)
 
 
 let setup_reason_error_printer () = 
@@ -28,7 +35,7 @@ let setup_reason_error_printer () =
 let setup_napkin_error_printer () =  
   Js_config.napkin := true;
   Lazy.force Super_main.setup;  
-  Lazy.force Napkin_outcome_printer.setup
+  Lazy.force Res_outcome_printer.setup
 
 let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf opref = 
   setup_reason_error_printer ();
@@ -117,7 +124,7 @@ let process_file ppf sourcefile =
   Location.set_input_name  sourcefile;  
   let ext = Ext_filename.get_extension_maybe sourcefile in 
   let input = classify_input ext in 
-  let opref = Compenv.output_prefix sourcefile in 
+  let opref = output_prefix sourcefile in 
   match input with 
   | Re -> handle_reason Ml sourcefile ppf opref     
   | Rei ->
@@ -133,12 +140,12 @@ let process_file ppf sourcefile =
   | Res -> 
     setup_napkin_error_printer ();
     Js_implementation.implementation 
-      ~parser:Napkin_driver.parse_implementation
+      ~parser:Res_driver.parse_implementation
       ppf sourcefile opref 
   | Resi ->   
     setup_napkin_error_printer ();
     Js_implementation.interface 
-      ~parser:Napkin_driver.parse_interface
+      ~parser:Res_driver.parse_interface
       ppf sourcefile opref       
   | Ml ->
     Js_implementation.implementation 
@@ -189,8 +196,6 @@ let anonymous ~(rev_args : string list) =
     begin 
       match rev_args with 
       | [filename] ->   
-        Compenv.readenv ppf 
-          (Before_compile filename); 
         process_file ppf filename
       | [] -> ()  
       | _ -> 
@@ -200,17 +205,13 @@ let anonymous ~(rev_args : string list) =
 (** used by -impl -intf *)
 let impl filename =
   Js_config.js_stdout := false;  
-  Compenv.readenv ppf 
-    (Before_compile filename)
-  ; process_implementation_file ppf filename;;
+  process_implementation_file ppf filename;;
 let intf filename =
   Js_config.js_stdout := false ;  
-  Compenv.readenv ppf 
-    (Before_compile filename)
-  ; process_interface_file ppf filename;;
+  process_interface_file ppf filename;;
 
 
-let fmt_file input =  
+let format_file input =  
   let ext = classify_input (Ext_filename.get_extension_maybe input) in 
   let syntax = 
     match ext with 
@@ -218,7 +219,7 @@ let fmt_file input =
     | Res | Resi -> `res 
     | Re | Rei -> `refmt (Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe") 
     | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) in   
-  output_string stdout (Napkin_multi_printer.print syntax ~input)
+  output_string stdout (Res_multi_printer.print syntax ~input)
 
 let set_color_option option = 
   match Clflags.parse_color_setting option with
@@ -294,10 +295,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
           <num1>..<num2>    a range of consecutive warning numbers\n\
        default setting is " ^ Bsc_warnings.defaults_w;  
 
-  "-warn-error", string_call (Warnings.parse_options true),
-  "<list>  Enable or disable error status for warnings according\n\
-       to <list>.  See option -w for the syntax of <list>.\n\
-       Default setting is " ^ Bsc_warnings.defaults_warn_error;
+  "-warn-error", string_call (fun _ -> ()),
+  "Deprecated: warnings are errors";
 
     "-o", string_optional_set Clflags.output_name, 
     "<file>  set output file name to <file>";
@@ -305,7 +304,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
      "-bs-read-cmi",  unit_call (fun _ -> Clflags.assume_no_mli := Mli_exists), 
      "*internal* Assume mli always exist ";
 
-    "-ppx", string_list_add Compenv.first_ppx,
+    "-ppx", string_list_add Clflags.all_ppx,
     "<command>  Pipe abstract syntax trees through preprocessor <command>";
 
     "-open", string_list_add Clflags.open_modules,
@@ -393,8 +392,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-eval", string_call (fun  s -> eval s ~suffix:Literals.suffix_ml), 
     "*internal* (experimental) set the string to be evaluated in OCaml syntax";
 
-    "-e",  string_call (fun  s -> eval s ~suffix:Literals.suffix_re), 
-    "(experimental) set the string to be evaluated in ReasonML syntax";  
+    "-e",  string_call (fun  s -> eval s ~suffix:Literals.suffix_res), 
+    "(experimental) set the string to be evaluated in ReScript syntax";  
 
     "-bs-cmi-only", set Js_config.cmi_only, 
     "*internal* Stop after generating cmi file";  
@@ -450,7 +449,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-dsource", set Clflags.dump_source, 
     "*internal* print source";
 
-    "-fmt", string_call fmt_file,
+    "-format", string_call format_file,
     "Format as Res syntax";
 
     "-where", unit_call print_standard_library, 
@@ -533,7 +532,6 @@ let _ : unit =
   Ast_config.add_signature 
     flags file_level_flags_handler;    
   try
-    Compenv.readenv ppf Before_args;
     Bsc_args.parse_exn 
       ~argv:Sys.argv 
       buckle_script_flags anonymous ~usage;

@@ -42,7 +42,7 @@ Random.init(0);
 var v = Caml_array.caml_make_vect(10, false);
 
 for(var i = 0; i <= 9; ++i){
-  Caml_array.caml_array_set(v, i, Random.bool(undefined));
+  Caml_array.set(v, i, Random.bool(undefined));
 }
 
 Mt_global.collect_eq(id, suites, "File \"random_test.ml\", line 26, characters 5-12", v, [

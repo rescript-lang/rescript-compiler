@@ -13,7 +13,7 @@ function f(param) {
           
         }));
   for(var i = 0; i <= 9; ++i){
-    Caml_array.caml_array_set(arr, i, (function(i){
+    Caml_array.set(arr, i, (function(i){
         return function (param) {
           v.contents = v.contents + i | 0;
           

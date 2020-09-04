@@ -2372,7 +2372,7 @@ let output_file (buf : Ext_buffer.t) source namespace =
   Ext_buffer.add_string buf 
     (Ext_namespace_encode.make ?ns:namespace source)
 
-(** for bucklescript artifacts 
+(** for rescript artifacts 
     [lhs_suffix] is [.cmj]
     [rhs_suffix] 
     is [.cmj] if it has [ml] (in this case does not care about mli or not)

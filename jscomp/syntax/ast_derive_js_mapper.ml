@@ -72,9 +72,10 @@ let eraseTypeStr =
     )
 let unsafeIndex = "_index"    
 let unsafeIndexGet = 
+  let any = Typ.any () in   
   Str.primitive
     (Val.mk ~prim:[""] {loc = noloc; txt = unsafeIndex} ~attrs:[Ast_attributes.bs_get_index]
-       (Ast_compatible.arrow (Typ.var "b") (Ast_compatible.arrow (Typ.var "a") (Typ.var "c")))
+       (Ast_compatible.arrow any (Ast_compatible.arrow any any))
     )
 let unsafeIndexGetExp = (Exp.ident {loc = noloc; txt = Lident unsafeIndex}) 
 (* JavaScript has allowed trailing commas in array literals since the beginning, 
@@ -164,12 +165,9 @@ let raiseWhenNotFound x =
         txt = Longident.Ldot (jsMapperRt,"raiseWhenNotFound")})
   x
 let assertExp e = 
-  Exp.extension 
-    ({Asttypes.loc = noloc; txt = "assert"},
-     (PStr 
-        [Str.eval e ]
-     )
-    )
+  Exp.assert_
+    e
+        
 let derivingName = "jsConverter"
 
 (* let notApplicable loc = 
@@ -435,10 +433,10 @@ let init () =
 
                   let objType flag =                     
                     Ast_comb.to_js_type loc @@  
-                    Ast_compatible.object_
+                    Typ.object_
                       (Ext_list.map label_declarations
                          (fun {pld_name ; pld_type } -> 
-                            pld_name, [], pld_type)) 
+                            Parsetree.Otag(pld_name, [], pld_type))) 
                       flag in                   
                   newTypeStr +? 
                   [

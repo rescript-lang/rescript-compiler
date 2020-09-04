@@ -35,8 +35,9 @@
 (** A type for qualified identifiers in Lambda IR 
  *)
 
-type t = Js_op.module_id = 
-  private {
+
+type t = J.module_id = 
+  (*private*) {
   id : Ident.t ; 
   kind : Js_op.kind 
   }
@@ -46,11 +47,11 @@ val id : t -> Ident.t
 
 val name : t -> string
 
-val mk : J.kind -> Ident.t -> t
+
 
 val of_ml : Ident.t -> t
 
-val of_external : Ident.t -> string -> t
+
 
 val of_runtime : Ident.t -> t 
 

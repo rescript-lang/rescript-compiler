@@ -524,30 +524,3 @@ let float_of_bits ( x : t) : float =
 let  bits_of_float : float -> t  = fun x -> 
     let lo,hi = ([%raw{|function(x){return new Int32Array(new Float64Array([x]).buffer)}|}] : _ -> _) x in 
     mk ~lo ~hi
-  (* let to_nat (x : int32) = x |> Caml_int32_extern.to_int |>  Caml_nativeint_extern.of_int in
-
-  let u = Float64_array.make [| x |] in
-  let int32 = Int32_array.fromBuffer (Float64_array.buffer u) in
-  mk ~lo:(to_nat (Int32_array.unsafe_get int32 0))
-    ~hi:( to_nat (Int32_array.unsafe_get int32 1)) *)
-
-(** used by "%caml_string_get64" *)
-(* let get64 (s : string) (i:int) : t =
-  let module String = Caml_string_extern in 
-  mk ~lo:
-    (Caml_nativeint_extern.logor
-       (Caml_nativeint_extern.logor
-          (Caml_nativeint_extern.of_int (Caml_char.code s.[i]))
-          (Caml_nativeint_extern.of_int (Caml_char.code s.[i+1]) << 8))
-       (Caml_nativeint_extern.logor
-          (Caml_nativeint_extern.of_int (Caml_char.code s.[i+2]) << 16 )
-          (Caml_nativeint_extern.of_int (Caml_char.code s.[i+3]) << 24 )))
-    ~hi:
-      (Caml_nativeint_extern.logor
-         (Caml_nativeint_extern.logor
-            (Caml_nativeint_extern.of_int (Caml_char.code s.[i+4]) << 32)
-            (Caml_nativeint_extern.of_int (Caml_char.code s.[i+5]) << 40))
-         (Caml_nativeint_extern.logor
-            (Caml_nativeint_extern.of_int (Caml_char.code s.[i+6]) << 48 )
-            (Caml_nativeint_extern.of_int (Caml_char.code s.[i+7]) << 56 )))
- *)

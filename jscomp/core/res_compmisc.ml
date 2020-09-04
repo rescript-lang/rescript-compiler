@@ -1,5 +1,5 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2015-2020 Authors of BuckleScript
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,29 +17,41 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let init_path () =
+  let dirs = !Clflags.include_dirs in
+  let exp_dirs =
+    List.map (Misc.expand_directory Config.standard_library) dirs in
+    Config.load_path :=
+         List.rev_append exp_dirs (Clflags.std_include_dir ());
+  Env.reset_cache ()
 
+(* Return the initial environment in which compilation proceeds. *)
 
+(* Note: do not do init_path() in initial_env, this breaks
+   toplevel initialization (PR#1775) *)
 
+let open_implicit_module m env =
+  let lid = {Asttypes.loc = Location.in_file "command line";
+             txt = Longident.parse m } in
+  snd (Typemod.type_open_ Override env lid.loc lid)
 
-
-
-(* TODO: add a context, like 
-    [args]
-    [Lfunction(params,body)]
- *)
-
-
-let maybe_functor (name : string) = 
-  name.[0] >= 'A' && name.[0] <= 'Z'
-
-
-let should_be_functor (name : string) (lam : Lam.t) = 
-  maybe_functor name  &&
-  (match lam with Lfunction _ -> true | _ -> false)
-
+let initial_env () =
+  Ident.reinit();
+  let initial =
+    if Config.safe_string then Env.initial_safe_string
+    else if !Clflags.unsafe_string then Env.initial_unsafe_string
+    else Env.initial_safe_string
+  in
+  let env =
+    if !Clflags.nopervasives then initial else
+    open_implicit_module "Pervasives" initial
+  in
+  List.fold_left (fun env m ->
+    open_implicit_module m env
+  ) env (List.rev !Clflags.open_modules)
 

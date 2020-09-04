@@ -239,8 +239,8 @@ let deep_flatten
     (*   when  List.length params = List.length args -> *)
     (*       aux (beta_reduce params body args) *)
 
-    | Lapply{ap_func = l1; ap_args  = ll; ap_loc = loc; ap_status = status} ->
-      Lam.apply (aux l1) (Ext_list.map ll aux) loc status
+    | Lapply{ap_func = l1; ap_args  = ll; ap_info} ->
+      Lam.apply (aux l1) (Ext_list.map ll aux) ap_info 
 
     (* This kind of simple optimizations should be done each time
        and as early as possible *)
@@ -262,8 +262,8 @@ let deep_flatten
       let args = Ext_list.map args aux in
       Lam.prim ~primitive ~args loc
 
-    | Lfunction{arity;  params;  body = l} ->
-      Lam.function_ ~arity  ~params  ~body:(aux  l)
+    | Lfunction{arity;  params;  body; attr} ->
+      Lam.function_ ~arity  ~params  ~body:(aux body) ~attr
     | Lswitch(l, {sw_failaction;
                   sw_consts;
                   sw_blocks;

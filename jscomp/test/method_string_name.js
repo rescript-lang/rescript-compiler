@@ -8,7 +8,6 @@ var f = {
 console.log(f["Content-Type"]);
 
 function ff(x) {
-  x.Hi;
   x["Content-Type"] = "hello";
   console.log(({
           "Content-Type": "hello"

@@ -1,5 +1,5 @@
 
-bsc_flags = -absname -bs-no-version-header  -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104  -warn-error A  -I runtime -I $stdlib -I others
+bsc_flags = -absname -bs-no-version-header  -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104  -I runtime -I $stdlib -I others
 
 rule cc
     command = $bsc -bs-cmi -bs-cmj $bsc_flags   -I test  $in
@@ -139,7 +139,7 @@ build test/const_defs_test.cmi test/const_defs_test.cmj : cc test/const_defs_tes
 build test/const_test.cmi test/const_test.cmj : cc test/const_test.ml | $stdlib
 build test/cont_int_fold_test.cmi test/cont_int_fold_test.cmj : cc test/cont_int_fold_test.ml | $stdlib
 build test/cps_test.cmi test/cps_test.cmj : cc test/cps_test.ml | test/mt.cmj $stdlib
-build test/cross_module_inline_test.cmi test/cross_module_inline_test.cmj : cc test/cross_module_inline_test.ml | $stdlib
+build test/cross_module_inline_test.cmi test/cross_module_inline_test.cmj : cc test/cross_module_inline_test.ml | test/test_char.cmj $stdlib
 build test/custom_error_test.cmi test/custom_error_test.cmj : cc test/custom_error_test.ml | $stdlib
 build test/debug_keep_test.cmi test/debug_keep_test.cmj : cc test/debug_keep_test.ml | $stdlib
 build test/debug_mode_value.cmi test/debug_mode_value.cmj : cc test/debug_mode_value.ml | $stdlib
@@ -329,6 +329,7 @@ build test/gpr_4491_test.cmi test/gpr_4491_test.cmj : cc test/gpr_4491_test.ml |
 build test/gpr_4494_test.cmi test/gpr_4494_test.cmj : cc test/gpr_4494_test.ml | $stdlib
 build test/gpr_4519_test.cmi test/gpr_4519_test.cmj : cc test/gpr_4519_test.ml | test/mt.cmj $stdlib
 build test/gpr_459_test.cmi test/gpr_459_test.cmj : cc test/gpr_459_test.ml | test/mt.cmj $stdlib
+build test/gpr_4639_test.cmi test/gpr_4639_test.cmj : cc test/gpr_4639_test.ml | $stdlib
 build test/gpr_627_test.cmi test/gpr_627_test.cmj : cc test/gpr_627_test.ml | test/mt.cmj $stdlib
 build test/gpr_658.cmi test/gpr_658.cmj : cc test/gpr_658.ml | $stdlib
 build test/gpr_858_test.cmi test/gpr_858_test.cmj : cc test/gpr_858_test.ml | $stdlib
@@ -546,6 +547,7 @@ build test/record_name_test.cmi test/record_name_test.cmj : cc test/record_name_
 build test/record_with_test.cmi test/record_with_test.cmj : cc test/record_with_test.ml | test/mt.cmj $stdlib
 build test/recursive_module.cmi test/recursive_module.cmj : cc test/recursive_module.ml | test/mt.cmj $stdlib
 build test/recursive_module_test.cmi test/recursive_module_test.cmj : cc test/recursive_module_test.ml | test/mt.cmj $stdlib
+build test/recursive_react_component.cmi test/recursive_react_component.cmj : cc test/recursive_react_component.re | test/react.cmj $stdlib
 build test/recursive_records_test.cmi test/recursive_records_test.cmj : cc test/recursive_records_test.ml | test/mt.cmj $stdlib
 build test/recursive_unbound_module_test.cmi test/recursive_unbound_module_test.cmj : cc test/recursive_unbound_module_test.ml | $stdlib
 build test/regression_print.cmi test/regression_print.cmj : cc test/regression_print.ml | $stdlib
@@ -583,7 +585,7 @@ build test/string_bound_get_test.cmi test/string_bound_get_test.cmj : cc test/st
 build test/string_get_set_test.cmi test/string_get_set_test.cmj : cc test/string_get_set_test.ml | test/mt.cmj $stdlib
 build test/string_interp_test.cmi test/string_interp_test.cmj : cc test/string_interp_test.ml | $stdlib
 build test/string_literal_print_test.cmi test/string_literal_print_test.cmj : cc test/string_literal_print_test.ml | test/mt.cmj $stdlib
-build test/string_runtime_test.cmi test/string_runtime_test.cmj : cc test/string_runtime_test.ml | test/mt.cmj $stdlib
+build test/string_runtime_test.cmi test/string_runtime_test.cmj : cc test/string_runtime_test.ml | test/mt.cmj test/test_char.cmj $stdlib
 build test/string_set.cmi test/string_set.cmj : cc test/string_set.ml | test/set_gen.cmj $stdlib
 build test/string_set_test.cmi test/string_set_test.cmj : cc test/string_set_test.ml | test/mt.cmj test/string_set.cmj $stdlib
 build test/string_test.cmi test/string_test.cmj : cc test/string_test.ml | test/ext_string_test.cmj test/mt.cmj $stdlib
@@ -602,7 +604,7 @@ build test/test_array_append.cmi test/test_array_append.cmj : cc test/test_array
 build test/test_array_primitive.cmi test/test_array_primitive.cmj : cc test/test_array_primitive.ml | $stdlib
 build test/test_bool_equal.cmi test/test_bool_equal.cmj : cc test/test_bool_equal.ml | $stdlib
 build test/test_bs_this.cmi test/test_bs_this.cmj : cc test/test_bs_this.ml | $stdlib
-build test/test_bug.cmi test/test_bug.cmj : cc test/test_bug.ml | $stdlib
+build test/test_bug.cmi test/test_bug.cmj : cc test/test_bug.ml | test/test_char.cmj $stdlib
 build test/test_bytes.cmi test/test_bytes.cmj : cc test/test_bytes.ml | $stdlib
 build test/test_case_opt_collision.cmi test/test_case_opt_collision.cmj : cc test/test_case_opt_collision.ml | test/mt.cmj $stdlib
 build test/test_case_set.cmi test/test_case_set.cmj : cc test/test_case_set.ml | $stdlib
@@ -717,6 +719,7 @@ build test/topsort_test.cmi test/topsort_test.cmj : cc test/topsort_test.ml | $s
 build test/tramp_fib.cmi test/tramp_fib.cmj : cc test/tramp_fib.ml | test/mt.cmj $stdlib
 build test/tscanf_test.cmi test/tscanf_test.cmj : cc test/tscanf_test.ml | test/mt.cmj test/mt_global.cmj test/testing.cmj $stdlib
 build test/tuple_alloc.cmi test/tuple_alloc.cmj : cc test/tuple_alloc.ml | $stdlib
+build test/type_disambiguate.cmi test/type_disambiguate.cmj : cc test/type_disambiguate.ml | $stdlib
 build test/typeof_test.cmi test/typeof_test.cmj : cc test/typeof_test.ml | test/mt.cmj $stdlib
 build test/ui_defs.cmi : cc test/ui_defs.mli | $stdlib
 build test/unboxed_attribute_test.cmi test/unboxed_attribute_test.cmj : cc test/unboxed_attribute_test.ml | test/mt.cmj $stdlib

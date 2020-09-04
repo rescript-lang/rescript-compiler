@@ -3383,7 +3383,9 @@ type t =
   | Wildcard_arg_to_constant_constr         (* 28 *)
   | Eol_in_string                           (* 29 *)
   | Duplicate_definitions of string * string * string * string (* 30 *)
+  
   | Multiple_definition of string * string * string (* 31 *)
+  
   | Unused_value_declaration of string      (* 32 *)
   | Unused_open of string                   (* 33 *)
   | Unused_type_declaration of string       (* 34 *)
@@ -3403,14 +3405,18 @@ type t =
   | Eliminated_optional_arguments of string list (* 48 *)
   | No_cmi_file of string * string option   (* 49 *)
   | Bad_docstring of bool                   (* 50 *)
+  
   | Expect_tailcall                         (* 51 *)
+  
   | Fragile_literal_pattern                 (* 52 *)
   | Misplaced_attribute of string           (* 53 *)
   | Duplicated_attribute of string          (* 54 *)
   | Inlining_impossible of string           (* 55 *)
   | Unreachable_case                        (* 56 *)
   | Ambiguous_pattern of string list        (* 57 *)
+  
   | No_cmx_file of string                   (* 58 *)
+  
   | Assignment_to_non_mutable_value         (* 59 *)
   | Unused_module of string                 (* 60 *)
   | Unboxable_type_in_prim_decl of string   (* 61 *)
@@ -3461,6 +3467,7 @@ val mk_lazy: (unit -> 'a) -> 'a Lazy.t
         the warning settings at the time [mk_lazy] is called. *)
 
 
+val nerrors : int ref
 val message : t -> string 
 val number: t -> int
 val super_report :
@@ -3529,7 +3536,9 @@ type t =
   | Wildcard_arg_to_constant_constr         (* 28 *)
   | Eol_in_string                           (* 29 *)
   | Duplicate_definitions of string * string * string * string (*30 *)
+  
   | Multiple_definition of string * string * string (* 31 *)
+  
   | Unused_value_declaration of string      (* 32 *)
   | Unused_open of string                   (* 33 *)
   | Unused_type_declaration of string       (* 34 *)
@@ -3549,14 +3558,18 @@ type t =
   | Eliminated_optional_arguments of string list (* 48 *)
   | No_cmi_file of string * string option   (* 49 *)
   | Bad_docstring of bool                   (* 50 *)
+          
   | Expect_tailcall                         (* 51 *)
+  
   | Fragile_literal_pattern                 (* 52 *)
   | Misplaced_attribute of string           (* 53 *)
   | Duplicated_attribute of string          (* 54 *)
   | Inlining_impossible of string           (* 55 *)
   | Unreachable_case                        (* 56 *)
   | Ambiguous_pattern of string list        (* 57 *)
+  
   | No_cmx_file of string                   (* 58 *)
+  
   | Assignment_to_non_mutable_value         (* 59 *)
   | Unused_module of string                 (* 60 *)
   | Unboxable_type_in_prim_decl of string   (* 61 *)
@@ -3611,7 +3624,9 @@ let number = function
   | Wildcard_arg_to_constant_constr -> 28
   | Eol_in_string -> 29
   | Duplicate_definitions _ -> 30
+  
   | Multiple_definition _ -> 31
+  
   | Unused_value_declaration _ -> 32
   | Unused_open _ -> 33
   | Unused_type_declaration _ -> 34
@@ -3631,14 +3646,18 @@ let number = function
   | Eliminated_optional_arguments _ -> 48
   | No_cmi_file _ -> 49
   | Bad_docstring _ -> 50
+  
   | Expect_tailcall -> 51
+  
   | Fragile_literal_pattern -> 52
   | Misplaced_attribute _ -> 53
   | Duplicated_attribute _ -> 54
   | Inlining_impossible _ -> 55
   | Unreachable_case -> 56
   | Ambiguous_pattern _ -> 57
+    
   | No_cmx_file _ -> 58
+  
   | Assignment_to_non_mutable_value -> 59
   | Unused_module _ -> 60
   | Unboxable_type_in_prim_decl _ -> 61
@@ -3716,7 +3735,9 @@ let backup () = !current
 let restore x = current := x
 
 let is_active x = not !disabled && (!current).active.(number x);;
-let is_error x = not !disabled && (!current).error.(number x);;
+
+let is_error = is_active
+
 
 let mk_lazy f =
   let state = backup () in
@@ -3880,10 +3901,12 @@ let message = function
   | Duplicate_definitions (kind, cname, tc1, tc2) ->
       Printf.sprintf "the %s %s is defined in both types %s and %s."
         kind cname tc1 tc2
+        
   | Multiple_definition(modname, file1, file2) ->
       Printf.sprintf
         "files %s and %s both define a module named %s"
         file1 file2 modname
+        
   | Unused_value_declaration v -> "unused value " ^ v ^ "."
   | Unused_open s -> "unused open " ^ s ^ "."
   | Unused_type_declaration s -> "unused type " ^ s ^ "."
@@ -3963,8 +3986,10 @@ let message = function
   | Bad_docstring unattached ->
       if unattached then "unattached documentation comment (ignored)"
       else "ambiguous documentation comment"
+      
   | Expect_tailcall ->
       Printf.sprintf "expected tailcall"
+      
   | Fragile_literal_pattern ->
       Printf.sprintf
         "Code should not depend on the actual values of\n\
@@ -3993,10 +4018,12 @@ let message = function
         "Ambiguous or-pattern variables under guard;\n\
          %s may match different arguments. (See manual section 8.5)"
         msg
+        
   | No_cmx_file name ->
       Printf.sprintf
         "no cmx file was found in path for module %s, \
          and its interface was not compiled with -opaque" name
+         
   | Assignment_to_non_mutable_value ->
       "A potential assignment to a non-mutable value was detected \n\
         in this source file.  Such assignments may generate incorrect code \n\
@@ -4013,23 +4040,23 @@ let message = function
 
 
   | Bs_unused_attribute s ->
-      "Unused BuckleScript attribute: " ^ s ^ "\n\
+      "Unused attribute: " ^ s ^ "\n\
       This means such annotation is not annotated properly. \n\
       for example, some annotations is only meaningful in externals \n"
   | Bs_polymorphic_comparison ->
-      "polymorphic comparison introduced (maybe unsafe)"
+      "Polymorphic comparison introduced (maybe unsafe)"
   | Bs_ffi_warning s ->
-      "BuckleScript FFI warning: " ^ s
+      "FFI warning: " ^ s
   | Bs_derive_warning s ->
-      "BuckleScript bs.deriving warning: " ^ s 
+      "bs.deriving warning: " ^ s 
   | Bs_fragile_external s ->     
-      "BuckleScript warning: " ^ s ^" : the external name is inferred from val name is unsafe from refactoring when changing value name"
+      s ^ " : the external name is inferred from val name is unsafe from refactoring when changing value name"
   | Bs_unimplemented_primitive s -> 
-      "BuckleScript warning: Unimplemented primitive used:" ^ s
+      "Unimplemented primitive used:" ^ s
   | Bs_integer_literal_overflow -> 
-      "BuckleScript warning: Integer literal exceeds the range of representable integers of type int"
+      "Integer literal exceeds the range of representable integers of type int"
   | Bs_uninterpreted_delimiters s -> 
-      "BuckleScript warning: Uninterpreted delimiters " ^ s  
+      "Uninterpreted delimiters " ^ s  
       
 ;;
 
@@ -4166,14 +4193,14 @@ let descriptions =
    62, "Type constraint on GADT type declaration";
     
     
-   101, "BuckleScript warning: Unused bs attributes";
-   102, "BuckleScript warning: polymorphic comparison introduced (maybe unsafe)";
-   103, "BuckleScript warning: about fragile FFI definitions" ;
-   104, "BuckleScript warning: bs.deriving warning with customized message ";
-   105, "BuckleScript warning: the external name is inferred from val name is unsafe from refactoring when changing value name";
-   106, "BuckleScript warning: Unimplemented primitive used:";
-   107, "BuckleScript warning: Integer literal exceeds the range of representable integers of type int";
-   108, "BuckleScript warning: Uninterpreted delimiters (for unicode)"  
+   101, "Unused bs attributes";
+   102, "Polymorphic comparison introduced (maybe unsafe)";
+   103, "Fragile FFI definitions" ;
+   104, "bs.deriving warning with customized message ";
+   105, "External name is inferred from val name is unsafe from refactoring when changing value name";
+   106, "Unimplemented primitive used:";
+   107, "Integer literal exceeds the range of representable integers of type int";
+   108, "Uninterpreted delimiters (for unicode)"  
    
   ]
 ;;
@@ -9130,7 +9157,7 @@ module Ast_compatible : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type poly_var_label = Asttypes.label Asttypes.loc
+
 
 
 
@@ -9140,7 +9167,7 @@ type poly_var_label = Asttypes.label Asttypes.loc
 
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
-type hash_label = string 
+
 open Parsetree
 
 
@@ -9157,20 +9184,13 @@ val const_exp_int:
   int -> 
   expression 
 
-val const_hash_label : 
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  string -> 
-  expression 
 
 
 val const_exp_int_list_as_array:  
   int list -> 
   expression 
 
-(* val const_exp_string_list_as_array:  
-  string list -> 
-  expression  *)
+
 
   
 val apply_simple:
@@ -9257,12 +9277,6 @@ val opt_arrow:
   core_type ->
   core_type
 
-val object_: 
-  ?loc:loc -> 
-  ?attrs:attrs ->
-  (string Asttypes.loc * attributes * core_type) list -> 
-  Asttypes.closed_flag ->
-  core_type  
 
 
 (* val nonrec_type_str:  
@@ -9340,7 +9354,6 @@ open Parsetree
 let default_loc = Location.none
 
 
-type poly_var_label = Asttypes.label Asttypes.loc
 
 
 
@@ -9349,8 +9362,9 @@ type poly_var_label = Asttypes.label Asttypes.loc
 
 
 
-let arrow ?(loc=default_loc) ?(attrs = []) a b  =
-  Ast_helper.Typ.arrow ~loc ~attrs Nolabel a b  
+
+let arrow ?loc ?attrs a b  =
+  Ast_helper.Typ.arrow ?loc ?attrs Nolabel a b  
 
 let apply_simple
  ?(loc = default_loc) 
@@ -9417,21 +9431,6 @@ let fun_
     pexp_desc = Pexp_fun(Nolabel,None, pat, exp)
   }
 
-(* let opt_label s =
-  Asttypes.Optional s *)
-
-(* let label_fun
-  ?(loc = default_loc)
-  ?(attrs = [])
-  ~label
-  pat
-  exp =
-  {
-    pexp_loc = loc;
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_fun(label, None, pat, exp)
-  } *)
-type hash_label = string 
 
 
 let const_exp_string 
@@ -9445,15 +9444,7 @@ let const_exp_string
     pexp_desc = Pexp_constant(Pconst_string(s,delimiter))
   }
 
-let const_hash_label 
-    ?(loc = default_loc)
-    ?(attrs = [])
-    (s : hash_label) : expression = 
-  {
-    pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_constant(Pconst_string(s,None))
-  }
+
 
 let const_exp_int 
   ?(loc = default_loc)
@@ -9477,19 +9468,6 @@ let apply_labels
         fn, 
         Ext_list.map args (fun (l,a) -> Asttypes.Labelled l, a)   ) }
 
-let object_ 
-  ?(loc= default_loc)
-  ?(attrs = [])
-  (fields : (Asttypes.label Asttypes.loc * attributes * core_type) list)
-  flg : core_type = 
-  {
-    ptyp_desc = 
-      Ptyp_object(
-        Ext_list.map fields (fun (a,b,c) -> 
-          Parsetree.Otag (a,b,c)),flg);
-    ptyp_loc = loc;
-    ptyp_attributes = attrs
-  }
 
 
 
@@ -9590,6 +9568,108 @@ type args  =
   (Asttypes.arg_label * Parsetree.expression) list 
 
 end
+module Bs_flow_ast_utils : sig 
+#1 "bs_flow_ast_utils.mli"
+(* Copyright (C) 2020 - Authors of BuckleScript 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val flow_deli_offset:
+  string option -> 
+  int
+
+val check_flow_errors:
+  loc:Location.t -> 
+  offset:int -> 
+  (Loc.t * Parse_error.t) list ->    
+  unit
+end = struct
+#1 "bs_flow_ast_utils.ml"
+(* Copyright (C) 2020 - Authors of BuckleScript 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ let offset_pos 
+  ({pos_lnum; pos_bol; pos_cnum} as loc : Lexing.position) 
+  ({line; column} : Loc.position) 
+  first_line_offset : Lexing.position = 
+ if line = 1 then 
+   {loc with pos_cnum = pos_cnum + column + first_line_offset }
+ else {
+   loc with 
+   pos_lnum = pos_lnum + line - 1;
+   pos_cnum =  pos_bol + column
+ } 
+
+
+let flow_deli_offset deli = 
+  (match deli with 
+   | None -> 1  (* length of '"'*)
+   | Some deli ->
+     String.length deli + 2 (* length of "{|"*)
+  )
+
+;;      
+
+
+(* Here the loc is  the payload loc *)
+let check_flow_errors ~(loc : Location.t)
+    ~offset
+    (errors : (Loc.t * Parse_error.t) list) = 
+  match errors with 
+  | [] ->  ()
+  | ({start ;
+      _end },first_error) :: _ -> 
+    let loc_start = loc.loc_start in     
+    Location.raise_errorf 
+      ~loc:{loc with 
+            loc_start = offset_pos loc_start start 
+                offset ;
+            loc_end = offset_pos loc_start _end 
+                offset } "%s"
+      (Parse_error.PP.error first_error)  
+end
 module Js_raw_info
 = struct
 #1 "js_raw_info.ml"
@@ -9635,7 +9715,6 @@ type exp =
     | RegExp of RegExp.t
   ]}
   *)
-  | Js_raw_json
   | Js_exp_unknown
 
 
@@ -11402,38 +11481,9 @@ let is_single_int (x : t ) : int option =
   | _  -> None
 
 
-let offset_pos 
-  ({pos_lnum; pos_bol; pos_cnum} as loc : Lexing.position) 
-    ({line; column} : Loc.position) first_line_offset : Lexing.position = 
-  if line = 1 then 
-    {loc with pos_cnum = pos_cnum + column + first_line_offset }
-  else {
-    loc with 
-    pos_lnum = pos_lnum + line - 1;
-    pos_cnum =  pos_bol + column
-  }
 
-let flow_deli_off_set deli = 
-  (match deli with 
-  | None -> 1  (* length of '"'*)
-  | Some deli ->
-     String.length deli + 2 (* length of "{|"*)
-  )
-(* Here the loc is  the payload loc *)
-let check_flow_errors ~(loc : Location.t)
-  ~offset(errors : (Loc.t * Parse_error.t) list) = 
-  match errors with 
-  | [] ->  ()
-  | ({start ;
-     _end },first_error) :: _ -> 
-  
-    Location.raise_errorf ~loc:{loc with 
-      loc_start = offset_pos loc.loc_start start 
-        offset ;
-      loc_end = offset_pos loc.loc_start _end 
-        offset } "%s"
-      (Parse_error.PP.error first_error)  
-;;      
+
+
 let raw_as_string_exp_exn 
   ~(kind: Js_raw_info.raw_kind)
   (x : t ) : _ option = 
@@ -11447,7 +11497,7 @@ let raw_as_string_exp_exn
                ;
            pexp_loc = loc} as e ,_);
       _}] -> 
-    check_flow_errors ~loc ~offset:(flow_deli_off_set deli) (match kind with 
+    Bs_flow_ast_utils.check_flow_errors ~loc ~offset:(Bs_flow_ast_utils.flow_deli_offset deli) (match kind with 
         | Raw_re 
         | Raw_exp ->  
           let (_loc,e),errors =  (Parser_flow.parse_expression (Parser_env.init_env None str) false) in 
@@ -12033,7 +12083,7 @@ type error
   *)
   | Not_supported_directive_in_bs_return
   | Expect_opt_in_bs_return_to_opt
-  | Label_in_uncurried_bs_attribute
+  | Misplaced_label_syntax
   | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
   | Bs_uncurried_arity_too_large
@@ -12108,18 +12158,21 @@ type error
   *)
   | Not_supported_directive_in_bs_return
   | Expect_opt_in_bs_return_to_opt
-  | Label_in_uncurried_bs_attribute
+  | Misplaced_label_syntax
   | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
   | Bs_uncurried_arity_too_large
 let pp_error fmt err =
   Format.pp_print_string fmt (match err with
   | Bs_uncurried_arity_too_large
-    -> "BuckleScript support uncurried function up to arity 22"
-  | Label_in_uncurried_bs_attribute
-    -> "BuckleScript uncurried function doesn't support labeled arguments yet"
+    -> "Uncurried function supports only up to arity 22"
+  | Misplaced_label_syntax
+    -> "Label syntax is not support in this position"
+    (*
+    let fn x = ((##) x ~hi)  ~lo:1 ~hi:2 
+    *)
   | Optional_in_uncurried_bs_attribute
-    -> "BuckleScript uncurried function doesn't support optional arguments yet"  
+    -> "Uncurried function doesn't support optional arguments yet"  
   | Expect_opt_in_bs_return_to_opt
       ->
         "bs.return directive *_to_opt expect return type to be \n\
@@ -12202,7 +12255,7 @@ let optional_err loc (lbl : Asttypes.arg_label) =
 
 let err_if_label loc (lbl : Asttypes.arg_label) =  
   if lbl <> Nolabel then 
-    raise (Error (loc, Label_in_uncurried_bs_attribute))
+    raise (Error (loc, Misplaced_label_syntax))
 
 let err_large_arity loc arity = 
   if arity > 22 then 
@@ -12240,7 +12293,7 @@ type t = Parsetree.core_type
 
 
 val lift_option_type : t -> t
-val is_any : t -> bool
+
 (* val replace_result : t -> t -> t *)
 
 (* val opt_arrow: Location.t -> string -> t -> t -> t *)
@@ -12259,7 +12312,7 @@ val from_labels :
 
 val make_obj :
   loc:Location.t ->
-  (string Asttypes.loc * Parsetree.attributes * t) list ->
+  Parsetree.object_field list ->
   t
 
 val is_user_option : t -> bool
@@ -12332,8 +12385,6 @@ let lift_option_type ({ptyp_loc} as ty:t) : t =
       ptyp_attributes = []
     }
 
-let is_any (ty : t) =
-  ty.ptyp_desc = Ptyp_any
 
 open Ast_helper
 
@@ -12394,8 +12445,9 @@ let from_labels ~loc arity labels
          Typ.var ~loc ("a" ^ string_of_int i)))) in
   let result_type =
     Ast_comb.to_js_type loc
-      (Ast_compatible.object_ ~loc
-         (Ext_list.map2 labels tyvars (fun x y -> x ,[], y)) Closed)
+      (Typ.object_ ~loc
+         (Ext_list.map2 labels tyvars 
+          (fun x y -> Parsetree.Otag (x ,[], y))) Closed)
   in
   Ext_list.fold_right2 labels tyvars  result_type
     (fun label (* {loc ; txt = label }*)
@@ -12405,7 +12457,7 @@ let from_labels ~loc arity labels
 
 let make_obj ~loc xs =
   Ast_comb.to_js_type loc
-    (Ast_compatible.object_  ~loc xs Closed)
+    (Typ.object_  ~loc xs Closed)
 
 
 
@@ -14885,10 +14937,10 @@ let fold h init f =
   !accu
 
 
-let elements set = 
+let to_list set = 
   fold set [] List.cons
 
-
+  
 
 
 let rec small_bucket_mem eq key lst =
@@ -14943,7 +14995,7 @@ sig
   val fold: t -> 'b  -> (key -> 'b -> 'b) -> 'b
   val length:  t -> int
   (* val stats:  t -> Hashtbl.statistics *)
-  val elements : t -> key list 
+  val to_list : t -> key list 
 end
 
 
@@ -14993,7 +15045,7 @@ val mem : 'a t -> 'a -> bool
 
 val iter : 'a t -> ('a -> unit) -> unit
 
-val elements : 'a t -> 'a list
+val to_list : 'a t -> 'a list
 
 val length : 'a t -> int 
 
@@ -15046,7 +15098,7 @@ let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
 (* let stats = Hash_set_gen.stats *)
-let elements = Hash_set_gen.elements
+let to_list = Hash_set_gen.to_list
 
 
 
@@ -15324,6 +15376,149 @@ let emit_external_warnings_on_signature  (sigi : Parsetree.signature) =
   if Warnings.is_active dummy_unused_attribute then 
     emit_external_warnings.signature emit_external_warnings sigi
 end
+module Classify_function : sig 
+#1 "classify_function.mli"
+(* Copyright (C) 2020- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val classify :
+  ?check:(Location.t * int) -> 
+  string -> 
+  Js_raw_info.exp 
+
+val classify_stmt :  
+  string -> Js_raw_info.stmt
+end = struct
+#1 "classify_function.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let rec is_obj_literal ( x : _ Flow_ast.Expression.t) : bool = 
+  match snd x with   
+  | Identifier (_, {name = "undefined"})  
+  | Literal _ -> true   
+  | Unary {operator = Minus ; argument } 
+    -> is_obj_literal argument 
+  | Object {properties} -> 
+    Ext_list.for_all properties is_literal_kv 
+  | Array  {elements} ->  
+    Ext_list.for_all elements (fun x -> 
+      match x with 
+      | None -> true
+      | Some (Expression x) -> is_obj_literal x 
+      | Some _ -> false
+      ) 
+  | _ -> false
+and is_literal_kv (x  : _ Flow_ast.Expression.Object.property) = 
+  match x with 
+  | Property (_ , Init {value}) -> is_obj_literal value
+  | _ -> false
+
+
+let classify_exp (prog : _ Flow_ast.Expression.t  )  : Js_raw_info.exp = 
+  match  prog with 
+  | (_, Function {
+    id = _;
+    params = (_, {params});
+    async = false;
+    generator = false;
+    predicate = None
+  })  -> 
+    Js_function {arity = List.length params; arrow = false}
+  | (_, ArrowFunction {
+    id = None;
+    params = (_, {params});
+    async = false;
+    generator = false;
+    predicate = None
+  })  -> 
+    Js_function
+      {arity = List.length params; arrow = true} 
+ |(_, Literal {comments}) -> 
+  let comment = 
+    match comments with 
+    | None -> None 
+    | Some {leading = [_, Block comment]} -> Some ("/*" ^ comment ^ "*/")
+    | Some {leading = [_, Line comment]} -> Some ("//" ^ comment)
+    | Some _ -> None
+  in   
+  Js_literal {comment}   
+ | (_, Identifier(_,{name = "undefined"})) -> Js_literal {comment =None} 
+ | (_, _)  -> 
+    if is_obj_literal prog then Js_literal {comment = None} else Js_exp_unknown
+ | exception _ -> 
+  Js_exp_unknown
+
+(** It seems we do the parse twice
+    - in parsing
+    - in code generation
+ *)
+let classify ?check (prog : string) : Js_raw_info.exp = 
+  let prog, errors  =
+    Parser_flow.parse_expression 
+      (Parser_env.init_env None prog) false in  
+  (match check with 
+  | Some (loc,offset) -> 
+    Bs_flow_ast_utils.check_flow_errors
+    ~loc ~offset errors 
+  | None -> ());
+  classify_exp prog
+
+
+let classify_stmt (prog : string) : Js_raw_info.stmt = 
+  let result =  Parser_flow.parse_program false None prog in 
+  match fst result with 
+  | (_loc, [], _) -> 
+    Js_stmt_comment 
+  | _ -> Js_stmt_unknown
+(* we can also analayze throw
+  x.x pure access
+ *)
+end
 module Literals
 = struct
 #1 "literals.ml"
@@ -15559,9 +15754,7 @@ val iter_process_bs_string_int_unwrap_uncurry :
 val iter_process_bs_string_as :
   t -> string option
 
-val iter_process_bs_string_as_ast :   
-  t -> 
-  Parsetree.expression option
+
   
 val has_bs_optional :
   t -> bool 
@@ -15572,8 +15765,7 @@ val iter_process_bs_int_as :
 type as_const_payload = 
   | Int of int
   | Str of string
-  | Json_str of string  
-
+  | Js_literal_str of string
 
 val iter_process_bs_string_or_int_as :
     t ->
@@ -15780,31 +15972,6 @@ let process_derive_type (attrs : t) : derive_attr * t =
         st, attr::acc
     ) 
 
-(* let iter_process_derive_type (attrs : t) =
-  let st = ref {explict_nonrec = false; bs_deriving = None } in
-  Ext_list.iter attrs
-    (fun ({txt ; loc}, payload  as attr)  ->
-      match  txt  with
-      |  "bs.deriving"
-        ->
-        let ost = !st in
-        (match ost with
-         | {bs_deriving = None } ->
-           Bs_ast_invariant.mark_used_bs_attribute attr ;
-           st :=
-             {ost with
-              bs_deriving = Some
-                  (Ast_payload.ident_or_record_as_config loc payload)}
-         | {bs_deriving = Some _} ->
-           Bs_syntaxerr.err loc Duplicated_bs_deriving)
-
-      | "nonrec" ->
-        st :=
-          { !st with explict_nonrec = true }
-      (* non bs attribute, no need to mark its use *)
-      | _ -> ()
-    ) ;
-  !st *)
 
 
 (* duplicated [bs.uncurry] [bs.string] not allowed,
@@ -15859,26 +16026,6 @@ let iter_process_bs_string_as  (attrs : t) : string option =
     ) ;
   !st
 
-let iter_process_bs_string_as_ast  (attrs : t) : Parsetree.expression option =
-  let st = ref None in
-  Ext_list.iter attrs
-    (fun
-      (({txt ; loc}, payload ) as attr )  ->
-      match  txt with
-      | "bs.as"
-        ->
-        if !st = None then
-          match Ast_payload.is_single_string_as_ast payload with
-          | None ->
-            Bs_syntaxerr.err loc Expect_string_literal
-          | Some _ as v ->            
-            Bs_ast_invariant.mark_used_bs_attribute attr ;
-            st:=  v
-        else
-          Bs_syntaxerr.err loc Duplicated_bs_as
-      | _  -> ()
-    ) ;
-  !st  
 
 let has_bs_optional  (attrs : t) : bool =
   Ext_list.exists attrs (fun
@@ -15916,8 +16063,7 @@ let iter_process_bs_int_as  (attrs : t) =
 type as_const_payload = 
   | Int of int
   | Str of string
-  | Json_str of string  
-
+  | Js_literal_str of string
 let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   let st = ref None in
   Ext_list.iter attrs
@@ -15930,16 +16076,31 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
           (Bs_ast_invariant.mark_used_bs_attribute attr ;
            match Ast_payload.is_single_int payload with
            | None ->
-             begin match Ast_payload.is_single_string payload with
-               | Some (s,None) ->
-                 st := Some (Str (s))
-               | Some (s, Some "json") ->
-                 st := Some (Json_str s )
-               | None | Some (_, Some _) ->
+             begin match  payload with
+               | PStr [ {
+                   pstr_desc =  
+                     Pstr_eval (
+                       {pexp_desc = 
+                          Pexp_constant 
+                            (Pconst_string(s, (None | Some "json" as dec)))
+                       ; pexp_loc ;
+                         _},_);
+                   _}] -> 
+                 if dec = None then
+                   st := Some (Str (s))
+                 else
+                 begin 
+                   (match Classify_function.classify ~check:(pexp_loc, Bs_flow_ast_utils.flow_deli_offset dec)
+                            s with 
+                   | Js_literal _ -> ()
+                   | _ -> 
+                    Location.raise_errorf ~loc:pexp_loc "an object literal expected");
+                   st := Some (Js_literal_str s )
+                 end
+               | _ -> 
                  Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
-
              end
-           | Some   v->
+           | Some v->
              st := (Some (Int v))
           )
         else
@@ -16313,903 +16474,6 @@ let local_extern_cont loc
 )
 
 end
-module Ext_json_types
-= struct
-#1 "ext_json_types.ml"
-(* Copyright (C) 2015-2017 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type loc = Lexing.position
-type json_str = 
-  { str : string ; loc : loc}
-
-type json_flo  =
-  { flo : string ; loc : loc}
-type json_array =
-  { content : t array ; 
-    loc_start : loc ; 
-    loc_end : loc ; 
-  }
-
-and json_map = 
-  { map : t Map_string.t ; loc :  loc }
-and t = 
-  | True of loc 
-  | False of loc 
-  | Null of loc 
-  | Flo of json_flo
-  | Str of json_str
-  | Arr  of json_array
-  | Obj of json_map
-   
-
-end
-module Ext_position : sig 
-#1 "ext_position.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = Lexing.position = {
-    pos_fname : string ;
-    pos_lnum : int ;
-    pos_bol : int ;
-    pos_cnum : int
-}
-
-(** [offset pos newpos]
-    return a new position
-    here [newpos] is zero based, the use case is that
-    at position [pos], we get a string and Lexing from that string,
-    therefore, we get a [newpos] and we need rebase it on top of 
-    [pos]
-*)
-val offset : t -> t -> t 
-
-val lexbuf_from_channel_with_fname:
-    in_channel -> string -> 
-    Lexing.lexbuf
-
-val print : Format.formatter -> t -> unit 
-end = struct
-#1 "ext_position.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = Lexing.position = {
-    pos_fname : string ;
-    pos_lnum : int ;
-    pos_bol : int ;
-    pos_cnum : int
-}
-
-let offset (x : t) (y:t) =
-  {
-    x with 
-    pos_lnum =
-       x.pos_lnum + y.pos_lnum - 1;
-    pos_cnum = 
-      x.pos_cnum + y.pos_cnum;
-    pos_bol = 
-      if y.pos_lnum = 1 then 
-        x.pos_bol
-      else x.pos_cnum + y.pos_bol
-  }
-
-let print fmt (pos : t) =
-  Format.fprintf fmt "(line %d, column %d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
-
-
-
-let lexbuf_from_channel_with_fname ic fname = 
-  let x = Lexing.from_function (fun buf n -> input ic buf 0 n) in 
-  let pos : t = {
-    pos_fname = fname ; 
-    pos_lnum = 1; 
-    pos_bol = 0;
-    pos_cnum = 0 (* copied from zero_pos*)
-  } in 
-  x.lex_start_p <- pos;
-  x.lex_curr_p <- pos ; 
-  x
-
-
-end
-module Ext_json_parse : sig 
-#1 "ext_json_parse.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type error
-
-val report_error : Format.formatter -> error -> unit 
-
-exception Error of Lexing.position * Lexing.position * error
-
-val parse_json_from_string : string -> Ext_json_types.t 
-
-val parse_json_from_chan :
-  string ->  in_channel -> Ext_json_types.t 
-
-val parse_json_from_file  : string -> Ext_json_types.t
-
-
-end = struct
-#1 "ext_json_parse.ml"
-# 1 "ext/ext_json_parse.mll"
- 
-type error =
-  | Illegal_character of char
-  | Unterminated_string
-  | Unterminated_comment
-  | Illegal_escape of string
-  | Unexpected_token 
-  | Expect_comma_or_rbracket
-  | Expect_comma_or_rbrace
-  | Expect_colon
-  | Expect_string_or_rbrace 
-  | Expect_eof 
-  (* | Trailing_comma_in_obj *)
-  (* | Trailing_comma_in_array *)
-
-
-let fprintf  = Format.fprintf
-let report_error ppf = function
-  | Illegal_character c ->
-      fprintf ppf "Illegal character (%s)" (Char.escaped c)
-  | Illegal_escape s ->
-      fprintf ppf "Illegal backslash escape in string or character (%s)" s
-  | Unterminated_string -> 
-      fprintf ppf "Unterminated_string"
-  | Expect_comma_or_rbracket ->
-    fprintf ppf "Expect_comma_or_rbracket"
-  | Expect_comma_or_rbrace -> 
-    fprintf ppf "Expect_comma_or_rbrace"
-  | Expect_colon -> 
-    fprintf ppf "Expect_colon"
-  | Expect_string_or_rbrace  -> 
-    fprintf ppf "Expect_string_or_rbrace"
-  | Expect_eof  -> 
-    fprintf ppf "Expect_eof"
-  | Unexpected_token 
-    ->
-    fprintf ppf "Unexpected_token"
-  (* | Trailing_comma_in_obj  *)
-  (*   -> fprintf ppf "Trailing_comma_in_obj" *)
-  (* | Trailing_comma_in_array  *)
-  (*   -> fprintf ppf "Trailing_comma_in_array" *)
-  | Unterminated_comment 
-    -> fprintf ppf "Unterminated_comment"
-         
-
-exception Error of Lexing.position * Lexing.position * error
-
-
-let () = 
-  Printexc.register_printer
-    (function x -> 
-     match x with 
-     | Error (loc_start,loc_end,error) -> 
-       Some (Format.asprintf 
-          "@[%a:@ %a@ -@ %a)@]" 
-          report_error  error
-          Ext_position.print loc_start
-          Ext_position.print loc_end
-       )
-
-     | _ -> None
-    )
-
-
-
-
-
-type token = 
-  | Comma
-  | Eof
-  | False
-  | Lbrace
-  | Lbracket
-  | Null
-  | Colon
-  | Number of string
-  | Rbrace
-  | Rbracket
-  | String of string
-  | True   
-  
-let error  (lexbuf : Lexing.lexbuf) e = 
-  raise (Error (lexbuf.lex_start_p, lexbuf.lex_curr_p, e))
-
-
-let lexeme_len (x : Lexing.lexbuf) =
-  x.lex_curr_pos - x.lex_start_pos
-
-let update_loc ({ lex_curr_p; _ } as lexbuf : Lexing.lexbuf) diff =
-  lexbuf.lex_curr_p <-
-    {
-      lex_curr_p with
-      pos_lnum = lex_curr_p.pos_lnum + 1;
-      pos_bol = lex_curr_p.pos_cnum - diff;
-    }
-
-let char_for_backslash = function
-  | 'n' -> '\010'
-  | 'r' -> '\013'
-  | 'b' -> '\008'
-  | 't' -> '\009'
-  | c -> c
-
-let dec_code c1 c2 c3 =
-  100 * (Char.code c1 - 48) + 10 * (Char.code c2 - 48) + (Char.code c3 - 48)
-
-let hex_code c1 c2 =
-  let d1 = Char.code c1 in
-  let val1 =
-    if d1 >= 97 then d1 - 87
-    else if d1 >= 65 then d1 - 55
-    else d1 - 48 in
-  let d2 = Char.code c2 in
-  let val2 =
-    if d2 >= 97 then d2 - 87
-    else if d2 >= 65 then d2 - 55
-    else d2 - 48 in
-  val1 * 16 + val2
-
-let lf = '\010'
-
-# 124 "ext/ext_json_parse.ml"
-let __ocaml_lex_tables = {
-  Lexing.lex_base =
-   "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
-    \245\255\246\255\247\255\248\255\249\255\000\000\000\000\000\000\
-    \041\000\001\000\254\255\005\000\005\000\253\255\001\000\002\000\
-    \252\255\000\000\000\000\003\000\251\255\001\000\003\000\250\255\
-    \079\000\089\000\099\000\121\000\131\000\141\000\153\000\163\000\
-    \001\000\253\255\254\255\023\000\255\255\006\000\246\255\189\000\
-    \248\255\215\000\255\255\249\255\249\000\181\000\252\255\009\000\
-    \063\000\075\000\234\000\251\255\032\001\250\255";
-  Lexing.lex_backtrk =
-   "\255\255\255\255\255\255\255\255\013\000\013\000\016\000\255\255\
-    \255\255\255\255\255\255\255\255\255\255\016\000\016\000\016\000\
-    \016\000\016\000\255\255\000\000\012\000\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\013\000\255\255\013\000\255\255\013\000\255\255\
-    \255\255\255\255\255\255\001\000\255\255\255\255\255\255\008\000\
-    \255\255\255\255\255\255\255\255\006\000\006\000\255\255\006\000\
-    \001\000\002\000\255\255\255\255\255\255\255\255";
-  Lexing.lex_default =
-   "\001\000\000\000\000\000\000\000\255\255\255\255\255\255\000\000\
-    \000\000\000\000\000\000\000\000\000\000\255\255\255\255\255\255\
-    \255\255\255\255\000\000\255\255\020\000\000\000\255\255\255\255\
-    \000\000\255\255\255\255\255\255\000\000\255\255\255\255\000\000\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \042\000\000\000\000\000\255\255\000\000\047\000\000\000\047\000\
-    \000\000\051\000\000\000\000\000\255\255\255\255\000\000\255\255\
-    \255\255\255\255\255\255\000\000\255\255\000\000";
-  Lexing.lex_trans =
-   "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\019\000\018\000\018\000\019\000\017\000\019\000\255\255\
-    \048\000\019\000\255\255\057\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \019\000\000\000\003\000\000\000\000\000\019\000\000\000\000\000\
-    \050\000\000\000\000\000\043\000\008\000\006\000\033\000\016\000\
-    \004\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
-    \005\000\005\000\007\000\004\000\005\000\005\000\005\000\005\000\
-    \005\000\005\000\005\000\005\000\005\000\032\000\044\000\033\000\
-    \056\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
-    \005\000\005\000\005\000\021\000\057\000\000\000\000\000\000\000\
-    \020\000\000\000\000\000\012\000\000\000\011\000\032\000\056\000\
-    \000\000\025\000\049\000\000\000\000\000\032\000\014\000\024\000\
-    \028\000\000\000\000\000\057\000\026\000\030\000\013\000\031\000\
-    \000\000\000\000\022\000\027\000\015\000\029\000\023\000\000\000\
-    \000\000\000\000\039\000\010\000\039\000\009\000\032\000\038\000\
-    \038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\037\000\000\000\037\000\000\000\
-    \035\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\255\255\
-    \035\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\038\000\038\000\000\000\000\000\255\255\
-    \000\000\056\000\000\000\000\000\055\000\058\000\058\000\058\000\
-    \058\000\058\000\058\000\058\000\058\000\058\000\058\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\054\000\
-    \000\000\054\000\000\000\000\000\000\000\000\000\054\000\000\000\
-    \002\000\041\000\000\000\000\000\000\000\255\255\046\000\053\000\
-    \053\000\053\000\053\000\053\000\053\000\053\000\053\000\053\000\
-    \053\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\255\255\059\000\059\000\059\000\059\000\059\000\059\000\
-    \059\000\059\000\059\000\059\000\000\000\000\000\000\000\000\000\
-    \000\000\060\000\060\000\060\000\060\000\060\000\060\000\060\000\
-    \060\000\060\000\060\000\054\000\000\000\000\000\000\000\000\000\
-    \000\000\054\000\060\000\060\000\060\000\060\000\060\000\060\000\
-    \000\000\000\000\000\000\000\000\000\000\054\000\000\000\000\000\
-    \000\000\054\000\000\000\054\000\000\000\000\000\000\000\052\000\
-    \061\000\061\000\061\000\061\000\061\000\061\000\061\000\061\000\
-    \061\000\061\000\060\000\060\000\060\000\060\000\060\000\060\000\
-    \000\000\061\000\061\000\061\000\061\000\061\000\061\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\061\000\061\000\061\000\061\000\061\000\061\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\255\255\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\255\255\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000";
-  Lexing.lex_check =
-   "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\000\000\000\000\017\000\000\000\000\000\019\000\020\000\
-    \045\000\019\000\020\000\055\000\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \000\000\255\255\000\000\255\255\255\255\019\000\255\255\255\255\
-    \045\000\255\255\255\255\040\000\000\000\000\000\004\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\006\000\006\000\006\000\006\000\006\000\
-    \006\000\006\000\006\000\006\000\006\000\004\000\043\000\005\000\
-    \056\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
-    \005\000\005\000\005\000\016\000\057\000\255\255\255\255\255\255\
-    \016\000\255\255\255\255\000\000\255\255\000\000\005\000\056\000\
-    \255\255\014\000\045\000\255\255\255\255\004\000\000\000\023\000\
-    \027\000\255\255\255\255\057\000\025\000\029\000\000\000\030\000\
-    \255\255\255\255\015\000\026\000\000\000\013\000\022\000\255\255\
-    \255\255\255\255\032\000\000\000\032\000\000\000\005\000\032\000\
-    \032\000\032\000\032\000\032\000\032\000\032\000\032\000\032\000\
-    \032\000\033\000\033\000\033\000\033\000\033\000\033\000\033\000\
-    \033\000\033\000\033\000\034\000\034\000\034\000\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\035\000\255\255\035\000\255\255\
-    \034\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\047\000\
-    \034\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\039\000\039\000\039\000\039\000\039\000\
-    \039\000\039\000\039\000\039\000\039\000\255\255\255\255\047\000\
-    \255\255\049\000\255\255\255\255\049\000\053\000\053\000\053\000\
-    \053\000\053\000\053\000\053\000\053\000\053\000\053\000\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\049\000\
-    \255\255\049\000\255\255\255\255\255\255\255\255\049\000\255\255\
-    \000\000\040\000\255\255\255\255\255\255\020\000\045\000\049\000\
-    \049\000\049\000\049\000\049\000\049\000\049\000\049\000\049\000\
-    \049\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\047\000\058\000\058\000\058\000\058\000\058\000\058\000\
-    \058\000\058\000\058\000\058\000\255\255\255\255\255\255\255\255\
-    \255\255\052\000\052\000\052\000\052\000\052\000\052\000\052\000\
-    \052\000\052\000\052\000\049\000\255\255\255\255\255\255\255\255\
-    \255\255\049\000\052\000\052\000\052\000\052\000\052\000\052\000\
-    \255\255\255\255\255\255\255\255\255\255\049\000\255\255\255\255\
-    \255\255\049\000\255\255\049\000\255\255\255\255\255\255\049\000\
-    \060\000\060\000\060\000\060\000\060\000\060\000\060\000\060\000\
-    \060\000\060\000\052\000\052\000\052\000\052\000\052\000\052\000\
-    \255\255\060\000\060\000\060\000\060\000\060\000\060\000\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\060\000\060\000\060\000\060\000\060\000\060\000\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\047\000\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\049\000\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255";
-  Lexing.lex_base_code =
-   "";
-  Lexing.lex_backtrk_code =
-   "";
-  Lexing.lex_default_code =
-   "";
-  Lexing.lex_trans_code =
-   "";
-  Lexing.lex_check_code =
-   "";
-  Lexing.lex_code =
-   "";
-}
-
-let rec lex_json buf lexbuf =
-   __ocaml_lex_lex_json_rec buf lexbuf 0
-and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
-  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
-# 142 "ext/ext_json_parse.mll"
-          ( lex_json buf lexbuf)
-# 314 "ext/ext_json_parse.ml"
-
-  | 1 ->
-# 143 "ext/ext_json_parse.mll"
-                   ( 
-    update_loc lexbuf 0;
-    lex_json buf  lexbuf
-  )
-# 322 "ext/ext_json_parse.ml"
-
-  | 2 ->
-# 147 "ext/ext_json_parse.mll"
-                ( comment buf lexbuf)
-# 327 "ext/ext_json_parse.ml"
-
-  | 3 ->
-# 148 "ext/ext_json_parse.mll"
-         ( True)
-# 332 "ext/ext_json_parse.ml"
-
-  | 4 ->
-# 149 "ext/ext_json_parse.mll"
-          (False)
-# 337 "ext/ext_json_parse.ml"
-
-  | 5 ->
-# 150 "ext/ext_json_parse.mll"
-         (Null)
-# 342 "ext/ext_json_parse.ml"
-
-  | 6 ->
-# 151 "ext/ext_json_parse.mll"
-       (Lbracket)
-# 347 "ext/ext_json_parse.ml"
-
-  | 7 ->
-# 152 "ext/ext_json_parse.mll"
-       (Rbracket)
-# 352 "ext/ext_json_parse.ml"
-
-  | 8 ->
-# 153 "ext/ext_json_parse.mll"
-       (Lbrace)
-# 357 "ext/ext_json_parse.ml"
-
-  | 9 ->
-# 154 "ext/ext_json_parse.mll"
-       (Rbrace)
-# 362 "ext/ext_json_parse.ml"
-
-  | 10 ->
-# 155 "ext/ext_json_parse.mll"
-       (Comma)
-# 367 "ext/ext_json_parse.ml"
-
-  | 11 ->
-# 156 "ext/ext_json_parse.mll"
-        (Colon)
-# 372 "ext/ext_json_parse.ml"
-
-  | 12 ->
-# 157 "ext/ext_json_parse.mll"
-                      (lex_json buf lexbuf)
-# 377 "ext/ext_json_parse.ml"
-
-  | 13 ->
-# 159 "ext/ext_json_parse.mll"
-         ( Number (Lexing.lexeme lexbuf))
-# 382 "ext/ext_json_parse.ml"
-
-  | 14 ->
-# 161 "ext/ext_json_parse.mll"
-      (
-  let pos = Lexing.lexeme_start_p lexbuf in
-  scan_string buf pos lexbuf;
-  let content = (Buffer.contents  buf) in 
-  Buffer.clear buf ;
-  String content 
-)
-# 393 "ext/ext_json_parse.ml"
-
-  | 15 ->
-# 168 "ext/ext_json_parse.mll"
-       (Eof )
-# 398 "ext/ext_json_parse.ml"
-
-  | 16 ->
-let
-# 169 "ext/ext_json_parse.mll"
-       c
-# 404 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 169 "ext/ext_json_parse.mll"
-          ( error lexbuf (Illegal_character c ))
-# 408 "ext/ext_json_parse.ml"
-
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
-      __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
-
-and comment buf lexbuf =
-   __ocaml_lex_comment_rec buf lexbuf 40
-and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
-  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
-# 171 "ext/ext_json_parse.mll"
-              (lex_json buf lexbuf)
-# 420 "ext/ext_json_parse.ml"
-
-  | 1 ->
-# 172 "ext/ext_json_parse.mll"
-     (comment buf lexbuf)
-# 425 "ext/ext_json_parse.ml"
-
-  | 2 ->
-# 173 "ext/ext_json_parse.mll"
-       (error lexbuf Unterminated_comment)
-# 430 "ext/ext_json_parse.ml"
-
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
-      __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
-
-and scan_string buf start lexbuf =
-   __ocaml_lex_scan_string_rec buf start lexbuf 45
-and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
-  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
-# 177 "ext/ext_json_parse.mll"
-      ( () )
-# 442 "ext/ext_json_parse.ml"
-
-  | 1 ->
-# 179 "ext/ext_json_parse.mll"
-  (
-        let len = lexeme_len lexbuf - 2 in
-        update_loc lexbuf len;
-
-        scan_string buf start lexbuf
-      )
-# 452 "ext/ext_json_parse.ml"
-
-  | 2 ->
-# 186 "ext/ext_json_parse.mll"
-      (
-        let len = lexeme_len lexbuf - 3 in
-        update_loc lexbuf len;
-        scan_string buf start lexbuf
-      )
-# 461 "ext/ext_json_parse.ml"
-
-  | 3 ->
-let
-# 191 "ext/ext_json_parse.mll"
-                                               c
-# 467 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 192 "ext/ext_json_parse.mll"
-      (
-        Buffer.add_char buf (char_for_backslash c);
-        scan_string buf start lexbuf
-      )
-# 474 "ext/ext_json_parse.ml"
-
-  | 4 ->
-let
-# 196 "ext/ext_json_parse.mll"
-                 c1
-# 480 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
-and
-# 196 "ext/ext_json_parse.mll"
-                               c2
-# 485 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
-and
-# 196 "ext/ext_json_parse.mll"
-                                             c3
-# 490 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
-and
-# 196 "ext/ext_json_parse.mll"
-                                                    s
-# 495 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
-# 197 "ext/ext_json_parse.mll"
-      (
-        let v = dec_code c1 c2 c3 in
-        if v > 255 then
-          error lexbuf (Illegal_escape s) ;
-        Buffer.add_char buf (Char.chr v);
-
-        scan_string buf start lexbuf
-      )
-# 506 "ext/ext_json_parse.ml"
-
-  | 5 ->
-let
-# 205 "ext/ext_json_parse.mll"
-                        c1
-# 512 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
-and
-# 205 "ext/ext_json_parse.mll"
-                                         c2
-# 517 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
-# 206 "ext/ext_json_parse.mll"
-      (
-        let v = hex_code c1 c2 in
-        Buffer.add_char buf (Char.chr v);
-
-        scan_string buf start lexbuf
-      )
-# 526 "ext/ext_json_parse.ml"
-
-  | 6 ->
-let
-# 212 "ext/ext_json_parse.mll"
-             c
-# 532 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 213 "ext/ext_json_parse.mll"
-      (
-        Buffer.add_char buf '\\';
-        Buffer.add_char buf c;
-
-        scan_string buf start lexbuf
-      )
-# 541 "ext/ext_json_parse.ml"
-
-  | 7 ->
-# 220 "ext/ext_json_parse.mll"
-      (
-        update_loc lexbuf 0;
-        Buffer.add_char buf lf;
-
-        scan_string buf start lexbuf
-      )
-# 551 "ext/ext_json_parse.ml"
-
-  | 8 ->
-# 227 "ext/ext_json_parse.mll"
-      (
-        let ofs = lexbuf.lex_start_pos in
-        let len = lexbuf.lex_curr_pos - ofs in
-        Buffer.add_subbytes buf lexbuf.lex_buffer ofs len;
-
-        scan_string buf start lexbuf
-      )
-# 562 "ext/ext_json_parse.ml"
-
-  | 9 ->
-# 235 "ext/ext_json_parse.mll"
-      (
-        error lexbuf Unterminated_string
-      )
-# 569 "ext/ext_json_parse.ml"
-
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
-      __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
-
-;;
-
-# 239 "ext/ext_json_parse.mll"
- 
-
-
-
-
-
-
-let  parse_json lexbuf =
-  let buf = Buffer.create 64 in 
-  let look_ahead = ref None in
-  let token () : token = 
-    match !look_ahead with 
-    | None ->  
-      lex_json buf lexbuf 
-    | Some x -> 
-      look_ahead := None ;
-      x 
-  in
-  let push e = look_ahead := Some e in 
-  let rec json (lexbuf : Lexing.lexbuf) : Ext_json_types.t = 
-    match token () with 
-    | True -> True lexbuf.lex_start_p
-    | False -> False lexbuf.lex_start_p
-    | Null -> Null lexbuf.lex_start_p
-    | Number s ->  Flo {flo = s; loc = lexbuf.lex_start_p}  
-    | String s -> Str { str = s; loc =    lexbuf.lex_start_p}
-    | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
-    | Lbrace -> parse_map lexbuf.lex_start_p Map_string.empty lexbuf
-    |  _ -> error lexbuf Unexpected_token
-(** Note if we remove [trailing_comma] support 
-    we should report errors (actually more work), for example 
-    {[
-    match token () with 
-    | Rbracket ->
-      if trailing_comma then
-        error lexbuf Trailing_comma_in_array
-      else
-    ]} 
-    {[
-    match token () with 
-    | Rbrace -> 
-      if trailing_comma then
-        error lexbuf Trailing_comma_in_obj
-      else
-
-    ]}   
- *)
-  and parse_array   loc_start loc_finish acc lexbuf 
-    : Ext_json_types.t =
-    match token () with 
-    | Rbracket ->
-        Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
-              loc_end = lexbuf.lex_curr_p }
-    | x -> 
-      push x ;
-      let new_one = json lexbuf in 
-      begin match token ()  with 
-      | Comma -> 
-          parse_array  loc_start loc_finish (new_one :: acc) lexbuf 
-      | Rbracket 
-        -> Arr {content = (Ext_array.reverse_of_list (new_one::acc));
-                     loc_start ; 
-                     loc_end = lexbuf.lex_curr_p }
-      | _ -> 
-        error lexbuf Expect_comma_or_rbracket
-      end
-  and parse_map loc_start  acc lexbuf : Ext_json_types.t = 
-    match token () with 
-    | Rbrace -> 
-        Obj { map = acc ; loc = loc_start}
-    | String key -> 
-      begin match token () with 
-      | Colon ->
-        let value = json lexbuf in
-        begin match token () with 
-        | Rbrace -> Obj {map = Map_string.add acc key value  ; loc = loc_start}
-        | Comma -> 
-          parse_map loc_start  (Map_string.add acc key value ) lexbuf 
-        | _ -> error lexbuf Expect_comma_or_rbrace
-        end
-      | _ -> error lexbuf Expect_colon
-      end
-    | _ -> error lexbuf Expect_string_or_rbrace
-  in 
-  let v = json lexbuf in 
-  match token () with 
-  | Eof -> v 
-  | _ -> error lexbuf Expect_eof
-
-let parse_json_from_string s = 
-  parse_json (Lexing.from_string s )
-
-let parse_json_from_chan fname in_chan = 
-  let lexbuf = 
-    Ext_position.lexbuf_from_channel_with_fname
-    in_chan fname in 
-  parse_json lexbuf 
-
-let parse_json_from_file s = 
-  let in_chan = open_in s in 
-  let lexbuf = 
-    Ext_position.lexbuf_from_channel_with_fname
-    in_chan s in 
-  match parse_json lexbuf with 
-  | exception e -> close_in in_chan ; raise e
-  | v  -> close_in in_chan;  v
-
-
-
-
-
-# 688 "ext/ext_json_parse.ml"
-
-end
 module External_arg_spec : sig 
 #1 "external_arg_spec.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -17239,10 +16503,7 @@ module External_arg_spec : sig
 type cst = private
   | Arg_int_lit of int 
   | Arg_string_lit of string 
-  | Arg_js_null
-  | Arg_js_true
-  | Arg_js_false
-  | Arg_js_json of string
+  | Arg_js_literal of string
 
 
 type label = private
@@ -17255,13 +16516,15 @@ type label = private
 
 
 type attr = 
-  | Poly_var of  {
-      has_payload : bool ; 
-      descr :
-        (Ast_compatible.hash_label * string) 
-          list option
-    }  
-  | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Poly_var_string of { 
+    descr :
+    (string * string) list
+  } 
+  | Poly_var of {
+    descr : 
+    (string * string) list option 
+  }   
+  | Int of (string * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
@@ -17290,7 +16553,8 @@ type param = {
 type obj_params = obj_param list 
 type params = param list 
 
-val cst_json : Location.t -> string -> cst 
+val cst_obj_literal : string -> cst 
+
 val cst_int : int -> cst 
 val cst_string : string -> cst 
 
@@ -17331,11 +16595,7 @@ end = struct
 type cst = 
   | Arg_int_lit of int 
   | Arg_string_lit of string 
-
-  | Arg_js_null
-  | Arg_js_true
-  | Arg_js_false
-  | Arg_js_json of string
+  | Arg_js_literal of string
 
 type label_noname = 
   | Arg_label 
@@ -17344,22 +16604,29 @@ type label_noname =
   
 type label = 
   | Obj_label of {name : string }
-  (* | Obj_labelCst of {name : string} *)
   | Obj_empty 
   | Obj_optional of {name : string }
   (* it will be ignored , side effect will be recorded *)
 
 
-
+(* This type is used to give some meta info on each argument *)
 type attr = 
-  | Poly_var of { 
-    has_payload : bool ; 
+  | Poly_var_string of { 
     descr :
-    (Ast_compatible.hash_label * string) list
-    option
-  }  
+    (string * string) list
+   (* introduced by attributes bs.string
+    and bs.as 
+   *)
+  } 
+  | Poly_var of {
+    descr : 
+    (string * string) list option 
+      (* introduced by attributes bs.string
+         and bs.as 
+      *)
+  } 
    (* `a does not have any value*)
-  | Int of (Ast_compatible.hash_label * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Int of (string * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
     (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
@@ -17383,37 +16650,7 @@ type obj_param =
 type obj_params = obj_param list 
 type params = param list 
 
-exception Error of Location.t * Ext_json_parse.error
-
-let pp_invaild_json fmt err = 
-  Format.fprintf fmt "@[Invalid json literal:  %a@]@." 
-    Ext_json_parse.report_error err
-
-let () = 
-  Location.register_error_of_exn (function 
-    | Error (loc,err) ->       
-      Some (Location.error_of_printer loc pp_invaild_json err)
-    | _ -> None
-    )
-
-
-let cst_json (loc : Location.t) s : cst  =
-  match Ext_json_parse.parse_json_from_string s with 
-  | True _ -> Arg_js_true
-  | False _ -> Arg_js_false 
-  | Null _ -> Arg_js_null 
-  | _ -> Arg_js_json s 
-  | exception Ext_json_parse.Error (start,finish,error_info)
-    ->
-    let loc1 = {
-      loc with
-       loc_start = 
-        Ext_position.offset loc.loc_start start; 
-       loc_end =   
-       Ext_position.offset loc.loc_start finish;
-    } in 
-     raise (Error (loc1 , error_info))
-
+let cst_obj_literal s = Arg_js_literal s
 let cst_int i = Arg_int_lit i 
 let cst_string s = Arg_string_lit s 
 let empty_label = Obj_empty 
@@ -17457,7 +16694,7 @@ module Ast_polyvar : sig
 val map_row_fields_into_ints:
   Location.t -> 
   Parsetree.row_field list -> 
-  (Ast_compatible.hash_label * int ) list 
+  (string * int ) list 
 
 val map_constructor_declarations_into_ints:
   Parsetree.constructor_declaration list ->
@@ -17596,12 +16833,15 @@ let map_row_fields_into_strings ptyp_loc
   | `NonNull -> 
     let has_payload = case = `NonNull in 
     let descr = if !has_bs_as then Some result else None in    
-    if not has_payload && descr = None then begin
-      Location.prerr_warning ptyp_loc (Bs_ffi_warning "bs.string is redundant here, you can safely remove it")   
-    end;
-    External_arg_spec.Poly_var 
-      {has_payload  ; 
-       descr  }
+    match has_payload, descr with 
+    | false, None ->    
+      Location.prerr_warning ptyp_loc (Bs_ffi_warning "bs.string is redundant here, you can safely remove it");
+      Nothing         
+    | false , Some descr -> 
+      External_arg_spec.Poly_var_string {descr } 
+    | true, _ ->             
+      External_arg_spec.Poly_var 
+        { descr  }
 
 let is_enum row_fields = 
   List.for_all (fun (x : Parsetree.row_field) -> 
@@ -18876,6 +18116,9 @@ external
 
     
 
+
+
+external set_as_old_file : string -> unit = "caml_stale_file"
 end
 module Hash_set_string : sig 
 #1 "hash_set_string.mli"
@@ -18950,7 +18193,7 @@ let iter = Hash_set_gen.iter
 let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
 (* let stats = Hash_set_gen.stats *)
-let elements = Hash_set_gen.elements
+let to_list = Hash_set_gen.to_list
 
 
 
@@ -19354,8 +18597,35 @@ let spec_of_ptyp
 (* is_optional = false 
 *)
 let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t) 
-  : Ast_core_type.t * External_arg_spec.attr = 
-  if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
+  :  External_arg_spec.attr = 
+  (if ptyp.ptyp_desc = Ptyp_any then 
+     let ptyp_attrs = ptyp.ptyp_attributes in
+     let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
+     match result with
+     |  None ->
+       spec_of_ptyp nolabel ptyp
+     | Some cst  -> (* (_[@bs.as ])*)
+       (* when ppx start dropping attributes
+          we should warn, there is a trade off whether
+          we should warn dropped non bs attribute or not
+       *)
+       Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
+       begin match cst with 
+         | Int i -> 
+           (* This type is used in bs.obj only to construct obj type*)
+           Arg_cst(External_arg_spec.cst_int i)
+         | Str i->
+           Arg_cst (External_arg_spec.cst_string i)     
+         |  Js_literal_str s ->
+           Arg_cst (External_arg_spec.cst_obj_literal  s)
+       end
+   else (* ([`a|`b] [@bs.string]) *)
+     spec_of_ptyp nolabel ptyp   
+  )
+
+let refine_obj_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t) 
+  :  External_arg_spec.attr = 
+  if ptyp.ptyp_desc = Ptyp_any then 
     let ptyp_attrs = ptyp.ptyp_attributes in
     let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
     (* when ppx start dropping attributes
@@ -19366,18 +18636,16 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
     match result with
     |  None ->
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-    | Some (Int i) ->
+    | Some (Int i) -> (* (_[@bs.as ])*)
       (* This type is used in bs.obj only to construct obj type*)
-      Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
+       Arg_cst(External_arg_spec.cst_int i)
     | Some (Str i)->
-      Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
-    | Some (Json_str s) ->
-      (* FIXME: This seems to be wrong in bs.obj, we should disable such payload in bs.obj *)
-      Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
+       Arg_cst (External_arg_spec.cst_string i)
+    | Some (Js_literal_str s ) ->
+       Arg_cst (External_arg_spec.cst_obj_literal s)
   else (* ([`a|`b] [@bs.string]) *)
-    ptyp, spec_of_ptyp nolabel ptyp   
+     spec_of_ptyp nolabel ptyp      
 
-  
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
     and result type in [@@bs.obj]
@@ -19391,7 +18659,7 @@ let get_opt_arg_type
     ~(nolabel : bool)
     (ptyp : Ast_core_type.t) :
   External_arg_spec.attr  =
-  if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
+  if ptyp.ptyp_desc = Ptyp_any then (* (_[@bs.as ])*)
     (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
   (* ([`a|`b] [@bs.string]) *)    
@@ -19658,7 +18926,7 @@ let process_obj
   } ->
     if String.length prim_name <> 0 then
       Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
-    let arg_kinds, new_arg_types_ty, result_types =
+    let arg_kinds, new_arg_types_ty, (result_types : Parsetree.object_field list) =
       Ext_list.fold_right arg_types_ty ( [], [], [])
         (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
            let arg_label = param_type.label in
@@ -19667,44 +18935,45 @@ let process_obj
            let new_arg_label, new_arg_types,  output_tys =
              match arg_label with
              | Nolabel ->
-               let new_ty, arg_type = refine_arg_type ~nolabel:true  ty in
-               if arg_type = Extern_unit then
-                 External_arg_spec.empty_kind arg_type, 
-                 {param_type with ty = new_ty}::arg_types, result_types
-               else
-                 Location.raise_errorf ~loc "expect label, optional, or unit here"
+               begin match ty.ptyp_desc with 
+                 | Ptyp_constr({txt = Lident "unit";_}, []) -> 
+                   External_arg_spec.empty_kind Extern_unit, 
+                   param_type ::arg_types, result_types
+                 | _ -> 
+                   Location.raise_errorf ~loc "expect label, optional, or unit here"
+               end 
              | Labelled name ->
-               let new_ty, obj_arg_type = refine_arg_type ~nolabel:false  ty in
+               let obj_arg_type = refine_obj_arg_type ~nolabel:false  ty in
                begin match obj_arg_type with
                  | Ignore ->
                    External_arg_spec.empty_kind obj_arg_type,
-                   {param_type with ty = new_ty}::arg_types, result_types
+                   param_type :: arg_types, result_types
                  | Arg_cst  _  ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.obj_label s;
                     obj_arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
-                   (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
+                   result_types
                  | Nothing  ->
                    let s = (Lam_methname.translate  name) in
                    {obj_arg_label = External_arg_spec.obj_label s ; obj_arg_type },
-                   {param_type with ty = new_ty}::arg_types,
-                   (({Asttypes.txt = name; loc} , [], new_ty) :: result_types)
+                   param_type ::arg_types,
+                   (Parsetree.Otag ({Asttypes.txt = name; loc} , [], ty) :: result_types)
                  | Int _  ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
-                   {param_type with ty = new_ty}::arg_types,
-                   (({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
-                 | Poly_var { has_payload = false ; _} ->
+                   param_type ::arg_types,
+                   (Otag ({Asttypes.txt = name; loc}, [], Ast_literal.type_int ~loc ()) :: result_types)
+                 | Poly_var_string _ ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
-                   {param_type with ty = new_ty }::arg_types,
-                   (({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
+                   param_type ::arg_types,
+                   (Otag({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
                  | Extern_unit -> assert false
-                 | Poly_var { has_payload = true ; _} 
+                 | Poly_var _ 
                    ->
                    Location.raise_errorf ~loc
                      "bs.obj label %s does not support such arg type" name
@@ -19722,17 +18991,17 @@ let process_obj
                    let s = (Lam_methname.translate  name) in
                    {obj_arg_label = External_arg_spec.optional s; obj_arg_type},
                    param_type :: arg_types,
-                   ( ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
+                   ( Parsetree.Otag ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc ty) ::  result_types)
                  | Int _  ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type :: arg_types,
-                   (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
-                 | Poly_var {has_payload = false ; _} ->
+                   (Otag ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
+                 | Poly_var_string _ ->
                    let s = Lam_methname.translate  name in
                    {obj_arg_label = External_arg_spec.optional s ; obj_arg_type },
                    param_type::arg_types,
-                   (({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
+                   (Otag ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
                  | Arg_cst _
                    ->
                    Location.raise_errorf ~loc "bs.as is not supported with optional yet"
@@ -19740,7 +19009,7 @@ let process_obj
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
                  | Extern_unit   -> assert false
-                 | Poly_var {has_payload = true; _}
+                 | Poly_var _
                    ->
                    Location.raise_errorf ~loc
                      "bs.obj label %s does not support such arg type" name
@@ -19754,10 +19023,11 @@ let process_obj
            output_tys) in
 
     let result =
-      if Ast_core_type.is_any  result_type then
+      if result_type.ptyp_desc = Ptyp_any then
         Ast_core_type.make_obj ~loc result_types
       else
-        fst (refine_arg_type ~nolabel:true result_type) 
+        result_type
+        (* TODO: do we need do some error checking here *)
         (* result type can not be labeled *)
     in
     Ast_compatible.mk_fn_type new_arg_types_ty result,
@@ -20116,7 +19386,7 @@ let handle_attributes
       let init : External_arg_spec.params * Ast_compatible.param_type list * int  = 
         match external_desc.val_send_pipe with
         | Some obj ->
-          let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
+          let arg_type = refine_arg_type ~nolabel:true obj in
           begin match arg_type with
             | Arg_cst _ ->
               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
@@ -20124,7 +19394,7 @@ let handle_attributes
               (* more error checking *)
               [{arg_label = Arg_empty; arg_type}],
               [{label = Nolabel;
-                ty = new_ty;
+                ty = obj;
                 attr =  [];
                 loc = obj.ptyp_loc} ],
               0           
@@ -20140,7 +19410,7 @@ let handle_attributes
                  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be a non optional"
                | Labelled _ | Nolabel 
                 -> 
-                if Ast_core_type.is_any ty then 
+                if ty.ptyp_desc = Ptyp_any then 
                   Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";                  
                 if spec_of_ptyp true ty <> Nothing then 
                   Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
@@ -20154,7 +19424,7 @@ let handle_attributes
              | Optional s  ->
                let arg_type = get_opt_arg_type ~nolabel:false ty in
                begin match arg_type with
-                 | Poly_var {has_payload = true; _} ->
+                 | Poly_var _ ->
                    (* ?x:([`x of int ] [@bs.string]) does not make sense *)
                    Location.raise_errorf
                      ~loc
@@ -20163,20 +19433,20 @@ let handle_attributes
                    Arg_optional, arg_type,
                    param_type :: arg_types end
              | Labelled _  ->
-               begin match refine_arg_type ~nolabel:false ty with
-                 | _, (Arg_cst _ as arg_type)  ->
-                   Arg_label , arg_type, arg_types
-                 | new_ty, arg_type ->
-                   Arg_label , arg_type, 
-                   {param_type with ty = new_ty} :: arg_types
-               end
+               let arg_type = refine_arg_type ~nolabel:false ty in
+               Arg_label , arg_type,
+               (match arg_type with
+                | Arg_cst _   ->
+                  arg_types
+                |  _ ->                   
+                  param_type :: arg_types)               
              | Nolabel ->
-               begin match refine_arg_type ~nolabel:true ty with
-                 | _ , (Arg_cst _ as arg_type) ->
-                   Arg_empty , arg_type,  arg_types
-                 | new_ty , arg_type ->
-                   Arg_empty, arg_type, {param_type with ty = new_ty} :: arg_types
-               end
+               let arg_type = refine_arg_type ~nolabel:true ty in 
+               Arg_empty , arg_type, (match arg_type with
+                   | Arg_cst _  ->
+                     arg_types
+                   | _ ->
+                     param_type :: arg_types)
            in
            ({ arg_label  ;
               arg_type
@@ -21759,10 +21029,10 @@ let ocaml_obj_as_js_object
 
     let result = Typ.var ~loc val_name.txt in 
     result , 
-    ((val_name , [], result ) ::
+    (Parsetree.Otag (val_name , [], result ) ::
      (if is_mutable then 
-        [{val_name with txt = val_name.txt ^ Literals.setter_suffix},[],
-         Ast_typ_uncurry.to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ()) ]
+        [ Otag ({val_name with txt = val_name.txt ^ Literals.setter_suffix},[],
+         Ast_typ_uncurry.to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ())) ]
       else 
         []) )
   in 
@@ -21777,7 +21047,8 @@ let ocaml_obj_as_js_object
       for public object type its [@bs.meth] it does not depend on itself
       while for label argument it is [@bs.this] which depends internal object
   *)
-  let internal_label_attr_types, public_label_attr_types  = 
+  let (internal_label_attr_types : Parsetree.object_field list), 
+      (public_label_attr_types : Parsetree.object_field list) = 
     Ext_list.fold_right clfs ([], []) 
       (fun ({pcf_loc  = loc} as x  : Parsetree.class_field) 
         (label_attr_types, public_label_attr_types) ->
@@ -21795,9 +21066,9 @@ let ocaml_obj_as_js_object
               ->  
               let method_type =
                 Ast_typ_uncurry.generate_arg_type x.pcf_loc mapper label.txt lbl pat e in 
-              ((label, [], method_type) :: label_attr_types),
+              (Parsetree.Otag(label, [], method_type) :: label_attr_types),
               (if public_flag = Public then
-                 (label, [], method_type) :: public_label_attr_types
+                 Parsetree.Otag (label, [], method_type) :: public_label_attr_types
                else 
                  public_label_attr_types)
 
@@ -22218,7 +21489,7 @@ let sane_property_name_check loc s =
     Location.raise_errorf ~loc 
       "property name (%s) can not contain speical character #" s 
 (* match fn as *)   
-let view_as_app (fn : exp) s : app_pattern option =      
+let view_as_app (fn : exp) (s : string list) : app_pattern option =      
   match fn.pexp_desc with 
   | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident op; _}}, args ) 
     when Ext_list.has_string s op

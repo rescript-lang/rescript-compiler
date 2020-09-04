@@ -22,6 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+external (.!()) : int array -> int -> int = "" [@@bs.get_index]
 
 let raiseWhenNotFound x =
   if Js.testAny x then raise Not_found 
@@ -30,7 +31,7 @@ let raiseWhenNotFound x =
 let rec fromIntAux (enum : int) i len xs =
   if i = len then None
   else
-    let k = Js.Array2.unsafe_get xs i in
+    let k = xs.!(i) in
     if k = enum then Some i
     else fromIntAux enum (i + 1) len xs
 
@@ -40,7 +41,7 @@ let fromInt len (xs : int array) (enum : int )  : 'variant option =
 let rec fromIntAssertAux len (enum : int) i  xs =
   if i = len then raise Not_found
   else
-    let k = Js.Array2.unsafe_get xs i in
+    let k = xs.!(i) in
     if k = enum then  i
     else fromIntAssertAux len enum (i + 1)  xs
 

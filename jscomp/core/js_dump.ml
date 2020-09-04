@@ -526,14 +526,16 @@ and loop_case_clauses  :  'a . cxt ->
 
 and vident cxt f  (v : J.vident) =
   match v with
-  | Id v | Qualified(v, _, None) ->
+  | Id v 
+  | Qualified({id  = v }, None) 
+  | Qualified({id  = v ; kind = External {default = true }}, _) ->
     Ext_pp_scope.ident cxt f v
-  | Qualified (id, (Ml | Runtime),  Some name) ->
+  | Qualified ({id; kind = Ml | Runtime},  Some name) ->
     let cxt = Ext_pp_scope.ident cxt f id in
     P.string f L.dot;
     P.string f (Ext_ident.convert  name);
     cxt
-  | Qualified (id, External _, Some name) ->
+  | Qualified ({id; kind = External _}, Some name) ->
     let cxt = Ext_pp_scope.ident cxt f id in
     Js_dump_property.property_access f name ;
     cxt
@@ -650,7 +652,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
      | Exp exp_info ->
        let raw_paren =
           not (match exp_info with  
-            | Js_literal _ | Js_raw_json -> true 
+            | Js_literal _  -> true 
             | Js_function _ | Js_exp_unknown -> false || raw_snippet_exp_simple_enough s) in 
        if raw_paren then P.string f L.lparen;
        P.string f s ;       
@@ -958,7 +960,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
 and property_name_and_value_list cxt f (l : J.property_map) =     
   iter_lst cxt f l (fun cxt f (pn,e) -> 
       match e.expression_desc with  
-      | Var (Id v | Qualified (v,_,None)) -> 
+      | Var (Id v | Qualified ({id =v; _},None)) -> 
         let key = Js_dump_property.property_key pn in 
         let str, cxt = Ext_pp_scope.str_of_ident cxt v in 
         let content = 

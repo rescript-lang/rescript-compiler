@@ -71,9 +71,7 @@ val iter_process_bs_string_int_unwrap_uncurry :
 val iter_process_bs_string_as :
   t -> string option
 
-val iter_process_bs_string_as_ast :   
-  t -> 
-  Parsetree.expression option
+
   
 val has_bs_optional :
   t -> bool 
@@ -84,8 +82,7 @@ val iter_process_bs_int_as :
 type as_const_payload = 
   | Int of int
   | Str of string
-  | Json_str of string  
-
+  | Js_literal_str of string
 
 val iter_process_bs_string_or_int_as :
     t ->

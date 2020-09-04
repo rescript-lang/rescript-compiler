@@ -24,7 +24,33 @@
 
 
 
+type inline_attribute = 
+  | Always_inline
+  | Never_inline
+  | Default_inline  
 
+type is_a_functor = 
+  | Functor_yes
+  | Functor_no 
+  | Functor_na  
+
+type function_attribute = {
+  inline : inline_attribute;
+  is_a_functor : is_a_functor
+}  
+
+type apply_status =
+  | App_na
+  | App_infer_full
+  | App_uncurry      
+
+type ap_info = {
+  ap_loc : Location.t ; 
+  ap_inlined : inline_attribute;
+  ap_status : apply_status;
+}  
+
+val default_fn_attr : function_attribute
 
 type ident = Ident.t
 
@@ -35,17 +61,17 @@ type lambda_switch  =
     sw_blocks: (int * t) list;
     sw_failaction: t option;
     sw_names: Lambda.switch_names option }
-and apply_status =
-  | App_na
-  | App_infer_full
-  | App_uncurry      
-and apply_info = private
+and apply = private
   { ap_func : t ; 
     ap_args : t list ; 
-    ap_loc : Location.t;
-    ap_status : apply_status
+    ap_info : ap_info;
   }
-
+and lfunction =  {
+  arity : int ; 
+  params : ident list ;
+  body : t ;
+  attr : function_attribute;
+}
 and prim_info = private
   { primitive : Lam_primitive.t ; 
     args : t list ; 
@@ -55,11 +81,8 @@ and  t =  private
   | Lvar of ident
   | Lglobal_module of ident
   | Lconst of Lam_constant.t
-  | Lapply of apply_info
-  | Lfunction of   { arity : int ; 
-                     params : ident list ;
-                     body : t 
-                   }
+  | Lapply of apply
+  | Lfunction of lfunction
   | Llet of Lam_compat.let_kind * ident * t * t
   | Lletrec of (ident * t) list * t
   | Lprim of prim_info
@@ -100,8 +123,14 @@ val var : ident -> t
 val global_module : ident -> t 
 val const : Lam_constant.t -> t
 
-val apply : t -> t list -> Location.t -> apply_status -> t
+val apply : 
+  t -> 
+  t list -> 
+  ap_info -> 
+  t
+
 val function_ : 
+  attr:function_attribute ->
   arity:int ->
   params:ident list -> 
   body:t -> t

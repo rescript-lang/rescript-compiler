@@ -106,7 +106,7 @@ let addone = fun [@bs] x -> x + 1
 
 let makeMatrixExn sx sy init =
   let open A in
-  [%assert sx >=0 && sy >=0 ];
+  assert (sx >=0 && sy >=0 );
   let res = makeUninitializedUnsafe sx in
   for x = 0 to  sx - 1 do
     let initY = makeUninitializedUnsafe sy in

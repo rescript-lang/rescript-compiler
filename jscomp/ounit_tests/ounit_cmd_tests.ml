@@ -148,7 +148,7 @@ external ff :
       type t
       external mk : int -> (_ [@bs.as {json| { x : 3 } |json}]) ->  t = "mk" [@@bs.val]
       |} in
-      OUnit.assert_bool __LOC__ (Ext_string.contain_substring should_err.stderr "Invalid json literal")
+      OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
     end
     ;
     __LOC__ >:: begin fun _ ->

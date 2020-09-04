@@ -26,7 +26,7 @@ type ('a,'b) t = Ok of 'a | Error of 'b
 
 let getExn = function
   | Ok x -> x
-  | Error _ -> [%assert "getExn"]
+  | Error _ -> raise Not_found
 
 let mapWithDefaultU opt default f = match opt with
   | Ok x -> (f x [@bs])
