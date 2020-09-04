@@ -1,10 +1,6 @@
-
-
 let fprintf = Format.fprintf
 
-
-
-let file_lines filePath = 
+let file_lines filePath =
   Ext_array.reverse_of_list
     (Ext_io.rev_lines_of_file filePath)
 
@@ -20,13 +16,13 @@ let print_loc ~normalizedRange ppf (loc : Location.t) =
     | Some ((start_line, start_line_start_char), (end_line, end_line_end_char)) ->
       if start_line = end_line then
         if start_line_start_char = end_line_end_char then
-          fprintf ppf " @{<dim>%i:%i@}" start_line start_line_start_char
+          fprintf ppf "@{<dim>%i:%i@}" start_line start_line_start_char
         else
-          fprintf ppf " @{<dim>%i:%i-%i@}" start_line start_line_start_char end_line_end_char
+          fprintf ppf "@{<dim>%i:%i-%i@}" start_line start_line_start_char end_line_end_char
       else
-        fprintf ppf " @{<dim>%i:%i-%i:%i@}" start_line start_line_start_char end_line end_line_end_char
+        fprintf ppf "@{<dim>%i:%i-%i:%i@}" start_line start_line_start_char end_line end_line_end_char
   in
-  fprintf ppf "@{<filename>%a@}%a" print_filename loc.loc_start.pos_fname dim_loc normalizedRange
+  fprintf ppf "@{<filename>%a@}:%a" print_filename loc.loc_start.pos_fname dim_loc normalizedRange
 ;;
 
 let print ~message_kind intro ppf (loc : Location.t) =
