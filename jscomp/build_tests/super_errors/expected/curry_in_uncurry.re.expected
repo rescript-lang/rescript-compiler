@@ -1,6 +1,6 @@
 
   [1;31mWe've found a bug for you![0m
-  [36m/.../fixtures/curry_in_uncurry.re[0m [2m3:1[0m
+  [36m/.../fixtures/curry_in_uncurry.re[0m:[2m3:1[0m
   
   1 [2m│[0m let f = (a,b) => a + b;
   2 [2m│[0m 

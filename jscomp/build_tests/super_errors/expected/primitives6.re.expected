@@ -1,6 +1,6 @@
 
   [1;31mWe've found a bug for you![0m
-  [36m/.../fixtures/primitives6.re[0m [2m3:7-8[0m
+  [36m/.../fixtures/primitives6.re[0m:[2m3:7-8[0m
   
   1 [2m│[0m /* Wrong constructor argument */
   2 [2m│[0m type x = X(int, float);
@@ -11,4 +11,4 @@
   But somewhere wanted:
     [1;33mfloat[0m
 
-You can convert a [1;33mint[0m to a [1;33mfloat[0m with [1;33mfloat_of_int[0m.If this is a literal, you want a number with a trailing dot (e.g. [1;33m20.[0m).
+  You can convert [1;33mint[0m to [1;33mfloat[0m with [1;33mBelt.Int.toFloat[0m.If this is a literal, you want a number with a trailing dot (e.g. [1;33m20.[0m).
