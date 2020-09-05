@@ -24,7 +24,7 @@ var test = false;
 for (var i = 0; i < lines.length; ++i) {
   if (lines[i] === "We've found a bug for you!") {
     console.log(`line ${i} found`);
-    assert.ok(/src\/demo.re 3:23-25/.test(lines[i + 1]));
+    assert.ok(/src\/demo.re:3:23-25/.test(lines[i + 1]));
     test = true;
   }
 }
