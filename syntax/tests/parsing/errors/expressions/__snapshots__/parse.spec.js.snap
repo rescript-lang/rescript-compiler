@@ -8,8 +8,7 @@ let x = ((let a = 1 in let b = 2 in fun pattern -> (\\"test\\" : int))
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/ambiguousArrow.js:1:9-21
-  
+  parsing/errors/expressions/ambiguousArrow.js:1:9-21  
   1 │ let a = b:int => \\"hi\\"
   2 │ 
   3 │ let x = {
@@ -20,8 +19,7 @@ let x = ((let a = 1 in let b = 2 in fun pattern -> (\\"test\\" : int))
 
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/ambiguousArrow.js:6:3-23
-  
+  parsing/errors/expressions/ambiguousArrow.js:6:3-23  
   4 │   let a = 1
   5 │   let b = 2
   6 │   a + b : int => \\"test\\"
@@ -43,8 +41,7 @@ let xs = x.map (fun key -> [|key;(predicates.(key))|])
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/array.js:2:44
-  
+  parsing/errors/expressions/array.js:2:44  
   1 │ // missing ] before )
   2 │ let xs = x.map(key => [key, predicates[key])
   3 │ 
@@ -63,8 +60,7 @@ exports[`arrow.js 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/arrow.js:1:52
-  
+  parsing/errors/expressions/arrow.js:1:52  
   1 │ Object.keys(providers).reduce((elements, providerId] => {
   2 │   let x = 1
   3 │   let b = 2
@@ -102,8 +98,7 @@ let pipeline =
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/block.js:14:4-15:1
-  
+  parsing/errors/expressions/block.js:14:4-15:1  
   12 │ 
   13 │     thisId === id
   14 │   }
@@ -114,8 +109,7 @@ let pipeline =
   Did you forget a \`)\` here? 
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/block.js:18:25-19:1
-  
+  parsing/errors/expressions/block.js:18:25-19:1  
   16 │ 
   17 │ let x = {
   18 │   loop(0, Nil->push(doc)
@@ -126,8 +120,7 @@ let pipeline =
   Did you forget a \`)\` here? 
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/block.js:22:11-23:1
-  
+  parsing/errors/expressions/block.js:22:11-23:1  
   20 │ 
   21 │ switch stack {
   22 │ | Empty =>
@@ -138,8 +131,7 @@ let pipeline =
   Looks like there might be an expression missing here
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/block.js:26:7-27:1
-  
+  parsing/errors/expressions/block.js:26:7-27:1  
   24 │ | Join(doc1, doc2) =>
   25 │ 	buffer->Buffer.add_string(indentation)
   26 │ 	loop(
@@ -150,8 +142,7 @@ let pipeline =
   Did you forget a \`)\` here? 
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/block.js:30:10-31:1
-  
+  parsing/errors/expressions/block.js:30:10-31:1  
   28 │ 
   29 │ let pipeline = switch scheduler {
   30 │ | Some =>
@@ -175,8 +166,7 @@ let () = ((let open Foo in let exception End  in x ())[@ns.braces ])
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/consecutive.res:1:23
-  
+  parsing/errors/expressions/consecutive.res:1:23  
   1 │ let f = (a,b) => a + 3b;
   2 │ 
   3 │ let f = (g, h) => {
@@ -184,8 +174,7 @@ let () = ((let open Foo in let exception End  in x ())[@ns.braces ])
   consecutive statements on a line must be separated by ';' or a newline
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/consecutive.res:4:7
-  
+  parsing/errors/expressions/consecutive.res:4:7  
   2 │ 
   3 │ let f = (g, h) => {
   4 │  a + 3b
@@ -195,8 +184,7 @@ let () = ((let open Foo in let exception End  in x ())[@ns.braces ])
   consecutive expressions on a line must be separated by ';' or a newline
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/consecutive.res:8:16-27
-  
+  parsing/errors/expressions/consecutive.res:8:16-27  
    6 │ 
    7 │ let () = {
    8 │   sideEffect1() sideEffect2()
@@ -206,8 +194,7 @@ let () = ((let open Foo in let exception End  in x ())[@ns.braces ])
   consecutive expressions on a line must be separated by ';' or a newline
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/consecutive.res:12:11-20
-  
+  parsing/errors/expressions/consecutive.res:12:11-20  
   10 │ 
   11 │ let () = {
   12 │   open Foo exception End
@@ -227,8 +214,7 @@ let f a b = ((())[@ns.braces ])
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/emptyBlock.js:1:10
-  
+  parsing/errors/expressions/emptyBlock.js:1:10  
   1 │ let x = {}
   2 │ 
   3 │ let f = (a, b) => {}
@@ -236,8 +222,7 @@ let f a b = ((())[@ns.braces ])
   This let-binding misses an expression
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/emptyBlock.js:3:20
-  
+  parsing/errors/expressions/emptyBlock.js:3:20  
   1 │ let x = {}
   2 │ 
   3 │ let f = (a, b) => {}
@@ -255,8 +240,7 @@ exports[`if.js 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/if.js:2:11-3:5
-  
+  parsing/errors/expressions/if.js:2:11-3:5  
   1 │ // missing brace below
   2 │ if (match)
   3 │   let a = 1
@@ -281,8 +265,7 @@ exports[`ifLet.res 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/ifLet.res:1:1-3:1
-  
+  parsing/errors/expressions/ifLet.res:1:1-3:1  
   1 │ if let Some(x) = result {
   2 │   Js.log(\\"The sky is blue\\")
   3 │ }
@@ -298,8 +281,7 @@ switch result {
 
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/ifLet.res:7:8-11:1
-  
+  parsing/errors/expressions/ifLet.res:7:8-11:1  
    5 │ if let Error(x) = result {
    6 │   Js.log(\\"The sky is red\\")
    7 │ } else if let Ok(y) = result {
@@ -332,8 +314,7 @@ module LicenseList = struct  end
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/implementation.res:7:1
-  
+  parsing/errors/expressions/implementation.res:7:1  
   5 │   }
   6 │ }
   7 │ }
@@ -352,8 +333,7 @@ let x = ([%rescript.exprhole ]) + 1
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/misc.js:1:9
-  
+  parsing/errors/expressions/misc.js:1:9  
   1 │ let x = _ + 1
   2 │ 
   
@@ -371,8 +351,7 @@ let record = { field = ([%rescript.exprhole ]) }
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/record.js:2:10-3:7
-  
+  parsing/errors/expressions/record.js:2:10-3:7  
   1 │ let newWrapper = {
   2 │   updateF
   3 │   value: f(xWrapper.currentValue),
@@ -382,8 +361,7 @@ let record = { field = ([%rescript.exprhole ]) }
   Did you forget a \`,\` here? 
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/record.js:8:10-18
-  
+  parsing/errors/expressions/record.js:8:10-18  
    6 │ 
    7 │ let newWrapper = {
    8 │   updateF updateF2
@@ -393,8 +371,7 @@ let record = { field = ([%rescript.exprhole ]) }
   Did you forget a \`:\` here? 
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/record.js:13:9-17:0
-  
+  parsing/errors/expressions/record.js:13:9-17:0  
   11 │ 
   12 │ let record = {
   13 │   field:
@@ -417,8 +394,7 @@ exports[`setField.js 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/setField.js:4:30-5:1
-  
+  parsing/errors/expressions/setField.js:4:30-5:1  
   2 │   let a = 1
   3 │ 	// notice missing expression after = 
   4 │   m.left.compatibleTypeArgs =
@@ -438,8 +414,7 @@ exports[`taggedTemplateLiterals.js 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/taggedTemplateLiterals.js:1:1-5
-  
+  parsing/errors/expressions/taggedTemplateLiterals.js:1:1-5  
   1 │ foo()\`null\`
   2 │ 
   
@@ -455,8 +430,7 @@ let parsedPayload = try Js.Json.parseExn response with | _ -> Js.Json.null
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/try.js:2:37-38
-  
+  parsing/errors/expressions/try.js:2:37-38  
   1 ┆ let parsedPayload =
   2 ┆   try (Js.Json.parseExn(response)) {
   3 ┆   | _ => Js.Json.null
@@ -475,8 +449,7 @@ let x = (\\"hi\\" : string)
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/unexpectedConstraint.js:4:3-13
-  
+  parsing/errors/expressions/unexpectedConstraint.js:4:3-13  
   2 │   let a = 1
   3 │   let b = 2
   4 │   a + b : int
@@ -488,8 +461,7 @@ let x = (\\"hi\\" : string)
 
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/expressions/unexpectedConstraint.js:7:9-20
-  
+  parsing/errors/expressions/unexpectedConstraint.js:7:9-20  
   5 │ }
   6 │ 
   7 │ let x = \\"hi\\": string 

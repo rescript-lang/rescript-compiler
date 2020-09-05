@@ -183,7 +183,7 @@ function printFile(filename) {
    machine-independent
 */
 let makeReproducibleFilename = (txt) => {
-  return txt.replace(/(  Syntax error!\n  )(.+)( .+)\n/g, (match, intro, filepath, loc) => {
+  return txt.replace(/(  Syntax error!\n  )(.+)(:.+)\n/g, (match, intro, filepath, loc) => {
     return intro + path.relative(__dirname, filepath) + loc
   })
 };

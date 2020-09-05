@@ -7,8 +7,7 @@ let y = 2
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/structure/closingBraces.res:3:1
-  
+  parsing/errors/structure/closingBraces.res:3:1  
   1 │ let x = 1
   2 │ 
   3 │ }}}
@@ -28,8 +27,7 @@ exception Bar
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/structure/consecutive.res:1:9-18
-  
+  parsing/errors/structure/consecutive.res:1:9-18  
   1 │ open Foo exception Bar
   2 │ 
   
@@ -46,8 +44,7 @@ module C = struct module T = (Fun)(struct ;;foo (a + c) (b + d) end) end
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/structure/gh16A.res:6:1
-  
+  parsing/errors/structure/gh16A.res:6:1  
   4 │   })
   5 │ }
   6 │ )
@@ -88,8 +85,7 @@ module ClientSet =
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/structure/gh16B.res:19:2
-  
+  parsing/errors/structure/gh16B.res:19:2  
   17 │ 
   18 │ 
   19 │ })))))))))))))))))))))))))))))); // this \\")\\" here, this can even be \\")
@@ -118,8 +114,7 @@ let (x : int1) = (int2 = 3 :> int3)
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/structure/letBinding.js:2:18-20
-  
+  parsing/errors/structure/letBinding.js:2:18-20  
   1 │ // missing =
   2 │ let rightResource ur.resources.find(
   3 │   r => r.account_id === connection.left.account.id
@@ -128,8 +123,7 @@ let (x : int1) = (int2 = 3 :> int3)
   Did you forget a \`=\` here? 
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/structure/letBinding.js:8:12-13
-  
+  parsing/errors/structure/letBinding.js:8:12-13  
    6 │ let x = {
    7 │   // missing =
    8 │   let field p->parseFieldDeclaration 
@@ -139,8 +133,7 @@ let (x : int1) = (int2 = 3 :> int3)
   Did you forget a \`=\` here? 
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/structure/letBinding.js:14:19-26
-  
+  parsing/errors/structure/letBinding.js:14:19-26  
   12 │ let t = {
   13 │ 	// missing =
   14 │ 	let (_, _, token) scanner->scan
@@ -150,8 +143,7 @@ let (x : int1) = (int2 = 3 :> int3)
   Did you forget a \`=\` here? 
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/structure/letBinding.js:18:39-20:3
-  
+  parsing/errors/structure/letBinding.js:18:39-20:3  
   16 │ }
   17 │ 
   18 │ let keyTable: Belt.Map.String.t<int> =
@@ -163,8 +155,7 @@ let (x : int1) = (int2 = 3 :> int3)
   This let-binding misses an expression
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/structure/letBinding.js:20:10-23:3
-  
+  parsing/errors/structure/letBinding.js:20:10-23:3  
   18 │ let keyTable: Belt.Map.String.t<int> =
   19 │ 
   20 │ let foo = 
@@ -177,8 +168,7 @@ let (x : int1) = (int2 = 3 :> int3)
   This let-binding misses an expression
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/structure/letBinding.js:23:11-13
-  
+  parsing/errors/structure/letBinding.js:23:11-13  
   21 │ 
   22 │ // no magic in the syntax
   23 │ let x: int :> string = y
@@ -188,8 +178,7 @@ let (x : int1) = (int2 = 3 :> int3)
   Did you forget a \`=\` here? 
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/structure/letBinding.js:26:6-8
-  
+  parsing/errors/structure/letBinding.js:26:6-8  
   24 │ 
   25 │ // no magic in the syntax
   26 │ let x :> string = y
@@ -199,8 +188,7 @@ let (x : int1) = (int2 = 3 :> int3)
   Did you forget a \`=\` here? 
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/structure/letBinding.js:29:13-15
-  
+  parsing/errors/structure/letBinding.js:29:13-15  
   27 │ 
   28 │ // no magic in the syntax
   29 │ let x : int1 :> int2 = 3 :> int3
@@ -219,8 +207,7 @@ let [%rescript.patternhole ] = 3
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/structure/letBindingPatternKeyword.js:1:5-8
-  
+  parsing/errors/structure/letBindingPatternKeyword.js:1:5-8  
   1 │ let open = 1
   2 │ let to = 3
   3 │ 
@@ -228,8 +215,7 @@ let [%rescript.patternhole ] = 3
   \`open\` is a reserved keyword. Keywords need to be escaped: \\\\\\"open\\"
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/errors/structure/letBindingPatternKeyword.js:2:5-6
-  
+  parsing/errors/structure/letBindingPatternKeyword.js:2:5-6  
   1 │ let open = 1
   2 │ let to = 3
   3 │ 

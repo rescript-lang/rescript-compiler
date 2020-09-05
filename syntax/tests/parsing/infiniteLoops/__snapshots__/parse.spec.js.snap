@@ -149,8 +149,7 @@ let removeNode rbt node =
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/infiniteLoops/equalAfterBinaryExpr.js:169:17
-  
+  parsing/infiniteLoops/equalAfterBinaryExpr.js:169:17  
   167 ┆ if isLeaf(. successor) {
   168 ┆   if rbt->root === Some(successor) {
   169 ┆     rbt->root = None
@@ -174,8 +173,7 @@ let (a : action) = AddUser \\"test\\"
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/infiniteLoops/jsxChildren.js:1:22
-  
+  parsing/infiniteLoops/jsxChildren.js:1:22  
   1 │ type action = AddUser<string>
   2 │ 
   3 │ let a: action = AddUser(\\"test\\")
@@ -183,8 +181,7 @@ let (a : action) = AddUser \\"test\\"
   consecutive statements on a line must be separated by ';' or a newline
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/infiniteLoops/jsxChildren.js:1:22-29
-  
+  parsing/infiniteLoops/jsxChildren.js:1:22-29  
   1 │ type action = AddUser<string>
   2 │ 
   3 │ let a: action = AddUser(\\"test\\")
@@ -592,8 +589,7 @@ include
 =====Errors=============================================
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/infiniteLoops/nonRecTypes.js:4:29-36
-  
+  parsing/infiniteLoops/nonRecTypes.js:4:29-36  
   2 ┆ include (
   3 ┆           {
   4 ┆             type t('value) = {
@@ -605,8 +601,7 @@ include
 
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/infiniteLoops/nonRecTypes.js:19:45-51
-  
+  parsing/infiniteLoops/nonRecTypes.js:19:45-51  
   17 ┆   ~size: int,
   18 ┆   ~root: option(node('value)),
   19 ┆   ~compare: Js.Internal.fn([ | \`Arity_2('value, 'value)], int)
@@ -616,8 +611,7 @@ include
   consecutive statements on a line must be separated by ';' or a newline
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/infiniteLoops/nonRecTypes.js:67:26-68:3
-  
+  parsing/infiniteLoops/nonRecTypes.js:67:26-68:3  
   65 │         };
   66 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None
        ;
@@ -629,8 +623,7 @@ include
   I'm not sure what to parse here when looking at \\"let\\".
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/infiniteLoops/nonRecTypes.js:68:21-69:3
-  
+  parsing/infiniteLoops/nonRecTypes.js:68:21-69:3  
   66 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None
        ;
   67 │ let rec minNode = node =>
@@ -642,8 +635,7 @@ include
   I'm not sure what to parse here when looking at \\"let\\".
 
   Syntax error!
-  /Users/mvalcke/Development/syntax/tests/parsing/infiniteLoops/nonRecTypes.js:434:31-38
-  
+  parsing/infiniteLoops/nonRecTypes.js:434:31-38  
   432 │     updateSum(Some(node), ~delta);
   433 │   };
   434 │ type nonrec oldNewVisibleNodes('value) = {
