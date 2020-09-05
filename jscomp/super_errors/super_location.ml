@@ -25,12 +25,8 @@ let print_loc ~normalizedRange ppf (loc : Location.t) =
   fprintf ppf "@{<filename>%a@}%a" print_filename loc.loc_start.pos_fname dim_loc normalizedRange
 ;;
 
-let print ~message_kind intro ppf (loc : Location.t) =
-    begin match message_kind with
-    | `warning -> fprintf ppf "@[@{<info>%s@}@]@," intro
-    | `warning_as_error -> fprintf ppf "@[@{<error>%s@} (configured as error) @]@," intro
-    | `error -> fprintf ppf "@[@{<error>%s@}@]@," intro
-    end;
+let print intro ppf (loc : Location.t) =
+    fprintf ppf "@[@{<error>%s@}@]@," intro;
     (* ocaml's reported line/col numbering is horrible and super error-prone
       when being handled programmatically (or humanly for that matter. If you're
       an ocaml contributor reading this: who the heck reads the character count
@@ -64,7 +60,7 @@ let print ~message_kind intro ppf (loc : Location.t) =
            branch might not be reached (aka no inline file content display) so
            we don't wanna end up with two line breaks in the the consequent *)
         fprintf ppf "@,%a"
-          (Super_misc.print_file ~is_warning:(message_kind=`warning) ~lines ~range)
+          (Super_misc.print_file  ~lines ~range)
           ()
       with
       (* this might happen if the file is e.g. "", "_none_" or any of the fake file name placeholders.
@@ -75,37 +71,23 @@ let print ~message_kind intro ppf (loc : Location.t) =
 
 (* taken from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L380 *)
 (* This is the error report entry point. We'll replace the default reporter with this one. *)
-let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err) =
-  let highlighted =
-    if if_highlight <> "" then
-      let rec collect_locs locs {Location.loc; sub; if_highlight = _; _} =
-        List.fold_left collect_locs (loc :: locs) sub
-      in
-      let locs = collect_locs [] err in
-      Location.highlight_locations ppf locs
-    else
-      false
-  in
-  if highlighted then
-    Format.pp_print_string ppf if_highlight
-  else begin
-    setup_colors ();
-    (* open a vertical box. Everything in our message is indented 2 spaces *)
-    Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print ~message_kind:`error "We've found a bug for you!") loc msg;
-    List.iter (Format.fprintf ppf "@,@[%a@]" super_error_reporter) sub;
+let rec super_error_reporter ppf ({loc; msg; sub} : Location.error) =
+  setup_colors ();
+  (* open a vertical box. Everything in our message is indented 2 spaces *)
+  Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print  "We've found a bug for you!") loc msg;
+  List.iter (Format.fprintf ppf "@,@[%a@]" super_error_reporter) sub
     (* no need to flush here; location's report_exception (which uses this ultimately) flushes *)
-  end
+
 
 (* extracted from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L299 *)
 (* This is the warning report entry point. We'll replace the default printer with this one *)
 let super_warning_printer loc ppf w =
   match Warnings.report w with
   | `Inactive -> ()
-  | `Active { Warnings. number = _; message = _; is_error; sub_locs = _} ->
-    setup_colors ();
-    let message_kind = if is_error then `warning_as_error else `warning in
-    Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]"
-      (print ~message_kind ("Warning number " ^ (Warnings.number w |> string_of_int)))
+  | `Active { Warnings. number = _; message = _;  sub_locs = _} ->
+    setup_colors ();    
+    Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]@."
+      (print  ("Warning number " ^ (Warnings.number w |> string_of_int)))
       loc
       (Super_warnings.message w);
     (* at this point, you can display sub_locs too, from e.g. https://github.com/ocaml/ocaml/commit/f6d53cc38f87c67fbf49109f5fb79a0334bab17a
