@@ -1,6 +1,6 @@
 
   [1;31mWe've found a bug for you![0m
-  [36m/.../fixtures/bucklescript.re[0m [2m4:1-3[0m
+  [36m/.../fixtures/bucklescript.re[0m:[2m4:1-3[0m
   
   2 [2m│[0m let app = [@bs] (f, x, y) => f(x);
   3 [2m│[0m 

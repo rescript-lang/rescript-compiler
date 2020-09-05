@@ -1,6 +1,6 @@
 
   [1;31mWe've found a bug for you![0m
-  [36m/.../fixtures/warnings1.re[0m [2m3:3-7[0m
+  [36m/.../fixtures/warnings1.re[0m:[2m3:3-7[0m
   
   1 [2m│[0m let x = (a, b) => a + b;
   2 [2m│[0m let z = () => {

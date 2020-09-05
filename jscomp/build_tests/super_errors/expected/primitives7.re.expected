@@ -1,6 +1,6 @@
 
   [1;31mWe've found a bug for you![0m
-  [36m/.../fixtures/primitives7.re[0m [2m3:28[0m
+  [36m/.../fixtures/primitives7.re[0m:[2m3:28[0m
   
   1 [2m│[0m /* Wanted list(float), found list(int) */
   2 [2m│[0m let a = [1,2,3];
@@ -16,4 +16,4 @@
     vs
     [1;33mfloat[0m
 
-You can convert a [1;33mint[0m to a [1;33mfloat[0m with [1;33mfloat_of_int[0m.If this is a literal, you want a number with a trailing dot (e.g. [1;33m20.[0m).
+  You can convert [1;33mint[0m to [1;33mfloat[0m with [1;33mBelt.Int.toFloat[0m.If this is a literal, you want a number with a trailing dot (e.g. [1;33m20.[0m).
