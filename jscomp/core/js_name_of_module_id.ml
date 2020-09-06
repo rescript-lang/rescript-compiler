@@ -189,7 +189,7 @@ let string_of_module_id
 #if BS_BROWSER then   
 let string_of_module_id_in_browser (x : Lam_module_ident.t) =  
    match x.kind with
-   | External name -> name
+   | External {name} -> name
    | Runtime | Ml -> 
                    "./stdlib/" ^  Ext_string.uncapitalize_ascii x.id.name ^ ".js"
 let string_of_module_id 
