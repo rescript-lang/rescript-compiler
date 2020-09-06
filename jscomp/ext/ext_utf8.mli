@@ -29,23 +29,23 @@ type byte =
   | Invalid
 
 
-val classify : char -> byte 
+val classify : char -> byte
 
-val follow : 
-    string -> 
-    int -> 
-    int -> 
+val follow :
+    string ->
     int ->
-    int * int 
+    int ->
+    int ->
+    int * int
 
 
-(** 
-  return [-1] if failed 
+(**
+  return [-1] if failed
 *)
-val next :  string -> remaining:int -> int -> int 
+val next :  string -> remaining:int -> int -> int
 
 
-exception Invalid_utf8 of string 
- 
- 
+exception Invalid_utf8 of string
+
+
 val decode_utf8_string : string -> int list

@@ -25,9 +25,9 @@
 external (.!()) : int array -> int -> int = "" [@@bs.get_index]
 
 let raiseWhenNotFound x =
-  if Js.testAny x then raise Not_found 
-  else x 
-    
+  if Js.testAny x then raise Not_found
+  else x
+
 let rec fromIntAux (enum : int) i len xs =
   if i = len then None
   else

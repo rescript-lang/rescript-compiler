@@ -93,10 +93,10 @@ module Callback = struct
   }
   type 'a arity22 = {
     i22 : 'a [@internal]
-  }  
-end  
+  }
+end
 module Meth = struct
-  type + 'a arity0 
+  type + 'a arity0
   type 'a arity1 = {
     i1 : 'a [@internal]
   }
@@ -171,11 +171,11 @@ module Internal = struct
   (* Use opaque instead of [._n] to prevent some optimizations happening *)
 
   external run : 'a arity0 -> 'a = "#run" "0"
-  (* 
-    x##meth a b --> 
+  (*
+    x##meth a b -->
     fullApppy (
-        (id (unsafe_downgrade x)#meth).I_2) 
+        (id (unsafe_downgrade x)#meth).I_2)
         a b)
-  *)  
-end  
+  *)
+end
 (**/**)

@@ -20,8 +20,8 @@ let () =
       | _ -> None
     )
 
-let cannot_run comm = 
-  raise (Error (CannotRun comm))    
+let cannot_run comm =
+  raise (Error (CannotRun comm))
 
-let wrong_magic magic = 
-    raise (Error (WrongMagic magic))  
+let wrong_magic magic =
+    raise (Error (WrongMagic magic))

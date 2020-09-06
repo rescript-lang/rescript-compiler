@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -29,14 +29,14 @@
 
 
 
-(** A pass converting nested js statement into a flatten visual appearance 
+(** A pass converting nested js statement into a flatten visual appearance
 
-    Note this module is used to convert some nested expressions to flat statements, 
+    Note this module is used to convert some nested expressions to flat statements,
     in general, it's more human readable, and since it generate flat statements, we can spot
-    some inline opportunities for the produced statemetns, 
+    some inline opportunities for the produced statemetns,
     (inline) expressions inside a nested expression would generate ugly code.
 
-    Since we are aiming to flatten expressions, we should avoid some smart constructors in {!Js_helper}, 
+    Since we are aiming to flatten expressions, we should avoid some smart constructors in {!Js_helper},
     it  tries to spit out expression istead of statements if it can
 *)
 

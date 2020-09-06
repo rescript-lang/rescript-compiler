@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,35 +17,35 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let p = Format.fprintf 
+let p = Format.fprintf
 
-let () = 
-  match Sys.argv with 
+let () =
+  match Sys.argv with
   | [|_; file|]
-    -> 
-    let ic = open_in_bin file in 
+    ->
+    let ic = open_in_bin file in
 
-    let arrs = 
-      Bsb_helper_depfile_gen.deps_of_channel ic 
+    let arrs =
+      Bsb_helper_depfile_gen.deps_of_channel ic
     in
     p Format.std_formatter "@[Dependent modules: @[%a@]@]@."
       (Format.pp_print_list ~pp_sep:(fun fmt () ->
            p fmt "@ ;"
-         ) Format.pp_print_string) 
+         ) Format.pp_print_string)
        arrs;
     p Format.std_formatter "@.==============================@.";
-    if Ext_path.check_suffix_case file ".mlast" then 
+    if Ext_path.check_suffix_case file ".mlast" then
       begin
         Pprintast.structure Format.std_formatter
           (Ml_binary.read_ast Ml_binary.Ml ic );
-        close_in ic 
+        close_in ic
       end
-    else if Ext_path.check_suffix_case file ".mliast" then 
+    else if Ext_path.check_suffix_case file ".mliast" then
       begin
         Pprintast.signature Format.std_formatter
           (Ml_binary.read_ast Ml_binary.Mli ic);

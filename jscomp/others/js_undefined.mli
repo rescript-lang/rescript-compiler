@@ -31,7 +31,7 @@ type + 'a t = 'a Js.undefined
 external return : 'a -> 'a t = "%identity"
 
 
-val test : 'a t -> bool 
+val test : 'a t -> bool
 [@@deprecated "Use = Js.undefined directly"]
 (** Returns [true] if the given value is [empty] ([undefined]), [false] otherwise *)
 
@@ -39,11 +39,11 @@ val test : 'a t -> bool
    @since 1.6.1
    Returns [true] if the given value is [empty] ([undefined])
 *)
-val testAny : 'a -> bool 
+val testAny : 'a -> bool
 
 
 (** The empty value, [undefined] *)
-external empty : 'a t = "#undefined" 
+external empty : 'a t = "#undefined"
 
 external getUnsafe : 'a t -> 'a = "%identity"
 

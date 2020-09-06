@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -32,37 +32,37 @@
 module E = Js_exp_make
 
 (** return [val < 0] if not nested [Some (Some (Some None))]*)
-let rec is_some_none_aux (x : Lam_constant.t) acc = 
-  match x with 
+let rec is_some_none_aux (x : Lam_constant.t) acc =
+  match x with
   | Const_some v -> is_some_none_aux v (acc + 1)
   | Const_module_alias
-  | Const_js_undefined -> acc 
+  | Const_js_undefined -> acc
   | _ -> -1
 
-let rec nested_some_none   n none = 
+let rec nested_some_none   n none =
   if n  = 0 then none
   else nested_some_none (n - 1) (E.optional_block none)
 
 
-let rec 
-translate_some (x : Lam_constant.t) : J.expression = 
-  let depth = is_some_none_aux x 0 in 
+let rec
+translate_some (x : Lam_constant.t) : J.expression =
+  let depth = is_some_none_aux x 0 in
   if depth < 0 then E.optional_not_nest_block (translate x )
   else nested_some_none depth (E.optional_block (translate Const_js_undefined))
-and translate (x : Lam_constant.t ) : J.expression = 
-  match x with 
+and translate (x : Lam_constant.t ) : J.expression =
+  match x with
   | Const_module_alias -> E.undefined (*  TODO *)
-  | Const_some s ->  translate_some s   
-  | Const_js_true -> E.bool true 
+  | Const_some s ->  translate_some s
+  | Const_js_true -> E.bool true
   | Const_js_false -> E.bool false
   | Const_js_null -> E.nil
   | Const_js_undefined -> E.undefined
   | Const_int {value; comment } -> E.int (Int32.of_int value) ?comment
   | Const_char i ->
     Js_of_lam_string.const_char i
-  | Const_int32 i -> E.int i 
+  | Const_int32 i -> E.int i
   (* E.float (Int32.to_string i) *)
-  | Const_int64 i -> 
+  | Const_int64 i ->
           (*
             TODO:
        {[
@@ -73,42 +73,42 @@ and translate (x : Lam_constant.t ) : J.expression =
          Int64.(to_float max_int);;
          - : float = 9.22337203685477581e+18
        ]}
-       Note we should compile it to Int64 as JS's 
-       speical representation -- 
+       Note we should compile it to Int64 as JS's
+       speical representation --
        it is not representatble in JS number
     *)
     (* E.float (Int64.to_string i) *)
     Js_long.of_const i
   (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
-  | Const_nativeint i -> E.nint i 
+  | Const_nativeint i -> E.nint i
   | Const_float f -> E.float f (* TODO: preserve float *)
-  | Const_string i (*TODO: here inline js*) -> 
-    E.str  i 
-  | Const_unicode i -> 
-    E.unicode i 
+  | Const_string i (*TODO: here inline js*) ->
+    E.str  i
+  | Const_unicode i ->
+    E.unicode i
 
 
-  | Const_pointer (c,pointer_info) ->     
-    begin match pointer_info with 
+  | Const_pointer (c,pointer_info) ->
+    begin match pointer_info with
       | Pt_variant {name} -> E.str name
-      | _ -> 
+      | _ ->
         E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info)
           (Int32.of_int c )
     end
-  | Const_block(tag, tag_info, xs ) -> 
-    Js_of_lam_block.make_block NA tag_info 
+  | Const_block(tag, tag_info, xs ) ->
+    Js_of_lam_block.make_block NA tag_info
       (E.small_int  tag) (Ext_list.map xs translate)
 
-  | Const_float_array ars -> 
-    (* according to the compiler 
-        const_float_array is immutable 
+  | Const_float_array ars ->
+    (* according to the compiler
+        const_float_array is immutable
        {[ Lprim(Pccall prim_obj_dup, [master]) ]},
-        however, we can not translate 
+        however, we can not translate
        {[ prim_obj_dup(x) =>  x' ]}
         since x' is now mutable, prim_obj_dup does a copy,
 
-        the compiler does this  is mainly to extract common data into data section, 
-        we  deoptimized this in js backend? so it is actually mutable 
+        the compiler does this  is mainly to extract common data into data section,
+        we  deoptimized this in js backend? so it is actually mutable
     *)
     (* TODO-- *)
     Js_of_lam_array.make_array Mutable
@@ -119,16 +119,16 @@ and translate (x : Lam_constant.t ) : J.expression =
   | Const_immstring s ->  (*TODO *)
     E.str s  (* TODO: check *)
 
-(* and translate_optional s = 
-  let  b = 
-  match s with 
+(* and translate_optional s =
+  let  b =
+  match s with
   | Const_js_undefined -> E.optional_block (translate s) *)
 
-let translate_arg_cst (cst : External_arg_spec.cst) = 
-  match cst with 
-   | Arg_int_lit i -> 
+let translate_arg_cst (cst : External_arg_spec.cst) =
+  match cst with
+   | Arg_int_lit i ->
      E.int (Int32.of_int i)
-   | Arg_string_lit i -> 
+   | Arg_string_lit i ->
      E.str i
-   | Arg_js_literal s 
+   | Arg_js_literal s
      -> E.raw_js_code (Exp (Js_literal {comment = None})) s

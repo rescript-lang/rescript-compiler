@@ -16,21 +16,21 @@
 (* Adapted significantly by BuckleScript Authors                          *)
 module A = Belt_Array
 
-type 'a node = { 
-  content: 'a; 
-  mutable next: 'a cell 
+type 'a node = {
+  content: 'a;
+  mutable next: 'a cell
 }
-and 'a cell = 'a node option 
+and 'a cell = 'a node option
 and 'a t = {
   mutable length: int;
   mutable first: 'a cell;
   mutable last: 'a cell
-} 
+}
 
 
 
 
-let make () =   
+let make () =
     {
       length = 0;
       first = None;
@@ -57,7 +57,7 @@ let add q x =
     q.last <-  cell
 
 
-  
+
 let peek q =
   match  q.first with (* same here could be v *)
   | None -> None
@@ -78,55 +78,55 @@ let pop q =
   match  q.first with
   | None -> None
   | Some x  ->
-    let next = x.next in 
-    if next = None then 
+    let next = x.next in
+    if next = None then
       begin (* only one element*)
         clear q;
         Some x.content
       end
-    else begin 
+    else begin
       q.length <- q.length  - 1;
       q.first <- next;
-      Some x.content 
+      Some x.content
     end
 
 let popExn q = (* TO fix *)
-  match  q.first with 
+  match  q.first with
   | None -> raise Not_found
   | Some x  ->
-    let next = x.next in 
-    if next = None then 
+    let next = x.next in
+    if next = None then
       begin (* only one element*)
         clear q;
         x.content
       end
-    else begin 
+    else begin
       q.length <- q.length - 1;
       q.first <- next;
-      x.content 
-    end    
+      x.content
+    end
 
 let popUndefined q =
   match  q.first with
   | None -> Js.undefined
   | Some x  ->
-    let next = x.next in 
-    if next = None then 
+    let next = x.next in
+    if next = None then
       begin (* only one element*)
         clear q;
         Js.Undefined.return x.content
       end
-    else begin 
+    else begin
       q.length <- q.length - 1;
       q.first <- next;
-      Js.Undefined.return x.content 
+      Js.Undefined.return x.content
     end
 
 let rec copyAux qRes prev cell =
   match  cell with
   | None -> qRes.last <-  prev; qRes
   | Some x  ->
-    let content = x.content in 
+    let content = x.content in
     let res =  Some {content ; next = None}  in
     begin match  prev with
       | None ->  qRes.first <- res
@@ -138,12 +138,12 @@ let copy q =
   copyAux {length = q.length; first = None;  last = None}  None q.first
 
 
-      
+
 let rec copyMapAux qRes prev cell f =
   match  cell with
   | None ->  qRes.last <- prev; qRes
   | Some x  ->
-    let content = f x.content [@bs] in 
+    let content = f x.content [@bs] in
     let res = Some {content; next = None}  in
     begin match  prev with (*TODO: optimize to remove such check*)
       | None -> qRes.first <- res
@@ -153,9 +153,9 @@ let rec copyMapAux qRes prev cell f =
 
 let mapU q f =
   copyMapAux {length = q.length; first = None; last = None}  None q.first f
-    
+
 let map q f = mapU q (fun [@bs] a -> f a)
-    
+
 let isEmpty q =
   q.length = 0
 
@@ -173,7 +173,7 @@ let forEachU q f =
   iterAux q.first f
 
 let forEach q f = forEachU q (fun[@bs] a -> f a)
-    
+
 let rec foldAux f accu cell =
   match  cell with
   | None -> accu
@@ -185,7 +185,7 @@ let reduceU q  accu f =
   foldAux f accu q.first
 
 let reduce q accu f = reduceU q accu (fun[@bs] a b -> f a b)
-    
+
 let transfer q1 q2 =
   if q1.length > 0 then
     match  q2.last with
@@ -200,15 +200,15 @@ let transfer q1 q2 =
       q2.last <- q1.last;
       clear q1
 
-let rec fillAux i arr cell =       
-  match  cell with 
+let rec fillAux i arr cell =
+  match  cell with
   | None -> ()
   | Some x ->
     A.setUnsafe arr i x.content;
-    fillAux (i + 1) arr (x.next) 
+    fillAux (i + 1) arr (x.next)
 
-let toArray x =         
-  let v = A.makeUninitializedUnsafe x.length in 
+let toArray x =
+  let v = A.makeUninitializedUnsafe x.length in
   fillAux 0 v x.first;
   v
 

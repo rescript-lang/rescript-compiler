@@ -1,5 +1,5 @@
 
-type 'a compare = 'a -> 'a -> int 
+type 'a compare = 'a -> 'a -> int
 type ('a, 'id) cmp
 
 (** only used for data structures, not exported for client usage *)
@@ -11,7 +11,7 @@ module type S = sig
   val cmp : (t,id) cmp
 end
 
-type ('key, 'id) t = 
+type ('key, 'id) t =
   (module S with type t = 'key and type id = 'id)
 
 module Make ( M : sig
@@ -22,4 +22,4 @@ module Make ( M : sig
 
 val make:
   ('a -> 'a -> int ) ->
-  (module S with type t = 'a)     
+  (module S with type t = 'a)

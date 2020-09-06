@@ -25,24 +25,24 @@
 
 
 type t0 = {
-  number : string option; 
+  number : string option;
 } [@@ocaml.unboxed]
 
-type nonrec t = t0 option 
+type nonrec t = t0 option
 
 let use_default = None
 
 let prepare_warning_concat ~(beg : bool) s =
-  let s = Ext_string.trim s in 
-  if s = "" then s 
-  else 
-    match s.[0] with 
-    | '0' .. '9' -> if beg then "-w +" ^ s else "+" ^ s 
-    | 'a' .. 'z' -> 
-      if beg then "-w " ^ s else "-" ^ s 
-    | 'A' .. 'Z' -> 
-      if beg then "-w " ^ s else "+" ^ s  
-    | _ -> 
+  let s = Ext_string.trim s in
+  if s = "" then s
+  else
+    match s.[0] with
+    | '0' .. '9' -> if beg then "-w +" ^ s else "+" ^ s
+    | 'a' .. 'z' ->
+      if beg then "-w " ^ s else "-" ^ s
+    | 'A' .. 'Z' ->
+      if beg then "-w " ^ s else "+" ^ s
+    | _ ->
       if beg then "-w " ^ s else s
 
 let to_merlin_string x =
@@ -51,17 +51,17 @@ let to_merlin_string x =
   (let customize = (match x with
        | Some {number =None}
        | None ->  Ext_string.empty
-       | Some {number = Some x} -> 
-         prepare_warning_concat ~beg:false x 
-     ) in 
+       | Some {number = Some x} ->
+         prepare_warning_concat ~beg:false x
+     ) in
    if customize = "" then customize
-   else customize ^ "-40-42-61") 
+   else customize ^ "-40-42-61")
 (* see #4406 to avoid user pass A
    Sync up with {!Warnings.report}
 *)
 
 
-   
+
 let from_map (m : Ext_json_types.t Map_string.t) =
   let number_opt = Map_string.find_opt m Bsb_build_schemas.number in
   let number =
@@ -77,12 +77,12 @@ let to_bsb_string ~toplevel warning =
   if toplevel then
     match warning with
     | None -> Ext_string.empty
-    | Some warning ->     
+    | Some warning ->
       (match warning.number with
        | None ->
          Ext_string.empty
        | Some x ->
-         prepare_warning_concat ~beg:true x  
-      ) 
-  else " -w a" 
+         prepare_warning_concat ~beg:true x
+      )
+  else " -w a"
   (* TODO: this is the current default behavior *)

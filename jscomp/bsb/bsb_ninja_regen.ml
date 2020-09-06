@@ -30,44 +30,44 @@ let (//) = Ext_path.combine
     return None if we dont need regenerate
     otherwise return Some info
 *)
-let regenerate_ninja 
+let regenerate_ninja
     ~(toplevel_package_specs : Bsb_package_specs.t option)
     ~forced ~per_proj_dir
-  : Bsb_config_types.t option =  
-  let toplevel = toplevel_package_specs = None in 
+  : Bsb_config_types.t option =
+  let toplevel = toplevel_package_specs = None in
   let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
-  let lib_bs_dir =  per_proj_dir // lib_artifacts_dir  in 
+  let lib_bs_dir =  per_proj_dir // lib_artifacts_dir  in
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
-    Bsb_ninja_check.check 
-      ~per_proj_dir:per_proj_dir  
+    Bsb_ninja_check.check
+      ~per_proj_dir:per_proj_dir
       ~forced ~file:output_deps in
   Bsb_log.info
     "@{<info>BSB check@} build spec : %a @." Bsb_ninja_check.pp_check_result check_result ;
-  match check_result  with 
+  match check_result  with
   | Good ->
     None  (* Fast path, no need regenerate ninja *)
-  | Bsb_forced 
-  | Bsb_bsc_version_mismatch 
-  | Bsb_file_not_exist 
-  | Bsb_source_directory_changed  
-  | Other _ -> 
-    if check_result = Bsb_bsc_version_mismatch then begin 
+  | Bsb_forced
+  | Bsb_bsc_version_mismatch
+  | Bsb_file_not_exist
+  | Bsb_source_directory_changed
+  | Other _ ->
+    if check_result = Bsb_bsc_version_mismatch then begin
       Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
-      Bsb_clean.clean_self  per_proj_dir; 
-    end ; 
-    
-    let config = 
-      Bsb_config_parse.interpret_json 
+      Bsb_clean.clean_self  per_proj_dir;
+    end ;
+
+    let config =
+      Bsb_config_parse.interpret_json
         ~toplevel_package_specs
-        ~per_proj_dir in 
-    (* create directory, lib/bs, lib/js, lib/es6 etc *)    
-    Bsb_build_util.mkp lib_bs_dir;         
+        ~per_proj_dir in
+    (* create directory, lib/bs, lib/js, lib/es6 etc *)
+    Bsb_build_util.mkp lib_bs_dir;
     Bsb_package_specs.list_dirs_by config.package_specs
-      (fun x -> 
+      (fun x ->
         let dir = per_proj_dir // x in (*Unix.EEXIST error*)
         if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
-    if toplevel then       
+    if toplevel then
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
@@ -75,9 +75,9 @@ let regenerate_ninja
 #if BS_NATIVE then
     if !Bsb_global_backend.backend = Bsb_config_types.Js then begin
       Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
-        config;       
-      Bsb_ninja_gen.output_ninja_and_namespace_map 
-        ~per_proj_dir  ~toplevel config ;             
+        config;
+      Bsb_ninja_gen.output_ninja_and_namespace_map
+        ~per_proj_dir  ~toplevel config ;
     end else begin
       let os = Filename.basename Bsb_global_paths.bsc_dir in
       let plugin_path = Bsb_global_paths.cwd // "node_modules" // "bs-platform-native" // os // "bsb.exe" in
@@ -87,15 +87,15 @@ let regenerate_ninja
     end;
 #else
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
-       config;       
-    Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~per_proj_dir  ~toplevel config ;             
+       config;
+    Bsb_ninja_gen.output_ninja_and_namespace_map
+      ~per_proj_dir  ~toplevel config ;
 #end
-    
-    (* PR2184: we still need record empty dir 
-        since it may add files in the future *)  
-    Bsb_ninja_check.record ~per_proj_dir ~file:output_deps 
+
+    (* PR2184: we still need record empty dir
+        since it may add files in the future *)
+    Bsb_ninja_check.record ~per_proj_dir ~file:output_deps
       (Literals.bsconfig_json::config.file_groups.globbed_dirs) ;
-    Some config 
+    Some config
 
 

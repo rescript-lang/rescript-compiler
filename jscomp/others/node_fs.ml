@@ -44,8 +44,8 @@ type path = string
 *)
 
 module Watch = struct
-  type t 
-  type config 
+  type t
+  type config
   external config :
     ?persistent: bool ->
     ?recursive: bool ->
@@ -66,7 +66,7 @@ module Watch = struct
       This is dependent type which can be tracked by GADT in some way,
       but to make things simple, let's just introduce an or type
   *)
-  
+
   external on :
     ([
       `change of (string (*eventType*) -> Node.string_buffer (* filename *) -> unit  [@bs])
@@ -76,7 +76,7 @@ module Watch = struct
   [@@bs.send.pipe: t]
   [@@deprecated "Please use `Node.Fs.on_` instead "]
 
-  external on_ : 
+  external on_ :
     t ->
     ([
       `change of (string (*eventType*) -> Node.string_buffer (* filename *) -> unit  [@bs])
@@ -120,7 +120,7 @@ external openSync :
     ] [@bs.string]) ->
   unit = "openSync"  [@@bs.module "fs"]
 
-type encoding = 
+type encoding =
   [
     `hex
   | `utf8
@@ -130,7 +130,7 @@ type encoding =
   | `ucs2
   | `base64
   | `binary
-  | `utf16le ]  
+  | `utf16le ]
 external readFileSync :
   string ->
   encoding ->

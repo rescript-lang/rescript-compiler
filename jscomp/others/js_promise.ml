@@ -29,8 +29,8 @@
     ]}
 *)
 
-type + 'a t 
-type error 
+type + 'a t
+type error
 
 
 external make : (resolve:('a -> unit [@bs]) ->

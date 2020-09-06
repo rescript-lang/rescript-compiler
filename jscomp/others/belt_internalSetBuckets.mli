@@ -1,5 +1,5 @@
 (* Copyright (C) 2018 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -27,8 +27,8 @@ module C = Belt_internalBucketsType
 type 'a bucket = {
   mutable key : 'a;
   mutable next : 'a bucket C.opt
-}  
-and ('hash, 'eq, 'a) t = ('hash, 'eq, 'a bucket) C.container  
+}
+and ('hash, 'eq, 'a) t = ('hash, 'eq, 'a bucket) C.container
 
 
 val copy: ('hash, 'eq, 'a) t -> ('hash, 'eq, 'a) t
@@ -44,4 +44,4 @@ val reduce: (_,_,'a) t -> 'b -> ('b -> 'a ->  'b) -> 'b
 
 val logStats: _ t -> unit
 
-val getBucketHistogram: _ t -> int array  
+val getBucketHistogram: _ t -> int array

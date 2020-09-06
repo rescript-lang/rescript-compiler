@@ -60,5 +60,5 @@ let clean_bs_deps  proj_dir =
       clean_bs_garbage  pkg_cxt.proj_dir
     )
 
-let clean_self  proj_dir = 
+let clean_self  proj_dir =
     clean_bs_garbage  proj_dir

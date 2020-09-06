@@ -48,27 +48,27 @@ let classify chr =
   (* c 0b1111_110__ *)
   else Invalid
 
-exception Invalid_utf8 of string 
+exception Invalid_utf8 of string
 
 (* when the first char is [Leading],
-  TODO: need more error checking 
+  TODO: need more error checking
   when out of bond
  *)
-let rec follow s n (c : int) offset = 
+let rec follow s n (c : int) offset =
   if n = 0 then (c, offset)
-  else 
+  else
     begin match classify s.[offset+1] with
       | Cont cc -> follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (offset+1)
       | _ -> raise (Invalid_utf8 "Continuation byte expected")
     end
 
 
-let rec next s ~remaining  offset = 
-  if remaining = 0 then offset 
-  else 
+let rec next s ~remaining  offset =
+  if remaining = 0 then offset
+  else
     begin match classify s.[offset+1] with
       | Cont _cc -> next s ~remaining:(remaining-1) (offset+1)
-      | _ ->  -1 
+      | _ ->  -1
       | exception _ ->  -1 (* it can happen when out of bound *)
     end
 
@@ -80,10 +80,10 @@ let decode_utf8_string s =
   let add elem = lst := elem :: !lst in
   let rec  decode_utf8_cont s i s_len =
     if i = s_len  then ()
-    else 
-      begin 
+    else
+      begin
         match classify s.[i] with
-        | Single c -> 
+        | Single c ->
           add c; decode_utf8_cont s (i+1) s_len
         | Cont _ -> raise (Invalid_utf8 "Unexpected continuation byte")
         | Leading (n, c) ->
@@ -91,13 +91,13 @@ let decode_utf8_string s =
           decode_utf8_cont s (i' + 1) s_len
         | Invalid -> raise (Invalid_utf8 "Invalid byte")
       end
-  in decode_utf8_cont s 0 (String.length s); 
+  in decode_utf8_cont s 0 (String.length s);
   List.rev !lst
 
 
-(** To decode {j||j} we need verify in the ast so that we have better error 
+(** To decode {j||j} we need verify in the ast so that we have better error
     location, then we do the decode later
-*)  
+*)
 
-(* let verify s loc = 
+(* let verify s loc =
   assert false *)

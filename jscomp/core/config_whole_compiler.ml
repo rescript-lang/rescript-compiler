@@ -16,7 +16,7 @@
 (* The main OCaml version string has moved to ../VERSION *)
 let version = "4.06.1+BS"
 let standard_library =
-  let (//) = Filename.concat in   
+  let (//) = Filename.concat in
   Filename.dirname Sys.executable_name // Filename.parent_dir_name //  "lib" // "ocaml"
 let standard_library_default = standard_library
 let syntax_kind = ref `ml
@@ -37,7 +37,7 @@ let bytecomp_c_libraries = "-lcurses -lpthread                  "
    c_compiler, ocamlc_cflags, ocamlc_cppflags etc., directly.
 *)
 let bytecomp_c_compiler =
-  "" 
+  ""
 let native_c_compiler =
   ""
 let native_c_libraries = ""
@@ -46,7 +46,7 @@ let ranlib = "ranlib"
 let ar = "ar"
 let cc_profile = "-pg"
 let mkdll = ""
-let mkexe = "" 
+let mkexe = ""
 let mkmaindll = ""
 
 let profiling = true

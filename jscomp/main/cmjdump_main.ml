@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,71 +17,71 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (* start dumping *)
 
-let f fmt = Printf.fprintf stdout fmt 
+let f fmt = Printf.fprintf stdout fmt
 
-let pp_cmj_case  (cmj_case : Ext_js_file_kind.t) : unit = 
-  match cmj_case with 
-  | Little_js -> 
+let pp_cmj_case  (cmj_case : Ext_js_file_kind.t) : unit =
+  match cmj_case with
+  | Little_js ->
     f  "case : little, .js \n"
-  | Little_bs -> 
-    f  "case : little, .bs.js \n"    
-  | Upper_js -> 
+  | Little_bs ->
+    f  "case : little, .bs.js \n"
+  | Upper_js ->
     f  "case: upper, .js  \n"
-  | Upper_bs -> 
-    f  "case: upper, .bs.js  \n"    
+  | Upper_bs ->
+    f  "case: upper, .bs.js  \n"
 
-let pp_cmj 
-    ({ values ; pure; package_spec = npm_package_path ; js_file_kind = cmj_case} : Js_cmj_format.t) = 
-  f  "package info: %s\n"  
-    (Format.asprintf "%a" Js_packages_info.dump_packages_info npm_package_path)        
+let pp_cmj
+    ({ values ; pure; package_spec = npm_package_path ; js_file_kind = cmj_case} : Js_cmj_format.t) =
+  f  "package info: %s\n"
+    (Format.asprintf "%a" Js_packages_info.dump_packages_info npm_package_path)
   ;
   pp_cmj_case  cmj_case;
 
   f "effect: %s\n"
       (if pure then "pure" else "not pure");
-   Ext_array.iter values 
-    (fun ({name ; arity; persistent_closed_lambda}) -> 
-      begin match arity with             
+   Ext_array.iter values
+    (fun ({name ; arity; persistent_closed_lambda}) ->
+      begin match arity with
         | Single arity ->
           f "%s: %s\n" name (Format.asprintf "%a" Lam_arity.print arity);
-          (match persistent_closed_lambda with 
-           | None -> 
-             f "%s: not saved\n" name 
-           | Some lam -> 
-             begin 
+          (match persistent_closed_lambda with
+           | None ->
+             f "%s: not saved\n" name
+           | Some lam ->
+             begin
                f "%s: ======[start]\n" name ;
                f "%s\n" (Lam_print.lambda_to_string lam);
                f "%s: ======[finish]\n" name
-             end )         
-        | Submodule xs -> 
-          (match persistent_closed_lambda with 
-           | None -> f "%s: not saved\n" name 
-           | Some lam -> 
-             begin 
+             end )
+        | Submodule xs ->
+          (match persistent_closed_lambda with
+           | None -> f "%s: not saved\n" name
+           | Some lam ->
+             begin
                f "%s: ======[start]\n" name ;
                f "%s" (Lam_print.lambda_to_string lam);
                f "%s: ======[finish]\n" name
-             end 
+             end
           );
-          Array.iteri 
-            (fun i arity -> f "%s[%i] : %s \n" 
-                name i 
+          Array.iteri
+            (fun i arity -> f "%s[%i] : %s \n"
+                name i
                 (Format.asprintf "%a" Lam_arity.print arity ))
             xs;
       end ; f "\n"
-    )    
-let () = 
+    )
+let () =
   match Sys.argv  with
-  | [|_; file |] 
-    -> 
-      let cmj,digest = Js_cmj_format.from_file_with_digest file in 
+  | [|_; file |]
+    ->
+      let cmj,digest = Js_cmj_format.from_file_with_digest file in
       Format.fprintf Format.std_formatter "@[Digest: %s@]@." (Digest.to_hex digest);
       pp_cmj cmj
   | _ -> failwith "expect one argument"

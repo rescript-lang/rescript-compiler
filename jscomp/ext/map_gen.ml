@@ -28,7 +28,7 @@ type ('key,'a) t0 =
 let  empty = Empty
 let rec map x f = match x with
     Empty -> Empty
-  | Leaf {k;v} -> Leaf {k; v = f v}  
+  | Leaf {k;v} -> Leaf {k; v = f v}
   | Node ({l; v ; r} as x) ->
     let l' = map l f in
     let d' = f v in
@@ -37,27 +37,27 @@ let rec map x f = match x with
 
 let rec mapi x f = match x with
     Empty -> Empty
-  | Leaf {k;v} -> Leaf {k; v = f k v}  
+  | Leaf {k;v} -> Leaf {k; v = f k v}
   | Node ({l; k ; v ; r} as x) ->
     let l' = mapi l f in
     let v' = f k v in
     let r' = mapi r f in
     Node {x with l = l'; v = v'; r = r'}
 
-let [@inline] calc_height a b = (if a >= b  then a else b) + 1 
+let [@inline] calc_height a b = (if a >= b  then a else b) + 1
 let [@inline] singleton k v = Leaf {k;v}
 let [@inline] height = function
   | Empty -> 0
   | Leaf _ -> 1
   | Node {h} -> h
 
-let [@inline] unsafe_node k v l  r h =   
+let [@inline] unsafe_node k v l  r h =
   Node {l; k; v; r; h}
-let [@inline] unsafe_two_elements k1 v1 k2 v2 = 
-  unsafe_node k2 v2 (singleton k1 v1) empty 2   
-let [@inline] unsafe_node_maybe_leaf k v l r h =   
-  if h = 1 then Leaf {k ; v}   
-  else Node{l;k;v;r; h }           
+let [@inline] unsafe_two_elements k1 v1 k2 v2 =
+  unsafe_node k2 v2 (singleton k1 v1) empty 2
+let [@inline] unsafe_node_maybe_leaf k v l r h =
+  if h = 1 then Leaf {k ; v}
+  else Node{l;k;v;r; h }
 
 
   type ('key, + 'a) t = ('key,'a) t0 = private
@@ -75,12 +75,12 @@ let [@inline] unsafe_node_maybe_leaf k v l r h =
     }
 
 let rec cardinal_aux acc  = function
-  | Empty -> acc 
+  | Empty -> acc
   | Leaf _ -> acc + 1
-  | Node {l; r} -> 
-    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
+  | Node {l; r} ->
+    cardinal_aux  (cardinal_aux (acc + 1)  r ) l
 
-let cardinal s = cardinal_aux 0 s 
+let cardinal s = cardinal_aux 0 s
 
 let rec bindings_aux accu = function
   | Empty -> accu
@@ -90,50 +90,50 @@ let rec bindings_aux accu = function
 let bindings s =
   bindings_aux [] s
 
-let rec fill_array_with_f (s : _ t) i arr  f : int =    
-  match s with 
-  | Empty -> i 
-  | Leaf  {k;v} -> 
+let rec fill_array_with_f (s : _ t) i arr  f : int =
+  match s with
+  | Empty -> i
+  | Leaf  {k;v} ->
     Array.unsafe_set arr i (f k v); i + 1
-  | Node {l; k; v; r} -> 
-    let inext = fill_array_with_f l i arr f in 
+  | Node {l; k; v; r} ->
+    let inext = fill_array_with_f l i arr f in
     Array.unsafe_set arr inext (f k v);
     fill_array_with_f r (inext + 1) arr f
 
-let rec fill_array_aux (s : _ t) i arr : int =    
-  match s with 
-  | Empty -> i 
-  | Leaf {k;v} -> 
+let rec fill_array_aux (s : _ t) i arr : int =
+  match s with
+  | Empty -> i
+  | Leaf {k;v} ->
     Array.unsafe_set arr i (k, v); i + 1
-  | Node {l;k;v;r} -> 
-    let inext = fill_array_aux l i arr in 
+  | Node {l;k;v;r} ->
+    let inext = fill_array_aux l i arr in
     Array.unsafe_set arr inext (k,v);
-    fill_array_aux r (inext + 1) arr 
+    fill_array_aux r (inext + 1) arr
 
 
-let to_sorted_array (s : ('key,'a) t)  : ('key * 'a ) array =    
-  match s with 
+let to_sorted_array (s : ('key,'a) t)  : ('key * 'a ) array =
+  match s with
   | Empty -> [||]
   | Leaf {k;v} -> [|k,v|]
-  | Node {l;k;v;r} -> 
-    let len = 
-      cardinal_aux (cardinal_aux 1 r) l in 
+  | Node {l;k;v;r} ->
+    let len =
+      cardinal_aux (cardinal_aux 1 r) l in
     let arr =
-      Array.make len (k,v) in  
+      Array.make len (k,v) in
     ignore (fill_array_aux s 0 arr : int);
-    arr 
+    arr
 
-let to_sorted_array_with_f (type key a b ) (s : (key,a) t)  (f : key -> a -> b): b array =    
-  match s with 
+let to_sorted_array_with_f (type key a b ) (s : (key,a) t)  (f : key -> a -> b): b array =
+  match s with
   | Empty -> [||]
   | Leaf {k;v} -> [| f k v|]
-  | Node {l;k;v;r} -> 
-    let len = 
-      cardinal_aux (cardinal_aux 1 r) l in 
+  | Node {l;k;v;r} ->
+    let len =
+      cardinal_aux (cardinal_aux 1 r) l in
     let arr =
-      Array.make len (f k v) in  
+      Array.make len (f k v) in
     ignore (fill_array_with_f s 0 arr f: int);
-    arr     
+    arr
 
 let rec keys_aux accu = function
     Empty -> accu
@@ -151,42 +151,42 @@ let bal l x d r =
   let hr = height r in
   if hl > hr + 2 then begin
     let [@warning "-8"] Node ({l=ll; r = lr} as l) = l in
-    let hll = height ll in 
-    let hlr = height lr in 
+    let hll = height ll in
+    let hlr = height lr in
     if hll >= hlr then
-      let hnode = calc_height hlr hr in       
-      unsafe_node l.k l.v 
-        ll  
+      let hnode = calc_height hlr hr in
+      unsafe_node l.k l.v
+        ll
         (unsafe_node_maybe_leaf x d lr  r hnode)
         (calc_height hll hnode)
-    else         
-      let [@warning "-8"] Node ({l=lrl; r=lrr} as lr) = lr in 
-      let hlrl = height lrl in 
-      let hlrr = height lrr in 
-      let hlnode = calc_height hll hlrl in 
-      let hrnode = calc_height hlrr hr in 
-      unsafe_node lr.k lr.v 
-        (unsafe_node_maybe_leaf l.k l.v ll  lrl hlnode)  
-        (unsafe_node_maybe_leaf x d lrr r hrnode)      
+    else
+      let [@warning "-8"] Node ({l=lrl; r=lrr} as lr) = lr in
+      let hlrl = height lrl in
+      let hlrr = height lrr in
+      let hlnode = calc_height hll hlrl in
+      let hrnode = calc_height hlrr hr in
+      unsafe_node lr.k lr.v
+        (unsafe_node_maybe_leaf l.k l.v ll  lrl hlnode)
+        (unsafe_node_maybe_leaf x d lrr r hrnode)
         (calc_height hlnode hrnode)
   end else if hr > hl + 2 then begin
-    let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
-    let hrr = height rr in 
-    let hrl = height rl in 
+    let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in
+    let hrr = height rr in
+    let hrl = height rl in
     if hrr >= hrl then
       let hnode = calc_height hl hrl in
-      unsafe_node r.k r.v 
+      unsafe_node r.k r.v
         (unsafe_node_maybe_leaf x d l rl hnode)
         rr
         (calc_height hnode hrr)
-    else 
-      let [@warning "-8"] Node ({l=rll;  r=rlr} as rl) = rl in 
-      let hrll = height rll in 
-      let hrlr = height rlr in 
+    else
+      let [@warning "-8"] Node ({l=rll;  r=rlr} as rl) = rl in
+      let hrll = height rll in
+      let hrlr = height rlr in
       let hlnode = (calc_height hl hrll) in
-      let hrnode = (calc_height hrlr hrr) in      
-      unsafe_node rl.k rl.v 
-        (unsafe_node_maybe_leaf x d l  rll hlnode)  
+      let hrnode = (calc_height hrlr hrr) in
+      unsafe_node rl.k rl.v
+        (unsafe_node_maybe_leaf x d l  rll hlnode)
         (unsafe_node_maybe_leaf r.k r.v rlr  rr hrnode)
         (calc_height hlnode hrnode)
   end else
@@ -198,18 +198,18 @@ let [@inline] is_empty = function Empty -> true | _ -> false
 
 let rec min_binding_exn = function
     Empty -> raise Not_found
-  | Leaf {k;v} -> (k,v)  
-  | Node{l; k; v} -> 
-    match l with 
-    | Empty -> (k, v) 
+  | Leaf {k;v} -> (k,v)
+  | Node{l; k; v} ->
+    match l with
+    | Empty -> (k, v)
     | Leaf _
-    | Node _ -> 
+    | Node _ ->
       min_binding_exn l
 
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
-  | Leaf _ -> empty  
+  | Leaf _ -> empty
   | Node{l=Empty;r} -> r
   | Node{l; k; v ; r} -> bal (remove_min_binding l) k v r
 
@@ -222,9 +222,9 @@ let merge t1 t2 =
     bal t1 x d (remove_min_binding t2)
 
 
-let rec iter x f = match x with 
+let rec iter x f = match x with
     Empty -> ()
-  | Leaf {k;v} -> (f k v : unit) 
+  | Leaf {k;v} -> (f k v : unit)
   | Node{l; k ; v ; r} ->
     iter l f; f k v; iter r f
 
@@ -233,18 +233,18 @@ let rec iter x f = match x with
 let rec fold m accu f =
   match m with
     Empty -> accu
-  | Leaf {k;v} -> f k v accu  
+  | Leaf {k;v} -> f k v accu
   | Node {l; k; v; r} ->
-    fold r (f k v (fold l accu f)) f 
+    fold r (f k v (fold l accu f)) f
 
-let rec for_all x p = match x with 
+let rec for_all x p = match x with
     Empty -> true
-  | Leaf {k; v} -> p k v   
+  | Leaf {k; v} -> p k v
   | Node{l; k; v ; r} -> p k v && for_all l p && for_all r p
 
 let rec exists x p = match x with
     Empty -> false
-  | Leaf {k; v} -> p k v   
+  | Leaf {k; v} -> p k v
   | Node{l; k; v; r} -> p k v || exists l p || exists r p
 
 (* Beware: those two functions assume that the added k is *strictly*
@@ -276,13 +276,13 @@ let rec join l v d r =
   | Leaf leaf ->
       add_min leaf.k leaf.v (add_min v d r)
   | Node xl ->
-    match r with  
+    match r with
     | Empty -> add_max v d l
-    | Leaf leaf -> 
-      add_max leaf.k leaf.v (add_max v d l)  
+    | Leaf leaf ->
+      add_max leaf.k leaf.v (add_max v d l)
     | Node  xr ->
-      let lh = xl.h in  
-      let rh = xr.h in 
+      let lh = xl.h in
+      let rh = xr.h in
       if lh > rh + 2 then bal xl.l xl.k xl.v (join xl.r v d r) else
       if rh > lh + 2 then bal (join l v d xr.l) xr.k xr.v xr.r else
         unsafe_node v d l  r (calc_height lh rh)
@@ -304,28 +304,28 @@ let concat_or_join t1 v d t2 =
   | Some d -> join t1 v d t2
   | None -> concat t1 t2
 
-    
+
 module type S =
   sig
     type key
     type +'a t
     val empty: 'a t
-    val compare_key: key -> key -> int 
+    val compare_key: key -> key -> int
     val is_empty: 'a t -> bool
     val mem: 'a t -> key -> bool
-    val to_sorted_array : 
+    val to_sorted_array :
       'a t -> (key * 'a ) array
-    val to_sorted_array_with_f : 
-      'a t -> (key -> 'a -> 'b) -> 'b array  
+    val to_sorted_array_with_f :
+      'a t -> (key -> 'a -> 'b) -> 'b array
     val add: 'a t -> key -> 'a -> 'a t
-    (** [add x y m] 
+    (** [add x y m]
         If [x] was already bound in [m], its previous binding disappears. *)
 
-    val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
-    (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
+    val adjust: 'a t -> key -> ('a option->  'a) ->  'a t
+    (** [adjust acc k replace ] if not exist [add (replace None ], otherwise
         [add k v (replace (Some old))]
     *)
-    
+
     val singleton: key -> 'a -> 'a t
 
     val remove: 'a t -> key -> 'a t
@@ -341,9 +341,9 @@ module type S =
         @since 3.12.0
      *)
 
-    val disjoint_merge_exn : 
-      'a t 
-      -> 'a t 
+    val disjoint_merge_exn :
+      'a t
+      -> 'a t
       -> (key -> 'a -> 'a -> exn)
       -> 'a t
      (* merge two maps, will raise if they have the same key *)
@@ -366,7 +366,7 @@ module type S =
 
     val exists: 'a t -> (key -> 'a -> bool) -> bool
     (** [exists p m] checks if at least one binding of the map
-        satisfy the predicate [p]. 
+        satisfy the predicate [p].
         order unspecified
      *)
 
@@ -390,7 +390,7 @@ module type S =
     (** Return the list of all bindings of the given map.
        The returned list is sorted in increasing order with respect
        to the ordering *)
-    val keys : 'a t -> key list 
+    val keys : 'a t -> key list
     (* Increasing order *)
 
 
@@ -410,7 +410,7 @@ module type S =
     (** [find x m] returns the current binding of [x] in [m],
        or raises [Not_found] if no such binding exists. *)
     val find_opt:  'a t ->  key ->'a option
-    val find_default: 'a t -> key  ->  'a  -> 'a 
+    val find_default: 'a t -> key  ->  'a  -> 'a
     val map: 'a t -> ('a -> 'b) -> 'b t
     (** [map f m] returns a map with same domain as [m], where the
        associated value [a] of all bindings of [m] has been
@@ -422,8 +422,8 @@ module type S =
     (** Same as {!Map.S.map}, but the function receives as arguments both the
        key and the associated value for each binding of the map. *)
 
-    val of_list : (key * 'a) list -> 'a t 
-    val of_array : (key * 'a ) array -> 'a t 
+    val of_list : (key * 'a) list -> 'a t
+    val of_array : (key * 'a ) array -> 'a t
     val add_list : (key * 'b) list -> 'b t -> 'b t
 
   end

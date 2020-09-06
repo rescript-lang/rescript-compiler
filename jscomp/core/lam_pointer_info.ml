@@ -23,12 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t = Lambda.pointer_info = 
-  | Pt_constructor of {name : string; const : int ; non_const :  int} 
+type t = Lambda.pointer_info =
+  | Pt_constructor of {name : string; const : int ; non_const :  int}
   | Pt_variant of {name : string}
   | Pt_module_alias (* IMPOSSIBLE *)
   | Pt_builtin_boolean (* IMPOSSIBLE *)
-  | Pt_shape_none (* IMPOSSIBLE *)  
+  | Pt_shape_none (* IMPOSSIBLE *)
   | Pt_assertfalse
-  | Pt_na  
+  | Pt_na
 

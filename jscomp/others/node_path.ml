@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -40,9 +40,9 @@ type pathObject =
          root : string ;
          base : string ;
          name : string ;
-         ext : string          
-       >            
-  ]  
+         ext : string
+       >
+  ]
 external format : pathObject -> string = "format" [@@bs.module "path"]
 
 external isAbsolute : string -> bool = "isAbsolute" [@@bs.module "path"]
@@ -50,9 +50,9 @@ external isAbsolute : string -> bool = "isAbsolute" [@@bs.module "path"]
 (* TODO: improve after we support [@bs.rest] calling convention  *)
 external join2 : string -> string -> string = "join" [@@bs.module "path"]
 
-external join : string array -> string = "join" 
+external join : string array -> string = "join"
 [@@bs.module "path"]  [@@bs.splice]
-   
+
 external normalize : string -> string = "normalize" [@@bs.module "path"]
 
 (* TODO: check if there is an exception raised *)

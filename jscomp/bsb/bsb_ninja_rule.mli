@@ -27,7 +27,7 @@
 (** The complexity comes from the fact that we allow custom rules which could
   conflict with our custom built-in rules
 *)
-type t  
+type t
 
 
 val get_name : t  -> out_channel -> string
@@ -35,7 +35,7 @@ val get_name : t  -> out_channel -> string
 (***********************************************************)
 (** A list of existing rules *)
 type builtin = {
-  
+
   build_ast : t;
   build_ast_from_re : t ;
 
@@ -59,21 +59,21 @@ type builtin = {
 (***********************************************************)
 
 (** rules are generally composed of built-in rules and customized rules, there are two design choices:
-    1. respect custom rules with the same name, then we need adjust our built-in 
+    1. respect custom rules with the same name, then we need adjust our built-in
     rules dynamically in case the conflict.
     2. respect our built-in rules, then we only need re-load custom rules for each bsconfig.json
 *)
 
 type command = string
-(** Since now we generate ninja files per bsconfig.json in a single process, 
+(** Since now we generate ninja files per bsconfig.json in a single process,
     we must make sure it is re-entrant
 *)
-val make_custom_rules : 
+val make_custom_rules :
   has_gentype:bool ->
   has_postbuild:bool ->
   has_ppx:bool ->
   has_pp:bool ->
-  has_builtin:bool -> 
+  has_builtin:bool ->
   bs_suffix:bool ->
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
   digest:string ->

@@ -94,7 +94,7 @@ val getUndefined: 'v t -> key -> 'v Js.undefined
 val getWithDefault: 'v t -> key -> 'v -> 'v
 
 val getExn: 'v t -> key -> 'v
- 
+
 val checkInvariantInternal: _ t -> unit
 (**
    {b raise} when invariant is not held
@@ -145,7 +145,7 @@ val partitionU:
     'v t ->
     (key -> 'v -> bool [@bs]) ->
     'v t * 'v t
-val partition: 
+val partition:
     'v t ->
     (key -> 'v -> bool) ->
     'v t * 'v t

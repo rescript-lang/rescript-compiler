@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -30,58 +30,58 @@
 
 
 
-type t = J.module_id = 
+type t = J.module_id =
   { id : Ident.t ; kind : Js_op.kind }
 
 
 
-let id x = x.id 
+let id x = x.id
 
 let of_ml id = { id ; kind =  Ml}
 
 
 let of_runtime id = { id ; kind = Runtime }
 
-let name  (x : t) : string  = 
-  match x.kind  with 
+let name  (x : t) : string  =
+  match x.kind  with
   | Ml  | Runtime ->  x.id.name
-  | External {name = v} -> v  
+  | External {name = v} -> v
 
-module Cmp = struct 
-  [@@@warning "+9"]  
+module Cmp = struct
+  [@@@warning "+9"]
   type nonrec t = t
-  let equal (x : t) y = 
-    match x.kind with 
-    | External {name = x_kind; default = x_default}-> 
-      begin match y.kind with 
-        | External {name = y_kind; default = y_default} -> 
+  let equal (x : t) y =
+    match x.kind with
+    | External {name = x_kind; default = x_default}->
+      begin match y.kind with
+        | External {name = y_kind; default = y_default} ->
           x_kind = (y_kind : string) && x_default = y_default
-        | _ -> false 
+        | _ -> false
       end
-    | Ml 
-    | Runtime -> Ext_ident.equal x.id y.id 
+    | Ml
+    | Runtime -> Ext_ident.equal x.id y.id
   (* #1556
-     Note the main difference between [Ml] and [Runtime] is 
-     that we have more assumptions about [Runtime] module, 
-     like its purity etc, and its name uniqueues, in the pattern match 
+     Note the main difference between [Ml] and [Runtime] is
+     that we have more assumptions about [Runtime] module,
+     like its purity etc, and its name uniqueues, in the pattern match
      {[
        {Runtime, "caml_int_compare"}
      ]}
      and we could do more optimziations.
-     However, here if it is [hit] 
-     (an Ml module = an Runtime module), which means both exists, 
+     However, here if it is [hit]
+     (an Ml module = an Runtime module), which means both exists,
      so adding either does not matter
      if it is not hit, fine
   *)
-  let hash (x : t) = 
-    match x.kind with 
-    | External {name = x_kind ; _} ->   
+  let hash (x : t) =
+    match x.kind with
+    | External {name = x_kind ; _} ->
       (* The hash collision is rare? *)
-      Bs_hash_stubs.hash_string x_kind 
-    | Ml 
-    | Runtime -> 
-      let x_id = x.id in 
-      Bs_hash_stubs.hash_stamp_and_name x_id.stamp x_id.name 
+      Bs_hash_stubs.hash_string x_kind
+    | Ml
+    | Runtime ->
+      let x_id = x.id in
+      Bs_hash_stubs.hash_stamp_and_name x_id.stamp x_id.name
 end
 
 module Hash = Hash.Make (Cmp)

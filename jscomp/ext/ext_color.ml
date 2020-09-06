@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -25,7 +25,7 @@
 
 
 
-type color 
+type color
   = Black
   | Red
   | Green
@@ -35,9 +35,9 @@ type color
   | Cyan
   | White
 
-type style 
-  = FG of color 
-  | BG of color 
+type style
+  = FG of color
+  | BG of color
   | Bold
   | Dim
 
@@ -61,7 +61,7 @@ let code_of_style = function
   | FG Magenta -> "35"
   | FG Cyan -> "36"
   | FG White -> "37"
-  
+
   | BG Black -> "40"
   | BG Red -> "41"
   | BG Green -> "42"
@@ -85,14 +85,14 @@ let style_of_tag s = match s with
   | "filename" -> [FG Cyan]
   | _ -> []
 
-let ansi_of_tag s = 
+let ansi_of_tag s =
   let l = style_of_tag s in
   let s =  String.concat ";" (Ext_list.map l  code_of_style) in
   "\x1b[" ^ s ^ "m"
 
 
 
-let reset_lit = "\x1b[0m" 
+let reset_lit = "\x1b[0m"
 
 
 

@@ -1,10 +1,10 @@
 
 
 module Res = struct
-    type  node = 
-        | Dir of string *  node list 
+    type  node =
+        | Dir of string *  node list
         | File of string *  string
 
-end    
+end
 
 

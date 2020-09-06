@@ -11,13 +11,13 @@
 (***********************************************************************)
 (* Adapted for Javascript backend : Hongbo Zhang,  *)
 
-type used_info = { 
-  mutable times : int ; 
+type used_info = {
+  mutable times : int ;
   mutable captured : bool;
-    (* captured in functon or loop, 
+    (* captured in functon or loop,
        inline in such cases should be careful
        1. can not inline mutable values
-       2. avoid re-computation 
+       2. avoid re-computation
     *)
 }
 
@@ -26,4 +26,4 @@ type occ_tbl  = used_info Hash_ident.t
 val dummy_info : unit -> used_info
 val collect_occurs : Lam.t -> occ_tbl
 
-val pp_occ_tbl : Format.formatter -> occ_tbl -> unit   
+val pp_occ_tbl : Format.formatter -> occ_tbl -> unit

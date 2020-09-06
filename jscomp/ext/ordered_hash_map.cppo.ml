@@ -15,7 +15,7 @@ struct
 
 #else
   [%error "unknown type"]
-#endif 
+#endif
 
 open Ordered_hash_map_gen
 
@@ -34,63 +34,63 @@ let to_sorted_array = to_sorted_array
 
 
 let rec small_bucket_mem key lst =
-  match lst with 
-  | Empty -> false 
-  | Cons rhs -> 
+  match lst with
+  | Empty -> false
+  | Cons rhs ->
     equal_key key rhs.key ||
-    match rhs.next with 
-    | Empty -> false 
-    | Cons rhs -> 
+    match rhs.next with
+    | Empty -> false
+    | Cons rhs ->
       equal_key key rhs.key ||
-      match rhs.next with 
-      | Empty -> false 
-      | Cons rhs -> 
+      match rhs.next with
+      | Empty -> false
+      | Cons rhs ->
         equal_key key rhs.key ||
         small_bucket_mem key rhs.next
 
 let rec small_bucket_rank key lst =
-  match lst with 
+  match lst with
   | Empty -> -1
-  | Cons rhs -> 
-    if equal_key key rhs.key then rhs.ord 
-    else match rhs.next with 
-      | Empty -> -1 
-      | Cons rhs -> 
+  | Cons rhs ->
+    if equal_key key rhs.key then rhs.ord
+    else match rhs.next with
+      | Empty -> -1
+      | Cons rhs ->
         if equal_key key rhs.key then rhs.ord else
-          match rhs.next with 
-          | Empty -> -1 
-          | Cons rhs -> 
+          match rhs.next with
+          | Empty -> -1
+          | Cons rhs ->
             if equal_key key rhs.key then rhs.ord else
               small_bucket_rank key rhs.next
 
 let rec small_bucket_find_value  key (lst : (_,_) bucket)   =
-  match lst with 
+  match lst with
   | Empty -> raise Not_found
-  | Cons rhs -> 
+  | Cons rhs ->
     if equal_key key rhs.key then rhs.data
-    else match rhs.next with 
-      | Empty -> raise Not_found 
-      | Cons rhs -> 
+    else match rhs.next with
+      | Empty -> raise Not_found
+      | Cons rhs ->
         if equal_key key  rhs.key then rhs.data else
-          match rhs.next with 
-          | Empty -> raise Not_found 
-          | Cons rhs -> 
+          match rhs.next with
+          | Empty -> raise Not_found
+          | Cons rhs ->
             if equal_key key rhs.key then rhs.data else
-              small_bucket_find_value key rhs.next 
+              small_bucket_find_value key rhs.next
 
 let add h key value =
-  let i = key_index h key  in 
-  if not (small_bucket_mem key  h.data.(i)) then 
-    begin 
+  let i = key_index h key  in
+  if not (small_bucket_mem key  h.data.(i)) then
+    begin
       h.data.(i) <- Cons {key; ord = h.size; data = value; next =  h.data.(i)};
       h.size <- h.size + 1 ;
       if h.size > Array.length h.data lsl 1 then resize key_index h
     end
 
 let mem h key =
-  small_bucket_mem key (Array.unsafe_get h.data (key_index h key)) 
-let rank h key = 
-  small_bucket_rank key(Array.unsafe_get h.data (key_index h key))  
+  small_bucket_mem key (Array.unsafe_get h.data (key_index h key))
+let rank h key =
+  small_bucket_rank key(Array.unsafe_get h.data (key_index h key))
 
 let find_value h key =
   small_bucket_find_value key (Array.unsafe_get h.data (key_index h key))

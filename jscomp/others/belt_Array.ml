@@ -488,7 +488,7 @@ let partitionU a f =
     let v = a.!(ii) in
     if f v [@bs] then (
       a1.!(i.contents) <- v;
-      i.contents <- i.contents + 1 
+      i.contents <- i.contents + 1
     )
     else (
       a2.!(j.contents) <- v;

@@ -24,15 +24,15 @@
 
 type 'a t = 'a option
 
-let some x = Some x 
+let some x = Some x
 
 let isSome = function
   | None -> false
   | Some _ -> true
 
 let isSomeValue eq v x =
-  match x with 
-  | None -> false 
+  match x with
+  | None -> false
   | Some x -> eq v x [@bs]
 
 
@@ -41,22 +41,22 @@ let isNone = function
   | Some _ -> false
 
 let getExn x =
-  match x with 
+  match x with
   | None -> Js_exn.raiseError "getExn"
-  | Some x -> x 
+  | Some x -> x
 
 let equal eq a b =
-  match a  with 
-  | None -> b = None 
-  | Some x -> 
-    begin match b with 
-    | None -> false 
+  match a  with
+  | None -> b = None
+  | Some x ->
+    begin match b with
+    | None -> false
     | Some y -> eq x y [@bs]
     end
 
 let andThen f x =
-  match x with 
-  | None -> None 
+  match x with
+  | None -> None
   | Some x -> f x [@bs]
 
 let map f x =
@@ -69,12 +69,12 @@ let getWithDefault a x =
   | None -> a
   | Some x -> x
 
-let default = getWithDefault  
+let default = getWithDefault
 
 let filter f x =
   match x with
   | None -> None
-  | Some x -> 
+  | Some x ->
     if f x [@bs] then
       Some x
     else

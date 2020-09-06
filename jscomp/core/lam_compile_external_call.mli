@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -29,20 +29,20 @@
 
 
 
-(** Compile ocaml external function call to JS IR. *) 
-val ocaml_to_js_eff : 
+(** Compile ocaml external function call to JS IR. *)
+val ocaml_to_js_eff :
   arg_label:External_arg_spec.label_noname ->
   arg_type:External_arg_spec.attr ->
-  J.expression -> 
-  Js_of_lam_variant.arg_expression * J.expression list  
+  J.expression ->
+  Js_of_lam_variant.arg_expression * J.expression list
 
 val translate_ffi :
-  Lam_compile_context.t -> 
-  External_arg_spec.params -> 
-  External_ffi_types.external_spec -> 
-  J.expression list -> 
-  J.expression 
-  
+  Lam_compile_context.t ->
+  External_arg_spec.params ->
+  External_ffi_types.external_spec ->
+  J.expression list ->
+  J.expression
+
 (** TODO: document supported attributes
     Attributes starting with `js` are reserved
     examples: "bs.splice"

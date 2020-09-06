@@ -26,23 +26,23 @@
 
 let kvs = Ext_json_noloc.kvs
 let arr = Ext_json_noloc.arr
-let str = Ext_json_noloc.str 
+let str = Ext_json_noloc.str
 
-let generate_sourcedirs_meta 
-  ~name (res : Bsb_file_groups.t) = 
-  let v = 
+let generate_sourcedirs_meta
+  ~name (res : Bsb_file_groups.t) =
+  let v =
     kvs [
       "dirs" ,
-      arr (Ext_array.of_list_map res.files ( fun x -> 
-          str x.dir 
+      arr (Ext_array.of_list_map res.files ( fun x ->
+          str x.dir
         ) ) ;
       "generated" ,
-      arr ( Array.of_list @@ Ext_list.fold_left res.files []  (fun acc x -> 
+      arr ( Array.of_list @@ Ext_list.fold_left res.files []  (fun acc x ->
           Ext_list.flat_map_append x.generators acc
-            (fun x -> 
-               Ext_list.map x.output str)   
-        ));        
-        "pkgs", arr 
+            (fun x ->
+               Ext_list.map x.output str)
+        ));
+        "pkgs", arr
           (Array.of_list
             (Bsb_pkg.to_list (fun pkg path ->
               arr [|
@@ -52,7 +52,6 @@ let generate_sourcedirs_meta
               ))
           )
     ]
-  in 
-  Ext_json_noloc.to_file 
+  in
+  Ext_json_noloc.to_file
   name v
-  

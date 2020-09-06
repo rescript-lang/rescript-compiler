@@ -1,5 +1,5 @@
 (* Copyright (C) Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,71 +17,71 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (* strategy:
-   If not installed, use the distributed [cmj] files, 
+   If not installed, use the distributed [cmj] files,
    make sure that the distributed files are platform independent
 *)
 
 
 
-let load_builin_unit unit_name : Js_cmj_format.cmj_load_info = 
-#if 
-BS_RELEASE_BUILD 
+let load_builin_unit unit_name : Js_cmj_format.cmj_load_info =
+#if
+BS_RELEASE_BUILD
 (* true *)
-then  
+then
   match Ext_string_array.find_sorted
           Builtin_cmj_datasets.module_names
           unit_name with
   | Some i
-    -> 
+    ->
     if Js_config.get_diagnose () then
       Format.fprintf Format.err_formatter ">Cmj: %s@." unit_name;
-    let cmj_table : Js_cmj_format.t = 
-       let values, pure =  Ext_marshal.from_string_uncheck Builtin_cmj_datasets.module_data.(i)  in   
-       {values; pure; package_spec = Js_packages_info.runtime_package_specs;js_file_kind = Little_js} 
-    in 
+    let cmj_table : Js_cmj_format.t =
+       let values, pure =  Ext_marshal.from_string_uncheck Builtin_cmj_datasets.module_data.(i)  in
+       {values; pure; package_spec = Js_packages_info.runtime_package_specs;js_file_kind = Little_js}
+    in
     if Js_config.get_diagnose () then
       Format.fprintf Format.err_formatter "<Cmj: %s@." unit_name;
-    {package_path =  
+    {package_path =
       Filename.dirname (Filename.dirname Sys.executable_name); cmj_table}
   | None
-    ->  
-#end         
+    ->
+#end
     Bs_exception.error (Cmj_not_found unit_name)
-(* 
-let load_unit_no_file unit_name : Js_cmj_format.cmj_load_info = 
-  let file = unit_name ^ Literals.suffix_cmj in   
+(*
+let load_unit_no_file unit_name : Js_cmj_format.cmj_load_info =
+  let file = unit_name ^ Literals.suffix_cmj in
   match Config_util.find_opt file with
   | Some f
-    -> 
-    {package_path = 
+    ->
+    {package_path =
        (** hacking relying on the convention of pkg/lib/ocaml/xx.cmj*)
-       Filename.dirname (Filename.dirname (Filename.dirname f)); 
+       Filename.dirname (Filename.dirname (Filename.dirname f));
      cmj_table =  Js_cmj_format.from_file f}
-  | None -> 
+  | None ->
     Bs_exception.error (Cmj_not_found unit_name) *)
 
-let load_unit_with_file unit_name : Js_cmj_format.cmj_load_info = 
-  let file = unit_name ^ Literals.suffix_cmj in   
+let load_unit_with_file unit_name : Js_cmj_format.cmj_load_info =
+  let file = unit_name ^ Literals.suffix_cmj in
   match Config_util.find_opt file with
   | Some f
-    -> 
-    {package_path = 
+    ->
+    {package_path =
       (** hacking relying on the convention of pkg/lib/ocaml/xx.cmj*)
-      Filename.dirname (Filename.dirname (Filename.dirname f)); 
+      Filename.dirname (Filename.dirname (Filename.dirname f));
       cmj_table =  Js_cmj_format.from_file f}
-  | None -> 
+  | None ->
     if !Js_config.no_stdlib then Bs_exception.error (Cmj_not_found unit_name)
-    else load_builin_unit unit_name 
+    else load_builin_unit unit_name
 
 
 (* we can disable loading from file for troubleshooting
-   Note in dev mode we still allow loading from file is to 
-   make the dev build still function correct 
+   Note in dev mode we still allow loading from file is to
+   make the dev build still function correct
 *)
 let load_unit = ref load_unit_with_file

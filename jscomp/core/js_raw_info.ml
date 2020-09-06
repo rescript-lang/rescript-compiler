@@ -1,5 +1,5 @@
 (* Copyright (C) 2020 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,19 +17,19 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
 type exp =
-  | Js_function of {arity : int ; arrow : bool}     
+  | Js_function of {arity : int ; arrow : bool}
   | Js_literal of {comment : string option}
-  (* A special handling of 
+  (* A special handling of
     [%raw "/*lint*/ 0"]
   *)
-  (* Flow ast module 
+  (* Flow ast module
   {[
   and value =
     | String of string
@@ -43,17 +43,17 @@ type exp =
   | Js_exp_unknown
 
 
-  type raw_kind = 
-    | Raw_re 
+  type raw_kind =
+    | Raw_re
     | Raw_exp
     | Raw_program
-    
-type stmt = 
+
+type stmt =
   | Js_stmt_comment
   | Js_stmt_unknown
 
-type code_info = 
-  | Exp of exp 
+type code_info =
+  | Exp of exp
   | Stmt of stmt
 
 

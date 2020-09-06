@@ -1,5 +1,5 @@
 (* Copyright (C) 2018- Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,58 +17,58 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- type public = 
+ type public =
   | Export_none
-  | Export_all 
-  | Export_set of Set_string.t 
-  
+  | Export_all
+  | Export_set of Set_string.t
 
-type build_generator = 
+
+type build_generator =
   { input : string list ;
     output : string list;
-    command : string}  
+    command : string}
 
 
-type  file_group = 
+type  file_group =
   { dir : string ;
-    sources : Bsb_db.map; 
+    sources : Bsb_db.map;
     resources : string list ;
     public : public ;
     dev_index : bool ; (* false means not in dev mode *)
-    generators : build_generator list ; 
+    generators : build_generator list ;
     (* output of [generators] should be added to [sources],
        if it is [.ml,.mli,.re,.rei]
     *)
-  }     
-
-type file_groups = file_group list 
-
-type t 
-  = private
-  { files :  file_groups; 
-    globbed_dirs : string list ; 
   }
 
-val empty : t    
+type file_groups = file_group list
 
-val merge : 
-  t -> 
-  t -> 
-  t   
+type t
+  = private
+  { files :  file_groups;
+    globbed_dirs : string list ;
+  }
 
-val cons :   
+val empty : t
+
+val merge :
+  t ->
+  t ->
+  t
+
+val cons :
   file_group:file_group ->
   ?globbed_dir:string ->
   t ->
   t
 
-val is_empty :   
+val is_empty :
   file_group ->
   bool
 

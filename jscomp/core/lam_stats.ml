@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -29,18 +29,18 @@
 
 
 
-(* It can be useful for common sub expression elimination ? 
-    if two lambdas are not equal, it should return false, other wise, 
+(* It can be useful for common sub expression elimination ?
+    if two lambdas are not equal, it should return false, other wise,
     it might return true , this is only used as a way of optimizaton
 
     Use case :
     1. switch case -- common fall through
  *)
 
-(* lambda pass for alpha conversion 
+(* lambda pass for alpha conversion
     and alias
-    we need think about the order of the pass, might be the alias pass can be done 
-    in the  beginning, when we do alpha conversion, we can instrument the table 
+    we need think about the order of the pass, might be the alias pass can be done
+    in the  beginning, when we do alpha conversion, we can instrument the table
  *)
 
 
@@ -49,7 +49,7 @@
 
 
 
-type ident_tbl = Lam_id_kind.t Hash_ident.t 
+type ident_tbl = Lam_id_kind.t Hash_ident.t
 
 
 
@@ -60,27 +60,27 @@ type t = {
   (** we don't need count arities for all identifiers, for identifiers
       for sure it's not a function, there is no need to count them
   *)
-  
+
 }
 
 let pp = Format.fprintf
 
-(* let pp_alias_tbl fmt (tbl : alias_tbl) = 
+(* let pp_alias_tbl fmt (tbl : alias_tbl) =
   Hash_ident.iter  tbl (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v) *)
-  
 
 
 
-let pp_ident_tbl fmt (ident_tbl : ident_tbl) = 
-  Hash_ident.iter ident_tbl (fun k v -> pp fmt "@[%a -> %a@]@." 
+
+let pp_ident_tbl fmt (ident_tbl : ident_tbl) =
+  Hash_ident.iter ident_tbl (fun k v -> pp fmt "@[%a -> %a@]@."
     Ident.print k Lam_id_kind.print v)
-    
 
-let print fmt (v : t) = 
+
+let print fmt (v : t) =
     pp fmt "@[Ident table:@ @[%a@]@]" pp_ident_tbl v.ident_tbl ;
     pp fmt "@[exports:@ @[%a@]@]"
-        (Format.pp_print_list 
-            ~pp_sep:(fun fmt () -> pp fmt "@ ;")             
+        (Format.pp_print_list
+            ~pp_sep:(fun fmt () -> pp fmt "@ ;")
             Ident.print
         ) v.exports
 

@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,14 +17,14 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(** Hash based datastrucure which does not support [remove], 
-    so that the adding order is strict and continous  
+(** Hash based datastrucure which does not support [remove],
+    so that the adding order is strict and continous
  *)
 
 module type S =
@@ -37,26 +37,26 @@ sig
   val add : 'value t -> key -> 'value -> unit
   val mem : 'value t -> key -> bool
   val rank : 'value t -> key -> int (* -1 if not found*)
-  val find_value : 'value t -> key -> 'value (* raise if not found*)  
-  val iter: 
-    'value t -> 
-    (key -> 'value -> int -> unit) ->  
+  val find_value : 'value t -> key -> 'value (* raise if not found*)
+  val iter:
+    'value t ->
+    (key -> 'value -> int -> unit) ->
     unit
-  val fold: 
-    'value t -> 
-    'b -> 
-    (key -> 'value -> int -> 'b -> 'b) ->  
+  val fold:
+    'value t ->
+    'b ->
+    (key -> 'value -> int -> 'b -> 'b) ->
     'b
   val length:  'value t -> int
-  val elements : 'value t -> key list 
-  val choose : 'value t -> key 
+  val elements : 'value t -> key list
+  val choose : 'value t -> key
   val to_sorted_array: 'value t -> key array
 end
 
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
-type ('a,'b) bucket = 
-  | Empty 
+type ('a,'b) bucket =
+  | Empty
   | Cons of {
     key : 'a ;
     ord :  int ;
@@ -102,9 +102,9 @@ let resize indexfun h =
         Empty -> ()
       | Cons { key; ord; data; next} ->
         let nidx = indexfun h key in
-        Array.unsafe_set ndata nidx 
-          (Cons { key; ord ; data; 
-                  next =   
+        Array.unsafe_set ndata nidx
+          (Cons { key; ord ; data;
+                  next =
                     Array.unsafe_get ndata nidx });
         insert_bucket next
     in
@@ -124,23 +124,23 @@ let iter h f =
     do_bucket (Array.unsafe_get d i)
   done
 
-let choose h = 
-  let rec aux arr offset len = 
+let choose h =
+  let rec aux arr offset len =
     if offset >= len then raise Not_found
-    else 
-      match Array.unsafe_get arr offset with 
-      | Empty -> aux arr (offset + 1) len 
-      | Cons {key = k; _} -> k 
+    else
+      match Array.unsafe_get arr offset with
+      | Empty -> aux arr (offset + 1) len
+      | Cons {key = k; _} -> k
   in
   aux h.data 0 (Array.length h.data)
 
-let to_sorted_array h = 
+let to_sorted_array h =
   if h.size = 0 then [||]
-  else 
-    let v = choose h in 
+  else
+    let v = choose h in
     let arr = Array.make h.size v in
     iter h (fun k _ i -> Array.unsafe_set arr i k);
-    arr 
+    arr
 
 let fold h init f =
   let rec do_bucket b accu =
@@ -156,12 +156,12 @@ let fold h init f =
   done;
   !accu
 
-let elements set = 
-  fold set [] (fun k  _  _ acc  ->  k :: acc) 
+let elements set =
+  fold set [] (fun k  _  _ acc  ->  k :: acc)
 
 
-let rec bucket_length acc (x : _ bucket) = 
-  match x with 
+let rec bucket_length acc (x : _ bucket) =
+  match x with
   | Empty -> 0
   | Cons rhs -> bucket_length (acc + 1) rhs.next
 

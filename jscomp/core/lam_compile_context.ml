@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -25,7 +25,7 @@
 
 
 
-type jbl_label = int 
+type jbl_label = int
 
 module HandlerMap = Map_int
 type value = {
@@ -34,15 +34,15 @@ type value = {
   order_id : int
 }
 
-(* delegate to the callee to generate expression 
+(* delegate to the callee to generate expression
       Invariant: [output] should return a trailing expression
 *)
 type return_label = {
   id : Ident.t;
   label : J.label;
   params : Ident.t list;
-  immutable_mask : bool array; 
-  mutable new_params : Ident.t Map_ident.t;  
+  immutable_mask : bool array;
+  mutable new_params : Ident.t Map_ident.t;
   mutable triggered : bool
 }
 
@@ -51,17 +51,17 @@ type tail = {
   in_staticcatch : bool;
 }
 
-type maybe_tail = 
+type maybe_tail =
   | Tail_in_try
   | Tail_with_name of tail
 
-type tail_type = 
-  | Not_tail 
+type tail_type =
+  | Not_tail
   | Maybe_tail_is_return of maybe_tail
   (* Note [return] does indicate it is a tail position in most cases
      however, in an exception handler, return may not be in tail position
-     to fix #1701 we play a trick that (Maybe_tail_is_return None) 
-     would never trigger tailcall, however, it preserves [return] 
+     to fix #1701 we play a trick that (Maybe_tail_is_return None)
+     would never trigger tailcall, however, it preserves [return]
      semantics
   *)
 (* have a mutable field to notifiy it's actually triggered *)
@@ -69,7 +69,7 @@ type tail_type =
 
 type let_kind = Lam_compat.let_kind
 
-type continuation = 
+type continuation =
   | EffectCall of tail_type
   | NeedValue of tail_type
   | Declare of let_kind * J.ident (* bound value *)
@@ -77,14 +77,14 @@ type continuation =
 
 type jmp_table =   value  HandlerMap.t
 
-let continuation_is_return ( x : continuation) =  
-  match x with 
-  | EffectCall (Maybe_tail_is_return _) | NeedValue (Maybe_tail_is_return _) 
-    -> true 
-  | EffectCall Not_tail | NeedValue Not_tail 
+let continuation_is_return ( x : continuation) =
+  match x with
+  | EffectCall (Maybe_tail_is_return _) | NeedValue (Maybe_tail_is_return _)
+    -> true
+  | EffectCall Not_tail | NeedValue Not_tail
   | Declare _ | Assign _
     -> false
-    
+
 type t = {
   continuation : continuation ;
   jmp_table : jmp_table;
@@ -94,51 +94,51 @@ type t = {
 let empty_handler_map = HandlerMap.empty
 
 type handler = {
-  label : jbl_label ; 
+  label : jbl_label ;
   handler : Lam.t;
-  bindings : Ident.t list; 
+  bindings : Ident.t list;
 }
 
 let no_static_raise_in_handler (x : handler) : bool =
-  not (Lam_exit_code.has_exit_code 
+  not (Lam_exit_code.has_exit_code
          x.handler (fun _code -> true))
 
-(* always keep key id positive, specifically no [0] generated 
+(* always keep key id positive, specifically no [0] generated
    return a tuple
    [tbl, handlers]
    [tbl] is used for compiling [staticraise]
    [handlers] is used for compiling [staticcatch]
 *)
-let add_jmps 
+let add_jmps
     (m  : jmp_table)
-    (exit_id : Ident.t)  
+    (exit_id : Ident.t)
     (code_table : handler list)
-  : jmp_table * (int * Lam.t) list 
-  = 
-  let map, handlers = 
-    Ext_list.fold_left_with_offset 
-      code_table (m,[]) 
-      (HandlerMap.cardinal m + 1 ) 
+  : jmp_table * (int * Lam.t) list
+  =
+  let map, handlers =
+    Ext_list.fold_left_with_offset
+      code_table (m,[])
+      (HandlerMap.cardinal m + 1 )
       (fun { label; handler; bindings}
-        (acc,handlers)        
-        order_id 
-        ->     
-          HandlerMap.add acc label {exit_id; bindings; order_id } , 
+        (acc,handlers)
+        order_id
+        ->
+          HandlerMap.add acc label {exit_id; bindings; order_id } ,
           (order_id,handler)::handlers
-      )   in 
+      )   in
   map, List.rev handlers
 
-let add_pseudo_jmp 
+let add_pseudo_jmp
     (m  : jmp_table)
     (exit_id : Ident.t)  (* TODO not needed, remove it later *)
     (code_table : handler) :
     jmp_table * Lam.t
-     = 
-   HandlerMap.add m 
-    code_table.label {exit_id; bindings = code_table.bindings; order_id = -1}, 
+     =
+   HandlerMap.add m
+    code_table.label {exit_id; bindings = code_table.bindings; order_id = -1},
    code_table.handler
 
 
 
-let find_exn cxt i = 
-  Map_int.find_exn cxt.jmp_table i 
+let find_exn cxt i =
+  Map_int.find_exn cxt.jmp_table i

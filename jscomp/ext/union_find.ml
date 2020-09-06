@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -25,59 +25,59 @@
 type t = {
   id : int array;
   sz : int array ;
-  mutable components : int  
-} 
+  mutable components : int
+}
 
-let init n = 
-  let id = Array.make n 0 in 
+let init n =
+  let id = Array.make n 0 in
   for i = 0 to  n - 1 do
-    Array.unsafe_set id i i  
+    Array.unsafe_set id i i
   done  ;
   {
-    id ; 
+    id ;
     sz = Array.make n 1;
     components = n
   }
 
-let rec find_aux id_store p = 
-  let parent = Array.unsafe_get id_store p in 
-  if p <> parent then 
-    find_aux id_store parent 
-  else p       
+let rec find_aux id_store p =
+  let parent = Array.unsafe_get id_store p in
+  if p <> parent then
+    find_aux id_store parent
+  else p
 
-let find store p = find_aux store.id p 
+let find store p = find_aux store.id p
 
 let union store p q =
-  let id_store = store.id in 
-  let p_root = find_aux id_store p in 
-  let q_root = find_aux id_store q in 
-  if p_root <> q_root then 
+  let id_store = store.id in
+  let p_root = find_aux id_store p in
+  let q_root = find_aux id_store q in
+  if p_root <> q_root then
     begin
       let () = store.components <- store.components - 1 in
       let sz_store = store.sz in
-      let sz_p_root = Array.unsafe_get sz_store p_root in 
-      let sz_q_root = Array.unsafe_get sz_store q_root in  
+      let sz_p_root = Array.unsafe_get sz_store p_root in
+      let sz_q_root = Array.unsafe_get sz_store q_root in
       let bigger = sz_p_root + sz_q_root in
-      (* Smaller root point to larger to make 
+      (* Smaller root point to larger to make
          it more balanced
          it will introduce a cost for small root find,
-         but major will not be impacted 
-      *) 
+         but major will not be impacted
+      *)
       if  sz_p_root < sz_q_root  then
         begin
-          Array.unsafe_set id_store p q_root;   
+          Array.unsafe_set id_store p q_root;
           Array.unsafe_set id_store p_root q_root;
-          Array.unsafe_set sz_store q_root bigger;            
-          (* little optimization *) 
-        end 
-      else   
-        begin
-          Array.unsafe_set id_store q  p_root ;
-          Array.unsafe_set id_store q_root p_root;   
-          Array.unsafe_set sz_store p_root bigger;          
+          Array.unsafe_set sz_store q_root bigger;
           (* little optimization *)
         end
-    end 
+      else
+        begin
+          Array.unsafe_set id_store q  p_root ;
+          Array.unsafe_set id_store q_root p_root;
+          Array.unsafe_set sz_store p_root bigger;
+          (* little optimization *)
+        end
+    end
 
-let count store = store.components    
+let count store = store.components
 

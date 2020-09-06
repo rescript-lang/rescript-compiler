@@ -45,10 +45,10 @@ let interval = ref Js.Nullable.null
 let remind () =
   Js.log "Wake Up!";
   IO.punchSleepyGuy ()
-  
+
 let snooze mins =
   interval := Js.Nullable.return (Js.Global.setInterval remind (mins * 60 * 1000))
-  
+
 let cancel () =
   Js.Nullable.iter !interval (fun[\@bs] intervalId -> Js.Global.clearInterval intervalId)
 ]}

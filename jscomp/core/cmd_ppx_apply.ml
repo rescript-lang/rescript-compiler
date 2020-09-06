@@ -10,7 +10,7 @@ let write_ast (type a) (kind : a Ml_binary.kind) fn (ast : a) =
   output_value oc (ast : a);
   close_out oc
 
-let temp_ppx_file () =   
+let temp_ppx_file () =
   Filename.temp_file "ppx" (Filename.basename !Location.input_name)
 
 let apply_rewriter kind fn_in ppx =
@@ -48,21 +48,21 @@ let read_ast (type a) (kind : a Ml_binary.kind) fn : a =
   ast
 
 
-(** [ppxs] are a stack, 
+(** [ppxs] are a stack,
     [-ppx1 -ppx2  -ppx3]
     are stored as [-ppx3; -ppx2; -ppx1]
     [fold_right] happens to process the first one *)
 let rewrite kind ppxs ast =
   let fn_in = temp_ppx_file () in
   write_ast kind fn_in ast;
-  let temp_files = List.fold_right (fun ppx fns -> 
-    match fns with 
+  let temp_files = List.fold_right (fun ppx fns ->
+    match fns with
     | [] -> assert false
     | fn_in :: _ -> (apply_rewriter kind fn_in ppx) :: fns
-  ) ppxs [fn_in] in 
-  match temp_files with 
-  | last_fn :: _ ->  
-    let out = read_ast kind last_fn in 
+  ) ppxs [fn_in] in
+  match temp_files with
+  | last_fn :: _ ->
+    let out = read_ast kind last_fn in
     Ext_list.iter temp_files Misc.remove_file;
     out
   | _ -> assert false

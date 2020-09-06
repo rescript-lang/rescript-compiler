@@ -32,7 +32,7 @@ let getExn = function
   | Some x -> x
   | None -> raise Not_found
 
-external getUnsafe : 'a option -> 'a = "%identity"  
+external getUnsafe : 'a option -> 'a = "%identity"
 
 let mapWithDefaultU opt default f = match opt with
   | Some x -> (f x [@bs])
@@ -62,15 +62,15 @@ let isSome = function
 
 let isNone x = x = None
 
-let eqU a b f = 
-  match a with 
-  | Some a -> 
-    begin match b with 
-    | None -> false 
+let eqU a b f =
+  match a with
+  | Some a ->
+    begin match b with
+    | None -> false
     | Some b -> f a b [@bs]
-    end 
+    end
   | None -> b = None
-  
+
 let eq a b f = eqU a b (fun[@bs] x y -> f x y)
 
 let cmpU a b f = match (a, b) with

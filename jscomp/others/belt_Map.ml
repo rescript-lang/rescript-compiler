@@ -89,7 +89,7 @@ let isEmpty map =
   Dict.isEmpty map.data
 
 let findFirstByU m f = Dict.findFirstByU m.data f
-let findFirstBy m f = findFirstByU m (fun [@bs] a b -> f a b) 
+let findFirstBy m f = findFirstByU m (fun [@bs] a b -> f a b)
 let forEachU m f = Dict.forEachU m.data f
 let forEach m f = forEachU m (fun [@bs] a b -> f a b)
 let reduceU m acc f = Dict.reduceU m.data acc f

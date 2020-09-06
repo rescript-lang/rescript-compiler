@@ -516,7 +516,7 @@ val reduceWithIndex:  'a array -> 'b -> ('b -> 'a -> int -> 'b) -> 'b
     Applies [f] to each element of [xs] from beginning to end. Function [f] has three parameters: the item
     from the array and an “accumulator”, which starts with a value of [init] and the index of each element. [reduceWithIndex]
     returns the final value of the accumulator.
-    
+
     @example {[
       reduceWithIndex [|1;2;3;4|] 0 (fun acc x i -> acc + x + i) = 16;
     ]}

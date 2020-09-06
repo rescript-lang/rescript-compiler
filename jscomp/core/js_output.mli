@@ -89,9 +89,9 @@ val dummy : t
 
 val output_of_expression :
     Lam_compile_context.continuation ->
-  
+
     J.expression -> (* compiled expression *)
-    no_effects: bool Lazy.t -> 
+    no_effects: bool Lazy.t ->
     t
 
 (** - needed for instrument [return] statement properly

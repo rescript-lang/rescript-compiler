@@ -1,5 +1,5 @@
 (* Copyright (C) 2019- Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,22 +17,22 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let option_id =   
+let option_id =
   Ident.create_persistent Js_runtime_modules.option
-let curry_id =   
+let curry_id =
   Ident.create_persistent Js_runtime_modules.curry
 
 let check_additional_id (x : J.expression) : Ident.t option =
   match x.expression_desc with
-  | Optional_block(_,false) -> 
-    Some option_id  
-  | Call(_, _, {arity = NA}) ->  
+  | Optional_block(_,false) ->
+    Some option_id
+  | Call(_, _, {arity = NA}) ->
     Some curry_id
-  | _ -> 
+  | _ ->
     None

@@ -22,7 +22,7 @@ let preprocess sourcefile =
 
 
 let remove_preprocessed inputfile =
-  if !Clflags.preprocessor <> None then  
+  if !Clflags.preprocessor <> None then
     Misc.remove_file inputfile
 
 
@@ -34,21 +34,21 @@ let remove_preprocessed inputfile =
 
 let parse (type a) (kind : a Ml_binary.kind) : _ -> a =
   match kind with
-  | Ml_binary.Ml -> Parse.implementation 
-  | Ml_binary.Mli -> Parse.interface 
+  | Ml_binary.Ml -> Parse.implementation
+  | Ml_binary.Mli -> Parse.interface
 
 let file_aux  inputfile (type a) (parse_fun  : _ -> a)
              (kind : a Ml_binary.kind) : a  =
   let ast_magic = Ml_binary.magic_of_kind kind in
   let ic = open_in_bin inputfile in
   let is_ast_file =
-    match really_input_string ic (String.length ast_magic) with 
-    | exception _ -> false 
+    match really_input_string ic (String.length ast_magic) with
+    | exception _ -> false
     |  buffer ->
       if buffer = ast_magic then true
       else if Ext_string.starts_with buffer "Caml1999" then
         Cmd_ast_exception.wrong_magic buffer
-      else false in 
+      else false in
   let ast =
     try
       if is_ast_file then begin
@@ -62,9 +62,9 @@ let file_aux  inputfile (type a) (parse_fun  : _ -> a)
       end
     with x -> close_in ic; raise x
   in
-  close_in ic; ast   
-  
-  
+  close_in ic; ast
+
+
 
 
 
@@ -72,7 +72,7 @@ let parse_file (type a) (kind  : a Ml_binary.kind) (sourcefile : string) : a =
   Location.set_input_name  sourcefile;
   let inputfile = preprocess sourcefile in
   let ast =
-    try 
+    try
       (file_aux   inputfile (parse kind)  kind)
     with exn ->
       remove_preprocessed inputfile;
@@ -83,7 +83,7 @@ let parse_file (type a) (kind  : a Ml_binary.kind) (sourcefile : string) : a =
 
 
 
-let parse_implementation sourcefile =  
+let parse_implementation sourcefile =
   parse_file Ml sourcefile
 
 let parse_interface  sourcefile =

@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -32,46 +32,46 @@ type option_unwrap_time =
   | Runtime_maybe_unwrapped
 
 
-(** Given [Some a ], return [a] *)  
+(** Given [Some a ], return [a] *)
 val val_from_option:
-  J.expression -> 
-  J.expression 
+  J.expression ->
+  J.expression
 
-(** Given [Some x] or [None], return [x]*)  
+(** Given [Some x] or [None], return [x]*)
 val get_default_undefined_from_optional:
-  J.expression -> 
-  J.expression  
+  J.expression ->
+  J.expression
 
-(** Given [Some (`a x)] or [None], 
-    return [x] *)  
-val option_unwrap : 
+(** Given [Some (`a x)] or [None],
+    return [x] *)
+val option_unwrap :
   J.expression ->
   J.expression
 
 
-val destruct_optional : 
+val destruct_optional :
   for_sure_none:'a ->
   for_sure_some:(J.expression -> 'a) ->
   not_sure:(unit -> 'a) ->
-  J.expression -> 
+  J.expression ->
   'a
 
-val some : 
-  J.expression -> 
-  J.expression
-
-val is_not_none :  
+val some :
   J.expression ->
   J.expression
 
-val null_to_opt : 
-  J.expression -> 
+val is_not_none :
+  J.expression ->
   J.expression
 
-val undef_to_opt : 
-  J.expression -> 
-  J.expression   
+val null_to_opt :
+  J.expression ->
+  J.expression
 
-val null_undef_to_opt : 
-  J.expression -> 
-  J.expression  
+val undef_to_opt :
+  J.expression ->
+  J.expression
+
+val null_undef_to_opt :
+  J.expression ->
+  J.expression

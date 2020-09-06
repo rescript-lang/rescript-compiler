@@ -25,18 +25,18 @@
 
 
 
-type boxed_integer = Lambda.boxed_integer = 
+type boxed_integer = Lambda.boxed_integer =
     Pnativeint | Pint32 | Pint64
 
 
-type comparison = Lambda.comparison = 
+type comparison = Lambda.comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge
 
 
 
 
 
-type compile_time_constant = 
+type compile_time_constant =
   | Big_endian
   | Ostype_unix
   | Ostype_win32
@@ -65,27 +65,27 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_tuple
   | Fld_poly_var_tag
   | Fld_poly_var_content
-  | Fld_extension 
+  | Fld_extension
   | Fld_variant
   | Fld_cons
   | Fld_array
-  
-val str_of_field_info : 
-  field_dbg_info -> 
+
+val str_of_field_info :
+  field_dbg_info ->
   string option
 
-type set_field_dbg_info = Lambda.set_field_dbg_info = 
+type set_field_dbg_info = Lambda.set_field_dbg_info =
   | Fld_set_na
-  | Fld_record_set of string 
-  | Fld_record_inline_set of string  
+  | Fld_record_set of string
+  | Fld_record_inline_set of string
   | Fld_record_extension_set of string
 
 
-val cmp_int32 : comparison -> int32 -> int32 -> bool 
-val cmp_int64 : comparison -> int64 -> int64 -> bool 
+val cmp_int32 : comparison -> int32 -> int32 -> bool
+val cmp_int64 : comparison -> int64 -> int64 -> bool
 val cmp_nativeint : comparison -> nativeint -> nativeint -> bool
-val cmp_float : comparison -> float -> float -> bool 
-val cmp_int : comparison -> int -> int -> bool 
+val cmp_float : comparison -> float -> float -> bool
+val cmp_int : comparison -> int -> int -> bool
 
 val eq_comparison : comparison -> comparison -> bool
 val eq_boxed_integer: boxed_integer -> boxed_integer -> bool

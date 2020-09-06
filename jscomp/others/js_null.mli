@@ -33,12 +33,12 @@ external return : 'a -> 'a t  = "%identity"
 (** Constructs a value of ['a Js.null] containing a value of ['a] *)
 
 
-val test : 'a t -> bool 
+val test : 'a t -> bool
 [@@deprecated "Use = Js.null directly "]
 (** Returns [true] if the given value is [empty] ([null]), [false] otherwise *)
 
 (** The empty value, [null] *)
-external empty : 'a t = "#null" 
+external empty : 'a t = "#null"
 
 
 external getUnsafe : 'a t -> 'a = "%identity"

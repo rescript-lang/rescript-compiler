@@ -1,5 +1,5 @@
 (* Copyright (C) Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,34 +17,34 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type rec_flag = 
-  | Lam_rec 
+type rec_flag =
+  | Lam_rec
   | Lam_non_rec
 
 (* TODO: This may contain some closure environment,
      check how it will interact with dead code elimination
-*)  
+*)
   | Lam_self_rec
   (* not inlining in this case *)
 
-type element = 
-  | NA 
-  | SimpleForm of Lam.t 
+type element =
+  | NA
+  | SimpleForm of Lam.t
 
 type boxed_nullable
-  = 
-  | Undefined 
-  | Null 
+  =
+  | Undefined
+  | Null
   | Null_undefined
 
 
-type t = 
+type t =
   | Normal_optional of Lam.t
   | OptionalBlock of Lam.t * boxed_nullable
   | ImmutableBlock of element array
@@ -56,26 +56,26 @@ type t =
     mutable arity : Lam_arity.t;
     lambda : (Lam.t * rec_flag) option;
   }
-  | Exception 
+  | Exception
   | Parameter
       (** For this case, it can help us determine whether it should be inlined or not *)
 
-  | NA (** Not such information is associated with an identifier, it is immutable, 
-           if you only associate a property to an identifier 
+  | NA (** Not such information is associated with an identifier, it is immutable,
+           if you only associate a property to an identifier
            we should consider [Lassign]
         *)
-(** 
-       {[ let v/2 =  Pnull_to_opt u]} 
+(**
+       {[ let v/2 =  Pnull_to_opt u]}
 
        {[ let v/2 = Pnull_to_opt exp]}
-       can be translated into 
+       can be translated into
        {[
-         let v/1 = exp in 
-         let v/2 =a Pnull_to_opt exp 
+         let v/1 = exp in
+         let v/2 =a Pnull_to_opt exp
        ]}
-       so that [Pfield v/2 0] will be replaced by [v/1], 
+       so that [Pfield v/2 0] will be replaced by [v/1],
        [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]
-*)        
+*)
 
 
 

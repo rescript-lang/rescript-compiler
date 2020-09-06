@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -32,41 +32,41 @@
 (** Define intemediate format to be serialized for cross module optimization
  *)
 
-(** In this module, 
-    currently only arity information is  exported, 
+(** In this module,
+    currently only arity information is  exported,
 
-    Short term: constant literals are also exported 
+    Short term: constant literals are also exported
 
     Long term:
     Benefit? since Google Closure Compiler already did such huge amount of work
-    TODO: simple expression, literal small function  can be stored, 
+    TODO: simple expression, literal small function  can be stored,
     but what would happen if small function captures other environment
-    for example 
+    for example
 
     {[
-      let f  = fun x -> g x 
+      let f  = fun x -> g x
     ]}
 
     {[
-      let f = g 
+      let f = g
     ]}
 *)
 
-type arity = 
+type arity =
   | Single of Lam_arity.t
   | Submodule of Lam_arity.t array
 
 type cmj_value = {
-  arity : arity ; 
-  persistent_closed_lambda : Lam.t option ; 
+  arity : arity ;
+  persistent_closed_lambda : Lam.t option ;
   (* Either constant or closed functor *)
 }
 
 type effect = string option
 
-type keyed_cmj_value = { 
+type keyed_cmj_value = {
   name : string ;
-  arity : arity ; 
+  arity : arity ;
   persistent_closed_lambda : Lam.t option
 }
 
@@ -74,21 +74,21 @@ type t =  {
   values : keyed_cmj_value array ;
   pure : bool;
   package_spec : Js_packages_info.t ;
-  js_file_kind : Ext_js_file_kind.t; 
+  js_file_kind : Ext_js_file_kind.t;
 }
 
 
 val make:
-  values: cmj_value Map_string.t -> 
-  effect: effect -> 
+  values: cmj_value Map_string.t ->
+  effect: effect ->
   package_spec: Js_packages_info.t ->
-  js_file_kind:Ext_js_file_kind.t -> 
+  js_file_kind:Ext_js_file_kind.t ->
   t
-  
 
-val query_by_name : 
+
+val query_by_name :
   t ->
-  string -> 
+  string ->
   keyed_cmj_value
 
 
@@ -104,17 +104,17 @@ val from_file_with_digest :
 
 val from_string : string -> t
 
-(* 
-  Note writing the file if its content is not changed  
+(*
+  Note writing the file if its content is not changed
 *)
-val to_file : 
+val to_file :
   string -> check_exists:bool -> t -> unit
 
 
 
 
-type path = string  
+type path = string
 type cmj_load_info = {
-  cmj_table : t ; 
+  cmj_table : t ;
   package_path : path ;
-}    
+}

@@ -30,13 +30,13 @@ val empty : 'a t -> unit
 
 val pushBack : 'a -> 'a t -> unit
 
-val copy : 'a t -> 'a t 
+val copy : 'a t -> 'a t
 (** shallow copy *)
 
 val memByRef : 'a -> 'a t -> bool
 
 val iter : ('a -> unit [@bs]) -> 'a t -> unit
-val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit 
+val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit
 
 
 (* [@@deprecated "Use Js.List.toVector instead"] *)
@@ -46,10 +46,10 @@ val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit
 
 val toList : 'a t -> 'a list
 
-val map : ('a -> 'b [@bs]) -> 'a t -> 'b t 
-val mapi : (int -> 'a -> 'b [@bs]) -> 'a t -> 'b t 
-val foldLeft : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b t -> 'a 
-val foldRight : ('b -> 'a -> 'a [@bs]) -> 'b t -> 'a -> 'a 
+val map : ('a -> 'b [@bs]) -> 'a t -> 'b t
+val mapi : (int -> 'a -> 'b [@bs]) -> 'a t -> 'b t
+val foldLeft : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b t -> 'a
+val foldRight : ('b -> 'a -> 'a [@bs]) -> 'b t -> 'a -> 'a
 external length : 'a t -> int = "%array_length"
 (** Return the length (number of elements) of the given array. *)
 
@@ -85,8 +85,8 @@ external make : int -> 'a -> 'a t = "caml_make_vect"
    size is only [Sys.max_array_length / 2].*)
 
 
-val init : int -> (int -> 'a [@bs]) -> 'a t 
-(** @param n size 
+val init : int -> (int -> 'a [@bs]) -> 'a t
+(** @param n size
     @param fn callback
     @raise RangeError when [n] is negative  *)
 

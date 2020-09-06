@@ -22,7 +22,7 @@
 
 (** GENERATED CODE for fold visitor patten of JS IR  *)
 open J
-module Camlp4Trash = 
+module Camlp4Trash =
   struct
     INCLUDE "j.ml"
   end

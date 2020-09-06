@@ -1,5 +1,5 @@
-(* Copyright (C) 2019-Present Authors of BuckleScript 
- * 
+(* Copyright (C) 2019-Present Authors of BuckleScript
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -103,28 +103,28 @@
 
 let dump v = dump (Obj.repr v)
 
-let pp_any fmt v = 
+let pp_any fmt v =
   Format.fprintf fmt "@[%s@]"
   (dump v )
 
 
-let bt () = 
-  let raw_bt = Printexc.backtrace_slots (Printexc.get_raw_backtrace()) in       
-  match raw_bt with 
+let bt () =
+  let raw_bt = Printexc.backtrace_slots (Printexc.get_raw_backtrace()) in
+  match raw_bt with
   | None -> ()
   | Some raw_bt ->
-    let acc = ref [] in 
-    (for i =  Array.length raw_bt - 1  downto 0 do 
-       let slot =  raw_bt.(i) in 
-       match Printexc.Slot.location slot with 
+    let acc = ref [] in
+    (for i =  Array.length raw_bt - 1  downto 0 do
+       let slot =  raw_bt.(i) in
+       match Printexc.Slot.location slot with
        | None
          -> ()
        | Some bt ->
-         (match !acc with 
+         (match !acc with
           | [] -> acc := [bt]
           | hd::_ -> if hd <> bt then acc := bt :: !acc )
 
-     done); 
-    Ext_list.iter !acc (fun bt ->       
+     done);
+    Ext_list.iter !acc (fun bt ->
         Printf.eprintf "File \"%s\", line %d, characters %d-%d\n"
           bt.filename bt.line_number bt.start_char bt.end_char )

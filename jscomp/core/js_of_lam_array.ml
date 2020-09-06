@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -34,10 +34,10 @@
    set array,
    ref array,
 
-   Also make sure, don't call any primitive array method, i.e [E.array_index_by_int] 
+   Also make sure, don't call any primitive array method, i.e [E.array_index_by_int]
 
-   We also need check primitive [caml_make_vect], i.e, 
-   [Caml_primitive['caml_make_vect']] see if it's correct 
+   We also need check primitive [caml_make_vect], i.e,
+   [Caml_primitive['caml_make_vect']] see if it's correct
 
    [caml_make_vect]
    [caml_array_sub]
@@ -55,11 +55,11 @@ module E  = Js_exp_make
 
 
 (* Parrayref(u|s) *)
-let make_array mt  args = 
-  E.array mt args 
- 
-let set_array  e e0 e1 = 
+let make_array mt  args =
+  E.array mt args
+
+let set_array  e e0 e1 =
   E.assign (E.array_index e e0)  e1
 
-let ref_array  e e0 = 
+let ref_array  e e0 =
   E.array_index  e  e0

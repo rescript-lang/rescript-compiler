@@ -32,14 +32,14 @@ let check_from_end al =
       else (let c = Char.chr e in
             if c = '/' then true
             else (if Ext_list.exists seen (fun x -> x = c)  then false (* flag should not be repeated *)
-                  else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then aux r (c::seen) 
+                  else (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then aux r (c::seen)
                         else false)))
   in aux al []
 
 let js_regex_checker s =
-  match Ext_utf8.decode_utf8_string s with 
-  | [] -> false 
-  | 47 (* [Char.code '/' = 47 ]*)::tail -> 
-    check_from_end (List.rev tail)       
-  | _ :: _ -> false 
-  | exception Ext_utf8.Invalid_utf8 _ -> false 
+  match Ext_utf8.decode_utf8_string s with
+  | [] -> false
+  | 47 (* [Char.code '/' = 47 ]*)::tail ->
+    check_from_end (List.rev tail)
+  | _ :: _ -> false
+  | exception Ext_utf8.Invalid_utf8 _ -> false

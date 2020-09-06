@@ -29,20 +29,20 @@ val height : ('a, 'b) t -> int
 
 val singleton : 'a -> 'b -> ('a, 'b) t
 
-val [@inline] unsafe_node : 
-  'a -> 
-  'b -> 
+val [@inline] unsafe_node :
+  'a ->
+  'b ->
   ('a, 'b ) t ->
   ('a, 'b ) t ->
-  int -> 
+  int ->
   ('a, 'b ) t
 
 (** smaller comes first *)
 val [@inline] unsafe_two_elements :
-  'a -> 
-  'b -> 
-  'a -> 
-  'b -> 
+  'a ->
+  'b ->
+  'a ->
+  'b ->
   ('a, 'b) t
 
 val bal : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
@@ -82,12 +82,12 @@ module type S =
     val remove : 'a t -> key -> 'a t
     (* val merge :
       'a t -> 'b t -> (key -> 'a option -> 'b option -> 'c option) -> 'c t *)
-    val disjoint_merge_exn : 
-    'a t -> 
-    'a t -> 
-    (key -> 'a -> 'a -> exn) -> 
+    val disjoint_merge_exn :
+    'a t ->
+    'a t ->
+    (key -> 'a -> 'a -> exn) ->
     'a t
-    
+
     val iter : 'a t -> (key -> 'a -> unit) -> unit
     val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
     val for_all : 'a t -> (key -> 'a -> bool) -> bool

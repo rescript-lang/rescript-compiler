@@ -23,7 +23,7 @@
 open Lambda
 type ident = Ident.t
 module Camlp4Trash = struct
- INCLUDE "lambda.mlp" 
+ INCLUDE "lambda.mlp"
 end
 
 class virtual map = Camlp4MapGenerator.generated ;;

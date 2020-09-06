@@ -1,5 +1,5 @@
 (* Copyright (C) 2020 - Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,15 +17,15 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let wrap_single_field_record loc lbl_name (lambda : Lambda.lambda) : Lambda.lambda = 
+let wrap_single_field_record loc lbl_name (lambda : Lambda.lambda) : Lambda.lambda =
   if lbl_name.[0] = 'I' then
-    let arity_s = String.sub lbl_name 1 (String.length lbl_name - 1) in 
+    let arity_s = String.sub lbl_name 1 (String.length lbl_name - 1) in
     Lprim (
       Pccall (Primitive.make ~name:"#fn_mk" ~alloc:true ~native_name:arity_s ~native_repr_args:[Same_as_ocaml_repr] ~native_repr_res: Same_as_ocaml_repr), [lambda],loc)
-  else lambda  
+  else lambda

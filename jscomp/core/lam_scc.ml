@@ -1,5 +1,5 @@
 (* Copyright (C) 2018 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -31,14 +31,14 @@
     there is no need to iter such lambda any more
 *)
 let hit_mask ( mask : Hash_set_ident_mask.t) (l : Lam.t) : bool =
-  let rec 
-    hit_opt (x : Lam.t option) = 
-    match x with 
-    | None -> false 
+  let rec
+    hit_opt (x : Lam.t option) =
+    match x with
+    | None -> false
     | Some a -> hit a
-    and hit_var (id : Ident.t) = 
-      Hash_set_ident_mask.mask_and_check_all_hit mask id 
-    and hit_list_snd : 'a. ('a * Lam.t ) list -> bool = fun x ->    
+    and hit_var (id : Ident.t) =
+      Hash_set_ident_mask.mask_and_check_all_hit mask id
+    and hit_list_snd : 'a. ('a * Lam.t ) list -> bool = fun x ->
       Ext_list.exists_snd x hit
     and hit_list xs = Ext_list.exists  xs hit
     and hit (l : Lam.t) =
@@ -84,7 +84,7 @@ let hit_mask ( mask : Hash_set_ident_mask.t) (l : Lam.t) : bool =
     | Lwhile(e1, e2) ->
       hit e1 || hit e2
     | Lsend (_k, met, obj, args, _) ->
-      hit met || hit obj || hit_list args  
+      hit met || hit obj || hit_list args
   in hit l
 
 

@@ -157,13 +157,13 @@ let paren_vgroup st n action =
   string st ")";
   v
 
-let paren_group st n action = 
+let paren_group st n action =
     group st n (fun _ -> paren st action)
 
-let cond_paren_group st b n action =    
-  if b then 
-    paren_group st n action 
-  else 
+let cond_paren_group st b n action =
+  if b then
+    paren_group st n action
+  else
     action ()
 
 

@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -26,28 +26,28 @@
 
 
 let is_dir_sep_unix c = c = '/'
-let is_dir_sep_win_cygwin c = 
+let is_dir_sep_win_cygwin c =
   c = '/' || c = '\\' || c = ':'
 
-let is_dir_sep = 
+let is_dir_sep =
   if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
 
 (* reference ninja.cc IsKnownShellSafeCharacter *)
-let maybe_quote ( s : string) = 
-  let noneed_quote = 
+let maybe_quote ( s : string) =
+  let noneed_quote =
     Ext_string.for_all s (function
-        | '0' .. '9' 
-        | 'a' .. 'z' 
+        | '0' .. '9'
+        | 'a' .. 'z'
         | 'A' .. 'Z'
-        | '_' | '+' 
+        | '_' | '+'
         | '-' | '.'
-        | '/' 
+        | '/'
         | '@' -> true
         | _ -> false
-      )  in 
+      )  in
   if noneed_quote then
     s
-  else Filename.quote s 
+  else Filename.quote s
 
 
 let chop_extension_maybe name =
@@ -57,8 +57,8 @@ let chop_extension_maybe name =
     else search_dot (i - 1) in
   search_dot (String.length name - 1)
 
-let get_extension_maybe name =   
-  let name_len = String.length name in  
+let get_extension_maybe name =
+  let name_len = String.length name in
   let rec search_dot name i name_len =
     if i < 0 || is_dir_sep (String.unsafe_get name i) then ""
     else if String.unsafe_get name i = '.' then String.sub name i (name_len - i)
@@ -67,23 +67,23 @@ let get_extension_maybe name =
 
 let chop_all_extensions_maybe name =
   let rec search_dot i last =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
-      (match last with 
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then
+      (match last with
       | None -> name
-      | Some i -> String.sub name 0 i)  
-    else if String.unsafe_get name i = '.' then 
+      | Some i -> String.sub name 0 i)
+    else if String.unsafe_get name i = '.' then
       search_dot (i - 1) (Some i)
     else search_dot (i - 1) last in
   search_dot (String.length name - 1) None
 
 
-let new_extension name (ext : string) = 
+let new_extension name (ext : string) =
   let rec search_dot name i ext =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
-      name ^ ext 
-    else if String.unsafe_get name i = '.' then 
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then
+      name ^ ext
+    else if String.unsafe_get name i = '.' then
       let ext_len = String.length ext in
-      let buf = Bytes.create (i + ext_len) in 
+      let buf = Bytes.create (i + ext_len) in
       Bytes.blit_string name 0 buf 0 i;
       Bytes.blit_string ext 0 buf i ext_len;
       Bytes.unsafe_to_string buf
@@ -93,58 +93,58 @@ let new_extension name (ext : string) =
 
 
 (** TODO: improve efficiency
-   given a path, calcuate its module name 
+   given a path, calcuate its module name
    Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
    we can not strip all extensions, otherwise
-   we can not tell the difference between "x.cpp.ml" 
+   we can not tell the difference between "x.cpp.ml"
    and "x.ml"
 *)
-let module_name name = 
+let module_name name =
   let rec search_dot i  name =
-    if i < 0  then 
+    if i < 0  then
       Ext_string.capitalize_ascii name
-    else 
-    if String.unsafe_get name i = '.' then 
-      Ext_string.capitalize_sub name i 
-    else 
-      search_dot (i - 1) name in  
-  let name = Filename.basename  name in 
-  let name_len = String.length name in 
-  search_dot (name_len - 1)  name 
+    else
+    if String.unsafe_get name i = '.' then
+      Ext_string.capitalize_sub name i
+    else
+      search_dot (i - 1) name in
+  let name = Filename.basename  name in
+  let name_len = String.length name in
+  search_dot (name_len - 1)  name
 
 type module_info = {
   module_name : string ;
   case : bool;
-} 
+}
 
 
 
 let rec valid_module_name_aux name off len =
-  if off >= len then true 
-  else 
-    let c = String.unsafe_get name off in 
-    match c with 
-    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> 
-      valid_module_name_aux name (off + 1) len 
+  if off >= len then true
+  else
+    let c = String.unsafe_get name off in
+    match c with
+    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' ->
+      valid_module_name_aux name (off + 1) len
     | _ -> false
 
-type state = 
+type state =
   | Invalid
   | Upper
   | Lower
 
-let valid_module_name name len =     
+let valid_module_name name len =
   if len = 0 then Invalid
-  else 
-    let c = String.unsafe_get name 0 in 
-    match c with 
+  else
+    let c = String.unsafe_get name 0 in
+    match c with
     | 'A' .. 'Z'
-      -> 
-      if valid_module_name_aux name 1 len then 
+      ->
+      if valid_module_name_aux name 1 len then
         Upper
-      else Invalid  
-    | 'a' .. 'z' 
-      -> 
+      else Invalid
+    | 'a' .. 'z'
+      ->
       if valid_module_name_aux name 1 len then
         Lower
       else Invalid
@@ -155,21 +155,20 @@ let as_module ~basename =
   let rec search_dot i  name name_len =
     if i < 0  then
       (* Input e.g, [a_b] *)
-      match valid_module_name name name_len with 
-      | Invalid -> None 
+      match valid_module_name name name_len with
+      | Invalid -> None
       | Upper ->  Some {module_name = name; case = true }
       | Lower -> Some {module_name = Ext_string.capitalize_ascii name; case = false}
-    else 
-    if String.unsafe_get name i = '.' then 
+    else
+    if String.unsafe_get name i = '.' then
       (*Input e.g, [A_b] *)
-      match valid_module_name  name i with 
-      | Invalid -> None 
-      | Upper -> 
+      match valid_module_name  name i with
+      | Invalid -> None
+      | Upper ->
         Some {module_name = Ext_string.capitalize_sub name i; case = true}
-      | Lower -> 
+      | Lower ->
         Some {module_name = Ext_string.capitalize_sub name i; case = false}
-    else 
-      search_dot (i - 1) name name_len in  
-  let name_len = String.length basename in       
+    else
+      search_dot (i - 1) name name_len in
+  let name_len = String.length basename in
   search_dot (name_len - 1)  basename name_len
-    

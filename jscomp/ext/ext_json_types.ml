@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2017 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,31 +17,31 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type loc = Lexing.position
-type json_str = 
+type json_str =
   { str : string ; loc : loc}
 
 type json_flo  =
   { flo : string ; loc : loc}
 type json_array =
-  { content : t array ; 
-    loc_start : loc ; 
-    loc_end : loc ; 
+  { content : t array ;
+    loc_start : loc ;
+    loc_end : loc ;
   }
 
-and json_map = 
+and json_map =
   { map : t Map_string.t ; loc :  loc }
-and t = 
-  | True of loc 
-  | False of loc 
-  | Null of loc 
+and t =
+  | True of loc
+  | False of loc
+  | Null of loc
   | Flo of json_flo
   | Str of json_str
   | Arr  of json_array
   | Obj of json_map
-   
+

@@ -23,80 +23,80 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type module_system = 
-  | NodeJS  
+type module_system =
+  | NodeJS
   | Es6
-  | Es6_global  
+  | Es6_global
 
-  
-val runtime_dir_of_module_system :  
+
+val runtime_dir_of_module_system :
   module_system ->
   string
 
-val runtime_package_path:  
+val runtime_package_path:
   module_system ->
   string ->
   string
 
-type package_info = { 
+type package_info = {
   module_system : module_system ;
-  path :  string 
+  path :  string
 }
 
-type t 
+type t
 
-val runtime_package_specs : t 
+val runtime_package_specs : t
 val is_runtime_package:
   t ->
   bool
-  
-  
 
-val same_package_by_name :   
+
+
+val same_package_by_name :
   t ->
-  t -> 
-  bool 
+  t ->
+  bool
 
-val iter : 
-  t -> 
+val iter :
+  t ->
   (package_info -> unit) ->
-  unit 
+  unit
 
-val empty : t 
-val from_name : string -> t 
-val is_empty : t -> bool 
+val empty : t
+val from_name : string -> t
+val is_empty : t -> bool
 
-val dump_packages_info : 
+val dump_packages_info :
   Format.formatter -> t -> unit
 
 
-(** used by command line option 
+(** used by command line option
   e.g [-bs-package-output commonjs:xx/path]
 *)
-val add_npm_package_path :   
+val add_npm_package_path :
   t ->
-  string -> 
-  t  
+  string ->
+  t
 
-type package_found_info =     
+type package_found_info =
   {
 
-    rel_path : string ;  
-    pkg_rel_path : string   
+    rel_path : string ;
+    pkg_rel_path : string
   }
 
 type info_query =
-  | Package_script 
-  | Package_not_found 
+  | Package_script
+  | Package_not_found
   | Package_found of package_found_info
 
-val get_output_dir:  
+val get_output_dir:
   t ->
   package_dir:string ->
   module_system ->
   string
 
-val query_package_infos:  
+val query_package_infos:
   t ->
   module_system ->
   info_query

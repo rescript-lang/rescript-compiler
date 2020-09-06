@@ -39,51 +39,51 @@
   | Const_block of int * Lam_tag_info.t * t list
   | Const_float_array of string list
   | Const_immstring of string
-  | Const_some of t 
-  | Const_module_alias 
+  | Const_some of t
+  | Const_module_alias
     (* eventually we can remove it, since we know
-      [constant] is [undefined] or not 
-    *) 
+      [constant] is [undefined] or not
+    *)
 
 
-let rec eq_approx (x : t) (y : t) = 
-  match x with 
+let rec eq_approx (x : t) (y : t) =
+  match x with
   | Const_module_alias -> y = Const_module_alias
   | Const_js_null -> y = Const_js_null
   | Const_js_undefined -> y =  Const_js_undefined
   | Const_js_true -> y = Const_js_true
   | Const_js_false -> y =  Const_js_false
-  | Const_int ix -> 
+  | Const_int ix ->
     (match y with Const_int iy -> ix.value = iy.value | _ -> false)
-  | Const_char ix ->   
+  | Const_char ix ->
     (match y with Const_char iy -> ix = iy | _ -> false)
-  | Const_string ix -> 
+  | Const_string ix ->
     (match y with Const_string iy -> ix = iy | _ -> false)
-  | Const_unicode ix ->   
+  | Const_unicode ix ->
     (match y with Const_unicode iy -> ix = iy | _ -> false)
-  | Const_float  ix -> 
+  | Const_float  ix ->
     (match y with Const_float iy -> ix = iy | _ -> false)
-  | Const_int32 ix ->   
+  | Const_int32 ix ->
     (match y with Const_int32 iy -> ix = iy | _ -> false)
-  | Const_int64 ix ->   
+  | Const_int64 ix ->
     (match y with Const_int64 iy -> ix = iy | _ -> false)
-  | Const_nativeint ix ->   
+  | Const_nativeint ix ->
     (match y with Const_nativeint iy -> ix = iy | _ -> false)
-  | Const_pointer (ix,_) ->   
+  | Const_pointer (ix,_) ->
     (match y with Const_pointer (iy,_) -> ix = iy | _ -> false)
-  | Const_block(ix,_,ixs) -> 
+  | Const_block(ix,_,ixs) ->
     (match y with Const_block(iy,_,iys) -> ix = iy && Ext_list.for_all2_no_exn ixs iys eq_approx
     | _ -> false)
-  | Const_float_array ixs ->   
-    (match y with Const_float_array iys -> 
+  | Const_float_array ixs ->
+    (match y with Const_float_array iys ->
       Ext_list.for_all2_no_exn ixs iys Ext_string.equal
     | _ -> false
     )
-  | Const_immstring ix ->   
+  | Const_immstring ix ->
    (match y with Const_immstring iy -> ix = iy | _ -> false)
-  | Const_some ix ->  
+  | Const_some ix ->
     (match y with Const_some iy -> eq_approx ix iy | _ -> false)
 
 
-let lam_none : t = 
-   Const_js_undefined 
+let lam_none : t =
+   Const_js_undefined

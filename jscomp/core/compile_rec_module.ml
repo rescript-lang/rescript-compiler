@@ -5,8 +5,8 @@ type t = Lambda.lambda
 
 (* Utilities for compiling "module rec" definitions *)
 
-let bs_init_mod (args : t list) loc : t =  
-  Lprim(Pccall (Primitive.simple 
+let bs_init_mod (args : t list) loc : t =
+  Lprim(Pccall (Primitive.simple
                   ~name:"#init_mod"
                   ~arity:2
                   ~alloc:true), args, loc)
@@ -19,33 +19,33 @@ let bs_update_mod (args : t list) loc : t =
 
 
 
-type loc = t 
-type shape = t 
+type loc = t
+type shape = t
 
-type binding = 
+type binding =
   Ident.t * (loc * shape) option * t
 
 
-let eval_rec_bindings_aux 
+let eval_rec_bindings_aux
     (bindings : binding list) (cont : t) : t =
-  let rec bind_inits args acc = 
-    match args with   
-    |  [] -> acc 
+  let rec bind_inits args acc =
+    match args with
+    |  [] -> acc
     | (_id, None, _rhs) :: rem ->
-      bind_inits rem acc 
+      bind_inits rem acc
     | (id, Some(loc, shape), _rhs) :: rem ->
       Lambda.Llet(Strict, Pgenval, id,
-                  bs_init_mod [loc; shape] Location.none,       
-                  bind_inits rem acc) in 
-  let rec  bind_strict args acc = 
-    match args with 
-    |  [] -> acc 
+                  bs_init_mod [loc; shape] Location.none,
+                  bind_inits rem acc) in
+  let rec  bind_strict args acc =
+    match args with
+    |  [] -> acc
     | (id, None, rhs) :: rem ->
       Lambda.Llet(Strict, Pgenval, id, rhs, bind_strict rem acc)
     | (_id, Some _, _rhs) :: rem ->
-      bind_strict rem acc in 
-  let rec patch_forwards args = 
-    match args with 
+      bind_strict rem acc in
+  let rec patch_forwards args =
+    match args with
     |  [] ->
       cont
     | (_id, None, _rhs) :: rem ->
@@ -55,67 +55,67 @@ let eval_rec_bindings_aux
         bs_update_mod [shape; Lvar id; rhs] Location.none,
         patch_forwards rem)
   in
-  bind_inits bindings 
-    (bind_strict bindings 
+  bind_inits bindings
+    (bind_strict bindings
        (patch_forwards bindings))
 
 (* collect all function declarations
     if the module creation is just a set of function declarations and consts,
     it is good
 *)
-let rec is_function_or_const_block (lam : Lambda.lambda) acc = 
-  match lam with 
+let rec is_function_or_const_block (lam : Lambda.lambda) acc =
+  match lam with
   | Lprim(Pmakeblock _, args , _)
-    -> 
-    Ext_list.for_all args 
-      (fun x -> 
-         match x with 
-         | Lvar id -> Set_ident.mem acc id 
+    ->
+    Ext_list.for_all args
+      (fun x ->
+         match x with
+         | Lvar id -> Set_ident.mem acc id
          | Lfunction _
          | Lconst _ -> true
-         | _ -> false)     
+         | _ -> false)
   | Llet  (_,_,id,Lfunction _, cont)
     -> is_function_or_const_block cont (Set_ident.add acc id )
-  | Lletrec (bindings, cont) -> 
-    let rec aux_bindings bindings acc = 
-      match bindings with 
+  | Lletrec (bindings, cont) ->
+    let rec aux_bindings bindings acc =
+      match bindings with
       | [] -> Some acc
-      | (id, Lambda.Lfunction _) :: rest  ->   
+      | (id, Lambda.Lfunction _) :: rest  ->
         aux_bindings rest (Set_ident.add acc id)
-      | (_, _) :: _ -> 
+      | (_, _) :: _ ->
         None
-    in   
-    begin match aux_bindings bindings acc with 
-      | None -> false 
-      | Some acc -> is_function_or_const_block cont acc 
-    end 
+    in
+    begin match aux_bindings bindings acc with
+      | None -> false
+      | Some acc -> is_function_or_const_block cont acc
+    end
   | Llet  (_,_,_,Lconst _, cont)
     -> is_function_or_const_block cont acc
   | Llet  (_,_, id1,Lvar id2, cont)
     when Set_ident.mem acc id2 ->
-    is_function_or_const_block cont (Set_ident.add acc id1) 
-  | _ -> false     
+    is_function_or_const_block cont (Set_ident.add acc id1)
+  | _ -> false
 
 
-let is_strict_or_all_functions (xs : binding list) = 
-    Ext_list.for_all xs (fun (_, opt, rhs) -> 
-      match opt with 
-      | None -> true 
+let is_strict_or_all_functions (xs : binding list) =
+    Ext_list.for_all xs (fun (_, opt, rhs) ->
+      match opt with
+      | None -> true
       | _ -> is_function_or_const_block rhs Set_ident.empty
     )
-    
+
 
 (* Without such optimizations:
 
 {[
-  module rec X : sig 
-    val f : int -> int   
-  end = struct 
+  module rec X : sig
+    val f : int -> int
+  end = struct
     let f x = x + 1
-  end   
-  and Y : sig 
-    val f : int -> int  
-  end = struct 
+  end
+  and Y : sig
+    val f : int -> int
+  end = struct
     let f x  = x + 2
   end
 ]}
@@ -137,11 +137,11 @@ would generate such rawlambda:
 
 ]}
 *)
-let eval_rec_bindings 
-    (bindings : binding list) 
+let eval_rec_bindings
+    (bindings : binding list)
     (cont : t) : t  =
-  if  is_strict_or_all_functions bindings then 
-    Lambda.Lletrec 
+  if  is_strict_or_all_functions bindings then
+    Lambda.Lletrec
       (Ext_list.map bindings (fun (id,_,rhs) -> id,rhs),cont  )
-  else 
+  else
     eval_rec_bindings_aux bindings cont

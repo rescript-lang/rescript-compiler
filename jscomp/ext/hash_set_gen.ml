@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -26,11 +26,11 @@
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
 
-type 'a bucket = 
+type 'a bucket =
   | Empty
   | Cons of {
-      mutable key : 'a ; 
-      mutable next : 'a bucket 
+      mutable key : 'a ;
+      mutable next : 'a bucket
     }
 
 type 'a t =
@@ -65,29 +65,29 @@ let resize indexfun h =
   let nsize = osize * 2 in
   if nsize < Sys.max_array_length then begin
     let ndata = Array.make nsize Empty in
-    let ndata_tail = Array.make nsize Empty in 
+    let ndata_tail = Array.make nsize Empty in
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
       | Cons {key; next} as cell ->
         let nidx = indexfun h key in
-        begin match Array.unsafe_get ndata_tail nidx with 
+        begin match Array.unsafe_get ndata_tail nidx with
         | Empty ->
           Array.unsafe_set ndata nidx cell
-        | Cons tail -> 
+        | Cons tail ->
           tail.next <- cell
         end;
-        Array.unsafe_set ndata_tail nidx  cell;          
+        Array.unsafe_set ndata_tail nidx  cell;
         insert_bucket next
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
     done;
-    for i = 0 to nsize - 1 do 
-      match Array.unsafe_get ndata_tail i with 
+    for i = 0 to nsize - 1 do
+      match Array.unsafe_get ndata_tail i with
       | Empty -> ()
       | Cons tail -> tail.next <- Empty
-    done 
+    done
   end
 
 let iter h f =
@@ -116,38 +116,38 @@ let fold h init f =
   !accu
 
 
-let to_list set = 
+let to_list set =
   fold set [] List.cons
 
-  
+
 
 
 let rec small_bucket_mem eq key lst =
-  match lst with 
-  | Empty -> false 
-  | Cons lst -> 
+  match lst with
+  | Empty -> false
+  | Cons lst ->
     eq key lst.key ||
-    match lst.next with 
-    | Empty -> false 
-    | Cons lst  -> 
+    match lst.next with
+    | Empty -> false
+    | Cons lst  ->
       eq key   lst.key ||
-      match lst.next with 
-      | Empty -> false 
-      | Cons lst  -> 
+      match lst.next with
+      | Empty -> false
+      | Cons lst  ->
         eq key lst.key ||
-        small_bucket_mem eq key lst.next 
+        small_bucket_mem eq key lst.next
 
-let rec remove_bucket 
+let rec remove_bucket
     (h : _ t) (i : int)
-    key 
-    ~(prec : _ bucket) 
-    (buck : _ bucket) 
-    eq_key = 
-  match buck with   
+    key
+    ~(prec : _ bucket)
+    (buck : _ bucket)
+    eq_key =
+  match buck with
   | Empty ->
     ()
   | Cons {key=k; next } ->
-    if eq_key k key 
+    if eq_key k key
     then begin
       h.size <- h.size - 1;
       match prec with
@@ -167,18 +167,18 @@ sig
   (* val copy: t -> t *)
   val remove:  t -> key -> unit
   val add :  t -> key -> unit
-  val of_array : key array -> t 
+  val of_array : key array -> t
   val check_add : t -> key -> bool
   val mem : t -> key -> bool
   val iter: t -> (key -> unit) -> unit
   val fold: t -> 'b  -> (key -> 'b -> 'b) -> 'b
   val length:  t -> int
   (* val stats:  t -> Hashtbl.statistics *)
-  val to_list : t -> key list 
+  val to_list : t -> key list
 end
 
 
-#if 0 then 
+#if 0 then
 let rec bucket_length accu = function
   | Empty -> accu
   | Cons l -> bucket_length (accu + 1) l.next

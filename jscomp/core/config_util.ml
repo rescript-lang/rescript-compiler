@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -31,10 +31,10 @@ let find_in_path_uncap path name =
   let uname = Ext_string.uncapitalize_ascii name in
   let rec try_dir = function
     | [] -> None
-    | dir::rem ->      
+    | dir::rem ->
       let ufullname = Filename.concat dir uname in
       if Sys.file_exists ufullname then Some ufullname
-      else 
+      else
         let fullname = Filename.concat dir name   in
         if Sys.file_exists fullname then Some fullname
         else try_dir rem
@@ -43,7 +43,7 @@ let find_in_path_uncap path name =
 
 
 (* ATTENTION: lazy to wait [Config.load_path] populated *)
-let find_opt file =  find_in_path_uncap !Config.load_path file 
+let find_opt file =  find_in_path_uncap !Config.load_path file
 
 
 

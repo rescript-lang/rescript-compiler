@@ -1,5 +1,5 @@
 (* Copyright (C) Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -26,39 +26,39 @@
 type t = private
   | Arity_info of int list  * bool
     (**
-      when the first argument is true, it is for sure 
-      the last one means it can take any params later, 
+      when the first argument is true, it is for sure
+      the last one means it can take any params later,
       for an exception: it is (Arity_info([], true))
-       approximation sound but not complete       
+       approximation sound but not complete
    *)
-  | Arity_na 
+  | Arity_na
 
-val equal : t -> t -> bool  
-val print : Format.formatter -> t -> unit   
+val equal : t -> t -> bool
+val print : Format.formatter -> t -> unit
 
-val print_arities_tbl : 
-  Format.formatter -> 
-  (Ident.t, t ref) Hashtbl.t -> 
-  unit 
+val print_arities_tbl :
+  Format.formatter ->
+  (Ident.t, t ref) Hashtbl.t ->
+  unit
 
-val merge : int -> t -> t   
+val merge : int -> t -> t
 
 val non_function_arity_info : t
 
-val raise_arity_info : t 
+val raise_arity_info : t
 
 val na : t
-val info : int list -> bool -> t 
+val info : int list -> bool -> t
 
 val first_arity_na :  t -> bool
-val get_first_arity : t -> int option 
+val get_first_arity : t -> int option
 
 (** when [NA] return  empty list*)
-val extract_arity : t -> int list 
+val extract_arity : t -> int list
 
-val merge_arities : 
-  int list -> 
-  int list -> 
-  bool -> 
-  bool -> 
+val merge_arities :
+  int list ->
+  int list ->
+  bool ->
+  bool ->
   t

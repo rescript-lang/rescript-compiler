@@ -37,7 +37,7 @@ let treeHeight (n : _ t) =
 let rec copy n =
   match  n with
   | None -> n
-  | Some n ->    
+  | Some n ->
     Some { n with left = copy n.left;  right = copy n.right}
 
 let create l x d r =
@@ -65,15 +65,15 @@ let updateValue n newValue =
 let bal l x d r =
   let hl = match  l with None -> 0 | Some n -> n.height in
   let hr = match  r with None -> 0 | Some n -> n.height in
-  if hl > hr + 2 then 
+  if hl > hr + 2 then
     match l with None -> assert false  | Some ({left = ll;   right = lr} as l) ->
       if treeHeight ll >= treeHeight lr then
         create ll l.key l.value (create lr x d r)
-      else 
-        match lr with None -> assert false | Some lr -> 
+      else
+        match lr with None -> assert false | Some lr ->
           create (create ll l.key l.value lr.left) lr.key lr.value (create lr.right x d r)
   else if hr > hl + 2 then
-    match r with None -> assert false | Some ({left = rl; right = rr} as r) -> 
+    match r with None -> assert false | Some ({left = rl; right = rr} as r) ->
       if treeHeight rr >= treeHeight rl then
         create (create l x d rl) r.key r.value rr
       else
@@ -85,7 +85,7 @@ let bal l x d r =
 
 let rec minKey0Aux n =
   match  n.left with
-  | None -> n.key 
+  | None -> n.key
   | Some n -> minKey0Aux n
 
 let minKey n =
@@ -100,7 +100,7 @@ let minKeyUndefined n =
 
 let rec maxKey0Aux n =
   match  n.right with
-  | None -> n.key 
+  | None -> n.key
   | Some n -> maxKey0Aux n
 
 let maxKey n =
@@ -160,7 +160,7 @@ let rec stackAllLeft v s =
 
 let rec findFirstByU n p =
   match  n with
-  | None -> None 
+  | None -> None
   | Some n ->
     let left =  findFirstByU n.left p in
     if left <> None then left
@@ -168,7 +168,7 @@ let rec findFirstByU n p =
         let  {key = v; value =  d} = n  in
         let pvd = p v d [@bs] in
         if pvd then Some(v, d)
-          else 
+          else
             let right =  findFirstByU n.right p in
             if right <> None then right else None
 
@@ -663,13 +663,13 @@ let rotateWithRightChild k1 =
   double l rotation
 *)
 let doubleWithLeftChild k3 =
-  let k3l = match k3.left with None -> assert false | Some x -> x in 
+  let k3l = match k3.left with None -> assert false | Some x -> x in
   let v = rotateWithRightChild k3l in
   (k3.left <- (Some v ));
   rotateWithLeftChild k3
 
 let doubleWithRightChild k2 =
-  let k2r = match k2.right with None -> assert false | Some x -> x in   
+  let k2r = match k2.right with None -> assert false | Some x -> x in
   let v = rotateWithLeftChild k2r in
   (k2.right <- (Some v));
   rotateWithRightChild k2
@@ -683,7 +683,7 @@ let balMutate nt  =
   let l, r = (nt.left, nt.right) in
   let hl, hr =  (treeHeight l, treeHeight r) in
   if hl > 2 +  hr then
-    match l with None -> assert false 
+    match l with None -> assert false
     | Some {left = ll;  right = lr} ->
     (if heightGe ll lr then
        heightUpdateMutate (rotateWithLeftChild nt)
@@ -692,7 +692,7 @@ let balMutate nt  =
     )
   else
   if hr > 2 + hl  then
-    match r with None -> assert false 
+    match r with None -> assert false
     | Some {left = rl; right = rr} ->
     (if heightGe rr rl then
        heightUpdateMutate (rotateWithRightChild nt)

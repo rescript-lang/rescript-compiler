@@ -1,5 +1,5 @@
 
-(* 
+(*
 #define FS_VAL(name,ty) external name : ty = "" [@@bs.module "fs"]
 
 

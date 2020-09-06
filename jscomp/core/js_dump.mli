@@ -22,14 +22,14 @@
 
 
 
-(** Print JS IR to vanilla Javascript code 
+(** Print JS IR to vanilla Javascript code
     Called by module {!Js_dump_program}
 *)
-val statement_list : 
+val statement_list :
   bool ->
-  Ext_pp_scope.t -> 
-  Ext_pp.t -> 
-  J.block -> 
+  Ext_pp_scope.t ->
+  Ext_pp.t ->
+  J.block ->
   Ext_pp_scope.t
 
 

@@ -25,6 +25,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val init_sample_project : cwd:string -> theme:string ->  string -> unit 
+val init_sample_project : cwd:string -> theme:string ->  string -> unit
 
-val list_themes : unit -> unit 
+val list_themes : unit -> unit

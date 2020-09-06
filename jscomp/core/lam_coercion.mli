@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -26,12 +26,12 @@
 type t = {
   export_list : Ident.t list ;
   export_set : Set_ident.t;
-  export_map : Lam.t Map_ident.t ; 
-  groups : Lam_group.t list ; 
-}   
+  export_map : Lam.t Map_ident.t ;
+  groups : Lam_group.t list ;
+}
 
 
-val coerce_and_group_big_lambda : 
+val coerce_and_group_big_lambda :
     Lam_stats.t ->
-    Lam.t -> 
+    Lam.t ->
     t * Lam_stats.t

@@ -24,7 +24,7 @@
 
 
 module P = Ext_pp
-module L = Js_dump_lit 
+module L = Js_dump_lit
 
 (**
    https://stackoverflow.com/questions/9367572/rules-for-unquoted-javascript-object-literal-keys
@@ -33,32 +33,32 @@ module L = Js_dump_lit
 
    Let's not do smart things
    {[
-     { 003 : 1} 
+     { 003 : 1}
    ]}
-   becomes 
+   becomes
    {[
      { 3 : 1}
    ]}
 *)
 
-let obj_property_no_need_quot s = 
-  let len = String.length s in 
-  if len > 0 then 
-    match String.unsafe_get s 0 with 
+let obj_property_no_need_quot s =
+  let len = String.length s in
+  if len > 0 then
+    match String.unsafe_get s 0 with
     | '$' | '_'
     | 'a'..'z'| 'A' .. 'Z' ->
       Ext_string.for_all_from  s
-        1 
-        (function 
+        1
+        (function
           | 'a'..'z'|'A'..'Z'
-          | '$' | '_' 
+          | '$' | '_'
           | '0' .. '9' -> true
           | _ -> false)
 
     | _ -> false
-  else 
-    false 
-(** used in printing keys 
+  else
+    false
+(** used in printing keys
     {[
       {"x" : x};;
       {x : x }
@@ -69,39 +69,39 @@ let obj_property_no_need_quot s =
     for example, id can be number in object literal
 *)
 
-(** used in property access 
+(** used in property access
     {[
       f.x ;;
       f["x"];;
     ]}
 *)
-let property_access f s = 
-  if obj_property_no_need_quot s then 
-    begin 
+let property_access f s =
+  if obj_property_no_need_quot s then
+    begin
       P.string f L.dot;
-      P.string f s; 
+      P.string f s;
     end
   else
-    begin 
+    begin
       P.bracket_group f 1 (fun _ ->
-      (* avoid cases like 
+      (* avoid cases like
         "0123", "123_456"
       *)
-      match string_of_int (int_of_string s ) with 
-      | s0 when s0 = s -> 
-        P.string f s 
+      match string_of_int (int_of_string s ) with
+      | s0 when s0 = s ->
+        P.string f s
       | _  ->
         Js_dump_string.pp_string f s
-      | exception _ -> 
+      | exception _ ->
         Js_dump_string.pp_string f s
     )
     end
 
-let property_key (s : J.property_name) : string =     
-  match s with 
+let property_key (s : J.property_name) : string =
+  match s with
   | Lit s ->
-    if obj_property_no_need_quot s then 
-      s 
-    else Js_dump_string.escape_to_string  s  
- | Symbol_name -> 
+    if obj_property_no_need_quot s then
+      s
+    else Js_dump_string.escape_to_string  s
+ | Symbol_name ->
        {|[Symbol.for("name")]|}

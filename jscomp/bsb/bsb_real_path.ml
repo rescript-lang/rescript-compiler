@@ -2,11 +2,11 @@ let (//) = Filename.concat
 
 
 
-let normalize_exn (s : string) : string = 
-  let old_cwd = Sys.getcwd () in 
+let normalize_exn (s : string) : string =
+  let old_cwd = Sys.getcwd () in
   Unix.chdir s ;
-  let normalized = Sys.getcwd () in 
-  Unix.chdir old_cwd; 
+  let normalized = Sys.getcwd () in
+  Unix.chdir old_cwd;
   normalized
 
 let real_path p =

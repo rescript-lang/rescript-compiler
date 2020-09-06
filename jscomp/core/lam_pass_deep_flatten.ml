@@ -109,7 +109,7 @@ let lambda_of_groups ~(rev_bindings : Lam_group.t list) (result : Lam.t)  : Lam.
       | Nop l -> Lam.seq l acc
       | Single(kind,ident,lam) -> Lam_util.refine_let ~kind ident lam acc
       | Recursive bindings -> Lam.letrec bindings acc)
-    
+
 
 
 (* TODO:
@@ -171,8 +171,8 @@ let deep_flatten
                      | Some key ->
                        Lam_group.single str key arg :: acc
                   )
-                  
-                  
+
+
               ) body
             | None ->
               flatten (Single(str, id, res ) :: accux) body
@@ -240,7 +240,7 @@ let deep_flatten
     (*       aux (beta_reduce params body args) *)
 
     | Lapply{ap_func = l1; ap_args  = ll; ap_info} ->
-      Lam.apply (aux l1) (Ext_list.map ll aux) ap_info 
+      Lam.apply (aux l1) (Ext_list.map ll aux) ap_info
 
     (* This kind of simple optimizations should be done each time
        and as early as possible *)

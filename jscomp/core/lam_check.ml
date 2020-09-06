@@ -47,30 +47,30 @@ let check file lam =
     else Hash_set_ident.add defined_variables id
   in
   (* TODO: replaced by a slow version of {!Lam_iter.inner_iter} *)
-  let rec 
-    check_list xs (cxt : Set_int.t)  = Ext_list.iter xs (fun x -> check_staticfails x cxt)  
-    and check_list_snd : 'a. ('a * Lam.t) list -> _ -> unit = fun xs cxt ->     
+  let rec
+    check_list xs (cxt : Set_int.t)  = Ext_list.iter xs (fun x -> check_staticfails x cxt)
+    and check_list_snd : 'a. ('a * Lam.t) list -> _ -> unit = fun xs cxt ->
       Ext_list.iter_snd  xs (fun x -> check_staticfails x cxt)
     and check_staticfails (l : Lam.t) (cxt : Set_int.t)=
       match l with
-      | Lvar _ 
-      | Lconst _ 
+      | Lvar _
+      | Lconst _
       | Lglobal_module _ -> ()
       | Lprim {args; _} ->
-        check_list args cxt       
+        check_list args cxt
       | Lapply{ap_func; ap_args; _} ->
         check_list (ap_func::ap_args) cxt
         (* check invariant that staticfaill does not cross function/while/for loop*)
-      | Lfunction{body;params = _} ->        
+      | Lfunction{body;params = _} ->
         check_staticfails body Set_int.empty
       | Lwhile(e1, e2) ->
         check_staticfails e1 cxt;
         check_staticfails e2 Set_int.empty
       | Lfor(_v, e1, e2, _dir, e3) ->
-        check_staticfails e1 cxt; check_staticfails e2 cxt;        
-        check_staticfails e3 Set_int.empty;                
+        check_staticfails e1 cxt; check_staticfails e2 cxt;
+        check_staticfails e3 Set_int.empty;
       | Llet(_str, _id, arg, body) ->
-        check_list [arg;body] cxt 
+        check_list [arg;body] cxt
       | Lletrec(decl, body) ->
         check_list_snd  decl cxt;
         check_staticfails body cxt
@@ -78,16 +78,16 @@ let check file lam =
         check_staticfails arg cxt ;
         check_list_snd sw.sw_consts cxt;
         check_list_snd sw.sw_blocks cxt;
-        Ext_option.iter sw.sw_failaction (fun x -> check_staticfails x cxt);         
+        Ext_option.iter sw.sw_failaction (fun x -> check_staticfails x cxt);
       | Lstringswitch (arg,cases,default) ->
         check_staticfails arg cxt ;
         check_list_snd cases cxt;
         Ext_option.iter default (fun x -> check_staticfails x cxt)
       | Lstaticraise (i,args) ->
-        if Set_int.mem cxt i  then  check_list args cxt 
+        if Set_int.mem cxt i  then  check_list args cxt
         else failwith ("exit " ^ string_of_int i ^ " unbound")
       | Lstaticcatch(e1, (j,_vars), e2) ->
-        check_staticfails e1 (Set_int.add cxt j);        
+        check_staticfails e1 (Set_int.add cxt j);
         check_staticfails e2 cxt
       | Ltrywith(e1, _exn, e2) ->
         check_staticfails e1 cxt;
@@ -102,9 +102,9 @@ let check file lam =
       | Lsend (_k, met, obj, args, _) ->
         check_list (met::obj::args) cxt
   in
-  let rec 
-    iter_list xs = Ext_list.iter xs iter   
-    and iter_list_snd : 'a. ('a * Lam.t) list -> unit = fun xs ->     
+  let rec
+    iter_list xs = Ext_list.iter xs iter
+    and iter_list_snd : 'a. ('a * Lam.t) list -> unit = fun xs ->
       Ext_list.iter_snd  xs iter
     and iter (l : Lam.t) =
       match l with
@@ -131,7 +131,7 @@ let check file lam =
         iter arg;
         iter_list_snd sw.sw_consts;
         iter_list_snd sw.sw_blocks;
-        Ext_option.iter sw.sw_failaction iter;         
+        Ext_option.iter sw.sw_failaction iter;
         assert (not (sw.sw_failaction <> None && sw.sw_consts_full && sw.sw_blocks_full))
       | Lstringswitch (arg,cases,default) ->
         iter arg ;

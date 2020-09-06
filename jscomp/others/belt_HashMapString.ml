@@ -18,7 +18,7 @@ type key = string
 type seed = int
 external caml_hash_mix_string : seed -> string -> seed  = "caml_hash_mix_string"
 external final_mix : seed -> seed = "caml_hash_final_mix"
-let hash (s : key) =   
+let hash (s : key) =
   final_mix  (caml_hash_mix_string 0 s )
 
 # 33 "others/hashmap.cppo.ml"
@@ -30,18 +30,18 @@ module A = Belt_Array
 type 'b t = (unit, unit, key,'b) N.t
 
 
-let rec copyBucketReHash  ~h_buckets ~ndata_tail  (old_bucket : _ N.bucket  C.opt ) = 
-  match C.toOpt old_bucket with 
+let rec copyBucketReHash  ~h_buckets ~ndata_tail  (old_bucket : _ N.bucket  C.opt ) =
+  match C.toOpt old_bucket with
   | None -> ()
   | Some cell ->
-    let nidx = hash cell.key land (A.length h_buckets - 1) in 
-    let v = C.return cell in 
+    let nidx = hash cell.key land (A.length h_buckets - 1) in
+    let v = C.return cell in
     begin match C.toOpt (A.getUnsafe ndata_tail nidx) with
-      | None -> 
+      | None ->
         A.setUnsafe h_buckets nidx  v
       | Some tail ->
-        tail.N.next <- v  (* cell put at the end *)            
-    end;          
+        tail.N.next <- v  (* cell put at the end *)
+    end;
     A.setUnsafe ndata_tail nidx  v;
     copyBucketReHash  ~h_buckets ~ndata_tail  cell.next
 
@@ -65,35 +65,35 @@ let resize  h =
   end
 
 
-let rec replaceInBucket  (key : key) info cell = 
-    if  cell.N.key = key 
+let rec replaceInBucket  (key : key) info cell =
+    if  cell.N.key = key
     then
       begin
         cell.N.value <- info;
         false
       end
     else
-    match C.toOpt cell.next with 
-    | None -> true 
-    | Some cell -> 
+    match C.toOpt cell.next with
+    | None -> true
+    | Some cell ->
       replaceInBucket key info cell
 
 let set  h (key : key) value =
-  let h_buckets = h.C.buckets in 
-  let buckets_len = A.length h_buckets in 
-  let i = hash key land (buckets_len - 1) in 
-  let l = A.getUnsafe h_buckets i in  
-  (match C.toOpt l with 
-  | None -> 
+  let h_buckets = h.C.buckets in
+  let buckets_len = A.length h_buckets in
+  let i = hash key land (buckets_len - 1) in
+  let l = A.getUnsafe h_buckets i in
+  (match C.toOpt l with
+  | None ->
     A.setUnsafe h_buckets i (C.return {N.key; value; next = C.emptyOpt});
     h.C.size <- (h.C.size + 1);
-  | Some bucket -> 
+  | Some bucket ->
       if replaceInBucket key value bucket then begin
         A.setUnsafe h_buckets i (C.return {N.key; value; next = l});
         h.C.size <- (h.C.size + 1);
-      end   
+      end
     );
-    if h.C.size > buckets_len lsl 1 then resize h 
+    if h.C.size > buckets_len lsl 1 then resize h
 
 
 
@@ -101,43 +101,43 @@ let rec removeInBucket h h_buckets  i (key : key) prec buckets =
   match C.toOpt buckets with
   | None -> ()
   | Some cell  ->
-    let cell_next = cell.N.next in 
-    if  cell.N.key = key 
-    then 
+    let cell_next = cell.N.next in
+    if  cell.N.key = key
+    then
       begin
         prec.N.next <-cell_next;
-        h.C.size <- (h.C.size - 1);        
+        h.C.size <- (h.C.size - 1);
       end
     else removeInBucket  h h_buckets i key cell cell_next
 
-let remove  h key =  
-  let h_buckets = h.C.buckets in 
-  let i = hash key land (A.length h_buckets - 1) in  
-  let bucket = (A.getUnsafe h_buckets i) in 
-  match C.toOpt bucket with 
+let remove  h key =
+  let h_buckets = h.C.buckets in
+  let i = hash key land (A.length h_buckets - 1) in
+  let bucket = (A.getUnsafe h_buckets i) in
+  match C.toOpt bucket with
   | None -> ()
-  | Some cell -> 
-    if cell.N.key = key then 
-    begin 
+  | Some cell ->
+    if cell.N.key = key then
+    begin
       A.setUnsafe h_buckets i cell.next;
       h.C.size <- (h.C.size - 1)
-    end 
-    else 
+    end
+    else
       removeInBucket  h h_buckets i key cell cell.next
 
 
 
-let rec getAux  (key : key) buckets = 
-  match C.toOpt buckets with 
+let rec getAux  (key : key) buckets =
+  match C.toOpt buckets with
   | None ->
     None
   | Some cell ->
-    if key = cell.N.key  then Some cell.N.value 
+    if key = cell.N.key  then Some cell.N.value
     else getAux key  cell.next
 
 let get  h (key : key) =
-  let h_buckets = h.C.buckets in 
-  let nid = hash key  land (A.length h_buckets - 1) in 
+  let h_buckets = h.C.buckets in
+  let nid = hash key  land (A.length h_buckets - 1) in
   match C.toOpt @@ A.getUnsafe h_buckets nid with
   | None -> None
   | Some cell1 ->
@@ -153,54 +153,54 @@ let get  h (key : key) =
             else getAux  key cell3.N.next
 
 
-let rec memInBucket (key : key) cell = 
+let rec memInBucket (key : key) cell =
     cell.N.key  = key  ||
-    (match C.toOpt cell.next with 
+    (match C.toOpt cell.next with
     | None -> false
     | Some nextCell -> memInBucket  key nextCell
      )
-    
+
 let has h key =
-  let h_buckets = h.C.buckets in 
-  let nid = hash key land (A.length h_buckets - 1) in 
-  let bucket = A.getUnsafe h_buckets nid in 
-  match C.toOpt bucket with 
+  let h_buckets = h.C.buckets in
+  let nid = hash key land (A.length h_buckets - 1) in
+  let bucket = A.getUnsafe h_buckets nid in
+  match C.toOpt bucket with
   | None -> false
-  | Some bucket -> 
+  | Some bucket ->
     memInBucket  key bucket
 
 
 let make ~hintSize = C.make ~hintSize ~hash:() ~eq:()
 let clear = C.clear
 let size h = h.C.size
-let forEachU = N.forEachU 
+let forEachU = N.forEachU
 let forEach = N.forEach
 let reduceU = N.reduceU
-let reduce = N.reduce               
+let reduce = N.reduce
 let logStats = N.logStats
-let keepMapInPlaceU = N.keepMapInPlaceU 
+let keepMapInPlaceU = N.keepMapInPlaceU
 let keepMapInPlace = N.keepMapInPlace
 let toArray = N.toArray
 let copy = N.copy
 let keysToArray = N.keysToArray
 let valuesToArray = N.valuesToArray
-let getBucketHistogram = N.getBucketHistogram 
+let getBucketHistogram = N.getBucketHistogram
 let isEmpty = C.isEmpty
 
-let fromArray arr = 
-  let len = A.length arr in 
-  let v = make ~hintSize:len in 
-  for i = 0 to len - 1 do 
+let fromArray arr =
+  let len = A.length arr in
+  let v = make ~hintSize:len in
+  for i = 0 to len - 1 do
     let k,value = (A.getUnsafe arr i) in
     set v k value
   done ;
   v
 
-(* TOOD: optimize heuristics for resizing *)  
-let mergeMany h arr =   
-  let len = A.length arr in 
-  for i = 0 to len - 1 do 
+(* TOOD: optimize heuristics for resizing *)
+let mergeMany h arr =
+  let len = A.length arr in
+  for i = 0 to len - 1 do
     let k,v = (A.getUnsafe arr i) in
-    set h k v 
+    set h k v
   done
 

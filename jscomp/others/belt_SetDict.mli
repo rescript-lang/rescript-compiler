@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -40,12 +40,12 @@ val has: ('value, 'id) t -> 'value -> cmp:('value, 'id) cmp -> bool
 val add: ('value, 'id) t -> 'value -> cmp:('value, 'id) cmp -> ('value, 'id) t
 (** [add s x] If [x] was already in [s], [s] is returned unchanged. *)
 
-val mergeMany: ('value, 'id) t -> 'value array -> cmp:('value, 'id) cmp -> ('value, 'id) t 
+val mergeMany: ('value, 'id) t -> 'value array -> cmp:('value, 'id) cmp -> ('value, 'id) t
 
 val remove: ('value, 'id) t -> 'value -> cmp:('value, 'id) cmp -> ('value, 'id) t
 (** [remove m x] If [x] was not in [m], [m] is returned reference unchanged. *)
 
-val removeMany: ('value, 'id) t -> 'value array -> cmp:('value, 'id) cmp -> ('value, 'id) t 
+val removeMany: ('value, 'id) t -> 'value array -> cmp:('value, 'id) cmp -> ('value, 'id) t
 
 val union: ('value, 'id) t -> ('value, 'id) t -> cmp:('value, 'id) cmp -> ('value, 'id) t
 
@@ -115,7 +115,7 @@ val get: ('value, 'id) t -> 'value -> cmp:('value, 'id) cmp -> 'value option
 
 val getUndefined: ('value, 'id) t -> 'value -> cmp:('value, 'id) cmp -> 'value Js.undefined
 
-val getExn: ('value, 'id) t -> 'value -> cmp:('value, 'id) cmp -> 'value 
+val getExn: ('value, 'id) t -> 'value -> cmp:('value, 'id) cmp -> 'value
 
 val split: ('value, 'id) t -> 'value -> cmp:('value, 'id) cmp -> (('value, 'id) t * ('value, 'id) t) * bool
 (** [split x s] returns a triple [(l, present, r)], where

@@ -32,13 +32,13 @@ val to_merlin_string : t  -> string
 
 
 
-val from_map : Ext_json_types.t Map_string.t -> t 
+val from_map : Ext_json_types.t Map_string.t -> t
 
 (** [to_bsb_string not_dev warning]
 *)
-val to_bsb_string : 
-  toplevel:bool -> 
-  t  -> 
+val to_bsb_string :
+  toplevel:bool ->
+  t  ->
   string
 
 val use_default : t

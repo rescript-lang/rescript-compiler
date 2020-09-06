@@ -22,9 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type callback = 
+type callback =
   [
-    `Str of (string -> unit) 
+    `Str of (string -> unit)
   | `Str_loc of (string -> Lexing.position -> unit)
   | `Flo of (string -> unit )
   | `Flo_loc of (string -> Lexing.position -> unit )
@@ -38,42 +38,42 @@ type callback =
   ]
 
 
-type path = string list 
+type path = string list
 
-type status = 
+type status =
   | No_path
-  | Found  of Ext_json_types.t 
-  | Wrong_type of path 
+  | Found  of Ext_json_types.t
+  | Wrong_type of path
 
-let test   ?(fail=(fun () -> ())) key 
+let test   ?(fail=(fun () -> ())) key
     (cb : callback) (m  : Ext_json_types.t Map_string.t)
   =
-  begin match Map_string.find_exn m key, cb with 
+  begin match Map_string.find_exn m key, cb with
     | exception Not_found  ->
       begin match cb with `Not_found f ->  f ()
                         | _ -> fail ()
-      end      
+      end
     | True _, `Bool cb -> cb true
-    | False _, `Bool cb  -> cb false 
-    | Flo {flo = s} , `Flo cb  -> cb s 
+    | False _, `Bool cb  -> cb false
+    | Flo {flo = s} , `Flo cb  -> cb s
     | Flo {flo = s; loc} , `Flo_loc cb  -> cb s loc
-    | Obj {map = b} , `Obj cb -> cb b 
-    | Arr {content}, `Arr cb -> cb content 
-    | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
-      cb content  loc_start loc_end 
+    | Obj {map = b} , `Obj cb -> cb b
+    | Arr {content}, `Arr cb -> cb content
+    | Arr {content; loc_start ; loc_end}, `Arr_loc cb ->
+      cb content  loc_start loc_end
     | Null _, `Null cb  -> cb ()
-    | Str {str = s }, `Str cb  -> cb s 
-    | Str {str = s ; loc }, `Str_loc cb -> cb s loc 
+    | Str {str = s }, `Str cb  -> cb s
+    | Str {str = s ; loc }, `Str_loc cb -> cb s loc
     |  any  , `Id  cb -> cb any
-    | _, _ -> fail () 
+    | _, _ -> fail ()
   end;
   m
 
 
 let loc_of (x : Ext_json_types.t) =
   match x with
-  | True p | False p | Null p -> p 
-  | Str p -> p.loc 
+  | True p | False p | Null p -> p
+  | Str p -> p.loc
   | Arr p -> p.loc_start
   | Obj p -> p.loc
   | Flo p -> p.loc

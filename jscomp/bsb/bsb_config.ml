@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,11 +17,11 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-let (//) = Ext_path.combine 
+let (//) = Ext_path.combine
 
 let lib_lit = "lib"
 let lib_js = lib_lit //"js"
@@ -31,11 +31,11 @@ let lib_bs = lib_lit // "bs"
 let lib_es6 = lib_lit // "es6"
 let lib_es6_global = lib_lit // "es6_global"
 
-let all_lib_artifacts = 
-  [ lib_js ; 
+let all_lib_artifacts =
+  [ lib_js ;
     lib_ocaml;
-    lib_bs ; 
-    lib_es6 ; 
+    lib_bs ;
+    lib_es6 ;
     lib_es6_global;
 #if BS_NATIVE then
   (* Artifacts directories for other backends *)
@@ -48,14 +48,14 @@ let all_lib_artifacts =
 let rev_lib_bs = ".."// ".."
 
 
-let rev_lib_bs_prefix p = rev_lib_bs // p 
+let rev_lib_bs_prefix p = rev_lib_bs // p
 
 let ocaml_bin_install_prefix p = lib_ocaml // p
 
-let lazy_src_root_dir = "$src_root_dir" 
+let lazy_src_root_dir = "$src_root_dir"
 let proj_rel path = lazy_src_root_dir // path
 
-(** it may not be a bad idea to hard code the binary path 
+(** it may not be a bad idea to hard code the binary path
     of bsb in configuration time
 *)
 

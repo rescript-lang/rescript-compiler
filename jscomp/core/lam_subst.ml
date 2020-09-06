@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -33,21 +33,21 @@
 
  let subst (s : Lam.t Map_ident.t) lam =
   let rec subst_aux (x : Lam.t) : Lam.t =
-    match x with 
+    match x with
     | Lvar id ->
       Map_ident.find_default s id  x
     | Lconst _ -> x
-    | Lapply{ap_func; ap_args; ap_info} -> 
+    | Lapply{ap_func; ap_args; ap_info} ->
       Lam.apply (subst_aux ap_func) (Ext_list.map ap_args subst_aux ) ap_info
-    | Lfunction {arity; params; body; attr} -> 
+    | Lfunction {arity; params; body; attr} ->
       Lam.function_ ~arity  ~params ~body:(subst_aux body) ~attr
-    | Llet(str, id, arg, body) -> 
+    | Llet(str, id, arg, body) ->
       Lam.let_ str id (subst_aux arg) (subst_aux body)
-    | Lletrec(decl, body) -> 
+    | Lletrec(decl, body) ->
       Lam.letrec (Ext_list.map decl subst_decl ) (subst_aux body)
-    | Lprim { primitive ; args; loc} -> 
+    | Lprim { primitive ; args; loc} ->
       Lam.prim ~primitive ~args:(Ext_list.map args subst_aux ) loc
-    | Lglobal_module _ -> x  
+    | Lglobal_module _ -> x
     | Lswitch(arg, sw) ->
       Lam.switch (subst_aux arg)
         {sw with sw_consts = Ext_list.map sw.sw_consts subst_case ;
@@ -66,11 +66,11 @@
       -> Lam.if_ (subst_aux e1) (subst_aux e2) (subst_aux e3)
     | Lsequence(e1, e2)
       -> Lam.seq (subst_aux e1) (subst_aux e2)
-    | Lwhile(e1, e2) 
+    | Lwhile(e1, e2)
       -> Lam.while_ (subst_aux e1) (subst_aux e2)
-    | Lfor(v, e1, e2, dir, e3) 
+    | Lfor(v, e1, e2, dir, e3)
       -> Lam.for_ v (subst_aux e1) (subst_aux e2) dir (subst_aux e3)
-    | Lassign(id, e) -> 
+    | Lassign(id, e) ->
       Lam.assign id (subst_aux e)
     | Lsend (k, met, obj, args, loc) ->
       Lam.send k (subst_aux met) (subst_aux obj) (Ext_list.map args subst_aux) loc
@@ -80,4 +80,4 @@
   and subst_opt = function
     | None -> None
     | Some e -> Some (subst_aux e)
-  in subst_aux lam 
+  in subst_aux lam

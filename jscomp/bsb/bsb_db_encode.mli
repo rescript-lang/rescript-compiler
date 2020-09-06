@@ -1,5 +1,5 @@
 (* Copyright (C) 2019 - Present Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,16 +17,16 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val encode : 
-  Bsb_db.t -> 
-  Ext_buffer.t -> 
-  unit 
+val encode :
+  Bsb_db.t ->
+  Ext_buffer.t ->
+  unit
 
-val write_build_cache : 
+val write_build_cache :
   dir:string -> Bsb_db.t -> string

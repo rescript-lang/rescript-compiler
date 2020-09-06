@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -29,25 +29,25 @@
 
 
 
-(** High level compilation module *) 
+(** High level compilation module *)
 
 (** This module defines a function to compile the program directly into [js]
-    given [filename] and [outputprefix], 
+    given [filename] and [outputprefix],
     it will be useful if we don't care about bytecode output(generating js only).
  *)
-val interface : 
+val interface :
   parser:(string -> Parsetree.signature) ->
-  Format.formatter -> 
-  string -> 
-  string -> 
+  Format.formatter ->
+  string ->
+  string ->
   unit
 
 val interface_mliast : Format.formatter -> string -> string  -> unit
-  
 
 
-(* val after_parsing_impl : 
-  Format.formatter -> 
+
+(* val after_parsing_impl :
+  Format.formatter ->
   string ->
   Parsetree.structure ->
   unit *)
@@ -56,13 +56,13 @@ val interface_mliast : Format.formatter -> string -> string  -> unit
     Used in eval
 *)
 
-val implementation : 
+val implementation :
   parser:(string -> Parsetree.structure) ->
-  Format.formatter -> 
-  string -> 
-  string -> 
+  Format.formatter ->
+  string ->
+  string ->
   unit
-(** [implementation ppf sourcefile outprefix] compiles to JS directly *) 
+(** [implementation ppf sourcefile outprefix] compiles to JS directly *)
 
 val implementation_mlast : Format.formatter -> string -> string -> unit
 

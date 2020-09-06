@@ -26,13 +26,13 @@
 (* A small module which is also used by {!Bsb_helper} *)
 type 'a t = (string * 'a * string) array
 
-let rec unsafe_loop i (l : 'a t) n x = 
+let rec unsafe_loop i (l : 'a t) n x =
   if i = n then None
-  else 
+  else
     let (y1,y2,_) =  Array.unsafe_get l i in
     if y1 = x then  Some y2
-    else unsafe_loop (i + 1) l n x 
+    else unsafe_loop (i + 1) l n x
 
 let assoc3 (l : 'a t) (x : string)  : 'a option =
-  let n = Array.length l in 
-  unsafe_loop 0 l n x 
+  let n = Array.length l in
+  unsafe_loop 0 l n x

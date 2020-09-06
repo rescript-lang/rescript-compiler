@@ -32,19 +32,19 @@ let (@>) (b, v) acc =
   else
     acc
 
-let preprocess_to_buffer fn (str : string) (oc : Buffer.t) : unit =     
+let preprocess_to_buffer fn (str : string) (oc : Buffer.t) : unit =
   let lexbuf = Lexing.from_string  str in
   Lexer.init () ;
   Location.init lexbuf fn;
-  let segments =    
+  let segments =
     Lexer.filter_directive_from_lexbuf  lexbuf in
   Ext_list.iter segments
     (fun (start, pos) ->
        Buffer.add_substring  oc str start (pos - start)
     )
 
-let verify_valid_ml (str : string) = 
-  try 
+let verify_valid_ml (str : string) =
+  try
     ignore @@ Parse.implementation (Lexing.from_string str);
     true
   with _ -> false
@@ -54,7 +54,7 @@ let preprocess_string fn (str : string) oc =
   let lexbuf = Lexing.from_string  str in
   Lexer.init () ;
   Location.init lexbuf fn;
-  let segments =    
+  let segments =
     Lexer.filter_directive_from_lexbuf  lexbuf in
   Ext_list.iter segments
     (fun (start, pos) ->
@@ -94,12 +94,12 @@ let rec process_line cwd filedir  line =
         | _
           ->  Ext_fmt.failwithf ~loc:__LOC__ "invalid line %s" line
       end
-and read_lines (cwd : string) (file : string) : string list =    
+and read_lines (cwd : string) (file : string) : string list =
   Ext_list.fold_left (Ext_io.rev_lines_of_file file) [] (fun acc f ->
       let filedir  =   Filename.dirname file in
       let extras = process_line  cwd filedir f in
       Ext_list.append extras   acc
-    ) 
+    )
 let implementation sourcefile =
   let content = Ext_io.load_file sourcefile in
   let ast =
@@ -137,7 +137,7 @@ let interface sourcefile =
 let emit_line_directive = ref true
 
 let emit out_chan name =
-  if !emit_line_directive then begin   
+  if !emit_line_directive then begin
     output_string out_chan "#1 \"";
     (*Note here we do this is mostly to avoid leaking user's
       information, like private path, in the future, we can have
@@ -145,11 +145,11 @@ let emit out_chan name =
     *)
     output_string out_chan (Filename.basename name) ;
     output_string out_chan "\"\n"
-  end 
-let decorate_module 
+  end
+let decorate_module
     ?(module_bound=true)
     out_chan base mli_name ml_name mli_content ml_content =
-  if module_bound then begin 
+  if module_bound then begin
     let base = Ext_string.capitalize_ascii base in
     output_string out_chan "module ";
     output_string out_chan base ;
@@ -162,7 +162,7 @@ let decorate_module
     output_string out_chan "\nend\n"
   end
   else
-    begin 
+    begin
       output_string out_chan "include (struct\n";
       emit out_chan  ml_name ;
       preprocess_string ml_name ml_content out_chan;
@@ -172,31 +172,31 @@ let decorate_module
       output_string out_chan "\nend)";
     end
 
-let decorate_module_only 
+let decorate_module_only
     ?(check : unit option)
-    ?(module_bound=true) 
+    ?(module_bound=true)
     out_chan base ml_name ml_content =
-  if module_bound then begin 
+  if module_bound then begin
     let base = Ext_string.capitalize_ascii base in
     output_string out_chan "module ";
     output_string out_chan base ;
     output_string out_chan "\n= struct\n"
   end;
   emit out_chan  ml_name;
-  if check <> None then 
-    let buf = Buffer.create 2000 in 
-    preprocess_to_buffer ml_name ml_content buf; 
-    let str = Buffer.contents buf in 
-    if not @@ verify_valid_ml str then 
+  if check <> None then
+    let buf = Buffer.create 2000 in
+    preprocess_to_buffer ml_name ml_content buf;
+    let str = Buffer.contents buf in
+    if not @@ verify_valid_ml str then
       failwith (ml_name ^ " can not be a valid ml module")
-    else 
-      output_string out_chan str 
-  else 
-    preprocess_string ml_name ml_content out_chan ; 
-  if module_bound then 
+    else
+      output_string out_chan str
+  else
+    preprocess_string ml_name ml_content out_chan ;
+  if module_bound then
     output_string out_chan "\nend\n"
 
-(** recursive module is not good for performance, here module type only 
+(** recursive module is not good for performance, here module type only
     has to be pure types otherwise it would not compile any way
 *)
 let decorate_interface_only out_chan  base  mli_name mli_content =
@@ -220,21 +220,21 @@ type main_module = { modulename : string ; export : bool }
 (** set bs-main*)
 let main_module : main_module option ref = ref None
 
-let set_main_module modulename = 
+let set_main_module modulename =
   main_module := Some {modulename; export = false }
 
-let set_main_export modulename = 
+let set_main_export modulename =
   main_module := Some {modulename; export = true }
 
-let set_mllib_file = ref false     
+let set_mllib_file = ref false
 
-let prelude = ref None 
-let set_prelude f = 
-  if Sys.file_exists f then 
-    prelude := Some f 
+let prelude = ref None
+let set_prelude f =
+  if Sys.file_exists f then
+    prelude := Some f
   else raise (Arg.Bad ("file " ^ f ^ " don't exist "))
 let prelude_str = ref None
-let set_prelude_str f = prelude_str := Some f 
+let set_prelude_str f = prelude_str := Some f
 
 (**
    {[
@@ -251,80 +251,80 @@ let set_prelude_str f = prelude_str := Some f
 
 let cwd = Sys.getcwd ()
 
-let normalize s = 
+let normalize s =
   Ext_path.normalize_absolute_path (Ext_path.combine cwd s )
-type dir_spec = Bspack_ast_extract.dir_spec 
+type dir_spec = Bspack_ast_extract.dir_spec
 
-let process_include s : dir_spec = 
-  let i = Ext_string.rindex_neg s '?'   in 
-  if i < 0 then   
+let process_include s : dir_spec =
+  let i = Ext_string.rindex_neg s '?'   in
+  if i < 0 then
     { dir = normalize s; excludes = []}
-  else 
+  else
     let dir = String.sub s 0 i in
     { dir = normalize dir;
-      excludes = Ext_string.split 
+      excludes = Ext_string.split
           (String.sub s (i + 1) (String.length s - i - 1)    )
           ','}
 
 let deduplicate_dirs (xs : dir_spec list) =
-  let set :  dir_spec Hash_string.t = Hash_string.create 64 in 
-  List.filter (fun ({dir ; excludes = new_excludes } as y : dir_spec) -> 
+  let set :  dir_spec Hash_string.t = Hash_string.create 64 in
+  List.filter (fun ({dir ; excludes = new_excludes } as y : dir_spec) ->
       match Hash_string.find_opt set dir with
-      | None ->  
+      | None ->
         Hash_string.add set dir y;
-        true 
+        true
       | Some x ->  x.excludes <- new_excludes @ x.excludes ; false
-    ) xs 
+    ) xs
 
 let includes :  _ list ref = ref []
 
-let add_include dir = 
+let add_include dir =
   includes := process_include    dir :: !includes
 
-let exclude_modules = ref []                                     
-let add_exclude module_ = 
+let exclude_modules = ref []
+let add_exclude module_ =
   exclude_modules := module_ :: !exclude_modules
-let no_implicit_include = ref false 
+let no_implicit_include = ref false
 
 let alias_map = Hash_string.create 0
 let alias_map_rev = Hash_string.create 0
 
 (**
    {[
-     A -> B 
+     A -> B
        A1 -> B
    ]}
-   print 
+   print
    {[
 
      module A = B
-     module A1 = B  
-   ]}   
-   We don't suppport 
+     module A1 = B
+   ]}
+   We don't suppport
    {[
-     A -> B 
+     A -> B
        A -> C
    ]}
-*)    
-let alias_module s = 
-  match Ext_string.split s '=' with 
-  | [a;b] -> 
+*)
+let alias_module s =
+  match Ext_string.split s '=' with
+  | [a;b] ->
     (* Error checking later*)
-    if Hash_string.mem alias_map a then 
+    if Hash_string.mem alias_map a then
       raise (Arg.Bad ("duplicated module alias " ^ a))
     else
-      begin 
+      begin
         Hash_string.add alias_map_rev b a;
-        Hash_string.add alias_map a b 
+        Hash_string.add alias_map a b
       end
   | _ -> raise (Arg.Bad "invalid module alias format like A=B")
 
-let undefine_symbol (s : string) = 
-  Lexer.remove_directive_built_in_value s 
-let define_symbol (s : string) = 
+let undefine_symbol (s : string) =
+  Lexer.remove_directive_built_in_value s
+let define_symbol (s : string) =
   match Ext_string.split ~keep_empty:true s '=' with
-  | [key; v] -> 
-    if not @@ Lexer.define_key_value key v  then 
+  | [key; v] ->
+    if not @@ Lexer.define_key_value key v  then
       raise (Arg.Bad ("illegal definition: " ^ s))
   | _ -> raise (Arg.Bad ("illegal definition: " ^ s))
 
@@ -338,7 +338,7 @@ let specs : (string * Arg.spec * string) list =
     "-module-alias", (Arg.String alias_module ),
     " -module-alis A=B, whenever need A,replace it with B" ;
     "-prelude", (Arg.String set_prelude),
-    " Set a prelude file, literally copy into the beginning";    
+    " Set a prelude file, literally copy into the beginning";
     "-bs-mllib", (Arg.String set_string),
     " Files collected from mllib";
     "-bs-MD", (Arg.Set set_mllib_file),
@@ -346,7 +346,7 @@ let specs : (string * Arg.spec * string) list =
     "-o", (Arg.String set_output),
     " Set output file (default to stdout)" ;
     "-with-header", (Arg.Set header_option),
-    " with header of time stamp" ; 
+    " with header of time stamp" ;
     "-bs-exclude-I", (Arg.String add_exclude),
     " don't read and pack such modules from -I (in the future, we should detect conflicts in mllib or commandline) "
     ;
@@ -358,7 +358,7 @@ let specs : (string * Arg.spec * string) list =
     " add dir to search path";
     "-U", Arg.String undefine_symbol,
     " Undefine a symbol when bspacking";
-    "-D", Arg.String define_symbol, 
+    "-D", Arg.String define_symbol,
     " Define a symbol when bspacking"
   ]
 
@@ -371,32 +371,32 @@ let () =
   try
     (Arg.parse specs anonymous usage;
      let command_files =  !batch_files in
-     let mllib = !mllib in 
+     let mllib = !mllib in
      (* emit code now *)
      let out_chan =
        lazy (match !output_file with
            | None -> stdout
            | Some file -> open_out_bin file)  in
-     let emit_header out_chan = 
+     let emit_header out_chan =
        let local_time = Unix.(localtime (gettimeofday ())) in
-       (if  !header_option 
+       (if  !header_option
         then
           output_string out_chan
             (Printf.sprintf "(** Generated by bspack %02d/%02d-%02d:%02d *)\n"
                (local_time.tm_mon + 1) local_time.tm_mday
                local_time.tm_hour local_time.tm_min));
-       (match !prelude_str with 
+       (match !prelude_str with
         | None -> ()
         | Some s -> output_string out_chan s; output_string out_chan "\n" );
        match !prelude with
        | None -> ()
-       | Some f -> 
-         begin 
+       | Some f ->
+         begin
            output_string out_chan (Ext_io.load_file f);
-           output_string out_chan "\n"         
+           output_string out_chan "\n"
          end
      in
-     let close_out_chan out_chan = 
+     let close_out_chan out_chan =
        (if  out_chan != stdout then close_out out_chan) in
      let files =
        Ext_list.append (match mllib with
@@ -406,8 +406,8 @@ let () =
 
      match !main_module, files with
      | Some _ , _ :: _
-       -> 
-       Ext_fmt.failwithf ~loc:__LOC__ 
+       ->
+       Ext_fmt.failwithf ~loc:__LOC__
          "-bs-main conflicts with other flags [ %s ]"
          (String.concat ", " files)
      | Some {modulename  = main_module ; export },  []
@@ -415,13 +415,13 @@ let () =
        let excludes =
          match !exclude_modules with
          | [] -> []
-         | xs -> 
-           Ext_list.flat_map xs (fun x -> [x ^ ".ml" ; x ^ ".mli"] ) in 
-       let extra_dirs = 
+         | xs ->
+           Ext_list.flat_map xs (fun x -> [x ^ ".ml" ; x ^ ".mli"] ) in
+       let extra_dirs =
          deduplicate_dirs @@
-         if not !no_implicit_include then {dir =  cwd; excludes = []} :: !includes 
-         else !includes 
-       in  
+         if not !no_implicit_include then {dir =  cwd; excludes = []} :: !includes
+         else !includes
+       in
        let ast_table, tasks =
          Bspack_ast_extract.collect_from_main ~excludes ~extra_dirs ~alias_map
            Format.err_formatter
@@ -430,98 +430,98 @@ let () =
            (fun (lazy (stru, _)) -> stru)
            (fun (lazy (sigi, _)) -> sigi)
            main_module
-       in 
-       if Queue.is_empty tasks then 
+       in
+       if Queue.is_empty tasks then
          raise (Arg.Bad (main_module ^ " does not pull in any libs, maybe wrong input"))
        ;
        let out_chan = Lazy.force out_chan in
-       let collect_module_by_filenames  = !set_mllib_file in 
+       let collect_module_by_filenames  = !set_mllib_file in
        let collection_modules = Queue.create () in
-       let count = ref 0 in 
-       let task_length = Queue.length tasks in 
+       let count = ref 0 in
+       let task_length = Queue.length tasks in
        emit_header out_chan ;
-       begin 
+       begin
          Bspack_ast_extract.handle_queue tasks ast_table
-           (fun base ml_name (lazy(_, ml_content)) -> 
-              incr count ;  
-              if collect_module_by_filenames then 
-                Queue.add ml_name collection_modules; 
-              let module_bound = not  export || task_length > !count  in 
+           (fun base ml_name (lazy(_, ml_content)) ->
+              incr count ;
+              if collect_module_by_filenames then
+                Queue.add ml_name collection_modules;
+              let module_bound = not  export || task_length > !count  in
               decorate_module_only ~module_bound out_chan base ml_name ml_content;
-              let aliased = Ext_string.capitalize_ascii base in 
+              let aliased = Ext_string.capitalize_ascii base in
               Hash_string.find_all alias_map_rev aliased
-              |> List.iter 
+              |> List.iter
                 (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
 
            )
-           (fun base mli_name (lazy (_, mli_content))  -> 
-              incr count ;                  
-              if collect_module_by_filenames then 
-                Queue.add mli_name collection_modules;                 
+           (fun base mli_name (lazy (_, mli_content))  ->
+              incr count ;
+              if collect_module_by_filenames then
+                Queue.add mli_name collection_modules;
 
               decorate_interface_only out_chan base mli_name mli_content;
-              let aliased = Ext_string.capitalize_ascii base in 
+              let aliased = Ext_string.capitalize_ascii base in
               Hash_string.find_all alias_map_rev aliased
-              |> List.iter 
+              |> List.iter
                 (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
 
            )
            (fun base mli_name ml_name (lazy (_, mli_content)) (lazy (_, ml_content))
-             -> 
-               incr count;  
+             ->
+               incr count;
                (*TODO: assume mli_name, ml_name are in the same dir,
-                 Needs to be addressed 
+                 Needs to be addressed
                *)
-               if collect_module_by_filenames then 
-                 begin 
+               if collect_module_by_filenames then
+                 begin
                    Queue.add ml_name collection_modules;
                    Queue.add mli_name collection_modules
-                 end; 
-               (** if export 
-                   print it as 
+                 end;
+               (** if export
+                   print it as
                    {[inclue (struct end : sig end)]}
-               *)   
-               let module_bound = not export || task_length > !count in 
+               *)
+               let module_bound = not export || task_length > !count in
                decorate_module ~module_bound out_chan base mli_name ml_name mli_content ml_content;
-               let aliased = (Ext_string.capitalize_ascii base) in 
+               let aliased = (Ext_string.capitalize_ascii base) in
                Hash_string.find_all alias_map_rev aliased
-               |> List.iter 
+               |> List.iter
                  (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
 
            )
        end;
        close_out_chan out_chan;
-       begin 
+       begin
          if !set_mllib_file then
            match !output_file with
            | None -> ()
            | Some file ->
              let output = file ^ ".d" in
-             let sorted_dep_queue = 
-               Queue.fold 
-               (fun acc collection_module -> 
-                  L_string_set.add 
+             let sorted_dep_queue =
+               Queue.fold
+               (fun acc collection_module ->
+                  L_string_set.add
                   (
                         (*FIXME: now we normalized path,
                         we need a beautiful output too for relative path
                         The relative path should be also be normalized..
                       *)
-                      Filename.concat 
+                      Filename.concat
                         (Ext_path.rel_normalized_absolute_path
-                           ~from:cwd                             
+                           ~from:cwd
                            (Filename.dirname collection_module)
                         ) (Filename.basename collection_module)
 
                   )
                   (* collection_module  *)
                   acc
-                ) L_string_set.empty  collection_modules in 
-             Ext_io.write_file 
+                ) L_string_set.empty  collection_modules in
+             Ext_io.write_file
                output
-               (                 
+               (
                  L_string_set.fold
-                   (fun dep acc  -> 
-                      acc ^ 
+                   (fun dep acc  ->
+                      acc ^
                       dep ^
                       " "
                    ) sorted_dep_queue
@@ -529,7 +529,7 @@ let () =
                    (* collection_modules *)
                )
        end
-     | None, _ -> 
+     | None, _ ->
        let ast_table =
          Bspack_ast_extract.collect_ast_map
            Format.err_formatter files
@@ -539,7 +539,7 @@ let () =
        let tasks = Bspack_ast_extract.sort fst  fst ast_table in
        let out_chan = (Lazy.force out_chan) in
        emit_header out_chan ;
-       Bspack_ast_extract.handle_queue tasks ast_table 
+       Bspack_ast_extract.handle_queue tasks ast_table
          (fun base ml_name (_, ml_content) -> decorate_module_only  out_chan base ml_name ml_content)
          (fun base mli_name (_, mli_content)  -> decorate_interface_only out_chan base mli_name mli_content )
          (fun base mli_name ml_name (_, mli_content) (_, ml_content)

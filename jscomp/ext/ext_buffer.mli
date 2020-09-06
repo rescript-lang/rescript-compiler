@@ -72,7 +72,7 @@ val add_string : t -> string -> unit
 
 (* val add_buffer : t -> t -> unit *)
 (** [add_buffer b1 b2] appends the current contents of buffer [b2]
-   at the end of buffer [b1].  [b2] is not modified. *)    
+   at the end of buffer [b1].  [b2] is not modified. *)
 
 (* val add_channel : t -> in_channel -> int -> unit *)
 (** [add_channel b ic n] reads exactly [n] character from the
@@ -82,41 +82,41 @@ val add_string : t -> string -> unit
 
 val output_buffer : out_channel -> t -> unit
 (** [output_buffer oc b] writes the current contents of buffer [b]
-   on the output channel [oc]. *)   
+   on the output channel [oc]. *)
 
-val digest : t -> Digest.t   
+val digest : t -> Digest.t
 
-val not_equal : 
-  t -> 
-  string -> 
-  bool 
+val not_equal :
+  t ->
+  string ->
+  bool
 
-val add_int_1 :    
-   t -> int -> unit 
+val add_int_1 :
+   t -> int -> unit
 
-val add_int_2 :    
-   t -> int -> unit 
+val add_int_2 :
+   t -> int -> unit
 
-val add_int_3 :    
-   t -> int -> unit 
+val add_int_3 :
+   t -> int -> unit
 
-val add_int_4 :    
-   t -> int -> unit 
+val add_int_4 :
+   t -> int -> unit
 
-val add_string_char :    
-   t -> 
+val add_string_char :
+   t ->
    string ->
-   char -> 
+   char ->
    unit
-   
-val add_ninja_prefix_var : 
-   t -> 
-   string -> 
-   unit 
-   
-   
-val add_char_string :    
-   t -> 
-   char -> 
-   string -> 
+
+val add_ninja_prefix_var :
+   t ->
+   string ->
+   unit
+
+
+val add_char_string :
+   t ->
+   char ->
+   string ->
    unit

@@ -23,15 +23,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (* Similiar to {!Lambda.tag_info}
-  In particular, 
-  it reduces some branches e.g, 
+  In particular,
+  it reduces some branches e.g,
   [Blk_some], [Blk_some_not_nested]
 *)
-type t =   
+type t =
   | Blk_tuple
   | Blk_array
   | Blk_poly_var
-  | Blk_record of string array 
+  | Blk_record of string array
   | Blk_module of string list
   | Blk_extension
   | Blk_na of string (* for debugging *)

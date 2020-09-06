@@ -23,30 +23,30 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t = private 
-  | True 
-  | False 
-  | Null 
-  | Flo of string 
+type t = private
+  | True
+  | False
+  | Null
+  | Flo of string
   | Str of string
-  | Arr of t array 
+  | Arr of t array
   | Obj of t Map_string.t
 
-val true_  : t 
-val false_ : t 
-val null : t 
-val str : string -> t 
-val flo : string -> t 
-val arr : t array -> t 
-val obj : t Map_string.t -> t 
-val kvs : (string * t) list -> t 
+val true_  : t
+val false_ : t
+val null : t
+val str : string -> t
+val flo : string -> t
+val arr : t array -> t
+val obj : t Map_string.t -> t
+val kvs : (string * t) list -> t
 
-val to_string : t -> string 
+val to_string : t -> string
 
 
 val to_channel : out_channel -> t -> unit
 
-val to_file : 
-  string -> 
-  t -> 
-  unit 
+val to_file :
+  string ->
+  t ->
+  unit

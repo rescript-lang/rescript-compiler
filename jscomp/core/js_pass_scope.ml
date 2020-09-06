@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -30,94 +30,94 @@
 
 
 
-(* 
+(*
 
-    Base line 
+    Base line
     {[
      for i = 1 to n do (function (i){...}(i))
      done
-       (* This is okay, since all ocaml follow the lexical scope, 
+       (* This is okay, since all ocaml follow the lexical scope,
           for generrated code too (* TODO: check *)
         *)
     ]}
 
-  For nested loops 
+  For nested loops
   {[
-   for i = 0 to n do 
-     for j = 0 to n do 
+   for i = 0 to n do
+     for j = 0 to n do
        arrr.(j)<- ()=>{ i}
      done
    done
  ]}
     Three kind of variables  (defined in the loop scope)
-    1. loop mutable variables 
+    1. loop mutable variables
        As long as variables change per iteration, defined in a loop (in the same loop)
         and captured by a closure
-       the loop, iff  be lexically scoped 
+       the loop, iff  be lexically scoped
        Tailcall parameters are considered defined inside the loop
-    - unless it's defined 
-       outside all the loops - note that for nested loops, if it's defined 
-       in the outerloop and captured by the inner loop, 
-       it still has to be lexically scoped. 
+    - unless it's defined
+       outside all the loops - note that for nested loops, if it's defined
+       in the outerloop and captured by the inner loop,
+       it still has to be lexically scoped.
 
-       How do we detect whether it is loop invariant or not 
-       - depend on loop variant 
+       How do we detect whether it is loop invariant or not
+       - depend on loop variant
        - depend on mutuable valuse
        - non pure (function call)
 
-       so we need collect mutable variables 
+       so we need collect mutable variables
        1. from lambda + loop (for/i) + tailcall params
-       2. defined in the loop and can not determine it is invariant  
+       2. defined in the loop and can not determine it is invariant
           in such cases we can determine it's immutable
-          1. const 
+          1. const
           2. only depend on immutable values and no function call?
 
-    ## The following would take advantage of nested loops 
-    2. loop invariant observable varaibles 
-        {[ 
+    ## The following would take advantage of nested loops
+    2. loop invariant observable varaibles
+        {[
          var x = (console.log(3), 32)
         ]}
-    3. loop invariant non-observable variables 
+    3. loop invariant non-observable variables
 
-    Invariant: 
-    loop invariant (observable or not) variables can not depend on 
-    loop mutable values so that once we detect loop Invariant variables 
-    all its dependency are loop invariant as well, so we can do loop 
+    Invariant:
+    loop invariant (observable or not) variables can not depend on
+    loop mutable values so that once we detect loop Invariant variables
+    all its dependency are loop invariant as well, so we can do loop
     Invariant code motion.
-    
+
     TODO:
-    loop invariant can be layered, it will be loop invariant 
+    loop invariant can be layered, it will be loop invariant
     in the inner layer while loop variant in the outer layer.
     {[
-    for i = 0 to 10 do 
-      for j  = 10 do 
+    for i = 0 to 10 do
+      for j  = 10 do
         let  k0 = param * 100 in (* loop invariant *)
         let  k1 = i * i in (* inner loop invariant, loop variant *)
         let  k2 = j * i in (* variant *)
         ..
-      done 
-    done 
+      done
+    done
     ]}
 *)
 
-let scope_pass  = 
+let scope_pass  =
   object(self)
     inherit Js_fold.fold as super
 
-    val  defined_idents = Set_ident.empty 
-        
-    (** [used_idents] 
+    val  defined_idents = Set_ident.empty
+
+    (** [used_idents]
         does not contain locally defined idents *)
-    val  used_idents = Set_ident.empty 
-    (** we need collect mutable values and loop defined varaibles *)    
-    val loop_mutable_values = Set_ident.empty 
+    val  used_idents = Set_ident.empty
+    (** we need collect mutable values and loop defined varaibles *)
+    val loop_mutable_values = Set_ident.empty
 
-    val mutable_values = Set_ident.empty      
+    val mutable_values = Set_ident.empty
 
-    val closured_idents = Set_ident.empty 
+    val closured_idents = Set_ident.empty
 
-    (** check if in loop or not *)    
-    val in_loop = false 
+    (** check if in loop or not *)
+    val in_loop = false
 
     method get_in_loop = in_loop
 
@@ -125,39 +125,39 @@ let scope_pass  =
 
     method get_used_idents = used_idents
 
-    method get_loop_mutable_values = loop_mutable_values 
+    method get_loop_mutable_values = loop_mutable_values
 
-    method get_mutable_values = mutable_values 
+    method get_mutable_values = mutable_values
 
-    method get_closured_idents = closured_idents 
+    method get_closured_idents = closured_idents
 
-    method with_in_loop b = 
+    method with_in_loop b =
       if b = self#get_in_loop then self
       else {< in_loop = b >}
      (* Since it's loop mutable variable, for sure
          it is mutable variable
-         *)       
-    method with_loop_mutable_values b = 
+         *)
+    method with_loop_mutable_values b =
       {< loop_mutable_values =  b >}
 
-    method add_loop_mutable_variable id = 
+    method add_loop_mutable_variable id =
       {< loop_mutable_values = Set_ident.add loop_mutable_values id;
-         mutable_values = Set_ident.add mutable_values id 
+         mutable_values = Set_ident.add mutable_values id
          >}
 
-    method add_mutable_variable id = 
+    method add_mutable_variable id =
       {< mutable_values = Set_ident.add mutable_values id >}
 
-    method add_defined_ident ident = 
-      {< defined_idents = Set_ident.add defined_idents ident >} 
-    method add_used_ident ident = 
+    method add_defined_ident ident =
+      {< defined_idents = Set_ident.add defined_idents ident >}
+    method add_used_ident ident =
       {< used_idents = Set_ident.add used_idents ident >}
-    method! expression x = 
-      match x.expression_desc with 
-      | Fun (_method_, params, block , env) -> 
-        (* Function is the only place to introduce a new scope in 
+    method! expression x =
+      match x.expression_desc with
+      | Fun (_method_, params, block , env) ->
+        (* Function is the only place to introduce a new scope in
             ES5
-            TODO: check 
+            TODO: check
             {[ try .. catch(exn) {.. }]}
             what's the scope of exn
         *)
@@ -170,15 +170,15 @@ let scope_pass  =
                      used_idents = Set_ident.empty ;
                      in_loop = false;
                      loop_mutable_values = Set_ident.empty;
-                     mutable_values = Set_ident.of_list (Js_fun_env.get_mutable_params params env) ; 
+                     mutable_values = Set_ident.of_list (Js_fun_env.get_mutable_params params env) ;
                      closured_idents = Set_ident.empty; (* think about nested function*)
                    >} # block block in
-        let defined_idents', used_idents' = 
+        let defined_idents', used_idents' =
           obj#get_defined_idents, obj#get_used_idents  in
         (* mark which param is used *)
-        params |> List.iteri 
-          (fun i v -> 
-             if not (Set_ident.mem used_idents' v) then 
+        params |> List.iteri
+          (fun i v ->
+             if not (Set_ident.mem used_idents' v) then
                Js_fun_env.mark_unused env i) ;
         let closured_idents' =  (* pass param_set down *)
           Set_ident.(diff used_idents' (union defined_idents' param_set )) in
@@ -186,56 +186,56 @@ let scope_pass  =
         (* Noe that we don't know which variables are exactly mutable yet ..
            due to the recursive thing
          *)
-        Js_fun_env.set_unbounded env closured_idents'   ; 
+        Js_fun_env.set_unbounded env closured_idents'   ;
         let lexical_scopes = Set_ident.(inter closured_idents' self#get_loop_mutable_values) in
         Js_fun_env.set_lexical_scope env lexical_scopes;
         (* tailcall , note that these varibles are used in another pass *)
-        {< used_idents = 
+        {< used_idents =
              Set_ident.union used_idents closured_idents' ;
-           (* There is a bug in ocaml -dsource*)           
+           (* There is a bug in ocaml -dsource*)
            closured_idents = Set_ident.union closured_idents closured_idents'
         >}
-      | _ -> 
-        let obj = super#expression x in 
+      | _ ->
+        let obj = super#expression x in
         match Js_block_runtime.check_additional_id x with
         | None -> obj
-        | Some id -> 
-          obj#add_used_ident id                
+        | Some id ->
+          obj#add_used_ident id
         (* TODO: most variables are immutable *)
 
-    method! variable_declaration x = 
+    method! variable_declaration x =
       match x with
-      | { ident ; value; property  }  -> 
-        let obj = 
-          (match self#get_in_loop, property with 
-           | true, Variable 
-             -> 
-             self#add_loop_mutable_variable ident 
+      | { ident ; value; property  }  ->
+        let obj =
+          (match self#get_in_loop, property with
+           | true, Variable
+             ->
+             self#add_loop_mutable_variable ident
            | true, (Strict | StrictOpt | Alias)
-           (* Not real true immutable in javascript 
-               since it's in the loop 
+           (* Not real true immutable in javascript
+               since it's in the loop
 
-               TODO: we should also 
+               TODO: we should also
            *)
-             -> 
-             begin match value with 
+             ->
+             begin match value with
                | None -> self#add_loop_mutable_variable ident
                (* TODO: Check why assertion failure *)
                (* self#add_loop_mutable_variable ident *) (* assert false *)
                | Some x
                  ->
-                 (** 
-                     when x is an immediate immutable value, 
+                 (**
+                     when x is an immediate immutable value,
                      (like integer .. )
                      not a reference, it should be Immutable
-                     or string, 
+                     or string,
                      type system might help here
                      TODO:
                  *)
                  match x.expression_desc with
-                 | Fun _  | Number _ | Str _ 
-                   -> self 
-                 | _ -> 
+                 | Fun _  | Number _ | Str _
+                   -> self
+                 | _ ->
                    (* if Set_ident.(is_empty @@ *)
                    (*   inter self#get_mutable_values  *)
                    (*     ( ({<  *)
@@ -248,22 +248,22 @@ let scope_pass  =
                    self#add_loop_mutable_variable ident
              end
            | false, Variable
-             -> 
-             self#add_mutable_variable ident      
+             ->
+             self#add_mutable_variable ident
            | false, (Strict | StrictOpt | Alias)
              -> self
           )#add_defined_ident ident
         in
-        begin match value with 
-          | None -> obj 
-          | Some x -> obj # expression x  
-        end 
+        begin match value with
+          | None -> obj
+          | Some x -> obj # expression x
+        end
 
-        
-    method! statement x = 
-      match x.statement_desc with 
+
+    method! statement x =
+      match x.statement_desc with
       | ForRange  (_,_, loop_id, _,_,a_env) as y -> (* TODO: simplify definition of For *)
-          let obj = 
+          let obj =
             {< in_loop = true ;
                loop_mutable_values = Set_ident.singleton loop_id ;
                used_idents = Set_ident.empty; (* TODO: if unused, can we generate better code? *)
@@ -273,7 +273,7 @@ let scope_pass  =
                  >}
               # statement_desc y in
 
-          let defined_idents', used_idents', closured_idents' = 
+          let defined_idents', used_idents', closured_idents' =
             obj#get_defined_idents, obj#get_used_idents, obj#get_closured_idents in
 
 
@@ -281,11 +281,11 @@ let scope_pass  =
           let () = Js_closure.set_lexical_scope a_env lexical_scope in
           (* set scope *)
           {< used_idents = Set_ident.union used_idents used_idents';
-             (* walk around ocaml -dsource bug 
-                {[ 
-                  Set_ident.(union used_idents used_idents)                  
-                ]}                
-             *)             
+             (* walk around ocaml -dsource bug
+                {[
+                  Set_ident.(union used_idents used_idents)
+                ]}
+             *)
              defined_idents = Set_ident.union defined_idents defined_idents';
              (* TODO: if we our generated code also follow lexical scope,
                 this is not necessary ;
@@ -294,19 +294,19 @@ let scope_pass  =
              closured_idents = Set_ident.union closured_idents lexical_scope
              >}
 
-      | While (_label,pred,body, _env) ->  
+      | While (_label,pred,body, _env) ->
           (((self#expression pred)#with_in_loop true) # block  body )
             #with_in_loop (self#get_in_loop)
-      | _ -> 
-          super#statement x 
+      | _ ->
+          super#statement x
 
-    method! exception_ident x = 
-      (* we can not simply skip it, since it can be used 
+    method! exception_ident x =
+      (* we can not simply skip it, since it can be used
           TODO: check loop exception
           (loop {
           excption(i){
           () => {i}
-          } 
+          }
           })
        *)
       {< used_idents = Set_ident.add used_idents x ;
@@ -314,11 +314,11 @@ let scope_pass  =
          >}
     method! for_ident x = {< loop_mutable_values = Set_ident.add loop_mutable_values x >}
 
-    method! ident x = 
-      if Set_ident.mem defined_idents x then 
+    method! ident x =
+      if Set_ident.mem defined_idents x then
         self
       else {< used_idents = Set_ident.add used_idents x >}
   end
 
-let program js = 
+let program js =
   (scope_pass # program js ) # get_loop_mutable_values

@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -38,13 +38,13 @@
 
 
 
-type ident_tbl = Lam_id_kind.t Hash_ident.t 
+type ident_tbl = Lam_id_kind.t Hash_ident.t
 
 
 
 type t = {
   export_idents : Set_ident.t ;
-  exports : Ident.t list ;  
+  exports : Ident.t list ;
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers
       for sure it's not a function, there is no need to count them
@@ -54,9 +54,9 @@ type t = {
 }
 
 
-val print : Format.formatter -> t -> unit 
+val print : Format.formatter -> t -> unit
 
-val make : 
+val make :
   export_idents:Ident.t list ->
   export_ident_sets:Set_ident.t ->
   t

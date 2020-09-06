@@ -32,14 +32,14 @@ type arg_expression =
 
 (* we need destruct [undefined] when input is optional *)
 let eval (arg : J.expression) (dispatches : (string * string) list ) : E.t =
-  if arg == E.undefined then E.undefined 
+  if arg == E.undefined then E.undefined
   else
     match arg.expression_desc with
-    | Str (_,s) ->     
-      let s = 
-        (Ext_list.assoc_by_string  dispatches s None) in 
-      E.str s 
-    | _ -> 
+    | Str (_,s) ->
+      let s =
+        (Ext_list.assoc_by_string  dispatches s None) in
+      E.str s
+    | _ ->
       E.of_block
         [(S.string_switch arg
             (Ext_list.map dispatches (fun (i,r) ->
@@ -53,22 +53,22 @@ let eval (arg : J.expression) (dispatches : (string * string) list ) : E.t =
 (** arg is a polyvar *)
 let eval_as_event (arg : J.expression) (dispatches : (string * string) list option) =
   match arg.expression_desc with
-  | Caml_block([{expression_desc = Str(_,s)}; cb], _, _, Blk_poly_var ) when Js_analyzer.no_side_effect_expression cb 
-    -> 
-    let v = 
-      match dispatches with 
-      | Some dispatches ->   
-        Ext_list.assoc_by_string dispatches s None 
+  | Caml_block([{expression_desc = Str(_,s)}; cb], _, _, Blk_poly_var ) when Js_analyzer.no_side_effect_expression cb
+    ->
+    let v =
+      match dispatches with
+      | Some dispatches ->
+        Ext_list.assoc_by_string dispatches s None
       | None -> s in
     Splice2(E.str v , cb )
   | _ ->
     Splice2
       (
-        (match dispatches with 
-        | Some dispatches ->     
+        (match dispatches with
+        | Some dispatches ->
         E.of_block
       [
-      
+
         (S.string_switch (E.poly_var_tag_access arg)
         (Ext_list.map dispatches (fun (i,r) ->
               {J.switch_case = i ;
@@ -114,7 +114,7 @@ let eval_as_unwrap (arg : J.expression) : E.t =
   | Caml_block ([{expression_desc = Number _}; cb], _, _, _) ->
     cb
   | _ ->
-    E.poly_var_value_access arg 
+    E.poly_var_value_access arg
 
 
 

@@ -34,13 +34,13 @@ module Js = Jsoo_common.Js
      *    type: "error" // or "warning" or "info"
      *  }
 *)
-let () =  
+let () =
   Bs_conditional_initial.setup_env ();
   Clflags.binary_annotations := false
 
-let error_of_exn e =   
-  match Location.error_of_exn e with 
-  | Some (`Ok e) -> Some e 
+let error_of_exn e =
+  match Location.error_of_exn e with
+  | Some (`Ok e) -> Some e
   | Some `Already_displayed
   | None -> None
 
@@ -64,16 +64,16 @@ let implementation ~use_super_errors impl str  : Js.Unsafe.obj =
 
   try
     Js_config.jsx_version :=  3 ; (* default *)
-    let ast = impl (Lexing.from_string str) in     
-    let ast = Ppx_entry.rewrite_implementation ast in 
-    let typed_tree = 
+    let ast = impl (Lexing.from_string str) in
+    let ast = Ppx_entry.rewrite_implementation ast in
+    let typed_tree =
       let (a,b,_,signature) = Typemod.type_implementation_more modulename modulename modulename env ast in
       (* finalenv := c ; *)
       types_signature := signature;
-      (a,b) in      
+      (a,b) in
   typed_tree
   |>  Translmod.transl_implementation modulename
-  |> (* Printlambda.lambda ppf *) (fun 
+  |> (* Printlambda.lambda ppf *) (fun
     {Lambda.code = lam}
     ->
       let buffer = Buffer.create 1000 in
@@ -126,7 +126,7 @@ let make_compiler name impl =
                     inject @@
                     Js.wrap_meth_callback
                       (fun _ code ->
-                         (compile impl ~use_super_errors:true (Js.to_string code)));                    
+                         (compile impl ~use_super_errors:true (Js.to_string code)));
                     "version", Js.Unsafe.inject (Js.string (Bs_version.version));
                   |]))
 let () = make_compiler "ocaml" Parse.implementation

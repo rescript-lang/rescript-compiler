@@ -21,14 +21,14 @@ struct
   let cmp = M.cmp
 end
 
-let make 
-  (type key) 
-  (cmp : key -> key -> int [@bs])   
+let make
+  (type key)
+  (cmp : key -> key -> int [@bs])
   =
-  let module M = struct 
+  let module M = struct
     type t = key
     let cmp = cmp
-  end in  
-  let module N = Make(M) in 
+  end in
+  let module N = Make(M) in
   (module N : S with type t = key)
 

@@ -1,6 +1,6 @@
 
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +18,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -31,29 +31,29 @@ let forEachU s f action =
   done
 
 let forEach s f action = forEachU s f (fun[@bs] a -> action a)
-    
+
 let rec everyU s f p =
   if s > f then true
   else
     p s [@bs] &&
     (everyU (s + 1) f p )
-  
+
 let every s f p = everyU s f (fun [@bs] a -> p a)
-    
+
 let rec everyByAux s f ~step p =
   if s > f then true
   else
     p s [@bs] &&
     (everyByAux (s + step) f ~step p )
 
-let everyByU s f ~step p = 
-  if step > 0 then 
+let everyByU s f ~step p =
+  if step > 0 then
      everyByAux s f ~step p
-  else true (* return empty range [true]*)  
+  else true (* return empty range [true]*)
 
 let everyBy s f ~step p = everyByU s f ~step (fun [@bs] a -> p a)
 
-let rec someU s f p =  
+let rec someU s f p =
   if s > f then false
   else
     p s [@bs] ||
@@ -62,15 +62,15 @@ let rec someU s f p =
 
 let some s f p = someU s f (fun[@bs] a -> p a)
 
-let rec someByAux s f ~step p =  
+let rec someByAux s f ~step p =
   if s > f then false
   else
     p s [@bs] ||
     (someByAux (s + step) f ~step p )
-    
-let someByU s f ~step p = 
-    if step > 0 then 
-      someByAux s f ~step p 
-    else false  (* return empty range, [false] *) 
+
+let someByU s f ~step p =
+    if step > 0 then
+      someByAux s f ~step p
+    else false  (* return empty range, [false] *)
 
 let someBy s f ~step p = someByU s f ~step (fun[@bs] a -> p a)

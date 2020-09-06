@@ -28,43 +28,42 @@ let (//) = Ext_path.combine
 
 
 
-let write_file fname digest contents = 
-  let oc = open_out_bin fname in 
+let write_file fname digest contents =
+  let oc = open_out_bin fname in
   Digest.output oc digest;
   output_char oc '\n';
   Ext_buffer.output_buffer oc contents;
-  close_out oc 
-(** 
+  close_out oc
+(**
   TODO:
   sort filegroupts to ensure deterministic behavior
-  
+
   if [.bsbuild] is not changed
   [.mlmap] does not need to be changed too
-  
+
 *)
-let output 
-    ~dir 
+let output
+    ~dir
     (namespace : string)
     (file_groups : Bsb_file_groups.file_groups )
-  = 
-  let fname = namespace ^ Literals.suffix_mlmap in 
-  let buf = Ext_buffer.create 10000 in   
-  Ext_list.iter file_groups 
+  =
+  let fname = namespace ^ Literals.suffix_mlmap in
+  let buf = Ext_buffer.create 10000 in
+  Ext_list.iter file_groups
     (fun  x ->
-       Map_string.iter x.sources (fun k _ -> 
+       Map_string.iter x.sources (fun k _ ->
            Ext_buffer.add_string_char buf k '\n';
-         ) 
+         )
     );
   (* let contents = Buffer.contents buf in    *)
-  let digest = Ext_buffer.digest buf in 
-  let fname = (dir// fname ) in 
+  let digest = Ext_buffer.digest buf in
+  let fname = (dir// fname ) in
   if Sys.file_exists fname then
-    let ic = open_in_bin fname in 
-    let old_digest = really_input_string ic Ext_digest.length in 
+    let ic = open_in_bin fname in
+    let old_digest = really_input_string ic Ext_digest.length in
     close_in ic ;
-    (if old_digest <> digest then 
+    (if old_digest <> digest then
       write_file fname digest buf)
-  else 
+  else
     write_file fname digest buf
-    
-  
+

@@ -23,14 +23,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* Make sure the escaped string conforms to 
+(* Make sure the escaped string conforms to
   JS lexing convention
 *)
-val escape_to_string : 
-  string -> 
-  string   
+val escape_to_string :
+  string ->
+  string
 
-val pp_string : 
-  Ext_pp.t -> 
-  string -> 
+val pp_string :
+  Ext_pp.t ->
+  string ->
   unit

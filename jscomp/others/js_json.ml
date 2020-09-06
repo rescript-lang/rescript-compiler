@@ -181,15 +181,15 @@ let serializeExn (type t) (x : t) : string  = [%raw{| function(obj){
       }
     return value
   });
-  
+
  if(output === undefined){
    // JSON.stringify will raise TypeError when it detects cylic objects
    throw new TypeError("output is undefined")
  }
- return output 
+ return output
  }
-|}] x 
+|}] x
 
-let deserializeUnsafe (s: string) : 'a = 
+let deserializeUnsafe (s: string) : 'a =
   patch (parseExn s)
 

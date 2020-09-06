@@ -26,10 +26,10 @@
   TODO: clean staled in source js artifacts
 *)
 
-val clean_bs_deps : 
-  string -> 
+val clean_bs_deps :
+  string ->
   unit
 
-val clean_self : 
-  string -> 
+val clean_self :
+  string ->
   unit

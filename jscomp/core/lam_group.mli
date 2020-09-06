@@ -38,9 +38,9 @@ type t =
 
 (** Tricky to be complete *)
 
-val pp_group : 
-  Format.formatter -> 
-  t -> 
+val pp_group :
+  Format.formatter ->
+  t ->
   unit
 
 val single :

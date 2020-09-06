@@ -24,15 +24,15 @@
 
 
 
-type ident = Ident.t 
+type ident = Ident.t
 
-type record_representation = 
+type record_representation =
     | Record_regular
     | Record_inlined of { tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
     | Record_extension                    (* Inlined record under extension *)
 
 
-type t = 
+type t =
   | Pbytes_to_string
   | Pbytes_of_string
   | Pmakeblock of int * Lam_tag_info.t * Asttypes.mutable_flag
@@ -49,7 +49,7 @@ type t =
       ffi : External_ffi_types.external_spec}
   | Pjs_object_create of External_arg_spec.obj_params
 
-  | Praise 
+  | Praise
   | Psequand | Psequor | Pnot
   | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
   | Pandint | Porint | Pxorint
@@ -58,8 +58,8 @@ type t =
   | Poffsetint of int
   | Poffsetref of int
   | Pintoffloat | Pfloatofint
-  | Pnegfloat 
-  
+  | Pnegfloat
+
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pintcomp of Lam_compat.comparison
   | Pfloatcomp of Lam_compat.comparison
@@ -67,22 +67,22 @@ type t =
   | Pbintcomp of Lam_compat.boxed_integer * Lam_compat.comparison
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
   | Pjs_runtime_apply (* [f; [...]] *)
-  | Pstringlength 
-  | Pstringrefu 
+  | Pstringlength
+  | Pstringrefu
   | Pstringrefs
-  | Pstringadd    
+  | Pstringadd
   | Pbyteslength
   | Pbytesrefu
-  | Pbytessetu 
+  | Pbytessetu
   | Pbytesrefs
   | Pbytessets
   (* Array operations *)
-  | Pmakearray 
-  | Parraylength 
-  | Parrayrefu 
-  | Parraysetu 
-  | Parrayrefs 
-  | Parraysets 
+  | Pmakearray
+  | Parraylength
+  | Parrayrefu
+  | Parraysetu
+  | Parrayrefs
+  | Parraysets
   (* Test if the argument is a block or an immediate integer *)
   | Pisint
   | Pis_poly_var_const
@@ -109,33 +109,33 @@ type t =
   | Pctconst of Lam_compat.compile_time_constant
   (* Integer to external pointer *)
   | Pdebugger
-  | Pjs_unsafe_downgrade of 
-    { 
-      name : string ; 
+  | Pjs_unsafe_downgrade of
+    {
+      name : string ;
       setter : bool;
       loc : Location.t;
     }
   | Pinit_mod
   | Pupdate_mod
-  | Praw_js_code of 
+  | Praw_js_code of
     Js_raw_info.t
-  | Pjs_fn_make of int 
-  | Pvoid_run 
-  | Pfull_apply 
+  | Pjs_fn_make of int
+  | Pvoid_run
+  | Pfull_apply
   | Pjs_fn_method
   | Pundefined_to_opt
   | Pnull_to_opt
-  | Pnull_undefined_to_opt 
-  
+  | Pnull_undefined_to_opt
+
   | Pis_null
   | Pis_undefined
   | Pis_null_undefined
 
   | Pjs_typeof
-  | Pjs_function_length 
+  | Pjs_function_length
   | Pcaml_obj_length
-  | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)  
-  | Pcreate_extension of string 
+  | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
+  | Pcreate_extension of string
   | Pis_not_none
   | Pval_from_option
   | Pval_from_option_not_nest
@@ -146,4 +146,4 @@ type t =
   | Pfield_computed (* Mostly used in object compilation *)
   | Psetfield_computed
 
-val eq_primitive_approx : t -> t -> bool  
+val eq_primitive_approx : t -> t -> bool

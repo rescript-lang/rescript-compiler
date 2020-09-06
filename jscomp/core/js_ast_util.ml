@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -29,16 +29,16 @@
 
 (* module E = Js_exp_make  *)
 
-module S = Js_stmt_make  
+module S = Js_stmt_make
 
 
 let named_expression (e : J.expression)
-  :  (J.statement  * Ident.t) option = 
-  if Js_analyzer.is_okay_to_duplicate e then 
-    None 
-  else 
-    let obj = Ext_ident.create_tmp () in 
-    let obj_code = 
+  :  (J.statement  * Ident.t) option =
+  if Js_analyzer.is_okay_to_duplicate e then
+    None
+  else
+    let obj = Ext_ident.create_tmp () in
+    let obj_code =
       S.define_variable
-        ~kind:Strict obj e in 
+        ~kind:Strict obj e in
     Some (obj_code, obj)

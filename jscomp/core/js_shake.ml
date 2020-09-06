@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -29,47 +29,47 @@
 
 
 
-(** we also need make it complete 
+(** we also need make it complete
  *)
-let get_initial_exports 
-    count_non_variable_declaration_statement 
-    (export_set : Set_ident.t) (block : J.block ) = 
-  let result = Ext_list.fold_left block export_set 
-    (fun acc st -> 
+let get_initial_exports
+    count_non_variable_declaration_statement
+    (export_set : Set_ident.t) (block : J.block ) =
+  let result = Ext_list.fold_left block export_set
+    (fun acc st ->
       match st.statement_desc with
       | Variable {ident ; value; _} ->
-          if Set_ident.mem acc ident then 
+          if Set_ident.mem acc ident then
             begin match value with
-            | None -> acc  
-            | Some x -> 
-              (* If not a function, we have to calcuate again and again 
+            | None -> acc
+            | Some x ->
+              (* If not a function, we have to calcuate again and again
                   TODO: add hashtbl for a cache
                *)
                 Set_ident.(
                 union (Js_analyzer.free_variables_of_expression empty empty x) acc)
             end
-          else 
+          else
             begin match value with
-            | None -> acc 
-            | Some x -> 
-                if Js_analyzer.no_side_effect_expression x then acc 
-                else 
+            | None -> acc
+            | Some x ->
+                if Js_analyzer.no_side_effect_expression x then acc
+                else
                   Set_ident.(
-                  union (Js_analyzer.free_variables_of_expression empty empty x) 
+                  union (Js_analyzer.free_variables_of_expression empty empty x)
                     (add acc ident))
             end
-      | _ -> 
+      | _ ->
           (* recalcuate again and again ... *)
           if Js_analyzer.no_side_effect_statement st || (not count_non_variable_declaration_statement)
           then acc
           else Set_ident.(union (Js_analyzer.free_variables_of_statement empty empty st) acc)
     ) in result, Set_ident.(diff result export_set)
 
-let shake_program (program : J.program) = 
-  let shake_block block export_set = 
-    let block = List.rev @@ Js_analyzer.rev_toplevel_flatten block in 
-    let  loop block export_set : Set_ident.t = 
-      let rec aux acc block = 
+let shake_program (program : J.program) =
+  let shake_block block export_set =
+    let block = List.rev @@ Js_analyzer.rev_toplevel_flatten block in
+    let  loop block export_set : Set_ident.t =
+      let rec aux acc block =
         let result, diff = get_initial_exports false acc block   in
         (* let _d ()  =  *)
         (*   if Ext_string.ends_with program.name  debug_file then  *)
@@ -77,9 +77,9 @@ let shake_program (program : J.program) =
         (*       Ext_log.err "@[%a@]@." Set_ident.print result  ; *)
         (*     end *)
         (* in *)
-        if Set_ident.is_empty diff then 
+        if Set_ident.is_empty diff then
           result
-        else 
+        else
           aux result block in
       let first_iteration, delta  = get_initial_exports true export_set block  in
       (* let _d ()  =  *)
@@ -94,24 +94,24 @@ let shake_program (program : J.program) =
       (* in *)
 
       if not @@ Set_ident.is_empty delta then
-        aux first_iteration block 
+        aux first_iteration block
       else first_iteration in
 
-    let really_set = loop block export_set in 
+    let really_set = loop block export_set in
     Ext_list.fold_right block []
-      (fun  (st : J.statement) acc -> 
+      (fun  (st : J.statement) acc ->
         match st.statement_desc with
-        | Variable {ident; value ; _} -> 
-            if Set_ident.mem really_set ident then st:: acc 
-            else 
-              begin match value with 
-              | None -> acc 
-              | Some x -> 
+        | Variable {ident; value ; _} ->
+            if Set_ident.mem really_set ident then st:: acc
+            else
+              begin match value with
+              | None -> acc
+              | Some x ->
                   if Js_analyzer.no_side_effect_expression x then acc
                   else st::acc
               end
         | _ -> if Js_analyzer.no_side_effect_statement st then acc else st::acc
-      ) 
+      )
   in
 
   {program with block = shake_block program.block program.export_set}

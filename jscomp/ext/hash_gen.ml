@@ -22,8 +22,8 @@
 type ('a, 'b) bucket =
   | Empty
   | Cons of {
-      mutable key : 'a ; 
-      mutable data : 'b ; 
+      mutable key : 'a ;
+      mutable data : 'b ;
       mutable next :  ('a, 'b) bucket
     }
 
@@ -43,7 +43,7 @@ let clear h =
   h.size <- 0;
   let len = Array.length h.data in
   for i = 0 to len - 1 do
-    Array.unsafe_set h.data i  Empty  
+    Array.unsafe_set h.data i  Empty
   done
 
 let reset h =
@@ -59,17 +59,17 @@ let resize indexfun h =
   let nsize = osize * 2 in
   if nsize < Sys.max_array_length then begin
     let ndata = Array.make nsize Empty in
-    let ndata_tail = Array.make nsize Empty in 
+    let ndata_tail = Array.make nsize Empty in
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
       | Cons {key; next} as cell ->
         let nidx = indexfun h key in
-        begin match Array.unsafe_get ndata_tail nidx with 
-        | Empty -> 
+        begin match Array.unsafe_get ndata_tail nidx with
+        | Empty ->
           Array.unsafe_set ndata nidx cell
         | Cons tail ->
-          tail.next <- cell  
+          tail.next <- cell
         end;
         Array.unsafe_set ndata_tail nidx cell;
         insert_bucket next
@@ -77,11 +77,11 @@ let resize indexfun h =
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
     done;
-    for i = 0 to nsize - 1 do 
-      match Array.unsafe_get ndata_tail i with 
-      | Empty -> ()  
+    for i = 0 to nsize - 1 do
+      match Array.unsafe_get ndata_tail i with
+      | Empty -> ()
       | Cons tail -> tail.next <- Empty
-    done   
+    done
   end
 
 
@@ -112,85 +112,85 @@ let fold h init f =
   !accu
 
 let to_list h f =
-  fold h [] (fun k data acc -> f k data :: acc)  
+  fold h [] (fun k data acc -> f k data :: acc)
 
 
 
 
 let rec small_bucket_mem (lst : _ bucket) eq key  =
-  match lst with 
-  | Empty -> false 
-  | Cons lst -> 
+  match lst with
+  | Empty -> false
+  | Cons lst ->
     eq  key lst.key ||
     match lst.next with
-    | Empty -> false 
-    | Cons lst -> 
-      eq key lst.key  || 
-      match lst.next with 
-      | Empty -> false 
-      | Cons lst -> 
+    | Empty -> false
+    | Cons lst ->
+      eq key lst.key  ||
+      match lst.next with
+      | Empty -> false
+      | Cons lst ->
         eq key lst.key  ||
-        small_bucket_mem lst.next eq key 
+        small_bucket_mem lst.next eq key
 
 
 let rec small_bucket_opt eq key (lst : _ bucket) : _ option =
-  match lst with 
-  | Empty -> None 
-  | Cons lst -> 
-    if eq  key lst.key then Some lst.data else 
+  match lst with
+  | Empty -> None
+  | Cons lst ->
+    if eq  key lst.key then Some lst.data else
       match lst.next with
-      | Empty -> None 
-      | Cons lst -> 
-        if eq key lst.key then Some lst.data else 
-          match lst.next with 
-          | Empty -> None 
-          | Cons lst -> 
-            if eq key lst.key  then Some lst.data else 
+      | Empty -> None
+      | Cons lst ->
+        if eq key lst.key then Some lst.data else
+          match lst.next with
+          | Empty -> None
+          | Cons lst ->
+            if eq key lst.key  then Some lst.data else
               small_bucket_opt eq key lst.next
 
 
 let rec small_bucket_key_opt eq key (lst : _ bucket) : _ option =
-  match lst with 
-  | Empty -> None 
-  | Cons {key=k;  next} -> 
-    if eq  key k then Some k else 
+  match lst with
+  | Empty -> None
+  | Cons {key=k;  next} ->
+    if eq  key k then Some k else
       match next with
-      | Empty -> None 
-      | Cons {key=k; next} -> 
-        if eq key k then Some k else 
-          match next with 
-          | Empty -> None 
-          | Cons {key=k; next} -> 
-            if eq key k  then Some k else 
+      | Empty -> None
+      | Cons {key=k; next} ->
+        if eq key k then Some k else
+          match next with
+          | Empty -> None
+          | Cons {key=k; next} ->
+            if eq key k  then Some k else
               small_bucket_key_opt eq key next
 
 
 let rec small_bucket_default eq key default (lst : _ bucket) =
-  match lst with 
-  | Empty -> default 
-  | Cons lst -> 
-    if eq  key lst.key then  lst.data else 
+  match lst with
+  | Empty -> default
+  | Cons lst ->
+    if eq  key lst.key then  lst.data else
       match lst.next with
-      | Empty -> default 
-      | Cons lst -> 
-        if eq key lst.key then  lst.data else 
-          match lst.next with 
-          | Empty -> default 
-          | Cons lst -> 
-            if eq key lst.key  then lst.data else 
+      | Empty -> default
+      | Cons lst ->
+        if eq key lst.key then  lst.data else
+          match lst.next with
+          | Empty -> default
+          | Cons lst ->
+            if eq key lst.key  then lst.data else
               small_bucket_default eq key default lst.next
 
-let rec remove_bucket 
+let rec remove_bucket
     h  (i : int)
-    key 
-    ~(prec : _ bucket) 
-    (buck : _ bucket) 
-    eq_key = 
-  match buck with   
+    key
+    ~(prec : _ bucket)
+    (buck : _ bucket)
+    eq_key =
+  match buck with
   | Empty ->
     ()
   | Cons {key=k; next }  ->
-    if eq_key k key 
+    if eq_key k key
     then begin
       h.size <- h.size - 1;
       match prec with
@@ -199,8 +199,8 @@ let rec remove_bucket
     end
     else remove_bucket h i key ~prec:buck next eq_key
 
-let rec replace_bucket key data (buck : _ bucket) eq_key = 
-  match buck with   
+let rec replace_bucket key data (buck : _ bucket) eq_key =
+  match buck with
   | Empty ->
     true
   | Cons slot ->
@@ -208,7 +208,7 @@ let rec replace_bucket key data (buck : _ bucket) eq_key =
     then (slot.key <- key; slot.data <- data; false)
     else replace_bucket key data slot.next eq_key
 
-module type S = sig 
+module type S = sig
   type key
   type 'a t
   val create: int -> 'a t
@@ -216,29 +216,29 @@ module type S = sig
   val reset: 'a t -> unit
 
   val add: 'a t -> key -> 'a -> unit
-  val add_or_update: 
-    'a t -> 
-    key -> 
-    update:('a -> 'a) -> 
-    'a -> unit 
+  val add_or_update:
+    'a t ->
+    key ->
+    update:('a -> 'a) ->
+    'a -> unit
   val remove: 'a t -> key -> unit
   val find_exn: 'a t -> key -> 'a
   val find_all: 'a t -> key -> 'a list
   val find_opt: 'a t -> key  -> 'a option
 
   (** return the key found in the hashtbl.
-      Use case: when you find the key existed in hashtbl, 
-      you want to use the one stored in the hashtbl. 
-      (they are semantically equivlanent, but may have other information different) 
+      Use case: when you find the key existed in hashtbl,
+      you want to use the one stored in the hashtbl.
+      (they are semantically equivlanent, but may have other information different)
   *)
-  val find_key_opt: 'a t -> key -> key option 
+  val find_key_opt: 'a t -> key -> key option
 
-  val find_default: 'a t -> key -> 'a -> 'a 
+  val find_default: 'a t -> key -> 'a -> 'a
 
   val replace: 'a t -> key -> 'a -> unit
   val mem: 'a t -> key -> bool
   val iter: 'a t -> (key -> 'a -> unit) -> unit
-  val fold: 
+  val fold:
     'a t -> 'b ->
     (key -> 'a -> 'b -> 'b) ->  'b
   val length: 'a t -> int

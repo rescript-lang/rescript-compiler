@@ -25,9 +25,9 @@
 
  let pass_free_variables (l : Lam.t) : Set_ident.t =
   let fv = ref Set_ident.empty in
-  let rec 
-  free_list xs = List.iter free xs 
-  and free_list_snd : 'a. ('a * Lam.t) list -> unit = fun xs -> 
+  let rec
+  free_list xs = List.iter free xs
+  and free_list_snd : 'a. ('a * Lam.t) list -> unit = fun xs ->
   Ext_list.iter_snd  xs free
   and free (l : Lam.t) =
 
@@ -38,23 +38,23 @@
       fv := Set_ident.add !fv id
     | Lstaticcatch(e1, (_,vars), e2) ->
       free e1; free e2;
-      Ext_list.iter vars (fun id -> fv := Set_ident.remove !fv id) 
+      Ext_list.iter vars (fun id -> fv := Set_ident.remove !fv id)
     | Ltrywith(e1, exn, e2) ->
       free e1; free e2;
-      fv := Set_ident.remove !fv exn 
+      fv := Set_ident.remove !fv exn
     | Lfunction{body;params} ->
       free body;
-      Ext_list.iter params (fun param -> fv := Set_ident.remove !fv param) 
+      Ext_list.iter params (fun param -> fv := Set_ident.remove !fv param)
     | Llet(_str, id, arg, body) ->
       free arg; free body;
       fv := Set_ident.remove !fv id
     | Lletrec(decl, body) ->
       free body;
       free_list_snd decl;
-      Ext_list.iter decl (fun (id, _exp) -> fv := Set_ident.remove !fv id) 
+      Ext_list.iter decl (fun (id, _exp) -> fv := Set_ident.remove !fv id)
     | Lfor(v, e1, e2, _dir, e3) ->
       free e1; free e2; free e3;
-      fv := Set_ident.remove !fv v 
+      fv := Set_ident.remove !fv v
     | Lconst _ -> ()
     | Lapply{ap_func; ap_args; _} ->
       free ap_func; free_list ap_args

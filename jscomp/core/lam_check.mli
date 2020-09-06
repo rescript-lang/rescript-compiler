@@ -25,4 +25,4 @@
 
 
 
-val check : string -> Lam.t -> Lam.t 
+val check : string -> Lam.t -> Lam.t

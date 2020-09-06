@@ -1,5 +1,5 @@
 
 
-include Hash_gen.S with type key = Ident.t 
+include Hash_gen.S with type key = Ident.t
 
 

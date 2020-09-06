@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,27 +17,27 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
 
-(* class count_deps (add : Ident.t -> unit )  = 
+(* class count_deps (add : Ident.t -> unit )  =
   object(self)
     inherit  Js_fold.fold as super
-    method! expression lam = 
-      match lam.expression_desc with 
+    method! expression lam =
+      match lam.expression_desc with
       | Fun (_, _, block, _) -> self#block block
-      (** Call 
-          actually depends on parameter, 
-          since closure 
+      (** Call
+          actually depends on parameter,
+          since closure
           {[
             n = n - 1
-                    acc = () => n 
+                    acc = () => n
           ]}
-          should be 
+          should be
 
           {[
             acc = (function (n) {() => n} (n))
@@ -50,38 +50,38 @@
 
 let add_lam_module_ident = Lam_module_ident.Hash_set.add
 let create = Lam_module_ident.Hash_set.create
-class count_hard_dependencies = 
+class count_hard_dependencies =
   object(self : 'self_type)
     inherit  Js_fold.fold as super
     val hard_dependencies =  create 17
-    method! module_id vid = 
+    method! module_id vid =
         add_lam_module_ident  hard_dependencies vid; self
-    method! expression x : 'self_type  = 
+    method! expression x : 'self_type  =
       (* check {!Js_pass_scope} when making changes *)
       (match  Js_block_runtime.check_additional_id x with
-       | Some id -> 
+       | Some id ->
          add_lam_module_ident hard_dependencies
-           (Lam_module_ident.of_runtime 
+           (Lam_module_ident.of_runtime
               id)
        | _ -> ());
       super#expression x
     method get_hard_dependencies = hard_dependencies
   end
 
-let calculate_hard_dependencies block = 
+let calculate_hard_dependencies block =
   ((new count_hard_dependencies)#block block) # get_hard_dependencies
 
 (*
    Given a set of [variables], count which variables  [lam] will depend on
    Invariant:
-   [variables] are parameters which means immutable so that [Call] 
+   [variables] are parameters which means immutable so that [Call]
    will not depend [variables]
 
 *)
-(* let depends_j (lam : J.expression) (variables : Set_ident.t) = 
+(* let depends_j (lam : J.expression) (variables : Set_ident.t) =
   let v = ref Set_ident.empty in
-  let add id = 
-    if Set_ident.mem variables id then 
+  let add id =
+    if Set_ident.mem variables id then
       v := Set_ident.add !v id
   in
   ignore @@ (new count_deps add ) # expression lam ;

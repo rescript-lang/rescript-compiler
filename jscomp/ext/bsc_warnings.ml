@@ -1,4 +1,4 @@
-(* Copyright (C) 2020- Authors of BuckleScript 
+(* Copyright (C) 2020- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -40,7 +40,7 @@
   - 45 Open statement shadows an already defined label or constructor.
   - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
   - 101 (bsb-specific) unsafe polymorphic comparison.
-*) 
+*)
 
 
 (*
@@ -57,17 +57,17 @@
   only in some special cases that we need all fields being listed
 
   We encourage people to write code based on type based disambigution
-  40,41,42 are enabled for compatiblity reasons  
+  40,41,42 are enabled for compatiblity reasons
   -40 Constructor or label name used out of scope
   This is intentional, we should never warn it
   - 41 Ambiguous constructor or label name.
   It is turned off since it prevents such cases below:
   {[
-    type a = A |B 
+    type a = A |B
     type b = A | B | C
   ]}
   - 42 Disambiguated constructor or label name (compatibility warning).
-  
+
   - 50 Unexpected documentation comment.
 
   - 102 Bs_polymorphic_comparison

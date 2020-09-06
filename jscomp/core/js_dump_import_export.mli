@@ -24,19 +24,19 @@
 
 
 
-val exports : 
+val exports :
   Ext_pp_scope.t -> Ext_pp.t -> Ident.t list -> Ext_pp_scope.t
 
-val es6_export :   
+val es6_export :
   Ext_pp_scope.t -> Ext_pp.t -> Ident.t list -> Ext_pp_scope.t
 
-val requires :  
+val requires :
   string -> Ext_pp_scope.t ->
-  Ext_pp.t -> (Ident.t * string * bool) list -> 
-  Ext_pp_scope.t 
+  Ext_pp.t -> (Ident.t * string * bool) list ->
+  Ext_pp_scope.t
 
-val imports : 
-  Ext_pp_scope.t -> 
-  Ext_pp.t -> 
-  (Ident.t * string * bool) list -> 
+val imports :
+  Ext_pp_scope.t ->
+  Ext_pp.t ->
+  (Ident.t * string * bool) list ->
   Ext_pp_scope.t

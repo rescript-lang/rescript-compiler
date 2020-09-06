@@ -31,6 +31,6 @@
 *)
 val regenerate_ninja :
   toplevel_package_specs:Bsb_package_specs.t option ->
-  forced: bool -> 
-  per_proj_dir:string -> 
-  Bsb_config_types.t option 
+  forced: bool ->
+  per_proj_dir:string ->
+  Bsb_config_types.t option

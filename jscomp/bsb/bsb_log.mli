@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,19 +17,19 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val setup : unit -> unit 
+val setup : unit -> unit
 
-type level = 
+type level =
   | Debug
-  | Info 
+  | Info
   | Warn
-  | Error 
+  | Error
 
 val log_level : level ref
 
@@ -37,10 +37,10 @@ type 'a fmt = Format.formatter -> ('a, Format.formatter, unit) format -> 'a
 
 type 'a log = ('a, Format.formatter, unit) format -> 'a
 
-val verbose : unit -> unit 
+val verbose : unit -> unit
 val debug  : 'a log
-val info : 'a log 
-val warn : 'a log 
+val info : 'a log
+val warn : 'a log
 val error : 'a log
 
 val info_args : string array -> unit

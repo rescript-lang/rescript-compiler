@@ -71,7 +71,7 @@ let comparableU
   (module MakeComparableU(struct
       type t = key
       let cmp = cmp
-    end) 
+    end)
   : Comparable with type t = key)
 
 let comparable

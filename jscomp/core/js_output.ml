@@ -48,14 +48,14 @@ let make ?value ?(output_finished=False) block =
 let dummy =
     {value = None; block = []; output_finished = Dummy }
 
-(** This can be merged with 
-    {!output_of_block_and_expression} *)    
+(** This can be merged with
+    {!output_of_block_and_expression} *)
 let output_of_expression
     (continuation : continuation)
     (exp : J.expression) ~(no_effects: bool Lazy.t)  =
   match continuation with
   | EffectCall  Not_tail ->
-    if Lazy.force no_effects 
+    if Lazy.force no_effects
     then dummy
     else {block = []; value  = Some exp ; output_finished = False}
   | Declare (kind, n)->
@@ -73,7 +73,7 @@ let output_of_block_and_expression
     (block : J.block) exp : t =
   match continuation with
   | EffectCall Not_tail -> make block ~value:exp
-  | EffectCall (Maybe_tail_is_return _) -> 
+  | EffectCall (Maybe_tail_is_return _) ->
     make (Ext_list.append_one block (S.return_stmt exp)) ~output_finished:True
   | Declare (kind,n) ->
     make (Ext_list.append_one block (S.define_variable ~kind  n exp))
@@ -167,7 +167,7 @@ let  append_output  (x : t ) (y : t ) : t =
 
 (* Fold right is more efficient *)
 let concat (xs : t list) : t =
-  Ext_list.fold_right xs dummy (fun x acc -> append_output x  acc) 
+  Ext_list.fold_right xs dummy (fun x acc -> append_output x  acc)
 
 let to_string x   =
   Js_dump.string_of_block (output_as_block x)

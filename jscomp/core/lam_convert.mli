@@ -1,5 +1,5 @@
 (* Copyright (C) 2018 - Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,32 +17,32 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* val happens_to_be_diff:  
+(* val happens_to_be_diff:
   (int * Lambda.lambda) list -> int option  *)
 
 
-(** 
+(**
   [convert exports lam]
   it also collect [exit_map] and a collection of potential depended modules [may_depends]
-  In this pass we also synchronized aliases so that 
+  In this pass we also synchronized aliases so that
     {[
-      let a1 = a0 in 
-      let a2 = a1 in 
-      let a3 = a2 in 
-      let a4 = a3 in 
+      let a1 = a0 in
+      let a2 = a1 in
+      let a3 = a2 in
+      let a4 = a3 in
     ]}
-    converted to 
+    converted to
     {[
-      let a1 = a0 in 
-      let a2 = a0 in 
-      let a3 = a0 in 
-      let a4 = a0 in 
+      let a1 = a0 in
+      let a2 = a0 in
+      let a3 = a0 in
+      let a4 = a0 in
     ]}
     we dont eliminate unused let bindings to leave it for {!Lam_pass_lets_dce}
     we should remove all those let aliases, otherwise, it will be

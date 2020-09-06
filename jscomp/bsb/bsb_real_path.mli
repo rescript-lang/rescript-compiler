@@ -24,4 +24,4 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val is_same_paths_via_io : string -> string -> bool 
+val is_same_paths_via_io : string -> string -> bool

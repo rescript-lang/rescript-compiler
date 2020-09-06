@@ -31,14 +31,14 @@ external to_opt : 'a t -> 'a option = "#null_to_opt"
 external toOption : 'a t -> 'a option = "#null_to_opt"
 external return : 'a -> 'a t  = "%identity"
 let test : 'a t -> bool = fun x -> x = Js.null
-external empty : 'a t = "#null" 
+external empty : 'a t = "#null"
 external getUnsafe : 'a t -> 'a = "%identity"
 
 let getExn f =
-  match toOption f with 
+  match toOption f with
   | None -> Js_exn.raiseError "Js.Null.getExn"
-  | Some x -> x 
-  
+  | Some x -> x
+
 let bind x f =
   match toOption x with
   | None -> empty
@@ -54,4 +54,4 @@ let fromOption x =
   | None -> empty
   | Some x -> return x
 
-let from_opt = fromOption  
+let from_opt = fromOption

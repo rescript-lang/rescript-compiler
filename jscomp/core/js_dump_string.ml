@@ -26,9 +26,9 @@ module P = Ext_pp
 
 (** Avoid to allocate single char string too many times*)
 let array_str1 =
-  Array.init 256 (fun i -> String.make 1 (Char.chr i)) 
+  Array.init 256 (fun i -> String.make 1 (Char.chr i))
 
-(** For conveting 
+(** For conveting
 
 *)
 let array_conv =
@@ -38,7 +38,7 @@ let array_conv =
  (* https://mathiasbynens.be/notes/javascript-escapes *)
 let (+>) = Ext_buffer.add_string
  let escape_to_buffer f  (* ?(utf=false)*) s =
-  let pp_raw_string f (* ?(utf=false)*) s = 
+  let pp_raw_string f (* ?(utf=false)*) s =
     let l = String.length s in
     for i = 0 to l - 1 do
       let c = String.unsafe_get s i in
@@ -50,7 +50,7 @@ let (+>) = Ext_buffer.add_string
       | '\t' -> f +> "\\t"
       (* This escape sequence is not supported by IE < 9
                | '\011' -> "\\v"
-         IE < 9 treats '\v' as 'v' instead of a vertical tab ('\x0B'). 
+         IE < 9 treats '\v' as 'v' instead of a vertical tab ('\x0B').
          If cross-browser compatibility is a concern, use \x0B instead of \v.
 
          Another thing to note is that the \v and \0 escapes are not allowed in JSON strings.
@@ -81,12 +81,12 @@ let (+>) = Ext_buffer.add_string
   f +> "\""
 ;;
 
-let escape_to_string s = 
-  let buf = Ext_buffer.create (String.length s * 2 ) in 
-  escape_to_buffer buf s;  
+let escape_to_string s =
+  let buf = Ext_buffer.create (String.length s * 2 ) in
+  escape_to_buffer buf s;
   (Ext_buffer.contents buf)
 
-let pp_string f s = 
+let pp_string f s =
     P.string f (escape_to_string s)
 (* let _best_string_quote s =
   let simple = ref 0 in

@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,67 +17,67 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val map : 
-  'a list -> 
-  ('a -> 'b) -> 
-  'b list 
+val map :
+  'a list ->
+  ('a -> 'b) ->
+  'b list
 
-val map_combine :  
-  'a list -> 
-  'b list -> 
-  ('a -> 'c) -> 
-  ('c * 'b) list 
+val map_combine :
+  'a list ->
+  'b list ->
+  ('a -> 'c) ->
+  ('c * 'b) list
 
 val combine_array:
   'a array ->
-  'b list -> 
+  'b list ->
   ('a -> 'c) ->
-  ('c * 'b) list   
+  ('c * 'b) list
 
 val combine_array_append:
   'a array ->
   'b list ->
-  ('c * 'b) list -> 
+  ('c * 'b) list ->
   ('a -> 'c) ->
-  ('c * 'b) list   
-  
-val has_string :   
+  ('c * 'b) list
+
+val has_string :
   string list ->
-  string -> 
+  string ->
   bool
 
 
-val map_split_opt :  
+val map_split_opt :
   'a list ->
   ('a -> 'b option * 'c option) ->
-  'b list * 'c list 
+  'b list * 'c list
 
 val mapi :
-  'a list -> 
-  (int -> 'a -> 'b) -> 
-  'b list 
+  'a list ->
+  (int -> 'a -> 'b) ->
+  'b list
 
 val mapi_append :
-  'a list -> 
-  (int -> 'a -> 'b) -> 
-  'b list -> 
-  'b list 
+  'a list ->
+  (int -> 'a -> 'b) ->
+  'b list ->
+  'b list
 
-val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
+val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list
 
 (** [map_last f xs ]
-    will pass [true] to [f] for the last element, 
-    [false] otherwise. 
+    will pass [true] to [f] for the last element,
+    [false] otherwise.
     For empty list, it returns empty
 *)
-val map_last : 
-    'a list -> 
+val map_last :
+    'a list ->
     (bool -> 'a -> 'b) -> 'b list
 
 (** [last l]
@@ -86,78 +86,78 @@ val map_last :
 *)
 val last : 'a list -> 'a
 
-val append : 
-  'a list -> 
-  'a list -> 
-  'a list 
-
-val append_one :  
-  'a list -> 
-  'a -> 
+val append :
+  'a list ->
+  'a list ->
   'a list
 
-val map_append :  
-  'b list -> 
-  'a list -> 
-  ('b -> 'a) -> 
+val append_one :
+  'a list ->
+  'a ->
   'a list
 
-val fold_right : 
-  'a list -> 
-  'b -> 
-  ('a -> 'b -> 'b) -> 
+val map_append :
+  'b list ->
+  'a list ->
+  ('b -> 'a) ->
+  'a list
+
+val fold_right :
+  'a list ->
+  'b ->
+  ('a -> 'b -> 'b) ->
   'b
 
-val fold_right2 : 
-  'a list -> 
-  'b list -> 
-  'c -> 
+val fold_right2 :
+  'a list ->
+  'b list ->
+  'c ->
   ('a -> 'b -> 'c -> 'c) ->  'c
 
-val fold_right3 : 
-  'a list -> 
-  'b list -> 
-  'c list -> 
-  'd -> 
-  ('a -> 'b -> 'c -> 'd -> 'd) -> 
+val fold_right3 :
+  'a list ->
+  'b list ->
+  'c list ->
+  'd ->
+  ('a -> 'b -> 'c -> 'd -> 'd) ->
   'd
-  
-  
-val map2 : 
+
+
+val map2 :
   'a list ->
   'b list ->
   ('a -> 'b -> 'c) ->
   'c list
 
-val fold_left_with_offset : 
-  'a list -> 
-  'acc -> 
-  int -> 
-  ('a -> 'acc ->  int ->  'acc) ->   
-  'acc 
+val fold_left_with_offset :
+  'a list ->
+  'acc ->
+  int ->
+  ('a -> 'acc ->  int ->  'acc) ->
+  'acc
 
 
 (** @unused *)
-val filter_map : 
-  'a list -> 
-  ('a -> 'b option) -> 
-  'b list  
+val filter_map :
+  'a list ->
+  ('a -> 'b option) ->
+  'b list
 
 (** [exclude p l] is the opposite of [filter p l] *)
-val exclude : 
-  'a list -> 
-  ('a -> bool) -> 
-  'a list 
+val exclude :
+  'a list ->
+  ('a -> bool) ->
+  'a list
 
 (** [excludes p l]
     return a tuple [excluded,newl]
-    where [exluded] is true indicates that at least one  
+    where [exluded] is true indicates that at least one
     element is removed,[newl] is the new list where all [p x] for [x] is false
 
 *)
-val exclude_with_val : 
-  'a list -> 
-  ('a -> bool) -> 
+val exclude_with_val :
+  'a list ->
+  ('a -> bool) ->
   'a list option
 
 
@@ -166,12 +166,12 @@ val same_length : 'a list -> 'b list -> bool
 val init : int -> (int -> 'a) -> 'a list
 
 (** [split_at n l]
-    will split [l] into two lists [a,b], [a] will be of length [n], 
+    will split [l] into two lists [a,b], [a] will be of length [n],
     otherwise, it will raise
 *)
-val split_at : 
-  'a list -> 
-  int -> 
+val split_at :
+  'a list ->
+  int ->
   'a list * 'a list
 
 
@@ -180,15 +180,15 @@ val split_at :
 *)
 val split_at_last : 'a list -> 'a list * 'a
 
-val filter_mapi : 
-  'a list -> 
-  ('a -> int ->  'b option) -> 
+val filter_mapi :
+  'a list ->
+  ('a -> int ->  'b option) ->
   'b list
 
-val filter_map2 : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b -> 'c option) -> 
+val filter_map2 :
+  'a list ->
+  'b list ->
+  ('a -> 'b -> 'c option) ->
   'c list
 
 
@@ -199,14 +199,14 @@ val length_ge : 'a list -> int -> bool
 (**
 
    {[length xs = length ys + n ]}
-   input n should be positive 
+   input n should be positive
    TODO: input checking
 *)
 
-val length_larger_than_n : 
-  'a list -> 
-  'a list -> 
-   int -> 
+val length_larger_than_n :
+  'a list ->
+  'a list ->
+   int ->
    bool
 
 
@@ -216,22 +216,22 @@ val length_larger_than_n :
    This weird semantics is due to it is the most efficient operation
    we can do
 *)
-val rev_map_append : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b) -> 
+val rev_map_append :
+  'a list ->
+  'b list ->
+  ('a -> 'b) ->
   'b list
 
 
-val flat_map : 
-  'a list -> 
-  ('a -> 'b list) -> 
+val flat_map :
+  'a list ->
+  ('a -> 'b list) ->
   'b list
 
-val flat_map_append : 
-  'a list -> 
+val flat_map_append :
+  'a list ->
   'b list  ->
-  ('a -> 'b list) -> 
+  ('a -> 'b list) ->
   'b list
 
 
@@ -246,168 +246,168 @@ val flat_map_append :
    {[
      [[1];[2];[4];[3;3]]
    ]}
-    TODO: this is O(n^2) behavior 
+    TODO: this is O(n^2) behavior
     which could be improved later
 *)
-val stable_group : 
-  'a list -> 
-  ('a -> 'a -> bool) -> 
-  'a list list 
+val stable_group :
+  'a list ->
+  ('a -> 'a -> bool) ->
+  'a list list
 
 (** [drop n list]
     raise when [n] is negative
     raise when list's length is less than [n]
 *)
-val drop : 
-  'a list -> 
-  int -> 
-  'a list 
+val drop :
+  'a list ->
+  int ->
+  'a list
 
-val find_first :   
+val find_first :
     'a list ->
     ('a -> bool) ->
-    'a option 
-    
+    'a option
+
 (** [find_first_not p lst ]
-    if all elements in [lst] pass, return [None] 
+    if all elements in [lst] pass, return [None]
     otherwise return the first element [e] as [Some e] which
     fails the predicate
 *)
-val find_first_not : 
-  'a list -> 
-  ('a -> bool) -> 
-  'a option 
+val find_first_not :
+  'a list ->
+  ('a -> bool) ->
+  'a option
 
-(** [find_opt f l] returns [None] if all return [None],  
-    otherwise returns the first one. 
+(** [find_opt f l] returns [None] if all return [None],
+    otherwise returns the first one.
 *)
 
-val find_opt : 
-  'a list -> 
-  ('a -> 'b option) -> 
-  'b option 
+val find_opt :
+  'a list ->
+  ('a -> 'b option) ->
+  'b option
 
-val find_def : 
-    'a list -> 
+val find_def :
+    'a list ->
     ('a -> 'b option) ->
     'b ->
-    'b 
+    'b
 
-    
-val rev_iter : 
-  'a list -> 
-  ('a -> unit) -> 
-  unit 
 
-val iter:   
-   'a list ->  
-   ('a -> unit) -> 
+val rev_iter :
+  'a list ->
+  ('a -> unit) ->
+  unit
+
+val iter:
+   'a list ->
+   ('a -> unit) ->
    unit
-   
-val for_all:  
-    'a list -> 
-    ('a -> bool) -> 
+
+val for_all:
+    'a list ->
+    ('a -> bool) ->
     bool
-val for_all_snd:    
-    ('a * 'b) list -> 
-    ('b -> bool) -> 
+val for_all_snd:
+    ('a * 'b) list ->
+    ('b -> bool) ->
     bool
 
 (** [for_all2_no_exn p xs ys]
     return [true] if all satisfied,
     [false] otherwise or length not equal
 *)
-val for_all2_no_exn : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b -> bool) -> 
+val for_all2_no_exn :
+  'a list ->
+  'b list ->
+  ('a -> 'b -> bool) ->
   bool
 
 
 
 (** [f] is applied follow the list order *)
-val split_map : 
-  'a list -> 
-  ('a -> 'b * 'c) -> 
-  'b list * 'c list       
+val split_map :
+  'a list ->
+  ('a -> 'b * 'c) ->
+  'b list * 'c list
 
 (** [fn] is applied from left to right *)
-val reduce_from_left : 
-  'a list -> 
+val reduce_from_left :
+  'a list ->
   ('a -> 'a -> 'a) ->
   'a
 
 val sort_via_array :
-  'a list -> 
-  ('a -> 'a -> int) -> 
-  'a list  
+  'a list ->
+  ('a -> 'a -> int) ->
+  'a list
 
 val sort_via_arrayf:
-  'a list -> 
+  'a list ->
   ('a -> 'a -> int) ->
-  ('a -> 'b ) -> 
-   'b list  
+  ('a -> 'b ) ->
+   'b list
 
 
 
 (** [assoc_by_string default key lst]
     if  [key] is found in the list  return that val,
-    other unbox the [default], 
+    other unbox the [default],
     otherwise [assert false ]
 *)
-val assoc_by_string : 
-  (string * 'a) list -> 
-  string -> 
-  'a  option ->   
-  'a  
+val assoc_by_string :
+  (string * 'a) list ->
+  string ->
+  'a  option ->
+  'a
 
-val assoc_by_int : 
-  (int * 'a) list -> 
-  int -> 
-  'a  option ->   
-  'a   
+val assoc_by_int :
+  (int * 'a) list ->
+  int ->
+  'a  option ->
+  'a
 
 
-val nth_opt : 'a list -> int -> 'a option  
+val nth_opt : 'a list -> int -> 'a option
 
-val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit 
+val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit
 
-val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
+val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit
 
-val exists : 'a list -> ('a -> bool) -> bool 
+val exists : 'a list -> ('a -> bool) -> bool
 
-val exists_fst : 
+val exists_fst :
   ('a * 'b) list ->
   ('a -> bool) ->
   bool
 
-val exists_snd : 
-  ('a * 'b) list -> 
-  ('b -> bool) -> 
+val exists_snd :
+  ('a * 'b) list ->
+  ('b -> bool) ->
   bool
 
 val concat_append:
-    'a list list -> 
-    'a list -> 
+    'a list list ->
+    'a list ->
     'a list
 
 val fold_left2:
-    'a list -> 
-    'b list -> 
-    'c -> 
+    'a list ->
+    'b list ->
+    'c ->
     ('a -> 'b -> 'c -> 'c)
-    -> 'c 
+    -> 'c
 
-val fold_left:    
-    'a list -> 
-    'b -> 
-    ('b -> 'a -> 'b) -> 
+val fold_left:
+    'a list ->
+    'b ->
+    ('b -> 'a -> 'b) ->
     'b
 
-val singleton_exn:     
+val singleton_exn:
     'a list -> 'a
 
-val mem_string :     
-    string list -> 
-    string -> 
+val mem_string :
+    string list ->
+    string ->
     bool

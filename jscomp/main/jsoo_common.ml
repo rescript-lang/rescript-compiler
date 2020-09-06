@@ -21,7 +21,7 @@ module Js = struct
   external to_bytestring : js_string t -> string = "caml_js_to_byte_string"
 end
 
-let mk_js_error (loc: Location.t) (msg: string) = 
+let mk_js_error (loc: Location.t) (msg: string) =
   let (_file,line,startchar) = Location.get_pos_info loc.Location.loc_start in
   let (_file,endline,endchar) = Location.get_pos_info loc.Location.loc_end in
   Js.Unsafe.(obj
@@ -36,4 +36,3 @@ let mk_js_error (loc: Location.t) (msg: string) =
   "type" , inject @@ Js.string "error"
   |]
   )
-  

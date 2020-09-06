@@ -32,13 +32,13 @@ type t = Lexing.position = {
 
 let offset (x : t) (y:t) =
   {
-    x with 
+    x with
     pos_lnum =
        x.pos_lnum + y.pos_lnum - 1;
-    pos_cnum = 
+    pos_cnum =
       x.pos_cnum + y.pos_cnum;
-    pos_bol = 
-      if y.pos_lnum = 1 then 
+    pos_bol =
+      if y.pos_lnum = 1 then
         x.pos_bol
       else x.pos_cnum + y.pos_bol
   }
@@ -48,15 +48,15 @@ let print fmt (pos : t) =
 
 
 
-let lexbuf_from_channel_with_fname ic fname = 
-  let x = Lexing.from_function (fun buf n -> input ic buf 0 n) in 
+let lexbuf_from_channel_with_fname ic fname =
+  let x = Lexing.from_function (fun buf n -> input ic buf 0 n) in
   let pos : t = {
-    pos_fname = fname ; 
-    pos_lnum = 1; 
+    pos_fname = fname ;
+    pos_lnum = 1;
     pos_bol = 0;
     pos_cnum = 0 (* copied from zero_pos*)
-  } in 
+  } in
   x.lex_start_p <- pos;
-  x.lex_curr_p <- pos ; 
+  x.lex_curr_p <- pos ;
   x
 

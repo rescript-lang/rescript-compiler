@@ -23,64 +23,64 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** poor man's serialization *)
-(* 
-let quot x = 
+(*
+let quot x =
     "\"" ^ String.escaped x ^ "\"" *)
 
-(* let rec encode_aux (x : Ext_json_types.t ) 
-    (buf : Buffer.t) : unit =  
-  let a str = Buffer.add_string buf str in 
-  match x with 
+(* let rec encode_aux (x : Ext_json_types.t )
+    (buf : Buffer.t) : unit =
+  let a str = Buffer.add_string buf str in
+  match x with
   | Null _ -> a "null"
   | Str {str = s }  -> a (quot s)
-  | Flo {flo = s} -> 
-    a s (* 
+  | Flo {flo = s} ->
+    a s (*
     since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
-  | Arr  {content} -> 
-    begin match content with 
+  | Arr  {content} ->
+    begin match content with
       | [||] -> a "[]"
-      | _ -> 
+      | _ ->
         a "[ ";
         encode_aux
           (Array.unsafe_get content 0)
-          buf ; 
-        for i = 1 to Array.length content - 1 do 
+          buf ;
+        for i = 1 to Array.length content - 1 do
           a " , ";
-          encode_aux 
+          encode_aux
             (Array.unsafe_get content i)
             buf
-        done;    
+        done;
         a " ]"
     end
   | True _ -> a "true"
   | False _ -> a "false"
-  | Obj {map} -> 
-    if Map_string.is_empty map then 
+  | Obj {map} ->
+    if Map_string.is_empty map then
       a "{}"
-    else 
-      begin  
+    else
+      begin
         (*prerr_endline "WEIRD";
         prerr_endline (string_of_int @@ Map_string.cardinal map );   *)
         a "{ ";
-        let _ : int =  Map_string.fold map 0  (fun  k v i -> 
+        let _ : int =  Map_string.fold map 0  (fun  k v i ->
             if i <> 0 then begin
-              a " , " 
-            end; 
+              a " , "
+            end;
             a (quot k);
             a " : ";
             encode_aux v buf ;
-            i + 1 
-          ) in 
+            i + 1
+          ) in
           a " }"
       end
  *)
 
-(* let to_string (x : Ext_json_types.t) = 
-    let buf = Buffer.create 1024 in 
+(* let to_string (x : Ext_json_types.t) =
+    let buf = Buffer.create 1024 in
     encode_aux x buf ;
-    Buffer.contents buf 
+    Buffer.contents buf
 
-let to_channel (oc : out_channel) x  = 
-    let buf = Buffer.create 1024 in 
+let to_channel (oc : out_channel) x  =
+    let buf = Buffer.create 1024 in
     encode_aux x buf ;
     Buffer.output_buffer oc buf  *)

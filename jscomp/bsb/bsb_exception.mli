@@ -26,18 +26,18 @@
 (**
     This module is used for fatal errros
 *)
-type error  
+type error
 exception Error of error
 
-val print : Format.formatter -> error -> unit 
+val print : Format.formatter -> error -> unit
 val package_not_found : pkg:Bsb_pkg_types.t -> json:string option -> 'a
 
 val conflict_module:
     string -> string -> string -> exn
-    
+
 val errorf : loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
 
-val config_error : Ext_json_types.t -> string -> 'a 
+val config_error : Ext_json_types.t -> string -> 'a
 
 val invalid_spec : string -> 'a
 

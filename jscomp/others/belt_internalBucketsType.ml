@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -33,16 +33,16 @@ type ('hash, 'eq, 'c) container =
 
 module A = Belt_Array
 external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
-external return : 'a -> 'a opt = "%identity" 
+external return : 'a -> 'a opt = "%identity"
 
-let emptyOpt = Js.undefined   
+let emptyOpt = Js.undefined
 let rec power_2_above x n =
   if x >= n then x
   else if x * 2 < x then x (* overflow *)
   else power_2_above (x * 2) n
 
 let make  ~hash ~eq ~hintSize =
-  let s = power_2_above 16 hintSize in  
+  let s = power_2_above 16 hintSize in
   { size = 0;
     buckets = A.makeUninitialized s;
     hash;
@@ -50,10 +50,10 @@ let make  ~hash ~eq ~hintSize =
 
 let clear h =
   h.size <- 0;
-  let h_buckets = h.buckets in 
+  let h_buckets = h.buckets in
   let len = A.length h_buckets in
   for i = 0 to len - 1 do
     A.setUnsafe h_buckets i  emptyOpt
   done
 
-let isEmpty h = h.size = 0 
+let isEmpty h = h.size = 0

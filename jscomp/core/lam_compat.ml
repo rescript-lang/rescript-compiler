@@ -24,28 +24,28 @@
 
 
 
-type boxed_integer = Lambda.boxed_integer = 
+type boxed_integer = Lambda.boxed_integer =
     Pnativeint | Pint32 | Pint64
 
 
-let eq_boxed_integer (p : boxed_integer) (p1 : boxed_integer ) = 
-  match p with 
-  | Pnativeint -> p1 = Pnativeint 
+let eq_boxed_integer (p : boxed_integer) (p1 : boxed_integer ) =
+  match p with
+  | Pnativeint -> p1 = Pnativeint
   | Pint32 -> p1 = Pint32
-  | Pint64 -> p1 = Pint64    
+  | Pint64 -> p1 = Pint64
 
-type comparison = Lambda.comparison = 
+type comparison = Lambda.comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge
 
 
-let eq_comparison ( p : comparison) (p1:comparison) = 
-  match p with 
+let eq_comparison ( p : comparison) (p1:comparison) =
+  match p with
   | Cge -> p1 =  Cge
   | Cgt -> p1 =  Cgt
   | Cle -> p1 =  Cle
-  | Clt -> p1 =  Clt 
-  | Ceq -> p1 =  Ceq 
-  | Cneq -> p1 =  Cneq 
+  | Clt -> p1 =  Clt
+  | Ceq -> p1 =  Ceq
+  | Cneq -> p1 =  Cneq
 
 
 
@@ -96,14 +96,14 @@ let cmp_int (cmp : comparison) (a : int) b : bool =
 
 
 type compile_time_constant =
-    | Big_endian  
+    | Big_endian
     | Ostype_unix
-    | Ostype_win32    
+    | Ostype_win32
     | Ostype
     | Backend_type
 
 (** relies on the fact that [compile_time_constant] is enum type *)
-let eq_compile_time_constant ( p : compile_time_constant) (p1 : compile_time_constant) = 
+let eq_compile_time_constant ( p : compile_time_constant) (p1 : compile_time_constant) =
   p = p1
 
 type let_kind = Lambda.let_kind
@@ -130,30 +130,30 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_extension
   | Fld_variant
   | Fld_cons
-  | Fld_array 
-  
-let str_of_field_info (x : field_dbg_info) : string option =  
-  match x with 
+  | Fld_array
+
+let str_of_field_info (x : field_dbg_info) : string option =
+  match x with
   | Fld_na  s -> if s = "" then None else Some s
   | Fld_array
   | Fld_extension
   | Fld_variant
   | Fld_cons
-  | Fld_poly_var_tag 
+  | Fld_poly_var_tag
   | Fld_poly_var_content
-  | Fld_tuple 
-     -> None   
-  | Fld_record {name ; _} 
+  | Fld_tuple
+     -> None
+  | Fld_record {name ; _}
   | Fld_module {name ; _}
   | Fld_record_inline {name}
   | Fld_record_extension {name}
-     -> 
+     ->
       Some name
 
-type set_field_dbg_info = Lambda.set_field_dbg_info = 
+type set_field_dbg_info = Lambda.set_field_dbg_info =
   | Fld_set_na
-  | Fld_record_set of string 
-  | Fld_record_inline_set of string  
+  | Fld_record_set of string
+  | Fld_record_inline_set of string
   | Fld_record_extension_set of string
 
 

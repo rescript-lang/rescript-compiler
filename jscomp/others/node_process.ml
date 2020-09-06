@@ -40,14 +40,14 @@ external argv : string array = "argv" [@@bs.module "process"]
 external exit : int -> 'a = "exit" [@@bs.module "process"]
 external cwd : unit -> string = "cwd" [@@bs.module "process"]
 
-(** The process.uptime() method returns the number of seconds 
+(** The process.uptime() method returns the number of seconds
    the current Node.js process has been running.) *)
 external uptime : t -> unit -> float = "uptime" [@@bs.send]
 
-let putEnvVar key (var : string) = 
+let putEnvVar key (var : string) =
   Js_dict.set process##env key var
-(** Note that 
-    {[process.env.X = undefined]} will result in 
+(** Note that
+    {[process.env.X = undefined]} will result in
     {[process.env.X = "undefined"]}
     The only sane way to do it is using `delete`
 *)

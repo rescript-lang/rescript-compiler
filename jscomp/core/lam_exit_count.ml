@@ -31,31 +31,31 @@ let count_exit (exits : collection) i =
   Hash_int.find_default exits i 0
 
 let incr_exit (exits : collection) i =
-  Hash_int.add_or_update exits i 1 ~update:succ 
+  Hash_int.add_or_update exits i 1 ~update:succ
 
 
-(** 
+(**
   This funcition counts how each [exit] is used, it will affect how the following optimizations performed.
-  
-  Some smart cases (this requires the following optimizations follow it): 
-  
+
+  Some smart cases (this requires the following optimizations follow it):
+
   {[
-    Lstaticcatch(l1, (i,_), l2) 
+    Lstaticcatch(l1, (i,_), l2)
   ]}
   If [l1] does not contain [(exit i)],
   [l2] will be removed, so don't count it.
-  
+
   About Switch default branch handling, it maybe backend-specific
-  See https://github.com/ocaml/ocaml/commit/fcf3571123e2c914768e34f1bd17e4cbaaa7d212#diff-704f66c0fa0fc9339230b39ce7d90919 
+  See https://github.com/ocaml/ocaml/commit/fcf3571123e2c914768e34f1bd17e4cbaaa7d212#diff-704f66c0fa0fc9339230b39ce7d90919
   For Lstringswitch ^
-  
+
   For Lswitch, if it is not exhuastive pattern match, default will be counted twice.
   Since for pattern match,  we will  test whether it is  an integer or block, both have default cases predicate: [sw_consts_full] vs nconsts
 *)
-let count_helper  (lam : Lam.t) : collection = 
+let count_helper  (lam : Lam.t) : collection =
   let exits : collection = Hash_int.create 17 in
-  let rec count (lam : Lam.t) = 
-    match lam with 
+  let rec count (lam : Lam.t) =
+    match lam with
     | Lstaticraise (i,ls) -> incr_exit exits i ; Ext_list.iter ls count
     | Lstaticcatch(l1, (i,_), l2) ->
       count l1;
@@ -72,7 +72,7 @@ let count_helper  (lam : Lam.t) : collection =
       count l2; count l1
     | Lletrec(bindings, body) ->
       Ext_list.iter_snd bindings count;
-      count body    
+      count body
     | Lprim {args;  _} -> List.iter count args
     | Lswitch(l, sw) ->
       count_default sw ;
@@ -91,10 +91,10 @@ let count_helper  (lam : Lam.t) : collection =
     | None -> ()
     | Some al ->
       if not sw.sw_consts_full && not sw.sw_blocks_full
-      then 
-          (count al ; count al)    
-      else 
-          count al in 
-  count lam ; 
+      then
+          (count al ; count al)
+      else
+          count al in
+  count lam ;
   exits
 ;;

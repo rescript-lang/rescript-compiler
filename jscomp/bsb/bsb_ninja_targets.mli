@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -25,17 +25,17 @@
 
 
 
-type override = 
-  | Append of string 
-  | AppendList of string list 
+type override =
+  | Append of string
+  | AppendList of string list
   | AppendVar of string
-  
-  | Overwrite of string 
-  
-  | OverwriteVar of string 
+
+  | Overwrite of string
+
+  | OverwriteVar of string
 
   | OverwriteVars of string list
-  
+
 type shadow = { key : string ; op : override }
 (** output should always be marked explicitly,
    otherwise the build system can not figure out clearly
@@ -44,22 +44,22 @@ type shadow = { key : string ; op : override }
 val output_build :
   ?order_only_deps:string list ->
   ?implicit_deps:string list ->
-  ?implicit_outputs: string list ->    
-  ?shadows:shadow list ->  
+  ?implicit_outputs: string list ->
+  ?shadows:shadow list ->
   outputs:string list ->
   inputs:string list ->
-  rule:Bsb_ninja_rule.t -> 
-  out_channel -> 
+  rule:Bsb_ninja_rule.t ->
+  out_channel ->
   unit
 
 
 val phony  :
   ?order_only_deps:string list ->
-  inputs:string list -> 
-  output:string -> 
-  out_channel -> 
+  inputs:string list ->
+  output:string ->
+  out_channel ->
   unit
 
-val output_kv : string ->  string -> out_channel -> unit 
+val output_kv : string ->  string -> out_channel -> unit
 val output_kvs : (string * string) array -> out_channel -> unit
 

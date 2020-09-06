@@ -23,13 +23,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 module C = Belt_internalBucketsType
-  
+
 type ('a,'b) bucket = {
   mutable key : 'a;
   mutable value : 'b;
   mutable next : ('a,'b) bucket C.opt
-}  
-and ('hash, 'eq, 'a, 'b) t = ('hash, 'eq, ('a,'b) bucket) C.container  
+}
+and ('hash, 'eq, 'a, 'b) t = ('hash, 'eq, ('a,'b) bucket) C.container
 
 
 val copy : ('hash, 'eq, 'a, 'b) t -> ('hash, 'eq, 'a, 'b) t
@@ -38,11 +38,11 @@ val forEachU: (_, _, 'a, 'b) t -> ('a -> 'b -> 'c [@bs]) -> unit
 val forEach: (_, _, 'a, 'b) t -> ('a -> 'b -> 'c) -> unit
 
 val reduceU: (_, _, 'a, 'b) t -> 'c -> ('c -> 'a -> 'b -> 'c [@bs]) -> 'c
-val reduce: (_, _, 'a, 'b) t -> 'c -> ('c -> 'a -> 'b -> 'c) -> 'c  
+val reduce: (_, _, 'a, 'b) t -> 'c -> ('c -> 'a -> 'b -> 'c) -> 'c
 
 val logStats : _ t -> unit
 
-  
+
 val keepMapInPlaceU: (_, _, 'a, 'b) t -> ('a -> 'b -> 'b option [@bs]) -> unit
 val keepMapInPlace: (_, _, 'a, 'b) t -> ('a -> 'b -> 'b option) -> unit
 

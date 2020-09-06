@@ -23,13 +23,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type 'a t  = 'a list 
+type 'a t  = 'a list
 
 val length : 'a t -> int
 
-val cons : 'a -> 'a t -> 'a t 
+val cons : 'a -> 'a t -> 'a t
 
-val isEmpty : 'a t -> bool 
+val isEmpty : 'a t -> bool
 
 val hd : 'a t -> 'a option
 
@@ -45,9 +45,9 @@ val mapRev : ('a -> 'b [@bs]) -> 'a t -> 'b t
 
 val map : ('a -> 'b [@bs]) -> 'a t -> 'b t
 
-val iter : ('a -> unit [@bs]) -> 'a t -> unit 
+val iter : ('a -> unit [@bs]) -> 'a t -> unit
 
-val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit 
+val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit
 
 val foldLeft : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b list -> 'a
 (** Application order is left to right, tail recurisve *)
@@ -58,14 +58,14 @@ val foldRight : ('a -> 'b -> 'b [@bs]) -> 'a list -> 'b -> 'b
 
 val flatten : 'a t t  -> 'a t
 
-val filter : ('a -> bool [@bs]) -> 'a t -> 'a t 
+val filter : ('a -> bool [@bs]) -> 'a t -> 'a t
 
 val filterMap : ('a -> 'b option [@bs]) -> 'a t -> 'b t
 
-val countBy : ('a -> bool [@bs]) -> 'a list -> int 
+val countBy : ('a -> bool [@bs]) -> 'a list -> int
 
-val init : int -> (int -> 'a [@bs]) -> 'a t 
+val init : int -> (int -> 'a [@bs]) -> 'a t
 
-val toVector : 'a t -> 'a Js_vector.t 
+val toVector : 'a t -> 'a Js_vector.t
 
 val equal : ('a -> 'a -> bool [@bs]) -> 'a list -> 'a list -> bool

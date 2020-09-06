@@ -1,6 +1,6 @@
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,36 +18,36 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Store a file called [.bsbuild] that can be communicated 
-    between [bsb.exe] and [bsb_helper.exe]. 
-    [bsb.exe] stores such data which would be retrieved by 
-    [bsb_helper.exe]. It is currently used to combine with 
+(** Store a file called [.bsbuild] that can be communicated
+    between [bsb.exe] and [bsb_helper.exe].
+    [bsb.exe] stores such data which would be retrieved by
+    [bsb_helper.exe]. It is currently used to combine with
     ocamldep to figure out which module->file it depends on
-*) 
+*)
 
-type case = bool 
+type case = bool
 
-type info = 
+type info =
   | Intf (* intemediate state *)
   | Impl
   | Impl_intf
 
-type syntax_kind =   
-  | Ml 
-  | Reason     
+type syntax_kind =
+  | Ml
+  | Reason
   | Res
 
-type module_info = 
+type module_info =
   {
     mutable info : info;
     dir : string;
     syntax_kind : syntax_kind;
-    (* This is actually not stored in bsbuild meta info 
+    (* This is actually not stored in bsbuild meta info
       since creating .d file only emit .cmj/.cmi dependencies, so it does not
       need know which syntax it is written
     *)
@@ -55,21 +55,21 @@ type module_info =
     name_sans_extension : string;
   }
 
-type map = module_info Map_string.t 
+type map = module_info Map_string.t
 
 type 'a cat  = {
-  mutable lib : 'a ; 
+  mutable lib : 'a ;
   mutable dev : 'a;
 }
 
-type t = map cat  
+type t = map cat
 
 (** store  the meta data indexed by {!Bsb_dir_index}
   {[
     0 --> lib group
     1 --> dev 1 group
     .
-    
+
   ]}
 *)
 

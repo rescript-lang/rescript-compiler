@@ -22,8 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = Lam.t 
-type ident = Ident.t 
+type t = Lam.t
+type ident = Ident.t
 
 
 let inner_iter (l : t) (f : t -> unit ) : unit =
@@ -40,21 +40,21 @@ let inner_iter (l : t) (f : t -> unit ) : unit =
     f body;
   | Lletrec(decl, body) ->
     f body;
-    Ext_list.iter_snd  decl f 
+    Ext_list.iter_snd  decl f
   | Lswitch(arg, {sw_consts; sw_consts_full = _ ; sw_blocks; sw_blocks_full = _; sw_failaction}) ->
     f arg;
     Ext_list.iter_snd sw_consts f;
     Ext_list.iter_snd sw_blocks f;
-    Ext_option.iter sw_failaction f      
+    Ext_option.iter sw_failaction f
   | Lstringswitch (arg,cases,default) ->
     f arg;
     Ext_list.iter_snd cases f;
-    Ext_option.iter default f     
+    Ext_option.iter default f
   | Lglobal_module (_ )
     ->  ()
   | Lprim {args; primitive = _; loc = _}  ->
     List.iter f args;
-  
+
   | Lstaticraise (_id,args) ->
     List.iter f args;
   | Lstaticcatch(e1, _vars , e2) ->
@@ -74,7 +74,7 @@ let inner_iter (l : t) (f : t -> unit ) : unit =
   | Lassign(_id, e) ->
     f e
   | Lsend (_k, met, obj, args, _loc) ->
-    f met; f obj; List.iter f args   
+    f met; f obj; List.iter f args
 
 
 let inner_exists (l : t) (f : t -> bool) : bool =
@@ -84,7 +84,7 @@ let inner_exists (l : t) (f : t -> bool) : bool =
   | Lconst (_ : Lam_constant.t) -> false
   | Lapply {ap_func; ap_args; ap_info =_;}   ->
     f ap_func ||
-    Ext_list.exists ap_args f 
+    Ext_list.exists ap_args f
   | Lfunction({body; arity = _;  params = _} ) ->
     f body
   | Llet(_str, _id, arg, body) ->
@@ -92,20 +92,20 @@ let inner_exists (l : t) (f : t -> bool) : bool =
     f body
   | Lletrec(decl, body) ->
     f body ||
-    Ext_list.exists_snd  decl f 
+    Ext_list.exists_snd  decl f
   | Lswitch(arg, {sw_consts; sw_consts_full = _; sw_blocks; sw_blocks_full = _; sw_failaction}) ->
     f arg ||
     Ext_list.exists_snd sw_consts f ||
     Ext_list.exists_snd sw_blocks f ||
-    Ext_option.exists sw_failaction f      
+    Ext_option.exists sw_failaction f
   | Lstringswitch (arg,cases,default) ->
     f arg ||
     Ext_list.exists_snd cases f ||
-    Ext_option.exists default f     
-  
+    Ext_option.exists default f
+
   | Lprim {args; primitive = _; loc = _}  ->
     Ext_list.exists args f;
-  
+
   | Lstaticraise (_id,args) ->
     Ext_list.exists args f;
   | Lstaticcatch(e1, _vars , e2) ->
@@ -125,4 +125,4 @@ let inner_exists (l : t) (f : t -> bool) : bool =
   | Lassign(_id, e) ->
     f e
   | Lsend (_k, met, obj, args, _loc) ->
-    f met || f obj || Ext_list.exists args f 
+    f met || f obj || Ext_list.exists args f

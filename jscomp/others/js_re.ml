@@ -46,7 +46,7 @@ let maybeMatches = "banana" |> Js.String.match_ [\[%re "/na+/g"\]]
 *)
 
 (** the RegExp object *)
-type t 
+type t
 
 (** the result of a executing a RegExp on a string *)
 type result

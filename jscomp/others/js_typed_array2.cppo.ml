@@ -219,7 +219,7 @@ end
 *)
 module DataView = struct
 
-  
+
   type t
 
   external make : array_buffer -> t = "DataView" [@@bs.new]

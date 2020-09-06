@@ -23,20 +23,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (* This file is only used in bsb watcher searlization *)
-type t = 
-  | True 
-  | False 
-  | Null 
-  | Flo of string 
+type t =
+  | True
+  | False
+  | Null
+  | Flo of string
   | Str of string
-  | Arr of t array 
+  | Arr of t array
   | Obj of t Map_string.t
 
 
 (** poor man's serialization *)
 let naive_escaped (unmodified_input : string) : string =
   let n = ref 0 in
-  let len = String.length unmodified_input in 
+  let len = String.length unmodified_input in
   for i = 0 to len - 1 do
     n := !n +
          (match String.unsafe_get unmodified_input i with
@@ -48,7 +48,7 @@ let naive_escaped (unmodified_input : string) : string =
     let result = Bytes.create !n in
     n := 0;
     for i = 0 to len - 1 do
-      let open Bytes in   
+      let open Bytes in
       begin match String.unsafe_get unmodified_input i with
         | ('\"' | '\\') as c ->
           unsafe_set result !n '\\'; incr n; unsafe_set result !n c
@@ -60,84 +60,84 @@ let naive_escaped (unmodified_input : string) : string =
           unsafe_set result !n '\\'; incr n; unsafe_set result !n 'r'
         | '\b' ->
           unsafe_set result !n '\\'; incr n; unsafe_set result !n 'b'
-        |  c -> unsafe_set result !n c      
+        |  c -> unsafe_set result !n c
       end;
       incr n
     done;
     Bytes.unsafe_to_string result
   end
 
-let quot x = 
+let quot x =
     "\"" ^ naive_escaped x ^ "\""
 let true_ = True
 let false_ = False
-let null = Null 
-let str s  = Str s 
-let flo s = Flo s 
-let arr s = Arr s 
-let obj s = Obj s 
-let kvs s = 
+let null = Null
+let str s  = Str s
+let flo s = Flo s
+let arr s = Arr s
+let obj s = Obj s
+let kvs s =
   Obj (Map_string.of_list s)
-  
-let rec encode_buf (x : t ) 
-    (buf : Buffer.t) : unit =  
-  let a str = Buffer.add_string buf str in 
-  match x with 
+
+let rec encode_buf (x : t )
+    (buf : Buffer.t) : unit =
+  let a str = Buffer.add_string buf str in
+  match x with
   | Null  -> a "null"
   | Str s   -> a (quot s)
-  | Flo  s -> 
-    a s (* 
+  | Flo  s ->
+    a s (*
     since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
-  | Arr  content -> 
-    begin match content with 
+  | Arr  content ->
+    begin match content with
       | [||] -> a "[]"
-      | _ -> 
+      | _ ->
         a "[ ";
         encode_buf
           (Array.unsafe_get content 0)
-          buf ; 
-        for i = 1 to Array.length content - 1 do 
+          buf ;
+        for i = 1 to Array.length content - 1 do
           a " , ";
-          encode_buf 
+          encode_buf
             (Array.unsafe_get content i)
             buf
-        done;    
+        done;
         a " ]"
     end
   | True  -> a "true"
   | False  -> a "false"
-  | Obj map -> 
-    if Map_string.is_empty map then 
+  | Obj map ->
+    if Map_string.is_empty map then
       a "{}"
-    else 
-      begin  
+    else
+      begin
         (*prerr_endline "WEIRD";
         prerr_endline (string_of_int @@ Map_string.cardinal map );   *)
         a "{ ";
-        let _ : int =  Map_string.fold map 0 (fun  k v i -> 
+        let _ : int =  Map_string.fold map 0 (fun  k v i ->
             if i <> 0 then begin
-              a " , " 
-            end; 
+              a " , "
+            end;
             a (quot k);
             a " : ";
             encode_buf v buf ;
-            i + 1 
-          ) in 
+            i + 1
+          ) in
           a " }"
       end
 
 
-let to_string x  = 
-    let buf = Buffer.create 1024 in 
+let to_string x  =
+    let buf = Buffer.create 1024 in
     encode_buf x buf ;
-    Buffer.contents buf 
+    Buffer.contents buf
 
-let to_channel (oc : out_channel) x  = 
-    let buf = Buffer.create 1024 in 
+let to_channel (oc : out_channel) x  =
+    let buf = Buffer.create 1024 in
     encode_buf x buf ;
-    Buffer.output_buffer oc buf   
+    Buffer.output_buffer oc buf
 
-let to_file name v =     
-  let ochan = open_out_bin name in 
+let to_file name v =
+  let ochan = open_out_bin name in
   to_channel ochan v ;
   close_out ochan

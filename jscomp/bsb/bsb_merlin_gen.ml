@@ -32,7 +32,7 @@ let (//) = Ext_path.combine
 (** [new_content] should start end finish with newline *)
 let revise_merlin merlin new_content =
   if Sys.file_exists merlin then
-    let s = Ext_io.load_file merlin in 
+    let s = Ext_io.load_file merlin in
     let header =  Ext_string.find s ~sub:merlin_header  in
     let tail = Ext_string.find s ~sub:merlin_trailer in
     if header < 0  && tail < 0 then (* locked region not added yet *)
@@ -67,7 +67,7 @@ let revise_merlin merlin new_content =
 (* ATTENTION: order matters here, need resolve global properties before
    merlin generation
 *)
-let merlin_flg_ppx = "\nFLG -ppx " 
+let merlin_flg_ppx = "\nFLG -ppx "
 let merlin_flg_pp = "\nFLG -pp "
 let merlin_s = "\nS "
 let merlin_b = "\nB "
@@ -76,103 +76,103 @@ let merlin_b = "\nB "
 let merlin_flg = "\nFLG "
 let bs_flg_prefix = "-bs-"
 
-let output_merlin_namespace buffer ns= 
-  match ns with 
+let output_merlin_namespace buffer ns=
+  match ns with
   | None -> ()
-  | Some x -> 
+  | Some x ->
     let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
-    Buffer.add_string buffer merlin_b ; 
-    Buffer.add_string buffer lib_artifacts_dir ; 
-    Buffer.add_string buffer merlin_flg ; 
+    Buffer.add_string buffer merlin_b ;
+    Buffer.add_string buffer lib_artifacts_dir ;
+    Buffer.add_string buffer merlin_flg ;
     Buffer.add_string buffer "-open ";
-    Buffer.add_string buffer x 
+    Buffer.add_string buffer x
 
 (* Literals.dash_nostdlib::
    FIX editor tooling, note merlin does not need -nostdlib since we added S and B
-   RLS will add -I for those cmi files,  
+   RLS will add -I for those cmi files,
    Some consistency check is needed
    Unless we tell the editor to peek those cmi for auto-complete and others for building which is too
    complicated
-*)      
+*)
 let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
-  let flags = (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) ( 
-     bsc_flags)) in 
-  if flags <> [] then    
-    merlin_flg ^ 
+  let flags = (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) (
+     bsc_flags)) in
+  if flags <> [] then
+    merlin_flg ^
     String.concat Ext_string.single_space flags
   else ""
 
-(* No need for [-warn-error] in merlin  *)     
-let warning_to_merlin_flg (warning: Bsb_warning.t ) : string=     
+(* No need for [-warn-error] in merlin  *)
+let warning_to_merlin_flg (warning: Bsb_warning.t ) : string=
   merlin_flg ^ Bsb_warning.to_merlin_string warning
 
 
 let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
-    ({file_groups = res_files ; 
+    ({file_groups = res_files ;
       generate_merlin;
       ppx_files;
       pp_file;
       bs_dependencies;
       bs_dev_dependencies;
-      bsc_flags; 
+      bsc_flags;
       built_in_dependency;
-      external_includes; 
-      reason_react_jsx ; 
+      external_includes;
+      reason_react_jsx ;
       namespace;
       package_name = _;
-      warning; 
+      warning;
      } : Bsb_config_types.t)
   =
-  if generate_merlin then begin     
+  if generate_merlin then begin
     let buffer = Buffer.create 1024 in
-    output_merlin_namespace buffer namespace; 
+    output_merlin_namespace buffer namespace;
     Ext_list.iter ppx_files (fun ppx ->
         Buffer.add_string buffer merlin_flg_ppx;
-        if ppx.args = [] then 
+        if ppx.args = [] then
           Buffer.add_string buffer ppx.name
-        else   
-          let fmt : _ format = 
-            if Ext_sys.is_windows_or_cygwin then 
+        else
+          let fmt : _ format =
+            if Ext_sys.is_windows_or_cygwin then
               "\"%s %s\""
-            else "'%s %s'" in 
-          Buffer.add_string buffer 
+            else "'%s %s'" in
+          Buffer.add_string buffer
             (Printf.sprintf fmt ppx.name (String.concat " " ppx.args))
       );
-    Ext_option.iter pp_file (fun x -> 
+    Ext_option.iter pp_file (fun x ->
       Buffer.add_string buffer (merlin_flg_pp ^ x)
-    );  
-    Buffer.add_string buffer 
-      (merlin_flg_ppx  ^ 
-       (match reason_react_jsx with 
-        | None -> 
-          let fmt : _ format = 
+    );
+    Buffer.add_string buffer
+      (merlin_flg_ppx  ^
+       (match reason_react_jsx with
+        | None ->
+          let fmt : _ format =
             if Ext_sys.is_windows_or_cygwin then
-              "\"%s -as-ppx \"" 
+              "\"%s -as-ppx \""
             else  "'%s -as-ppx '"  in Printf.sprintf fmt Bsb_global_paths.vendor_bsc
         | Some opt ->
-          let fmt : _ format = 
+          let fmt : _ format =
             if Ext_sys.is_windows_or_cygwin then
-              "\"%s -as-ppx -bs-jsx %d\"" 
-            else  "'%s -as-ppx -bs-jsx %d'" 
-          in 
+              "\"%s -as-ppx -bs-jsx %d\""
+            else  "'%s -as-ppx -bs-jsx %d'"
+          in
           Printf.sprintf fmt  Bsb_global_paths.vendor_bsc
             (match opt with Jsx_v3 -> 3)
        )
-      );    
-    Ext_list.iter external_includes (fun path -> 
+      );
+    Ext_list.iter external_includes (fun path ->
         Buffer.add_string buffer merlin_s ;
         Buffer.add_string buffer path ;
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
-      );      
-    Ext_option.iter built_in_dependency (fun package -> 
-        let path = package.package_install_path in 
-        Buffer.add_string buffer (merlin_s ^ path );
-        Buffer.add_string buffer (merlin_b ^ path)                      
       );
-    let bsc_string_flag = bsc_flg_to_merlin_ocamlc_flg bsc_flags in 
+    Ext_option.iter built_in_dependency (fun package ->
+        let path = package.package_install_path in
+        Buffer.add_string buffer (merlin_s ^ path );
+        Buffer.add_string buffer (merlin_b ^ path)
+      );
+    let bsc_string_flag = bsc_flg_to_merlin_ocamlc_flg bsc_flags in
     Buffer.add_string buffer bsc_string_flag ;
-    Buffer.add_string buffer (warning_to_merlin_flg  warning); 
+    Buffer.add_string buffer (warning_to_merlin_flg  warning);
     Ext_list.iter bs_dependencies (fun package ->
         let path = package.package_install_path in
         Buffer.add_string buffer merlin_s ;
@@ -181,7 +181,7 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
         Buffer.add_string buffer path ;
       );
     Ext_list.iter bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
-    (fun package ->    
+    (fun package ->
         let path = package.package_install_path in
         Buffer.add_string buffer merlin_s ;
         Buffer.add_string buffer path ;
@@ -189,8 +189,8 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
         Buffer.add_string buffer path ;
       );
     let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
-    Ext_list.iter res_files.files (fun x -> 
-        if not (Bsb_file_groups.is_empty x) then 
+    Ext_list.iter res_files.files (fun x ->
+        if not (Bsb_file_groups.is_empty x) then
           begin
             Buffer.add_string buffer merlin_s;
             Buffer.add_string buffer x.dir ;
@@ -199,7 +199,7 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
           end
       ) ;
     Buffer.add_string buffer "\n";
-    revise_merlin (per_proj_dir // merlin) buffer 
+    revise_merlin (per_proj_dir // merlin) buffer
   end
 
 

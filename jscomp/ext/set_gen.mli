@@ -6,7 +6,7 @@ type 'a t =private
 
 val empty : 'a t
 val [@inline] is_empty : 'a t-> bool
-val unsafe_two_elements : 
+val unsafe_two_elements :
   'a -> 'a -> 'a t
 
 val cardinal : 'a t-> int
@@ -48,7 +48,7 @@ module type S =
     val remove : t -> elt -> t
     val union : t -> t -> t
     val inter : t -> t -> t
-    val diff : t -> t -> t    
+    val diff : t -> t -> t
     val of_list : elt list -> t
     val of_sorted_array : elt array -> t
     val invariant : t -> bool

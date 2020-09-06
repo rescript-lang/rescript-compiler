@@ -25,7 +25,7 @@
 
 (** Used in `bsb -init` command *)
 val global_substitute:
-  string -> 
+  string ->
   reg:string ->
-  (string -> string list -> string) -> 
+  (string -> string list -> string) ->
   string

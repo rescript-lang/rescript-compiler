@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -39,9 +39,9 @@ val cmpU:
     ('k, 'v, 'id) t ->
     ('k, 'v, 'id) t ->
     kcmp:('k, 'id) cmp ->
-    vcmp:('v -> 'v -> int [@bs]) -> 
+    vcmp:('v -> 'v -> int [@bs]) ->
      int
-val cmp: 
+val cmp:
     ('k, 'v, 'id) t ->
     ('k, 'v, 'id) t ->
     kcmp:('k, 'id) cmp ->
@@ -226,7 +226,7 @@ val partitionU:
     ('k, 'a, 'id) t * ('k, 'a, 'id) t
 val partition:
     ('k, 'a, 'id) t ->
-    ('k -> 'a -> bool) -> 
+    ('k -> 'a -> bool) ->
     ('k, 'a, 'id) t * ('k, 'a, 'id) t
 (** [partition m p] returns a pair of maps [(m1, m2)], where
     [m1] contains all the bindings of [s] that satisfy the

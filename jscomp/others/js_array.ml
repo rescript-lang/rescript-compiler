@@ -83,7 +83,7 @@ external includes : 'a -> bool = "includes" [@@bs.send.pipe: 'a t as 'this] (** 
 external indexOf : 'a  -> int = "indexOf" [@@bs.send.pipe: 'a t as 'this]
 external indexOfFrom : 'a -> from:int -> int = "indexOf" [@@bs.send.pipe: 'a t as 'this]
 
-external join : 'a t -> string = "join" 
+external join : 'a t -> string = "join"
 [@@bs.send] [@@deprecated "please use joinWith instead"]
 
 external joinWith : string -> string = "join" [@@bs.send.pipe: 'a t as 'this]

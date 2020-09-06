@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (* TODO: This function is a duplicate of `Ast_extract.sort_files_by_dependencies`
-         without the dependency on `bs_exception`. 
+         without the dependency on `bs_exception`.
          We should combine them at some point to avoid the duplicated logic. *)
 let sort_files_by_dependencies ~domain dependency_graph =
   let next current =
@@ -37,7 +37,7 @@ let sort_files_by_dependencies ~domain dependency_graph =
            Format.pp_print_string)
         (current::path)
     else if Set_string.mem !worklist current then
-      begin        
+      begin
         Set_string.iter (next current)
           (fun node ->
              if  Map_string.mem dependency_graph node then
@@ -52,7 +52,7 @@ let sort_files_by_dependencies ~domain dependency_graph =
   result
 ;;
 
-(* TODO: The core of the logic in this function is the exact same as 
+(* TODO: The core of the logic in this function is the exact same as
          `Ast_extract.collect_from_main` but we removed the dep on bs_exception
          and made it return a Queue. It also doesn't create the ast_table itself.
          We should probably refactor the two to work together at some point. *)
@@ -68,7 +68,7 @@ let simple_collect_from_main ?alias_map ast_table main_module =
     match alias_map with
     | None -> module_set
     | Some map ->
-      Set_string.fold module_set Set_string.empty (fun x acc -> Set_string.add acc (Hash_string.find_default map x x) ) 
+      Set_string.fold module_set Set_string.empty (fun x acc -> Set_string.add acc (Hash_string.find_default map x x) )
   in
   let rec visit visiting path current =
     if Set_string.mem visiting current then
@@ -92,7 +92,7 @@ let simple_collect_from_main ?alias_map ast_table main_module =
   result
 
 let get_otherlibs_dependencies dependency_graph file_extension =
-  let addIfPresentInSet v moduleName fileName acc = 
+  let addIfPresentInSet v moduleName fileName acc =
     if Set_string.mem v moduleName then
       Set_string.add acc (fileName ^ file_extension)
     else
@@ -109,4 +109,4 @@ let get_otherlibs_dependencies dependency_graph file_extension =
       |> addIfPresent "Dynlink"  "dynlink"
       |> addIfPresent "Graphics" "graphics"
   )  in
-  Set_string.fold set_of_otherlib_deps [] (fun v acc -> v :: acc) 
+  Set_string.fold set_of_otherlib_deps [] (fun v acc -> v :: acc)

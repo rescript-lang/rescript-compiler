@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -34,9 +34,9 @@
 (** Define some basic types used in JS IR *)
 
 type binop =
-  | Eq  
+  | Eq
   (* acutally assignment ..
-     TODO: move it into statement, so that all expressions 
+     TODO: move it into statement, so that all expressions
      are side efffect free (except function calls)
    *)
 
@@ -85,7 +85,7 @@ let iasr  x y = x asr y (* x >> y *)
 
 
 Note that js treat unsigned shift 0 bits in a special way
-   Unsigned shifts convert their left-hand side to Uint32, 
+   Unsigned shifts convert their left-hand side to Uint32,
    signed shifts convert it to Int32.
    Shifting by 0 digits returns the converted value.
    {[
@@ -99,8 +99,8 @@ Note that js treat unsigned shift 0 bits in a special way
    So in Js, [-1 >>>0] will be the largest Uint32, while [-1>>0] will remain [-1]
    and [-1 >>> 0 >> 0 ] will be [-1]
 *)
-type int_op = 
-    
+type int_op =
+
   | Bor
   | Bxor
   | Band
@@ -109,7 +109,7 @@ type int_op =
   | Asr
 
   | Plus
-      (* for [+], given two numbers 
+      (* for [+], given two numbers
          x + y | 0
        *)
   | Minus
@@ -128,37 +128,37 @@ type int_op =
     ~0xff -> -256
     design; make sure each operation type is consistent
  *)
-type level = 
-  | Log 
+type level =
+  | Log
   | Info
   | Warn
   | Error
 
-type kind = 
+type kind =
   | Ml
-  | Runtime 
+  | Runtime
   | External of {name : string; default : bool}
 
-type property = Lam_compat.let_kind = 
+type property = Lam_compat.let_kind =
   | Strict
   | Alias
-  | StrictOpt 
+  | StrictOpt
   | Variable
 
 
-type property_name = 
+type property_name =
    | Lit of string
    | Symbol_name
-  
-type 'a access = 
+
+type 'a access =
   | Getter
   | Setter
 type jsint = Int32.t
 
-type int_or_char = 
-    { i : jsint; 
-      (* we can not use [int] on 32 bit platform, if we dont use 
-          [Int32.t], we need a configuration step          
+type int_or_char =
+    { i : jsint;
+      (* we can not use [int] on 32 bit platform, if we dont use
+          [Int32.t], we need a configuration step
       *)
       c : char option
     }
@@ -166,53 +166,53 @@ type int_or_char =
  (* literal char *)
 type float_lit = { f :  string } [@@unboxed]
 
-type number = 
-  | Float of float_lit 
+type number =
+  | Float of float_lit
   | Int of int_or_char
   | Uint of int32
   | Nint of nativeint
-  (* becareful when constant folding +/-, 
+  (* becareful when constant folding +/-,
      since we treat it as js nativeint, bitwise operators:
      https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators
      The operands of all bitwise operators are converted to signed 32-bit integers in two's complement format.'
-  *)      
+  *)
 
-type mutable_flag = 
+type mutable_flag =
   | Mutable
   | Immutable
   | NA
-type direction_flag = 
+type direction_flag =
   | Upto
   | Downto
   | Up
 
-(* 
+(*
     {[
-    let rec x = 1 :: y 
+    let rec x = 1 :: y
     and y = 1 :: x
     ]}
  *)
-type recursive_info = 
-  | SingleRecursive 
+type recursive_info =
+  | SingleRecursive
   | NonRecursie
   | NA
 
-type used_stats = 
-  | Dead_pure 
-        (* only [Dead] should be taken serious, 
+type used_stats =
+  | Dead_pure
+        (* only [Dead] should be taken serious,
             other status can be converted during
             inlining
             -- all exported symbols can not be dead
-            -- once a symbole is called Dead_pure, 
+            -- once a symbole is called Dead_pure,
             it can not be alive anymore, we should avoid iterating it
-            
+
           *)
-  | Dead_non_pure 
-      (* we still need iterating it, 
+  | Dead_non_pure
+      (* we still need iterating it,
          just its bindings does not make sense any more *)
   | Exported (* Once it's exported, shall we change its status anymore? *)
-      (* In general, we should count in one pass, and eliminate code in another 
-         pass, you can not do it in a single pass, however, some simple 
+      (* In general, we should count in one pass, and eliminate code in another
+         pass, you can not do it in a single pass, however, some simple
          dead code can be detected in a single pass
        *)
   | Once_pure (* used only once so that, if we do the inlining, it will be [Dead] *)
@@ -227,15 +227,15 @@ type ident_info = {
     mutable used_stats : used_stats;
   }
 
-type exports = Ident.t list 
+type exports = Ident.t list
 
 
 
 
 type tag_info = Lam_tag_info.t
 
-type length_object = 
-  | Array 
+type length_object =
+  | Array
   | String
   | Bytes
   | Function

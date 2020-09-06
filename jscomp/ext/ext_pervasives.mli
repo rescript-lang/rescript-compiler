@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -29,14 +29,14 @@
 
 
 
-(** Extension to standard library [Pervavives] module, safe to open 
+(** Extension to standard library [Pervavives] module, safe to open
   *)
 
 external reraise: exn -> 'a = "%reraise"
 
-val finally : 
+val finally :
   'a ->
-  clean:('a -> 'c) -> 
+  clean:('a -> 'c) ->
   ('a -> 'b) -> 'b
 
 (* val try_it : (unit -> 'a) ->  unit  *)
@@ -67,6 +67,6 @@ val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 val nat_of_string_exn : string -> int
 
 val parse_nat_of_string:
-  string -> 
-  int ref -> 
-  int 
+  string ->
+  int ref ->
+  int

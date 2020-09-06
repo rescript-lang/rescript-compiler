@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -27,25 +27,25 @@
 
 
 #if BS_BROWSER || BS_RELEASE_BUILD then
- let dump _ (prog : J.program) = 
+ let dump _ (prog : J.program) =
   prog
 #else
-let log_counter = ref 0 
+let log_counter = ref 0
 
 let dump name (prog : J.program) =
   begin
-    let () = 
+    let () =
       if Js_config.get_diagnose ()
-      then 
+      then
         begin
-          incr log_counter ; 
-          Ext_log.dwarn ~__POS__ "\n@[[TIME:]%s: %f@]@." name (Sys.time () *. 1000.);          
-          Ext_pervasives.with_file_as_chan       
+          incr log_counter ;
+          Ext_log.dwarn ~__POS__ "\n@[[TIME:]%s: %f@]@." name (Sys.time () *. 1000.);
+          Ext_pervasives.with_file_as_chan
             (Ext_filename.new_extension !Location.input_name
              (Printf.sprintf ".%02d.%s.jsx"  !log_counter name)
             ) (fun chan -> Js_dump_program.dump_program prog chan )
         end in
-    prog    
+    prog
   end
 #end
- 
+

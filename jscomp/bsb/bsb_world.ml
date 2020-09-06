@@ -25,17 +25,17 @@
 
 let (//) = Ext_path.combine
 
-(** TODO: create the animation effect 
+(** TODO: create the animation effect
     logging installed files
 *)
-let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_config_types.t ) =  
-  let install ~destdir file = 
+let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_config_types.t ) =
+  let install ~destdir file =
      Bsb_file.install_if_exists ~destdir file  |> ignore
   in
   let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
-  let install_filename_sans_extension destdir namespace x = 
-    let x = 
-      Ext_namespace_encode.make ?ns:namespace x in 
+  let install_filename_sans_extension destdir namespace x =
+    let x =
+      Ext_namespace_encode.make ?ns:namespace x in
     install ~destdir (cwd // x ^  Literals.suffix_ml) ;
     install ~destdir (cwd // x ^  Literals.suffix_re) ;
     install ~destdir (cwd // x ^ Literals.suffix_mli) ;
@@ -44,14 +44,14 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmj) ;
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmt) ;
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmti) ;
-  in   
+  in
   let destdir = cwd // !Bsb_global_backend.lib_ocaml_dir in (* lib is already there after building, so just mkdir [lib/ocaml] *)
   if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
   begin
     Bsb_log.info "@{<info>Installing started@}@.";
-    begin match namespace with 
+    begin match namespace with
       | None -> ()
-      | Some x -> 
+      | Some x ->
         install_filename_sans_extension destdir None  x
     end;
     Hash_set_string.iter files_to_install (install_filename_sans_extension destdir namespace) ;
@@ -63,32 +63,32 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
 let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
 
   let vendor_ninja = Bsb_global_paths.vendor_ninja in
-  let args = 
-    if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
+  let args =
+    if Ext_array.is_empty ninja_args then [|vendor_ninja|]
     else Array.append [|vendor_ninja|] ninja_args
-  in 
+  in
   let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
   Bsb_build_util.walk_all_deps  cwd (fun {top; proj_dir} ->
       if not top then
-        begin 
-          let config_opt = 
-            Bsb_ninja_regen.regenerate_ninja 
-              ~toplevel_package_specs:(Some deps) 
+        begin
+          let config_opt =
+            Bsb_ninja_regen.regenerate_ninja
+              ~toplevel_package_specs:(Some deps)
               ~forced:true
               ~per_proj_dir:proj_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
-          let command = 
+          let command =
             {Bsb_unix.cmd = vendor_ninja;
              cwd = proj_dir // lib_artifacts_dir;
-             args 
-            } in     
+             args
+            } in
           let eid =
             Bsb_unix.run_command_execv
-              command in 
-          if eid <> 0 then   
+              command in
+          if eid <> 0 then
             Bsb_unix.command_fatal_error command eid;
-          (* When ninja is not regenerated, ninja will still do the build, 
+          (* When ninja is not regenerated, ninja will still do the build,
              still need reinstall check
-             Note that we can check if ninja print "no work to do", 
+             Note that we can check if ninja print "no work to do",
              then don't need reinstall more
           *)
           Ext_option.iter config_opt (install_targets proj_dir);

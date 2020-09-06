@@ -25,28 +25,28 @@
 
 let (//) = Filename.concat
 
-type t = 
+type t =
   | Global of string
   | Scope of string * scope
-and scope = string  
+and scope = string
 
-let to_string (x : t) = 
+let to_string (x : t) =
   match x with
   | Global s -> s
-  | Scope (s,scope) -> scope // s 
+  | Scope (s,scope) -> scope // s
 
-let print fmt (x : t) = 
-  match x with   
-  | Global s -> Format.pp_print_string fmt s 
-  | Scope(name,scope) -> 
+let print fmt (x : t) =
+  match x with
+  | Global s -> Format.pp_print_string fmt s
+  | Scope(name,scope) ->
     Format.fprintf fmt "%s/%s" scope name
 
-let equal (x : t) y = 
-  match x, y with 
-  | Scope(a0,a1), Scope(b0,b1) 
+let equal (x : t) y =
+  match x, y with
+  | Scope(a0,a1), Scope(b0,b1)
     -> a0 = b0 && a1 = b1
   | Global a0, Global b0 -> a0 = b0
-  | Scope _, Global _ 
+  | Scope _, Global _
   | Global _, Scope _ -> false
 
 (**
@@ -59,45 +59,45 @@ let equal (x : t) y =
     hello//xh//helo
   ]}
 *)
-let extract_pkg_name_and_file (s : string) =   
-  let len = String.length s in 
-  assert (len  > 0 ); 
-  let v = String.unsafe_get s 0 in 
-  if v = '@' then 
-    let scope_id = 
-      Ext_string.no_slash_idx s  in 
+let extract_pkg_name_and_file (s : string) =
+  let len = String.length s in
+  assert (len  > 0 );
+  let v = String.unsafe_get s 0 in
+  if v = '@' then
+    let scope_id =
+      Ext_string.no_slash_idx s  in
     assert (scope_id > 0);
-    let pkg_id =   
+    let pkg_id =
       Ext_string.no_slash_idx_from
-        s (scope_id + 1)   in 
-     let scope =     
-      String.sub s 0 scope_id in 
-     
-     if pkg_id < 0 then     
+        s (scope_id + 1)   in
+     let scope =
+      String.sub s 0 scope_id in
+
+     if pkg_id < 0 then
       (Scope(String.sub s (scope_id + 1) (len - scope_id - 1), scope),"")
-     else 
+     else
       (Scope(
-        String.sub s (scope_id + 1) (pkg_id - scope_id - 1), scope), 
+        String.sub s (scope_id + 1) (pkg_id - scope_id - 1), scope),
        String.sub s (pkg_id + 1) (len - pkg_id - 1))
-  else     
-      let pkg_id = Ext_string.no_slash_idx s in 
-      if pkg_id < 0 then 
+  else
+      let pkg_id = Ext_string.no_slash_idx s in
+      if pkg_id < 0 then
       Global s , ""
-      else 
-      Global (String.sub s 0 pkg_id), 
+      else
+      Global (String.sub s 0 pkg_id),
               (String.sub s (pkg_id + 1) (len - pkg_id - 1))
 
 
-let string_as_package (s : string) : t = 
-  let len = String.length s in 
-  assert (len > 0); 
-  let v = String.unsafe_get s 0 in 
-  if v = '@' then 
-    let scope_id = 
-        Ext_string.no_slash_idx s in 
+let string_as_package (s : string) : t =
+  let len = String.length s in
+  assert (len > 0);
+  let v = String.unsafe_get s 0 in
+  if v = '@' then
+    let scope_id =
+        Ext_string.no_slash_idx s in
     assert (scope_id > 0);
     Scope(
       String.sub s (scope_id + 1) (len - scope_id - 1),
       String.sub s 0 scope_id
-      )    
-  else Global s       
+      )
+  else Global s

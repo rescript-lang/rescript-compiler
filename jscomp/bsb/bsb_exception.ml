@@ -31,7 +31,7 @@ type error =
   | Invalid_spec of string
   | Conflict_module of string * string * string
   | No_implementation of string
-  | Not_consistent of string 
+  | Not_consistent of string
 
 exception Error of error
 
@@ -46,17 +46,17 @@ let print (fmt : Format.formatter) (x : error) =
     "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
     File names must be unique per project"
       modname dir1 dir2
-  | Not_consistent modname ->     
-    Format.fprintf fmt 
+  | Not_consistent modname ->
+    Format.fprintf fmt
     "@{<error>Error:@} %s has implementation/interface in non-consistent syntax(reason/ocaml)" modname
-  | No_implementation (modname) ->     
-    Format.fprintf fmt 
+  | No_implementation (modname) ->
+    Format.fprintf fmt
     "@{<error>Error:@} %s does not have implementation file" modname
   | Package_not_found (name,json_opt) ->
     let in_json = match json_opt with
     | None -> Ext_string.empty
     | Some x -> " in " ^ x in
-    let name = Bsb_pkg_types.to_string name in 
+    let name = Bsb_pkg_types.to_string name in
     if Ext_string.equal name Bs_version.package_name then
       Format.fprintf fmt
       "File \"bsconfig.json\", line 1\n\
@@ -87,9 +87,9 @@ let print (fmt : Format.formatter) (x : error) =
 
 let conflict_module modname dir1 dir2 =
   Error (Conflict_module (modname,dir1,dir2))
-let no_implementation modname =   
+let no_implementation modname =
   error (No_implementation modname)
-let not_consistent modname =   
+let not_consistent modname =
   error (Not_consistent modname)
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt

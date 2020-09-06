@@ -25,32 +25,32 @@
 
 
 
-let () =    
+let () =
   let namespace = ref None in
-  let dev_group = ref false in   
-  let argv = Sys.argv in 
+  let dev_group = ref false in
+  let argv = Sys.argv in
   let l = Array.length argv in
-  let current = ref 1 in 
-  let rev_list = ref [] in 
+  let current = ref 1 in
+  let rev_list = ref [] in
   while !current < l do
     let s = argv.(!current) in
-    incr current;  
+    incr current;
     if s <> "" && s.[0] = '-' then begin
-      match s with 
+      match s with
       | "-hash" ->
         incr current
       | "-bs-ns" ->
         let ns = argv.(!current) in
         namespace := Some ns;
-        incr current     
+        incr current
       | "-g"  ->
         dev_group := true
-      | s -> 
+      | s ->
         prerr_endline ("unknown options: " ^ s);
         prerr_endline ("available options: -hash [hash]; -bs-ns [ns]; -g");
         exit 2
-    end else 
-      rev_list := s :: !rev_list    
+    end else
+      rev_list := s :: !rev_list
   done;
   (
     match !rev_list with
@@ -60,14 +60,13 @@ let () =
             !dev_group
             !namespace x ""
     | [y; x] (* reverse order *)
-      -> 
+      ->
       Bsb_helper_depfile_gen.emit_d
         Js
         !dev_group
         !namespace x y
-    | _ -> 
+    | _ ->
       ()
-  ) 
+  )
 ;;
- 
-  
+

@@ -4,26 +4,26 @@ type key = string
 type key = int
 #else
 [%error "unknown type"]
-#endif  
+#endif
 
 
-type 'b t 
+type 'b t
 
 
-val make:  hintSize:int -> 'b t 
+val make:  hintSize:int -> 'b t
 
 val clear: 'b t -> unit
 
 val isEmpty: _ t -> bool
-  
+
 val set: 'a t -> key -> 'a -> unit
 (** [setDone tbl k v] if [k] does not exist,
     add the binding [k,v], otherwise, update the old value with the new
     [v]
 *)
-  
 
-val copy: 'a t -> 'a t 
+
+val copy: 'a t -> 'a t
 val get:  'a t -> key -> 'a option
 
 val has:  'b  t -> key -> bool
@@ -39,8 +39,8 @@ val reduce: 'b t -> 'c -> ('c -> key -> 'b ->  'c) -> 'c
 val keepMapInPlaceU: 'a t ->  (key -> 'a -> 'a option [@bs]) -> unit
 val keepMapInPlace: 'a t ->  (key -> 'a -> 'a option) -> unit
 
-  
-val size: _ t -> int  
+
+val size: _ t -> int
 
 
 val toArray: 'a t -> (key * 'a) array

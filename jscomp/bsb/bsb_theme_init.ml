@@ -24,17 +24,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type file_type = 
+type file_type =
   | Directory
   | Non_directory_file
-  | Non_exists 
+  | Non_exists
 
-let classify_file name = 
-  let exists = Sys.file_exists name in 
-  if exists then 
+let classify_file name =
+  let exists = Sys.file_exists name in
+  if exists then
     if Sys.is_directory name then Directory
     else Non_directory_file
-  else Non_exists   
+  else Non_exists
 
 let replace s env : string =
   Bsb_regex.global_substitute s ~reg:"\\${bsb:\\([-a-zA-Z0-9]+\\)}"
@@ -43,7 +43,7 @@ let replace s env : string =
        | key::_ ->
          Hash_string.find_exn  env key
        | _ -> assert false
-    ) 
+    )
 
 let (//) = Filename.concat
 
@@ -55,23 +55,23 @@ let enter_dir cwd x action =
   | exception e -> Unix.chdir cwd ; raise e
   | v -> v
 
-let mkdir_or_not_if_exists dir = 
-  match classify_file dir with 
+let mkdir_or_not_if_exists dir =
+  match classify_file dir with
   | Directory -> ()
-  | Non_directory_file 
-    -> 
-    Format.fprintf Format.err_formatter 
+  | Non_directory_file
+    ->
+    Format.fprintf Format.err_formatter
      "%s expected to be added as dir but exist file is not a dir" dir
   | Non_exists -> Unix.mkdir dir 0o777
 
 let rec process_theme_aux env cwd (x : OCamlRes.Res.node) =
   match x with
   | File (name,content)  ->
-    let new_file = cwd // name in 
+    let new_file = cwd // name in
     if not @@ Sys.file_exists new_file then
       Ext_io.write_file new_file (replace content env)
   | Dir (current, nodes) ->
-    let new_cwd = cwd // current in 
+    let new_cwd = cwd // current in
     mkdir_or_not_if_exists new_cwd;
     List.iter (fun x -> process_theme_aux env new_cwd x ) nodes
 
@@ -130,17 +130,17 @@ let init_sample_project ~cwd ~theme name =
 
     | _ ->
       if Ext_namespace.is_valid_npm_package_name name
-      then begin        
-        match classify_file name with 
-        | Non_directory_file 
-          -> 
+      then begin
+        match classify_file name with
+        | Non_directory_file
+          ->
           begin
             Format.fprintf Format.err_formatter "@{<error>%s already exists but it is not a directory@}@." name ;
             exit 2
           end
-        | Directory -> 
+        | Directory ->
           begin
-            Format.fprintf Format.std_formatter "Adding files into existing dir %s@." name; 
+            Format.fprintf Format.std_formatter "Adding files into existing dir %s@." name;
             Hash_string.add env "name" name;
             enter_dir cwd name action
           end
@@ -148,7 +148,7 @@ let init_sample_project ~cwd ~theme name =
           ->
           begin
             Format.fprintf Format.std_formatter "Making directory %s@." name;
-            Unix.mkdir name 0o777;            
+            Unix.mkdir name 0o777;
             Hash_string.add env "name" name;
             enter_dir cwd name action
           end

@@ -24,10 +24,10 @@
 
 
 type t =
-  { 
+  {
     dir_or_files : string array ;
     st_mtimes : float array;
-    source_directory :  string ;    
+    source_directory :  string ;
   }
 
 
@@ -69,7 +69,7 @@ let rec check_aux cwd (xs : string array) (ys: float array) i finish =
   if i = finish then Good
   else
     let current_file = Array.unsafe_get  xs i  in
-    
+
     let stat = Unix.stat  (Filename.concat cwd  current_file) in
     if stat.st_mtime <= Array.unsafe_get ys i then
       check_aux cwd xs ys (i + 1 ) finish
@@ -88,13 +88,13 @@ let read (fname : string) (cont : t -> check_result) =
   | exception _ -> Bsb_file_not_exist
 
 let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
-  let dir_or_files = Array.of_list file_or_dirs in 
-  let st_mtimes = 
+  let dir_or_files = Array.of_list file_or_dirs in
+  let st_mtimes =
     Ext_array.map dir_or_files
-      (fun  x ->      
+      (fun  x ->
            (Unix.stat (Filename.concat per_proj_dir  x )).st_mtime
          )
-  in 
+  in
   write (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string)
     { st_mtimes ;
       dir_or_files;
@@ -121,6 +121,6 @@ let check ~(per_proj_dir:string) ~forced ~file : check_result =
             Bsb_log.info
               "@{<info>Stat miss %s@}@."
               (Printexc.to_string e);
-            Bsb_file_not_exist        
+            Bsb_file_not_exist
           end)
 

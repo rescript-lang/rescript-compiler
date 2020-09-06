@@ -23,12 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val property_access : 
+val property_access :
   Ext_pp.t ->
-  string -> 
-  unit 
+  string ->
+  unit
 
 
-val property_key : 
-  J.property_name -> 
+val property_key :
+  J.property_name ->
   string
