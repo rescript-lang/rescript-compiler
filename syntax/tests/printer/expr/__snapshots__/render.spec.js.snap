@@ -2420,6 +2420,8 @@ exports[`jsx.js 1`] = `
 let x = <Foo className=\\"container\\" />
 let x = <Foo.Bar className=\\"container\\" />
 let x = <Foo.Bar.Baz className=\\"container\\" />
+let x = <Foo.bar className=\\"container\\" />
+let x = <Foo.baz className=\\"multiline\\" />
 
 let x =
   <div

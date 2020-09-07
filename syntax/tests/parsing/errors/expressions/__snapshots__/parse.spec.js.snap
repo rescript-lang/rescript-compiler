@@ -327,6 +327,82 @@ module LicenseList = struct  end
 ========================================================"
 `;
 
+exports[`jsx.js 1`] = `
+"=====Parsetree==========================================
+let x = ((di ~children:[] ())[@JSX ]) - (v / ([%rescript.exprhole ]))
+let x = ((Unclosed.createElement ~children:[] ())[@JSX ])
+let x =
+  ((Foo.Bar.createElement ~children:[] ())[@JSX ]) > ([%rescript.exprhole ])
+let x =
+  ((Foo.Bar.Baz.createElement ~children:[] ())[@JSX ]) >
+    ([%rescript.exprhole ])
+let x =
+  ((Foo.bar.createElement ~children:[] ())[@JSX ]) > ([%rescript.exprhole ])
+let x =
+  ((Foo.bar.createElement ~baz:((baz)[@ns.namedArgLoc ]) ~children:[] ())
+  [@JSX ])
+=====Errors=============================================
+
+  Syntax error!
+  parsing/errors/expressions/jsx.js 1:12  
+  1 │ let x = <di-v />
+  2 │ let x = <Unclosed >;
+  3 │ let x = <Foo.Bar></Free.Will>;
+  
+  I'm not sure what to parse here when looking at \\"-\\".
+
+  Syntax error!
+  parsing/errors/expressions/jsx.js 2:20  
+  1 │ let x = <di-v />
+  2 │ let x = <Unclosed >;
+  3 │ let x = <Foo.Bar></Free.Will>;
+  4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
+  
+  Did you forget a \`</\` here? 
+
+  Syntax error!
+  parsing/errors/expressions/jsx.js 3:9-28  
+  1 │ let x = <di-v />
+  2 │ let x = <Unclosed >;
+  3 │ let x = <Foo.Bar></Free.Will>;
+  4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
+  5 │ let x = <Foo.bar> </Foo.baz>
+  
+  Missing </Foo.Bar>
+
+  Syntax error!
+  parsing/errors/expressions/jsx.js 4:9-34  
+  2 │ let x = <Unclosed >;
+  3 │ let x = <Foo.Bar></Free.Will>;
+  4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
+  5 │ let x = <Foo.bar> </Foo.baz>
+  6 │ let x = <Foo.bar.baz />
+  
+  Missing </Foo.Bar.Baz>
+
+  Syntax error!
+  parsing/errors/expressions/jsx.js 5:9-27  
+  3 │ let x = <Foo.Bar></Free.Will>;
+  4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
+  5 │ let x = <Foo.bar> </Foo.baz>
+  6 │ let x = <Foo.bar.baz />
+  7 │ 
+  
+  Missing </Foo.bar>
+
+  Syntax error!
+  parsing/errors/expressions/jsx.js 6:17  
+  4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
+  5 │ let x = <Foo.bar> </Foo.baz>
+  6 │ let x = <Foo.bar.baz />
+  7 │ 
+  
+  I'm not sure what to parse here when looking at \\".\\".
+
+
+========================================================"
+`;
+
 exports[`misc.js 1`] = `
 "=====Parsetree==========================================
 let x = ([%rescript.exprhole ]) + 1

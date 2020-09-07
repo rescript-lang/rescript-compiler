@@ -2,6 +2,10 @@ let x = <div className="container" className2="container2" className3="container
 let x = <Foo className="container" />
 let x = <Foo.Bar className="container" />
 let x = <Foo.Bar.Baz className="container" />
+let x = <Foo.bar className="container" />
+let x = <Foo.baz
+ className="multiline"
+/>
 
 
 let x =

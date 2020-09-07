@@ -18,8 +18,24 @@ let _ = <div className="menu"></div>
 let _ = <div className="menu" onClick={_ => Js.log("click")}> </div>
 let _ = <div className="menu" onClick={_ => Js.log("click")}></div>
 
+let _ = <Navbar />
 let _ = <Navbar> </Navbar>
-let _ = <Nav.Navbar> </Nav.Navbar>
+let _ = <Navbar></Navbar>
+let _ = <Navbar className="menu"> </Navbar>
+
+let _ = <Dot.Up />
+let _ = <Dot.Up> </Dot.Up>
+let _ = <Dot.Up></Dot.Up>
+let _ = <Dot.Up><Dot.low /></Dot.Up>
+let _ = <Dot.Up><Dot.Up /></Dot.Up>
+let _ = <Dot.Up className="menu"> </Dot.Up>
+
+let _ = <Dot.low />
+let _ = <Dot.low> </Dot.low>
+let _ = <Dot.low></Dot.low>
+let _ = <Dot.low><Dot.Up /></Dot.low>
+let _ = <Dot.low><Dot.low /></Dot.low>
+let _ = <Dot.low className="menu"> </Dot.low>
 
 // punning
 let _ = <el punned> </el>

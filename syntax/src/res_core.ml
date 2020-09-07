@@ -618,7 +618,7 @@ let verifyJsxOpeningClosingName p nameExpr =
   let closing = match p.Parser.token with
   | Lident lident -> Parser.next p; Longident.Lident lident
   | Uident _ ->
-    (parseModuleLongIdent ~lowercase:false p).txt
+    (parseModuleLongIdent ~lowercase:true p).txt
   | _ -> Longident.Lident ""
   in
   match nameExpr.Parsetree.pexp_desc with
@@ -2422,7 +2422,7 @@ and parseJsxName p =
     let loc = mkLoc identStart identEnd in
     Location.mkloc (Longident.Lident ident) loc
   | Uident _ ->
-    let longident = parseModuleLongIdent ~lowercase:false p in
+    let longident = parseModuleLongIdent ~lowercase:true p in
     Location.mkloc (Longident.Ldot (longident.txt, "createElement")) longident.loc
   | _ ->
     let msg = "A jsx name should start with a lowercase or uppercase identifier, like: div in <div /> or Navbar in <Navbar />"

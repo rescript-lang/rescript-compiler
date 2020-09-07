@@ -541,7 +541,42 @@ let _ =
       ~children:[] ())
   [@JSX ])
 let _ = ((Navbar.createElement ~children:[] ())[@JSX ])
-let _ = ((Nav.Navbar.createElement ~children:[] ())[@JSX ])
+let _ = ((Navbar.createElement ~children:[] ())[@JSX ])
+let _ = ((Navbar.createElement ~children:[] ())[@JSX ])
+let _ =
+  ((Navbar.createElement ~className:((\\"menu\\")[@ns.namedArgLoc ]) ~children:[]
+      ())
+  [@JSX ])
+let _ = ((Dot.Up.createElement ~children:[] ())[@JSX ])
+let _ = ((Dot.Up.createElement ~children:[] ())[@JSX ])
+let _ = ((Dot.Up.createElement ~children:[] ())[@JSX ])
+let _ =
+  ((Dot.Up.createElement
+      ~children:[((Dot.low.createElement ~children:[] ())[@JSX ])] ())
+  [@JSX ])
+let _ =
+  ((Dot.Up.createElement
+      ~children:[((Dot.Up.createElement ~children:[] ())[@JSX ])] ())
+  [@JSX ])
+let _ =
+  ((Dot.Up.createElement ~className:((\\"menu\\")[@ns.namedArgLoc ]) ~children:[]
+      ())
+  [@JSX ])
+let _ = ((Dot.low.createElement ~children:[] ())[@JSX ])
+let _ = ((Dot.low.createElement ~children:[] ())[@JSX ])
+let _ = ((Dot.low.createElement ~children:[] ())[@JSX ])
+let _ =
+  ((Dot.low.createElement
+      ~children:[((Dot.Up.createElement ~children:[] ())[@JSX ])] ())
+  [@JSX ])
+let _ =
+  ((Dot.low.createElement
+      ~children:[((Dot.low.createElement ~children:[] ())[@JSX ])] ())
+  [@JSX ])
+let _ =
+  ((Dot.low.createElement ~className:((\\"menu\\")[@ns.namedArgLoc ])
+      ~children:[] ())
+  [@JSX ])
 let _ = ((el ~punned:((punned)[@ns.namedArgLoc ]) ~children:[] ())[@JSX ])
 let _ = ((el ?punned:((punned)[@ns.namedArgLoc ]) ~children:[] ())[@JSX ])
 let _ = ((el ~punned:((punned)[@ns.namedArgLoc ]) ~children:[] ())[@JSX ])
