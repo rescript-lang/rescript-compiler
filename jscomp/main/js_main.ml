@@ -29,11 +29,12 @@ let process_implementation_file ppf name =
 
 
 let setup_reason_error_printer () = 
+  Config.syntax_kind := `reason ;  
   Lazy.force Super_main.setup;  
   Lazy.force Reason_outcome_printer_main.setup
 
 let setup_napkin_error_printer () =  
-  Js_config.napkin := true;
+  Config.syntax_kind := `rescript ;
   Lazy.force Super_main.setup;  
   Lazy.force Res_outcome_printer.setup
 

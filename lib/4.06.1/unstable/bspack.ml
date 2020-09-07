@@ -220,6 +220,8 @@ val version: string
 val standard_library: string
         (* The directory containing the standard libraries *)
 
+val syntax_kind : [`ml | `reason | `rescript ] ref        
+
 val bs_only : bool ref
 
 val standard_runtime: string
@@ -409,6 +411,7 @@ let standard_library =
   let (//) = Filename.concat in   
   Filename.dirname Sys.executable_name // Filename.parent_dir_name //  "lib" // "ocaml"
 let standard_library_default = standard_library
+let syntax_kind = ref `ml
 let bs_only = ref true
 let standard_runtime = "ocamlrun" (*dont care:path to ocamlrun*)
 let ccomp_type = "cc"
@@ -3411,9 +3414,6 @@ val mk_lazy: (unit -> 'a) -> 'a Lazy.t
 val nerrors : int ref
 val message : t -> string 
 val number: t -> int
-val super_report :
-  (t -> string) ->
-  t ->  [ `Active of reporting_information | `Inactive ]
 
 
 end = struct
@@ -3677,7 +3677,9 @@ let restore x = current := x
 
 let is_active x = not !disabled && (!current).active.(number x);;
 
-let is_error = is_active
+let is_error = 
+  if !Config.bs_only then is_active else 
+    fun x -> not !disabled && (!current).error.(number x) 
 
 
 let mk_lazy f =
@@ -3794,15 +3796,19 @@ let message = function
         ("the following methods are overridden by the class"
          :: cname  :: ":\n " :: slist)
   | Method_override [] -> assert false
-  | Partial_match "" -> "this pattern-matching is not exhaustive."
+
+  | Partial_match "" ->
+      "You forgot to handle a possible case here, though we don't have more information on the value."
   | Partial_match s ->
-      "this pattern-matching is not exhaustive.\n\
-       Here is an example of a case that is not matched:\n" ^ s
+      "You forgot to handle a possible case here, for example: \n  " ^ s
+       
   | Non_closed_record_pattern s ->
       "the following labels are not bound in this record pattern:\n" ^ s ^
       "\nEither bind these labels explicitly or add '; _' to the pattern."
-  | Statement_type ->
-      "this expression should have type unit."
+      
+  | Statement_type -> 
+    "This expression returns a value, but you're not doing anything with it. If this is on purpose, wrap it with `ignore`."      
+      
   | Unused_match -> "this match case is unused."
   | Unused_pat   -> "this sub-pattern is unused."
   | Instance_variable_override [lab] ->
@@ -3818,7 +3824,15 @@ let message = function
   | Implicit_public_methods l ->
       "the following private methods were made public implicitly:\n "
       ^ String.concat " " l ^ "."
-  | Unerasable_optional_argument -> "this optional argument cannot be erased."
+
+  | Unerasable_optional_argument ->
+      String.concat ""
+        ["This optional parameter in final position will, in practice, not be optional.\n";
+         "  Reorder the parameters so that at least one non-optional one is in final position or, if all parameters are optional, insert a final ().\n\n";
+         "  Explanation: If the final parameter is optional, it'd be unclear whether a function application that omits it should be considered fully applied, or partially applied. Imagine writing `let title = display(\"hello!\")`, only to realize `title` isn't your desired result, but a curried call that takes a final optional argument, e.g. `~showDate`.\n\n";
+         "  Formal rule: an optional argument is considered intentionally omitted when the 1st positional (i.e. neither labeled nor optional) argument defined after it is passed in."
+        ]
+  
   | Undeclared_virtual_method m -> "the virtual method "^m^" is not declared."
   | Not_principal s -> s^" is not principal."
   | Without_principality s -> s^" without principality."
@@ -3827,10 +3841,18 @@ let message = function
       "this statement never returns (or has an unsound type.)"
   | Preprocessor s -> s
   | Useless_record_with ->
+     begin match !Config.syntax_kind with 
+      | `ml ->
       "all the fields are explicitly listed in this record:\n\
        the 'with' clause is useless."
+      | `reason | `rescript ->
+        "All the fields are already explicitly listed in this record. You can remove the `...` spread."
+     end   
+       
   | Bad_module_name (modname) ->
-      "bad source file name: \"" ^ modname ^ "\" is not a valid module name."
+    "This file's name is potentially invalid. The build systems conventionally turn a file name into a module name by upper-casing the first letter. " ^ modname ^ " isn't a valid module name.\n" ^
+    "Note: some build systems might e.g. turn kebab-case into CamelCase module, which is why this isn't a hard error."
+      
   | All_clauses_guarded ->
       "this pattern-matching is not exhaustive.\n\
        All clauses in this pattern-matching are guarded."
@@ -4034,16 +4056,6 @@ let report w =
              }
 ;;
 
-
-let super_report message w =
-  match is_active w with
-  | false -> `Inactive
-  | true ->
-     if is_error w then incr nerrors;
-     `Active { number = number w; message = message w; is_error = is_error w;
-               sub_locs = sub_locs w;
-             }
-;;    
 
 exception Errors;;
 
@@ -11929,7 +11941,7 @@ val record_as_js_object : bool ref
 val as_ppx : bool ref 
 
 val mono_empty_array : bool ref
-val napkin : bool ref 
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -12024,7 +12036,7 @@ let as_ppx = ref false
 
 let mono_empty_array = ref true
 
-let napkin = ref false
+
 end
 module Map_gen : sig 
 #1 "map_gen.mli"

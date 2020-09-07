@@ -19,6 +19,7 @@ let standard_library =
   let (//) = Filename.concat in   
   Filename.dirname Sys.executable_name // Filename.parent_dir_name //  "lib" // "ocaml"
 let standard_library_default = standard_library
+let syntax_kind = ref `ml
 let bs_only = ref true
 let standard_runtime = "ocamlrun" (*dont care:path to ocamlrun*)
 let ccomp_type = "cc"
