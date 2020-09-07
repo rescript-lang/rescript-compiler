@@ -100,4 +100,3 @@ val record_as_js_object : bool ref
 val as_ppx : bool ref 
 
 val mono_empty_array : bool ref
-val napkin : bool ref 

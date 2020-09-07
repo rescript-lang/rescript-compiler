@@ -12,11 +12,16 @@
 
 (* adapted by rescript from [driver/compile.ml] for convenience    *)
 
-open Format
-open Typedtree
-open Compenv
-
-
+let module_of_filename  outputprefix =
+  let basename = Filename.basename outputprefix in
+  let name =
+    try
+      let pos = String.index basename '.' in
+      String.sub basename 0 pos
+    with Not_found -> basename
+  in
+  String.capitalize_ascii name 
+;;
 
 let fprintf = Format.fprintf
 
@@ -71,7 +76,7 @@ let after_parsing_sig ppf  outputprefix ast  =
     Warnings.check_fatal()
   else 
     begin 
-      let modulename = module_of_filename ppf !Location.input_name outputprefix in
+      let modulename = module_of_filename outputprefix in
       Lam_compile_env.reset () ;
       let initial_env = Res_compmisc.initial_env () in
       Env.set_unit_name modulename;
@@ -83,7 +88,7 @@ let after_parsing_sig ppf  outputprefix ast  =
       let sg = tsg.sig_type in
       if !Clflags.print_types then
         Printtyp.wrap_printing_env initial_env (fun () ->
-            fprintf std_formatter "%a@."
+            fprintf Format.std_formatter "%a@."
               Printtyp.signature (Typemod.simplify_signature sg));
       ignore (Includemod.signatures initial_env sg sg);
       Typecore.force_delayed_checks ();

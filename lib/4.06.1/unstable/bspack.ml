@@ -220,6 +220,8 @@ val version: string
 val standard_library: string
         (* The directory containing the standard libraries *)
 
+val syntax_kind : [`ml | `reason | `rescript ] ref        
+
 val bs_only : bool ref
 
 val standard_runtime: string
@@ -409,6 +411,7 @@ let standard_library =
   let (//) = Filename.concat in   
   Filename.dirname Sys.executable_name // Filename.parent_dir_name //  "lib" // "ocaml"
 let standard_library_default = standard_library
+let syntax_kind = ref `ml
 let bs_only = ref true
 let standard_runtime = "ocamlrun" (*dont care:path to ocamlrun*)
 let ccomp_type = "cc"
@@ -3270,65 +3273,6 @@ let dump_location = ref true
 
 
 end
-module Terminfo : sig 
-#1 "terminfo.mli"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
-(*                                                                        *)
-(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(* Basic interface to the terminfo database *)
-
-type status =
-  | Uninitialised
-  | Bad_term
-  | Good_term of int  (* number of lines of the terminal *)
-;;
-external setup : out_channel -> status = "caml_terminfo_setup";;
-external backup : int -> unit = "caml_terminfo_backup";;
-external standout : bool -> unit = "caml_terminfo_standout";;
-external resume : int -> unit = "caml_terminfo_resume";;
-
-end = struct
-#1 "terminfo.ml"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
-(*                                                                        *)
-(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(* Basic interface to the terminfo database *)
-
-type status =
-  | Uninitialised
-  | Bad_term
-  | Good_term of int
-;;
-external setup : out_channel -> status = "caml_terminfo_setup";;
-external backup : int -> unit = "caml_terminfo_backup";;
-external standout : bool -> unit = "caml_terminfo_standout";;
-external resume : int -> unit = "caml_terminfo_resume";;
-
-end
 module Warnings : sig 
 #1 "warnings.mli"
 (**************************************************************************)
@@ -3470,9 +3414,6 @@ val mk_lazy: (unit -> 'a) -> 'a Lazy.t
 val nerrors : int ref
 val message : t -> string 
 val number: t -> int
-val super_report :
-  (t -> string) ->
-  t ->  [ `Active of reporting_information | `Inactive ]
 
 
 end = struct
@@ -3736,7 +3677,9 @@ let restore x = current := x
 
 let is_active x = not !disabled && (!current).active.(number x);;
 
-let is_error = is_active
+let is_error = 
+  if !Config.bs_only then is_active else 
+    fun x -> not !disabled && (!current).error.(number x) 
 
 
 let mk_lazy f =
@@ -3853,15 +3796,19 @@ let message = function
         ("the following methods are overridden by the class"
          :: cname  :: ":\n " :: slist)
   | Method_override [] -> assert false
-  | Partial_match "" -> "this pattern-matching is not exhaustive."
+
+  | Partial_match "" ->
+      "You forgot to handle a possible case here, though we don't have more information on the value."
   | Partial_match s ->
-      "this pattern-matching is not exhaustive.\n\
-       Here is an example of a case that is not matched:\n" ^ s
+      "You forgot to handle a possible case here, for example: \n  " ^ s
+       
   | Non_closed_record_pattern s ->
       "the following labels are not bound in this record pattern:\n" ^ s ^
       "\nEither bind these labels explicitly or add '; _' to the pattern."
-  | Statement_type ->
-      "this expression should have type unit."
+      
+  | Statement_type -> 
+    "This expression returns a value, but you're not doing anything with it. If this is on purpose, wrap it with `ignore`."      
+      
   | Unused_match -> "this match case is unused."
   | Unused_pat   -> "this sub-pattern is unused."
   | Instance_variable_override [lab] ->
@@ -3877,7 +3824,15 @@ let message = function
   | Implicit_public_methods l ->
       "the following private methods were made public implicitly:\n "
       ^ String.concat " " l ^ "."
-  | Unerasable_optional_argument -> "this optional argument cannot be erased."
+
+  | Unerasable_optional_argument ->
+      String.concat ""
+        ["This optional parameter in final position will, in practice, not be optional.\n";
+         "  Reorder the parameters so that at least one non-optional one is in final position or, if all parameters are optional, insert a final ().\n\n";
+         "  Explanation: If the final parameter is optional, it'd be unclear whether a function application that omits it should be considered fully applied, or partially applied. Imagine writing `let title = display(\"hello!\")`, only to realize `title` isn't your desired result, but a curried call that takes a final optional argument, e.g. `~showDate`.\n\n";
+         "  Formal rule: an optional argument is considered intentionally omitted when the 1st positional (i.e. neither labeled nor optional) argument defined after it is passed in."
+        ]
+  
   | Undeclared_virtual_method m -> "the virtual method "^m^" is not declared."
   | Not_principal s -> s^" is not principal."
   | Without_principality s -> s^" without principality."
@@ -3886,10 +3841,18 @@ let message = function
       "this statement never returns (or has an unsound type.)"
   | Preprocessor s -> s
   | Useless_record_with ->
+     begin match !Config.syntax_kind with 
+      | `ml ->
       "all the fields are explicitly listed in this record:\n\
        the 'with' clause is useless."
+      | `reason | `rescript ->
+        "All the fields are already explicitly listed in this record. You can remove the `...` spread."
+     end   
+       
   | Bad_module_name (modname) ->
-      "bad source file name: \"" ^ modname ^ "\" is not a valid module name."
+    "This file's name is potentially invalid. The build systems conventionally turn a file name into a module name by upper-casing the first letter. " ^ modname ^ " isn't a valid module name.\n" ^
+    "Note: some build systems might e.g. turn kebab-case into CamelCase module, which is why this isn't a hard error."
+      
   | All_clauses_guarded ->
       "this pattern-matching is not exhaustive.\n\
        All clauses in this pattern-matching are guarded."
@@ -4094,16 +4057,6 @@ let report w =
 ;;
 
 
-let super_report message w =
-  match is_active w with
-  | false -> `Inactive
-  | true ->
-     if is_error w then incr nerrors;
-     `Active { number = number w; message = message w; is_error = is_error w;
-               sub_locs = sub_locs w;
-             }
-;;    
-
 exception Errors;;
 
 let reset_fatal () =
@@ -4285,8 +4238,10 @@ val get_pos_info: Lexing.position -> string * int * int (* file, line, char *)
 val print_loc: formatter -> t -> unit
 val print_error: formatter -> t -> unit
 val print_error_cur_file: formatter -> unit -> unit
+
 val print_warning: t -> formatter -> Warnings.t -> unit
 val formatter_for_warnings : formatter ref
+
 val prerr_warning: t -> Warnings.t -> unit
 val echo_eof: unit -> unit
 val reset: unit -> unit
@@ -4299,8 +4254,6 @@ val warning_printer : (t -> formatter -> Warnings.t -> unit) ref
 
 val default_warning_printer : t -> formatter -> Warnings.t -> unit
 (** Original warning printer for use in hooks. *)
-
-val highlight_locations: formatter -> t list -> bool
 
 type 'a loc = {
   txt : 'a;
@@ -4452,153 +4405,9 @@ let set_input_name name =
   if name <> "" then input_name := name
 (* Terminal info *)
 
-let status = ref Terminfo.Uninitialised
+(* let status = ref Terminfo.Uninitialised *)
 
 let num_loc_lines = ref 0 (* number of lines already printed after input *)
-
-let print_updating_num_loc_lines ppf f arg =
-  let open Format in
-  let out_functions = pp_get_formatter_out_functions ppf () in
-  let out_string str start len =
-    let rec count i c =
-      if i = start + len then c
-      else if String.get str i = '\n' then count (succ i) (succ c)
-      else count (succ i) c in
-    num_loc_lines := !num_loc_lines + count start 0 ;
-    out_functions.out_string str start len in
-  pp_set_formatter_out_functions ppf
-    { out_functions with out_string } ;
-  f ppf arg ;
-  pp_print_flush ppf ();
-  pp_set_formatter_out_functions ppf out_functions
-
-(* Highlight the locations using standout mode. *)
-
-let highlight_terminfo ppf num_lines lb locs =
-  Format.pp_print_flush ppf ();  (* avoid mixing Format and normal output *)
-  (* Char 0 is at offset -lb.lex_abs_pos in lb.lex_buffer. *)
-  let pos0 = -lb.lex_abs_pos in
-  (* Do nothing if the buffer does not contain the whole phrase. *)
-  if pos0 < 0 then raise Exit;
-  (* Count number of lines in phrase *)
-  let lines = ref !num_loc_lines in
-  for i = pos0 to lb.lex_buffer_len - 1 do
-    if Bytes.get lb.lex_buffer i = '\n' then incr lines
-  done;
-  (* If too many lines, give up *)
-  if !lines >= num_lines - 2 then raise Exit;
-  (* Move cursor up that number of lines *)
-  flush stdout; Terminfo.backup !lines;
-  (* Print the input, switching to standout for the location *)
-  let bol = ref false in
-  print_string "# ";
-  for pos = 0 to lb.lex_buffer_len - pos0 - 1 do
-    if !bol then (print_string "  "; bol := false);
-    if List.exists (fun loc -> pos = loc.loc_start.pos_cnum) locs then
-      Terminfo.standout true;
-    if List.exists (fun loc -> pos = loc.loc_end.pos_cnum) locs then
-      Terminfo.standout false;
-    let c = Bytes.get lb.lex_buffer (pos + pos0) in
-    print_char c;
-    bol := (c = '\n')
-  done;
-  (* Make sure standout mode is over *)
-  Terminfo.standout false;
-  (* Position cursor back to original location *)
-  Terminfo.resume !num_loc_lines;
-  flush stdout
-
-(* Highlight the location by printing it again. *)
-
-let highlight_dumb ppf lb loc =
-  (* Char 0 is at offset -lb.lex_abs_pos in lb.lex_buffer. *)
-  let pos0 = -lb.lex_abs_pos in
-  (* Do nothing if the buffer does not contain the whole phrase. *)
-  if pos0 < 0 then raise Exit;
-  let end_pos = lb.lex_buffer_len - pos0 - 1 in
-  (* Determine line numbers for the start and end points *)
-  let line_start = ref 0 and line_end = ref 0 in
-  for pos = 0 to end_pos do
-    if Bytes.get lb.lex_buffer (pos + pos0) = '\n' then begin
-      if loc.loc_start.pos_cnum > pos then incr line_start;
-      if loc.loc_end.pos_cnum   > pos then incr line_end;
-    end
-  done;
-  (* Print character location (useful for Emacs) *)
-  Format.fprintf ppf "@[<v>Characters %i-%i:@,"
-                 loc.loc_start.pos_cnum loc.loc_end.pos_cnum;
-  (* Print the input, underlining the location *)
-  Format.pp_print_string ppf "  ";
-  let line = ref 0 in
-  let pos_at_bol = ref 0 in
-  for pos = 0 to end_pos do
-    match Bytes.get lb.lex_buffer (pos + pos0) with
-    | '\n' ->
-      if !line = !line_start && !line = !line_end then begin
-        (* loc is on one line: underline location *)
-        Format.fprintf ppf "@,  ";
-        for _i = !pos_at_bol to loc.loc_start.pos_cnum - 1 do
-          Format.pp_print_char ppf ' '
-        done;
-        for _i = loc.loc_start.pos_cnum to loc.loc_end.pos_cnum - 1 do
-          Format.pp_print_char ppf '^'
-        done
-      end;
-      if !line >= !line_start && !line <= !line_end then begin
-        Format.fprintf ppf "@,";
-        if pos < loc.loc_end.pos_cnum then Format.pp_print_string ppf "  "
-      end;
-      incr line;
-      pos_at_bol := pos + 1
-    | '\r' -> () (* discard *)
-    | c ->
-      if !line = !line_start && !line = !line_end then
-        (* loc is on one line: print whole line *)
-        Format.pp_print_char ppf c
-      else if !line = !line_start then
-        (* first line of multiline loc:
-           print a dot for each char before loc_start *)
-        if pos < loc.loc_start.pos_cnum then
-          Format.pp_print_char ppf '.'
-        else
-          Format.pp_print_char ppf c
-      else if !line = !line_end then
-        (* last line of multiline loc: print a dot for each char
-           after loc_end, even whitespaces *)
-        if pos < loc.loc_end.pos_cnum then
-          Format.pp_print_char ppf c
-        else
-          Format.pp_print_char ppf '.'
-      else if !line > !line_start && !line < !line_end then
-        (* intermediate line of multiline loc: print whole line *)
-        Format.pp_print_char ppf c
-  done;
-  Format.fprintf ppf "@]"
-
-(* Highlight the location using one of the supported modes. *)
-
-let rec highlight_locations ppf locs =
-  match !status with
-    Terminfo.Uninitialised ->
-      status := Terminfo.setup stdout; highlight_locations ppf locs
-  | Terminfo.Bad_term ->
-      begin match !input_lexbuf with
-        None -> false
-      | Some lb ->
-          let norepeat =
-            try Sys.getenv "TERM" = "norepeat" with Not_found -> false in
-          if norepeat then false else
-            let loc1 = List.hd locs in
-            try highlight_dumb ppf lb loc1; true
-            with Exit -> false
-      end
-  | Terminfo.Good_term num_lines ->
-      begin match !input_lexbuf with
-        None -> false
-      | Some lb ->
-          try highlight_terminfo ppf num_lines lb locs; true
-          with Exit -> false
-      end
 
 (* Print the location in some way or another *)
 
@@ -4648,7 +4457,7 @@ let print_loc ppf loc =
       
   let endchar = loc.loc_end.pos_cnum - loc.loc_start.pos_cnum + startchar in
   if file = "//toplevel//" then begin
-    if highlight_locations ppf [loc] then () else
+    
       fprintf ppf "Characters %i-%i"
               loc.loc_start.pos_cnum loc.loc_end.pos_cnum
   end else begin
@@ -4661,9 +4470,8 @@ let print_loc ppf loc =
 
 let default_printer ppf loc =
   setup_colors ();
-  if loc.loc_start.pos_fname = "//toplevel//"
-  && highlight_locations ppf [loc] then ()
-  else fprintf ppf "@{<loc>%a@}%s@," print_loc loc msg_colon
+  
+  fprintf ppf "@{<loc>%a@}%s@," print_loc loc msg_colon
 ;;
 
 let printer = ref default_printer
@@ -4678,9 +4486,8 @@ let print_error_prefix ppf =
 ;;
 
 let print_compact ppf loc =
-  if loc.loc_start.pos_fname = "//toplevel//"
-  && highlight_locations ppf [loc] then ()
-  else begin
+  
+  begin
     let (file, line, startchar) = get_pos_info loc.loc_start in
     let endchar = loc.loc_end.pos_cnum - loc.loc_start.pos_cnum + startchar in
     fprintf ppf "%a:%i" print_filename file line;
@@ -4697,15 +4504,11 @@ let print_error_cur_file ppf () = print_error ppf (in_file !input_name);;
 let default_warning_printer loc ppf w =
   match Warnings.report w with
   | `Inactive -> ()
-  | `Active { Warnings. number; message; is_error; sub_locs } ->
+  | `Active { Warnings. number; message;  sub_locs } ->
     setup_colors ();
     fprintf ppf "@[<v>";
     print ppf loc;
-    if is_error
-    then
-      fprintf ppf "%t (%s %d): %s@," print_error_prefix
-           (String.uncapitalize_ascii warning_prefix) number message
-    else fprintf ppf "@{<warning>%s@} %d: %s@," warning_prefix number message;
+    fprintf ppf "@{<warning>%s@} %d: %s@," warning_prefix number message;
     List.iter
       (fun (loc, msg) ->
          if loc <> none then fprintf ppf "  %a  %s@," print loc msg
@@ -4716,8 +4519,8 @@ let default_warning_printer loc ppf w =
 
 let warning_printer = ref default_warning_printer ;;
 
-let print_warning loc ppf w =
-  print_updating_num_loc_lines ppf (!warning_printer loc) w
+let print_warning loc ppf w = 
+  !warning_printer loc ppf w  
 ;;
 
 let formatter_for_warnings = ref err_formatter;;
@@ -4793,29 +4596,16 @@ let error_of_exn exn =
      in
      loop !error_of_exn
 
-let rec default_error_reporter ppf ({loc; msg; sub; if_highlight} as err) =
-  let highlighted =
-    if if_highlight <> "" && loc.loc_start.pos_fname = "//toplevel//" then
-      let rec collect_locs locs {loc; sub; _} =
-        List.fold_left collect_locs (loc :: locs) sub
-      in
-      let locs = collect_locs [] err in
-      highlight_locations ppf locs
-    else
-      false
-  in
-  if highlighted then
-    Format.pp_print_string ppf if_highlight
-  else begin
+
+let rec default_error_reporter ppf ({loc; msg; sub}) =
     fprintf ppf "@[<v>%a %s" print_error loc msg;
     List.iter (Format.fprintf ppf "@,@[<2>%a@]" default_error_reporter) sub;
     fprintf ppf "@]"
-  end
-
+    
 let error_reporter = ref default_error_reporter
 
 let report_error ppf err =
-  print_updating_num_loc_lines ppf !error_reporter err
+   !error_reporter ppf err
 ;;
 
 let error_of_printer loc print x =
@@ -10971,7 +10761,7 @@ module Literals
 = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -10989,7 +10779,7 @@ module Literals
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -11003,7 +10793,7 @@ module Literals
 let js_array_ctor = "Array"
 let js_type_number = "number"
 let js_type_string = "string"
-let js_type_object = "object" 
+let js_type_object = "object"
 let js_type_boolean = "boolean"
 let js_undefined = "undefined"
 let js_prop_length = "length"
@@ -11035,7 +10825,6 @@ let fn_mk = "fn_mk"
 
 let bs_deriving = "bs.deriving"
 let bs_deriving_dot = "bs.deriving."
-let bs_type = "bs.type"
 
 
 (** nodejs *)
@@ -11066,8 +10855,8 @@ let suffix_resast = ".resast"
 let suffix_resiast = ".resiast"
 let suffix_mlmap = ".mlmap"
 
-let suffix_cmt = ".cmt" 
-let suffix_cmti = ".cmti" 
+let suffix_cmt = ".cmt"
+let suffix_cmti = ".cmti"
 let suffix_mlast = ".mlast"
 let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
@@ -11077,21 +10866,15 @@ let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
-(* let suffix_re_js = ".re.js" *)
 let suffix_gen_js = ".gen.js"
 let suffix_gen_tsx = ".gen.tsx"
-let suffix_tsx = ".tsx"
 
-let commonjs = "commonjs" 
+let commonjs = "commonjs"
 
 let es6 = "es6"
 let es6_global = "es6-global"
 
-let unused_attribute = "Unused attribute " 
-let dash_nostdlib = "-nostdlib"
-
-let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
-let reactjs_jsx_ppx_3_exe  = "reactjs_jsx_ppx_3.exe"
+let unused_attribute = "Unused attribute "
 
 let native = "native"
 let bytecode = "bytecode"
@@ -11106,7 +10889,7 @@ let node_current = "."
 
 let gentype_import = "genType.import"
 
-let bsbuild_cache = ".bsbuild"    
+let bsbuild_cache = ".bsbuild"
 
 let sourcedirs_meta = ".sourcedirs.json"
 
@@ -11126,6 +10909,7 @@ let tl = "tl"
 
 let lazy_done = "LAZY_DONE"
 let lazy_val = "VAL"
+
 end
 module Ext_path : sig 
 #1 "ext_path.mli"
@@ -12151,7 +11935,7 @@ val record_as_js_object : bool ref
 val as_ppx : bool ref 
 
 val mono_empty_array : bool ref
-val napkin : bool ref 
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -12246,7 +12030,7 @@ let as_ppx = ref false
 
 let mono_empty_array = ref true
 
-let napkin = ref false
+
 end
 module Map_gen : sig 
 #1 "map_gen.mli"
@@ -29465,10 +29249,7 @@ type error =
 
 exception Error of error * Location.t
 
-open Format
 
-val report_error: formatter -> error -> unit
- (* Deprecated.  Use Location.{error_of_exn, report_error}. *)
 
 val in_comment : unit -> bool;;
 val in_string : unit -> bool;;
