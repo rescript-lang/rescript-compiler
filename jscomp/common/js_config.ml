@@ -90,4 +90,3 @@ let as_ppx = ref false
 
 let mono_empty_array = ref true
 
-let napkin = ref false

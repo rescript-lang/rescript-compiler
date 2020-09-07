@@ -89,7 +89,7 @@ let super_warning_printer loc ppf w =
     Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]@."
       (print  ("Warning number " ^ (Warnings.number w |> string_of_int)))
       loc
-      (Super_warnings.message w);
+      (Warnings.message w);
     (* at this point, you can display sub_locs too, from e.g. https://github.com/ocaml/ocaml/commit/f6d53cc38f87c67fbf49109f5fb79a0334bab17a
       but we won't bother for now *)
 ;;
