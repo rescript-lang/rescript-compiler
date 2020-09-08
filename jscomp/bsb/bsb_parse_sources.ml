@@ -217,6 +217,7 @@ let prune_staled_bs_js_files
     Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
       context.cwd in 
   if Sys.file_exists lib_parent then
+    (* walk through dangling *.cm[t,i,j] files *)
     let artifacts = Sys.readdir lib_parent in 
     Ext_array.iter artifacts (fun x ->       
         let kind = classify_suffix x  in
@@ -243,13 +244,6 @@ let prune_staled_bs_js_files
                          cmd ^ 
                          " -cmt-rm " ^ filepath)                   
                      : int ) with _ -> ())
-                | Cmj _ ->        
-                  (* remove .bs.js *)
-                  if context.bs_suffix then
-                    try_unlink 
-                      (Filename.concat context.cwd
-                         (String.sub x 0 j ^ Literals.suffix_bs_js)
-                      )
                | _ -> ());
               try_unlink filepath
             end
