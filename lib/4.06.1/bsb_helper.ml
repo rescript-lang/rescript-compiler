@@ -1311,9 +1311,9 @@ let es6_global = "es6-global"
 
 let unused_attribute = "Unused attribute "
 
-let native = "native"
-let bytecode = "bytecode"
-let js = "js"
+
+
+
 
 
 

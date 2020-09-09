@@ -5325,9 +5325,9 @@ let es6_global = "es6-global"
 
 let unused_attribute = "Unused attribute "
 
-let native = "native"
-let bytecode = "bytecode"
-let js = "js"
+
+
+
 
 
 
@@ -10244,8 +10244,6 @@ val lib_artifacts_dir : string ref
 (* path to the compiled artifacts, would be lib/ocaml when compiling to JS *)
 val lib_ocaml_dir : string ref
 
-(* string representation of the target backend, would be "js" when compiling to js *)
-val backend_string: string ref
 
 
 
@@ -10283,7 +10281,7 @@ let lib_artifacts_dir = ref Bsb_config.lib_bs
 
 let lib_ocaml_dir = ref Bsb_config.lib_ocaml
 
-let backend_string = ref Literals.js
+
 
 
 
@@ -12487,7 +12485,7 @@ let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
            (Unix.stat (Filename.concat per_proj_dir  x )).st_mtime
          )
   in 
-  write (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string)
+  write (file ^ "_js" )
     { st_mtimes ;
       dir_or_files;
       source_directory = per_proj_dir ;
@@ -12500,7 +12498,7 @@ let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
     bit in case we found a different version of compiler
 *)
 let check ~(per_proj_dir:string) ~forced ~file : check_result =
-  read (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string)  (fun  {
+  read ( file ^ "_js" )  (fun  {
       dir_or_files ; source_directory; st_mtimes
     } ->
       if per_proj_dir <> source_directory then Bsb_source_directory_changed else
