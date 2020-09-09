@@ -30,7 +30,7 @@ let resolve_package cwd  package_name =
   let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
   {
     Bsb_config_types.package_name ;
-    package_install_path = x // !Bsb_global_backend.lib_ocaml_dir
+    package_install_path = x // Bsb_config.lib_ocaml
   }
 
 type json_map = Ext_json_types.t Map_string.t
@@ -136,7 +136,7 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
         check_version_exit map stdlib_path;
         Some {
             Bsb_config_types.package_name = current_package;
-            package_install_path = stdlib_path // !Bsb_global_backend.lib_ocaml_dir;
+            package_install_path = stdlib_path // Bsb_config.lib_ocaml;
           }
 
       | _ -> assert false 

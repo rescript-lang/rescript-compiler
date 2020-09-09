@@ -10241,9 +10241,6 @@ val backend : Bsb_config_types.compilation_kind_t ref
 (* path to all intermediate build artifacts, would be lib/bs when compiling to JS *)
 val lib_artifacts_dir : string ref
 
-(* path to the compiled artifacts, would be lib/ocaml when compiling to JS *)
-val lib_ocaml_dir : string ref
-
 
 
 
@@ -10279,7 +10276,7 @@ let backend = ref Bsb_config_types.Js
 
 let lib_artifacts_dir = ref Bsb_config.lib_bs
 
-let lib_ocaml_dir = ref Bsb_config.lib_ocaml
+
 
 
 
@@ -11561,7 +11558,7 @@ let resolve_package cwd  package_name =
   let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
   {
     Bsb_config_types.package_name ;
-    package_install_path = x // !Bsb_global_backend.lib_ocaml_dir
+    package_install_path = x // Bsb_config.lib_ocaml
   }
 
 type json_map = Ext_json_types.t Map_string.t
@@ -11667,7 +11664,7 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
         check_version_exit map stdlib_path;
         Some {
             Bsb_config_types.package_name = current_package;
-            package_install_path = stdlib_path // !Bsb_global_backend.lib_ocaml_dir;
+            package_install_path = stdlib_path // Bsb_config.lib_ocaml;
           }
 
       | _ -> assert false 
@@ -16688,7 +16685,7 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmt) ;
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmti) ;
   in   
-  let destdir = cwd // !Bsb_global_backend.lib_ocaml_dir in (* lib is already there after building, so just mkdir [lib/ocaml] *)
+  let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
   if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
   begin
     Bsb_log.info "@{<info>Installing started@}@.";

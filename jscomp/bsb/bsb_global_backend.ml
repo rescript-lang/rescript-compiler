@@ -28,7 +28,7 @@ let backend = ref Bsb_config_types.Js
 
 let lib_artifacts_dir = ref Bsb_config.lib_bs
 
-let lib_ocaml_dir = ref Bsb_config.lib_ocaml
+
 
 
 

@@ -29,8 +29,5 @@ val backend : Bsb_config_types.compilation_kind_t ref
 (* path to all intermediate build artifacts, would be lib/bs when compiling to JS *)
 val lib_artifacts_dir : string ref
 
-(* path to the compiled artifacts, would be lib/ocaml when compiling to JS *)
-val lib_ocaml_dir : string ref
-
 
 
