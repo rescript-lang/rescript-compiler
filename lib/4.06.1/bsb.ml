@@ -5877,7 +5877,6 @@ let all_lib_artifacts =
     lib_bs ; 
     lib_es6 ; 
     lib_es6_global;
-
   ]
 let rev_lib_bs = ".."// ".."
 
@@ -7957,7 +7956,6 @@ type t =
     files_to_install : Hash_set_string.t ;
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
-    entries : entries_t list ;
     generators : command Map_string.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
     bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
@@ -10251,7 +10249,6 @@ val backend_string: string ref
 
 
 
-
 end = struct
 #1 "bsb_global_backend.ml"
 (* Copyright (C) 2019 - Authors of BuckleScript
@@ -11575,8 +11572,7 @@ let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
 
- 
-let extract_main_entries (_ :json_map) = []  
+
 
 
 
@@ -11903,7 +11899,7 @@ let interpret_json
     let bs_suffix = extract_bs_suffix_exn map in   
     (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries 
          array from the bsconfig and set the backend_ref to the first entry, if any. *)
-    let entries = extract_main_entries map in
+
     (* The default situation is empty *)
     let built_in_package = check_stdlib map per_proj_dir in
     let package_specs =     
@@ -11971,7 +11967,6 @@ let interpret_json
           generate_merlin = 
             extract_boolean map Bsb_build_schemas.generate_merlin true;
           reason_react_jsx  ;  
-          entries;
           generators = extract_generators map ; 
           cut_generators ;
         }
@@ -14496,9 +14491,7 @@ let regenerate_ninja
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
        config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~per_proj_dir  ~toplevel config ;             
-
-    
+      ~per_proj_dir  ~toplevel config ;                 
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~per_proj_dir ~file:output_deps 

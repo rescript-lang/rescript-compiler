@@ -34,24 +34,3 @@ let backend_string = ref Literals.js
 
 
 
-#if BS_NATIVE then
-let (//) = Ext_path.combine
-let backend_is_set = ref false
-let set_backend b =
-  backend_is_set := true;
-  backend := b;
-  match b with
-  | Bsb_config_types.Js       -> 
-    lib_artifacts_dir := Bsb_config.lib_bs;
-    lib_ocaml_dir := Bsb_config.lib_ocaml;
-    backend_string := Literals.js;
-  | Bsb_config_types.Native   -> 
-    lib_artifacts_dir := Bsb_config.lib_lit // "bs-native";
-    lib_ocaml_dir := Bsb_config.lib_lit // "ocaml-native";
-    backend_string := Literals.native;
-  | Bsb_config_types.Bytecode -> 
-    lib_artifacts_dir := Bsb_config.lib_lit // "bs-bytecode";
-    lib_ocaml_dir := Bsb_config.lib_lit // "ocaml-bytecode";
-    backend_string := Literals.bytecode;
-
-#end

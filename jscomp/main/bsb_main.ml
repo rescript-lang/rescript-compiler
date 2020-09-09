@@ -87,16 +87,7 @@ let bsb_main_flags : (string * spec * string) array =
     specify a websocket number (and optionally, a host). \n\
     When a build finishes, we send a message to that port. \n\
     For tools that listen on build completion." ;
-#if BS_NATIVE then
-    "-backend", String (String_call (fun s -> 
-        match s with
-        | "js"       -> Bsb_global_backend.set_backend Bsb_config_types.Js
-        | "native"   -> Bsb_global_backend.set_backend Bsb_config_types.Native
-        | "bytecode" -> Bsb_global_backend.set_backend Bsb_config_types.Bytecode
-        | _ -> failwith "-backend should be one of: 'js', 'bytecode' or 'native'."
-      )),
-    "Builds the entries specified in the bsconfig that match the given backend. Can be either 'js', 'bytecode' or 'native'.";
-#end
+
   |]
 
 

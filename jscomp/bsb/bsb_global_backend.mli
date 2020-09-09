@@ -36,10 +36,3 @@ val lib_ocaml_dir : string ref
 val backend_string: string ref
 
 
-#if BS_NATIVE then
-(* Flag to track whether backend has been set to a value. *)
-val backend_is_set : bool ref
-
-(* convenience setter to update all the refs according to the given target backend *)
-val set_backend : Bsb_config_types.compilation_kind_t -> unit
-#end

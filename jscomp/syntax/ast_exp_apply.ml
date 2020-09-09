@@ -234,8 +234,6 @@ let app_exp_mapper
            Ast_attributes.is_bs with
        | None -> default_expr_mapper self e
        | Some pexp_attributes ->
-         if !Config.bs_only then 
            {e with pexp_desc = Ast_uncurry_apply.uncurry_fn_apply e.pexp_loc self fn  args ;
                    pexp_attributes }
-         else   {e with pexp_attributes } (* BS_NATIVE branch*)
      )
