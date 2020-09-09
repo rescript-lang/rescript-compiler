@@ -5325,9 +5325,9 @@ let es6_global = "es6-global"
 
 let unused_attribute = "Unused attribute "
 
-let native = "native"
-let bytecode = "bytecode"
-let js = "js"
+
+
+
 
 
 
@@ -5877,7 +5877,6 @@ let all_lib_artifacts =
     lib_bs ; 
     lib_es6 ; 
     lib_es6_global;
-
   ]
 let rev_lib_bs = ".."// ".."
 
@@ -7912,10 +7911,8 @@ type dependency =
   }
 type dependencies = dependency list 
 
-(* `string` is a path to the entrypoint *)
-type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of string
 
-type compilation_kind_t = Js | Bytecode | Native
+
 
 type reason_react_jsx = 
   | Jsx_v3
@@ -7957,7 +7954,6 @@ type t =
     files_to_install : Hash_set_string.t ;
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
-    entries : entries_t list ;
     generators : command Map_string.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
     bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
@@ -10210,88 +10206,6 @@ let walk_all_deps dir cb =
   walk_all_deps_aux visited [] true dir cb 
 
 end
-module Bsb_global_backend : sig 
-#1 "bsb_global_backend.mli"
-(* Copyright (C) 2019 - Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(* Target backend *)
-val backend : Bsb_config_types.compilation_kind_t ref
-
-(* path to all intermediate build artifacts, would be lib/bs when compiling to JS *)
-val lib_artifacts_dir : string ref
-
-(* path to the compiled artifacts, would be lib/ocaml when compiling to JS *)
-val lib_ocaml_dir : string ref
-
-(* string representation of the target backend, would be "js" when compiling to js *)
-val backend_string: string ref
-
-
-
-
-end = struct
-#1 "bsb_global_backend.ml"
-(* Copyright (C) 2019 - Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-let backend = ref Bsb_config_types.Js
-
-let lib_artifacts_dir = ref Bsb_config.lib_bs
-
-let lib_ocaml_dir = ref Bsb_config.lib_ocaml
-
-let backend_string = ref Literals.js
-
-
-
-
-end
 module Bsb_global_paths : sig 
 #1 "bsb_global_paths.mli"
 (* Copyright (C) 2019 - Authors of BuckleScript
@@ -11455,7 +11369,7 @@ let (//) = Ext_path.combine
 let ninja_clean  proj_dir =
   try
     let cmd = Bsb_global_paths.vendor_ninja in
-    let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
+    let lib_artifacts_dir = Bsb_config.lib_bs in
     let cwd = proj_dir // lib_artifacts_dir in
     if Sys.file_exists cwd then
       let eid =
@@ -11566,7 +11480,7 @@ let resolve_package cwd  package_name =
   let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
   {
     Bsb_config_types.package_name ;
-    package_install_path = x // !Bsb_global_backend.lib_ocaml_dir
+    package_install_path = x // Bsb_config.lib_ocaml
   }
 
 type json_map = Ext_json_types.t Map_string.t
@@ -11575,8 +11489,7 @@ let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
 
- 
-let extract_main_entries (_ :json_map) = []  
+
 
 
 
@@ -11673,7 +11586,7 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
         check_version_exit map stdlib_path;
         Some {
             Bsb_config_types.package_name = current_package;
-            package_install_path = stdlib_path // !Bsb_global_backend.lib_ocaml_dir;
+            package_install_path = stdlib_path // Bsb_config.lib_ocaml;
           }
 
       | _ -> assert false 
@@ -11903,7 +11816,7 @@ let interpret_json
     let bs_suffix = extract_bs_suffix_exn map in   
     (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries 
          array from the bsconfig and set the backend_ref to the first entry, if any. *)
-    let entries = extract_main_entries map in
+
     (* The default situation is empty *)
     let built_in_package = check_stdlib map per_proj_dir in
     let package_specs =     
@@ -11971,7 +11884,6 @@ let interpret_json
           generate_merlin = 
             extract_boolean map Bsb_build_schemas.generate_merlin true;
           reason_react_jsx  ;  
-          entries;
           generators = extract_generators map ; 
           cut_generators ;
         }
@@ -12192,7 +12104,7 @@ let output_merlin_namespace buffer ns=
   match ns with 
   | None -> ()
   | Some x -> 
-    let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
+    let lib_artifacts_dir = Bsb_config.lib_bs in
     Buffer.add_string buffer merlin_b ; 
     Buffer.add_string buffer lib_artifacts_dir ; 
     Buffer.add_string buffer merlin_flg ; 
@@ -12300,7 +12212,7 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );
-    let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
+    let lib_artifacts_dir = Bsb_config.lib_bs in
     Ext_list.iter res_files.files (fun x -> 
         if not (Bsb_file_groups.is_empty x) then 
           begin
@@ -12492,7 +12404,7 @@ let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
            (Unix.stat (Filename.concat per_proj_dir  x )).st_mtime
          )
   in 
-  write (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string)
+  write (file ^ "_js" )
     { st_mtimes ;
       dir_or_files;
       source_directory = per_proj_dir ;
@@ -12505,7 +12417,7 @@ let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
     bit in case we found a different version of compiler
 *)
 let check ~(per_proj_dir:string) ~forced ~file : check_result =
-  read (Ext_string.concat3 file "_" !Bsb_global_backend.backend_string)  (fun  {
+  read ( file ^ "_js" )  (fun  {
       dir_or_files ; source_directory; st_mtimes
     } ->
       if per_proj_dir <> source_directory then Bsb_source_directory_changed else
@@ -13961,7 +13873,7 @@ let output_ninja_and_namespace_map
 
     } : Bsb_config_types.t) : unit 
   =
-  let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
+  let lib_artifacts_dir = Bsb_config.lib_bs in
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
@@ -14455,7 +14367,7 @@ let regenerate_ninja
     ~forced ~per_proj_dir
   : Bsb_config_types.t option =  
   let toplevel = toplevel_package_specs = None in 
-  let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
+  let lib_artifacts_dir = Bsb_config.lib_bs in
   let lib_bs_dir =  per_proj_dir // lib_artifacts_dir  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
@@ -14496,9 +14408,7 @@ let regenerate_ninja
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
        config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~per_proj_dir  ~toplevel config ;             
-
-    
+      ~per_proj_dir  ~toplevel config ;                 
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~per_proj_dir ~file:output_deps 
@@ -16684,7 +16594,7 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
   let install ~destdir file = 
      Bsb_file.install_if_exists ~destdir file  |> ignore
   in
-  let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
+  let lib_artifacts_dir = Bsb_config.lib_bs in
   let install_filename_sans_extension destdir namespace x = 
     let x = 
       Ext_namespace_encode.make ?ns:namespace x in 
@@ -16697,7 +16607,7 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmt) ;
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmti) ;
   in   
-  let destdir = cwd // !Bsb_global_backend.lib_ocaml_dir in (* lib is already there after building, so just mkdir [lib/ocaml] *)
+  let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
   if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
   begin
     Bsb_log.info "@{<info>Installing started@}@.";
@@ -16719,7 +16629,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
     if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
     else Array.append [|vendor_ninja|] ninja_args
   in 
-  let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
+  let lib_artifacts_dir = Bsb_config.lib_bs in
   Bsb_build_util.walk_all_deps  cwd (fun {top; proj_dir} ->
       if not top then
         begin 
@@ -17097,7 +17007,7 @@ let exec_command_then_exit  command =
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
 let ninja_command_exit   ninja_args  =
   let ninja_args_len = Array.length ninja_args in
-  let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
+  let lib_artifacts_dir = Bsb_config.lib_bs in
   if Ext_sys.is_windows_or_cygwin then
     let path_ninja = Filename.quote Bsb_global_paths.vendor_ninja in 
     exec_command_then_exit 

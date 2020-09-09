@@ -56,11 +56,6 @@ let process_with_gentype filename =
 
 let after_parsing_sig ppf  outputprefix ast  =
   Ast_config.iter_on_bs_config_sigi ast;  
-  if !Js_config.simple_binary_ast then begin
-    let oc = open_out_bin (outputprefix ^ Literals.suffix_mliast_simple) in 
-    Ml_binary.write_ast Mli !Location.input_name ast oc;
-    close_out oc ;
-  end;
   if !Js_config.binary_ast then
     begin 
       let sourcefile = !Location.input_name in   
@@ -165,11 +160,6 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
   let ast =
     if !Js_config.no_export  then 
       no_export ast else ast in     
-  if !Js_config.simple_binary_ast then begin
-    let oc = open_out_bin (outputprefix ^ Literals.suffix_mlast_simple) in 
-    Ml_binary.write_ast Ml !Location.input_name  ast oc;
-    close_out oc ;
-  end;
   if !Js_config.binary_ast then begin 
     let sourcefile = !Location.input_name in 
     Binary_ast.write_ast ~sourcefile

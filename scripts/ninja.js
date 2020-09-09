@@ -1610,8 +1610,7 @@ function nativeNinja() {
   var templateNative = `
 subninja ${getPreprocessorFileName()}
 rule optc
-    command = BS_NATIVE=${!!process.env
-      .BS_NATIVE} $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50 -absname -c $in
+    command = $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50 -absname -c $in
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
@@ -1784,10 +1783,6 @@ function main() {
     }
     if (process.argv.includes("-check")) {
       checkEffect();
-    }
-    if (process.argv.includes("-native")) {
-      process.env.BS_NATIVE = "true";
-      emptyCount++;
     }
     if (process.argv.includes("-playground")) {
       isPlayground = true;

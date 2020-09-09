@@ -32,7 +32,7 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
   let install ~destdir file = 
      Bsb_file.install_if_exists ~destdir file  |> ignore
   in
-  let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
+  let lib_artifacts_dir = Bsb_config.lib_bs in
   let install_filename_sans_extension destdir namespace x = 
     let x = 
       Ext_namespace_encode.make ?ns:namespace x in 
@@ -45,7 +45,7 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmt) ;
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmti) ;
   in   
-  let destdir = cwd // !Bsb_global_backend.lib_ocaml_dir in (* lib is already there after building, so just mkdir [lib/ocaml] *)
+  let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
   if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
   begin
     Bsb_log.info "@{<info>Installing started@}@.";
@@ -67,7 +67,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
     if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
     else Array.append [|vendor_ninja|] ninja_args
   in 
-  let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
+  let lib_artifacts_dir = Bsb_config.lib_bs in
   Bsb_build_util.walk_all_deps  cwd (fun {top; proj_dir} ->
       if not top then
         begin 

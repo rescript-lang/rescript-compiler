@@ -121,15 +121,7 @@ let string_of_module_id
 
         | Package_found pkg, Package_script 
           ->    
-#if BS_NATIVE then
-          if Filename.is_relative pkg.rel_path then 
-            pkg.pkg_rel_path // js_file
-          else 
-            pkg.rel_path // js_file
-#else
           pkg.pkg_rel_path // js_file
-#end
-
         | Package_found dep_pkg,
           Package_found cur_pkg -> 
           if  Js_packages_info.same_package_by_name current_package_info  dep_package_info then 
@@ -143,14 +135,7 @@ let string_of_module_id
           else  
             begin match module_system with 
               | NodeJS | Es6 -> 
-#if BS_NATIVE then
-          if Filename.is_relative dep_pkg.rel_path then 
-            dep_pkg.pkg_rel_path // js_file
-          else 
-            dep_pkg.rel_path // js_file
-#else
                 dep_pkg.pkg_rel_path // js_file
-#end
               (** Note we did a post-processing when working on Windows *)
               | Es6_global 
               ->             

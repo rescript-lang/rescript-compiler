@@ -35,7 +35,7 @@ let regenerate_ninja
     ~forced ~per_proj_dir
   : Bsb_config_types.t option =  
   let toplevel = toplevel_package_specs = None in 
-  let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
+  let lib_artifacts_dir = Bsb_config.lib_bs in
   let lib_bs_dir =  per_proj_dir // lib_artifacts_dir  in 
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
@@ -72,26 +72,11 @@ let regenerate_ninja
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
     ;
-#if BS_NATIVE then
-    if !Bsb_global_backend.backend = Bsb_config_types.Js then begin
-      Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
-        config;       
-      Bsb_ninja_gen.output_ninja_and_namespace_map 
-        ~per_proj_dir  ~toplevel config ;             
-    end else begin
-      let os = Filename.basename Bsb_global_paths.bsc_dir in
-      let plugin_path = Bsb_global_paths.cwd // "node_modules" // "bs-platform-native" // os // "bsb.exe" in
-      let status = Sys.command (Printf.sprintf "%s -project-dir %s -lib-artifacts-dir %s -root-project-dir %s -bsc-dir %s -backend %s" plugin_path per_proj_dir lib_bs_dir Bsb_global_paths.cwd Bsb_global_paths.bsc_dir !Bsb_global_backend.backend_string) in
-      if status <> 0 then
-        print_endline "Error: native plugin ran into an error";
-    end;
-#else
+
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
        config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~per_proj_dir  ~toplevel config ;             
-#end
-    
+      ~per_proj_dir  ~toplevel config ;                 
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~per_proj_dir ~file:output_deps 

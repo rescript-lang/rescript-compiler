@@ -10876,9 +10876,9 @@ let es6_global = "es6-global"
 
 let unused_attribute = "Unused attribute "
 
-let native = "native"
-let bytecode = "bytecode"
-let js = "js"
+
+
+
 
 
 
@@ -11909,7 +11909,7 @@ val tool_name : string
 
 val syntax_only  : bool ref
 val binary_ast : bool ref
-val simple_binary_ast : bool ref
+
 
 
 val bs_suffix : bool ref
@@ -11990,7 +11990,7 @@ let no_builtin_ppx = ref false
 
 
 
-let tool_name = "BuckleScript"
+let tool_name = "ReScript"
 
 let check_div_by_zero = ref true
 let get_check_div_by_zero () = !check_div_by_zero
@@ -11999,7 +11999,7 @@ let get_check_div_by_zero () = !check_div_by_zero
 
 let syntax_only = ref false
 let binary_ast = ref false
-let simple_binary_ast = ref false
+
 
 let bs_suffix = ref false 
 
