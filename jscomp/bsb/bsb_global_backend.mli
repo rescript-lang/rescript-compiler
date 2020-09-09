@@ -32,7 +32,5 @@ val lib_artifacts_dir : string ref
 (* path to the compiled artifacts, would be lib/ocaml when compiling to JS *)
 val lib_ocaml_dir : string ref
 
-(* string representation of the target backend, would be "js" when compiling to js *)
-val backend_string: string ref
 
 

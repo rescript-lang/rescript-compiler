@@ -30,7 +30,7 @@ let lib_artifacts_dir = ref Bsb_config.lib_bs
 
 let lib_ocaml_dir = ref Bsb_config.lib_ocaml
 
-let backend_string = ref Literals.js
+
 
 
 
