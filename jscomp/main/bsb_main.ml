@@ -101,7 +101,7 @@ let exec_command_then_exit  command =
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
 let ninja_command_exit   ninja_args  =
   let ninja_args_len = Array.length ninja_args in
-  let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
+  let lib_artifacts_dir = Bsb_config.lib_bs in
   if Ext_sys.is_windows_or_cygwin then
     let path_ninja = Filename.quote Bsb_global_paths.vendor_ninja in 
     exec_command_then_exit 
