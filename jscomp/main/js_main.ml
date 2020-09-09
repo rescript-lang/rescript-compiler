@@ -386,10 +386,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-bs-list-conditionals", unit_call (fun () -> Lexer.list_variables Format.err_formatter),
     "List existing conditional variables";  
-    
-    "-bs-simple-binary-ast",  set Js_config.simple_binary_ast,
-    "*internal* Generate binary .mliast_simple and mlast_simple";
-    
+        
     "-bs-eval", string_call (fun  s -> eval s ~suffix:Literals.suffix_ml), 
     "*internal* (experimental) set the string to be evaluated in OCaml syntax";
 

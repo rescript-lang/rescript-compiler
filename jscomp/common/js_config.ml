@@ -59,7 +59,7 @@ let get_check_div_by_zero () = !check_div_by_zero
 
 let syntax_only = ref false
 let binary_ast = ref false
-let simple_binary_ast = ref false
+
 
 let bs_suffix = ref false 
 

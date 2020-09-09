@@ -11909,7 +11909,7 @@ val tool_name : string
 
 val syntax_only  : bool ref
 val binary_ast : bool ref
-val simple_binary_ast : bool ref
+
 
 
 val bs_suffix : bool ref
@@ -11999,7 +11999,7 @@ let get_check_div_by_zero () = !check_div_by_zero
 
 let syntax_only = ref false
 let binary_ast = ref false
-let simple_binary_ast = ref false
+
 
 let bs_suffix = ref false 
 
