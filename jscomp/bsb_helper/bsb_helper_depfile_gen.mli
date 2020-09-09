@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type kind = Js | Bytecode | Native
+
 
 (** [deps_of_channel ic]
     given an input_channel dumps all modules it depend on, only used for debugging 
@@ -31,7 +31,6 @@ val deps_of_channel : in_channel -> string list
 
 
 val emit_d: 
-  kind -> 
   bool ->  
   string  option ->
   string ->

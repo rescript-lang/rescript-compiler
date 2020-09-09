@@ -87,7 +87,7 @@ let deps_of_channel (ic : in_channel) : string list =
   v
  *)
 
-type kind = Js | Bytecode | Native
+
 
 let output_file (buf : Ext_buffer.t) source namespace = 
   Ext_buffer.add_string buf 
@@ -233,7 +233,6 @@ let oc_intf
 
 
 let emit_d 
-  compilation_kind
   (dev_group : bool) 
   (namespace : string option) (mlast : string) (mliast : string) = 
   let data  =
@@ -242,11 +241,8 @@ let emit_d
   let buf = Ext_buffer.create 2048 in 
   let filename = 
       Ext_filename.new_extension mlast Literals.suffix_d in   
-  let lhs_suffix, rhs_suffix =
-    match compilation_kind with
-    | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
-    | Bytecode -> Literals.suffix_cmo, Literals.suffix_cmo
-    | Native   -> Literals.suffix_cmx, Literals.suffix_cmx 
+  let lhs_suffix, rhs_suffix =    
+    Literals.suffix_cmj, Literals.suffix_cmj
   in   
   oc_impl 
     mlast
