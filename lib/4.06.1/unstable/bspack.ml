@@ -10714,8 +10714,8 @@ module Ext_sys : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* Not used yet *)
-(* val is_directory_no_exn : string -> bool *)
+
+val is_directory_no_exn : string -> bool
 
 
 val is_windows_or_cygwin : bool 
@@ -10748,8 +10748,8 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** TODO: not exported yet, wait for Windows Fix*)
-(* let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false  *)
+let is_directory_no_exn f = 
+  try Sys.is_directory f with _ -> false 
 
 
 let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
