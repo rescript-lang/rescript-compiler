@@ -8,6 +8,6 @@ var output = child_process.spawnSync(
 
 
 var assert = require('assert')
-assert.ok(output.stderr.match(/IGNORED/))
+assert.ok(output.stderr.match(/not an existing module/))
 
 
