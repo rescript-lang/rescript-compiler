@@ -10727,14 +10727,13 @@ let collect_pub_modules
   for i = 0 to Array.length xs - 1 do 
     let v = Array.unsafe_get xs i in 
     match v with 
-    | Str { str}
+    | Str { str; loc}
       -> 
       if Map_string.mem cache str then 
         set := Set_string.add !set str
       else 
-        Bsb_log.warn
-          "@{<warning>IGNORED@}: %S in public is not an existing module \
-          and has been ignored@." str
+        Bsb_exception.errorf ~loc
+          "%S in public is not an existing module" str
     | _ -> 
       Bsb_exception.errorf 
         ~loc:(Ext_json.loc_of v)
@@ -10748,8 +10747,8 @@ let extract_pub (input : Ext_json_types.t Map_string.t) (cur_sources : Bsb_db.ma
     if s = Bsb_build_schemas.export_all then Export_all  else 
     if s = Bsb_build_schemas.export_none then Export_none else 
       errorf x "invalid str for %s "  s 
-  | Some (Arr {content = s}) ->         
-    Export_set (collect_pub_modules s cur_sources)
+  | Some (Arr {content}) ->         
+    Export_set (collect_pub_modules content cur_sources)
   | Some config -> 
     Bsb_exception.config_error config "expect array or string"
   | None ->
@@ -11390,9 +11389,9 @@ let ninja_clean  proj_dir =
       let eid =
         Bsb_unix.run_command_execv {cmd ; args = [|cmd; "-t"; "clean"|] ; cwd} in
       if eid <> 0 then
-        Bsb_log.warn "@{<warning>ninja clean failed@}@."
+        Bsb_log.warn "@{<warning>Failed@}@."
   with  e ->
-    Bsb_log.warn "@{<warning>ninja clean failed@} : %s @." (Printexc.to_string e)
+    Bsb_log.warn "@{<warning>Failed@}: %s @." (Printexc.to_string e)
 
 let clean_bs_garbage proj_dir =
   Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ;

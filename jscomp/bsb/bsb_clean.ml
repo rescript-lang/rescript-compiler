@@ -35,9 +35,9 @@ let ninja_clean  proj_dir =
       let eid =
         Bsb_unix.run_command_execv {cmd ; args = [|cmd; "-t"; "clean"|] ; cwd} in
       if eid <> 0 then
-        Bsb_log.warn "@{<warning>ninja clean failed@}@."
+        Bsb_log.warn "@{<warning>Failed@}@."
   with  e ->
-    Bsb_log.warn "@{<warning>ninja clean failed@} : %s @." (Printexc.to_string e)
+    Bsb_log.warn "@{<warning>Failed@}: %s @." (Printexc.to_string e)
 
 let clean_bs_garbage proj_dir =
   Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ;
