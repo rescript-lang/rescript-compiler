@@ -5163,8 +5163,8 @@ module Ext_sys : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* Not used yet *)
-(* val is_directory_no_exn : string -> bool *)
+
+val is_directory_no_exn : string -> bool
 
 
 val is_windows_or_cygwin : bool 
@@ -5197,8 +5197,8 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** TODO: not exported yet, wait for Windows Fix*)
-(* let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false  *)
+let is_directory_no_exn f = 
+  try Sys.is_directory f with _ -> false 
 
 
 let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
@@ -8317,8 +8317,8 @@ let normalize_exn (s : string) : string =
   normalized
 
 let real_path p =
-  match (try Some (Sys.is_directory p) with  _ -> None) with
-  | None ->
+  match Sys.is_directory p with
+  | exception _ ->
     let rec resolve dir =
       if Sys.file_exists dir then normalize_exn dir else
       let parent = Filename.dirname dir in
@@ -8330,8 +8330,8 @@ let real_path p =
       else p
     in
     resolve p
-  | Some true -> normalize_exn p
-  | Some false ->
+  | true -> normalize_exn p
+  | false ->
     let dir = normalize_exn (Filename.dirname p) in
     match Filename.basename p with
     | "." -> dir
@@ -10448,7 +10448,8 @@ let check (x : module_info)
 
 
 let warning_unused_file : _ format = 
-  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
+  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. \n\
+  The build system transforms a file name into a module name by upper-casing the first letter@."
 
 let add_basename
     ~(dir:string) 
@@ -10959,7 +10960,7 @@ let rec
         let parent = Filename.concat root dir in
         Ext_array.fold_left (Lazy.force base_name_array) Bsb_file_groups.empty (fun origin x -> 
             if  not (Set_string.mem cxt.ignored_dirs x) && 
-                Sys.is_directory (Filename.concat parent x) then 
+                Ext_sys.is_directory_no_exn (Filename.concat parent x) then 
               Bsb_file_groups.merge
                 (
                   parsing_source_dir_map
@@ -11107,7 +11108,7 @@ and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field =
       | Some(True _), _ -> 
         Ext_array.iter file_array begin fun f -> 
           if not (Set_string.mem cxt.ignored_dirs f) && 
-             Sys.is_directory (Filename.concat working_dir f ) then 
+             Ext_sys.is_directory_no_exn (Filename.concat working_dir f ) then 
             walk_source_dir_map 
               {cxt with 
                cwd = 
@@ -11287,7 +11288,8 @@ let run_command_execv =
 *)
 
 let rec remove_dir_recursive dir = 
-  if Sys.is_directory dir then 
+  match Sys.is_directory dir with
+  | true -> 
     begin 
       let files = Sys.readdir dir in 
       for i = 0 to Array.length files - 1 do 
@@ -11295,7 +11297,8 @@ let rec remove_dir_recursive dir =
       done ;
       Unix.rmdir dir 
     end
-  else Sys.remove dir 
+  | false ->  Sys.remove dir 
+  | exception _ -> ()
 
 end
 module Bsb_clean : sig 

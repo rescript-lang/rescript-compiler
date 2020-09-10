@@ -310,7 +310,7 @@ let rec
         let parent = Filename.concat root dir in
         Ext_array.fold_left (Lazy.force base_name_array) Bsb_file_groups.empty (fun origin x -> 
             if  not (Set_string.mem cxt.ignored_dirs x) && 
-                Sys.is_directory (Filename.concat parent x) then 
+                Ext_sys.is_directory_no_exn (Filename.concat parent x) then 
               Bsb_file_groups.merge
                 (
                   parsing_source_dir_map
@@ -458,7 +458,7 @@ and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field =
       | Some(True _), _ -> 
         Ext_array.iter file_array begin fun f -> 
           if not (Set_string.mem cxt.ignored_dirs f) && 
-             Sys.is_directory (Filename.concat working_dir f ) then 
+             Ext_sys.is_directory_no_exn (Filename.concat working_dir f ) then 
             walk_source_dir_map 
               {cxt with 
                cwd = 

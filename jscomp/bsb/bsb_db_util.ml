@@ -69,7 +69,8 @@ let check (x : module_info)
 
 
 let warning_unused_file : _ format = 
-  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
+  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. \n\
+  The build system transforms a file name into a module name by upper-casing the first letter@."
 
 let add_basename
     ~(dir:string) 
