@@ -10275,6 +10275,7 @@ let valid_module_name name len =
         Upper
       else Invalid  
     | 'a' .. 'z' 
+    | '0' .. '9'
       -> 
       if valid_module_name_aux name 1 len then
         Lower
