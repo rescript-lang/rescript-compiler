@@ -6528,6 +6528,24 @@ let () =
     )
 
 end
+module Ext_js_suffix
+= struct
+#1 "ext_js_suffix.ml"
+type t = 
+  | Js 
+  | Bs_js   
+
+
+let to_string (x : t) =   
+  match x with 
+  | Js -> Literals.suffix_js
+  | Bs_js -> Literals.suffix_bs_js  
+
+let to_bsc_flag (x : t) (buf : Ext_buffer.t) = 
+    match x with 
+    | Js -> ()
+    | Bs_js -> Ext_buffer.add_string buf " -bs-suffix"
+end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7050,7 +7068,10 @@ val from_json:
   Ext_json_types.t -> t 
 
 val get_list_of_output_js : 
-  t -> bool -> string -> string list
+  t -> 
+  Ext_js_suffix.t -> 
+  string -> 
+  string list
 
 (**
   Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
@@ -7218,17 +7239,17 @@ let default_package_specs =
 *)
 let get_list_of_output_js 
     (package_specs : Spec_set.t)
-    (bs_suffix : bool)
+    (bs_suffix : Ext_js_suffix.t)
     (output_file_sans_extension : string)
     = 
   Spec_set.fold 
     (fun (spec : spec) acc ->
         let basename =  Ext_namespace.change_ext_ns_suffix
              output_file_sans_extension
-             (if bs_suffix then Literals.suffix_bs_js else Literals.suffix_js)
+             (Ext_js_suffix.to_string bs_suffix)
         in 
-        (Bsb_config.proj_rel @@ (if spec.in_source then basename
-        else prefix_of_format spec.format // basename))         
+        (Bsb_config.proj_rel (if spec.in_source then basename
+        else prefix_of_format spec.format // basename))   
        :: acc
     ) package_specs []
 
@@ -7957,7 +7978,7 @@ type t =
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
     generators : command Map_string.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
-    bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
+    bs_suffix : Ext_js_suffix.t ; 
     gentype_config : gentype_config option;
   }
 
@@ -10646,7 +10667,7 @@ val scan :
   root: string ->  
   cut_generators: bool -> 
   namespace : string option -> 
-  bs_suffix:bool -> 
+  bs_suffix:Ext_js_suffix.t -> 
   ignored_dirs:Set_string.t ->
   Ext_json_types.t ->   
   Bsb_file_groups.t 
@@ -10713,7 +10734,6 @@ type cxt = {
   cut_generators : bool;
   traverse : bool;
   namespace : string option;
-  bs_suffix: bool;
   ignored_dirs : Set_string.t
 }
 
@@ -11054,7 +11074,7 @@ let scan
   ~root 
   ~cut_generators 
   ~namespace 
-  ~bs_suffix 
+  ~(bs_suffix : Ext_js_suffix.t)
   ~ignored_dirs
   x : t  = 
   parse_sources {
@@ -11065,7 +11085,6 @@ let scan
     root ;
     cut_generators;
     namespace;
-    bs_suffix;
     traverse = false
   } x 
 
@@ -11606,12 +11625,14 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
       | _ -> assert false 
 
     end
-let extract_bs_suffix_exn (map : json_map) =  
+
+
+let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
   match Map_string.find_opt map Bsb_build_schemas.suffix with 
-  | None -> false  
+  | None -> Js  
   | Some (Str {str} as config ) -> 
-    if str = Literals.suffix_js then false 
-    else if str = Literals.suffix_bs_js then true
+    if str = Literals.suffix_js then Js
+    else if str = Literals.suffix_bs_js then Bs_js
     else Bsb_exception.config_error config 
         "expect .bs.js or .js string here"
   | Some config -> 
@@ -12901,7 +12922,7 @@ val make_custom_rules :
   has_ppx:bool ->
   has_pp:bool ->
   has_builtin:bool -> 
-  bs_suffix:bool ->
+  bs_suffix:Ext_js_suffix.t ->
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
   digest:string ->
   refmt:string option ->
@@ -13028,7 +13049,7 @@ let make_custom_rules
   ~(has_ppx : bool)
   ~(has_pp : bool)
   ~(has_builtin : bool)
-  ~(bs_suffix : bool)
+  ~(bs_suffix : Ext_js_suffix.t)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
@@ -13044,8 +13065,7 @@ let make_custom_rules
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc";
     Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
-    if bs_suffix then
-      Ext_buffer.add_string buf " -bs-suffix";
+    Ext_js_suffix.to_bsc_flag bs_suffix buf;
     if read_cmi then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
@@ -13494,7 +13514,7 @@ module Bsb_ninja_file_groups : sig
 
 val handle_files_per_dir :
   out_channel ->
-  bs_suffix:bool ->
+  bs_suffix:Ext_js_suffix.t ->
   rules:Bsb_ninja_rule.builtin ->
   package_specs:Bsb_package_specs.t ->
   js_post_build_cmd:string option ->
@@ -13599,7 +13619,7 @@ let emit_module_build
     (package_specs : Bsb_package_specs.t)
     (is_dev : bool) 
     oc 
-    ~bs_suffix
+    ~(bs_suffix : Ext_js_suffix.t)
     js_post_build_cmd
     namespace
     (module_info : Bsb_db.module_info)
@@ -13693,7 +13713,7 @@ let emit_module_build
 
 let handle_files_per_dir
     oc 
-    ~bs_suffix
+    ~(bs_suffix : Ext_js_suffix.t)
     ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
     ~js_post_build_cmd  
