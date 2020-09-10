@@ -51,7 +51,6 @@ type cxt = {
   cut_generators : bool;
   traverse : bool;
   namespace : string option;
-  bs_suffix: bool;
   ignored_dirs : Set_string.t
 }
 
@@ -392,7 +391,7 @@ let scan
   ~root 
   ~cut_generators 
   ~namespace 
-  ~bs_suffix 
+  ~(bs_suffix : Ext_js_suffix.t)
   ~ignored_dirs
   x : t  = 
   parse_sources {
@@ -403,7 +402,6 @@ let scan
     root ;
     cut_generators;
     namespace;
-    bs_suffix;
     traverse = false
   } x 
 

@@ -61,7 +61,7 @@ let syntax_only = ref false
 let binary_ast = ref false
 
 
-let bs_suffix = ref false 
+let bs_suffix : Ext_js_suffix.t ref = ref Ext_js_suffix.Js
 
 let debug = ref false
 

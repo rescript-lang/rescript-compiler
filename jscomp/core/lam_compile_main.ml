@@ -37,10 +37,10 @@ let get_cmj_case output_prefix : Ext_js_file_kind.t =
     Ext_char.is_lower_case (Filename.basename output_prefix).[0] 
   in 
   match little, !Js_config.bs_suffix with 
-  | true, true -> Little_bs
-  | true, false -> Little_js
-  | false, true -> Upper_bs 
-  | false, false -> Upper_js
+  | true, Bs_js -> Little_bs
+  | true, Js -> Little_js
+  | false, Bs_js -> Upper_bs 
+  | false, Js -> Upper_js
   
 
 let compile_group (meta : Lam_stats.t) 
@@ -278,7 +278,7 @@ let compile
           meta  
           effect 
           coerced_input.export_map
-          (get_cmj_case output_prefix)
+          ~js_file_kind:(get_cmj_case output_prefix)
       in
       (if not !Clflags.dont_write_files then
          Js_cmj_format.to_file 
@@ -298,7 +298,7 @@ let lambda_as_module
     Ext_namespace.change_ext_ns_suffix 
       (Filename.basename
          output_prefix) 
-      (if !Js_config.bs_suffix then Literals.suffix_bs_js else Literals.suffix_js) 
+      (Ext_js_suffix.to_string  !Js_config.bs_suffix) 
   in
   let package_info = Js_packages_state.get_packages_info () in 
   if Js_packages_info.is_empty package_info && !Js_config.js_stdout then begin    

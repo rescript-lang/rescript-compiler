@@ -93,7 +93,7 @@ let emit_module_build
     (package_specs : Bsb_package_specs.t)
     (is_dev : bool) 
     oc 
-    ~bs_suffix
+    ~(bs_suffix : Ext_js_suffix.t)
     js_post_build_cmd
     namespace
     (module_info : Bsb_db.module_info)
@@ -187,7 +187,7 @@ let emit_module_build
 
 let handle_files_per_dir
     oc 
-    ~bs_suffix
+    ~(bs_suffix : Ext_js_suffix.t)
     ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
     ~js_post_build_cmd  
