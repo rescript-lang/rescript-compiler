@@ -148,7 +148,7 @@ let export_to_cmj
     (meta : Lam_stats.t ) 
     effect 
     export_map
-    js_file_kind
+    ~js_file_kind
   : Js_cmj_format.t = 
   let values =  values_of_export meta export_map in
   

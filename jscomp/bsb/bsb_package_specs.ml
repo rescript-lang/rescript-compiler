@@ -152,17 +152,17 @@ let default_package_specs =
 *)
 let get_list_of_output_js 
     (package_specs : Spec_set.t)
-    (bs_suffix : bool)
+    (bs_suffix : Ext_js_suffix.t)
     (output_file_sans_extension : string)
     = 
   Spec_set.fold 
     (fun (spec : spec) acc ->
         let basename =  Ext_namespace.change_ext_ns_suffix
              output_file_sans_extension
-             (if bs_suffix then Literals.suffix_bs_js else Literals.suffix_js)
+             (Ext_js_suffix.to_string bs_suffix)
         in 
-        (Bsb_config.proj_rel @@ (if spec.in_source then basename
-        else prefix_of_format spec.format // basename))         
+        (Bsb_config.proj_rel (if spec.in_source then basename
+        else prefix_of_format spec.format // basename))   
        :: acc
     ) package_specs []
 

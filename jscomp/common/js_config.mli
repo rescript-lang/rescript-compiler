@@ -77,7 +77,7 @@ val binary_ast : bool ref
 
 
 
-val bs_suffix : bool ref
+val bs_suffix : Ext_js_suffix.t ref
 val debug : bool ref
 
 val cmi_only  : bool ref

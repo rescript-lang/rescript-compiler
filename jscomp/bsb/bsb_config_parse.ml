@@ -142,12 +142,14 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
       | _ -> assert false 
 
     end
-let extract_bs_suffix_exn (map : json_map) =  
+
+
+let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
   match Map_string.find_opt map Bsb_build_schemas.suffix with 
-  | None -> false  
+  | None -> Js  
   | Some (Str {str} as config ) -> 
-    if str = Literals.suffix_js then false 
-    else if str = Literals.suffix_bs_js then true
+    if str = Literals.suffix_js then Js
+    else if str = Literals.suffix_bs_js then Bs_js
     else Bsb_exception.config_error config 
         "expect .bs.js or .js string here"
   | Some config -> 

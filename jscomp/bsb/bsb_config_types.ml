@@ -75,6 +75,6 @@ type t =
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
     generators : command Map_string.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
-    bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
+    bs_suffix : Ext_js_suffix.t ; 
     gentype_config : gentype_config option;
   }
