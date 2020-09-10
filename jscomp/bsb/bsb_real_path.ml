@@ -10,8 +10,8 @@ let normalize_exn (s : string) : string =
   normalized
 
 let real_path p =
-  match (try Some (Sys.is_directory p) with  _ -> None) with
-  | None ->
+  match Sys.is_directory p with
+  | exception _ ->
     let rec resolve dir =
       if Sys.file_exists dir then normalize_exn dir else
       let parent = Filename.dirname dir in
@@ -23,8 +23,8 @@ let real_path p =
       else p
     in
     resolve p
-  | Some true -> normalize_exn p
-  | Some false ->
+  | true -> normalize_exn p
+  | false ->
     let dir = normalize_exn (Filename.dirname p) in
     match Filename.basename p with
     | "." -> dir

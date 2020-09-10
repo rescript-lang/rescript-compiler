@@ -458,7 +458,7 @@ and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field =
       | Some(True _), _ -> 
         Ext_array.iter file_array begin fun f -> 
           if not (Set_string.mem cxt.ignored_dirs f) && 
-             Sys.is_directory (Filename.concat working_dir f ) then 
+             Ext_sys.is_directory_no_exn (Filename.concat working_dir f ) then 
             walk_source_dir_map 
               {cxt with 
                cwd = 
