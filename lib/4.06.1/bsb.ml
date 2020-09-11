@@ -6838,14 +6838,20 @@ module Ext_js_file_kind
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type case = 
+  | Upper
+  | Little 
 
-type t = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs
+type t = {
+  case : case; 
+  suffix : Ext_js_suffix.t;
+}
 
 
+let any_runtime_kind = {
+  case = Little; 
+  suffix = Ext_js_suffix.Js
+}
 end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
@@ -6968,20 +6974,13 @@ let try_split_module_name name =
 
 
   
-(* let js_name_of_basename bs_suffix s =   
-  change_ext_ns_suffix  s 
-  (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js ) *)
 
 let js_name_of_modulename s (little : Ext_js_file_kind.t) : string = 
-  match little with 
-  | Little_js -> 
-    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_js
-  | Little_bs -> 
-    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_bs_js
-  | Upper_js ->
-    change_ext_ns_suffix s  Literals.suffix_js
-  | Upper_bs -> 
-    change_ext_ns_suffix s  Literals.suffix_bs_js
+  let s = match little.case with 
+    | Little -> 
+      Ext_string.uncapitalize_ascii s
+    | Upper -> s  in 
+  change_ext_ns_suffix s  (Ext_js_suffix.to_string little.suffix)
 
 (* https://docs.npmjs.com/files/package.json 
    Some rules:
