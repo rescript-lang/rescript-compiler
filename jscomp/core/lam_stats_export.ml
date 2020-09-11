@@ -148,7 +148,8 @@ let export_to_cmj
     (meta : Lam_stats.t ) 
     effect 
     export_map
-    ~js_file_kind
+    suffix
+    case
   : Js_cmj_format.t = 
   let values =  values_of_export meta export_map in
   
@@ -156,7 +157,8 @@ let export_to_cmj
     ~values
     ~effect 
     ~package_spec: (Js_packages_state.get_packages_info ())
-   ~js_file_kind
+    ~suffix 
+    ~case
     (* FIXME: make sure [-o] would not change its case 
       add test for ns/non-ns
     *)

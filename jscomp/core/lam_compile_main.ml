@@ -32,12 +32,6 @@
 (* module E = Js_exp_make  *)
 (* module S = Js_stmt_make   *)
 
-let get_cmj_case output_prefix : Ext_js_file_kind.t = 
-  let little = 
-    Ext_char.is_lower_case (Filename.basename output_prefix).[0] 
-  in 
-  {case = if little then Little else Upper ; suffix = !Js_config.bs_suffix}
-  
 
 let compile_group (meta : Lam_stats.t) 
     (x : Lam_group.t) : Js_output.t  = 
@@ -273,8 +267,9 @@ let compile
         Lam_stats_export.export_to_cmj 
           meta  
           effect 
-          coerced_input.export_map
-          ~js_file_kind:(get_cmj_case output_prefix)
+          coerced_input.export_map          
+          !Js_config.bs_suffix          
+          (if Ext_char.is_lower_case (Filename.basename output_prefix).[0] then Little else Upper)
       in
       (if not !Clflags.dont_write_files then
          Js_cmj_format.to_file 

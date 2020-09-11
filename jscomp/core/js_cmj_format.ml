@@ -51,19 +51,26 @@ type t = {
   values : keyed_cmj_values ;
   pure : bool;
   package_spec : Js_packages_info.t ;
-  js_file_kind : Ext_js_file_kind.t; 
+  case : Ext_js_file_kind.case;
+  suffix : Ext_js_suffix.t;
 }
 
-let make ~(values:cmj_value Map_string.t) ~effect ~package_spec ~js_file_kind : t = 
+let make 
+    ~(values:cmj_value Map_string.t) 
+    ~effect 
+    ~package_spec 
+    ~case
+    ~suffix : t = 
   {
     values = Map_string.to_sorted_array_with_f values (fun k v -> {
-      name = k ; 
-      arity = v.arity;
-      persistent_closed_lambda = v.persistent_closed_lambda
-    }); 
+          name = k ; 
+          arity = v.arity;
+          persistent_closed_lambda = v.persistent_closed_lambda
+        }); 
     pure = effect = None ; 
     package_spec;
-    js_file_kind
+    suffix;
+    case
   }
 
 

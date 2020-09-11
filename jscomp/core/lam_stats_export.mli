@@ -34,6 +34,7 @@ val export_to_cmj :
   Lam_stats.t ->
   Js_cmj_format.effect ->
   Lam.t Map_ident.t ->
-  js_file_kind:Ext_js_file_kind.t ->
+  Ext_js_suffix.t ->  
+  Ext_js_file_kind.case ->
   Js_cmj_format.t
 

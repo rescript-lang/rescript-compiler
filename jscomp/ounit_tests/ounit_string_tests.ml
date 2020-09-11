@@ -387,13 +387,13 @@ let suites =
       Ext_namespace.change_ext_ns_suffix  "AA-b" Literals.suffix_js
       =~ "AA.js";
       Ext_namespace.js_name_of_modulename 
-        "AA-b" {case = Little; suffix = Js} 
+        "AA-b" Little  Js
       =~ "aA.js";
       Ext_namespace.js_name_of_modulename 
-        "AA-b" {case = Upper; suffix = Js} 
+        "AA-b" Upper  Js
       =~ "AA.js";
       Ext_namespace.js_name_of_modulename 
-        "AA-b" {case = Upper; suffix = Bs_js} 
+        "AA-b" Upper Bs_js
       =~ "AA.bs.js";
     end;
     __LOC__ >:: begin   fun _ -> 

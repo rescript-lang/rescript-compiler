@@ -35,7 +35,8 @@ let load_builin_unit (unit_name : string) : Js_cmj_format.cmj_load_info =
       let values, pure =  Ext_marshal.from_string_uncheck Builtin_cmj_datasets.module_data.(i)  in   
       {values; pure; 
         package_spec = Js_packages_info.runtime_package_specs;
-        js_file_kind = Ext_js_file_kind.any_runtime_kind} 
+        case = Little;
+        suffix = Js} (* FIXME when we change it *)
     in 
     if Js_config.get_diagnose () then
       Format.fprintf Format.err_formatter "<Cmj: %s@." unit_name;

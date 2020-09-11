@@ -37,11 +37,13 @@ let fix_path_for_windows : string -> string =
 let get_runtime_module_path 
     (dep_module_id : Lam_module_ident.t) 
     (current_package_info : Js_packages_info.t)
-    module_system = 
+    (module_system : Js_packages_info.module_system) = 
   let current_info_query = 
     Js_packages_info.query_package_infos current_package_info
       module_system  in
-  let js_file =  Ext_namespace.js_name_of_modulename dep_module_id.id.name Ext_js_file_kind.any_runtime_kind in     
+  let js_file =  
+    Ext_namespace.js_name_of_modulename dep_module_id.id.name 
+      Little Js in (* Js may be subject to the module system *)
   match current_info_query with        
   | Package_not_found -> assert false
   | Package_script -> 
@@ -107,8 +109,8 @@ let string_of_module_id
           module_system  
       in
       match Lam_compile_env.get_package_path_from_cmj dep_module_id with 
-      | (package_path, dep_package_info, little) -> 
-        let js_file =  Ext_namespace.js_name_of_modulename dep_module_id.id.name little in 
+      | (package_path, dep_package_info, case, suffix) -> 
+        let js_file =  Ext_namespace.js_name_of_modulename dep_module_id.id.name case suffix in 
         let dep_info_query =  
           Js_packages_info.query_package_infos dep_package_info module_system 
         in 

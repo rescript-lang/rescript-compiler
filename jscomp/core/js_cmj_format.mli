@@ -74,7 +74,8 @@ type t =  {
   values : keyed_cmj_value array ;
   pure : bool;
   package_spec : Js_packages_info.t ;
-  js_file_kind : Ext_js_file_kind.t; 
+  case : Ext_js_file_kind.case;
+  suffix : Ext_js_suffix.t; 
 }
 
 
@@ -82,7 +83,8 @@ val make:
   values: cmj_value Map_string.t -> 
   effect: effect -> 
   package_spec: Js_packages_info.t ->
-  js_file_kind:Ext_js_file_kind.t -> 
+  case:Ext_js_file_kind.case ->
+  suffix:Ext_js_suffix.t -> 
   t
   
 
