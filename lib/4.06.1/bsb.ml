@@ -6904,7 +6904,8 @@ val change_ext_ns_suffix :
   *)
 val js_name_of_modulename : 
   string -> 
-  Ext_js_file_kind.t -> 
+  Ext_js_file_kind.case -> 
+  Ext_js_suffix.t ->
   string
 
 (* TODO handle cases like 
@@ -6975,12 +6976,12 @@ let try_split_module_name name =
 
   
 
-let js_name_of_modulename s (little : Ext_js_file_kind.t) : string = 
-  let s = match little.case with 
+let js_name_of_modulename s (case : Ext_js_file_kind.case) suffix : string = 
+  let s = match case with 
     | Little -> 
       Ext_string.uncapitalize_ascii s
     | Upper -> s  in 
-  change_ext_ns_suffix s  (Ext_js_suffix.to_string little.suffix)
+  change_ext_ns_suffix s  (Ext_js_suffix.to_string suffix)
 
 (* https://docs.npmjs.com/files/package.json 
    Some rules:
