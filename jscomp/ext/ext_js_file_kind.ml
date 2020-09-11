@@ -21,10 +21,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type case = 
+  | Upper
+  | Little 
 
-type t = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs
+type t = {
+  case : case; 
+  suffix : Ext_js_suffix.t;
+}
 
+
+let any_runtime_kind = {
+  case = Little; 
+  suffix = Ext_js_suffix.Js
+}

@@ -62,8 +62,12 @@ let from_cmj ~mode (files : string list) (output_file : string) : unit =
         let content : Js_cmj_format.t = Js_cmj_format.from_file file in 
         let () = match mode with
         | Native ->
-          assert (content.js_file_kind = Little_js);
-          assert (content.package_spec = Js_packages_info.runtime_package_specs);
+          begin match content with 
+            |{js_file_kind = {case = Little; suffix = Js}; package_spec}
+              when package_spec = Js_packages_info.runtime_package_specs
+              -> ()
+            | _ -> assert false   
+          end
         | Playground _ -> ()
         in
         (* prerr_endline (Ext_obj.dump content.package_spec); *)

@@ -36,11 +36,7 @@ let get_cmj_case output_prefix : Ext_js_file_kind.t =
   let little = 
     Ext_char.is_lower_case (Filename.basename output_prefix).[0] 
   in 
-  match little, !Js_config.bs_suffix with 
-  | true, Bs_js -> Little_bs
-  | true, Js -> Little_js
-  | false, Bs_js -> Upper_bs 
-  | false, Js -> Upper_js
+  {case = if little then Little else Upper ; suffix = !Js_config.bs_suffix}
   
 
 let compile_group (meta : Lam_stats.t) 

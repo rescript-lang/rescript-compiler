@@ -28,13 +28,13 @@ let f fmt = Printf.fprintf stdout fmt
 
 let pp_cmj_case  (cmj_case : Ext_js_file_kind.t) : unit = 
   match cmj_case with 
-  | Little_js -> 
+  | {case = Little; suffix = Js} -> 
     f  "case : little, .js \n"
-  | Little_bs -> 
+  | {case = Little ; suffix = Bs_js} -> 
     f  "case : little, .bs.js \n"    
-  | Upper_js -> 
+  | {case = Upper; suffix = Js} -> 
     f  "case: upper, .js  \n"
-  | Upper_bs -> 
+  | {case = Upper; suffix = Bs_js} -> 
     f  "case: upper, .bs.js  \n"    
 
 let pp_cmj 

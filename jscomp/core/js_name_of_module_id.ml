@@ -41,7 +41,7 @@ let get_runtime_module_path
   let current_info_query = 
     Js_packages_info.query_package_infos current_package_info
       module_system  in
-  let js_file =  Ext_namespace.js_name_of_modulename dep_module_id.id.name Little_js in     
+  let js_file =  Ext_namespace.js_name_of_modulename dep_module_id.id.name Ext_js_file_kind.any_runtime_kind in     
   match current_info_query with        
   | Package_not_found -> assert false
   | Package_script -> 
