@@ -74,7 +74,6 @@ type t =
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
     generators : command Map_string.t ; 
-    cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
-    bs_suffix : Ext_js_suffix.t ; 
+    cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)    
     gentype_config : gentype_config option;
   }

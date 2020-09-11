@@ -391,7 +391,6 @@ let scan
   ~root 
   ~cut_generators 
   ~namespace 
-  ~(bs_suffix : Ext_js_suffix.t)
   ~ignored_dirs
   x : t  = 
   parse_sources {

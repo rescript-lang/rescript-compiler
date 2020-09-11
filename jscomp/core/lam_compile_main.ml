@@ -284,12 +284,6 @@ let lambda_as_module
     (lambda_output : J.deps_program)
     (output_prefix : string)
      : unit = 
-  let basename =  
-    Ext_namespace.change_ext_ns_suffix 
-      (Filename.basename
-         output_prefix) 
-      (Ext_js_suffix.to_string  !Js_config.bs_suffix) 
-  in
   let package_info = Js_packages_state.get_packages_info () in 
   if Js_packages_info.is_empty package_info && !Js_config.js_stdout then begin    
     Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout;
@@ -298,7 +292,13 @@ let lambda_as_module
       exit 77
     end  
   end else
-    Js_packages_info.iter package_info (fun {module_system; path = _path} -> 
+    Js_packages_info.iter package_info (fun {module_system; path = _path; suffix} -> 
+        let basename =  
+          Ext_namespace.change_ext_ns_suffix 
+            (Filename.basename
+               output_prefix) 
+            (Ext_js_suffix.to_string  suffix) 
+        in
         let output_chan chan  = 
           Js_dump_program.dump_deps_program ~output_prefix
             module_system 

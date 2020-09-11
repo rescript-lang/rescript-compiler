@@ -245,25 +245,31 @@ let add_npm_package_path (packages_info : t) (s : string)  : t =
   if is_empty packages_info then 
     Bsc_args.bad_arg "please set package name first using -bs-package-name "
   else   
-    let module_system, path =
+    let handle_module_system module_system = 
+      match module_system_of_string module_system with
+      | Some x -> x
+      | None ->
+        Bsc_args.bad_arg ("invalid module system " ^ module_system)  
+    in  
+    let m =
       match Ext_string.split ~keep_empty:false s ':' with
-      | [ module_system; path]  ->
-        (match module_system_of_string module_system with
-         | Some x -> x
-         | None ->
-           Bsc_args.bad_arg ("invalid module system " ^ module_system)), path
       | [path] ->
-        NodeJS, path
-      | module_system :: path -> 
-        (match module_system_of_string module_system with 
-        | Some x -> x
-        | None -> Bsc_args.bad_arg @@ "invalid module system " ^ module_system), (String.concat ":" path)
+        {module_system = NodeJS; path; suffix =  Js}
+      | [ module_system; path]  ->
+        { module_system = handle_module_system module_system;
+         path;
+         suffix =  Js
+        }
+      | [module_system ; path; suffix] -> 
+        { module_system = handle_module_system module_system;
+          path; 
+          suffix = Ext_js_suffix.of_string suffix
+        }
       | _ ->
-        Bsc_args.bad_arg @@ "invalid npm package path: " ^ s
+        Bsc_args.bad_arg  ("invalid npm package path: " ^ s)
     in
     { packages_info with 
-      module_systems = 
-        {module_system; path; suffix = !Js_config.bs_suffix}::packages_info.module_systems
+      module_systems = m::packages_info.module_systems
     }
 
 (* support es6 modules instead

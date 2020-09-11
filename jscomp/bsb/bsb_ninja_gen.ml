@@ -96,7 +96,6 @@ let output_ninja_and_namespace_map
     ~per_proj_dir 
     ~toplevel           
     ({
-      bs_suffix;
       package_name;
       external_includes;
       bsc_flags ; 
@@ -205,7 +204,6 @@ let output_ninja_and_namespace_map
       ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)
       ~reason_react_jsx
-      ~bs_suffix
       ~digest
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
@@ -214,7 +212,6 @@ let output_ninja_and_namespace_map
   Ext_list.iter bs_file_groups 
     (fun files_per_dir ->
        Bsb_ninja_file_groups.handle_files_per_dir oc  
-         ~bs_suffix     
          ~rules
          ~js_post_build_cmd 
          ~package_specs 
