@@ -36,7 +36,7 @@ let load_builin_unit (unit_name : string) : Js_cmj_format.cmj_load_info =
       {values; pure; 
         package_spec = Js_packages_info.runtime_package_specs;
         case = Little;
-        suffix = Js} (* FIXME when we change it *)
+      } (* FIXME when we change it *)
     in 
     if Js_config.get_diagnose () then
       Format.fprintf Format.err_formatter "<Cmj: %s@." unit_name;

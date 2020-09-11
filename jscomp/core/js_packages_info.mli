@@ -40,7 +40,8 @@ val runtime_package_path:
 
 type package_info = { 
   module_system : module_system ;
-  path :  string 
+  path :  string ;
+  suffix : Ext_js_suffix.t
 }
 
 type t 
@@ -82,7 +83,8 @@ type package_found_info =
   {
 
     rel_path : string ;  
-    pkg_rel_path : string   
+    pkg_rel_path : string;
+    suffix : Ext_js_suffix.t   
   }
 
 type info_query =

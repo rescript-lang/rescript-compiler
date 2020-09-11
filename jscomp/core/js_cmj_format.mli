@@ -75,7 +75,6 @@ type t =  {
   pure : bool;
   package_spec : Js_packages_info.t ;
   case : Ext_js_file_kind.case;
-  suffix : Ext_js_suffix.t; 
 }
 
 
@@ -84,7 +83,6 @@ val make:
   effect: effect -> 
   package_spec: Js_packages_info.t ->
   case:Ext_js_file_kind.case ->
-  suffix:Ext_js_suffix.t -> 
   t
   
 

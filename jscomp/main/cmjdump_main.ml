@@ -26,21 +26,20 @@
 
 let f fmt = Printf.fprintf stdout fmt 
 
-let pp_cmj_case  (case : Ext_js_file_kind.case) suffix : unit = 
-  f "%s"  
+let pp_cmj_case  (case : Ext_js_file_kind.case) : unit = 
+  f "%s\n"  
     ("case : " ^ 
      (match case with 
       | Little -> "little"  
-      | Upper -> "upper") ^ 
-     "," ^ 
-     Ext_js_suffix.to_string suffix ^ "\n")
+      | Upper -> "upper") 
+    )
 
 let pp_cmj 
-    ({ values ; pure; package_spec = npm_package_path ; case ; suffix } : Js_cmj_format.t) = 
+    ({ values ; pure; package_spec = npm_package_path ; case } : Js_cmj_format.t) = 
   f  "package info: %s\n"  
     (Format.asprintf "%a" Js_packages_info.dump_packages_info npm_package_path)        
   ;
-  pp_cmj_case  case suffix;
+  pp_cmj_case  case ;
 
   f "effect: %s\n"
       (if pure then "pure" else "not pure");

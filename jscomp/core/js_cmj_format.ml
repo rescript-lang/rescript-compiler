@@ -51,8 +51,7 @@ type t = {
   values : keyed_cmj_values ;
   pure : bool;
   package_spec : Js_packages_info.t ;
-  case : Ext_js_file_kind.case;
-  suffix : Ext_js_suffix.t;
+  case : Ext_js_file_kind.case;  
 }
 
 let make 
@@ -60,7 +59,7 @@ let make
     ~effect 
     ~package_spec 
     ~case
-    ~suffix : t = 
+     : t = 
   {
     values = Map_string.to_sorted_array_with_f values (fun k v -> {
           name = k ; 
@@ -69,7 +68,6 @@ let make
         }); 
     pure = effect = None ; 
     package_spec;
-    suffix;
     case
   }
 

@@ -63,9 +63,10 @@ let from_cmj ~mode (files : string list) (output_file : string) : unit =
         let () = match mode with
         | Native ->
           begin match content with 
-            | {case = Little; suffix = Js; package_spec}
+            | {case = Little; package_spec}
               when package_spec = Js_packages_info.runtime_package_specs
               -> ()
+              (*TODO: assert its suffixes*)
             | _ -> assert false   
           end
         | Playground _ -> ()

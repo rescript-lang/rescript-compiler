@@ -268,7 +268,6 @@ let compile
           meta  
           effect 
           coerced_input.export_map          
-          !Js_config.bs_suffix          
           (if Ext_char.is_lower_case (Filename.basename output_prefix).[0] then Little else Upper)
       in
       (if not !Clflags.dont_write_files then
