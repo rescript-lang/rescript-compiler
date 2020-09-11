@@ -130,8 +130,8 @@ let make_custom_rules
       ~postbuild : string =     
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc";
-    Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
     Ext_js_suffix.to_bsc_flag bs_suffix buf;
+    Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
     if read_cmi then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 

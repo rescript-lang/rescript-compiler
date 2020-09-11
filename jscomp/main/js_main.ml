@@ -326,7 +326,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-g", unit_call (fun _ -> Js_config.debug := true; Lexer.replace_directive_bool "DEBUG" true),
     "Debug mode";
 
-    "-bs-suffix", unit_call (fun _ -> Js_config.bs_suffix := Bs_js), 
+    "-bs-suffix", string_call (fun s -> 
+      Js_config.bs_suffix := Ext_js_suffix.of_string s ), 
     "*internal* set suffix to .bs.js";
 
     "-bs-package-name", string_call Js_packages_state.set_package_name, 
