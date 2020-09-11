@@ -115,7 +115,6 @@ let make_custom_rules
   ~(has_ppx : bool)
   ~(has_pp : bool)
   ~(has_builtin : bool)
-  ~(bs_suffix : Ext_js_suffix.t)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
@@ -131,7 +130,6 @@ let make_custom_rules
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc";
     Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
-    Ext_js_suffix.to_bsc_flag bs_suffix buf;
     if read_cmi then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 

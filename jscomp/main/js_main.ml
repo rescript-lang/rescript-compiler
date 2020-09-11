@@ -296,8 +296,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
           <num1>..<num2>    a range of consecutive warning numbers\n\
        default setting is " ^ Bsc_warnings.defaults_w;  
 
-  "-warn-error", string_call (fun _ -> ()),
-  "Deprecated: warnings are errors";
 
     "-o", string_optional_set Clflags.output_name, 
     "<file>  set output file name to <file>";
@@ -317,7 +315,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal* Set jsx version";
 
     "-bs-package-output", string_call Js_packages_state.update_npm_package_path, 
-    "Set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ";
+    "*internal* Set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ";
 
     "-bs-binary-ast", set Js_config.binary_ast,
     "*internal* Generate binary .mli_ast and ml_ast";
@@ -328,8 +326,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-g", unit_call (fun _ -> Js_config.debug := true; Lexer.replace_directive_bool "DEBUG" true),
     "Debug mode";
 
-    "-bs-suffix", unit_call (fun _ -> Js_config.bs_suffix := Bs_js), 
-    "*internal* set suffix to .bs.js";
 
     "-bs-package-name", string_call Js_packages_state.set_package_name, 
     "Set package name, useful when you want to produce npm packages";
@@ -501,7 +497,10 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bin-annot", Unit_dummy,
     "*internal* keep the compatibility with RLS";
     "-c", Unit_dummy,
-    "*internal* keep the compatibility with RLS"
+    "*internal* keep the compatibility with RLS";
+    "-warn-error", string_call (fun _ -> ()),
+    "Deprecated: warnings are errors";
+  
   |]
 
 

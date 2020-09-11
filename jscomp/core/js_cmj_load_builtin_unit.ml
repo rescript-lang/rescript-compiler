@@ -1,5 +1,5 @@
-(* Copyright (C) 2017 Authors of BuckleScript
- *
+(* Copyright (C) Authors of BuckleScript
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,19 +17,31 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-val handle_files_per_dir :
-  out_channel ->
-  rules:Bsb_ninja_rule.builtin ->
-  package_specs:Bsb_package_specs.t ->
-  js_post_build_cmd:string option ->
-  files_to_install:Hash_set_string.t ->
-  namespace:string option -> 
-  Bsb_file_groups.file_group -> unit
+let load_builin_unit (unit_name : string) : Js_cmj_format.cmj_load_info = 
+  match Ext_string_array.find_sorted
+          Builtin_cmj_datasets.module_names
+          unit_name with
+  | Some i
+    -> 
+    if Js_config.get_diagnose () then
+      Format.fprintf Format.err_formatter ">Cmj: %s@." unit_name;
+    let cmj_table : Js_cmj_format.t = 
+      let values, pure =  Ext_marshal.from_string_uncheck Builtin_cmj_datasets.module_data.(i)  in   
+      {values; pure; 
+        package_spec = Js_packages_info.runtime_package_specs;
+        case = Little;
+      } (* FIXME when we change it *)
+    in 
+    if Js_config.get_diagnose () then
+      Format.fprintf Format.err_formatter "<Cmj: %s@." unit_name;
+    {package_path =  
+       Filename.dirname (Filename.dirname Sys.executable_name); cmj_table}
+  | None
+    ->  
+    Bs_exception.error (Cmj_not_found unit_name)

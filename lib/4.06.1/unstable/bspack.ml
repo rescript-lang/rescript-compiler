@@ -10867,6 +10867,8 @@ let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
+let suffix_mjs = ".mjs"
+let suffix_cjs = ".cjs"
 let suffix_gen_js = ".gen.js"
 let suffix_gen_tsx = ".gen.tsx"
 
@@ -11832,24 +11834,6 @@ let of_list2 ks vs =
 
 
 end
-module Ext_js_suffix
-= struct
-#1 "ext_js_suffix.ml"
-type t = 
-  | Js 
-  | Bs_js   
-
-
-let to_string (x : t) =   
-  match x with 
-  | Js -> Literals.suffix_js
-  | Bs_js -> Literals.suffix_bs_js  
-
-let to_bsc_flag (x : t) (buf : Ext_buffer.t) = 
-    match x with 
-    | Js -> ()
-    | Bs_js -> Ext_buffer.add_string buf " -bs-suffix"
-end
 module Js_config : sig 
 #1 "js_config.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11931,7 +11915,7 @@ val binary_ast : bool ref
 
 
 
-val bs_suffix : Ext_js_suffix.t ref
+
 val debug : bool ref
 
 val cmi_only  : bool ref
@@ -12020,7 +12004,6 @@ let syntax_only = ref false
 let binary_ast = ref false
 
 
-let bs_suffix : Ext_js_suffix.t ref = ref Ext_js_suffix.Js
 
 let debug = ref false
 

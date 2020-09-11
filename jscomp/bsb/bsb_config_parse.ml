@@ -47,13 +47,7 @@ let package_specs_from_bsconfig () =
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
   begin match json with
     | Obj {map} ->
-      begin 
-        match Map_string.find_opt map  Bsb_build_schemas.package_specs with 
-        | Some x ->
-          Bsb_package_specs.from_json x
-        | None -> 
-          Bsb_package_specs.default_package_specs
-      end
+      Bsb_package_specs.from_map map
     | _ -> assert false
   end
 
@@ -148,13 +142,14 @@ let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =
   match Map_string.find_opt map Bsb_build_schemas.suffix with 
   | None -> Js  
   | Some (Str {str} as config ) -> 
-    if str = Literals.suffix_js then Js
-    else if str = Literals.suffix_bs_js then Bs_js
-    else Bsb_exception.config_error config 
-        "expect .bs.js or .js string here"
+    let s =  Ext_js_suffix.of_string str  in 
+    if s = Unknown_extension then 
+     Bsb_exception.config_error config 
+        "expect .bs.js, .js, .cjs, .mjs here"
+    else s     
   | Some config -> 
     Bsb_exception.config_error config 
-      "expect .bs.js or .js string here"
+      "expect a string exteion like \".js\" here"
 
 let extract_gentype_config (map : json_map) cwd 
   : Bsb_config_types.gentype_config option = 
@@ -365,17 +360,13 @@ let interpret_json
       extract_package_name_and_namespace  map in 
     let refmt = extract_refmt map per_proj_dir in 
     let gentype_config  = extract_gentype_config map per_proj_dir in  
-    let bs_suffix = extract_bs_suffix_exn map in   
     (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries 
          array from the bsconfig and set the backend_ref to the first entry, if any. *)
 
     (* The default situation is empty *)
     let built_in_package = check_stdlib map per_proj_dir in
-    let package_specs =     
-      match Map_string.find_opt map Bsb_build_schemas.package_specs with 
-      | Some x ->
-        Bsb_package_specs.from_json x 
-      | None ->  Bsb_package_specs.default_package_specs 
+    let package_specs =  
+      Bsb_package_specs.from_map map     
     in
     let pp_flags : string option = 
       extract_string map Bsb_build_schemas.pp_flags (fun p -> 
@@ -400,12 +391,10 @@ let interpret_json
             ~toplevel
             ~root: per_proj_dir
             ~cut_generators
-            ~bs_suffix
             ~namespace
             sources in         
         {
           gentype_config;
-          bs_suffix ;
           package_name ;
           namespace ;    
           warning = extract_warning map;

@@ -43,8 +43,11 @@ let compatible (dep : module_system)
 (* As a dependency Leaf Node, it is the same either [global] or [not] *)
 
 
-type package_info =
-  { module_system : module_system ; path :  string }
+type package_info = { 
+  module_system : module_system ; 
+  path :  string; 
+  suffix : Ext_js_suffix.t 
+}
 
 type package_name  = 
   | Pkg_empty 
@@ -79,8 +82,8 @@ type t =
 let runtime_package_specs : t = {
   name = Pkg_runtime;
   module_systems =[
-    {module_system = Es6; path = "lib/es6"};
-    {module_system = NodeJS; path = "lib/js"};
+    {module_system = Es6; path = "lib/es6"; suffix = Js};
+    {module_system = NodeJS; path = "lib/js"; suffix = Js};
   ]
 }   
 let same_package_by_name (x : t) (y : t) = x.name = y.name 
@@ -140,13 +143,14 @@ let module_system_of_string package_name : module_system option =
 
 let dump_package_info 
     (fmt : Format.formatter)
-    ({module_system = ms; path =  name} : package_info)
+    ({module_system = ms; path =  name; suffix} : package_info)
   = 
   Format.fprintf
     fmt 
-    "@[%s:@ %s@]"
+    "@[%s@ %s@ %s@]"
     (string_of_module_system ms)
     name 
+    (Ext_js_suffix.to_string suffix)
 
 let dump_package_name fmt (x : package_name) = 
   match x with 
@@ -169,7 +173,8 @@ type package_found_info =
   {
 
     rel_path : string ;     
-    pkg_rel_path : string
+    pkg_rel_path : string;
+    suffix : Ext_js_suffix.t
   }
 type info_query =
   | Package_script 
@@ -193,10 +198,12 @@ let query_package_infos
       Package_found 
         { 
           rel_path ;
-          pkg_rel_path 
+          pkg_rel_path ;
+          suffix = k.suffix
         }
     | None -> Package_not_found)
   | Pkg_runtime -> 
+    (*FIXME: [compatible] seems not correct *)
     match Ext_list.find_first module_systems (fun k -> 
         compatible k.module_system  module_system)  with
     | Some k -> 
@@ -205,7 +212,8 @@ let query_package_infos
       Package_found 
         { 
           rel_path ;
-          pkg_rel_path 
+          pkg_rel_path ;
+          suffix = k.suffix
         }
     | None -> Package_not_found
 
@@ -237,23 +245,32 @@ let add_npm_package_path (packages_info : t) (s : string)  : t =
   if is_empty packages_info then 
     Bsc_args.bad_arg "please set package name first using -bs-package-name "
   else   
-    let module_system, path =
+    let handle_module_system module_system = 
+      match module_system_of_string module_system with
+      | Some x -> x
+      | None ->
+        Bsc_args.bad_arg ("invalid module system " ^ module_system)  
+    in  
+    let m =
       match Ext_string.split ~keep_empty:false s ':' with
-      | [ module_system; path]  ->
-        (match module_system_of_string module_system with
-         | Some x -> x
-         | None ->
-           Bsc_args.bad_arg ("invalid module system " ^ module_system)), path
       | [path] ->
-        NodeJS, path
-      | module_system :: path -> 
-        (match module_system_of_string module_system with 
-        | Some x -> x
-        | None -> Bsc_args.bad_arg @@ "invalid module system " ^ module_system), (String.concat ":" path)
+        {module_system = NodeJS; path; suffix =  Js}
+      | [ module_system; path]  ->
+        { module_system = handle_module_system module_system;
+         path;
+         suffix =  Js
+        }
+      | [module_system ; path; suffix] -> 
+        { module_system = handle_module_system module_system;
+          path; 
+          suffix = Ext_js_suffix.of_string suffix
+        }
       | _ ->
-        Bsc_args.bad_arg @@ "invalid npm package path: " ^ s
+        Bsc_args.bad_arg  ("invalid npm package path: " ^ s)
     in
-    { packages_info with module_systems = {module_system; path}::packages_info.module_systems}
+    { packages_info with 
+      module_systems = m::packages_info.module_systems
+    }
 
 (* support es6 modules instead
    TODO: enrich ast to support import export 

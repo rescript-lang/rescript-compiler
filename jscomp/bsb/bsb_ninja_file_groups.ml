@@ -93,7 +93,6 @@ let emit_module_build
     (package_specs : Bsb_package_specs.t)
     (is_dev : bool) 
     oc 
-    ~(bs_suffix : Ext_js_suffix.t)
     js_post_build_cmd
     namespace
     (module_info : Bsb_db.module_info)
@@ -117,7 +116,7 @@ let emit_module_build
   let output_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
-    Bsb_package_specs.get_list_of_output_js package_specs bs_suffix output_filename_sans_extension in 
+    Bsb_package_specs.get_list_of_output_js package_specs output_filename_sans_extension in 
   let common_shadows = 
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
@@ -187,7 +186,6 @@ let emit_module_build
 
 let handle_files_per_dir
     oc 
-    ~(bs_suffix : Ext_js_suffix.t)
     ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
     ~js_post_build_cmd  
@@ -212,7 +210,6 @@ let handle_files_per_dir
         package_specs
         group.dev_index
         oc 
-        ~bs_suffix
         js_post_build_cmd      
         namespace module_info
     )

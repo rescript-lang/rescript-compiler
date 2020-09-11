@@ -32,16 +32,6 @@
 (* module E = Js_exp_make  *)
 (* module S = Js_stmt_make   *)
 
-let get_cmj_case output_prefix : Ext_js_file_kind.t = 
-  let little = 
-    Ext_char.is_lower_case (Filename.basename output_prefix).[0] 
-  in 
-  match little, !Js_config.bs_suffix with 
-  | true, Bs_js -> Little_bs
-  | true, Js -> Little_js
-  | false, Bs_js -> Upper_bs 
-  | false, Js -> Upper_js
-  
 
 let compile_group (meta : Lam_stats.t) 
     (x : Lam_group.t) : Js_output.t  = 
@@ -277,8 +267,8 @@ let compile
         Lam_stats_export.export_to_cmj 
           meta  
           effect 
-          coerced_input.export_map
-          ~js_file_kind:(get_cmj_case output_prefix)
+          coerced_input.export_map          
+          (if Ext_char.is_lower_case (Filename.basename output_prefix).[0] then Little else Upper)
       in
       (if not !Clflags.dont_write_files then
          Js_cmj_format.to_file 
@@ -294,12 +284,6 @@ let lambda_as_module
     (lambda_output : J.deps_program)
     (output_prefix : string)
      : unit = 
-  let basename =  
-    Ext_namespace.change_ext_ns_suffix 
-      (Filename.basename
-         output_prefix) 
-      (Ext_js_suffix.to_string  !Js_config.bs_suffix) 
-  in
   let package_info = Js_packages_state.get_packages_info () in 
   if Js_packages_info.is_empty package_info && !Js_config.js_stdout then begin    
     Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout;
@@ -308,7 +292,13 @@ let lambda_as_module
       exit 77
     end  
   end else
-    Js_packages_info.iter package_info (fun {module_system; path = _path} -> 
+    Js_packages_info.iter package_info (fun {module_system; path = _path; suffix} -> 
+        let basename =  
+          Ext_namespace.change_ext_ns_suffix 
+            (Filename.basename
+               output_prefix) 
+            (Ext_js_suffix.to_string  suffix) 
+        in
         let output_chan chan  = 
           Js_dump_program.dump_deps_program ~output_prefix
             module_system 
