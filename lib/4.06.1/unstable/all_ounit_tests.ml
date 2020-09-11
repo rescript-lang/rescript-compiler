@@ -16478,14 +16478,6 @@ let to_string (x : t) =
   | Cjs -> Literals.suffix_cjs
   | Unknown_extension -> assert false
 
-let to_bsc_flag (x : t) (buf : Ext_buffer.t) = 
-    match x with 
-    | Js -> ()
-    | Bs_js | Mjs | Cjs 
-      -> 
-      Ext_buffer.add_string buf " -bs-suffix ";
-      Ext_buffer.add_string buf (to_string x)
-    | Unknown_extension -> assert false
 
 let of_string (x : string) : t =
   match () with 

@@ -6547,14 +6547,6 @@ let to_string (x : t) =
   | Cjs -> Literals.suffix_cjs
   | Unknown_extension -> assert false
 
-let to_bsc_flag (x : t) (buf : Ext_buffer.t) = 
-    match x with 
-    | Js -> ()
-    | Bs_js | Mjs | Cjs 
-      -> 
-      Ext_buffer.add_string buf " -bs-suffix ";
-      Ext_buffer.add_string buf (to_string x)
-    | Unknown_extension -> assert false
 
 let of_string (x : string) : t =
   match () with 
@@ -7082,14 +7074,13 @@ module Bsb_package_specs : sig
 type t
 
 
-val default_package_specs : t
 
-val from_json:
-  Ext_json_types.t -> t 
+
+val from_map:
+  Ext_json_types.t Map_string.t -> t 
 
 val get_list_of_output_js : 
   t -> 
-  Ext_js_suffix.t -> 
   string -> 
   string list
 
@@ -7140,7 +7131,8 @@ type format =
 
 type spec = {
   format : format;
-  in_source : bool 
+  in_source : bool;
+  suffix : Ext_js_suffix.t 
 }
 
 module Spec_set = Set.Make( struct type t = spec 
@@ -7175,11 +7167,11 @@ let prefix_of_format (x : format)  =
   | Es6 -> Bsb_config.lib_es6 
   | Es6_global -> Bsb_config.lib_es6_global )
 
-let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
+let rec from_array suffix (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
   let has_in_source = ref false in
   Ext_array.iter arr (fun x ->
-      let result = from_json_single x  in
+      let result = from_json_single suffix x  in
       if result.in_source then 
         (
           if not !has_in_source then
@@ -7194,10 +7186,10 @@ let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
   !spec
 
 (* TODO: FIXME: better API without mutating *)
-and from_json_single (x : Ext_json_types.t) : spec =
+and from_json_single suffix (x : Ext_json_types.t) : spec =
   match x with
   | Str {str = format; loc } ->    
-      {format = supported_format format loc  ; in_source = false }    
+      {format = supported_format format loc  ; in_source = false ; suffix }    
   | Obj {map; loc} ->
     begin match Map_string.find_exn map "module" with
       | Str {str = format} ->
@@ -7207,7 +7199,17 @@ and from_json_single (x : Ext_json_types.t) : spec =
           | Some _
           | None -> false
         in        
-          {format = supported_format format loc ; in_source  }        
+        let suffix = 
+          match Map_string.find_opt map  "suffix" with
+          | Some (Str {str = suffix; loc}) ->
+            let s = Ext_js_suffix.of_string suffix in 
+            if s = Unknown_extension then 
+              Bsb_exception.errorf ~loc "expect .js,.bs.js,.mjs or .cjs"
+            else  s 
+          | Some v -> 
+            Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "expect a string field"
+          | None -> suffix in   
+        {format = supported_format format loc ; in_source ; suffix}        
       | Arr _ ->
         Bsb_exception.errorf ~loc
           "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."
@@ -7221,25 +7223,28 @@ and from_json_single (x : Ext_json_types.t) : spec =
   | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
            "package-specs: we expect either a string or an object."
 
-let  from_json (x : Ext_json_types.t) : Spec_set.t =
+let  from_json suffix (x : Ext_json_types.t) : Spec_set.t =
   match x with
-  | Arr {content ; _} -> from_array content
-  | _ -> Spec_set.singleton (from_json_single x )
-
+  | Arr {content ; _} -> from_array suffix content
+  | _ -> Spec_set.singleton (from_json_single suffix x )
 
 let bs_package_output = "-bs-package-output"
-
+[@@@warning "+9"]
 (** Assume input is valid 
-    {[ -bs-package-output commonjs:lib/js/jscomp/test ]}
+    coordinate with command line flag 
+    {[ -bs-package-output commonjs:lib/js/jscomp/test:.js ]}    
 *)
-let package_flag ({format; in_source } : spec) dir =
+let package_flag ({format; in_source; suffix } : spec) dir =
   Ext_string.inter2
     bs_package_output 
-    (Ext_string.concat3
+    (Ext_string.concat5
        (string_of_format format)
        Ext_string.single_colon
        (if in_source then dir else
-        prefix_of_format format // dir))
+        prefix_of_format format // dir)
+      Ext_string.single_colon  
+      (Ext_js_suffix.to_string suffix)
+    )
 
 let package_flag_of_package_specs (package_specs : t) 
     (dirname : string ) : string  = 
@@ -7247,9 +7252,9 @@ let package_flag_of_package_specs (package_specs : t)
       Ext_string.inter2 acc (package_flag format dirname )
     ) package_specs Ext_string.empty
 
-let default_package_specs = 
+let default_package_specs suffix = 
   Spec_set.singleton 
-    { format = NodeJS ; in_source = false }
+    { format = NodeJS ; in_source = false; suffix  }
 
 
 
@@ -7259,14 +7264,14 @@ let default_package_specs =
 *)
 let get_list_of_output_js 
     (package_specs : Spec_set.t)
-    (bs_suffix : Ext_js_suffix.t)
     (output_file_sans_extension : string)
     = 
   Spec_set.fold 
     (fun (spec : spec) acc ->
-        let basename =  Ext_namespace.change_ext_ns_suffix
+        let basename =  
+          Ext_namespace.change_ext_ns_suffix
              output_file_sans_extension
-             (Ext_js_suffix.to_string bs_suffix)
+             (Ext_js_suffix.to_string spec.suffix)
         in 
         (Bsb_config.proj_rel (if spec.in_source then basename
         else prefix_of_format spec.format // basename))   
@@ -7282,6 +7287,30 @@ let list_dirs_by
     if not spec.in_source then     
       f (prefix_of_format spec.format) 
   ) package_specs 
+  
+type json_map = Ext_json_types.t Map_string.t 
+
+let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
+  match Map_string.find_opt map Bsb_build_schemas.suffix with 
+  | None -> Js  
+  | Some (Str {str; loc} as config ) -> 
+    let s =  Ext_js_suffix.of_string str  in 
+    if s = Unknown_extension then 
+      Bsb_exception.errorf ~loc
+        "expect .bs.js, .js, .cjs, .mjs here"
+    else s     
+  | Some config -> 
+    Bsb_exception.config_error config 
+      "expect a string exteion like \".js\" here"
+
+let from_map map =  
+  let suffix = extract_bs_suffix_exn map in   
+  match Map_string.find_opt map Bsb_build_schemas.package_specs with 
+  | Some x ->
+    from_json suffix x 
+  | None ->  default_package_specs suffix
+
+
 end
 module Bsc_warnings
 = struct
@@ -7997,8 +8026,7 @@ type t =
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
     generators : command Map_string.t ; 
-    cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
-    bs_suffix : Ext_js_suffix.t ; 
+    cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)    
     gentype_config : gentype_config option;
   }
 
@@ -10687,7 +10715,6 @@ val scan :
   root: string ->  
   cut_generators: bool -> 
   namespace : string option -> 
-  bs_suffix:Ext_js_suffix.t -> 
   ignored_dirs:Set_string.t ->
   Ext_json_types.t ->   
   Bsb_file_groups.t 
@@ -11094,7 +11121,6 @@ let scan
   ~root 
   ~cut_generators 
   ~namespace 
-  ~(bs_suffix : Ext_js_suffix.t)
   ~ignored_dirs
   x : t  = 
   parse_sources {
@@ -11550,13 +11576,7 @@ let package_specs_from_bsconfig () =
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
   begin match json with
     | Obj {map} ->
-      begin 
-        match Map_string.find_opt map  Bsb_build_schemas.package_specs with 
-        | Some x ->
-          Bsb_package_specs.from_json x
-        | None -> 
-          Bsb_package_specs.default_package_specs
-      end
+      Bsb_package_specs.from_map map
     | _ -> assert false
   end
 
@@ -11869,17 +11889,13 @@ let interpret_json
       extract_package_name_and_namespace  map in 
     let refmt = extract_refmt map per_proj_dir in 
     let gentype_config  = extract_gentype_config map per_proj_dir in  
-    let bs_suffix = extract_bs_suffix_exn map in   
     (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries 
          array from the bsconfig and set the backend_ref to the first entry, if any. *)
 
     (* The default situation is empty *)
     let built_in_package = check_stdlib map per_proj_dir in
-    let package_specs =     
-      match Map_string.find_opt map Bsb_build_schemas.package_specs with 
-      | Some x ->
-        Bsb_package_specs.from_json x 
-      | None ->  Bsb_package_specs.default_package_specs 
+    let package_specs =  
+      Bsb_package_specs.from_map map     
     in
     let pp_flags : string option = 
       extract_string map Bsb_build_schemas.pp_flags (fun p -> 
@@ -11904,12 +11920,10 @@ let interpret_json
             ~toplevel
             ~root: per_proj_dir
             ~cut_generators
-            ~bs_suffix
             ~namespace
             sources in         
         {
           gentype_config;
-          bs_suffix ;
           package_name ;
           namespace ;    
           warning = extract_warning map;
@@ -12943,7 +12957,6 @@ val make_custom_rules :
   has_ppx:bool ->
   has_pp:bool ->
   has_builtin:bool -> 
-  bs_suffix:Ext_js_suffix.t ->
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
   digest:string ->
   refmt:string option ->
@@ -13070,7 +13083,6 @@ let make_custom_rules
   ~(has_ppx : bool)
   ~(has_pp : bool)
   ~(has_builtin : bool)
-  ~(bs_suffix : Ext_js_suffix.t)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
@@ -13085,7 +13097,6 @@ let make_custom_rules
       ~postbuild : string =     
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc";
-    Ext_js_suffix.to_bsc_flag bs_suffix buf;
     Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
     if read_cmi then 
       Ext_buffer.add_string buf " -bs-read-cmi";
@@ -13535,7 +13546,6 @@ module Bsb_ninja_file_groups : sig
 
 val handle_files_per_dir :
   out_channel ->
-  bs_suffix:Ext_js_suffix.t ->
   rules:Bsb_ninja_rule.builtin ->
   package_specs:Bsb_package_specs.t ->
   js_post_build_cmd:string option ->
@@ -13640,7 +13650,6 @@ let emit_module_build
     (package_specs : Bsb_package_specs.t)
     (is_dev : bool) 
     oc 
-    ~(bs_suffix : Ext_js_suffix.t)
     js_post_build_cmd
     namespace
     (module_info : Bsb_db.module_info)
@@ -13664,7 +13673,7 @@ let emit_module_build
   let output_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
-    Bsb_package_specs.get_list_of_output_js package_specs bs_suffix output_filename_sans_extension in 
+    Bsb_package_specs.get_list_of_output_js package_specs output_filename_sans_extension in 
   let common_shadows = 
     make_common_shadows package_specs
       (Filename.dirname output_cmi)
@@ -13734,7 +13743,6 @@ let emit_module_build
 
 let handle_files_per_dir
     oc 
-    ~(bs_suffix : Ext_js_suffix.t)
     ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
     ~js_post_build_cmd  
@@ -13759,7 +13767,6 @@ let handle_files_per_dir
         package_specs
         group.dev_index
         oc 
-        ~bs_suffix
         js_post_build_cmd      
         namespace module_info
     )
@@ -13905,7 +13912,6 @@ let output_ninja_and_namespace_map
     ~per_proj_dir 
     ~toplevel           
     ({
-      bs_suffix;
       package_name;
       external_includes;
       bsc_flags ; 
@@ -14014,7 +14020,6 @@ let output_ninja_and_namespace_map
       ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)
       ~reason_react_jsx
-      ~bs_suffix
       ~digest
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
@@ -14023,7 +14028,6 @@ let output_ninja_and_namespace_map
   Ext_list.iter bs_file_groups 
     (fun files_per_dir ->
        Bsb_ninja_file_groups.handle_files_per_dir oc  
-         ~bs_suffix     
          ~rules
          ~js_post_build_cmd 
          ~package_specs 

@@ -11834,42 +11834,6 @@ let of_list2 ks vs =
 
 
 end
-module Ext_js_suffix
-= struct
-#1 "ext_js_suffix.ml"
-type t = 
-  | Js 
-  | Bs_js   
-  | Mjs
-  | Cjs
-  | Unknown_extension
-let to_string (x : t) =   
-  match x with 
-  | Js -> Literals.suffix_js
-  | Bs_js -> Literals.suffix_bs_js  
-  | Mjs -> Literals.suffix_mjs
-  | Cjs -> Literals.suffix_cjs
-  | Unknown_extension -> assert false
-
-let to_bsc_flag (x : t) (buf : Ext_buffer.t) = 
-    match x with 
-    | Js -> ()
-    | Bs_js | Mjs | Cjs 
-      -> 
-      Ext_buffer.add_string buf " -bs-suffix ";
-      Ext_buffer.add_string buf (to_string x)
-    | Unknown_extension -> assert false
-
-let of_string (x : string) : t =
-  match () with 
-  | () when x = Literals.suffix_js -> Js 
-  | () when x = Literals.suffix_bs_js -> Bs_js       
-  | () when x = Literals.suffix_mjs -> Mjs
-  | () when x = Literals.suffix_cjs -> Cjs 
-  | _ -> Unknown_extension
-
-
-end
 module Js_config : sig 
 #1 "js_config.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11951,7 +11915,7 @@ val binary_ast : bool ref
 
 
 
-val bs_suffix : Ext_js_suffix.t ref
+
 val debug : bool ref
 
 val cmi_only  : bool ref
@@ -12040,7 +12004,6 @@ let syntax_only = ref false
 let binary_ast = ref false
 
 
-let bs_suffix : Ext_js_suffix.t ref = ref Ext_js_suffix.Js
 
 let debug = ref false
 
