@@ -5315,6 +5315,8 @@ let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
+let suffix_mjs = ".mjs"
+let suffix_cjs = ".cjs"
 let suffix_gen_js = ".gen.js"
 let suffix_gen_tsx = ".gen.tsx"
 
@@ -6534,17 +6536,35 @@ module Ext_js_suffix
 type t = 
   | Js 
   | Bs_js   
-
-
+  | Mjs
+  | Cjs
+  | Unknown_extension
 let to_string (x : t) =   
   match x with 
   | Js -> Literals.suffix_js
   | Bs_js -> Literals.suffix_bs_js  
+  | Mjs -> Literals.suffix_mjs
+  | Cjs -> Literals.suffix_cjs
+  | Unknown_extension -> assert false
 
 let to_bsc_flag (x : t) (buf : Ext_buffer.t) = 
     match x with 
     | Js -> ()
-    | Bs_js -> Ext_buffer.add_string buf " -bs-suffix"
+    | Bs_js | Mjs | Cjs 
+      -> 
+      Ext_buffer.add_string buf " -bs-suffix ";
+      Ext_buffer.add_string buf (to_string x)
+    | Unknown_extension -> assert false
+
+let of_string (x : string) : t =
+  match () with 
+  | () when x = Literals.suffix_js -> Js 
+  | () when x = Literals.suffix_bs_js -> Bs_js       
+  | () when x = Literals.suffix_mjs -> Mjs
+  | () when x = Literals.suffix_cjs -> Cjs 
+  | _ -> Unknown_extension
+
+
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
@@ -11631,13 +11651,14 @@ let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =
   match Map_string.find_opt map Bsb_build_schemas.suffix with 
   | None -> Js  
   | Some (Str {str} as config ) -> 
-    if str = Literals.suffix_js then Js
-    else if str = Literals.suffix_bs_js then Bs_js
-    else Bsb_exception.config_error config 
-        "expect .bs.js or .js string here"
+    let s =  Ext_js_suffix.of_string str  in 
+    if s = Unknown_extension then 
+     Bsb_exception.config_error config 
+        "expect .bs.js, .js, .cjs, .mjs here"
+    else s     
   | Some config -> 
     Bsb_exception.config_error config 
-      "expect .bs.js or .js string here"
+      "expect a string exteion like \".js\" here"
 
 let extract_gentype_config (map : json_map) cwd 
   : Bsb_config_types.gentype_config option = 
@@ -13064,8 +13085,8 @@ let make_custom_rules
       ~postbuild : string =     
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc";
-    Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
     Ext_js_suffix.to_bsc_flag bs_suffix buf;
+    Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
     if read_cmi then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
