@@ -37,8 +37,7 @@ let simple_conversions = [
 let print_simple_conversion ppf (actual, expected) =
   try (
     let converter = List.assoc (actual, expected) simple_conversions in
-    Format.pp_print_newline ppf ();
-    fprintf ppf "@[<v 2>@,You can convert @{<info>%s@} to @{<info>%s@} with @{<info>%s@}.@]" actual expected converter
+    fprintf ppf "@,@[<v 2>You can convert @{<info>%s@} to @{<info>%s@} with @{<info>%s@}.@]" actual expected converter
   ) with | Not_found -> ()
 
 let print_simple_message ppf = function
