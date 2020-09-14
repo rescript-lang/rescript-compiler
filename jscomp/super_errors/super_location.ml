@@ -86,7 +86,7 @@ let super_warning_printer loc ppf w =
   | `Inactive -> ()
   | `Active { Warnings. number = _; message = _;  sub_locs = _} ->
     setup_colors ();    
-    Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]@."
+    Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]"
       (print  ("Warning number " ^ (Warnings.number w |> string_of_int)))
       loc
       (Warnings.message w);
