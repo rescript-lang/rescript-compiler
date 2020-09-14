@@ -28,7 +28,7 @@ let (//) = Ext_path.combine
 
 
 (* TODO: sync up with {!Js_packages_info.module_system}  *)
-type format = 
+type format = Ext_module_system.t = 
   | NodeJS | Es6 | Es6_global
 
 type spec = {
@@ -63,11 +63,6 @@ let string_of_format (x : format) =
   | Es6 -> Literals.es6
   | Es6_global -> Literals.es6_global
 
-let prefix_of_format (x : format)  =   
-  (match x with 
-  | NodeJS -> Bsb_config.lib_js 
-  | Es6 -> Bsb_config.lib_es6 
-  | Es6_global -> Bsb_config.lib_es6_global )
 
 let rec from_array suffix (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
@@ -108,7 +103,7 @@ and from_json_single suffix (x : Ext_json_types.t) : spec =
             if s = Unknown_extension then 
               Bsb_exception.errorf ~loc "expect .js,.bs.js,.mjs or .cjs"
             else  s 
-          | Some v -> 
+          | Some _ -> 
             Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "expect a string field"
           | None -> suffix in   
         {format = supported_format format loc ; in_source ; suffix}        
@@ -143,7 +138,7 @@ let package_flag ({format; in_source; suffix } : spec) dir =
        (string_of_format format)
        Ext_string.single_colon
        (if in_source then dir else
-        prefix_of_format format // dir)
+        Bsb_config.top_prefix_of_format format // dir)
       Ext_string.single_colon  
       (Ext_js_suffix.to_string suffix)
     )
@@ -175,8 +170,8 @@ let get_list_of_output_js
              output_file_sans_extension
              (Ext_js_suffix.to_string spec.suffix)
         in 
-        (Bsb_config.proj_rel (if spec.in_source then basename
-        else prefix_of_format spec.format // basename))   
+        (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
+        else Bsb_config.lib_bs_prefix_of_format spec.format // basename) 
        :: acc
     ) package_specs []
 
@@ -187,7 +182,7 @@ let list_dirs_by
   =  
   Spec_set.iter (fun (spec : spec)  -> 
     if not spec.in_source then     
-      f (prefix_of_format spec.format) 
+      f (Bsb_config.top_prefix_of_format spec.format) 
   ) package_specs 
   
 type json_map = Ext_json_types.t Map_string.t 
@@ -195,7 +190,7 @@ type json_map = Ext_json_types.t Map_string.t
 let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
   match Map_string.find_opt map Bsb_build_schemas.suffix with 
   | None -> Js  
-  | Some (Str {str; loc} as config ) -> 
+  | Some (Str {str; loc}) -> 
     let s =  Ext_js_suffix.of_string str  in 
     if s = Unknown_extension then 
       Bsb_exception.errorf ~loc

@@ -35,7 +35,7 @@ type t = {
 
 let get_name (x : t) oc = x.name oc
 let print_rule (oc : out_channel) 
-  ~description 
+  ?description 
   ?(restat : unit option)  
   ?dyndep 
   ~command   
@@ -47,8 +47,12 @@ let print_rule (oc : out_channel)
     );
   (if restat <>  None then   
      output_string oc "  restat = 1\n");
-
-  output_string oc "  description = " ; output_string oc description; output_string oc "\n"
+  begin match description with 
+    | None -> ()     
+    | Some description -> 
+      output_string oc "  description = " ; output_string oc description
+  end ;
+  output_string oc "\n"
 
 
 
@@ -58,7 +62,6 @@ let define
     ~command
     ?dyndep
     ?restat
-    ?(description = "\027[34mBuilding\027[39m \027[2m${out}\027[22m") (* blue, dim *)
     rule_name : t 
   =
 
@@ -68,7 +71,7 @@ let define
     name = fun oc ->
       if not self.used then
         begin
-          print_rule oc ~description  ?dyndep ?restat ~command rule_name;
+          print_rule oc  ?dyndep ?restat ~command rule_name;
           self.used <- true
         end ;
       rule_name

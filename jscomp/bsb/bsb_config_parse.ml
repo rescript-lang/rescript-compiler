@@ -138,18 +138,6 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
     end
 
 
-let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
-  match Map_string.find_opt map Bsb_build_schemas.suffix with 
-  | None -> Js  
-  | Some (Str {str} as config ) -> 
-    let s =  Ext_js_suffix.of_string str  in 
-    if s = Unknown_extension then 
-     Bsb_exception.config_error config 
-        "expect .bs.js, .js, .cjs, .mjs here"
-    else s     
-  | Some config -> 
-    Bsb_exception.config_error config 
-      "expect a string exteion like \".js\" here"
 
 let extract_gentype_config (map : json_map) cwd 
   : Bsb_config_types.gentype_config option = 

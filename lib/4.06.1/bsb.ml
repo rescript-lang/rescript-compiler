@@ -4937,6 +4937,15 @@ let is_empty (x : file_group) =
   x.resources = [] &&
   x.generators = []    
 end
+module Ext_module_system
+= struct
+#1 "ext_module_system.ml"
+
+
+
+type t =
+     | NodeJS | Es6 | Es6_global
+end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5833,8 +5842,8 @@ val lib_ocaml : string
 val all_lib_artifacts : string list 
 (* we need generate path relative to [lib/bs] directory in the opposite direction *)
 val rev_lib_bs_prefix : string -> string
-
-
+val lib_bs_prefix_of_format : Ext_module_system.t -> string
+val top_prefix_of_format : Ext_module_system.t -> string
 (** default not install, only when -make-world, its dependencies will be installed  *)
 
 
@@ -5881,6 +5890,23 @@ let all_lib_artifacts =
     lib_es6_global;
   ]
 let rev_lib_bs = ".."// ".."
+
+(* access the js directory from "lib/bs", 
+  it would be '../js'
+*)
+let lib_bs_prefix_of_format (x : Ext_module_system.t) = 
+  ".." // match x with 
+  | NodeJS -> "js"
+  | Es6 -> "es6"
+  | Es6_global -> "es6_global"
+  
+(* lib/js, lib/es6, lib/es6_global *)
+let top_prefix_of_format (x : Ext_module_system.t)  =   
+  match x with 
+  | NodeJS -> lib_js 
+  | Es6 -> lib_es6 
+  | Es6_global -> lib_es6_global 
+
 
 
 let rev_lib_bs_prefix p = rev_lib_bs // p 
@@ -7126,7 +7152,7 @@ let (//) = Ext_path.combine
 
 
 (* TODO: sync up with {!Js_packages_info.module_system}  *)
-type format = 
+type format = Ext_module_system.t = 
   | NodeJS | Es6 | Es6_global
 
 type spec = {
@@ -7161,11 +7187,6 @@ let string_of_format (x : format) =
   | Es6 -> Literals.es6
   | Es6_global -> Literals.es6_global
 
-let prefix_of_format (x : format)  =   
-  (match x with 
-  | NodeJS -> Bsb_config.lib_js 
-  | Es6 -> Bsb_config.lib_es6 
-  | Es6_global -> Bsb_config.lib_es6_global )
 
 let rec from_array suffix (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
@@ -7206,7 +7227,7 @@ and from_json_single suffix (x : Ext_json_types.t) : spec =
             if s = Unknown_extension then 
               Bsb_exception.errorf ~loc "expect .js,.bs.js,.mjs or .cjs"
             else  s 
-          | Some v -> 
+          | Some _ -> 
             Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "expect a string field"
           | None -> suffix in   
         {format = supported_format format loc ; in_source ; suffix}        
@@ -7241,7 +7262,7 @@ let package_flag ({format; in_source; suffix } : spec) dir =
        (string_of_format format)
        Ext_string.single_colon
        (if in_source then dir else
-        prefix_of_format format // dir)
+        Bsb_config.top_prefix_of_format format // dir)
       Ext_string.single_colon  
       (Ext_js_suffix.to_string suffix)
     )
@@ -7273,8 +7294,8 @@ let get_list_of_output_js
              output_file_sans_extension
              (Ext_js_suffix.to_string spec.suffix)
         in 
-        (Bsb_config.proj_rel (if spec.in_source then basename
-        else prefix_of_format spec.format // basename))   
+        (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
+        else Bsb_config.lib_bs_prefix_of_format spec.format // basename) 
        :: acc
     ) package_specs []
 
@@ -7285,7 +7306,7 @@ let list_dirs_by
   =  
   Spec_set.iter (fun (spec : spec)  -> 
     if not spec.in_source then     
-      f (prefix_of_format spec.format) 
+      f (Bsb_config.top_prefix_of_format spec.format) 
   ) package_specs 
   
 type json_map = Ext_json_types.t Map_string.t 
@@ -7293,7 +7314,7 @@ type json_map = Ext_json_types.t Map_string.t
 let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
   match Map_string.find_opt map Bsb_build_schemas.suffix with 
   | None -> Js  
-  | Some (Str {str; loc} as config ) -> 
+  | Some (Str {str; loc}) -> 
     let s =  Ext_js_suffix.of_string str  in 
     if s = Unknown_extension then 
       Bsb_exception.errorf ~loc
@@ -11667,18 +11688,6 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
     end
 
 
-let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
-  match Map_string.find_opt map Bsb_build_schemas.suffix with 
-  | None -> Js  
-  | Some (Str {str} as config ) -> 
-    let s =  Ext_js_suffix.of_string str  in 
-    if s = Unknown_extension then 
-     Bsb_exception.config_error config 
-        "expect .bs.js, .js, .cjs, .mjs here"
-    else s     
-  | Some config -> 
-    Bsb_exception.config_error config 
-      "expect a string exteion like \".js\" here"
 
 let extract_gentype_config (map : json_map) cwd 
   : Bsb_config_types.gentype_config option = 
@@ -13003,7 +13012,7 @@ type t = {
 
 let get_name (x : t) oc = x.name oc
 let print_rule (oc : out_channel) 
-  ~description 
+  ?description 
   ?(restat : unit option)  
   ?dyndep 
   ~command   
@@ -13015,8 +13024,12 @@ let print_rule (oc : out_channel)
     );
   (if restat <>  None then   
      output_string oc "  restat = 1\n");
-
-  output_string oc "  description = " ; output_string oc description; output_string oc "\n"
+  begin match description with 
+    | None -> ()     
+    | Some description -> 
+      output_string oc "  description = " ; output_string oc description
+  end ;
+  output_string oc "\n"
 
 
 
@@ -13026,7 +13039,6 @@ let define
     ~command
     ?dyndep
     ?restat
-    ?(description = "\027[34mBuilding\027[39m \027[2m${out}\027[22m") (* blue, dim *)
     rule_name : t 
   =
 
@@ -13036,7 +13048,7 @@ let define
     name = fun oc ->
       if not self.used then
         begin
-          print_rule oc ~description  ?dyndep ?restat ~command rule_name;
+          print_rule oc  ?dyndep ?restat ~command rule_name;
           self.used <- true
         end ;
       rule_name
