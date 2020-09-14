@@ -70,3 +70,5 @@ let setup_env () =
   ; Switch.cut := 100 (* tweakable but not very useful *)
 #end  
 
+let () = 
+    at_exit (fun _ -> Format.pp_print_flush Format.err_formatter ())
