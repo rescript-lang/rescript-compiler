@@ -108,7 +108,7 @@ and from_json_single suffix (x : Ext_json_types.t) : spec =
             if s = Unknown_extension then 
               Bsb_exception.errorf ~loc "expect .js,.bs.js,.mjs or .cjs"
             else  s 
-          | Some v -> 
+          | Some _ -> 
             Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "expect a string field"
           | None -> suffix in   
         {format = supported_format format loc ; in_source ; suffix}        
@@ -195,7 +195,7 @@ type json_map = Ext_json_types.t Map_string.t
 let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
   match Map_string.find_opt map Bsb_build_schemas.suffix with 
   | None -> Js  
-  | Some (Str {str; loc} as config ) -> 
+  | Some (Str {str; loc}) -> 
     let s =  Ext_js_suffix.of_string str  in 
     if s = Unknown_extension then 
       Bsb_exception.errorf ~loc
