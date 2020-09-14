@@ -292,21 +292,21 @@ let lambda_as_module
       exit 77
     end  
   end else
-    Js_packages_info.iter package_info (fun {module_system; path = _path; suffix} -> 
+    Js_packages_info.iter package_info (fun {module_system; path; suffix} -> 
+        let output_chan chan  = 
+          Js_dump_program.dump_deps_program ~output_prefix
+            module_system 
+            lambda_output
+            chan in
         let basename =  
           Ext_namespace.change_ext_ns_suffix 
             (Filename.basename
                output_prefix) 
             (Ext_js_suffix.to_string  suffix) 
         in
-        let output_chan chan  = 
-          Js_dump_program.dump_deps_program ~output_prefix
-            module_system 
-            lambda_output
-            chan in
         let target_file = 
           (Lazy.force Ext_path.package_dir //
-           _path //
+           path //
            basename
            (* #913 only generate little-case js file *)
           ) in     
