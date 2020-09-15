@@ -77,14 +77,12 @@ module BundleConfig = struct
     mutable module_system: Js_packages_info.module_system;
     mutable filename: string option;
     mutable warn_flags: string;
-    mutable warn_error_flags: string;
   }
 
   let make () = {
     module_system=Js_packages_info.NodeJS;
     filename=None;
     warn_flags=Bsc_warnings.defaults_w;
-    warn_error_flags=Bsc_warnings.defaults_warn_error;
   }
 
 
@@ -178,11 +176,10 @@ module ErrorRet = struct
     fromLocErrors ~type_:"syntax_error" errors
 
   (* for raised errors caused by malformed warning / warning_error flags *)
-  let makeWarningFlagError ~(warn_flags: string) ~(warn_error_flags: string) (msg: string)  =
+  let makeWarningFlagError ~(warn_flags: string) (msg: string)  =
     Js.Unsafe.(obj [|
         "msg" , inject @@ Js.string msg;
         "warn_flags", inject @@ Js.string warn_flags;
-        "warn_error_flags", inject @@ Js.string warn_error_flags;
         "type" , inject @@ Js.string "warning_flag_error"
       |])
 
@@ -316,7 +313,7 @@ module ResDriver = struct
 end
 
 let rescript_parse ~filename src =
-  let (structure, _ ) = ResDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
+  let (structure, _ ) = ResDriver.parse_implementation ~forPrinter:false ~sourcefile:filename ~src
   in
   structure
 
@@ -342,7 +339,7 @@ module Compile = struct
         Super_location.super_warning_printer loc ppf w;
         let open LocWarnInfo in
         let fullMsg = flush_warning_buffer () in
-        let shortMsg = Super_warnings.message w in
+        let shortMsg = Warnings.message w in
         let info = {
           fullMsg;
           shortMsg;
@@ -410,11 +407,10 @@ module Compile = struct
 
 
   let implementation ~(config: BundleConfig.t) ~lang str  : Js.Unsafe.obj =
-    let {BundleConfig.module_system; warn_flags; warn_error_flags} = config in
+    let {BundleConfig.module_system; warn_flags} = config in
     try
       reset_compiler ();
       Warnings.parse_options false warn_flags;
-      Warnings.parse_options true warn_error_flags;
       let filename = get_filename ~lang config.filename in
       let modulename = "Playground" in
       let impl = match lang with
@@ -464,7 +460,7 @@ module Compile = struct
     | e ->
       match e with
       | Arg.Bad msg ->
-        ErrorRet.makeWarningFlagError ~warn_flags ~warn_error_flags msg
+        ErrorRet.makeWarningFlagError ~warn_flags msg
       | _ -> handle_err e;;
 
   let syntax_format ?(filename: string option) ~(from:Lang.t) ~(to_:Lang.t) (src: string) =
@@ -502,10 +498,10 @@ module Compile = struct
           Res_printer.printImplementation ~width:80 structure ~comments:[]
         | (Res, Reason) ->
           let (structure, _) =
-            ResDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
+            ResDriver.parse_implementation ~forPrinter:false ~sourcefile:filename ~src
           in
           let sanitized = structure
-                          |> Res_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
+                          |> Res_ast_conversion.normalizeReasonArityStructure ~forPrinter:false
                           |> Res_ast_conversion.structure
           in
           Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter (Converter404.copy_structure sanitized, []);
@@ -519,14 +515,14 @@ module Compile = struct
           Res_printer.printImplementation ~width:80 structure ~comments:[]
         | (Res, OCaml) ->
           let (structure, _) =
-            ResDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
+            ResDriver.parse_implementation ~forPrinter:false ~sourcefile:filename ~src
           in
           Pprintast.structure Format.str_formatter structure;
           Format.flush_str_formatter ()
         | (Res, Res) ->
           (* Basically pretty printing *)
           let (structure, comments) =
-            ResDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
+            ResDriver.parse_implementation ~forPrinter:false ~sourcefile:filename ~src
           in
           Res_printer.printImplementation ~width:80 structure ~comments
         | (OCaml, OCaml) -> src
@@ -605,9 +601,6 @@ module Export = struct
     let set_warn_flags value =
       config.warn_flags <- value; true
     in
-    let set_warn_error_flags value =
-      config.warn_error_flags <- value; true
-    in
     Js.Unsafe.(
       [|
         "setModuleSystem",
@@ -628,12 +621,6 @@ module Export = struct
           (fun _ value ->
              (Js.bool (set_warn_flags (Js.to_string value)))
           );
-        "setWarnErrorFlags",
-        inject @@
-        Js.wrap_meth_callback
-          (fun _ value ->
-             (Js.bool (set_warn_error_flags (Js.to_string value)))
-          );
         "list",
         inject @@
         Js.wrap_meth_callback
@@ -648,8 +635,6 @@ module Export = struct
                              );
                              "warn_flags",
                              inject @@ (Js.string config.warn_flags);
-                             "warn_error_flags",
-                             inject @@ (Js.string config.warn_error_flags);
                            |]))
           );
 
@@ -671,9 +656,6 @@ module Export = struct
     in
     let set_warn_flags value =
       config.warn_flags <- value; true
-    in
-    let set_warn_error_flags value =
-      config.warn_error_flags <- value; true
     in
     let convert_syntax ~(fromLang: string) ~(toLang: string) (src: string) =
       let open Lang in
@@ -722,12 +704,6 @@ module Export = struct
           (fun _ value ->
              (Js.bool (set_warn_flags (Js.to_string value)))
           );
-        "setWarnErrorFlags",
-        inject @@
-        Js.wrap_meth_callback
-          (fun _ value ->
-             (Js.bool (set_warn_error_flags (Js.to_string value)))
-          );
         "getConfig",
         inject @@
         Js.wrap_meth_callback
@@ -742,8 +718,6 @@ module Export = struct
                              );
                              "warn_flags",
                              inject @@ (Js.string config.warn_flags);
-                             "warn_error_flags",
-                             inject @@ (Js.string config.warn_error_flags);
                            |]))
           );
       |])
