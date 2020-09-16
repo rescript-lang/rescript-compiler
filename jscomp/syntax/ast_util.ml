@@ -82,7 +82,7 @@ let ocaml_obj_as_js_object
       and exposed object type, in some cases there are equivalent
 
       for public object type its [@bs.meth] it does not depend on itself
-      while for label argument it is [@bs.this] which depends internal object
+      while for label argument it is [@this] which depends internal object
   *)
   let (internal_label_attr_types : Parsetree.object_field list), 
       (public_label_attr_types : Parsetree.object_field list) = 

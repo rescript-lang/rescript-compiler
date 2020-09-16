@@ -126,7 +126,7 @@ let pp_error fmt err =
     "Conflicting FFI attributes found: " ^ str
   | Bs_this_simple_pattern
     ->
-    "@bs.this expect its pattern variable to be simple form")
+    "@this expect its pattern variable to be simple form")
 
 type exn +=  Error of Location.t * error
 

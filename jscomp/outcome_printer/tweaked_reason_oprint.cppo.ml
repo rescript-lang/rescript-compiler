@@ -323,7 +323,7 @@ and print_simple_out_type ppf =
           Oide_ident "Js_OO", "Callback" ), _),
       [res]
     ) ->
-    fprintf ppf "@[<0>(%a)@ [@bs.this]@]" (print_out_type_1 ~uncurried:false) res
+    fprintf ppf "@[<0>(%a)@ [@this]@]" (print_out_type_1 ~uncurried:false) res
 
   (* also BuckleScript-specific. Turns Js.t({. foo: bar}) into {. "foo": bar} *)
   | Otyp_constr (
