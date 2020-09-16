@@ -226,7 +226,7 @@ let has_bs_optional  (attrs : t) : bool =
   Ext_list.exists attrs (fun
       (({txt ; }, _ ) as attr)  ->
       match  txt with
-      | "bs.optional"
+      | "bs.optional" | "optional"
         ->
         Bs_ast_invariant.mark_used_bs_attribute attr ;
         true

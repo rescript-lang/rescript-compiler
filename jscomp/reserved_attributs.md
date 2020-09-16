@@ -17,7 +17,7 @@ send
 new
 set_index
 
-optional
+optional -- done
 uncurry -- done
     note [@uncurry 3] is okay but rarely used
     maybe we should remove it
