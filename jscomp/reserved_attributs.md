@@ -9,11 +9,11 @@ set
 this
 meth
 open -- not decided
-inline -- 
+inline -- done
     this would conflict exist one or not?
     invalid payload in bs.inline
     seems that we need loose the check
-deriving
+deriving -- done
 string
 int
 ignore

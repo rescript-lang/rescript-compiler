@@ -128,7 +128,7 @@ let process_bs (attrs : t) =
       | _ , _ ->
         st, attr::acc
     ) 
-
+(* ATT: Special cases for built-in attributes handling *)
 let external_needs_to_be_encoded (attrs : t)=
   Ext_list.exists_fst attrs 
     (fun {txt} ->
@@ -153,7 +153,7 @@ let process_derive_type (attrs : t) : derive_attr * t =
   Ext_list.fold_left attrs ({bs_deriving = None }, []) 
     (fun (st, acc) ({txt ; loc}, payload  as attr)  ->
        match   txt  with
-       |  "bs.deriving"
+       |  "bs.deriving" | "deriving"
          ->
          begin match st.bs_deriving with 
            |  None -> 

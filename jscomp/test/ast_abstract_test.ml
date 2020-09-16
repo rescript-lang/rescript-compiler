@@ -25,8 +25,8 @@ type x =
   [`a 
   |`b
   |`c]
-[@@bs.deriving {jsConverter = newType}]    
-
+  
+[@@deriving {jsConverter = newType}]    
 
 
 let idx v =   eq __LOC__ (xFromJs (xToJs v)) v 

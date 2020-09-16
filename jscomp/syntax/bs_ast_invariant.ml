@@ -23,6 +23,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(** Warning unused bs attributes
+  Note if we warn `deriving` too, 
+  it may fail third party ppxes
+*)
 let is_bs_attribute txt = 
   let len = String.length txt  in
   len >= 2 &&
