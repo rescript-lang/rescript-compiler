@@ -169,7 +169,7 @@ let process_derive_type (attrs : t) : derive_attr * t =
 
 
 
-(* duplicated [bs.uncurry] [bs.string] not allowed,
+(* duplicated [bs.uncurry] @string not allowed,
   it is worse in bs.uncurry since it will introduce
   inconsistency in arity
  *)  
@@ -184,9 +184,9 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
     else Bs_syntaxerr.err loc Conflict_attributes  in 
   Ext_list.iter attrs (fun (({txt ; loc=_}, (payload : _ ) ) as attr)  ->
       match  txt with
-      | "bs.string"
+      | "bs.string" | "string"
         -> assign `String attr
-      | "bs.int"
+      | "bs.int" | "int"
         -> assign `Int attr
       | "bs.ignore" | "ignore"
         -> assign `Ignore attr

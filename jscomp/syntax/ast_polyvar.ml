@@ -114,7 +114,7 @@ let map_row_fields_into_strings ptyp_loc
     let descr = if !has_bs_as then Some result else None in    
     match has_payload, descr with 
     | false, None ->    
-      Location.prerr_warning ptyp_loc (Bs_ffi_warning "bs.string is redundant here, you can safely remove it");
+      Location.prerr_warning ptyp_loc (Bs_ffi_warning "@string is redundant here, you can safely remove it");
       Nothing         
     | false , Some descr -> 
       External_arg_spec.Poly_var_string {descr } 

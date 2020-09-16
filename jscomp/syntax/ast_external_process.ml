@@ -118,7 +118,7 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
          |  Js_literal_str s ->
            Arg_cst (External_arg_spec.cst_obj_literal  s)
        end
-   else (* ([`a|`b] [@bs.string]) *)
+   else (* ([`a|`b] [@string]) *)
      spec_of_ptyp nolabel ptyp   
   )
 
@@ -142,7 +142,7 @@ let refine_obj_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
        Arg_cst (External_arg_spec.cst_string i)
     | Some (Js_literal_str s ) ->
        Arg_cst (External_arg_spec.cst_obj_literal s)
-  else (* ([`a|`b] [@bs.string]) *)
+  else (* ([`a|`b] [@string]) *)
      spec_of_ptyp nolabel ptyp      
 
 (** Given the type of argument, process its [bs.] attribute and new type,
@@ -150,7 +150,7 @@ let refine_obj_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
     and result type in [@@bs.obj]
     They are not the same though, for example
     {[
-      external f : hi:([ `hi | `lo ] [@bs.string]) -> unit -> _ = "" [@@bs.obj]
+      external f : hi:([ `hi | `lo ] [@string]) -> unit -> _ = "" [@@bs.obj]
     ]}
     The result type would be [ hi:string ]
 *)
@@ -161,7 +161,7 @@ let get_opt_arg_type
   if ptyp.ptyp_desc = Ptyp_any then (* (_[@as ])*)
     (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
-  (* ([`a|`b] [@bs.string]) *)    
+  (* ([`a|`b] [@@string]) *)    
   spec_of_ptyp nolabel ptyp
 
 
@@ -924,10 +924,10 @@ let handle_attributes
                let arg_type = get_opt_arg_type ~nolabel:false ty in
                begin match arg_type with
                  | Poly_var _ ->
-                   (* ?x:([`x of int ] [@bs.string]) does not make sense *)
+                   (* ?x:([`x of int ] [@string]) does not make sense *)
                    Location.raise_errorf
                      ~loc
-                     "[@@bs.string] does not work with optional when it has arities in label %s" s
+                     "@string does not work with optional when it has arities in label %s" s
                  | _ ->
                    Arg_optional, arg_type,
                    param_type :: arg_types end

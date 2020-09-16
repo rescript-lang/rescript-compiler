@@ -78,7 +78,7 @@ let append_list  x xs =
     unbox it in the first place.
 
     Note when optional value is not passed, the unboxed value would be 
-    [undefined], with the combination of `[@bs.int]` it would be still be 
+    [undefined], with the combination of `[@int]` it would be still be 
     [undefined], this by default is still correct..  
     {[
       (function () {

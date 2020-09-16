@@ -19,7 +19,7 @@
         `short |
         `long |
         `numeric |
-        `two_digit [@bs.as "2-digit"]] [@bs.string]) ->
+        `two_digit [@as "2-digit"]] [@string]) ->
 
     ?day:([`numeric | `two_digit [@bs.as "2-digit"]] [@bs.string]) ->
     ?hour:([`numeric | `two_digit [@bs.as "2-digit"]] [@bs.string]) ->

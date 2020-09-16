@@ -46,19 +46,19 @@ type attr =
   | Poly_var_string of { 
     descr :
     (string * string) list
-   (* introduced by attributes bs.string
+   (* introduced by attributes @string
     and @as 
    *)
   } 
   | Poly_var of {
     descr : 
     (string * string) list option 
-      (* introduced by attributes bs.string
+      (* introduced by attributes @string
          and @as 
       *)
   } 
    (* `a does not have any value*)
-  | Int of (string * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Int of (string * int ) list (* ([`a | `b ] [@int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
     (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
