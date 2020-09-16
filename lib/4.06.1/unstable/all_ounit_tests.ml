@@ -1326,7 +1326,10 @@ val find_and_split :
   ('a -> 'b -> bool) ->
   'b -> 'a split
 
-val exists : ('a -> bool) -> 'a array -> bool 
+val exists : 
+  'a array -> 
+  ('a -> bool) ->  
+  bool 
 
 val is_empty : 'a array -> bool 
 
@@ -1573,7 +1576,7 @@ let find_and_split arr cmp v : _ split =
 
 (** TODO: available since 4.03, use {!Array.exists} *)
 
-let exists p a =
+let exists a p =
   let n = Array.length a in
   let rec loop i =
     if i = n then false
