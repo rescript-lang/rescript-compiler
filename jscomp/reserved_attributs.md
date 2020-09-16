@@ -18,7 +18,9 @@ new
 set_index
 
 optional
-uncurry
+uncurry -- done
+    note [@uncurry 3] is okay but rarely used
+    maybe we should remove it
 unwrap -- done
 string -- done
 int -- done
