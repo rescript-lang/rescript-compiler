@@ -24,7 +24,7 @@
 
 open Ast_helper
 
-(* Handling `fun [@bs.this]` used in `object [@bs] end` *)
+(* Handling `fun [@this]` used in `object [@bs] end` *)
 let to_method_callback  loc (self : Bs_ast_mapper.mapper) 
   label pat body : Parsetree.expression_desc
   = 

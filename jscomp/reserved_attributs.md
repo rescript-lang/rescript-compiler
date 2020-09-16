@@ -17,16 +17,12 @@ as
 optional
 get_index
 return
-
 obj
-
 val
 module
 scope
-
 variadic
 send
-
 new
 set_index
 

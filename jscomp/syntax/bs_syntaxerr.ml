@@ -87,7 +87,7 @@ let pp_error fmt err =
     ->
      "unsupported predicates"
   | Conflict_bs_bs_this_bs_meth ->
-     "[@bs.this], [@bs], [@bs.meth] can not be applied at the same time"
+     "@this, @bs, @bs.meth can not be applied at the same time"
   | Duplicated_bs_deriving
     -> "duplicate bs.deriving attribute"
   | Conflict_attributes
@@ -126,7 +126,7 @@ let pp_error fmt err =
     "Conflicting FFI attributes found: " ^ str
   | Bs_this_simple_pattern
     ->
-    "[@bs.this] expect its pattern variable to be simple form")
+    "@bs.this expect its pattern variable to be simple form")
 
 type exn +=  Error of Location.t * error
 
