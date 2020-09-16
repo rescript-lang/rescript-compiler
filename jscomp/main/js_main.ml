@@ -538,7 +538,7 @@ let _ : unit =
     exit 2
   | x -> 
     begin
-#if undefined BS_RELEASE_BUILD then      
+#if false (* undefined BS_RELEASE_BUILD *) then      
       Ext_obj.bt ();
 #end
       Location.report_exception ppf x;
