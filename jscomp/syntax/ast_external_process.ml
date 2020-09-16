@@ -251,6 +251,7 @@ let return_wrapper loc (txt : string) : External_ffi_types.return_wrapper =
   | _ ->
     Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
 
+exception Not_handled_external_attribute
 
 (* The processed attributes will be dropped *)
 let parse_external_attributes
@@ -259,8 +260,8 @@ let parse_external_attributes
     (prim_name_or_pval_prim: bundle_source )
     (prim_attributes : Ast_attributes.t) : Ast_attributes.t * external_desc =
 
-  (* shared by `[@@bs.val]`, `[@@bs.send]`,
-     `[@@bs.set]`, `[@@bs.get]` , `[@@bs.new]`
+  (* shared by `[@@val]`, `[@@send]`,
+     `[@@set]`, `[@@get]` , `[@@new]`
      `[@@bs.send.pipe]` does not use it
   *)
   let name_from_payload_or_prim ~loc (payload : Parsetree.payload) : name_source =
@@ -286,8 +287,8 @@ let parse_external_attributes
             in 
             attr::attrs, 
             {st with external_module_name = Some { bundle; module_bind_name = Phint_nothing}}          
-        else if Ext_string.starts_with txt "bs." then
-           attrs, begin match txt with
+        else         
+           let action () = begin match txt with
             | "bs.val" ->
               if no_arguments then
                 {st with val_name = name_from_payload_or_prim ~loc payload}
@@ -329,9 +330,10 @@ let parse_external_attributes
             | "bs.send.pipe"
               ->
               { st with val_send_pipe = Some (Ast_payload.as_core_type loc payload)}
-            | "bs.set" ->
+            | "bs.set" | "set" ->
               {st with set_name = name_from_payload_or_prim ~loc  payload}
-            | "bs.get" -> {st with get_name = name_from_payload_or_prim ~loc payload}
+            | "bs.get" | "get" ->
+             {st with get_name = name_from_payload_or_prim ~loc payload}
 
             | "bs.new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
             | "bs.set_index" -> 
@@ -352,9 +354,10 @@ let parse_external_attributes
                 | _ ->
                   Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
               end
-            | _ -> (Location.prerr_warning loc (Bs_unused_attribute txt); st)
-          end
-        else attr :: attrs, st
+            | _ -> raise_notrace Not_handled_external_attribute
+          end in 
+          try attrs, action () with 
+          | Not_handled_external_attribute -> attr::attrs, st
     )
     
 
@@ -797,9 +800,9 @@ let external_desc_of_non_obj
     ->
     if arg_type_specs_length = 2 then
       Js_set { js_set_scopes = scopes ; js_set_name = name}
-    else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
+    else  Location.raise_errorf ~loc "Ill defined attribute [@@set] (two args required)"
   | {set_name = #bundle_source; _}
-    -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.set]"
+    -> Location.raise_errorf ~loc "conflict attributes found with [@@set]"
   | {get_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
 
      val_name = `Nm_na  ;

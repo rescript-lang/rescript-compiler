@@ -33,7 +33,7 @@ type ('a,'b) st =
 let process_method_attributes_rev (attrs : t) =
   Ext_list.fold_left attrs ({get = None ; set = None}, []) (fun (st,acc) (({txt ; loc}, payload) as attr ) ->
       match txt  with
-      | "bs.get" (* [@@bs.get{null; undefined}]*)
+      | "bs.get" | "get" (* @bs.get{null; undefined}*)
         ->
         let result =
           Ext_list.fold_left (Ast_payload.ident_or_record_as_config loc payload) (false, false)
@@ -63,7 +63,7 @@ let process_method_attributes_rev (attrs : t) =
 
         ({st with get = Some result}, acc  )
 
-      | "bs.set"
+      | "bs.set" | "set"
         ->
         let result =
           Ext_list.fold_left (Ast_payload.ident_or_record_as_config loc payload) `Get 
@@ -78,7 +78,7 @@ let process_method_attributes_rev (attrs : t) =
                else Bs_syntaxerr.err loc Unsupported_predicates
             )  in
         (* properties -- void
-              [@@bs.set{only}]
+              [@@set{only}]
         *)
         {st with set = Some result }, acc
       | _ ->
