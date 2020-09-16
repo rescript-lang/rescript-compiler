@@ -431,10 +431,6 @@ let rec
   | [] -> []  
   | item::rest -> 
     match item.pstr_desc with 
-    | Pstr_extension (({txt = ("bs.debugger.chrome" | "debugger.chrome") ;loc}, _),_)
-      -> 
-      Location.prerr_warning loc (Preprocessor "this extension can be safely removed");
-      structure_mapper self rest
     | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs)
       ->
       Ast_exp_handle_external.handle_raw_structure loc payload :: structure_mapper self rest
