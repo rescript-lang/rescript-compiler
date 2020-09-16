@@ -6,7 +6,6 @@ to detect unused attributes in the future
 
 get
 set
-
 string
 int
 ignore
@@ -25,7 +24,7 @@ send
 new
 set_index
 
-meth
+meth -- done
 this -- done
 send.pipe -- deprecated, no short-cut
 splice -- deprecated, use variadic

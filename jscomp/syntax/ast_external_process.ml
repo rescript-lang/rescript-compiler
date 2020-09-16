@@ -503,7 +503,7 @@ let process_obj
                    (Otag ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
                  | Arg_cst _
                    ->
-                   Location.raise_errorf ~loc "bs.as is not supported with optional yet"
+                   Location.raise_errorf ~loc "@as is not supported with optional yet"
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc
                      "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
