@@ -650,8 +650,7 @@ build test/test_js_ffi.cmi test/test_js_ffi.cmj : cc test/test_js_ffi.ml | $stdl
 build test/test_let.cmi test/test_let.cmj : cc test/test_let.ml | $stdlib
 build test/test_list.cmi test/test_list.cmj : cc test/test_list.ml | $stdlib
 build test/test_literal.cmi test/test_literal.cmj : cc test/test_literal.ml | $stdlib
-build test/test_literals.cmj : cc_cmi test/test_literals.ml | test/test_literals.cmi $stdlib
-build test/test_literals.cmi : cc test/test_literals.mli | $stdlib
+build test/test_literals.cmi test/test_literals.cmj : cc test/test_literals.ml | $stdlib
 build test/test_match_exception.cmi test/test_match_exception.cmj : cc test/test_match_exception.ml | $stdlib
 build test/test_mutliple.cmi test/test_mutliple.cmj : cc test/test_mutliple.ml | $stdlib
 build test/test_nat64.cmi test/test_nat64.cmj : cc test/test_nat64.ml | $stdlib

@@ -134,24 +134,16 @@ let external_needs_to_be_encoded (attrs : t)=
     (fun {txt} ->
        Ext_string.starts_with txt "bs." || txt = Literals.gentype_import) 
 
-let has_inline_in_stru (attrs : t) : bool =
-  Ext_list.exists attrs (fun 
-    (({txt;},_) as attr) -> 
-    if txt = "bs.inline" then
-      (Bs_ast_invariant.mark_used_bs_attribute attr;
-      true)
-    else false)       
+let is_inline : attr -> bool =        
+  (fun 
+    (({txt;},_)) -> 
+     txt = "bs.inline" || txt = "inline" 
+  )  
+  
 
-let has_inline_payload_in_sig (attrs : t)  = 
-  Ext_list.find_first attrs 
-    (fun (({txt},_) as attr) ->
-       if txt = "bs.inline" then
-       begin
-        Bs_ast_invariant.mark_used_bs_attribute attr;
-        true
-       end 
-       else false
-    ) 
+let has_inline_payload (attrs : t)  = 
+  Ext_list.find_first attrs is_inline
+    
 
 type derive_attr = {
   bs_deriving : Ast_payload.action list option

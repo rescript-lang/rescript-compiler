@@ -10827,8 +10827,8 @@ let fn_method = "fn_method"
 let fn_mk = "fn_mk"
 (*let js_fn_runmethod = "js_fn_runmethod"*)
 
-let bs_deriving = "bs.deriving"
-let bs_deriving_dot = "bs.deriving."
+
+
 
 
 (** nodejs *)

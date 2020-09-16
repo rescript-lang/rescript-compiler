@@ -50,7 +50,7 @@ let  isAbstract (xs :Ast_payload.action list) =
       match txt with 
       | "abstract" -> 
         Location.raise_errorf ~loc 
-          "bs.deriving abstract does not work with any other deriving"
+          "deriving abstract does not work with any other deriving"
       | _ -> ()
     ) ;
     Not_abstract

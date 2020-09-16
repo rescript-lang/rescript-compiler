@@ -28,7 +28,7 @@ open Ast_helper
 
   
 let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
-    (({txt ; loc} as lid , payload) : Parsetree.extension) = 
+    (({txt ; loc}  , payload) : Parsetree.extension) = 
   begin match txt with
     | "bs.raw" | "raw" -> 
        Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload      
@@ -141,10 +141,6 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
         | _ -> Location.raise_errorf ~loc "Expect an expression here"
       end
     | _ ->
-      match payload with
-      | PTyp typ when Ext_string.starts_with txt Literals.bs_deriving_dot ->
-        self.expr self (Ast_derive.gen_expression lid typ)
-      | _ ->  
         e (* For an unknown extension, we don't really need to process further*)
         (* Exp.extension ~loc ~attrs:e.pexp_attributes (
             self.extension self extension) *)
