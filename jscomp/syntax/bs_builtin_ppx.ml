@@ -245,7 +245,7 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
           (match 
            Ast_attributes.has_inline_payload_in_sig
            pval_attributes with 
-         | Some ({loc},PStr [{pstr_desc = Pstr_eval ({pexp_desc },_)}]) ->
+         | Some (_,PStr [{pstr_desc = Pstr_eval ({pexp_desc },_)}]) ->
            begin match pexp_desc with
              | Pexp_constant (
                Pconst_string
@@ -297,12 +297,11 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
                        pval_attributes = []
                      }}
               | _ -> 
-                Location.raise_errorf ~loc "invalid payload in bs.inline"
+                default_mapper.signature_item self sigi
            end 
-         | Some ({loc}, _) ->                  
-           Location.raise_errorf ~loc "invalid payload in bs.inline"
+         | Some  _            
          | None ->
-          default_mapper.signature_item self sigi
+         default_mapper.signature_item self sigi
           )
       | _ -> default_mapper.signature_item self sigi
 
@@ -328,65 +327,63 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
     let pvb_expr = self.expr self pvb_expr in 
     let pvb_attributes = self.attributes self pvb_attributes in 
     let has_inline_property = Ast_attributes.has_inline_in_stru pvb_attributes in
-    if has_inline_property then
-      begin match pvb_expr.pexp_desc with 
-        | Pexp_constant(
-            Pconst_string
-              (s,dec))
-          ->      
-          Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
-          {str with pstr_desc = Pstr_primitive  {
-               pval_name = pval_name ;
-               pval_type = Ast_literal.type_string (); 
-               pval_loc = pvb_loc;
-               pval_attributes = [];
-               pval_prim = External_ffi_types.inline_string_primitive s dec
-             } } 
-        | Pexp_constant(Pconst_integer (s,None))
-          -> 
-          let s = Int32.of_string s in  
-          Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
-          {str with pstr_desc = Pstr_primitive  {
-               pval_name = pval_name ;
-               pval_type = Ast_literal.type_int (); 
-               pval_loc = pvb_loc;
-               pval_attributes = [];
-               pval_prim = External_ffi_types.inline_int_primitive s
-             } }
-        | Pexp_constant(Pconst_integer (s, Some 'L'))
-          -> 
-          let s = Int64.of_string s in  
-          Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
-          {str with pstr_desc = Pstr_primitive  {
-               pval_name = pval_name ;
-               pval_type = Ast_literal.type_int64; 
-               pval_loc = pvb_loc;
-               pval_attributes = [];
-               pval_prim = External_ffi_types.inline_int64_primitive s
-             } }             
-        | Pexp_constant(Pconst_float (s, None))
-          ->
-          Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
-          {str with pstr_desc = Pstr_primitive  {
-               pval_name = pval_name ;
-               pval_type = Ast_literal.type_float; 
-               pval_loc = pvb_loc;
-               pval_attributes = [];
-               pval_prim = External_ffi_types.inline_float_primitive s
-             } }                 
-        | Pexp_construct ({txt = Lident ("true" | "false" as txt) },None) -> 
-          Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
-          {str with pstr_desc = Pstr_primitive  {
-               pval_name = pval_name ;
-               pval_type = Ast_literal.type_bool (); 
-               pval_loc = pvb_loc;
-               pval_attributes = [];
-               pval_prim = External_ffi_types.inline_bool_primitive (txt = "true")
-             } }
-        | _ -> Location.raise_errorf ~loc:pvb_loc "invalid payload in bs.inline"
-      end 
-    else      
-      { str with pstr_desc =  Pstr_value(Nonrecursive, [{pvb_pat ; pvb_expr; pvb_attributes; pvb_loc}])}
+    begin match has_inline_property, pvb_expr.pexp_desc with 
+      | true, Pexp_constant(
+          Pconst_string
+            (s,dec))
+        ->      
+        Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
+        {str with pstr_desc = Pstr_primitive  {
+             pval_name = pval_name ;
+             pval_type = Ast_literal.type_string (); 
+             pval_loc = pvb_loc;
+             pval_attributes = [];
+             pval_prim = External_ffi_types.inline_string_primitive s dec
+           } } 
+      | true, Pexp_constant(Pconst_integer (s,None))
+        -> 
+        let s = Int32.of_string s in  
+        Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
+        {str with pstr_desc = Pstr_primitive  {
+             pval_name = pval_name ;
+             pval_type = Ast_literal.type_int (); 
+             pval_loc = pvb_loc;
+             pval_attributes = [];
+             pval_prim = External_ffi_types.inline_int_primitive s
+           } }
+      | true, Pexp_constant(Pconst_integer (s, Some 'L'))
+        -> 
+        let s = Int64.of_string s in  
+        Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
+        {str with pstr_desc = Pstr_primitive  {
+             pval_name = pval_name ;
+             pval_type = Ast_literal.type_int64; 
+             pval_loc = pvb_loc;
+             pval_attributes = [];
+             pval_prim = External_ffi_types.inline_int64_primitive s
+           } }             
+      | true, Pexp_constant(Pconst_float (s, None))
+        ->
+        Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
+        {str with pstr_desc = Pstr_primitive  {
+             pval_name = pval_name ;
+             pval_type = Ast_literal.type_float; 
+             pval_loc = pvb_loc;
+             pval_attributes = [];
+             pval_prim = External_ffi_types.inline_float_primitive s
+           } }                 
+      | true, Pexp_construct ({txt = Lident ("true" | "false" as txt) },None) -> 
+        Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
+        {str with pstr_desc = Pstr_primitive  {
+             pval_name = pval_name ;
+             pval_type = Ast_literal.type_bool (); 
+             pval_loc = pvb_loc;
+             pval_attributes = [];
+             pval_prim = External_ffi_types.inline_bool_primitive (txt = "true")
+           } }
+      | _ ->
+        { str with pstr_desc =  Pstr_value(Nonrecursive, [{pvb_pat ; pvb_expr; pvb_attributes; pvb_loc}])}
+    end
   | Pstr_attribute({txt = "bs.config" },_)  -> str      
   | _ -> default_mapper.structure_item self str
 
