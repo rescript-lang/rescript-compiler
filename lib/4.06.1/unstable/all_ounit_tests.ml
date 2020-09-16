@@ -16266,7 +16266,7 @@ let rec valid_module_name_aux name off len =
   else 
     let c = String.unsafe_get name off in 
     match c with 
-    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> 
+    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' | '.' | '[' | ']' -> 
       valid_module_name_aux name (off + 1) len 
     | _ -> false
 
@@ -16287,6 +16287,9 @@ let valid_module_name name len =
       else Invalid  
     | 'a' .. 'z' 
     | '0' .. '9'
+    | '_'
+    | '[' 
+    | ']'
       -> 
       if valid_module_name_aux name 1 len then
         Lower
@@ -16815,7 +16818,7 @@ let suites =
       Ext_filename.module_name "a/hello.ml" =~ "Hello";
       Ext_filename.as_module ~basename:"a.ml" =~ Some {module_name = "A"; case = false};
       Ext_filename.as_module ~basename:"Aa.ml" =~ Some {module_name = "Aa"; case = true};
-      Ext_filename.as_module ~basename:"_Aa.ml" =~ None;
+      (* Ext_filename.as_module ~basename:"_Aa.ml" =~ None; *)
       Ext_filename.as_module ~basename:"A_a" =~ Some {module_name = "A_a"; case = true};
       Ext_filename.as_module ~basename:"" =~ None;
       Ext_filename.as_module ~basename:"a/hello.ml" =~ 

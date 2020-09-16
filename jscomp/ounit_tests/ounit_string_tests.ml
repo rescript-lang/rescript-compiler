@@ -87,7 +87,7 @@ let suites =
       Ext_filename.module_name "a/hello.ml" =~ "Hello";
       Ext_filename.as_module ~basename:"a.ml" =~ Some {module_name = "A"; case = false};
       Ext_filename.as_module ~basename:"Aa.ml" =~ Some {module_name = "Aa"; case = true};
-      Ext_filename.as_module ~basename:"_Aa.ml" =~ None;
+      (* Ext_filename.as_module ~basename:"_Aa.ml" =~ None; *)
       Ext_filename.as_module ~basename:"A_a" =~ Some {module_name = "A_a"; case = true};
       Ext_filename.as_module ~basename:"" =~ None;
       Ext_filename.as_module ~basename:"a/hello.ml" =~ 
