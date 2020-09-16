@@ -6,9 +6,6 @@ to detect unused attributes in the future
 
 get
 set
-string
-int
-ignore
 unwrap
 uncurry
 
@@ -23,6 +20,11 @@ variadic
 send
 new
 set_index
+
+string
+int
+
+ignore -- done
 as  -- done
 meth -- done
 this -- done

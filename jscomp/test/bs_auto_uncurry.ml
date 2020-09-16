@@ -39,7 +39,7 @@ external map2 :
 
 
 external ff : 
-    int -> (int [@bs.ignore]) -> (int -> int -> int [@bs.uncurry]) -> int 
+    int -> (int [@ignore]) -> (int -> int -> int [@bs.uncurry]) -> int 
     = "ff" [@@bs.val]
 
 external ff1 : 

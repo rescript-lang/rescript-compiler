@@ -188,7 +188,7 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
         -> assign `String attr
       | "bs.int"
         -> assign `Int attr
-      | "bs.ignore"
+      | "bs.ignore" | "ignore"
         -> assign `Ignore attr
       | "bs.unwrap"
         -> assign `Unwrap attr
