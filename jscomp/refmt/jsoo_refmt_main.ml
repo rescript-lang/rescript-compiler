@@ -242,7 +242,7 @@ let reason_parse ~filename str =
   |> maybe_add_newline
   |> lexbuf_from_string ~filename
   |> Refmt_api.Reason_toolchain.RE.implementation
-  |> Converter.copy_structure;;
+  |> Converter.copy_structure
 
 let ocaml_parse ~filename str =
   lexbuf_from_string ~filename str |> Parse.implementation
@@ -271,6 +271,48 @@ module ResDriver = struct
       ~endPos
       ~msg;
     Format.flush_str_formatter ()
+
+  module ReasonBinary = struct
+    (* copied from res_driver_reason_binary.ml bc it was not exposed in the mli *)
+    let isReasonDocComment (comment: Res_comment.t) =
+      let content = Res_comment.txt comment in
+      let len = String.length content in
+      if len = 0 then true
+      else if len >= 2 && (String.unsafe_get content 0 = '*' && String.unsafe_get content 1 = '*') then false
+      else if len >= 1 && (String.unsafe_get content 0 = '*') then true
+      else false
+
+    (* Originally taken and adapted from res_driver_reason_binary.ml to decouple from file access *)
+    let extractConcreteSyntax ~(filename:string) (src:string) =
+      let commentData = ref [] in
+      let stringData = ref [] in
+      let scanner = Res_scanner.make (Bytes.of_string src) ~filename in
+
+      let rec next prevEndPos scanner =
+        let (startPos, endPos, token) = Res_scanner.scan scanner in
+        match token with
+        | Eof -> ()
+        | Comment c ->
+          Res_comment.setPrevTokEndPos c prevEndPos;
+          commentData := c::(!commentData);
+          next endPos scanner
+        | String _ ->
+          let loc = {Location.loc_start = startPos; loc_end = endPos; loc_ghost = false} in
+          let len = endPos.pos_cnum - startPos.pos_cnum in
+          let txt = (String.sub [@doesNotRaise]) src startPos.pos_cnum len in
+          stringData := (txt, loc)::(!stringData);
+          next endPos scanner
+        | _ ->
+          next endPos scanner
+      in
+      next Lexing.dummy_pos scanner;
+      let comments =
+        !commentData
+        |> List.filter (fun c -> not (isReasonDocComment c))
+        |> List.rev
+      in
+      (comments, !stringData)
+  end
 
   let parse_implementation ~sourcefile ~forPrinter ~src =
     Location.input_name := sourcefile;
@@ -485,26 +527,46 @@ module Compile = struct
           |> Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter;
           Format.flush_str_formatter ()
         | (Reason, Res) ->
+          let (comments, stringData) = ResDriver.ReasonBinary.extractConcreteSyntax ~filename src in
           let ast =
             src
             |> lexbuf_from_string ~filename
             |> Refmt_api.Reason_toolchain.RE.implementation
+          in
+          let structure =
+            Refmt_api.Reason_syntax_util.(apply_mapper_to_structure ast remove_stylistic_attrs_mapper)
             |> Converter.copy_structure
+            |> Res_ast_conversion.replaceStringLiteralStructure stringData
+            |> Res_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
+            |> Res_ast_conversion.structure
           in
-          let structure = ast
-                          |> Res_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
-                          |> Res_ast_conversion.structure
-          in
-          Res_printer.printImplementation ~width:80 structure ~comments:[]
+          Res_printer.printImplementation ~width:80 structure ~comments
         | (Res, Reason) ->
+          let (comments, stringData) = ResDriver.ReasonBinary.extractConcreteSyntax ~filename src in
           let (structure, _) =
             ResDriver.parse_implementation ~forPrinter:false ~sourcefile:filename ~src
           in
           let sanitized = structure
+                          |> Res_ast_conversion.replaceStringLiteralStructure stringData
                           |> Res_ast_conversion.normalizeReasonArityStructure ~forPrinter:false
                           |> Res_ast_conversion.structure
           in
-          Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter (Converter404.copy_structure sanitized, []);
+          let reasonComments = comments|> List.map (fun comment -> 
+              let open Refmt_api.Reason_comment in
+              let text = Res_comment.txt comment in
+              let category =
+                if Res_comment.isSingleLineComment comment then
+                  SingleLine
+                else
+                  Regular
+              in
+              {
+                location = Res_comment.loc comment;
+                category;
+                text;
+              }
+            ) in
+          Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter (Converter404.copy_structure sanitized, reasonComments);
           Format.flush_str_formatter ()
         | (OCaml, Res) ->
           let structure =
