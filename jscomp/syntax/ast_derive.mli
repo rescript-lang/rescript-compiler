@@ -52,12 +52,6 @@ val gen_signature:
   Ast_signature.t
 
 
-val gen_expression : 
-  string Asttypes.loc -> 
-  Parsetree.core_type -> 
-  Parsetree.expression
-
-
 
 val gen_structure_signature :  
   Location.t -> 

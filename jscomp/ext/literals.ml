@@ -62,7 +62,7 @@ let fn_mk = "fn_mk"
 (*let js_fn_runmethod = "js_fn_runmethod"*)
 
 
-let bs_deriving_dot = "bs.deriving."
+
 
 
 (** nodejs *)
