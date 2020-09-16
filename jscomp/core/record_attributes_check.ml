@@ -26,7 +26,7 @@ type label = Types.label_description
 
 let find_name (attr : Parsetree.attribute) =
   match attr with 
-  | {txt = "bs.as"}, PStr 
+  | {txt = "bs.as" | "as"}, PStr 
       [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_constant (Pconst_string(s,_))},_ )}] -> 
     Some s 
   | _ -> None
@@ -35,7 +35,7 @@ let find_name (attr : Parsetree.attribute) =
 let find_name_with_loc (attr : Parsetree.attribute) : 
   string Asttypes.loc option =
   match attr with 
-  | {txt = "bs.as";loc}, PStr 
+  | {txt = "bs.as" | "as";loc}, PStr 
       [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_constant (Pconst_string(s,_))},_ )}] -> 
     Some {txt = s; loc} 
   | _ -> None
@@ -79,7 +79,7 @@ let rec check_duplicated_labels_aux
           | Some ({txt = s;} as l) -> 
             if Set_string.mem coll s  
               (*use coll to make check a bit looser
-                allow cases like [ x : int [@bs.as "x"]]
+                allow cases like [ x : int [@as "x"]]
                *) then  
               Some l
             else 

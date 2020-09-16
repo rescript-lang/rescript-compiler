@@ -11,7 +11,7 @@ int
 ignore
 unwrap
 uncurry
-as
+
 optional
 get_index
 return
@@ -23,7 +23,7 @@ variadic
 send
 new
 set_index
-
+as  -- done
 meth -- done
 this -- done
 send.pipe -- deprecated, no short-cut

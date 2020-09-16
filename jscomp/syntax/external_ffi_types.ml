@@ -179,7 +179,7 @@ let valid_global_name ?loc txt =
 
 (*
   We loose such check (see #2583),
-  it also helps with the implementation deriving abstract [@bs.as]
+  it also helps with the implementation deriving abstract [@as]
 *)
 
 let valid_method_name ?loc:_  _txt  =

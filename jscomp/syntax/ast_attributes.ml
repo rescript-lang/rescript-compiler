@@ -206,7 +206,7 @@ let iter_process_bs_string_as  (attrs : t) : string option =
     (fun
       (({txt ; loc}, payload ) as attr )  ->
       match  txt with
-      | "bs.as"
+      | "bs.as" | "as"
         ->
         if !st = None then
           match Ast_payload.is_single_string payload with
@@ -241,7 +241,7 @@ let iter_process_bs_int_as  (attrs : t) =
     (fun
       (({txt ; loc}, payload ) as attr)  ->
       match  txt with
-      | "bs.as"
+      | "bs.as" | "as"
         ->
         if !st =  None then
           match Ast_payload.is_single_int payload with
@@ -265,7 +265,7 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
     (fun
       (({txt ; loc}, payload ) as attr)  ->
       match  txt with
-      | "bs.as"
+      | "bs.as" | "as"
         ->
         if !st = None then
           (Bs_ast_invariant.mark_used_bs_attribute attr ;

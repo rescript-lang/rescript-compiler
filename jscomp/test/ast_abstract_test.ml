@@ -41,7 +41,7 @@ let () =
 
 type a =
   | A
-  | B [@bs.as 3]
+  | B [@as 3]
   | C
 [@@bs.deriving {jsConverter = newType}]      
 

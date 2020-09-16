@@ -47,14 +47,14 @@ type attr =
     descr :
     (string * string) list
    (* introduced by attributes bs.string
-    and bs.as 
+    and @as 
    *)
   } 
   | Poly_var of {
     descr : 
     (string * string) list option 
       (* introduced by attributes bs.string
-         and bs.as 
+         and @as 
       *)
   } 
    (* `a does not have any value*)

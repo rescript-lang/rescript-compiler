@@ -124,7 +124,7 @@ let emit_external_warnings : iterator=
       Ext_list.iter lbl.pld_attributes 
         (fun attr -> 
           match attr with 
-          | {txt = "bs.as"}, _ -> mark_used_bs_attribute attr
+          | {txt = "bs.as" | "as"}, _ -> mark_used_bs_attribute attr
           | _ -> ()
           );
       default_iterator.label_declaration self lbl      

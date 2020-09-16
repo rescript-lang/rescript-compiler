@@ -43,7 +43,7 @@ external ff :
     = "ff" [@@bs.val]
 
 external ff1 : 
-    int -> (_ [@bs.as 3 ]) -> (int -> int -> int [@bs.uncurry]) -> int 
+    int -> (_ [@as 3 ]) -> (int -> int -> int [@bs.uncurry]) -> int 
     = "ff1" [@@bs.val]
 
 

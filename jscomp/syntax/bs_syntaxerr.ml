@@ -96,7 +96,7 @@ let pp_error fmt err =
     -> "expect string literal "
   | Duplicated_bs_as
     ->
-    "duplicate bs.as "
+    "duplicate @as "
   | Expect_int_literal
     ->
     "expect int literal "

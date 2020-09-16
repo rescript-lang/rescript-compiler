@@ -356,7 +356,7 @@ let translate_ffi
       begin match args  with
         | self :: args -> 
           (* PR2162 [self_type] more checks in syntax:
-             - should not be [bs.as] *)
+             - should not be [@as] *)
           let [@warning"-8"] ( _self_type::arg_types )
             = arg_types in
           if splice then   

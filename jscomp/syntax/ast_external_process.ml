@@ -103,7 +103,7 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
      match result with
      |  None ->
        spec_of_ptyp nolabel ptyp
-     | Some cst  -> (* (_[@bs.as ])*)
+     | Some cst  -> (* (_[@as ])*)
        (* when ppx start dropping attributes
           we should warn, there is a trade off whether
           we should warn dropped non bs attribute or not
@@ -135,7 +135,7 @@ let refine_obj_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
     match result with
     |  None ->
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-    | Some (Int i) -> (* (_[@bs.as ])*)
+    | Some (Int i) -> (* (_[@as ])*)
       (* This type is used in bs.obj only to construct obj type*)
        Arg_cst(External_arg_spec.cst_int i)
     | Some (Str i)->
@@ -158,7 +158,7 @@ let get_opt_arg_type
     ~(nolabel : bool)
     (ptyp : Ast_core_type.t) :
   External_arg_spec.attr  =
-  if ptyp.ptyp_desc = Ptyp_any then (* (_[@bs.as ])*)
+  if ptyp.ptyp_desc = Ptyp_any then (* (_[@as ])*)
     (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
   (* ([`a|`b] [@bs.string]) *)    
@@ -888,7 +888,7 @@ let handle_attributes
           let arg_type = refine_arg_type ~nolabel:true obj in
           begin match arg_type with
             | Arg_cst _ ->
-              Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
+              Location.raise_errorf ~loc:obj.ptyp_loc "[@as] is not supported in @send type "
             | _ ->
               (* more error checking *)
               [{arg_label = Arg_empty; arg_type}],
