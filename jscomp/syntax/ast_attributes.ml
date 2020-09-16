@@ -136,20 +136,17 @@ let external_needs_to_be_encoded (attrs : t)=
 
 let has_inline_in_stru (attrs : t) : bool =
   Ext_list.exists attrs (fun 
-    (({txt;},_) as attr) -> 
-    if txt = "bs.inline" then
-      (Bs_ast_invariant.mark_used_bs_attribute attr;
-      true)
+    ({txt;},_) -> 
+    if txt = "bs.inline" then      
+      true
     else false)       
 
 let has_inline_payload_in_sig (attrs : t)  = 
   Ext_list.find_first attrs 
-    (fun (({txt},_) as attr) ->
+    (fun 
+      ({txt},_)  ->
        if txt = "bs.inline" then
-       begin
-        Bs_ast_invariant.mark_used_bs_attribute attr;
         true
-       end 
        else false
     ) 
 
