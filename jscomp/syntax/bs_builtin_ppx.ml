@@ -389,7 +389,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
       | _ ->
         { str with pstr_desc =  Pstr_value(Nonrecursive, [{pvb_pat ; pvb_expr; pvb_attributes; pvb_loc}])}
     end
-  | Pstr_attribute({txt = "bs.config" },_)  -> str      
+  | Pstr_attribute({txt = "bs.config" | "config" },_)  -> str      
   | _ -> default_mapper.structure_item self str
 
 

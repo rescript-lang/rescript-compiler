@@ -51,7 +51,7 @@ let add_signature k v =
 let rec iter_on_bs_config_stru (x :Parsetree.structure) =   
   match x with 
   | [] -> () 
-  | {pstr_desc = Pstr_attribute (({txt = "bs.config"; loc}, payload) as attr)}::_ -> 
+  | {pstr_desc = Pstr_attribute (({txt = "bs.config" | "config"; loc}, payload) as attr)}::_ -> 
     Bs_ast_invariant.mark_used_bs_attribute attr;
     Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload)
       (Ast_payload.table_dispatch !structural_config_table)
@@ -62,7 +62,7 @@ let rec iter_on_bs_config_stru (x :Parsetree.structure) =
 let rec iter_on_bs_config_sigi (x :Parsetree.signature) =   
   match x with 
   | [] -> () 
-  | {psig_desc = Psig_attribute (({txt = "bs.config"; loc}, payload) as attr)}::_ -> 
+  | {psig_desc = Psig_attribute (({txt = "bs.config" | "config"; loc}, payload) as attr)}::_ -> 
     Bs_ast_invariant.mark_used_bs_attribute attr;
     Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload)
       (Ast_payload.table_dispatch !signature_config_table)
