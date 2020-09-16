@@ -20,7 +20,7 @@ let _ = log1 arg_pair
 external log2 :
   (
     [ `Unit of unit
-    ] [@bs.unwrap]
+    ] [@unwrap]
   )
   -> unit = "console.log" [@@bs.val]
 

@@ -360,7 +360,7 @@ let parse_external_attributes
 
 
 let has_bs_uncurry (attrs : Ast_attributes.t) = 
-  Ext_list.exists_fst attrs (fun x -> x.txt = "bs.uncurry")
+  Ext_list.exists_fst attrs (fun {txt;loc=_} -> txt = "bs.uncurry" || txt = "uncurry")
 
 
 let check_return_wrapper
@@ -470,7 +470,7 @@ let process_obj
                    (Otag({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc
-                     "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
+                     "The combination of @obj, @uncurry is not supported yet"
                  | Extern_unit -> assert false
                  | Poly_var _ 
                    ->
@@ -478,7 +478,7 @@ let process_obj
                      "bs.obj label %s does not support such arg type" name
                  | Unwrap ->
                    Location.raise_errorf ~loc
-                     "bs.obj label %s does not support [@bs.unwrap] arguments" name
+                     "bs.obj label %s does not support @unwrap arguments" name
                end
              | Optional name ->
                let obj_arg_type = get_opt_arg_type ~nolabel:false  ty in
@@ -506,7 +506,7 @@ let process_obj
                    Location.raise_errorf ~loc "@as is not supported with optional yet"
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc
-                     "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
+                     "The combination of @obj, @uncurry is not supported yet"
                  | Extern_unit   -> assert false
                  | Poly_var _
                    ->
@@ -514,7 +514,7 @@ let process_obj
                      "bs.obj label %s does not support such arg type" name
                  | Unwrap ->
                    Location.raise_errorf ~loc
-                     "bs.obj label %s does not support [@bs.unwrap] arguments" name
+                     "bs.obj label %s does not support @unwrap arguments" name
                end
            in
            new_arg_label::arg_labels,
@@ -854,12 +854,12 @@ let handle_attributes
   : Parsetree.core_type *  External_ffi_types.t * Parsetree.attributes * bool
   =
   (** sanity check here
-      {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
+      {[ int -> int -> (int -> int -> int [@uncurry])]}
       It does not make sense
   *)
   if has_bs_uncurry type_annotation.ptyp_attributes then
     Location.raise_errorf
-      ~loc "[@@bs.uncurry] can not be applied to the whole definition";
+      ~loc "@uncurry can not be applied to the whole definition";
   let prim_name_or_pval_name =
     if String.length prim_name = 0 then  
       `Nm_val (lazy (Location.prerr_warning loc (Bs_fragile_external pval_name); pval_name))
@@ -870,7 +870,7 @@ let handle_attributes
   if has_bs_uncurry result_type.ptyp_attributes then
     Location.raise_errorf
       ~loc:result_type.ptyp_loc
-      "[@@bs.uncurry] can not be applied to tailed position";
+      "@uncurry can not be applied to tailed position";
   let no_arguments = arg_types_ty = [] in  
   let unused_attrs, external_desc =
     parse_external_attributes no_arguments  

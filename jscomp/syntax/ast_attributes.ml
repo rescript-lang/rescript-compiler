@@ -169,8 +169,8 @@ let process_derive_type (attrs : t) : derive_attr * t =
 
 
 
-(* duplicated [bs.uncurry] @string not allowed,
-  it is worse in bs.uncurry since it will introduce
+(* duplicated @uncurry @string not allowed,
+  it is worse in @uncurry since it will introduce
   inconsistency in arity
  *)  
 let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
@@ -190,9 +190,9 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
         -> assign `Int attr
       | "bs.ignore" | "ignore"
         -> assign `Ignore attr
-      | "bs.unwrap"
+      | "bs.unwrap" | "unwrap"
         -> assign `Unwrap attr
-      | "bs.uncurry"
+      | "bs.uncurry" | "uncurry"
         ->
         assign (`Uncurry (Ast_payload.is_single_int payload)) attr
       | _ -> ()

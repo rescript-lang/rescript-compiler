@@ -76,7 +76,7 @@ let pp_error fmt err =
   | Illegal_attribute ->
     "Illegal attributes"
   | Canot_infer_arity_by_syntax
-    ->   "Cannot infer the arity through the syntax, either [@bs.uncurry n] or \n\
+    ->   "Cannot infer the arity through the syntax, either [@uncurry n] or \n\
               write it in arrow syntax "
   | Inconsistent_arity (arity,n)
       -> Printf.sprintf "Inconsistent arity %d vs %d" arity n

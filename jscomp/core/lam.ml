@@ -819,7 +819,7 @@ let sequand l r = if_ l r false_
 (** only [handle_bs_non_obj_ffi] will be used outside *)
 (**
    [no_auto_uncurried_arg_types xs]
-   check if the FFI have [@@bs.uncurry] attribute.
+   check if the FFI have @uncurry attribute.
    if it does not we wrap it in a nomral way otherwise
 *)
 let rec no_auto_uncurried_arg_types

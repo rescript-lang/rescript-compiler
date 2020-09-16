@@ -6,10 +6,6 @@ to detect unused attributes in the future
 
 get
 set
-unwrap
-uncurry
-
-optional
 get_index
 return
 obj
@@ -21,9 +17,11 @@ send
 new
 set_index
 
-string
-int
-
+optional
+uncurry
+unwrap -- done
+string -- done
+int -- done
 ignore -- done
 as  -- done
 meth -- done
