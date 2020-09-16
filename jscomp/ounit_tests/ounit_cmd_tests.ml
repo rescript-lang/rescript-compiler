@@ -115,7 +115,7 @@ external ff :
       (* Ounit_cmd_util.debug_output should_err ; *)
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring
-           should_err.stderr "bs.uncurry")
+           should_err.stderr "uncurry")
     end ;
 
     __LOC__ >:: begin fun _ ->

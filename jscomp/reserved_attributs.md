@@ -4,8 +4,7 @@ This is a list of reserved attributes, we may use such information
 to detect unused attributes in the future
 
 
-get
-set
+
 get_index
 return
 obj
@@ -17,6 +16,8 @@ send
 new
 set_index
 
+get -- done
+set -- done
 optional -- done
 uncurry -- done
     note [@uncurry 3] is okay but rarely used
