@@ -152,18 +152,20 @@ type derive_attr = {
 let process_derive_type (attrs : t) : derive_attr * t =
   Ext_list.fold_left attrs ({bs_deriving = None }, []) 
     (fun (st, acc) ({txt ; loc}, payload  as attr)  ->
-      match  st, txt  with
-      |  {bs_deriving = None}, "bs.deriving"
-        ->
-        {
-         bs_deriving = Some
-             (Ast_payload.ident_or_record_as_config loc payload)}, acc
-      | {bs_deriving = Some _}, "bs.deriving"
-        ->
-        Bs_syntaxerr.err loc Duplicated_bs_deriving
-
-      | _ , _ ->
-        st, attr::acc
+       match   txt  with
+       |  "bs.deriving"
+         ->
+         begin match st.bs_deriving with 
+           |  None -> 
+             {
+               bs_deriving = Some
+                   (Ast_payload.ident_or_record_as_config loc payload)}, acc
+           | Some _
+             ->
+             Bs_syntaxerr.err loc Duplicated_bs_deriving
+         end 
+       | _  ->
+         st, attr::acc
     ) 
 
 
