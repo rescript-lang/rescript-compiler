@@ -316,7 +316,7 @@ and print_simple_out_type ppf =
     let res =
       if name = "arity0" then Otyp_arrow ("", Otyp_constr (Oide_ident "unit", []),ty)
       else ty in   
-    fprintf ppf "@[<0>(%a)@ [@bs.meth]@]" (print_out_type_1 ~uncurried:false) res
+    fprintf ppf "@[<0>(%a)@ [@meth]@]" (print_out_type_1 ~uncurried:false) res
 
   | Otyp_constr (
       Oide_dot (Oide_dot (

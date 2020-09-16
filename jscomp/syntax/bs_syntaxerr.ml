@@ -87,7 +87,7 @@ let pp_error fmt err =
     ->
      "unsupported predicates"
   | Conflict_bs_bs_this_bs_meth ->
-     "@this, @bs, @bs.meth can not be applied at the same time"
+     "@this, @bs, @meth can not be applied at the same time"
   | Duplicated_bs_deriving
     -> "duplicate bs.deriving attribute"
   | Conflict_attributes

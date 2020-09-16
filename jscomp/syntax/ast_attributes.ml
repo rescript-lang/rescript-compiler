@@ -99,7 +99,7 @@ let process_attributes_rev (attrs : t) : attr_kind * t =
         Uncurry attr, acc (* TODO: warn unused/duplicated attribute *)
       | ("bs.this" | "this"), (Nothing | Meth_callback _)
         ->  Meth_callback attr, acc
-      | "bs.meth",  (Nothing | Method _)
+      | ("bs.meth" | "meth"),  (Nothing | Method _)
         -> Method attr, acc
       | ("bs" | "bs.this" | "this"), _
         -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
