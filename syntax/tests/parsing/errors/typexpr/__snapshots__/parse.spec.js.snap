@@ -26,7 +26,7 @@ module Error3 =
   3 │ 
   4 │ module Error2 = {
   
-  Did you forget a \`=>\` here? 
+  Did you forget a \`=>\` here?
 
   Syntax error!
   parsing/errors/typexpr/arrow.js:7:27-30  

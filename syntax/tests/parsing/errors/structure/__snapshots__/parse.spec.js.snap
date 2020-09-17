@@ -120,7 +120,7 @@ let (x : int1) = (int2 = 3 :> int3)
   3 │   r => r.account_id === connection.left.account.id
   4 │ )
   
-  Did you forget a \`=\` here? 
+  Did you forget a \`=\` here?
 
   Syntax error!
   parsing/errors/structure/letBinding.js:8:12-13  
@@ -130,7 +130,7 @@ let (x : int1) = (int2 = 3 :> int3)
    9 │   field
   10 │ }
   
-  Did you forget a \`=\` here? 
+  Did you forget a \`=\` here?
 
   Syntax error!
   parsing/errors/structure/letBinding.js:14:19-26  
@@ -140,7 +140,7 @@ let (x : int1) = (int2 = 3 :> int3)
   15 │   token
   16 │ }
   
-  Did you forget a \`=\` here? 
+  Did you forget a \`=\` here?
 
   Syntax error!
   parsing/errors/structure/letBinding.js:18:39-20:3  
@@ -175,7 +175,7 @@ let (x : int1) = (int2 = 3 :> int3)
   24 │ 
   25 │ // no magic in the syntax
   
-  Did you forget a \`=\` here? 
+  Did you forget a \`=\` here?
 
   Syntax error!
   parsing/errors/structure/letBinding.js:26:6-8  
@@ -185,7 +185,7 @@ let (x : int1) = (int2 = 3 :> int3)
   27 │ 
   28 │ // no magic in the syntax
   
-  Did you forget a \`=\` here? 
+  Did you forget a \`=\` here?
 
   Syntax error!
   parsing/errors/structure/letBinding.js:29:13-15  
@@ -194,7 +194,7 @@ let (x : int1) = (int2 = 3 :> int3)
   29 │ let x : int1 :> int2 = 3 :> int3
   30 │ 
   
-  Did you forget a \`=\` here? 
+  Did you forget a \`=\` here?
 
 
 ========================================================"

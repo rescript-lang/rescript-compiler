@@ -46,7 +46,7 @@ let xs = x.map (fun key -> [|key;(predicates.(key))|])
   2 │ let xs = x.map(key => [key, predicates[key])
   3 │ 
   
-  Did you forget a \`]\` here? 
+  Did you forget a \`]\` here?
 
 
 ========================================================"
@@ -65,7 +65,7 @@ exports[`arrow.js 1`] = `
   2 │   let x = 1
   3 │   let b = 2
   
-  Did you forget a \`,\` here? 
+  Did you forget a \`,\` here?
 
 
 ========================================================"
@@ -106,7 +106,7 @@ let pipeline =
   16 │ 
   17 │ let x = {
   
-  Did you forget a \`)\` here? 
+  Did you forget a \`)\` here?
 
   Syntax error!
   parsing/errors/expressions/block.js:18:25-19:1  
@@ -117,7 +117,7 @@ let pipeline =
   20 │ 
   21 │ switch stack {
   
-  Did you forget a \`)\` here? 
+  Did you forget a \`)\` here?
 
   Syntax error!
   parsing/errors/expressions/block.js:22:11-23:1  
@@ -139,7 +139,7 @@ let pipeline =
   28 │ 
   29 │ let pipeline = switch scheduler {
   
-  Did you forget a \`)\` here? 
+  Did you forget a \`)\` here?
 
   Syntax error!
   parsing/errors/expressions/block.js:30:10-31:1  
@@ -247,7 +247,7 @@ exports[`if.js 1`] = `
   4 │   a + 1
   5 │ }
   
-  Did you forget a \`{\` here? 
+  Did you forget a \`{\` here?
 
 
 ========================================================"
@@ -358,7 +358,7 @@ let x =
   3 │ let x = <Foo.Bar></Free.Will>;
   4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
   
-  Did you forget a \`</\` here? 
+  Did you forget a \`</\` here?
 
   Syntax error!
   parsing/errors/expressions/jsx.js:3:9-28  
@@ -434,7 +434,7 @@ let record = { field = ([%rescript.exprhole ]) }
   4 │ }
   5 │ 
   
-  Did you forget a \`,\` here? 
+  Did you forget a \`,\` here?
 
   Syntax error!
   parsing/errors/expressions/record.js:8:10-18  
@@ -444,7 +444,7 @@ let record = { field = ([%rescript.exprhole ]) }
    9 │   value: f(xWrapper.currentValue),
   10 │ }
   
-  Did you forget a \`:\` here? 
+  Did you forget a \`:\` here?
 
   Syntax error!
   parsing/errors/expressions/record.js:13:9-17:0  
@@ -512,7 +512,7 @@ let parsedPayload = try Js.Json.parseExn response with | _ -> Js.Json.null
   3 ┆   | _ => Js.Json.null
   4 ┆   }
   
-  Did you forget a \`catch\` here? 
+  Did you forget a \`catch\` here?
 
 
 ========================================================"

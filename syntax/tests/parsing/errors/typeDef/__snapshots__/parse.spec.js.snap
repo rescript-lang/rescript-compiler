@@ -128,7 +128,7 @@ type t = [ [%rescript.typehole ] | [%rescript.typehole ]]
   4 │ 
   5 │ type z = [< | #A | #B > ]
   
-  Did you forget a \`|\` here? 
+  Did you forget a \`|\` here?
 
   Syntax error!
   parsing/errors/typeDef/polyvariant.js:7:15  
@@ -179,7 +179,7 @@ type nonrec state = [%rescript.typehole ]
   3 │ 
   4 │ // missing type
   
-  Did you forget a \`=\` here? 
+  Did you forget a \`=\` here?
 
   Syntax error!
   parsing/errors/typeDef/typeDef.js:8:1-4  

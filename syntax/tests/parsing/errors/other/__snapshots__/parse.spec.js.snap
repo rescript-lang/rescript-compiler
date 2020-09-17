@@ -36,7 +36,7 @@ type nonrec 'extraInfo student =
   3 │   ~image: bool=?,
   4 │ ) => React.element = \\"ModalContent\\"
   
-  Did you forget a \`,\` here? 
+  Did you forget a \`,\` here?
 
   Syntax error!
   parsing/errors/other/regionMissingComma.res:8:11-9:11  
@@ -47,7 +47,7 @@ type nonrec 'extraInfo student =
   10 │ }
   11 │ 
   
-  Did you forget a \`,\` here? 
+  Did you forget a \`,\` here?
 
 
 ========================================================"
