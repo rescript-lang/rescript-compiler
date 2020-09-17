@@ -59,10 +59,10 @@ external getMockFn3 : t -> int -> string = ""
 [@@bs.get_index] [@@bs.scope "a0", "a1", "a2"] 
 
 external setMocFn1 : t -> int -> string -> unit = "" 
-[@@bs.set_index] [@@bs.scope "a0"]
+[@@set_index] [@@bs.scope "a0"]
 
 external setMocFn2 : t -> int -> string -> unit = "" 
-[@@bs.set_index] [@@bs.scope "a0", "a1"]
+[@@set_index] [@@bs.scope "a0", "a1"]
 
 external setMocFn3 : t -> int -> string -> unit = "" 
 [@@bs.set_index] [@@bs.scope "a0", "a1", "a2"]

@@ -5,7 +5,7 @@ to detect unused attributes in the future
 
 
 
-get_index
+
 return
 obj
 val
@@ -14,8 +14,9 @@ scope
 variadic
 send
 new
-set_index
 
+get_index -- done
+set_index -- done
 get -- done
 set -- done
 optional -- done

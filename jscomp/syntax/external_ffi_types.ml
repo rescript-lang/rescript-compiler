@@ -94,8 +94,8 @@ type external_spec =
 
 (* let name_of_ffi ffi =
   match ffi with
-  | Js_get_index _scope -> "[@@bs.get_index ..]"
-  | Js_set_index _scope -> "[@@bs.set_index ..]"
+  | Js_get_index _scope -> "@get_index .."
+  | Js_set_index _scope -> "@set_index .."
   | Js_get { js_get_name = s} -> Printf.sprintf "[@@bs.get %S]" s
   | Js_set { js_set_name = s} -> Printf.sprintf "[@@bs.set %S]" s
   | Js_call v  -> Printf.sprintf "[@@bs.val %S]" v.name

@@ -336,13 +336,13 @@ let parse_external_attributes
              {st with get_name = name_from_payload_or_prim ~loc payload}
 
             | "bs.new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
-            | "bs.set_index" -> 
+            | "bs.set_index" | "set_index" -> 
               if String.length prim_name_check <> 0 then 
-                Location.raise_errorf ~loc "[@@bs.set_index] this particular external's name needs to be a placeholder empty string";
+                Location.raise_errorf ~loc "@set_index this particular external's name needs to be a placeholder empty string";
               {st with set_index = true}
-            | "bs.get_index"->               
+            | "bs.get_index" | "get_index" ->               
               if String.length prim_name_check <> 0 then
-                Location.raise_errorf ~loc "[@@bs.get_index] this particular external's name needs to be a placeholder empty string";
+                Location.raise_errorf ~loc "@get_index this particular external's name needs to be a placeholder empty string";
               {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
             | "bs.return" ->
@@ -567,9 +567,9 @@ let external_desc_of_non_obj
     if arg_type_specs_length = 3 then
       Js_set_index {js_set_index_scopes = scopes}
     else
-      Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
+      Location.raise_errorf ~loc "Ill defined attribute @set_index (arity of 3)"
   | {set_index = true; _} ->
-    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.set_index]")
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with @set_index")
   | {get_index = true;
      val_name = `Nm_na;
      external_module_name = None ;
@@ -590,10 +590,10 @@ let external_desc_of_non_obj
     if arg_type_specs_length = 2 then
       Js_get_index {js_get_index_scopes = scopes}
     else Location.raise_errorf ~loc
-        "Ill defined attribute [@@bs.get_index] (arity expected 2 : while %d)" arg_type_specs_length
+        "Ill defined attribute @get_index (arity expected 2 : while %d)" arg_type_specs_length
 
   | {get_index = true; _} ->
-    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.get_index]")
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with @get_index")
   | {module_as_val = Some external_module_name ;
 
      get_index = false;
