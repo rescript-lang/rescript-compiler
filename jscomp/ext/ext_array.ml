@@ -207,7 +207,7 @@ let find_and_split arr cmp v : _ split =
 
 (** TODO: available since 4.03, use {!Array.exists} *)
 
-let exists p a =
+let exists a p =
   let n = Array.length a in
   let rec loop i =
     if i = n then false

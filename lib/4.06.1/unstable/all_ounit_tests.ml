@@ -1326,7 +1326,10 @@ val find_and_split :
   ('a -> 'b -> bool) ->
   'b -> 'a split
 
-val exists : ('a -> bool) -> 'a array -> bool 
+val exists : 
+  'a array -> 
+  ('a -> bool) ->  
+  bool 
 
 val is_empty : 'a array -> bool 
 
@@ -1573,7 +1576,7 @@ let find_and_split arr cmp v : _ split =
 
 (** TODO: available since 4.03, use {!Array.exists} *)
 
-let exists p a =
+let exists a p =
   let n = Array.length a in
   let rec loop i =
     if i = n then false
@@ -8101,7 +8104,7 @@ let suites =
       = ""
       [@@bs.send.pipe:int]
       [@@bs.splice]|}|] in  
-      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "bs.splice")
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "variadic")
     end;
         __LOC__ >:: begin fun _ -> 
     let v_output = perform_bsc [|"-bs-eval"; {|external
@@ -8110,7 +8113,7 @@ let suites =
   = ""
   [@@bs.send.pipe:int]
   [@@bs.splice]  |}|] in  
-      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "bs.splice")
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "variadic")
     end;
 
     __LOC__ >:: begin fun _ ->
@@ -8166,7 +8169,7 @@ external ff :
       (* Ounit_cmd_util.debug_output should_err ; *)
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring
-           should_err.stderr "bs.uncurry")
+           should_err.stderr "uncurry")
     end ;
 
     __LOC__ >:: begin fun _ ->
@@ -8775,7 +8778,7 @@ let output = bsc_eval {|
             |}
           in
           OUnit.assert_bool __LOC__
-            (Ext_string.contain_substring output.stderr "bs.unwrap")
+            (Ext_string.contain_substring output.stderr "unwrap")
         end;
 
         __LOC__ >:: begin fun _ ->

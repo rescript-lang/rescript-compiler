@@ -1,5 +1,5 @@
 
-[@@@bs.config {
+[@@@config {
   flags = [|
   (* "-drawlambda"; *)
   (* "-dtypedtree"; *)

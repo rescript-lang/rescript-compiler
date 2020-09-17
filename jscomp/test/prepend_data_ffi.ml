@@ -80,7 +80,7 @@ external on_exit_slice4 :
     int 
     -> (_ [@bs.as 3]) 
     -> (_ [@bs.as "xxx"]) 
-    -> ([`a|`b|`c] [@bs.int])
+    -> ([`a|`b|`c] [@int])
     -> ([`a|`b|`c] )
     -> int array
     -> unit 

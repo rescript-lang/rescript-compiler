@@ -25,8 +25,8 @@ type x =
   [`a 
   |`b
   |`c]
-[@@bs.deriving {jsConverter = newType}]    
-
+  
+[@@deriving {jsConverter = newType}]    
 
 
 let idx v =   eq __LOC__ (xFromJs (xToJs v)) v 
@@ -41,7 +41,7 @@ let () =
 
 type a =
   | A
-  | B [@bs.as 3]
+  | B [@as 3]
   | C
 [@@bs.deriving {jsConverter = newType}]      
 

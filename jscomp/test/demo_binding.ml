@@ -22,12 +22,12 @@ class type title =
 
 class type text = 
   object
-    method text : string [@@bs.set]
+    method text : string [@@set]
   end[@bs]
 
 class type measure =
     object
-      method minHeight : int [@@bs.set]
+      method minHeight : int [@@set]
       method minWidth : int [@@bs.set]
       method maxHeight : int  [@@bs.set]
       method maxWidth : int [@@bs.set]
@@ -106,4 +106,4 @@ class type textArea =
 external set_interval : (unit -> unit [@bs]) -> float -> unit  =  "setInterval"
      [@@bs.module "@runtime", "Runtime"]
 
-external toFixed : float -> int -> string = "toFixed" [@@bs.send ]
+external toFixed : float -> int -> string = "toFixed" [@@send]

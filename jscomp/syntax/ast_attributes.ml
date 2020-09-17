@@ -33,7 +33,7 @@ type ('a,'b) st =
 let process_method_attributes_rev (attrs : t) =
   Ext_list.fold_left attrs ({get = None ; set = None}, []) (fun (st,acc) (({txt ; loc}, payload) as attr ) ->
       match txt  with
-      | "bs.get" (* [@@bs.get{null; undefined}]*)
+      | "bs.get" | "get" (* @bs.get{null; undefined}*)
         ->
         let result =
           Ext_list.fold_left (Ast_payload.ident_or_record_as_config loc payload) (false, false)
@@ -63,7 +63,7 @@ let process_method_attributes_rev (attrs : t) =
 
         ({st with get = Some result}, acc  )
 
-      | "bs.set"
+      | "bs.set" | "set"
         ->
         let result =
           Ext_list.fold_left (Ast_payload.ident_or_record_as_config loc payload) `Get 
@@ -78,7 +78,7 @@ let process_method_attributes_rev (attrs : t) =
                else Bs_syntaxerr.err loc Unsupported_predicates
             )  in
         (* properties -- void
-              [@@bs.set{only}]
+              [@@set{only}]
         *)
         {st with set = Some result }, acc
       | _ ->
@@ -97,12 +97,11 @@ let process_attributes_rev (attrs : t) : attr_kind * t =
       | "bs", (Nothing | Uncurry _)
         ->
         Uncurry attr, acc (* TODO: warn unused/duplicated attribute *)
-      | "bs.this", (Nothing | Meth_callback _)
+      | ("bs.this" | "this"), (Nothing | Meth_callback _)
         ->  Meth_callback attr, acc
-      | "bs.meth",  (Nothing | Method _)
+      | ("bs.meth" | "meth"),  (Nothing | Method _)
         -> Method attr, acc
-      | "bs", _
-      | "bs.this", _
+      | ("bs" | "bs.this" | "this"), _
         -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
       | _ , _ ->
         st, attr::acc
@@ -129,10 +128,27 @@ let process_bs (attrs : t) =
         st, attr::acc
     ) 
 
+let external_attrs = [|
+  "get";
+  "set";
+  "get_index";
+  "return";
+  "obj";
+  "val";
+  "module";
+  "scope";
+  "variadic";
+  "send";
+  "new";
+  "set_index";
+  Literals.gentype_import
+|]    
+(* ATT: Special cases for built-in attributes handling *)
 let external_needs_to_be_encoded (attrs : t)=
   Ext_list.exists_fst attrs 
     (fun {txt} ->
-       Ext_string.starts_with txt "bs." || txt = Literals.gentype_import) 
+       Ext_string.starts_with txt "bs." ||
+       Ext_array.exists external_attrs (fun (x : string) -> txt = x) ) 
 
 let is_inline : attr -> bool =        
   (fun 
@@ -152,24 +168,26 @@ type derive_attr = {
 let process_derive_type (attrs : t) : derive_attr * t =
   Ext_list.fold_left attrs ({bs_deriving = None }, []) 
     (fun (st, acc) ({txt ; loc}, payload  as attr)  ->
-      match  st, txt  with
-      |  {bs_deriving = None}, "bs.deriving"
-        ->
-        {
-         bs_deriving = Some
-             (Ast_payload.ident_or_record_as_config loc payload)}, acc
-      | {bs_deriving = Some _}, "bs.deriving"
-        ->
-        Bs_syntaxerr.err loc Duplicated_bs_deriving
-
-      | _ , _ ->
-        st, attr::acc
+       match   txt  with
+       |  "bs.deriving" | "deriving"
+         ->
+         begin match st.bs_deriving with 
+           |  None -> 
+             {
+               bs_deriving = Some
+                   (Ast_payload.ident_or_record_as_config loc payload)}, acc
+           | Some _
+             ->
+             Bs_syntaxerr.err loc Duplicated_bs_deriving
+         end 
+       | _  ->
+         st, attr::acc
     ) 
 
 
 
-(* duplicated [bs.uncurry] [bs.string] not allowed,
-  it is worse in bs.uncurry since it will introduce
+(* duplicated @uncurry @string not allowed,
+  it is worse in @uncurry since it will introduce
   inconsistency in arity
  *)  
 let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
@@ -183,15 +201,15 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
     else Bs_syntaxerr.err loc Conflict_attributes  in 
   Ext_list.iter attrs (fun (({txt ; loc=_}, (payload : _ ) ) as attr)  ->
       match  txt with
-      | "bs.string"
+      | "bs.string" | "string"
         -> assign `String attr
-      | "bs.int"
+      | "bs.int" | "int"
         -> assign `Int attr
-      | "bs.ignore"
+      | "bs.ignore" | "ignore"
         -> assign `Ignore attr
-      | "bs.unwrap"
+      | "bs.unwrap" | "unwrap"
         -> assign `Unwrap attr
-      | "bs.uncurry"
+      | "bs.uncurry" | "uncurry"
         ->
         assign (`Uncurry (Ast_payload.is_single_int payload)) attr
       | _ -> ()
@@ -205,7 +223,7 @@ let iter_process_bs_string_as  (attrs : t) : string option =
     (fun
       (({txt ; loc}, payload ) as attr )  ->
       match  txt with
-      | "bs.as"
+      | "bs.as" | "as"
         ->
         if !st = None then
           match Ast_payload.is_single_string payload with
@@ -225,7 +243,7 @@ let has_bs_optional  (attrs : t) : bool =
   Ext_list.exists attrs (fun
       (({txt ; }, _ ) as attr)  ->
       match  txt with
-      | "bs.optional"
+      | "bs.optional" | "optional"
         ->
         Bs_ast_invariant.mark_used_bs_attribute attr ;
         true
@@ -240,7 +258,7 @@ let iter_process_bs_int_as  (attrs : t) =
     (fun
       (({txt ; loc}, payload ) as attr)  ->
       match  txt with
-      | "bs.as"
+      | "bs.as" | "as"
         ->
         if !st =  None then
           match Ast_payload.is_single_int payload with
@@ -264,7 +282,7 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
     (fun
       (({txt ; loc}, payload ) as attr)  ->
       match  txt with
-      | "bs.as"
+      | "bs.as" | "as"
         ->
         if !st = None then
           (Bs_ast_invariant.mark_used_bs_attribute attr ;

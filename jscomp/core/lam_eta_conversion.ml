@@ -119,7 +119,7 @@ let transform_under_supply n ap_info fn args =
     cautiously, since 
     [let u = f] and we are chaning the arity of [f] it will affect 
     the collection of [u]
-    A typical use case is to pass an OCaml function to JS side as a callback (i.e, [@bs.uncurry])
+    A typical use case is to pass an OCaml function to JS side as a callback (i.e, [@uncurry])
 *)
 let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : Lam.t = 
   let ap_info : Lam.ap_info = {ap_loc = loc; ap_inlined = Default_inline; ap_status = App_na } in

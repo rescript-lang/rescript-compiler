@@ -103,7 +103,7 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
      match result with
      |  None ->
        spec_of_ptyp nolabel ptyp
-     | Some cst  -> (* (_[@bs.as ])*)
+     | Some cst  -> (* (_[@as ])*)
        (* when ppx start dropping attributes
           we should warn, there is a trade off whether
           we should warn dropped non bs attribute or not
@@ -111,14 +111,14 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
        Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
        begin match cst with 
          | Int i -> 
-           (* This type is used in bs.obj only to construct obj type*)
+           (* This type is used in obj only to construct obj type*)
            Arg_cst(External_arg_spec.cst_int i)
          | Str i->
            Arg_cst (External_arg_spec.cst_string i)     
          |  Js_literal_str s ->
            Arg_cst (External_arg_spec.cst_obj_literal  s)
        end
-   else (* ([`a|`b] [@bs.string]) *)
+   else (* ([`a|`b] [@string]) *)
      spec_of_ptyp nolabel ptyp   
   )
 
@@ -135,22 +135,22 @@ let refine_obj_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
     match result with
     |  None ->
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-    | Some (Int i) -> (* (_[@bs.as ])*)
-      (* This type is used in bs.obj only to construct obj type*)
+    | Some (Int i) -> (* (_[@as ])*)
+      (* This type is used in obj only to construct obj type*)
        Arg_cst(External_arg_spec.cst_int i)
     | Some (Str i)->
        Arg_cst (External_arg_spec.cst_string i)
     | Some (Js_literal_str s ) ->
        Arg_cst (External_arg_spec.cst_obj_literal s)
-  else (* ([`a|`b] [@bs.string]) *)
+  else (* ([`a|`b] [@string]) *)
      spec_of_ptyp nolabel ptyp      
 
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
-    and result type in [@@bs.obj]
+    and result type in [@@obj]
     They are not the same though, for example
     {[
-      external f : hi:([ `hi | `lo ] [@bs.string]) -> unit -> _ = "" [@@bs.obj]
+      external f : hi:([ `hi | `lo ] [@string]) -> unit -> _ = "" [@@obj]
     ]}
     The result type would be [ hi:string ]
 *)
@@ -158,20 +158,20 @@ let get_opt_arg_type
     ~(nolabel : bool)
     (ptyp : Ast_core_type.t) :
   External_arg_spec.attr  =
-  if ptyp.ptyp_desc = Ptyp_any then (* (_[@bs.as ])*)
-    (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
+  if ptyp.ptyp_desc = Ptyp_any then (* (_[@as ])*)
+    (* extenral f : ?x:_ -> y:int -> _ = "" [@@obj] is not allowed *)
     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
-  (* ([`a|`b] [@bs.string]) *)    
+  (* ([`a|`b] [@@string]) *)    
   spec_of_ptyp nolabel ptyp
 
 
 
 (**
-   [@@bs.module "react"]
-   [@@bs.module "react"]
+   [@@module "react"]
+   [@@module "react"]
    ---
-   [@@bs.module "@" "react"]
-   [@@bs.module "@" "react"]
+   [@@module "@" "react"]
+   [@@module "@" "react"]
 
    They should have the same module name
 
@@ -179,7 +179,7 @@ let get_opt_arg_type
    two external files to the same module name
 *)
 type bundle_source =
-  [`Nm_payload of string (* from payload [@@bs.val "xx" ]*)
+  [`Nm_payload of string (* from payload [@@val "xx" ]*)
   |`Nm_external of string (* from "" in external *)
   | `Nm_val of string lazy_t   (* from function name *)
   ]
@@ -251,6 +251,7 @@ let return_wrapper loc (txt : string) : External_ffi_types.return_wrapper =
   | _ ->
     Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
 
+exception Not_handled_external_attribute
 
 (* The processed attributes will be dropped *)
 let parse_external_attributes
@@ -259,15 +260,15 @@ let parse_external_attributes
     (prim_name_or_pval_prim: bundle_source )
     (prim_attributes : Ast_attributes.t) : Ast_attributes.t * external_desc =
 
-  (* shared by `[@@bs.val]`, `[@@bs.send]`,
-     `[@@bs.set]`, `[@@bs.get]` , `[@@bs.new]`
+  (* shared by `[@@val]`, `[@@send]`,
+     `[@@set]`, `[@@get]` , `[@@new]`
      `[@@bs.send.pipe]` does not use it
   *)
   let name_from_payload_or_prim ~loc (payload : Parsetree.payload) : name_source =
     match payload with
     | PStr [] ->
       (prim_name_or_pval_prim :> name_source)
-    (* It is okay to have [@@bs.val] without payload *)
+    (* It is okay to have [@@val] without payload *)
     | _ ->
       begin match Ast_payload.is_single_string payload with
         | Some  (val_name, _) ->  `Nm_payload val_name
@@ -286,15 +287,15 @@ let parse_external_attributes
             in 
             attr::attrs, 
             {st with external_module_name = Some { bundle; module_bind_name = Phint_nothing}}          
-        else if Ext_string.starts_with txt "bs." then
-           attrs, begin match txt with
-            | "bs.val" ->
+        else         
+           let action () = begin match txt with
+            | "bs.val" | "val" ->
               if no_arguments then
                 {st with val_name = name_from_payload_or_prim ~loc payload}
               else
                 {st with call_name = name_from_payload_or_prim ~loc payload}
 
-            | "bs.module" ->
+            | "bs.module" | "module" ->
               begin match Ast_payload.assert_strings loc payload with
                 | [bundle] ->
                   {st with external_module_name =
@@ -314,7 +315,7 @@ let parse_external_attributes
                 | _  ->
                   Bs_syntaxerr.err loc Illegal_attribute
               end
-            | "bs.scope" ->
+            | "bs.scope" | "scope" ->
               begin match Ast_payload.assert_strings loc payload with
                 | [] ->
                   Bs_syntaxerr.err loc Illegal_attribute
@@ -323,27 +324,29 @@ let parse_external_attributes
                 *)
                 | scopes ->  { st with scopes = scopes }
               end
-            | "bs.splice" | "bs.variadic" -> {st with splice = true}
-            | "bs.send" ->
+            | "bs.splice" 
+            | "bs.variadic" | "variadic" -> {st with splice = true}
+            | "bs.send" | "send" ->
               { st with val_send = name_from_payload_or_prim ~loc payload}
             | "bs.send.pipe"
               ->
               { st with val_send_pipe = Some (Ast_payload.as_core_type loc payload)}
-            | "bs.set" ->
+            | "bs.set" | "set" ->
               {st with set_name = name_from_payload_or_prim ~loc  payload}
-            | "bs.get" -> {st with get_name = name_from_payload_or_prim ~loc payload}
+            | "bs.get" | "get" ->
+             {st with get_name = name_from_payload_or_prim ~loc payload}
 
-            | "bs.new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
-            | "bs.set_index" -> 
+            | "bs.new" | "new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
+            | "bs.set_index" | "set_index" -> 
               if String.length prim_name_check <> 0 then 
-                Location.raise_errorf ~loc "[@@bs.set_index] this particular external's name needs to be a placeholder empty string";
+                Location.raise_errorf ~loc "%@set_index this particular external's name needs to be a placeholder empty string";
               {st with set_index = true}
-            | "bs.get_index"->               
+            | "bs.get_index" | "get_index" ->               
               if String.length prim_name_check <> 0 then
-                Location.raise_errorf ~loc "[@@bs.get_index] this particular external's name needs to be a placeholder empty string";
+                Location.raise_errorf ~loc "%@get_index this particular external's name needs to be a placeholder empty string";
               {st with get_index = true}
-            | "bs.obj" -> {st with mk_obj = true}
-            | "bs.return" ->
+            | "bs.obj" | "obj" -> {st with mk_obj = true}
+            | "bs.return" | "return" ->
               let actions =
                 Ast_payload.ident_or_record_as_config loc payload in
               begin match actions with
@@ -352,15 +355,16 @@ let parse_external_attributes
                 | _ ->
                   Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
               end
-            | _ -> (Location.prerr_warning loc (Bs_unused_attribute txt); st)
-          end
-        else attr :: attrs, st
+            | _ -> raise_notrace Not_handled_external_attribute
+          end in 
+          try attrs, action () with 
+          | Not_handled_external_attribute -> attr::attrs, st
     )
     
 
 
 let has_bs_uncurry (attrs : Ast_attributes.t) = 
-  Ext_list.exists_fst attrs (fun x -> x.txt = "bs.uncurry")
+  Ext_list.exists_fst attrs (fun {txt;loc=_} -> txt = "bs.uncurry" || txt = "uncurry")
 
 
 let check_return_wrapper
@@ -420,11 +424,11 @@ let process_obj
     set_index = false ;
     mk_obj = _;
     scopes = [];
-    (* wrapper does not work with [bs.obj]
+    (* wrapper does not work with @obj
        TODO: better error message *)
   } ->
     if String.length prim_name <> 0 then
-      Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
+      Location.raise_errorf ~loc "%@obj expect external names to be empty string";
     let arg_kinds, new_arg_types_ty, (result_types : Parsetree.object_field list) =
       Ext_list.fold_right arg_types_ty ( [], [], [])
         (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
@@ -470,15 +474,15 @@ let process_obj
                    (Otag({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc
-                     "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
+                     "The combination of %@obj, %@uncurry is not supported yet"
                  | Extern_unit -> assert false
                  | Poly_var _ 
                    ->
                    Location.raise_errorf ~loc
-                     "bs.obj label %s does not support such arg type" name
+                     "%@obj label %s does not support such arg type" name
                  | Unwrap ->
                    Location.raise_errorf ~loc
-                     "bs.obj label %s does not support [@bs.unwrap] arguments" name
+                     "%@obj label %s does not support %@unwrap arguments" name
                end
              | Optional name ->
                let obj_arg_type = get_opt_arg_type ~nolabel:false  ty in
@@ -503,18 +507,18 @@ let process_obj
                    (Otag ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
                  | Arg_cst _
                    ->
-                   Location.raise_errorf ~loc "bs.as is not supported with optional yet"
+                   Location.raise_errorf ~loc "%@as is not supported with optional yet"
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc
-                     "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
+                     "The combination of %@obj, %@uncurry is not supported yet"
                  | Extern_unit   -> assert false
                  | Poly_var _
                    ->
                    Location.raise_errorf ~loc
-                     "bs.obj label %s does not support such arg type" name
+                     "%@obj label %s does not support such arg type" name
                  | Unwrap ->
                    Location.raise_errorf ~loc
-                     "bs.obj label %s does not support [@bs.unwrap] arguments" name
+                     "%@obj label %s does not support %@unwrap arguments" name
                end
            in
            new_arg_label::arg_labels,
@@ -531,7 +535,7 @@ let process_obj
     in
     Ast_compatible.mk_fn_type new_arg_types_ty result,
     External_ffi_types.ffi_obj_create arg_kinds
-  | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
+  | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with %@obj"
 
 
 let external_desc_of_non_obj 
@@ -564,9 +568,9 @@ let external_desc_of_non_obj
     if arg_type_specs_length = 3 then
       Js_set_index {js_set_index_scopes = scopes}
     else
-      Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
+      Location.raise_errorf ~loc "Ill defined attribute %@set_index (arity of 3)"
   | {set_index = true; _} ->
-    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.set_index]")
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with %@set_index")
   | {get_index = true;
      val_name = `Nm_na;
      external_module_name = None ;
@@ -587,10 +591,10 @@ let external_desc_of_non_obj
     if arg_type_specs_length = 2 then
       Js_get_index {js_get_index_scopes = scopes}
     else Location.raise_errorf ~loc
-        "Ill defined attribute [@@bs.get_index] (arity expected 2 : while %d)" arg_type_specs_length
+        "Ill defined attribute %@get_index (arity expected 2 : while %d)" arg_type_specs_length
 
   | {get_index = true; _} ->
-    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.get_index]")
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with %@get_index")
   | {module_as_val = Some external_module_name ;
 
      get_index = false;
@@ -613,17 +617,17 @@ let external_desc_of_non_obj
       | [], `Nm_na,  _ -> Js_module_as_var external_module_name
       | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
       | _, #bundle_source, #bundle_source ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
+        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with %@module.")
 
       | _, (`Nm_val _ | `Nm_external _) , `Nm_na
         -> Js_module_as_class external_module_name
       | _, `Nm_payload _ , `Nm_na
         ->
         Location.raise_errorf ~loc
-          "Incorrect FFI attribute found: (bs.new should not carry a payload here)"
+          "Incorrect FFI attribute found: (%@new should not carry a payload here)"
     end
   | {module_as_val = Some _; _} ->
-    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with %@module.")
   | {call_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name) ;
      splice;
      scopes ;
@@ -645,7 +649,7 @@ let external_desc_of_non_obj
     Js_call {splice; name; external_module_name; scopes }
   | {call_name = #bundle_source ; _ }
     ->
-    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with %@val")
   | {val_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      external_module_name;
 
@@ -666,13 +670,13 @@ let external_desc_of_non_obj
     -> (* 
     if no_arguments -->
           {[
-            external ff : int = "" [@@bs.val]
+            external ff : int = "" [@@val]
           ]}
        *)
     Js_var { name; external_module_name; scopes}
   | {val_name = #bundle_source ; _ }
     ->
-    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with %@val")
 
   | {splice ;
      scopes ;
@@ -695,7 +699,7 @@ let external_desc_of_non_obj
     if arg_type_specs_length  = 0 then
       (*
          {[
-           external ff : int = "" [@@bs.module "xx"]
+           external ff : int = "" [@@module "xx"]
          ]}
       *)
       Js_var { name; external_module_name; scopes}
@@ -717,21 +721,21 @@ let external_desc_of_non_obj
      return_wrapper = _ ;
     } ->
     (* PR #2162 - since when we assemble arguments the first argument in
-       [@@bs.send] is ignored
+       [@@send] is ignored
     *)
     begin match arg_type_specs with
       | [] ->
         Location.raise_errorf
-          ~loc "Ill defined attribute [@@bs.send] (the external needs to be a regular function call with at least one argument)"
+          ~loc "Ill defined attribute %@send(the external needs to be a regular function call with at least one argument)"
       |  {arg_type = Arg_cst _ ; arg_label = _} :: _
         ->
         Location.raise_errorf
-          ~loc "Ill defined attribute [@@bs.send] (first argument can't be const)"
+          ~loc "Ill defined attribute %@send(first argument can't be const)"
       | _ :: _  ->
         Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
     end
   | {val_send = #bundle_source; _ }
-    -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with [@@bs.send]"
+    -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with %@send"
   | {val_send_pipe = Some _;
      (* splice = (false as splice); *)
      val_send = `Nm_na;
@@ -756,7 +760,7 @@ let external_desc_of_non_obj
              pipe = true}
 
   | {val_send_pipe = Some _ ; _}
-    -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.send.pipe]"
+    -> Location.raise_errorf ~loc "conflict attributes found with [%@%@bs.send.pipe]"
 
   | {new_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      external_module_name;
@@ -777,7 +781,7 @@ let external_desc_of_non_obj
     }
     -> Js_new {name; external_module_name;  scopes}
   | {new_name = #bundle_source ; _ } ->
-    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.new]")
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with %@new")
   | {set_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      val_name = `Nm_na  ;
      call_name = `Nm_na ;
@@ -797,9 +801,9 @@ let external_desc_of_non_obj
     ->
     if arg_type_specs_length = 2 then
       Js_set { js_set_scopes = scopes ; js_set_name = name}
-    else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
+    else  Location.raise_errorf ~loc "Ill defined attribute %@set (two args required)"
   | {set_name = #bundle_source; _}
-    -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.set]"
+    -> Location.raise_errorf ~loc "conflict attributes found with %@set"
   | {get_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
 
      val_name = `Nm_na  ;
@@ -821,9 +825,9 @@ let external_desc_of_non_obj
     if arg_type_specs_length = 1 then
       Js_get { js_get_name = name; js_get_scopes = scopes }
     else
-      Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
+      Location.raise_errorf ~loc "Ill defined attribute %@bs.get (only one argument)"
   | {get_name = #bundle_source; _}
-    -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.get]"
+    -> Location.raise_errorf ~loc "Attribute found that conflicts with %@bs.get"
 
   | {get_name = `Nm_na;
      val_name = `Nm_na  ;
@@ -842,7 +846,7 @@ let external_desc_of_non_obj
      return_wrapper = _;
 
     }
-    ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  
+    ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot %@val? "  
 
 (** Note that the passed [type_annotation] is already processed by visitor pattern before*)
 let handle_attributes
@@ -854,12 +858,12 @@ let handle_attributes
   : Parsetree.core_type *  External_ffi_types.t * Parsetree.attributes * bool
   =
   (** sanity check here
-      {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
+      {[ int -> int -> (int -> int -> int [@uncurry])]}
       It does not make sense
   *)
   if has_bs_uncurry type_annotation.ptyp_attributes then
     Location.raise_errorf
-      ~loc "[@@bs.uncurry] can not be applied to the whole definition";
+      ~loc "%@uncurry can not be applied to the whole definition";
   let prim_name_or_pval_name =
     if String.length prim_name = 0 then  
       `Nm_val (lazy (Location.prerr_warning loc (Bs_fragile_external pval_name); pval_name))
@@ -870,7 +874,7 @@ let handle_attributes
   if has_bs_uncurry result_type.ptyp_attributes then
     Location.raise_errorf
       ~loc:result_type.ptyp_loc
-      "[@@bs.uncurry] can not be applied to tailed position";
+      "%@uncurry can not be applied to tailed position";
   let no_arguments = arg_types_ty = [] in  
   let unused_attrs, external_desc =
     parse_external_attributes no_arguments  
@@ -888,7 +892,7 @@ let handle_attributes
           let arg_type = refine_arg_type ~nolabel:true obj in
           begin match arg_type with
             | Arg_cst _ ->
-              Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
+              Location.raise_errorf ~loc:obj.ptyp_loc "%@as is not supported in %@send type "
             | _ ->
               (* more error checking *)
               [{arg_label = Arg_empty; arg_type}],
@@ -906,17 +910,17 @@ let handle_attributes
            if i = 0 && splice  then
              begin match arg_label with 
                | Optional _ -> 
-                 Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be a non optional"
+                 Location.raise_errorf ~loc "%@variadic expect the last type to be a non optional"
                | Labelled _ | Nolabel 
                 -> 
                 if ty.ptyp_desc = Ptyp_any then 
-                  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";                  
+                  Location.raise_errorf ~loc "%@variadic expect the last type to be an array";                  
                 if spec_of_ptyp true ty <> Nothing then 
-                  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
+                  Location.raise_errorf ~loc "%@variadic expect the last type to be an array";
                 match ty.ptyp_desc with 
                 | Ptyp_constr({txt = Lident "array"; _}, [_])
                   -> ()
-                | _ -> Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
+                | _ -> Location.raise_errorf ~loc "%@variadic expect the last type to be an array";
              end ; 
            let (arg_label : External_arg_spec.label_noname), arg_type, new_arg_types =
              match arg_label with
@@ -924,10 +928,10 @@ let handle_attributes
                let arg_type = get_opt_arg_type ~nolabel:false ty in
                begin match arg_type with
                  | Poly_var _ ->
-                   (* ?x:([`x of int ] [@bs.string]) does not make sense *)
+                   (* ?x:([`x of int ] [@string]) does not make sense *)
                    Location.raise_errorf
                      ~loc
-                     "[@@bs.string] does not work with optional when it has arities in label %s" s
+                     "%@string does not work with optional when it has arities in label %s" s
                  | _ ->
                    Arg_optional, arg_type,
                    param_type :: arg_types end

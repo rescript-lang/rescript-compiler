@@ -4,43 +4,47 @@ This is a list of reserved attributes, we may use such information
 to detect unused attributes in the future
 
 
-get
-set
-this
-meth
+
+
+
+scope
+val -- done
+module -- done
+obj -- done
+variadic -- done
+send -- done
+return -- done
+new -- done
+get_index -- done
+set_index -- done
+get -- done
+set -- done
+optional -- done
+uncurry -- done
+    note [@uncurry 3] is okay but rarely used
+    maybe we should remove it
+unwrap -- done
+string -- done
+int -- done
+ignore -- done
+as  -- done
+meth -- done
+this -- done
+send.pipe -- deprecated, no short-cut
+splice -- deprecated, use variadic
+config -- done
 open -- not decided
-inline -- 
+inline -- done
     this would conflict exist one or not?
     invalid payload in bs.inline
     seems that we need loose the check
-deriving
-string
-int
-ignore
-unwrap
-uncurry
-as
-optional
-get_index
-return
-config
-obj
+deriving -- done
 raw -- not needed
 re -- not needed
 external -- not needed
 time   -- not needed
 node   -- not needed
 debugger -- not needed
-val
-module
-scope
-splice -- deprecated, use variadic
-variadic
-send
-send.pipe -- deprecated, no short-cut
-new
-set_index
-
 debugger.chrome -- deprecated
 
 keywords is okay `[@open]` is a valid syntax

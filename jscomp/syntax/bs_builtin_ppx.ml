@@ -125,7 +125,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
                pexp_desc = Ast_uncurry_gen.to_uncurry_fn e.pexp_loc self label pat body  ;
                pexp_attributes}
             | Method _ , _
-              ->  Location.raise_errorf ~loc:e.pexp_loc "bs.meth is not supported in function expression"
+              ->  Location.raise_errorf ~loc:e.pexp_loc "%@meth is not supported in function expression"
             | Meth_callback _, pexp_attributes
               ->
               (** FIXME: does it make sense to have a label for [this] ? *)
@@ -151,7 +151,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
                }
              | Some e ->
                Location.raise_errorf
-                 ~loc:e.pexp_loc "`with` construct is not supported in bs.obj ")
+                 ~loc:e.pexp_loc "`with` construct is not supported in js obj ")
           else
             default_expr_mapper self e
         | Pexp_object {pcstr_self;  pcstr_fields} ->
@@ -389,7 +389,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
       | _ ->
         { str with pstr_desc =  Pstr_value(Nonrecursive, [{pvb_pat ; pvb_expr; pvb_attributes; pvb_loc}])}
     end
-  | Pstr_attribute({txt = "bs.config" },_)  -> str      
+  | Pstr_attribute({txt = "bs.config" | "config" },_)  -> str      
   | _ -> default_mapper.structure_item self str
 
 
