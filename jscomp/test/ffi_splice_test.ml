@@ -33,7 +33,7 @@ Make.prototype.add = function(){
 type t 
 
 
-external make : int -> int -> int -> int -> t = "Make"  [@@bs.new]
+external make : int -> int -> int -> int -> t = "Make"  [@@new]
 
 
 external sum : t -> unit -> int = "sum" [@@bs.send]

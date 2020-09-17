@@ -101,7 +101,7 @@ type external_spec =
   | Js_call v  -> Printf.sprintf "[@@bs.val %S]" v.name
   | Js_send v  -> Printf.sprintf "[@@bs.send %S]" v.name
   | Js_module_as_fn v  -> Printf.sprintf "[@@bs.val %S]" v.external_module_name.bundle
-  | Js_new v  -> Printf.sprintf "[@@bs.new %S]" v.name
+  | Js_new v  -> Printf.sprintf "[@@new %S]" v.name
   | Js_module_as_class v
     -> Printf.sprintf "[@@bs.module] %S " v.bundle
   | Js_module_as_var v

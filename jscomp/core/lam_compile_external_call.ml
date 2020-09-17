@@ -309,7 +309,7 @@ let translate_ffi
   | Js_new { external_module_name = module_name; 
              name = fn;
              scopes
-           } -> (* handle [@@bs.new]*)
+           } -> (* handle [@@new]*)
     (* This has some side effect, it will 
        mark its identifier (If it has) as an object,
        ATTENTION: 

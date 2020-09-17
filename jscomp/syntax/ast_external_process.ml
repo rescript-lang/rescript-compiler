@@ -335,7 +335,7 @@ let parse_external_attributes
             | "bs.get" | "get" ->
              {st with get_name = name_from_payload_or_prim ~loc payload}
 
-            | "bs.new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
+            | "bs.new" | "new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
             | "bs.set_index" | "set_index" -> 
               if String.length prim_name_check <> 0 then 
                 Location.raise_errorf ~loc "@set_index this particular external's name needs to be a placeholder empty string";
@@ -623,7 +623,7 @@ let external_desc_of_non_obj
       | _, `Nm_payload _ , `Nm_na
         ->
         Location.raise_errorf ~loc
-          "Incorrect FFI attribute found: (bs.new should not carry a payload here)"
+          "Incorrect FFI attribute found: (@new should not carry a payload here)"
     end
   | {module_as_val = Some _; _} ->
     Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
@@ -780,7 +780,7 @@ let external_desc_of_non_obj
     }
     -> Js_new {name; external_module_name;  scopes}
   | {new_name = #bundle_source ; _ } ->
-    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.new]")
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@new]")
   | {set_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      val_name = `Nm_na  ;
      call_name = `Nm_na ;
