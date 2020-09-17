@@ -6,15 +6,15 @@ to detect unused attributes in the future
 
 
 
-return
+
 obj
 val
 module
 scope
-variadic
-send
-new
-
+variadic -- done
+send -- done
+return -- done
+new -- done
 get_index -- done
 set_index -- done
 get -- done

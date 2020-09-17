@@ -287,8 +287,8 @@ exception Not_simple_form
     where [wrap] used to be simple instructions
     Note that [external] functions are forced to do eta-conversion
     when combined with [|>] operator, we need to make sure beta-reduction
-    is applied though since `[@bs.splice]` needs such guarantee.
-    Since `[@bs.splice] is the tail position
+    is applied though since `[@variadic]` needs such guarantee.
+    Since `[@variadic] is the tail position
 *)
 let rec is_eta_conversion_exn
     params inner_args outer_args : t list =

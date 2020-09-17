@@ -904,7 +904,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
            ]}
               is also wrong.
 
-              It seems, we need handle [@bs.splice] earlier
+              It seems, we need handle [@variadic] earlier
 
               or
            {[
@@ -912,7 +912,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
              let x0, x1, x2 =1,2,3 in
              (fun y -> f [|x0;x1;x2|] y)
            ]}
-              But this still need us to know [@bs.splice] in advance
+              But this still need us to know [@variadic] in advance
 
 
            we should not remove it immediately, since we have to be careful

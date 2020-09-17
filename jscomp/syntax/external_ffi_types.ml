@@ -96,10 +96,10 @@ type external_spec =
   match ffi with
   | Js_get_index _scope -> "@get_index .."
   | Js_set_index _scope -> "@set_index .."
-  | Js_get { js_get_name = s} -> Printf.sprintf "[@@bs.get %S]" s
-  | Js_set { js_set_name = s} -> Printf.sprintf "[@@bs.set %S]" s
-  | Js_call v  -> Printf.sprintf "[@@bs.val %S]" v.name
-  | Js_send v  -> Printf.sprintf "[@@bs.send %S]" v.name
+  | Js_get { js_get_name = s} -> Printf.sprintf "[@@get %S]" s
+  | Js_set { js_set_name = s} -> Printf.sprintf "[@@set %S]" s
+  | Js_call v  -> Printf.sprintf "[@@val %S]" v.name
+  | Js_send v  -> Printf.sprintf "[@@send %S]" v.name
   | Js_module_as_fn v  -> Printf.sprintf "[@@bs.val %S]" v.external_module_name.bundle
   | Js_new v  -> Printf.sprintf "[@@new %S]" v.name
   | Js_module_as_class v

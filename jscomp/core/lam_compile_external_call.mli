@@ -45,5 +45,5 @@ val translate_ffi :
   
 (** TODO: document supported attributes
     Attributes starting with `js` are reserved
-    examples: "bs.splice"
+    examples: "variadic"
  *)

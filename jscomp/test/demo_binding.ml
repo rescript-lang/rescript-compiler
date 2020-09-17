@@ -106,4 +106,4 @@ class type textArea =
 external set_interval : (unit -> unit [@bs]) -> float -> unit  =  "setInterval"
      [@@bs.module "@runtime", "Runtime"]
 
-external toFixed : float -> int -> string = "toFixed" [@@bs.send ]
+external toFixed : float -> int -> string = "toFixed" [@@send]

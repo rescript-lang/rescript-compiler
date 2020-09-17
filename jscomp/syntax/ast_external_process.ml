@@ -324,8 +324,9 @@ let parse_external_attributes
                 *)
                 | scopes ->  { st with scopes = scopes }
               end
-            | "bs.splice" | "bs.variadic" -> {st with splice = true}
-            | "bs.send" ->
+            | "bs.splice" 
+            | "bs.variadic" | "variadic" -> {st with splice = true}
+            | "bs.send" | "send" ->
               { st with val_send = name_from_payload_or_prim ~loc payload}
             | "bs.send.pipe"
               ->
@@ -720,21 +721,21 @@ let external_desc_of_non_obj
      return_wrapper = _ ;
     } ->
     (* PR #2162 - since when we assemble arguments the first argument in
-       [@@bs.send] is ignored
+       [@@send] is ignored
     *)
     begin match arg_type_specs with
       | [] ->
         Location.raise_errorf
-          ~loc "Ill defined attribute [@@bs.send] (the external needs to be a regular function call with at least one argument)"
+          ~loc "Ill defined attribute @send(the external needs to be a regular function call with at least one argument)"
       |  {arg_type = Arg_cst _ ; arg_label = _} :: _
         ->
         Location.raise_errorf
-          ~loc "Ill defined attribute [@@bs.send] (first argument can't be const)"
+          ~loc "Ill defined attribute @send(first argument can't be const)"
       | _ :: _  ->
         Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
     end
   | {val_send = #bundle_source; _ }
-    -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with [@@bs.send]"
+    -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with @send"
   | {val_send_pipe = Some _;
      (* splice = (false as splice); *)
      val_send = `Nm_na;
@@ -909,17 +910,17 @@ let handle_attributes
            if i = 0 && splice  then
              begin match arg_label with 
                | Optional _ -> 
-                 Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be a non optional"
+                 Location.raise_errorf ~loc "@@variadic expect the last type to be a non optional"
                | Labelled _ | Nolabel 
                 -> 
                 if ty.ptyp_desc = Ptyp_any then 
-                  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";                  
+                  Location.raise_errorf ~loc "@@variadic expect the last type to be an array";                  
                 if spec_of_ptyp true ty <> Nothing then 
-                  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
+                  Location.raise_errorf ~loc "@@variadic expect the last type to be an array";
                 match ty.ptyp_desc with 
                 | Ptyp_constr({txt = Lident "array"; _}, [_])
                   -> ()
-                | _ -> Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
+                | _ -> Location.raise_errorf ~loc "@@variadic expect the last type to be an array";
              end ; 
            let (arg_label : External_arg_spec.label_noname), arg_type, new_arg_types =
              match arg_label with
