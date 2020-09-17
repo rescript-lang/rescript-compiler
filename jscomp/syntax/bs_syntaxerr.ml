@@ -67,7 +67,7 @@ let pp_error fmt err =
     -> "Uncurried function doesn't support optional arguments yet"  
   | Expect_opt_in_bs_return_to_opt
       ->
-        "@return directive *_to_opt expect return type to be \n\
+        "%@return directive *_to_opt expect return type to be \n\
          syntax wise `_ option` for safety"
 
   | Not_supported_directive_in_bs_return
@@ -76,7 +76,7 @@ let pp_error fmt err =
   | Illegal_attribute ->
     "Illegal attributes"
   | Canot_infer_arity_by_syntax
-    ->   "Cannot infer the arity through the syntax, either [@uncurry n] or \n\
+    ->   "Cannot infer the arity through the syntax, either [%@uncurry n] or \n\
               write it in arrow syntax "
   | Inconsistent_arity (arity,n)
       -> Printf.sprintf "Inconsistent arity %d vs %d" arity n
@@ -87,7 +87,7 @@ let pp_error fmt err =
     ->
      "unsupported predicates"
   | Conflict_bs_bs_this_bs_meth ->
-     "@this, @bs, @meth can not be applied at the same time"
+     "%@this, %@bs, %@meth can not be applied at the same time"
   | Duplicated_bs_deriving
     -> "duplicate bs.deriving attribute"
   | Conflict_attributes
@@ -96,7 +96,7 @@ let pp_error fmt err =
     -> "expect string literal "
   | Duplicated_bs_as
     ->
-    "duplicate @as "
+    "duplicate %@as "
   | Expect_int_literal
     ->
     "expect int literal "
@@ -113,20 +113,20 @@ let pp_error fmt err =
     "_ is not allowed in combination with external optional type"
   | Invalid_bs_string_type
     ->
-    "Not a valid type for @string"
+    "Not a valid type for %@string"
   | Invalid_bs_int_type
     ->
-    "Not a valid type for @int"
+    "Not a valid type for %@int"
   | Invalid_bs_unwrap_type
     ->
-    "Not a valid type for @unwrap. Type must be an inline variant (closed), and\n\
+    "Not a valid type for %@unwrap. Type must be an inline variant (closed), and\n\
      each constructor must have an argument."
   | Conflict_ffi_attribute str
     ->
     "Conflicting FFI attributes found: " ^ str
   | Bs_this_simple_pattern
     ->
-    "@this expect its pattern variable to be simple form")
+    "%@this expect its pattern variable to be simple form")
 
 type exn +=  Error of Location.t * error
 

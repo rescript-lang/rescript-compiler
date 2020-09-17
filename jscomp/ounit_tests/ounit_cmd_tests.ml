@@ -50,7 +50,7 @@ let suites =
       = ""
       [@@bs.send.pipe:int]
       [@@bs.splice]|}|] in  
-      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "bs.splice")
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "variadic")
     end;
         __LOC__ >:: begin fun _ -> 
     let v_output = perform_bsc [|"-bs-eval"; {|external
@@ -59,7 +59,7 @@ let suites =
   = ""
   [@@bs.send.pipe:int]
   [@@bs.splice]  |}|] in  
-      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "bs.splice")
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "variadic")
     end;
 
     __LOC__ >:: begin fun _ ->

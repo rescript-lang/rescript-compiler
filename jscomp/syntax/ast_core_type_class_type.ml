@@ -174,7 +174,7 @@ let typ_mapper
               | Uncurry attr , attrs ->
                 attrs, attr +> ty
               | Method _, _
-                -> Location.raise_errorf ~loc "@get/set conflicts with @meth"
+                -> Location.raise_errorf ~loc "%@get/set conflicts with %@meth"
               | Meth_callback attr, attrs ->
                 attrs, attr +> ty 
             in 
@@ -186,7 +186,7 @@ let typ_mapper
               | Uncurry attr, attrs ->
                 attrs, attr +> ty 
               | Method _, _
-                -> Location.raise_errorf ~loc "@get/set conflicts with @meth"
+                -> Location.raise_errorf ~loc "%@get/set conflicts with %@meth"
               | Meth_callback attr, attrs ->
                 attrs, attr +> ty
             in               
