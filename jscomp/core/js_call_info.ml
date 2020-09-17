@@ -37,7 +37,7 @@ type call_info =
   | Call_ml (* called by plain ocaml expression *)
   | Call_builtin_runtime (* built-in externals *)
   | Call_na 
-  (* either from [@@bs.val] or not available, 
+  (* either from [@@val] or not available, 
      such calls does not follow such rules
      {[ fun x y -> (f x y) === f ]} when [f] is an atom     
 

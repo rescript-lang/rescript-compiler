@@ -167,11 +167,11 @@ let get_opt_arg_type
 
 
 (**
-   [@@bs.module "react"]
-   [@@bs.module "react"]
+   [@@module "react"]
+   [@@module "react"]
    ---
-   [@@bs.module "@" "react"]
-   [@@bs.module "@" "react"]
+   [@@module "@" "react"]
+   [@@module "@" "react"]
 
    They should have the same module name
 
@@ -179,7 +179,7 @@ let get_opt_arg_type
    two external files to the same module name
 *)
 type bundle_source =
-  [`Nm_payload of string (* from payload [@@bs.val "xx" ]*)
+  [`Nm_payload of string (* from payload [@@val "xx" ]*)
   |`Nm_external of string (* from "" in external *)
   | `Nm_val of string lazy_t   (* from function name *)
   ]
@@ -268,7 +268,7 @@ let parse_external_attributes
     match payload with
     | PStr [] ->
       (prim_name_or_pval_prim :> name_source)
-    (* It is okay to have [@@bs.val] without payload *)
+    (* It is okay to have [@@val] without payload *)
     | _ ->
       begin match Ast_payload.is_single_string payload with
         | Some  (val_name, _) ->  `Nm_payload val_name
@@ -289,13 +289,13 @@ let parse_external_attributes
             {st with external_module_name = Some { bundle; module_bind_name = Phint_nothing}}          
         else         
            let action () = begin match txt with
-            | "bs.val" ->
+            | "bs.val" | "val" ->
               if no_arguments then
                 {st with val_name = name_from_payload_or_prim ~loc payload}
               else
                 {st with call_name = name_from_payload_or_prim ~loc payload}
 
-            | "bs.module" ->
+            | "bs.module" | "module" ->
               begin match Ast_payload.assert_strings loc payload with
                 | [bundle] ->
                   {st with external_module_name =
@@ -617,7 +617,7 @@ let external_desc_of_non_obj
       | [], `Nm_na,  _ -> Js_module_as_var external_module_name
       | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
       | _, #bundle_source, #bundle_source ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
+        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with @@module.")
 
       | _, (`Nm_val _ | `Nm_external _) , `Nm_na
         -> Js_module_as_class external_module_name
@@ -627,7 +627,7 @@ let external_desc_of_non_obj
           "Incorrect FFI attribute found: (@new should not carry a payload here)"
     end
   | {module_as_val = Some _; _} ->
-    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with @@module.")
   | {call_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name) ;
      splice;
      scopes ;
@@ -649,7 +649,7 @@ let external_desc_of_non_obj
     Js_call {splice; name; external_module_name; scopes }
   | {call_name = #bundle_source ; _ }
     ->
-    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with @val")
   | {val_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      external_module_name;
 
@@ -670,13 +670,13 @@ let external_desc_of_non_obj
     -> (* 
     if no_arguments -->
           {[
-            external ff : int = "" [@@bs.val]
+            external ff : int = "" [@@val]
           ]}
        *)
     Js_var { name; external_module_name; scopes}
   | {val_name = #bundle_source ; _ }
     ->
-    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with @val")
 
   | {splice ;
      scopes ;
@@ -699,7 +699,7 @@ let external_desc_of_non_obj
     if arg_type_specs_length  = 0 then
       (*
          {[
-           external ff : int = "" [@@bs.module "xx"]
+           external ff : int = "" [@@module "xx"]
          ]}
       *)
       Js_var { name; external_module_name; scopes}
@@ -846,7 +846,7 @@ let external_desc_of_non_obj
      return_wrapper = _;
 
     }
-    ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  
+    ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot %@val? "  
 
 (** Note that the passed [type_annotation] is already processed by visitor pattern before*)
 let handle_attributes

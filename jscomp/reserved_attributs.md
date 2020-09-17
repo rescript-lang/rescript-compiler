@@ -7,10 +7,10 @@ to detect unused attributes in the future
 
 
 
-obj
-val
-module
 scope
+val -- done
+module -- done
+obj -- done
 variadic -- done
 send -- done
 return -- done

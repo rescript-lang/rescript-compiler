@@ -252,7 +252,7 @@ let translate_scoped_module_val
         Ext_list.fold_left (Ext_list.append rest  [fn]) start E.dot
     end
   | None ->  
-    (*  no [@@bs.module], assume it's global *)
+    (*  no [@@module], assume it's global *)
     begin match scopes with 
       | [] -> 
         E.js_global fn

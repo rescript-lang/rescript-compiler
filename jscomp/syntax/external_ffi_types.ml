@@ -100,16 +100,16 @@ type external_spec =
   | Js_set { js_set_name = s} -> Printf.sprintf "[@@set %S]" s
   | Js_call v  -> Printf.sprintf "[@@val %S]" v.name
   | Js_send v  -> Printf.sprintf "[@@send %S]" v.name
-  | Js_module_as_fn v  -> Printf.sprintf "[@@bs.val %S]" v.external_module_name.bundle
+  | Js_module_as_fn v  -> Printf.sprintf "[@@val %S]" v.external_module_name.bundle
   | Js_new v  -> Printf.sprintf "[@@new %S]" v.name
   | Js_module_as_class v
-    -> Printf.sprintf "[@@bs.module] %S " v.bundle
+    -> Printf.sprintf "[@@module] %S " v.bundle
   | Js_module_as_var v
     ->
-    Printf.sprintf "[@@bs.module] %S " v.bundle
-  | Js_var v (* FIXME: could be [@@bs.module "xx"] as well *)
+    Printf.sprintf "[@@module] %S " v.bundle
+  | Js_var v (* FIXME: could be [@@module "xx"] as well *)
     ->
-    Printf.sprintf "[@@bs.val] %S " v.name *)
+    Printf.sprintf "[@@val] %S " v.name *)
 
 type return_wrapper =
   | Return_unset
