@@ -151,7 +151,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
                }
              | Some e ->
                Location.raise_errorf
-                 ~loc:e.pexp_loc "`with` construct is not supported in bs.obj ")
+                 ~loc:e.pexp_loc "`with` construct is not supported in obj ")
           else
             default_expr_mapper self e
         | Pexp_object {pcstr_self;  pcstr_fields} ->

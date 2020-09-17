@@ -111,7 +111,7 @@ let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
        Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
        begin match cst with 
          | Int i -> 
-           (* This type is used in bs.obj only to construct obj type*)
+           (* This type is used in obj only to construct obj type*)
            Arg_cst(External_arg_spec.cst_int i)
          | Str i->
            Arg_cst (External_arg_spec.cst_string i)     
@@ -136,7 +136,7 @@ let refine_obj_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
     |  None ->
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
     | Some (Int i) -> (* (_[@as ])*)
-      (* This type is used in bs.obj only to construct obj type*)
+      (* This type is used in obj only to construct obj type*)
        Arg_cst(External_arg_spec.cst_int i)
     | Some (Str i)->
        Arg_cst (External_arg_spec.cst_string i)
@@ -147,10 +147,10 @@ let refine_obj_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
 
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
-    and result type in [@@bs.obj]
+    and result type in [@@obj]
     They are not the same though, for example
     {[
-      external f : hi:([ `hi | `lo ] [@string]) -> unit -> _ = "" [@@bs.obj]
+      external f : hi:([ `hi | `lo ] [@string]) -> unit -> _ = "" [@@obj]
     ]}
     The result type would be [ hi:string ]
 *)
@@ -159,7 +159,7 @@ let get_opt_arg_type
     (ptyp : Ast_core_type.t) :
   External_arg_spec.attr  =
   if ptyp.ptyp_desc = Ptyp_any then (* (_[@as ])*)
-    (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
+    (* extenral f : ?x:_ -> y:int -> _ = "" [@@obj] is not allowed *)
     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
   (* ([`a|`b] [@@string]) *)    
   spec_of_ptyp nolabel ptyp
@@ -345,7 +345,7 @@ let parse_external_attributes
               if String.length prim_name_check <> 0 then
                 Location.raise_errorf ~loc "@get_index this particular external's name needs to be a placeholder empty string";
               {st with get_index = true}
-            | "bs.obj" -> {st with mk_obj = true}
+            | "bs.obj" | "obj" -> {st with mk_obj = true}
             | "bs.return" | "return" ->
               let actions =
                 Ast_payload.ident_or_record_as_config loc payload in
@@ -424,11 +424,11 @@ let process_obj
     set_index = false ;
     mk_obj = _;
     scopes = [];
-    (* wrapper does not work with [bs.obj]
+    (* wrapper does not work with @obj
        TODO: better error message *)
   } ->
     if String.length prim_name <> 0 then
-      Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
+      Location.raise_errorf ~loc "@@obj expect external names to be empty string";
     let arg_kinds, new_arg_types_ty, (result_types : Parsetree.object_field list) =
       Ext_list.fold_right arg_types_ty ( [], [], [])
         (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
@@ -474,15 +474,15 @@ let process_obj
                    (Otag({Asttypes.txt = name; loc}, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc
-                     "The combination of @obj, @uncurry is not supported yet"
+                     "The combination of @@obj, @@uncurry is not supported yet"
                  | Extern_unit -> assert false
                  | Poly_var _ 
                    ->
                    Location.raise_errorf ~loc
-                     "bs.obj label %s does not support such arg type" name
+                     "@@obj label %s does not support such arg type" name
                  | Unwrap ->
                    Location.raise_errorf ~loc
-                     "bs.obj label %s does not support @unwrap arguments" name
+                     "@@obj label %s does not support @unwrap arguments" name
                end
              | Optional name ->
                let obj_arg_type = get_opt_arg_type ~nolabel:false  ty in
@@ -507,18 +507,18 @@ let process_obj
                    (Otag ({Asttypes.txt = name; loc}, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
                  | Arg_cst _
                    ->
-                   Location.raise_errorf ~loc "@as is not supported with optional yet"
+                   Location.raise_errorf ~loc "@@as is not supported with optional yet"
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc
-                     "The combination of @obj, @uncurry is not supported yet"
+                     "The combination of @@obj, @@uncurry is not supported yet"
                  | Extern_unit   -> assert false
                  | Poly_var _
                    ->
                    Location.raise_errorf ~loc
-                     "bs.obj label %s does not support such arg type" name
+                     "@@obj label %s does not support such arg type" name
                  | Unwrap ->
                    Location.raise_errorf ~loc
-                     "bs.obj label %s does not support @unwrap arguments" name
+                     "@@obj label %s does not support @unwrap arguments" name
                end
            in
            new_arg_label::arg_labels,
@@ -535,7 +535,7 @@ let process_obj
     in
     Ast_compatible.mk_fn_type new_arg_types_ty result,
     External_ffi_types.ffi_obj_create arg_kinds
-  | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
+  | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with @@obj"
 
 
 let external_desc_of_non_obj 
