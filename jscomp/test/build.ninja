@@ -336,7 +336,7 @@ build test/gpr_858_test.cmi test/gpr_858_test.cmj : cc test/gpr_858_test.ml | $s
 build test/gpr_858_unit2_test.cmi test/gpr_858_unit2_test.cmj : cc test/gpr_858_unit2_test.ml | $stdlib
 build test/gpr_904_test.cmi test/gpr_904_test.cmj : cc test/gpr_904_test.ml | test/mt.cmj $stdlib
 build test/gpr_974_test.cmi test/gpr_974_test.cmj : cc test/gpr_974_test.ml | $stdlib
-build test/gpr_977_test.cmi test/gpr_977_test.cmj : cc test/gpr_977_test.ml | test/mt.cmj $stdlib
+build test/gpr_977_test.cmi test/gpr_977_test.cmj : cc test/gpr_977_test.ml | test/mt.cmj test/nativeint.cmj $stdlib
 build test/gpr_return_type_unused_attribute.cmi test/gpr_return_type_unused_attribute.cmj : cc test/gpr_return_type_unused_attribute.ml | $stdlib
 build test/gray_code_test.cmi test/gray_code_test.cmj : cc test/gray_code_test.ml | $stdlib
 build test/guide_for_ext.cmi test/guide_for_ext.cmj : cc test/guide_for_ext.ml | $stdlib
@@ -374,7 +374,7 @@ build test/int32_test.cmi test/int32_test.cmj : cc test/int32_test.ml | test/ext
 build test/int64_mul_div_test.cmi test/int64_mul_div_test.cmj : cc test/int64_mul_div_test.ml | test/mt.cmj $stdlib
 build test/int64_string_bench.cmi test/int64_string_bench.cmj : cc test/int64_string_bench.ml | $stdlib
 build test/int64_string_test.cmi test/int64_string_test.cmj : cc test/int64_string_test.ml | test/mt.cmj $stdlib
-build test/int64_test.cmi test/int64_test.cmj : cc test/int64_test.ml | test/ext_array_test.cmj test/mt.cmj $stdlib
+build test/int64_test.cmi test/int64_test.cmj : cc test/int64_test.ml | test/ext_array_test.cmj test/mt.cmj test/nativeint.cmj $stdlib
 build test/int_hashtbl_test.cmi test/int_hashtbl_test.cmj : cc test/int_hashtbl_test.ml | test/mt.cmj $stdlib
 build test/int_map.cmi test/int_map.cmj : cc test/int_map.ml | $stdlib
 build test/int_overflow_test.cmi test/int_overflow_test.cmj : cc test/int_overflow_test.ml | test/mt.cmj $stdlib
@@ -453,6 +453,8 @@ build test/mutable_obj_test.cmi test/mutable_obj_test.cmj : cc test/mutable_obj_
 build test/mutable_uncurry_test.cmi test/mutable_uncurry_test.cmj : cc test/mutable_uncurry_test.ml | test/mt.cmj $stdlib
 build test/mutual_non_recursive_type.cmi test/mutual_non_recursive_type.cmj : cc test/mutual_non_recursive_type.ml | $stdlib
 build test/name_mangle_test.cmi test/name_mangle_test.cmj : cc test/name_mangle_test.ml | test/mt.cmj $stdlib
+build test/nativeint.cmj : cc_cmi test/nativeint.ml | test/nativeint.cmi $stdlib
+build test/nativeint.cmi : cc test/nativeint.mli | $stdlib
 build test/nested_include.cmi test/nested_include.cmj : cc test/nested_include.ml | $stdlib
 build test/nested_module_alias.cmi test/nested_module_alias.cmj : cc test/nested_module_alias.ml | $stdlib
 build test/nested_obj_literal.cmi test/nested_obj_literal.cmj : cc test/nested_obj_literal.ml | $stdlib
@@ -470,12 +472,12 @@ build test/obj_magic_test.cmi test/obj_magic_test.cmj : cc test/obj_magic_test.m
 build test/obj_repr_test.cmi test/obj_repr_test.cmj : cc test/obj_repr_test.ml | $stdlib
 build test/obj_test.cmi test/obj_test.cmj : cc test/obj_test.ml | test/mt.cmj $stdlib
 build test/obj_type_test.cmi test/obj_type_test.cmj : cc test/obj_type_test.ml | $stdlib
-build test/ocaml_parsetree_test.cmj : cc_cmi test/ocaml_parsetree_test.ml | test/ocaml_parsetree_test.cmi $stdlib
+build test/ocaml_parsetree_test.cmj : cc_cmi test/ocaml_parsetree_test.ml | test/nativeint.cmj test/ocaml_parsetree_test.cmi $stdlib
 build test/ocaml_parsetree_test.cmi : cc test/ocaml_parsetree_test.mli | $stdlib
 build test/ocaml_proto_test.cmj : cc_cmi test/ocaml_proto_test.ml | test/mt.cmj test/ocaml_proto_test.cmi $stdlib
 build test/ocaml_proto_test.cmi : cc test/ocaml_proto_test.mli | $stdlib
 build test/ocaml_re_test.cmi test/ocaml_re_test.cmj : cc test/ocaml_re_test.ml | test/mt.cmj $stdlib
-build test/ocaml_typedtree_test.cmj : cc_cmi test/ocaml_typedtree_test.ml | test/ocaml_typedtree_test.cmi $stdlib
+build test/ocaml_typedtree_test.cmj : cc_cmi test/ocaml_typedtree_test.ml | test/nativeint.cmj test/ocaml_typedtree_test.cmi $stdlib
 build test/ocaml_typedtree_test.cmi : cc test/ocaml_typedtree_test.mli | $stdlib
 build test/of_string_test.cmi test/of_string_test.cmj : cc test/of_string_test.ml | test/mt.cmj $stdlib
 build test/offset.cmi test/offset.cmj : cc test/offset.ml | $stdlib
@@ -485,7 +487,7 @@ build test/opr_4560_test.cmi test/opr_4560_test.cmj : cc test/opr_4560_test.ml |
 build test/option_repr_test.cmi test/option_repr_test.cmj : cc test/option_repr_test.ml | test/mt.cmj $stdlib
 build test/optional_ffi_test.cmi test/optional_ffi_test.cmj : cc test/optional_ffi_test.ml | test/mt.cmj $stdlib
 build test/optional_regression_test.cmi test/optional_regression_test.cmj : cc test/optional_regression_test.ml | test/mt.cmj $stdlib
-build test/parser_api.cmi test/parser_api.cmj : cc test/parser_api.ml | $stdlib
+build test/parser_api.cmi test/parser_api.cmj : cc test/parser_api.ml | test/nativeint.cmj $stdlib
 build test/parser_api_test.cmi test/parser_api_test.cmj : cc test/parser_api_test.ml | test/mt.cmj test/parser_api.cmj $stdlib
 build test/pipe_send_readline.cmi test/pipe_send_readline.cmj : cc test/pipe_send_readline.ml | $stdlib
 build test/pipe_syntax.cmi test/pipe_syntax.cmj : cc test/pipe_syntax.ml | $stdlib
@@ -564,7 +566,7 @@ build test/sexp.cmi : cc test/sexp.mli | $stdlib
 build test/sexpm.cmj : cc_cmi test/sexpm.ml | test/sexpm.cmi $stdlib
 build test/sexpm.cmi : cc test/sexpm.mli | $stdlib
 build test/sexpm_test.cmi test/sexpm_test.cmj : cc test/sexpm_test.ml | test/mt.cmj test/sexpm.cmj $stdlib
-build test/shift_test.cmi test/shift_test.cmj : cc test/shift_test.ml | $stdlib
+build test/shift_test.cmi test/shift_test.cmj : cc test/shift_test.ml | test/nativeint.cmj $stdlib
 build test/side_effect.cmi test/side_effect.cmj : cc test/side_effect.ml | $stdlib
 build test/side_effect_free.cmi test/side_effect_free.cmj : cc test/side_effect_free.ml | $stdlib
 build test/simple_derive_test.cmj : cc_cmi test/simple_derive_test.ml | test/simple_derive_test.cmi $stdlib
@@ -716,7 +718,7 @@ build test/ticker.cmi test/ticker.cmj : cc test/ticker.ml | $stdlib
 build test/to_string_test.cmi test/to_string_test.cmj : cc test/to_string_test.ml | test/mt.cmj $stdlib
 build test/topsort_test.cmi test/topsort_test.cmj : cc test/topsort_test.ml | $stdlib
 build test/tramp_fib.cmi test/tramp_fib.cmj : cc test/tramp_fib.ml | test/mt.cmj $stdlib
-build test/tscanf_test.cmi test/tscanf_test.cmj : cc test/tscanf_test.ml | test/mt.cmj test/mt_global.cmj test/testing.cmj $stdlib
+build test/tscanf_test.cmi test/tscanf_test.cmj : cc test/tscanf_test.ml | test/mt.cmj test/mt_global.cmj test/nativeint.cmj test/testing.cmj $stdlib
 build test/tuple_alloc.cmi test/tuple_alloc.cmj : cc test/tuple_alloc.ml | $stdlib
 build test/type_disambiguate.cmi test/type_disambiguate.cmj : cc test/type_disambiguate.ml | $stdlib
 build test/typeof_test.cmi test/typeof_test.cmj : cc test/typeof_test.ml | test/mt.cmj $stdlib
