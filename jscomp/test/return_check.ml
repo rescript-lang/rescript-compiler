@@ -23,7 +23,7 @@ let test dom =
 
 
 external get_undefined : int array -> int -> int option = "" 
-[@@bs.get_index] [@@bs.return { undefined_to_opt }]
+[@@bs.get_index] [@@return undefined_to_opt ]
 
 
 let f_undefined xs i = 

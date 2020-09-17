@@ -67,7 +67,7 @@ let pp_error fmt err =
     -> "Uncurried function doesn't support optional arguments yet"  
   | Expect_opt_in_bs_return_to_opt
       ->
-        "bs.return directive *_to_opt expect return type to be \n\
+        "@return directive *_to_opt expect return type to be \n\
          syntax wise `_ option` for safety"
 
   | Not_supported_directive_in_bs_return

@@ -345,7 +345,7 @@ let parse_external_attributes
                 Location.raise_errorf ~loc "@get_index this particular external's name needs to be a placeholder empty string";
               {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
-            | "bs.return" ->
+            | "bs.return" | "return" ->
               let actions =
                 Ast_payload.ident_or_record_as_config loc payload in
               begin match actions with
