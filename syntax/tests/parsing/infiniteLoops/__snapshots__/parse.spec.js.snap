@@ -180,6 +180,7 @@ let (a : action) = AddUser \\"test\\"
   
   consecutive statements on a line must be separated by ';' or a newline
 
+
   Syntax error!
   parsing/infiniteLoops/jsxChildren.js:1:22-29  
   1 │ type action = AddUser<string>
@@ -610,6 +611,7 @@ include
   
   consecutive statements on a line must be separated by ';' or a newline
 
+
   Syntax error!
   parsing/infiniteLoops/nonRecTypes.js:67:26-68:3  
   65 │         };
@@ -621,6 +623,7 @@ include
   70 │   let nodeToRemove =
   
   I'm not sure what to parse here when looking at \\"let\\".
+
 
   Syntax error!
   parsing/infiniteLoops/nonRecTypes.js:68:21-69:3  
@@ -634,6 +637,7 @@ include
   
   I'm not sure what to parse here when looking at \\"let\\".
 
+
   Syntax error!
   parsing/infiniteLoops/nonRecTypes.js:434:31-38  
   432 │     updateSum(Some(node), ~delta);
@@ -644,7 +648,6 @@ include
   
   Type parameters require angle brackets:
   oldNewVisibleNodes<'value>
-
 
 
 ========================================================"

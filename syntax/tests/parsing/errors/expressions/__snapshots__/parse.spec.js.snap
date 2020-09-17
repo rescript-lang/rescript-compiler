@@ -31,7 +31,6 @@ let x = ((let a = 1 in let b = 2 in fun pattern -> (\\"test\\" : int))
   2) (pattern: int) => \\"test\\"
 
 
-
 ========================================================"
 `;
 
@@ -108,6 +107,7 @@ let pipeline =
   
   Did you forget a \`)\` here?
 
+
   Syntax error!
   parsing/errors/expressions/block.js:18:25-19:1  
   16 │ 
@@ -118,6 +118,7 @@ let pipeline =
   21 │ switch stack {
   
   Did you forget a \`)\` here?
+
 
   Syntax error!
   parsing/errors/expressions/block.js:22:11-23:1  
@@ -130,6 +131,7 @@ let pipeline =
   
   Looks like there might be an expression missing here
 
+
   Syntax error!
   parsing/errors/expressions/block.js:26:7-27:1  
   24 │ | Join(doc1, doc2) =>
@@ -140,6 +142,7 @@ let pipeline =
   29 │ let pipeline = switch scheduler {
   
   Did you forget a \`)\` here?
+
 
   Syntax error!
   parsing/errors/expressions/block.js:30:10-31:1  
@@ -173,6 +176,7 @@ let () = ((let open Foo in let exception End  in x ())[@ns.braces ])
   
   consecutive statements on a line must be separated by ';' or a newline
 
+
   Syntax error!
   parsing/errors/expressions/consecutive.res:4:7  
   2 │ 
@@ -183,6 +187,7 @@ let () = ((let open Foo in let exception End  in x ())[@ns.braces ])
   
   consecutive expressions on a line must be separated by ';' or a newline
 
+
   Syntax error!
   parsing/errors/expressions/consecutive.res:8:16-27  
    6 │ 
@@ -192,6 +197,7 @@ let () = ((let open Foo in let exception End  in x ())[@ns.braces ])
   10 │ 
   
   consecutive expressions on a line must be separated by ';' or a newline
+
 
   Syntax error!
   parsing/errors/expressions/consecutive.res:12:11-20  
@@ -220,6 +226,7 @@ let f a b = ((())[@ns.braces ])
   3 │ let f = (a, b) => {}
   
   This let-binding misses an expression
+
 
   Syntax error!
   parsing/errors/expressions/emptyBlock.js:3:20  
@@ -299,7 +306,6 @@ switch result {
 }
 
 
-
 ========================================================"
 `;
 
@@ -351,6 +357,7 @@ let x =
   
   I'm not sure what to parse here when looking at \\"-\\".
 
+
   Syntax error!
   parsing/errors/expressions/jsx.js:2:20  
   1 │ let x = <di-v />
@@ -359,6 +366,7 @@ let x =
   4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
   
   Did you forget a \`</\` here?
+
 
   Syntax error!
   parsing/errors/expressions/jsx.js:3:9-28  
@@ -370,6 +378,7 @@ let x =
   
   Missing </Foo.Bar>
 
+
   Syntax error!
   parsing/errors/expressions/jsx.js:4:9-34  
   2 │ let x = <Unclosed >;
@@ -380,6 +389,7 @@ let x =
   
   Missing </Foo.Bar.Baz>
 
+
   Syntax error!
   parsing/errors/expressions/jsx.js:5:9-27  
   3 │ let x = <Foo.Bar></Free.Will>;
@@ -389,6 +399,7 @@ let x =
   7 │ 
   
   Missing </Foo.bar>
+
 
   Syntax error!
   parsing/errors/expressions/jsx.js:6:17  
@@ -436,6 +447,7 @@ let record = { field = ([%rescript.exprhole ]) }
   
   Did you forget a \`,\` here?
 
+
   Syntax error!
   parsing/errors/expressions/record.js:8:10-18  
    6 │ 
@@ -445,6 +457,7 @@ let record = { field = ([%rescript.exprhole ]) }
   10 │ }
   
   Did you forget a \`:\` here?
+
 
   Syntax error!
   parsing/errors/expressions/record.js:13:9-17:0  
@@ -545,7 +558,6 @@ let x = (\\"hi\\" : string)
   
   Expressions with type constraints need to be wrapped in parens:
   (\\"hi\\": string)
-
 
 
 ========================================================"

@@ -5004,9 +5004,9 @@ let printImplementation ~width (s: Parsetree.structure) ~comments =
   (* CommentTable.log cmtTbl; *)
   let doc = printStructure s cmtTbl in
   (* Doc.debug doc; *)
-  Doc.toString ~width doc
+  Doc.toString ~width doc ^ "\n"
 
 let printInterface ~width (s: Parsetree.signature) ~comments =
   let cmtTbl = CommentTable.make () in
   CommentTable.walkSignature s cmtTbl comments;
-  Doc.toString ~width (printSignature s cmtTbl)
+  Doc.toString ~width (printSignature s cmtTbl) ^ "\n"

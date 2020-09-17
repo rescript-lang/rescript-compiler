@@ -11,11 +11,6 @@ let create n =
 
 let contents b = Bytes.sub_string b.buffer 0 b.position
 
-let unsafe_get b ofs =
-  Bytes.unsafe_get b.buffer ofs
-
-let length b = b.position
-
 (* Can't be called directly, don't add to the interface *)
 let resize_internal b more =
   let len = b.length in

@@ -36,6 +36,7 @@ val z2 : float[@@genType ]
   
   consecutive specifications on a line must be separated by ';' or a newline
 
+
   Syntax error!
   parsing/errors/signature/consecutive.resi:3:15-21  
   1 │ let x: int let y: float

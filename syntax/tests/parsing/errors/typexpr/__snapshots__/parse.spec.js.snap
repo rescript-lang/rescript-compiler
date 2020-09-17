@@ -28,6 +28,7 @@ module Error3 =
   
   Did you forget a \`=>\` here?
 
+
   Syntax error!
   parsing/errors/typexpr/arrow.js:7:27-30  
   5 │   type observation ={
@@ -37,6 +38,7 @@ module Error3 =
   9 │ }
   
   Did you forget a \`:\` here? It signals the start of a type
+
 
   Syntax error!
   parsing/errors/typexpr/arrow.js:14:26-29  
@@ -85,6 +87,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   
   Did you forget a \`:\` here? It signals the start of a type
 
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js:7:14-8:13  
    5 │ 
@@ -95,6 +98,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   10 │ 
   
   Did you forget a \`:\` here? It signals the start of a type
+
 
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js:13:14-14:13  
@@ -107,6 +111,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   
   Did you forget a \`:\` here? It signals the start of a type
 
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js:19:14-20:1  
   17 │ type state = {
@@ -118,6 +123,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   
   Did you forget a \`:\` here? It signals the start of a type
 
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js:25:1  
   23 │   @bs.meth
@@ -127,6 +133,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   27 │ type state = {
   
   I'm missing a type here
+
 
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js:28:10  
@@ -138,6 +145,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   
   I'm missing a type here
 
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js:33:18  
   31 │ 
@@ -148,6 +156,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   
   I'm missing a type here
 
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js:37:25  
   35 │ }
@@ -157,6 +166,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   39 │   ..
   
   I'm missing a type here
+
 
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js:40:8-41:8  
@@ -169,6 +179,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   
   Did you forget a \`:\` here? It signals the start of a type
 
+
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js:46:3-11  
   44 │ type websocket = {
@@ -178,6 +189,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
   48 │ 
   
   I'm missing a type here
+
 
   Syntax error!
   parsing/errors/typexpr/bsObjSugar.js:50:7-51:0  
@@ -281,6 +293,7 @@ type nonrec 'A x = 'let
   3 │ 
   
   A type variable consists of a singlequote followed by a name like \`'a\` or \`'A\`
+
 
   Syntax error!
   parsing/errors/typexpr/typeVar.res:2:15-17  

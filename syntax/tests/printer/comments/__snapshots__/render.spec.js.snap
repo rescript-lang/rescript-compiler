@@ -902,6 +902,7 @@ exports[`extensionConstructor.res 1`] = `
 
 exports[`fileWithOneSingleLineComment.res 1`] = `
 "// retain this comment
+
 "
 `;
 
@@ -914,6 +915,7 @@ comment
 */
 
 // more comments
+
 "
 `;
 
@@ -947,6 +949,7 @@ let getZ2 = nested =>
 
 exports[`interfaceWithOneSingleComment.resi 1`] = `
 "// retain this comment
+
 "
 `;
 
@@ -956,6 +959,7 @@ exports[`interfaceWithOnlyComments.resi 1`] = `
 /* test */
 
 // ok
+
 "
 `;
 

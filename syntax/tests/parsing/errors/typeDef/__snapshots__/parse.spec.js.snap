@@ -64,6 +64,7 @@ let make (props : < handleClick: Click.t -> unit  ;value: string   >  Js.t) =
   
   An inline record type declaration is only allowed in a variant constructor's declaration
 
+
   Syntax error!
   parsing/errors/typeDef/inlineRecord.res:14:5-10  
   12 ┆ name: string,
@@ -73,6 +74,7 @@ let make (props : < handleClick: Click.t -> unit  ;value: string   >  Js.t) =
   16 ┆ }
   
   An inline record type declaration is only allowed in a variant constructor's declaration
+
 
   Syntax error!
   parsing/errors/typeDef/inlineRecord.res:19:21-31  
@@ -120,6 +122,7 @@ type t = [ [%rescript.typehole ] | [%rescript.typehole ]]
   
   I'm not sure what to parse here when looking at \\"]\\".
 
+
   Syntax error!
   parsing/errors/typeDef/polyvariant.js:3:13-14  
   1 │ type t = [< ]
@@ -129,6 +132,7 @@ type t = [ [%rescript.typehole ] | [%rescript.typehole ]]
   5 │ type z = [< | #A | #B > ]
   
   Did you forget a \`|\` here?
+
 
   Syntax error!
   parsing/errors/typeDef/polyvariant.js:7:15  
@@ -181,6 +185,7 @@ type nonrec state = [%rescript.typehole ]
   
   Did you forget a \`=\` here?
 
+
   Syntax error!
   parsing/errors/typeDef/typeDef.js:8:1-4  
   6 │ 
@@ -189,6 +194,7 @@ type nonrec state = [%rescript.typehole ]
   9 │ 
   
   Missing a type here
+
 
   Syntax error!
   parsing/errors/typeDef/typeDef.js:9:1  
@@ -244,6 +250,7 @@ type nonrec ('from, 'foo) derivedNode =
   
   \`to\` is a reserved keyword. Keywords need to be escaped: \\\\\\"to\\"
 
+
   Syntax error!
   parsing/errors/typeDef/typeParams.js:10:26  
    8 │ }
@@ -254,6 +261,7 @@ type nonrec ('from, 'foo) derivedNode =
   
   A type param consists of a singlequote followed by a name like \`'a\` or \`'A\`
 
+
   Syntax error!
   parsing/errors/typeDef/typeParams.js:15:26  
   13 │ }
@@ -263,6 +271,7 @@ type nonrec ('from, 'foo) derivedNode =
   17 │   updateF: 'from => 'to_,
   
   A type param consists of a singlequote followed by a name like \`'a\` or \`'A\`
+
 
   Syntax error!
   parsing/errors/typeDef/typeParams.js:21:25-27  

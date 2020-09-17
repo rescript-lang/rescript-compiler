@@ -209,10 +209,6 @@ let toString ~width doc =
       end
   in
   process ~pos:0 [] [0, Flat, doc];
-
-  let len = MiniBuffer.length buffer in
-  if len > 0 && MiniBuffer.unsafe_get buffer (len - 1) != '\n' then
-    MiniBuffer.add_char buffer '\n';
   MiniBuffer.contents buffer
 
 
