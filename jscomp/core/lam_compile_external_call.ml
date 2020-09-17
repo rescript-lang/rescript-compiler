@@ -382,7 +382,7 @@ let translate_ffi
 
     (* TODO #11
        1. check args -- error checking 
-       2. support [@@bs.scope "window"]
+       2. support [@@scope "window"]
        we need know whether we should call [add_js_module] or not 
     *)
       translate_scoped_module_val external_module_name name scopes

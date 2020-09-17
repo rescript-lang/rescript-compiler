@@ -315,7 +315,7 @@ let parse_external_attributes
                 | _  ->
                   Bs_syntaxerr.err loc Illegal_attribute
               end
-            | "bs.scope" ->
+            | "bs.scope" | "scope" ->
               begin match Ast_payload.assert_strings loc payload with
                 | [] ->
                   Bs_syntaxerr.err loc Illegal_attribute
