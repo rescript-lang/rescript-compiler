@@ -583,6 +583,23 @@ and printModType modType cmtTbl =
       printAttributes ~loc:longident.loc modType.pmty_attributes cmtTbl;
       printLongidentLocation longident cmtTbl
     ]
+  | Pmty_signature [] ->
+    let shouldBreak =
+      modType.pmty_loc.loc_start.pos_lnum < modType.pmty_loc.loc_end.pos_lnum
+    in
+    Doc.breakableGroup ~forceBreak:shouldBreak (
+      Doc.concat [
+        Doc.lbrace;
+        Doc.indent (
+          Doc.concat [
+            Doc.softLine;
+            printCommentsInside cmtTbl modType.pmty_loc;
+          ];
+        );
+        Doc.softLine;
+        Doc.rbrace;
+      ]
+    )
   | Pmty_signature signature ->
     let signatureDoc = Doc.breakableGroup ~forceBreak:true (
       Doc.concat [
@@ -4678,6 +4695,23 @@ and printModExpr modExpr cmtTbl =
   let doc = match modExpr.pmod_desc with
   | Pmod_ident longidentLoc ->
     printLongidentLocation longidentLoc cmtTbl
+  | Pmod_structure [] ->
+    let shouldBreak =
+      modExpr.pmod_loc.loc_start.pos_lnum < modExpr.pmod_loc.loc_end.pos_lnum
+    in
+    Doc.breakableGroup ~forceBreak:shouldBreak (
+      Doc.concat [
+        Doc.lbrace;
+        Doc.indent (
+          Doc.concat [
+            Doc.softLine;
+            printCommentsInside cmtTbl modExpr.pmod_loc;
+          ];
+        );
+        Doc.softLine;
+        Doc.rbrace;
+      ]
+    )
   | Pmod_structure structure ->
     Doc.breakableGroup ~forceBreak:true (
       Doc.concat [

@@ -1423,6 +1423,8 @@ and walkExprArgument (_argLabel, expr) t comments =
       let (before, after) = partitionLeadingTrailing comments longident.loc in
       attach t.leading longident.loc before;
       attach t.trailing longident.loc after
+    | Pmod_structure [] ->
+      attach t.inside modExpr.pmod_loc comments
     | Pmod_structure structure ->
       walkStructure structure t comments
     | Pmod_extension extension ->
@@ -1516,6 +1518,8 @@ and walkExprArgument (_argLabel, expr) t comments =
       let (leading, trailing) = partitionLeadingTrailing comments longident.loc in
       attach t.leading longident.loc leading;
       attach t.trailing longident.loc trailing;
+    | Pmty_signature [] ->
+      attach t.inside modType.pmty_loc comments
     | Pmty_signature signature ->
       walkSignature signature t comments
     | Pmty_extension extension ->

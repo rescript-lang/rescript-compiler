@@ -7,3 +7,18 @@ module type Comparable = {
   type t
   let compare: (t, t) => int
 }
+
+module type Foo = {}
+
+module type Foo = {/* rainy clouds */}
+
+module type Foo = {
+  /* rainy clouds */
+}
+
+module type Foo = { // trailing
+}
+
+module type Foo = {
+  // Sunny clouds
+}
