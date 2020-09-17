@@ -72,10 +72,10 @@ let explain t =
     end
   | Expected {context; token = t} ->
     let hint = match context with
-    | Some grammar -> "It signals the start of " ^ (Grammar.toString grammar)
+    | Some grammar -> " It signals the start of " ^ (Grammar.toString grammar)
     | None -> ""
     in
-    "Did you forget a `" ^ (Token.toString t) ^ "` here? " ^ hint
+    "Did you forget a `" ^ (Token.toString t) ^ "` here?" ^ hint
   | Unexpected {token = t; context = breadcrumbs} ->
     let name = (Token.toString t) in
     begin match breadcrumbs with
@@ -143,7 +143,7 @@ let make ~startPos ~endPos category = {
 
 let printReport diagnostics src =
   Format.fprintf Format.err_formatter "@[<v>";
-  List.rev diagnostics |> List.iter (fun d -> 
+  List.rev diagnostics |> List.iter (fun d ->
     Res_diagnostics_printing_utils.Super_location.super_error_reporter
       Format.err_formatter
       ~src
