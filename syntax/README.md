@@ -1,6 +1,6 @@
 # ReScript Syntax ![Tests](https://github.com/rescript-lang/syntax/workflows/CI/badge.svg)
 
-Blog post: https://reasonml.org/blog/bucklescript-8-1-new-syntax
+Blog post: https://rescript-lang.org/blog/bucklescript-8-1-new-syntax
 
 Documentation: https://rescript-lang.org/docs/manual/latest/overview
 
