@@ -85,6 +85,7 @@ let log t =
     ]
   ) |> Doc.toString ~width:80 |> print_endline
   [@@live]
+
 let attach tbl loc comments =
   match comments with
   | [] -> ()
@@ -776,6 +777,12 @@ let rec walkStructure s t comments =
         partitionLeadingTrailing comments longident.loc in
       attach t.leading longident.loc leading;
       attach t.trailing longident.loc trailing;
+    | Pexp_let (
+        _recFlag,
+        valueBindings,
+        {pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, None)}
+      ) ->
+      walkValueBindings valueBindings t comments
     | Pexp_let (_recFlag, valueBindings, expr2) ->
       let comments = visitListButContinueWithRemainingComments
         ~getLoc:(fun n ->

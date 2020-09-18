@@ -561,6 +561,27 @@ switch x {
 let catch = 34
 
 let promiseCatch = x => Js.Promise.catch(x)
+
+// aggregating intersections
+let () = {
+  let s = Sphere.make()
+  let i1 = make(~t=1., ~sphere=s)
+  let i2 = make(~t=2., ~sphere=s)
+
+  //  let is = interesections
+
+  //  assert
+}
+
+let () = {
+  let s = Sphere.make()
+  let i1 = make(~t=1., ~sphere=s)
+  let i2 = make(~t=2., ~sphere=s)
+
+  //  let is = interesections
+
+  //  assert
+}
 "
 `;
 

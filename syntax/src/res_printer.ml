@@ -90,7 +90,7 @@ let printMultilineCommentContent txt =
       Doc.text "*/";
     ]
 
-let printTrailingComment (nodeLoc : Location.t) comment =
+let printTrailingComment (prevLoc: Location.t) (nodeLoc : Location.t) comment =
   let singleLine = Comment.isSingleLineComment comment in
   let content =
     let txt = Comment.txt comment in
@@ -101,8 +101,7 @@ let printTrailingComment (nodeLoc : Location.t) comment =
   in
   let diff =
     let cmtStart = (Comment.loc comment).loc_start in
-    let prevTokEndPos = Comment.prevTokEndPos comment in
-    cmtStart.pos_lnum - prevTokEndPos.pos_lnum
+    cmtStart.pos_lnum - prevLoc.loc_end.pos_lnum
   in
   let isBelow =
     (Comment.loc comment).loc_start.pos_lnum > nodeLoc.loc_end.pos_lnum in
@@ -224,12 +223,12 @@ let printLeadingComments node tbl loc =
     loop [] comments
 
 let printTrailingComments node tbl loc =
-  let rec loop acc comments =
+  let rec loop prev acc comments =
     match comments with
     | [] -> Doc.concat (List.rev acc)
     | comment::comments ->
-      let cmtDoc = printTrailingComment loc comment in
-      loop (cmtDoc::acc) comments
+      let cmtDoc = printTrailingComment prev loc comment in
+      loop (Comment.loc comment) (cmtDoc::acc) comments
   in
   match Hashtbl.find tbl loc with
   | exception Not_found -> node
@@ -238,7 +237,7 @@ let printTrailingComments node tbl loc =
    (* Remove comments from tbl: Some ast nodes have the same location.
     * We only want to print comments once *)
     Hashtbl.remove tbl loc;
-    let cmtsDoc = loop [] comments in
+    let cmtsDoc = loop loc [] comments in
     Doc.concat [
       node;
       cmtsDoc;

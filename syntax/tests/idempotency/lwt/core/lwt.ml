@@ -1448,10 +1448,8 @@ struct
           'a 'u 'c. packed_callbacks list -> ('a, 'u, 'c) promise ->
             packed_callbacks list =
           fun (type c) callbacks_accumulator (p : (_, _, c) promise) ->
-
         let p = underlying p in
         match p.state with
-        (* If the promise is not still pending, it can't be canceled. *)
         | Fulfilled _ ->
           callbacks_accumulator
         | Rejected _ ->
