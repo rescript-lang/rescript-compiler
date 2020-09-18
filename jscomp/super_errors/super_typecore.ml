@@ -37,8 +37,7 @@ let simple_conversions = [
 let print_simple_conversion ppf (actual, expected) =
   try (
     let converter = List.assoc (actual, expected) simple_conversions in
-    Format.pp_print_newline ppf ();
-    fprintf ppf "@[<v 2>@,You can convert @{<info>%s@} to @{<info>%s@} with @{<info>%s@}.@]" actual expected converter
+    fprintf ppf "@,@,@[<v 2>You can convert @{<info>%s@} to @{<info>%s@} with @{<info>%s@}.@]" actual expected converter
   ) with | Not_found -> ()
 
 let print_simple_message ppf = function
@@ -135,7 +134,7 @@ let print_expr_type_clash env trace ppf =
         (function ppf ->
             fprintf ppf "This has type:")
         (function ppf ->
-            fprintf ppf "But somewhere wanted:");
+            fprintf ppf "Somewhere wanted:");
       show_extra_help ppf env trace;
     end
 
@@ -178,21 +177,21 @@ let report_error env ppf = function
           fprintf ppf "The variable %s on the left-hand side of this or-pattern has type" (Ident.name id))
         (function ppf ->
           fprintf ppf "but on the right-hand side it has type")
-  | Expr_type_clash ( 
+  | Expr_type_clash (
       (_, {desc = Tarrow _}) ::
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),_,_)}) :: _
-    ) -> 
-    fprintf ppf "This function is a curried function where an uncurried function is expected"    
+    ) ->
+    fprintf ppf "This function is a curried function where an uncurried function is expected"
   | Expr_type_clash (
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),a,_),_,_)}) ::
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),b,_),_,_)}) :: _
-    ) when a <> b -> 
-    fprintf ppf "This function has %s but was expected %s" a b 
-  | Expr_type_clash ( 
+    ) when a <> b ->
+    fprintf ppf "This function has %s but was expected %s" a b
+  | Expr_type_clash (
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),a,_),_,_)}) ::
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),b,_),_,_)}) :: _
-    ) when a <> b -> 
-    fprintf ppf "This method has %s but was expected %s" a b 
+    ) when a <> b ->
+    fprintf ppf "This method has %s but was expected %s" a b
 
   | Expr_type_clash trace ->
       (* modified *)
@@ -254,10 +253,10 @@ let report_error env ppf = function
         fprintf ppf "it should have type@ %a@]"
           type_expr ty
       end else begin
-        match ty with 
-        | {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),_,_)} -> 
+        match ty with
+        | {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),_,_)} ->
           fprintf ppf "This expression is excpeted to have an uncurried function"
-        | _ ->     
+        | _ ->
         fprintf ppf "@[This expression should not be a function,@ ";
         fprintf ppf "the expected type is@ %a@]"
           type_expr ty
