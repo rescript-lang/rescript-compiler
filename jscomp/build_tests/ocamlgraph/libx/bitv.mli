@@ -183,12 +183,13 @@ val of_int64_s : Int64.t -> t
 val to_int64_s : t -> Int64.t
 val of_int64_us : Int64.t -> t
 val to_int64_us : t -> Int64.t
+#if 0 then
 (* type [Nativeint.t] (length 32/64 with sign, 31/63 without) *)
 val of_nativeint_s : Nativeint.t -> t
 val to_nativeint_s : t -> Nativeint.t
 val of_nativeint_us : Nativeint.t -> t
 val to_nativeint_us : t -> Nativeint.t
-
+#end
 (*s Only if you know what you are doing... *)
 
 val unsafe_set : t -> int -> bool -> unit
