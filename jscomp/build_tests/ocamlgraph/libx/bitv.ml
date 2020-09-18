@@ -595,6 +595,7 @@ let to_int64_us _ = failwith "todo"
 let of_int64_s _ = failwith "todo"
 let to_int64_s _ = failwith "todo"
 
+#if 0 then
 (* [Nativeint] *)
 let select_of f32 f64 = match Sys.word_size with
   | 32 -> (fun i -> f32 (Nativeint.to_int32 i))
@@ -608,3 +609,4 @@ let select_to f32 f64 = match Sys.word_size with
   | _ -> assert false
 let to_nativeint_s = select_to to_int32_s to_int64_s
 let to_nativeint_us = select_to to_int32_us to_int64_us
+#end
