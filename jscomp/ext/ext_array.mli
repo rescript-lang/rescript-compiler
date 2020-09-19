@@ -33,7 +33,10 @@ val reverse_in_place : 'a array -> unit
 val reverse : 'a array -> 'a array 
 val reverse_of_list : 'a list -> 'a array
 
-val filter : ('a -> bool) -> 'a array -> 'a array
+val filter : 
+  'a array -> 
+  ('a -> bool) ->   
+  'a array
 
 val filter_map : 
 'a array -> 

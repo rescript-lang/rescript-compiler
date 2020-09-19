@@ -58,7 +58,7 @@ let reverse_of_list =  function
       | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
     fill 0 tl
 
-let filter f a =
+let filter a f =
   let arr_len = Array.length a in
   let rec aux acc i =
     if i = arr_len 
