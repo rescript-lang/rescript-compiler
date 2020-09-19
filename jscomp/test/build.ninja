@@ -453,6 +453,7 @@ build test/mutable_obj_test.cmi test/mutable_obj_test.cmj : cc test/mutable_obj_
 build test/mutable_uncurry_test.cmi test/mutable_uncurry_test.cmj : cc test/mutable_uncurry_test.ml | test/mt.cmj $stdlib
 build test/mutual_non_recursive_type.cmi test/mutual_non_recursive_type.cmj : cc test/mutual_non_recursive_type.ml | $stdlib
 build test/name_mangle_test.cmi test/name_mangle_test.cmj : cc test/name_mangle_test.ml | test/mt.cmj $stdlib
+build test/native_pattern.cmi test/native_pattern.cmj : cc test/native_pattern.ml | test/nativeint.cmj $stdlib
 build test/nativeint.cmj : cc_cmi test/nativeint.ml | test/nativeint.cmi $stdlib
 build test/nativeint.cmi : cc test/nativeint.mli | $stdlib
 build test/nested_include.cmi test/nested_include.cmj : cc test/nested_include.ml | $stdlib
