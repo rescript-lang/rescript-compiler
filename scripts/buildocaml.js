@@ -64,7 +64,7 @@ function build(config) {
     if (config) {
       var { make } = require("./config.js");
       cp.execSync(
-        "./configure -flambda -prefix " +
+        "./configure -cc \"gcc -Wno-implicit-function-declaration\" -flambda -prefix " +
           prefix +
           ` -no-ocamlbuild  -no-curses -no-graph -no-pthread -no-debugger && ${make} clean`,
         { cwd: ocamlSrcDir, stdio: [0, 1, 2] }
