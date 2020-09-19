@@ -6603,7 +6603,10 @@ val reverse_in_place : 'a array -> unit
 val reverse : 'a array -> 'a array 
 val reverse_of_list : 'a list -> 'a array
 
-val filter : ('a -> bool) -> 'a array -> 'a array
+val filter : 
+  'a array -> 
+  ('a -> bool) ->   
+  'a array
 
 val filter_map : 
 'a array -> 
@@ -6746,7 +6749,7 @@ let reverse_of_list =  function
       | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
     fill 0 tl
 
-let filter f a =
+let filter a f =
   let arr_len = Array.length a in
   let rec aux acc i =
     if i = arr_len 
