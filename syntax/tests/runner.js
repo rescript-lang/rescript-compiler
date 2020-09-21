@@ -44,7 +44,13 @@ function parseFile(filename, recover, env) {
   let args = ["-print", "ml"];
   if (recover) args.push("-recover");
   args.push(filename);
-  return env ? cp.spawnSync(parser, args, { env }) : cp.spawnSync(parser, args);
+  let result = env ? cp.spawnSync(parser, args, { env }) : cp.spawnSync(parser, args);
+
+  return {
+    result: result.stdout.toString(),
+    status: result.status,
+    errorOutput: result.stderr
+  }
 }
 
 function parseOcamlFileToNapkin(filename) {
@@ -154,7 +160,11 @@ function printFile(filename) {
 
     case "reason":
       parserSrc = "re";
-      return parseReasonFileToNapkin(filename, 80);
+      return {
+        result: parseReasonFileToNapkin(filename, 80),
+        status: 0,
+        errorOutput: ""
+      };
       break;
 
     case "rescript":
@@ -173,7 +183,13 @@ function printFile(filename) {
 
   args.push(filename);
 
-  return cp.spawnSync(parser, args).stdout.toString("utf8");
+  let result = cp.spawnSync(parser, args);
+
+  return {
+    result: result.stdout.toString("utf8"),
+    status: result.status,
+    errorOutput: result.stderr
+  }
 }
 
 /* Parser error output format:
@@ -196,16 +212,27 @@ global.runPrinter = (dirname) => {
     }
 
     test(base, () => {
-      let napkin = printFile(filename);
-      expect(napkin).toMatchSnapshot();
+      let {result, errorOutput, status} = printFile(filename);
+      if (status > 0) {
+        let msg = `Test from file: ${filename} failed with error output:
+
+------------ BEGIN ------------
+${errorOutput}
+------------- END -------------
+
+Make sure the test input is syntactically valid.`;
+        fail(msg);
+      } else {
+        expect(result).toMatchSnapshot();
+      }
 
       if (process.env.ROUNDTRIP_TEST) {
         let intf = isInterface(filename);
         let sexpAst = parseFileToSexp(filename);
-        let napkin2 = parseNapkinStdinToNapkin(napkin, intf, 80);
-        let napkinSexpAst = parseNapkinStdinToSexp(napkin, intf);
-        expect(sexpAst).toEqual(napkinSexpAst);
-        expect(napkin).toEqual(napkin2);
+        let result2 = parseNapkinStdinToNapkin(result, intf, 80);
+        let resultSexpAst = parseNapkinStdinToSexp(result, intf);
+        expect(sexpAst).toEqual(resultSexpAst);
+        expect(result).toEqual(result2);
       }
     });
   });
@@ -219,20 +246,31 @@ global.runParser = (dirname, recover = false, showError = false, env) => {
     }
 
     test(base, () => {
-      let res = parseFile(filename, recover, env);
-      let parsetree = res.stdout.toString();
-      let output = "";
-      if (showError) {
-        output += `=====Parsetree==========================================\n`;
-        output += `${parsetree}\n`;
-        output += `=====Errors=============================================\n`;
-        output += `${makeReproducibleFilename(res.stderr.toString())}\n`;
-        output += `========================================================`;
-      } else {
-        output = parsetree;
-      }
+      let {result, errorOutput, status} = parseFile(filename, recover, env);
+      if (status > 0) {
+        let msg = `Test from file: ${filename} failed with error output:
 
-      expect(output).toMatchSnapshot();
+------------ BEGIN ------------
+${errorOutput}
+------------- END -------------
+
+Make sure the test input is syntactically valid or run your test suite with 'recover' set to true.`;
+        fail(msg);
+      } else {
+        let parsetree = result;
+        let output = "";
+        if (showError) {
+          output += `=====Parsetree==========================================\n`;
+          output += `${parsetree}\n`;
+          output += `=====Errors=============================================\n`;
+          output += `${makeReproducibleFilename(errorOutput.toString())}\n`;
+          output += `========================================================`;
+        } else {
+          output = parsetree;
+        }
+
+        expect(output).toMatchSnapshot();
+      }
     });
   });
 };

@@ -236,11 +236,11 @@ module CliArgProcessor = struct
           backend.stringOfDiagnostics
             ~source:parseResult.source
             ~filename:parseResult.filename
-            parseResult.diagnostics;
-          if recover || not parseResult.invalid then
+            parseResult.diagnostics; 
+          if recover then
             printEngine.printInterface
               ~width ~filename ~comments:parseResult.comments parseResult.parsetree
-          else ()
+          else exit 1
         end
         else
           printEngine.printInterface
@@ -252,10 +252,10 @@ module CliArgProcessor = struct
             ~source:parseResult.source
             ~filename:parseResult.filename
             parseResult.diagnostics;
-          if recover || not parseResult.invalid then
+          if recover then
             printEngine.printImplementation
               ~width ~filename ~comments:parseResult.comments parseResult.parsetree
-          else ()
+          else exit 1
         end
         else
           printEngine.printImplementation
