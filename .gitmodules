@@ -5,3 +5,6 @@
 	path = syntax
 	url = https://github.com/rescript-lang/syntax
 	branch = master
+[submodule "ninja"]
+	path = ninja
+	url = git@github.com:rescript-lang/ninja.git
