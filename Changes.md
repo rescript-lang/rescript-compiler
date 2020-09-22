@@ -40,13 +40,13 @@
 
 - #4623 better data flow inference for common pattern: `let {a,b,c} = ...`
 
-- #4622 add html element & observer phanton types
+- #4622 add html element & observer phantom types
 
 - #4618 fix combination of bs.obj with bs.as so that bs.as can carry more kinds of playload
 
 - #4613 (internal) pass down @inlined attribute from upstream. (the info is passed down, how to make use of it is not done yet)
 
-- #4609 Lift the restriction that user can only defined a type with less than 256 constructors
+- #4609 Lift the restriction that user can only define a type with less than 256 constructors
 
 
 - #4606, #3961 (internal) use is_a_functor from upstream instead of guessing
