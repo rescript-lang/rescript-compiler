@@ -164,14 +164,17 @@ CAMLprim value caml_stale_file(value path)
 {
   CAMLparam1(path);
   struct timeval tv[2];
-  char * p = caml_stat_strdup(String_val(path));
+  char * p = caml_stat_strdup_to_os(String_val(path));
+  // unicode friendly
   tv[0].tv_sec = 0.0;
   tv[0].tv_usec = 0.0;
   tv[1].tv_sec = 0.0;
   tv[1].tv_usec = 0.0;
-  caml_enter_blocking_section();
+  // caml_enter_blocking_section();
+  // not needed for single thread
   utimes(p, tv);
-  caml_leave_blocking_section();
+  // caml_leave_blocking_section();
+  // not needed for single thread
   caml_stat_free(p);
   // TODO: error checking
   CAMLreturn(Val_unit);
