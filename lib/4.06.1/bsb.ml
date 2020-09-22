@@ -17076,6 +17076,14 @@ let bsb_main_flags : (string * spec * string) array =
 
   |]
 
+external lock_file : string -> bool = "caml_lock_file"
+let () = 
+  if lock_file ".bsb.exe.lock" then begin 
+    prerr_endline "Can not acquire lockfile .bsb.exe.lock\n\
+    Maybe due to another instance of bsb running\n\
+    Please try it later";
+    exit 2
+  end  
 
 (*Note that [keepdepfile] only makes sense when combined with [deps] for optimization*)
 

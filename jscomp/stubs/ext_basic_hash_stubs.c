@@ -4,6 +4,11 @@
 #include <stdint.h>
 #include "caml/memory.h"
 #include "caml/signals.h"
+
+#ifndef _WIN32
+#include <fcntl.h>
+#endif
+
 typedef uint32_t uint32;
 
 #define FINAL_MIX(h) \
@@ -172,6 +177,24 @@ CAMLprim value caml_stale_file(value path)
   CAMLreturn(Val_unit);
 }
 #endif
+
+
+CAMLprim value caml_lock_file(value path){
+  CAMLparam1(path);
+  value locked = Val_false;
+#ifdef F_SETLK  
+  int fd = open(String_val(path), O_RDWR | O_CREAT, 0600);
+  struct flock fl;
+  fl.l_start = 0;
+  fl.l_len = 0;
+  fl.l_type = F_WRLCK;
+  fl.l_whence = SEEK_SET;
+  if (fcntl(fd, F_SETLK, &fl) < 0){
+    locked = Val_true;
+  }
+#endif 
+  CAMLreturn(locked);
+}
 /* local variables: */
 /* compile-command: "ocamlopt.opt -c ext_basic_hash_stubs.c" */
 /* end: */
