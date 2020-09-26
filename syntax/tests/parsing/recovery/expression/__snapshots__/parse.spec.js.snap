@@ -11,7 +11,8 @@ exports[`infinite.js 1`] = `"let smallest = ((heap.compare ())[@bs ]) < (a |. (f
 
 exports[`jsx.js 1`] = `
 "let x = ((div ~children:[] ())[@JSX ])
-[@@@ ]"
+[@@@ ]
+;;[%rescript.exprhole ][@@ ]"
 `;
 
 exports[`list.js 1`] = `

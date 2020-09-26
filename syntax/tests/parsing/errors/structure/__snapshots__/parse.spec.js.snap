@@ -1,5 +1,36 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`attributes.res 1`] = `
+"=====Parsetree==========================================
+module MissingExpression = struct ;;[%rescript.exprhole ][@@attr ] end
+;;[%rescript.exprhole ][@@attrWithNoExpression ]
+=====Errors=============================================
+
+  Syntax error!
+  parsing/errors/structure/attributes.res:2:3-7  
+  1 │ module MissingExpression = {
+  2 │   @attr
+  3 │ }
+  4 │ 
+  
+  Did you forget to attach \`attr\` to an item?
+  Standalone attributes start with \`@@\` like: \`@@attr\`
+
+
+  Syntax error!
+  parsing/errors/structure/attributes.res:5:1-21  
+  3 │ }
+  4 │ 
+  5 │ @attrWithNoExpression
+  6 │ 
+  
+  Did you forget to attach \`attrWithNoExpression\` to an item?
+  Standalone attributes start with \`@@\` like: \`@@attrWithNoExpression\`
+
+
+========================================================"
+`;
+
 exports[`closingBraces.res 1`] = `
 "=====Parsetree==========================================
 let x = 1

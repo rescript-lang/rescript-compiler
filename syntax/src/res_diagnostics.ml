@@ -102,7 +102,7 @@ let explain t =
           "Did you forget to write an expression here?"
         | (Grammar.LetBinding, _)::_, _ ->
           "This let-binding misses an expression"
-        | _::_, (Rbracket | Rbrace) ->
+        | _::_, (Rbracket | Rbrace | Eof) ->
           "Missing expression"
         | _ ->
           "I'm not sure what to parse here when looking at \"" ^ name ^ "\"."

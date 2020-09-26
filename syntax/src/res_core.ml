@@ -15,8 +15,6 @@ let mkLoc startLoc endLoc = Location.{
 }
 
 module Recover = struct
-  (* type action = unit option None is abort, Some () is retry *)
-
   let defaultExpr () =
     let id = Location.mknoloc "rescript.exprhole" in
     Ast_helper.Exp.mk (Pexp_extension (id, PStr []))
@@ -32,6 +30,10 @@ module Recover = struct
 
   let defaultModuleExpr () = Ast_helper.Mod.structure []
   let defaultModuleType () = Ast_helper.Mty.signature []
+
+  let defaultSignatureItem =
+    let id = Location.mknoloc "rescript.sigitemhole" in
+    Ast_helper.Sig.extension (id, PStr [])
 
   let recoverEqualGreater p =
     Parser.expect EqualGreater p;
@@ -93,6 +95,10 @@ Solution: directly use `concat`."
 
   let typeParam = "A type param consists of a singlequote followed by a name like `'a` or `'A`"
   let typeVar = "A type variable consists of a singlequote followed by a name like `'a` or `'A`"
+
+  let attributeWithoutNode (attr : Parsetree.attribute) =
+    let ({Asttypes.txt = attrName}, _) = attr in
+    "Did you forget to attach `" ^ attrName ^ "` to an item?\n  Standalone attributes start with `@@` like: `@@" ^ attrName ^"`"
 end
 
 
@@ -5094,9 +5100,11 @@ and parseStructureItemRegion p =
     let loc = mkLoc startPos p.prevEndPos in
     Some {structureItem with pstr_loc = loc}
   | Module ->
+    Parser.beginRegion p;
     let structureItem = parseModuleOrModuleTypeImplOrPackExpr ~attrs p in
     parseNewlineOrSemicolonStructure p;
     let loc = mkLoc startPos p.prevEndPos in
+    Parser.endRegion p;
     Some {structureItem with pstr_loc = loc}
   | AtAt ->
     let attr = parseStandaloneAttribute p in
@@ -5114,7 +5122,19 @@ and parseStructureItemRegion p =
     parseNewlineOrSemicolonStructure p;
     let loc = mkLoc startPos p.prevEndPos in
     Parser.checkProgress ~prevEndPos ~result:(Ast_helper.Str.eval ~loc ~attrs exp) p
-  | _ -> None
+  | _ ->
+    begin match attrs with
+    | (({Asttypes.loc = attrLoc}, _) as attr)::_ ->
+      Parser.err
+       ~startPos:attrLoc.loc_start
+       ~endPos:attrLoc.loc_end
+       p
+       (Diagnostics.message (ErrorMessages.attributeWithoutNode attr));
+      let expr = parseExpr p in
+      Some (Ast_helper.Str.eval ~loc:(mkLoc p.startPos p.prevEndPos) ~attrs expr)
+    | _ ->
+      None
+    end
 
 and parseJsImport ~startPos ~attrs p =
   Parser.expect Token.Import p;
@@ -5815,24 +5835,30 @@ and parseSignatureItemRegion p =
     let loc = mkLoc startPos p.prevEndPos in
     Some (Ast_helper.Sig.include_ ~loc includeDescription)
   | Module ->
+    Parser.beginRegion p;
     Parser.next p;
     begin match p.Parser.token with
     | Uident _ ->
       let modDecl = parseModuleDeclarationOrAlias ~attrs p in
       parseNewlineOrSemicolonSignature p;
       let loc = mkLoc startPos p.prevEndPos in
+      Parser.endRegion p;
       Some (Ast_helper.Sig.module_ ~loc modDecl)
     | Rec ->
       let recModule = parseRecModuleSpec ~attrs ~startPos p in
       parseNewlineOrSemicolonSignature p;
       let loc = mkLoc startPos p.prevEndPos in
+      Parser.endRegion p;
       Some (Ast_helper.Sig.rec_module ~loc recModule)
     | Typ ->
-      Some (parseModuleTypeDeclaration ~attrs ~startPos p)
+      let modTypeDecl = parseModuleTypeDeclaration ~attrs ~startPos p in
+      Parser.endRegion p;
+      Some modTypeDecl
     | _t ->
       let modDecl = parseModuleDeclarationOrAlias ~attrs p in
       parseNewlineOrSemicolonSignature p;
       let loc = mkLoc startPos p.prevEndPos in
+      Parser.endRegion p;
       Some (Ast_helper.Sig.module_ ~loc modDecl)
     end
   | AtAt ->
@@ -5849,7 +5875,17 @@ and parseSignatureItemRegion p =
     Parser.next p;
     parseSignatureItemRegion p
   | _ ->
-    None
+    begin match attrs with
+    | (({Asttypes.loc = attrLoc}, _) as attr)::_ ->
+     Parser.err
+      ~startPos:attrLoc.loc_start
+      ~endPos:attrLoc.loc_end
+      p
+      (Diagnostics.message (ErrorMessages.attributeWithoutNode attr));
+     Some Recover.defaultSignatureItem
+    | _ ->
+     None
+    end
 
 (* module rec module-name :  module-type  { and module-name:  module-type } *)
 and parseRecModuleSpec ~attrs ~startPos p =
@@ -5952,8 +5988,7 @@ and parseSignLetDesc ~attrs p =
 (*    attr-id	::=	lowercase-ident
 ∣	  capitalized-ident
 ∣	  attr-id .  attr-id   *)
-and parseAttributeId p =
-  let startPos = p.Parser.startPos in
+and parseAttributeId ~startPos p =
   let rec loop p acc =
     match p.Parser.token with
     | Lident ident | Uident ident ->
@@ -6036,8 +6071,9 @@ and parsePayload p =
 and parseAttribute p =
   match p.Parser.token with
   | At ->
+    let startPos = p.startPos in
     Parser.next p;
-    let attrId = parseAttributeId p in
+    let attrId = parseAttributeId ~startPos p in
     let payload = parsePayload p in
     Some(attrId, payload)
   | _ -> None
@@ -6053,8 +6089,9 @@ and parseAttributes p =
  *  | @@ attribute-id ( structure-item )
  *)
 and parseStandaloneAttribute p =
+  let startPos = p.startPos in
   Parser.expect AtAt p;
-  let attrId = parseAttributeId p in
+  let attrId = parseAttributeId ~startPos p in
   let payload = parsePayload p in
   (attrId, payload)
 
@@ -6092,10 +6129,11 @@ and parseStandaloneAttribute p =
  *  ~moduleLanguage represents whether we're on the module level or not
  *)
 and parseExtension ?(moduleLanguage=false) p =
+  let startPos = p.Parser.startPos in
   if moduleLanguage then
     Parser.expect PercentPercent p
   else
     Parser.expect Percent p;
-  let attrId = parseAttributeId p in
+  let attrId = parseAttributeId ~startPos p in
   let payload = parsePayload p in
   (attrId, payload)
