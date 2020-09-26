@@ -224,10 +224,10 @@ let chop_extension name =
 let remove_extension name =
   let l = extension_len name in
   if l = 0 then name else String.sub name 0 (String.length name - l)
-
+#if 0 then
 external open_desc: string -> open_flag list -> int -> int = "caml_sys_open"
 external close_desc: int -> unit = "caml_sys_close"
-
+#end
 let prng = lazy(Random.State.make_self_init ())
 
 let temp_file_name temp_dir prefix suffix =
@@ -239,7 +239,7 @@ let current_temp_dir_name = ref temp_dir_name
 
 let set_temp_dir_name s = current_temp_dir_name := s
 let get_temp_dir_name () = !current_temp_dir_name
-
+#if 0 then
 let temp_file ?(temp_dir = !current_temp_dir_name) prefix suffix =
   let rec try_name counter =
     let name = temp_file_name temp_dir prefix suffix in
@@ -249,7 +249,7 @@ let temp_file ?(temp_dir = !current_temp_dir_name) prefix suffix =
     with Sys_error _ as e ->
       if counter >= 1000 then raise e else try_name (counter + 1)
   in try_name 0
-
+#end
 let open_temp_file ?(mode = [Open_text]) ?(perms = 0o600)
                    ?(temp_dir = !current_temp_dir_name) prefix suffix =
   let rec try_name counter =

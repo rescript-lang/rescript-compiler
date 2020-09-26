@@ -97,6 +97,7 @@ val dirname : string -> string
    This function conforms to the specification of POSIX.1-2008 for the
    [dirname] utility. *)
 
+#if 0 then
 val temp_file : ?temp_dir: string -> string -> string -> string
 (** [temp_file prefix suffix] returns the name of a
    fresh temporary file in the temporary directory.
@@ -111,6 +112,7 @@ val temp_file : ?temp_dir: string -> string -> string -> string
    Raise [Sys_error] if the file could not be created.
    @before 3.11.2 no ?temp_dir optional argument
 *)
+#end
 
 val open_temp_file :
       ?mode: open_flag list -> ?perms: int -> ?temp_dir: string -> string ->

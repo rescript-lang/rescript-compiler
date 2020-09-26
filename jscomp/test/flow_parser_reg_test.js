@@ -15778,6 +15778,77 @@ function parse(content, options) {
         }
       }
     };
+    var literal = function (param) {
+      var lit = param[1];
+      var raw = lit.raw;
+      var value = lit.value;
+      var loc = param[0];
+      var value_;
+      if (typeof value === "number") {
+        value_ = $$null;
+      } else {
+        switch (value.TAG | 0) {
+          case /* String */0 :
+              value_ = string(value._0);
+              break;
+          case /* Boolean */1 :
+              value_ = bool(value._0);
+              break;
+          case /* Number */2 :
+              value_ = number$1(value._0);
+              break;
+          case /* RegExp */3 :
+              var match = value._0;
+              value_ = regexp$1(loc, match.pattern, match.flags);
+              break;
+          
+        }
+      }
+      var props;
+      var exit = 0;
+      if (typeof value === "number" || value.TAG !== /* RegExp */3) {
+        exit = 1;
+      } else {
+        var match$1 = value._0;
+        var regex = obj([
+              [
+                "pattern",
+                string(match$1.pattern)
+              ],
+              [
+                "flags",
+                string(match$1.flags)
+              ]
+            ]);
+        props = [
+          [
+            "value",
+            value_
+          ],
+          [
+            "raw",
+            string(raw)
+          ],
+          [
+            "regex",
+            regex
+          ]
+        ];
+      }
+      if (exit === 1) {
+        props = [
+          [
+            "value",
+            value_
+          ],
+          [
+            "raw",
+            string(raw)
+          ]
+        ];
+      }
+      return node("Literal", loc, props);
+    };
     var identifier = function (param) {
       var id = param[1];
       return node("Identifier", param[0], [
@@ -15794,6 +15865,200 @@ function parse(content, options) {
                     bool(id.optional)
                   ]
                 ]);
+    };
+    var jsx_opening = function (param) {
+      var opening = param[1];
+      return node("JSXOpeningElement", param[0], [
+                  [
+                    "name",
+                    jsx_name(opening.name)
+                  ],
+                  [
+                    "attributes",
+                    array_of_list(jsx_opening_attribute, opening.attributes)
+                  ],
+                  [
+                    "selfClosing",
+                    bool(opening.selfClosing)
+                  ]
+                ]);
+    };
+    var jsx_closing = function (param) {
+      return node("JSXClosingElement", param[0], [[
+                    "name",
+                    jsx_name(param[1].name)
+                  ]]);
+    };
+    var jsx_child = function (param) {
+      var element = param[1];
+      var loc = param[0];
+      switch (element.TAG | 0) {
+        case /* Element */0 :
+            return jsx_element([
+                        loc,
+                        element._0
+                      ]);
+        case /* ExpressionContainer */1 :
+            return jsx_expression_container([
+                        loc,
+                        element._0
+                      ]);
+        case /* Text */2 :
+            var param$1 = [
+              loc,
+              element._0
+            ];
+            var text = param$1[1];
+            return node("JSXText", param$1[0], [
+                        [
+                          "value",
+                          string(text.value)
+                        ],
+                        [
+                          "raw",
+                          string(text.raw)
+                        ]
+                      ]);
+        
+      }
+    };
+    var variable_declarator = function (param) {
+      var declarator = param[1];
+      return node("VariableDeclarator", param[0], [
+                  [
+                    "id",
+                    pattern(declarator.id)
+                  ],
+                  [
+                    "init",
+                    option(expression, declarator.init)
+                  ]
+                ]);
+    };
+    var type_annotation = function (param) {
+      return node("TypeAnnotation", param[0], [[
+                    "typeAnnotation",
+                    _type(param[1])
+                  ]]);
+    };
+    var class_element = function (m) {
+      if (m.TAG) {
+        var param = m._0;
+        var prop = param[1];
+        var lit = prop.key;
+        var match;
+        switch (lit.TAG | 0) {
+          case /* Literal */0 :
+              match = [
+                literal(lit._0),
+                false
+              ];
+              break;
+          case /* Identifier */1 :
+              match = [
+                identifier(lit._0),
+                false
+              ];
+              break;
+          case /* Computed */2 :
+              match = [
+                expression(lit._0),
+                true
+              ];
+              break;
+          
+        }
+        return node("ClassProperty", param[0], [
+                    [
+                      "key",
+                      match[0]
+                    ],
+                    [
+                      "value",
+                      option(expression, prop.value)
+                    ],
+                    [
+                      "typeAnnotation",
+                      option(type_annotation, prop.typeAnnotation)
+                    ],
+                    [
+                      "computed",
+                      bool(match[1])
+                    ],
+                    [
+                      "static",
+                      bool(prop.static)
+                    ]
+                  ]);
+      } else {
+        var param$1 = m._0;
+        var method_ = param$1[1];
+        var key = method_.key;
+        var match$1;
+        switch (key.TAG | 0) {
+          case /* Literal */0 :
+              match$1 = [
+                literal(key._0),
+                false
+              ];
+              break;
+          case /* Identifier */1 :
+              match$1 = [
+                identifier(key._0),
+                false
+              ];
+              break;
+          case /* Computed */2 :
+              match$1 = [
+                expression(key._0),
+                true
+              ];
+              break;
+          
+        }
+        var kind;
+        switch (method_.kind) {
+          case /* Constructor */0 :
+              kind = "constructor";
+              break;
+          case /* Method */1 :
+              kind = "method";
+              break;
+          case /* Get */2 :
+              kind = "get";
+              break;
+          case /* Set */3 :
+              kind = "set";
+              break;
+          
+        }
+        return node("MethodDefinition", param$1[0], [
+                    [
+                      "key",
+                      match$1[0]
+                    ],
+                    [
+                      "value",
+                      function_expression(method_.value)
+                    ],
+                    [
+                      "kind",
+                      string(kind)
+                    ],
+                    [
+                      "static",
+                      bool(method_.static)
+                    ],
+                    [
+                      "computed",
+                      bool(match$1[1])
+                    ],
+                    [
+                      "decorators",
+                      array_of_list(expression, method_.decorators)
+                    ]
+                  ]);
+      }
     };
     var expression = function (param) {
       var arr = param[1];
@@ -16302,14 +16567,56 @@ function parse(content, options) {
         
       }
     };
-    var array_pattern_element = function (p) {
-      if (!p.TAG) {
-        return pattern(p._0);
-      }
-      var match = p._0;
-      return node("SpreadElementPattern", match[0], [[
-                    "argument",
-                    pattern(match[1].argument)
+    var template_literal = function (param) {
+      var value = param[1];
+      return node("TemplateLiteral", param[0], [
+                  [
+                    "quasis",
+                    array_of_list(template_element, value.quasis)
+                  ],
+                  [
+                    "expressions",
+                    array_of_list(expression, value.expressions)
+                  ]
+                ]);
+    };
+    var object_type = function (param) {
+      var o = param[1];
+      return node("ObjectTypeAnnotation", param[0], [
+                  [
+                    "properties",
+                    array_of_list(object_type_property, o.properties)
+                  ],
+                  [
+                    "indexers",
+                    array_of_list(object_type_indexer, o.indexers)
+                  ],
+                  [
+                    "callProperties",
+                    array_of_list(object_type_call_property, o.callProperties)
+                  ]
+                ]);
+    };
+    var interface_extends = function (param) {
+      var g = param[1];
+      var id = g.id;
+      var id$1;
+      id$1 = id.TAG ? generic_type_qualified_identifier(id._0) : identifier(id._0);
+      return node("InterfaceExtends", param[0], [
+                  [
+                    "id",
+                    id$1
+                  ],
+                  [
+                    "typeParameters",
+                    option(type_parameter_instantiation, g.typeParameters)
+                  ]
+                ]);
+    };
+    var type_parameter_declaration = function (param) {
+      return node("TypeParameterDeclaration", param[0], [[
+                    "params",
+                    array_of_list(type_param, param[1].params)
                   ]]);
     };
     var pattern = function (param) {
@@ -16361,63 +16668,103 @@ function parse(content, options) {
         
       }
     };
-    var object_pattern_property = function (param) {
-      if (param.TAG) {
-        var match = param._0;
-        return node("SpreadPropertyPattern", match[0], [[
-                      "argument",
-                      pattern(match[1].argument)
-                    ]]);
-      }
-      var match$1 = param._0;
-      var prop = match$1[1];
-      var lit = prop.key;
-      var match$2;
-      switch (lit.TAG | 0) {
-        case /* Literal */0 :
-            match$2 = [
-              literal(lit._0),
-              false
-            ];
-            break;
-        case /* Identifier */1 :
-            match$2 = [
-              identifier(lit._0),
-              false
-            ];
-            break;
-        case /* Computed */2 :
-            match$2 = [
-              expression(lit._0),
-              true
-            ];
-            break;
-        
-      }
-      return node("PropertyPattern", match$1[0], [
+    var template_element = function (param) {
+      var element = param[1];
+      var value = obj([
+            [
+              "raw",
+              string(element.value.raw)
+            ],
+            [
+              "cooked",
+              string(element.value.cooked)
+            ]
+          ]);
+      return node("TemplateElement", param[0], [
                   [
-                    "key",
-                    match$2[0]
+                    "value",
+                    value
                   ],
                   [
-                    "pattern",
-                    pattern(prop.pattern)
-                  ],
-                  [
-                    "computed",
-                    bool(match$2[1])
-                  ],
-                  [
-                    "shorthand",
-                    bool(prop.shorthand)
+                    "tail",
+                    bool(element.tail)
                   ]
                 ]);
     };
-    var type_annotation = function (param) {
-      return node("TypeAnnotation", param[0], [[
+    var export_specifier = function (param) {
+      var specifier = param[1];
+      return node("ExportSpecifier", param[0], [
+                  [
+                    "id",
+                    identifier(specifier.id)
+                  ],
+                  [
+                    "name",
+                    option(identifier, specifier.name)
+                  ]
+                ]);
+    };
+    var function_type_param = function (param) {
+      var param$1 = param[1];
+      return node("FunctionTypeParam", param[0], [
+                  [
+                    "name",
+                    identifier(param$1.name)
+                  ],
+                  [
                     "typeAnnotation",
-                    _type(param[1])
+                    _type(param$1.typeAnnotation)
+                  ],
+                  [
+                    "optional",
+                    bool(param$1.optional)
+                  ]
+                ]);
+    };
+    var jsx_name = function (id) {
+      switch (id.TAG | 0) {
+        case /* Identifier */0 :
+            return jsx_identifier(id._0);
+        case /* NamespacedName */1 :
+            return jsx_namespaced_name(id._0);
+        case /* MemberExpression */2 :
+            return jsx_member_expression(id._0);
+        
+      }
+    };
+    var jsx_expression_container = function (param) {
+      var expr = param[1].expression;
+      var expression$1;
+      expression$1 = expr.TAG ? node("JSXEmptyExpression", expr._0, []) : expression(expr._0);
+      return node("JSXExpressionContainer", param[0], [[
+                    "expression",
+                    expression$1
                   ]]);
+    };
+    var jsx_opening_attribute = function (attribute) {
+      if (attribute.TAG) {
+        var param = attribute._0;
+        return node("JSXSpreadAttribute", param[0], [[
+                      "argument",
+                      expression(param[1].argument)
+                    ]]);
+      } else {
+        var param$1 = attribute._0;
+        var attribute$1 = param$1[1];
+        var id = attribute$1.name;
+        var name;
+        name = id.TAG ? jsx_namespaced_name(id._0) : jsx_identifier(id._0);
+        return node("JSXAttribute", param$1[0], [
+                    [
+                      "name",
+                      name
+                    ],
+                    [
+                      "value",
+                      option(jsx_attribute_value, attribute$1.value)
+                    ]
+                  ]);
+      }
     };
     var comment = function (param) {
       var c = param[1];
@@ -16434,341 +16781,29 @@ function parse(content, options) {
                     string(match[1])
                   ]]);
     };
+    var class_body = function (param) {
+      return node("ClassBody", param[0], [[
+                    "body",
+                    array_of_list(class_element, param[1].body)
+                  ]]);
+    };
+    var class_implements = function (param) {
+      var $$implements = param[1];
+      return node("ClassImplements", param[0], [
+                  [
+                    "id",
+                    identifier($$implements.id)
+                  ],
+                  [
+                    "typeParameters",
+                    option(type_parameter_instantiation, $$implements.typeParameters)
+                  ]
+                ]);
+    };
     var type_parameter_instantiation = function (param) {
       return node("TypeParameterInstantiation", param[0], [[
                     "params",
                     array_of_list(_type, param[1].params)
-                  ]]);
-    };
-    var jsx_child = function (param) {
-      var element = param[1];
-      var loc = param[0];
-      switch (element.TAG | 0) {
-        case /* Element */0 :
-            return jsx_element([
-                        loc,
-                        element._0
-                      ]);
-        case /* ExpressionContainer */1 :
-            return jsx_expression_container([
-                        loc,
-                        element._0
-                      ]);
-        case /* Text */2 :
-            var param$1 = [
-              loc,
-              element._0
-            ];
-            var text = param$1[1];
-            return node("JSXText", param$1[0], [
-                        [
-                          "value",
-                          string(text.value)
-                        ],
-                        [
-                          "raw",
-                          string(text.raw)
-                        ]
-                      ]);
-        
-      }
-    };
-    var jsx_closing = function (param) {
-      return node("JSXClosingElement", param[0], [[
-                    "name",
-                    jsx_name(param[1].name)
-                  ]]);
-    };
-    var jsx_opening = function (param) {
-      var opening = param[1];
-      return node("JSXOpeningElement", param[0], [
-                  [
-                    "name",
-                    jsx_name(opening.name)
-                  ],
-                  [
-                    "attributes",
-                    array_of_list(jsx_opening_attribute, opening.attributes)
-                  ],
-                  [
-                    "selfClosing",
-                    bool(opening.selfClosing)
-                  ]
-                ]);
-    };
-    var type_parameter_declaration = function (param) {
-      return node("TypeParameterDeclaration", param[0], [[
-                    "params",
-                    array_of_list(type_param, param[1].params)
-                  ]]);
-    };
-    var object_type = function (param) {
-      var o = param[1];
-      return node("ObjectTypeAnnotation", param[0], [
-                  [
-                    "properties",
-                    array_of_list(object_type_property, o.properties)
-                  ],
-                  [
-                    "indexers",
-                    array_of_list(object_type_indexer, o.indexers)
-                  ],
-                  [
-                    "callProperties",
-                    array_of_list(object_type_call_property, o.callProperties)
-                  ]
-                ]);
-    };
-    var function_type = function (param) {
-      var fn = param[1];
-      return node("FunctionTypeAnnotation", param[0], [
-                  [
-                    "params",
-                    array_of_list(function_type_param, fn.params)
-                  ],
-                  [
-                    "returnType",
-                    _type(fn.returnType)
-                  ],
-                  [
-                    "rest",
-                    option(function_type_param, fn.rest)
-                  ],
-                  [
-                    "typeParameters",
-                    option(type_parameter_declaration, fn.typeParameters)
-                  ]
-                ]);
-    };
-    var declare_class = function (param) {
-      var d = param[1];
-      return node("DeclareClass", param[0], [
-                  [
-                    "id",
-                    identifier(d.id)
-                  ],
-                  [
-                    "typeParameters",
-                    option(type_parameter_declaration, d.typeParameters)
-                  ],
-                  [
-                    "body",
-                    object_type(d.body)
-                  ],
-                  [
-                    "extends",
-                    array_of_list(interface_extends, d.extends)
-                  ]
-                ]);
-    };
-    var export_specifiers = function (param) {
-      if (param !== undefined) {
-        if (param.TAG) {
-          return array([node("ExportBatchSpecifier", param._0, [[
-                              "name",
-                              option(identifier, param._1)
-                            ]])]);
-        } else {
-          return array_of_list(export_specifier, param._0);
-        }
-      } else {
-        return array([]);
-      }
-    };
-    var interface_declaration = function (param) {
-      var i = param[1];
-      return node("InterfaceDeclaration", param[0], [
-                  [
-                    "id",
-                    identifier(i.id)
-                  ],
-                  [
-                    "typeParameters",
-                    option(type_parameter_declaration, i.typeParameters)
-                  ],
-                  [
-                    "body",
-                    object_type(i.body)
-                  ],
-                  [
-                    "extends",
-                    array_of_list(interface_extends, i.extends)
-                  ]
-                ]);
-    };
-    var let_assignment = function (assignment) {
-      return obj([
-                  [
-                    "id",
-                    pattern(assignment.id)
-                  ],
-                  [
-                    "init",
-                    option(expression, assignment.init)
-                  ]
-                ]);
-    };
-    var literal = function (param) {
-      var lit = param[1];
-      var raw = lit.raw;
-      var value = lit.value;
-      var loc = param[0];
-      var value_;
-      if (typeof value === "number") {
-        value_ = $$null;
-      } else {
-        switch (value.TAG | 0) {
-          case /* String */0 :
-              value_ = string(value._0);
-              break;
-          case /* Boolean */1 :
-              value_ = bool(value._0);
-              break;
-          case /* Number */2 :
-              value_ = number$1(value._0);
-              break;
-          case /* RegExp */3 :
-              var match = value._0;
-              value_ = regexp$1(loc, match.pattern, match.flags);
-              break;
-          
-        }
-      }
-      var props;
-      var exit = 0;
-      if (typeof value === "number" || value.TAG !== /* RegExp */3) {
-        exit = 1;
-      } else {
-        var match$1 = value._0;
-        var regex = obj([
-              [
-                "pattern",
-                string(match$1.pattern)
-              ],
-              [
-                "flags",
-                string(match$1.flags)
-              ]
-            ]);
-        props = [
-          [
-            "value",
-            value_
-          ],
-          [
-            "raw",
-            string(raw)
-          ],
-          [
-            "regex",
-            regex
-          ]
-        ];
-      }
-      if (exit === 1) {
-        props = [
-          [
-            "value",
-            value_
-          ],
-          [
-            "raw",
-            string(raw)
-          ]
-        ];
-      }
-      return node("Literal", loc, props);
-    };
-    var variable_declaration = function (param) {
-      var $$var = param[1];
-      var match = $$var.kind;
-      var kind;
-      switch (match) {
-        case /* Var */0 :
-            kind = "var";
-            break;
-        case /* Let */1 :
-            kind = "let";
-            break;
-        case /* Const */2 :
-            kind = "const";
-            break;
-        
-      }
-      return node("VariableDeclaration", param[0], [
-                  [
-                    "declarations",
-                    array_of_list(variable_declarator, $$var.declarations)
-                  ],
-                  [
-                    "kind",
-                    string(kind)
-                  ]
-                ]);
-    };
-    var type_alias = function (param) {
-      var alias = param[1];
-      return node("TypeAlias", param[0], [
-                  [
-                    "id",
-                    identifier(alias.id)
-                  ],
-                  [
-                    "typeParameters",
-                    option(type_parameter_declaration, alias.typeParameters)
-                  ],
-                  [
-                    "right",
-                    _type(alias.right)
-                  ]
-                ]);
-    };
-    var block = function (param) {
-      return node("BlockStatement", param[0], [[
-                    "body",
-                    array_of_list(statement, param[1].body)
-                  ]]);
-    };
-    var declare_function = function (param) {
-      return node("DeclareFunction", param[0], [[
-                    "id",
-                    identifier(param[1].id)
-                  ]]);
-    };
-    var $$case = function (param) {
-      var c = param[1];
-      return node("SwitchCase", param[0], [
-                  [
-                    "test",
-                    option(expression, c.test)
-                  ],
-                  [
-                    "consequent",
-                    array_of_list(statement, c.consequent)
-                  ]
-                ]);
-    };
-    var $$catch = function (param) {
-      var c = param[1];
-      return node("CatchClause", param[0], [
-                  [
-                    "param",
-                    pattern(c.param)
-                  ],
-                  [
-                    "guard",
-                    option(expression, c.guard)
-                  ],
-                  [
-                    "body",
-                    block(c.body)
-                  ]
-                ]);
-    };
-    var declare_variable = function (param) {
-      return node("DeclareVariable", param[0], [[
-                    "id",
-                    identifier(param[1].id)
                   ]]);
     };
     var statement = function (param) {
@@ -17291,56 +17326,70 @@ function parse(content, options) {
         
       }
     };
-    var class_implements = function (param) {
-      var $$implements = param[1];
-      return node("ClassImplements", param[0], [
-                  [
-                    "id",
-                    identifier($$implements.id)
-                  ],
-                  [
-                    "typeParameters",
-                    option(type_parameter_instantiation, $$implements.typeParameters)
-                  ]
-                ]);
-    };
-    var class_body = function (param) {
-      return node("ClassBody", param[0], [[
-                    "body",
-                    array_of_list(class_element, param[1].body)
-                  ]]);
-    };
     var jsx_identifier = function (param) {
       return node("JSXIdentifier", param[0], [[
                     "name",
                     string(param[1].name)
                   ]]);
     };
-    var jsx_namespaced_name = function (param) {
-      var namespaced_name = param[1];
-      return node("JSXNamespacedName", param[0], [
+    var jsx_member_expression = function (param) {
+      var member_expression = param[1];
+      var id = member_expression._object;
+      var _object;
+      _object = id.TAG ? jsx_member_expression(id._0) : jsx_identifier(id._0);
+      return node("JSXMemberExpression", param[0], [
                   [
-                    "namespace",
-                    jsx_identifier(namespaced_name.namespace)
+                    "object",
+                    _object
                   ],
                   [
-                    "name",
-                    jsx_identifier(namespaced_name.name)
+                    "property",
+                    jsx_identifier(member_expression.property)
                   ]
                 ]);
     };
-    var jsx_attribute_value = function (param) {
-      if (param.TAG) {
-        return jsx_expression_container([
-                    param._0,
-                    param._1
-                  ]);
-      } else {
-        return literal([
-                    param._0,
-                    param._1
-                  ]);
-      }
+    var block = function (param) {
+      return node("BlockStatement", param[0], [[
+                    "body",
+                    array_of_list(statement, param[1].body)
+                  ]]);
+    };
+    var function_type = function (param) {
+      var fn = param[1];
+      return node("FunctionTypeAnnotation", param[0], [
+                  [
+                    "params",
+                    array_of_list(function_type_param, fn.params)
+                  ],
+                  [
+                    "returnType",
+                    _type(fn.returnType)
+                  ],
+                  [
+                    "rest",
+                    option(function_type_param, fn.rest)
+                  ],
+                  [
+                    "typeParameters",
+                    option(type_parameter_declaration, fn.typeParameters)
+                  ]
+                ]);
+    };
+    var generic_type_qualified_identifier = function (param) {
+      var q = param[1];
+      var id = q.qualification;
+      var qualification;
+      qualification = id.TAG ? generic_type_qualified_identifier(id._0) : identifier(id._0);
+      return node("QualifiedTypeIdentifier", param[0], [
+                  [
+                    "qualification",
+                    qualification
+                  ],
+                  [
+                    "id",
+                    identifier(q.id)
+                  ]
+                ]);
     };
     var jsx_element = function (param) {
       var element = param[1];
@@ -17359,55 +17408,16 @@ function parse(content, options) {
                   ]
                 ]);
     };
-    var jsx_expression_container = function (param) {
-      var expr = param[1].expression;
-      var expression$1;
-      expression$1 = expr.TAG ? node("JSXEmptyExpression", expr._0, []) : expression(expr._0);
-      return node("JSXExpressionContainer", param[0], [[
-                    "expression",
-                    expression$1
-                  ]]);
-    };
-    var interface_extends = function (param) {
-      var g = param[1];
-      var id = g.id;
-      var id$1;
-      id$1 = id.TAG ? generic_type_qualified_identifier(id._0) : identifier(id._0);
-      return node("InterfaceExtends", param[0], [
+    var jsx_namespaced_name = function (param) {
+      var namespaced_name = param[1];
+      return node("JSXNamespacedName", param[0], [
                   [
-                    "id",
-                    id$1
+                    "namespace",
+                    jsx_identifier(namespaced_name.namespace)
                   ],
                   [
-                    "typeParameters",
-                    option(type_parameter_instantiation, g.typeParameters)
-                  ]
-                ]);
-    };
-    var jsx_name = function (id) {
-      switch (id.TAG | 0) {
-        case /* Identifier */0 :
-            return jsx_identifier(id._0);
-        case /* NamespacedName */1 :
-            return jsx_namespaced_name(id._0);
-        case /* MemberExpression */2 :
-            return jsx_member_expression(id._0);
-        
-      }
-    };
-    var generic_type_qualified_identifier = function (param) {
-      var q = param[1];
-      var id = q.qualification;
-      var qualification;
-      qualification = id.TAG ? generic_type_qualified_identifier(id._0) : identifier(id._0);
-      return node("QualifiedTypeIdentifier", param[0], [
-                  [
-                    "qualification",
-                    qualification
-                  ],
-                  [
-                    "id",
-                    identifier(q.id)
+                    "name",
+                    jsx_identifier(namespaced_name.name)
                   ]
                 ]);
     };
@@ -17439,112 +17449,75 @@ function parse(content, options) {
                   ]
                 ]);
     };
-    var jsx_member_expression = function (param) {
-      var member_expression = param[1];
-      var id = member_expression._object;
-      var _object;
-      _object = id.TAG ? jsx_member_expression(id._0) : jsx_identifier(id._0);
-      return node("JSXMemberExpression", param[0], [
-                  [
-                    "object",
-                    _object
-                  ],
-                  [
-                    "property",
-                    jsx_identifier(member_expression.property)
-                  ]
-                ]);
-    };
-    var variable_declarator = function (param) {
-      var declarator = param[1];
-      return node("VariableDeclarator", param[0], [
+    var object_type_indexer = function (param) {
+      var indexer = param[1];
+      return node("ObjectTypeIndexer", param[0], [
                   [
                     "id",
-                    pattern(declarator.id)
+                    identifier(indexer.id)
                   ],
                   [
-                    "init",
-                    option(expression, declarator.init)
+                    "key",
+                    _type(indexer.key)
+                  ],
+                  [
+                    "value",
+                    _type(indexer.value)
+                  ],
+                  [
+                    "static",
+                    bool(indexer.static)
                   ]
                 ]);
     };
-    var comprehension_block = function (param) {
-      var b = param[1];
-      return node("ComprehensionBlock", param[0], [
+    var object_type_property = function (param) {
+      var prop = param[1];
+      var lit = prop.key;
+      var key;
+      switch (lit.TAG | 0) {
+        case /* Literal */0 :
+            key = literal(lit._0);
+            break;
+        case /* Identifier */1 :
+            key = identifier(lit._0);
+            break;
+        case /* Computed */2 :
+            throw {
+                  RE_EXN_ID: "Failure",
+                  _1: "There should not be computed object type property keys",
+                  Error: new Error()
+                };
+        
+      }
+      return node("ObjectTypeProperty", param[0], [
                   [
-                    "left",
-                    pattern(b.left)
+                    "key",
+                    key
                   ],
                   [
-                    "right",
-                    expression(b.right)
+                    "value",
+                    _type(prop.value)
                   ],
                   [
-                    "each",
-                    bool(b.each)
+                    "optional",
+                    bool(prop.optional)
+                  ],
+                  [
+                    "static",
+                    bool(prop.static)
                   ]
                 ]);
     };
-    var template_literal = function (param) {
-      var value = param[1];
-      return node("TemplateLiteral", param[0], [
+    var object_type_call_property = function (param) {
+      var callProperty = param[1];
+      return node("ObjectTypeCallProperty", param[0], [
                   [
-                    "quasis",
-                    array_of_list(template_element, value.quasis)
+                    "value",
+                    function_type(callProperty.value)
                   ],
                   [
-                    "expressions",
-                    array_of_list(expression, value.expressions)
-                  ]
-                ]);
-    };
-    var function_expression = function (param) {
-      var _function = param[1];
-      var b = _function.body;
-      var body;
-      body = b.TAG ? expression(b._0) : block(b._0);
-      return node("FunctionExpression", param[0], [
-                  [
-                    "id",
-                    option(identifier, _function.id)
-                  ],
-                  [
-                    "params",
-                    array_of_list(pattern, _function.params)
-                  ],
-                  [
-                    "defaults",
-                    array_of_list((function (param) {
-                            return option(expression, param);
-                          }), _function.defaults)
-                  ],
-                  [
-                    "rest",
-                    option(identifier, _function.rest)
-                  ],
-                  [
-                    "body",
-                    body
-                  ],
-                  [
-                    "async",
-                    bool(_function.async)
-                  ],
-                  [
-                    "generator",
-                    bool(_function.generator)
-                  ],
-                  [
-                    "expression",
-                    bool(_function.expression)
-                  ],
-                  [
-                    "returnType",
-                    option(type_annotation, _function.returnType)
-                  ],
-                  [
-                    "typeParameters",
-                    option(type_parameter_declaration, _function.typeParameters)
+                    "static",
+                    bool(callProperty.static)
                   ]
                 ]);
     };
@@ -17632,274 +17605,301 @@ function parse(content, options) {
                     expression(match[1].argument)
                   ]]);
     };
-    var class_element = function (m) {
-      if (m.TAG) {
-        var param = m._0;
-        var prop = param[1];
-        var lit = prop.key;
-        var match;
-        switch (lit.TAG | 0) {
-          case /* Literal */0 :
-              match = [
-                literal(lit._0),
-                false
-              ];
-              break;
-          case /* Identifier */1 :
-              match = [
-                identifier(lit._0),
-                false
-              ];
-              break;
-          case /* Computed */2 :
-              match = [
-                expression(lit._0),
-                true
-              ];
-              break;
-          
-        }
-        return node("ClassProperty", param[0], [
-                    [
-                      "key",
-                      match[0]
-                    ],
-                    [
-                      "value",
-                      option(expression, prop.value)
-                    ],
-                    [
-                      "typeAnnotation",
-                      option(type_annotation, prop.typeAnnotation)
-                    ],
-                    [
-                      "computed",
-                      bool(match[1])
-                    ],
-                    [
-                      "static",
-                      bool(prop.static)
-                    ]
+    var let_assignment = function (assignment) {
+      return obj([
+                  [
+                    "id",
+                    pattern(assignment.id)
+                  ],
+                  [
+                    "init",
+                    option(expression, assignment.init)
+                  ]
+                ]);
+    };
+    var function_expression = function (param) {
+      var _function = param[1];
+      var b = _function.body;
+      var body;
+      body = b.TAG ? expression(b._0) : block(b._0);
+      return node("FunctionExpression", param[0], [
+                  [
+                    "id",
+                    option(identifier, _function.id)
+                  ],
+                  [
+                    "params",
+                    array_of_list(pattern, _function.params)
+                  ],
+                  [
+                    "defaults",
+                    array_of_list((function (param) {
+                            return option(expression, param);
+                          }), _function.defaults)
+                  ],
+                  [
+                    "rest",
+                    option(identifier, _function.rest)
+                  ],
+                  [
+                    "body",
+                    body
+                  ],
+                  [
+                    "async",
+                    bool(_function.async)
+                  ],
+                  [
+                    "generator",
+                    bool(_function.generator)
+                  ],
+                  [
+                    "expression",
+                    bool(_function.expression)
+                  ],
+                  [
+                    "returnType",
+                    option(type_annotation, _function.returnType)
+                  ],
+                  [
+                    "typeParameters",
+                    option(type_parameter_declaration, _function.typeParameters)
+                  ]
+                ]);
+    };
+    var comprehension_block = function (param) {
+      var b = param[1];
+      return node("ComprehensionBlock", param[0], [
+                  [
+                    "left",
+                    pattern(b.left)
+                  ],
+                  [
+                    "right",
+                    expression(b.right)
+                  ],
+                  [
+                    "each",
+                    bool(b.each)
+                  ]
+                ]);
+    };
+    var jsx_attribute_value = function (param) {
+      if (param.TAG) {
+        return jsx_expression_container([
+                    param._0,
+                    param._1
                   ]);
       } else {
-        var param$1 = m._0;
-        var method_ = param$1[1];
-        var key = method_.key;
-        var match$1;
-        switch (key.TAG | 0) {
-          case /* Literal */0 :
-              match$1 = [
-                literal(key._0),
-                false
-              ];
-              break;
-          case /* Identifier */1 :
-              match$1 = [
-                identifier(key._0),
-                false
-              ];
-              break;
-          case /* Computed */2 :
-              match$1 = [
-                expression(key._0),
-                true
-              ];
-              break;
-          
-        }
-        var kind;
-        switch (method_.kind) {
-          case /* Constructor */0 :
-              kind = "constructor";
-              break;
-          case /* Method */1 :
-              kind = "method";
-              break;
-          case /* Get */2 :
-              kind = "get";
-              break;
-          case /* Set */3 :
-              kind = "set";
-              break;
-          
-        }
-        return node("MethodDefinition", param$1[0], [
-                    [
-                      "key",
-                      match$1[0]
-                    ],
-                    [
-                      "value",
-                      function_expression(method_.value)
-                    ],
-                    [
-                      "kind",
-                      string(kind)
-                    ],
-                    [
-                      "static",
-                      bool(method_.static)
-                    ],
-                    [
-                      "computed",
-                      bool(match$1[1])
-                    ],
-                    [
-                      "decorators",
-                      array_of_list(expression, method_.decorators)
-                    ]
+        return literal([
+                    param._0,
+                    param._1
                   ]);
       }
     };
-    var template_element = function (param) {
-      var element = param[1];
-      var value = obj([
-            [
-              "raw",
-              string(element.value.raw)
-            ],
-            [
-              "cooked",
-              string(element.value.cooked)
-            ]
-          ]);
-      return node("TemplateElement", param[0], [
-                  [
-                    "value",
-                    value
-                  ],
-                  [
-                    "tail",
-                    bool(element.tail)
-                  ]
-                ]);
+    var export_specifiers = function (param) {
+      if (param !== undefined) {
+        if (param.TAG) {
+          return array([node("ExportBatchSpecifier", param._0, [[
+                              "name",
+                              option(identifier, param._1)
+                            ]])]);
+        } else {
+          return array_of_list(export_specifier, param._0);
+        }
+      } else {
+        return array([]);
+      }
     };
-    var function_type_param = function (param) {
-      var param$1 = param[1];
-      return node("FunctionTypeParam", param[0], [
-                  [
-                    "name",
-                    identifier(param$1.name)
-                  ],
-                  [
-                    "typeAnnotation",
-                    _type(param$1.typeAnnotation)
-                  ],
-                  [
-                    "optional",
-                    bool(param$1.optional)
-                  ]
-                ]);
-    };
-    var export_specifier = function (param) {
-      var specifier = param[1];
-      return node("ExportSpecifier", param[0], [
+    var declare_class = function (param) {
+      var d = param[1];
+      return node("DeclareClass", param[0], [
                   [
                     "id",
-                    identifier(specifier.id)
+                    identifier(d.id)
                   ],
                   [
-                    "name",
-                    option(identifier, specifier.name)
+                    "typeParameters",
+                    option(type_parameter_declaration, d.typeParameters)
+                  ],
+                  [
+                    "body",
+                    object_type(d.body)
+                  ],
+                  [
+                    "extends",
+                    array_of_list(interface_extends, d.extends)
                   ]
                 ]);
     };
-    var object_type_property = function (param) {
-      var prop = param[1];
-      var lit = prop.key;
-      var key;
-      switch (lit.TAG | 0) {
-        case /* Literal */0 :
-            key = literal(lit._0);
+    var interface_declaration = function (param) {
+      var i = param[1];
+      return node("InterfaceDeclaration", param[0], [
+                  [
+                    "id",
+                    identifier(i.id)
+                  ],
+                  [
+                    "typeParameters",
+                    option(type_parameter_declaration, i.typeParameters)
+                  ],
+                  [
+                    "body",
+                    object_type(i.body)
+                  ],
+                  [
+                    "extends",
+                    array_of_list(interface_extends, i.extends)
+                  ]
+                ]);
+    };
+    var $$catch = function (param) {
+      var c = param[1];
+      return node("CatchClause", param[0], [
+                  [
+                    "param",
+                    pattern(c.param)
+                  ],
+                  [
+                    "guard",
+                    option(expression, c.guard)
+                  ],
+                  [
+                    "body",
+                    block(c.body)
+                  ]
+                ]);
+    };
+    var type_alias = function (param) {
+      var alias = param[1];
+      return node("TypeAlias", param[0], [
+                  [
+                    "id",
+                    identifier(alias.id)
+                  ],
+                  [
+                    "typeParameters",
+                    option(type_parameter_declaration, alias.typeParameters)
+                  ],
+                  [
+                    "right",
+                    _type(alias.right)
+                  ]
+                ]);
+    };
+    var $$case = function (param) {
+      var c = param[1];
+      return node("SwitchCase", param[0], [
+                  [
+                    "test",
+                    option(expression, c.test)
+                  ],
+                  [
+                    "consequent",
+                    array_of_list(statement, c.consequent)
+                  ]
+                ]);
+    };
+    var variable_declaration = function (param) {
+      var $$var = param[1];
+      var match = $$var.kind;
+      var kind;
+      switch (match) {
+        case /* Var */0 :
+            kind = "var";
             break;
-        case /* Identifier */1 :
-            key = identifier(lit._0);
+        case /* Let */1 :
+            kind = "let";
             break;
-        case /* Computed */2 :
-            throw {
-                  RE_EXN_ID: "Failure",
-                  _1: "There should not be computed object type property keys",
-                  Error: new Error()
-                };
+        case /* Const */2 :
+            kind = "const";
+            break;
         
       }
-      return node("ObjectTypeProperty", param[0], [
+      return node("VariableDeclaration", param[0], [
                   [
-                    "key",
-                    key
+                    "declarations",
+                    array_of_list(variable_declarator, $$var.declarations)
                   ],
                   [
-                    "value",
-                    _type(prop.value)
-                  ],
-                  [
-                    "optional",
-                    bool(prop.optional)
-                  ],
-                  [
-                    "static",
-                    bool(prop.static)
+                    "kind",
+                    string(kind)
                   ]
                 ]);
     };
-    var object_type_call_property = function (param) {
-      var callProperty = param[1];
-      return node("ObjectTypeCallProperty", param[0], [
-                  [
-                    "value",
-                    function_type(callProperty.value)
-                  ],
-                  [
-                    "static",
-                    bool(callProperty.static)
-                  ]
-                ]);
-    };
-    var object_type_indexer = function (param) {
-      var indexer = param[1];
-      return node("ObjectTypeIndexer", param[0], [
-                  [
+    var declare_variable = function (param) {
+      return node("DeclareVariable", param[0], [[
                     "id",
-                    identifier(indexer.id)
-                  ],
+                    identifier(param[1].id)
+                  ]]);
+    };
+    var declare_function = function (param) {
+      return node("DeclareFunction", param[0], [[
+                    "id",
+                    identifier(param[1].id)
+                  ]]);
+    };
+    var array_pattern_element = function (p) {
+      if (!p.TAG) {
+        return pattern(p._0);
+      }
+      var match = p._0;
+      return node("SpreadElementPattern", match[0], [[
+                    "argument",
+                    pattern(match[1].argument)
+                  ]]);
+    };
+    var object_pattern_property = function (param) {
+      if (param.TAG) {
+        var match = param._0;
+        return node("SpreadPropertyPattern", match[0], [[
+                      "argument",
+                      pattern(match[1].argument)
+                    ]]);
+      }
+      var match$1 = param._0;
+      var prop = match$1[1];
+      var lit = prop.key;
+      var match$2;
+      switch (lit.TAG | 0) {
+        case /* Literal */0 :
+            match$2 = [
+              literal(lit._0),
+              false
+            ];
+            break;
+        case /* Identifier */1 :
+            match$2 = [
+              identifier(lit._0),
+              false
+            ];
+            break;
+        case /* Computed */2 :
+            match$2 = [
+              expression(lit._0),
+              true
+            ];
+            break;
+        
+      }
+      return node("PropertyPattern", match$1[0], [
                   [
                     "key",
-                    _type(indexer.key)
+                    match$2[0]
                   ],
                   [
-                    "value",
-                    _type(indexer.value)
+                    "pattern",
+                    pattern(prop.pattern)
                   ],
                   [
-                    "static",
-                    bool(indexer.static)
+                    "computed",
+                    bool(match$2[1])
+                  ],
+                  [
+                    "shorthand",
+                    bool(prop.shorthand)
                   ]
                 ]);
-    };
-    var jsx_opening_attribute = function (attribute) {
-      if (attribute.TAG) {
-        var param = attribute._0;
-        return node("JSXSpreadAttribute", param[0], [[
-                      "argument",
-                      expression(param[1].argument)
-                    ]]);
-      } else {
-        var param$1 = attribute._0;
-        var attribute$1 = param$1[1];
-        var id = attribute$1.name;
-        var name;
-        name = id.TAG ? jsx_namespaced_name(id._0) : jsx_identifier(id._0);
-        return node("JSXAttribute", param$1[0], [
-                    [
-                      "name",
-                      name
-                    ],
-                    [
-                      "value",
-                      option(jsx_attribute_value, attribute$1.value)
-                    ]
-                  ]);
-      }
     };
     var program$2 = function (param) {
       return node("Program", param[0], [
