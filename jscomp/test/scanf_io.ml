@@ -37,7 +37,7 @@ let write_tscanf_data_file fname lines =
 
 (* Reading back tscanf_data_file_lines (hence, testing data file reading as
    well). *)
-let get_lines fname =
+(* let get_lines fname =
   let ib = Scanf.Scanning.from_file fname in
   let l = ref [] in
   try
@@ -51,7 +51,7 @@ let get_lines fname =
     failwith (Printf.sprintf "in file %s, %s" fname s)
   | End_of_file ->
     failwith (Printf.sprintf "in file %s, unexpected end of file" fname)
-;;
+;; *)
 
 (* Creating digests for files. *)
 let add_digest_ib ob ib =
@@ -65,23 +65,23 @@ let add_digest_ib ob ib =
   | End_of_file -> ()
 ;;
 
-let digest_file fname =
+(* let digest_file fname =
   let ib = Scanf.Scanning.from_file fname in
   let ob = Buffer.create 42 in
   add_digest_ib ob ib;
   Buffer.contents ob
-;;
+;; *)
 
 (* Simply test that the list of lines read from the file is the list of lines
    written to it!. *)
-let test54 () =
+(* let test54 () =
   get_lines tscanf_data_file = tscanf_data_file_lines
-;;
+;; *)
 
 (* test (test54 ()) *)
 (* ;; *)
 
-let test55 () =
+(* let test55 () =
   let ob = Buffer.create 42 in
   let ib =
     create_tscanf_data ob tscanf_data_file_lines;
@@ -90,7 +90,7 @@ let test55 () =
     Scanning.from_string s in
   let tscanf_data_file_lines_digest = add_digest_ib ob ib; Buffer.contents ob in
   digest_file tscanf_data_file = tscanf_data_file_lines_digest
-;;
+;; *)
 
 (* test (test55 ()) *)
 (* ;; *)

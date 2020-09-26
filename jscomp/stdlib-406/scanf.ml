@@ -120,15 +120,12 @@ module type SCANNING = sig
   (* [Scanning.name_of_input ib] returns the name of the character
      source for input buffer [ib]. *)
 
-  val open_in : file_name -> in_channel
-  val open_in_bin : file_name -> in_channel
-  val from_file : file_name -> in_channel
-  val from_file_bin : file_name -> in_channel
+  
   val from_string : string -> in_channel
   val from_function : (unit -> char) -> in_channel
   val from_channel : Pervasives.in_channel -> in_channel
 
-  val close_in : in_channel -> unit
+
 
   val memo_from_channel : Pervasives.in_channel -> in_channel
   (* Obsolete. *)
@@ -324,9 +321,7 @@ module Scanning : SCANNING = struct
   (* Perform bufferized input to improve efficiency. *)
   let file_buffer_size = ref 1024
 
-  (* The scanner closes the input channel at end of input. *)
-  let scan_close_at_end ic = Pervasives.close_in ic; raise End_of_file
-
+  
   (* The scanner does not close the input channel at end of input:
      it just raises [End_of_file]. *)
   let scan_raise_at_end _ic = raise End_of_file
@@ -349,7 +344,7 @@ module Scanning : SCANNING = struct
     create iname next
 
 
-  let from_ic_close_at_end = from_ic scan_close_at_end
+
   let from_ic_raise_at_end = from_ic scan_raise_at_end
 
   (* The scanning buffer reading from [Pervasives.stdin].
@@ -374,31 +369,17 @@ module Scanning : SCANNING = struct
 
   let stdib = stdin
 
-  let open_in_file open_in fname =
-    match fname with
-    | "-" -> stdin
-    | fname ->
-      let ic = open_in fname in
-      from_ic_close_at_end (From_file (fname, ic)) ic
 
 
-  let open_in = open_in_file Pervasives.open_in
-  let open_in_bin = open_in_file Pervasives.open_in_bin
+  
+  
 
-  let from_file = open_in
-  let from_file_bin = open_in_bin
-
+  
   let from_channel ic =
     from_ic_raise_at_end (From_channel ic) ic
 
 
-  let close_in ib =
-    match ib.ic_input_name with
-    | From_channel ic ->
-      Pervasives.close_in ic
-    | From_file (_fname, ic) -> Pervasives.close_in ic
-    | From_function | From_string -> ()
-
+  
 
   (*
      Obsolete: a memo [from_channel] version to build a [Scanning.in_channel]

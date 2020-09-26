@@ -125,35 +125,9 @@ type file_name = string
     @since 4.00.0
 *)
 
-val open_in : file_name -> in_channel
-(** [Scanning.open_in fname] returns a {!Scanning.in_channel} formatted input
-    channel for bufferized reading in text mode from file [fname].
 
-    Note:
-    [open_in] returns a formatted input channel that efficiently reads
-    characters in large chunks; in contrast, [from_channel] below returns
-    formatted input channels that must read one character at a time, leading
-    to a much slower scanning rate.
-    @since 3.12.0
-*)
 
-val open_in_bin : file_name -> in_channel
-(** [Scanning.open_in_bin fname] returns a {!Scanning.in_channel} formatted
-    input channel for bufferized reading in binary mode from file [fname].
-    @since 3.12.0
-*)
 
-val close_in : in_channel -> unit
-(** Closes the {!Pervasives.in_channel} associated with the given
-  {!Scanning.in_channel} formatted input channel.
-  @since 3.12.0
-*)
-
-val from_file : file_name -> in_channel
-(** An alias for {!Scanning.open_in} above. *)
-
-val from_file_bin : string -> in_channel
-(** An alias for {!Scanning.open_in_bin} above. *)
 
 val from_string : string -> in_channel
 (** [Scanning.from_string s] returns a {!Scanning.in_channel} formatted
