@@ -11,6 +11,7 @@ depend:
 	$(OCAMLDEP) -native -I tests -I src src/*.ml src/*.mli tests/*.ml tests/*.mli > .depend
 
 API_FILES = \
+	src/reactjs_jsx_ppx.cmx\
 	src/res_io.cmx\
 	src/res_minibuffer.cmx\
 	src/res_doc.cmx\

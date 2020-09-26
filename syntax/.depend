@@ -1,3 +1,5 @@
+src/reactjs_jsx_ppx.cmx : src/reactjs_jsx_ppx.cmi
+src/reactjs_jsx_ppx.cmi :
 src/res_ast_conversion.cmx : src/res_ast_conversion.cmi
 src/res_ast_conversion.cmi :
 src/res_ast_debugger.cmx : src/res_driver.cmx src/res_doc.cmx \
@@ -6,7 +8,7 @@ src/res_ast_debugger.cmi : src/res_driver.cmi
 src/res_character_codes.cmx :
 src/res_cli.cmx : src/res_driver_reason_binary.cmx \
     src/res_driver_ml_parser.cmx src/res_driver_binary.cmx src/res_driver.cmx \
-    src/res_ast_debugger.cmx
+    src/res_ast_debugger.cmx src/reactjs_jsx_ppx.cmx
 src/res_comment.cmx : src/res_comment.cmi
 src/res_comment.cmi :
 src/res_comments_table.cmx : src/res_parsetree_viewer.cmx src/res_doc.cmx \

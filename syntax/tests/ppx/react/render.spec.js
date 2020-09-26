@@ -1,0 +1,1 @@
+runPrinter(__dirname, "jsx")

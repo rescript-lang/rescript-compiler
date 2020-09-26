@@ -151,7 +151,7 @@ function parseNapkinStdinToNapkin(src, isInterface, width = 100) {
     .stdout.toString("utf8");
 }
 
-function printFile(filename) {
+function printFile(filename, ppx) {
   let parserSrc;
   switch (classifyLang(filename)) {
     case "ocaml":
@@ -165,8 +165,7 @@ function printFile(filename) {
         status: 0,
         errorOutput: ""
       };
-      break;
-
+    
     case "rescript":
     default:
       parserSrc = "res";
@@ -174,8 +173,7 @@ function printFile(filename) {
   }
 
   let intf = isInterface(filename);
-
-  let args = ["-parse", parserSrc, "-print", "res", "-width", "80"];
+  let args = ["-parse", parserSrc, "-print", "res", "-width", "80", "-ppx", ppx];
 
   if (intf) {
     args.push("-interface");
@@ -204,15 +202,16 @@ let makeReproducibleFilename = (txt) => {
   })
 };
 
-global.runPrinter = (dirname) => {
+global.runPrinter = (dirname, ppx = "") => {
   fs.readdirSync(dirname).forEach((base) => {
     let filename = path.join(dirname, base);
+
     if (!fs.lstatSync(filename).isFile() || base === "render.spec.js") {
       return;
     }
 
     test(base, () => {
-      let {result, errorOutput, status} = printFile(filename);
+      let {result, errorOutput, status} = printFile(filename, ppx);
       if (status > 0) {
         let msg = `Test from file: ${filename} failed with error output:
 
@@ -226,7 +225,9 @@ Make sure the test input is syntactically valid.`;
         expect(result).toMatchSnapshot();
       }
 
-      if (process.env.ROUNDTRIP_TEST) {
+      // Only run roundtrip tests in ppx-free tests.
+      // Ppxs are only applied in .res syntax, not .re, so resulting ASTs would not match
+      if (process.env.ROUNDTRIP_TEST && ppx === "") {
         let intf = isInterface(filename);
         let sexpAst = parseFileToSexp(filename);
         let result2 = parseNapkinStdinToNapkin(result, intf, 80);

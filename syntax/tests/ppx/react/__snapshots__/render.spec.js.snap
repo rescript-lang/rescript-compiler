@@ -1,0 +1,101 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`commentAtTop.res 1`] = `
+"@bs.obj
+external makeProps: (~msg: 'msg, ~key: string=?, unit) => {\\"msg\\": 'msg} = \\"\\" // test React JSX file
+
+let make =
+  (@warning(\\"-16\\") ~msg) => {
+    ReactDOMRe.createDOMElementVariadic(\\"div\\", [{msg->React.string}])
+  }
+let make = {
+  let \\\\\\"CommentAtTop\\" = (\\\\\\"Props\\": {\\"msg\\": 'msg}) => make(~msg=\\\\\\"Props\\"[\\"msg\\"])
+  \\\\\\"CommentAtTop\\"
+}
+"
+`;
+
+exports[`externalWithCustomName.res 1`] = `
+"module Foo = {
+  @bs.obj
+  external componentProps: (
+    ~a: int,
+    ~b: string,
+    ~key: string=?,
+    unit,
+  ) => {\\"a\\": int, \\"b\\": string} = \\"\\"
+  @bs.module(\\"Foo\\")
+  external component: React.componentLike<
+    {\\"a\\": int, \\"b\\": string},
+    React.element,
+  > = \\"component\\"
+}
+
+let t = React.createElement(
+  Foo.component,
+  Foo.componentProps(~a=1, ~b={\\"1\\"}, ()),
+)
+"
+`;
+
+exports[`innerModule.res 1`] = `
+"module Bar = {
+  @bs.obj
+  external makeProps: (
+    ~a: 'a,
+    ~b: 'b,
+    ~key: string=?,
+    unit,
+  ) => {\\"a\\": 'a, \\"b\\": 'b} = \\"\\"
+  let make =
+    (@warning(\\"-16\\") ~a, @warning(\\"-16\\") ~b, _) => {
+      Js.log(\\"This function should be named \`InnerModule.react$Bar\`\\")
+      ReactDOMRe.createDOMElementVariadic(\\"div\\", [])
+    }
+  let make = {
+    let \\\\\\"InnerModule$Bar\\" = (\\\\\\"Props\\": {\\"a\\": 'a, \\"b\\": 'b}) =>
+      make(~b=\\\\\\"Props\\"[\\"b\\"], ~a=\\\\\\"Props\\"[\\"a\\"], ())
+    \\\\\\"InnerModule$Bar\\"
+  }
+  @bs.obj
+  external componentProps: (
+    ~a: 'a,
+    ~b: 'b,
+    ~key: string=?,
+    unit,
+  ) => {\\"a\\": 'a, \\"b\\": 'b} = \\"\\"
+
+  let component =
+    (@warning(\\"-16\\") ~a, @warning(\\"-16\\") ~b, _) => {
+      Js.log(\\"This function should be named \`InnerModule.react$Bar$component\`\\")
+      ReactDOMRe.createDOMElementVariadic(\\"div\\", [])
+    }
+  let component = {
+    let \\\\\\"InnerModule$Bar$component\\" = (\\\\\\"Props\\": {\\"a\\": 'a, \\"b\\": 'b}) =>
+      component(~b=\\\\\\"Props\\"[\\"b\\"], ~a=\\\\\\"Props\\"[\\"a\\"], ())
+    \\\\\\"InnerModule$Bar$component\\"
+  }
+}
+"
+`;
+
+exports[`topLevel.res 1`] = `
+"@bs.obj
+external makeProps: (
+  ~a: 'a,
+  ~b: 'b,
+  ~key: string=?,
+  unit,
+) => {\\"a\\": 'a, \\"b\\": 'b} = \\"\\"
+let make =
+  (@warning(\\"-16\\") ~a, @warning(\\"-16\\") ~b, _) => {
+    Js.log(\\"This function should be named 'TopLevel.react'\\")
+    ReactDOMRe.createDOMElementVariadic(\\"div\\", [])
+  }
+let make = {
+  let \\\\\\"TopLevel\\" = (\\\\\\"Props\\": {\\"a\\": 'a, \\"b\\": 'b}) =>
+    make(~b=\\\\\\"Props\\"[\\"b\\"], ~a=\\\\\\"Props\\"[\\"a\\"], ())
+  \\\\\\"TopLevel\\"
+}
+"
+`;
