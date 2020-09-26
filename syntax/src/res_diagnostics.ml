@@ -41,7 +41,7 @@ let explain t =
       let token = Token.toString t in
       "`" ^ token ^ "` is a reserved keyword."
     | _ ->
-      "At this point, I'm looking for an uppercased identifier like `Belt` or `Array`"
+      "At this point, I'm looking for an uppercased name like `Belt` or `Array`"
     end
   | Lident currentToken ->
     begin match currentToken with
@@ -54,7 +54,7 @@ let explain t =
     | Underscore ->
       "`_` isn't a valid name."
     | _ ->
-      "I'm expecting an lowercased identifier like `name` or `age`"
+      "I'm expecting a lowercase name like `user or `age`"
     end
   | Message txt -> txt
   | UnclosedString ->

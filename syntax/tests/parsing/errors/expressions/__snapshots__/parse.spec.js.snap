@@ -507,7 +507,7 @@ exports[`taggedTemplateLiterals.js 1`] = `
   1 │ foo()\`null\`
   2 │ 
   
-  Tagged template literals are currently restricted to identifiers like: json\`null\`.
+  Tagged template literals are currently restricted to names like: json\`null\`.
 
 
 ========================================================"

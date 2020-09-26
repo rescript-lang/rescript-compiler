@@ -61,7 +61,7 @@ type t =
 
 let toString = function
   | OpenDescription -> "an open description"
-  | ModuleLongIdent -> "a module identifier"
+  | ModuleLongIdent -> "a module path"
   | Ternary -> "a ternary expression"
   | Es6ArrowExpr -> "an es6 arrow function"
   | Jsx -> "a jsx expression"
