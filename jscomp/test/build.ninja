@@ -430,6 +430,8 @@ build test/map_find_test.cmi test/map_find_test.cmj : cc test/map_find_test.ml |
 build test/map_test.cmj : cc_cmi test/map_test.ml | test/map_test.cmi test/mt.cmj $stdlib
 build test/map_test.cmi : cc test/map_test.mli | $stdlib
 build test/mario_game.cmi test/mario_game.cmj : cc test/mario_game.ml | $stdlib
+build test/marshal.cmj : cc_cmi test/marshal.ml | test/marshal.cmi $stdlib
+build test/marshal.cmi : cc test/marshal.mli | $stdlib
 build test/method_chain.cmi test/method_chain.cmj : cc test/method_chain.ml | $stdlib
 build test/method_name_test.cmi test/method_name_test.cmj : cc test/method_name_test.ml | test/mt.cmj $stdlib
 build test/method_string_name.cmi test/method_string_name.cmj : cc test/method_string_name.re | $stdlib
@@ -478,7 +480,7 @@ build test/ocaml_parsetree_test.cmi : cc test/ocaml_parsetree_test.mli | $stdlib
 build test/ocaml_proto_test.cmj : cc_cmi test/ocaml_proto_test.ml | test/mt.cmj test/ocaml_proto_test.cmi $stdlib
 build test/ocaml_proto_test.cmi : cc test/ocaml_proto_test.mli | $stdlib
 build test/ocaml_re_test.cmi test/ocaml_re_test.cmj : cc test/ocaml_re_test.ml | test/mt.cmj $stdlib
-build test/ocaml_typedtree_test.cmj : cc_cmi test/ocaml_typedtree_test.ml | test/nativeint.cmj test/ocaml_typedtree_test.cmi $stdlib
+build test/ocaml_typedtree_test.cmj : cc_cmi test/ocaml_typedtree_test.ml | test/marshal.cmj test/nativeint.cmj test/ocaml_typedtree_test.cmi $stdlib
 build test/ocaml_typedtree_test.cmi : cc test/ocaml_typedtree_test.mli | $stdlib
 build test/of_string_test.cmi test/of_string_test.cmj : cc test/of_string_test.ml | test/mt.cmj $stdlib
 build test/offset.cmi test/offset.cmj : cc test/offset.ml | $stdlib

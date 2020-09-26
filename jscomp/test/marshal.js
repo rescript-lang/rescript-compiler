@@ -1,7 +1,7 @@
+'use strict';
 
-
-import * as Caml_bytes from "./caml_bytes.js";
-import * as Caml_external_polyfill from "./caml_external_polyfill.js";
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
+var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 
 function to_buffer(buff, ofs, len, v, flags) {
   if (ofs < 0 || len < 0 || ofs > (buff.length - len | 0)) {
@@ -62,15 +62,12 @@ function from_channel(prim) {
 
 var header_size = 20;
 
-export {
-  to_channel ,
-  to_buffer ,
-  from_channel ,
-  from_bytes ,
-  from_string ,
-  header_size ,
-  data_size ,
-  total_size ,
-  
-}
+exports.to_channel = to_channel;
+exports.to_buffer = to_buffer;
+exports.from_channel = from_channel;
+exports.from_bytes = from_bytes;
+exports.from_string = from_string;
+exports.header_size = header_size;
+exports.data_size = data_size;
+exports.total_size = total_size;
 /* No side effect */
