@@ -183,24 +183,3 @@ val current : int ref
     argument 0 (the program name) and starts parsing arguments
     at the next element. *)
 
-val read_arg: string -> string array
-(** [Arg.read_arg file] reads newline-terminated command line arguments from
-    file [file].
-    @since 4.05.0 *)
-
-val read_arg0: string -> string array
-(** Identical to {!Arg.read_arg} but assumes null character terminated command line
-    arguments.
-    @since 4.05.0 *)
-
-
-val write_arg: string -> string array -> unit
-(** [Arg.write_arg file args] writes the arguments [args] newline-terminated
-    into the file [file]. If the any of the arguments in [args] contains a
-    newline, use {!Arg.write_arg0} instead.
-    @since 4.05.0 *)
-
-val write_arg0: string -> string array -> unit
-(** Identical to {!Arg.write_arg} but uses the null character for terminator
-    instead of newline.
-    @since 4.05.0 *)
