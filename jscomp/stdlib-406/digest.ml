@@ -35,11 +35,6 @@ let substring str ofs len =
 
 let subbytes b ofs len = substring (Bytes.unsafe_to_string b) ofs len
 
-let file filename =
-  let ic = open_in_bin filename in
-  match channel ic (-1) with
-    | d -> close_in ic; d
-    | exception e -> close_in ic; raise e
 
 let output chan digest =
   output_string chan digest

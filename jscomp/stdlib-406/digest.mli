@@ -63,8 +63,6 @@ external channel : in_channel -> int -> t = "caml_md5_chan"
    all characters from [ic] until end-of-file is reached and return
    their digest. *)
 
-val file : string -> t
-(** Return the digest of the file whose name is given. *)
 
 val output : out_channel -> t -> unit
 (** Write a digest on the given output channel. *)

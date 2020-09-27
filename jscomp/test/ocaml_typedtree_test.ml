@@ -5601,11 +5601,12 @@ let output_cmi filename oc cmi =
   output_string oc Config.cmi_magic_number;
   output_value oc (cmi.cmi_name, cmi.cmi_sign);
   flush oc;
-  let crc = Digest.file filename in
+  assert false (* this path is not tested *)
+  (* let crc = Digest.file filename in
   let crcs = (cmi.cmi_name, Some crc) :: cmi.cmi_crcs in
   output_value oc crcs;
   output_value oc cmi.cmi_flags;
-  crc
+  crc *)
 
 (* Error report *)
 
@@ -29692,6 +29693,8 @@ let record_value_dependency vd1 vd2 =
     value_deps := (vd1, vd2) :: !value_deps
 
 let save_cmt filename modname binary_annots sourcefile initial_env sg =
+ assert false
+(*    
   if !Clflags.binary_annotations && not !Clflags.print_types then begin
     let imports = Env.imports () in
     let oc = open_out_bin filename in
@@ -29732,7 +29735,7 @@ let save_cmt filename modname binary_annots sourcefile initial_env sg =
     | exception _ -> ()
     | cmd -> ignore (Sys.command (cmd ^ " -cmt-add " ^ filename ^ (match sourcefile with None -> "" | Some sourcefile -> ":" ^ sourcefile)))
   end;
-  clear ()
+  clear () *)
 
 end
 module Ctype : sig
