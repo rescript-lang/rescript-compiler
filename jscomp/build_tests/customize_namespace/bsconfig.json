@@ -14,5 +14,6 @@
       "depa",
       "depb"
   ],
+  "warnings": {"error" : "+101"},
   "refmt": 3
 }

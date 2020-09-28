@@ -23,10 +23,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type warning_error =
+  | Warn_error_false
+  (* default [false] to make our changes non-intrusive *)
+  | Warn_error_true
+  | Warn_error_number of string
 
 type t0 = {
-  number : string option; 
-} [@@ocaml.unboxed]
+  number : string option;
+  error : warning_error
+}
 
 type nonrec t = t0 option 
 
@@ -64,13 +70,27 @@ let to_merlin_string x =
    
 let from_map (m : Ext_json_types.t Map_string.t) =
   let number_opt = Map_string.find_opt m Bsb_build_schemas.number in
-  let number =
-    match number_opt with
-    | Some (Str { str = number}) -> Some number
-    | None -> None
-    | Some x -> Bsb_exception.config_error x "expect a string"
-  in
-  Some {number }
+  let error_opt = Map_string.find_opt m  Bsb_build_schemas.error in
+  match number_opt, error_opt  with
+  | None, None -> None
+  | _, _ ->
+    let error  =
+      match error_opt with
+      | Some (True _) -> Warn_error_true
+      | Some (False _) -> Warn_error_false
+      | Some (Str {str ; })
+        -> Warn_error_number str
+      | Some x -> Bsb_exception.config_error x "expect true/false or string"
+      | None -> Warn_error_false
+      (** To make it less intrusive : warning error has to be enabled*)
+    in
+    let number =
+      match number_opt with
+      | Some (Str { str = number}) -> Some number
+      | None -> None
+      | Some x -> Bsb_exception.config_error x "expect a string"
+    in
+    Some {number; error }
 
 
 let to_bsb_string ~toplevel warning =
@@ -83,6 +103,15 @@ let to_bsb_string ~toplevel warning =
          Ext_string.empty
        | Some x ->
          prepare_warning_concat ~beg:true x  
-      ) 
+      ) ^
+      (
+        match warning.error with
+        | Warn_error_true ->
+          " -warn-error A"
+        | Warn_error_number y ->
+          " -warn-error " ^ y
+        | Warn_error_false ->
+          Ext_string.empty
+      )
   else " -w a" 
   (* TODO: this is the current default behavior *)

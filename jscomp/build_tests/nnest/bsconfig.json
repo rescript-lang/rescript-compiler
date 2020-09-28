@@ -10,5 +10,6 @@
     "module": "commonjs",
     "in-source": true
   },
-  "namespace": true
+  "namespace": true,
+  "warnings": {"error": true}
 }

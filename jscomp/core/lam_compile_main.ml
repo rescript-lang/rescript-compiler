@@ -260,6 +260,7 @@ let compile
                Ext_string.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
             ) 
       in
+      Warnings.check_fatal();
       let effect = 
         Lam_stats_export.get_dependent_module_effect
         maybe_pure external_module_ids in 
@@ -286,11 +287,7 @@ let lambda_as_module
      : unit = 
   let package_info = Js_packages_state.get_packages_info () in 
   if Js_packages_info.is_empty package_info && !Js_config.js_stdout then begin    
-    Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout;
-    if !Warnings.nerrors > 0 then begin 
-      Warnings.nerrors := 0;
-      exit 77
-    end  
+    Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout
   end else
     Js_packages_info.iter package_info (fun {module_system; path; suffix} -> 
         let output_chan chan  = 
@@ -313,15 +310,11 @@ let lambda_as_module
         (if not !Clflags.dont_write_files then 
           Ext_pervasives.with_file_as_chan
             target_file output_chan );
-        if !Warnings.nerrors > 0 then begin 
-          Warnings.nerrors := 0 ;
+        if !Warnings.has_warnings  then begin 
+          Warnings.has_warnings := false ;
           if Sys.file_exists target_file then begin 
             Bs_hash_stubs.set_as_old_file target_file
-          end;
-          exit 77
-          (* don't write js file, we need remove js files 
-             otherwise the js files are out-of-date
-             exit 177 *)
+          end          
         end             
         )
   

@@ -3411,6 +3411,7 @@ val mk_lazy: (unit -> 'a) -> 'a Lazy.t
         the warning settings at the time [mk_lazy] is called. *)
 
 
+val has_warnings : bool ref
 val nerrors : int ref
 val message : t -> string 
 val number: t -> int
@@ -3676,11 +3677,7 @@ let backup () = !current
 let restore x = current := x
 
 let is_active x = not !disabled && (!current).active.(number x);;
-
-let is_error = 
-  if !Config.bs_only then is_active else 
-    fun x -> not !disabled && (!current).error.(number x) 
-
+let is_error x = not !disabled && (!current).error.(number x);;
 
 let mk_lazy f =
   let state = backup () in
@@ -4031,6 +4028,7 @@ let sub_locs = function
       ]
   | _ -> []
 
+let has_warnings = ref false ;;  
 let nerrors = ref 0;;
 
 type reporting_information =
@@ -4050,6 +4048,7 @@ let report w =
   match is_active w with
   | false -> `Inactive
   | true ->
+     has_warnings := true; 
      if is_error w then incr nerrors;
      `Active { number = number w; message = message w; is_error = is_error w;
                sub_locs = sub_locs w;
@@ -4238,7 +4237,7 @@ val get_pos_info: Lexing.position -> string * int * int (* file, line, char *)
 val print_loc: formatter -> t -> unit
 val print_error: formatter -> t -> unit
 val print_error_cur_file: formatter -> unit -> unit
-
+ (* Not using below APIs in ReScript *)
 val print_warning: t -> formatter -> Warnings.t -> unit
 val formatter_for_warnings : formatter ref
 
@@ -4405,7 +4404,7 @@ let set_input_name name =
   if name <> "" then input_name := name
 (* Terminal info *)
 
-(* let status = ref Terminfo.Uninitialised *)
+
 
 let num_loc_lines = ref 0 (* number of lines already printed after input *)
 
@@ -4504,11 +4503,15 @@ let print_error_cur_file ppf () = print_error ppf (in_file !input_name);;
 let default_warning_printer loc ppf w =
   match Warnings.report w with
   | `Inactive -> ()
-  | `Active { Warnings. number; message;  sub_locs } ->
+  | `Active { Warnings. number; message; is_error; sub_locs } ->
     setup_colors ();
     fprintf ppf "@[<v>";
     print ppf loc;
-    fprintf ppf "@{<warning>%s@} %d: %s@," warning_prefix number message;
+    if is_error
+    then
+      fprintf ppf "%t (%s %d): %s@," print_error_prefix
+           (String.uncapitalize_ascii warning_prefix) number message
+    else fprintf ppf "@{<warning>%s@} %d: %s@," warning_prefix number message;
     List.iter
       (fun (loc, msg) ->
          if loc <> none then fprintf ppf "  %a  %s@," print loc msg

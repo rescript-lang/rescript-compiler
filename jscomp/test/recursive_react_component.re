@@ -1,7 +1,8 @@
 
 [@bs.config {
   flags : [|"-bs-jsx","3", "-dsource",
-    // "-w","A"
+     // "-w","A", 
+     // "-warn-error", "a"
     |]
 }];
 

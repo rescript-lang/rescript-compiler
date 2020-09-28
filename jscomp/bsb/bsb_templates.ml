@@ -14,14 +14,9 @@ let root = OCamlRes.Res.([
       \    \"dir\" : \"src\",\n\
       \    \"subdirs\" : true\n\
       \  },\n\
-      \  \"package-specs\": {\n\
-      \    \"module\": \"commonjs\",\n\
-      \    \"in-source\": true\n\
-      \  },\n\
-      \  \"suffix\": \".bs.js\",\n\
-      \  \"bs-dependencies\": [\n\
-      \  ],\n\
-      \  \"refmt\": 3\n\
+      \  \"warnings\": {\n\
+      \    \"error\" : \"+101\"\n\
+      \  }\n\
        }\n\
        ") ;
     File  ("package.json",
