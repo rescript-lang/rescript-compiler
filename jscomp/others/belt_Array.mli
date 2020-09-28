@@ -365,7 +365,7 @@ val map: 'a array ->  ('a -> 'b ) -> 'b array
     the beginning to end
 
     @example {[
-     map [|1;2|] (fun x-> x + 1) = [|3;4|]
+     map [|1;2|] (fun x-> x + 10) = [|11;12|]
    ]}
 
 *)
