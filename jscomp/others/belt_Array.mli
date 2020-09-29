@@ -429,7 +429,7 @@ val getIndexBy: 'a array -> ('a -> bool) -> int option
 val keepU: 'a array -> ('a -> bool [@bs]) -> 'a array
 val keep: 'a array -> ('a -> bool ) -> 'a array
 (** [keep xs p ]
-    @return a new array that keep all elements satisfy [p]
+    @return a new array that keeps all elements satisfying [p]
 
     @example {[
       keep [|1;2;3|] (fun x -> x mod  2 = 0) = [|2|]
@@ -440,7 +440,7 @@ val keepReverseU: 'a array -> ('a -> bool [@bs]) -> 'a array
 val keepReverse: 'a array -> ('a -> bool ) -> 'a array
 (** [keepReverse xs p ]
     @return a new array that keeps all elements satisfying [p] from the 
-    last to the first element of xs
+    last to the first element of [xs]. 
 
     @example {[
       keepReverse [|1;2;3|] (fun x -> x mod  2 = 1) = [|3;1|]
@@ -450,7 +450,9 @@ val keepReverse: 'a array -> ('a -> bool ) -> 'a array
 val keepWithIndexU: 'a array -> ('a -> int -> bool [@bs]) -> 'a array
 val keepWithIndex: 'a array -> ('a -> int -> bool ) -> 'a array
 (** [keepWithIndex xs p ]
-    @return a new array that keep all elements satisfy [p]
+    @return a new array that keeps all elements satisfying [p]. 
+    The predicate [p] takes two arguments:
+    the element from [xs] and the index starting from 0.
 
     @example {[
       keepWithIndex [|1;2;3|] (fun _x i -> i = 1) = [|2|]
@@ -461,7 +463,7 @@ val keepReverseWithIndexU: 'a array -> ('a -> int -> bool [@bs]) -> 'a array
 val keepReverseWithIndex: 'a array -> ('a -> int -> bool ) -> 'a array
 (** [keepReverseWithIndex xs p ]
     @return a new array that keeps all elements satisfying [p] from the 
-    last to the first element of xs. The predicate [p] takes two arguments:
+    last to the first element of [xs]. The predicate [p] takes two arguments:
     the element from [xs] and the index starting from [length - 1] down to 0.
 
     @example {[
@@ -472,10 +474,10 @@ val keepReverseWithIndex: 'a array -> ('a -> int -> bool ) -> 'a array
 val keepMapU: 'a array -> ('a -> 'b option [@bs]) -> 'b array
 val keepMap: 'a array -> ('a -> 'b option) -> 'b array
 (** [keepMap xs p]
-    @return a new array that keep all elements that return a non-None applied [p]
+    @return a new array that keeps all elements that return a non-None when applied to [p]
 
     @example {[
-      keepMap [|1;2;3|] (fun x -> if x mod 2 then Some x else None)
+      keepMap [|1;2;3|] (fun x -> if x mod 2 = 0 then Some x else None)
       = [| 2 |]
     ]}
 *)
@@ -484,7 +486,7 @@ val keepMapReverseU: 'a array -> ('a -> 'b option [@bs]) -> 'b array
 val keepMapReverse: 'a array -> ('a -> 'b option) -> 'b array
 (** [keepMapReverse xs p]
     @return a new array that keeps all elements that return a non-None when 
-    applied [p] from the last to the first element of xs
+    applied to [p] from the last to the first element of [xs]
 
     @example {[
       keepMapReverse [|1;2;3|] (fun x -> if x mod 2 = 1 then Some x else None)
@@ -496,16 +498,16 @@ val forEachWithIndexU: 'a array ->  (int -> 'a -> unit [@bs]) -> unit
 val forEachWithIndex: 'a array ->  (int -> 'a -> unit ) -> unit
 (** [forEachWithIndex xs f]
 
-    The same as {!forEach};except that [f] is supplied two arguments:
+    The same as {!forEach}; except that [f] is supplied with two arguments:
     the index starting from 0 and the element from [xs]
 
     @example {[
 
-      forEach [|"a";"b";"c"|] (fun i x -> Js.log("Item " ^ (string_of_int i) ^ " is " ^ x));;
+      forEachWithIndex [|"a";"b";"c"|] (fun i x -> Js.log("Item " ^ (string_of_int i) ^ " is " ^ x));;
       (*  prints:
         Item 0 is a
         Item 1 is b
-        Item 2 is cc
+        Item 2 is c
       *)
 
       let total = ref 0 ;;
@@ -519,7 +521,7 @@ val forEachReverseWithIndexU: 'a array ->  (int -> 'a -> unit [@bs]) -> unit
 val forEachReverseWithIndex: 'a array ->  (int -> 'a -> unit ) -> unit
 (** [forEachReverseWithIndex xs f]
 
-    The same as {!forEachReverse};except that [f] is supplied two arguments:
+    The same as {!forEachReverse}; except that [f] is supplied with two arguments:
     the index from [length xs - 1] down to 0 and the element from [xs]
 
     @example {[
