@@ -873,7 +873,7 @@ async function runtimeNinja(devmode = true) {
       : "build.ninja"
     : "release.ninja";
   var templateRuntimeRules = `
-bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nopervasives  -unsafe -w +50  
+bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nopervasives  -unsafe -w +50 -warn-error A
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuidList([
@@ -972,7 +972,7 @@ async function othersNinja(devmode = true) {
   var ninjaCwd = "others";
 
   var templateOthersRules = `
-bsc_flags = ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6   -nopervasives  -unsafe  -w +50  -open Bs_stdlib_mini -I ./runtime
+bsc_flags = ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6   -nopervasives  -unsafe  -w +50 -warn-error A  -open Bs_stdlib_mini -I ./runtime
 ${ruleCC(ninjaCwd)}
 ${
   devmode
@@ -1099,7 +1099,7 @@ async function stdlibNinja(devmode = true) {
   var bsc_builtin_overrides = [[bsc_flags, `$${bsc_flags} -nopervasives`]];
   // It is interesting `-w -a` would generate not great code sometimes
   // deprecations diabled due to string_of_float
-  var warnings = "-w -9-3-106";
+  var warnings = "-w -9-3-106 -warn-error A";
   var templateStdlibRules = `
 ${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6   ${warnings}  -I runtime  -I others
 ${ruleCC(ninjaCwd)}
@@ -1235,7 +1235,7 @@ async function testNinja() {
   var ninjaOutput = useEnv ? "env.ninja" : "build.ninja";
   var ninjaCwd = `test`;
   var templateTestRules = `
-bsc_flags = -absname -bs-no-version-header  -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104  -I runtime -I $stdlib -I others
+bsc_flags = -absname -bs-no-version-header  -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104 -warn-error A  -I runtime -I $stdlib -I others
 ${ruleCC(ninjaCwd)}
 
 

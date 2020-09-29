@@ -498,8 +498,10 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal* keep the compatibility with RLS";
     "-c", Unit_dummy,
     "*internal* keep the compatibility with RLS";
-    "-warn-error", string_call (fun _ -> ()),
-    "Deprecated: warnings are errors";
+    "-warn-error", string_call (Warnings.parse_options true),
+    "<list>  Enable or disable error status for warnings according\n\
+         to <list>.  See option -w for the syntax of <list>.\n\
+         Default setting is " ^ Bsc_warnings.defaults_warn_error;    
   
   |]
 
