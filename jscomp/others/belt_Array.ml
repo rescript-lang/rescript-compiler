@@ -257,6 +257,11 @@ let forEachU a f =
 
 let forEach a f = forEachU a (fun[@bs] a -> f a)
 
+let forEachReverseU a f =
+  for i = length a - 1 downto 0 do f a.!(i) [@bs] done
+
+let forEachReverse a f = forEachReverseU a (fun[@bs] a -> f a)
+
 let mapU a f =
   let l = length a in
   let r = makeUninitializedUnsafe l in
@@ -266,6 +271,17 @@ let mapU a f =
   r
 
 let map a f = mapU a (fun[@bs] a -> f a)
+
+let mapReverseU a f =
+  let l = length a in
+  let r = makeUninitializedUnsafe l in
+  let lastIndex = l - 1 in
+  for i = 0 to lastIndex do
+    r.!(i) <- f a.!(lastIndex - i) [@bs]
+  done;
+  r
+
+let mapReverse a f = mapReverseU a (fun[@bs] a -> f a)
 
 let getByU a p =
   let l = length a in
@@ -316,6 +332,23 @@ let keepU a f =
 
 let keep a f = keepU a (fun [@bs] a -> f a)
 
+let keepReverseU a f =
+  let l = length a in
+  let r = makeUninitializedUnsafe l in
+  let j = ref 0 in
+  for i = l - 1 downto 0 do
+    let v = a.!(i) in
+    if f v [@bs] then
+      begin
+        r.!(j.contents) <- v;
+        j.contents <- j.contents + 1
+      end
+  done;
+  truncateToLengthUnsafe r j.contents;
+  r
+
+let keepReverse a f = keepReverseU a (fun [@bs] a -> f a)
+
 let keepWithIndexU a f =
   let l = length a in
   let r = makeUninitializedUnsafe l in
@@ -332,6 +365,23 @@ let keepWithIndexU a f =
   r
 
 let keepWithIndex a f = keepWithIndexU a (fun [@bs] a i -> f a i)
+
+let keepReverseWithIndexU a f =
+  let l = length a in
+  let r = makeUninitializedUnsafe l in
+  let j = ref 0 in
+  for i = l - 1 downto 0 do
+    let v =  a.!(i) in
+    if f v i [@bs] then
+      begin
+        r.!(j.contents) <- v;
+        j.contents <- j.contents + 1
+      end
+  done;
+  truncateToLengthUnsafe r j.contents;
+  r
+
+let keepReverseWithIndex a f = keepReverseWithIndexU a (fun [@bs] a i -> f a i)
 
 let keepMapU a f =
   let l = length a in
@@ -352,10 +402,34 @@ let keepMapU a f =
 
 let keepMap a f = keepMapU a (fun[@bs] a -> f a)
 
+let keepMapReverseU a f =
+  let l = length a in
+  let r = makeUninitializedUnsafe l in
+  let j = ref 0 in
+  for i = l - 1 downto 0 do
+    let v = a.!(i) in
+    match f v [@bs] with
+    | None -> ()
+    | Some v ->
+      begin
+        r.!(j.contents) <- v;
+        j.contents <- j.contents + 1
+      end
+  done;
+  truncateToLengthUnsafe r j.contents;
+  r
+
+let keepMapReverse a f = keepMapReverseU a (fun[@bs] a -> f a)
+
 let forEachWithIndexU a f=
   for i = 0 to length a - 1 do f i a.!(i) [@bs] done
 
 let forEachWithIndex a f = forEachWithIndexU a (fun[@bs] a b -> f a b)
+
+let forEachReverseWithIndexU a f=
+  for i = length a - 1 downto 0 do f i a.!(i) [@bs] done
+
+let forEachReverseWithIndex a f = forEachReverseWithIndexU a (fun[@bs] a b -> f a b)
 
 let mapWithIndexU  a f =
   let l = length a in
@@ -366,6 +440,17 @@ let mapWithIndexU  a f =
   r
 
 let mapWithIndex a f = mapWithIndexU a (fun[@bs] a b -> f a b)
+
+let mapReverseWithIndexU  a f =
+  let l = length a in
+  let r = makeUninitializedUnsafe l in
+  let lastIndex = l - 1 in
+  for i = 0 to lastIndex do
+    r.!(i) <- f i a.!(lastIndex - i) [@bs]
+  done;
+  r
+
+let mapReverseWithIndex a f = mapReverseWithIndexU a (fun[@bs] a b -> f a b)
 
 let reduceU a x f =
   let r = ref x in
