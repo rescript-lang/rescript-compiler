@@ -36,7 +36,7 @@ type current_printed_line_status =
 (* Range coordinates all 1-indexed, like for editors. Otherwise this code
   would have way too many off-by-one errors *)
 let print_file 
-
+~is_warning 
 (* start_line_start_char inclusive, end_line_end_char exclusive *)
 ~range:((start_line, start_line_start_char), (end_line, end_line_end_char)) 
 ~lines
@@ -69,10 +69,10 @@ ppf
   | Some n -> n
   in
   (* coloring *)
-  let highlighted_line_number : _ format = "@{<error>%s@}%a" in
+  let highlighted_line_number : _ format = if is_warning then "@{<info>%s@}%a" else "@{<error>%s@}%a" in
 
   let print_char_maybe_highlight ~begin_highlight_line ~end_highlight_line ch =
-    let highlighted_open_tag: _ format = "@{<error>" in
+    let highlighted_open_tag: _ format = if is_warning then "@{<info>" else "@{<error>" in
     if begin_highlight_line then fprintf ppf highlighted_open_tag;
     fprintf ppf "%c@," ch;
     if end_highlight_line then fprintf ppf "@}"
