@@ -633,19 +633,20 @@ val reduceWithIndex:  'a array -> 'b -> ('b -> 'a -> int -> 'b) -> 'b
     ]}
 *)
 
-val joinWith: string array -> string -> string
-(** [joinWith xs sep]
+val joinWithU: 'a array -> string -> ('a -> string [@bs]) -> string
+val joinWith: 'a array -> string -> ('a -> string) -> string
+(** [joinWith xs sep toString]
     
-    Concatenates all the elements of [xs], each separated by [sep], the string 
+    Concatenates all the elements of [xs] converted to string with [toString], each separated by [sep], the string 
     given as the second argument, into a single string.
     If the array has only one element, then that element will be returned 
     without using the separator.
     If the array is empty, the empty string will be returned.
 
     @example{[
-      joinWith [|"hello", "Bob"|] " " = "hello Bob"
-      joinWith [||] " " = ""
-      joinWith [|"hello"|] " " = "hello"
+      joinWith [|0; 1|] ", " string_of_int = "0, 1"
+      joinWith [||] " " string_of_int = ""
+      joinWith [|1|] " " string_of_int = "1"
 
     ]}
 *)
