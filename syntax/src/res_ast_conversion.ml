@@ -437,7 +437,7 @@ let normalize =
     structure_item = begin fun mapper structureItem ->
       match structureItem.pstr_desc with
       (* heuristic: if we have multiple type declarations, mark them recursive *)
-      | Pstr_type (recFlag, typeDeclarations) ->
+      | Pstr_type (Recursive as recFlag, typeDeclarations) ->
         let flag = match typeDeclarations with
         | [td] ->
           if looksLikeRecursiveTypeDeclaration td then Asttypes.Recursive
@@ -455,7 +455,7 @@ let normalize =
     signature_item = begin fun mapper signatureItem ->
       match signatureItem.psig_desc with
       (* heuristic: if we have multiple type declarations, mark them recursive *)
-      | Psig_type (recFlag, typeDeclarations) ->
+      | Psig_type (Recursive as recFlag, typeDeclarations) ->
         let flag = match typeDeclarations with
         | [td] ->
           if looksLikeRecursiveTypeDeclaration td then Asttypes.Recursive
