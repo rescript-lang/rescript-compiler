@@ -2586,7 +2586,7 @@ and parseJsxProp p =
       | _ ->
         let attrExpr =
           Ast_helper.Exp.ident ~loc ~attrs:[propLocAttr]
-            (Location.mknoloc (Longident.Lident name)) in
+            (Location.mkloc (Longident.Lident name) loc) in
         let label =
           if optional then Asttypes.Optional name else Asttypes.Labelled name
         in
