@@ -778,6 +778,33 @@ if /* c0 */ user.name === \\"John\\" /* c1 */ {
   /* c5 */ Js.log(\\"we need John\\") /* c6 */
 } // trailing
 
+if a {
+  b
+} else if (
+  // test
+  c
+) {
+  d
+}
+
+let distXToTraverse = if deltaX < 0. {
+  // wizard to the left
+  if minRangeX >= -.deltaX {
+    // already within min range, aka close enough
+    0.
+  } else {
+    deltaX +. minRangeX
+  }
+} else if (
+  // wizard to the right
+  minRangeX >= deltaX
+) {
+  // already within min range, aka close enough
+  0.
+} else {
+  deltaX -. minRangeX
+}
+
 // Pexp_while
 while /* c0 */ condition.contents /* c1 */ {
   /* c2 */ doStuff() /* c3 */

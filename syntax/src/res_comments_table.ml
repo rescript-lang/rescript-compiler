@@ -296,6 +296,12 @@ let rec isBlockExpr expr =
   | Pexp_setfield (expr, _, _) when isBlockExpr expr -> true
   | _ -> false
 
+let isIfThenElseExpr expr =
+  let open Parsetree in
+  match expr.pexp_desc with
+  | Pexp_ifthenelse _ -> true
+  | _ -> false
+
 let rec walkStructure s t comments =
   match s with
   | _ when comments = [] -> ()
@@ -1082,7 +1088,7 @@ let rec walkStructure s t comments =
       begin match elseExpr with
       | None -> ()
       | Some expr ->
-        if isBlockExpr expr then
+        if isBlockExpr expr || isIfThenElseExpr expr then
           walkExpr expr t comments
         else (
           let (leading, inside, trailing) = partitionByLoc comments expr.pexp_loc in
