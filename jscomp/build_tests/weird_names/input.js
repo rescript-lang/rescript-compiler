@@ -5,7 +5,10 @@ var path = require("path");
 var out = cp.spawnSync(`bsb`, { encoding: "utf8" });
 
 console.log(out.stdout);
-assert.ok(out.stderr === "");
+if(out.stderr !== ""){
+  assert.fail(out.stderr)
+}
+
 
 let files = [
   "_app.res",
@@ -20,5 +23,5 @@ for (let f of files) {
   let { name } = path.parse(f);
   let m = `./lib/js/src/${name}.js`;
   //   console.log(m);
-  assert.deepEqual(require(m), { a: 1 });
+  assert.deepEqual(require(m).a,  1);
 }
