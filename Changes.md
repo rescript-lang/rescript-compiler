@@ -1,5 +1,13 @@
 `*` means  potential break changes
 
+# 8.3.1
+This is a minor bug fix release for 8.3.0
+- capture warnings when rebuild without enforce warn-as-error
+- #4716 internal, make ninja a submodule in dev process
+- #4722 better dataflow for cases like `let {a;b} as obj = ...`
+- no need call `caml_enter_blocking_section` for single threaded compiler
+- #4739 fix the interaction of exotic filenames like `[id]` with the build system.
+
 # 8.3
 
 - #4694, #4712 improving/customizing the underlying ninja build system, better performance  
