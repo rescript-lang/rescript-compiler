@@ -36,6 +36,7 @@
 
 type check_result = 
   | Good
+  | Bsb_file_corrupted
   | Bsb_file_not_exist (** We assume that it is a clean repo *)  
   | Bsb_source_directory_changed
   | Bsb_bsc_version_mismatch  
