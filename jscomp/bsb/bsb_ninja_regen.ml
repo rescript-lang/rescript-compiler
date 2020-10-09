@@ -48,7 +48,8 @@ let regenerate_ninja
   | Good ->
     None  (* Fast path, no need regenerate ninja *)
   | Bsb_forced 
-  | Bsb_bsc_version_mismatch 
+  | Bsb_bsc_version_mismatch
+  | Bsb_file_corrupted
   | Bsb_file_not_exist 
   | Bsb_source_directory_changed  
   | Other _ -> 
