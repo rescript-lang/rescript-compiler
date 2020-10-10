@@ -33,6 +33,3 @@ val vendor_ninja : string
 
 val vendor_bsdep : string
 
-val ocaml_dir : string
-
-val ocaml_lib_dir : string
