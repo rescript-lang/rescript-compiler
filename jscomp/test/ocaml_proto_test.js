@@ -535,53 +535,39 @@ function prepare_error(e) {
                         _1: "%sInvalid import qualified, only 'public' supported"
                       }), to_string(e._0));
     case /* Invalid_file_name */6 :
-        return Curry._1(Printf.sprintf(Pervasives.$caret$caret(/* Format */{
-                            _0: {
+        return Curry._1(Printf.sprintf(/* Format */{
+                        _0: {
+                          TAG: /* String_literal */11,
+                          _0: "Invalid file name: ",
+                          _1: {
+                            TAG: /* String */2,
+                            _0: /* No_padding */0,
+                            _1: {
                               TAG: /* String_literal */11,
-                              _0: "Invalid file name: ",
-                              _1: {
-                                TAG: /* String */2,
-                                _0: /* No_padding */0,
-                                _1: {
-                                  TAG: /* String_literal */11,
-                                  _0: ", ",
-                                  _1: /* End_of_format */0
-                                }
-                              }
-                            },
-                            _1: "Invalid file name: %s, "
-                          }, /* Format */{
-                            _0: {
-                              TAG: /* String_literal */11,
-                              _0: "format must <name>.proto",
+                              _0: ", format must <name>.proto",
                               _1: /* End_of_format */0
-                            },
-                            _1: "format must <name>.proto"
-                          })), e._0);
+                            }
+                          }
+                        },
+                        _1: "Invalid file name: %s, format must <name>.proto"
+                      }), e._0);
     case /* Import_file_not_found */7 :
-        return Curry._1(Printf.sprintf(Pervasives.$caret$caret(/* Format */{
-                            _0: {
+        return Curry._1(Printf.sprintf(/* Format */{
+                        _0: {
+                          TAG: /* String_literal */11,
+                          _0: "File: ",
+                          _1: {
+                            TAG: /* String */2,
+                            _0: /* No_padding */0,
+                            _1: {
                               TAG: /* String_literal */11,
-                              _0: "File: ",
-                              _1: {
-                                TAG: /* String */2,
-                                _0: /* No_padding */0,
-                                _1: {
-                                  TAG: /* String_literal */11,
-                                  _0: ", ",
-                                  _1: /* End_of_format */0
-                                }
-                              }
-                            },
-                            _1: "File: %s, "
-                          }, /* Format */{
-                            _0: {
-                              TAG: /* String_literal */11,
-                              _0: "could not be found.",
+                              _0: ", could not be found.",
                               _1: /* End_of_format */0
-                            },
-                            _1: "could not be found."
-                          })), e._0);
+                            }
+                          }
+                        },
+                        _1: "File: %s, could not be found."
+                      }), e._0);
     case /* Invalid_packed_option */8 :
         return Curry._1(Printf.sprintf(/* Format */{
                         _0: {
@@ -1647,6 +1633,34 @@ function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
   };
 }
 
+function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
+  while(true) {
+    var __ocaml_lex_state = ___ocaml_lex_state;
+    var l = _l;
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
+    switch (__ocaml_lex_state$1) {
+      case 0 :
+          update_loc(lexbuf);
+          return /* Comment_value */{
+                  _0: $$String.concat("", List.rev(l))
+                };
+      case 1 :
+          ___ocaml_lex_state = 41;
+          _l = {
+            hd: Lexing.lexeme(lexbuf),
+            tl: l
+          };
+          continue ;
+      case 2 :
+          return /* Comment_eof */0;
+      default:
+        Curry._1(lexbuf.refill_buff, lexbuf);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
+    }
+  };
+}
+
 function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
@@ -1670,34 +1684,6 @@ function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
           };
           continue ;
       case 3 :
-          return /* Comment_eof */0;
-      default:
-        Curry._1(lexbuf.refill_buff, lexbuf);
-        ___ocaml_lex_state = __ocaml_lex_state$1;
-        continue ;
-    }
-  };
-}
-
-function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
-  while(true) {
-    var __ocaml_lex_state = ___ocaml_lex_state;
-    var l = _l;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
-    switch (__ocaml_lex_state$1) {
-      case 0 :
-          update_loc(lexbuf);
-          return /* Comment_value */{
-                  _0: $$String.concat("", List.rev(l))
-                };
-      case 1 :
-          ___ocaml_lex_state = 41;
-          _l = {
-            hd: Lexing.lexeme(lexbuf),
-            tl: l
-          };
-          continue ;
-      case 2 :
           return /* Comment_eof */0;
       default:
         Curry._1(lexbuf.refill_buff, lexbuf);

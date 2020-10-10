@@ -1294,16 +1294,6 @@ external format_of_string :
     {!Scanf.format_from_string} function.
 *)
 
-val ( ^^ ) :
-  ('a, 'b, 'c, 'd, 'e, 'f) format6 ->
-  ('f, 'b, 'c, 'e, 'g, 'h) format6 ->
-  ('a, 'b, 'c, 'd, 'g, 'h) format6
-(** [f1 ^^ f2] catenates format strings [f1] and [f2]. The result is a
-  format string that behaves as the concatenation of format strings [f1] and
-  [f2]: in case of formatted output, it accepts arguments from [f1], then
-  arguments from [f2]; in case of formatted input, it returns results from
-  [f1], then results from [f2].
-  Right-associative operator at precedence level 5/11. *)
 
 
 (** {1 Program termination} *)

@@ -874,13 +874,11 @@ let prepare_error = function
 
   | Invalid_file_name file_name -> 
     P.sprintf 
-      ("Invalid file name: %s, " ^^ 
-       "format must <name>.proto") file_name  
+      ("Invalid file name: %s, format must <name>.proto") file_name  
 
   | Import_file_not_found file_name -> 
     P.sprintf 
-      ("File: %s, " ^^ 
-       "could not be found.") file_name  
+      ("File: %s, could not be found.") file_name  
 
   | Invalid_packed_option field_name ->
     P.sprintf "Invalid packed option for field: %s" field_name
