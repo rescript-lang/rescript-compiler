@@ -13208,7 +13208,8 @@ let make_custom_rules
   in   
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
-    Ext_buffer.add_string buf "$bsc  $warnings";
+    Ext_buffer.add_string buf "$bsc  $warnings -bs-v ";
+    Ext_buffer.add_string buf Bs_version.version;
     (match refmt with 
     | None -> ()
     | Some x ->

@@ -8306,6 +8306,9 @@ module Ml_binary : sig
 
 
 
+(* This file was used to read reason ast
+  and part of parsing binary ast
+ *)
 type _ kind = 
   | Ml : Parsetree.structure kind 
   | Mli : Parsetree.signature kind
@@ -8317,6 +8320,19 @@ val write_ast :
    'a kind -> string -> 'a -> out_channel -> unit
 
 val magic_of_kind : 'a kind -> string   
+
+val read_my_ast : 
+  'a kind ->
+  in_channel ->
+   'a
+
+val write_my_ast : 
+  'a kind -> 
+   string -> 
+   'a -> 
+   out_channel -> 
+   unit
+
 end = struct
 #1 "ml_binary.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8357,7 +8373,7 @@ let read_ast (type t ) (kind : t  kind) ic : t  =
     | Mli -> Config.ast_intf_magic_number in 
   let buffer = really_input_string ic (String.length magic) in
   assert(buffer = magic); (* already checked by apply_rewriter *)
-  Location.set_input_name @@ input_value ic;
+  Location.set_input_name (input_value ic);
   input_value ic 
 
 let write_ast (type t) (kind : t kind) 
@@ -8375,7 +8391,18 @@ let magic_of_kind : type a . a kind -> string = function
   | Ml -> Config.ast_impl_magic_number
   | Mli -> Config.ast_intf_magic_number
 
-  
+
+let read_my_ast (type t ) (_ : t  kind) ic : t  =
+  Location.set_input_name (input_line ic);
+  input_value ic 
+
+let write_my_ast (type t) ( _ : t kind)
+    (fname : string)
+    (pt : t) oc = 
+  output_string oc fname;
+  output_char oc '\n';
+  output_value oc pt
+
 end
 module Ast_extract : sig 
 #1 "ast_extract.mli"
