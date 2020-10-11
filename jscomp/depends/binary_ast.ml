@@ -33,7 +33,7 @@ let read_ast (type t ) (kind : t  Ml_binary.kind) fn : t  =
   try
     let dep_size = input_binary_int ic in 
     seek_in  ic (pos_in ic + dep_size) ; 
-    let ast = Ml_binary.read_ast kind ic in 
+    let ast = Ml_binary.read_my_ast kind ic in 
     close_in ic;
     ast
   with exn ->
@@ -59,6 +59,6 @@ let write_ast (type t) ~(sourcefile : string) ~output (kind : t Ml_binary.kind) 
     ) output_set ;  
   output_binary_int oc (Ext_buffer.length buf);  
   Ext_buffer.output_buffer oc buf;
-  Ml_binary.write_ast kind sourcefile pt oc;
+  Ml_binary.write_my_ast kind sourcefile pt oc;
   close_out oc 
 
