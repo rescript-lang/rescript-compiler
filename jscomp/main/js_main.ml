@@ -326,7 +326,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-g", unit_call (fun _ -> Js_config.debug := true; Lexer.replace_directive_bool "DEBUG" true),
     "Debug mode";
 
-
+    "-bs-v", string_call ignore, 
+    "*internal* version check to force a rebuild";
     "-bs-package-name", string_call Js_packages_state.set_package_name, 
     "Set package name, useful when you want to produce npm packages";
     
@@ -334,10 +335,10 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "Set package map, not only set package name but also use it as a namespace" ;
 
     "-as-ppx", set Js_config.as_ppx, 
-    "As ppx for editor integration";
+    "*internal*As ppx for editor integration";
 
     "-no-alias-deps", set Clflags.transparent_modules, 
-    "Do not record dependencies for module aliases";
+    "*internal*Do not record dependencies for module aliases";
 
     "-bs-gentype", string_optional_set Clflags.bs_gentype ,
     "*internal* Pass gentype command";
@@ -405,13 +406,13 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal* Disable built-in ppx";  
 
     "-bs-cross-module-opt", set Js_config.cross_module_inline, 
-    "Enable cross module inlining(experimental), default(false)";
+    "*internal* Enable cross module inlining(experimental), default(false)";
 
     "-bs-no-cross-module-opt", clear Js_config.cross_module_inline, 
-    "Disable cross module inlining(experimental)";
+    "*internal* Disable cross module inlining(experimental)";
 
     "-bs-diagnose", set Js_config.diagnose, 
-    "More verbose output";
+    "*internal* More verbose output";
 
     "-bs-no-check-div-by-zero", clear Js_config.check_div_by_zero, 
     "*internal* unsafe mode, don't check div by zero and mod by zero";
@@ -481,13 +482,13 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "Print inferred interface";  
 
     "-nolabels", set Clflags.classic, 
-    "Ignore non-optional labels in types";  
+    "*internal* Ignore non-optional labels in types";  
 
     "-principal", set Clflags.principal, 
-    "Check principality of type inference";  
+    "*internal* Check principality of type inference";  
     
     "-short-paths", clear Clflags.real_paths, 
-    "Shorten paths in types";
+    "*internal* Shorten paths in types";
     
     "-unsafe", set Clflags.fast, 
     "Do not compile bounds checking on array and string access";

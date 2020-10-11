@@ -10373,9 +10373,6 @@ val vendor_ninja : string
 
 val vendor_bsdep : string
 
-val ocaml_dir : string
-
-val ocaml_lib_dir : string
 
 end = struct
 #1 "bsb_global_paths.ml"
@@ -10445,13 +10442,6 @@ let vendor_bsdep =
   
 ;; assert (Sys.file_exists bsc_dir)       
 
-let ocaml_version = "4.06.1"
-
-let ocaml_dir =
-  Filename.(concat (concat (dirname bsc_dir) "native") ocaml_version)
-
-let ocaml_lib_dir =
-  Filename.(concat (concat ocaml_dir "lib") "ocaml")
 
 end
 module Bsb_db_util : sig 
@@ -13218,7 +13208,8 @@ let make_custom_rules
   in   
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
-    Ext_buffer.add_string buf "$bsc  $warnings";
+    Ext_buffer.add_string buf "$bsc  $warnings -bs-v ";
+    Ext_buffer.add_string buf Bs_version.version;
     (match refmt with 
     | None -> ()
     | Some x ->

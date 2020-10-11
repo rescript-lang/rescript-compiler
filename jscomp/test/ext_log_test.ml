@@ -29,6 +29,9 @@
 
 
 
+ let ( ^^ ) (Format (fmt1, str1) : _ format6) (Format (fmt2, str2) : _ format6) : _ format6 =
+  Format (CamlinternalFormatBasics.concat_fmt fmt1 fmt2,
+          str1 ^ "%," ^ str2)
 
 
 type 'a logging =  ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a

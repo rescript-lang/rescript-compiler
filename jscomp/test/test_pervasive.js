@@ -135,7 +135,6 @@ var Pervasives$1 = {
   set_binary_mode_in: Pervasives.set_binary_mode_in,
   LargeFile: Pervasives.LargeFile,
   string_of_format: Pervasives.string_of_format,
-  $caret$caret: Pervasives.$caret$caret,
   exit: Pervasives.exit,
   at_exit: Pervasives.at_exit,
   valid_float_lexem: Pervasives.valid_float_lexem,

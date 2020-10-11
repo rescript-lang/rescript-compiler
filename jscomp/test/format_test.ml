@@ -10,6 +10,11 @@ let eq3 loc a b c =
   eq loc b c ; 
   eq loc a c 
 
+
+let ( ^^ ) (Format (fmt1, str1) : _ format6) (Format (fmt2, str2) : _ format6) : _ format6 =
+  Format (CamlinternalFormatBasics.concat_fmt fmt1 fmt2,
+          str1 ^ "%," ^ str2)
+
 let u () = "xx %s" ^^ "yy"
 
 module M = struct 
