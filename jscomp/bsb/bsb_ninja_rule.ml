@@ -98,12 +98,12 @@ type builtin = {
   (** Rules below all need restat *)
   build_bin_deps : t ;
   build_bin_deps_dev : t;        
-  ml_cmj_js : t;
-  ml_cmj_js_dev : t;
-  ml_cmj_cmi_js : t ;
-  ml_cmj_cmi_js_dev : t ;
-  ml_cmi : t;
-  ml_cmi_dev : t ;
+  mj : t;
+  mj_dev : t;
+  mij : t ;
+  mij_dev : t ;
+  mi : t;
+  mi_dev : t ;
   
   build_package : t ;
   customs : t Map_string.t
@@ -220,15 +220,15 @@ let make_custom_rules
   in 
   (* [g_lib_incls] are fixed for libs *)
   let ml_cmj_js, ml_cmj_js_dev =
-    aux ~name:"cmj" ~read_cmi:`yes ~postbuild:has_postbuild in   
+    aux ~name:"mj" ~read_cmi:`yes ~postbuild:has_postbuild in   
   let ml_cmj_cmi_js, ml_cmj_cmi_js_dev =
     aux
       ~read_cmi:`no
-      ~name:"cmji" ~postbuild:has_postbuild in  
+      ~name:"mij" ~postbuild:has_postbuild in  
   let ml_cmi, ml_cmi_dev =
     aux 
        ~read_cmi:`is_cmi  ~postbuild:false
-      ~name:"cmi" in 
+      ~name:"mi" in 
   let build_package = 
     define
       ~command:"$bsc -w -49 -color always -no-alias-deps  $in"
@@ -245,13 +245,13 @@ let make_custom_rules
     (** Rules below all need restat *)
     build_bin_deps ;
     build_bin_deps_dev;
-    ml_cmj_js ;
-    ml_cmj_js_dev ;
-    ml_cmj_cmi_js ;
-    ml_cmi ;
+    mj = ml_cmj_js ;
+    mj_dev = ml_cmj_js_dev ;
+    mij = ml_cmj_cmi_js ;
+    mi = ml_cmi ;
     
-    ml_cmj_cmi_js_dev;
-    ml_cmi_dev;
+    mij_dev = ml_cmj_cmi_js_dev;
+    mi_dev = ml_cmi_dev;
     
     build_package ;
     customs =
