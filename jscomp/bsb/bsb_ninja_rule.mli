@@ -46,12 +46,12 @@ type builtin = {
   (** Rules below all need restat *)
   build_bin_deps : t ;
   build_bin_deps_dev : t ;
-  ml_cmj_js : t;
-  ml_cmj_js_dev : t;
-  ml_cmj_cmi_js : t ;
-  ml_cmj_cmi_js_dev : t ;
-  ml_cmi : t;
-  ml_cmi_dev : t ;
+  mj : t;
+  mj_dev : t;
+  mij : t ;
+  mij_dev : t ;
+  mi : t;
+  mi_dev : t ;
 
   build_package : t ;
   customs : t Map_string.t

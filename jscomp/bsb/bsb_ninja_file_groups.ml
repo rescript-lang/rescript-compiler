@@ -146,7 +146,7 @@ let emit_module_build
       ~shadows:common_shadows
       ~order_only_deps:[output_d]
       ~inputs:[output_mliast]
-      ~rule:(if is_dev then rules.ml_cmi_dev else rules.ml_cmi)
+      ~rule:(if is_dev then rules.mi_dev else rules.mi)
     ;
   end;
 
@@ -160,11 +160,11 @@ let emit_module_build
   in
   let rule =
     if has_intf_file then 
-      (if  is_dev then rules.ml_cmj_js_dev
-       else rules.ml_cmj_js)
+      (if  is_dev then rules.mj_dev
+       else rules.mj)
     else  
-      (if is_dev then rules.ml_cmj_cmi_js_dev 
-       else rules.ml_cmj_cmi_js
+      (if is_dev then rules.mij_dev 
+       else rules.mij
       )
   in
   Bsb_ninja_targets.output_build oc

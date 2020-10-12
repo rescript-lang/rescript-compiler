@@ -13017,12 +13017,12 @@ type builtin = {
   (** Rules below all need restat *)
   build_bin_deps : t ;
   build_bin_deps_dev : t ;
-  ml_cmj_js : t;
-  ml_cmj_js_dev : t;
-  ml_cmj_cmi_js : t ;
-  ml_cmj_cmi_js_dev : t ;
-  ml_cmi : t;
-  ml_cmi_dev : t ;
+  mj : t;
+  mj_dev : t;
+  mij : t ;
+  mij_dev : t ;
+  mi : t;
+  mi_dev : t ;
 
   build_package : t ;
   customs : t Map_string.t
@@ -13154,12 +13154,12 @@ type builtin = {
   (** Rules below all need restat *)
   build_bin_deps : t ;
   build_bin_deps_dev : t;        
-  ml_cmj_js : t;
-  ml_cmj_js_dev : t;
-  ml_cmj_cmi_js : t ;
-  ml_cmj_cmi_js_dev : t ;
-  ml_cmi : t;
-  ml_cmi_dev : t ;
+  mj : t;
+  mj_dev : t;
+  mij : t ;
+  mij_dev : t ;
+  mi : t;
+  mi_dev : t ;
   
   build_package : t ;
   customs : t Map_string.t
@@ -13183,13 +13183,13 @@ let make_custom_rules
       since the default is already good -- it does not*)
   let buf = Ext_buffer.create 100 in     
   let mk_ml_cmj_cmd 
-      ~read_cmi 
+      ~(read_cmi : [`yes | `is_cmi | `no])
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc";
     Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
-    if read_cmi then 
+    if read_cmi = `yes then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dev_incls;      
@@ -13259,7 +13259,6 @@ let make_custom_rules
       ("$bsdep -g -hash " ^ digest ^" $g_ns $in")
       "mk_deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
-    let postbuild = has_postbuild && postbuild in 
     define
       ~command:(mk_ml_cmj_cmd 
                   ~read_cmi  ~is_dev:false 
@@ -13276,16 +13275,16 @@ let make_custom_rules
       (name ^ "_dev")
   in 
   (* [g_lib_incls] are fixed for libs *)
-  let ml_cmj_js, ml_cmj_js_dev =
-    aux ~name:"ml_cmj_only" ~read_cmi:true ~postbuild:true in   
-  let ml_cmj_cmi_js, ml_cmj_cmi_js_dev =
+  let mj, mj_dev =
+    aux ~name:"mj" ~read_cmi:`yes ~postbuild:has_postbuild in   
+  let mij, mij_dev =
     aux
-      ~read_cmi:false 
-      ~name:"ml_cmj_cmi" ~postbuild:true in  
-  let ml_cmi, ml_cmi_dev =
+      ~read_cmi:`no
+      ~name:"mij" ~postbuild:has_postbuild in  
+  let mi, mi_dev =
     aux 
-       ~read_cmi:false  ~postbuild:false
-      ~name:"ml_cmi" in 
+       ~read_cmi:`is_cmi  ~postbuild:false
+      ~name:"mi" in 
   let build_package = 
     define
       ~command:"$bsc -w -49 -color always -no-alias-deps  $in"
@@ -13302,13 +13301,13 @@ let make_custom_rules
     (** Rules below all need restat *)
     build_bin_deps ;
     build_bin_deps_dev;
-    ml_cmj_js ;
-    ml_cmj_js_dev ;
-    ml_cmj_cmi_js ;
-    ml_cmi ;
+    mj  ;
+    mj_dev  ;
+    mij  ;
+    mi  ;
     
-    ml_cmj_cmi_js_dev;
-    ml_cmi_dev;
+    mij_dev;
+    mi_dev ;
     
     build_package ;
     customs =
@@ -13795,7 +13794,7 @@ let emit_module_build
       ~shadows:common_shadows
       ~order_only_deps:[output_d]
       ~inputs:[output_mliast]
-      ~rule:(if is_dev then rules.ml_cmi_dev else rules.ml_cmi)
+      ~rule:(if is_dev then rules.mi_dev else rules.mi)
     ;
   end;
 
@@ -13809,11 +13808,11 @@ let emit_module_build
   in
   let rule =
     if has_intf_file then 
-      (if  is_dev then rules.ml_cmj_js_dev
-       else rules.ml_cmj_js)
+      (if  is_dev then rules.mj_dev
+       else rules.mj)
     else  
-      (if is_dev then rules.ml_cmj_cmi_js_dev 
-       else rules.ml_cmj_cmi_js
+      (if is_dev then rules.mij_dev 
+       else rules.mij
       )
   in
   Bsb_ninja_targets.output_build oc
