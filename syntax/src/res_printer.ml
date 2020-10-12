@@ -2284,7 +2284,12 @@ and printPattern (p : Parsetree.pattern) cmtTbl =
         | _ -> patternDoc
       ]
     ) orChain in
-    Doc.group (Doc.concat docs)
+    let isSpreadOverMultipleLines = match (orChain, List.rev orChain) with
+    | first::_, last::_ ->
+      first.ppat_loc.loc_start.pos_lnum < last.ppat_loc.loc_end.pos_lnum
+    | _ -> false
+    in
+    Doc.breakableGroup ~forceBreak:isSpreadOverMultipleLines (Doc.concat docs)
   | Ppat_extension ext ->
     printExtension ~atModuleLvl:false ext cmtTbl
   | Ppat_lazy p ->

@@ -471,7 +471,9 @@ type color =
 
 let blahCurriedX = (x, x) =>
   switch x {
-  | Red(10) | Black(20) | Green(10) => 1 // After or pattern green
+  | Red(10)
+  | Black(20)
+  | Green(10) => 1 // After or pattern green
   | Red(x) => 0 // After red
   | Black(x) => 0 // After black
   | Green(x) => 0

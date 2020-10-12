@@ -105,3 +105,22 @@ let first = switch first {
 | Some(x) => x
 | None => ("": format6<_>)
 }
+
+// spread over multiple lines, because author used multiple lines
+switch a {
+| B
+| C | D => 1
+| E => 2
+}
+
+// keep on one line, author kept it on one line
+switch a {
+| B | C | D => 1
+| E => 2
+}
+
+// should naturally break over multiple lines
+switch a {
+| Bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb | Ccccccccccccccccccccccccccccccccccccccccccccccccccccc | Dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd | Eeeeeeeeeeeeee => 1
+| E => 2
+}
