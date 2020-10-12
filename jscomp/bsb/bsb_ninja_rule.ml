@@ -219,13 +219,13 @@ let make_custom_rules
       (name ^ "_dev")
   in 
   (* [g_lib_incls] are fixed for libs *)
-  let ml_cmj_js, ml_cmj_js_dev =
+  let mj, mj_dev =
     aux ~name:"mj" ~read_cmi:`yes ~postbuild:has_postbuild in   
-  let ml_cmj_cmi_js, ml_cmj_cmi_js_dev =
+  let mij, mij_dev =
     aux
       ~read_cmi:`no
       ~name:"mij" ~postbuild:has_postbuild in  
-  let ml_cmi, ml_cmi_dev =
+  let mi, mi_dev =
     aux 
        ~read_cmi:`is_cmi  ~postbuild:false
       ~name:"mi" in 
@@ -245,13 +245,13 @@ let make_custom_rules
     (** Rules below all need restat *)
     build_bin_deps ;
     build_bin_deps_dev;
-    mj = ml_cmj_js ;
-    mj_dev = ml_cmj_js_dev ;
-    mij = ml_cmj_cmi_js ;
-    mi = ml_cmi ;
+    mj  ;
+    mj_dev  ;
+    mij  ;
+    mi  ;
     
-    mij_dev = ml_cmj_cmi_js_dev;
-    mi_dev = ml_cmi_dev;
+    mij_dev;
+    mi_dev ;
     
     build_package ;
     customs =
