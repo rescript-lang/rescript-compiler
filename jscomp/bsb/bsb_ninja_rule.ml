@@ -127,13 +127,13 @@ let make_custom_rules
       since the default is already good -- it does not*)
   let buf = Ext_buffer.create 100 in     
   let mk_ml_cmj_cmd 
-      ~read_cmi 
+      ~(read_cmi : [`yes | `is_cmi | `no])
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc";
     Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
-    if read_cmi then 
+    if read_cmi = `yes then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dev_incls;      
@@ -203,7 +203,6 @@ let make_custom_rules
       ("$bsdep -g -hash " ^ digest ^" $g_ns $in")
       "mk_deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
-    let postbuild = has_postbuild && postbuild in 
     define
       ~command:(mk_ml_cmj_cmd 
                   ~read_cmi  ~is_dev:false 
@@ -221,15 +220,15 @@ let make_custom_rules
   in 
   (* [g_lib_incls] are fixed for libs *)
   let ml_cmj_js, ml_cmj_js_dev =
-    aux ~name:"ml_cmj_only" ~read_cmi:true ~postbuild:true in   
+    aux ~name:"cmj" ~read_cmi:`yes ~postbuild:has_postbuild in   
   let ml_cmj_cmi_js, ml_cmj_cmi_js_dev =
     aux
-      ~read_cmi:false 
-      ~name:"ml_cmj_cmi" ~postbuild:true in  
+      ~read_cmi:`no
+      ~name:"cmji" ~postbuild:has_postbuild in  
   let ml_cmi, ml_cmi_dev =
     aux 
-       ~read_cmi:false  ~postbuild:false
-      ~name:"ml_cmi" in 
+       ~read_cmi:`is_cmi  ~postbuild:false
+      ~name:"cmi" in 
   let build_package = 
     define
       ~command:"$bsc -w -49 -color always -no-alias-deps  $in"
