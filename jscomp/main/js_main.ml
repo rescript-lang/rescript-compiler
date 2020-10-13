@@ -400,7 +400,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal*  Not using cached cmj, always generate cmj";    
 
     "-bs-no-version-header", set Js_config.no_version_header,
-    "Don't print version header";
+    "*internal*Don't print version header";
 
     "-bs-no-builtin-ppx", set Js_config.no_builtin_ppx,
     "*internal* Disable built-in ppx";  
