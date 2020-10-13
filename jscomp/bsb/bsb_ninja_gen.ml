@@ -204,6 +204,7 @@ let output_ninja_and_namespace_map
       ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)
       ~reason_react_jsx
+      ~package_specs
       ~digest
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
