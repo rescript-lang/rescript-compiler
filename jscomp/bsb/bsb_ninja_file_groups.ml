@@ -46,20 +46,7 @@ let handle_generators oc
     )
 
 
-let make_common_shadows     
-    package_specs 
-    dirname 
-  : Bsb_ninja_targets.shadow list 
-  =
-  
-   [{ key = Bsb_ninja_global_vars.g_pkg_flg;
-      op = 
-        Append
-          (Bsb_package_specs.package_flag_of_package_specs
-             package_specs dirname
-          )
-    }] 
-  
+
 
 type suffixes = {
   impl : string;
@@ -117,10 +104,6 @@ let emit_module_build
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
     Bsb_package_specs.get_list_of_output_js package_specs output_filename_sans_extension in 
-  let common_shadows = 
-    make_common_shadows package_specs
-      (Filename.dirname output_cmi)
-      in  
   
   Bsb_ninja_targets.output_build oc
     ~outputs:[output_mlast]
@@ -143,20 +126,19 @@ let emit_module_build
     ;
     Bsb_ninja_targets.output_build oc
       ~outputs:[output_cmi]
-      ~shadows:common_shadows
       ~order_only_deps:[output_d]
       ~inputs:[output_mliast]
       ~rule:(if is_dev then rules.mi_dev else rules.mi)
     ;
   end;
 
-  let shadows =
+  let shadows : Bsb_ninja_targets.shadow list =
     match js_post_build_cmd with
-    | None -> common_shadows
+    | None -> []
     | Some cmd ->
-      {key = Bsb_ninja_global_vars.postbuild;
-       op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)} 
-      :: common_shadows
+      [{key = Bsb_ninja_global_vars.postbuild;
+       op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)}] 
+      
   in
   let rule =
     if has_intf_file then 

@@ -121,6 +121,7 @@ let make_custom_rules
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
+  ~(package_specs: Bsb_package_specs.t)
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -133,6 +134,7 @@ let make_custom_rules
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc";
     Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
+    Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d");
     if read_cmi = `yes then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
@@ -176,11 +178,11 @@ let make_custom_rules
   let build_ast =
     define
       ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:false )
-      "build_ast" in
+      "ast" in
   let build_ast_from_re =
     define
       ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:true)
-      "build_ast_from_re" in 
+      "astj" in 
  
   let copy_resources =    
     define 
@@ -195,13 +197,13 @@ let make_custom_rules
       ~restat:()
       ~command:
       ("$bsdep -hash " ^ digest ^" $g_ns $in")
-      "mk_deps" in 
+      "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
       ("$bsdep -g -hash " ^ digest ^" $g_ns $in")
-      "mk_deps_dev" in     
+      "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define
       ~command:(mk_ml_cmj_cmd 

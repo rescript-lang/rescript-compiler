@@ -13048,6 +13048,7 @@ val make_custom_rules :
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
   digest:string ->
   refmt:string option ->
+  package_specs:Bsb_package_specs.t ->
   command Map_string.t ->
   builtin
 
@@ -13177,6 +13178,7 @@ let make_custom_rules
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
+  ~(package_specs: Bsb_package_specs.t)
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -13189,6 +13191,7 @@ let make_custom_rules
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc";
     Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
+    Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d");
     if read_cmi = `yes then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
@@ -13232,11 +13235,11 @@ let make_custom_rules
   let build_ast =
     define
       ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:false )
-      "build_ast" in
+      "ast" in
   let build_ast_from_re =
     define
       ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:true)
-      "build_ast_from_re" in 
+      "astj" in 
  
   let copy_resources =    
     define 
@@ -13251,13 +13254,13 @@ let make_custom_rules
       ~restat:()
       ~command:
       ("$bsdep -hash " ^ digest ^" $g_ns $in")
-      "mk_deps" in 
+      "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
       ("$bsdep -g -hash " ^ digest ^" $g_ns $in")
-      "mk_deps_dev" in     
+      "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define
       ~command:(mk_ml_cmj_cmd 
@@ -13448,7 +13451,7 @@ let output_build
     ~rule
     oc =
   let rule = Bsb_ninja_rule.get_name rule  oc in (* Trigger building if not used *)
-  output_string oc "build ";
+  output_string oc "o ";
   Ext_list.iter outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
   if implicit_outputs <> [] then begin 
     output_string oc " | ";
@@ -13517,7 +13520,7 @@ let output_build
 
 
 let phony ?(order_only_deps=[]) ~inputs ~output oc =
-  output_string oc "build ";
+  output_string oc "o ";
   output_string oc output ;
   output_string oc " : ";
   output_string oc "phony";
@@ -13694,20 +13697,7 @@ let handle_generators oc
     )
 
 
-let make_common_shadows     
-    package_specs 
-    dirname 
-  : Bsb_ninja_targets.shadow list 
-  =
-  
-   [{ key = Bsb_ninja_global_vars.g_pkg_flg;
-      op = 
-        Append
-          (Bsb_package_specs.package_flag_of_package_specs
-             package_specs dirname
-          )
-    }] 
-  
+
 
 type suffixes = {
   impl : string;
@@ -13765,10 +13755,6 @@ let emit_module_build
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
     Bsb_package_specs.get_list_of_output_js package_specs output_filename_sans_extension in 
-  let common_shadows = 
-    make_common_shadows package_specs
-      (Filename.dirname output_cmi)
-      in  
   
   Bsb_ninja_targets.output_build oc
     ~outputs:[output_mlast]
@@ -13791,20 +13777,19 @@ let emit_module_build
     ;
     Bsb_ninja_targets.output_build oc
       ~outputs:[output_cmi]
-      ~shadows:common_shadows
       ~order_only_deps:[output_d]
       ~inputs:[output_mliast]
       ~rule:(if is_dev then rules.mi_dev else rules.mi)
     ;
   end;
 
-  let shadows =
+  let shadows : Bsb_ninja_targets.shadow list =
     match js_post_build_cmd with
-    | None -> common_shadows
+    | None -> []
     | Some cmd ->
-      {key = Bsb_ninja_global_vars.postbuild;
-       op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)} 
-      :: common_shadows
+      [{key = Bsb_ninja_global_vars.postbuild;
+       op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)}] 
+      
   in
   let rule =
     if has_intf_file then 
@@ -14111,6 +14096,7 @@ let output_ninja_and_namespace_map
       ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)
       ~reason_react_jsx
+      ~package_specs
       ~digest
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;

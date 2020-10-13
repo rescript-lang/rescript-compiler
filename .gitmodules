@@ -9,3 +9,4 @@
 [submodule "ninja"]
 	path = ninja
 	url = git@github.com:rescript-lang/ninja.git
+	ignore = untracked
