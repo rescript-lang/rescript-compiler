@@ -13235,11 +13235,11 @@ let make_custom_rules
   let build_ast =
     define
       ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:false )
-      "build_ast" in
+      "ast" in
   let build_ast_from_re =
     define
       ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:true)
-      "build_ast_from_re" in 
+      "astj" in 
  
   let copy_resources =    
     define 
@@ -13254,13 +13254,13 @@ let make_custom_rules
       ~restat:()
       ~command:
       ("$bsdep -hash " ^ digest ^" $g_ns $in")
-      "mk_deps" in 
+      "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
       ("$bsdep -g -hash " ^ digest ^" $g_ns $in")
-      "mk_deps_dev" in     
+      "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define
       ~command:(mk_ml_cmj_cmd 
@@ -13451,7 +13451,7 @@ let output_build
     ~rule
     oc =
   let rule = Bsb_ninja_rule.get_name rule  oc in (* Trigger building if not used *)
-  output_string oc "build ";
+  output_string oc "o ";
   Ext_list.iter outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
   if implicit_outputs <> [] then begin 
     output_string oc " | ";
@@ -13520,7 +13520,7 @@ let output_build
 
 
 let phony ?(order_only_deps=[]) ~inputs ~output oc =
-  output_string oc "build ";
+  output_string oc "o ";
   output_string oc output ;
   output_string oc " : ";
   output_string oc "phony";

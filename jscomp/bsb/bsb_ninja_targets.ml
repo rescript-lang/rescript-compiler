@@ -57,7 +57,7 @@ let output_build
     ~rule
     oc =
   let rule = Bsb_ninja_rule.get_name rule  oc in (* Trigger building if not used *)
-  output_string oc "build ";
+  output_string oc "o ";
   Ext_list.iter outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
   if implicit_outputs <> [] then begin 
     output_string oc " | ";
@@ -126,7 +126,7 @@ let output_build
 
 
 let phony ?(order_only_deps=[]) ~inputs ~output oc =
-  output_string oc "build ";
+  output_string oc "o ";
   output_string oc output ;
   output_string oc " : ";
   output_string oc "phony";
