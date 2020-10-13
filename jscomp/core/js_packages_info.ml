@@ -252,7 +252,7 @@ let add_npm_package_path (packages_info : t) (s : string)  : t =
         Bsc_args.bad_arg ("invalid module system " ^ module_system)  
     in  
     let m =
-      match Ext_string.split ~keep_empty:false s ':' with
+      match Ext_string.split ~keep_empty:true s ':' with
       | [path] ->
         {module_system = NodeJS; path; suffix =  Js}
       | [ module_system; path]  ->
