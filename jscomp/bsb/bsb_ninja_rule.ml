@@ -50,9 +50,10 @@ let print_rule (oc : out_channel)
   begin match description with 
     | None -> ()     
     | Some description -> 
-      output_string oc "  description = " ; output_string oc description
-  end ;
-  output_string oc "\n"
+      output_string oc "  description = " ; output_string oc description;
+      output_string oc "\n"
+  end 
+  
 
 
 
@@ -134,7 +135,8 @@ let make_custom_rules
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc";
     Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
-    Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d");
+    if read_cmi <> `is_cmi then
+      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d");
     if read_cmi = `yes then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
