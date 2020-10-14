@@ -70,7 +70,7 @@ type command = string
 *)
 val make_custom_rules : 
   has_gentype:bool ->
-  has_postbuild:bool ->
+  has_postbuild:string option ->
   has_ppx:bool ->
   has_pp:bool ->
   has_builtin:bool -> 

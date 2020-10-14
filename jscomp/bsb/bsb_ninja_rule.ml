@@ -115,7 +115,7 @@ type builtin = {
 
 let make_custom_rules 
   ~(has_gentype : bool)        
-  ~(has_postbuild : bool)
+  ~(has_postbuild : string option)
   ~(has_ppx : bool)
   ~(has_pp : bool)
   ~(has_builtin : bool)
@@ -157,8 +157,13 @@ let make_custom_rules
     if has_gentype then
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.gentypeconfig;
     Ext_buffer.add_string buf " -o $out $in";
-    if postbuild then
-      Ext_buffer.add_string buf " $postbuild";
+    begin match postbuild with 
+    | None -> ()
+    | Some cmd -> 
+      Ext_buffer.add_string buf " && ";
+      Ext_buffer.add_string buf cmd ; 
+      Ext_buffer.add_string buf " $out_last"
+    end ;
     Ext_buffer.contents buf
   in   
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
@@ -181,7 +186,7 @@ let make_custom_rules
     );
     if has_ppx then 
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.ppx_flags; 
-    Ext_buffer.add_string buf " $bsc_flags -o $out  -bs-ast $in";   
+    Ext_buffer.add_string buf " $bsc_flags -o $out -bs-ast $in";   
     Ext_buffer.contents buf
   in  
   let build_ast =
@@ -239,7 +244,7 @@ let make_custom_rules
       ~name:"mij" ~postbuild:has_postbuild in  
   let mi, mi_dev =
     aux 
-       ~read_cmi:`is_cmi  ~postbuild:false
+       ~read_cmi:`is_cmi  ~postbuild:None
       ~name:"mi" in 
   let build_package = 
     define

@@ -125,6 +125,8 @@ let output_ninja_and_namespace_map
   let g_pkg_flg  =     
       Ext_string.inter2 "-bs-package-name" package_name
   in  
+  let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
+  let bsc_flags = (get_bsc_flags bsc_flags) in 
   let () = 
     Ext_option.iter pp_file (fun flag ->
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
@@ -143,8 +145,8 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
         (* The path to [bsb_heler.exe] *)
         Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
-        Bsb_ninja_global_vars.warnings, Bsb_warning.to_bsb_string ~toplevel warning ;
-        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags bsc_flags) ;
+        Bsb_ninja_global_vars.warnings, warnings;
+        Bsb_ninja_global_vars.bsc_flags,  bsc_flags;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
         Bsb_ninja_global_vars.g_dpkg_incls, 
@@ -192,7 +194,7 @@ let output_ninja_and_namespace_map
       Bsb_ninja_rule.make_custom_rules 
       ~refmt
       ~has_gentype:(gentype_config <> None)
-      ~has_postbuild:(js_post_build_cmd <> None)
+      ~has_postbuild:js_post_build_cmd 
       ~has_ppx:(ppx_files <> [])
       ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)
@@ -208,7 +210,6 @@ let output_ninja_and_namespace_map
     (fun files_per_dir ->
        Bsb_ninja_file_groups.handle_files_per_dir oc  
          ~rules
-         ~js_post_build_cmd 
          ~package_specs 
          ~files_to_install    
          ~namespace files_per_dir)
