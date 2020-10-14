@@ -317,8 +317,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-package-output", string_call Js_packages_state.update_npm_package_path, 
     "*internal* Set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ";
 
-    "-bs-binary-ast", set Js_config.binary_ast,
-    "*internal* Generate binary .mli_ast and ml_ast";
+    "-bs-ast", unit_call(fun _ ->  Js_config.binary_ast := true; Js_config.syntax_only := true),
+    "*internal* Generate binary .mli_ast and ml_ast and stop";
 
     "-bs-syntax-only", set Js_config.syntax_only,
     "Only check syntax";

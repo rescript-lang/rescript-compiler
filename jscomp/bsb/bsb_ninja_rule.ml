@@ -181,7 +181,7 @@ let make_custom_rules
     );
     if has_ppx then 
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.ppx_flags; 
-    Ext_buffer.add_string buf " $bsc_flags -o $out -bs-syntax-only -bs-binary-ast $in";   
+    Ext_buffer.add_string buf " $bsc_flags -o $out  -bs-ast $in";   
     Ext_buffer.contents buf
   in  
   let build_ast =
