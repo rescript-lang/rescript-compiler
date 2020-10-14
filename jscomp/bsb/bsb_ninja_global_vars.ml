@@ -46,7 +46,7 @@ let refmt_flags = "refmt_flags"
 
 let postbuild = "postbuild"
 
-let g_ns = "g_ns" 
+
 
 let warnings = "warnings"
 

@@ -122,16 +122,9 @@ let output_ninja_and_namespace_map
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
-  let g_pkg_flg , g_ns_flg = 
-    match namespace with
-    | None -> 
-      Ext_string.inter2 "-bs-package-name" package_name, Ext_string.empty
-    | Some s -> 
-      Ext_string.inter4 
-        "-bs-package-name" package_name 
-        "-bs-ns" s
-      ,
-      Ext_string.inter2 "-bs-ns" s in  
+  let g_pkg_flg  =     
+      Ext_string.inter2 "-bs-package-name" package_name
+  in  
   let () = 
     Ext_option.iter pp_file (fun flag ->
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
@@ -158,7 +151,7 @@ let output_ninja_and_namespace_map
         (Bsb_build_util.include_dirs_by
            bs_dev_dependencies
            (fun x -> x.package_install_path));  
-        Bsb_ninja_global_vars.g_ns , g_ns_flg ; 
+
       |] oc 
   in          
   let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
@@ -205,6 +198,7 @@ let output_ninja_and_namespace_map
       ~has_builtin:(built_in_dependency <> None)
       ~reason_react_jsx
       ~package_specs
+      ~namespace
       ~digest
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;

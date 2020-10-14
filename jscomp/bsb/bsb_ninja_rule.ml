@@ -123,20 +123,27 @@ let make_custom_rules
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
   ~(package_specs: Bsb_package_specs.t)
+  ~namespace
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
       since the default is already good -- it does not*)
   let buf = Ext_buffer.create 100 in     
+  let ns_flag = 
+    match namespace with None -> ""    
+    | Some n -> " -bs-ns " ^ n in 
   let mk_ml_cmj_cmd 
       ~(read_cmi : [`yes | `is_cmi | `no])
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc";
-    Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
-    if read_cmi <> `is_cmi then
-      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d");
+    
+    Ext_buffer.add_string buf ns_flag;
+    if read_cmi <> `is_cmi then begin 
+      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
+      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
+    end;
     if read_cmi = `yes then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
@@ -194,17 +201,18 @@ let make_custom_rules
         else "cp $in $out"
       )
       "copy_resource" in
+
   let build_bin_deps =
     define
       ~restat:()
       ~command:
-      ("$bsdep -hash " ^ digest ^" $g_ns $in")
+      ("$bsdep -hash " ^ digest ^ ns_flag ^ " $in")
       "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
-      ("$bsdep -g -hash " ^ digest ^" $g_ns $in")
+      ("$bsdep -g -hash " ^ digest ^ ns_flag ^ " $in")
       "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define

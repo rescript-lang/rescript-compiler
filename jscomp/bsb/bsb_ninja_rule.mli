@@ -78,6 +78,7 @@ val make_custom_rules :
   digest:string ->
   refmt:string option ->
   package_specs:Bsb_package_specs.t ->
+  namespace:string option ->
   command Map_string.t ->
   builtin
 

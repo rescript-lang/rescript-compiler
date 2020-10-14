@@ -12957,7 +12957,7 @@ let refmt_flags = "refmt_flags"
 
 let postbuild = "postbuild"
 
-let g_ns = "g_ns" 
+
 
 let warnings = "warnings"
 
@@ -13049,6 +13049,7 @@ val make_custom_rules :
   digest:string ->
   refmt:string option ->
   package_specs:Bsb_package_specs.t ->
+  namespace:string option ->
   command Map_string.t ->
   builtin
 
@@ -13180,20 +13181,27 @@ let make_custom_rules
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
   ~(package_specs: Bsb_package_specs.t)
+  ~namespace
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
       since the default is already good -- it does not*)
   let buf = Ext_buffer.create 100 in     
+  let ns_flag = 
+    match namespace with None -> ""    
+    | Some n -> " -bs-ns " ^ n in 
   let mk_ml_cmj_cmd 
       ~(read_cmi : [`yes | `is_cmi | `no])
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc";
-    Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
-    if read_cmi <> `is_cmi then
-      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d");
+    
+    Ext_buffer.add_string buf ns_flag;
+    if read_cmi <> `is_cmi then begin 
+      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
+      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
+    end;
     if read_cmi = `yes then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
@@ -13251,17 +13259,18 @@ let make_custom_rules
         else "cp $in $out"
       )
       "copy_resource" in
+
   let build_bin_deps =
     define
       ~restat:()
       ~command:
-      ("$bsdep -hash " ^ digest ^" $g_ns $in")
+      ("$bsdep -hash " ^ digest ^ ns_flag ^ " $in")
       "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
-      ("$bsdep -g -hash " ^ digest ^" $g_ns $in")
+      ("$bsdep -g -hash " ^ digest ^ ns_flag ^ " $in")
       "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define
@@ -13542,7 +13551,7 @@ let output_kv key value oc  =
   output_string oc "\n"
 
 let output_kvs kvs oc =
-  Ext_array.iter kvs (fun (k,v) -> output_kv k v oc) 
+  Ext_array.iter kvs (fun (k,v) -> if v <> "" then output_kv k v oc) 
 
 
 
@@ -14016,16 +14025,9 @@ let output_ninja_and_namespace_map
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
-  let g_pkg_flg , g_ns_flg = 
-    match namespace with
-    | None -> 
-      Ext_string.inter2 "-bs-package-name" package_name, Ext_string.empty
-    | Some s -> 
-      Ext_string.inter4 
-        "-bs-package-name" package_name 
-        "-bs-ns" s
-      ,
-      Ext_string.inter2 "-bs-ns" s in  
+  let g_pkg_flg  =     
+      Ext_string.inter2 "-bs-package-name" package_name
+  in  
   let () = 
     Ext_option.iter pp_file (fun flag ->
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
@@ -14052,7 +14054,7 @@ let output_ninja_and_namespace_map
         (Bsb_build_util.include_dirs_by
            bs_dev_dependencies
            (fun x -> x.package_install_path));  
-        Bsb_ninja_global_vars.g_ns , g_ns_flg ; 
+
       |] oc 
   in          
   let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
@@ -14099,6 +14101,7 @@ let output_ninja_and_namespace_map
       ~has_builtin:(built_in_dependency <> None)
       ~reason_react_jsx
       ~package_specs
+      ~namespace
       ~digest
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
