@@ -511,3 +511,14 @@ let unzip a =
     a2.!(i) <- v2
   done;
   (a1, a2)
+
+let joinWithU a sep toString =
+  match length a with
+  | 0 -> ""
+  | l ->
+      let lastIndex = l - 1 in
+      let rec aux i res =
+        if i = lastIndex then res ^ toString a.!(i) [@bs]
+        else aux (i + 1) (res ^ toString a.!(i) [@bs] ^ sep) in
+      aux 0 ""
+let joinWith a sep toString = joinWithU a sep (fun [@bs] x -> toString x)
