@@ -365,7 +365,7 @@ val map: 'a array ->  ('a -> 'b ) -> 'b array
     the beginning to end
 
     @example {[
-     map [|1;2|] (fun x-> x + 1) = [|3;4|]
+     map [|1;2|] (fun x-> x + 10) = [|11;12|]
    ]}
 
 *)
@@ -393,7 +393,7 @@ val getIndexBy: 'a array -> ('a -> bool) -> int option
 val keepU: 'a array -> ('a -> bool [@bs]) -> 'a array
 val keep: 'a array -> ('a -> bool ) -> 'a array
 (** [keep xs p ]
-    @return a new array that keep all elements satisfy [p]
+    @return a new array that keeps all elements satisfying [p]
 
     @example {[
       keep [|1;2;3|] (fun x -> x mod  2 = 0) = [|2|]
@@ -403,7 +403,9 @@ val keep: 'a array -> ('a -> bool ) -> 'a array
 val keepWithIndexU: 'a array -> ('a -> int -> bool [@bs]) -> 'a array
 val keepWithIndex: 'a array -> ('a -> int -> bool ) -> 'a array
 (** [keepWithIndex xs p ]
-    @return a new array that keep all elements satisfy [p]
+    @return a new array that keeps all elements satisfying [p]. 
+    The predicate [p] takes two arguments:
+    the element from [xs] and the index starting from 0.
 
     @example {[
       keepWithIndex [|1;2;3|] (fun _x i -> i = 1) = [|2|]
@@ -413,10 +415,10 @@ val keepWithIndex: 'a array -> ('a -> int -> bool ) -> 'a array
 val keepMapU: 'a array -> ('a -> 'b option [@bs]) -> 'b array
 val keepMap: 'a array -> ('a -> 'b option) -> 'b array
 (** [keepMap xs p]
-    @return a new array that keep all elements that return a non-None applied [p]
+    @return a new array that keeps all elements that return a non-None when applied to [p]
 
     @example {[
-      keepMap [|1;2;3|] (fun x -> if x mod 2 then Some x else None)
+      keepMap [|1;2;3|] (fun x -> if x mod 2 = 0 then Some x else None)
       = [| 2 |]
     ]}
 *)
@@ -425,16 +427,16 @@ val forEachWithIndexU: 'a array ->  (int -> 'a -> unit [@bs]) -> unit
 val forEachWithIndex: 'a array ->  (int -> 'a -> unit ) -> unit
 (** [forEachWithIndex xs f]
 
-    The same as {!forEach};except that [f] is supplied two arguments:
+    The same as {!forEach}; except that [f] is supplied with two arguments:
     the index starting from 0 and the element from [xs]
 
     @example {[
 
-      forEach [|"a";"b";"c"|] (fun i x -> Js.log("Item " ^ (string_of_int i) ^ " is " ^ x));;
+      forEachWithIndex [|"a";"b";"c"|] (fun i x -> Js.log("Item " ^ (string_of_int i) ^ " is " ^ x));;
       (*  prints:
         Item 0 is a
         Item 1 is b
-        Item 2 is cc
+        Item 2 is c
       *)
 
       let total = ref 0 ;;
