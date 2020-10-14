@@ -146,6 +146,6 @@ let output_kv key value oc  =
   output_string oc "\n"
 
 let output_kvs kvs oc =
-  Ext_array.iter kvs (fun (k,v) -> output_kv k v oc) 
+  Ext_array.iter kvs (fun (k,v) -> if v <> "" then output_kv k v oc) 
 
 
