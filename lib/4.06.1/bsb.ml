@@ -12957,7 +12957,7 @@ let refmt_flags = "refmt_flags"
 
 let postbuild = "postbuild"
 
-let g_ns = "g_ns" 
+
 
 let warnings = "warnings"
 
@@ -13041,7 +13041,7 @@ type command = string
 *)
 val make_custom_rules : 
   has_gentype:bool ->
-  has_postbuild:bool ->
+  has_postbuild:string option ->
   has_ppx:bool ->
   has_pp:bool ->
   has_builtin:bool -> 
@@ -13049,6 +13049,7 @@ val make_custom_rules :
   digest:string ->
   refmt:string option ->
   package_specs:Bsb_package_specs.t ->
+  namespace:string option ->
   command Map_string.t ->
   builtin
 
@@ -13107,9 +13108,10 @@ let print_rule (oc : out_channel)
   begin match description with 
     | None -> ()     
     | Some description -> 
-      output_string oc "  description = " ; output_string oc description
-  end ;
-  output_string oc "\n"
+      output_string oc "  description = " ; output_string oc description;
+      output_string oc "\n"
+  end 
+  
 
 
 
@@ -13171,7 +13173,7 @@ type builtin = {
 
 let make_custom_rules 
   ~(has_gentype : bool)        
-  ~(has_postbuild : bool)
+  ~(has_postbuild : string option)
   ~(has_ppx : bool)
   ~(has_pp : bool)
   ~(has_builtin : bool)
@@ -13179,19 +13181,27 @@ let make_custom_rules
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
   ~(package_specs: Bsb_package_specs.t)
+  ~namespace
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
       since the default is already good -- it does not*)
   let buf = Ext_buffer.create 100 in     
+  let ns_flag = 
+    match namespace with None -> ""    
+    | Some n -> " -bs-ns " ^ n in 
   let mk_ml_cmj_cmd 
       ~(read_cmi : [`yes | `is_cmi | `no])
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc";
-    Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
-    Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d");
+    
+    Ext_buffer.add_string buf ns_flag;
+    if read_cmi <> `is_cmi then begin 
+      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
+      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
+    end;
     if read_cmi = `yes then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
@@ -13205,8 +13215,13 @@ let make_custom_rules
     if has_gentype then
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.gentypeconfig;
     Ext_buffer.add_string buf " -o $out $in";
-    if postbuild then
-      Ext_buffer.add_string buf " $postbuild";
+    begin match postbuild with 
+    | None -> ()
+    | Some cmd -> 
+      Ext_buffer.add_string buf " && ";
+      Ext_buffer.add_string buf cmd ; 
+      Ext_buffer.add_string buf " $out_last"
+    end ;
     Ext_buffer.contents buf
   in   
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
@@ -13229,7 +13244,7 @@ let make_custom_rules
     );
     if has_ppx then 
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.ppx_flags; 
-    Ext_buffer.add_string buf " $bsc_flags -o $out -bs-syntax-only -bs-binary-ast $in";   
+    Ext_buffer.add_string buf " $bsc_flags -o $out -bs-ast $in";   
     Ext_buffer.contents buf
   in  
   let build_ast =
@@ -13249,17 +13264,18 @@ let make_custom_rules
         else "cp $in $out"
       )
       "copy_resource" in
+
   let build_bin_deps =
     define
       ~restat:()
       ~command:
-      ("$bsdep -hash " ^ digest ^" $g_ns $in")
+      ("$bsdep -hash " ^ digest ^ ns_flag ^ " $in")
       "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
-      ("$bsdep -g -hash " ^ digest ^" $g_ns $in")
+      ("$bsdep -g -hash " ^ digest ^ ns_flag ^ " $in")
       "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define
@@ -13286,7 +13302,7 @@ let make_custom_rules
       ~name:"mij" ~postbuild:has_postbuild in  
   let mi, mi_dev =
     aux 
-       ~read_cmi:`is_cmi  ~postbuild:false
+       ~read_cmi:`is_cmi  ~postbuild:None
       ~name:"mi" in 
   let build_package = 
     define
@@ -13451,10 +13467,10 @@ let output_build
     ~rule
     oc =
   let rule = Bsb_ninja_rule.get_name rule  oc in (* Trigger building if not used *)
-  output_string oc "o ";
+  output_string oc "o";
   Ext_list.iter outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
   if implicit_outputs <> [] then begin 
-    output_string oc " | ";
+    output_string oc " |";
     Ext_list.iter implicit_outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
   end;
   output_string oc " : ";
@@ -13468,7 +13484,7 @@ let output_build
   ;
   if order_only_deps <> [] then
     begin
-      output_string oc " || ";                
+      output_string oc " ||";                
       Ext_list.iter order_only_deps (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
     end
   ;
@@ -13540,7 +13556,7 @@ let output_kv key value oc  =
   output_string oc "\n"
 
 let output_kvs kvs oc =
-  Ext_array.iter kvs (fun (k,v) -> output_kv k v oc) 
+  Ext_array.iter kvs (fun (k,v) -> if v <> "" then output_kv k v oc) 
 
 
 
@@ -13642,7 +13658,6 @@ val handle_files_per_dir :
   out_channel ->
   rules:Bsb_ninja_rule.builtin ->
   package_specs:Bsb_package_specs.t ->
-  js_post_build_cmd:string option ->
   files_to_install:Hash_set_string.t ->
   namespace:string option -> 
   Bsb_file_groups.file_group -> unit
@@ -13731,7 +13746,6 @@ let emit_module_build
     (package_specs : Bsb_package_specs.t)
     (is_dev : bool) 
     oc 
-    js_post_build_cmd
     namespace
     (module_info : Bsb_db.module_info)
   =    
@@ -13782,15 +13796,6 @@ let emit_module_build
       ~rule:(if is_dev then rules.mi_dev else rules.mi)
     ;
   end;
-
-  let shadows : Bsb_ninja_targets.shadow list =
-    match js_post_build_cmd with
-    | None -> []
-    | Some cmd ->
-      [{key = Bsb_ninja_global_vars.postbuild;
-       op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)}] 
-      
-  in
   let rule =
     if has_intf_file then 
       (if  is_dev then rules.mj_dev
@@ -13802,7 +13807,6 @@ let emit_module_build
   in
   Bsb_ninja_targets.output_build oc
     ~outputs:[output_cmj]
-    ~shadows
     ~implicit_outputs:  
       (if has_intf_file then output_js else output_cmi::output_js )
     ~inputs:[output_mlast]
@@ -13821,7 +13825,6 @@ let handle_files_per_dir
     oc 
     ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
-    ~js_post_build_cmd  
     ~(files_to_install : Hash_set_string.t) 
     ~(namespace  : string option)
     (group: Bsb_file_groups.file_group ) 
@@ -13843,7 +13846,6 @@ let handle_files_per_dir
         package_specs
         group.dev_index
         oc 
-        js_post_build_cmd      
         namespace module_info
     )
 
@@ -14014,16 +14016,11 @@ let output_ninja_and_namespace_map
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
-  let g_pkg_flg , g_ns_flg = 
-    match namespace with
-    | None -> 
-      Ext_string.inter2 "-bs-package-name" package_name, Ext_string.empty
-    | Some s -> 
-      Ext_string.inter4 
-        "-bs-package-name" package_name 
-        "-bs-ns" s
-      ,
-      Ext_string.inter2 "-bs-ns" s in  
+  let g_pkg_flg  =     
+      Ext_string.inter2 "-bs-package-name" package_name
+  in  
+  let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
+  let bsc_flags = (get_bsc_flags bsc_flags) in 
   let () = 
     Ext_option.iter pp_file (fun flag ->
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
@@ -14042,15 +14039,15 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
         (* The path to [bsb_heler.exe] *)
         Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
-        Bsb_ninja_global_vars.warnings, Bsb_warning.to_bsb_string ~toplevel warning ;
-        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags bsc_flags) ;
+        Bsb_ninja_global_vars.warnings, warnings;
+        Bsb_ninja_global_vars.bsc_flags,  bsc_flags;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
         Bsb_ninja_global_vars.g_dpkg_incls, 
         (Bsb_build_util.include_dirs_by
            bs_dev_dependencies
            (fun x -> x.package_install_path));  
-        Bsb_ninja_global_vars.g_ns , g_ns_flg ; 
+
       |] oc 
   in          
   let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
@@ -14091,12 +14088,13 @@ let output_ninja_and_namespace_map
       Bsb_ninja_rule.make_custom_rules 
       ~refmt
       ~has_gentype:(gentype_config <> None)
-      ~has_postbuild:(js_post_build_cmd <> None)
+      ~has_postbuild:js_post_build_cmd 
       ~has_ppx:(ppx_files <> [])
       ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)
       ~reason_react_jsx
       ~package_specs
+      ~namespace
       ~digest
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
@@ -14106,7 +14104,6 @@ let output_ninja_and_namespace_map
     (fun files_per_dir ->
        Bsb_ninja_file_groups.handle_files_per_dir oc  
          ~rules
-         ~js_post_build_cmd 
          ~package_specs 
          ~files_to_install    
          ~namespace files_per_dir)

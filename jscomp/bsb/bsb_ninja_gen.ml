@@ -122,16 +122,11 @@ let output_ninja_and_namespace_map
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
-  let g_pkg_flg , g_ns_flg = 
-    match namespace with
-    | None -> 
-      Ext_string.inter2 "-bs-package-name" package_name, Ext_string.empty
-    | Some s -> 
-      Ext_string.inter4 
-        "-bs-package-name" package_name 
-        "-bs-ns" s
-      ,
-      Ext_string.inter2 "-bs-ns" s in  
+  let g_pkg_flg  =     
+      Ext_string.inter2 "-bs-package-name" package_name
+  in  
+  let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
+  let bsc_flags = (get_bsc_flags bsc_flags) in 
   let () = 
     Ext_option.iter pp_file (fun flag ->
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
@@ -150,15 +145,15 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
         (* The path to [bsb_heler.exe] *)
         Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
-        Bsb_ninja_global_vars.warnings, Bsb_warning.to_bsb_string ~toplevel warning ;
-        Bsb_ninja_global_vars.bsc_flags, (get_bsc_flags bsc_flags) ;
+        Bsb_ninja_global_vars.warnings, warnings;
+        Bsb_ninja_global_vars.bsc_flags,  bsc_flags;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
         Bsb_ninja_global_vars.g_dpkg_incls, 
         (Bsb_build_util.include_dirs_by
            bs_dev_dependencies
            (fun x -> x.package_install_path));  
-        Bsb_ninja_global_vars.g_ns , g_ns_flg ; 
+
       |] oc 
   in          
   let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
@@ -199,12 +194,13 @@ let output_ninja_and_namespace_map
       Bsb_ninja_rule.make_custom_rules 
       ~refmt
       ~has_gentype:(gentype_config <> None)
-      ~has_postbuild:(js_post_build_cmd <> None)
+      ~has_postbuild:js_post_build_cmd 
       ~has_ppx:(ppx_files <> [])
       ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)
       ~reason_react_jsx
       ~package_specs
+      ~namespace
       ~digest
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
@@ -214,7 +210,6 @@ let output_ninja_and_namespace_map
     (fun files_per_dir ->
        Bsb_ninja_file_groups.handle_files_per_dir oc  
          ~rules
-         ~js_post_build_cmd 
          ~package_specs 
          ~files_to_install    
          ~namespace files_per_dir)

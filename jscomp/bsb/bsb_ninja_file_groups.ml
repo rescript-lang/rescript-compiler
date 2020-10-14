@@ -80,7 +80,6 @@ let emit_module_build
     (package_specs : Bsb_package_specs.t)
     (is_dev : bool) 
     oc 
-    js_post_build_cmd
     namespace
     (module_info : Bsb_db.module_info)
   =    
@@ -131,15 +130,6 @@ let emit_module_build
       ~rule:(if is_dev then rules.mi_dev else rules.mi)
     ;
   end;
-
-  let shadows : Bsb_ninja_targets.shadow list =
-    match js_post_build_cmd with
-    | None -> []
-    | Some cmd ->
-      [{key = Bsb_ninja_global_vars.postbuild;
-       op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)}] 
-      
-  in
   let rule =
     if has_intf_file then 
       (if  is_dev then rules.mj_dev
@@ -151,7 +141,6 @@ let emit_module_build
   in
   Bsb_ninja_targets.output_build oc
     ~outputs:[output_cmj]
-    ~shadows
     ~implicit_outputs:  
       (if has_intf_file then output_js else output_cmi::output_js )
     ~inputs:[output_mlast]
@@ -170,7 +159,6 @@ let handle_files_per_dir
     oc 
     ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
-    ~js_post_build_cmd  
     ~(files_to_install : Hash_set_string.t) 
     ~(namespace  : string option)
     (group: Bsb_file_groups.file_group ) 
@@ -192,7 +180,6 @@ let handle_files_per_dir
         package_specs
         group.dev_index
         oc 
-        js_post_build_cmd      
         namespace module_info
     )
 

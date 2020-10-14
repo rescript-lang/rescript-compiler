@@ -50,9 +50,10 @@ let print_rule (oc : out_channel)
   begin match description with 
     | None -> ()     
     | Some description -> 
-      output_string oc "  description = " ; output_string oc description
-  end ;
-  output_string oc "\n"
+      output_string oc "  description = " ; output_string oc description;
+      output_string oc "\n"
+  end 
+  
 
 
 
@@ -114,7 +115,7 @@ type builtin = {
 
 let make_custom_rules 
   ~(has_gentype : bool)        
-  ~(has_postbuild : bool)
+  ~(has_postbuild : string option)
   ~(has_ppx : bool)
   ~(has_pp : bool)
   ~(has_builtin : bool)
@@ -122,19 +123,27 @@ let make_custom_rules
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
   ~(package_specs: Bsb_package_specs.t)
+  ~namespace
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
       since the default is already good -- it does not*)
   let buf = Ext_buffer.create 100 in     
+  let ns_flag = 
+    match namespace with None -> ""    
+    | Some n -> " -bs-ns " ^ n in 
   let mk_ml_cmj_cmd 
       ~(read_cmi : [`yes | `is_cmi | `no])
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf "$bsc";
-    Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
-    Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d");
+    
+    Ext_buffer.add_string buf ns_flag;
+    if read_cmi <> `is_cmi then begin 
+      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
+      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
+    end;
     if read_cmi = `yes then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
@@ -148,8 +157,13 @@ let make_custom_rules
     if has_gentype then
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.gentypeconfig;
     Ext_buffer.add_string buf " -o $out $in";
-    if postbuild then
-      Ext_buffer.add_string buf " $postbuild";
+    begin match postbuild with 
+    | None -> ()
+    | Some cmd -> 
+      Ext_buffer.add_string buf " && ";
+      Ext_buffer.add_string buf cmd ; 
+      Ext_buffer.add_string buf " $out_last"
+    end ;
     Ext_buffer.contents buf
   in   
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
@@ -172,7 +186,7 @@ let make_custom_rules
     );
     if has_ppx then 
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.ppx_flags; 
-    Ext_buffer.add_string buf " $bsc_flags -o $out -bs-syntax-only -bs-binary-ast $in";   
+    Ext_buffer.add_string buf " $bsc_flags -o $out -bs-ast $in";   
     Ext_buffer.contents buf
   in  
   let build_ast =
@@ -192,17 +206,18 @@ let make_custom_rules
         else "cp $in $out"
       )
       "copy_resource" in
+
   let build_bin_deps =
     define
       ~restat:()
       ~command:
-      ("$bsdep -hash " ^ digest ^" $g_ns $in")
+      ("$bsdep -hash " ^ digest ^ ns_flag ^ " $in")
       "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
-      ("$bsdep -g -hash " ^ digest ^" $g_ns $in")
+      ("$bsdep -g -hash " ^ digest ^ ns_flag ^ " $in")
       "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define
@@ -229,7 +244,7 @@ let make_custom_rules
       ~name:"mij" ~postbuild:has_postbuild in  
   let mi, mi_dev =
     aux 
-       ~read_cmi:`is_cmi  ~postbuild:false
+       ~read_cmi:`is_cmi  ~postbuild:None
       ~name:"mi" in 
   let build_package = 
     define
