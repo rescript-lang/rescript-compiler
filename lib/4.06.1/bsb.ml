@@ -12940,7 +12940,7 @@ module Bsb_ninja_global_vars
 
 
 let src_root_dir = "src_root_dir"
-let bsdep = "bsdep"
+
 
 let bsc_flags = "bsc_flags"
 
@@ -12959,7 +12959,7 @@ let postbuild = "postbuild"
 
 
 
-let warnings = "warnings"
+
 
 let gentypeconfig = "gentypeconfig"
 
@@ -13052,6 +13052,8 @@ val make_custom_rules :
   namespace:string option ->
   package_name:string ->
   bsc:string ->
+  warnings:string ->
+  bs_dep:string ->
   command Map_string.t ->
   builtin
 
@@ -13186,6 +13188,8 @@ let make_custom_rules
   ~namespace
   ~package_name
   ~bsc
+  ~warnings
+  ~bs_dep
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -13216,7 +13220,8 @@ let make_custom_rules
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dpkg_incls;
     if not has_builtin then   
       Ext_buffer.add_string buf " -nostdlib";
-    Ext_buffer.add_string buf " $warnings $bsc_flags";
+    Ext_buffer.add_char_string buf ' ' warnings;  
+    Ext_buffer.add_string buf " $bsc_flags";
     if has_gentype then
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.gentypeconfig;
     Ext_buffer.add_string buf " -o $out $in";
@@ -13232,7 +13237,8 @@ let make_custom_rules
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
     Ext_buffer.add_string buf bsc;
-    Ext_buffer.add_string buf " $warnings -bs-v ";
+    Ext_buffer.add_char_string buf ' ' warnings;  
+    Ext_buffer.add_string buf " -bs-v ";
     Ext_buffer.add_string buf Bs_version.version;
     (match refmt with 
     | None -> ()
@@ -13275,13 +13281,13 @@ let make_custom_rules
     define
       ~restat:()
       ~command:
-      ("$bsdep -hash " ^ digest ^ ns_flag ^ " $in")
+      (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
       "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
-      ("$bsdep -g -hash " ^ digest ^ ns_flag ^ " $in")
+      (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $in")
       "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define
@@ -14025,6 +14031,7 @@ let output_ninja_and_namespace_map
   let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
   let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
+  let bs_dep = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) in 
   let () = 
     Ext_option.iter pp_file (fun flag ->
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
@@ -14041,9 +14048,8 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.src_root_dir, per_proj_dir (* TODO: need check its integrity -- allow relocate or not? *);
         (* The path to [bsc.exe] independent of config  *)
 
-        (* The path to [bsb_heler.exe] *)
-        Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
-        Bsb_ninja_global_vars.warnings, warnings;
+
+
         Bsb_ninja_global_vars.bsc_flags,  bsc_flags;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
@@ -14102,6 +14108,8 @@ let output_ninja_and_namespace_map
       ~digest
       ~package_name
       ~bsc:bsc_path
+      ~warnings
+      ~bs_dep
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;

@@ -127,6 +127,7 @@ let make_custom_rules
   ~package_name
   ~bsc
   ~warnings
+  ~bs_dep
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -218,13 +219,13 @@ let make_custom_rules
     define
       ~restat:()
       ~command:
-      ("$bsdep -hash " ^ digest ^ ns_flag ^ " $in")
+      (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
       "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
-      ("$bsdep -g -hash " ^ digest ^ ns_flag ^ " $in")
+      (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $in")
       "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define

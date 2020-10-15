@@ -125,6 +125,7 @@ let output_ninja_and_namespace_map
   let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
   let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
+  let bs_dep = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) in 
   let () = 
     Ext_option.iter pp_file (fun flag ->
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
@@ -141,8 +142,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.src_root_dir, per_proj_dir (* TODO: need check its integrity -- allow relocate or not? *);
         (* The path to [bsc.exe] independent of config  *)
 
-        (* The path to [bsb_heler.exe] *)
-        Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
+
 
         Bsb_ninja_global_vars.bsc_flags,  bsc_flags;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
@@ -203,6 +203,7 @@ let output_ninja_and_namespace_map
       ~package_name
       ~bsc:bsc_path
       ~warnings
+      ~bs_dep
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;

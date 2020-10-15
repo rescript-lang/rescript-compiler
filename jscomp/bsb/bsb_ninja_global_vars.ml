@@ -29,7 +29,7 @@
 
 
 let src_root_dir = "src_root_dir"
-let bsdep = "bsdep"
+
 
 let bsc_flags = "bsc_flags"
 

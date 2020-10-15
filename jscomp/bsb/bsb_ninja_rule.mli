@@ -82,6 +82,7 @@ val make_custom_rules :
   package_name:string ->
   bsc:string ->
   warnings:string ->
+  bs_dep:string ->
   command Map_string.t ->
   builtin
 
