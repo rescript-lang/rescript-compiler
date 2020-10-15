@@ -13865,12 +13865,6 @@ let src_root_dir = "src_root_dir"
 
 
 
-let refmt = "refmt"
-
-
-
-
-
 end
 module Bsb_ninja_gen : sig 
 #1 "bsb_ninja_gen.mli"
