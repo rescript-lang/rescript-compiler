@@ -26,7 +26,7 @@
  
 
 
-let bsc = "bsc" 
+
 
 let src_root_dir = "src_root_dir"
 let bsdep = "bsdep"

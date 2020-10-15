@@ -125,6 +125,7 @@ let make_custom_rules
   ~(package_specs: Bsb_package_specs.t)
   ~namespace
   ~package_name
+  ~bsc
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -138,7 +139,7 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
-    Ext_buffer.add_string buf "$bsc";
+    Ext_buffer.add_string buf bsc;
     
     Ext_buffer.add_string buf ns_flag;
     if read_cmi <> `is_cmi then begin 
@@ -170,7 +171,8 @@ let make_custom_rules
   in   
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
-    Ext_buffer.add_string buf "$bsc  $warnings -bs-v ";
+    Ext_buffer.add_string buf bsc;
+    Ext_buffer.add_string buf " $warnings -bs-v ";
     Ext_buffer.add_string buf Bs_version.version;
     (match refmt with 
     | None -> ()
@@ -250,7 +252,7 @@ let make_custom_rules
       ~name:"mi" in 
   let build_package = 
     define
-      ~command:"$bsc -w -49 -color always -no-alias-deps  $in"
+      ~command:(bsc ^ " -w -49 -color always -no-alias-deps  $in")
       ~restat:()
       "build_package"
   in 

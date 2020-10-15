@@ -12937,7 +12937,7 @@ module Bsb_ninja_global_vars
  
 
 
-let bsc = "bsc" 
+
 
 let src_root_dir = "src_root_dir"
 let bsdep = "bsdep"
@@ -13051,6 +13051,7 @@ val make_custom_rules :
   package_specs:Bsb_package_specs.t ->
   namespace:string option ->
   package_name:string ->
+  bsc:string ->
   command Map_string.t ->
   builtin
 
@@ -13184,6 +13185,7 @@ let make_custom_rules
   ~(package_specs: Bsb_package_specs.t)
   ~namespace
   ~package_name
+  ~bsc
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -13197,7 +13199,7 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
-    Ext_buffer.add_string buf "$bsc";
+    Ext_buffer.add_string buf bsc;
     
     Ext_buffer.add_string buf ns_flag;
     if read_cmi <> `is_cmi then begin 
@@ -13229,7 +13231,8 @@ let make_custom_rules
   in   
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
-    Ext_buffer.add_string buf "$bsc  $warnings -bs-v ";
+    Ext_buffer.add_string buf bsc;
+    Ext_buffer.add_string buf " $warnings -bs-v ";
     Ext_buffer.add_string buf Bs_version.version;
     (match refmt with 
     | None -> ()
@@ -13309,7 +13312,7 @@ let make_custom_rules
       ~name:"mi" in 
   let build_package = 
     define
-      ~command:"$bsc -w -49 -color always -no-alias-deps  $in"
+      ~command:(bsc ^ " -w -49 -color always -no-alias-deps  $in")
       ~restat:()
       "build_package"
   in 
@@ -14021,6 +14024,7 @@ let output_ninja_and_namespace_map
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
   let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
+  let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
   let () = 
     Ext_option.iter pp_file (fun flag ->
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
@@ -14036,7 +14040,7 @@ let output_ninja_and_namespace_map
 
         Bsb_ninja_global_vars.src_root_dir, per_proj_dir (* TODO: need check its integrity -- allow relocate or not? *);
         (* The path to [bsc.exe] independent of config  *)
-        Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
+
         (* The path to [bsb_heler.exe] *)
         Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
         Bsb_ninja_global_vars.warnings, warnings;
@@ -14097,6 +14101,7 @@ let output_ninja_and_namespace_map
       ~namespace
       ~digest
       ~package_name
+      ~bsc:bsc_path
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;

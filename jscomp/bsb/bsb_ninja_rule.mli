@@ -80,6 +80,7 @@ val make_custom_rules :
   package_specs:Bsb_package_specs.t ->
   namespace:string option ->
   package_name:string ->
+  bsc:string ->
   command Map_string.t ->
   builtin
 
