@@ -13212,7 +13212,7 @@ let make_custom_rules
     
     Ext_buffer.add_char_string buf ' ' ppx_flags; 
     Ext_buffer.add_char_string buf ' ' bsc_flags;
-    Ext_buffer.add_string buf " -o $out -bs-ast $in";   
+    Ext_buffer.add_string buf "-bs-ast -o $out $in";   
     Ext_buffer.contents buf
   in  
   let build_ast =
