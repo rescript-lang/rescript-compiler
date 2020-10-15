@@ -26,10 +26,13 @@
  
 
 
+(* Invariant: the two string literal has 
+  to be "a" and "$a"
+*)
 
+let src_root_dir = "g_root"
 
-let src_root_dir = "src_root_dir"
-
+let lazy_src_root_dir = "$g_root" 
 
 
 
