@@ -12944,7 +12944,7 @@ let src_root_dir = "src_root_dir"
 
 let bsc_flags = "bsc_flags"
 
-let ppx_flags = "ppx_flags"
+
 
 let pp_flags = "pp_flags"
 
@@ -13042,7 +13042,6 @@ type command = string
 val make_custom_rules : 
   has_gentype:bool ->
   has_postbuild:string option ->
-  has_ppx:bool ->
   has_pp:bool ->
   has_builtin:bool -> 
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
@@ -13054,6 +13053,7 @@ val make_custom_rules :
   bsc:string ->
   warnings:string ->
   bs_dep:string ->
+  ppx_flags:string ->
   command Map_string.t ->
   builtin
 
@@ -13178,7 +13178,6 @@ type builtin = {
 let make_custom_rules 
   ~(has_gentype : bool)        
   ~(has_postbuild : string option)
-  ~(has_ppx : bool)
   ~(has_pp : bool)
   ~(has_builtin : bool)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
@@ -13190,6 +13189,7 @@ let make_custom_rules
   ~bsc
   ~warnings
   ~bs_dep
+  ~ppx_flags
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -13234,7 +13234,7 @@ let make_custom_rules
     end ;
     Ext_buffer.contents buf
   in   
-  let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
+  let mk_ast ~(has_pp : bool) ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
     Ext_buffer.add_string buf bsc;
     Ext_buffer.add_char_string buf ' ' warnings;  
@@ -13254,18 +13254,18 @@ let make_custom_rules
      | _, Some Jsx_v3 
        -> Ext_buffer.add_string buf " -bs-jsx 3"
     );
-    if has_ppx then 
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.ppx_flags; 
+    
+    Ext_buffer.add_string buf ppx_flags; 
     Ext_buffer.add_string buf " $bsc_flags -o $out -bs-ast $in";   
     Ext_buffer.contents buf
   in  
   let build_ast =
     define
-      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:false )
+      ~command:(mk_ast ~has_pp ~has_reason_react_jsx:false )
       "ast" in
   let build_ast_from_re =
     define
-      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:true)
+      ~command:(mk_ast ~has_pp ~has_reason_react_jsx:true)
       "astj" in 
  
   let copy_resources =    
@@ -14051,7 +14051,7 @@ let output_ninja_and_namespace_map
 
 
         Bsb_ninja_global_vars.bsc_flags,  bsc_flags;
-        Bsb_ninja_global_vars.ppx_flags, ppx_flags;
+        
 
         Bsb_ninja_global_vars.g_dpkg_incls, 
         (Bsb_build_util.include_dirs_by
@@ -14099,7 +14099,6 @@ let output_ninja_and_namespace_map
       ~refmt
       ~has_gentype:(gentype_config <> None)
       ~has_postbuild:js_post_build_cmd 
-      ~has_ppx:(ppx_files <> [])
       ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)
       ~reason_react_jsx
@@ -14110,6 +14109,7 @@ let output_ninja_and_namespace_map
       ~bsc:bsc_path
       ~warnings
       ~bs_dep
+      ~ppx_flags
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;

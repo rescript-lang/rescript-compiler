@@ -71,7 +71,6 @@ type command = string
 val make_custom_rules : 
   has_gentype:bool ->
   has_postbuild:string option ->
-  has_ppx:bool ->
   has_pp:bool ->
   has_builtin:bool -> 
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
@@ -83,6 +82,7 @@ val make_custom_rules :
   bsc:string ->
   warnings:string ->
   bs_dep:string ->
+  ppx_flags:string ->
   command Map_string.t ->
   builtin
 

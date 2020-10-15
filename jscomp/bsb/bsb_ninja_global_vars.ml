@@ -33,7 +33,7 @@ let src_root_dir = "src_root_dir"
 
 let bsc_flags = "bsc_flags"
 
-let ppx_flags = "ppx_flags"
+
 
 let pp_flags = "pp_flags"
 

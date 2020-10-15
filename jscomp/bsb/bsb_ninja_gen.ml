@@ -145,7 +145,7 @@ let output_ninja_and_namespace_map
 
 
         Bsb_ninja_global_vars.bsc_flags,  bsc_flags;
-        Bsb_ninja_global_vars.ppx_flags, ppx_flags;
+        
 
         Bsb_ninja_global_vars.g_dpkg_incls, 
         (Bsb_build_util.include_dirs_by
@@ -193,7 +193,6 @@ let output_ninja_and_namespace_map
       ~refmt
       ~has_gentype:(gentype_config <> None)
       ~has_postbuild:js_post_build_cmd 
-      ~has_ppx:(ppx_files <> [])
       ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)
       ~reason_react_jsx
@@ -204,6 +203,7 @@ let output_ninja_and_namespace_map
       ~bsc:bsc_path
       ~warnings
       ~bs_dep
+      ~ppx_flags
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;
