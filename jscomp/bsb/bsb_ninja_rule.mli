@@ -81,6 +81,7 @@ val make_custom_rules :
   namespace:string option ->
   package_name:string ->
   bsc:string ->
+  warnings:string ->
   command Map_string.t ->
   builtin
 

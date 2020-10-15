@@ -48,7 +48,7 @@ let postbuild = "postbuild"
 
 
 
-let warnings = "warnings"
+
 
 let gentypeconfig = "gentypeconfig"
 

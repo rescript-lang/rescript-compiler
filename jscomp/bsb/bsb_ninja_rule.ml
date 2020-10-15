@@ -126,6 +126,7 @@ let make_custom_rules
   ~namespace
   ~package_name
   ~bsc
+  ~warnings
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -156,7 +157,8 @@ let make_custom_rules
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dpkg_incls;
     if not has_builtin then   
       Ext_buffer.add_string buf " -nostdlib";
-    Ext_buffer.add_string buf " $warnings $bsc_flags";
+    Ext_buffer.add_char_string buf ' ' warnings;  
+    Ext_buffer.add_string buf " $bsc_flags";
     if has_gentype then
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.gentypeconfig;
     Ext_buffer.add_string buf " -o $out $in";
@@ -172,7 +174,8 @@ let make_custom_rules
   let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
     Ext_buffer.add_string buf bsc;
-    Ext_buffer.add_string buf " $warnings -bs-v ";
+    Ext_buffer.add_char_string buf ' ' warnings;  
+    Ext_buffer.add_string buf " -bs-v ";
     Ext_buffer.add_string buf Bs_version.version;
     (match refmt with 
     | None -> ()

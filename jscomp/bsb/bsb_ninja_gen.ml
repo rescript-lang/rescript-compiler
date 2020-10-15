@@ -143,7 +143,7 @@ let output_ninja_and_namespace_map
 
         (* The path to [bsb_heler.exe] *)
         Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
-        Bsb_ninja_global_vars.warnings, warnings;
+
         Bsb_ninja_global_vars.bsc_flags,  bsc_flags;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
 
@@ -202,6 +202,7 @@ let output_ninja_and_namespace_map
       ~digest
       ~package_name
       ~bsc:bsc_path
+      ~warnings
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;
