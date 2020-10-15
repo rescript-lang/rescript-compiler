@@ -130,6 +130,7 @@ let make_custom_rules
   ~ppx_flags
   ~bsc_flags
   ~dpkg_incls
+  ~lib_incls
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -143,25 +144,23 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
-    Ext_buffer.add_string buf bsc;
-    
+    Ext_buffer.add_string buf bsc;    
     Ext_buffer.add_string buf ns_flag;
-    if read_cmi <> `is_cmi then begin 
-      Ext_buffer.add_string buf " -bs-package-name ";
-      Ext_buffer.add_string buf package_name;
-      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
-    end;
     if read_cmi = `yes then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dev_incls;      
-    Ext_buffer.add_ninja_prefix_var buf Bsb_build_schemas.g_lib_incls;
-    
+    Ext_buffer.add_char_string buf ' ' lib_incls;    
     Ext_buffer.add_char_string buf ' ' dpkg_incls;
     if not has_builtin then   
       Ext_buffer.add_string buf " -nostdlib";
     Ext_buffer.add_char_string buf ' ' warnings;  
     Ext_buffer.add_char_string buf ' ' bsc_flags;
+    if read_cmi <> `is_cmi then begin 
+      Ext_buffer.add_string buf " -bs-package-name ";
+      Ext_buffer.add_string buf package_name;
+      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
+    end;
     if has_gentype then
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.gentypeconfig;
     Ext_buffer.add_string buf " -o $out $in";
@@ -246,7 +245,7 @@ let make_custom_rules
       ~restat:() (* Always restat when having mli *)
       (name ^ "_dev")
   in 
-  (* [g_lib_incls] are fixed for libs *)
+
   let mj, mj_dev =
     aux ~name:"mj" ~read_cmi:`yes ~postbuild:has_postbuild in   
   let mij, mij_dev =

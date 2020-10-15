@@ -1925,7 +1925,7 @@ let export_all = "all"
 let export_none = "none"
 
 
-let g_lib_incls = "g_lib_incls"
+
 let use_stdlib = "use-stdlib"
 let reason = "reason"
 let react_jsx = "react-jsx"
@@ -13050,8 +13050,9 @@ val make_custom_rules :
   warnings:string ->
   bs_dep:string ->
   ppx_flags:string ->
-  bsc_flags:string ->
+  bsc_flags:string ->  
   dpkg_incls:string ->
+  lib_incls:string ->
   command Map_string.t ->
   builtin
 
@@ -13190,6 +13191,7 @@ let make_custom_rules
   ~ppx_flags
   ~bsc_flags
   ~dpkg_incls
+  ~lib_incls
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -13203,25 +13205,23 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
-    Ext_buffer.add_string buf bsc;
-    
+    Ext_buffer.add_string buf bsc;    
     Ext_buffer.add_string buf ns_flag;
-    if read_cmi <> `is_cmi then begin 
-      Ext_buffer.add_string buf " -bs-package-name ";
-      Ext_buffer.add_string buf package_name;
-      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
-    end;
     if read_cmi = `yes then 
       Ext_buffer.add_string buf " -bs-read-cmi";
     if is_dev then 
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dev_incls;      
-    Ext_buffer.add_ninja_prefix_var buf Bsb_build_schemas.g_lib_incls;
-    
+    Ext_buffer.add_char_string buf ' ' lib_incls;    
     Ext_buffer.add_char_string buf ' ' dpkg_incls;
     if not has_builtin then   
       Ext_buffer.add_string buf " -nostdlib";
     Ext_buffer.add_char_string buf ' ' warnings;  
     Ext_buffer.add_char_string buf ' ' bsc_flags;
+    if read_cmi <> `is_cmi then begin 
+      Ext_buffer.add_string buf " -bs-package-name ";
+      Ext_buffer.add_string buf package_name;
+      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
+    end;
     if has_gentype then
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.gentypeconfig;
     Ext_buffer.add_string buf " -o $out $in";
@@ -13306,7 +13306,7 @@ let make_custom_rules
       ~restat:() (* Always restat when having mli *)
       (name ^ "_dev")
   in 
-  (* [g_lib_incls] are fixed for libs *)
+
   let mj, mj_dev =
     aux ~name:"mj" ~read_cmi:`yes ~postbuild:has_postbuild in   
   let mij, mij_dev =
@@ -13953,8 +13953,7 @@ let emit_bsc_lib_includes
     (bs_dependencies : Bsb_config_types.dependencies)
   (source_dirs : string list) 
   (external_includes) 
-  (namespace : _ option)
-  (oc : out_channel): unit = 
+  (namespace : _ option): string = 
   (* TODO: bsc_flags contain stdlib path which is in the latter position currently *)
   let all_includes source_dirs  = 
     source_dirs @
@@ -13970,14 +13969,13 @@ let emit_bsc_lib_includes
         (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
     )
   in 
-  Bsb_ninja_targets.output_kv
-    Bsb_build_schemas.g_lib_incls 
-    (Bsb_build_util.include_dirs 
-       (all_includes 
-          (if namespace = None then source_dirs 
-           else Filename.current_dir_name :: source_dirs
-           (*working dir is [lib/bs] we include this path to have namespace mapping*)
-          )))  oc 
+
+  (Bsb_build_util.include_dirs 
+     (all_includes 
+        (if namespace = None then source_dirs 
+         else Filename.current_dir_name :: source_dirs
+         (*working dir is [lib/bs] we include this path to have namespace mapping*)
+        )))
 
 
 let output_static_resources 
@@ -14084,6 +14082,7 @@ let output_ninja_and_namespace_map
       (Bsb_build_util.include_dirs source_dirs.dev) oc
   ;
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
+  let lib_incls = emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace in
   let rules : Bsb_ninja_rule.builtin = 
       Bsb_ninja_rule.make_custom_rules 
       ~refmt
@@ -14102,8 +14101,9 @@ let output_ninja_and_namespace_map
       ~ppx_flags
       ~bsc_flags
       ~dpkg_incls
+      ~lib_incls
       generators in   
-  emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
+
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 
