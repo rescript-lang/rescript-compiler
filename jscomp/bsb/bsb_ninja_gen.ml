@@ -122,9 +122,6 @@ let output_ninja_and_namespace_map
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
-  let g_pkg_flg  =     
-      Ext_string.inter2 "-bs-package-name" package_name
-  in  
   let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
   let () = 
@@ -139,7 +136,7 @@ let output_ninja_and_namespace_map
       );    
     Bsb_ninja_targets.output_kvs
       [|
-        Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
+
         Bsb_ninja_global_vars.src_root_dir, per_proj_dir (* TODO: need check its integrity -- allow relocate or not? *);
         (* The path to [bsc.exe] independent of config  *)
         Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
@@ -202,6 +199,7 @@ let output_ninja_and_namespace_map
       ~package_specs
       ~namespace
       ~digest
+      ~package_name
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;

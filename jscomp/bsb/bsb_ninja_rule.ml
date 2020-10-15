@@ -124,6 +124,7 @@ let make_custom_rules
   ~(refmt : string option) (* set refmt path when needed *)
   ~(package_specs: Bsb_package_specs.t)
   ~namespace
+  ~package_name
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -141,7 +142,8 @@ let make_custom_rules
     
     Ext_buffer.add_string buf ns_flag;
     if read_cmi <> `is_cmi then begin 
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
+      Ext_buffer.add_string buf " -bs-package-name ";
+      Ext_buffer.add_string buf package_name;
       Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
     end;
     if read_cmi = `yes then 

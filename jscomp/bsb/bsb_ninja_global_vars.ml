@@ -24,7 +24,7 @@
 
 
  
-let g_pkg_flg = "g_pkg_flg"
+
 
 let bsc = "bsc" 
 
