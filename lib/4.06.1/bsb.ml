@@ -13205,8 +13205,9 @@ let make_custom_rules
     (* The include order matters below *)
     if is_dev then 
       Ext_buffer.add_char_string buf ' ' dev_incls;      
-    Ext_buffer.add_char_string buf ' ' lib_incls;    
-    Ext_buffer.add_char_string buf ' ' dpkg_incls;
+    Ext_buffer.add_char_string buf ' ' lib_incls; 
+    if is_dev then    
+      Ext_buffer.add_char_string buf ' ' dpkg_incls;
     if not has_builtin then   
       Ext_buffer.add_string buf " -nostdlib";
     Ext_buffer.add_char_string buf ' ' warnings;  
