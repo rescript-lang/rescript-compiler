@@ -127,16 +127,13 @@ let output_ninja_and_namespace_map
   let dpkg_incls  =  (Bsb_build_util.include_dirs_by
                         bs_dev_dependencies
                         (fun x -> x.package_install_path)) in 
+  
   let () = 
     Ext_option.iter pp_file (fun flag ->
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
           (Bsb_build_util.pp_flag flag) oc 
       );
-    Ext_option.iter gentype_config (fun x -> 
-        (* resolved earlier *)
-        Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.gentypeconfig
-          ("-bs-gentype " ^ x.path) oc
-      );    
+
     Bsb_ninja_targets.output_kv      
       Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
       oc 
@@ -176,7 +173,7 @@ let output_ninja_and_namespace_map
   let rules : Bsb_ninja_rule.builtin = 
       Bsb_ninja_rule.make_custom_rules 
       ~refmt
-      ~has_gentype:(gentype_config <> None)
+      ~gentype_config
       ~has_postbuild:js_post_build_cmd 
       ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)

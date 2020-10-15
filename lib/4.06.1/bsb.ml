@@ -12950,8 +12950,6 @@ let pp_flags = "pp_flags"
 let refmt = "refmt"
 
 
-let gentypeconfig = "gentypeconfig"
-
 
 
 
@@ -13029,7 +13027,7 @@ type command = string
     we must make sure it is re-entrant
 *)
 val make_custom_rules : 
-  has_gentype:bool ->
+  gentype_config:Bsb_config_types.gentype_config option ->
   has_postbuild:string option ->
   has_pp:bool ->
   has_builtin:bool -> 
@@ -13169,7 +13167,7 @@ type builtin = {
 ;;
 
 let make_custom_rules 
-  ~(has_gentype : bool)        
+  ~(gentype_config : Bsb_config_types.gentype_config option)        
   ~(has_postbuild : string option)
   ~(has_pp : bool)
   ~(has_builtin : bool)
@@ -13213,13 +13211,17 @@ let make_custom_rules
       Ext_buffer.add_string buf " -nostdlib";
     Ext_buffer.add_char_string buf ' ' warnings;  
     Ext_buffer.add_char_string buf ' ' bsc_flags;
+    begin match gentype_config with 
+      | None -> ()
+      | Some x ->
+        Ext_buffer.add_string buf " -bs-gentype " ;
+        Ext_buffer.add_string buf x.path
+    end;
     if read_cmi <> `is_cmi then begin 
       Ext_buffer.add_string buf " -bs-package-name ";
       Ext_buffer.add_string buf package_name;
       Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
     end;
-    if has_gentype then
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.gentypeconfig;
     Ext_buffer.add_string buf " -o $out $in";
     begin match postbuild with 
     | None -> ()
@@ -14030,16 +14032,13 @@ let output_ninja_and_namespace_map
   let dpkg_incls  =  (Bsb_build_util.include_dirs_by
                         bs_dev_dependencies
                         (fun x -> x.package_install_path)) in 
+  
   let () = 
     Ext_option.iter pp_file (fun flag ->
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
           (Bsb_build_util.pp_flag flag) oc 
       );
-    Ext_option.iter gentype_config (fun x -> 
-        (* resolved earlier *)
-        Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.gentypeconfig
-          ("-bs-gentype " ^ x.path) oc
-      );    
+
     Bsb_ninja_targets.output_kv      
       Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
       oc 
@@ -14079,7 +14078,7 @@ let output_ninja_and_namespace_map
   let rules : Bsb_ninja_rule.builtin = 
       Bsb_ninja_rule.make_custom_rules 
       ~refmt
-      ~has_gentype:(gentype_config <> None)
+      ~gentype_config
       ~has_postbuild:js_post_build_cmd 
       ~has_pp:(pp_file <> None)
       ~has_builtin:(built_in_dependency <> None)

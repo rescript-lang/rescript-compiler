@@ -39,7 +39,5 @@ let pp_flags = "pp_flags"
 let refmt = "refmt"
 
 
-let gentypeconfig = "gentypeconfig"
-
 
 

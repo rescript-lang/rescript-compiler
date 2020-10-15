@@ -114,7 +114,7 @@ type builtin = {
 ;;
 
 let make_custom_rules 
-  ~(has_gentype : bool)        
+  ~(gentype_config : Bsb_config_types.gentype_config option)        
   ~(has_postbuild : string option)
   ~(has_pp : bool)
   ~(has_builtin : bool)
@@ -158,13 +158,17 @@ let make_custom_rules
       Ext_buffer.add_string buf " -nostdlib";
     Ext_buffer.add_char_string buf ' ' warnings;  
     Ext_buffer.add_char_string buf ' ' bsc_flags;
+    begin match gentype_config with 
+      | None -> ()
+      | Some x ->
+        Ext_buffer.add_string buf " -bs-gentype " ;
+        Ext_buffer.add_string buf x.path
+    end;
     if read_cmi <> `is_cmi then begin 
       Ext_buffer.add_string buf " -bs-package-name ";
       Ext_buffer.add_string buf package_name;
       Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
     end;
-    if has_gentype then
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.gentypeconfig;
     Ext_buffer.add_string buf " -o $out $in";
     begin match postbuild with 
     | None -> ()
