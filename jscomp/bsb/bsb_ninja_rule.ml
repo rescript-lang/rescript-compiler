@@ -116,7 +116,7 @@ type builtin = {
 let make_custom_rules 
   ~(gentype_config : Bsb_config_types.gentype_config option)        
   ~(has_postbuild : string option)
-  ~(has_pp : bool)
+  ~(pp_file : string option)
   ~(has_builtin : bool)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
@@ -180,7 +180,7 @@ let make_custom_rules
     end ;
     Ext_buffer.contents buf
   in   
-  let mk_ast ~(has_pp : bool) ~has_reason_react_jsx : string =
+  let mk_ast  ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
     Ext_buffer.add_string buf bsc;
     Ext_buffer.add_char_string buf ' ' warnings;  
@@ -192,8 +192,12 @@ let make_custom_rules
       Ext_buffer.add_string buf " -bs-refmt ";
       Ext_buffer.add_string buf (Ext_filename.maybe_quote x);
     );
-    if has_pp then
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.pp_flags;
+    (match pp_file with 
+     | None -> ()
+     | Some flag ->
+       Ext_buffer.add_char_string buf ' '
+         (Bsb_build_util.pp_flag flag)
+    );
     (match has_reason_react_jsx, reason_react_jsx with
      | false, _ 
      | _, None -> ()
@@ -208,11 +212,11 @@ let make_custom_rules
   in  
   let build_ast =
     define
-      ~command:(mk_ast ~has_pp ~has_reason_react_jsx:false )
+      ~command:(mk_ast ~has_reason_react_jsx:false )
       "ast" in
   let build_ast_from_re =
     define
-      ~command:(mk_ast ~has_pp ~has_reason_react_jsx:true)
+      ~command:(mk_ast  ~has_reason_react_jsx:true)
       "astj" in 
  
   let copy_resources =    

@@ -129,11 +129,6 @@ let output_ninja_and_namespace_map
                         (fun x -> x.package_install_path)) in 
   
   let () = 
-    Ext_option.iter pp_file (fun flag ->
-        Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
-          (Bsb_build_util.pp_flag flag) oc 
-      );
-
     Bsb_ninja_targets.output_kv      
       Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
       oc 
@@ -175,7 +170,7 @@ let output_ninja_and_namespace_map
       ~refmt
       ~gentype_config
       ~has_postbuild:js_post_build_cmd 
-      ~has_pp:(pp_file <> None)
+      ~pp_file
       ~has_builtin:(built_in_dependency <> None)
       ~reason_react_jsx
       ~package_specs

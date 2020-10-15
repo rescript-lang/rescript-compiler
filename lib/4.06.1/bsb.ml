@@ -12906,54 +12906,6 @@ let output
     
   
 end
-module Bsb_ninja_global_vars
-= struct
-#1 "bsb_ninja_global_vars.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
- 
-
-
-
-
-let src_root_dir = "src_root_dir"
-
-
-
-
-let pp_flags = "pp_flags"
-
-
-let refmt = "refmt"
-
-
-
-
-
-end
 module Bsb_ninja_rule : sig 
 #1 "bsb_ninja_rule.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -13029,7 +12981,7 @@ type command = string
 val make_custom_rules : 
   gentype_config:Bsb_config_types.gentype_config option ->
   has_postbuild:string option ->
-  has_pp:bool ->
+  pp_file:string option ->
   has_builtin:bool -> 
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
   digest:string ->
@@ -13169,7 +13121,7 @@ type builtin = {
 let make_custom_rules 
   ~(gentype_config : Bsb_config_types.gentype_config option)        
   ~(has_postbuild : string option)
-  ~(has_pp : bool)
+  ~(pp_file : string option)
   ~(has_builtin : bool)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
@@ -13233,7 +13185,7 @@ let make_custom_rules
     end ;
     Ext_buffer.contents buf
   in   
-  let mk_ast ~(has_pp : bool) ~has_reason_react_jsx : string =
+  let mk_ast  ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
     Ext_buffer.add_string buf bsc;
     Ext_buffer.add_char_string buf ' ' warnings;  
@@ -13245,8 +13197,12 @@ let make_custom_rules
       Ext_buffer.add_string buf " -bs-refmt ";
       Ext_buffer.add_string buf (Ext_filename.maybe_quote x);
     );
-    if has_pp then
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.pp_flags;
+    (match pp_file with 
+     | None -> ()
+     | Some flag ->
+       Ext_buffer.add_char_string buf ' '
+         (Bsb_build_util.pp_flag flag)
+    );
     (match has_reason_react_jsx, reason_react_jsx with
      | false, _ 
      | _, None -> ()
@@ -13261,11 +13217,11 @@ let make_custom_rules
   in  
   let build_ast =
     define
-      ~command:(mk_ast ~has_pp ~has_reason_react_jsx:false )
+      ~command:(mk_ast ~has_reason_react_jsx:false )
       "ast" in
   let build_ast_from_re =
     define
-      ~command:(mk_ast ~has_pp ~has_reason_react_jsx:true)
+      ~command:(mk_ast  ~has_reason_react_jsx:true)
       "astj" in 
  
   let copy_resources =    
@@ -13868,6 +13824,54 @@ let handle_files_per_dir
     (* pseuduo targets per directory *)
 
 end
+module Bsb_ninja_global_vars
+= struct
+#1 "bsb_ninja_global_vars.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ 
+
+
+
+
+let src_root_dir = "src_root_dir"
+
+
+
+
+
+
+
+let refmt = "refmt"
+
+
+
+
+
+end
 module Bsb_ninja_gen : sig 
 #1 "bsb_ninja_gen.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -14035,11 +14039,6 @@ let output_ninja_and_namespace_map
                         (fun x -> x.package_install_path)) in 
   
   let () = 
-    Ext_option.iter pp_file (fun flag ->
-        Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
-          (Bsb_build_util.pp_flag flag) oc 
-      );
-
     Bsb_ninja_targets.output_kv      
       Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
       oc 
@@ -14081,7 +14080,7 @@ let output_ninja_and_namespace_map
       ~refmt
       ~gentype_config
       ~has_postbuild:js_post_build_cmd 
-      ~has_pp:(pp_file <> None)
+      ~pp_file
       ~has_builtin:(built_in_dependency <> None)
       ~reason_react_jsx
       ~package_specs
