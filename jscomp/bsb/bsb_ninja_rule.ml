@@ -128,6 +128,8 @@ let make_custom_rules
   ~warnings
   ~bs_dep
   ~ppx_flags
+  ~bsc_flags
+  ~dpkg_incls
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -154,12 +156,12 @@ let make_custom_rules
     if is_dev then 
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dev_incls;      
     Ext_buffer.add_ninja_prefix_var buf Bsb_build_schemas.g_lib_incls;
-    if is_dev then
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dpkg_incls;
+    
+    Ext_buffer.add_char_string buf ' ' dpkg_incls;
     if not has_builtin then   
       Ext_buffer.add_string buf " -nostdlib";
     Ext_buffer.add_char_string buf ' ' warnings;  
-    Ext_buffer.add_string buf " $bsc_flags";
+    Ext_buffer.add_char_string buf ' ' bsc_flags;
     if has_gentype then
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.gentypeconfig;
     Ext_buffer.add_string buf " -o $out $in";
@@ -193,8 +195,9 @@ let make_custom_rules
        -> Ext_buffer.add_string buf " -bs-jsx 3"
     );
     
-    Ext_buffer.add_string buf ppx_flags; 
-    Ext_buffer.add_string buf " $bsc_flags -o $out -bs-ast $in";   
+    Ext_buffer.add_char_string buf ' ' ppx_flags; 
+    Ext_buffer.add_char_string buf ' ' bsc_flags;
+    Ext_buffer.add_string buf " -o $out -bs-ast $in";   
     Ext_buffer.contents buf
   in  
   let build_ast =

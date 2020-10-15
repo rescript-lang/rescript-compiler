@@ -126,6 +126,9 @@ let output_ninja_and_namespace_map
   let bsc_flags = (get_bsc_flags bsc_flags) in 
   let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
   let bs_dep = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) in 
+  let dpkg_incls  =  (Bsb_build_util.include_dirs_by
+                        bs_dev_dependencies
+                        (fun x -> x.package_install_path)) in 
   let () = 
     Ext_option.iter pp_file (fun flag ->
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
@@ -136,23 +139,9 @@ let output_ninja_and_namespace_map
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.gentypeconfig
           ("-bs-gentype " ^ x.path) oc
       );    
-    Bsb_ninja_targets.output_kvs
-      [|
-
-        Bsb_ninja_global_vars.src_root_dir, per_proj_dir (* TODO: need check its integrity -- allow relocate or not? *);
-        (* The path to [bsc.exe] independent of config  *)
-
-
-
-        Bsb_ninja_global_vars.bsc_flags,  bsc_flags;
-        
-
-        Bsb_ninja_global_vars.g_dpkg_incls, 
-        (Bsb_build_util.include_dirs_by
-           bs_dev_dependencies
-           (fun x -> x.package_install_path));  
-
-      |] oc 
+    Bsb_ninja_targets.output_kv      
+      Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
+      oc 
   in          
   let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
   let source_dirs : string list Bsb_db.cat = {lib = []; dev = []} in
@@ -204,6 +193,8 @@ let output_ninja_and_namespace_map
       ~warnings
       ~bs_dep
       ~ppx_flags
+      ~bsc_flags
+      ~dpkg_incls
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;

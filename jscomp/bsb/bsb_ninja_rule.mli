@@ -83,6 +83,8 @@ val make_custom_rules :
   warnings:string ->
   bs_dep:string ->
   ppx_flags:string ->
+  bsc_flags:string ->
+  dpkg_incls:string ->
   command Map_string.t ->
   builtin
 

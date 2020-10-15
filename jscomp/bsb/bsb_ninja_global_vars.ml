@@ -31,14 +31,10 @@
 let src_root_dir = "src_root_dir"
 
 
-let bsc_flags = "bsc_flags"
-
 
 
 let pp_flags = "pp_flags"
 
-
-let g_dpkg_incls = "g_dpkg_incls"
 
 let refmt = "refmt"
 

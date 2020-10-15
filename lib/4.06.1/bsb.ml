@@ -12942,14 +12942,10 @@ module Bsb_ninja_global_vars
 let src_root_dir = "src_root_dir"
 
 
-let bsc_flags = "bsc_flags"
-
 
 
 let pp_flags = "pp_flags"
 
-
-let g_dpkg_incls = "g_dpkg_incls"
 
 let refmt = "refmt"
 
@@ -13054,6 +13050,8 @@ val make_custom_rules :
   warnings:string ->
   bs_dep:string ->
   ppx_flags:string ->
+  bsc_flags:string ->
+  dpkg_incls:string ->
   command Map_string.t ->
   builtin
 
@@ -13190,6 +13188,8 @@ let make_custom_rules
   ~warnings
   ~bs_dep
   ~ppx_flags
+  ~bsc_flags
+  ~dpkg_incls
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -13216,12 +13216,12 @@ let make_custom_rules
     if is_dev then 
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dev_incls;      
     Ext_buffer.add_ninja_prefix_var buf Bsb_build_schemas.g_lib_incls;
-    if is_dev then
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dpkg_incls;
+    
+    Ext_buffer.add_char_string buf ' ' dpkg_incls;
     if not has_builtin then   
       Ext_buffer.add_string buf " -nostdlib";
     Ext_buffer.add_char_string buf ' ' warnings;  
-    Ext_buffer.add_string buf " $bsc_flags";
+    Ext_buffer.add_char_string buf ' ' bsc_flags;
     if has_gentype then
       Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.gentypeconfig;
     Ext_buffer.add_string buf " -o $out $in";
@@ -13255,8 +13255,9 @@ let make_custom_rules
        -> Ext_buffer.add_string buf " -bs-jsx 3"
     );
     
-    Ext_buffer.add_string buf ppx_flags; 
-    Ext_buffer.add_string buf " $bsc_flags -o $out -bs-ast $in";   
+    Ext_buffer.add_char_string buf ' ' ppx_flags; 
+    Ext_buffer.add_char_string buf ' ' bsc_flags;
+    Ext_buffer.add_string buf " -o $out -bs-ast $in";   
     Ext_buffer.contents buf
   in  
   let build_ast =
@@ -14032,6 +14033,9 @@ let output_ninja_and_namespace_map
   let bsc_flags = (get_bsc_flags bsc_flags) in 
   let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
   let bs_dep = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) in 
+  let dpkg_incls  =  (Bsb_build_util.include_dirs_by
+                        bs_dev_dependencies
+                        (fun x -> x.package_install_path)) in 
   let () = 
     Ext_option.iter pp_file (fun flag ->
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
@@ -14042,23 +14046,9 @@ let output_ninja_and_namespace_map
         Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.gentypeconfig
           ("-bs-gentype " ^ x.path) oc
       );    
-    Bsb_ninja_targets.output_kvs
-      [|
-
-        Bsb_ninja_global_vars.src_root_dir, per_proj_dir (* TODO: need check its integrity -- allow relocate or not? *);
-        (* The path to [bsc.exe] independent of config  *)
-
-
-
-        Bsb_ninja_global_vars.bsc_flags,  bsc_flags;
-        
-
-        Bsb_ninja_global_vars.g_dpkg_incls, 
-        (Bsb_build_util.include_dirs_by
-           bs_dev_dependencies
-           (fun x -> x.package_install_path));  
-
-      |] oc 
+    Bsb_ninja_targets.output_kv      
+      Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
+      oc 
   in          
   let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
   let source_dirs : string list Bsb_db.cat = {lib = []; dev = []} in
@@ -14110,6 +14100,8 @@ let output_ninja_and_namespace_map
       ~warnings
       ~bs_dep
       ~ppx_flags
+      ~bsc_flags
+      ~dpkg_incls
       generators in   
   emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
   output_static_resources static_resources rules.copy_resources oc ;
