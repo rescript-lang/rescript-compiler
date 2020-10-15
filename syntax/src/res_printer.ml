@@ -2967,7 +2967,6 @@ and printExpression (e : Parsetree.expression) cmtTbl =
   | Pexp_let _ ->
     printExpressionBlock ~braces:true e cmtTbl
   | Pexp_fun (Nolabel, None, {ppat_desc = Ppat_var {txt="__x"}}, ({pexp_desc = Pexp_apply _})) ->
-
     (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
     printExpressionWithComments (ParsetreeViewer.rewriteUnderscoreApply e) cmtTbl
   | Pexp_fun _ | Pexp_newtype _ ->
@@ -3038,7 +3037,15 @@ and printExpression (e : Parsetree.expression) cmtTbl =
         )
     in
     let typConstraintDoc = match typConstraint with
-    | Some(typ) -> Doc.concat [Doc.text ": "; printTypExpr typ cmtTbl]
+    | Some(typ) ->
+      let typDoc =
+        let doc = printTypExpr typ cmtTbl in
+        if Parens.arrowReturnTypExpr typ then
+          addParens doc
+        else
+          doc
+      in
+      Doc.concat [Doc.text ": "; typDoc]
     | _ -> Doc.nil
     in
     let attrs = printAttributes attrs cmtTbl in

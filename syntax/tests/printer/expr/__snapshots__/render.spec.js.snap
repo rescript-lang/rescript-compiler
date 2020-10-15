@@ -2140,6 +2140,18 @@ let f = (~\\\\\\"aria-b\\": string, ~\\\\\\"aria-d\\" as \\\\\\"aria-xyz\\") => 
 }
 
 let f = (type \\\\\\"😎\\", x) => Js.log(x)
+
+let query = (~url, ()): (unit => unit) => {
+  () => Js.log(\\"Queried \\" ++ url)
+}
+
+let query = (~url, ()): ((unit, unit) => unit) => {
+  ((), ()) => Js.log(\\"Queried \\" ++ url)
+}
+
+let query = (~url, ()): ((unit, unit, unit) => unit) => {
+  ((), (), ()) => Js.log(\\"Queried \\" ++ url)
+}
 "
 `;
 

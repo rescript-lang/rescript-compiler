@@ -402,3 +402,7 @@ type kind = Parenthesized | Braced of Location.t | Nothing
   let includeModExpr modExpr = match modExpr.Parsetree.pmod_desc with
   | Parsetree.Pmod_constraint _ -> true
   | _ -> false
+
+let arrowReturnTypExpr typExpr = match typExpr.Parsetree.ptyp_desc with
+  | Parsetree.Ptyp_arrow _ -> true
+  | _ -> false
