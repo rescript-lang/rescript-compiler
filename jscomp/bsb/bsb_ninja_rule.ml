@@ -131,6 +131,7 @@ let make_custom_rules
   ~bsc_flags
   ~dpkg_incls
   ~lib_incls
+  ~dev_incls
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -148,8 +149,9 @@ let make_custom_rules
     Ext_buffer.add_string buf ns_flag;
     if read_cmi = `yes then 
       Ext_buffer.add_string buf " -bs-read-cmi";
+    (* The include order matters below *)
     if is_dev then 
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dev_incls;      
+      Ext_buffer.add_char_string buf ' ' dev_incls;      
     Ext_buffer.add_char_string buf ' ' lib_incls;    
     Ext_buffer.add_char_string buf ' ' dpkg_incls;
     if not has_builtin then   

@@ -169,11 +169,8 @@ let output_ninja_and_namespace_map
        if Map_string.mem lib k  then 
          raise (Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k))
     ) ;
-  if source_dirs.dev <> [] then
-    Bsb_ninja_targets.output_kv 
-      Bsb_ninja_global_vars.g_dev_incls
-      (Bsb_build_util.include_dirs source_dirs.dev) oc
-  ;
+  let dev_incls = 
+      (Bsb_build_util.include_dirs source_dirs.dev) in 
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   let lib_incls = emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace in
   let rules : Bsb_ninja_rule.builtin = 
@@ -193,8 +190,9 @@ let output_ninja_and_namespace_map
       ~bs_dep
       ~ppx_flags
       ~bsc_flags
-      ~dpkg_incls
-      ~lib_incls
+      ~dpkg_incls (* dev dependencies *)
+      ~lib_incls (* its own libs *)
+      ~dev_incls (* its own devs *)
       generators in   
 
   output_static_resources static_resources rules.copy_resources oc ;

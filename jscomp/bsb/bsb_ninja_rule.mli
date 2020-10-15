@@ -86,6 +86,7 @@ val make_custom_rules :
   bsc_flags:string ->  
   dpkg_incls:string ->
   lib_incls:string ->
+  dev_incls:string ->
   command Map_string.t ->
   builtin
 
