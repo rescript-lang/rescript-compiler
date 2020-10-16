@@ -13403,8 +13403,6 @@ val phony  :
   unit
 
 val output_kv : string ->  string -> out_channel -> unit 
-val output_kvs : (string * string) array -> out_channel -> unit
-
 
 end = struct
 #1 "bsb_ninja_targets.ml"
@@ -13486,9 +13484,6 @@ let output_kv key value oc  =
   output_string oc " = ";
   output_string oc value ;
   output_string oc "\n"
-
-let output_kvs kvs oc =
-  Ext_array.iter kvs (fun (k,v) -> if v <> "" then output_kv k v oc) 
 
 
 

@@ -49,5 +49,3 @@ val phony  :
   unit
 
 val output_kv : string ->  string -> out_channel -> unit 
-val output_kvs : (string * string) array -> out_channel -> unit
-
