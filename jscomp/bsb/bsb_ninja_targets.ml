@@ -25,33 +25,10 @@
 
 
 
-type override = 
-  | Append of string 
-  | AppendList of string list
-  (* Append s 
-     s
-  *)
-  | AppendVar of string 
-  (* AppendVar s 
-     $s
-  *)
-  | Overwrite of string 
-
-  | OverwriteVar of string 
-    (*
-      OverwriteVar s 
-      $s
-    *)
-  | OverwriteVars of string list
-
-type shadow = 
-  { key : string ; op : override }
-
 let output_build
     ?(order_only_deps=[])
     ?(implicit_deps=[])
     ?(implicit_outputs=[])
-    ?(shadows=([] : shadow list))
     ~outputs
     ~inputs
     ~rule
@@ -78,52 +55,7 @@ let output_build
       Ext_list.iter order_only_deps (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
     end
   ;
-  output_string oc "\n";
-  if shadows <> [] then begin 
-    Ext_list.iter shadows (fun {key=k; op= v} ->
-        output_string oc "  " ;
-        output_string oc k ;
-        output_string oc " = ";
-        match v with
-        | Overwrite s -> 
-          output_string oc s ; 
-          output_string oc "\n"
-        | OverwriteVar s ->
-          output_string oc "$";
-          output_string oc s ; 
-          output_string oc "\n"
-        | OverwriteVars s ->  
-          Ext_list.iter s (fun s ->
-              output_string oc "$";
-              output_string oc s ; 
-              output_string oc Ext_string.single_space
-            );
-          output_string oc "\n"
-        | AppendList ls -> 
-          output_string oc "$" ;
-          output_string oc k;
-          Ext_list.iter ls
-            (fun s ->
-               output_string oc Ext_string.single_space;
-               output_string oc s 
-            ) ;
-          output_string oc "\n"
-        | Append s ->
-          output_string oc "$" ;
-          output_string oc k;
-          output_string oc Ext_string.single_space;
-          output_string oc s ; output_string oc "\n"
-        | AppendVar s ->   
-          output_string oc "$" ;
-          output_string oc k;
-          output_string oc Ext_string.single_space;
-          output_string oc "$";
-          output_string oc s ; 
-          output_string oc "\n"
-      ) 
-  end
-
-
+  output_string oc "\n"
 
 let phony ?(order_only_deps=[]) ~inputs ~output oc =
   output_string oc "o ";
