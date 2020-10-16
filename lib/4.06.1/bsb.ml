@@ -1925,7 +1925,7 @@ let export_all = "all"
 let export_none = "none"
 
 
-let g_lib_incls = "g_lib_incls"
+
 let use_stdlib = "use-stdlib"
 let reason = "reason"
 let react_jsx = "react-jsx"
@@ -4943,6 +4943,51 @@ let is_empty (x : file_group) =
   x.resources = [] &&
   x.generators = []    
 end
+module Bsb_ninja_global_vars
+= struct
+#1 "bsb_ninja_global_vars.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ 
+
+
+(* Invariant: the two string literal has 
+  to be "a" and "$a"
+*)
+
+let src_root_dir = "g_root"
+
+let lazy_src_root_dir = "$g_root" 
+
+
+
+
+
+
+end
 module Ext_module_system
 = struct
 #1 "ext_module_system.ml"
@@ -5919,8 +5964,7 @@ let rev_lib_bs_prefix p = rev_lib_bs // p
 
 let ocaml_bin_install_prefix p = lib_ocaml // p
 
-let lazy_src_root_dir = "$src_root_dir" 
-let proj_rel path = lazy_src_root_dir // path
+let proj_rel path = Bsb_ninja_global_vars.lazy_src_root_dir // path
 
 (** it may not be a bad idea to hard code the binary path 
     of bsb in configuration time
@@ -12906,67 +12950,6 @@ let output
     
   
 end
-module Bsb_ninja_global_vars
-= struct
-#1 "bsb_ninja_global_vars.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
- 
-let g_pkg_flg = "g_pkg_flg"
-
-let bsc = "bsc" 
-
-let src_root_dir = "src_root_dir"
-let bsdep = "bsdep"
-
-let bsc_flags = "bsc_flags"
-
-let ppx_flags = "ppx_flags"
-
-let pp_flags = "pp_flags"
-
-
-let g_dpkg_incls = "g_dpkg_incls"
-
-let refmt = "refmt"
-
-let refmt_flags = "refmt_flags"
-
-let postbuild = "postbuild"
-
-
-
-let warnings = "warnings"
-
-let gentypeconfig = "gentypeconfig"
-
-let g_dev_incls = "g_dev_incls"
-
-
-end
 module Bsb_ninja_rule : sig 
 #1 "bsb_ninja_rule.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -13040,16 +13023,24 @@ type command = string
     we must make sure it is re-entrant
 *)
 val make_custom_rules : 
-  has_gentype:bool ->
+  gentype_config:Bsb_config_types.gentype_config option ->
   has_postbuild:string option ->
-  has_ppx:bool ->
-  has_pp:bool ->
+  pp_file:string option ->
   has_builtin:bool -> 
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
   digest:string ->
   refmt:string option ->
   package_specs:Bsb_package_specs.t ->
   namespace:string option ->
+  package_name:string ->
+  bsc:string ->
+  warnings:string ->
+  bs_dep:string ->
+  ppx_flags:string ->
+  bsc_flags:string ->  
+  dpkg_incls:string ->
+  lib_incls:string ->
+  dev_incls:string ->
   command Map_string.t ->
   builtin
 
@@ -13172,16 +13163,24 @@ type builtin = {
 ;;
 
 let make_custom_rules 
-  ~(has_gentype : bool)        
+  ~(gentype_config : Bsb_config_types.gentype_config option)        
   ~(has_postbuild : string option)
-  ~(has_ppx : bool)
-  ~(has_pp : bool)
+  ~(pp_file : string option)
   ~(has_builtin : bool)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
   ~(package_specs: Bsb_package_specs.t)
   ~namespace
+  ~package_name
+  ~bsc
+  ~warnings
+  ~bs_dep
+  ~ppx_flags
+  ~bsc_flags
+  ~dpkg_incls
+  ~lib_incls
+  ~dev_incls
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -13195,25 +13194,31 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
-    Ext_buffer.add_string buf "$bsc";
-    
+    Ext_buffer.add_string buf bsc;    
     Ext_buffer.add_string buf ns_flag;
-    if read_cmi <> `is_cmi then begin 
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
-      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
-    end;
     if read_cmi = `yes then 
       Ext_buffer.add_string buf " -bs-read-cmi";
+    (* The include order matters below *)
     if is_dev then 
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dev_incls;      
-    Ext_buffer.add_ninja_prefix_var buf Bsb_build_schemas.g_lib_incls;
-    if is_dev then
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dpkg_incls;
+      Ext_buffer.add_char_string buf ' ' dev_incls;      
+    Ext_buffer.add_char_string buf ' ' lib_incls; 
+    if is_dev then    
+      Ext_buffer.add_char_string buf ' ' dpkg_incls;
     if not has_builtin then   
       Ext_buffer.add_string buf " -nostdlib";
-    Ext_buffer.add_string buf " $warnings $bsc_flags";
-    if has_gentype then
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.gentypeconfig;
+    Ext_buffer.add_char_string buf ' ' warnings;  
+    Ext_buffer.add_char_string buf ' ' bsc_flags;
+    begin match gentype_config with 
+      | None -> ()
+      | Some x ->
+        Ext_buffer.add_string buf " -bs-gentype " ;
+        Ext_buffer.add_string buf x.path
+    end;
+    if read_cmi <> `is_cmi then begin 
+      Ext_buffer.add_string buf " -bs-package-name ";
+      Ext_buffer.add_string buf package_name;
+      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
+    end;
     Ext_buffer.add_string buf " -o $out $in";
     begin match postbuild with 
     | None -> ()
@@ -13224,9 +13229,11 @@ let make_custom_rules
     end ;
     Ext_buffer.contents buf
   in   
-  let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
+  let mk_ast  ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
-    Ext_buffer.add_string buf "$bsc  $warnings -bs-v ";
+    Ext_buffer.add_string buf bsc;
+    Ext_buffer.add_char_string buf ' ' warnings;  
+    Ext_buffer.add_string buf " -bs-v ";
     Ext_buffer.add_string buf Bs_version.version;
     (match refmt with 
     | None -> ()
@@ -13234,26 +13241,31 @@ let make_custom_rules
       Ext_buffer.add_string buf " -bs-refmt ";
       Ext_buffer.add_string buf (Ext_filename.maybe_quote x);
     );
-    if has_pp then
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.pp_flags;
+    (match pp_file with 
+     | None -> ()
+     | Some flag ->
+       Ext_buffer.add_char_string buf ' '
+         (Bsb_build_util.pp_flag flag)
+    );
     (match has_reason_react_jsx, reason_react_jsx with
      | false, _ 
      | _, None -> ()
      | _, Some Jsx_v3 
        -> Ext_buffer.add_string buf " -bs-jsx 3"
     );
-    if has_ppx then 
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.ppx_flags; 
-    Ext_buffer.add_string buf " $bsc_flags -o $out -bs-ast $in";   
+    
+    Ext_buffer.add_char_string buf ' ' ppx_flags; 
+    Ext_buffer.add_char_string buf ' ' bsc_flags;
+    Ext_buffer.add_string buf " -bs-ast -o $out $in";   
     Ext_buffer.contents buf
   in  
   let build_ast =
     define
-      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:false )
+      ~command:(mk_ast ~has_reason_react_jsx:false )
       "ast" in
   let build_ast_from_re =
     define
-      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:true)
+      ~command:(mk_ast  ~has_reason_react_jsx:true)
       "astj" in 
  
   let copy_resources =    
@@ -13269,13 +13281,13 @@ let make_custom_rules
     define
       ~restat:()
       ~command:
-      ("$bsdep -hash " ^ digest ^ ns_flag ^ " $in")
+      (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
       "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
-      ("$bsdep -g -hash " ^ digest ^ ns_flag ^ " $in")
+      (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $in")
       "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define
@@ -13293,7 +13305,7 @@ let make_custom_rules
       ~restat:() (* Always restat when having mli *)
       (name ^ "_dev")
   in 
-  (* [g_lib_incls] are fixed for libs *)
+
   let mj, mj_dev =
     aux ~name:"mj" ~read_cmi:`yes ~postbuild:has_postbuild in   
   let mij, mij_dev =
@@ -13306,7 +13318,7 @@ let make_custom_rules
       ~name:"mi" in 
   let build_package = 
     define
-      ~command:"$bsc -w -49 -color always -no-alias-deps  $in"
+      ~command:(bsc ^ " -w -49 -color always -no-alias-deps  $in")
       ~restat:()
       "build_package"
   in 
@@ -13940,8 +13952,7 @@ let emit_bsc_lib_includes
     (bs_dependencies : Bsb_config_types.dependencies)
   (source_dirs : string list) 
   (external_includes) 
-  (namespace : _ option)
-  (oc : out_channel): unit = 
+  (namespace : _ option): string = 
   (* TODO: bsc_flags contain stdlib path which is in the latter position currently *)
   let all_includes source_dirs  = 
     source_dirs @
@@ -13957,14 +13968,13 @@ let emit_bsc_lib_includes
         (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
     )
   in 
-  Bsb_ninja_targets.output_kv
-    Bsb_build_schemas.g_lib_incls 
-    (Bsb_build_util.include_dirs 
-       (all_includes 
-          (if namespace = None then source_dirs 
-           else Filename.current_dir_name :: source_dirs
-           (*working dir is [lib/bs] we include this path to have namespace mapping*)
-          )))  oc 
+
+  (Bsb_build_util.include_dirs 
+     (all_includes 
+        (if namespace = None then source_dirs 
+         else Filename.current_dir_name :: source_dirs
+         (*working dir is [lib/bs] we include this path to have namespace mapping*)
+        )))
 
 
 let output_static_resources 
@@ -14016,39 +14026,18 @@ let output_ninja_and_namespace_map
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
-  let g_pkg_flg  =     
-      Ext_string.inter2 "-bs-package-name" package_name
-  in  
   let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
+  let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
+  let bs_dep = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) in 
+  let dpkg_incls  =  (Bsb_build_util.include_dirs_by
+                        bs_dev_dependencies
+                        (fun x -> x.package_install_path)) in 
+  
   let () = 
-    Ext_option.iter pp_file (fun flag ->
-        Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
-          (Bsb_build_util.pp_flag flag) oc 
-      );
-    Ext_option.iter gentype_config (fun x -> 
-        (* resolved earlier *)
-        Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.gentypeconfig
-          ("-bs-gentype " ^ x.path) oc
-      );    
-    Bsb_ninja_targets.output_kvs
-      [|
-        Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
-        Bsb_ninja_global_vars.src_root_dir, per_proj_dir (* TODO: need check its integrity -- allow relocate or not? *);
-        (* The path to [bsc.exe] independent of config  *)
-        Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
-        (* The path to [bsb_heler.exe] *)
-        Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
-        Bsb_ninja_global_vars.warnings, warnings;
-        Bsb_ninja_global_vars.bsc_flags,  bsc_flags;
-        Bsb_ninja_global_vars.ppx_flags, ppx_flags;
-
-        Bsb_ninja_global_vars.g_dpkg_incls, 
-        (Bsb_build_util.include_dirs_by
-           bs_dev_dependencies
-           (fun x -> x.package_install_path));  
-
-      |] oc 
+    Bsb_ninja_targets.output_kv      
+      Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
+      oc 
   in          
   let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
   let source_dirs : string list Bsb_db.cat = {lib = []; dev = []} in
@@ -14078,26 +14067,32 @@ let output_ninja_and_namespace_map
        if Map_string.mem lib k  then 
          raise (Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k))
     ) ;
-  if source_dirs.dev <> [] then
-    Bsb_ninja_targets.output_kv 
-      Bsb_ninja_global_vars.g_dev_incls
-      (Bsb_build_util.include_dirs source_dirs.dev) oc
-  ;
+  let dev_incls = 
+      (Bsb_build_util.include_dirs source_dirs.dev) in 
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
+  let lib_incls = emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace in
   let rules : Bsb_ninja_rule.builtin = 
       Bsb_ninja_rule.make_custom_rules 
       ~refmt
-      ~has_gentype:(gentype_config <> None)
+      ~gentype_config
       ~has_postbuild:js_post_build_cmd 
-      ~has_ppx:(ppx_files <> [])
-      ~has_pp:(pp_file <> None)
+      ~pp_file
       ~has_builtin:(built_in_dependency <> None)
       ~reason_react_jsx
       ~package_specs
       ~namespace
       ~digest
+      ~package_name
+      ~bsc:bsc_path
+      ~warnings
+      ~bs_dep
+      ~ppx_flags
+      ~bsc_flags
+      ~dpkg_incls (* dev dependencies *)
+      ~lib_incls (* its own libs *)
+      ~dev_incls (* its own devs *)
       generators in   
-  emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
+
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 

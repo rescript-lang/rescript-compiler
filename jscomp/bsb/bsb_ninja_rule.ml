@@ -114,16 +114,24 @@ type builtin = {
 ;;
 
 let make_custom_rules 
-  ~(has_gentype : bool)        
+  ~(gentype_config : Bsb_config_types.gentype_config option)        
   ~(has_postbuild : string option)
-  ~(has_ppx : bool)
-  ~(has_pp : bool)
+  ~(pp_file : string option)
   ~(has_builtin : bool)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
   ~(package_specs: Bsb_package_specs.t)
   ~namespace
+  ~package_name
+  ~bsc
+  ~warnings
+  ~bs_dep
+  ~ppx_flags
+  ~bsc_flags
+  ~dpkg_incls
+  ~lib_incls
+  ~dev_incls
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -137,25 +145,31 @@ let make_custom_rules
       ~is_dev 
       ~postbuild : string =     
     Ext_buffer.clear buf;
-    Ext_buffer.add_string buf "$bsc";
-    
+    Ext_buffer.add_string buf bsc;    
     Ext_buffer.add_string buf ns_flag;
-    if read_cmi <> `is_cmi then begin 
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_pkg_flg;
-      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
-    end;
     if read_cmi = `yes then 
       Ext_buffer.add_string buf " -bs-read-cmi";
+    (* The include order matters below *)
     if is_dev then 
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dev_incls;      
-    Ext_buffer.add_ninja_prefix_var buf Bsb_build_schemas.g_lib_incls;
-    if is_dev then
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_dpkg_incls;
+      Ext_buffer.add_char_string buf ' ' dev_incls;      
+    Ext_buffer.add_char_string buf ' ' lib_incls; 
+    if is_dev then    
+      Ext_buffer.add_char_string buf ' ' dpkg_incls;
     if not has_builtin then   
       Ext_buffer.add_string buf " -nostdlib";
-    Ext_buffer.add_string buf " $warnings $bsc_flags";
-    if has_gentype then
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.gentypeconfig;
+    Ext_buffer.add_char_string buf ' ' warnings;  
+    Ext_buffer.add_char_string buf ' ' bsc_flags;
+    begin match gentype_config with 
+      | None -> ()
+      | Some x ->
+        Ext_buffer.add_string buf " -bs-gentype " ;
+        Ext_buffer.add_string buf x.path
+    end;
+    if read_cmi <> `is_cmi then begin 
+      Ext_buffer.add_string buf " -bs-package-name ";
+      Ext_buffer.add_string buf package_name;
+      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
+    end;
     Ext_buffer.add_string buf " -o $out $in";
     begin match postbuild with 
     | None -> ()
@@ -166,9 +180,11 @@ let make_custom_rules
     end ;
     Ext_buffer.contents buf
   in   
-  let mk_ast ~(has_pp : bool) ~has_ppx ~has_reason_react_jsx : string =
+  let mk_ast  ~has_reason_react_jsx : string =
     Ext_buffer.clear buf ; 
-    Ext_buffer.add_string buf "$bsc  $warnings -bs-v ";
+    Ext_buffer.add_string buf bsc;
+    Ext_buffer.add_char_string buf ' ' warnings;  
+    Ext_buffer.add_string buf " -bs-v ";
     Ext_buffer.add_string buf Bs_version.version;
     (match refmt with 
     | None -> ()
@@ -176,26 +192,31 @@ let make_custom_rules
       Ext_buffer.add_string buf " -bs-refmt ";
       Ext_buffer.add_string buf (Ext_filename.maybe_quote x);
     );
-    if has_pp then
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.pp_flags;
+    (match pp_file with 
+     | None -> ()
+     | Some flag ->
+       Ext_buffer.add_char_string buf ' '
+         (Bsb_build_util.pp_flag flag)
+    );
     (match has_reason_react_jsx, reason_react_jsx with
      | false, _ 
      | _, None -> ()
      | _, Some Jsx_v3 
        -> Ext_buffer.add_string buf " -bs-jsx 3"
     );
-    if has_ppx then 
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.ppx_flags; 
-    Ext_buffer.add_string buf " $bsc_flags -o $out -bs-ast $in";   
+    
+    Ext_buffer.add_char_string buf ' ' ppx_flags; 
+    Ext_buffer.add_char_string buf ' ' bsc_flags;
+    Ext_buffer.add_string buf " -bs-ast -o $out $in";   
     Ext_buffer.contents buf
   in  
   let build_ast =
     define
-      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:false )
+      ~command:(mk_ast ~has_reason_react_jsx:false )
       "ast" in
   let build_ast_from_re =
     define
-      ~command:(mk_ast ~has_pp ~has_ppx ~has_reason_react_jsx:true)
+      ~command:(mk_ast  ~has_reason_react_jsx:true)
       "astj" in 
  
   let copy_resources =    
@@ -211,13 +232,13 @@ let make_custom_rules
     define
       ~restat:()
       ~command:
-      ("$bsdep -hash " ^ digest ^ ns_flag ^ " $in")
+      (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
       "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
-      ("$bsdep -g -hash " ^ digest ^ ns_flag ^ " $in")
+      (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $in")
       "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define
@@ -235,7 +256,7 @@ let make_custom_rules
       ~restat:() (* Always restat when having mli *)
       (name ^ "_dev")
   in 
-  (* [g_lib_incls] are fixed for libs *)
+
   let mj, mj_dev =
     aux ~name:"mj" ~read_cmi:`yes ~postbuild:has_postbuild in   
   let mij, mij_dev =
@@ -248,7 +269,7 @@ let make_custom_rules
       ~name:"mi" in 
   let build_package = 
     define
-      ~command:"$bsc -w -49 -color always -no-alias-deps  $in"
+      ~command:(bsc ^ " -w -49 -color always -no-alias-deps  $in")
       ~restat:()
       "build_package"
   in 

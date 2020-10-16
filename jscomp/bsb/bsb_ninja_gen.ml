@@ -46,8 +46,7 @@ let emit_bsc_lib_includes
     (bs_dependencies : Bsb_config_types.dependencies)
   (source_dirs : string list) 
   (external_includes) 
-  (namespace : _ option)
-  (oc : out_channel): unit = 
+  (namespace : _ option): string = 
   (* TODO: bsc_flags contain stdlib path which is in the latter position currently *)
   let all_includes source_dirs  = 
     source_dirs @
@@ -63,14 +62,13 @@ let emit_bsc_lib_includes
         (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
     )
   in 
-  Bsb_ninja_targets.output_kv
-    Bsb_build_schemas.g_lib_incls 
-    (Bsb_build_util.include_dirs 
-       (all_includes 
-          (if namespace = None then source_dirs 
-           else Filename.current_dir_name :: source_dirs
-           (*working dir is [lib/bs] we include this path to have namespace mapping*)
-          )))  oc 
+
+  (Bsb_build_util.include_dirs 
+     (all_includes 
+        (if namespace = None then source_dirs 
+         else Filename.current_dir_name :: source_dirs
+         (*working dir is [lib/bs] we include this path to have namespace mapping*)
+        )))
 
 
 let output_static_resources 
@@ -122,39 +120,18 @@ let output_ninja_and_namespace_map
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
-  let g_pkg_flg  =     
-      Ext_string.inter2 "-bs-package-name" package_name
-  in  
   let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
+  let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
+  let bs_dep = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) in 
+  let dpkg_incls  =  (Bsb_build_util.include_dirs_by
+                        bs_dev_dependencies
+                        (fun x -> x.package_install_path)) in 
+  
   let () = 
-    Ext_option.iter pp_file (fun flag ->
-        Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.pp_flags
-          (Bsb_build_util.pp_flag flag) oc 
-      );
-    Ext_option.iter gentype_config (fun x -> 
-        (* resolved earlier *)
-        Bsb_ninja_targets.output_kv Bsb_ninja_global_vars.gentypeconfig
-          ("-bs-gentype " ^ x.path) oc
-      );    
-    Bsb_ninja_targets.output_kvs
-      [|
-        Bsb_ninja_global_vars.g_pkg_flg, g_pkg_flg ; 
-        Bsb_ninja_global_vars.src_root_dir, per_proj_dir (* TODO: need check its integrity -- allow relocate or not? *);
-        (* The path to [bsc.exe] independent of config  *)
-        Bsb_ninja_global_vars.bsc, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc);
-        (* The path to [bsb_heler.exe] *)
-        Bsb_ninja_global_vars.bsdep, (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) ;
-        Bsb_ninja_global_vars.warnings, warnings;
-        Bsb_ninja_global_vars.bsc_flags,  bsc_flags;
-        Bsb_ninja_global_vars.ppx_flags, ppx_flags;
-
-        Bsb_ninja_global_vars.g_dpkg_incls, 
-        (Bsb_build_util.include_dirs_by
-           bs_dev_dependencies
-           (fun x -> x.package_install_path));  
-
-      |] oc 
+    Bsb_ninja_targets.output_kv      
+      Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
+      oc 
   in          
   let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
   let source_dirs : string list Bsb_db.cat = {lib = []; dev = []} in
@@ -184,26 +161,32 @@ let output_ninja_and_namespace_map
        if Map_string.mem lib k  then 
          raise (Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k))
     ) ;
-  if source_dirs.dev <> [] then
-    Bsb_ninja_targets.output_kv 
-      Bsb_ninja_global_vars.g_dev_incls
-      (Bsb_build_util.include_dirs source_dirs.dev) oc
-  ;
+  let dev_incls = 
+      (Bsb_build_util.include_dirs source_dirs.dev) in 
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
+  let lib_incls = emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace in
   let rules : Bsb_ninja_rule.builtin = 
       Bsb_ninja_rule.make_custom_rules 
       ~refmt
-      ~has_gentype:(gentype_config <> None)
+      ~gentype_config
       ~has_postbuild:js_post_build_cmd 
-      ~has_ppx:(ppx_files <> [])
-      ~has_pp:(pp_file <> None)
+      ~pp_file
       ~has_builtin:(built_in_dependency <> None)
       ~reason_react_jsx
       ~package_specs
       ~namespace
       ~digest
+      ~package_name
+      ~bsc:bsc_path
+      ~warnings
+      ~bs_dep
+      ~ppx_flags
+      ~bsc_flags
+      ~dpkg_incls (* dev dependencies *)
+      ~lib_incls (* its own libs *)
+      ~dev_incls (* its own devs *)
       generators in   
-  emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace oc;
+
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 
