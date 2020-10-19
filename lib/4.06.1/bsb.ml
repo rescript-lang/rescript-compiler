@@ -13637,30 +13637,21 @@ let handle_generators oc
 
 type suffixes = {
   impl : string;
-  intf : string ; 
-  impl_ast : string;
-  intf_ast : string;  
+  intf : string   
 }
 
 let re_suffixes = {
   impl  = Literals.suffix_re;
   intf = Literals.suffix_rei;
-  impl_ast = Literals.suffix_ast;
-  intf_ast = Literals.suffix_iast;
-
 }
 
 let ml_suffixes = {
   impl = Literals.suffix_ml;
   intf = Literals.suffix_mli;
-  impl_ast = Literals.suffix_ast;
-  intf_ast = Literals.suffix_iast
 }
 let res_suffixes = {
   impl = Literals.suffix_res;
   intf = Literals.suffix_resi;
-  impl_ast = Literals.suffix_ast;
-  intf_ast = Literals.suffix_iast
 }
 let emit_module_build
     (rules : Bsb_ninja_rule.builtin)  
@@ -13680,8 +13671,8 @@ let emit_module_build
   let filename_sans_extension = module_info.name_sans_extension in 
   let input_impl = Bsb_config.proj_rel (filename_sans_extension ^ config.impl ) in
   let input_intf = Bsb_config.proj_rel (filename_sans_extension ^ config.intf) in
-  let output_mlast = filename_sans_extension  ^ config.impl_ast in
-  let output_mliast = filename_sans_extension  ^ config.intf_ast in
+  let output_ast = filename_sans_extension  ^ Literals.suffix_ast in
+  let output_iast = filename_sans_extension  ^ Literals.suffix_iast in
   let output_d = filename_sans_extension ^ Literals.suffix_d in
   let output_filename_sans_extension =  
       Ext_namespace_encode.make ?ns:namespace filename_sans_extension
@@ -13692,18 +13683,18 @@ let emit_module_build
     Bsb_package_specs.get_list_of_output_js package_specs output_filename_sans_extension in 
   
   Bsb_ninja_targets.output_build oc
-    ~outputs:[output_mlast]
+    ~outputs:[output_ast]
     ~inputs:[input_impl]
     ~rule:ast_rule;
   Bsb_ninja_targets.output_build
     oc
     ~outputs:[output_d]
-    ~inputs:(if has_intf_file then [output_mlast;output_mliast] else [output_mlast] )
+    ~inputs:(if has_intf_file then [output_ast;output_iast] else [output_ast] )
     ~rule:(if is_dev then rules.build_bin_deps_dev else rules.build_bin_deps)
   ;  
   if has_intf_file then begin           
     Bsb_ninja_targets.output_build oc
-      ~outputs:[output_mliast]
+      ~outputs:[output_iast]
       (* TODO: we can get rid of absloute path if we fixed the location to be 
           [lib/bs], better for testing?
       *)
@@ -13713,7 +13704,7 @@ let emit_module_build
     Bsb_ninja_targets.output_build oc
       ~outputs:[output_cmi]
       ~order_only_deps:[output_d]
-      ~inputs:[output_mliast]
+      ~inputs:[output_iast]
       ~rule:(if is_dev then rules.mi_dev else rules.mi)
     ;
   end;
@@ -13730,7 +13721,7 @@ let emit_module_build
     ~outputs:[output_cmj]
     ~implicit_outputs:  
       (if has_intf_file then output_js else output_cmi::output_js )
-    ~inputs:[output_mlast]
+    ~inputs:[output_ast]
     ~implicit_deps:(if has_intf_file then [output_cmi] else [] )
     ~order_only_deps:[output_d]
     ~rule
