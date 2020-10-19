@@ -62,7 +62,7 @@ let after_parsing_sig ppf  outputprefix ast  =
       Binary_ast.write_ast
         Mli
         ~sourcefile
-        ~output:(outputprefix ^ Filename.extension sourcefile ^ "ast")
+        ~output:(outputprefix ^  Literals.suffix_iast)
         (* to support relocate to another directory *)
         ast 
 
@@ -111,9 +111,9 @@ let interface ~parser ppf fname outputprefix =
   |> print_if_pipe ppf Clflags.dump_source Pprintast.signature 
   |> after_parsing_sig ppf  outputprefix 
 
-let interface_mliast ppf fname outputprefix  = 
+let interface_mliast ppf fname outputprefix  setup = 
   Res_compmisc.init_path ();
-  Binary_ast.read_ast Mli fname 
+  Binary_ast.read_ast_exn ~fname Mli  setup
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.interface
   |> print_if_pipe ppf Clflags.dump_source Pprintast.signature 
   |> after_parsing_sig ppf  outputprefix 
@@ -163,7 +163,7 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
   if !Js_config.binary_ast then begin 
     let sourcefile = !Location.input_name in 
     Binary_ast.write_ast ~sourcefile
-      Ml ~output:(outputprefix ^ Filename.extension sourcefile ^ "ast")
+      Ml ~output:(outputprefix ^ Literals.suffix_ast)
       ast
   end ;
   if !Js_config.syntax_only then 
@@ -205,9 +205,9 @@ let implementation ~parser ppf fname outputprefix  =
   |> print_if_pipe ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf outputprefix 
 
-let implementation_mlast ppf fname outputprefix = 
+let implementation_mlast ppf fname outputprefix setup = 
   Res_compmisc.init_path ();
-  Binary_ast.read_ast Ml fname
+  Binary_ast.read_ast_exn ~fname Ml  setup
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.implementation
   |> print_if_pipe ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf  outputprefix 

@@ -8321,17 +8321,6 @@ val write_ast :
 
 val magic_of_kind : 'a kind -> string   
 
-val read_my_ast : 
-  'a kind ->
-  in_channel ->
-   'a
-
-val write_my_ast : 
-  'a kind -> 
-   string -> 
-   'a -> 
-   out_channel -> 
-   unit
 
 end = struct
 #1 "ml_binary.ml"
@@ -8392,16 +8381,6 @@ let magic_of_kind : type a . a kind -> string = function
   | Mli -> Config.ast_intf_magic_number
 
 
-let read_my_ast (type t ) (_ : t  kind) ic : t  =
-  Location.set_input_name (input_line ic);
-  input_value ic 
-
-let write_my_ast (type t) ( _ : t kind)
-    (fname : string)
-    (pt : t) oc = 
-  output_string oc fname;
-  output_char oc '\n';
-  output_value oc pt
 
 end
 module Ast_extract : sig 
@@ -10891,18 +10870,12 @@ let suffix_re = ".re"
 let suffix_rei = ".rei"
 let suffix_res = ".res"
 let suffix_resi = ".resi"
-let suffix_resast = ".resast"
-let suffix_resiast = ".resiast"
 let suffix_mlmap = ".mlmap"
 
 let suffix_cmt = ".cmt"
 let suffix_cmti = ".cmti"
-let suffix_mlast = ".mlast"
-let suffix_mlast_simple = ".mlast_simple"
-let suffix_mliast = ".mliast"
-let suffix_reast = ".reast"
-let suffix_reiast = ".reiast"
-let suffix_mliast_simple = ".mliast_simple"
+let suffix_ast = ".ast"
+let suffix_iast = ".iast"
 let suffix_d = ".d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"

@@ -26,19 +26,26 @@
  (** Synced up with module {!Bsb_helper_depfile_gen} *)
 module Set_string = Ast_extract.Set_string
 
+type 'a kind = 'a Ml_binary.kind =
+  | Ml : Parsetree.structure kind 
+  | Mli : Parsetree.signature kind
 
 
-let read_ast (type t ) (kind : t  Ml_binary.kind) fn : t  =
-  let ic = open_in_bin fn in
-  try
-    let dep_size = input_binary_int ic in 
-    seek_in  ic (pos_in ic + dep_size) ; 
-    let ast = Ml_binary.read_my_ast kind ic in 
-    close_in ic;
-    ast
-  with exn ->
-    close_in ic;
-    raise exn
+let read_ast_exn (type t ) ~fname (_ : t  kind) setup : t  =
+  let ic = open_in_bin fname in
+  let dep_size = input_binary_int ic in 
+  seek_in  ic (pos_in ic + dep_size) ; 
+  let sourcefile = (input_line ic) in
+  Location.set_input_name sourcefile;
+  let ast = input_value ic in
+  close_in ic;
+  begin match Ext_file_extensions.classify_input 
+                (Ext_filename.get_extension_maybe sourcefile) with 
+  | Re | Rei -> setup `reason   
+  | Res | Resi -> setup `rescript 
+  | _ -> ()
+  end;
+  ast
 
 let magic_sep_char = '\n'
 (*
@@ -46,7 +53,7 @@ let magic_sep_char = '\n'
    1. for performance , easy skipping and calcuate the length 
    2. cut dependency, otherwise its type is {!Ast_extract.Set_string.t}
 *)      
-let write_ast (type t) ~(sourcefile : string) ~output (kind : t Ml_binary.kind) ( pt : t) : unit =
+let write_ast (type t) ~(sourcefile : string) ~output (kind : t kind) ( pt : t) : unit =
   let oc = open_out_bin output in 
   let output_set = Ast_extract.read_parse_and_extract kind pt in
   let buf = Ext_buffer.create 1000 in
@@ -59,6 +66,8 @@ let write_ast (type t) ~(sourcefile : string) ~output (kind : t Ml_binary.kind) 
     ) output_set ;  
   output_binary_int oc (Ext_buffer.length buf);  
   Ext_buffer.output_buffer oc buf;
-  Ml_binary.write_my_ast kind sourcefile pt oc;
+  output_string oc sourcefile;
+  output_char oc '\n';
+  output_value oc pt;
   close_out oc 
 

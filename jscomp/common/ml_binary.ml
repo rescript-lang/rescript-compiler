@@ -55,13 +55,3 @@ let magic_of_kind : type a . a kind -> string = function
   | Mli -> Config.ast_intf_magic_number
 
 
-let read_my_ast (type t ) (_ : t  kind) ic : t  =
-  Location.set_input_name (input_line ic);
-  input_value ic 
-
-let write_my_ast (type t) ( _ : t kind)
-    (fname : string)
-    (pt : t) oc = 
-  output_string oc fname;
-  output_char oc '\n';
-  output_value oc pt

@@ -23,7 +23,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val read_ast : 'a Ml_binary.kind -> string -> 'a 
+type _ kind = 
+  | Ml : Parsetree.structure kind 
+  | Mli : Parsetree.signature kind
+
+val read_ast_exn : 
+  fname:string -> 
+  'a kind ->  
+  ([`ml | `rescript | `reason ] -> unit) ->
+  'a 
 
 
 val magic_sep_char : char
@@ -43,5 +51,10 @@ val magic_sep_char : char
    Use case cat - | fan -printer -impl -
    redirect the standard input to fan
  *)
-val write_ast : sourcefile:string -> output:string -> 'a Ml_binary.kind -> 'a -> unit
+val write_ast : 
+  sourcefile:string -> 
+  output:string -> 
+  'a kind -> 
+  'a -> 
+  unit
 
