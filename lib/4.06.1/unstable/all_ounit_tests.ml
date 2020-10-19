@@ -6088,6 +6088,8 @@ let suffix_mlmap = ".mlmap"
 
 let suffix_cmt = ".cmt"
 let suffix_cmti = ".cmti"
+let suffix_ast = ".ast"
+let suffix_iast = ".iast"
 let suffix_mlast = ".mlast"
 let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
@@ -8541,17 +8543,6 @@ val write_ast :
 
 val magic_of_kind : 'a kind -> string   
 
-val read_my_ast : 
-  'a kind ->
-  in_channel ->
-   'a
-
-val write_my_ast : 
-  'a kind -> 
-   string -> 
-   'a -> 
-   out_channel -> 
-   unit
 
 end = struct
 #1 "ml_binary.ml"
@@ -8612,16 +8603,6 @@ let magic_of_kind : type a . a kind -> string = function
   | Mli -> Config.ast_intf_magic_number
 
 
-let read_my_ast (type t ) (_ : t  kind) ic : t  =
-  Location.set_input_name (input_line ic);
-  input_value ic 
-
-let write_my_ast (type t) ( _ : t kind)
-    (fname : string)
-    (pt : t) oc = 
-  output_string oc fname;
-  output_char oc '\n';
-  output_value oc pt
 
 end
 module Ast_extract : sig 

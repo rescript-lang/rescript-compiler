@@ -1292,6 +1292,8 @@ let suffix_mlmap = ".mlmap"
 
 let suffix_cmt = ".cmt"
 let suffix_cmti = ".cmti"
+let suffix_ast = ".ast"
+let suffix_iast = ".iast"
 let suffix_mlast = ".mlast"
 let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
