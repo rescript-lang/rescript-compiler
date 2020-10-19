@@ -58,22 +58,22 @@ type suffixes = {
 let re_suffixes = {
   impl  = Literals.suffix_re;
   intf = Literals.suffix_rei;
-  impl_ast = Literals.suffix_reast;
-  intf_ast = Literals.suffix_reiast;
+  impl_ast = Literals.suffix_ast;
+  intf_ast = Literals.suffix_iast;
 
 }
 
 let ml_suffixes = {
   impl = Literals.suffix_ml;
   intf = Literals.suffix_mli;
-  impl_ast = Literals.suffix_mlast;
-  intf_ast = Literals.suffix_mliast
+  impl_ast = Literals.suffix_ast;
+  intf_ast = Literals.suffix_iast
 }
 let res_suffixes = {
   impl = Literals.suffix_res;
   intf = Literals.suffix_resi;
-  impl_ast = Literals.suffix_resast;
-  intf_ast = Literals.suffix_resiast
+  impl_ast = Literals.suffix_ast;
+  intf_ast = Literals.suffix_iast
 }
 let emit_module_build
     (rules : Bsb_ninja_rule.builtin)  

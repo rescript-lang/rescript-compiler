@@ -5360,20 +5360,20 @@ let suffix_re = ".re"
 let suffix_rei = ".rei"
 let suffix_res = ".res"
 let suffix_resi = ".resi"
-let suffix_resast = ".resast"
-let suffix_resiast = ".resiast"
+(* let suffix_resast = ".resast"
+let suffix_resiast = ".resiast" *)
 let suffix_mlmap = ".mlmap"
 
 let suffix_cmt = ".cmt"
 let suffix_cmti = ".cmti"
 let suffix_ast = ".ast"
 let suffix_iast = ".iast"
-let suffix_mlast = ".mlast"
+(* let suffix_mlast = ".mlast"
 let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
 let suffix_reast = ".reast"
 let suffix_reiast = ".reiast"
-let suffix_mliast_simple = ".mliast_simple"
+let suffix_mliast_simple = ".mliast_simple" *)
 let suffix_d = ".d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
@@ -13653,22 +13653,22 @@ type suffixes = {
 let re_suffixes = {
   impl  = Literals.suffix_re;
   intf = Literals.suffix_rei;
-  impl_ast = Literals.suffix_reast;
-  intf_ast = Literals.suffix_reiast;
+  impl_ast = Literals.suffix_ast;
+  intf_ast = Literals.suffix_iast;
 
 }
 
 let ml_suffixes = {
   impl = Literals.suffix_ml;
   intf = Literals.suffix_mli;
-  impl_ast = Literals.suffix_mlast;
-  intf_ast = Literals.suffix_mliast
+  impl_ast = Literals.suffix_ast;
+  intf_ast = Literals.suffix_iast
 }
 let res_suffixes = {
   impl = Literals.suffix_res;
   intf = Literals.suffix_resi;
-  impl_ast = Literals.suffix_resast;
-  intf_ast = Literals.suffix_resiast
+  impl_ast = Literals.suffix_ast;
+  intf_ast = Literals.suffix_iast
 }
 let emit_module_build
     (rules : Bsb_ninja_rule.builtin)  
