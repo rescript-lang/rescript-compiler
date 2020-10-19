@@ -28,18 +28,22 @@ let process_implementation_file ppf name =
   (output_prefix name)
 
 
-let setup_reason_error_printer () = 
-  Config.syntax_kind := `reason ;  
-  Lazy.force Super_main.setup;  
-  Lazy.force Reason_outcome_printer_main.setup
+let setup_error_printer (syntax_kind : [ `ml | `reason | `rescript ])= 
+  Config.syntax_kind := syntax_kind ;   
+  if syntax_kind = `reason then begin 
+    Lazy.force Super_main.setup;  
+    Lazy.force Reason_outcome_printer_main.setup
+  end else if !Config.syntax_kind = `rescript then begin 
+    Lazy.force Super_main.setup;  
+    Lazy.force Res_outcome_printer.setup  
+  end  
 
-let setup_napkin_error_printer () =  
-  Config.syntax_kind := `rescript ;
-  Lazy.force Super_main.setup;  
-  Lazy.force Res_outcome_printer.setup
+
+  
+  
 
 let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf opref = 
-  setup_reason_error_printer ();
+  setup_error_printer `reason;
   let tmpfile =  Ast_reason_pp.pp sourcefile in   
   (match kind with 
    | Ml_binary.Ml -> 
@@ -62,60 +66,10 @@ let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf opref =
   Ast_reason_pp.clean tmpfile 
 
   
-type valid_input = 
-  | Ml 
-  | Mli
-  | Re
-  | Rei
-  | Res
-  | Resi
-  | Resast
-  | Resiast
-  | Mlast    
-  | Mliast 
-  | Reast
-  | Reiast
-  | Mlmap
-  | Cmi
-  | Unknown
 
 
 
-(** This is per-file based, 
-    when [ocamlc] [-c -o another_dir/xx.cmi] 
-    it will return (another_dir/xx)
-*)    
 
-let classify_input ext = 
-
-  match () with 
-  | _ when ext = Literals.suffix_ml ->   
-    Ml
-  | _ when ext = Literals.suffix_re ->
-    Re
-  | _ when ext = !Config.interface_suffix ->
-    Mli  
-  | _ when ext = Literals.suffix_rei ->
-    Rei
-  | _ when ext =  Literals.suffix_mlast ->
-    Mlast 
-  | _ when ext = Literals.suffix_mliast ->
-    Mliast
-  | _ when ext = Literals.suffix_reast ->
-    Reast 
-  | _ when ext = Literals.suffix_reiast ->
-    Reiast
-  | _ when ext =  Literals.suffix_mlmap ->
-    Mlmap 
-  | _ when ext =  Literals.suffix_cmi ->
-    Cmi
-  | _ when ext = Literals.suffix_res -> 
-    Res
-  | _ when ext = Literals.suffix_resi -> 
-    Resi    
-  | _ when ext = Literals.suffix_resast -> Resast   
-  | _ when ext = Literals.suffix_resiast -> Resiast
-  | _ -> Unknown
 
 let process_file ppf sourcefile = 
   (* This is a better default then "", it will be changed later 
@@ -124,50 +78,38 @@ let process_file ppf sourcefile =
   *)
   Location.set_input_name  sourcefile;  
   let ext = Ext_filename.get_extension_maybe sourcefile in 
-  let input = classify_input ext in 
+  let input = Ext_file_extensions.classify_input ext in 
   let opref = output_prefix sourcefile in 
   match input with 
   | Re -> handle_reason Ml sourcefile ppf opref     
   | Rei ->
     handle_reason Mli sourcefile ppf opref 
-  | Reiast 
-    -> 
-    setup_reason_error_printer ();
-    Js_implementation.interface_mliast ppf sourcefile opref   
-  | Reast 
-    -> 
-    setup_reason_error_printer ();
-    Js_implementation.implementation_mlast ppf sourcefile opref
+  | Ml ->
+    Js_implementation.implementation 
+      ~parser:Pparse_driver.parse_implementation
+      ppf sourcefile opref 
+  | Mli  ->   
+    Js_implementation.interface 
+      ~parser:Pparse_driver.parse_interface
+      ppf sourcefile opref   
   | Res -> 
-    setup_napkin_error_printer ();
+    setup_error_printer `rescript;
     Js_implementation.implementation 
       ~parser:Res_driver.parse_implementation
       ppf sourcefile opref 
   | Resi ->   
-    setup_napkin_error_printer ();
+    setup_error_printer `rescript;
     Js_implementation.interface 
       ~parser:Res_driver.parse_interface
-      ppf sourcefile opref       
-  | Ml ->
-    Js_implementation.implementation 
-    ~parser:Pparse_driver.parse_implementation
-    ppf sourcefile opref 
-  | Mli  ->   
-    Js_implementation.interface 
-    ~parser:Pparse_driver.parse_interface
-    ppf sourcefile opref   
-  | Resiast
-    ->   
-    setup_napkin_error_printer ();
-    Js_implementation.interface_mliast ppf sourcefile opref 
-  | Mliast 
-    -> Js_implementation.interface_mliast ppf sourcefile opref 
-  | Resast  
-    ->
-    setup_napkin_error_printer ();
+      ppf sourcefile opref     
+  | Intf_ast 
+    ->     
+    Js_implementation.interface_mliast ppf sourcefile opref   
+    setup_error_printer ;
+  | Impl_ast 
+    -> 
     Js_implementation.implementation_mlast ppf sourcefile opref
-  | Mlast 
-    -> Js_implementation.implementation_mlast ppf sourcefile opref
+    setup_error_printer;  
   | Mlmap 
     -> Js_implementation.implementation_map ppf sourcefile opref
   | Cmi
@@ -213,7 +155,7 @@ let intf filename =
 
 
 let format_file input =  
-  let ext = classify_input (Ext_filename.get_extension_maybe input) in 
+  let ext = Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe input) in 
   let syntax = 
     match ext with 
     | Ml | Mli -> `ml
