@@ -23,7 +23,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val read_ast : 'a Ml_binary.kind -> string -> 'a 
+val read_ast_exn : 
+  fname:string -> 
+  'a Ml_binary.kind ->  
+  'a 
 
 
 val magic_sep_char : char

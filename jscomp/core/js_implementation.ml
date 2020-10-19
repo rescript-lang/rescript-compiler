@@ -113,7 +113,7 @@ let interface ~parser ppf fname outputprefix =
 
 let interface_mliast ppf fname outputprefix  = 
   Res_compmisc.init_path ();
-  Binary_ast.read_ast Mli fname 
+  Binary_ast.read_ast_exn Mli ~fname 
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.interface
   |> print_if_pipe ppf Clflags.dump_source Pprintast.signature 
   |> after_parsing_sig ppf  outputprefix 
@@ -207,7 +207,7 @@ let implementation ~parser ppf fname outputprefix  =
 
 let implementation_mlast ppf fname outputprefix = 
   Res_compmisc.init_path ();
-  Binary_ast.read_ast Ml fname
+  Binary_ast.read_ast_exn Ml ~fname
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.implementation
   |> print_if_pipe ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf  outputprefix 

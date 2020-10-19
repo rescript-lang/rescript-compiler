@@ -28,17 +28,13 @@ module Set_string = Ast_extract.Set_string
 
 
 
-let read_ast (type t ) (kind : t  Ml_binary.kind) fn : t  =
-  let ic = open_in_bin fn in
-  try
-    let dep_size = input_binary_int ic in 
-    seek_in  ic (pos_in ic + dep_size) ; 
-    let ast = Ml_binary.read_my_ast kind ic in 
-    close_in ic;
-    ast
-  with exn ->
-    close_in ic;
-    raise exn
+let read_ast_exn (type t ) ~fname (kind : t  Ml_binary.kind)  : t  =
+  let ic = open_in_bin fname in
+  let dep_size = input_binary_int ic in 
+  seek_in  ic (pos_in ic + dep_size) ; 
+  let ast = Ml_binary.read_my_ast kind ic in 
+  close_in ic;
+  ast
 
 let magic_sep_char = '\n'
 (*
