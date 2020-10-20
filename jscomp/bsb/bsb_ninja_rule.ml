@@ -127,7 +127,7 @@ let make_custom_rules
   ~bsc
   ~warnings
   ~bs_dep
-  ~ppx_flags
+  ~(ppx_files : Bsb_config_types.ppx list)
   ~bsc_flags
   ~dpkg_incls
   ~lib_incls
@@ -186,6 +186,16 @@ let make_custom_rules
     Ext_buffer.add_char_string buf ' ' warnings;  
     Ext_buffer.add_string buf " -bs-v ";
     Ext_buffer.add_string buf Bs_version.version;
+    (match ppx_files with 
+     | [ ] -> ()
+     | _ -> 
+       Ext_list.iter ppx_files (fun x -> 
+           match string_of_float (Unix.stat x.name).st_mtime with 
+           | exception _ -> () 
+           | st -> Ext_buffer.add_char_string buf ',' st 
+         );
+       Ext_buffer.add_char_string buf ' ' 
+         (Bsb_build_util.ppx_flags ppx_files)); 
     (match refmt with 
     | None -> ()
     | Some x ->
@@ -205,7 +215,6 @@ let make_custom_rules
        -> Ext_buffer.add_string buf " -bs-jsx 3"
     );
     
-    Ext_buffer.add_char_string buf ' ' ppx_flags; 
     Ext_buffer.add_char_string buf ' ' bsc_flags;
     Ext_buffer.add_string buf " -bs-ast -o $out $in";   
     Ext_buffer.contents buf

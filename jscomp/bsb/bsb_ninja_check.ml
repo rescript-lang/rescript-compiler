@@ -24,12 +24,6 @@
 
 [@@@warning "+9"]
 
-type t =
-  { 
-    dir_or_files : string array ;
-    st_mtimes : float array;
-    source_directory :  string ;    
-  }
 (* float_of_string_opt *)
 external hexstring_of_float : float -> int -> char -> string
   = "caml_hexstring_of_float"
@@ -40,54 +34,6 @@ let hex_of_float f = hexstring_of_float f (-1) '-'
 (* let id (f : float) = 
     float_of_string (hex_of_float f) = f
  *)
-
-let encode ( {source_directory ; st_mtimes; dir_or_files} : t ) 
-    (buf: Ext_buffer.t)= 
-  Ext_buffer.add_string_char buf Bs_version.version '\n';  
-  Ext_buffer.add_string_char buf source_directory '\n';
-  let dir_or_files_len = Array.length dir_or_files in 
-  (if dir_or_files_len <> 0 then begin 
-    Ext_buffer.add_string buf dir_or_files.(0);
-    for i = 1 to dir_or_files_len - 1 do 
-      Ext_buffer.add_char_string buf '\t' dir_or_files.(i) 
-    done  
-  end);
-  Ext_buffer.add_char buf '\n';
-  let st_mtimes_len = Array.length st_mtimes in 
-  (if st_mtimes_len <> 0 then begin 
-    Ext_buffer.add_string buf (hex_of_float st_mtimes.(0));
-    for i = 1 to st_mtimes_len - 1 do 
-      Ext_buffer.add_char_string buf '\t' (hex_of_float st_mtimes.(i))  
-    done     
-  end);
-  Ext_buffer.add_char buf '\n'
-  
-let decode_exn ic  =
-  let source_directory = input_line ic in 
-  let dir_or_files = input_line ic in 
-  let dir_or_files = 
-    Array.of_list 
-      (Ext_string.split dir_or_files '\t') in 
-  let st_mtimes_line = 
-    input_line ic in 
-  let st_mtimes = 
-    Ext_array.of_list_map 
-      (Ext_string.split st_mtimes_line '\t')   
-      (fun x -> float_of_string x) in 
-  close_in ic ;
-  {dir_or_files; st_mtimes; source_directory}
-
-
-(* TODO: for such small data structure, maybe text format is better *)
-
-let write (fname : string)  (x : t) =
-  let buf = Ext_buffer.create 1_000 in   
-  encode x buf;  
-  let oc = open_out_bin fname in
-  Ext_buffer.output_buffer oc buf ;
-  close_out oc
-
-
 
 
 
@@ -113,35 +59,66 @@ let pp_check_result fmt (check_resoult : check_result) =
         "Bsb forced rebuild"
       | Other s -> s)
 
-let rec check_aux cwd (xs : string array) (ys: float array) i finish =
-  if i = finish then Good
-  else
-    let current_file = Array.unsafe_get  xs i  in
-    
-    let stat = Unix.stat  (Filename.concat cwd  current_file) in
-    if stat.st_mtime <= Array.unsafe_get ys i then
-      check_aux cwd xs ys (i + 1 ) finish
-    else Other current_file
+let rec check_aux cwd (xs : string list)  =
+  match xs with 
+  | [] -> Good
+  | "===" :: rest ->
+    check_global rest 
+  | item :: rest
+    -> 
+    match Ext_string.split item '\t' with 
+    | [file; stamp] -> 
+       let stamp = float_of_string stamp in 
+       let cur_file = (Filename.concat cwd file) in 
+       let stat = Unix.stat cur_file in 
+       if stat.st_mtime <= stamp then 
+        check_aux cwd rest 
+       else Other  cur_file
+    | _ -> Bsb_file_corrupted 
+and check_global rest = 
+  match rest with 
+  | [] -> Good 
+  | item :: rest ->
+    match Ext_string.split item '\t' with 
+    | [file; stamp] -> 
+      let stamp = float_of_string stamp in 
+      let cur_file = file in 
+      let stat = Unix.stat cur_file in 
+      if stat.st_mtime <> stamp then 
+        check_global rest 
+      else Other  cur_file
+    | _ -> Bsb_file_corrupted 
 
-    
+
+(* TODO: for such small data structure, maybe text format is better *)
 
 
-
-
-let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
-  let dir_or_files = Array.of_list file_or_dirs in 
-  let st_mtimes = 
-    Ext_array.map dir_or_files
-      (fun  x ->      
-           (Unix.stat (Filename.concat per_proj_dir  x )).st_mtime
-         )
-  in 
-  write file
-    { 
-      st_mtimes ;
-      dir_or_files;
-      source_directory = per_proj_dir ;
-    }
+let record 
+  ~per_proj_dir ~file  
+  ~(config:Bsb_config_types.t) (file_or_dirs : string list) : unit =
+  let _ = config in 
+  let buf = Ext_buffer.create 1_000 in   
+  Ext_buffer.add_string_char buf Bs_version.version '\n';  
+  Ext_buffer.add_string_char buf per_proj_dir '\n';
+  Ext_list.iter file_or_dirs (fun f -> 
+    Ext_buffer.add_string_char buf f '\t'; 
+    Ext_buffer.add_string_char buf 
+      (hex_of_float (Unix.stat (Filename.concat per_proj_dir f)).st_mtime) '\n'; 
+  );
+  begin match config.ppx_files with 
+  | [] -> ()
+  | files ->
+    Ext_buffer.add_string buf "===\n";
+    Ext_list.iter files (fun {name ; args = _} -> 
+    try
+      let stamp = (Unix.stat name).st_mtime in 
+      Ext_buffer.add_string_char buf name '\t';
+      Ext_buffer.add_string_char buf (hex_of_float stamp) '\n' 
+    with  _ -> ())
+  end;      
+  let oc = open_out_bin file in
+  Ext_buffer.output_buffer oc buf ;
+  close_out oc    
 
 (** check time stamp for all files
     TODO: those checks system call can be saved later
@@ -153,18 +130,16 @@ let check ~(per_proj_dir:string) ~forced ~file : check_result =
   match  open_in_bin file with   (* Windows binary mode*)    
   | exception _ -> Bsb_file_not_exist
   | ic ->
-    if input_line ic <> Bs_version.version then Bsb_bsc_version_mismatch
-    else 
-      match decode_exn ic with 
-      | exception _ -> Bsb_file_corrupted (* corrupted file *)
-      | {
-        dir_or_files ; source_directory; st_mtimes
-      } ->
+    match List.rev (Ext_io.rev_lines_of_chann ic) with
+    | exception _ -> Bsb_file_corrupted 
+    | version :: source_directory :: dir_or_files ->
+      if version <> Bs_version.version then Bsb_bsc_version_mismatch
+      else 
         if per_proj_dir <> source_directory then Bsb_source_directory_changed else
         if forced then Bsb_forced (* No need walk through *)
-        else
+        else begin 
           try
-            check_aux per_proj_dir dir_or_files st_mtimes  0 (Array.length dir_or_files)
+            check_aux per_proj_dir dir_or_files 
           with e ->
             begin
               Bsb_log.info
@@ -172,4 +147,6 @@ let check ~(per_proj_dir:string) ~forced ~file : check_result =
                 (Printexc.to_string e);
               Bsb_file_not_exist        
             end
+        end 
+   | _ -> Bsb_file_corrupted         
 

@@ -58,7 +58,7 @@ let regenerate_ninja
       Bsb_clean.clean_self  per_proj_dir; 
     end ; 
     
-    let config = 
+    let config : Bsb_config_types.t = 
       Bsb_config_parse.interpret_json 
         ~toplevel_package_specs
         ~per_proj_dir in 
@@ -80,7 +80,7 @@ let regenerate_ninja
       ~per_proj_dir  ~toplevel config ;                 
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
-    Bsb_ninja_check.record ~per_proj_dir ~file:output_deps 
+    Bsb_ninja_check.record ~per_proj_dir ~config ~file:output_deps 
       (Literals.bsconfig_json::config.file_groups.globbed_dirs) ;
     Some config 
 
