@@ -12441,6 +12441,7 @@ val pp_check_result :
 val record : 
   per_proj_dir:string -> 
   file:string -> 
+  config:Bsb_config_types.t ->
   string list -> 
   unit
 
@@ -12549,7 +12550,10 @@ and check_global rest =
 (* TODO: for such small data structure, maybe text format is better *)
 
 
-let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
+let record 
+  ~per_proj_dir ~file  
+  ~(config:Bsb_config_types.t) (file_or_dirs : string list) : unit =
+  let _ = config in 
   let buf = Ext_buffer.create 1_000 in   
   Ext_buffer.add_string_char buf Bs_version.version '\n';  
   Ext_buffer.add_string_char buf per_proj_dir '\n';
@@ -12993,7 +12997,7 @@ val make_custom_rules :
   bsc:string ->
   warnings:string ->
   bs_dep:string ->
-  ppx_flags:string ->
+  ppx_files:Bsb_config_types.ppx list ->
   bsc_flags:string ->  
   dpkg_incls:string ->
   lib_incls:string ->
@@ -13133,7 +13137,7 @@ let make_custom_rules
   ~bsc
   ~warnings
   ~bs_dep
-  ~ppx_flags
+  ~(ppx_files : Bsb_config_types.ppx list)
   ~bsc_flags
   ~dpkg_incls
   ~lib_incls
@@ -13192,6 +13196,16 @@ let make_custom_rules
     Ext_buffer.add_char_string buf ' ' warnings;  
     Ext_buffer.add_string buf " -bs-v ";
     Ext_buffer.add_string buf Bs_version.version;
+    (match ppx_files with 
+     | [ ] -> ()
+     | _ -> 
+       Ext_list.iter ppx_files (fun x -> 
+           match string_of_float (Unix.stat x.name).st_mtime with 
+           | exception _ -> () 
+           | st -> Ext_buffer.add_char_string buf ',' st 
+         );
+       Ext_buffer.add_char_string buf ' ' 
+         (Bsb_build_util.ppx_flags ppx_files)); 
     (match refmt with 
     | None -> ()
     | Some x ->
@@ -13211,7 +13225,6 @@ let make_custom_rules
        -> Ext_buffer.add_string buf " -bs-jsx 3"
     );
     
-    Ext_buffer.add_char_string buf ' ' ppx_flags; 
     Ext_buffer.add_char_string buf ' ' bsc_flags;
     Ext_buffer.add_string buf " -bs-ast -o $out $in";   
     Ext_buffer.contents buf
@@ -13886,8 +13899,7 @@ let output_ninja_and_namespace_map
     } : Bsb_config_types.t) : unit 
   =
   let lib_artifacts_dir = Bsb_config.lib_bs in
-  let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in 
-  let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
+  let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in   
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
   let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
@@ -13949,7 +13961,7 @@ let output_ninja_and_namespace_map
       ~bsc:bsc_path
       ~warnings
       ~bs_dep
-      ~ppx_flags
+      ~ppx_files
       ~bsc_flags
       ~dpkg_incls (* dev dependencies *)
       ~lib_incls (* its own libs *)
@@ -14381,7 +14393,7 @@ let regenerate_ninja
       Bsb_clean.clean_self  per_proj_dir; 
     end ; 
     
-    let config = 
+    let config : Bsb_config_types.t = 
       Bsb_config_parse.interpret_json 
         ~toplevel_package_specs
         ~per_proj_dir in 
@@ -14403,7 +14415,7 @@ let regenerate_ninja
       ~per_proj_dir  ~toplevel config ;                 
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
-    Bsb_ninja_check.record ~per_proj_dir ~file:output_deps 
+    Bsb_ninja_check.record ~per_proj_dir ~config ~file:output_deps 
       (Literals.bsconfig_json::config.file_groups.globbed_dirs) ;
     Some config 
 
