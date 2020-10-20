@@ -93,7 +93,10 @@ and check_global rest =
 (* TODO: for such small data structure, maybe text format is better *)
 
 
-let record ~per_proj_dir ~file  (file_or_dirs : string list) : unit =
+let record 
+  ~per_proj_dir ~file  
+  ~(config:Bsb_config_types.t) (file_or_dirs : string list) : unit =
+  let _ = config in 
   let buf = Ext_buffer.create 1_000 in   
   Ext_buffer.add_string_char buf Bs_version.version '\n';  
   Ext_buffer.add_string_char buf per_proj_dir '\n';

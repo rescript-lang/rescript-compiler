@@ -62,6 +62,7 @@ val pp_check_result :
 val record : 
   per_proj_dir:string -> 
   file:string -> 
+  config:Bsb_config_types.t ->
   string list -> 
   unit
 
