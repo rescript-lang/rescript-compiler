@@ -12541,7 +12541,7 @@ and check_global rest =
       let stamp = float_of_string stamp in 
       let cur_file = file in 
       let stat = Unix.stat cur_file in 
-      if stat.st_mtime <= stamp then 
+      if stat.st_mtime <> stamp then 
         check_global rest 
       else Other  cur_file
     | _ -> Bsb_file_corrupted 
@@ -12562,6 +12562,17 @@ let record
     Ext_buffer.add_string_char buf 
       (hex_of_float (Unix.stat (Filename.concat per_proj_dir f)).st_mtime) '\n'; 
   );
+  begin match config.ppx_files with 
+  | [] -> ()
+  | files ->
+    Ext_buffer.add_string buf "===\n";
+    Ext_list.iter files (fun {name ; args = _} -> 
+    try
+      let stamp = (Unix.stat name).st_mtime in 
+      Ext_buffer.add_string_char buf name '\t';
+      Ext_buffer.add_string_char buf (hex_of_float stamp) '\n' 
+    with  _ -> ())
+  end;      
   let oc = open_out_bin file in
   Ext_buffer.output_buffer oc buf ;
   close_out oc    
