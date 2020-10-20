@@ -82,7 +82,7 @@ val make_custom_rules :
   bsc:string ->
   warnings:string ->
   bs_dep:string ->
-  ppx_flags:string ->
+  ppx_files:Bsb_config_types.ppx list ->
   bsc_flags:string ->  
   dpkg_incls:string ->
   lib_incls:string ->
