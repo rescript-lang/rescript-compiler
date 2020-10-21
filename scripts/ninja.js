@@ -35,9 +35,9 @@ var visitorPattern = `
 rule p4of
     command = camlp4of $flags -impl $in -printer o -o $out
     generator = true
-build core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml
+o core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml
     flags = -I core -filter map -filter trash
-build core/js_map.ml: p4of core/js_map.mlp | core/j.ml
+o core/js_map.ml: p4of core/js_map.mlp | core/j.ml
     flags = -I core -filter Camlp4FoldGenerator -filter trash
 `;
 /**
@@ -405,7 +405,7 @@ function targetsToString(files, cwd) {
 function ninjaBuild(outputs, inputs, rule, deps, cwd, overrides) {
   var fileOutputs = targetsToString(outputs, cwd);
   var fileInputs = targetsToString(inputs, cwd);
-  var stmt = `build ${fileOutputs} : ${rule} ${fileInputs}`;
+  var stmt = `o ${fileOutputs} : ${rule} ${fileInputs}`;
   // deps.push(pseudoTarget('../lib/bsc'))
   if (deps.length > 0) {
     var fileDeps = targetsToString(deps, cwd);
@@ -1411,7 +1411,7 @@ subninja runtime/env.ninja
 subninja others/env.ninja
 subninja $stdlib/env.ninja
 subninja test/env.ninja
-build all: phony runtime others $stdlib test
+o all: phony runtime others $stdlib test
 `
     );
   } else {
@@ -1426,7 +1426,7 @@ subninja runtime/build.ninja
 subninja others/build.ninja
 subninja $stdlib/build.ninja
 subninja test/build.ninja
-build all: phony runtime others $stdlib test
+o all: phony runtime others $stdlib test
 `
     );
     writeFileAscii(
@@ -1520,13 +1520,13 @@ function preprocessorNinjaSync() {
     .readdirSync(path.join(jscompDir, "..", "syntax", "src"), "ascii")
     .filter((x) => x.endsWith(".ml") || x.endsWith(".mli"));
   var buildNapkinFiles = napkinFiles
-    .map((file) => `build napkin/${file} : copy ../syntax/src/${file}`)
+    .map((file) => `o napkin/${file} : copy ../syntax/src/${file}`)
     .join("\n");
   var cppoNative = `
 ${useEnv ? getEnnvConfigNinja() : getVendorConfigNinja()}
 rule link
     command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out
-build ${cppoFile}: link ${cppoMonoFile}
+o ${cppoFile}: link ${cppoMonoFile}
     libs = unix.cmxa str.cmxa
     generator = true
 ${cppoRule()}
@@ -1562,7 +1562,7 @@ ${cppoList("outcome_printer", [
 ${cppoList("syntax", [
   ["reactjs_jsx_ppx_v3.ml", "reactjs_jsx_ppx.cppo.ml", ""],
 ])}
-build ../${
+o ../${
     process.platform
   }/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
     libs = ocamlcommon.cmxa
@@ -1623,52 +1623,52 @@ rule mk_bsversion
     generator = true
 rule gcc
     command = $ocamlopt -ccopt -fPIC -ccopt -O2 -ccopt -o -ccopt $out -c $in
-build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c
+o stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c
 rule ocamlmklib
     command = $ocamlmklib -v $in -o $name && touch $out
 
 rule mk_keywords
     command = $ocaml $in
     generator = true
-build ext/js_reserved_map.ml: mk_keywords ../scripts/build_sorted.ml keywords.list
+o ext/js_reserved_map.ml: mk_keywords ../scripts/build_sorted.ml keywords.list
 
-build stubs/libbs_hash.a stubs/dllbs_hash.so: ocamlmklib stubs/ext_basic_hash_stubs.o
+o stubs/libbs_hash.a stubs/dllbs_hash.so: ocamlmklib stubs/ext_basic_hash_stubs.o
     name = stubs/bs_hash
 rule stubslib
     command = $ocamlopt -a $ml -o $out -cclib $clib
-build stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a
+o stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a
     ml = stubs/bs_hash_stubs.cmx
     clib = stubs/libbs_hash.a
 
 ${generateVisitorPattern()}
 
-build common/bs_version.ml : mk_bsversion build_version.js ../package.json
+o common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
-build ../${
+o ../${
     process.platform
   }/bsc: link js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa napkin/napkin.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
-build ../${
+o ../${
     process.platform
   }/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
-build ../${
+o ../${
     process.platform
   }/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa bsb_helper/bsb_helper.cmxa main/bsb_helper_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
-build ./bin/bspack.exe: link stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
+o ./bin/bspack.exe: link stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
     libs = unix.cmxa ocamlcommon.cmxa
     flags = -I ./bin -w -40-30    
-build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx
+o ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx
     libs = ocamlcommon.cmxa    
-build ./bin/cmij.exe: link ./stubs/stubs.cmxa ext/ext.cmxa  common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmij_main.cmx
+o ./bin/cmij.exe: link ./stubs/stubs.cmxa ext/ext.cmxa  common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmij_main.cmx
     libs = ocamlcommon.cmxa
 
 rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
     generator = true
-build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa bsb_helper/bsb_helper.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
+o ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa bsb_helper/bsb_helper.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
 
 ${mllRule}
@@ -1677,7 +1677,7 @@ ${mllList("ext", ["ext_json_parse.mll"])}
 
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in
-build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/generator.ml
+o ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/generator.ml
     flags = -I +ocamldoc -I ../odoc_gen -absname
 `;
   /**
@@ -1747,13 +1747,13 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
           if (y.ext === ".cmx") {
             var intf = path.join(y.dir, y.name + ".cmi");
             var ml = path.join(y.dir, y.name + ".ml");
-            return `build ${
+            return `o ${
               deps.has(intf) ? target : [target, intf].join(" ")
             } : optc ${ml} | ${setSortedToStringAsNativeDeps(deps)}`;
           } else {
             // === 'cmi'
             var mli = path.join(y.dir, y.name + ".mli");
-            return `build ${target} : optc ${mli} | ${setSortedToStringAsNativeDeps(
+            return `o ${target} : optc ${mli} | ${setSortedToStringAsNativeDeps(
               deps
             )}`;
           }
@@ -1762,7 +1762,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
       libs.forEach((x) => {
         var output = sortFilesByDeps(x.libs, map);
         var name = x.name;
-        stmts.push(`build ${name}/${name}.cmxa : archive ${output.join(" ")}`);
+        stmts.push(`o ${name}/${name}.cmxa : archive ${output.join(" ")}`);
       });
 
       writeFileAscii(
