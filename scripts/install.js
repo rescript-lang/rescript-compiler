@@ -141,7 +141,7 @@ subninja runtime/release.ninja
 subninja others/release.ninja
 subninja $stdlib/release.ninja
 ${process.env.BS_TRAVIS_CI ? "subninja test/build.ninja\n" : "\n"}
-build all: phony runtime others $stdlib
+o all: phony runtime others $stdlib
 `;
   var filePath = path.join(jscomp_dir, "release.ninja");
   fs.writeFileSync(filePath, releaseNinja, "ascii");
