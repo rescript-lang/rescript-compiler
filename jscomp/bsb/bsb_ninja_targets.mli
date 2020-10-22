@@ -32,8 +32,6 @@
 *)
 val output_build :
   ?order_only_deps:string list ->
-  ?implicit_deps:string list ->
-  ?implicit_outputs: string list ->    
   outputs:string list ->
   inputs:string list ->
   rule:Bsb_ninja_rule.t -> 
