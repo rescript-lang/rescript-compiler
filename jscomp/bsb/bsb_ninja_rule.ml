@@ -170,7 +170,7 @@ let make_custom_rules
       Ext_buffer.add_string buf package_name;
       Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
     end;
-    Ext_buffer.add_string buf " -o $out $in";
+    Ext_buffer.add_string buf " -o $out $i";
     begin match postbuild with 
     | None -> ()
     | Some cmd -> 
@@ -216,7 +216,7 @@ let make_custom_rules
     );
     
     Ext_buffer.add_char_string buf ' ' bsc_flags;
-    Ext_buffer.add_string buf " -bs-ast -o $out $in";   
+    Ext_buffer.add_string buf " -bs-ast -o $out $i";   
     Ext_buffer.contents buf
   in  
   let build_ast =
@@ -232,8 +232,8 @@ let make_custom_rules
     define 
       ~command:(
         if Ext_sys.is_windows_or_cygwin then
-          "cmd.exe /C copy /Y $in $out > null" 
-        else "cp $in $out"
+          "cmd.exe /C copy /Y $i $out > null" 
+        else "cp $i $out"
       )
       "copy_resource" in
 
@@ -241,13 +241,13 @@ let make_custom_rules
     define
       ~restat:()
       ~command:
-      (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
+      (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $i")
       "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
-      (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $in")
+      (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $i")
       "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define
@@ -278,7 +278,7 @@ let make_custom_rules
       ~name:"mi" in 
   let build_package = 
     define
-      ~command:(bsc ^ " -w -49 -color always -no-alias-deps  $in")
+      ~command:(bsc ^ " -w -49 -color always -no-alias-deps  $i")
       ~restat:()
       "build_package"
   in 
