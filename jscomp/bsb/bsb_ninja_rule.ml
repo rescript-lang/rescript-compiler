@@ -241,13 +241,13 @@ let make_custom_rules
     define
       ~restat:()
       ~command:
-      (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $i")
+      (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
       "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
-      (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $i")
+      (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $in")
       "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define
