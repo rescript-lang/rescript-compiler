@@ -31,7 +31,7 @@
    however, for the command we don't need pass `-o`
 *)
 val output_build :
-  ?order_only_deps:string list ->
+  (* ?order_only_deps:string list -> *)
   ?implicit_deps:string list ->
   ?implicit_outputs: string list ->    
   outputs:string list ->

@@ -27,7 +27,7 @@ let oc_list xs  oc =
   Ext_list.iter xs (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
 
 let output_build
-    ?(order_only_deps=[])
+    (* ?(order_only_deps=[]) *)
     ?(implicit_deps=[])
     ?(implicit_outputs=[])
     ~outputs
@@ -50,12 +50,12 @@ let output_build
       oc_list implicit_deps oc 
     end
   ;
-  if order_only_deps <> [] then
+  (* if order_only_deps <> [] then
     begin
       output_string oc " ||";                
       oc_list order_only_deps oc 
     end
-  ;
+  ; *)
   output_string oc "\n"
 
 let phony ?(order_only_deps=[]) ~inputs ~output oc =
