@@ -13191,7 +13191,7 @@ let make_custom_rules
       Ext_buffer.add_string buf package_name;
       Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
     end;
-    Ext_buffer.add_string buf " -o $out $in";
+    Ext_buffer.add_string buf " -o $out $i";
     begin match postbuild with 
     | None -> ()
     | Some cmd -> 
@@ -13237,7 +13237,7 @@ let make_custom_rules
     );
     
     Ext_buffer.add_char_string buf ' ' bsc_flags;
-    Ext_buffer.add_string buf " -bs-ast -o $out $in";   
+    Ext_buffer.add_string buf " -bs-ast -o $out $i";   
     Ext_buffer.contents buf
   in  
   let build_ast =
@@ -13253,8 +13253,8 @@ let make_custom_rules
     define 
       ~command:(
         if Ext_sys.is_windows_or_cygwin then
-          "cmd.exe /C copy /Y $in $out > null" 
-        else "cp $in $out"
+          "cmd.exe /C copy /Y $i $out > null" 
+        else "cp $i $out"
       )
       "copy_resource" in
 
@@ -13262,13 +13262,13 @@ let make_custom_rules
     define
       ~restat:()
       ~command:
-      (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
+      (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $i")
       "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
-      (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $in")
+      (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $i")
       "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define
@@ -13299,7 +13299,7 @@ let make_custom_rules
       ~name:"mi" in 
   let build_package = 
     define
-      ~command:(bsc ^ " -w -49 -color always -no-alias-deps  $in")
+      ~command:(bsc ^ " -w -49 -color always -no-alias-deps  $i")
       ~restat:()
       "build_package"
   in 
@@ -13366,9 +13366,6 @@ module Bsb_ninja_targets : sig
    however, for the command we don't need pass `-o`
 *)
 val output_build :
-  (* ?order_only_deps:string list -> *)
-  ?implicit_deps:string list ->
-  ?implicit_outputs: string list ->    
   outputs:string list ->
   inputs:string list ->
   rule:Bsb_ninja_rule.t -> 
@@ -13416,9 +13413,6 @@ let oc_list xs  oc =
   Ext_list.iter xs (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
 
 let output_build
-    (* ?(order_only_deps=[]) *)
-    ?(implicit_deps=[])
-    ?(implicit_outputs=[])
     ~outputs
     ~inputs
     ~rule
@@ -13426,25 +13420,9 @@ let output_build
   let rule = Bsb_ninja_rule.get_name rule  oc in (* Trigger building if not used *)
   output_string oc "o";
   oc_list outputs oc;
-  if implicit_outputs <> [] then begin 
-    output_string oc " |";
-    oc_list implicit_outputs oc 
-  end;
   output_string oc " : ";
   output_string oc rule;
   oc_list inputs oc;
-  if implicit_deps <> [] then 
-    begin
-      output_string oc " |";
-      oc_list implicit_deps oc 
-    end
-  ;
-  (* if order_only_deps <> [] then
-    begin
-      output_string oc " ||";                
-      oc_list order_only_deps oc 
-    end
-  ; *)
   output_string oc "\n"
 
 let phony ?(order_only_deps=[]) ~inputs ~output oc =
@@ -13705,12 +13683,9 @@ let emit_module_build
       )
   in
   Bsb_ninja_targets.output_build oc
-    ~outputs:[output_cmj]
-    ~implicit_outputs:  
-      (if has_intf_file then output_js else output_cmi::output_js )
-    ~inputs:[output_ast]
-    ~implicit_deps:(if has_intf_file then [output_cmi] else [] )
-    (* ~order_only_deps:[output_d] *)
+    ~outputs:
+      (if has_intf_file then output_cmj :: output_js else output_cmj::output_cmi::output_js)
+    ~inputs:(if has_intf_file then [output_ast; output_cmi] else [output_ast])
     ~rule
   (* ;
   {output_cmj; output_cmi} *)
