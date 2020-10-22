@@ -13366,6 +13366,7 @@ module Bsb_ninja_targets : sig
    however, for the command we don't need pass `-o`
 *)
 val output_build :
+  ?order_only_deps:string list ->
   outputs:string list ->
   inputs:string list ->
   rule:Bsb_ninja_rule.t -> 
@@ -13413,6 +13414,7 @@ let oc_list xs  oc =
   Ext_list.iter xs (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
 
 let output_build
+    ?(order_only_deps=[])
     ~outputs
     ~inputs
     ~rule
@@ -13423,6 +13425,12 @@ let output_build
   output_string oc " : ";
   output_string oc rule;
   oc_list inputs oc;
+  if order_only_deps <> [] then
+    begin
+      output_string oc " ||";                
+      oc_list order_only_deps oc 
+    end
+  ;
   output_string oc "\n"
 
 let phony ?(order_only_deps=[]) ~inputs ~output oc =
@@ -13668,7 +13676,7 @@ let emit_module_build
     ;
     Bsb_ninja_targets.output_build oc
       ~outputs:[output_cmi]
-      (* ~order_only_deps:[output_d] *)
+      ~order_only_deps:[output_d]
       ~inputs:[output_iast]
       ~rule:(if is_dev then rules.mi_dev else rules.mi)
     ;
@@ -13683,6 +13691,7 @@ let emit_module_build
       )
   in
   Bsb_ninja_targets.output_build oc
+    ~order_only_deps:[output_d]
     ~outputs:
       (if has_intf_file then output_cmj :: output_js else output_cmj::output_cmi::output_js)
     ~inputs:(if has_intf_file then [output_ast; output_cmi] else [output_ast])
