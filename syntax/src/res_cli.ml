@@ -247,7 +247,7 @@ module CliArgProcessor = struct
         end
         else
           let parsetree = match ppx with
-            | "jsx" -> Reactjs_jsx_ppx.rewrite_signature parseResult.parsetree
+            | "jsx" -> Reactjs_jsx_ppx_v3.rewrite_signature parseResult.parsetree
             | _ -> parseResult.parsetree
           in
           printEngine.printInterface
@@ -266,7 +266,7 @@ module CliArgProcessor = struct
         end
         else
           let parsetree = match ppx with
-            | "jsx" -> Reactjs_jsx_ppx.rewrite_implementation parseResult.parsetree
+            | "jsx" -> Reactjs_jsx_ppx_v3.rewrite_implementation parseResult.parsetree
             | _ -> parseResult.parsetree
           in
           printEngine.printImplementation
