@@ -1,4 +1,4 @@
-(* Copyright (C) 2019 - Authors of BuckleScript
+(* Copyright (C) 2015-2020 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,36 +22,36 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let init_path () =
+  let dirs = !Clflags.include_dirs in
+  let exp_dirs =
+    List.map (Misc.expand_directory Config.standard_library) dirs in
+    Config.load_path :=
+         List.rev_append exp_dirs (Clflags.std_include_dir ());
+  Env.reset_cache ()
 
+(* Return the initial environment in which compilation proceeds. *)
 
-let backend = ref Bsb_config_types.Js
+(* Note: do not do init_path() in initial_env, this breaks
+   toplevel initialization (PR#1775) *)
 
-let lib_artifacts_dir = ref Bsb_config.lib_bs
+let open_implicit_module m env =
+  let lid = {Asttypes.loc = Location.in_file "command line";
+             txt = Longident.parse m } in
+  snd (Typemod.type_open_ Override env lid.loc lid)
 
-let lib_ocaml_dir = ref Bsb_config.lib_ocaml
+let initial_env () =
+  Ident.reinit();
+  let initial =
+    if Config.safe_string then Env.initial_safe_string
+    else if !Clflags.unsafe_string then Env.initial_unsafe_string
+    else Env.initial_safe_string
+  in
+  let env =
+    if !Clflags.nopervasives then initial else
+    open_implicit_module "Pervasives" initial
+  in
+  List.fold_left (fun env m ->
+    open_implicit_module m env
+  ) env (List.rev !Clflags.open_modules)
 
-let backend_string = ref Literals.js
-
-
-
-#if BS_NATIVE then
-let (//) = Ext_path.combine
-let backend_is_set = ref false
-let set_backend b =
-  backend_is_set := true;
-  backend := b;
-  match b with
-  | Bsb_config_types.Js       -> 
-    lib_artifacts_dir := Bsb_config.lib_bs;
-    lib_ocaml_dir := Bsb_config.lib_ocaml;
-    backend_string := Literals.js;
-  | Bsb_config_types.Native   -> 
-    lib_artifacts_dir := Bsb_config.lib_lit // "bs-native";
-    lib_ocaml_dir := Bsb_config.lib_lit // "ocaml-native";
-    backend_string := Literals.native;
-  | Bsb_config_types.Bytecode -> 
-    lib_artifacts_dir := Bsb_config.lib_lit // "bs-bytecode";
-    lib_ocaml_dir := Bsb_config.lib_lit // "ocaml-bytecode";
-    backend_string := Literals.bytecode;
-
-#end

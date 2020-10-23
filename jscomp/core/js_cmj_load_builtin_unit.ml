@@ -1,4 +1,4 @@
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,35 +22,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let p = Format.fprintf 
 
-let () = 
-  match Sys.argv with 
-  | [|_; file|]
+let load_builin_unit (unit_name : string) : Js_cmj_format.cmj_load_info = 
+  match Ext_string_array.find_sorted
+          Builtin_cmj_datasets.module_names
+          unit_name with
+  | Some i
     -> 
-    let ic = open_in_bin file in 
-
-    let arrs = 
-      Bsb_helper_depfile_gen.deps_of_channel ic 
-    in
-    p Format.std_formatter "@[Dependent modules: @[%a@]@]@."
-      (Format.pp_print_list ~pp_sep:(fun fmt () ->
-           p fmt "@ ;"
-         ) Format.pp_print_string) 
-       arrs;
-    p Format.std_formatter "@.==============================@.";
-    if Ext_path.check_suffix_case file ".mlast" then 
-      begin
-        Pprintast.structure Format.std_formatter
-          (Ml_binary.read_ast Ml_binary.Ml ic );
-        close_in ic 
-      end
-    else if Ext_path.check_suffix_case file ".mliast" then 
-      begin
-        Pprintast.signature Format.std_formatter
-          (Ml_binary.read_ast Ml_binary.Mli ic);
-        close_in ic
-      end
-    else assert false
-
-  | _ -> failwith "expect one argument"
+    if Js_config.get_diagnose () then
+      Format.fprintf Format.err_formatter ">Cmj: %s@." unit_name;
+    let cmj_table : Js_cmj_format.t = 
+      let values, pure =  Ext_marshal.from_string_uncheck Builtin_cmj_datasets.module_data.(i)  in   
+      {values; pure; 
+        package_spec = Js_packages_info.runtime_package_specs;
+        case = Little;
+      } (* FIXME when we change it *)
+    in 
+    if Js_config.get_diagnose () then
+      Format.fprintf Format.err_formatter "<Cmj: %s@." unit_name;
+    {package_path =  
+       Filename.dirname (Filename.dirname Sys.executable_name); cmj_table}
+  | None
+    ->  
+    Bs_exception.error (Cmj_not_found unit_name)

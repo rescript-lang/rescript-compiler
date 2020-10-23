@@ -24,33 +24,17 @@
 
 
  
-let g_pkg_flg = "g_pkg_flg"
-
-let bsc = "bsc" 
-
-let src_root_dir = "src_root_dir"
-let bsdep = "bsdep"
-
-let bsc_flags = "bsc_flags"
-
-let ppx_flags = "ppx_flags"
-
-let pp_flags = "pp_flags"
 
 
-let g_dpkg_incls = "g_dpkg_incls"
+(* Invariant: the two string literal has 
+  to be "a" and "$a"
+*)
 
-let refmt = "refmt"
+let src_root_dir = "g_root"
 
-let refmt_flags = "refmt_flags"
+let lazy_src_root_dir = "$g_root" 
 
-let postbuild = "postbuild"
 
-let g_ns = "g_ns" 
 
-let warnings = "warnings"
 
-let gentypeconfig = "gentypeconfig"
-
-let g_dev_incls = "g_dev_incls"
 

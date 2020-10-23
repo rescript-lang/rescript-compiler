@@ -1,8 +1,8 @@
+'use strict';
 
-
-import * as Caml_format from "./caml_format.js";
-import * as Caml_primitive from "./caml_primitive.js";
-import * as Caml_js_exceptions from "./caml_js_exceptions.js";
+var Caml_format = require("../../lib/js/caml_format.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function succ(n) {
   return n + 1;
@@ -59,21 +59,18 @@ var max_int = 9007199254740991;
 
 var min_int = -9007199254740991;
 
-export {
-  zero ,
-  one ,
-  minus_one ,
-  succ ,
-  pred ,
-  abs ,
-  size ,
-  max_int ,
-  min_int ,
-  lognot ,
-  of_string_opt ,
-  to_string ,
-  compare ,
-  equal ,
-  
-}
+exports.zero = zero;
+exports.one = one;
+exports.minus_one = minus_one;
+exports.succ = succ;
+exports.pred = pred;
+exports.abs = abs;
+exports.size = size;
+exports.max_int = max_int;
+exports.min_int = min_int;
+exports.lognot = lognot;
+exports.of_string_opt = of_string_opt;
+exports.to_string = to_string;
+exports.compare = compare;
+exports.equal = equal;
 /* No side effect */

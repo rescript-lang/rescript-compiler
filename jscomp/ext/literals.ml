@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -31,7 +31,7 @@
 let js_array_ctor = "Array"
 let js_type_number = "number"
 let js_type_string = "string"
-let js_type_object = "object" 
+let js_type_object = "object"
 let js_type_boolean = "boolean"
 let js_undefined = "undefined"
 let js_prop_length = "length"
@@ -61,9 +61,8 @@ let fn_method = "fn_method"
 let fn_mk = "fn_mk"
 (*let js_fn_runmethod = "js_fn_runmethod"*)
 
-let bs_deriving = "bs.deriving"
-let bs_deriving_dot = "bs.deriving."
-let bs_type = "bs.type"
+
+
 
 
 (** nodejs *)
@@ -90,40 +89,30 @@ let suffix_re = ".re"
 let suffix_rei = ".rei"
 let suffix_res = ".res"
 let suffix_resi = ".resi"
-let suffix_resast = ".resast"
-let suffix_resiast = ".resiast"
 let suffix_mlmap = ".mlmap"
 
-let suffix_cmt = ".cmt" 
-let suffix_cmti = ".cmti" 
-let suffix_mlast = ".mlast"
-let suffix_mlast_simple = ".mlast_simple"
-let suffix_mliast = ".mliast"
-let suffix_reast = ".reast"
-let suffix_reiast = ".reiast"
-let suffix_mliast_simple = ".mliast_simple"
+let suffix_cmt = ".cmt"
+let suffix_cmti = ".cmti"
+let suffix_ast = ".ast"
+let suffix_iast = ".iast"
 let suffix_d = ".d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
-(* let suffix_re_js = ".re.js" *)
+let suffix_mjs = ".mjs"
+let suffix_cjs = ".cjs"
 let suffix_gen_js = ".gen.js"
 let suffix_gen_tsx = ".gen.tsx"
-let suffix_tsx = ".tsx"
 
-let commonjs = "commonjs" 
+let commonjs = "commonjs"
 
 let es6 = "es6"
 let es6_global = "es6-global"
 
-let unused_attribute = "Unused attribute " 
-let dash_nostdlib = "-nostdlib"
+let unused_attribute = "Unused attribute "
 
-let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
-let reactjs_jsx_ppx_3_exe  = "reactjs_jsx_ppx_3.exe"
 
-let native = "native"
-let bytecode = "bytecode"
-let js = "js"
+
+
 
 
 
@@ -134,7 +123,7 @@ let node_current = "."
 
 let gentype_import = "genType.import"
 
-let bsbuild_cache = ".bsbuild"    
+let bsbuild_cache = ".bsbuild"
 
 let sourcedirs_meta = ".sourcedirs.json"
 

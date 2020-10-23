@@ -1284,7 +1284,10 @@ val reverse_in_place : 'a array -> unit
 val reverse : 'a array -> 'a array 
 val reverse_of_list : 'a list -> 'a array
 
-val filter : ('a -> bool) -> 'a array -> 'a array
+val filter : 
+  'a array -> 
+  ('a -> bool) ->   
+  'a array
 
 val filter_map : 
 'a array -> 
@@ -1326,7 +1329,10 @@ val find_and_split :
   ('a -> 'b -> bool) ->
   'b -> 'a split
 
-val exists : ('a -> bool) -> 'a array -> bool 
+val exists : 
+  'a array -> 
+  ('a -> bool) ->  
+  bool 
 
 val is_empty : 'a array -> bool 
 
@@ -1424,7 +1430,7 @@ let reverse_of_list =  function
       | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
     fill 0 tl
 
-let filter f a =
+let filter a f =
   let arr_len = Array.length a in
   let rec aux acc i =
     if i = arr_len 
@@ -1573,7 +1579,7 @@ let find_and_split arr cmp v : _ split =
 
 (** TODO: available since 4.03, use {!Array.exists} *)
 
-let exists p a =
+let exists a p =
   let n = Array.length a in
   let rec loop i =
     if i = n then false
@@ -5986,7 +5992,7 @@ module Literals
 = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -6004,7 +6010,7 @@ module Literals
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -6018,7 +6024,7 @@ module Literals
 let js_array_ctor = "Array"
 let js_type_number = "number"
 let js_type_string = "string"
-let js_type_object = "object" 
+let js_type_object = "object"
 let js_type_boolean = "boolean"
 let js_undefined = "undefined"
 let js_prop_length = "length"
@@ -6048,9 +6054,8 @@ let fn_method = "fn_method"
 let fn_mk = "fn_mk"
 (*let js_fn_runmethod = "js_fn_runmethod"*)
 
-let bs_deriving = "bs.deriving"
-let bs_deriving_dot = "bs.deriving."
-let bs_type = "bs.type"
+
+
 
 
 (** nodejs *)
@@ -6077,40 +6082,30 @@ let suffix_re = ".re"
 let suffix_rei = ".rei"
 let suffix_res = ".res"
 let suffix_resi = ".resi"
-let suffix_resast = ".resast"
-let suffix_resiast = ".resiast"
 let suffix_mlmap = ".mlmap"
 
-let suffix_cmt = ".cmt" 
-let suffix_cmti = ".cmti" 
-let suffix_mlast = ".mlast"
-let suffix_mlast_simple = ".mlast_simple"
-let suffix_mliast = ".mliast"
-let suffix_reast = ".reast"
-let suffix_reiast = ".reiast"
-let suffix_mliast_simple = ".mliast_simple"
+let suffix_cmt = ".cmt"
+let suffix_cmti = ".cmti"
+let suffix_ast = ".ast"
+let suffix_iast = ".iast"
 let suffix_d = ".d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
-(* let suffix_re_js = ".re.js" *)
+let suffix_mjs = ".mjs"
+let suffix_cjs = ".cjs"
 let suffix_gen_js = ".gen.js"
 let suffix_gen_tsx = ".gen.tsx"
-let suffix_tsx = ".tsx"
 
-let commonjs = "commonjs" 
+let commonjs = "commonjs"
 
 let es6 = "es6"
 let es6_global = "es6-global"
 
-let unused_attribute = "Unused attribute " 
-let dash_nostdlib = "-nostdlib"
+let unused_attribute = "Unused attribute "
 
-let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
-let reactjs_jsx_ppx_3_exe  = "reactjs_jsx_ppx_3.exe"
 
-let native = "native"
-let bytecode = "bytecode"
-let js = "js"
+
+
 
 
 
@@ -6121,7 +6116,7 @@ let node_current = "."
 
 let gentype_import = "genType.import"
 
-let bsbuild_cache = ".bsbuild"    
+let bsbuild_cache = ".bsbuild"
 
 let sourcedirs_meta = ".sourcedirs.json"
 
@@ -6141,6 +6136,7 @@ let tl = "tl"
 
 let lazy_done = "LAZY_DONE"
 let lazy_val = "VAL"
+
 end
 module Bsb_db_decode : sig 
 #1 "bsb_db_decode.mli"
@@ -6719,6 +6715,9 @@ external
 
     
 
+
+
+external set_as_old_file : string -> unit = "caml_stale_file"
 end
 module Ext_util : sig 
 #1 "ext_util.mli"
@@ -8102,7 +8101,7 @@ let suites =
       = ""
       [@@bs.send.pipe:int]
       [@@bs.splice]|}|] in  
-      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "bs.splice")
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "variadic")
     end;
         __LOC__ >:: begin fun _ -> 
     let v_output = perform_bsc [|"-bs-eval"; {|external
@@ -8111,7 +8110,7 @@ let suites =
   = ""
   [@@bs.send.pipe:int]
   [@@bs.splice]  |}|] in  
-      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "bs.splice")
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "variadic")
     end;
 
     __LOC__ >:: begin fun _ ->
@@ -8167,7 +8166,7 @@ external ff :
       (* Ounit_cmd_util.debug_output should_err ; *)
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring
-           should_err.stderr "bs.uncurry")
+           should_err.stderr "uncurry")
     end ;
 
     __LOC__ >:: begin fun _ ->
@@ -8521,6 +8520,9 @@ module Ml_binary : sig
 
 
 
+(* This file was used to read reason ast
+  and part of parsing binary ast
+ *)
 type _ kind = 
   | Ml : Parsetree.structure kind 
   | Mli : Parsetree.signature kind
@@ -8532,6 +8534,8 @@ val write_ast :
    'a kind -> string -> 'a -> out_channel -> unit
 
 val magic_of_kind : 'a kind -> string   
+
+
 end = struct
 #1 "ml_binary.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8572,7 +8576,7 @@ let read_ast (type t ) (kind : t  kind) ic : t  =
     | Mli -> Config.ast_intf_magic_number in 
   let buffer = really_input_string ic (String.length magic) in
   assert(buffer = magic); (* already checked by apply_rewriter *)
-  Location.set_input_name @@ input_value ic;
+  Location.set_input_name (input_value ic);
   input_value ic 
 
 let write_ast (type t) (kind : t kind) 
@@ -8590,7 +8594,8 @@ let magic_of_kind : type a . a kind -> string = function
   | Ml -> Config.ast_impl_magic_number
   | Mli -> Config.ast_intf_magic_number
 
-  
+
+
 end
 module Ast_extract : sig 
 #1 "ast_extract.mli"
@@ -8776,7 +8781,7 @@ let output = bsc_eval {|
             |}
           in
           OUnit.assert_bool __LOC__
-            (Ext_string.contain_substring output.stderr "bs.unwrap")
+            (Ext_string.contain_substring output.stderr "unwrap")
         end;
 
         __LOC__ >:: begin fun _ ->
@@ -14224,8 +14229,8 @@ module Ext_sys : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* Not used yet *)
-(* val is_directory_no_exn : string -> bool *)
+
+val is_directory_no_exn : string -> bool
 
 
 val is_windows_or_cygwin : bool 
@@ -14258,8 +14263,8 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** TODO: not exported yet, wait for Windows Fix*)
-(* let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false  *)
+let is_directory_no_exn f = 
+  try Sys.is_directory f with _ -> false 
 
 
 let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
@@ -16267,7 +16272,7 @@ let rec valid_module_name_aux name off len =
   else 
     let c = String.unsafe_get name off in 
     match c with 
-    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> 
+    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' | '.' | '[' | ']' -> 
       valid_module_name_aux name (off + 1) len 
     | _ -> false
 
@@ -16287,6 +16292,10 @@ let valid_module_name name len =
         Upper
       else Invalid  
     | 'a' .. 'z' 
+    | '0' .. '9'
+    | '_'
+    | '[' 
+    | ']'
       -> 
       if valid_module_name_aux name 1 len then
         Lower
@@ -16461,6 +16470,34 @@ let js_id_name_of_hint_name module_name =
     else  Ext_buffer.contents buf 
 
 end
+module Ext_js_suffix
+= struct
+#1 "ext_js_suffix.ml"
+type t = 
+  | Js 
+  | Bs_js   
+  | Mjs
+  | Cjs
+  | Unknown_extension
+let to_string (x : t) =   
+  match x with 
+  | Js -> Literals.suffix_js
+  | Bs_js -> Literals.suffix_bs_js  
+  | Mjs -> Literals.suffix_mjs
+  | Cjs -> Literals.suffix_cjs
+  | Unknown_extension -> assert false
+
+
+let of_string (x : string) : t =
+  match () with 
+  | () when x = Literals.suffix_js -> Js 
+  | () when x = Literals.suffix_bs_js -> Bs_js       
+  | () when x = Literals.suffix_mjs -> Mjs
+  | () when x = Literals.suffix_cjs -> Cjs 
+  | _ -> Unknown_extension
+
+
+end
 module Ext_js_file_kind
 = struct
 #1 "ext_js_file_kind.ml"
@@ -16487,14 +16524,20 @@ module Ext_js_file_kind
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type case = 
+  | Upper
+  | Little 
 
-type t = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs
+type t = {
+  case : case; 
+  suffix : Ext_js_suffix.t;
+}
 
 
+let any_runtime_kind = {
+  case = Little; 
+  suffix = Ext_js_suffix.Js
+}
 end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
@@ -16547,7 +16590,8 @@ val change_ext_ns_suffix :
   *)
 val js_name_of_modulename : 
   string -> 
-  Ext_js_file_kind.t -> 
+  Ext_js_file_kind.case -> 
+  Ext_js_suffix.t ->
   string
 
 (* TODO handle cases like 
@@ -16617,20 +16661,13 @@ let try_split_module_name name =
 
 
   
-(* let js_name_of_basename bs_suffix s =   
-  change_ext_ns_suffix  s 
-  (if bs_suffix then Literals.suffix_bs_js else  Literals.suffix_js ) *)
 
-let js_name_of_modulename s (little : Ext_js_file_kind.t) : string = 
-  match little with 
-  | Little_js -> 
-    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_js
-  | Little_bs -> 
-    change_ext_ns_suffix (Ext_string.uncapitalize_ascii s)  Literals.suffix_bs_js
-  | Upper_js ->
-    change_ext_ns_suffix s  Literals.suffix_js
-  | Upper_bs -> 
-    change_ext_ns_suffix s  Literals.suffix_bs_js
+let js_name_of_modulename s (case : Ext_js_file_kind.case) suffix : string = 
+  let s = match case with 
+    | Little -> 
+      Ext_string.uncapitalize_ascii s
+    | Upper -> s  in 
+  change_ext_ns_suffix s  (Ext_js_suffix.to_string suffix)
 
 (* https://docs.npmjs.com/files/package.json 
    Some rules:
@@ -16787,7 +16824,7 @@ let suites =
       Ext_filename.module_name "a/hello.ml" =~ "Hello";
       Ext_filename.as_module ~basename:"a.ml" =~ Some {module_name = "A"; case = false};
       Ext_filename.as_module ~basename:"Aa.ml" =~ Some {module_name = "Aa"; case = true};
-      Ext_filename.as_module ~basename:"_Aa.ml" =~ None;
+      (* Ext_filename.as_module ~basename:"_Aa.ml" =~ None; *)
       Ext_filename.as_module ~basename:"A_a" =~ Some {module_name = "A_a"; case = true};
       Ext_filename.as_module ~basename:"" =~ None;
       Ext_filename.as_module ~basename:"a/hello.ml" =~ 
@@ -17087,13 +17124,13 @@ let suites =
       Ext_namespace.change_ext_ns_suffix  "AA-b" Literals.suffix_js
       =~ "AA.js";
       Ext_namespace.js_name_of_modulename 
-        "AA-b" Little_js 
+        "AA-b" Little  Js
       =~ "aA.js";
       Ext_namespace.js_name_of_modulename 
-        "AA-b" Upper_js 
+        "AA-b" Upper  Js
       =~ "AA.js";
       Ext_namespace.js_name_of_modulename 
-        "AA-b" Upper_bs 
+        "AA-b" Upper Bs_js
       =~ "AA.bs.js";
     end;
     __LOC__ >:: begin   fun _ -> 

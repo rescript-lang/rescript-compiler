@@ -65,15 +65,7 @@ let gen_signature
        (Ast_payload.table_dispatch !derive_table action).signature_gen
          tdcls explict_nonrec) 
 
-(** used for cases like [%sexp] *)         
-let gen_expression ({Asttypes.txt ; loc}) typ =
-  let txt = Ext_string.tail_from txt (String.length Literals.bs_deriving_dot) in 
-  match (Ast_payload.table_dispatch !derive_table 
-           ({txt ; loc}, None)).expression_gen with 
-  | None ->
-    Bs_syntaxerr.err loc (Unregistered txt)
 
-  | Some f -> f typ
 
 open Ast_helper  
 let gen_structure_signature 

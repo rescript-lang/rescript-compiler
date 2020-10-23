@@ -35,9 +35,9 @@ var visitorPattern = `
 rule p4of
     command = camlp4of $flags -impl $in -printer o -o $out
     generator = true
-build core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml
+o core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml
     flags = -I core -filter map -filter trash
-build core/js_map.ml: p4of core/js_map.mlp | core/j.ml
+o core/js_map.ml: p4of core/js_map.mlp | core/j.ml
     flags = -I core -filter Camlp4FoldGenerator -filter trash
 `;
 /**
@@ -405,7 +405,7 @@ function targetsToString(files, cwd) {
 function ninjaBuild(outputs, inputs, rule, deps, cwd, overrides) {
   var fileOutputs = targetsToString(outputs, cwd);
   var fileInputs = targetsToString(inputs, cwd);
-  var stmt = `build ${fileOutputs} : ${rule} ${fileInputs}`;
+  var stmt = `o ${fileOutputs} : ${rule} ${fileInputs}`;
   // deps.push(pseudoTarget('../lib/bsc'))
   if (deps.length > 0) {
     var fileDeps = targetsToString(deps, cwd);
@@ -873,7 +873,7 @@ async function runtimeNinja(devmode = true) {
       : "build.ninja"
     : "release.ninja";
   var templateRuntimeRules = `
-bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nopervasives  -unsafe -w +50  
+bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nopervasives  -unsafe -w +50 -warn-error A
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuidList([
@@ -972,7 +972,7 @@ async function othersNinja(devmode = true) {
   var ninjaCwd = "others";
 
   var templateOthersRules = `
-bsc_flags = ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6   -nopervasives  -unsafe  -w +50  -open Bs_stdlib_mini -I ./runtime
+bsc_flags = ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6   -nopervasives  -unsafe  -w +50 -warn-error A  -open Bs_stdlib_mini -I ./runtime
 ${ruleCC(ninjaCwd)}
 ${
   devmode
@@ -1099,7 +1099,7 @@ async function stdlibNinja(devmode = true) {
   var bsc_builtin_overrides = [[bsc_flags, `$${bsc_flags} -nopervasives`]];
   // It is interesting `-w -a` would generate not great code sometimes
   // deprecations diabled due to string_of_float
-  var warnings = "-w -9-3-106";
+  var warnings = "-w -9-3-106 -warn-error A";
   var templateStdlibRules = `
 ${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6   ${warnings}  -I runtime  -I others
 ${ruleCC(ninjaCwd)}
@@ -1235,7 +1235,7 @@ async function testNinja() {
   var ninjaOutput = useEnv ? "env.ninja" : "build.ninja";
   var ninjaCwd = `test`;
   var templateTestRules = `
-bsc_flags = -absname -bs-no-version-header  -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104  -I runtime -I $stdlib -I others
+bsc_flags = -absname -bs-no-version-header  -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104 -warn-error A  -I runtime -I $stdlib -I others
 ${ruleCC(ninjaCwd)}
 
 
@@ -1411,7 +1411,7 @@ subninja runtime/env.ninja
 subninja others/env.ninja
 subninja $stdlib/env.ninja
 subninja test/env.ninja
-build all: phony runtime others $stdlib test
+o all: phony runtime others $stdlib test
 `
     );
   } else {
@@ -1426,7 +1426,7 @@ subninja runtime/build.ninja
 subninja others/build.ninja
 subninja $stdlib/build.ninja
 subninja test/build.ninja
-build all: phony runtime others $stdlib test
+o all: phony runtime others $stdlib test
 `
     );
     writeFileAscii(
@@ -1520,13 +1520,13 @@ function preprocessorNinjaSync() {
     .readdirSync(path.join(jscompDir, "..", "syntax", "src"), "ascii")
     .filter((x) => x.endsWith(".ml") || x.endsWith(".mli"));
   var buildNapkinFiles = napkinFiles
-    .map((file) => `build napkin/${file} : copy ../syntax/src/${file}`)
+    .map((file) => `o napkin/${file} : copy ../syntax/src/${file}`)
     .join("\n");
   var cppoNative = `
 ${useEnv ? getEnnvConfigNinja() : getVendorConfigNinja()}
 rule link
     command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out
-build ${cppoFile}: link ${cppoMonoFile}
+o ${cppoFile}: link ${cppoMonoFile}
     libs = unix.cmxa str.cmxa
     generator = true
 ${cppoRule()}
@@ -1559,7 +1559,7 @@ ${cppoList("outcome_printer", [
   ["reason_syntax_util.ml", "reason_syntax_util.cppo.ml", ""],
   ["reason_syntax_util.mli", "reason_syntax_util.cppo.mli", ""],
 ])}
-build ../${
+o ../${
     process.platform
   }/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
     libs = ocamlcommon.cmxa
@@ -1607,8 +1607,7 @@ function nativeNinja() {
   var templateNative = `
 subninja ${getPreprocessorFileName()}
 rule optc
-    command = BS_NATIVE=${!!process.env
-      .BS_NATIVE} $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50 -absname -c $in
+    command = $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50 -warn-error A -absname -c $in
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
@@ -1621,52 +1620,52 @@ rule mk_bsversion
     generator = true
 rule gcc
     command = $ocamlopt -ccopt -fPIC -ccopt -O2 -ccopt -o -ccopt $out -c $in
-build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c
+o stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c
 rule ocamlmklib
     command = $ocamlmklib -v $in -o $name && touch $out
 
 rule mk_keywords
     command = $ocaml $in
     generator = true
-build ext/js_reserved_map.ml: mk_keywords ../scripts/build_sorted.ml keywords.list
+o ext/js_reserved_map.ml: mk_keywords ../scripts/build_sorted.ml keywords.list
 
-build stubs/libbs_hash.a stubs/dllbs_hash.so: ocamlmklib stubs/ext_basic_hash_stubs.o
+o stubs/libbs_hash.a stubs/dllbs_hash.so: ocamlmklib stubs/ext_basic_hash_stubs.o
     name = stubs/bs_hash
 rule stubslib
     command = $ocamlopt -a $ml -o $out -cclib $clib
-build stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a
+o stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a
     ml = stubs/bs_hash_stubs.cmx
     clib = stubs/libbs_hash.a
 
 ${generateVisitorPattern()}
 
-build common/bs_version.ml : mk_bsversion build_version.js ../package.json
+o common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
-build ../${
+o ../${
     process.platform
   }/bsc: link napkin/napkin.cmxa js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
-build ../${
+o ../${
     process.platform
   }/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
-build ../${
+o ../${
     process.platform
   }/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa bsb_helper/bsb_helper.cmxa main/bsb_helper_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
-build ./bin/bspack.exe: link stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
+o ./bin/bspack.exe: link stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
     libs = unix.cmxa ocamlcommon.cmxa
     flags = -I ./bin -w -40-30    
-build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx
+o ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx
     libs = ocamlcommon.cmxa    
-build ./bin/cmij.exe: link ./stubs/stubs.cmxa ext/ext.cmxa  common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmij_main.cmx
+o ./bin/cmij.exe: link ./stubs/stubs.cmxa ext/ext.cmxa  common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmij_main.cmx
     libs = ocamlcommon.cmxa
 
 rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
     generator = true
-build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa bsb_helper/bsb_helper.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
+o ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa bsb_helper/bsb_helper.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
 
 ${mllRule}
@@ -1675,7 +1674,7 @@ ${mllList("ext", ["ext_json_parse.mll"])}
 
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in
-build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/generator.ml
+o ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/generator.ml
     flags = -I +ocamldoc -I ../odoc_gen -absname
 `;
   /**
@@ -1745,13 +1744,13 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
           if (y.ext === ".cmx") {
             var intf = path.join(y.dir, y.name + ".cmi");
             var ml = path.join(y.dir, y.name + ".ml");
-            return `build ${
+            return `o ${
               deps.has(intf) ? target : [target, intf].join(" ")
             } : optc ${ml} | ${setSortedToStringAsNativeDeps(deps)}`;
           } else {
             // === 'cmi'
             var mli = path.join(y.dir, y.name + ".mli");
-            return `build ${target} : optc ${mli} | ${setSortedToStringAsNativeDeps(
+            return `o ${target} : optc ${mli} | ${setSortedToStringAsNativeDeps(
               deps
             )}`;
           }
@@ -1760,7 +1759,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
       libs.forEach((x) => {
         var output = sortFilesByDeps(x.libs, map);
         var name = x.name;
-        stmts.push(`build ${name}/${name}.cmxa : archive ${output.join(" ")}`);
+        stmts.push(`o ${name}/${name}.cmxa : archive ${output.join(" ")}`);
       });
 
       writeFileAscii(
@@ -1781,10 +1780,6 @@ function main() {
     }
     if (process.argv.includes("-check")) {
       checkEffect();
-    }
-    if (process.argv.includes("-native")) {
-      process.env.BS_NATIVE = "true";
-      emptyCount++;
     }
     if (process.argv.includes("-playground")) {
       isPlayground = true;

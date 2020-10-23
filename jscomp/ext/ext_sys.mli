@@ -23,8 +23,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* Not used yet *)
-(* val is_directory_no_exn : string -> bool *)
+
+val is_directory_no_exn : string -> bool
 
 
 val is_windows_or_cygwin : bool 

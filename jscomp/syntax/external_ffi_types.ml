@@ -94,22 +94,22 @@ type external_spec =
 
 (* let name_of_ffi ffi =
   match ffi with
-  | Js_get_index _scope -> "[@@bs.get_index ..]"
-  | Js_set_index _scope -> "[@@bs.set_index ..]"
-  | Js_get { js_get_name = s} -> Printf.sprintf "[@@bs.get %S]" s
-  | Js_set { js_set_name = s} -> Printf.sprintf "[@@bs.set %S]" s
-  | Js_call v  -> Printf.sprintf "[@@bs.val %S]" v.name
-  | Js_send v  -> Printf.sprintf "[@@bs.send %S]" v.name
-  | Js_module_as_fn v  -> Printf.sprintf "[@@bs.val %S]" v.external_module_name.bundle
-  | Js_new v  -> Printf.sprintf "[@@bs.new %S]" v.name
+  | Js_get_index _scope -> "@get_index .."
+  | Js_set_index _scope -> "@set_index .."
+  | Js_get { js_get_name = s} -> Printf.sprintf "[@@get %S]" s
+  | Js_set { js_set_name = s} -> Printf.sprintf "[@@set %S]" s
+  | Js_call v  -> Printf.sprintf "[@@val %S]" v.name
+  | Js_send v  -> Printf.sprintf "[@@send %S]" v.name
+  | Js_module_as_fn v  -> Printf.sprintf "[@@val %S]" v.external_module_name.bundle
+  | Js_new v  -> Printf.sprintf "[@@new %S]" v.name
   | Js_module_as_class v
-    -> Printf.sprintf "[@@bs.module] %S " v.bundle
+    -> Printf.sprintf "[@@module] %S " v.bundle
   | Js_module_as_var v
     ->
-    Printf.sprintf "[@@bs.module] %S " v.bundle
-  | Js_var v (* FIXME: could be [@@bs.module "xx"] as well *)
+    Printf.sprintf "[@@module] %S " v.bundle
+  | Js_var v (* FIXME: could be [@@module "xx"] as well *)
     ->
-    Printf.sprintf "[@@bs.val] %S " v.name *)
+    Printf.sprintf "[@@val] %S " v.name *)
 
 type return_wrapper =
   | Return_unset
@@ -179,7 +179,7 @@ let valid_global_name ?loc txt =
 
 (*
   We loose such check (see #2583),
-  it also helps with the implementation deriving abstract [@bs.as]
+  it also helps with the implementation deriving abstract [@as]
 *)
 
 let valid_method_name ?loc:_  _txt  =

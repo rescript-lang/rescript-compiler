@@ -29,11 +29,11 @@ let ff () =
 
 type a = {
   mutable low : string
-  [@bs.optional]
-  [@bs.as "lo-x"]
+  [@optional]
+  [@as "lo-x"]
 ;
   hi : int
-} [@@bs.deriving abstract]
+} [@@deriving abstract]
 
 
 (**

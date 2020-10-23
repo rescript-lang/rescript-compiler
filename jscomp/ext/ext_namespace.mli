@@ -47,7 +47,8 @@ val change_ext_ns_suffix :
   *)
 val js_name_of_modulename : 
   string -> 
-  Ext_js_file_kind.t -> 
+  Ext_js_file_kind.case -> 
+  Ext_js_suffix.t ->
   string
 
 (* TODO handle cases like 

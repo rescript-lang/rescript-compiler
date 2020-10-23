@@ -25,13 +25,15 @@
 type t
 
 
-val default_package_specs : t
 
-val from_json:
-  Ext_json_types.t -> t 
+
+val from_map:
+  Ext_json_types.t Map_string.t -> t 
 
 val get_list_of_output_js : 
-  t -> bool -> string -> string list
+  t -> 
+  string -> 
+  string list
 
 (**
   Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}

@@ -51,7 +51,6 @@ type cxt = {
   cut_generators : bool;
   traverse : bool;
   namespace : string option;
-  bs_suffix: bool;
   ignored_dirs : Set_string.t
 }
 
@@ -65,14 +64,13 @@ let collect_pub_modules
   for i = 0 to Array.length xs - 1 do 
     let v = Array.unsafe_get xs i in 
     match v with 
-    | Str { str}
+    | Str { str; loc}
       -> 
       if Map_string.mem cache str then 
         set := Set_string.add !set str
       else 
-        Bsb_log.warn
-          "@{<warning>IGNORED@}: %S in public is not an existing module \
-          and has been ignored@." str
+        Bsb_exception.errorf ~loc
+          "%S in public is not an existing module" str
     | _ -> 
       Bsb_exception.errorf 
         ~loc:(Ext_json.loc_of v)
@@ -86,8 +84,8 @@ let extract_pub (input : Ext_json_types.t Map_string.t) (cur_sources : Bsb_db.ma
     if s = Bsb_build_schemas.export_all then Export_all  else 
     if s = Bsb_build_schemas.export_none then Export_none else 
       errorf x "invalid str for %s "  s 
-  | Some (Arr {content = s}) ->         
-    Export_set (collect_pub_modules s cur_sources)
+  | Some (Arr {content}) ->         
+    Export_set (collect_pub_modules content cur_sources)
   | Some config -> 
     Bsb_exception.config_error config "expect array or string"
   | None ->
@@ -217,6 +215,7 @@ let prune_staled_bs_js_files
     Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
       context.cwd in 
   if Sys.file_exists lib_parent then
+    (* walk through dangling *.cm[t,i,j] files *)
     let artifacts = Sys.readdir lib_parent in 
     Ext_array.iter artifacts (fun x ->       
         let kind = classify_suffix x  in
@@ -243,13 +242,6 @@ let prune_staled_bs_js_files
                          cmd ^ 
                          " -cmt-rm " ^ filepath)                   
                      : int ) with _ -> ())
-                | Cmj _ ->        
-                  (* remove .bs.js *)
-                  if context.bs_suffix then
-                    try_unlink 
-                      (Filename.concat context.cwd
-                         (String.sub x 0 j ^ Literals.suffix_bs_js)
-                      )
                | _ -> ());
               try_unlink filepath
             end
@@ -316,7 +308,7 @@ let rec
         let parent = Filename.concat root dir in
         Ext_array.fold_left (Lazy.force base_name_array) Bsb_file_groups.empty (fun origin x -> 
             if  not (Set_string.mem cxt.ignored_dirs x) && 
-                Sys.is_directory (Filename.concat parent x) then 
+                Ext_sys.is_directory_no_exn (Filename.concat parent x) then 
               Bsb_file_groups.merge
                 (
                   parsing_source_dir_map
@@ -399,7 +391,6 @@ let scan
   ~root 
   ~cut_generators 
   ~namespace 
-  ~bs_suffix 
   ~ignored_dirs
   x : t  = 
   parse_sources {
@@ -410,7 +401,6 @@ let scan
     root ;
     cut_generators;
     namespace;
-    bs_suffix;
     traverse = false
   } x 
 
@@ -464,7 +454,7 @@ and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field =
       | Some(True _), _ -> 
         Ext_array.iter file_array begin fun f -> 
           if not (Set_string.mem cxt.ignored_dirs f) && 
-             Sys.is_directory (Filename.concat working_dir f ) then 
+             Ext_sys.is_directory_no_exn (Filename.concat working_dir f ) then 
             walk_source_dir_map 
               {cxt with 
                cwd = 

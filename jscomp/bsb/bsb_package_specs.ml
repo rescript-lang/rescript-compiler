@@ -28,12 +28,13 @@ let (//) = Ext_path.combine
 
 
 (* TODO: sync up with {!Js_packages_info.module_system}  *)
-type format = 
+type format = Ext_module_system.t = 
   | NodeJS | Es6 | Es6_global
 
 type spec = {
   format : format;
-  in_source : bool 
+  in_source : bool;
+  suffix : Ext_js_suffix.t 
 }
 
 module Spec_set = Set.Make( struct type t = spec 
@@ -62,17 +63,12 @@ let string_of_format (x : format) =
   | Es6 -> Literals.es6
   | Es6_global -> Literals.es6_global
 
-let prefix_of_format (x : format)  =   
-  (match x with 
-  | NodeJS -> Bsb_config.lib_js 
-  | Es6 -> Bsb_config.lib_es6 
-  | Es6_global -> Bsb_config.lib_es6_global )
 
-let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
+let rec from_array suffix (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
   let has_in_source = ref false in
   Ext_array.iter arr (fun x ->
-      let result = from_json_single x  in
+      let result = from_json_single suffix x  in
       if result.in_source then 
         (
           if not !has_in_source then
@@ -87,10 +83,10 @@ let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
   !spec
 
 (* TODO: FIXME: better API without mutating *)
-and from_json_single (x : Ext_json_types.t) : spec =
+and from_json_single suffix (x : Ext_json_types.t) : spec =
   match x with
   | Str {str = format; loc } ->    
-      {format = supported_format format loc  ; in_source = false }    
+      {format = supported_format format loc  ; in_source = false ; suffix }    
   | Obj {map; loc} ->
     begin match Map_string.find_exn map "module" with
       | Str {str = format} ->
@@ -100,7 +96,17 @@ and from_json_single (x : Ext_json_types.t) : spec =
           | Some _
           | None -> false
         in        
-          {format = supported_format format loc ; in_source  }        
+        let suffix = 
+          match Map_string.find_opt map  "suffix" with
+          | Some (Str {str = suffix; loc}) ->
+            let s = Ext_js_suffix.of_string suffix in 
+            if s = Unknown_extension then 
+              Bsb_exception.errorf ~loc "expect .js,.bs.js,.mjs or .cjs"
+            else  s 
+          | Some _ -> 
+            Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "expect a string field"
+          | None -> suffix in   
+        {format = supported_format format loc ; in_source ; suffix}        
       | Arr _ ->
         Bsb_exception.errorf ~loc
           "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."
@@ -114,25 +120,28 @@ and from_json_single (x : Ext_json_types.t) : spec =
   | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
            "package-specs: we expect either a string or an object."
 
-let  from_json (x : Ext_json_types.t) : Spec_set.t =
+let  from_json suffix (x : Ext_json_types.t) : Spec_set.t =
   match x with
-  | Arr {content ; _} -> from_array content
-  | _ -> Spec_set.singleton (from_json_single x )
-
+  | Arr {content ; _} -> from_array suffix content
+  | _ -> Spec_set.singleton (from_json_single suffix x )
 
 let bs_package_output = "-bs-package-output"
-
+[@@@warning "+9"]
 (** Assume input is valid 
-    {[ -bs-package-output commonjs:lib/js/jscomp/test ]}
+    coordinate with command line flag 
+    {[ -bs-package-output commonjs:lib/js/jscomp/test:.js ]}    
 *)
-let package_flag ({format; in_source } : spec) dir =
+let package_flag ({format; in_source; suffix } : spec) dir =
   Ext_string.inter2
     bs_package_output 
-    (Ext_string.concat3
+    (Ext_string.concat5
        (string_of_format format)
        Ext_string.single_colon
        (if in_source then dir else
-        prefix_of_format format // dir))
+        Bsb_config.top_prefix_of_format format // dir)
+      Ext_string.single_colon  
+      (Ext_js_suffix.to_string suffix)
+    )
 
 let package_flag_of_package_specs (package_specs : t) 
     (dirname : string ) : string  = 
@@ -140,9 +149,9 @@ let package_flag_of_package_specs (package_specs : t)
       Ext_string.inter2 acc (package_flag format dirname )
     ) package_specs Ext_string.empty
 
-let default_package_specs = 
+let default_package_specs suffix = 
   Spec_set.singleton 
-    { format = NodeJS ; in_source = false }
+    { format = NodeJS ; in_source = false; suffix  }
 
 
 
@@ -152,17 +161,17 @@ let default_package_specs =
 *)
 let get_list_of_output_js 
     (package_specs : Spec_set.t)
-    (bs_suffix : bool)
     (output_file_sans_extension : string)
     = 
   Spec_set.fold 
     (fun (spec : spec) acc ->
-        let basename =  Ext_namespace.change_ext_ns_suffix
+        let basename =  
+          Ext_namespace.change_ext_ns_suffix
              output_file_sans_extension
-             (if bs_suffix then Literals.suffix_bs_js else Literals.suffix_js)
+             (Ext_js_suffix.to_string spec.suffix)
         in 
-        (Bsb_config.proj_rel @@ (if spec.in_source then basename
-        else prefix_of_format spec.format // basename))         
+        (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
+        else Bsb_config.lib_bs_prefix_of_format spec.format // basename) 
        :: acc
     ) package_specs []
 
@@ -173,5 +182,28 @@ let list_dirs_by
   =  
   Spec_set.iter (fun (spec : spec)  -> 
     if not spec.in_source then     
-      f (prefix_of_format spec.format) 
+      f (Bsb_config.top_prefix_of_format spec.format) 
   ) package_specs 
+  
+type json_map = Ext_json_types.t Map_string.t 
+
+let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
+  match Map_string.find_opt map Bsb_build_schemas.suffix with 
+  | None -> Js  
+  | Some (Str {str; loc}) -> 
+    let s =  Ext_js_suffix.of_string str  in 
+    if s = Unknown_extension then 
+      Bsb_exception.errorf ~loc
+        "expect .bs.js, .js, .cjs, .mjs here"
+    else s     
+  | Some config -> 
+    Bsb_exception.config_error config 
+      "expect a string exteion like \".js\" here"
+
+let from_map map =  
+  let suffix = extract_bs_suffix_exn map in   
+  match Map_string.find_opt map Bsb_build_schemas.package_specs with 
+  | Some x ->
+    from_json suffix x 
+  | None ->  default_package_specs suffix
+

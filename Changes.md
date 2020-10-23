@@ -1,4 +1,74 @@
 `*` means  potential break changes
+
+# 8.3.1
+This is a minor bug fix release for 8.3.0
+- capture warnings when rebuild without enforce warn-as-error
+- #4716 internal, make ninja a submodule in dev process
+- #4722 better dataflow for cases like `let {a;b} as obj = ...`
+- no need call `caml_enter_blocking_section` for single threaded compiler
+- #4739 fix the interaction of exotic filenames like `[id]` with the build system.
+
+# 8.3
+
+- #4694, #4712 improving/customizing the underlying ninja build system, better performance  
+
+- #4681, #4710 creating persistent lib/bs.compiler.log per each build for editor diagnostics
+
+- #4688, #4707 better error message
+
+- * #4702  remove nativeint module which is not meaningful on js platform
+
+- #4701 support both `bs.val` and `val` attributes, in the future to recommend the shorter ones
+
+- #4693 Fix the compiler runtime issue, always flush err_formatter when at_exit
+
+- #4687, #4689, #4691 allow user to customize js file extension in bsconfig.json (checkout the schema )
+
+- #4685, #4624, #4690 allow more character set in filenames to make rescript play better with react native and next.js
+
+- #4684 fix the raise of Sys.is_directory, make bsb works better with Emacs temp files
+
+- #4679 better error message for nonrec GADT
+
+- #4671, #4678 better strategies to remove staled output for the build system
+
+- #4676 (internal) add Config.syntax_kind so that some changes in super_errors can be made upstream
+
+- #4650, #4656, #4657, #4662 always warn-as-error while not degrading user expereince (with the help of build system)
+
+- #4661 (internal) not depending on upstream compenv module
+
+- #4639, #4642 refined static analysis to generate better code 
+
+- #4636, #4641 es6 default import support 
+
+- #4638 clean up the confusing error message over uncurry label
+
+- #4637 remove unneeded mention of BuckleScript in uncurried message
+
+- #4623 better data flow inference for common pattern: `let {a,b,c} = ...`
+
+- #4622 add html element & observer phantom types
+
+- #4618 fix combination of bs.obj with bs.as so that bs.as can carry more kinds of playload
+
+- #4613 (internal) pass down @inlined attribute from upstream. (the info is passed down, how to make use of it is not done yet)
+
+- #4609 Lift the restriction that user can only define a type with less than 256 constructors
+
+
+- #4606, #3961 (internal) use is_a_functor from upstream instead of guessing
+
+- #4605 (experimental) take `@@inline` attribute into consideration for functions
+
+- #4604 enhance Random module
+
+- #4600, #4599 fix missing bounds checking for Bytes.set
+
+- #4597 fix Js.Array and Js.Array2 the wrong return type for `from` method
+
+- #4513 better error message when interface/implementation mismatches (done in commit db485f1)
+
 # 8.2
 
 - `bsc -fmt myFile` now changed to `bsc -format myFile`

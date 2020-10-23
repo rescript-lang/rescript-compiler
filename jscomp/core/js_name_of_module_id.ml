@@ -37,11 +37,13 @@ let fix_path_for_windows : string -> string =
 let get_runtime_module_path 
     (dep_module_id : Lam_module_ident.t) 
     (current_package_info : Js_packages_info.t)
-    module_system = 
+    (module_system : Js_packages_info.module_system) = 
   let current_info_query = 
     Js_packages_info.query_package_infos current_package_info
       module_system  in
-  let js_file =  Ext_namespace.js_name_of_modulename dep_module_id.id.name Little_js in     
+  let js_file =  
+    Ext_namespace.js_name_of_modulename dep_module_id.id.name 
+      Little Js in (* Js may be subject to the module system *)
   match current_info_query with        
   | Package_not_found -> assert false
   | Package_script -> 
@@ -107,8 +109,9 @@ let string_of_module_id
           module_system  
       in
       match Lam_compile_env.get_package_path_from_cmj dep_module_id with 
-      | (package_path, dep_package_info, little) -> 
-        let js_file =  Ext_namespace.js_name_of_modulename dep_module_id.id.name little in 
+      | (package_path, dep_package_info, case) -> 
+
+        
         let dep_info_query =  
           Js_packages_info.query_package_infos dep_package_info module_system 
         in 
@@ -116,22 +119,19 @@ let string_of_module_id
         | Package_not_found , _  -> 
           Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
         | Package_script , Package_found _  -> 
-          Bs_exception.error (Dependency_script_module_dependent_not js_file)
+          Bs_exception.error (Dependency_script_module_dependent_not dep_module_id.id.name)
         | (Package_script  | Package_found _ ), Package_not_found -> assert false
 
-        | Package_found pkg, Package_script 
+        | Package_found ({suffix} as pkg), Package_script 
           ->    
-#if BS_NATIVE then
-          if Filename.is_relative pkg.rel_path then 
-            pkg.pkg_rel_path // js_file
-          else 
-            pkg.rel_path // js_file
-#else
+          let js_file =  
+              Ext_namespace.js_name_of_modulename dep_module_id.id.name case suffix in 
           pkg.pkg_rel_path // js_file
-#end
-
-        | Package_found dep_pkg,
+        | Package_found ({suffix } as dep_pkg),
           Package_found cur_pkg -> 
+          let js_file =  
+            Ext_namespace.js_name_of_modulename dep_module_id.id.name case suffix in 
+
           if  Js_packages_info.same_package_by_name current_package_info  dep_package_info then 
             Ext_path.node_rebase_file
               ~from:cur_pkg.rel_path
@@ -143,14 +143,7 @@ let string_of_module_id
           else  
             begin match module_system with 
               | NodeJS | Es6 -> 
-#if BS_NATIVE then
-          if Filename.is_relative dep_pkg.rel_path then 
-            dep_pkg.pkg_rel_path // js_file
-          else 
-            dep_pkg.rel_path // js_file
-#else
                 dep_pkg.pkg_rel_path // js_file
-#end
               (** Note we did a post-processing when working on Windows *)
               | Es6_global 
               ->             
@@ -167,6 +160,8 @@ let string_of_module_id
             end
         | Package_script, Package_script 
           -> 
+          let js_file =  
+            Ext_namespace.js_name_of_modulename dep_module_id.id.name case Js in 
           match Config_util.find_opt js_file with 
           | Some file -> 
             let basename = Filename.basename file in 
@@ -189,7 +184,7 @@ let string_of_module_id
 #if BS_BROWSER then   
 let string_of_module_id_in_browser (x : Lam_module_ident.t) =  
    match x.kind with
-   | External name -> name
+   | External {name} -> name
    | Runtime | Ml -> 
                    "./stdlib/" ^  Ext_string.uncapitalize_ascii x.id.name ^ ".js"
 let string_of_module_id 

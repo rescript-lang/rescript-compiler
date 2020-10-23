@@ -26,18 +26,18 @@ let rec bottom_aliases = function
   | _ -> None
 
 let simple_conversions = [
-  (("float", "int"), "int_of_float");
-  (("int", "float"), "float_of_int");
-  (("int", "string"), "string_of_int");
-  (("float", "string"), "string_of_float");
+  (("float", "int"), "Belt.Float.toInt");
+  (("float", "string"), "Belt.Float.toString");
+  (("int", "float"), "Belt.Int.toFloat");
+  (("int", "string"), "Belt.Int.toString");
+  (("string", "float"), "Belt.Float.fromString");
+  (("string", "int"), "Belt.Int.fromString");
 ]
 
 let print_simple_conversion ppf (actual, expected) =
   try (
     let converter = List.assoc (actual, expected) simple_conversions in
-    Format.pp_print_newline ppf ();
-    Format.pp_print_newline ppf ();
-    fprintf ppf "You can convert a @{<info>%s@} to a @{<info>%s@} with @{<info>%s@}." actual expected converter
+    fprintf ppf "@,@,@[<v 2>You can convert @{<info>%s@} to @{<info>%s@} with @{<info>%s@}.@]" actual expected converter
   ) with | Not_found -> ()
 
 let print_simple_message ppf = function
@@ -70,73 +70,59 @@ let rec collect_missing_arguments env type1 type2 = match type1 with
     end
   | _ -> None
 
-let print_expr_type_clash env trace ppf =
-  (* this is the most frequent error. Do whatever we can to provide specific
-    guidance to this generic error before giving up *)
-  if Super_reason_react.state_escape_scope trace && Super_reason_react.trace_both_component_spec trace then
-    fprintf ppf "@[<v>\
-      @[@{<info>Is this a ReasonReact reducerComponent or component with retained props?@}@ \
-      If so, is the type for state, retained props or action declared _after_@ the component declaration?@ \
-      @{<info>Moving these types above the component declaration@} should resolve this!@]\
-    @]"
-    (* This one above shouldn't catch any false positives, so we can safely not display the original type clash error. *)
-  else if Super_reason_react.is_component_spec_wanted_react_element trace then
-    fprintf ppf "@[<v>\
-      @[@{<info>Did you want to create a ReasonReact element without using JSX?@}@ If not, disregard this.@ \
-      If so, don't forget to wrap this value in `ReasonReact.element` yourself:@ https://reasonml.github.io/reason-react/docs/en/jsx.html#capitalized@]@,@,\
-      @[@{<info>Here's the original error message@}@]@,\
-    @]";
-    begin
-    let bottom_aliases_result = bottom_aliases trace in
-    let missing_arguments = match bottom_aliases_result with
-    | Some (actual, expected) -> collect_missing_arguments env actual expected
+let print_expr_type_clash env trace ppf = begin
+  (* this is the most frequent error. We should do whatever we can to provide
+  specific guidance to this generic error before giving up *)
+  let bottom_aliases_result = bottom_aliases trace in
+  let missing_arguments = match bottom_aliases_result with
+  | Some (actual, expected) -> collect_missing_arguments env actual expected
+  | None -> assert false
+  in
+  let print_arguments =
+    Format.pp_print_list
+      ~pp_sep:(fun ppf _ -> fprintf ppf ",@ ")
+      (fun ppf (label, argtype) ->
+        match label with
+        | Asttypes.Nolabel -> fprintf ppf "@[%a@]" type_expr argtype
+        | Labelled label ->
+          fprintf ppf "@[(~%s: %a)@]" label type_expr argtype
+        | Optional label ->
+          fprintf ppf "@[(?%s: %a)@]" label type_expr argtype
+      )
+  in
+  match missing_arguments with
+  | Some [singleArgument] ->
+    (* btw, you can't say "final arguments". Intermediate labeled
+      arguments might be the ones missing *)
+    fprintf ppf "@[@{<info>This call is missing an argument@} of type@ %a@]"
+      print_arguments [singleArgument]
+  | Some arguments ->
+    fprintf ppf "@[<hv>@{<info>This call is missing arguments@} of type:@ %a@]"
+      print_arguments arguments
+  | None ->
+    let missing_parameters = match bottom_aliases_result with
+    | Some (actual, expected) -> collect_missing_arguments env expected actual
     | None -> assert false
     in
-    let print_arguments =
-      Format.pp_print_list
-        ~pp_sep:(fun ppf _ -> fprintf ppf ",@ ")
-        (fun ppf (label, argtype) ->
-          match label with
-          | Asttypes.Nolabel -> fprintf ppf "@[%a@]" type_expr argtype
-          | Labelled label ->
-            fprintf ppf "@[(~%s: %a)@]" label type_expr argtype
-          | Optional label ->
-            fprintf ppf "@[(?%s: %a)@]" label type_expr argtype
-        )
-    in
-    match missing_arguments with
-    | Some [singleArgument] ->
-      (* btw, you can't say "final arguments". Intermediate labeled
-        arguments might be the ones missing *)
-      fprintf ppf "@[@{<info>This call is missing an argument@} of type@ %a@]"
-        print_arguments [singleArgument]
+    begin match missing_parameters with
+    | Some [singleParameter] ->
+      fprintf ppf "@[This value might need to be @{<info>wrapped in a function@ that@ takes@ an@ extra@ parameter@}@ of@ type@ %a@]@,@,"
+        print_arguments [singleParameter];
+      fprintf ppf "@[@{<info>Here's the original error message@}@]@,"
     | Some arguments ->
-      fprintf ppf "@[<hv>@{<info>This call is missing arguments@} of type:@ %a@]"
-        print_arguments arguments
-    | None ->
-      let missing_parameters = match bottom_aliases_result with
-      | Some (actual, expected) -> collect_missing_arguments env expected actual
-      | None -> assert false
-      in
-      begin match missing_parameters with
-      | Some [singleParameter] ->
-        fprintf ppf "@[This value might need to be @{<info>wrapped in a function@ that@ takes@ an@ extra@ parameter@}@ of@ type@ %a@]@,@,"
-          print_arguments [singleParameter];
-        fprintf ppf "@[@{<info>Here's the original error message@}@]@,"
-      | Some arguments ->
-        fprintf ppf "@[This value seems to @{<info>need to be wrapped in a function that takes extra@ arguments@}@ of@ type:@ @[<hv>%a@]@]@,@,"
-          print_arguments arguments;
-        fprintf ppf "@[@{<info>Here's the original error message@}@]@,"
-      | None -> ()
-      end;
+      fprintf ppf "@[This value seems to @{<info>need to be wrapped in a function that takes extra@ arguments@}@ of@ type:@ @[<hv>%a@]@]@,@,"
+        print_arguments arguments;
+      fprintf ppf "@[@{<info>Here's the original error message@}@]@,"
+    | None -> ()
+    end;
 
-      super_report_unification_error ppf env trace
-        (function ppf ->
-            fprintf ppf "This has type:")
-        (function ppf ->
-            fprintf ppf "But somewhere wanted:");
-      show_extra_help ppf env trace;
-    end
+    super_report_unification_error ppf env trace
+      (function ppf ->
+          fprintf ppf "This has type:")
+      (function ppf ->
+          fprintf ppf "Somewhere wanted:");
+    show_extra_help ppf env trace;
+  end
 
 (* Pasted from typecore.ml. Needed for some cases in report_error below *)
 (* Records *)
@@ -177,21 +163,21 @@ let report_error env ppf = function
           fprintf ppf "The variable %s on the left-hand side of this or-pattern has type" (Ident.name id))
         (function ppf ->
           fprintf ppf "but on the right-hand side it has type")
-  | Expr_type_clash ( 
+  | Expr_type_clash (
       (_, {desc = Tarrow _}) ::
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),_,_)}) :: _
-    ) -> 
-    fprintf ppf "This function is a curried function where an uncurried function is expected"    
+    ) ->
+    fprintf ppf "This function is a curried function where an uncurried function is expected"
   | Expr_type_clash (
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),a,_),_,_)}) ::
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),b,_),_,_)}) :: _
-    ) when a <> b -> 
-    fprintf ppf "This function has %s but was expected %s" a b 
-  | Expr_type_clash ( 
+    ) when a <> b ->
+    fprintf ppf "This function has %s but was expected %s" a b
+  | Expr_type_clash (
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),a,_),_,_)}) ::
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),b,_),_,_)}) :: _
-    ) when a <> b -> 
-    fprintf ppf "This method has %s but was expected %s" a b 
+    ) when a <> b ->
+    fprintf ppf "This method has %s but was expected %s" a b
 
   | Expr_type_clash trace ->
       (* modified *)
@@ -253,10 +239,10 @@ let report_error env ppf = function
         fprintf ppf "it should have type@ %a@]"
           type_expr ty
       end else begin
-        match ty with 
-        | {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),_,_)} -> 
+        match ty with
+        | {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),_,_)} ->
           fprintf ppf "This expression is excpeted to have an uncurried function"
-        | _ ->     
+        | _ ->
         fprintf ppf "@[This expression should not be a function,@ ";
         fprintf ppf "the expected type is@ %a@]"
           type_expr ty

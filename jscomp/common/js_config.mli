@@ -74,10 +74,10 @@ val tool_name : string
 
 val syntax_only  : bool ref
 val binary_ast : bool ref
-val simple_binary_ast : bool ref
 
 
-val bs_suffix : bool ref
+
+
 val debug : bool ref
 
 val cmi_only  : bool ref
@@ -100,4 +100,3 @@ val record_as_js_object : bool ref
 val as_ppx : bool ref 
 
 val mono_empty_array : bool ref
-val napkin : bool ref 

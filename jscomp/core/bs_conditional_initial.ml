@@ -35,6 +35,7 @@ let setup_env () =
   Matching.call_switcher_variant_constr := Polyvar_pattern_match.call_switcher_variant_constr;
   Clflags.no_std_include := true;
   Warnings.parse_options false Bsc_warnings.defaults_w;
+  Warnings.parse_options true Bsc_warnings.defaults_warn_error;
   Clflags.dump_location := false;  
   Clflags.compile_only := true;
   Config.bs_only := true;  
@@ -70,3 +71,5 @@ let setup_env () =
   ; Switch.cut := 100 (* tweakable but not very useful *)
 #end  
 
+let () = 
+    at_exit (fun _ -> Format.pp_print_flush Format.err_formatter ())

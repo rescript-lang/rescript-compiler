@@ -46,12 +46,12 @@ type builtin = {
   (** Rules below all need restat *)
   build_bin_deps : t ;
   build_bin_deps_dev : t ;
-  ml_cmj_js : t;
-  ml_cmj_js_dev : t;
-  ml_cmj_cmi_js : t ;
-  ml_cmj_cmi_js_dev : t ;
-  ml_cmi : t;
-  ml_cmi_dev : t ;
+  mj : t;
+  mj_dev : t;
+  mij : t ;
+  mij_dev : t ;
+  mi : t;
+  mi_dev : t ;
 
   build_package : t ;
   customs : t Map_string.t
@@ -69,15 +69,24 @@ type command = string
     we must make sure it is re-entrant
 *)
 val make_custom_rules : 
-  has_gentype:bool ->
-  has_postbuild:bool ->
-  has_ppx:bool ->
-  has_pp:bool ->
+  gentype_config:Bsb_config_types.gentype_config option ->
+  has_postbuild:string option ->
+  pp_file:string option ->
   has_builtin:bool -> 
-  bs_suffix:bool ->
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
   digest:string ->
   refmt:string option ->
+  package_specs:Bsb_package_specs.t ->
+  namespace:string option ->
+  package_name:string ->
+  bsc:string ->
+  warnings:string ->
+  bs_dep:string ->
+  ppx_files:Bsb_config_types.ppx list ->
+  bsc_flags:string ->  
+  dpkg_incls:string ->
+  lib_incls:string ->
+  dev_incls:string ->
   command Map_string.t ->
   builtin
 

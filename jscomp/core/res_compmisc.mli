@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2015-2020 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,14 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val init_path : unit -> unit
 
-
-
-
-
-
-let main_entries = []
-
-let ocaml_flags = ["-g"; "-bin-annot"; "-color"; "always"]
-
-let ocaml_dependencies = ["unix"; "bigarray"; ]
+val initial_env : unit -> Env.t

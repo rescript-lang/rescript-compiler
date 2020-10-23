@@ -69,6 +69,9 @@ let suites :  Mt.pair_suites =
                         float_of_string b))) 
    |> Array.to_list ) 
 
+let ( ^^ ) (Format (fmt1, str1) : _ format6) (Format (fmt2, str2) : _ format6) : _ format6 =
+  Format (CamlinternalFormatBasics.concat_fmt fmt1 fmt2,
+          str1 ^ "%," ^ str2)
 
     
 let ff = format_int "%32d"

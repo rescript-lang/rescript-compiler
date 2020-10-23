@@ -29,15 +29,15 @@ let (//) = Ext_path.combine
 let ninja_clean  proj_dir =
   try
     let cmd = Bsb_global_paths.vendor_ninja in
-    let lib_artifacts_dir = !Bsb_global_backend.lib_artifacts_dir in
+    let lib_artifacts_dir = Bsb_config.lib_bs in
     let cwd = proj_dir // lib_artifacts_dir in
     if Sys.file_exists cwd then
       let eid =
         Bsb_unix.run_command_execv {cmd ; args = [|cmd; "-t"; "clean"|] ; cwd} in
       if eid <> 0 then
-        Bsb_log.warn "@{<warning>ninja clean failed@}@."
+        Bsb_log.warn "@{<warning>Failed@}@."
   with  e ->
-    Bsb_log.warn "@{<warning>ninja clean failed@} : %s @." (Printexc.to_string e)
+    Bsb_log.warn "@{<warning>Failed@}: %s @." (Printexc.to_string e)
 
 let clean_bs_garbage proj_dir =
   Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ;

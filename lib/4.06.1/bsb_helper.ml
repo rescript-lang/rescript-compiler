@@ -1196,7 +1196,7 @@ module Literals
 = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -1214,7 +1214,7 @@ module Literals
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -1228,7 +1228,7 @@ module Literals
 let js_array_ctor = "Array"
 let js_type_number = "number"
 let js_type_string = "string"
-let js_type_object = "object" 
+let js_type_object = "object"
 let js_type_boolean = "boolean"
 let js_undefined = "undefined"
 let js_prop_length = "length"
@@ -1258,9 +1258,8 @@ let fn_method = "fn_method"
 let fn_mk = "fn_mk"
 (*let js_fn_runmethod = "js_fn_runmethod"*)
 
-let bs_deriving = "bs.deriving"
-let bs_deriving_dot = "bs.deriving."
-let bs_type = "bs.type"
+
+
 
 
 (** nodejs *)
@@ -1287,40 +1286,30 @@ let suffix_re = ".re"
 let suffix_rei = ".rei"
 let suffix_res = ".res"
 let suffix_resi = ".resi"
-let suffix_resast = ".resast"
-let suffix_resiast = ".resiast"
 let suffix_mlmap = ".mlmap"
 
-let suffix_cmt = ".cmt" 
-let suffix_cmti = ".cmti" 
-let suffix_mlast = ".mlast"
-let suffix_mlast_simple = ".mlast_simple"
-let suffix_mliast = ".mliast"
-let suffix_reast = ".reast"
-let suffix_reiast = ".reiast"
-let suffix_mliast_simple = ".mliast_simple"
+let suffix_cmt = ".cmt"
+let suffix_cmti = ".cmti"
+let suffix_ast = ".ast"
+let suffix_iast = ".iast"
 let suffix_d = ".d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
-(* let suffix_re_js = ".re.js" *)
+let suffix_mjs = ".mjs"
+let suffix_cjs = ".cjs"
 let suffix_gen_js = ".gen.js"
 let suffix_gen_tsx = ".gen.tsx"
-let suffix_tsx = ".tsx"
 
-let commonjs = "commonjs" 
+let commonjs = "commonjs"
 
 let es6 = "es6"
 let es6_global = "es6-global"
 
-let unused_attribute = "Unused attribute " 
-let dash_nostdlib = "-nostdlib"
+let unused_attribute = "Unused attribute "
 
-let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
-let reactjs_jsx_ppx_3_exe  = "reactjs_jsx_ppx_3.exe"
 
-let native = "native"
-let bytecode = "bytecode"
-let js = "js"
+
+
 
 
 
@@ -1331,7 +1320,7 @@ let node_current = "."
 
 let gentype_import = "genType.import"
 
-let bsbuild_cache = ".bsbuild"    
+let bsbuild_cache = ".bsbuild"
 
 let sourcedirs_meta = ".sourcedirs.json"
 
@@ -1351,6 +1340,7 @@ let tl = "tl"
 
 let lazy_done = "LAZY_DONE"
 let lazy_val = "VAL"
+
 end
 module Bsb_db_decode : sig 
 #1 "bsb_db_decode.mli"
@@ -2119,7 +2109,7 @@ let rec valid_module_name_aux name off len =
   else 
     let c = String.unsafe_get name off in 
     match c with 
-    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> 
+    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' | '.' | '[' | ']' -> 
       valid_module_name_aux name (off + 1) len 
     | _ -> false
 
@@ -2139,6 +2129,10 @@ let valid_module_name name len =
         Upper
       else Invalid  
     | 'a' .. 'z' 
+    | '0' .. '9'
+    | '_'
+    | '[' 
+    | ']'
       -> 
       if valid_module_name_aux name 1 len then
         Lower
@@ -2259,7 +2253,7 @@ module Bsb_helper_depfile_gen : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type kind = Js | Bytecode | Native
+
 
 (** [deps_of_channel ic]
     given an input_channel dumps all modules it depend on, only used for debugging 
@@ -2268,7 +2262,6 @@ val deps_of_channel : in_channel -> string list
 
 
 val emit_d: 
-  kind -> 
   bool ->  
   string  option ->
   string ->
@@ -2366,7 +2359,7 @@ let deps_of_channel (ic : in_channel) : string list =
   v
  *)
 
-type kind = Js | Bytecode | Native
+
 
 let output_file (buf : Ext_buffer.t) source namespace = 
   Ext_buffer.add_string buf 
@@ -2404,8 +2397,6 @@ let oc_impl
     (db : Bsb_db_decode.t)
     (namespace : string option)
     (buf : Ext_buffer.t)
-    (lhs_suffix : string)
-    (rhs_suffix : string)
   = 
   (* TODO: move namespace upper, it is better to resolve ealier *)  
   let has_deps = ref false in 
@@ -2413,7 +2404,7 @@ let oc_impl
   let at_most_once : unit lazy_t  = lazy (
     has_deps := true ;
     output_file buf (Ext_filename.chop_extension_maybe mlast) namespace ; 
-    Ext_buffer.add_string buf lhs_suffix; 
+    Ext_buffer.add_string buf Literals.suffix_cmj; 
     Ext_buffer.add_string buf dep_lit ) in  
   (match namespace with None -> () | Some ns -> 
       Lazy.force at_most_once;
@@ -2447,7 +2438,7 @@ let oc_impl
             Ext_string.uncapitalize_ascii dependent_module) in 
         Ext_buffer.add_char buf ' ';  
         output_file buf source namespace;
-        Ext_buffer.add_string buf rhs_suffix;
+        Ext_buffer.add_string buf Literals.suffix_cmj;
         
         (* #3260 cmj changes does not imply cmi change anymore *)
         oc_cmi buf namespace source
@@ -2512,7 +2503,6 @@ let oc_intf
 
 
 let emit_d 
-  compilation_kind
   (dev_group : bool) 
   (namespace : string option) (mlast : string) (mliast : string) = 
   let data  =
@@ -2521,20 +2511,13 @@ let emit_d
   let buf = Ext_buffer.create 2048 in 
   let filename = 
       Ext_filename.new_extension mlast Literals.suffix_d in   
-  let lhs_suffix, rhs_suffix =
-    match compilation_kind with
-    | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
-    | Bytecode -> Literals.suffix_cmo, Literals.suffix_cmo
-    | Native   -> Literals.suffix_cmx, Literals.suffix_cmx 
-  in   
   oc_impl 
     mlast
     dev_group
     data
     namespace
     buf 
-    lhs_suffix 
-    rhs_suffix ;      
+    ;      
   if mliast <> "" then begin
     oc_intf 
       mliast
@@ -2644,13 +2627,11 @@ let () =
     match !rev_list with
     | [x]
       ->  Bsb_helper_depfile_gen.emit_d
-            Js
             !dev_group
             !namespace x ""
     | [y; x] (* reverse order *)
       -> 
       Bsb_helper_depfile_gen.emit_d
-        Js
         !dev_group
         !namespace x y
     | _ -> 

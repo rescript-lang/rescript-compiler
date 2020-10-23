@@ -9,6 +9,15 @@
             ],
             "description": "es6-global generate relative `require` paths instead of relying on NodeJS' module resolution. Default: commonjs."
         },
+        "suffix-spec" : {
+            "enum" : [
+                ".js",
+                ".bs.js",
+                ".mjs",
+                ".cjs"
+            ],
+            "description": "suffix of generated js files, default to [.js] "
+        },
         "module-format-object": {
             "type": "object",
             "properties": {
@@ -18,6 +27,9 @@
                 "in-source": {
                     "type": "boolean",
                     "description": "Default: false."
+                },
+                "suffix" : {
+                    "$ref" : "#/definitions/suffix-spec"
                 }
             },
             "required": [
@@ -484,11 +496,7 @@
             "description": "(Not needed usually) arguments to pass to `refmt` above. Default: `[\"--print\", \"binary\"]`."
         },
         "suffix" : {
-            "enum" : [
-                ".js",
-                ".bs.js"
-            ],
-            "description": "suffix of generated js files, default to [.js] "
+            "$ref" : "#/definitions/suffix-spec"
         }
     },
     "additionalProperties": false,

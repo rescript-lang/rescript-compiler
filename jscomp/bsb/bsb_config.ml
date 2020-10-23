@@ -37,23 +37,32 @@ let all_lib_artifacts =
     lib_bs ; 
     lib_es6 ; 
     lib_es6_global;
-#if BS_NATIVE then
-  (* Artifacts directories for other backends *)
-    lib_lit // "bs-native";
-    lib_lit // "bs-bytecode";
-    lib_lit // "ocaml-native";
-    lib_lit // "ocaml-bytecode";
-#end
   ]
 let rev_lib_bs = ".."// ".."
+
+(* access the js directory from "lib/bs", 
+  it would be '../js'
+*)
+let lib_bs_prefix_of_format (x : Ext_module_system.t) = 
+  ".." // match x with 
+  | NodeJS -> "js"
+  | Es6 -> "es6"
+  | Es6_global -> "es6_global"
+  
+(* lib/js, lib/es6, lib/es6_global *)
+let top_prefix_of_format (x : Ext_module_system.t)  =   
+  match x with 
+  | NodeJS -> lib_js 
+  | Es6 -> lib_es6 
+  | Es6_global -> lib_es6_global 
+
 
 
 let rev_lib_bs_prefix p = rev_lib_bs // p 
 
 let ocaml_bin_install_prefix p = lib_ocaml // p
 
-let lazy_src_root_dir = "$src_root_dir" 
-let proj_rel path = lazy_src_root_dir // path
+let proj_rel path = Bsb_ninja_global_vars.lazy_src_root_dir // path
 
 (** it may not be a bad idea to hard code the binary path 
     of bsb in configuration time

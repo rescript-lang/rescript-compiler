@@ -29,30 +29,7 @@
 
 
 
-let load_builin_unit unit_name : Js_cmj_format.cmj_load_info = 
-#if 
-BS_RELEASE_BUILD 
-(* true *)
-then  
-  match Ext_string_array.find_sorted
-          Builtin_cmj_datasets.module_names
-          unit_name with
-  | Some i
-    -> 
-    if Js_config.get_diagnose () then
-      Format.fprintf Format.err_formatter ">Cmj: %s@." unit_name;
-    let cmj_table : Js_cmj_format.t = 
-       let values, pure =  Ext_marshal.from_string_uncheck Builtin_cmj_datasets.module_data.(i)  in   
-       {values; pure; package_spec = Js_packages_info.runtime_package_specs;js_file_kind = Little_js} 
-    in 
-    if Js_config.get_diagnose () then
-      Format.fprintf Format.err_formatter "<Cmj: %s@." unit_name;
-    {package_path =  
-      Filename.dirname (Filename.dirname Sys.executable_name); cmj_table}
-  | None
-    ->  
-#end         
-    Bs_exception.error (Cmj_not_found unit_name)
+
 (* 
 let load_unit_no_file unit_name : Js_cmj_format.cmj_load_info = 
   let file = unit_name ^ Literals.suffix_cmj in   
@@ -77,7 +54,12 @@ let load_unit_with_file unit_name : Js_cmj_format.cmj_load_info =
       cmj_table =  Js_cmj_format.from_file f}
   | None -> 
     if !Js_config.no_stdlib then Bs_exception.error (Cmj_not_found unit_name)
-    else load_builin_unit unit_name 
+    else 
+#if BS_RELEASE_BUILD then    
+  Js_cmj_load_builtin_unit.load_builin_unit unit_name 
+#else
+  Bs_exception.error (Cmj_not_found unit_name)
+#end      
 
 
 (* we can disable loading from file for troubleshooting

@@ -10,28 +10,40 @@
 (*                                                                     *)
 (***********************************************************************)
 
+let output_prefix name =
+  let oname =
+    match !Clflags.output_name with
+    | None -> name
+    | Some n -> (Clflags.output_name := None; n) in
+  Filename.remove_extension oname
+
 
 let process_interface_file ppf name =
   Js_implementation.interface ppf name 
   ~parser:Pparse_driver.parse_interface
-  (Compenv.output_prefix name)
+  (output_prefix name)
 let process_implementation_file ppf name =
   Js_implementation.implementation ppf name 
   ~parser:Pparse_driver.parse_implementation
-  (Compenv.output_prefix name)
+  (output_prefix name)
 
 
-let setup_reason_error_printer () = 
-  Lazy.force Super_main.setup;  
-  Lazy.force Reason_outcome_printer_main.setup
+let setup_error_printer (syntax_kind : [ `ml | `reason | `rescript ])= 
+  Config.syntax_kind := syntax_kind ;   
+  if syntax_kind = `reason then begin 
+    Lazy.force Super_main.setup;  
+    Lazy.force Reason_outcome_printer_main.setup
+  end else if !Config.syntax_kind = `rescript then begin 
+    Lazy.force Super_main.setup;  
+    Lazy.force Res_outcome_printer.setup  
+  end  
 
-let setup_napkin_error_printer () =  
-  Js_config.napkin := true;
-  Lazy.force Super_main.setup;  
-  Lazy.force Napkin_outcome_printer.setup
+
+  
+  
 
 let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf opref = 
-  setup_reason_error_printer ();
+  setup_error_printer `reason;
   let tmpfile =  Ast_reason_pp.pp sourcefile in   
   (match kind with 
    | Ml_binary.Ml -> 
@@ -54,60 +66,10 @@ let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf opref =
   Ast_reason_pp.clean tmpfile 
 
   
-type valid_input = 
-  | Ml 
-  | Mli
-  | Re
-  | Rei
-  | Res
-  | Resi
-  | Resast
-  | Resiast
-  | Mlast    
-  | Mliast 
-  | Reast
-  | Reiast
-  | Mlmap
-  | Cmi
-  | Unknown
 
 
 
-(** This is per-file based, 
-    when [ocamlc] [-c -o another_dir/xx.cmi] 
-    it will return (another_dir/xx)
-*)    
 
-let classify_input ext = 
-
-  match () with 
-  | _ when ext = Literals.suffix_ml ->   
-    Ml
-  | _ when ext = Literals.suffix_re ->
-    Re
-  | _ when ext = !Config.interface_suffix ->
-    Mli  
-  | _ when ext = Literals.suffix_rei ->
-    Rei
-  | _ when ext =  Literals.suffix_mlast ->
-    Mlast 
-  | _ when ext = Literals.suffix_mliast ->
-    Mliast
-  | _ when ext = Literals.suffix_reast ->
-    Reast 
-  | _ when ext = Literals.suffix_reiast ->
-    Reiast
-  | _ when ext =  Literals.suffix_mlmap ->
-    Mlmap 
-  | _ when ext =  Literals.suffix_cmi ->
-    Cmi
-  | _ when ext = Literals.suffix_res -> 
-    Res
-  | _ when ext = Literals.suffix_resi -> 
-    Resi    
-  | _ when ext = Literals.suffix_resast -> Resast   
-  | _ when ext = Literals.suffix_resiast -> Resiast
-  | _ -> Unknown
 
 let process_file ppf sourcefile = 
   (* This is a better default then "", it will be changed later 
@@ -116,50 +78,38 @@ let process_file ppf sourcefile =
   *)
   Location.set_input_name  sourcefile;  
   let ext = Ext_filename.get_extension_maybe sourcefile in 
-  let input = classify_input ext in 
-  let opref = Compenv.output_prefix sourcefile in 
+  let input = Ext_file_extensions.classify_input ext in 
+  let opref = output_prefix sourcefile in 
   match input with 
   | Re -> handle_reason Ml sourcefile ppf opref     
   | Rei ->
     handle_reason Mli sourcefile ppf opref 
-  | Reiast 
-    -> 
-    setup_reason_error_printer ();
-    Js_implementation.interface_mliast ppf sourcefile opref   
-  | Reast 
-    -> 
-    setup_reason_error_printer ();
-    Js_implementation.implementation_mlast ppf sourcefile opref
-  | Res -> 
-    setup_napkin_error_printer ();
-    Js_implementation.implementation 
-      ~parser:Napkin_driver.parse_implementation
-      ppf sourcefile opref 
-  | Resi ->   
-    setup_napkin_error_printer ();
-    Js_implementation.interface 
-      ~parser:Napkin_driver.parse_interface
-      ppf sourcefile opref       
   | Ml ->
     Js_implementation.implementation 
-    ~parser:Pparse_driver.parse_implementation
-    ppf sourcefile opref 
+      ~parser:Pparse_driver.parse_implementation
+      ppf sourcefile opref 
   | Mli  ->   
     Js_implementation.interface 
-    ~parser:Pparse_driver.parse_interface
-    ppf sourcefile opref   
-  | Resiast
-    ->   
-    setup_napkin_error_printer ();
-    Js_implementation.interface_mliast ppf sourcefile opref 
-  | Mliast 
-    -> Js_implementation.interface_mliast ppf sourcefile opref 
-  | Resast  
-    ->
-    setup_napkin_error_printer ();
+      ~parser:Pparse_driver.parse_interface
+      ppf sourcefile opref   
+  | Res -> 
+    setup_error_printer `rescript;
+    Js_implementation.implementation 
+      ~parser:Res_driver.parse_implementation
+      ppf sourcefile opref 
+  | Resi ->   
+    setup_error_printer `rescript;
+    Js_implementation.interface 
+      ~parser:Res_driver.parse_interface
+      ppf sourcefile opref     
+  | Intf_ast 
+    ->     
+    Js_implementation.interface_mliast ppf sourcefile opref   
+    setup_error_printer ;
+  | Impl_ast 
+    -> 
     Js_implementation.implementation_mlast ppf sourcefile opref
-  | Mlast 
-    -> Js_implementation.implementation_mlast ppf sourcefile opref
+    setup_error_printer;  
   | Mlmap 
     -> Js_implementation.implementation_map ppf sourcefile opref
   | Cmi
@@ -189,8 +139,6 @@ let anonymous ~(rev_args : string list) =
     begin 
       match rev_args with 
       | [filename] ->   
-        Compenv.readenv ppf 
-          (Before_compile filename); 
         process_file ppf filename
       | [] -> ()  
       | _ -> 
@@ -200,25 +148,21 @@ let anonymous ~(rev_args : string list) =
 (** used by -impl -intf *)
 let impl filename =
   Js_config.js_stdout := false;  
-  Compenv.readenv ppf 
-    (Before_compile filename)
-  ; process_implementation_file ppf filename;;
+  process_implementation_file ppf filename;;
 let intf filename =
   Js_config.js_stdout := false ;  
-  Compenv.readenv ppf 
-    (Before_compile filename)
-  ; process_interface_file ppf filename;;
+  process_interface_file ppf filename;;
 
 
 let format_file input =  
-  let ext = classify_input (Ext_filename.get_extension_maybe input) in 
+  let ext = Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe input) in 
   let syntax = 
     match ext with 
     | Ml | Mli -> `ml
     | Res | Resi -> `res 
     | Re | Rei -> `refmt (Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe") 
     | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) in   
-  output_string stdout (Napkin_multi_printer.print syntax ~input)
+  output_string stdout (Res_multi_printer.print syntax ~input)
 
 let set_color_option option = 
   match Clflags.parse_color_setting option with
@@ -294,8 +238,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
           <num1>..<num2>    a range of consecutive warning numbers\n\
        default setting is " ^ Bsc_warnings.defaults_w;  
 
-  "-warn-error", string_call (fun _ -> ()),
-  "Deprecated: warnings are errors";
 
     "-o", string_optional_set Clflags.output_name, 
     "<file>  set output file name to <file>";
@@ -303,7 +245,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
      "-bs-read-cmi",  unit_call (fun _ -> Clflags.assume_no_mli := Mli_exists), 
      "*internal* Assume mli always exist ";
 
-    "-ppx", string_list_add Compenv.first_ppx,
+    "-ppx", string_list_add Clflags.all_ppx,
     "<command>  Pipe abstract syntax trees through preprocessor <command>";
 
     "-open", string_list_add Clflags.open_modules,
@@ -315,10 +257,10 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal* Set jsx version";
 
     "-bs-package-output", string_call Js_packages_state.update_npm_package_path, 
-    "Set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ";
+    "*internal* Set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ";
 
-    "-bs-binary-ast", set Js_config.binary_ast,
-    "*internal* Generate binary .mli_ast and ml_ast";
+    "-bs-ast", unit_call(fun _ ->  Js_config.binary_ast := true; Js_config.syntax_only := true),
+    "*internal* Generate binary .mli_ast and ml_ast and stop";
 
     "-bs-syntax-only", set Js_config.syntax_only,
     "Only check syntax";
@@ -326,9 +268,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-g", unit_call (fun _ -> Js_config.debug := true; Lexer.replace_directive_bool "DEBUG" true),
     "Debug mode";
 
-    "-bs-suffix", set Js_config.bs_suffix, 
-    "*internal* set suffix to .bs.js";
-
+    "-bs-v", string_call ignore, 
+    "*internal* version check to force a rebuild";
     "-bs-package-name", string_call Js_packages_state.set_package_name, 
     "Set package name, useful when you want to produce npm packages";
     
@@ -336,10 +277,10 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "Set package map, not only set package name but also use it as a namespace" ;
 
     "-as-ppx", set Js_config.as_ppx, 
-    "As ppx for editor integration";
+    "*internal*As ppx for editor integration";
 
     "-no-alias-deps", set Clflags.transparent_modules, 
-    "Do not record dependencies for module aliases";
+    "*internal*Do not record dependencies for module aliases";
 
     "-bs-gentype", string_optional_set Clflags.bs_gentype ,
     "*internal* Pass gentype command";
@@ -384,10 +325,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-bs-list-conditionals", unit_call (fun () -> Lexer.list_variables Format.err_formatter),
     "List existing conditional variables";  
-    
-    "-bs-simple-binary-ast",  set Js_config.simple_binary_ast,
-    "*internal* Generate binary .mliast_simple and mlast_simple";
-    
+        
     "-bs-eval", string_call (fun  s -> eval s ~suffix:Literals.suffix_ml), 
     "*internal* (experimental) set the string to be evaluated in OCaml syntax";
 
@@ -404,19 +342,19 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal*  Not using cached cmj, always generate cmj";    
 
     "-bs-no-version-header", set Js_config.no_version_header,
-    "Don't print version header";
+    "*internal*Don't print version header";
 
     "-bs-no-builtin-ppx", set Js_config.no_builtin_ppx,
     "*internal* Disable built-in ppx";  
 
     "-bs-cross-module-opt", set Js_config.cross_module_inline, 
-    "Enable cross module inlining(experimental), default(false)";
+    "*internal* Enable cross module inlining(experimental), default(false)";
 
     "-bs-no-cross-module-opt", clear Js_config.cross_module_inline, 
-    "Disable cross module inlining(experimental)";
+    "*internal* Disable cross module inlining(experimental)";
 
     "-bs-diagnose", set Js_config.diagnose, 
-    "More verbose output";
+    "*internal* More verbose output";
 
     "-bs-no-check-div-by-zero", clear Js_config.check_div_by_zero, 
     "*internal* unsafe mode, don't check div by zero and mod by zero";
@@ -486,13 +424,13 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "Print inferred interface";  
 
     "-nolabels", set Clflags.classic, 
-    "Ignore non-optional labels in types";  
+    "*internal* Ignore non-optional labels in types";  
 
     "-principal", set Clflags.principal, 
-    "Check principality of type inference";  
+    "*internal* Check principality of type inference";  
     
     "-short-paths", clear Clflags.real_paths, 
-    "Shorten paths in types";
+    "*internal* Shorten paths in types";
     
     "-unsafe", set Clflags.fast, 
     "Do not compile bounds checking on array and string access";
@@ -502,7 +440,12 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bin-annot", Unit_dummy,
     "*internal* keep the compatibility with RLS";
     "-c", Unit_dummy,
-    "*internal* keep the compatibility with RLS"
+    "*internal* keep the compatibility with RLS";
+    "-warn-error", string_call (Warnings.parse_options true),
+    "<list>  Enable or disable error status for warnings according\n\
+         to <list>.  See option -w for the syntax of <list>.\n\
+         Default setting is " ^ Bsc_warnings.defaults_warn_error;    
+  
   |]
 
 
@@ -531,7 +474,6 @@ let _ : unit =
   Ast_config.add_signature 
     flags file_level_flags_handler;    
   try
-    Compenv.readenv ppf Before_args;
     Bsc_args.parse_exn 
       ~argv:Sys.argv 
       buckle_script_flags anonymous ~usage;
@@ -541,7 +483,7 @@ let _ : unit =
     exit 2
   | x -> 
     begin
-#if undefined BS_RELEASE_BUILD then      
+#if false (* undefined BS_RELEASE_BUILD *) then      
       Ext_obj.bt ();
 #end
       Location.report_exception ppf x;

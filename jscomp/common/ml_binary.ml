@@ -36,7 +36,7 @@ let read_ast (type t ) (kind : t  kind) ic : t  =
     | Mli -> Config.ast_intf_magic_number in 
   let buffer = really_input_string ic (String.length magic) in
   assert(buffer = magic); (* already checked by apply_rewriter *)
-  Location.set_input_name @@ input_value ic;
+  Location.set_input_name (input_value ic);
   input_value ic 
 
 let write_ast (type t) (kind : t kind) 
@@ -54,4 +54,4 @@ let magic_of_kind : type a . a kind -> string = function
   | Ml -> Config.ast_impl_magic_number
   | Mli -> Config.ast_intf_magic_number
 
-  
+

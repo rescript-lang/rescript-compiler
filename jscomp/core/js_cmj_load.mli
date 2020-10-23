@@ -29,10 +29,6 @@
 
 
 
-(** return path and meta data *)
-val load_unit_with_file : 
-   string -> 
-   Js_cmj_format.cmj_load_info
 
 
 val load_unit :

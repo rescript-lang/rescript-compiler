@@ -23,6 +23,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(** Warning unused bs attributes
+  Note if we warn `deriving` too, 
+  it may fail third party ppxes
+*)
 let is_bs_attribute txt = 
   let len = String.length txt  in
   len >= 2 &&
@@ -83,6 +87,14 @@ let emit_external_warnings : iterator=
   {
     default_iterator with
     attribute = (fun _ attr -> warn_unused_attribute attr);
+    structure_item = (fun self str_item -> 
+      match str_item.pstr_desc with 
+       | Pstr_type (Nonrecursive, [{ptype_kind = Ptype_variant ({pcd_res = Some _} :: _)}])
+        when !Config.syntax_kind = `rescript ->        
+          Location.raise_errorf ~loc:str_item.pstr_loc 
+          "GADT has to be recursive types, please try `type rec'" 
+      | _ -> default_iterator.structure_item self str_item  
+    );
     expr = (fun self a -> 
         match a.pexp_desc with 
         | Pexp_constant (
@@ -112,7 +124,7 @@ let emit_external_warnings : iterator=
       Ext_list.iter lbl.pld_attributes 
         (fun attr -> 
           match attr with 
-          | {txt = "bs.as"}, _ -> mark_used_bs_attribute attr
+          | {txt = "bs.as" | "as"}, _ -> mark_used_bs_attribute attr
           | _ -> ()
           );
       default_iterator.label_declaration self lbl      

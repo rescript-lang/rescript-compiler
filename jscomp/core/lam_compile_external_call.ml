@@ -78,7 +78,7 @@ let append_list  x xs =
     unbox it in the first place.
 
     Note when optional value is not passed, the unboxed value would be 
-    [undefined], with the combination of `[@bs.int]` it would be still be 
+    [undefined], with the combination of `[@int]` it would be still be 
     [undefined], this by default is still correct..  
     {[
       (function () {
@@ -252,7 +252,7 @@ let translate_scoped_module_val
         Ext_list.fold_left (Ext_list.append rest  [fn]) start E.dot
     end
   | None ->  
-    (*  no [@@bs.module], assume it's global *)
+    (*  no [@@module], assume it's global *)
     begin match scopes with 
       | [] -> 
         E.js_global fn
@@ -309,7 +309,7 @@ let translate_ffi
   | Js_new { external_module_name = module_name; 
              name = fn;
              scopes
-           } -> (* handle [@@bs.new]*)
+           } -> (* handle [@@new]*)
     (* This has some side effect, it will 
        mark its identifier (If it has) as an object,
        ATTENTION: 
@@ -356,7 +356,7 @@ let translate_ffi
       begin match args  with
         | self :: args -> 
           (* PR2162 [self_type] more checks in syntax:
-             - should not be [bs.as] *)
+             - should not be [@as] *)
           let [@warning"-8"] ( _self_type::arg_types )
             = arg_types in
           if splice then   
@@ -382,7 +382,7 @@ let translate_ffi
 
     (* TODO #11
        1. check args -- error checking 
-       2. support [@@bs.scope "window"]
+       2. support [@@scope "window"]
        we need know whether we should call [add_js_module] or not 
     *)
       translate_scoped_module_val external_module_name name scopes

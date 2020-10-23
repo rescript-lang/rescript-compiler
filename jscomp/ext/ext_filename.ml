@@ -124,7 +124,7 @@ let rec valid_module_name_aux name off len =
   else 
     let c = String.unsafe_get name off in 
     match c with 
-    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> 
+    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' | '.' | '[' | ']' -> 
       valid_module_name_aux name (off + 1) len 
     | _ -> false
 
@@ -144,6 +144,10 @@ let valid_module_name name len =
         Upper
       else Invalid  
     | 'a' .. 'z' 
+    | '0' .. '9'
+    | '_'
+    | '[' 
+    | ']'
       -> 
       if valid_module_name_aux name 1 len then
         Lower

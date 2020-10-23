@@ -42,7 +42,12 @@ val interface :
   string -> 
   unit
 
-val interface_mliast : Format.formatter -> string -> string  -> unit
+val interface_mliast : 
+  Format.formatter -> 
+  string -> 
+  string  -> 
+  ([`ml | `rescript | `reason ] -> unit) ->
+  unit
   
 
 
@@ -52,7 +57,7 @@ val interface_mliast : Format.formatter -> string -> string  -> unit
   Parsetree.structure ->
   unit *)
 (** [after_parsing_impl ppf sourcefile outputprefix ast ]
-    Make sure you need run {!Compmisc.init_path} for set up
+    Make sure you need run {!Res_compmisc.init_path} for set up
     Used in eval
 *)
 
@@ -64,6 +69,11 @@ val implementation :
   unit
 (** [implementation ppf sourcefile outprefix] compiles to JS directly *) 
 
-val implementation_mlast : Format.formatter -> string -> string -> unit
+val implementation_mlast : 
+  Format.formatter ->
+  string -> 
+  string -> 
+  ([`ml | `rescript | `reason ]  -> unit) ->
+  unit
 
 val implementation_map : Format.formatter -> string -> string -> unit

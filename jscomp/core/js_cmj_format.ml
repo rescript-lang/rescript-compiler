@@ -51,34 +51,32 @@ type t = {
   values : keyed_cmj_values ;
   pure : bool;
   package_spec : Js_packages_info.t ;
-  js_file_kind : Ext_js_file_kind.t; 
+  case : Ext_js_file_kind.case;  
 }
 
-let make ~(values:cmj_value Map_string.t) ~effect ~package_spec ~js_file_kind : t = 
+let make 
+    ~(values:cmj_value Map_string.t) 
+    ~effect 
+    ~package_spec 
+    ~case
+     : t = 
   {
     values = Map_string.to_sorted_array_with_f values (fun k v -> {
-      name = k ; 
-      arity = v.arity;
-      persistent_closed_lambda = v.persistent_closed_lambda
-    }); 
+          name = k ; 
+          arity = v.arity;
+          persistent_closed_lambda = v.persistent_closed_lambda
+        }); 
     pure = effect = None ; 
     package_spec;
-    js_file_kind
+    case
   }
 
 
-let verify_magic_in_beg ic =
-  let buffer = really_input_string ic Ext_cmj_magic.cmj_magic_number_length in 
-  if buffer <> Ext_cmj_magic.cmj_magic_number then
-    Ext_fmt.failwithf ~loc:__LOC__ 
-      "cmj files have incompatible versions, please rebuilt using the new compiler : %s" 
-        __LOC__
 
 
 (* Serialization .. *)
 let from_file name : t =
   let ic = open_in_bin name in 
-  verify_magic_in_beg ic ; 
   let _digest = Digest.input ic in 
   let v  : t = input_value ic in 
   close_in ic ;
@@ -86,7 +84,6 @@ let from_file name : t =
 
 let from_file_with_digest name : t * Digest.t =
   let ic = open_in_bin name in 
-  verify_magic_in_beg ic ; 
   let digest = Digest.input ic in 
   let v  : t = input_value ic in 
   close_in ic ;
@@ -94,20 +91,14 @@ let from_file_with_digest name : t * Digest.t =
 
 
 let from_string s : t = 
-  let magic_number = String.sub s 0 Ext_cmj_magic.cmj_magic_number_length in 
-  if magic_number = Ext_cmj_magic.cmj_magic_number then 
-    Marshal.from_string s  Ext_cmj_magic.header_length
-  else 
-    Ext_fmt.failwithf ~loc:__LOC__ 
-      "cmj files have incompatible versions, please rebuilt using the new compiler : %s"
-        __LOC__
+    Marshal.from_string s  Ext_digest.length
 
 
 let for_sure_not_changed (name : string) (header : string) =   
   if Sys.file_exists name then 
     let ic = open_in_bin name in 
     let holder =
-      really_input_string ic Ext_cmj_magic.header_length in 
+      really_input_string ic Ext_digest.length in 
     close_in ic; 
     holder = header
   else false  
@@ -118,7 +109,7 @@ let for_sure_not_changed (name : string) (header : string) =
 let to_file name ~check_exists (v : t) = 
   let s = Marshal.to_string v [] in 
   let cur_digest = Digest.string s in 
-  let header = Ext_cmj_magic.cmj_magic_number ^ cur_digest in 
+  let header =  cur_digest in 
   if  not (check_exists && for_sure_not_changed name header) then 
     let oc = open_out_bin name in 
     output_string oc header;    

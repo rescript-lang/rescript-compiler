@@ -33,7 +33,10 @@ val reverse_in_place : 'a array -> unit
 val reverse : 'a array -> 'a array 
 val reverse_of_list : 'a list -> 'a array
 
-val filter : ('a -> bool) -> 'a array -> 'a array
+val filter : 
+  'a array -> 
+  ('a -> bool) ->   
+  'a array
 
 val filter_map : 
 'a array -> 
@@ -75,7 +78,10 @@ val find_and_split :
   ('a -> 'b -> bool) ->
   'b -> 'a split
 
-val exists : ('a -> bool) -> 'a array -> bool 
+val exists : 
+  'a array -> 
+  ('a -> bool) ->  
+  bool 
 
 val is_empty : 'a array -> bool 
 

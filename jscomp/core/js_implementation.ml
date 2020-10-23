@@ -12,11 +12,16 @@
 
 (* adapted by rescript from [driver/compile.ml] for convenience    *)
 
-open Format
-open Typedtree
-open Compenv
-
-
+let module_of_filename  outputprefix =
+  let basename = Filename.basename outputprefix in
+  let name =
+    try
+      let pos = String.index basename '.' in
+      String.sub basename 0 pos
+    with Not_found -> basename
+  in
+  String.capitalize_ascii name 
+;;
 
 let fprintf = Format.fprintf
 
@@ -51,18 +56,13 @@ let process_with_gentype filename =
 
 let after_parsing_sig ppf  outputprefix ast  =
   Ast_config.iter_on_bs_config_sigi ast;  
-  if !Js_config.simple_binary_ast then begin
-    let oc = open_out_bin (outputprefix ^ Literals.suffix_mliast_simple) in 
-    Ml_binary.write_ast Mli !Location.input_name ast oc;
-    close_out oc ;
-  end;
   if !Js_config.binary_ast then
     begin 
       let sourcefile = !Location.input_name in   
       Binary_ast.write_ast
         Mli
         ~sourcefile
-        ~output:(outputprefix ^ Filename.extension sourcefile ^ "ast")
+        ~output:(outputprefix ^  Literals.suffix_iast)
         (* to support relocate to another directory *)
         ast 
 
@@ -71,9 +71,9 @@ let after_parsing_sig ppf  outputprefix ast  =
     Warnings.check_fatal()
   else 
     begin 
-      let modulename = module_of_filename ppf !Location.input_name outputprefix in
+      let modulename = module_of_filename outputprefix in
       Lam_compile_env.reset () ;
-      let initial_env = Compmisc.initial_env () in
+      let initial_env = Res_compmisc.initial_env () in
       Env.set_unit_name modulename;
 
       let tsg = Typemod.type_interface 
@@ -83,7 +83,7 @@ let after_parsing_sig ppf  outputprefix ast  =
       let sg = tsg.sig_type in
       if !Clflags.print_types then
         Printtyp.wrap_printing_env initial_env (fun () ->
-            fprintf std_formatter "%a@."
+            fprintf Format.std_formatter "%a@."
               Printtyp.signature (Typemod.simplify_signature sg));
       ignore (Includemod.signatures initial_env sg sg);
       Typecore.force_delayed_checks ();
@@ -103,7 +103,7 @@ let after_parsing_sig ppf  outputprefix ast  =
 
 
 let interface ~parser ppf fname outputprefix =
-  Compmisc.init_path false;
+  Res_compmisc.init_path ();
   parser fname
   |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Mli 
   |> Ppx_entry.rewrite_signature
@@ -111,9 +111,9 @@ let interface ~parser ppf fname outputprefix =
   |> print_if_pipe ppf Clflags.dump_source Pprintast.signature 
   |> after_parsing_sig ppf  outputprefix 
 
-let interface_mliast ppf fname outputprefix  = 
-  Compmisc.init_path false;
-  Binary_ast.read_ast Mli fname 
+let interface_mliast ppf fname outputprefix  setup = 
+  Res_compmisc.init_path ();
+  Binary_ast.read_ast_exn ~fname Mli  setup
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.interface
   |> print_if_pipe ppf Clflags.dump_source Pprintast.signature 
   |> after_parsing_sig ppf  outputprefix 
@@ -160,15 +160,10 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
   let ast =
     if !Js_config.no_export  then 
       no_export ast else ast in     
-  if !Js_config.simple_binary_ast then begin
-    let oc = open_out_bin (outputprefix ^ Literals.suffix_mlast_simple) in 
-    Ml_binary.write_ast Ml !Location.input_name  ast oc;
-    close_out oc ;
-  end;
   if !Js_config.binary_ast then begin 
     let sourcefile = !Location.input_name in 
     Binary_ast.write_ast ~sourcefile
-      Ml ~output:(outputprefix ^ Filename.extension sourcefile ^ "ast")
+      Ml ~output:(outputprefix ^ Literals.suffix_ast)
       ast
   end ;
   if !Js_config.syntax_only then 
@@ -177,7 +172,7 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
     begin
       let modulename = Ext_filename.module_name outputprefix in
       Lam_compile_env.reset () ;
-      let env = Compmisc.initial_env() in
+      let env = Res_compmisc.initial_env() in
       Env.set_unit_name modulename;
       let (typedtree, coercion, _, _) =
         Typemod.type_implementation_more 
@@ -202,7 +197,7 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
       process_with_gentype (outputprefix ^ ".cmt")        
     end
 let implementation ~parser ppf fname outputprefix  =
-  Compmisc.init_path false;  
+  Res_compmisc.init_path ();  
   parser fname
   |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Ml  
   |> Ppx_entry.rewrite_implementation
@@ -210,9 +205,9 @@ let implementation ~parser ppf fname outputprefix  =
   |> print_if_pipe ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf outputprefix 
 
-let implementation_mlast ppf fname outputprefix = 
-  Compmisc.init_path false;
-  Binary_ast.read_ast Ml fname
+let implementation_mlast ppf fname outputprefix setup = 
+  Res_compmisc.init_path ();
+  Binary_ast.read_ast_exn ~fname Ml  setup
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.implementation
   |> print_if_pipe ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf  outputprefix 
@@ -248,7 +243,7 @@ let implementation_map ppf sourcefile outputprefix =
       if Ext_string.is_empty line then acc 
       else make_structure_item ~ns line :: acc 
     )  in 
-  Compmisc.init_path false;
+  Res_compmisc.init_path ();
   ml_ast
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.implementation
   |> print_if_pipe ppf Clflags.dump_source Pprintast.structure

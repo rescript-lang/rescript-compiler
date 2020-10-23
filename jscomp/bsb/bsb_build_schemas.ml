@@ -62,7 +62,7 @@ let export_all = "all"
 let export_none = "none"
 
 
-let g_lib_incls = "g_lib_incls"
+
 let use_stdlib = "use-stdlib"
 let reason = "reason"
 let react_jsx = "react-jsx"

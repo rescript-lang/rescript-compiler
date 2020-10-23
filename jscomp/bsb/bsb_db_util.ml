@@ -69,13 +69,25 @@ let check (x : module_info)
 
 
 let warning_unused_file : _ format = 
-  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
+  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. \n\
+  The build system transforms a file name into a module name by upper-casing the first letter@."
+(* TODO: add a link for more explanations *)
 
+
+let is_editor_temporary_files basename =
+  Ext_string.starts_with basename ".#"  
+(* 
+  Example: .#hi.ml
+  Note for other files like <filename>~, <filename>.swp
+  it does not pass the suffix rules
+*)
 let add_basename
     ~(dir:string) 
     (map : t)  
     ?(error_on_invalid_suffix)
     basename : t =   
+  if is_editor_temporary_files basename then map 
+  else
   let info = ref Bsb_db.Impl in   
   let syntax_kind = ref Bsb_db.Ml in 
   let invalid_suffix = ref false in

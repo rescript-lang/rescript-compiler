@@ -27,10 +27,8 @@
 
 val handle_files_per_dir :
   out_channel ->
-  bs_suffix:bool ->
   rules:Bsb_ninja_rule.builtin ->
   package_specs:Bsb_package_specs.t ->
-  js_post_build_cmd:string option ->
   files_to_install:Hash_set_string.t ->
   namespace:string option -> 
   Bsb_file_groups.file_group -> unit

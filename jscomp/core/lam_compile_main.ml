@@ -32,16 +32,6 @@
 (* module E = Js_exp_make  *)
 (* module S = Js_stmt_make   *)
 
-let get_cmj_case output_prefix : Ext_js_file_kind.t = 
-  let little = 
-    Ext_char.is_lower_case (Filename.basename output_prefix).[0] 
-  in 
-  match little, !Js_config.bs_suffix with 
-  | true, true -> Little_bs
-  | true, false -> Little_js
-  | false, true -> Upper_bs 
-  | false, false -> Upper_js
-  
 
 let compile_group (meta : Lam_stats.t) 
     (x : Lam_group.t) : Js_output.t  = 
@@ -270,6 +260,7 @@ let compile
                Ext_string.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
             ) 
       in
+      Warnings.check_fatal();
       let effect = 
         Lam_stats_export.get_dependent_module_effect
         maybe_pure external_module_ids in 
@@ -277,8 +268,8 @@ let compile
         Lam_stats_export.export_to_cmj 
           meta  
           effect 
-          coerced_input.export_map
-          (get_cmj_case output_prefix)
+          coerced_input.export_map          
+          (if Ext_char.is_lower_case (Filename.basename output_prefix).[0] then Little else Upper)
       in
       (if not !Clflags.dont_write_files then
          Js_cmj_format.to_file 
@@ -294,43 +285,38 @@ let lambda_as_module
     (lambda_output : J.deps_program)
     (output_prefix : string)
      : unit = 
-  let basename =  
-    Ext_namespace.change_ext_ns_suffix 
-      (Filename.basename
-         output_prefix) 
-      (if !Js_config.bs_suffix then Literals.suffix_bs_js else Literals.suffix_js) 
-  in
   let package_info = Js_packages_state.get_packages_info () in 
   if Js_packages_info.is_empty package_info && !Js_config.js_stdout then begin    
-    Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout;
-    if !Warnings.nerrors > 0 then begin 
-      Warnings.nerrors := 0;
-      exit 77
-    end  
+    Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output stdout
   end else
-    Js_packages_info.iter package_info (fun {module_system; path = _path} -> 
+    Js_packages_info.iter package_info (fun {module_system; path; suffix} -> 
         let output_chan chan  = 
           Js_dump_program.dump_deps_program ~output_prefix
             module_system 
             lambda_output
             chan in
+        let basename =  
+          Ext_namespace.change_ext_ns_suffix 
+            (Filename.basename
+               output_prefix) 
+            (Ext_js_suffix.to_string  suffix) 
+        in
         let target_file = 
           (Lazy.force Ext_path.package_dir //
-           _path //
+           path //
            basename
            (* #913 only generate little-case js file *)
           ) in     
-        if !Warnings.nerrors > 0 then begin 
-          Warnings.nerrors := 0 ;
-          if Sys.file_exists target_file then Sys.remove target_file;
-          exit 77
-          (* don't write js file, we need remove js files 
-            otherwise the js files are out-of-date
-            exit 177 *)
-        end else   
-        if not @@ !Clflags.dont_write_files then 
+        (if not !Clflags.dont_write_files then 
           Ext_pervasives.with_file_as_chan
-            target_file output_chan )
+            target_file output_chan );
+        if !Warnings.has_warnings  then begin 
+          Warnings.has_warnings := false ;
+          if Sys.file_exists target_file then begin 
+            Bs_hash_stubs.set_as_old_file target_file
+          end          
+        end             
+        )
   
 
 

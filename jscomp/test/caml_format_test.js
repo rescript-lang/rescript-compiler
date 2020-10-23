@@ -10,6 +10,7 @@ var Printf = require("../../lib/js/printf.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
+var CamlinternalFormatBasics = require("../../lib/js/camlinternalFormatBasics.js");
 
 var of_string = [
   [
@@ -280,6 +281,13 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
                                   ];
                           }), pairs$1))))));
 
+function $caret$caret(param, param$1) {
+  return /* Format */{
+          _0: CamlinternalFormatBasics.concat_fmt(param._0, param$1._0),
+          _1: param._1 + ("%," + param$1._1)
+        };
+}
+
 function ff(param) {
   return Caml_format.caml_format_int("%32d", param);
 }
@@ -289,7 +297,7 @@ var formatter_suites_0 = [
   (function (param) {
       return {
               TAG: /* Eq */0,
-              _0: Curry._6(Format.asprintf(Pervasives.$caret$caret(/* Format */{
+              _0: Curry._6(Format.asprintf($caret$caret(/* Format */{
                             _0: {
                               TAG: /* String */2,
                               _0: /* No_padding */0,
@@ -359,7 +367,7 @@ var formatter_suites_1 = {
     (function (param) {
         return {
                 TAG: /* Eq */0,
-                _0: Curry._8(Format.asprintf(Pervasives.$caret$caret(/* Format */{
+                _0: Curry._8(Format.asprintf($caret$caret(/* Format */{
                               _0: {
                                 TAG: /* String */2,
                                 _0: /* No_padding */0,
@@ -2338,7 +2346,7 @@ var int64_suites_1 = {
                             ],
                             tl: {
                               hd: [
-                                "File \"caml_format_test.ml\", line 206, characters 4-11",
+                                "File \"caml_format_test.ml\", line 209, characters 4-11",
                                 (function (param) {
                                     return {
                                             TAG: /* Eq */0,
@@ -2378,7 +2386,7 @@ var int64_suites_1 = {
                                 ],
                                 tl: {
                                   hd: [
-                                    "File \"caml_format_test.ml\", line 214, characters 4-11",
+                                    "File \"caml_format_test.ml\", line 217, characters 4-11",
                                     (function (param) {
                                         return {
                                                 TAG: /* Eq */0,
@@ -2398,7 +2406,7 @@ var int64_suites_1 = {
                                   ],
                                   tl: {
                                     hd: [
-                                      "File \"caml_format_test.ml\", line 215, characters 4-11",
+                                      "File \"caml_format_test.ml\", line 218, characters 4-11",
                                       (function (param) {
                                           return {
                                                   TAG: /* Eq */0,
@@ -2418,7 +2426,7 @@ var int64_suites_1 = {
                                     ],
                                     tl: {
                                       hd: [
-                                        "File \"caml_format_test.ml\", line 219, characters 4-11",
+                                        "File \"caml_format_test.ml\", line 222, characters 4-11",
                                         (function (param) {
                                             return {
                                                     TAG: /* Eq */0,
@@ -2438,7 +2446,7 @@ var int64_suites_1 = {
                                       ],
                                       tl: {
                                         hd: [
-                                          "File \"caml_format_test.ml\", line 222, characters 4-11",
+                                          "File \"caml_format_test.ml\", line 225, characters 4-11",
                                           (function (param) {
                                               return {
                                                       TAG: /* Eq */0,
@@ -2458,7 +2466,7 @@ var int64_suites_1 = {
                                         ],
                                         tl: {
                                           hd: [
-                                            "File \"caml_format_test.ml\", line 225, characters 4-11",
+                                            "File \"caml_format_test.ml\", line 228, characters 4-11",
                                             (function (param) {
                                                 return {
                                                         TAG: /* Eq */0,
@@ -2759,6 +2767,7 @@ exports.u = u;
 exports.to_str = to_str;
 exports.v = v;
 exports.suites = suites;
+exports.$caret$caret = $caret$caret;
 exports.ff = ff;
 exports.a = a;
 exports.formatter_suites = formatter_suites;

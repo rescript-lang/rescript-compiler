@@ -14,7 +14,9 @@ var cmjTargets = output
   .filter(x => x.endsWith(".cmj"))
   .map(x => path.basename(x))
   .sort();
-
-assert.deepEqual(cmjTargets, ["demo.cmj", "hello00.cmj","hexll.cmj"]);
+cmjTargets.sort()
+var expected = ["demo.cmj", "hello00.cmj","hexll..cmj",'hexll.cmj']
+expected.sort()
+assert.deepEqual(cmjTargets, expected);
 
 

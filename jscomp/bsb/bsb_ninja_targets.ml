@@ -23,119 +23,32 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-type override = 
-  | Append of string 
-  | AppendList of string list
-  (* Append s 
-     s
-  *)
-  | AppendVar of string 
-  (* AppendVar s 
-     $s
-  *)
-  | Overwrite of string 
-
-  | OverwriteVar of string 
-    (*
-      OverwriteVar s 
-      $s
-    *)
-  | OverwriteVars of string list
-
-type shadow = 
-  { key : string ; op : override }
+let oc_list xs  oc = 
+  Ext_list.iter xs (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
 
 let output_build
-    ?(order_only_deps=[])
-    ?(implicit_deps=[])
-    ?(implicit_outputs=[])
-    ?(shadows=([] : shadow list))
     ~outputs
     ~inputs
     ~rule
     oc =
   let rule = Bsb_ninja_rule.get_name rule  oc in (* Trigger building if not used *)
-  output_string oc "build ";
-  Ext_list.iter outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
-  if implicit_outputs <> [] then begin 
-    output_string oc " | ";
-    Ext_list.iter implicit_outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
-  end;
+  output_string oc "o";
+  oc_list outputs oc;
   output_string oc " : ";
   output_string oc rule;
-  Ext_list.iter inputs (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
-  if implicit_deps <> [] then 
-    begin
-      output_string oc " | ";
-      Ext_list.iter implicit_deps (fun s -> output_string oc Ext_string.single_space; output_string oc s )
-    end
-  ;
-  if order_only_deps <> [] then
-    begin
-      output_string oc " || ";                
-      Ext_list.iter order_only_deps (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
-    end
-  ;
-  output_string oc "\n";
-  if shadows <> [] then begin 
-    Ext_list.iter shadows (fun {key=k; op= v} ->
-        output_string oc "  " ;
-        output_string oc k ;
-        output_string oc " = ";
-        match v with
-        | Overwrite s -> 
-          output_string oc s ; 
-          output_string oc "\n"
-        | OverwriteVar s ->
-          output_string oc "$";
-          output_string oc s ; 
-          output_string oc "\n"
-        | OverwriteVars s ->  
-          Ext_list.iter s (fun s ->
-              output_string oc "$";
-              output_string oc s ; 
-              output_string oc Ext_string.single_space
-            );
-          output_string oc "\n"
-        | AppendList ls -> 
-          output_string oc "$" ;
-          output_string oc k;
-          Ext_list.iter ls
-            (fun s ->
-               output_string oc Ext_string.single_space;
-               output_string oc s 
-            ) ;
-          output_string oc "\n"
-        | Append s ->
-          output_string oc "$" ;
-          output_string oc k;
-          output_string oc Ext_string.single_space;
-          output_string oc s ; output_string oc "\n"
-        | AppendVar s ->   
-          output_string oc "$" ;
-          output_string oc k;
-          output_string oc Ext_string.single_space;
-          output_string oc "$";
-          output_string oc s ; 
-          output_string oc "\n"
-      ) 
-  end
-
-
+  oc_list inputs oc;
+  output_string oc "\n"
 
 let phony ?(order_only_deps=[]) ~inputs ~output oc =
-  output_string oc "build ";
+  output_string oc "o ";
   output_string oc output ;
   output_string oc " : ";
   output_string oc "phony";
-  output_string oc Ext_string.single_space;
-  Ext_list.iter inputs  (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
+  oc_list inputs oc;
   if order_only_deps <> [] then 
     begin
-      output_string oc " || ";                
-      Ext_list.iter order_only_deps (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
+      output_string oc " ||";                
+      oc_list order_only_deps oc 
     end;
   output_string oc "\n"
 
@@ -144,8 +57,5 @@ let output_kv key value oc  =
   output_string oc " = ";
   output_string oc value ;
   output_string oc "\n"
-
-let output_kvs kvs oc =
-  Ext_array.iter kvs (fun (k,v) -> output_kv k v oc) 
 
 

@@ -1,10 +1,6 @@
-
-
 let fprintf = Format.fprintf
 
-
-
-let file_lines filePath = 
+let file_lines filePath =
   Ext_array.reverse_of_list
     (Ext_io.rev_lines_of_file filePath)
 
@@ -20,11 +16,11 @@ let print_loc ~normalizedRange ppf (loc : Location.t) =
     | Some ((start_line, start_line_start_char), (end_line, end_line_end_char)) ->
       if start_line = end_line then
         if start_line_start_char = end_line_end_char then
-          fprintf ppf " @{<dim>%i:%i@}" start_line start_line_start_char
+          fprintf ppf ":@{<dim>%i:%i@}" start_line start_line_start_char
         else
-          fprintf ppf " @{<dim>%i:%i-%i@}" start_line start_line_start_char end_line_end_char
+          fprintf ppf ":@{<dim>%i:%i-%i@}" start_line start_line_start_char end_line_end_char
       else
-        fprintf ppf " @{<dim>%i:%i-%i:%i@}" start_line start_line_start_char end_line end_line_end_char
+        fprintf ppf ":@{<dim>%i:%i-%i:%i@}" start_line start_line_start_char end_line end_line_end_char
   in
   fprintf ppf "@{<filename>%a@}%a" print_filename loc.loc_start.pos_fname dim_loc normalizedRange
 ;;
@@ -79,26 +75,13 @@ let print ~message_kind intro ppf (loc : Location.t) =
 
 (* taken from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L380 *)
 (* This is the error report entry point. We'll replace the default reporter with this one. *)
-let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err) =
-  let highlighted =
-    if if_highlight <> "" then
-      let rec collect_locs locs {Location.loc; sub; if_highlight = _; _} =
-        List.fold_left collect_locs (loc :: locs) sub
-      in
-      let locs = collect_locs [] err in
-      Location.highlight_locations ppf locs
-    else
-      false
-  in
-  if highlighted then
-    Format.pp_print_string ppf if_highlight
-  else begin
-    setup_colors ();
-    (* open a vertical box. Everything in our message is indented 2 spaces *)
-    Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print ~message_kind:`error "We've found a bug for you!") loc msg;
-    List.iter (Format.fprintf ppf "@,@[%a@]" super_error_reporter) sub;
+let rec super_error_reporter ppf ({loc; msg; sub} : Location.error) =
+  setup_colors ();
+  (* open a vertical box. Everything in our message is indented 2 spaces *)
+  Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print ~message_kind:`error "We've found a bug for you!") loc msg;
+  List.iter (Format.fprintf ppf "@,@[%a@]" super_error_reporter) sub
     (* no need to flush here; location's report_exception (which uses this ultimately) flushes *)
-  end
+
 
 (* extracted from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L299 *)
 (* This is the warning report entry point. We'll replace the default printer with this one *)
@@ -111,7 +94,7 @@ let super_warning_printer loc ppf w =
     Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]"
       (print ~message_kind ("Warning number " ^ (Warnings.number w |> string_of_int)))
       loc
-      (Super_warnings.message w);
+      (Warnings.message w);
     (* at this point, you can display sub_locs too, from e.g. https://github.com/ocaml/ocaml/commit/f6d53cc38f87c67fbf49109f5fb79a0334bab17a
       but we won't bother for now *)
 ;;
