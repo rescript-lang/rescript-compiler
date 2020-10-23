@@ -37,14 +37,13 @@ let get_name (x : t) oc = x.name oc
 let print_rule (oc : out_channel) 
   ?description 
   ?(restat : unit option)  
-  ?dyndep 
+  ?(dyndep : unit option)
   ~command   
   name  =
   output_string oc "rule "; output_string oc name ; output_string oc "\n";
   output_string oc "  command = "; output_string oc command; output_string oc "\n";
-  Ext_option.iter dyndep (fun f ->
-      output_string oc "  dyndep = "; output_string oc f; output_string oc  "\n"
-    );
+  (if dyndep <> None then
+      output_string oc "  dyndep = 1\n");
   (if restat <>  None then   
      output_string oc "  restat = 1\n");
   begin match description with 
@@ -254,14 +253,14 @@ let make_custom_rules
       ~command:(mk_ml_cmj_cmd 
                   ~read_cmi  ~is_dev:false 
                   ~postbuild)
-      ~dyndep:"$in_e.d"
+      ~dyndep:()
       ~restat:() (* Always restat when having mli *)
       name,
     define
       ~command:(mk_ml_cmj_cmd 
                   ~read_cmi  ~is_dev:true
                   ~postbuild)
-      ~dyndep:"$in_e.d"
+      ~dyndep:()
       ~restat:() (* Always restat when having mli *)
       (name ^ "_dev")
   in 
