@@ -116,7 +116,7 @@ let emit_module_build
     ;
     Bsb_ninja_targets.output_build oc
       ~outputs:[output_cmi]
-      ~order_only_deps:[output_d]
+      (* ~order_only_deps:[output_d] *)
       ~inputs:[output_iast]
       ~rule:(if is_dev then rules.mi_dev else rules.mi)
     ;
@@ -131,12 +131,10 @@ let emit_module_build
       )
   in
   Bsb_ninja_targets.output_build oc
-    ~outputs:[output_cmj]
-    ~implicit_outputs:  
-      (if has_intf_file then output_js else output_cmi::output_js )
-    ~inputs:[output_ast]
-    ~implicit_deps:(if has_intf_file then [output_cmi] else [] )
-    ~order_only_deps:[output_d]
+    (* ~order_only_deps:[output_d] *)
+    ~outputs:
+      (if has_intf_file then output_cmj :: output_js else output_cmj::output_cmi::output_js)
+    ~inputs:(if has_intf_file then [output_ast; output_cmi] else [output_ast])
     ~rule
   (* ;
   {output_cmj; output_cmi} *)

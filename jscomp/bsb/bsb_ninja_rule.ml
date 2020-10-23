@@ -37,14 +37,13 @@ let get_name (x : t) oc = x.name oc
 let print_rule (oc : out_channel) 
   ?description 
   ?(restat : unit option)  
-  ?dyndep 
+  ?(dyndep : unit option)
   ~command   
   name  =
   output_string oc "rule "; output_string oc name ; output_string oc "\n";
   output_string oc "  command = "; output_string oc command; output_string oc "\n";
-  Ext_option.iter dyndep (fun f ->
-      output_string oc "  dyndep = "; output_string oc f; output_string oc  "\n"
-    );
+  (if dyndep <> None then
+      output_string oc "  dyndep = 1\n");
   (if restat <>  None then   
      output_string oc "  restat = 1\n");
   begin match description with 
@@ -170,7 +169,7 @@ let make_custom_rules
       Ext_buffer.add_string buf package_name;
       Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
     end;
-    Ext_buffer.add_string buf " -o $out $in";
+    Ext_buffer.add_string buf " -o $out $i";
     begin match postbuild with 
     | None -> ()
     | Some cmd -> 
@@ -216,7 +215,7 @@ let make_custom_rules
     );
     
     Ext_buffer.add_char_string buf ' ' bsc_flags;
-    Ext_buffer.add_string buf " -bs-ast -o $out $in";   
+    Ext_buffer.add_string buf " -bs-ast -o $out $i";   
     Ext_buffer.contents buf
   in  
   let build_ast =
@@ -232,8 +231,8 @@ let make_custom_rules
     define 
       ~command:(
         if Ext_sys.is_windows_or_cygwin then
-          "cmd.exe /C copy /Y $in $out > null" 
-        else "cp $in $out"
+          "cmd.exe /C copy /Y $i $out > null" 
+        else "cp $i $out"
       )
       "copy_resource" in
 
@@ -254,14 +253,14 @@ let make_custom_rules
       ~command:(mk_ml_cmj_cmd 
                   ~read_cmi  ~is_dev:false 
                   ~postbuild)
-      ~dyndep:"$in_e.d"
+      ~dyndep:()
       ~restat:() (* Always restat when having mli *)
       name,
     define
       ~command:(mk_ml_cmj_cmd 
                   ~read_cmi  ~is_dev:true
                   ~postbuild)
-      ~dyndep:"$in_e.d"
+      ~dyndep:()
       ~restat:() (* Always restat when having mli *)
       (name ^ "_dev")
   in 
@@ -278,7 +277,7 @@ let make_custom_rules
       ~name:"mi" in 
   let build_package = 
     define
-      ~command:(bsc ^ " -w -49 -color always -no-alias-deps  $in")
+      ~command:(bsc ^ " -w -49 -color always -no-alias-deps  $i")
       ~restat:()
       "build_package"
   in 
