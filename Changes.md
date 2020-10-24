@@ -1,5 +1,48 @@
 `*` means  potential break changes
 
+# 8.3.2
+
+This is a minor release which mostly fouces on internal improvement, 
+some development is in submodule [ninja](https://github.com/rescript-lang/ninja) and 
+[syntax](https://github.com/rescript-lang/syntax) repo, it ships a critical
+bug fix for windows port.
+- #4766, #4767 Bug fix: the npm changed modification time to 1985, our build system was adapted to 
+  support the ancient timestamp.
+- #4762, #4764 more robust internal encoding for uncurry application
+- #4761, #4760, #4758, #4754, #4749, #4747, #4745, #4744
+  updates build engine, more compact build instructions and low latency for startup.
+
+  Previously when buildng an target, it's command line is very dynamic as below:
+  ```
+  build  src/demo.cmj |  src/demo.cmi ../js/src/demo.js : ml_cmj_cmi src/demo.mlast ||  src/demo.d
+  postbuild = && cat ../js/src/demo.js
+  g_pkg_flg = $g_pkg_flg  -bs-package-output commonjs:lib/js/src:.js
+  ```
+  Now it's much more compact, everything is precomputed:
+  ```
+  o src/demo.cmj src/demo.cmi ../js/src/demo.js : mij src/demo.ast
+  ```
+  Such simplification saved the start up time for large projects significantly.
+
+  
+  some internal commands are now recommented to experiment for 
+  third party tools:
+  ```
+  npx bsb -- -t targets # list all targets
+  npx bsb -- -t commands target # list all commands for target
+  npx bsb -- -t commands -s target # list last command for target
+  ```
+
+- #4759 ignore node_modules in templates generator
+- #4756 rebuild when ppx binaries change
+- #4751 for binary ast file extensions, we now only have 
+  `.iast` (for interfaces) and `.ast` (for implementation)
+  we used to have `.mlast`, `.mliast`,`.reast`, `.reiast`,
+  `.resast`, `.resiast` for different surface syntaxes, these are now much simplified
+- #4738 Add Array.joinWith to Belt
+- #4735, mark -bs-no-version-header internal
+- #4718, #4722 compiler verison changes would trigger rebuild, no
+  need store magic numbers in the artifacts
 # 8.3.1
 This is a minor bug fix release for 8.3.0
 - capture warnings when rebuild without enforce warn-as-error
