@@ -18,7 +18,7 @@ SNAP=../lib/$snapshot_path
 o snapshot: phony  $SNAP/whole_compiler.ml   $SNAP/bsb_helper.ml $SNAP/bsb.ml $SNAP/unstable/all_ounit_tests.ml
 # $SNAP/bspp.ml
 o $SNAP/whole_compiler.ml: bspack | ./bin/bspack.exe $LTO
-    flags = ${releaseMode} -D BS_ONLY=true -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER   ${includes}
+    flags = ${releaseMode} -D BS_ONLY=true -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER   $includes
     main = Js_main
     post_process = && node $LTO $SNAP/whole_compiler.ml
 

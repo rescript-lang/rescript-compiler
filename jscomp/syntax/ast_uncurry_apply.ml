@@ -34,6 +34,17 @@ type exp = Parsetree.expression
 let jsInternal = 
   Ast_literal.Lid.js_internal
 
+(* we use the trick 
+  [( opaque e : _) ] to avoid it being inspected, 
+  the type constraint is avoid some syntactic transformation, e.g ` e |. (f g [@bs])`
+  `opaque` is to avoid it being inspected in the type level
+*)
+let opaque_full_apply ~loc (e : exp) : Parsetree.expression_desc =   
+  Pexp_constraint
+    (Exp.apply ~loc (Exp.ident {txt = Ast_literal.Lid.js_internal_full_apply; loc})
+      [Nolabel,e],
+      Typ.any ~loc ()
+    )  
 let generic_apply loc 
     (self : Bs_ast_mapper.mapper) 
     (obj : Parsetree.expression) 
@@ -56,18 +67,15 @@ let generic_apply loc
       (Exp.ident {txt = Ldot (jsInternal, "run");loc}, [Nolabel,fn])
   else 
     let arity_s = string_of_int arity in 
-
-    Parsetree.Pexp_apply (
-      Exp.ident {txt = Ast_literal.Lid.js_internal_full_apply; loc},
-      [Nolabel,
-       Exp.apply ~loc
-         (Exp.apply ~loc
-            (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
-            [(Nolabel, Exp.field ~loc 
-              (Exp.constraint_ ~loc fn 
-                (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn, "arity"^arity_s);loc} 
-                  [Typ.any ~loc ()])) {txt = Ast_literal.Lid.hidden_field arity_s; loc})]) 
-         args])                        
+    opaque_full_apply ~loc (
+      Exp.apply ~loc
+        (Exp.apply ~loc
+           (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
+           [(Nolabel, Exp.field ~loc 
+               (Exp.constraint_ ~loc fn 
+                  (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_fn, "arity"^arity_s);loc} 
+                     [Typ.any ~loc ()])) {txt = Ast_literal.Lid.hidden_field arity_s; loc})]) 
+        args)
 
 let method_apply  loc 
     (self : Bs_ast_mapper.mapper) 
@@ -91,17 +99,15 @@ let method_apply  loc
         (Exp.ident {txt = Ldot ((Ldot (Ast_literal.Lid.js_oo,"Internal")), "run");loc}, [Nolabel,fn])
     else 
       let arity_s = string_of_int arity in 
-      Parsetree.Pexp_apply (
-        Exp.ident {txt = Ast_literal.Lid.js_internal_full_apply; loc},
-        [Nolabel,
-         Exp.apply ~loc (
-           Exp.apply ~loc (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
-             [(Nolabel,
+      opaque_full_apply ~loc (
+        Exp.apply ~loc (
+          Exp.apply ~loc (Exp.ident ~loc {txt = Ast_literal.Lid.opaque; loc}) 
+            [(Nolabel,
               Exp.field ~loc
                 (Exp.constraint_ ~loc 
-                  fn (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_meth,"arity"^arity_s);loc} [Typ.any ~loc ()]))
+                   fn (Typ.constr ~loc {txt = Ldot (Ast_literal.Lid.js_meth,"arity"^arity_s);loc} [Typ.any ~loc ()]))
                 {loc; txt = Ast_literal.Lid.hidden_field arity_s})]) 
-           args])
+          args)
   
 
 let uncurry_fn_apply loc self fn args = 
