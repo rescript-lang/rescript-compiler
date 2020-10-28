@@ -1,1 +1,23 @@
-../lib/4.06.1/bsb_helper.ml: ./bsb_helper/bsb_db_decode.ml ./bsb_helper/bsb_db_decode.mli ./bsb_helper/bsb_helper_depfile_gen.ml ./bsb_helper/bsb_helper_depfile_gen.mli ./ext/ext_buffer.ml ./ext/ext_buffer.mli ./ext/ext_bytes.ml ./ext/ext_bytes.mli ./ext/ext_filename.ml ./ext/ext_filename.mli ./ext/ext_io.ml ./ext/ext_io.mli ./ext/ext_namespace_encode.ml ./ext/ext_namespace_encode.mli ./ext/ext_pervasives.ml ./ext/ext_pervasives.mli ./ext/ext_string.ml ./ext/ext_string.mli ./ext/ext_string_array.ml ./ext/ext_string_array.mli ./ext/literals.ml ./main/bsb_helper_main.ml ./main/bsb_helper_main.mli 
+../lib/4.06.1/bsb_helper.ml: ./bsb_helper/bsb_db_decode.ml
+../lib/4.06.1/bsb_helper.ml: ./bsb_helper/bsb_db_decode.mli
+../lib/4.06.1/bsb_helper.ml: ./bsb_helper/bsb_helper_depfile_gen.ml
+../lib/4.06.1/bsb_helper.ml: ./bsb_helper/bsb_helper_depfile_gen.mli
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_buffer.ml
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_buffer.mli
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_bytes.ml
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_bytes.mli
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_filename.ml
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_filename.mli
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_io.ml
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_io.mli
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_namespace_encode.ml
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_namespace_encode.mli
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_pervasives.ml
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_pervasives.mli
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_string.ml
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_string.mli
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_string_array.ml
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_string_array.mli
+../lib/4.06.1/bsb_helper.ml: ./ext/literals.ml
+../lib/4.06.1/bsb_helper.ml: ./main/bsb_helper_main.ml
+../lib/4.06.1/bsb_helper.ml: ./main/bsb_helper_main.mli

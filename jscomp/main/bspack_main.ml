@@ -522,10 +522,11 @@ let () =
                  L_string_set.fold
                    (fun dep acc  -> 
                       acc ^ 
-                      dep ^
-                      " "
+                      file ^ ": " ^ dep ^
+                      "\n"
                    ) sorted_dep_queue
-                   (file ^ ": " )
+                   ""
+                   (* (file ^ ": " ) *)
                    (* collection_modules *)
                )
        end
