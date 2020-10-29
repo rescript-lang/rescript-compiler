@@ -44,7 +44,7 @@ o core/js_map.ml: p4of core/js_map.mlp | core/j.ml
  * @returns {boolean}
  */
 function hasCamlp4() {
-  // console.log(`camlp4of ${process.env.PATH}`)  
+  // console.log(`camlp4of ${process.env.PATH}`)
   try {
     console.log(cp.execSync(`camlp4of -v`, { encoding: "ascii" }));
     return true;
@@ -100,7 +100,6 @@ function generateVisitorPattern() {
  * need do test build in CI either
  *
  */
-var useEnv = false;
 
 /**
  * Note this file is not used in ninja file
@@ -109,7 +108,7 @@ var useEnv = false;
  * Note ocamldep.opt has built-in macro handling OCAML_VERSION
  */
 var getOcamldepFile = () => {
-  if (useEnv || process.env.ESY === "true") {
+  if (process.env.ESY === "true") {
     return `ocamldep.opt`;
   } else {
     return path.join(
@@ -867,11 +866,7 @@ var compilerTarget = pseudoTarget(COMPILIER);
 async function runtimeNinja(devmode = true) {
   var ninjaCwd = "runtime";
   var externalDeps = devmode ? [compilerTarget] : [];
-  var ninjaOutput = devmode
-    ? useEnv
-      ? "env.ninja"
-      : "build.ninja"
-    : "release.ninja";
+  var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
   var templateRuntimeRules = `
 bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nopervasives  -unsafe -w +50 -warn-error A
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
@@ -964,11 +959,7 @@ rule ${mllRuleName}
 `;
 async function othersNinja(devmode = true) {
   var externalDeps = [runtimeTarget];
-  var ninjaOutput = devmode
-    ? useEnv
-      ? "env.ninja"
-      : "build.ninja"
-    : "release.ninja";
+  var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
   var ninjaCwd = "others";
 
   var templateOthersRules = `
@@ -1087,11 +1078,7 @@ async function stdlibNinja(devmode = true) {
   var ninjaCwd = stdlibVersion;
   var stdlibDir = path.join(jscompDir, stdlibVersion);
   var externalDeps = [othersTarget];
-  var ninjaOutput = devmode
-    ? useEnv
-      ? "env.ninja"
-      : "build.ninja"
-    : "release.ninja";
+  var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
   var bsc_flags = "bsc_flags";
   /**
    * @type [string,string][]
@@ -1232,7 +1219,7 @@ function baseName(x) {
  * @returns {Promise<void>}
  */
 async function testNinja() {
-  var ninjaOutput = useEnv ? "env.ninja" : "build.ninja";
+  var ninjaOutput = "build.ninja";
   var ninjaCwd = `test`;
   var templateTestRules = `
 bsc_flags = -absname -bs-no-version-header  -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104 -warn-error A  -I runtime -I $stdlib -I others
@@ -1392,32 +1379,15 @@ function sortFilesByDeps(domain, dependency_graph) {
 }
 
 function updateRelease() {
-  if (!useEnv) {
-    runtimeNinja(false);
-    stdlibNinja(false);
-    othersNinja(false);
-  }
+  runtimeNinja(false);
+  stdlibNinja(false);
+  othersNinja(false);
 }
 
 function updateDev() {
-  if (useEnv) {
-    writeFileAscii(
-      path.join(jscompDir, "env.ninja"),
-      `
-${getEnnvConfigNinja()}
-stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
-subninja compilerEnv.ninja
-subninja runtime/env.ninja
-subninja others/env.ninja
-subninja $stdlib/env.ninja
-subninja test/env.ninja
-o all: phony runtime others $stdlib test
-`
-    );
-  } else {
-    writeFileAscii(
-      path.join(jscompDir, "build.ninja"),
-      `
+  writeFileAscii(
+    path.join(jscompDir, "build.ninja"),
+    `
 ${getVendorConfigNinja()}
 stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
 ${BSC_COMPILER}      
@@ -1428,17 +1398,17 @@ subninja $stdlib/build.ninja
 subninja test/build.ninja
 o all: phony runtime others $stdlib test
 `
-    );
-    writeFileAscii(
-      path.join(jscompDir, "..", "lib", "build.ninja"),
-      `
+  );
+  writeFileAscii(
+    path.join(jscompDir, "..", "lib", "build.ninja"),
+    `
 ocamlopt = ocamlopt.opt 
 ext = exe
 INCL= ${version6() ? "4.06.1+BS" : "4.02.3+BS"}
 include body.ninja               
 `
-    );
-  }
+  );
+
   preprocessorNinjaSync();
   nativeNinja();
   runtimeNinja();
@@ -1509,7 +1479,7 @@ ocaml = ocaml
  * @returns {string}
  */
 function getPreprocessorFileName() {
-  return useEnv ? "cppoEnv.ninja" : "cppoVendor.ninja";
+  return "cppoVendor.ninja";
 }
 /**
  * Built cppo.exe refmt.exe etc for dev purpose
@@ -1523,7 +1493,7 @@ function preprocessorNinjaSync() {
     .map((file) => `o napkin/${file} : copy ../syntax/src/${file}`)
     .join("\n");
   var cppoNative = `
-${useEnv ? getEnnvConfigNinja() : getVendorConfigNinja()}
+${getVendorConfigNinja()}
 rule link
     command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out
 o ${cppoFile}: link ${cppoMonoFile}
@@ -1584,7 +1554,7 @@ ${buildNapkinFiles}
  * an effect on depfile
  */
 function nativeNinja() {
-  var ninjaOutput = useEnv ? "compilerEnv.ninja" : "compiler.ninja";
+  var ninjaOutput = "compiler.ninja";
   var sourceDirs = [
     "stubs",
     "ext",
@@ -1774,10 +1744,6 @@ function main() {
   var emptyCount = 2;
   var isPlayground = false;
   if (require.main === module) {
-    if (process.argv.includes("-env")) {
-      useEnv = true;
-      emptyCount++;
-    }
     if (process.argv.includes("-check")) {
       checkEffect();
     }
