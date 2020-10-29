@@ -454,21 +454,21 @@ let test19 () =
     "scan_rest"
 ;;
 
-(test19 ())
+(test19 ()) |. ignore
 ;;
 
 let test20 () =
   scan_failure_test
     scan_int_list (Scanning.from_string "[1;2;3;4;; 5]");;
 
-(test20 ())
+(test20 ()) |. ignore
 ;;
 
 let test21 () =
   scan_failure_test
     scan_int_list (Scanning.from_string "[1;2;3;4;;");;
 
-(test21 ())
+(test21 ()) |. ignore
 ;;
 
 let rec scan_elems ib accu =
@@ -571,10 +571,10 @@ and test26 () =
 and test27 () =
   scan_failure_test scan_int_list (Scanning.from_string "[1;2;3;4;; 23]");;
 
- (test24 ()) &&
+ ((test24 ()) &&
  (test25 ()) &&
  (test26 ()) &&
- (test27 ())
+ (test27 ())) |. ignore
 ;;
 
 (* To scan an OCaml string:
@@ -1075,8 +1075,8 @@ let test43, test44 =
  (fun () -> bscanf ib "%!%i" (fun i -> i))
 ;;
 
-test_raises_this_exc End_of_file test43 () &&
-test_raises_this_exc End_of_file test44 ()
+(test_raises_this_exc End_of_file test43 () &&
+test_raises_this_exc End_of_file test44 ()) |. ignore
 ;;
 
 (* Testing small range scanning (bug found once). *)

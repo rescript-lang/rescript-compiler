@@ -8,7 +8,7 @@ end
 external f : int -> int array -> int = "Math.max" 
   [@@bs.splice] [@@bs.val]
 
-;; f 1 [||]
+;; f 1 [||] |. ignore
 
 external send : int -> int array -> int = "send" 
   [@@bs.splice] [@@bs.send]

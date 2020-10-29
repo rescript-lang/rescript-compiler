@@ -1,1 +1,1 @@
-List.find (fun x -> x > 3 ) []
+List.find (fun x -> x > 3 ) [] |. ignore

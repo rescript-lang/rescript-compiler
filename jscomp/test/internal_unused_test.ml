@@ -2,7 +2,7 @@
 [@@@warnerror "a"]
 ;; module [@internal.local] P0 = struct 
   let a = 3 in 
-  Js.log a ; a + 2
+  Js.log a ; a + 2 |. ignore
 end  
 open! P0
 

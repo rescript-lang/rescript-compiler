@@ -17,7 +17,7 @@ let v = ref 3
 
 let update () = incr v ; true 
 
-;; if update () then "" else ""
+;; (if update () then "" else "") |. ignore
 
 ;; eq __LOC__ !v 4 
 
