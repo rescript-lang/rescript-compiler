@@ -267,3 +267,10 @@ module Int = Belt_Int
 module Float = Belt_Float
 
 
+(** {!Belt.AsyncData}
+
+    Utilities for async data representation.
+*)
+
+module AsyncData = Belt_AsyncData
+
