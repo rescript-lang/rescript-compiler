@@ -1,8 +1,9 @@
 Special tests for super errors (the pretty error display)
 
-Follow CONTRIBUTING.md and run the integration test:
+Follow CONTRIBUTING.md and run the integration build that produces the binary needed in these tests:
 
 ```sh
+npm uninstall -g bs-platform # a cache-busting uninstall is needed, but only for npm >=7
 BS_TRAVIS_CI=1 npm install -g .
 ```
 

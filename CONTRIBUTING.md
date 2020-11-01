@@ -50,7 +50,7 @@ If this doesn't work (rare), then:
 If you'd like to use your modified ReScript like an end-user, try:
 
 ```sh
-npm uninstall -g bs-platform
+npm uninstall -g bs-platform # a cache-busting uninstall is needed, but only for npm >=7
 BS_TRAVIS_CI=1 npm install -g .
 ```
 
