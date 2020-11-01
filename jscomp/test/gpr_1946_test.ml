@@ -7,7 +7,7 @@ let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y
 
 let x =  [%obj{x = 3 ; y = 4}]##x
 
-;; [%obj{x = 3 ; y = 4}]##x
+;; [%obj{x = 3 ; y = 4}]##x |. ignore
 
 
 let zz =  [%obj{_5 = 3 }]##_5
