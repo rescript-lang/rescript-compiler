@@ -45,7 +45,7 @@ type 'a t  =
   | Loading
   | Done 'a
 
-val getExn : ('a, 'b) t -> 'a
+val getExn : 'a t -> 'a
 (**
   [getExn res]
   
