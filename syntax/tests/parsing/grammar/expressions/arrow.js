@@ -17,7 +17,7 @@ let f = (_, _) => ()
 let f = ([a, b], [c, d]) => a + b  + c + d
 let f = ({a}) => a + 1
 let f = ({a, b}, {c, d}) => a + b + c + d
-let f = ((a,)) => a + 1
+// let f = ((a,)) => a + 1
 let f = ((a, b)) => a + b
 let f = ((a, b), (c, d)) => a + b + c + d
 let f = (exception Terminate) => ()

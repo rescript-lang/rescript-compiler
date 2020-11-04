@@ -102,6 +102,8 @@ Solution: directly use `concat`."
 
   let typeDeclarationNameLongident longident =
     "A type declaration's name cannot contain a module access. Did you mean `" ^ (Longident.last longident) ^"`?"
+
+  let tupleSingleElement = "A tuple needs at least two elements"
 end
 
 
@@ -1341,14 +1343,22 @@ and parseRecordPattern ~attrs p =
 
 and parseTuplePattern ~attrs ~first ~startPos p =
   let patterns =
-    parseCommaDelimitedRegion p
-      ~grammar:Grammar.PatternList
-      ~closing:Rparen
-      ~f:parseConstrainedPatternRegion
+    first::(
+      parseCommaDelimitedRegion p
+        ~grammar:Grammar.PatternList
+        ~closing:Rparen
+        ~f:parseConstrainedPatternRegion
+    )
   in
   Parser.expect Rparen p;
+  let () = match patterns with
+  | [_] ->
+    Parser.err ~startPos ~endPos:p.prevEndPos p
+      (Diagnostics.message ErrorMessages.tupleSingleElement)
+  | _ -> ()
+  in
   let loc = mkLoc startPos p.prevEndPos in
-  Ast_helper.Pat.tuple ~loc ~attrs (first::patterns)
+  Ast_helper.Pat.tuple ~loc ~attrs (patterns)
 
 and parsePatternRegion p =
   match p.Parser.token with
@@ -3507,11 +3517,23 @@ and parseConstructorArgs p =
 
 and parseTupleExpr ~first ~startPos p =
   let exprs =
-    parseCommaDelimitedRegion
-      p ~grammar:Grammar.ExprList ~closing:Rparen ~f:parseConstrainedExprRegion
+    first::(
+      parseCommaDelimitedRegion
+        p
+        ~grammar:Grammar.ExprList
+        ~closing:Rparen
+        ~f:parseConstrainedExprRegion
+    )
   in
   Parser.expect Rparen p;
-  Ast_helper.Exp.tuple ~loc:(mkLoc startPos p.prevEndPos) (first::exprs)
+  let () = match exprs with
+  | [_] ->
+    Parser.err ~startPos ~endPos:p.prevEndPos p
+      (Diagnostics.message ErrorMessages.tupleSingleElement)
+  | _ -> ()
+  in
+  let loc = mkLoc startPos p.prevEndPos in
+  Ast_helper.Exp.tuple ~loc exprs
 
 and parseSpreadExprRegion p =
   match p.Parser.token with
@@ -3961,15 +3983,23 @@ and parseTypExprRegion p =
 
 and parseTupleType ~attrs ~first ~startPos p =
   let typexprs =
-    parseCommaDelimitedRegion
-      ~grammar:Grammar.TypExprList
-      ~closing:Rparen
-      ~f:parseTypExprRegion
-      p
+    first::(
+      parseCommaDelimitedRegion
+        ~grammar:Grammar.TypExprList
+        ~closing:Rparen
+        ~f:parseTypExprRegion
+        p
+    )
   in
   Parser.expect Rparen p;
+  let () = match typexprs with
+  | [_] ->
+    Parser.err ~startPos ~endPos:p.prevEndPos p
+      (Diagnostics.message ErrorMessages.tupleSingleElement)
+  | _ -> ()
+  in
   let tupleLoc = mkLoc startPos p.prevEndPos in
-  Ast_helper.Typ.tuple ~attrs ~loc:tupleLoc (first::typexprs)
+  Ast_helper.Typ.tuple ~attrs ~loc:tupleLoc typexprs
 
 and parseTypeConstructorArgRegion p =
   if Grammar.isTypExprStart p.Parser.token then
