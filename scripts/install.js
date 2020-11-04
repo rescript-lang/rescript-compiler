@@ -73,6 +73,7 @@ function provideNinja() {
   }
 
   if (
+    (process.env.NINJA_FORCE_REBUILD === undefined) &&  
     fs.existsSync(ninja_bin_output) &&
     test_ninja_compatible(ninja_bin_output)
   ) {
