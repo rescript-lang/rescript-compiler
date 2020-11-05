@@ -12646,8 +12646,9 @@ module Bsb_ninja_rule : sig
 *)
 type t  
 
+type o = out_channel
 
-val get_name : t  -> out_channel -> string
+val get_name : t  -> o -> string
 
 (***********************************************************)
 (** A list of existing rules *)
@@ -12736,33 +12737,39 @@ end = struct
 
 
 
-
+type o = out_channel
 
 
 type t = { 
   mutable used : bool; 
   rule_name : string; 
-  name : out_channel -> string 
+  name : o -> string 
 }
 
-let get_name (x : t) oc = x.name oc
-let print_rule (oc : out_channel) 
+let get_name (x : t) (oc : o) = x.name oc
+let (+>) : o -> string -> unit  = output_string
+let print_rule (oc : o) 
   ?description 
   ?(restat : unit option)  
   ?(dyndep : unit option)
   ~command   
   name  =
-  output_string oc "rule "; output_string oc name ; output_string oc "\n";
-  output_string oc "  command = "; output_string oc command; output_string oc "\n";
+  oc +> "rule "; 
+  oc +> name ;  
+  oc +> "\n";
+  oc +> "  command = "; 
+  oc +> command; 
+  oc +> "\n";
   (if dyndep <> None then
-      output_string oc "  dyndep = 1\n");
+       oc +> "  dyndep = 1\n");
   (if restat <>  None then   
-     output_string oc "  restat = 1\n");
+      oc +> "  restat = 1\n");
   begin match description with 
     | None -> ()     
     | Some description -> 
-      output_string oc "  description = " ; output_string oc description;
-      output_string oc "\n"
+      oc +> "  description = " ; 
+      oc +> description;
+      oc +> "\n"
   end 
   
 
@@ -12780,7 +12787,7 @@ let define
   let rec self = {
     used  = false;
     rule_name ;
-    name = fun oc ->
+    name = fun (oc : o)  ->
       if not self.used then
         begin
           print_rule oc  ?dyndep ?restat ~command rule_name;
@@ -13056,7 +13063,6 @@ module Bsb_ninja_targets : sig
    however, for the command we don't need pass `-o`
 *)
 val output_build :
-  (* ?order_only_deps:string list -> *)
   outputs:string list ->
   inputs:string list ->
   rule:Bsb_ninja_rule.t -> 
