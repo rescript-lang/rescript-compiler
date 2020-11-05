@@ -16590,10 +16590,6 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
   let install_filename_sans_extension destdir namespace x = 
     let x = 
       Ext_namespace_encode.make ?ns:namespace x in 
-    install ~destdir (cwd // x ^  Literals.suffix_ml) ;
-    install ~destdir (cwd // x ^  Literals.suffix_re) ;
-    install ~destdir (cwd // x ^ Literals.suffix_mli) ;
-    install ~destdir (cwd // x ^  Literals.suffix_rei) ;
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmi) ;
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmj) ;
     install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmt) ;
