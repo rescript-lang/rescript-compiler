@@ -122,7 +122,7 @@ let output_ninja_and_namespace_map
   =
   let lib_artifacts_dir = Bsb_config.lib_bs in
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in   
-  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
+
   let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
   let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
@@ -130,12 +130,6 @@ let output_ninja_and_namespace_map
   let dpkg_incls  =  (Bsb_build_util.include_dirs_by
                         bs_dev_dependencies
                         (fun x -> x.package_install_path)) in 
-  
-  let () = 
-    Bsb_ninja_targets.output_kv      
-      Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
-      oc 
-  in          
   let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
   let source_dirs : string list Bsb_db.cat = {lib = []; dev = []} in
   let static_resources =
@@ -188,8 +182,12 @@ let output_ninja_and_namespace_map
       ~dpkg_incls (* dev dependencies *)
       ~lib_incls (* its own libs *)
       ~dev_incls (* its own devs *)
-      generators in   
+      generators in  
 
+  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in              
+  Bsb_ninja_targets.output_kv      
+    Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
+    oc ;
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 
@@ -198,9 +196,7 @@ let output_ninja_and_namespace_map
          ~rules
          ~package_specs 
          ~files_to_install    
-         ~namespace files_per_dir)
-  ;
-
+         ~namespace files_per_dir);
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     
         per_proj_dir // lib_artifacts_dir  in
@@ -213,3 +209,4 @@ let output_ninja_and_namespace_map
         ~rule:rules.build_package
     );
   close_out oc
+        
