@@ -8,5 +8,5 @@
 	branch = master
 [submodule "ninja"]
 	path = ninja
-	url = git@github.com:rescript-lang/ninja.git
+	url = https://github.com/rescript-lang/ninja
 	ignore = untracked
