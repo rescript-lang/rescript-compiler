@@ -166,8 +166,8 @@ let install_target config_opt =
           Map_string.iter group.sources 
             (fun  module_name module_info -> 
                if check_file module_name then 
-                 begin Queue.add module_info.name_sans_extension config.files_to_install end
-            )) in 
+                 begin Queue.add module_info config.files_to_install end
+            )) in (* FIXME: it seems namespace was missed here *)
       config
     | Some config -> config in
   Bsb_world.install_targets Bsb_global_paths.cwd config

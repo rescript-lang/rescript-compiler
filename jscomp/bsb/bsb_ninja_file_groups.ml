@@ -158,7 +158,7 @@ let handle_files_per_dir
   Map_string.iter group.sources   (fun  module_name module_info   ->
       if installable module_name then 
         Queue.add 
-          module_info.name_sans_extension files_to_install;
+          module_info files_to_install;
       emit_module_build  rules
         package_specs
         group.dev_index

@@ -48,10 +48,10 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
     begin match namespace with 
       | None -> ()
       | Some x -> 
-        install_filename_sans_extension destdir None  x
+        install_filename_sans_extension destdir None  x (* need install graph.cmi for namespace *)
     end;
     files_to_install 
-    |> Queue.iter (install_filename_sans_extension destdir namespace) ;
+    |> Queue.iter (fun (x : Bsb_db.module_info) -> install_filename_sans_extension destdir namespace x.name_sans_extension) ;
     Bsb_log.info "@{<info>Installing finished@} @.";
   end
 

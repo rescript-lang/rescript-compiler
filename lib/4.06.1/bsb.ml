@@ -7704,7 +7704,7 @@ type t =
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
     file_groups : Bsb_file_groups.t;
-    files_to_install : string Queue.t ;
+    files_to_install : Bsb_db.module_info Queue.t ;
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
     generators : command Map_string.t ; 
@@ -13235,7 +13235,7 @@ val handle_files_per_dir :
   out_channel ->
   rules:Bsb_ninja_rule.builtin ->
   package_specs:Bsb_package_specs.t ->
-  files_to_install:string Queue.t ->
+  files_to_install:Bsb_db.module_info Queue.t ->
   namespace:string option -> 
   Bsb_file_groups.file_group -> unit
 
@@ -13401,7 +13401,7 @@ let handle_files_per_dir
   Map_string.iter group.sources   (fun  module_name module_info   ->
       if installable module_name then 
         Queue.add 
-          module_info.name_sans_extension files_to_install;
+          module_info files_to_install;
       emit_module_build  rules
         package_specs
         group.dev_index
@@ -16287,10 +16287,10 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
     begin match namespace with 
       | None -> ()
       | Some x -> 
-        install_filename_sans_extension destdir None  x
+        install_filename_sans_extension destdir None  x (* need install graph.cmi for namespace *)
     end;
     files_to_install 
-    |> Queue.iter (install_filename_sans_extension destdir namespace) ;
+    |> Queue.iter (fun (x : Bsb_db.module_info) -> install_filename_sans_extension destdir namespace x.name_sans_extension) ;
     Bsb_log.info "@{<info>Installing finished@} @.";
   end
 
@@ -16746,8 +16746,8 @@ let install_target config_opt =
           Map_string.iter group.sources 
             (fun  module_name module_info -> 
                if check_file module_name then 
-                 begin Queue.add module_info.name_sans_extension config.files_to_install end
-            )) in 
+                 begin Queue.add module_info config.files_to_install end
+            )) in (* FIXME: it seems namespace was missed here *)
       config
     | Some config -> config in
   Bsb_world.install_targets Bsb_global_paths.cwd config
