@@ -13542,6 +13542,10 @@ let output_static_resources
       ~order_only_deps:static_resources 
       ~inputs:[]
       ~output:Literals.build_ninja         
+(*
+  FIXME: check if the trick still works
+  phony build.ninja : | resources 
+*)      
 
 
 let output_ninja_and_namespace_map
