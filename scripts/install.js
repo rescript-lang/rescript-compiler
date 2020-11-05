@@ -37,17 +37,24 @@ function provideNinja() {
   function build_ninja() {
     console.log(`building ninja`);
     ensureExists(ninja_source_dir);
-    cp.execSync(`tar xzvf ../ninja.tar.gz`, {
-      cwd: ninja_source_dir,
-      stdio: [0, 1, 2]
-    });
-    console.log("No prebuilt Ninja, building Ninja now");
-    var build_ninja_command = "./configure.py --bootstrap";
-    cp.execSync(build_ninja_command, {
-      cwd: ninja_source_dir,
-      stdio: [0, 1, 2]
-    });
-    fs.copyFileSync(path.join(ninja_source_dir, "ninja"), ninja_bin_output);
+    if (fs.existsSync(path.join(root_dir, "vendor", "ninja.tar.gz"))) {
+      cp.execSync(`tar xzvf ../ninja.tar.gz`, {
+        cwd: ninja_source_dir,
+        stdio: [0, 1, 2],
+      });
+      console.log("No prebuilt Ninja, building Ninja now");
+      var build_ninja_command = "./configure.py --bootstrap";
+      cp.execSync(build_ninja_command, {
+        cwd: ninja_source_dir,
+        stdio: [0, 1, 2],
+      });
+      fs.copyFileSync(path.join(ninja_source_dir, "ninja"), ninja_bin_output);
+    } else {
+      console.log(`ninja.tar.gz not availble in CI mode`);
+      require("../ninja/snapshot").build();
+      fs.copyFileSync(path.join(root_dir, "ninja", "ninja"), ninja_bin_output);
+    }
+
     console.log("ninja binary is ready: ", ninja_bin_output);
   }
 
@@ -62,7 +69,7 @@ function provideNinja() {
       version = cp
         .execSync(JSON.stringify(binary_path) + " --version", {
           encoding: "utf8",
-          stdio: ["pipe", "pipe", "ignore"] // execSync outputs to stdout even if we catch the error. Silent it here
+          stdio: ["pipe", "pipe", "ignore"], // execSync outputs to stdout even if we catch the error. Silent it here
         })
         .trim();
     } catch (e) {
@@ -73,6 +80,7 @@ function provideNinja() {
   }
 
   if (
+    process.env.NINJA_FORCE_REBUILD === undefined &&
     fs.existsSync(ninja_bin_output) &&
     test_ninja_compatible(ninja_bin_output)
   ) {
@@ -149,16 +157,13 @@ o all: phony runtime others $stdlib
   cp.execFileSync(ninja_bin_output, cleanArgs, {
     cwd: jscomp_dir,
     stdio: [0, 1, 2],
-    shell: false
+    shell: false,
   });
-  var buildArgs = ["-f", "release.ninja"];
-  if (process.env.BS_TRAVIS_CI) {
-    buildArgs.push("--verbose");
-  }
+  var buildArgs = ["-f", "release.ninja", "--verbose"];
   cp.execFileSync(ninja_bin_output, buildArgs, {
     cwd: jscomp_dir,
     stdio: [0, 1, 2],
-    shell: false
+    shell: false,
   });
   fs.unlinkSync(filePath);
   console.log("Build finished");
@@ -194,18 +199,18 @@ function provideCompiler() {
     var releaseNinja = require("./ninjaFactory.js").libNinja({
       ocamlopt: ocamlopt,
       INCL: myVersion,
-      isWin: is_windows
+      isWin: is_windows,
     });
 
     var filePath = path.join(lib_dir, "release.ninja");
     fs.writeFileSync(filePath, releaseNinja, "ascii");
     cp.execFileSync(ninja_bin_output, ["-f", "release.ninja", "-t", "clean"], {
       cwd: lib_dir,
-      stdio: [0, 1, 2]
+      stdio: [0, 1, 2],
     });
     cp.execFileSync(ninja_bin_output, ["-f", "release.ninja", "-v"], {
       cwd: lib_dir,
-      stdio: [0, 1, 2]
+      stdio: [0, 1, 2],
     });
     fs.unlinkSync(filePath);
     return myVersion;
