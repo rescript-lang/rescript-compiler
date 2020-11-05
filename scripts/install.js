@@ -37,17 +37,24 @@ function provideNinja() {
   function build_ninja() {
     console.log(`building ninja`);
     ensureExists(ninja_source_dir);
-    cp.execSync(`tar xzvf ../ninja.tar.gz`, {
-      cwd: ninja_source_dir,
-      stdio: [0, 1, 2],
-    });
-    console.log("No prebuilt Ninja, building Ninja now");
-    var build_ninja_command = "./configure.py --bootstrap";
-    cp.execSync(build_ninja_command, {
-      cwd: ninja_source_dir,
-      stdio: [0, 1, 2],
-    });
-    fs.copyFileSync(path.join(ninja_source_dir, "ninja"), ninja_bin_output);
+    if (fs.existsSync(path.join(root_dir, "vendor", "ninja.tar.gz"))) {
+      cp.execSync(`tar xzvf ../ninja.tar.gz`, {
+        cwd: ninja_source_dir,
+        stdio: [0, 1, 2],
+      });
+      console.log("No prebuilt Ninja, building Ninja now");
+      var build_ninja_command = "./configure.py --bootstrap";
+      cp.execSync(build_ninja_command, {
+        cwd: ninja_source_dir,
+        stdio: [0, 1, 2],
+      });
+      fs.copyFileSync(path.join(ninja_source_dir, "ninja"), ninja_bin_output);
+    } else {
+      console.log(`ninja.tar.gz not availble in CI mode`);
+      require("../ninja/snapshot").build();
+      fs.copyFileSync(path.join(root_dir, "ninja", "ninja"), ninja_bin_output);
+    }
+
     console.log("ninja binary is ready: ", ninja_bin_output);
   }
 
@@ -73,7 +80,7 @@ function provideNinja() {
   }
 
   if (
-    (process.env.NINJA_FORCE_REBUILD === undefined) &&  
+    process.env.NINJA_FORCE_REBUILD === undefined &&
     fs.existsSync(ninja_bin_output) &&
     test_ninja_compatible(ninja_bin_output)
   ) {
