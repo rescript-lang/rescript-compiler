@@ -72,7 +72,7 @@ let emit_module_build
     (is_dev : bool) 
     oc 
     namespace
-    (module_info : Bsb_db.module_info)
+    (module_info : Bsb_db.module_info) : unit
   =    
   let has_intf_file = module_info.info = Impl_intf in 
   let config, ast_rule  = 
@@ -116,7 +116,6 @@ let emit_module_build
     ;
     Bsb_ninja_targets.output_build oc
       ~outputs:[output_cmi]
-      (* ~order_only_deps:[output_d] *)
       ~inputs:[output_iast]
       ~rule:(if is_dev then rules.mi_dev else rules.mi)
     ;
@@ -131,15 +130,10 @@ let emit_module_build
       )
   in
   Bsb_ninja_targets.output_build oc
-    (* ~order_only_deps:[output_d] *)
     ~outputs:
       (if has_intf_file then output_cmj :: output_js else output_cmj::output_cmi::output_js)
     ~inputs:(if has_intf_file then [output_ast; output_cmi] else [output_ast])
     ~rule
-  (* ;
-  {output_cmj; output_cmi} *)
-
-
 
 
 
@@ -148,7 +142,7 @@ let handle_files_per_dir
     oc 
     ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
-    ~(files_to_install : Hash_set_string.t) 
+    ~files_to_install
     ~(namespace  : string option)
     (group: Bsb_file_groups.file_group ) 
   : unit =
@@ -163,8 +157,8 @@ let handle_files_per_dir
       Set_string.mem set module_name in
   Map_string.iter group.sources   (fun  module_name module_info   ->
       if installable module_name then 
-        Hash_set_string.add files_to_install 
-          module_info.name_sans_extension;
+        Queue.add 
+          module_info.name_sans_extension files_to_install;
       emit_module_build  rules
         package_specs
         group.dev_index

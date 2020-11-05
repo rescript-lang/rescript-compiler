@@ -50,7 +50,8 @@ let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_c
       | Some x -> 
         install_filename_sans_extension destdir None  x
     end;
-    Hash_set_string.iter files_to_install (install_filename_sans_extension destdir namespace) ;
+    files_to_install 
+    |> Queue.iter (install_filename_sans_extension destdir namespace) ;
     Bsb_log.info "@{<info>Installing finished@} @.";
   end
 

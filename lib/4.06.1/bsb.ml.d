@@ -123,9 +123,6 @@
 ../lib/4.06.1/bsb.ml: ./ext/hash.ml
 ../lib/4.06.1/bsb.ml: ./ext/hash.mli
 ../lib/4.06.1/bsb.ml: ./ext/hash_gen.ml
-../lib/4.06.1/bsb.ml: ./ext/hash_set_gen.ml
-../lib/4.06.1/bsb.ml: ./ext/hash_set_string.ml
-../lib/4.06.1/bsb.ml: ./ext/hash_set_string.mli
 ../lib/4.06.1/bsb.ml: ./ext/hash_string.ml
 ../lib/4.06.1/bsb.ml: ./ext/hash_string.mli
 ../lib/4.06.1/bsb.ml: ./ext/literals.ml

@@ -29,6 +29,6 @@ val handle_files_per_dir :
   out_channel ->
   rules:Bsb_ninja_rule.builtin ->
   package_specs:Bsb_package_specs.t ->
-  files_to_install:Hash_set_string.t ->
+  files_to_install:string Queue.t ->
   namespace:string option -> 
   Bsb_file_groups.file_group -> unit

@@ -166,7 +166,7 @@ let install_target config_opt =
           Map_string.iter group.sources 
             (fun  module_name module_info -> 
                if check_file module_name then 
-                 begin Hash_set_string.add config.files_to_install module_info.name_sans_extension end
+                 begin Queue.add module_info.name_sans_extension config.files_to_install end
             )) in 
       config
     | Some config -> config in
