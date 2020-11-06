@@ -44,7 +44,7 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
           let _config = 
             Bsb_ninja_regen.regenerate_ninja 
               ~toplevel_package_specs:(Some deps) 
-              ~per_proj_dir:proj_dir  in 
+              ~per_proj_dir:proj_dir  ~forced:true in 
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
              cwd = lib_bs_dir;
