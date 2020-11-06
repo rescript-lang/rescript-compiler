@@ -38,7 +38,7 @@ let log cmd =
   Bsb_log.info_args cmd.args
 
 let command_fatal_error cmd eid =
-  Bsb_log.error "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd;
+  Bsb_log.error "@{<error>Failure:@} %s \nLocation: %s@." cmd.cmd cmd.cwd;
   exit eid 
 
 let run_command_execv_unix  cmd : int =
