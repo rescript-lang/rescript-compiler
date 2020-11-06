@@ -13550,6 +13550,13 @@ let output_static_resources
 let output_installation_file cwd_lib_bs namespace files_to_install = 
   let install_oc = open_out_bin (cwd_lib_bs // "install.ninja") in 
   let o s = output_string install_oc s in
+  let[@inline] oo suffix ~dest ~src =   
+    o  "o " ; 
+    o dest ;
+    o suffix; 
+    o " : cp ";
+    o src;
+    o suffix; o "\n" in 
   let bs = ".."//"bs" in  
   let sb = ".."//".." in 
   o "rule cp\n  command = cp $i $out\n";
@@ -13558,36 +13565,34 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
       let base = Filename.basename name_sans_extension in 
       let ns_base = Ext_namespace_encode.make ?ns:namespace base in
       let ns_origin = Ext_namespace_encode.make ?ns:namespace name_sans_extension in
-      let sources = 
-        match info, syntax_kind with
-        | Intf , _ -> assert false
-        | Impl, Ml -> [".ml" ]
-        | Impl, Reason -> [".re" ] 
-        | Impl, Res -> [".res" ] 
-        | Impl_intf, Ml ->  [".ml" ; ".mli"] 
-        | Impl_intf, Reason ->  [".re" ; ".rei"]
-        | Impl_intf, Res ->  [".res" ; ".resi"]
-      in   
-      let binaries = 
-        match info with 
-        | Intf -> assert false
-        | Impl -> [".cmi"; ".cmt";  ".cmj"]
-        | Impl_intf -> [".cmi"; ".cmt"; ".cmti" ; ".cmj"] in  
-      (* install source files *)
-      Ext_list.iter sources (fun s -> 
-          o @@ Printf.sprintf "o %s : cp %s \n" (base ^ s) (sb // name_sans_extension ^s)
-               
-        ); 
-      (* install binary artifacts  *)
-      Ext_list.iter binaries (fun s -> 
-          o @@  Printf.sprintf "o %s : cp %s \n" (ns_base ^ s) (bs // ns_origin ^s)               
-        ) );
+      oo Literals.suffix_cmi ~dest:ns_base ~src:(bs//ns_origin);
+      oo Literals.suffix_cmj ~dest:ns_base ~src:(bs//ns_origin);      
+      oo Literals.suffix_cmt ~dest:ns_base ~src:(bs//ns_origin);
+      let suffix = 
+        match syntax_kind with 
+        | Ml -> Literals.suffix_ml 
+        | Reason -> Literals.suffix_re 
+        | Res -> Literals.suffix_res 
+      in  oo suffix ~dest:base ~src:(sb//name_sans_extension);
+      match info with
+      | Intf  -> assert false
+      | Impl ->  ()
+      | Impl_intf ->  
+        let  suffix_b =
+          match syntax_kind with 
+          | Ml ->  Literals.suffix_mli
+          | Reason ->  Literals.suffix_rei
+          | Res ->  Literals.suffix_resi in   
+        oo suffix_b  ~dest:base ~src:(sb//name_sans_extension);                      
+        oo Literals.suffix_cmti ~dest:ns_base ~src:(bs//ns_origin)
+    );
   begin match namespace with 
   | None -> ()      
   | Some x -> 
-    o @@ Printf.sprintf "o %s.cmi : cp %s.cmi\n" x (bs//x);
-    o @@ Printf.sprintf "o %s.cmj : cp %s.cmj\n" x (bs//x);
-    o @@ Printf.sprintf "o %s.cmt : cp %s.cmt\n" x (bs//x)
+    let src = bs // x in   
+    oo Literals.suffix_cmi ~dest:x ~src; 
+    oo Literals.suffix_cmj ~dest:x ~src;
+    oo Literals.suffix_cmt ~dest:x ~src
   end;
   close_out install_oc
 
