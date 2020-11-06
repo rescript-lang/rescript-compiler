@@ -16696,9 +16696,11 @@ let program_exit () =
 let install_target () =
   let (//) = Filename.concat in  
   let vendor_ninja = Bsb_global_paths.vendor_ninja in 
+  let install_dir = "lib" // "ocaml" in 
+  Bsb_build_util.mkp install_dir;
   let install_command = {
     Bsb_unix.cmd = vendor_ninja ; 
-    cwd =  "lib" // "ocaml";
+    cwd =  install_dir;
     args = [| vendor_ninja ; "-f"; ".."//"bs"//"install.ninja"|]
   } in 
   let eid =
