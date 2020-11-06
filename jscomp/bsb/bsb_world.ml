@@ -36,16 +36,18 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
     else Array.append [|vendor_ninja|] ninja_args
   in 
   let lib_artifacts_dir = Bsb_config.lib_bs in
-  Bsb_build_util.walk_all_deps  cwd (fun {top; proj_dir} ->
+  Bsb_build_util.walk_all_deps  cwd (fun ({top; proj_dir} : Bsb_build_util.package_context) ->
       if not top then
         begin 
+          let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
+          Bsb_build_util.mkp lib_bs_dir;
           let _config = 
             Bsb_ninja_regen.regenerate_ninja 
               ~toplevel_package_specs:(Some deps) 
               ~per_proj_dir:proj_dir  in 
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
-             cwd = proj_dir // lib_artifacts_dir;
+             cwd = lib_bs_dir;
              args 
             } in     
           let eid =
@@ -58,17 +60,20 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
              Note that we can check if ninja print "no work to do", 
              then don't need reinstall more
           *)
+          Bsb_log.info "@{<info>Installation started@}@.";
+          let install_dir = proj_dir // "lib" // "ocaml" in 
+          Bsb_build_util.mkp install_dir;
           let install_command = {
             Bsb_unix.cmd = vendor_ninja; 
-            cwd = proj_dir // "lib" // "ocaml";
+            cwd = install_dir;
             args = [| vendor_ninja ; "-f"; ".."//"bs"//"install.ninja"|]
           } in 
           let eid =
             Bsb_unix.run_command_execv
               install_command in 
           if eid <> 0 then   
-            Bsb_unix.command_fatal_error install_command eid;  
-          
+            Bsb_unix.command_fatal_error install_command eid;            
+          Bsb_log.info "@{<info>Installation finished@}@.";
         end
     )
 
