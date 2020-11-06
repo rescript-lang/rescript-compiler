@@ -16260,10 +16260,10 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
         begin 
           let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
           Bsb_build_util.mkp lib_bs_dir;
-          let _config = 
+          let _config : _ option = 
             Bsb_ninja_regen.regenerate_ninja 
               ~toplevel_package_specs:(Some deps) 
-              ~per_proj_dir:proj_dir  ~forced:true in 
+              ~per_proj_dir:proj_dir  ~forced:false in 
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
              cwd = lib_bs_dir;
