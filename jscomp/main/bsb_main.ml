@@ -148,30 +148,20 @@ let handle_anonymous_arg ~rev_args =
 let program_exit () =
   exit 0
 
-let install_target config_opt =
-  let config =
-    match config_opt with
-    | None ->
-      let config = 
-        Bsb_config_parse.interpret_json
-          ~toplevel_package_specs:None
-          ~per_proj_dir:Bsb_global_paths.cwd in
-      let _ = Ext_list.iter config.file_groups.files (fun group -> 
-          let check_file = match group.public with
-            | Export_all -> fun _ -> true
-            | Export_none -> fun _ -> false
-            | Export_set set ->  
-              fun module_name ->
-                Set_string.mem set module_name in
-          Map_string.iter group.sources 
-            (fun  module_name module_info -> 
-               if check_file module_name then 
-                 begin Queue.add module_info config.files_to_install end
-            )) in (* FIXME: it seems namespace was missed here *)
-      config
-    | Some config -> config in
-  Bsb_world.install_targets Bsb_global_paths.cwd config
-
+let install_target () =
+  let (//) = Filename.concat in  
+  let vendor_ninja = Bsb_global_paths.vendor_ninja in 
+  let install_command = {
+    Bsb_unix.cmd = vendor_ninja ; 
+    cwd =  "lib" // "ocaml";
+    args = [| vendor_ninja ; "-f"; ".."//"bs"//"install.ninja"|]
+  } in 
+  let eid =
+    Bsb_unix.run_command_execv
+      install_command in 
+  if eid <> 0 then   
+    Bsb_unix.command_fatal_error install_command eid  
+  
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
   try begin 
@@ -222,7 +212,7 @@ let () =
                  end else if make_world then begin
                    ninja_command_exit [||] 
                  end else if do_install then begin
-                   install_target config_opt
+                   install_target ()
                  end)
           end
         else
@@ -246,7 +236,7 @@ let () =
             if !make_world then
               Bsb_world.make_world_deps Bsb_global_paths.cwd ( config_opt) ninja_args;
             if !do_install then
-              install_target ( config_opt);
+              install_target ();
             if !watch_mode then program_exit ()
             else ninja_command_exit  ninja_args 
           end

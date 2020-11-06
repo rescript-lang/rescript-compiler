@@ -25,35 +25,6 @@
 
 let (//) = Ext_path.combine
 
-(** TODO: create the animation effect 
-    logging installed files
-*)
-let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_config_types.t ) =  
-  let install ~destdir file = 
-     Bsb_file.install_if_exists ~destdir file  |> ignore
-  in
-  let lib_artifacts_dir = Bsb_config.lib_bs in
-  let install_filename_sans_extension destdir namespace x = 
-    let x = 
-      Ext_namespace_encode.make ?ns:namespace x in 
-    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmi) ;
-    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmj) ;
-    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmt) ;
-    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmti) ;
-  in   
-  let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
-  if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-  begin
-    Bsb_log.info "@{<info>Installing started@}@.";
-    begin match namespace with 
-      | None -> ()
-      | Some x -> 
-        install_filename_sans_extension destdir None  x (* need install graph.cmi for namespace *)
-    end;
-    files_to_install 
-    |> Queue.iter (fun (x : Bsb_db.module_info) -> install_filename_sans_extension destdir namespace x.name_sans_extension) ;
-    Bsb_log.info "@{<info>Installing finished@} @.";
-  end
 
 
 
@@ -68,11 +39,10 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
   Bsb_build_util.walk_all_deps  cwd (fun {top; proj_dir} ->
       if not top then
         begin 
-          let config_opt = 
+          let _config = 
             Bsb_ninja_regen.regenerate_ninja 
               ~toplevel_package_specs:(Some deps) 
-              ~forced:true
-              ~per_proj_dir:proj_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+              ~per_proj_dir:proj_dir  in 
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
              cwd = proj_dir // lib_artifacts_dir;
@@ -88,7 +58,17 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
              Note that we can check if ninja print "no work to do", 
              then don't need reinstall more
           *)
-          Ext_option.iter config_opt (install_targets proj_dir);
+          let install_command = {
+            Bsb_unix.cmd = vendor_ninja; 
+            cwd = proj_dir // "lib" // "ocaml";
+            args = [| vendor_ninja ; "-f"; ".."//"bs"//"install.ninja"|]
+          } in 
+          let eid =
+            Bsb_unix.run_command_execv
+              install_command in 
+          if eid <> 0 then   
+            Bsb_unix.command_fatal_error install_command eid;  
+          
         end
     )
 

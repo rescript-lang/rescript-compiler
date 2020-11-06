@@ -16184,64 +16184,6 @@ let init_sample_project ~cwd ~theme name =
 
 
 end
-module Bsb_file : sig 
-#1 "bsb_file.mli"
-
-
-
-(** return [true] if copied *)
-val install_if_exists : destdir:string -> string -> bool
-
-
-end = struct
-#1 "bsb_file.ml"
-
-
-
-
-let set_infos filename (infos : Unix.stats) =
-  Unix.utimes filename infos.st_atime infos.st_mtime;
-  Unix.chmod filename infos.st_perm
-  (** it is not necessary to call [chown] since it is within the same user 
-    and {!Unix.chown} is not implemented under Windows
-   *)
-  (*
-  try
-    Unix.chown filename infos.st_uid infos.st_gid
-  with Unix_error(EPERM,_,_) -> ()
-*)
-
-let buffer_size = 8192;;
-let buffer = Bytes.create buffer_size;;
-
-let file_copy input_name output_name =
-  let fd_in = Unix.openfile input_name [O_RDONLY] 0 in
-  let fd_out = Unix.openfile output_name [O_WRONLY; O_CREAT; O_TRUNC] 0o666 in
-  let rec copy_loop () =
-    match Unix.read fd_in buffer 0 buffer_size with
-    |  0 -> ()
-    | r -> ignore (Unix.write fd_out buffer 0 r); copy_loop ()
-  in
-  copy_loop ();
-  Unix.close fd_in;
-  Unix.close fd_out;;
-
-
-let copy_with_permission input_name output_name =
-    file_copy input_name output_name ;
-    set_infos output_name (Unix.lstat input_name)  
-
-let install_if_exists ~destdir input_name = 
-    if Sys.file_exists input_name then 
-      let output_name = (Filename.concat destdir (Filename.basename input_name)) in
-      match Unix.stat output_name , Unix.stat input_name with
-      | {st_mtime = output_stamp;_}, {st_mtime = input_stamp;_} when input_stamp <= output_stamp 
-        -> false
-      | _ -> copy_with_permission input_name output_name; true 
-      | exception _ -> copy_with_permission input_name output_name; true
-    else false
-
-end
 module Bsb_world : sig 
 #1 "bsb_world.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
@@ -16267,12 +16209,6 @@ module Bsb_world : sig
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val install_targets:
-  string ->
-  Bsb_config_types.t  ->
-  unit
 
 val make_world_deps:
   string ->
@@ -16308,35 +16244,6 @@ end = struct
 
 let (//) = Ext_path.combine
 
-(** TODO: create the animation effect 
-    logging installed files
-*)
-let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_config_types.t ) =  
-  let install ~destdir file = 
-     Bsb_file.install_if_exists ~destdir file  |> ignore
-  in
-  let lib_artifacts_dir = Bsb_config.lib_bs in
-  let install_filename_sans_extension destdir namespace x = 
-    let x = 
-      Ext_namespace_encode.make ?ns:namespace x in 
-    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmi) ;
-    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmj) ;
-    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmt) ;
-    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmti) ;
-  in   
-  let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
-  if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-  begin
-    Bsb_log.info "@{<info>Installing started@}@.";
-    begin match namespace with 
-      | None -> ()
-      | Some x -> 
-        install_filename_sans_extension destdir None  x (* need install graph.cmi for namespace *)
-    end;
-    files_to_install 
-    |> Queue.iter (fun (x : Bsb_db.module_info) -> install_filename_sans_extension destdir namespace x.name_sans_extension) ;
-    Bsb_log.info "@{<info>Installing finished@} @.";
-  end
 
 
 
@@ -16351,11 +16258,10 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
   Bsb_build_util.walk_all_deps  cwd (fun {top; proj_dir} ->
       if not top then
         begin 
-          let config_opt = 
+          let _config = 
             Bsb_ninja_regen.regenerate_ninja 
               ~toplevel_package_specs:(Some deps) 
-              ~forced:true
-              ~per_proj_dir:proj_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+              ~per_proj_dir:proj_dir  in 
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
              cwd = proj_dir // lib_artifacts_dir;
@@ -16371,7 +16277,17 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
              Note that we can check if ninja print "no work to do", 
              then don't need reinstall more
           *)
-          Ext_option.iter config_opt (install_targets proj_dir);
+          let install_command = {
+            Bsb_unix.cmd = vendor_ninja; 
+            cwd = proj_dir // "lib" // "ocaml";
+            args = [| vendor_ninja ; "-f"; ".."//"bs"//"install.ninja"|]
+          } in 
+          let eid =
+            Bsb_unix.run_command_execv
+              install_command in 
+          if eid <> 0 then   
+            Bsb_unix.command_fatal_error install_command eid;  
+          
         end
     )
 
@@ -16772,30 +16688,20 @@ let handle_anonymous_arg ~rev_args =
 let program_exit () =
   exit 0
 
-let install_target config_opt =
-  let config =
-    match config_opt with
-    | None ->
-      let config = 
-        Bsb_config_parse.interpret_json
-          ~toplevel_package_specs:None
-          ~per_proj_dir:Bsb_global_paths.cwd in
-      let _ = Ext_list.iter config.file_groups.files (fun group -> 
-          let check_file = match group.public with
-            | Export_all -> fun _ -> true
-            | Export_none -> fun _ -> false
-            | Export_set set ->  
-              fun module_name ->
-                Set_string.mem set module_name in
-          Map_string.iter group.sources 
-            (fun  module_name module_info -> 
-               if check_file module_name then 
-                 begin Queue.add module_info config.files_to_install end
-            )) in (* FIXME: it seems namespace was missed here *)
-      config
-    | Some config -> config in
-  Bsb_world.install_targets Bsb_global_paths.cwd config
-
+let install_target () =
+  let (//) = Filename.concat in  
+  let vendor_ninja = Bsb_global_paths.vendor_ninja in 
+  let install_command = {
+    Bsb_unix.cmd = vendor_ninja ; 
+    cwd =  "lib" // "ocaml";
+    args = [| vendor_ninja ; "-f"; ".."//"bs"//"install.ninja"|]
+  } in 
+  let eid =
+    Bsb_unix.run_command_execv
+      install_command in 
+  if eid <> 0 then   
+    Bsb_unix.command_fatal_error install_command eid  
+  
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
   try begin 
@@ -16846,7 +16752,7 @@ let () =
                  end else if make_world then begin
                    ninja_command_exit [||] 
                  end else if do_install then begin
-                   install_target config_opt
+                   install_target ()
                  end)
           end
         else
@@ -16870,7 +16776,7 @@ let () =
             if !make_world then
               Bsb_world.make_world_deps Bsb_global_paths.cwd ( config_opt) ninja_args;
             if !do_install then
-              install_target ( config_opt);
+              install_target ();
             if !watch_mode then program_exit ()
             else ninja_command_exit  ninja_args 
           end
