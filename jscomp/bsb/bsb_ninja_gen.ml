@@ -88,7 +88,59 @@ let output_static_resources
       ~order_only_deps:static_resources 
       ~inputs:[]
       ~output:Literals.build_ninja         
+(*
+  FIXME: check if the trick still works
+  phony build.ninja : | resources 
+*)      
 
+let output_installation_file cwd_lib_bs namespace files_to_install = 
+  let install_oc = open_out_bin (cwd_lib_bs // "install.ninja") in 
+  let o s = output_string install_oc s in
+  let[@inline] oo suffix ~dest ~src =   
+    o  "o " ; 
+    o dest ;
+    o suffix; 
+    o " : cp ";
+    o src;
+    o suffix; o "\n" in 
+  let bs = ".."//"bs" in  
+  let sb = ".."//".." in 
+  o "rule cp\n  command = cp $i $out\n";
+  files_to_install 
+  |> Queue.iter (fun ({name_sans_extension;syntax_kind; info} : Bsb_db.module_info) -> 
+      let base = Filename.basename name_sans_extension in 
+      let ns_base = Ext_namespace_encode.make ?ns:namespace base in
+      let ns_origin = Ext_namespace_encode.make ?ns:namespace name_sans_extension in
+      oo Literals.suffix_cmi ~dest:ns_base ~src:(bs//ns_origin);
+      oo Literals.suffix_cmj ~dest:ns_base ~src:(bs//ns_origin);      
+      oo Literals.suffix_cmt ~dest:ns_base ~src:(bs//ns_origin);
+      let suffix = 
+        match syntax_kind with 
+        | Ml -> Literals.suffix_ml 
+        | Reason -> Literals.suffix_re 
+        | Res -> Literals.suffix_res 
+      in  oo suffix ~dest:base ~src:(sb//name_sans_extension);
+      match info with
+      | Intf  -> assert false
+      | Impl ->  ()
+      | Impl_intf ->  
+        let  suffix_b =
+          match syntax_kind with 
+          | Ml ->  Literals.suffix_mli
+          | Reason ->  Literals.suffix_rei
+          | Res ->  Literals.suffix_resi in   
+        oo suffix_b  ~dest:base ~src:(sb//name_sans_extension);                      
+        oo Literals.suffix_cmti ~dest:ns_base ~src:(bs//ns_origin)
+    );
+  begin match namespace with 
+  | None -> ()      
+  | Some x -> 
+    let src = bs // x in   
+    oo Literals.suffix_cmi ~dest:x ~src; 
+    oo Literals.suffix_cmj ~dest:x ~src;
+    oo Literals.suffix_cmt ~dest:x ~src
+  end;
+  close_out install_oc
 
 let output_ninja_and_namespace_map
     ~per_proj_dir 
@@ -118,7 +170,7 @@ let output_ninja_and_namespace_map
   =
   let lib_artifacts_dir = Bsb_config.lib_bs in
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in   
-  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
+
   let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
   let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
@@ -126,12 +178,6 @@ let output_ninja_and_namespace_map
   let dpkg_incls  =  (Bsb_build_util.include_dirs_by
                         bs_dev_dependencies
                         (fun x -> x.package_install_path)) in 
-  
-  let () = 
-    Bsb_ninja_targets.output_kv      
-      Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
-      oc 
-  in          
   let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
   let source_dirs : string list Bsb_db.cat = {lib = []; dev = []} in
   let static_resources =
@@ -184,8 +230,12 @@ let output_ninja_and_namespace_map
       ~dpkg_incls (* dev dependencies *)
       ~lib_incls (* its own libs *)
       ~dev_incls (* its own devs *)
-      generators in   
+      generators in  
 
+  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in              
+  Bsb_ninja_targets.output_kv      
+    Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
+    oc ;
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 
@@ -194,9 +244,7 @@ let output_ninja_and_namespace_map
          ~rules
          ~package_specs 
          ~files_to_install    
-         ~namespace files_per_dir)
-  ;
-
+         ~namespace files_per_dir);
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     
         per_proj_dir // lib_artifacts_dir  in
@@ -208,4 +256,5 @@ let output_ninja_and_namespace_map
         ~inputs:[ns ^ Literals.suffix_mlmap]
         ~rule:rules.build_package
     );
-  close_out oc
+  close_out oc;
+  output_installation_file cwd_lib_bs namespace files_to_install      

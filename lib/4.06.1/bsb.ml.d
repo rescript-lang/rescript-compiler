@@ -16,8 +16,6 @@
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_db_util.mli
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_exception.ml
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_exception.mli
-../lib/4.06.1/bsb.ml: ./bsb/bsb_file.ml
-../lib/4.06.1/bsb.ml: ./bsb/bsb_file.mli
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_file_groups.ml
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_file_groups.mli
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_global_paths.ml
@@ -123,9 +121,6 @@
 ../lib/4.06.1/bsb.ml: ./ext/hash.ml
 ../lib/4.06.1/bsb.ml: ./ext/hash.mli
 ../lib/4.06.1/bsb.ml: ./ext/hash_gen.ml
-../lib/4.06.1/bsb.ml: ./ext/hash_set_gen.ml
-../lib/4.06.1/bsb.ml: ./ext/hash_set_string.ml
-../lib/4.06.1/bsb.ml: ./ext/hash_set_string.mli
 ../lib/4.06.1/bsb.ml: ./ext/hash_string.ml
 ../lib/4.06.1/bsb.ml: ./ext/hash_string.mli
 ../lib/4.06.1/bsb.ml: ./ext/literals.ml

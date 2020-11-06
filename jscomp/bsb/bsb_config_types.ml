@@ -70,7 +70,7 @@ type t =
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
     file_groups : Bsb_file_groups.t;
-    files_to_install : Hash_set_string.t ;
+    files_to_install : Bsb_db.module_info Queue.t ;
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
     generators : command Map_string.t ; 

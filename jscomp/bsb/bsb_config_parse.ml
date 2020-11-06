@@ -408,7 +408,7 @@ let interpret_json
              | None ->  package_specs
              | Some x -> x );          
           file_groups = groups; 
-          files_to_install = Hash_set_string.create 96;
+          files_to_install = Queue.create ();
           built_in_dependency = built_in_package;
           generate_merlin = 
             extract_boolean map Bsb_build_schemas.generate_merlin true;

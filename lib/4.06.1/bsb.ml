@@ -7629,422 +7629,6 @@ let to_bsb_string ~toplevel warning =
   (* TODO: this is the current default behavior *)
 
 end
-module Bs_hash_stubs
-= struct
-#1 "bs_hash_stubs.ml"
-
-
-external hash_string :  string -> int = "caml_bs_hash_string" [@@noalloc];;
-
-external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" [@@noalloc];;
-
-external hash_string_small_int :  string -> int  -> int = "caml_bs_hash_string_and_small_int" [@@noalloc];;
-
-external hash_stamp_and_name : int -> string -> int = "caml_bs_hash_stamp_and_name" [@@noalloc];;
-
-external hash_small_int : int -> int = "caml_bs_hash_small_int" [@@noalloc];;
-
-external hash_int :  int  -> int = "caml_bs_hash_int" [@@noalloc];;
-
-external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" [@@noalloc];;
-
-external    
-    int_unsafe_blit : 
-    int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" [@@noalloc];;
-
-    
-
-
-
-external set_as_old_file : string -> unit = "caml_stale_file"
-end
-module Ext_util : sig 
-#1 "ext_util.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
- 
-val power_2_above : int -> int -> int
-
-
-val stats_to_string : Hashtbl.statistics -> string 
-end = struct
-#1 "ext_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(**
-   {[
-     (power_2_above 16 63 = 64)
-       (power_2_above 16 76 = 128)
-   ]}
-*)
-let rec power_2_above x n =
-  if x >= n then x
-  else if x * 2 > Sys.max_array_length then x
-  else power_2_above (x * 2) n
-
-
-let stats_to_string ({num_bindings; num_buckets; max_bucket_length; bucket_histogram} : Hashtbl.statistics) = 
-  Printf.sprintf 
-    "bindings: %d,buckets: %d, longest: %d, hist:[%s]" 
-    num_bindings 
-    num_buckets 
-    max_bucket_length
-    (String.concat "," (Array.to_list (Array.map string_of_int bucket_histogram)))
-end
-module Hash_set_gen
-= struct
-#1 "hash_set_gen.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(* We do dynamic hashing, and resize the table and rehash the elements
-   when buckets become too long. *)
-
-type 'a bucket = 
-  | Empty
-  | Cons of {
-      mutable key : 'a ; 
-      mutable next : 'a bucket 
-    }
-
-type 'a t =
-  { mutable size: int;                        (* number of entries *)
-    mutable data: 'a bucket array;  (* the buckets *)
-    initial_size: int;                        (* initial array size *)
-  }
-
-
-
-
-let create  initial_size =
-  let s = Ext_util.power_2_above 16 initial_size in
-  { initial_size = s; size = 0; data = Array.make s Empty }
-
-let clear h =
-  h.size <- 0;
-  let len = Array.length h.data in
-  for i = 0 to len - 1 do
-    Array.unsafe_set h.data i  Empty
-  done
-
-let reset h =
-  h.size <- 0;
-  h.data <- Array.make h.initial_size Empty
-
-let length h = h.size
-
-let resize indexfun h =
-  let odata = h.data in
-  let osize = Array.length odata in
-  let nsize = osize * 2 in
-  if nsize < Sys.max_array_length then begin
-    let ndata = Array.make nsize Empty in
-    let ndata_tail = Array.make nsize Empty in 
-    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
-    let rec insert_bucket = function
-        Empty -> ()
-      | Cons {key; next} as cell ->
-        let nidx = indexfun h key in
-        begin match Array.unsafe_get ndata_tail nidx with 
-        | Empty ->
-          Array.unsafe_set ndata nidx cell
-        | Cons tail -> 
-          tail.next <- cell
-        end;
-        Array.unsafe_set ndata_tail nidx  cell;          
-        insert_bucket next
-    in
-    for i = 0 to osize - 1 do
-      insert_bucket (Array.unsafe_get odata i)
-    done;
-    for i = 0 to nsize - 1 do 
-      match Array.unsafe_get ndata_tail i with 
-      | Empty -> ()
-      | Cons tail -> tail.next <- Empty
-    done 
-  end
-
-let iter h f =
-  let rec do_bucket = function
-    | Empty ->
-      ()
-    | Cons l  ->
-      f l.key  ; do_bucket l.next in
-  let d = h.data in
-  for i = 0 to Array.length d - 1 do
-    do_bucket (Array.unsafe_get d i)
-  done
-
-let fold h init f =
-  let rec do_bucket b accu =
-    match b with
-      Empty ->
-      accu
-    | Cons l  ->
-      do_bucket l.next (f l.key  accu) in
-  let d = h.data in
-  let accu = ref init in
-  for i = 0 to Array.length d - 1 do
-    accu := do_bucket (Array.unsafe_get d i) !accu
-  done;
-  !accu
-
-
-let to_list set = 
-  fold set [] List.cons
-
-  
-
-
-let rec small_bucket_mem eq key lst =
-  match lst with 
-  | Empty -> false 
-  | Cons lst -> 
-    eq key lst.key ||
-    match lst.next with 
-    | Empty -> false 
-    | Cons lst  -> 
-      eq key   lst.key ||
-      match lst.next with 
-      | Empty -> false 
-      | Cons lst  -> 
-        eq key lst.key ||
-        small_bucket_mem eq key lst.next 
-
-let rec remove_bucket 
-    (h : _ t) (i : int)
-    key 
-    ~(prec : _ bucket) 
-    (buck : _ bucket) 
-    eq_key = 
-  match buck with   
-  | Empty ->
-    ()
-  | Cons {key=k; next } ->
-    if eq_key k key 
-    then begin
-      h.size <- h.size - 1;
-      match prec with
-      | Empty -> Array.unsafe_set h.data i  next
-      | Cons c -> c.next <- next
-    end
-    else remove_bucket h i key ~prec:buck next eq_key
-
-
-module type S =
-sig
-  type key
-  type t
-  val create: int ->  t
-  val clear : t -> unit
-  val reset : t -> unit
-  (* val copy: t -> t *)
-  val remove:  t -> key -> unit
-  val add :  t -> key -> unit
-  val of_array : key array -> t 
-  val check_add : t -> key -> bool
-  val mem : t -> key -> bool
-  val iter: t -> (key -> unit) -> unit
-  val fold: t -> 'b  -> (key -> 'b -> 'b) -> 'b
-  val length:  t -> int
-  (* val stats:  t -> Hashtbl.statistics *)
-  val to_list : t -> key list 
-end
-
-
-
-end
-module Hash_set_string : sig 
-#1 "hash_set_string.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-include Hash_set_gen.S with type key = string
-
-end = struct
-#1 "hash_set_string.ml"
-# 1 "ext/hash_set.cppo.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-[@@@warning "-32"] (* FIXME *)
-# 32 "ext/hash_set.cppo.ml"
-type key = string 
-let key_index (h :  _ Hash_set_gen.t ) (key : key) =
-  (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
-let eq_key = Ext_string.equal 
-type  t = key  Hash_set_gen.t 
-
-
-# 65 "ext/hash_set.cppo.ml"
-let create = Hash_set_gen.create
-let clear = Hash_set_gen.clear
-let reset = Hash_set_gen.reset
-(* let copy = Hash_set_gen.copy *)
-let iter = Hash_set_gen.iter
-let fold = Hash_set_gen.fold
-let length = Hash_set_gen.length
-(* let stats = Hash_set_gen.stats *)
-let to_list = Hash_set_gen.to_list
-
-
-
-let remove (h : _ Hash_set_gen.t ) key =
-  let i = key_index h key in
-  let h_data = h.data in 
-  Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
-
-
-
-let add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in 
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i (Cons {key = key ; next =  old_bucket});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
-    end
-
-let of_array arr = 
-  let len = Array.length arr in 
-  let tbl = create len in 
-  for i = 0 to len - 1  do
-    add tbl (Array.unsafe_get arr i);
-  done ;
-  tbl 
-  
-    
-let check_add (h : _ Hash_set_gen.t) key : bool =
-  let i = key_index h key  in 
-  let h_data = h.data in  
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i  (Cons { key = key ; next =  old_bucket});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
-      true 
-    end
-  else false 
-
-
-let mem (h :  _ Hash_set_gen.t) key =
-  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
-
-  
-
-end
 module Bsb_config_types
 = struct
 #1 "bsb_config_types.ml"
@@ -8120,7 +7704,7 @@ type t =
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
     file_groups : Bsb_file_groups.t;
-    files_to_install : Hash_set_string.t ;
+    files_to_install : Bsb_db.module_info Queue.t ;
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
     generators : command Map_string.t ; 
@@ -8511,6 +8095,84 @@ let is_same_paths_via_io a b =
   then true
   else (real_path a) = (real_path b)
 
+end
+module Ext_util : sig 
+#1 "ext_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ 
+val power_2_above : int -> int -> int
+
+
+val stats_to_string : Hashtbl.statistics -> string 
+end = struct
+#1 "ext_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(**
+   {[
+     (power_2_above 16 63 = 64)
+       (power_2_above 16 76 = 128)
+   ]}
+*)
+let rec power_2_above x n =
+  if x >= n then x
+  else if x * 2 > Sys.max_array_length then x
+  else power_2_above (x * 2) n
+
+
+let stats_to_string ({num_bindings; num_buckets; max_bucket_length; bucket_histogram} : Hashtbl.statistics) = 
+  Printf.sprintf 
+    "bindings: %d,buckets: %d, longest: %d, hist:[%s]" 
+    num_bindings 
+    num_buckets 
+    max_bucket_length
+    (String.concat "," (Array.to_list (Array.map string_of_int bucket_histogram)))
 end
 module Hash_gen
 = struct
@@ -9874,6 +9536,35 @@ let parse_json_from_file s =
 
 # 688 "ext/ext_json_parse.ml"
 
+end
+module Bs_hash_stubs
+= struct
+#1 "bs_hash_stubs.ml"
+
+
+external hash_string :  string -> int = "caml_bs_hash_string" [@@noalloc];;
+
+external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" [@@noalloc];;
+
+external hash_string_small_int :  string -> int  -> int = "caml_bs_hash_string_and_small_int" [@@noalloc];;
+
+external hash_stamp_and_name : int -> string -> int = "caml_bs_hash_stamp_and_name" [@@noalloc];;
+
+external hash_small_int : int -> int = "caml_bs_hash_small_int" [@@noalloc];;
+
+external hash_int :  int  -> int = "caml_bs_hash_int" [@@noalloc];;
+
+external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" [@@noalloc];;
+
+external    
+    int_unsafe_blit : 
+    int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" [@@noalloc];;
+
+    
+
+
+
+external set_as_old_file : string -> unit = "caml_stale_file"
 end
 module Hash_string : sig 
 #1 "hash_string.mli"
@@ -11405,7 +11096,7 @@ let log cmd =
   Bsb_log.info_args cmd.args
 
 let command_fatal_error cmd eid =
-  Bsb_log.error "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd;
+  Bsb_log.error "@{<error>Failure:@} %s \nLocation: %s@." cmd.cmd cmd.cwd;
   exit eid 
 
 let run_command_execv_unix  cmd : int =
@@ -12025,7 +11716,7 @@ let interpret_json
              | None ->  package_specs
              | Some x -> x );          
           file_groups = groups; 
-          files_to_install = Hash_set_string.create 96;
+          files_to_install = Queue.create ();
           built_in_dependency = built_in_package;
           generate_merlin = 
             extract_boolean map Bsb_build_schemas.generate_merlin true;
@@ -13544,7 +13235,7 @@ val handle_files_per_dir :
   out_channel ->
   rules:Bsb_ninja_rule.builtin ->
   package_specs:Bsb_package_specs.t ->
-  files_to_install:Hash_set_string.t ->
+  files_to_install:Bsb_db.module_info Queue.t ->
   namespace:string option -> 
   Bsb_file_groups.file_group -> unit
 
@@ -13624,7 +13315,7 @@ let emit_module_build
     (is_dev : bool) 
     oc 
     namespace
-    (module_info : Bsb_db.module_info)
+    (module_info : Bsb_db.module_info) : unit
   =    
   let has_intf_file = module_info.info = Impl_intf in 
   let config, ast_rule  = 
@@ -13668,7 +13359,6 @@ let emit_module_build
     ;
     Bsb_ninja_targets.output_build oc
       ~outputs:[output_cmi]
-      (* ~order_only_deps:[output_d] *)
       ~inputs:[output_iast]
       ~rule:(if is_dev then rules.mi_dev else rules.mi)
     ;
@@ -13683,15 +13373,10 @@ let emit_module_build
       )
   in
   Bsb_ninja_targets.output_build oc
-    (* ~order_only_deps:[output_d] *)
     ~outputs:
       (if has_intf_file then output_cmj :: output_js else output_cmj::output_cmi::output_js)
     ~inputs:(if has_intf_file then [output_ast; output_cmi] else [output_ast])
     ~rule
-  (* ;
-  {output_cmj; output_cmi} *)
-
-
 
 
 
@@ -13700,7 +13385,7 @@ let handle_files_per_dir
     oc 
     ~(rules : Bsb_ninja_rule.builtin)
     ~package_specs 
-    ~(files_to_install : Hash_set_string.t) 
+    ~files_to_install
     ~(namespace  : string option)
     (group: Bsb_file_groups.file_group ) 
   : unit =
@@ -13715,8 +13400,8 @@ let handle_files_per_dir
       Set_string.mem set module_name in
   Map_string.iter group.sources   (fun  module_name module_info   ->
       if installable module_name then 
-        Hash_set_string.add files_to_install 
-          module_info.name_sans_extension;
+        Queue.add 
+          module_info files_to_install;
       emit_module_build  rules
         package_specs
         group.dev_index
@@ -13857,7 +13542,59 @@ let output_static_resources
       ~order_only_deps:static_resources 
       ~inputs:[]
       ~output:Literals.build_ninja         
+(*
+  FIXME: check if the trick still works
+  phony build.ninja : | resources 
+*)      
 
+let output_installation_file cwd_lib_bs namespace files_to_install = 
+  let install_oc = open_out_bin (cwd_lib_bs // "install.ninja") in 
+  let o s = output_string install_oc s in
+  let[@inline] oo suffix ~dest ~src =   
+    o  "o " ; 
+    o dest ;
+    o suffix; 
+    o " : cp ";
+    o src;
+    o suffix; o "\n" in 
+  let bs = ".."//"bs" in  
+  let sb = ".."//".." in 
+  o "rule cp\n  command = cp $i $out\n";
+  files_to_install 
+  |> Queue.iter (fun ({name_sans_extension;syntax_kind; info} : Bsb_db.module_info) -> 
+      let base = Filename.basename name_sans_extension in 
+      let ns_base = Ext_namespace_encode.make ?ns:namespace base in
+      let ns_origin = Ext_namespace_encode.make ?ns:namespace name_sans_extension in
+      oo Literals.suffix_cmi ~dest:ns_base ~src:(bs//ns_origin);
+      oo Literals.suffix_cmj ~dest:ns_base ~src:(bs//ns_origin);      
+      oo Literals.suffix_cmt ~dest:ns_base ~src:(bs//ns_origin);
+      let suffix = 
+        match syntax_kind with 
+        | Ml -> Literals.suffix_ml 
+        | Reason -> Literals.suffix_re 
+        | Res -> Literals.suffix_res 
+      in  oo suffix ~dest:base ~src:(sb//name_sans_extension);
+      match info with
+      | Intf  -> assert false
+      | Impl ->  ()
+      | Impl_intf ->  
+        let  suffix_b =
+          match syntax_kind with 
+          | Ml ->  Literals.suffix_mli
+          | Reason ->  Literals.suffix_rei
+          | Res ->  Literals.suffix_resi in   
+        oo suffix_b  ~dest:base ~src:(sb//name_sans_extension);                      
+        oo Literals.suffix_cmti ~dest:ns_base ~src:(bs//ns_origin)
+    );
+  begin match namespace with 
+  | None -> ()      
+  | Some x -> 
+    let src = bs // x in   
+    oo Literals.suffix_cmi ~dest:x ~src; 
+    oo Literals.suffix_cmj ~dest:x ~src;
+    oo Literals.suffix_cmt ~dest:x ~src
+  end;
+  close_out install_oc
 
 let output_ninja_and_namespace_map
     ~per_proj_dir 
@@ -13887,7 +13624,7 @@ let output_ninja_and_namespace_map
   =
   let lib_artifacts_dir = Bsb_config.lib_bs in
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in   
-  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in          
+
   let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
   let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
@@ -13895,12 +13632,6 @@ let output_ninja_and_namespace_map
   let dpkg_incls  =  (Bsb_build_util.include_dirs_by
                         bs_dev_dependencies
                         (fun x -> x.package_install_path)) in 
-  
-  let () = 
-    Bsb_ninja_targets.output_kv      
-      Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
-      oc 
-  in          
   let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
   let source_dirs : string list Bsb_db.cat = {lib = []; dev = []} in
   let static_resources =
@@ -13953,8 +13684,12 @@ let output_ninja_and_namespace_map
       ~dpkg_incls (* dev dependencies *)
       ~lib_incls (* its own libs *)
       ~dev_incls (* its own devs *)
-      generators in   
+      generators in  
 
+  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in              
+  Bsb_ninja_targets.output_kv      
+    Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
+    oc ;
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 
@@ -13963,9 +13698,7 @@ let output_ninja_and_namespace_map
          ~rules
          ~package_specs 
          ~files_to_install    
-         ~namespace files_per_dir)
-  ;
-
+         ~namespace files_per_dir);
   Ext_option.iter  namespace (fun ns -> 
       let namespace_dir =     
         per_proj_dir // lib_artifacts_dir  in
@@ -13977,7 +13710,8 @@ let output_ninja_and_namespace_map
         ~inputs:[ns ^ Literals.suffix_mlmap]
         ~rule:rules.build_package
     );
-  close_out oc
+  close_out oc;
+  output_installation_file cwd_lib_bs namespace files_to_install      
 
 end
 module Ext_json_noloc : sig 
@@ -16455,64 +16189,6 @@ let init_sample_project ~cwd ~theme name =
 
 
 end
-module Bsb_file : sig 
-#1 "bsb_file.mli"
-
-
-
-(** return [true] if copied *)
-val install_if_exists : destdir:string -> string -> bool
-
-
-end = struct
-#1 "bsb_file.ml"
-
-
-
-
-let set_infos filename (infos : Unix.stats) =
-  Unix.utimes filename infos.st_atime infos.st_mtime;
-  Unix.chmod filename infos.st_perm
-  (** it is not necessary to call [chown] since it is within the same user 
-    and {!Unix.chown} is not implemented under Windows
-   *)
-  (*
-  try
-    Unix.chown filename infos.st_uid infos.st_gid
-  with Unix_error(EPERM,_,_) -> ()
-*)
-
-let buffer_size = 8192;;
-let buffer = Bytes.create buffer_size;;
-
-let file_copy input_name output_name =
-  let fd_in = Unix.openfile input_name [O_RDONLY] 0 in
-  let fd_out = Unix.openfile output_name [O_WRONLY; O_CREAT; O_TRUNC] 0o666 in
-  let rec copy_loop () =
-    match Unix.read fd_in buffer 0 buffer_size with
-    |  0 -> ()
-    | r -> ignore (Unix.write fd_out buffer 0 r); copy_loop ()
-  in
-  copy_loop ();
-  Unix.close fd_in;
-  Unix.close fd_out;;
-
-
-let copy_with_permission input_name output_name =
-    file_copy input_name output_name ;
-    set_infos output_name (Unix.lstat input_name)  
-
-let install_if_exists ~destdir input_name = 
-    if Sys.file_exists input_name then 
-      let output_name = (Filename.concat destdir (Filename.basename input_name)) in
-      match Unix.stat output_name , Unix.stat input_name with
-      | {st_mtime = output_stamp;_}, {st_mtime = input_stamp;_} when input_stamp <= output_stamp 
-        -> false
-      | _ -> copy_with_permission input_name output_name; true 
-      | exception _ -> copy_with_permission input_name output_name; true
-    else false
-
-end
 module Bsb_world : sig 
 #1 "bsb_world.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
@@ -16538,12 +16214,6 @@ module Bsb_world : sig
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val install_targets:
-  string ->
-  Bsb_config_types.t  ->
-  unit
 
 val make_world_deps:
   string ->
@@ -16579,34 +16249,6 @@ end = struct
 
 let (//) = Ext_path.combine
 
-(** TODO: create the animation effect 
-    logging installed files
-*)
-let install_targets cwd ({files_to_install; namespace; package_name = _} : Bsb_config_types.t ) =  
-  let install ~destdir file = 
-     Bsb_file.install_if_exists ~destdir file  |> ignore
-  in
-  let lib_artifacts_dir = Bsb_config.lib_bs in
-  let install_filename_sans_extension destdir namespace x = 
-    let x = 
-      Ext_namespace_encode.make ?ns:namespace x in 
-    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmi) ;
-    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmj) ;
-    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmt) ;
-    install ~destdir (cwd // lib_artifacts_dir//x ^ Literals.suffix_cmti) ;
-  in   
-  let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
-  if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
-  begin
-    Bsb_log.info "@{<info>Installing started@}@.";
-    begin match namespace with 
-      | None -> ()
-      | Some x -> 
-        install_filename_sans_extension destdir None  x
-    end;
-    Hash_set_string.iter files_to_install (install_filename_sans_extension destdir namespace) ;
-    Bsb_log.info "@{<info>Installing finished@} @.";
-  end
 
 
 
@@ -16618,17 +16260,18 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
     else Array.append [|vendor_ninja|] ninja_args
   in 
   let lib_artifacts_dir = Bsb_config.lib_bs in
-  Bsb_build_util.walk_all_deps  cwd (fun {top; proj_dir} ->
+  Bsb_build_util.walk_all_deps  cwd (fun ({top; proj_dir} : Bsb_build_util.package_context) ->
       if not top then
         begin 
-          let config_opt = 
+          let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
+          Bsb_build_util.mkp lib_bs_dir;
+          let _config : _ option = 
             Bsb_ninja_regen.regenerate_ninja 
               ~toplevel_package_specs:(Some deps) 
-              ~forced:true
-              ~per_proj_dir:proj_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
+              ~per_proj_dir:proj_dir  ~forced:false in 
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
-             cwd = proj_dir // lib_artifacts_dir;
+             cwd = lib_bs_dir;
              args 
             } in     
           let eid =
@@ -16641,7 +16284,20 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
              Note that we can check if ninja print "no work to do", 
              then don't need reinstall more
           *)
-          Ext_option.iter config_opt (install_targets proj_dir);
+          Bsb_log.info "@{<info>Installation started@}@.";
+          let install_dir = proj_dir // "lib" // "ocaml" in 
+          Bsb_build_util.mkp install_dir;
+          let install_command = {
+            Bsb_unix.cmd = vendor_ninja; 
+            cwd = install_dir;
+            args = [| vendor_ninja ; "-f"; ".."//"bs"//"install.ninja"|]
+          } in 
+          let eid =
+            Bsb_unix.run_command_execv
+              install_command in 
+          if eid <> 0 then   
+            Bsb_unix.command_fatal_error install_command eid;            
+          Bsb_log.info "@{<info>Installation finished@}@.";
         end
     )
 
@@ -17042,30 +16698,22 @@ let handle_anonymous_arg ~rev_args =
 let program_exit () =
   exit 0
 
-let install_target config_opt =
-  let config =
-    match config_opt with
-    | None ->
-      let config = 
-        Bsb_config_parse.interpret_json
-          ~toplevel_package_specs:None
-          ~per_proj_dir:Bsb_global_paths.cwd in
-      let _ = Ext_list.iter config.file_groups.files (fun group -> 
-          let check_file = match group.public with
-            | Export_all -> fun _ -> true
-            | Export_none -> fun _ -> false
-            | Export_set set ->  
-              fun module_name ->
-                Set_string.mem set module_name in
-          Map_string.iter group.sources 
-            (fun  module_name module_info -> 
-               if check_file module_name then 
-                 begin Hash_set_string.add config.files_to_install module_info.name_sans_extension end
-            )) in 
-      config
-    | Some config -> config in
-  Bsb_world.install_targets Bsb_global_paths.cwd config
-
+let install_target () =
+  let (//) = Filename.concat in  
+  let vendor_ninja = Bsb_global_paths.vendor_ninja in 
+  let install_dir = "lib" // "ocaml" in 
+  Bsb_build_util.mkp install_dir;
+  let install_command = {
+    Bsb_unix.cmd = vendor_ninja ; 
+    cwd =  install_dir;
+    args = [| vendor_ninja ; "-f"; ".."//"bs"//"install.ninja"|]
+  } in 
+  let eid =
+    Bsb_unix.run_command_execv
+      install_command in 
+  if eid <> 0 then   
+    Bsb_unix.command_fatal_error install_command eid  
+  
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
   try begin 
@@ -17116,7 +16764,7 @@ let () =
                  end else if make_world then begin
                    ninja_command_exit [||] 
                  end else if do_install then begin
-                   install_target config_opt
+                   install_target ()
                  end)
           end
         else
@@ -17140,7 +16788,7 @@ let () =
             if !make_world then
               Bsb_world.make_world_deps Bsb_global_paths.cwd ( config_opt) ninja_args;
             if !do_install then
-              install_target ( config_opt);
+              install_target ();
             if !watch_mode then program_exit ()
             else ninja_command_exit  ninja_args 
           end
