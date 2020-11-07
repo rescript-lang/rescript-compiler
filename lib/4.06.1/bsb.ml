@@ -6560,9 +6560,10 @@ let print (fmt : Format.formatter) (x : error) =
          in_json
 
   | Json_config (pos,s) ->
-    Format.fprintf fmt "File \"bsconfig.json\", line %d:\n\
+    Format.fprintf fmt "File %S, line %d:\n\
                         @{<error>Error:@} %s \n\
                         For more details, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json"
+                        pos.pos_fname
                         pos.pos_lnum s
   | Invalid_spec s ->
     Format.fprintf fmt
@@ -10032,7 +10033,8 @@ let rec walk_all_deps_aux
          | Expect_none -> ()  
          | Expect_name s ->  
           if s <> str then 
-            Bsb_exception.errorf ~loc "package name is expected to be %s but got %s" s str
+            Bsb_exception.errorf 
+            ~loc "package name is expected to be %s but got %s" s str 
         );
         str
       | Some _ 

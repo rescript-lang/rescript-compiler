@@ -193,7 +193,8 @@ let rec walk_all_deps_aux
          | Expect_none -> ()  
          | Expect_name s ->  
           if s <> str then 
-            Bsb_exception.errorf ~loc "package name is expected to be %s but got %s" s str
+            Bsb_exception.errorf 
+            ~loc "package name is expected to be %s but got %s" s str 
         );
         str
       | Some _ 
