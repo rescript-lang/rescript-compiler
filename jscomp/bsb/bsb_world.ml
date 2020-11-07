@@ -37,7 +37,9 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
   in 
   let lib_artifacts_dir = Bsb_config.lib_bs in
   Bsb_build_util.walk_all_deps  cwd (fun ({top; proj_dir} : Bsb_build_util.package_context) ->
-      if not top then
+      match top with 
+      | Expect_none -> ()
+      | Expect_name _ ->
         begin 
           let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
           Bsb_build_util.mkp lib_bs_dir;

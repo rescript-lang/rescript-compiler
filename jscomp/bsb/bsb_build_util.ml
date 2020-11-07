@@ -153,9 +153,13 @@ let get_list_string s = get_list_string_acc s []
 let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
+type top = 
+  | Expect_none 
+  | Expect_name of string   
+
 type package_context = {
   proj_dir : string ; 
-  top : bool ; 
+  top : top ; 
 }
 
 (**
@@ -172,18 +176,26 @@ type package_context = {
 let pp_packages_rev ppf lst = 
   Ext_list.rev_iter lst (fun  s ->  Format.fprintf ppf "%s " s) 
 
+
 let rec walk_all_deps_aux 
   (visited : string Hash_string.t) 
   (paths : string list) 
-  (top : bool) 
-  (dir : string) 
+  ~(top : top) 
+  (dir : string)  
   (cb : package_context -> unit) =
   let bsconfig_json =  dir // Literals.bsconfig_json in
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
     let cur_package_name = 
       match Map_string.find_opt map Bsb_build_schemas.name with 
-      | Some (Str {str }) -> str
+      | Some (Str {str ; loc }) -> 
+        (match top with 
+         | Expect_none -> ()  
+         | Expect_name s ->  
+          if s <> str then 
+            Bsb_exception.errorf ~loc "package name is expected to be %s but got %s" s str
+        );
+        str
       | Some _ 
       | None -> Bsb_exception.errorf ~loc "package name missing in %s/bsconfig.json" dir 
     in 
@@ -210,7 +222,7 @@ let rec walk_all_deps_aux
                    let package_dir = 
                      Bsb_pkg.resolve_bs_package ~cwd:dir 
                        (Bsb_pkg_types.string_as_package   new_package) in 
-                   walk_all_deps_aux visited package_stacks  false package_dir cb  ;
+                   walk_all_deps_aux visited package_stacks  ~top:(Expect_name new_package) package_dir cb  ;
                  | _ -> 
                    Bsb_exception.errorf ~loc 
                      "%s expect an array"
@@ -219,7 +231,7 @@ let rec walk_all_deps_aux
         |> ignore in
       begin 
         explore_deps Bsb_build_schemas.bs_dependencies;          
-        if top then explore_deps Bsb_build_schemas.bs_dev_dependencies;
+        if top = Expect_none then explore_deps Bsb_build_schemas.bs_dev_dependencies;
         cb {top ; proj_dir = dir};
         Hash_string.add visited cur_package_name dir;
       end
@@ -230,4 +242,4 @@ let rec walk_all_deps_aux
 
 let walk_all_deps dir cb = 
   let visited = Hash_string.create 0 in 
-  walk_all_deps_aux visited [] true dir cb 
+  walk_all_deps_aux visited [] ~top:Expect_none dir cb 
