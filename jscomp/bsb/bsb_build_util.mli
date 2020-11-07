@@ -86,6 +86,10 @@ val get_list_string :
     Ext_json_types.t array -> 
     string list
 
+type top = 
+  | Expect_none 
+  | Expect_name of string   
+
 type result = { path : string; checked : bool }    
 
 (* [resolve_bsb_magic_file]
@@ -100,7 +104,10 @@ val resolve_bsb_magic_file :
 
 type package_context = {
   proj_dir : string ; 
-  top : bool ; 
+  top : top ; 
 }
 
-val walk_all_deps : string -> (package_context -> unit) -> unit
+val walk_all_deps : 
+  string -> 
+  (package_context -> unit) -> 
+  unit

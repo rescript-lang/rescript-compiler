@@ -31,7 +31,6 @@
    however, for the command we don't need pass `-o`
 *)
 val output_build :
-  (* ?order_only_deps:string list -> *)
   outputs:string list ->
   inputs:string list ->
   rule:Bsb_ninja_rule.t -> 
