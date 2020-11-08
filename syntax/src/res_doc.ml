@@ -99,6 +99,14 @@ let propagateForcedBreaks doc =
   let (_, processedDoc) = walk doc in
   processedDoc
 
+(* See documentation in interface file *)
+let rec willBreak doc = match doc with
+  | LineBreak Hard | BreakParent | Group {shouldBreak = true} -> true
+  | Group {doc} | Indent doc | CustomLayout (doc::_) -> willBreak doc
+  | Concat docs -> List.exists willBreak docs
+  | IfBreaks {yes; no} -> willBreak yes || willBreak no
+  | _ -> false
+
 let join ~sep docs =
   let rec loop acc sep docs =
     match docs with

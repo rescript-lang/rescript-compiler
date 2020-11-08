@@ -189,3 +189,34 @@ foo(_ => {
 
 foo(list => list())
 foo(\"switch" => \"switch"())
+
+// the [] of the array should break
+[
+  fn(x => {
+    let _ = x
+  }),
+  fn(y => {
+    let _ = y
+  }),
+  fn(z => {
+    let _ = z
+  })
+]
+
+// similar, the jsx tree should be broken over multiple lines
+let f = () => {
+  <div>
+    {switch user.commited {
+    | NotAsked => React.null
+    | Loading => "Loading ..."->React.string
+    | Done(Error(_)) => "Error"->React.string
+    | Done(Ok(users)) => <> <ul> {users->Array.map(user => {
+            <li key=user.id> {user.username->React.string} </li>
+          })->React.array} </ul> {reloadableUser.last->AsyncData.isLoading
+          ? "Loading next page"->React.string
+          : React.null} <button onClick={_ => setPage(x => x + 1)}>
+          {"Load next page"->React.string}
+        </button> </>
+    }}
+  </div>
+}

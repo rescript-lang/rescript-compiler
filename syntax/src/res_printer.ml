@@ -3730,7 +3730,25 @@ and printPexpApply expr cmtTbl =
       let argsDoc =
         printArgumentsWithCallbackInLastPosition ~uncurried args cmtTbl
       in
+      (*
+       * Fixes the following layout (the `[` and `]` should break):
+       *   [fn(x => {
+       *     let _ = x
+       *   }), fn(y => {
+       *     let _ = y
+       *   }), fn(z => {
+       *     let _ = z
+       *   })]
+       * See `Doc.willBreak documentation in interface file for more context.
+       * Context:
+       *  https://github.com/rescript-lang/syntax/issues/111
+       *  https://github.com/rescript-lang/syntax/issues/166
+       *)
+      let maybeBreakParent =
+        if Doc.willBreak argsDoc then Doc.breakParent else Doc.nil
+      in
       Doc.concat [
+        maybeBreakParent;
         printAttributes attrs cmtTbl;
         callExprDoc;
         argsDoc;
