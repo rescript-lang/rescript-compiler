@@ -109,5 +109,5 @@ type package_context = {
 
 val walk_all_deps : 
   string -> 
-  (package_context -> unit) -> 
-  unit
+  package_context Queue.t
+  

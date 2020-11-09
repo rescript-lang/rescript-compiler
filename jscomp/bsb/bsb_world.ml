@@ -26,21 +26,42 @@
 let (//) = Ext_path.combine
 
 
+let vendor_ninja = Bsb_global_paths.vendor_ninja 
 
-
-let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
-
-  let vendor_ninja = Bsb_global_paths.vendor_ninja in
+let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : string array) =
+  let deps =
+    match config with
+    | None ->
+      (* When this running bsb does not read bsconfig.json,
+         we will read such json file to know which [package-specs]
+         it wants
+      *)
+      Bsb_config_parse.package_specs_from_bsconfig ()
+    | Some config -> config.package_specs in
   let args = 
     if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
     else Array.append [|vendor_ninja|] ninja_args
   in 
   let lib_artifacts_dir = Bsb_config.lib_bs in
-  Bsb_build_util.walk_all_deps  cwd (fun ({top; proj_dir} : Bsb_build_util.package_context) ->
+  let queue = 
+    Bsb_build_util.walk_all_deps  cwd  in 
+  (* let oc = open_out_bin ".deps.log" in 
+  queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) -> 
+    match top with 
+    | Expect_none -> ()
+    | Expect_name s ->       
+      output_string oc s ;
+      output_string oc " : ";
+      output_string oc proj_dir;
+      output_string oc "\n"
+   );
+  close_out oc ;   *)
+  queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) ->
       match top with 
       | Expect_none -> ()
-      | Expect_name _ ->
+      | Expect_name s ->
         begin 
+          output_string stdout ("Start building dependency " ^ s ^ "\n");
           let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
           Bsb_build_util.mkp lib_bs_dir;
           let _config : _ option = 
@@ -76,19 +97,6 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
           if eid <> 0 then   
             Bsb_unix.command_fatal_error install_command eid;            
           Bsb_log.info "@{<info>Installation finished@}@.";
+          output_string stdout ("Finish building dependency " ^ s ^ "\n")
         end
     )
-
-
-let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : string array) =
-  Bsb_log.info "Making the dependency world!@.";
-  let deps =
-    match config with
-    | None ->
-      (* When this running bsb does not read bsconfig.json,
-         we will read such json file to know which [package-specs]
-         it wants
-      *)
-      Bsb_config_parse.package_specs_from_bsconfig ()
-    | Some config -> config.package_specs in
-  build_bs_deps cwd deps ninja_args
