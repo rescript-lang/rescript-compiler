@@ -61,7 +61,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
       | Expect_none -> ()
       | Expect_name s ->
         begin 
-          output_string stdout ("Start building dependency " ^ s ^ "\n");
+          print_endline ("Dependency\t" ^ s );
           let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
           Bsb_build_util.mkp lib_bs_dir;
           let _config : _ option = 
@@ -97,6 +97,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
           if eid <> 0 then   
             Bsb_unix.command_fatal_error install_command eid;            
           Bsb_log.info "@{<info>Installation finished@}@.";
-          output_string stdout ("Finish building dependency " ^ s ^ "\n")
+
         end
-    )
+    );
+    print_endline "Dependency\tDone."
