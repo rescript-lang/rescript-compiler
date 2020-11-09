@@ -9833,8 +9833,8 @@ type package_context = {
 
 val walk_all_deps : 
   string -> 
-  (package_context -> unit) -> 
-  unit
+  package_context Queue.t
+  
 
 end = struct
 #1 "bsb_build_util.ml"
@@ -10022,7 +10022,7 @@ let rec walk_all_deps_aux
   (paths : string list) 
   ~(top : top) 
   (dir : string)  
-  (cb : package_context -> unit) =
+  (queue : _ Queue.t) = 
   let bsconfig_json =  dir // Literals.bsconfig_json in
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
@@ -10039,15 +10039,15 @@ let rec walk_all_deps_aux
         str
       | Some _ 
       | None -> Bsb_exception.errorf ~loc "package name missing in %s/bsconfig.json" dir 
-    in 
-    let package_stacks = cur_package_name :: paths in 
-    Bsb_log.info "@{<info>Package stack:@} %a @." pp_packages_rev
-      package_stacks ;    
+    in      
     if Ext_list.mem_string paths cur_package_name  then
       begin
         Bsb_log.error "@{<error>Cyclic dependencies in package stack@}@.";
         exit 2 
       end;
+    let package_stacks = cur_package_name :: paths in 
+    Bsb_log.info "@{<info>Package stack:@} %a @." pp_packages_rev
+      package_stacks ;    
     if Hash_string.mem visited cur_package_name then 
       Bsb_log.info
         "@{<info>Visited before@} %s@." cur_package_name
@@ -10063,7 +10063,7 @@ let rec walk_all_deps_aux
                    let package_dir = 
                      Bsb_pkg.resolve_bs_package ~cwd:dir 
                        (Bsb_pkg_types.string_as_package   new_package) in 
-                   walk_all_deps_aux visited package_stacks  ~top:(Expect_name new_package) package_dir cb  ;
+                   walk_all_deps_aux visited package_stacks  ~top:(Expect_name new_package) package_dir queue  ;
                  | _ -> 
                    Bsb_exception.errorf ~loc 
                      "%s expect an array"
@@ -10073,17 +10073,17 @@ let rec walk_all_deps_aux
       begin 
         explore_deps Bsb_build_schemas.bs_dependencies;          
         if top = Expect_none then explore_deps Bsb_build_schemas.bs_dev_dependencies;
-        cb {top ; proj_dir = dir};
+        Queue.add {top ; proj_dir = dir} queue;
         Hash_string.add visited cur_package_name dir;
       end
   | _ -> ()
-  | exception _ -> 
-    Bsb_exception.invalid_json bsconfig_json
-    
 
-let walk_all_deps dir cb = 
+
+let walk_all_deps dir  : package_context Queue.t = 
   let visited = Hash_string.create 0 in 
-  walk_all_deps_aux visited [] ~top:Expect_none dir cb 
+  let cb = Queue.create () in 
+  walk_all_deps_aux visited [] ~top:Expect_none dir cb ;
+  cb
 
 end
 module Bsb_global_paths : sig 
@@ -11274,10 +11274,12 @@ let clean_bs_garbage proj_dir =
 
 
 let clean_bs_deps  proj_dir =
-  Bsb_build_util.walk_all_deps  proj_dir  (fun pkg_cxt ->
+  let queue =   
+  Bsb_build_util.walk_all_deps  proj_dir   in 
+  Queue.iter (fun (pkg_cxt : Bsb_build_util.package_context )->
       (* whether top or not always do the cleaning *)
       clean_bs_garbage  pkg_cxt.proj_dir
-    )
+    ) queue
 
 let clean_self  proj_dir = 
     clean_bs_garbage  proj_dir
@@ -11452,7 +11454,8 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
       let stdlib_path = 
         Bsb_pkg.resolve_bs_package ~cwd current_package in 
       let json_spec = 
-        Ext_json_parse.parse_json_from_file 
+        Ext_json_parse.parse_json_from_file
+          (* No exn raised: stdlib  has package.json *)
           (Filename.concat stdlib_path Literals.package_json) in 
       match json_spec with 
       | Obj {map}  -> 
@@ -16270,21 +16273,42 @@ end = struct
 let (//) = Ext_path.combine
 
 
+let vendor_ninja = Bsb_global_paths.vendor_ninja 
 
-
-let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
-
-  let vendor_ninja = Bsb_global_paths.vendor_ninja in
+let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : string array) =
+  let deps =
+    match config with
+    | None ->
+      (* When this running bsb does not read bsconfig.json,
+         we will read such json file to know which [package-specs]
+         it wants
+      *)
+      Bsb_config_parse.package_specs_from_bsconfig ()
+    | Some config -> config.package_specs in
   let args = 
     if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
     else Array.append [|vendor_ninja|] ninja_args
   in 
   let lib_artifacts_dir = Bsb_config.lib_bs in
-  Bsb_build_util.walk_all_deps  cwd (fun ({top; proj_dir} : Bsb_build_util.package_context) ->
+  let queue = 
+    Bsb_build_util.walk_all_deps  cwd  in 
+  (* let oc = open_out_bin ".deps.log" in 
+  queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) -> 
+    match top with 
+    | Expect_none -> ()
+    | Expect_name s ->       
+      output_string oc s ;
+      output_string oc " : ";
+      output_string oc proj_dir;
+      output_string oc "\n"
+   );
+  close_out oc ;   *)
+  queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) ->
       match top with 
       | Expect_none -> ()
-      | Expect_name _ ->
+      | Expect_name s ->
         begin 
+          print_endline ("Dependency on " ^ s );
           let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
           Bsb_build_util.mkp lib_bs_dir;
           let _config : _ option = 
@@ -16320,22 +16344,10 @@ let build_bs_deps cwd (deps : Bsb_package_specs.t) (ninja_args : string array) =
           if eid <> 0 then   
             Bsb_unix.command_fatal_error install_command eid;            
           Bsb_log.info "@{<info>Installation finished@}@.";
+
         end
-    )
-
-
-let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : string array) =
-  Bsb_log.info "Making the dependency world!@.";
-  let deps =
-    match config with
-    | None ->
-      (* When this running bsb does not read bsconfig.json,
-         we will read such json file to know which [package-specs]
-         it wants
-      *)
-      Bsb_config_parse.package_specs_from_bsconfig ()
-    | Some config -> config.package_specs in
-  build_bs_deps cwd deps ninja_args
+    );
+    print_endline "Dependency Finished"
 
 end
 module Bsc_args : sig 
@@ -16808,7 +16820,7 @@ let () =
                 ~forced:!force_regenerate) in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
-              Bsb_world.make_world_deps Bsb_global_paths.cwd ( config_opt) ninja_args;
+              Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
             if !do_install then
               install_target ();
             if !watch_mode then program_exit ()

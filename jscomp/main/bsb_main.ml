@@ -236,7 +236,7 @@ let () =
                 ~forced:!force_regenerate) in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
-              Bsb_world.make_world_deps Bsb_global_paths.cwd ( config_opt) ninja_args;
+              Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
             if !do_install then
               install_target ();
             if !watch_mode then program_exit ()

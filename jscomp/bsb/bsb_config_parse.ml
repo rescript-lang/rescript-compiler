@@ -123,7 +123,8 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
       let stdlib_path = 
         Bsb_pkg.resolve_bs_package ~cwd current_package in 
       let json_spec = 
-        Ext_json_parse.parse_json_from_file 
+        Ext_json_parse.parse_json_from_file
+          (* No exn raised: stdlib  has package.json *)
           (Filename.concat stdlib_path Literals.package_json) in 
       match json_spec with 
       | Obj {map}  -> 
