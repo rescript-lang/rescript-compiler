@@ -61,7 +61,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
       | Expect_none -> ()
       | Expect_name s ->
         begin 
-          print_endline ("Dependency\t" ^ s );
+          print_endline ("Dependency on " ^ s );
           let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
           Bsb_build_util.mkp lib_bs_dir;
           let _config : _ option = 
@@ -100,4 +100,4 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
 
         end
     );
-    print_endline "Dependency\tDone."
+    print_endline "Dependency Finished"

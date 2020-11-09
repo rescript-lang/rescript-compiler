@@ -10077,9 +10077,7 @@ let rec walk_all_deps_aux
         Hash_string.add visited cur_package_name dir;
       end
   | _ -> ()
-  | exception _ -> 
-    Bsb_exception.invalid_json bsconfig_json
-    
+
 
 let walk_all_deps dir  : package_context Queue.t = 
   let visited = Hash_string.create 0 in 
@@ -11456,7 +11454,8 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
       let stdlib_path = 
         Bsb_pkg.resolve_bs_package ~cwd current_package in 
       let json_spec = 
-        Ext_json_parse.parse_json_from_file 
+        Ext_json_parse.parse_json_from_file
+          (* No exn raised: stdlib  has package.json *)
           (Filename.concat stdlib_path Literals.package_json) in 
       match json_spec with 
       | Obj {map}  -> 
@@ -16309,7 +16308,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
       | Expect_none -> ()
       | Expect_name s ->
         begin 
-          output_string stdout ("Start building dependency " ^ s ^ "\n");
+          print_endline ("Dependency on " ^ s );
           let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
           Bsb_build_util.mkp lib_bs_dir;
           let _config : _ option = 
@@ -16345,9 +16344,10 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
           if eid <> 0 then   
             Bsb_unix.command_fatal_error install_command eid;            
           Bsb_log.info "@{<info>Installation finished@}@.";
-          output_string stdout ("Finish building dependency " ^ s ^ "\n")
+
         end
-    )
+    );
+    print_endline "Dependency Finished"
 
 end
 module Bsc_args : sig 
