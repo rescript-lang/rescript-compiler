@@ -134,6 +134,18 @@ let (-1)..(-1.) = x
   | _ -> false"
 `;
 
+exports[`constraint.js 1`] = `
+";;match thing with
+  | Some (node : node) -> ()
+  | Some (node : Feature.node) -> ()
+  | (child : node)::rest -> ()
+  | (child : node)::rest -> ()
+  | (Some _, Some (menuItem : Menu.item)) -> ()
+  | (Some _, Some (menuItem : Menu.item)) -> ()
+  | SettingChanged ({ fullName; value;_} : Nova.Setting.t) -> ()
+  | SettingChanged ({ fullName; value;_} : Nova.Setting.t) -> ()"
+`;
+
 exports[`constructor.js 1`] = `
 "let Instance = i
 let Instance as inst = i
