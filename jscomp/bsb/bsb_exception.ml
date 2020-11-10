@@ -73,9 +73,10 @@ let print (fmt : Format.formatter) (x : error) =
          in_json
 
   | Json_config (pos,s) ->
-    Format.fprintf fmt "File \"bsconfig.json\", line %d:\n\
+    Format.fprintf fmt "File %S, line %d:\n\
                         @{<error>Error:@} %s \n\
-                        For more details, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json"
+                        For more details, please checkout the schema https://rescript-lang.org/docs/manual/latest/build-configuration-schema"
+                        pos.pos_fname
                         pos.pos_lnum s
   | Invalid_spec s ->
     Format.fprintf fmt
