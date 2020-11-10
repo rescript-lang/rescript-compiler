@@ -18,7 +18,7 @@
     "coverage": "nyc --timeout=3000 --reporter=html mocha jscomp/test/*test.js && open ./coverage/index.html"
   },
   "name": "bs-platform",
-  "version": "8.4.0-dev.1",
+  "version": "8.3.3-dev.2",
   "description": "ReScript compiler, OCaml standard libary by ReScript and its required runtime support",
   "repository": {
     "type": "git",
