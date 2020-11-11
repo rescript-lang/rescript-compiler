@@ -3407,6 +3407,12 @@ and printBinaryExpression (expr : Parsetree.expression) cmtTbl =
         end
       else
         begin match expr.pexp_desc with
+        | Pexp_apply (
+            {pexp_desc = Pexp_ident {txt = Longident.Lident "^"; loc}},
+            [Nolabel, _; Nolabel, _]
+          ) when loc.loc_ghost ->
+            let doc = printTemplateLiteral expr cmtTbl in
+            printComments doc cmtTbl expr.Parsetree.pexp_loc
         | Pexp_setfield (lhs, field, rhs) ->
           let doc = printSetFieldExpr expr.pexp_attributes lhs field rhs expr.pexp_loc cmtTbl  in
           if isLhs then addParens doc else doc

@@ -142,9 +142,10 @@ type kind = Parenthesized | Braced of Location.t | Nothing
     match rhs.Parsetree.pexp_desc with
     | Parsetree.Pexp_apply(
       {pexp_attributes = [];
-        pexp_desc = Pexp_ident {txt = Longident.Lident operator}},
+        pexp_desc = Pexp_ident {txt = Longident.Lident operator; loc = operatorLoc}},
         [_, _left; _, _right]
-      ) when ParsetreeViewer.isBinaryOperator operator ->
+      ) when ParsetreeViewer.isBinaryOperator operator &&
+         not (operatorLoc.loc_ghost && operator = "^") ->
     let precParent = ParsetreeViewer.operatorPrecedence parentOperator in
     let precChild =  ParsetreeViewer.operatorPrecedence operator in
     precParent == precChild
@@ -153,9 +154,10 @@ type kind = Parenthesized | Braced of Location.t | Nothing
   let flattenOperandRhs parentOperator rhs =
     match rhs.Parsetree.pexp_desc with
     | Parsetree.Pexp_apply(
-        {pexp_desc = Pexp_ident {txt = Longident.Lident operator}},
+        {pexp_desc = Pexp_ident {txt = Longident.Lident operator; loc = operatorLoc}},
         [_, _left; _, _right]
-      ) when ParsetreeViewer.isBinaryOperator operator ->
+      ) when ParsetreeViewer.isBinaryOperator operator &&
+         not (operatorLoc.loc_ghost && operator = "^") ->
       let precParent = ParsetreeViewer.operatorPrecedence parentOperator in
       let precChild =  ParsetreeViewer.operatorPrecedence operator in
       precParent >= precChild || rhs.pexp_attributes <> []

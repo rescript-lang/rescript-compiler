@@ -222,6 +222,7 @@ let isUnaryExpression expr = match expr.pexp_desc with
     ) when isUnaryOperator operator -> true
   | _ -> false
 
+(* TODO: tweak this to check for ghost ^ as template literal *)
 let isBinaryOperator operator = match operator with
   | ":="
   | "||"
@@ -235,9 +236,11 @@ let isBinaryOperator operator = match operator with
 
 let isBinaryExpression expr = match expr.pexp_desc with
   | Pexp_apply(
-      {pexp_desc = Pexp_ident {txt = Longident.Lident operator}},
+      {pexp_desc = Pexp_ident {txt = Longident.Lident operator; loc = operatorLoc}},
       [(Nolabel, _operand1); (Nolabel, _operand2)]
-    ) when isBinaryOperator operator -> true
+    ) when isBinaryOperator operator &&
+        not (operatorLoc.loc_ghost && operator = "^") (* template literal *)
+    -> true
   | _ -> false
 
 let isEqualityOperator operator = match operator with
@@ -489,18 +492,17 @@ let rec collectPatternsFromListConstruct acc pattern =
     collectPatternsFromListConstruct (pat::acc) rest
   | _ -> List.rev acc, pattern
 
-let rec isTemplateLiteral expr =
-  let isPexpConstantString expr = match expr.pexp_desc with
-  | Pexp_constant (Pconst_string (_, Some _)) -> true
-  | _ -> false
-  in
+(* Simple heuristic to detect template literal sugar:
+ *  `${user.name} lastName` parses internally as user.name ++ ` lastName`.
+ *  The thing is: the ++ operator (parsed as `^`)  will always have a ghost loc.
+ *  A ghost loc is only produced by our parser.
+ *  Hence, if we have that ghost operator, we know for sure it's a template literal. *)
+let isTemplateLiteral expr =
   match expr.pexp_desc with
   | Pexp_apply (
-      {pexp_desc = Pexp_ident {txt = Longident.Lident "^"}},
-      [Nolabel, arg1; Nolabel, arg2]
-    ) when not (isPexpConstantString arg1 && isPexpConstantString arg2) ->
-    isTemplateLiteral arg1 || isTemplateLiteral arg2
-  | Pexp_constant (Pconst_string (_, Some _)) -> true
+      {pexp_desc = Pexp_ident {txt = Longident.Lident "^"; loc}},
+      [Nolabel, _; Nolabel, _]
+    ) when loc.loc_ghost -> true
   | _ -> false
 
 (* Blue | Red | Green -> [Blue; Red; Green] *)
