@@ -1886,6 +1886,7 @@ and parseBracketAccess p expr startPos =
     Parser.next p;
     let stringEnd = p.prevEndPos in
     Parser.expect Rbracket p;
+    Parser.eatBreadcrumb p;
     let rbracket = p.prevEndPos in
     let e =
       let identLoc = mkLoc stringStart stringEnd in
@@ -1911,6 +1912,7 @@ and parseBracketAccess p expr startPos =
   | _ ->
     let accessExpr = parseConstrainedOrCoercedExpr p in
     Parser.expect Rbracket p;
+    Parser.eatBreadcrumb p;
     let rbracket = p.prevEndPos in
     let arrayLoc = mkLoc lbracket rbracket in
     begin match p.token with
@@ -1941,7 +1943,6 @@ and parseBracketAccess p expr startPos =
             )
           [Nolabel, expr; Nolabel, accessExpr]
       in
-      Parser.eatBreadcrumb p;
       parsePrimaryExpr ~operand:e p
     end
 
