@@ -206,7 +206,7 @@ let classify_suffix (x : string) : suffix_kind =
 (** This is the only place where we do some removal during scanning,
   configurabl
 *)    
-let prune_staled_bs_js_files 
+let _prune_staled_bs_js_files 
     (context : cxt) 
     (cur_sources : _ Map_string.t ) 
      : unit =     
@@ -248,7 +248,7 @@ let prune_staled_bs_js_files
             else () (* assert false *)
       )
 
-
+let prune_staled_bs_js_files _ _ = ()
 
 
 

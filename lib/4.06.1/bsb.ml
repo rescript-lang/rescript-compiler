@@ -10736,7 +10736,7 @@ let classify_suffix (x : string) : suffix_kind =
 (** This is the only place where we do some removal during scanning,
   configurabl
 *)    
-let prune_staled_bs_js_files 
+let _prune_staled_bs_js_files 
     (context : cxt) 
     (cur_sources : _ Map_string.t ) 
      : unit =     
@@ -10778,7 +10778,7 @@ let prune_staled_bs_js_files
             else () (* assert false *)
       )
 
-
+let prune_staled_bs_js_files _ _ = ()
 
 
 
@@ -13569,9 +13569,11 @@ let output_static_resources
   FIXME: check if the trick still works
   phony build.ninja : | resources 
 *)      
-
+let mark_rescript oc = 
+  output_string oc "rescript = 1\n"  
 let output_installation_file cwd_lib_bs namespace files_to_install = 
   let install_oc = open_out_bin (cwd_lib_bs // "install.ninja") in 
+  mark_rescript install_oc;
   let o s = output_string install_oc s in
   let[@inline] oo suffix ~dest ~src =   
     o  "o " ; 
@@ -13709,7 +13711,8 @@ let output_ninja_and_namespace_map
       ~dev_incls (* its own devs *)
       generators in  
 
-  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in              
+  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in 
+  mark_rescript oc;
   Bsb_ninja_targets.output_kv      
     Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
     oc ;
@@ -14366,6 +14369,87 @@ let root = OCamlRes.Res.([
        \n\
        ```\n\
        npm run watch\n\
+       ```\n\
+       \n\
+       ")]) ;
+  Dir  ("basic-reason", [
+    Dir  ("src", [
+      File  ("Demo.re",
+        "Js.log(\"Hello, ReScript!\");\n\
+         ")]) ;
+    File  ("bsconfig.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"sources\": {\n\
+      \    \"dir\" : \"src\",\n\
+      \    \"subdirs\" : true\n\
+      \  },\n\
+      \  \"package-specs\": {\n\
+      \    \"module\": \"commonjs\",\n\
+      \    \"in-source\": true\n\
+      \  },\n\
+      \  \"suffix\": \".bs.js\",\n\
+      \  \"bs-dependencies\": [\n\
+       \n\
+      \  ],\n\
+      \  \"warnings\": {\n\
+      \    \"error\" : \"+101\"\n\
+      \  },\n\
+      \  \"namespace\": true,\n\
+      \  \"refmt\": 3\n\
+       }\n\
+       ") ;
+    File  ("package.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"scripts\": {\n\
+      \    \"build\": \"bsb -make-world\",\n\
+      \    \"start\": \"bsb -make-world -w\",\n\
+      \    \"clean\": \"bsb -clean-world\"\n\
+      \  },\n\
+      \  \"keywords\": [\n\
+      \    \"BuckleScript\"\n\
+      \  ],\n\
+      \  \"author\": \"\",\n\
+      \  \"license\": \"MIT\",\n\
+      \  \"devDependencies\": {\n\
+      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
+      \  }\n\
+       }\n\
+       ") ;
+    File  (".gitignore",
+      ".DS_Store\n\
+       .merlin\n\
+       .bsb.lock\n\
+       npm-debug.log\n\
+       /lib/bs/\n\
+       /node_modules/\n\
+       ") ;
+    File  ("README.md",
+      "# Basic Reason Template\n\
+       \n\
+       Hello! This project allows you to quickly get started with ReScript using Reason syntax. If you wanted a more sophisticated version, try the `react` template (`bsb -theme react -init .`).\n\
+       \n\
+       # Build\n\
+       \n\
+       ```bash\n\
+       # for yarn\n\
+       yarn build\n\
+       \n\
+       # for npm\n\
+       npm run build\n\
+       ```\n\
+       \n\
+       # Build + Watch\n\
+       \n\
+       ```bash\n\
+       # for yarn\n\
+       yarn start\n\
+       \n\
+       # for npm\n\
+       npm run start\n\
        ```\n\
        \n\
        ")]) ;
