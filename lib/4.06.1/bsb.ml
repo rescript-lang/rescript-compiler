@@ -11736,21 +11736,23 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
   | None 
   | Some _ ->
     begin
-      let stdlib_path = 
-        Bsb_pkg.resolve_bs_package ~cwd current_package in 
-      let json_spec = 
-        Ext_json_parse.parse_json_from_file 
-          (Filename.concat stdlib_path Literals.package_json) in 
-      match json_spec with 
-      | Obj {map}  -> 
-        check_version_exit map stdlib_path;
-        Some {
-            Bsb_config_types.package_name = current_package;
-            package_install_path = stdlib_path // Bsb_config.lib_ocaml;
-          }
+      if Sys.getenv_opt "RES_SKIP_STDLIB_CHECK" = None then begin 
+        let stdlib_path = 
+          Bsb_pkg.resolve_bs_package ~cwd current_package in 
+        let json_spec = 
+          Ext_json_parse.parse_json_from_file
+            (* No exn raised: stdlib  has package.json *)
+            (Filename.concat stdlib_path Literals.package_json) in 
+        match json_spec with 
+        | Obj {map}  -> 
+          check_version_exit map stdlib_path;
 
-      | _ -> assert false 
-
+        | _ -> assert false
+      end;
+      Some {
+        Bsb_config_types.package_name = current_package;
+        package_install_path = Filename.dirname Bsb_global_paths.bsc_dir // Bsb_config.lib_ocaml;
+      }
     end
 
 
