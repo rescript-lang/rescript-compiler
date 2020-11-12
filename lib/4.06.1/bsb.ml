@@ -10366,8 +10366,6 @@ let rec walk_all_deps_aux
         Hash_string.add visited cur_package_name dir;
       end
   | _ -> ()
-  | exception _ -> 
-    Bsb_exception.invalid_json bsconfig_json
     
 
 let walk_all_deps dir cb = 
