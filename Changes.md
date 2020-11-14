@@ -1,5 +1,20 @@
 `*` means  potential break changes
 
+# 8.3.3
+This is a bug release for 8.3.*
+- #4817 *internal* add an option RES_SKIP_STDLIB_CHECK so that 
+  for a true monorepo, it does not need follow `node_modules` layout
+- #4807 #4815 remove unused code in refmt parser *a lot* (around 50_000 loc)
+  on darwin, the binary size is dropped fom 9.69M to 8.48M
+- #4808 add back basic-reason theme to avoid breakage for existing docs  
+- #4806 Fix broken ocaml build with gcc 10
+- #4804 restore back-wards compatibility with `build statement` in generated ninja files
+- #4803 fix the bsb build schema location in the error message
+- #4802 proper error message when bsconfig.json is missing
+- #4801 add a sanity check for name field in bsconfig.json to match real package name
+- #4810 #4784 regressions for weird indentation in warning output
+
+
 # 8.3.1
 This is a minor bug fix release for 8.3.0
 - capture warnings when rebuild without enforce warn-as-error
