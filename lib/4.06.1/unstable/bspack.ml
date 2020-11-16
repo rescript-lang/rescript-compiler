@@ -3374,6 +3374,7 @@ type t =
   | Bs_unimplemented_primitive of string    (* 106 *)
   | Bs_integer_literal_overflow              (* 107 *)
   | Bs_uninterpreted_delimiters of string   (* 108 *)
+  | Bs_toplevel_expression_unit             (* 109 *)
         
 ;;
 
@@ -3526,6 +3527,7 @@ type t =
   | Bs_unimplemented_primitive of string    (* 106 *)
   | Bs_integer_literal_overflow              (* 107 *)
   | Bs_uninterpreted_delimiters of string   (* 108 *)
+  | Bs_toplevel_expression_unit             (* 109 *)
   
 ;;
 
@@ -3614,10 +3616,11 @@ let number = function
   | Bs_unimplemented_primitive _ -> 106
   | Bs_integer_literal_overflow -> 107
   | Bs_uninterpreted_delimiters _ -> 108
+  | Bs_toplevel_expression_unit -> 109
   
 ;;
 
-let last_warning_number = 108
+let last_warning_number = 109
 let letter_all = 
   let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
   loop last_warning_number
@@ -3752,7 +3755,7 @@ let parse_options errflag s =
   current := {error; active}
 
 (* If you change these, don't forget to change them in man/ocamlc.m *)
-let defaults_w = "+a-4-6-7-9-27-29-32..42-44-45-48-50-60-102";;
+let defaults_w = "+a-4-6-7-9-27-29-32..42-44-45-48-50-60-102-109";;
 let defaults_warn_error = "-a+31";;
 
 let () = 
@@ -4017,6 +4020,8 @@ let message = function
       "Integer literal exceeds the range of representable integers of type int"
   | Bs_uninterpreted_delimiters s -> 
       "Uninterpreted delimiters " ^ s  
+  | Bs_toplevel_expression_unit -> 
+      "Toplevel expression is expected to have unit type."    
       
 ;;
 
@@ -4152,7 +4157,8 @@ let descriptions =
    105, "External name is inferred from val name is unsafe from refactoring when changing value name";
    106, "Unimplemented primitive used:";
    107, "Integer literal exceeds the range of representable integers of type int";
-   108, "Uninterpreted delimiters (for unicode)"  
+   108, "Uninterpreted delimiters (for unicode)" ;
+   109, "Toplevel expression has unit type"   
    
   ]
 ;;
