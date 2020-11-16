@@ -1,0 +1,12 @@
+{
+  "name": "warnerror",
+  "version": "0.1.0",
+  "sources": {
+    "dir" : "src",
+    "subdirs" : true
+  },
+  "bs-dependencies": [ "test"],
+  "warnings": {
+    "error" : "+101"
+  }
+}
