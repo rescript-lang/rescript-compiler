@@ -12893,8 +12893,11 @@ let make_custom_rules
       Ext_buffer.add_char_string buf ' ' dpkg_incls;
     if not has_builtin then   
       Ext_buffer.add_string buf " -nostdlib";
-    Ext_buffer.add_char_string buf ' ' warnings;  
     Ext_buffer.add_char_string buf ' ' bsc_flags;
+    Ext_buffer.add_char_string buf ' ' warnings; 
+    (* we need "-w a" in the end position to take effect
+      in non-toplevel mode
+    *)
     begin match gentype_config with 
       | None -> ()
       | Some x ->
