@@ -5,7 +5,7 @@ var out = cp.spawnSync(`npx bsb -make-world`, {
   encoding: "utf-8",
   shell: true,
 });
-if (!out.error) {
+if (out.error) {
   throw out.error;
 }
 if (out.status !== 0) {
