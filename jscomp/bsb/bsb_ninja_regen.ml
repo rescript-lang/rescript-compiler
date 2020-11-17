@@ -39,7 +39,8 @@ let regenerate_ninja
   let output_deps = lib_bs_dir // bsdeps in
   let check_result  =
     Bsb_ninja_check.check 
-      ~per_proj_dir:per_proj_dir  
+      ~package_kind
+      ~per_proj_dir
       ~forced ~file:output_deps in
   Bsb_log.info
     "@{<info>BSB check@} build spec : %a @." Bsb_ninja_check.pp_check_result check_result ;
@@ -48,6 +49,7 @@ let regenerate_ninja
     None  (* Fast path, no need regenerate ninja *)
   | Bsb_forced 
   | Bsb_bsc_version_mismatch
+  | Bsb_package_kind_inconsistent
   | Bsb_file_corrupted
   | Bsb_file_not_exist 
   | Bsb_source_directory_changed  
@@ -82,7 +84,7 @@ let regenerate_ninja
       ~per_proj_dir  ~package_kind config ;                 
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
-    Bsb_ninja_check.record ~per_proj_dir ~config ~file:output_deps 
+    Bsb_ninja_check.record ~package_kind ~per_proj_dir ~config ~file:output_deps 
       (Literals.bsconfig_json::config.file_groups.globbed_dirs) ;
     Some config 
 

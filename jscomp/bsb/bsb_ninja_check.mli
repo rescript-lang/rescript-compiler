@@ -41,6 +41,7 @@ type check_result =
   | Bsb_source_directory_changed
   | Bsb_bsc_version_mismatch  
   | Bsb_forced
+  | Bsb_package_kind_inconsistent
   | Other of string
 
 val pp_check_result : 
@@ -60,6 +61,7 @@ val pp_check_result :
     [build.ninja] should be regenerated
 *)
 val record : 
+  package_kind:Bsb_package_kind.t ->
   per_proj_dir:string -> 
   file:string -> 
   config:Bsb_config_types.t ->
@@ -69,6 +71,7 @@ val record :
 
 (** check if [build.ninja] should be regenerated *)
 val check :
+  package_kind:Bsb_package_kind.t ->
   per_proj_dir:string ->  
   forced:bool -> 
   file:string -> 
