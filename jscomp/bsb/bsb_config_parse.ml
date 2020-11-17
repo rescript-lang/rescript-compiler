@@ -322,7 +322,7 @@ let extract_js_post_build (map : json_map) cwd : string option =
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
 let interpret_json 
-    ~(toplevel_package_specs : Bsb_package_kind.t)
+    ~(package_kind : Bsb_package_kind.t)
     ~per_proj_dir:(per_proj_dir:string)
 
   : Bsb_config_types.t =
@@ -366,7 +366,7 @@ let interpret_json
     let reason_react_jsx = extract_reason_react_jsx map in 
     let bs_dependencies = extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies in    
     let bs_dev_dependencies = 
-      match toplevel_package_specs with 
+      match package_kind with 
       | Toplevel ->
         extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dev_dependencies
       | Dependency _ -> [] in 
@@ -376,7 +376,7 @@ let interpret_json
           extract_boolean map Bsb_build_schemas.cut_generators false in 
         let groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
-            ~toplevel:toplevel_package_specs
+            ~toplevel:package_kind
             ~root: per_proj_dir
             ~cut_generators
             ~namespace
@@ -404,7 +404,7 @@ let interpret_json
           refmt;
           js_post_build_cmd = (extract_js_post_build map per_proj_dir);
           package_specs = 
-            (match toplevel_package_specs with 
+            (match package_kind with 
              | Toplevel ->  Bsb_package_specs.from_map map                
              | Dependency x -> x);          
           file_groups = groups; 

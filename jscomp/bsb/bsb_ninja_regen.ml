@@ -59,7 +59,7 @@ let regenerate_ninja
     
     let config : Bsb_config_types.t = 
       Bsb_config_parse.interpret_json 
-        ~toplevel_package_specs
+        ~package_kind:toplevel_package_specs
         ~per_proj_dir in 
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
     Bsb_build_util.mkp lib_bs_dir;         
