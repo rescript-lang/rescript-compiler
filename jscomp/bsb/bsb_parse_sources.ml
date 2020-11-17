@@ -27,6 +27,7 @@
 type build_generator = Bsb_file_groups.build_generator
 
 
+let (.?()) = Map_string.find_opt
 
 (* type file_group = Bsb_file_groups.file_group *)
 
@@ -79,7 +80,7 @@ let collect_pub_modules
   !set
 
 let extract_pub (input : Ext_json_types.t Map_string.t) (cur_sources : Bsb_db.map) : Bsb_file_groups.public =   
-  match Map_string.find_opt input  Bsb_build_schemas.public with 
+  match input.?(Bsb_build_schemas.public) with 
   | Some ((Str({str = s}) as x)) ->  
     if s = Bsb_build_schemas.export_all then Export_all  else 
     if s = Bsb_build_schemas.export_none then Export_none else 
@@ -92,7 +93,7 @@ let extract_pub (input : Ext_json_types.t Map_string.t) (cur_sources : Bsb_db.ma
     Export_all 
 
 let extract_resources (input : Ext_json_types.t Map_string.t) : string list =   
-  match Map_string.find_opt input  Bsb_build_schemas.resources with 
+  match input.?(Bsb_build_schemas.resources) with 
   | Some (Arr x) ->
     Bsb_build_util.get_list_string x.content
   | Some config -> 
@@ -131,14 +132,14 @@ let extract_input_output (edge : Ext_json_types.t) : string list * string list =
 type json_map = Ext_json_types.t Map_string.t
 
 let extract_generators (input : json_map) : build_generator list  =
-  match Map_string.find_opt input  Bsb_build_schemas.generators with
+  match input.?(Bsb_build_schemas.generators) with
   | Some (Arr { content ; loc_start= _}) ->
     (* Need check is dev build or not *)
     Ext_array.fold_left content [] (fun acc x ->
         match x with
         | Obj { map } ->
-          (match Map_string.find_opt map Bsb_build_schemas.name ,
-                 Map_string.find_opt map Bsb_build_schemas.edge
+          (match map.?(Bsb_build_schemas.name) ,
+                 map.?(Bsb_build_schemas.edge)
            with
            | Some (Str command), Some edge ->
              let output, input = extract_input_output edge in 
@@ -152,11 +153,11 @@ let extract_generators (input : json_map) : build_generator list  =
 
 let extract_predicate (m : json_map)  : string -> bool =
   let excludes = 
-    match Map_string.find_opt m  Bsb_build_schemas.excludes with 
+    match m.?(Bsb_build_schemas.excludes) with 
     | None -> []   
     | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
     | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
-  let slow_re = Map_string.find_opt m Bsb_build_schemas.slow_re in 
+  let slow_re = m.?(Bsb_build_schemas.slow_re) in 
   match slow_re, excludes with 
   | Some (Str {str = s}), [] -> 
     let re = Str.regexp s  in 
@@ -269,7 +270,7 @@ let rec
       | {cut_generators = true ; _ } -> false  
     in          
     let scanned_generators = extract_generators input in        
-    let sub_dirs_field = Map_string.find_opt input  Bsb_build_schemas.subdirs in 
+    let sub_dirs_field = input.?(Bsb_build_schemas.subdirs) in 
     let base_name_array = 
         lazy (cur_globbed_dirs := true ; Sys.readdir (Filename.concat cxt.root dir)) in 
     let output_sources = 
@@ -277,7 +278,7 @@ let rec
         Map_string.empty (fun acc o -> 
             Bsb_db_util.add_basename ~dir acc o) in 
     let sources = 
-      match Map_string.find_opt input Bsb_build_schemas.files with 
+      match input.?(Bsb_build_schemas.files) with 
       | None ->  
         (** We should avoid temporary files *)
         Ext_array.fold_left (Lazy.force base_name_array) output_sources (fun acc basename -> 
@@ -359,7 +360,7 @@ and parsing_single_source ({package_kind; dev_index ; cwd} as cxt ) (x : Ext_jso
      end   
   | Obj {map} ->
     let current_dir_index = 
-      match Map_string.find_opt map Bsb_build_schemas.type_ with 
+      match map.?(Bsb_build_schemas.type_) with 
       | Some (Str {str="dev"}) -> 
         true
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
@@ -370,7 +371,7 @@ and parsing_single_source ({package_kind; dev_index ; cwd} as cxt ) (x : Ext_jso
     | Dependency _, false 
     | Toplevel, _ ->       
       let dir = 
-        match Map_string.find_opt map Bsb_build_schemas.dir with 
+        match map.?(Bsb_build_schemas.dir) with 
         | Some (Str{str}) -> 
           Ext_path.simple_convert_node_path_to_os_path str 
         | Some x -> Bsb_exception.config_error x "dir expected to be a string"
@@ -439,11 +440,11 @@ and walk_single_source cxt (x : Ext_json_types.t) =
     walk_source_dir_map 
     {cxt with cwd = Ext_path.concat cxt.cwd dir } None 
   | Obj {map} ->       
-    begin match Map_string.find_opt map Bsb_build_schemas.dir with 
+    begin match map.?(Bsb_build_schemas.dir) with 
     | Some (Str{str}) -> 
       let dir = Ext_path.simple_convert_node_path_to_os_path str  in 
       walk_source_dir_map 
-      {cxt with cwd = Ext_path.concat cxt.cwd dir} (Map_string.find_opt map Bsb_build_schemas.subdirs)
+      {cxt with cwd = Ext_path.concat cxt.cwd dir} map.?(Bsb_build_schemas.subdirs)
     | _ -> ()
     end
   | _ -> ()  
@@ -486,22 +487,22 @@ let clean_re_js root =
       (Filename.concat root Literals.bsconfig_json) with 
   | Obj { map } -> 
     let ignored_dirs = 
-      match Map_string.find_opt map Bsb_build_schemas.ignored_dirs with       
+      match map .?(Bsb_build_schemas.ignored_dirs) with       
       | Some (Arr {content = x}) -> Set_string.of_list (Bsb_build_util.get_list_string x )
       | Some _
       | None -> Set_string.empty
     in
     let gentype_language =
-      match Map_string.find_opt map Bsb_build_schemas.gentypeconfig with
+      match map.?(Bsb_build_schemas.gentypeconfig) with
         | None -> ""
         | Some (Obj { map }) ->
-          (match Map_string.find_opt map Bsb_build_schemas.language with
+          (match map.?(Bsb_build_schemas.language) with
           | None -> ""
           | Some (Str {str}) -> str
           | Some _ -> "")
         | Some _ -> ""
     in
-    Ext_option.iter (Map_string.find_opt map Bsb_build_schemas.sources) begin fun config -> 
+    Ext_option.iter map.?(Bsb_build_schemas.sources) begin fun config -> 
       try (
           walk_sources { root ;                           
                          traverse = true; 

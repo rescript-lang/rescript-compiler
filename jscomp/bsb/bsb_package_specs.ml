@@ -43,6 +43,7 @@ module Spec_set = Set.Make( struct type t = spec
 
 type t = Spec_set.t 
 
+let (.?()) = Map_string.find_opt 
 
 let bad_module_format_message_exn ~loc format =
   Bsb_exception.errorf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of:  %s, %s or %s"
@@ -91,13 +92,13 @@ and from_json_single suffix (x : Ext_json_types.t) : spec =
     begin match Map_string.find_exn map "module" with
       | Str {str = format} ->
         let in_source = 
-          match Map_string.find_opt map  Bsb_build_schemas.in_source with
+          match map.?(Bsb_build_schemas.in_source) with
           | Some (True _) -> true
           | Some _
           | None -> false
         in        
         let suffix = 
-          match Map_string.find_opt map  "suffix" with
+          match map.?("suffix") with
           | Some (Str {str = suffix; loc}) ->
             let s = Ext_js_suffix.of_string suffix in 
             if s = Unknown_extension then 
@@ -188,7 +189,7 @@ let list_dirs_by
 type json_map = Ext_json_types.t Map_string.t 
 
 let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
-  match Map_string.find_opt map Bsb_build_schemas.suffix with 
+  match map.?(Bsb_build_schemas.suffix) with 
   | None -> Js  
   | Some (Str {str; loc}) -> 
     let s =  Ext_js_suffix.of_string str  in 
@@ -202,7 +203,7 @@ let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =
 
 let from_map map =  
   let suffix = extract_bs_suffix_exn map in   
-  match Map_string.find_opt map Bsb_build_schemas.package_specs with 
+  match map.?(Bsb_build_schemas.package_specs) with 
   | Some x ->
     from_json suffix x 
   | None ->  default_package_specs suffix
