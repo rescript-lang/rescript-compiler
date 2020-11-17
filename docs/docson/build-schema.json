@@ -406,7 +406,7 @@
         },
         "pinned-dependencies" : {
             "$ref": "#/definitions/dependencies",
-            "description": "Those dependencies are pinned so that their dev dependencies will get rebuilt"
+            "description": "Those dependencies are pinned (since version 8.4)"
         },
         "generators": {
             "type": "array",
