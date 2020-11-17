@@ -265,7 +265,7 @@ let rec
     let cur_globbed_dirs = ref false in 
     let has_generators =
       match cxt with 
-      | {cut_generators = false; package_kind = Toplevel } -> true
+      | {cut_generators = false; package_kind = Toplevel | Pinned_dependency _ } -> true
       | {cut_generators = false; package_kind = Dependency _} 
       | {cut_generators = true ; _ } -> false  
     in          
@@ -352,7 +352,7 @@ and parsing_single_source ({package_kind; dev_index ; cwd} as cxt ) (x : Ext_jso
     | Dependency _ , true ->  
       Bsb_file_groups.empty
     | Dependency _, false  
-    | Toplevel, _ ->
+    | (Toplevel | Pinned_dependency _), _ ->
       parsing_source_dir_map 
         {cxt with 
          cwd = Ext_path.concat cwd (Ext_path.simple_convert_node_path_to_os_path dir)}
@@ -369,7 +369,7 @@ and parsing_single_source ({package_kind; dev_index ; cwd} as cxt ) (x : Ext_jso
     | Dependency _ , true -> 
       Bsb_file_groups.empty 
     | Dependency _, false 
-    | Toplevel, _ ->       
+    | (Toplevel | Pinned_dependency _), _ ->       
       let dir = 
         match map.?(Bsb_build_schemas.dir) with 
         | Some (Str{str}) -> 

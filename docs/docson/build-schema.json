@@ -404,6 +404,10 @@
             "$ref": "#/definitions/dependencies",
             "description": "OCaml/Reason dev dependencies of the library, like in package.json. Currently searches in `node_modules`"
         },
+        "pinned-dependencies" : {
+            "$ref": "#/definitions/dependencies",
+            "description": "Those dependencies are pinned so that their dev dependencies will get rebuilt"
+        },
         "generators": {
             "type": "array",
             "items": {

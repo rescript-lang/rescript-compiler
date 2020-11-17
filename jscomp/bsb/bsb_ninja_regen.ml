@@ -72,6 +72,7 @@ let regenerate_ninja
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
+    | Pinned_dependency _ (* FIXME: seems need to be watched *)
     | Dependency _ -> ())    
     ;
 

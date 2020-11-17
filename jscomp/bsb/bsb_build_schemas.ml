@@ -36,6 +36,7 @@ let refmt = "refmt"
 let bs_external_includes = "bs-external-includes"
 let bs_lib_dir = "bs-lib-dir"
 let bs_dependencies = "bs-dependencies"
+let pinned_dependencies = "pinned-dependencies"
 let bs_dev_dependencies = "bs-dev-dependencies"
 
 

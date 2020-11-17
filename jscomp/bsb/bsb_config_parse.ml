@@ -44,14 +44,6 @@ let (.?()) = Map_string.find_opt
 
 
 
-let package_specs_from_bsconfig () = 
-  let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
-  begin match json with
-    | Obj {map} ->
-      Bsb_package_specs.from_map map
-    | _ -> assert false
-  end
-
 
 
 
@@ -228,6 +220,13 @@ let extract_ignored_dirs (map : json_map) : Set_string .t =
     Set_string.of_list (Bsb_build_util.get_list_string content)
   | Some config -> 
     Bsb_exception.config_error config "expect an array of string"  
+let extract_pinned_dependencies (map : json_map) : Set_string.t = 
+  match map.?(Bsb_build_schemas.pinned_dependencies) with 
+  | None -> Set_string.empty
+  | Some (Arr {content}) -> 
+    Set_string.of_list (Bsb_build_util.get_list_string content)
+  | Some config -> 
+    Bsb_exception.config_error config "expect an array of string"    
 
 let extract_generators (map : json_map) = 
   let generators = ref Map_string.empty in 
@@ -368,10 +367,13 @@ let interpret_json
     let bs_dependencies = extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies in    
     let bs_dev_dependencies = 
       match package_kind with 
-      | Toplevel ->
+      | Toplevel 
+      | Pinned_dependency _ ->
         extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dev_dependencies
       | Dependency _ -> [] in 
-    begin match Map_string.find_opt map Bsb_build_schemas.sources with 
+    let pinned_dependencies = 
+      extract_pinned_dependencies map in   
+    begin match map.?(Bsb_build_schemas.sources) with 
       | Some sources -> 
         let cut_generators = 
           extract_boolean map Bsb_build_schemas.cut_generators false in 
@@ -383,6 +385,7 @@ let interpret_json
             ~namespace
             sources in         
         {
+          pinned_dependencies;  
           gentype_config;
           package_name ;
           namespace ;    
@@ -407,6 +410,7 @@ let interpret_json
           package_specs = 
             (match package_kind with 
              | Toplevel ->  Bsb_package_specs.from_map map                
+             | Pinned_dependency x
              | Dependency x -> x);          
           file_groups = groups; 
           files_to_install = Queue.create ();
@@ -423,3 +427,13 @@ let interpret_json
     end
   | _ -> 
     Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"
+
+
+let package_specs_from_bsconfig () = 
+  let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
+  begin match json with
+    | Obj {map} ->
+      Bsb_package_specs.from_map map,
+      extract_pinned_dependencies map
+    | _ -> assert false
+  end

@@ -1899,6 +1899,7 @@ let refmt = "refmt"
 let bs_external_includes = "bs-external-includes"
 let bs_lib_dir = "bs-lib-dir"
 let bs_dependencies = "bs-dependencies"
+let pinned_dependencies = "pinned-dependencies"
 let bs_dev_dependencies = "bs-dev-dependencies"
 
 
@@ -7215,6 +7216,7 @@ module Spec_set = Set.Make( struct type t = spec
 
 type t = Spec_set.t 
 
+let (.?()) = Map_string.find_opt 
 
 let bad_module_format_message_exn ~loc format =
   Bsb_exception.errorf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of:  %s, %s or %s"
@@ -7263,13 +7265,13 @@ and from_json_single suffix (x : Ext_json_types.t) : spec =
     begin match Map_string.find_exn map "module" with
       | Str {str = format} ->
         let in_source = 
-          match Map_string.find_opt map  Bsb_build_schemas.in_source with
+          match map.?(Bsb_build_schemas.in_source) with
           | Some (True _) -> true
           | Some _
           | None -> false
         in        
         let suffix = 
-          match Map_string.find_opt map  "suffix" with
+          match map.?("suffix") with
           | Some (Str {str = suffix; loc}) ->
             let s = Ext_js_suffix.of_string suffix in 
             if s = Unknown_extension then 
@@ -7360,7 +7362,7 @@ let list_dirs_by
 type json_map = Ext_json_types.t Map_string.t 
 
 let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
-  match Map_string.find_opt map Bsb_build_schemas.suffix with 
+  match map.?(Bsb_build_schemas.suffix) with 
   | None -> Js  
   | Some (Str {str; loc}) -> 
     let s =  Ext_js_suffix.of_string str  in 
@@ -7374,7 +7376,7 @@ let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =
 
 let from_map map =  
   let suffix = extract_bs_suffix_exn map in   
-  match Map_string.find_opt map Bsb_build_schemas.package_specs with 
+  match map.?(Bsb_build_schemas.package_specs) with 
   | Some x ->
     from_json suffix x 
   | None ->  default_package_specs suffix
@@ -7411,6 +7413,7 @@ module Bsb_package_kind
 type t = 
     | Toplevel
     | Dependency of Bsb_package_specs.t 
+    | Pinned_dependency of Bsb_package_specs.t 
         (*  This package specs comes from the toplevel to 
             override the current settings
         *)
@@ -7643,7 +7646,8 @@ let from_map (m : Ext_json_types.t Map_string.t) =
 
 let to_bsb_string ~(package_kind: Bsb_package_kind.t) warning =
   match package_kind with 
-  | Toplevel -> 
+  | Toplevel 
+  | Pinned_dependency _ -> 
     (match warning with
     | None -> Ext_string.empty
     | Some warning ->     
@@ -7731,6 +7735,7 @@ type t =
     pp_file : string option;
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
+    pinned_dependencies : Set_string.t;
     built_in_dependency : dependency option; 
     warning : Bsb_warning.t;
     (*TODO: maybe we should always resolve bs-platform 
@@ -10593,6 +10598,7 @@ end = struct
 type build_generator = Bsb_file_groups.build_generator
 
 
+let (.?()) = Map_string.find_opt
 
 (* type file_group = Bsb_file_groups.file_group *)
 
@@ -10645,7 +10651,7 @@ let collect_pub_modules
   !set
 
 let extract_pub (input : Ext_json_types.t Map_string.t) (cur_sources : Bsb_db.map) : Bsb_file_groups.public =   
-  match Map_string.find_opt input  Bsb_build_schemas.public with 
+  match input.?(Bsb_build_schemas.public) with 
   | Some ((Str({str = s}) as x)) ->  
     if s = Bsb_build_schemas.export_all then Export_all  else 
     if s = Bsb_build_schemas.export_none then Export_none else 
@@ -10658,7 +10664,7 @@ let extract_pub (input : Ext_json_types.t Map_string.t) (cur_sources : Bsb_db.ma
     Export_all 
 
 let extract_resources (input : Ext_json_types.t Map_string.t) : string list =   
-  match Map_string.find_opt input  Bsb_build_schemas.resources with 
+  match input.?(Bsb_build_schemas.resources) with 
   | Some (Arr x) ->
     Bsb_build_util.get_list_string x.content
   | Some config -> 
@@ -10697,14 +10703,14 @@ let extract_input_output (edge : Ext_json_types.t) : string list * string list =
 type json_map = Ext_json_types.t Map_string.t
 
 let extract_generators (input : json_map) : build_generator list  =
-  match Map_string.find_opt input  Bsb_build_schemas.generators with
+  match input.?(Bsb_build_schemas.generators) with
   | Some (Arr { content ; loc_start= _}) ->
     (* Need check is dev build or not *)
     Ext_array.fold_left content [] (fun acc x ->
         match x with
         | Obj { map } ->
-          (match Map_string.find_opt map Bsb_build_schemas.name ,
-                 Map_string.find_opt map Bsb_build_schemas.edge
+          (match map.?(Bsb_build_schemas.name) ,
+                 map.?(Bsb_build_schemas.edge)
            with
            | Some (Str command), Some edge ->
              let output, input = extract_input_output edge in 
@@ -10718,11 +10724,11 @@ let extract_generators (input : json_map) : build_generator list  =
 
 let extract_predicate (m : json_map)  : string -> bool =
   let excludes = 
-    match Map_string.find_opt m  Bsb_build_schemas.excludes with 
+    match m.?(Bsb_build_schemas.excludes) with 
     | None -> []   
     | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
     | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
-  let slow_re = Map_string.find_opt m Bsb_build_schemas.slow_re in 
+  let slow_re = m.?(Bsb_build_schemas.slow_re) in 
   match slow_re, excludes with 
   | Some (Str {str = s}), [] -> 
     let re = Str.regexp s  in 
@@ -10830,12 +10836,12 @@ let rec
     let cur_globbed_dirs = ref false in 
     let has_generators =
       match cxt with 
-      | {cut_generators = false; package_kind = Toplevel } -> true
+      | {cut_generators = false; package_kind = Toplevel | Pinned_dependency _ } -> true
       | {cut_generators = false; package_kind = Dependency _} 
       | {cut_generators = true ; _ } -> false  
     in          
     let scanned_generators = extract_generators input in        
-    let sub_dirs_field = Map_string.find_opt input  Bsb_build_schemas.subdirs in 
+    let sub_dirs_field = input.?(Bsb_build_schemas.subdirs) in 
     let base_name_array = 
         lazy (cur_globbed_dirs := true ; Sys.readdir (Filename.concat cxt.root dir)) in 
     let output_sources = 
@@ -10843,7 +10849,7 @@ let rec
         Map_string.empty (fun acc o -> 
             Bsb_db_util.add_basename ~dir acc o) in 
     let sources = 
-      match Map_string.find_opt input Bsb_build_schemas.files with 
+      match input.?(Bsb_build_schemas.files) with 
       | None ->  
         (** We should avoid temporary files *)
         Ext_array.fold_left (Lazy.force base_name_array) output_sources (fun acc basename -> 
@@ -10917,7 +10923,7 @@ and parsing_single_source ({package_kind; dev_index ; cwd} as cxt ) (x : Ext_jso
     | Dependency _ , true ->  
       Bsb_file_groups.empty
     | Dependency _, false  
-    | Toplevel, _ ->
+    | (Toplevel | Pinned_dependency _), _ ->
       parsing_source_dir_map 
         {cxt with 
          cwd = Ext_path.concat cwd (Ext_path.simple_convert_node_path_to_os_path dir)}
@@ -10925,7 +10931,7 @@ and parsing_single_source ({package_kind; dev_index ; cwd} as cxt ) (x : Ext_jso
      end   
   | Obj {map} ->
     let current_dir_index = 
-      match Map_string.find_opt map Bsb_build_schemas.type_ with 
+      match map.?(Bsb_build_schemas.type_) with 
       | Some (Str {str="dev"}) -> 
         true
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
@@ -10934,9 +10940,9 @@ and parsing_single_source ({package_kind; dev_index ; cwd} as cxt ) (x : Ext_jso
     | Dependency _ , true -> 
       Bsb_file_groups.empty 
     | Dependency _, false 
-    | Toplevel, _ ->       
+    | (Toplevel | Pinned_dependency _), _ ->       
       let dir = 
-        match Map_string.find_opt map Bsb_build_schemas.dir with 
+        match map.?(Bsb_build_schemas.dir) with 
         | Some (Str{str}) -> 
           Ext_path.simple_convert_node_path_to_os_path str 
         | Some x -> Bsb_exception.config_error x "dir expected to be a string"
@@ -11005,11 +11011,11 @@ and walk_single_source cxt (x : Ext_json_types.t) =
     walk_source_dir_map 
     {cxt with cwd = Ext_path.concat cxt.cwd dir } None 
   | Obj {map} ->       
-    begin match Map_string.find_opt map Bsb_build_schemas.dir with 
+    begin match map.?(Bsb_build_schemas.dir) with 
     | Some (Str{str}) -> 
       let dir = Ext_path.simple_convert_node_path_to_os_path str  in 
       walk_source_dir_map 
-      {cxt with cwd = Ext_path.concat cxt.cwd dir} (Map_string.find_opt map Bsb_build_schemas.subdirs)
+      {cxt with cwd = Ext_path.concat cxt.cwd dir} map.?(Bsb_build_schemas.subdirs)
     | _ -> ()
     end
   | _ -> ()  
@@ -11052,22 +11058,22 @@ let clean_re_js root =
       (Filename.concat root Literals.bsconfig_json) with 
   | Obj { map } -> 
     let ignored_dirs = 
-      match Map_string.find_opt map Bsb_build_schemas.ignored_dirs with       
+      match map .?(Bsb_build_schemas.ignored_dirs) with       
       | Some (Arr {content = x}) -> Set_string.of_list (Bsb_build_util.get_list_string x )
       | Some _
       | None -> Set_string.empty
     in
     let gentype_language =
-      match Map_string.find_opt map Bsb_build_schemas.gentypeconfig with
+      match map.?(Bsb_build_schemas.gentypeconfig) with
         | None -> ""
         | Some (Obj { map }) ->
-          (match Map_string.find_opt map Bsb_build_schemas.language with
+          (match map.?(Bsb_build_schemas.language) with
           | None -> ""
           | Some (Str {str}) -> str
           | Some _ -> "")
         | Some _ -> ""
     in
-    Ext_option.iter (Map_string.find_opt map Bsb_build_schemas.sources) begin fun config -> 
+    Ext_option.iter map.?(Bsb_build_schemas.sources) begin fun config -> 
       try (
           walk_sources { root ;                           
                          traverse = true; 
@@ -11359,7 +11365,8 @@ module Bsb_config_parse : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 val package_specs_from_bsconfig : 
-    unit -> Bsb_package_specs.t
+    unit -> 
+    Bsb_package_specs.t * Set_string.t
 
 
 
@@ -11418,16 +11425,9 @@ let (|?)  m (key, cb) =
 
 
 
+let (.?()) = Map_string.find_opt
 
 
-
-let package_specs_from_bsconfig () = 
-  let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
-  begin match json with
-    | Obj {map} ->
-      Bsb_package_specs.from_map map
-    | _ -> assert false
-  end
 
 
 
@@ -11439,7 +11439,7 @@ let package_specs_from_bsconfig () =
 let extract_package_name_and_namespace
     (map : json_map) : string * string option =   
   let package_name = 
-    match Map_string.find_opt map Bsb_build_schemas.name with 
+    match  map.?(Bsb_build_schemas.name) with 
 
     | Some (Str { str = "_" } as config)
       -> 
@@ -11454,7 +11454,7 @@ let extract_package_name_and_namespace
         "field name is required"
   in 
   let namespace = 
-    match Map_string.find_opt map Bsb_build_schemas.namespace with 
+    match map.?(Bsb_build_schemas.namespace) with 
     | None 
     | Some (False _) 
       -> None 
@@ -11493,7 +11493,7 @@ let check_version_exit (map : json_map) stdlib_path =
   | _ -> assert false
 
 let check_stdlib (map : json_map) cwd (*built_in_package*) =  
-  match Map_string.find_opt map Bsb_build_schemas.use_stdlib with      
+  match map.?( Bsb_build_schemas.use_stdlib) with      
   | Some (False _) -> None    
   | None 
   | Some _ ->
@@ -11521,11 +11521,11 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
 
 let extract_gentype_config (map : json_map) cwd 
   : Bsb_config_types.gentype_config option = 
-  match Map_string.find_opt map Bsb_build_schemas.gentypeconfig with 
+  match map.?(Bsb_build_schemas.gentypeconfig) with 
   | None -> None
   | Some (Obj {map = obj}) -> 
     Some { path = 
-             match Map_string.find_opt obj Bsb_build_schemas.path with
+             match obj.?(Bsb_build_schemas.path) with
              | None -> 
                (Bsb_build_util.resolve_bsb_magic_file
                  ~cwd ~desc:"gentype.exe"
@@ -11543,7 +11543,7 @@ let extract_gentype_config (map : json_map) cwd
       config "gentypeconfig expect an object"  
 
 let extract_refmt (map : json_map) cwd : Bsb_config_types.refmt =      
-  match Map_string.find_opt map Bsb_build_schemas.refmt with 
+  match map.?(Bsb_build_schemas.refmt) with 
   | Some (Flo {flo} as config) -> 
     begin match flo with 
       | "3" -> None
@@ -11560,14 +11560,14 @@ let extract_refmt (map : json_map) cwd : Bsb_config_types.refmt =
     None
 
 let extract_string (map : json_map) (field : string) cb = 
-  match Map_string.find_opt map field with 
+  match  map.?( field) with 
   | None -> None 
   | Some (Str{str}) -> cb str 
   | Some config -> 
     Bsb_exception.config_error config (field ^ " expect a string" )
   
 let extract_boolean (map : json_map) (field : string) (default : bool) : bool = 
-  match Map_string.find_opt map field with 
+  match map.?(field) with 
   | None -> default 
   | Some (True _ ) -> true
   | Some (False _) -> false 
@@ -11578,7 +11578,7 @@ let extract_reason_react_jsx (map : json_map) =
   let default : Bsb_config_types.reason_react_jsx option ref = ref None in 
   map
   |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
-      match Map_string.find_opt m Bsb_build_schemas.react_jsx with 
+      match m.?(Bsb_build_schemas.react_jsx) with 
       | Some (Flo{loc; flo}) -> 
         begin match flo with 
           | "3" -> 
@@ -11593,30 +11593,37 @@ let extract_reason_react_jsx (map : json_map) =
   !default
 
 let extract_warning (map : json_map) = 
-  match Map_string.find_opt map Bsb_build_schemas.warnings with 
+  match map.?(Bsb_build_schemas.warnings) with 
   | None -> Bsb_warning.use_default 
   | Some (Obj {map }) -> Bsb_warning.from_map map 
   | Some config -> Bsb_exception.config_error config "expect an object"
 
-let extract_ignored_dirs (map : json_map) =   
-  match Map_string.find_opt map Bsb_build_schemas.ignored_dirs with 
+let extract_ignored_dirs (map : json_map) : Set_string .t =   
+  match map.?(Bsb_build_schemas.ignored_dirs) with 
   | None -> Set_string.empty
   | Some (Arr {content}) -> 
     Set_string.of_list (Bsb_build_util.get_list_string content)
   | Some config -> 
     Bsb_exception.config_error config "expect an array of string"  
+let extract_pinned_dependencies (map : json_map) : Set_string.t = 
+  match map.?(Bsb_build_schemas.pinned_dependencies) with 
+  | None -> Set_string.empty
+  | Some (Arr {content}) -> 
+    Set_string.of_list (Bsb_build_util.get_list_string content)
+  | Some config -> 
+    Bsb_exception.config_error config "expect an array of string"    
 
 let extract_generators (map : json_map) = 
   let generators = ref Map_string.empty in 
-  (match Map_string.find_opt map Bsb_build_schemas.generators with 
+  (match map.?(Bsb_build_schemas.generators) with 
    | None -> ()
    | Some (Arr {content = s}) -> 
      generators :=
        Ext_array.fold_left s Map_string.empty (fun acc json -> 
            match json with 
            | Obj {map = m ; loc}  -> 
-             begin match Map_string.find_opt  m Bsb_build_schemas.name,
-                         Map_string.find_opt  m Bsb_build_schemas.command with 
+             begin match m.?(Bsb_build_schemas.name),
+                         m.?(Bsb_build_schemas.command) with 
              | Some (Str {str = name}), Some ( Str {str = command}) -> 
                Map_string.add acc name command 
              | _, _ -> 
@@ -11631,7 +11638,7 @@ let extract_generators (map : json_map) =
 
 let extract_dependencies (map : json_map) cwd (field : string )
   : Bsb_config_types.dependencies =   
-  match Map_string.find_opt map field with 
+  match map.?(field) with 
   | None -> []
   | Some (Arr ({content = s})) -> 
     Ext_list.map (Bsb_build_util.get_list_string s) (fun s -> resolve_package cwd (Bsb_pkg_types.string_as_package s))
@@ -11641,7 +11648,7 @@ let extract_dependencies (map : json_map) cwd (field : string )
   
 (* return an empty array if not found *)     
 let extract_string_list (map : json_map) (field : string) : string list = 
-  match Map_string.find_opt map field with 
+  match map.?(field) with 
   | None -> []
   | Some (Arr {content = s}) -> 
     Bsb_build_util.get_list_string s 
@@ -11652,7 +11659,7 @@ let extract_ppx
   (map : json_map) 
   (field : string) 
   ~(cwd : string) : Bsb_config_types.ppx list =     
-  match Map_string.find_opt map field with 
+  match map.?(field) with 
   | None -> []
   | Some (Arr {content }) -> 
     let resolve s = 
@@ -11745,10 +11752,13 @@ let interpret_json
     let bs_dependencies = extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies in    
     let bs_dev_dependencies = 
       match package_kind with 
-      | Toplevel ->
+      | Toplevel 
+      | Pinned_dependency _ ->
         extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dev_dependencies
       | Dependency _ -> [] in 
-    begin match Map_string.find_opt map Bsb_build_schemas.sources with 
+    let pinned_dependencies = 
+      extract_pinned_dependencies map in   
+    begin match map.?(Bsb_build_schemas.sources) with 
       | Some sources -> 
         let cut_generators = 
           extract_boolean map Bsb_build_schemas.cut_generators false in 
@@ -11760,6 +11770,7 @@ let interpret_json
             ~namespace
             sources in         
         {
+          pinned_dependencies;  
           gentype_config;
           package_name ;
           namespace ;    
@@ -11784,6 +11795,7 @@ let interpret_json
           package_specs = 
             (match package_kind with 
              | Toplevel ->  Bsb_package_specs.from_map map                
+             | Pinned_dependency x
              | Dependency x -> x);          
           file_groups = groups; 
           files_to_install = Queue.create ();
@@ -11800,6 +11812,16 @@ let interpret_json
     end
   | _ -> 
     Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"
+
+
+let package_specs_from_bsconfig () = 
+  let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
+  begin match json with
+    | Obj {map} ->
+      Bsb_package_specs.from_map map,
+      extract_pinned_dependencies map
+    | _ -> assert false
+  end
 
 end
 module Ext_io : sig 
@@ -14200,6 +14222,7 @@ let regenerate_ninja
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
+    | Pinned_dependency _ (* FIXME: seems need to be watched *)
     | Dependency _ -> ())    
     ;
 
@@ -16407,7 +16430,7 @@ let (//) = Ext_path.combine
 let vendor_ninja = Bsb_global_paths.vendor_ninja 
 
 let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : string array) =
-  let deps =
+  let deps, pinned_dependencies =
     match config with
     | None ->
       (* When this running bsb does not read bsconfig.json,
@@ -16415,7 +16438,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
          it wants
       *)
       Bsb_config_parse.package_specs_from_bsconfig ()
-    | Some config -> config.package_specs in
+    | Some config -> config.package_specs, config.pinned_dependencies in
   let args = 
     if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
     else Array.append [|vendor_ninja|] ninja_args
@@ -16439,12 +16462,15 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
       | Expect_none -> ()
       | Expect_name s ->
         begin 
-          print_endline ("Dependency on " ^ s );
+          let is_pinned =  Set_string.mem pinned_dependencies s in 
+          (if is_pinned then  
+            print_endline ("Dependency pinned on " ^ s )
+          else print_endline ("Dependency on " ^ s ));
           let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
           Bsb_build_util.mkp lib_bs_dir;
           let _config : _ option = 
             Bsb_ninja_regen.regenerate_ninja 
-              ~package_kind:(Dependency deps) 
+              ~package_kind:(if is_pinned then Pinned_dependency deps else Dependency deps) 
               ~per_proj_dir:proj_dir  ~forced:false in 
           let command = 
             {Bsb_unix.cmd = vendor_ninja;

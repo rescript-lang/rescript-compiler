@@ -23,7 +23,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 val package_specs_from_bsconfig : 
-    unit -> Bsb_package_specs.t
+    unit -> 
+    Bsb_package_specs.t * Set_string.t
 
 
 
