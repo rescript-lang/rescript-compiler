@@ -29,7 +29,7 @@ let (//) = Ext_path.combine
 let vendor_ninja = Bsb_global_paths.vendor_ninja 
 
 let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : string array) =
-  let deps =
+  let deps, pinned_dependencies =
     match config with
     | None ->
       (* When this running bsb does not read bsconfig.json,
@@ -37,7 +37,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
          it wants
       *)
       Bsb_config_parse.package_specs_from_bsconfig ()
-    | Some config -> config.package_specs in
+    | Some config -> config.package_specs, config.pinned_dependencies in
   let args = 
     if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
     else Array.append [|vendor_ninja|] ninja_args
@@ -61,12 +61,15 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
       | Expect_none -> ()
       | Expect_name s ->
         begin 
-          print_endline ("Dependency on " ^ s );
+          let is_pinned =  Set_string.mem pinned_dependencies s in 
+          (if is_pinned then  
+            print_endline ("Dependency pinned on " ^ s )
+          else print_endline ("Dependency on " ^ s ));
           let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
           Bsb_build_util.mkp lib_bs_dir;
           let _config : _ option = 
             Bsb_ninja_regen.regenerate_ninja 
-              ~package_kind:(Dependency deps) 
+              ~package_kind:(if is_pinned then Pinned_dependency deps else Dependency deps) 
               ~per_proj_dir:proj_dir  ~forced:false in 
           let command = 
             {Bsb_unix.cmd = vendor_ninja;

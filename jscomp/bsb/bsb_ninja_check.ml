@@ -44,6 +44,7 @@ type check_result =
   | Bsb_source_directory_changed
   | Bsb_bsc_version_mismatch
   | Bsb_forced
+  | Bsb_package_kind_inconsistent
   | Other of string
 
 let pp_check_result fmt (check_resoult : check_result) =
@@ -57,6 +58,8 @@ let pp_check_result fmt (check_resoult : check_result) =
         "Bsc or bsb version mismatch"
       | Bsb_forced ->
         "Bsb forced rebuild"
+      | Bsb_package_kind_inconsistent -> 
+        "The package was built in different mode"  
       | Other s -> s)
 
 let rec check_aux cwd (xs : string list)  =
@@ -94,12 +97,18 @@ and check_global rest =
 
 
 let record 
+  ~(package_kind : Bsb_package_kind.t)
   ~per_proj_dir ~file  
   ~(config:Bsb_config_types.t) (file_or_dirs : string list) : unit =
   let _ = config in 
   let buf = Ext_buffer.create 1_000 in   
   Ext_buffer.add_string_char buf Bs_version.version '\n';  
   Ext_buffer.add_string_char buf per_proj_dir '\n';
+  (match package_kind with 
+  | Toplevel -> Ext_buffer.add_string buf "0\n"
+  | Dependency _ -> Ext_buffer.add_string buf "1\n"
+  | Pinned_dependency _ -> Ext_buffer.add_string buf "2\n"
+  );
   Ext_list.iter file_or_dirs (fun f -> 
     Ext_buffer.add_string_char buf f '\t'; 
     Ext_buffer.add_string_char buf 
@@ -126,18 +135,29 @@ let record
     Even forced, we still need walk through a little
     bit in case we found a different version of compiler
 *)
-let check ~(per_proj_dir:string) ~forced ~file : check_result =
+let check 
+  ~(package_kind : Bsb_package_kind.t)
+  ~(per_proj_dir:string) ~forced ~file : check_result =
   match  open_in_bin file with   (* Windows binary mode*)    
   | exception _ -> Bsb_file_not_exist
   | ic ->
     match List.rev (Ext_io.rev_lines_of_chann ic) with
     | exception _ -> Bsb_file_corrupted 
-    | version :: source_directory :: dir_or_files ->
+    | version :: source_directory ::package_kind_str:: dir_or_files ->
       if version <> Bs_version.version then Bsb_bsc_version_mismatch
       else 
         if per_proj_dir <> source_directory then Bsb_source_directory_changed else
         if forced then Bsb_forced (* No need walk through *)
-        else begin 
+        else if 
+          
+          not (match package_kind, package_kind_str with 
+          | Toplevel, "0" 
+          | Dependency _, "1"
+          | Pinned_dependency _, "2" -> true 
+          | _ -> false ) then 
+          Bsb_package_kind_inconsistent
+        else
+        begin 
           try
             check_aux per_proj_dir dir_or_files 
           with e ->
