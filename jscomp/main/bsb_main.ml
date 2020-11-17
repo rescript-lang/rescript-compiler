@@ -170,7 +170,7 @@ let () =
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
       Bsb_ninja_regen.regenerate_ninja 
-        ~toplevel_package_specs:Toplevel 
+        ~package_kind:Toplevel 
         ~forced:false 
         ~per_proj_dir:Bsb_global_paths.cwd  |> ignore;
       ninja_command_exit  [||] 
@@ -199,7 +199,7 @@ let () =
               else
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
-                     ~toplevel_package_specs:Toplevel 
+                     ~package_kind:Toplevel 
                      ~forced:force_regenerate ~per_proj_dir:Bsb_global_paths.cwd   in
                  if make_world then begin
                    Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||]
@@ -231,7 +231,7 @@ let () =
             | _ ->  
             let config_opt = 
               (Bsb_ninja_regen.regenerate_ninja 
-                ~toplevel_package_specs:Toplevel 
+                ~package_kind:Toplevel 
                 ~per_proj_dir:Bsb_global_paths.cwd 
                 ~forced:!force_regenerate) in
             (* [-make-world] should never be combined with [-package-specs] *)

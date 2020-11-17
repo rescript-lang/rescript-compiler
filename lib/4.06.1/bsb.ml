@@ -14120,7 +14120,7 @@ module Bsb_ninja_regen : sig
     otherwise return Some info
 *)
 val regenerate_ninja :
-  toplevel_package_specs:Bsb_package_kind.t ->
+  package_kind:Bsb_package_kind.t ->
   forced: bool -> 
   per_proj_dir:string -> 
   Bsb_config_types.t option 
@@ -14159,7 +14159,7 @@ let (//) = Ext_path.combine
     otherwise return Some info
 *)
 let regenerate_ninja 
-    ~(toplevel_package_specs : Bsb_package_kind.t)
+    ~(package_kind : Bsb_package_kind.t)
     ~forced ~per_proj_dir
   : Bsb_config_types.t option =  
   let lib_artifacts_dir = Bsb_config.lib_bs in
@@ -14187,7 +14187,7 @@ let regenerate_ninja
     
     let config : Bsb_config_types.t = 
       Bsb_config_parse.interpret_json 
-        ~package_kind:toplevel_package_specs
+        ~package_kind
         ~per_proj_dir in 
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
     Bsb_build_util.mkp lib_bs_dir;         
@@ -14195,7 +14195,7 @@ let regenerate_ninja
       (fun x -> 
         let dir = per_proj_dir // x in (*Unix.EEXIST error*)
         if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
-    (match toplevel_package_specs with 
+    (match package_kind with 
     | Toplevel -> 
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
@@ -14206,7 +14206,7 @@ let regenerate_ninja
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
        config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~per_proj_dir  ~toplevel:toplevel_package_specs config ;                 
+      ~per_proj_dir  ~toplevel:package_kind config ;                 
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~per_proj_dir ~config ~file:output_deps 
@@ -16444,7 +16444,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
           Bsb_build_util.mkp lib_bs_dir;
           let _config : _ option = 
             Bsb_ninja_regen.regenerate_ninja 
-              ~toplevel_package_specs:(Dependency deps) 
+              ~package_kind:(Dependency deps) 
               ~per_proj_dir:proj_dir  ~forced:false in 
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
@@ -16885,7 +16885,7 @@ let () =
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
       Bsb_ninja_regen.regenerate_ninja 
-        ~toplevel_package_specs:Toplevel 
+        ~package_kind:Toplevel 
         ~forced:false 
         ~per_proj_dir:Bsb_global_paths.cwd  |> ignore;
       ninja_command_exit  [||] 
@@ -16914,7 +16914,7 @@ let () =
               else
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
-                     ~toplevel_package_specs:Toplevel 
+                     ~package_kind:Toplevel 
                      ~forced:force_regenerate ~per_proj_dir:Bsb_global_paths.cwd   in
                  if make_world then begin
                    Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||]
@@ -16946,7 +16946,7 @@ let () =
             | _ ->  
             let config_opt = 
               (Bsb_ninja_regen.regenerate_ninja 
-                ~toplevel_package_specs:Toplevel 
+                ~package_kind:Toplevel 
                 ~per_proj_dir:Bsb_global_paths.cwd 
                 ~forced:!force_regenerate) in
             (* [-make-world] should never be combined with [-package-specs] *)
