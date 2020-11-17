@@ -39,6 +39,7 @@
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_ninja_rule.mli
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_ninja_targets.ml
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_ninja_targets.mli
+../lib/4.06.1/bsb.ml: ./bsb/bsb_package_kind.ml
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_package_specs.ml
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_package_specs.mli
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_parse_sources.ml

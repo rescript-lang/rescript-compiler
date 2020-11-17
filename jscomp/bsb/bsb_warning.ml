@@ -93,9 +93,10 @@ let from_map (m : Ext_json_types.t Map_string.t) =
     Some {number; error }
 
 
-let to_bsb_string ~toplevel warning =
-  if toplevel then
-    match warning with
+let to_bsb_string ~(toplevel: Bsb_package_kind.t) warning =
+  match toplevel with 
+  | Toplevel -> 
+    (match warning with
     | None -> Ext_string.empty
     | Some warning ->     
       (match warning.number with
@@ -112,6 +113,6 @@ let to_bsb_string ~toplevel warning =
           " -warn-error " ^ y
         | Warn_error_false ->
           Ext_string.empty
-      )
-  else " -w a" 
+      ))
+  | Dependency _ ->  " -w a" 
   (* TODO: this is the current default behavior *)
