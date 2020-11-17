@@ -30,7 +30,7 @@
     all relative paths, this function will do the IO
 *)
 val scan :
-  toplevel:Bsb_package_kind.t -> 
+  package_kind:Bsb_package_kind.t -> 
   root: string ->  
   cut_generators: bool -> 
   namespace : string option -> 

@@ -10547,7 +10547,7 @@ module Bsb_parse_sources : sig
     all relative paths, this function will do the IO
 *)
 val scan :
-  toplevel:Bsb_package_kind.t -> 
+  package_kind:Bsb_package_kind.t -> 
   root: string ->  
   cut_generators: bool -> 
   namespace : string option -> 
@@ -10610,7 +10610,7 @@ let errorf x fmt =
   Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt 
 
 type cxt = {
-  toplevel : Bsb_package_kind.t ;
+  package_kind : Bsb_package_kind.t ;
   dev_index : bool; 
   cwd : string ;
   root : string;
@@ -10830,8 +10830,8 @@ let rec
     let cur_globbed_dirs = ref false in 
     let has_generators =
       match cxt with 
-      | {cut_generators = false; toplevel = Toplevel } -> true
-      | {cut_generators = false; toplevel = Dependency _} 
+      | {cut_generators = false; package_kind = Toplevel } -> true
+      | {cut_generators = false; package_kind = Dependency _} 
       | {cut_generators = true ; _ } -> false  
     in          
     let scanned_generators = extract_generators input in        
@@ -10909,11 +10909,11 @@ let rec
       children
 
 
-and parsing_single_source ({toplevel; dev_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_single_source ({package_kind; dev_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    begin match toplevel, dev_index with 
+    begin match package_kind, dev_index with 
     | Dependency _ , true ->  
       Bsb_file_groups.empty
     | Dependency _, false  
@@ -10930,7 +10930,7 @@ and parsing_single_source ({toplevel; dev_index ; cwd} as cxt ) (x : Ext_json_ty
         true
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dev_index in 
-    begin match toplevel, current_dir_index with 
+    begin match package_kind, current_dir_index with 
     | Dependency _ , true -> 
       Bsb_file_groups.empty 
     | Dependency _, false 
@@ -10964,7 +10964,7 @@ and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  =
 
 
 let scan 
-  ~toplevel 
+  ~package_kind 
   ~root 
   ~cut_generators 
   ~namespace 
@@ -10972,7 +10972,7 @@ let scan
   x : t  = 
   parse_sources {
     ignored_dirs;
-    toplevel;
+    package_kind;
     dev_index = false;
     cwd = Filename.current_dir_name;
     root ;
@@ -11754,7 +11754,7 @@ let interpret_json
           extract_boolean map Bsb_build_schemas.cut_generators false in 
         let groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
-            ~toplevel:package_kind
+            ~package_kind
             ~root: per_proj_dir
             ~cut_generators
             ~namespace

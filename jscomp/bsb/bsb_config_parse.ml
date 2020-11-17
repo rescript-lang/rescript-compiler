@@ -376,7 +376,7 @@ let interpret_json
           extract_boolean map Bsb_build_schemas.cut_generators false in 
         let groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
-            ~toplevel:package_kind
+            ~package_kind
             ~root: per_proj_dir
             ~cut_generators
             ~namespace
