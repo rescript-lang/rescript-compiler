@@ -31,10 +31,9 @@ let (//) = Ext_path.combine
     otherwise return Some info
 *)
 let regenerate_ninja 
-    ~(toplevel_package_specs : Bsb_package_specs.t option)
+    ~(package_kind : Bsb_package_kind.t)
     ~forced ~per_proj_dir
   : Bsb_config_types.t option =  
-  let toplevel = toplevel_package_specs = None in 
   let lib_artifacts_dir = Bsb_config.lib_bs in
   let lib_bs_dir =  per_proj_dir // lib_artifacts_dir  in 
   let output_deps = lib_bs_dir // bsdeps in
@@ -60,7 +59,7 @@ let regenerate_ninja
     
     let config : Bsb_config_types.t = 
       Bsb_config_parse.interpret_json 
-        ~toplevel_package_specs
+        ~package_kind
         ~per_proj_dir in 
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
     Bsb_build_util.mkp lib_bs_dir;         
@@ -68,16 +67,18 @@ let regenerate_ninja
       (fun x -> 
         let dir = per_proj_dir // x in (*Unix.EEXIST error*)
         if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
-    if toplevel then       
+    (match package_kind with 
+    | Toplevel -> 
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
+    | Dependency _ -> ())    
     ;
 
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
        config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~per_proj_dir  ~toplevel config ;                 
+      ~per_proj_dir  ~package_kind config ;                 
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~per_proj_dir ~config ~file:output_deps 

@@ -27,5 +27,5 @@
 *)
 val output_ninja_and_namespace_map :
   per_proj_dir:string ->  
-  toplevel:bool -> 
+  package_kind:Bsb_package_kind.t -> 
   Bsb_config_types.t -> unit 

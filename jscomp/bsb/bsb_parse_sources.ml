@@ -44,7 +44,7 @@ let errorf x fmt =
   Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt 
 
 type cxt = {
-  toplevel : bool ;
+  package_kind : Bsb_package_kind.t ;
   dev_index : bool; 
   cwd : string ;
   root : string;
@@ -262,7 +262,12 @@ let rec
   if Set_string.mem cxt.ignored_dirs dir then Bsb_file_groups.empty
   else 
     let cur_globbed_dirs = ref false in 
-    let has_generators = not (cxt.cut_generators || not cxt.toplevel) in          
+    let has_generators =
+      match cxt with 
+      | {cut_generators = false; package_kind = Toplevel } -> true
+      | {cut_generators = false; package_kind = Dependency _} 
+      | {cut_generators = true ; _ } -> false  
+    in          
     let scanned_generators = extract_generators input in        
     let sub_dirs_field = Map_string.find_opt input  Bsb_build_schemas.subdirs in 
     let base_name_array = 
@@ -338,17 +343,20 @@ let rec
       children
 
 
-and parsing_single_source ({toplevel; dev_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_single_source ({package_kind; dev_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    if not toplevel &&  dev_index then 
+    begin match package_kind, dev_index with 
+    | Dependency _ , true ->  
       Bsb_file_groups.empty
-    else 
+    | Dependency _, false  
+    | Toplevel, _ ->
       parsing_source_dir_map 
         {cxt with 
          cwd = Ext_path.concat cwd (Ext_path.simple_convert_node_path_to_os_path dir)}
         Map_string.empty  
+     end   
   | Obj {map} ->
     let current_dir_index = 
       match Map_string.find_opt map Bsb_build_schemas.type_ with 
@@ -356,9 +364,11 @@ and parsing_single_source ({toplevel; dev_index ; cwd} as cxt ) (x : Ext_json_ty
         true
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dev_index in 
-    if not toplevel && current_dir_index then 
+    begin match package_kind, current_dir_index with 
+    | Dependency _ , true -> 
       Bsb_file_groups.empty 
-    else 
+    | Dependency _, false 
+    | Toplevel, _ ->       
       let dir = 
         match Map_string.find_opt map Bsb_build_schemas.dir with 
         | Some (Str{str}) -> 
@@ -373,6 +383,7 @@ and parsing_single_source ({toplevel; dev_index ; cwd} as cxt ) (x : Ext_json_ty
       parsing_source_dir_map 
         {cxt with dev_index = current_dir_index; 
                   cwd= Ext_path.concat cwd dir} map
+      end            
   | _ -> Bsb_file_groups.empty
 and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
   Ext_array.fold_left file_groups Bsb_file_groups.empty (fun  origin x ->
@@ -387,7 +398,7 @@ and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  =
 
 
 let scan 
-  ~toplevel 
+  ~package_kind 
   ~root 
   ~cut_generators 
   ~namespace 
@@ -395,7 +406,7 @@ let scan
   x : t  = 
   parse_sources {
     ignored_dirs;
-    toplevel;
+    package_kind;
     dev_index = false;
     cwd = Filename.current_dir_name;
     root ;

@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2020- Authors of ReScript 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16,24 +16,15 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val package_specs_from_bsconfig : 
-    unit -> Bsb_package_specs.t
-
-
-
-
-val interpret_json : 
-    package_kind:Bsb_package_kind.t  -> 
-    per_proj_dir:string -> 
-    Bsb_config_types.t
-
-
-
-
-
+type t = 
+    | Toplevel
+    | Dependency of Bsb_package_specs.t 
+        (*  This package specs comes from the toplevel to 
+            override the current settings
+        *)

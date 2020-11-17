@@ -7381,6 +7381,41 @@ let from_map map =
 
 
 end
+module Bsb_package_kind
+= struct
+#1 "bsb_package_kind.ml"
+(* Copyright (C) 2020- Authors of ReScript 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = 
+    | Toplevel
+    | Dependency of Bsb_package_specs.t 
+        (*  This package specs comes from the toplevel to 
+            override the current settings
+        *)
+
+end
 module Bsc_warnings
 = struct
 #1 "bsc_warnings.ml"
@@ -7504,7 +7539,7 @@ val from_map : Ext_json_types.t Map_string.t -> t
 (** [to_bsb_string not_dev warning]
 *)
 val to_bsb_string : 
-  toplevel:bool -> 
+  package_kind:Bsb_package_kind.t -> 
   t  -> 
   string
 
@@ -7606,9 +7641,10 @@ let from_map (m : Ext_json_types.t Map_string.t) =
     Some {number; error }
 
 
-let to_bsb_string ~toplevel warning =
-  if toplevel then
-    match warning with
+let to_bsb_string ~(package_kind: Bsb_package_kind.t) warning =
+  match package_kind with 
+  | Toplevel -> 
+    (match warning with
     | None -> Ext_string.empty
     | Some warning ->     
       (match warning.number with
@@ -7625,8 +7661,8 @@ let to_bsb_string ~toplevel warning =
           " -warn-error " ^ y
         | Warn_error_false ->
           Ext_string.empty
-      )
-  else " -w a" 
+      ))
+  | Dependency _ ->  " -w a" 
   (* TODO: this is the current default behavior *)
 
 end
@@ -10511,7 +10547,7 @@ module Bsb_parse_sources : sig
     all relative paths, this function will do the IO
 *)
 val scan :
-  toplevel: bool -> 
+  package_kind:Bsb_package_kind.t -> 
   root: string ->  
   cut_generators: bool -> 
   namespace : string option -> 
@@ -10574,7 +10610,7 @@ let errorf x fmt =
   Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt 
 
 type cxt = {
-  toplevel : bool ;
+  package_kind : Bsb_package_kind.t ;
   dev_index : bool; 
   cwd : string ;
   root : string;
@@ -10792,7 +10828,12 @@ let rec
   if Set_string.mem cxt.ignored_dirs dir then Bsb_file_groups.empty
   else 
     let cur_globbed_dirs = ref false in 
-    let has_generators = not (cxt.cut_generators || not cxt.toplevel) in          
+    let has_generators =
+      match cxt with 
+      | {cut_generators = false; package_kind = Toplevel } -> true
+      | {cut_generators = false; package_kind = Dependency _} 
+      | {cut_generators = true ; _ } -> false  
+    in          
     let scanned_generators = extract_generators input in        
     let sub_dirs_field = Map_string.find_opt input  Bsb_build_schemas.subdirs in 
     let base_name_array = 
@@ -10868,17 +10909,20 @@ let rec
       children
 
 
-and parsing_single_source ({toplevel; dev_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_single_source ({package_kind; dev_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    if not toplevel &&  dev_index then 
+    begin match package_kind, dev_index with 
+    | Dependency _ , true ->  
       Bsb_file_groups.empty
-    else 
+    | Dependency _, false  
+    | Toplevel, _ ->
       parsing_source_dir_map 
         {cxt with 
          cwd = Ext_path.concat cwd (Ext_path.simple_convert_node_path_to_os_path dir)}
         Map_string.empty  
+     end   
   | Obj {map} ->
     let current_dir_index = 
       match Map_string.find_opt map Bsb_build_schemas.type_ with 
@@ -10886,9 +10930,11 @@ and parsing_single_source ({toplevel; dev_index ; cwd} as cxt ) (x : Ext_json_ty
         true
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dev_index in 
-    if not toplevel && current_dir_index then 
+    begin match package_kind, current_dir_index with 
+    | Dependency _ , true -> 
       Bsb_file_groups.empty 
-    else 
+    | Dependency _, false 
+    | Toplevel, _ ->       
       let dir = 
         match Map_string.find_opt map Bsb_build_schemas.dir with 
         | Some (Str{str}) -> 
@@ -10903,6 +10949,7 @@ and parsing_single_source ({toplevel; dev_index ; cwd} as cxt ) (x : Ext_json_ty
       parsing_source_dir_map 
         {cxt with dev_index = current_dir_index; 
                   cwd= Ext_path.concat cwd dir} map
+      end            
   | _ -> Bsb_file_groups.empty
 and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
   Ext_array.fold_left file_groups Bsb_file_groups.empty (fun  origin x ->
@@ -10917,7 +10964,7 @@ and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  =
 
 
 let scan 
-  ~toplevel 
+  ~package_kind 
   ~root 
   ~cut_generators 
   ~namespace 
@@ -10925,7 +10972,7 @@ let scan
   x : t  = 
   parse_sources {
     ignored_dirs;
-    toplevel;
+    package_kind;
     dev_index = false;
     cwd = Filename.current_dir_name;
     root ;
@@ -11318,7 +11365,7 @@ val package_specs_from_bsconfig :
 
 
 val interpret_json : 
-    toplevel_package_specs:Bsb_package_specs.t option -> 
+    package_kind:Bsb_package_kind.t  -> 
     per_proj_dir:string -> 
     Bsb_config_types.t
 
@@ -11653,7 +11700,7 @@ let extract_js_post_build (map : json_map) cwd : string option =
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
 let interpret_json 
-    ~toplevel_package_specs
+    ~(package_kind : Bsb_package_kind.t)
     ~per_proj_dir:(per_proj_dir:string)
 
   : Bsb_config_types.t =
@@ -11686,9 +11733,7 @@ let interpret_json
 
     (* The default situation is empty *)
     let built_in_package = check_stdlib map per_proj_dir in
-    let package_specs =  
-      Bsb_package_specs.from_map map     
-    in
+    
     let pp_flags : string option = 
       extract_string map Bsb_build_schemas.pp_flags (fun p -> 
         if p = "" then 
@@ -11697,19 +11742,19 @@ let interpret_json
           Some (Bsb_build_util.resolve_bsb_magic_file ~cwd:per_proj_dir ~desc:Bsb_build_schemas.pp_flags p).path
       ) in 
     let reason_react_jsx = extract_reason_react_jsx map in 
-    let bs_dependencies = extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies in 
-    let toplevel = toplevel_package_specs = None in 
+    let bs_dependencies = extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies in    
     let bs_dev_dependencies = 
-      if toplevel then 
+      match package_kind with 
+      | Toplevel ->
         extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dev_dependencies
-      else [] in 
+      | Dependency _ -> [] in 
     begin match Map_string.find_opt map Bsb_build_schemas.sources with 
       | Some sources -> 
         let cut_generators = 
           extract_boolean map Bsb_build_schemas.cut_generators false in 
         let groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
-            ~toplevel
+            ~package_kind
             ~root: per_proj_dir
             ~cut_generators
             ~namespace
@@ -11737,9 +11782,9 @@ let interpret_json
           refmt;
           js_post_build_cmd = (extract_js_post_build map per_proj_dir);
           package_specs = 
-            (match toplevel_package_specs with 
-             | None ->  package_specs
-             | Some x -> x );          
+            (match package_kind with 
+             | Toplevel ->  Bsb_package_specs.from_map map                
+             | Dependency x -> x);          
           file_groups = groups; 
           files_to_install = Queue.create ();
           built_in_dependency = built_in_package;
@@ -13474,7 +13519,7 @@ module Bsb_ninja_gen : sig
 *)
 val output_ninja_and_namespace_map :
   per_proj_dir:string ->  
-  toplevel:bool -> 
+  package_kind:Bsb_package_kind.t -> 
   Bsb_config_types.t -> unit 
 
 end = struct
@@ -13625,7 +13670,7 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
 
 let output_ninja_and_namespace_map
     ~per_proj_dir 
-    ~toplevel           
+    ~package_kind           
     ({
       package_name;
       external_includes;
@@ -13652,7 +13697,7 @@ let output_ninja_and_namespace_map
   let lib_artifacts_dir = Bsb_config.lib_bs in
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in   
 
-  let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
+  let warnings = Bsb_warning.to_bsb_string ~package_kind warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
   let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
   let bs_dep = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) in 
@@ -14075,7 +14120,7 @@ module Bsb_ninja_regen : sig
     otherwise return Some info
 *)
 val regenerate_ninja :
-  toplevel_package_specs:Bsb_package_specs.t option ->
+  package_kind:Bsb_package_kind.t ->
   forced: bool -> 
   per_proj_dir:string -> 
   Bsb_config_types.t option 
@@ -14114,10 +14159,9 @@ let (//) = Ext_path.combine
     otherwise return Some info
 *)
 let regenerate_ninja 
-    ~(toplevel_package_specs : Bsb_package_specs.t option)
+    ~(package_kind : Bsb_package_kind.t)
     ~forced ~per_proj_dir
   : Bsb_config_types.t option =  
-  let toplevel = toplevel_package_specs = None in 
   let lib_artifacts_dir = Bsb_config.lib_bs in
   let lib_bs_dir =  per_proj_dir // lib_artifacts_dir  in 
   let output_deps = lib_bs_dir // bsdeps in
@@ -14143,7 +14187,7 @@ let regenerate_ninja
     
     let config : Bsb_config_types.t = 
       Bsb_config_parse.interpret_json 
-        ~toplevel_package_specs
+        ~package_kind
         ~per_proj_dir in 
     (* create directory, lib/bs, lib/js, lib/es6 etc *)    
     Bsb_build_util.mkp lib_bs_dir;         
@@ -14151,16 +14195,18 @@ let regenerate_ninja
       (fun x -> 
         let dir = per_proj_dir // x in (*Unix.EEXIST error*)
         if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
-    if toplevel then       
+    (match package_kind with 
+    | Toplevel -> 
       Bsb_watcher_gen.generate_sourcedirs_meta
         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
         config.file_groups
+    | Dependency _ -> ())    
     ;
 
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
        config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~per_proj_dir  ~toplevel config ;                 
+      ~per_proj_dir  ~package_kind config ;                 
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~per_proj_dir ~config ~file:output_deps 
@@ -16398,7 +16444,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
           Bsb_build_util.mkp lib_bs_dir;
           let _config : _ option = 
             Bsb_ninja_regen.regenerate_ninja 
-              ~toplevel_package_specs:(Some deps) 
+              ~package_kind:(Dependency deps) 
               ~per_proj_dir:proj_dir  ~forced:false in 
           let command = 
             {Bsb_unix.cmd = vendor_ninja;
@@ -16839,7 +16885,7 @@ let () =
     match Sys.argv with 
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
       Bsb_ninja_regen.regenerate_ninja 
-        ~toplevel_package_specs:None 
+        ~package_kind:Toplevel 
         ~forced:false 
         ~per_proj_dir:Bsb_global_paths.cwd  |> ignore;
       ninja_command_exit  [||] 
@@ -16868,7 +16914,7 @@ let () =
               else
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
-                     ~toplevel_package_specs:None 
+                     ~package_kind:Toplevel 
                      ~forced:force_regenerate ~per_proj_dir:Bsb_global_paths.cwd   in
                  if make_world then begin
                    Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||]
@@ -16900,7 +16946,7 @@ let () =
             | _ ->  
             let config_opt = 
               (Bsb_ninja_regen.regenerate_ninja 
-                ~toplevel_package_specs:None 
+                ~package_kind:Toplevel 
                 ~per_proj_dir:Bsb_global_paths.cwd 
                 ~forced:!force_regenerate) in
             (* [-make-world] should never be combined with [-package-specs] *)

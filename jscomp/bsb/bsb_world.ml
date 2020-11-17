@@ -66,7 +66,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
           Bsb_build_util.mkp lib_bs_dir;
           let _config : _ option = 
             Bsb_ninja_regen.regenerate_ninja 
-              ~toplevel_package_specs:(Some deps) 
+              ~package_kind:(Dependency deps) 
               ~per_proj_dir:proj_dir  ~forced:false in 
           let command = 
             {Bsb_unix.cmd = vendor_ninja;

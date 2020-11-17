@@ -322,7 +322,7 @@ let extract_js_post_build (map : json_map) cwd : string option =
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
 let interpret_json 
-    ~toplevel_package_specs
+    ~(package_kind : Bsb_package_kind.t)
     ~per_proj_dir:(per_proj_dir:string)
 
   : Bsb_config_types.t =
@@ -355,9 +355,7 @@ let interpret_json
 
     (* The default situation is empty *)
     let built_in_package = check_stdlib map per_proj_dir in
-    let package_specs =  
-      Bsb_package_specs.from_map map     
-    in
+    
     let pp_flags : string option = 
       extract_string map Bsb_build_schemas.pp_flags (fun p -> 
         if p = "" then 
@@ -366,19 +364,19 @@ let interpret_json
           Some (Bsb_build_util.resolve_bsb_magic_file ~cwd:per_proj_dir ~desc:Bsb_build_schemas.pp_flags p).path
       ) in 
     let reason_react_jsx = extract_reason_react_jsx map in 
-    let bs_dependencies = extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies in 
-    let toplevel = toplevel_package_specs = None in 
+    let bs_dependencies = extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies in    
     let bs_dev_dependencies = 
-      if toplevel then 
+      match package_kind with 
+      | Toplevel ->
         extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dev_dependencies
-      else [] in 
+      | Dependency _ -> [] in 
     begin match Map_string.find_opt map Bsb_build_schemas.sources with 
       | Some sources -> 
         let cut_generators = 
           extract_boolean map Bsb_build_schemas.cut_generators false in 
         let groups = Bsb_parse_sources.scan
             ~ignored_dirs:(extract_ignored_dirs map)
-            ~toplevel
+            ~package_kind
             ~root: per_proj_dir
             ~cut_generators
             ~namespace
@@ -406,9 +404,9 @@ let interpret_json
           refmt;
           js_post_build_cmd = (extract_js_post_build map per_proj_dir);
           package_specs = 
-            (match toplevel_package_specs with 
-             | None ->  package_specs
-             | Some x -> x );          
+            (match package_kind with 
+             | Toplevel ->  Bsb_package_specs.from_map map                
+             | Dependency x -> x);          
           file_groups = groups; 
           files_to_install = Queue.create ();
           built_in_dependency = built_in_package;

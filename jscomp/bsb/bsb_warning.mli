@@ -37,7 +37,7 @@ val from_map : Ext_json_types.t Map_string.t -> t
 (** [to_bsb_string not_dev warning]
 *)
 val to_bsb_string : 
-  toplevel:bool -> 
+  package_kind:Bsb_package_kind.t -> 
   t  -> 
   string
 

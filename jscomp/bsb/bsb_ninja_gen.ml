@@ -144,7 +144,7 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
 
 let output_ninja_and_namespace_map
     ~per_proj_dir 
-    ~toplevel           
+    ~package_kind           
     ({
       package_name;
       external_includes;
@@ -171,7 +171,7 @@ let output_ninja_and_namespace_map
   let lib_artifacts_dir = Bsb_config.lib_bs in
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in   
 
-  let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
+  let warnings = Bsb_warning.to_bsb_string ~package_kind warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
   let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
   let bs_dep = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) in 
