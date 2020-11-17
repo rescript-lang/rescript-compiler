@@ -93,8 +93,8 @@ let from_map (m : Ext_json_types.t Map_string.t) =
     Some {number; error }
 
 
-let to_bsb_string ~(toplevel: Bsb_package_kind.t) warning =
-  match toplevel with 
+let to_bsb_string ~(package_kind: Bsb_package_kind.t) warning =
+  match package_kind with 
   | Toplevel -> 
     (match warning with
     | None -> Ext_string.empty

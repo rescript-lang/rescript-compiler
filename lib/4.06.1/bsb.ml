@@ -7539,7 +7539,7 @@ val from_map : Ext_json_types.t Map_string.t -> t
 (** [to_bsb_string not_dev warning]
 *)
 val to_bsb_string : 
-  toplevel:Bsb_package_kind.t -> 
+  package_kind:Bsb_package_kind.t -> 
   t  -> 
   string
 
@@ -7641,8 +7641,8 @@ let from_map (m : Ext_json_types.t Map_string.t) =
     Some {number; error }
 
 
-let to_bsb_string ~(toplevel: Bsb_package_kind.t) warning =
-  match toplevel with 
+let to_bsb_string ~(package_kind: Bsb_package_kind.t) warning =
+  match package_kind with 
   | Toplevel -> 
     (match warning with
     | None -> Ext_string.empty
@@ -13519,7 +13519,7 @@ module Bsb_ninja_gen : sig
 *)
 val output_ninja_and_namespace_map :
   per_proj_dir:string ->  
-  toplevel:Bsb_package_kind.t -> 
+  package_kind:Bsb_package_kind.t -> 
   Bsb_config_types.t -> unit 
 
 end = struct
@@ -13670,7 +13670,7 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
 
 let output_ninja_and_namespace_map
     ~per_proj_dir 
-    ~toplevel           
+    ~package_kind           
     ({
       package_name;
       external_includes;
@@ -13697,7 +13697,7 @@ let output_ninja_and_namespace_map
   let lib_artifacts_dir = Bsb_config.lib_bs in
   let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in   
 
-  let warnings = Bsb_warning.to_bsb_string ~toplevel warning in
+  let warnings = Bsb_warning.to_bsb_string ~package_kind warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
   let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
   let bs_dep = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) in 
@@ -14206,7 +14206,7 @@ let regenerate_ninja
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
        config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~per_proj_dir  ~toplevel:package_kind config ;                 
+      ~per_proj_dir  ~package_kind config ;                 
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~per_proj_dir ~config ~file:output_deps 

@@ -78,7 +78,7 @@ let regenerate_ninja
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
        config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~per_proj_dir  ~toplevel:package_kind config ;                 
+      ~per_proj_dir  ~package_kind config ;                 
     (* PR2184: we still need record empty dir 
         since it may add files in the future *)  
     Bsb_ninja_check.record ~per_proj_dir ~config ~file:output_deps 
