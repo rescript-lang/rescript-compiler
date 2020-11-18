@@ -270,3 +270,17 @@ let x = <MyComponent sidebar=<div> test </div> nav=<Navbar /> />
 <div>  {Js.log(a <= 10)} </div>
 <div> <div> {Js.log(a <= 10)} </div> </div>
 <div> <div onClick={_ => Js.log(a <= 10) }> <div> {Js.log(a <= 10)} </div> </div> </div>
+
+module App = {
+  @react.component
+  let make = () => {
+    <> 1 </>
+  }
+}
+
+module App = {
+  @react.component
+  let make = () => {
+    <> <div /> </>
+  }
+}

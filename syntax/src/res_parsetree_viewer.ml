@@ -388,9 +388,14 @@ let isJsxExpression expr =
     loop expr.Parsetree.pexp_attributes
   | _ -> false
 
-let hasJsxAttribute attributes = match attributes with
-  | ({Location.txt = "JSX"},_)::_ -> true
-  | _ -> false
+let hasJsxAttribute attributes =
+  let rec loop attrs =
+    match attrs with
+    | [] -> false
+    | ({Location.txt = "JSX"}, _)::_ -> true
+    | _::attrs -> loop attrs
+  in
+  loop attributes
 
 let shouldIndentBinaryExpr expr =
   let samePrecedenceSubExpression operator subExpression =
