@@ -5396,6 +5396,11 @@ and parseFunctorArg p =
     Parser.expect Colon p;
     let moduleType = parseModuleType p in
     Some (attrs, argName, Some moduleType, startPos)
+  | Lparen ->
+    Parser.next p;
+    Parser.expect Rparen p;
+    let argName = Location.mkloc "*" (mkLoc startPos p.prevEndPos) in
+    Some (attrs, argName, None, startPos)
   | _ ->
     None
 

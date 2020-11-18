@@ -69,7 +69,17 @@ module Make(Cmp:sig type nonrec t val eq : t -> t -> bool end) :
     let empty = []
     let add (y : coll) (e : key) =
       if List.exists (fun x -> eq x e) y then y else e :: y
-  end "
+  end 
+module Gen1(P:Primitive)() =
+  struct type nonrec t = P.t
+         type nonrec internal = P.t
+         let inject t = t end
+module DistinctString() : StringBased =
+  struct type nonrec t = string
+         let inject t = t end 
+module DistinctString() : StringBased =
+  struct type nonrec t = string
+         let inject t = t end "
 `;
 
 exports[`ident.js 1`] = `

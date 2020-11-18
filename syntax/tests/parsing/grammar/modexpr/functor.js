@@ -41,3 +41,19 @@ module Make = (
       list{e, ...y};
     };
 }
+
+module Gen1 = (P: Primitive, ()) => {
+  type t = P.t
+  type internal = P.t
+  let inject = t => t
+}
+
+module DistinctString = (()) : StringBased  => {
+  type t = string
+  let inject = t => t
+}
+
+module DistinctString = (): StringBased  => {
+  type t = string
+  let inject = t => t
+}

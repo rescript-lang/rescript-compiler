@@ -54,3 +54,14 @@ module Make = (H: Hashtbl.HashedType): (S with type data = H.t) => {
 
   type rec data = H.t
 }
+
+module Gen1 = (P: Primitive, ()) => {
+  type t = P.t
+  type internal = P.t
+  let inject = t => t
+}
+
+module DistinctString = (): StringBased  => {
+  type t = string
+  let inject = t => t
+}

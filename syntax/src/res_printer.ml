@@ -4941,7 +4941,7 @@ and printModFunctorParam (attrs, lbl, optModType) cmtTbl =
   in
   let attrs = printAttributes attrs cmtTbl in
   let lblDoc =
-    let doc = Doc.text lbl.txt in
+    let doc = if lbl.txt = "*" then Doc.text "()" else Doc.text lbl.txt in
     printComments doc cmtTbl lbl.loc
   in
   let doc = Doc.group (
