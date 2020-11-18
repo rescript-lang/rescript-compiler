@@ -1891,7 +1891,19 @@ and printValueBinding ~recFlag vb cmtTbl i =
     | Braced braces  -> printBraces doc expr braces
     | Nothing -> doc
   in
-  if ParsetreeViewer.isPipeExpr vb.pvb_expr then
+  (*
+   * we want to optimize the layout of one pipe:
+   *   let tbl = data->Js.Array2.reduce((map, curr) => {
+   *     ...
+   *   })
+   * important is that we don't do this for multiple pipes:
+   *   let decoratorTags =
+   *     items
+   *     ->Js.Array2.filter(items => {items.category === Decorators})
+   *     ->Belt.Array.map(...)
+   * Multiple pipes chained together lend themselves more towards the last layout.
+   *)
+  if ParsetreeViewer.isSinglePipeExpr vb.pvb_expr then
     Doc.customLayout [
       Doc.group (
         Doc.concat [

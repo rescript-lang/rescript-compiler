@@ -514,11 +514,11 @@ let collectOrPatternChain pat =
   in
   loop pat []
 
-let isPipeExpr expr = match expr.pexp_desc with
+let rec isSinglePipeExpr expr = match expr.pexp_desc with
   | Pexp_apply(
       {pexp_desc = Pexp_ident {txt = Longident.Lident ("|." | "|>") }},
-      [(Nolabel, _operand1); (Nolabel, _operand2)]
-    ) -> true
+      [(Nolabel, operand1); (Nolabel, _operand2)]
+    ) when not (isSinglePipeExpr operand1) -> true
   | _ -> false
 
 let extractValueDescriptionFromModExpr modExpr =

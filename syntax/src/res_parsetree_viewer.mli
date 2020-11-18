@@ -121,7 +121,7 @@ val filterParsingAttrs : Parsetree.attributes -> Parsetree.attributes
 
 val isBracedExpr : Parsetree.expression -> bool
 
-val isPipeExpr : Parsetree.expression -> bool
+val isSinglePipeExpr : Parsetree.expression -> bool
 
 val extractValueDescriptionFromModExpr: Parsetree.module_expr -> Parsetree.value_description list
 

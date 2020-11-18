@@ -1398,6 +1398,13 @@ myPromise->Js.Promise.then_(value => {
   Js.log2(\\"Failure!!\\", err)
   Js.Promise.resolve(-2)
 }, _)
+
+let decoratorTags =
+  items
+  ->Js.Array2.filter(items => {items.category === Decorators})
+  ->Belt.Array.map(item => {
+    <span className=\\"mr-2\\" key=item.name> <Tag text={item.name} /> </span>
+  })
 "
 `;
 
