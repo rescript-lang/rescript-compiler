@@ -1829,6 +1829,16 @@ type jsUser = /* before */ {
 "
 `;
 
+exports[`valueBindingSugar.res 1`] = `
+"let /* before */ x /* after */:
+  type t. (/* a */ int /* b */, /* c */ int /* d */) => /* e */ int =
+  (/* c0 */ a /* c1 */, /* c2 */ b /* c3 */) => {
+    // comment
+    a + b
+  }
+"
+`;
+
 exports[`valueBindings.res 1`] = `
 "let x = 1
 // trailing first value-binding

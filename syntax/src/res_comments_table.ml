@@ -741,10 +741,31 @@ let rec walkStructure s t comments =
         {vb with
           pvb_pat = {vb.pvb_pat with
             ppat_loc = {pat.ppat_loc with loc_end = t.ptyp_loc.loc_end}}}
+
+      | ({ppat_desc = Ppat_constraint (pat, ({ptyp_desc = Ptyp_poly (_::_, t)} as typ))} as constrainedPattern),
+        {pexp_desc = Pexp_newtype (_, {pexp_desc = Pexp_constraint (expr, _)})} ->
+        (*
+         * The location of the Ptyp_poly on the pattern is the whole thing.
+         * let x:
+         *   type t. (int, int) => int =
+         *   (a, b) => {
+         *     // comment
+         *     a + b
+         *   }
+         *)
+        {vb with
+          pvb_pat = {
+            constrainedPattern with
+              ppat_desc = Ppat_constraint (pat, typ);
+              ppat_loc = {constrainedPattern.ppat_loc with loc_end = t.ptyp_loc.loc_end};
+          };
+          pvb_expr = expr
+        }
       | _ -> vb
     in
     let patternLoc = vb.Parsetree.pvb_pat.ppat_loc in
     let exprLoc = vb.Parsetree.pvb_expr.pexp_loc in
+    let expr = vb.pvb_expr  in
 
     let (leading, inside, trailing) =
       partitionByLoc comments patternLoc in
@@ -753,21 +774,19 @@ let rec walkStructure s t comments =
      *   let |* before *| a = 1 *)
     attach t.leading patternLoc leading;
     walkPattern vb.Parsetree.pvb_pat t inside;
-    (* let pattern = expr     -> pattern and expr on the same line *)
-    (* if patternLoc.loc_end.pos_lnum == exprLoc.loc_start.pos_lnum then ( *)
-      let (afterPat, surroundingExpr) =
-        partitionAdjacentTrailing patternLoc trailing
-      in
-      attach t.trailing patternLoc afterPat;
-      let (beforeExpr, insideExpr, afterExpr) =
-        partitionByLoc surroundingExpr exprLoc in
-      if isBlockExpr vb.pvb_expr then (
-        walkExpr vb.pvb_expr t (List.concat [beforeExpr; insideExpr; afterExpr])
-      ) else (
-        attach t.leading exprLoc beforeExpr;
-        walkExpr vb.Parsetree.pvb_expr t insideExpr;
-        attach t.trailing exprLoc afterExpr
-      )
+    let (afterPat, surroundingExpr) =
+      partitionAdjacentTrailing patternLoc trailing
+    in
+    attach t.trailing patternLoc afterPat;
+    let (beforeExpr, insideExpr, afterExpr) =
+      partitionByLoc surroundingExpr exprLoc in
+    if isBlockExpr expr then (
+      walkExpr expr t (List.concat [beforeExpr; insideExpr; afterExpr])
+    ) else (
+      attach t.leading exprLoc beforeExpr;
+      walkExpr expr t insideExpr;
+      attach t.trailing exprLoc afterExpr
+    )
 
   and walkExpr expr t comments =
     let open Location in
