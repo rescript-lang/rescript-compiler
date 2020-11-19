@@ -20,14 +20,6 @@ let output_prefix name =
     Filename.remove_extension oname
 
 
-let process_interface_file ppf name =
-  Js_implementation.interface ppf name 
-  ~parser:Pparse_driver.parse_interface
-  (output_prefix name)
-let process_implementation_file ppf name =
-  Js_implementation.implementation ppf name 
-  ~parser:Pparse_driver.parse_implementation
-  (output_prefix name)
 
 
 let setup_error_printer (syntax_kind : [ `ml | `reason | `rescript ])= 
@@ -69,18 +61,19 @@ let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf opref =
 
   
 
-
-
-
-
-let process_file ppf sourcefile = 
+let process_file sourcefile 
+  ?(kind ) ppf = 
   (* This is a better default then "", it will be changed later 
      The {!Location.input_name} relies on that we write the binary ast 
      properly
   *)
   Location.set_input_name  sourcefile;    
   let opref = output_prefix sourcefile in 
-  match Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile) with 
+  let kind =
+    match kind with 
+    | None -> Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile)  
+    | Some kind -> kind in 
+  match kind with 
   | Re -> handle_reason Ml sourcefile ppf opref     
   | Rei ->
     handle_reason Mli sourcefile ppf opref 
@@ -139,7 +132,7 @@ let anonymous ~(rev_args : string list) =
     begin 
       match rev_args with 
       | [filename] ->   
-        process_file ppf filename
+        process_file filename ppf
       | [] -> ()  
       | _ -> 
         Bsc_args.bad_arg "can not handle multiple files"
@@ -148,10 +141,10 @@ let anonymous ~(rev_args : string list) =
 (** used by -impl -intf *)
 let impl filename =
   Js_config.js_stdout := false;  
-  process_implementation_file ppf filename;;
+  process_file filename ~kind:Ml ppf ;;
 let intf filename =
   Js_config.js_stdout := false ;  
-  process_interface_file ppf filename;;
+  process_file filename ~kind:Mli ppf;;
 
 
 let format_file input =  
