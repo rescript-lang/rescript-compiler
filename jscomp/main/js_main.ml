@@ -78,11 +78,9 @@ let process_file ppf sourcefile =
      The {!Location.input_name} relies on that we write the binary ast 
      properly
   *)
-  Location.set_input_name  sourcefile;  
-  let ext = Ext_filename.get_extension_maybe sourcefile in 
-  let input = Ext_file_extensions.classify_input ext in 
+  Location.set_input_name  sourcefile;    
   let opref = output_prefix sourcefile in 
-  match input with 
+  match Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile) with 
   | Re -> handle_reason Ml sourcefile ppf opref     
   | Rei ->
     handle_reason Mli sourcefile ppf opref 
