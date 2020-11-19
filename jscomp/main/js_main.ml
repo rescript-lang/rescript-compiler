@@ -11,11 +11,13 @@
 (***********************************************************************)
 
 let output_prefix name =
-  let oname =
-    match !Clflags.output_name with
-    | None -> name
-    | Some n -> (Clflags.output_name := None; n) in
-  Filename.remove_extension oname
+  match !Clflags.output_name with
+  | None -> 
+    Ext_namespace_encode.make 
+      (Filename.remove_extension name) 
+      ?ns:!Clflags.dont_record_crc_unit
+  | Some oname -> 
+    Filename.remove_extension oname
 
 
 let process_interface_file ppf name =
