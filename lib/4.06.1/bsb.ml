@@ -12948,7 +12948,7 @@ let make_custom_rules
   ~(digest : string)
   ~(refmt : string option) (* set refmt path when needed *)
   ~(package_specs: Bsb_package_specs.t)
-  ~namespace
+  ~(namespace : string option)
   ~package_name
   ~bsc
   ~warnings
@@ -12999,7 +12999,7 @@ let make_custom_rules
       Ext_buffer.add_string buf package_name;
       Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
     end;
-    Ext_buffer.add_string buf " -o $out $i";
+    Ext_buffer.add_string buf " $i";
     begin match postbuild with 
     | None -> ()
     | Some cmd -> 
