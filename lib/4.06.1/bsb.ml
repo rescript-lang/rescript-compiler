@@ -13663,9 +13663,11 @@ let output_static_resources
   FIXME: check if the trick still works
   phony build.ninja : | resources 
 *)      
-
+let mark_rescript oc = 
+  output_string oc "rescript = 1\n"  
 let output_installation_file cwd_lib_bs namespace files_to_install = 
   let install_oc = open_out_bin (cwd_lib_bs // "install.ninja") in 
+  mark_rescript install_oc;
   let o s = output_string install_oc s in
   let[@inline] oo suffix ~dest ~src =   
     o  "o " ; 
@@ -13803,7 +13805,8 @@ let output_ninja_and_namespace_map
       ~dev_incls (* its own devs *)
       generators in  
 
-  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in              
+  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in 
+  mark_rescript oc;
   Bsb_ninja_targets.output_kv      
     Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
     oc ;
