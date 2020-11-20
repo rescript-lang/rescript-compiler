@@ -369,6 +369,8 @@
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_modulename.mli
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_namespace.ml
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_namespace.mli
+../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_namespace_encode.ml
+../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_namespace_encode.mli
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_option.ml
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_option.mli
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_path.ml
