@@ -60,7 +60,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
               let loc_start = loc.loc_start in 
               let (file, lnum, __) = Location.get_pos_info loc_start in                  
               Printf.sprintf "%s %d"
-                file lnum in   
+                (Filename.basename file) lnum in   
           let e = self.expr self e in 
           Exp.sequence ~loc
             (Ast_compatible.app1 ~loc     
