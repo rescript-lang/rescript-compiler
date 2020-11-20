@@ -19,7 +19,13 @@ let output_prefix name =
   | Some oname -> 
     Filename.remove_extension oname
 
-
+let set_abs_input_name sourcefile =     
+  let sourcefile =   
+    if !Location.absname && Filename.is_relative  sourcefile then 
+      Ext_path.absolute_cwd_path sourcefile
+    else sourcefile in 
+  Location.set_input_name sourcefile;
+  sourcefile  
 
 
 let setup_error_printer (syntax_kind : [ `ml | `reason | `rescript ])= 
@@ -59,7 +65,7 @@ let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf opref =
        ppf  tmpfile opref ;    );
   Ast_reason_pp.clean tmpfile 
 
-  
+
 
 let process_file sourcefile 
   ?(kind ) ppf = 
@@ -67,44 +73,60 @@ let process_file sourcefile
      The {!Location.input_name} relies on that we write the binary ast 
      properly
   *)
-  Location.set_input_name  sourcefile;    
-  let opref = output_prefix sourcefile in 
   let kind =
     match kind with 
     | None -> Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile)  
     | Some kind -> kind in 
   match kind with 
-  | Re -> handle_reason Ml sourcefile ppf opref     
+  | Re -> 
+    let sourcefile = set_abs_input_name  sourcefile in 
+    let opref = output_prefix sourcefile in 
+    handle_reason Ml sourcefile ppf opref     
   | Rei ->
+    let sourcefile = set_abs_input_name  sourcefile in 
+    let opref = output_prefix sourcefile in 
     handle_reason Mli sourcefile ppf opref 
   | Ml ->
+    let sourcefile = set_abs_input_name  sourcefile in 
+    let opref = output_prefix sourcefile in 
     Js_implementation.implementation 
       ~parser:Pparse_driver.parse_implementation
       ppf sourcefile opref 
   | Mli  ->   
+    let sourcefile = set_abs_input_name  sourcefile in 
+    let opref = output_prefix sourcefile in 
     Js_implementation.interface 
       ~parser:Pparse_driver.parse_interface
       ppf sourcefile opref   
   | Res -> 
+    let sourcefile = set_abs_input_name  sourcefile in 
+    let opref = output_prefix sourcefile in 
     setup_error_printer `rescript;
     Js_implementation.implementation 
       ~parser:Res_driver.parse_implementation
       ppf sourcefile opref 
   | Resi ->   
+    let sourcefile = set_abs_input_name  sourcefile in 
+    let opref = output_prefix sourcefile in 
     setup_error_printer `rescript;
     Js_implementation.interface 
       ~parser:Res_driver.parse_interface
       ppf sourcefile opref     
   | Intf_ast 
     ->     
+    let opref = output_prefix sourcefile in 
     Js_implementation.interface_mliast ppf sourcefile opref   
     setup_error_printer ;
   | Impl_ast 
     -> 
+    let opref = output_prefix sourcefile in 
     Js_implementation.implementation_mlast ppf sourcefile opref
     setup_error_printer;  
   | Mlmap 
-    -> Js_implementation.implementation_map ppf sourcefile opref
+    -> 
+    Location.set_input_name  sourcefile;    
+    let opref = output_prefix sourcefile in 
+    Js_implementation.implementation_map ppf sourcefile opref
   | Cmi
     ->
     let cmi_sign = (Cmi_format.read_cmi sourcefile).cmi_sign in 
