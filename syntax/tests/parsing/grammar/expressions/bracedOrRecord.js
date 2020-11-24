@@ -52,3 +52,6 @@ let x = {
   let b = 2
   a + b
 }
+
+// interpret strings correct
+<> {"\n"->React.string} </>

@@ -43,3 +43,7 @@ connection["left"]["account"]["accountName"]
 // Bucklescript #= sugar
 john["age"] = 99
 john["son"]["age"] = steve["age"] - 5
+
+// interpret strings correct
+dict["\n"] = abc
+dict["\""] = dict2["\""]

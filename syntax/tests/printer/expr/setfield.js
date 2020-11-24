@@ -13,3 +13,6 @@ user.address = addresses[2]
 
 (currentNode.parent->castNotOption).color = Black
 (isLeft ? node.left : node.right).color = Black
+
+// interpret strings correct
+dict["\n"] = dict2["\""]

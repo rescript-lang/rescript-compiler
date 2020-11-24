@@ -274,7 +274,8 @@ let e = (((fun x -> x + 1) |> sideEffect; logToAnalytics Shady.ml)
   [@ns.braces ])
 let f = ((fun event -> (event.target).value)[@ns.braces ])
 let f = ((fun event -> ((event.target).value : string))[@ns.braces ])
-let x = ((let a = 1 in let b = 2 in a + b)[@ns.braces ])"
+let x = ((let a = 1 in let b = 2 in a + b)[@ns.braces ])
+;;(([((\\"\\\\n\\" |. React.string)[@ns.braces ])])[@JSX ])"
 `;
 
 exports[`bsObject.js 1`] = `
@@ -1180,7 +1181,10 @@ let x = (arr.((x : int))).((y : int))
 ;;connection ## platformId
 ;;((connection ## left) ## account) ## accountName
 ;;(john ## age) #= 99
-;;((john ## son) ## age) #= ((steve ## age) - 5)"
+;;((john ## son) ## age) #= ((steve ## age) - 5)
+;;(dict ## 
+) #= abc
+;;(dict ## \\") #= (dict2 ## \\")"
 `;
 
 exports[`record.js 1`] = `

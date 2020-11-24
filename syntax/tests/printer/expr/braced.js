@@ -213,3 +213,7 @@ let x = {
 {
   a} + {
     b}
+
+// string constant should be printed correct
+<> {"\n"->React.string} </>
+<> {"\""->React.string} </>

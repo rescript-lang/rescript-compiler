@@ -1883,6 +1883,7 @@ and parseBracketAccess p expr startPos =
   let stringStart = p.startPos in
   match p.Parser.token with
   | String s ->
+    let s = if p.mode = ParseForTypeChecker then parseStringLiteral s else s in
     Parser.next p;
     let stringEnd = p.prevEndPos in
     Parser.expect Rbracket p;
@@ -2666,6 +2667,7 @@ and parseBracedOrRecordExpr  p =
     Parser.expect Rbrace p;
     expr
   | String s ->
+    let s = if p.mode = ParseForTypeChecker then parseStringLiteral s else s in
     let field =
       let loc = mkLoc p.startPos p.endPos in
       Parser.next p;
