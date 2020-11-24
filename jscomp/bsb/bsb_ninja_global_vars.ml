@@ -33,7 +33,7 @@
 (* let src_root_dir = "g_root"
 
 let lazy_src_root_dir = "$g_root"  *)
-
+let g_finger = "g_finger"
 
 
 

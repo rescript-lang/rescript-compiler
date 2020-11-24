@@ -125,12 +125,12 @@ let make_custom_rules
   ~package_name
   ~bsc
   ~warnings
-  ~bs_dep
+  ~(bs_dep : string)
   ~(ppx_files : Bsb_config_types.ppx list)
   ~bsc_flags
-  ~dpkg_incls
-  ~lib_incls
-  ~dev_incls
+  ~(dpkg_incls : string)
+  ~(lib_incls : string)
+  ~(dev_incls : string)
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -172,6 +172,8 @@ let make_custom_rules
       Ext_buffer.add_string buf package_name;
       Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
     end;
+    Ext_buffer.add_string buf " -bs-v ";    
+    Ext_buffer.add_ninja_prefix_var buf '-' Bsb_ninja_global_vars.g_finger;
     Ext_buffer.add_string buf " $i";
     begin match postbuild with 
     | None -> ()

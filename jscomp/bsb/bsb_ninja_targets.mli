@@ -45,4 +45,4 @@ val phony  :
   out_channel -> 
   unit
 
-val output_kv : string ->  string -> out_channel -> unit 
+val output_finger : string ->  string -> out_channel -> unit 
