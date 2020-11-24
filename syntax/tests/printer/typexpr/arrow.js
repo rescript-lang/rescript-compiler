@@ -105,3 +105,8 @@ type getInitialPropsFn<'a> = {
   "query": Js.Dict.t<string>,
   "req": Js.Nullable.t<Js.t<'a>>,
 } => Js.Promise.t<Js.t<'a>>
+
+// keep parens
+external fromPoly: ([> ] as 'a) => t = "%identity"
+
+external fromPoly: ([> ] as 'a, [> ] as 'b) => t = "%identity"

@@ -1551,7 +1551,7 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
         let typDoc =
           let doc = printTypExpr n cmtTbl in
           match n.ptyp_desc with
-          | Ptyp_arrow _ | Ptyp_tuple _ -> addParens doc
+          | Ptyp_arrow _ | Ptyp_tuple _ | Ptyp_alias _ -> addParens doc
           | _ -> doc
         in
         Doc.group (
