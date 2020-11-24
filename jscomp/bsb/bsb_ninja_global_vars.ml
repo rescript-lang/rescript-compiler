@@ -30,9 +30,9 @@
   to be "a" and "$a"
 *)
 
-let src_root_dir = "g_root"
+(* let src_root_dir = "g_root"
 
-let lazy_src_root_dir = "$g_root" 
+let lazy_src_root_dir = "$g_root"  *)
 
 
 

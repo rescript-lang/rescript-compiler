@@ -10,16 +10,14 @@
 (*                                                                     *)
 (***********************************************************************)
 
-let output_prefix name =
-  match !Clflags.output_name with
-  | None -> 
-    Ext_namespace_encode.make 
-      (Filename.remove_extension name) 
-      ?ns:!Clflags.dont_record_crc_unit
-  | Some oname -> 
-    Filename.remove_extension oname
 
-
+let set_abs_input_name sourcefile =     
+  let sourcefile =   
+    if !Location.absname && Filename.is_relative  sourcefile then 
+      Ext_path.absolute_cwd_path sourcefile
+    else sourcefile in 
+  Location.set_input_name sourcefile;
+  sourcefile  
 
 
 let setup_error_printer (syntax_kind : [ `ml | `reason | `rescript ])= 
@@ -36,9 +34,10 @@ let setup_error_printer (syntax_kind : [ `ml | `reason | `rescript ])=
   
   
 
-let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf opref = 
+let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf  = 
   setup_error_printer `reason;
   let tmpfile =  Ast_reason_pp.pp sourcefile in   
+  let outputprefix = Config_util.output_prefix sourcefile in 
   (match kind with 
    | Ml_binary.Ml -> 
      Js_implementation.implementation
@@ -47,7 +46,7 @@ let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf opref =
            let ast = Ml_binary.read_ast Ml in_chan in 
            close_in in_chan; ast 
          )
-       ppf  tmpfile opref    
+       ppf  tmpfile ~outputprefix
 
    | Ml_binary.Mli ->
      Js_implementation.interface 
@@ -56,10 +55,9 @@ let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf opref =
            let ast = Ml_binary.read_ast Mli in_chan in 
            close_in in_chan; ast 
          )
-       ppf  tmpfile opref ;    );
+       ppf  tmpfile ~outputprefix  );
   Ast_reason_pp.clean tmpfile 
 
-  
 
 let process_file sourcefile 
   ?(kind ) ppf = 
@@ -67,44 +65,51 @@ let process_file sourcefile
      The {!Location.input_name} relies on that we write the binary ast 
      properly
   *)
-  Location.set_input_name  sourcefile;    
-  let opref = output_prefix sourcefile in 
   let kind =
     match kind with 
     | None -> Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile)  
     | Some kind -> kind in 
   match kind with 
-  | Re -> handle_reason Ml sourcefile ppf opref     
+  | Re -> 
+    let sourcefile = set_abs_input_name  sourcefile in 
+    handle_reason Ml sourcefile ppf 
   | Rei ->
-    handle_reason Mli sourcefile ppf opref 
+    let sourcefile = set_abs_input_name  sourcefile in 
+    handle_reason Mli sourcefile ppf  
   | Ml ->
+    let sourcefile = set_abs_input_name  sourcefile in     
     Js_implementation.implementation 
       ~parser:Pparse_driver.parse_implementation
-      ppf sourcefile opref 
+      ppf sourcefile 
   | Mli  ->   
+    let sourcefile = set_abs_input_name  sourcefile in   
     Js_implementation.interface 
       ~parser:Pparse_driver.parse_interface
-      ppf sourcefile opref   
+      ppf sourcefile 
   | Res -> 
+    let sourcefile = set_abs_input_name  sourcefile in     
     setup_error_printer `rescript;
     Js_implementation.implementation 
       ~parser:Res_driver.parse_implementation
-      ppf sourcefile opref 
+      ppf sourcefile 
   | Resi ->   
+    let sourcefile = set_abs_input_name  sourcefile in 
     setup_error_printer `rescript;
     Js_implementation.interface 
       ~parser:Res_driver.parse_interface
-      ppf sourcefile opref     
+      ppf sourcefile      
   | Intf_ast 
     ->     
-    Js_implementation.interface_mliast ppf sourcefile opref   
+    Js_implementation.interface_mliast ppf sourcefile
     setup_error_printer ;
   | Impl_ast 
     -> 
-    Js_implementation.implementation_mlast ppf sourcefile opref
+    Js_implementation.implementation_mlast ppf sourcefile 
     setup_error_printer;  
   | Mlmap 
-    -> Js_implementation.implementation_map ppf sourcefile opref
+    -> 
+    Location.set_input_name  sourcefile;    
+    Js_implementation.implementation_map ppf sourcefile 
   | Cmi
     ->
     let cmi_sign = (Cmi_format.read_cmi sourcefile).cmi_sign in 

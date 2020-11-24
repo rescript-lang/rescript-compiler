@@ -32,7 +32,6 @@
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_ninja_file_groups.mli
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_ninja_gen.ml
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_ninja_gen.mli
-../lib/4.06.1/bsb.ml: ./bsb/bsb_ninja_global_vars.ml
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_ninja_regen.ml
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_ninja_regen.mli
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_ninja_rule.ml

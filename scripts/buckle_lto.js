@@ -12,7 +12,6 @@ var pairs = [
   ["Clflags.no_implicit_current_dir", "true"],
   ["Clflags.strict_sequence", "true"],
   ["Clflags.strict_formats", "true"],
-  ["Location.absname", "true"],
   ["Clflags.compile_only", "true"],
   ["Clflags.recursive_types","false"]
 ];

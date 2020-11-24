@@ -37,3 +37,16 @@
 val find_opt : string -> string option
 (** [find filename] Input is a file name, output is absolute path *)
 
+
+(** given the input, calculate the output prefix 
+
+    in: src/hello.ast
+    out: src/hello
+
+    with namespace:
+    in: src/hello.ast
+    out: src/hello-Ns
+*)
+val output_prefix : 
+    string -> 
+    string 

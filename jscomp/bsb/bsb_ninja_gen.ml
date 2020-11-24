@@ -236,9 +236,9 @@ let output_ninja_and_namespace_map
 
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in 
   mark_rescript oc;
-  Bsb_ninja_targets.output_kv      
+  (* Bsb_ninja_targets.output_kv      
     Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
-    oc ;
+    oc ; *)
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 

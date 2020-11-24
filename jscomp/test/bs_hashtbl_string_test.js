@@ -179,12 +179,12 @@ function bench4(param) {
 
 function bench5(param) {
   var table = Belt_internalBucketsType.make(Int.hash, Int.eq, 1000000);
-  console.time("test/bs_hashtbl_string_test.ml 133");
+  console.time("bs_hashtbl_string_test.ml 133");
   for(var i = 0; i <= 1000000; ++i){
     Belt_HashMap.set(table, i, i);
   }
-  console.timeEnd("test/bs_hashtbl_string_test.ml 133");
-  console.time("test/bs_hashtbl_string_test.ml 137");
+  console.timeEnd("bs_hashtbl_string_test.ml 133");
+  console.time("bs_hashtbl_string_test.ml 137");
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMap.has(table, i$1)) {
       throw {
@@ -199,12 +199,12 @@ function bench5(param) {
     }
     
   }
-  console.timeEnd("test/bs_hashtbl_string_test.ml 137");
-  console.time("test/bs_hashtbl_string_test.ml 141");
+  console.timeEnd("bs_hashtbl_string_test.ml 137");
+  console.time("bs_hashtbl_string_test.ml 141");
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Belt_HashMap.remove(table, i$2);
   }
-  console.timeEnd("test/bs_hashtbl_string_test.ml 141");
+  console.timeEnd("bs_hashtbl_string_test.ml 141");
   if (Belt_HashMap.isEmpty(table)) {
     return ;
   }
@@ -291,11 +291,11 @@ function bench7(param) {
       };
 }
 
-console.time("test/bs_hashtbl_string_test.ml 203");
+console.time("bs_hashtbl_string_test.ml 203");
 
 bench7(undefined);
 
-console.timeEnd("test/bs_hashtbl_string_test.ml 203");
+console.timeEnd("bs_hashtbl_string_test.ml 203");
 
 var N;
 
