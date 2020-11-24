@@ -52,9 +52,9 @@ let phony ?(order_only_deps=[]) ~inputs ~output oc =
     end;
   output_string oc "\n"
 
-let output_kv key value oc  =
+let output_finger key value oc  =
   output_string oc key ;
-  output_string oc " = ";
+  output_string oc " := ";
   output_string oc value ;
   output_string oc "\n"
 

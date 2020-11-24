@@ -648,6 +648,7 @@ val add_string_char :
    
 val add_ninja_prefix_var : 
    t -> 
+   char -> 
    string -> 
    unit 
    
@@ -771,14 +772,14 @@ let add_char_string b c s  =
   b.position <- new_position
 
 (* equivalent to add_char " "; add_char "$"; add_string s  *)
-let add_ninja_prefix_var b s =  
+let add_ninja_prefix_var b char s =  
   let s_len = String.length s in
   let len = s_len + 2 in 
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
   let b_buffer = b.buffer in 
   let b_position = b.position in 
-  Bytes.unsafe_set b_buffer b_position ' ' ; 
+  Bytes.unsafe_set b_buffer b_position char ; 
   Bytes.unsafe_set b_buffer (b_position + 1) '$' ; 
   Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 2) s_len;
   b.position <- new_position
@@ -12683,6 +12684,51 @@ let output
     
   
 end
+module Bsb_ninja_global_vars
+= struct
+#1 "bsb_ninja_global_vars.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ 
+
+
+(* Invariant: the two string literal has 
+  to be "a" and "$a"
+*)
+
+(* let src_root_dir = "g_root"
+
+let lazy_src_root_dir = "$g_root"  *)
+let g_finger = "g_finger"
+
+
+
+
+
+end
 module Bsb_ninja_rule : sig 
 #1 "bsb_ninja_rule.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -12907,12 +12953,12 @@ let make_custom_rules
   ~package_name
   ~bsc
   ~warnings
-  ~bs_dep
+  ~(bs_dep : string)
   ~(ppx_files : Bsb_config_types.ppx list)
   ~bsc_flags
-  ~dpkg_incls
-  ~lib_incls
-  ~dev_incls
+  ~(dpkg_incls : string)
+  ~(lib_incls : string)
+  ~(dev_incls : string)
   (custom_rules : command Map_string.t) : 
   builtin = 
   (** FIXME: We don't need set [-o ${out}] when building ast 
@@ -12954,6 +13000,8 @@ let make_custom_rules
       Ext_buffer.add_string buf package_name;
       Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
     end;
+    Ext_buffer.add_string buf " -bs-v ";    
+    Ext_buffer.add_ninja_prefix_var buf '-' Bsb_ninja_global_vars.g_finger;
     Ext_buffer.add_string buf " $i";
     begin match postbuild with 
     | None -> ()
@@ -13143,7 +13191,7 @@ val phony  :
   out_channel -> 
   unit
 
-val output_kv : string ->  string -> out_channel -> unit 
+val output_finger : string ->  string -> out_channel -> unit 
 
 end = struct
 #1 "bsb_ninja_targets.ml"
@@ -13201,9 +13249,9 @@ let phony ?(order_only_deps=[]) ~inputs ~output oc =
     end;
   output_string oc "\n"
 
-let output_kv key value oc  =
+let output_finger key value oc  =
   output_string oc key ;
-  output_string oc " = ";
+  output_string oc " := ";
   output_string oc value ;
   output_string oc "\n"
 
@@ -13762,9 +13810,15 @@ let output_ninja_and_namespace_map
 
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in 
   mark_rescript oc;
-  (* Bsb_ninja_targets.output_kv      
-    Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
-    oc ; *)
+  let finger_file  = 
+    fun (x : Bsb_config_types.dependency) -> x.package_install_path //".ninja_log"
+  in  
+  Bsb_ninja_targets.output_finger    
+    Bsb_ninja_global_vars.g_finger 
+    (String.concat " "
+       (Ext_list.map_append bs_dependencies 
+          (Ext_list.map  bs_dev_dependencies finger_file) finger_file))
+    oc ;
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 

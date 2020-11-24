@@ -236,9 +236,15 @@ let output_ninja_and_namespace_map
 
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in 
   mark_rescript oc;
-  (* Bsb_ninja_targets.output_kv      
-    Bsb_ninja_global_vars.src_root_dir per_proj_dir                 
-    oc ; *)
+  let finger_file  = 
+    fun (x : Bsb_config_types.dependency) -> x.package_install_path //".ninja_log"
+  in  
+  Bsb_ninja_targets.output_finger    
+    Bsb_ninja_global_vars.g_finger 
+    (String.concat " "
+       (Ext_list.map_append bs_dependencies 
+          (Ext_list.map  bs_dev_dependencies finger_file) finger_file))
+    oc ;
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 
