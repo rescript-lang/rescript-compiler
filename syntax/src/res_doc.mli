@@ -4,6 +4,7 @@ val nil: t
 val line: t
 val hardLine: t
 val softLine: t
+val literalLine: t
 val text: string -> t
 val concat: t list -> t
 val indent: t -> t

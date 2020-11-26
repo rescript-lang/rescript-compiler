@@ -387,6 +387,10 @@ let printStringLoc sloc cmtTbl =
   let doc = printIdentLike sloc.Location.txt in
   printComments doc cmtTbl sloc.loc
 
+let printStringContents txt =
+  let lines = String.split_on_char '\n' txt in
+  Doc.join ~sep:Doc.literalLine (List.map Doc.text lines)
+
 let printConstant c = match c with
   | Parsetree.Pconst_integer (s, suffix) ->
     begin match suffix with
@@ -394,11 +398,17 @@ let printConstant c = match c with
     | None -> Doc.text s
     end
   | Pconst_string (txt, None) ->
-    Doc.text ("\"" ^ txt ^ "\"")
+    Doc.concat [
+      Doc.text "\"";
+      printStringContents txt;
+      Doc.text "\"";
+    ]
   | Pconst_string (txt, Some prefix) ->
     Doc.concat [
       if prefix = "js" then Doc.nil else Doc.text prefix;
-      Doc.text ("`" ^ txt ^ "`")
+      Doc.text "`";
+      printStringContents txt;
+      Doc.text "`";
     ]
   | Pconst_float (s, _) -> Doc.text s
   | Pconst_char c -> Doc.text ("'" ^ (Char.escaped c) ^ "'")
@@ -3290,10 +3300,16 @@ and printTemplateLiteral expr cmtTbl =
         Doc.concat [lhs; rhs]
     | Pexp_constant (Pconst_string (txt, Some prefix)) ->
       tag := prefix;
-      Doc.text txt
+      printStringContents txt
     | _ ->
       let doc = printExpressionWithComments expr cmtTbl in
-      Doc.concat [Doc.text "${"; doc; Doc.rbrace]
+      Doc.group (
+        Doc.concat [
+          Doc.text "${";
+          Doc.indent doc;
+          Doc.rbrace;
+        ]
+      )
   in
   let content = walkExpr expr in
   Doc.concat [
@@ -4663,18 +4679,27 @@ and printPayload (payload : Parsetree.payload) cmtTbl =
   | PStr [{pstr_desc = Pstr_eval (expr, attrs)}] ->
     let exprDoc = printExpressionWithComments expr cmtTbl in
     let needsParens = match attrs with | [] -> false | _ -> true in
-    Doc.concat [
-      Doc.lparen;
-      Doc.indent (
-        Doc.concat [
-          Doc.softLine;
-          printAttributes attrs cmtTbl;
-          if needsParens then addParens exprDoc else exprDoc;
-        ]
-      );
-      Doc.softLine;
-      Doc.rparen;
-    ]
+    let shouldHug = ParsetreeViewer.isHuggableExpression expr in
+    if shouldHug then
+      Doc.concat [
+        Doc.lparen;
+        printAttributes attrs cmtTbl;
+        if needsParens then addParens exprDoc else exprDoc;
+        Doc.rparen;
+      ]
+    else
+      Doc.concat [
+        Doc.lparen;
+        Doc.indent (
+          Doc.concat [
+            Doc.softLine;
+            printAttributes attrs cmtTbl;
+            if needsParens then addParens exprDoc else exprDoc;
+          ]
+        );
+        Doc.softLine;
+        Doc.rparen;
+      ]
   | PStr [{pstr_desc = Pstr_value (_recFlag, _bindings)} as si] ->
     addParens(printStructureItem si cmtTbl)
   | PStr structure ->

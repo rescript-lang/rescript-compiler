@@ -171,15 +171,33 @@ let isBracedExpr expr =
   | (Some _, _) -> true
   | _ -> false
 
+let isMultilineText txt =
+  let len = String.length txt in
+  let rec check i=
+    if i >= len then false
+    else
+      let c = String.unsafe_get txt i in
+      match c with
+      | '\010' | '\013' -> true
+      | '\\' ->
+        if (i + 2) = len then false
+        else
+          check (i + 2)
+      | _ -> check (i + 1)
+  in
+  check 0
+
 let isHuggableExpression expr =
   match expr.pexp_desc with
   | Pexp_array _
   | Pexp_tuple _
+  | Pexp_constant (Pconst_string (_, Some _))
   | Pexp_construct ({txt = Longident.Lident ("::" | "[]")}, _)
   | Pexp_extension ({txt = "bs.obj"}, _)
   | Pexp_record _ -> true
   | _ when isBlockExpr expr -> true
   | _ when isBracedExpr expr -> true
+  | Pexp_constant (Pconst_string (txt, None)) when isMultilineText txt -> true
   | _ -> false
 
 let isHuggableRhs expr =

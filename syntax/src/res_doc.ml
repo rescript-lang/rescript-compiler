@@ -6,6 +6,9 @@ type lineStyle =
   | Classic (* fits? -> replace with space *)
   | Soft (* fits? -> replaced with nothing *)
   | Hard (* always included, forces breaks in parents *)
+   (* always included, forces breaks in parents, but doesn't increase indentation
+    use case: template literals, multiline string content *)
+  | Literal
 
 type t =
   | Nil
@@ -23,6 +26,7 @@ let nil = Nil
 let line = LineBreak Classic
 let hardLine = LineBreak Hard
 let softLine = LineBreak Soft
+let literalLine = LineBreak Literal
 let text s = Text s
 let concat l = Concat l
 let indent d = Indent d
@@ -58,7 +62,7 @@ let propagateForcedBreaks doc =
     (false, doc)
   | BreakParent ->
     (true, Nil)
-  | LineBreak Hard ->
+  | LineBreak (Hard | Literal) ->
     (true, doc)
   | LineBreak (Classic | Soft) ->
     (false, doc)
@@ -101,7 +105,7 @@ let propagateForcedBreaks doc =
 
 (* See documentation in interface file *)
 let rec willBreak doc = match doc with
-  | LineBreak Hard | BreakParent | Group {shouldBreak = true} -> true
+  | LineBreak (Hard | Literal) | BreakParent | Group {shouldBreak = true} -> true
   | Group {doc} | Indent doc | CustomLayout (doc::_) -> willBreak doc
   | Concat docs -> List.exists willBreak docs
   | IfBreaks {yes; no} -> willBreak yes || willBreak no
@@ -122,7 +126,7 @@ let rec fits w doc = match doc with
   | (_ind, _mode, Text txt)::rest -> fits (w - String.length txt) rest
   | (ind, mode, Indent doc)::rest -> fits w ((ind + 2, mode, doc)::rest)
   | (_ind, Flat, LineBreak break)::rest ->
-      if break = Hard then true
+      if break = Hard || break = Literal then true
       else
         let w = if break = Classic then w - 1 else w in
         fits w rest
@@ -177,9 +181,14 @@ let toString ~width doc =
         if mode = Break then (
           begin match lineSuffices with
           | [] ->
-            MiniBuffer.flush_newline buffer;
-            MiniBuffer.add_string buffer (String.make ind ' ' [@doesNotRaise]);
-            process ~pos:ind [] rest
+            if lineStyle = Literal then (
+              MiniBuffer.add_char buffer '\n';
+              process ~pos:0 [] rest
+            ) else (
+              MiniBuffer.flush_newline buffer;
+              MiniBuffer.add_string buffer (String.make ind ' ' [@doesNotRaise]);
+              process ~pos:ind [] rest
+            )
           | _docs ->
             process ~pos:ind [] (List.concat [List.rev lineSuffices; cmd::rest])
           end
@@ -187,6 +196,7 @@ let toString ~width doc =
           let pos = match lineStyle with
           | Classic -> MiniBuffer.add_string buffer " "; pos + 1
           | Hard -> MiniBuffer.flush_newline buffer; 0
+          | Literal -> MiniBuffer.add_char buffer '\n'; 0
           | Soft -> pos
           in
           process ~pos lineSuffices rest
@@ -292,6 +302,7 @@ let debug t =
         | Classic -> "Classic"
         | Soft -> "Soft"
         | Hard -> "Hard"
+        | Literal -> "Liteal"
       in
       text ("LineBreak(" ^ breakTxt ^ ")")
     | Group {shouldBreak; doc} ->

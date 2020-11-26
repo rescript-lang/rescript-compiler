@@ -869,24 +869,18 @@ module type CompareInt = ComparableInt with type t := int
 `;
 
 exports[`docComments.ml 1`] = `
-"@@ocaml.text(
-  \\" The first special comment of the file is the comment associated
-     to the whole module. \\"
-)
+"@@ocaml.text(\\" The first special comment of the file is the comment associated
+     to the whole module. \\")
 
 @ocaml.doc(\\" The comment for function f \\")
 let f = (x, y) => x + y
 
-@@ocaml.text(
-  \\" This comment is not attached to any element since there is another
-     special comment just before the next element. \\"
-)
+@@ocaml.text(\\" This comment is not attached to any element since there is another
+     special comment just before the next element. \\")
 
 /* A simple comment. */
-@ocaml.doc(
-  \\" Comment for exception My_exception, even with a simple comment
-     between the special comment and the exception.\\"
-)
+@ocaml.doc(\\" Comment for exception My_exception, even with a simple comment
+     between the special comment and the exception.\\")
 exception My_exception(int => int, int)
 
 @ocaml.doc(\\" Comment for type weather  \\")
@@ -921,32 +915,24 @@ module type my_module_type = {
 `;
 
 exports[`docComments.mli 1`] = `
-"@@ocaml.text(
-  \\" The first special comment of the file is the comment associated
-     with the whole module.\\"
-)
+"@@ocaml.text(\\" The first special comment of the file is the comment associated
+     with the whole module.\\")
 
-@@ocaml.text(
-  \\" Special comments can be placed between elements and are kept
+@@ocaml.text(\\" Special comments can be placed between elements and are kept
      by the OCamldoc tool, but are not associated to any element.
-     @-tags in these comments are ignored.\\"
-)
+     @-tags in these comments are ignored.\\")
 
-@@ocaml.text(
-  /* ***************************************************************** */
-  \\" Comments like the one above, with more than two asterisks,
-     are ignored. \\"
-)
+@@ocaml.text(/* ***************************************************************** */
+\\" Comments like the one above, with more than two asterisks,
+     are ignored. \\")
 
 @ocaml.doc(\\" The comment for function f. \\")
 @ocaml.doc(\\" The continuation of the comment for function f. \\")
 let f: (int, int) => int
 
 /* Hello, I'm a simple comment :-) */
-@ocaml.doc(
-  \\" Comment for exception My_exception, even with a simple comment
-     between the special comment and the exception.\\"
-)
+@ocaml.doc(\\" Comment for exception My_exception, even with a simple comment
+     between the special comment and the exception.\\")
 exception My_exception(int => int, int)
 
 @ocaml.doc(\\" Comment for type weather  \\")
@@ -955,10 +941,8 @@ type weather =
   | @ocaml.doc(\\" The comment for constructor Sun \\") Sun
 
 @ocaml.doc(\\" Comment for type weather2  \\")
-@ocaml.doc(
-  \\" I can continue the comment for type weather2 here
-   because there is already a comment associated to the last constructor.\\"
-)
+@ocaml.doc(\\" I can continue the comment for type weather2 here
+   because there is already a comment associated to the last constructor.\\")
 type weather2 =
   | @ocaml.doc(\\" The comment for constructor Rain \\") Rain(int)
   | @ocaml.doc(\\" The comment for constructor Sun \\") Sun
