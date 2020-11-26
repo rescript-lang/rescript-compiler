@@ -10701,83 +10701,12 @@ let extract_predicate (m : json_map)  : string -> bool =
     assume [not toplevel && not (Bsb_dir_index.is_lib_dir dir_index)]      
     is already checked, so we don't need check it again    
 *)
-let try_unlink s = 
-  try Unix.unlink s  
-  with _ -> 
-    Bsb_log.info "@{<info>Failed to remove %s}@." s 
 
-let bs_cmt_post_process_cmd = 
-  lazy (try Sys.getenv "BS_CMT_POST_PROCESS_CMD" with _ -> "")
 
-type suffix_kind =   
-   | Cmi of int | Cmt of int  | Cmj of int | Cmti of int
-   | Not_any 
-
-let classify_suffix (x : string) : suffix_kind =   
-  let i =  
-    Ext_string.ends_with_index x Literals.suffix_cmi in 
-  if i >=0 then Cmi i
-  else 
-    let i =  
-      Ext_string.ends_with_index x Literals.suffix_cmj in 
-    if i >= 0 then Cmj i    
-    else 
-      let i =  
-        Ext_string.ends_with_index x Literals.suffix_cmt in 
-      if i >= 0 then Cmt i   
-      else 
-        let i =  
-          Ext_string.ends_with_index x Literals.suffix_cmti in 
-        if i >= 0 then Cmti i 
-        else Not_any
 
 (** This is the only place where we do some removal during scanning,
   configurabl
 *)    
-let prune_staled_bs_js_files 
-    (context : cxt) 
-    (cur_sources : _ Map_string.t ) 
-     : unit =     
-     (* Doesn't need to use Bsb_global_backend.lib_artifacts_dir because this is only for JS. *)
-  let lib_parent = 
-    Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
-      context.cwd in 
-  if Sys.file_exists lib_parent then
-    (* walk through dangling *.cm[t,i,j] files *)
-    let artifacts = Sys.readdir lib_parent in 
-    Ext_array.iter artifacts (fun x ->       
-        let kind = classify_suffix x  in
-        match kind with 
-        | Not_any -> ()
-        | Cmi i | Cmt i | Cmj i | Cmti i -> 
-          let j = 
-            if context.namespace = None then i              
-            else
-              Ext_string.rindex_neg x '-' 
-          in 
-          if j >= 0 then
-            let cmp = Ext_string.capitalize_sub x  j  in
-            if not (Map_string.mem cur_sources cmp) then 
-            begin (* prune action *)
-              let filepath = Filename.concat lib_parent x in 
-              (match kind with 
-               | Cmt _ -> 
-                 let lazy cmd =  bs_cmt_post_process_cmd in 
-
-                 if cmd <> "" then
-                   (try ignore (
-                       Sys.command (
-                         cmd ^ 
-                         " -cmt-rm " ^ filepath)                   
-                     : int ) with _ -> ())
-               | _ -> ());
-              try_unlink filepath
-            end
-            else () (* assert false *)
-      )
-
-
-
 
 
 (********************************************************************)  
@@ -10858,7 +10787,7 @@ let rec
       | Some s, _  -> parse_sources cxt s 
     in 
     (** Do some clean up *)  
-    prune_staled_bs_js_files cxt sources ;
+    (* prune_staled_bs_js_files cxt sources ; *)
     Bsb_file_groups.cons 
       ~file_group:{ dir ; 
                     sources = sources; 
@@ -13819,6 +13748,9 @@ let output_ninja_and_namespace_map
        (Ext_list.map_append bs_dependencies 
           (Ext_list.map  bs_dev_dependencies finger_file) finger_file))
     oc ;
+  (match gentype_config with 
+  | None -> ()
+  | Some x -> output_string oc ("cleaner = " ^ x.path ^ "\n"));   
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 
