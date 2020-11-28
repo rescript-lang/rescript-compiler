@@ -13610,7 +13610,11 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
     o suffix; o "\n" in 
   let bs = ".."//"bs" in  
   let sb = ".."//".." in 
-  o "rule cp\n  command = cp $i $out\n";
+  o (if Ext_sys.is_windows_or_cygwin then 
+      "rule cp\n  command = cmd.exe /C copy /Y $i $out > null\n"
+    else
+      "rule cp\n  command = cp $i $out\n"
+    );
   files_to_install 
   |> Queue.iter (fun ({name_sans_extension;syntax_kind; info} : Bsb_db.module_info) -> 
       let base = Filename.basename name_sans_extension in 
