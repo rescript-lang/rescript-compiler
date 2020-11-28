@@ -29,8 +29,9 @@
 *)
 type t  
 
+type o = out_channel
 
-val get_name : t  -> out_channel -> string
+val get_name : t  -> o -> string
 
 (***********************************************************)
 (** A list of existing rules *)
