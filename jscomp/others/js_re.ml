@@ -162,7 +162,7 @@ external unicode : t -> bool = "unicode" [@@bs.get]
  * Ignore case
  *)
 
-let re = [%re "/quick\s(brown).+?(jumps)/ig" in
+let re = [%re "/quick\s(brown).+?(jumps)/ig"] in
 let result = re |. Js.Re.exec_ "The Quick Brown Fox Jumps Over The Lazy Dog"
 ]}
 
