@@ -111,7 +111,6 @@ val add_string_char :
    
 val add_ninja_prefix_var : 
    t -> 
-   char -> 
    string -> 
    unit 
    

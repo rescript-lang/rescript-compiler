@@ -177,8 +177,8 @@ let make_custom_rules
     begin match bs_dependencies, bs_dev_dependencies with 
     | [], [] -> ()
     | _, _  -> 
-      Ext_buffer.add_string buf " -bs-v ";    
-      Ext_buffer.add_ninja_prefix_var buf '-' Bsb_ninja_global_vars.g_finger;
+      Ext_buffer.add_string buf " -bs-v";    
+      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_finger;
     end;
     Ext_buffer.add_string buf " $i";
     begin match postbuild with 

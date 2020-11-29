@@ -648,7 +648,6 @@ val add_string_char :
    
 val add_ninja_prefix_var : 
    t -> 
-   char -> 
    string -> 
    unit 
    
@@ -772,14 +771,14 @@ let add_char_string b c s  =
   b.position <- new_position
 
 (* equivalent to add_char " "; add_char "$"; add_string s  *)
-let add_ninja_prefix_var b char s =  
+let add_ninja_prefix_var b s =  
   let s_len = String.length s in
   let len = s_len + 2 in 
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
   let b_buffer = b.buffer in 
   let b_position = b.position in 
-  Bytes.unsafe_set b_buffer b_position char ; 
+  Bytes.unsafe_set b_buffer b_position ' ' ; 
   Bytes.unsafe_set b_buffer (b_position + 1) '$' ; 
   Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 2) s_len;
   b.position <- new_position
@@ -12934,8 +12933,8 @@ let make_custom_rules
     begin match bs_dependencies, bs_dev_dependencies with 
     | [], [] -> ()
     | _, _  -> 
-      Ext_buffer.add_string buf " -bs-v ";    
-      Ext_buffer.add_ninja_prefix_var buf '-' Bsb_ninja_global_vars.g_finger;
+      Ext_buffer.add_string buf " -bs-v";    
+      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_finger;
     end;
     Ext_buffer.add_string buf " $i";
     begin match postbuild with 
