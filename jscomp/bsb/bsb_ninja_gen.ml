@@ -232,6 +232,8 @@ let output_ninja_and_namespace_map
       ~dpkg_incls (* dev dependencies *)
       ~lib_incls (* its own libs *)
       ~dev_incls (* its own devs *)
+      ~bs_dependencies
+      ~bs_dev_dependencies    
       generators in  
 
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in 

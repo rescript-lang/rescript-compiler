@@ -12747,6 +12747,8 @@ val make_custom_rules :
   dpkg_incls:string ->
   lib_incls:string ->
   dev_incls:string ->
+  bs_dependencies:Bsb_config_types.dependencies ->
+  bs_dev_dependencies:Bsb_config_types.dependencies ->
   command Map_string.t ->
   builtin
 
@@ -12884,6 +12886,8 @@ let make_custom_rules
   ~(dpkg_incls : string)
   ~(lib_incls : string)
   ~(dev_incls : string)
+  ~bs_dependencies
+  ~bs_dev_dependencies
   (custom_rules : command Map_string.t) : 
   builtin = 
   let bs_dep = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep in
@@ -12927,8 +12931,12 @@ let make_custom_rules
       Ext_buffer.add_string buf package_name;
       Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
     end;
-    Ext_buffer.add_string buf " -bs-v ";    
-    Ext_buffer.add_ninja_prefix_var buf '-' Bsb_ninja_global_vars.g_finger;
+    begin match bs_dependencies, bs_dev_dependencies with 
+    | [], [] -> ()
+    | _, _  -> 
+      Ext_buffer.add_string buf " -bs-v ";    
+      Ext_buffer.add_ninja_prefix_var buf '-' Bsb_ninja_global_vars.g_finger;
+    end;
     Ext_buffer.add_string buf " $i";
     begin match postbuild with 
     | None -> ()
@@ -13733,6 +13741,8 @@ let output_ninja_and_namespace_map
       ~dpkg_incls (* dev dependencies *)
       ~lib_incls (* its own libs *)
       ~dev_incls (* its own devs *)
+      ~bs_dependencies
+      ~bs_dev_dependencies    
       generators in  
 
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in 
