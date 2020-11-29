@@ -13746,12 +13746,14 @@ let output_ninja_and_namespace_map
   let finger_file  = 
     fun (x : Bsb_config_types.dependency) -> x.package_install_path //".ninja_log"
   in  
-  Bsb_ninja_targets.output_finger    
-    Bsb_ninja_global_vars.g_finger 
-    (String.concat " "
-       (Ext_list.map_append bs_dependencies 
-          (Ext_list.map  bs_dev_dependencies finger_file) finger_file))
-    oc ;
+  Ext_list.iter bs_dependencies (fun x -> 
+      Bsb_ninja_targets.output_finger Bsb_ninja_global_vars.g_finger
+        (finger_file x) oc
+    );
+  Ext_list.iter bs_dev_dependencies (fun x -> 
+      Bsb_ninja_targets.output_finger Bsb_ninja_global_vars.g_finger
+        (finger_file x) oc
+    );
   (match gentype_config with 
   | None -> ()
   | Some x -> output_string oc ("cleaner = " ^ x.path ^ "\n"));   
