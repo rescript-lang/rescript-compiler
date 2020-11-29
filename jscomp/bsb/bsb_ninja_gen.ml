@@ -179,7 +179,6 @@ let output_ninja_and_namespace_map
 
   let warnings = Bsb_warning.to_bsb_string ~package_kind warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
-  let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
   let dpkg_incls  =  (Bsb_build_util.include_dirs_by
                         bs_dev_dependencies
                         (fun x -> x.package_install_path)) in 
@@ -227,7 +226,6 @@ let output_ninja_and_namespace_map
       ~namespace
       ~digest
       ~package_name
-      ~bsc:bsc_path
       ~warnings      
       ~ppx_files
       ~bsc_flags

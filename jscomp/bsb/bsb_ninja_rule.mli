@@ -79,7 +79,6 @@ val make_custom_rules :
   package_specs:Bsb_package_specs.t ->
   namespace:string option ->
   package_name:string ->
-  bsc:string ->
   warnings:string ->
   ppx_files:Bsb_config_types.ppx list ->
   bsc_flags:string ->  
