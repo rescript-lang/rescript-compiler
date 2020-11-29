@@ -12743,7 +12743,6 @@ val make_custom_rules :
   package_name:string ->
   bsc:string ->
   warnings:string ->
-  bs_dep:string ->
   ppx_files:Bsb_config_types.ppx list ->
   bsc_flags:string ->  
   dpkg_incls:string ->
@@ -12881,8 +12880,7 @@ let make_custom_rules
   ~(namespace : string option)
   ~package_name
   ~bsc
-  ~warnings
-  ~(bs_dep : string)
+  ~warnings  
   ~(ppx_files : Bsb_config_types.ppx list)
   ~bsc_flags
   ~(dpkg_incls : string)
@@ -12890,6 +12888,8 @@ let make_custom_rules
   ~(dev_incls : string)
   (custom_rules : command Map_string.t) : 
   builtin = 
+  let bs_dep = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep in
+    
   (** FIXME: We don't need set [-o ${out}] when building ast 
       since the default is already good -- it does not*)
   let buf = Ext_buffer.create 100 in     
@@ -13683,7 +13683,6 @@ let output_ninja_and_namespace_map
   let warnings = Bsb_warning.to_bsb_string ~package_kind warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
   let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
-  let bs_dep = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) in 
   let dpkg_incls  =  (Bsb_build_util.include_dirs_by
                         bs_dev_dependencies
                         (fun x -> x.package_install_path)) in 
@@ -13732,8 +13731,7 @@ let output_ninja_and_namespace_map
       ~digest
       ~package_name
       ~bsc:bsc_path
-      ~warnings
-      ~bs_dep
+      ~warnings      
       ~ppx_files
       ~bsc_flags
       ~dpkg_incls (* dev dependencies *)

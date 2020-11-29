@@ -124,8 +124,7 @@ let make_custom_rules
   ~(namespace : string option)
   ~package_name
   ~bsc
-  ~warnings
-  ~(bs_dep : string)
+  ~warnings  
   ~(ppx_files : Bsb_config_types.ppx list)
   ~bsc_flags
   ~(dpkg_incls : string)
@@ -133,6 +132,8 @@ let make_custom_rules
   ~(dev_incls : string)
   (custom_rules : command Map_string.t) : 
   builtin = 
+  let bs_dep = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep in
+    
   (** FIXME: We don't need set [-o ${out}] when building ast 
       since the default is already good -- it does not*)
   let buf = Ext_buffer.create 100 in     
