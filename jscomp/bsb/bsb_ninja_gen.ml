@@ -108,7 +108,7 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
   let bs = ".."//"bs" in  
   let sb = ".."//".." in 
   o (if Ext_sys.is_windows_or_cygwin then 
-      "rule cp\n  command = cmd.exe /C copy /Y $i $out > null\n"
+      "rule cp\n  command = cmd.exe /C copy /Y $i $out >NUL\n"
     else
       "rule cp\n  command = cp $i $out\n"
     );

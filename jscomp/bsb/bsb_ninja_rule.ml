@@ -242,7 +242,7 @@ let make_custom_rules
     define 
       ~command:(
         if Ext_sys.is_windows_or_cygwin then
-          "cmd.exe /C copy /Y $i $out > null" 
+          "cmd.exe /C copy /Y $i $out >NUL" 
         else "cp $i $out"
       )
       "copy_resource" in
