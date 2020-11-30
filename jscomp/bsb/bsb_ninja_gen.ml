@@ -179,8 +179,6 @@ let output_ninja_and_namespace_map
 
   let warnings = Bsb_warning.to_bsb_string ~package_kind warning in
   let bsc_flags = (get_bsc_flags bsc_flags) in 
-  let bsc_path = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc) in      
-  let bs_dep = (Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep) in 
   let dpkg_incls  =  (Bsb_build_util.include_dirs_by
                         bs_dev_dependencies
                         (fun x -> x.package_install_path)) in 
@@ -228,14 +226,14 @@ let output_ninja_and_namespace_map
       ~namespace
       ~digest
       ~package_name
-      ~bsc:bsc_path
-      ~warnings
-      ~bs_dep
+      ~warnings      
       ~ppx_files
       ~bsc_flags
       ~dpkg_incls (* dev dependencies *)
       ~lib_incls (* its own libs *)
       ~dev_incls (* its own devs *)
+      ~bs_dependencies
+      ~bs_dev_dependencies    
       generators in  
 
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in 
@@ -243,12 +241,14 @@ let output_ninja_and_namespace_map
   let finger_file  = 
     fun (x : Bsb_config_types.dependency) -> x.package_install_path //".ninja_log"
   in  
-  Bsb_ninja_targets.output_finger    
-    Bsb_ninja_global_vars.g_finger 
-    (String.concat " "
-       (Ext_list.map_append bs_dependencies 
-          (Ext_list.map  bs_dev_dependencies finger_file) finger_file))
-    oc ;
+  Ext_list.iter bs_dependencies (fun x -> 
+      Bsb_ninja_targets.output_finger Bsb_ninja_global_vars.g_finger
+        (finger_file x) oc
+    );
+  Ext_list.iter bs_dev_dependencies (fun x -> 
+      Bsb_ninja_targets.output_finger Bsb_ninja_global_vars.g_finger
+        (finger_file x) oc
+    );
   (match gentype_config with 
   | None -> ()
   | Some x -> output_string oc ("cleaner = " ^ x.path ^ "\n"));   

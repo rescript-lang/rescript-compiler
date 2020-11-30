@@ -79,14 +79,14 @@ val make_custom_rules :
   package_specs:Bsb_package_specs.t ->
   namespace:string option ->
   package_name:string ->
-  bsc:string ->
   warnings:string ->
-  bs_dep:string ->
   ppx_files:Bsb_config_types.ppx list ->
   bsc_flags:string ->  
   dpkg_incls:string ->
   lib_incls:string ->
   dev_incls:string ->
+  bs_dependencies:Bsb_config_types.dependencies ->
+  bs_dev_dependencies:Bsb_config_types.dependencies ->
   command Map_string.t ->
   builtin
 

@@ -123,16 +123,18 @@ let make_custom_rules
   ~(package_specs: Bsb_package_specs.t)
   ~(namespace : string option)
   ~package_name
-  ~bsc
-  ~warnings
-  ~(bs_dep : string)
+  ~warnings  
   ~(ppx_files : Bsb_config_types.ppx list)
   ~bsc_flags
   ~(dpkg_incls : string)
   ~(lib_incls : string)
   ~(dev_incls : string)
+  ~bs_dependencies
+  ~bs_dev_dependencies
   (custom_rules : command Map_string.t) : 
   builtin = 
+  let bs_dep = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep in
+  let bsc = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc in 
   (** FIXME: We don't need set [-o ${out}] when building ast 
       since the default is already good -- it does not*)
   let buf = Ext_buffer.create 100 in     
@@ -172,8 +174,12 @@ let make_custom_rules
       Ext_buffer.add_string buf package_name;
       Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
     end;
-    Ext_buffer.add_string buf " -bs-v ";    
-    Ext_buffer.add_ninja_prefix_var buf '-' Bsb_ninja_global_vars.g_finger;
+    begin match bs_dependencies, bs_dev_dependencies with 
+    | [], [] -> ()
+    | _, _  -> 
+      Ext_buffer.add_string buf " -bs-v";    
+      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_finger;
+    end;
     Ext_buffer.add_string buf " $i";
     begin match postbuild with 
     | None -> ()
