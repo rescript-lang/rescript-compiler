@@ -1,4 +1,29 @@
 `*` means  potential break changes
+# 8.4.0
+
+- #4848 #4847 #4844 #4836 #4826 #4824
+  
+  Pinned packages support and `-make-world` respect changes of dependencies
+
+- #4840 #4841 more robust handling of removing stale output
+
+
+- #4831 use relative paths in the command line
+  It will be expanded to absolute path right after the compiler see the path,
+  such changes work better with the underlying ninja build engine, and should perform slightly better
+
+- #4828 no need pass -o for compiling, inferred directly (with namespace support too)
+
+- #4827 *internal* the dev version of bsc now behave roughly the same as the released version
+
+- #4825 fix a typo in the wanring `%@string` -> `@string`
+
+- #4823 introduce a new warning 109: toplevel expression is expected to have type unit
+  It is turned on as warn-error by default. This warning is introduced to avoid partial application errors in a curried language
+
+- #4822 more robust hanlding of : ignore warnings and warn-error when bsb is building dependencies
+
+
 
 # 8.3.3
 This is a bug release for 8.3.*
