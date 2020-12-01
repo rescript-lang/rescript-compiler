@@ -2404,16 +2404,27 @@ and printPatternRecordRow row cmtTbl =
       longident.loc with
       loc_end = pattern.Parsetree.ppat_loc.loc_end
     } in
+    let rhsDoc =
+      let doc = printPattern pattern cmtTbl in
+      if Parens.patternRecordRowRhs pattern then
+        addParens doc
+      else
+        doc
+    in
     let doc = Doc.group (
       Doc.concat([
         printLidentPath longident cmtTbl;
-        Doc.text ": ";
-        Doc.indent(
-          Doc.concat [
-            Doc.softLine;
-            printPattern pattern cmtTbl;
-          ]
-        )
+        Doc.text ":";
+        (if ParsetreeViewer.isHuggablePattern pattern then
+          Doc.concat [Doc.space; rhsDoc]
+        else
+          Doc.indent(
+            Doc.concat [
+              Doc.line;
+              rhsDoc;
+            ]
+          )
+        );
       ])
     ) in
     printComments doc cmtTbl locForComments

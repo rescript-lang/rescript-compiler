@@ -215,6 +215,7 @@ let isHuggablePattern pattern =
   | Ppat_array _
   | Ppat_tuple _
   | Ppat_record _
+  | Ppat_variant _
   | Ppat_construct _ -> true
   | _ -> false
 

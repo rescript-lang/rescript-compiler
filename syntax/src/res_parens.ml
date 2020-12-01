@@ -408,3 +408,9 @@ type kind = Parenthesized | Braced of Location.t | Nothing
 let arrowReturnTypExpr typExpr = match typExpr.Parsetree.ptyp_desc with
   | Parsetree.Ptyp_arrow _ -> true
   | _ -> false
+
+let patternRecordRowRhs (pattern : Parsetree.pattern) =
+  match pattern.ppat_desc with
+  | Ppat_constraint ({ppat_desc = Ppat_unpack _}, {ptyp_desc = Ptyp_package _}) -> false
+  | Ppat_constraint _ -> true
+  | _ -> false
