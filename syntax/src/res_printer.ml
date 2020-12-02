@@ -3991,6 +3991,10 @@ and printJsxName {txt = lident} =
     Doc.join ~sep:Doc.dot (List.map Doc.text segments)
 
 and printArgumentsWithCallbackInFirstPosition ~uncurried args cmtTbl =
+  (* Because the same subtree gets printed twice, we need to copy the cmtTbl.
+   * consumed comments need to be marked not-consumed and reprinted…
+   * Cheng's different comment algorithm will solve this. *)
+  let cmtTblCopy = CommentTable.copy cmtTbl in
   let (callback, printedArgs) = match args with
   | (lbl, expr)::args ->
     let lblDoc = match lbl with
@@ -4036,13 +4040,17 @@ and printArgumentsWithCallbackInFirstPosition ~uncurried args cmtTbl =
    *   arg3,
    * )
    *)
-  let breakAllArgs = printArguments ~uncurried args cmtTbl in
+  let breakAllArgs = printArguments ~uncurried args cmtTblCopy in
   Doc.customLayout [
     fitsOnOneLine;
     breakAllArgs;
   ]
 
 and printArgumentsWithCallbackInLastPosition ~uncurried args cmtTbl =
+  (* Because the same subtree gets printed twice, we need to copy the cmtTbl.
+   * consumed comments need to be marked not-consumed and reprinted…
+   * Cheng's different comment algorithm will solve this. *)
+  let cmtTblCopy = CommentTable.copy cmtTbl in
   let rec loop acc args = match args with
   | [] -> (Doc.nil, Doc.nil)
   | [lbl, expr] ->
@@ -4095,7 +4103,7 @@ and printArgumentsWithCallbackInLastPosition ~uncurried args cmtTbl =
    *   (param1, parm2) => doStuff(param1, parm2)
    * )
    *)
-  let breakAllArgs = printArguments ~uncurried args cmtTbl in
+  let breakAllArgs = printArguments ~uncurried args cmtTblCopy in
   Doc.customLayout [
     fitsOnOneLine;
     arugmentsFitOnOneLine;

@@ -13,6 +13,12 @@ let make () = {
   trailing = Hashtbl.create 100;
 }
 
+let copy tbl = {
+  leading = Hashtbl.copy tbl.leading;
+  inside = Hashtbl.copy tbl.inside;
+  trailing = Hashtbl.copy tbl.trailing;
+}
+
 let empty = make ()
 
 let log t =

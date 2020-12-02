@@ -1409,6 +1409,26 @@ let decoratorTags =
   ->Belt.Array.map(item => {
     <span className=\\"mr-2\\" key=item.name> <Tag text={item.name} /> </span>
   })
+
+// Comments should still be printed here (callback in last position)
+let makeEntryJobsForJournal = (journalId: string, userId: string) => {
+  let promises = Belt.MutableQueue.make()
+  // We'll return a promise from this function so that the caller can know
+  // whether we've successfully finished creating jobs or not.
+  let (pom, resolve, reject) = Pom.make()
+  _getEntries(
+    ~journalId,
+    ~authHeader=MercuryService.makeAuthToken(userId),
+    // This has got to add a promise to a mutable queue of promises or something.
+    ~onData=onEntryData,
+    ~onComplete=_ => {
+      // When the request is done, we should wait on the queue of promises to be all finished, then we can resolve.
+      resolve()
+    },
+  )
+
+  pom
+}
 "
 `;
 

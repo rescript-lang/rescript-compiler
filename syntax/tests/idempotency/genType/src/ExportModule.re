@@ -113,7 +113,8 @@ let emitAllModuleItems =
                |> ModuleName.toString
              : typeForValue
                |> EmitType.typeToString(
-                    ~config={...config, language: Flow} /* abuse type to print object */,
+                    /* abuse type to print object */
+                    ~config={...config, language: Flow},
                     ~typeNameIsInterface=_ =>
                     false
                   );
