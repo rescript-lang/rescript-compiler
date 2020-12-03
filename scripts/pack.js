@@ -60,9 +60,9 @@ ${" ".repeat(indent)})`;
 
 /**
  *
- * @param {string} templatesDir
  */
-function main(templatesDir) {
+function updateThemes() {
+  var templatesDir = path.join(__dirname, "..", "jscomp", "bsb", "templates");  
   var output = child_process.spawnSync(`git clean -dfx ${templatesDir}`, {
     shell: true,
     encoding: "utf-8",
@@ -92,5 +92,9 @@ ${fs
     "utf8"
   );
 }
-var templatesDir = path.join(__dirname, "..", "jscomp", "bsb", "templates");
-main(templatesDir);
+exports.updateThemes = updateThemes;
+
+
+if (require.main === module) {
+  updateThemes();
+}
