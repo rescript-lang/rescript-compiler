@@ -58,8 +58,12 @@ ${" ".repeat(indent)})`;
   return output;
 }
 
-function main() {
-  var output = child_process.spawnSync(`git clean -dfx templates`, {
+/**
+ *
+ * @param {string} templatesDir
+ */
+function main(templatesDir) {
+  var output = child_process.spawnSync(`git clean -dfx ${templatesDir}`, {
     shell: true,
     encoding: "utf-8",
   });
@@ -71,11 +75,9 @@ function main() {
     console.log(output.stderr);
   }
 
-  var templatesDir = path.join(__dirname, "templates");
-
   // run git clean -dfx . first
   fs.writeFileSync(
-    path.join(__dirname, "bsb_templates.ml"),
+    path.join(templatesDir, "..", "bsb_templates.ml"),
     `
 type  node = 
   | Dir of string *  node list 
@@ -90,5 +92,5 @@ ${fs
     "utf8"
   );
 }
-
-main();
+var templatesDir = path.join(__dirname, "..", "jscomp", "bsb", "templates");
+main(templatesDir);

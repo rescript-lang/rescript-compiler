@@ -8,13 +8,9 @@ There's a `templates/` subdirectory. It's the thing shown when you do `bsb -them
 
 ## Add/edit a template
 
-The content of `templates` is packed into `bsb_templates.ml` automatically when running `pack-templates.sh`, located in this directory.
+The content of `templates` is packed into `bsb_templates.ml` automatically when running [pack.js](../../scripts/pack.js).
 
-When adding/editing a template the script needs to be rerun to update the relevant parts in `bsb_templates.ml`. The script uses [`ocamlres`](https://github.com/OCamlPro/ocp-ocamlres), a tool for embedding files inside ocaml executables. You will need to install it with [`opam`](https://opam.ocaml.org/doc/Install.html), ocaml package manager. Follow the [instructions](https://opam.ocaml.org/doc/Install.html) to install `opam`, if you haven't installed it yet. To install `ocp-ocamlres` run:
-
-```sh
-opam install ocp-ocamlres
-```
+When adding/editing a template the script needs to be rerun to update the relevant parts in `bsb_templates.ml`. 
 
 ## Testing a template locally
 
