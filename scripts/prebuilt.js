@@ -43,6 +43,7 @@ function buildCompiler() {
 }
 if (!is_windows) {
   if (!process.argv.includes("-noclean")) {
+    require("./pack").updateThemes();
     rebuild();
   }
 
