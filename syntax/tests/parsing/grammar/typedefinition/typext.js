@@ -60,3 +60,21 @@ type t += private | @attr1 Foo = Foo2
 type t += private @attr1 Foo = Foo2 | @attr2 Bar = Bar2
 @attr
 type t += private | @attr1 Foo = Foo2 | @attr2 Bar = Bar2
+
+module Tid = {
+  type t<_> = ..
+  type s<_> = ..
+  type u<_> = ..
+}
+
+module type Tid = {
+  type t
+  type Tid.t<_> += Tid: Tid.t<t>
+
+  type Tid.s<_> +=
+    | Tid: Tid.s<t>
+
+  type Tid.u<_> +=
+    | Uid: Tid.u<t>
+    | Uid2: Tid.u<t>
+}

@@ -5050,6 +5050,10 @@ and parseConstrDef ~parseAttrs p =
     Parser.next p;
     let longident = parseModuleLongIdent ~lowercase:false p in
     Parsetree.Pext_rebind longident
+  | Colon ->
+    Parser.next p;
+    let typ = parseTypExpr p in
+    Parsetree.Pext_decl (Pcstr_tuple [], Some typ)
   | _ ->
     Parsetree.Pext_decl (Pcstr_tuple [], None)
   in
