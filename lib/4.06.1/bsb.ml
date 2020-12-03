@@ -14315,29 +14315,21 @@ let global_substitute text ~reg:expr repl_fun =
   String.concat "" (List.rev (replace [] 0 false))
 
 end
-module OCamlRes
-= struct
-#1 "oCamlRes.ml"
-
-
-module Res = struct
-    type  node = 
-        | Dir of string *  node list 
-        | File of string *  string
-
-end    
-
-
-
-end
 module Bsb_templates : sig 
 #1 "bsb_templates.mli"
+type  node = 
+  | Dir of string *  node list 
+  | File of string *  string
 
 
-val root : OCamlRes.Res.node list 
+val root : node list 
 end = struct
 #1 "bsb_templates.ml"
-let root = OCamlRes.Res.([
+
+type  node = 
+  | Dir of string *  node list 
+  | File of string *  string  
+let root = ([
    Dir("basic",[
     File(".gitignore",
     "*.exe\n\
@@ -16322,7 +16314,7 @@ let mkdir_or_not_if_exists dir =
      "%s expected to be added as dir but exist file is not a dir" dir
   | Non_exists -> Unix.mkdir dir 0o777
 
-let rec process_theme_aux env cwd (x : OCamlRes.Res.node) =
+let rec process_theme_aux env cwd (x : Bsb_templates.node) =
   match x with
   | File (name,content)  ->
     let new_file = cwd // name in 
@@ -16334,10 +16326,8 @@ let rec process_theme_aux env cwd (x : OCamlRes.Res.node) =
     List.iter (fun x -> process_theme_aux env new_cwd x ) nodes
 
 let list_themes () =
-  Format.fprintf Format.std_formatter "Available themes: @.";
-  Bsb_templates.root
-  |>
-  List.iter (fun (x : OCamlRes.Res.node)  ->
+  Format.fprintf Format.std_formatter "Available themes: @.";    
+  Ext_list.iter Bsb_templates.root (fun x  ->
       match  x with
       | Dir (x, _) ->
         Format.fprintf Format.std_formatter "%s@." x
@@ -16346,7 +16336,7 @@ let list_themes () =
     )
 
 (* @raise [Not_found] *)
-let process_themes env theme proj_dir (themes : OCamlRes.Res.node list ) =
+let process_themes env theme proj_dir (themes : Bsb_templates.node list ) =
   match Ext_list.find_first themes (fun x ->
       match  x with
       | Dir (dir, _) -> dir = theme

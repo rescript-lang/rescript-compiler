@@ -1,4 +1,8 @@
-let root = OCamlRes.Res.([
+
+type  node = 
+  | Dir of string *  node list 
+  | File of string *  string  
+let root = ([
    Dir("basic",[
     File(".gitignore",
     "*.exe\n\

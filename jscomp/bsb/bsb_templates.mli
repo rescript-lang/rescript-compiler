@@ -1,3 +1,6 @@
+type  node = 
+  | Dir of string *  node list 
+  | File of string *  string
 
 
-val root : OCamlRes.Res.node list 
+val root : node list 

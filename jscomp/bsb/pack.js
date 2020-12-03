@@ -76,7 +76,11 @@ function main() {
   // run git clean -dfx . first
   fs.writeFileSync(
     path.join(__dirname, "bsb_templates.ml"),
-    `let root = OCamlRes.Res.([
+    `
+type  node = 
+  | Dir of string *  node list 
+  | File of string *  string  
+let root = ([
 ${fs
   .readdirSync(templatesDir)
   .filter((x) => fs.statSync(path.join(templatesDir, x)).isDirectory())

@@ -64,7 +64,6 @@
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_watcher_gen.mli
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_world.ml
 ../lib/4.06.1/bsb.ml: ./bsb/bsb_world.mli
-../lib/4.06.1/bsb.ml: ./bsb/oCamlRes.ml
 ../lib/4.06.1/bsb.ml: ./common/bs_version.ml
 ../lib/4.06.1/bsb.ml: ./common/bs_version.mli
 ../lib/4.06.1/bsb.ml: ./ext/bsb_db.ml
