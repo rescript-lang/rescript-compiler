@@ -1576,14 +1576,15 @@ function nativeNinja() {
 
   var templateNative = `
 subninja ${getPreprocessorFileName()}
+compilerlibs := ../native/4.06.1/lib/ocaml/compiler-libs/ocamlcommon.cmxa
 rule optc
-    command = $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50 -warn-error A -absname -c $in
+    command = $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50 -warn-error A -absname -c $in # $compilerlibs
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
     description = arcive -> $out
 rule link
-    command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out
+    command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out # $compilerlibs
     description = linking -> $out
 rule mk_bsversion
     command = node $in
