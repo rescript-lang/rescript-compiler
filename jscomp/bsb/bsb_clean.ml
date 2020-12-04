@@ -55,8 +55,9 @@ let clean_bs_garbage proj_dir =
 
 
 let clean_bs_deps  proj_dir =
+  let _, pinned_dependencies = Bsb_config_parse.package_specs_from_bsconfig () in   
   let queue =   
-  Bsb_build_util.walk_all_deps  proj_dir   in 
+  Bsb_build_util.walk_all_deps  proj_dir ~pinned_dependencies in 
   Queue.iter (fun (pkg_cxt : Bsb_build_util.package_context )->
       (* whether top or not always do the cleaning *)
       clean_bs_garbage  pkg_cxt.proj_dir

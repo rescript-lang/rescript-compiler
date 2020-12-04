@@ -7,7 +7,10 @@ var child_process = require("child_process");
 // `util.format` is useful to escape to js style string literrals.
 // { name : "basic", children : ... }
 // { name : "xx", content : ... }
-
+/**
+ * 
+ * @param {string} dir 
+ */
 function scanDir(dir) {
   var files = fs.readdirSync(dir).sort();
   var children = files.map((file) => {
@@ -23,6 +26,11 @@ function scanDir(dir) {
   return { name: path.basename(dir), children };
 }
 
+/**
+ * 
+ * @param {string} s 
+ * @param {number} indent 
+ */
 function escape(s, indent) {
   return (
     " ".repeat(indent) +
