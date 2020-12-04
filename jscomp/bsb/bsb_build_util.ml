@@ -182,7 +182,8 @@ let rec walk_all_deps_aux
   (paths : string list) 
   ~(top : top) 
   (dir : string)  
-  (queue : _ Queue.t) = 
+  (queue : _ Queue.t) 
+  ~pinned_dependencies = 
   let bsconfig_json =  dir // Literals.bsconfig_json in
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
@@ -223,7 +224,8 @@ let rec walk_all_deps_aux
                    let package_dir = 
                      Bsb_pkg.resolve_bs_package ~cwd:dir 
                        (Bsb_pkg_types.string_as_package   new_package) in 
-                   walk_all_deps_aux visited package_stacks  ~top:(Expect_name new_package) package_dir queue  ;
+                   walk_all_deps_aux visited package_stacks  ~top:(Expect_name new_package) package_dir queue  
+                   ~pinned_dependencies ;
                  | _ -> 
                    Bsb_exception.errorf ~loc 
                      "%s expect an array"
@@ -232,15 +234,22 @@ let rec walk_all_deps_aux
         |> ignore in
       begin 
         explore_deps Bsb_build_schemas.bs_dependencies;          
-        if top = Expect_none then explore_deps Bsb_build_schemas.bs_dev_dependencies;
+        begin match top with
+          | Expect_none ->
+            explore_deps Bsb_build_schemas.bs_dev_dependencies
+          | Expect_name n when 
+              Set_string.mem pinned_dependencies n -> 
+            explore_deps Bsb_build_schemas.bs_dev_dependencies
+          | Expect_name _ -> () 
+        end;
         Queue.add {top ; proj_dir = dir} queue;
         Hash_string.add visited cur_package_name dir;
       end
   | _ -> ()
 
 
-let walk_all_deps dir  : package_context Queue.t = 
+let walk_all_deps dir ~pinned_dependencies : package_context Queue.t = 
   let visited = Hash_string.create 0 in 
   let cb = Queue.create () in 
-  walk_all_deps_aux visited [] ~top:Expect_none dir cb ;
+  walk_all_deps_aux visited [] ~top:Expect_none dir cb ~pinned_dependencies;
   cb

@@ -44,7 +44,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
   in 
   let lib_artifacts_dir = Bsb_config.lib_bs in
   let queue = 
-    Bsb_build_util.walk_all_deps  cwd  in 
+    Bsb_build_util.walk_all_deps  cwd ~pinned_dependencies in 
   (* let oc = open_out_bin ".deps.log" in 
   queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) -> 
     match top with 
