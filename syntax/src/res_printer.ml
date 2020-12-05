@@ -1612,7 +1612,9 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
             Doc.softLine;
             if isUncurried then Doc.concat [Doc.dot; Doc.space] else Doc.nil;
             Doc.join ~sep:(Doc.concat [Doc.comma; Doc.line]) (
-              List.map (fun tp -> printTypeParameter tp cmtTbl) args
+              List.map (fun tp ->
+                printTypeParameter tp cmtTbl
+              ) args
             )
           ]
         );
@@ -1812,6 +1814,11 @@ and printTypeParameter (attrs, lbl, typ) cmtTbl =
   | Labelled _ -> Doc.nil
   | Optional _lbl -> Doc.text "=?"
   in
+  let (loc, typ) = match typ.ptyp_attributes with
+  | ({Location.txt = "ns.namedArgLoc"; loc}, _)::attrs ->
+    ({loc with loc_end = typ.ptyp_loc.loc_end}, {typ with ptyp_attributes = attrs})
+  | _ -> (typ.ptyp_loc, typ)
+  in
   let doc = Doc.group (
     Doc.concat [
       uncurried;
@@ -1821,7 +1828,7 @@ and printTypeParameter (attrs, lbl, typ) cmtTbl =
       optionalIndicator;
     ]
   ) in
-  printComments doc cmtTbl typ.ptyp_loc
+  printComments doc cmtTbl loc
 
 and printValueBinding ~recFlag vb cmtTbl i =
   let (hasGenType, attrs) = ParsetreeViewer.splitGenTypeAttr vb.pvb_attributes in

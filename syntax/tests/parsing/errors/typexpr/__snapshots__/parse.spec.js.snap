@@ -8,14 +8,16 @@ module Error2 =
     type nonrec observation =
       {
       observed: int ;
-      onStep: currentValue:unit -> [%rescript.typehole ] }
+      onStep:
+        currentValue:((unit)[@ns.namedArgLoc ]) -> [%rescript.typehole ] }
   end
 module Error3 =
   struct
     type nonrec observation =
       {
       observed: int ;
-      onStep: currentValue:unit -> [%rescript.typehole ] }
+      onStep:
+        currentValue:((unit)[@ns.namedArgLoc ]) -> [%rescript.typehole ] }
   end
 =====Errors=============================================
 
@@ -206,8 +208,8 @@ type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
 
 exports[`garbage.res 1`] = `
 "=====Parsetree==========================================
-external printName : name:unit -> unit = \\"printName\\"[@@bs.module
-                                                      \\"moduleName\\"]
+external printName : name:((unit)[@ns.namedArgLoc ]) -> unit = \\"printName\\"
+[@@bs.module \\"moduleName\\"]
 =====Errors=============================================
 
   Syntax error!

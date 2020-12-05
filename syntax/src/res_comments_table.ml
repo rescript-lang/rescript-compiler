@@ -1279,13 +1279,12 @@ let rec walkStructure s t comments =
       attach t.trailing callExpr.pexp_loc afterExpr;
       walkList
         ~getLoc:(fun (_argLabel, expr) ->
-          let loc = match expr.Parsetree.pexp_attributes with
+          match expr.Parsetree.pexp_attributes with
           | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_attrs ->
               {loc with loc_end = expr.pexp_loc.loc_end}
           | _ ->
              expr.pexp_loc
-          in
-          loc)
+          )
         ~walkNode:walkExprArgument
         arguments
         t
@@ -1840,7 +1839,13 @@ and walkExprArgument (_argLabel, expr) t comments =
 
   and walkTypeParameters typeParameters t comments =
     visitListButContinueWithRemainingComments
-      ~getLoc:(fun (_, _, typexpr) -> typexpr.Parsetree.ptyp_loc)
+      ~getLoc:(fun (_, _, typexpr) ->
+        match typexpr.Parsetree.ptyp_attributes with
+        | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_attrs ->
+            {loc with loc_end = typexpr.ptyp_loc.loc_end}
+        | _ ->
+          typexpr.ptyp_loc
+      )
       ~walkNode:walkTypeParameter
       ~newlineDelimited:false
       typeParameters

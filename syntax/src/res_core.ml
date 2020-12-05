@@ -3828,9 +3828,13 @@ and parseTypeParameter p =
     match p.Parser.token with
     | Tilde ->
       Parser.next p;
-      let (name, _loc) = parseLident p in
+      let (name, loc) = parseLident p in
+      let lblLocAttr = (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr []) in
       Parser.expect ~grammar:Grammar.TypeExpression Colon p;
-      let typ = parseTypExpr p in
+      let typ =
+        let typ = parseTypExpr p in
+        {typ with ptyp_attributes = lblLocAttr::typ.ptyp_attributes}
+      in
       begin match p.Parser.token with
       | Equal ->
         Parser.next p;
@@ -3899,9 +3903,13 @@ and parseEs6ArrowType ~attrs p =
   match p.Parser.token with
   | Tilde ->
     Parser.next p;
-    let (name, _loc) = parseLident p in
+    let (name, loc) = parseLident p in
+    let lblLocAttr = (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr []) in
     Parser.expect ~grammar:Grammar.TypeExpression Colon p;
-    let typ = parseTypExpr ~alias:false ~es6Arrow:false p in
+    let typ =
+      let typ = parseTypExpr ~alias:false ~es6Arrow:false p in
+      {typ with ptyp_attributes = lblLocAttr::typ.ptyp_attributes}
+    in
     let arg = match p.Parser.token with
     | Equal ->
       Parser.next p;
@@ -3912,7 +3920,8 @@ and parseEs6ArrowType ~attrs p =
     in
     Parser.expect EqualGreater p;
     let returnType = parseTypExpr ~alias:false p in
-    Ast_helper.Typ.arrow ~attrs arg typ returnType
+    let loc = mkLoc startPos p.prevEndPos in
+    Ast_helper.Typ.arrow ~loc ~attrs arg typ returnType
   | _ ->
     let parameters = parseTypeParameters p in
     Parser.expect EqualGreater p;

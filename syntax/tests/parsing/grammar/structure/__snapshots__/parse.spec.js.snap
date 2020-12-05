@@ -35,7 +35,9 @@ exports[`externalDefinition.js 1`] = `
 "external clear : t -> int -> unit = \\"clear\\"
 external add_nat : nat -> int = \\"add_nat_bytecode\\" \\"add_nat_native\\"
 external attachShader :
-  t -> program:webGlProgram -> shader:webGlShader -> unit = \\"attachShader\\"
+  t ->
+    program:((webGlProgram)[@ns.namedArgLoc ]) ->
+      shader:((webGlShader)[@ns.namedArgLoc ]) -> unit = \\"attachShader\\"
 [@@bs.send ]
 external svg : unit -> React.element = \\"svg\\"
 external svg : unit -> React.element = \\"svg\\"

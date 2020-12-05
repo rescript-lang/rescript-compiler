@@ -22,7 +22,8 @@ exports[`external.js 1`] = `
 "module type Signature  =
   sig
     type nonrec t
-    external linkProgram : t -> program:webGlProgram -> unit = \\"linkProgram\\"
+    external linkProgram :
+      t -> program:((webGlProgram)[@ns.namedArgLoc ]) -> unit = \\"linkProgram\\"
     [@@bs.send ]
     external add_nat :
       nat -> int -> int -> int = \\"add_nat_bytecode\\" \\"add_nat_native\\"

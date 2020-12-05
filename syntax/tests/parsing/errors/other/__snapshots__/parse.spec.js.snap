@@ -95,7 +95,8 @@ exports[`patternMatching.js 1`] = `
 exports[`regionMissingComma.res 1`] = `
 "=====Parsetree==========================================
 external make :
-  ?style:ReactDOMRe.Style.t -> ((?image:bool -> React.element)[@bs ]) =
+  ?style:((ReactDOMRe.Style.t)[@ns.namedArgLoc ]) ->
+    ((?image:((bool)[@ns.namedArgLoc ]) -> React.element)[@bs ]) =
     \\"ModalContent\\"
 type nonrec 'extraInfo student =
   {

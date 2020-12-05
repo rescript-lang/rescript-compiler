@@ -32,6 +32,23 @@ type fn = {
 type add = /* before */ ( /* c0 */ int /* c1 */, /* c2 */ int /* c3 */) => /* before return */ int /* after */
 type add = /* before */ ( /* c0 */ ~a:int /* c1 */, /* c2 */ ~b:int /* c3 */) => /* before return */ int /* after */
 type multiply = /* before */ ( /* c0 */ ~fn: (/* cinner0 */ int /* cinner1 */, /* cinner2 */int /*cinner3 */) => /*cx*/ int /* c1 */, /* c2 */ ~b:int /* c3 */) => int /* after */
+type make = (
+  ~activity: ActivityFlow_Activity.t,
+  ~showExpert: (string, string) => unit,
+  ~showCognitiveAspect: string => unit,
+  ~next: (string, string, array<string>) => unit,
+  ~hapticFeedback: unit => unit,
+  ~participants: Belt.Set.String.t,
+  // here
+
+  // above
+  /* c0 */ ~openPhotoFeed: /* c1 */ (/* c2 */~feedId: /* c3 */ option<string> /* c4 */, /* c5 */ unit /* c6 */) => /* c7 */ unit /* c8 */,
+  // only provide this when it shows a random activity
+  ~getAnother: unit => unit=?,
+) => React.element
+
+type f = /* c0 */ ~a: /* c1 */ int /* c2 */ => /* c3 */  int /* c4 */
+type f = (/* c0 */ ~a: /* c1 */ int /* c2 */) => /* c3 */  int /* c4 */
 
 // Ptyp_object
 type jsUser = /* before */ {
