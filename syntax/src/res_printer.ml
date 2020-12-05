@@ -5,6 +5,17 @@ module Token = Res_token
 module Parens = Res_parens
 module ParsetreeViewer = Res_parsetree_viewer
 
+type callbackStyle =
+  (* regular arrow function, example: `let f = x => x + 1` *)
+  | NoCallback
+  (* `Thing.map(foo, (arg1, arg2) => MyModuleBlah.toList(argument))` *)
+  | FitsOnOneLine
+  (* Thing.map(longArgumet, veryLooooongArgument, (arg1, arg2) =>
+   *   MyModuleBlah.toList(argument)
+   * )
+   *)
+  | ArgumentsFitOnOneLine
+
 let addParens doc =
   Doc.group (
     Doc.concat [
@@ -1901,6 +1912,7 @@ and printValueBinding ~recFlag vb cmtTbl i =
     | Braced braces  -> printBraces doc expr braces
     | Nothing -> doc
   in
+  let patternDoc = printPattern vb.pvb_pat cmtTbl in
   (*
    * we want to optimize the layout of one pipe:
    *   let tbl = data->Js.Array2.reduce((map, curr) => {
@@ -1919,7 +1931,7 @@ and printValueBinding ~recFlag vb cmtTbl i =
         Doc.concat [
           attrs;
           header;
-          printPattern vb.pvb_pat cmtTbl;
+          patternDoc;
           Doc.text " =";
           Doc.space;
           printedExpr;
@@ -1929,7 +1941,7 @@ and printValueBinding ~recFlag vb cmtTbl i =
         Doc.concat [
           attrs;
           header;
-          printPattern vb.pvb_pat cmtTbl;
+          patternDoc;
           Doc.text " =";
           Doc.indent (
             Doc.concat [
@@ -1962,7 +1974,7 @@ and printValueBinding ~recFlag vb cmtTbl i =
       Doc.concat [
         attrs;
         header;
-        printPattern vb.pvb_pat cmtTbl;
+        patternDoc;
         Doc.text " =";
         if shouldIndent then
           Doc.indent (
@@ -3019,7 +3031,7 @@ and printExpression (e : Parsetree.expression) cmtTbl =
     in
     let hasConstraint = match typConstraint with | Some _ -> true | None -> false in
     let parametersDoc = printExprFunParameters
-      ~inCallback:false
+      ~inCallback:NoCallback
       ~uncurried
       ~hasConstraint
       parameters
@@ -3224,7 +3236,9 @@ and printPexpFun ~inCallback e cmtTbl =
                   returnDoc;
                 ]
               );
-              if inCallback then Doc.softLine else Doc.nil;
+              (match inCallback with
+              | FitsOnOneLine | ArgumentsFitOnOneLine -> Doc.softLine
+              | _ -> Doc.nil);
             ]
           else
             Doc.concat [
@@ -3240,15 +3254,13 @@ and printPexpFun ~inCallback e cmtTbl =
       ]
     | _ -> Doc.nil
     in
-    Doc.group (
-      Doc.concat [
-        printAttributes attrs cmtTbl;
-        parametersDoc;
-        typConstraintDoc;
-        Doc.text " =>";
-        returnExprDoc;
-      ]
-    )
+    Doc.concat [
+      printAttributes attrs cmtTbl;
+      parametersDoc;
+      typConstraintDoc;
+      Doc.text " =>";
+      returnExprDoc;
+    ]
 
 and printTernaryOperand expr cmtTbl =
   let doc = printExpressionWithComments expr cmtTbl in
@@ -4010,11 +4022,12 @@ and printArgumentsWithCallbackInFirstPosition ~uncurried args cmtTbl =
     in
     let callback = Doc.concat [
       lblDoc;
-      printPexpFun ~inCallback:true expr cmtTbl
+      printPexpFun ~inCallback:FitsOnOneLine expr cmtTbl
     ] in
-    let printedArgs = List.map (fun arg ->
-      printArgument arg cmtTbl
-    ) args |> Doc.join ~sep:(Doc.concat [Doc.comma; Doc.line])
+    let printedArgs =
+      Doc.join ~sep:(Doc.concat [Doc.comma; Doc.line]) (
+        List.map (fun arg -> printArgument arg cmtTbl) args
+      )
     in
     (callback, printedArgs)
   | _ -> assert false
@@ -4051,8 +4064,9 @@ and printArgumentsWithCallbackInLastPosition ~uncurried args cmtTbl =
    * consumed comments need to be marked not-consumed and reprinted…
    * Cheng's different comment algorithm will solve this. *)
   let cmtTblCopy = CommentTable.copy cmtTbl in
+  let cmtTblCopy2 = CommentTable.copy cmtTbl in
   let rec loop acc args = match args with
-  | [] -> (Doc.nil, Doc.nil)
+  | [] -> (Doc.nil, Doc.nil, Doc.nil)
   | [lbl, expr] ->
     let lblDoc = match lbl with
     | Asttypes.Nolabel -> Doc.nil
@@ -4065,13 +4079,20 @@ and printArgumentsWithCallbackInLastPosition ~uncurried args cmtTbl =
         Doc.tilde; printIdentLike txt; Doc.equal; Doc.question;
       ]
     in
-    let callback = printPexpFun ~inCallback:true expr cmtTbl in
-    (Doc.concat (List.rev acc), Doc.concat [lblDoc; callback])
+    let callbackFitsOnOneLine =
+      printPexpFun ~inCallback:FitsOnOneLine expr cmtTbl in
+    let callbackArgumetnsFitsOnOneLine =
+      printPexpFun ~inCallback:ArgumentsFitOnOneLine expr cmtTblCopy in
+    (
+      Doc.concat (List.rev acc),
+      Doc.concat [lblDoc; callbackFitsOnOneLine],
+      Doc.concat [lblDoc; callbackArgumetnsFitsOnOneLine]
+    )
   | arg::args ->
     let argDoc = printArgument arg cmtTbl in
     loop (Doc.line::Doc.comma::argDoc::acc) args
   in
-  let (printedArgs, callback) = loop [] args in
+  let (printedArgs, callback, callback2) = loop [] args in
 
   (* Thing.map(foo, (arg1, arg2) => MyModuleBlah.toList(argument)) *)
   let fitsOnOneLine = Doc.concat [
@@ -4088,10 +4109,8 @@ and printArgumentsWithCallbackInLastPosition ~uncurried args cmtTbl =
   let arugmentsFitOnOneLine =
     Doc.concat [
       if uncurried then Doc.text "(." else Doc.lparen;
-      Doc.softLine;
       printedArgs;
-      Doc.breakableGroup ~forceBreak:true callback;
-      Doc.softLine;
+      Doc.breakableGroup ~forceBreak:true callback2;
       Doc.rparen;
     ]
   in
@@ -4103,7 +4122,7 @@ and printArgumentsWithCallbackInLastPosition ~uncurried args cmtTbl =
    *   (param1, parm2) => doStuff(param1, parm2)
    * )
    *)
-  let breakAllArgs = printArguments ~uncurried args cmtTblCopy in
+  let breakAllArgs = printArguments ~uncurried args cmtTblCopy2 in
   Doc.customLayout [
     fitsOnOneLine;
     arugmentsFitOnOneLine;
@@ -4362,11 +4381,20 @@ and printExprFunParameters ~inCallback ~uncurried ~hasConstraint parameters cmtT
     Doc.text "()"
   (* let f = (~greeting, ~from as hometown, ~x=?) => () *)
   | parameters ->
+    let inCallback = match inCallback with
+      | FitsOnOneLine -> true
+      | _ -> false
+    in
     let lparen = if uncurried then Doc.text "(. " else Doc.lparen in
     let shouldHug = ParsetreeViewer.parametersShouldHug parameters in
     let printedParamaters = Doc.concat [
       if shouldHug || inCallback then Doc.nil else Doc.softLine;
-      Doc.join ~sep:(Doc.concat [Doc.comma; if inCallback then Doc.space else Doc.line])
+      Doc.join
+        ~sep:(
+          Doc.concat [
+            Doc.comma; if inCallback then Doc.line else Doc.line
+          ]
+        )
         (List.map (fun p -> printExpFunParameter p cmtTbl) parameters)
     ] in
     Doc.group (

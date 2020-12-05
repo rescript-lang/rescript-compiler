@@ -234,7 +234,7 @@ let debug t =
   let rec toDoc = function
     | Nil -> text "nil"
     | BreakParent -> text "breakparent"
-    | Text txt -> text ("text(" ^ txt ^ ")")
+    | Text txt -> text ("text(\"" ^ txt ^ "\")")
     | LineSuffix doc -> group(
         concat [
           text "linesuffix(";
@@ -245,6 +245,7 @@ let debug t =
           text ")"
         ]
       )
+    | Concat [] -> text "concat()"
     | Concat docs -> group(
         concat [
           text "concat(";
@@ -312,7 +313,7 @@ let debug t =
           indent (
             concat [
               line;
-              text ("shouldBreak: " ^ (string_of_bool shouldBreak));
+              text ("{shouldBreak: " ^ (string_of_bool shouldBreak) ^ "}");
               concat [text ",";  line];
               toDoc doc;
             ]

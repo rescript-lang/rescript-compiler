@@ -256,3 +256,66 @@ let makeEntryJobsForJournal = (journalId: string, userId: string) => {
 
   pom
 }
+
+let make = fn(
+  (
+    ~a: option<string>=?,
+    ~b: option<string>=?,
+    ~c: option<string>=?,
+    ~d: option<string>=?,
+    ~e: option<string>=?,
+    x
+  ) => {
+    Js.log()
+  }
+)
+
+let make = fn(
+  (
+    ~a: option<string>,
+    ~b: option<string>,
+    ~c: option<string>,
+    ~d: option<string>,
+    ~e: option<string>,
+    x
+  ) => {
+    Js.log()
+  }
+)
+
+let make = fn(
+  (
+    ~a: optionstring,
+    ~b: optionstring,
+    ~c: optionstring,
+    ~d: optionstring,
+    ~e: optionstring,
+    x
+  ) => {
+    Js.log()
+  }
+)
+
+let make = fn(
+  (
+     aoptionstring,
+     boptionstring,
+     coptionstring,
+     doptionstring,
+     eoptionstring,
+     foptionstring,
+    x
+  ) => {
+    Js.log()
+  }
+)
+
+// comments should not disappear on the pattern 
+let /* a */ decoratorTags /* b */ = items
+  ->Js.Array2.filter(items => {items.category === Decorators})
+
+let /* a */ decoratorTags /* b */ = items->Js.Array2.filter(items => {
+  items.category === Decorators
+  || items.category === ChristmasLighting
+  || items.category === Unknown
+})

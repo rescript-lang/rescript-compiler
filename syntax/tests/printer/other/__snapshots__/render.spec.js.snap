@@ -393,16 +393,19 @@ exports[`moduleData.ml 1`] = `
 `;
 
 exports[`nesting.res 1`] = `
-"let unitsCommands = state.units->Js.Array2.mapi(({
-  unit: targetUnit,
-  coordinates: targetCoordinates,
-}, i) => {
+"let unitsCommands = state.units->Js.Array2.mapi((
+  {unit: targetUnit, coordinates: targetCoordinates},
+  i,
+) => {
   // n^2
   let res = []
-  state.units->Js.Array2.forEachi(({
-    unit: unitThatMightBeAttacking,
-    coordinates: unitThatMightBeAttackingCoordinates,
-  }, j) => {
+  state.units->Js.Array2.forEachi((
+    {
+      unit: unitThatMightBeAttacking,
+      coordinates: unitThatMightBeAttackingCoordinates,
+    },
+    j,
+  ) => {
     if i !== j {
       switch Js.Array2.unsafe_get(
         unitThatMightBeAttacking.timeline,
