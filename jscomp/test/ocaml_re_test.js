@@ -1988,7 +1988,7 @@ function equal$2(_x1, _x2) {
     } else {
       switch (x1.TAG | 0) {
         case /* Set */0 :
-            if (typeof x2 === "number" || x2.TAG) {
+            if (typeof x2 === "number" || x2.TAG !== /* Set */0) {
               return false;
             } else {
               return Caml_obj.caml_equal(x1._0, x2._0);
@@ -2560,7 +2560,7 @@ function as_set(s) {
           Error: new Error()
         };
   }
-  if (!s.TAG) {
+  if (s.TAG === /* Set */0) {
     return s._0;
   }
   throw {

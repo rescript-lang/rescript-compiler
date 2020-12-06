@@ -6,10 +6,10 @@ function is_number(_expr) {
     var expr = _expr;
     switch (expr.TAG | 0) {
       case /* Val */0 :
-          if (expr._0.TAG) {
-            return false;
-          } else {
+          if (expr._0.TAG === /* Natural */0) {
             return true;
+          } else {
+            return false;
           }
       case /* Neg */1 :
           _expr = expr._0;

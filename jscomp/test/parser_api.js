@@ -1484,10 +1484,10 @@ function ansi_of_color(param) {
 
 function code_of_style(c) {
   if (typeof c !== "number") {
-    if (c.TAG) {
-      return "4" + ansi_of_color(c._0);
-    } else {
+    if (c.TAG === /* FG */0) {
       return "3" + ansi_of_color(c._0);
+    } else {
+      return "4" + ansi_of_color(c._0);
     }
   }
   switch (c) {
@@ -7374,18 +7374,18 @@ function varify_constructors(var_names, t) {
           };
   };
   var loop_row_field = function (t) {
-    if (t.TAG) {
-      return {
-              TAG: /* Rinherit */1,
-              _0: loop(t._0)
-            };
-    } else {
+    if (t.TAG === /* Rtag */0) {
       return {
               TAG: /* Rtag */0,
               _0: t._0,
               _1: t._1,
               _2: t._2,
               _3: List.map(loop, t._3)
+            };
+    } else {
+      return {
+              TAG: /* Rinherit */1,
+              _0: loop(t._0)
             };
     }
   };
@@ -14642,7 +14642,7 @@ function directive_parse(token_with_comments, lexbuf) {
             var value_v = query(curr_loc, curr_token._0);
             return token_op(calc, (function (e) {
                           push(e);
-                          if (typeof value_v !== "number" && !value_v.TAG) {
+                          if (typeof value_v !== "number" && value_v.TAG === /* Dir_bool */0) {
                             return value_v._0;
                           }
                           var ty = type_of_directive(value_v);
@@ -16546,30 +16546,30 @@ function token$1(lexbuf) {
     if (typeof docs === "number") {
       return ;
     }
-    if (docs.TAG) {
-      var b = docs._2;
-      var f = docs._1;
+    if (docs.TAG === /* After */0) {
       var a = docs._0;
       if (lines >= 2) {
         set_post_docstrings(post_pos, List.rev(a));
-        set_post_extra_docstrings(post_pos, List.rev_append(f, List.rev(b)));
-        set_floating_docstrings(pre_pos, List.rev_append(f, List.rev(b)));
         return set_pre_extra_docstrings(pre_pos, List.rev(a));
       } else {
         set_post_docstrings(post_pos, List.rev(a));
-        set_post_extra_docstrings(post_pos, List.rev_append(f, List.rev(b)));
-        set_floating_docstrings(pre_pos, List.rev(f));
-        set_pre_extra_docstrings(pre_pos, List.rev(a));
-        return set_pre_docstrings(pre_pos, b);
+        return set_pre_docstrings(pre_pos, a);
       }
     }
+    var b = docs._2;
+    var f = docs._1;
     var a$1 = docs._0;
     if (lines >= 2) {
       set_post_docstrings(post_pos, List.rev(a$1));
+      set_post_extra_docstrings(post_pos, List.rev_append(f, List.rev(b)));
+      set_floating_docstrings(pre_pos, List.rev_append(f, List.rev(b)));
       return set_pre_extra_docstrings(pre_pos, List.rev(a$1));
     } else {
       set_post_docstrings(post_pos, List.rev(a$1));
-      return set_pre_docstrings(pre_pos, a$1);
+      set_post_extra_docstrings(post_pos, List.rev_append(f, List.rev(b)));
+      set_floating_docstrings(pre_pos, List.rev(f));
+      set_pre_extra_docstrings(pre_pos, List.rev(a$1));
+      return set_pre_docstrings(pre_pos, b);
     }
   };
   var loop = function (_lines, _docs, lexbuf) {
@@ -16629,32 +16629,11 @@ function token$1(lexbuf) {
                         tl: /* [] */0
                       }
                     });
-              } else if (docs.TAG) {
-                var b = docs._2;
-                var f = docs._1;
+              } else if (docs.TAG === /* After */0) {
                 var a = docs._0;
                 docs$prime = lines >= 2 ? ({
                       TAG: /* Before */1,
                       _0: a,
-                      _1: Pervasives.$at(b, f),
-                      _2: {
-                        hd: doc$1,
-                        tl: /* [] */0
-                      }
-                    }) : ({
-                      TAG: /* Before */1,
-                      _0: a,
-                      _1: f,
-                      _2: {
-                        hd: doc$1,
-                        tl: b
-                      }
-                    });
-              } else {
-                var a$1 = docs._0;
-                docs$prime = lines >= 2 ? ({
-                      TAG: /* Before */1,
-                      _0: a$1,
                       _1: /* [] */0,
                       _2: {
                         hd: doc$1,
@@ -16664,7 +16643,28 @@ function token$1(lexbuf) {
                       TAG: /* After */0,
                       _0: {
                         hd: doc$1,
-                        tl: a$1
+                        tl: a
+                      }
+                    });
+              } else {
+                var b = docs._2;
+                var f = docs._1;
+                var a$1 = docs._0;
+                docs$prime = lines >= 2 ? ({
+                      TAG: /* Before */1,
+                      _0: a$1,
+                      _1: Pervasives.$at(b, f),
+                      _2: {
+                        hd: doc$1,
+                        tl: /* [] */0
+                      }
+                    }) : ({
+                      TAG: /* Before */1,
+                      _0: a$1,
+                      _1: f,
+                      _2: {
+                        hd: doc$1,
+                        tl: b
                       }
                     });
               }
@@ -16834,11 +16834,11 @@ function wrap(parsing_fun, lexbuf) {
       if (typeof tmp === "number") {
         throw err;
       }
-      if (tmp.TAG) {
-        throw err;
-      }
-      if (input_name.contents === "//toplevel//") {
-        skip_phrase(lexbuf);
+      if (tmp.TAG === /* Illegal_character */0) {
+        if (input_name.contents === "//toplevel//") {
+          skip_phrase(lexbuf);
+          throw err;
+        }
         throw err;
       }
       throw err;

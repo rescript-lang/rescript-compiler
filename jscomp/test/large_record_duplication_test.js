@@ -128,15 +128,14 @@ var v2 = {
 };
 
 function get_x0$1(x) {
-  if (x.TAG) {
-    return ;
-  } else {
+  if (x.TAG === /* A0 */0) {
     return x.x0;
   }
+  
 }
 
 function f2(x) {
-  if (x.TAG) {
+  if (x.TAG !== /* A0 */0) {
     return x;
   }
   var newrecord = Caml_obj.caml_obj_dup(x);

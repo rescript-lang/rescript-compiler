@@ -5,10 +5,10 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
 function eq_A(x, y) {
-  if (x.TAG || y.TAG) {
-    return false;
-  } else {
+  if (x.TAG === /* A */0 && y.TAG === /* A */0) {
     return x._0 === y._0;
+  } else {
+    return false;
   }
 }
 

@@ -24,13 +24,13 @@ function f(param) {
 }
 
 function bind(x, f) {
-  if (x.TAG) {
-    return x;
-  } else {
+  if (x.TAG === /* Left */0) {
     return {
             TAG: /* Left */0,
             _0: Curry._1(f, x._0)
           };
+  } else {
+    return x;
   }
 }
 

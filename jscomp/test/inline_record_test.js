@@ -34,14 +34,14 @@ var v1 = {
 };
 
 function f(x) {
-  if (x.TAG) {
-    return List.fold_left((function (prim, prim$1) {
-                  return prim + prim$1 | 0;
-                }), 0, x.more);
-  } else {
+  if (x.TAG === /* A0 */0) {
     return List.fold_left((function (prim, prim$1) {
                   return prim + prim$1 | 0;
                 }), x.lbl, x.more);
+  } else {
+    return List.fold_left((function (prim, prim$1) {
+                  return prim + prim$1 | 0;
+                }), 0, x.more);
   }
 }
 
@@ -80,10 +80,10 @@ if (A0 === A0) {
 eq("File \"inline_record_test.ml\", line 51, characters 6-13", tmp, 3);
 
 function ff(x) {
-  if (x.TAG) {
-    x.z = x.z + 2 | 0;
-  } else {
+  if (x.TAG === /* A0 */0) {
     x.x = x.x + 1 | 0;
+  } else {
+    x.z = x.z + 2 | 0;
   }
   
 }
@@ -107,7 +107,9 @@ for(var i = 0; i <= 10; ++i){
 
 var tmp$1;
 
-if (v4.TAG) {
+if (v4.TAG === /* A0 */0) {
+  tmp$1 = v4.x;
+} else {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
@@ -119,15 +121,11 @@ if (v4.TAG) {
       };
 }
 
-tmp$1 = v4.x;
-
 eq("File \"inline_record_test.ml\", line 69, characters 6-13", tmp$1, 11);
 
 var tmp$2;
 
-if (v5.TAG) {
-  tmp$2 = v5.z;
-} else {
+if (v5.TAG === /* A0 */0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
@@ -138,6 +136,8 @@ if (v5.TAG) {
         Error: new Error()
       };
 }
+
+tmp$2 = v5.z;
 
 eq("File \"inline_record_test.ml\", line 71, characters 6-13", tmp$2, 22);
 

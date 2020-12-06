@@ -37,15 +37,15 @@ function parse(token) {
           if (n._0 === "(") {
             var v = parse_expr_aux(parse_term_aux(parse_atom(undefined)));
             var match = token$1(undefined);
-            if (match.TAG) {
+            if (match.TAG === /* Kwd */0) {
+              if (match._0 === ")") {
+                return v;
+              }
               throw {
                     RE_EXN_ID: Parse_error,
                     _1: "Unbalanced parens",
                     Error: new Error()
                   };
-            }
-            if (match._0 === ")") {
-              return v;
             }
             throw {
                   RE_EXN_ID: Parse_error,
@@ -72,34 +72,36 @@ function parse(token) {
   };
   var parse_term_aux = function (e1) {
     var e = token$1(undefined);
-    if (e.TAG) {
+    if (e.TAG === /* Kwd */0) {
+      switch (e._0) {
+        case "*" :
+            return Math.imul(e1, parse_term_aux(parse_atom(undefined)));
+        case "/" :
+            return Caml_int32.div(e1, parse_term_aux(parse_atom(undefined)));
+        default:
+          Queue.push(e, look_ahead);
+          return e1;
+      }
+    } else {
       Queue.push(e, look_ahead);
       return e1;
-    }
-    switch (e._0) {
-      case "*" :
-          return Math.imul(e1, parse_term_aux(parse_atom(undefined)));
-      case "/" :
-          return Caml_int32.div(e1, parse_term_aux(parse_atom(undefined)));
-      default:
-        Queue.push(e, look_ahead);
-        return e1;
     }
   };
   var parse_expr_aux = function (e1) {
     var e = token$1(undefined);
-    if (e.TAG) {
+    if (e.TAG === /* Kwd */0) {
+      switch (e._0) {
+        case "+" :
+            return e1 + parse_expr_aux(parse_term_aux(parse_atom(undefined))) | 0;
+        case "-" :
+            return e1 - parse_expr_aux(parse_term_aux(parse_atom(undefined))) | 0;
+        default:
+          Queue.push(e, look_ahead);
+          return e1;
+      }
+    } else {
       Queue.push(e, look_ahead);
       return e1;
-    }
-    switch (e._0) {
-      case "+" :
-          return e1 + parse_expr_aux(parse_term_aux(parse_atom(undefined))) | 0;
-      case "-" :
-          return e1 - parse_expr_aux(parse_term_aux(parse_atom(undefined))) | 0;
-      default:
-        Queue.push(e, look_ahead);
-        return e1;
     }
   };
   var r = parse_expr_aux(parse_term_aux(parse_atom(undefined)));
@@ -165,20 +167,21 @@ function l_parse(token) {
     while(true) {
       var a = _a;
       var t = token$1(undefined);
-      if (t.TAG) {
+      if (t.TAG === /* Kwd */0) {
+        switch (t._0) {
+          case "*" :
+              _a = Math.imul(a, parse_f(undefined));
+              continue ;
+          case "/" :
+              _a = Caml_int32.div(a, parse_f(undefined));
+              continue ;
+          default:
+            Queue.push(t, look_ahead);
+            return a;
+        }
+      } else {
         Queue.push(t, look_ahead);
         return a;
-      }
-      switch (t._0) {
-        case "*" :
-            _a = Math.imul(a, parse_f(undefined));
-            continue ;
-        case "/" :
-            _a = Caml_int32.div(a, parse_f(undefined));
-            continue ;
-        default:
-          Queue.push(t, look_ahead);
-          return a;
       }
     };
   };
@@ -189,15 +192,15 @@ function l_parse(token) {
           if (i._0 === "(") {
             var v = parse_t_aux(parse_f_aux(parse_f(undefined)));
             var t = token$1(undefined);
-            if (t.TAG) {
+            if (t.TAG === /* Kwd */0) {
+              if (t._0 === ")") {
+                return v;
+              }
               throw {
                     RE_EXN_ID: Parse_error,
                     _1: "Unbalanced )",
                     Error: new Error()
                   };
-            }
-            if (t._0 === ")") {
-              return v;
             }
             throw {
                   RE_EXN_ID: Parse_error,
@@ -224,20 +227,21 @@ function l_parse(token) {
     while(true) {
       var a = _a;
       var t = token$1(undefined);
-      if (t.TAG) {
+      if (t.TAG === /* Kwd */0) {
+        switch (t._0) {
+          case "+" :
+              _a = a + parse_f_aux(parse_f(undefined)) | 0;
+              continue ;
+          case "-" :
+              _a = a - parse_f_aux(parse_f(undefined)) | 0;
+              continue ;
+          default:
+            Queue.push(t, look_ahead);
+            return a;
+        }
+      } else {
         Queue.push(t, look_ahead);
         return a;
-      }
-      switch (t._0) {
-        case "+" :
-            _a = a + parse_f_aux(parse_f(undefined)) | 0;
-            continue ;
-        case "-" :
-            _a = a - parse_f_aux(parse_f(undefined)) | 0;
-            continue ;
-        default:
-          Queue.push(t, look_ahead);
-          return a;
       }
     };
   };
