@@ -924,10 +924,10 @@ function get_obj(param) {
 }
 
 function is_player(param) {
-  if (param.TAG) {
-    return false;
-  } else {
+  if (param.TAG === /* Player */0) {
     return true;
+  } else {
+    return false;
   }
 }
 
@@ -2147,39 +2147,39 @@ function translate_keys(param) {
 }
 
 function run_update_collid(state, collid, all_collids) {
-  if (collid.TAG) {
-    var obj = collid._2;
-    var evolved = update_collidable(state, collid, all_collids);
-    if (!obj.kill) {
-      collid_objs.contents = {
-        hd: collid,
-        tl: Pervasives.$at(collid_objs.contents, evolved)
+  if (collid.TAG === /* Player */0) {
+    var o = collid._2;
+    var keys = translate_keys(undefined);
+    o.crouch = false;
+    var match = update_player(o, keys, state.ctx);
+    var player;
+    if (match !== undefined) {
+      var new_spr = match[1];
+      normalize_pos(o.pos, collid._1.params, new_spr.params);
+      player = {
+        TAG: /* Player */0,
+        _0: match[0],
+        _1: new_spr,
+        _2: o
       };
+    } else {
+      player = collid;
     }
-    var new_parts = obj.kill ? kill(collid, state.ctx) : /* [] */0;
-    particles.contents = Pervasives.$at(particles.contents, new_parts);
-    return collid;
+    var evolved = update_collidable(state, player, all_collids);
+    collid_objs.contents = Pervasives.$at(collid_objs.contents, evolved);
+    return player;
   }
-  var o = collid._2;
-  var keys = translate_keys(undefined);
-  o.crouch = false;
-  var match = update_player(o, keys, state.ctx);
-  var player;
-  if (match !== undefined) {
-    var new_spr = match[1];
-    normalize_pos(o.pos, collid._1.params, new_spr.params);
-    player = {
-      TAG: /* Player */0,
-      _0: match[0],
-      _1: new_spr,
-      _2: o
+  var obj = collid._2;
+  var evolved$1 = update_collidable(state, collid, all_collids);
+  if (!obj.kill) {
+    collid_objs.contents = {
+      hd: collid,
+      tl: Pervasives.$at(collid_objs.contents, evolved$1)
     };
-  } else {
-    player = collid;
   }
-  var evolved$1 = update_collidable(state, player, all_collids);
-  collid_objs.contents = Pervasives.$at(collid_objs.contents, evolved$1);
-  return player;
+  var new_parts = obj.kill ? kill(collid, state.ctx) : /* [] */0;
+  particles.contents = Pervasives.$at(particles.contents, new_parts);
+  return collid;
 }
 
 function update_loop(canvas, param, map_dim) {

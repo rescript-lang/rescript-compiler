@@ -799,16 +799,16 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
   | Number (Int {i = i0 ; _}), Number (Int {i = i1; }) -> 
     bool (i0 = i1)
   | Undefined , Undefined -> true_  
-  | (Bin(Bor, 
+  (* | (Bin(Bor, 
          {expression_desc = Number(Int {i = 0l; _})}, 
          ({expression_desc = Caml_block_tag _; _} as a ))
     |
       Bin(Bor, 
           ({expression_desc = Caml_block_tag _; _} as a),
           {expression_desc = Number (Int {i = 0l; _})})), 
-    Number (Int {i = 0l; _})
+    Number (Int {i = 0l;}) when e1.comment = None
     ->  (** (x.tag | 0) === 0  *)
-    not  a     
+    not  a      *)
   | (Bin(Bor, 
          {expression_desc = Number(Int {i = 0l; _})}, 
          ({expression_desc = Caml_block_tag _; _} as a ))

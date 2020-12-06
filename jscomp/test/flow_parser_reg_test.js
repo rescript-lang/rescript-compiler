@@ -7212,7 +7212,7 @@ function primary(env) {
       case /* T_LPAREN */3 :
           var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
           var _type = param_list_or_type(env);
-          if (_type.TAG) {
+          if (_type.TAG !== /* ParamList */0) {
             return _type._0;
           }
           var match$2 = _type._0;
@@ -8075,7 +8075,7 @@ function pattern(check_env, _param) {
 }
 
 function object_property(check_env, param) {
-  if (param.TAG) {
+  if (param.TAG !== /* Property */0) {
     return pattern(check_env, param._0[1].argument);
   }
   var property = param._0[1];
@@ -8096,10 +8096,10 @@ function object_property(check_env, param) {
 
 function array_element(check_env, param) {
   if (param !== undefined) {
-    if (param.TAG) {
-      return pattern(check_env, param._0[1].argument);
-    } else {
+    if (param.TAG === /* Element */0) {
       return pattern(check_env, param._0);
+    } else {
+      return pattern(check_env, param._0[1].argument);
     }
   } else {
     return check_env;
@@ -8333,12 +8333,12 @@ function _function(env) {
   var simple = is_simple_function_params(params, defaults, rest);
   strict_post_check(env, match$4[2], simple, id$2, params);
   var match$5;
-  match$5 = body.TAG ? [
-      body._0[0],
-      true
-    ] : [
+  match$5 = body.TAG === /* BodyBlock */0 ? [
       body._0[0],
       false
+    ] : [
+      body._0[0],
+      true
     ];
   return [
           btwn(start_loc, match$5[0]),
@@ -8518,7 +8518,7 @@ function variable(env) {
 
 function is_tighter(a, b) {
   var a_prec;
-  a_prec = a.TAG ? a._0 - 1 | 0 : a._0;
+  a_prec = a.TAG === /* Left_assoc */0 ? a._0 : a._0 - 1 | 0;
   return a_prec >= b._0;
 }
 
@@ -9012,7 +9012,7 @@ function _function$1(env) {
   var simple = is_simple_function_params(params, defaults, rest);
   strict_post_check(env, match$3[2], simple, id$1, params);
   var expression;
-  expression = body.TAG ? true : false;
+  expression = body.TAG === /* BodyBlock */0 ? false : true;
   return [
           btwn(start_loc, match$3[0]),
           {
@@ -10445,7 +10445,7 @@ function try_arrow_function(env) {
   var simple = is_simple_function_params(params, defaults, rest);
   strict_post_check(env$3, match$3[1], simple, undefined, params);
   var expression;
-  expression = body.TAG ? true : false;
+  expression = body.TAG === /* BodyBlock */0 ? false : true;
   var loc = btwn(start_loc, match$2[0]);
   return [
           loc,
@@ -10628,12 +10628,12 @@ function _method(env, kind) {
   var simple = is_simple_function_params(params, /* [] */0, undefined);
   strict_post_check(env, match$1[2], simple, undefined, params);
   var match$2;
-  match$2 = body.TAG ? [
-      body._0[0],
-      true
-    ] : [
+  match$2 = body.TAG === /* BodyBlock */0 ? [
       body._0[0],
       false
+    ] : [
+      body._0[0],
+      true
     ];
   var value_0 = match$2[0];
   var value_1 = {
@@ -10869,12 +10869,12 @@ function init(env, start_loc, key, async, generator) {
         var simple = is_simple_function_params(params, defaults, rest);
         strict_post_check(env, match$3[2], simple, undefined, params);
         var match$4;
-        match$4 = body.TAG ? [
-            body._0[0],
-            true
-          ] : [
+        match$4 = body.TAG === /* BodyBlock */0 ? [
             body._0[0],
             false
+          ] : [
+            body._0[0],
+            true
           ];
         var value_0 = match$4[0];
         var value_1 = {
@@ -10919,7 +10919,7 @@ function init(env, start_loc, key, async, generator) {
 }
 
 function check_property(env, prop_map, prop) {
-  if (prop.TAG) {
+  if (prop.TAG !== /* Property */0) {
     return prop_map;
   }
   var match = prop._0;
@@ -11176,12 +11176,12 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
   var simple = is_simple_function_params(params, defaults, rest);
   strict_post_check(env, match$2[2], simple, undefined, params);
   var match$3;
-  match$3 = body.TAG ? [
-      body._0[0],
-      true
-    ] : [
+  match$3 = body.TAG === /* BodyBlock */0 ? [
       body._0[0],
       false
+    ] : [
+      body._0[0],
+      true
     ];
   var end_loc$1 = match$3[0];
   var value_1 = {
@@ -11205,7 +11205,7 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
   switch (key.TAG | 0) {
     case /* Literal */0 :
         var match$4 = key._0[1].value;
-        kind = typeof match$4 === "number" || match$4.TAG || match$4._0 !== "constructor" ? /* Method */1 : /* Constructor */0;
+        kind = typeof match$4 === "number" || !(match$4.TAG === /* String */0 && match$4._0 === "constructor") ? /* Method */1 : /* Constructor */0;
         break;
     case /* Identifier */1 :
         kind = key._0[1].name === "constructor" ? /* Constructor */0 : /* Method */1;
@@ -12374,39 +12374,39 @@ function module_items(env, _module_kind, _acc) {
     var loc = stmt[0];
     var module_kind$1;
     if (module_kind !== undefined) {
-      if (module_kind.TAG) {
-        if (typeof stmt$1 === "number" || stmt$1.TAG !== /* DeclareModuleExports */26) {
+      if (module_kind.TAG === /* CommonJS */0) {
+        if (typeof stmt$1 === "number") {
           module_kind$1 = module_kind;
         } else {
-          error$1(env, /* AmbiguousDeclareModuleKind */61);
-          module_kind$1 = module_kind;
+          switch (stmt$1.TAG | 0) {
+            case /* DeclareModuleExports */26 :
+                error$1(env, /* DuplicateDeclareModuleExports */60);
+                module_kind$1 = module_kind;
+                break;
+            case /* DeclareExportDeclaration */27 :
+                var declaration = stmt$1._0.declaration;
+                if (declaration !== undefined) {
+                  switch (declaration.TAG | 0) {
+                    case /* NamedType */4 :
+                    case /* Interface */5 :
+                        break;
+                    default:
+                      error$1(env, /* AmbiguousDeclareModuleKind */61);
+                  }
+                } else {
+                  error$1(env, /* AmbiguousDeclareModuleKind */61);
+                }
+                module_kind$1 = module_kind;
+                break;
+            default:
+              module_kind$1 = module_kind;
+          }
         }
-      } else if (typeof stmt$1 === "number") {
+      } else if (typeof stmt$1 === "number" || stmt$1.TAG !== /* DeclareModuleExports */26) {
         module_kind$1 = module_kind;
       } else {
-        switch (stmt$1.TAG | 0) {
-          case /* DeclareModuleExports */26 :
-              error$1(env, /* DuplicateDeclareModuleExports */60);
-              module_kind$1 = module_kind;
-              break;
-          case /* DeclareExportDeclaration */27 :
-              var declaration = stmt$1._0.declaration;
-              if (declaration !== undefined) {
-                switch (declaration.TAG | 0) {
-                  case /* NamedType */4 :
-                  case /* Interface */5 :
-                      break;
-                  default:
-                    error$1(env, /* AmbiguousDeclareModuleKind */61);
-                }
-              } else {
-                error$1(env, /* AmbiguousDeclareModuleKind */61);
-              }
-              module_kind$1 = module_kind;
-              break;
-          default:
-            module_kind$1 = module_kind;
-        }
+        error$1(env, /* AmbiguousDeclareModuleKind */61);
+        module_kind$1 = module_kind;
       }
     } else if (typeof stmt$1 === "number") {
       module_kind$1 = module_kind;
@@ -12459,19 +12459,19 @@ function fold(acc, _param) {
     switch (match.TAG | 0) {
       case /* Object */0 :
           return List.fold_left((function (acc, prop) {
-                        if (prop.TAG) {
-                          return fold(acc, prop._0[1].argument);
-                        } else {
+                        if (prop.TAG === /* Property */0) {
                           return fold(acc, prop._0[1].pattern);
+                        } else {
+                          return fold(acc, prop._0[1].argument);
                         }
                       }), acc, match._0.properties);
       case /* Array */1 :
           return List.fold_left((function (acc, elem) {
                         if (elem !== undefined) {
-                          if (elem.TAG) {
-                            return fold(acc, elem._0[1].argument);
-                          } else {
+                          if (elem.TAG === /* Element */0) {
                             return fold(acc, elem._0);
+                          } else {
+                            return fold(acc, elem._0[1].argument);
                           }
                         } else {
                           return acc;
@@ -12504,30 +12504,29 @@ function assert_can_be_forin_or_forof(env, err, param) {
   if (param === undefined) {
     return error$1(env, err);
   }
-  if (param.TAG) {
+  if (param.TAG === /* InitDeclaration */0) {
     var match = param._0;
-    var loc = match[0];
-    if (!Curry._1(Parse.is_assignable_lhs, [
-            loc,
-            match[1]
-          ])) {
-      return error_at(env, [
-                  loc,
-                  err
-                ]);
-    } else {
+    var declarations = match[1].declarations;
+    if (declarations && declarations.hd[1].init === undefined && !declarations.tl) {
       return ;
     }
+    return error_at(env, [
+                match[0],
+                err
+              ]);
   }
   var match$1 = param._0;
-  var declarations = match$1[1].declarations;
-  if (declarations && declarations.hd[1].init === undefined && !declarations.tl) {
-    return ;
+  var loc = match$1[0];
+  if (!Curry._1(Parse.is_assignable_lhs, [
+          loc,
+          match$1[1]
+        ])) {
+    return error_at(env, [
+                loc,
+                err
+              ]);
   }
-  return error_at(env, [
-              match$1[0],
-              err
-            ]);
+  
 }
 
 function _if(env) {
@@ -12762,26 +12761,26 @@ function from_expr(env, param) {
                   if (param === undefined) {
                     return ;
                   }
-                  if (param.TAG) {
+                  if (param.TAG === /* Expression */0) {
                     var match = param._0;
-                    var argument = Curry._2(Parse.pattern_from_expr, env, match[1].argument);
                     return {
-                            TAG: /* Spread */1,
-                            _0: [
-                              match[0],
-                              {
-                                argument: argument
-                              }
-                            ]
+                            TAG: /* Element */0,
+                            _0: Curry._2(Parse.pattern_from_expr, env, [
+                                  match[0],
+                                  match[1]
+                                ])
                           };
                   }
                   var match$1 = param._0;
+                  var argument = Curry._2(Parse.pattern_from_expr, env, match$1[1].argument);
                   return {
-                          TAG: /* Element */0,
-                          _0: Curry._2(Parse.pattern_from_expr, env, [
-                                match$1[0],
-                                match$1[1]
-                              ])
+                          TAG: /* Spread */1,
+                          _0: [
+                            match$1[0],
+                            {
+                              argument: argument
+                            }
+                          ]
                         };
                 }), param$1[1].elements);
           return [
@@ -12800,53 +12799,53 @@ function from_expr(env, param) {
             expr._0
           ];
           var properties = List.map((function (param) {
-                  if (param.TAG) {
+                  if (param.TAG === /* Property */0) {
                     var match = param._0;
-                    var argument = Curry._2(Parse.pattern_from_expr, env, match[1].argument);
+                    var match$1 = match[1];
+                    var key = match$1.key;
+                    var key$1;
+                    switch (key.TAG | 0) {
+                      case /* Literal */0 :
+                          key$1 = {
+                            TAG: /* Literal */0,
+                            _0: key._0
+                          };
+                          break;
+                      case /* Identifier */1 :
+                          key$1 = {
+                            TAG: /* Identifier */1,
+                            _0: key._0
+                          };
+                          break;
+                      case /* Computed */2 :
+                          key$1 = {
+                            TAG: /* Computed */2,
+                            _0: key._0
+                          };
+                          break;
+                      
+                    }
+                    var pattern = Curry._2(Parse.pattern_from_expr, env, match$1.value);
                     return {
-                            TAG: /* SpreadProperty */1,
+                            TAG: /* Property */0,
                             _0: [
                               match[0],
                               {
-                                argument: argument
+                                key: key$1,
+                                pattern: pattern,
+                                shorthand: match$1.shorthand
                               }
                             ]
                           };
                   }
-                  var match$1 = param._0;
-                  var match$2 = match$1[1];
-                  var key = match$2.key;
-                  var key$1;
-                  switch (key.TAG | 0) {
-                    case /* Literal */0 :
-                        key$1 = {
-                          TAG: /* Literal */0,
-                          _0: key._0
-                        };
-                        break;
-                    case /* Identifier */1 :
-                        key$1 = {
-                          TAG: /* Identifier */1,
-                          _0: key._0
-                        };
-                        break;
-                    case /* Computed */2 :
-                        key$1 = {
-                          TAG: /* Computed */2,
-                          _0: key._0
-                        };
-                        break;
-                    
-                  }
-                  var pattern = Curry._2(Parse.pattern_from_expr, env, match$2.value);
+                  var match$2 = param._0;
+                  var argument = Curry._2(Parse.pattern_from_expr, env, match$2[1].argument);
                   return {
-                          TAG: /* Property */0,
+                          TAG: /* SpreadProperty */1,
                           _0: [
-                            match$1[0],
+                            match$2[0],
                             {
-                              key: key$1,
-                              pattern: pattern,
-                              shorthand: match$2.shorthand
+                              argument: argument
                             }
                           ]
                         };
@@ -13393,7 +13392,7 @@ function attribute(env) {
         var expression_container$1 = match$2[1];
         var loc$1 = match$2[0];
         var match$3 = expression_container$1.expression;
-        if (match$3.TAG) {
+        if (match$3.TAG !== /* Expression */0) {
           error$1(env, /* JSXAttributeValueEmptyExpression */40);
         }
         match$1 = [
@@ -13622,7 +13621,7 @@ function children_and_closing(env, _acc) {
               ];
       }
       var closingElement = element_or_closing(env);
-      if (!closingElement.TAG) {
+      if (closingElement.TAG === /* Closing */0) {
         return [
                 List.rev(acc),
                 closingElement._0
@@ -13663,10 +13662,10 @@ function normalize(name) {
         var match$1 = name._0[1];
         var _object = match$1._object;
         var _object$1;
-        _object$1 = _object.TAG ? normalize({
+        _object$1 = _object.TAG === /* Identifier */0 ? _object._0[1].name : normalize({
                 TAG: /* MemberExpression */2,
                 _0: _object._0
-              }) : _object._0[1].name;
+              });
         return _object$1 + ("." + match$1.property[1].name);
     
   }
@@ -14071,11 +14070,11 @@ function statement(env) {
                       assert_can_be_forin_or_forof(env, /* InvalidLHSInForOf */17, init);
                       var left;
                       if (init !== undefined) {
-                        left = init.TAG ? ({
-                              TAG: /* LeftExpression */1,
+                        left = init.TAG === /* InitDeclaration */0 ? ({
+                              TAG: /* LeftDeclaration */0,
                               _0: init._0
                             }) : ({
-                              TAG: /* LeftDeclaration */0,
+                              TAG: /* LeftExpression */1,
                               _0: init._0
                             });
                       } else {
@@ -14110,11 +14109,11 @@ function statement(env) {
                     assert_can_be_forin_or_forof(env, /* InvalidLHSInForIn */16, init);
                     var left$1;
                     if (init !== undefined) {
-                      left$1 = init.TAG ? ({
-                            TAG: /* LeftExpression */1,
+                      left$1 = init.TAG === /* InitDeclaration */0 ? ({
+                            TAG: /* LeftDeclaration */0,
                             _0: init._0
                           }) : ({
-                            TAG: /* LeftDeclaration */0,
+                            TAG: /* LeftExpression */1,
                             _0: init._0
                           });
                     } else {
@@ -15065,7 +15064,7 @@ function statement_list(_env, term_fn, item_fn, _param) {
               stmts$1
             ];
     }
-    if (str.TAG) {
+    if (str.TAG !== /* String */0) {
       return [
               env,
               string_tokens,
@@ -15679,7 +15678,7 @@ function parse(content, options) {
               var g = param$1[1];
               var id = g.id;
               var id$1;
-              id$1 = id.TAG ? generic_type_qualified_identifier(id._0) : identifier(id._0);
+              id$1 = id.TAG === /* Unqualified */0 ? identifier(id._0) : generic_type_qualified_identifier(id._0);
               return node("GenericTypeAnnotation", param$1[0], [
                           [
                             "id",
@@ -15942,74 +15941,26 @@ function parse(content, options) {
                   ]]);
     };
     var class_element = function (m) {
-      if (m.TAG) {
+      if (m.TAG === /* Method */0) {
         var param = m._0;
-        var prop = param[1];
-        var lit = prop.key;
-        var match;
-        switch (lit.TAG | 0) {
-          case /* Literal */0 :
-              match = [
-                literal(lit._0),
-                false
-              ];
-              break;
-          case /* Identifier */1 :
-              match = [
-                identifier(lit._0),
-                false
-              ];
-              break;
-          case /* Computed */2 :
-              match = [
-                expression(lit._0),
-                true
-              ];
-              break;
-          
-        }
-        return node("ClassProperty", param[0], [
-                    [
-                      "key",
-                      match[0]
-                    ],
-                    [
-                      "value",
-                      option(expression, prop.value)
-                    ],
-                    [
-                      "typeAnnotation",
-                      option(type_annotation, prop.typeAnnotation)
-                    ],
-                    [
-                      "computed",
-                      bool(match[1])
-                    ],
-                    [
-                      "static",
-                      bool(prop.static)
-                    ]
-                  ]);
-      } else {
-        var param$1 = m._0;
-        var method_ = param$1[1];
+        var method_ = param[1];
         var key = method_.key;
-        var match$1;
+        var match;
         switch (key.TAG | 0) {
           case /* Literal */0 :
-              match$1 = [
+              match = [
                 literal(key._0),
                 false
               ];
               break;
           case /* Identifier */1 :
-              match$1 = [
+              match = [
                 identifier(key._0),
                 false
               ];
               break;
           case /* Computed */2 :
-              match$1 = [
+              match = [
                 expression(key._0),
                 true
               ];
@@ -16032,10 +15983,10 @@ function parse(content, options) {
               break;
           
         }
-        return node("MethodDefinition", param$1[0], [
+        return node("MethodDefinition", param[0], [
                     [
                       "key",
-                      match$1[0]
+                      match[0]
                     ],
                     [
                       "value",
@@ -16051,11 +16002,59 @@ function parse(content, options) {
                     ],
                     [
                       "computed",
-                      bool(match$1[1])
+                      bool(match[1])
                     ],
                     [
                       "decorators",
                       array_of_list(expression, method_.decorators)
+                    ]
+                  ]);
+      } else {
+        var param$1 = m._0;
+        var prop = param$1[1];
+        var lit = prop.key;
+        var match$1;
+        switch (lit.TAG | 0) {
+          case /* Literal */0 :
+              match$1 = [
+                literal(lit._0),
+                false
+              ];
+              break;
+          case /* Identifier */1 :
+              match$1 = [
+                identifier(lit._0),
+                false
+              ];
+              break;
+          case /* Computed */2 :
+              match$1 = [
+                expression(lit._0),
+                true
+              ];
+              break;
+          
+        }
+        return node("ClassProperty", param$1[0], [
+                    [
+                      "key",
+                      match$1[0]
+                    ],
+                    [
+                      "value",
+                      option(expression, prop.value)
+                    ],
+                    [
+                      "typeAnnotation",
+                      option(type_annotation, prop.typeAnnotation)
+                    ],
+                    [
+                      "computed",
+                      bool(match$1[1])
+                    ],
+                    [
+                      "static",
+                      bool(prop.static)
                     ]
                   ]);
       }
@@ -16088,7 +16087,7 @@ function parse(content, options) {
             var arrow = arr._0;
             var b = arrow.body;
             var body;
-            body = b.TAG ? expression(b._0) : block(b._0);
+            body = b.TAG === /* BodyBlock */0 ? block(b._0) : expression(b._0);
             return node("ArrowFunctionExpression", loc, [
                         [
                           "id",
@@ -16420,7 +16419,7 @@ function parse(content, options) {
             var member = arr._0;
             var id = member.property;
             var property;
-            property = id.TAG ? expression(id._0) : identifier(id._0);
+            property = id.TAG === /* PropertyIdentifier */0 ? identifier(id._0) : expression(id._0);
             return node("MemberExpression", loc, [
                         [
                           "object",
@@ -16601,7 +16600,7 @@ function parse(content, options) {
       var g = param[1];
       var id = g.id;
       var id$1;
-      id$1 = id.TAG ? generic_type_qualified_identifier(id._0) : identifier(id._0);
+      id$1 = id.TAG === /* Unqualified */0 ? identifier(id._0) : generic_type_qualified_identifier(id._0);
       return node("InterfaceExtends", param[0], [
                   [
                     "id",
@@ -16735,26 +16734,20 @@ function parse(content, options) {
     var jsx_expression_container = function (param) {
       var expr = param[1].expression;
       var expression$1;
-      expression$1 = expr.TAG ? node("JSXEmptyExpression", expr._0, []) : expression(expr._0);
+      expression$1 = expr.TAG === /* Expression */0 ? expression(expr._0) : node("JSXEmptyExpression", expr._0, []);
       return node("JSXExpressionContainer", param[0], [[
                     "expression",
                     expression$1
                   ]]);
     };
     var jsx_opening_attribute = function (attribute) {
-      if (attribute.TAG) {
+      if (attribute.TAG === /* Attribute */0) {
         var param = attribute._0;
-        return node("JSXSpreadAttribute", param[0], [[
-                      "argument",
-                      expression(param[1].argument)
-                    ]]);
-      } else {
-        var param$1 = attribute._0;
-        var attribute$1 = param$1[1];
+        var attribute$1 = param[1];
         var id = attribute$1.name;
         var name;
-        name = id.TAG ? jsx_namespaced_name(id._0) : jsx_identifier(id._0);
-        return node("JSXAttribute", param$1[0], [
+        name = id.TAG === /* Identifier */0 ? jsx_identifier(id._0) : jsx_namespaced_name(id._0);
+        return node("JSXAttribute", param[0], [
                     [
                       "name",
                       name
@@ -16764,16 +16757,22 @@ function parse(content, options) {
                       option(jsx_attribute_value, attribute$1.value)
                     ]
                   ]);
+      } else {
+        var param$1 = attribute._0;
+        return node("JSXSpreadAttribute", param$1[0], [[
+                      "argument",
+                      expression(param$1[1].argument)
+                    ]]);
       }
     };
     var comment = function (param) {
       var c = param[1];
       var match;
-      match = c.TAG ? [
-          "Line",
+      match = c.TAG === /* Block */0 ? [
+          "Block",
           c._0
         ] : [
-          "Block",
+          "Line",
           c._0
         ];
       return node(match[0], param[0], [[
@@ -16955,10 +16954,10 @@ function parse(content, options) {
         case /* For */14 :
             var _for = b._0;
             var init = function (init$1) {
-              if (init$1.TAG) {
-                return expression(init$1._0);
-              } else {
+              if (init$1.TAG === /* InitDeclaration */0) {
                 return variable_declaration(init$1._0);
+              } else {
+                return expression(init$1._0);
               }
             };
             return node("ForStatement", loc, [
@@ -16983,7 +16982,7 @@ function parse(content, options) {
             var forin = b._0;
             var left = forin.left;
             var left$1;
-            left$1 = left.TAG ? expression(left._0) : variable_declaration(left._0);
+            left$1 = left.TAG === /* LeftDeclaration */0 ? variable_declaration(left._0) : expression(left._0);
             return node("ForInStatement", loc, [
                         [
                           "left",
@@ -17006,7 +17005,7 @@ function parse(content, options) {
             var forof = b._0;
             var left$2 = forof.left;
             var left$3;
-            left$3 = left$2.TAG ? expression(left$2._0) : variable_declaration(left$2._0);
+            left$3 = left$2.TAG === /* LeftDeclaration */0 ? variable_declaration(left$2._0) : expression(left$2._0);
             return node("ForOfStatement", loc, [
                         [
                           "left",
@@ -17045,7 +17044,7 @@ function parse(content, options) {
               ];
             var b$1 = fn.body;
             var body;
-            body = b$1.TAG ? expression(b$1._0) : block(b$1._0);
+            body = b$1.TAG === /* BodyBlock */0 ? block(b$1._0) : expression(b$1._0);
             return node(match[0], loc, [
                         [
                           "id",
@@ -17163,10 +17162,10 @@ function parse(content, options) {
             var m = b._0;
             var lit = m.id;
             var id$2;
-            id$2 = lit.TAG ? literal(lit._0) : identifier(lit._0);
+            id$2 = lit.TAG === /* Identifier */0 ? identifier(lit._0) : literal(lit._0);
             var match$2 = m.kind;
             var tmp;
-            tmp = match$2.TAG ? string("ES") : string("CommonJS");
+            tmp = match$2.TAG === /* CommonJS */0 ? string("CommonJS") : string("ES");
             return node("DeclareModule", loc, [
                         [
                           "id",
@@ -17237,7 +17236,7 @@ function parse(content, options) {
             var $$export$1 = b._0;
             var match$4 = $$export$1.declaration;
             var declaration$1 = match$4 !== undefined ? (
-                match$4.TAG ? expression(match$4._0) : statement(match$4._0)
+                match$4.TAG === /* Declaration */0 ? statement(match$4._0) : expression(match$4._0)
               ) : $$null;
             return node("ExportDeclaration", loc, [
                         [
@@ -17336,7 +17335,7 @@ function parse(content, options) {
       var member_expression = param[1];
       var id = member_expression._object;
       var _object;
-      _object = id.TAG ? jsx_member_expression(id._0) : jsx_identifier(id._0);
+      _object = id.TAG === /* Identifier */0 ? jsx_identifier(id._0) : jsx_member_expression(id._0);
       return node("JSXMemberExpression", param[0], [
                   [
                     "object",
@@ -17379,7 +17378,7 @@ function parse(content, options) {
       var q = param[1];
       var id = q.qualification;
       var qualification;
-      qualification = id.TAG ? generic_type_qualified_identifier(id._0) : identifier(id._0);
+      qualification = id.TAG === /* Unqualified */0 ? identifier(id._0) : generic_type_qualified_identifier(id._0);
       return node("QualifiedTypeIdentifier", param[0], [
                   [
                     "qualification",
@@ -17522,81 +17521,81 @@ function parse(content, options) {
                 ]);
     };
     var object_property = function (param) {
-      if (param.TAG) {
+      if (param.TAG === /* Property */0) {
         var match = param._0;
-        return node("SpreadProperty", match[0], [[
-                      "argument",
-                      expression(match[1].argument)
-                    ]]);
+        var prop = match[1];
+        var lit = prop.key;
+        var match$1;
+        switch (lit.TAG | 0) {
+          case /* Literal */0 :
+              match$1 = [
+                literal(lit._0),
+                false
+              ];
+              break;
+          case /* Identifier */1 :
+              match$1 = [
+                identifier(lit._0),
+                false
+              ];
+              break;
+          case /* Computed */2 :
+              match$1 = [
+                expression(lit._0),
+                true
+              ];
+              break;
+          
+        }
+        var match$2 = prop.kind;
+        var kind;
+        switch (match$2) {
+          case /* Init */0 :
+              kind = "init";
+              break;
+          case /* Get */1 :
+              kind = "get";
+              break;
+          case /* Set */2 :
+              kind = "set";
+              break;
+          
+        }
+        return node("Property", match[0], [
+                    [
+                      "key",
+                      match$1[0]
+                    ],
+                    [
+                      "value",
+                      expression(prop.value)
+                    ],
+                    [
+                      "kind",
+                      string(kind)
+                    ],
+                    [
+                      "method",
+                      bool(prop._method)
+                    ],
+                    [
+                      "shorthand",
+                      bool(prop.shorthand)
+                    ],
+                    [
+                      "computed",
+                      bool(match$1[1])
+                    ]
+                  ]);
       }
-      var match$1 = param._0;
-      var prop = match$1[1];
-      var lit = prop.key;
-      var match$2;
-      switch (lit.TAG | 0) {
-        case /* Literal */0 :
-            match$2 = [
-              literal(lit._0),
-              false
-            ];
-            break;
-        case /* Identifier */1 :
-            match$2 = [
-              identifier(lit._0),
-              false
-            ];
-            break;
-        case /* Computed */2 :
-            match$2 = [
-              expression(lit._0),
-              true
-            ];
-            break;
-        
-      }
-      var match$3 = prop.kind;
-      var kind;
-      switch (match$3) {
-        case /* Init */0 :
-            kind = "init";
-            break;
-        case /* Get */1 :
-            kind = "get";
-            break;
-        case /* Set */2 :
-            kind = "set";
-            break;
-        
-      }
-      return node("Property", match$1[0], [
-                  [
-                    "key",
-                    match$2[0]
-                  ],
-                  [
-                    "value",
-                    expression(prop.value)
-                  ],
-                  [
-                    "kind",
-                    string(kind)
-                  ],
-                  [
-                    "method",
-                    bool(prop._method)
-                  ],
-                  [
-                    "shorthand",
-                    bool(prop.shorthand)
-                  ],
-                  [
-                    "computed",
-                    bool(match$2[1])
-                  ]
-                ]);
+      var match$3 = param._0;
+      return node("SpreadProperty", match$3[0], [[
+                    "argument",
+                    expression(match$3[1].argument)
+                  ]]);
     };
     var expression_or_spread = function (expr) {
-      if (!expr.TAG) {
+      if (expr.TAG === /* Expression */0) {
         return expression(expr._0);
       }
       var match = expr._0;
@@ -17621,7 +17620,7 @@ function parse(content, options) {
       var _function = param[1];
       var b = _function.body;
       var body;
-      body = b.TAG ? expression(b._0) : block(b._0);
+      body = b.TAG === /* BodyBlock */0 ? block(b._0) : expression(b._0);
       return node("FunctionExpression", param[0], [
                   [
                     "id",
@@ -17685,13 +17684,13 @@ function parse(content, options) {
                 ]);
     };
     var jsx_attribute_value = function (param) {
-      if (param.TAG) {
-        return jsx_expression_container([
+      if (param.TAG === /* Literal */0) {
+        return literal([
                     param._0,
                     param._1
                   ]);
       } else {
-        return literal([
+        return jsx_expression_container([
                     param._0,
                     param._1
                   ]);
@@ -17699,13 +17698,13 @@ function parse(content, options) {
     };
     var export_specifiers = function (param) {
       if (param !== undefined) {
-        if (param.TAG) {
+        if (param.TAG === /* ExportSpecifiers */0) {
+          return array_of_list(export_specifier, param._0);
+        } else {
           return array([node("ExportBatchSpecifier", param._0, [[
                               "name",
                               option(identifier, param._1)
                             ]])]);
-        } else {
-          return array_of_list(export_specifier, param._0);
         }
       } else {
         return array([]);
@@ -17840,7 +17839,7 @@ function parse(content, options) {
                   ]]);
     };
     var array_pattern_element = function (p) {
-      if (!p.TAG) {
+      if (p.TAG === /* Element */0) {
         return pattern(p._0);
       }
       var match = p._0;
@@ -17850,56 +17849,56 @@ function parse(content, options) {
                   ]]);
     };
     var object_pattern_property = function (param) {
-      if (param.TAG) {
+      if (param.TAG === /* Property */0) {
         var match = param._0;
-        return node("SpreadPropertyPattern", match[0], [[
-                      "argument",
-                      pattern(match[1].argument)
-                    ]]);
+        var prop = match[1];
+        var lit = prop.key;
+        var match$1;
+        switch (lit.TAG | 0) {
+          case /* Literal */0 :
+              match$1 = [
+                literal(lit._0),
+                false
+              ];
+              break;
+          case /* Identifier */1 :
+              match$1 = [
+                identifier(lit._0),
+                false
+              ];
+              break;
+          case /* Computed */2 :
+              match$1 = [
+                expression(lit._0),
+                true
+              ];
+              break;
+          
+        }
+        return node("PropertyPattern", match[0], [
+                    [
+                      "key",
+                      match$1[0]
+                    ],
+                    [
+                      "pattern",
+                      pattern(prop.pattern)
+                    ],
+                    [
+                      "computed",
+                      bool(match$1[1])
+                    ],
+                    [
+                      "shorthand",
+                      bool(prop.shorthand)
+                    ]
+                  ]);
       }
-      var match$1 = param._0;
-      var prop = match$1[1];
-      var lit = prop.key;
-      var match$2;
-      switch (lit.TAG | 0) {
-        case /* Literal */0 :
-            match$2 = [
-              literal(lit._0),
-              false
-            ];
-            break;
-        case /* Identifier */1 :
-            match$2 = [
-              identifier(lit._0),
-              false
-            ];
-            break;
-        case /* Computed */2 :
-            match$2 = [
-              expression(lit._0),
-              true
-            ];
-            break;
-        
-      }
-      return node("PropertyPattern", match$1[0], [
-                  [
-                    "key",
-                    match$2[0]
-                  ],
-                  [
-                    "pattern",
-                    pattern(prop.pattern)
-                  ],
-                  [
-                    "computed",
-                    bool(match$2[1])
-                  ],
-                  [
-                    "shorthand",
-                    bool(prop.shorthand)
-                  ]
-                ]);
+      var match$2 = param._0;
+      return node("SpreadPropertyPattern", match$2[0], [[
+                    "argument",
+                    pattern(match$2[1].argument)
+                  ]]);
     };
     var program$2 = function (param) {
       return node("Program", param[0], [

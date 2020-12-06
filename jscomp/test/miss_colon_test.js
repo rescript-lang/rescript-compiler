@@ -5,9 +5,9 @@ function $plus$colon(_f, _g) {
   while(true) {
     var g = _g;
     var f = _f;
-    if (!f.TAG) {
+    if (f.TAG === /* Int */0) {
       var n = f._0;
-      if (!g.TAG) {
+      if (g.TAG === /* Int */0) {
         return {
                 TAG: /* Int */0,
                 _0: n + g._0 | 0
@@ -51,11 +51,9 @@ function $star$colon(_f, _g) {
     var f = _f;
     var exit = 0;
     var exit$1 = 0;
-    if (f.TAG) {
-      exit$1 = 3;
-    } else {
+    if (f.TAG === /* Int */0) {
       var n = f._0;
-      if (!g.TAG) {
+      if (g.TAG === /* Int */0) {
         return {
                 TAG: /* Int */0,
                 _0: Math.imul(n, g._0)
@@ -68,11 +66,11 @@ function $star$colon(_f, _g) {
               };
       }
       exit$1 = 3;
+    } else {
+      exit$1 = 3;
     }
     if (exit$1 === 3) {
-      if (g.TAG) {
-        exit = 2;
-      } else {
+      if (g.TAG === /* Int */0) {
         if (g._0 === 0) {
           return {
                   TAG: /* Int */0,
@@ -80,9 +78,11 @@ function $star$colon(_f, _g) {
                 };
         }
         exit = 2;
+      } else {
+        exit = 2;
       }
     }
-    if (exit === 2 && !f.TAG && f._0 === 1) {
+    if (exit === 2 && f.TAG === /* Int */0 && f._0 === 1) {
       return g;
     }
     switch (g.TAG | 0) {

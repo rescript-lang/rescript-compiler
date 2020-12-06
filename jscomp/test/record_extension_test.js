@@ -36,7 +36,7 @@ var v0 = {
 eq("File \"record_extension_test.ml\", line 19, characters 6-13", f(v0), 7);
 
 function f2(x) {
-  if (typeof x === "number" || x.TAG) {
+  if (typeof x === "number" || x.TAG !== /* C */0) {
     return 0;
   } else {
     return x.x;
@@ -44,7 +44,7 @@ function f2(x) {
 }
 
 function f2_with(x) {
-  if (typeof x === "number" || x.TAG) {
+  if (typeof x === "number" || x.TAG !== /* C */0) {
     return x;
   } else {
     return {

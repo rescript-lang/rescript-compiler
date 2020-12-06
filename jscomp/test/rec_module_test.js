@@ -77,16 +77,16 @@ var Even = {};
 var Odd = {};
 
 function compare(t1, t2) {
-  if (t1.TAG) {
-    if (t2.TAG) {
-      return Curry._2(ASet.compare, t1._0, t2._0);
+  if (t1.TAG === /* Leaf */0) {
+    if (t2.TAG === /* Leaf */0) {
+      return Caml_primitive.caml_string_compare(t1._0, t2._0);
     } else {
-      return -1;
+      return 1;
     }
-  } else if (t2.TAG) {
-    return 1;
+  } else if (t2.TAG === /* Leaf */0) {
+    return -1;
   } else {
-    return Caml_primitive.caml_string_compare(t1._0, t2._0);
+    return Curry._2(ASet.compare, t1._0, t2._0);
   }
 }
 

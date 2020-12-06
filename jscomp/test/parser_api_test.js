@@ -25,7 +25,7 @@ if (match) {
       var match$3 = match$2.hd;
       var match$4 = match$3.pvb_pat;
       var match$5 = match$4.ppat_desc;
-      if (typeof match$5 === "number" || match$5.TAG) {
+      if (typeof match$5 === "number" || match$5.TAG !== /* Ppat_var */0) {
         eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
       } else {
         var match$6 = match$5._0;
@@ -45,7 +45,7 @@ if (match) {
                   if (match$14.TAG === /* Pexp_fun */4 && match$14._0 === "" && match$14._1 === undefined) {
                     var match$15 = match$14._2;
                     var match$16 = match$15.ppat_desc;
-                    if (typeof match$16 === "number" || match$16.TAG) {
+                    if (typeof match$16 === "number" || match$16.TAG !== /* Ppat_var */0) {
                       eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                     } else {
                       var match$17 = match$16._0;
@@ -65,9 +65,7 @@ if (match) {
                                 if (match$25.TAG === /* Pexp_apply */5) {
                                   var match$26 = match$25._0;
                                   var match$27 = match$26.pexp_desc;
-                                  if (match$27.TAG) {
-                                    eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
-                                  } else {
+                                  if (match$27.TAG === /* Pexp_ident */0) {
                                     var match$28 = match$27._0;
                                     var match$29 = match$28.txt;
                                     switch (match$29.TAG | 0) {
@@ -92,9 +90,7 @@ if (match) {
                                                         if (match$39.TAG === /* Pexp_apply */5) {
                                                           var match$40 = match$39._0;
                                                           var match$41 = match$40.pexp_desc;
-                                                          if (match$41.TAG) {
-                                                            eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
-                                                          } else {
+                                                          if (match$41.TAG === /* Pexp_ident */0) {
                                                             var match$42 = match$41._0;
                                                             var match$43 = match$42.txt;
                                                             switch (match$43.TAG | 0) {
@@ -116,9 +112,7 @@ if (match) {
                                                                               if (match$51[0] === "") {
                                                                                 var match$52 = match$51[1];
                                                                                 var match$53 = match$52.pexp_desc;
-                                                                                if (match$53.TAG) {
-                                                                                  eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
-                                                                                } else {
+                                                                                if (match$53.TAG === /* Pexp_ident */0) {
                                                                                   var match$54 = match$53._0;
                                                                                   var match$55 = match$54.txt;
                                                                                   switch (match$55.TAG | 0) {
@@ -140,9 +134,7 @@ if (match) {
                                                                                                     if (match$63[0] === "") {
                                                                                                       var match$64 = match$63[1];
                                                                                                       var match$65 = match$64.pexp_desc;
-                                                                                                      if (match$65.TAG) {
-                                                                                                        eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
-                                                                                                      } else {
+                                                                                                      if (match$65.TAG === /* Pexp_ident */0) {
                                                                                                         var match$66 = match$65._0;
                                                                                                         var match$67 = match$66.txt;
                                                                                                         switch (match$67.TAG | 0) {
@@ -172,9 +164,7 @@ if (match) {
                                                                                                                                     if (match$79[0] === "") {
                                                                                                                                       var match$80 = match$79[1];
                                                                                                                                       var match$81 = match$80.pexp_desc;
-                                                                                                                                      if (match$81.TAG) {
-                                                                                                                                        eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
-                                                                                                                                      } else {
+                                                                                                                                      if (match$81.TAG === /* Pexp_ident */0) {
                                                                                                                                         var match$82 = match$81._0;
                                                                                                                                         var match$83 = match$82.txt;
                                                                                                                                         switch (match$83.TAG | 0) {
@@ -256,6 +246,8 @@ if (match) {
                                                                                                                                               break;
                                                                                                                                           
                                                                                                                                         }
+                                                                                                                                      } else {
+                                                                                                                                        eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                       }
                                                                                                                                     } else {
                                                                                                                                       eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
@@ -298,6 +290,8 @@ if (match) {
                                                                                                               break;
                                                                                                           
                                                                                                         }
+                                                                                                      } else {
+                                                                                                        eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                       }
                                                                                                     } else {
                                                                                                       eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
@@ -327,6 +321,8 @@ if (match) {
                                                                                         break;
                                                                                     
                                                                                   }
+                                                                                } else {
+                                                                                  eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                 }
                                                                               } else {
                                                                                 eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
@@ -356,6 +352,8 @@ if (match) {
                                                                   break;
                                                               
                                                             }
+                                                          } else {
+                                                            eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                           }
                                                         } else {
                                                           eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
@@ -388,6 +386,8 @@ if (match) {
                                           break;
                                       
                                     }
+                                  } else {
+                                    eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
                                   }
                                 } else {
                                   eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);

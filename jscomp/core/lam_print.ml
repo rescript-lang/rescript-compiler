@@ -383,12 +383,12 @@ let lambda ppf v  =
         List.iter
           (fun (n, l) ->
              if !spc then fprintf ppf "@ " else spc := true;
-             fprintf ppf "@[<hv 1>case int %i:@ %a@]" n lam l)
+             fprintf ppf "@[<hv 1>case int %i %S:@ %a@]" n (match sw.sw_names with None -> "" | Some x -> x.consts.(n)) lam l)
           sw.sw_consts;
         List.iter
           (fun (n, l) ->
              if !spc then fprintf ppf "@ " else spc := true;
-             fprintf ppf "@[<hv 1>case tag %i:@ %a@]" n lam l)
+             fprintf ppf "@[<hv 1>case tag %i %S:@ %a@]" n (match sw.sw_names with None -> "" | Some x -> x.blocks.(n)) lam l)
           sw.sw_blocks ;
         begin match sw.sw_failaction with
           | None  -> ()

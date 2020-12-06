@@ -488,11 +488,11 @@ var lval = {
 
 function patchlval(param) {
   var n = lval.contents[0];
-  if (n.TAG) {
+  if (n.TAG === /* Mov */0) {
+    return Caml_bytes.set(obuf, opos.contents - n._0 | 0, /* "\141" */141);
+  } else {
     opos.contents = opos.contents - n._0 | 0;
     return ;
-  } else {
-    return Caml_bytes.set(obuf, opos.contents - n._0 | 0, /* "\141" */141);
   }
 }
 
@@ -891,15 +891,15 @@ function binary(stk, lvl) {
     while(true) {
       var loc = _loc;
       var o = Curry._1(next$1, undefined);
-      if (o.TAG) {
+      if (o.TAG === /* Op */0) {
+        if (lvlof(o._0) === lvl) {
+          var loc$prime = test(lvl - 8 | 0, loc);
+          binary(stk, lvl - 1 | 0);
+          _loc = loc$prime;
+          continue ;
+        }
         Curry._1(unnext, o);
         return loc;
-      }
-      if (lvlof(o._0) === lvl) {
-        var loc$prime = test(lvl - 8 | 0, loc);
-        binary(stk, lvl - 1 | 0);
-        _loc = loc$prime;
-        continue ;
       }
       Curry._1(unnext, o);
       return loc;
@@ -910,7 +910,7 @@ function binary(stk, lvl) {
     var _param;
     while(true) {
       var o = Curry._1(next$1, undefined);
-      if (o.TAG) {
+      if (o.TAG !== /* Op */0) {
         return Curry._1(unnext, o);
       }
       var o$1 = o._0;
@@ -921,11 +921,11 @@ function binary(stk, lvl) {
       binary(stk, lvl - 1 | 0);
       pop(1);
       var ops = List.assoc(o$1, inss);
-      if (ops.TAG) {
+      if (ops.TAG === /* Bin */0) {
+        List.iter(out, ops._0);
+      } else {
         out(4733377);
         cmp(ops._0);
-      } else {
-        List.iter(out, ops._0);
       }
       _param = undefined;
       continue ;
@@ -1080,7 +1080,7 @@ function unary(stk) {
 
 function postfix(stk) {
   var op = Curry._1(next$1, undefined);
-  if (op.TAG) {
+  if (op.TAG !== /* Op */0) {
     return Curry._1(unnext, op);
   }
   var op$1 = op._0;
@@ -1200,7 +1200,7 @@ function expr(stk) {
   var _param;
   while(true) {
     var t = Curry._1(next$1, undefined);
-    if (t.TAG) {
+    if (t.TAG !== /* Op */0) {
       return Curry._1(unnext, t);
     }
     if (t._0 !== "=") {
@@ -1478,7 +1478,7 @@ function stmt(brk, stk) {
     brkl.contents = loc$4;
     return ;
   }
-  if (!t.TAG) {
+  if (t.TAG === /* Op */0) {
     switch (t._0) {
       case ";" :
           return ;
@@ -2001,20 +2001,20 @@ function main(param) {
         var _param;
         while(true) {
           var tok = Curry._1(next$1, undefined);
-          if (tok.TAG) {
+          if (tok.TAG === /* Op */0) {
+            if (tok._0 === "EOF!") {
+              return Printf.printf(/* Format */{
+                          _0: {
+                            TAG: /* String_literal */11,
+                            _0: "End of input stream\n",
+                            _1: /* End_of_format */0
+                          },
+                          _1: "End of input stream\n"
+                        });
+            }
             ppsym(tok);
             _param = undefined;
             continue ;
-          }
-          if (tok._0 === "EOF!") {
-            return Printf.printf(/* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "End of input stream\n",
-                          _1: /* End_of_format */0
-                        },
-                        _1: "End of input stream\n"
-                      });
           }
           ppsym(tok);
           _param = undefined;

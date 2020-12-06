@@ -502,7 +502,7 @@ var suites_1 = {
                       hd: [
                         "File \"rec_value_test.ml\", line 161, characters 2-9",
                         (function (param) {
-                            if (!rec_variant_b.TAG) {
+                            if (rec_variant_b.TAG === /* B */0) {
                               return {
                                       TAG: /* Eq */0,
                                       _0: Curry._1(rec_variant_b_1, undefined),
@@ -524,7 +524,7 @@ var suites_1 = {
                         hd: [
                           "File \"rec_value_test.ml\", line 166, characters 2-9",
                           (function (param) {
-                              if (rec_variant_a.TAG) {
+                              if (rec_variant_a.TAG !== /* B */0) {
                                 return {
                                         TAG: /* Eq */0,
                                         _0: Curry._1(rec_variant_a_1, undefined),

@@ -1877,7 +1877,9 @@ function string_of_basic_type(param) {
 function string_of_field_type(bt) {
   if (typeof bt === "number") {
     return "unit";
-  } else if (bt.TAG) {
+  } else if (bt.TAG === /* Ft_basic_type */0) {
+    return string_of_basic_type(bt._0);
+  } else {
     var param = bt._0;
     var module_ = param.udt_module;
     if (module_ !== undefined) {
@@ -1885,8 +1887,6 @@ function string_of_field_type(bt) {
     } else {
       return param.udt_type_name;
     }
-  } else {
-    return string_of_basic_type(bt._0);
   }
 }
 
@@ -2100,18 +2100,18 @@ function print(scope) {
         return acc;
       }
       var s = param.hd;
-      if (s.TAG) {
-        var items = s._0.items;
-        var sub = loop(/* [] */0, i + 1 | 0, items);
+      if (s.TAG === /* Line */0) {
         _param = param.tl;
-        _acc = Pervasives.$at(sub, acc);
+        _acc = {
+          hd: indentation_prefix(i) + s._0,
+          tl: acc
+        };
         continue ;
       }
+      var items = s._0.items;
+      var sub = loop(/* [] */0, i + 1 | 0, items);
       _param = param.tl;
-      _acc = {
-        hd: indentation_prefix(i) + s._0,
-        tl: acc
-      };
+      _acc = Pervasives.$at(sub, acc);
       continue ;
     };
   };
@@ -2335,7 +2335,7 @@ function decode_field_f(field_type, pk) {
   if (typeof field_type === "number") {
     return "Pbrt.Decoder.empty_nested d";
   }
-  if (!field_type.TAG) {
+  if (field_type.TAG === /* Ft_basic_type */0) {
     return decode_basic_type(field_type._0, pk) + " d";
   }
   var t = field_type._0;
@@ -3275,7 +3275,7 @@ function endline(s) {
 }
 
 function gen_pp_field(field_type) {
-  if (typeof field_type !== "number" && field_type.TAG) {
+  if (typeof field_type !== "number" && field_type.TAG !== /* Ft_basic_type */0) {
     return function_name_of_user_defined("pp", field_type._0);
   }
   return Curry._1(Printf.sprintf(/* Format */{
@@ -4546,10 +4546,10 @@ function compile_default_p2(all_types, field) {
             return invalid_default_value(field_name$1, "invalid default type (bool expected)", undefined);
           }
       case /* Field_type_string */13 :
-          if (field_default$1.TAG) {
-            return invalid_default_value(field_name$1, "invalid default type (string expected)", undefined);
-          } else {
+          if (field_default$1.TAG === /* Constant_string */0) {
             return field_default$1;
+          } else {
+            return invalid_default_value(field_name$1, "invalid default type (string expected)", undefined);
           }
       case /* Field_type_bytes */14 :
           return invalid_default_value(field_name$1, "default value not supported for bytes", undefined);
@@ -4562,7 +4562,7 @@ function compile_default_p2(all_types, field) {
     var default_enum_value = field_default$1._0;
     var match = type_of_id(all_types, field_type$1._0);
     var spec = match.spec;
-    if (spec.TAG) {
+    if (spec.TAG !== /* Enum */0) {
       return invalid_default_value(field_name$1, "field of type message cannot have a default litteral value", undefined);
     }
     var default_enum_value$1 = apply_until((function (param) {
@@ -4875,19 +4875,19 @@ function type_scope_of_type(param) {
 
 function is_empty_message(param) {
   var match = param.spec;
-  if (match.TAG) {
-    return 0 === List.length(match._0.message_body);
-  } else {
+  if (match.TAG === /* Enum */0) {
     return false;
+  } else {
+    return 0 === List.length(match._0.message_body);
   }
 }
 
 function type_name_of_type(param) {
   var match = param.spec;
-  if (match.TAG) {
-    return match._0.message_name;
-  } else {
+  if (match.TAG === /* Enum */0) {
     return match._0.enum_name;
+  } else {
+    return match._0.message_name;
   }
 }
 
@@ -5142,7 +5142,7 @@ function compile_message_p2(types, param, message) {
 function node_of_proto_type(param) {
   var match = param.spec;
   var id = param.id;
-  if (!match.TAG) {
+  if (match.TAG === /* Enum */0) {
     return {
             id: id,
             sub: /* [] */0
@@ -5495,38 +5495,39 @@ function gen_encode_field_type(with_key, sc, var_name, encoding_number, pk, is_p
     encode_key(sc);
     return line$1(sc, "Pbrt.Encoder.empty_nested encoder;");
   }
-  if (field_type.TAG) {
-    var ud = field_type._0;
+  if (field_type.TAG === /* Ft_basic_type */0) {
     encode_key(sc);
-    var f_name = function_name_of_user_defined("encode", ud);
-    if (ud.udt_nested) {
-      return line$1(sc, Curry._2(Printf.sprintf(/* Format */{
-                          _0: {
-                            TAG: /* String_literal */11,
-                            _0: "Pbrt.Encoder.nested (",
+    var rt = encode_basic_type(field_type._0, pk);
+    return line$1(sc, Curry._2(Printf.sprintf(/* Format */{
+                        _0: {
+                          TAG: /* String */2,
+                          _0: /* No_padding */0,
+                          _1: {
+                            TAG: /* Char_literal */12,
+                            _0: /* " " */32,
                             _1: {
                               TAG: /* String */2,
                               _0: /* No_padding */0,
                               _1: {
-                                TAG: /* Char_literal */12,
-                                _0: /* " " */32,
-                                _1: {
-                                  TAG: /* String */2,
-                                  _0: /* No_padding */0,
-                                  _1: {
-                                    TAG: /* String_literal */11,
-                                    _0: ") encoder;",
-                                    _1: /* End_of_format */0
-                                  }
-                                }
+                                TAG: /* String_literal */11,
+                                _0: " encoder;",
+                                _1: /* End_of_format */0
                               }
                             }
-                          },
-                          _1: "Pbrt.Encoder.nested (%s %s) encoder;"
-                        }), f_name, var_name));
-    } else {
-      return line$1(sc, Curry._2(Printf.sprintf(/* Format */{
-                          _0: {
+                          }
+                        },
+                        _1: "%s %s encoder;"
+                      }), rt, var_name));
+  }
+  var ud = field_type._0;
+  encode_key(sc);
+  var f_name = function_name_of_user_defined("encode", ud);
+  if (ud.udt_nested) {
+    return line$1(sc, Curry._2(Printf.sprintf(/* Format */{
+                        _0: {
+                          TAG: /* String_literal */11,
+                          _0: "Pbrt.Encoder.nested (",
+                          _1: {
                             TAG: /* String */2,
                             _0: /* No_padding */0,
                             _1: {
@@ -5537,38 +5538,37 @@ function gen_encode_field_type(with_key, sc, var_name, encoding_number, pk, is_p
                                 _0: /* No_padding */0,
                                 _1: {
                                   TAG: /* String_literal */11,
-                                  _0: " encoder;",
+                                  _0: ") encoder;",
                                   _1: /* End_of_format */0
                                 }
                               }
                             }
-                          },
-                          _1: "%s %s encoder;"
-                        }), f_name, var_name));
-    }
-  }
-  encode_key(sc);
-  var rt = encode_basic_type(field_type._0, pk);
-  return line$1(sc, Curry._2(Printf.sprintf(/* Format */{
-                      _0: {
-                        TAG: /* String */2,
-                        _0: /* No_padding */0,
-                        _1: {
-                          TAG: /* Char_literal */12,
-                          _0: /* " " */32,
+                          }
+                        },
+                        _1: "Pbrt.Encoder.nested (%s %s) encoder;"
+                      }), f_name, var_name));
+  } else {
+    return line$1(sc, Curry._2(Printf.sprintf(/* Format */{
+                        _0: {
+                          TAG: /* String */2,
+                          _0: /* No_padding */0,
                           _1: {
-                            TAG: /* String */2,
-                            _0: /* No_padding */0,
+                            TAG: /* Char_literal */12,
+                            _0: /* " " */32,
                             _1: {
-                              TAG: /* String_literal */11,
-                              _0: " encoder;",
-                              _1: /* End_of_format */0
+                              TAG: /* String */2,
+                              _0: /* No_padding */0,
+                              _1: {
+                                TAG: /* String_literal */11,
+                                _0: " encoder;",
+                                _1: /* End_of_format */0
+                              }
                             }
                           }
-                        }
-                      },
-                      _1: "%s %s encoder;"
-                    }), rt, var_name));
+                        },
+                        _1: "%s %s encoder;"
+                      }), f_name, var_name));
+  }
 }
 
 function gen_encode_record(and_, param, sc) {
@@ -6218,16 +6218,12 @@ var Codegen_encode = {
 function default_value_of_field_type(field_name, field_type, field_default) {
   if (typeof field_type === "number") {
     return "()";
-  } else if (field_type.TAG) {
-    return function_name_of_user_defined("default", field_type._0) + " ()";
-  } else {
+  } else if (field_type.TAG === /* Ft_basic_type */0) {
     var basic_type = field_type._0;
     switch (basic_type) {
       case /* Bt_string */0 :
           if (field_default !== undefined) {
-            if (field_default.TAG) {
-              return invalid_default_value(field_name, "invalid default type", undefined);
-            } else {
+            if (field_default.TAG === /* Constant_string */0) {
               return Curry._1(Printf.sprintf(/* Format */{
                               _0: {
                                 TAG: /* Char_literal */12,
@@ -6244,6 +6240,8 @@ function default_value_of_field_type(field_name, field_type, field_default) {
                               },
                               _1: "\"%s\""
                             }), field_default._0);
+            } else {
+              return invalid_default_value(field_name, "invalid default type", undefined);
             }
           } else {
             return "\"\"";
@@ -6316,9 +6314,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           }
       case /* Bt_bytes */5 :
           if (field_default !== undefined) {
-            if (field_default.TAG) {
-              return invalid_default_value(field_name, "invalid default type", undefined);
-            } else {
+            if (field_default.TAG === /* Constant_string */0) {
               return Curry._1(Printf.sprintf(/* Format */{
                               _0: {
                                 TAG: /* String_literal */11,
@@ -6335,6 +6331,8 @@ function default_value_of_field_type(field_name, field_type, field_default) {
                               },
                               _1: "Bytes.of_string \"%s\""
                             }), field_default._0);
+            } else {
+              return invalid_default_value(field_name, "invalid default type", undefined);
             }
           } else {
             return "Bytes.create 64";
@@ -6354,6 +6352,8 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           }
       
     }
+  } else {
+    return function_name_of_user_defined("default", field_type._0) + " ()";
   }
 }
 
@@ -7150,12 +7150,12 @@ function encoding_info_of_field_type(all_types, field_type) {
     }
   } else {
     var match = type_of_id(all_types, field_type._0);
-    if (match.spec.TAG) {
-      return /* Pk_bytes */2;
-    } else {
+    if (match.spec.TAG === /* Enum */0) {
       return /* Pk_varint */{
               _0: false
             };
+    } else {
+      return /* Pk_bytes */2;
     }
   }
 }
@@ -7233,7 +7233,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
       return /* Ft_unit */0;
     }
     var udt_nested;
-    udt_nested = t.spec.TAG ? true : false;
+    udt_nested = t.spec.TAG === /* Enum */0 ? false : true;
     var field_type_module = module_of_file_name(t.file_name);
     var match$3 = type_scope_of_type(t);
     var udt_type_name = type_name(match$3.message_names, type_name_of_type(t));
@@ -7415,7 +7415,15 @@ function compile(proto_definition) {
           var file_name = param.file_name;
           var id = param.id;
           var scope = param.scope;
-          if (m.TAG) {
+          if (m.TAG === /* Enum */0) {
+            return {
+                    scope: scope,
+                    id: id,
+                    file_name: file_name,
+                    file_options: file_options,
+                    spec: m
+                  };
+          } else {
             return {
                     scope: scope,
                     id: id,
@@ -7426,14 +7434,6 @@ function compile(proto_definition) {
                       _0: compile_message_p2(all_pbtt_msgs, scope, m._0)
                     }
                   };
-          } else {
-            return {
-                    scope: scope,
-                    id: id,
-                    file_name: file_name,
-                    file_options: file_options,
-                    spec: m
-                  };
           }
         }), all_pbtt_msgs);
   var grouped_pbtt_msgs = List.rev(group(all_pbtt_msgs$1));
@@ -7442,7 +7442,12 @@ function compile(proto_definition) {
                         var m = pbtt_msg.spec;
                         var file_name = pbtt_msg.file_name;
                         var scope = pbtt_msg.scope;
-                        if (m.TAG) {
+                        if (m.TAG === /* Enum */0) {
+                          return {
+                                  hd: compile_enum(file_name, scope, m._0),
+                                  tl: /* [] */0
+                                };
+                        } else {
                           var file_options = pbtt_msg.file_options;
                           var message = m._0;
                           var module_ = module_of_file_name(file_name);
@@ -7617,14 +7622,15 @@ function compile(proto_definition) {
                                                 Error: new Error()
                                               };
                                         }
-                                        if (key_type.TAG) {
+                                        if (key_type.TAG === /* Ft_basic_type */0) {
+                                          key_type$1 = key_type._0;
+                                        } else {
                                           throw {
                                                 RE_EXN_ID: "Failure",
                                                 _1: "Only Basic Types are supported for map keys",
                                                 Error: new Error()
                                               };
                                         }
-                                        key_type$1 = key_type._0;
                                         var value_type = compile_field_type(Curry._1(Printf.sprintf(/* Format */{
                                                       _0: {
                                                         TAG: /* String_literal */11,
@@ -7706,11 +7712,6 @@ function compile(proto_definition) {
                                       hd: type_,
                                       tl: match[0]
                                     });
-                        } else {
-                          return {
-                                  hd: compile_enum(file_name, scope, m._0),
-                                  tl: /* [] */0
-                                };
                         }
                       }), pbtt_msgs);
         }), grouped_pbtt_msgs);

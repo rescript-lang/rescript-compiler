@@ -41,7 +41,7 @@ var u = fib(10, (function (x) {
 function iter(_bounce) {
   while(true) {
     var bounce = _bounce;
-    if (!bounce.TAG) {
+    if (bounce.TAG === /* Continue */0) {
       return bounce._0;
     }
     _bounce = bounce._0();
