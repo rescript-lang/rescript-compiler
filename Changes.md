@@ -90,7 +90,7 @@
 
 - #4827 *internal* the dev version of bsc now behave roughly the same as the released version
 
-- #4825 fix a typo in the wanring `%@string` -> `@string`
+- #4825 fix a typo in the warning `%@string` -> `@string`
 
 - #4823 introduce a new warning 109: toplevel expression is expected to have type unit
   It is turned on as warn-error by default. This warning is introduced to avoid partial application errors in a curried language
