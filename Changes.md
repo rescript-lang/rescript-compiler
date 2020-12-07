@@ -1,7 +1,81 @@
 `*` means  potential break changes
-# 8.4.0
 
-- #4848 #4847 #4844 #4836 #4826 #4824
+# 8.4.1
+
+- Syntax submodule upgrades from 7f5c968 to 7cc70c9
+- #4856 #4858
+  Improve code generation for pattern match:
+  Input:
+  ```res
+  type t =
+    | A 
+    | B
+    | C 
+    | D (int )
+    | E (int)
+
+  let f = x => {
+    switch x {
+        | A => 0
+        | B => 1
+        | C => 2
+        | D (x) => x 
+        | E (x) => x + 1
+    }
+  }    
+  ```
+  Output was:
+  ```js
+    function f(x) {
+      if (typeof x !== "number") {
+        if (x.TAG) {
+        return x._0 + 1 | 0;
+      } else {
+        return x._0;
+      }
+      
+      switch (x) {
+        case /* A */0 :
+          return 0;
+        case /* B */1 :
+          return 1;
+        case /* C */2 :
+          return 2;      
+    }
+  }
+  ```
+
+  Now:
+  ```js
+  function f(x) {
+    if (typeof x !== "number") {
+      if (x.TAG === /* D */0) {
+        return x._0;
+      } else {
+        return x._0 + 1 | 0;
+      }
+    }
+    switch (x) {
+      case /* A */0 :
+          return 0;
+      case /* B */1 :
+          return 1;
+      case /* C */2 :
+          return 2;
+      
+    }
+  }
+  ```
+
+
+
+- #4855 *internal changes*
+  changes to compiler-libs will trigger a rebuild of the compiler, this allows us to
+  see how changes of compiler-libs affect bsc.exe quickly
+
+- #4850 replace ocp-ocamlres with a lightweight nodejs script, get rid of such dev dependency
+
+- #4854 #4848 #4847 #4844 #4836 #4826 #4824
   
   Pinned packages support and `-make-world` respect changes of dependencies
 
