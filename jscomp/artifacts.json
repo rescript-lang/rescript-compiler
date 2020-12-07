@@ -1007,6 +1007,7 @@
     "littlecase.js",
     "ninja.js",
     "ninjaFactory.js",
+    "pack.js",
     "prebuilt.js",
     "prepublish.js",
     "release.js",
