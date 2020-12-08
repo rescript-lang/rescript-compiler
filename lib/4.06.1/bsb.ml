@@ -13627,18 +13627,28 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
   let bs = ".."//"bs" in  
   let sb = ".."//".." in 
   o (if Ext_sys.is_windows_or_cygwin then 
-      "rule cp\n  command = cmd.exe /C copy /Y $i $out >NUL\n"
+      "rule cp\n  command = cmd.exe /C copy /Y $i $out >NUL\n\
+       rule touch\n command = cmd.exe /C type nul >>$out & copy $out+,, >NUL\n"
     else
-      "rule cp\n  command = cp $i $out\n"
+      "rule cp\n  command = cp $i $out\n\
+       rule touch\n command = touch $out\n"
     );
+  let essentials = Ext_buffer.create 1_000 in   
   files_to_install 
   |> Queue.iter (fun ({name_sans_extension;syntax_kind; info} : Bsb_db.module_info) -> 
       let base = Filename.basename name_sans_extension in 
-      let ns_base = Ext_namespace_encode.make ?ns:namespace base in
+      let dest = Ext_namespace_encode.make ?ns:namespace base in
       let ns_origin = Ext_namespace_encode.make ?ns:namespace name_sans_extension in
-      oo Literals.suffix_cmi ~dest:ns_base ~src:(bs//ns_origin);
-      oo Literals.suffix_cmj ~dest:ns_base ~src:(bs//ns_origin);      
-      oo Literals.suffix_cmt ~dest:ns_base ~src:(bs//ns_origin);
+      let src = bs//ns_origin in 
+      oo Literals.suffix_cmi ~dest ~src;
+      oo Literals.suffix_cmj ~dest ~src;      
+      oo Literals.suffix_cmt ~dest ~src;
+      
+      Ext_buffer.add_string essentials  dest ;
+      Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';    
+      Ext_buffer.add_string essentials dest ;
+      Ext_buffer.add_string_char essentials Literals.suffix_cmj ' ';
+
       let suffix = 
         match syntax_kind with 
         | Ml -> Literals.suffix_ml 
@@ -13655,16 +13665,23 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
           | Reason ->  Literals.suffix_rei
           | Res ->  Literals.suffix_resi in   
         oo suffix_b  ~dest:base ~src:(sb//name_sans_extension);                      
-        oo Literals.suffix_cmti ~dest:ns_base ~src:(bs//ns_origin)
+        oo Literals.suffix_cmti ~dest ~src
     );
   begin match namespace with 
   | None -> ()      
-  | Some x -> 
-    let src = bs // x in   
-    oo Literals.suffix_cmi ~dest:x ~src; 
-    oo Literals.suffix_cmj ~dest:x ~src;
-    oo Literals.suffix_cmt ~dest:x ~src
+  | Some dest -> 
+    let src = bs // dest in   
+    oo Literals.suffix_cmi ~dest ~src; 
+    oo Literals.suffix_cmj ~dest ~src;
+    oo Literals.suffix_cmt ~dest ~src;
+    Ext_buffer.add_string essentials dest ; 
+    Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';
+    Ext_buffer.add_string essentials dest ;
+    Ext_buffer.add_string essentials Literals.suffix_cmj 
   end;
+  Ext_buffer.add_char essentials '\n';
+  o "build install.stamp : touch ";
+  Ext_buffer.output_buffer install_oc essentials;
   close_out install_oc
 
 let output_ninja_and_namespace_map
@@ -13758,7 +13775,7 @@ let output_ninja_and_namespace_map
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in 
   mark_rescript oc;
   let finger_file  = 
-    fun (x : Bsb_config_types.dependency) -> x.package_install_path //".ninja_log"
+    fun (x : Bsb_config_types.dependency) -> x.package_install_path //"install.stamp"
   in  
   Ext_list.iter bs_dependencies (fun x -> 
       Bsb_ninja_targets.output_finger Bsb_ninja_global_vars.g_finger
