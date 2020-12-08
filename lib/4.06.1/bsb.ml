@@ -4822,7 +4822,7 @@ type  file_group =
     sources : Bsb_db.map; 
     resources : string list ;
     public : public ;
-    dev_index : bool ; (* false means not in dev mode *)
+    is_dev : bool ; (* false means not in dev mode *)
     generators : build_generator list ; 
     (* output of [generators] should be added to [sources],
        if it is [.ml,.mli,.re,.rei]
@@ -4899,7 +4899,7 @@ type  file_group =
     sources : Bsb_db.map; 
     resources : string list ;
     public : public ;
-    dev_index : bool  ;
+    is_dev : bool  ;
     generators : build_generator list ; 
     (* output of [generators] should be added to [sources],
        if it is [.ml,.mli,.re,.rei]
@@ -10582,7 +10582,7 @@ let errorf x fmt =
 
 type cxt = {
   package_kind : Bsb_package_kind.t ;
-  dev_index : bool; 
+  is_dev : bool; 
   cwd : string ;
   root : string;
   cut_generators : bool;
@@ -10802,18 +10802,18 @@ let rec
                     sources = sources; 
                     resources ;
                     public ;
-                    dev_index = cxt.dev_index ;
+                    is_dev = cxt.is_dev ;
                     generators = if has_generators then scanned_generators else []  } 
       ?globbed_dir:(
         if !cur_globbed_dirs then Some dir else None)
       children
 
 
-and parsing_single_source ({package_kind; dev_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_single_source ({package_kind; is_dev ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    begin match package_kind, dev_index with 
+    begin match package_kind, is_dev with 
     | Dependency _ , true ->  
       Bsb_file_groups.empty
     | Dependency _, false  
@@ -10829,7 +10829,7 @@ and parsing_single_source ({package_kind; dev_index ; cwd} as cxt ) (x : Ext_jso
       | Some (Str {str="dev"}) -> 
         true
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
-      | None -> dev_index in 
+      | None -> is_dev in 
     begin match package_kind, current_dir_index with 
     | Dependency _ , true -> 
       Bsb_file_groups.empty 
@@ -10847,7 +10847,7 @@ and parsing_single_source ({package_kind; dev_index ; cwd} as cxt ) (x : Ext_jso
 
       in
       parsing_source_dir_map 
-        {cxt with dev_index = current_dir_index; 
+        {cxt with is_dev = current_dir_index; 
                   cwd= Ext_path.concat cwd dir} map
       end            
   | _ -> Bsb_file_groups.empty
@@ -10873,7 +10873,7 @@ let scan
   parse_sources {
     ignored_dirs;
     package_kind;
-    dev_index = false;
+    is_dev = false;
     cwd = Filename.current_dir_name;
     root ;
     cut_generators;
@@ -13454,7 +13454,7 @@ let handle_files_per_dir
     ~(namespace  : string option)
     (group: Bsb_file_groups.file_group ) 
   : unit =
-
+  let is_dev = group.is_dev in   
   handle_generators oc group rules.customs ;
   let installable =
     match group.public with
@@ -13464,12 +13464,12 @@ let handle_files_per_dir
       fun module_name ->
       Set_string.mem set module_name in
   Map_string.iter group.sources   (fun  module_name module_info   ->
-      if installable module_name then 
+      if installable module_name && not is_dev then 
         Queue.add 
           module_info files_to_install;
       emit_module_build  rules
         package_specs
-        group.dev_index
+        is_dev
         oc 
         namespace module_info
     )
@@ -13726,9 +13726,9 @@ let output_ninja_and_namespace_map
       [] (
       fun 
         (acc_resources : string list) 
-        {sources; dir; resources; dev_index} 
+        {sources; dir; resources; is_dev} 
         ->
-          if dev_index then begin
+          if is_dev then begin
             bs_groups.dev <- Bsb_db_util.merge bs_groups.dev sources ;
             source_dirs.dev <- dir :: source_dirs.dev;  
           end else begin 

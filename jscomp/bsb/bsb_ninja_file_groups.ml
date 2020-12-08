@@ -146,7 +146,7 @@ let handle_files_per_dir
     ~(namespace  : string option)
     (group: Bsb_file_groups.file_group ) 
   : unit =
-
+  let is_dev = group.is_dev in   
   handle_generators oc group rules.customs ;
   let installable =
     match group.public with
@@ -156,12 +156,12 @@ let handle_files_per_dir
       fun module_name ->
       Set_string.mem set module_name in
   Map_string.iter group.sources   (fun  module_name module_info   ->
-      if installable module_name then 
+      if installable module_name && not is_dev then 
         Queue.add 
           module_info files_to_install;
       emit_module_build  rules
         package_specs
-        group.dev_index
+        is_dev
         oc 
         namespace module_info
     )
