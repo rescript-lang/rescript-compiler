@@ -13627,7 +13627,8 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
   let bs = ".."//"bs" in  
   let sb = ".."//".." in 
   o (if Ext_sys.is_windows_or_cygwin then 
-      "rule cp\n  command = cmd.exe /C copy /Y $i $out >NUL\n"
+      "rule cp\n  command = cmd.exe /C copy /Y $i $out >NUL\n\
+       rule touch\n command = cmd.exe /C type nul >>$out & copy $out+,, >NUL\n"
     else
       "rule cp\n  command = cp $i $out\n\
        rule touch\n command = touch $out\n"
@@ -13636,17 +13637,18 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
   files_to_install 
   |> Queue.iter (fun ({name_sans_extension;syntax_kind; info} : Bsb_db.module_info) -> 
       let base = Filename.basename name_sans_extension in 
-      let ns_base = Ext_namespace_encode.make ?ns:namespace base in
+      let dest = Ext_namespace_encode.make ?ns:namespace base in
       let ns_origin = Ext_namespace_encode.make ?ns:namespace name_sans_extension in
-      oo Literals.suffix_cmi ~dest:ns_base ~src:(bs//ns_origin);
-      oo Literals.suffix_cmj ~dest:ns_base ~src:(bs//ns_origin);      
-      oo Literals.suffix_cmt ~dest:ns_base ~src:(bs//ns_origin);
-      Ext_buffer.add_string essentials ns_base ;
-      Ext_buffer.add_string essentials Literals.suffix_cmi;
-      Ext_buffer.add_string essentials " ";
-      Ext_buffer.add_string essentials ns_base ;
-      Ext_buffer.add_string essentials Literals.suffix_cmj;
-      Ext_buffer.add_string essentials " ";
+      let src = bs//ns_origin in 
+      oo Literals.suffix_cmi ~dest ~src;
+      oo Literals.suffix_cmj ~dest ~src;      
+      oo Literals.suffix_cmt ~dest ~src;
+      
+      Ext_buffer.add_string essentials  dest ;
+      Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';    
+      Ext_buffer.add_string essentials dest ;
+      Ext_buffer.add_string_char essentials Literals.suffix_cmj ' ';
+
       let suffix = 
         match syntax_kind with 
         | Ml -> Literals.suffix_ml 
@@ -13663,22 +13665,21 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
           | Reason ->  Literals.suffix_rei
           | Res ->  Literals.suffix_resi in   
         oo suffix_b  ~dest:base ~src:(sb//name_sans_extension);                      
-        oo Literals.suffix_cmti ~dest:ns_base ~src:(bs//ns_origin)
+        oo Literals.suffix_cmti ~dest ~src
     );
   begin match namespace with 
   | None -> ()      
-  | Some x -> 
-    let src = bs // x in   
-    oo Literals.suffix_cmi ~dest:x ~src; 
-    oo Literals.suffix_cmj ~dest:x ~src;
-    oo Literals.suffix_cmt ~dest:x ~src;
-    Ext_buffer.add_string essentials x ; 
-    Ext_buffer.add_string essentials Literals.suffix_cmi;
-    Ext_buffer.add_string essentials " ";
-    Ext_buffer.add_string essentials x ;
-    Ext_buffer.add_string essentials Literals.suffix_cmj;
+  | Some dest -> 
+    let src = bs // dest in   
+    oo Literals.suffix_cmi ~dest ~src; 
+    oo Literals.suffix_cmj ~dest ~src;
+    oo Literals.suffix_cmt ~dest ~src;
+    Ext_buffer.add_string essentials dest ; 
+    Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';
+    Ext_buffer.add_string essentials dest ;
+    Ext_buffer.add_string essentials Literals.suffix_cmj 
   end;
-  Ext_buffer.add_string essentials "\n";
+  Ext_buffer.add_char essentials '\n';
   o "build install.stamp : touch ";
   Ext_buffer.output_buffer install_oc essentials;
   close_out install_oc
