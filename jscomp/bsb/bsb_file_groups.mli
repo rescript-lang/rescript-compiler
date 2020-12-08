@@ -40,7 +40,7 @@ type  file_group =
     sources : Bsb_db.map; 
     resources : string list ;
     public : public ;
-    dev_index : bool ; (* false means not in dev mode *)
+    is_dev : bool ; (* false means not in dev mode *)
     generators : build_generator list ; 
     (* output of [generators] should be added to [sources],
        if it is [.ml,.mli,.re,.rei]

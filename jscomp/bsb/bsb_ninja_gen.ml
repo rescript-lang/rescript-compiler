@@ -207,9 +207,9 @@ let output_ninja_and_namespace_map
       [] (
       fun 
         (acc_resources : string list) 
-        {sources; dir; resources; dev_index} 
+        {sources; dir; resources; is_dev} 
         ->
-          if dev_index then begin
+          if is_dev then begin
             bs_groups.dev <- Bsb_db_util.merge bs_groups.dev sources ;
             source_dirs.dev <- dir :: source_dirs.dev;  
           end else begin 

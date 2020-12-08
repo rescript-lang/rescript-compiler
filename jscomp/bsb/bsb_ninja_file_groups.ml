@@ -146,7 +146,7 @@ let handle_files_per_dir
     ~(namespace  : string option)
     (group: Bsb_file_groups.file_group ) 
   : unit =
-  let is_dev = group.dev_index in   
+  let is_dev = group.is_dev in   
   handle_generators oc group rules.customs ;
   let installable =
     match group.public with
