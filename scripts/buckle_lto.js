@@ -27,7 +27,7 @@ var regexp = RegExp(
       }
       return result;
     })
-    .flat()
+    .reduce((x,y)=>x.concat(y))
     .join("|")}`,
   "g"
 );
