@@ -9,8 +9,10 @@ var root_config = { cwd: root, stdio: [0, 1, 2], encoding: "utf8" };
 
 var ocamlVersion = require("./buildocaml.js").getVersionPrefix();
 var fs = require("fs");
-var hostPlatform = "darwin";
 
+function isHostPlatform(){
+    return process.platform === "darwin" || process.platform === "linux" 
+}
 function rebuild() {
   cp.execSync(`node ${path.join(__dirname, "ninja.js")} cleanbuild`, {
     cwd: __dirname,
@@ -51,7 +53,7 @@ if (!is_windows) {
 }
 
 function createOCamlTar() {
-  if (process.platform === hostPlatform) {
+    if (isHostPlatform()) {
     require("./installUtils.js").install();
     console.log(`status in ocaml submodule:`);
     cp.execSync(`git -C ocaml status -uno`, { cwd: root, stdio: [0, 1, 2] });

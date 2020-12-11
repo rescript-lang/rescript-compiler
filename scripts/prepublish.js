@@ -64,7 +64,7 @@ function check(map) {
   // since it's already snapshot
 
   // make sure the remote and current are on the same commit
-  var currentBranch = (p.execSync(`git branch --show-current`) + "").trim();
+  var currentBranch = (p.execSync(`git rev-parse --abbrev-ref HEAD`) + "").trim();
   var command = `git fetch origin && git diff ${currentBranch} origin/${currentBranch}`;
   console.log(`Running '${command}'`);
   var remoteDiffs = p.execSync(command) + "";
