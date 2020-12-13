@@ -119,20 +119,20 @@ let oc_cmi buf namespace source =
     When ns is turned on, `B` is interprted as `Ns-B` which is a cyclic dependency,
     it can be errored out earlier
 *)
-let oc_impl 
-    (mlast : string)
-    (dev_group : bool)
+let oc_deps 
+    (ast_file : string)
+    (is_dev : bool)
     (db : Bsb_db_decode.t)
     (namespace : string option)
     (buf : Ext_buffer.t)
-    (kind : [`impl | `intf ])
+    (kind : [`impl | `intf ]) : unit 
   = 
   (* TODO: move namespace upper, it is better to resolve ealier *)  
   let has_deps = ref false in 
-  let cur_module_name = Ext_filename.module_name mlast  in
+  let cur_module_name = Ext_filename.module_name ast_file  in
   let at_most_once : unit lazy_t  = lazy (
     has_deps := true ;
-    output_file buf (Ext_filename.chop_extension_maybe mlast) namespace ; 
+    output_file buf (Ext_filename.chop_extension_maybe ast_file) namespace ; 
     Ext_buffer.add_string buf (if kind = `impl then Literals.suffix_cmj else Literals.suffix_cmi); 
     (* print the source *)
     Ext_buffer.add_string buf dep_lit ) in  
@@ -141,7 +141,7 @@ let oc_impl
       Ext_buffer.add_string buf ns;
       Ext_buffer.add_string buf Literals.suffix_cmi; (* always cmi *)
   ) ; (* TODO: moved into static files*)
-  let s = extract_dep_raw_string mlast in 
+  let s = extract_dep_raw_string ast_file in 
   let offset = ref 1 in 
   let size = String.length s in 
   while !offset < size do 
@@ -154,7 +154,7 @@ let oc_impl
       end
     );
     (match  
-      Bsb_db_decode.find db dependent_module dev_group 
+      Bsb_db_decode.find db dependent_module is_dev 
     with      
     | None -> ()
     | Some ({dir_name; case }) -> 
@@ -180,62 +180,8 @@ let oc_impl
     Ext_buffer.add_char buf '\n'
 
 
-
-(** Note since dependent file is [mli], it only depends on 
-    [.cmi] file
-*)
-(* let oc_intf
-    mliast    
-    (dev_group : bool)
-    (db : Bsb_db_decode.t)
-    (namespace : string option)
-    (buf : Ext_buffer.t) : unit =     
-  
-  let has_deps = ref false in  
-  let cur_module_name = Ext_filename.module_name mliast in
-  let at_most_once : unit lazy_t = lazy (  
-    has_deps := true;
-    output_file buf (Ext_filename.chop_all_extensions_maybe mliast) namespace ;   
-    Ext_buffer.add_string buf Literals.suffix_cmi ; 
-    Ext_buffer.add_string buf dep_lit) in 
-  (match namespace with None -> () | Some  ns -> 
-      Lazy.force at_most_once;  
-      Ext_buffer.add_string buf ns;
-      Ext_buffer.add_string buf Literals.suffix_cmi;
-  ) ; 
-  
-  let s = extract_dep_raw_string mliast in 
-  let offset = ref 1 in 
-  let size = String.length s in 
-  while !offset < size do 
-    let next_tab = String.index_from s !offset magic_sep_char in
-    let dependent_module = String.sub s !offset (next_tab - !offset) in 
-    (if dependent_module = cur_module_name then 
-       begin
-         prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
-         exit 2
-       end
-    );
-    (match  Bsb_db_decode.find db dependent_module dev_group 
-     with     
-     | None -> ()
-     | Some {dir_name; case} ->       
-       Lazy.force at_most_once; 
-       let source = 
-         Filename.concat dir_name 
-           (if case then dependent_module else
-              Ext_string.uncapitalize_ascii dependent_module
-           ) in 
-       oc_cmi buf namespace source         
-    );
-    offset := next_tab + 1   
-  done;  
-  if !has_deps then
-    Ext_buffer.add_char buf '\n' *)
-
-
 let emit_d 
-  (dev_group : bool) 
+  (is_dev : bool) 
   (namespace : string option) (mlast : string) (mliast : string) = 
   let data  =
     Bsb_db_decode.read_build_cache 
@@ -243,17 +189,17 @@ let emit_d
   let buf = Ext_buffer.create 2048 in 
   let filename = 
       Ext_filename.new_extension mlast Literals.suffix_d in   
-  oc_impl 
+  oc_deps 
     mlast
-    dev_group
+    is_dev
     data
     namespace
     buf `impl
     ;      
   if mliast <> "" then begin
-    oc_impl
+    oc_deps
       mliast
-      dev_group
+      is_dev
       data 
       namespace 
       buf `intf
