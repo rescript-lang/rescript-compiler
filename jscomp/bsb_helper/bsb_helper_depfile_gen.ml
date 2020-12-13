@@ -24,7 +24,7 @@
 
 
 
-let dep_lit = " : "
+let dep_lit = " :"
 let write_buf name buf  =     
   let oc = open_out_bin name in 
   Ext_buffer.output_buffer oc buf ;
@@ -166,6 +166,7 @@ let oc_deps
             dependent_module
           else 
             Ext_string.uncapitalize_ascii dependent_module) in 
+        Ext_buffer.add_char buf ' ';    
         if kind = `impl then begin     
           output_file buf source namespace;
           Ext_buffer.add_string buf Literals.suffix_cmj;
