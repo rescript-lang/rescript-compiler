@@ -164,7 +164,6 @@ let oc_impl
             dependent_module
           else 
             Ext_string.uncapitalize_ascii dependent_module) in 
-        Ext_buffer.add_char buf ' ';  
         output_file buf source namespace;
         Ext_buffer.add_string buf Literals.suffix_cmj;
         
@@ -190,6 +189,7 @@ let oc_intf
     (buf : Ext_buffer.t) : unit =     
   
   let has_deps = ref false in  
+  let cur_module_name = Ext_filename.module_name mliast in
   let at_most_once : unit lazy_t = lazy (  
     has_deps := true;
     output_file buf (Ext_filename.chop_all_extensions_maybe mliast) namespace ;   
@@ -200,7 +200,7 @@ let oc_intf
       Ext_buffer.add_string buf ns;
       Ext_buffer.add_string buf Literals.suffix_cmi;
   ) ; 
-  let cur_module_name = Ext_filename.module_name mliast in
+  
   let s = extract_dep_raw_string mliast in 
   let offset = ref 1 in 
   let size = String.length s in 
@@ -218,11 +218,12 @@ let oc_intf
      | None -> ()
      | Some {dir_name; case} ->       
        Lazy.force at_most_once; 
-       oc_cmi buf namespace 
-         (Filename.concat dir_name 
-            (if case then dependent_module else
-               Ext_string.uncapitalize_ascii dependent_module
-            ))
+       let source = 
+         Filename.concat dir_name 
+           (if case then dependent_module else
+              Ext_string.uncapitalize_ascii dependent_module
+           ) in 
+       oc_cmi buf namespace source         
     );
     offset := next_tab + 1   
   done;  
