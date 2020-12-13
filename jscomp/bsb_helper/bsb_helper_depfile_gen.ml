@@ -125,6 +125,7 @@ let oc_impl
     (db : Bsb_db_decode.t)
     (namespace : string option)
     (buf : Ext_buffer.t)
+    (kind : [`impl | `intf ])
   = 
   (* TODO: move namespace upper, it is better to resolve ealier *)  
   let has_deps = ref false in 
@@ -132,12 +133,13 @@ let oc_impl
   let at_most_once : unit lazy_t  = lazy (
     has_deps := true ;
     output_file buf (Ext_filename.chop_extension_maybe mlast) namespace ; 
-    Ext_buffer.add_string buf Literals.suffix_cmj; 
+    Ext_buffer.add_string buf (if kind = `impl then Literals.suffix_cmj else Literals.suffix_cmi); 
+    (* print the source *)
     Ext_buffer.add_string buf dep_lit ) in  
   (match namespace with None -> () | Some ns -> 
       Lazy.force at_most_once;
       Ext_buffer.add_string buf ns;
-      Ext_buffer.add_string buf Literals.suffix_cmi;
+      Ext_buffer.add_string buf Literals.suffix_cmi; (* always cmi *)
   ) ; (* TODO: moved into static files*)
   let s = extract_dep_raw_string mlast in 
   let offset = ref 1 in 
@@ -164,9 +166,10 @@ let oc_impl
             dependent_module
           else 
             Ext_string.uncapitalize_ascii dependent_module) in 
-        output_file buf source namespace;
-        Ext_buffer.add_string buf Literals.suffix_cmj;
-        
+        if kind = `impl then begin     
+          output_file buf source namespace;
+          Ext_buffer.add_string buf Literals.suffix_cmj;
+        end;
         (* #3260 cmj changes does not imply cmi change anymore *)
         oc_cmi buf namespace source
 
@@ -181,7 +184,7 @@ let oc_impl
 (** Note since dependent file is [mli], it only depends on 
     [.cmi] file
 *)
-let oc_intf
+(* let oc_intf
     mliast    
     (dev_group : bool)
     (db : Bsb_db_decode.t)
@@ -228,7 +231,7 @@ let oc_intf
     offset := next_tab + 1   
   done;  
   if !has_deps then
-    Ext_buffer.add_char buf '\n'
+    Ext_buffer.add_char buf '\n' *)
 
 
 let emit_d 
@@ -245,14 +248,14 @@ let emit_d
     dev_group
     data
     namespace
-    buf 
+    buf `impl
     ;      
   if mliast <> "" then begin
-    oc_intf 
+    oc_impl
       mliast
       dev_group
       data 
       namespace 
-      buf        
+      buf `intf
   end;          
   write_file filename buf 
