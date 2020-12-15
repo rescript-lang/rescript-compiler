@@ -21,6 +21,9 @@ function b(loc, x) {
 
 function f(x) {
   var match = Curry._1(x, undefined);
+  if (match > 3 || match < 1) {
+    return /* "x" */120;
+  }
   switch (match) {
     case 1 :
         return /* "a" */97;
@@ -28,13 +31,15 @@ function f(x) {
         return /* "b" */98;
     case 3 :
         return /* "c" */99;
-    default:
-      return /* "x" */120;
+    
   }
 }
 
 function f22(x) {
   var match = Curry._1(x, undefined);
+  if (match > 3 || match < 1) {
+    return /* "x" */120;
+  }
   switch (match) {
     case 1 :
         return /* "a" */97;
@@ -42,8 +47,7 @@ function f22(x) {
         return /* "b" */98;
     case 3 :
         return /* "c" */99;
-    default:
-      return /* "x" */120;
+    
   }
 }
 

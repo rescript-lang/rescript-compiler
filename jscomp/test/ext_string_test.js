@@ -179,15 +179,14 @@ function escaped(s) {
       if (match < 32) {
         return true;
       }
-      var switcher = match - 34 | 0;
-      if (switcher > 58 || switcher < 0) {
-        if (switcher >= 93) {
+      if (match > 92 || match < 34) {
+        if (match >= 127) {
           return true;
         }
         _i = i + 1 | 0;
         continue ;
       }
-      if (switcher > 57 || switcher < 1) {
+      if (match > 91 || match < 35) {
         return true;
       }
       _i = i + 1 | 0;
@@ -467,18 +466,16 @@ function is_valid_module_file(s) {
     return false;
   }
   return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
-                if (x < 65) {
-                  if (x >= 48) {
-                    return x < 58;
+                if (x >= 65) {
+                  if (x > 96 || x < 91) {
+                    return x < 123;
                   } else {
-                    return x === 39;
+                    return x === 95;
                   }
-                }
-                var switcher = x - 91 | 0;
-                if (switcher > 5 || switcher < 0) {
-                  return switcher < 32;
+                } else if (x >= 48) {
+                  return x < 58;
                 } else {
-                  return switcher === 4;
+                  return x === 39;
                 }
               }));
 }

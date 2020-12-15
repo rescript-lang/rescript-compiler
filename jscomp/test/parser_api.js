@@ -1231,15 +1231,14 @@ function rev_split_words(s) {
         return res;
       }
       var match = Caml_string.get(s, i);
-      var switcher = match - 9 | 0;
-      if (switcher > 4 || switcher < 0) {
-        if (switcher !== 23) {
+      if (match > 13 || match < 9) {
+        if (match !== 32) {
           return split2(res, i, i + 1 | 0);
         }
         _i = i + 1 | 0;
         continue ;
       }
-      if (switcher === 3 || switcher === 2) {
+      if (match === 12 || match === 11) {
         return split2(res, i, i + 1 | 0);
       }
       _i = i + 1 | 0;
@@ -1256,14 +1255,13 @@ function rev_split_words(s) {
               };
       }
       var match = Caml_string.get(s, j);
-      var switcher = match - 9 | 0;
-      if (switcher > 4 || switcher < 0) {
-        if (switcher !== 23) {
+      if (match > 13 || match < 9) {
+        if (match !== 32) {
           _j = j + 1 | 0;
           continue ;
         }
         
-      } else if (switcher === 3 || switcher === 2) {
+      } else if (match === 12 || match === 11) {
         _j = j + 1 | 0;
         continue ;
       }
@@ -1879,6 +1877,17 @@ function loop(i) {
 var letter_all = loop(104);
 
 function letter(param) {
+  if (param > 122 || param < 97) {
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "warnings.ml",
+            176,
+            9
+          ],
+          Error: new Error()
+        };
+  }
   switch (param) {
     case 97 :
         return letter_all;
@@ -2031,16 +2040,7 @@ function letter(param) {
                 hd: 27,
                 tl: /* [] */0
               };
-    default:
-      throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "warnings.ml",
-              176,
-              9
-            ],
-            Error: new Error()
-          };
+    
   }
 }
 
@@ -2169,16 +2169,16 @@ function parse_opt(error, active, flags, s) {
             };
       }
       if (c >= 43) {
-        switch (c - 43 | 0) {
-          case 0 :
+        switch (c) {
+          case 43 :
               return loop_letter_num(set, i + 1 | 0);
-          case 1 :
+          case 44 :
               throw {
                     RE_EXN_ID: Arg.Bad,
                     _1: "Ill-formed list of warnings",
                     Error: new Error()
                   };
-          case 2 :
+          case 45 :
               return loop_letter_num(clear, i + 1 | 0);
           
         }
@@ -13981,8 +13981,8 @@ function semver(loc, lhs, str) {
         ];
       }
     } else if (v >= 60) {
-      switch (v - 60 | 0) {
-        case 0 :
+      switch (v) {
+        case 60 :
             if (last_index === 0) {
               throw {
                     RE_EXN_ID: $$Error$2,
@@ -14002,10 +14002,10 @@ function semver(loc, lhs, str) {
                 semantic_version_parse(str, 1, last_index)
               ];
             break;
-        case 1 :
+        case 61 :
             exit = 1;
             break;
-        case 2 :
+        case 62 :
             if (last_index === 0) {
               throw {
                     RE_EXN_ID: $$Error$2,
@@ -15180,17 +15180,17 @@ function char_for_backslash(c) {
   if (c >= 117) {
     return c;
   }
-  switch (c - 110 | 0) {
-    case 0 :
+  switch (c) {
+    case 110 :
         return /* "\n" */10;
-    case 4 :
+    case 114 :
         return /* "\r" */13;
-    case 1 :
-    case 2 :
-    case 3 :
-    case 5 :
+    case 111 :
+    case 112 :
+    case 113 :
+    case 115 :
         return c;
-    case 6 :
+    case 116 :
         return /* "\t" */9;
     
   }
@@ -16423,9 +16423,8 @@ function interpret_directive(lexbuf, cont, look_ahead) {
                 if (token === /* SHARP */84 && at_bol(lexbuf)) {
                   var token$1 = token_with_comments(lexbuf);
                   if (typeof token$1 === "number") {
-                    var switcher = token$1 - 23 | 0;
-                    if (switcher === 0 || switcher === 1) {
-                      if (switcher !== 0) {
+                    if (token$1 === 24 || token$1 === 23) {
+                      if (token$1 >= 24) {
                         if_then_else.contents = /* Dir_out */2;
                         return Curry._1(cont, lexbuf);
                       } else {
@@ -16433,7 +16432,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
                         return Curry._1(cont, lexbuf);
                       }
                     }
-                    if (switcher === 14) {
+                    if (token$1 === 37) {
                       throw {
                             RE_EXN_ID: $$Error$2,
                             _1: /* Unexpected_directive */6,
@@ -16499,9 +16498,8 @@ function interpret_directive(lexbuf, cont, look_ahead) {
     if (token$2 === /* SHARP */84 && at_bol(lexbuf)) {
       var token$3 = token_with_comments(lexbuf);
       if (typeof token$3 === "number") {
-        var switcher$1 = token$3 - 23 | 0;
-        if (switcher$1 === 0 || switcher$1 === 1) {
-          if (switcher$1 !== 0) {
+        if (token$3 === 24 || token$3 === 23) {
+          if (token$3 >= 24) {
             if_then_else.contents = /* Dir_out */2;
             return Curry._1(cont, lexbuf);
           }
@@ -16516,7 +16514,7 @@ function interpret_directive(lexbuf, cont, look_ahead) {
           _else_seen = true;
           continue ;
         }
-        if (switcher$1 === 14) {
+        if (token$3 === 37) {
           throw {
                 RE_EXN_ID: $$Error$2,
                 _1: /* Unexpected_directive */6,

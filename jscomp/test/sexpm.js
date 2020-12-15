@@ -57,19 +57,19 @@ function _must_escape(s) {
         }
       } else if (c >= 11) {
         if (c >= 32) {
-          switch (c - 32 | 0) {
-            case 1 :
-            case 3 :
-            case 4 :
-            case 5 :
-            case 6 :
-            case 7 :
+          switch (c) {
+            case 33 :
+            case 35 :
+            case 36 :
+            case 37 :
+            case 38 :
+            case 39 :
                 exit = 1;
                 break;
-            case 0 :
-            case 2 :
-            case 8 :
-            case 9 :
+            case 32 :
+            case 34 :
+            case 40 :
+            case 41 :
                 throw {
                       RE_EXN_ID: Pervasives.Exit,
                       Error: new Error()
@@ -539,8 +539,8 @@ function expr_starting_with(c, k, t) {
     
   } else if (c >= 11) {
     if (c >= 32) {
-      switch (c - 32 | 0) {
-        case 0 :
+      switch (c) {
+        case 32 :
             throw {
                   RE_EXN_ID: "Assert_failure",
                   _1: [
@@ -550,18 +550,18 @@ function expr_starting_with(c, k, t) {
                   ],
                   Error: new Error()
                 };
-        case 2 :
+        case 34 :
             return quoted(k, t);
-        case 1 :
-        case 3 :
-        case 4 :
-        case 5 :
-        case 6 :
-        case 7 :
+        case 33 :
+        case 35 :
+        case 36 :
+        case 37 :
+        case 38 :
+        case 39 :
             break;
-        case 8 :
+        case 40 :
             return expr_list(/* [] */0, k, t);
-        case 9 :
+        case 41 :
             return _error(t, /* Format */{
                         _0: {
                           TAG: /* String_literal */11,
@@ -597,16 +597,15 @@ function expr_list(acc, k, t) {
                   }), _error_eof);
     }
     var c = _get(t);
-    var switcher = c - 9 | 0;
-    if (switcher > 23 || switcher < 0) {
-      if (switcher === 32) {
+    if (c > 32 || c < 9) {
+      if (c === 41) {
         return Curry._2(k, undefined, {
                     NAME: "List",
                     VAL: List.rev(acc)
                   });
       }
       
-    } else if (switcher > 22 || switcher < 2) {
+    } else if (c > 31 || c < 11) {
       continue ;
     }
     return expr_starting_with(c, (function (last, e) {
@@ -682,14 +681,14 @@ function atom(k, t) {
       }
     } else if (c >= 11) {
       if (c >= 32) {
-        switch (c - 32 | 0) {
-          case 0 :
+        switch (c) {
+          case 32 :
               exit = 2;
               break;
-          case 1 :
+          case 33 :
               exit = 1;
               break;
-          case 2 :
+          case 34 :
               return _error(t, /* Format */{
                           _0: {
                             TAG: /* String_literal */11,
@@ -748,37 +747,37 @@ function escaped(k, t) {
   var c = _get(t);
   if (c >= 92) {
     if (c < 117) {
-      switch (c - 92 | 0) {
-        case 0 :
+      switch (c) {
+        case 92 :
             return Curry._1(k, /* "\\" */92);
-        case 6 :
+        case 98 :
             return Curry._1(k, /* "\b" */8);
-        case 18 :
+        case 110 :
             return Curry._1(k, /* "\n" */10);
-        case 22 :
+        case 114 :
             return Curry._1(k, /* "\r" */13);
-        case 1 :
-        case 2 :
-        case 3 :
-        case 4 :
-        case 5 :
-        case 7 :
-        case 8 :
-        case 9 :
-        case 10 :
-        case 11 :
-        case 12 :
-        case 13 :
-        case 14 :
-        case 15 :
-        case 16 :
-        case 17 :
-        case 19 :
-        case 20 :
-        case 21 :
-        case 23 :
+        case 93 :
+        case 94 :
+        case 95 :
+        case 96 :
+        case 97 :
+        case 99 :
+        case 100 :
+        case 101 :
+        case 102 :
+        case 103 :
+        case 104 :
+        case 105 :
+        case 106 :
+        case 107 :
+        case 108 :
+        case 109 :
+        case 111 :
+        case 112 :
+        case 113 :
+        case 115 :
             break;
-        case 24 :
+        case 116 :
             return Curry._1(k, /* "\t" */9);
         
       }
@@ -1148,8 +1147,8 @@ function MakeDecode(funarg) {
       
     } else if (c >= 11) {
       if (c >= 32) {
-        switch (c - 32 | 0) {
-          case 0 :
+        switch (c) {
+          case 32 :
               throw {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
@@ -1159,18 +1158,18 @@ function MakeDecode(funarg) {
                     ],
                     Error: new Error()
                   };
-          case 2 :
+          case 34 :
               return quoted(k, t);
-          case 1 :
-          case 3 :
-          case 4 :
-          case 5 :
-          case 6 :
-          case 7 :
+          case 33 :
+          case 35 :
+          case 36 :
+          case 37 :
+          case 38 :
+          case 39 :
               break;
-          case 8 :
+          case 40 :
               return expr_list(/* [] */0, k, t);
-          case 9 :
+          case 41 :
               return _error(t, /* Format */{
                           _0: {
                             TAG: /* String_literal */11,
@@ -1205,16 +1204,15 @@ function MakeDecode(funarg) {
                     }), _error_eof);
       }
       var c = _get(t);
-      var switcher = c - 9 | 0;
-      if (switcher > 23 || switcher < 0) {
-        if (switcher === 32) {
+      if (c > 32 || c < 9) {
+        if (c === 41) {
           return Curry._2(k, undefined, {
                       NAME: "List",
                       VAL: List.rev(acc)
                     });
         }
         
-      } else if (switcher > 22 || switcher < 2) {
+      } else if (c > 31 || c < 11) {
         continue ;
       }
       return expr_starting_with(c, (function (last, e) {
@@ -1288,14 +1286,14 @@ function MakeDecode(funarg) {
         }
       } else if (c >= 11) {
         if (c >= 32) {
-          switch (c - 32 | 0) {
-            case 0 :
+          switch (c) {
+            case 32 :
                 exit = 2;
                 break;
-            case 1 :
+            case 33 :
                 exit = 1;
                 break;
-            case 2 :
+            case 34 :
                 return _error(t, /* Format */{
                             _0: {
                               TAG: /* String_literal */11,
@@ -1352,37 +1350,37 @@ function MakeDecode(funarg) {
     var c = _get(t);
     if (c >= 92) {
       if (c < 117) {
-        switch (c - 92 | 0) {
-          case 0 :
+        switch (c) {
+          case 92 :
               return Curry._1(k, /* "\\" */92);
-          case 6 :
+          case 98 :
               return Curry._1(k, /* "\b" */8);
-          case 18 :
+          case 110 :
               return Curry._1(k, /* "\n" */10);
-          case 22 :
+          case 114 :
               return Curry._1(k, /* "\r" */13);
-          case 1 :
-          case 2 :
-          case 3 :
-          case 4 :
-          case 5 :
-          case 7 :
-          case 8 :
-          case 9 :
-          case 10 :
-          case 11 :
-          case 12 :
-          case 13 :
-          case 14 :
-          case 15 :
-          case 16 :
-          case 17 :
-          case 19 :
-          case 20 :
-          case 21 :
-          case 23 :
+          case 93 :
+          case 94 :
+          case 95 :
+          case 96 :
+          case 97 :
+          case 99 :
+          case 100 :
+          case 101 :
+          case 102 :
+          case 103 :
+          case 104 :
+          case 105 :
+          case 106 :
+          case 107 :
+          case 108 :
+          case 109 :
+          case 111 :
+          case 112 :
+          case 113 :
+          case 115 :
               break;
-          case 24 :
+          case 116 :
               return Curry._1(k, /* "\t" */9);
           
         }

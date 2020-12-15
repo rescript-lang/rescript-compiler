@@ -2262,62 +2262,64 @@ function update_loop(canvas, param, map_dim) {
 function keydown(evt) {
   var match = evt.keyCode;
   if (match >= 41) {
-    switch (match) {
-      case 65 :
-          pressed_keys.left = true;
-          break;
-      case 66 :
-          pressed_keys.bbox = (pressed_keys.bbox + 1 | 0) % 2;
-          break;
-      case 68 :
-          pressed_keys.right = true;
-          break;
-      case 83 :
-          pressed_keys.down = true;
-          break;
-      case 67 :
-      case 69 :
-      case 70 :
-      case 71 :
-      case 72 :
-      case 73 :
-      case 74 :
-      case 75 :
-      case 76 :
-      case 77 :
-      case 78 :
-      case 79 :
-      case 80 :
-      case 81 :
-      case 82 :
-      case 84 :
-      case 85 :
-      case 86 :
-          break;
-      case 87 :
-          pressed_keys.up = true;
-          break;
-      default:
+    if (!(match > 87 || match < 65)) {
+      switch (match) {
+        case 65 :
+            pressed_keys.left = true;
+            break;
+        case 66 :
+            pressed_keys.bbox = (pressed_keys.bbox + 1 | 0) % 2;
+            break;
+        case 68 :
+            pressed_keys.right = true;
+            break;
+        case 83 :
+            pressed_keys.down = true;
+            break;
+        case 67 :
+        case 69 :
+        case 70 :
+        case 71 :
+        case 72 :
+        case 73 :
+        case 74 :
+        case 75 :
+        case 76 :
+        case 77 :
+        case 78 :
+        case 79 :
+        case 80 :
+        case 81 :
+        case 82 :
+        case 84 :
+        case 85 :
+        case 86 :
+            break;
+        case 87 :
+            pressed_keys.up = true;
+            break;
         
+      }
     }
+    
   } else if (match >= 32) {
-    switch (match - 32 | 0) {
-      case 1 :
-      case 2 :
-      case 3 :
-      case 4 :
+    switch (match) {
+      case 33 :
+      case 34 :
+      case 35 :
+      case 36 :
           break;
-      case 5 :
+      case 37 :
           pressed_keys.left = true;
           break;
-      case 0 :
-      case 6 :
+      case 32 :
+      case 38 :
           pressed_keys.up = true;
           break;
-      case 7 :
+      case 39 :
           pressed_keys.right = true;
           break;
-      case 8 :
+      case 40 :
           pressed_keys.down = true;
           break;
       
@@ -2349,23 +2351,23 @@ function keyup(evt) {
       pressed_keys.left = false;
     }
   } else if (match >= 32) {
-    switch (match - 32 | 0) {
-      case 1 :
-      case 2 :
-      case 3 :
-      case 4 :
+    switch (match) {
+      case 33 :
+      case 34 :
+      case 35 :
+      case 36 :
           break;
-      case 5 :
+      case 37 :
           pressed_keys.left = false;
           break;
-      case 0 :
-      case 6 :
+      case 32 :
+      case 38 :
           pressed_keys.up = false;
           break;
-      case 7 :
+      case 39 :
           pressed_keys.right = false;
           break;
-      case 8 :
+      case 40 :
           pressed_keys.down = false;
           break;
       

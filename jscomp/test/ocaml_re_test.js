@@ -437,50 +437,44 @@ function $plus$plus(x, y) {
 function from_char(param) {
   if (param >= 170) {
     if (param >= 187) {
-      var switcher = param - 192 | 0;
-      if (switcher > 54 || switcher < 0) {
-        if (switcher >= 56) {
+      if (param > 246 || param < 192) {
+        if (param >= 248) {
           return 2;
         } else {
           return 4;
         }
-      } else if (switcher !== 23) {
+      } else if (param !== 215) {
         return 2;
       } else {
         return 4;
       }
-    }
-    var switcher$1 = param - 171 | 0;
-    if (!(switcher$1 > 14 || switcher$1 < 0) && switcher$1 !== 10) {
+    } else if (!(param > 185 || param < 171) && param !== 181) {
       return 4;
     } else {
       return 2;
     }
-  }
-  if (param < 65) {
-    if (param >= 48) {
-      if (param >= 58) {
+  } else if (param >= 65) {
+    if (param > 96 || param < 91) {
+      if (param >= 123) {
         return 4;
       } else {
         return 2;
       }
-    } else if (param !== 10) {
-      return 4;
-    } else {
-      return 12;
-    }
-  }
-  var switcher$2 = param - 91 | 0;
-  if (switcher$2 > 5 || switcher$2 < 0) {
-    if (switcher$2 >= 32) {
+    } else if (param !== 95) {
       return 4;
     } else {
       return 2;
     }
-  } else if (switcher$2 !== 4) {
+  } else if (param >= 48) {
+    if (param >= 58) {
+      return 4;
+    } else {
+      return 2;
+    }
+  } else if (param !== 10) {
     return 4;
   } else {
-    return 2;
+    return 12;
   }
 }
 
@@ -3474,6 +3468,12 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             };
       }
       var c = get(undefined);
+      if (c > 122 || c < 48) {
+        return {
+                TAG: /* Set */0,
+                _0: single(c)
+              };
+      }
       switch (c) {
         case 48 :
         case 49 :
@@ -3616,11 +3616,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                 };
         case 122 :
             return /* End_of_str */6;
-        default:
-          return {
-                  TAG: /* Set */0,
-                  _0: single(c)
-                };
+        
       }
     } else {
       if (i.contents === l) {
@@ -3944,8 +3940,8 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                 VAL: c$2
               };
       }
-      switch (c$2 - 58 | 0) {
-        case 10 :
+      switch (c$2) {
+        case 68 :
             return {
                     NAME: "Set",
                     VAL: compl({
@@ -3953,7 +3949,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                           tl: /* [] */0
                         })
                   };
-        case 25 :
+        case 83 :
             return {
                     NAME: "Set",
                     VAL: compl({
@@ -3961,7 +3957,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                           tl: /* [] */0
                         })
                   };
-        case 29 :
+        case 87 :
             return {
                     NAME: "Set",
                     VAL: compl({
@@ -3981,54 +3977,54 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                           }
                         })
                   };
-        case 0 :
-        case 1 :
-        case 2 :
-        case 3 :
-        case 4 :
-        case 5 :
-        case 6 :
-        case 33 :
-        case 34 :
-        case 35 :
-        case 36 :
-        case 37 :
-        case 38 :
+        case 58 :
+        case 59 :
+        case 60 :
+        case 61 :
+        case 62 :
+        case 63 :
+        case 64 :
+        case 91 :
+        case 92 :
+        case 93 :
+        case 94 :
+        case 95 :
+        case 96 :
             return {
                     NAME: "Char",
                     VAL: c$2
                   };
-        case 40 :
+        case 98 :
             return {
                     NAME: "Char",
                     VAL: /* "\b" */8
                   };
-        case 42 :
+        case 100 :
             return {
                     NAME: "Set",
                     VAL: digit
                   };
-        case 52 :
+        case 110 :
             return {
                     NAME: "Char",
                     VAL: /* "\n" */10
                   };
-        case 56 :
+        case 114 :
             return {
                     NAME: "Char",
                     VAL: /* "\r" */13
                   };
-        case 57 :
+        case 115 :
             return {
                     NAME: "Set",
                     VAL: space
                   };
-        case 58 :
+        case 116 :
             return {
                     NAME: "Char",
                     VAL: /* "\t" */9
                   };
-        case 61 :
+        case 119 :
             return {
                     NAME: "Set",
                     VAL: alt$1({
@@ -4048,48 +4044,48 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                           }
                         })
                   };
-        case 7 :
-        case 8 :
-        case 9 :
-        case 11 :
-        case 12 :
-        case 13 :
-        case 14 :
-        case 15 :
-        case 16 :
-        case 17 :
-        case 18 :
-        case 19 :
-        case 20 :
-        case 21 :
-        case 22 :
-        case 23 :
-        case 24 :
-        case 26 :
-        case 27 :
-        case 28 :
-        case 30 :
-        case 31 :
-        case 32 :
-        case 39 :
-        case 41 :
-        case 43 :
-        case 44 :
-        case 45 :
-        case 46 :
-        case 47 :
-        case 48 :
-        case 49 :
-        case 50 :
-        case 51 :
-        case 53 :
-        case 54 :
-        case 55 :
-        case 59 :
-        case 60 :
-        case 62 :
-        case 63 :
-        case 64 :
+        case 65 :
+        case 66 :
+        case 67 :
+        case 69 :
+        case 70 :
+        case 71 :
+        case 72 :
+        case 73 :
+        case 74 :
+        case 75 :
+        case 76 :
+        case 77 :
+        case 78 :
+        case 79 :
+        case 80 :
+        case 81 :
+        case 82 :
+        case 84 :
+        case 85 :
+        case 86 :
+        case 88 :
+        case 89 :
+        case 90 :
+        case 97 :
+        case 99 :
+        case 101 :
+        case 102 :
+        case 103 :
+        case 104 :
+        case 105 :
+        case 106 :
+        case 107 :
+        case 108 :
+        case 109 :
+        case 111 :
+        case 112 :
+        case 113 :
+        case 117 :
+        case 118 :
+        case 120 :
+        case 121 :
+        case 122 :
             throw {
                   RE_EXN_ID: Parse_error,
                   Error: new Error()

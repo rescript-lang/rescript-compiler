@@ -12,6 +12,9 @@ function f(value) {
 
 function fxx(v) {
   var match = Curry._1(v, undefined);
+  if (match > 3 || match < 1) {
+    return /* "d" */100;
+  }
   switch (match) {
     case 1 :
         return /* "a" */97;
@@ -19,8 +22,7 @@ function fxx(v) {
         return /* "b" */98;
     case 3 :
         return /* "c" */99;
-    default:
-      return /* "d" */100;
+    
   }
 }
 
