@@ -966,8 +966,29 @@ let string_comp (cmp : J.binop) ?comment  (e0: t) (e1 : t) =
 let obj_length ?comment e : t = 
   to_int32 {expression_desc = Length (e, Caml_block); comment }
 
+let compare_int_aux (cmp : Lam_compat.comparison) (l : int) r = 
+  match cmp with 
+  | Ceq -> l = r 
+  | Cneq -> l <> r 
+  | Clt -> l < r 
+  | Cgt -> l > r 
+  | Cle -> l <= r
+  | Cge -> l >= r  
+
 let rec int_comp (cmp : Lam_compat.comparison) ?comment  (e0 : t) (e1 : t) = 
   match cmp, e0.expression_desc, e1.expression_desc with
+  | _, Number (Int _ | Uint _ as l), Number (Int _| Uint _ as r) -> 
+    let l = 
+      match l with 
+      | Uint l -> Ext_int.int32_unsigned_to_int l 
+      | Int {i = l} -> Int32.to_int l 
+      | _ -> assert false in
+    let r =   
+      match r with 
+      | Uint l -> Ext_int.int32_unsigned_to_int l 
+      | Int {i = l} -> Int32.to_int l 
+      | _ -> assert false in  
+    bool (compare_int_aux cmp l r )
   | _, Call ({
       expression_desc = 
         Var (Qualified 
