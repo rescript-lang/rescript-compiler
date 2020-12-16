@@ -124,6 +124,7 @@ o test/class_setter_getter.cmi : cc test/class_setter_getter.mli | $stdlib
 o test/class_test.cmi test/class_test.cmj : cc test/class_test.ml | test/mt.cmj $stdlib
 o test/class_type_ffi_test.cmi test/class_type_ffi_test.cmj : cc test/class_type_ffi_test.ml | $stdlib
 o test/compare_test.cmi test/compare_test.cmj : cc test/compare_test.ml | $stdlib
+o test/complete_parmatch_test.cmi test/complete_parmatch_test.cmj : cc test/complete_parmatch_test.ml | $stdlib
 o test/complex_if_test.cmi test/complex_if_test.cmj : cc test/complex_if_test.ml | test/mt.cmj $stdlib
 o test/complex_test.cmi test/complex_test.cmj : cc test/complex_test.ml | test/mt.cmj $stdlib
 o test/complex_while_loop.cmi test/complex_while_loop.cmj : cc test/complex_while_loop.ml | $stdlib
