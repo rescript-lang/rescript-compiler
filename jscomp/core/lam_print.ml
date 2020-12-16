@@ -220,7 +220,7 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
     fprintf ppf "sys.constant_%s" const_name
   | Pisint -> fprintf ppf "isint"
   | Pis_poly_var_const -> fprintf ppf "#is_poly_var_const"
-  | Pisout -> fprintf ppf "isout"
+  | Pisout i -> fprintf ppf "isout %d" i
   | Pbintofint bi -> print_boxed_integer "of_int" ppf bi
   | Pintofbint bi -> print_boxed_integer "to_int" ppf bi
   | Pcvtbint (bi1, bi2) -> print_boxed_integer_conversion ppf bi1 bi2

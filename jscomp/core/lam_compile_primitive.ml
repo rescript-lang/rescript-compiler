@@ -438,10 +438,10 @@ let translate  loc
   | Pnot ->
     E.not  (Ext_list.singleton_exn args)       
   | Poffsetint n ->
-    E.int32_add (Ext_list.singleton_exn args) (E.small_int  n)      
+    E.offset (Ext_list.singleton_exn args) n
   | Poffsetref n ->
     let v = Js_of_lam_block.field Lambda.ref_field_info (Ext_list.singleton_exn args) 0l in
-    E.seq (E.assign  v (E.int32_add v (E.small_int  n))) E.unit
+    E.seq (E.assign  v (E.offset v n)) E.unit
   | Psequand -> (* TODO: rhs is possibly a tail call *)
     begin match args with
       | [e1;e2] ->
@@ -454,7 +454,7 @@ let translate  loc
         E.or_  e1  e2
       | _ -> assert false
     end
-  | Pisout -> 
+  | Pisout off -> 
     begin match args with 
       (* predicate: [x > range  or x < 0 ]
          can be simplified if x is positive , x > range
@@ -466,7 +466,7 @@ let translate  loc
          a normal case of the compiler is  that it will do a shift 
          in the first step [ (x - 1) > 1 or ( x - 1 ) < 0 ]
       *)
-      | [range; e] -> E.is_out e range
+      | [range; e] -> E.is_out (E.offset e off) range
       | _ -> assert false
     end
   | Pbytes_of_string -> 

@@ -128,16 +128,15 @@ let oc_deps
     (kind : [`impl | `intf ]) : unit 
   = 
   (* TODO: move namespace upper, it is better to resolve ealier *)  
-  let has_deps = ref false in 
   let cur_module_name = Ext_filename.module_name ast_file  in
   let at_most_once : unit lazy_t  = lazy (
-    has_deps := true ;
     output_file buf (Ext_filename.chop_extension_maybe ast_file) namespace ; 
     Ext_buffer.add_string buf (if kind = `impl then Literals.suffix_cmj else Literals.suffix_cmi); 
     (* print the source *)
     Ext_buffer.add_string buf dep_lit ) in  
   (match namespace with None -> () | Some ns -> 
       Lazy.force at_most_once;
+      Ext_buffer.add_char buf ' ';
       Ext_buffer.add_string buf ns;
       Ext_buffer.add_string buf Literals.suffix_cmi; (* always cmi *)
   ) ; (* TODO: moved into static files*)
@@ -177,7 +176,7 @@ let oc_deps
       end);     
     offset := next_tab + 1  
   done ;
-  if !has_deps then  
+  if Lazy.is_val at_most_once then  
     Ext_buffer.add_char buf '\n'
 
 
