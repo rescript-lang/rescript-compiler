@@ -438,10 +438,10 @@ let translate  loc
   | Pnot ->
     E.not  (Ext_list.singleton_exn args)       
   | Poffsetint n ->
-    E.int32_add (Ext_list.singleton_exn args) (E.small_int  n)      
+    E.offset (Ext_list.singleton_exn args) n
   | Poffsetref n ->
     let v = Js_of_lam_block.field Lambda.ref_field_info (Ext_list.singleton_exn args) 0l in
-    E.seq (E.assign  v (E.int32_add v (E.small_int  n))) E.unit
+    E.seq (E.assign  v (E.offset v n)) E.unit
   | Psequand -> (* TODO: rhs is possibly a tail call *)
     begin match args with
       | [e1;e2] ->
