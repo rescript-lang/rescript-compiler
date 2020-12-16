@@ -716,7 +716,7 @@ let has_boolean_type (x : t) =
   | Lprim {primitive =
     Pnot | Psequand |
     Psequor 
-    | Pisout 
+    | Pisout _
     | Pintcomp _ 
     | Pis_not_none
     | Pfloatcomp _
@@ -790,7 +790,7 @@ let if_ (a : t) (b : t) (c : t) : t =
       end 
     | _ -> 
       (match a with 
-       | Lprim {primitive = Pisout; args = [Lconst(Const_int {value = range}); Lvar xx] } 
+       | Lprim {primitive = Pisout off; args = [Lconst(Const_int {value = range}); Lvar xx] } 
          -> 
          begin match c with 
            | Lswitch ( Lvar yy as switch_arg, 
@@ -798,7 +798,8 @@ let if_ (a : t) (b : t) (c : t) : t =
                          sw_consts_full = _; sw_failaction = None} as body)
                      )
              when Ident.same xx yy 
-               && complete_range sw_consts ~start:0 ~finish:range
+               && complete_range sw_consts 
+                ~start:(-off) ~finish:(range - off)
              ->  
              Lswitch(switch_arg, 
                      { body with sw_failaction = Some b; sw_consts_full = false; })

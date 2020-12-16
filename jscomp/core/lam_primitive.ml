@@ -91,7 +91,7 @@ type t =
   | Pisint
   | Pis_poly_var_const
   (* Test if the (integer) argument is outside an interval *)
-  | Pisout  
+  | Pisout  of int 
   (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
   | Pbintofint of Lam_compat.boxed_integer
   | Pintofbint of Lam_compat.boxed_integer
@@ -231,7 +231,8 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pjs_typeof -> rhs = Pjs_typeof
   | Pisint -> rhs = Pisint
   | Pis_poly_var_const -> rhs = Pis_poly_var_const 
-  | Pisout -> rhs = Pisout
+  | Pisout l -> 
+    (match rhs with Pisout r -> l = r | _ -> false )
   | Pdebugger -> rhs = Pdebugger    
   | Pinit_mod -> rhs = Pinit_mod
   | Pupdate_mod -> rhs = Pupdate_mod

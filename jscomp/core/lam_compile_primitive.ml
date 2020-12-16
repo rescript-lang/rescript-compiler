@@ -454,7 +454,7 @@ let translate  loc
         E.or_  e1  e2
       | _ -> assert false
     end
-  | Pisout -> 
+  | Pisout off -> 
     begin match args with 
       (* predicate: [x > range  or x < 0 ]
          can be simplified if x is positive , x > range
@@ -466,7 +466,7 @@ let translate  loc
          a normal case of the compiler is  that it will do a shift 
          in the first step [ (x - 1) > 1 or ( x - 1 ) < 0 ]
       *)
-      | [range; e] -> E.is_out e range
+      | [range; e] -> E.is_out (E.offset e off) range
       | _ -> assert false
     end
   | Pbytes_of_string -> 

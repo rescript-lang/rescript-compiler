@@ -352,7 +352,14 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pbytesrefs -> prim ~primitive:Pbytesrefs ~args loc
   | Pbytessets -> prim ~primitive:Pbytessets ~args loc
   | Pisint -> prim ~primitive:Pisint ~args loc
-  | Pisout -> prim ~primitive:Pisout ~args loc
+  | Pisout -> 
+    begin match args with 
+    | [ range; Lprim {primitive = Poffsetint i; args = [x]}] ->
+
+      prim ~primitive:(Pisout i) ~args:[range;x] loc 
+    | _ ->     
+      prim ~primitive:(Pisout 0) ~args loc
+    end
   | Pintoffloat -> prim ~primitive:Pintoffloat ~args loc
   | Pfloatofint -> prim ~primitive:Pfloatofint ~args loc
   | Pnegfloat -> prim ~primitive:Pnegfloat ~args loc

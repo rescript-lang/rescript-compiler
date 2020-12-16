@@ -87,7 +87,7 @@ type t =
   | Pisint
   | Pis_poly_var_const
   (* Test if the (integer) argument is outside an interval *)
-  | Pisout
+  | Pisout of int
   (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
   | Pbintofint of Lam_compat.boxed_integer
   | Pintofbint of Lam_compat.boxed_integer
