@@ -1,21 +1,49 @@
 'use strict';
 
 
-var switcher = -299;
-
-if (switcher > 99 || switcher < 0) {
-  if (switcher === -300 || switcher === -299) {
-    console.log("good response");
+function test(code) {
+  if (code > 599 || code < 500) {
+    if (code === 201 || code === 200) {
+      return "good response";
+    } else {
+      return "the catch all";
+    }
+  } else if (code > 597 || code < 512) {
+    return "bad response";
   } else {
-    console.log("the catch all");
+    return "the catch all";
   }
-} else if (switcher > 97 || switcher < 12) {
-  console.log("bad response");
-} else {
-  console.log("the catch all");
 }
 
-var httpResponseCode = 201;
+var a = "good response";
 
-exports.httpResponseCode = httpResponseCode;
+var b = "bad response";
+
+if (a !== "good response") {
+  throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "gpr_3877_test.ml",
+          14,
+          3
+        ],
+        Error: new Error()
+      };
+}
+
+if (b !== "bad response") {
+  throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "gpr_3877_test.ml",
+          15,
+          3
+        ],
+        Error: new Error()
+      };
+}
+
+exports.test = test;
+exports.a = a;
+exports.b = b;
 /*  Not a pure module */

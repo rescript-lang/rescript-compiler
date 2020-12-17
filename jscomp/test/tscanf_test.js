@@ -1715,8 +1715,8 @@ function scan_elems$2(ib, accu) {
                   }), (function (c, i) {
                   if (c >= 91) {
                     if (c < 94) {
-                      switch (c - 91 | 0) {
-                        case 0 :
+                      switch (c) {
+                        case 91 :
                             if (accu === /* [] */0) {
                               return scan_elems$2(ib, {
                                           hd: i,
@@ -1724,9 +1724,9 @@ function scan_elems$2(ib, accu) {
                                         });
                             }
                             break;
-                        case 1 :
+                        case 92 :
                             break;
-                        case 2 :
+                        case 93 :
                             return List.rev({
                                         hd: i,
                                         tl: accu

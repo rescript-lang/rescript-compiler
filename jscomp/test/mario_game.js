@@ -2301,23 +2301,23 @@ function keydown(evt) {
         
     }
   } else if (match >= 32) {
-    switch (match - 32 | 0) {
-      case 1 :
-      case 2 :
-      case 3 :
-      case 4 :
+    switch (match) {
+      case 33 :
+      case 34 :
+      case 35 :
+      case 36 :
           break;
-      case 5 :
+      case 37 :
           pressed_keys.left = true;
           break;
-      case 0 :
-      case 6 :
+      case 32 :
+      case 38 :
           pressed_keys.up = true;
           break;
-      case 7 :
+      case 39 :
           pressed_keys.right = true;
           break;
-      case 8 :
+      case 40 :
           pressed_keys.down = true;
           break;
       
@@ -2349,23 +2349,23 @@ function keyup(evt) {
       pressed_keys.left = false;
     }
   } else if (match >= 32) {
-    switch (match - 32 | 0) {
-      case 1 :
-      case 2 :
-      case 3 :
-      case 4 :
+    switch (match) {
+      case 33 :
+      case 34 :
+      case 35 :
+      case 36 :
           break;
-      case 5 :
+      case 37 :
           pressed_keys.left = false;
           break;
-      case 0 :
-      case 6 :
+      case 32 :
+      case 38 :
           pressed_keys.up = false;
           break;
-      case 7 :
+      case 39 :
           pressed_keys.right = false;
           break;
-      case 8 :
+      case 40 :
           pressed_keys.down = false;
           break;
       
