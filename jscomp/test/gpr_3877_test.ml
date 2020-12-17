@@ -1,8 +1,15 @@
-let httpResponseCode = 201
-let _ =
-  match httpResponseCode with
+
+let [@inline] test code  =
+  match code with
   | 201|200 ->
-      Js.log (("good response"))
+      ("good response")
   | 500|503|506|509|598|501|504|507|510|599|502|505|508|511 ->
-      Js.log (("bad response"))
-  | _ -> Js.log (("the catch all"))
+      ("bad response")
+  | _ -> ("the catch all")
+
+let a = test 201
+
+let b = test 504
+
+;; assert (a = "good response" )
+;; assert (b = "bad response")

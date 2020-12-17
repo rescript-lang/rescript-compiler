@@ -139,11 +139,10 @@ function getq(param) {
 }
 
 function isid(param) {
-  var switcher = param - 91 | 0;
-  if (switcher > 5 || switcher < 0) {
-    return (switcher + 26 >>> 0) <= 57;
+  if (param > 96 || param < 91) {
+    return !(param > 122 || param < 65);
   } else {
-    return switcher === 4;
+    return param === 95;
   }
 }
 
