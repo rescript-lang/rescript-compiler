@@ -28,6 +28,22 @@ let x = \\"\\\\\\\\0AAA\\"
 ========================================================"
 `;
 
+exports[`nativeint.res 1`] = `
+"=====Parsetree==========================================
+let nativeint = 3n
+=====Errors=============================================
+
+  Syntax error!
+  parsing/errors/scanner/nativeint.res:1:18  
+  1 │ let nativeint = 3n
+  2 │ 
+  
+  Unsupported number type (nativeint). Did you mean \`3\`?
+
+
+========================================================"
+`;
+
 exports[`oldDerefOp.js 1`] = `
 "=====Parsetree==========================================
 let newVelocity = velocity +. (a *. secondPerFrame)

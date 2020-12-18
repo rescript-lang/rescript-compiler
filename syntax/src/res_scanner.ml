@@ -190,6 +190,18 @@ let scanNumber scanner =
        || scanner.ch >= CharacterCodes.Upper.g && scanner.ch <= CharacterCodes.Upper.z
     then (
       let ch = scanner.ch in
+      if CharacterCodes.Lower.n = ch then (
+        let msg =
+          "Unsupported number type (nativeint). Did you mean `"
+          ^ literal
+          ^ "`?"
+        in
+        let pos = position scanner in
+        scanner.err
+          ~startPos:pos
+          ~endPos:pos
+          (Diagnostics.message msg)
+      );
       next scanner;
       Some (Char.unsafe_chr ch)
     ) else

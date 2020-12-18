@@ -1125,11 +1125,11 @@ let build_other ext env = match env with
       (function Tpat_constant(Const_int64 i) -> i | _ -> assert false)
       (function i -> Tpat_constant(Const_int64 i))
       0L Int64.succ p env
-| ({pat_desc=(Tpat_constant (Const_nativeint _))} as p,_) :: _ ->
-    build_other_constant
-      (function Tpat_constant(Const_nativeint i) -> i | _ -> assert false)
-      (function i -> Tpat_constant(Const_nativeint i))
-      0n Nativeint.succ p env
+(* | ({pat_desc=(Tpat_constant (Const_nativeint _))} as p,_) :: _ -> *)
+    (* build_other_constant *)
+      (* (function Tpat_constant(Const_nativeint i) -> i | _ -> assert false) *)
+      (* (function i -> Tpat_constant(Const_nativeint i)) *)
+      (* 0n Nativeint.succ p env *)
 | ({pat_desc=(Tpat_constant (Const_string _))} as p,_) :: _ ->
     build_other_constant
       (function Tpat_constant(Const_string (s, _)) -> String.length s

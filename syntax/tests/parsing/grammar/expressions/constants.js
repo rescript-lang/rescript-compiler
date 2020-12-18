@@ -19,7 +19,6 @@ let x = 0b0000_0001
 
 let int32 = 42l
 let int64 = 42L
-let nativeint = 42n
 
 let x = -44.20e99
 let x = -44.20_34e99

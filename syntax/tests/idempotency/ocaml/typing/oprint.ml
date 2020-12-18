@@ -150,7 +150,7 @@ let print_out_value ppf tree =
     | Oval_int i -> parenthesize_if_neg ppf "%i" i (i < 0)
     | Oval_int32 i -> parenthesize_if_neg ppf "%lil" i (i < 0l)
     | Oval_int64 i -> parenthesize_if_neg ppf "%LiL" i (i < 0L)
-    | Oval_nativeint i -> parenthesize_if_neg ppf "%nin" i (i < 0n)
+    (* | Oval_nativeint i -> parenthesize_if_neg ppf "%nin" i (i < 0n) *)
     | Oval_float f -> parenthesize_if_neg ppf "%s" (float_repres f) (f < 0.0)
     | Oval_string (_,_, Ostr_bytes) as tree ->
       pp_print_char ppf '(';
