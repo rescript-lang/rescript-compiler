@@ -204,7 +204,8 @@ let () =
   Bs_conditional_initial.setup_env ();
   Clflags.binary_annotations := false;
   Misc.Color.setup (Some Always);
-  Lazy.force Super_main.setup
+  Lazy.force Super_main.setup;
+  Lazy.force Res_outcome_printer.setup
 
 let error_of_exn e =
   (match Location.error_of_exn e with
