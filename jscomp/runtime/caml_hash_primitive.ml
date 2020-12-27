@@ -56,7 +56,7 @@ let caml_hash_final_mix h =
   (* Caml_nativeint_extern.logand  (h.contents ^ (h.contents >>> 16)) 0x3FFFFFFFn *)
 
 let caml_hash_mix_string h  s = 
-  let module String = Caml_string_extern in 
+  
   let len =Caml_string_extern.length s in
   let block = len / 4 - 1  in
   let hash = ref h in  
