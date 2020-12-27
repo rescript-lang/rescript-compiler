@@ -29,29 +29,25 @@ let (>>>) = Caml_nativeint_extern.shift_right_logical
 let (|~) = Caml_nativeint_extern.logor
 let (^) = Caml_nativeint_extern.logxor
 
-external ( *~ ) : nativeint -> nativeint -> nativeint = "%int32_mul" 
-external ( +~ ) : nativeint -> nativeint -> nativeint = "%int32_add"
 
-
-
-let rotl32 (x : nativeint) n  = 
+let rotl32 (x : int) n  = 
   (x << n) |~ (x >>> (32 - n))
 
 external (.![]) : string -> int -> int = "charCodeAt" [@@bs.send]
 let caml_hash_mix_int h  d = 
   let d = ref d in 
-  d.contents <- d.contents *~ 0xcc9e2d51n ;
+  d.contents <- d.contents * 0xcc9e2d51 ;
   d.contents <- rotl32 d.contents 15 ;
-  d.contents <- d.contents *~ 0x1b873593n ;
+  d.contents <- d.contents * 0x1b873593 ;
   let h = ref (h ^ d.contents) in
   h.contents <- rotl32 h.contents 13 ;
-  h.contents +~ (h.contents << 2)  +~ 0xe6546b64n  
+  h.contents + (h.contents << 2)  + 0xe6546b64  
 
 let caml_hash_final_mix h = 
   let h = ref (h ^ (h >>> 16)) in
-  h.contents <- h.contents *~ 0x85ebca6bn ;
+  h.contents <- h.contents * 0x85ebca6b ;
   h.contents <- h.contents ^ (h.contents >>> 13);
-  h.contents <- h.contents *~ 0xc2b2ae35n ;
+  h.contents <- h.contents * 0xc2b2ae35 ;
   h.contents ^ (h.contents >>> 16)
   (* Caml_nativeint_extern.logand  (h.contents ^ (h.contents >>> 16)) 0x3FFFFFFFn *)
 
@@ -68,7 +64,7 @@ let caml_hash_mix_string h  s =
       (s.![j+2] lsl 16) lor 
       (s.![j+3] lsl 24)
     in
-    hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int w)
+    hash.contents <- caml_hash_mix_int hash.contents  w
   done ;
   let modulo =  len land 0b11 in 
   if modulo <> 0 then 
@@ -83,9 +79,9 @@ let caml_hash_mix_string h  s =
            s.![len -2]
         else  s.![len - 1] 
       in 
-      hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int w)
+      hash.contents <- caml_hash_mix_int hash.contents  w
     end;
-  hash.contents <- hash.contents ^ (Caml_nativeint_extern.of_int len) ;
+  hash.contents <- hash.contents ^ len ;
   hash.contents 
 
  

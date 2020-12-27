@@ -77,19 +77,18 @@ let unsafe_pop (q : 'a t) =
 
 
 
-external ( +~ ) : nativeint -> nativeint -> nativeint =
-   "%int32_add"
+let caml_hash_mix_int = Caml_hash_primitive.caml_hash_mix_int
+let caml_hash_final_mix = Caml_hash_primitive.caml_hash_final_mix
+let caml_hash_mix_string =  Caml_hash_primitive.caml_hash_mix_string
 
 
-open Caml_hash_primitive
-
-let caml_hash (count : int) _limit (seed : nativeint) 
-  (obj : Obj.t) : nativeint = 
+let caml_hash (count : int) _limit (seed : int) 
+  (obj : Obj.t) : int = 
   let hash = ref seed in 
   if Js.typeof obj = "number" then
     begin 
       let u = Caml_nativeint_extern.of_float (Obj.magic obj) in
-      hash.contents <- caml_hash_mix_int hash.contents (u +~ u +~ 1n) ;
+      hash.contents <- caml_hash_mix_int hash.contents (u + u + 1) ;
       caml_hash_final_mix hash.contents
     end
   else if Js.typeof obj = "string" then 
@@ -111,7 +110,7 @@ let caml_hash (count : int) _limit (seed : nativeint)
       if Js.typeof obj = "number" then
         begin 
           let u = Caml_nativeint_extern.of_float (Obj.magic obj) in
-          hash.contents <- caml_hash_mix_int hash.contents (u +~ u +~ 1n) ;
+          hash.contents <- caml_hash_mix_int hash.contents (u + u + 1) ;
           num.contents <- num.contents - 1;
         end 
       else if Js.typeof obj = "string" then 
@@ -134,10 +133,10 @@ let caml_hash (count : int) _limit (seed : nativeint)
           let tag = (size lsl 10) lor obj_tag in 
           if obj_tag = 248 (* Obj.object_tag*) then 
             hash.contents <- caml_hash_mix_int hash.contents 
-                (Caml_nativeint_extern.of_int (Obj.obj (Obj.field obj 1) : int))
+                (Obj.obj (Obj.field obj 1) : int)
           else 
             begin 
-              hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int tag) ;
+              hash.contents <- caml_hash_mix_int hash.contents tag ;
               let block = 
                 let v = size - 1 in if v <  num.contents then v else num.contents in 
               for i = 0 to block do
@@ -154,7 +153,7 @@ let caml_hash (count : int) _limit (seed : nativeint)
             }
             return size
           }|}] obj (fun [@bs] v -> push_back queue v ) [@bs]) in    
-            hash.contents <- caml_hash_mix_int hash.contents (Caml_nativeint_extern.of_int ((size lsl 10) lor 0)) (*tag*) ;
+            hash.contents <- caml_hash_mix_int hash.contents  ((size lsl 10) lor 0) (*tag*) ;
           end
     done;
     caml_hash_final_mix hash.contents
