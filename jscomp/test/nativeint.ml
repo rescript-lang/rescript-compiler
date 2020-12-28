@@ -38,24 +38,24 @@ external to_float : nativeint -> float
 external of_int32: int32 -> nativeint = "%nativeint_of_int32"
 external to_int32: nativeint -> int32 = "%nativeint_to_int32"
 
-let zero = 0n
+(* let zero = 0
 let one = 1n
 let minus_one = -1n
 let succ n = add n 1n
 let pred n = sub n 1n
-let abs n = if n >= 0n then n else neg n
+let abs n = if n >= 0n then n else neg n *)
 #if BS then
-let size = 54 (* 54 is not a multiple of 8 *)
+(* let size = 54 (* 54 is not a multiple of 8 *)
 let min_int = -9007199254740991n
-let max_int = 9007199254740991n
+let max_int = 9007199254740991n *)
 #else
 let size = Sys.word_size
 let min_int = shift_left 1n (size - 1)
 let max_int = sub min_int 1n
 #end
-let lognot n = logxor n (-1n)
+(* let lognot n = logxor n (-1n) *)
 
-external format : string -> nativeint -> string = "caml_nativeint_format"
+(* external format : string -> nativeint -> string = "caml_nativeint_format"
 let to_string n = format "%d" n
 
 external of_string: string -> nativeint = "caml_nativeint_of_string"
@@ -68,4 +68,4 @@ let of_string_opt s =
 type t = nativeint
 
 let compare (x: t) (y: t) = Pervasives.compare x y
-let equal (x: t) (y: t) = compare x y = 0
+let equal (x: t) (y: t) = compare x y = 0 *)

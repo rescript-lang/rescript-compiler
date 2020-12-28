@@ -151,9 +151,9 @@ let suites :  Mt.pair_suites = Mt.[
         Eq(generic_compare 0x0000_0000_8000_0000L 0x0000_0000_0000_0001L > 0 , true));
     "shift_left", (fun _ -> 
         Eq(Int64.shift_left 0x00ff_ffffL 8, 0xffff_ff00L));
-    "shift_right",(fun _ ->
+    (* "shift_right",(fun _ ->
         Eq(Nativeint.shift_right_logical 0xffff_ffffn 0, 0xffff_ffffn)
-      ); 
+      );  *)
     "fib_int64", (fun _ -> 
         Eq(fib 1000 1L 2L, -8549408682174725832L)
       );
