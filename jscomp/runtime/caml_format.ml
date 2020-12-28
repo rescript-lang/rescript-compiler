@@ -72,15 +72,15 @@ let parse_sign_and_base (s : string) =
   let sign = ref 1 in
   let base = ref Dec in
   let i  = ref 0 in
-  (match s.[i.contents] with 
+  (match s.!(i.contents) with 
    | '-' -> 
      sign .contents<-  -1;
      i.contents <- i.contents + 1
    | '+' -> 
      i.contents <- i.contents + 1
    | _ -> ());
-  if s.[i.contents] = '0' then 
-    (match  s.[i.contents + 1] with 
+  if s.!(i.contents) = '0' then 
+    (match  s.!(i.contents + 1) with 
      |  ('x' | 'X')
        -> base .contents<- Hex; i.contents<- i.contents + 2 
      |  ( 'o' | 'O')
