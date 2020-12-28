@@ -188,3 +188,57 @@ type exoticUser = {
   \"let": string,
   \"type": float
 }
+
+module Js = {
+  module Fn = {
+    type arity0<'a> = {i0: unit => 'a}
+    type arity1<'a> = {i1: 'a}
+    type arity2<'a> = {i2: 'a}
+    type arity3<'a> = {i3: 'a}
+    type arity4<'a> = {i4: 'a}
+    type arity5<'a> = {i5: 'a}
+    type arity6<'a> = {i6: 'a}
+    type arity7<'a> = {i7: 'a}
+    type arity8<'a> = {i8: 'a}
+    type arity9<'a> = {i9: 'a}
+    type arity10<'a> = {i10: 'a}
+    type arity11<'a> = {i11: 'a}
+    type arity12<'a> = {i12: 'a}
+    type arity13<'a> = {i13: 'a}
+    type arity14<'a> = {i14: 'a}
+    type arity15<'a> = {i15: 'a}
+    type arity16<'a> = {i16: 'a}
+    type arity17<'a> = {i17: 'a}
+    type arity18<'a> = {i18: 'a}
+    type arity19<'a> = {i19: 'a}
+    type arity20<'a> = {i20: 'a}
+    type arity21<'a> = {i21: 'a}
+    type arity22<'a> = {i22: 'a}
+  }
+}
+
+type arity0 = Js.Fn.arity0<unit>
+type arity0b = Js.Fn.arity0<int>
+type arity1 = Js.Fn.arity1<(int) => int>
+type arity2 = Js.Fn.arity2<(int, int) => int>
+type arity3 = Js.Fn.arity3<(int, int, int) => int>
+type arity4 = Js.Fn.arity4<(int, int, int, int) => int>
+type arity5 = Js.Fn.arity5<(int, int, int, int, int) => int>
+type arity6 = Js.Fn.arity6<(int, int, int, int, int, int) => int>
+type arity7 = Js.Fn.arity7<(int, int, int, int, int, int, int) => int>
+type arity8 = Js.Fn.arity8<(int, int, int, int, int, int, int, int) => int>
+type arity9 = Js.Fn.arity9<(int, int, int, int, int, int, int, int, int) => int>
+type arity10 = Js.Fn.arity10<(int, int, int, int, int, int, int, int, int, int) => int>
+type arity11 = Js.Fn.arity11<(int, int, int, int, int, int, int, int, int, int, int) => int>
+type arity12 = Js.Fn.arity12<(int, int, int, int, int, int, int, int, int, int, int, int) => int>
+type arity13 = Js.Fn.arity13<(int, int, int, int, int, int, int, int, int, int, int, int, int) => int>
+type arity14 = Js.Fn.arity14<(int, int, int, int, int, int, int, int, int, int, int, int, int, int) => int>
+type arity15 = Js.Fn.arity15<(int, int, int, int, int, int, int, int, int, int, int, int, int, int, int) => int>
+type arity16 = Js.Fn.arity16<(int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int) => int>
+type arity17 = Js.Fn.arity17<(int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int) => int>
+type arity18 = Js.Fn.arity18<(int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int) => int>
+type arity19 = Js.Fn.arity19<(int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int) => int>
+type arity20 = Js.Fn.arity20<(int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int) => int>
+type arity21 = Js.Fn.arity21<(int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int) => int>
+type arity22 = Js.Fn.arity22<(int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int) => int>
+

@@ -10,6 +10,13 @@
 module Doc = Res_doc
 module Token = Res_token
 
+(* checks if ident contains "arity", like in "arity1", "arity2", "arity3" etc. *)
+let isArityIdent ident =
+  if String.length ident >= 6 then
+    (String.sub [@doesNotRaise]) ident 0 5 = "arity"
+  else
+    false
+
 type identifierStyle =
   | ExoticIdent
   | NormalIdent
@@ -195,6 +202,21 @@ let printIdentLike ~allowUident txt =
          Doc.text " as '";
          Doc.text aliasTxt
        ]
+     | Otyp_constr (
+        Oide_dot (Oide_dot (Oide_ident "Js", "Fn") , "arity0"), (* Js.Fn.arity0 *)
+        [Otyp_constr (Oide_ident ident, [])] (* int or unit or string *)
+       ) ->
+        (* Js.Fn.arity0<int> -> (.) => int*)
+        Doc.concat [
+          Doc.text "(.) => ";
+          Doc.text ident;
+        ]
+     | Otyp_constr (
+        Oide_dot (Oide_dot (Oide_ident "Js", "Fn") , ident), (* Js.Fn.arity2 *)
+        [(Otyp_arrow _) as arrowType] (* (int, int) => int *)
+     ) when isArityIdent ident ->
+      (* Js.Fn.arity2<(int, int) => int> -> (. int, int) => int*)
+       printOutArrowType ~uncurried:true arrowType
      | Otyp_constr (outIdent, []) ->
        printOutIdentDoc ~allowUident:false outIdent
      | Otyp_manifest (typ1, typ2) ->
@@ -283,51 +305,56 @@ let printIdentLike ~allowUident txt =
          ]
        )
      | Otyp_arrow _ as typ ->
-       let (typArgs, typ) = collectArrowArgs typ [] in
-       let args = Doc.join ~sep:(Doc.concat [Doc.comma; Doc.line]) (
-         List.map (fun (lbl, typ) ->
-           if lbl = "" then
-             printOutTypeDoc typ
-           else
-             Doc.group (
-               Doc.concat [
-                 Doc.text ("~" ^ lbl ^ ": ");
-                 printOutTypeDoc typ
-               ]
-             )
-         ) typArgs
-       ) in
-       let argsDoc =
-         let needsParens = match typArgs with
-         | [_, (Otyp_tuple _ | Otyp_arrow _)] -> true
-         (* single argument should not be wrapped *)
-         | ["", _] -> false
-         | _ -> true
-         in
-         if needsParens then
-           Doc.group (
-             Doc.concat [
-               Doc.lparen;
-               Doc.indent (
-                 Doc.concat [
-                   Doc.softLine;
-                   args;
-                 ]
-               );
-               Doc.trailingComma;
-               Doc.softLine;
-               Doc.rparen;
-             ]
-           )
-         else args
-       in
-       Doc.concat [
-         argsDoc;
-         Doc.text " => ";
-         printOutTypeDoc typ;
-       ]
+       printOutArrowType ~uncurried:false typ
      | Otyp_module (_modName, _stringList, _outTypes) ->
          Doc.nil
+
+   and printOutArrowType ~uncurried typ =
+     let (typArgs, typ) = collectArrowArgs typ [] in
+     let args = Doc.join ~sep:(Doc.concat [Doc.comma; Doc.line]) (
+       List.map (fun (lbl, typ) ->
+         if lbl = "" then
+           printOutTypeDoc typ
+         else
+           Doc.group (
+             Doc.concat [
+               Doc.text ("~" ^ lbl ^ ": ");
+               printOutTypeDoc typ
+             ]
+           )
+       ) typArgs
+     ) in
+     let argsDoc =
+       let needsParens = match typArgs with
+       | _ when uncurried -> true
+       | [_, (Otyp_tuple _ | Otyp_arrow _)] -> true
+       (* single argument should not be wrapped *)
+       | ["", _] -> false
+       | _ -> true
+       in
+       if needsParens then
+         Doc.group (
+           Doc.concat [
+             if uncurried then Doc.text "(. " else Doc.lparen;
+             Doc.indent (
+               Doc.concat [
+                 Doc.softLine;
+                 args;
+               ]
+             );
+             Doc.trailingComma;
+             Doc.softLine;
+             Doc.rparen;
+           ]
+         )
+       else args
+     in
+     Doc.concat [
+       argsDoc;
+       Doc.text " => ";
+       printOutTypeDoc typ;
+     ]
+
 
    and printOutVariant variant = match variant with
      | Ovar_fields fields -> (* (string * bool * out_type list) list *)
