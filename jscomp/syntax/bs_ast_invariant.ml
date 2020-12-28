@@ -81,6 +81,36 @@ let warn_discarded_unused_attributes (attrs : Parsetree.attributes) =
 
 type iterator = Ast_iterator.iterator
 let default_iterator = Ast_iterator.default_iterator
+
+let check_constant loc kind (const : Parsetree.constant) = 
+  match const with 
+  | Pconst_string
+    (_, Some s) -> 
+    begin match kind with 
+      | `expr ->
+          (if Ast_utf8_string_interp.is_unescaped s  then 
+             Bs_warnings.error_unescaped_delimiter loc s) 
+      | `pat ->
+        if s =  "j" then 
+        Location.raise_errorf ~loc  "Unicode string is not allowed in pattern match"    
+    end 
+  | Pconst_integer(s,None) -> 
+    (* range check using int32 
+      It is better to give a warning instead of error to avoid make people unhappy.
+      It also has restrictions in which platform bsc is running on since it will 
+      affect int ranges
+    *)
+    (
+      try 
+        ignore (
+          if String.length s = 0 || s.[0] = '-' then 
+            Int32.of_string s 
+          else Int32.of_string ("-" ^ s))
+      with _ ->              
+        Bs_warnings.warn_literal_overflow loc
+    )
+  | _ -> ()   
+
 (* Note we only used Bs_ast_iterator here, we can reuse compiler-libs instead of 
    rolling our own*)
 let emit_external_warnings : iterator=
@@ -96,27 +126,8 @@ let emit_external_warnings : iterator=
       | _ -> default_iterator.structure_item self str_item  
     );
     expr = (fun self a -> 
-        match a.pexp_desc with 
-        | Pexp_constant (
-          Pconst_string
-          (_, Some s)) 
-          when Ast_utf8_string_interp.is_unescaped s -> 
-          Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
-        | Pexp_constant(Pconst_integer(s,None)) -> 
-          (* range check using int32 
-            It is better to give a warning instead of error to avoid make people unhappy.
-            It also has restrictions in which platform bsc is running on since it will 
-            affect int ranges
-          *)
-          (
-            try 
-              ignore (
-                if String.length s = 0 || s.[0] = '-' then 
-                  Int32.of_string s 
-                else Int32.of_string ("-" ^ s))
-            with _ ->              
-              Bs_warnings.warn_literal_overflow a.pexp_loc
-          )
+        match a.pexp_desc with  
+        | Pexp_constant(const) -> check_constant a.pexp_loc `expr const
         | _ -> default_iterator.expr self a 
       );
     label_declaration = (fun self lbl ->     
@@ -156,14 +167,12 @@ let emit_external_warnings : iterator=
          | _ ->
            default_iterator.value_description self v 
       );
-      pat = begin fun self (pat : Parsetree.pattern) -> 
-                  match pat.ppat_desc with
-                  |  Ppat_constant(
-            Pconst_string
-         (_, Some "j")) ->
-        Location.raise_errorf ~loc:pat.ppat_loc  "Unicode string is not allowed in pattern match" 
+    pat = begin fun self (pat : Parsetree.pattern) -> 
+      match pat.ppat_desc with
+      |  Ppat_constant(constant) ->
+        check_constant pat.ppat_loc `pat constant
       | _ -> default_iterator.pat self pat
-      end 
+    end 
   }
 
 let rec iter_warnings_on_stru (stru : Parsetree.structure) = 
