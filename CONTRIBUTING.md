@@ -38,7 +38,7 @@ If this doesn't work (rare), then:
 ## Test
 
 ```sh
-./darwin/bsc -I jscomp/runtime/ myTestFile.ml
+./darwin/bsc.exe myTestFile.ml
 ```
 
 (`./linux/bsc` for linux developers).
