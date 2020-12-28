@@ -24,8 +24,8 @@
 
 
 
-val div : nativeint -> nativeint -> nativeint
+val div : int -> int -> int
 
-val mod_ : nativeint -> nativeint -> nativeint
+val mod_ : int -> int -> int
 
 

@@ -22,6 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val caml_hash_mix_int : nativeint -> nativeint -> nativeint
-val caml_hash_mix_string : nativeint -> string -> nativeint
-val caml_hash_final_mix : nativeint -> nativeint
+val caml_hash_mix_int : int -> int -> int
+val caml_hash_mix_string : int -> string -> int
+val caml_hash_final_mix : int -> int

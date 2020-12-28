@@ -1,19 +1,15 @@
-external add : nativeint -> nativeint -> nativeint = "%nativeint_add"
-external div : nativeint -> nativeint -> nativeint = "%nativeint_div"
-external rem : nativeint -> nativeint -> nativeint = "%nativeint_mod"
-external logor : nativeint -> nativeint -> nativeint = "%nativeint_or"
-external shift_left : nativeint -> int -> nativeint = "%nativeint_lsl"
-external logand : nativeint -> nativeint -> nativeint = "%nativeint_and"
-external shift_right_logical : nativeint -> int -> nativeint = "%nativeint_lsr"
-external shift_right : nativeint -> int -> nativeint = "%nativeint_asr"
-external mul : nativeint -> nativeint -> nativeint = "%nativeint_mul"
-external logxor : nativeint -> nativeint -> nativeint = "%nativeint_xor"
-external to_float : nativeint -> float = "caml_nativeint_to_float"
-external of_float : float -> nativeint = "caml_nativeint_of_float"
-external to_int : nativeint -> int = "%nativeint_to_int"
-external to_int32 : nativeint -> int32 = "%nativeint_to_int32"
-external of_int : int -> nativeint = "%nativeint_of_int"
-external neg : nativeint -> nativeint = "%nativeint_neg"
 
-external to_string : nativeint -> string = "String" [@@bs.val]
+
+
+
+
+external add : int -> int -> int = "%nativeint_add"
+external div : int -> int -> int = "%nativeint_div"
+external rem : int -> int -> int = "%nativeint_mod"
+external shift_right_logical : int -> int -> int = "%nativeint_lsr"
+external mul : int -> int -> int = "%nativeint_mul"
+
+external to_float : int -> float = "caml_nativeint_to_float"
+external of_float : float -> int = "caml_nativeint_of_float"
+external to_string : int -> string = "String" [@@bs.val]
 

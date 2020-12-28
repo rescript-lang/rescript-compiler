@@ -30,7 +30,7 @@
 
 type t 
 val mk : 
-  lo:nativeint -> hi:nativeint -> t 
+  lo:int -> hi:int -> t 
 val succ : t -> t 
 val min_int : t
 val max_int : t
@@ -38,8 +38,8 @@ val one : t
 val zero : t
 val neg_one : t 
 (* val not : t -> t *)
-val of_int32 : nativeint -> t
-val to_int32 : t -> nativeint
+val of_int32 : int -> t
+val to_int32 : t -> int
 
 val add : t -> t -> t
 val neg : t -> t

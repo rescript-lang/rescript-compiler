@@ -41,8 +41,8 @@ let failwith s = raise (Failure  s)
 
 let (>>>) = Caml_nativeint_extern.shift_right_logical
 
-let to_nat x = Caml_nativeint_extern.of_int x 
-(* let of_nat x = Caml_nativeint_extern.to_int x  *)
+
+
 let (+~) = Caml_nativeint_extern.add 
 let ( *~ ) = Caml_nativeint_extern.mul  
 
@@ -69,19 +69,18 @@ let int_of_string_base = function
   | Bin -> 2
     
 let parse_sign_and_base (s : string) = 
-  let module String = Caml_string_extern in 
-  let sign = ref 1n in
+  let sign = ref 1 in
   let base = ref Dec in
   let i  = ref 0 in
-  (match s.[i.contents] with 
+  (match s.!(i.contents) with 
    | '-' -> 
-     sign .contents<-  -1n;
+     sign .contents<-  -1;
      i.contents <- i.contents + 1
    | '+' -> 
      i.contents <- i.contents + 1
    | _ -> ());
-  if s.[i.contents] = '0' then 
-    (match  s.[i.contents + 1] with 
+  if s.!(i.contents) = '0' then 
+    (match  s.!(i.contents + 1) with 
      |  ('x' | 'X')
        -> base .contents<- Hex; i.contents<- i.contents + 2 
      |  ( 'o' | 'O')
@@ -94,15 +93,15 @@ let parse_sign_and_base (s : string) =
   (i.contents, sign.contents, base.contents)
 
 
-let caml_int_of_string s = 
+let caml_int_of_string (s : string) : int = 
   let i, sign, hbase = parse_sign_and_base s in
-  let base  = Caml_nativeint_extern.of_int (int_of_string_base hbase) in
-  let threshold = (-1n >>> 0) in 
+  let base = int_of_string_base hbase in
+  let threshold = (-1 >>> 0) in 
   let len =Caml_string_extern.length s in  
   let c = if i < len then s.!(i) else '\000' in
-  let d = to_nat (parse_digit c) in
+  let d = parse_digit c in
   let () =
-    if d < 0n || d >=  base then
+    if d < 0 || d >=  base then
       failwith "int_of_string" in
   (* let () = [%bs.debugger]  in *)
   let rec aux acc k = 
@@ -111,8 +110,8 @@ let caml_int_of_string s =
       let a = s.!(k) in
       if a  = '_' then aux acc ( k +  1) 
       else 
-        let v = to_nat  (parse_digit a) in  
-        if v < 0n || v >=  base then 
+        let v = parse_digit a in  
+        if v < 0 || v >=  base then 
           failwith "int_of_string"
         else 
           let acc = base *~ acc +~  v in 
@@ -121,8 +120,8 @@ let caml_int_of_string s =
           else aux acc  ( k +   1)
   in 
   let res = sign *~ aux d (i + 1) in 
-  let or_res = Caml_nativeint_extern.logor res 0n in 
-  (if base = 10n && res <> or_res then 
+  let or_res =  res lor 0 in 
+  (if base = 10 && res <> or_res then 
     failwith "int_of_string");
   or_res
 
@@ -130,7 +129,7 @@ let caml_int_of_string s =
 let caml_int64_of_string s = 
   let i, sign, hbase = parse_sign_and_base s in
   let base  = Caml_int64_extern.of_int (int_of_string_base hbase) in
-  let sign = Caml_int64_extern.of_nativeint sign in
+  let sign = Caml_int64_extern.of_int sign in
   let threshold =
     match hbase with
     | Hex -> (* 2 ^ 64 - 1 / 16*)
@@ -353,18 +352,19 @@ let finish_formatting (config : fmt) rawbuffer =
 
 
 
-let aux f (i : nativeint)  = 
+let aux f (i : int) : string = 
   let i = 
-    if i < 0n then 
+    if i < 0 then 
       if f.signedconv then 
         begin 
           f.sign <- -1;
-          Caml_nativeint_extern.neg i
+          (-i)>>>0
+          (* when i is min_int, [-i] could overflow *)
         end
       else 
-        Caml_nativeint_extern.shift_right_logical i 0 
+         i >>> 0 
     else  i  in
-  let s = ref (Caml_string_extern.of_nativeint i ~base:(int_of_base f.base)) in 
+  let s = ref (Caml_string_extern.of_int i ~base:(int_of_base f.base)) in 
   if f.prec >= 0 then 
     begin 
       f.filter <- " ";
