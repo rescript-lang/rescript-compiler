@@ -25,55 +25,51 @@
 
 
 (* This module would  only work with js backend, since it requires
-   [nativeint] behaves as js  numbers
+   [int] behaves as js  numbers
  *)
 
 (* TODO: see GPR#333
-   the encoding of nativeint is platform dependent *)
+   the encoding of int is platform dependent *)
    
 
 
 
-let (>>>) = Caml_nativeint_extern.shift_right_logical
-let (>>) = Caml_nativeint_extern.shift_right
-let (|~) = Caml_nativeint_extern.logor
+let (>>>~) = Caml_nativeint_extern.shift_right_logical
 let ( +~ ) = Caml_nativeint_extern.add
 let ( *~ ) = Caml_nativeint_extern.mul
-let ( & ) = Caml_nativeint_extern.logand
-let ( << ) = Caml_nativeint_extern.shift_left
-let lognot x = Caml_nativeint_extern.logxor x (-1n)
+let lognot x =  x lxor (-1)
 
-type t =   {  hi : nativeint ; [@bs.as "0"] lo : nativeint ; [@bs.as "1" ]  }
+type t =   {  hi : int ; [@as "0"] lo : int ; [@as "1" ]  }
 
 external unsafe_to_int64 : t -> int64 = "%identity"           
 external unsafe_of_int64 : int64 -> t = "%identity"
 
 
-let mk ~lo ~hi =  {lo = lo >>> 0 ; hi}
-let min_int =  mk  ~lo: 0n ~hi:(-0x80000000n)
+let mk ~lo ~hi =  {lo = lo >>>~ 0 ; hi}
+let min_int =  mk  ~lo: 0 ~hi:(-0x80000000)
 (* The high bits are signed 0x80000000 |~ 0 *)
 
 let max_int =
- mk  ~lo:(0xffff_ffffn) ~hi: 0x7fff_ffffn
+ mk  ~lo:(0xffff_ffff) ~hi: 0x7fff_ffff
 
-let one = mk ~lo: 1n ~hi:0n
-let zero = mk ~lo: 0n ~hi: 0n
-let neg_one = mk ~lo:(-1n) ~hi:(-1n)
+let one = mk ~lo: 1 ~hi:0
+let zero = mk ~lo: 0 ~hi: 0
+let neg_one = mk ~lo:(-1) ~hi:(-1)
 
 
 
-let neg_signed x =  (x  & 0x8000_0000n) <> 0n
-let non_neg_signed x = (x  & 0x8000_0000n) = 0n
+let neg_signed x =  (x  land 0x8000_0000) <> 0
+let non_neg_signed x = (x  land 0x8000_0000) = 0
 let succ_aux ~x_lo ~x_hi = 
-  let lo =  ( x_lo +~ 1n) |~ 0n in  
-  mk ~lo ~hi:(( x_hi +~ if lo = 0n then 1n else 0n) |~ 0n)
+  let lo =  ( x_lo +~ 1) lor 0 in  
+  mk ~lo ~hi:(( x_hi +~ if lo = 0 then 1 else 0) lor 0)
 let succ ( {lo = x_lo; hi = x_hi} : t) =
   succ_aux ~x_lo ~x_hi
   
 let neg ( {lo;hi} ) =
-  let other_lo = (lognot lo +~  1n) |~ 0n in   
+  let other_lo = (lognot lo +~  1) lor 0 in   
   mk ~lo:other_lo 
-    ~hi:((lognot hi +~ if other_lo = 0n then 1n else 0n)  |~ 0n)
+    ~hi:((lognot hi +~ if other_lo = 0 then 1 else 0)  lor 0)
 
 
 
@@ -83,7 +79,7 @@ let neg ( {lo;hi} ) =
 let add_aux 
     ( {lo = x_lo; hi = x_hi} : t)
     ~y_lo ~y_hi  =
-  let lo =  ( x_lo +~ y_lo) |~ 0n in
+  let lo =  ( x_lo +~ y_lo) lor 0 in
   let overflow =
     if (neg_signed x_lo && ( neg_signed y_lo  ||  (non_neg_signed lo)))
     || (neg_signed y_lo  &&  (non_neg_signed lo))
@@ -93,10 +89,10 @@ let add_aux
        --> bc + ac + ab 
        --> a (b+c) + bc
     *)
-    then 1n 
-    else  0n
+    then 1 
+    else  0
   in
-  mk ~lo ~hi:(( x_hi +~ y_hi +~ overflow) |~ 0n)
+  mk ~lo ~hi:(( x_hi +~ y_hi +~ overflow) lor 0)
 
 
 let add
@@ -126,8 +122,8 @@ let equal_nullable x y =
 
 (* when [lo] is unsigned integer, [lognot lo] is still an unsigned integer  *)
 let sub_aux x ~lo ~hi = 
-  let y_lo =  (lognot lo +~  1n) >>> 0 in 
-  let y_hi =  ((lognot hi +~ if y_lo = 0n then 1n else 0n)  |~  0n) in 
+  let y_lo =  (lognot lo +~  1) >>>~ 0 in 
+  let y_hi =  ((lognot hi +~ if y_lo = 0 then 1 else 0)  lor  0) in 
   add_aux x ~y_lo ~y_hi
 
 let sub self ({lo;hi})= sub_aux self ~lo ~hi 
@@ -137,13 +133,13 @@ let lsl_ ( {lo; hi} as x) numBits =
   if numBits = 0 then
     x
   else if numBits >= 32 then
-    mk ~lo:0n ~hi:(Caml_nativeint_extern.shift_left lo (numBits - 32))
+    mk ~lo:0 ~hi:(lo lsl (numBits - 32))
   else
-    mk ~lo:(Caml_nativeint_extern.shift_left lo numBits)
+    mk ~lo:(lo lsl numBits)
      ~hi:
        (
-         ( lo >>>  (32 - numBits)) |~
-         ( hi << numBits))
+         ( lo >>>~  (32 - numBits)) lor
+         ( hi lsl numBits))
 
 
 let lsr_ ( {lo; hi} as x) numBits =
@@ -151,16 +147,16 @@ let lsr_ ( {lo; hi} as x) numBits =
   else
     let offset = numBits - 32 in
     if offset = 0 then
-        mk ~lo:hi ~hi:0n
+        mk ~lo:hi ~hi:0
     else if offset > 0 then
-      mk ~lo:(hi >>> offset) ~hi:0n
+      mk ~lo:(hi >>>~ offset) ~hi:0
     else
       mk
-      ~hi: ( hi >>> numBits)
-        ~lo:(
-          Caml_nativeint_extern.logor
-            (Caml_nativeint_extern.shift_left hi (-offset))
-            ( lo >>> numBits))
+      ~hi: ( hi >>>~ numBits)
+        ~lo:(          
+            (hi lsl (-offset))
+            lor
+            ( lo >>>~ numBits))
 
 
 let asr_ ( {lo; hi } as x) numBits =
@@ -168,19 +164,19 @@ let asr_ ( {lo; hi } as x) numBits =
     x
   else
   if numBits < 32  then
-    mk ~hi:(  hi >> numBits)
+    mk ~hi:(  hi asr numBits)
       ~lo:(
-       Caml_nativeint_extern.logor
-         ( hi << (32 - numBits)) (* zero filled *)
-         ( lo >>> numBits))
+         ( hi lsl (32 - numBits)) (* zero filled *)
+         lor
+         ( lo >>>~ numBits))
 
 
   else
-    mk ~hi:( if hi >= 0n then  0n  else -1n) ~lo:(  hi >> (numBits - 32))
+    mk ~hi:( if hi >= 0 then  0  else -1) ~lo:(  hi asr (numBits - 32))
 
 
 let is_zero = function
-  |  {lo = 0n ; hi = 0n} -> true
+  |  {lo = 0 ; hi = 0} -> true
   | _ -> false
 
 
@@ -188,60 +184,60 @@ let is_zero = function
 let rec mul this
     other =
   match this, other with
-  |  {lo = 0n ; hi = 0n}, _
-  | _,  {lo = 0n; hi = 0n}
+  |  {lo = 0 ; hi = 0}, _
+  | _,  {lo = 0; hi = 0}
     -> zero
-  |  {lo = 0n; hi = - 0x80000000n},  {lo;_ }
-  |  {lo;_},  {lo = 0n; hi = - 0x80000000n}
+  |  {lo = 0; hi = - 0x80000000},  {lo;_ }
+  |  {lo;_},  {lo = 0; hi = - 0x80000000}
     ->
-    if  (lo & 0x1n) = 0n then
+    if lo land 0x1 = 0 then
       zero
     else min_int
   |  {lo = this_lo; hi = this_hi},
      {lo = other_lo; hi = other_hi }
     ->
-    if this_hi < 0n  then
-      if other_hi < 0n then
+    if this_hi < 0  then
+      if other_hi < 0 then
         mul (neg this) (neg other)
       else
         neg (mul (neg this) other)
-    else if other_hi < 0n then
+    else if other_hi < 0 then
       neg (mul this (neg other) )
     else
       (* TODO: when both are small, use float multiplication *)
-      let a48 = this_hi >>> 16 in
-      let a32 =  this_hi & 0xffffn in
-      let a16 =  this_lo >>> 16 in
-      let a00 =  this_lo & 0xffffn in
+      let a48 = this_hi >>>~ 16 in
+      let a32 =  this_hi land 0xffff in
+      let a16 =  this_lo >>>~ 16 in
+      let a00 =  this_lo land 0xffff in
 
-      let b48 =  other_hi >>> 16 in
-      let b32 =  other_hi & 0xffffn in
-      let b16 =  other_lo >>> 16 in
-      let b00 =  other_lo & 0xffffn in
+      let b48 =  other_hi >>>~ 16 in
+      let b32 =  other_hi land 0xffff in
+      let b16 =  other_lo >>>~ 16 in
+      let b00 =  other_lo land 0xffff in
 
-      let c48 = ref 0n in
-      let c32 = ref 0n in
-      let c16 = ref 0n in
+      let c48 = ref 0 in
+      let c32 = ref 0 in
+      let c16 = ref 0 in
       begin
         let c00 =  a00 *~ b00  in
-        c16.contents <-  (c00 >>> 16) +~   a16 *~ b00 ;
-        c32.contents <-  c16.contents >>> 16;
-        c16.contents <-  ( c16.contents & 0xffffn) +~ a00 *~ b16;
-        c32.contents <-  (c32.contents +~  ( c16.contents >>> 16)) +~  a32 *~ b00;
-        c48.contents <-  c32.contents >>>  16;
-        c32.contents <-  (c32.contents & 0xffffn) +~  a16 *~ b16;
-        c48.contents <-  c48.contents +~  ( c32.contents >>> 16);
-        c32.contents <-  (c32.contents & 0xffffn) +~  a00 *~ b32;
-        c48.contents <-  c48.contents +~  (c32.contents >>> 16);
-        c32.contents <-  c32.contents & 0xffffn;
-        c48.contents <-  (c48.contents  +~ (a48 *~ b00 +~ a32 *~ b16 +~ a16 *~ b32 +~ a00 *~ b48)) & 0xffffn;
+        c16.contents <-  (c00 >>>~ 16) +~   a16 *~ b00 ;
+        c32.contents <-  c16.contents >>>~ 16;
+        c16.contents <-  ( c16.contents land 0xffff) +~ a00 *~ b16;
+        c32.contents <-  (c32.contents +~  ( c16.contents >>>~ 16)) +~  a32 *~ b00;
+        c48.contents <-  c32.contents >>>~  16;
+        c32.contents <-  (c32.contents land 0xffff) +~  a16 *~ b16;
+        c48.contents <-  c48.contents +~  ( c32.contents >>>~ 16);
+        c32.contents <-  (c32.contents land 0xffff) +~  a00 *~ b32;
+        c48.contents <-  c48.contents +~  (c32.contents >>>~ 16);
+        c32.contents <-  c32.contents land 0xffff;
+        c48.contents <-  (c48.contents  +~ (a48 *~ b00 +~ a32 *~ b16 +~ a16 *~ b32 +~ a00 *~ b48)) land 0xffff;
         mk ~lo:
-           (Caml_nativeint_extern.logor
-             (c00 & 0xffffn)
-             ( (c16.contents & 0xffffn) << 16))
-         ~hi:( Caml_nativeint_extern.logor
-             c32.contents
-             ( c48.contents << 16))
+           (
+             (c00 land 0xffff) lor
+             ( (c16.contents land 0xffff) lsl 16))
+         ~hi:( 
+             c32.contents lor
+             ( c48.contents lsl 16))
 
       end
 
@@ -253,19 +249,19 @@ let rec mul this
 *)
  let xor ( {lo = this_lo; hi= this_hi}) ( {lo = other_lo; hi = other_hi}) =
    mk
-     ~lo:(Caml_nativeint_extern.logxor this_lo other_lo)
-    ~hi:(Caml_nativeint_extern.logxor this_hi other_hi)
+     ~lo:(this_lo lxor other_lo)
+    ~hi:(this_hi lxor other_hi)
 
 
 let or_  ( {lo = this_lo; hi= this_hi}) ( {lo = other_lo; hi = other_hi}) =
   mk
-    ~lo:(Caml_nativeint_extern.logor this_lo other_lo)
-    ~hi:(Caml_nativeint_extern.logor this_hi other_hi)
+    ~lo:(this_lo lor other_lo )
+    ~hi:(this_hi lor other_hi)
 
 let and_ ( {lo = this_lo; hi= this_hi}) ( {lo = other_lo; hi = other_hi}) =
   mk
-    ~lo:(Caml_nativeint_extern.logand this_lo other_lo)
-    ~hi:(Caml_nativeint_extern.logand this_hi other_hi)
+    ~lo:(this_lo land other_lo)
+    ~hi:(this_hi land other_hi)
 
 
 
@@ -342,10 +338,10 @@ external floor : float -> float =  "floor" [@@bs.val] [@@bs.scope "Math"]
   when it is all 1, we need exclude -2^53
 *)
 let isSafeInteger ({hi;lo}) = 
-  let top11Bits = hi >> 21 in   
-  top11Bits = 0n || 
-  (top11Bits = -1n && 
-  Pervasives.not (lo = 0n && hi = (0xff_e0_00_00n |~ 0n )))
+  let top11Bits = hi asr 21 in   
+  top11Bits = 0 || 
+  (top11Bits = -1 && 
+  Pervasives.not (lo = 0 && hi = 0xff_e0_00_00))
 
 external string_of_float : float -> string = "String" [@@bs.val] 
 let rec to_string ( self : int64) = 
@@ -354,26 +350,26 @@ let rec to_string ( self : int64) =
      string_of_float (to_float self)
   else 
   
-  if self_hi <0n then 
+  if self_hi <0 then 
     if eq self min_int then "-9223372036854775808"
     else "-" ^ to_string (unsafe_to_int64 (neg self))
   else (* large positive number *)    
     let ( {lo ; hi} as approx_div1) =  (of_float (floor (to_float self /. 10.) )) in
     let ( { lo = rem_lo ;hi = rem_hi} ) = (* rem should be a pretty small number *)
         self 
-        |. sub_aux  ~lo:(lo << 3) ~hi:((lo>>>29) |~ (hi << 3))
-        |. sub_aux ~lo:(lo << 1) ~hi: ((lo >>> 31) |~ (hi << 1))
+        |. sub_aux  ~lo:(lo lsl 3) ~hi:((lo>>>~29) lor (hi lsl 3))
+        |. sub_aux ~lo:(lo lsl 1) ~hi: ((lo >>>~ 31) lor (hi lsl 1))
     in 
-    if rem_lo =0n && rem_hi = 0n then to_string (unsafe_to_int64 approx_div1) ^ "0"
+    if rem_lo =0 && rem_hi = 0 then to_string (unsafe_to_int64 approx_div1) ^ "0"
     else 
-    if rem_hi < 0n then 
+    if rem_hi < 0 then 
       (* let ( {lo = rem_lo}) = neg rem in      *)
-      let rem_lo = (lognot rem_lo +~ 1n ) >>> 0 |. Caml_nativeint_extern.to_float  in 
+      let rem_lo = (lognot rem_lo +~ 1 ) >>>~ 0 |. Caml_nativeint_extern.to_float  in 
       let delta =  (ceil (rem_lo /. 10.)) in 
       let remainder = 10. *. delta -. rem_lo in
       (
         approx_div1 
-        |. sub_aux ~lo:(Caml_nativeint_extern.of_float delta) ~hi:0n
+        |. sub_aux ~lo:(Caml_nativeint_extern.of_float delta) ~hi:0
         |. unsafe_to_int64 
         |. to_string
       ) ^ 
@@ -383,7 +379,7 @@ let rec to_string ( self : int64) =
       let delta =  (floor (rem_lo /. 10.)) in 
       let remainder = rem_lo -. 10. *. delta in 
       (approx_div1 
-      |. add_aux ~y_lo:(Caml_nativeint_extern.of_float delta) ~y_hi:0n
+      |. add_aux ~y_lo:(Caml_nativeint_extern.of_float delta) ~y_hi:0
       |. unsafe_to_int64 
       |. to_string)
       ^                                                    
@@ -393,11 +389,11 @@ let rec to_string ( self : int64) =
 
 let rec div self other =
   match self, other with
-  | _,  {lo = 0n ; hi = 0n} ->
+  | _,  {lo = 0 ; hi = 0} ->
     raise Division_by_zero
-  |  {lo = 0n; hi = 0n}, _
+  |  {lo = 0; hi = 0}, _
     -> zero
-  |  {lo = 0n ; hi = -0x8000_0000n}, _
+  |  {lo = 0 ; hi = -0x8000_0000}, _
     ->
     begin
       if eq other one || eq other neg_one then self
@@ -408,23 +404,23 @@ let rec div self other =
         let half_this = asr_ self 1  in
         let approx = lsl_ (div half_this other) 1 in
         match approx with
-        |  {lo = 0n ; hi = 0n}
-          -> if other_hi < 0n then one else neg one
+        |  {lo = 0 ; hi = 0}
+          -> if other_hi < 0 then one else neg one
         | _
           ->
           let rem = sub self (mul other approx) in
           add approx (div rem other)
     end
-  | _,  {lo = 0n; hi = - 0x8000_0000n}
+  | _,  {lo = 0; hi = - 0x8000_0000}
     -> zero
   |  {lo = _; hi = self_hi},  {lo = _; hi = other_hi}
     ->
-    if self_hi < 0n then
-      if other_hi <0n then
+    if self_hi < 0 then
+      if other_hi <0 then
         div (neg self) (neg other)
       else
         neg (div (neg self)  other)
-    else if other_hi < 0n  then
+    else if other_hi < 0  then
       neg (div self (neg other))
     else
       let res = ref zero in
@@ -439,7 +435,7 @@ let rec div self other =
           else 2. ** (log2 -. 48.) in
         let approxRes = ref (of_float approx.contents) in
         let approxRem = ref (mul approxRes.contents other) in
-        while (match approxRem.contents with  {hi;_}-> hi) < 0n || gt approxRem.contents rem.contents do
+        while (match approxRem.contents with  {hi;_}-> hi) < 0 || gt approxRem.contents rem.contents do
           approx.contents <- approx.contents -. delta;
           approxRes.contents <- of_float approx.contents;
           approxRem.contents <- mul approxRes.contents other
@@ -465,10 +461,10 @@ let compare ( self) ( other) =
     Pervasives.compare self.lo  other.lo
   else v
 
-let of_int32 (lo : nativeint) =
-  mk ~lo ~hi:(if lo < 0n then -1n else 0n)
+let of_int32 (lo : int) =
+  mk ~lo ~hi:(if lo < 0 then -1 else 0)
 
-let to_int32 ( x) = Caml_nativeint_extern.logor x.lo  0n (* signed integer *)
+let to_int32 ( x) = x.lo lor 0 (* signed integer *)
 
 
 (* width does matter, will it be relevant to endian order? *)
@@ -476,12 +472,12 @@ let to_int32 ( x) = Caml_nativeint_extern.logor x.lo  0n (* signed integer *)
 let to_hex (x : int64) =
   let  {hi = x_hi; lo = x_lo} = unsafe_of_int64 x in 
   let aux v : string =
-    Caml_string_extern.of_int (Caml_nativeint_extern.to_int (Caml_nativeint_extern.shift_right_logical v 0)) ~base:16
+    Caml_string_extern.of_int (Caml_nativeint_extern.shift_right_logical v 0) ~base:16
   in
   match x_hi, x_lo with
-  | 0n, 0n -> "0"
-  | _, 0n -> aux x_hi ^ "00000000"
-  | 0n, _ -> aux x_lo
+  | 0, 0 -> "0"
+  | _, 0 -> aux x_hi ^ "00000000"
+  | 0, _ -> aux x_lo
   | _, _ ->
     let lo =  aux x_lo in
     let pad = 8 -Caml_string_extern.length lo in
@@ -494,7 +490,7 @@ let to_hex (x : int64) =
 let discard_sign (x : int64) : int64 = 
   let v = unsafe_of_int64 x in   
   unsafe_to_int64 
-  (match v with  v ->  {  v with hi = Caml_nativeint_extern.logand 0x7fff_ffffn v.hi })
+  (match v with  v ->  {  v with hi = 0x7fff_ffff land v.hi })
 
 (* >>> 0 does not change its bit representation
       it simply makes sure it is an unsigned integer
