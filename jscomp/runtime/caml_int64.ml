@@ -39,6 +39,12 @@ let ( +~ ) = Caml_nativeint_extern.add
 let ( *~ ) = Caml_nativeint_extern.mul
 let lognot x =  x lxor (-1)
 
+(* [hi] is signed 
+   [lo] is unsigned
+   
+  signedness does not matter when they are doing int32 bits operation   
+  however, they are different when doing comparison
+*)
 type t =   {  hi : int ; [@as "0"] lo : int ; [@as "1" ]  }
 
 external unsafe_to_int64 : t -> int64 = "%identity"           
@@ -46,7 +52,7 @@ external unsafe_of_int64 : int64 -> t = "%identity"
 
 
 let mk ~lo ~hi =  {lo = lo >>>~ 0 ; hi}
-let min_int =  mk  ~lo: 0 ~hi:(-0x80000000)
+let min_int =  mk  ~lo: 0 ~hi:(0x80000000)
 (* The high bits are signed 0x80000000 |~ 0 *)
 
 let max_int =
