@@ -24,14 +24,11 @@
 
 
 
-let (<< ) = Caml_nativeint_extern.shift_left
-let (>>>) = Caml_nativeint_extern.shift_right_logical
-let (|~) = Caml_nativeint_extern.logor
-let (^) = Caml_nativeint_extern.logxor
+
 
 
 let rotl32 (x : int) n  = 
-  (x << n) |~ (x >>> (32 - n))
+  (x lsl n) lor (x lsr (32 - n))
 
 external (.![]) : string -> int -> int = "charCodeAt" [@@bs.send]
 let caml_hash_mix_int h  d = 
@@ -39,16 +36,16 @@ let caml_hash_mix_int h  d =
   d.contents <- d.contents * 0xcc9e2d51 ;
   d.contents <- rotl32 d.contents 15 ;
   d.contents <- d.contents * 0x1b873593 ;
-  let h = ref (h ^ d.contents) in
+  let h = ref (h lxor d.contents) in
   h.contents <- rotl32 h.contents 13 ;
-  h.contents + (h.contents << 2)  + 0xe6546b64  
+  h.contents + (h.contents lsl 2)  + 0xe6546b64  
 
 let caml_hash_final_mix h = 
-  let h = ref (h ^ (h >>> 16)) in
+  let h = ref (h lxor (h lsr 16)) in
   h.contents <- h.contents * 0x85ebca6b ;
-  h.contents <- h.contents ^ (h.contents >>> 13);
+  h.contents <- h.contents lxor (h.contents lsr 13);
   h.contents <- h.contents * 0xc2b2ae35 ;
-  h.contents ^ (h.contents >>> 16)
+  h.contents lxor (h.contents lsr 16)
   (* Caml_nativeint_extern.logand  (h.contents ^ (h.contents >>> 16)) 0x3FFFFFFFn *)
 
 let caml_hash_mix_string h  s = 
@@ -81,7 +78,7 @@ let caml_hash_mix_string h  s =
       in 
       hash.contents <- caml_hash_mix_int hash.contents  w
     end;
-  hash.contents <- hash.contents ^ len ;
+  hash.contents <- hash.contents lxor len ;
   hash.contents 
 
  
