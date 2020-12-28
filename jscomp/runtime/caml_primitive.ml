@@ -60,7 +60,7 @@ let caml_float_min (x : float) y   =
   if x < y then x else y   
 let caml_string_min (x : string) y =     
   if x < y then x else y 
-let caml_nativeint_min (x : nativeint) y =   
+let caml_nativeint_min (x : int) y =   
   if x < y then x else y 
 let caml_int32_min (x : int32) y   = 
   if x < y then x else y 
@@ -73,7 +73,7 @@ let caml_float_max (x : float) y   =
   if x > y then x else y   
 let caml_string_max (x : string) y =     
   if x > y then x else y 
-let caml_nativeint_max (x : nativeint) y =   
+let caml_nativeint_max (x : int) y =   
   if x > y then x else y 
 let caml_int32_max (x : int32) y   = 
   if x > y then x else y 

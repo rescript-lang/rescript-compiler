@@ -31,6 +31,7 @@ external ( land ) : int -> int -> int = "%andint"
 external ( mod ) : int -> int -> int = "%modint"
 external ( lsr ) : int -> int -> int = "%lsrint"
 external ( lxor ) : int -> int -> int = "%xorint"
+external ( asr ) : int -> int -> int = "%asrint"
 type 'a ref = { mutable contents : 'a }
 external ref : 'a -> 'a ref = "%makemutable"
 

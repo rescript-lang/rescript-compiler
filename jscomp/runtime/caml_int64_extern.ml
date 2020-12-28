@@ -1,5 +1,4 @@
 external of_int : int -> int64 = "%int64_of_int"
-external of_nativeint : nativeint -> int64 = "%int64_of_nativeint"
 external add : int64 -> int64 -> int64 = "%int64_add"
 external sub : int64 -> int64 -> int64 = "%int64_sub"
 external mul : int64 -> int64 -> int64 = "%int64_mul"

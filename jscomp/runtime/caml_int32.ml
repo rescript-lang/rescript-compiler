@@ -27,13 +27,13 @@
 
 
 
-let div (x:nativeint) (y:nativeint) = 
-  if y = 0n  then
+let div (x:int) (y:int) = 
+  if y = 0  then
     raise Division_by_zero
   else Caml_nativeint_extern.div x y
 
-let mod_ (x : nativeint) (y:nativeint) = 
-  if y = 0n then
+let mod_ (x : int) (y:int) = 
+  if y = 0 then
     raise Division_by_zero
   else Caml_nativeint_extern.rem x  y
 

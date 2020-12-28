@@ -40,7 +40,6 @@ external get_string_unsafe : string -> int ->  string = ""
 
 external toUpperCase : string -> string = "toUpperCase" [@@bs.send] 
 external of_int : int -> base:int -> string = "toString" [@@bs.send]
-external of_nativeint : nativeint -> base:int -> string = "toString" [@@bs.send]
 external slice : string -> int -> int -> string = "slice" 
     [@@bs.send]
 external slice_rest : string -> int -> string = "slice" 

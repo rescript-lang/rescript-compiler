@@ -25,7 +25,7 @@ o runtime/caml_gc.cmj : cc_cmi runtime/caml_gc.ml | runtime/caml_gc.cmi
 o runtime/caml_gc.cmi : cc runtime/caml_gc.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 o runtime/caml_hash.cmj : cc_cmi runtime/caml_hash.ml | runtime/caml_hash.cmi runtime/caml_hash_primitive.cmj runtime/caml_nativeint_extern.cmj runtime/js.cmj
 o runtime/caml_hash.cmi : cc runtime/caml_hash.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
-o runtime/caml_hash_primitive.cmj : cc_cmi runtime/caml_hash_primitive.ml | runtime/caml_hash_primitive.cmi runtime/caml_nativeint_extern.cmj runtime/caml_string_extern.cmj
+o runtime/caml_hash_primitive.cmj : cc_cmi runtime/caml_hash_primitive.ml | runtime/caml_hash_primitive.cmi runtime/caml_string_extern.cmj
 o runtime/caml_hash_primitive.cmi : cc runtime/caml_hash_primitive.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 o runtime/caml_int32.cmj : cc_cmi runtime/caml_int32.ml | runtime/caml_int32.cmi runtime/caml_nativeint_extern.cmj
 o runtime/caml_int32.cmi : cc runtime/caml_int32.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj

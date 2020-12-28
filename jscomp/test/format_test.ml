@@ -28,7 +28,9 @@ module M = struct
   [@@bs.val]  [@@bs.scope "Number"]
 end 
 let () = 
-  eq __LOC__ (Format.asprintf (u ()) "x") ("xx x" ^ "yy")
+  eq __LOC__ (Format.asprintf (u ()) "x") ("xx x" ^ "yy");
+  eq __LOC__ (Format.asprintf "%ld" 0x8000_0000l) "-2147483648";
+  eq __LOC__ (Format.asprintf "%d" 0x8000_0000) "-2147483648"
   
 
 #if OCAML_VERSION =~ ">4.03.0" then
