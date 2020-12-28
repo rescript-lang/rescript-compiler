@@ -386,7 +386,8 @@ let rec to_string ( self : int64) =
       Caml_nativeint_extern.to_string (Caml_nativeint_extern.of_float remainder) 
 
 
-
+let [@inline] float_max (a : float) b = 
+  if a > b then a else b 
 let rec div self other =
   match self, other with
   | _,  {lo = 0 ; hi = 0} ->
@@ -427,7 +428,7 @@ let rec div self other =
       let rem = ref self in
       (* assert false *)
       while ge rem.contents other  do
-        let approx = ref ( Pervasives.max 1.
+        let approx = ref ( float_max 1.
              (Caml_float.floor (to_float rem.contents /. to_float other) )) in
         let log2 = ceil (log approx.contents /. log2) in
         let delta =
@@ -455,10 +456,18 @@ let div_mod (self : int64) (other : int64) : int64 * int64 =
   let quotient = div (unsafe_of_int64 self) (unsafe_of_int64 other) in
   unsafe_to_int64 quotient, unsafe_to_int64 (sub (unsafe_of_int64 self) (mul quotient (unsafe_of_int64 other)))
 
+(** Note this function is unasfe here, but when combined it is actually safe
+    In theory, we need do an uint_compare for [lo] components
+    The thing is [uint_compare] and [int_compare] are specialised 
+    to the same code when translted into js
+*)
+let [@inline] int_compare (x : int)  y = 
+  if x < y then -1 else if x = y then 0 else 1 
+
 let compare ( self) ( other) =
-  let v = Pervasives.compare self.hi other.hi in
+  let v = int_compare self.hi other.hi in
   if v = 0 then
-    Pervasives.compare self.lo  other.lo
+    int_compare self.lo  other.lo
   else v
 
 let of_int32 (lo : int) =
