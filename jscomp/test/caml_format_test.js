@@ -658,7 +658,7 @@ var formatter_suites_1 = {
                                                                                                                                             TAG: /* Char_literal */12,
                                                                                                                                             _0: /* " " */32,
                                                                                                                                             _1: {
-                                                                                                                                              TAG: /* Nativeint */6,
+                                                                                                                                              TAG: /* Int */4,
                                                                                                                                               _0: /* Int_d */0,
                                                                                                                                               _1: /* No_padding */0,
                                                                                                                                               _2: /* No_precision */0,
@@ -666,7 +666,7 @@ var formatter_suites_1 = {
                                                                                                                                                 TAG: /* Char_literal */12,
                                                                                                                                                 _0: /* " " */32,
                                                                                                                                                 _1: {
-                                                                                                                                                  TAG: /* Nativeint */6,
+                                                                                                                                                  TAG: /* Int */4,
                                                                                                                                                   _0: /* Int_i */3,
                                                                                                                                                   _1: /* No_padding */0,
                                                                                                                                                   _2: /* No_precision */0,
@@ -674,7 +674,7 @@ var formatter_suites_1 = {
                                                                                                                                                     TAG: /* Char_literal */12,
                                                                                                                                                     _0: /* " " */32,
                                                                                                                                                     _1: {
-                                                                                                                                                      TAG: /* Nativeint */6,
+                                                                                                                                                      TAG: /* Int */4,
                                                                                                                                                       _0: /* Int_u */12,
                                                                                                                                                       _1: /* No_padding */0,
                                                                                                                                                       _2: /* No_precision */0,
@@ -682,7 +682,7 @@ var formatter_suites_1 = {
                                                                                                                                                         TAG: /* Char_literal */12,
                                                                                                                                                         _0: /* " " */32,
                                                                                                                                                         _1: {
-                                                                                                                                                          TAG: /* Nativeint */6,
+                                                                                                                                                          TAG: /* Int */4,
                                                                                                                                                           _0: /* Int_x */6,
                                                                                                                                                           _1: /* No_padding */0,
                                                                                                                                                           _2: /* No_precision */0,
@@ -690,7 +690,7 @@ var formatter_suites_1 = {
                                                                                                                                                             TAG: /* Char_literal */12,
                                                                                                                                                             _0: /* " " */32,
                                                                                                                                                             _1: {
-                                                                                                                                                              TAG: /* Nativeint */6,
+                                                                                                                                                              TAG: /* Int */4,
                                                                                                                                                               _0: /* Int_x */6,
                                                                                                                                                               _1: /* No_padding */0,
                                                                                                                                                               _2: /* No_precision */0,
@@ -698,7 +698,7 @@ var formatter_suites_1 = {
                                                                                                                                                                 TAG: /* Char_literal */12,
                                                                                                                                                                 _0: /* " " */32,
                                                                                                                                                                 _1: {
-                                                                                                                                                                  TAG: /* Nativeint */6,
+                                                                                                                                                                  TAG: /* Int */4,
                                                                                                                                                                   _0: /* Int_o */10,
                                                                                                                                                                   _1: /* No_padding */0,
                                                                                                                                                                   _2: /* No_precision */0,
@@ -774,7 +774,7 @@ var formatter_suites_1 = {
                                 }
                               }
                             },
-                            _1: "%d %i %u %n %l %L %N %x %X %o %s %S %c %C %f %F %e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no  "
+                            _1: "%d %i %u %n %l %L %N %x %X %o %s %S %c %C %f %F %e %E %g %G %B %b %ld %li %lu %lx %lX %lo %d %i %u %x %x %o  "
                           }), [
                         1,
                         2,
@@ -1074,7 +1074,7 @@ var formatter_suites_1 = {
                                                                                                                                                 TAG: /* Char_literal */12,
                                                                                                                                                 _0: /* " " */32,
                                                                                                                                                 _1: {
-                                                                                                                                                  TAG: /* Nativeint */6,
+                                                                                                                                                  TAG: /* Int */4,
                                                                                                                                                   _0: /* Int_d */0,
                                                                                                                                                   _1: /* No_padding */0,
                                                                                                                                                   _2: /* No_precision */0,
@@ -1082,7 +1082,7 @@ var formatter_suites_1 = {
                                                                                                                                                     TAG: /* Char_literal */12,
                                                                                                                                                     _0: /* " " */32,
                                                                                                                                                     _1: {
-                                                                                                                                                      TAG: /* Nativeint */6,
+                                                                                                                                                      TAG: /* Int */4,
                                                                                                                                                       _0: /* Int_i */3,
                                                                                                                                                       _1: /* No_padding */0,
                                                                                                                                                       _2: /* No_precision */0,
@@ -1090,7 +1090,7 @@ var formatter_suites_1 = {
                                                                                                                                                         TAG: /* Char_literal */12,
                                                                                                                                                         _0: /* " " */32,
                                                                                                                                                         _1: {
-                                                                                                                                                          TAG: /* Nativeint */6,
+                                                                                                                                                          TAG: /* Int */4,
                                                                                                                                                           _0: /* Int_u */12,
                                                                                                                                                           _1: /* No_padding */0,
                                                                                                                                                           _2: /* No_precision */0,
@@ -1098,7 +1098,7 @@ var formatter_suites_1 = {
                                                                                                                                                             TAG: /* Char_literal */12,
                                                                                                                                                             _0: /* " " */32,
                                                                                                                                                             _1: {
-                                                                                                                                                              TAG: /* Nativeint */6,
+                                                                                                                                                              TAG: /* Int */4,
                                                                                                                                                               _0: /* Int_x */6,
                                                                                                                                                               _1: /* No_padding */0,
                                                                                                                                                               _2: /* No_precision */0,
@@ -1106,7 +1106,7 @@ var formatter_suites_1 = {
                                                                                                                                                                 TAG: /* Char_literal */12,
                                                                                                                                                                 _0: /* " " */32,
                                                                                                                                                                 _1: {
-                                                                                                                                                                  TAG: /* Nativeint */6,
+                                                                                                                                                                  TAG: /* Int */4,
                                                                                                                                                                   _0: /* Int_x */6,
                                                                                                                                                                   _1: /* No_padding */0,
                                                                                                                                                                   _2: /* No_precision */0,
@@ -1114,7 +1114,7 @@ var formatter_suites_1 = {
                                                                                                                                                                     TAG: /* Char_literal */12,
                                                                                                                                                                     _0: /* " " */32,
                                                                                                                                                                     _1: {
-                                                                                                                                                                      TAG: /* Nativeint */6,
+                                                                                                                                                                      TAG: /* Int */4,
                                                                                                                                                                       _0: /* Int_o */10,
                                                                                                                                                                       _1: /* No_padding */0,
                                                                                                                                                                       _2: /* No_precision */0,
@@ -1195,7 +1195,7 @@ var formatter_suites_1 = {
                                   }
                                 }
                               },
-                              _1: "@[%23d %2i %3u %n %0xl %0xL %N %03x %X %o %s %S %c %C %3f %2F %2e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no  @]"
+                              _1: "@[%23d %2i %3u %n %0xl %0xL %N %03x %X %o %s %S %c %C %3f %2F %2e %E %g %G %B %b %ld %li %lu %lx %lX %lo %d %i %u %x %x %o  @]"
                             }), [
                           1,
                           2,
@@ -2037,14 +2037,14 @@ var int64_suites_0 = [
               TAG: /* Eq */0,
               _0: Curry._1(Format.asprintf(/* Format */{
                         _0: {
-                          TAG: /* Nativeint */6,
+                          TAG: /* Int */4,
                           _0: /* Int_x */6,
                           _1: /* No_padding */0,
                           _2: /* No_precision */0,
                           _3: /* End_of_format */0
                         },
-                        _1: "%nx"
-                      }), 4294967295),
+                        _1: "%x"
+                      }), -1),
               _1: "ffffffff"
             };
     })
@@ -2058,14 +2058,14 @@ var int64_suites_1 = {
                 TAG: /* Eq */0,
                 _0: Curry._1(Format.asprintf(/* Format */{
                           _0: {
-                            TAG: /* Nativeint */6,
+                            TAG: /* Int */4,
                             _0: /* Int_o */10,
                             _1: /* No_padding */0,
                             _2: /* No_precision */0,
                             _3: /* End_of_format */0
                           },
-                          _1: "%no"
-                        }), 4294967295),
+                          _1: "%o"
+                        }), -1),
                 _1: "37777777777"
               };
       })
@@ -2346,7 +2346,7 @@ var int64_suites_1 = {
                             ],
                             tl: {
                               hd: [
-                                "File \"caml_format_test.ml\", line 209, characters 4-11",
+                                "File \"caml_format_test.ml\", line 207, characters 4-11",
                                 (function (param) {
                                     return {
                                             TAG: /* Eq */0,
@@ -2386,7 +2386,7 @@ var int64_suites_1 = {
                                 ],
                                 tl: {
                                   hd: [
-                                    "File \"caml_format_test.ml\", line 217, characters 4-11",
+                                    "File \"caml_format_test.ml\", line 215, characters 4-11",
                                     (function (param) {
                                         return {
                                                 TAG: /* Eq */0,
@@ -2406,7 +2406,7 @@ var int64_suites_1 = {
                                   ],
                                   tl: {
                                     hd: [
-                                      "File \"caml_format_test.ml\", line 218, characters 4-11",
+                                      "File \"caml_format_test.ml\", line 216, characters 4-11",
                                       (function (param) {
                                           return {
                                                   TAG: /* Eq */0,
@@ -2426,7 +2426,7 @@ var int64_suites_1 = {
                                     ],
                                     tl: {
                                       hd: [
-                                        "File \"caml_format_test.ml\", line 222, characters 4-11",
+                                        "File \"caml_format_test.ml\", line 220, characters 4-11",
                                         (function (param) {
                                             return {
                                                     TAG: /* Eq */0,
@@ -2446,7 +2446,7 @@ var int64_suites_1 = {
                                       ],
                                       tl: {
                                         hd: [
-                                          "File \"caml_format_test.ml\", line 225, characters 4-11",
+                                          "File \"caml_format_test.ml\", line 223, characters 4-11",
                                           (function (param) {
                                               return {
                                                       TAG: /* Eq */0,
@@ -2466,7 +2466,7 @@ var int64_suites_1 = {
                                         ],
                                         tl: {
                                           hd: [
-                                            "File \"caml_format_test.ml\", line 228, characters 4-11",
+                                            "File \"caml_format_test.ml\", line 226, characters 4-11",
                                             (function (param) {
                                                 return {
                                                         TAG: /* Eq */0,

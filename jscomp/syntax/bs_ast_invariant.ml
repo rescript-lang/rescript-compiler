@@ -109,6 +109,8 @@ let check_constant loc kind (const : Parsetree.constant) =
       with _ ->              
         Bs_warnings.warn_literal_overflow loc
     )
+  | Pconst_integer(_, Some 'n')
+    -> Location.raise_errorf ~loc "literal with `n` suffix is not supported"  
   | _ -> ()   
 
 (* Note we only used Bs_ast_iterator here, we can reuse compiler-libs instead of 

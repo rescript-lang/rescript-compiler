@@ -337,7 +337,7 @@ o test/gpr_858_test.cmi test/gpr_858_test.cmj : cc test/gpr_858_test.ml | $stdli
 o test/gpr_858_unit2_test.cmi test/gpr_858_unit2_test.cmj : cc test/gpr_858_unit2_test.ml | $stdlib
 o test/gpr_904_test.cmi test/gpr_904_test.cmj : cc test/gpr_904_test.ml | test/mt.cmj $stdlib
 o test/gpr_974_test.cmi test/gpr_974_test.cmj : cc test/gpr_974_test.ml | $stdlib
-o test/gpr_977_test.cmi test/gpr_977_test.cmj : cc test/gpr_977_test.ml | test/mt.cmj test/nativeint.cmj $stdlib
+o test/gpr_977_test.cmi test/gpr_977_test.cmj : cc test/gpr_977_test.ml | test/mt.cmj $stdlib
 o test/gpr_return_type_unused_attribute.cmi test/gpr_return_type_unused_attribute.cmj : cc test/gpr_return_type_unused_attribute.ml | $stdlib
 o test/gray_code_test.cmi test/gray_code_test.cmj : cc test/gray_code_test.ml | $stdlib
 o test/guide_for_ext.cmi test/guide_for_ext.cmj : cc test/guide_for_ext.ml | $stdlib
@@ -375,7 +375,7 @@ o test/int32_test.cmi test/int32_test.cmj : cc test/int32_test.ml | test/ext_arr
 o test/int64_mul_div_test.cmi test/int64_mul_div_test.cmj : cc test/int64_mul_div_test.ml | test/mt.cmj $stdlib
 o test/int64_string_bench.cmi test/int64_string_bench.cmj : cc test/int64_string_bench.ml | $stdlib
 o test/int64_string_test.cmi test/int64_string_test.cmj : cc test/int64_string_test.ml | test/mt.cmj $stdlib
-o test/int64_test.cmi test/int64_test.cmj : cc test/int64_test.ml | test/ext_array_test.cmj test/mt.cmj test/nativeint.cmj $stdlib
+o test/int64_test.cmi test/int64_test.cmj : cc test/int64_test.ml | test/ext_array_test.cmj test/mt.cmj $stdlib
 o test/int_hashtbl_test.cmi test/int_hashtbl_test.cmj : cc test/int_hashtbl_test.ml | test/mt.cmj $stdlib
 o test/int_map.cmi test/int_map.cmj : cc test/int_map.ml | $stdlib
 o test/int_overflow_test.cmi test/int_overflow_test.cmj : cc test/int_overflow_test.ml | test/mt.cmj $stdlib
@@ -454,9 +454,7 @@ o test/mutable_obj_test.cmi test/mutable_obj_test.cmj : cc test/mutable_obj_test
 o test/mutable_uncurry_test.cmi test/mutable_uncurry_test.cmj : cc test/mutable_uncurry_test.ml | test/mt.cmj $stdlib
 o test/mutual_non_recursive_type.cmi test/mutual_non_recursive_type.cmj : cc test/mutual_non_recursive_type.ml | $stdlib
 o test/name_mangle_test.cmi test/name_mangle_test.cmj : cc test/name_mangle_test.ml | test/mt.cmj $stdlib
-o test/native_pattern.cmi test/native_pattern.cmj : cc test/native_pattern.ml | test/nativeint.cmj $stdlib
-o test/nativeint.cmj : cc_cmi test/nativeint.ml | test/nativeint.cmi $stdlib
-o test/nativeint.cmi : cc test/nativeint.mli | $stdlib
+o test/nativeint.cmi test/nativeint.cmj : cc test/nativeint.ml | $stdlib
 o test/nested_include.cmi test/nested_include.cmj : cc test/nested_include.ml | $stdlib
 o test/nested_module_alias.cmi test/nested_module_alias.cmj : cc test/nested_module_alias.ml | $stdlib
 o test/nested_obj_literal.cmi test/nested_obj_literal.cmj : cc test/nested_obj_literal.ml | $stdlib
@@ -568,7 +566,6 @@ o test/sexp.cmi : cc test/sexp.mli | $stdlib
 o test/sexpm.cmj : cc_cmi test/sexpm.ml | test/sexpm.cmi $stdlib
 o test/sexpm.cmi : cc test/sexpm.mli | $stdlib
 o test/sexpm_test.cmi test/sexpm_test.cmj : cc test/sexpm_test.ml | test/mt.cmj test/sexpm.cmj $stdlib
-o test/shift_test.cmi test/shift_test.cmj : cc test/shift_test.ml | test/nativeint.cmj $stdlib
 o test/side_effect.cmi test/side_effect.cmj : cc test/side_effect.ml | $stdlib
 o test/side_effect_free.cmi test/side_effect_free.cmj : cc test/side_effect_free.ml | $stdlib
 o test/simple_derive_test.cmj : cc_cmi test/simple_derive_test.ml | test/simple_derive_test.cmi $stdlib
@@ -720,7 +717,7 @@ o test/ticker.cmi test/ticker.cmj : cc test/ticker.ml | $stdlib
 o test/to_string_test.cmi test/to_string_test.cmj : cc test/to_string_test.ml | test/mt.cmj $stdlib
 o test/topsort_test.cmi test/topsort_test.cmj : cc test/topsort_test.ml | $stdlib
 o test/tramp_fib.cmi test/tramp_fib.cmj : cc test/tramp_fib.ml | test/mt.cmj $stdlib
-o test/tscanf_test.cmi test/tscanf_test.cmj : cc test/tscanf_test.ml | test/mt.cmj test/mt_global.cmj test/nativeint.cmj test/testing.cmj $stdlib
+o test/tscanf_test.cmi test/tscanf_test.cmj : cc test/tscanf_test.ml | test/mt.cmj test/mt_global.cmj test/testing.cmj $stdlib
 o test/tuple_alloc.cmi test/tuple_alloc.cmj : cc test/tuple_alloc.ml | $stdlib
 o test/type_disambiguate.cmi test/type_disambiguate.cmj : cc test/type_disambiguate.ml | $stdlib
 o test/typeof_test.cmi test/typeof_test.cmj : cc test/typeof_test.ml | test/mt.cmj $stdlib

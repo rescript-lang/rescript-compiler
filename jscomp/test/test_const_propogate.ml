@@ -7,8 +7,3 @@ let f x =
   else 
     x + 1
 
-let f2 x = 
-  if 5n > 3n then 
-    x 
-  else 
-    x + 1

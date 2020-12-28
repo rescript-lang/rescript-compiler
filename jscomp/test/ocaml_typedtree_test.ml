@@ -24919,9 +24919,9 @@ let cvt_int32_literal s =
   Int32.neg (Int32.of_string ("-" ^ String.sub s 0 (String.length s - 1)))
 let cvt_int64_literal s =
   Int64.neg (Int64.of_string ("-" ^ String.sub s 0 (String.length s - 1)))
-let cvt_nativeint_literal s =
-  Nativeint.neg (Nativeint.of_string ("-" ^ String.sub s 0
-                                                       (String.length s - 1)))
+let cvt_nativeint_literal s = assert false
+  (* Nativeint.neg (Nativeint.of_string ("-" ^ String.sub s 0
+                                                       (String.length s - 1))) *)
 
 (* Remove underscores from float literals *)
 
@@ -39910,10 +39910,10 @@ let build_other ext env =  match env with
       (function i -> Tpat_constant(Const_int64 i))
       0L Int64.succ p env
 | ({pat_desc=(Tpat_constant (Const_nativeint _))} as p,_) :: _ ->
-    build_other_constant
+    (* build_other_constant
       (function Tpat_constant(Const_nativeint i) -> i | _ -> assert false)
       (function i -> Tpat_constant(Const_nativeint i))
-      0n Nativeint.succ p env
+      0n Nativeint.succ p env *) assert false
 | ({pat_desc=(Tpat_constant (Const_string _))} as p,_) :: _ ->
     build_other_constant
       (function Tpat_constant(Const_string (s, _)) -> String.length s
