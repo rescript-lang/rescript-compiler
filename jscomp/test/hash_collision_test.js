@@ -35,21 +35,21 @@ var hi = [
   "azdwbie"
 ];
 
-eq("File \"hash_collision.ml\", line 24, characters 9-16", 1, 0);
+eq("File \"hash_collision_test.ml\", line 24, characters 9-16", 0, 0);
 
-eq("File \"hash_collision.ml\", line 25, characters 9-16", 1, 1);
+eq("File \"hash_collision_test.ml\", line 25, characters 9-16", 1, 1);
 
-eq("File \"hash_collision.ml\", line 27, characters 9-16", f1({
+eq("File \"hash_collision_test.ml\", line 27, characters 9-16", f1({
           NAME: "Eric_Cooper",
           VAL: -1
         }), 0);
 
-eq("File \"hash_collision.ml\", line 29, characters 9-16", f1({
+eq("File \"hash_collision_test.ml\", line 29, characters 9-16", f1({
           NAME: "azdwbie",
           VAL: -2
         }), 0);
 
-Mt.from_pair_suites("hash_collision.ml", suites.contents);
+Mt.from_pair_suites("hash_collision_test.ml", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

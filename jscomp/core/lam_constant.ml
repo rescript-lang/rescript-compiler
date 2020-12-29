@@ -27,12 +27,11 @@
   | Const_js_undefined
   | Const_js_true
   | Const_js_false
-  | Const_int of {i : int; comment : string option}
+  | Const_int of {i : int32; comment : string option}
   | Const_char of char
   | Const_string of string  (* use record later *)
   | Const_unicode of string
-  | Const_float of string
-  | Const_int32 of int32
+  | Const_float of string  
   | Const_int64 of int64
   | Const_nativeint of nativeint
   | Const_pointer of int * Lam_pointer_info.t
@@ -62,8 +61,6 @@ let rec eq_approx (x : t) (y : t) =
     (match y with Const_unicode iy -> ix = iy | _ -> false)
   | Const_float  ix -> 
     (match y with Const_float iy -> ix = iy | _ -> false)
-  | Const_int32 ix ->   
-    (match y with Const_int32 iy -> ix = iy | _ -> false)
   | Const_int64 ix ->   
     (match y with Const_int64 iy -> ix = iy | _ -> false)
   | Const_nativeint ix ->   

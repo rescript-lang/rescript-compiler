@@ -306,7 +306,7 @@ let inline_int_primitive (i : int32) : string list =
   [""; 
     to_string 
     (Ffi_inline_const 
-      (Const_int32 i))
+      (Const_int {i; comment = None}))
   ]
 
 let inline_int64_primitive (i : int64) : string list =   

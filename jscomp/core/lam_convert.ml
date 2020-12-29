@@ -418,8 +418,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pctconst x ->
     begin match x with
       | Word_size 
-      | Int_size -> Lam.const(Const_int {i = 32; comment = None})  
-      | Max_wosize -> Lam.const (Const_int {i = 2147483647; comment = Some "Max_wosize"})
+      | Int_size -> Lam.const(Const_int {i = 32l; comment = None})  
+      | Max_wosize -> Lam.const (Const_int {i = 2147483647l; comment = Some "Max_wosize"})
       | Big_endian
         -> prim ~primitive:(Pctconst Big_endian) ~args loc
       | Ostype_unix
@@ -835,7 +835,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
             | Some i ->
               prim
                 ~primitive:Paddint
-                ~args:[e; Lam.const(Const_int {i; comment = None})]
+                ~args:[e; Lam.const(Const_int {i = Int32.of_int i; comment = None})]
                 Location.none
             | None ->
               Lam.switch e

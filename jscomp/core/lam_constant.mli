@@ -27,12 +27,11 @@ type t =
   | Const_js_undefined
   | Const_js_true
   | Const_js_false
-  | Const_int of {i : int; comment : string option}
+  | Const_int of {i : int32; comment : string option}
   | Const_char of char
   | Const_string of string  (* use record later *)
   | Const_unicode of string
   | Const_float of string
-  | Const_int32 of int32
   | Const_int64 of int64
   | Const_nativeint of nativeint
   | Const_pointer of int * Lam_pointer_info.t
