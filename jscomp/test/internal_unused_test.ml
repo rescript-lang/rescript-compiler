@@ -52,3 +52,8 @@ end
 (* module%private X  = Arg  
 type x = X.spec *)
 (* [%%debugger.chrome] *)
+
+module H = functor () -> struct 
+  external %private x : int -> int =  "x"
+  [@@bs.module "./x"]
+end  
