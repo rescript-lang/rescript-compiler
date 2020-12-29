@@ -57,9 +57,6 @@ let mark_used_bs_attribute ((x,_) : Parsetree.attribute) =
   if not x.loc.loc_ghost then
     Hash_set_poly.add used_attributes x
 
-let dummy_unused_attribute : Warnings.t = (Bs_unused_attribute "")
-
-
 
 let warn_unused_attribute 
   (({txt; loc} as sloc, _) : Parsetree.attribute) = 
@@ -201,9 +198,7 @@ let rec iter_warnings_on_sigi (stru : Parsetree.signature) =
 
 
 let emit_external_warnings_on_structure  (stru : Parsetree.structure) =   
-  if Warnings.is_active dummy_unused_attribute then 
-    emit_external_warnings.structure emit_external_warnings stru
+  emit_external_warnings.structure emit_external_warnings stru
 
 let emit_external_warnings_on_signature  (sigi : Parsetree.signature) = 
-  if Warnings.is_active dummy_unused_attribute then 
-    emit_external_warnings.signature emit_external_warnings sigi
+  emit_external_warnings.signature emit_external_warnings sigi
