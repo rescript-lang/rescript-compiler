@@ -28,7 +28,6 @@ let rec struct_const ppf (cst : Lam_constant.t) =
   |  (Const_char c) -> fprintf ppf "%C" c
   |  (Const_string s) -> fprintf ppf "%S" s
   |  (Const_unicode s) -> fprintf ppf "%S" s
-  | Const_immstring s -> fprintf ppf "#%S" s
   |  (Const_float f) -> fprintf ppf "%s" f
   |  (Const_int32 n) -> fprintf ppf "%lil" n
   |  (Const_int64 n) -> fprintf ppf "%LiL" n

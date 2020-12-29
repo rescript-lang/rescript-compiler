@@ -116,8 +116,6 @@ and translate (x : Lam_constant.t ) : J.expression =
   (* E.arr Mutable ~comment:"float array" *)
   (*   (Ext_list.map (fun x ->  E.float  x ) ars) *)
 
-  | Const_immstring s ->  (*TODO *)
-    E.str s  (* TODO: check *)
 
 (* and translate_optional s = 
   let  b = 

@@ -52,7 +52,7 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
     | Pt_na ->  Const_pointer(i, p)      
      end 
   | Const_float_array (s) -> Const_float_array(s)
-  | Const_immstring s -> Const_immstring s
+  | Const_immstring s -> Const_string s
   | Const_block (i,t,xs) ->
     begin match t with 
     | Blk_some_not_nested -> 

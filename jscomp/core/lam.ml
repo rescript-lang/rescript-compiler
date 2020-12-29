@@ -760,7 +760,7 @@ let rec eval_const_as_bool (v : Lam_constant.t ) : bool =
   | Const_unicode _
   | Const_block _
   | Const_float_array _
-  | Const_immstring _ -> true
+    -> true
   | Const_some b -> eval_const_as_bool b
 
 

@@ -38,7 +38,6 @@
   | Const_pointer of int * Lam_pointer_info.t
   | Const_block of int * Lam_tag_info.t * t list
   | Const_float_array of string list
-  | Const_immstring of string
   | Const_some of t 
   | Const_module_alias 
     (* eventually we can remove it, since we know
@@ -79,8 +78,6 @@ let rec eq_approx (x : t) (y : t) =
       Ext_list.for_all2_no_exn ixs iys Ext_string.equal
     | _ -> false
     )
-  | Const_immstring ix ->   
-   (match y with Const_immstring iy -> ix = iy | _ -> false)
   | Const_some ix ->  
     (match y with Const_some iy -> eq_approx ix iy | _ -> false)
 

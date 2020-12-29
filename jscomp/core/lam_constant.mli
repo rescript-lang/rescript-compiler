@@ -38,7 +38,6 @@ type t =
   | Const_pointer of int * Lam_pointer_info.t
   | Const_block of int * Lam_tag_info.t * t list
   | Const_float_array of string list
-  | Const_immstring of string
   | Const_some of t 
     (* eventually we can remove it, since we know
       [constant] is [undefined] or not 

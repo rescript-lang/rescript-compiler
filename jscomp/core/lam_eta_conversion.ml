@@ -46,7 +46,7 @@ let transform_under_supply n ap_info fn args =
         | Const_char _ | Const_string _ 
         | Const_float _ | Const_int32 _ 
         | Const_int64 _ | Const_nativeint _ 
-        | Const_pointer _ | Const_immstring _ | Const_js_true | Const_js_false | Const_js_undefined) 
+        | Const_pointer _ | Const_js_true | Const_js_false | Const_js_undefined) 
       | Lprim {primitive = Pfield (_, Fld_module _);
                 _ }
       | Lfunction _ 
