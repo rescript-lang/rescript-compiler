@@ -82,8 +82,8 @@ let formatter_suites = Mt.[
     (fun _ -> Eq (Format.asprintf ("%s %03d %L" ^^ "%S %03d %L" ) "32" 33 33 "a" 33 3, "32 033 33\"a\" 033 3"));
     "fmt_gen",
     (fun _ -> Eq(Format.asprintf ("%s %03d %L" ^^ "%S %03d %L %a" ) "32" 33 33 "a" 33 3 (Format.pp_print_list Format.pp_print_int) [1;2;3], "32 033 33\"a\" 033 3 12\n3"));
-    "long_fmt", (fun _ -> Eq(Format.asprintf "%d %i %u %n %l %L %N %x %X %o %s %S %c %C %f %F %e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no  " 1 2 3 4 5 6 7 8 9 10 "a" "b" 'c' 'd' 1. 2. 3. 4. 5. 6. true false 0l 1l 2l 3l 4l 5l 6n 7n 8n 9n 10n 11n  , "1 2 3 4 5 6 7 8 9 12 a \"b\" c 'd' 1.000000 2. 3.000000e+00 4.000000E+00 5 6 true false 0 1 2 3 4 5 6 7 8 9 a 13  "));
-    "long_fmt_2", (fun _ -> Eq(Format.asprintf "@[%23d %2i %3u %n %0xl %0xL %N %03x %X %o %s %S %c %C %3f %2F %2e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no  @]" 1 2 3 4 5 6 7 8 9 10 "a" "b" 'c' 'd' 1. 2. 3. 4. 5. 6. true false 0l 1l 2l 3l 4l 5l 6n 7n 8n 9n 10n 11n, "                      1  2   3 4 5l 6L 7 008 9 12 a \"b\" c 'd' 1.000000 2. 3.000000e+00 4.000000E+00 5 6 true false 0 1 2 3 4 5 6 7 8 9 a 13  "));
+    "long_fmt", (fun _ -> Eq(Format.asprintf "%d %i %u %n %l %L %N %x %X %o %s %S %c %C %f %F %e %E %g %G %B %b %ld %li %lu %lx %lX %lo %d %i %u %x %x %o  " 1 2 3 4 5 6 7 8 9 10 "a" "b" 'c' 'd' 1. 2. 3. 4. 5. 6. true false 0l 1l 2l 3l 4l 5l 6 7 8 9 10 11  , "1 2 3 4 5 6 7 8 9 12 a \"b\" c 'd' 1.000000 2. 3.000000e+00 4.000000E+00 5 6 true false 0 1 2 3 4 5 6 7 8 9 a 13  "));
+    "long_fmt_2", (fun _ -> Eq(Format.asprintf "@[%23d %2i %3u %n %0xl %0xL %N %03x %X %o %s %S %c %C %3f %2F %2e %E %g %G %B %b %ld %li %lu %lx %lX %lo %d %i %u %x %x %o  @]" 1 2 3 4 5 6 7 8 9 10 "a" "b" 'c' 'd' 1. 2. 3. 4. 5. 6. true false 0l 1l 2l 3l 4l 5l 6 7 8 9 10 11, "                      1  2   3 4 5l 6L 7 008 9 12 a \"b\" c 'd' 1.000000 2. 3.000000e+00 4.000000E+00 5 6 true false 0 1 2 3 4 5 6 7 8 9 a 13  "));
     "width_1", (fun _ -> Eq(Format.asprintf "%014d" 32, "00000000000032"));
     "width_2", (fun _ -> Eq(Format.asprintf "%10.3f" 32333.02, " 32333.020"));
     "alternate_1", (fun _ -> Eq(Format.asprintf "%0x" 32333, "7e4d"));
@@ -99,8 +99,6 @@ let formatter_suites = Mt.[
     "prec_2", (fun _ -> Eq(format_int "%.10d" 32, "0000000032"));
     "prec_3", (fun _ -> Eq(format_int "%.d" 32, "32"));
     "prec_4", (fun _ -> Eq(format_int "%.d" 32, "32"));
-
-    (* "long_fmt", (fun _ -> Eq(Format.asprintf "%d %i %u %n %l %L %N %x %X %o %s %S %c %C %f %F %e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no %Ld %Li %Lu %Lx %LX %Lo " 1 2 3 4 5 6 7 8 9 10 "a" "b" 'c' 'd' 1. 2. 3. 4. 5. 6. true false 0l 1l 2l 3l 4l 5l 6n 7n 8n 9n 10n 11n 12L 13L 14L 15L 16L 17L , "1 2 3 4 5 6 7 8 9 12 a \"b\" c 'd' 1.000000 2. 3.000000e+00 4.000000E+00 5 6 true false 0 1 2 3 4 5 6 7 8 9 a 13 12 13 14 f 10 21 ")) *)
   ]
 
 external format_float: string -> float -> string
@@ -183,8 +181,8 @@ let int64_suites =
   Mt.[
 
 
-    "i32_simple", (fun _ -> Eq(Format.asprintf "%nx" 0xffff_ffffn, "ffffffff")) ;
-    "i32_simple1", (fun _ -> Eq(Format.asprintf "%no" 0xffff_ffffn, "37777777777"));
+    "i32_simple", (fun _ -> Eq(Format.asprintf "%x" 0xffff_ffff, "ffffffff")) ;
+    "i32_simple1", (fun _ -> Eq(Format.asprintf "%o" 0xffff_ffff, "37777777777"));
     "i64_simple", (fun _ -> Eq( Format.asprintf "%Ld" 3L, "3"));
     "i64_simple2", (fun _ -> Eq( Format.asprintf "%Lx" 33L, "21"));
     "i64_simple3", (fun _ -> Eq( Format.asprintf "%Li" 33L, "33"));

@@ -26,7 +26,7 @@ let () =
   b __LOC__ (not (eqNull "3" Js.null));
   b __LOC__ (not (eqNull '3' Js.null));
   b __LOC__ (not (eqNull 0L Js.null));
-  b __LOC__ (not (eqNull 0n Js.null));
+  b __LOC__ (not (eqNull 0 Js.null));
   b __LOC__ (not (eqNull 0. Js.null));
   b __LOC__ (not (eqNull (f ()) Js.null));
   b __LOC__ ( (eqNull (shouldBeNull ()) Js.null));
@@ -41,7 +41,7 @@ let () =
   b __LOC__ (not (eqNullable "3" v));
   b __LOC__ (not (eqNullable '3' v));
   b __LOC__ (not (eqNullable 0L v));
-  b __LOC__ (not (eqNullable 0n v));
+  b __LOC__ (not (eqNullable 0 v));
   b __LOC__ (not (eqNullable 0. v));
   b __LOC__ (not (eqNullable (f ()) v));
   b __LOC__ ( (eqNullable (shouldBeNull ()) v));
@@ -57,7 +57,7 @@ let () =
   b __LOC__ (not (eqUndefined "3" v));
   b __LOC__ (not (eqUndefined '3' v));
   b __LOC__ (not (eqUndefined 0L v));
-  b __LOC__ (not (eqUndefined 0n v));
+  b __LOC__ (not (eqUndefined 0 v));
   b __LOC__ (not (eqUndefined 0. v));
   b __LOC__ ((eqUndefined (f ()) v)); 
   (* [ None === undefined]

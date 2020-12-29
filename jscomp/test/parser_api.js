@@ -15238,7 +15238,15 @@ function cvt_int64_literal(s) {
 }
 
 function cvt_nativeint_literal(s) {
-  return -Caml_format.caml_nativeint_of_string("-" + $$String.sub(s, 0, s.length - 1 | 0));
+  throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "lexer.mll",
+          622,
+          30
+        ],
+        Error: new Error()
+      };
 }
 
 function remove_underscores(s) {

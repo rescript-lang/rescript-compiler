@@ -25,7 +25,6 @@ var Process = require("process");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_sys = require("../../lib/js/caml_sys.js");
 var Filename = require("../../lib/js/filename.js");
-var Nativeint = require("./nativeint.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
@@ -249,8 +248,8 @@ function split_last(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "misc.ml",
-          54,
+          "ocaml_typedtree_test.ml",
+          817,
           10
         ],
         Error: new Error()
@@ -893,8 +892,8 @@ function letter(param) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "warnings.ml",
-              176,
+              "ocaml_typedtree_test.ml",
+              1587,
               9
             ],
             Error: new Error()
@@ -1171,8 +1170,8 @@ function message(s) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "warnings.ml",
-                  283,
+                  "ocaml_typedtree_test.ml",
+                  1694,
                   26
                 ],
                 Error: new Error()
@@ -1209,8 +1208,8 @@ function message(s) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "warnings.ml",
-                  303,
+                  "ocaml_typedtree_test.ml",
+                  1714,
                   37
                 ],
                 Error: new Error()
@@ -1340,8 +1339,8 @@ function message(s) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "warnings.ml",
-                  365,
+                  "ocaml_typedtree_test.ml",
+                  1776,
                   39
                 ],
                 Error: new Error()
@@ -1358,8 +1357,8 @@ function message(s) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "warnings.ml",
-                  374,
+                  "ocaml_typedtree_test.ml",
+                  1785,
                   36
                 ],
                 Error: new Error()
@@ -2440,8 +2439,8 @@ function balance(l, d, r) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "ident.ml",
-              120,
+              "ocaml_typedtree_test.ml",
+              2781,
               11
             ],
             Error: new Error()
@@ -2450,8 +2449,8 @@ function balance(l, d, r) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ident.ml",
-            120,
+            "ocaml_typedtree_test.ml",
+            2781,
             11
           ],
           Error: new Error()
@@ -2476,8 +2475,8 @@ function balance(l, d, r) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ident.ml",
-            129,
+            "ocaml_typedtree_test.ml",
+            2790,
             11
           ],
           Error: new Error()
@@ -2486,8 +2485,8 @@ function balance(l, d, r) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "ident.ml",
-          129,
+          "ocaml_typedtree_test.ml",
+          2790,
           11
         ],
         Error: new Error()
@@ -2746,8 +2745,8 @@ function head(_id) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "path.ml",
-                  49,
+                  "ocaml_typedtree_test.ml",
+                  2970,
                   22
                 ],
                 Error: new Error()
@@ -4207,8 +4206,8 @@ function print_raw(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "btype.ml",
-          27,
+          "ocaml_typedtree_test.ml",
+          4836,
           16
         ],
         Error: new Error()
@@ -4437,8 +4436,8 @@ function row_fixed(row) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "btype.ml",
-              137,
+              "ocaml_typedtree_test.ml",
+              4946,
               9
             ],
             Error: new Error()
@@ -4505,8 +4504,8 @@ function proxy(ty) {
               throw {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
-                      "btype.ml",
-                      167,
+                      "ocaml_typedtree_test.ml",
+                      4976,
                       15
                     ],
                     Error: new Error()
@@ -4623,8 +4622,8 @@ function iter_row(f, _row) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "btype.ml",
-                  214,
+                  "ocaml_typedtree_test.ml",
+                  5023,
                   9
                 ],
                 Error: new Error()
@@ -4900,8 +4899,8 @@ function copy_kind(_param) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "btype.ml",
-              363,
+              "ocaml_typedtree_test.ml",
+              5172,
               16
             ],
             Error: new Error()
@@ -5011,8 +5010,8 @@ function copy_type_desc(_keep_namesOpt, f, _ty) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "btype.ml",
-                  390,
+                  "ocaml_typedtree_test.ml",
+                  5199,
                   27
                 ],
                 Error: new Error()
@@ -5021,8 +5020,8 @@ function copy_type_desc(_keep_namesOpt, f, _ty) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "btype.ml",
-                  385,
+                  "ocaml_typedtree_test.ml",
+                  5194,
                   27
                 ],
                 Error: new Error()
@@ -5057,8 +5056,8 @@ function copy_type_desc(_keep_namesOpt, f, _ty) {
                     throw {
                           RE_EXN_ID: "Assert_failure",
                           _1: [
-                            "btype.ml",
-                            375,
+                            "ocaml_typedtree_test.ml",
+                            5184,
                             26
                           ],
                           Error: new Error()
@@ -5111,8 +5110,8 @@ function dup_kind(r) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "btype.ml",
-            408,
+            "ocaml_typedtree_test.ml",
+            5217,
             40
           ],
           Error: new Error()
@@ -5277,8 +5276,8 @@ function forget_abbrev_rec(mem, path) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "btype.ml",
-            520,
+            "ocaml_typedtree_test.ml",
+            5329,
             6
           ],
           Error: new Error()
@@ -5555,8 +5554,8 @@ function rev_log(_accu, _param) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "btype.ml",
-                656,
+                "ocaml_typedtree_test.ml",
+                5465,
                 15
               ],
               Error: new Error()
@@ -9291,8 +9290,8 @@ function bal$4(l, x, d, r) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "tbl.ml",
-              35,
+              "ocaml_typedtree_test.ml",
+              8866,
               11
             ],
             Error: new Error()
@@ -9301,8 +9300,8 @@ function bal$4(l, x, d, r) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "tbl.ml",
-            35,
+            "ocaml_typedtree_test.ml",
+            8866,
             11
           ],
           Error: new Error()
@@ -9323,8 +9322,8 @@ function bal$4(l, x, d, r) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "tbl.ml",
-            42,
+            "ocaml_typedtree_test.ml",
+            8873,
             11
           ],
           Error: new Error()
@@ -9333,8 +9332,8 @@ function bal$4(l, x, d, r) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "tbl.ml",
-          42,
+          "ocaml_typedtree_test.ml",
+          8873,
           11
         ],
         Error: new Error()
@@ -9793,8 +9792,8 @@ function typexp(s, ty) {
                         throw {
                               RE_EXN_ID: "Assert_failure",
                               _1: [
-                                "subst.ml",
-                                170,
+                                "ocaml_typedtree_test.ml",
+                                9179,
                                 23
                               ],
                               Error: new Error()
@@ -10281,8 +10280,8 @@ var add_delayed_check_forward = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "env.ml",
-              24,
+              "ocaml_typedtree_test.ml",
+              9717,
               46
             ],
             Error: new Error()
@@ -10502,8 +10501,8 @@ var components_of_module$prime = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "env.ml",
-              272,
+              "ocaml_typedtree_test.ml",
+              9965,
               32
             ],
             Error: new Error()
@@ -10516,8 +10515,8 @@ var components_of_module_maker$prime = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "env.ml",
-              275,
+              "ocaml_typedtree_test.ml",
+              9968,
               37
             ],
             Error: new Error()
@@ -10530,8 +10529,8 @@ var components_of_functor_appl$prime = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "env.ml",
-              278,
+              "ocaml_typedtree_test.ml",
+              9971,
               23
             ],
             Error: new Error()
@@ -10544,8 +10543,8 @@ var check_modtype_inclusion = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "env.ml",
-              282,
+              "ocaml_typedtree_test.ml",
+              9975,
               35
             ],
             Error: new Error()
@@ -10558,8 +10557,8 @@ var strengthen = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "env.ml",
-              286,
+              "ocaml_typedtree_test.ml",
+              9979,
               28
             ],
             Error: new Error()
@@ -11189,8 +11188,8 @@ function normalize_path$1(oloc, env, path) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "env.ml",
-              579,
+              "ocaml_typedtree_test.ml",
+              10272,
               28
             ],
             Error: new Error()
@@ -11760,8 +11759,8 @@ function set_type_used_callback(name, td, callback) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "env.ml",
-              841,
+              "ocaml_typedtree_test.ml",
+              10534,
               22
             ],
             Error: new Error()
@@ -11811,8 +11810,8 @@ function ty_path(t) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "env.ml",
-            871,
+            "ocaml_typedtree_test.ml",
+            10564,
             9
           ],
           Error: new Error()
@@ -11824,8 +11823,8 @@ function ty_path(t) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "env.ml",
-          871,
+          "ocaml_typedtree_test.ml",
+          10564,
           9
         ],
         Error: new Error()
@@ -11924,8 +11923,8 @@ function mark_constructor(usage, env, name, desc) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "env.ml",
-              908,
+              "ocaml_typedtree_test.ml",
+              10601,
               64
             ],
             Error: new Error()
@@ -12302,8 +12301,8 @@ function add_gadt_instances(env, lv, tl) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "env.ml",
-              1066,
+              "ocaml_typedtree_test.ml",
+              10759,
               59
             ],
             Error: new Error()
@@ -12325,8 +12324,8 @@ function add_gadt_instance_chain(env, lv, t) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "env.ml",
-              1075,
+              "ocaml_typedtree_test.ml",
+              10768,
               59
             ],
             Error: new Error()
@@ -13669,8 +13668,8 @@ function add_local_constraint(id, info, elv, env) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "env.ml",
-            1538,
+            "ocaml_typedtree_test.ml",
+            11231,
             9
           ],
           Error: new Error()
@@ -13679,8 +13678,8 @@ function add_local_constraint(id, info, elv, env) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "env.ml",
-          1538,
+          "ocaml_typedtree_test.ml",
+          11231,
           9
         ],
         Error: new Error()
@@ -15257,8 +15256,8 @@ function mkexp_constraint(e, param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "parser.mly",
-          153,
+          "ocaml_typedtree_test.ml",
+          12335,
           18
         ],
         Error: new Error()
@@ -22242,8 +22241,8 @@ function directive_parse(token_with_comments, lexbuf) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "lexer.mll",
-              312,
+              "ocaml_typedtree_test.ml",
+              24615,
               4
             ],
             Error: new Error()
@@ -22476,8 +22475,8 @@ function directive_parse(token_with_comments, lexbuf) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "lexer.mll",
-                331,
+                "ocaml_typedtree_test.ml",
+                24634,
                 17
               ],
               Error: new Error()
@@ -23235,7 +23234,15 @@ function cvt_int64_literal(s) {
 }
 
 function cvt_nativeint_literal(s) {
-  return -Caml_format.caml_nativeint_of_string("-" + $$String.sub(s, 0, s.length - 1 | 0));
+  throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "ocaml_typedtree_test.ml",
+          24922,
+          30
+        ],
+        Error: new Error()
+      };
 }
 
 function remove_underscores(s) {
@@ -24177,8 +24184,8 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "lexer.mll",
-                  989,
+                  "ocaml_typedtree_test.ml",
+                  26852,
                   16
                 ],
                 Error: new Error()
@@ -24216,8 +24223,8 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "lexer.mll",
-                        1003,
+                        "ocaml_typedtree_test.ml",
+                        26869,
                         18
                       ],
                       Error: new Error()
@@ -24266,8 +24273,8 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "lexer.mll",
-                        1023,
+                        "ocaml_typedtree_test.ml",
+                        26892,
                         18
                       ],
                       Error: new Error()
@@ -24306,8 +24313,8 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "lexer.mll",
-                  1053,
+                  "ocaml_typedtree_test.ml",
+                  26942,
                   16
                 ],
                 Error: new Error()
@@ -25160,41 +25167,125 @@ function TypedtreeMap_MakeMap(funarg) {
                 str_final_env: str$1.str_final_env
               });
   };
-  var map_class_type = function (ct) {
-    var ct$1 = Curry._1(funarg.enter_class_type, ct);
-    var csg = ct$1.cltyp_desc;
-    var cltyp_desc;
-    switch (csg.TAG | 0) {
-      case /* Tcty_constr */0 :
-          cltyp_desc = {
-            TAG: /* Tcty_constr */0,
-            _0: csg._0,
-            _1: csg._1,
-            _2: List.map(map_core_type, csg._2)
+  var map_structure_item = function (item) {
+    var item$1 = Curry._1(funarg.enter_structure_item, item);
+    var vd = item$1.str_desc;
+    var str_desc;
+    switch (vd.TAG | 0) {
+      case /* Tstr_eval */0 :
+          str_desc = {
+            TAG: /* Tstr_eval */0,
+            _0: map_expression(vd._0),
+            _1: vd._1
           };
           break;
-      case /* Tcty_signature */1 :
-          cltyp_desc = {
-            TAG: /* Tcty_signature */1,
-            _0: map_class_signature(csg._0)
+      case /* Tstr_value */1 :
+          var rec_flag = vd._0;
+          str_desc = {
+            TAG: /* Tstr_value */1,
+            _0: rec_flag,
+            _1: List.map(map_binding, vd._1)
           };
           break;
-      case /* Tcty_arrow */2 :
-          cltyp_desc = {
-            TAG: /* Tcty_arrow */2,
-            _0: csg._0,
-            _1: map_core_type(csg._1),
-            _2: map_class_type(csg._2)
+      case /* Tstr_primitive */2 :
+          str_desc = {
+            TAG: /* Tstr_primitive */2,
+            _0: map_value_description(vd._0)
+          };
+          break;
+      case /* Tstr_type */3 :
+          str_desc = {
+            TAG: /* Tstr_type */3,
+            _0: List.map(map_type_declaration, vd._0)
+          };
+          break;
+      case /* Tstr_typext */4 :
+          str_desc = {
+            TAG: /* Tstr_typext */4,
+            _0: map_type_extension(vd._0)
+          };
+          break;
+      case /* Tstr_exception */5 :
+          str_desc = {
+            TAG: /* Tstr_exception */5,
+            _0: map_extension_constructor(vd._0)
+          };
+          break;
+      case /* Tstr_module */6 :
+          str_desc = {
+            TAG: /* Tstr_module */6,
+            _0: map_module_binding(vd._0)
+          };
+          break;
+      case /* Tstr_recmodule */7 :
+          var list = List.map(map_module_binding, vd._0);
+          str_desc = {
+            TAG: /* Tstr_recmodule */7,
+            _0: list
+          };
+          break;
+      case /* Tstr_modtype */8 :
+          str_desc = {
+            TAG: /* Tstr_modtype */8,
+            _0: map_module_type_declaration(vd._0)
+          };
+          break;
+      case /* Tstr_open */9 :
+          str_desc = {
+            TAG: /* Tstr_open */9,
+            _0: vd._0
+          };
+          break;
+      case /* Tstr_class */10 :
+          var list$1 = List.map((function (param) {
+                  return [
+                          map_class_declaration(param[0]),
+                          param[1],
+                          param[2]
+                        ];
+                }), vd._0);
+          str_desc = {
+            TAG: /* Tstr_class */10,
+            _0: list$1
+          };
+          break;
+      case /* Tstr_class_type */11 :
+          var list$2 = List.map((function (param) {
+                  return [
+                          param[0],
+                          param[1],
+                          map_class_type_declaration(param[2])
+                        ];
+                }), vd._0);
+          str_desc = {
+            TAG: /* Tstr_class_type */11,
+            _0: list$2
+          };
+          break;
+      case /* Tstr_include */12 :
+          var incl = vd._0;
+          str_desc = {
+            TAG: /* Tstr_include */12,
+            _0: {
+              incl_mod: map_module_expr(incl.incl_mod),
+              incl_type: incl.incl_type,
+              incl_loc: incl.incl_loc,
+              incl_attributes: incl.incl_attributes
+            }
+          };
+          break;
+      case /* Tstr_attribute */13 :
+          str_desc = {
+            TAG: /* Tstr_attribute */13,
+            _0: vd._0
           };
           break;
       
     }
-    return Curry._1(funarg.leave_class_type, {
-                cltyp_desc: cltyp_desc,
-                cltyp_type: ct$1.cltyp_type,
-                cltyp_env: ct$1.cltyp_env,
-                cltyp_loc: ct$1.cltyp_loc,
-                cltyp_attributes: ct$1.cltyp_attributes
+    return Curry._1(funarg.leave_structure_item, {
+                str_desc: str_desc,
+                str_loc: item$1.str_loc,
+                str_env: item$1.str_env
               });
   };
   var map_core_type = function (ct) {
@@ -25288,6 +25379,569 @@ function TypedtreeMap_MakeMap(funarg) {
                 ctyp_env: ct$1.ctyp_env,
                 ctyp_loc: ct$1.ctyp_loc,
                 ctyp_attributes: ct$1.ctyp_attributes
+              });
+  };
+  var map_class_type = function (ct) {
+    var ct$1 = Curry._1(funarg.enter_class_type, ct);
+    var csg = ct$1.cltyp_desc;
+    var cltyp_desc;
+    switch (csg.TAG | 0) {
+      case /* Tcty_constr */0 :
+          cltyp_desc = {
+            TAG: /* Tcty_constr */0,
+            _0: csg._0,
+            _1: csg._1,
+            _2: List.map(map_core_type, csg._2)
+          };
+          break;
+      case /* Tcty_signature */1 :
+          cltyp_desc = {
+            TAG: /* Tcty_signature */1,
+            _0: map_class_signature(csg._0)
+          };
+          break;
+      case /* Tcty_arrow */2 :
+          cltyp_desc = {
+            TAG: /* Tcty_arrow */2,
+            _0: csg._0,
+            _1: map_core_type(csg._1),
+            _2: map_class_type(csg._2)
+          };
+          break;
+      
+    }
+    return Curry._1(funarg.leave_class_type, {
+                cltyp_desc: cltyp_desc,
+                cltyp_type: ct$1.cltyp_type,
+                cltyp_env: ct$1.cltyp_env,
+                cltyp_loc: ct$1.cltyp_loc,
+                cltyp_attributes: ct$1.cltyp_attributes
+              });
+  };
+  var map_value_description = function (v) {
+    var v$1 = Curry._1(funarg.enter_value_description, v);
+    var val_desc = map_core_type(v$1.val_desc);
+    return Curry._1(funarg.leave_value_description, {
+                val_id: v$1.val_id,
+                val_name: v$1.val_name,
+                val_desc: val_desc,
+                val_val: v$1.val_val,
+                val_prim: v$1.val_prim,
+                val_loc: v$1.val_loc,
+                val_attributes: v$1.val_attributes
+              });
+  };
+  var map_type_declaration = function (decl) {
+    var decl$1 = Curry._1(funarg.enter_type_declaration, decl);
+    var typ_params = List.map(map_type_parameter, decl$1.typ_params);
+    var typ_cstrs = List.map((function (param) {
+            return [
+                    map_core_type(param[0]),
+                    map_core_type(param[1]),
+                    param[2]
+                  ];
+          }), decl$1.typ_cstrs);
+    var list = decl$1.typ_kind;
+    var typ_kind;
+    if (typeof list === "number") {
+      typ_kind = list === /* Ttype_abstract */0 ? /* Ttype_abstract */0 : /* Ttype_open */1;
+    } else if (list.TAG === /* Ttype_variant */0) {
+      var list$1 = List.map(map_constructor_declaration, list._0);
+      typ_kind = {
+        TAG: /* Ttype_variant */0,
+        _0: list$1
+      };
+    } else {
+      var list$2 = List.map((function (ld) {
+              return {
+                      ld_id: ld.ld_id,
+                      ld_name: ld.ld_name,
+                      ld_mutable: ld.ld_mutable,
+                      ld_type: map_core_type(ld.ld_type),
+                      ld_loc: ld.ld_loc,
+                      ld_attributes: ld.ld_attributes
+                    };
+            }), list._0);
+      typ_kind = {
+        TAG: /* Ttype_record */1,
+        _0: list$2
+      };
+    }
+    var typ_manifest = may_map(map_core_type, decl$1.typ_manifest);
+    return Curry._1(funarg.leave_type_declaration, {
+                typ_id: decl$1.typ_id,
+                typ_name: decl$1.typ_name,
+                typ_params: typ_params,
+                typ_type: decl$1.typ_type,
+                typ_cstrs: typ_cstrs,
+                typ_kind: typ_kind,
+                typ_private: decl$1.typ_private,
+                typ_manifest: typ_manifest,
+                typ_loc: decl$1.typ_loc,
+                typ_attributes: decl$1.typ_attributes
+              });
+  };
+  var map_module_type_declaration = function (mtd) {
+    var mtd$1 = Curry._1(funarg.enter_module_type_declaration, mtd);
+    return Curry._1(funarg.leave_module_type_declaration, {
+                mtd_id: mtd$1.mtd_id,
+                mtd_name: mtd$1.mtd_name,
+                mtd_type: may_map(map_module_type, mtd$1.mtd_type),
+                mtd_attributes: mtd$1.mtd_attributes,
+                mtd_loc: mtd$1.mtd_loc
+              });
+  };
+  var map_class_description = function (cd) {
+    var cd$1 = Curry._1(funarg.enter_class_description, cd);
+    var ci_params = List.map(map_type_parameter, cd$1.ci_params);
+    var ci_expr = map_class_type(cd$1.ci_expr);
+    return Curry._1(funarg.leave_class_description, {
+                ci_virt: cd$1.ci_virt,
+                ci_params: ci_params,
+                ci_id_name: cd$1.ci_id_name,
+                ci_id_class: cd$1.ci_id_class,
+                ci_id_class_type: cd$1.ci_id_class_type,
+                ci_id_object: cd$1.ci_id_object,
+                ci_id_typesharp: cd$1.ci_id_typesharp,
+                ci_expr: ci_expr,
+                ci_decl: cd$1.ci_decl,
+                ci_type_decl: cd$1.ci_type_decl,
+                ci_loc: cd$1.ci_loc,
+                ci_attributes: cd$1.ci_attributes
+              });
+  };
+  var map_module_type = function (mty) {
+    var mty$1 = Curry._1(funarg.enter_module_type, mty);
+    var sg = mty$1.mty_desc;
+    var mty_desc;
+    switch (sg.TAG | 0) {
+      case /* Tmty_signature */1 :
+          mty_desc = {
+            TAG: /* Tmty_signature */1,
+            _0: map_signature(sg._0)
+          };
+          break;
+      case /* Tmty_functor */2 :
+          mty_desc = {
+            TAG: /* Tmty_functor */2,
+            _0: sg._0,
+            _1: sg._1,
+            _2: may_map(map_module_type, sg._2),
+            _3: map_module_type(sg._3)
+          };
+          break;
+      case /* Tmty_with */3 :
+          mty_desc = {
+            TAG: /* Tmty_with */3,
+            _0: map_module_type(sg._0),
+            _1: List.map((function (param) {
+                    return [
+                            param[0],
+                            param[1],
+                            map_with_constraint(param[2])
+                          ];
+                  }), sg._1)
+          };
+          break;
+      case /* Tmty_typeof */4 :
+          mty_desc = {
+            TAG: /* Tmty_typeof */4,
+            _0: map_module_expr(sg._0)
+          };
+          break;
+      case /* Tmty_ident */0 :
+      case /* Tmty_alias */5 :
+          mty_desc = mty$1.mty_desc;
+          break;
+      
+    }
+    return Curry._1(funarg.leave_module_type, {
+                mty_desc: mty_desc,
+                mty_type: mty$1.mty_type,
+                mty_env: mty$1.mty_env,
+                mty_loc: mty$1.mty_loc,
+                mty_attributes: mty$1.mty_attributes
+              });
+  };
+  var map_class_type_declaration = function (cd) {
+    var cd$1 = Curry._1(funarg.enter_class_type_declaration, cd);
+    var ci_params = List.map(map_type_parameter, cd$1.ci_params);
+    var ci_expr = map_class_type(cd$1.ci_expr);
+    return Curry._1(funarg.leave_class_type_declaration, {
+                ci_virt: cd$1.ci_virt,
+                ci_params: ci_params,
+                ci_id_name: cd$1.ci_id_name,
+                ci_id_class: cd$1.ci_id_class,
+                ci_id_class_type: cd$1.ci_id_class_type,
+                ci_id_object: cd$1.ci_id_object,
+                ci_id_typesharp: cd$1.ci_id_typesharp,
+                ci_expr: ci_expr,
+                ci_decl: cd$1.ci_decl,
+                ci_type_decl: cd$1.ci_type_decl,
+                ci_loc: cd$1.ci_loc,
+                ci_attributes: cd$1.ci_attributes
+              });
+  };
+  var map_extension_constructor = function (ext) {
+    var ext$1 = Curry._1(funarg.enter_extension_constructor, ext);
+    var match = ext$1.ext_kind;
+    var ext_kind;
+    if (match.TAG === /* Text_decl */0) {
+      var args = List.map(map_core_type, match._0);
+      var ret = may_map(map_core_type, match._1);
+      ext_kind = {
+        TAG: /* Text_decl */0,
+        _0: args,
+        _1: ret
+      };
+    } else {
+      ext_kind = {
+        TAG: /* Text_rebind */1,
+        _0: match._0,
+        _1: match._1
+      };
+    }
+    return Curry._1(funarg.leave_extension_constructor, {
+                ext_id: ext$1.ext_id,
+                ext_name: ext$1.ext_name,
+                ext_type: ext$1.ext_type,
+                ext_kind: ext_kind,
+                ext_loc: ext$1.ext_loc,
+                ext_attributes: ext$1.ext_attributes
+              });
+  };
+  var map_type_extension = function (tyext) {
+    var tyext$1 = Curry._1(funarg.enter_type_extension, tyext);
+    var tyext_params = List.map(map_type_parameter, tyext$1.tyext_params);
+    var tyext_constructors = List.map(map_extension_constructor, tyext$1.tyext_constructors);
+    return Curry._1(funarg.leave_type_extension, {
+                tyext_path: tyext$1.tyext_path,
+                tyext_txt: tyext$1.tyext_txt,
+                tyext_params: tyext_params,
+                tyext_constructors: tyext_constructors,
+                tyext_private: tyext$1.tyext_private,
+                tyext_attributes: tyext$1.tyext_attributes
+              });
+  };
+  var map_type_parameter = function (param) {
+    return [
+            map_core_type(param[0]),
+            param[1]
+          ];
+  };
+  var map_pat_extra = function (pat_extra) {
+    var ct = pat_extra[0];
+    if (typeof ct === "number" || ct.TAG !== /* Tpat_constraint */0) {
+      return pat_extra;
+    } else {
+      return [
+              {
+                TAG: /* Tpat_constraint */0,
+                _0: map_core_type(ct._0)
+              },
+              pat_extra[1],
+              pat_extra[2]
+            ];
+    }
+  };
+  var map_pattern = function (pat) {
+    var pat$1 = Curry._1(funarg.enter_pattern, pat);
+    var list = pat$1.pat_desc;
+    var pat_desc;
+    if (typeof list === "number") {
+      pat_desc = pat$1.pat_desc;
+    } else {
+      switch (list.TAG | 0) {
+        case /* Tpat_alias */1 :
+            var pat1 = map_pattern(list._0);
+            pat_desc = {
+              TAG: /* Tpat_alias */1,
+              _0: pat1,
+              _1: list._1,
+              _2: list._2
+            };
+            break;
+        case /* Tpat_tuple */3 :
+            pat_desc = {
+              TAG: /* Tpat_tuple */3,
+              _0: List.map(map_pattern, list._0)
+            };
+            break;
+        case /* Tpat_construct */4 :
+            pat_desc = {
+              TAG: /* Tpat_construct */4,
+              _0: list._0,
+              _1: list._1,
+              _2: List.map(map_pattern, list._2)
+            };
+            break;
+        case /* Tpat_variant */5 :
+            var pato = list._1;
+            var pato$1 = pato !== undefined ? map_pattern(pato) : pato;
+            pat_desc = {
+              TAG: /* Tpat_variant */5,
+              _0: list._0,
+              _1: pato$1,
+              _2: list._2
+            };
+            break;
+        case /* Tpat_record */6 :
+            pat_desc = {
+              TAG: /* Tpat_record */6,
+              _0: List.map((function (param) {
+                      return [
+                              param[0],
+                              param[1],
+                              map_pattern(param[2])
+                            ];
+                    }), list._0),
+              _1: list._1
+            };
+            break;
+        case /* Tpat_array */7 :
+            pat_desc = {
+              TAG: /* Tpat_array */7,
+              _0: List.map(map_pattern, list._0)
+            };
+            break;
+        case /* Tpat_or */8 :
+            pat_desc = {
+              TAG: /* Tpat_or */8,
+              _0: map_pattern(list._0),
+              _1: map_pattern(list._1),
+              _2: list._2
+            };
+            break;
+        case /* Tpat_lazy */9 :
+            pat_desc = {
+              TAG: /* Tpat_lazy */9,
+              _0: map_pattern(list._0)
+            };
+            break;
+        default:
+          pat_desc = pat$1.pat_desc;
+      }
+    }
+    var pat_extra = List.map(map_pat_extra, pat$1.pat_extra);
+    return Curry._1(funarg.leave_pattern, {
+                pat_desc: pat_desc,
+                pat_loc: pat$1.pat_loc,
+                pat_extra: pat_extra,
+                pat_type: pat$1.pat_type,
+                pat_env: pat$1.pat_env,
+                pat_attributes: pat$1.pat_attributes
+              });
+  };
+  var map_signature_item = function (item) {
+    var item$1 = Curry._1(funarg.enter_signature_item, item);
+    var vd = item$1.sig_desc;
+    var sig_desc;
+    switch (vd.TAG | 0) {
+      case /* Tsig_value */0 :
+          sig_desc = {
+            TAG: /* Tsig_value */0,
+            _0: map_value_description(vd._0)
+          };
+          break;
+      case /* Tsig_type */1 :
+          sig_desc = {
+            TAG: /* Tsig_type */1,
+            _0: List.map(map_type_declaration, vd._0)
+          };
+          break;
+      case /* Tsig_typext */2 :
+          sig_desc = {
+            TAG: /* Tsig_typext */2,
+            _0: map_type_extension(vd._0)
+          };
+          break;
+      case /* Tsig_exception */3 :
+          sig_desc = {
+            TAG: /* Tsig_exception */3,
+            _0: map_extension_constructor(vd._0)
+          };
+          break;
+      case /* Tsig_module */4 :
+          var md = vd._0;
+          sig_desc = {
+            TAG: /* Tsig_module */4,
+            _0: {
+              md_id: md.md_id,
+              md_name: md.md_name,
+              md_type: map_module_type(md.md_type),
+              md_attributes: md.md_attributes,
+              md_loc: md.md_loc
+            }
+          };
+          break;
+      case /* Tsig_recmodule */5 :
+          sig_desc = {
+            TAG: /* Tsig_recmodule */5,
+            _0: List.map((function (md) {
+                    return {
+                            md_id: md.md_id,
+                            md_name: md.md_name,
+                            md_type: map_module_type(md.md_type),
+                            md_attributes: md.md_attributes,
+                            md_loc: md.md_loc
+                          };
+                  }), vd._0)
+          };
+          break;
+      case /* Tsig_modtype */6 :
+          sig_desc = {
+            TAG: /* Tsig_modtype */6,
+            _0: map_module_type_declaration(vd._0)
+          };
+          break;
+      case /* Tsig_open */7 :
+          sig_desc = item$1.sig_desc;
+          break;
+      case /* Tsig_include */8 :
+          var incl = vd._0;
+          sig_desc = {
+            TAG: /* Tsig_include */8,
+            _0: {
+              incl_mod: map_module_type(incl.incl_mod),
+              incl_type: incl.incl_type,
+              incl_loc: incl.incl_loc,
+              incl_attributes: incl.incl_attributes
+            }
+          };
+          break;
+      case /* Tsig_class */9 :
+          sig_desc = {
+            TAG: /* Tsig_class */9,
+            _0: List.map(map_class_description, vd._0)
+          };
+          break;
+      case /* Tsig_class_type */10 :
+          sig_desc = {
+            TAG: /* Tsig_class_type */10,
+            _0: List.map(map_class_type_declaration, vd._0)
+          };
+          break;
+      case /* Tsig_attribute */11 :
+          sig_desc = vd;
+          break;
+      
+    }
+    return Curry._1(funarg.leave_signature_item, {
+                sig_desc: sig_desc,
+                sig_env: item$1.sig_env,
+                sig_loc: item$1.sig_loc
+              });
+  };
+  var map_binding = function (vb) {
+    return {
+            vb_pat: map_pattern(vb.vb_pat),
+            vb_expr: map_expression(vb.vb_expr),
+            vb_attributes: vb.vb_attributes,
+            vb_loc: vb.vb_loc
+          };
+  };
+  var map_class_expr = function (cexpr) {
+    var cexpr$1 = Curry._1(funarg.enter_class_expr, cexpr);
+    var clstr = cexpr$1.cl_desc;
+    var cl_desc;
+    switch (clstr.TAG | 0) {
+      case /* Tcl_ident */0 :
+          cl_desc = {
+            TAG: /* Tcl_ident */0,
+            _0: clstr._0,
+            _1: clstr._1,
+            _2: List.map(map_core_type, clstr._2)
+          };
+          break;
+      case /* Tcl_structure */1 :
+          cl_desc = {
+            TAG: /* Tcl_structure */1,
+            _0: map_class_structure(clstr._0)
+          };
+          break;
+      case /* Tcl_fun */2 :
+          cl_desc = {
+            TAG: /* Tcl_fun */2,
+            _0: clstr._0,
+            _1: map_pattern(clstr._1),
+            _2: List.map((function (param) {
+                    return [
+                            param[0],
+                            param[1],
+                            map_expression(param[2])
+                          ];
+                  }), clstr._2),
+            _3: map_class_expr(clstr._3),
+            _4: clstr._4
+          };
+          break;
+      case /* Tcl_apply */3 :
+          cl_desc = {
+            TAG: /* Tcl_apply */3,
+            _0: map_class_expr(clstr._0),
+            _1: List.map((function (param) {
+                    return [
+                            param[0],
+                            may_map(map_expression, param[1]),
+                            param[2]
+                          ];
+                  }), clstr._1)
+          };
+          break;
+      case /* Tcl_let */4 :
+          var rec_flat = clstr._0;
+          cl_desc = {
+            TAG: /* Tcl_let */4,
+            _0: rec_flat,
+            _1: List.map(map_binding, clstr._1),
+            _2: List.map((function (param) {
+                    return [
+                            param[0],
+                            param[1],
+                            map_expression(param[2])
+                          ];
+                  }), clstr._2),
+            _3: map_class_expr(clstr._3)
+          };
+          break;
+      case /* Tcl_constraint */5 :
+          var clty = clstr._1;
+          var cl = clstr._0;
+          cl_desc = clty !== undefined ? ({
+                TAG: /* Tcl_constraint */5,
+                _0: map_class_expr(cl),
+                _1: map_class_type(clty),
+                _2: clstr._2,
+                _3: clstr._3,
+                _4: clstr._4
+              }) : ({
+                TAG: /* Tcl_constraint */5,
+                _0: map_class_expr(cl),
+                _1: undefined,
+                _2: clstr._2,
+                _3: clstr._3,
+                _4: clstr._4
+              });
+          break;
+      
+    }
+    return Curry._1(funarg.leave_class_expr, {
+                cl_desc: cl_desc,
+                cl_loc: cexpr$1.cl_loc,
+                cl_type: cexpr$1.cl_type,
+                cl_env: cexpr$1.cl_env,
+                cl_attributes: cexpr$1.cl_attributes
+              });
+  };
+  var map_class_structure = function (cs) {
+    var cs$1 = Curry._1(funarg.enter_class_structure, cs);
+    var cstr_self = map_pattern(cs$1.cstr_self);
+    var cstr_fields = List.map(map_class_field, cs$1.cstr_fields);
+    return Curry._1(funarg.leave_class_structure, {
+                cstr_self: cstr_self,
+                cstr_fields: cstr_fields,
+                cstr_type: cs$1.cstr_type,
+                cstr_meths: cs$1.cstr_meths
               });
   };
   var map_expression = function (exp) {
@@ -25521,443 +26175,6 @@ function TypedtreeMap_MakeMap(funarg) {
                 exp_attributes: exp$1.exp_attributes
               });
   };
-  var map_pattern = function (pat) {
-    var pat$1 = Curry._1(funarg.enter_pattern, pat);
-    var list = pat$1.pat_desc;
-    var pat_desc;
-    if (typeof list === "number") {
-      pat_desc = pat$1.pat_desc;
-    } else {
-      switch (list.TAG | 0) {
-        case /* Tpat_alias */1 :
-            var pat1 = map_pattern(list._0);
-            pat_desc = {
-              TAG: /* Tpat_alias */1,
-              _0: pat1,
-              _1: list._1,
-              _2: list._2
-            };
-            break;
-        case /* Tpat_tuple */3 :
-            pat_desc = {
-              TAG: /* Tpat_tuple */3,
-              _0: List.map(map_pattern, list._0)
-            };
-            break;
-        case /* Tpat_construct */4 :
-            pat_desc = {
-              TAG: /* Tpat_construct */4,
-              _0: list._0,
-              _1: list._1,
-              _2: List.map(map_pattern, list._2)
-            };
-            break;
-        case /* Tpat_variant */5 :
-            var pato = list._1;
-            var pato$1 = pato !== undefined ? map_pattern(pato) : pato;
-            pat_desc = {
-              TAG: /* Tpat_variant */5,
-              _0: list._0,
-              _1: pato$1,
-              _2: list._2
-            };
-            break;
-        case /* Tpat_record */6 :
-            pat_desc = {
-              TAG: /* Tpat_record */6,
-              _0: List.map((function (param) {
-                      return [
-                              param[0],
-                              param[1],
-                              map_pattern(param[2])
-                            ];
-                    }), list._0),
-              _1: list._1
-            };
-            break;
-        case /* Tpat_array */7 :
-            pat_desc = {
-              TAG: /* Tpat_array */7,
-              _0: List.map(map_pattern, list._0)
-            };
-            break;
-        case /* Tpat_or */8 :
-            pat_desc = {
-              TAG: /* Tpat_or */8,
-              _0: map_pattern(list._0),
-              _1: map_pattern(list._1),
-              _2: list._2
-            };
-            break;
-        case /* Tpat_lazy */9 :
-            pat_desc = {
-              TAG: /* Tpat_lazy */9,
-              _0: map_pattern(list._0)
-            };
-            break;
-        default:
-          pat_desc = pat$1.pat_desc;
-      }
-    }
-    var pat_extra = List.map(map_pat_extra, pat$1.pat_extra);
-    return Curry._1(funarg.leave_pattern, {
-                pat_desc: pat_desc,
-                pat_loc: pat$1.pat_loc,
-                pat_extra: pat_extra,
-                pat_type: pat$1.pat_type,
-                pat_env: pat$1.pat_env,
-                pat_attributes: pat$1.pat_attributes
-              });
-  };
-  var map_signature_item = function (item) {
-    var item$1 = Curry._1(funarg.enter_signature_item, item);
-    var vd = item$1.sig_desc;
-    var sig_desc;
-    switch (vd.TAG | 0) {
-      case /* Tsig_value */0 :
-          sig_desc = {
-            TAG: /* Tsig_value */0,
-            _0: map_value_description(vd._0)
-          };
-          break;
-      case /* Tsig_type */1 :
-          sig_desc = {
-            TAG: /* Tsig_type */1,
-            _0: List.map(map_type_declaration, vd._0)
-          };
-          break;
-      case /* Tsig_typext */2 :
-          sig_desc = {
-            TAG: /* Tsig_typext */2,
-            _0: map_type_extension(vd._0)
-          };
-          break;
-      case /* Tsig_exception */3 :
-          sig_desc = {
-            TAG: /* Tsig_exception */3,
-            _0: map_extension_constructor(vd._0)
-          };
-          break;
-      case /* Tsig_module */4 :
-          var md = vd._0;
-          sig_desc = {
-            TAG: /* Tsig_module */4,
-            _0: {
-              md_id: md.md_id,
-              md_name: md.md_name,
-              md_type: map_module_type(md.md_type),
-              md_attributes: md.md_attributes,
-              md_loc: md.md_loc
-            }
-          };
-          break;
-      case /* Tsig_recmodule */5 :
-          sig_desc = {
-            TAG: /* Tsig_recmodule */5,
-            _0: List.map((function (md) {
-                    return {
-                            md_id: md.md_id,
-                            md_name: md.md_name,
-                            md_type: map_module_type(md.md_type),
-                            md_attributes: md.md_attributes,
-                            md_loc: md.md_loc
-                          };
-                  }), vd._0)
-          };
-          break;
-      case /* Tsig_modtype */6 :
-          sig_desc = {
-            TAG: /* Tsig_modtype */6,
-            _0: map_module_type_declaration(vd._0)
-          };
-          break;
-      case /* Tsig_open */7 :
-          sig_desc = item$1.sig_desc;
-          break;
-      case /* Tsig_include */8 :
-          var incl = vd._0;
-          sig_desc = {
-            TAG: /* Tsig_include */8,
-            _0: {
-              incl_mod: map_module_type(incl.incl_mod),
-              incl_type: incl.incl_type,
-              incl_loc: incl.incl_loc,
-              incl_attributes: incl.incl_attributes
-            }
-          };
-          break;
-      case /* Tsig_class */9 :
-          sig_desc = {
-            TAG: /* Tsig_class */9,
-            _0: List.map(map_class_description, vd._0)
-          };
-          break;
-      case /* Tsig_class_type */10 :
-          sig_desc = {
-            TAG: /* Tsig_class_type */10,
-            _0: List.map(map_class_type_declaration, vd._0)
-          };
-          break;
-      case /* Tsig_attribute */11 :
-          sig_desc = vd;
-          break;
-      
-    }
-    return Curry._1(funarg.leave_signature_item, {
-                sig_desc: sig_desc,
-                sig_env: item$1.sig_env,
-                sig_loc: item$1.sig_loc
-              });
-  };
-  var map_type_parameter = function (param) {
-    return [
-            map_core_type(param[0]),
-            param[1]
-          ];
-  };
-  var map_constructor_declaration = function (cd) {
-    return {
-            cd_id: cd.cd_id,
-            cd_name: cd.cd_name,
-            cd_args: List.map(map_core_type, cd.cd_args),
-            cd_res: may_map(map_core_type, cd.cd_res),
-            cd_loc: cd.cd_loc,
-            cd_attributes: cd.cd_attributes
-          };
-  };
-  var map_structure_item = function (item) {
-    var item$1 = Curry._1(funarg.enter_structure_item, item);
-    var vd = item$1.str_desc;
-    var str_desc;
-    switch (vd.TAG | 0) {
-      case /* Tstr_eval */0 :
-          str_desc = {
-            TAG: /* Tstr_eval */0,
-            _0: map_expression(vd._0),
-            _1: vd._1
-          };
-          break;
-      case /* Tstr_value */1 :
-          var rec_flag = vd._0;
-          str_desc = {
-            TAG: /* Tstr_value */1,
-            _0: rec_flag,
-            _1: List.map(map_binding, vd._1)
-          };
-          break;
-      case /* Tstr_primitive */2 :
-          str_desc = {
-            TAG: /* Tstr_primitive */2,
-            _0: map_value_description(vd._0)
-          };
-          break;
-      case /* Tstr_type */3 :
-          str_desc = {
-            TAG: /* Tstr_type */3,
-            _0: List.map(map_type_declaration, vd._0)
-          };
-          break;
-      case /* Tstr_typext */4 :
-          str_desc = {
-            TAG: /* Tstr_typext */4,
-            _0: map_type_extension(vd._0)
-          };
-          break;
-      case /* Tstr_exception */5 :
-          str_desc = {
-            TAG: /* Tstr_exception */5,
-            _0: map_extension_constructor(vd._0)
-          };
-          break;
-      case /* Tstr_module */6 :
-          str_desc = {
-            TAG: /* Tstr_module */6,
-            _0: map_module_binding(vd._0)
-          };
-          break;
-      case /* Tstr_recmodule */7 :
-          var list = List.map(map_module_binding, vd._0);
-          str_desc = {
-            TAG: /* Tstr_recmodule */7,
-            _0: list
-          };
-          break;
-      case /* Tstr_modtype */8 :
-          str_desc = {
-            TAG: /* Tstr_modtype */8,
-            _0: map_module_type_declaration(vd._0)
-          };
-          break;
-      case /* Tstr_open */9 :
-          str_desc = {
-            TAG: /* Tstr_open */9,
-            _0: vd._0
-          };
-          break;
-      case /* Tstr_class */10 :
-          var list$1 = List.map((function (param) {
-                  return [
-                          map_class_declaration(param[0]),
-                          param[1],
-                          param[2]
-                        ];
-                }), vd._0);
-          str_desc = {
-            TAG: /* Tstr_class */10,
-            _0: list$1
-          };
-          break;
-      case /* Tstr_class_type */11 :
-          var list$2 = List.map((function (param) {
-                  return [
-                          param[0],
-                          param[1],
-                          map_class_type_declaration(param[2])
-                        ];
-                }), vd._0);
-          str_desc = {
-            TAG: /* Tstr_class_type */11,
-            _0: list$2
-          };
-          break;
-      case /* Tstr_include */12 :
-          var incl = vd._0;
-          str_desc = {
-            TAG: /* Tstr_include */12,
-            _0: {
-              incl_mod: map_module_expr(incl.incl_mod),
-              incl_type: incl.incl_type,
-              incl_loc: incl.incl_loc,
-              incl_attributes: incl.incl_attributes
-            }
-          };
-          break;
-      case /* Tstr_attribute */13 :
-          str_desc = {
-            TAG: /* Tstr_attribute */13,
-            _0: vd._0
-          };
-          break;
-      
-    }
-    return Curry._1(funarg.leave_structure_item, {
-                str_desc: str_desc,
-                str_loc: item$1.str_loc,
-                str_env: item$1.str_env
-              });
-  };
-  var map_class_expr = function (cexpr) {
-    var cexpr$1 = Curry._1(funarg.enter_class_expr, cexpr);
-    var clstr = cexpr$1.cl_desc;
-    var cl_desc;
-    switch (clstr.TAG | 0) {
-      case /* Tcl_ident */0 :
-          cl_desc = {
-            TAG: /* Tcl_ident */0,
-            _0: clstr._0,
-            _1: clstr._1,
-            _2: List.map(map_core_type, clstr._2)
-          };
-          break;
-      case /* Tcl_structure */1 :
-          cl_desc = {
-            TAG: /* Tcl_structure */1,
-            _0: map_class_structure(clstr._0)
-          };
-          break;
-      case /* Tcl_fun */2 :
-          cl_desc = {
-            TAG: /* Tcl_fun */2,
-            _0: clstr._0,
-            _1: map_pattern(clstr._1),
-            _2: List.map((function (param) {
-                    return [
-                            param[0],
-                            param[1],
-                            map_expression(param[2])
-                          ];
-                  }), clstr._2),
-            _3: map_class_expr(clstr._3),
-            _4: clstr._4
-          };
-          break;
-      case /* Tcl_apply */3 :
-          cl_desc = {
-            TAG: /* Tcl_apply */3,
-            _0: map_class_expr(clstr._0),
-            _1: List.map((function (param) {
-                    return [
-                            param[0],
-                            may_map(map_expression, param[1]),
-                            param[2]
-                          ];
-                  }), clstr._1)
-          };
-          break;
-      case /* Tcl_let */4 :
-          var rec_flat = clstr._0;
-          cl_desc = {
-            TAG: /* Tcl_let */4,
-            _0: rec_flat,
-            _1: List.map(map_binding, clstr._1),
-            _2: List.map((function (param) {
-                    return [
-                            param[0],
-                            param[1],
-                            map_expression(param[2])
-                          ];
-                  }), clstr._2),
-            _3: map_class_expr(clstr._3)
-          };
-          break;
-      case /* Tcl_constraint */5 :
-          var clty = clstr._1;
-          var cl = clstr._0;
-          cl_desc = clty !== undefined ? ({
-                TAG: /* Tcl_constraint */5,
-                _0: map_class_expr(cl),
-                _1: map_class_type(clty),
-                _2: clstr._2,
-                _3: clstr._3,
-                _4: clstr._4
-              }) : ({
-                TAG: /* Tcl_constraint */5,
-                _0: map_class_expr(cl),
-                _1: undefined,
-                _2: clstr._2,
-                _3: clstr._3,
-                _4: clstr._4
-              });
-          break;
-      
-    }
-    return Curry._1(funarg.leave_class_expr, {
-                cl_desc: cl_desc,
-                cl_loc: cexpr$1.cl_loc,
-                cl_type: cexpr$1.cl_type,
-                cl_env: cexpr$1.cl_env,
-                cl_attributes: cexpr$1.cl_attributes
-              });
-  };
-  var map_binding = function (vb) {
-    return {
-            vb_pat: map_pattern(vb.vb_pat),
-            vb_expr: map_expression(vb.vb_expr),
-            vb_attributes: vb.vb_attributes,
-            vb_loc: vb.vb_loc
-          };
-  };
-  var map_class_structure = function (cs) {
-    var cs$1 = Curry._1(funarg.enter_class_structure, cs);
-    var cstr_self = map_pattern(cs$1.cstr_self);
-    var cstr_fields = List.map(map_class_field, cs$1.cstr_fields);
-    return Curry._1(funarg.leave_class_structure, {
-                cstr_self: cstr_self,
-                cstr_fields: cstr_fields,
-                cstr_type: cs$1.cstr_type,
-                cstr_meths: cs$1.cstr_meths
-              });
-  };
   var map_module_expr = function (mexpr) {
     var mexpr$1 = Curry._1(funarg.enter_module_expr, mexpr);
     var st = mexpr$1.mod_desc;
@@ -26026,58 +26243,40 @@ function TypedtreeMap_MakeMap(funarg) {
                 mod_attributes: mexpr$1.mod_attributes
               });
   };
-  var map_module_type = function (mty) {
-    var mty$1 = Curry._1(funarg.enter_module_type, mty);
-    var sg = mty$1.mty_desc;
-    var mty_desc;
-    switch (sg.TAG | 0) {
-      case /* Tmty_signature */1 :
-          mty_desc = {
-            TAG: /* Tmty_signature */1,
-            _0: map_signature(sg._0)
-          };
-          break;
-      case /* Tmty_functor */2 :
-          mty_desc = {
-            TAG: /* Tmty_functor */2,
-            _0: sg._0,
-            _1: sg._1,
-            _2: may_map(map_module_type, sg._2),
-            _3: map_module_type(sg._3)
-          };
-          break;
-      case /* Tmty_with */3 :
-          mty_desc = {
-            TAG: /* Tmty_with */3,
-            _0: map_module_type(sg._0),
-            _1: List.map((function (param) {
-                    return [
-                            param[0],
-                            param[1],
-                            map_with_constraint(param[2])
-                          ];
-                  }), sg._1)
-          };
-          break;
-      case /* Tmty_typeof */4 :
-          mty_desc = {
-            TAG: /* Tmty_typeof */4,
-            _0: map_module_expr(sg._0)
-          };
-          break;
-      case /* Tmty_ident */0 :
-      case /* Tmty_alias */5 :
-          mty_desc = mty$1.mty_desc;
-          break;
-      
-    }
-    return Curry._1(funarg.leave_module_type, {
-                mty_desc: mty_desc,
-                mty_type: mty$1.mty_type,
-                mty_env: mty$1.mty_env,
-                mty_loc: mty$1.mty_loc,
-                mty_attributes: mty$1.mty_attributes
+  var map_class_declaration = function (cd) {
+    var cd$1 = Curry._1(funarg.enter_class_declaration, cd);
+    var ci_params = List.map(map_type_parameter, cd$1.ci_params);
+    var ci_expr = map_class_expr(cd$1.ci_expr);
+    return Curry._1(funarg.leave_class_declaration, {
+                ci_virt: cd$1.ci_virt,
+                ci_params: ci_params,
+                ci_id_name: cd$1.ci_id_name,
+                ci_id_class: cd$1.ci_id_class,
+                ci_id_class_type: cd$1.ci_id_class_type,
+                ci_id_object: cd$1.ci_id_object,
+                ci_id_typesharp: cd$1.ci_id_typesharp,
+                ci_expr: ci_expr,
+                ci_decl: cd$1.ci_decl,
+                ci_type_decl: cd$1.ci_type_decl,
+                ci_loc: cd$1.ci_loc,
+                ci_attributes: cd$1.ci_attributes
               });
+  };
+  var map_module_binding = function (x) {
+    return {
+            mb_id: x.mb_id,
+            mb_name: x.mb_name,
+            mb_expr: map_module_expr(x.mb_expr),
+            mb_attributes: x.mb_attributes,
+            mb_loc: x.mb_loc
+          };
+  };
+  var map_case = function (param) {
+    return {
+            c_lhs: map_pattern(param.c_lhs),
+            c_guard: may_map(map_expression, param.c_guard),
+            c_rhs: map_expression(param.c_rhs)
+          };
   };
   var map_exp_extra = function (exp_extra) {
     var attrs = exp_extra[2];
@@ -26135,232 +26334,6 @@ function TypedtreeMap_MakeMap(funarg) {
           return exp_extra;
       
     }
-  };
-  var map_case = function (param) {
-    return {
-            c_lhs: map_pattern(param.c_lhs),
-            c_guard: may_map(map_expression, param.c_guard),
-            c_rhs: map_expression(param.c_rhs)
-          };
-  };
-  var map_with_constraint = function (cstr) {
-    var cstr$1 = Curry._1(funarg.enter_with_constraint, cstr);
-    var tmp;
-    switch (cstr$1.TAG | 0) {
-      case /* Twith_type */0 :
-          tmp = {
-            TAG: /* Twith_type */0,
-            _0: map_type_declaration(cstr$1._0)
-          };
-          break;
-      case /* Twith_typesubst */2 :
-          tmp = {
-            TAG: /* Twith_typesubst */2,
-            _0: map_type_declaration(cstr$1._0)
-          };
-          break;
-      case /* Twith_module */1 :
-      case /* Twith_modsubst */3 :
-          tmp = cstr$1;
-          break;
-      
-    }
-    return Curry._1(funarg.leave_with_constraint, tmp);
-  };
-  var map_signature = function (sg) {
-    var sg$1 = Curry._1(funarg.enter_signature, sg);
-    var sig_items = List.map(map_signature_item, sg$1.sig_items);
-    return Curry._1(funarg.leave_signature, {
-                sig_items: sig_items,
-                sig_type: sg$1.sig_type,
-                sig_final_env: sg$1.sig_final_env
-              });
-  };
-  var map_class_signature = function (cs) {
-    var cs$1 = Curry._1(funarg.enter_class_signature, cs);
-    var csig_self = map_core_type(cs$1.csig_self);
-    var csig_fields = List.map(map_class_type_field, cs$1.csig_fields);
-    return Curry._1(funarg.leave_class_signature, {
-                csig_self: csig_self,
-                csig_fields: csig_fields,
-                csig_type: cs$1.csig_type
-              });
-  };
-  var map_pat_extra = function (pat_extra) {
-    var ct = pat_extra[0];
-    if (typeof ct === "number" || ct.TAG !== /* Tpat_constraint */0) {
-      return pat_extra;
-    } else {
-      return [
-              {
-                TAG: /* Tpat_constraint */0,
-                _0: map_core_type(ct._0)
-              },
-              pat_extra[1],
-              pat_extra[2]
-            ];
-    }
-  };
-  var map_type_declaration = function (decl) {
-    var decl$1 = Curry._1(funarg.enter_type_declaration, decl);
-    var typ_params = List.map(map_type_parameter, decl$1.typ_params);
-    var typ_cstrs = List.map((function (param) {
-            return [
-                    map_core_type(param[0]),
-                    map_core_type(param[1]),
-                    param[2]
-                  ];
-          }), decl$1.typ_cstrs);
-    var list = decl$1.typ_kind;
-    var typ_kind;
-    if (typeof list === "number") {
-      typ_kind = list === /* Ttype_abstract */0 ? /* Ttype_abstract */0 : /* Ttype_open */1;
-    } else if (list.TAG === /* Ttype_variant */0) {
-      var list$1 = List.map(map_constructor_declaration, list._0);
-      typ_kind = {
-        TAG: /* Ttype_variant */0,
-        _0: list$1
-      };
-    } else {
-      var list$2 = List.map((function (ld) {
-              return {
-                      ld_id: ld.ld_id,
-                      ld_name: ld.ld_name,
-                      ld_mutable: ld.ld_mutable,
-                      ld_type: map_core_type(ld.ld_type),
-                      ld_loc: ld.ld_loc,
-                      ld_attributes: ld.ld_attributes
-                    };
-            }), list._0);
-      typ_kind = {
-        TAG: /* Ttype_record */1,
-        _0: list$2
-      };
-    }
-    var typ_manifest = may_map(map_core_type, decl$1.typ_manifest);
-    return Curry._1(funarg.leave_type_declaration, {
-                typ_id: decl$1.typ_id,
-                typ_name: decl$1.typ_name,
-                typ_params: typ_params,
-                typ_type: decl$1.typ_type,
-                typ_cstrs: typ_cstrs,
-                typ_kind: typ_kind,
-                typ_private: decl$1.typ_private,
-                typ_manifest: typ_manifest,
-                typ_loc: decl$1.typ_loc,
-                typ_attributes: decl$1.typ_attributes
-              });
-  };
-  var map_extension_constructor = function (ext) {
-    var ext$1 = Curry._1(funarg.enter_extension_constructor, ext);
-    var match = ext$1.ext_kind;
-    var ext_kind;
-    if (match.TAG === /* Text_decl */0) {
-      var args = List.map(map_core_type, match._0);
-      var ret = may_map(map_core_type, match._1);
-      ext_kind = {
-        TAG: /* Text_decl */0,
-        _0: args,
-        _1: ret
-      };
-    } else {
-      ext_kind = {
-        TAG: /* Text_rebind */1,
-        _0: match._0,
-        _1: match._1
-      };
-    }
-    return Curry._1(funarg.leave_extension_constructor, {
-                ext_id: ext$1.ext_id,
-                ext_name: ext$1.ext_name,
-                ext_type: ext$1.ext_type,
-                ext_kind: ext_kind,
-                ext_loc: ext$1.ext_loc,
-                ext_attributes: ext$1.ext_attributes
-              });
-  };
-  var map_value_description = function (v) {
-    var v$1 = Curry._1(funarg.enter_value_description, v);
-    var val_desc = map_core_type(v$1.val_desc);
-    return Curry._1(funarg.leave_value_description, {
-                val_id: v$1.val_id,
-                val_name: v$1.val_name,
-                val_desc: val_desc,
-                val_val: v$1.val_val,
-                val_prim: v$1.val_prim,
-                val_loc: v$1.val_loc,
-                val_attributes: v$1.val_attributes
-              });
-  };
-  var map_class_type_declaration = function (cd) {
-    var cd$1 = Curry._1(funarg.enter_class_type_declaration, cd);
-    var ci_params = List.map(map_type_parameter, cd$1.ci_params);
-    var ci_expr = map_class_type(cd$1.ci_expr);
-    return Curry._1(funarg.leave_class_type_declaration, {
-                ci_virt: cd$1.ci_virt,
-                ci_params: ci_params,
-                ci_id_name: cd$1.ci_id_name,
-                ci_id_class: cd$1.ci_id_class,
-                ci_id_class_type: cd$1.ci_id_class_type,
-                ci_id_object: cd$1.ci_id_object,
-                ci_id_typesharp: cd$1.ci_id_typesharp,
-                ci_expr: ci_expr,
-                ci_decl: cd$1.ci_decl,
-                ci_type_decl: cd$1.ci_type_decl,
-                ci_loc: cd$1.ci_loc,
-                ci_attributes: cd$1.ci_attributes
-              });
-  };
-  var map_type_extension = function (tyext) {
-    var tyext$1 = Curry._1(funarg.enter_type_extension, tyext);
-    var tyext_params = List.map(map_type_parameter, tyext$1.tyext_params);
-    var tyext_constructors = List.map(map_extension_constructor, tyext$1.tyext_constructors);
-    return Curry._1(funarg.leave_type_extension, {
-                tyext_path: tyext$1.tyext_path,
-                tyext_txt: tyext$1.tyext_txt,
-                tyext_params: tyext_params,
-                tyext_constructors: tyext_constructors,
-                tyext_private: tyext$1.tyext_private,
-                tyext_attributes: tyext$1.tyext_attributes
-              });
-  };
-  var map_module_binding = function (x) {
-    return {
-            mb_id: x.mb_id,
-            mb_name: x.mb_name,
-            mb_expr: map_module_expr(x.mb_expr),
-            mb_attributes: x.mb_attributes,
-            mb_loc: x.mb_loc
-          };
-  };
-  var map_module_type_declaration = function (mtd) {
-    var mtd$1 = Curry._1(funarg.enter_module_type_declaration, mtd);
-    return Curry._1(funarg.leave_module_type_declaration, {
-                mtd_id: mtd$1.mtd_id,
-                mtd_name: mtd$1.mtd_name,
-                mtd_type: may_map(map_module_type, mtd$1.mtd_type),
-                mtd_attributes: mtd$1.mtd_attributes,
-                mtd_loc: mtd$1.mtd_loc
-              });
-  };
-  var map_class_declaration = function (cd) {
-    var cd$1 = Curry._1(funarg.enter_class_declaration, cd);
-    var ci_params = List.map(map_type_parameter, cd$1.ci_params);
-    var ci_expr = map_class_expr(cd$1.ci_expr);
-    return Curry._1(funarg.leave_class_declaration, {
-                ci_virt: cd$1.ci_virt,
-                ci_params: ci_params,
-                ci_id_name: cd$1.ci_id_name,
-                ci_id_class: cd$1.ci_id_class,
-                ci_id_class_type: cd$1.ci_id_class_type,
-                ci_id_object: cd$1.ci_id_object,
-                ci_id_typesharp: cd$1.ci_id_typesharp,
-                ci_expr: ci_expr,
-                ci_decl: cd$1.ci_decl,
-                ci_type_decl: cd$1.ci_type_decl,
-                ci_loc: cd$1.ci_loc,
-                ci_attributes: cd$1.ci_attributes
-              });
   };
   var map_class_field = function (cf) {
     var cf$1 = Curry._1(funarg.enter_class_field, cf);
@@ -26452,6 +26425,16 @@ function TypedtreeMap_MakeMap(funarg) {
                 cf_attributes: cf$1.cf_attributes
               });
   };
+  var map_constructor_declaration = function (cd) {
+    return {
+            cd_id: cd.cd_id,
+            cd_name: cd.cd_name,
+            cd_args: List.map(map_core_type, cd.cd_args),
+            cd_res: may_map(map_core_type, cd.cd_res),
+            cd_loc: cd.cd_loc,
+            cd_attributes: cd.cd_attributes
+          };
+  };
   var map_class_type_field = function (ctf) {
     var ctf$1 = Curry._1(funarg.enter_class_type_field, ctf);
     var ct = ctf$1.ctf_desc;
@@ -26508,24 +26491,38 @@ function TypedtreeMap_MakeMap(funarg) {
                 ctf_attributes: ctf$1.ctf_attributes
               });
   };
-  var map_class_description = function (cd) {
-    var cd$1 = Curry._1(funarg.enter_class_description, cd);
-    var ci_params = List.map(map_type_parameter, cd$1.ci_params);
-    var ci_expr = map_class_type(cd$1.ci_expr);
-    return Curry._1(funarg.leave_class_description, {
-                ci_virt: cd$1.ci_virt,
-                ci_params: ci_params,
-                ci_id_name: cd$1.ci_id_name,
-                ci_id_class: cd$1.ci_id_class,
-                ci_id_class_type: cd$1.ci_id_class_type,
-                ci_id_object: cd$1.ci_id_object,
-                ci_id_typesharp: cd$1.ci_id_typesharp,
-                ci_expr: ci_expr,
-                ci_decl: cd$1.ci_decl,
-                ci_type_decl: cd$1.ci_type_decl,
-                ci_loc: cd$1.ci_loc,
-                ci_attributes: cd$1.ci_attributes
+  var map_signature = function (sg) {
+    var sg$1 = Curry._1(funarg.enter_signature, sg);
+    var sig_items = List.map(map_signature_item, sg$1.sig_items);
+    return Curry._1(funarg.leave_signature, {
+                sig_items: sig_items,
+                sig_type: sg$1.sig_type,
+                sig_final_env: sg$1.sig_final_env
               });
+  };
+  var map_with_constraint = function (cstr) {
+    var cstr$1 = Curry._1(funarg.enter_with_constraint, cstr);
+    var tmp;
+    switch (cstr$1.TAG | 0) {
+      case /* Twith_type */0 :
+          tmp = {
+            TAG: /* Twith_type */0,
+            _0: map_type_declaration(cstr$1._0)
+          };
+          break;
+      case /* Twith_typesubst */2 :
+          tmp = {
+            TAG: /* Twith_typesubst */2,
+            _0: map_type_declaration(cstr$1._0)
+          };
+          break;
+      case /* Twith_module */1 :
+      case /* Twith_modsubst */3 :
+          tmp = cstr$1;
+          break;
+      
+    }
+    return Curry._1(funarg.leave_with_constraint, tmp);
   };
   var map_row_field = function (rf) {
     if (rf.TAG === /* Ttag */0) {
@@ -26556,6 +26553,16 @@ function TypedtreeMap_MakeMap(funarg) {
                 pack_fields: pack_fields,
                 pack_type: pack$1.pack_type,
                 pack_txt: pack$1.pack_txt
+              });
+  };
+  var map_class_signature = function (cs) {
+    var cs$1 = Curry._1(funarg.enter_class_signature, cs);
+    var csig_self = map_core_type(cs$1.csig_self);
+    var csig_fields = List.map(map_class_type_field, cs$1.csig_fields);
+    return Curry._1(funarg.leave_class_signature, {
+                csig_self: csig_self,
+                csig_fields: csig_fields,
+                csig_type: cs$1.csig_type
               });
   };
   return {
@@ -27124,8 +27131,8 @@ function is_object_type(path) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "ctype.ml",
-                149,
+                "ocaml_typedtree_test.ml",
+                30169,
                 23
               ],
               Error: new Error()
@@ -27310,8 +27317,8 @@ function object_fields(ty) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ctype.ml",
-            284,
+            "ocaml_typedtree_test.ml",
+            30304,
             27
           ],
           Error: new Error()
@@ -27323,8 +27330,8 @@ function object_fields(ty) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "ctype.ml",
-          284,
+          "ocaml_typedtree_test.ml",
+          30304,
           27
         ],
         Error: new Error()
@@ -27523,8 +27530,8 @@ function close_object(ty) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ctype.ml",
-            351,
+            "ocaml_typedtree_test.ml",
+            30371,
             25
           ],
           Error: new Error()
@@ -27540,8 +27547,8 @@ function close_object(ty) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "ctype.ml",
-                347,
+                "ocaml_typedtree_test.ml",
+                30367,
                 30
               ],
               Error: new Error()
@@ -27557,8 +27564,8 @@ function close_object(ty) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "ctype.ml",
-                  347,
+                  "ocaml_typedtree_test.ml",
+                  30367,
                   30
                 ],
                 Error: new Error()
@@ -27569,8 +27576,8 @@ function close_object(ty) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "ctype.ml",
-          351,
+          "ocaml_typedtree_test.ml",
+          30371,
           25
         ],
         Error: new Error()
@@ -27583,8 +27590,8 @@ function row_variable(ty) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ctype.ml",
-            365,
+            "ocaml_typedtree_test.ml",
+            30385,
             23
           ],
           Error: new Error()
@@ -27600,8 +27607,8 @@ function row_variable(ty) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "ctype.ml",
-                361,
+                "ocaml_typedtree_test.ml",
+                30381,
                 30
               ],
               Error: new Error()
@@ -27617,8 +27624,8 @@ function row_variable(ty) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "ctype.ml",
-                  361,
+                  "ocaml_typedtree_test.ml",
+                  30381,
                   30
                 ],
                 Error: new Error()
@@ -27629,8 +27636,8 @@ function row_variable(ty) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "ctype.ml",
-          365,
+          "ocaml_typedtree_test.ml",
+          30385,
           23
         ],
         Error: new Error()
@@ -27643,8 +27650,8 @@ function set_object_name(id, rv, params, ty) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ctype.ml",
-            375,
+            "ocaml_typedtree_test.ml",
+            30395,
             6
           ],
           Error: new Error()
@@ -27665,8 +27672,8 @@ function set_object_name(id, rv, params, ty) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "ctype.ml",
-          375,
+          "ocaml_typedtree_test.ml",
+          30395,
           6
         ],
         Error: new Error()
@@ -27679,8 +27686,8 @@ function hide_private_methods(ty) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ctype.ml",
-            397,
+            "ocaml_typedtree_test.ml",
+            30417,
             6
           ],
           Error: new Error()
@@ -27701,8 +27708,8 @@ function hide_private_methods(ty) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "ctype.ml",
-          397,
+          "ocaml_typedtree_test.ml",
+          30417,
           6
         ],
         Error: new Error()
@@ -28818,8 +28825,8 @@ function copy(env, partial, keep_names, ty) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "ctype.ml",
-              984,
+              "ocaml_typedtree_test.ml",
+              31004,
               16
             ],
             Error: new Error()
@@ -28965,8 +28972,8 @@ function copy(env, partial, keep_names, ty) {
                     throw {
                           RE_EXN_ID: "Assert_failure",
                           _1: [
-                            "ctype.ml",
-                            1047,
+                            "ocaml_typedtree_test.ml",
+                            31067,
                             24
                           ],
                           Error: new Error()
@@ -29203,8 +29210,8 @@ function instance_constructor(in_pattern, cstr) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "ctype.ml",
-                1170,
+                "ocaml_typedtree_test.ml",
+                31190,
                 8
               ],
               Error: new Error()
@@ -29499,8 +29506,8 @@ function instance_poly(keep_namesOpt, fixed, univars, sch) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "ctype.ml",
-              1307,
+              "ocaml_typedtree_test.ml",
+              31327,
               11
             ],
             Error: new Error()
@@ -29519,8 +29526,8 @@ function instance_poly(keep_namesOpt, fixed, univars, sch) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ctype.ml",
-            1307,
+            "ocaml_typedtree_test.ml",
+            31327,
             11
           ],
           Error: new Error()
@@ -29600,8 +29607,8 @@ function subst(env, level, priv, abbrev, ty, params, args, body) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "ctype.ml",
-                1347,
+                "ocaml_typedtree_test.ml",
+                31367,
                 8
               ],
               Error: new Error()
@@ -29615,8 +29622,8 @@ function subst(env, level, priv, abbrev, ty, params, args, body) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "ctype.ml",
-                1347,
+                "ocaml_typedtree_test.ml",
+                31367,
                 8
               ],
               Error: new Error()
@@ -29664,8 +29671,8 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ctype.ml",
-            1456,
+            "ocaml_typedtree_test.ml",
+            31476,
             6
           ],
           Error: new Error()
@@ -29764,8 +29771,8 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "ctype.ml",
-          1456,
+          "ocaml_typedtree_test.ml",
+          31476,
           6
         ],
         Error: new Error()
@@ -29788,8 +29795,8 @@ function expand_head_once(env, ty) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "ctype.ml",
-              1464,
+              "ocaml_typedtree_test.ml",
+              31484,
               56
             ],
             Error: new Error()
@@ -30013,8 +30020,8 @@ function enforce_constraints(env, ty) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ctype.ml",
-            1574,
+            "ocaml_typedtree_test.ml",
+            31594,
             6
           ],
           Error: new Error()
@@ -30043,8 +30050,8 @@ function enforce_constraints(env, ty) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ctype.ml",
-            1574,
+            "ocaml_typedtree_test.ml",
+            31594,
             6
           ],
           Error: new Error()
@@ -30754,8 +30761,8 @@ function get_newtype_level(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "ctype.ml",
-          1949,
+          "ocaml_typedtree_test.ml",
+          31969,
           12
         ],
         Error: new Error()
@@ -30822,8 +30829,8 @@ function reify(env, t) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "ctype.ml",
-                        1987,
+                        "ocaml_typedtree_test.ml",
+                        32007,
                         19
                       ],
                       Error: new Error()
@@ -30852,8 +30859,8 @@ function reify(env, t) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "ctype.ml",
-                        1987,
+                        "ocaml_typedtree_test.ml",
+                        32007,
                         19
                       ],
                       Error: new Error()
@@ -31038,8 +31045,8 @@ function mcomp(type_pairs, env, _t1, _t2) {
                         throw {
                               RE_EXN_ID: "Assert_failure",
                               _1: [
-                                "ctype.ml",
-                                2051,
+                                "ocaml_typedtree_test.ml",
+                                32071,
                                 30
                               ],
                               Error: new Error()
@@ -31709,8 +31716,8 @@ function mcomp_fields(type_pairs, env, ty1, ty2) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ctype.ml",
-            2096,
+            "ocaml_typedtree_test.ml",
+            32116,
             59
           ],
           Error: new Error()
@@ -31864,8 +31871,8 @@ function find_newtype_level(env, path) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ctype.ml",
-            2227,
+            "ocaml_typedtree_test.ml",
+            32247,
             12
           ],
           Error: new Error()
@@ -31877,8 +31884,8 @@ function find_newtype_level(env, path) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "ctype.ml",
-              2228,
+              "ocaml_typedtree_test.ml",
+              32248,
               20
             ],
             Error: new Error()
@@ -31933,8 +31940,8 @@ var nondep_type$prime = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "ctype.ml",
-              2250,
+              "ocaml_typedtree_test.ml",
+              32270,
               37
             ],
             Error: new Error()
@@ -31947,8 +31954,8 @@ var package_subtype = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "ctype.ml",
-              2251,
+              "ocaml_typedtree_test.ml",
+              32271,
               48
             ],
             Error: new Error()
@@ -32469,8 +32476,8 @@ function unify_kind(k1, k2) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "ctype.ml",
-          2624,
+          "ocaml_typedtree_test.ml",
+          32644,
           37
         ],
         Error: new Error()
@@ -36213,8 +36220,8 @@ function match_class_declarations(env, patt_params, patt_type, subj_params, subj
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "ctype.ml",
-                  3600,
+                  "ocaml_typedtree_test.ml",
+                  33620,
                   34
                 ],
                 Error: new Error()
@@ -36475,8 +36482,8 @@ function find_cltype_for_path(env, p) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ctype.ml",
-            3707,
+            "ocaml_typedtree_test.ml",
+            33727,
             12
           ],
           Error: new Error()
@@ -36673,8 +36680,8 @@ function build_subtype(env, visited, loops, posi, level, t) {
                   throw {
                         RE_EXN_ID: "Assert_failure",
                         _1: [
-                          "ctype.ml",
-                          3770,
+                          "ocaml_typedtree_test.ml",
+                          33790,
                           10
                         ],
                         Error: new Error()
@@ -36700,8 +36707,8 @@ function build_subtype(env, visited, loops, posi, level, t) {
                     throw {
                           RE_EXN_ID: "Assert_failure",
                           _1: [
-                            "ctype.ml",
-                            3774,
+                            "ocaml_typedtree_test.ml",
+                            33794,
                             50
                           ],
                           Error: new Error()
@@ -36865,8 +36872,8 @@ function build_subtype(env, visited, loops, posi, level, t) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "ctype.ml",
-                3865,
+                "ocaml_typedtree_test.ml",
+                33885,
                 6
               ],
               Error: new Error()
@@ -36893,8 +36900,8 @@ function build_subtype(env, visited, loops, posi, level, t) {
                   throw {
                         RE_EXN_ID: "Assert_failure",
                         _1: [
-                          "ctype.ml",
-                          3832,
+                          "ocaml_typedtree_test.ml",
+                          33852,
                           17
                         ],
                         Error: new Error()
@@ -36954,8 +36961,8 @@ function build_subtype(env, visited, loops, posi, level, t) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "ctype.ml",
-                        3832,
+                        "ocaml_typedtree_test.ml",
+                        33852,
                         17
                       ],
                       Error: new Error()
@@ -38001,8 +38008,8 @@ function unalias_object(ty) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "ctype.ml",
-              4129,
+              "ocaml_typedtree_test.ml",
+              34149,
               6
             ],
             Error: new Error()
@@ -38716,8 +38723,8 @@ function nondep_class_declaration(env, id, decl) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ctype.ml",
-            4449,
+            "ocaml_typedtree_test.ml",
+            34469,
             2
           ],
           Error: new Error()
@@ -38745,8 +38752,8 @@ function nondep_cltype_declaration(env, id, decl) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "ctype.ml",
-            4468,
+            "ocaml_typedtree_test.ml",
+            34488,
             2
           ],
           Error: new Error()
@@ -39594,8 +39601,8 @@ function print_simple_out_type(ppf, s) {
                                   throw {
                                         RE_EXN_ID: "Assert_failure",
                                         _1: [
-                                          "oprint.ml",
-                                          229,
+                                          "ocaml_typedtree_test.ml",
+                                          34918,
                                           17
                                         ],
                                         Error: new Error()
@@ -45509,8 +45516,8 @@ function tree_of_typobject(sch, fi, nm) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "printtyp.ml",
-              688,
+              "ocaml_typedtree_test.ml",
+              36179,
               6
             ],
             Error: new Error()
@@ -47198,8 +47205,8 @@ function mismatch(unif, param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "printtyp.ml",
-          1339,
+          "ocaml_typedtree_test.ml",
+          36830,
           9
         ],
         Error: new Error()
@@ -48283,8 +48290,8 @@ function report_unification_error(ppf, env, unifOpt, tr, txt1, txt2) {
                     throw {
                           RE_EXN_ID: "Assert_failure",
                           _1: [
-                            "printtyp.ml",
-                            1438,
+                            "ocaml_typedtree_test.ml",
+                            36929,
                             20
                           ],
                           Error: new Error()
@@ -48294,8 +48301,8 @@ function report_unification_error(ppf, env, unifOpt, tr, txt1, txt2) {
                   throw {
                         RE_EXN_ID: "Assert_failure",
                         _1: [
-                          "printtyp.ml",
-                          1438,
+                          "ocaml_typedtree_test.ml",
+                          36929,
                           20
                         ],
                         Error: new Error()
@@ -51839,8 +51846,8 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "includemod.ml",
-                  275,
+                  "ocaml_typedtree_test.ml",
+                  38381,
                   6
                 ],
                 Error: new Error()
@@ -51853,8 +51860,8 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "includemod.ml",
-              275,
+              "ocaml_typedtree_test.ml",
+              38381,
               6
             ],
             Error: new Error()
@@ -52177,8 +52184,8 @@ function signature_components(old_env, env, cxt, subst, paired) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "includemod.ml",
-          400,
+          "ocaml_typedtree_test.ml",
+          38506,
           6
         ],
         Error: new Error()
@@ -53405,8 +53412,8 @@ function path_of_context(param) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "includemod.ml",
-                571,
+                "ocaml_typedtree_test.ml",
+                38677,
                 15
               ],
               Error: new Error()
@@ -53416,8 +53423,8 @@ function path_of_context(param) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "includemod.ml",
-            573,
+            "ocaml_typedtree_test.ml",
+            38679,
             9
           ],
           Error: new Error()
@@ -53426,8 +53433,8 @@ function path_of_context(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "includemod.ml",
-          573,
+          "ocaml_typedtree_test.ml",
+          38679,
           9
         ],
         Error: new Error()
@@ -54092,8 +54099,8 @@ function compat(_p, _q) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "parmatch.ml",
-                  106,
+                  "ocaml_typedtree_test.ml",
+                  39148,
                   6
                 ],
                 Error: new Error()
@@ -54119,8 +54126,8 @@ function compats(_ps, _qs) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "parmatch.ml",
-              111,
+              "ocaml_typedtree_test.ml",
+              39153,
               12
             ],
             Error: new Error()
@@ -54132,8 +54139,8 @@ function compats(_ps, _qs) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "parmatch.ml",
-            111,
+            "ocaml_typedtree_test.ml",
+            39153,
             12
           ],
           Error: new Error()
@@ -55561,8 +55568,8 @@ function do_set_args(erase_mutable, q, r) {
             throw {
                   RE_EXN_ID: "Assert_failure",
                   _1: [
-                    "parmatch.ml",
-                    450,
+                    "ocaml_typedtree_test.ml",
+                    39492,
                     13
                   ],
                   Error: new Error()
@@ -56051,8 +56058,8 @@ function row_of_pat(pat) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "parmatch.ml",
-            602,
+            "ocaml_typedtree_test.ml",
+            39644,
             9
           ],
           Error: new Error()
@@ -56064,8 +56071,8 @@ function row_of_pat(pat) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "parmatch.ml",
-          602,
+          "ocaml_typedtree_test.ml",
+          39644,
           9
         ],
         Error: new Error()
@@ -56078,8 +56085,8 @@ function generalized_constructor(x) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "parmatch.ml",
-            613,
+            "ocaml_typedtree_test.ml",
+            39655,
             9
           ],
           Error: new Error()
@@ -56091,8 +56098,8 @@ function generalized_constructor(x) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "parmatch.ml",
-          613,
+          "ocaml_typedtree_test.ml",
+          39655,
           9
         ],
         Error: new Error()
@@ -56154,8 +56161,8 @@ function full_match(ignore_generalized, closing, env) {
                   throw {
                         RE_EXN_ID: "Assert_failure",
                         _1: [
-                          "parmatch.ml",
-                          640,
+                          "ocaml_typedtree_test.ml",
+                          39682,
                           17
                         ],
                         Error: new Error()
@@ -56167,8 +56174,8 @@ function full_match(ignore_generalized, closing, env) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "parmatch.ml",
-                        640,
+                        "ocaml_typedtree_test.ml",
+                        39682,
                         17
                       ],
                       Error: new Error()
@@ -56262,8 +56269,8 @@ function complete_tags(nconsts, nconstrs, tags) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "parmatch.ml",
-                        703,
+                        "ocaml_typedtree_test.ml",
+                        39745,
                         14
                       ],
                       Error: new Error()
@@ -56452,8 +56459,8 @@ function build_other(ext, env) {
                             throw {
                                   RE_EXN_ID: "Assert_failure",
                                   _1: [
-                                    "parmatch.ml",
-                                    857,
+                                    "ocaml_typedtree_test.ml",
+                                    39899,
                                     55
                                   ],
                                   Error: new Error()
@@ -56482,8 +56489,8 @@ function build_other(ext, env) {
                       throw {
                             RE_EXN_ID: "Assert_failure",
                             _1: [
-                              "parmatch.ml",
-                              832,
+                              "ocaml_typedtree_test.ml",
+                              39874,
                               15
                             ],
                             Error: new Error()
@@ -56572,8 +56579,8 @@ function build_other(ext, env) {
                             throw {
                                   RE_EXN_ID: "Assert_failure",
                                   _1: [
-                                    "parmatch.ml",
-                                    878,
+                                    "ocaml_typedtree_test.ml",
+                                    39920,
                                     21
                                   ],
                                   Error: new Error()
@@ -56602,8 +56609,8 @@ function build_other(ext, env) {
                             throw {
                                   RE_EXN_ID: "Assert_failure",
                                   _1: [
-                                    "parmatch.ml",
-                                    884,
+                                    "ocaml_typedtree_test.ml",
+                                    39926,
                                     21
                                   ],
                                   Error: new Error()
@@ -56631,8 +56638,8 @@ function build_other(ext, env) {
                             throw {
                                   RE_EXN_ID: "Assert_failure",
                                   _1: [
-                                    "parmatch.ml",
-                                    862,
+                                    "ocaml_typedtree_test.ml",
+                                    39904,
                                     57
                                   ],
                                   Error: new Error()
@@ -56658,8 +56665,8 @@ function build_other(ext, env) {
                             throw {
                                   RE_EXN_ID: "Assert_failure",
                                   _1: [
-                                    "parmatch.ml",
-                                    867,
+                                    "ocaml_typedtree_test.ml",
+                                    39909,
                                     57
                                   ],
                                   Error: new Error()
@@ -56674,32 +56681,15 @@ function build_other(ext, env) {
                                   };
                           }), Caml_int64.zero, Int64.succ, p, env);
           case /* Const_nativeint */6 :
-              return build_other_constant((function (param) {
-                            if (typeof param !== "number" && param.TAG === /* Tpat_constant */2) {
-                              var i = param._0;
-                              if (i.TAG === /* Const_nativeint */6) {
-                                return i._0;
-                              }
-                              
-                            }
-                            throw {
-                                  RE_EXN_ID: "Assert_failure",
-                                  _1: [
-                                    "parmatch.ml",
-                                    872,
-                                    61
-                                  ],
-                                  Error: new Error()
-                                };
-                          }), (function (i) {
-                            return {
-                                    TAG: /* Tpat_constant */2,
-                                    _0: {
-                                      TAG: /* Const_nativeint */6,
-                                      _0: i
-                                    }
-                                  };
-                          }), 0, Nativeint.succ, p, env);
+              throw {
+                    RE_EXN_ID: "Assert_failure",
+                    _1: [
+                      "ocaml_typedtree_test.ml",
+                      39916,
+                      33
+                    ],
+                    Error: new Error()
+                  };
           
         }
     case /* Tpat_construct */4 :
@@ -56779,8 +56769,8 @@ function build_other(ext, env) {
                   throw {
                         RE_EXN_ID: "Assert_failure",
                         _1: [
-                          "parmatch.ml",
-                          801,
+                          "ocaml_typedtree_test.ml",
+                          39843,
                           23
                         ],
                         Error: new Error()
@@ -56792,8 +56782,8 @@ function build_other(ext, env) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "parmatch.ml",
-                        801,
+                        "ocaml_typedtree_test.ml",
+                        39843,
                         23
                       ],
                       Error: new Error()
@@ -56848,8 +56838,8 @@ function build_other(ext, env) {
                   throw {
                         RE_EXN_ID: "Assert_failure",
                         _1: [
-                          "parmatch.ml",
-                          893,
+                          "ocaml_typedtree_test.ml",
+                          39935,
                           15
                         ],
                         Error: new Error()
@@ -56861,8 +56851,8 @@ function build_other(ext, env) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "parmatch.ml",
-                        893,
+                        "ocaml_typedtree_test.ml",
+                        39935,
                         15
                       ],
                       Error: new Error()
@@ -56909,8 +56899,8 @@ function build_other_gadt(ext, env) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "parmatch.ml",
-          917,
+          "ocaml_typedtree_test.ml",
+          39959,
           11
         ],
         Error: new Error()
@@ -57077,8 +57067,8 @@ function orify_many(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "parmatch.ml",
-          989,
+          "ocaml_typedtree_test.ml",
+          40031,
           12
         ],
         Error: new Error()
@@ -57306,8 +57296,8 @@ function exhaust_gadt$1(ext, pss, n) {
               throw {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
-                      "parmatch.ml",
-                      1165,
+                      "ocaml_typedtree_test.ml",
+                      40207,
                       19
                     ],
                     Error: new Error()
@@ -57318,8 +57308,8 @@ function exhaust_gadt$1(ext, pss, n) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "parmatch.ml",
-                  1165,
+                  "ocaml_typedtree_test.ml",
+                  40207,
                   19
                 ],
                 Error: new Error()
@@ -57427,8 +57417,8 @@ function is_var_column(rs) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "parmatch.ml",
-                        1274,
+                        "ocaml_typedtree_test.ml",
+                        40316,
                         14
                       ],
                       Error: new Error()
@@ -57444,8 +57434,8 @@ function or_args(_p) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "parmatch.ml",
-              1281,
+              "ocaml_typedtree_test.ml",
+              40323,
               23
             ],
             Error: new Error()
@@ -57464,8 +57454,8 @@ function or_args(_p) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "parmatch.ml",
-                1281,
+                "ocaml_typedtree_test.ml",
+                40323,
                 23
               ],
               Error: new Error()
@@ -57486,8 +57476,8 @@ function remove(r) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "parmatch.ml",
-          1286,
+          "ocaml_typedtree_test.ml",
+          40328,
           12
         ],
         Error: new Error()
@@ -57509,8 +57499,8 @@ function push_no_or(r) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "parmatch.ml",
-          1293,
+          "ocaml_typedtree_test.ml",
+          40335,
           8
         ],
         Error: new Error()
@@ -57532,8 +57522,8 @@ function push_or(r) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "parmatch.ml",
-          1297,
+          "ocaml_typedtree_test.ml",
+          40339,
           8
         ],
         Error: new Error()
@@ -57618,8 +57608,8 @@ function filter_one$1(q, rs) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "parmatch.ml",
-              1314,
+              "ocaml_typedtree_test.ml",
+              40356,
               14
             ],
             Error: new Error()
@@ -57680,8 +57670,8 @@ function extract_columns(pss, qs) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "parmatch.ml",
-            1357,
+            "ocaml_typedtree_test.ml",
+            40399,
             8
           ],
           Error: new Error()
@@ -57763,8 +57753,8 @@ function every_satisfiables(_pss, _qs) {
                           throw {
                                 RE_EXN_ID: "Assert_failure",
                                 _1: [
-                                  "parmatch.ml",
-                                  1394,
+                                  "ocaml_typedtree_test.ml",
+                                  40436,
                                   23
                                 ],
                                 Error: new Error()
@@ -57797,8 +57787,8 @@ function every_satisfiables(_pss, _qs) {
                       throw {
                             RE_EXN_ID: "Assert_failure",
                             _1: [
-                              "parmatch.ml",
-                              1394,
+                              "ocaml_typedtree_test.ml",
+                              40436,
                               23
                             ],
                             Error: new Error()
@@ -58431,8 +58421,8 @@ function conv(typed) {
                             throw {
                                   RE_EXN_ID: "Assert_failure",
                                   _1: [
-                                    "parmatch.ml",
-                                    1729,
+                                    "ocaml_typedtree_test.ml",
+                                    40771,
                                     28
                                   ],
                                   Error: new Error()
@@ -59011,8 +59001,8 @@ function warning_leave_scope(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "typetexp.ml",
-          146,
+          "ocaml_typedtree_test.ml",
+          41349,
           10
         ],
         Error: new Error()
@@ -59318,8 +59308,8 @@ var transl_modtype_longident = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "typetexp.ml",
-              293,
+              "ocaml_typedtree_test.ml",
+              41496,
               45
             ],
             Error: new Error()
@@ -59332,8 +59322,8 @@ var transl_modtype = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "typetexp.ml",
-              294,
+              "ocaml_typedtree_test.ml",
+              41497,
               35
             ],
             Error: new Error()
@@ -59511,8 +59501,8 @@ function transl_type_param(env, styp) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "typetexp.ml",
-          379,
+          "ocaml_typedtree_test.ml",
+          41582,
           9
         ],
         Error: new Error()
@@ -59855,8 +59845,8 @@ function transl_type(env, policy, styp) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "typetexp.ml",
-                        505,
+                        "ocaml_typedtree_test.ml",
+                        41708,
                         57
                       ],
                       Error: new Error()
@@ -59938,8 +59928,8 @@ function transl_type(env, policy, styp) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "typetexp.ml",
-                  553,
+                  "ocaml_typedtree_test.ml",
+                  41756,
                   10
                 ],
                 Error: new Error()
@@ -60032,8 +60022,8 @@ function transl_type(env, policy, styp) {
             throw {
                   RE_EXN_ID: "Assert_failure",
                   _1: [
-                    "typetexp.ml",
-                    553,
+                    "ocaml_typedtree_test.ml",
+                    41756,
                     10
                   ],
                   Error: new Error()
@@ -60396,8 +60386,8 @@ function transl_type(env, policy, styp) {
                       throw {
                             RE_EXN_ID: "Assert_failure",
                             _1: [
-                              "typetexp.ml",
-                              666,
+                              "ocaml_typedtree_test.ml",
+                              41869,
                               24
                             ],
                             Error: new Error()
@@ -60429,8 +60419,8 @@ function transl_type(env, policy, styp) {
                       throw {
                             RE_EXN_ID: "Assert_failure",
                             _1: [
-                              "typetexp.ml",
-                              666,
+                              "ocaml_typedtree_test.ml",
+                              41869,
                               24
                             ],
                             Error: new Error()
@@ -61709,8 +61699,8 @@ var type_module = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "typecore.ml",
-              77,
+              "ocaml_typedtree_test.ml",
+              42447,
               22
             ],
             Error: new Error()
@@ -61723,8 +61713,8 @@ var type_open = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "typecore.ml",
-              83,
+              "ocaml_typedtree_test.ml",
+              42453,
               16
             ],
             Error: new Error()
@@ -61737,8 +61727,8 @@ var type_package = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "typecore.ml",
-              88,
+              "ocaml_typedtree_test.ml",
+              42458,
               16
             ],
             Error: new Error()
@@ -61751,8 +61741,8 @@ var type_object = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "typecore.ml",
-              92,
+              "ocaml_typedtree_test.ml",
+              42462,
               20
             ],
             Error: new Error()
@@ -62115,8 +62105,8 @@ function extract_option_type(env, ty) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "typecore.ml",
-          275,
+          "ocaml_typedtree_test.ml",
+          42645,
           9
         ],
         Error: new Error()
@@ -62190,8 +62180,8 @@ function extract_label_names(sexp, env, ty) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "typecore.ml",
-              293,
+              "ocaml_typedtree_test.ml",
+              42663,
               4
             ],
             Error: new Error()
@@ -62295,8 +62285,8 @@ function get_newtype_level$1(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "typecore.ml",
-          331,
+          "ocaml_typedtree_test.ml",
+          42701,
           12
         ],
         Error: new Error()
@@ -62312,8 +62302,8 @@ function unify_pat_types_gadt(loc, env, ty, ty$prime) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "typecore.ml",
-            336,
+            "ocaml_typedtree_test.ml",
+            42706,
             14
           ],
           Error: new Error()
@@ -62406,8 +62396,8 @@ function finalize_variant(pat) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "typecore.ml",
-            362,
+            "ocaml_typedtree_test.ml",
+            42732,
             15
           ],
           Error: new Error()
@@ -62421,8 +62411,8 @@ function finalize_variant(pat) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "typecore.ml",
-            362,
+            "ocaml_typedtree_test.ml",
+            42732,
             15
           ],
           Error: new Error()
@@ -62464,8 +62454,8 @@ function finalize_variant(pat) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "typecore.ml",
-              370,
+              "ocaml_typedtree_test.ml",
+              42740,
               40
             ],
             Error: new Error()
@@ -63161,8 +63151,8 @@ function get_type_path$1(env, d) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "typecore.ml",
-            602,
+            "ocaml_typedtree_test.ml",
+            42972,
             11
           ],
           Error: new Error()
@@ -63174,8 +63164,8 @@ function get_type_path$1(env, d) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "typecore.ml",
-          602,
+          "ocaml_typedtree_test.ml",
+          42972,
           11
         ],
         Error: new Error()
@@ -63632,8 +63622,8 @@ function type_label_a_list(labels, loc, closed, env, type_lbl_a, opath, lid_a_li
                             throw {
                                   RE_EXN_ID: "Assert_failure",
                                   _1: [
-                                    "typecore.ml",
-                                    819,
+                                    "ocaml_typedtree_test.ml",
+                                    43189,
                                     17
                                   ],
                                   Error: new Error()
@@ -63746,8 +63736,8 @@ function get_type_path$2(env, d) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "typecore.ml",
-            602,
+            "ocaml_typedtree_test.ml",
+            42972,
             11
           ],
           Error: new Error()
@@ -63759,8 +63749,8 @@ function get_type_path$2(env, d) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "typecore.ml",
-          602,
+          "ocaml_typedtree_test.ml",
+          42972,
           11
         ],
         Error: new Error()
@@ -64006,8 +63996,8 @@ function unify_head_only(loc, env, ty, constr) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "typecore.ml",
-            892,
+            "ocaml_typedtree_test.ml",
+            43262,
             9
           ],
           Error: new Error()
@@ -64028,8 +64018,8 @@ function unify_head_only(loc, env, ty, constr) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "typecore.ml",
-          892,
+          "ocaml_typedtree_test.ml",
+          43262,
           9
         ],
         Error: new Error()
@@ -64591,8 +64581,8 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
               throw {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
-                      "typecore.ml",
-                      955,
+                      "ocaml_typedtree_test.ml",
+                      43325,
                       13
                     ],
                     Error: new Error()
@@ -64633,8 +64623,8 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
             throw {
                   RE_EXN_ID: "Assert_failure",
                   _1: [
-                    "typecore.ml",
-                    955,
+                    "ocaml_typedtree_test.ml",
+                    43325,
                     13
                   ],
                   Error: new Error()
@@ -66019,8 +66009,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                       throw {
                             RE_EXN_ID: "Assert_failure",
                             _1: [
-                              "typecore.ml",
-                              1773,
+                              "ocaml_typedtree_test.ml",
+                              44143,
                               38
                             ],
                             Error: new Error()
@@ -66208,8 +66198,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             throw {
                   RE_EXN_ID: "Assert_failure",
                   _1: [
-                    "typecore.ml",
-                    1852,
+                    "ocaml_typedtree_test.ml",
+                    44222,
                     6
                   ],
                   Error: new Error()
@@ -66333,8 +66323,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                       throw {
                             RE_EXN_ID: "Assert_failure",
                             _1: [
-                              "typecore.ml",
-                              1903,
+                              "ocaml_typedtree_test.ml",
+                              44273,
                               65
                             ],
                             Error: new Error()
@@ -66590,8 +66580,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "typecore.ml",
-                  3375,
+                  "ocaml_typedtree_test.ml",
+                  45745,
                   11
                 ],
                 Error: new Error()
@@ -66921,8 +66911,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             throw {
                   RE_EXN_ID: "Assert_failure",
                   _1: [
-                    "typecore.ml",
-                    2092,
+                    "ocaml_typedtree_test.ml",
+                    44462,
                     15
                   ],
                   Error: new Error()
@@ -66938,8 +66928,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "typecore.ml",
-                  2095,
+                  "ocaml_typedtree_test.ml",
+                  44465,
                   38
                 ],
                 Error: new Error()
@@ -67480,8 +67470,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                       throw {
                             RE_EXN_ID: "Assert_failure",
                             _1: [
-                              "typecore.ml",
-                              2384,
+                              "ocaml_typedtree_test.ml",
+                              44754,
                               18
                             ],
                             Error: new Error()
@@ -67559,8 +67549,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                       throw {
                             RE_EXN_ID: "Assert_failure",
                             _1: [
-                              "typecore.ml",
-                              2384,
+                              "ocaml_typedtree_test.ml",
+                              44754,
                               18
                             ],
                             Error: new Error()
@@ -67596,8 +67586,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             throw {
                   RE_EXN_ID: "Assert_failure",
                   _1: [
-                    "typecore.ml",
-                    2410,
+                    "ocaml_typedtree_test.ml",
+                    44780,
                     14
                   ],
                   Error: new Error()
@@ -67633,8 +67623,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
               throw {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
-                      "typecore.ml",
-                      2410,
+                      "ocaml_typedtree_test.ml",
+                      44780,
                       14
                     ],
                     Error: new Error()
@@ -67838,8 +67828,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "typecore.ml",
-                  2494,
+                  "ocaml_typedtree_test.ml",
+                  44864,
                   10
                 ],
                 Error: new Error()
@@ -67894,8 +67884,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "typecore.ml",
-                2494,
+                "ocaml_typedtree_test.ml",
+                44864,
                 10
               ],
               Error: new Error()
@@ -68016,8 +68006,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "typecore.ml",
-                  2600,
+                  "ocaml_typedtree_test.ml",
+                  44970,
                   15
                 ],
                 Error: new Error()
@@ -68088,8 +68078,8 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             throw {
                   RE_EXN_ID: "Assert_failure",
                   _1: [
-                    "typecore.ml",
-                    2600,
+                    "ocaml_typedtree_test.ml",
+                    44970,
                     15
                   ],
                   Error: new Error()
@@ -68377,8 +68367,8 @@ function type_function(in_function, loc, attrs, env, ty_expected, l, caselist) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "typecore.ml",
-                2706,
+                "ocaml_typedtree_test.ml",
+                45076,
                 24
               ],
               Error: new Error()
@@ -68474,8 +68464,8 @@ function type_format(loc, str, env) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "typecore.ml",
-          2759,
+          "ocaml_typedtree_test.ml",
+          45129,
           11
         ],
         Error: new Error()
@@ -69010,8 +69000,8 @@ function type_application(env, funct, sargs) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "typecore.ml",
-                        3250,
+                        "ocaml_typedtree_test.ml",
+                        45620,
                         16
                       ],
                       Error: new Error()
@@ -69632,8 +69622,8 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
               throw {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
-                      "parmatch.ml",
-                      1947,
+                      "ocaml_typedtree_test.ml",
+                      40989,
                       48
                     ],
                     Error: new Error()
@@ -71184,8 +71174,8 @@ register_error_of_exn(function (err) {
                                                         throw {
                                                               RE_EXN_ID: "Assert_failure",
                                                               _1: [
-                                                                "printtyp.ml",
-                                                                1585,
+                                                                "ocaml_typedtree_test.ml",
+                                                                37076,
                                                                 12
                                                               ],
                                                               Error: new Error()
@@ -72047,8 +72037,8 @@ function set_fixed_row(env, loc, p, decl) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "typedecl.ml",
-            113,
+            "ocaml_typedtree_test.ml",
+            46574,
             14
           ],
           Error: new Error()
@@ -72375,8 +72365,8 @@ function check_constraints_rec(env, loc, visited, _ty) {
               throw {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
-                      "typedecl.ml",
-                      360,
+                      "ocaml_typedtree_test.ml",
+                      46821,
                       28
                     ],
                     Error: new Error()
@@ -73263,8 +73253,8 @@ function compute_variance_gadt(env, check, rloc, decl, param) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "typedecl.ml",
-            809,
+            "ocaml_typedtree_test.ml",
+            47270,
             13
           ],
           Error: new Error()
@@ -73299,8 +73289,8 @@ function compute_variance_gadt(env, check, rloc, decl, param) {
             throw {
                   RE_EXN_ID: "Assert_failure",
                   _1: [
-                    "typedecl.ml",
-                    798,
+                    "ocaml_typedtree_test.ml",
+                    47259,
                     37
                   ],
                   Error: new Error()
@@ -73324,8 +73314,8 @@ function compute_variance_gadt(env, check, rloc, decl, param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "typedecl.ml",
-          809,
+          "ocaml_typedtree_test.ml",
+          47270,
           13
         ],
         Error: new Error()
@@ -73416,8 +73406,8 @@ function compute_variance_decl(env, check, decl, rloc) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "typedecl.ml",
-          848,
+          "ocaml_typedtree_test.ml",
+          47309,
           15
         ],
         Error: new Error()
@@ -74019,8 +74009,8 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "typedecl.ml",
-                  301,
+                  "ocaml_typedtree_test.ml",
+                  46762,
                   26
                 ],
                 Error: new Error()
@@ -74186,8 +74176,8 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "typedecl.ml",
-                        409,
+                        "ocaml_typedtree_test.ml",
+                        46870,
                         59
                       ],
                       Error: new Error()
@@ -74199,8 +74189,8 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
               throw {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
-                      "typedecl.ml",
-                      409,
+                      "ocaml_typedtree_test.ml",
+                      46870,
                       59
                     ],
                     Error: new Error()
@@ -74221,8 +74211,8 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "typedecl.ml",
-                        413,
+                        "ocaml_typedtree_test.ml",
+                        46874,
                         16
                       ],
                       Error: new Error()
@@ -74238,8 +74228,8 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "typedecl.ml",
-                        382,
+                        "ocaml_typedtree_test.ml",
+                        46843,
                         58
                       ],
                       Error: new Error()
@@ -74251,8 +74241,8 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
               throw {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
-                      "typedecl.ml",
-                      382,
+                      "ocaml_typedtree_test.ml",
+                      46843,
                       58
                     ],
                     Error: new Error()
@@ -74275,8 +74265,8 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                         throw {
                               RE_EXN_ID: "Assert_failure",
                               _1: [
-                                "typedecl.ml",
-                                395,
+                                "ocaml_typedtree_test.ml",
+                                46856,
                                 30
                               ],
                               Error: new Error()
@@ -74306,8 +74296,8 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
             throw {
                   RE_EXN_ID: "Assert_failure",
                   _1: [
-                    "typedecl.ml",
-                    428,
+                    "ocaml_typedtree_test.ml",
+                    46889,
                     63
                   ],
                   Error: new Error()
@@ -74443,8 +74433,8 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "typedecl.ml",
-              1162,
+              "ocaml_typedtree_test.ml",
+              47623,
               17
             ],
             Error: new Error()
@@ -74461,8 +74451,8 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "typedecl.ml",
-              1162,
+              "ocaml_typedtree_test.ml",
+              47623,
               17
             ],
             Error: new Error()
@@ -74527,8 +74517,8 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "typedecl.ml",
-                  1187,
+                  "ocaml_typedtree_test.ml",
+                  47648,
                   17
                 ],
                 Error: new Error()
@@ -76891,8 +76881,8 @@ function inheritance(self_type, env, ovf, concr_meths, warn_vals, loc, parent) {
               throw {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
-                      "typeclass.ml",
-                      261,
+                      "ocaml_typedtree_test.ml",
+                      48527,
                       12
                     ],
                     Error: new Error()
@@ -77546,8 +77536,8 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
               throw {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
-                      "typeclass.ml",
-                      760,
+                      "ocaml_typedtree_test.ml",
+                      49026,
                       18
                     ],
                     Error: new Error()
@@ -77932,8 +77922,8 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                       throw {
                             RE_EXN_ID: "Assert_failure",
                             _1: [
-                              "typeclass.ml",
-                              662,
+                              "ocaml_typedtree_test.ml",
+                              48928,
                               17
                             ],
                             Error: new Error()
@@ -77958,8 +77948,8 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         throw {
                               RE_EXN_ID: "Assert_failure",
                               _1: [
-                                "typeclass.ml",
-                                662,
+                                "ocaml_typedtree_test.ml",
+                                48928,
                                 17
                               ],
                               Error: new Error()
@@ -77969,8 +77959,8 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                     throw {
                           RE_EXN_ID: "Assert_failure",
                           _1: [
-                            "typeclass.ml",
-                            664,
+                            "ocaml_typedtree_test.ml",
+                            48930,
                             13
                           ],
                           Error: new Error()
@@ -78685,8 +78675,8 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                                 throw {
                                       RE_EXN_ID: "Assert_failure",
                                       _1: [
-                                        "typeclass.ml",
-                                        1017,
+                                        "ocaml_typedtree_test.ml",
+                                        49283,
                                         20
                                       ],
                                       Error: new Error()
@@ -79697,8 +79687,8 @@ function type_classes(define_class, approx, kind, env, cls) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "typeclass.ml",
-                        1562,
+                        "ocaml_typedtree_test.ml",
+                        49828,
                         15
                       ],
                       Error: new Error()
@@ -79708,8 +79698,8 @@ function type_classes(define_class, approx, kind, env, cls) {
               throw {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
-                      "typeclass.ml",
-                      1562,
+                      "ocaml_typedtree_test.ml",
+                      49828,
                       15
                     ],
                     Error: new Error()
@@ -79843,8 +79833,8 @@ function unify_parents_struct(env, ty, st) {
                             throw {
                                   RE_EXN_ID: "Assert_failure",
                                   _1: [
-                                    "typeclass.ml",
-                                    1639,
+                                    "ocaml_typedtree_test.ml",
+                                    49905,
                                     15
                                   ],
                                   Error: new Error()
@@ -81358,8 +81348,8 @@ function path_concat(head, p) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "typemod.ml",
-                54,
+                "ocaml_typedtree_test.ml",
+                50263,
                 16
               ],
               Error: new Error()
@@ -81435,8 +81425,8 @@ var type_module_type_of_fwd = {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "typemod.ml",
-              99,
+              "ocaml_typedtree_test.ml",
+              50308,
               22
             ],
             Error: new Error()
@@ -81911,8 +81901,8 @@ function merge_constraint(initial_env, loc, sg, constr) {
               throw {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
-                      "typemod.ml",
-                      246,
+                      "ocaml_typedtree_test.ml",
+                      50455,
                       38
                     ],
                     Error: new Error()
@@ -82011,8 +82001,8 @@ function merge_constraint(initial_env, loc, sg, constr) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "typemod.ml",
-                        263,
+                        "ocaml_typedtree_test.ml",
+                        50472,
                         68
                       ],
                       Error: new Error()
@@ -82032,8 +82022,8 @@ function merge_constraint(initial_env, loc, sg, constr) {
               throw {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
-                      "typemod.ml",
-                      269,
+                      "ocaml_typedtree_test.ml",
+                      50478,
                       38
                     ],
                     Error: new Error()
@@ -84886,8 +84876,8 @@ function type_package$1(env, m, p, nl, tl) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "typemod.ml",
-                  1565,
+                  "ocaml_typedtree_test.ml",
+                  51774,
                   11
                 ],
                 Error: new Error()
@@ -85916,7 +85906,7 @@ if (match$1) {
       if (match$6.name === "int") {
         var match$7 = match$6.flags;
         if (match$7 !== 0) {
-          eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+          eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
         } else {
           var match$8 = match$5.typ_name;
           if (match$8.txt === "int") {
@@ -85927,7 +85917,7 @@ if (match$1) {
               if (match$11.pos_fname === "" && !(match$11.pos_lnum !== 2 || match$11.pos_bol !== 1 || match$11.pos_cnum !== 9 || match$9.loc_ghost || match$5.typ_params)) {
                 var match$12 = match$5.typ_type;
                 if (match$12.type_params || match$12.type_arity !== 0) {
-                  eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                  eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                 } else {
                   var match$13 = match$12.type_kind;
                   if (typeof match$13 === "number" && !(match$13 !== 0 || !(match$12.type_private && !(match$12.type_manifest !== undefined || match$12.type_variance || match$12.type_newtype_level !== undefined)))) {
@@ -85957,7 +85947,7 @@ if (match$1) {
                                       if (match$27.name === "~-") {
                                         var match$28 = match$27.flags;
                                         if (match$28 !== 0) {
-                                          eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                          eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                         } else {
                                           var match$29 = match$26.val_name;
                                           if (match$29.txt === "~-") {
@@ -85969,12 +85959,12 @@ if (match$1) {
                                                 var match$33 = match$26.val_desc;
                                                 var match$34 = match$33.ctyp_desc;
                                                 if (typeof match$34 === "number" || !(match$34.TAG === /* Ttyp_arrow */1 && match$34._0 === "")) {
-                                                  eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                  eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                 } else {
                                                   var match$35 = match$34._1;
                                                   var match$36 = match$35.ctyp_desc;
                                                   if (typeof match$36 === "number" || match$36.TAG !== /* Ttyp_constr */3) {
-                                                    eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                    eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                   } else {
                                                     var match$37 = match$36._0;
                                                     switch (match$37.TAG | 0) {
@@ -85983,7 +85973,7 @@ if (match$1) {
                                                           if (match$38.name === "int") {
                                                             var match$39 = match$38.flags;
                                                             if (match$39 !== 0) {
-                                                              eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                              eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                             } else {
                                                               var match$40 = match$36._1;
                                                               var match$41 = match$40.txt;
@@ -85998,7 +85988,7 @@ if (match$1) {
                                                                           var match$45 = match$35.ctyp_type;
                                                                           var match$46 = match$45.desc;
                                                                           if (typeof match$46 === "number" || match$46.TAG !== /* Tconstr */3) {
-                                                                            eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                            eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                           } else {
                                                                             var match$47 = match$46._0;
                                                                             switch (match$47.TAG | 0) {
@@ -86007,7 +85997,7 @@ if (match$1) {
                                                                                   if (match$48.name === "int") {
                                                                                     var match$49 = match$48.flags;
                                                                                     if (match$49 !== 0 || match$46._1) {
-                                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                      eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                     } else {
                                                                                       var match$50 = match$46._2.contents;
                                                                                       if (typeof match$50 === "number") {
@@ -86019,7 +86009,7 @@ if (match$1) {
                                                                                             var match$54 = match$34._2;
                                                                                             var match$55 = match$54.ctyp_desc;
                                                                                             if (typeof match$55 === "number" || match$55.TAG !== /* Ttyp_constr */3) {
-                                                                                              eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                              eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                             } else {
                                                                                               var match$56 = match$55._0;
                                                                                               switch (match$56.TAG | 0) {
@@ -86028,7 +86018,7 @@ if (match$1) {
                                                                                                     if (match$57.name === "int") {
                                                                                                       var match$58 = match$57.flags;
                                                                                                       if (match$58 !== 0) {
-                                                                                                        eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                        eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                       } else {
                                                                                                         var match$59 = match$55._1;
                                                                                                         var match$60 = match$59.txt;
@@ -86043,7 +86033,7 @@ if (match$1) {
                                                                                                                     var match$64 = match$54.ctyp_type;
                                                                                                                     var match$65 = match$64.desc;
                                                                                                                     if (typeof match$65 === "number" || match$65.TAG !== /* Tconstr */3) {
-                                                                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                      eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                     } else {
                                                                                                                       var match$66 = match$65._0;
                                                                                                                       switch (match$66.TAG | 0) {
@@ -86052,7 +86042,7 @@ if (match$1) {
                                                                                                                             if (match$67.name === "int") {
                                                                                                                               var match$68 = match$67.flags;
                                                                                                                               if (match$68 !== 0 || match$65._1) {
-                                                                                                                                eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                               } else {
                                                                                                                                 var match$69 = match$65._2.contents;
                                                                                                                                 if (typeof match$69 === "number") {
@@ -86064,11 +86054,11 @@ if (match$1) {
                                                                                                                                       var match$73 = match$33.ctyp_type;
                                                                                                                                       var match$74 = match$73.desc;
                                                                                                                                       if (typeof match$74 === "number" || !(match$74.TAG === /* Tarrow */1 && match$74._0 === "")) {
-                                                                                                                                        eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                        eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                       } else {
                                                                                                                                         var match$75 = match$74._1.desc;
                                                                                                                                         if (typeof match$75 === "number" || match$75.TAG !== /* Tconstr */3) {
-                                                                                                                                          eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                          eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                         } else {
                                                                                                                                           var match$76 = match$75._0;
                                                                                                                                           switch (match$76.TAG | 0) {
@@ -86077,13 +86067,13 @@ if (match$1) {
                                                                                                                                                 if (match$77.name === "int") {
                                                                                                                                                   var match$78 = match$77.flags;
                                                                                                                                                   if (match$78 !== 0 || match$75._1) {
-                                                                                                                                                    eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                    eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                   } else {
                                                                                                                                                     var match$79 = match$75._2.contents;
                                                                                                                                                     if (typeof match$79 === "number") {
                                                                                                                                                       var match$80 = match$74._2.desc;
                                                                                                                                                       if (typeof match$80 === "number" || match$80.TAG !== /* Tconstr */3) {
-                                                                                                                                                        eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                        eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                       } else {
                                                                                                                                                         var match$81 = match$80._0;
                                                                                                                                                         switch (match$81.TAG | 0) {
@@ -86092,7 +86082,7 @@ if (match$1) {
                                                                                                                                                               if (match$82.name === "int") {
                                                                                                                                                                 var match$83 = match$82.flags;
                                                                                                                                                                 if (match$83 !== 0 || match$80._1) {
-                                                                                                                                                                  eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                  eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                 } else {
                                                                                                                                                                   var match$84 = match$80._2.contents;
                                                                                                                                                                   if (typeof match$84 === "number") {
@@ -86106,11 +86096,11 @@ if (match$1) {
                                                                                                                                                                           var match$89 = match$26.val_val;
                                                                                                                                                                           var match$90 = match$89.val_type.desc;
                                                                                                                                                                           if (typeof match$90 === "number" || !(match$90.TAG === /* Tarrow */1 && match$90._0 === "")) {
-                                                                                                                                                                            eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                            eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                           } else {
                                                                                                                                                                             var match$91 = match$90._1.desc;
                                                                                                                                                                             if (typeof match$91 === "number" || match$91.TAG !== /* Tconstr */3) {
-                                                                                                                                                                              eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                              eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                             } else {
                                                                                                                                                                               var match$92 = match$91._0;
                                                                                                                                                                               switch (match$92.TAG | 0) {
@@ -86119,13 +86109,13 @@ if (match$1) {
                                                                                                                                                                                     if (match$93.name === "int") {
                                                                                                                                                                                       var match$94 = match$93.flags;
                                                                                                                                                                                       if (match$94 !== 0 || match$91._1) {
-                                                                                                                                                                                        eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                                        eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                                       } else {
                                                                                                                                                                                         var match$95 = match$91._2.contents;
                                                                                                                                                                                         if (typeof match$95 === "number") {
                                                                                                                                                                                           var match$96 = match$90._2.desc;
                                                                                                                                                                                           if (typeof match$96 === "number" || match$96.TAG !== /* Tconstr */3) {
-                                                                                                                                                                                            eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                                            eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                                           } else {
                                                                                                                                                                                             var match$97 = match$96._0;
                                                                                                                                                                                             switch (match$97.TAG | 0) {
@@ -86134,7 +86124,7 @@ if (match$1) {
                                                                                                                                                                                                   if (match$98.name === "int") {
                                                                                                                                                                                                     var match$99 = match$98.flags;
                                                                                                                                                                                                     if (match$99 !== 0 || match$96._1) {
-                                                                                                                                                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                                                      eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                                                     } else {
                                                                                                                                                                                                       var match$100 = match$96._2.contents;
                                                                                                                                                                                                       if (typeof match$100 === "number") {
@@ -86142,7 +86132,7 @@ if (match$1) {
                                                                                                                                                                                                         if (typeof match$101 === "number" && match$101 === 0) {
                                                                                                                                                                                                           var match$102 = match$89.val_kind;
                                                                                                                                                                                                           if (typeof match$102 === "number" || match$102.TAG !== /* Val_prim */0) {
-                                                                                                                                                                                                            eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                                                            eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                                                           } else {
                                                                                                                                                                                                             var match$103 = match$102._0;
                                                                                                                                                                                                             if (match$103.prim_name === "%negint" && !(match$103.prim_arity !== 1 || !(match$103.prim_alloc && match$103.prim_native_name === "" && !match$103.prim_native_float))) {
@@ -86151,255 +86141,255 @@ if (match$1) {
                                                                                                                                                                                                               if (match$105.pos_fname === "" && !(match$105.pos_lnum !== 3 || match$105.pos_bol !== 10 || match$105.pos_cnum !== 10)) {
                                                                                                                                                                                                                 var match$106 = match$104.loc_end;
                                                                                                                                                                                                                 if (match$106.pos_fname === "" && !(match$106.pos_lnum !== 3 || match$106.pos_bol !== 10 || match$106.pos_cnum !== 50 || match$104.loc_ghost || match$89.val_attributes)) {
-                                                                                                                                                                                                                  eq("File \"ocaml_typed_tree_main.ml\", line 220, characters 14-21", true, true);
+                                                                                                                                                                                                                  eq("File \"ocaml_typedtree_test.ml\", line 52275, characters 14-21", true, true);
                                                                                                                                                                                                                 } else {
-                                                                                                                                                                                                                  eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                                                                  eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                                                                 }
                                                                                                                                                                                                               } else {
-                                                                                                                                                                                                                eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                                                                eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                                                               }
                                                                                                                                                                                                             } else {
-                                                                                                                                                                                                              eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                                                              eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                                                             }
                                                                                                                                                                                                           }
                                                                                                                                                                                                         } else {
-                                                                                                                                                                                                          eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                                                          eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                                                         }
                                                                                                                                                                                                       } else {
-                                                                                                                                                                                                        eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                                                        eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                                                       }
                                                                                                                                                                                                     }
                                                                                                                                                                                                   } else {
-                                                                                                                                                                                                    eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                                                    eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                                                   }
                                                                                                                                                                                                   break;
                                                                                                                                                                                               case /* Pdot */1 :
                                                                                                                                                                                               case /* Papply */2 :
-                                                                                                                                                                                                  eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                                                  eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                                                   break;
                                                                                                                                                                                               
                                                                                                                                                                                             }
                                                                                                                                                                                           }
                                                                                                                                                                                         } else {
-                                                                                                                                                                                          eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                                          eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                                         }
                                                                                                                                                                                       }
                                                                                                                                                                                     } else {
-                                                                                                                                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                                      eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                                     }
                                                                                                                                                                                     break;
                                                                                                                                                                                 case /* Pdot */1 :
                                                                                                                                                                                 case /* Papply */2 :
-                                                                                                                                                                                    eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                                    eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                                     break;
                                                                                                                                                                                 
                                                                                                                                                                               }
                                                                                                                                                                             }
                                                                                                                                                                           }
                                                                                                                                                                         } else {
-                                                                                                                                                                          eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                          eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                         }
                                                                                                                                                                       } else {
-                                                                                                                                                                        eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                        eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                       }
                                                                                                                                                                     } else {
-                                                                                                                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                      eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                     }
                                                                                                                                                                   } else {
-                                                                                                                                                                    eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                    eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                                   }
                                                                                                                                                                 }
                                                                                                                                                               } else {
-                                                                                                                                                                eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                                eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                               }
                                                                                                                                                               break;
                                                                                                                                                           case /* Pdot */1 :
                                                                                                                                                           case /* Papply */2 :
-                                                                                                                                                              eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                              eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                               break;
                                                                                                                                                           
                                                                                                                                                         }
                                                                                                                                                       }
                                                                                                                                                     } else {
-                                                                                                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                      eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                     }
                                                                                                                                                   }
                                                                                                                                                 } else {
-                                                                                                                                                  eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                  eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                 }
                                                                                                                                                 break;
                                                                                                                                             case /* Pdot */1 :
                                                                                                                                             case /* Papply */2 :
-                                                                                                                                                eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                                eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                                 break;
                                                                                                                                             
                                                                                                                                           }
                                                                                                                                         }
                                                                                                                                       }
                                                                                                                                     } else {
-                                                                                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                      eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                     }
                                                                                                                                   } else {
-                                                                                                                                    eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                    eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                   }
                                                                                                                                 } else {
-                                                                                                                                  eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                                  eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                                 }
                                                                                                                               }
                                                                                                                             } else {
-                                                                                                                              eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                              eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                             }
                                                                                                                             break;
                                                                                                                         case /* Pdot */1 :
                                                                                                                         case /* Papply */2 :
-                                                                                                                            eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                            eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                             break;
                                                                                                                         
                                                                                                                       }
                                                                                                                     }
                                                                                                                   } else {
-                                                                                                                    eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                    eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                   }
                                                                                                                 } else {
-                                                                                                                  eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                  eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                                 }
                                                                                                               } else {
-                                                                                                                eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                                eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                               }
                                                                                                               break;
                                                                                                           case /* Ldot */1 :
                                                                                                           case /* Lapply */2 :
-                                                                                                              eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                              eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                               break;
                                                                                                           
                                                                                                         }
                                                                                                       }
                                                                                                     } else {
-                                                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                      eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                     }
                                                                                                     break;
                                                                                                 case /* Pdot */1 :
                                                                                                 case /* Papply */2 :
-                                                                                                    eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                                    eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                                     break;
                                                                                                 
                                                                                               }
                                                                                             }
                                                                                           } else {
-                                                                                            eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                            eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                           }
                                                                                         } else {
-                                                                                          eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                          eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                         }
                                                                                       } else {
-                                                                                        eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                        eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                       }
                                                                                     }
                                                                                   } else {
-                                                                                    eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                    eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                   }
                                                                                   break;
                                                                               case /* Pdot */1 :
                                                                               case /* Papply */2 :
-                                                                                  eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                                  eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                                   break;
                                                                               
                                                                             }
                                                                           }
                                                                         } else {
-                                                                          eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                          eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                         }
                                                                       } else {
-                                                                        eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                        eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                       }
                                                                     } else {
-                                                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                      eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                     }
                                                                     break;
                                                                 case /* Ldot */1 :
                                                                 case /* Lapply */2 :
-                                                                    eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                                    eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                                     break;
                                                                 
                                                               }
                                                             }
                                                           } else {
-                                                            eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                            eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                           }
                                                           break;
                                                       case /* Pdot */1 :
                                                       case /* Papply */2 :
-                                                          eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                          eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                                           break;
                                                       
                                                     }
                                                   }
                                                 }
                                               } else {
-                                                eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                                eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                               }
                                             } else {
-                                              eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                              eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                             }
                                           } else {
-                                            eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                            eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                           }
                                         }
                                       } else {
-                                        eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                        eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                       }
                                     } else {
-                                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                      eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                     }
                                   } else {
-                                    eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                    eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                   }
                                 } else {
-                                  eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                  eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                                 }
                               } else {
-                                eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                                eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                               }
                             } else {
-                              eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                              eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                             }
                           } else {
-                            eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                            eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                           }
                         } else {
-                          eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                          eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                         }
                       } else {
-                        eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                        eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                       }
                     } else {
-                      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                      eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                     }
                   } else {
-                    eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                    eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
                   }
                 }
               } else {
-                eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+                eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
               }
             } else {
-              eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+              eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
             }
           } else {
-            eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+            eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
           }
         }
       } else {
-        eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+        eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
       }
     } else {
-      eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+      eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
     }
   } else {
-    eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+    eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
   }
 } else {
-  eq("File \"ocaml_typed_tree_main.ml\", line 221, characters 12-19", true, false);
+  eq("File \"ocaml_typedtree_test.ml\", line 52276, characters 12-19", true, false);
 }
 
 from_pair_suites("Ocaml_typedtree_test", suites.contents);
