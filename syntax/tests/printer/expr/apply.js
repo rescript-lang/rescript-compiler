@@ -46,3 +46,27 @@ call(~\"let": int)
 document.createElementWithOptions(. "div", elementProps(~onClick=_ =>
     Js.log("hello world")
   ))
+
+f(. 1)
+f(. [1, 2, 3])
+f(. [suuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuperLong, suuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuperLong, suuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuperLong,])
+f(. (1, 2, 3))
+f(. {"a": 1})
+f(. list{1})
+f(. `
+ template
+ string
+`)
+f(. `single line`)
+f(. "
+ template
+ string
+")
+f(. {
+  expr 
+})
+f(. {expr})
+f(. {
+  exception Exit
+  raise(Exit)
+})

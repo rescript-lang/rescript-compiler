@@ -4153,7 +4153,7 @@ and printArguments ~uncurried (args : (Asttypes.arg_label * Parsetree.expression
       | Nothing -> doc
     in
     Doc.concat [
-      if uncurried then Doc.text "(." else Doc.lparen;
+      if uncurried then Doc.text "(. " else Doc.lparen;
       argDoc;
       Doc.rparen;
     ]
