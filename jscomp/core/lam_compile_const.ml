@@ -57,10 +57,11 @@ and translate (x : Lam_constant.t ) : J.expression =
   | Const_js_false -> E.bool false
   | Const_js_null -> E.nil
   | Const_js_undefined -> E.undefined
-  | Const_int {value; comment } -> E.int (Int32.of_int value) ?comment
+  | Const_int {i; comment } -> E.int (Int32.of_int i) ?comment
+  | Const_int32 i -> E.int i 
   | Const_char i ->
     Js_of_lam_string.const_char i
-  | Const_int32 i -> E.int i 
+  
   (* E.float (Int32.to_string i) *)
   | Const_int64 i -> 
           (*

@@ -26,7 +26,7 @@
 (**used in effect analysis, it is sound but not-complete *)
 let not_zero_constant ( x : Lam_constant.t) =  
   match x with 
-  | Const_int {value }  -> value <> 0
+  | Const_int {i }  -> i <> 0
   | Const_int32 i  -> i <> 0l
   | Const_int64 i  -> i <> 0L
   | Const_nativeint i -> i <> 0n
@@ -62,9 +62,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
             | "caml_obj_dup"
             | "caml_array_dup"            
             ), _  -> true 
-          | "caml_ml_open_descriptor_in", [Lconst (  (Const_int {value = 0}))] -> true 
+          | "caml_ml_open_descriptor_in", [Lconst (  (Const_int {i = 0}))] -> true 
           | "caml_ml_open_descriptor_out", 
-            [Lconst (  (Const_int {value = 1|2})) ]
+            [Lconst (  (Const_int {i = 1|2})) ]
             -> true
           (* we can not mark it pure
              only when we guarantee this exception is caught...

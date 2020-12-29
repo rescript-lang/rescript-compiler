@@ -27,7 +27,7 @@
   | Const_js_undefined
   | Const_js_true
   | Const_js_false
-  | Const_int of {value : int; comment : string option}
+  | Const_int of {i : int; comment : string option}
   | Const_char of char
   | Const_string of string  (* use record later *)
   | Const_unicode of string
@@ -53,7 +53,7 @@ let rec eq_approx (x : t) (y : t) =
   | Const_js_true -> y = Const_js_true
   | Const_js_false -> y =  Const_js_false
   | Const_int ix -> 
-    (match y with Const_int iy -> ix.value = iy.value | _ -> false)
+    (match y with Const_int iy -> ix.i = iy.i | _ -> false)
   | Const_char ix ->   
     (match y with Const_char iy -> ix = iy | _ -> false)
   | Const_string ix -> 
