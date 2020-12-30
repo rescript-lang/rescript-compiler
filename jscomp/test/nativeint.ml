@@ -15,28 +15,28 @@
 
 (* Module [Nativeint]: processor-native integers *)
 
-external neg: nativeint -> nativeint = "%nativeint_neg"
-external add: nativeint -> nativeint -> nativeint = "%nativeint_add"
-external sub: nativeint -> nativeint -> nativeint = "%nativeint_sub"
-external mul: nativeint -> nativeint -> nativeint = "%nativeint_mul"
-external div: nativeint -> nativeint -> nativeint = "%nativeint_div"
-external rem: nativeint -> nativeint -> nativeint = "%nativeint_mod"
-external logand: nativeint -> nativeint -> nativeint = "%nativeint_and"
-external logor: nativeint -> nativeint -> nativeint = "%nativeint_or"
-external logxor: nativeint -> nativeint -> nativeint = "%nativeint_xor"
-external shift_left: nativeint -> int -> nativeint = "%nativeint_lsl"
-external shift_right: nativeint -> int -> nativeint = "%nativeint_asr"
-external shift_right_logical: nativeint -> int -> nativeint = "%nativeint_lsr"
-external of_int: int -> nativeint = "%nativeint_of_int"
-external to_int: nativeint -> int = "%nativeint_to_int"
+external neg: nativeint -> nativeint = "nativeint_neg"
+external add: nativeint -> nativeint -> nativeint = "nativeint_add"
+external sub: nativeint -> nativeint -> nativeint = "nativeint_sub"
+external mul: nativeint -> nativeint -> nativeint = "nativeint_mul"
+external div: nativeint -> nativeint -> nativeint = "nativeint_div"
+external rem: nativeint -> nativeint -> nativeint = "nativeint_mod"
+external logand: nativeint -> nativeint -> nativeint = "nativeint_and"
+external logor: nativeint -> nativeint -> nativeint = "nativeint_or"
+external logxor: nativeint -> nativeint -> nativeint = "nativeint_xor"
+external shift_left: nativeint -> int -> nativeint = "nativeint_lsl"
+external shift_right: nativeint -> int -> nativeint = "nativeint_asr"
+external shift_right_logical: nativeint -> int -> nativeint = "nativeint_lsr"
+external of_int: int -> nativeint = "nativeint_of_int"
+external to_int: nativeint -> int = "nativeint_to_int"
 external of_float : float -> nativeint
   = "caml_nativeint_of_float" "caml_nativeint_of_float_unboxed"
   [@@unboxed] [@@noalloc]
 external to_float : nativeint -> float
   = "caml_nativeint_to_float" "caml_nativeint_to_float_unboxed"
   [@@unboxed] [@@noalloc]
-external of_int32: int32 -> nativeint = "%nativeint_of_int32"
-external to_int32: nativeint -> int32 = "%nativeint_to_int32"
+external of_int32: int32 -> nativeint = "nativeint_of_int32"
+external to_int32: nativeint -> int32 = "nativeint_to_int32"
 
 (* let zero = 0
 let one = 1n

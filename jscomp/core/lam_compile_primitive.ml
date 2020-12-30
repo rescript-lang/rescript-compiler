@@ -170,18 +170,12 @@ let translate  loc
     | _ -> assert false
     )
   (** Negate boxed int *)
-  | Pnegbint Pint32
-    ->
-      E.int32_minus (E.zero_int_literal)  (Ext_list.singleton_exn args) 
       
   | Pnegint
     -> 
       (* #977 *)
       E.int32_minus (E.zero_int_literal)  (Ext_list.singleton_exn args)
-  | Pnegbint Pnativeint
-    -> 
-      E.unchecked_int32_minus (E.zero_int_literal)  (Ext_list.singleton_exn args) 
-  | Pnegbint Pint64
+  | Pnegint64
     -> 
     Js_long.neg args 
 
@@ -192,22 +186,13 @@ let translate  loc
   (** Negate boxed int end*)
   (* Int addition and subtraction *)
   | Paddint 
-  | Paddbint  Pint32
     ->
     begin match args with
       | [e1;e2] ->
         E.int32_add  e1  e2
       | _ -> assert false
     end
-  | Paddbint Pnativeint 
-    -> 
-    begin match args with
-      | [e1;e2] ->
-        E.unchecked_int32_add  e1  e2
-      | _ -> assert false
-    end
-
-  | Paddbint Pint64
+  | Paddint64
     ->  
     Js_long.add args 
 
@@ -226,21 +211,7 @@ let translate  loc
         E.int32_minus e1 e2 
       | _ -> assert false
     end
-  | Psubbint Pint32
-    -> 
-    begin match args with
-      | [e1;e2] ->
-        E.int32_minus   e1  e2
-      | _ -> assert false 
-    end
-  | Psubbint Pnativeint
-    -> 
-    begin match args with
-      | [e1;e2] ->
-        E.unchecked_int32_minus   e1  e2
-      | _ -> assert false 
-    end
-  | Psubbint Pint64
+  | Psubint64
     -> 
     Js_long.sub args 
   | Psubfloat
@@ -250,23 +221,14 @@ let translate  loc
         E.float_minus   e1  e2
       | _ -> assert false 
     end
-  | Pmulbint Lambda.Pnativeint
-    -> 
-    begin match args with
-      | [e1; e2]  ->
-        E.unchecked_int32_mul  e1  e2
-      | _ -> assert false 
-    end
-
   | Pmulint 
-  | Pmulbint Pint32
     ->
     begin match args with
       | [e1; e2]  ->
         E.int32_mul  e1  e2
       | _ -> assert false 
     end
-  | Pmulbint Pint64 
+  | Pmulint64
     -> 
     Js_long.mul args 
   | Pmulfloat 
@@ -281,15 +243,7 @@ let translate  loc
       | [e1;e2] -> E.float_div  e1  e2
       | _ -> assert false 
     end
-  | Pdivbint Pnativeint
-    -> 
-    begin match args with 
-      | [e1;e2] ->
-        E.int32_div ~checked:false e1 e2
-      | _ -> assert false
-    end
   | Pdivint 
-  | Pdivbint Pint32
     -> 
     begin match args with 
       | [e1;e2] ->
@@ -297,93 +251,73 @@ let translate  loc
       | _ -> assert false
     end
 
-  | Pdivbint Pint64 
+  | Pdivint64
     -> Js_long.div args 
   | Pmodint 
-  | Pmodbint Pnativeint
-  | Pmodbint Pint32
     ->
     begin match args with
       | [e1; e2] ->
         E.int32_mod   ~checked:(!Js_config.check_div_by_zero) e1  e2
       | _ -> assert false 
     end
-  | Pmodbint Pint64 
+  | Pmodint64
     -> Js_long.mod_ args  
   | Plslint 
-  | Plslbint Pnativeint
-  | Plslbint Pint32
     ->
     begin match args with
       | [e1;e2] ->
         E.int32_lsl e1  e2
       | _ -> assert false 
     end
-  | Plslbint Pint64 
+  | Plslint64
     -> Js_long.lsl_ args
-  | Plsrbint Pnativeint
-    -> 
-    begin match args with
-      | [e1; e2] ->
-        E.int32_lsr   e1  e2
-      | _ -> assert false
-    end
   | Plsrint 
-  | Plsrbint Pint32
     ->
     begin match args with
-      | [e1; {J.expression_desc = Number (Int {i=0l; _}|Uint 0l | Nint 0n); _}]
+      | [e1; {J.expression_desc = Number (Int {i=0l; _}|Uint 0l ); _}]
         -> 
         e1
       | [e1; e2] ->
         E.to_int32 @@ E.int32_lsr   e1  e2
       | _ -> assert false
     end
-  | Plsrbint Pint64
+  | Plsrint64
     -> Js_long.lsr_ args
   | Pasrint 
-  | Pasrbint Pnativeint
-  | Pasrbint Pint32
     ->
     begin match args with
       | [e1;e2] ->
         E.int32_asr  e1  e2
       | _ -> assert false
     end
-  | Pasrbint Pint64 
+  | Pasrint64
     -> Js_long.asr_ args      
   | Pandint 
-  | Pandbint Pnativeint
-  | Pandbint Pint32
     ->
     begin match args with
       | [e1;e2] ->
         E.int32_band  e1  e2
       | _ -> assert false
     end
-  | Pandbint Pint64
+  | Pandint64
     -> Js_long.and_ args
   | Porint 
-  | Porbint Pnativeint
-  | Porbint Pint32
     ->
     begin match args with
       | [e1;e2] ->
         E.int32_bor  e1  e2
       | _ -> assert false
     end
-  | Porbint Pint64 
+  | Porint64
     -> Js_long.or_ args
   | Pxorint 
-  | Pxorbint Pnativeint
-  | Pxorbint Pint32 
     -> 
     begin match args with
       | [e1;e2] ->
         E.int32_bxor  e1  e2
       | _ -> assert false
     end
-  | Pxorbint Lambda.Pint64 
+  | Pxorint64
     ->
     Js_long.xor args    
   | Pjscomp cmp ->
@@ -391,10 +325,10 @@ let translate  loc
       | [l;r] -> E.js_comp cmp l r 
       | _ -> assert false 
     end
-  | Pbintcomp (Pnativeint ,cmp)
+
   | Pfloatcomp cmp
   | Pintcomp cmp
-  | Pbintcomp (Pint32 ,cmp) ->
+    ->
     (* Global Builtin Exception is an int, like 
        [Not_found] or [Invalid_argument] ?
     *)
@@ -404,36 +338,21 @@ let translate  loc
   (* List --> stamp = 0 
      Assert_false --> stamp = 26 
   *)
-  | Pbintcomp (Pint64 ,cmp)
+  | Pint64comp cmp
     -> Js_long.comp cmp args
 
-  | Pcvtbint ((Pint32 | Pnativeint ), Pint64) 
-    -> Js_long.of_int32 args
-  | Pcvtbint (Pint64, Pint64)
-  | Pcvtbint ((Pnativeint|Pint32), (Pnativeint|Pint32))
-    ->   
-    begin match args with 
-      | [e0] -> e0 
-      | _ -> assert false
-    end
-  | Pcvtbint (Pint64, (Pnativeint|Pint32)) 
-    ->  
-    Js_long.to_int32 args 
+
   | Pintoffloat -> 
     begin
       match args with 
       | [e] -> E.to_int32 e 
       | _ -> assert false 
     end
-  | Pbintofint Pint64
+  | Pint64ofint
     -> Js_long.of_int32 args 
-  | Pbintofint (Pnativeint 
-               | Pint32 )
-  | Pintofbint Pnativeint
-  | Pintofbint Pint32
   | Pfloatofint 
     -> Ext_list.singleton_exn args     
-  | Pintofbint Pint64
+  | Pintofint64
     -> Js_long.to_int32 args
   | Pnot ->
     E.not  (Ext_list.singleton_exn args)       

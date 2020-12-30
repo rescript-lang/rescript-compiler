@@ -37,7 +37,7 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
   | Const_base (Const_float i) -> (Const_float i)
   | Const_base (Const_int32 i) -> (Const_int {i;comment = None})
   | Const_base (Const_int64 i) -> (Const_int64 i)
-  | Const_base (Const_nativeint i) -> (Const_nativeint i)
+  | Const_base (Const_nativeint _) -> assert false
   | Const_pointer(0, Pt_constructor{name = "()"; const = 1; non_const = 0})
     -> Const_js_undefined
   | Const_pointer(i,p) ->

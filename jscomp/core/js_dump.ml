@@ -675,7 +675,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
         -> Int32.to_string i (* check , js convention with ocaml lexical convention *)
       | Uint i
         -> Format.asprintf "%lu" i
-      | Nint i -> Nativeint.to_string i in
+      in
     let need_paren =
       if s.[0] = '-'
       then level > 13  (* Negative numbers may need to be parenthesized. *)
