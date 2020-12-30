@@ -60,7 +60,6 @@ and translate (x : Lam_constant.t ) : J.expression =
   | Const_int {i; comment } -> E.int i ?comment:(Lam_constant.string_of_pointer_info comment)
   | Const_char i ->
     Js_of_lam_string.const_char i
-  
   (* E.float (Int32.to_string i) *)
   | Const_int64 i -> 
           (*
@@ -80,7 +79,7 @@ and translate (x : Lam_constant.t ) : J.expression =
     (* E.float (Int64.to_string i) *)
     Js_long.of_const i
   (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
-  | Const_nativeint i -> E.nint i 
+
   | Const_float f -> E.float f (* TODO: preserve float *)
   | Const_string i (*TODO: here inline js*) -> 
     E.str  i 

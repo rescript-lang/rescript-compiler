@@ -64,7 +64,7 @@ type t =
   | Pintcomp of Lam_compat.comparison
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
-  | Pbintcomp of Lam_compat.boxed_integer * Lam_compat.comparison
+  | Pint64comp of  Lam_compat.comparison
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
   | Pjs_runtime_apply (* [f; [...]] *)
   | Pstringlength 
@@ -89,21 +89,20 @@ type t =
   (* Test if the (integer) argument is outside an interval *)
   | Pisout of int
   (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
-  | Pbintofint of Lam_compat.boxed_integer
-  | Pintofbint of Lam_compat.boxed_integer
-  | Pcvtbint of Lam_compat.boxed_integer (*source*) * Lam_compat.boxed_integer (*destination*)
-  | Pnegbint of Lam_compat.boxed_integer
-  | Paddbint of Lam_compat.boxed_integer
-  | Psubbint of Lam_compat.boxed_integer
-  | Pmulbint of Lam_compat.boxed_integer
-  | Pdivbint of Lam_compat.boxed_integer
-  | Pmodbint of Lam_compat.boxed_integer
-  | Pandbint of Lam_compat.boxed_integer
-  | Porbint of Lam_compat.boxed_integer
-  | Pxorbint of Lam_compat.boxed_integer
-  | Plslbint of Lam_compat.boxed_integer
-  | Plsrbint of Lam_compat.boxed_integer
-  | Pasrbint of Lam_compat.boxed_integer
+  | Pint64ofint 
+  | Pintofint64
+  | Pnegint64
+  | Paddint64
+  | Psubint64
+  | Pmulint64
+  | Pdivint64
+  | Pmodint64
+  | Pandint64
+  | Porint64
+  | Pxorint64
+  | Plslint64
+  | Plsrint64
+  | Pasrint64
 
   (* Compile time constants *)
   | Pctconst of Lam_compat.compile_time_constant

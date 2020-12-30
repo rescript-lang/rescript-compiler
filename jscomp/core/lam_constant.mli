@@ -41,7 +41,6 @@ type t =
   | Const_unicode of string
   | Const_float of string
   | Const_int64 of int64
-  | Const_nativeint of nativeint
   | Const_pointer of string
   | Const_block of int * Lam_tag_info.t * t list
   | Const_float_array of string list

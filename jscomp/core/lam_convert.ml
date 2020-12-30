@@ -380,25 +380,97 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Parraysetu _ -> prim ~primitive:(Parraysetu ) ~args loc
   | Parrayrefs _ -> prim ~primitive:(Parrayrefs ) ~args loc
   | Parraysets _ -> prim ~primitive:(Parraysets ) ~args loc
-  | Pbintofint x -> prim ~primitive:(Pbintofint x) ~args loc
-  | Pintofbint x -> prim ~primitive:(Pintofbint x) ~args loc
-  | Pnegbint x -> prim ~primitive:(Pnegbint x) ~args loc
-  | Paddbint x -> prim ~primitive:(Paddbint x) ~args loc
-  | Psubbint x -> prim ~primitive:(Psubbint x) ~args loc
-  | Pmulbint x -> prim ~primitive:(Pmulbint x) ~args loc
+  | Pbintofint x -> 
+    begin match x with 
+    | Pint32 | Pnativeint -> Ext_list.singleton_exn args
+    | Pint64 -> prim ~primitive:(Pint64ofint ) ~args loc
+    end
+  | Pintofbint x -> 
+    begin match x with 
+      | Pint32 | Pnativeint -> Ext_list.singleton_exn args 
+      | Pint64 -> prim ~primitive:Pintofint64  ~args loc
+    end
+  | Pnegbint x -> 
+    begin match x with 
+    | Pnativeint -> assert false
+    | Pint32 -> prim ~primitive:Pnegint ~args loc 
+    | Pint64 -> prim ~primitive:Pnegint64 ~args loc 
+    end  
+  | Paddbint x -> 
+    begin match x with 
+    | Pnativeint -> assert false
+    | Pint32  -> prim ~primitive:Paddint ~args loc 
+    | Pint64 -> prim ~primitive:Paddint64 ~args loc
+    end 
+  | Psubbint x -> 
+    begin match x with 
+    | Pnativeint -> assert false 
+    | Pint32 -> prim ~primitive:(Psubint) ~args loc
+    | Pint64 -> prim ~primitive:(Psubint64) ~args loc
+    end
+  | Pmulbint x -> 
+    begin match x with 
+    | Pnativeint -> assert false 
+    | Pint32 -> prim ~primitive:Pmulint ~args loc
+    | Pint64 -> prim ~primitive:Pmulint64 ~args loc
+    end
   | Pdivbint 
     {size = x; is_safe = _} (*FIXME*)
     ->
-     prim ~primitive:(Pdivbint x) ~args loc
+    begin match x with 
+    | Pnativeint -> assert false
+    | Pint32 ->  prim ~primitive:(Pdivint) ~args loc
+    | Pint64->  prim ~primitive:(Pdivint64) ~args loc
+    end
   | Pmodbint 
     {size = x; is_safe = _} (*FIXME*)
-    -> prim ~primitive:(Pmodbint x) ~args loc
-  | Pandbint x -> prim ~primitive:(Pandbint x) ~args loc
-  | Porbint x -> prim ~primitive:(Porbint x) ~args loc
-  | Pxorbint x -> prim ~primitive:(Pxorbint x) ~args loc
-  | Plslbint x -> prim ~primitive:(Plslbint x) ~args loc
-  | Plsrbint x -> prim ~primitive:(Plsrbint x) ~args loc
-  | Pasrbint x -> prim ~primitive:(Pasrbint x) ~args loc
+    -> 
+      begin match x with 
+      | Pnativeint -> assert false 
+      | Pint32 -> prim ~primitive:(Pmodint ) ~args loc
+      | Pint64 -> prim ~primitive:(Pmodint64 ) ~args loc
+      end
+  | Pandbint x -> 
+    begin match x with 
+      | Pnativeint -> assert false 
+      | Pint32 -> 
+        prim ~primitive:(Pandint ) ~args loc
+      | Pint64 -> prim ~primitive:(Pandint64 ) ~args loc  
+    end
+  | Porbint x -> 
+    begin match x with 
+      | Pnativeint -> assert false 
+      | Pint32 -> 
+        prim ~primitive:(Porint ) ~args loc
+      | Pint64 -> 
+        prim ~primitive:(Porint64 ) ~args loc
+    end
+  | Pxorbint x -> 
+    begin match x with 
+      | Pnativeint -> assert false 
+      | Pint32 -> 
+        prim ~primitive:(Pxorint ) ~args loc
+      | Pint64 -> 
+        prim ~primitive:(Pxorint64 ) ~args loc
+    end
+  | Plslbint x -> 
+    begin match x with 
+    | Pnativeint -> assert false
+    | Pint32 -> prim ~primitive:(Plslint) ~args loc
+    | Pint64 -> prim ~primitive:(Plslint64) ~args loc
+    end
+  | Plsrbint x -> 
+    begin match x with 
+    | Pnativeint -> assert false 
+    | Pint32 -> prim ~primitive:(Plsrint) ~args loc
+    | Pint64 -> prim ~primitive:(Plsrint64) ~args loc
+    end
+  | Pasrbint x -> 
+    begin match x with 
+    | Pnativeint -> assert false 
+    | Pint32 -> prim ~primitive:(Pasrint) ~args loc
+    | Pint64 -> prim ~primitive:(Pasrint64) ~args loc
+    end
   | Pbigarraydim _ 
   | Pbigstring_load_16 _
   | Pbigstring_load_32 _
@@ -433,8 +505,23 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     end
 
   
-  | Pcvtbint (a,b) -> prim ~primitive:(Pcvtbint (a,b)) ~args loc
-  | Pbintcomp (a,b) -> prim ~primitive:(Pbintcomp (a,b)) ~args loc
+  | Pcvtbint (a,b) -> 
+    begin match a, b with 
+    | (Pnativeint | Pint32), (Pnativeint | Pint32) 
+    | Pint64, Pint64 ->   Ext_list.singleton_exn args 
+    | Pint64, (Pnativeint | Pint32) 
+      -> 
+      prim ~primitive:(Pintofint64) ~args loc
+    | (Pnativeint | Pint32) , Pint64 
+      ->   
+      prim ~primitive:(Pint64ofint) ~args loc
+    end
+  | Pbintcomp (a,b) -> 
+    begin match a with 
+    | Pnativeint -> prim ~primitive:(Pintcomp b) ~args loc (* FIXME*)
+    | Pint32 -> prim ~primitive:(Pintcomp b) ~args loc
+    | Pint64 -> prim ~primitive:(Pint64comp b) ~args loc
+    end
   | Pfield_computed -> 
     prim ~primitive:Pfield_computed ~args loc 
   | Popaque -> Ext_list.singleton_exn args      

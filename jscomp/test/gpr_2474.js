@@ -11,5 +11,7 @@ throw {
       Error: new Error()
     };
 
+var coordinates = 1;
+
 exports.coordinates = coordinates;
 /*  Not a pure module */

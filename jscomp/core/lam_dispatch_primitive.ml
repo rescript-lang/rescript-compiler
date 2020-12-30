@@ -578,7 +578,38 @@ let translate loc (prim_name : string)
       E.runtime_ref Js_runtime_modules.io "stdout"
     | "caml_ml_open_descriptor_out" when 
       args_const_unbox_approx_int_two args -> 
-      E.runtime_ref Js_runtime_modules.io "stderr"       
+      E.runtime_ref Js_runtime_modules.io "stderr"   
+    | "nativeint_add" -> 
+      begin match args with 
+        | [e1;e2] -> 
+          E.unchecked_int32_add e1 e2 
+        | _ -> assert false
+      end  
+      | "nativeint_div" -> 
+      begin match args with 
+        | [e1;e2] -> 
+          E.int32_div e1 e2 ~checked:false
+        | _ -> assert false
+      end  
+      | "nativeint_mod" -> 
+      begin match args with 
+        | [e1;e2] -> 
+          E.int32_mod e1 e2 ~checked:false
+        | _ -> assert false
+      end  
+      | "nativeint_lsr" -> 
+      begin match args with 
+        | [e1;e2] -> 
+          E.int32_lsr e1 e2 
+        | _ -> assert false
+      end 
+      | "nativeint_mul" -> 
+      begin match args with 
+        | [e1;e2] -> 
+          E.unchecked_int32_mul e1 e2 
+        | _ -> assert false
+      end  
+
     | _ -> 
       Bs_warnings.warn_missing_primitive loc prim_name  ;
       E.resolve_and_apply prim_name args

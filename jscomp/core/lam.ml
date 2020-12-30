@@ -534,10 +534,7 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
       (* | Pnegbint Pnativeint, ( (Const_nativeint i)) *)
       (*   ->   *)
       (*   Lift.nativeint (Nativeint.neg i) *)
-      | Pnegbint Pint32, Const_int {i = a}
-        ->
-        Lift.int (Int32.neg a)
-      | Pnegbint Pint64, Const_int64 a
+      | Pnegint64, Const_int64 a
         ->
         Lift.int64 (Int64.neg a)
       | Pnot, Const_js_true -> false_
@@ -548,12 +545,8 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
 
   | [Lconst a ; Lconst b] ->
     begin match prim, a, b  with
-      | (Pbintcomp(_, cmp) | Pintcomp (cmp)),  (Const_int {i = a}),  (Const_int {i = b})
-        -> Lift.bool (Lam_compat.cmp_int32 cmp a b)
-      | Pbintcomp(_, cmp),  (Const_int64 a),  (Const_int64 b)
+      | Pint64comp cmp,  (Const_int64 a),  (Const_int64 b)
         -> Lift.bool (Lam_compat.cmp_int64  cmp a b)
-      | Pbintcomp(_, cmp),  (Const_nativeint a),  (Const_nativeint b)
-        -> Lift.bool (Lam_compat.cmp_nativeint  cmp a b)
       | Pfloatcomp  cmp,  (Const_float a),  (Const_float b)
         -> (** FIXME: could raise? *)
           Lift.bool (Lam_compat.cmp_float  cmp (float_of_string a) (float_of_string b))
@@ -596,61 +589,34 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
           | Plsrint -> int_ (Int32.shift_right_logical aa  (Int32.to_int bb))
           | Pasrint -> int_ (Int32.shift_right aa (Int32.to_int bb))
           | _ -> default ()
-        end
-      | (Paddbint Pint32
-        | Psubbint Pint32
-        | Pmulbint Pint32
-        | Pdivbint Pint32
-        | Pmodbint Pint32
-        | Pandbint Pint32
-        | Porbint Pint32
-        | Pxorbint Pint32
-        ),  (Const_int {i = aa}),   (Const_int {i = bb})
-        ->
-        begin match prim with
-          | Paddbint _  -> Lift.int (Int32.add aa bb)
-          | Psubbint _  -> Lift.int (Int32.sub aa bb)
-          | Pmulbint _ -> Lift.int (Int32.mul aa  bb)
-          | Pdivbint _ ->  (try Lift.int (Int32.div aa  bb) with _  -> default ())
-          | Pmodbint _ -> (try Lift.int (Int32.rem aa  bb) with _ -> default ())
-          | Pandbint _ -> Lift.int (Int32.logand aa bb)
-          | Porbint _ -> Lift.int (Int32.logor aa bb)
-          | Pxorbint _ -> Lift.int (Int32.logxor aa bb)
-          | _ -> default ()
-        end
-      | Plslbint Pint32,  (Const_int {i = aa}),  (Const_int {i = b})
-        -> Lift.int (Int32.shift_left  aa (Int32.to_int b ))
-      | Plsrbint Pint32,  (Const_int {i = aa}),  (Const_int {i = b})
-        -> Lift.int (Int32.shift_right_logical  aa (Int32.to_int b ))
-      | Pasrbint Pint32,  (Const_int {i = aa}),  (Const_int {i = b})
-        -> Lift.int (Int32.shift_right  aa (Int32.to_int b ))
+        end            
 
-      | (Paddbint Pint64
-        | Psubbint Pint64
-        | Pmulbint Pint64
-        | Pdivbint Pint64
-        | Pmodbint Pint64
-        | Pandbint Pint64
-        | Porbint Pint64
-        | Pxorbint Pint64
+      | (Paddint64
+        | Psubint64
+        | Pmulint64
+        | Pdivint64
+        | Pmodint64
+        | Pandint64
+        | Porint64
+        | Pxorint64
         ),  (Const_int64 aa),   (Const_int64 bb)
         ->
         begin match prim with
-          | Paddbint _  -> Lift.int64 (Int64.add aa bb)
-          | Psubbint _  -> Lift.int64 (Int64.sub aa bb)
-          | Pmulbint _ -> Lift.int64 (Int64.mul aa  bb)
-          | Pdivbint _ -> (try Lift.int64 (Int64.div aa  bb) with _ -> default ())
-          | Pmodbint _ -> (try Lift.int64 (Int64.rem aa  bb) with _ -> default ())
-          | Pandbint _ -> Lift.int64 (Int64.logand aa bb)
-          | Porbint _ -> Lift.int64 (Int64.logor aa bb)
-          | Pxorbint _ -> Lift.int64 (Int64.logxor aa bb)
+          | Paddint64   -> Lift.int64 (Int64.add aa bb)
+          | Psubint64  -> Lift.int64 (Int64.sub aa bb)
+          | Pmulint64 -> Lift.int64 (Int64.mul aa  bb)
+          | Pdivint64 -> (try Lift.int64 (Int64.div aa  bb) with _ -> default ())
+          | Pmodint64 -> (try Lift.int64 (Int64.rem aa  bb) with _ -> default ())
+          | Pandint64 -> Lift.int64 (Int64.logand aa bb)
+          | Porint64 -> Lift.int64 (Int64.logor aa bb)
+          | Pxorint64 -> Lift.int64 (Int64.logxor aa bb)
           | _ -> default ()
         end
-      | Plslbint Pint64,  (Const_int64 aa),  (Const_int {i = b})
+      | Plslint64,  (Const_int64 aa),  (Const_int {i = b})
         -> Lift.int64 (Int64.shift_left  aa (Int32.to_int b ))
-      | Plsrbint Pint64,  (Const_int64 aa),  (Const_int {i = b})
+      | Plsrint64,  (Const_int64 aa),  (Const_int {i = b})
         -> Lift.int64 (Int64.shift_right_logical  aa (Int32.to_int b ))
-      | Pasrbint Pint64,  (Const_int64 aa),  (Const_int {i = b})
+      | Pasrint64,  (Const_int64 aa),  (Const_int {i = b})
         -> Lift.int64 (Int64.shift_right  aa (Int32.to_int b ))
 
       | Psequand, Const_js_false, 
@@ -744,8 +710,6 @@ let rec eval_const_as_bool (v : Lam_constant.t ) : bool =
     Char.code x <> 0 
   |  (Const_int64 x) ->
     x <> 0L 
-  | (Const_nativeint x) ->
-    x <> 0n 
   | Const_js_false 
   | Const_js_null
   | Const_module_alias

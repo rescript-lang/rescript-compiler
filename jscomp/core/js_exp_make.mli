@@ -123,7 +123,6 @@ val method_ : ?comment:string ->
 val econd : ?comment:string -> t -> t -> t -> t
 
 val int : ?comment:string -> ?c:char ->  int32 -> t 
-val nint : ?comment:string -> nativeint -> t 
 val small_int : int -> t
 val float : ?comment:string -> string -> t
 
