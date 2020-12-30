@@ -151,8 +151,8 @@ let happens_to_be_diff
     (sw_consts :
        (int * Lambda.lambda) list) : int option =
   match sw_consts with
-  | (a, Lconst (Const_pointer (a0,_)| Const_base (Const_int a0)))::
-    (b, Lconst (Const_pointer (b0,_)| Const_base (Const_int b0)))::
+  | (a, Lconst (Const_pointer (a0,Pt_constructor _)| Const_base (Const_int a0)))::
+    (b, Lconst (Const_pointer (b0,Pt_constructor _)| Const_base (Const_int b0)))::
     rest when
      no_over_flow a  &&
      no_over_flow a0 &&
@@ -162,7 +162,7 @@ let happens_to_be_diff
     if b0 - b = diff then
       if Ext_list.for_all rest (fun (x, lam) ->
           match lam with
-          | Lconst (Const_pointer(x0,_) | Const_base(Const_int x0))
+          | Lconst (Const_pointer(x0, Pt_constructor _) | Const_base(Const_int x0))
             when no_over_flow x0 && no_over_flow x ->
             x0 - x = diff
           | _ -> false

@@ -22,19 +22,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type constructor_tag =  { name : string; const : int; non_const : int} 
+type pointer_info = 
+    | None 
+    | Pt_constructor of constructor_tag
+    | Pt_assertfalse
+    | Some of string
+let string_of_pointer_info (x : pointer_info) : string option =     
+  match x with 
+  | Some name
+  | Pt_constructor {name;_} -> Some name
+  | Pt_assertfalse -> Some "assert_false"
+  | None -> None
+
 type t =
   | Const_js_null
   | Const_js_undefined
   | Const_js_true
   | Const_js_false
-  | Const_int of {i : int32; comment : string option}
+  | Const_int of {i : int32; comment : pointer_info}
   | Const_char of char
   | Const_string of string  (* use record later *)
   | Const_unicode of string
   | Const_float of string  
   | Const_int64 of int64
   | Const_nativeint of nativeint
-  | Const_pointer of int * Lam_pointer_info.t
+  | Const_pointer of string
   | Const_block of int * Lam_tag_info.t * t list
   | Const_float_array of string list
   | Const_some of t 
@@ -65,8 +78,8 @@ let rec eq_approx (x : t) (y : t) =
     (match y with Const_int64 iy -> ix = iy | _ -> false)
   | Const_nativeint ix ->   
     (match y with Const_nativeint iy -> ix = iy | _ -> false)
-  | Const_pointer (ix,_) ->   
-    (match y with Const_pointer (iy,_) -> ix = iy | _ -> false)
+  | Const_pointer ix ->   
+    (match y with Const_pointer (iy) -> ix = iy | _ -> false)
   | Const_block(ix,_,ixs) -> 
     (match y with Const_block(iy,_,iys) -> ix = iy && Ext_list.for_all2_no_exn ixs iys eq_approx
     | _ -> false)

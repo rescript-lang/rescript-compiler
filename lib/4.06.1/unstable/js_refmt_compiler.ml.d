@@ -309,8 +309,6 @@
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./core/lam_pass_lets_dce.mli
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./core/lam_pass_remove_alias.ml
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./core/lam_pass_remove_alias.mli
-../lib/4.06.1/unstable/js_refmt_compiler.ml: ./core/lam_pointer_info.ml
-../lib/4.06.1/unstable/js_refmt_compiler.ml: ./core/lam_pointer_info.mli
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./core/lam_primitive.ml
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./core/lam_primitive.mli
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./core/lam_print.ml

@@ -124,10 +124,6 @@ function bFromJs(param) {
   return param - 0 | 0;
 }
 
-var b0 = 0;
-
-var b1 = 1;
-
 function idb(v) {
   return eq("File \"ast_abstract_test.ml\", line 71, characters 5-12", bFromJs(v + 0 | 0), v);
 }
@@ -158,8 +154,6 @@ function cFromJs(param) {
   }
   return param - 3 | 0;
 }
-
-var c0 = 3;
 
 function idc(v) {
   return eq("File \"ast_abstract_test.ml\", line 83, characters 15-22", cFromJs(v + 3 | 0), v);
@@ -208,6 +202,12 @@ Mt.from_pair_suites("Ast_abstract_test", suites.contents);
 var x0 = "a";
 
 var x1 = "b";
+
+var b0 = 0;
+
+var b1 = 1;
+
+var c0 = 3;
 
 var jsMapperEraseType = /* JsMapperEraseType */0;
 

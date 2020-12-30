@@ -418,9 +418,6 @@ and eq_approx_list ls ls1 =  Ext_list.for_all2_no_exn ls ls1 eq_approx
 
 let switch lam (lam_switch : lambda_switch) : t =
   match lam with
-  | Lconst (Const_pointer (i,_)) 
-    ->
-    Ext_list.assoc_by_int   lam_switch.sw_consts i lam_switch.sw_failaction
   | Lconst (Const_int {i})
     ->
     Ext_list.assoc_by_int   lam_switch.sw_consts (Int32.to_int i) lam_switch.sw_failaction  
@@ -545,8 +542,6 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
         Lift.int64 (Int64.neg a)
       | Pnot, Const_js_true -> false_
       | Pnot, Const_js_false -> true_
-      | Pnot , Const_pointer (a,_)
-        -> Lift.bool (a = 0 )
       | _ -> default ()
     end
 
@@ -562,15 +557,12 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
       | Pfloatcomp  cmp,  (Const_float a),  (Const_float b)
         -> (** FIXME: could raise? *)
           Lift.bool (Lam_compat.cmp_float  cmp (float_of_string a) (float_of_string b))
-      | Pintcomp cmp ,
-        (  Const_pointer (a,Pt_constructor _)),
-        ( Const_pointer (b,Pt_constructor _))
-        -> Lift.bool (Lam_compat.cmp_int cmp a b)
+      
       | Pintcomp (Ceq | Cneq as op) ,
-        (  Const_pointer (_,Pt_variant{name = a} )),
-        ( Const_pointer (_,Pt_variant {name =b }))
+         Const_pointer a,
+         Const_pointer b
         -> Lift.bool (match op with
-        | Ceq ->  a  = b
+        | Ceq ->  a  = (b : string)
         | Cneq -> a <> b 
         | _ -> assert false )
       | (Paddint
@@ -746,10 +738,7 @@ let rec complete_range  (sw_consts : (int * _) list) ~(start : int) ~finish=
       complete_range  rest ~start:(start + 1) ~finish
 
 let rec eval_const_as_bool (v : Lam_constant.t ) : bool = 
-  match v with
-  | Const_pointer (x, _)  
-    ->
-    x <> 0 (* FIXME: strictly wrong, when a variant happens to hash get 0 *)
+  match v with  
   | (Const_int {i =  x}) -> x <> 0l
   | (Const_char x) ->
     Char.code x <> 0 
@@ -763,6 +752,7 @@ let rec eval_const_as_bool (v : Lam_constant.t ) : bool =
   | Const_js_undefined -> false
   | Const_js_true
   | Const_string _
+  | Const_pointer _  
   | Const_float _
   | Const_unicode _
   | Const_block _
@@ -777,9 +767,9 @@ let if_ (a : t) (b : t) (c : t) : t =
     if eval_const_as_bool v then b else c
   | _ -> 
     match  b, c with 
-    | _, Lconst (Const_pointer (_, Pt_assertfalse))
+    | _, Lconst (Const_int {comment = Pt_assertfalse})
       -> seq a b (* TODO: we could customize more cases *)
-    | Lconst (Const_pointer (_, Pt_assertfalse)), _ 
+    | Lconst (Const_int {comment = Pt_assertfalse}), _ 
       -> seq a c
     | Lconst(Const_js_true), Lconst(Const_js_false)
       -> 
