@@ -26,7 +26,6 @@ module Recover = struct
   let defaultPattern () =
     let id = Location.mknoloc "rescript.patternhole" in
     Ast_helper.Pat.extension (id, PStr [])
-    (* Ast_helper.Pat.any  () *)
 
   let defaultModuleExpr () = Ast_helper.Mod.structure []
   let defaultModuleType () = Ast_helper.Mty.signature []
@@ -104,6 +103,12 @@ Solution: directly use `concat`."
     "A type declaration's name cannot contain a module access. Did you mean `" ^ (Longident.last longident) ^"`?"
 
   let tupleSingleElement = "A tuple needs at least two elements"
+
+  let missingTildeLabeledParameter name =
+    if name = "" then
+      "A labeled parameter starts with a `~`."
+    else
+      ("A labeled parameter starts with a `~`. Did you mean: `~" ^ name ^ "`?")
 end
 
 
@@ -1595,6 +1600,10 @@ and parseParameter p =
       let lidents = parseLidentList p in
       Some (TypeParameter {uncurried; attrs; locs = lidents; pos = startPos})
     ) else (
+    let hasTilde = match p.token with
+    | Tilde -> true
+    | _ -> false
+    in
     let (attrs, lbl, pat) = match p.Parser.token with
     | Tilde ->
       Parser.next p;
@@ -1641,11 +1650,18 @@ and parseParameter p =
     in
     match p.Parser.token with
     | Equal ->
+      if not hasTilde then (
+        let msg = match pat.ppat_desc with
+        | Ppat_var var -> ErrorMessages.missingTildeLabeledParameter var.txt
+        | _ -> ErrorMessages.missingTildeLabeledParameter ""
+        in
+        Parser.err ~startPos  p (Diagnostics.message msg)
+      );
       Parser.next p;
       let lbl = match lbl with
-      | Asttypes.Labelled lblName -> Asttypes.Optional lblName
-      | Asttypes.Optional _ as lbl -> lbl
-      | Asttypes.Nolabel -> Asttypes.Nolabel
+      | Asttypes.Labelled lblName ->
+        Asttypes.Optional lblName
+      | lbl -> lbl
       in
       begin match p.Parser.token with
       | Question ->
@@ -3848,9 +3864,9 @@ and parseTypeParameter p =
       begin match p.token with
       | Colon ->
         let () =
-          let error = Diagnostics.message
-            ("Parameter names start with a `~`, like: ~" ^ name)
-          in
+          let error = Diagnostics.message (
+            ErrorMessages.missingTildeLabeledParameter name
+          ) in
           Parser.err ~startPos:loc.loc_start ~endPos:loc.loc_end p error
         in
         Parser.next p;

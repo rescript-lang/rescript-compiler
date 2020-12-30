@@ -100,7 +100,7 @@ type nonrec draw = stroke:pencil -> unit
   1 │ type  draw = (stroke: pencil) => unit
   2 │ 
   
-  Parameter names start with a \`~\`, like: ~stroke
+  A labeled parameter starts with a \`~\`. Did you mean: \`~stroke\`?
 
 
 ========================================================"
