@@ -37,7 +37,7 @@ module M = struct ;;match l with | None -> [] | Some l -> l ## prop end
 
 exports[`labelledParameters.res 1`] = `
 "=====Parsetree==========================================
-let f x y z = (x + y) + z
+let f x ?(y= 2)  z = (x + y) + z
 type nonrec f = x:int -> y:int -> int
 =====Errors=============================================
 

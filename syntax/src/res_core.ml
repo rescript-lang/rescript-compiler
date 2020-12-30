@@ -1600,10 +1600,6 @@ and parseParameter p =
       let lidents = parseLidentList p in
       Some (TypeParameter {uncurried; attrs; locs = lidents; pos = startPos})
     ) else (
-    let hasTilde = match p.token with
-    | Tilde -> true
-    | _ -> false
-    in
     let (attrs, lbl, pat) = match p.Parser.token with
     | Tilde ->
       Parser.next p;
@@ -1650,16 +1646,14 @@ and parseParameter p =
     in
     match p.Parser.token with
     | Equal ->
-      if not hasTilde then (
-        let msg = match pat.ppat_desc with
-        | Ppat_var var -> ErrorMessages.missingTildeLabeledParameter var.txt
-        | _ -> ErrorMessages.missingTildeLabeledParameter ""
-        in
-        Parser.err ~startPos  p (Diagnostics.message msg)
-      );
       Parser.next p;
       let lbl = match lbl with
-      | Asttypes.Labelled lblName ->
+      | Asttypes.Labelled lblName -> Asttypes.Optional lblName
+      | Asttypes.Nolabel ->
+        let lblName = match pat.ppat_desc with | Ppat_var var -> var.txt | _ -> "" in
+        Parser.err ~startPos ~endPos:p.prevEndPos p (
+          Diagnostics.message (ErrorMessages.missingTildeLabeledParameter lblName)
+        );
         Asttypes.Optional lblName
       | lbl -> lbl
       in
