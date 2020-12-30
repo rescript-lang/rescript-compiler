@@ -151,8 +151,8 @@ let happens_to_be_diff
     (sw_consts :
        (int * Lambda.lambda) list) : int option =
   match sw_consts with
-  | (a, Lconst (Const_pointer (a0,_)| Const_base (Const_int a0)))::
-    (b, Lconst (Const_pointer (b0,_)| Const_base (Const_int b0)))::
+  | (a, Lconst (Const_pointer (a0,Pt_constructor _)| Const_base (Const_int a0)))::
+    (b, Lconst (Const_pointer (b0,Pt_constructor _)| Const_base (Const_int b0)))::
     rest when
      no_over_flow a  &&
      no_over_flow a0 &&
@@ -162,7 +162,7 @@ let happens_to_be_diff
     if b0 - b = diff then
       if Ext_list.for_all rest (fun (x, lam) ->
           match lam with
-          | Lconst (Const_pointer(x0,_) | Const_base(Const_int x0))
+          | Lconst (Const_pointer(x0, Pt_constructor _) | Const_base(Const_int x0))
             when no_over_flow x0 && no_over_flow x ->
             x0 - x = diff
           | _ -> false
@@ -418,8 +418,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pctconst x ->
     begin match x with
       | Word_size 
-      | Int_size -> Lam.const(Const_int {value = 32; comment = None})  
-      | Max_wosize -> Lam.const (Const_int {value = 2147483647; comment = Some "Max_wosize"})
+      | Int_size -> Lam.const(Const_int {i = 32l; comment = None})  
+      | Max_wosize -> Lam.const (Const_int {i = 2147483647l; comment = Some "Max_wosize"})
       | Big_endian
         -> prim ~primitive:(Pctconst Big_endian) ~args loc
       | Ostype_unix
@@ -835,7 +835,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
             | Some i ->
               prim
                 ~primitive:Paddint
-                ~args:[e; Lam.const(Const_int {value = i; comment = None})]
+                ~args:[e; Lam.const(Const_int {i = Int32.of_int i; comment = None})]
                 Location.none
             | None ->
               Lam.switch e

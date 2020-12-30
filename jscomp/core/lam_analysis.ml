@@ -26,8 +26,7 @@
 (**used in effect analysis, it is sound but not-complete *)
 let not_zero_constant ( x : Lam_constant.t) =  
   match x with 
-  | Const_int {value }  -> value <> 0
-  | Const_int32 i  -> i <> 0l
+  | Const_int {i }  -> i <> 0l
   | Const_int64 i  -> i <> 0L
   | Const_nativeint i -> i <> 0n
   | _ -> false 
@@ -62,9 +61,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
             | "caml_obj_dup"
             | "caml_array_dup"            
             ), _  -> true 
-          | "caml_ml_open_descriptor_in", [Lconst (  (Const_int {value = 0}))] -> true 
+          | "caml_ml_open_descriptor_in", [Lconst (  (Const_int {i = 0l}))] -> true 
           | "caml_ml_open_descriptor_out", 
-            [Lconst (  (Const_int {value = 1|2})) ]
+            [Lconst (  (Const_int {i = 1l|2l})) ]
             -> true
           (* we can not mark it pure
              only when we guarantee this exception is caught...
@@ -275,9 +274,8 @@ and size_constant x =
   match x with 
   | Const_int _ | Const_char _ 
 
-  | Const_float _  | Const_int32 _ | Const_int64 _ 
+  | Const_float _  | Const_int64 _ 
   | Const_nativeint _ 
-  | Const_immstring _
   | Const_pointer _ 
   | Const_js_null | Const_js_undefined | Const_module_alias
   | Const_js_true | Const_js_false
@@ -362,7 +360,7 @@ let safe_to_inline (lam : Lam.t) =
   | Lfunction _ ->  true
   | Lconst 
     (Const_pointer _  
-    | Const_immstring _ 
+    |Const_int {comment = Pt_constructor _}
     | Const_js_true 
     | Const_js_false
     | Const_js_undefined

@@ -51,7 +51,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
         | {times = 1; captured = true }, (Lconst _ | Lvar _)
         |  _, (Lconst 
                  ((
-                     Const_int _ | Const_char _ | Const_float _ | Const_int32 _ 
+                     Const_int _ | Const_char _ | Const_float _ 
                      | Const_nativeint _ )
                  | Const_pointer _ |Const_js_true | Const_js_false | Const_js_undefined) (* could be poly-variant [`A] -> [65a]*)
               | Lprim {primitive = Pfield (_);
@@ -205,8 +205,9 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
       | None -> Lam.prim ~primitive ~args:[l';r'] loc 
       | Some l_s -> 
         match r with 
-        |Lconst((Const_int {value = i})) -> 
-          if i < String.length l_s && i >=0  then
+        |Lconst((Const_int {i})) -> 
+          let i = Int32.to_int i in
+          if i < String.length l_s && i >= 0  then
             Lam.const ((Const_char l_s.[i]))
           else 
             Lam.prim ~primitive ~args:[l';r'] loc 

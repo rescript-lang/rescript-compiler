@@ -57,10 +57,10 @@ and translate (x : Lam_constant.t ) : J.expression =
   | Const_js_false -> E.bool false
   | Const_js_null -> E.nil
   | Const_js_undefined -> E.undefined
-  | Const_int {value; comment } -> E.int (Int32.of_int value) ?comment
+  | Const_int {i; comment } -> E.int i ?comment:(Lam_constant.string_of_pointer_info comment)
   | Const_char i ->
     Js_of_lam_string.const_char i
-  | Const_int32 i -> E.int i 
+  
   (* E.float (Int32.to_string i) *)
   | Const_int64 i -> 
           (*
@@ -88,13 +88,8 @@ and translate (x : Lam_constant.t ) : J.expression =
     E.unicode i 
 
 
-  | Const_pointer (c,pointer_info) ->     
-    begin match pointer_info with 
-      | Pt_variant {name} -> E.str name
-      | _ -> 
-        E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info)
-          (Int32.of_int c )
-    end
+  | Const_pointer name ->     
+     E.str name
   | Const_block(tag, tag_info, xs ) -> 
     Js_of_lam_block.make_block NA tag_info 
       (E.small_int  tag) (Ext_list.map xs translate)
@@ -116,8 +111,6 @@ and translate (x : Lam_constant.t ) : J.expression =
   (* E.arr Mutable ~comment:"float array" *)
   (*   (Ext_list.map (fun x ->  E.float  x ) ars) *)
 
-  | Const_immstring s ->  (*TODO *)
-    E.str s  (* TODO: check *)
 
 (* and translate_optional s = 
   let  b = 

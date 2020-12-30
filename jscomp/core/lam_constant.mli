@@ -22,23 +22,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type constructor_tag =  { name : string; const : int; non_const : int} 
+type pointer_info = 
+  | None 
+  | Pt_constructor of constructor_tag
+  | Pt_assertfalse
+  | Some of string 
+val string_of_pointer_info :
+  pointer_info -> string option  
 type t =
   | Const_js_null
   | Const_js_undefined
   | Const_js_true
   | Const_js_false
-  | Const_int of {value : int; comment : string option}
+  | Const_int of {i : int32; comment : pointer_info}
   | Const_char of char
   | Const_string of string  (* use record later *)
   | Const_unicode of string
   | Const_float of string
-  | Const_int32 of int32
   | Const_int64 of int64
   | Const_nativeint of nativeint
-  | Const_pointer of int * Lam_pointer_info.t
+  | Const_pointer of string
   | Const_block of int * Lam_tag_info.t * t list
   | Const_float_array of string list
-  | Const_immstring of string
   | Const_some of t 
     (* eventually we can remove it, since we know
       [constant] is [undefined] or not 

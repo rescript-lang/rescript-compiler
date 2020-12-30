@@ -24,7 +24,7 @@
 
 let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t =
   match const with
-  | Const_base (Const_int i) -> Const_int {value = i; comment = None}
+  | Const_base (Const_int i) -> Const_int {i = Int32.of_int i; comment = None}
   | Const_base (Const_char i) -> (Const_char i)
   | Const_base (Const_string(i,opt)) ->
       (match opt with
@@ -35,7 +35,7 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
         Const_string i)
     
   | Const_base (Const_float i) -> (Const_float i)
-  | Const_base (Const_int32 i) -> (Const_int32 i)
+  | Const_base (Const_int32 i) -> (Const_int {i;comment = None})
   | Const_base (Const_int64 i) -> (Const_int64 i)
   | Const_base (Const_nativeint i) -> (Const_nativeint i)
   | Const_pointer(0, Pt_constructor{name = "()"; const = 1; non_const = 0})
@@ -46,13 +46,15 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
       | Pt_builtin_boolean -> if i = 0 then Const_js_false else Const_js_true
       | Pt_shape_none ->
         Lam_constant.lam_none
-    | Pt_assertfalse    
-    | Pt_constructor _
-    | Pt_variant _    
-    | Pt_na ->  Const_pointer(i, p)      
+    | Pt_assertfalse    -> 
+      Const_int { i = Int32.of_int i ; comment = Pt_assertfalse}
+    | Pt_constructor {name;const;non_const} ->
+      Const_int {i = Int32.of_int i ; comment = Pt_constructor {name;const;non_const}} 
+    | Pt_variant {name} -> Const_pointer name
+    | Pt_na ->  Const_int{i = Int32.of_int i ; comment = None}      
      end 
   | Const_float_array (s) -> Const_float_array(s)
-  | Const_immstring s -> Const_immstring s
+  | Const_immstring s -> Const_string s
   | Const_block (i,t,xs) ->
     begin match t with 
     | Blk_some_not_nested -> 

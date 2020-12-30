@@ -63,12 +63,3 @@ let comment_of_tag_info  (x : Lam_tag_info.t) =
   | Blk_na s -> if s = "" then None else Some s
 
 (* let module_alias = Some "alias"   *)
-let comment_of_pointer_info (x :  Lam_pointer_info.t)= 
-  match x with 
-  | Pt_constructor {name;_}
-  | Pt_variant {name} -> Some name
-  | Pt_assertfalse -> Some "assert_false"
-  | Pt_na -> None
-  | Pt_module_alias 
-  | Pt_builtin_boolean
-  | Pt_shape_none -> assert false
