@@ -28,7 +28,6 @@ let not_zero_constant ( x : Lam_constant.t) =
   match x with 
   | Const_int {i }  -> i <> 0l
   | Const_int64 i  -> i <> 0L
-  | Const_nativeint i -> i <> 0n
   | _ -> false 
 
 
@@ -72,8 +71,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
         end 
       | Pmodint
       | Pdivint 
-      | Pdivbint _
-      | Pmodbint _ 
+      | Pdivint64
+      | Pmodint64
         -> begin match args with 
           | [_ ; Lconst cst ] -> not_zero_constant cst 
           | _ -> false 
@@ -134,20 +133,19 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pis_poly_var_const
       (* Test if the (integer) argument is outside an interval *)
       | Pisout _
-      | Pbintofint _
-      | Pintofbint _
-      | Pcvtbint _
-      | Pnegbint _
-      | Paddbint _
-      | Psubbint _
-      | Pmulbint _
-      | Pandbint _
-      | Porbint _
-      | Pxorbint _
-      | Plslbint _
-      | Plsrbint _
-      | Pasrbint _
-      | Pbintcomp _
+      | Pint64ofint 
+      | Pintofint64 
+      | Pnegint64
+      | Paddint64 
+      | Psubint64
+      | Pmulint64
+      | Pandint64 
+      | Porint64 
+      | Pxorint64
+      | Plslint64
+      | Plsrint64
+      | Pasrint64
+      | Pint64comp _
       (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
 
       (* Compile time constants *)
@@ -275,7 +273,6 @@ and size_constant x =
   | Const_int _ | Const_char _ 
 
   | Const_float _  | Const_int64 _ 
-  | Const_nativeint _ 
   | Const_pointer _ 
   | Const_js_null | Const_js_undefined | Const_module_alias
   | Const_js_true | Const_js_false

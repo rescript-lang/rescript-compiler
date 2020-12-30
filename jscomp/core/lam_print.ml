@@ -12,7 +12,7 @@
 
 open Format
 open Asttypes
-open Primitive
+
 
 
 
@@ -30,7 +30,6 @@ let rec struct_const ppf (cst : Lam_constant.t) =
   |  (Const_unicode s) -> fprintf ppf "%S" s
   |  (Const_float f) -> fprintf ppf "%s" f
   |  (Const_int64 n) -> fprintf ppf "%LiL" n
-  |  (Const_nativeint n) -> fprintf ppf "%nin" n
   | Const_pointer(name) ->
     fprintf ppf "`%s" name 
   
@@ -48,26 +47,7 @@ let rec struct_const ppf (cst : Lam_constant.t) =
       List.iter (fun f -> fprintf ppf "@ %s" f) fl in
     fprintf ppf "@[<1>[|@[%s%a@]|]@]" f1 floats fl
 
-let boxed_integer_name (i : Lam_compat.boxed_integer) =
-  match i with 
-  | Pnativeint -> "nativeint"
-  | Pint32 -> "int32"
-  | Pint64 -> "int64"
 
-(* let print_boxed_integer name ppf bi =
-  fprintf ppf "%s_%s" (boxed_integer_name bi) name *)
-
-let print_boxed_integer_conversion ppf bi1 bi2 =
-  fprintf ppf "%s_of_%s" (boxed_integer_name bi2) (boxed_integer_name bi1)
-
-let boxed_integer_mark name (i : Lam_compat.boxed_integer) = 
-  match i with 
-  | Pnativeint -> Printf.sprintf "Nativeint.%s" name
-  | Pint32 -> Printf.sprintf "Int32.%s" name
-  | Pint64 -> Printf.sprintf "Int64.%s" name
-
-let print_boxed_integer name ppf bi =
-  fprintf ppf "%s" (boxed_integer_mark name bi);;
 
 let record_rep ppf (r : Lam_primitive.record_representation) =
   match r with
@@ -219,27 +199,26 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pisint -> fprintf ppf "isint"
   | Pis_poly_var_const -> fprintf ppf "#is_poly_var_const"
   | Pisout i -> fprintf ppf "isout %d" i
-  | Pbintofint bi -> print_boxed_integer "of_int" ppf bi
-  | Pintofbint bi -> print_boxed_integer "to_int" ppf bi
-  | Pcvtbint (bi1, bi2) -> print_boxed_integer_conversion ppf bi1 bi2
-  | Pnegbint bi -> print_boxed_integer "neg" ppf bi
-  | Paddbint bi -> print_boxed_integer "add" ppf bi
-  | Psubbint bi -> print_boxed_integer "sub" ppf bi
-  | Pmulbint bi -> print_boxed_integer "mul" ppf bi
-  | Pdivbint bi -> print_boxed_integer "div" ppf bi
-  | Pmodbint bi -> print_boxed_integer "mod" ppf bi
-  | Pandbint bi -> print_boxed_integer "and" ppf bi
-  | Porbint bi -> print_boxed_integer "or" ppf bi
-  | Pxorbint bi -> print_boxed_integer "xor" ppf bi
-  | Plslbint bi -> print_boxed_integer "lsl" ppf bi
-  | Plsrbint bi -> print_boxed_integer "lsr" ppf bi
-  | Pasrbint bi -> print_boxed_integer "asr" ppf bi
-  | Pbintcomp(bi, Ceq) -> print_boxed_integer "==[bint]" ppf bi
-  | Pbintcomp(bi, Cneq) -> print_boxed_integer "!=" ppf bi
-  | Pbintcomp(bi, Clt) -> print_boxed_integer "<" ppf bi
-  | Pbintcomp(bi, Cgt) -> print_boxed_integer ">" ppf bi
-  | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
-  | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
+  | Pint64ofint -> fprintf ppf "of_int" 
+  | Pintofint64 -> fprintf ppf "to_int"   
+  | Pnegint64 -> fprintf ppf "neg64"
+  | Paddint64 -> fprintf ppf "add64" 
+  | Psubint64  -> fprintf ppf "sub64"
+  | Pmulint64  -> fprintf ppf "mul64" 
+  | Pdivint64  -> fprintf ppf "div64"
+  | Pmodint64  -> fprintf ppf "mod64" 
+  | Pandint64  -> fprintf ppf "and64"
+  | Porint64  -> fprintf ppf "or64"
+  | Pxorint64  -> fprintf ppf "xor64" 
+  | Plslint64  -> fprintf ppf "lsl64" 
+  | Plsrint64  -> fprintf ppf "lsr64"
+  | Pasrint64  -> fprintf ppf "asr64"
+  | Pint64comp(Ceq) -> fprintf ppf "==" 
+  | Pint64comp(Cneq) -> fprintf ppf "!=" 
+  | Pint64comp(Clt) -> fprintf ppf "<" 
+  | Pint64comp(Cgt) -> fprintf ppf ">" 
+  | Pint64comp(Cle) -> fprintf ppf "<=" 
+  | Pint64comp(Cge) -> fprintf ppf ">=" 
 
 
 

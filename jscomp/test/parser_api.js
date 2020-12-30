@@ -9886,7 +9886,7 @@ var yyact = [
                                 TAG: /* Pexp_constant */1,
                                 _0: {
                                   TAG: /* Const_nativeint */6,
-                                  _0: -n._0
+                                  _0: Caml_external_polyfill.resolve("nativeint_neg")(n._0)
                                 }
                               });
                 default:
@@ -12893,7 +12893,7 @@ var yyact = [
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return {
               TAG: /* Const_nativeint */6,
-              _0: -_2
+              _0: Caml_external_polyfill.resolve("nativeint_neg")(_2)
             };
     }),
   (function (__caml_parser_env) {

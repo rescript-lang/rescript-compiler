@@ -273,7 +273,7 @@ let rec eq_expression
     | Caml_block_tag _ 
     
     | Object _ 
-    | Number (Uint _ | Nint _)
+    | Number (Uint _ )
 
       ->  false 
   end

@@ -51,7 +51,7 @@ external unsafe_to_int64 : t -> int64 = "%identity"
 external unsafe_of_int64 : int64 -> t = "%identity"
 
 
-let mk ~lo ~hi =  {lo = lo >>>~ 0 ; hi}
+let [@inline] mk ~lo ~hi =  {lo = lo >>>~ 0 ; hi}
 let min_int =  mk  ~lo: 0 ~hi:(0x80000000)
 (* The high bits are signed 0x80000000 |~ 0 *)
 

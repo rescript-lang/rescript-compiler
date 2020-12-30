@@ -67,7 +67,7 @@ type t =
   | Pintcomp of Lam_compat.comparison
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
-  | Pbintcomp of Lam_compat.boxed_integer * Lam_compat.comparison
+  | Pint64comp of Lam_compat.comparison
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
   | Pjs_runtime_apply (* [f; [...]] *)
   (* String operations *)
@@ -92,23 +92,20 @@ type t =
   | Pis_poly_var_const
   (* Test if the (integer) argument is outside an interval *)
   | Pisout  of int 
-  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
-  | Pbintofint of Lam_compat.boxed_integer
-  | Pintofbint of Lam_compat.boxed_integer
-  | Pcvtbint of Lam_compat.boxed_integer (*source*) * Lam_compat.boxed_integer (*destination*)
-  | Pnegbint of Lam_compat.boxed_integer
-  | Paddbint of Lam_compat.boxed_integer
-  | Psubbint of Lam_compat.boxed_integer
-  | Pmulbint of Lam_compat.boxed_integer
-  | Pdivbint of Lam_compat.boxed_integer
-  | Pmodbint of Lam_compat.boxed_integer
-  | Pandbint of Lam_compat.boxed_integer
-  | Porbint of Lam_compat.boxed_integer
-  | Pxorbint of Lam_compat.boxed_integer
-  | Plslbint of Lam_compat.boxed_integer
-  | Plsrbint of Lam_compat.boxed_integer
-  | Pasrbint of Lam_compat.boxed_integer
-  
+  | Pint64ofint 
+  | Pintofint64
+  | Pnegint64
+  | Paddint64
+  | Psubint64
+  | Pmulint64
+  | Pdivint64
+  | Pmodint64
+  | Pandint64
+  | Porint64
+  | Pxorint64
+  | Plslint64
+  | Plsrint64 
+  | Pasrint64  
   (* Compile time constants *)
   | Pctconst of Lam_compat.compile_time_constant
   (* Integer to external pointer *)
@@ -267,22 +264,21 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Parraysetu  -> rhs = Parraysetu
   | Parrayrefs -> rhs = Parrayrefs
   | Parraysets -> rhs = Parraysets
-  | Pbintofint  boxed_integer -> (match rhs with Pbintofint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pintofbint  boxed_integer -> (match rhs with Pintofbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pnegbint  boxed_integer -> (match rhs with Pnegbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Paddbint  boxed_integer -> (match rhs with Paddbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Psubbint  boxed_integer -> (match rhs with Psubbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pmulbint  boxed_integer -> (match rhs with Pmulbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pdivbint  boxed_integer -> (match rhs with Pdivbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pmodbint  boxed_integer -> (match rhs with Pmodbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pandbint  boxed_integer -> (match rhs with Pandbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Porbint boxed_integer ->   (match rhs with Porbint  boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pxorbint  boxed_integer -> (match rhs with Pxorbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Plslbint  boxed_integer -> (match rhs with Plslbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Plsrbint  boxed_integer -> (match rhs with Plsrbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pasrbint  boxed_integer -> (match rhs with Pasrbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pcvtbint  (boxed_integer, boxed_integer1) -> (match rhs with Pcvtbint (boxed_integer10, boxed_integer11) -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer10 && Lam_compat.eq_boxed_integer boxed_integer1 boxed_integer11 | _ -> false )
-  | Pbintcomp  (boxed_integer , comparison) -> (match rhs with Pbintcomp(boxed_integer1, comparison1) -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 && Lam_compat.eq_comparison comparison comparison1 | _ -> false)  
+  | Pint64ofint -> rhs = Pint64ofint
+  | Pintofint64 -> rhs = Pintofint64
+  | Pnegint64 -> rhs = Pnegint64
+  | Paddint64  -> rhs = Paddint64
+  | Psubint64  -> rhs = Psubint64
+  | Pmulint64  -> rhs = Pmulint64
+  | Pdivint64  -> rhs = Pdivint64
+  | Pmodint64  -> rhs = Pmodint64
+  | Pandint64  ->  rhs = Pandint64
+  | Porint64  -> rhs = Porint64
+  | Pxorint64  -> rhs = Pxorint64
+  | Plslint64  -> rhs = Plslint64
+  | Plsrint64  -> rhs = Plsrint64
+  | Pasrint64   -> rhs = Pasrint64
+  | Pint64comp ( comparison) -> (match rhs with Pint64comp(comparison1) -> Lam_compat.eq_comparison comparison comparison1 | _ -> false)  
   | Pctconst compile_time_constant -> (match rhs with Pctconst compile_time_constant1 -> Lam_compat.eq_compile_time_constant compile_time_constant compile_time_constant1 | _ -> false)
   | Pjs_unsafe_downgrade {name; loc=_; setter } -> (match rhs with Pjs_unsafe_downgrade rhs -> name = rhs.name && setter = rhs.setter | _ -> false)  
   | Pjs_fn_make i -> (match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)

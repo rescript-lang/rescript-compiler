@@ -170,7 +170,7 @@ type number =
   | Float of float_lit 
   | Int of int_or_char
   | Uint of int32
-  | Nint of nativeint
+
   (* becareful when constant folding +/-, 
      since we treat it as js nativeint, bitwise operators:
      https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators
