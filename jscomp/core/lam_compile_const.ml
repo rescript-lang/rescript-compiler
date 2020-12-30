@@ -92,7 +92,7 @@ and translate (x : Lam_constant.t ) : J.expression =
     begin match pointer_info with 
       | Pt_variant {name} -> E.str name
       | _ -> 
-        E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info)
+        E.int ?comment:(Lam_pointer_info.to_string pointer_info)
           (Int32.of_int c )
     end
   | Const_block(tag, tag_info, xs ) -> 

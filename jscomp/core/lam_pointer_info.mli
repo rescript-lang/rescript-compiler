@@ -31,3 +31,6 @@ type t = Lambda.pointer_info =
   | Pt_shape_none (* IMPOSSIBLE *)  
   | Pt_assertfalse
   | Pt_na  
+
+
+val to_string : t -> string option

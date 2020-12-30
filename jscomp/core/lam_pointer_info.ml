@@ -32,3 +32,13 @@ type t = Lambda.pointer_info =
   | Pt_assertfalse
   | Pt_na  
 
+
+let to_string (x :  t)= 
+  match x with 
+  | Pt_constructor {name;_}
+  | Pt_variant {name} -> Some name
+  | Pt_assertfalse -> Some "assert_false"
+  | Pt_na -> None
+  | Pt_module_alias 
+  | Pt_builtin_boolean
+  | Pt_shape_none -> assert false

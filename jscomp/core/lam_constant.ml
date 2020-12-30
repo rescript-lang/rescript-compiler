@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- type t =
+type t =
   | Const_js_null
   | Const_js_undefined
   | Const_js_true
