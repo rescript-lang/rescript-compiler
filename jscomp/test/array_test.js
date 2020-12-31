@@ -146,12 +146,12 @@ var array_suites_1 = {
             return {
                     TAG: /* Eq */0,
                     _0: [
-                      Caml_array.caml_make_vect(100, /* "a" */97),
+                      Caml_array.caml_make_vect(100, /* 'a' */97),
                       Caml_array.caml_make_float_vect(100)
                     ],
                     _1: [
                       $$Array.init(100, (function (param) {
-                              return /* "a" */97;
+                              return /* 'a' */97;
                             })),
                       $$Array.init(100, (function (param) {
                               return 0;

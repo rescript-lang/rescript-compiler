@@ -264,13 +264,13 @@ function string_of_string_list(l) {
   return Curry._1(Printf.sprintf(/* Format */{
                   _0: {
                     TAG: /* Char_literal */12,
-                    _0: /* "[" */91,
+                    _0: /* '[' */91,
                     _1: {
                       TAG: /* String */2,
                       _0: /* No_padding */0,
                       _1: {
                         TAG: /* Char_literal */12,
-                        _0: /* "]" */93,
+                        _0: /* ']' */93,
                         _1: /* End_of_format */0
                       }
                     }
@@ -407,7 +407,7 @@ function prepare_error(e) {
                                     _0: /* No_padding */0,
                                     _1: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* ")" */41,
+                                      _0: /* ')' */41,
                                       _1: /* End_of_format */0
                                     }
                                   }
@@ -441,7 +441,7 @@ function prepare_error(e) {
                                     _0: /* No_padding */0,
                                     _1: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* ")" */41,
+                                      _0: /* ')' */41,
                                       _1: /* End_of_format */0
                                     }
                                   }
@@ -469,7 +469,7 @@ function prepare_error(e) {
                                 _0: /* No_padding */0,
                                 _1: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* ")" */41,
+                                  _0: /* ')' */41,
                                   _1: /* End_of_format */0
                                 }
                               }
@@ -1907,7 +1907,7 @@ function string_of_record_field_type(param) {
           return Curry._3(Printf.sprintf(/* Format */{
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* "(" */40,
+                            _0: /* '(' */40,
                             _1: {
                               TAG: /* String */2,
                               _0: /* No_padding */0,
@@ -1936,7 +1936,7 @@ function string_of_record_field_type(param) {
           return Curry._3(Printf.sprintf(/* Format */{
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* "(" */40,
+                            _0: /* '(' */40,
                             _1: {
                               TAG: /* String */2,
                               _0: /* No_padding */0,
@@ -1977,13 +1977,13 @@ function function_name_of_user_defined(prefix, param) {
                       _0: /* No_padding */0,
                       _1: {
                         TAG: /* Char_literal */12,
-                        _0: /* "." */46,
+                        _0: /* '.' */46,
                         _1: {
                           TAG: /* String */2,
                           _0: /* No_padding */0,
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* "_" */95,
+                            _0: /* '_' */95,
                             _1: {
                               TAG: /* String */2,
                               _0: /* No_padding */0,
@@ -2002,7 +2002,7 @@ function function_name_of_user_defined(prefix, param) {
                       _0: /* No_padding */0,
                       _1: {
                         TAG: /* Char_literal */12,
-                        _0: /* "_" */95,
+                        _0: /* '_' */95,
                         _1: {
                           TAG: /* String */2,
                           _0: /* No_padding */0,
@@ -2522,7 +2522,7 @@ function gen_decode_record(and_, param, sc) {
                                                                           _0: /* No_padding */0,
                                                                           _1: {
                                                                             TAG: /* Char_literal */12,
-                                                                            _0: /* ";" */59,
+                                                                            _0: /* ';' */59,
                                                                             _1: /* End_of_format */0
                                                                           }
                                                                         }
@@ -2558,7 +2558,7 @@ function gen_decode_record(and_, param, sc) {
                                                                                 _0: /* No_padding */0,
                                                                                 _1: {
                                                                                   TAG: /* Char_literal */12,
-                                                                                  _0: /* ";" */59,
+                                                                                  _0: /* ';' */59,
                                                                                   _1: /* End_of_format */0
                                                                                 }
                                                                               }
@@ -2624,7 +2624,7 @@ function gen_decode_record(and_, param, sc) {
                                                                                             _0: /* No_padding */0,
                                                                                             _1: {
                                                                                               TAG: /* Char_literal */12,
-                                                                                              _0: /* ";" */59,
+                                                                                              _0: /* ';' */59,
                                                                                               _1: /* End_of_format */0
                                                                                             }
                                                                                           }
@@ -2714,7 +2714,7 @@ function gen_decode_record(and_, param, sc) {
                                                                                       _0: /* No_padding */0,
                                                                                       _1: {
                                                                                         TAG: /* Char_literal */12,
-                                                                                        _0: /* ";" */59,
+                                                                                        _0: /* ';' */59,
                                                                                         _1: /* End_of_format */0
                                                                                       }
                                                                                     }
@@ -2820,7 +2820,7 @@ function gen_decode_record(and_, param, sc) {
                                                                                         _0: /* No_padding */0,
                                                                                         _1: {
                                                                                           TAG: /* Char_literal */12,
-                                                                                          _0: /* ";" */59,
+                                                                                          _0: /* ';' */59,
                                                                                           _1: /* End_of_format */0
                                                                                         }
                                                                                       }
@@ -2889,7 +2889,7 @@ function gen_decode_record(and_, param, sc) {
                                                                                                 _0: /* No_padding */0,
                                                                                                 _1: {
                                                                                                   TAG: /* Char_literal */12,
-                                                                                                  _0: /* ";" */59,
+                                                                                                  _0: /* ';' */59,
                                                                                                   _1: /* End_of_format */0
                                                                                                 }
                                                                                               }
@@ -3007,7 +3007,7 @@ function gen_decode_variant(and_, param, sc) {
                                                                           _0: /* No_padding */0,
                                                                           _1: {
                                                                             TAG: /* Char_literal */12,
-                                                                            _0: /* ")" */41,
+                                                                            _0: /* ')' */41,
                                                                             _1: /* End_of_format */0
                                                                           }
                                                                         }
@@ -3036,7 +3036,7 @@ function gen_decode_variant(and_, param, sc) {
                                                                       _0: /* No_padding */0,
                                                                       _1: {
                                                                         TAG: /* Char_literal */12,
-                                                                        _0: /* ")" */41,
+                                                                        _0: /* ')' */41,
                                                                         _1: /* End_of_format */0
                                                                       }
                                                                     }
@@ -3103,13 +3103,13 @@ function gen_decode_const_variant(and_, param, sc) {
                                                     _0: /* No_padding */0,
                                                     _1: {
                                                       TAG: /* Char_literal */12,
-                                                      _0: /* ":" */58,
+                                                      _0: /* ':' */58,
                                                       _1: {
                                                         TAG: /* String */2,
                                                         _0: /* No_padding */0,
                                                         _1: {
                                                           TAG: /* Char_literal */12,
-                                                          _0: /* ")" */41,
+                                                          _0: /* ')' */41,
                                                           _1: /* End_of_format */0
                                                         }
                                                       }
@@ -3130,7 +3130,7 @@ function gen_decode_const_variant(and_, param, sc) {
                                         _0: /* No_padding */0,
                                         _1: {
                                           TAG: /* Char_literal */12,
-                                          _0: /* "\"" */34,
+                                          _0: /* '"' */34,
                                           _1: /* End_of_format */0
                                         }
                                       }
@@ -3266,7 +3266,8 @@ function endline(s) {
                     _0: /* No_padding */0,
                     _1: {
                       TAG: /* Char_literal */12,
-                      _0: /* "\n" */10,
+                      _0: /* '
+' */10,
                       _1: /* End_of_format */0
                     }
                   },
@@ -3304,7 +3305,8 @@ function gen_pp_record(and_, param, sc) {
                 _0: /* No_padding */0,
                 _1: {
                   TAG: /* Char_literal */12,
-                  _0: /* "\n" */10,
+                  _0: /* '
+' */10,
                   _1: /* End_of_format */0
                 }
               }
@@ -3382,7 +3384,7 @@ function gen_pp_record(and_, param, sc) {
                                                                       _0: /* No_padding */0,
                                                                       _1: {
                                                                         TAG: /* Char_literal */12,
-                                                                        _0: /* ";" */59,
+                                                                        _0: /* ';' */59,
                                                                         _1: /* End_of_format */0
                                                                       }
                                                                     }
@@ -3416,7 +3418,7 @@ function gen_pp_record(and_, param, sc) {
                                                                       _0: /* No_padding */0,
                                                                       _1: {
                                                                         TAG: /* Char_literal */12,
-                                                                        _0: /* ";" */59,
+                                                                        _0: /* ';' */59,
                                                                         _1: /* End_of_format */0
                                                                       }
                                                                     }
@@ -3485,7 +3487,7 @@ function gen_pp_record(and_, param, sc) {
                                                                         _0: /* No_padding */0,
                                                                         _1: {
                                                                           TAG: /* Char_literal */12,
-                                                                          _0: /* ";" */59,
+                                                                          _0: /* ';' */59,
                                                                           _1: /* End_of_format */0
                                                                         }
                                                                       }
@@ -3520,13 +3522,13 @@ function gen_pp_record(and_, param, sc) {
                                                                   _0: /* No_padding */0,
                                                                   _1: {
                                                                     TAG: /* Char_literal */12,
-                                                                    _0: /* " " */32,
+                                                                    _0: /* ' ' */32,
                                                                     _1: {
                                                                       TAG: /* String */2,
                                                                       _0: /* No_padding */0,
                                                                       _1: {
                                                                         TAG: /* Char_literal */12,
-                                                                        _0: /* " " */32,
+                                                                        _0: /* ' ' */32,
                                                                         _1: {
                                                                           TAG: /* String */2,
                                                                           _0: /* No_padding */0,
@@ -3538,7 +3540,7 @@ function gen_pp_record(and_, param, sc) {
                                                                               _0: /* No_padding */0,
                                                                               _1: {
                                                                                 TAG: /* Char_literal */12,
-                                                                                _0: /* ";" */59,
+                                                                                _0: /* ';' */59,
                                                                                 _1: /* End_of_format */0
                                                                               }
                                                                             }
@@ -3575,7 +3577,7 @@ function gen_pp_record(and_, param, sc) {
                                                                       _0: /* No_padding */0,
                                                                       _1: {
                                                                         TAG: /* Char_literal */12,
-                                                                        _0: /* ";" */59,
+                                                                        _0: /* ';' */59,
                                                                         _1: /* End_of_format */0
                                                                       }
                                                                     }
@@ -3648,7 +3650,7 @@ function gen_pp_variant(and_, param, sc) {
                                                             _0: /* No_padding */0,
                                                             _1: {
                                                               TAG: /* Char_literal */12,
-                                                              _0: /* "\"" */34,
+                                                              _0: /* '"' */34,
                                                               _1: /* End_of_format */0
                                                             }
                                                           }
@@ -3683,10 +3685,10 @@ function gen_pp_variant(and_, param, sc) {
                                                             _0: /* No_padding */0,
                                                             _1: {
                                                               TAG: /* Char_literal */12,
-                                                              _0: /* "(" */40,
+                                                              _0: /* '(' */40,
                                                               _1: {
                                                                 TAG: /* Char_literal */12,
-                                                                _0: /* "%" */37,
+                                                                _0: /* '%' */37,
                                                                 _1: {
                                                                   TAG: /* String_literal */11,
                                                                   _0: "a)",
@@ -3771,7 +3773,7 @@ function gen_pp_const_variant(and_, param, sc) {
                                                           _0: /* No_padding */0,
                                                           _1: {
                                                             TAG: /* Char_literal */12,
-                                                            _0: /* "\"" */34,
+                                                            _0: /* '"' */34,
                                                             _1: /* End_of_format */0
                                                           }
                                                         }
@@ -4088,7 +4090,7 @@ function string_of_option(f, x) {
                         _0: /* No_padding */0,
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* ")" */41,
+                          _0: /* ')' */41,
                           _1: /* End_of_format */0
                         }
                       }
@@ -4131,7 +4133,8 @@ function strong_connect(g, sccs, stack, index, v) {
                     _2: /* No_precision */0,
                     _3: {
                       TAG: /* Char_literal */12,
-                      _0: /* "\n" */10,
+                      _0: /* '
+' */10,
                       _1: /* End_of_format */0
                     }
                   }
@@ -4169,7 +4172,8 @@ function strong_connect(g, sccs, stack, index, v) {
                             _0: /* No_padding */0,
                             _1: {
                               TAG: /* Char_literal */12,
-                              _0: /* "\n" */10,
+                              _0: /* '
+' */10,
                               _1: /* End_of_format */0
                             }
                           }
@@ -4235,7 +4239,8 @@ function strong_connect(g, sccs, stack, index, v) {
                         _0: /* No_padding */0,
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* "\n" */10,
+                          _0: /* '
+' */10,
                           _1: /* End_of_format */0
                         }
                       }
@@ -4259,7 +4264,8 @@ function strong_connect(g, sccs, stack, index, v) {
                 _0: /* No_padding */0,
                 _1: {
                   TAG: /* Char_literal */12,
-                  _0: /* "\n" */10,
+                  _0: /* '
+' */10,
                   _1: /* End_of_format */0
                 }
               }
@@ -4426,7 +4432,7 @@ function string_of_unresolved(param) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* "}" */125,
+                                _0: /* '}' */125,
                                 _1: /* End_of_format */0
                               }
                             }
@@ -4442,7 +4448,7 @@ function string_of_unresolved(param) {
 function scope_of_package(s) {
   if (s !== undefined) {
     return {
-            packages: List.rev(rev_split_by_char(/* "." */46, s)),
+            packages: List.rev(rev_split_by_char(/* '.' */46, s)),
             message_names: /* [] */0
           };
   } else {
@@ -4454,12 +4460,12 @@ function scope_of_package(s) {
 }
 
 function unresolved_of_string(s) {
-  var match = rev_split_by_char(/* "." */46, s);
+  var match = rev_split_by_char(/* '.' */46, s);
   if (match) {
     return {
             scope: List.rev(match.tl),
             type_name: match.hd,
-            from_root: Caml_string.get(s, 0) === /* "." */46
+            from_root: Caml_string.get(s, 0) === /* '.' */46
           };
   }
   throw {
@@ -4942,7 +4948,8 @@ function compile_message_p2(types, param, message) {
                   _0: /* No_padding */0,
                   _1: {
                     TAG: /* Char_literal */12,
-                    _0: /* "\n" */10,
+                    _0: /* '
+' */10,
                     _1: /* End_of_format */0
                   }
                 }
@@ -4975,7 +4982,8 @@ function compile_message_p2(types, param, message) {
                   _0: /* No_padding */0,
                   _1: {
                     TAG: /* Char_literal */12,
-                    _0: /* "\n" */10,
+                    _0: /* '
+' */10,
                     _1: /* End_of_format */0
                   }
                 }
@@ -5004,7 +5012,8 @@ function compile_message_p2(types, param, message) {
                                     _0: /* No_padding */0,
                                     _1: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* "\n" */10,
+                                      _0: /* '
+' */10,
                                       _1: /* End_of_format */0
                                     }
                                   }
@@ -5245,7 +5254,7 @@ function gen_type_record(mutable_, and_, param, sc) {
                   _0: /* No_padding */0,
                   _1: {
                     TAG: /* Char_literal */12,
-                    _0: /* " " */32,
+                    _0: /* ' ' */32,
                     _1: {
                       TAG: /* String */2,
                       _0: /* No_padding */0,
@@ -5279,7 +5288,7 @@ function gen_type_record(mutable_, and_, param, sc) {
                                                     _0: /* No_padding */0,
                                                     _1: {
                                                       TAG: /* Char_literal */12,
-                                                      _0: /* ";" */59,
+                                                      _0: /* ';' */59,
                                                       _1: /* End_of_format */0
                                                     }
                                                   }
@@ -5301,7 +5310,7 @@ function gen_type_variant(and_, variant, sc) {
                   _0: /* No_padding */0,
                   _1: {
                     TAG: /* Char_literal */12,
-                    _0: /* " " */32,
+                    _0: /* ' ' */32,
                     _1: {
                       TAG: /* String */2,
                       _0: /* No_padding */0,
@@ -5366,7 +5375,7 @@ function gen_type_const_variant(and_, param, sc) {
                   _0: /* No_padding */0,
                   _1: {
                     TAG: /* Char_literal */12,
-                    _0: /* " " */32,
+                    _0: /* ' ' */32,
                     _1: {
                       TAG: /* String */2,
                       _0: /* No_padding */0,
@@ -5391,7 +5400,7 @@ function gen_type_const_variant(and_, param, sc) {
                                                       _0: /* No_padding */0,
                                                       _1: {
                                                         TAG: /* Char_literal */12,
-                                                        _0: /* " " */32,
+                                                        _0: /* ' ' */32,
                                                         _1: /* End_of_format */0
                                                       }
                                                     }
@@ -5504,7 +5513,7 @@ function gen_encode_field_type(with_key, sc, var_name, encoding_number, pk, is_p
                           _0: /* No_padding */0,
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* " " */32,
+                            _0: /* ' ' */32,
                             _1: {
                               TAG: /* String */2,
                               _0: /* No_padding */0,
@@ -5532,7 +5541,7 @@ function gen_encode_field_type(with_key, sc, var_name, encoding_number, pk, is_p
                             _0: /* No_padding */0,
                             _1: {
                               TAG: /* Char_literal */12,
-                              _0: /* " " */32,
+                              _0: /* ' ' */32,
                               _1: {
                                 TAG: /* String */2,
                                 _0: /* No_padding */0,
@@ -5554,7 +5563,7 @@ function gen_encode_field_type(with_key, sc, var_name, encoding_number, pk, is_p
                           _0: /* No_padding */0,
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* " " */32,
+                            _0: /* ' ' */32,
                             _1: {
                               TAG: /* String */2,
                               _0: /* No_padding */0,
@@ -5583,7 +5592,8 @@ function gen_encode_record(and_, param, sc) {
                 _0: /* No_padding */0,
                 _1: {
                   TAG: /* Char_literal */12,
-                  _0: /* "\n" */10,
+                  _0: /* '
+' */10,
                   _1: /* End_of_format */0
                 }
               }
@@ -5700,7 +5710,7 @@ function gen_encode_record(and_, param, sc) {
                                                                   _0: /* No_padding */0,
                                                                   _1: {
                                                                     TAG: /* Char_literal */12,
-                                                                    _0: /* ";" */59,
+                                                                    _0: /* ';' */59,
                                                                     _1: /* End_of_format */0
                                                                   }
                                                                 }
@@ -5723,7 +5733,7 @@ function gen_encode_record(and_, param, sc) {
                                                           _0: /* No_padding */0,
                                                           _1: {
                                                             TAG: /* Char_literal */12,
-                                                            _0: /* ";" */59,
+                                                            _0: /* ';' */59,
                                                             _1: /* End_of_format */0
                                                           }
                                                         }
@@ -5748,7 +5758,7 @@ function gen_encode_record(and_, param, sc) {
                                                                 _0: /* No_padding */0,
                                                                 _1: {
                                                                   TAG: /* Char_literal */12,
-                                                                  _0: /* ";" */59,
+                                                                  _0: /* ';' */59,
                                                                   _1: /* End_of_format */0
                                                                 }
                                                               }
@@ -5771,7 +5781,7 @@ function gen_encode_record(and_, param, sc) {
                                                         _0: /* No_padding */0,
                                                         _1: {
                                                           TAG: /* Char_literal */12,
-                                                          _0: /* ";" */59,
+                                                          _0: /* ';' */59,
                                                           _1: /* End_of_format */0
                                                         }
                                                       }
@@ -5850,7 +5860,7 @@ function gen_encode_record(and_, param, sc) {
                                                       _0: /* No_padding */0,
                                                       _1: {
                                                         TAG: /* Char_literal */12,
-                                                        _0: /* ";" */59,
+                                                        _0: /* ';' */59,
                                                         _1: /* End_of_format */0
                                                       }
                                                     }
@@ -6227,13 +6237,13 @@ function default_value_of_field_type(field_name, field_type, field_default) {
               return Curry._1(Printf.sprintf(/* Format */{
                               _0: {
                                 TAG: /* Char_literal */12,
-                                _0: /* "\"" */34,
+                                _0: /* '"' */34,
                                 _1: {
                                   TAG: /* String */2,
                                   _0: /* No_padding */0,
                                   _1: {
                                     TAG: /* Char_literal */12,
-                                    _0: /* "\"" */34,
+                                    _0: /* '"' */34,
                                     _1: /* End_of_format */0
                                   }
                                 }
@@ -6277,7 +6287,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
                                 _2: /* No_precision */0,
                                 _3: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "l" */108,
+                                  _0: /* 'l' */108,
                                   _1: /* End_of_format */0
                                 }
                               },
@@ -6300,7 +6310,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
                                 _2: /* No_precision */0,
                                 _3: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "L" */76,
+                                  _0: /* 'L' */76,
                                   _1: /* End_of_format */0
                                 }
                               },
@@ -6324,7 +6334,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
                                   _0: /* No_padding */0,
                                   _1: {
                                     TAG: /* Char_literal */12,
-                                    _0: /* "\"" */34,
+                                    _0: /* '"' */34,
                                     _1: /* End_of_format */0
                                   }
                                 }
@@ -6382,7 +6392,7 @@ function record_field_default_info(record_field) {
                         _0: /* No_padding */0,
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* ")" */41,
+                          _0: /* ')' */41,
                           _1: /* End_of_format */0
                         }
                       }
@@ -6401,7 +6411,7 @@ function record_field_default_info(record_field) {
                         _0: /* No_padding */0,
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* ")" */41,
+                          _0: /* ')' */41,
                           _1: /* End_of_format */0
                         }
                       }
@@ -6430,7 +6440,7 @@ function record_field_default_info(record_field) {
                             _0: /* No_padding */0,
                             _1: {
                               TAG: /* Char_literal */12,
-                              _0: /* ")" */41,
+                              _0: /* ')' */41,
                               _1: /* End_of_format */0
                             }
                           }
@@ -6506,7 +6516,7 @@ function gen_default_record(mutable_, and_, param, sc) {
                                                     _0: /* No_padding */0,
                                                     _1: {
                                                       TAG: /* Char_literal */12,
-                                                      _0: /* ";" */59,
+                                                      _0: /* ';' */59,
                                                       _1: /* End_of_format */0
                                                     }
                                                   }
@@ -6529,7 +6539,7 @@ function gen_default_record(mutable_, and_, param, sc) {
                         _0: /* No_padding */0,
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* " " */32,
+                          _0: /* ' ' */32,
                           _1: /* End_of_format */0
                         }
                       }
@@ -6543,7 +6553,7 @@ function gen_default_record(mutable_, and_, param, sc) {
                     return line$1(sc, Curry._4(Printf.sprintf(/* Format */{
                                         _0: {
                                           TAG: /* Char_literal */12,
-                                          _0: /* "?" */63,
+                                          _0: /* '?' */63,
                                           _1: {
                                             TAG: /* String */2,
                                             _0: /* No_padding */0,
@@ -6555,7 +6565,7 @@ function gen_default_record(mutable_, and_, param, sc) {
                                                 _0: /* No_padding */0,
                                                 _1: {
                                                   TAG: /* Char_literal */12,
-                                                  _0: /* ":" */58,
+                                                  _0: /* ':' */58,
                                                   _1: {
                                                     TAG: /* String */2,
                                                     _0: /* No_padding */0,
@@ -6567,7 +6577,7 @@ function gen_default_record(mutable_, and_, param, sc) {
                                                         _0: /* No_padding */0,
                                                         _1: {
                                                           TAG: /* Char_literal */12,
-                                                          _0: /* ")" */41,
+                                                          _0: /* ')' */41,
                                                           _1: /* End_of_format */0
                                                         }
                                                       }
@@ -6606,7 +6616,7 @@ function gen_default_record(mutable_, and_, param, sc) {
                                                 _0: /* No_padding */0,
                                                 _1: {
                                                   TAG: /* Char_literal */12,
-                                                  _0: /* ";" */59,
+                                                  _0: /* ';' */59,
                                                   _1: /* End_of_format */0
                                                 }
                                               },
@@ -6691,7 +6701,7 @@ function gen_default_variant(and_, param, sc) {
                                           _0: /* No_padding */0,
                                           _1: {
                                             TAG: /* Char_literal */12,
-                                            _0: /* ")" */41,
+                                            _0: /* ')' */41,
                                             _1: /* End_of_format */0
                                           }
                                         }
@@ -6744,13 +6754,13 @@ function gen_default_const_variant(and_, param, sc) {
                                 _0: /* No_padding */0,
                                 _1: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* ":" */58,
+                                  _0: /* ':' */58,
                                   _1: {
                                     TAG: /* String */2,
                                     _0: /* No_padding */0,
                                     _1: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* ")" */41,
+                                      _0: /* ')' */41,
                                       _1: /* End_of_format */0
                                     }
                                   }
@@ -6816,13 +6826,13 @@ function gen_sig_record(sc, param) {
                   return line$1(sc, Curry._2(Printf.sprintf(/* Format */{
                                       _0: {
                                         TAG: /* Char_literal */12,
-                                        _0: /* "?" */63,
+                                        _0: /* '?' */63,
                                         _1: {
                                           TAG: /* String */2,
                                           _0: /* No_padding */0,
                                           _1: {
                                             TAG: /* Char_literal */12,
-                                            _0: /* ":" */58,
+                                            _0: /* ':' */58,
                                             _1: {
                                               TAG: /* String */2,
                                               _0: /* No_padding */0,
@@ -7077,7 +7087,7 @@ function module_of_file_name(file_name) {
   var file_name$1 = Curry._1(Filename.basename, file_name);
   var dot_index;
   try {
-    dot_index = $$String.rindex(file_name$1, /* "." */46);
+    dot_index = $$String.rindex(file_name$1, /* '.' */46);
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);

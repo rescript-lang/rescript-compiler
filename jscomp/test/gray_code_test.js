@@ -23,14 +23,14 @@ function gray_decode(n) {
 }
 
 function bool_string(len, n) {
-  var s = Bytes.make(len, /* "0" */48);
+  var s = Bytes.make(len, /* '0' */48);
   var _i = len - 1 | 0;
   var _n = n;
   while(true) {
     var n$1 = _n;
     var i = _i;
     if ((n$1 & 1) === 1) {
-      Caml_bytes.set(s, i, /* "1" */49);
+      Caml_bytes.set(s, i, /* '1' */49);
     }
     if (i <= 0) {
       return s;

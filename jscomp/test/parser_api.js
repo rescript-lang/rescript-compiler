@@ -142,7 +142,8 @@ function print_config(oc) {
                           _0: /* No_padding */0,
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* "\n" */10,
+                            _0: /* '
+' */10,
                             _1: /* End_of_format */0
                           }
                         }
@@ -164,7 +165,8 @@ function print_config(oc) {
                           _0: /* No_padding */0,
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* "\n" */10,
+                            _0: /* '
+' */10,
                             _1: /* End_of_format */0
                           }
                         }
@@ -1035,7 +1037,7 @@ function remove_file(filename) {
 }
 
 function expand_directory(alt, s) {
-  if (s.length !== 0 && Caml_string.get(s, 0) === /* "+" */43) {
+  if (s.length !== 0 && Caml_string.get(s, 0) === /* '+' */43) {
     return Filename.concat(alt, $$String.sub(s, 1, s.length - 1 | 0));
   } else {
     return s;
@@ -1149,7 +1151,7 @@ function chop_extensions(file) {
   var dirname = Curry._1(Filename.dirname, file);
   var basename = Curry._1(Filename.basename, file);
   try {
-    var pos = $$String.index(basename, /* "." */46);
+    var pos = $$String.index(basename, /* '.' */46);
     var basename$1 = $$String.sub(basename, 0, pos);
     if (Curry._1(Filename.is_implicit, file) && dirname === Filename.current_dir_name) {
       return basename$1;
@@ -2095,7 +2097,7 @@ function parse_opt(error, active, flags, s) {
               ];
       }
       _i = i + 1 | 0;
-      _n = (Math.imul(10, n) + Caml_string.get(s, i) | 0) - /* "0" */48 | 0;
+      _n = (Math.imul(10, n) + Caml_string.get(s, i) | 0) - /* '0' */48 | 0;
       continue ;
     };
   };
@@ -2103,7 +2105,7 @@ function parse_opt(error, active, flags, s) {
     var match = get_num(0, i);
     var n1 = match[1];
     var i$1 = match[0];
-    if (!((i$1 + 2 | 0) < s.length && Caml_string.get(s, i$1) === /* "." */46 && Caml_string.get(s, i$1 + 1 | 0) === /* "." */46)) {
+    if (!((i$1 + 2 | 0) < s.length && Caml_string.get(s, i$1) === /* '.' */46 && Caml_string.get(s, i$1 + 1 | 0) === /* '.' */46)) {
       return [
               i$1,
               n1,
@@ -2397,7 +2399,7 @@ function message(s) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* " " */32,
+                                _0: /* ' ' */32,
                                 _1: {
                                   TAG: /* String */2,
                                   _0: /* No_padding */0,
@@ -2415,7 +2417,7 @@ function message(s) {
                                           _0: /* No_padding */0,
                                           _1: {
                                             TAG: /* Char_literal */12,
-                                            _0: /* "." */46,
+                                            _0: /* '.' */46,
                                             _1: /* End_of_format */0
                                           }
                                         }
@@ -2561,7 +2563,7 @@ function message(s) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* " " */32,
+                                _0: /* ' ' */32,
                                 _1: {
                                   TAG: /* String */2,
                                   _0: /* No_padding */0,
@@ -2629,7 +2631,7 @@ function message(s) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* " " */32,
+                                _0: /* ' ' */32,
                                 _1: {
                                   TAG: /* String */2,
                                   _0: /* No_padding */0,
@@ -2740,13 +2742,14 @@ function help_warnings(param) {
                             _2: /* No_precision */0,
                             _3: {
                               TAG: /* Char_literal */12,
-                              _0: /* " " */32,
+                              _0: /* ' ' */32,
                               _1: {
                                 TAG: /* String */2,
                                 _0: /* No_padding */0,
                                 _1: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "\n" */10,
+                                  _0: /* '
+' */10,
                                   _1: /* End_of_format */0
                                 }
                               }
@@ -3062,7 +3065,7 @@ function help_warnings(param) {
         }
       });
   console.log("  A all warnings");
-  for(var i = /* "b" */98; i <= /* "z" */122; ++i){
+  for(var i = /* 'b' */98; i <= /* 'z' */122; ++i){
     var c = Char.chr(i);
     var l = letter(c);
     if (l) {
@@ -3109,7 +3112,8 @@ function help_warnings(param) {
                           _2: /* No_precision */0,
                           _3: {
                             TAG: /* Char_literal */12,
-                            _0: /* "\n" */10,
+                            _0: /* '
+' */10,
                             _1: /* End_of_format */0
                           }
                         }
@@ -3230,7 +3234,8 @@ function print_updating_num_loc_lines(ppf, f, arg) {
         if (i === (start + len | 0)) {
           return c;
         }
-        if (Caml_string.get(str, i) === /* "\n" */10) {
+        if (Caml_string.get(str, i) === /* '
+' */10) {
           _c = c + 1 | 0;
           _i = i + 1 | 0;
           continue ;
@@ -3265,7 +3270,8 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
   }
   var lines = num_loc_lines.contents;
   for(var i = pos0 ,i_finish = lb.lex_buffer_len; i < i_finish; ++i){
-    if (Caml_bytes.get(lb.lex_buffer, i) === /* "\n" */10) {
+    if (Caml_bytes.get(lb.lex_buffer, i) === /* '
+' */10) {
       lines = lines + 1 | 0;
     }
     
@@ -3301,7 +3307,8 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
     }
     var c = Caml_bytes.get(lb.lex_buffer, pos + pos0 | 0);
     Pervasives.print_char(c);
-    bol = c === /* "\n" */10;
+    bol = c === /* '
+' */10;
   }
   Caml_external_polyfill.resolve("caml_terminfo_standout")(false);
   Caml_external_polyfill.resolve("caml_terminfo_resume")(num_loc_lines.contents);
@@ -3320,7 +3327,8 @@ function highlight_dumb(ppf, lb, loc) {
   var line_start = 0;
   var line_end = 0;
   for(var pos = 0; pos <= end_pos; ++pos){
-    if (Caml_bytes.get(lb.lex_buffer, pos + pos0 | 0) === /* "\n" */10) {
+    if (Caml_bytes.get(lb.lex_buffer, pos + pos0 | 0) === /* '
+' */10) {
       if (loc.loc_start.pos_cnum > pos) {
         line_start = line_start + 1 | 0;
       }
@@ -3342,7 +3350,7 @@ function highlight_dumb(ppf, lb, loc) {
                 _2: /* No_precision */0,
                 _3: {
                   TAG: /* Char_literal */12,
-                  _0: /* "-" */45,
+                  _0: /* '-' */45,
                   _1: {
                     TAG: /* Int */4,
                     _0: /* Int_i */3,
@@ -3350,7 +3358,7 @@ function highlight_dumb(ppf, lb, loc) {
                     _2: /* No_precision */0,
                     _3: {
                       TAG: /* Char_literal */12,
-                      _0: /* ":" */58,
+                      _0: /* ':' */58,
                       _1: {
                         TAG: /* Formatting_lit */17,
                         _0: /* Flush_newline */4,
@@ -3374,7 +3382,7 @@ function highlight_dumb(ppf, lb, loc) {
           Format.pp_print_char(ppf, c);
         } else if (line === line_start) {
           if (pos$1 < loc.loc_start.pos_cnum) {
-            Format.pp_print_char(ppf, /* "." */46);
+            Format.pp_print_char(ppf, /* '.' */46);
           } else {
             Format.pp_print_char(ppf, c);
           }
@@ -3382,7 +3390,7 @@ function highlight_dumb(ppf, lb, loc) {
           if (pos$1 < loc.loc_end.pos_cnum) {
             Format.pp_print_char(ppf, c);
           } else {
-            Format.pp_print_char(ppf, /* "." */46);
+            Format.pp_print_char(ppf, /* '.' */46);
           }
         } else if (line > line_start && line < line_end) {
           Format.pp_print_char(ppf, c);
@@ -3405,10 +3413,10 @@ function highlight_dumb(ppf, lb, loc) {
               _1: "@.  "
             });
         for(var _i = pos_at_bol ,_i_finish = loc.loc_start.pos_cnum; _i < _i_finish; ++_i){
-          Format.pp_print_char(ppf, /* " " */32);
+          Format.pp_print_char(ppf, /* ' ' */32);
         }
         for(var _i$1 = loc.loc_start.pos_cnum ,_i_finish$1 = loc.loc_end.pos_cnum; _i$1 < _i_finish$1; ++_i$1){
-          Format.pp_print_char(ppf, /* "^" */94);
+          Format.pp_print_char(ppf, /* '^' */94);
         }
       }
       if (line >= line_start && line <= line_end) {
@@ -3573,7 +3581,7 @@ function print_loc(ppf, loc) {
                           _2: /* No_precision */0,
                           _3: {
                             TAG: /* Char_literal */12,
-                            _0: /* "-" */45,
+                            _0: /* '-' */45,
                             _1: {
                               TAG: /* Int */4,
                               _0: /* Int_i */3,
@@ -3730,7 +3738,7 @@ function print_error_prefix(ppf, param) {
                   _0: /* Close_tag */1,
                   _1: {
                     TAG: /* Char_literal */12,
-                    _0: /* ":" */58,
+                    _0: /* ':' */58,
                     _1: /* End_of_format */0
                   }
                 }
@@ -3776,7 +3784,7 @@ function default_warning_printer(loc, ppf, w) {
                           _0: /* Close_tag */1,
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* " " */32,
+                            _0: /* ' ' */32,
                             _1: {
                               TAG: /* Alpha */15,
                               _0: {
@@ -3927,7 +3935,7 @@ function default_error_reporter(ppf, err) {
                   TAG: /* Alpha */15,
                   _0: {
                     TAG: /* Char_literal */12,
-                    _0: /* " " */32,
+                    _0: /* ' ' */32,
                     _1: {
                       TAG: /* String */2,
                       _0: /* No_padding */0,
@@ -4200,7 +4208,7 @@ function last(s) {
 
 function split_at_dots(s, pos) {
   try {
-    var dot = $$String.index_from(s, pos, /* "." */46);
+    var dot = $$String.index_from(s, pos, /* '.' */46);
     return {
             hd: $$String.sub(s, pos, dot - pos | 0),
             tl: split_at_dots(s, dot + 1 | 0)
@@ -6704,7 +6712,7 @@ function prepare_error(loc) {
                                 _0: /* No_padding */0,
                                 _1: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "." */46,
+                                  _0: /* '.' */46,
                                   _1: /* End_of_format */0
                                 }
                               }
@@ -6920,7 +6928,7 @@ function mkinfix(arg1, name, arg2) {
 }
 
 function neg_float_string(f) {
-  if (f.length !== 0 && Caml_string.get(f, 0) === /* "-" */45) {
+  if (f.length !== 0 && Caml_string.get(f, 0) === /* '-' */45) {
     return $$String.sub(f, 1, f.length - 1 | 0);
   } else {
     return "-" + f;
@@ -13871,7 +13879,7 @@ var exit = 0;
 var i;
 
 try {
-  i = $$String.rindex(Sys.ocaml_version, /* "+" */43);
+  i = $$String.rindex(Sys.ocaml_version, /* '+' */43);
   exit = 1;
 }
 catch (raw_exn$1){
@@ -13919,13 +13927,13 @@ function semantic_version_parse(str, start, last_index) {
               ];
       }
       var c = str.charCodeAt(start);
-      if (c === /* "." */46) {
+      if (c === /* '.' */46) {
         return [
                 acc,
                 start + 1 | 0
               ];
       }
-      var v = c - /* "0" */48 | 0;
+      var v = c - /* '0' */48 | 0;
       if (!(v >= 0 && v <= 9)) {
         return [
                 acc,
@@ -14604,7 +14612,7 @@ function directive_parse(token_with_comments, lexbuf) {
             if (t.TAG === /* UIDENT */17) {
               var s = t._0;
               if (calc) {
-                if (Caml_string.get(r, 0) === /* "u" */117) {
+                if (Caml_string.get(r, 0) === /* 'u' */117) {
                   return !defined(s);
                 } else {
                   return defined(s);
@@ -15172,7 +15180,7 @@ function char_for_backslash(c) {
     if (c !== 98) {
       return c;
     } else {
-      return /* "\b" */8;
+      return /* '' */8;
     }
   }
   if (c >= 117) {
@@ -15180,16 +15188,17 @@ function char_for_backslash(c) {
   }
   switch (c) {
     case 110 :
-        return /* "\n" */10;
+        return /* '
+' */10;
     case 114 :
-        return /* "\r" */13;
+        return /* '' */13;
     case 111 :
     case 112 :
     case 113 :
     case 115 :
         return c;
     case 116 :
-        return /* "\t" */9;
+        return /* '	' */9;
     
   }
 }
@@ -15200,7 +15209,7 @@ function char_for_decimal_code(lexbuf, i) {
     return Char.chr(c);
   }
   if (comment_start_loc.contents !== /* [] */0) {
-    return /* "x" */120;
+    return /* 'x' */120;
   }
   throw {
         RE_EXN_ID: $$Error$2,
@@ -15416,7 +15425,7 @@ function report_error$2(ppf, c) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* ")" */41,
+                                _0: /* ')' */41,
                                 _1: /* End_of_format */0
                               }
                             }
@@ -15433,7 +15442,7 @@ function report_error$2(ppf, c) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* ")" */41,
+                                _0: /* ')' */41,
                                 _1: /* End_of_format */0
                               }
                             }
@@ -15473,7 +15482,7 @@ function report_error$2(ppf, c) {
           return Curry._1(Format.fprintf(ppf, /* Format */{
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* "`" */96,
+                            _0: /* '`' */96,
                             _1: {
                               TAG: /* String */2,
                               _0: /* No_padding */0,
@@ -15522,13 +15531,13 @@ function report_error$2(ppf, c) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* "," */44,
+                                _0: /* ',' */44,
                                 _1: {
                                   TAG: /* String */2,
                                   _0: /* No_padding */0,
                                   _1: {
                                     TAG: /* Char_literal */12,
-                                    _0: /* ")" */41,
+                                    _0: /* ')' */41,
                                     _1: /* End_of_format */0
                                   }
                                 }
@@ -16100,7 +16109,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
               };
       case 2 :
           string_start_loc.contents = curr(lexbuf);
-          store_string_char(/* "\"" */34);
+          store_string_char(/* '"' */34);
           is_in_string.contents = true;
           try {
             string(lexbuf);
@@ -16143,7 +16152,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             throw exn;
           }
           is_in_string.contents = false;
-          store_string_char(/* "\"" */34);
+          store_string_char(/* '"' */34);
           ___ocaml_lex_state = 132;
           continue ;
       case 3 :
@@ -16193,9 +16202,9 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             throw exn$1;
           }
           is_in_string.contents = false;
-          store_string_char(/* "|" */124);
+          store_string_char(/* '|' */124);
           store_string(delim$1);
-          store_string_char(/* "}" */125);
+          store_string_char(/* '}' */125);
           ___ocaml_lex_state = 132;
           continue ;
       case 5 :

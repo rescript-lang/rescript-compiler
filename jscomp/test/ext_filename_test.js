@@ -181,7 +181,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
                       }), file2);
       }
       var curr_char = file2.charCodeAt(i);
-      if (!(curr_char === os_path_separator_char || curr_char === /* "." */46)) {
+      if (!(curr_char === os_path_separator_char || curr_char === /* '.' */46)) {
         return i;
       }
       _i = i + 1 | 0;
@@ -375,7 +375,7 @@ function normalize_absolute_path(x) {
 }
 
 function get_extension(x) {
-  var pos = Ext_string_test.rindex_neg(x, /* "." */46);
+  var pos = Ext_string_test.rindex_neg(x, /* '.' */46);
   if (pos < 0) {
     return "";
   } else {

@@ -35,7 +35,7 @@ function scan_rest(ib, accu) {
                   return Curry._1(Scanf.bscanf(ib, /* Format */{
                                   _0: {
                                     TAG: /* Char_literal */12,
-                                    _0: /* " " */32,
+                                    _0: /* ' ' */32,
                                     _1: {
                                       TAG: /* Int */4,
                                       _0: /* Int_i */3,
@@ -43,7 +43,7 @@ function scan_rest(ib, accu) {
                                       _2: /* No_precision */0,
                                       _3: {
                                         TAG: /* Char_literal */12,
-                                        _0: /* " " */32,
+                                        _0: /* ' ' */32,
                                         _1: /* End_of_format */0
                                       }
                                     }

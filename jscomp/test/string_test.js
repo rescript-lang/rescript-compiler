@@ -202,7 +202,7 @@ Mt.from_pair_suites("String_test", {
                                   }
                                 }
                               },
-                              _1: rev_split_by_char(/* "a" */97, "bbbbabbbba")
+                              _1: rev_split_by_char(/* 'a' */97, "bbbbabbbba")
                             };
                     })
                 ],
@@ -216,7 +216,7 @@ Mt.from_pair_suites("String_test", {
                                   hd: "aaaa",
                                   tl: /* [] */0
                                 },
-                                _1: rev_split_by_char(/* "," */44, "aaaa")
+                                _1: rev_split_by_char(/* ',' */44, "aaaa")
                               };
                       })
                   ],
@@ -236,7 +236,7 @@ Mt.from_pair_suites("String_test", {
                                       }
                                     }
                                   },
-                                  _1: xsplit(/* "." */46, "a.b.c")
+                                  _1: xsplit(/* '.' */46, "a.b.c")
                                 };
                         })
                     ],
@@ -247,7 +247,7 @@ Mt.from_pair_suites("String_test", {
                             return {
                                     TAG: /* Eq */0,
                                     _0: /* [] */0,
-                                    _1: Ext_string_test.split(undefined, "", /* "_" */95)
+                                    _1: Ext_string_test.split(undefined, "", /* '_' */95)
                                   };
                           })
                       ],
@@ -261,7 +261,7 @@ Mt.from_pair_suites("String_test", {
                                         hd: "test_unsafe_obj_ffi_ppx.cmi",
                                         tl: /* [] */0
                                       },
-                                      _1: Ext_string_test.split(false, " test_unsafe_obj_ffi_ppx.cmi", /* " " */32)
+                                      _1: Ext_string_test.split(false, " test_unsafe_obj_ffi_ppx.cmi", /* ' ' */32)
                                     };
                             })
                         ],
@@ -337,7 +337,7 @@ Mt.from_pair_suites("String_test", {
                                         (function (param) {
                                             return {
                                                     TAG: /* Eq */0,
-                                                    _0: String.fromCharCode(/* "0" */48),
+                                                    _0: String.fromCharCode(/* '0' */48),
                                                     _1: "0"
                                                   };
                                           })
@@ -349,11 +349,11 @@ Mt.from_pair_suites("String_test", {
                                               return {
                                                       TAG: /* Eq */0,
                                                       _0: string_of_chars({
-                                                            hd: /* "0" */48,
+                                                            hd: /* '0' */48,
                                                             tl: {
-                                                              hd: /* "1" */49,
+                                                              hd: /* '1' */49,
                                                               tl: {
-                                                                hd: /* "2" */50,
+                                                                hd: /* '2' */50,
                                                                 tl: /* [] */0
                                                               }
                                                             }

@@ -941,7 +941,7 @@ function parse_opt(error, active, flags, s) {
               ];
       }
       _i = i + 1 | 0;
-      _n = (Math.imul(10, n) + Caml_string.get(s, i) | 0) - /* "0" */48 | 0;
+      _n = (Math.imul(10, n) + Caml_string.get(s, i) | 0) - /* '0' */48 | 0;
       continue ;
     };
   };
@@ -949,7 +949,7 @@ function parse_opt(error, active, flags, s) {
     var match = get_num(0, i);
     var n1 = match[1];
     var i$1 = match[0];
-    if (!((i$1 + 2 | 0) < s.length && Caml_string.get(s, i$1) === /* "." */46 && Caml_string.get(s, i$1 + 1 | 0) === /* "." */46)) {
+    if (!((i$1 + 2 | 0) < s.length && Caml_string.get(s, i$1) === /* '.' */46 && Caml_string.get(s, i$1 + 1 | 0) === /* '.' */46)) {
       return [
               i$1,
               n1,
@@ -1239,7 +1239,7 @@ function message(s) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* " " */32,
+                                _0: /* ' ' */32,
                                 _1: {
                                   TAG: /* String */2,
                                   _0: /* No_padding */0,
@@ -1257,7 +1257,7 @@ function message(s) {
                                           _0: /* No_padding */0,
                                           _1: {
                                             TAG: /* Char_literal */12,
-                                            _0: /* "." */46,
+                                            _0: /* '.' */46,
                                             _1: /* End_of_format */0
                                           }
                                         }
@@ -1403,7 +1403,7 @@ function message(s) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* " " */32,
+                                _0: /* ' ' */32,
                                 _1: {
                                   TAG: /* String */2,
                                   _0: /* No_padding */0,
@@ -1471,7 +1471,7 @@ function message(s) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* " " */32,
+                                _0: /* ' ' */32,
                                 _1: {
                                   TAG: /* String */2,
                                   _0: /* No_padding */0,
@@ -1615,7 +1615,8 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
   }
   var lines = num_loc_lines.contents;
   for(var i = pos0 ,i_finish = lb.lex_buffer_len; i < i_finish; ++i){
-    if (Caml_bytes.get(lb.lex_buffer, i) === /* "\n" */10) {
+    if (Caml_bytes.get(lb.lex_buffer, i) === /* '
+' */10) {
       lines = lines + 1 | 0;
     }
     
@@ -1651,7 +1652,8 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
     }
     var c = Caml_bytes.get(lb.lex_buffer, pos + pos0 | 0);
     Pervasives.print_char(c);
-    bol = c === /* "\n" */10;
+    bol = c === /* '
+' */10;
   }
   Caml_external_polyfill.resolve("caml_terminfo_standout")(false);
   Caml_external_polyfill.resolve("caml_terminfo_resume")(num_loc_lines.contents);
@@ -1670,7 +1672,8 @@ function highlight_dumb(ppf, lb, loc) {
   var line_start = 0;
   var line_end = 0;
   for(var pos = 0; pos <= end_pos; ++pos){
-    if (Caml_bytes.get(lb.lex_buffer, pos + pos0 | 0) === /* "\n" */10) {
+    if (Caml_bytes.get(lb.lex_buffer, pos + pos0 | 0) === /* '
+' */10) {
       if (loc.loc_start.pos_cnum > pos) {
         line_start = line_start + 1 | 0;
       }
@@ -1692,7 +1695,7 @@ function highlight_dumb(ppf, lb, loc) {
                 _2: /* No_precision */0,
                 _3: {
                   TAG: /* Char_literal */12,
-                  _0: /* "-" */45,
+                  _0: /* '-' */45,
                   _1: {
                     TAG: /* Int */4,
                     _0: /* Int_i */3,
@@ -1700,7 +1703,7 @@ function highlight_dumb(ppf, lb, loc) {
                     _2: /* No_precision */0,
                     _3: {
                       TAG: /* Char_literal */12,
-                      _0: /* ":" */58,
+                      _0: /* ':' */58,
                       _1: {
                         TAG: /* Formatting_lit */17,
                         _0: /* Flush_newline */4,
@@ -1724,7 +1727,7 @@ function highlight_dumb(ppf, lb, loc) {
           Format.pp_print_char(ppf, c);
         } else if (line === line_start) {
           if (pos$1 < loc.loc_start.pos_cnum) {
-            Format.pp_print_char(ppf, /* "." */46);
+            Format.pp_print_char(ppf, /* '.' */46);
           } else {
             Format.pp_print_char(ppf, c);
           }
@@ -1732,7 +1735,7 @@ function highlight_dumb(ppf, lb, loc) {
           if (pos$1 < loc.loc_end.pos_cnum) {
             Format.pp_print_char(ppf, c);
           } else {
-            Format.pp_print_char(ppf, /* "." */46);
+            Format.pp_print_char(ppf, /* '.' */46);
           }
         } else if (line > line_start && line < line_end) {
           Format.pp_print_char(ppf, c);
@@ -1755,10 +1758,10 @@ function highlight_dumb(ppf, lb, loc) {
               _1: "@.  "
             });
         for(var _i = pos_at_bol ,_i_finish = loc.loc_start.pos_cnum; _i < _i_finish; ++_i){
-          Format.pp_print_char(ppf, /* " " */32);
+          Format.pp_print_char(ppf, /* ' ' */32);
         }
         for(var _i$1 = loc.loc_start.pos_cnum ,_i_finish$1 = loc.loc_end.pos_cnum; _i$1 < _i_finish$1; ++_i$1){
-          Format.pp_print_char(ppf, /* "^" */94);
+          Format.pp_print_char(ppf, /* '^' */94);
         }
       }
       if (line >= line_start && line <= line_end) {
@@ -1914,7 +1917,7 @@ function print_loc(ppf, loc) {
                           _2: /* No_precision */0,
                           _3: {
                             TAG: /* Char_literal */12,
-                            _0: /* "-" */45,
+                            _0: /* '-' */45,
                             _1: {
                               TAG: /* Int */4,
                               _0: /* Int_i */3,
@@ -2072,7 +2075,7 @@ function print_error(ppf, loc) {
                   _0: /* Close_tag */1,
                   _1: {
                     TAG: /* Char_literal */12,
-                    _0: /* ":" */58,
+                    _0: /* ':' */58,
                     _1: /* End_of_format */0
                   }
                 }
@@ -2109,7 +2112,7 @@ function default_warning_printer(loc, ppf, w) {
                           _0: /* Close_tag */1,
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* " " */32,
+                            _0: /* ' ' */32,
                             _1: {
                               TAG: /* Alpha */15,
                               _0: {
@@ -2148,7 +2151,8 @@ function prerr_warning(loc, w) {
         if (i === (start + len | 0)) {
           return c;
         }
-        if (Caml_string.get(str, i) === /* "\n" */10) {
+        if (Caml_string.get(str, i) === /* '
+' */10) {
           _c = c + 1 | 0;
           _i = i + 1 | 0;
           continue ;
@@ -2361,7 +2365,7 @@ function print$2(ppf, i) {
                         _0: /* No_padding */0,
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* "/" */47,
+                          _0: /* '/' */47,
                           _1: {
                             TAG: /* Int */4,
                             _0: /* Int_i */3,
@@ -2384,7 +2388,7 @@ function print$2(ppf, i) {
                         _0: /* No_padding */0,
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* "!" */33,
+                          _0: /* '!' */33,
                           _1: /* End_of_format */0
                         }
                       },
@@ -2398,7 +2402,7 @@ function print$2(ppf, i) {
                       _0: /* No_padding */0,
                       _1: {
                         TAG: /* Char_literal */12,
-                        _0: /* "#" */35,
+                        _0: /* '#' */35,
                         _1: /* End_of_format */0
                       }
                     },
@@ -5323,7 +5327,7 @@ function forget_abbrev(mem, path) {
 
 function is_optional(l) {
   if (l.length !== 0) {
-    return Caml_string.get(l, 0) === /* "?" */63;
+    return Caml_string.get(l, 0) === /* '?' */63;
   } else {
     return false;
   }
@@ -12956,7 +12960,7 @@ function check_usage(loc, id, warn, tbl) {
           used.contents = true;
           
         }));
-  if (!(name === "" || Caml_string.get(name, 0) === /* "_" */95 || Caml_string.get(name, 0) === /* "#" */35)) {
+  if (!(name === "" || Caml_string.get(name, 0) === /* '_' */95 || Caml_string.get(name, 0) === /* '#' */35)) {
     return Curry._1(add_delayed_check_forward.contents, (function (param) {
                   if (!used.contents) {
                     return prerr_warning(loc, Curry._1(warn, name));
@@ -13069,11 +13073,11 @@ function check_value_name(name, loc) {
           Error: new Error()
         };
   }
-  if (!(name.length !== 0 && Caml_string.get(name, 0) === /* "#" */35)) {
+  if (!(name.length !== 0 && Caml_string.get(name, 0) === /* '#' */35)) {
     return ;
   }
   for(var i = 1 ,i_finish = name.length; i < i_finish; ++i){
-    if (Caml_string.get(name, i) === /* "#" */35) {
+    if (Caml_string.get(name, i) === /* '#' */35) {
       throw {
             RE_EXN_ID: $$Error$2,
             _1: {
@@ -13356,7 +13360,7 @@ function store_type(check, slot, id, path, info, env, renv) {
             Hashtbl.add(used_constructors, k, (function (param) {
                     return add_constructor_usage(used, param);
                   }));
-            if (!(ty === "" || Caml_string.get(ty, 0) === /* "_" */95)) {
+            if (!(ty === "" || Caml_string.get(ty, 0) === /* '_' */95)) {
               return Curry._1(add_delayed_check_forward.contents, (function (param) {
                             if (!is_in_signature(env) && !used.cu_positive) {
                               return prerr_warning(loc, {
@@ -14525,7 +14529,7 @@ function report_error$1(ppf, param) {
                                         _0: /* No_padding */0,
                                         _1: {
                                           TAG: /* Char_literal */12,
-                                          _0: /* "." */46,
+                                          _0: /* '.' */46,
                                           _1: {
                                             TAG: /* Formatting_lit */17,
                                             _0: /* Close_box */0,
@@ -14550,7 +14554,7 @@ function report_error$1(ppf, param) {
         return Curry._1(Format.fprintf(ppf, /* Format */{
                         _0: {
                           TAG: /* Char_literal */12,
-                          _0: /* "'" */39,
+                          _0: /* ''' */39,
                           _1: {
                             TAG: /* String */2,
                             _0: /* No_padding */0,
@@ -14882,7 +14886,7 @@ function prepare_error(loc) {
                                 _0: /* No_padding */0,
                                 _1: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "." */46,
+                                  _0: /* '.' */46,
                                   _1: /* End_of_format */0
                                 }
                               }
@@ -15082,7 +15086,7 @@ function mkinfix(arg1, name, arg2) {
 }
 
 function neg_float_string(f) {
-  if (f.length !== 0 && Caml_string.get(f, 0) === /* "-" */45) {
+  if (f.length !== 0 && Caml_string.get(f, 0) === /* '-' */45) {
     return $$String.sub(f, 1, f.length - 1 | 0);
   } else {
     return "-" + f;
@@ -21974,7 +21978,7 @@ var exit = 0;
 var i;
 
 try {
-  i = $$String.rindex(Sys.ocaml_version, /* "+" */43);
+  i = $$String.rindex(Sys.ocaml_version, /* '+' */43);
   exit = 1;
 }
 catch (raw_exn$1){
@@ -22022,13 +22026,13 @@ function semantic_version_parse(str, start, last_index) {
               ];
       }
       var c = str.charCodeAt(start);
-      if (c === /* "." */46) {
+      if (c === /* '.' */46) {
         return [
                 acc,
                 start + 1 | 0
               ];
       }
-      var v = c - /* "0" */48 | 0;
+      var v = c - /* '0' */48 | 0;
       if (!(v >= 0 && v <= 9)) {
         return [
                 acc,
@@ -22608,7 +22612,7 @@ function directive_parse(token_with_comments, lexbuf) {
             if (t.TAG === /* UIDENT */17) {
               var s = t._0;
               if (calc) {
-                if (Caml_string.get(r, 0) === /* "u" */117) {
+                if (Caml_string.get(r, 0) === /* 'u' */117) {
                   return !defined(s);
                 } else {
                   return defined(s);
@@ -23168,7 +23172,7 @@ function char_for_backslash(c) {
     if (c !== 98) {
       return c;
     } else {
-      return /* "\b" */8;
+      return /* '' */8;
     }
   }
   if (c >= 117) {
@@ -23176,16 +23180,17 @@ function char_for_backslash(c) {
   }
   switch (c) {
     case 110 :
-        return /* "\n" */10;
+        return /* '
+' */10;
     case 114 :
-        return /* "\r" */13;
+        return /* '' */13;
     case 111 :
     case 112 :
     case 113 :
     case 115 :
         return c;
     case 116 :
-        return /* "\t" */9;
+        return /* '	' */9;
     
   }
 }
@@ -23196,7 +23201,7 @@ function char_for_decimal_code(lexbuf, i) {
     return Char.chr(c);
   }
   if (comment_start_loc.contents !== /* [] */0) {
-    return /* "x" */120;
+    return /* 'x' */120;
   }
   throw {
         RE_EXN_ID: $$Error$4,
@@ -23408,7 +23413,7 @@ function report_error$2(ppf, c) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* ")" */41,
+                                _0: /* ')' */41,
                                 _1: /* End_of_format */0
                               }
                             }
@@ -23425,7 +23430,7 @@ function report_error$2(ppf, c) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* ")" */41,
+                                _0: /* ')' */41,
                                 _1: /* End_of_format */0
                               }
                             }
@@ -23465,7 +23470,7 @@ function report_error$2(ppf, c) {
           return Curry._1(Format.fprintf(ppf, /* Format */{
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* "`" */96,
+                            _0: /* '`' */96,
                             _1: {
                               TAG: /* String */2,
                               _0: /* No_padding */0,
@@ -23514,13 +23519,13 @@ function report_error$2(ppf, c) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* "," */44,
+                                _0: /* ',' */44,
                                 _1: {
                                   TAG: /* String */2,
                                   _0: /* No_padding */0,
                                   _1: {
                                     TAG: /* Char_literal */12,
-                                    _0: /* ")" */41,
+                                    _0: /* ')' */41,
                                     _1: /* End_of_format */0
                                   }
                                 }
@@ -24192,7 +24197,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
               };
       case 2 :
           string_start_loc.contents = curr(lexbuf);
-          store_string_char(/* "\"" */34);
+          store_string_char(/* '"' */34);
           is_in_string.contents = true;
           try {
             string(lexbuf);
@@ -24235,7 +24240,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             throw exn;
           }
           is_in_string.contents = false;
-          store_string_char(/* "\"" */34);
+          store_string_char(/* '"' */34);
           ___ocaml_lex_state = 132;
           continue ;
       case 3 :
@@ -24285,9 +24290,9 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             throw exn$1;
           }
           is_in_string.contents = false;
-          store_string_char(/* "|" */124);
+          store_string_char(/* '|' */124);
           store_string(delim$1);
-          store_string_char(/* "}" */125);
+          store_string_char(/* '}' */125);
           ___ocaml_lex_state = 132;
           continue ;
       case 5 :
@@ -26981,7 +26986,7 @@ register_error_of_exn(function (param) {
                                 },
                                 _1: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "`" */96,
+                                  _0: /* '`' */96,
                                   _1: {
                                     TAG: /* String */2,
                                     _0: /* No_padding */0,
@@ -27139,7 +27144,7 @@ function is_object_type(path) {
             };
     
   }
-  return Caml_string.get(name, 0) === /* "#" */35;
+  return Caml_string.get(name, 0) === /* '#' */35;
 }
 
 var trace_gadt_instances = {
@@ -29146,7 +29151,7 @@ function get_new_abstract_name(s) {
                     _0: /* No_padding */0,
                     _1: {
                       TAG: /* Char_literal */12,
-                      _0: /* "#" */35,
+                      _0: /* '#' */35,
                       _1: {
                         TAG: /* Int */4,
                         _0: /* Int_d */0,
@@ -38857,12 +38862,12 @@ function print_ident(ppf, s) {
                           TAG: /* Alpha */15,
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* "(" */40,
+                            _0: /* '(' */40,
                             _1: {
                               TAG: /* Alpha */15,
                               _0: {
                                 TAG: /* Char_literal */12,
-                                _0: /* ")" */41,
+                                _0: /* ')' */41,
                                 _1: /* End_of_format */0
                               }
                             }
@@ -38872,7 +38877,7 @@ function print_ident(ppf, s) {
                       }), print_ident, s._0, print_ident, s._1);
     case /* Oide_dot */1 :
         print_ident(ppf, s._0);
-        Format.pp_print_char(ppf, /* "." */46);
+        Format.pp_print_char(ppf, /* '.' */46);
         return Curry._2(out_ident.contents, ppf, s._1);
     case /* Oide_ident */2 :
         return Curry._2(out_ident.contents, ppf, s._0);
@@ -38968,7 +38973,7 @@ function pr_present(param, param$1) {
                 return Curry._1(Format.fprintf(ppf, /* Format */{
                                 _0: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "`" */96,
+                                  _0: /* '`' */96,
                                   _1: {
                                     TAG: /* String */2,
                                     _0: /* No_padding */0,
@@ -38999,7 +39004,7 @@ function pr_vars(param, param$1) {
                 return Curry._1(Format.fprintf(ppf, /* Format */{
                                 _0: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "'" */39,
+                                  _0: /* ''' */39,
                                   _1: {
                                     TAG: /* String */2,
                                     _0: /* No_padding */0,
@@ -39088,7 +39093,7 @@ function print_out_type(ppf, ty) {
                             TAG: /* Alpha */15,
                             _0: {
                               TAG: /* Char_literal */12,
-                              _0: /* "." */46,
+                              _0: /* '.' */46,
                               _1: {
                                 TAG: /* Formatting_lit */17,
                                 _0: {
@@ -39127,7 +39132,7 @@ function print_out_type_1(ppf, ty) {
   Format.pp_open_box(ppf, 0);
   if (lab !== "") {
     Format.pp_print_string(ppf, lab);
-    Format.pp_print_char(ppf, /* ":" */58);
+    Format.pp_print_char(ppf, /* ':' */58);
   }
   print_out_type_2(ppf, ty._1);
   Format.pp_print_string(ppf, " ->");
@@ -39193,7 +39198,7 @@ function print_simple_out_type(ppf, s) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* "#" */35,
+                                _0: /* '#' */35,
                                 _1: {
                                   TAG: /* Alpha */15,
                                   _0: {
@@ -39343,7 +39348,7 @@ function print_simple_out_type(ppf, s) {
                                                     },
                                                     _1: {
                                                       TAG: /* Char_literal */12,
-                                                      _0: /* "(" */40,
+                                                      _0: /* '(' */40,
                                                       _1: {
                                                         TAG: /* Alpha */15,
                                                         _0: {
@@ -39356,12 +39361,12 @@ function print_simple_out_type(ppf, s) {
                                                           },
                                                           _1: {
                                                             TAG: /* Char_literal */12,
-                                                            _0: /* "[" */91,
+                                                            _0: /* '[' */91,
                                                             _1: {
                                                               TAG: /* Formatting_lit */17,
                                                               _0: {
                                                                 TAG: /* Scan_indic */2,
-                                                                _0: /* "b" */98
+                                                                _0: /* 'b' */98
                                                               },
                                                               _1: {
                                                                 TAG: /* String_literal */11,
@@ -39506,7 +39511,7 @@ function print_simple_out_type(ppf, s) {
                                                       },
                                                       _1: {
                                                         TAG: /* Char_literal */12,
-                                                        _0: /* "(" */40,
+                                                        _0: /* '(' */40,
                                                         _1: {
                                                           TAG: /* Alpha */15,
                                                           _0: {
@@ -39519,12 +39524,12 @@ function print_simple_out_type(ppf, s) {
                                                             },
                                                             _1: {
                                                               TAG: /* Char_literal */12,
-                                                              _0: /* "[" */91,
+                                                              _0: /* '[' */91,
                                                               _1: {
                                                                 TAG: /* Formatting_lit */17,
                                                                 _0: {
                                                                   TAG: /* Scan_indic */2,
-                                                                  _0: /* "b" */98
+                                                                  _0: /* 'b' */98
                                                                 },
                                                                 _1: {
                                                                   TAG: /* String_literal */11,
@@ -39560,7 +39565,7 @@ function print_simple_out_type(ppf, s) {
                                                       },
                                                       _1: {
                                                         TAG: /* Char_literal */12,
-                                                        _0: /* "(" */40,
+                                                        _0: /* '(' */40,
                                                         _1: {
                                                           TAG: /* Alpha */15,
                                                           _0: {
@@ -39573,12 +39578,12 @@ function print_simple_out_type(ppf, s) {
                                                             },
                                                             _1: {
                                                               TAG: /* Char_literal */12,
-                                                              _0: /* "[" */91,
+                                                              _0: /* '[' */91,
                                                               _1: {
                                                                 TAG: /* Formatting_lit */17,
                                                                 _0: {
                                                                   TAG: /* Scan_indic */2,
-                                                                  _0: /* "b" */98
+                                                                  _0: /* 'b' */98
                                                                 },
                                                                 _1: {
                                                                   TAG: /* String_literal */11,
@@ -39683,7 +39688,7 @@ function print_simple_out_type(ppf, s) {
         return Curry._2(Format.fprintf(ppf, /* Format */{
                         _0: {
                           TAG: /* Char_literal */12,
-                          _0: /* "'" */39,
+                          _0: /* ''' */39,
                           _1: {
                             TAG: /* String */2,
                             _0: /* No_padding */0,
@@ -39795,7 +39800,7 @@ function print_simple_out_type(ppf, s) {
                           _0: /* No_padding */0,
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* "[" */91,
+                            _0: /* '[' */91,
                             _1: {
                               TAG: /* String */2,
                               _0: /* No_padding */0,
@@ -39895,7 +39900,7 @@ function print_simple_out_type(ppf, s) {
                 return Curry._4(Format.fprintf(ppf, /* Format */{
                                 _0: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* " " */32,
+                                  _0: /* ' ' */32,
                                   _1: {
                                     TAG: /* String */2,
                                     _0: /* No_padding */0,
@@ -39923,7 +39928,7 @@ function print_simple_out_type(ppf, s) {
         return Format.fprintf(ppf, /* Format */{
                     _0: {
                       TAG: /* Char_literal */12,
-                      _0: /* ")" */41,
+                      _0: /* ')' */41,
                       _1: {
                         TAG: /* Formatting_lit */17,
                         _0: /* Close_box */0,
@@ -39936,9 +39941,9 @@ function print_simple_out_type(ppf, s) {
       return ;
   }
   Format.pp_open_box(ppf, 1);
-  Format.pp_print_char(ppf, /* "(" */40);
+  Format.pp_print_char(ppf, /* '(' */40);
   print_out_type(ppf, s);
-  Format.pp_print_char(ppf, /* ")" */41);
+  Format.pp_print_char(ppf, /* ')' */41);
   return Format.pp_close_box(ppf, undefined);
 }
 
@@ -39979,7 +39984,7 @@ function print_fields(rest, ppf, _param) {
                             TAG: /* Alpha */15,
                             _0: {
                               TAG: /* Char_literal */12,
-                              _0: /* ";" */59,
+                              _0: /* ';' */59,
                               _1: {
                                 TAG: /* Formatting_lit */17,
                                 _0: {
@@ -40021,7 +40026,7 @@ function print_fields(rest, ppf, _param) {
       Format.fprintf(ppf, /* Format */{
             _0: {
               TAG: /* Char_literal */12,
-              _0: /* ";" */59,
+              _0: /* ';' */59,
               _1: {
                 TAG: /* Formatting_lit */17,
                 _0: {
@@ -40060,7 +40065,7 @@ function print_row_field(ppf, param) {
                       },
                       _1: {
                         TAG: /* Char_literal */12,
-                        _0: /* "&" */38,
+                        _0: /* '&' */38,
                         _1: {
                           TAG: /* Formatting_lit */17,
                           _0: {
@@ -40117,7 +40122,7 @@ function print_row_field(ppf, param) {
                     },
                     _1: {
                       TAG: /* Char_literal */12,
-                      _0: /* "`" */96,
+                      _0: /* '`' */96,
                       _1: {
                         TAG: /* String */2,
                         _0: /* No_padding */0,
@@ -40164,9 +40169,9 @@ function print_typargs(ppf, tyl) {
   if (tyl) {
     if (tyl.tl) {
       Format.pp_open_box(ppf, 1);
-      Format.pp_print_char(ppf, /* "(" */40);
+      Format.pp_print_char(ppf, /* '(' */40);
       print_typlist(print_out_type, ",", ppf, tyl);
-      Format.pp_print_char(ppf, /* ")" */41);
+      Format.pp_print_char(ppf, /* ')' */41);
       Format.pp_close_box(ppf, undefined);
       return Format.pp_print_space(ppf, undefined);
     } else {
@@ -40218,12 +40223,12 @@ function print_out_class_params(ppf, tyl) {
                       },
                       _1: {
                         TAG: /* Char_literal */12,
-                        _0: /* "[" */91,
+                        _0: /* '[' */91,
                         _1: {
                           TAG: /* Alpha */15,
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* "]" */93,
+                            _0: /* ']' */93,
                             _1: {
                               TAG: /* Formatting_lit */17,
                               _0: /* Close_box */0,
@@ -40283,12 +40288,12 @@ function print_out_class_type(ppf, param) {
                             },
                             _1: {
                               TAG: /* Char_literal */12,
-                              _0: /* "[" */91,
+                              _0: /* '[' */91,
                               _1: {
                                 TAG: /* Alpha */15,
                                 _0: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "]" */93,
+                                  _0: /* ']' */93,
                                   _1: {
                                     TAG: /* Formatting_lit */17,
                                     _0: /* Close_box */0,
@@ -40402,12 +40407,12 @@ function print_out_class_type(ppf, param) {
                                 },
                                 _1: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "(" */40,
+                                  _0: /* '(' */40,
                                   _1: {
                                     TAG: /* Alpha */15,
                                     _0: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* ")" */41,
+                                      _0: /* ')' */41,
                                       _1: {
                                         TAG: /* Formatting_lit */17,
                                         _0: /* Close_box */0,
@@ -40728,7 +40733,7 @@ function print_out_functor(ppf, m) {
       return Curry._5(Format.fprintf(ppf, /* Format */{
                       _0: {
                         TAG: /* Char_literal */12,
-                        _0: /* "(" */40,
+                        _0: /* '(' */40,
                         _1: {
                           TAG: /* String */2,
                           _0: /* No_padding */0,
@@ -40977,7 +40982,7 @@ function print_out_label(ppf, param) {
                                 _0: /* Close_box */0,
                                 _1: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* ";" */59,
+                                  _0: /* ';' */59,
                                   _1: /* End_of_format */0
                                 }
                               }
@@ -41104,7 +41109,7 @@ function print_out_module_type(ppf, t) {
                             TAG: /* Alpha */15,
                             _0: {
                               TAG: /* Char_literal */12,
-                              _0: /* ")" */41,
+                              _0: /* ')' */41,
                               _1: /* End_of_format */0
                             }
                           }
@@ -41266,7 +41271,7 @@ function print_out_sig_item(ppf, param) {
                                       },
                                       _1: {
                                         TAG: /* Char_literal */12,
-                                        _0: /* ":" */58,
+                                        _0: /* ':' */58,
                                         _1: {
                                           TAG: /* Formatting_lit */17,
                                           _0: {
@@ -41338,7 +41343,7 @@ function print_out_sig_item(ppf, param) {
                                       },
                                       _1: {
                                         TAG: /* Char_literal */12,
-                                        _0: /* "=" */61,
+                                        _0: /* '=' */61,
                                         _1: {
                                           TAG: /* Formatting_lit */17,
                                           _0: {
@@ -41429,7 +41434,7 @@ function print_out_sig_item(ppf, param) {
                                   },
                                   _1: {
                                     TAG: /* Char_literal */12,
-                                    _0: /* "(" */40,
+                                    _0: /* '(' */40,
                                     _1: {
                                       TAG: /* Formatting_gen */18,
                                       _0: {
@@ -41443,7 +41448,7 @@ function print_out_sig_item(ppf, param) {
                                         TAG: /* Alpha */15,
                                         _0: {
                                           TAG: /* Char_literal */12,
-                                          _0: /* ")" */41,
+                                          _0: /* ')' */41,
                                           _1: {
                                             TAG: /* Formatting_lit */17,
                                             _0: /* Close_box */0,
@@ -41477,7 +41482,7 @@ function print_out_sig_item(ppf, param) {
                                             return Format.fprintf(ppf, /* Format */{
                                                         _0: {
                                                           TAG: /* Char_literal */12,
-                                                          _0: /* "," */44,
+                                                          _0: /* ',' */44,
                                                           _1: {
                                                             TAG: /* Formatting_lit */17,
                                                             _0: {
@@ -41759,7 +41764,7 @@ function print_out_sig_item(ppf, param) {
                             _0: /* No_padding */0,
                             _1: {
                               TAG: /* Char_literal */12,
-                              _0: /* " " */32,
+                              _0: /* ' ' */32,
                               _1: {
                                 TAG: /* String */2,
                                 _0: /* No_padding */0,
@@ -41879,7 +41884,7 @@ function print_out_sig_item(ppf, param) {
                                 },
                                 _1: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "(" */40,
+                                  _0: /* '(' */40,
                                   _1: {
                                     TAG: /* Formatting_gen */18,
                                     _0: {
@@ -41893,7 +41898,7 @@ function print_out_sig_item(ppf, param) {
                                       TAG: /* Alpha */15,
                                       _0: {
                                         TAG: /* Char_literal */12,
-                                        _0: /* ")" */41,
+                                        _0: /* ')' */41,
                                         _1: {
                                           TAG: /* Formatting_lit */17,
                                           _0: /* Close_box */0,
@@ -41927,7 +41932,7 @@ function print_out_sig_item(ppf, param) {
                                           return Format.fprintf(ppf, /* Format */{
                                                       _0: {
                                                         TAG: /* Char_literal */12,
-                                                        _0: /* "," */44,
+                                                        _0: /* ',' */44,
                                                         _1: {
                                                           TAG: /* Formatting_lit */17,
                                                           _0: {
@@ -42016,7 +42021,7 @@ function print_out_sig_item(ppf, param) {
                             _0: /* No_padding */0,
                             _1: {
                               TAG: /* Char_literal */12,
-                              _0: /* " " */32,
+                              _0: /* ' ' */32,
                               _1: {
                                 TAG: /* Theta */16,
                                 _0: {
@@ -42084,7 +42089,7 @@ function print_out_sig_item(ppf, param) {
                                           },
                                           _1: {
                                             TAG: /* Char_literal */12,
-                                            _0: /* "}" */125,
+                                            _0: /* '}' */125,
                                             _1: /* End_of_format */0
                                           }
                                         }
@@ -42262,7 +42267,7 @@ function print_out_sig_item(ppf, param) {
                             _0: /* No_padding */0,
                             _1: {
                               TAG: /* Char_literal */12,
-                              _0: /* "\"" */34,
+                              _0: /* '"' */34,
                               _1: /* End_of_format */0
                             }
                           }
@@ -42272,7 +42277,7 @@ function print_out_sig_item(ppf, param) {
                     }), param.hd);
             return List.iter((function (s) {
                           var len = s.length;
-                          if (len >= 3 && Caml_string.get(s, 0) === /* "B" */66 && Caml_string.get(s, 1) === /* "S" */83 && Caml_string.get(s, 2) === /* ":" */58) {
+                          if (len >= 3 && Caml_string.get(s, 0) === /* 'B' */66 && Caml_string.get(s, 1) === /* 'S' */83 && Caml_string.get(s, 2) === /* ':' */58) {
                             return Format.fprintf(ppf, /* Format */{
                                         _0: {
                                           TAG: /* Formatting_lit */17,
@@ -42302,13 +42307,13 @@ function print_out_sig_item(ppf, param) {
                                               },
                                               _1: {
                                                 TAG: /* Char_literal */12,
-                                                _0: /* "\"" */34,
+                                                _0: /* '"' */34,
                                                 _1: {
                                                   TAG: /* String */2,
                                                   _0: /* No_padding */0,
                                                   _1: {
                                                     TAG: /* Char_literal */12,
-                                                    _0: /* "\"" */34,
+                                                    _0: /* '"' */34,
                                                     _1: /* End_of_format */0
                                                   }
                                                 }
@@ -42340,7 +42345,7 @@ function print_out_sig_item(ppf, param) {
                             _0: /* No_padding */0,
                             _1: {
                               TAG: /* Char_literal */12,
-                              _0: /* " " */32,
+                              _0: /* ' ' */32,
                               _1: {
                                 TAG: /* Alpha */15,
                                 _0: {
@@ -42404,7 +42409,7 @@ function print_out_type_extension(ppf, te) {
                           },
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* "(" */40,
+                            _0: /* '(' */40,
                             _1: {
                               TAG: /* Formatting_gen */18,
                               _0: {
@@ -42418,7 +42423,7 @@ function print_out_type_extension(ppf, te) {
                                 TAG: /* Alpha */15,
                                 _0: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* ")" */41,
+                                  _0: /* ')' */41,
                                   _1: {
                                     TAG: /* Formatting_lit */17,
                                     _0: /* Close_box */0,
@@ -42452,7 +42457,7 @@ function print_out_type_extension(ppf, te) {
                                     return Format.fprintf(ppf, /* Format */{
                                                 _0: {
                                                   TAG: /* Char_literal */12,
-                                                  _0: /* "," */44,
+                                                  _0: /* ',' */44,
                                                   _1: {
                                                     TAG: /* Formatting_lit */17,
                                                     _0: {
@@ -42604,7 +42609,7 @@ function longident(ppf, s) {
                           TAG: /* Alpha */15,
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* "." */46,
+                            _0: /* '.' */46,
                             _1: {
                               TAG: /* String */2,
                               _0: /* No_padding */0,
@@ -42620,12 +42625,12 @@ function longident(ppf, s) {
                           TAG: /* Alpha */15,
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* "(" */40,
+                            _0: /* '(' */40,
                             _1: {
                               TAG: /* Alpha */15,
                               _0: {
                                 TAG: /* Char_literal */12,
-                                _0: /* ")" */41,
+                                _0: /* ')' */41,
                                 _1: /* End_of_format */0
                               }
                             }
@@ -42735,7 +42740,7 @@ function path(ppf, id) {
           
         }
         path(ppf, id$1);
-        Format.pp_print_char(ppf, /* "." */46);
+        Format.pp_print_char(ppf, /* '.' */46);
         return Format.pp_print_string(ppf, id._1);
     case /* Papply */2 :
         return Curry._4(Format.fprintf(ppf, /* Format */{
@@ -42743,12 +42748,12 @@ function path(ppf, id) {
                           TAG: /* Alpha */15,
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* "(" */40,
+                            _0: /* '(' */40,
                             _1: {
                               TAG: /* Alpha */15,
                               _0: {
                                 TAG: /* Char_literal */12,
-                                _0: /* ")" */41,
+                                _0: /* ')' */41,
                                 _1: /* End_of_format */0
                               }
                             }
@@ -42822,14 +42827,14 @@ function raw_list(pr, ppf, param) {
                     },
                     _1: {
                       TAG: /* Char_literal */12,
-                      _0: /* "[" */91,
+                      _0: /* '[' */91,
                       _1: {
                         TAG: /* Alpha */15,
                         _0: {
                           TAG: /* Theta */16,
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* "]" */93,
+                            _0: /* ']' */93,
                             _1: {
                               TAG: /* Formatting_lit */17,
                               _0: /* Close_box */0,
@@ -42846,7 +42851,7 @@ function raw_list(pr, ppf, param) {
                               return Curry._2(Format.fprintf(ppf, /* Format */{
                                               _0: {
                                                 TAG: /* Char_literal */12,
-                                                _0: /* ";" */59,
+                                                _0: /* ';' */59,
                                                 _1: {
                                                   TAG: /* Formatting_lit */17,
                                                   _0: {
@@ -42964,13 +42969,13 @@ function print_name(ppf, name) {
     return Curry._1(Format.fprintf(ppf, /* Format */{
                     _0: {
                       TAG: /* Char_literal */12,
-                      _0: /* "\"" */34,
+                      _0: /* '"' */34,
                       _1: {
                         TAG: /* String */2,
                         _0: /* No_padding */0,
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* "\"" */34,
+                          _0: /* '"' */34,
                           _1: /* End_of_format */0
                         }
                       }
@@ -43007,7 +43012,7 @@ function raw_type(ppf, ty) {
                         _2: /* No_precision */0,
                         _3: {
                           TAG: /* Char_literal */12,
-                          _0: /* "}" */125,
+                          _0: /* '}' */125,
                           _1: /* End_of_format */0
                         }
                       }
@@ -43064,7 +43069,7 @@ function raw_type(ppf, ty) {
                                     TAG: /* Alpha */15,
                                     _0: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* "}" */125,
+                                      _0: /* '}' */125,
                                       _1: {
                                         TAG: /* Formatting_lit */17,
                                         _0: /* Close_box */0,
@@ -43137,7 +43142,7 @@ function raw_type_desc(ppf, name) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* "," */44,
+                                _0: /* ',' */44,
                                 _1: {
                                   TAG: /* Formatting_lit */17,
                                   _0: {
@@ -43150,7 +43155,7 @@ function raw_type_desc(ppf, name) {
                                     TAG: /* Alpha */15,
                                     _0: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* "," */44,
+                                      _0: /* ',' */44,
                                       _1: {
                                         TAG: /* Formatting_lit */17,
                                         _0: {
@@ -43163,7 +43168,7 @@ function raw_type_desc(ppf, name) {
                                           TAG: /* Alpha */15,
                                           _0: {
                                             TAG: /* Char_literal */12,
-                                            _0: /* "," */44,
+                                            _0: /* ',' */44,
                                             _1: {
                                               TAG: /* Formatting_lit */17,
                                               _0: {
@@ -43177,7 +43182,7 @@ function raw_type_desc(ppf, name) {
                                                 _0: /* No_padding */0,
                                                 _1: {
                                                   TAG: /* Char_literal */12,
-                                                  _0: /* ")" */41,
+                                                  _0: /* ')' */41,
                                                   _1: {
                                                     TAG: /* Formatting_lit */17,
                                                     _0: /* Close_box */0,
@@ -43267,7 +43272,7 @@ function raw_type_desc(ppf, name) {
                                 TAG: /* Alpha */15,
                                 _0: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "," */44,
+                                  _0: /* ',' */44,
                                   _1: {
                                     TAG: /* Formatting_lit */17,
                                     _0: {
@@ -43280,7 +43285,7 @@ function raw_type_desc(ppf, name) {
                                       TAG: /* Alpha */15,
                                       _0: {
                                         TAG: /* Char_literal */12,
-                                        _0: /* "," */44,
+                                        _0: /* ',' */44,
                                         _1: {
                                           TAG: /* Formatting_lit */17,
                                           _0: {
@@ -43293,7 +43298,7 @@ function raw_type_desc(ppf, name) {
                                             TAG: /* Alpha */15,
                                             _0: {
                                               TAG: /* Char_literal */12,
-                                              _0: /* ")" */41,
+                                              _0: /* ')' */41,
                                               _1: {
                                                 TAG: /* Formatting_lit */17,
                                                 _0: /* Close_box */0,
@@ -43345,7 +43350,7 @@ function raw_type_desc(ppf, name) {
                                 TAG: /* Alpha */15,
                                 _0: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "," */44,
+                                  _0: /* ',' */44,
                                   _1: {
                                     TAG: /* Formatting_lit */17,
                                     _0: {
@@ -43377,7 +43382,7 @@ function raw_type_desc(ppf, name) {
                                             _0: /* Close_box */0,
                                             _1: {
                                               TAG: /* Char_literal */12,
-                                              _0: /* ")" */41,
+                                              _0: /* ')' */41,
                                               _1: {
                                                 TAG: /* Formatting_lit */17,
                                                 _0: /* Close_box */0,
@@ -43414,7 +43419,7 @@ function raw_type_desc(ppf, name) {
                                               TAG: /* Alpha */15,
                                               _0: {
                                                 TAG: /* Char_literal */12,
-                                                _0: /* "," */44,
+                                                _0: /* ',' */44,
                                                 _1: {
                                                   TAG: /* Formatting_lit */17,
                                                   _0: {
@@ -43480,7 +43485,7 @@ function raw_type_desc(ppf, name) {
                                 _0: /* No_padding */0,
                                 _1: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "," */44,
+                                  _0: /* ',' */44,
                                   _1: {
                                     TAG: /* Formatting_lit */17,
                                     _0: {
@@ -43494,7 +43499,7 @@ function raw_type_desc(ppf, name) {
                                       _0: /* No_padding */0,
                                       _1: {
                                         TAG: /* Char_literal */12,
-                                        _0: /* "," */44,
+                                        _0: /* ',' */44,
                                         _1: {
                                           TAG: /* Formatting_lit */17,
                                           _0: {
@@ -43507,7 +43512,7 @@ function raw_type_desc(ppf, name) {
                                             TAG: /* Alpha */15,
                                             _0: {
                                               TAG: /* Char_literal */12,
-                                              _0: /* "," */44,
+                                              _0: /* ',' */44,
                                               _1: {
                                                 TAG: /* Formatting_lit */17,
                                                 _0: {
@@ -43520,7 +43525,7 @@ function raw_type_desc(ppf, name) {
                                                   TAG: /* Alpha */15,
                                                   _0: {
                                                     TAG: /* Char_literal */12,
-                                                    _0: /* ")" */41,
+                                                    _0: /* ')' */41,
                                                     _1: {
                                                       TAG: /* Formatting_lit */17,
                                                       _0: /* Close_box */0,
@@ -43638,7 +43643,7 @@ function raw_type_desc(ppf, name) {
                           },
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* "{" */123,
+                            _0: /* '{' */123,
                             _1: {
                               TAG: /* Formatting_gen */18,
                               _0: {
@@ -43663,7 +43668,7 @@ function raw_type_desc(ppf, name) {
                                     TAG: /* Alpha */15,
                                     _0: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* ";" */59,
+                                      _0: /* ';' */59,
                                       _1: {
                                         TAG: /* Formatting_lit */17,
                                         _0: /* Close_box */0,
@@ -43699,7 +43704,7 @@ function raw_type_desc(ppf, name) {
                                                   TAG: /* Alpha */15,
                                                   _0: {
                                                     TAG: /* Char_literal */12,
-                                                    _0: /* ";" */59,
+                                                    _0: /* ';' */59,
                                                     _1: {
                                                       TAG: /* Formatting_lit */17,
                                                       _0: /* Close_box */0,
@@ -43719,7 +43724,7 @@ function raw_type_desc(ppf, name) {
                                                             _0: /* No_padding */0,
                                                             _1: {
                                                               TAG: /* Char_literal */12,
-                                                              _0: /* ";" */59,
+                                                              _0: /* ';' */59,
                                                               _1: {
                                                                 TAG: /* Formatting_lit */17,
                                                                 _0: {
@@ -43736,7 +43741,7 @@ function raw_type_desc(ppf, name) {
                                                                     _0: /* No_padding */0,
                                                                     _1: {
                                                                       TAG: /* Char_literal */12,
-                                                                      _0: /* ";" */59,
+                                                                      _0: /* ';' */59,
                                                                       _1: {
                                                                         TAG: /* Formatting_lit */17,
                                                                         _0: {
@@ -43768,7 +43773,7 @@ function raw_type_desc(ppf, name) {
                                                                                 _0: /* Close_box */0,
                                                                                 _1: {
                                                                                   TAG: /* Char_literal */12,
-                                                                                  _0: /* "}" */125,
+                                                                                  _0: /* '}' */125,
                                                                                   _1: {
                                                                                     TAG: /* Formatting_lit */17,
                                                                                     _0: /* Close_box */0,
@@ -43823,7 +43828,7 @@ function raw_type_desc(ppf, name) {
                                                           _0: /* No_padding */0,
                                                           _1: {
                                                             TAG: /* Char_literal */12,
-                                                            _0: /* "," */44,
+                                                            _0: /* ',' */44,
                                                             _1: {
                                                               TAG: /* Formatting_lit */17,
                                                               _0: {
@@ -43876,7 +43881,7 @@ function raw_type_desc(ppf, name) {
                                                 TAG: /* Alpha */15,
                                                 _0: {
                                                   TAG: /* Char_literal */12,
-                                                  _0: /* "," */44,
+                                                  _0: /* ',' */44,
                                                   _1: {
                                                     TAG: /* Formatting_lit */17,
                                                     _0: {
@@ -43889,7 +43894,7 @@ function raw_type_desc(ppf, name) {
                                                       TAG: /* Alpha */15,
                                                       _0: {
                                                         TAG: /* Char_literal */12,
-                                                        _0: /* ")" */41,
+                                                        _0: /* ')' */41,
                                                         _1: /* End_of_format */0
                                                       }
                                                     }
@@ -43954,7 +43959,7 @@ function raw_type_desc(ppf, name) {
                                 TAG: /* Alpha */15,
                                 _0: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "," */44,
+                                  _0: /* ',' */44,
                                   _1: {
                                     TAG: /* Formatting_lit */17,
                                     _0: {
@@ -43967,7 +43972,7 @@ function raw_type_desc(ppf, name) {
                                       TAG: /* Alpha */15,
                                       _0: {
                                         TAG: /* Char_literal */12,
-                                        _0: /* ")" */41,
+                                        _0: /* ')' */41,
                                         _1: {
                                           TAG: /* Formatting_lit */17,
                                           _0: /* Close_box */0,
@@ -44023,7 +44028,7 @@ function raw_type_desc(ppf, name) {
                                     TAG: /* Alpha */15,
                                     _0: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* ")" */41,
+                                      _0: /* ')' */41,
                                       _1: {
                                         TAG: /* Formatting_lit */17,
                                         _0: /* Close_box */0,
@@ -44085,7 +44090,7 @@ function raw_field(ppf, param) {
                               TAG: /* Alpha */15,
                               _0: {
                                 TAG: /* Char_literal */12,
-                                _0: /* ")" */41,
+                                _0: /* ')' */41,
                                 _1: {
                                   TAG: /* Formatting_lit */17,
                                   _0: /* Close_box */0,
@@ -44132,7 +44137,7 @@ function raw_field(ppf, param) {
                         _0: /* No_padding */0,
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* "," */44,
+                          _0: /* ',' */44,
                           _1: {
                             TAG: /* Formatting_lit */17,
                             _0: {
@@ -44145,7 +44150,7 @@ function raw_field(ppf, param) {
                               TAG: /* Alpha */15,
                               _0: {
                                 TAG: /* Char_literal */12,
-                                _0: /* "," */44,
+                                _0: /* ',' */44,
                                 _1: {
                                   TAG: /* Formatting_lit */17,
                                   _0: {
@@ -44159,7 +44164,7 @@ function raw_field(ppf, param) {
                                     _0: /* No_padding */0,
                                     _1: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* "," */44,
+                                      _0: /* ',' */44,
                                       _1: {
                                         TAG: /* Formatting_lit */17,
                                         _0: {
@@ -44191,7 +44196,7 @@ function raw_field(ppf, param) {
                                                 _0: /* Close_box */0,
                                                 _1: {
                                                   TAG: /* Char_literal */12,
-                                                  _0: /* ")" */41,
+                                                  _0: /* ')' */41,
                                                   _1: {
                                                     TAG: /* Formatting_lit */17,
                                                     _0: /* Close_box */0,
@@ -44241,12 +44246,12 @@ function raw_field(ppf, param) {
                                       },
                                       _1: {
                                         TAG: /* Char_literal */12,
-                                        _0: /* "(" */40,
+                                        _0: /* '(' */40,
                                         _1: {
                                           TAG: /* Alpha */15,
                                           _0: {
                                             TAG: /* Char_literal */12,
-                                            _0: /* ")" */41,
+                                            _0: /* ')' */41,
                                             _1: {
                                               TAG: /* Formatting_lit */17,
                                               _0: /* Close_box */0,
@@ -44630,7 +44635,7 @@ function path_size(id) {
         var id$1 = id._0;
         var s = id$1.name;
         return [
-                s !== "" && Caml_string.get(s, 0) === /* "_" */95 ? 10 : 1,
+                s !== "" && Caml_string.get(s, 0) === /* '_' */95 ? 10 : 1,
                 -id$1.stamp | 0
               ];
     case /* Pdot */1 :
@@ -46692,7 +46697,7 @@ function type_expansion(t, ppf, t$prime) {
                         },
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* "=" */61,
+                          _0: /* '=' */61,
                           _1: {
                             TAG: /* Formatting_lit */17,
                             _0: {
@@ -46748,7 +46753,7 @@ function type_path_expansion(tp, ppf, tp$prime) {
                           },
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* "=" */61,
+                            _0: /* '=' */61,
                             _1: {
                               TAG: /* Formatting_lit */17,
                               _0: {
@@ -46851,7 +46856,7 @@ function trace(fst, txt, ppf, param) {
                                     _0: /* Close_box */0,
                                     _1: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* " " */32,
+                                      _0: /* ' ' */32,
                                       _1: {
                                         TAG: /* Alpha */15,
                                         _0: /* End_of_format */0
@@ -47032,7 +47037,7 @@ function print_tags(ppf, fields) {
     Curry._1(Format.fprintf(ppf, /* Format */{
               _0: {
                 TAG: /* Char_literal */12,
-                _0: /* "`" */96,
+                _0: /* '`' */96,
                 _1: {
                   TAG: /* String */2,
                   _0: /* No_padding */0,
@@ -47045,7 +47050,7 @@ function print_tags(ppf, fields) {
                   return Curry._1(Format.fprintf(ppf, /* Format */{
                                   _0: {
                                     TAG: /* Char_literal */12,
-                                    _0: /* "," */44,
+                                    _0: /* ',' */44,
                                     _1: {
                                       TAG: /* Formatting_lit */17,
                                       _0: {
@@ -47056,7 +47061,7 @@ function print_tags(ppf, fields) {
                                       },
                                       _1: {
                                         TAG: /* Char_literal */12,
-                                        _0: /* "`" */96,
+                                        _0: /* '`' */96,
                                         _1: {
                                           TAG: /* String */2,
                                           _0: /* No_padding */0,
@@ -48730,7 +48735,7 @@ function include_err(ppf, lab) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* " " */32,
+                                _0: /* ' ' */32,
                                 _1: {
                                   TAG: /* String */2,
                                   _0: /* No_padding */0,
@@ -49158,7 +49163,7 @@ function report_type_mismatch(first, second, decl, ppf) {
                                         TAG: /* Alpha */15,
                                         _0: {
                                           TAG: /* Char_literal */12,
-                                          _0: /* "." */46,
+                                          _0: /* '.' */46,
                                           _1: /* End_of_format */0
                                         }
                                       }
@@ -49316,7 +49321,7 @@ function report_type_mismatch(first, second, decl, ppf) {
                                                                   _0: /* No_padding */0,
                                                                   _1: {
                                                                     TAG: /* Char_literal */12,
-                                                                    _0: /* " " */32,
+                                                                    _0: /* ' ' */32,
                                                                     _1: {
                                                                       TAG: /* String */2,
                                                                       _0: /* No_padding */0,
@@ -49347,13 +49352,13 @@ function report_type_mismatch(first, second, decl, ppf) {
                                                                 _0: /* No_padding */0,
                                                                 _1: {
                                                                   TAG: /* Char_literal */12,
-                                                                  _0: /* " " */32,
+                                                                  _0: /* ' ' */32,
                                                                   _1: {
                                                                     TAG: /* String */2,
                                                                     _0: /* No_padding */0,
                                                                     _1: {
                                                                       TAG: /* Char_literal */12,
-                                                                      _0: /* " " */32,
+                                                                      _0: /* ' ' */32,
                                                                       _1: {
                                                                         TAG: /* String */2,
                                                                         _0: /* No_padding */0,
@@ -52358,7 +52363,7 @@ function show_loc(msg, ppf, loc) {
                           TAG: /* Alpha */15,
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* ":" */58,
+                            _0: /* ':' */58,
                             _1: {
                               TAG: /* Formatting_lit */17,
                               _0: {
@@ -52539,7 +52544,7 @@ function include_err$1(ppf, path$1) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* ":" */58,
+                                _0: /* ':' */58,
                                 _1: {
                                   TAG: /* Formatting_lit */17,
                                   _0: {
@@ -52859,7 +52864,7 @@ function include_err$1(ppf, path$1) {
                                     _0: /* No_padding */0,
                                     _1: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* ":" */58,
+                                      _0: /* ':' */58,
                                       _1: /* End_of_format */0
                                     }
                                   }
@@ -53301,7 +53306,7 @@ function args(ppf, cxt) {
           return Curry._4(Format.fprintf(ppf, /* Format */{
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* "(" */40,
+                            _0: /* '(' */40,
                             _1: {
                               TAG: /* Alpha */15,
                               _0: {
@@ -53333,13 +53338,13 @@ function args(ppf, cxt) {
           return Curry._3(Format.fprintf(ppf, /* Format */{
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* "(" */40,
+                            _0: /* '(' */40,
                             _1: {
                               TAG: /* String */2,
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* ")" */41,
+                                _0: /* ')' */41,
                                 _1: {
                                   TAG: /* Alpha */15,
                                   _0: /* End_of_format */0
@@ -53455,7 +53460,7 @@ function context$1(ppf, cxt) {
                         TAG: /* Alpha */15,
                         _0: {
                           TAG: /* Char_literal */12,
-                          _0: /* ":" */58,
+                          _0: /* ':' */58,
                           _1: {
                             TAG: /* Formatting_lit */17,
                             _0: {
@@ -54224,7 +54229,7 @@ function pretty_const(c) {
                           _2: /* No_precision */0,
                           _3: {
                             TAG: /* Char_literal */12,
-                            _0: /* "l" */108,
+                            _0: /* 'l' */108,
                             _1: /* End_of_format */0
                           }
                         },
@@ -54239,7 +54244,7 @@ function pretty_const(c) {
                           _2: /* No_precision */0,
                           _3: {
                             TAG: /* Char_literal */12,
-                            _0: /* "L" */76,
+                            _0: /* 'L' */76,
                             _1: /* End_of_format */0
                           }
                         },
@@ -54254,7 +54259,7 @@ function pretty_const(c) {
                           _2: /* No_precision */0,
                           _3: {
                             TAG: /* Char_literal */12,
-                            _0: /* "n" */110,
+                            _0: /* 'n' */110,
                             _1: /* End_of_format */0
                           }
                         },
@@ -54287,7 +54292,7 @@ function pretty_val(ppf, v) {
                             TAG: /* Alpha */15,
                             _0: {
                               TAG: /* Char_literal */12,
-                              _0: /* ")" */41,
+                              _0: /* ')' */41,
                               _1: {
                                 TAG: /* Formatting_lit */17,
                                 _0: /* Close_box */0,
@@ -54319,7 +54324,7 @@ function pretty_val(ppf, v) {
                         },
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* "(" */40,
+                          _0: /* '(' */40,
                           _1: {
                             TAG: /* Alpha */15,
                             _0: {
@@ -54361,7 +54366,7 @@ function pretty_val(ppf, v) {
                             TAG: /* Alpha */15,
                             _0: {
                               TAG: /* Char_literal */12,
-                              _0: /* ")" */41,
+                              _0: /* ')' */41,
                               _1: {
                                 TAG: /* Formatting_lit */17,
                                 _0: /* Close_box */0,
@@ -54387,7 +54392,7 @@ function pretty_val(ppf, v) {
     return Format.fprintf(ppf, /* Format */{
                 _0: {
                   TAG: /* Char_literal */12,
-                  _0: /* "_" */95,
+                  _0: /* '_' */95,
                   _1: /* End_of_format */0
                 },
                 _1: "_"
@@ -54409,7 +54414,7 @@ function pretty_val(ppf, v) {
                           },
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* "(" */40,
+                            _0: /* '(' */40,
                             _1: {
                               TAG: /* Alpha */15,
                               _0: {
@@ -54427,7 +54432,7 @@ function pretty_val(ppf, v) {
                                     TAG: /* Alpha */15,
                                     _0: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* ")" */41,
+                                      _0: /* ')' */41,
                                       _1: {
                                         TAG: /* Formatting_lit */17,
                                         _0: /* Close_box */0,
@@ -54464,12 +54469,12 @@ function pretty_val(ppf, v) {
                           },
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* "(" */40,
+                            _0: /* '(' */40,
                             _1: {
                               TAG: /* Alpha */15,
                               _0: {
                                 TAG: /* Char_literal */12,
-                                _0: /* ")" */41,
+                                _0: /* ')' */41,
                                 _1: {
                                   TAG: /* Formatting_lit */17,
                                   _0: /* Close_box */0,
@@ -54616,12 +54621,12 @@ function pretty_val(ppf, v) {
                                 },
                                 _1: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "(" */40,
+                                  _0: /* '(' */40,
                                   _1: {
                                     TAG: /* Alpha */15,
                                     _0: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* ")" */41,
+                                      _0: /* ')' */41,
                                       _1: {
                                         TAG: /* Formatting_lit */17,
                                         _0: /* Close_box */0,
@@ -54663,7 +54668,7 @@ function pretty_val(ppf, v) {
                             },
                             _1: {
                               TAG: /* Char_literal */12,
-                              _0: /* "`" */96,
+                              _0: /* '`' */96,
                               _1: {
                                 TAG: /* String */2,
                                 _0: /* No_padding */0,
@@ -54693,7 +54698,7 @@ function pretty_val(ppf, v) {
           return Curry._1(Format.fprintf(ppf, /* Format */{
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* "`" */96,
+                            _0: /* '`' */96,
                             _1: {
                               TAG: /* String */2,
                               _0: /* No_padding */0,
@@ -54716,12 +54721,12 @@ function pretty_val(ppf, v) {
                           },
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* "{" */123,
+                            _0: /* '{' */123,
                             _1: {
                               TAG: /* Alpha */15,
                               _0: {
                                 TAG: /* Char_literal */12,
-                                _0: /* "}" */125,
+                                _0: /* '}' */125,
                                 _1: {
                                   TAG: /* Formatting_lit */17,
                                   _0: /* Close_box */0,
@@ -54784,12 +54789,12 @@ function pretty_val(ppf, v) {
                           },
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* "(" */40,
+                            _0: /* '(' */40,
                             _1: {
                               TAG: /* Alpha */15,
                               _0: {
                                 TAG: /* Char_literal */12,
-                                _0: /* "|" */124,
+                                _0: /* '|' */124,
                                 _1: {
                                   TAG: /* Formatting_lit */17,
                                   _0: {
@@ -54802,7 +54807,7 @@ function pretty_val(ppf, v) {
                                     TAG: /* Alpha */15,
                                     _0: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* ")" */41,
+                                      _0: /* ')' */41,
                                       _1: {
                                         TAG: /* Formatting_lit */17,
                                         _0: /* Close_box */0,
@@ -54877,12 +54882,12 @@ function pretty_car(ppf, v) {
     return Curry._2(Format.fprintf(ppf, /* Format */{
                     _0: {
                       TAG: /* Char_literal */12,
-                      _0: /* "(" */40,
+                      _0: /* '(' */40,
                       _1: {
                         TAG: /* Alpha */15,
                         _0: {
                           TAG: /* Char_literal */12,
-                          _0: /* ")" */41,
+                          _0: /* ')' */41,
                           _1: /* End_of_format */0
                         }
                       }
@@ -54958,12 +54963,12 @@ function pretty_arg(ppf, v) {
   return Curry._2(Format.fprintf(ppf, /* Format */{
                   _0: {
                     TAG: /* Char_literal */12,
-                    _0: /* "(" */40,
+                    _0: /* '(' */40,
                     _1: {
                       TAG: /* Alpha */15,
                       _0: {
                         TAG: /* Char_literal */12,
-                        _0: /* ")" */41,
+                        _0: /* ')' */41,
                         _1: /* End_of_format */0
                       }
                     }
@@ -54982,7 +54987,7 @@ function pretty_or(ppf, v) {
                       TAG: /* Alpha */15,
                       _0: {
                         TAG: /* Char_literal */12,
-                        _0: /* "|" */124,
+                        _0: /* '|' */124,
                         _1: {
                           TAG: /* Formatting_lit */17,
                           _0: {
@@ -55055,12 +55060,12 @@ function pretty_lvals(ppf, param) {
                       _0: /* No_padding */0,
                       _1: {
                         TAG: /* Char_literal */12,
-                        _0: /* "=" */61,
+                        _0: /* '=' */61,
                         _1: {
                           TAG: /* Alpha */15,
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* ";" */59,
+                            _0: /* ';' */59,
                             _1: {
                               TAG: /* Formatting_lit */17,
                               _0: {
@@ -55087,7 +55092,7 @@ function pretty_lvals(ppf, param) {
                       _0: /* No_padding */0,
                       _1: {
                         TAG: /* Char_literal */12,
-                        _0: /* "=" */61,
+                        _0: /* '=' */61,
                         _1: {
                           TAG: /* Alpha */15,
                           _0: /* End_of_format */0
@@ -56498,23 +56503,23 @@ function build_other(ext, env) {
                     }), env);
               var _param = {
                 hd: [
-                  /* "a" */97,
-                  /* "z" */122
+                  /* 'a' */97,
+                  /* 'z' */122
                 ],
                 tl: {
                   hd: [
-                    /* "A" */65,
-                    /* "Z" */90
+                    /* 'A' */65,
+                    /* 'Z' */90
                   ],
                   tl: {
                     hd: [
-                      /* "0" */48,
-                      /* "9" */57
+                      /* '0' */48,
+                      /* '9' */57
                     ],
                     tl: {
                       hd: [
-                        /* " " */32,
-                        /* "~" */126
+                        /* ' ' */32,
+                        /* '~' */126
                       ],
                       tl: {
                         hd: [
@@ -59426,10 +59431,10 @@ function widen(param) {
 }
 
 function strict_lowercase(c) {
-  if (c === /* "_" */95) {
+  if (c === /* '_' */95) {
     return true;
-  } else if (c >= /* "a" */97) {
-    return c <= /* "z" */122;
+  } else if (c >= /* 'a' */97) {
+    return c <= /* 'z' */122;
   } else {
     return false;
   }
@@ -59459,7 +59464,7 @@ function transl_type_param(env, styp) {
     var name$1 = name._0;
     var ty$1;
     try {
-      if (name$1 !== "" && Caml_string.get(name$1, 0) === /* "_" */95) {
+      if (name$1 !== "" && Caml_string.get(name$1, 0) === /* '_' */95) {
         throw {
               RE_EXN_ID: $$Error$6,
               _1: loc,
@@ -59572,7 +59577,7 @@ function transl_type(env, policy, styp) {
   switch (name.TAG | 0) {
     case /* Ptyp_var */0 :
         var name$1 = name._0;
-        if (name$1 !== "" && Caml_string.get(name$1, 0) === /* "_" */95) {
+        if (name$1 !== "" && Caml_string.get(name$1, 0) === /* '_' */95) {
           throw {
                 RE_EXN_ID: $$Error$6,
                 _1: styp.ptyp_loc,
@@ -60930,7 +60935,7 @@ function spellcheck(ppf, fold, env, lid) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* "?" */63,
+                                _0: /* '?' */63,
                                 _1: /* End_of_format */0
                               }
                             }
@@ -61284,7 +61289,7 @@ register_error_of_exn(function (err) {
                                                             _0: /* No_padding */0,
                                                             _1: {
                                                               TAG: /* Char_literal */12,
-                                                              _0: /* " " */32,
+                                                              _0: /* ' ' */32,
                                                               _1: {
                                                                 TAG: /* Alpha */15,
                                                                 _0: {
@@ -61482,7 +61487,7 @@ register_error_of_exn(function (err) {
                                                       _0: /* No_padding */0,
                                                       _1: {
                                                         TAG: /* Char_literal */12,
-                                                        _0: /* "." */46,
+                                                        _0: /* '.' */46,
                                                         _1: {
                                                           TAG: /* Formatting_lit */17,
                                                           _0: /* Close_box */0,
@@ -69811,7 +69816,7 @@ function type_let(checkOpt, check_strictOpt, env, rec_flag, spat_sexp_list, scop
                   var used = {
                     contents: false
                   };
-                  if (!(name === "" || Caml_string.get(name, 0) === /* "_" */95 || Caml_string.get(name, 0) === /* "#" */35)) {
+                  if (!(name === "" || Caml_string.get(name, 0) === /* '_' */95 || Caml_string.get(name, 0) === /* '#' */35)) {
                     add_delayed_check(function (param) {
                           if (!used.contents) {
                             return prerr_warning(vd.val_loc, Curry._1(some_used.contents ? check_strict : check$1, name));
@@ -70865,7 +70870,7 @@ register_error_of_exn(function (err) {
                                                         _0: /* No_padding */0,
                                                         _1: {
                                                           TAG: /* Char_literal */12,
-                                                          _0: /* " " */32,
+                                                          _0: /* ' ' */32,
                                                           _1: {
                                                             TAG: /* Alpha */15,
                                                             _0: {
@@ -70919,7 +70924,7 @@ register_error_of_exn(function (err) {
                                                                 _0: /* No_padding */0,
                                                                 _1: {
                                                                   TAG: /* Char_literal */12,
-                                                                  _0: /* " " */32,
+                                                                  _0: /* ' ' */32,
                                                                   _1: {
                                                                     TAG: /* Alpha */15,
                                                                     _0: {
@@ -70961,7 +70966,7 @@ register_error_of_exn(function (err) {
                                                                 _0: /* No_padding */0,
                                                                 _1: {
                                                                   TAG: /* Char_literal */12,
-                                                                  _0: /* " " */32,
+                                                                  _0: /* ' ' */32,
                                                                   _1: {
                                                                     TAG: /* Alpha */15,
                                                                     _0: {
@@ -71474,7 +71479,7 @@ register_error_of_exn(function (err) {
                                                                         TAG: /* Alpha */15,
                                                                         _0: {
                                                                           TAG: /* Char_literal */12,
-                                                                          _0: /* ";" */59,
+                                                                          _0: /* ';' */59,
                                                                           _1: {
                                                                             TAG: /* Formatting_lit */17,
                                                                             _0: {
@@ -71511,7 +71516,7 @@ register_error_of_exn(function (err) {
                                             return Curry._2(Format.fprintf(param, /* Format */{
                                                             _0: {
                                                               TAG: /* Char_literal */12,
-                                                              _0: /* "." */46,
+                                                              _0: /* '.' */46,
                                                               _1: {
                                                                 TAG: /* Formatting_lit */17,
                                                                 _0: /* Flush_newline */4,
@@ -71934,7 +71939,7 @@ register_error_of_exn(function (err) {
                                                                         _0: /* No_padding */0,
                                                                         _1: {
                                                                           TAG: /* Char_literal */12,
-                                                                          _0: /* "." */46,
+                                                                          _0: /* '.' */46,
                                                                           _1: {
                                                                             TAG: /* Formatting_lit */17,
                                                                             _0: /* Close_box */0,
@@ -73417,7 +73422,7 @@ function compute_variance_decl(env, check, decl, rloc) {
 function is_sharp(id) {
   var s = id.name;
   if (s.length !== 0) {
-    return Caml_string.get(s, 0) === /* "#" */35;
+    return Caml_string.get(s, 0) === /* '#' */35;
   } else {
     return false;
   }
@@ -74792,7 +74797,7 @@ function transl_value_decl(env, loc, valdecl) {
     var arity$1 = customize_arity(arity(ty), valdecl.pval_attributes);
     var prim = parse_declaration(arity$1, decl);
     var prim_native_name = prim.prim_native_name;
-    if (arity$1 === 0 && !(prim_native_name.length > 3 && prim_native_name[0] === "B" && prim_native_name[1] === "S" && prim_native_name[2] === ":") && (prim.prim_name.length === 0 || Caml_string.get(prim.prim_name, 0) !== /* "%" */37 && Caml_string.get(prim.prim_name, 0) !== /* "#" */35)) {
+    if (arity$1 === 0 && !(prim_native_name.length > 3 && prim_native_name[0] === "B" && prim_native_name[1] === "S" && prim_native_name[2] === ":") && (prim.prim_name.length === 0 || Caml_string.get(prim.prim_name, 0) !== /* '%' */37 && Caml_string.get(prim.prim_name, 0) !== /* '#' */35)) {
       throw {
             RE_EXN_ID: $$Error$8,
             _1: valdecl.pval_type.ptyp_loc,
@@ -75056,7 +75061,7 @@ function explain_unbound(ppf, tv, tl, typ, kwd, lab) {
     return Curry._6(Format.fprintf(ppf, /* Format */{
                     _0: {
                       TAG: /* Char_literal */12,
-                      _0: /* "." */46,
+                      _0: /* '.' */46,
                       _1: {
                         TAG: /* Formatting_lit */17,
                         _0: /* Flush_newline */4,
@@ -75181,7 +75186,7 @@ function report_error$5(ppf, s) {
                                     _2: /* No_precision */0,
                                     _3: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* " " */32,
+                                      _0: /* ' ' */32,
                                       _1: {
                                         TAG: /* String */2,
                                         _0: /* No_padding */0,
@@ -76382,7 +76387,7 @@ function report_error$5(ppf, s) {
                                 _0: /* No_padding */0,
                                 _1: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "," */44,
+                                  _0: /* ',' */44,
                                   _1: {
                                     TAG: /* Formatting_lit */17,
                                     _0: {
@@ -76399,7 +76404,7 @@ function report_error$5(ppf, s) {
                                         _0: /* No_padding */0,
                                         _1: {
                                           TAG: /* Char_literal */12,
-                                          _0: /* "." */46,
+                                          _0: /* '.' */46,
                                           _1: {
                                             TAG: /* Formatting_lit */17,
                                             _0: /* Close_box */0,
@@ -79966,7 +79971,7 @@ register_error_of_exn(function (err) {
                                                                           _0: /* No_padding */0,
                                                                           _1: {
                                                                             TAG: /* Char_literal */12,
-                                                                            _0: /* " " */32,
+                                                                            _0: /* ' ' */32,
                                                                             _1: {
                                                                               TAG: /* String */2,
                                                                               _0: /* No_padding */0,
@@ -80413,7 +80418,7 @@ register_error_of_exn(function (err) {
                                                             TAG: /* Theta */16,
                                                             _0: {
                                                               TAG: /* Char_literal */12,
-                                                              _0: /* "." */46,
+                                                              _0: /* '.' */46,
                                                               _1: {
                                                                 TAG: /* Formatting_lit */17,
                                                                 _0: {
@@ -80677,7 +80682,7 @@ register_error_of_exn(function (err) {
                                                               _0: /* No_padding */0,
                                                               _1: {
                                                                 TAG: /* Char_literal */12,
-                                                                _0: /* " " */32,
+                                                                _0: /* ' ' */32,
                                                                 _1: {
                                                                   TAG: /* String */2,
                                                                   _0: /* No_padding */0,
@@ -80931,7 +80936,7 @@ register_error_of_exn(function (err) {
                                                                 TAG: /* Alpha */15,
                                                                 _0: {
                                                                   TAG: /* Char_literal */12,
-                                                                  _0: /* "," */44,
+                                                                  _0: /* ',' */44,
                                                                   _1: {
                                                                     TAG: /* Formatting_lit */17,
                                                                     _0: {
@@ -80996,7 +81001,7 @@ register_error_of_exn(function (err) {
                                                                     TAG: /* Alpha */15,
                                                                     _0: {
                                                                       TAG: /* Char_literal */12,
-                                                                      _0: /* "." */46,
+                                                                      _0: /* '.' */46,
                                                                       _1: {
                                                                         TAG: /* Formatting_lit */17,
                                                                         _0: /* Flush_newline */4,
@@ -81046,7 +81051,7 @@ register_error_of_exn(function (err) {
                                                           TAG: /* Alpha */15,
                                                           _0: {
                                                             TAG: /* Char_literal */12,
-                                                            _0: /* "," */44,
+                                                            _0: /* ',' */44,
                                                             _1: {
                                                               TAG: /* Formatting_lit */17,
                                                               _0: {
@@ -81139,7 +81144,7 @@ register_error_of_exn(function (err) {
                                                               _0: /* No_padding */0,
                                                               _1: {
                                                                 TAG: /* Char_literal */12,
-                                                                _0: /* ";" */59,
+                                                                _0: /* ';' */59,
                                                                 _1: {
                                                                   TAG: /* Formatting_lit */17,
                                                                   _0: {
@@ -81231,7 +81236,7 @@ register_error_of_exn(function (err) {
                                                                     _0: /* No_padding */0,
                                                                     _1: {
                                                                       TAG: /* Char_literal */12,
-                                                                      _0: /* "'" */39,
+                                                                      _0: /* ''' */39,
                                                                       _1: {
                                                                         TAG: /* Formatting_lit */17,
                                                                         _0: {
@@ -81284,7 +81289,7 @@ register_error_of_exn(function (err) {
                                                                   _0: /* No_padding */0,
                                                                   _1: {
                                                                     TAG: /* Char_literal */12,
-                                                                    _0: /* "'" */39,
+                                                                    _0: /* ''' */39,
                                                                     _1: {
                                                                       TAG: /* Formatting_lit */17,
                                                                       _0: {
@@ -85478,7 +85483,7 @@ register_error_of_exn(function (err) {
                                                                     _0: /* No_padding */0,
                                                                     _1: {
                                                                       TAG: /* Char_literal */12,
-                                                                      _0: /* "." */46,
+                                                                      _0: /* '.' */46,
                                                                       _1: {
                                                                         TAG: /* Formatting_lit */17,
                                                                         _0: {
@@ -85531,7 +85536,7 @@ register_error_of_exn(function (err) {
                                                                   TAG: /* Alpha */15,
                                                                   _0: {
                                                                     TAG: /* Char_literal */12,
-                                                                    _0: /* "," */44,
+                                                                    _0: /* ',' */44,
                                                                     _1: {
                                                                       TAG: /* Formatting_lit */17,
                                                                       _0: {
@@ -85584,7 +85589,7 @@ register_error_of_exn(function (err) {
                                                                   TAG: /* Alpha */15,
                                                                   _0: {
                                                                     TAG: /* Char_literal */12,
-                                                                    _0: /* "," */44,
+                                                                    _0: /* ',' */44,
                                                                     _1: {
                                                                       TAG: /* Formatting_lit */17,
                                                                       _0: {
@@ -85638,7 +85643,7 @@ register_error_of_exn(function (err) {
                                                                   TAG: /* Alpha */15,
                                                                   _0: {
                                                                     TAG: /* Char_literal */12,
-                                                                    _0: /* "," */44,
+                                                                    _0: /* ',' */44,
                                                                     _1: {
                                                                       TAG: /* Formatting_lit */17,
                                                                       _0: {
@@ -85742,7 +85747,7 @@ register_error_of_exn(function (err) {
                                                                   TAG: /* Alpha */15,
                                                                   _0: {
                                                                     TAG: /* Char_literal */12,
-                                                                    _0: /* "." */46,
+                                                                    _0: /* '.' */46,
                                                                     _1: {
                                                                       TAG: /* Formatting_lit */17,
                                                                       _0: /* Close_box */0,

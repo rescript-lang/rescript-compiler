@@ -40,7 +40,7 @@ b("File \"equal_box_test.ml\", line 25, characters 4-11", undefined !== null);
 
 b("File \"equal_box_test.ml\", line 26, characters 4-11", "3" !== null);
 
-b("File \"equal_box_test.ml\", line 27, characters 4-11", /* "3" */51 !== null);
+b("File \"equal_box_test.ml\", line 27, characters 4-11", /* '3' */51 !== null);
 
 b("File \"equal_box_test.ml\", line 28, characters 4-11", !Caml_int64.equal_null(Caml_int64.zero, null));
 
@@ -66,7 +66,7 @@ b("File \"equal_box_test.ml\", line 40, characters 4-11", undefined !== v);
 
 b("File \"equal_box_test.ml\", line 41, characters 4-11", "3" !== v);
 
-b("File \"equal_box_test.ml\", line 42, characters 4-11", /* "3" */51 !== v);
+b("File \"equal_box_test.ml\", line 42, characters 4-11", /* '3' */51 !== v);
 
 b("File \"equal_box_test.ml\", line 43, characters 4-11", !Caml_int64.equal_nullable(Caml_int64.zero, v));
 
@@ -90,7 +90,7 @@ b("File \"equal_box_test.ml\", line 56, characters 4-11", true);
 
 b("File \"equal_box_test.ml\", line 57, characters 4-11", "3" !== undefined);
 
-b("File \"equal_box_test.ml\", line 58, characters 4-11", /* "3" */51 !== undefined);
+b("File \"equal_box_test.ml\", line 58, characters 4-11", /* '3' */51 !== undefined);
 
 b("File \"equal_box_test.ml\", line 59, characters 4-11", !Caml_int64.equal_undefined(Caml_int64.zero, undefined));
 

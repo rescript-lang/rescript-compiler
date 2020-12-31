@@ -138,7 +138,7 @@ function from_pairs(prefix, pairs) {
                                         _0: /* No_padding */0,
                                         _1: {
                                           TAG: /* Char_literal */12,
-                                          _0: /* "_" */95,
+                                          _0: /* '_' */95,
                                           _1: {
                                             TAG: /* Int */4,
                                             _0: /* Int_d */0,

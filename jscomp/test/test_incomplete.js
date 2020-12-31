@@ -3,7 +3,7 @@
 
 function f(x) {
   if (!(x > 3 || x < 1)) {
-    return /* "a" */97;
+    return /* 'a' */97;
   }
   throw {
         RE_EXN_ID: "Match_failure",

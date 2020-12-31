@@ -58,7 +58,8 @@ function trim(s) {
           var tmp = false;
           if (i < j) {
             var u = s.charCodeAt(i);
-            tmp = u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32;
+            tmp = u === /* '	' */9 || u === /* '
+' */10 || u === /* ' ' */32;
           }
           return tmp;
         })()) {
@@ -69,7 +70,8 @@ function trim(s) {
           var tmp = false;
           if (k >= i) {
             var u = s.charCodeAt(k);
-            tmp = u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32;
+            tmp = u === /* '	' */9 || u === /* '
+' */10 || u === /* ' ' */32;
           }
           return tmp;
         })()) {
@@ -90,10 +92,11 @@ function split(keep_empty, str, on) {
 
 function quick_split_by_ws(str) {
   return split_by(false, (function (x) {
-                if (x === /* "\t" */9 || x === /* "\n" */10) {
+                if (x === /* '	' */9 || x === /* '
+' */10) {
                   return true;
                 } else {
-                  return x === /* " " */32;
+                  return x === /* ' ' */32;
                 }
               }), str);
 }
@@ -578,23 +581,23 @@ function no_char(x, ch, i, len) {
 }
 
 function no_slash(x) {
-  return unsafe_no_char(x, /* "/" */47, 0, x.length - 1 | 0);
+  return unsafe_no_char(x, /* '/' */47, 0, x.length - 1 | 0);
 }
 
 function no_slash_idx(x) {
-  return unsafe_no_char_idx(x, /* "/" */47, 0, x.length - 1 | 0);
+  return unsafe_no_char_idx(x, /* '/' */47, 0, x.length - 1 | 0);
 }
 
 function replace_slash_backward(x) {
   var len = x.length;
-  if (unsafe_no_char(x, /* "/" */47, 0, len - 1 | 0)) {
+  if (unsafe_no_char(x, /* '/' */47, 0, len - 1 | 0)) {
     return x;
   } else {
     return $$String.map((function (x) {
                   if (x !== 47) {
                     return x;
                   } else {
-                    return /* "\\" */92;
+                    return /* '\' */92;
                   }
                 }), x);
   }
@@ -602,14 +605,14 @@ function replace_slash_backward(x) {
 
 function replace_backward_slash(x) {
   var len = x.length;
-  if (unsafe_no_char(x, /* "\\" */92, 0, len - 1 | 0)) {
+  if (unsafe_no_char(x, /* '\' */92, 0, len - 1 | 0)) {
     return x;
   } else {
     return $$String.map((function (x) {
                   if (x !== 92) {
                     return x;
                   } else {
-                    return /* "/" */47;
+                    return /* '/' */47;
                   }
                 }), x);
   }

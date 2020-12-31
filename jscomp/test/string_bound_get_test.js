@@ -5,7 +5,7 @@ var Caml_string = require("../../lib/js/caml_string.js");
 
 var v = "ghos";
 
-var u_a = /* "g" */103;
+var u_a = /* 'g' */103;
 
 function u_b(param) {
   return Caml_string.get(v, -1);
@@ -23,7 +23,7 @@ function u_g(param) {
   return Caml_bytes.get(u_e, -1);
 }
 
-var u_c = /* "g" */103;
+var u_c = /* 'g' */103;
 
 exports.v = v;
 exports.u_a = u_a;

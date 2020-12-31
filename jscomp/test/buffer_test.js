@@ -13,12 +13,12 @@ var suites_0 = [
       return {
               TAG: /* Eq */0,
               _0: [
-                Caml_bytes.get(Bytes.make(3, /* "a" */97), 0),
-                Bytes.make(3, /* "a" */97)[0]
+                Caml_bytes.get(Bytes.make(3, /* 'a' */97), 0),
+                Bytes.make(3, /* 'a' */97)[0]
               ],
               _1: [
-                /* "a" */97,
-                /* "a" */97
+                /* 'a' */97,
+                /* 'a' */97
               ]
             };
     })
@@ -28,17 +28,17 @@ var suites_1 = {
   hd: [
     "equal2",
     (function (param) {
-        var u = Bytes.make(3, /* "a" */97);
-        u[0] = /* "b" */98;
+        var u = Bytes.make(3, /* 'a' */97);
+        u[0] = /* 'b' */98;
         return {
                 TAG: /* Eq */0,
                 _0: [
                   u[0],
-                  /* "g" */103
+                  /* 'g' */103
                 ],
                 _1: [
-                  /* "b" */98,
-                  /* "g" */103
+                  /* 'b' */98,
+                  /* 'g' */103
                 ]
               };
       })

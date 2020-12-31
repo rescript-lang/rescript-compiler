@@ -9,7 +9,7 @@ function print_pair(fmt, param) {
   return Curry._2(Format.fprintf(fmt, /* Format */{
                   _0: {
                     TAG: /* Char_literal */12,
-                    _0: /* "(" */40,
+                    _0: /* '(' */40,
                     _1: {
                       TAG: /* Int */4,
                       _0: /* Int_d */0,
@@ -17,7 +17,7 @@ function print_pair(fmt, param) {
                       _2: /* No_precision */0,
                       _3: {
                         TAG: /* Char_literal */12,
-                        _0: /* "," */44,
+                        _0: /* ',' */44,
                         _1: {
                           TAG: /* Int */4,
                           _0: /* Int_d */0,
@@ -25,7 +25,7 @@ function print_pair(fmt, param) {
                           _2: /* No_precision */0,
                           _3: {
                             TAG: /* Char_literal */12,
-                            _0: /* ")" */41,
+                            _0: /* ')' */41,
                             _1: /* End_of_format */0
                           }
                         }

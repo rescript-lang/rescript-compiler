@@ -54,7 +54,7 @@ Printexc.register_printer(function (s) {
                             _2: /* No_precision */0,
                             _3: {
                               TAG: /* Char_literal */12,
-                              _0: /* ")" */41,
+                              _0: /* ')' */41,
                               _1: /* End_of_format */0
                             }
                           }

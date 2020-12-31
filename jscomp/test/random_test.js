@@ -76,7 +76,7 @@ Curry._5(Printf.printf(/* Format */{
             _2: /* No_precision */0,
             _3: {
               TAG: /* Char_literal */12,
-              _0: /* " " */32,
+              _0: /* ' ' */32,
               _1: {
                 TAG: /* Int64 */7,
                 _0: /* Int_d */0,
@@ -84,7 +84,7 @@ Curry._5(Printf.printf(/* Format */{
                 _2: /* No_precision */0,
                 _3: {
                   TAG: /* Char_literal */12,
-                  _0: /* " " */32,
+                  _0: /* ' ' */32,
                   _1: {
                     TAG: /* Int */4,
                     _0: /* Int_d */0,
@@ -92,7 +92,7 @@ Curry._5(Printf.printf(/* Format */{
                     _2: /* No_precision */0,
                     _3: {
                       TAG: /* Char_literal */12,
-                      _0: /* " " */32,
+                      _0: /* ' ' */32,
                       _1: {
                         TAG: /* Float */8,
                         _0: /* Float_f */0,
@@ -100,7 +100,7 @@ Curry._5(Printf.printf(/* Format */{
                         _2: /* No_precision */0,
                         _3: {
                           TAG: /* Char_literal */12,
-                          _0: /* " " */32,
+                          _0: /* ' ' */32,
                           _1: {
                             TAG: /* Int32 */5,
                             _0: /* Int_d */0,
