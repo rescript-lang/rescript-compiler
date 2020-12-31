@@ -748,6 +748,27 @@ let aggregateTotal = (forecast, ~audienceType) =>
     views: item[\\"reach\\"][\\"views\\"],
     sample: item[\\"reach\\"][\\"sample\\"],
   })
+
+React.useEffect4(() => {
+  switch (context.library, context.account) {
+  | (Some(library), Some(account)) =>
+    library.getBalance(. account)
+    ->Promise.Js.catch(_ => {Promise.resolved(None)})
+    ->Promise.get(newBalance => {
+      dispatch(
+        LoadAddress(
+          account,
+          newBalance->Belt.Option.flatMap(balance =>
+            Eth.make(balance.toString(.))
+          ),
+        ),
+      )
+    })
+
+    None
+  | _ => None
+  }
+}, (context.library, context.account, context.chainId, dispatch))
 "
 `;
 

@@ -74,7 +74,7 @@ let rec rewriteReasonFastPipe expr =
     let rhsLoc = {rhs.pexp_loc with loc_end = expr.pexp_loc.loc_end} in
     let newLhs =
       let expr = rewriteReasonFastPipe lhs in
-      {expr with pexp_attributes = subAttrs}
+      {expr with pexp_attributes = List.concat [lhs.pexp_attributes; subAttrs]}
     in
     let newRhs = {
       pexp_loc = rhsLoc;

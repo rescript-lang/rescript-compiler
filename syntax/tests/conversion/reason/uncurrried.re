@@ -56,3 +56,22 @@ let () = {
   // ok
   dontDoThisAhome(. a, b)(. c, d)(. e, f)
 }
+
+
+let _ =
+  library.getBalance(. account)
+  ->Promise.Js.catch(_ => Promise.resolved(None))
+
+let _ =
+  library.getBalance(. account)
+  ->Promise.Js.catch(_ => {Promise.resolved(None)})
+  ->Promise.get(newBalance => {
+      dispatch(
+        LoadAddress(
+          account,
+          newBalance->Belt.Option.flatMap(balance =>
+            Eth.make(balance.toString(.))
+          ),
+        ),
+      )
+    });

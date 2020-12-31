@@ -135,7 +135,9 @@ let x = a - b
 let x = a -. b
 ;;Constructor (a, b)
 ;;\`Constructor (a, b)
-let _ = ((Constructor (a, b); \`Constructor (a, b))[@ns.braces ])"
+let _ = ((Constructor (a, b); \`Constructor (a, b))[@ns.braces ])
+;;((library.getBalance account)[@bs ]) |.
+    (Promise.Js.catch (fun _ -> ((Promise.resolved None)[@ns.braces ])))"
 `;
 
 exports[`binaryNoEs6Arrow.js 1`] = `
