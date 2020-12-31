@@ -40,7 +40,7 @@ module E = Js_exp_make
 *)
 
 let const_char (i : char) = 
-  E.int  ~comment:("\"" ^ String.escaped (String.make 1 i) ^ "\"") 
+  E.int  
     ~c:i (Int32.of_int @@ Char.code i)
 
 let caml_char_of_int  (v : J.expression)  =  v
