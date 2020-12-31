@@ -247,7 +247,7 @@ val extension_assign :
 val assign_by_int : 
   ?comment:string -> 
   t -> 
-  Js_op.jsint -> 
+  int32 -> 
   t -> 
   t
 
