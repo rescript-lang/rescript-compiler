@@ -9,8 +9,8 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 function f(H) {
   var tbl = Curry._1(H.create, 17);
-  Curry._3(H.add, tbl, 1, /* "1" */49);
-  Curry._3(H.add, tbl, 2, /* "2" */50);
+  Curry._3(H.add, tbl, 1, /* '1' */49);
+  Curry._3(H.add, tbl, 2, /* '2' */50);
   return List.sort((function (param, param$1) {
                 return Caml_primitive.caml_int_compare(param[0], param$1[0]);
               }), Curry._3(H.fold, (function (k, v, acc) {
@@ -65,12 +65,12 @@ var suites_0 = [
               _0: {
                 hd: [
                   1,
-                  /* "1" */49
+                  /* '1' */49
                 ],
                 tl: {
                   hd: [
                     2,
-                    /* "2" */50
+                    /* '2' */50
                   ],
                   tl: /* [] */0
                 }

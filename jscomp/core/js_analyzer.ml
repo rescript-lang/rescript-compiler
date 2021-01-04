@@ -178,9 +178,9 @@ let rec eq_expression
   begin match x0  with 
     | Null -> y0 = Null
     | Undefined -> y0 = Undefined
-    | Number (Int i) -> 
+    | Number (Int {i}) -> 
       begin match y0 with  
-        | Number (Int j)   -> i = j 
+        | Number (Int {i = j})   -> i = j 
         | _ -> false 
       end
     | Number (Float _) -> false

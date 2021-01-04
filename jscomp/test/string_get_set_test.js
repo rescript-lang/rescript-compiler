@@ -8,8 +8,8 @@ Mt.from_pair_suites("string_get_set_test.ml", {
         (function (param) {
             return {
                     TAG: /* Eq */0,
-                    _0: /* "h" */104,
-                    _1: /* "h" */104
+                    _0: /* 'h' */104,
+                    _1: /* 'h' */104
                   };
           })
       ],

@@ -11,7 +11,7 @@ var suites_0 = [
   (function (param) {
       return {
               TAG: /* Eq */0,
-              _0: Test_char.caml_is_printable(/* "a" */97),
+              _0: Test_char.caml_is_printable(/* 'a' */97),
               _1: true
             };
     })
@@ -23,11 +23,11 @@ var suites_1 = {
     (function (param) {
         var match = List.split(List.map((function (x) {
                     var b = Caml_bytes.caml_create_bytes(1000);
-                    Caml_bytes.caml_fill_bytes(b, 0, x, /* "c" */99);
+                    Caml_bytes.caml_fill_bytes(b, 0, x, /* 'c' */99);
                     return [
                             Caml_bytes.bytes_to_string(b),
                             Caml_bytes.bytes_to_string(Bytes.init(x, (function (param) {
-                                        return /* "c" */99;
+                                        return /* 'c' */99;
                                       })))
                           ];
                   }), {

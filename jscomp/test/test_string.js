@@ -35,7 +35,7 @@ function c(x, y) {
 }
 
 function h(s, b) {
-  if (Caml_string.get(s, 0) === /* "a" */97 && Caml_bytes.get(b, 0) === /* "b" */98) {
+  if (Caml_string.get(s, 0) === /* 'a' */97 && Caml_bytes.get(b, 0) === /* 'b' */98) {
     return Caml_string.get(s, 1) === Caml_bytes.get(b, 2);
   } else {
     return false;

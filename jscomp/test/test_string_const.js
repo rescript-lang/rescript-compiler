@@ -12,13 +12,13 @@ catch (raw_e){
   var e = Caml_js_exceptions.internalToOCamlException(raw_e);
   if (e.RE_EXN_ID === "Invalid_argument") {
     console.log(e._1);
-    hh = /* "a" */97;
+    hh = /* 'a' */97;
   } else {
     throw e;
   }
 }
 
-var f = /* "o" */111;
+var f = /* 'o' */111;
 
 exports.f = f;
 exports.hh = hh;

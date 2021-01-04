@@ -120,7 +120,7 @@ function symitr(f) {
   
 }
 
-var glo = Bytes.make(4096, /* "\000" */0);
+var glo = Bytes.make(4096, /* '\000' */0);
 
 var gpos = {
   contents: 0
@@ -130,11 +130,11 @@ var s = Caml_bytes.caml_create_bytes(100);
 
 function getq(param) {
   var c = Curry._1(getch, undefined);
-  if (c !== 92 || peekch(undefined) !== /* "n" */110) {
+  if (c !== 92 || peekch(undefined) !== /* 'n' */110) {
     return c;
   } else {
     Curry._1(getch, undefined);
-    return /* "\n" */10;
+    return /* '\n' */10;
   }
 }
 
@@ -151,7 +151,7 @@ function skip(_param) {
     var ch = Curry._1(getch, undefined);
     if (ch >= 14) {
       if (ch !== 32) {
-        if (ch !== 47 || peekch(undefined) !== /* "*" */42) {
+        if (ch !== 47 || peekch(undefined) !== /* '*' */42) {
           return ch;
         } else {
           var _param$1 = (Curry._1(getch, undefined), undefined);
@@ -161,7 +161,7 @@ function skip(_param) {
               _param$1 = undefined;
               continue ;
             }
-            if (peekch(undefined) === /* "/" */47) {
+            if (peekch(undefined) === /* '/' */47) {
               return skip((Curry._1(getch, undefined), undefined));
             }
             _param$1 = undefined;
@@ -246,7 +246,7 @@ function next(param) {
   } else if (c === 39) {
     var ch = getq(undefined);
     var qt = Curry._1(getch, undefined);
-    if (qt !== /* "'" */39) {
+    if (qt !== /* '\'' */39) {
       throw {
             RE_EXN_ID: "Failure",
             _1: "syntax error",
@@ -341,7 +341,7 @@ function nextis(t) {
   return Caml_obj.caml_equal(t, nt);
 }
 
-var obuf = Bytes.make(1048576, /* "\000" */0);
+var obuf = Bytes.make(1048576, /* '\000' */0);
 
 var opos = {
   contents: 0
@@ -488,7 +488,7 @@ var lval = {
 function patchlval(param) {
   var n = lval.contents[0];
   if (n.TAG === /* Mov */0) {
-    return Caml_bytes.set(obuf, opos.contents - n._0 | 0, /* "\141" */141);
+    return Caml_bytes.set(obuf, opos.contents - n._0 | 0, /* '\141' */141);
   } else {
     opos.contents = opos.contents - n._0 | 0;
     return ;
@@ -1637,7 +1637,7 @@ function top(_param) {
                       _0: /* No_padding */0,
                       _1: {
                         TAG: /* Char_literal */12,
-                        _0: /* "\n" */10,
+                        _0: /* '\n' */10,
                         _1: /* End_of_format */0
                       }
                     }
@@ -1924,7 +1924,7 @@ function main(param) {
                               _2: /* No_precision */0,
                               _3: {
                                 TAG: /* Char_literal */12,
-                                _0: /* "\n" */10,
+                                _0: /* '\n' */10,
                                 _1: /* End_of_format */0
                               }
                             }
@@ -1941,7 +1941,7 @@ function main(param) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* "\n" */10,
+                                _0: /* '\n' */10,
                                 _1: /* End_of_format */0
                               }
                             }

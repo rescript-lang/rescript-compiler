@@ -86,7 +86,7 @@ function string_of_rank(i) {
                         _2: /* No_precision */0,
                         _3: {
                           TAG: /* Char_literal */12,
-                          _0: /* ")" */41,
+                          _0: /* ')' */41,
                           _1: /* End_of_format */0
                         }
                       }
@@ -1211,7 +1211,7 @@ function process_input_line(ticker_map, all_tickers, line) {
             }
           };
   };
-  var tokens = split(/* "|" */124, line);
+  var tokens = split(/* '|' */124, line);
   if (tokens) {
     switch (tokens.hd) {
       case "Q" :

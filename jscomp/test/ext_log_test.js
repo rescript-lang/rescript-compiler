@@ -18,7 +18,7 @@ function err(str, f) {
                         _0: /* No_padding */0,
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* " " */32,
+                          _0: /* ' ' */32,
                           _1: /* End_of_format */0
                         }
                       },
@@ -41,7 +41,7 @@ function ierr(b, str, f) {
                           _0: /* No_padding */0,
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* " " */32,
+                            _0: /* ' ' */32,
                             _1: /* End_of_format */0
                           }
                         },
@@ -54,7 +54,7 @@ function ierr(b, str, f) {
                         _0: /* No_padding */0,
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* " " */32,
+                          _0: /* ' ' */32,
                           _1: /* End_of_format */0
                         }
                       },
@@ -73,7 +73,7 @@ function warn(str, f) {
                           _0: /* No_padding */0,
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* " " */32,
+                            _0: /* ' ' */32,
                             _1: /* End_of_format */0
                           }
                         }
@@ -100,7 +100,7 @@ function iwarn(b, str, f) {
                             _0: /* No_padding */0,
                             _1: {
                               TAG: /* Char_literal */12,
-                              _0: /* " " */32,
+                              _0: /* ' ' */32,
                               _1: /* End_of_format */0
                             }
                           }
@@ -117,7 +117,7 @@ function iwarn(b, str, f) {
                           _0: /* No_padding */0,
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* " " */32,
+                            _0: /* ' ' */32,
                             _1: /* End_of_format */0
                           }
                         }
@@ -137,7 +137,7 @@ function info(str, f) {
                           _0: /* No_padding */0,
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* " " */32,
+                            _0: /* ' ' */32,
                             _1: /* End_of_format */0
                           }
                         }
@@ -156,7 +156,7 @@ function iinfo(b, str, f) {
                           _0: /* No_padding */0,
                           _1: {
                             TAG: /* Char_literal */12,
-                            _0: /* " " */32,
+                            _0: /* ' ' */32,
                             _1: /* End_of_format */0
                           }
                         }

@@ -27,7 +27,7 @@ var s = Curry._1(Printf.sprintf(/* Format */{
             },
             _2: {
               TAG: /* Char_literal */12,
-              _0: /* "." */46,
+              _0: /* '.' */46,
               _1: /* End_of_format */0
             }
           },
@@ -58,7 +58,7 @@ var s$1 = Curry._2(Printf.sprintf(/* Format */{
             _2: /* No_precision */0,
             _3: {
               TAG: /* Char_literal */12,
-              _0: /* " " */32,
+              _0: /* ' ' */32,
               _1: {
                 TAG: /* Format_arg */13,
                 _0: undefined,

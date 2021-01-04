@@ -9,7 +9,7 @@ var suites_0 = [
   (function (param) {
       return {
               TAG: /* Eq */0,
-              _0: Ext_string_test.split(true, "hihi", /* "i" */105),
+              _0: Ext_string_test.split(true, "hihi", /* 'i' */105),
               _1: {
                 hd: "h",
                 tl: {
@@ -30,7 +30,7 @@ var suites_1 = {
     (function (param) {
         return {
                 TAG: /* Eq */0,
-                _0: Ext_string_test.split(undefined, "hihi", /* "i" */105),
+                _0: Ext_string_test.split(undefined, "hihi", /* 'i' */105),
                 _1: {
                   hd: "h",
                   tl: {
@@ -47,7 +47,7 @@ var suites_1 = {
       (function (param) {
           return {
                   TAG: /* Eq */0,
-                  _0: Ext_string_test.split(true, "", /* "i" */105),
+                  _0: Ext_string_test.split(true, "", /* 'i' */105),
                   _1: /* [] */0
                 };
         })
@@ -58,7 +58,7 @@ var suites_1 = {
         (function (param) {
             return {
                     TAG: /* Eq */0,
-                    _0: Ext_string_test.split(true, "h i i", /* " " */32),
+                    _0: Ext_string_test.split(true, "h i i", /* ' ' */32),
                     _1: {
                       hd: "h",
                       tl: {
@@ -81,10 +81,10 @@ var suites_1 = {
                       _0: List.filter(function (s) {
                               return s !== "";
                             })(Ext_string_test.split_by(undefined, (function (x) {
-                                  if (x === /* " " */32) {
+                                  if (x === /* ' ' */32) {
                                     return true;
                                   } else {
-                                    return x === /* "\t" */9;
+                                    return x === /* '\t' */9;
                                   }
                                 }), "h hgso hgso \t hi")),
                       _1: {

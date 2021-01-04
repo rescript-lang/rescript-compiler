@@ -1266,22 +1266,22 @@ var m = List.fold_left((function (acc, param) {
       }), /* Empty */0, {
       hd: [
         10,
-        /* "a" */97
+        /* 'a' */97
       ],
       tl: {
         hd: [
           3,
-          /* "b" */98
+          /* 'b' */98
         ],
         tl: {
           hd: [
             7,
-            /* "c" */99
+            /* 'c' */99
           ],
           tl: {
             hd: [
               20,
-              /* "d" */100
+              /* 'd' */100
             ],
             tl: /* [] */0
           }
@@ -1937,22 +1937,22 @@ var s = List.fold_left((function (acc, param) {
       }), /* Empty */0, {
       hd: [
         "10",
-        /* "a" */97
+        /* 'a' */97
       ],
       tl: {
         hd: [
           "3",
-          /* "b" */98
+          /* 'b' */98
         ],
         tl: {
           hd: [
             "7",
-            /* "c" */99
+            /* 'c' */99
           ],
           tl: {
             hd: [
               "20",
-              /* "d" */100
+              /* 'd' */100
             ],
             tl: /* [] */0
           }
@@ -1967,7 +1967,7 @@ Mt.from_pair_suites("Inline_map2_test", {
             return {
                     TAG: /* Eq */0,
                     _0: find(10, m),
-                    _1: /* "a" */97
+                    _1: /* 'a' */97
                   };
           })
       ],
@@ -1978,7 +1978,7 @@ Mt.from_pair_suites("Inline_map2_test", {
               return {
                       TAG: /* Eq */0,
                       _0: find$1("10", s),
-                      _1: /* "a" */97
+                      _1: /* 'a' */97
                     };
             })
         ],

@@ -58,7 +58,14 @@ let rec no_side_effects (lam : Lam.t) : bool =
             | "caml_make_vect"
             | "caml_create_bytes"
             | "caml_obj_dup"
-            | "caml_array_dup"            
+            | "caml_array_dup" 
+
+            | "nativeint_add"         
+            | "nativeint_div"
+            | "nativeint_mod"
+            | "nativeint_lsr"  
+            | "nativeint_mul"
+
             ), _  -> true 
           | "caml_ml_open_descriptor_in", [Lconst (  (Const_int {i = 0l}))] -> true 
           | "caml_ml_open_descriptor_out", 

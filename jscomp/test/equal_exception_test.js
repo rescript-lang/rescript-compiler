@@ -10,7 +10,7 @@ var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var v = "gso";
 
 function is_equal(param) {
-  if (Caml_bytes.get(Bytes.make(3, /* "a" */97), 0) !== /* "a" */97) {
+  if (Caml_bytes.get(Bytes.make(3, /* 'a' */97), 0) !== /* 'a' */97) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
@@ -21,7 +21,7 @@ function is_equal(param) {
           Error: new Error()
         };
   }
-  if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
+  if (Bytes.make(3, /* 'a' */97)[0] !== /* 'a' */97) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
@@ -32,9 +32,9 @@ function is_equal(param) {
           Error: new Error()
         };
   }
-  var u = Bytes.make(3, /* "a" */97);
-  u[0] = /* "b" */98;
-  if (u[0] !== /* "b" */98) {
+  var u = Bytes.make(3, /* 'a' */97);
+  u[0] = /* 'b' */98;
+  if (u[0] !== /* 'b' */98) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [

@@ -67,7 +67,7 @@ function get_lines(fname) {
       Curry._1(Scanf.bscanf(ib, /* Format */{
                 _0: {
                   TAG: /* Char_literal */12,
-                  _0: /* " " */32,
+                  _0: /* ' ' */32,
                   _1: {
                     TAG: /* Caml_string */3,
                     _0: /* No_padding */0,
@@ -165,7 +165,7 @@ function add_digest_ib(ob, ib) {
                       _1: "\xff\xdb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
                       _2: {
                         TAG: /* Char_literal */12,
-                        _0: /* "\n" */10,
+                        _0: /* '\n' */10,
                         _1: /* End_of_format */0
                       }
                     },
@@ -174,10 +174,10 @@ function add_digest_ib(ob, ib) {
   };
   var output_line_digest = function (s) {
     $$Buffer.add_string(ob, s);
-    $$Buffer.add_char(ob, /* "#" */35);
+    $$Buffer.add_char(ob, /* '#' */35);
     var s$1 = Digest.to_hex(Digest.string(s));
     $$Buffer.add_string(ob, Caml_bytes.bytes_to_string(Bytes.uppercase(Caml_bytes.bytes_of_string(s$1))));
-    return $$Buffer.add_char(ob, /* "\n" */10);
+    return $$Buffer.add_char(ob, /* '\n' */10);
   };
   try {
     while(true) {

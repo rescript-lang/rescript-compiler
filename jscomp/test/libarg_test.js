@@ -46,7 +46,7 @@ function f_bool(b) {
                       _0: /* No_padding */0,
                       _1: {
                         TAG: /* Char_literal */12,
-                        _0: /* ")" */41,
+                        _0: /* ')' */41,
                         _1: /* End_of_format */0
                       }
                     }
@@ -73,7 +73,7 @@ function f_string(s) {
                       _0: /* No_padding */0,
                       _1: {
                         TAG: /* Char_literal */12,
-                        _0: /* ")" */41,
+                        _0: /* ')' */41,
                         _1: /* End_of_format */0
                       }
                     }
@@ -98,7 +98,7 @@ function f_int(i) {
                       _2: /* No_precision */0,
                       _3: {
                         TAG: /* Char_literal */12,
-                        _0: /* ")" */41,
+                        _0: /* ')' */41,
                         _1: /* End_of_format */0
                       }
                     }
@@ -123,7 +123,7 @@ function f_float(f) {
                       _2: /* No_precision */0,
                       _3: {
                         TAG: /* Char_literal */12,
-                        _0: /* ")" */41,
+                        _0: /* ')' */41,
                         _1: /* End_of_format */0
                       }
                     }
@@ -146,7 +146,7 @@ function f_symbol(s) {
                       _0: /* No_padding */0,
                       _1: {
                         TAG: /* Char_literal */12,
-                        _0: /* ")" */41,
+                        _0: /* ')' */41,
                         _1: /* End_of_format */0
                       }
                     }
@@ -165,7 +165,7 @@ function f_rest(s) {
                       _0: /* No_padding */0,
                       _1: {
                         TAG: /* Char_literal */12,
-                        _0: /* ")" */41,
+                        _0: /* ')' */41,
                         _1: /* End_of_format */0
                       }
                     }
@@ -184,7 +184,7 @@ function f_anon(s) {
                       _0: /* No_padding */0,
                       _1: {
                         TAG: /* Char_literal */12,
-                        _0: /* ")" */41,
+                        _0: /* ')' */41,
                         _1: /* End_of_format */0
                       }
                     }
@@ -511,12 +511,12 @@ function test(argv) {
                         },
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* " " */32,
+                          _0: /* ' ' */32,
                           _1: {
                             TAG: /* Char */0,
                             _0: {
                               TAG: /* Char_literal */12,
-                              _0: /* " " */32,
+                              _0: /* ' ' */32,
                               _1: {
                                 TAG: /* String */2,
                                 _0: {
@@ -526,7 +526,7 @@ function test(argv) {
                                 },
                                 _1: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* "\n" */10,
+                                  _0: /* '\n' */10,
                                   _1: {
                                     TAG: /* Flush */10,
                                     _0: /* End_of_format */0
@@ -538,7 +538,7 @@ function test(argv) {
                         }
                       },
                       _1: "%20s %c %-20s\n%!"
-                    }), x, x === y ? /* "=" */61 : /* "#" */35, y);
+                    }), x, x === y ? /* '=' */61 : /* '#' */35, y);
     };
     List.iter2(f, result, reference);
   }

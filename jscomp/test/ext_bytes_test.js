@@ -70,19 +70,19 @@ function escaped(s) {
     } else {
       switch (c) {
         case 8 :
-            s$prime[n] = /* "\\" */92;
+            s$prime[n] = /* '\\' */92;
             n = n + 1 | 0;
-            s$prime[n] = /* "b" */98;
+            s$prime[n] = /* 'b' */98;
             break;
         case 9 :
-            s$prime[n] = /* "\\" */92;
+            s$prime[n] = /* '\\' */92;
             n = n + 1 | 0;
-            s$prime[n] = /* "t" */116;
+            s$prime[n] = /* 't' */116;
             break;
         case 10 :
-            s$prime[n] = /* "\\" */92;
+            s$prime[n] = /* '\\' */92;
             n = n + 1 | 0;
-            s$prime[n] = /* "n" */110;
+            s$prime[n] = /* 'n' */110;
             break;
         case 0 :
         case 1 :
@@ -97,16 +97,16 @@ function escaped(s) {
             exit = 1;
             break;
         case 13 :
-            s$prime[n] = /* "\\" */92;
+            s$prime[n] = /* '\\' */92;
             n = n + 1 | 0;
-            s$prime[n] = /* "r" */114;
+            s$prime[n] = /* 'r' */114;
             break;
         
       }
     }
     switch (exit) {
       case 1 :
-          s$prime[n] = /* "\\" */92;
+          s$prime[n] = /* '\\' */92;
           n = n + 1 | 0;
           s$prime[n] = 48 + (c / 100 | 0) | 0;
           n = n + 1 | 0;
@@ -115,7 +115,7 @@ function escaped(s) {
           s$prime[n] = 48 + c % 10 | 0;
           break;
       case 2 :
-          s$prime[n] = /* "\\" */92;
+          s$prime[n] = /* '\\' */92;
           n = n + 1 | 0;
           s$prime[n] = c;
           break;
@@ -171,7 +171,7 @@ var f = Char.chr;
 var a$2 = Caml_bytes.bytes_to_string(Bytes.init(100, f));
 
 var b = Bytes.init(100, (function (i) {
-        return /* "\000" */0;
+        return /* '\000' */0;
       }));
 
 Bytes.blit_string(a$2, 10, b, 5, 10);

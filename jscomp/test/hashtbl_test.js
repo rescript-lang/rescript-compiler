@@ -22,8 +22,8 @@ function to_list(tbl) {
 
 function f(param) {
   var tbl = Hashtbl.create(undefined, 17);
-  Hashtbl.add(tbl, 1, /* "1" */49);
-  Hashtbl.add(tbl, 2, /* "2" */50);
+  Hashtbl.add(tbl, 1, /* '1' */49);
+  Hashtbl.add(tbl, 2, /* '2' */50);
   return List.sort((function (param, param$1) {
                 return Caml_primitive.caml_int_compare(param[0], param$1[0]);
               }), to_list(tbl));
@@ -51,12 +51,12 @@ var suites_0 = [
               _0: {
                 hd: [
                   1,
-                  /* "1" */49
+                  /* '1' */49
                 ],
                 tl: {
                   hd: [
                     2,
-                    /* "2" */50
+                    /* '2' */50
                   ],
                   tl: /* [] */0
                 }

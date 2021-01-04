@@ -88,7 +88,7 @@ function pr(param) {
                       _2: /* No_precision */0,
                       _3: {
                         TAG: /* Char_literal */12,
-                        _0: /* "\n" */10,
+                        _0: /* '\n' */10,
                         _1: /* End_of_format */0
                       }
                     },
@@ -112,7 +112,7 @@ function pr(param) {
                         _2: /* No_precision */0,
                         _3: {
                           TAG: /* Char_literal */12,
-                          _0: /* "\n" */10,
+                          _0: /* '\n' */10,
                           _1: /* End_of_format */0
                         }
                       }

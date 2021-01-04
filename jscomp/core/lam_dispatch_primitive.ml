@@ -98,24 +98,21 @@ let translate loc (prim_name : string)
         | _ -> assert false 
       end
     | "caml_int32_of_int"
-    | "caml_nativeint_of_int" 
-    | "caml_nativeint_of_int32" -> 
+       -> 
       begin match args with 
         | [e] -> e 
         | _ -> assert false 
       end
     | "caml_int32_of_float"
     | "caml_int_of_float"
-    | "caml_nativeint_of_float" -> 
+       -> 
       begin match args with 
         | [e] -> E.to_int32 e 
         | _ -> assert false 
       end
     | "caml_int32_to_float"
-    | "caml_int32_to_int"
-    | "caml_nativeint_to_int" 
-    | "caml_nativeint_to_float"
-    | "caml_nativeint_to_int32" -> 
+    | "caml_int32_to_int"     
+      -> 
       begin match args with 
         | [e] -> e (* TODO: do more checking when [to_int32]*)
         | _ -> assert false 
@@ -290,11 +287,6 @@ let translate loc (prim_name : string)
     | "caml_int32_equal_null"
     | "caml_int32_equal_nullable"
     | "caml_int32_equal_undefined"
-    
-
-    | "caml_nativeint_equal_null"
-    | "caml_nativeint_equal_nullable"
-    | "caml_nativeint_equal_undefined"
       ->   
       begin match args with 
       | [e0;e1]
@@ -355,7 +347,7 @@ let translate loc (prim_name : string)
       end
     | "caml_int_compare"
     | "caml_int32_compare"
-    | "caml_nativeint_compare"
+
     | "caml_float_compare"
 
     | "caml_string_compare" 
@@ -365,7 +357,7 @@ let translate loc (prim_name : string)
     | "caml_int_min"
     | "caml_float_min"
     | "caml_string_min"
-    | "caml_nativeint_min"
+
     | "caml_int32_min"
     
       -> 
@@ -381,7 +373,7 @@ let translate loc (prim_name : string)
     | "caml_int_max"
     | "caml_float_max"
     | "caml_string_max"
-    | "caml_nativeint_max"
+
     | "caml_int32_max"    
     -> 
       begin match args with 

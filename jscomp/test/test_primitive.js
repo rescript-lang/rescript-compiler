@@ -42,7 +42,7 @@ var v = [
 
 var xxx = "a";
 
-var a = /* "a" */97;
+var a = /* 'a' */97;
 
 function u(b) {
   if (b) {

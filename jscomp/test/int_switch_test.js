@@ -23,13 +23,13 @@ function f(x) {
   var match = Curry._1(x, undefined);
   switch (match) {
     case 1 :
-        return /* "a" */97;
+        return /* 'a' */97;
     case 2 :
-        return /* "b" */98;
+        return /* 'b' */98;
     case 3 :
-        return /* "c" */99;
+        return /* 'c' */99;
     default:
-      return /* "x" */120;
+      return /* 'x' */120;
   }
 }
 
@@ -37,13 +37,13 @@ function f22(x) {
   var match = Curry._1(x, undefined);
   switch (match) {
     case 1 :
-        return /* "a" */97;
+        return /* 'a' */97;
     case 2 :
-        return /* "b" */98;
+        return /* 'b' */98;
     case 3 :
-        return /* "c" */99;
+        return /* 'c' */99;
     default:
-      return /* "x" */120;
+      return /* 'x' */120;
   }
 }
 
@@ -51,36 +51,36 @@ function f33(x) {
   var match = Curry._1(x, undefined);
   switch (match) {
     case /* A */0 :
-        return /* "a" */97;
+        return /* 'a' */97;
     case /* B */1 :
-        return /* "b" */98;
+        return /* 'b' */98;
     case /* C */2 :
-        return /* "c" */99;
+        return /* 'c' */99;
     case /* D */3 :
-        return /* "x" */120;
+        return /* 'x' */120;
     
   }
 }
 
 eq("File \"int_switch_test.ml\", line 35, characters 6-13", f(function (param) {
           return 1;
-        }), /* "a" */97);
+        }), /* 'a' */97);
 
 eq("File \"int_switch_test.ml\", line 36, characters 6-13", f(function (param) {
           return 2;
-        }), /* "b" */98);
+        }), /* 'b' */98);
 
 eq("File \"int_switch_test.ml\", line 37, characters 6-13", f(function (param) {
           return 3;
-        }), /* "c" */99);
+        }), /* 'c' */99);
 
 eq("File \"int_switch_test.ml\", line 38, characters 6-13", f(function (param) {
           return 0;
-        }), /* "x" */120);
+        }), /* 'x' */120);
 
 eq("File \"int_switch_test.ml\", line 39, characters 6-13", f(function (param) {
           return -1;
-        }), /* "x" */120);
+        }), /* 'x' */120);
 
 Mt.from_pair_suites("Int_switch_test", suites.contents);
 

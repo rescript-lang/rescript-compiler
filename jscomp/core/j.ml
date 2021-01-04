@@ -73,7 +73,7 @@ and required_modules = module_id list
     currently we always use quote
  *)
 and property_name =  Js_op.property_name
-and jsint = Js_op.jsint
+and jsint = int32
 and ident = Ident.t 
 and module_id = {
   id : ident; kind : Js_op.kind

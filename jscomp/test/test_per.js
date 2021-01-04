@@ -430,12 +430,12 @@ function print_float(f) {
 
 function print_endline(s) {
   output_string(stdout, s);
-  Caml_io.caml_ml_output_char(stdout, /* "\n" */10);
+  Caml_io.caml_ml_output_char(stdout, /* '\n' */10);
   return Caml_io.caml_ml_flush(stdout);
 }
 
 function print_newline(param) {
-  Caml_io.caml_ml_output_char(stdout, /* "\n" */10);
+  Caml_io.caml_ml_output_char(stdout, /* '\n' */10);
   return Caml_io.caml_ml_flush(stdout);
 }
 
@@ -461,12 +461,12 @@ function prerr_float(f) {
 
 function prerr_endline(s) {
   output_string(stderr, s);
-  Caml_io.caml_ml_output_char(stderr, /* "\n" */10);
+  Caml_io.caml_ml_output_char(stderr, /* '\n' */10);
   return Caml_io.caml_ml_flush(stderr);
 }
 
 function prerr_newline(param) {
-  Caml_io.caml_ml_output_char(stderr, /* "\n" */10);
+  Caml_io.caml_ml_output_char(stderr, /* '\n' */10);
   return Caml_io.caml_ml_flush(stderr);
 }
 

@@ -327,7 +327,7 @@ function error(str) {
                               _0: /* No_padding */0,
                               _1: {
                                 TAG: /* Char_literal */12,
-                                _0: /* "`" */96,
+                                _0: /* '`' */96,
                                 _1: /* End_of_format */0
                               }
                             }
@@ -2283,11 +2283,11 @@ function parse_body(_f) {
           };
     }
     var ref_char_code;
-    if (c >= /* "0" */48 && c <= /* "9" */57) {
-      ref_char_code = /* "0" */48;
-    } else if (c >= /* "A" */65 && c <= /* "F" */70) {
+    if (c >= /* '0' */48 && c <= /* '9' */57) {
+      ref_char_code = /* '0' */48;
+    } else if (c >= /* 'A' */65 && c <= /* 'F' */70) {
       ref_char_code = 55;
-    } else if (c >= /* "a" */97 && c <= /* "f" */102) {
+    } else if (c >= /* 'a' */97 && c <= /* 'f' */102) {
       ref_char_code = 87;
     } else {
       throw {
@@ -2424,22 +2424,22 @@ function oct_to_int(x) {
           Error: new Error()
         };
   }
-  return x - /* "0" */48 | 0;
+  return x - /* '0' */48 | 0;
 }
 
 function hexa_to_int(x) {
   if (x >= 65) {
     if (x >= 97) {
       if (x < 103) {
-        return (x - /* "a" */97 | 0) + 10 | 0;
+        return (x - /* 'a' */97 | 0) + 10 | 0;
       }
       
     } else if (x < 71) {
-      return (x - /* "A" */65 | 0) + 10 | 0;
+      return (x - /* 'A' */65 | 0) + 10 | 0;
     }
     
   } else if (!(x > 57 || x < 48)) {
-    return x - /* "0" */48 | 0;
+    return x - /* '0' */48 | 0;
   }
   throw {
         RE_EXN_ID: "Assert_failure",
@@ -3886,7 +3886,7 @@ function comment(env, buf, lexbuf) {
                 ];
       case 1 :
           Lexing.new_line(lexbuf);
-          $$Buffer.add_char(buf, /* "\n" */10);
+          $$Buffer.add_char(buf, /* '\n' */10);
           return comment(env, buf, lexbuf);
       case 2 :
           var loc = from_lb(env.lex_source, lexbuf);
@@ -4829,7 +4829,7 @@ function template_part(env, start, cooked, raw, literal, lexbuf) {
                   true
                 ];
       case 1 :
-          $$Buffer.add_char(literal, /* "`" */96);
+          $$Buffer.add_char(literal, /* '`' */96);
           return [
                   env,
                   btwn(start, from_lb(env.lex_source, lexbuf)),
@@ -4843,8 +4843,8 @@ function template_part(env, start, cooked, raw, literal, lexbuf) {
                   false
                 ];
       case 3 :
-          $$Buffer.add_char(raw, /* "\\" */92);
-          $$Buffer.add_char(literal, /* "\\" */92);
+          $$Buffer.add_char(raw, /* '\\' */92);
+          $$Buffer.add_char(literal, /* '\\' */92);
           var match = string_escape(env, cooked, lexbuf);
           var str = Lexing.lexeme(lexbuf);
           $$Buffer.add_string(raw, str);
@@ -4861,7 +4861,7 @@ function template_part(env, start, cooked, raw, literal, lexbuf) {
           var lf$1 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
           $$Buffer.add_char(raw, lf$1);
           $$Buffer.add_char(literal, lf$1);
-          $$Buffer.add_char(cooked, /* "\n" */10);
+          $$Buffer.add_char(cooked, /* '\n' */10);
           Lexing.new_line(lexbuf);
           return template_part(env, start, cooked, raw, literal, lexbuf);
       case 6 :
@@ -5339,7 +5339,7 @@ function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
           var buf$2 = $$Buffer.create(127);
           var raw = $$Buffer.create(127);
           $$Buffer.add_char(raw, quote);
-          var mode = quote === /* "'" */39 ? /* JSX_SINGLE_QUOTED_TEXT */0 : /* JSX_DOUBLE_QUOTED_TEXT */1;
+          var mode = quote === /* '\'' */39 ? /* JSX_SINGLE_QUOTED_TEXT */0 : /* JSX_DOUBLE_QUOTED_TEXT */1;
           var match$2 = jsx_text(env, mode, buf$2, raw, lexbuf);
           $$Buffer.add_char(raw, quote);
           var value = $$Buffer.contents(buf$2);

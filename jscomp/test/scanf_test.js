@@ -27,7 +27,7 @@ eq("File \"scanf_test.ml\", line 6, characters 5-12", [
                   _2: /* No_precision */0,
                   _3: {
                     TAG: /* Char_literal */12,
-                    _0: /* " " */32,
+                    _0: /* ' ' */32,
                     _1: {
                       TAG: /* Int */4,
                       _0: /* Int_d */0,

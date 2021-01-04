@@ -32,7 +32,6 @@ let caml_bool_compare (x : bool) (y : bool): int =
   | false, true -> -1
 
 let caml_int32_compare = caml_int_compare
-let caml_nativeint_compare = caml_int_compare
 
 let caml_float_compare (x : float) (y : float ) =
   if x = y then 0
@@ -60,8 +59,6 @@ let caml_float_min (x : float) y   =
   if x < y then x else y   
 let caml_string_min (x : string) y =     
   if x < y then x else y 
-let caml_nativeint_min (x : int) y =   
-  if x < y then x else y 
 let caml_int32_min (x : int32) y   = 
   if x < y then x else y 
 
@@ -72,8 +69,6 @@ let caml_int_max (x : int) (y : int) : int =
 let caml_float_max (x : float) y   =
   if x > y then x else y   
 let caml_string_max (x : string) y =     
-  if x > y then x else y 
-let caml_nativeint_max (x : int) y =   
   if x > y then x else y 
 let caml_int32_max (x : int32) y   = 
   if x > y then x else y 

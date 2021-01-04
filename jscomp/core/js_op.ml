@@ -153,22 +153,13 @@ type property_name =
 type 'a access = 
   | Getter
   | Setter
-type jsint = Int32.t
-
-type int_or_char = 
-    { i : jsint; 
-      (* we can not use [int] on 32 bit platform, if we dont use 
-          [Int32.t], we need a configuration step          
-      *)
-      c : char option
-    }
 
  (* literal char *)
 type float_lit = { f :  string } [@@unboxed]
 
 type number = 
   | Float of float_lit 
-  | Int of int_or_char
+  | Int of { i  : int32; c : char option}
   | Uint of int32
 
   (* becareful when constant folding +/-, 
