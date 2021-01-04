@@ -42,7 +42,35 @@ var arg_spec = {
   tl: arg_spec_1
 };
 
-Arg.parse(arg_spec, anno_fun, usage_msg);
+Arg.parse_argv(undefined, [
+      "prog.exe",
+      "-c",
+      "-d"
+    ], arg_spec, anno_fun, usage_msg);
+
+if (compile.contents !== true) {
+  throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "argv_test.ml",
+          20,
+          0
+        ],
+        Error: new Error()
+      };
+}
+
+if (test.contents !== false) {
+  throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "argv_test.ml",
+          21,
+          0
+        ],
+        Error: new Error()
+      };
+}
 
 exports.anno_fun = anno_fun;
 exports.usage_msg = usage_msg;

@@ -14,4 +14,8 @@ let arg_spec = Arg.[
   ]
 
 ;;
-Arg.parse arg_spec anno_fun usage_msg
+Arg.parse_argv [|"prog.exe";"-c"; "-d"; |] arg_spec anno_fun usage_msg
+;;
+
+assert (!compile = true);
+assert (!test = false)
