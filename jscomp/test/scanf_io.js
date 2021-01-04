@@ -165,8 +165,7 @@ function add_digest_ib(ob, ib) {
                       _1: "\xff\xdb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
                       _2: {
                         TAG: /* Char_literal */12,
-                        _0: /* '
-' */10,
+                        _0: /* '\n' */10,
                         _1: /* End_of_format */0
                       }
                     },
@@ -178,8 +177,7 @@ function add_digest_ib(ob, ib) {
     $$Buffer.add_char(ob, /* '#' */35);
     var s$1 = Digest.to_hex(Digest.string(s));
     $$Buffer.add_string(ob, Caml_bytes.bytes_to_string(Bytes.uppercase(Caml_bytes.bytes_of_string(s$1))));
-    return $$Buffer.add_char(ob, /* '
-' */10);
+    return $$Buffer.add_char(ob, /* '\n' */10);
   };
   try {
     while(true) {

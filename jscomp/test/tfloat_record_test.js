@@ -28,8 +28,7 @@ function print_newline(param) {
   return Format.fprintf(fmt, /* Format */{
               _0: {
                 TAG: /* Char_literal */12,
-                _0: /* '
-' */10,
+                _0: /* '\n' */10,
                 _1: /* End_of_format */0
               },
               _1: "\n"

@@ -1615,8 +1615,7 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
   }
   var lines = num_loc_lines.contents;
   for(var i = pos0 ,i_finish = lb.lex_buffer_len; i < i_finish; ++i){
-    if (Caml_bytes.get(lb.lex_buffer, i) === /* '
-' */10) {
+    if (Caml_bytes.get(lb.lex_buffer, i) === /* '\n' */10) {
       lines = lines + 1 | 0;
     }
     
@@ -1652,8 +1651,7 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
     }
     var c = Caml_bytes.get(lb.lex_buffer, pos + pos0 | 0);
     Pervasives.print_char(c);
-    bol = c === /* '
-' */10;
+    bol = c === /* '\n' */10;
   }
   Caml_external_polyfill.resolve("caml_terminfo_standout")(false);
   Caml_external_polyfill.resolve("caml_terminfo_resume")(num_loc_lines.contents);
@@ -1672,8 +1670,7 @@ function highlight_dumb(ppf, lb, loc) {
   var line_start = 0;
   var line_end = 0;
   for(var pos = 0; pos <= end_pos; ++pos){
-    if (Caml_bytes.get(lb.lex_buffer, pos + pos0 | 0) === /* '
-' */10) {
+    if (Caml_bytes.get(lb.lex_buffer, pos + pos0 | 0) === /* '\n' */10) {
       if (loc.loc_start.pos_cnum > pos) {
         line_start = line_start + 1 | 0;
       }
@@ -2151,8 +2148,7 @@ function prerr_warning(loc, w) {
         if (i === (start + len | 0)) {
           return c;
         }
-        if (Caml_string.get(str, i) === /* '
-' */10) {
+        if (Caml_string.get(str, i) === /* '\n' */10) {
           _c = c + 1 | 0;
           _i = i + 1 | 0;
           continue ;
@@ -14554,7 +14550,7 @@ function report_error$1(ppf, param) {
         return Curry._1(Format.fprintf(ppf, /* Format */{
                         _0: {
                           TAG: /* Char_literal */12,
-                          _0: /* ''' */39,
+                          _0: /* '\'' */39,
                           _1: {
                             TAG: /* String */2,
                             _0: /* No_padding */0,
@@ -23172,7 +23168,7 @@ function char_for_backslash(c) {
     if (c !== 98) {
       return c;
     } else {
-      return /* '' */8;
+      return /* '\b' */8;
     }
   }
   if (c >= 117) {
@@ -23180,17 +23176,16 @@ function char_for_backslash(c) {
   }
   switch (c) {
     case 110 :
-        return /* '
-' */10;
+        return /* '\n' */10;
     case 114 :
-        return /* '' */13;
+        return /* '\r' */13;
     case 111 :
     case 112 :
     case 113 :
     case 115 :
         return c;
     case 116 :
-        return /* '	' */9;
+        return /* '\t' */9;
     
   }
 }
@@ -39004,7 +38999,7 @@ function pr_vars(param, param$1) {
                 return Curry._1(Format.fprintf(ppf, /* Format */{
                                 _0: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* ''' */39,
+                                  _0: /* '\'' */39,
                                   _1: {
                                     TAG: /* String */2,
                                     _0: /* No_padding */0,
@@ -39688,7 +39683,7 @@ function print_simple_out_type(ppf, s) {
         return Curry._2(Format.fprintf(ppf, /* Format */{
                         _0: {
                           TAG: /* Char_literal */12,
-                          _0: /* ''' */39,
+                          _0: /* '\'' */39,
                           _1: {
                             TAG: /* String */2,
                             _0: /* No_padding */0,
@@ -81236,7 +81231,7 @@ register_error_of_exn(function (err) {
                                                                     _0: /* No_padding */0,
                                                                     _1: {
                                                                       TAG: /* Char_literal */12,
-                                                                      _0: /* ''' */39,
+                                                                      _0: /* '\'' */39,
                                                                       _1: {
                                                                         TAG: /* Formatting_lit */17,
                                                                         _0: {
@@ -81289,7 +81284,7 @@ register_error_of_exn(function (err) {
                                                                   _0: /* No_padding */0,
                                                                   _1: {
                                                                     TAG: /* Char_literal */12,
-                                                                    _0: /* ''' */39,
+                                                                    _0: /* '\'' */39,
                                                                     _1: {
                                                                       TAG: /* Formatting_lit */17,
                                                                       _0: {

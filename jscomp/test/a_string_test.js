@@ -84,7 +84,7 @@ var suites_1 = {
                                   if (x === /* ' ' */32) {
                                     return true;
                                   } else {
-                                    return x === /* '	' */9;
+                                    return x === /* '\t' */9;
                                   }
                                 }), "h hgso hgso \t hi")),
                       _1: {

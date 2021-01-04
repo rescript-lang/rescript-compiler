@@ -356,8 +356,7 @@ function to_file_seq(filename, seq) {
   var f = function (oc) {
     return Curry._1(seq, (function (t) {
                   to_chan(oc, t);
-                  return Caml_io.caml_ml_output_char(oc, /* '
-' */10);
+                  return Caml_io.caml_ml_output_char(oc, /* '\n' */10);
                 }));
   };
   var oc = Pervasives.open_out(filename);
@@ -440,8 +439,7 @@ function _get(t) {
   }
   var c = Caml_bytes.get(t.buf, t.i);
   t.i = t.i + 1 | 0;
-  if (c === /* '
-' */10) {
+  if (c === /* '\n' */10) {
     t.col = 1;
     t.line = t.line + 1 | 0;
   } else {
@@ -751,14 +749,13 @@ function escaped(k, t) {
     if (c < 117) {
       switch (c) {
         case 92 :
-            return Curry._1(k, /* '\' */92);
+            return Curry._1(k, /* '\\' */92);
         case 98 :
-            return Curry._1(k, /* '' */8);
+            return Curry._1(k, /* '\b' */8);
         case 110 :
-            return Curry._1(k, /* '
-' */10);
+            return Curry._1(k, /* '\n' */10);
         case 114 :
-            return Curry._1(k, /* '' */13);
+            return Curry._1(k, /* '\r' */13);
         case 93 :
         case 94 :
         case 95 :
@@ -781,7 +778,7 @@ function escaped(k, t) {
         case 115 :
             break;
         case 116 :
-            return Curry._1(k, /* '	' */9);
+            return Curry._1(k, /* '\t' */9);
         
       }
     }
@@ -802,7 +799,7 @@ function escaped(k, t) {
                         TAG: /* Char */0,
                         _0: {
                           TAG: /* Char_literal */12,
-                          _0: /* ''' */39,
+                          _0: /* '\'' */39,
                           _1: /* End_of_format */0
                         }
                       }
@@ -1054,8 +1051,7 @@ function MakeDecode(funarg) {
     }
     var c = Caml_bytes.get(t.buf, t.i);
     t.i = t.i + 1 | 0;
-    if (c === /* '
-' */10) {
+    if (c === /* '\n' */10) {
       t.col = 1;
       t.line = t.line + 1 | 0;
     } else {
@@ -1356,14 +1352,13 @@ function MakeDecode(funarg) {
       if (c < 117) {
         switch (c) {
           case 92 :
-              return Curry._1(k, /* '\' */92);
+              return Curry._1(k, /* '\\' */92);
           case 98 :
-              return Curry._1(k, /* '' */8);
+              return Curry._1(k, /* '\b' */8);
           case 110 :
-              return Curry._1(k, /* '
-' */10);
+              return Curry._1(k, /* '\n' */10);
           case 114 :
-              return Curry._1(k, /* '' */13);
+              return Curry._1(k, /* '\r' */13);
           case 93 :
           case 94 :
           case 95 :
@@ -1386,7 +1381,7 @@ function MakeDecode(funarg) {
           case 115 :
               break;
           case 116 :
-              return Curry._1(k, /* '	' */9);
+              return Curry._1(k, /* '\t' */9);
           
         }
       }
@@ -1407,7 +1402,7 @@ function MakeDecode(funarg) {
                           TAG: /* Char */0,
                           _0: {
                             TAG: /* Char_literal */12,
-                            _0: /* ''' */39,
+                            _0: /* '\'' */39,
                             _1: /* End_of_format */0
                           }
                         }

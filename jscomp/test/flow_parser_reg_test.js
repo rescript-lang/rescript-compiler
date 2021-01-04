@@ -3886,8 +3886,7 @@ function comment(env, buf, lexbuf) {
                 ];
       case 1 :
           Lexing.new_line(lexbuf);
-          $$Buffer.add_char(buf, /* '
-' */10);
+          $$Buffer.add_char(buf, /* '\n' */10);
           return comment(env, buf, lexbuf);
       case 2 :
           var loc = from_lb(env.lex_source, lexbuf);
@@ -4844,8 +4843,8 @@ function template_part(env, start, cooked, raw, literal, lexbuf) {
                   false
                 ];
       case 3 :
-          $$Buffer.add_char(raw, /* '\' */92);
-          $$Buffer.add_char(literal, /* '\' */92);
+          $$Buffer.add_char(raw, /* '\\' */92);
+          $$Buffer.add_char(literal, /* '\\' */92);
           var match = string_escape(env, cooked, lexbuf);
           var str = Lexing.lexeme(lexbuf);
           $$Buffer.add_string(raw, str);
@@ -4862,8 +4861,7 @@ function template_part(env, start, cooked, raw, literal, lexbuf) {
           var lf$1 = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
           $$Buffer.add_char(raw, lf$1);
           $$Buffer.add_char(literal, lf$1);
-          $$Buffer.add_char(cooked, /* '
-' */10);
+          $$Buffer.add_char(cooked, /* '\n' */10);
           Lexing.new_line(lexbuf);
           return template_part(env, start, cooked, raw, literal, lexbuf);
       case 6 :
@@ -5341,7 +5339,7 @@ function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
           var buf$2 = $$Buffer.create(127);
           var raw = $$Buffer.create(127);
           $$Buffer.add_char(raw, quote);
-          var mode = quote === /* ''' */39 ? /* JSX_SINGLE_QUOTED_TEXT */0 : /* JSX_DOUBLE_QUOTED_TEXT */1;
+          var mode = quote === /* '\'' */39 ? /* JSX_SINGLE_QUOTED_TEXT */0 : /* JSX_DOUBLE_QUOTED_TEXT */1;
           var match$2 = jsx_text(env, mode, buf$2, raw, lexbuf);
           $$Buffer.add_char(raw, quote);
           var value = $$Buffer.contents(buf$2);

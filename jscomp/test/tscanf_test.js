@@ -765,8 +765,7 @@ function test7(param) {
               },
               _1: "%C %C %C %C %C"
             }), (function (c1, c2, c3, c4, c5) {
-            return c1 === /* 'a' */97 && c2 === /* '
-' */10 && c3 === /* '	' */9 && c4 === /* ' ' */0 ? c5 === /* ' ' */32 : false;
+            return c1 === /* 'a' */97 && c2 === /* '\n' */10 && c3 === /* '\t' */9 && c4 === /* '\000' */0 ? c5 === /* ' ' */32 : false;
           }))) {
     return Curry._1(Scanf.bscanf(Scanf.Scanning.from_string("a \n \t \0  b"), /* Format */{
                     _0: {
@@ -793,7 +792,7 @@ function test7(param) {
                     },
                     _1: "%c %c %c "
                   }), (function (c1, c2, c3) {
-                  if (c1 === /* 'a' */97 && c2 === /* ' ' */0) {
+                  if (c1 === /* 'a' */97 && c2 === /* '\000' */0) {
                     return c3 === /* 'b' */98;
                   } else {
                     return false;
@@ -1078,7 +1077,7 @@ function test11(param) {
                         TAG: /* Formatting_lit */17,
                         _0: {
                           TAG: /* Scan_indic */2,
-                          _0: /* '	' */9
+                          _0: /* '\t' */9
                         },
                         _1: {
                           TAG: /* Char_literal */12,
@@ -1090,7 +1089,7 @@ function test11(param) {
                               TAG: /* Formatting_lit */17,
                               _0: {
                                 TAG: /* Scan_indic */2,
-                                _0: /* '	' */9
+                                _0: /* '\t' */9
                               },
                               _1: {
                                 TAG: /* Char_literal */12,
@@ -3611,7 +3610,7 @@ function test42(param) {
                       TAG: /* Formatting_lit */17,
                       _0: {
                         TAG: /* Scan_indic */2,
-                        _0: /* '	' */9
+                        _0: /* '\t' */9
                       },
                       _1: /* End_of_format */0
                     }
@@ -4263,8 +4262,7 @@ function next_char(ob, param) {
 
 function send_string(ob, s) {
   $$Buffer.add_string(ob, s);
-  return $$Buffer.add_char(ob, /* '
-' */10);
+  return $$Buffer.add_char(ob, /* '\n' */10);
 }
 
 function send_int(ob, i) {
@@ -4278,8 +4276,7 @@ function writer(ib, ob) {
                     _0: /* No_padding */0,
                     _1: {
                       TAG: /* Char_literal */12,
-                      _0: /* '
-' */10,
+                      _0: /* '\n' */10,
                       _1: /* End_of_format */0
                     }
                   },
@@ -4327,8 +4324,7 @@ function reader(ib, ob) {
                       _1: "\xff\xfb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
                       _2: {
                         TAG: /* Char_literal */12,
-                        _0: /* '
-' */10,
+                        _0: /* '\n' */10,
                         _1: /* End_of_format */0
                       }
                     },
@@ -4379,8 +4375,7 @@ function test51(param) {
                 _0: /* No_padding */0,
                 _1: {
                   TAG: /* Char_literal */12,
-                  _0: /* '
-' */10,
+                  _0: /* '\n' */10,
                   _1: /* End_of_format */0
                 }
               },
@@ -4394,8 +4389,7 @@ function test51(param) {
                   _0: /* No_padding */0,
                   _1: {
                     TAG: /* Char_literal */12,
-                    _0: /* '
-' */10,
+                    _0: /* '\n' */10,
                     _1: /* End_of_format */0
                   }
                 }
@@ -4409,8 +4403,7 @@ function test51(param) {
                 _0: /* No_padding */0,
                 _1: {
                   TAG: /* Char_literal */12,
-                  _0: /* '
-' */10,
+                  _0: /* '\n' */10,
                   _1: {
                     TAG: /* String */2,
                     _0: /* No_padding */0,
@@ -4430,8 +4423,7 @@ function test51(param) {
                 _0: /* No_padding */0,
                 _1: {
                   TAG: /* Char_literal */12,
-                  _0: /* '
-' */10,
+                  _0: /* '\n' */10,
                   _1: {
                     TAG: /* String */2,
                     _0: /* No_padding */0,
@@ -4620,8 +4612,7 @@ function test52(param) {
                     },
                     _1: {
                       TAG: /* Char_literal */12,
-                      _0: /* '
-' */10,
+                      _0: /* '\n' */10,
                       _1: /* End_of_format */0
                     }
                   }
@@ -4646,8 +4637,7 @@ function test52(param) {
                     _0: /* No_padding */0,
                     _1: {
                       TAG: /* Char_literal */12,
-                      _0: /* '
-' */10,
+                      _0: /* '\n' */10,
                       _1: /* End_of_format */0
                     }
                   }
@@ -4662,8 +4652,7 @@ function test52(param) {
                 _0: /* No_padding */0,
                 _1: {
                   TAG: /* Char_literal */12,
-                  _0: /* '
-' */10,
+                  _0: /* '\n' */10,
                   _1: {
                     TAG: /* String */2,
                     _0: /* No_padding */0,
@@ -4683,8 +4672,7 @@ function test52(param) {
                 _0: /* No_padding */0,
                 _1: {
                   TAG: /* Char_literal */12,
-                  _0: /* '
-' */10,
+                  _0: /* '\n' */10,
                   _1: {
                     TAG: /* String */2,
                     _0: /* No_padding */0,
@@ -4704,8 +4692,7 @@ function test52(param) {
                 _0: /* No_padding */0,
                 _1: {
                   TAG: /* Char_literal */12,
-                  _0: /* '
-' */10,
+                  _0: /* '\n' */10,
                   _1: {
                     TAG: /* String */2,
                     _0: /* No_padding */0,

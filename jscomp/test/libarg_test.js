@@ -526,8 +526,7 @@ function test(argv) {
                                 },
                                 _1: {
                                   TAG: /* Char_literal */12,
-                                  _0: /* '
-' */10,
+                                  _0: /* '\n' */10,
                                   _1: {
                                     TAG: /* Flush */10,
                                     _0: /* End_of_format */0

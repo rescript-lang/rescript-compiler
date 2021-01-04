@@ -3266,8 +3266,7 @@ function endline(s) {
                     _0: /* No_padding */0,
                     _1: {
                       TAG: /* Char_literal */12,
-                      _0: /* '
-' */10,
+                      _0: /* '\n' */10,
                       _1: /* End_of_format */0
                     }
                   },
@@ -3305,8 +3304,7 @@ function gen_pp_record(and_, param, sc) {
                 _0: /* No_padding */0,
                 _1: {
                   TAG: /* Char_literal */12,
-                  _0: /* '
-' */10,
+                  _0: /* '\n' */10,
                   _1: /* End_of_format */0
                 }
               }
@@ -4133,8 +4131,7 @@ function strong_connect(g, sccs, stack, index, v) {
                     _2: /* No_precision */0,
                     _3: {
                       TAG: /* Char_literal */12,
-                      _0: /* '
-' */10,
+                      _0: /* '\n' */10,
                       _1: /* End_of_format */0
                     }
                   }
@@ -4172,8 +4169,7 @@ function strong_connect(g, sccs, stack, index, v) {
                             _0: /* No_padding */0,
                             _1: {
                               TAG: /* Char_literal */12,
-                              _0: /* '
-' */10,
+                              _0: /* '\n' */10,
                               _1: /* End_of_format */0
                             }
                           }
@@ -4239,8 +4235,7 @@ function strong_connect(g, sccs, stack, index, v) {
                         _0: /* No_padding */0,
                         _1: {
                           TAG: /* Char_literal */12,
-                          _0: /* '
-' */10,
+                          _0: /* '\n' */10,
                           _1: /* End_of_format */0
                         }
                       }
@@ -4264,8 +4259,7 @@ function strong_connect(g, sccs, stack, index, v) {
                 _0: /* No_padding */0,
                 _1: {
                   TAG: /* Char_literal */12,
-                  _0: /* '
-' */10,
+                  _0: /* '\n' */10,
                   _1: /* End_of_format */0
                 }
               }
@@ -4948,8 +4942,7 @@ function compile_message_p2(types, param, message) {
                   _0: /* No_padding */0,
                   _1: {
                     TAG: /* Char_literal */12,
-                    _0: /* '
-' */10,
+                    _0: /* '\n' */10,
                     _1: /* End_of_format */0
                   }
                 }
@@ -4982,8 +4975,7 @@ function compile_message_p2(types, param, message) {
                   _0: /* No_padding */0,
                   _1: {
                     TAG: /* Char_literal */12,
-                    _0: /* '
-' */10,
+                    _0: /* '\n' */10,
                     _1: /* End_of_format */0
                   }
                 }
@@ -5012,8 +5004,7 @@ function compile_message_p2(types, param, message) {
                                     _0: /* No_padding */0,
                                     _1: {
                                       TAG: /* Char_literal */12,
-                                      _0: /* '
-' */10,
+                                      _0: /* '\n' */10,
                                       _1: /* End_of_format */0
                                     }
                                   }
@@ -5592,8 +5583,7 @@ function gen_encode_record(and_, param, sc) {
                 _0: /* No_padding */0,
                 _1: {
                   TAG: /* Char_literal */12,
-                  _0: /* '
-' */10,
+                  _0: /* '\n' */10,
                   _1: /* End_of_format */0
                 }
               }

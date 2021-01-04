@@ -61,17 +61,17 @@ function escaped(s) {
     } else {
       switch (c) {
         case 8 :
-            s$prime[n] = /* '\' */92;
+            s$prime[n] = /* '\\' */92;
             n = n + 1 | 0;
             s$prime[n] = /* 'b' */98;
             break;
         case 9 :
-            s$prime[n] = /* '\' */92;
+            s$prime[n] = /* '\\' */92;
             n = n + 1 | 0;
             s$prime[n] = /* 't' */116;
             break;
         case 10 :
-            s$prime[n] = /* '\' */92;
+            s$prime[n] = /* '\\' */92;
             n = n + 1 | 0;
             s$prime[n] = /* 'n' */110;
             break;
@@ -88,7 +88,7 @@ function escaped(s) {
             exit = 1;
             break;
         case 13 :
-            s$prime[n] = /* '\' */92;
+            s$prime[n] = /* '\\' */92;
             n = n + 1 | 0;
             s$prime[n] = /* 'r' */114;
             break;
@@ -97,7 +97,7 @@ function escaped(s) {
     }
     switch (exit) {
       case 1 :
-          s$prime[n] = /* '\' */92;
+          s$prime[n] = /* '\\' */92;
           n = n + 1 | 0;
           s$prime[n] = 48 + (c / 100 | 0) | 0;
           n = n + 1 | 0;
@@ -106,7 +106,7 @@ function escaped(s) {
           s$prime[n] = 48 + c % 10 | 0;
           break;
       case 2 :
-          s$prime[n] = /* '\' */92;
+          s$prime[n] = /* '\\' */92;
           n = n + 1 | 0;
           s$prime[n] = c;
           break;
