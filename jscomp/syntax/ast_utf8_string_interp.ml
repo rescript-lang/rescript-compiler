@@ -202,9 +202,6 @@ let rec check_and_transform (loc : int )  s byte_offset ({s_len; buf} as cxt : c
     | Single 34 ->
       Buffer.add_string buf "\\\"";
       check_and_transform (loc + 1)  s (byte_offset + 1) cxt
-    | Single 39 ->
-      Buffer.add_string buf "\\'";
-      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
     | Single 10 ->
 
       Buffer.add_string buf "\\n";

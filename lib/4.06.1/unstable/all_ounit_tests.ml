@@ -17652,7 +17652,7 @@ let error ~loc error =
    visual input while es5 string 
    does not*)
 
-let rec check_and_transform (loc : int ) buf s byte_offset s_len =
+let rec check_and_transform (loc : int ) (buf : Buffer.t) (s : string) (byte_offset : int) (s_len : int) =
   if byte_offset = s_len then ()
   else 
     let current_char = s.[byte_offset] in 
@@ -17662,9 +17662,6 @@ let rec check_and_transform (loc : int ) buf s byte_offset s_len =
     | Single 34 ->
       Buffer.add_string buf "\\\"";
       check_and_transform (loc + 1) buf s (byte_offset + 1) s_len
-    | Single 39 -> 
-      Buffer.add_string buf "\\'";
-      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
     | Single 10 ->          
       Buffer.add_string buf "\\n";
       check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
@@ -18600,9 +18597,6 @@ let rec check_and_transform (loc : int )  s byte_offset ({s_len; buf} as cxt : c
       escape_code (loc + 1)  s (byte_offset+1) cxt
     | Single 34 ->
       Buffer.add_string buf "\\\"";
-      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
-    | Single 39 ->
-      Buffer.add_string buf "\\'";
       check_and_transform (loc + 1)  s (byte_offset + 1) cxt
     | Single 10 ->
 
