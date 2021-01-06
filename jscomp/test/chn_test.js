@@ -32,7 +32,7 @@ function eq(loc, x, y) {
 
 console.log("你好，\n世界");
 
-console.log("\x3f\u003f\b\t\n\v\f\r\0\"\'");
+console.log("\x3f\u003f\b\t\n\v\f\r\0\"'");
 
 function convert(s) {
   return $$Array.to_list(Array.from(s, (function (x) {
@@ -227,7 +227,7 @@ eq("File \"chn_test.ml\", line 82, characters 5-12", convert(" \b\t\n\v\f\ra"), 
       }
     });
 
-eq("File \"chn_test.ml\", line 89, characters 6-13", convert(" \b\t\n\v\f\r\"\'\\\0a"), {
+eq("File \"chn_test.ml\", line 89, characters 6-13", convert(" \b\t\n\v\f\r\"'\\\0a"), {
       hd: 32,
       tl: {
         hd: 8,
