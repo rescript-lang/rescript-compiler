@@ -82,7 +82,7 @@ type t =
 let runtime_package_specs : t = {
   name = Pkg_runtime;
   module_systems =[
-    {module_system = Es6; path = "lib/es6"; suffix = Js};
+    {module_system = Es6; path = "lib/es6"; suffix = Mjs};
     {module_system = NodeJS; path = "lib/js"; suffix = Js};
   ]
 }   
