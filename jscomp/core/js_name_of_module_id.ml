@@ -43,7 +43,7 @@ let get_runtime_module_path
       module_system  in
   let js_file =  
     Ext_namespace.js_name_of_modulename dep_module_id.id.name 
-      Little Js in (* Js may be subject to the module system *)
+      Little (match module_system with NodeJS -> Js | Es6 | Es6_global -> Mjs) in 
   match current_info_query with        
   | Package_not_found -> assert false
   | Package_script -> 

@@ -67,7 +67,11 @@ let from_cmj ~mode (files : string list) (output_file : string) : unit =
               when package_spec = Js_packages_info.runtime_package_specs
               -> ()
               (*TODO: assert its suffixes*)
-            | _ -> assert false   
+            | _ -> 
+              Format.fprintf Format.err_formatter
+                 "@[%s: @[%a@]@]@." file
+              Js_packages_info.dump_packages_info  content.package_spec;              
+              assert false   
           end
         | Playground _ -> ()
         in
