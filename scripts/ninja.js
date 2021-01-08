@@ -1329,6 +1329,7 @@ function checkEffect() {
   ]);
 
   var assert = require("assert");
+  // @ts-ignore
   assert(
     effect.length === black_list.size &&
       effect.every((x) => black_list.has(x.file))
