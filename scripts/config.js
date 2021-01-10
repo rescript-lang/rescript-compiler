@@ -10,10 +10,11 @@ var sys_extension;
 switch (os.type()) {
     case 'Darwin':
     case 'FreeBSD':
-    case 'Linux':        
+    case 'Linux':
+    case 'OpenBSD':
     case 'Windows_NT':
         sys_extension = "." + os.platform(); break;
-    default: throw ("Not supported" + os.type())
+    default: throw ("Not supported " + os.type())
 }
 
 exports.sys_extension  = sys_extension

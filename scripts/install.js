@@ -18,7 +18,7 @@ var root_dir = path.join(__dirname, "..");
 var lib_dir = path.join(root_dir, "lib");
 var jscomp_dir = path.join(root_dir, "jscomp");
 
-var supported_os = ["darwin", "freebsd", "linux", "win32"];
+var supported_os = ["darwin", "freebsd", "linux", "openbsd", "win32"];
 if (supported_os.indexOf(process.platform) < 0) {
   throw new Error("Not supported platform" + process.platform);
 }
