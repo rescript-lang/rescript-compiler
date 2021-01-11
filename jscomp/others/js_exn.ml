@@ -45,6 +45,12 @@ external makeError : string -> error = "Error" [@@bs.new]
 external isCamlExceptionOrOpenVariant : 
   'a -> bool = "caml_is_extension"
 
+let unsafeAnyToExn obj =
+  if isCamlExceptionOrOpenVariant obj then
+    (Obj.magic obj : exn)
+  else
+    Error ((Obj.magic obj) : t)
+
 let raiseError str = 
   raise (Obj.magic (makeError str : error) : exn)
 
