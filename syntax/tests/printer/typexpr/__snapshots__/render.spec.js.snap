@@ -588,17 +588,17 @@ type color = [rgb | #Orange | #Yellow | #Purple]
 
 type t = [#variant]
 type t = [#Variant]
-type t = [#\\\\\\"type\\"]
-type t = [#\\\\\\"va r ia nt\\"]
-type t = [#\\\\\\"Variant ⛰\\"]
+type t = [#\\"type\\"]
+type t = [#\\"va r ia nt\\"]
+type t = [#\\"Variant ⛰\\"]
 
 let id = (x: [> #Red | #Green | #Blue]) => x
 let upper = (x: [< #Red | #Green]) => true
 type point = [#Point(float, float)]
-type \\\\\\"type\\" = [#\\\\\\"Point🗿\\"(\\\\\\"let\\", float)]
+type \\\\\\"type\\" = [#\\"Point🗿\\"(\\\\\\"let\\", float)]
 type shape = [#Rectangle(point, point) | #Circle(point, float)]
 
-type madness = [< #\\\\\\"type\\" & (\\\\\\"let\\") & (\\\\\\"Super exotic\\") | #\\\\\\"Bad Idea\\"]
+type madness = [< #\\"type\\" & (\\\\\\"let\\") & (\\\\\\"Super exotic\\") | #\\"Bad Idea\\"]
 
 let error_of_exn: exn => option<[#Ok(error) | #Already_displayed]> = x
 
@@ -647,5 +647,21 @@ type x = [
   | #Baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaar
   | #Baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaz
 ]
+
+type animation = [#\\"ease-in\\" | #\\"ease-out\\" | #\\"never ease ✍️\\"]
+
+module type Conjunctive = {
+  type u1 = [#A | #B]
+  type u2 = [#A | #B | #C]
+
+  let f: [< #T([< u2]) & ([< u2]) & ([< u1])] => unit
+  let g: [< #S & ([< u2]) & ([< u2]) & ([< u1])] => unit
+  let g: [<
+    | #\\"Exotic-S+\\"
+    & ([< #\\"Exotic-u2+\\"])
+    & ([< #\\"Exotic-u2-\\"])
+    & ([< #\\"Exotic-u1+++\\"])
+  ] => unit
+}
 "
 `;

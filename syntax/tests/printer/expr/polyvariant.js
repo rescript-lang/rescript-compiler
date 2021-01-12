@@ -104,6 +104,18 @@ let r = #lident(a, b)
 let r = #\"exotic lident"
 let r = #\"exotic lident"(a, b)
 
+let x = #"1"
+let x = #"123"
+let x = #"10space"
+let x = #space10
+
+let a = #"1"
+let b = #"1a"
+let c = #a2
+let d = #abcd
+
+#"BigBlue"(#"Shade-of-blue+++", #"Shade-of-blue---")
+
 external openSync: (
   path,
   @bs.string [

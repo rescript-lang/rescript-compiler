@@ -444,6 +444,164 @@ let processUnderscoreApplication args =
   in
   (args, wrap)
 
+let hexValue x =
+  match x with
+  | '0' .. '9' ->
+    (Char.code x) - 48
+  | 'A' .. 'Z' ->
+    (Char.code x) - 55
+  | 'a' .. 'z' ->
+    (Char.code x) - 97
+  | _ -> 16
+
+let parseStringLiteral s =
+  let len = String.length s in
+  let b = Buffer.create (String.length s) in
+
+  let rec loop i =
+    if i = len then
+      ()
+    else
+      let c = String.unsafe_get s i in
+      match c with
+      | '\\' as c ->
+        let nextIx = i + 1 in
+        if nextIx < len then
+          let nextChar = String.unsafe_get s nextIx in
+          begin match nextChar with
+          (* this is interesting:
+           * let x = "foo\
+           * bar"
+           * The `\` escapes the newline, as if there was nothing here.
+           * Essentialy transforming this piece of code in `let x = "foobar"`
+           *
+           * What is even more interesting is that any space or tabs after the
+           * escaped newline are also dropped.
+           * let x = "foo\
+           *          bar"
+           * is the same as `let x = "foobar"`
+           *)
+          | '\010' | '\013' ->
+            let i = ref (nextIx + 1) in
+            while !i < len && (
+              let c = String.unsafe_get s !i in
+              c = ' ' || c = '\t'
+            ) do
+              incr i
+            done;
+            loop !i
+          | 'n' ->
+            Buffer.add_char b '\010';
+            loop (nextIx + 1)
+          | 'r' ->
+            Buffer.add_char b '\013';
+            loop (nextIx + 1)
+          | 'b' ->
+            Buffer.add_char b '\008';
+            loop (nextIx + 1)
+          | 't' ->
+            Buffer.add_char b '\009';
+            loop (nextIx + 1)
+          | '\\' as c ->
+            Buffer.add_char b c;
+            loop (nextIx + 1)
+          | ' ' as c ->
+              Buffer.add_char b c;
+            loop (nextIx + 1)
+          | '\'' as c ->
+              Buffer.add_char b c;
+            loop (nextIx + 1)
+          | '\"' as c ->
+            Buffer.add_char b c;
+            loop (nextIx + 1)
+          | '0' .. '9' ->
+            if nextIx + 2 < len then
+              let c0 = nextChar in
+              let c1 = (String.unsafe_get s (nextIx + 1)) in
+              let c2 = (String.unsafe_get s (nextIx + 2)) in
+              let c =
+                100 * (Char.code c0 - 48) +
+                10 * (Char.code c1  - 48) +
+                (Char.code c2 - 48)
+              in
+              if (c < 0 || c > 255) then (
+                Buffer.add_char b '\\';
+                Buffer.add_char b c0;
+                Buffer.add_char b c1;
+                Buffer.add_char b c2;
+                loop (nextIx + 3)
+              ) else (
+                Buffer.add_char b (Char.unsafe_chr c);
+                loop (nextIx + 3)
+              )
+            else (
+              Buffer.add_char b '\\';
+              Buffer.add_char b nextChar;
+              loop (nextIx + 1)
+            )
+          | 'o' ->
+            if nextIx + 3 < len then
+              let c0 = (String.unsafe_get s (nextIx + 1)) in
+              let c1 = (String.unsafe_get s (nextIx + 2)) in
+              let c2 = (String.unsafe_get s (nextIx + 3)) in
+              let c =
+                64 * (Char.code c0 - 48) +
+                8 * (Char.code c1  - 48) +
+                (Char.code c2 - 48)
+              in
+              if (c < 0 || c > 255) then (
+                Buffer.add_char b '\\';
+                Buffer.add_char b '0';
+                Buffer.add_char b c0;
+                Buffer.add_char b c1;
+                Buffer.add_char b c2;
+                loop (nextIx + 4)
+              ) else (
+                Buffer.add_char b (Char.unsafe_chr c);
+                loop (nextIx + 4)
+              )
+            else (
+              Buffer.add_char b '\\';
+              Buffer.add_char b nextChar;
+              loop (nextIx + 1)
+            )
+          | 'x' as c ->
+            if nextIx + 2 < len then
+              let c0 = (String.unsafe_get s (nextIx + 1)) in
+              let c1 = (String.unsafe_get s (nextIx + 2)) in
+              let c = (16 * (hexValue c0)) + (hexValue c1) in
+              if (c < 0 || c > 255) then (
+                Buffer.add_char b '\\';
+                Buffer.add_char b 'x';
+                Buffer.add_char b c0;
+                Buffer.add_char b c1;
+                loop (nextIx + 3)
+              ) else (
+                Buffer.add_char b (Char.unsafe_chr c);
+                loop (nextIx + 3)
+              )
+            else (
+              Buffer.add_char b '\\';
+              Buffer.add_char b c;
+              loop (nextIx + 2)
+            )
+          | _ ->
+            Buffer.add_char b c;
+            Buffer.add_char b nextChar;
+            loop (nextIx + 1)
+          end
+        else (
+          Buffer.add_char b c;
+          ()
+        )
+      | c ->
+        Buffer.add_char b c;
+        loop (i + 1)
+    in
+    loop 0;
+    Buffer.contents b
+
+
 let rec parseLident p =
   let recoverLident p =
     if (
@@ -506,7 +664,13 @@ let parseIdent ~msg ~startPos p =
 
 let parseHashIdent ~startPos p =
   Parser.expect Hash p;
-  parseIdent ~startPos ~msg:ErrorMessages.variantIdent p
+  match p.token with
+  | String text ->
+    Parser.next p;
+    let text = if p.mode = ParseForTypeChecker then parseStringLiteral text else text in
+    (text, mkLoc startPos p.prevEndPos)
+  | _ ->
+    parseIdent ~startPos ~msg:ErrorMessages.variantIdent p
 
 (* Ldot (Ldot (Lident "Foo", "Bar"), "baz") *)
 let parseValuePath p =
@@ -675,163 +839,6 @@ let parseOpenDescription ~attrs p =
   let loc = mkLoc startPos p.prevEndPos in
   Parser.eatBreadcrumb p;
   Ast_helper.Opn.mk ~loc ~attrs ~override modident
-
-let hexValue x =
-  match x with
-  | '0' .. '9' ->
-    (Char.code x) - 48
-  | 'A' .. 'Z' ->
-    (Char.code x) - 55
-  | 'a' .. 'z' ->
-    (Char.code x) - 97
-  | _ -> 16
-
-let parseStringLiteral s =
-  let len = String.length s in
-  let b = Buffer.create (String.length s) in
-
-  let rec loop i =
-    if i = len then
-      ()
-    else
-      let c = String.unsafe_get s i in
-      match c with
-      | '\\' as c ->
-        let nextIx = i + 1 in
-        if nextIx < len then
-          let nextChar = String.unsafe_get s nextIx in
-          begin match nextChar with
-          (* this is interesting:
-           * let x = "foo\
-           * bar"
-           * The `\` escapes the newline, as if there was nothing here.
-           * Essentialy transforming this piece of code in `let x = "foobar"`
-           *
-           * What is even more interesting is that any space or tabs after the
-           * escaped newline are also dropped.
-           * let x = "foo\
-           *          bar"
-           * is the same as `let x = "foobar"`
-           *)
-          | '\010' | '\013' ->
-            let i = ref (nextIx + 1) in
-            while !i < len && (
-              let c = String.unsafe_get s !i in
-              c = ' ' || c = '\t'
-            ) do
-              incr i
-            done;
-            loop !i
-          | 'n' ->
-            Buffer.add_char b '\010';
-            loop (nextIx + 1)
-          | 'r' ->
-            Buffer.add_char b '\013';
-            loop (nextIx + 1)
-          | 'b' ->
-            Buffer.add_char b '\008';
-            loop (nextIx + 1)
-          | 't' ->
-            Buffer.add_char b '\009';
-            loop (nextIx + 1)
-          | '\\' as c ->
-            Buffer.add_char b c;
-            loop (nextIx + 1)
-          | ' ' as c ->
-              Buffer.add_char b c;
-            loop (nextIx + 1)
-          | '\'' as c ->
-              Buffer.add_char b c;
-            loop (nextIx + 1)
-          | '\"' as c ->
-            Buffer.add_char b c;
-            loop (nextIx + 1)
-          | '0' .. '9' ->
-            if nextIx + 2 < len then
-              let c0 = nextChar in
-              let c1 = (String.unsafe_get s (nextIx + 1)) in
-              let c2 = (String.unsafe_get s (nextIx + 2)) in
-              let c =
-                100 * (Char.code c0 - 48) +
-                10 * (Char.code c1  - 48) +
-                (Char.code c2 - 48)
-              in
-              if (c < 0 || c > 255) then (
-                Buffer.add_char b '\\';
-                Buffer.add_char b c0;
-                Buffer.add_char b c1;
-                Buffer.add_char b c2;
-                loop (nextIx + 3)
-              ) else (
-                Buffer.add_char b (Char.unsafe_chr c);
-                loop (nextIx + 3)
-              )
-            else (
-              Buffer.add_char b '\\';
-              Buffer.add_char b nextChar;
-              loop (nextIx + 1)
-            )
-          | 'o' ->
-            if nextIx + 3 < len then
-              let c0 = (String.unsafe_get s (nextIx + 1)) in
-              let c1 = (String.unsafe_get s (nextIx + 2)) in
-              let c2 = (String.unsafe_get s (nextIx + 3)) in
-              let c =
-                64 * (Char.code c0 - 48) +
-                8 * (Char.code c1  - 48) +
-                (Char.code c2 - 48)
-              in
-              if (c < 0 || c > 255) then (
-                Buffer.add_char b '\\';
-                Buffer.add_char b '0';
-                Buffer.add_char b c0;
-                Buffer.add_char b c1;
-                Buffer.add_char b c2;
-                loop (nextIx + 4)
-              ) else (
-                Buffer.add_char b (Char.unsafe_chr c);
-                loop (nextIx + 4)
-              )
-            else (
-              Buffer.add_char b '\\';
-              Buffer.add_char b nextChar;
-              loop (nextIx + 1)
-            )
-          | 'x' as c ->
-            if nextIx + 2 < len then
-              let c0 = (String.unsafe_get s (nextIx + 1)) in
-              let c1 = (String.unsafe_get s (nextIx + 2)) in
-              let c = (16 * (hexValue c0)) + (hexValue c1) in
-              if (c < 0 || c > 255) then (
-                Buffer.add_char b '\\';
-                Buffer.add_char b 'x';
-                Buffer.add_char b c0;
-                Buffer.add_char b c1;
-                loop (nextIx + 3)
-              ) else (
-                Buffer.add_char b (Char.unsafe_chr c);
-                loop (nextIx + 3)
-              )
-            else (
-              Buffer.add_char b '\\';
-              Buffer.add_char b c;
-              loop (nextIx + 2)
-            )
-          | _ ->
-            Buffer.add_char b c;
-            Buffer.add_char b nextChar;
-            loop (nextIx + 1)
-          end
-        else (
-          Buffer.add_char b c;
-          ()
-        )
-      | c ->
-        Buffer.add_char b c;
-        loop (i + 1)
-    in
-    loop 0;
-    Buffer.contents b
 
 let parseTemplateStringLiteral s =
   let len = String.length s in
@@ -1129,7 +1136,14 @@ let rec parsePattern ?(alias=true) ?(or_=true) p =
       let loc = mkLoc startPos ident.loc.loc_end in
       Ast_helper.Pat.type_ ~loc ~attrs ident
     ) else (
-      let (ident, loc) = parseIdent ~msg:ErrorMessages.variantIdent ~startPos p in
+      let (ident, loc) = match p.token with
+      | String text ->
+        Parser.next p;
+        let text = if p.mode = ParseForTypeChecker then parseStringLiteral text else text in
+        (text, mkLoc startPos p.prevEndPos)
+      | _ ->
+        parseIdent ~msg:ErrorMessages.variantIdent ~startPos p
+      in
       begin match p.Parser.token with
       | Lparen ->
         parseVariantPatternArgs p ident startPos attrs

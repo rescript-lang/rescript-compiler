@@ -135,6 +135,12 @@ let computeAreaPlus = (sp: shapePlus) =>
   | #...shape as s => computeArea(s)
   }
 
+let computeAreaExotic = (sp) =>
+  switch sp {
+  | #"R-Triangle+"(_p1, _p2, _p3) => () 
+  | #...shape as s => ignore(s); ()
+  }
+
 let top = #Point(3.0, 5.0)
 let left = #Point(0.0, 0.0)
 let right = #Point(3.0, 0.0)
@@ -178,11 +184,16 @@ module type Conjunctive = {
 };
 
 // exotic idents in poly-vars
-type t20 = [#\"type"]
-type t21 = [#\"va r ia nt"]
-type t22 = [#\"Variant ⛰"]
+type t20 = [#"type"]
+type t21 = [#"va r ia nt"]
+type t22 = [#"Variant ⛰"]
 type \"let" = int
-type \"type" = [ #\"Point🗿"(\"let", float) ]
+type \"type" = [ #"Point🗿"(\"let", float) ]
+type t23 = [
+  | #"1"
+  | #"10space"
+  | #"123"
+]
 
 type exoticUser = {
   \"let": string,

@@ -29,7 +29,7 @@ let classifyIdentContent ~allowUident txt =
       let c = String.unsafe_get txt i in
       if i == 0 && not (
         (allowUident && (c >= 'A' && c <= 'Z')) ||
-        (c >= 'a' && c <= 'z') || c = '_' || (c >= '0' && c <= '9')) then
+        (c >= 'a' && c <= 'z') || c = '_') then
         ExoticIdent
       else if not (
            (c >= 'a' && c <= 'z')
@@ -54,6 +54,15 @@ let printIdentLike ~allowUident txt =
       Doc.text txt;
       Doc.text"\""
     ]
+  | NormalIdent -> Doc.text txt
+
+let printPolyVarIdent txt =
+  match classifyIdentContent ~allowUident:true txt with
+  | ExoticIdent -> Doc.concat [
+     Doc.text "\"";
+     Doc.text txt;
+     Doc.text"\""
+   ]
   | NormalIdent -> Doc.text txt
 
   (* ReScript doesn't have parenthesized identifiers.
@@ -376,7 +385,7 @@ let printIdentLike ~allowUident txt =
              Doc.group (
                Doc.concat [
                  Doc.text "#";
-                 printIdentLike ~allowUident:true name;
+                 printPolyVarIdent name;
                  match types with
                  | [] -> Doc.nil
                  | types ->

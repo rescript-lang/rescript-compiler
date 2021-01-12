@@ -3,6 +3,11 @@ let #Shape = x
 let #\"type" = x
 let #\"test 🏚" = x
 let #\"Shape✅" = x
+let #"1" = x
+let #"123" = x
+let #"10space" = x
+
+let #space10 = x
 
 let #Shape(\"module", \"ExoticIdent") = x
 
@@ -22,5 +27,9 @@ let cmp = (selectedChoice, value) =>
   | (#...a : typ) => true
   | lazy #...a => true
   | exception #...a => true
+  | #"1" => true
+  | #"123" => true
+  | #"10space" => x
+  | #space10 => x
   | _ => false
   }

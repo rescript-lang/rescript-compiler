@@ -100,6 +100,11 @@ type shapePlus = [
   | #Triangle(point, point, point)
 ]
 let computeAreaPlus: shapePlus => float
+let computeAreaExotic: [<
+  | #Circle(point, float)
+  | #"R-Triangle+"('a, 'b, 'c)
+  | #Rectangle(point, point)
+] => unit
 let top: [> #Point(float, float)]
 let left: [> #Point(float, float)]
 let right: [> #Point(float, float)]
@@ -137,11 +142,12 @@ module type Conjunctive = {
   let f: [< #T([< u2]) & ([< u2]) & ([< u1])] => unit
   let g: [< #S & ([< u2]) & ([< u2]) & ([< u1])] => unit
 }
-type t20 = [#\"type"]
-type t21 = [#\"va r ia nt"]
-type t22 = [#\"Variant ⛰"]
+type t20 = [#"type"]
+type t21 = [#"va r ia nt"]
+type t22 = [#"Variant ⛰"]
 type \"let" = int
-type \"type" = [#\"Point🗿"(\"let", float)]
+type \"type" = [#"Point🗿"(\"let", float)]
+type t23 = [#"1" | #"10space" | #"123"]
 type exoticUser = {\"let": string, \"type": float}
 module Js = {
   module Fn = {

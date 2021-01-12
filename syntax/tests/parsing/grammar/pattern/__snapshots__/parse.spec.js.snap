@@ -528,7 +528,12 @@ let cmp selectedChoice value =
   | (#a : typ) -> true
   | (lazy #a) -> true
   | exception #a -> true
-  | _ -> false"
+  | _ -> false
+;;match polyVar with
+  | \`ease-in -> ()
+  | \`ease-out⛰ -> ()
+  | \`ease+++ (\`1Blue, \`r+) -> ()
+  | _ -> ()"
 `;
 
 exports[`record.js 1`] = `
