@@ -36,7 +36,7 @@ val question: t
 val tilde: t
 val equal: t
 val trailingComma: t
-val doubleQuote: t
+val doubleQuote: t [@@live]
 
 (*
  * `willBreak doc` checks whether `doc` contains forced line breaks.

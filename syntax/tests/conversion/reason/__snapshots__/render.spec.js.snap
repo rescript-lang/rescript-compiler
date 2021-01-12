@@ -1049,8 +1049,8 @@ exports[`gentype.re 1`] = `
   @after
   export type t
 
-  @after
-  export x: int
+  @genType @after
+  let x: int
 
   @foo
   type e = ..
@@ -1064,8 +1064,8 @@ module type MT = {
   @after
   export type t
 
-  @after
-  export x: int
+  @genType @after
+  let x: int
 
   @foo
   type e = ..
@@ -1077,7 +1077,8 @@ let x = 42
 `;
 
 exports[`gentype.rei 1`] = `
-"export x: int
+"@genType
+let x: int
 "
 `;
 

@@ -919,107 +919,16 @@ and printIncludeDescription (includeDescription: Parsetree.include_description) 
   ]
 
 and printIncludeDeclaration (includeDeclaration : Parsetree.include_declaration)  cmtTbl =
-  let isJsFfiImport = List.exists (fun attr ->
-    match attr with
-    | ({Location.txt = "ns.jsFfi"}, _) -> true
-    | _ -> false
-  ) includeDeclaration.pincl_attributes
-  in
-  if isJsFfiImport then
-    printJsFfiImportDeclaration includeDeclaration cmtTbl
-  else
-    Doc.concat [
-      printAttributes includeDeclaration.pincl_attributes cmtTbl;
-      Doc.text "include ";
-      let includeDoc =
-        printModExpr includeDeclaration.pincl_mod cmtTbl
-      in
-      if Parens.includeModExpr includeDeclaration.pincl_mod then
-        addParens includeDoc
-      else includeDoc;
-    ]
-
-and printJsFfiImport (valueDescription: Parsetree.value_description) cmtTbl =
-  let attrs = List.filter (fun attr ->
-    match attr with
-    | ({Location.txt = "bs.val" | "genType.import" | "bs.scope" }, _) -> false
-    | _ -> true
-  ) valueDescription.pval_attributes in
-  let (ident, alias) = match valueDescription.pval_prim with
-  | primitive::_ ->
-    if primitive <> valueDescription.pval_name.txt then
-      (
-        printIdentLike primitive,
-        Doc.concat [
-          Doc.text " as ";
-          printIdentLike valueDescription.pval_name.txt;
-        ]
-      )
-    else
-      (printIdentLike primitive, Doc.nil)
-  | _ ->
-    (printIdentLike valueDescription.pval_name.txt, Doc.nil)
-  in
   Doc.concat [
-    printAttributes ~loc:valueDescription.pval_name.loc attrs cmtTbl;
-    ident;
-    alias;
-    Doc.text ": ";
-    printTypExpr valueDescription.pval_type cmtTbl;
+    printAttributes includeDeclaration.pincl_attributes cmtTbl;
+    Doc.text "include ";
+    let includeDoc =
+      printModExpr includeDeclaration.pincl_mod cmtTbl
+    in
+    if Parens.includeModExpr includeDeclaration.pincl_mod then
+      addParens includeDoc
+    else includeDoc;
   ]
-
-and printJsFfiImportScope (scope: ParsetreeViewer.jsImportScope) =
-  match scope with
-  | JsGlobalImport -> Doc.nil
-  | JsModuleImport modName ->
-    Doc.concat [
-      Doc.text " from ";
-      Doc.doubleQuote;
-      Doc.text modName;
-      Doc.doubleQuote;
-    ]
-  | JsScopedImport idents ->
-    Doc.concat [
-      Doc.text " from ";
-      Doc.join ~sep:Doc.dot (List.map Doc.text idents)
-    ]
-
-and printJsFfiImportDeclaration (includeDeclaration: Parsetree.include_declaration) cmtTbl =
-  let attrs = List.filter (fun attr ->
-    match attr with
-    | ({Location.txt = "ns.jsFfi"}, _) -> false
-    | _ -> true
-  ) includeDeclaration.pincl_attributes
-  in
-  let imports = ParsetreeViewer.extractValueDescriptionFromModExpr includeDeclaration.pincl_mod in
-  let scope = match imports with
-  | vd::_ -> ParsetreeViewer.classifyJsImport vd
-  | [] -> ParsetreeViewer.JsGlobalImport
-  in
-  let scopeDoc = printJsFfiImportScope scope in
-  Doc.group (
-    Doc.concat [
-      printAttributes attrs cmtTbl;
-      Doc.text "import ";
-      Doc.group (
-        Doc.concat [
-          Doc.lbrace;
-          Doc.indent (
-            Doc.concat [
-              Doc.softLine;
-              Doc.join ~sep:(Doc.concat [Doc.comma; Doc.line]) (
-                List.map (fun vd -> printJsFfiImport vd cmtTbl) imports
-              )
-            ]
-          );
-          Doc.trailingComma;
-          Doc.softLine;
-          Doc.rbrace;
-        ]
-      );
-      scopeDoc;
-    ]
-  )
 
 and printValueBindings ~recFlag (vbs: Parsetree.value_binding list) cmtTbl =
   printListi
@@ -1032,10 +941,14 @@ and printValueDescription valueDescription cmtTbl =
   let isExternal =
     match valueDescription.pval_prim with | [] -> false | _ -> true
   in
-  let (hasGenType, attrs) = ParsetreeViewer.splitGenTypeAttr valueDescription.pval_attributes in
-  let attrs = printAttributes ~loc:valueDescription.pval_name.loc attrs cmtTbl in
+  let attrs =
+    printAttributes
+      ~loc:valueDescription.pval_name.loc
+      valueDescription.pval_attributes
+      cmtTbl
+  in
   let header =
-    if isExternal then "external " else (if hasGenType then "export " else "let ") in
+    if isExternal then "external " else "let " in
   Doc.group (
     Doc.concat [
       attrs;
@@ -1109,18 +1022,11 @@ and printTypeDeclarations ~recFlag typeDeclarations cmtTbl =
  *  | Ptype_open
  *)
 and printTypeDeclaration ~name ~equalSign ~recFlag i (td: Parsetree.type_declaration) cmtTbl =
-  let (hasGenType, attrs) = ParsetreeViewer.splitGenTypeAttr td.ptype_attributes in
-  let attrs = printAttributes ~loc:td.ptype_loc attrs cmtTbl in
+  let attrs = printAttributes ~loc:td.ptype_loc td.ptype_attributes cmtTbl in
   let prefix = if i > 0 then
-    Doc.concat [
-      Doc.text "and ";
-      if hasGenType then Doc.text "export " else Doc.nil
-    ]
+    Doc.text "and "
   else
-    Doc.concat [
-      Doc.text (if hasGenType then "export type " else "type ");
-      recFlag
-    ]
+    Doc.concat [Doc.text "type "; recFlag]
   in
   let typeName = name in
   let typeParams = printTypeParams td.ptype_params cmtTbl in

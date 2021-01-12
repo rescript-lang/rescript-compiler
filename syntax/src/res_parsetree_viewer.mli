@@ -123,15 +123,6 @@ val isBracedExpr : Parsetree.expression -> bool
 
 val isSinglePipeExpr : Parsetree.expression -> bool
 
-val extractValueDescriptionFromModExpr: Parsetree.module_expr -> Parsetree.value_description list
-
-type jsImportScope =
- | JsGlobalImport (* nothing *)
- | JsModuleImport of string (* from "path" *)
- | JsScopedImport of string list (* window.location *)
-
-val classifyJsImport: Parsetree.value_description -> jsImportScope
-
 (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
 val rewriteUnderscoreApply: Parsetree.expression -> Parsetree.expression
 

@@ -545,47 +545,6 @@ let rec isSinglePipeExpr expr = match expr.pexp_desc with
     ) when not (isSinglePipeExpr operand1) -> true
   | _ -> false
 
-let extractValueDescriptionFromModExpr modExpr =
-  let rec loop structure acc =
-    match structure with
-    | [] -> List.rev acc
-    | structureItem::structure ->
-      begin match structureItem.Parsetree.pstr_desc with
-      | Pstr_primitive vd -> loop structure (vd::acc)
-      | _ -> loop structure acc
-      end
-  in
-  match modExpr.pmod_desc with
-  | Pmod_structure structure -> loop structure []
-  | _ -> []
-
-type jsImportScope =
-  | JsGlobalImport (* nothing *)
-  | JsModuleImport of string (* from "path" *)
-  | JsScopedImport of string list (* window.location *)
-
-let classifyJsImport valueDescription =
-  let rec loop attrs =
-    let open Parsetree in
-    match attrs with
-    | [] -> JsGlobalImport
-    | ({Location.txt = "bs.scope"}, PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_constant (Pconst_string (s, _))}, _)}])::_ ->
-      JsScopedImport [s]
-    | ({Location.txt = "genType.import"}, PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_constant (Pconst_string (s, _))}, _)}])::_ ->
-      JsModuleImport s
-    | ({Location.txt = "bs.scope"}, PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_tuple exprs}, _)}])::_ ->
-      let scopes = List.fold_left (fun acc curr ->
-        match curr.Parsetree.pexp_desc with
-        | Pexp_constant (Pconst_string (s, _)) -> s::acc
-        | _ -> acc
-      ) [] exprs
-      in
-      JsScopedImport (List.rev scopes)
-    | _::attrs ->
-     loop attrs
-  in
-  loop valueDescription.pval_attributes
-
 let isUnderscoreApplySugar expr =
   match expr.pexp_desc with
   | Pexp_fun (
