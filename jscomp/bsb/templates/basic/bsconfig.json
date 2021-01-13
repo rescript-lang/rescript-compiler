@@ -4,8 +4,5 @@
   "sources": {
     "dir" : "src",
     "subdirs" : true
-  },
-  "warnings": {
-    "error" : "+101"
   }
 }

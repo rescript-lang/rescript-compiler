@@ -14412,9 +14412,6 @@ let root = ([
     \  \"sources\": {\n\
     \    \"dir\" : \"src\",\n\
     \    \"subdirs\" : true\n\
-    \  },\n\
-    \  \"warnings\": {\n\
-    \    \"error\" : \"+101\"\n\
     \  }\n\
     }\n\
     "
@@ -14439,10 +14436,9 @@ let root = ([
     }"
     );
     Dir("src",[
-     File("demo.ml",
+     File("demo.res",
      "\n\
-     \n\
-     let () = Js.log \"Hello, BuckleScript\""
+     Js.log(\"Hello, ReScript\")"
      )        
     ])        
    ]);
