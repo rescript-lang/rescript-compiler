@@ -488,9 +488,9 @@ and  pp_function ~is_method
     since it can be either [int] or [string]
 *)
 and pp_one_case_clause : 'a .
-  _ -> P.t -> (P.t -> 'a -> unit) -> 'a J.case_clause -> _
+  _ -> P.t -> (P.t -> 'a -> unit) -> ('a * J.case_clause) -> _
   = fun cxt f  pp_cond
-    ({switch_case; switch_body ; should_break; comment; } : _ J.case_clause) ->
+    (switch_case, ({switch_body ; should_break; comment; } :  J.case_clause)) ->
     let cxt =
       P.group f 1  (fun _ ->
           P.group f 1 (fun _ ->
@@ -520,7 +520,7 @@ and pp_one_case_clause : 'a .
     cxt
 
 and loop_case_clauses  :  'a . cxt ->
-  P.t -> (P.t -> 'a -> unit) -> 'a J.case_clause list -> cxt
+  P.t -> (P.t -> 'a -> unit) -> ('a * J.case_clause) list -> cxt
   = fun  cxt  f pp_cond cases ->
     Ext_list.fold_left cases cxt (fun acc x -> pp_one_case_clause acc f pp_cond x)              
 
