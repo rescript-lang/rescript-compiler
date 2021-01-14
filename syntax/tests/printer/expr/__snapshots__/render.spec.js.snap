@@ -638,8 +638,8 @@ let x =
     regainPerform()
   }
 
-let x = a && %bs.raw(\\"true\\")
-let x = a && %bs.raw(\\"true\\") && %bs.raw(\\"false\\")
+let x = a && %raw(\\"true\\")
+let x = a && %raw(\\"true\\") && %raw(\\"false\\")
 
 let x = a && module(Foo)
 let x = a && module(Foo) && module(Bar)
@@ -791,11 +791,10 @@ let () = {
 let reifyStyle = (type a, x: 'a): (style<a>, a) => {
   module Internal = {
     type rec constructor
-    @bs.val
-    external canvasGradient: constructor = \\"CanvasGradient\\" /* internal */
-    @bs.val external canvasPattern: constructor = \\"CanvasPattern\\" /* internal */
+    @val external canvasGradient: constructor = \\"CanvasGradient\\" /* internal */
+    @val external canvasPattern: constructor = \\"CanvasPattern\\" /* internal */
     let instanceOf = (
-      %bs.raw(\`function(x,y) {return +(x instanceof y)}\`): (
+      %raw(\`function(x,y) {return +(x instanceof y)}\`): (
         'a,
         constructor,
       ) => bool
@@ -1801,15 +1800,15 @@ let x = <div \\\\\\"aria-foo\\"=\\\\\\"type\\"> \\\\\\"module\\" \\\\\\"let\\" <
 
 exports[`extension.js 1`] = `
 "let x = %eval
-let node = %bs.raw(\\"0\\")
-let node = %bs.raw(@attr (\\"0\\"))
-let node = %bs.raw(@attrStructureLvl (@attrOnExpr \\"0\\"))
+let node = %raw(\\"0\\")
+let node = %raw(@attr (\\"0\\"))
+let node = %raw(@attrStructureLvl (@attrOnExpr \\"0\\"))
 
-let node = %bs.raw(
+let node = %raw(
   @attrStructureLvl @attrStructureLvl2 @attrStructureLvl3
   (@attrOnExpr \\"0\\")
 )
-let node = %bs.raw(
+let node = %raw(
   @attrStructureLvl @attrStructureLvl2 @attrStructureLvl3
   (
     @attrOnExpr @attrOnExpr2 @attrOnExpr3 @attrOnExpr4 @attrOnExpr5
@@ -1828,7 +1827,7 @@ switch %external(__DEV__) {
 | None => Js.log(\\"production mode\\")
 }
 
-let node = @attr %bs.raw(\\"0\\")
+let node = @attr %raw(\\"0\\")
 "
 `;
 
@@ -2793,7 +2792,7 @@ let x =
       open React
       React.render()
     }
-    extension=%bs.raw(\\"eval()\\")
+    extension=%raw(\\"eval()\\")
     jsObject={\\"x\\": 1, \\"y\\": 2}
     withAttr={@attr foo}
   />
@@ -2873,7 +2872,7 @@ let x =
       open React
       React.render()
     }
-    %bs.raw(\\"eval()\\")
+    %raw(\\"eval()\\")
     {\\"x\\": 1, \\"y\\": 2}
     {@attr ident}
   </div>
@@ -3255,19 +3254,19 @@ let d = #abcd
 
 external openSync: (
   path,
-  @bs.string
+  @string
   [
-    | @bs.as(\\"r\\") #Read
-    | @bs.as(\\"r+\\") #Read_write
-    | @bs.as(\\"rs+\\") #Read_write_sync
-    | @bs.as(\\"w\\") #Write
-    | @bs.as(\\"wx\\") #Write_fail_if_exists
-    | @bs.as(\\"w+\\") #Write_read
-    | @bs.as(\\"wx+\\") #Write_read_fail_if_exists
-    | @bs.as(\\"a\\") #Append
-    | @bs.as(\\"ax\\") #Append_fail_if_exists
-    | @bs.as(\\"a+\\") #Append_read
-    | @bs.as(\\"ax+\\") #Append_read_fail_if_exists
+    | @as(\\"r\\") #Read
+    | @as(\\"r+\\") #Read_write
+    | @as(\\"rs+\\") #Read_write_sync
+    | @as(\\"w\\") #Write
+    | @as(\\"wx\\") #Write_fail_if_exists
+    | @as(\\"w+\\") #Write_read
+    | @as(\\"wx+\\") #Write_read_fail_if_exists
+    | @as(\\"a\\") #Append
+    | @as(\\"ax\\") #Append_fail_if_exists
+    | @as(\\"a+\\") #Append_read
+    | @as(\\"ax+\\") #Append_read_fail_if_exists
   ],
 ) => unit = \\"openSync\\"
 "

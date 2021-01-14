@@ -67,15 +67,15 @@ type t = @attr (fooWithSuperLongIdentifierNameLooooooooooooooooooooooooooooooooo
 type t = @attr @attrWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong @attrWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong (fooWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong, barWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong, bazWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong) => @attr2 @attrWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong @attrWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong (stringWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong, floatWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong) => unit
 
 
-external debounce: (int, @bs.meth unit) => unit = "debounce";
+external debounce: (int, @meth unit) => unit = "debounce";
 
-external debounce: int => @bs.meth (unit => unit) = "debounce";
+external debounce: int => @meth (unit => unit) = "debounce";
 
-external debounce: (int, @bs.meth (unit => unit)) => @bs.meth (unit => unit) = "debounce";
+external debounce: (int, @meth (unit => unit)) => @meth (unit => unit) = "debounce";
 
-external debounce: (int, @bs.meth (unit => unit), @bs.meth (unit => unit)) => @bs.meth (unit => unit) = "debounce";
+external debounce: (int, @meth (unit => unit), @meth (unit => unit)) => @meth (unit => unit) = "debounce";
 
-external debounce: (int, @bs.meth (unit => unit), @bs.meth ( unit => @bs.meth (unit => unit))) => @bs.meth (unit => unit) = "debounce";
+external debounce: (int, @meth (unit => unit), @meth ( unit => @meth (unit => unit))) => @meth (unit => unit) = "debounce";
 
 type returnTyp = (int, int) => @magic float
 type returnTyp = (intWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong, intWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong) => @magic float
@@ -93,8 +93,8 @@ type t = (. @attr int, . @attr2 int) => unit
 type t = (. @attrOnInt int, @attrOnInt int, . @attrOnInt int, @attrOnInt int) => int
 type t = (. @attr ~x: int, ~y: int, . @attr ~z: int, @attr ~omega: int) => unit 
 
-@bs.val external requestAnimationFrame: (float => unit) => unit = "requestAnimationFrame"
-@bs.val external requestAnimationFrame: @attr (float => unit) => unit = "requestAnimationFrame"
+@val external requestAnimationFrame: (float => unit) => unit = "requestAnimationFrame"
+@val external requestAnimationFrame: @attr (float => unit) => unit = "requestAnimationFrame"
 
 type arrows = (int, (float => unit) => unit, float) => unit
 

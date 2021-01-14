@@ -24,7 +24,7 @@ exception Exit = Ns.Lib.Terminate
 `;
 
 exports[`extension.resi 1`] = `
-"%%bs.raw(\\"eval(js)\\")
+"%%raw(\\"eval(js)\\")
 
 @attr
 %%extension(payload)

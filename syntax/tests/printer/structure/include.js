@@ -6,7 +6,7 @@ include WebGl
 include (
   /* Use varargs to avoid the ReactJS warning for duplicate keys in children */
   {
-    @bs.val @bs.module("react")
+    @val @module("react")
     external createElementInternalHack: 'a = "createElement"
     @bs.send
     external apply: (

@@ -21,7 +21,7 @@ type madness = [< | #\"type" & (\"let") & (\"Super exotic") | #\"Bad Idea" ]
 let error_of_exn: exn => option<[ | #Ok(error) | #Already_displayed ]> = x
 
 external make: (
-  ~_type: @bs.string
+  ~_type: @string
   [
   | #basis
   | #basisClosed

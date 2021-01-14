@@ -1007,12 +1007,15 @@ let x = 1
 
 exports[`extension.re 1`] = `
 "// here
-%%bs.raw(\` eval(
+%%raw(\` eval(
 __gc,
 1,
 0
 )
   \`)
+
+let x = %raw(\\"10\\")
+let y = %raw(\\"20\\")
 "
 `;
 
@@ -1086,6 +1089,9 @@ exports[`jsObject.re 1`] = `
 "let component = props[\\"Component\\"]
 
 let element = props[\\"element\\"]
+
+let y = {\\"age\\": 30}
+let y = {\\"age\\": 30, \\"name\\": \\"steve\\"}
 "
 `;
 
@@ -1246,7 +1252,7 @@ module Form = %form(
     name: string,
     email: string,
     message: string,
-    @bs.as(\\"form-name\\")
+    @as(\\"form-name\\")
     formName: string,
   }
   type output = input
@@ -1324,7 +1330,9 @@ let x = 1
 `;
 
 exports[`string.re 1`] = `
-"%%bs.raw(\\"define(x.y, 'userAgent', {value: 'USER_AGENT_STRING'})\\")
+"%%raw(\\"define(x.y, 'userAgent', {value: 'USER_AGENT_STRING'})\\")
+
+%%raw(\\"define(x.y, 'userAgent', {value: 'USER_AGENT_STRING'})\\")
 
 let x = \`This is a long string with a slash and line break \\\\\\\\
 carriage return\`

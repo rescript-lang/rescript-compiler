@@ -67,7 +67,7 @@ let /* before */ module(/* h1 */ Hashtbl /* h2 */: /* h3 */ MutableTable /* h4 *
 let /* before */ exception /* c0 */ Exit /* c1 */ /* after */ = exc
 
 // Ppat_extension
-let /* before */ %bs.raw("eval(gc())") /* after */ = stuff
+let /* before */ %raw("eval(gc())") /* after */ = stuff
 
 // Ppat_interval
 let /* c0 */ 'a' .. 'z' /* c1 */ = x

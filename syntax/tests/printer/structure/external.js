@@ -1,4 +1,4 @@
-@bs.val external null: reactElement = "null";
+@val external null: reactElement = "null";
 
 external string: string => reactElement = "%identity";
 

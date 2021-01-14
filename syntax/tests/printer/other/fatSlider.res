@@ -11,7 +11,7 @@ module Range = {
     children: React.element,
   }
   
-  @bs.module("react-range") @react.component
+  @module("react-range") @react.component
   external make: (
     ~min: int,
     ~max: int,

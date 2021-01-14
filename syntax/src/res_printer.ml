@@ -1973,11 +1973,16 @@ and printPackageConstraint i cmtTbl (longidentLoc, typ) =
   ]
 
 and printExtension ~atModuleLvl (stringLoc, payload) cmtTbl =
+  let txt = match stringLoc.Location.txt with
+  | "bs.raw" -> "raw"
+  | "bs.obj" -> "obj"
+  | txt -> txt
+  in
   let extName =
     let doc = Doc.concat [
       Doc.text "%";
       if atModuleLvl then Doc.text "%" else Doc.nil;
-      Doc.text stringLoc.Location.txt;
+      Doc.text txt
     ] in
     printComments doc cmtTbl stringLoc.Location.loc
   in
@@ -2709,7 +2714,7 @@ and printExpression (e : Parsetree.expression) cmtTbl =
   | Pexp_extension extension ->
     begin match extension with
     | (
-        {txt = "bs.obj"},
+        {txt = "bs.obj" | "obj"},
         PStr [{
           pstr_loc = loc;
           pstr_desc = Pstr_eval({pexp_desc = Pexp_record (rows, _)}, [])
@@ -4730,10 +4735,34 @@ and printPayload (payload : Parsetree.payload) cmtTbl =
     ]
 
 and printAttribute ((id, payload) : Parsetree.attribute) cmtTbl =
+  let contents = match id.txt with
+  | "bs.val" -> "val"
+  | "bs.module" -> "module"
+  | "bs.scope" -> "scope"
+  | "bs.splice" | "bs.variadic" -> "variadic"
+  | "bs.set" -> "set"
+  | "bs.set_index" -> "set_index"
+  | "bs.get" -> "get"
+  | "bs.get_index" -> "get_index"
+  | "bs.new" -> "new"
+  | "bs.obj" -> "obj"
+  | "bs.return" -> "return"
+  | "bs.uncurry" -> "uncurry"
+  | "bs.this" -> "this"
+  | "bs.meth" -> "meth"
+  | "bs.deriving" -> "deriving"
+  | "bs.string" -> "string"
+  | "bs.int" -> "int"
+  | "bs.ignore" -> "ignore"
+  | "bs.unwrap" -> "unwrap"
+  | "bs.as" -> "as"
+  | "bs.optional" -> "optional"
+  | txt -> txt
+  in
   Doc.group (
     Doc.concat [
       Doc.text "@";
-      Doc.text id.txt;
+      Doc.text contents;
       printPayload payload cmtTbl
     ]
   )

@@ -36,7 +36,7 @@ include {
 
 @ns.jsFfi
 include {
-  @bs.val external document: Dom.document = \\"document\\"
+  @val external document: Dom.document = \\"document\\"
 }
 "
 `;

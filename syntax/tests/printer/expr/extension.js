@@ -1,10 +1,10 @@
 let x = %eval
-let node = %bs.raw("0")
-let node = %bs.raw(@attr "0")
-let node = %bs.raw(@attrStructureLvl (@attrOnExpr "0"))
+let node = %raw("0")
+let node = %raw(@attr "0")
+let node = %raw(@attrStructureLvl (@attrOnExpr "0"))
 
-let node = %bs.raw(@attrStructureLvl @attrStructureLvl2 @attrStructureLvl3 (@attrOnExpr "0"))
-let node = %bs.raw(
+let node = %raw(@attrStructureLvl @attrStructureLvl2 @attrStructureLvl3 (@attrOnExpr "0"))
+let node = %raw(
   @attrStructureLvl @attrStructureLvl2 @attrStructureLvl3
   (
     @attrOnExpr @attrOnExpr2 @attrOnExpr3 @attrOnExpr4 @attrOnExpr5
@@ -23,4 +23,4 @@ switch %external(__DEV__) {
 | None => Js.log("production mode")
 }
 
-let node = @attr %bs.raw("0")
+let node = @attr %raw("0")

@@ -62,27 +62,25 @@ exports[`jsFfiSugar.js 1`] = `
 "include
   struct
     external setTimeout : (unit -> unit) -> unit -> float = \\"setTimeout\\"
-    [@@bs.val ]
+    [@@val ]
   end[@@ns.jsFfi ]
 include
   struct
-    external timeout : (unit -> unit) -> unit -> float = \\"setTimeout\\"
-    [@@bs.val ]
+    external timeout : (unit -> unit) -> unit -> float = \\"setTimeout\\"[@@val ]
   end[@@ns.jsFfi ]
 include
   struct
     external setTimeout : (unit -> unit) -> unit -> float = \\"setTimeout\\"
-    [@@bs.val ]
-    external clearTimeout : float -> unit = \\"clearTimeout\\"[@@bs.val ]
+    [@@val ]
+    external clearTimeout : float -> unit = \\"clearTimeout\\"[@@val ]
   end[@@ns.jsFfi ]
 include
   struct
-    external random : unit -> float = \\"random\\"[@@bs.val ][@@bs.scope \\"Math\\"]
+    external random : unit -> float = \\"random\\"[@@val ][@@scope \\"Math\\"]
   end[@@ns.jsFfi ]
 include
   struct
-    external href : string = \\"href\\"[@@bs.val ][@@bs.scope
-                                                (\\"window\\", \\"location\\")]
+    external href : string = \\"href\\"[@@val ][@@scope (\\"window\\", \\"location\\")]
   end[@@ns.jsFfi ]
 include
   struct

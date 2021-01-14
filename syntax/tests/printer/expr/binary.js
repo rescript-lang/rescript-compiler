@@ -252,8 +252,8 @@ let x = a && lazy false && lazy true
 let x = a && {open React; killPerform()}
 let x = a && {open React; killPerform()} && {open Dom; regainPerform()}
 
-let x = a && %bs.raw("true")
-let x = a && %bs.raw("true") && %bs.raw("false")
+let x = a && %raw("true")
+let x = a && %raw("true") && %raw("false")
 
 let x = a && module(Foo)
 let x = a && module(Foo) && module(Bar)

@@ -2919,7 +2919,7 @@ and parseRecordExprWithStringKeys ~startPos firstRow p =
     Ast_helper.Exp.record ~loc rows None
   ) in
   Ast_helper.Exp.extension ~loc
-    (Location.mkloc "bs.obj" loc, Parsetree.PStr [recordStrExpr])
+    (Location.mkloc "obj" loc, Parsetree.PStr [recordStrExpr])
 
 and parseRecordExpr ~startPos ?(spread=None) rows p =
   let exprs =

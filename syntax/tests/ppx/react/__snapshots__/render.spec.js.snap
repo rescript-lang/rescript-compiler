@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`commentAtTop.res 1`] = `
-"@bs.obj
+"@obj
 external makeProps: (~msg: 'msg, ~key: string=?, unit) => {\\"msg\\": 'msg} = \\"\\" // test React JSX file
 
 let make =
@@ -17,14 +17,14 @@ let make = {
 
 exports[`externalWithCustomName.res 1`] = `
 "module Foo = {
-  @bs.obj
+  @obj
   external componentProps: (
     ~a: int,
     ~b: string,
     ~key: string=?,
     unit,
   ) => {\\"a\\": int, \\"b\\": string} = \\"\\"
-  @bs.module(\\"Foo\\")
+  @module(\\"Foo\\")
   external component: React.componentLike<
     {\\"a\\": int, \\"b\\": string},
     React.element,
@@ -40,7 +40,7 @@ let t = React.createElement(
 
 exports[`innerModule.res 1`] = `
 "module Bar = {
-  @bs.obj
+  @obj
   external makeProps: (
     ~a: 'a,
     ~b: 'b,
@@ -57,7 +57,7 @@ exports[`innerModule.res 1`] = `
       make(~b=\\\\\\"Props\\"[\\"b\\"], ~a=\\\\\\"Props\\"[\\"a\\"], ())
     \\\\\\"InnerModule$Bar\\"
   }
-  @bs.obj
+  @obj
   external componentProps: (
     ~a: 'a,
     ~b: 'b,
@@ -80,7 +80,7 @@ exports[`innerModule.res 1`] = `
 `;
 
 exports[`topLevel.res 1`] = `
-"@bs.obj
+"@obj
 external makeProps: (
   ~a: 'a,
   ~b: 'b,

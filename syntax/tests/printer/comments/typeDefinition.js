@@ -58,32 +58,32 @@ type /* c0 */ color /* c1 */ = /* before manifest */ Colour.t /* after manifest 
 }
 
 type domProps =  {
-  @bs.optional
+  @optional
   viewTarget: string,
-  @bs.optional
+  @optional
   visibility: string,
   /*width::string? =>*/
-  @bs.optional
+  @optional
   widths: string,
-  @bs.optional
+  @optional
   wordSpacing: string,
-  @bs.optional
+  @optional
   writingMode: string,
-  @bs.optional
+  @optional
   x: string,
-  @bs.optional
+  @optional
   x1: string,
 }
 
-@bs.deriving(abstract)
+@deriving(abstract)
 type t = {
   /* MDX shortnames for more advanced components */
-  @bs.as("Cite")
+  @as("Cite")
   cite: React.component<{
     "author": option<string>,
     "children": React.element,
   }>,
-  @bs.as("Info") @bs.optional
+  @as("Info") @optional
   info: React.component<props>,
 }
 

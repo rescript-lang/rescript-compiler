@@ -281,10 +281,10 @@ let x = ((let a = 1 in let b = 2 in a + b)[@ns.braces ])
 `;
 
 exports[`bsObject.js 1`] = `
-"let x = [%bs.obj { age = 30 }]
-let y = [%bs.obj { age = 30 }]
-let y = [%bs.obj { age = 30; name = \\"steve\\" }]
-let y = [%bs.obj { age = 30; name = \\"steve\\" }]
+"let x = [%obj { age = 30 }]
+let y = [%obj { age = 30 }]
+let y = [%obj { age = 30; name = \\"steve\\" }]
+let y = [%obj { age = 30; name = \\"steve\\" }]
 let x = ((\\"age\\")[@ns.braces ])
 let x = ((\\"age\\".(0))[@ns.braces ])
 let x = ((\\"age\\" |. Js.log)[@ns.braces ])

@@ -879,7 +879,7 @@ let rec walkStructure s t comments =
         attach t.trailing expr2.pexp_loc trailing
       )
     | Pexp_extension (
-        {txt = "bs.obj"},
+        {txt = "bs.obj" | "obj"},
         PStr [{
           pstr_desc = Pstr_eval({pexp_desc = Pexp_record (rows, _)}, [])
         }]

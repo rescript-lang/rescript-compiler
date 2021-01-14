@@ -39,7 +39,7 @@ let importDescr ~attrs ~scope ~importSpec ~loc = {
 }
 
 let toParsetree importDescr =
-  let bsVal = (Location.mknoloc "bs.val", Parsetree.PStr []) in
+  let bsVal = (Location.mknoloc "val", Parsetree.PStr []) in
   let attrs = match importDescr.jid_scope with
   | Global -> [bsVal]
   (* @genType.import("./MyMath"),
@@ -63,7 +63,7 @@ let toParsetree importDescr =
       Ast_helper.Str.eval expr
     in
     let bsScope = (
-      Location.mknoloc "bs.scope",
+      Location.mknoloc "scope",
       Parsetree. PStr [structureItem]
     ) in
     [bsVal; bsScope]

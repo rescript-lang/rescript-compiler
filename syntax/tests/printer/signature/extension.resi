@@ -1,4 +1,4 @@
-%%bs.raw("eval(js)")
+%%raw("eval(js)")
 
 @attr
 %%extension(payload)

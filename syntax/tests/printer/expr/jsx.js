@@ -173,7 +173,7 @@ let x =
     pack=module(Foo: Bar)
     pack={module(Foo: Bar)}
     openExpr={open React; React.render()}
-    extension=%bs.raw("eval()")
+    extension=%raw("eval()")
     jsObject={"x": 1, "y": 2} 
     withAttr={@attr foo}
  />
@@ -245,7 +245,7 @@ let x =
     {module(Foo: Bar)}
     module(Foo: Bar)
     {open React; React.render()}
-    %bs.raw("eval()")
+    %raw("eval()")
     {"x": 1, "y": 2} 
     {@attr ident} 
   </div>

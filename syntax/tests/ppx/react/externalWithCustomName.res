@@ -1,5 +1,5 @@
 module Foo = {
-  @react.component @bs.module("Foo")
+  @react.component @module("Foo")
   external component: (~a: int, ~b: string, _) => React.element = "component"
 }
 

@@ -321,6 +321,47 @@ let stringLiteralMapper stringData =
 let normalize =
   let open Ast_mapper in
   { default_mapper with
+    extension = (fun mapper ext ->
+      match ext with
+      | (id, payload) ->
+        let contents = match id.txt with
+        | "bs.raw" -> "raw"
+        | "bs.obj" -> "obj"
+        | txt -> txt
+        in
+        ({id with txt = contents}, default_mapper.payload mapper payload)
+
+    );
+    attribute = (fun mapper attr ->
+      match attr with
+      | (id, payload) ->
+        (* Reminder, keep this in sync with src/res_printer.ml *)
+        let contents = match id.txt with
+        | "bs.val" -> "val"
+        | "bs.module" -> "module"
+        | "bs.scope" -> "scope"
+        | "bs.splice" | "bs.variadic" -> "variadic"
+        | "bs.set" -> "set"
+        | "bs.set_index" -> "set_index"
+        | "bs.get" -> "get"
+        | "bs.get_index" -> "get_index"
+        | "bs.new" -> "new"
+        | "bs.obj" -> "obj"
+        | "bs.return" -> "return"
+        | "bs.uncurry" -> "uncurry"
+        | "bs.this" -> "this"
+        | "bs.meth" -> "meth"
+        | "bs.deriving" -> "deriving"
+        | "bs.string" -> "string"
+        | "bs.int" -> "int"
+        | "bs.ignore" -> "ignore"
+        | "bs.unwrap" -> "unwrap"
+        | "bs.as" -> "as"
+        | "bs.optional" -> "optional"
+        | txt -> txt
+        in
+        ({id with txt = contents}, default_mapper.payload mapper payload)
+    );
     attributes = (fun mapper attrs ->
       attrs
       |> List.filter (fun attr ->

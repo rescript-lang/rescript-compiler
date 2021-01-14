@@ -118,17 +118,17 @@ let d = #abcd
 
 external openSync: (
   path,
-  @bs.string [
-    | @bs.as("r") #Read
-    | @bs.as("r+") #Read_write
-    | @bs.as("rs+") #Read_write_sync
-    | @bs.as("w") #Write
-    | @bs.as("wx") #Write_fail_if_exists
-    | @bs.as("w+") #Write_read
-    | @bs.as("wx+") #Write_read_fail_if_exists
-    | @bs.as("a") #Append
-    | @bs.as("ax") #Append_fail_if_exists
-    | @bs.as("a+") #Append_read
-    | @bs.as("ax+") #Append_read_fail_if_exists
+  @string [
+    | @as("r") #Read
+    | @as("r+") #Read_write
+    | @as("rs+") #Read_write_sync
+    | @as("w") #Write
+    | @as("wx") #Write_fail_if_exists
+    | @as("w+") #Write_read
+    | @as("wx+") #Write_read_fail_if_exists
+    | @as("a") #Append
+    | @as("ax") #Append_fail_if_exists
+    | @as("a+") #Append_read
+    | @as("ax+") #Append_read_fail_if_exists
   ],
 ) => unit = "openSync"

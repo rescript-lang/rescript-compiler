@@ -76,25 +76,25 @@ expr
 `;
 
 exports[`extension.js 1`] = `
-"%%bs.raw(\\"__eval__gc()\\")
+"%%raw(\\"__eval__gc()\\")
 
 @attr
-%%bs.raw(\\"__eval__gc()\\")
+%%raw(\\"__eval__gc()\\")
 
 @attrStructureLvl @attrStructureLvl2 @attrStructureLvl3
-%%bs.raw(\\"__eval__gc()\\")
+%%raw(\\"__eval__gc()\\")
 
 @attrStructureLvl
 @attrStructureLvl2
 @attrStructureLvl3
 @attrStructureLvl4
 @attrStructureLvl5
-%%bs.raw(\\"__eval__gc()\\")
+%%raw(\\"__eval__gc()\\")
 "
 `;
 
 exports[`external.js 1`] = `
-"@bs.val external null: reactElement = \\"null\\"
+"@val external null: reactElement = \\"null\\"
 
 external string: string => reactElement = \\"%identity\\"
 
@@ -115,7 +115,7 @@ include WebGl
 include (
   /* Use varargs to avoid the ReactJS warning for duplicate keys in children */
   {
-    @bs.val @bs.module(\\"react\\")
+    @val @module(\\"react\\")
     external createElementInternalHack: 'a = \\"createElement\\"
     @bs.send
     external apply: (

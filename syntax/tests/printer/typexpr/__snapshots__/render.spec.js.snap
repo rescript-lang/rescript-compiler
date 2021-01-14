@@ -212,24 +212,24 @@ type t = @attr
   floatWithSuperLongIdentifierNameLoooooooooooooooooooooooooooooooooooooooooooooong,
 ) => unit
 
-external debounce: (int, @bs.meth unit) => unit = \\"debounce\\"
+external debounce: (int, @meth unit) => unit = \\"debounce\\"
 
-external debounce: int => @bs.meth (unit => unit) = \\"debounce\\"
+external debounce: int => @meth (unit => unit) = \\"debounce\\"
 
-external debounce: (int, @bs.meth (unit => unit)) => @bs.meth (unit => unit) =
+external debounce: (int, @meth (unit => unit)) => @meth (unit => unit) =
   \\"debounce\\"
 
 external debounce: (
   int,
-  @bs.meth (unit => unit),
-  @bs.meth (unit => unit),
-) => @bs.meth (unit => unit) = \\"debounce\\"
+  @meth (unit => unit),
+  @meth (unit => unit),
+) => @meth (unit => unit) = \\"debounce\\"
 
 external debounce: (
   int,
-  @bs.meth (unit => unit),
-  @bs.meth (unit => @bs.meth (unit => unit)),
-) => @bs.meth (unit => unit) = \\"debounce\\"
+  @meth (unit => unit),
+  @meth (unit => @meth (unit => unit)),
+) => @meth (unit => unit) = \\"debounce\\"
 
 type returnTyp = (int, int) => @magic float
 type returnTyp = (
@@ -260,10 +260,10 @@ type t = (
 ) => int
 type t = (. @attr ~x: int, ~y: int, . @attr ~z: int, @attr ~omega: int) => unit
 
-@bs.val
+@val
 external requestAnimationFrame: (float => unit) => unit =
   \\"requestAnimationFrame\\"
-@bs.val
+@val
 external requestAnimationFrame: @attr ((float => unit) => unit) =
   \\"requestAnimationFrame\\"
 
@@ -559,7 +559,7 @@ let t: @attrs list<{\\"age\\": int}> = x
 
 external color: @attr colour<'t> = \\"c_color\\"
 
-@bs.send @bs.return(nullable)
+@send @return(nullable)
 external getAttribute: (Js.t<'a>, string) => option<string> = \\"getAttribute\\"
 
 let dangerousHtml: string => Js.t<'a> = html => {\\"__html\\": html}
@@ -603,7 +603,7 @@ type madness = [< #\\"type\\" & (\\\\\\"let\\") & (\\\\\\"Super exotic\\") | #\\
 let error_of_exn: exn => option<[#Ok(error) | #Already_displayed]> = x
 
 external make: (
-  ~_type: @bs.string
+  ~_type: @string
   [
     | #basis
     | #basisClosed
