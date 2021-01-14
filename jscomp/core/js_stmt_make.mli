@@ -84,7 +84,7 @@ val int_switch :
   ?declaration:Lam_compat.let_kind * Ident.t -> 
   ?default:J.block -> 
   J.expression -> 
-  int J.case_clause list -> 
+  (int * J.case_clause) list -> 
   t 
 
 val string_switch : 
@@ -92,7 +92,7 @@ val string_switch :
   ?declaration:Lam_compat.let_kind * Ident.t -> 
   ?default:J.block ->
   J.expression -> 
-  string J.case_clause list ->
+  (string * J.case_clause) list ->
   t
 
 (** Just declaration without initialization *)  

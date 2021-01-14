@@ -43,7 +43,7 @@ let eval (arg : J.expression) (dispatches : (string * string) list ) : E.t =
       E.of_block
         [(S.string_switch arg
             (Ext_list.map dispatches (fun (i,r) ->
-                 {J.switch_case = i ;
+                 i, J.{
                   switch_body = [S.return_stmt (E.str r)];
                   should_break = false; (* FIXME: if true, still print break*)
                   comment = None;
@@ -71,7 +71,7 @@ let eval_as_event (arg : J.expression) (dispatches : (string * string) list opti
       
         (S.string_switch (E.poly_var_tag_access arg)
         (Ext_list.map dispatches (fun (i,r) ->
-              {J.switch_case = i ;
+              i, J.{
                switch_body = [S.return_stmt (E.str r)];
                should_break = false; (* FIXME: if true, still print break*)
                comment = None;
@@ -103,7 +103,7 @@ let eval_as_int (arg : J.expression) (dispatches : (string * int) list ) : E.t  
     E.of_block
       [(S.string_switch arg
       (Ext_list.map dispatches (fun (i,r) ->
-              {J.switch_case = i ;
+              i, J.{
                switch_body = [S.return_stmt (E.int (Int32.of_int  r))];
                should_break = false; (* FIXME: if true, still print break*)
                comment = None;

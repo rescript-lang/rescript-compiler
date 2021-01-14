@@ -305,8 +305,8 @@ and statement_desc =
     {[ goto : label option ; ]}
   *)
 
-  | Int_switch of expression * int case_clause list * block option 
-  | String_switch of expression * string case_clause list * block option 
+  | Int_switch of expression * int_clause list * block option 
+  | String_switch of expression * string_clause list * block option 
   | Throw of expression
   | Try of block * (exception_ident * block) option * block option
   | Debugger
@@ -329,9 +329,9 @@ and variable_declaration = {
   property : property;
   ident_info : ident_info;
 }
-
-and 'a case_clause = { 
-  switch_case : 'a ; 
+and string_clause = string * case_clause
+and int_clause =  int * case_clause
+and case_clause = {   
   switch_body : block ;
   should_break :  bool ;  (* true means break *)
   comment : string option ;

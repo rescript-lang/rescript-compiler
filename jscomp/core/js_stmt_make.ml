@@ -98,13 +98,13 @@ let int_switch
     ?(declaration : (J.property * Ident.t) option )
     ?(default : J.block option)
     (e : J.expression)  
-    (clauses : int J.case_clause list): t = 
+    (clauses : (int * J.case_clause) list): t = 
   match e.expression_desc with 
   | Number (Int {i; _}) -> 
     let continuation =  
       match Ext_list.find_opt clauses
-              (fun x ->
-                 if x.switch_case = Int32.to_int i then
+              (fun (switch_case,x) ->
+                 if switch_case = Int32.to_int i then
                    Some x.switch_body else None ) 
       with 
       | Some case -> case 
@@ -137,12 +137,12 @@ let string_switch
   ?(declaration : (J.property * Ident.t) option) 
   ?(default : J.block option)
   (e : J.expression)  
-  (clauses : string J.case_clause list): t= 
+  (clauses : (string * J.case_clause) list): t= 
   match e.expression_desc with 
   | Str (_,s) -> 
     let continuation = 
-      match Ext_list.find_opt clauses (fun  x ->
-                 if x.switch_case = s then 
+      match Ext_list.find_opt clauses (fun  (switch_case, x) ->
+                 if switch_case = s then 
                    Some x.switch_body
                  else None  
               ) with 

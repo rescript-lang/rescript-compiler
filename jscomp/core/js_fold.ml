@@ -47,6 +47,9 @@ class virtual fold =
         let o = o#option (fun o -> o#expression) _x_i1 in
         let o = o#property _x_i2 in let o = o#ident_info _x_i3 in o
     method tag_info : tag_info -> 'self_type = o#unknown
+    method string_clause : string_clause -> 'self_type =
+      fun (_x, _x_i1) ->
+        let o = o#string _x in let o = o#case_clause _x_i1 in o
     method statement_desc : statement_desc -> 'self_type =
       function
       | Block _x -> let o = o#block _x in o
@@ -70,10 +73,28 @@ class virtual fold =
       | Return _x -> let o = o#expression _x in o
       | Int_switch (_x, _x_i1, _x_i2) ->
           let o = o#expression _x in
+          let o = o#list (fun o -> o#int_clause) _x_i1 in
+          let o = o#option (fun o -> o#block) _x_i2 in o
+      | String_switch (_x, _x_i1, _x_i2) ->
+          let o = o#expression _x in
+          let o = o#list (fun o -> o#string_clause) _x_i1 in
+          let o = o#option (fun o -> o#block) _x_i2 in o
+      | Throw _x -> let o = o#expression _x in o
+      | Try (_x, _x_i1, _x_i2) ->
+          let o = o#block _x in
           let o =
-            o#list
-              (fun o ->
-                 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+            o#option
+              (fun o (_x, _x_i1) ->
+                 let o = o#exception_ident _x in let o = o#block _x_i1 in o)
+              _x_i1 in
+          let o = o#option (fun o -> o#block) _x_i2 in o
+      | Debugger -> o
+    method statement : statement -> 'self_type =
+      fun { statement_desc = _x; comment = _x_i1 } ->
+        let o = o#statement_desc _x in
+        let o = o#option (fun o -> o#string) _x_i1 in o
+    method required_modules : required_modules -> 'self_type =
+      (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -96,7 +117,7 @@ class virtual fold =
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-                 (* Javascript IR
+      (* Javascript IR
   
     It's a subset of Javascript AST specialized for OCaml lambda backend
 
@@ -104,15 +125,18 @@ class virtual fold =
     convention and [Block] is just a sequence of statements, which means it does 
     not introduce new scope
 *)
-                 (* TODO: it seems that camlp4of supports very limited structures
+      (* TODO: it seems that camlp4of supports very limited structures
    it does not even support attributes like `[@@@warning "-30"]
    we should get rid of such dependency ASAP
 *)
-                 (** object literal, if key is ident, in this case, it might be renamed by 
+      o#list (fun o -> o#module_id)
+    method property_name : property_name -> 'self_type = o#unknown
+    method property_map : property_map -> 'self_type =
+      (** object literal, if key is ident, in this case, it might be renamed by 
     Google Closure  optimizer,
     currently we always use quote
  *)
-                 (* Since camldot is only available for toplevel module accessors,
+      (* Since camldot is only available for toplevel module accessors,
        we don't need print  `A.length$2`
        just print `A.length` - it's guarateed to be unique
        
@@ -127,179 +151,6 @@ class virtual fold =
          Qualified (_, Runtime, Some "caml_int_compare")         
        ]}       
      *)
-                 (** where we use a trick [== null ] *) (* js true/false*)
-                 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
-     [typeof] is an operator     
-  *)
-                 (* !v *)
-                 (* TODO: Add some primitives so that [js inliner] can do a better job *)
-                 (* [int_op] will guarantee return [int32] bits 
-     https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
-                 (* | Int32_bin of int_op * expression * expression *)
-                 (* f.apply(null,args) -- Fully applied guaranteed 
-       TODO: once we know args's shape --
-       if it's know at compile time, we can turn it into
-       f(args[0], args[1], ... )
-     *)
-                 (* Analysze over J expression is hard since, 
-        some primitive  call is translated 
-        into a plain call, it's better to keep them
-    *)
-                 (* str.[i])*)
-                 (* arr.(i)
-       Invariant: 
-       The second argument has to be type of [int],
-       This can be constructed either in a static way [E.array_index_by_int] or a dynamic way 
-       [E.array_index]
-     *)
-                 (* The third argument bool indicates whether we should 
-       print it as 
-       a["idd"] -- false
-       or 
-       a.idd  -- true
-       There are several kinds of properties
-       1. OCaml module dot (need to be escaped or not)
-          All exported declarations have to be OCaml identifiers
-       2. Javascript dot (need to be preserved/or using quote)
-     *)
-                 (* TODO: option remove *)
-                 (* The first parameter by default is false, 
-     it will be true when it's a method
-  *)
-                 (* A string is UTF-8 encoded, the string may contain
-       escape sequences.
-       The first argument is used to mark it is non-pure, please
-       don't optimize it, since it does have side effec, 
-       examples like "use asm;" and our compiler may generate "error;..." 
-       which is better to leave it alone
-       The last argument is passed from as `j` from `{j||j}`
-     *)
-                 (* It is escaped string, print delimited by '"'*)
-                 (* literally raw JS code 
-  *) (* [true] means [identity] *)
-                 (* The third argument is [tag] , forth is [tag_info] *)
-                 (* | Caml_uninitialized_obj of expression * expression *)
-                 (* [tag] and [size] tailed  for [Obj.new_block] *)
-                 (* For setter, it still return the value of expression, 
-     we can not use 
-     {[
-       type 'a access = Get | Set of 'a
-     ]}
-     in another module, since it will break our code generator
-     [Caml_block_tag] can return [undefined], 
-     you have to use [E.tag] in a safe way     
-  *)
-                 (* | Caml_block_set_tag of expression * expression *)
-                 (* | Caml_block_set_length of expression * expression *)
-                 (* It will just fetch tag, to make it safe, when creating it, 
-     we need apply "|0", we don't do it in the 
-     last step since "|0" can potentially be optimized
-  *)
-                 (* pure*) (* pure *)
-                 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block
-   block can be nested, specified in ES3 
- *)
-                 (* Delay some units like [primitive] into JS layer ,
-   benefit: better cross module inlining, and smaller IR size?
- *)
-                 (* 
-  [closure] captured loop mutable values in the outer loop
-
-  check if it contains loop mutable values, happens in nested loop
-  when closured, it's no longer loop mutable value. 
-  which means the outer loop mutable value can not peek into the inner loop
-  {[
-  var i = f ();
-  for(var finish = 32; i < finish; ++i){
-  }
-  ]}
-  when [for_ident_expression] is [None], [var i] has to 
-  be initialized outside, so 
-
-  {[
-  var i = f ()
-  (function (xxx){
-  for(var finish = 32; i < finish; ++i)
-  }(..i))
-  ]}
-  This happens rare it's okay
-
-  this is because [i] has to be initialized outside, if [j] 
-  contains a block side effect
-  TODO: create such example
-*)
-                 (* Since in OCaml, 
-   
-  [for i = 0 to k end do done ]
-  k is only evaluated once , to encode this invariant in JS IR,
-  make sure [ident] is defined in the first b
-
-  TODO: currently we guarantee that [bound] was only 
-  excecuted once, should encode this in AST level
-*)
-                 (* Can be simplified to keep the semantics of OCaml
-   For (var i, e, ...){
-     let  j = ... 
-   }
-
-   if [i] or [j] is captured inside closure
-
-   for (var i , e, ...){
-     (function (){
-     })(i)
-   }
-*)
-                 (* Single return is good for ininling..
-   However, when you do tail-call optmization
-   you loose the expression oriented semantics
-   Block is useful for implementing goto
-   {[
-   xx:{
-   break xx;
-   }
-   ]}
-*)
-                 (* Function declaration and Variable declaration  *)
-                 (* check if it contains loop mutable values, happens in nested loop *)
-                 (* only used when inline a fucntion *)
-                 (* Here we need track back a bit ?, move Return to Function ...
-                              Then we can only have one Return, which is not good *)
-                 (* since in ocaml, it's expression oriented langauge, [return] in
-    general has no jumps, it only happens when we do 
-    tailcall conversion, in that case there is a jump.
-    However, currently  a single [break] is good to cover
-    our compilation strategy 
-    Attention: we should not insert [break] arbitrarily, otherwise 
-    it would break the semantics
-    A more robust signature would be 
-    {[ goto : label option ; ]}
-  *)
-                 o#case_clause (fun o -> o#int))
-              _x_i1 in
-          let o = o#option (fun o -> o#block) _x_i2 in o
-      | String_switch (_x, _x_i1, _x_i2) ->
-          let o = o#expression _x in
-          let o =
-            o#list (fun o -> o#case_clause (fun o -> o#string)) _x_i1 in
-          let o = o#option (fun o -> o#block) _x_i2 in o
-      | Throw _x -> let o = o#expression _x in o
-      | Try (_x, _x_i1, _x_i2) ->
-          let o = o#block _x in
-          let o =
-            o#option
-              (fun o (_x, _x_i1) ->
-                 let o = o#exception_ident _x in let o = o#block _x_i1 in o)
-              _x_i1 in
-          let o = o#option (fun o -> o#block) _x_i2 in o
-      | Debugger -> o
-    method statement : statement -> 'self_type =
-      fun { statement_desc = _x; comment = _x_i1 } ->
-        let o = o#statement_desc _x in
-        let o = o#option (fun o -> o#string) _x_i1 in o
-    method required_modules : required_modules -> 'self_type =
-      o#list (fun o -> o#module_id)
-    method property_name : property_name -> 'self_type = o#unknown
-    method property_map : property_map -> 'self_type =
       o#list
         (fun o (_x, _x_i1) ->
            let o = o#property_name _x in let o = o#expression _x_i1 in o)
@@ -318,6 +169,8 @@ class virtual fold =
     method kind : kind -> 'self_type = o#unknown
     method jsint : jsint -> 'self_type = o#int32
     method int_op : int_op -> 'self_type = o#unknown
+    method int_clause : int_clause -> 'self_type =
+      fun (_x, _x_i1) -> let o = o#int _x in let o = o#case_clause _x_i1 in o
     method ident_info : ident_info -> 'self_type = o#unknown
     method ident : ident -> 'self_type = o#unknown
     method for_ident_expression : for_ident_expression -> 'self_type =
@@ -362,7 +215,46 @@ class virtual fold =
           let o = o#option (fun o -> o#int32) _x_i2 in o
       | New (_x, _x_i1) ->
           let o = o#expression _x in
-          let o = o#option (fun o -> o#list (fun o -> o#expression)) _x_i1
+          let o =
+            o#option
+              (fun o -> (** where we use a trick [== null ] *)
+                 (* js true/false*)
+                 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
+     [typeof] is an operator     
+  *)
+                 (* !v *)
+                 (* TODO: Add some primitives so that [js inliner] can do a better job *)
+                 (* [int_op] will guarantee return [int32] bits 
+     https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
+                 (* | Int32_bin of int_op * expression * expression *)
+                 (* f.apply(null,args) -- Fully applied guaranteed 
+       TODO: once we know args's shape --
+       if it's know at compile time, we can turn it into
+       f(args[0], args[1], ... )
+     *)
+                 (* Analysze over J expression is hard since, 
+        some primitive  call is translated 
+        into a plain call, it's better to keep them
+    *)
+                 (* str.[i])*)
+                 (* arr.(i)
+       Invariant: 
+       The second argument has to be type of [int],
+       This can be constructed either in a static way [E.array_index_by_int] or a dynamic way 
+       [E.array_index]
+     *)
+                 (* The third argument bool indicates whether we should 
+       print it as 
+       a["idd"] -- false
+       or 
+       a.idd  -- true
+       There are several kinds of properties
+       1. OCaml module dot (need to be escaped or not)
+          All exported declarations have to be OCaml identifiers
+       2. Javascript dot (need to be preserved/or using quote)
+     *)
+                 o#list (fun o -> o#expression))
+              _x_i1
           in o
       | Var _x -> let o = o#vident _x in o
       | Fun (_x, _x_i1, _x_i2, _x_i3) ->
@@ -397,20 +289,124 @@ class virtual fold =
         let o = o#program _x in
         let o = o#required_modules _x_i1 in
         let o = o#option (fun o -> o#string) _x_i2 in o
-    method case_clause :
-      'a. ('self_type -> 'a -> 'self_type) -> 'a case_clause -> 'self_type =
-      fun _f_a
-        {
-          switch_case = _x;
-          switch_body = _x_i1;
-          should_break = _x_i2;
-          comment = _x_i3
-        } ->
-        let o = _f_a o _x in
-        let o = o#block _x_i1 in
-        let o = o#bool _x_i2 in
-        let o = o#option (fun o -> o#string) _x_i3 in o
-    method block : block -> 'self_type = (* true means break *)
+    method case_clause : case_clause -> 'self_type =
+      fun { switch_body = _x; should_break = _x_i1; comment = _x_i2 } ->
+        let o = o#block _x in
+        let o = o#bool _x_i1 in
+        let o = o#option (fun o -> o#string) _x_i2 in o
+    method block : block -> 'self_type = (* TODO: option remove *)
+      (* The first parameter by default is false, 
+     it will be true when it's a method
+  *)
+      (* A string is UTF-8 encoded, the string may contain
+       escape sequences.
+       The first argument is used to mark it is non-pure, please
+       don't optimize it, since it does have side effec, 
+       examples like "use asm;" and our compiler may generate "error;..." 
+       which is better to leave it alone
+       The last argument is passed from as `j` from `{j||j}`
+     *)
+      (* It is escaped string, print delimited by '"'*)
+      (* literally raw JS code 
+  *) (* [true] means [identity] *)
+      (* The third argument is [tag] , forth is [tag_info] *)
+      (* | Caml_uninitialized_obj of expression * expression *)
+      (* [tag] and [size] tailed  for [Obj.new_block] *)
+      (* For setter, it still return the value of expression, 
+     we can not use 
+     {[
+       type 'a access = Get | Set of 'a
+     ]}
+     in another module, since it will break our code generator
+     [Caml_block_tag] can return [undefined], 
+     you have to use [E.tag] in a safe way     
+  *)
+      (* | Caml_block_set_tag of expression * expression *)
+      (* | Caml_block_set_length of expression * expression *)
+      (* It will just fetch tag, to make it safe, when creating it, 
+     we need apply "|0", we don't do it in the 
+     last step since "|0" can potentially be optimized
+  *)
+      (* pure*) (* pure *)
+      (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block
+   block can be nested, specified in ES3 
+ *)
+      (* Delay some units like [primitive] into JS layer ,
+   benefit: better cross module inlining, and smaller IR size?
+ *)
+      (* 
+  [closure] captured loop mutable values in the outer loop
+
+  check if it contains loop mutable values, happens in nested loop
+  when closured, it's no longer loop mutable value. 
+  which means the outer loop mutable value can not peek into the inner loop
+  {[
+  var i = f ();
+  for(var finish = 32; i < finish; ++i){
+  }
+  ]}
+  when [for_ident_expression] is [None], [var i] has to 
+  be initialized outside, so 
+
+  {[
+  var i = f ()
+  (function (xxx){
+  for(var finish = 32; i < finish; ++i)
+  }(..i))
+  ]}
+  This happens rare it's okay
+
+  this is because [i] has to be initialized outside, if [j] 
+  contains a block side effect
+  TODO: create such example
+*)
+      (* Since in OCaml, 
+   
+  [for i = 0 to k end do done ]
+  k is only evaluated once , to encode this invariant in JS IR,
+  make sure [ident] is defined in the first b
+
+  TODO: currently we guarantee that [bound] was only 
+  excecuted once, should encode this in AST level
+*)
+      (* Can be simplified to keep the semantics of OCaml
+   For (var i, e, ...){
+     let  j = ... 
+   }
+
+   if [i] or [j] is captured inside closure
+
+   for (var i , e, ...){
+     (function (){
+     })(i)
+   }
+*)
+      (* Single return is good for ininling..
+   However, when you do tail-call optmization
+   you loose the expression oriented semantics
+   Block is useful for implementing goto
+   {[
+   xx:{
+   break xx;
+   }
+   ]}
+*)
+      (* Function declaration and Variable declaration  *)
+      (* check if it contains loop mutable values, happens in nested loop *)
+      (* only used when inline a fucntion *)
+      (* Here we need track back a bit ?, move Return to Function ...
+                              Then we can only have one Return, which is not good *)
+      (* since in ocaml, it's expression oriented langauge, [return] in
+    general has no jumps, it only happens when we do 
+    tailcall conversion, in that case there is a jump.
+    However, currently  a single [break] is good to cover
+    our compilation strategy 
+    Attention: we should not insert [break] arbitrarily, otherwise 
+    it would break the semantics
+    A more robust signature would be 
+    {[ goto : label option ; ]}
+  *)
+      (* true means break *)
       (* TODO: For efficency: block should not be a list, it should be able to 
    be concatenated in both ways 
  *)
