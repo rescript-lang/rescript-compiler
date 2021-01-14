@@ -1,0 +1,2 @@
+
+Js.log("Hello, ReScript")

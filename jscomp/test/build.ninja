@@ -168,6 +168,8 @@ o test/epsilon_test.cmi test/epsilon_test.cmj : cc test/epsilon_test.ml | test/m
 o test/equal_box_test.cmi test/equal_box_test.cmj : cc test/equal_box_test.ml | test/mt.cmj $stdlib
 o test/equal_exception_test.cmi test/equal_exception_test.cmj : cc test/equal_exception_test.ml | test/mt.cmj $stdlib
 o test/equal_test.cmi test/equal_test.cmj : cc test/equal_test.ml | $stdlib
+o test/es6_export.cmi test/es6_export.cmj : cc test/es6_export.ml | $stdlib
+o test/es6_import.cmi test/es6_import.cmj : cc test/es6_import.ml | test/es6_export.cmj $stdlib
 o test/es6_module_test.cmi test/es6_module_test.cmj : cc test/es6_module_test.ml | test/mt.cmj $stdlib
 o test/escape_esmodule.cmi test/escape_esmodule.cmj : cc test/escape_esmodule.ml | $stdlib
 o test/esmodule_ref.cmi test/esmodule_ref.cmj : cc test/esmodule_ref.ml | test/escape_esmodule.cmj $stdlib
