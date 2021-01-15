@@ -44,13 +44,16 @@ external isCamlExceptionOrOpenVariant:
 (** internal use only *)
 
 val anyToExnInternal: 'a -> exn
-(** [unsafeAnyToExn obj] will take any value [obj] and wrap it
+(**
+ * [anyToExnInternal obj] will take any value [obj] and wrap it
  * in a Js.Exn.Error if given value is not an exn already. If
  * [obj] is an exn, it will return [obj] without any changes. 
  *
  * This function is mostly useful for cases where you want to unify a type of a value
  * that potentially is either exn, a JS error, or any other JS value really (e.g. for 
  * a value passed to a Promise.catch callback) 
+ *
+ * IMPORTANT: This is an internal API and may be changed / removed any time in the future.
  *
  * @example {[
  *   switch (Js.Exn.unsafeAnyToExn("test")) {
