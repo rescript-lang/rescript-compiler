@@ -43,7 +43,7 @@ external isCamlExceptionOrOpenVariant:
   'a -> bool = "caml_is_extension"
 (** internal use only *)
 
-val unsafeAnyToExn : 'a -> exn
+val anyToExnInternal: 'a -> exn
 (** [unsafeAnyToExn obj] will take any value [obj] and wrap it
  * in a Js.Exn.Error if given value is not an exn already. If
  * [obj] is an exn, it will return [obj] without any changes. 
