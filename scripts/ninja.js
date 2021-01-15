@@ -31,38 +31,6 @@ var stdlibTarget = pseudoTarget("$stdlib");
 var vendorNinjaPath = path.join(__dirname, "..", process.platform, "ninja.exe");
 
 exports.vendorNinjaPath = vendorNinjaPath;
-var visitorPattern = `
-rule p4of
-    command = camlp4of $flags -impl $in -printer o -o $out
-    generator = true
-o core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml
-    flags = -I core -filter map -filter trash
-o core/js_map.ml: p4of core/js_map.mlp | core/j.ml
-    flags = -I core -filter Camlp4FoldGenerator -filter trash
-`;
-/**
- * @returns {boolean}
- */
-function hasCamlp4() {
-  // console.log(`camlp4of ${process.env.PATH}`)
-  try {
-    console.log(cp.execSync(`camlp4of -v`, { encoding: "ascii" }));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-/**
- * @returns {string}
- */
-function generateVisitorPattern() {
-  if (hasCamlp4()) {
-    return visitorPattern;
-  } else {
-    console.warn(`camlp4of ignored`);
-    return ``;
-  }
-}
 /**
  * By default we use vendored,
  * we produce two ninja files which won't overlap
@@ -1609,7 +1577,13 @@ o stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a
     ml = stubs/bs_hash_stubs.cmx
     clib = stubs/libbs_hash.a
 
-${generateVisitorPattern()}
+rule p4of
+    command = node ../ocaml-tree/wasm.js $flags -i $i -o $out
+    generator = true
+o core/js_fold.ml: p4of core/j.ml
+    flags = -fold
+o core/js_map.ml: p4of core/j.ml
+    flags = -map    
 
 o common/bs_version.ml : mk_bsversion build_version.js ../package.json
 

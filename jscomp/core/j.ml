@@ -38,10 +38,7 @@
     not introduce new scope
 *)
 
-(* TODO: it seems that camlp4of supports very limited structures
-   it does not even support attributes like `[@@@warning "-30"]
-   we should get rid of such dependency ASAP
-*)
+
 
 type label = string
 

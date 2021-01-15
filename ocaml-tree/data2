@@ -1,0 +1,3 @@
+type inline = 
+    | A of { x : int }
+    | B of int
