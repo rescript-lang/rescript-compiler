@@ -180,10 +180,10 @@ let mark_dead_code (js : J.program) : J.program =
     ]}
 
 *) 
-let subst_map () = object (self)
+let subst_map (substitution : J.expression Hash_ident.t) = object (self)
   inherit Js_map.map as super
 
-  val  substitution :  J.expression Hash_ident.t= Hash_ident.create 17 
+
 
 
 
@@ -288,7 +288,7 @@ end
 
 let program  (js : J.program) = 
   js 
-  |> (subst_map () )#program
+  |> (subst_map (Hash_ident.create 32) )#program
   |> mark_dead_code
   (* |> mark_dead_code *)
   (* mark dead code twice does have effect in some cases, however, we disabled it 
