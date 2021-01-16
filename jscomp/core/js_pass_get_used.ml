@@ -22,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let add_use stats id = 
+  Hash_ident.add_or_update stats id 1 ~update:succ 
 
 (** Update ident info use cases, it is a non pure function, 
     it will annotate [program] with some meta data
@@ -37,8 +39,6 @@ let count_collects my_export_set =
     (* collect all def sites *)
     val defined_idents : J.variable_declaration Hash_ident.t = Hash_ident.create 83
 
-    method add_use id = 
-      Hash_ident.add_or_update stats id 1 ~update:succ 
     method! variable_declaration 
         ({ident; value ; property = _ ; ident_info = _}  as v)
       =  
@@ -48,7 +48,7 @@ let count_collects my_export_set =
         self
       | Some x
         -> self#expression x 
-    method! ident id = self#add_use id; self
+    method! ident id = add_use stats id; self
     method get_stats = 
       Hash_ident.iter defined_idents (fun ident v  -> 
           if Set_ident.mem my_export_set ident then 
