@@ -29,21 +29,16 @@
     since in this case it can not be global?  
 
 *)
-let count_collects () = 
+let count_collects my_export_set = 
   object (self)
-    inherit Js_fold.fold as super
+    inherit Js_fold.fold 
     (* collect used status*)
     val stats : int Hash_ident.t = Hash_ident.create 83
     (* collect all def sites *)
     val defined_idents : J.variable_declaration Hash_ident.t = Hash_ident.create 83
 
-    val mutable my_export_set  : Set_ident.t = Set_ident.empty
-
     method add_use id = 
       Hash_ident.add_or_update stats id 1 ~update:succ 
-    method! program x = 
-      my_export_set <- x.export_set ; 
-      super#program x
     method! variable_declaration 
         ({ident; value ; property = _ ; ident_info = _}  as v)
       =  
@@ -76,5 +71,5 @@ let count_collects () =
 
 
 let get_stats (program : J.program) : J.variable_declaration Hash_ident.t
-  =  ((count_collects ()) #program program) #get_stats
+  =  ((count_collects program.export_set) #program program) #get_stats
  
