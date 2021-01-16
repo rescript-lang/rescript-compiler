@@ -27,10 +27,9 @@
 
 let add_lam_module_ident = Lam_module_ident.Hash_set.add
 let create = Lam_module_ident.Hash_set.create
-class count_hard_dependencies = 
+class count_hard_dependencies hard_dependencies = 
   object(self : 'self_type)
     inherit  Js_fold.fold as super
-    val hard_dependencies =  create 17
     method! module_id vid = 
         add_lam_module_ident  hard_dependencies vid; self
     method! expression x : 'self_type  = 
@@ -42,11 +41,12 @@ class count_hard_dependencies =
               id)
        | _ -> ());
       super#expression x
-    method get_hard_dependencies = hard_dependencies
   end
 
 let calculate_hard_dependencies block = 
-  ((new count_hard_dependencies)#block block) # get_hard_dependencies
+  let hard_dependencies = create 17 in   
+  let _ : Js_fold.fold = (new count_hard_dependencies hard_dependencies)#block block in 
+  hard_dependencies
 
 (*
    Given a set of [variables], count which variables  [lam] will depend on
