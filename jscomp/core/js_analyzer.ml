@@ -43,6 +43,8 @@ let free_variables used_idents defined_idents =
     inherit Js_fold.fold as super
     val defined_idents = defined_idents
     val used_idents = used_idents 
+    method get_depenencies = 
+      Set_ident.diff used_idents defined_idents
     method! variable_declaration st = 
       match st with 
       | { ident; value = None}
@@ -68,11 +70,6 @@ let free_variables used_idents defined_idents =
       | _
         ->
         super#expression exp
-
-    method get_depenencies = 
-      Set_ident.diff used_idents defined_idents
-    method get_used_idents = used_idents
-    method get_defined_idents = defined_idents 
   end 
 
 let free_variables_of_statement used_idents defined_idents st = 
