@@ -130,33 +130,33 @@ and no_side_effect (x : J.expression)  =
 
 let no_side_effect_expression (x : J.expression) = no_side_effect x 
 
-let no_side_effect clean = 
+let no_side_effect clean : Js_fold.fold = 
   object (self)
     inherit Js_fold.fold as super
-    val no_side_effect = clean
-    method get_no_side_effect = no_side_effect
-
     method! statement s = 
-      if not no_side_effect then self else 
+      if not !clean then self else 
         match s.statement_desc with 
         | Throw _ 
         | Debugger 
         | Break 
         | Variable _ 
         | Continue _ ->  
-          {< no_side_effect = false>}
+          clean := false ; self
         | Exp e -> self#expression e 
         | Int_switch _ | String_switch _ | ForRange _ 
         | If _ | While _   | Block _ | Return _ | Try _  -> super#statement s 
     method! list f x = 
-      if not self#get_no_side_effect then self else super#list f x 
+      if not !clean then self else super#list f x 
     method! expression s = 
-      if not no_side_effect then self
-      else  {< no_side_effect = no_side_effect_expression s >}
-
+      (if !clean then 
+        clean := no_side_effect_expression s); 
+      self 
     (** only expression would cause side effec *)
   end
-let no_side_effect_statement st = ((no_side_effect true)#statement st)#get_no_side_effect
+let no_side_effect_statement st = 
+  let clean = ref true in   
+  let _ : Js_fold.fold  = ((no_side_effect clean)#statement st) in 
+  !clean
 
 (* TODO: generate [fold2] 
    This make sense, for example:
