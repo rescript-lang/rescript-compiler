@@ -27,7 +27,7 @@
 
 let add_lam_module_ident = Lam_module_ident.Hash_set.add
 let create = Lam_module_ident.Hash_set.create
-class count_hard_dependencies hard_dependencies = 
+let count_hard_dependencies hard_dependencies = 
   object(self : 'self_type)
     inherit  Js_fold.fold as super
     method! module_id vid = 
@@ -45,7 +45,7 @@ class count_hard_dependencies hard_dependencies =
 
 let calculate_hard_dependencies block = 
   let hard_dependencies = create 17 in   
-  let _ : Js_fold.fold = (new count_hard_dependencies hard_dependencies)#block block in 
+  let _ : Js_fold.fold = (count_hard_dependencies hard_dependencies)#block block in 
   hard_dependencies
 
 (*
