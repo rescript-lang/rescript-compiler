@@ -130,10 +130,10 @@ and no_side_effect (x : J.expression)  =
 
 let no_side_effect_expression (x : J.expression) = no_side_effect x 
 
-let no_side_effect init = 
+let no_side_effect clean = 
   object (self)
     inherit Js_fold.fold as super
-    val no_side_effect = init
+    val no_side_effect = clean
     method get_no_side_effect = no_side_effect
 
     method! statement s = 
