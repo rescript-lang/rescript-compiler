@@ -183,7 +183,7 @@ let mark_dead_code (js : J.program) : J.program =
 let subst_map () = object (self)
   inherit Js_map.map as super
 
-  val mutable substitution :  J.expression Hash_ident.t= Hash_ident.create 17 
+  val  substitution :  J.expression Hash_ident.t= Hash_ident.create 17 
 
   method get_substitution = substitution
 
