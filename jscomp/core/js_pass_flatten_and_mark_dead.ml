@@ -185,7 +185,7 @@ let subst_map () = object (self)
 
   val  substitution :  J.expression Hash_ident.t= Hash_ident.create 17 
 
-  method get_substitution = substitution
+
 
   method add_substitue (ident : Ident.t) (e:J.expression) = 
     Hash_ident.replace  substitution ident e
@@ -264,7 +264,7 @@ let subst_map () = object (self)
               {expression_desc = Number (Int {i; _})})
     | Static_index ({expression_desc = Var (Id (id))}, _, Some i)          
      -> 
-      (match Hash_ident.find_opt self#get_substitution id with 
+      (match Hash_ident.find_opt substitution id with 
        | Some {expression_desc = Caml_block (ls, Immutable, _, _) } 
          -> 
          (* user program can be wrong, we should not 
