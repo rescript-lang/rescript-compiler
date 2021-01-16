@@ -52,7 +52,7 @@ let count_collects
   (* collect used status*)
   (stats : int Hash_ident.t)
   (* collect all def sites *)
-  (defined_idents : J.variable_declaration Hash_ident.t)
+  (defined_idents : J.variable_declaration Hash_ident.t) : Js_fold.fold
    = 
   object (self)
     inherit Js_fold.fold 

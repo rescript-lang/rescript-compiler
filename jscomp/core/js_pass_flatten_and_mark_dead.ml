@@ -43,7 +43,7 @@ type meta_info =
 let mark_dead_code (js : J.program) : J.program = 
   let ident_use_stats : meta_info Hash_ident.t
     = Hash_ident.create 17 in 
-  let mark_dead = object (self)
+  let mark_dead  : Js_fold.fold = object (self)
     inherit Js_fold.fold 
     method! ident ident = 
       (match Hash_ident.find_opt ident_use_stats ident with
