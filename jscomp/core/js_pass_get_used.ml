@@ -24,21 +24,39 @@
 
 let add_use stats id = 
   Hash_ident.add_or_update stats id 1 ~update:succ 
-
+let post_process_stats my_export_set (defined_idents : J.variable_declaration Hash_ident.t) stats =
+  Hash_ident.iter defined_idents (fun ident v  -> 
+      if Set_ident.mem my_export_set ident then 
+        Js_op_util.update_used_stats v.ident_info Exported
+      else 
+        let pure = 
+          match v.value  with 
+          | None -> false  (* can not happen *)
+          | Some x -> Js_analyzer.no_side_effect_expression x in
+        match Hash_ident.find_opt stats ident with 
+        | None -> 
+          Js_op_util.update_used_stats v.ident_info 
+            (if pure then Dead_pure else Dead_non_pure)
+        | Some num -> 
+          if num = 1 then 
+            Js_op_util.update_used_stats v.ident_info 
+              (if pure then Once_pure else Used) 
+    ) ; defined_idents  
 (** Update ident info use cases, it is a non pure function, 
     it will annotate [program] with some meta data
     TODO: Ident Hash could be improved, 
     since in this case it can not be global?  
 
 *)
-let count_collects my_export_set = 
+let count_collects 
+  (* collect used status*)
+  (stats : int Hash_ident.t)
+  (* collect all def sites *)
+  (defined_idents : J.variable_declaration Hash_ident.t)
+   = 
   object (self)
     inherit Js_fold.fold 
-    (* collect used status*)
-    val stats : int Hash_ident.t = Hash_ident.create 83
-    (* collect all def sites *)
-    val defined_idents : J.variable_declaration Hash_ident.t = Hash_ident.create 83
-
+  
     method! variable_declaration 
         ({ident; value ; property = _ ; ident_info = _}  as v)
       =  
@@ -49,27 +67,14 @@ let count_collects my_export_set =
       | Some x
         -> self#expression x 
     method! ident id = add_use stats id; self
-    method get_stats = 
-      Hash_ident.iter defined_idents (fun ident v  -> 
-          if Set_ident.mem my_export_set ident then 
-            Js_op_util.update_used_stats v.ident_info Exported
-          else 
-            let pure = 
-              match v.value  with 
-              | None -> false  (* can not happen *)
-              | Some x -> Js_analyzer.no_side_effect_expression x in
-            match Hash_ident.find_opt stats ident with 
-            | None -> 
-              Js_op_util.update_used_stats v.ident_info 
-                (if pure then Dead_pure else Dead_non_pure)
-            | Some num -> 
-              if num = 1 then 
-                Js_op_util.update_used_stats v.ident_info 
-                  (if pure then Once_pure else Used) 
-        ) ; defined_idents
+
   end
 
 
 let get_stats (program : J.program) : J.variable_declaration Hash_ident.t
-  =  ((count_collects program.export_set) #program program) #get_stats
- 
+  =      
+  let stats : int Hash_ident.t = Hash_ident.create 83 in   
+  let defined_idents : J.variable_declaration Hash_ident.t = Hash_ident.create 83 in
+  let my_export_set =  program.export_set in 
+  let _ : Js_fold.fold = (count_collects stats defined_idents) #program program in 
+  post_process_stats my_export_set defined_idents stats 
