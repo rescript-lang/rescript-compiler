@@ -32,34 +32,7 @@
 module E = Js_exp_make
 module S = Js_stmt_make
 
-(* class count  var = object (self : 'self)
-  val mutable appears = 0
-  inherit Js_fold.fold as super
-  method! ident  x =
-    (if Ident.same x var then
-      appears <- appears + 1); 
-    self
-  method get_appears = appears 
-end *)
 
-(* rewrite return for current block, but don't go into
-   inner function, mostly for inlinning
- *)
-(* class rewrite_return ?return_value ()=
-  let mk_return  = 
-    match return_value with 
-    | None -> fun e -> S.exp e 
-    | Some ident -> fun e -> 
-      S.define_variable ~kind:Variable ident e in
-  object (self : 'self)
-    inherit Js_map.map as super
-    method! statement x =
-      match x.statement_desc with 
-      | Return {return_value = e} -> 
-          mk_return e 
-      | _ -> super#statement x 
-    method! expression x = x (* don't go inside *)
-  end   *)
 
 type meta_info =   
   | Info of J.ident_info 

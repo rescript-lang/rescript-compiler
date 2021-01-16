@@ -24,29 +24,6 @@
 
 
 
-(* class count_deps (add : Ident.t -> unit )  = 
-  object(self)
-    inherit  Js_fold.fold as super
-    method! expression lam = 
-      match lam.expression_desc with 
-      | Fun (_, _, block, _) -> self#block block
-      (** Call 
-          actually depends on parameter, 
-          since closure 
-          {[
-            n = n - 1
-                    acc = () => n 
-          ]}
-          should be 
-
-          {[
-            acc = (function (n) {() => n} (n))
-              n = n - 1
-          ]}
-      *)
-      | _ -> super#expression lam
-    method! ident x = add x ; self
-  end *)
 
 let add_lam_module_ident = Lam_module_ident.Hash_set.add
 let create = Lam_module_ident.Hash_set.create
