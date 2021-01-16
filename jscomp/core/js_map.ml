@@ -31,7 +31,6 @@ method exports : exports -> exports = o#unknown
 method tag_info : tag_info -> tag_info = o#unknown  
 method required_modules : required_modules -> required_modules = o#list (fun o -> o#module_id)  
 method property_name : property_name -> property_name = o#unknown  
-method jsint : jsint -> jsint = o#int32  
 method ident : ident -> ident = o#unknown  
 method module_id : module_id -> module_id = fun { id = _x0;kind = _x1} -> let _x0 = o#ident _x0 in
 let _x1 = o#unknown _x1 in {id = _x0;kind = _x1}  

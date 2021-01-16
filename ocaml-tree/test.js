@@ -49,7 +49,9 @@ var nodeFormatter = {
 // visual(new Node('hi','test',[1,2,3]),nodeFormatter) works
 
 var fs = require("fs");
-var y = p.parse(fs.readFileSync("j.ml", "utf8"));
+var path = require("path");
+var j_dir = path.join(__dirname, "..", "jscomp", "core");
+var y = p.parse(fs.readFileSync(path.join(j_dir, "j.ml"), "utf8"));
 
 /**
  * mutual recursive types
@@ -63,5 +65,6 @@ globalThis.devtoolsFormatters.push(nodeFormatter);
 
 var map_maker = require("./map_maker");
 var fold_maker = require("./fold_maker");
-fs.writeFileSync("js_fold.ml", fold_maker.make(typedefs), "utf8");
-fs.writeFileSync("js_map.ml", map_maker.make(typedefs), "utf8");
+var fold = fold_maker.make(typedefs);
+var map = map_maker.make(typedefs);
+console.log(fold, map);
