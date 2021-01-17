@@ -35,7 +35,13 @@ let addBraces doc =
   Doc.group (
     Doc.concat [
       Doc.lbrace;
-      doc;
+      Doc.indent (
+        Doc.concat [
+          Doc.softLine;
+          doc;
+        ]
+      );
+      Doc.softLine;
       Doc.rbrace;
     ]
   )
@@ -45,6 +51,12 @@ let getFirstLeadingComment tbl loc =
   | comment::_ -> Some comment
   | [] -> None
   | exception Not_found -> None
+
+(* Checks if `loc` has a leading line comment, i.e. `// comment above`*)
+let hasLeadingLineComment tbl loc =
+  match getFirstLeadingComment tbl loc with
+  | Some comment -> Comment.isSingleLineComment comment
+  | None -> false
 
 let printMultilineCommentContent txt =
   (* Turns
@@ -3809,12 +3821,17 @@ and printJsxFragment expr cmtTbl =
 and printJsxChildren (children: Parsetree.expression list) cmtTbl =
   Doc.group (
     Doc.join ~sep:Doc.line (
-      List.map (fun expr ->
+      List.map (fun (expr : Parsetree.expression) ->
+        let leadingLineCommentPresent = hasLeadingLineComment cmtTbl expr.pexp_loc in
         let exprDoc = printExpressionWithComments expr cmtTbl in
         match Parens.jsxChildExpr expr with
         | Parenthesized | Braced _ ->
           (* {(20: int)} make sure that we also protect the expression inside *)
-          addBraces (if Parens.bracedExpr expr then addParens exprDoc else exprDoc)
+          let innerDoc = if Parens.bracedExpr expr then addParens exprDoc else exprDoc in
+          if leadingLineCommentPresent then
+            addBraces innerDoc
+          else
+            Doc.concat [Doc.lbrace; innerDoc; Doc.rbrace]
         | Nothing -> exprDoc
       ) children
     )
@@ -3902,11 +3919,16 @@ and printJsxProp arg cmtTbl =
     | Nolabel -> Doc.nil
     in
     let exprDoc =
-      let doc = printExpression expr cmtTbl in
+      let leadingLineCommentPresent = hasLeadingLineComment cmtTbl expr.pexp_loc in
+      let doc = printExpressionWithComments expr cmtTbl in
       match Parens.jsxPropExpr expr with
       | Parenthesized | Braced(_) ->
         (* {(20: int)} make sure that we also protect the expression inside *)
-        addBraces (if Parens.bracedExpr expr then addParens doc else doc)
+        let innerDoc = if Parens.bracedExpr expr then addParens doc else doc in
+        if leadingLineCommentPresent then
+          addBraces innerDoc
+        else
+          Doc.concat [Doc.lbrace; innerDoc; Doc.rbrace]
       | _ -> doc
     in
     let fullLoc = {argLoc with loc_end = expr.pexp_loc.loc_end} in

@@ -284,3 +284,35 @@ module App = {
     <> <div /> </>
   }
 }
+
+// leading line comment on rhs jsx prop should indent nicely
+<ContributorsRow
+  amount={
+    // ->BN.new_("86400")
+    // There are 86400 seconds in a day.
+    amount->BN.div(BN.new_("86400"))->BN.toString
+  }
+/>
+
+// leading line comment on rhs jsx prop should indent nicely
+<ContributorsRow
+  amount={
+    // There are 86400 seconds in a day.
+    compute(amount)
+  }
+/>
+
+// leading line comment on braced children should indent nicely
+<div>
+  {// comment
+    content
+  }
+
+  { // comment
+    if condition() {
+      renderBranch()
+    } else {
+      doSomeOtherThings()
+    }
+  }
+</div>
