@@ -65,6 +65,9 @@ globalThis.devtoolsFormatters.push(nodeFormatter);
 
 var map_maker = require("./map_maker");
 var fold_maker = require("./fold_maker");
+var iter_maker = require("./iter_maker");
 var fold = fold_maker.make(typedefs);
 var map = map_maker.make(typedefs);
-console.log(fold, map);
+var iter = iter_maker.make(typedefs);
+// console.log(fold, map);
+fs.writeFileSync(path.join(j_dir, "js_iter.ml"), iter, "utf8");

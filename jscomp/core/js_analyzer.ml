@@ -44,21 +44,21 @@ let add_defined_idents (x : idents_stats) ident =
    Note such shaking is done in the toplevel, so that it requires us to 
    flatten the statement first 
 *)
-let free_variables (stats : idents_stats) : Js_fold.fold = 
+let free_variables (stats : idents_stats) : Js_iter.iter = 
   object (self)
-    inherit Js_fold.fold as super
+    inherit Js_iter.iter as super
     method! variable_declaration st = 
       add_defined_idents stats st.ident; 
       match st.value with 
       |  None
-        ->  self
+        ->  ()
       | Some v
         -> 
         self # expression v
     method! ident id = 
       (if not (Set_ident.mem stats.defined_idents id )then 
-         stats.used_idents <- Set_ident.add stats.used_idents id); 
-      self
+         stats.used_idents <- Set_ident.add stats.used_idents id)
+
     method! expression exp = 
       match exp.expression_desc with
       | Fun(_, _,_, env)
@@ -67,8 +67,8 @@ let free_variables (stats : idents_stats) : Js_fold.fold =
         *)
         ->
         stats.used_idents <-
-          Set_ident.union (Js_fun_env.get_unbounded env) stats.used_idents;
-        self 
+          Set_ident.union (Js_fun_env.get_unbounded env) stats.used_idents
+
 
       | _
         ->

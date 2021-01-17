@@ -194,6 +194,7 @@
 ../lib/4.06.1/whole_compiler.ml: ./core/js_fun_env.mli
 ../lib/4.06.1/whole_compiler.ml: ./core/js_implementation.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/js_implementation.mli
+../lib/4.06.1/whole_compiler.ml: ./core/js_iter.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/js_long.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/js_long.mli
 ../lib/4.06.1/whole_compiler.ml: ./core/js_map.ml
