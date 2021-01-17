@@ -735,3 +735,53 @@ let isBinaryOp src startCnum endCnum =
       c == CharacterCodes.eof
     in
     leftOk && rightOk
+
+(* Assume `{` consumed, advances the scanner towards the ends of Reason quoted strings. (for conversion)
+ * In {| foo bar |} the scanner will be advanced until after the `|}` *)
+let tryAdvanceQuotedString scanner =
+  let rec scanContents tag () =
+    if scanner.ch == CharacterCodes.eof then (
+      ()
+    ) else if scanner.ch == CharacterCodes.bar then (
+      next scanner;
+      if CharacterCodes.Lower.a <= scanner.ch && scanner.ch <= CharacterCodes.Lower.z then (
+        let startOff = scanner.offset in
+        while CharacterCodes.Lower.a <= scanner.ch && scanner.ch <= CharacterCodes.Lower.z do
+          next scanner
+        done;
+        let suffix = Bytes.sub_string scanner.src startOff (scanner.offset - startOff) in
+        if tag = suffix then (
+          if scanner.ch = CharacterCodes.rbrace then
+            next scanner
+          else
+            scanContents tag ()
+        ) else
+          scanContents tag ()
+      ) else if CharacterCodes.rbrace = scanner.ch then (
+        next scanner
+      ) else (
+        scanContents tag ()
+      )
+    ) else (
+      if CharacterCodes.isLineBreak scanner.ch then (
+        scanner.lineOffset <- scanner.offset + 1;
+        scanner.lnum <- scanner.lnum + 1;
+      );
+      next scanner;
+      scanContents tag ()
+    )
+  in
+  if CharacterCodes.Lower.a <= scanner.ch && scanner.ch <= CharacterCodes.Lower.z then (
+    let startOff = scanner.offset in
+    while CharacterCodes.Lower.a <= scanner.ch && scanner.ch <= CharacterCodes.Lower.z do
+      next scanner
+    done;
+    let tag = Bytes.sub_string scanner.src startOff (scanner.offset - startOff) in
+    if scanner.ch = CharacterCodes.bar then
+      scanContents tag ()
+    else
+      ()
+  ) else if scanner.ch = CharacterCodes.bar then
+    scanContents "" ()
+  else
+    ()

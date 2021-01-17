@@ -30,6 +30,11 @@ let extractConcreteSyntax filename =
       let len = endPos.pos_cnum - startPos.pos_cnum in
       let txt = (String.sub [@doesNotRaise]) src startPos.pos_cnum len in
       stringData := (txt, loc)::(!stringData);
+      next endPos scanner;
+    | Lbrace ->
+      (* handle {| |} or {sql||sql} quoted strings. We don't care about its contents.
+         Why? // abcdef inside the quoted string would otherwise be picked up as an extra comment *)
+      Res_scanner.tryAdvanceQuotedString scanner;
       next endPos scanner
     | _ ->
       next endPos scanner

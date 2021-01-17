@@ -11,3 +11,19 @@ let x = "\"";
 let y = "\n";
 
 <> {"\n"->React.string} </>;
+
+// The `//` should not result into an extra comment
+let x = {j|https://www.apple.com|j};
+let x = {|https://www.apple.com|};
+let x = {js|https://www.apple.com|js};
+let x = {|https://www.apple.com|};
+let x = {sql|https://www.apple.com|sql};
+
+// /* */ should not result in an extra comments
+let x = {j|/* https://www.apple.com */|j};
+let x = {|/* https://www.apple.com*/|};
+let x = {js|/*https://www.apple.com*/|js};
+let x = {|/*https://www.apple.com*/|};
+let x = {sql|/*https://www.apple.com*/|sql};
+
+let x = {js|`https://${appleWebsite}`|js};

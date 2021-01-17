@@ -1,5 +1,6 @@
 ## Unreleased
 
+* Improve conversion of quoted strings from Reason in [#238](https://github.com/rescript-lang/syntax/pull/238)
 * Print attributes/extension without bs prefix where possible in [#230](https://github.com/rescript-lang/syntax/pull/230)
 * Cleanup gentype attribute printing [fe05e1051aa94b16f6993ddc5ba9651f89e86907](https://github.com/rescript-lang/syntax/commit/fe05e1051aa94b16f6993ddc5ba9651f89e86907)
 * Implement light weight syntax for poly-variants [f84c5760b3f743f65e934195c87fc06bf88bff75](https://github.com/rescript-lang/syntax/commit/f84c5760b3f743f65e934195c87fc06bf88bff75)

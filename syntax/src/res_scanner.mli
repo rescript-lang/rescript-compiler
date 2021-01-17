@@ -30,3 +30,5 @@ val popMode: t -> mode -> unit
 val reconsiderLessThan: t -> Res_token.t
 
 val scanTemplateLiteralToken: t -> (Lexing.position * Lexing.position * Res_token.t)
+
+val tryAdvanceQuotedString: t -> unit
