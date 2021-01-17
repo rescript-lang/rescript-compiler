@@ -139,32 +139,31 @@ and no_side_effect (x : J.expression)  =
 
 let no_side_effect_expression (x : J.expression) = no_side_effect x 
 
-let no_side_effect clean : Js_fold.fold = 
+let no_side_effect clean : Js_iter.iter = 
   object (self)
-    inherit Js_fold.fold as super
+    inherit Js_iter.iter as super
     method! statement s = 
-      if not !clean then self else 
+      if !clean then 
         match s.statement_desc with 
         | Throw _ 
         | Debugger 
         | Break 
         | Variable _ 
         | Continue _ ->  
-          clean := false ; self
+          clean := false 
         | Exp e -> self#expression e 
         | Int_switch _ | String_switch _ | ForRange _ 
         | If _ | While _   | Block _ | Return _ | Try _  -> super#statement s 
     method! list f x = 
-      if not !clean then self else super#list f x 
+      if  !clean then super#list f x 
     method! expression s = 
-      (if !clean then 
-        clean := no_side_effect_expression s); 
-      self 
-    (** only expression would cause side effec *)
+      if !clean then 
+        clean := no_side_effect_expression s      
+        (** only expression would cause side effec *)
   end
 let no_side_effect_statement st = 
   let clean = ref true in   
-  let _ : Js_fold.fold  = ((no_side_effect clean)#statement st) in 
+  (no_side_effect clean)#statement st;
   !clean
 
 (* TODO: generate [fold2] 
