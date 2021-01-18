@@ -17,7 +17,7 @@ function mkMethod({ name, def }, allNames) {
   return `method ${name} : ${name} -> unit = ${mkBody(def, allNames)}  `;
 }
 
-var skip = `o#unknown`;
+var skip = `unknown _self`;
 
 /**
  * @param {Node} def
@@ -30,18 +30,21 @@ function mkBody(def, allNames) {
     case "type_constructor_path":
       var basic = node_types.isSupported(def, allNames);
       if (basic !== undefined) {
-        return `o#${basic}`;
+        return `_self#${basic}`;
       }
       return skip;
     case "constructed_type":
       // FIXME
       var [list, base] = [...def.children].reverse();
-      return `${mkBody(list, allNames)} (fun o -> ${mkBody(base, allNames)})`;
+      return `${mkBody(list, allNames)} (fun _self -> ${mkBody(
+        base,
+        allNames
+      )})`;
     case "record_declaration":
       var len = def.children.length;
       var args = init(len, (i) => `_x${i}`);
       var pat_exp = init(len, (i) => {
-        return `${def.children[i].children[0].text} = ${args[i]}`;
+        return `${def.children[i].mainText} = ${args[i]}`;
       });
 
       /**
@@ -50,13 +53,9 @@ function mkBody(def, allNames) {
       var body = args
         .map((x, i) => {
           var ty = def.children[i].children[1];
-          var fn = mkBody(ty, allNames);
-          if (fn === skip) {
-            return;
-          }
-          return `${fn} ${x}`;
+          return mkBodyApply(ty, allNames, x);
         })
-        .filter((x) => x !== undefined);
+        .filter(Boolean);
       return `fun { ${pat_exp.join(";")}} -> begin ${body.join(";")} end`;
     case "variant_declaration":
       var len = def.children.length;
@@ -66,19 +65,28 @@ function mkBody(def, allNames) {
       var len = def.children.length;
       var args = init(len, (i) => `_x${i}`);
       var body = args
-        .map((x, i) => {
-          var fn = mkBody(def.children[i], allNames);
-          if (fn === skip) {
-            return;
-          }
-          return `${fn} ${x}`;
-        })
-        .filter((x) => x !== undefined);
+        .map((x, i) => mkBodyApply(def.children[i], allNames, x))
+        .filter(Boolean);
       return `fun ( ${args.join(",")}) -> begin ${body.join(";")} end`;
     default:
       throw new Error(`unkonwn ${def.type}`);
   }
 }
+
+/**
+ *
+ * @param {Node} ty
+ * @param {Set<string>} allNames
+ * @param {string} arg
+ */
+function mkBodyApply(ty, allNames, arg) {
+  var fn = mkBody(ty, allNames);
+  if (fn === skip) {
+    return ``;
+  }
+  return `${fn} ${arg}`;
+}
+
 /**
  *
  * @param {Node} branch
@@ -92,23 +100,21 @@ function mkBranch(branch, allNames) {
   var [{ text }, ...rest] = branch.children;
   // TODO: add inline record support
   var len = rest.length;
-  if (len !== 0) {
-    var args = init(len, (i) => `_x${i}`);
-    var pat_exp = `${text} ( ${args.join(",")}) `;
-    var body = args
-      .map((x, i) => {
-        var ty = rest[i];
-        var fn = mkBody(ty, allNames);
-        if (fn === skip) {
-          return;
-        }
-        return `${fn} ${x} `;
-      })
-      .filter((x) => x !== undefined);
-    return `${pat_exp} -> \n begin ${body.join(";")} end`;
-  } else {
+  if (len === 0) {
     return `${text} -> ()`;
   }
+  var args = init(len, (i) => `_x${i}`);
+  var pat_exp = `${text} ( ${args.join(",")}) `;
+  var body = args
+    .map((x, i) => {
+      var ty = rest[i];
+      return mkBodyApply(ty, allNames, x);
+    })
+    .filter(Boolean);
+  if (body.length === 0) {
+    return `${text} _ -> ()`;
+  }
+  return `${pat_exp} -> \n begin ${body.join(";")} end`;
 }
 
 /**
@@ -121,18 +127,18 @@ function make(typedefs) {
   var output = typedefs.map((x) => mkMethod(x, allNames));
   var o = `
     open J  
+    let unknown _self _ = ()
     class iter =
-      object ((o : 'self_type))
-        method unknown : 'a. 'a -> unit = ignore
+      object ((_self : 'self_type))
         method option :
           'a. ('self_type -> 'a -> unit) -> 'a option -> unit =
-          fun _f_a -> function | None -> () | Some _x ->  _f_a o _x 
+          fun _f_a -> function | None -> () | Some _x ->  _f_a _self _x 
         method list :
           'a. ('self_type -> 'a -> unit) -> 'a list -> unit =
           fun _f_a ->
             function
             | [] -> ()
-            | _x :: _x_i1 -> _f_a o _x ;  o#list _f_a _x_i1 
+            | _x :: _x_i1 -> _f_a _self _x ;  _self#list _f_a _x_i1 
     ${output.join("\n")}    
     end
     `;

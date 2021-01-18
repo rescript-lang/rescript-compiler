@@ -6,6 +6,9 @@ class Node {
     this.text = text;
     this.children = children;
   }
+  get mainText() {
+    return this.children[0].text;
+  }
 }
 
 /**
@@ -61,9 +64,13 @@ function getTypeDefs(parseOutput) {
  *
  * @param {Node} def
  * @returns {string | undefined}
- * 
+ *
  * Note visitor may have different requirements against
  * `to_string` where more information is appreciated
+ *
+ * Here the case when it is not supported:
+ * - It is an external type: M.t
+ * - it is an foreign type : xx (xx does not belong to recursive types)
  */
 function isSupported(def, allNames) {
   if (def.children.length === 1) {
@@ -75,13 +82,14 @@ function isSupported(def, allNames) {
   }
   return;
 }
-
+/**
+ * @template T
+ * @param {number} n 
+ * @param {(_ : number) => T} fn 
+ * @returns {T[]}
+ */
 function init(n, fn) {
-  var arr = Array(n);
-  for (let i = 0; i < n; ++i) {
-    arr[i] = fn(i);
-  }
-  return arr;
+  return Array.from({ length: n }, (_, i) => fn(i));
 }
 exports.init = init;
 exports.isSupported = isSupported;
