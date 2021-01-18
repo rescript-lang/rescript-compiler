@@ -83,3 +83,10 @@ val empty : t
 
 val table_dispatch : 
   (Parsetree.expression option  -> 'a) Map_string.t -> action -> 'a
+
+(** Report to the user, as a warning, that the bs-attribute parser is bailing out. (This is to allow
+  external ppx, like ppx_deriving, to pick up where the builtin ppx leave off.) *)
+val unrecognizedConfigRecord:
+  Location.t ->
+  string ->
+  unit

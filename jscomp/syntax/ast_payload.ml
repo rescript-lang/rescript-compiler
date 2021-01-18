@@ -130,6 +130,11 @@ type action =
 *)
 
 
+let unrecognizedConfigRecord loc text =
+  Location.prerr_warning
+    loc
+    (Warnings.Bs_derive_warning text)
+
 
 let ident_or_record_as_config     
     loc
@@ -156,11 +161,11 @@ let ident_or_record_as_config
                -> 
                ({Asttypes.txt = name ; loc}, Some y)
              | _ -> 
-               Location.raise_errorf ~loc "Qualified label is not allood"
+               Location.raise_errorf ~loc "Qualified label is not allowed"
           )
 
       | Some _ -> 
-        Location.raise_errorf ~loc "with is not supported"
+        unrecognizedConfigRecord loc "`with` is not supported, discarding"; []
     end
   | PStr [
       {pstr_desc =
@@ -174,7 +179,7 @@ let ident_or_record_as_config
     ] -> [ {Asttypes.txt ; loc = lloc}, None] 
   | PStr [] -> []
   | _ -> 
-    Location.raise_errorf ~loc "this is not a valid record config"
+      unrecognizedConfigRecord loc "invalid attribute config-record, ignoring"; []
 
 
 
