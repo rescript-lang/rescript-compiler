@@ -43,8 +43,8 @@ type meta_info =
 let mark_dead_code (js : J.program) : J.program = 
   let ident_use_stats : meta_info Hash_ident.t
     = Hash_ident.create 17 in 
-  let mark_dead  : Js_fold.fold = object (self)
-    inherit Js_fold.fold 
+  let mark_dead  : Js_iter.iter = object (self)
+    inherit Js_iter.iter
     method! ident ident = 
       (match Hash_ident.find_opt ident_use_stats ident with
        | None -> (* First time *)
@@ -53,14 +53,13 @@ let mark_dead_code (js : J.program) : J.program =
        | Some Recursive
          -> ()
        | Some (Info x) ->  Js_op_util.update_used_stats x Used )
-    ; self 
     method! variable_declaration vd = 
       match vd.ident_info.used_stats with 
       |  Dead_pure 
-        -> self
+        -> ()
       |  Dead_non_pure  -> 
         begin match vd.value with
-          | None -> self
+          | None -> ()
           | Some x -> self#expression x 
         end
       |  _ -> 
@@ -68,7 +67,7 @@ let mark_dead_code (js : J.program) : J.program =
         let pure = 
           match value with 
           | None  -> true
-          | Some x -> ignore (self#expression x); Js_analyzer.no_side_effect_expression x in
+          | Some x ->  (self#expression x); Js_analyzer.no_side_effect_expression x in
         (
          let () = 
            if Set_ident.mem js.export_set ident then 
@@ -87,9 +86,9 @@ let mark_dead_code (js : J.program) : J.program =
          | None ->  (* First time *)
            Hash_ident.add ident_use_stats ident (Info ident_info);
            Js_op_util.update_used_stats ident_info 
-             (if pure then Scanning_pure else Scanning_non_pure)); self
+             (if pure then Scanning_pure else Scanning_non_pure))
   end  in 
-  let _ =  (mark_dead#program js) in 
+  let () =  (mark_dead#program js) in 
   Hash_ident.iter ident_use_stats (fun _id (info : meta_info) ->
       match info  with 
       | Info ({used_stats = Scanning_pure} as info) -> 

@@ -52,22 +52,19 @@ let count_collects
   (* collect used status*)
   (stats : int Hash_ident.t)
   (* collect all def sites *)
-  (defined_idents : J.variable_declaration Hash_ident.t) : Js_fold.fold
+  (defined_idents : J.variable_declaration Hash_ident.t) : Js_iter.iter
    = 
   object (self)
-    inherit Js_fold.fold 
-  
+    inherit Js_iter.iter
     method! variable_declaration 
         ({ident; value ; property = _ ; ident_info = _}  as v)
       =  
       Hash_ident.add defined_idents ident v; 
       match value with 
-      | None -> 
-        self
+      | None -> ()
       | Some x
         -> self#expression x 
-    method! ident id = add_use stats id; self
-
+    method! ident id = add_use stats id
   end
 
 
@@ -76,5 +73,5 @@ let get_stats (program : J.program) : J.variable_declaration Hash_ident.t
   let stats : int Hash_ident.t = Hash_ident.create 83 in   
   let defined_idents : J.variable_declaration Hash_ident.t = Hash_ident.create 83 in
   let my_export_set =  program.export_set in 
-  let _ : Js_fold.fold = (count_collects stats defined_idents) #program program in 
+  (count_collects stats defined_idents) #program program;
   post_process_stats my_export_set defined_idents stats 

@@ -16,6 +16,9 @@ for (let i = 0; i < process.argv.length; ++i) {
     case "-fold":
       mode = "fold";
       break;
+    case "-iter":
+      mode = "iter";
+      break;
     case "-i":
       ++i;
       input = process.argv[i];
@@ -30,7 +33,7 @@ var source = fs.readFileSync(input, "utf8");
 var node_types = require("./node_types");
 var map_maker = require("./map_maker");
 var fold_maker = require("./fold_maker");
-
+var iter_maker = require("./iter_maker");
 // var p = new P()
 (async () => {
   await P.init();
@@ -45,6 +48,9 @@ var fold_maker = require("./fold_maker");
       break;
     case "fold":
       fs.writeFileSync(output, fold_maker.make(typedefs), "utf8");
+      break;
+    case "iter":
+      fs.writeFileSync(output, iter_maker.make(typedefs), "utf8");
       break;
   }
 })();

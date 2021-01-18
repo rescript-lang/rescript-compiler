@@ -45,11 +45,9 @@ external makeError : string -> error = "Error" [@@bs.new]
 external isCamlExceptionOrOpenVariant : 
   'a -> bool = "caml_is_extension"
 
-let anyToExnInternal obj =
-  if isCamlExceptionOrOpenVariant obj then
-    (Obj.magic obj : exn)
-  else
-    Error ((Obj.magic obj) : t)
+let anyToExnInternal x = 
+    Caml_js_exceptions.internalToOCamlException (Obj.repr x)
+  
 
 let raiseError str = 
   raise (Obj.magic (makeError str : error) : exn)

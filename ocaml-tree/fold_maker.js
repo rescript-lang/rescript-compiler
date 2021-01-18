@@ -1,5 +1,7 @@
 //@ts-check
 var assert = require("assert");
+var node_types = require("./node_types");
+var init = node_types.init;
 /**
  *
  * @typedef {import('./node_types').Node} Node
@@ -8,91 +10,110 @@ var assert = require("assert");
 /**
  *
  * @param {{name:string, def:Node}} typedef
+ * @param {Set<string>} allNames
  * @returns {string}
  */
-function mkMethod({ name, def }) {
-  return `method ${name} : ${name} -> 'self_type = ${mkBody(def)}  `;
+function mkMethod({ name, def }, allNames) {
+  return `method ${name} : ${name} -> 'self_type = ${mkBody(def, allNames)}  `;
 }
-
-function init(n, fn) {
-  var arr = Array(n);
-  for (let i = 0; i < n; ++i) {
-    arr[i] = fn(i);
-  }
-  return arr;
-}
-
+var skip = `unknown _self`;
 /**
  * @param {Node} def
+ * @param {Set<string>} allNames
  */
-function mkBody(def) {
+function mkBody(def, allNames) {
   // @ts-ignore
   assert(def !== undefined);
   switch (def.type) {
     case "type_constructor_path":
-      if (def.children.length === 1) {
-        return `o#${def.children[0].text}`;
-      } else {
-        // [ extended_module_path  ..]
-        return `o#unknown`;
+      var basic = node_types.isSupported(def, allNames);
+      if (basic !== undefined) {
+        return `_self#${basic}`;
       }
+      return skip;
     case "constructed_type":
       // FIXME
       var [list, base] = [...def.children].reverse();
-      return `${mkBody(list)} (fun o -> ${mkBody(base)})`;
+      return `${mkBody(list, allNames)} (fun _self -> ${mkBody(
+        base,
+        allNames
+      )})`;
     case "record_declaration":
       var len = def.children.length;
       var args = init(len, (i) => `_x${i}`);
       var pat_exp = init(len, (i) => {
-        return `${def.children[i].children[0].text} = ${args[i]}`;
+        return `${def.children[i].mainText} = ${args[i]}`;
       });
 
       /**
        * @type {string[]}
        */
-      var body = args.map((x, i) => {
-        var ty = def.children[i].children[1];
-        return `let o = ${mkBody(ty)} ${x} in`;
-      });
-      return `fun { ${pat_exp.join(";")}} -> ${body.join("\n")} o`;
+      var body = args
+        .map((x, i) => {
+          var ty = def.children[i].children[1];
+          return mkBodyApply(ty, allNames, x);
+        })
+        .filter(Boolean);
+      return `fun { ${pat_exp.join(";")}} -> ${body.join("\n")} _self`;
     case "variant_declaration":
       var len = def.children.length;
-      var branches = def.children.map((branch) => mkBranch(branch));
+      var branches = def.children.map((branch) => mkBranch(branch, allNames));
       return `function \n| ${branches.join("\n|")}`;
     case "tuple_type":
       var len = def.children.length;
       var args = init(len, (i) => `_x${i}`);
-      var body = args.map(
-        (x, i) => `let o = ${mkBody(def.children[i])} ${x} in`
-      );
-      return `fun ( ${args.join(",")}) -> ${body.join(" ")} o`;
+      var body = args
+        .map((x, i) => mkBodyApply(def.children[i], allNames, x))
+        .filter(Boolean);
+      return `fun ( ${args.join(",")}) -> ${body.join(" ")} _self`;
     default:
       throw new Error(`unkonwn ${def.type}`);
   }
 }
+
+/**
+ *
+ * @param {Node} ty
+ * @param {Set<string>} allNames
+ * @param {string} arg
+ */
+function mkBodyApply(ty, allNames, arg) {
+  var fn = mkBody(ty, allNames);
+  if (fn === skip) {
+    return ``;
+  }
+  return `let _self = ${fn} ${arg} in`;
+}
+
 /**
  *
  * @param {Node} branch
  * branch is constructor_declaration
+ * @param {Set<string>} allNames
  * @returns {string}
  */
-function mkBranch(branch) {
+function mkBranch(branch, allNames) {
   // @ts-ignore
   assert(branch?.type === "constructor_declaration");
   var [{ text }, ...rest] = branch.children;
   // TODO: add inline record support
   var len = rest.length;
-  if (len !== 0) {
-    var args = init(len, (i) => `_x${i}`);
-    var pat_exp = `${text} ( ${args.join(",")}) `;
-    var body = args.map((x, i) => {
-      var ty = rest[i];
-      return `let o = ${mkBody(ty)} ${x} in`;
-    });
-    return `${pat_exp} -> \n${body.join("\n")}\n o`;
-  } else {
-    return `${text} -> o`;
+  if (len === 0) {
+    return `${text} -> _self `;
   }
+
+  var args = init(len, (i) => `_x${i}`);
+  var pat_exp = `${text} ( ${args.join(",")}) `;
+  var body = args
+    .map((x, i) => {
+      var ty = rest[i];
+      return mkBodyApply(ty, allNames, x);
+    })
+    .filter(Boolean);
+  if(body.length === 0){
+    return `${text} _ -> _self`
+  }  
+  return `${pat_exp} -> \n${body.join("\n")}\n _self`;
 }
 
 /**
@@ -101,25 +122,22 @@ function mkBranch(branch) {
  * @returns {string}
  */
 function make(typedefs) {
-  var output = typedefs.map(mkMethod);
+  var allNames = new Set([...typedefs.map((x) => x.name), "option", "list"]);
+  var output = typedefs.map((x) => mkMethod(x, allNames));
   var o = `
     open J  
-    class virtual fold =
-      object ((o : 'self_type))
-        method unknown : 'a. 'a -> 'self_type = fun _ -> o
-        method string : string -> 'self_type = fun _ -> o
+    let [@inline] unknown _self _ = _self
+    class  fold =
+      object ((_self : 'self_type))
         method option :
           'a. ('self_type -> 'a -> 'self_type) -> 'a option -> 'self_type =
-          fun _f_a -> function | None -> o | Some _x -> let o = _f_a o _x in o
+          fun _f_a -> function | None -> _self | Some _x -> let _self = _f_a _self _x in _self
         method list :
           'a. ('self_type -> 'a -> 'self_type) -> 'a list -> 'self_type =
           fun _f_a ->
             function
-            | [] -> o
-            | _x :: _x_i1 -> let o = _f_a o _x in let o = o#list _f_a _x_i1 in o
-        method int32 : int32 -> 'self_type = fun _ -> o
-        method int : int -> 'self_type = fun _ -> o 
-        method bool : bool -> 'self_type = fun _ -> o
+            | [] -> _self
+            | _x :: _x_i1 -> let _self = _f_a _self _x in let _self = _self#list _f_a _x_i1 in _self
     ${output.join("\n")}    
     end
     `;

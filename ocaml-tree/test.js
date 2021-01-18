@@ -7,7 +7,7 @@ var P = require("tree-sitter");
 var p = new P();
 p.setLanguage(OCaml);
 
-var { Node, getTypedefs } = require("./node_types.js");
+var { Node, getTypedefs, nodeToObject } = require("./node_types.js");
 
 // https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview
 var nodeFormatter = {
@@ -32,6 +32,10 @@ var nodeFormatter = {
     return display;
   },
 };
+if (globalThis.devtoolsFormatters === undefined) {
+  globalThis.devtoolsFormatters = [];
+}
+globalThis.devtoolsFormatters.push(nodeFormatter);
 
 // only make senses in browser
 // function visual(obj, formatter) {
@@ -58,13 +62,12 @@ var y = p.parse(fs.readFileSync(path.join(j_dir, "j.ml"), "utf8"));
  */
 var typedefs = getTypedefs(y);
 
-if (globalThis.devtoolsFormatters === undefined) {
-  globalThis.devtoolsFormatters = [];
-}
-globalThis.devtoolsFormatters.push(nodeFormatter);
 
 var map_maker = require("./map_maker");
 var fold_maker = require("./fold_maker");
+var iter_maker = require("./iter_maker");
 var fold = fold_maker.make(typedefs);
 var map = map_maker.make(typedefs);
-console.log(fold, map);
+var iter = iter_maker.make(typedefs);
+// console.log(fold, map);
+fs.writeFileSync(path.join(j_dir, "js_iter.ml"), iter, "utf8");

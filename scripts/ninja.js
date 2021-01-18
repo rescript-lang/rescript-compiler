@@ -1584,7 +1584,8 @@ o core/js_fold.ml: p4of core/j.ml
     flags = -fold
 o core/js_map.ml: p4of core/j.ml
     flags = -map    
-
+o core/js_iter.ml: p4of core/j.ml
+    flags = -iter
 o common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
 o ../${
