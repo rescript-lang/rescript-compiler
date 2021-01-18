@@ -28,7 +28,6 @@ method exports : exports -> 'self_type = o#unknown
 method tag_info : tag_info -> 'self_type = o#unknown  
 method required_modules : required_modules -> 'self_type = o#list (fun o -> o#module_id)  
 method property_name : property_name -> 'self_type = o#unknown  
-method jsint : jsint -> 'self_type = o#int32  
 method ident : ident -> 'self_type = o#unknown  
 method module_id : module_id -> 'self_type = fun { id = _x0;kind = _x1} -> let o = o#ident _x0 in
 let o = o#unknown _x1 in o  

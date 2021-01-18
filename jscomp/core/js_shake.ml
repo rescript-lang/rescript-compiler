@@ -46,7 +46,7 @@ let get_initial_exports
                   TODO: add hashtbl for a cache
                *)
                 Set_ident.(
-                union (Js_analyzer.free_variables_of_expression empty empty x) acc)
+                union (Js_analyzer.free_variables_of_expression  x) acc)
             end
           else 
             begin match value with
@@ -55,14 +55,14 @@ let get_initial_exports
                 if Js_analyzer.no_side_effect_expression x then acc 
                 else 
                   Set_ident.(
-                  union (Js_analyzer.free_variables_of_expression empty empty x) 
+                  union (Js_analyzer.free_variables_of_expression x) 
                     (add acc ident))
             end
       | _ -> 
           (* recalcuate again and again ... *)
           if Js_analyzer.no_side_effect_statement st || (not count_non_variable_declaration_statement)
           then acc
-          else Set_ident.(union (Js_analyzer.free_variables_of_statement empty empty st) acc)
+          else Set_ident.(union (Js_analyzer.free_variables_of_statement  st) acc)
     ) in result, Set_ident.(diff result export_set)
 
 let shake_program (program : J.program) = 

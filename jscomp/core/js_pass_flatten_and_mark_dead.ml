@@ -32,34 +32,7 @@
 module E = Js_exp_make
 module S = Js_stmt_make
 
-(* class count  var = object (self : 'self)
-  val mutable appears = 0
-  inherit Js_fold.fold as super
-  method! ident  x =
-    (if Ident.same x var then
-      appears <- appears + 1); 
-    self
-  method get_appears = appears 
-end *)
 
-(* rewrite return for current block, but don't go into
-   inner function, mostly for inlinning
- *)
-(* class rewrite_return ?return_value ()=
-  let mk_return  = 
-    match return_value with 
-    | None -> fun e -> S.exp e 
-    | Some ident -> fun e -> 
-      S.define_variable ~kind:Variable ident e in
-  object (self : 'self)
-    inherit Js_map.map as super
-    method! statement x =
-      match x.statement_desc with 
-      | Return {return_value = e} -> 
-          mk_return e 
-      | _ -> super#statement x 
-    method! expression x = x (* don't go inside *)
-  end   *)
 
 type meta_info =   
   | Info of J.ident_info 
@@ -70,7 +43,7 @@ type meta_info =
 let mark_dead_code (js : J.program) : J.program = 
   let ident_use_stats : meta_info Hash_ident.t
     = Hash_ident.create 17 in 
-  let mark_dead = object (self)
+  let mark_dead  : Js_fold.fold = object (self)
     inherit Js_fold.fold 
     method! ident ident = 
       (match Hash_ident.find_opt ident_use_stats ident with
@@ -180,12 +153,12 @@ let mark_dead_code (js : J.program) : J.program =
     ]}
 
 *) 
-let subst_map () = object (self)
+let subst_map (substitution : J.expression Hash_ident.t) = object (self)
   inherit Js_map.map as super
 
-  val mutable substitution :  J.expression Hash_ident.t= Hash_ident.create 17 
 
-  method get_substitution = substitution
+
+
 
   method add_substitue (ident : Ident.t) (e:J.expression) = 
     Hash_ident.replace  substitution ident e
@@ -264,7 +237,7 @@ let subst_map () = object (self)
               {expression_desc = Number (Int {i; _})})
     | Static_index ({expression_desc = Var (Id (id))}, _, Some i)          
      -> 
-      (match Hash_ident.find_opt self#get_substitution id with 
+      (match Hash_ident.find_opt substitution id with 
        | Some {expression_desc = Caml_block (ls, Immutable, _, _) } 
          -> 
          (* user program can be wrong, we should not 
@@ -288,7 +261,7 @@ end
 
 let program  (js : J.program) = 
   js 
-  |> (subst_map () )#program
+  |> (subst_map (Hash_ident.create 32) )#program
   |> mark_dead_code
   (* |> mark_dead_code *)
   (* mark dead code twice does have effect in some cases, however, we disabled it 

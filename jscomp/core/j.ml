@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2015- Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -70,7 +70,6 @@ and required_modules = module_id list
     currently we always use quote
  *)
 and property_name =  Js_op.property_name
-and jsint = int32
 and ident = Ident.t 
 and module_id = {
   id : ident; kind : Js_op.kind
