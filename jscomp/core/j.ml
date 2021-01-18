@@ -39,38 +39,38 @@
 *)
 
 
+type mutable_flag = Js_op.mutable_flag 
+
+type binop = Js_op.binop
+
+type int_op = Js_op.int_op
+
+type kind = Js_op.kind
+
+type property = Js_op.property
+
+type number = Js_op.number 
+
+type ident_info = Js_op.ident_info
+
+type exports = Js_op.exports
+
+type tag_info = Js_op.tag_info 
+
+type property_name =  Js_op.property_name
 
 type label = string
-
-and binop = Js_op.binop
-
-and int_op = Js_op.int_op
- 
-and kind = Js_op.kind
-
-and property = Js_op.property
-
-and number = Js_op.number 
-
-and mutable_flag = Js_op.mutable_flag 
-
-and ident_info = Js_op.ident_info
-
-and exports = Js_op.exports
-
-and tag_info = Js_op.tag_info 
  
 and required_modules = module_id list
 
-
-
+and ident = Ident.t (* we override `method ident` *)
 
 (** object literal, if key is ident, in this case, it might be renamed by 
     Google Closure  optimizer,
     currently we always use quote
  *)
-and property_name =  Js_op.property_name
-and ident = Ident.t 
+
+
 and module_id = {
   id : ident; kind : Js_op.kind
 }
@@ -350,3 +350,4 @@ and deps_program =
     modules : required_modules ;
     side_effect : string option (* None: no, Some reason  *)
   }
+  [@@deriving]

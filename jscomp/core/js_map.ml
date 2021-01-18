@@ -1,8 +1,8 @@
 
 open J
-class virtual map = object
+let unknown : 'a. 'a -> 'a = fun x -> x 
+class map = object
 ((o : 'self_type))
-method unknown : 'a. 'a -> 'a = fun x -> x 
 method string : string -> string = fun x -> x
 method option :
   'a 'a_out. ('self_type -> 'a -> 'a_out) -> 'a option -> 'a_out option =
@@ -20,20 +20,10 @@ method int32 : int32 -> int32 = fun x -> x
 method int : int -> int = fun x -> x 
 method bool : bool -> bool = fun x -> x
 method label : label -> label = o#string  
-method binop : binop -> binop = o#unknown  
-method int_op : int_op -> int_op = o#unknown  
-method kind : kind -> kind = o#unknown  
-method property : property -> property = o#unknown  
-method number : number -> number = o#unknown  
-method mutable_flag : mutable_flag -> mutable_flag = o#unknown  
-method ident_info : ident_info -> ident_info = o#unknown  
-method exports : exports -> exports = o#unknown  
-method tag_info : tag_info -> tag_info = o#unknown  
 method required_modules : required_modules -> required_modules = o#list (fun o -> o#module_id)  
-method property_name : property_name -> property_name = o#unknown  
-method ident : ident -> ident = o#unknown  
+method ident : ident -> ident = unknown  
 method module_id : module_id -> module_id = fun { id = _x0;kind = _x1} -> let _x0 = o#ident _x0 in
-let _x1 = o#unknown _x1 in {id = _x0;kind = _x1}  
+let _x1 = unknown _x1 in {id = _x0;kind = _x1}  
 method vident : vident -> vident = function 
 | Id ( _x0)  -> 
 let _x0 = o#ident _x0 in
@@ -44,9 +34,9 @@ let _x1 = o#option (fun o -> o#string) _x1 in
 Qualified ( _x0,_x1)   
 method exception_ident : exception_ident -> exception_ident = o#ident  
 method for_ident : for_ident -> for_ident = o#ident  
-method for_direction : for_direction -> for_direction = o#unknown  
-method property_map : property_map -> property_map = o#list (fun o -> fun ( _x0,_x1) -> let _x0 = o#property_name _x0 in let _x1 = o#expression _x1 in _x0,_x1)  
-method length_object : length_object -> length_object = o#unknown  
+method for_direction : for_direction -> for_direction = unknown  
+method property_map : property_map -> property_map = o#list (fun o -> fun ( _x0,_x1) -> let _x0 = unknown _x0 in let _x1 = o#expression _x1 in _x0,_x1)  
+method length_object : length_object -> length_object = unknown  
 method expression_desc : expression_desc -> expression_desc = function 
 | Length ( _x0,_x1)  -> 
 let _x0 = o#expression _x0 in
@@ -84,7 +74,7 @@ let _x1 = o#expression _x1 in
 let _x2 = o#expression _x2 in
 Cond ( _x0,_x1,_x2) 
 |Bin ( _x0,_x1,_x2)  -> 
-let _x0 = o#binop _x0 in
+let _x0 = unknown _x0 in
 let _x1 = o#expression _x1 in
 let _x2 = o#expression _x2 in
 Bin ( _x0,_x1,_x2) 
@@ -95,7 +85,7 @@ FlatCall ( _x0,_x1)
 |Call ( _x0,_x1,_x2)  -> 
 let _x0 = o#expression _x0 in
 let _x1 = o#list (fun o -> o#expression) _x1 in
-let _x2 = o#unknown _x2 in
+let _x2 = unknown _x2 in
 Call ( _x0,_x1,_x2) 
 |String_index ( _x0,_x1)  -> 
 let _x0 = o#expression _x0 in
@@ -121,7 +111,7 @@ Var ( _x0)
 let _x0 = o#bool _x0 in
 let _x1 = o#list (fun o -> o#ident) _x1 in
 let _x2 = o#block _x2 in
-let _x3 = o#unknown _x3 in
+let _x3 = unknown _x3 in
 Fun ( _x0,_x1,_x2,_x3) 
 |Str ( _x0,_x1)  -> 
 let _x0 = o#bool _x0 in
@@ -131,11 +121,11 @@ Str ( _x0,_x1)
 let _x0 = o#string _x0 in
 Unicode ( _x0) 
 |Raw_js_code ( _x0)  -> 
-let _x0 = o#unknown _x0 in
+let _x0 = unknown _x0 in
 Raw_js_code ( _x0) 
 |Array ( _x0,_x1)  -> 
 let _x0 = o#list (fun o -> o#expression) _x0 in
-let _x1 = o#mutable_flag _x1 in
+let _x1 = unknown _x1 in
 Array ( _x0,_x1) 
 |Optional_block ( _x0,_x1)  -> 
 let _x0 = o#expression _x0 in
@@ -143,15 +133,15 @@ let _x1 = o#bool _x1 in
 Optional_block ( _x0,_x1) 
 |Caml_block ( _x0,_x1,_x2,_x3)  -> 
 let _x0 = o#list (fun o -> o#expression) _x0 in
-let _x1 = o#mutable_flag _x1 in
+let _x1 = unknown _x1 in
 let _x2 = o#expression _x2 in
-let _x3 = o#tag_info _x3 in
+let _x3 = unknown _x3 in
 Caml_block ( _x0,_x1,_x2,_x3) 
 |Caml_block_tag ( _x0)  -> 
 let _x0 = o#expression _x0 in
 Caml_block_tag ( _x0) 
 |Number ( _x0)  -> 
-let _x0 = o#number _x0 in
+let _x0 = unknown _x0 in
 Number ( _x0) 
 |Object ( _x0)  -> 
 let _x0 = o#property_map _x0 in
@@ -179,7 +169,7 @@ If ( _x0,_x1,_x2)
 let _x0 = o#option (fun o -> o#label) _x0 in
 let _x1 = o#expression _x1 in
 let _x2 = o#block _x2 in
-let _x3 = o#unknown _x3 in
+let _x3 = unknown _x3 in
 While ( _x0,_x1,_x2,_x3) 
 |ForRange ( _x0,_x1,_x2,_x3,_x4,_x5)  -> 
 let _x0 = o#option (fun o -> o#for_ident_expression) _x0 in
@@ -187,7 +177,7 @@ let _x1 = o#finish_ident_expression _x1 in
 let _x2 = o#for_ident _x2 in
 let _x3 = o#for_direction _x3 in
 let _x4 = o#block _x4 in
-let _x5 = o#unknown _x5 in
+let _x5 = unknown _x5 in
 ForRange ( _x0,_x1,_x2,_x3,_x4,_x5) 
 |Continue ( _x0)  -> 
 let _x0 = o#label _x0 in
@@ -221,8 +211,8 @@ method statement : statement -> statement = fun { statement_desc = _x0;comment =
 let _x1 = o#option (fun o -> o#string) _x1 in {statement_desc = _x0;comment = _x1}  
 method variable_declaration : variable_declaration -> variable_declaration = fun { ident = _x0;value = _x1;property = _x2;ident_info = _x3} -> let _x0 = o#ident _x0 in
 let _x1 = o#option (fun o -> o#expression) _x1 in
-let _x2 = o#property _x2 in
-let _x3 = o#ident_info _x3 in {ident = _x0;value = _x1;property = _x2;ident_info = _x3}  
+let _x2 = unknown _x2 in
+let _x3 = unknown _x3 in {ident = _x0;value = _x1;property = _x2;ident_info = _x3}  
 method string_clause : string_clause -> string_clause = fun ( _x0,_x1) -> let _x0 = o#string _x0 in let _x1 = o#case_clause _x1 in _x0,_x1  
 method int_clause : int_clause -> int_clause = fun ( _x0,_x1) -> let _x0 = o#int _x0 in let _x1 = o#case_clause _x1 in _x0,_x1  
 method case_clause : case_clause -> case_clause = fun { switch_body = _x0;should_break = _x1;comment = _x2} -> let _x0 = o#block _x0 in
@@ -230,8 +220,8 @@ let _x1 = o#bool _x1 in
 let _x2 = o#option (fun o -> o#string) _x2 in {switch_body = _x0;should_break = _x1;comment = _x2}  
 method block : block -> block = o#list (fun o -> o#statement)  
 method program : program -> program = fun { block = _x0;exports = _x1;export_set = _x2} -> let _x0 = o#block _x0 in
-let _x1 = o#exports _x1 in
-let _x2 = o#unknown _x2 in {block = _x0;exports = _x1;export_set = _x2}  
+let _x1 = unknown _x1 in
+let _x2 = unknown _x2 in {block = _x0;exports = _x1;export_set = _x2}  
 method deps_program : deps_program -> deps_program = fun { program = _x0;modules = _x1;side_effect = _x2} -> let _x0 = o#program _x0 in
 let _x1 = o#required_modules _x1 in
 let _x2 = o#option (fun o -> o#string) _x2 in {program = _x0;modules = _x1;side_effect = _x2}  
