@@ -4660,7 +4660,11 @@ and printBsObjectRow (lbl, expr) cmtTbl =
   let doc = Doc.concat [
     lblDoc;
     Doc.text ": ";
-    printExpressionWithComments expr cmtTbl
+    (let doc = printExpressionWithComments expr cmtTbl in
+    match Parens.expr expr with
+    | Parens.Parenthesized -> addParens doc
+    | Braced braces -> printBraces doc expr braces
+    | Nothing -> doc);
   ] in
   printComments doc cmtTbl cmtLoc
 

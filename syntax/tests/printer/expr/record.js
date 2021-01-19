@@ -18,3 +18,13 @@ let withSpreadAndNaturalBreak = {...fields, firstField: superLongIdentiiiiiiiiff
 let x = @attr {x: 1, y: 2}
 let x = @attr {...initialState, superLongName: 1, superLongName: 2, superLongName: 5}
 let x = @attr {...initialState, superLongName: 1, superLongName: 2, superLongName: 5, superLongName: 20}
+
+// print parens around constrained expr in rhs
+let user = {name: (ceo.name: string)}
+// braces should be preserved on rhs
+let user = {name: {ceo.name}}
+let user = {name: {
+  ceo.name
+}}
+// braced + constrained expr
+let user = {name: {(ceo.name: string)}}

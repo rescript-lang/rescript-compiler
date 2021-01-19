@@ -12,3 +12,47 @@ let person = {
   },
   "age": 32
 }
+
+// print parens around constrained expr in rhs
+let user = {"name": (ceo.name: string)}
+// braces should be preserved on rhs
+let user = {"name": {ceo.name}}
+let user = {"name": {
+  ceo.name
+}}
+// braced + constrained expr
+let user = {"name": {(ceo.name: string)}}
+
+React.jsx(
+  ReactDOM.stringToComponent("div"),
+  {
+    let ariaCurrent = #page
+    {
+      "aria-current": (ariaCurrent : [
+      | #page
+      | #step
+      | #location
+      | #date
+      | #time
+      | #"true"
+      | #"false"
+      ])
+    }
+  }
+)
+
+React.jsx(
+  ReactDOM.stringToComponent("div"),
+  {
+    let children = {msg->React.string}
+    {"children": (children: React.element)}
+  }
+)
+
+(@warning("-3") React.jsx)(
+  ReactDOM.stringToComponent("div"),
+  {
+    let \"data-foo" = "payload"
+    {"data-foo": (\"data-foo": string)}
+  }
+)
