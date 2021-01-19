@@ -1,5 +1,6 @@
 ## Unreleased
 
+* Improve printing of trailing comments under lhs of "pipe" expression in [#329](https://github.com/rescript-lang/syntax/pull/239/files)
 * Improve printing of jsx children and props with leading line comment in [#236](https://github.com/rescript-lang/syntax/pull/236)
 * Improve conversion of quoted strings from Reason in [#238](https://github.com/rescript-lang/syntax/pull/238)
 * Print attributes/extension without bs prefix where possible in [#230](https://github.com/rescript-lang/syntax/pull/230)

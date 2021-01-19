@@ -58,6 +58,14 @@ let hasLeadingLineComment tbl loc =
   | Some comment -> Comment.isSingleLineComment comment
   | None -> false
 
+let hasCommentBelow tbl loc =
+  match Hashtbl.find tbl.CommentTable.trailing loc with
+  | comment::_ ->
+    let commentLoc = Comment.loc comment in
+    commentLoc.Location.loc_start.pos_lnum > loc.Location.loc_end.pos_lnum
+  | [] -> false
+  | exception Not_found -> false
+
 let printMultilineCommentContent txt =
   (* Turns
    *         |* first line
@@ -3460,15 +3468,19 @@ and printBinaryExpression (expr : Parsetree.expression) cmtTbl =
         ParsetreeViewer.isBinaryExpression lhs ||
         ParsetreeViewer.isBinaryExpression rhs
     ) ->
+    let lhsHasCommentBelow = hasCommentBelow cmtTbl lhs.pexp_loc in
     let lhsDoc = printOperand ~isLhs:true lhs op in
     let rhsDoc = printOperand ~isLhs:false rhs op in
     Doc.group (
       Doc.concat [
         lhsDoc;
-        (match op with
-        | "|." -> Doc.text "->"
-        | "|>" -> Doc.text " |> "
-        | _ -> assert false);
+        (match lhsHasCommentBelow, op with
+        | true, "|." -> Doc.concat [Doc.softLine; Doc.text "->"]
+        | false, "|." -> Doc.text "->"
+        | true, "|>" -> Doc.concat [Doc.line; Doc.text "|> "]
+        | false, "|>" -> Doc.text " |> "
+        | _ -> Doc.nil
+        );
         rhsDoc;
       ]
     )
