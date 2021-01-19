@@ -1,5 +1,6 @@
 ## Unreleased
 
+* Improve printing of non-callback arguments in call expressions with callback in [#241](https://github.com/rescript-lang/syntax/pull/241/files)
 * Fix printing of constrained expressions in rhs of js objects [#240](https://github.com/rescript-lang/syntax/pull/240)
 * Improve printing of trailing comments under lhs of "pipe" expression in [#329](https://github.com/rescript-lang/syntax/pull/239/files)
 * Improve printing of jsx children and props with leading line comment in [#236](https://github.com/rescript-lang/syntax/pull/236)

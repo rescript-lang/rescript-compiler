@@ -319,3 +319,72 @@ let /* a */ decoratorTags /* b */ = items->Js.Array2.filter(items => {
   || items.category === ChristmasLighting
   || items.category === Unknown
 })
+
+// callback in last position
+showDialog(
+  `
+  Do you really want to leave this workspace?
+  Some more text with detailed explanations...
+  `,
+  ~danger=true,
+  ~confirmText="Yes, I am sure!",
+  ~onConfirm={() => ()},
+)
+
+// callback in first position
+showDialog(
+  ~onConfirm={() => ()},
+  ~danger=true,
+  ~confirmText="Yes, I am sure!",
+  `
+  Do you really want to leave this workspace?
+  Some more text with detailed explanations...
+  `,
+)
+
+// callback in last position, with comment in between args
+showDialog(dialogMessage,
+// comment
+ ~danger=true, ~confirmText="Yes, I am sure!", ~onConfirm=() => ())
+ 
+// callback in last position, with comment in between args
+showDialog(
+  dialogMessage,
+ ~danger=true, 
+ /* comment below */
+ ~confirmText="Yes, I am sure!",
+ ~onConfirm=() => ())
+
+// callback in first position, with single line comment in between args
+showDialog(
+  ~onConfirm=() => (),
+  dialogMessage,
+  // comment
+  ~danger=true,
+  ~confirmText="Yes, I am sure!"
+ )
+ 
+// callback in first position, with comment in between args
+showDialog(
+  ~onConfirm=() => (),
+  dialogMessage,
+  ~danger=true, 
+  /* comment below */
+  ~confirmText="Yes, I am sure!",
+)
+
+React.useEffect5((
+  context.activate,
+  context.chainId,
+  dispatch,
+  setTriedLoginAlready,
+  triedLoginAlready,
+),
+() => {
+  doThings()
+  None
+}, // intentionally only running on mount (make sure it's only mounted once :))
+)
+
+apply(a, b, c, /* before */ () => () /* after */)
+apply(/* before */ () => () /* after */, a, b, c)

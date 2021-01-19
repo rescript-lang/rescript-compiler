@@ -3991,6 +3991,7 @@ and printArgumentsWithCallbackInFirstPosition ~uncurried args cmtTbl =
       lblDoc;
       printPexpFun ~inCallback:FitsOnOneLine expr cmtTbl
     ] in
+    let callback = printComments callback cmtTbl expr.pexp_loc in
     let printedArgs =
       Doc.join ~sep:(Doc.concat [Doc.comma; Doc.line]) (
         List.map (fun arg -> printArgument arg cmtTbl) args
@@ -3999,6 +4000,7 @@ and printArgumentsWithCallbackInFirstPosition ~uncurried args cmtTbl =
     (callback, printedArgs)
   | _ -> assert false
   in
+
   (* Thing.map((arg1, arg2) => MyModuleBlah.toList(argument), foo) *)
   (* Thing.map((arg1, arg2) => {
    *   MyModuleBlah.toList(argument)
@@ -4021,10 +4023,29 @@ and printArgumentsWithCallbackInFirstPosition ~uncurried args cmtTbl =
    * )
    *)
   let breakAllArgs = printArguments ~uncurried args cmtTblCopy in
-  Doc.customLayout [
-    fitsOnOneLine;
-    breakAllArgs;
-  ]
+
+  (* Sometimes one of the non-callback arguments will break.
+   * There might be a single line comment in there, or a multiline string etc.
+   * showDialog(
+   *   ~onConfirm={() => ()},
+   *   `
+   *   Do you really want to leave this workspace?
+   *   Some more text with detailed explanations...
+   *   `,
+   *   ~danger=true,
+   *   // comment   --> here a single line comment
+   *   ~confirmText="Yes, I am sure!",
+   *  )
+   * In this case, we always want the arguments broken over multiple lines,
+   * like a normal function call.
+   *)
+  if Doc.willBreak printedArgs then
+    breakAllArgs
+  else
+    Doc.customLayout [
+      fitsOnOneLine;
+      breakAllArgs;
+    ]
 
 and printArgumentsWithCallbackInLastPosition ~uncurried args cmtTbl =
   (* Because the same subtree gets printed twice, we need to copy the cmtTbl.
@@ -4047,13 +4068,19 @@ and printArgumentsWithCallbackInLastPosition ~uncurried args cmtTbl =
       ]
     in
     let callbackFitsOnOneLine =
-      printPexpFun ~inCallback:FitsOnOneLine expr cmtTbl in
-    let callbackArgumetnsFitsOnOneLine =
-      printPexpFun ~inCallback:ArgumentsFitOnOneLine expr cmtTblCopy in
+      let pexpFunDoc = printPexpFun ~inCallback:FitsOnOneLine expr cmtTbl in
+      let doc = Doc.concat [lblDoc; pexpFunDoc] in
+      printComments doc cmtTbl expr.pexp_loc
+    in
+    let callbackArgumentsFitsOnOneLine =
+      let pexpFunDoc = printPexpFun ~inCallback:ArgumentsFitOnOneLine expr cmtTblCopy in
+      let doc = Doc.concat [lblDoc; pexpFunDoc] in
+      printComments doc cmtTblCopy expr.pexp_loc
+    in
     (
       Doc.concat (List.rev acc),
-      Doc.concat [lblDoc; callbackFitsOnOneLine],
-      Doc.concat [lblDoc; callbackArgumetnsFitsOnOneLine]
+      callbackFitsOnOneLine,
+      callbackArgumentsFitsOnOneLine
     )
   | arg::args ->
     let argDoc = printArgument arg cmtTbl in
@@ -4090,11 +4117,30 @@ and printArgumentsWithCallbackInLastPosition ~uncurried args cmtTbl =
    * )
    *)
   let breakAllArgs = printArguments ~uncurried args cmtTblCopy2 in
-  Doc.customLayout [
-    fitsOnOneLine;
-    arugmentsFitOnOneLine;
-    breakAllArgs;
-  ]
+
+  (* Sometimes one of the non-callback arguments will break.
+   * There might be a single line comment in there, or a multiline string etc.
+   * showDialog(
+   *   `
+   *   Do you really want to leave this workspace?
+   *   Some more text with detailed explanations...
+   *   `,
+   *   ~danger=true,
+   *   // comment   --> here a single line comment
+   *   ~confirmText="Yes, I am sure!",
+   *   ~onConfirm={() => ()},
+   *  )
+   * In this case, we always want the arguments broken over multiple lines,
+   * like a normal function call.
+   *)
+  if Doc.willBreak printedArgs then
+    breakAllArgs
+  else
+    Doc.customLayout [
+      fitsOnOneLine;
+      arugmentsFitOnOneLine;
+      breakAllArgs;
+    ]
 
 and printArguments ~uncurried (args : (Asttypes.arg_label * Parsetree.expression) list) cmtTbl =
   match args with
@@ -4357,11 +4403,7 @@ and printExprFunParameters ~inCallback ~uncurried ~hasConstraint parameters cmtT
     let printedParamaters = Doc.concat [
       if shouldHug || inCallback then Doc.nil else Doc.softLine;
       Doc.join
-        ~sep:(
-          Doc.concat [
-            Doc.comma; if inCallback then Doc.line else Doc.line
-          ]
-        )
+        ~sep:(Doc.concat [Doc.comma; Doc.line])
         (List.map (fun p -> printExpFunParameter p cmtTbl) parameters)
     ] in
     Doc.group (
@@ -4369,11 +4411,12 @@ and printExprFunParameters ~inCallback ~uncurried ~hasConstraint parameters cmtT
         lparen;
         if shouldHug || inCallback then
           printedParamaters
-        else Doc.indent printedParamaters;
-        if shouldHug || inCallback then
-          Doc.nil
         else
-          Doc.concat [Doc.trailingComma; Doc.softLine];
+          Doc.concat [
+            Doc.indent printedParamaters;
+            Doc.trailingComma;
+            Doc.softLine;
+          ];
         Doc.rparen;
       ]
     )
