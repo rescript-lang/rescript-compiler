@@ -39,14 +39,15 @@ function mkBody(def, allNames) {
 
       switch (list.text) {
         case "option":
+        case "list":  
           var inner = mkBody(base, allNames);
           if (inner === skip) {
             return inner;
           }
-          return `option (${inner})`;
-        case "list":
-          // there are list and other
-          return `${mkBody(list, allNames)} ${mkBody(base, allNames)}`;
+          return `(${list.text} ${inner})`;
+        // case "list":
+        //   // there are list and other
+        //   return `(${mkBody(list, allNames)} ${mkBody(base, allNames)})`;
         default:
           throw new Error(`not supported high order types ${list.text}`);
       }
@@ -139,18 +140,15 @@ function make(typedefs) {
   var o = `
     open J  
 
-    let option sub  = fun  v ->
+    let option sub  v =
       match v with 
       | None -> ()
       | Some v -> sub  v
-    class iter =
-      object ((_self : 'self_type))
-        method list :
-          'a. ('a -> unit) -> 'a list -> unit =
-          fun _f_a ->
-            function
-            | [] -> ()
-            | _x :: _x_i1 -> _f_a  _x ;  _self#list _f_a _x_i1 
+    let rec list sub v =
+      match v with 
+      | [] -> ()
+      | x::xs -> sub x ; list sub xs 
+    class iter = object (_self : 'self_type)
     ${output.join("\n")}    
     end
     `;
