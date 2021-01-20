@@ -1,11 +1,12 @@
 
     open J  
     let [@inline] unknown _self _ = _self
+    let [@inline] option sub  self = fun v -> 
+      match v with 
+      | None -> self 
+      | Some x -> sub  x 
     class  fold =
       object ((_self : 'self_type))
-        method option :
-          'a. ('self_type -> 'a -> 'self_type) -> 'a option -> 'self_type =
-          fun _f_a -> function | None -> _self | Some _x -> let _self = _f_a _self _x in _self
         method list :
           'a. ('self_type -> 'a -> 'self_type) -> 'a list -> 'self_type =
           fun _f_a ->
@@ -22,7 +23,6 @@ let _self = _self#ident _x0 in
  _self
 |Qualified ( _x0,_x1)  -> 
 let _self = _self#module_id _x0 in
-let _self = _self#option (fun _self -> unknown _self) _x1 in
  _self  
 method exception_ident : exception_ident -> 'self_type = _self#ident  
 method for_ident : for_ident -> 'self_type = _self#ident  
@@ -85,11 +85,10 @@ let _self = _self#expression _x1 in
  _self
 |Static_index ( _x0,_x1,_x2)  -> 
 let _self = _self#expression _x0 in
-let _self = _self#option (fun _self -> unknown _self) _x2 in
  _self
 |New ( _x0,_x1)  -> 
 let _self = _self#expression _x0 in
-let _self = _self#option (fun _self -> _self#list (fun _self -> _self#expression)) _x1 in
+let _self = option (_self#list (fun _self -> _self#expression)) _self _x1 in
  _self
 |Var ( _x0)  -> 
 let _self = _self#vident _x0 in
@@ -138,12 +137,12 @@ let _self = _self#block _x1 in
 let _self = _self#block _x2 in
  _self
 |While ( _x0,_x1,_x2,_x3)  -> 
-let _self = _self#option (fun _self -> _self#label) _x0 in
+let _self = option (_self#label) _self _x0 in
 let _self = _self#expression _x1 in
 let _self = _self#block _x2 in
  _self
 |ForRange ( _x0,_x1,_x2,_x3,_x4,_x5)  -> 
-let _self = _self#option (fun _self -> _self#for_ident_expression) _x0 in
+let _self = option (_self#for_ident_expression) _self _x0 in
 let _self = _self#finish_ident_expression _x1 in
 let _self = _self#for_ident _x2 in
 let _self = _self#for_direction _x3 in
@@ -159,36 +158,32 @@ let _self = _self#expression _x0 in
 |Int_switch ( _x0,_x1,_x2)  -> 
 let _self = _self#expression _x0 in
 let _self = _self#list (fun _self -> _self#int_clause) _x1 in
-let _self = _self#option (fun _self -> _self#block) _x2 in
+let _self = option (_self#block) _self _x2 in
  _self
 |String_switch ( _x0,_x1,_x2)  -> 
 let _self = _self#expression _x0 in
 let _self = _self#list (fun _self -> _self#string_clause) _x1 in
-let _self = _self#option (fun _self -> _self#block) _x2 in
+let _self = option (_self#block) _self _x2 in
  _self
 |Throw ( _x0)  -> 
 let _self = _self#expression _x0 in
  _self
 |Try ( _x0,_x1,_x2)  -> 
 let _self = _self#block _x0 in
-let _self = _self#option (fun _self -> fun ( _x0,_x1) -> let _self = _self#exception_ident _x0 in let _self = _self#block _x1 in _self) _x1 in
-let _self = _self#option (fun _self -> _self#block) _x2 in
+let _self = option (fun ( _x0,_x1) -> let _self = _self#exception_ident _x0 in let _self = _self#block _x1 in _self) _self _x1 in
+let _self = option (_self#block) _self _x2 in
  _self
 |Debugger -> _self   
-method expression : expression -> 'self_type = fun { expression_desc = _x0;comment = _x1} -> let _self = _self#expression_desc _x0 in
-let _self = _self#option (fun _self -> unknown _self) _x1 in _self  
-method statement : statement -> 'self_type = fun { statement_desc = _x0;comment = _x1} -> let _self = _self#statement_desc _x0 in
-let _self = _self#option (fun _self -> unknown _self) _x1 in _self  
+method expression : expression -> 'self_type = fun { expression_desc = _x0;comment = _x1} -> let _self = _self#expression_desc _x0 in _self  
+method statement : statement -> 'self_type = fun { statement_desc = _x0;comment = _x1} -> let _self = _self#statement_desc _x0 in _self  
 method variable_declaration : variable_declaration -> 'self_type = fun { ident = _x0;value = _x1;property = _x2;ident_info = _x3} -> let _self = _self#ident _x0 in
-let _self = _self#option (fun _self -> _self#expression) _x1 in _self  
+let _self = option (_self#expression) _self _x1 in _self  
 method string_clause : string_clause -> 'self_type = fun ( _x0,_x1) -> let _self = _self#case_clause _x1 in _self  
 method int_clause : int_clause -> 'self_type = fun ( _x0,_x1) -> let _self = _self#case_clause _x1 in _self  
-method case_clause : case_clause -> 'self_type = fun { switch_body = _x0;should_break = _x1;comment = _x2} -> let _self = _self#block _x0 in
-let _self = _self#option (fun _self -> unknown _self) _x2 in _self  
+method case_clause : case_clause -> 'self_type = fun { switch_body = _x0;should_break = _x1;comment = _x2} -> let _self = _self#block _x0 in _self  
 method block : block -> 'self_type = _self#list (fun _self -> _self#statement)  
 method program : program -> 'self_type = fun { block = _x0;exports = _x1;export_set = _x2} -> let _self = _self#block _x0 in _self  
 method deps_program : deps_program -> 'self_type = fun { program = _x0;modules = _x1;side_effect = _x2} -> let _self = _self#program _x0 in
-let _self = _self#required_modules _x1 in
-let _self = _self#option (fun _self -> unknown _self) _x2 in _self      
+let _self = _self#required_modules _x1 in _self      
     end
     

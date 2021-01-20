@@ -17,7 +17,7 @@ function mkMethod({ name, def }, allNames) {
   return `method ${name} : ${name} -> unit = ${mkBody(def, allNames)}  `;
 }
 
-var skip = `unknown _self`;
+var skip = `ignore`;
 
 /**
  * @param {Node} def
@@ -36,10 +36,24 @@ function mkBody(def, allNames) {
     case "constructed_type":
       // FIXME
       var [list, base] = [...def.children].reverse();
-      return `${mkBody(list, allNames)} (fun _self -> ${mkBody(
-        base,
-        allNames
-      )})`;
+
+      switch (list.text) {
+        case "option":
+          var inner = mkBody(base, allNames);
+          if (inner === skip) {
+            return inner;
+          }
+          return `option (${inner})`;
+        case "list":
+          // there are list and other
+          return `${mkBody(list, allNames)} (fun _self -> ${mkBody(
+            base,
+            allNames
+          )})`;
+        default:
+          throw new Error(`not supported high order types ${list.text}`);
+      }
+
     case "record_declaration":
       var len = def.children.length;
       var args = init(len, (i) => `_x${i}`);
@@ -127,12 +141,13 @@ function make(typedefs) {
   var output = typedefs.map((x) => mkMethod(x, allNames));
   var o = `
     open J  
-    let unknown _self _ = ()
+
+    let option sub  = fun  v ->
+      match v with 
+      | None -> ()
+      | Some v -> sub  v
     class iter =
       object ((_self : 'self_type))
-        method option :
-          'a. ('self_type -> 'a -> unit) -> 'a option -> unit =
-          fun _f_a -> function | None -> () | Some _x ->  _f_a _self _x 
         method list :
           'a. ('self_type -> 'a -> unit) -> 'a list -> unit =
           fun _f_a ->
