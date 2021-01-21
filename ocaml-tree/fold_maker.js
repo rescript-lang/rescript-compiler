@@ -36,16 +36,12 @@ function mkBody(def, allNames) {
       var [list, base] = [...def.children].reverse();
       switch (list.text) {
         case "option":
+        case "list":  
           var inner = mkBody(base, allNames);
           if (inner === skip) {
             return inner;
           }
-          return `option (${inner}) _self`;
-        case "list":
-          return `${mkBody(list, allNames)} (fun _self -> ${mkBody(
-            base,
-            allNames
-          )})`;
+          return `${list.text} (fun _self -> ${inner}) _self`;
         default:
           throw new Error(`not supported high order types ${list.text}`);
       }
@@ -141,7 +137,13 @@ function make(typedefs) {
     let [@inline] option sub  self = fun v -> 
       match v with 
       | None -> self 
-      | Some x -> sub  x 
+      | Some x -> sub self x 
+    let rec list (sub : 'self_type -> 'a -> 'self_type) self = fun v ->
+      match  v with 
+      | [] -> self 
+      | x::xs -> 
+        let self = sub self x in 
+        list sub self xs 
     class  fold =
       object ((_self : 'self_type))
         method list :

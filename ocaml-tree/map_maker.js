@@ -35,16 +35,12 @@ function mkBody(def, allNames) {
       var [list, base] = [...def.children].reverse();
       switch (list.text) {
         case "option":
+        case "list":
           var inner = mkBody(base, allNames);
           if (inner === skip) {
             return inner;
           }
-          return `option (${inner})`;
-        case "list":
-          return `${mkBody(list, allNames)} (fun _self -> ${mkBody(
-            base,
-            allNames
-          )})`;
+          return `${list.text} (${inner})`;
         default:
           throw new Error(`not supported high order types ${list.text}`);
       }
@@ -133,21 +129,22 @@ function make(typedefs) {
   var o = typedefs.map((x) => mkMethod(x, allNames));
   var output = `
 open J
-let unknown : 'a. 'a -> 'a = fun x -> x 
-let option sub = fun v -> 
+let [@inline] unknown : 'a. 'a -> 'a = fun x -> x 
+let [@inline] option sub = fun v -> 
   match v with 
   | None -> None
   | Some v -> Some (sub v)
+let rec list sub = fun v ->
+  match v with 
+  | [] -> []
+  | x::xs -> 
+    let v = sub x in 
+    v :: list sub xs 
+    (* Note we need add [v] to enforce the evaluation order
+      it indeed cause different semantis here  
+    *) 
 class map = object
 ((_self : 'self_type))
-method list :
-  'a 'a_out. ('self_type -> 'a -> 'a_out) -> 'a list -> 'a_out list =
-  fun _f_a ->
-    function
-    | [] -> []
-    | _x :: _x_i1 ->
-        let _x = _f_a _self _x in
-        let _x_i1 = _self#list _f_a _x_i1 in _x :: _x_i1
 ${o.join("\n")}
 end
 `;
