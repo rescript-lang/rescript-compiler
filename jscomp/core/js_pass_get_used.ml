@@ -48,30 +48,31 @@ let post_process_stats my_export_set (defined_idents : J.variable_declaration Ha
     since in this case it can not be global?  
 
 *)
+let super = Js_record_iter.iter  
 let count_collects 
   (* collect used status*)
   (stats : int Hash_ident.t)
   (* collect all def sites *)
-  (defined_idents : J.variable_declaration Hash_ident.t) : Js_iter.iter
+  (defined_idents : J.variable_declaration Hash_ident.t) 
    = 
-  object (self)
-    inherit Js_iter.iter
-    method! variable_declaration 
-        ({ident; value ; property = _ ; ident_info = _}  as v)
-      =  
+  {super with 
+     variable_declaration = (fun self 
+        ({ident; value ; property = _ ; ident_info = _}  as v) -> 
+      
       Hash_ident.add defined_idents ident v; 
       match value with 
       | None -> ()
       | Some x
-        -> self#expression x 
-    method! ident id = add_use stats id
-  end
+        -> self.expression self x );
+    ident = fun _ id -> add_use stats id
+  }
 
 
 let get_stats (program : J.program) : J.variable_declaration Hash_ident.t
   =      
   let stats : int Hash_ident.t = Hash_ident.create 83 in   
   let defined_idents : J.variable_declaration Hash_ident.t = Hash_ident.create 83 in
-  let my_export_set =  program.export_set in 
-  (count_collects stats defined_idents) #program program;
+  let my_export_set =  program.export_set in
+  let obj =  count_collects stats defined_idents in 
+  obj.program obj program;
   post_process_stats my_export_set defined_idents stats 

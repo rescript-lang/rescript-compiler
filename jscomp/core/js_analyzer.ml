@@ -44,47 +44,51 @@ let add_defined_idents (x : idents_stats) ident =
    Note such shaking is done in the toplevel, so that it requires us to 
    flatten the statement first 
 *)
-let free_variables (stats : idents_stats) : Js_iter.iter = 
-  object (self)
-    inherit Js_iter.iter as super
-    method! variable_declaration st = 
-      add_defined_idents stats st.ident; 
-      match st.value with 
-      |  None
-        ->  ()
-      | Some v
-        -> 
-        self # expression v
-    method! ident id = 
-      (if not (Set_ident.mem stats.defined_idents id )then 
-         stats.used_idents <- Set_ident.add stats.used_idents id)
+let super = Js_record_iter.iter
+let free_variables (stats : idents_stats) = {
+  super with 
+  variable_declaration = begin fun self st ->   
+    add_defined_idents stats st.ident; 
+    match st.value with 
+    |  None
+      ->  ()
+    | Some v
+      -> 
+      self.expression self v
 
-    method! expression exp = 
-      match exp.expression_desc with
-      | Fun(_, _,_, env)
-        (** a optimization to avoid walking into funciton again
-            if it's already comuted
-        *)
-        ->
-        stats.used_idents <-
-          Set_ident.union (Js_fun_env.get_unbounded env) stats.used_idents
+  end;
+  ident = begin fun _ id -> 
+    if not (Set_ident.mem stats.defined_idents id )then 
+      stats.used_idents <- Set_ident.add stats.used_idents id
+  end;
+  expression = begin fun self exp -> 
+    match exp.expression_desc with
+    | Fun(_, _,_, env)
+      (** a optimization to avoid walking into funciton again
+          if it's already comuted
+      *)
+      ->
+      stats.used_idents <-
+        Set_ident.union (Js_fun_env.get_unbounded env) stats.used_idents
+    | _
+      ->
+      super.expression self exp
+  end
+}
 
-
-      | _
-        ->
-        super#expression exp
-  end 
 
 let free_variables_of_statement  st = 
   let init = {used_idents = Set_ident.empty;  
-              defined_idents = Set_ident.empty} in 
-  let _ = (free_variables init)#statement st in 
+              defined_idents = Set_ident.empty} in
+  let obj = free_variables init in               
+  obj.statement obj st ;
   Set_ident.diff init.used_idents init.defined_idents
 
 let free_variables_of_expression  st = 
   let init = {used_idents = Set_ident.empty;  
               defined_idents = Set_ident.empty} in 
-  let _ = (free_variables init)#expression st in 
+  let obj = free_variables init in 
+  obj.expression obj st ;
   Set_ident.diff init.used_idents init.defined_idents
 
 let rec no_side_effect_expression_desc (x : J.expression_desc)  = 
@@ -139,10 +143,10 @@ and no_side_effect (x : J.expression)  =
 
 let no_side_effect_expression (x : J.expression) = no_side_effect x 
 
-let no_side_effect_obj  : Js_iter.iter = 
-  object (self)
-    inherit Js_iter.iter as super
-    method! statement s = 
+let super = Js_record_iter.iter 
+let no_side_effect_obj  = 
+  {super with 
+    statement = (fun self s -> 
         match s.statement_desc with 
         | Throw _ 
         | Debugger 
@@ -150,15 +154,15 @@ let no_side_effect_obj  : Js_iter.iter =
         | Variable _ 
         | Continue _ ->  
           raise_notrace Not_found
-        | Exp e -> self#expression e 
+        | Exp e -> self.expression self e 
         | Int_switch _ | String_switch _ | ForRange _ 
-        | If _ | While _   | Block _ | Return _ | Try _  -> super#statement s 
-    method! expression s = 
+        | If _ | While _   | Block _ | Return _ | Try _  -> super.statement self s );
+    expression = begin fun _ s ->  
       if not (no_side_effect_expression s) then raise_notrace Not_found
-  end
+  end}
 let no_side_effect_statement st = 
   try 
-    no_side_effect_obj#statement st; true
+    no_side_effect_obj.statement no_side_effect_obj st; true
   with _ -> false
 
 

@@ -180,10 +180,8 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_fold_basic.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_fun_env.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_fun_env.mli
-../lib/4.06.1/unstable/js_compiler.ml: ./core/js_iter.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_long.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_long.mli
-../lib/4.06.1/unstable/js_compiler.ml: ./core/js_map.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_name_of_module_id.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_name_of_module_id.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_number.ml
@@ -222,6 +220,8 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_pass_tailcall_inline.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_pass_tailcall_inline.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_raw_info.ml
+../lib/4.06.1/unstable/js_compiler.ml: ./core/js_record_iter.ml
+../lib/4.06.1/unstable/js_compiler.ml: ./core/js_record_map.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_shake.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_shake.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_stmt_make.ml
