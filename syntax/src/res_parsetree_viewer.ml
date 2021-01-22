@@ -538,11 +538,31 @@ let collectOrPatternChain pat =
   in
   loop pat []
 
-let rec isSinglePipeExpr expr = match expr.pexp_desc with
+let isSinglePipeExpr expr =
+  (* handles:
+   *   x
+   *   ->Js.Dict.get("wm-property")
+   *   ->Option.flatMap(Js.Json.decodeString)
+   *   ->Option.flatMap(x =>
+   *     switch x {
+   *     | "like-of" => Some(#like)
+   *     | "repost-of" => Some(#repost)
+   *     | _ => None
+   *     }
+   *   )
+   *)
+  let isPipeExpr expr = match expr.pexp_desc with
+  | Pexp_apply(
+      {pexp_desc = Pexp_ident {txt = Longident.Lident ("|." | "|>") }},
+      [(Nolabel, _operand1); (Nolabel, _operand2)]
+    )  -> true
+  | _ -> false
+  in
+  match expr.pexp_desc with
   | Pexp_apply(
       {pexp_desc = Pexp_ident {txt = Longident.Lident ("|." | "|>") }},
       [(Nolabel, operand1); (Nolabel, _operand2)]
-    ) when not (isSinglePipeExpr operand1) -> true
+    ) when not (isPipeExpr operand1) -> true
   | _ -> false
 
 let isUnderscoreApplySugar expr =
