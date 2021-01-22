@@ -40,7 +40,7 @@ deps_program : deps_program fn
     and 'a fn = iter -> 'a -> unit
     let iter : iter = {
      label : label fn  = ( unknown )  ;
- required_modules : required_modules fn  = ( fun _self arg -> list ((fun _self arg -> _self.module_id _self arg)) _self arg )  ;
+ required_modules : required_modules fn  = ( fun _self arg -> list _self.module_id _self arg )  ;
  ident : ident fn  = ( unknown )  ;
  module_id : module_id fn  = ( fun _self { id = _x0;kind = _x1} -> begin _self.ident _self _x0 end )  ;
  vident : vident fn  = ( fun _self -> function 
@@ -78,7 +78,7 @@ deps_program : deps_program fn
 |FlatCall ( _x0,_x1)  -> 
  begin _self.expression _self _x0;_self.expression _self _x1 end
 |Call ( _x0,_x1,_x2)  -> 
- begin _self.expression _self _x0;list ((fun _self arg -> _self.expression _self arg)) _self _x1 end
+ begin _self.expression _self _x0;list _self.expression _self _x1 end
 |String_index ( _x0,_x1)  -> 
  begin _self.expression _self _x0;_self.expression _self _x1 end
 |Array_index ( _x0,_x1)  -> 
@@ -86,20 +86,20 @@ deps_program : deps_program fn
 |Static_index ( _x0,_x1,_x2)  -> 
  begin _self.expression _self _x0 end
 |New ( _x0,_x1)  -> 
- begin _self.expression _self _x0;option (fun _self arg -> list ((fun _self arg -> _self.expression _self arg)) _self arg) _self _x1 end
+ begin _self.expression _self _x0;option (fun _self arg -> list _self.expression _self arg) _self _x1 end
 |Var ( _x0)  -> 
  begin _self.vident _self _x0 end
 |Fun ( _x0,_x1,_x2,_x3)  -> 
- begin list ((fun _self arg -> _self.ident _self arg)) _self _x1;_self.block _self _x2 end
+ begin list _self.ident _self _x1;_self.block _self _x2 end
 |Str _ -> ()
 |Unicode _ -> ()
 |Raw_js_code _ -> ()
 |Array ( _x0,_x1)  -> 
- begin list ((fun _self arg -> _self.expression _self arg)) _self _x0 end
+ begin list _self.expression _self _x0 end
 |Optional_block ( _x0,_x1)  -> 
  begin _self.expression _self _x0 end
 |Caml_block ( _x0,_x1,_x2,_x3)  -> 
- begin list ((fun _self arg -> _self.expression _self arg)) _self _x0;_self.expression _self _x2 end
+ begin list _self.expression _self _x0;_self.expression _self _x2 end
 |Caml_block_tag ( _x0)  -> 
  begin _self.expression _self _x0 end
 |Number _ -> ()
@@ -119,30 +119,30 @@ deps_program : deps_program fn
 |If ( _x0,_x1,_x2)  -> 
  begin _self.expression _self _x0;_self.block _self _x1;_self.block _self _x2 end
 |While ( _x0,_x1,_x2,_x3)  -> 
- begin option ((fun _self arg -> _self.label _self arg)) _self _x0;_self.expression _self _x1;_self.block _self _x2 end
+ begin option _self.label _self _x0;_self.expression _self _x1;_self.block _self _x2 end
 |ForRange ( _x0,_x1,_x2,_x3,_x4,_x5)  -> 
- begin option ((fun _self arg -> _self.for_ident_expression _self arg)) _self _x0;_self.finish_ident_expression _self _x1;_self.for_ident _self _x2;_self.for_direction _self _x3;_self.block _self _x4 end
+ begin option _self.for_ident_expression _self _x0;_self.finish_ident_expression _self _x1;_self.for_ident _self _x2;_self.for_direction _self _x3;_self.block _self _x4 end
 |Continue ( _x0)  -> 
  begin _self.label _self _x0 end
 |Break -> ()
 |Return ( _x0)  -> 
  begin _self.expression _self _x0 end
 |Int_switch ( _x0,_x1,_x2)  -> 
- begin _self.expression _self _x0;list ((fun _self arg -> _self.int_clause _self arg)) _self _x1;option ((fun _self arg -> _self.block _self arg)) _self _x2 end
+ begin _self.expression _self _x0;list _self.int_clause _self _x1;option _self.block _self _x2 end
 |String_switch ( _x0,_x1,_x2)  -> 
- begin _self.expression _self _x0;list ((fun _self arg -> _self.string_clause _self arg)) _self _x1;option ((fun _self arg -> _self.block _self arg)) _self _x2 end
+ begin _self.expression _self _x0;list _self.string_clause _self _x1;option _self.block _self _x2 end
 |Throw ( _x0)  -> 
  begin _self.expression _self _x0 end
 |Try ( _x0,_x1,_x2)  -> 
- begin _self.block _self _x0;option ((fun _self (_x0,_x1) -> begin _self.exception_ident _self _x0;_self.block _self _x1 end)) _self _x1;option ((fun _self arg -> _self.block _self arg)) _self _x2 end
+ begin _self.block _self _x0;option ((fun _self (_x0,_x1) -> begin _self.exception_ident _self _x0;_self.block _self _x1 end)) _self _x1;option _self.block _self _x2 end
 |Debugger -> () )  ;
  expression : expression fn  = ( fun _self { expression_desc = _x0;comment = _x1} -> begin _self.expression_desc _self _x0 end )  ;
  statement : statement fn  = ( fun _self { statement_desc = _x0;comment = _x1} -> begin _self.statement_desc _self _x0 end )  ;
- variable_declaration : variable_declaration fn  = ( fun _self { ident = _x0;value = _x1;property = _x2;ident_info = _x3} -> begin _self.ident _self _x0;option ((fun _self arg -> _self.expression _self arg)) _self _x1 end )  ;
+ variable_declaration : variable_declaration fn  = ( fun _self { ident = _x0;value = _x1;property = _x2;ident_info = _x3} -> begin _self.ident _self _x0;option _self.expression _self _x1 end )  ;
  string_clause : string_clause fn  = ( (fun _self (_x0,_x1) -> begin _self.case_clause _self _x1 end) )  ;
  int_clause : int_clause fn  = ( (fun _self (_x0,_x1) -> begin _self.case_clause _self _x1 end) )  ;
  case_clause : case_clause fn  = ( fun _self { switch_body = _x0;should_break = _x1;comment = _x2} -> begin _self.block _self _x0 end )  ;
- block : block fn  = ( fun _self arg -> list ((fun _self arg -> _self.statement _self arg)) _self arg )  ;
+ block : block fn  = ( fun _self arg -> list _self.statement _self arg )  ;
  program : program fn  = ( fun _self { block = _x0;exports = _x1;export_set = _x2} -> begin _self.block _self _x0 end )  ;
  deps_program : deps_program fn  = ( fun _self { program = _x0;modules = _x1;side_effect = _x2} -> begin _self.program _self _x0;_self.required_modules _self _x1 end )      
     }
