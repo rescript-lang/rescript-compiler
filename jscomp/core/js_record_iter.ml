@@ -1,7 +1,7 @@
 
     open J  
     let unknown _ _ = ()
-    let option sub self = fun v -> 
+    let [@inline] option sub self = fun v -> 
       match v with 
       | None -> ()
       | Some v -> sub self v
@@ -38,7 +38,7 @@ program : program fn;
 deps_program : deps_program fn
     }  
     and 'a fn = iter -> 'a -> unit
-    let iter : iter = {
+    let super : iter = {
      label : label fn  = ( unknown )  ;
  required_modules : required_modules fn  = ( fun _self arg -> list _self.module_id _self arg )  ;
  ident : ident fn  = ( unknown )  ;

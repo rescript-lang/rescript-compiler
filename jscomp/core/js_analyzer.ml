@@ -44,7 +44,7 @@ let add_defined_idents (x : idents_stats) ident =
    Note such shaking is done in the toplevel, so that it requires us to 
    flatten the statement first 
 *)
-let super = Js_record_iter.iter
+let super = Js_record_iter.super
 let free_variables (stats : idents_stats) = {
   super with 
   variable_declaration = begin fun self st ->   
@@ -145,7 +145,7 @@ and no_side_effect (x : J.expression)  =
 
 let no_side_effect_expression (x : J.expression) = no_side_effect x 
 
-let super = Js_record_iter.iter 
+let super = Js_record_iter.super
 let no_side_effect_obj  = 
   {super with 
     statement = (fun self s -> 

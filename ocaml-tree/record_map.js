@@ -202,7 +202,7 @@ function make(typedefs) {
   var o = `
     open J  
     let [@inline] unknown _ x = x
-    let option sub self = fun v -> 
+    let [@inline] option sub self = fun v -> 
       match v with 
       | None -> None
       | Some v -> Some (sub self v)

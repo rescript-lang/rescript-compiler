@@ -197,7 +197,7 @@ function make(typedefs) {
   var o = `
     open J  
     let unknown _ _ = ()
-    let option sub self = fun v -> 
+    let [@inline] option sub self = fun v -> 
       match v with 
       | None -> ()
       | Some v -> sub self v
@@ -212,7 +212,7 @@ function make(typedefs) {
       ${customNames.map((x) => `${x} : ${x} fn`).join(";\n")}
     }  
     and 'a fn = iter -> 'a -> unit
-    let iter : iter = {
+    let super : iter = {
     ${output.join(";\n")}    
     }
     `;
