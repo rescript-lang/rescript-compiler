@@ -76,18 +76,20 @@ let free_variables (stats : idents_stats) = {
   end
 }
 
+let init = {used_idents = Set_ident.empty;  
+            defined_idents = Set_ident.empty} 
+let obj = free_variables init 
+let clean_up init = 
+  init.used_idents <- Set_ident.empty;
+  init.defined_idents <- Set_ident.empty
 
 let free_variables_of_statement  st = 
-  let init = {used_idents = Set_ident.empty;  
-              defined_idents = Set_ident.empty} in
-  let obj = free_variables init in               
+  clean_up init;  
   obj.statement obj st ;
   Set_ident.diff init.used_idents init.defined_idents
 
 let free_variables_of_expression  st = 
-  let init = {used_idents = Set_ident.empty;  
-              defined_idents = Set_ident.empty} in 
-  let obj = free_variables init in 
+  clean_up init;  
   obj.expression obj st ;
   Set_ident.diff init.used_idents init.defined_idents
 
