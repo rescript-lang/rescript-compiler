@@ -1,5 +1,6 @@
 ## Unreleased
 
+* Implement intelligent breaking for poly-var type expressions in [#246](https://github.com/rescript-lang/syntax/pull/246)
 * Improve indentation of fast pipe chain in let binding in [#244](https://github.com/rescript-lang/syntax/pull/244)
 * Improve printing of non-callback arguments in call expressions with callback in [#241](https://github.com/rescript-lang/syntax/pull/241/files)
 * Fix printing of constrained expressions in rhs of js objects [#240](https://github.com/rescript-lang/syntax/pull/240)

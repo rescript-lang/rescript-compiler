@@ -1587,6 +1587,7 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
   | Ptyp_class _ ->
     Doc.text "classes are not supported in types"
   | Ptyp_variant (rowFields, closedFlag, labelsOpt) ->
+    let forceBreak = typExpr.ptyp_loc.Location.loc_start.pos_lnum < typExpr.ptyp_loc.loc_end.pos_lnum in
     let printRowField = function
     | Parsetree.Rtag ({txt}, attrs, true, []) ->
       Doc.group (
@@ -1615,7 +1616,10 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
     in
     let docs = List.map printRowField rowFields in
     let cases = Doc.join ~sep:(Doc.concat [Doc.line; Doc.text "| "]) docs in
-    let cases = if docs = [] then cases else Doc.concat [Doc.ifBreaks (Doc.text "| ") Doc.nil; cases] in
+    let cases =
+      if docs = [] then cases
+      else Doc.concat [Doc.ifBreaks (Doc.text "| ") Doc.nil; cases]
+    in
     let openingSymbol =
       if closedFlag = Open
       then Doc.concat [Doc.greaterThan; Doc.line]
@@ -1628,10 +1632,14 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
     | Some([]) ->
       Doc.nil
     | Some(labels) ->
-      Doc.concat (List.map (fun label -> Doc.concat [Doc.line; Doc.text "#" ; printPolyVarIdent label] ) labels)
+      Doc.concat (
+        List.map (fun label ->
+          Doc.concat [Doc.line; Doc.text "#" ; printPolyVarIdent label]
+        ) labels
+      )
     in
     let closingSymbol = if hasLabels then Doc.text " >" else Doc.nil in
-    Doc.group (
+    Doc.breakableGroup ~forceBreak (
       Doc.concat [
         Doc.lbracket;
         Doc.indent (

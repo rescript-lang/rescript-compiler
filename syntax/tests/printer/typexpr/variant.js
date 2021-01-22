@@ -82,3 +82,14 @@ module type Conjunctive = {
   let g: [< | #S&([< u2]) & ([< u2]) & ([< u1])] => unit
   let g: [< | #"Exotic-S+"&([< #"Exotic-u2+"]) & ([< #"Exotic-u2-"]) & ([< #"Exotic-u1+++"])] => unit
 };
+
+
+// should break because user wrote it over serveral lines
+type currencyPoly = [#USD 
+  | #CAD | #EUR]
+
+// should not break, user wrote it on one line
+type currencyPoly = [#USD | #CAD | #EUR]
+//
+// should break, line length exceeded
+type currencyPoly = [#UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUSD | #CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD | #EUUUUUUUUUUUUUUUUUUUR]

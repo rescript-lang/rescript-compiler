@@ -596,7 +596,10 @@ let id = (x: [> #Red | #Green | #Blue]) => x
 let upper = (x: [< #Red | #Green]) => true
 type point = [#Point(float, float)]
 type \\\\\\"type\\" = [#\\"Point🗿\\"(\\\\\\"let\\", float)]
-type shape = [#Rectangle(point, point) | #Circle(point, float)]
+type shape = [
+  | #Rectangle(point, point)
+  | #Circle(point, float)
+]
 
 type madness = [< #\\"type\\" & (\\\\\\"let\\") & (\\\\\\"Super exotic\\") | #\\"Bad Idea\\"]
 
@@ -648,7 +651,11 @@ type x = [
   | #Baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaz
 ]
 
-type animation = [#\\"ease-in\\" | #\\"ease-out\\" | #\\"never ease ✍️\\"]
+type animation = [
+  | #\\"ease-in\\"
+  | #\\"ease-out\\"
+  | #\\"never ease ✍️\\"
+]
 
 module type Conjunctive = {
   type u1 = [#A | #B]
@@ -663,5 +670,22 @@ module type Conjunctive = {
     & ([< #\\"Exotic-u1+++\\"])
   ] => unit
 }
+
+// should break because user wrote it over serveral lines
+type currencyPoly = [
+  | #USD
+  | #CAD
+  | #EUR
+]
+
+// should not break, user wrote it on one line
+type currencyPoly = [#USD | #CAD | #EUR]
+//
+// should break, line length exceeded
+type currencyPoly = [
+  | #UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUSD
+  | #CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD
+  | #EUUUUUUUUUUUUUUUUUUUR
+]
 "
 `;
