@@ -28,7 +28,7 @@
 let add_lam_module_ident = Lam_module_ident.Hash_set.add
 let create = Lam_module_ident.Hash_set.create
 
-let super = Js_record_iter.iter 
+let super = Js_record_iter.super 
 let  count_hard_dependencies hard_dependencies = {
   super with 
   module_id = begin 

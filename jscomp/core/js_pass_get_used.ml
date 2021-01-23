@@ -48,7 +48,7 @@ let post_process_stats my_export_set (defined_idents : J.variable_declaration Ha
     since in this case it can not be global?  
 
 *)
-let super = Js_record_iter.iter  
+let super = Js_record_iter.super  
 let count_collects 
   (* collect used status*)
   (stats : int Hash_ident.t)

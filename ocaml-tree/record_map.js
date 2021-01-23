@@ -59,6 +59,14 @@ function mkBody(def, allNames) {
   }
 }
 
+/**
+ * @typedef {  { eta: string; beta(x: string): string; method? : string } } Obj
+ *
+ */
+
+/**
+ * @type {Obj}
+ */
 var skip_obj = {
   eta: skip,
   /**
@@ -78,7 +86,6 @@ var skip_obj = {
  * The code fragments should have two operations
  * - eta-expanded
  *   needed due to `self` is missing
- * @typedef {typeof skip_obj} Obj
  * @returns {Obj}
  */
 function mkStructuralTy(def, allNames) {
@@ -92,6 +99,7 @@ function mkStructuralTy(def, allNames) {
           beta(x) {
             return `let ${x} = ${code} _self ${x} in `;
           },
+          method: code,
         };
       }
       return skip_obj;
@@ -105,11 +113,15 @@ function mkStructuralTy(def, allNames) {
           if (inner === skip_obj) {
             return skip_obj;
           }
+          var inner_code = inner.method;
+          if (inner_code === undefined) {
+            inner_code = `(${inner.eta})`;
+          }
           // return `${list.text} (${inner})`;
           return {
-            eta: `fun _self arg -> ${list.text} (${inner.eta}) _self arg`,
+            eta: `fun _self arg -> ${list.text} ${inner_code} _self arg`,
             beta(x) {
-              return `let ${x} = ${list.text} (${inner.eta}) _self ${x} in `;
+              return `let ${x} = ${list.text} ${inner_code} _self ${x} in `;
             },
           };
         default:
@@ -121,7 +133,9 @@ function mkStructuralTy(def, allNames) {
       var body = args
         .map((x, i) => mkBodyApply(def.children[i], allNames, x))
         .filter(Boolean);
-      var snippet = `(${args.join(",")}) -> begin ${body.join(" ")} (${args.join(",")}) end`;
+      var snippet = `(${args.join(",")}) -> begin ${body.join(
+        " "
+      )} (${args.join(",")}) end`;
       return {
         eta: `(fun _self ${snippet})`,
         beta(x) {
@@ -188,7 +202,7 @@ function make(typedefs) {
   var o = `
     open J  
     let [@inline] unknown _ x = x
-    let option sub self = fun v -> 
+    let [@inline] option sub self = fun v -> 
       match v with 
       | None -> None
       | Some v -> Some (sub self v)

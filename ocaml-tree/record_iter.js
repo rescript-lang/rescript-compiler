@@ -56,7 +56,14 @@ function mkBody(def, allNames) {
       throw new Error(`unkonwn ${def.type}`);
   }
 }
+/**
+ * @typedef {  { eta: string; beta(x: string): string; method? : string } } Obj
+ *
+ */
 
+/**
+ * @type {Obj}
+ */
 var skip_obj = {
   eta: skip,
   /**
@@ -76,7 +83,6 @@ var skip_obj = {
  * The code fragments should have two operations
  * - eta-expanded
  *   needed due to `self` is missing
- * @typedef {typeof skip_obj} Obj
  * @returns {Obj}
  */
 function mkStructuralTy(def, allNames) {
@@ -90,6 +96,7 @@ function mkStructuralTy(def, allNames) {
           beta(x) {
             return `${code} _self ${x}`;
           },
+          method: code,
         };
       }
       return skip_obj;
@@ -104,10 +111,14 @@ function mkStructuralTy(def, allNames) {
             return skip_obj;
           }
           // return `${list.text} (${inner})`;
+          var inner_code = inner.method;
+          if (inner_code === undefined) {
+            inner_code = `(${inner.eta})`;
+          }
           return {
-            eta: `fun _self arg -> ${list.text} (${inner.eta}) _self arg`,
+            eta: `fun _self arg -> ${list.text} ${inner_code} _self arg`,
             beta(x) {
-              return `${list.text} (${inner.eta}) _self ${x}`;
+              return `${list.text} ${inner_code} _self ${x}`;
             },
           };
         default:
@@ -186,7 +197,7 @@ function make(typedefs) {
   var o = `
     open J  
     let unknown _ _ = ()
-    let option sub self = fun v -> 
+    let [@inline] option sub self = fun v -> 
       match v with 
       | None -> ()
       | Some v -> sub self v
@@ -201,7 +212,7 @@ function make(typedefs) {
       ${customNames.map((x) => `${x} : ${x} fn`).join(";\n")}
     }  
     and 'a fn = iter -> 'a -> unit
-    let iter : iter = {
+    let super : iter = {
     ${output.join(";\n")}    
     }
     `;

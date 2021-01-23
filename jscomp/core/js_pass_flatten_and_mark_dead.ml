@@ -39,7 +39,7 @@ type meta_info =
   | Recursive
 
 
-let super = Js_record_iter.iter
+let super = Js_record_iter.super
 
 let mark_dead_code (js : J.program) : J.program = 
   let ident_use_stats : meta_info Hash_ident.t
