@@ -17,7 +17,7 @@ function mkMethod({ name, def }, allNames) {
   return `method ${name} : ${name} -> unit = ${mkBody(def, allNames)}  `;
 }
 
-var skip = `unknown _self`;
+var skip = `ignore`;
 
 /**
  * @param {Node} def
@@ -36,10 +36,22 @@ function mkBody(def, allNames) {
     case "constructed_type":
       // FIXME
       var [list, base] = [...def.children].reverse();
-      return `${mkBody(list, allNames)} (fun _self -> ${mkBody(
-        base,
-        allNames
-      )})`;
+
+      switch (list.text) {
+        case "option":
+        case "list":  
+          var inner = mkBody(base, allNames);
+          if (inner === skip) {
+            return inner;
+          }
+          return `(${list.text} ${inner})`;
+        // case "list":
+        //   // there are list and other
+        //   return `(${mkBody(list, allNames)} ${mkBody(base, allNames)})`;
+        default:
+          throw new Error(`not supported high order types ${list.text}`);
+      }
+
     case "record_declaration":
       var len = def.children.length;
       var args = init(len, (i) => `_x${i}`);
@@ -67,7 +79,7 @@ function mkBody(def, allNames) {
       var body = args
         .map((x, i) => mkBodyApply(def.children[i], allNames, x))
         .filter(Boolean);
-      return `fun ( ${args.join(",")}) -> begin ${body.join(";")} end`;
+      return `(fun ( ${args.join(",")}) -> begin ${body.join(";")} end)`;
     default:
       throw new Error(`unkonwn ${def.type}`);
   }
@@ -127,18 +139,16 @@ function make(typedefs) {
   var output = typedefs.map((x) => mkMethod(x, allNames));
   var o = `
     open J  
-    let unknown _self _ = ()
-    class iter =
-      object ((_self : 'self_type))
-        method option :
-          'a. ('self_type -> 'a -> unit) -> 'a option -> unit =
-          fun _f_a -> function | None -> () | Some _x ->  _f_a _self _x 
-        method list :
-          'a. ('self_type -> 'a -> unit) -> 'a list -> unit =
-          fun _f_a ->
-            function
-            | [] -> ()
-            | _x :: _x_i1 -> _f_a _self _x ;  _self#list _f_a _x_i1 
+
+    let option sub  v =
+      match v with 
+      | None -> ()
+      | Some v -> sub  v
+    let rec list sub v =
+      match v with 
+      | [] -> ()
+      | x::xs -> sub x ; list sub xs 
+    class iter = object (_self : 'self_type)
     ${output.join("\n")}    
     end
     `;

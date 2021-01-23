@@ -27,25 +27,30 @@
 
 let add_lam_module_ident = Lam_module_ident.Hash_set.add
 let create = Lam_module_ident.Hash_set.create
-let count_hard_dependencies hard_dependencies = 
-  object
-    inherit  Js_iter.iter as super
-    method! module_id vid = 
-        add_lam_module_ident  hard_dependencies vid
-    method! expression x   = 
-      (* check {!Js_pass_scope} when making changes *)
+
+let super = Js_record_iter.iter 
+let  count_hard_dependencies hard_dependencies = {
+  super with 
+  module_id = begin 
+    fun _ vid -> 
+      add_lam_module_ident hard_dependencies vid
+  end;
+  expression = begin 
+    fun self x ->   
       (match  Js_block_runtime.check_additional_id x with
        | Some id -> 
          add_lam_module_ident hard_dependencies
            (Lam_module_ident.of_runtime 
               id)
        | _ -> ());
-      super#expression x
-  end
+      super.expression self x
+  end    
+}
 
 let calculate_hard_dependencies block = 
   let hard_dependencies = create 17 in   
-  (count_hard_dependencies hard_dependencies)#block block ;
+  let obj = (count_hard_dependencies hard_dependencies) in 
+  obj.block obj block ;
   hard_dependencies
 
 (*

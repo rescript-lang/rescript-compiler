@@ -34,10 +34,17 @@ function mkBody(def, allNames) {
     case "constructed_type":
       // FIXME
       var [list, base] = [...def.children].reverse();
-      return `${mkBody(list, allNames)} (fun _self -> ${mkBody(
-        base,
-        allNames
-      )})`;
+      switch (list.text) {
+        case "option":
+        case "list":  
+          var inner = mkBody(base, allNames);
+          if (inner === skip) {
+            return inner;
+          }
+          return `${list.text} (fun _self -> ${inner}) _self`;
+        default:
+          throw new Error(`not supported high order types ${list.text}`);
+      }
     case "record_declaration":
       var len = def.children.length;
       var args = init(len, (i) => `_x${i}`);
@@ -110,9 +117,9 @@ function mkBranch(branch, allNames) {
       return mkBodyApply(ty, allNames, x);
     })
     .filter(Boolean);
-  if(body.length === 0){
-    return `${text} _ -> _self`
-  }  
+  if (body.length === 0) {
+    return `${text} _ -> _self`;
+  }
   return `${pat_exp} -> \n${body.join("\n")}\n _self`;
 }
 
@@ -127,11 +134,18 @@ function make(typedefs) {
   var o = `
     open J  
     let [@inline] unknown _self _ = _self
+    let [@inline] option sub  self = fun v -> 
+      match v with 
+      | None -> self 
+      | Some x -> sub self x 
+    let rec list (sub : 'self_type -> 'a -> 'self_type) self = fun v ->
+      match  v with 
+      | [] -> self 
+      | x::xs -> 
+        let self = sub self x in 
+        list sub self xs 
     class  fold =
       object ((_self : 'self_type))
-        method option :
-          'a. ('self_type -> 'a -> 'self_type) -> 'a option -> 'self_type =
-          fun _f_a -> function | None -> _self | Some _x -> let _self = _f_a _self _x in _self
         method list :
           'a. ('self_type -> 'a -> 'self_type) -> 'a list -> 'self_type =
           fun _f_a ->

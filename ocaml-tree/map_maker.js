@@ -33,10 +33,18 @@ function mkBody(def, allNames) {
     case "constructed_type":
       // FIXME
       var [list, base] = [...def.children].reverse();
-      return `${mkBody(list, allNames)} (fun _self -> ${mkBody(
-        base,
-        allNames
-      )})`;
+      switch (list.text) {
+        case "option":
+        case "list":
+          var inner = mkBody(base, allNames);
+          if (inner === skip) {
+            return inner;
+          }
+          return `${list.text} (${inner})`;
+        default:
+          throw new Error(`not supported high order types ${list.text}`);
+      }
+
     case "record_declaration":
       var len = def.children.length;
       var args = init(len, (i) => `_x${i}`);
@@ -98,7 +106,7 @@ function mkBranch(branch, allNames) {
   if (len === 0) {
     return `${text} as v -> v`;
   }
-  
+
   var args = init(len, (i) => `_x${i}`);
   var pat_exp = `${text} ( ${args.join(",")}) `;
   var body = args
@@ -107,9 +115,9 @@ function mkBranch(branch, allNames) {
       return mkBodyApply(ty, allNames, x);
     })
     .filter(Boolean);
-  if(body.length === 0) {
-    return `${text} _ as v -> v `
-  }  
+  if (body.length === 0) {
+    return `${text} _ as v -> v `;
+  }
   return `${pat_exp} -> \n${body.join("\n")}\n${pat_exp}`;
 }
 /**
@@ -121,21 +129,22 @@ function make(typedefs) {
   var o = typedefs.map((x) => mkMethod(x, allNames));
   var output = `
 open J
-let unknown : 'a. 'a -> 'a = fun x -> x 
+let [@inline] unknown : 'a. 'a -> 'a = fun x -> x 
+let [@inline] option sub = fun v -> 
+  match v with 
+  | None -> None
+  | Some v -> Some (sub v)
+let rec list sub = fun v ->
+  match v with 
+  | [] -> []
+  | x::xs -> 
+    let v = sub x in 
+    v :: list sub xs 
+    (* Note we need add [v] to enforce the evaluation order
+      it indeed cause different semantis here  
+    *) 
 class map = object
 ((_self : 'self_type))
-method option :
-  'a 'a_out. ('self_type -> 'a -> 'a_out) -> 'a option -> 'a_out option =
-  fun _f_a ->
-    function | None -> None | Some _x -> let _x = _f_a _self _x in Some _x
-method list :
-  'a 'a_out. ('self_type -> 'a -> 'a_out) -> 'a list -> 'a_out list =
-  fun _f_a ->
-    function
-    | [] -> []
-    | _x :: _x_i1 ->
-        let _x = _f_a _self _x in
-        let _x_i1 = _self#list _f_a _x_i1 in _x :: _x_i1
 ${o.join("\n")}
 end
 `;

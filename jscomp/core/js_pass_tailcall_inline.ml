@@ -40,13 +40,12 @@
 module S = Js_stmt_make
 (* module E = Js_exp_make *)
 
+let super = Js_record_map.super
+let substitue_variables (map : Ident.t Map_ident.t) = {
+  super with ident = fun _ id ->
+    Map_ident.find_default map id id 
 
-let substitue_variables (map : Ident.t Map_ident.t) = 
-    object
-      inherit Js_map.map
-      method! ident id =
-         Map_ident.find_default map id id 
-    end         
+}
 
 (* 1. recursive value ? let rec x = 1 :: x
     non-terminating
@@ -88,7 +87,9 @@ let inline_call
            | _ -> 
              map, S.define_variable ~kind:Variable param arg :: acc) in
   if Map_ident.is_empty map then block 
-  else (substitue_variables map) # block block  
+  else 
+    let obj = substitue_variables map in 
+    obj.block obj block  
 
 (** There is a side effect when traversing dead code, since 
     we assume that substitue a node would mark a node as dead node,
@@ -115,10 +116,10 @@ let inline_call
     (when we forget to recursive apply), then some code non-dead [find_beg] will be marked as dead, 
     while it is still called 
 *)
-let subst (export_set : Set_ident.t) stats  = 
-  object (self)
-    inherit Js_map.map as super
-    method! statement st = 
+let super = Js_record_map.super
+let subst (export_set : Set_ident.t) stats  = {super with 
+  
+    statement  = (fun self st ->
       match st.statement_desc with 
       | Variable 
           {value = _ ;
@@ -130,18 +131,17 @@ let subst (export_set : Set_ident.t) stats  =
       | Variable { ident_info = {used_stats = Dead_non_pure} ;
                    value = Some v  ; _ }        
         -> S.exp v
-      | _ -> super#statement st 
-    method! variable_declaration 
-        ({ident; value = _ ; property = _ ; ident_info = _}  as v)
-      =  
+      | _ -> super.statement self st );
+    variable_declaration = (fun self 
+        ({ident; value = _ ; property = _ ; ident_info = _}  as v) -> 
       (* TODO: replacement is a bit shaky, the problem is the lambda we stored is
          not consistent after we did some subsititution, and the dead code removal
          does rely on this (otherwise, when you do beta-reduction you have to regenerate names)
       *)
-      let v = super # variable_declaration v in
+      let v = super . variable_declaration self v in
       Hash_ident.add stats ident v; (* see #278 before changes *)
-      v
-    method! block bs = 
+      v);
+     block = (fun self bs ->
       match bs with
       | ({statement_desc = 
             Variable ({value =
@@ -149,17 +149,17 @@ let subst (export_set : Set_ident.t) stats  =
                       } as vd) ; comment = _} as st) :: rest  -> 
         let is_export = Set_ident.mem export_set vd.ident in
         if is_export then 
-          self#statement st :: self#block rest 
+          self.statement self st :: self.block self rest 
         else 
           begin 
             match Hash_ident.find_opt stats vd.ident with 
             (* TODO: could be improved as [mem] *)
             | None -> 
               if Js_analyzer.no_side_effect_expression v 
-              then S.exp v  :: self#block rest 
-              else self#block rest 
+              then S.exp v  :: self.block self rest 
+              else self.block self rest 
 
-            | Some _ -> self#statement st  :: self#block rest 
+            | Some _ -> self.statement self st  :: self.block self rest 
           end
 
       | [{statement_desc = 
@@ -182,7 +182,7 @@ let subst (export_set : Set_ident.t) stats  =
             -> 
             Js_op_util.update_used_stats v.ident_info Dead_pure;
             let no_tailcall = Js_fun_env.no_tailcall env in 
-            let processed_blocks = ( self#block block) (* see #278 before changes*) in 
+            let processed_blocks = ( self.block self block) (* see #278 before changes*) in 
             inline_call no_tailcall params args processed_blocks
             (* Ext_list.fold_right2 
               params args  processed_blocks
@@ -193,7 +193,7 @@ let subst (export_set : Set_ident.t) stats  =
             *)
 
           | (None | Some _) ->
-            [self#statement st ]
+            [self.statement self st ]
         end
 
       | [{statement_desc = 
@@ -203,21 +203,22 @@ let subst (export_set : Set_ident.t) stats  =
             when Ext_list.same_length params args 
             -> 
             let no_tailcall = Js_fun_env.no_tailcall env in 
-            let processed_blocks = ( self#block block) (* see #278 before changes*) in 
+            let processed_blocks = ( self.block self block) (* see #278 before changes*) in 
             inline_call no_tailcall params args processed_blocks
       | x :: xs 
         ->
-        self#statement x :: self#block xs
+        self.statement self x :: self.block self xs
       | [] 
         -> 
         []
-
-  end
+     )
+}
 
 
 let tailcall_inline (program : J.program) = 
   let stats = Js_pass_get_used.get_stats program in
   let export_set = program.export_set in
-  (subst export_set stats )#program program
+  let obj = (subst export_set stats ) in 
+  obj.program obj program
 
     
