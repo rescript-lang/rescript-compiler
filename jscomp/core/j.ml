@@ -61,7 +61,6 @@ type property_name =  Js_op.property_name
 
 type label = string
  
-and required_modules = module_id list
 
 and ident = Ident.t (* we override `method ident` *)
 
@@ -74,6 +73,7 @@ and ident = Ident.t (* we override `method ident` *)
 and module_id = {
   id : ident; kind : Js_op.kind
 }
+and required_modules = module_id list
 and vident = 
   | Id of ident
   | Qualified of module_id * string option
@@ -273,7 +273,14 @@ and finish_ident_expression = expression (* pure *)
    }
    ]}
 *)
+and case_clause = {   
+  switch_body : block ;
+  should_break :  bool ;  (* true means break *)
+  comment : string option ;
+}
 
+and string_clause = string * case_clause
+and int_clause =  int * case_clause
 
 and statement_desc =
   | Block of block
@@ -325,13 +332,6 @@ and variable_declaration = {
   property : property;
   ident_info : ident_info;
 }
-and string_clause = string * case_clause
-and int_clause =  int * case_clause
-and case_clause = {   
-  switch_body : block ;
-  should_break :  bool ;  (* true means break *)
-  comment : string option ;
-}
 
 (* TODO: For efficency: block should not be a list, it should be able to 
    be concatenated in both ways 
@@ -350,4 +350,21 @@ and deps_program =
     modules : required_modules ;
     side_effect : string option (* None: no, Some reason  *)
   }
-  [@@deriving]
+[@@deriving {excludes =  [|
+    deps_program ; 
+    int_clause; 
+    string_clause ;
+    for_direction;
+    exception_ident;
+    for_direction;
+    expression_desc;
+    statement_desc;
+    for_ident_expression;
+    label;
+    finish_ident_expression;
+    property_map;
+    length_object;
+    for_ident;
+    required_modules;
+    case_clause
+    |] }]

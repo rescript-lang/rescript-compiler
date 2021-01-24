@@ -42,6 +42,10 @@ var fold_maker = require("./fold_maker");
 var iter_maker = require("./iter_maker");
 var record_iter = require("./record_iter");
 var record_map = require("./record_map");
+
+
+var maker = node_types.maker;
+
 // var p = new P()
 (async () => {
   await P.init();
@@ -52,19 +56,19 @@ var record_map = require("./record_map");
   var typedefs = node_types.getTypedefs(out);
   switch (mode) {
     case "map":
-      fs.writeFileSync(output, map_maker.make(typedefs), "utf8");
+      fs.writeFileSync(output, maker(map_maker.make, typedefs), "utf8");
       break;
     case "fold":
-      fs.writeFileSync(output, fold_maker.make(typedefs), "utf8");
+      fs.writeFileSync(output, maker(fold_maker.make, typedefs), "utf8");
       break;
     case "iter":
-      fs.writeFileSync(output, iter_maker.make(typedefs), "utf8");
+      fs.writeFileSync(output, maker(iter_maker.make, typedefs), "utf8");
       break;
     case "record-iter":
-      fs.writeFileSync(output, record_iter.make(typedefs), "utf8");
+      fs.writeFileSync(output, maker(record_iter.make, typedefs), "utf8");
       break;
     case "record-map":
-      fs.writeFileSync(output, record_map.make(typedefs), "utf8");
+      fs.writeFileSync(output, maker(record_map.make, typedefs), "utf8");
       break;
   }
 })();

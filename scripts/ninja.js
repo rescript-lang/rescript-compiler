@@ -1582,10 +1582,6 @@ rule p4of
     generator = true
 o core/js_fold.ml: p4of core/j.ml
     flags = -fold
-o core/js_map.ml: p4of core/j.ml
-    flags = -map    
-o core/js_iter.ml: p4of core/j.ml
-    flags = -iter
 o core/js_record_iter.ml: p4of core/j.ml
     flags = -record-iter
 o core/js_record_map.ml: p4of core/j.ml

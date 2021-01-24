@@ -20,9 +20,9 @@
             | [] -> _self
             | _x :: _x_i1 -> let _self = _f_a _self _x in let _self = _self#list _f_a _x_i1 in _self
     method label : label -> 'self_type = unknown _self  
-method required_modules : required_modules -> 'self_type = list (fun _self -> _self#module_id) _self  
 method ident : ident -> 'self_type = unknown _self  
 method module_id : module_id -> 'self_type = fun { id = _x0;kind = _x1} -> let _self = _self#ident _x0 in _self  
+method required_modules : required_modules -> 'self_type = list (fun _self -> _self#module_id) _self  
 method vident : vident -> 'self_type = function 
 | Id ( _x0)  -> 
 let _self = _self#ident _x0 in
@@ -127,6 +127,9 @@ let _self = _self#property_map _x0 in
 |Null -> _self   
 method for_ident_expression : for_ident_expression -> 'self_type = _self#expression  
 method finish_ident_expression : finish_ident_expression -> 'self_type = _self#expression  
+method case_clause : case_clause -> 'self_type = fun { switch_body = _x0;should_break = _x1;comment = _x2} -> let _self = _self#block _x0 in _self  
+method string_clause : string_clause -> 'self_type = fun ( _x0,_x1) -> let _self = _self#case_clause _x1 in _self  
+method int_clause : int_clause -> 'self_type = fun ( _x0,_x1) -> let _self = _self#case_clause _x1 in _self  
 method statement_desc : statement_desc -> 'self_type = function 
 | Block ( _x0)  -> 
 let _self = _self#block _x0 in
@@ -184,9 +187,6 @@ method expression : expression -> 'self_type = fun { expression_desc = _x0;comme
 method statement : statement -> 'self_type = fun { statement_desc = _x0;comment = _x1} -> let _self = _self#statement_desc _x0 in _self  
 method variable_declaration : variable_declaration -> 'self_type = fun { ident = _x0;value = _x1;property = _x2;ident_info = _x3} -> let _self = _self#ident _x0 in
 let _self = option (fun _self -> _self#expression) _self _x1 in _self  
-method string_clause : string_clause -> 'self_type = fun ( _x0,_x1) -> let _self = _self#case_clause _x1 in _self  
-method int_clause : int_clause -> 'self_type = fun ( _x0,_x1) -> let _self = _self#case_clause _x1 in _self  
-method case_clause : case_clause -> 'self_type = fun { switch_body = _x0;should_break = _x1;comment = _x2} -> let _self = _self#block _x0 in _self  
 method block : block -> 'self_type = list (fun _self -> _self#statement) _self  
 method program : program -> 'self_type = fun { block = _x0;exports = _x1;export_set = _x2} -> let _self = _self#block _x0 in _self  
 method deps_program : deps_program -> 'self_type = fun { program = _x0;modules = _x1;side_effect = _x2} -> let _self = _self#program _x0 in
