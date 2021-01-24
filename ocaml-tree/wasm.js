@@ -19,6 +19,9 @@ for (let i = 0; i < process.argv.length; ++i) {
     case "-record-map":
       mode = "record-map";
       break;
+    case "-record-fold":
+      mode = "record-fold";
+      break;
     case "-i":
       ++i;
       input = process.argv[i];
@@ -35,8 +38,7 @@ var node_types = require("./node_types");
 var fold_maker = require("./fold_maker");
 var record_iter = require("./record_iter");
 var record_map = require("./record_map");
-
-
+var record_fold = require("./record_fold");
 var maker = node_types.maker;
 
 // var p = new P()
@@ -50,6 +52,9 @@ var maker = node_types.maker;
   switch (mode) {
     case "fold":
       fs.writeFileSync(output, maker(fold_maker.make, typedefs), "utf8");
+      break;
+    case "record-fold":
+      fs.writeFileSync(output, maker(record_fold.make, typedefs), "utf8");
       break;
     case "record-iter":
       fs.writeFileSync(output, maker(record_iter.make, typedefs), "utf8");

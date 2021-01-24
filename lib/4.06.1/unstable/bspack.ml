@@ -10553,7 +10553,7 @@ external reraise: exn -> 'a = "%reraise"
 
 val finally : 
   'a ->
-  clean:('a -> 'c) -> 
+  clean:('a -> unit) -> 
   ('a -> 'b) -> 'b
 
 (* val try_it : (unit -> 'a) ->  unit  *)

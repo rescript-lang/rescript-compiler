@@ -6,8 +6,8 @@ OCaml.nodeTypeInfo = require("./src/node-types.json");
 var P = require("tree-sitter");
 var p = new P();
 p.setLanguage(OCaml);
-var nodeTypes = require("./node_types.js")
-var { Node, getTypedefs, nodeToObject,maker } = nodeTypes;
+var nodeTypes = require("./node_types.js");
+var { Node, getTypedefs, nodeToObject, maker } = nodeTypes;
 
 // https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview
 var nodeFormatter = {
@@ -68,8 +68,9 @@ var typedefs = getTypedefs(y);
 // var fold = maker(fold_maker.make,typedefs);
 // var map = maker(map_maker.make,typedefs);
 // var iter = maker(iter_maker.make,typedefs);
-var record_iter = require("./record_iter");
+// var record_iter = require("./record_iter");
+var record_fold = require("./record_fold");
 // var record_map = require("./record_map");
-var riter = maker(record_iter.make,typedefs);
+var riter = maker(record_fold.make, typedefs);
 // console.log(fold, map);
-fs.writeFileSync(path.join(j_dir, "js_record_iter.ml"), riter, "utf8");
+fs.writeFileSync(path.join(j_dir, "js_record_fold.ml"), riter, "utf8");
