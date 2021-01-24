@@ -1,12 +1,13 @@
 //@ts-check
 var assert = require("assert");
 var node_types = require("./node_types");
-var init = node_types.init;
+var { init, setDiff } = node_types;
 /**
  *
  * @typedef {import('./node_types').Node} Node
  * @typedef {import("./node_types").Names} Names
- * @typedef {import ("./node_types").Type} Type* 
+ * @typedef {import ("./node_types").Type} Type
+ * @typedef {import("./types").Obj} Obj
  */
 
 /**
@@ -58,20 +59,12 @@ function mkBody(def, allNames) {
       throw new Error(`unkonwn ${def.type}`);
   }
 }
-/**
- * @typedef {  { eta: string; beta(x: string): string; method? : string } } Obj
- *
- */
 
 /**
  * @type {Obj}
  */
 var skip_obj = {
   eta: skip,
-  /**
-   *
-   * @param {string} x
-   */
   beta(x) {
     return `${skip} ${x}`;
   },
@@ -94,9 +87,10 @@ function mkStructuralTy(def, allNames) {
       switch (basic.kind) {
         case "no":
           return skip_obj;
-        case "exclude":        
+        case "exclude":
         case "yes":
-          var code = basic.kind === 'yes' ? `_self.${basic.name}` : `${basic.name}`;    
+          var code =
+            basic.kind === "yes" ? `_self.${basic.name}` : `${basic.name}`;
           return {
             eta: `(fun _self arg -> ${code} _self arg)`,
             beta(x) {
@@ -191,51 +185,34 @@ function mkBranch(branch, allNames) {
 }
 
 /**
- *
- * @param {Set<string>} x
- * @param {Set<string>} y
- * @return {string[]}
- */
-function setDiff(x, y) {
-  var output = [];
-  for (let e of x) {
-    if (!y.has(e)) {
-      output.push(e);
-    }
-  }
-  return output;
-}
-/**
  * @param {Type} type
  * @returns {string}
  */
 function make(type) {
   var { types: typedefs, names } = type;
   var customNames = setDiff(names.all, names.excludes);
-  // var customNames = [...new Set([...typedefs.map((x) => x.name)])];
-  // var allNames = new Set(customNames.concat(["option", "list"]));
   var output = typedefs.map((x) => mkMethod(x, names));
   var o = `
-    open J  
-    let unknown _ _ = ()
-    let [@inline] option sub self = fun v -> 
-      match v with 
-      | None -> ()
-      | Some v -> sub self v
-    let rec list sub self = fun x  -> 
-      match x with 
-      | [] -> ()
-      | x::xs -> 
-         sub self x ;
-        list sub self xs
+open J  
+let unknown _ _ = ()
+let [@inline] option sub self = fun v -> 
+  match v with 
+  | None -> ()
+  | Some v -> sub self v
+let rec list sub self = fun x  -> 
+  match x with 
+  | [] -> ()
+  | x::xs -> 
+    sub self x ;
+    list sub self xs
 
-    type iter = {
-      ${customNames.map((x) => `${x} : ${x} fn`).join(";\n")}
-    }  
-    and 'a fn = iter -> 'a -> unit
-    ${output.join("\n")}
-    let super : iter = {
-    ${customNames.join("\n;")}    
+type iter = {
+${customNames.map((x) => `${x} : ${x} fn`).join(";\n")}
+}  
+and 'a fn = iter -> 'a -> unit
+${output.join("\n")}
+let super : iter = {
+${customNames.join(";\n")}    
     }
     `;
   return o;

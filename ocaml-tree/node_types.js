@@ -95,14 +95,14 @@ function isSupported(def, names) {
   if (def.children.length === 1) {
     var basic = def.mainText;
     if (allNames.has(basic)) {
-      if(excludes.has(basic)){
-        return {kind : 'exclude', name : basic}
-      }  
-      return {kind : 'yes', name : basic};
+      if (excludes.has(basic)) {
+        return { kind: "exclude", name: basic };
+      }
+      return { kind: "yes", name: basic };
     }
-    return {kind: 'no'};
+    return { kind: "no" };
   }
-  return {kind : 'no'};
+  return { kind: "no" };
 }
 /**
  * @template T
@@ -134,6 +134,23 @@ function extractExcludes(node) {
 function maker(make, typedefs) {
   return typedefs.map((x) => make(x)).reduce((x, y) => x + y);
 }
+
+/**
+ *
+ * @param {Set<string>} x
+ * @param {Set<string>} y
+ * @return {string[]}
+ */
+function setDiff(x, y) {
+  var output = [];
+  for (let e of x) {
+    if (!y.has(e)) {
+      output.push(e);
+    }
+  }
+  return output;
+}
+exports.setDiff = setDiff;
 exports.extractExcludes = extractExcludes;
 exports.maker = maker;
 exports.init = init;

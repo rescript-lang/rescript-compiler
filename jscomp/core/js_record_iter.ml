@@ -1,19 +1,19 @@
 
-    open J  
-    let unknown _ _ = ()
-    let [@inline] option sub self = fun v -> 
-      match v with 
-      | None -> ()
-      | Some v -> sub self v
-    let rec list sub self = fun x  -> 
-      match x with 
-      | [] -> ()
-      | x::xs -> 
-         sub self x ;
-        list sub self xs
+open J  
+let unknown _ _ = ()
+let [@inline] option sub self = fun v -> 
+  match v with 
+  | None -> ()
+  | Some v -> sub self v
+let rec list sub self = fun x  -> 
+  match x with 
+  | [] -> ()
+  | x::xs -> 
+    sub self x ;
+    list sub self xs
 
-    type iter = {
-      ident : ident fn;
+type iter = {
+ident : ident fn;
 module_id : module_id fn;
 vident : vident fn;
 expression : expression fn;
@@ -21,9 +21,9 @@ statement : statement fn;
 variable_declaration : variable_declaration fn;
 block : block fn;
 program : program fn
-    }  
-    and 'a fn = iter -> 'a -> unit
-    let  label : label fn  =  unknown   
+}  
+and 'a fn = iter -> 'a -> unit
+let  label : label fn  =  unknown   
 let  ident : ident fn  =  unknown   
 let  module_id : module_id fn  =  fun _self { id = _x0;kind = _x1} -> begin _self.ident _self _x0 end   
 let  required_modules : required_modules fn  =  fun _self arg -> list _self.module_id _self arg   
@@ -129,14 +129,14 @@ let  variable_declaration : variable_declaration fn  =  fun _self { ident = _x0;
 let  block : block fn  =  fun _self arg -> list _self.statement _self arg   
 let  program : program fn  =  fun _self { block = _x0;exports = _x1;export_set = _x2} -> begin _self.block _self _x0 end   
 let  deps_program : deps_program fn  =  fun _self { program = _x0;modules = _x1;side_effect = _x2} -> begin _self.program _self _x0;required_modules _self _x1 end   
-    let super : iter = {
-    ident
-;module_id
-;vident
-;expression
-;statement
-;variable_declaration
-;block
-;program    
+let super : iter = {
+ident;
+module_id;
+vident;
+expression;
+statement;
+variable_declaration;
+block;
+program    
     }
     
