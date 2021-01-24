@@ -3230,7 +3230,7 @@ and parseWhileExpression p =
 
 and parsePatternGuard p =
   match p.Parser.token with
-    | When ->
+    | When | If ->
       Parser.next p;
       Some (parseExpr ~context:WhenExpr p)
     | _ ->
@@ -6132,7 +6132,7 @@ and parsePayload p =
       Parser.next p;
       let pattern = parsePattern p in
       let expr = match p.token with
-      | When ->
+      | When | If ->
         Parser.next p;
         Some (parseExpr p)
       | _ ->

@@ -109,7 +109,7 @@ let x = 1
 @attr(? var)
 let x = 1
 
-@attr(? var when x === 1)
+@attr(? var if x === 1)
 let x = 1
 
 %ext(: let x: int)
@@ -129,21 +129,21 @@ exports[`case.js 1`] = `
 "let printExprFunParameters = (~uncurried, parameters) =>
   switch parameters {
   | list{([], Asttypes.Nolabel, None, {Parsetree.ppat_desc: Ppat_any})}
-    when !uncurried =>
+    if !uncurried =>
     Doc.text(\\"_\\")
   | list{(
       [],
       Asttypes.Nolabel,
       None,
       {Parsetree.ppat_desc: Ppat_var(stringLoc)},
-    )} when !uncurried =>
+    )} if !uncurried =>
     Doc.text(stringLoc.txt)
   | list{(
       [],
       Nolabel,
       None,
       {ppat_desc: Ppat_construct({txt: Longident.Lident(\\"()\\")}, None)},
-    )} when !uncurried =>
+    )} if !uncurried =>
     Doc.text(\\"()\\")
   | parameters =>
     let lparen = if uncurried {

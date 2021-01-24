@@ -4330,7 +4330,7 @@ and printCase (case: Parsetree.case) cmtTbl =
   | Some expr -> Doc.group (
       Doc.concat [
         Doc.line;
-        Doc.text "when ";
+        Doc.text "if ";
         printExpressionWithComments expr cmtTbl;
       ]
     )
@@ -4791,7 +4791,7 @@ and printPayload (payload : Parsetree.payload) cmtTbl =
     | Some expr ->
       Doc.concat [
         Doc.line;
-        Doc.text "when ";
+        Doc.text "if ";
         printExpressionWithComments expr cmtTbl;
       ]
     | None -> Doc.nil

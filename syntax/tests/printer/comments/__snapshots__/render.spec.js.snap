@@ -601,9 +601,9 @@ let multiply = (/* c0 */ m1 /* c1 */, /* c2 */ m2 /* c3 */) => {
 }
 
 switch x {
-| Blue when /* c0 */ multicore.enabled /* c1 */ === /* c2 */ true /* c3 */ => ()
+| Blue if /* c0 */ multicore.enabled /* c1 */ === /* c2 */ true /* c3 */ => ()
 | Red
-  when {
+  if {
     // c0
     open /* c1 */ Multicore // c2
     // c3
@@ -651,7 +651,7 @@ exports[`case.res 1`] = `
   } {
   | (None, None) => N.empty
   | (Some(n) /* (Node (l1, v1, d1, r1, h1), _) */, _)
-    when {
+    if {
       open N
       heightGet(n) >=
       switch N.toOpt(s2) {
@@ -1940,7 +1940,7 @@ let walkList: 'node. (
 ) => unit = (~prevLoc=?, ~getLoc, ~walkNode, l, t, comments) => {
   open Location
   switch l {
-  | _ when comments == list{} => ()
+  | _ if comments == list{} => ()
   | list{} =>
     switch prevLoc {
     | Some(loc) => attach(t.trailing, loc, comments)
