@@ -133,7 +133,8 @@ function mkStructuralTy(def, allNames) {
       return {
         eta: `(fun _self st ${snippet})`,
         beta(x) {
-          return `let st = (fun ${snippet}) ${x} in `; // TODO: could be inlined futher
+          // This code path seems to be not hit
+          return `let st = (fun ${snippet}) ${x} in `; 
         },
       };
     default:

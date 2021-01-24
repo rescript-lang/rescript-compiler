@@ -119,7 +119,7 @@ let scope_pass  =
     (** check if in loop or not *)    
     val in_loop = false 
 
-    method get_in_loop = in_loop
+    (* method get_in_loop = in_loop *)
 
     method get_defined_idents = defined_idents
 
@@ -127,12 +127,12 @@ let scope_pass  =
 
     method get_loop_mutable_values = loop_mutable_values 
 
-    method get_mutable_values = mutable_values 
+    (* method get_mutable_values = mutable_values  *)
 
     method get_closured_idents = closured_idents 
 
     method with_in_loop b = 
-      if b = self#get_in_loop then self
+      if b = in_loop then self
       else {< in_loop = b >}
      (* Since it's loop mutable variable, for sure
          it is mutable variable
@@ -207,7 +207,7 @@ let scope_pass  =
       match x with
       | { ident ; value; property  }  -> 
         let obj = 
-          (match self#get_in_loop, property with 
+          (match in_loop, property with 
            | true, Variable 
              -> 
              self#add_loop_mutable_variable ident 
@@ -296,7 +296,7 @@ let scope_pass  =
 
       | While (_label,pred,body, _env) ->  
           (((self#expression pred)#with_in_loop true) # block  body )
-            #with_in_loop (self#get_in_loop)
+            #with_in_loop (in_loop)
       | _ -> 
           super#statement x 
 
