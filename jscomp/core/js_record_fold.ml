@@ -16,6 +16,8 @@ type 'state iter = {
   ident : ('state,ident) fn;
   module_id : ('state,module_id) fn;
   vident : ('state,vident) fn;
+  exception_ident : ('state,exception_ident) fn;
+  for_ident : ('state,for_ident) fn;
   expression : ('state,expression) fn;
   statement : ('state,statement) fn;
   variable_declaration : ('state,variable_declaration) fn;
@@ -108,7 +110,7 @@ let  statement_desc : 'a . ('a,statement_desc) fn  =  fun _self st -> function
 |While ( _x0,_x1,_x2,_x3)  -> 
   let st = option label _self st _x0 in let st = _self.expression _self st _x1 in let st = _self.block _self st _x2 in st
 |ForRange ( _x0,_x1,_x2,_x3,_x4,_x5)  -> 
-  let st = option for_ident_expression _self st _x0 in let st = finish_ident_expression _self st _x1 in let st = for_ident _self st _x2 in let st = for_direction _self st _x3 in let st = _self.block _self st _x4 in st
+  let st = option for_ident_expression _self st _x0 in let st = finish_ident_expression _self st _x1 in let st = _self.for_ident _self st _x2 in let st = for_direction _self st _x3 in let st = _self.block _self st _x4 in st
 |Continue ( _x0)  -> 
   let st = label _self st _x0 in st
 |Break -> st
@@ -121,7 +123,7 @@ let  statement_desc : 'a . ('a,statement_desc) fn  =  fun _self st -> function
 |Throw ( _x0)  -> 
   let st = _self.expression _self st _x0 in st
 |Try ( _x0,_x1,_x2)  -> 
-  let st = _self.block _self st _x0 in let st = option ((fun _self st (_x0,_x1) ->  let st = exception_ident _self st _x0 in let st = _self.block _self st _x1 in st )) _self st _x1 in let st = option _self.block _self st _x2 in st
+  let st = _self.block _self st _x0 in let st = option ((fun _self st (_x0,_x1) ->  let st = _self.exception_ident _self st _x0 in let st = _self.block _self st _x1 in st )) _self st _x1 in let st = option _self.block _self st _x2 in st
 |Debugger -> st   
 let  expression : 'a . ('a,expression) fn  =  fun _self st { expression_desc = _x0;comment = _x1} -> let st = expression_desc _self st _x0 in st   
 let  statement : 'a . ('a,statement) fn  =  fun _self st { statement_desc = _x0;comment = _x1} -> let st = statement_desc _self st _x0 in st   
@@ -133,6 +135,8 @@ let super : 'state iter = {
   ident;
   module_id;
   vident;
+  exception_ident;
+  for_ident;
   expression;
   statement;
   variable_declaration;

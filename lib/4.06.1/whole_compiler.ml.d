@@ -187,7 +187,6 @@
 ../lib/4.06.1/whole_compiler.ml: ./core/js_dump_string.mli
 ../lib/4.06.1/whole_compiler.ml: ./core/js_exp_make.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/js_exp_make.mli
-../lib/4.06.1/whole_compiler.ml: ./core/js_fold.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/js_fold_basic.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/js_fold_basic.mli
 ../lib/4.06.1/whole_compiler.ml: ./core/js_fun_env.ml
@@ -234,6 +233,7 @@
 ../lib/4.06.1/whole_compiler.ml: ./core/js_pass_tailcall_inline.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/js_pass_tailcall_inline.mli
 ../lib/4.06.1/whole_compiler.ml: ./core/js_raw_info.ml
+../lib/4.06.1/whole_compiler.ml: ./core/js_record_fold.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/js_record_iter.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/js_record_map.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/js_shake.ml

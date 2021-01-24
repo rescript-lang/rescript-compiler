@@ -355,7 +355,7 @@ and deps_program =
     int_clause; 
     string_clause ;
     for_direction;
-    exception_ident;
+    (* exception_ident; *)
     for_direction;
     expression_desc;
     statement_desc;
@@ -364,7 +364,12 @@ and deps_program =
     finish_ident_expression;
     property_map;
     length_object;
-    for_ident;
+    (* for_ident; *)
     required_modules;
     case_clause
     |] }]
+(*
+FIXME: customize for each code generator 
+for each code generator, we can provide a white-list
+so that we can achieve the optimal
+*)    

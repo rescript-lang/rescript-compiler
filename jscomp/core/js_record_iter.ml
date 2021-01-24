@@ -16,6 +16,8 @@ type iter = {
 ident : ident fn;
 module_id : module_id fn;
 vident : vident fn;
+exception_ident : exception_ident fn;
+for_ident : for_ident fn;
 expression : expression fn;
 statement : statement fn;
 variable_declaration : variable_declaration fn;
@@ -108,7 +110,7 @@ let  statement_desc : statement_desc fn  =  fun _self -> function
 |While ( _x0,_x1,_x2,_x3)  -> 
  begin option label _self _x0;_self.expression _self _x1;_self.block _self _x2 end
 |ForRange ( _x0,_x1,_x2,_x3,_x4,_x5)  -> 
- begin option for_ident_expression _self _x0;finish_ident_expression _self _x1;for_ident _self _x2;for_direction _self _x3;_self.block _self _x4 end
+ begin option for_ident_expression _self _x0;finish_ident_expression _self _x1;_self.for_ident _self _x2;for_direction _self _x3;_self.block _self _x4 end
 |Continue ( _x0)  -> 
  begin label _self _x0 end
 |Break -> ()
@@ -121,7 +123,7 @@ let  statement_desc : statement_desc fn  =  fun _self -> function
 |Throw ( _x0)  -> 
  begin _self.expression _self _x0 end
 |Try ( _x0,_x1,_x2)  -> 
- begin _self.block _self _x0;option ((fun _self (_x0,_x1) -> begin exception_ident _self _x0;_self.block _self _x1 end)) _self _x1;option _self.block _self _x2 end
+ begin _self.block _self _x0;option ((fun _self (_x0,_x1) -> begin _self.exception_ident _self _x0;_self.block _self _x1 end)) _self _x1;option _self.block _self _x2 end
 |Debugger -> ()   
 let  expression : expression fn  =  fun _self { expression_desc = _x0;comment = _x1} -> begin expression_desc _self _x0 end   
 let  statement : statement fn  =  fun _self { statement_desc = _x0;comment = _x1} -> begin statement_desc _self _x0 end   
@@ -133,6 +135,8 @@ let super : iter = {
 ident;
 module_id;
 vident;
+exception_ident;
+for_ident;
 expression;
 statement;
 variable_declaration;
