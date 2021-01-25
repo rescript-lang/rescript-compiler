@@ -1547,7 +1547,7 @@ function nativeNinja() {
 subninja ${getPreprocessorFileName()}
 compilerlibs := ../native/4.06.1/lib/ocaml/compiler-libs/ocamlcommon.cmxa
 rule optc
-    command = $ocamlopt -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50 -warn-error A -absname -c $in # $compilerlibs
+    command = $ocamlopt -strict-sequence -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50 -warn-error A -absname -c $in # $compilerlibs
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
@@ -1582,15 +1582,12 @@ rule p4of
     generator = true
 o core/js_fold.ml: p4of core/j.ml
     flags = -fold
-o core/js_map.ml: p4of core/j.ml
-    flags = -map    
-o core/js_iter.ml: p4of core/j.ml
-    flags = -iter
 o core/js_record_iter.ml: p4of core/j.ml
     flags = -record-iter
 o core/js_record_map.ml: p4of core/j.ml
     flags = -record-map
-
+o core/js_record_fold.ml: p4of core/j.ml
+    flags = -record-fold
 o common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
 o ../${

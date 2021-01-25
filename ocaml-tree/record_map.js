@@ -1,27 +1,30 @@
 //@ts-check
 var assert = require("assert");
 var node_types = require("./node_types");
-var init = node_types.init;
+var { init, setDiff } = node_types;
 /**
  *
  * @typedef {import('./node_types').Node} Node
+ * @typedef {import("./node_types").Names} Names
+ * @typedef {import ("./node_types").Type} Type
+ * @typedef {import("./types").Obj} Obj
  */
 
 /**
  *
  * @param {{name:string, def:Node}} typedef
- * @param {Set<string>} allNames
+ * @param {Names} allNames
  * @returns {string}
  */
 function mkMethod({ name, def }, allNames) {
-  return ` ${name} : ${name} fn  = ( ${mkBody(def, allNames)} )  `;
+  return ` let ${name} : ${name} fn  = ${mkBody(def, allNames)} `;
 }
 
 var skip = `unknown`;
 
 /**
  * @param {Node} def
- * @param {Set<string>} allNames
+ * @param {Names} allNames
  */
 function mkBody(def, allNames) {
   // @ts-ignore
@@ -60,19 +63,10 @@ function mkBody(def, allNames) {
 }
 
 /**
- * @typedef {  { eta: string; beta(x: string): string; method? : string } } Obj
- *
- */
-
-/**
  * @type {Obj}
  */
 var skip_obj = {
   eta: skip,
-  /**
-   *
-   * @param {string} x
-   */
   beta(x) {
     return `${skip} ${x}`;
   },
@@ -82,7 +76,7 @@ var skip_obj = {
  *
  *
  * @param {Node} def
- * @param {Set<string>} allNames
+ * @param {Names} allNames
  * The code fragments should have two operations
  * - eta-expanded
  *   needed due to `self` is missing
@@ -92,17 +86,22 @@ function mkStructuralTy(def, allNames) {
   switch (def.type) {
     case "type_constructor_path":
       var basic = node_types.isSupported(def, allNames);
-      if (basic !== undefined) {
-        var code = `_self.${basic}`;
-        return {
-          eta: `(fun _self arg -> ${code} _self arg)`,
-          beta(x) {
-            return `let ${x} = ${code} _self ${x} in `;
-          },
-          method: code,
-        };
+      switch (basic.kind) {
+        case "no":
+          return skip_obj;
+        case "exclude":
+        case "yes":
+          var code =
+            basic.kind === "yes" ? `_self.${basic.name}` : `${basic.name}`;
+          return {
+            eta: `(fun _self arg -> ${code} _self arg)`,
+            beta(x) {
+              return `let ${x} = ${code} _self ${x} in `;
+            },
+            method: code,
+          };
       }
-      return skip_obj;
+
     case "constructed_type":
       // FIXME
       var [list, base] = [...def.children].reverse();
@@ -149,7 +148,7 @@ function mkStructuralTy(def, allNames) {
 /**
  *
  * @param {Node} ty
- * @param {Set<string>} allNames
+ * @param {Names} allNames
  * @param {string} arg
  */
 function mkBodyApply(ty, allNames, arg) {
@@ -164,7 +163,7 @@ function mkBodyApply(ty, allNames, arg) {
  *
  * @param {Node} branch
  * branch is constructor_declaration
- * @param {Set<string>} allNames
+ * @param {Names} allNames
  * @returns {string}
  */
 function mkBranch(branch, allNames) {
@@ -192,35 +191,36 @@ function mkBranch(branch, allNames) {
 
 /**
  *
- * @param {{name : string, def: Node}[]} typedefs
+ * @param {Type} type
  * @returns {string}
  */
-function make(typedefs) {
-  var customNames = [...new Set([...typedefs.map((x) => x.name)])];
-  var allNames = new Set(customNames.concat(["option", "list"]));
-  var output = typedefs.map((x) => mkMethod(x, allNames));
+function make(type) {
+  var { types: typedefs, names } = type;
+  var customNames = setDiff(names.all, names.excludes);
+  var output = typedefs.map((x) => mkMethod(x, names));
   var o = `
-    open J  
-    let [@inline] unknown _ x = x
-    let [@inline] option sub self = fun v -> 
-      match v with 
-      | None -> None
-      | Some v -> Some (sub self v)
-    let rec list sub self = fun x  -> 
-      match x with 
-      | [] -> []
-      | x::xs -> 
-         let v = sub self x in 
-        v ::list sub self xs
+open J  
+let [@inline] unknown _ x = x
+let [@inline] option sub self = fun v -> 
+  match v with 
+  | None -> None
+  | Some v -> Some (sub self v)
+let rec list sub self = fun x  -> 
+  match x with 
+  | [] -> []
+  | x::xs -> 
+    let v = sub self x in 
+    v :: list sub self xs
 
-    type iter = {
-      ${customNames.map((x) => `${x} : ${x} fn`).join(";\n")}
-    }  
-    and 'a fn = iter -> 'a -> 'a
-    let super : iter = {
-    ${output.join(";\n")}    
-    }
-    `;
+type iter = {
+${customNames.map((x) => `${x} : ${x} fn`).join(";\n")}
+}  
+and 'a fn = iter -> 'a -> 'a
+${output.join("\n")}
+let super : iter = {
+${customNames.join(";\n")}
+}
+`;
   return o;
 }
 exports.make = make;

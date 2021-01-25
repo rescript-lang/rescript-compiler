@@ -5,12 +5,14 @@ var init = node_types.init;
 /**
  *
  * @typedef {import('./node_types').Node} Node
+ * @typedef {import("./node_types").Names} Names
+ * @typedef {import ("./node_types").Type} Type
  */
 
 /**
  *
  * @param {{name:string, def:Node}} typedef
- * @param {Set<string>} allNames
+ * @param {Names} allNames
  * @returns {string}
  */
 function mkMethod({ name, def }, allNames) {
@@ -19,7 +21,7 @@ function mkMethod({ name, def }, allNames) {
 var skip = `unknown _self`;
 /**
  * @param {Node} def
- * @param {Set<string>} allNames
+ * @param {Names} allNames
  */
 function mkBody(def, allNames) {
   // @ts-ignore
@@ -27,16 +29,19 @@ function mkBody(def, allNames) {
   switch (def.type) {
     case "type_constructor_path":
       var basic = node_types.isSupported(def, allNames);
-      if (basic !== undefined) {
-        return `_self#${basic}`;
+      switch (basic.kind) {
+        case "no":
+          return skip;
+        default:
+          //FIXME
+          return `_self#${basic.name}`;
       }
-      return skip;
     case "constructed_type":
       // FIXME
       var [list, base] = [...def.children].reverse();
       switch (list.text) {
         case "option":
-        case "list":  
+        case "list":
           var inner = mkBody(base, allNames);
           if (inner === skip) {
             return inner;
@@ -81,7 +86,7 @@ function mkBody(def, allNames) {
 /**
  *
  * @param {Node} ty
- * @param {Set<string>} allNames
+ * @param {Names} allNames
  * @param {string} arg
  */
 function mkBodyApply(ty, allNames, arg) {
@@ -96,7 +101,7 @@ function mkBodyApply(ty, allNames, arg) {
  *
  * @param {Node} branch
  * branch is constructor_declaration
- * @param {Set<string>} allNames
+ * @param {Names} allNames
  * @returns {string}
  */
 function mkBranch(branch, allNames) {
@@ -125,12 +130,12 @@ function mkBranch(branch, allNames) {
 
 /**
  *
- * @param {{name : string, def: Node}[]} typedefs
+ * @param {Type} type
  * @returns {string}
  */
-function make(typedefs) {
-  var allNames = new Set([...typedefs.map((x) => x.name), "option", "list"]);
-  var output = typedefs.map((x) => mkMethod(x, allNames));
+function make(type) {
+  var { types: typedefs, names } = type;
+  var output = typedefs.map((x) => mkMethod(x, names));
   var o = `
     open J  
     let [@inline] unknown _self _ = _self

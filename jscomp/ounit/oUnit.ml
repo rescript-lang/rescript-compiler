@@ -262,7 +262,7 @@ let assert_command
 
 let raises f =
   try
-    f ();
+    ignore (f ());
     None
   with e -> 
     Some e
@@ -462,7 +462,7 @@ let maybe_backtrace = ""
 let perform_test report test =
   let run_test_case f path =
     try 
-      f ();
+      ignore(f ());
       RSuccess path
     with
       | Failure s -> 
@@ -496,11 +496,11 @@ let perform_test report test =
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
     let result = 
-      report (EStart path);
+      ignore @@ report (EStart path);
       run_test_case f path 
     in
-      report (EResult result);
-      report (EEnd path);
+      ignore @@ report (EResult result);
+      ignore @@ report (EEnd path);
       result
   in
   let rec iter state = 
