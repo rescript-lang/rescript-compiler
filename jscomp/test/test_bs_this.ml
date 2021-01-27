@@ -1,6 +1,6 @@
 
 
-let uux_this :[%bs.obj: < length : int > ] -> int -> int -> int [@bs.this] 
+let uux_this : < length : int > Js.t -> int -> int -> int [@bs.this] 
   =
   fun[@bs.this] o x y -> o##length + x + y
 

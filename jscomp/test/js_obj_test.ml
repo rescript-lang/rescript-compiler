@@ -16,7 +16,7 @@ let suites = Mt.[
   "js_obj", (fun _ ->
     Eq(34, f_js [%obj{ say = fun [@bs]  x -> x + 2 } ]));
   "js_obj2", (fun _ ->
-    Eq(34,  [%obj { say = fun [@bs]  x -> x + 2 } #@say 32 ]));
+    Eq(34,  [%obj { say = fun [@bs]  x -> x + 2 }] #@say 32 ));
   "empty", (fun _ ->
     Eq(0, empty () |> keys |> Array.length));
   "assign", (fun _ ->

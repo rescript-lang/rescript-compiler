@@ -35,14 +35,14 @@ external dirname : string -> string = "dirname" [@@bs.module "path"]
 external dirname_ext : string -> string -> string = "dirname" [@@bs.module "path"]
 
 type pathObject =
-  [%bs.obj: <
-         dir : string ;
-         root : string ;
-         base : string ;
-         name : string ;
-         ext : string          
-       >            
-  ]  
+  <
+    dir : string ;
+    root : string ;
+    base : string ;
+    name : string ;
+    ext : string          
+  >   Js.t         
+  
 external format : pathObject -> string = "format" [@@bs.module "path"]
 
 external isAbsolute : string -> bool = "isAbsolute" [@@bs.module "path"]

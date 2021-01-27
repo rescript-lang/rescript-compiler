@@ -380,8 +380,6 @@
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_pp.mli
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_pp_scope.ml
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_pp_scope.mli
-../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_ref.ml
-../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_ref.mli
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_scc.ml
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_scc.mli
 ../lib/4.06.1/unstable/js_refmt_compiler.ml: ./ext/ext_spec.ml

@@ -9,14 +9,14 @@ class type v2 = object
 end [@bs]
 
 type vv = 
-  [%bs.obj: < 
+   < 
     hey : int -> int -> int [@bs]
-  >  ]
+  >  Js.t
 
 type vv2 = 
-  [%bs.obj: < 
+   < 
     hey : int -> int -> int [@bs]
-  > ]
+  > Js.t
 
 
 val test_v : v Js.t -> int
