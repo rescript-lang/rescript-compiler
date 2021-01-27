@@ -60,3 +60,6 @@ let h = u => {
     let m = u##hi ;
     m(.1,2);
 }
+
+ // 
+let nested   = ({ "x" : {"y" : 3 }} : {. "x" : {. "y" : int }})
