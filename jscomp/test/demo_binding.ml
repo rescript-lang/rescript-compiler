@@ -80,11 +80,11 @@ class type grid  =
   object
     inherit widget
     inherit measure
-    method columns : [%bs.obj: <width : int; .. >  ]  array [@@bs.set]
+    method columns :  <width : int; .. >  Js.t  array [@@bs.set]
     method titleRows : 
-      [%bs.obj: <label : <text : string; .. >   ; ..> ]   array [@@bs.set]
+       <label : <text : string; .. > Js.t   ; ..> Js.t   array [@@bs.set]
     method dataSource :
-      [%bs.obj: <label : <text : string; .. >   ; ..>  ]  array array [@@bs.set]
+       <label : <text : string; .. >  Js.t ; ..>  Js.t  array array [@@bs.set]
   end[@bs]
 
 

@@ -27,7 +27,7 @@ open Ast_helper
 
 
   
-let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
+let handle_extension  e (self : Bs_ast_mapper.mapper)
     (({txt ; loc}  , payload) : Parsetree.extension) = 
   begin match txt with
     | "bs.raw" | "raw" -> 
@@ -134,11 +134,15 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
       {e with pexp_desc = Ast_exp_handle_external.handle_debugger loc payload}
     | "bs.obj" | "obj" ->
       begin match payload with 
-        | PStr [{pstr_desc = Pstr_eval (e,_)}]
+        |PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record(label_exprs, None)} as e,_)}]
           -> 
-          Ext_ref.non_exn_protect record_as_js_object true
-            (fun () -> self.expr self e ) 
-        | _ -> Location.raise_errorf ~loc "Expect an expression here"
+          {e 
+            with 
+            pexp_desc = 
+              Ast_util.record_as_js_object e.pexp_loc self label_exprs
+          }
+        
+        | _ -> Location.raise_errorf ~loc "Expect a record expression here"
       end
     | _ ->
         e (* For an unknown extension, we don't really need to process further*)

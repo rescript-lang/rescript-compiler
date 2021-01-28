@@ -24,7 +24,6 @@
 
 
 val handle_extension :
-  bool ref ->
   Parsetree.expression ->
   Bs_ast_mapper.mapper ->
   Parsetree.extension ->

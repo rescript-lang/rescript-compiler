@@ -74,7 +74,7 @@ let ui_layout
     stackPanel##addChild grid;
     stackPanel##addChild inputCode;
     stackPanel##addChild button;
-    let mk_titleRow text = [%bs.obj {label =  {text }  } ] in
+    let mk_titleRow text = [%obj {label =  [%obj{text }]  } ] in
     let u =  [%bs.obj {width =  200} ]  in
     grid##minHeight #= 300;
     grid##titleRows #=

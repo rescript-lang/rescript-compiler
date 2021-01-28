@@ -18,7 +18,7 @@ let f ( x : < height : int [@bs.set{no_get}] > Js.t) =
 
 
 type v =
- [%bs.obj:  < dec : int -> < x : int ; y : float >  [@bs] [@bs.set]  >  ]
+   < dec : int -> < x : int ; y : float > Js.t [@bs] [@bs.set]  >  Js.t
 
 let f (x : v ) =
   x##dec#= (fun [@bs] x -> [%bs.obj {x ; y = float_of_int x }])   

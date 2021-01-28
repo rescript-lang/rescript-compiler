@@ -25,6 +25,6 @@ let f4 h x y =
 (*   ##(draw (x,y)) *)
 (*   ##(draw(x,y)) *)
 let () = 
-  eq __LOC__ 32  [%bs.obj f2 { x = {y = {z = 32}}} ]
+  eq __LOC__ 32  ( f2 [%obj{ x = [%obj{y = [%obj{z = 32}]}]}] )
 
 let () = Mt.from_pair_suites __MODULE__ !suites

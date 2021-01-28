@@ -70,7 +70,7 @@ let _ = dyn_log3 ~req:(`Int 8) ~opt:(`Bool true) ()
 
 external log4 :
   ([ `String of string
-   | `Options of [%bs.obj: < foo : int > ]
+   | `Options of  < foo : int > Js.t
    ] [@bs.unwrap])
   -> unit = "console.log" [@@bs.val]
 

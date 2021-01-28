@@ -27,9 +27,16 @@ function h(u) {
   return m(1, 2);
 }
 
+var nested = {
+  x: {
+    y: 3
+  }
+};
+
 exports.u = u;
 exports.u2 = u2;
 exports.f = f;
 exports.add = add;
 exports.h = h;
+exports.nested = nested;
 /* No side effect */

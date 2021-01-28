@@ -75,7 +75,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
         match e.pexp_desc with
         (** Its output should not be rewritten anymore *)
         | Pexp_extension extension ->
-          Ast_exp_extension.handle_extension Js_config.record_as_js_object e self extension
+          Ast_exp_extension.handle_extension e self extension
         | Pexp_constant (
             Pconst_string
             (s, (Some delim)))
@@ -134,26 +134,6 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
           end
         | Pexp_apply (fn, args  ) ->
           Ast_exp_apply.app_exp_mapper e self fn args
-        | Pexp_record (label_exprs, opt_exp)  ->
-           (* could be supported using `Object.assign`?
-               type
-               {[
-                 external update : 'a Js.t -> 'b Js.t -> 'a Js.t = ""
-                 constraint 'b :> 'a
-               ]}
-            *)
-          if !Js_config.record_as_js_object then
-            (match opt_exp with
-             | None ->
-               { e with
-                 pexp_desc =
-                   Ast_util.record_as_js_object e.pexp_loc self label_exprs;
-               }
-             | Some e ->
-               Location.raise_errorf
-                 ~loc:e.pexp_loc "`with` construct is not supported in js obj ")
-          else
-            default_expr_mapper self e
         | Pexp_object {pcstr_self;  pcstr_fields} ->
             (match Ast_attributes.process_bs e.pexp_attributes with
             | true, pexp_attributes
@@ -204,7 +184,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
 
 
 let typ_mapper (self : mapper) (typ : Parsetree.core_type) = 
-  Ast_core_type_class_type.typ_mapper Js_config.record_as_js_object self typ
+  Ast_core_type_class_type.typ_mapper self typ
 
 let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Parsetree.class_type) = 
   match Ast_attributes.process_bs pcty_attributes with

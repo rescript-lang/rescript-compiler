@@ -11,15 +11,15 @@ class type v2 = object
 end [@bs]
 
 type vv = 
-  [%obj: < 
+   < 
     hey : int -> int -> int [@bs]
-  >   ]
+  > Js.t
 
 
 type vv2 = 
-  [%obj: < 
+  < 
     hey : int ->  int -> int [@bs]
-  > ] 
+  > Js.t
 
 
 let hh (x : v) : v2 = x 

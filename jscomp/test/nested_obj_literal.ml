@@ -1,7 +1,7 @@
 
 
 let structural_obj = 
-  [%bs.obj { x = { y = { z = 3 }}} ]
+  [%bs.obj { x = [%obj{ y = [%obj{ z = 3 }]}]} ]
 (* compiler inferred type :
   val structural_obj : < x : < y : < z : int >  >  > [@bs.obj] *)
 

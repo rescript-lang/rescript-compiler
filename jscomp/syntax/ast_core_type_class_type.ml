@@ -128,16 +128,11 @@ let default_typ_mapper = Bs_ast_mapper.default_mapper.typ
   we can only use it locally
 *)
 
-let typ_mapper 
-    record_as_js_object
+let typ_mapper
     (self : Bs_ast_mapper.mapper)
     (ty : Parsetree.core_type) 
   = 
   match ty with
-  | {ptyp_desc = Ptyp_extension({txt = ("bs.obj"|"obj")}, PTyp ty)}
-    -> 
-    Ext_ref.non_exn_protect record_as_js_object true 
-      (fun _ -> self.typ self ty )
   | {ptyp_attributes ;
      ptyp_desc = Ptyp_arrow (label, args, body);
      (* let it go without regard label names, 
@@ -205,14 +200,10 @@ let typ_mapper
             Ast_compatible.object_field label attrs (self.typ self core_type) in
           process_getter_setter ~not_getter_setter ~get ~set
             loc label ptyp_attrs core_type acc
-        )in      
-    let inner_type =
-      { ty
-        with ptyp_desc = Ptyp_object(new_methods, closed_flag);
-      } in 
-    if !record_as_js_object then 
-      Ast_comb.to_js_type loc inner_type          
-    else inner_type
+        )in          
+    { ty
+      with ptyp_desc = Ptyp_object(new_methods, closed_flag);
+    } 
   | _ -> default_typ_mapper self ty
     
 let handle_class_type_fields self fields = 

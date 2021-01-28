@@ -3,25 +3,25 @@
 
 
 let u : 'self = 
-  [%bs.obj 
+  
     (
-      {
+      [%obj{
         x = 3 ;
         y = 32 ;
         bark = (fun [@bs] this x y -> Js.log (this##length, this##x, this##y));
         length = 32
-      } : 
+      }] : 
         <
         x : int ; 
       y : int ;
       bark : 'self -> int ->  int -> unit [@bs]; 
-      length : int >       )
-  ]
+      length : int >      Js.t )
+  
 
 
 let u  = u#@bark u 1 2 
 
-let uux_this :[%bs.obj: < length : int > ] -> int -> int -> int [@bs.this] 
+let uux_this : < length : int > Js.t -> int -> int -> int [@bs.this] 
   =
   fun[@bs.this] o x y -> o##length + x + y
 
@@ -55,22 +55,22 @@ let f_okay = fun [@bs.this] ( _ as x ) y u -> y + u + x
 
 
 let uu : 'self = 
-  [%bs.obj 
+  
     (
-      {
+      [%obj{
         x = 3 ;
         y = 32 ;
         bark = 
           (fun [@bs.this] (o : 'self) (x : int) (y : int) -> 
                Js.log (o##length, o##x, o##y,x,y));
         length = 32
-      } : 
+      }] : 
         <
         x : int ; 
       y : int ;
       bark : ('self -> int -> int -> _ [@bs.this]); 
-      length : int >       )
-  ]
+      length : int >       Js.t)
+  
 
 let js_obj : 'self = 
   [%bs.obj 
