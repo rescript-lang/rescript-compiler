@@ -57,12 +57,12 @@ let print (fmt : Format.formatter) (x : error) =
     | None -> Ext_string.empty
     | Some x -> " in " ^ x in
     let name = Bsb_pkg_types.to_string name in 
-    if Ext_string.equal name Bs_version.package_name then
+    if Ext_string.equal name !Bs_version.package_name then
       Format.fprintf fmt
       "File \"bsconfig.json\", line 1\n\
-       @{<error>Error:@} package @{<error>bs-platform@} is not found %s\n\
+       @{<error>Error:@} package @{<error>%s@} is not found %s\n\
        It's the basic, required package. If you have it installed globally,\n\
-       Please run `npm link bs-platform` to make it available" in_json
+       Please run `npm link bs-platform` to make it available" name in_json
     else
       Format.fprintf fmt
         "File \"bsconfig.json\", line 1\n\

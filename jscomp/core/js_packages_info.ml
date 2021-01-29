@@ -56,7 +56,7 @@ type package_name  =
 
 
 
-let runtime_package_name = "bs-platform"
+
 
 
 let (//) = Filename.concat    
@@ -70,7 +70,7 @@ let runtime_dir_of_module_system (ms : module_system ) =
 let runtime_package_path 
     (ms : module_system) 
     js_file =        
-  runtime_package_name // "lib" // runtime_dir_of_module_system ms // js_file
+  !Bs_version.package_name // "lib" // runtime_dir_of_module_system ms // js_file
 
 
 type t =
@@ -86,6 +86,14 @@ let runtime_package_specs : t = {
     {module_system = NodeJS; path = "lib/js"; suffix = Js};
   ]
 }   
+
+(**
+  populated by the command line
+*)
+let runtime_test_package_specs : t = {
+  name = Pkg_runtime; 
+  module_systems = []
+}
 let same_package_by_name (x : t) (y : t) = x.name = y.name 
 
 let is_runtime_package (x : t) = 
@@ -112,16 +120,10 @@ let empty : t =
     module_systems =  []
   }
 
-let from_name (name : string) =
-  if name = runtime_package_name then 
-    {
-      name = Pkg_runtime ; module_systems = [] 
-    }
-  else 
-    {
-      name = Pkg_normal name  ;
-      module_systems = [] 
-    }
+let from_name (name : string) : t = {
+  name = Pkg_normal name  ;
+  module_systems = [] 
+}
 
 let is_empty  (x : t) =
   x.name = Pkg_empty
@@ -156,7 +158,7 @@ let dump_package_name fmt (x : package_name) =
   match x with 
   | Pkg_empty -> Format.fprintf fmt "@empty_pkg@"
   | Pkg_normal s -> Format.pp_print_string fmt s 
-  | Pkg_runtime -> Format.pp_print_string fmt runtime_package_name
+  | Pkg_runtime -> Format.pp_print_string fmt "@runtime"
 
 let dump_packages_info 
     (fmt : Format.formatter) 
@@ -208,7 +210,7 @@ let query_package_infos
         compatible k.module_system  module_system)  with
     | Some k -> 
       let rel_path = k.path in 
-      let pkg_rel_path = runtime_package_name // rel_path in 
+      let pkg_rel_path = !Bs_version.package_name // rel_path in 
       Package_found 
         { 
           rel_path ;
@@ -221,7 +223,8 @@ let query_package_infos
 
 let get_js_path 
     (x : t )
-    module_system 
+    (module_system : module_system) 
+    : string
   = 
   match Ext_list.find_first x.module_systems (fun k -> 
       compatible k.module_system  module_system) with

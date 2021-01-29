@@ -34,6 +34,7 @@ let fix_path_for_windows : string -> string =
   else fun s -> s 
 
 
+(* dependency is runtime module *)  
 let get_runtime_module_path 
     (dep_module_id : Lam_module_ident.t) 
     (current_package_info : Js_packages_info.t)

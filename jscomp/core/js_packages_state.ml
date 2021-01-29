@@ -33,6 +33,11 @@ let set_package_name name =
   else
     Bsc_args.bad_arg "duplicated flag for -bs-package-name"
 
+let make_runtime () : unit = 
+  packages_info :=  Js_packages_info.runtime_package_specs
+
+let make_runtime_test () : unit = 
+  packages_info := Js_packages_info.runtime_test_package_specs  
 let set_package_map module_name = 
     (* set_package_name name ; 
     let module_name = Ext_namespace.namespace_of_package_name name  in  *)
