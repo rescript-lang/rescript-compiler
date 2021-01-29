@@ -81,7 +81,7 @@ let get_runtime_module_path
             calculate relative js path
           *)
           ((Filename.dirname (Filename.dirname Sys.executable_name)) // dep_path // js_file)  
-
+          (*FIXME: the runtime path needs changed when customize runtime*)
 
 
 (* [output_dir] is decided by the command line argument *)

@@ -7691,7 +7691,7 @@ type t =
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
     pinned_dependencies : Set_string.t;
-    built_in_dependency : dependency option; 
+    built_in_dependency : bool; 
     warning : Bsb_warning.t;
     (*TODO: maybe we should always resolve bs-platform 
       so that we can calculate correct relative path in 
@@ -10092,114 +10092,6 @@ let walk_all_deps dir ~pinned_dependencies : package_context Queue.t =
   cb
 
 end
-module Bsb_global_paths : sig 
-#1 "bsb_global_paths.mli"
-(* Copyright (C) 2019 - Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val cwd : string 
-
-val bsc_dir : string 
-
-val vendor_bsc : string
-
-val vendor_ninja : string
-
-val vendor_bsdep : string
-
-
-end = struct
-#1 "bsb_global_paths.ml"
-(* Copyright (C) 2019 - Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let cwd = Sys.getcwd ()
-
-
-(**
-   If [Sys.executable_name] gives an absolute path, 
-   nothing needs to be done.
-   
-   If [Sys.executable_name] is not an absolute path, for example
-   (rlwrap ./ocaml)
-   it is a relative path, 
-   it needs be adapted based on cwd
-
-   if [Sys.executable_name] gives an absolute path, 
-   nothing needs to be done
-   if it is a relative path 
-
-   there are two cases: 
-   - bsb.exe
-   - ./bsb.exe 
-   The first should also not be touched
-   Only the latter need be adapted based on project root  
-*)
-
-let bsc_dir  = 
-  Filename.dirname 
-    (Ext_path.normalize_absolute_path 
-       (Ext_path.combine cwd  Sys.executable_name))
-
-let vendor_bsc =        
-  Filename.concat bsc_dir  "bsc.exe"
-
-
-let vendor_ninja = 
-    Filename.concat bsc_dir "ninja.exe"      
-
-let vendor_bsdep =     
-  Filename.concat bsc_dir "bsb_helper.exe"
-
-
-  
-;; assert (Sys.file_exists bsc_dir)       
-
-
-end
 module Bsb_db_util : sig 
 #1 "bsb_db_util.mli"
 
@@ -11119,48 +11011,26 @@ let extract_package_name_and_namespace
     - the running bsb and vendoring bsb is the same
     - the running bsb need delete stale build artifacts
       (kinda check npm upgrade)
-*)
-let check_version_exit (map : json_map) stdlib_path =   
-  match Map_string.find_exn map Bsb_build_schemas.version with 
-  | Str {str } -> 
-    if str <> Bs_version.version then 
-      begin
-        Format.fprintf Format.err_formatter
-          "@{<error>bs-platform version mismatch@} Running bsb @{<info>%s@} (%s) vs vendored @{<info>%s@} (%s)@."
-          Bs_version.version
-          (Filename.dirname (Filename.dirname Sys.executable_name))
-          str
-          stdlib_path 
-        ;
-        exit 2
-      end
-  | _ -> assert false
 
-let check_stdlib (map : json_map) cwd (*built_in_package*) =  
+      Note if the setup is correct: 
+      the running compiler and node_modules/bs-platform
+      should be the same version, 
+      The exact check is that the running compiler should have a 
+      compatible runtime version installed, the location of the
+      compiler is actually not relevant.
+      We disable the check temporarily
+      e.g,
+      ```
+      bsc -runtime runtime_dir@version
+      ```
+*)  
+let check_stdlib (map : json_map) (*built_in_package*) : bool =  
   match map.?( Bsb_build_schemas.use_stdlib) with      
-  | Some (False _) -> None    
+  | Some (False _) -> false
   | None 
-  | Some _ ->
-    begin
-      let current_package : Bsb_pkg_types.t = Global !Bs_version.package_name in  
-      if Sys.getenv_opt "RES_SKIP_STDLIB_CHECK" = None then begin 
-        let stdlib_path = 
-          Bsb_pkg.resolve_bs_package ~cwd current_package in 
-        let json_spec = 
-          Ext_json_parse.parse_json_from_file
-            (* No exn raised: stdlib  has package.json *)
-            (Filename.concat stdlib_path Literals.package_json) in 
-        match json_spec with 
-        | Obj {map}  -> 
-          check_version_exit map stdlib_path;
+  | Some _ ->    
+    true
 
-        | _ -> assert false
-      end;
-      Some {
-        Bsb_config_types.package_name = current_package;
-        package_install_path = Filename.dirname Bsb_global_paths.bsc_dir // Bsb_config.lib_ocaml;
-      }
-    end
 
 
 
@@ -11384,7 +11254,7 @@ let interpret_json
          array from the bsconfig and set the backend_ref to the first entry, if any. *)
 
     (* The default situation is empty *)
-    let built_in_package = check_stdlib map per_proj_dir in
+    let built_in_package : bool = check_stdlib map  in
     
     let pp_flags : string option = 
       extract_string map Bsb_build_schemas.pp_flags (fun p -> 
@@ -11467,6 +11337,114 @@ let package_specs_from_bsconfig () =
       extract_pinned_dependencies map
     | _ -> assert false
   end
+
+end
+module Bsb_global_paths : sig 
+#1 "bsb_global_paths.mli"
+(* Copyright (C) 2019 - Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val cwd : string 
+
+val bsc_dir : string 
+
+val vendor_bsc : string
+
+val vendor_ninja : string
+
+val vendor_bsdep : string
+
+
+end = struct
+#1 "bsb_global_paths.ml"
+(* Copyright (C) 2019 - Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let cwd = Sys.getcwd ()
+
+
+(**
+   If [Sys.executable_name] gives an absolute path, 
+   nothing needs to be done.
+   
+   If [Sys.executable_name] is not an absolute path, for example
+   (rlwrap ./ocaml)
+   it is a relative path, 
+   it needs be adapted based on cwd
+
+   if [Sys.executable_name] gives an absolute path, 
+   nothing needs to be done
+   if it is a relative path 
+
+   there are two cases: 
+   - bsb.exe
+   - ./bsb.exe 
+   The first should also not be touched
+   Only the latter need be adapted based on project root  
+*)
+
+let bsc_dir  = 
+  Filename.dirname 
+    (Ext_path.normalize_absolute_path 
+       (Ext_path.combine cwd  Sys.executable_name))
+
+let vendor_bsc =        
+  Filename.concat bsc_dir  "bsc.exe"
+
+
+let vendor_ninja = 
+    Filename.concat bsc_dir "ninja.exe"      
+
+let vendor_bsdep =     
+  Filename.concat bsc_dir "bsb_helper.exe"
+
+
+  
+;; assert (Sys.file_exists bsc_dir)       
+
 
 end
 module Bsb_unix : sig 
@@ -12014,11 +11992,13 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );      
-    Ext_option.iter built_in_dependency (fun package -> 
-        let path = package.package_install_path in 
-        Buffer.add_string buffer (merlin_s ^ path );
-        Buffer.add_string buffer (merlin_b ^ path)                      
-      );
+    if built_in_dependency then (
+      let path = 
+        (Filename.dirname Bsb_global_paths.bsc_dir) 
+        // "lib" //"ocaml" in 
+      Buffer.add_string buffer (merlin_s ^ path );
+      Buffer.add_string buffer (merlin_b ^ path)                      
+    );
     let bsc_string_flag = bsc_flg_to_merlin_ocamlc_flg bsc_flags in 
     Buffer.add_string buffer bsc_string_flag ;
     Buffer.add_string buffer (warning_to_merlin_flg  warning); 
@@ -13757,7 +13737,7 @@ let output_ninja_and_namespace_map
       ~gentype_config
       ~has_postbuild:js_post_build_cmd 
       ~pp_file
-      ~has_builtin:(built_in_dependency <> None)
+      ~has_builtin:built_in_dependency 
       ~reason_react_jsx
       ~package_specs
       ~namespace
