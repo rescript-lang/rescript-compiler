@@ -25,7 +25,7 @@
 
 (* let get_list_string = Bsb_build_util.get_list_string *)
 let (//) = Ext_path.combine
-let current_package : Bsb_pkg_types.t = Global Bs_version.package_name
+
 let resolve_package cwd  package_name = 
   let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
   {
@@ -113,6 +113,7 @@ let check_stdlib (map : json_map) cwd (*built_in_package*) =
   | None 
   | Some _ ->
     begin
+      let current_package : Bsb_pkg_types.t = Global !Bs_version.package_name in  
       if Sys.getenv_opt "RES_SKIP_STDLIB_CHECK" = None then begin 
         let stdlib_path = 
           Bsb_pkg.resolve_bs_package ~cwd current_package in 

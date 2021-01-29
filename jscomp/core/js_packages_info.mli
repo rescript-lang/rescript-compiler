@@ -47,6 +47,9 @@ type package_info = {
 type t 
 
 val runtime_package_specs : t 
+
+val runtime_test_package_specs : t  
+
 val is_runtime_package:
   t ->
   bool

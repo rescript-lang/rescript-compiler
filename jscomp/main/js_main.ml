@@ -443,7 +443,11 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "<list>  Enable or disable error status for warnings according\n\
          to <list>.  See option -w for the syntax of <list>.\n\
          Default setting is " ^ Bsc_warnings.defaults_warn_error;    
-  
+    "-make-runtime", unit_call Js_packages_state.make_runtime,
+    "*internal* make runtime library";  
+    "-make-runtime-test", unit_call Js_packages_state.make_runtime_test,
+    "*internal* make runtime test library";  
+
   |]
 
 

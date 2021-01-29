@@ -836,7 +836,7 @@ async function runtimeNinja(devmode = true) {
   var externalDeps = devmode ? [compilerTarget] : [];
   var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
   var templateRuntimeRules = `
-bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6:.mjs  -nopervasives  -unsafe -w +50 -warn-error A
+bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime  -nopervasives  -unsafe -w +50 -warn-error A
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuidList([
@@ -931,7 +931,7 @@ async function othersNinja(devmode = true) {
   var ninjaCwd = "others";
 
   var templateOthersRules = `
-bsc_flags = ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6:.mjs   -nopervasives  -unsafe  -w +50 -warn-error A  -open Bs_stdlib_mini -I ./runtime
+bsc_flags = ${commonBsFlags} -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50 -warn-error A  -open Bs_stdlib_mini -I ./runtime
 ${ruleCC(ninjaCwd)}
 ${
   devmode
@@ -1056,7 +1056,7 @@ async function stdlibNinja(devmode = true) {
   // deprecations diabled due to string_of_float
   var warnings = "-w -9-3-106 -warn-error A";
   var templateStdlibRules = `
-${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6:.mjs   ${warnings}  -I runtime  -I others
+${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -make-runtime    ${warnings}  -I runtime  -I others
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuidList([
   [
@@ -1190,7 +1190,7 @@ async function testNinja() {
   var ninjaOutput = "build.ninja";
   var ninjaCwd = `test`;
   var templateTestRules = `
-bsc_flags = -bs-no-version-header  -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104 -warn-error A  -I runtime -I $stdlib -I others
+bsc_flags = -bs-no-version-header  -bs-cross-module-opt -make-runtime-test -bs-package-output commonjs:jscomp/test  -w -3-6-26-27-29-30-32..40-44-45-52-60-9-106+104 -warn-error A  -I runtime -I $stdlib -I others
 ${ruleCC(ninjaCwd)}
 
 
