@@ -39,8 +39,11 @@ val get_list_of_output_js :
   Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
 *)
 val package_flag_of_package_specs : 
-  t -> string -> string
+  t -> 
+  dirname:string -> 
+  string
 
+(* used to ensure each dir does exist *)
 val list_dirs_by :   
   t -> 
   (string -> unit) -> 

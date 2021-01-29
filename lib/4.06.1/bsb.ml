@@ -7118,8 +7118,11 @@ val get_list_of_output_js :
   Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
 *)
 val package_flag_of_package_specs : 
-  t -> string -> string
+  t -> 
+  dirname:string -> 
+  string
 
+(* used to ensure each dir does exist *)
 val list_dirs_by :   
   t -> 
   (string -> unit) -> 
@@ -7169,7 +7172,10 @@ module Spec_set = Set.Make( struct type t = spec
     let compare = Pervasives.compare 
   end)
 
-type t = Spec_set.t 
+type t = {
+  modules : Spec_set.t;
+  (* runtime: Bsb_pkg_types.t option;   *)
+}
 
 let (.?()) = Map_string.find_opt 
 
@@ -7217,8 +7223,8 @@ and from_json_single suffix (x : Ext_json_types.t) : spec =
   | Str {str = format; loc } ->    
       {format = supported_format format loc  ; in_source = false ; suffix }    
   | Obj {map; loc} ->
-    begin match Map_string.find_exn map "module" with
-      | Str {str = format} ->
+    begin match map .?("module") with
+      | Some(Str {str = format}) ->
         let in_source = 
           match map.?(Bsb_build_schemas.in_source) with
           | Some (True _) -> true
@@ -7236,13 +7242,10 @@ and from_json_single suffix (x : Ext_json_types.t) : spec =
             Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "expect a string field"
           | None -> suffix in   
         {format = supported_format format loc ; in_source ; suffix}        
-      | Arr _ ->
+      | Some _ ->
         Bsb_exception.errorf ~loc
-          "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."
-      | _ ->
-        Bsb_exception.errorf ~loc
-          "package-specs: the `module` field of the configuration object should be a string."
-      | exception _ ->
+          "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."      
+      | None ->
         Bsb_exception.errorf ~loc
           "package-specs: when the configuration is an object, the `module` field is mandatory."
     end
@@ -7272,11 +7275,12 @@ let package_flag ({format; in_source; suffix } : spec) dir =
       (Ext_js_suffix.to_string suffix)
     )
 
+(* FIXME: we should adapt it *)    
 let package_flag_of_package_specs (package_specs : t) 
-    (dirname : string ) : string  = 
+    ~(dirname : string ) : string  = 
   Spec_set.fold (fun format acc ->
       Ext_string.inter2 acc (package_flag format dirname )
-    ) package_specs Ext_string.empty
+    ) package_specs.modules Ext_string.empty
 
 let default_package_specs suffix = 
   Spec_set.singleton 
@@ -7289,7 +7293,7 @@ let default_package_specs suffix =
 
 *)
 let get_list_of_output_js 
-    (package_specs : Spec_set.t)
+    (package_specs : t)
     (output_file_sans_extension : string)
     = 
   Spec_set.fold 
@@ -7302,17 +7306,17 @@ let get_list_of_output_js
         (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
         else Bsb_config.lib_bs_prefix_of_format spec.format // basename) 
        :: acc
-    ) package_specs []
+    ) package_specs.modules []
 
 
 let list_dirs_by
-  (package_specs : Spec_set.t)
+  (package_specs : t)
   (f : string -> unit)
   =  
   Spec_set.iter (fun (spec : spec)  -> 
     if not spec.in_source then     
       f (Bsb_config.top_prefix_of_format spec.format) 
-  ) package_specs 
+  ) package_specs.modules 
   
 type json_map = Ext_json_types.t Map_string.t 
 
@@ -7331,10 +7335,13 @@ let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =
 
 let from_map map =  
   let suffix = extract_bs_suffix_exn map in   
-  match map.?(Bsb_build_schemas.package_specs) with 
+  let modules = match map.?(Bsb_build_schemas.package_specs) with 
   | Some x ->
     from_json suffix x 
-  | None ->  default_package_specs suffix
+  | None ->  default_package_specs suffix in 
+  {
+    modules 
+  }
 
 
 end
@@ -12920,7 +12927,8 @@ let make_custom_rules
     if read_cmi <> `is_cmi then begin 
       Ext_buffer.add_string buf " -bs-package-name ";
       Ext_buffer.add_string buf package_name;
-      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
+      Ext_buffer.add_string buf 
+        (Bsb_package_specs.package_flag_of_package_specs package_specs ~dirname:"$in_d")
     end;
     begin match bs_dependencies, bs_dev_dependencies with 
     | [], [] -> ()
