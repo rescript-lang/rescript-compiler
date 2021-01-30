@@ -237,7 +237,7 @@ let output_ninja_and_namespace_map
       ~gentype_config
       ~has_postbuild:js_post_build_cmd 
       ~pp_file
-      ~has_builtin:(built_in_dependency <> None)
+      ~has_builtin:built_in_dependency 
       ~reason_react_jsx
       ~package_specs
       ~namespace

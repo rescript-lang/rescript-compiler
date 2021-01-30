@@ -37,11 +37,18 @@ type spec = {
   suffix : Ext_js_suffix.t 
 }
 
+(*FIXME: use assoc list instead *)
 module Spec_set = Set.Make( struct type t = spec 
     let compare = Pervasives.compare 
   end)
 
-type t = Spec_set.t 
+type t = {
+  modules : Spec_set.t;
+  runtime: string option;  
+  (* This has to be resolved as early as possible, since 
+    the path will be inherited in sub projects
+  *)
+}
 
 let (.?()) = Map_string.find_opt 
 
@@ -89,8 +96,8 @@ and from_json_single suffix (x : Ext_json_types.t) : spec =
   | Str {str = format; loc } ->    
       {format = supported_format format loc  ; in_source = false ; suffix }    
   | Obj {map; loc} ->
-    begin match Map_string.find_exn map "module" with
-      | Str {str = format} ->
+    begin match map .?("module") with
+      | Some(Str {str = format}) ->
         let in_source = 
           match map.?(Bsb_build_schemas.in_source) with
           | Some (True _) -> true
@@ -108,13 +115,10 @@ and from_json_single suffix (x : Ext_json_types.t) : spec =
             Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "expect a string field"
           | None -> suffix in   
         {format = supported_format format loc ; in_source ; suffix}        
-      | Arr _ ->
+      | Some _ ->
         Bsb_exception.errorf ~loc
-          "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."
-      | _ ->
-        Bsb_exception.errorf ~loc
-          "package-specs: the `module` field of the configuration object should be a string."
-      | exception _ ->
+          "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."      
+      | None ->
         Bsb_exception.errorf ~loc
           "package-specs: when the configuration is an object, the `module` field is mandatory."
     end
@@ -144,12 +148,16 @@ let package_flag ({format; in_source; suffix } : spec) dir =
       (Ext_js_suffix.to_string suffix)
     )
 
+(* FIXME: we should adapt it *)    
 let package_flag_of_package_specs (package_specs : t) 
-    (dirname : string ) : string  = 
-  Spec_set.fold (fun format acc ->
+    ~(dirname : string ) : string  = 
+  let res = Spec_set.fold (fun format acc ->
       Ext_string.inter2 acc (package_flag format dirname )
-    ) package_specs Ext_string.empty
-
+    ) package_specs.modules Ext_string.empty in 
+  match package_specs.runtime with 
+  | None -> res
+  | Some x -> 
+    res ^ " -runtime " ^ x 
 let default_package_specs suffix = 
   Spec_set.singleton 
     { format = NodeJS ; in_source = false; suffix  }
@@ -161,7 +169,7 @@ let default_package_specs suffix =
 
 *)
 let get_list_of_output_js 
-    (package_specs : Spec_set.t)
+    (package_specs : t)
     (output_file_sans_extension : string)
     = 
   Spec_set.fold 
@@ -174,17 +182,17 @@ let get_list_of_output_js
         (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
         else Bsb_config.lib_bs_prefix_of_format spec.format // basename) 
        :: acc
-    ) package_specs []
+    ) package_specs.modules []
 
 
 let list_dirs_by
-  (package_specs : Spec_set.t)
+  (package_specs : t)
   (f : string -> unit)
   =  
   Spec_set.iter (fun (spec : spec)  -> 
     if not spec.in_source then     
       f (Bsb_config.top_prefix_of_format spec.format) 
-  ) package_specs 
+  ) package_specs.modules 
   
 type json_map = Ext_json_types.t Map_string.t 
 
@@ -201,10 +209,20 @@ let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =
     Bsb_exception.config_error config 
       "expect a string exteion like \".js\" here"
 
-let from_map map =  
+let from_map ~(cwd:string) map =  
   let suffix = extract_bs_suffix_exn map in   
-  match map.?(Bsb_build_schemas.package_specs) with 
+  let modules = match map.?(Bsb_build_schemas.package_specs) with 
   | Some x ->
     from_json suffix x 
-  | None ->  default_package_specs suffix
+  | None ->  default_package_specs suffix in 
+  let runtime = 
+    match map.?(Bsb_build_schemas.external_stdlib) with
+    | None -> None 
+    | Some(Str{str; _}) ->
+       Some (Bsb_pkg.resolve_bs_package ~cwd (Bsb_pkg_types.string_as_package str))
+    | _ -> assert false in   
+  {
+    runtime;  
+    modules 
+  }
 

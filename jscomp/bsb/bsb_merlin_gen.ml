@@ -165,11 +165,13 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );      
-    Ext_option.iter built_in_dependency (fun package -> 
-        let path = package.package_install_path in 
-        Buffer.add_string buffer (merlin_s ^ path );
-        Buffer.add_string buffer (merlin_b ^ path)                      
-      );
+    if built_in_dependency then (
+      let path = 
+        (Filename.dirname Bsb_global_paths.bsc_dir) 
+        // "lib" //"ocaml" in 
+      Buffer.add_string buffer (merlin_s ^ path );
+      Buffer.add_string buffer (merlin_b ^ path)                      
+    );
     let bsc_string_flag = bsc_flg_to_merlin_ocamlc_flg bsc_flags in 
     Buffer.add_string buffer bsc_string_flag ;
     Buffer.add_string buffer (warning_to_merlin_flg  warning); 

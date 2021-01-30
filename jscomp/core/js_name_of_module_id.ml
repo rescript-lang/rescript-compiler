@@ -80,7 +80,12 @@ let get_runtime_module_path
           (*Invariant: the package path to bs-platform, it is used to 
             calculate relative js path
           *)
-          ((Filename.dirname (Filename.dirname Sys.executable_name)) // dep_path // js_file)  
+          (match !Js_config.customize_runtime with 
+           | None ->
+             ((Filename.dirname (Filename.dirname Sys.executable_name)) // dep_path // js_file)
+           | Some path -> 
+             path //dep_path // js_file 
+          )  
 
 
 
@@ -142,6 +147,9 @@ let string_of_module_id
                   which is guaranteed by [-bs-package-output]
               *)
           else  
+          if Js_packages_info.is_runtime_package dep_package_info then 
+            get_runtime_module_path dep_module_id current_package_info module_system
+          else 
             begin match module_system with 
               | NodeJS | Es6 -> 
                 dep_pkg.pkg_rel_path // js_file

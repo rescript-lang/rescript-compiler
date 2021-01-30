@@ -1928,6 +1928,7 @@ let export_none = "none"
 
 
 let use_stdlib = "use-stdlib"
+let external_stdlib = "external-stdlib"
 let reason = "reason"
 let react_jsx = "react-jsx"
 
@@ -6068,7 +6069,10 @@ let string_as_package (s : string) : t =
   if v = '@' then 
     let scope_id = 
         Ext_string.no_slash_idx s in 
-    assert (scope_id > 0);
+    assert (scope_id > 0); 
+    (* better-eror message for invalid scope package:
+      @rescript/std
+    *)
     Scope(
       String.sub s (scope_id + 1) (len - scope_id - 1),
       String.sub s 0 scope_id
@@ -6555,1159 +6559,6 @@ let () =
         Some (Format.asprintf "%a" print x )
       | _ -> None
     )
-
-end
-module Ext_js_suffix
-= struct
-#1 "ext_js_suffix.ml"
-type t = 
-  | Js 
-  | Bs_js   
-  | Mjs
-  | Cjs
-  | Unknown_extension
-let to_string (x : t) =   
-  match x with 
-  | Js -> Literals.suffix_js
-  | Bs_js -> Literals.suffix_bs_js  
-  | Mjs -> Literals.suffix_mjs
-  | Cjs -> Literals.suffix_cjs
-  | Unknown_extension -> assert false
-
-
-let of_string (x : string) : t =
-  match () with 
-  | () when x = Literals.suffix_js -> Js 
-  | () when x = Literals.suffix_bs_js -> Bs_js       
-  | () when x = Literals.suffix_mjs -> Mjs
-  | () when x = Literals.suffix_cjs -> Cjs 
-  | _ -> Unknown_extension
-
-
-end
-module Ext_filename : sig 
-#1 "ext_filename.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(* TODO:
-   Change the module name, this code is not really an extension of the standard 
-    library but rather specific to JS Module name convention. 
-*)
-
-
-
-
-
-(** An extension module to calculate relative path follow node/npm style. 
-    TODO : this short name will have to change upon renaming the file.
-*)
-
-val is_dir_sep : 
-  char -> bool 
-  
-val maybe_quote:
-  string -> 
-  string
-
-val chop_extension_maybe:
-  string -> 
-  string
-
-(* return an empty string if no extension found *)  
-val get_extension_maybe:   
-  string -> 
-  string
-
-
-val new_extension:  
-  string -> 
-  string -> 
-  string
-
-val chop_all_extensions_maybe:
-  string -> 
-  string  
-
-(* OCaml specific abstraction*)
-val module_name:  
-  string ->
-  string
-
-
-
-
-type module_info = {
-  module_name : string ;
-  case : bool;
-}   
-
-
-
-val as_module:
-  basename:string -> 
-  module_info option
-end = struct
-#1 "ext_filename.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-let is_dir_sep_unix c = c = '/'
-let is_dir_sep_win_cygwin c = 
-  c = '/' || c = '\\' || c = ':'
-
-let is_dir_sep = 
-  if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
-
-(* reference ninja.cc IsKnownShellSafeCharacter *)
-let maybe_quote ( s : string) = 
-  let noneed_quote = 
-    Ext_string.for_all s (function
-        | '0' .. '9' 
-        | 'a' .. 'z' 
-        | 'A' .. 'Z'
-        | '_' | '+' 
-        | '-' | '.'
-        | '/' 
-        | '@' -> true
-        | _ -> false
-      )  in 
-  if noneed_quote then
-    s
-  else Filename.quote s 
-
-
-let chop_extension_maybe name =
-  let rec search_dot i =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then name
-    else if String.unsafe_get name i = '.' then String.sub name 0 i
-    else search_dot (i - 1) in
-  search_dot (String.length name - 1)
-
-let get_extension_maybe name =   
-  let name_len = String.length name in  
-  let rec search_dot name i name_len =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then ""
-    else if String.unsafe_get name i = '.' then String.sub name i (name_len - i)
-    else search_dot name (i - 1) name_len in
-  search_dot name (name_len - 1) name_len
-
-let chop_all_extensions_maybe name =
-  let rec search_dot i last =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
-      (match last with 
-      | None -> name
-      | Some i -> String.sub name 0 i)  
-    else if String.unsafe_get name i = '.' then 
-      search_dot (i - 1) (Some i)
-    else search_dot (i - 1) last in
-  search_dot (String.length name - 1) None
-
-
-let new_extension name (ext : string) = 
-  let rec search_dot name i ext =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
-      name ^ ext 
-    else if String.unsafe_get name i = '.' then 
-      let ext_len = String.length ext in
-      let buf = Bytes.create (i + ext_len) in 
-      Bytes.blit_string name 0 buf 0 i;
-      Bytes.blit_string ext 0 buf i ext_len;
-      Bytes.unsafe_to_string buf
-    else search_dot name (i - 1) ext  in
-  search_dot name (String.length name - 1) ext
-
-
-
-(** TODO: improve efficiency
-   given a path, calcuate its module name 
-   Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
-   we can not strip all extensions, otherwise
-   we can not tell the difference between "x.cpp.ml" 
-   and "x.ml"
-*)
-let module_name name = 
-  let rec search_dot i  name =
-    if i < 0  then 
-      Ext_string.capitalize_ascii name
-    else 
-    if String.unsafe_get name i = '.' then 
-      Ext_string.capitalize_sub name i 
-    else 
-      search_dot (i - 1) name in  
-  let name = Filename.basename  name in 
-  let name_len = String.length name in 
-  search_dot (name_len - 1)  name 
-
-type module_info = {
-  module_name : string ;
-  case : bool;
-} 
-
-
-
-let rec valid_module_name_aux name off len =
-  if off >= len then true 
-  else 
-    let c = String.unsafe_get name off in 
-    match c with 
-    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' | '.' | '[' | ']' -> 
-      valid_module_name_aux name (off + 1) len 
-    | _ -> false
-
-type state = 
-  | Invalid
-  | Upper
-  | Lower
-
-let valid_module_name name len =     
-  if len = 0 then Invalid
-  else 
-    let c = String.unsafe_get name 0 in 
-    match c with 
-    | 'A' .. 'Z'
-      -> 
-      if valid_module_name_aux name 1 len then 
-        Upper
-      else Invalid  
-    | 'a' .. 'z' 
-    | '0' .. '9'
-    | '_'
-    | '[' 
-    | ']'
-      -> 
-      if valid_module_name_aux name 1 len then
-        Lower
-      else Invalid
-    | _ -> Invalid
-
-
-let as_module ~basename =
-  let rec search_dot i  name name_len =
-    if i < 0  then
-      (* Input e.g, [a_b] *)
-      match valid_module_name name name_len with 
-      | Invalid -> None 
-      | Upper ->  Some {module_name = name; case = true }
-      | Lower -> Some {module_name = Ext_string.capitalize_ascii name; case = false}
-    else 
-    if String.unsafe_get name i = '.' then 
-      (*Input e.g, [A_b] *)
-      match valid_module_name  name i with 
-      | Invalid -> None 
-      | Upper -> 
-        Some {module_name = Ext_string.capitalize_sub name i; case = true}
-      | Lower -> 
-        Some {module_name = Ext_string.capitalize_sub name i; case = false}
-    else 
-      search_dot (i - 1) name name_len in  
-  let name_len = String.length basename in       
-  search_dot (name_len - 1)  basename name_len
-    
-end
-module Ext_js_file_kind
-= struct
-#1 "ext_js_file_kind.ml"
-(* Copyright (C) 2020- Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-type case = 
-  | Upper
-  | Little 
-
-type t = {
-  case : case; 
-  suffix : Ext_js_suffix.t;
-}
-
-
-let any_runtime_kind = {
-  case = Little; 
-  suffix = Ext_js_suffix.Js
-}
-end
-module Ext_namespace : sig 
-#1 "ext_namespace.mli"
-(* Copyright (C) 2017- Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-val try_split_module_name :
-  string -> (string * string ) option
-
-
-
-(* Note  we have to output uncapitalized file Name, 
-   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-   relevant issues: #1609, #913  
-
-   #1933 when removing ns suffix, don't pass the bound
-   of basename
-*)
-val change_ext_ns_suffix :  
-  string -> 
-  string ->
-  string
-
-
-  
-(** [js_name_of_modulename ~little A-Ns]
-  *)
-val js_name_of_modulename : 
-  string -> 
-  Ext_js_file_kind.case -> 
-  Ext_js_suffix.t ->
-  string
-
-(* TODO handle cases like 
-   '@angular/core'
-   its directory structure is like 
-   {[
-     @angular
-     |-------- core
-   ]}
-*)
-val is_valid_npm_package_name : string -> bool 
-
-val namespace_of_package_name : string -> string
-
-end = struct
-#1 "ext_namespace.ml"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-let rec rindex_rec s i  =
-  if i < 0 then i else
-    let char = String.unsafe_get s i in
-    if Ext_filename.is_dir_sep char  then -1 
-    else if char = Literals.ns_sep_char then i 
-    else
-      rindex_rec s (i - 1) 
-
-let change_ext_ns_suffix name ext =
-  let i = rindex_rec name (String.length name - 1)  in 
-  if i < 0 then name ^ ext
-  else String.sub name 0 i ^ ext (* FIXME: micro-optimizaiton*)
-
-let try_split_module_name name = 
-  let len = String.length name in 
-  let i = rindex_rec name (len - 1)  in 
-  if i < 0 then None 
-  else 
-    Some (String.sub name (i+1) (len - i - 1),
-          String.sub name 0 i )
-
-
-
-  
-
-let js_name_of_modulename s (case : Ext_js_file_kind.case) suffix : string = 
-  let s = match case with 
-    | Little -> 
-      Ext_string.uncapitalize_ascii s
-    | Upper -> s  in 
-  change_ext_ns_suffix s  (Ext_js_suffix.to_string suffix)
-
-(* https://docs.npmjs.com/files/package.json 
-   Some rules:
-   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
-   The name can't start with a dot or an underscore.
-   New packages must not have uppercase letters in the name.
-   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
-*)
-let is_valid_npm_package_name (s : string) = 
-  let len = String.length s in 
-  len <= 214 && (* magic number forced by npm *)
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'a' .. 'z' | '@' -> 
-    Ext_string.for_all_from s 1 
-      (fun x -> 
-         match x with 
-         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
-         | _ -> false )
-  | _ -> false 
-
-
-let namespace_of_package_name (s : string) : string = 
-  let len = String.length s in 
-  let buf = Ext_buffer.create len in 
-  let add capital ch = 
-    Ext_buffer.add_char buf 
-      (if capital then 
-         (Char.uppercase_ascii ch)
-       else ch) in    
-  let rec aux capital off len =     
-    if off >= len then ()
-    else 
-      let ch = String.unsafe_get s off in
-      match ch with 
-      | 'a' .. 'z' 
-      | 'A' .. 'Z' 
-      | '0' .. '9'
-      | '_'
-        ->
-        add capital ch ; 
-        aux false (off + 1) len 
-      | '/'
-      | '-' -> 
-        aux true (off + 1) len 
-      | _ -> aux capital (off+1) len
-  in 
-  aux true 0 len ;
-  Ext_buffer.contents buf 
-
-end
-module Bsb_package_specs : sig 
-#1 "bsb_package_specs.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t
-
-
-
-
-val from_map:
-  Ext_json_types.t Map_string.t -> t 
-
-val get_list_of_output_js : 
-  t -> 
-  string -> 
-  string list
-
-(**
-  Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
-*)
-val package_flag_of_package_specs : 
-  t -> string -> string
-
-val list_dirs_by :   
-  t -> 
-  (string -> unit) -> 
-  unit
-end = struct
-#1 "bsb_package_specs.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let (//) = Ext_path.combine 
-
-
-
-(* TODO: sync up with {!Js_packages_info.module_system}  *)
-type format = Ext_module_system.t = 
-  | NodeJS | Es6 | Es6_global
-
-type spec = {
-  format : format;
-  in_source : bool;
-  suffix : Ext_js_suffix.t 
-}
-
-module Spec_set = Set.Make( struct type t = spec 
-    let compare = Pervasives.compare 
-  end)
-
-type t = Spec_set.t 
-
-let (.?()) = Map_string.find_opt 
-
-let bad_module_format_message_exn ~loc format =
-  Bsb_exception.errorf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of:  %s, %s or %s"
-    format
-    Literals.commonjs
-    Literals.es6
-    Literals.es6_global
-
-let supported_format (x : string) loc = 
-  if x = Literals.commonjs then NodeJS
-  else if x = Literals.es6 then Es6
-  else if x = Literals.es6_global then Es6_global
-  else bad_module_format_message_exn ~loc x 
-
-let string_of_format (x : format) =
-  match x with 
-  | NodeJS -> Literals.commonjs
-  | Es6 -> Literals.es6
-  | Es6_global -> Literals.es6_global
-
-
-let rec from_array suffix (arr : Ext_json_types.t array) : Spec_set.t =
-  let spec = ref Spec_set.empty in
-  let has_in_source = ref false in
-  Ext_array.iter arr (fun x ->
-      let result = from_json_single suffix x  in
-      if result.in_source then 
-        (
-          if not !has_in_source then
-            has_in_source:= true
-          else 
-            Bsb_exception.errorf 
-              ~loc:(Ext_json.loc_of x) 
-              "package-specs: we've detected two module formats that are both configured to be in-source." 
-        );
-      spec := Spec_set.add result !spec
-    );
-  !spec
-
-(* TODO: FIXME: better API without mutating *)
-and from_json_single suffix (x : Ext_json_types.t) : spec =
-  match x with
-  | Str {str = format; loc } ->    
-      {format = supported_format format loc  ; in_source = false ; suffix }    
-  | Obj {map; loc} ->
-    begin match Map_string.find_exn map "module" with
-      | Str {str = format} ->
-        let in_source = 
-          match map.?(Bsb_build_schemas.in_source) with
-          | Some (True _) -> true
-          | Some _
-          | None -> false
-        in        
-        let suffix = 
-          match map.?("suffix") with
-          | Some (Str {str = suffix; loc}) ->
-            let s = Ext_js_suffix.of_string suffix in 
-            if s = Unknown_extension then 
-              Bsb_exception.errorf ~loc "expect .js,.bs.js,.mjs or .cjs"
-            else  s 
-          | Some _ -> 
-            Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "expect a string field"
-          | None -> suffix in   
-        {format = supported_format format loc ; in_source ; suffix}        
-      | Arr _ ->
-        Bsb_exception.errorf ~loc
-          "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."
-      | _ ->
-        Bsb_exception.errorf ~loc
-          "package-specs: the `module` field of the configuration object should be a string."
-      | exception _ ->
-        Bsb_exception.errorf ~loc
-          "package-specs: when the configuration is an object, the `module` field is mandatory."
-    end
-  | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
-           "package-specs: we expect either a string or an object."
-
-let  from_json suffix (x : Ext_json_types.t) : Spec_set.t =
-  match x with
-  | Arr {content ; _} -> from_array suffix content
-  | _ -> Spec_set.singleton (from_json_single suffix x )
-
-let bs_package_output = "-bs-package-output"
-[@@@warning "+9"]
-(** Assume input is valid 
-    coordinate with command line flag 
-    {[ -bs-package-output commonjs:lib/js/jscomp/test:.js ]}    
-*)
-let package_flag ({format; in_source; suffix } : spec) dir =
-  Ext_string.inter2
-    bs_package_output 
-    (Ext_string.concat5
-       (string_of_format format)
-       Ext_string.single_colon
-       (if in_source then dir else
-        Bsb_config.top_prefix_of_format format // dir)
-      Ext_string.single_colon  
-      (Ext_js_suffix.to_string suffix)
-    )
-
-let package_flag_of_package_specs (package_specs : t) 
-    (dirname : string ) : string  = 
-  Spec_set.fold (fun format acc ->
-      Ext_string.inter2 acc (package_flag format dirname )
-    ) package_specs Ext_string.empty
-
-let default_package_specs suffix = 
-  Spec_set.singleton 
-    { format = NodeJS ; in_source = false; suffix  }
-
-
-
-(**
-    [get_list_of_output_js specs "src/hi/hello"]
-
-*)
-let get_list_of_output_js 
-    (package_specs : Spec_set.t)
-    (output_file_sans_extension : string)
-    = 
-  Spec_set.fold 
-    (fun (spec : spec) acc ->
-        let basename =  
-          Ext_namespace.change_ext_ns_suffix
-             output_file_sans_extension
-             (Ext_js_suffix.to_string spec.suffix)
-        in 
-        (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
-        else Bsb_config.lib_bs_prefix_of_format spec.format // basename) 
-       :: acc
-    ) package_specs []
-
-
-let list_dirs_by
-  (package_specs : Spec_set.t)
-  (f : string -> unit)
-  =  
-  Spec_set.iter (fun (spec : spec)  -> 
-    if not spec.in_source then     
-      f (Bsb_config.top_prefix_of_format spec.format) 
-  ) package_specs 
-  
-type json_map = Ext_json_types.t Map_string.t 
-
-let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
-  match map.?(Bsb_build_schemas.suffix) with 
-  | None -> Js  
-  | Some (Str {str; loc}) -> 
-    let s =  Ext_js_suffix.of_string str  in 
-    if s = Unknown_extension then 
-      Bsb_exception.errorf ~loc
-        "expect .bs.js, .js, .cjs, .mjs here"
-    else s     
-  | Some config -> 
-    Bsb_exception.config_error config 
-      "expect a string exteion like \".js\" here"
-
-let from_map map =  
-  let suffix = extract_bs_suffix_exn map in   
-  match map.?(Bsb_build_schemas.package_specs) with 
-  | Some x ->
-    from_json suffix x 
-  | None ->  default_package_specs suffix
-
-
-end
-module Bsb_package_kind
-= struct
-#1 "bsb_package_kind.ml"
-(* Copyright (C) 2020- Authors of ReScript 
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = 
-    | Toplevel
-    | Dependency of Bsb_package_specs.t 
-    | Pinned_dependency of Bsb_package_specs.t 
-        (*  This package specs comes from the toplevel to 
-            override the current settings
-        *)
-
-end
-module Bsc_warnings
-= struct
-#1 "bsc_warnings.ml"
-(* Copyright (C) 2020- Authors of BuckleScript 
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-(**
-  See the meanings of the warning codes here: https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec281
-
-  - 30 Two labels or constructors of the same name are defined in two mutually recursive types.
-  - 40 Constructor or label name used out of scope.
-
-  - 6 Label omitted in function application.
-  - 7 Method overridden.
-  - 9 Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)
-  - 27 Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.
-  - 29 Unescaped end-of-line in a string constant (non-portable code).
-  - 32 .. 39 Unused blabla
-  - 44 Open statement shadows an already defined identifier.
-  - 45 Open statement shadows an already defined label or constructor.
-  - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
-  - 101 (bsb-specific) unsafe polymorphic comparison.
-*) 
-
-
-(*
-  The purpose of default warning set is to make it strict while
-  not annoy user too much
-
-  -4 Fragile pattern matching: matching that will remain complete even if additional con- structors are added to one of the variant types matched.
-  We turn it off since common pattern
-  {[
-    match x with | A -> .. |  _ -> false
-  ]}
-
-  -9 Missing fields in a record pattern.
-  only in some special cases that we need all fields being listed
-
-  We encourage people to write code based on type based disambigution
-  40,41,42 are enabled for compatiblity reasons  
-  -40 Constructor or label name used out of scope
-  This is intentional, we should never warn it
-  - 41 Ambiguous constructor or label name.
-  It is turned off since it prevents such cases below:
-  {[
-    type a = A |B 
-    type b = A | B | C
-  ]}
-  - 42 Disambiguated constructor or label name (compatibility warning).
-  
-  - 50 Unexpected documentation comment.
-
-  - 102 Bs_polymorphic_comparison
-*)
-let defaults_w = "+a-4-9-20-40-41-42-50-61-102"
-let defaults_warn_error = "-a+5+6+101+109";;
-(*TODO: add +10*)
-
-end
-module Bsb_warning : sig 
-#1 "bsb_warning.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-type t
-
-(** Extra work is need to make merlin happy *)
-val to_merlin_string : t  -> string
-
-
-
-val from_map : Ext_json_types.t Map_string.t -> t 
-
-(** [to_bsb_string not_dev warning]
-*)
-val to_bsb_string : 
-  package_kind:Bsb_package_kind.t -> 
-  t  -> 
-  string
-
-val use_default : t
-end = struct
-#1 "bsb_warning.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type warning_error =
-  | Warn_error_false
-  (* default [false] to make our changes non-intrusive *)
-  | Warn_error_true
-  | Warn_error_number of string
-
-type t0 = {
-  number : string option;
-  error : warning_error
-}
-
-type nonrec t = t0 option 
-
-let use_default = None
-
-let prepare_warning_concat ~(beg : bool) s =
-  let s = Ext_string.trim s in 
-  if s = "" then s 
-  else 
-    match s.[0] with 
-    | '0' .. '9' -> if beg then "-w +" ^ s else "+" ^ s 
-    | 'a' .. 'z' -> 
-      if beg then "-w " ^ s else "-" ^ s 
-    | 'A' .. 'Z' -> 
-      if beg then "-w " ^ s else "+" ^ s  
-    | _ -> 
-      if beg then "-w " ^ s else s
-
-let to_merlin_string x =
-  "-w " ^ Bsc_warnings.defaults_w
-  ^
-  (let customize = (match x with
-       | Some {number =None}
-       | None ->  Ext_string.empty
-       | Some {number = Some x} -> 
-         prepare_warning_concat ~beg:false x 
-     ) in 
-   if customize = "" then customize
-   else customize ^ "-40-42-61") 
-(* see #4406 to avoid user pass A
-   Sync up with {!Warnings.report}
-*)
-
-
-   
-let from_map (m : Ext_json_types.t Map_string.t) =
-  let number_opt = Map_string.find_opt m Bsb_build_schemas.number in
-  let error_opt = Map_string.find_opt m  Bsb_build_schemas.error in
-  match number_opt, error_opt  with
-  | None, None -> None
-  | _, _ ->
-    let error  =
-      match error_opt with
-      | Some (True _) -> Warn_error_true
-      | Some (False _) -> Warn_error_false
-      | Some (Str {str ; })
-        -> Warn_error_number str
-      | Some x -> Bsb_exception.config_error x "expect true/false or string"
-      | None -> Warn_error_false
-      (** To make it less intrusive : warning error has to be enabled*)
-    in
-    let number =
-      match number_opt with
-      | Some (Str { str = number}) -> Some number
-      | None -> None
-      | Some x -> Bsb_exception.config_error x "expect a string"
-    in
-    Some {number; error }
-
-
-let to_bsb_string ~(package_kind: Bsb_package_kind.t) warning =
-  match package_kind with 
-  | Toplevel 
-  | Pinned_dependency _ -> 
-    (match warning with
-    | None -> Ext_string.empty
-    | Some warning ->     
-      (match warning.number with
-       | None ->
-         Ext_string.empty
-       | Some x ->
-         prepare_warning_concat ~beg:true x  
-      ) ^
-      (
-        match warning.error with
-        | Warn_error_true ->
-          " -warn-error A"
-        | Warn_error_number y ->
-          " -warn-error " ^ y
-        | Warn_error_false ->
-          Ext_string.empty
-      ))
-  | Dependency _ ->  " -w a" 
-  (* TODO: this is the current default behavior *)
-
-end
-module Bsb_config_types
-= struct
-#1 "bsb_config_types.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type dependency = 
-  {
-    package_name : Bsb_pkg_types.t ; 
-    package_install_path : string ; 
-  }
-type dependencies = dependency list 
-
-
-
-
-type reason_react_jsx = 
-  | Jsx_v3
-  (* string option  *)
-
-type refmt = string option
-
-type gentype_config = {
-  path : string (* resolved *)
-}
-type command = string
-
-type ppx = {
-  name : string;
-  args : string list
-}
-type t = 
-  {
-    package_name : string ; 
-    (* [captial-package] *)
-    namespace : string option; 
-    (* CapitalPackage *)
-    external_includes : string list ; 
-    bsc_flags : string list ;
-    ppx_files : ppx list ;
-    pp_file : string option;
-    bs_dependencies : dependencies;
-    bs_dev_dependencies : dependencies;
-    pinned_dependencies : Set_string.t;
-    built_in_dependency : dependency option; 
-    warning : Bsb_warning.t;
-    (*TODO: maybe we should always resolve bs-platform 
-      so that we can calculate correct relative path in 
-      [.merlin]
-    *)
-    refmt : refmt;
-    js_post_build_cmd : string option;
-    package_specs : Bsb_package_specs.t ; 
-    file_groups : Bsb_file_groups.t;
-    files_to_install : Bsb_db.module_info Queue.t ;
-    generate_merlin : bool ; 
-    reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
-    generators : command Map_string.t ; 
-    cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)    
-    gentype_config : gentype_config option;
-  }
 
 end
 module Ext_color : sig 
@@ -8601,6 +7452,7 @@ val resolve_bs_package :
     cwd:string ->  Bsb_pkg_types.t -> string 
 
 
+(** used by watcher *)    
 val to_list:    
   (Bsb_pkg_types.t  ->
    string ->
@@ -8801,6 +7653,1181 @@ let resolve_bs_package ~cwd (package : t) =
 (*           (\* Bs_exception.error (Bs_package_not_found name)           *\) *)
 (*   in *)
 (*   aux cwd *)
+
+end
+module Ext_js_suffix
+= struct
+#1 "ext_js_suffix.ml"
+type t = 
+  | Js 
+  | Bs_js   
+  | Mjs
+  | Cjs
+  | Unknown_extension
+let to_string (x : t) =   
+  match x with 
+  | Js -> Literals.suffix_js
+  | Bs_js -> Literals.suffix_bs_js  
+  | Mjs -> Literals.suffix_mjs
+  | Cjs -> Literals.suffix_cjs
+  | Unknown_extension -> assert false
+
+
+let of_string (x : string) : t =
+  match () with 
+  | () when x = Literals.suffix_js -> Js 
+  | () when x = Literals.suffix_bs_js -> Bs_js       
+  | () when x = Literals.suffix_mjs -> Mjs
+  | () when x = Literals.suffix_cjs -> Cjs 
+  | _ -> Unknown_extension
+
+
+end
+module Ext_filename : sig 
+#1 "ext_filename.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* TODO:
+   Change the module name, this code is not really an extension of the standard 
+    library but rather specific to JS Module name convention. 
+*)
+
+
+
+
+
+(** An extension module to calculate relative path follow node/npm style. 
+    TODO : this short name will have to change upon renaming the file.
+*)
+
+val is_dir_sep : 
+  char -> bool 
+  
+val maybe_quote:
+  string -> 
+  string
+
+val chop_extension_maybe:
+  string -> 
+  string
+
+(* return an empty string if no extension found *)  
+val get_extension_maybe:   
+  string -> 
+  string
+
+
+val new_extension:  
+  string -> 
+  string -> 
+  string
+
+val chop_all_extensions_maybe:
+  string -> 
+  string  
+
+(* OCaml specific abstraction*)
+val module_name:  
+  string ->
+  string
+
+
+
+
+type module_info = {
+  module_name : string ;
+  case : bool;
+}   
+
+
+
+val as_module:
+  basename:string -> 
+  module_info option
+end = struct
+#1 "ext_filename.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+let is_dir_sep_unix c = c = '/'
+let is_dir_sep_win_cygwin c = 
+  c = '/' || c = '\\' || c = ':'
+
+let is_dir_sep = 
+  if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
+
+(* reference ninja.cc IsKnownShellSafeCharacter *)
+let maybe_quote ( s : string) = 
+  let noneed_quote = 
+    Ext_string.for_all s (function
+        | '0' .. '9' 
+        | 'a' .. 'z' 
+        | 'A' .. 'Z'
+        | '_' | '+' 
+        | '-' | '.'
+        | '/' 
+        | '@' -> true
+        | _ -> false
+      )  in 
+  if noneed_quote then
+    s
+  else Filename.quote s 
+
+
+let chop_extension_maybe name =
+  let rec search_dot i =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then name
+    else if String.unsafe_get name i = '.' then String.sub name 0 i
+    else search_dot (i - 1) in
+  search_dot (String.length name - 1)
+
+let get_extension_maybe name =   
+  let name_len = String.length name in  
+  let rec search_dot name i name_len =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then ""
+    else if String.unsafe_get name i = '.' then String.sub name i (name_len - i)
+    else search_dot name (i - 1) name_len in
+  search_dot name (name_len - 1) name_len
+
+let chop_all_extensions_maybe name =
+  let rec search_dot i last =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      (match last with 
+      | None -> name
+      | Some i -> String.sub name 0 i)  
+    else if String.unsafe_get name i = '.' then 
+      search_dot (i - 1) (Some i)
+    else search_dot (i - 1) last in
+  search_dot (String.length name - 1) None
+
+
+let new_extension name (ext : string) = 
+  let rec search_dot name i ext =
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
+      name ^ ext 
+    else if String.unsafe_get name i = '.' then 
+      let ext_len = String.length ext in
+      let buf = Bytes.create (i + ext_len) in 
+      Bytes.blit_string name 0 buf 0 i;
+      Bytes.blit_string ext 0 buf i ext_len;
+      Bytes.unsafe_to_string buf
+    else search_dot name (i - 1) ext  in
+  search_dot name (String.length name - 1) ext
+
+
+
+(** TODO: improve efficiency
+   given a path, calcuate its module name 
+   Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
+   we can not strip all extensions, otherwise
+   we can not tell the difference between "x.cpp.ml" 
+   and "x.ml"
+*)
+let module_name name = 
+  let rec search_dot i  name =
+    if i < 0  then 
+      Ext_string.capitalize_ascii name
+    else 
+    if String.unsafe_get name i = '.' then 
+      Ext_string.capitalize_sub name i 
+    else 
+      search_dot (i - 1) name in  
+  let name = Filename.basename  name in 
+  let name_len = String.length name in 
+  search_dot (name_len - 1)  name 
+
+type module_info = {
+  module_name : string ;
+  case : bool;
+} 
+
+
+
+let rec valid_module_name_aux name off len =
+  if off >= len then true 
+  else 
+    let c = String.unsafe_get name off in 
+    match c with 
+    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' | '.' | '[' | ']' -> 
+      valid_module_name_aux name (off + 1) len 
+    | _ -> false
+
+type state = 
+  | Invalid
+  | Upper
+  | Lower
+
+let valid_module_name name len =     
+  if len = 0 then Invalid
+  else 
+    let c = String.unsafe_get name 0 in 
+    match c with 
+    | 'A' .. 'Z'
+      -> 
+      if valid_module_name_aux name 1 len then 
+        Upper
+      else Invalid  
+    | 'a' .. 'z' 
+    | '0' .. '9'
+    | '_'
+    | '[' 
+    | ']'
+      -> 
+      if valid_module_name_aux name 1 len then
+        Lower
+      else Invalid
+    | _ -> Invalid
+
+
+let as_module ~basename =
+  let rec search_dot i  name name_len =
+    if i < 0  then
+      (* Input e.g, [a_b] *)
+      match valid_module_name name name_len with 
+      | Invalid -> None 
+      | Upper ->  Some {module_name = name; case = true }
+      | Lower -> Some {module_name = Ext_string.capitalize_ascii name; case = false}
+    else 
+    if String.unsafe_get name i = '.' then 
+      (*Input e.g, [A_b] *)
+      match valid_module_name  name i with 
+      | Invalid -> None 
+      | Upper -> 
+        Some {module_name = Ext_string.capitalize_sub name i; case = true}
+      | Lower -> 
+        Some {module_name = Ext_string.capitalize_sub name i; case = false}
+    else 
+      search_dot (i - 1) name name_len in  
+  let name_len = String.length basename in       
+  search_dot (name_len - 1)  basename name_len
+    
+end
+module Ext_js_file_kind
+= struct
+#1 "ext_js_file_kind.ml"
+(* Copyright (C) 2020- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type case = 
+  | Upper
+  | Little 
+
+type t = {
+  case : case; 
+  suffix : Ext_js_suffix.t;
+}
+
+
+let any_runtime_kind = {
+  case = Little; 
+  suffix = Ext_js_suffix.Js
+}
+end
+module Ext_namespace : sig 
+#1 "ext_namespace.mli"
+(* Copyright (C) 2017- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+val try_split_module_name :
+  string -> (string * string ) option
+
+
+
+(* Note  we have to output uncapitalized file Name, 
+   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+   relevant issues: #1609, #913  
+
+   #1933 when removing ns suffix, don't pass the bound
+   of basename
+*)
+val change_ext_ns_suffix :  
+  string -> 
+  string ->
+  string
+
+
+  
+(** [js_name_of_modulename ~little A-Ns]
+  *)
+val js_name_of_modulename : 
+  string -> 
+  Ext_js_file_kind.case -> 
+  Ext_js_suffix.t ->
+  string
+
+(* TODO handle cases like 
+   '@angular/core'
+   its directory structure is like 
+   {[
+     @angular
+     |-------- core
+   ]}
+*)
+val is_valid_npm_package_name : string -> bool 
+
+val namespace_of_package_name : string -> string
+
+end = struct
+#1 "ext_namespace.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+let rec rindex_rec s i  =
+  if i < 0 then i else
+    let char = String.unsafe_get s i in
+    if Ext_filename.is_dir_sep char  then -1 
+    else if char = Literals.ns_sep_char then i 
+    else
+      rindex_rec s (i - 1) 
+
+let change_ext_ns_suffix name ext =
+  let i = rindex_rec name (String.length name - 1)  in 
+  if i < 0 then name ^ ext
+  else String.sub name 0 i ^ ext (* FIXME: micro-optimizaiton*)
+
+let try_split_module_name name = 
+  let len = String.length name in 
+  let i = rindex_rec name (len - 1)  in 
+  if i < 0 then None 
+  else 
+    Some (String.sub name (i+1) (len - i - 1),
+          String.sub name 0 i )
+
+
+
+  
+
+let js_name_of_modulename s (case : Ext_js_file_kind.case) suffix : string = 
+  let s = match case with 
+    | Little -> 
+      Ext_string.uncapitalize_ascii s
+    | Upper -> s  in 
+  change_ext_ns_suffix s  (Ext_js_suffix.to_string suffix)
+
+(* https://docs.npmjs.com/files/package.json 
+   Some rules:
+   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
+   The name can't start with a dot or an underscore.
+   New packages must not have uppercase letters in the name.
+   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
+*)
+let is_valid_npm_package_name (s : string) = 
+  let len = String.length s in 
+  len <= 214 && (* magic number forced by npm *)
+  len > 0 &&
+  match String.unsafe_get s 0 with 
+  | 'a' .. 'z' | '@' -> 
+    Ext_string.for_all_from s 1 
+      (fun x -> 
+         match x with 
+         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
+         | _ -> false )
+  | _ -> false 
+
+
+let namespace_of_package_name (s : string) : string = 
+  let len = String.length s in 
+  let buf = Ext_buffer.create len in 
+  let add capital ch = 
+    Ext_buffer.add_char buf 
+      (if capital then 
+         (Char.uppercase_ascii ch)
+       else ch) in    
+  let rec aux capital off len =     
+    if off >= len then ()
+    else 
+      let ch = String.unsafe_get s off in
+      match ch with 
+      | 'a' .. 'z' 
+      | 'A' .. 'Z' 
+      | '0' .. '9'
+      | '_'
+        ->
+        add capital ch ; 
+        aux false (off + 1) len 
+      | '/'
+      | '-' -> 
+        aux true (off + 1) len 
+      | _ -> aux capital (off+1) len
+  in 
+  aux true 0 len ;
+  Ext_buffer.contents buf 
+
+end
+module Bsb_package_specs : sig 
+#1 "bsb_package_specs.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t
+
+
+
+
+val from_map:
+  cwd:string ->
+  Ext_json_types.t Map_string.t -> t 
+
+val get_list_of_output_js : 
+  t -> 
+  string -> 
+  string list
+
+(**
+  Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
+*)
+val package_flag_of_package_specs : 
+  t -> 
+  dirname:string -> 
+  string
+
+(* used to ensure each dir does exist *)
+val list_dirs_by :   
+  t -> 
+  (string -> unit) -> 
+  unit
+end = struct
+#1 "bsb_package_specs.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let (//) = Ext_path.combine 
+
+
+
+(* TODO: sync up with {!Js_packages_info.module_system}  *)
+type format = Ext_module_system.t = 
+  | NodeJS | Es6 | Es6_global
+
+type spec = {
+  format : format;
+  in_source : bool;
+  suffix : Ext_js_suffix.t 
+}
+
+(*FIXME: use assoc list instead *)
+module Spec_set = Set.Make( struct type t = spec 
+    let compare = Pervasives.compare 
+  end)
+
+type t = {
+  modules : Spec_set.t;
+  runtime: string option;  
+  (* This has to be resolved as early as possible, since 
+    the path will be inherited in sub projects
+  *)
+}
+
+let (.?()) = Map_string.find_opt 
+
+let bad_module_format_message_exn ~loc format =
+  Bsb_exception.errorf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of:  %s, %s or %s"
+    format
+    Literals.commonjs
+    Literals.es6
+    Literals.es6_global
+
+let supported_format (x : string) loc = 
+  if x = Literals.commonjs then NodeJS
+  else if x = Literals.es6 then Es6
+  else if x = Literals.es6_global then Es6_global
+  else bad_module_format_message_exn ~loc x 
+
+let string_of_format (x : format) =
+  match x with 
+  | NodeJS -> Literals.commonjs
+  | Es6 -> Literals.es6
+  | Es6_global -> Literals.es6_global
+
+
+let rec from_array suffix (arr : Ext_json_types.t array) : Spec_set.t =
+  let spec = ref Spec_set.empty in
+  let has_in_source = ref false in
+  Ext_array.iter arr (fun x ->
+      let result = from_json_single suffix x  in
+      if result.in_source then 
+        (
+          if not !has_in_source then
+            has_in_source:= true
+          else 
+            Bsb_exception.errorf 
+              ~loc:(Ext_json.loc_of x) 
+              "package-specs: we've detected two module formats that are both configured to be in-source." 
+        );
+      spec := Spec_set.add result !spec
+    );
+  !spec
+
+(* TODO: FIXME: better API without mutating *)
+and from_json_single suffix (x : Ext_json_types.t) : spec =
+  match x with
+  | Str {str = format; loc } ->    
+      {format = supported_format format loc  ; in_source = false ; suffix }    
+  | Obj {map; loc} ->
+    begin match map .?("module") with
+      | Some(Str {str = format}) ->
+        let in_source = 
+          match map.?(Bsb_build_schemas.in_source) with
+          | Some (True _) -> true
+          | Some _
+          | None -> false
+        in        
+        let suffix = 
+          match map.?("suffix") with
+          | Some (Str {str = suffix; loc}) ->
+            let s = Ext_js_suffix.of_string suffix in 
+            if s = Unknown_extension then 
+              Bsb_exception.errorf ~loc "expect .js,.bs.js,.mjs or .cjs"
+            else  s 
+          | Some _ -> 
+            Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "expect a string field"
+          | None -> suffix in   
+        {format = supported_format format loc ; in_source ; suffix}        
+      | Some _ ->
+        Bsb_exception.errorf ~loc
+          "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."      
+      | None ->
+        Bsb_exception.errorf ~loc
+          "package-specs: when the configuration is an object, the `module` field is mandatory."
+    end
+  | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
+           "package-specs: we expect either a string or an object."
+
+let  from_json suffix (x : Ext_json_types.t) : Spec_set.t =
+  match x with
+  | Arr {content ; _} -> from_array suffix content
+  | _ -> Spec_set.singleton (from_json_single suffix x )
+
+let bs_package_output = "-bs-package-output"
+[@@@warning "+9"]
+(** Assume input is valid 
+    coordinate with command line flag 
+    {[ -bs-package-output commonjs:lib/js/jscomp/test:.js ]}    
+*)
+let package_flag ({format; in_source; suffix } : spec) dir =
+  Ext_string.inter2
+    bs_package_output 
+    (Ext_string.concat5
+       (string_of_format format)
+       Ext_string.single_colon
+       (if in_source then dir else
+        Bsb_config.top_prefix_of_format format // dir)
+      Ext_string.single_colon  
+      (Ext_js_suffix.to_string suffix)
+    )
+
+(* FIXME: we should adapt it *)    
+let package_flag_of_package_specs (package_specs : t) 
+    ~(dirname : string ) : string  = 
+  let res = Spec_set.fold (fun format acc ->
+      Ext_string.inter2 acc (package_flag format dirname )
+    ) package_specs.modules Ext_string.empty in 
+  match package_specs.runtime with 
+  | None -> res
+  | Some x -> 
+    res ^ " -runtime " ^ x 
+let default_package_specs suffix = 
+  Spec_set.singleton 
+    { format = NodeJS ; in_source = false; suffix  }
+
+
+
+(**
+    [get_list_of_output_js specs "src/hi/hello"]
+
+*)
+let get_list_of_output_js 
+    (package_specs : t)
+    (output_file_sans_extension : string)
+    = 
+  Spec_set.fold 
+    (fun (spec : spec) acc ->
+        let basename =  
+          Ext_namespace.change_ext_ns_suffix
+             output_file_sans_extension
+             (Ext_js_suffix.to_string spec.suffix)
+        in 
+        (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
+        else Bsb_config.lib_bs_prefix_of_format spec.format // basename) 
+       :: acc
+    ) package_specs.modules []
+
+
+let list_dirs_by
+  (package_specs : t)
+  (f : string -> unit)
+  =  
+  Spec_set.iter (fun (spec : spec)  -> 
+    if not spec.in_source then     
+      f (Bsb_config.top_prefix_of_format spec.format) 
+  ) package_specs.modules 
+  
+type json_map = Ext_json_types.t Map_string.t 
+
+let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
+  match map.?(Bsb_build_schemas.suffix) with 
+  | None -> Js  
+  | Some (Str {str; loc}) -> 
+    let s =  Ext_js_suffix.of_string str  in 
+    if s = Unknown_extension then 
+      Bsb_exception.errorf ~loc
+        "expect .bs.js, .js, .cjs, .mjs here"
+    else s     
+  | Some config -> 
+    Bsb_exception.config_error config 
+      "expect a string exteion like \".js\" here"
+
+let from_map ~(cwd:string) map =  
+  let suffix = extract_bs_suffix_exn map in   
+  let modules = match map.?(Bsb_build_schemas.package_specs) with 
+  | Some x ->
+    from_json suffix x 
+  | None ->  default_package_specs suffix in 
+  let runtime = 
+    match map.?(Bsb_build_schemas.external_stdlib) with
+    | None -> None 
+    | Some(Str{str; _}) ->
+       Some (Bsb_pkg.resolve_bs_package ~cwd (Bsb_pkg_types.string_as_package str))
+    | _ -> assert false in   
+  {
+    runtime;  
+    modules 
+  }
+
+
+end
+module Bsb_package_kind
+= struct
+#1 "bsb_package_kind.ml"
+(* Copyright (C) 2020- Authors of ReScript 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = 
+    | Toplevel
+    | Dependency of Bsb_package_specs.t 
+    | Pinned_dependency of Bsb_package_specs.t 
+        (*  This package specs comes from the toplevel to 
+            override the current settings
+        *)
+
+end
+module Bsc_warnings
+= struct
+#1 "bsc_warnings.ml"
+(* Copyright (C) 2020- Authors of BuckleScript 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+(**
+  See the meanings of the warning codes here: https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec281
+
+  - 30 Two labels or constructors of the same name are defined in two mutually recursive types.
+  - 40 Constructor or label name used out of scope.
+
+  - 6 Label omitted in function application.
+  - 7 Method overridden.
+  - 9 Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)
+  - 27 Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.
+  - 29 Unescaped end-of-line in a string constant (non-portable code).
+  - 32 .. 39 Unused blabla
+  - 44 Open statement shadows an already defined identifier.
+  - 45 Open statement shadows an already defined label or constructor.
+  - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
+  - 101 (bsb-specific) unsafe polymorphic comparison.
+*) 
+
+
+(*
+  The purpose of default warning set is to make it strict while
+  not annoy user too much
+
+  -4 Fragile pattern matching: matching that will remain complete even if additional con- structors are added to one of the variant types matched.
+  We turn it off since common pattern
+  {[
+    match x with | A -> .. |  _ -> false
+  ]}
+
+  -9 Missing fields in a record pattern.
+  only in some special cases that we need all fields being listed
+
+  We encourage people to write code based on type based disambigution
+  40,41,42 are enabled for compatiblity reasons  
+  -40 Constructor or label name used out of scope
+  This is intentional, we should never warn it
+  - 41 Ambiguous constructor or label name.
+  It is turned off since it prevents such cases below:
+  {[
+    type a = A |B 
+    type b = A | B | C
+  ]}
+  - 42 Disambiguated constructor or label name (compatibility warning).
+  
+  - 50 Unexpected documentation comment.
+
+  - 102 Bs_polymorphic_comparison
+*)
+let defaults_w = "+a-4-9-20-40-41-42-50-61-102"
+let defaults_warn_error = "-a+5+6+101+109";;
+(*TODO: add +10*)
+
+end
+module Bsb_warning : sig 
+#1 "bsb_warning.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+type t
+
+(** Extra work is need to make merlin happy *)
+val to_merlin_string : t  -> string
+
+
+
+val from_map : Ext_json_types.t Map_string.t -> t 
+
+(** [to_bsb_string not_dev warning]
+*)
+val to_bsb_string : 
+  package_kind:Bsb_package_kind.t -> 
+  t  -> 
+  string
+
+val use_default : t
+end = struct
+#1 "bsb_warning.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type warning_error =
+  | Warn_error_false
+  (* default [false] to make our changes non-intrusive *)
+  | Warn_error_true
+  | Warn_error_number of string
+
+type t0 = {
+  number : string option;
+  error : warning_error
+}
+
+type nonrec t = t0 option 
+
+let use_default = None
+
+let prepare_warning_concat ~(beg : bool) s =
+  let s = Ext_string.trim s in 
+  if s = "" then s 
+  else 
+    match s.[0] with 
+    | '0' .. '9' -> if beg then "-w +" ^ s else "+" ^ s 
+    | 'a' .. 'z' -> 
+      if beg then "-w " ^ s else "-" ^ s 
+    | 'A' .. 'Z' -> 
+      if beg then "-w " ^ s else "+" ^ s  
+    | _ -> 
+      if beg then "-w " ^ s else s
+
+let to_merlin_string x =
+  "-w " ^ Bsc_warnings.defaults_w
+  ^
+  (let customize = (match x with
+       | Some {number =None}
+       | None ->  Ext_string.empty
+       | Some {number = Some x} -> 
+         prepare_warning_concat ~beg:false x 
+     ) in 
+   if customize = "" then customize
+   else customize ^ "-40-42-61") 
+(* see #4406 to avoid user pass A
+   Sync up with {!Warnings.report}
+*)
+
+
+   
+let from_map (m : Ext_json_types.t Map_string.t) =
+  let number_opt = Map_string.find_opt m Bsb_build_schemas.number in
+  let error_opt = Map_string.find_opt m  Bsb_build_schemas.error in
+  match number_opt, error_opt  with
+  | None, None -> None
+  | _, _ ->
+    let error  =
+      match error_opt with
+      | Some (True _) -> Warn_error_true
+      | Some (False _) -> Warn_error_false
+      | Some (Str {str ; })
+        -> Warn_error_number str
+      | Some x -> Bsb_exception.config_error x "expect true/false or string"
+      | None -> Warn_error_false
+      (** To make it less intrusive : warning error has to be enabled*)
+    in
+    let number =
+      match number_opt with
+      | Some (Str { str = number}) -> Some number
+      | None -> None
+      | Some x -> Bsb_exception.config_error x "expect a string"
+    in
+    Some {number; error }
+
+
+let to_bsb_string ~(package_kind: Bsb_package_kind.t) warning =
+  match package_kind with 
+  | Toplevel 
+  | Pinned_dependency _ -> 
+    (match warning with
+    | None -> Ext_string.empty
+    | Some warning ->     
+      (match warning.number with
+       | None ->
+         Ext_string.empty
+       | Some x ->
+         prepare_warning_concat ~beg:true x  
+      ) ^
+      (
+        match warning.error with
+        | Warn_error_true ->
+          " -warn-error A"
+        | Warn_error_number y ->
+          " -warn-error " ^ y
+        | Warn_error_false ->
+          Ext_string.empty
+      ))
+  | Dependency _ ->  " -w a" 
+  (* TODO: this is the current default behavior *)
+
+end
+module Bsb_config_types
+= struct
+#1 "bsb_config_types.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type dependency = 
+  {
+    package_name : Bsb_pkg_types.t ; 
+    package_install_path : string ; 
+  }
+type dependencies = dependency list 
+
+
+
+
+type reason_react_jsx = 
+  | Jsx_v3
+  (* string option  *)
+
+type refmt = string option
+
+type gentype_config = {
+  path : string (* resolved *)
+}
+type command = string
+
+type ppx = {
+  name : string;
+  args : string list
+}
+type t = 
+  {
+    package_name : string ; 
+    (* [captial-package] *)
+    namespace : string option; 
+    (* CapitalPackage *)
+    external_includes : string list ; 
+    bsc_flags : string list ;
+    ppx_files : ppx list ;
+    pp_file : string option;
+    bs_dependencies : dependencies;
+    bs_dev_dependencies : dependencies;
+    pinned_dependencies : Set_string.t;
+    built_in_dependency : bool; 
+    warning : Bsb_warning.t;
+    (*TODO: maybe we should always resolve bs-platform 
+      so that we can calculate correct relative path in 
+      [.merlin]
+    *)
+    refmt : refmt;
+    js_post_build_cmd : string option;
+    package_specs : Bsb_package_specs.t ; 
+    file_groups : Bsb_file_groups.t;
+    files_to_install : Bsb_db.module_info Queue.t ;
+    generate_merlin : bool ; 
+    reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
+    generators : command Map_string.t ; 
+    cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)    
+    gentype_config : gentype_config option;
+  }
 
 end
 module Ext_json_parse : sig 
@@ -11119,48 +11146,26 @@ let extract_package_name_and_namespace
     - the running bsb and vendoring bsb is the same
     - the running bsb need delete stale build artifacts
       (kinda check npm upgrade)
-*)
-let check_version_exit (map : json_map) stdlib_path =   
-  match Map_string.find_exn map Bsb_build_schemas.version with 
-  | Str {str } -> 
-    if str <> Bs_version.version then 
-      begin
-        Format.fprintf Format.err_formatter
-          "@{<error>bs-platform version mismatch@} Running bsb @{<info>%s@} (%s) vs vendored @{<info>%s@} (%s)@."
-          Bs_version.version
-          (Filename.dirname (Filename.dirname Sys.executable_name))
-          str
-          stdlib_path 
-        ;
-        exit 2
-      end
-  | _ -> assert false
 
-let check_stdlib (map : json_map) cwd (*built_in_package*) =  
+      Note if the setup is correct: 
+      the running compiler and node_modules/bs-platform
+      should be the same version, 
+      The exact check is that the running compiler should have a 
+      compatible runtime version installed, the location of the
+      compiler is actually not relevant.
+      We disable the check temporarily
+      e.g,
+      ```
+      bsc -runtime runtime_dir@version
+      ```
+*)  
+let check_stdlib (map : json_map) (*built_in_package*) : bool =  
   match map.?( Bsb_build_schemas.use_stdlib) with      
-  | Some (False _) -> None    
+  | Some (False _) -> false
   | None 
-  | Some _ ->
-    begin
-      let current_package : Bsb_pkg_types.t = Global !Bs_version.package_name in  
-      if Sys.getenv_opt "RES_SKIP_STDLIB_CHECK" = None then begin 
-        let stdlib_path = 
-          Bsb_pkg.resolve_bs_package ~cwd current_package in 
-        let json_spec = 
-          Ext_json_parse.parse_json_from_file
-            (* No exn raised: stdlib  has package.json *)
-            (Filename.concat stdlib_path Literals.package_json) in 
-        match json_spec with 
-        | Obj {map}  -> 
-          check_version_exit map stdlib_path;
+  | Some _ ->    
+    true
 
-        | _ -> assert false
-      end;
-      Some {
-        Bsb_config_types.package_name = current_package;
-        package_install_path = Filename.dirname Bsb_global_paths.bsc_dir // Bsb_config.lib_ocaml;
-      }
-    end
 
 
 
@@ -11384,7 +11389,7 @@ let interpret_json
          array from the bsconfig and set the backend_ref to the first entry, if any. *)
 
     (* The default situation is empty *)
-    let built_in_package = check_stdlib map per_proj_dir in
+    let built_in_package : bool = check_stdlib map  in
     
     let pp_flags : string option = 
       extract_string map Bsb_build_schemas.pp_flags (fun p -> 
@@ -11439,7 +11444,7 @@ let interpret_json
           js_post_build_cmd = (extract_js_post_build map per_proj_dir);
           package_specs = 
             (match package_kind with 
-             | Toplevel ->  Bsb_package_specs.from_map map                
+             | Toplevel ->  Bsb_package_specs.from_map ~cwd:per_proj_dir map                
              | Pinned_dependency x
              | Dependency x -> x);          
           file_groups = groups; 
@@ -11463,7 +11468,7 @@ let package_specs_from_bsconfig () =
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
   begin match json with
     | Obj {map} ->
-      Bsb_package_specs.from_map map,
+      Bsb_package_specs.from_map ~cwd:Bsb_global_paths.cwd map,
       extract_pinned_dependencies map
     | _ -> assert false
   end
@@ -12014,11 +12019,13 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );      
-    Ext_option.iter built_in_dependency (fun package -> 
-        let path = package.package_install_path in 
-        Buffer.add_string buffer (merlin_s ^ path );
-        Buffer.add_string buffer (merlin_b ^ path)                      
-      );
+    if built_in_dependency then (
+      let path = 
+        (Filename.dirname Bsb_global_paths.bsc_dir) 
+        // "lib" //"ocaml" in 
+      Buffer.add_string buffer (merlin_s ^ path );
+      Buffer.add_string buffer (merlin_b ^ path)                      
+    );
     let bsc_string_flag = bsc_flg_to_merlin_ocamlc_flg bsc_flags in 
     Buffer.add_string buffer bsc_string_flag ;
     Buffer.add_string buffer (warning_to_merlin_flg  warning); 
@@ -12940,7 +12947,8 @@ let make_custom_rules
     if read_cmi <> `is_cmi then begin 
       Ext_buffer.add_string buf " -bs-package-name ";
       Ext_buffer.add_string buf package_name;
-      Ext_buffer.add_string buf (Bsb_package_specs.package_flag_of_package_specs package_specs "$in_d")
+      Ext_buffer.add_string buf 
+        (Bsb_package_specs.package_flag_of_package_specs package_specs ~dirname:"$in_d")
     end;
     begin match bs_dependencies, bs_dev_dependencies with 
     | [], [] -> ()
@@ -13757,7 +13765,7 @@ let output_ninja_and_namespace_map
       ~gentype_config
       ~has_postbuild:js_post_build_cmd 
       ~pp_file
-      ~has_builtin:(built_in_dependency <> None)
+      ~has_builtin:built_in_dependency 
       ~reason_react_jsx
       ~package_specs
       ~namespace

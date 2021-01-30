@@ -481,6 +481,10 @@
             "type": "boolean",
             "description": "(Experimental) whether to use the OCaml standard library. Default: true"
         },
+        "external-stdlib" : {
+            "type" : "string",
+            "description": "Use the external stdlib library instead of the one shipped with the compiler package"
+        },
         "bs-external-includes": {
             "type": "array",
             "items": {

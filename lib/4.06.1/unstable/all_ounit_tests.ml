@@ -7500,7 +7500,10 @@ let string_as_package (s : string) : t =
   if v = '@' then 
     let scope_id = 
         Ext_string.no_slash_idx s in 
-    assert (scope_id > 0);
+    assert (scope_id > 0); 
+    (* better-eror message for invalid scope package:
+      @rescript/std
+    *)
     Scope(
       String.sub s (scope_id + 1) (len - scope_id - 1),
       String.sub s 0 scope_id
