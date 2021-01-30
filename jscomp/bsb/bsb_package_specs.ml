@@ -37,13 +37,17 @@ type spec = {
   suffix : Ext_js_suffix.t 
 }
 
+(*FIXME: use assoc list instead *)
 module Spec_set = Set.Make( struct type t = spec 
     let compare = Pervasives.compare 
   end)
 
 type t = {
   modules : Spec_set.t;
-  (* runtime: Bsb_pkg_types.t option;   *)
+  runtime: string option;  
+  (* This has to be resolved as early as possible, since 
+    the path will be inherited in sub projects
+  *)
 }
 
 let (.?()) = Map_string.find_opt 
@@ -147,10 +151,13 @@ let package_flag ({format; in_source; suffix } : spec) dir =
 (* FIXME: we should adapt it *)    
 let package_flag_of_package_specs (package_specs : t) 
     ~(dirname : string ) : string  = 
-  Spec_set.fold (fun format acc ->
+  let res = Spec_set.fold (fun format acc ->
       Ext_string.inter2 acc (package_flag format dirname )
-    ) package_specs.modules Ext_string.empty
-
+    ) package_specs.modules Ext_string.empty in 
+  match package_specs.runtime with 
+  | None -> res
+  | Some x -> 
+    res ^ " -runtime " ^ x 
 let default_package_specs suffix = 
   Spec_set.singleton 
     { format = NodeJS ; in_source = false; suffix  }
@@ -202,13 +209,20 @@ let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =
     Bsb_exception.config_error config 
       "expect a string exteion like \".js\" here"
 
-let from_map map =  
+let from_map ~(cwd:string) map =  
   let suffix = extract_bs_suffix_exn map in   
   let modules = match map.?(Bsb_build_schemas.package_specs) with 
   | Some x ->
     from_json suffix x 
   | None ->  default_package_specs suffix in 
+  let runtime = 
+    match map.?(Bsb_build_schemas.external_stdlib) with
+    | None -> None 
+    | Some(Str{str; _}) ->
+       Some (Bsb_pkg.resolve_bs_package ~cwd (Bsb_pkg_types.string_as_package str))
+    | _ -> assert false in   
   {
+    runtime;  
     modules 
   }
 

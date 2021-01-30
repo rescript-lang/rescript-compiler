@@ -32,7 +32,18 @@ let setup_error_printer (syntax_kind : [ `ml | `reason | `rescript ])=
 
 
   
-  
+let setup_runtime_path path = 
+  let u0 = Filename.dirname path in 
+  let std = Filename.basename path in 
+  let _path = Filename.dirname u0 in 
+  let rescript = Filename.basename u0 in 
+  (match rescript.[0] with 
+   | '@' -> (* scoped package *)
+     Bs_version.package_name := rescript ^ "/" ^ std;
+   | _ -> Bs_version.package_name := std
+   | exception _ -> 
+     Bs_version.package_name := std);
+  Js_config.customize_runtime := Some path
 
 let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf  = 
   setup_error_printer `reason;
@@ -443,6 +454,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "<list>  Enable or disable error status for warnings according\n\
          to <list>.  See option -w for the syntax of <list>.\n\
          Default setting is " ^ Bsc_warnings.defaults_warn_error;    
+    "-runtime",string_call setup_runtime_path,     
+    "*internal* Set the runtime directory";
     "-make-runtime", unit_call Js_packages_state.make_runtime,
     "*internal* make runtime library";  
     "-make-runtime-test", unit_call Js_packages_state.make_runtime_test,

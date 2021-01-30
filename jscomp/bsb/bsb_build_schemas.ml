@@ -65,6 +65,7 @@ let export_none = "none"
 
 
 let use_stdlib = "use-stdlib"
+let external_stdlib = "external-stdlib"
 let reason = "reason"
 let react_jsx = "react-jsx"
 

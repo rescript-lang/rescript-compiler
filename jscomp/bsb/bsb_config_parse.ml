@@ -388,7 +388,7 @@ let interpret_json
           js_post_build_cmd = (extract_js_post_build map per_proj_dir);
           package_specs = 
             (match package_kind with 
-             | Toplevel ->  Bsb_package_specs.from_map map                
+             | Toplevel ->  Bsb_package_specs.from_map ~cwd:per_proj_dir map                
              | Pinned_dependency x
              | Dependency x -> x);          
           file_groups = groups; 
@@ -412,7 +412,7 @@ let package_specs_from_bsconfig () =
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
   begin match json with
     | Obj {map} ->
-      Bsb_package_specs.from_map map,
+      Bsb_package_specs.from_map ~cwd:Bsb_global_paths.cwd map,
       extract_pinned_dependencies map
     | _ -> assert false
   end

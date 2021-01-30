@@ -100,3 +100,4 @@ val no_export: bool ref
 val as_ppx : bool ref 
 
 val mono_empty_array : bool ref
+val customize_runtime : string option ref 

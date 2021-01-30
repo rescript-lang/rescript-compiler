@@ -94,7 +94,19 @@ let runtime_test_package_specs : t = {
   name = Pkg_runtime; 
   module_systems = []
 }
-let same_package_by_name (x : t) (y : t) = x.name = y.name 
+
+let same_package_by_name (x : t) (y : t) =
+  match x.name with 
+  | Pkg_empty -> 
+    y.name = Pkg_empty
+  | Pkg_runtime -> 
+    y.name = Pkg_runtime 
+  | Pkg_normal s -> 
+    begin match y.name with 
+    | Pkg_normal y -> s = y
+    | Pkg_empty | Pkg_runtime -> false
+    end
+   
 
 let is_runtime_package (x : t) = 
     x.name = Pkg_runtime

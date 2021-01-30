@@ -92,3 +92,4 @@ let as_ppx = ref false
 
 let mono_empty_array = ref true
 
+let customize_runtime = ref None 
