@@ -112,6 +112,12 @@
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/vec_gen.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/vec_int.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/vec_int.mli
+../lib/4.06.1/unstable/all_ounit_tests.ml: ./frontend/ast_compatible.ml
+../lib/4.06.1/unstable/all_ounit_tests.ml: ./frontend/ast_compatible.mli
+../lib/4.06.1/unstable/all_ounit_tests.ml: ./frontend/ast_utf8_string.ml
+../lib/4.06.1/unstable/all_ounit_tests.ml: ./frontend/ast_utf8_string.mli
+../lib/4.06.1/unstable/all_ounit_tests.ml: ./frontend/ast_utf8_string_interp.ml
+../lib/4.06.1/unstable/all_ounit_tests.ml: ./frontend/ast_utf8_string_interp.mli
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./main/ounit_tests_main.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./main/ounit_tests_main.mli
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ounit/oUnit.ml
@@ -151,9 +157,3 @@
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ounit_tests/ounit_util_tests.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ounit_tests/ounit_vec_test.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./stubs/bs_hash_stubs.ml
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./syntax/ast_compatible.ml
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./syntax/ast_compatible.mli
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./syntax/ast_utf8_string.ml
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./syntax/ast_utf8_string.mli
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./syntax/ast_utf8_string_interp.ml
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./syntax/ast_utf8_string_interp.mli
