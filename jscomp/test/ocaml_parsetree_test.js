@@ -11265,11 +11265,7 @@ function directive_parse(token_with_comments, lexbuf) {
   };
   var parse_or_aux = function (calc, v) {
     var e = token(undefined);
-    if (typeof e === "number") {
-      if (e !== 8) {
-        push(e);
-        return v;
-      }
+    if (e === 8) {
       var calc$1 = calc && !v;
       var b = parse_or_aux(calc$1, parse_and_aux(calc$1, parse_relation(calc$1)));
       if (v) {
@@ -11291,15 +11287,7 @@ function directive_parse(token_with_comments, lexbuf) {
         case /* LPAREN */54 :
             var v = parse_or_aux(calc, parse_and_aux(calc, parse_relation(calc)));
             var match = token(undefined);
-            if (typeof match === "number") {
-              if (match !== 81) {
-                throw {
-                      RE_EXN_ID: $$Error$2,
-                      _1: /* Unterminated_paren_in_conditional */1,
-                      _2: curr(lexbuf),
-                      Error: new Error()
-                    };
-              }
+            if (match === 81) {
               return v;
             }
             throw {
@@ -11435,11 +11423,7 @@ function directive_parse(token_with_comments, lexbuf) {
   };
   var parse_and_aux = function (calc, v) {
     var e = token(undefined);
-    if (typeof e === "number") {
-      if (e !== 0) {
-        push(e);
-        return v;
-      }
+    if (e === 0) {
       var calc$1 = calc && v;
       var b = parse_and_aux(calc$1, parse_relation(calc$1));
       if (v) {
@@ -11453,15 +11437,7 @@ function directive_parse(token_with_comments, lexbuf) {
   };
   var v = parse_or_aux(true, parse_and_aux(true, parse_relation(true)));
   var match = token(undefined);
-  if (typeof match === "number") {
-    if (match !== 88) {
-      throw {
-            RE_EXN_ID: $$Error$2,
-            _1: /* Expect_hash_then_in_conditional */5,
-            _2: curr(lexbuf),
-            Error: new Error()
-          };
-    }
+  if (match === 88) {
     return v;
   }
   throw {
@@ -12903,13 +12879,9 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           catch (raw_exn){
             var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn.RE_EXN_ID === $$Error$2) {
-              var match$1 = exn._1;
-              if (typeof match$1 === "number") {
-                if (match$1 !== 0) {
-                  throw exn;
-                }
-                var match$2 = comment_start_loc.contents;
-                if (match$2) {
+              if (exn._1 === 0) {
+                var match$1 = comment_start_loc.contents;
+                if (match$1) {
                   var start = List.hd(List.rev(comment_start_loc.contents));
                   comment_start_loc.contents = /* [] */0;
                   throw {
@@ -12919,7 +12891,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                           _0: start,
                           _1: exn._2
                         },
-                        _2: match$2.hd,
+                        _2: match$1.hd,
                         Error: new Error()
                       };
                 }
@@ -12953,13 +12925,9 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           catch (raw_exn$1){
             var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
             if (exn$1.RE_EXN_ID === $$Error$2) {
-              var match$3 = exn$1._1;
-              if (typeof match$3 === "number") {
-                if (match$3 !== 0) {
-                  throw exn$1;
-                }
-                var match$4 = comment_start_loc.contents;
-                if (match$4) {
+              if (exn$1._1 === 0) {
+                var match$2 = comment_start_loc.contents;
+                if (match$2) {
                   var start$1 = List.hd(List.rev(comment_start_loc.contents));
                   comment_start_loc.contents = /* [] */0;
                   throw {
@@ -12969,7 +12937,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                           _0: start$1,
                           _1: exn$1._2
                         },
-                        _2: match$4.hd,
+                        _2: match$2.hd,
                         Error: new Error()
                       };
                 }
@@ -12999,8 +12967,8 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           ___ocaml_lex_state = 132;
           continue ;
       case 10 :
-          var match$5 = comment_start_loc.contents;
-          if (match$5) {
+          var match$3 = comment_start_loc.contents;
+          if (match$3) {
             var start$2 = List.hd(List.rev(comment_start_loc.contents));
             comment_start_loc.contents = /* [] */0;
             throw {
@@ -13009,7 +12977,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                     TAG: /* Unterminated_comment */2,
                     _0: start$2
                   },
-                  _2: match$5.hd,
+                  _2: match$3.hd,
                   Error: new Error()
                 };
           }

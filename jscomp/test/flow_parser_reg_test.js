@@ -7103,27 +7103,20 @@ function param_list_or_type(env) {
   return ret;
 }
 
-function postfix(env) {
-  var t = primary(env);
-  return postfix_with(env, t);
-}
-
 function prefix(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "number") {
-    return postfix(env);
-  }
   if (match !== 76) {
-    return postfix(env);
+    var t = primary(env);
+    return postfix_with(env, t);
   }
   var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   token$4(env, /* T_PLING */76);
-  var t = prefix(env);
+  var t$1 = prefix(env);
   return [
-          btwn(loc, t[0]),
+          btwn(loc, t$1[0]),
           {
             TAG: /* Nullable */0,
-            _0: t
+            _0: t$1
           }
         ];
 }
@@ -7385,7 +7378,7 @@ function union_with(env, left) {
     while(true) {
       var acc = _acc;
       var match = Curry._2(Parser_env_Peek.token, undefined, env);
-      if (typeof match === "number" && match === 80) {
+      if (match === 80) {
         token$4(env, /* T_BIT_OR */80);
         _acc = {
           hd: intersection(env),
@@ -7459,7 +7452,7 @@ function intersection_with(env, left) {
     while(true) {
       var acc = _acc;
       var match = Curry._2(Parser_env_Peek.token, undefined, env);
-      if (typeof match === "number" && match === 82) {
+      if (match === 82) {
         token$4(env, /* T_BIT_AND */82);
         _acc = {
           hd: prefix(env),
@@ -7593,37 +7586,21 @@ function params$1(env, allow_default, _require_default, _acc) {
     var id = match$1[1];
     var loc = match$1[0];
     var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
-    var match$3;
-    if (allow_default) {
-      var exit = 0;
-      if (typeof match$2 === "number" && match$2 === 75) {
-        token$3(env);
-        match$3 = [
-          union(env),
-          true
-        ];
-      } else {
-        exit = 1;
-      }
-      if (exit === 1) {
-        if (require_default) {
-          error_at(env, [
-                loc,
-                /* MissingTypeParamDefault */58
-              ]);
-        }
-        match$3 = [
-          undefined,
-          require_default
-        ];
-      }
-      
-    } else {
-      match$3 = [
+    var match$3 = allow_default ? (
+        match$2 === 75 ? (token$3(env), [
+              union(env),
+              true
+            ]) : (require_default ? error_at(env, [
+                    loc,
+                    /* MissingTypeParamDefault */58
+                  ]) : undefined, [
+              undefined,
+              require_default
+            ])
+      ) : [
         undefined,
         false
       ];
-    }
     var param_1 = {
       name: id.name,
       bound: id.typeAnnotation,
@@ -7843,7 +7820,7 @@ function properties(allow_static, env, _param) {
           var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
           var match$2;
           var exit$1 = 0;
-          if ($$static && typeof match$1 === "number" && match$1 === 77) {
+          if ($$static && match$1 === 77) {
             strict_error_at(env, [
                   start_loc,
                   /* StrictReservedWord */39
@@ -7995,7 +7972,7 @@ function annotation(env) {
 
 function annotation_opt(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match === "number" && match === 77) {
+  if (match === 77) {
     return annotation(env);
   }
   
@@ -8780,18 +8757,11 @@ function unary(env) {
 
 function left_hand_side(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  var expr;
-  var exit = 0;
-  if (typeof match === "number" && match === 42) {
-    expr = _new(env, (function (new_expr, _args) {
+  var expr = match === 42 ? _new(env, (function (new_expr, _args) {
             return new_expr;
-          }));
-  } else {
-    exit = 1;
-  }
-  if (exit === 1) {
-    expr = Curry._2(Parser_env_Peek.is_function, undefined, env) ? _function$1(env) : primary$1(env);
-  }
+          })) : (
+      Curry._2(Parser_env_Peek.is_function, undefined, env) ? _function$1(env) : primary$1(env)
+    );
   var expr$1 = member(env, expr);
   var part = Curry._2(Parser_env_Peek.token, undefined, env);
   if (typeof part === "number") {
@@ -8885,7 +8855,7 @@ function _new(env, _finish_fn) {
   while(true) {
     var finish_fn = _finish_fn;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "number" && match === 42) {
+    if (match === 42) {
       var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
       token$4(env, /* T_NEW */42);
       var finish_fn$prime = (function(finish_fn,start_loc){
@@ -8922,7 +8892,7 @@ function _new(env, _finish_fn) {
     var callee$1;
     callee$1 = typeof part === "number" || part.TAG !== /* T_TEMPLATE_PART */2 ? callee : tagged_template(env, callee, part._0);
     var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
-    var args = typeof match$1 === "number" && match$1 === 3 ? Curry._1($$arguments, env) : undefined;
+    var args = match$1 === 3 ? Curry._1($$arguments, env) : undefined;
     return Curry._2(finish_fn, callee$1, args);
   };
 }
@@ -8987,7 +8957,7 @@ function _function$1(env) {
     ];
   } else {
     var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
-    var id = typeof match$1 === "number" && match$1 === 89 ? undefined : Curry._2(Parse.identifier, /* StrictFunctionName */30, env);
+    var id = match$1 === 89 ? undefined : Curry._2(Parse.identifier, /* StrictFunctionName */30, env);
     match = [
       id,
       Curry._1(type_parameter_declaration$1, env)
@@ -9393,7 +9363,7 @@ function sequence(env, _acc) {
   while(true) {
     var acc = _acc;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "number" && match === 8) {
+    if (match === 8) {
       token$4(env, /* T_COMMA */8);
       var expr = Curry._1(assignment, env);
       _acc = {
@@ -9663,12 +9633,6 @@ function logical_and(env, _left, _lloc) {
     var lloc = _lloc;
     var left = _left;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "number") {
-      return [
-              lloc,
-              left
-            ];
-    }
     if (match !== 79) {
       return [
               lloc,
@@ -9689,12 +9653,6 @@ function logical_or(env, _left, _lloc) {
     var lloc = _lloc;
     var left = _left;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "number") {
-      return [
-              lloc,
-              left
-            ];
-    }
     if (match !== 78) {
       return [
               lloc,
@@ -10054,12 +10012,6 @@ function binary(env) {
 
 function argument(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "number") {
-    return {
-            TAG: /* Expression */0,
-            _0: Curry._1(assignment, env)
-          };
-  }
   if (match !== 11) {
     return {
             TAG: /* Expression */0,
@@ -10129,7 +10081,7 @@ function template_parts(env, _quasis, _expressions) {
       tl: expressions
     };
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "number" && match === 2) {
+    if (match === 2) {
       push_lex_mode(env, /* TEMPLATE */4);
       var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
       var match$2;
@@ -10412,7 +10364,7 @@ function try_arrow_function(env) {
           var generator = false;
           var env = with_in_function(true, param);
           var match = Curry._2(Parser_env_Peek.token, undefined, env);
-          if (typeof match === "number" && match === 1) {
+          if (match === 1) {
             var match$1 = function_body(env, async, generator);
             return [
                     match$1[1],
@@ -10461,9 +10413,6 @@ function decorator_list_helper(env, _decorators) {
   while(true) {
     var decorators = _decorators;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "number") {
-      return decorators;
-    }
     if (match !== 12) {
       return decorators;
     }
@@ -11097,9 +11046,6 @@ function class_implements(env, _acc) {
       tl: acc
     };
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "number") {
-      return List.rev(acc$1);
-    }
     if (match !== 8) {
       return List.rev(acc$1);
     }
@@ -12252,9 +12198,6 @@ function supers(env, _acc) {
       tl: acc
     };
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "number") {
-      return List.rev(acc$1);
-    }
     if (match !== 8) {
       return List.rev(acc$1);
     }
@@ -12296,9 +12239,6 @@ function supers$1(env, _acc) {
       tl: acc
     };
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "number") {
-      return List.rev(acc$1);
-    }
     if (match !== 8) {
       return List.rev(acc$1);
     }
@@ -12549,7 +12489,7 @@ function case_list(env, _param) {
     }
     var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
     var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
-    var test = typeof match$1 === "number" && match$1 === 34 ? (seen_default ? error$1(env, /* MultipleDefaultsInSwitch */19) : undefined, token$4(env, /* T_DEFAULT */34), undefined) : (token$4(env, /* T_CASE */31), Curry._1(Parse.expression, env));
+    var test = match$1 === 34 ? (seen_default ? error$1(env, /* MultipleDefaultsInSwitch */19) : undefined, token$4(env, /* T_DEFAULT */34), undefined) : (token$4(env, /* T_CASE */31), Curry._1(Parse.expression, env));
     var seen_default$1 = seen_default || test === undefined;
     var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
     token$4(env, /* T_COLON */77);
@@ -12706,7 +12646,7 @@ function specifier_list(env, _acc) {
 function named_or_namespace_specifier(env) {
   var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match === "number" && match === 97) {
+  if (match === 97) {
     token$4(env, /* T_MULT */97);
     contextual(env, "as");
     var id = Curry._2(Parse.identifier, undefined, env);
@@ -12921,17 +12861,13 @@ function _object$2(restricted_error) {
     }
     var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
     var prop;
-    var exit = 0;
-    if (typeof match$1 === "number" && match$1 === 77) {
+    if (match$1 === 77) {
       token$4(env, /* T_COLON */77);
       prop = [
         pattern$1(env, restricted_error),
         false
       ];
     } else {
-      exit = 1;
-    }
-    if (exit === 1) {
       switch (key.TAG | 0) {
         case /* Identifier */1 :
             var id = key._0;
@@ -12963,7 +12899,7 @@ function _object$2(restricted_error) {
     var pattern$3 = prop[0];
     var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
     var pattern$4;
-    if (typeof match$2 === "number" && match$2 === 75) {
+    if (match$2 === 75) {
       token$4(env, /* T_ASSIGN */75);
       var $$default = Curry._1(Parse.assignment, env);
       var loc$1 = btwn(pattern$3[0], $$default[0]);
@@ -13109,7 +13045,7 @@ function _array(restricted_error) {
       var pattern$2 = pattern$1(env, restricted_error);
       var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
       var pattern$3;
-      if (typeof match$1 === "number" && match$1 === 75) {
+      if (match$1 === 75) {
         token$4(env, /* T_ASSIGN */75);
         var $$default = Curry._1(Parse.expression, env);
         var loc$1 = btwn(pattern$2[0], $$default[0]);
@@ -13254,9 +13190,6 @@ function member_expression(env, _member) {
   while(true) {
     var member = _member;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "number") {
-      return member;
-    }
     if (match !== 9) {
       return member;
     }
@@ -13782,7 +13715,7 @@ function statement(env) {
                 var block = Curry._1(Parse.block_body, env);
                 var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
                 var handler;
-                if (typeof match$2 === "number" && match$2 === 32) {
+                if (match$2 === 32) {
                   var start_loc$4 = Curry._2(Parser_env_Peek.loc, undefined, env);
                   token$4(env, /* T_CATCH */32);
                   token$4(env, /* T_LPAREN */3);
@@ -13811,7 +13744,7 @@ function statement(env) {
                   handler = undefined;
                 }
                 var match$3 = Curry._2(Parser_env_Peek.token, undefined, env);
-                var finalizer = typeof match$3 === "number" && match$3 === 36 ? (token$4(env, /* T_FINALLY */36), Curry._1(Parse.block_body, env)) : undefined;
+                var finalizer = match$3 === 36 ? (token$4(env, /* T_FINALLY */36), Curry._1(Parse.block_body, env)) : undefined;
                 var end_loc$3 = finalizer !== undefined ? finalizer[0] : (
                     handler !== undefined ? handler[0] : (error_at(env, [
                               block[0],
@@ -14130,10 +14063,10 @@ function statement(env) {
                       }), match$5[1]);
                 token$4(env, /* T_SEMICOLON */7);
                 var match$10 = Curry._2(Parser_env_Peek.token, undefined, env);
-                var test$2 = typeof match$10 === "number" && match$10 === 7 ? undefined : Curry._1(Parse.expression, env);
+                var test$2 = match$10 === 7 ? undefined : Curry._1(Parse.expression, env);
                 token$4(env, /* T_SEMICOLON */7);
                 var match$11 = Curry._2(Parser_env_Peek.token, undefined, env);
-                var update = typeof match$11 === "number" && match$11 === 4 ? undefined : Curry._1(Parse.expression, env);
+                var update = match$11 === 4 ? undefined : Curry._1(Parse.expression, env);
                 token$4(env, /* T_RPAREN */4);
                 var body$6 = Curry._1(Parse.statement, with_in_loop(true, env));
                 return [
@@ -14222,7 +14155,7 @@ function statement(env) {
         var match$12 = Curry._2(Parser_env_Peek.token, undefined, env);
         var label$4 = expr$1[1];
         var loc$11 = expr$1[0];
-        if (typeof label$4 !== "number" && label$4.TAG === /* Identifier */18 && typeof match$12 === "number" && match$12 === 77) {
+        if (typeof label$4 !== "number" && label$4.TAG === /* Identifier */18 && match$12 === 77) {
           var label$5 = label$4._0;
           var match$13 = label$5[1];
           var name$2 = match$13.name;
@@ -14497,8 +14430,7 @@ function module_item(env) {
                       ]);
                   var match$4 = Curry._2(Parser_env_Peek.token, undefined, env$1);
                   var match$5;
-                  var exit$1 = 0;
-                  if (typeof match$4 === "number" && match$4 === 13) {
+                  if (match$4 === 13) {
                     var fn = _function(env$1);
                     match$5 = [
                       fn[0],
@@ -14507,32 +14439,27 @@ function module_item(env) {
                         _0: fn
                       }
                     ];
+                  } else if (Curry._2(Parser_env_Peek.is_class, undefined, env$1)) {
+                    var _class = class_declaration(env$1, decorators);
+                    match$5 = [
+                      _class[0],
+                      {
+                        TAG: /* Declaration */0,
+                        _0: _class
+                      }
+                    ];
                   } else {
-                    exit$1 = 3;
-                  }
-                  if (exit$1 === 3) {
-                    if (Curry._2(Parser_env_Peek.is_class, undefined, env$1)) {
-                      var _class = class_declaration(env$1, decorators);
-                      match$5 = [
-                        _class[0],
-                        {
-                          TAG: /* Declaration */0,
-                          _0: _class
-                        }
-                      ];
-                    } else {
-                      var expr = Curry._1(Parse.assignment, env$1);
-                      var loc$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
-                      var end_loc$3 = loc$2 !== undefined ? loc$2 : expr[0];
-                      semicolon(env$1);
-                      match$5 = [
-                        end_loc$3,
-                        {
-                          TAG: /* Expression */1,
-                          _0: expr
-                        }
-                      ];
-                    }
+                    var expr = Curry._1(Parse.assignment, env$1);
+                    var loc$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+                    var end_loc$3 = loc$2 !== undefined ? loc$2 : expr[0];
+                    semicolon(env$1);
+                    match$5 = [
+                      end_loc$3,
+                      {
+                        TAG: /* Expression */1,
+                        _0: expr
+                      }
+                    ];
                   }
                   return [
                           btwn(start_loc, match$5[0]),
@@ -14587,7 +14514,7 @@ function module_item(env) {
         switch (exit) {
           case 1 :
               var match$6 = Curry._2(Parser_env_Peek.token, undefined, env$1);
-              var exportKind = typeof match$6 === "number" && match$6 === 59 ? (token$3(env$1), /* ExportType */0) : /* ExportValue */1;
+              var exportKind = match$6 === 59 ? (token$3(env$1), /* ExportType */0) : /* ExportValue */1;
               token$4(env$1, /* T_LCURLY */1);
               var match$7 = export_specifiers_and_errs(env$1, /* [] */0, /* [] */0);
               var specifiers$1 = {
@@ -14732,13 +14659,13 @@ function module_item(env) {
         var importKind = match$10[0];
         var match$11 = Curry._2(Parser_env_Peek.token, undefined, env$2);
         var match$12 = Curry._2(Parser_env_Peek.is_identifier, undefined, env$2);
+        var exit$1 = 0;
         var exit$2 = 0;
-        var exit$3 = 0;
         if (typeof match$11 === "number") {
           if (match$11 === /* T_COMMA */8) {
-            exit$2 = 1;
+            exit$1 = 1;
           } else {
-            exit$3 = 2;
+            exit$2 = 2;
           }
         } else if (match$11.TAG === /* T_STRING */1) {
           if (importKind === /* ImportValue */2) {
@@ -14786,13 +14713,13 @@ function module_item(env) {
                     }
                   ];
           }
-          exit$3 = 2;
+          exit$2 = 2;
         } else {
-          exit$3 = 2;
+          exit$2 = 2;
         }
-        if (exit$3 === 2) {
+        if (exit$2 === 2) {
           if (match$12) {
-            exit$2 = 1;
+            exit$1 = 1;
           } else {
             var specifiers$2 = named_or_namespace_specifier(env$2);
             var source$5 = source(env$2);
@@ -14812,11 +14739,11 @@ function module_item(env) {
                   ];
           }
         }
-        if (exit$2 === 1) {
+        if (exit$1 === 1) {
           var match$14 = Curry._2(Parser_env_Peek.token, undefined, env$2);
           var match$15 = Curry._2(Parser_env_Peek.value, undefined, env$2);
           var match$16;
-          var exit$4 = 0;
+          var exit$3 = 0;
           if (type_ident !== undefined && typeof match$14 === "number" && !(match$14 !== 8 && (match$14 !== 0 || match$15 !== "from"))) {
             match$16 = [
               /* ImportValue */2,
@@ -14826,9 +14753,9 @@ function module_item(env) {
               }
             ];
           } else {
-            exit$4 = 2;
+            exit$3 = 2;
           }
-          if (exit$4 === 2) {
+          if (exit$3 === 2) {
             match$16 = [
               importKind,
               {
@@ -14838,7 +14765,7 @@ function module_item(env) {
             ];
           }
           var match$17 = Curry._2(Parser_env_Peek.token, undefined, env$2);
-          var additional_specifiers = typeof match$17 === "number" && match$17 === 8 ? (token$4(env$2, /* T_COMMA */8), named_or_namespace_specifier(env$2)) : /* [] */0;
+          var additional_specifiers = match$17 === 8 ? (token$4(env$2, /* T_COMMA */8), named_or_namespace_specifier(env$2)) : /* [] */0;
           var source$6 = source(env$2);
           var loc$7 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
           var end_loc$8 = loc$7 !== undefined ? loc$7 : source$6[0];
@@ -14980,7 +14907,7 @@ function statement_list(_env, term_fn, item_fn, _param) {
     var stmts = param[1];
     var string_tokens = param[0];
     var t = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof t === "number" && t === 105) {
+    if (t === 105) {
       return [
               env,
               string_tokens,
@@ -15103,7 +15030,7 @@ function statement_list$1(term_fn, env) {
   while(true) {
     var acc = _acc;
     var t = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof t === "number" && t === 105) {
+    if (t === 105) {
       return List.rev(acc);
     }
     if (Curry._1(term_fn, t)) {
@@ -15122,7 +15049,7 @@ function module_body(term_fn, env) {
   while(true) {
     var acc = _acc;
     var t = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof t === "number" && t === 105) {
+    if (t === 105) {
       return List.rev(acc);
     }
     if (Curry._1(term_fn, t)) {
@@ -15151,8 +15078,7 @@ function identifier$2(restricted_error, env) {
   var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   var name = Curry._2(Parser_env_Peek.value, undefined, env);
   var t = Curry._2(Parser_env_Peek.token, undefined, env);
-  var exit = 0;
-  if (typeof t === "number" && t === 26) {
+  if (t === 26) {
     if (env.in_strict_mode) {
       strict_error(env, /* StrictReservedWord */39);
     } else if (env.no_let) {
@@ -15162,18 +15088,13 @@ function identifier$2(restricted_error, env) {
           });
     }
     token$3(env);
+  } else if (is_strict_reserved(name)) {
+    strict_error(env, /* StrictReservedWord */39);
+    token$3(env);
+  } else if (typeof t === "number" && !(t > 62 || t < 58)) {
+    token$4(env, t);
   } else {
-    exit = 1;
-  }
-  if (exit === 1) {
-    if (is_strict_reserved(name)) {
-      strict_error(env, /* StrictReservedWord */39);
-      token$3(env);
-    } else if (typeof t === "number" && !(t > 62 || t < 58)) {
-      token$4(env, t);
-    } else {
-      token$4(env, /* T_IDENTIFIER */0);
-    }
+    token$4(env, /* T_IDENTIFIER */0);
   }
   if (restricted_error !== undefined && is_restricted(name)) {
     strict_error_at(env, [
@@ -15227,7 +15148,7 @@ function program(env) {
 function expression$1(env) {
   var expr = Curry._1(assignment, env);
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match === "number" && match === 8) {
+  if (match === 8) {
     return sequence(env, {
                 hd: expr,
                 tl: /* [] */0

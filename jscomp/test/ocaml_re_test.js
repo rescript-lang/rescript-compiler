@@ -1918,59 +1918,23 @@ function equal$2(_x1, _x2) {
     if (typeof x1 === "number") {
       switch (x1) {
         case /* Beg_of_line */0 :
-            if (typeof x2 === "number") {
-              return x2 === 0;
-            } else {
-              return false;
-            }
+            return x2 === 0;
         case /* End_of_line */1 :
-            if (typeof x2 === "number") {
-              return x2 === 1;
-            } else {
-              return false;
-            }
+            return x2 === 1;
         case /* Beg_of_word */2 :
-            if (typeof x2 === "number") {
-              return x2 === 2;
-            } else {
-              return false;
-            }
+            return x2 === 2;
         case /* End_of_word */3 :
-            if (typeof x2 === "number") {
-              return x2 === 3;
-            } else {
-              return false;
-            }
+            return x2 === 3;
         case /* Not_bound */4 :
-            if (typeof x2 === "number") {
-              return x2 === 4;
-            } else {
-              return false;
-            }
+            return x2 === 4;
         case /* Beg_of_str */5 :
-            if (typeof x2 === "number") {
-              return x2 === 5;
-            } else {
-              return false;
-            }
+            return x2 === 5;
         case /* End_of_str */6 :
-            if (typeof x2 === "number") {
-              return x2 === 6;
-            } else {
-              return false;
-            }
+            return x2 === 6;
         case /* Last_end_of_line */7 :
-            if (typeof x2 === "number") {
-              return x2 === 7;
-            } else {
-              return false;
-            }
+            return x2 === 7;
         case /* Start */8 :
-            if (typeof x2 === "number") {
-              return x2 === 8;
-            } else {
-              return false;
-            }
+            return x2 === 8;
         case /* Stop */9 :
             if (typeof x2 === "number") {
               return x2 >= 9;

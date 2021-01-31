@@ -773,6 +773,24 @@ let if_ (a : t) (b : t) (c : t) : t =
                      { body with sw_failaction = Some b; sw_consts_full = false; })
            |  _ -> Lifthenelse(a,b,c)      
          end
+         | Lprim{primitive = Pisint; args = [Lvar i];_}
+         -> 
+         begin match b with 
+         | Lifthenelse(Lprim{primitive = Pintcomp Ceq ; args = [Lvar j; Lconst _]}  , _, b_f)
+          when Ident.same i j && eq_approx b_f c ->
+            b
+         | Lprim{primitive = Pintcomp Ceq ; args = [Lvar j; Lconst _]}  
+           when Ident.same i j && eq_approx false_ c -> b
+         | Lifthenelse(Lprim({primitive = Pintcomp Cneq ; args = [Lvar j; Lconst _]} as b_pred)  , b_t, b_f)
+           when Ident.same i j && eq_approx b_t c ->
+           Lifthenelse(Lprim{b_pred with primitive = Pintcomp Ceq}, b_f, b_t)      
+         | Lprim({primitive = Pintcomp Cneq ; args = [Lvar j; Lconst _] as args ; loc} )
+         | Lprim(
+            {primitive = Pnot ; args = [Lprim{primitive = Pintcomp Ceq ; args = [Lvar j; Lconst _] as args; loc}]})
+           when Ident.same i j && eq_approx true_ c
+           -> Lprim{primitive = Pintcomp Ceq; args; loc}
+         | _ -> Lifthenelse(a,b,c)
+         end 
        | _ ->  Lifthenelse (a,b,c))
 
 
