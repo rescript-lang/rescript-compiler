@@ -1352,11 +1352,7 @@ function kill(collid, ctx) {
         }
     case /* Block */3 :
         var o$2 = collid._2;
-        var t = collid._0;
-        if (typeof t !== "number") {
-          return /* [] */0;
-        }
-        if (t !== 1) {
+        if (collid._0 !== 1) {
           return /* [] */0;
         }
         var pos_0$1 = o$2.pos.x;
@@ -1684,72 +1680,64 @@ function process_collision(dir, c1, c2, state) {
               var o2$4 = c2._2;
               var t = c2._0;
               if (dir !== 0) {
-                var exit$1 = 0;
-                if (typeof t === "number" && t === 4) {
+                if (t === 4) {
                   game_win(state.ctx);
                   return [
                           undefined,
                           undefined
                         ];
+                } else if (dir !== 1) {
+                  collide_block(undefined, dir, o1$3);
+                  return [
+                          undefined,
+                          undefined
+                        ];
+                } else {
+                  state.multiplier = 1;
+                  collide_block(undefined, dir, o1$3);
+                  return [
+                          undefined,
+                          undefined
+                        ];
                 }
-                exit$1 = 4;
-                if (exit$1 === 4) {
-                  if (dir !== 1) {
-                    collide_block(undefined, dir, o1$3);
-                    return [
-                            undefined,
-                            undefined
-                          ];
-                  } else {
-                    state.multiplier = 1;
-                    collide_block(undefined, dir, o1$3);
-                    return [
-                            undefined,
-                            undefined
-                          ];
-                  }
-                }
-                
-              } else {
-                if (typeof t === "number") {
-                  if (t !== 1) {
-                    if (t !== 4) {
-                      collide_block(undefined, dir, o1$3);
-                      return [
-                              undefined,
-                              undefined
-                            ];
-                    } else {
-                      game_win(state.ctx);
-                      return [
-                              undefined,
-                              undefined
-                            ];
-                    }
-                  } else if (c1._0 === /* BigM */0) {
-                    collide_block(undefined, dir, o1$3);
-                    dec_health(o2$4);
-                    return [
-                            undefined,
-                            undefined
-                          ];
-                  } else {
-                    collide_block(undefined, dir, o1$3);
-                    return [
-                            undefined,
-                            undefined
-                          ];
-                  }
-                }
-                var updated_block = evolve_block(o2$4, context);
-                var spawned_item = spawn_above(o1$3.dir, o2$4, t._0, context);
-                collide_block(undefined, dir, o1$3);
-                return [
-                        spawned_item,
-                        updated_block
-                      ];
               }
-              break;
+              if (typeof t === "number") {
+                if (t !== 1) {
+                  if (t !== 4) {
+                    collide_block(undefined, dir, o1$3);
+                    return [
+                            undefined,
+                            undefined
+                          ];
+                  } else {
+                    game_win(state.ctx);
+                    return [
+                            undefined,
+                            undefined
+                          ];
+                  }
+                } else if (c1._0 === /* BigM */0) {
+                  collide_block(undefined, dir, o1$3);
+                  dec_health(o2$4);
+                  return [
+                          undefined,
+                          undefined
+                        ];
+                } else {
+                  collide_block(undefined, dir, o1$3);
+                  return [
+                          undefined,
+                          undefined
+                        ];
+                }
+              }
+              var updated_block = evolve_block(o2$4, context);
+              var spawned_item = spawn_above(o1$3.dir, o2$4, t._0, context);
+              collide_block(undefined, dir, o1$3);
+              return [
+                      spawned_item,
+                      updated_block
+                    ];
           
         }
         break;

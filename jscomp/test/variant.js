@@ -26,7 +26,7 @@ function foo(n) {
 }
 
 function fooA1(param) {
-  if (typeof param === "number" && param === 0) {
+  if (param === 0) {
     return 1;
   } else {
     return 42;

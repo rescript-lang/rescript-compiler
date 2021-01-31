@@ -1084,9 +1084,6 @@ function compute_update_sequences(all_tickers) {
   List.fold_left((function (counter, ticker) {
           var loop = function (counter, ticker) {
             var rank = ticker.rank;
-            if (typeof rank !== "number") {
-              return counter;
-            }
             if (rank !== 0) {
               return counter;
             }
