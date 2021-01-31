@@ -676,7 +676,11 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
       default ()
 
 let not_ loc x  : t =
-  prim ~primitive:Pnot ~args:[x] loc
+  match x with 
+  | Lprim ({primitive = Pintcomp Cneq } as prim)-> 
+    Lprim {prim with primitive = Pintcomp Ceq}
+  | _   ->
+    prim ~primitive:Pnot ~args:[x] loc
 
 
 let has_boolean_type (x : t) = 
