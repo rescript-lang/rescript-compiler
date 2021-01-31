@@ -8,7 +8,7 @@ var cp = require("child_process");
 var sourceDirs = [
   "ext",
   "common",
-  "syntax",
+  "frontend",
   "depends",
   "core",
   "super_errors",
