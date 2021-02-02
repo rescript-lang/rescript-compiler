@@ -93,3 +93,6 @@ type currencyPoly = [#USD | #CAD | #EUR]
 //
 // should break, line length exceeded
 type currencyPoly = [#UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUSD | #CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD | #EUUUUUUUUUUUUUUUUUUUR]
+
+type t = [s]
+type t = [ListStyleType.t];

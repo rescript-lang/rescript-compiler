@@ -141,7 +141,9 @@ module type Conjunctive  =
     val g :
       [< \`Exotic-S+ of [< \`Exotic-u2+ ]&[< \`Exotic-u2- ]&[< \`Exotic-u1+++ ] ]
         -> unit
-  end"
+  end
+type nonrec t = [ s]
+type nonrec t = [ ListStyleType.t]"
 `;
 
 exports[`tuple.js 1`] = `

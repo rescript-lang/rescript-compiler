@@ -109,7 +109,6 @@ type nonrec draw = stroke:pencil -> unit
 exports[`polyvariant.js 1`] = `
 "=====Parsetree==========================================
 type nonrec t = [< [%rescript.typehole ]]
-type nonrec t = [ s | [%rescript.typehole ]]
 type nonrec z = [< \`A  | \`B ]
 type t = [ [%rescript.typehole ] | [%rescript.typehole ]]
 =====Errors=============================================
@@ -118,29 +117,18 @@ type t = [ [%rescript.typehole ] | [%rescript.typehole ]]
   parsing/errors/typeDef/polyvariant.js:1:13  
   1 │ type t = [< ]
   2 │ 
-  3 │ type t = [ s ]
+  3 │ type z = [< | #A | #B > ]
   
   I'm not sure what to parse here when looking at \\"]\\".
 
 
   Syntax error!
-  parsing/errors/typeDef/polyvariant.js:3:13-14  
-  1 │ type t = [< ]
-  2 │ 
-  3 │ type t = [ s ]
+  parsing/errors/typeDef/polyvariant.js:5:15  
+  3 │ type z = [< | #A | #B > ]
   4 │ 
-  5 │ type z = [< | #A | #B > ]
-  
-  Did you forget a \`|\` here?
-
-
-  Syntax error!
-  parsing/errors/typeDef/polyvariant.js:7:15  
-  5 │ type z = [< | #A | #B > ]
+  5 │ type rec t = []
   6 │ 
-  7 │ type rec t = []
-  8 │ 
-  9 │ 
+  7 │ 
   
   I'm not sure what to parse here when looking at \\"]\\".
 

@@ -687,5 +687,8 @@ type currencyPoly = [
   | #CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD
   | #EUUUUUUUUUUUUUUUUUUUR
 ]
+
+type t = [s]
+type t = [ListStyleType.t]
 "
 `;

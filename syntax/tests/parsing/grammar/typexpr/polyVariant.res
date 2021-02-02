@@ -12,3 +12,6 @@ module type Conjunctive = {
   let g: [< | #S&([< u2]) & ([< u2]) & ([< u1])] => unit
   let g: [< | #"Exotic-S+"&([< #"Exotic-u2+"]) & ([< #"Exotic-u2-"]) & ([< #"Exotic-u1+++"])] => unit
 };
+
+type t = [s]
+type t = [ListStyleType.t];

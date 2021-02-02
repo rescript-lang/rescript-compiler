@@ -4827,8 +4827,14 @@ and parseTagSpecFirst p =
     [parsePolymorphicVariantTypeSpecHash ~attrs ~full:false p]
   | _ ->
     let typ = parseTypExpr ~attrs p in
-    Parser.expect Bar p;
-    [Parsetree.Rinherit typ; parseTagSpec p]
+    begin match p.token with
+    | Rbracket ->
+      (* example: [ListStyleType.t] *)
+      [Parsetree.Rinherit typ;]
+    | _ ->
+      Parser.expect Bar p;
+      [Parsetree.Rinherit typ; parseTagSpec p]
+    end
 
 and parsePolymorphicVariantTypeSpecHash ~attrs ~full p : Parsetree.row_field =
   let startPos = p.Parser.startPos in
