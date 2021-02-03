@@ -2,7 +2,7 @@
 
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var Scan_failure = Caml_exceptions.create("Test_static_catch_ident.Scan_failure");
+var Scan_failure = /* @__PURE__ */Caml_exceptions.create("Test_static_catch_ident.Scan_failure");
 
 function scanf_bad_input(ib, x) {
   var s;

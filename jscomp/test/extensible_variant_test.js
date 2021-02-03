@@ -3,15 +3,15 @@
 var Mt = require("./mt.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var Str = Caml_exceptions.create("Extensible_variant_test.Str");
+var Str = /* @__PURE__ */Caml_exceptions.create("Extensible_variant_test.Str");
 
-var Int = Caml_exceptions.create("Extensible_variant_test.N.Int");
+var Int = /* @__PURE__ */Caml_exceptions.create("Extensible_variant_test.N.Int");
 
 var N = {
   Int: Int
 };
 
-var Int$1 = Caml_exceptions.create("Extensible_variant_test.Int");
+var Int$1 = /* @__PURE__ */Caml_exceptions.create("Extensible_variant_test.Int");
 
 function to_int(x) {
   if (x.RE_EXN_ID === Str) {

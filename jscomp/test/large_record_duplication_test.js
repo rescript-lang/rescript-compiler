@@ -22,7 +22,7 @@ function f0(x) {
   return newrecord;
 }
 
-var Small = Caml_exceptions.create("Large_record_duplication_test.Small");
+var Small = /* @__PURE__ */Caml_exceptions.create("Large_record_duplication_test.Small");
 
 function f_small(u) {
   if (u.RE_EXN_ID === Small) {
@@ -145,7 +145,7 @@ function f2(x) {
 
 eq("File \"large_record_duplication_test.ml\", line 205, characters 6-13", get_x0$1(f2(v2)), 1);
 
-var A0 = Caml_exceptions.create("Large_record_duplication_test.A0");
+var A0 = /* @__PURE__ */Caml_exceptions.create("Large_record_duplication_test.A0");
 
 function f3(x) {
   if (x.RE_EXN_ID !== A0) {

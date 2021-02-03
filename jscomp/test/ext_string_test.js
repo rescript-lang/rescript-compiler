@@ -262,7 +262,7 @@ function unsafe_is_sub(sub, i, s, j, len) {
   }
 }
 
-var Local_exit = Caml_exceptions.create("Ext_string_test.Local_exit");
+var Local_exit = /* @__PURE__ */Caml_exceptions.create("Ext_string_test.Local_exit");
 
 function find(startOpt, sub, s) {
   var start = startOpt !== undefined ? startOpt : 0;

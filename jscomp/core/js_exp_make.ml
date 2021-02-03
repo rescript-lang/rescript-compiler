@@ -119,6 +119,11 @@ let runtime_call ?comment module_name fn_name args =
     ~info:Js_call_info.builtin_runtime_call
     (runtime_var_dot  module_name fn_name) args
 
+let pure_runtime_call module_name fn_name args = 
+  call ~comment:Literals.pure
+    ~info:Js_call_info.builtin_runtime_call
+    (runtime_var_dot  module_name fn_name) args
+
 let runtime_ref module_name fn_name = 
   runtime_var_dot  module_name fn_name
 

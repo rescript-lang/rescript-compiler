@@ -11,7 +11,7 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function starts_with(xs, prefix, p) {
-  var H = Caml_exceptions.create("H");
+  var H = /* @__PURE__ */Caml_exceptions.create("H");
   var len1 = xs.length;
   var len2 = prefix.length;
   if (len2 > len1) {

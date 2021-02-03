@@ -54,7 +54,7 @@ let of_const (v : Int64.t) =
   | -9223372036854775808L ->
     E.runtime_var_dot  Js_runtime_modules.int64 "min_int"
   | _ -> 
-    E.runtime_call Js_runtime_modules.int64 "mk"
+    E.pure_runtime_call Js_runtime_modules.int64 "mk"
       [
         E.int (Int64.to_int32 v ); 
         E.int (Int64.to_int32 (Int64.shift_right v 32))

@@ -45,7 +45,7 @@ eq("File \"inline_const_test.ml\", line 35, characters 5-12", 1, 1);
 
 eq("File \"inline_const_test.ml\", line 36, characters 5-12", 3e-6, 0.000003);
 
-var h = Caml_int64.add(Caml_int64.add(Caml_int64.mk(100, 0), Int64.one), Caml_int64.one);
+var h = Caml_int64.add(Caml_int64.add(/* @__PURE__ */Caml_int64.mk(100, 0), Int64.one), Caml_int64.one);
 
 Mt.from_pair_suites("File \"inline_const_test.ml\", line 43, characters 22-29", suites.contents);
 

@@ -5,7 +5,7 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
-var Foo = Caml_exceptions.create("Gpr_1701_test.Foo");
+var Foo = /* @__PURE__ */Caml_exceptions.create("Gpr_1701_test.Foo");
 
 function test(n) {
   if (n === 0) {

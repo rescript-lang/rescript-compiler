@@ -36,9 +36,9 @@ var u = {
   b: u_b
 };
 
-var A = Caml_exceptions.create("Record_debug_test.A");
+var A = /* @__PURE__ */Caml_exceptions.create("Record_debug_test.A");
 
-var B = Caml_exceptions.create("Record_debug_test.B");
+var B = /* @__PURE__ */Caml_exceptions.create("Record_debug_test.B");
 
 var v0 = {
   RE_EXN_ID: A,

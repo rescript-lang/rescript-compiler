@@ -2,9 +2,9 @@
 
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var A = Caml_exceptions.create("Rebind_module.A");
+var A = /* @__PURE__ */Caml_exceptions.create("Rebind_module.A");
 
-var AA = Caml_exceptions.create("Rebind_module.AA");
+var AA = /* @__PURE__ */Caml_exceptions.create("Rebind_module.AA");
 
 exports.A = A;
 exports.AA = AA;

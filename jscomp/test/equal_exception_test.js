@@ -65,7 +65,7 @@ function is_exception(param) {
 }
 
 function is_normal_exception(_x) {
-  var A = Caml_exceptions.create("A");
+  var A = /* @__PURE__ */Caml_exceptions.create("A");
   var v = {
     RE_EXN_ID: A,
     _1: 3
@@ -86,7 +86,7 @@ function is_normal_exception(_x) {
 }
 
 function is_arbitrary_exception(param) {
-  var A = Caml_exceptions.create("A");
+  var A = /* @__PURE__ */Caml_exceptions.create("A");
   try {
     throw {
           RE_EXN_ID: A,
@@ -136,7 +136,7 @@ function eq(param) {
   return param.RE_EXN_ID === "Not_found";
 }
 
-var Not_found = Caml_exceptions.create("Equal_exception_test.Not_found");
+var Not_found = /* @__PURE__ */Caml_exceptions.create("Equal_exception_test.Not_found");
 
 if (Caml_obj.caml_equal(e, {
         RE_EXN_ID: Not_found

@@ -2,7 +2,7 @@
 
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var Custom_inline = Caml_exceptions.create("Test_literal.Custom_inline");
+var Custom_inline = /* @__PURE__ */Caml_exceptions.create("Test_literal.Custom_inline");
 
 var v = {
   RE_EXN_ID: Custom_inline,

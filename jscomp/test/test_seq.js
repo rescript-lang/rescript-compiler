@@ -6,11 +6,11 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
-var Bad = Caml_exceptions.create("Test_seq.Bad");
+var Bad = /* @__PURE__ */Caml_exceptions.create("Test_seq.Bad");
 
-var Help = Caml_exceptions.create("Test_seq.Help");
+var Help = /* @__PURE__ */Caml_exceptions.create("Test_seq.Help");
 
-var Stop = Caml_exceptions.create("Test_seq.Stop");
+var Stop = /* @__PURE__ */Caml_exceptions.create("Test_seq.Stop");
 
 function assoc3(x, _l) {
   while(true) {

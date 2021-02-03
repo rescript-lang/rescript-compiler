@@ -32,7 +32,7 @@ function insert(queue, prio, elt) {
   }
 }
 
-var Queue_is_empty = Caml_exceptions.create("Pq_test.PrioQueue.Queue_is_empty");
+var Queue_is_empty = /* @__PURE__ */Caml_exceptions.create("Pq_test.PrioQueue.Queue_is_empty");
 
 function remove_top(param) {
   if (param) {

@@ -60,7 +60,7 @@ Mt_global.collect_eq(id, suites, "File \"random_test.ml\", line 26, characters 5
 
 var f = Random.int64(Int64.max_int);
 
-var h = Random.int64(Caml_int64.mk(3, 0));
+var h = Random.int64(/* @__PURE__ */Caml_int64.mk(3, 0));
 
 var vv = Random.bits(undefined);
 

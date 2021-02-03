@@ -3,7 +3,7 @@
 var Test_common = require("./test_common.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var Local = Caml_exceptions.create("Test_exception.Local");
+var Local = /* @__PURE__ */Caml_exceptions.create("Test_exception.Local");
 
 function f(param) {
   throw {
@@ -43,7 +43,7 @@ function xx(param) {
       };
 }
 
-var Nullary = Caml_exceptions.create("Test_exception.Nullary");
+var Nullary = /* @__PURE__ */Caml_exceptions.create("Test_exception.Nullary");
 
 var a = {
   RE_EXN_ID: Nullary

@@ -67,7 +67,7 @@ var color = {
   contents: undefined
 };
 
-var Fatal_error = Caml_exceptions.create("Ocaml_parsetree_test.Misc.Fatal_error");
+var Fatal_error = /* @__PURE__ */Caml_exceptions.create("Ocaml_parsetree_test.Misc.Fatal_error");
 
 function fatal_error(msg) {
   Pervasives.prerr_string(">> Fatal error: ");
@@ -1254,7 +1254,7 @@ function print(ppf, w) {
   
 }
 
-var Errors = Caml_exceptions.create("Ocaml_parsetree_test.Warnings.Errors");
+var Errors = /* @__PURE__ */Caml_exceptions.create("Ocaml_parsetree_test.Warnings.Errors");
 
 var absname = {
   contents: false
@@ -1985,7 +1985,7 @@ register_error_of_exn(function (msg) {
       }
     });
 
-var $$Error = Caml_exceptions.create("Ocaml_parsetree_test.Location.Error");
+var $$Error = /* @__PURE__ */Caml_exceptions.create("Ocaml_parsetree_test.Location.Error");
 
 register_error_of_exn(function (e) {
       if (e.RE_EXN_ID === $$Error) {
@@ -3539,9 +3539,9 @@ var Ast_helper_Cf = {
   concrete: concrete
 };
 
-var $$Error$1 = Caml_exceptions.create("Ocaml_parsetree_test.Syntaxerr.Error");
+var $$Error$1 = /* @__PURE__ */Caml_exceptions.create("Ocaml_parsetree_test.Syntaxerr.Error");
 
-var Escape_error = Caml_exceptions.create("Ocaml_parsetree_test.Syntaxerr.Escape_error");
+var Escape_error = /* @__PURE__ */Caml_exceptions.create("Ocaml_parsetree_test.Syntaxerr.Escape_error");
 
 function prepare_error(loc) {
   switch (loc.TAG | 0) {
@@ -10711,7 +10711,7 @@ function string_of_type_directive(x) {
   }
 }
 
-var $$Error$2 = Caml_exceptions.create("Ocaml_parsetree_test.Lexer.Error");
+var $$Error$2 = /* @__PURE__ */Caml_exceptions.create("Ocaml_parsetree_test.Lexer.Error");
 
 function assert_same_type(lexbuf, x, y) {
   var lhs = type_of_directive(x);

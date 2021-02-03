@@ -157,7 +157,7 @@ var color = {
   contents: undefined
 };
 
-var Fatal_error = Caml_exceptions.create("Ocaml_typedtree_test.Misc.Fatal_error");
+var Fatal_error = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Misc.Fatal_error");
 
 function fatal_error(msg) {
   Pervasives.prerr_string(">> Fatal error: ");
@@ -1534,7 +1534,7 @@ function print(ppf, w) {
   
 }
 
-var Errors = Caml_exceptions.create("Ocaml_typedtree_test.Warnings.Errors");
+var Errors = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Warnings.Errors");
 
 var absname = {
   contents: false
@@ -2281,7 +2281,7 @@ register_error_of_exn(function (msg) {
       }
     });
 
-var $$Error = Caml_exceptions.create("Ocaml_typedtree_test.Location.Error");
+var $$Error = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Location.Error");
 
 register_error_of_exn(function (e) {
       if (e.RE_EXN_ID === $$Error) {
@@ -5598,7 +5598,7 @@ function backtrack(param) {
   return Caml_array.set(trail, 0, changes);
 }
 
-var $$Error$1 = Caml_exceptions.create("Ocaml_typedtree_test.Cmi_format.Error");
+var $$Error$1 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Cmi_format.Error");
 
 function input_cmi(ic) {
   var match = Caml_external_polyfill.resolve("caml_input_value")(ic);
@@ -5794,7 +5794,7 @@ register_error_of_exn(function (err) {
       
     });
 
-var Inconsistency = Caml_exceptions.create("Ocaml_typedtree_test.Consistbl.Inconsistency");
+var Inconsistency = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Consistbl.Inconsistency");
 
 function set$1(tbl, name, crc, source) {
   return Hashtbl.add(tbl, name, [
@@ -10312,7 +10312,7 @@ var used_constructors = Hashtbl.create(undefined, 16);
 
 var prefixed_sg = Hashtbl.create(undefined, 113);
 
-var $$Error$2 = Caml_exceptions.create("Ocaml_typedtree_test.Env.Error");
+var $$Error$2 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Env.Error");
 
 function force(f, x) {
   var x$1 = x.contents;
@@ -11306,7 +11306,7 @@ function is_functor_arg(_path, env) {
   };
 }
 
-var Recmodule = Caml_exceptions.create("Ocaml_typedtree_test.Env.Recmodule");
+var Recmodule = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Env.Recmodule");
 
 function lookup_module_descr(lid, env) {
   switch (lid.TAG | 0) {
@@ -14756,9 +14756,9 @@ function from_pair_suites(name, suites) {
 
 Promise.resolve(undefined);
 
-var $$Error$3 = Caml_exceptions.create("Ocaml_typedtree_test.Syntaxerr.Error");
+var $$Error$3 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Syntaxerr.Error");
 
-var Escape_error = Caml_exceptions.create("Ocaml_typedtree_test.Syntaxerr.Escape_error");
+var Escape_error = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Syntaxerr.Escape_error");
 
 function prepare_error(loc) {
   switch (loc.TAG | 0) {
@@ -21940,7 +21940,7 @@ function string_of_type_directive(x) {
   }
 }
 
-var $$Error$4 = Caml_exceptions.create("Ocaml_typedtree_test.Lexer.Error");
+var $$Error$4 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Lexer.Error");
 
 function assert_same_type(lexbuf, x, y) {
   var lhs = type_of_directive(x);
@@ -26918,9 +26918,9 @@ function save_cmt(filename, modname, binary_annots, sourcefile, initial_env, sg)
   return clear(undefined);
 }
 
-var Unify = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Unify");
+var Unify = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Unify");
 
-var Tags = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Tags");
+var Tags = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Tags");
 
 register_error_of_exn(function (param) {
       if (param.RE_EXN_ID === Tags) {
@@ -27000,13 +27000,13 @@ register_error_of_exn(function (param) {
       
     });
 
-var Subtype = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Subtype");
+var Subtype = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Subtype");
 
-var Cannot_expand = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Cannot_expand");
+var Cannot_expand = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Cannot_expand");
 
-var Recursive_abbrev = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Recursive_abbrev");
+var Recursive_abbrev = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Recursive_abbrev");
 
-var Unification_recursive_abbrev = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Unification_recursive_abbrev");
+var Unification_recursive_abbrev = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Unification_recursive_abbrev");
 
 var current_level = {
   contents: 0
@@ -27833,7 +27833,7 @@ function filter_row_fields(erase, param) {
   }
 }
 
-var Non_closed0 = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Non_closed0");
+var Non_closed0 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Non_closed0");
 
 function closed_schema_rec(_ty) {
   while(true) {
@@ -27893,7 +27893,7 @@ function closed_schema(ty) {
   }
 }
 
-var Non_closed = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Non_closed");
+var Non_closed = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Non_closed");
 
 var free_variables = {
   contents: /* [] */0
@@ -28096,7 +28096,7 @@ function closed_extension_constructor(ext) {
   }
 }
 
-var CCFailure = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.CCFailure");
+var CCFailure = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Ctype.CCFailure");
 
 function closed_class(params, sign) {
   var ty = object_fields(repr(sign.csig_self));
@@ -30113,7 +30113,7 @@ function is_contractive(env, ty) {
   }
 }
 
-var Occur = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Occur");
+var Occur = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Occur");
 
 function occur_rec(env, visited, ty0, ty) {
   if (ty === ty0) {
@@ -35555,7 +35555,7 @@ function eqtype$1(rename, type_pairs, subst, env, t1, t2) {
   return eqtype(rename, type_pairs, subst, env, t1, t2);
 }
 
-var Failure = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Failure");
+var Failure = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Failure");
 
 function moregen_clty(trace, type_pairs, env, cty1, cty2) {
   try {
@@ -48789,7 +48789,7 @@ function report_error$3(ppf, param) {
                 }), include_err, param.hd, print_errs, param.tl);
 }
 
-var Dont_match = Caml_exceptions.create("Ocaml_typedtree_test.Includecore.Dont_match");
+var Dont_match = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Includecore.Dont_match");
 
 function private_flags(decl1, decl2) {
   var match = decl1.type_private;
@@ -51134,7 +51134,7 @@ function remove_aliases$1(env, sg) {
   return remove_aliases(env, excl, sg);
 }
 
-var $$Error$5 = Caml_exceptions.create("Ocaml_typedtree_test.Includemod.Error");
+var $$Error$5 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Includemod.Error");
 
 function value_descriptions(env, cxt, subst, id, vd1, vd2) {
   record_value_dependency(vd1, vd2);
@@ -51314,7 +51314,7 @@ function class_declarations$1(old_env, env, cxt, subst, id, decl1, decl2) {
       };
 }
 
-var Dont_match$1 = Caml_exceptions.create("Ocaml_typedtree_test.Includemod.Dont_match");
+var Dont_match$1 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Includemod.Dont_match");
 
 function may_expand_module_path(env, path) {
   try {
@@ -54048,7 +54048,7 @@ function compats(_ps, _qs) {
   };
 }
 
-var Empty = Caml_exceptions.create("Ocaml_typedtree_test.Parmatch.Empty");
+var Empty = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Parmatch.Empty");
 
 function clean_copy(ty) {
   if (ty.level === 100000000) {
@@ -58035,7 +58035,7 @@ function initial_matrix(_param) {
   };
 }
 
-var NoGuard = Caml_exceptions.create("Ocaml_typedtree_test.Parmatch.NoGuard");
+var NoGuard = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Parmatch.NoGuard");
 
 function initial_all(no_guard, param) {
   if (param) {
@@ -58622,11 +58622,11 @@ function check_partial(param, param$1) {
   return check_partial_param(do_check_partial_normal, do_check_fragile_normal, param, param$1);
 }
 
-var Already_bound = Caml_exceptions.create("Ocaml_typedtree_test.Typetexp.Already_bound");
+var Already_bound = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Typetexp.Already_bound");
 
-var $$Error$6 = Caml_exceptions.create("Ocaml_typedtree_test.Typetexp.Error");
+var $$Error$6 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Typetexp.Error");
 
-var Error_forward = Caml_exceptions.create("Ocaml_typedtree_test.Typetexp.Error_forward");
+var Error_forward = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Typetexp.Error_forward");
 
 function string_of_payload(param) {
   switch (param.TAG | 0) {
@@ -61590,9 +61590,9 @@ register_error_of_exn(function (err) {
                   }), err._3);
     });
 
-var $$Error$7 = Caml_exceptions.create("Ocaml_typedtree_test.Typecore.Error");
+var $$Error$7 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Typecore.Error");
 
-var Error_forward$1 = Caml_exceptions.create("Ocaml_typedtree_test.Typecore.Error_forward");
+var Error_forward$1 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Typecore.Error_forward");
 
 var type_module = {
   contents: (function (env, md) {
@@ -71859,7 +71859,7 @@ register_error_of_exn(function (err) {
 
 add_delayed_check_forward.contents = add_delayed_check;
 
-var $$Error$8 = Caml_exceptions.create("Ocaml_typedtree_test.Typedecl.Error");
+var $$Error$8 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Typedecl.Error");
 
 function enter_type$1(env, sdecl, id) {
   var match = sdecl.ptype_manifest;
@@ -76377,9 +76377,9 @@ register_error_of_exn(function (param) {
       
     });
 
-var $$Error$9 = Caml_exceptions.create("Ocaml_typedtree_test.Typeclass.Error");
+var $$Error$9 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Typeclass.Error");
 
-var Error_forward$2 = Caml_exceptions.create("Ocaml_typedtree_test.Typeclass.Error_forward");
+var Error_forward$2 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Typeclass.Error_forward");
 
 function ctyp(desc, typ, env, loc) {
   return {
@@ -81213,9 +81213,9 @@ register_error_of_exn(function (err) {
                   }), err._3);
     });
 
-var $$Error$10 = Caml_exceptions.create("Ocaml_typedtree_test.Typemod.Error");
+var $$Error$10 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Typemod.Error");
 
-var Error_forward$3 = Caml_exceptions.create("Ocaml_typedtree_test.Typemod.Error_forward");
+var Error_forward$3 = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Typemod.Error_forward");
 
 function fst3(param) {
   return param[0];
@@ -83244,7 +83244,7 @@ function simplify_signature(sg) {
   return aux(sg)[0];
 }
 
-var Not_a_path = Caml_exceptions.create("Ocaml_typedtree_test.Typemod.Not_a_path");
+var Not_a_path = /* @__PURE__ */Caml_exceptions.create("Ocaml_typedtree_test.Typemod.Not_a_path");
 
 function path_of_module(_mexp) {
   while(true) {

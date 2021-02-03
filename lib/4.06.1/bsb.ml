@@ -5372,6 +5372,7 @@ let tl = "tl"
 let lazy_done = "LAZY_DONE"
 let lazy_val = "VAL"
 
+let pure = "@__PURE__"
 end
 module Ext_path : sig 
 #1 "ext_path.mli"

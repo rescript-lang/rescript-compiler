@@ -53,7 +53,7 @@ console.log(f(v));
 
 console.log(f(v1));
 
-var A0 = Caml_exceptions.create("Inline_record_test.A0");
+var A0 = /* @__PURE__ */Caml_exceptions.create("Inline_record_test.A0");
 
 var v3 = {
   RE_EXN_ID: A0,
@@ -141,7 +141,7 @@ tmp$2 = v5.z;
 
 eq("File \"inline_record_test.ml\", line 71, characters 6-13", tmp$2, 22);
 
-var A4 = Caml_exceptions.create("Inline_record_test.A4");
+var A4 = /* @__PURE__ */Caml_exceptions.create("Inline_record_test.A4");
 
 var v6 = {
   RE_EXN_ID: A4,
