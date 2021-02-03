@@ -85,7 +85,7 @@ let raw_as_string_exp_exn
     Bs_flow_ast_utils.check_flow_errors ~loc ~offset:(Bs_flow_ast_utils.flow_deli_offset deli) (match kind with 
         | Raw_re 
         | Raw_exp ->  
-          let (_loc,e),errors =  (Parser_flow.parse_expression (Parser_env.init_env None str) false) in 
+          let (_loc,e),errors =  Parser_flow.parse_expression (Parser_env.init_env None str) false in 
           if kind = Raw_re then 
             (match e with 
             | Literal {value = RegExp _} -> ()
