@@ -8,16 +8,16 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
-var Local = Caml_exceptions.create("Exception_raise_test.Local");
+var Local = /* @__PURE__ */Caml_exceptions.create("Exception_raise_test.Local");
 
-var B = Caml_exceptions.create("Exception_raise_test.B");
+var B = /* @__PURE__ */Caml_exceptions.create("Exception_raise_test.B");
 
-var C = Caml_exceptions.create("Exception_raise_test.C");
+var C = /* @__PURE__ */Caml_exceptions.create("Exception_raise_test.C");
 
-var D = Caml_exceptions.create("Exception_raise_test.D");
+var D = /* @__PURE__ */Caml_exceptions.create("Exception_raise_test.D");
 
 function appf(g, x) {
-  var A = Caml_exceptions.create("A");
+  var A = /* @__PURE__ */Caml_exceptions.create("A");
   try {
     return Curry._1(g, x);
   }
@@ -58,7 +58,7 @@ function appf(g, x) {
   }
 }
 
-var A = Caml_exceptions.create("Exception_raise_test.A");
+var A = /* @__PURE__ */Caml_exceptions.create("Exception_raise_test.A");
 
 var f;
 

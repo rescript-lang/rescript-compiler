@@ -4822,7 +4822,7 @@ function test53(param) {
                     _3: /* End_of_format */0
                   },
                   _1: "%Ld"
-                }), id), Caml_int64.mk(123, 0))) {
+                }), id), /* @__PURE__ */Caml_int64.mk(123, 0))) {
     return Curry._1(Scanf.sscanf("124", /* Format */{
                     _0: {
                       TAG: /* Int64 */7,
@@ -4833,7 +4833,7 @@ function test53(param) {
                     },
                     _1: "%Ld"
                   }), (function (i) {
-                  return Caml_int64.eq(Caml_int64.sub(i, Caml_int64.one), Caml_int64.mk(123, 0));
+                  return Caml_int64.eq(Caml_int64.sub(i, Caml_int64.one), /* @__PURE__ */Caml_int64.mk(123, 0));
                 }));
   } else {
     return false;

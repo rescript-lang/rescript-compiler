@@ -370,7 +370,7 @@ function string_of_programmatic_error(e) {
   return "Programatic_error" + tmp;
 }
 
-var Compilation_error = Caml_exceptions.create("Ocaml_proto_test.Exception.Compilation_error");
+var Compilation_error = /* @__PURE__ */Caml_exceptions.create("Ocaml_proto_test.Exception.Compilation_error");
 
 function prepare_error(e) {
   if (typeof e === "number") {

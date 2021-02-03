@@ -8,7 +8,7 @@ var Stream = require("../../lib/js/stream.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var Parse_error = Caml_exceptions.create("Stream_parser_test.Parse_error");
+var Parse_error = /* @__PURE__ */Caml_exceptions.create("Stream_parser_test.Parse_error");
 
 function parse(token) {
   var look_ahead = {

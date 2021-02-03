@@ -25,19 +25,19 @@ function f(a, b) {
   return eq("File \"int64_string_test.ml\", line 11, characters 5-12", Caml_int64.to_string(a), b);
 }
 
-var hh = Caml_int64.add(Int64.min_int, Caml_int64.mk(100, 0));
+var hh = Caml_int64.add(Int64.min_int, /* @__PURE__ */Caml_int64.mk(100, 0));
 
-eq("File \"int64_string_test.ml\", line 15, characters 6-13", hh, Caml_int64.mk(100, -2147483648));
+eq("File \"int64_string_test.ml\", line 15, characters 6-13", hh, /* @__PURE__ */Caml_int64.mk(100, -2147483648));
 
-f(Caml_int64.mk(-33, -1), "-33");
+f(/* @__PURE__ */Caml_int64.mk(-33, -1), "-33");
 
-f(Caml_int64.mk(33, 0), "33");
+f(/* @__PURE__ */Caml_int64.mk(33, 0), "33");
 
 f(Int64.min_int, "-9223372036854775808");
 
 f(hh, "-9223372036854775708");
 
-f(Caml_int64.mk(-1530494976, 232830), "1000000000000000");
+f(/* @__PURE__ */Caml_int64.mk(-1530494976, 232830), "1000000000000000");
 
 for(var i = 0; i <= 8; ++i){
   eq("File \"int64_string_test.ml\", line 25, characters 5-12", Caml_int64.to_string(Caml_int64.add(Int64.min_int, Caml_int64.of_int32(i))), "-922337203685477580" + String(8 - i | 0));
@@ -51,30 +51,30 @@ for(var i$2 = 0; i$2 <= 8; ++i$2){
   eq("File \"int64_string_test.ml\", line 33, characters 5-12", Caml_int64.to_string(Caml_int64.add(Int64.min_int, Caml_int64.of_int32(1000000 + i$2 | 0))), "-922337203685377580" + String(8 - i$2 | 0));
 }
 
-var u = Caml_int64.mk(-10001, 2097151);
+var u = /* @__PURE__ */Caml_int64.mk(-10001, 2097151);
 
 for(var i$3 = 0; i$3 <= 6; ++i$3){
   eq("File \"int64_string_test.ml\", line 42, characters 5-12", Caml_int64.to_string(Caml_int64.add(u, Caml_int64.of_int32(Math.imul(i$3, 10000)))), "90071992547" + (String(3 + i$3 | 0) + "0991"));
 }
 
-var v$1 = Caml_int64.mk(-49999, -2097153);
+var v$1 = /* @__PURE__ */Caml_int64.mk(-49999, -2097153);
 
 for(var i$4 = 0; i$4 <= 9; ++i$4){
   eq("File \"int64_string_test.ml\", line 49, characters 5-12", Caml_int64.to_string(Caml_int64.add(v$1, Caml_int64.of_int32(Math.imul(i$4, 10000)))), "-90071992547" + (String(9 - i$4 | 0) + "0991"));
 }
 
-eq("File \"int64_string_test.ml\", line 52, characters 6-13", Caml_int64.to_string(Caml_int64.mk(-1, 2097151)), "9007199254740991");
+eq("File \"int64_string_test.ml\", line 52, characters 6-13", Caml_int64.to_string(/* @__PURE__ */Caml_int64.mk(-1, 2097151)), "9007199254740991");
 
-eq("File \"int64_string_test.ml\", line 53, characters 6-13", Caml_int64.to_string(Caml_int64.mk(1, -2097152)), "-9007199254740991");
+eq("File \"int64_string_test.ml\", line 53, characters 6-13", Caml_int64.to_string(/* @__PURE__ */Caml_int64.mk(1, -2097152)), "-9007199254740991");
 
-eq("File \"int64_string_test.ml\", line 54, characters 6-13", Caml_int64.to_string(Caml_int64.mk(-233, -1)), "-233");
+eq("File \"int64_string_test.ml\", line 54, characters 6-13", Caml_int64.to_string(/* @__PURE__ */Caml_int64.mk(-233, -1)), "-233");
 
 eq("File \"int64_string_test.ml\", line 55, characters 6-13", Caml_int64.to_string(Caml_int64.max_int), "9223372036854775807");
 
 var random_data = {
   hd: {
     hd: [
-      Caml_int64.mk(-1923201751, 2147226018),
+      /* @__PURE__ */Caml_int64.mk(-1923201751, 2147226018),
       "9222265526802072873"
     ],
     tl: /* [] */0
@@ -82,7 +82,7 @@ var random_data = {
   tl: {
     hd: {
       hd: [
-        Caml_int64.mk(1923201751, -2147226019),
+        /* @__PURE__ */Caml_int64.mk(1923201751, -2147226019),
         "-9222265526802072873"
       ],
       tl: /* [] */0
@@ -90,7 +90,7 @@ var random_data = {
     tl: {
       hd: {
         hd: [
-          Caml_int64.mk(-1645588432, 1923105645),
+          /* @__PURE__ */Caml_int64.mk(-1645588432, 1923105645),
           "8259675854677364784"
         ],
         tl: /* [] */0
@@ -98,7 +98,7 @@ var random_data = {
       tl: {
         hd: {
           hd: [
-            Caml_int64.mk(1645588432, -1923105646),
+            /* @__PURE__ */Caml_int64.mk(1645588432, -1923105646),
             "-8259675854677364784"
           ],
           tl: /* [] */0
@@ -106,7 +106,7 @@ var random_data = {
         tl: {
           hd: {
             hd: [
-              Caml_int64.mk(-1997543078, 2057149268),
+              /* @__PURE__ */Caml_int64.mk(-1997543078, 2057149268),
               "8835388831347763546"
             ],
             tl: /* [] */0
@@ -114,7 +114,7 @@ var random_data = {
           tl: {
             hd: {
               hd: [
-                Caml_int64.mk(1997543078, -2057149269),
+                /* @__PURE__ */Caml_int64.mk(1997543078, -2057149269),
                 "-8835388831347763546"
               ],
               tl: /* [] */0
@@ -122,7 +122,7 @@ var random_data = {
             tl: {
               hd: {
                 hd: [
-                  Caml_int64.mk(-1512009783, 1963412104),
+                  /* @__PURE__ */Caml_int64.mk(-1512009783, 1963412104),
                   "8432790778033508297"
                 ],
                 tl: /* [] */0
@@ -130,7 +130,7 @@ var random_data = {
               tl: {
                 hd: {
                   hd: [
-                    Caml_int64.mk(1512009783, -1963412105),
+                    /* @__PURE__ */Caml_int64.mk(1512009783, -1963412105),
                     "-8432790778033508297"
                   ],
                   tl: /* [] */0
@@ -138,7 +138,7 @@ var random_data = {
                 tl: {
                   hd: {
                     hd: [
-                      Caml_int64.mk(-200913449, 2049795191),
+                      /* @__PURE__ */Caml_int64.mk(-200913449, 2049795191),
                       "8803803312937127383"
                     ],
                     tl: /* [] */0
@@ -146,7 +146,7 @@ var random_data = {
                   tl: {
                     hd: {
                       hd: [
-                        Caml_int64.mk(200913449, -2049795192),
+                        /* @__PURE__ */Caml_int64.mk(200913449, -2049795192),
                         "-8803803312937127383"
                       ],
                       tl: /* [] */0
@@ -154,7 +154,7 @@ var random_data = {
                     tl: {
                       hd: {
                         hd: [
-                          Caml_int64.mk(-446052820, 1991682107),
+                          /* @__PURE__ */Caml_int64.mk(-446052820, 1991682107),
                           "8554209517442287148"
                         ],
                         tl: /* [] */0
@@ -162,7 +162,7 @@ var random_data = {
                       tl: {
                         hd: {
                           hd: [
-                            Caml_int64.mk(446052820, -1991682108),
+                            /* @__PURE__ */Caml_int64.mk(446052820, -1991682108),
                             "-8554209517442287148"
                           ],
                           tl: /* [] */0
@@ -170,7 +170,7 @@ var random_data = {
                         tl: {
                           hd: {
                             hd: [
-                              Caml_int64.mk(-659436124, 2055313051),
+                              /* @__PURE__ */Caml_int64.mk(-659436124, 2055313051),
                               "8827502340722511268"
                             ],
                             tl: /* [] */0
@@ -178,7 +178,7 @@ var random_data = {
                           tl: {
                             hd: {
                               hd: [
-                                Caml_int64.mk(659436124, -2055313052),
+                                /* @__PURE__ */Caml_int64.mk(659436124, -2055313052),
                                 "-8827502340722511268"
                               ],
                               tl: /* [] */0
@@ -186,7 +186,7 @@ var random_data = {
                             tl: {
                               hd: {
                                 hd: [
-                                  Caml_int64.mk(-629381303, 2086148291),
+                                  /* @__PURE__ */Caml_int64.mk(-629381303, 2086148291),
                                   "8959938688116877129"
                                 ],
                                 tl: /* [] */0
@@ -194,7 +194,7 @@ var random_data = {
                               tl: {
                                 hd: {
                                   hd: [
-                                    Caml_int64.mk(629381303, -2086148292),
+                                    /* @__PURE__ */Caml_int64.mk(629381303, -2086148292),
                                     "-8959938688116877129"
                                   ],
                                   tl: /* [] */0
@@ -202,7 +202,7 @@ var random_data = {
                                 tl: {
                                   hd: {
                                     hd: [
-                                      Caml_int64.mk(-409338213, 1950036541),
+                                      /* @__PURE__ */Caml_int64.mk(-409338213, 1950036541),
                                       "8375343173485592219"
                                     ],
                                     tl: /* [] */0
@@ -210,7 +210,7 @@ var random_data = {
                                   tl: {
                                     hd: {
                                       hd: [
-                                        Caml_int64.mk(409338213, -1950036542),
+                                        /* @__PURE__ */Caml_int64.mk(409338213, -1950036542),
                                         "-8375343173485592219"
                                       ],
                                       tl: /* [] */0
@@ -218,7 +218,7 @@ var random_data = {
                                     tl: {
                                       hd: {
                                         hd: [
-                                          Caml_int64.mk(-392215503, 1920197492),
+                                          /* @__PURE__ */Caml_int64.mk(-392215503, 1920197492),
                                           "8247185433903973425"
                                         ],
                                         tl: /* [] */0
@@ -226,7 +226,7 @@ var random_data = {
                                       tl: {
                                         hd: {
                                           hd: [
-                                            Caml_int64.mk(392215503, -1920197493),
+                                            /* @__PURE__ */Caml_int64.mk(392215503, -1920197493),
                                             "-8247185433903973425"
                                           ],
                                           tl: /* [] */0
@@ -234,7 +234,7 @@ var random_data = {
                                         tl: {
                                           hd: {
                                             hd: [
-                                              Caml_int64.mk(-1732901220, 2066884723),
+                                              /* @__PURE__ */Caml_int64.mk(-1732901220, 2066884723),
                                               "8877202292449085084"
                                             ],
                                             tl: /* [] */0
@@ -242,7 +242,7 @@ var random_data = {
                                           tl: {
                                             hd: {
                                               hd: [
-                                                Caml_int64.mk(1732901220, -2066884724),
+                                                /* @__PURE__ */Caml_int64.mk(1732901220, -2066884724),
                                                 "-8877202292449085084"
                                               ],
                                               tl: /* [] */0
@@ -250,7 +250,7 @@ var random_data = {
                                             tl: {
                                               hd: {
                                                 hd: [
-                                                  Caml_int64.mk(86646639, 2028895352),
+                                                  /* @__PURE__ */Caml_int64.mk(86646639, 2028895352),
                                                   "8714039183933054831"
                                                 ],
                                                 tl: /* [] */0
@@ -258,7 +258,7 @@ var random_data = {
                                               tl: {
                                                 hd: {
                                                   hd: [
-                                                    Caml_int64.mk(-86646639, -2028895353),
+                                                    /* @__PURE__ */Caml_int64.mk(-86646639, -2028895353),
                                                     "-8714039183933054831"
                                                   ],
                                                   tl: /* [] */0
@@ -266,7 +266,7 @@ var random_data = {
                                                 tl: {
                                                   hd: {
                                                     hd: [
-                                                      Caml_int64.mk(1417923479, 2068232680),
+                                                      /* @__PURE__ */Caml_int64.mk(1417923479, 2068232680),
                                                       "8882991722536356759"
                                                     ],
                                                     tl: /* [] */0
@@ -274,7 +274,7 @@ var random_data = {
                                                   tl: {
                                                     hd: {
                                                       hd: [
-                                                        Caml_int64.mk(-1417923479, -2068232681),
+                                                        /* @__PURE__ */Caml_int64.mk(-1417923479, -2068232681),
                                                         "-8882991722536356759"
                                                       ],
                                                       tl: /* [] */0
@@ -282,7 +282,7 @@ var random_data = {
                                                     tl: {
                                                       hd: {
                                                         hd: [
-                                                          Caml_int64.mk(2146167188, 1940466044),
+                                                          /* @__PURE__ */Caml_int64.mk(2146167188, 1940466044),
                                                           "8334238200124664212"
                                                         ],
                                                         tl: /* [] */0
@@ -290,7 +290,7 @@ var random_data = {
                                                       tl: {
                                                         hd: {
                                                           hd: [
-                                                            Caml_int64.mk(-2146167188, -1940466045),
+                                                            /* @__PURE__ */Caml_int64.mk(-2146167188, -1940466045),
                                                             "-8334238200124664212"
                                                           ],
                                                           tl: /* [] */0
@@ -298,7 +298,7 @@ var random_data = {
                                                         tl: {
                                                           hd: {
                                                             hd: [
-                                                              Caml_int64.mk(-1450051974, 2139021480),
+                                                              /* @__PURE__ */Caml_int64.mk(-1450051974, 2139021480),
                                                               "9187027304886433402"
                                                             ],
                                                             tl: /* [] */0
@@ -306,7 +306,7 @@ var random_data = {
                                                           tl: {
                                                             hd: {
                                                               hd: [
-                                                                Caml_int64.mk(1450051974, -2139021481),
+                                                                /* @__PURE__ */Caml_int64.mk(1450051974, -2139021481),
                                                                 "-9187027304886433402"
                                                               ],
                                                               tl: /* [] */0
@@ -314,7 +314,7 @@ var random_data = {
                                                             tl: {
                                                               hd: {
                                                                 hd: [
-                                                                  Caml_int64.mk(-437291686, 2126455706),
+                                                                  /* @__PURE__ */Caml_int64.mk(-437291686, 2126455706),
                                                                   "9133057717520266586"
                                                                 ],
                                                                 tl: /* [] */0
@@ -322,7 +322,7 @@ var random_data = {
                                                               tl: {
                                                                 hd: {
                                                                   hd: [
-                                                                    Caml_int64.mk(437291686, -2126455707),
+                                                                    /* @__PURE__ */Caml_int64.mk(437291686, -2126455707),
                                                                     "-9133057717520266586"
                                                                   ],
                                                                   tl: /* [] */0
@@ -330,7 +330,7 @@ var random_data = {
                                                                 tl: {
                                                                   hd: {
                                                                     hd: [
-                                                                      Caml_int64.mk(608162909, 2134212194),
+                                                                      /* @__PURE__ */Caml_int64.mk(608162909, 2134212194),
                                                                       "9166371576562570333"
                                                                     ],
                                                                     tl: /* [] */0
@@ -338,7 +338,7 @@ var random_data = {
                                                                   tl: {
                                                                     hd: {
                                                                       hd: [
-                                                                        Caml_int64.mk(-608162909, -2134212195),
+                                                                        /* @__PURE__ */Caml_int64.mk(-608162909, -2134212195),
                                                                         "-9166371576562570333"
                                                                       ],
                                                                       tl: /* [] */0
@@ -346,7 +346,7 @@ var random_data = {
                                                                     tl: {
                                                                       hd: {
                                                                         hd: [
-                                                                          Caml_int64.mk(1403654222, 2014956425),
+                                                                          /* @__PURE__ */Caml_int64.mk(1403654222, 2014956425),
                                                                           "8654171949643731022"
                                                                         ],
                                                                         tl: /* [] */0
@@ -354,7 +354,7 @@ var random_data = {
                                                                       tl: {
                                                                         hd: {
                                                                           hd: [
-                                                                            Caml_int64.mk(-1403654222, -2014956426),
+                                                                            /* @__PURE__ */Caml_int64.mk(-1403654222, -2014956426),
                                                                             "-8654171949643731022"
                                                                           ],
                                                                           tl: /* [] */0
@@ -362,7 +362,7 @@ var random_data = {
                                                                         tl: {
                                                                           hd: {
                                                                             hd: [
-                                                                              Caml_int64.mk(1237787861, 2103588109),
+                                                                              /* @__PURE__ */Caml_int64.mk(1237787861, 2103588109),
                                                                               "9034842133647271125"
                                                                             ],
                                                                             tl: /* [] */0
@@ -370,7 +370,7 @@ var random_data = {
                                                                           tl: {
                                                                             hd: {
                                                                               hd: [
-                                                                                Caml_int64.mk(-1237787861, -2103588110),
+                                                                                /* @__PURE__ */Caml_int64.mk(-1237787861, -2103588110),
                                                                                 "-9034842133647271125"
                                                                               ],
                                                                               tl: /* [] */0
@@ -378,7 +378,7 @@ var random_data = {
                                                                             tl: {
                                                                               hd: {
                                                                                 hd: [
-                                                                                  Caml_int64.mk(-1133894441, 2004341376),
+                                                                                  /* @__PURE__ */Caml_int64.mk(-1133894441, 2004341376),
                                                                                   "8608580663100712151"
                                                                                 ],
                                                                                 tl: /* [] */0
@@ -386,7 +386,7 @@ var random_data = {
                                                                               tl: {
                                                                                 hd: {
                                                                                   hd: [
-                                                                                    Caml_int64.mk(1133894441, -2004341377),
+                                                                                    /* @__PURE__ */Caml_int64.mk(1133894441, -2004341377),
                                                                                     "-8608580663100712151"
                                                                                   ],
                                                                                   tl: /* [] */0
@@ -394,7 +394,7 @@ var random_data = {
                                                                                 tl: {
                                                                                   hd: {
                                                                                     hd: [
-                                                                                      Caml_int64.mk(-152578516, 2053733102),
+                                                                                      /* @__PURE__ */Caml_int64.mk(-152578516, 2053733102),
                                                                                       "8820716511945020972"
                                                                                     ],
                                                                                     tl: /* [] */0
@@ -402,7 +402,7 @@ var random_data = {
                                                                                   tl: {
                                                                                     hd: {
                                                                                       hd: [
-                                                                                        Caml_int64.mk(152578516, -2053733103),
+                                                                                        /* @__PURE__ */Caml_int64.mk(152578516, -2053733103),
                                                                                         "-8820716511945020972"
                                                                                       ],
                                                                                       tl: /* [] */0
@@ -410,7 +410,7 @@ var random_data = {
                                                                                     tl: {
                                                                                       hd: {
                                                                                         hd: [
-                                                                                          Caml_int64.mk(1979926511, 2131986077),
+                                                                                          /* @__PURE__ */Caml_int64.mk(1979926511, 2131986077),
                                                                                           "9156810478222264303"
                                                                                         ],
                                                                                         tl: /* [] */0
@@ -418,7 +418,7 @@ var random_data = {
                                                                                       tl: {
                                                                                         hd: {
                                                                                           hd: [
-                                                                                            Caml_int64.mk(-1979926511, -2131986078),
+                                                                                            /* @__PURE__ */Caml_int64.mk(-1979926511, -2131986078),
                                                                                             "-9156810478222264303"
                                                                                           ],
                                                                                           tl: /* [] */0
@@ -426,7 +426,7 @@ var random_data = {
                                                                                         tl: {
                                                                                           hd: {
                                                                                             hd: [
-                                                                                              Caml_int64.mk(609814957, 2038531675),
+                                                                                              /* @__PURE__ */Caml_int64.mk(609814957, 2038531675),
                                                                                               "8755426876594915757"
                                                                                             ],
                                                                                             tl: /* [] */0
@@ -434,7 +434,7 @@ var random_data = {
                                                                                           tl: {
                                                                                             hd: {
                                                                                               hd: [
-                                                                                                Caml_int64.mk(-609814957, -2038531676),
+                                                                                                /* @__PURE__ */Caml_int64.mk(-609814957, -2038531676),
                                                                                                 "-8755426876594915757"
                                                                                               ],
                                                                                               tl: /* [] */0
@@ -442,7 +442,7 @@ var random_data = {
                                                                                             tl: {
                                                                                               hd: {
                                                                                                 hd: [
-                                                                                                  Caml_int64.mk(1830468673, 2043028138),
+                                                                                                  /* @__PURE__ */Caml_int64.mk(1830468673, 2043028138),
                                                                                                   "8774739039348243521"
                                                                                                 ],
                                                                                                 tl: /* [] */0
@@ -450,7 +450,7 @@ var random_data = {
                                                                                               tl: {
                                                                                                 hd: {
                                                                                                   hd: [
-                                                                                                    Caml_int64.mk(-1830468673, -2043028139),
+                                                                                                    /* @__PURE__ */Caml_int64.mk(-1830468673, -2043028139),
                                                                                                     "-8774739039348243521"
                                                                                                   ],
                                                                                                   tl: /* [] */0
@@ -458,7 +458,7 @@ var random_data = {
                                                                                                 tl: {
                                                                                                   hd: {
                                                                                                     hd: [
-                                                                                                      Caml_int64.mk(-1990851787, 2113110666),
+                                                                                                      /* @__PURE__ */Caml_int64.mk(-1990851787, 2113110666),
                                                                                                       "9075741205602894645"
                                                                                                     ],
                                                                                                     tl: /* [] */0
@@ -466,7 +466,7 @@ var random_data = {
                                                                                                   tl: {
                                                                                                     hd: {
                                                                                                       hd: [
-                                                                                                        Caml_int64.mk(1990851787, -2113110667),
+                                                                                                        /* @__PURE__ */Caml_int64.mk(1990851787, -2113110667),
                                                                                                         "-9075741205602894645"
                                                                                                       ],
                                                                                                       tl: /* [] */0
@@ -474,7 +474,7 @@ var random_data = {
                                                                                                     tl: {
                                                                                                       hd: {
                                                                                                         hd: [
-                                                                                                          Caml_int64.mk(62815435, 2045703976),
+                                                                                                          /* @__PURE__ */Caml_int64.mk(62815435, 2045703976),
                                                                                                           "8786231674279984331"
                                                                                                         ],
                                                                                                         tl: /* [] */0
@@ -482,7 +482,7 @@ var random_data = {
                                                                                                       tl: {
                                                                                                         hd: {
                                                                                                           hd: [
-                                                                                                            Caml_int64.mk(-62815435, -2045703977),
+                                                                                                            /* @__PURE__ */Caml_int64.mk(-62815435, -2045703977),
                                                                                                             "-8786231674279984331"
                                                                                                           ],
                                                                                                           tl: /* [] */0
@@ -490,7 +490,7 @@ var random_data = {
                                                                                                         tl: {
                                                                                                           hd: {
                                                                                                             hd: [
-                                                                                                              Caml_int64.mk(1641712918, 2083606415),
+                                                                                                              /* @__PURE__ */Caml_int64.mk(1641712918, 2083606415),
                                                                                                               "8949021411802516758"
                                                                                                             ],
                                                                                                             tl: /* [] */0
@@ -498,7 +498,7 @@ var random_data = {
                                                                                                           tl: {
                                                                                                             hd: {
                                                                                                               hd: [
-                                                                                                                Caml_int64.mk(-1641712918, -2083606416),
+                                                                                                                /* @__PURE__ */Caml_int64.mk(-1641712918, -2083606416),
                                                                                                                 "-8949021411802516758"
                                                                                                               ],
                                                                                                               tl: /* [] */0
@@ -506,7 +506,7 @@ var random_data = {
                                                                                                             tl: {
                                                                                                               hd: {
                                                                                                                 hd: [
-                                                                                                                  Caml_int64.mk(385116562, 1984816802),
+                                                                                                                  /* @__PURE__ */Caml_int64.mk(385116562, 1984816802),
                                                                                                                   "8524723253526423954"
                                                                                                                 ],
                                                                                                                 tl: /* [] */0
@@ -514,7 +514,7 @@ var random_data = {
                                                                                                               tl: {
                                                                                                                 hd: {
                                                                                                                   hd: [
-                                                                                                                    Caml_int64.mk(-385116562, -1984816803),
+                                                                                                                    /* @__PURE__ */Caml_int64.mk(-385116562, -1984816803),
                                                                                                                     "-8524723253526423954"
                                                                                                                   ],
                                                                                                                   tl: /* [] */0
@@ -522,7 +522,7 @@ var random_data = {
                                                                                                                 tl: {
                                                                                                                   hd: {
                                                                                                                     hd: [
-                                                                                                                      Caml_int64.mk(-634982516, 1982155493),
+                                                                                                                      /* @__PURE__ */Caml_int64.mk(-634982516, 1982155493),
                                                                                                                       "8513293021681741708"
                                                                                                                     ],
                                                                                                                     tl: /* [] */0
@@ -530,7 +530,7 @@ var random_data = {
                                                                                                                   tl: {
                                                                                                                     hd: {
                                                                                                                       hd: [
-                                                                                                                        Caml_int64.mk(634982516, -1982155494),
+                                                                                                                        /* @__PURE__ */Caml_int64.mk(634982516, -1982155494),
                                                                                                                         "-8513293021681741708"
                                                                                                                       ],
                                                                                                                       tl: /* [] */0
@@ -538,7 +538,7 @@ var random_data = {
                                                                                                                     tl: {
                                                                                                                       hd: {
                                                                                                                         hd: [
-                                                                                                                          Caml_int64.mk(1953231192, 1960775672),
+                                                                                                                          /* @__PURE__ */Caml_int64.mk(1953231192, 1960775672),
                                                                                                                           "8421467387985654104"
                                                                                                                         ],
                                                                                                                         tl: /* [] */0
@@ -546,7 +546,7 @@ var random_data = {
                                                                                                                       tl: {
                                                                                                                         hd: {
                                                                                                                           hd: [
-                                                                                                                            Caml_int64.mk(-1953231192, -1960775673),
+                                                                                                                            /* @__PURE__ */Caml_int64.mk(-1953231192, -1960775673),
                                                                                                                             "-8421467387985654104"
                                                                                                                           ],
                                                                                                                           tl: /* [] */0
@@ -554,7 +554,7 @@ var random_data = {
                                                                                                                         tl: {
                                                                                                                           hd: {
                                                                                                                             hd: [
-                                                                                                                              Caml_int64.mk(-1489159267, 1957806908),
+                                                                                                                              /* @__PURE__ */Caml_int64.mk(-1489159267, 1957806908),
                                                                                                                               "8408716644548688797"
                                                                                                                             ],
                                                                                                                             tl: /* [] */0
@@ -562,7 +562,7 @@ var random_data = {
                                                                                                                           tl: {
                                                                                                                             hd: {
                                                                                                                               hd: [
-                                                                                                                                Caml_int64.mk(1489159267, -1957806909),
+                                                                                                                                /* @__PURE__ */Caml_int64.mk(1489159267, -1957806909),
                                                                                                                                 "-8408716644548688797"
                                                                                                                               ],
                                                                                                                               tl: /* [] */0
@@ -570,7 +570,7 @@ var random_data = {
                                                                                                                             tl: {
                                                                                                                               hd: {
                                                                                                                                 hd: [
-                                                                                                                                  Caml_int64.mk(-573272148, 2035600198),
+                                                                                                                                  /* @__PURE__ */Caml_int64.mk(-573272148, 2035600198),
                                                                                                                                   "8742836281862819756"
                                                                                                                                 ],
                                                                                                                                 tl: /* [] */0
@@ -578,7 +578,7 @@ var random_data = {
                                                                                                                               tl: {
                                                                                                                                 hd: {
                                                                                                                                   hd: [
-                                                                                                                                    Caml_int64.mk(573272148, -2035600199),
+                                                                                                                                    /* @__PURE__ */Caml_int64.mk(573272148, -2035600199),
                                                                                                                                     "-8742836281862819756"
                                                                                                                                   ],
                                                                                                                                   tl: /* [] */0
@@ -586,7 +586,7 @@ var random_data = {
                                                                                                                                 tl: {
                                                                                                                                   hd: {
                                                                                                                                     hd: [
-                                                                                                                                      Caml_int64.mk(-1707233215, 1979020711),
+                                                                                                                                      /* @__PURE__ */Caml_int64.mk(-1707233215, 1979020711),
                                                                                                                                       "8499829234439401537"
                                                                                                                                     ],
                                                                                                                                     tl: /* [] */0
@@ -594,7 +594,7 @@ var random_data = {
                                                                                                                                   tl: {
                                                                                                                                     hd: {
                                                                                                                                       hd: [
-                                                                                                                                        Caml_int64.mk(1707233215, -1979020712),
+                                                                                                                                        /* @__PURE__ */Caml_int64.mk(1707233215, -1979020712),
                                                                                                                                         "-8499829234439401537"
                                                                                                                                       ],
                                                                                                                                       tl: /* [] */0
@@ -602,7 +602,7 @@ var random_data = {
                                                                                                                                     tl: {
                                                                                                                                       hd: {
                                                                                                                                         hd: [
-                                                                                                                                          Caml_int64.mk(814703363, 1938132066),
+                                                                                                                                          /* @__PURE__ */Caml_int64.mk(814703363, 1938132066),
                                                                                                                                           "8324213839613616899"
                                                                                                                                         ],
                                                                                                                                         tl: /* [] */0
@@ -610,7 +610,7 @@ var random_data = {
                                                                                                                                       tl: {
                                                                                                                                         hd: {
                                                                                                                                           hd: [
-                                                                                                                                            Caml_int64.mk(-814703363, -1938132067),
+                                                                                                                                            /* @__PURE__ */Caml_int64.mk(-814703363, -1938132067),
                                                                                                                                             "-8324213839613616899"
                                                                                                                                           ],
                                                                                                                                           tl: /* [] */0
@@ -618,7 +618,7 @@ var random_data = {
                                                                                                                                         tl: {
                                                                                                                                           hd: {
                                                                                                                                             hd: [
-                                                                                                                                              Caml_int64.mk(100663039, 2121879728),
+                                                                                                                                              /* @__PURE__ */Caml_int64.mk(100663039, 2121879728),
                                                                                                                                               "9113404037906038527"
                                                                                                                                             ],
                                                                                                                                             tl: /* [] */0
@@ -626,7 +626,7 @@ var random_data = {
                                                                                                                                           tl: {
                                                                                                                                             hd: {
                                                                                                                                               hd: [
-                                                                                                                                                Caml_int64.mk(-100663039, -2121879729),
+                                                                                                                                                /* @__PURE__ */Caml_int64.mk(-100663039, -2121879729),
                                                                                                                                                 "-9113404037906038527"
                                                                                                                                               ],
                                                                                                                                               tl: /* [] */0
@@ -634,7 +634,7 @@ var random_data = {
                                                                                                                                             tl: {
                                                                                                                                               hd: {
                                                                                                                                                 hd: [
-                                                                                                                                                  Caml_int64.mk(1821275721, 2078127307),
+                                                                                                                                                  /* @__PURE__ */Caml_int64.mk(1821275721, 2078127307),
                                                                                                                                                   "8925488822310827593"
                                                                                                                                                 ],
                                                                                                                                                 tl: /* [] */0
@@ -642,7 +642,7 @@ var random_data = {
                                                                                                                                               tl: {
                                                                                                                                                 hd: {
                                                                                                                                                   hd: [
-                                                                                                                                                    Caml_int64.mk(-1821275721, -2078127308),
+                                                                                                                                                    /* @__PURE__ */Caml_int64.mk(-1821275721, -2078127308),
                                                                                                                                                     "-8925488822310827593"
                                                                                                                                                   ],
                                                                                                                                                   tl: /* [] */0
@@ -650,7 +650,7 @@ var random_data = {
                                                                                                                                                 tl: {
                                                                                                                                                   hd: {
                                                                                                                                                     hd: [
-                                                                                                                                                      Caml_int64.mk(221520981, 2113685321),
+                                                                                                                                                      /* @__PURE__ */Caml_int64.mk(221520981, 2113685321),
                                                                                                                                                       "9078209327951782997"
                                                                                                                                                     ],
                                                                                                                                                     tl: /* [] */0
@@ -658,7 +658,7 @@ var random_data = {
                                                                                                                                                   tl: {
                                                                                                                                                     hd: {
                                                                                                                                                       hd: [
-                                                                                                                                                        Caml_int64.mk(-221520981, -2113685322),
+                                                                                                                                                        /* @__PURE__ */Caml_int64.mk(-221520981, -2113685322),
                                                                                                                                                         "-9078209327951782997"
                                                                                                                                                       ],
                                                                                                                                                       tl: /* [] */0
@@ -666,7 +666,7 @@ var random_data = {
                                                                                                                                                     tl: {
                                                                                                                                                       hd: {
                                                                                                                                                         hd: [
-                                                                                                                                                          Caml_int64.mk(76350484, 2045429685),
+                                                                                                                                                          /* @__PURE__ */Caml_int64.mk(76350484, 2045429685),
                                                                                                                                                           "8785053603418932244"
                                                                                                                                                         ],
                                                                                                                                                         tl: /* [] */0
@@ -674,7 +674,7 @@ var random_data = {
                                                                                                                                                       tl: {
                                                                                                                                                         hd: {
                                                                                                                                                           hd: [
-                                                                                                                                                            Caml_int64.mk(-76350484, -2045429686),
+                                                                                                                                                            /* @__PURE__ */Caml_int64.mk(-76350484, -2045429686),
                                                                                                                                                             "-8785053603418932244"
                                                                                                                                                           ],
                                                                                                                                                           tl: /* [] */0
@@ -682,7 +682,7 @@ var random_data = {
                                                                                                                                                         tl: {
                                                                                                                                                           hd: {
                                                                                                                                                             hd: [
-                                                                                                                                                              Caml_int64.mk(-482197705, 1968718580),
+                                                                                                                                                              /* @__PURE__ */Caml_int64.mk(-482197705, 1968718580),
                                                                                                                                                               "8455581919940329271"
                                                                                                                                                             ],
                                                                                                                                                             tl: /* [] */0
@@ -690,7 +690,7 @@ var random_data = {
                                                                                                                                                           tl: {
                                                                                                                                                             hd: {
                                                                                                                                                               hd: [
-                                                                                                                                                                Caml_int64.mk(482197705, -1968718581),
+                                                                                                                                                                /* @__PURE__ */Caml_int64.mk(482197705, -1968718581),
                                                                                                                                                                 "-8455581919940329271"
                                                                                                                                                               ],
                                                                                                                                                               tl: /* [] */0
@@ -698,7 +698,7 @@ var random_data = {
                                                                                                                                                             tl: {
                                                                                                                                                               hd: {
                                                                                                                                                                 hd: [
-                                                                                                                                                                  Caml_int64.mk(-659366784, 2085192963),
+                                                                                                                                                                  /* @__PURE__ */Caml_int64.mk(-659366784, 2085192963),
                                                                                                                                                                   "8955835585569938560"
                                                                                                                                                                 ],
                                                                                                                                                                 tl: /* [] */0
@@ -706,7 +706,7 @@ var random_data = {
                                                                                                                                                               tl: {
                                                                                                                                                                 hd: {
                                                                                                                                                                   hd: [
-                                                                                                                                                                    Caml_int64.mk(659366784, -2085192964),
+                                                                                                                                                                    /* @__PURE__ */Caml_int64.mk(659366784, -2085192964),
                                                                                                                                                                     "-8955835585569938560"
                                                                                                                                                                   ],
                                                                                                                                                                   tl: /* [] */0
@@ -714,7 +714,7 @@ var random_data = {
                                                                                                                                                                 tl: {
                                                                                                                                                                   hd: {
                                                                                                                                                                     hd: [
-                                                                                                                                                                      Caml_int64.mk(891163075, 2105970746),
+                                                                                                                                                                      /* @__PURE__ */Caml_int64.mk(891163075, 2105970746),
                                                                                                                                                                       "9045075481293885891"
                                                                                                                                                                     ],
                                                                                                                                                                     tl: /* [] */0
@@ -722,7 +722,7 @@ var random_data = {
                                                                                                                                                                   tl: {
                                                                                                                                                                     hd: {
                                                                                                                                                                       hd: [
-                                                                                                                                                                        Caml_int64.mk(-891163075, -2105970747),
+                                                                                                                                                                        /* @__PURE__ */Caml_int64.mk(-891163075, -2105970747),
                                                                                                                                                                         "-9045075481293885891"
                                                                                                                                                                       ],
                                                                                                                                                                       tl: /* [] */0
@@ -730,7 +730,7 @@ var random_data = {
                                                                                                                                                                     tl: {
                                                                                                                                                                       hd: {
                                                                                                                                                                         hd: [
-                                                                                                                                                                          Caml_int64.mk(1745967587, 1979240942),
+                                                                                                                                                                          /* @__PURE__ */Caml_int64.mk(1745967587, 1979240942),
                                                                                                                                                                           "8500775118540200419"
                                                                                                                                                                         ],
                                                                                                                                                                         tl: /* [] */0
@@ -738,7 +738,7 @@ var random_data = {
                                                                                                                                                                       tl: {
                                                                                                                                                                         hd: {
                                                                                                                                                                           hd: [
-                                                                                                                                                                            Caml_int64.mk(-1745967587, -1979240943),
+                                                                                                                                                                            /* @__PURE__ */Caml_int64.mk(-1745967587, -1979240943),
                                                                                                                                                                             "-8500775118540200419"
                                                                                                                                                                           ],
                                                                                                                                                                           tl: /* [] */0
@@ -746,7 +746,7 @@ var random_data = {
                                                                                                                                                                         tl: {
                                                                                                                                                                           hd: {
                                                                                                                                                                             hd: [
-                                                                                                                                                                              Caml_int64.mk(-1726605174, 2128838238),
+                                                                                                                                                                              /* @__PURE__ */Caml_int64.mk(-1726605174, 2128838238),
                                                                                                                                                                               "9143290613252626570"
                                                                                                                                                                             ],
                                                                                                                                                                             tl: /* [] */0
@@ -754,7 +754,7 @@ var random_data = {
                                                                                                                                                                           tl: {
                                                                                                                                                                             hd: {
                                                                                                                                                                               hd: [
-                                                                                                                                                                                Caml_int64.mk(1726605174, -2128838239),
+                                                                                                                                                                                /* @__PURE__ */Caml_int64.mk(1726605174, -2128838239),
                                                                                                                                                                                 "-9143290613252626570"
                                                                                                                                                                               ],
                                                                                                                                                                               tl: /* [] */0
@@ -762,7 +762,7 @@ var random_data = {
                                                                                                                                                                             tl: {
                                                                                                                                                                               hd: {
                                                                                                                                                                                 hd: [
-                                                                                                                                                                                  Caml_int64.mk(-1163315390, 2031412573),
+                                                                                                                                                                                  /* @__PURE__ */Caml_int64.mk(-1163315390, 2031412573),
                                                                                                                                                                                   "8724850568849864514"
                                                                                                                                                                                 ],
                                                                                                                                                                                 tl: /* [] */0
@@ -770,7 +770,7 @@ var random_data = {
                                                                                                                                                                               tl: {
                                                                                                                                                                                 hd: {
                                                                                                                                                                                   hd: [
-                                                                                                                                                                                    Caml_int64.mk(1163315390, -2031412574),
+                                                                                                                                                                                    /* @__PURE__ */Caml_int64.mk(1163315390, -2031412574),
                                                                                                                                                                                     "-8724850568849864514"
                                                                                                                                                                                   ],
                                                                                                                                                                                   tl: /* [] */0
@@ -778,7 +778,7 @@ var random_data = {
                                                                                                                                                                                 tl: {
                                                                                                                                                                                   hd: {
                                                                                                                                                                                     hd: [
-                                                                                                                                                                                      Caml_int64.mk(-1030126896, 2134043448),
+                                                                                                                                                                                      /* @__PURE__ */Caml_int64.mk(-1030126896, 2134043448),
                                                                                                                                                                                       "9165646820667917008"
                                                                                                                                                                                     ],
                                                                                                                                                                                     tl: /* [] */0
@@ -786,7 +786,7 @@ var random_data = {
                                                                                                                                                                                   tl: {
                                                                                                                                                                                     hd: {
                                                                                                                                                                                       hd: [
-                                                                                                                                                                                        Caml_int64.mk(1030126896, -2134043449),
+                                                                                                                                                                                        /* @__PURE__ */Caml_int64.mk(1030126896, -2134043449),
                                                                                                                                                                                         "-9165646820667917008"
                                                                                                                                                                                       ],
                                                                                                                                                                                       tl: /* [] */0
@@ -794,7 +794,7 @@ var random_data = {
                                                                                                                                                                                     tl: {
                                                                                                                                                                                       hd: {
                                                                                                                                                                                         hd: [
-                                                                                                                                                                                          Caml_int64.mk(-1996229624, 2053645659),
+                                                                                                                                                                                          /* @__PURE__ */Caml_int64.mk(-1996229624, 2053645659),
                                                                                                                                                                                           "8820340945276105736"
                                                                                                                                                                                         ],
                                                                                                                                                                                         tl: /* [] */0
@@ -802,7 +802,7 @@ var random_data = {
                                                                                                                                                                                       tl: {
                                                                                                                                                                                         hd: {
                                                                                                                                                                                           hd: [
-                                                                                                                                                                                            Caml_int64.mk(1996229624, -2053645660),
+                                                                                                                                                                                            /* @__PURE__ */Caml_int64.mk(1996229624, -2053645660),
                                                                                                                                                                                             "-8820340945276105736"
                                                                                                                                                                                           ],
                                                                                                                                                                                           tl: /* [] */0
@@ -810,7 +810,7 @@ var random_data = {
                                                                                                                                                                                         tl: {
                                                                                                                                                                                           hd: {
                                                                                                                                                                                             hd: [
-                                                                                                                                                                                              Caml_int64.mk(-2129989589, 2121544293),
+                                                                                                                                                                                              /* @__PURE__ */Caml_int64.mk(-2129989589, 2121544293),
                                                                                                                                                                                               "9111963357615419435"
                                                                                                                                                                                             ],
                                                                                                                                                                                             tl: /* [] */0
@@ -818,7 +818,7 @@ var random_data = {
                                                                                                                                                                                           tl: {
                                                                                                                                                                                             hd: {
                                                                                                                                                                                               hd: [
-                                                                                                                                                                                                Caml_int64.mk(2129989589, -2121544294),
+                                                                                                                                                                                                /* @__PURE__ */Caml_int64.mk(2129989589, -2121544294),
                                                                                                                                                                                                 "-9111963357615419435"
                                                                                                                                                                                               ],
                                                                                                                                                                                               tl: /* [] */0
@@ -826,7 +826,7 @@ var random_data = {
                                                                                                                                                                                             tl: {
                                                                                                                                                                                               hd: {
                                                                                                                                                                                                 hd: [
-                                                                                                                                                                                                  Caml_int64.mk(-54067016, 2143847823),
+                                                                                                                                                                                                  /* @__PURE__ */Caml_int64.mk(-54067016, 2143847823),
                                                                                                                                                                                                   "9207756291626696888"
                                                                                                                                                                                                 ],
                                                                                                                                                                                                 tl: /* [] */0
@@ -834,7 +834,7 @@ var random_data = {
                                                                                                                                                                                               tl: {
                                                                                                                                                                                                 hd: {
                                                                                                                                                                                                   hd: [
-                                                                                                                                                                                                    Caml_int64.mk(54067016, -2143847824),
+                                                                                                                                                                                                    /* @__PURE__ */Caml_int64.mk(54067016, -2143847824),
                                                                                                                                                                                                     "-9207756291626696888"
                                                                                                                                                                                                   ],
                                                                                                                                                                                                   tl: /* [] */0
@@ -842,7 +842,7 @@ var random_data = {
                                                                                                                                                                                                 tl: {
                                                                                                                                                                                                   hd: {
                                                                                                                                                                                                     hd: [
-                                                                                                                                                                                                      Caml_int64.mk(1548719224, 2080628135),
+                                                                                                                                                                                                      /* @__PURE__ */Caml_int64.mk(1548719224, 2080628135),
                                                                                                                                                                                                       "8936229796511192184"
                                                                                                                                                                                                     ],
                                                                                                                                                                                                     tl: /* [] */0
@@ -850,7 +850,7 @@ var random_data = {
                                                                                                                                                                                                   tl: {
                                                                                                                                                                                                     hd: {
                                                                                                                                                                                                       hd: [
-                                                                                                                                                                                                        Caml_int64.mk(-1548719224, -2080628136),
+                                                                                                                                                                                                        /* @__PURE__ */Caml_int64.mk(-1548719224, -2080628136),
                                                                                                                                                                                                         "-8936229796511192184"
                                                                                                                                                                                                       ],
                                                                                                                                                                                                       tl: /* [] */0
@@ -858,7 +858,7 @@ var random_data = {
                                                                                                                                                                                                     tl: {
                                                                                                                                                                                                       hd: {
                                                                                                                                                                                                         hd: [
-                                                                                                                                                                                                          Caml_int64.mk(1066249560, 2061191282),
+                                                                                                                                                                                                          /* @__PURE__ */Caml_int64.mk(1066249560, 2061191282),
                                                                                                                                                                                                           "8852749148056563032"
                                                                                                                                                                                                         ],
                                                                                                                                                                                                         tl: /* [] */0
@@ -866,7 +866,7 @@ var random_data = {
                                                                                                                                                                                                       tl: {
                                                                                                                                                                                                         hd: {
                                                                                                                                                                                                           hd: [
-                                                                                                                                                                                                            Caml_int64.mk(-1066249560, -2061191283),
+                                                                                                                                                                                                            /* @__PURE__ */Caml_int64.mk(-1066249560, -2061191283),
                                                                                                                                                                                                             "-8852749148056563032"
                                                                                                                                                                                                           ],
                                                                                                                                                                                                           tl: /* [] */0
@@ -1000,9 +1000,9 @@ Belt_List.forEach(random_data, (function (u) {
             };
       }));
 
-eq("File \"int64_string_test.ml\", line 164, characters 7-14", Caml_int64.to_string(Caml_int64.mk(1, -2097152)), "-9007199254740991");
+eq("File \"int64_string_test.ml\", line 164, characters 7-14", Caml_int64.to_string(/* @__PURE__ */Caml_int64.mk(1, -2097152)), "-9007199254740991");
 
-eq("File \"int64_string_test.ml\", line 165, characters 7-14", Caml_int64.to_string(Caml_int64.mk(0, -2097152)), "-9007199254740992");
+eq("File \"int64_string_test.ml\", line 165, characters 7-14", Caml_int64.to_string(/* @__PURE__ */Caml_int64.mk(0, -2097152)), "-9007199254740992");
 
 Mt.from_pair_suites("File \"int64_string_test.ml\", line 166, characters 23-30", suites.contents);
 

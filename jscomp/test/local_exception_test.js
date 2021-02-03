@@ -2,7 +2,7 @@
 
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var A = Caml_exceptions.create("Local_exception_test.A");
+var A = /* @__PURE__ */Caml_exceptions.create("Local_exception_test.A");
 
 var v = {
   RE_EXN_ID: A,
@@ -10,13 +10,13 @@ var v = {
   _2: true
 };
 
-var B = Caml_exceptions.create("Local_exception_test.B");
+var B = /* @__PURE__ */Caml_exceptions.create("Local_exception_test.B");
 
 var u = {
   RE_EXN_ID: B
 };
 
-var D = Caml_exceptions.create("Local_exception_test.D");
+var D = /* @__PURE__ */Caml_exceptions.create("Local_exception_test.D");
 
 var d = {
   RE_EXN_ID: D,

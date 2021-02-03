@@ -2,7 +2,7 @@
 
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var A = Caml_exceptions.create("Test_exception_escape.N.A");
+var A = /* @__PURE__ */Caml_exceptions.create("Test_exception_escape.N.A");
 
 var f;
 

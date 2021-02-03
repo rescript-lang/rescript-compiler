@@ -1436,7 +1436,7 @@ var String_set = {
   of_list: of_list
 };
 
-var Cycle = Caml_exceptions.create("Topsort_test.Cycle");
+var Cycle = /* @__PURE__ */Caml_exceptions.create("Topsort_test.Cycle");
 
 function pathsort(graph) {
   var visited = {

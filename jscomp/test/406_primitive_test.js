@@ -27,7 +27,7 @@ eq("File \"406_primitive_test.ml\", line 29, characters 6-13", backend_type, /* 
     });
 
 function f(param) {
-  var A = Caml_exceptions.create("A");
+  var A = /* @__PURE__ */Caml_exceptions.create("A");
   try {
     for(var i = 0; i <= 200; ++i){
       if (i === 10) {

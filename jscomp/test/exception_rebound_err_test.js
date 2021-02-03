@@ -31,11 +31,11 @@ function eq(loc, x, y) {
   
 }
 
-var A = Caml_exceptions.create("Exception_rebound_err_test.A");
+var A = /* @__PURE__ */Caml_exceptions.create("Exception_rebound_err_test.A");
 
-var B = Caml_exceptions.create("Exception_rebound_err_test.B");
+var B = /* @__PURE__ */Caml_exceptions.create("Exception_rebound_err_test.B");
 
-var C = Caml_exceptions.create("Exception_rebound_err_test.C");
+var C = /* @__PURE__ */Caml_exceptions.create("Exception_rebound_err_test.C");
 
 function test_js_error4(param) {
   try {

@@ -16,9 +16,9 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var A = Caml_exceptions.create("Exception_def.A");
+var A = /* @__PURE__ */Caml_exceptions.create("Exception_def.A");
 
-var A$1 = Caml_exceptions.create("Exception_def.U.A");
+var A$1 = /* @__PURE__ */Caml_exceptions.create("Exception_def.U.A");
 
 var U = {
   A: A$1
@@ -26,15 +26,15 @@ var U = {
 
 var H = {};
 
-var Bx = Caml_exceptions.create("Exception_def.Bx");
+var Bx = /* @__PURE__ */Caml_exceptions.create("Exception_def.Bx");
 
 var u = {
   RE_EXN_ID: Bx
 };
 
-var Ax = Caml_exceptions.create("Exception_def.Ax");
+var Ax = /* @__PURE__ */Caml_exceptions.create("Exception_def.Ax");
 
-var XXX = Caml_exceptions.create("Exception_def.XXX");
+var XXX = /* @__PURE__ */Caml_exceptions.create("Exception_def.XXX");
 
 var Aa = "Match_failure";
 
@@ -51,9 +51,9 @@ var v = {
 
 var H0 = "Not_found";
 
-var H1 = Caml_exceptions.create("Exception_def.H1");
+var H1 = /* @__PURE__ */Caml_exceptions.create("Exception_def.H1");
 
-var H2 = Caml_exceptions.create("Exception_def.H2");
+var H2 = /* @__PURE__ */Caml_exceptions.create("Exception_def.H2");
 
 var h2 = {
   RE_EXN_ID: H2

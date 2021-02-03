@@ -19,9 +19,9 @@ function f(match) {
   
 }
 
-var A = Caml_exceptions.create("Exn_error_pattern.A");
+var A = /* @__PURE__ */Caml_exceptions.create("Exn_error_pattern.A");
 
-var B = Caml_exceptions.create("Exn_error_pattern.B");
+var B = /* @__PURE__ */Caml_exceptions.create("Exn_error_pattern.B");
 
 function g(match) {
   if (Caml_exceptions.caml_is_extension(match)) {

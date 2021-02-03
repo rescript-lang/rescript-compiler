@@ -101,15 +101,15 @@ function rollback_path(subst, p) {
   }
 }
 
-var EA1 = Caml_exceptions.create("Variant.EA1");
+var EA1 = /* @__PURE__ */Caml_exceptions.create("Variant.EA1");
 
-var EA2 = Caml_exceptions.create("Variant.EA2");
+var EA2 = /* @__PURE__ */Caml_exceptions.create("Variant.EA2");
 
-var EB = Caml_exceptions.create("Variant.EB");
+var EB = /* @__PURE__ */Caml_exceptions.create("Variant.EB");
 
-var EC = Caml_exceptions.create("Variant.EC");
+var EC = /* @__PURE__ */Caml_exceptions.create("Variant.EC");
 
-var ED = Caml_exceptions.create("Variant.ED");
+var ED = /* @__PURE__ */Caml_exceptions.create("Variant.ED");
 
 function fooExn(f) {
   try {

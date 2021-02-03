@@ -4,7 +4,7 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var Empty = Caml_exceptions.create("Queue_402.Empty");
+var Empty = /* @__PURE__ */Caml_exceptions.create("Queue_402.Empty");
 
 function create(param) {
   return {

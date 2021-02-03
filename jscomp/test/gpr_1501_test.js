@@ -30,9 +30,9 @@ function eq(loc, x, y) {
   
 }
 
-var A = Caml_exceptions.create("Gpr_1501_test.A");
+var A = /* @__PURE__ */Caml_exceptions.create("Gpr_1501_test.A");
 
-var B = Caml_exceptions.create("Gpr_1501_test.B");
+var B = /* @__PURE__ */Caml_exceptions.create("Gpr_1501_test.B");
 
 eq("File \"gpr_1501_test.ml\", line 15, characters 7-14", "Not_found", Printexc.to_string({
           RE_EXN_ID: "Not_found"

@@ -86,11 +86,11 @@ if (exit === 1) {
         }));
 }
 
-var A = Caml_exceptions.create("Js_exception_catch_test.A");
+var A = /* @__PURE__ */Caml_exceptions.create("Js_exception_catch_test.A");
 
-var B = Caml_exceptions.create("Js_exception_catch_test.B");
+var B = /* @__PURE__ */Caml_exceptions.create("Js_exception_catch_test.B");
 
-var C = Caml_exceptions.create("Js_exception_catch_test.C");
+var C = /* @__PURE__ */Caml_exceptions.create("Js_exception_catch_test.C");
 
 function test(f) {
   try {

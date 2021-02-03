@@ -193,9 +193,9 @@ function max_int_2(a, b) {
   }
 }
 
-var Height_invariant_broken = Caml_exceptions.create("Set_gen.Height_invariant_broken");
+var Height_invariant_broken = /* @__PURE__ */Caml_exceptions.create("Set_gen.Height_invariant_broken");
 
-var Height_diff_borken = Caml_exceptions.create("Set_gen.Height_diff_borken");
+var Height_diff_borken = /* @__PURE__ */Caml_exceptions.create("Set_gen.Height_diff_borken");
 
 function check_height_and_diff(param) {
   if (!param) {

@@ -2085,7 +2085,7 @@ var int64_suites_1 = {
                               _3: /* End_of_format */0
                             },
                             _1: "%Ld"
-                          }), Caml_int64.mk(3, 0)),
+                          }), /* @__PURE__ */Caml_int64.mk(3, 0)),
                   _1: "3"
                 };
         })
@@ -2105,7 +2105,7 @@ var int64_suites_1 = {
                                 _3: /* End_of_format */0
                               },
                               _1: "%Lx"
-                            }), Caml_int64.mk(33, 0)),
+                            }), /* @__PURE__ */Caml_int64.mk(33, 0)),
                     _1: "21"
                   };
           })
@@ -2125,7 +2125,7 @@ var int64_suites_1 = {
                                   _3: /* End_of_format */0
                                 },
                                 _1: "%Li"
-                              }), Caml_int64.mk(33, 0)),
+                              }), /* @__PURE__ */Caml_int64.mk(33, 0)),
                       _1: "33"
                     };
             })
@@ -2145,7 +2145,7 @@ var int64_suites_1 = {
                                     _3: /* End_of_format */0
                                   },
                                   _1: "%LX"
-                                }), Caml_int64.mk(44, 0)),
+                                }), /* @__PURE__ */Caml_int64.mk(44, 0)),
                         _1: "2C"
                       };
               })
@@ -2165,7 +2165,7 @@ var int64_suites_1 = {
                                       _3: /* End_of_format */0
                                     },
                                     _1: "%Lx"
-                                  }), Caml_int64.mk(44, 0)),
+                                  }), /* @__PURE__ */Caml_int64.mk(44, 0)),
                           _1: "2c"
                         };
                 })
@@ -2188,7 +2188,7 @@ var int64_suites_1 = {
                                         _3: /* End_of_format */0
                                       },
                                       _1: "%*Lx"
-                                    }), 5, Caml_int64.mk(44, 0)),
+                                    }), 5, /* @__PURE__ */Caml_int64.mk(44, 0)),
                             _1: "   2c"
                           };
                   })
@@ -2199,7 +2199,7 @@ var int64_suites_1 = {
                   (function (param) {
                       return {
                               TAG: /* Eq */0,
-                              _0: Caml_int64.to_string(Caml_int64.mk(3333, 0)),
+                              _0: Caml_int64.to_string(/* @__PURE__ */Caml_int64.mk(3333, 0)),
                               _1: "3333"
                             };
                     })
@@ -2229,7 +2229,7 @@ var int64_suites_1 = {
                                             }
                                           },
                                           _1: "%Ld%018Ld"
-                                        }), Caml_int64.mk(3, 0), Caml_int64.mk(3, 0)),
+                                        }), /* @__PURE__ */Caml_int64.mk(3, 0), /* @__PURE__ */Caml_int64.mk(3, 0)),
                                 _1: "3000000000000000003"
                               };
                       })
@@ -2259,7 +2259,7 @@ var int64_suites_1 = {
                                               }
                                             },
                                             _1: "%Ld%018Ld"
-                                          }), Caml_int64.mk(1548746752, 107288), Caml_int64.zero),
+                                          }), /* @__PURE__ */Caml_int64.mk(1548746752, 107288), Caml_int64.zero),
                                   _1: "460800000000000000000000000000000"
                                 };
                         })
@@ -2319,7 +2319,7 @@ var int64_suites_1 = {
                                                     _3: /* End_of_format */0
                                                   },
                                                   _1: "%Ld"
-                                                }), Caml_int64.mk(-11111, -1)),
+                                                }), /* @__PURE__ */Caml_int64.mk(-11111, -1)),
                                         _1: "-11111"
                                       };
                               })
@@ -2439,7 +2439,7 @@ var int64_suites_1 = {
                                                                 _3: /* End_of_format */0
                                                               },
                                                               _1: "%Lu"
-                                                            }), Caml_int64.mk(-100, -1)),
+                                                            }), /* @__PURE__ */Caml_int64.mk(-100, -1)),
                                                     _1: "18446744073709551516"
                                                   };
                                           })
@@ -2479,7 +2479,7 @@ var int64_suites_1 = {
                                                                     _3: /* End_of_format */0
                                                                   },
                                                                   _1: "%Lu"
-                                                                }), Caml_int64.mk(-10000, -1)),
+                                                                }), /* @__PURE__ */Caml_int64.mk(-10000, -1)),
                                                         _1: "18446744073709541616"
                                                       };
                                               })
@@ -2543,7 +2543,7 @@ var int64_suites_1 = {
                                                                           _3: /* End_of_format */0
                                                                         },
                                                                         _1: "%12Lx"
-                                                                      }), Caml_int64.mk(3, 0)),
+                                                                      }), /* @__PURE__ */Caml_int64.mk(3, 0)),
                                                               _1: "           3"
                                                             };
                                                     })
@@ -2563,7 +2563,7 @@ var int64_suites_1 = {
                                                                             _3: /* End_of_format */0
                                                                           },
                                                                           _1: "%LX"
-                                                                        }), Caml_int64.mk(1163551168, 1859194407)),
+                                                                        }), /* @__PURE__ */Caml_int64.mk(1163551168, 1859194407)),
                                                                 _1: "6ED10E27455A61C0"
                                                               };
                                                       })
@@ -2587,7 +2587,7 @@ var int64_suites_1 = {
                                                                               }
                                                                             },
                                                                             _1: "%Ld\n"
-                                                                          }), Caml_int64.mk(32, 0)),
+                                                                          }), /* @__PURE__ */Caml_int64.mk(32, 0)),
                                                                   _1: "32\n"
                                                                 };
                                                         })
@@ -2612,7 +2612,7 @@ var int64_suites_1 = {
                                                                                   }
                                                                                 },
                                                                                 _1: "%Ld\n"
-                                                                              }), Caml_int64.mk(32, 0)), $$Buffer.contents(buf)),
+                                                                              }), /* @__PURE__ */Caml_int64.mk(32, 0)), $$Buffer.contents(buf)),
                                                                     _1: "32\n"
                                                                   };
                                                           })
@@ -2657,23 +2657,23 @@ var of_string_data = [
     "0"
   ],
   [
-    Caml_int64.mk(3, 0),
+    /* @__PURE__ */Caml_int64.mk(3, 0),
     "3"
   ],
   [
-    Caml_int64.mk(33, 0),
+    /* @__PURE__ */Caml_int64.mk(33, 0),
     "33"
   ],
   [
-    Caml_int64.mk(333, 0),
+    /* @__PURE__ */Caml_int64.mk(333, 0),
     "33_3"
   ],
   [
-    Caml_int64.mk(33333, 0),
+    /* @__PURE__ */Caml_int64.mk(33333, 0),
     "33_33_3"
   ],
   [
-    Caml_int64.mk(-1674115755, 77),
+    /* @__PURE__ */Caml_int64.mk(-1674115755, 77),
     "333333333333"
   ],
   [
@@ -2681,7 +2681,7 @@ var of_string_data = [
     "0xffff_ffff_ffff_ffff"
   ],
   [
-    Caml_int64.mk(113, 0),
+    /* @__PURE__ */Caml_int64.mk(113, 0),
     "0b01110001"
   ],
   [
@@ -2756,9 +2756,9 @@ var float_suites = {
   tl: /* [] */0
 };
 
-var hh = Caml_int64.mk(-858993460, 214748364);
+var hh = /* @__PURE__ */Caml_int64.mk(-858993460, 214748364);
 
-var hhh = Caml_int64.mk(0, 268435456);
+var hhh = /* @__PURE__ */Caml_int64.mk(0, 268435456);
 
 exports.of_string = of_string;
 exports.from_float_of_string = from_float_of_string;

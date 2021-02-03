@@ -17,7 +17,7 @@ Curry._1(Printf.printf(/* Format */{
             }
           },
           _1: "%Ld\n"
-        }), Caml_int64.mk(32, 0));
+        }), /* @__PURE__ */Caml_int64.mk(32, 0));
 
 Printf.printf(/* Format */{
       _0: {

@@ -147,7 +147,7 @@ function compare(loc1, loc2) {
   }
 }
 
-var $$Error = Caml_exceptions.create("Flow_parser_reg_test.Parse_error.Error");
+var $$Error = /* @__PURE__ */Caml_exceptions.create("Flow_parser_reg_test.Parse_error.Error");
 
 function error(str) {
   if (typeof str === "number") {
@@ -2120,7 +2120,7 @@ function illegal_number(env, lexbuf, word, token) {
         ];
 }
 
-var No_good = Caml_exceptions.create("Flow_parser_reg_test.Lexer_flow.FloatOfString.No_good");
+var No_good = /* @__PURE__ */Caml_exceptions.create("Flow_parser_reg_test.Lexer_flow.FloatOfString.No_good");
 
 function eat(f) {
   var match = f.todo;
@@ -6277,7 +6277,7 @@ function contextual(env, str) {
   return token$3(env);
 }
 
-var Rollback = Caml_exceptions.create("Flow_parser_reg_test.Parser_env.Try.Rollback");
+var Rollback = /* @__PURE__ */Caml_exceptions.create("Flow_parser_reg_test.Parser_env.Try.Rollback");
 
 function save_state(env) {
   var orig_token_sink = env.token_sink.contents;

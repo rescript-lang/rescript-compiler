@@ -95,6 +95,12 @@ val runtime_call :
   t list -> (* args *)
   t
 
+val pure_runtime_call : 
+  string -> (* module_name *)
+  string -> (* fn_name *)
+  t list -> (* args *)
+  t
+
 val runtime_ref : 
   string -> 
   string -> 

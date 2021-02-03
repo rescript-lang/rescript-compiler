@@ -3239,9 +3239,9 @@ function get(t, i) {
   return $$String.sub(t.s, p1, match[1] - p1 | 0);
 }
 
-var Parse_error = Caml_exceptions.create("Parse_error");
+var Parse_error = /* @__PURE__ */Caml_exceptions.create("Parse_error");
 
-var Not_supported = Caml_exceptions.create("Not_supported");
+var Not_supported = /* @__PURE__ */Caml_exceptions.create("Not_supported");
 
 function posix_class_of_string(class_) {
   switch (class_) {

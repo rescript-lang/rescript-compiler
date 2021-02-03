@@ -3,7 +3,7 @@
 var Exception_def = require("./exception_def.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var E = Caml_exceptions.create("Exception_rebind_test.A.E");
+var E = /* @__PURE__ */Caml_exceptions.create("Exception_rebind_test.A.E");
 
 var A = {
   E: E
@@ -13,7 +13,7 @@ var B = {
   F: E
 };
 
-var A0 = Caml_exceptions.create("Exception_rebind_test.A0");
+var A0 = /* @__PURE__ */Caml_exceptions.create("Exception_rebind_test.A0");
 
 var H0 = "Invalid_argument";
 

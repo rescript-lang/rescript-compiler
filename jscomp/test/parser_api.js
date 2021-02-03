@@ -771,7 +771,7 @@ var Clflags = {
   color: color
 };
 
-var Fatal_error = Caml_exceptions.create("Parser_api.Misc.Fatal_error");
+var Fatal_error = /* @__PURE__ */Caml_exceptions.create("Parser_api.Misc.Fatal_error");
 
 function fatal_error(msg) {
   Pervasives.prerr_string(">> Fatal error: ");
@@ -2711,7 +2711,7 @@ function super_print(message, ppf, w) {
   
 }
 
-var Errors = Caml_exceptions.create("Parser_api.Warnings.Errors");
+var Errors = /* @__PURE__ */Caml_exceptions.create("Parser_api.Warnings.Errors");
 
 function check_fatal(param) {
   if (nerrors.contents <= 0) {
@@ -4083,7 +4083,7 @@ function report_exception(ppf, exn) {
   };
 }
 
-var $$Error = Caml_exceptions.create("Parser_api.Location.Error");
+var $$Error = /* @__PURE__ */Caml_exceptions.create("Parser_api.Location.Error");
 
 register_error_of_exn(function (e) {
       if (e.RE_EXN_ID === $$Error) {
@@ -6578,9 +6578,9 @@ var Ast_helper = {
   Cstr: Cstr
 };
 
-var $$Error$1 = Caml_exceptions.create("Parser_api.Syntaxerr.Error");
+var $$Error$1 = /* @__PURE__ */Caml_exceptions.create("Parser_api.Syntaxerr.Error");
 
-var Escape_error = Caml_exceptions.create("Parser_api.Syntaxerr.Escape_error");
+var Escape_error = /* @__PURE__ */Caml_exceptions.create("Parser_api.Syntaxerr.Escape_error");
 
 function prepare_error(loc) {
   switch (loc.TAG | 0) {
@@ -13812,7 +13812,7 @@ function string_of_type_directive(x) {
   }
 }
 
-var $$Error$2 = Caml_exceptions.create("Parser_api.Lexer.Error");
+var $$Error$2 = /* @__PURE__ */Caml_exceptions.create("Parser_api.Lexer.Error");
 
 function assert_same_type(lexbuf, x, y) {
   var lhs = type_of_directive(x);

@@ -1341,6 +1341,7 @@ let tl = "tl"
 let lazy_done = "LAZY_DONE"
 let lazy_val = "VAL"
 
+let pure = "@__PURE__"
 end
 module Bsb_db_decode : sig 
 #1 "bsb_db_decode.mli"

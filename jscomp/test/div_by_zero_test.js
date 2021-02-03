@@ -96,7 +96,7 @@ add([
           return {
                   TAG: /* ThrowAny */7,
                   _0: (function (param) {
-                      Caml_int64.div(Caml_int64.mk(3, 0), Caml_int64.zero);
+                      Caml_int64.div(/* @__PURE__ */Caml_int64.mk(3, 0), Caml_int64.zero);
                       
                     })
                 };
@@ -109,7 +109,7 @@ add([
           return {
                   TAG: /* ThrowAny */7,
                   _0: (function (param) {
-                      Caml_int64.mod_(Caml_int64.mk(3, 0), Caml_int64.zero);
+                      Caml_int64.mod_(/* @__PURE__ */Caml_int64.mk(3, 0), Caml_int64.zero);
                       
                     })
                 };

@@ -34,11 +34,11 @@ function hh(param) {
       };
 }
 
-var A = Caml_exceptions.create("Exception_value_test.A");
+var A = /* @__PURE__ */Caml_exceptions.create("Exception_value_test.A");
 
-var B = Caml_exceptions.create("Exception_value_test.B");
+var B = /* @__PURE__ */Caml_exceptions.create("Exception_value_test.B");
 
-var C = Caml_exceptions.create("Exception_value_test.C");
+var C = /* @__PURE__ */Caml_exceptions.create("Exception_value_test.C");
 
 var u = {
   RE_EXN_ID: A,

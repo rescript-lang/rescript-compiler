@@ -43,7 +43,7 @@ module E = Js_exp_make
    about the correctness of inlining more difficult
 *)
 let make exception_str  : J.expression = 
-  E.runtime_call Js_runtime_modules.exceptions Literals.create [exception_str]
+  E.pure_runtime_call Js_runtime_modules.exceptions Literals.create [exception_str]   
 
 
 

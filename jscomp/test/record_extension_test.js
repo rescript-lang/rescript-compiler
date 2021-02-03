@@ -18,7 +18,7 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var Inline_record = Caml_exceptions.create("Record_extension_test.Inline_record");
+var Inline_record = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.Inline_record");
 
 function f(x) {
   if (x.RE_EXN_ID === Inline_record) {
@@ -55,11 +55,11 @@ function f2_with(x) {
   }
 }
 
-var A = Caml_exceptions.create("Record_extension_test.A");
+var A = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.A");
 
-var B = Caml_exceptions.create("Record_extension_test.B");
+var B = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.B");
 
-var C = Caml_exceptions.create("Record_extension_test.C");
+var C = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.C");
 
 function u(f) {
   try {
