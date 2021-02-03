@@ -49,16 +49,16 @@ let flow_deli_offset deli =
 (* Here the loc is  the payload loc *)
 let check_flow_errors ~(loc : Location.t)
     ~offset
-    (errors : (Loc.t * Parse_error.t) list) = 
+    (errors : (Loc.t * Parse_error.t) list) : unit = 
   match errors with 
   | [] ->  ()
   | ({start ;
       _end },first_error) :: _ -> 
     let loc_start = loc.loc_start in     
-    Location.raise_errorf 
-      ~loc:{loc with 
+    Location.prerr_warning 
+      {loc with 
             loc_start = offset_pos loc_start start 
                 offset ;
             loc_end = offset_pos loc_start _end 
-                offset } "%s"
-      (Parse_error.PP.error first_error)  
+                offset } 
+      (Bs_ffi_warning (Parse_error.PP.error first_error))
