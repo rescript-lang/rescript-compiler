@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 9.0
+
 * Fix parsing of poly-var typexpr consisting of one tag-spec-first in [254](https://github.com/rescript-lang/syntax/pull/254)
 * Implement new syntax for guards on pattern match cases in [#248](https://github.com/rescript-lang/syntax/pull/248)
 * Implement intelligent breaking for poly-var type expressions in [#246](https://github.com/rescript-lang/syntax/pull/246)
