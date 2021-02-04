@@ -1,5 +1,77 @@
 `*` means  potential break changes
 
+
+# 9.0
+
+- #4933 update syntax bf6561bb5d84
+  syntax changes listed [here](https://github.com/rescript-lang/syntax/blob/master/CHANGELOG.md#90)
+- #4934 generate `@pure` annotations to help esbuild remove more dead code
+
+- #4932 #4931 turn flow syntax checking from a error into warning 103, so it can be turned off as below
+```res
+@@config({
+  flags: ["-w", "-103"],
+})
+
+%%raw(`
+if (import.meta.hot){
+  console.log('es6')
+}
+`)
+```
+The rationale is that flow could be not standard compilant so we need provide a work around, here
+`import.meta` is something new in Ecmascript
+
+- #4926 #4928 
+  *internal* changes, move jscomp/syntax to jscomp/frontend to avoid conflicts
+
+- #4924 #4927 better code generated for pattern match. 
+  Take advantage of the JS runtime, some predicates can be simplified
+
+- #4920 #4925 support external-stdlib config
+```
+"external-stdlib" : "@rescript/std"
+```
+- #4922 #4923 *breaking changes" Allow embed records in structural js objects
+
+- #4908 #4919 #4917 #4916 #4914 #4913 #4910
+  Get rid of camlp4 as a dev dependency, introduce an optimized visitor pattern
+  generator, better performance, no object usage and less dependency thanks to wasm
+
+- #4911 Relax uninterpretable attributes from error to warn to make ppx_deriving happy  
+
+- #4905 *internal* add `Js_exn.anyToExnInternal`
+
+- #4903 porting to open BSD/adJ
+
+- #4902 for stdlib es6 artifacts ship .mjs instead of .js, so that
+on the user side, if they config es6 with .mjs, it will work out of box
+
+- #4900 #4986 `'` in string literals does not need to be escaped
+
+- #4893 *internal* simplify numbers in JS IR
+
+- #4892 #4891  *internal* simplify boxed int operations
+
+- #4890 clean up constant in lambda IR, fix a subtle bug when do constant folding
+
+- #4888 #4881 support external in private block
+
+- #4882 #4884 #4887 remove nativeint, not allow literlas like `3n`
+
+- #4873 #4875 #4876 better code generation for pattern match
+
+- #4870 fix typo in uncurried error message
+
+- #4867 *internal* clean up bsb_helper
+
+# 8.4.2
+
+- #4864 #4865
+  Not install dev directory for pinned dependencies
+- #4863
+  for a package, only cmi/cmj artifact changes will trigger a rebuild 
+
 # 8.4.1
 
 - Syntax submodule upgrades from 7f5c968 to 7cc70c9
