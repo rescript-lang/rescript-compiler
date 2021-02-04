@@ -2961,7 +2961,10 @@ and parseExprBlockItem p =
     Parser.next p;
     begin match p.token with
     | Lparen ->
-      parseFirstClassModuleExpr ~startPos p
+      let expr = parseFirstClassModuleExpr ~startPos p in
+      let a = parsePrimaryExpr ~operand:expr p in
+      let expr = parseBinaryExpr ~a p 1 in
+      parseTernaryExpr expr p
     | _ ->
       let name = match p.Parser.token with
       | Uident ident ->
@@ -5558,6 +5561,9 @@ and parseModuleOrModuleTypeImplOrPackExpr ~attrs p =
   | Typ -> parseModuleTypeImpl ~attrs startPos p
   | Lparen ->
     let expr = parseFirstClassModuleExpr ~startPos p in
+    let a = parsePrimaryExpr ~operand:expr p in
+    let expr = parseBinaryExpr ~a p 1 in
+    let expr = parseTernaryExpr expr p in
     Ast_helper.Str.eval ~attrs expr
   | _ -> parseMaybeRecModuleBinding ~attrs ~startPos p
 

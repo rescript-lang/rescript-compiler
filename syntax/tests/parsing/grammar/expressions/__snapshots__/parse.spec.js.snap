@@ -470,7 +470,41 @@ let build_dispatch_table handlers =
       [@ns.namedArgLoc ]) table)
   [@ns.braces ])
 ;;(module Three)
-;;((module Three) : (module X_int))"
+;;((module Three) : (module X_int))
+;;(module Teenager).(0)
+;;((module Teenager) |. age) |. Js.log
+;;((module Teenager).(0)) |. Js.log
+;;((if ((module Teenager) |. age) |. isAdult
+    then Js.log \\"has responsibilities\\"
+    else Js.log \\"can play in the playground\\")[@ns.ternary ])
+;;((if ((module Streets).(0)) |. isExpensive
+    then Js.log \\"big money\\"
+    else Js.log \\"affordable\\")[@ns.ternary ])
+let () = ((((module Teenager) |. age) |. Js.log)[@ns.braces ])
+let () = (((module Teenager).(0))[@ns.braces ])
+let () =
+  ((if ((module Teenager) |. age) |. isAdult
+    then Js.log \\"has responsibilities\\"
+    else Js.log \\"can play in the playground\\")
+  [@ns.braces ][@ns.ternary ])
+let () =
+  ((if ((module Streets).(0)) |. isExpensive
+    then Js.log \\"big money\\"
+    else Js.log \\"affordable\\")
+  [@ns.braces ][@ns.ternary ])
+let () =
+  ((let a = 1 in
+    let b = 2 in (module Teenager).(0); ((module Teenager) |. age) |. Js.log)
+  [@ns.braces ])
+let () =
+  ((let a = 1 in
+    let b = 2 in
+    ((module Teenager) |. age) |. Js.log;
+    ((if (((module Teenager).(0)) |. age) |. isAdult
+      then Js.log \\"has responsibilities\\"
+      else Js.log \\"can play in the playground\\")
+    [@ns.ternary ]))
+  [@ns.braces ])"
 `;
 
 exports[`float.js 1`] = `
