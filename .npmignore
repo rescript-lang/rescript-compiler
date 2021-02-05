@@ -41,3 +41,4 @@ vendor/js_of_ocaml.bc
 syntax/
 *.log
 ninja
+ocaml-tree
