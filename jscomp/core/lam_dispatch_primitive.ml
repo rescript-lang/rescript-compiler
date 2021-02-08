@@ -59,7 +59,7 @@ let args_const_unbox_approx_int_two (args : J.expression list) =
 *)
 let translate loc (prim_name : string) 
     (args : J.expression list) : J.expression  =
-  let call m = 
+  let [@inline] call m = 
     E.runtime_call m prim_name args in 
   begin match prim_name with 
     |  "caml_add_float" -> 
@@ -347,9 +347,9 @@ let translate loc (prim_name : string)
       end
     | "caml_int_compare"
     | "caml_int32_compare"
-
+      -> E.runtime_call Js_runtime_modules.caml_primitive 
+        "caml_int_compare" args
     | "caml_float_compare"
-
     | "caml_string_compare" 
     -> 
       call Js_runtime_modules.caml_primitive
