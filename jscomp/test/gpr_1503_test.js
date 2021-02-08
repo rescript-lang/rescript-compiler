@@ -35,7 +35,10 @@ function id(x) {
   return Caml_format.caml_int64_of_string(Caml_int64.to_string(x));
 }
 
-var i = /* @__PURE__ */Caml_int64.mk(-1414812757, 2074848171);
+var i = [
+  2074848171,
+  2880154539
+];
 
 var s = Caml_int64.to_string(i);
 

@@ -19,7 +19,10 @@ var v = Caml_int64.add(Caml_int64.of_int32(Int32.max_int), Int64.one);
 
 var h = Caml_int64.neg(v);
 
-var a = /* @__PURE__ */Caml_int64.mk(2147483647, 0);
+var a = [
+  0,
+  2147483647
+];
 
 function commutative_add(result, a, b) {
   return {
@@ -43,68 +46,254 @@ var shift_left_tests_0 = $$Array.map((function (i) {
 
 var shift_left_tests_1 = [
   Caml_int64.one,
-  /* @__PURE__ */Caml_int64.mk(2, 0),
-  /* @__PURE__ */Caml_int64.mk(4, 0),
-  /* @__PURE__ */Caml_int64.mk(8, 0),
-  /* @__PURE__ */Caml_int64.mk(16, 0),
-  /* @__PURE__ */Caml_int64.mk(32, 0),
-  /* @__PURE__ */Caml_int64.mk(64, 0),
-  /* @__PURE__ */Caml_int64.mk(128, 0),
-  /* @__PURE__ */Caml_int64.mk(256, 0),
-  /* @__PURE__ */Caml_int64.mk(512, 0),
-  /* @__PURE__ */Caml_int64.mk(1024, 0),
-  /* @__PURE__ */Caml_int64.mk(2048, 0),
-  /* @__PURE__ */Caml_int64.mk(4096, 0),
-  /* @__PURE__ */Caml_int64.mk(8192, 0),
-  /* @__PURE__ */Caml_int64.mk(16384, 0),
-  /* @__PURE__ */Caml_int64.mk(32768, 0),
-  /* @__PURE__ */Caml_int64.mk(65536, 0),
-  /* @__PURE__ */Caml_int64.mk(131072, 0),
-  /* @__PURE__ */Caml_int64.mk(262144, 0),
-  /* @__PURE__ */Caml_int64.mk(524288, 0),
-  /* @__PURE__ */Caml_int64.mk(1048576, 0),
-  /* @__PURE__ */Caml_int64.mk(2097152, 0),
-  /* @__PURE__ */Caml_int64.mk(4194304, 0),
-  /* @__PURE__ */Caml_int64.mk(8388608, 0),
-  /* @__PURE__ */Caml_int64.mk(16777216, 0),
-  /* @__PURE__ */Caml_int64.mk(33554432, 0),
-  /* @__PURE__ */Caml_int64.mk(67108864, 0),
-  /* @__PURE__ */Caml_int64.mk(134217728, 0),
-  /* @__PURE__ */Caml_int64.mk(268435456, 0),
-  /* @__PURE__ */Caml_int64.mk(536870912, 0),
-  /* @__PURE__ */Caml_int64.mk(1073741824, 0),
-  /* @__PURE__ */Caml_int64.mk(-2147483648, 0),
-  /* @__PURE__ */Caml_int64.mk(0, 1),
-  /* @__PURE__ */Caml_int64.mk(0, 2),
-  /* @__PURE__ */Caml_int64.mk(0, 4),
-  /* @__PURE__ */Caml_int64.mk(0, 8),
-  /* @__PURE__ */Caml_int64.mk(0, 16),
-  /* @__PURE__ */Caml_int64.mk(0, 32),
-  /* @__PURE__ */Caml_int64.mk(0, 64),
-  /* @__PURE__ */Caml_int64.mk(0, 128),
-  /* @__PURE__ */Caml_int64.mk(0, 256),
-  /* @__PURE__ */Caml_int64.mk(0, 512),
-  /* @__PURE__ */Caml_int64.mk(0, 1024),
-  /* @__PURE__ */Caml_int64.mk(0, 2048),
-  /* @__PURE__ */Caml_int64.mk(0, 4096),
-  /* @__PURE__ */Caml_int64.mk(0, 8192),
-  /* @__PURE__ */Caml_int64.mk(0, 16384),
-  /* @__PURE__ */Caml_int64.mk(0, 32768),
-  /* @__PURE__ */Caml_int64.mk(0, 65536),
-  /* @__PURE__ */Caml_int64.mk(0, 131072),
-  /* @__PURE__ */Caml_int64.mk(0, 262144),
-  /* @__PURE__ */Caml_int64.mk(0, 524288),
-  /* @__PURE__ */Caml_int64.mk(0, 1048576),
-  /* @__PURE__ */Caml_int64.mk(0, 2097152),
-  /* @__PURE__ */Caml_int64.mk(0, 4194304),
-  /* @__PURE__ */Caml_int64.mk(0, 8388608),
-  /* @__PURE__ */Caml_int64.mk(0, 16777216),
-  /* @__PURE__ */Caml_int64.mk(0, 33554432),
-  /* @__PURE__ */Caml_int64.mk(0, 67108864),
-  /* @__PURE__ */Caml_int64.mk(0, 134217728),
-  /* @__PURE__ */Caml_int64.mk(0, 268435456),
-  /* @__PURE__ */Caml_int64.mk(0, 536870912),
-  /* @__PURE__ */Caml_int64.mk(0, 1073741824),
+  [
+    0,
+    2
+  ],
+  [
+    0,
+    4
+  ],
+  [
+    0,
+    8
+  ],
+  [
+    0,
+    16
+  ],
+  [
+    0,
+    32
+  ],
+  [
+    0,
+    64
+  ],
+  [
+    0,
+    128
+  ],
+  [
+    0,
+    256
+  ],
+  [
+    0,
+    512
+  ],
+  [
+    0,
+    1024
+  ],
+  [
+    0,
+    2048
+  ],
+  [
+    0,
+    4096
+  ],
+  [
+    0,
+    8192
+  ],
+  [
+    0,
+    16384
+  ],
+  [
+    0,
+    32768
+  ],
+  [
+    0,
+    65536
+  ],
+  [
+    0,
+    131072
+  ],
+  [
+    0,
+    262144
+  ],
+  [
+    0,
+    524288
+  ],
+  [
+    0,
+    1048576
+  ],
+  [
+    0,
+    2097152
+  ],
+  [
+    0,
+    4194304
+  ],
+  [
+    0,
+    8388608
+  ],
+  [
+    0,
+    16777216
+  ],
+  [
+    0,
+    33554432
+  ],
+  [
+    0,
+    67108864
+  ],
+  [
+    0,
+    134217728
+  ],
+  [
+    0,
+    268435456
+  ],
+  [
+    0,
+    536870912
+  ],
+  [
+    0,
+    1073741824
+  ],
+  [
+    0,
+    2147483648
+  ],
+  [
+    1,
+    0
+  ],
+  [
+    2,
+    0
+  ],
+  [
+    4,
+    0
+  ],
+  [
+    8,
+    0
+  ],
+  [
+    16,
+    0
+  ],
+  [
+    32,
+    0
+  ],
+  [
+    64,
+    0
+  ],
+  [
+    128,
+    0
+  ],
+  [
+    256,
+    0
+  ],
+  [
+    512,
+    0
+  ],
+  [
+    1024,
+    0
+  ],
+  [
+    2048,
+    0
+  ],
+  [
+    4096,
+    0
+  ],
+  [
+    8192,
+    0
+  ],
+  [
+    16384,
+    0
+  ],
+  [
+    32768,
+    0
+  ],
+  [
+    65536,
+    0
+  ],
+  [
+    131072,
+    0
+  ],
+  [
+    262144,
+    0
+  ],
+  [
+    524288,
+    0
+  ],
+  [
+    1048576,
+    0
+  ],
+  [
+    2097152,
+    0
+  ],
+  [
+    4194304,
+    0
+  ],
+  [
+    8388608,
+    0
+  ],
+  [
+    16777216,
+    0
+  ],
+  [
+    33554432,
+    0
+  ],
+  [
+    67108864,
+    0
+  ],
+  [
+    134217728,
+    0
+  ],
+  [
+    268435456,
+    0
+  ],
+  [
+    536870912,
+    0
+  ],
+  [
+    1073741824,
+    0
+  ],
   Caml_int64.min_int
 ];
 
@@ -119,68 +308,254 @@ var shift_right_tests_0 = $$Array.map((function (i) {
 
 var shift_right_tests_1 = [
   Caml_int64.min_int,
-  /* @__PURE__ */Caml_int64.mk(0, -1073741824),
-  /* @__PURE__ */Caml_int64.mk(0, -536870912),
-  /* @__PURE__ */Caml_int64.mk(0, -268435456),
-  /* @__PURE__ */Caml_int64.mk(0, -134217728),
-  /* @__PURE__ */Caml_int64.mk(0, -67108864),
-  /* @__PURE__ */Caml_int64.mk(0, -33554432),
-  /* @__PURE__ */Caml_int64.mk(0, -16777216),
-  /* @__PURE__ */Caml_int64.mk(0, -8388608),
-  /* @__PURE__ */Caml_int64.mk(0, -4194304),
-  /* @__PURE__ */Caml_int64.mk(0, -2097152),
-  /* @__PURE__ */Caml_int64.mk(0, -1048576),
-  /* @__PURE__ */Caml_int64.mk(0, -524288),
-  /* @__PURE__ */Caml_int64.mk(0, -262144),
-  /* @__PURE__ */Caml_int64.mk(0, -131072),
-  /* @__PURE__ */Caml_int64.mk(0, -65536),
-  /* @__PURE__ */Caml_int64.mk(0, -32768),
-  /* @__PURE__ */Caml_int64.mk(0, -16384),
-  /* @__PURE__ */Caml_int64.mk(0, -8192),
-  /* @__PURE__ */Caml_int64.mk(0, -4096),
-  /* @__PURE__ */Caml_int64.mk(0, -2048),
-  /* @__PURE__ */Caml_int64.mk(0, -1024),
-  /* @__PURE__ */Caml_int64.mk(0, -512),
-  /* @__PURE__ */Caml_int64.mk(0, -256),
-  /* @__PURE__ */Caml_int64.mk(0, -128),
-  /* @__PURE__ */Caml_int64.mk(0, -64),
-  /* @__PURE__ */Caml_int64.mk(0, -32),
-  /* @__PURE__ */Caml_int64.mk(0, -16),
-  /* @__PURE__ */Caml_int64.mk(0, -8),
-  /* @__PURE__ */Caml_int64.mk(0, -4),
-  /* @__PURE__ */Caml_int64.mk(0, -2),
-  /* @__PURE__ */Caml_int64.mk(0, -1),
-  /* @__PURE__ */Caml_int64.mk(-2147483648, -1),
-  /* @__PURE__ */Caml_int64.mk(-1073741824, -1),
-  /* @__PURE__ */Caml_int64.mk(-536870912, -1),
-  /* @__PURE__ */Caml_int64.mk(-268435456, -1),
-  /* @__PURE__ */Caml_int64.mk(-134217728, -1),
-  /* @__PURE__ */Caml_int64.mk(-67108864, -1),
-  /* @__PURE__ */Caml_int64.mk(-33554432, -1),
-  /* @__PURE__ */Caml_int64.mk(-16777216, -1),
-  /* @__PURE__ */Caml_int64.mk(-8388608, -1),
-  /* @__PURE__ */Caml_int64.mk(-4194304, -1),
-  /* @__PURE__ */Caml_int64.mk(-2097152, -1),
-  /* @__PURE__ */Caml_int64.mk(-1048576, -1),
-  /* @__PURE__ */Caml_int64.mk(-524288, -1),
-  /* @__PURE__ */Caml_int64.mk(-262144, -1),
-  /* @__PURE__ */Caml_int64.mk(-131072, -1),
-  /* @__PURE__ */Caml_int64.mk(-65536, -1),
-  /* @__PURE__ */Caml_int64.mk(-32768, -1),
-  /* @__PURE__ */Caml_int64.mk(-16384, -1),
-  /* @__PURE__ */Caml_int64.mk(-8192, -1),
-  /* @__PURE__ */Caml_int64.mk(-4096, -1),
-  /* @__PURE__ */Caml_int64.mk(-2048, -1),
-  /* @__PURE__ */Caml_int64.mk(-1024, -1),
-  /* @__PURE__ */Caml_int64.mk(-512, -1),
-  /* @__PURE__ */Caml_int64.mk(-256, -1),
-  /* @__PURE__ */Caml_int64.mk(-128, -1),
-  /* @__PURE__ */Caml_int64.mk(-64, -1),
-  /* @__PURE__ */Caml_int64.mk(-32, -1),
-  /* @__PURE__ */Caml_int64.mk(-16, -1),
-  /* @__PURE__ */Caml_int64.mk(-8, -1),
-  /* @__PURE__ */Caml_int64.mk(-4, -1),
-  /* @__PURE__ */Caml_int64.mk(-2, -1),
+  [
+    -1073741824,
+    0
+  ],
+  [
+    -536870912,
+    0
+  ],
+  [
+    -268435456,
+    0
+  ],
+  [
+    -134217728,
+    0
+  ],
+  [
+    -67108864,
+    0
+  ],
+  [
+    -33554432,
+    0
+  ],
+  [
+    -16777216,
+    0
+  ],
+  [
+    -8388608,
+    0
+  ],
+  [
+    -4194304,
+    0
+  ],
+  [
+    -2097152,
+    0
+  ],
+  [
+    -1048576,
+    0
+  ],
+  [
+    -524288,
+    0
+  ],
+  [
+    -262144,
+    0
+  ],
+  [
+    -131072,
+    0
+  ],
+  [
+    -65536,
+    0
+  ],
+  [
+    -32768,
+    0
+  ],
+  [
+    -16384,
+    0
+  ],
+  [
+    -8192,
+    0
+  ],
+  [
+    -4096,
+    0
+  ],
+  [
+    -2048,
+    0
+  ],
+  [
+    -1024,
+    0
+  ],
+  [
+    -512,
+    0
+  ],
+  [
+    -256,
+    0
+  ],
+  [
+    -128,
+    0
+  ],
+  [
+    -64,
+    0
+  ],
+  [
+    -32,
+    0
+  ],
+  [
+    -16,
+    0
+  ],
+  [
+    -8,
+    0
+  ],
+  [
+    -4,
+    0
+  ],
+  [
+    -2,
+    0
+  ],
+  [
+    -1,
+    0
+  ],
+  [
+    -1,
+    2147483648
+  ],
+  [
+    -1,
+    3221225472
+  ],
+  [
+    -1,
+    3758096384
+  ],
+  [
+    -1,
+    4026531840
+  ],
+  [
+    -1,
+    4160749568
+  ],
+  [
+    -1,
+    4227858432
+  ],
+  [
+    -1,
+    4261412864
+  ],
+  [
+    -1,
+    4278190080
+  ],
+  [
+    -1,
+    4286578688
+  ],
+  [
+    -1,
+    4290772992
+  ],
+  [
+    -1,
+    4292870144
+  ],
+  [
+    -1,
+    4293918720
+  ],
+  [
+    -1,
+    4294443008
+  ],
+  [
+    -1,
+    4294705152
+  ],
+  [
+    -1,
+    4294836224
+  ],
+  [
+    -1,
+    4294901760
+  ],
+  [
+    -1,
+    4294934528
+  ],
+  [
+    -1,
+    4294950912
+  ],
+  [
+    -1,
+    4294959104
+  ],
+  [
+    -1,
+    4294963200
+  ],
+  [
+    -1,
+    4294965248
+  ],
+  [
+    -1,
+    4294966272
+  ],
+  [
+    -1,
+    4294966784
+  ],
+  [
+    -1,
+    4294967040
+  ],
+  [
+    -1,
+    4294967168
+  ],
+  [
+    -1,
+    4294967232
+  ],
+  [
+    -1,
+    4294967264
+  ],
+  [
+    -1,
+    4294967280
+  ],
+  [
+    -1,
+    4294967288
+  ],
+  [
+    -1,
+    4294967292
+  ],
+  [
+    -1,
+    4294967294
+  ],
   Caml_int64.neg_one
 ];
 
@@ -195,68 +570,254 @@ var shift_right_logical_suites_0 = $$Array.map((function (i) {
 
 var shift_right_logical_suites_1 = [
   Caml_int64.min_int,
-  /* @__PURE__ */Caml_int64.mk(0, 1073741824),
-  /* @__PURE__ */Caml_int64.mk(0, 536870912),
-  /* @__PURE__ */Caml_int64.mk(0, 268435456),
-  /* @__PURE__ */Caml_int64.mk(0, 134217728),
-  /* @__PURE__ */Caml_int64.mk(0, 67108864),
-  /* @__PURE__ */Caml_int64.mk(0, 33554432),
-  /* @__PURE__ */Caml_int64.mk(0, 16777216),
-  /* @__PURE__ */Caml_int64.mk(0, 8388608),
-  /* @__PURE__ */Caml_int64.mk(0, 4194304),
-  /* @__PURE__ */Caml_int64.mk(0, 2097152),
-  /* @__PURE__ */Caml_int64.mk(0, 1048576),
-  /* @__PURE__ */Caml_int64.mk(0, 524288),
-  /* @__PURE__ */Caml_int64.mk(0, 262144),
-  /* @__PURE__ */Caml_int64.mk(0, 131072),
-  /* @__PURE__ */Caml_int64.mk(0, 65536),
-  /* @__PURE__ */Caml_int64.mk(0, 32768),
-  /* @__PURE__ */Caml_int64.mk(0, 16384),
-  /* @__PURE__ */Caml_int64.mk(0, 8192),
-  /* @__PURE__ */Caml_int64.mk(0, 4096),
-  /* @__PURE__ */Caml_int64.mk(0, 2048),
-  /* @__PURE__ */Caml_int64.mk(0, 1024),
-  /* @__PURE__ */Caml_int64.mk(0, 512),
-  /* @__PURE__ */Caml_int64.mk(0, 256),
-  /* @__PURE__ */Caml_int64.mk(0, 128),
-  /* @__PURE__ */Caml_int64.mk(0, 64),
-  /* @__PURE__ */Caml_int64.mk(0, 32),
-  /* @__PURE__ */Caml_int64.mk(0, 16),
-  /* @__PURE__ */Caml_int64.mk(0, 8),
-  /* @__PURE__ */Caml_int64.mk(0, 4),
-  /* @__PURE__ */Caml_int64.mk(0, 2),
-  /* @__PURE__ */Caml_int64.mk(0, 1),
-  /* @__PURE__ */Caml_int64.mk(-2147483648, 0),
-  /* @__PURE__ */Caml_int64.mk(1073741824, 0),
-  /* @__PURE__ */Caml_int64.mk(536870912, 0),
-  /* @__PURE__ */Caml_int64.mk(268435456, 0),
-  /* @__PURE__ */Caml_int64.mk(134217728, 0),
-  /* @__PURE__ */Caml_int64.mk(67108864, 0),
-  /* @__PURE__ */Caml_int64.mk(33554432, 0),
-  /* @__PURE__ */Caml_int64.mk(16777216, 0),
-  /* @__PURE__ */Caml_int64.mk(8388608, 0),
-  /* @__PURE__ */Caml_int64.mk(4194304, 0),
-  /* @__PURE__ */Caml_int64.mk(2097152, 0),
-  /* @__PURE__ */Caml_int64.mk(1048576, 0),
-  /* @__PURE__ */Caml_int64.mk(524288, 0),
-  /* @__PURE__ */Caml_int64.mk(262144, 0),
-  /* @__PURE__ */Caml_int64.mk(131072, 0),
-  /* @__PURE__ */Caml_int64.mk(65536, 0),
-  /* @__PURE__ */Caml_int64.mk(32768, 0),
-  /* @__PURE__ */Caml_int64.mk(16384, 0),
-  /* @__PURE__ */Caml_int64.mk(8192, 0),
-  /* @__PURE__ */Caml_int64.mk(4096, 0),
-  /* @__PURE__ */Caml_int64.mk(2048, 0),
-  /* @__PURE__ */Caml_int64.mk(1024, 0),
-  /* @__PURE__ */Caml_int64.mk(512, 0),
-  /* @__PURE__ */Caml_int64.mk(256, 0),
-  /* @__PURE__ */Caml_int64.mk(128, 0),
-  /* @__PURE__ */Caml_int64.mk(64, 0),
-  /* @__PURE__ */Caml_int64.mk(32, 0),
-  /* @__PURE__ */Caml_int64.mk(16, 0),
-  /* @__PURE__ */Caml_int64.mk(8, 0),
-  /* @__PURE__ */Caml_int64.mk(4, 0),
-  /* @__PURE__ */Caml_int64.mk(2, 0),
+  [
+    1073741824,
+    0
+  ],
+  [
+    536870912,
+    0
+  ],
+  [
+    268435456,
+    0
+  ],
+  [
+    134217728,
+    0
+  ],
+  [
+    67108864,
+    0
+  ],
+  [
+    33554432,
+    0
+  ],
+  [
+    16777216,
+    0
+  ],
+  [
+    8388608,
+    0
+  ],
+  [
+    4194304,
+    0
+  ],
+  [
+    2097152,
+    0
+  ],
+  [
+    1048576,
+    0
+  ],
+  [
+    524288,
+    0
+  ],
+  [
+    262144,
+    0
+  ],
+  [
+    131072,
+    0
+  ],
+  [
+    65536,
+    0
+  ],
+  [
+    32768,
+    0
+  ],
+  [
+    16384,
+    0
+  ],
+  [
+    8192,
+    0
+  ],
+  [
+    4096,
+    0
+  ],
+  [
+    2048,
+    0
+  ],
+  [
+    1024,
+    0
+  ],
+  [
+    512,
+    0
+  ],
+  [
+    256,
+    0
+  ],
+  [
+    128,
+    0
+  ],
+  [
+    64,
+    0
+  ],
+  [
+    32,
+    0
+  ],
+  [
+    16,
+    0
+  ],
+  [
+    8,
+    0
+  ],
+  [
+    4,
+    0
+  ],
+  [
+    2,
+    0
+  ],
+  [
+    1,
+    0
+  ],
+  [
+    0,
+    2147483648
+  ],
+  [
+    0,
+    1073741824
+  ],
+  [
+    0,
+    536870912
+  ],
+  [
+    0,
+    268435456
+  ],
+  [
+    0,
+    134217728
+  ],
+  [
+    0,
+    67108864
+  ],
+  [
+    0,
+    33554432
+  ],
+  [
+    0,
+    16777216
+  ],
+  [
+    0,
+    8388608
+  ],
+  [
+    0,
+    4194304
+  ],
+  [
+    0,
+    2097152
+  ],
+  [
+    0,
+    1048576
+  ],
+  [
+    0,
+    524288
+  ],
+  [
+    0,
+    262144
+  ],
+  [
+    0,
+    131072
+  ],
+  [
+    0,
+    65536
+  ],
+  [
+    0,
+    32768
+  ],
+  [
+    0,
+    16384
+  ],
+  [
+    0,
+    8192
+  ],
+  [
+    0,
+    4096
+  ],
+  [
+    0,
+    2048
+  ],
+  [
+    0,
+    1024
+  ],
+  [
+    0,
+    512
+  ],
+  [
+    0,
+    256
+  ],
+  [
+    0,
+    128
+  ],
+  [
+    0,
+    64
+  ],
+  [
+    0,
+    32
+  ],
+  [
+    0,
+    16
+  ],
+  [
+    0,
+    8
+  ],
+  [
+    0,
+    4
+  ],
+  [
+    0,
+    2
+  ],
   Caml_int64.one
 ];
 
@@ -300,7 +861,10 @@ var suites = Pervasives.$at({
             return {
                     TAG: /* Eq */0,
                     _0: v,
-                    _1: /* @__PURE__ */Caml_int64.mk(-2147483648, 0)
+                    _1: [
+                      0,
+                      2147483648
+                    ]
                   };
           })
       ],
@@ -310,7 +874,10 @@ var suites = Pervasives.$at({
           (function (param) {
               return {
                       TAG: /* Eq */0,
-                      _0: /* @__PURE__ */Caml_int64.mk(-2, 0),
+                      _0: [
+                        0,
+                        4294967294
+                      ],
                       _1: Caml_int64.add(a, a)
                     };
             })
@@ -330,56 +897,113 @@ var suites = Pervasives.$at({
             hd: [
               "add_4",
               (function (param) {
-                  return commutative_add(/* @__PURE__ */Caml_int64.mk(-2, -1), /* @__PURE__ */Caml_int64.mk(-3, -1), Caml_int64.one);
+                  return commutative_add([
+                              -1,
+                              4294967294
+                            ], [
+                              -1,
+                              4294967293
+                            ], Caml_int64.one);
                 })
             ],
             tl: {
               hd: [
                 "add_5",
                 (function (param) {
-                    return commutative_add(/* @__PURE__ */Caml_int64.mk(-3, -1), /* @__PURE__ */Caml_int64.mk(-3, -1), Caml_int64.zero);
+                    return commutative_add([
+                                -1,
+                                4294967293
+                              ], [
+                                -1,
+                                4294967293
+                              ], Caml_int64.zero);
                   })
               ],
               tl: {
                 hd: [
                   "add_6",
                   (function (param) {
-                      return commutative_add(/* @__PURE__ */Caml_int64.mk(4, 0), /* @__PURE__ */Caml_int64.mk(-3, -1), /* @__PURE__ */Caml_int64.mk(7, 0));
+                      return commutative_add([
+                                  0,
+                                  4
+                                ], [
+                                  -1,
+                                  4294967293
+                                ], [
+                                  0,
+                                  7
+                                ]);
                     })
                 ],
                 tl: {
                   hd: [
                     "add_7",
                     (function (param) {
-                        return commutative_add(/* @__PURE__ */Caml_int64.mk(0, 1), /* @__PURE__ */Caml_int64.mk(-2147483648, 0), /* @__PURE__ */Caml_int64.mk(-2147483648, 0));
+                        return commutative_add([
+                                    1,
+                                    0
+                                  ], [
+                                    0,
+                                    2147483648
+                                  ], [
+                                    0,
+                                    2147483648
+                                  ]);
                       })
                   ],
                   tl: {
                     hd: [
                       "add_8",
                       (function (param) {
-                          return commutative_add(/* @__PURE__ */Caml_int64.mk(0, 1), /* @__PURE__ */Caml_int64.mk(-1, 0), Caml_int64.one);
+                          return commutative_add([
+                                      1,
+                                      0
+                                    ], [
+                                      0,
+                                      4294967295
+                                    ], Caml_int64.one);
                         })
                     ],
                     tl: {
                       hd: [
                         "add_9",
                         (function (param) {
-                            return commutative_add(/* @__PURE__ */Caml_int64.mk(-1, 0), /* @__PURE__ */Caml_int64.mk(-2147483648, 0), /* @__PURE__ */Caml_int64.mk(2147483647, 0));
+                            return commutative_add([
+                                        0,
+                                        4294967295
+                                      ], [
+                                        0,
+                                        2147483648
+                                      ], [
+                                        0,
+                                        2147483647
+                                      ]);
                           })
                       ],
                       tl: {
                         hd: [
                           "add_10",
                           (function (param) {
-                              return commutative_add(/* @__PURE__ */Caml_int64.mk(-2147483648, 0), /* @__PURE__ */Caml_int64.mk(-2147483648, 0), Caml_int64.zero);
+                              return commutative_add([
+                                          0,
+                                          2147483648
+                                        ], [
+                                          0,
+                                          2147483648
+                                        ], Caml_int64.zero);
                             })
                         ],
                         tl: {
                           hd: [
                             "add_11",
                             (function (param) {
-                                return commutative_add(/* @__PURE__ */Caml_int64.mk(-1, 0), /* @__PURE__ */Caml_int64.mk(-1, 0), Caml_int64.zero);
+                                return commutative_add([
+                                            0,
+                                            4294967295
+                                          ], [
+                                            0,
+                                            4294967295
+                                          ], Caml_int64.zero);
                               })
                           ],
                           tl: {
@@ -389,7 +1013,10 @@ var suites = Pervasives.$at({
                                   return {
                                           TAG: /* Eq */0,
                                           _0: 3,
-                                          _1: Caml_int64.to_int32(/* @__PURE__ */Caml_int64.mk(3, 0))
+                                          _1: Caml_int64.to_int32([
+                                                0,
+                                                3
+                                              ])
                                         };
                                 })
                             ],
@@ -400,7 +1027,10 @@ var suites = Pervasives.$at({
                                     return {
                                             TAG: /* Eq */0,
                                             _0: 3,
-                                            _1: Caml_int64.to_int32(/* @__PURE__ */Caml_int64.mk(3, 0))
+                                            _1: Caml_int64.to_int32([
+                                                  0,
+                                                  3
+                                                ])
                                           };
                                   })
                               ],
@@ -410,8 +1040,14 @@ var suites = Pervasives.$at({
                                   (function (param) {
                                       return {
                                               TAG: /* Eq */0,
-                                              _0: /* @__PURE__ */Caml_int64.mk(3, 0),
-                                              _1: /* @__PURE__ */Caml_int64.mk(3, 0)
+                                              _0: [
+                                                0,
+                                                3
+                                              ],
+                                              _1: [
+                                                0,
+                                                3
+                                              ]
                                             };
                                     })
                                 ],
@@ -421,8 +1057,14 @@ var suites = Pervasives.$at({
                                     (function (param) {
                                         return {
                                                 TAG: /* Eq */0,
-                                                _0: /* @__PURE__ */Caml_int64.mk(-3, -1),
-                                                _1: /* @__PURE__ */Caml_int64.mk(-3, -1)
+                                                _0: [
+                                                  -1,
+                                                  4294967293
+                                                ],
+                                                _1: [
+                                                  -1,
+                                                  4294967293
+                                                ]
                                               };
                                       })
                                   ],
@@ -432,8 +1074,14 @@ var suites = Pervasives.$at({
                                       (function (param) {
                                           return {
                                                   TAG: /* Eq */0,
-                                                  _0: /* @__PURE__ */Caml_int64.mk(-2, -1),
-                                                  _1: /* @__PURE__ */Caml_int64.mk(-2, -1)
+                                                  _0: [
+                                                    -1,
+                                                    4294967294
+                                                  ],
+                                                  _1: [
+                                                    -1,
+                                                    4294967294
+                                                  ]
                                                 };
                                         })
                                     ],
@@ -465,8 +1113,14 @@ var suites = Pervasives.$at({
                                             (function (param) {
                                                 return {
                                                         TAG: /* Eq */0,
-                                                        _0: /* @__PURE__ */Caml_int64.mk(2, 0),
-                                                        _1: /* @__PURE__ */Caml_int64.mk(2, 0)
+                                                        _0: [
+                                                          0,
+                                                          2
+                                                        ],
+                                                        _1: [
+                                                          0,
+                                                          2
+                                                        ]
                                                       };
                                               })
                                           ],
@@ -477,12 +1131,24 @@ var suites = Pervasives.$at({
                                                   return {
                                                           TAG: /* Eq */0,
                                                           _0: [
-                                                            /* @__PURE__ */Caml_int64.mk(286331153, 0),
-                                                            Caml_int64.xor(a, /* @__PURE__ */Caml_int64.mk(-285217025, 0))
+                                                            [
+                                                              0,
+                                                              286331153
+                                                            ],
+                                                            Caml_int64.xor(a, [
+                                                                  0,
+                                                                  4009750271
+                                                                ])
                                                           ],
                                                           _1: [
-                                                            /* @__PURE__ */Caml_int64.mk(286331153, 0),
-                                                            /* @__PURE__ */Caml_int64.mk(-1862266624, 0)
+                                                            [
+                                                              0,
+                                                              286331153
+                                                            ],
+                                                            [
+                                                              0,
+                                                              2432700672
+                                                            ]
                                                           ]
                                                         };
                                                 })
@@ -493,8 +1159,14 @@ var suites = Pervasives.$at({
                                                 (function (param) {
                                                     return {
                                                             TAG: /* Eq */0,
-                                                            _0: /* @__PURE__ */Caml_int64.mk(-1, 0),
-                                                            _1: /* @__PURE__ */Caml_int64.mk(-1, 0)
+                                                            _0: [
+                                                              0,
+                                                              4294967295
+                                                            ],
+                                                            _1: [
+                                                              0,
+                                                              4294967295
+                                                            ]
                                                           };
                                                   })
                                               ],
@@ -504,8 +1176,14 @@ var suites = Pervasives.$at({
                                                   (function (param) {
                                                       return {
                                                               TAG: /* Eq */0,
-                                                              _0: /* @__PURE__ */Caml_int64.mk(-286331154, 0),
-                                                              _1: /* @__PURE__ */Caml_int64.mk(-286331154, 0)
+                                                              _0: [
+                                                                0,
+                                                                4008636142
+                                                              ],
+                                                              _1: [
+                                                                0,
+                                                                4008636142
+                                                              ]
                                                             };
                                                     })
                                                 ],
@@ -522,68 +1200,254 @@ var suites = Pervasives.$at({
                                                                           }))),
                                                                 _1: [
                                                                   Caml_int64.one,
-                                                                  /* @__PURE__ */Caml_int64.mk(2, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(4, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(8, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(16, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(32, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(64, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(128, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(256, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(512, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(1024, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(2048, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(4096, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(8192, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(16384, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(32768, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(65536, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(131072, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(262144, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(524288, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(1048576, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(2097152, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(4194304, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(8388608, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(16777216, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(33554432, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(67108864, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(134217728, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(268435456, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(536870912, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(1073741824, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(-2147483648, 0),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 1),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 2),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 4),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 8),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 16),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 32),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 64),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 128),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 256),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 512),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 1024),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 2048),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 4096),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 8192),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 16384),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 32768),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 65536),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 131072),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 262144),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 524288),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 1048576),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 2097152),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 4194304),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 8388608),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 16777216),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 33554432),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 67108864),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 134217728),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 268435456),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 536870912),
-                                                                  /* @__PURE__ */Caml_int64.mk(0, 1073741824),
+                                                                  [
+                                                                    0,
+                                                                    2
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    4
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    8
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    16
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    32
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    64
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    128
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    256
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    512
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    1024
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    2048
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    4096
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    8192
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    16384
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    32768
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    65536
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    131072
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    262144
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    524288
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    1048576
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    2097152
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    4194304
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    8388608
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    16777216
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    33554432
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    67108864
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    134217728
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    268435456
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    536870912
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    1073741824
+                                                                  ],
+                                                                  [
+                                                                    0,
+                                                                    2147483648
+                                                                  ],
+                                                                  [
+                                                                    1,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    2,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    4,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    8,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    16,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    32,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    64,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    128,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    256,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    512,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    1024,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    2048,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    4096,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    8192,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    16384,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    32768,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    65536,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    131072,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    262144,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    524288,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    1048576,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    2097152,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    4194304,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    8388608,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    16777216,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    33554432,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    67108864,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    134217728,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    268435456,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    536870912,
+                                                                    0
+                                                                  ],
+                                                                  [
+                                                                    1073741824,
+                                                                    0
+                                                                  ],
                                                                   Caml_int64.min_int
                                                                 ]
                                                               };
@@ -603,67 +1467,250 @@ var suites = Pervasives.$at({
                                                                   _1: [
                                                                     Caml_int64.neg_one,
                                                                     Caml_int64.max_int,
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 1073741823),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 536870911),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 268435455),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 134217727),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 67108863),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 33554431),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 16777215),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 8388607),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 4194303),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 2097151),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 1048575),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 524287),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 262143),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 131071),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 65535),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 32767),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 16383),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 8191),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 4095),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 2047),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 1023),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 511),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 255),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 127),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 63),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 31),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 15),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 7),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 3),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 1),
-                                                                    /* @__PURE__ */Caml_int64.mk(-1, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(2147483647, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(1073741823, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(536870911, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(268435455, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(134217727, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(67108863, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(33554431, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(16777215, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(8388607, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(4194303, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(2097151, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(1048575, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(524287, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(262143, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(131071, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(65535, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(32767, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(16383, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(8191, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(4095, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(2047, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(1023, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(511, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(255, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(127, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(63, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(31, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(15, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(7, 0),
-                                                                    /* @__PURE__ */Caml_int64.mk(3, 0),
+                                                                    [
+                                                                      1073741823,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      536870911,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      268435455,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      134217727,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      67108863,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      33554431,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      16777215,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      8388607,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      4194303,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      2097151,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      1048575,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      524287,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      262143,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      131071,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      65535,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      32767,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      16383,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      8191,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      4095,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      2047,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      1023,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      511,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      255,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      127,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      63,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      31,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      15,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      7,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      3,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      1,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      4294967295
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      2147483647
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      1073741823
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      536870911
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      268435455
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      134217727
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      67108863
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      33554431
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      16777215
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      8388607
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      4194303
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      2097151
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      1048575
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      524287
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      262143
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      131071
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      65535
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      32767
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      16383
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      8191
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      4095
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      2047
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      1023
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      511
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      255
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      127
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      63
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      31
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      15
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      7
+                                                                    ],
+                                                                    [
+                                                                      0,
+                                                                      3
+                                                                    ],
                                                                     Caml_int64.one
                                                                   ]
                                                                 };
@@ -755,8 +1802,14 @@ var suites = Pervasives.$at({
                                                           (function (param) {
                                                               return {
                                                                       TAG: /* Eq */0,
-                                                                      _0: /* @__PURE__ */Caml_int64.mk(6, 0),
-                                                                      _1: /* @__PURE__ */Caml_int64.mk(6, 0)
+                                                                      _0: [
+                                                                        0,
+                                                                        6
+                                                                      ],
+                                                                      _1: [
+                                                                        0,
+                                                                        6
+                                                                      ]
                                                                     };
                                                             })
                                                         ],
@@ -772,7 +1825,10 @@ var suites = Pervasives.$at({
                                                                             ]),
                                                                         _1: [
                                                                           Caml_int64.zero,
-                                                                          /* @__PURE__ */Caml_int64.mk(-2147483648, -1)
+                                                                          [
+                                                                            -1,
+                                                                            2147483648
+                                                                          ]
                                                                         ]
                                                                       };
                                                               })
@@ -783,8 +1839,14 @@ var suites = Pervasives.$at({
                                                               (function (param) {
                                                                   return {
                                                                           TAG: /* Eq */0,
-                                                                          _0: /* @__PURE__ */Caml_int64.mk(-3, -1),
-                                                                          _1: /* @__PURE__ */Caml_int64.mk(-3, -1)
+                                                                          _0: [
+                                                                            -1,
+                                                                            4294967293
+                                                                          ],
+                                                                          _1: [
+                                                                            -1,
+                                                                            4294967293
+                                                                          ]
                                                                         };
                                                                 })
                                                             ],
@@ -794,8 +1856,14 @@ var suites = Pervasives.$at({
                                                                 (function (param) {
                                                                     return {
                                                                             TAG: /* Eq */0,
-                                                                            _0: /* @__PURE__ */Caml_int64.mk(3, 0),
-                                                                            _1: /* @__PURE__ */Caml_int64.mk(3, 0)
+                                                                            _0: [
+                                                                              0,
+                                                                              3
+                                                                            ],
+                                                                            _1: [
+                                                                              0,
+                                                                              3
+                                                                            ]
                                                                           };
                                                                   })
                                                               ],
@@ -807,7 +1875,10 @@ var suites = Pervasives.$at({
                                                                               TAG: /* Eq */0,
                                                                               _0: $$Array.map(Caml_int64.to_int32, [
                                                                                     Caml_int64.zero,
-                                                                                    /* @__PURE__ */Caml_int64.mk(-2147483648, 0)
+                                                                                    [
+                                                                                      0,
+                                                                                      2147483648
+                                                                                    ]
                                                                                   ]),
                                                                               _1: [
                                                                                 0,
@@ -833,9 +1904,18 @@ var suites = Pervasives.$at({
                                                                       (function (param) {
                                                                           return {
                                                                                   TAG: /* Eq */0,
-                                                                                  _0: Caml_int64.div_mod(/* @__PURE__ */Caml_int64.mk(7, 0), /* @__PURE__ */Caml_int64.mk(3, 0)),
+                                                                                  _0: Caml_int64.div_mod([
+                                                                                        0,
+                                                                                        7
+                                                                                      ], [
+                                                                                        0,
+                                                                                        3
+                                                                                      ]),
                                                                                   _1: [
-                                                                                    /* @__PURE__ */Caml_int64.mk(2, 0),
+                                                                                    [
+                                                                                      0,
+                                                                                      2
+                                                                                    ],
                                                                                     Caml_int64.one
                                                                                   ]
                                                                                 };
@@ -858,7 +1938,10 @@ var suites = Pervasives.$at({
                                                                           (function (param) {
                                                                               return {
                                                                                       TAG: /* Eq */0,
-                                                                                      _0: Caml_obj.caml_compare(/* @__PURE__ */Caml_int64.mk(0, 1), Caml_int64.one) > 0,
+                                                                                      _0: Caml_obj.caml_compare([
+                                                                                            1,
+                                                                                            0
+                                                                                          ], Caml_int64.one) > 0,
                                                                                       _1: true
                                                                                     };
                                                                             })
@@ -869,8 +1952,14 @@ var suites = Pervasives.$at({
                                                                             (function (param) {
                                                                                 return {
                                                                                         TAG: /* Eq */0,
-                                                                                        _0: /* @__PURE__ */Caml_int64.mk(-1, 0),
-                                                                                        _1: /* @__PURE__ */Caml_int64.mk(-1, 0)
+                                                                                        _0: [
+                                                                                          0,
+                                                                                          4294967295
+                                                                                        ],
+                                                                                        _1: [
+                                                                                          0,
+                                                                                          4294967295
+                                                                                        ]
                                                                                       };
                                                                               })
                                                                           ],
@@ -880,7 +1969,10 @@ var suites = Pervasives.$at({
                                                                               (function (param) {
                                                                                   return {
                                                                                           TAG: /* Eq */0,
-                                                                                          _0: Caml_obj.caml_compare(/* @__PURE__ */Caml_int64.mk(-2147483648, 0), Caml_int64.one) > 0,
+                                                                                          _0: Caml_obj.caml_compare([
+                                                                                                0,
+                                                                                                2147483648
+                                                                                              ], Caml_int64.one) > 0,
                                                                                           _1: true
                                                                                         };
                                                                                 })
@@ -891,8 +1983,14 @@ var suites = Pervasives.$at({
                                                                                 (function (param) {
                                                                                     return {
                                                                                             TAG: /* Eq */0,
-                                                                                            _0: /* @__PURE__ */Caml_int64.mk(-256, 0),
-                                                                                            _1: /* @__PURE__ */Caml_int64.mk(-256, 0)
+                                                                                            _0: [
+                                                                                              0,
+                                                                                              4294967040
+                                                                                            ],
+                                                                                            _1: [
+                                                                                              0,
+                                                                                              4294967040
+                                                                                            ]
                                                                                           };
                                                                                   })
                                                                               ],
@@ -902,8 +2000,14 @@ var suites = Pervasives.$at({
                                                                                   (function (param) {
                                                                                       return {
                                                                                               TAG: /* Eq */0,
-                                                                                              _0: fib(1000, Caml_int64.one, /* @__PURE__ */Caml_int64.mk(2, 0)),
-                                                                                              _1: /* @__PURE__ */Caml_int64.mk(-1420443336, -1990564327)
+                                                                                              _0: fib(1000, Caml_int64.one, [
+                                                                                                    0,
+                                                                                                    2
+                                                                                                  ]),
+                                                                                              _1: [
+                                                                                                -1990564327,
+                                                                                                2874523960
+                                                                                              ]
                                                                                             };
                                                                                     })
                                                                                 ],
@@ -914,7 +2018,10 @@ var suites = Pervasives.$at({
                                                                                         return {
                                                                                                 TAG: /* Eq */0,
                                                                                                 _0: fac(30, Caml_int64.one),
-                                                                                                _1: /* @__PURE__ */Caml_int64.mk(1409286144, -2040662563)
+                                                                                                _1: [
+                                                                                                  -2040662563,
+                                                                                                  1409286144
+                                                                                                ]
                                                                                               };
                                                                                       })
                                                                                   ],
@@ -925,7 +2032,10 @@ var suites = Pervasives.$at({
                                                                                           return {
                                                                                                   TAG: /* Eq */0,
                                                                                                   _0: Caml_int64.add(Int64.max_int, Int64.max_int),
-                                                                                                  _1: /* @__PURE__ */Caml_int64.mk(-2, -1)
+                                                                                                  _1: [
+                                                                                                    -1,
+                                                                                                    4294967294
+                                                                                                  ]
                                                                                                 };
                                                                                         })
                                                                                     ],
@@ -1089,37 +2199,85 @@ function id(loc, x) {
   }
 }
 
-eq("File \"int64_test.ml\", line 202, characters 5-12", Caml_int64.bits_of_float(0.3), /* @__PURE__ */Caml_int64.mk(858993459, 1070805811));
+eq("File \"int64_test.ml\", line 202, characters 5-12", Caml_int64.bits_of_float(0.3), [
+      1070805811,
+      858993459
+    ]);
 
-eq("File \"int64_test.ml\", line 203, characters 5-12", Caml_int64.float_of_bits(/* @__PURE__ */Caml_int64.mk(858993459, 1070805811)), 0.3);
+eq("File \"int64_test.ml\", line 203, characters 5-12", Caml_int64.float_of_bits([
+          1070805811,
+          858993459
+        ]), 0.3);
 
 id("File \"int64_test.ml\", line 204, characters 5-12", Caml_int64.neg_one);
 
-id("File \"int64_test.ml\", line 205, characters 5-12", /* @__PURE__ */Caml_int64.mk(-100, -1));
+id("File \"int64_test.ml\", line 205, characters 5-12", [
+      -1,
+      4294967196
+    ]);
 
-id("File \"int64_test.ml\", line 206, characters 5-12", /* @__PURE__ */Caml_int64.mk(-1, 0));
+id("File \"int64_test.ml\", line 206, characters 5-12", [
+      0,
+      4294967295
+    ]);
 
-id("File \"int64_test.ml\", line 207, characters 5-12", /* @__PURE__ */Caml_int64.mk(536870911, 0));
+id("File \"int64_test.ml\", line 207, characters 5-12", [
+      0,
+      536870911
+    ]);
 
-id("File \"int64_test.ml\", line 208, characters 5-12", /* @__PURE__ */Caml_int64.mk(536870655, 0));
+id("File \"int64_test.ml\", line 208, characters 5-12", [
+      0,
+      536870655
+    ]);
 
-eq("File \"int64_test.ml\", line 209, characters 5-12", Caml_int64.div(Int64.min_int, /* @__PURE__ */Caml_int64.mk(10, 0)), /* @__PURE__ */Caml_int64.mk(858993460, -214748365));
+eq("File \"int64_test.ml\", line 209, characters 5-12", Caml_int64.div(Int64.min_int, [
+          0,
+          10
+        ]), [
+      -214748365,
+      858993460
+    ]);
 
-eq("File \"int64_test.ml\", line 210, characters 5-12", Caml_int64.to_string(Caml_int64.div(Int64.min_int, /* @__PURE__ */Caml_int64.mk(10, 0))), "-922337203685477580");
+eq("File \"int64_test.ml\", line 210, characters 5-12", Caml_int64.to_string(Caml_int64.div(Int64.min_int, [
+              0,
+              10
+            ])), "-922337203685477580");
 
-eq("File \"int64_test.ml\", line 211, characters 5-12", Caml_int64.mul(Int64.min_int, /* @__PURE__ */Caml_int64.mk(10, 0)), Caml_int64.zero);
+eq("File \"int64_test.ml\", line 211, characters 5-12", Caml_int64.mul(Int64.min_int, [
+          0,
+          10
+        ]), Caml_int64.zero);
 
-eq("File \"int64_test.ml\", line 212, characters 5-12", Caml_int64.mul(/* @__PURE__ */Caml_int64.mk(10, 0), Int64.min_int), Caml_int64.zero);
+eq("File \"int64_test.ml\", line 212, characters 5-12", Caml_int64.mul([
+          0,
+          10
+        ], Int64.min_int), Caml_int64.zero);
 
 eq("File \"int64_test.ml\", line 213, characters 5-12", Caml_int64.mul(Caml_int64.one, Int64.min_int), Int64.min_int);
 
-eq("File \"int64_test.ml\", line 214, characters 5-12", Caml_int64.mul(Int64.max_int, /* @__PURE__ */Caml_int64.mk(10, 0)), /* @__PURE__ */Caml_int64.mk(-10, -1));
+eq("File \"int64_test.ml\", line 214, characters 5-12", Caml_int64.mul(Int64.max_int, [
+          0,
+          10
+        ]), [
+      -1,
+      4294967286
+    ]);
 
 eq("File \"int64_test.ml\", line 215, characters 5-12", Caml_int64.succ(Int64.max_int), Int64.min_int);
 
-eq("File \"int64_test.ml\", line 216, characters 5-12", Caml_int64.succ(Int64.min_int), /* @__PURE__ */Caml_int64.mk(1, -2147483648));
+eq("File \"int64_test.ml\", line 216, characters 5-12", Caml_int64.succ(Int64.min_int), [
+      -2147483648,
+      1
+    ]);
 
-eq("File \"int64_test.ml\", line 217, characters 5-12", Caml_int64.succ(/* @__PURE__ */Caml_int64.mk(-1, 0)), /* @__PURE__ */Caml_int64.mk(0, 1));
+eq("File \"int64_test.ml\", line 217, characters 5-12", Caml_int64.succ([
+          0,
+          4294967295
+        ]), [
+      1,
+      0
+    ]);
 
 Mt.from_pair_suites("Int64_test", suites$1.contents);
 

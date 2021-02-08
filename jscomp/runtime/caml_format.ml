@@ -125,6 +125,14 @@ let caml_int_of_string (s : string) : int =
     failwith "int_of_string");
   or_res
 
+let hex_threshold, 
+    dec_threshold, 
+    oct_threshold,
+    bin_threshold = 
+  1152921504606846975L,
+  1844674407370955161L,
+  2305843009213693951L,
+  9223372036854775807L
 
 let caml_int64_of_string s = 
   let i, sign, hbase = parse_sign_and_base s in
@@ -133,13 +141,13 @@ let caml_int64_of_string s =
   let threshold =
     match hbase with
     | Hex -> (* 2 ^ 64 - 1 / 16*)
-      1152921504606846975L
+      hex_threshold
     | Dec ->
-      1844674407370955161L
+      dec_threshold
     | Oct ->
-      2305843009213693951L
+      oct_threshold
     | Bin ->
-      9223372036854775807L
+      bin_threshold
   in 
   let len =Caml_string_extern.length s in  
   let c = if i < len then s.!(i) else '\000' in

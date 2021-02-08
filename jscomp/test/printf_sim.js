@@ -2,7 +2,6 @@
 
 var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
-var Caml_int64 = require("../../lib/js/caml_int64.js");
 
 Curry._1(Printf.printf(/* Format */{
           _0: {
@@ -17,7 +16,10 @@ Curry._1(Printf.printf(/* Format */{
             }
           },
           _1: "%Ld\n"
-        }), /* @__PURE__ */Caml_int64.mk(32, 0));
+        }), [
+      0,
+      32
+    ]);
 
 Printf.printf(/* Format */{
       _0: {
