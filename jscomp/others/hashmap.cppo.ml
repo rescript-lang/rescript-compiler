@@ -10,7 +10,7 @@
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
 (***********************************************************************)
-(**  Adapted by Authors of BuckleScript 2017                           *)
+(**  Adapted by Authors of ReScript 2017                           *)
 
 #ifdef TYPE_STRING
 type key = string

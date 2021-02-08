@@ -886,7 +886,7 @@ val assoc3 :
 
 end = struct
 #1 "ext_spec.ml"
-(* Copyright (C) 2020- Authors of BuckleScript
+(* Copyright (C) 2020- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -1649,7 +1649,7 @@ let unsafe_sub  x offs len =
 end
 module Bsb_arg : sig 
 #1 "bsb_arg.mli"
-(* Copyright (C) 2020- Authors of BuckleScript
+(* Copyright (C) 2020- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -1704,7 +1704,7 @@ val parse_exn :
 val bad_arg : string -> 'a  
 end = struct
 #1 "bsb_arg.ml"
-(* Copyright (C) 2020- Authors of BuckleScript
+(* Copyright (C) 2020- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -1861,7 +1861,7 @@ end
 module Bsb_build_schemas
 = struct
 #1 "bsb_build_schemas.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -4781,7 +4781,7 @@ let print fmt s =
 end
 module Bsb_file_groups : sig 
 #1 "bsb_file_groups.mli"
-(* Copyright (C) 2018- Authors of BuckleScript
+(* Copyright (C) 2018- Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -4858,7 +4858,7 @@ val is_empty :
 
 end = struct
 #1 "bsb_file_groups.ml"
-(* Copyright (C) 2018- Authors of BuckleScript
+(* Copyright (C) 2018- Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -5376,7 +5376,7 @@ let pure = "@__PURE__"
 end
 module Ext_path : sig 
 #1 "ext_path.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -5479,7 +5479,7 @@ val package_dir : string Lazy.t
 
 end = struct
 #1 "ext_path.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -5933,7 +5933,7 @@ let proj_rel path = rev_lib_bs // path
 end
 module Bsb_pkg_types : sig 
 #1 "bsb_pkg_types.mli"
-(* Copyright (C) 2019- Authors of BuckleScript
+(* Copyright (C) 2019- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -5974,7 +5974,7 @@ val string_as_package : string -> t
 end = struct
 #1 "bsb_pkg_types.ml"
 
-(* Copyright (C) 2018- Authors of BuckleScript
+(* Copyright (C) 2018- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -6714,7 +6714,7 @@ let reset_lit = "\x1b[0m"
 end
 module Bsb_log : sig 
 #1 "bsb_log.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -6763,7 +6763,7 @@ val info_args : string array -> unit
 
 end = struct
 #1 "bsb_log.ml"
-(* Copyright (C) 2017- Authors of BuckleScript
+(* Copyright (C) 2017- Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -6877,7 +6877,7 @@ end
 module Bsb_real_path : sig 
 #1 "bsb_real_path.mli"
 
-(* Copyright (C) 2020- Authors of BuckleScript
+(* Copyright (C) 2020- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -7462,7 +7462,7 @@ val to_list:
 end = struct
 #1 "bsb_pkg.ml"
 
-(* Copyright (C) 2017- Authors of BuckleScript
+(* Copyright (C) 2017- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -7956,7 +7956,7 @@ end
 module Ext_js_file_kind
 = struct
 #1 "ext_js_file_kind.ml"
-(* Copyright (C) 2020- Authors of BuckleScript
+(* Copyright (C) 2020- Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -7996,7 +7996,7 @@ let any_runtime_kind = {
 end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
-(* Copyright (C) 2017- Authors of BuckleScript
+(* Copyright (C) 2017- Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8176,7 +8176,7 @@ let namespace_of_package_name (s : string) : string =
 end
 module Bsb_package_specs : sig 
 #1 "bsb_package_specs.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8229,7 +8229,7 @@ val list_dirs_by :
   unit
 end = struct
 #1 "bsb_package_specs.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8498,7 +8498,7 @@ end
 module Bsc_warnings
 = struct
 #1 "bsc_warnings.ml"
-(* Copyright (C) 2020- Authors of BuckleScript 
+(* Copyright (C) 2020- Authors of ReScript 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8579,7 +8579,7 @@ let defaults_warn_error = "-a+5+6+101+109";;
 end
 module Bsb_warning : sig 
 #1 "bsb_warning.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8625,7 +8625,7 @@ val to_bsb_string :
 val use_default : t
 end = struct
 #1 "bsb_warning.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -10122,7 +10122,7 @@ let walk_all_deps dir ~pinned_dependencies : package_context Queue.t =
 end
 module Bsb_global_paths : sig 
 #1 "bsb_global_paths.mli"
-(* Copyright (C) 2019 - Authors of BuckleScript
+(* Copyright (C) 2019 - Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -10160,7 +10160,7 @@ val vendor_bsdep : string
 
 end = struct
 #1 "bsb_global_paths.ml"
-(* Copyright (C) 2019 - Authors of BuckleScript
+(* Copyright (C) 2019 - Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -11619,7 +11619,7 @@ let rec remove_dir_recursive dir =
 end
 module Bsb_clean : sig 
 #1 "bsb_clean.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -11657,7 +11657,7 @@ val clean_self :
 
 end = struct
 #1 "bsb_clean.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12321,7 +12321,7 @@ let check
 end
 module Bsb_db_encode : sig 
 #1 "bsb_db_encode.mli"
-(* Copyright (C) 2019 - Present Authors of BuckleScript
+(* Copyright (C) 2019 - Present Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12356,7 +12356,7 @@ val write_build_cache :
 
 end = struct
 #1 "bsb_db_encode.ml"
-(* Copyright (C) 2019 - Present Authors of BuckleScript
+(* Copyright (C) 2019 - Present Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12465,7 +12465,7 @@ let write_build_cache ~dir (bs_files : Bsb_db.t)  : string =
 end
 module Ext_digest : sig 
 #1 "ext_digest.mli"
-(* Copyright (C) 2019- Authors of BuckleScript
+(* Copyright (C) 2019- Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12495,7 +12495,7 @@ module Ext_digest : sig
  val hex_length : int
 end = struct
 #1 "ext_digest.ml"
-(* Copyright (C) 2019- Authors of BuckleScript
+(* Copyright (C) 2019- Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12526,7 +12526,7 @@ end = struct
 end
 module Bsb_namespace_map_gen : sig 
 #1 "bsb_namespace_map_gen.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12561,7 +12561,7 @@ val output :
   unit 
 end = struct
 #1 "bsb_namespace_map_gen.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12635,7 +12635,7 @@ end
 module Bsb_ninja_global_vars
 = struct
 #1 "bsb_ninja_global_vars.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13215,7 +13215,7 @@ let output_finger key value oc  =
 end
 module Ext_namespace_encode : sig 
 #1 "ext_namespace_encode.mli"
-(* Copyright (C) 2020- Authors of BuckleScript
+(* Copyright (C) 2020- Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13248,7 +13248,7 @@ val make :
  
 end = struct
 #1 "ext_namespace_encode.ml"
-(* Copyright (C) 2020- Authors of BuckleScript
+(* Copyright (C) 2020- Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13279,7 +13279,7 @@ end = struct
 end
 module Bsb_ninja_file_groups : sig 
 #1 "bsb_ninja_file_groups.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13316,7 +13316,7 @@ val handle_files_per_dir :
 
 end = struct
 #1 "bsb_ninja_file_groups.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13824,7 +13824,7 @@ let output_ninja_and_namespace_map
 end
 module Ext_json_noloc : sig 
 #1 "ext_json_noloc.mli"
-(* Copyright (C) 2017- Authors of BuckleScript
+(* Copyright (C) 2017- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13879,7 +13879,7 @@ val to_file :
 
 end = struct
 #1 "ext_json_noloc.ml"
-(* Copyright (C) 2017- Authors of BuckleScript
+(* Copyright (C) 2017- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14025,7 +14025,7 @@ let to_file name v =
 end
 module Bsb_watcher_gen : sig 
 #1 "bsb_watcher_gen.mli"
-(* Copyright (C) 2017- Authors of BuckleScript
+(* Copyright (C) 2017- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14063,7 +14063,7 @@ val generate_sourcedirs_meta :
   unit 
 end = struct
 #1 "bsb_watcher_gen.ml"
-(* Copyright (C) 2017- Authors of BuckleScript
+(* Copyright (C) 2017- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14124,7 +14124,7 @@ let generate_sourcedirs_meta
 end
 module Bsb_ninja_regen : sig 
 #1 "bsb_ninja_regen.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14162,7 +14162,7 @@ val regenerate_ninja :
   Bsb_config_types.t option 
 end = struct
 #1 "bsb_ninja_regen.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14257,7 +14257,7 @@ let regenerate_ninja
 end
 module Bsb_regex : sig 
 #1 "bsb_regex.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14290,7 +14290,7 @@ val global_substitute:
   string
 end = struct
 #1 "bsb_regex.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15614,7 +15614,7 @@ let root = ([
     </html>"
     );
     File("loader.js",
-    "/* Copyright (C) 2018 Authors of BuckleScript\n\
+    "/* Copyright (C) 2018 Authors of ReScript\n\
     \ * \n\
     \ * This program is free software: you can redistribute it and/or modify\n\
     \ * it under the terms of the GNU Lesser General Public License as published by\n\
@@ -16449,7 +16449,7 @@ let init_sample_project ~cwd ~theme name =
 end
 module Bsb_world : sig 
 #1 "bsb_world.mli"
-(* Copyright (C) 2017- Authors of BuckleScript
+(* Copyright (C) 2017- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16480,7 +16480,7 @@ val make_world_deps:
   unit  
 end = struct
 #1 "bsb_world.ml"
-(* Copyright (C) 2017- Authors of BuckleScript
+(* Copyright (C) 2017- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16590,7 +16590,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
 end
 module Bsc_args : sig 
 #1 "bsc_args.mli"
-(* Copyright (C) 2020- Authors of BuckleScript
+(* Copyright (C) 2020- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16650,7 +16650,7 @@ val parse_exn :
 
 end = struct
 #1 "bsc_args.ml"
-(* Copyright (C) 2020- Authors of BuckleScript
+(* Copyright (C) 2020- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

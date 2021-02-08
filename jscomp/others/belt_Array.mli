@@ -10,7 +10,7 @@
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
 (***********************************************************************)
-(* Adapted significantly by Authors of BuckleScript *)
+(* Adapted significantly by Authors of ReScript *)
 
 
 (** {!Belt.Array}

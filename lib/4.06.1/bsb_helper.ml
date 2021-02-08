@@ -1065,7 +1065,7 @@ let unsafe_sub  x offs len =
 end
 module Ext_string_array : sig 
 #1 "ext_string_array.mli"
-(* Copyright (C) 2020 - Present Authors of BuckleScript
+(* Copyright (C) 2020 - Present Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -1100,7 +1100,7 @@ val find_sorted_assoc :
   'a option
 end = struct
 #1 "ext_string_array.ml"
-(* Copyright (C) 2020 - Present Authors of BuckleScript
+(* Copyright (C) 2020 - Present Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -1345,7 +1345,7 @@ let pure = "@__PURE__"
 end
 module Bsb_db_decode : sig 
 #1 "bsb_db_decode.mli"
-(* Copyright (C) 2019 - Present Authors of BuckleScript
+(* Copyright (C) 2019 - Present Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -1407,7 +1407,7 @@ val find:
 val decode : string -> t   
 end = struct
 #1 "bsb_db_decode.ml"
-(* Copyright (C) 2019 - Present Authors of BuckleScript
+(* Copyright (C) 2019 - Present Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -2166,7 +2166,7 @@ let as_module ~basename =
 end
 module Ext_namespace_encode : sig 
 #1 "ext_namespace_encode.mli"
-(* Copyright (C) 2020- Authors of BuckleScript
+(* Copyright (C) 2020- Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -2199,7 +2199,7 @@ val make :
  
 end = struct
 #1 "ext_namespace_encode.ml"
-(* Copyright (C) 2020- Authors of BuckleScript
+(* Copyright (C) 2020- Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
