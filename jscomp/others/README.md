@@ -1,4 +1,4 @@
-Belt is a data structures and utilities library that ships with BuckleScript and bsb-native, optimized for the web.
+Belt is a data structures and utilities library that ships with ReScript and bsb-native, optimized for the web.
 
 ```ocaml
 let a = Belt.Array.make 10 0

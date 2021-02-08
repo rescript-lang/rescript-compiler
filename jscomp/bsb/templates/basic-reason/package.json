@@ -7,7 +7,7 @@
     "clean": "bsb -clean-world"
   },
   "keywords": [
-    "BuckleScript"
+    "ReScript"
   ],
   "author": "",
   "license": "MIT",

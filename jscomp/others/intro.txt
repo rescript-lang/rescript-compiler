@@ -1,8 +1,8 @@
 {!indexlist}
 
-{1 Libraries shipped with BuckleScript}
+{1 Libraries shipped with ReScript}
 
-BuckleScript is mostly a compiler, but it does ship some libraries for users' convenience
+ReScript is mostly a compiler, but it does ship some libraries for users' convenience
 
 {2 4 libraries}
 
@@ -19,9 +19,9 @@ For example
 
 {!Belt}
 
-The BuckleScript standard library ({b beta}).
+The ReScript standard library ({b beta}).
 
-BuckleScript also ships the vanilla OCaml standard library.
+ReScript also ships the vanilla OCaml standard library.
 @see <https://caml.inria.fr/pub/docs/manual-ocaml-4.02/stdlib.html> OCaml standard library
 
 {!Node}

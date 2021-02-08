@@ -207,7 +207,7 @@ let print_standard_library () =
   exit 0  
 
 let bs_version_string = 
-  "BuckleScript " ^ Bs_version.version ^
+  "ReScript " ^ Bs_version.version ^
   " ( Using OCaml:" ^ Config.version ^ " )" 
 
 let print_version_string () = 

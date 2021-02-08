@@ -23,17 +23,17 @@
   *)
 
 (*
-  This file's shared between the Reason repo and the BuckleScript repo. In
-  Reason, it's in src/reason-parser/. In BuckleScript, it's in
+  This file's shared between the Reason repo and the ReScript repo. In
+  Reason, it's in src/reason-parser/. In ReScript, it's in
   jscomp/outcome_printer/. We periodically copy this file from Reason (the
-  source of truth) to BuckleScript, then uncomment the #if #else #end cppo
-  macros you see in the file. That's because BuckleScript's on OCaml 4.02 while
+  source of truth) to ReScript, then uncomment the #if #else #end cppo
+  macros you see in the file. That's because ReScript's on OCaml 4.02 while
   Reason's on 4.04; so the #if macros surround the pieces of code that are
   different between the two compilers.
 
   When you modify this file, please make sure you're not dragging in too many
   things. You don't necessarily have to test the file on both Reason and
-  BuckleScript; ping @chenglou and a few others and we'll keep them synced up by
+  ReScript; ping @chenglou and a few others and we'll keep them synced up by
   patching the right parts, through the power of types(tm)
 *)
 
@@ -288,7 +288,7 @@ and print_simple_out_type ppf =
       fprintf ppf "@[%s#%a%a@]" (if ng then "_" else "")
         print_ident id print_typargs tyl
 
-  (* BuckleScript-specific external. See the manual for the usage of [@bs]. This
+  (* ReScript-specific external. See the manual for the usage of [@bs]. This
     [@bs] is processed into a type that looks like `Js.Internal.fn ...`. This
     leaks during error reporting, where the type is printed. Here, we print it
     back from `Js.Internal.fn([ `Arity_2 ('c, 'd) ], 'e)` into `('a => 'b => int) [@bs]` *)
@@ -325,7 +325,7 @@ and print_simple_out_type ppf =
     ) ->
     fprintf ppf "@[<0>(%a)@ [%@this]@]" (print_out_type_1 ~uncurried:false) res
 
-  (* also BuckleScript-specific. Turns Js.t({. foo: bar}) into {. "foo": bar} *)
+  (* also ReScript-specific. Turns Js.t({. foo: bar}) into {. "foo": bar} *)
   | Otyp_constr (
       (Oide_dot ((Oide_ident "Js"), "t")),
       [Otyp_object (fields, rest)]
@@ -622,7 +622,7 @@ and print_out_sig_item ppf =
       (* "BS:" is considered as a bucklescript external annotation, `[@bs.module]` and the sort.
 
         "What's going on here? Isn't [@bs.foo] supposed to be an attribute in oval_attributes?"
-        Usually yes. But here, we're intercepting things a little too late. BuckleScript already
+        Usually yes. But here, we're intercepting things a little too late. ReScript already
         finished its pre/post-processing work before we get to print anything. The original
         attribute is already gone, replaced by a "BS:asdfasdfasd" thing here.
       *)

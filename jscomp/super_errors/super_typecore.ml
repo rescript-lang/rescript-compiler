@@ -207,7 +207,7 @@ let report_error env ppf = function
         ->
           fprintf
             ppf
-            "@[<v>This is an uncurried BuckleScript function. @{<info>It must be applied with a dot@}.@,@,\
+            "@[<v>This is an uncurried ReScript function. @{<info>It must be applied with a dot@}.@,@,\
             Like this: @{<info>foo(. a, b)@}@,\
             Not like this: @{<dim>foo(a, b)@}@,@,\
             This guarantees that your function is fully applied. More info here:@,\

@@ -9,7 +9,7 @@
 (*  under the terms of the GNU Library General Public License, with    *)
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
-(*  Adapted by authors of BuckleScript without using functors          *)
+(*  Adapted by authors of ReScript without using functors          *)
 (***********************************************************************)
 
 (** specalized when key type is [int], more efficient

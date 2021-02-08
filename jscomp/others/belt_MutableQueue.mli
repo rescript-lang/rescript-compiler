@@ -12,7 +12,7 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-(* Adapted significantly by BuckleScript Authors *)
+(* Adapted significantly by ReScript Authors *)
 (** First-in first-out queues.
 
     This module implements queues (FIFOs), with in-place modification.

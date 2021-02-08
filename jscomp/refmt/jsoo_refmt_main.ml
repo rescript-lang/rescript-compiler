@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (**
-`jsoo_refmt_main` is the JSOO compilation entry point for building BuckleScript + Refmt as one bundle.
+`jsoo_refmt_main` is the JSOO compilation entry point for building ReScript + Refmt as one bundle.
 This is usually the file you want to build for the full playground experience.
 *)
 

@@ -65,7 +65,7 @@ type binop =
   | Mod
 
 (**
-note that we don't need raise [Div_by_zero] in BuckleScript
+note that we don't need raise [Div_by_zero] in ReScript
 
 {[
 let add x y = x + y  (* | 0 *)

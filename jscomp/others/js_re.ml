@@ -25,7 +25,7 @@
 (** Provides bindings for JavaScript Regular Expressions
 
 {4 Syntax sugar}
-BuckleScript provides a bit of syntax sugar for regex literals: [\[%re "/foo/g"\]]
+ReScript provides a bit of syntax sugar for regex literals: [\[%re "/foo/g"\]]
 will evaluate to a {! t} that can be passed around and used like usual.
 
 {b Note:} This is not an immutable API. A RegExp object with the [global] ("g")

@@ -7,7 +7,7 @@
     "start": "bsb -make-world -w"
   },
   "keywords": [
-    "BuckleScript"
+    "ReScript"
   ],
   "author": "",
   "license": "MIT",

@@ -556,7 +556,7 @@ module Ext_buffer : sig
    concatenated pairwise).
 *)
 
-(* BuckleScript customization: customized for efficient digest *)
+(* ReScript customization: customized for efficient digest *)
 
 type t
 (** The abstract type of buffers. *)
@@ -14436,7 +14436,7 @@ let root = ([
     \    \"watch\": \"bsb -make-world -w\"\n\
     \  },\n\
     \  \"keywords\": [\n\
-    \    \"BuckleScript\"\n\
+    \    \"ReScript\"\n\
     \  ],\n\
     \  \"author\": \"\",\n\
     \  \"license\": \"MIT\",\n\
@@ -14523,7 +14523,7 @@ let root = ([
     \    \"clean\": \"bsb -clean-world\"\n\
     \  },\n\
     \  \"keywords\": [\n\
-    \    \"BuckleScript\"\n\
+    \    \"ReScript\"\n\
     \  ],\n\
     \  \"author\": \"\",\n\
     \  \"license\": \"MIT\",\n\
@@ -14619,7 +14619,7 @@ let root = ([
     \    \"watch\": \"bsb -make-world -w\"\n\
     \  },\n\
     \  \"keywords\": [\n\
-    \    \"BuckleScript\"\n\
+    \    \"ReScript\"\n\
     \  ],\n\
     \  \"author\": \"\",\n\
     \  \"license\": \"MIT\",\n\
@@ -14632,7 +14632,7 @@ let root = ([
      File("demo.ml",
      "\n\
      \n\
-     let () = Js.log \"Hello, BuckleScript\""
+     let () = Js.log \"Hello, ReScript\""
      );
      File("test.cpp.ml",
      "\n\
@@ -14680,7 +14680,7 @@ let root = ([
     \    \"start\": \"bsb -make-world -w\"\n\
     \  },\n\
     \  \"keywords\": [\n\
-    \    \"BuckleScript\"\n\
+    \    \"ReScript\"\n\
     \  ],\n\
     \  \"author\": \"\",\n\
     \  \"license\": \"MIT\",\n\
@@ -14772,7 +14772,7 @@ let root = ([
     \    \"watch\": \"bsb -make-world -w\"\n\
     \  },\n\
     \  \"keywords\": [\n\
-    \    \"BuckleScript\"\n\
+    \    \"ReScript\"\n\
     \  ],\n\
     \  \"author\": \"\",\n\
     \  \"license\": \"MIT\",\n\
@@ -14785,7 +14785,7 @@ let root = ([
      File("demo.ml",
      "\n\
      \n\
-     let () = Js.log \"Hello, BuckleScript\""
+     let () = Js.log \"Hello, ReScript\""
      )        
     ])        
    ]);
@@ -14953,7 +14953,7 @@ let root = ([
     \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"\n\
     \  },\n\
     \  \"keywords\": [\n\
-    \    \"BuckleScript\",\n\
+    \    \"ReScript\",\n\
     \    \"ReasonReact\",\n\
     \    \"reason-react\"\n\
     \  ],\n\
@@ -15291,7 +15291,7 @@ let root = ([
      ])        
     ]);
     File("watcher.js",
-    "// This is our simple, robust watcher. It hooks into the BuckleScript build\n\
+    "// This is our simple, robust watcher. It hooks into the ReScript build\n\
     // system to listen for build events.\n\
     // See package.json's `start` script and `./node_modules/.bin/bsb --help`\n\
     \n\
@@ -15411,7 +15411,7 @@ let root = ([
     \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"\n\
     \  },\n\
     \  \"keywords\": [\n\
-    \    \"BuckleScript\",\n\
+    \    \"ReScript\",\n\
     \    \"ReasonReact\",\n\
     \    \"reason-react\"\n\
     \  ],\n\
@@ -16126,7 +16126,7 @@ let root = ([
     \    \"watch\": \"bsb -make-world -w -ws _\"\n\
     \  },\n\
     \  \"keywords\": [\n\
-    \    \"BuckleScript\"\n\
+    \    \"ReScript\"\n\
     \  ],\n\
     \  \"author\": \"\",\n\
     \  \"license\": \"MIT\",\n\

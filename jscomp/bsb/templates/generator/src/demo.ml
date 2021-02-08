@@ -1,3 +1,3 @@
 
 
-let () = Js.log "Hello, BuckleScript"
+let () = Js.log "Hello, ReScript"
