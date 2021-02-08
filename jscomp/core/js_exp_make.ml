@@ -996,7 +996,7 @@ let rec int_comp (cmp : Lam_compat.comparison) ?comment  (e0 : t) (e1 : t) =
       expression_desc = 
         Var (Qualified 
                ({kind = Runtime}, 
-                Some ("caml_int_compare" | "caml_int32_compare"))); _}, 
+                Some ("caml_int_compare"))); _}, 
       [l;r], _), 
     Number (Int {i = 0l})
     -> int_comp cmp l r (* = 0 > 0 < 0 *)

@@ -38,7 +38,7 @@ val caml_bool_compare : bool -> bool -> int
 val caml_float_compare : float -> float -> int 
 
 val caml_string_compare : string -> string -> int 
-val caml_int32_compare : int -> int -> int
+
 
 
 val caml_bool_min : bool selector 

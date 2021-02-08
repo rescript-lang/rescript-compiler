@@ -31,7 +31,7 @@ let caml_bool_compare (x : bool) (y : bool): int =
   | true, false -> 1 
   | false, true -> -1
 
-let caml_int32_compare = caml_int_compare
+
 
 let caml_float_compare (x : float) (y : float ) =
   if x = y then 0
