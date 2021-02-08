@@ -45,9 +45,24 @@ var f5_max = Caml_obj.caml_max;
 
 b("File \"bs_min_max_test.ml\", line 28, characters 4-11", Caml_int64.eq(Caml_int64.min(Caml_int64.zero, Caml_int64.one), Caml_int64.zero));
 
-b("File \"bs_min_max_test.ml\", line 29, characters 4-11", Caml_int64.eq(Caml_int64.max(/* @__PURE__ */Caml_int64.mk(22, 0), Caml_int64.one), /* @__PURE__ */Caml_int64.mk(22, 0)));
+b("File \"bs_min_max_test.ml\", line 29, characters 4-11", Caml_int64.eq(Caml_int64.max([
+              0,
+              22
+            ], Caml_int64.one), [
+          0,
+          22
+        ]));
 
-b("File \"bs_min_max_test.ml\", line 30, characters 4-11", Caml_int64.eq(Caml_int64.max(/* @__PURE__ */Caml_int64.mk(-3, -1), /* @__PURE__ */Caml_int64.mk(3, 0)), /* @__PURE__ */Caml_int64.mk(3, 0)));
+b("File \"bs_min_max_test.ml\", line 30, characters 4-11", Caml_int64.eq(Caml_int64.max([
+              -1,
+              4294967293
+            ], [
+              0,
+              3
+            ]), [
+          0,
+          3
+        ]));
 
 eq("File \"bs_min_max_test.ml\", line 31, characters 5-12", Caml_obj.caml_min(undefined, 3), undefined);
 
