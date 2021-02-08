@@ -10,7 +10,7 @@
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
 (***********************************************************************)
-(** Almost rewritten  by authors of BuckleScript                       *)
+(** Almost rewritten  by authors of ReScript                       *)
 
 [@@@bs.config {flags = [|"-bs-noassertfalse" |] }]
 type ('k, 'v) node  = {

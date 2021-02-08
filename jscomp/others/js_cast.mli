@@ -27,7 +27,7 @@
 
 
     Different OCaml types might share the same represention in the 
-    BuckleScript runtime; while this is a compiler internal knowledge,
+    ReScript runtime; while this is a compiler internal knowledge,
     applications might benefit from having a safe and zero cost 
     conversion between those types. 
     

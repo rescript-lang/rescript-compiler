@@ -71,7 +71,7 @@ function main() {
   var binDir = path.join(__dirname, "..", "jscomp", "bin");
   if (ounitTest) {
     cp.execSync(
-      `ocamlc.opt -I . -c js_refmt_compiler.mli js_refmt_compiler.ml`,
+      `ocamlc.opt -I . -c js_compiler.mli js_compiler.ml`,
       {
         cwd: path.join(__dirname, "..", "lib", "4.06.1", "unstable"),
         stdio: [0, 1, 2],

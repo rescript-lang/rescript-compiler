@@ -1,4 +1,4 @@
-(* BuckleScript compiler
+(* ReScript compiler
  * Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * http://www.ocsigen.org/js_of_ocaml/
  * Copyright (C) 2010 Jérôme Vouillon

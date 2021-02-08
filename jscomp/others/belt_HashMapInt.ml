@@ -11,7 +11,7 @@
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
 (***********************************************************************)
-(**  Adapted by Authors of BuckleScript 2017                           *)
+(**  Adapted by Authors of ReScript 2017                           *)
 
 # 23 "others/hashmap.cppo.ml"
 type key = int

@@ -1,6 +1,6 @@
 
 # 2 "others/hashset.cppo.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

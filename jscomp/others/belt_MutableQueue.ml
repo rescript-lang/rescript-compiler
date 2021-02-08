@@ -13,7 +13,7 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-(* Adapted significantly by BuckleScript Authors                          *)
+(* Adapted significantly by ReScript Authors                          *)
 module A = Belt_Array
 
 type 'a node = { 

@@ -19,7 +19,7 @@
    concatenated pairwise).
 *)
 
-(* BuckleScript customization: customized for efficient digest *)
+(* ReScript customization: customized for efficient digest *)
 
 type t
 (** The abstract type of buffers. *)

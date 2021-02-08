@@ -8719,7 +8719,7 @@ module Ext_buffer : sig
    concatenated pairwise).
 *)
 
-(* BuckleScript customization: customized for efficient digest *)
+(* ReScript customization: customized for efficient digest *)
 
 type t
 (** The abstract type of buffers. *)
@@ -9049,7 +9049,7 @@ val assoc3 :
 
 end = struct
 #1 "ext_spec.ml"
-(* Copyright (C) 2020- Authors of BuckleScript
+(* Copyright (C) 2020- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -9837,7 +9837,7 @@ let unsafe_sub  x offs len =
 end
 module Bsc_args : sig 
 #1 "bsc_args.mli"
-(* Copyright (C) 2020- Authors of BuckleScript
+(* Copyright (C) 2020- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -9897,7 +9897,7 @@ val parse_exn :
 
 end = struct
 #1 "bsc_args.ml"
-(* Copyright (C) 2020- Authors of BuckleScript
+(* Copyright (C) 2020- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -10935,7 +10935,7 @@ let pure = "@__PURE__"
 end
 module Ext_path : sig 
 #1 "ext_path.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -11038,7 +11038,7 @@ val package_dir : string Lazy.t
 
 end = struct
 #1 "ext_path.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
+(* Copyright (C) 2017 Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13546,7 +13546,7 @@ let print fmt s =
 end
 module Bspack_ast_extract : sig 
 #1 "bspack_ast_extract.mli"
-(* Copyright (C) 2020 - Authors of BuckleScript
+(* Copyright (C) 2020 - Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13640,7 +13640,7 @@ val build_lazy_queue :
 
 end = struct
 #1 "bspack_ast_extract.ml"
-(* Copyright (C) 2020 - Authors of BuckleScript
+(* Copyright (C) 2020 - Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
