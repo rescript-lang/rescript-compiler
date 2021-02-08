@@ -6,7 +6,7 @@
   3 [2m│[0m 
   [1;31m4[0m [2m│[0m [1;31mapp[0m(((x) => x + 1), 2);
   
-  This is an uncurried BuckleScript function. [1;33mIt must be applied with a dot[0m.
+  This is an uncurried ReScript function. [1;33mIt must be applied with a dot[0m.
   
   Like this: [1;33mfoo(. a, b)[0m
   Not like this: [2mfoo(a, b)[0m
