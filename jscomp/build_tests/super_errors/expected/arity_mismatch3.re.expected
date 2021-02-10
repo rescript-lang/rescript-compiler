@@ -1,0 +1,8 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m/.../fixtures/arity_mismatch3.re[0m:[2m1:23-35[0m
+  
+  [1;31m1[0m [2m│[0m Belt.Array.mapU([||], [1;31m(. a, b) => 1[0m);
+  
+  The field Js.Fn.I2 belongs to the record type Js.Fn.arity2
+  but a field was expected belonging to the record type Js.Fn.arity1
