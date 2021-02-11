@@ -1,4 +1,9 @@
 
+(* Needed for the online playground experience *)
+val super_warning_printer :
+  Warnings.loc ->
+  Format.formatter ->
+  Warnings.t -> unit
 
 val error_of_printer :
   Location.t -> 

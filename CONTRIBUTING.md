@@ -194,13 +194,17 @@ This is usually the file you want to create to test certain compile behavior wit
 - Verify the output, check in the `jscomp/test/my_file_test.ml` and `jscomp/test/my_file_test.js` to version control. The checked in `.js` file is essential for verifying regressions later on.
 - Eventually check in other relevant files changed during the rebuild (depends on your compiler changes).
 
-## Contribute to the BS Playground Bundle
+## Contribute to the ReScript Playground Bundle
 
 > Note: These instructions are designed for building the 4.06 based version of ReScript (ReScript v6).
 
 The "Playground bundle" is the BS compiler compiled to JavaScript, including all necessary dependency files (stdlib / belt etc). It is useful for building tools where you want to compile and execute arbitrary Reason / OCaml in the browser.
 
-The ReScript source code is compiled with a tool called [JSOO (js_of_ocaml)](https://ocsigen.org/js_of_ocaml/3.5.1/manual/overview), which uses OCaml bytecode to compile to JavaScript and is part of the bigger OCaml ecosystem. Before we can compile anything, we need to install the required tools (requires [`opam`](https://opam.ocaml.org/doc/Install.html) to be installed):
+The ReScript source code is compiled with a tool called [JSOO (js_of_ocaml)](https://ocsigen.org/js_of_ocaml/3.6.0/manual/overview), which uses OCaml bytecode to compile to JavaScript and is part of the bigger OCaml ecosystem.
+
+We actually ship a bytecode version of `js_of_ocaml`, so you actually don't need to install any third party dependencies. This is usually for basic usage if you don't care about the compilation speed or a fast feedback loop (e.g. CI).
+
+For faster compilation times, we recommend to install a proper `jsoo` executable:
 
 ```sh
 # Create the right switch, if not created yet (first install)
@@ -210,18 +214,25 @@ opam switch create 4.06.1
 opam switch 4.06.1
 eval `opam config env`
 
-opam install js_of_ocaml.3.5.1
+opam install js_of_ocaml.3.6.0
 ```
 
-### Build the Bundle
+Additionally, make sure to adapt the `scripts/repl.js` file to use the `js_of_ocaml` binary instead (otherwise you'll continue using the slower bytecode version):
 
-The entry point of the JSOO bundle is located in `jscomp/main/jsoo_main.ml` and the script for running JSOO can be found in `scripts/repl.js`. A full clean build can be done like this:
+```diff
+- e(`${OCAMLRUN} ${JSOO} compile jsc.byte ${jsooFlag}-o exports.js`);
++ e(`js_of_ocaml compile jsc.byte ${jsooFlag}-o exports.js`);
+```
+
+### Building the Bundle
+
+The entry point of the JSOO bundle is located in `jscomp/main/jsoo_refmt_main.ml` and the script for running JSOO can be found in `scripts/repl.js`. A full clean build can be done like this:
 
 ```
 # We create a target directory for storing the bundle / stdlib files
 mkdir playground && mkdir playground/stdlib
 
-# We build the ReScript source code and also the bytecode for jsoo_main.ml
+# We build the ReScript source code and also the bytecode for jsoo_refmt_main.ml
 node scripts/ninja.js config && node scripts/ninja.js build
 
 # Now we run the repl.js script pointing to our playground directory (note how it needs to be relative to the repl.js file)
@@ -230,7 +241,7 @@ BS_PLAYGROUND=../playground node scripts/repl.js
 
 _Troubleshooting: if ninja build step failed with `Error: cannot find file '+runtime.js'`, make sure `ocamlfind` is installed with `opam install ocamlfind`._
 
-**You should now find following files:**
+After a successful compilation, you will find following files in your project:
 
 - `playground/exports.js` -> This is the ReScript compiler, which binds the ReScript API to the `window` object.
 - `playground/stdlib/*.js` -> All the ReScript runtime files.
@@ -240,31 +251,28 @@ You can now use the `exports.js` file either directly by using a `<script src="/
 ```
 $ node
 > require("./exports.js");
-undefined
-> let compile_result = ocaml.compile(`Js.log Sys.ocaml_version`); // You can change the code here
-undefined
-> eval(compile_result);
+> let compiler = rescript_compiler.make()
+> let result = compiler.rescript.compile(`Js.log(Sys.ocaml_version)`);
+> eval(result);
 4.06.2+BS
-undefined
 ```
 
 ### Playground JS bundle API
 
-As soon as the bundle is loaded, you will get access to following functions (as seen in [`jsoo_main.ml`](jscomp/main/jsoo_main.ml)):
+As soon as the bundle is loaded, you will get access to the functions exposed in [`jsoo_refmt_main.ml`](jscomp/refmt/jsoo_refmt_main.ml). Best way to check out the API is by inspecting a compiler instance it either in node, or in the browser:
 
-- `window.ocaml`:
-  - `compile(code: string)`: Compiles given code
-  - `shake_compile(code: string)`: Compiles given code with tree-shaking
-  - `compile_super_errors(code: string)`: Compiles given code and outputs `super_errors` related messages on `console.error`
-  - `compile_super_errors_ppx_v2(code: string)`: Compiles given code with the React v2 syntax
-  - `compile_super_errors_ppx_v3(code: string)`: Compiles given code with the React v3 syntax
-  - `load_module(cmi_path: string, cmi_content: string, cmj_name: string, cmj_content: string)`: Loads a module into the compiler (see notes on `cmj` / `cmi` below)
+```
+$ node
+require('./exports.js')
 
-For each compile every successful operation will return `{js_code: string}`. On compile errors, the returned object will be `{js_error_msg: string}`.
+> let compiler = rescript_compiler.make()
+> console.log(compiler)
+```
+
 
 ### Working on the Playground JS API
 
-Whenever you are modifying any files in the ReScript compiler, or in the `jsoo_main.ml` file, you'll need to rebuild the source and recreate the JS bundle.
+Whenever you are modifying any files in the ReScript compiler, or in the `jsoo_refmt_main.ml` file, you'll need to rebuild the source and recreate the JS bundle.
 
 ```sh
 node scripts/ninja.js config && node scripts/ninja.js build
