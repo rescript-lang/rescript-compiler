@@ -27,6 +27,23 @@
     Utilities for option data type
 *)
 
+
+val keepU : 'a option -> ('a -> bool [@bs]) -> 'a option
+(** Uncurried version of [keep] *)
+
+val keep : 'a option -> ('a -> bool) -> 'a option
+(**
+  [keep optionValue p]
+  
+  If [optionValue] is [Some value] and [p value = true], it returns [Some value]; otherwise returns [None]
+  
+  @example {[
+    keep (Some 10)(fun x -> x > 5);; (* returns [Some 10] *)
+    keep (Some 4)(fun x -> x > 5);; (* returns [None] *)
+    keep None (fun x -> x > 5);; (* returns [None] *)
+  ]}
+*)
+
 val forEachU : 'a option -> ('a -> unit [@bs]) -> unit
 (** Uncurried version of [forEach] *)
 

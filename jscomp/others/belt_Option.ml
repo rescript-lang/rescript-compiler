@@ -22,6 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
+let keepU opt p = match opt with
+  | Some x as some when (p x [@bs]) -> some
+  | _ -> None
+
+let keep opt p = keepU opt (fun[@bs] x -> p x)
+
 let forEachU opt f = match opt with
   | Some x -> (f x [@bs])
   | None  -> ()
