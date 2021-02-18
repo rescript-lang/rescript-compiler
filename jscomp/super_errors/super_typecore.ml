@@ -124,6 +124,22 @@ let print_expr_type_clash env trace ppf = begin
     show_extra_help ppf env trace;
   end
 
+let reportJsFnArityMismatch ~arityA ~arityB ppf =
+  let extractArity s =
+    if Ext_string.starts_with s "arity" then
+      (* get the number part of e.g. arity12 *)
+      (* assumption: the module Js.Fn only contains types from arity0 to arity22 *)
+      String.sub s 5 ((String.length s) - 5)
+    else
+      raise (Invalid_argument "Unrecognized arity type name.")
+  in
+  let firstNumber = extractArity arityA in
+  fprintf ppf "This function expected @{<info>%s@} %s, but got @{<error>%s@}"
+    firstNumber
+    (if firstNumber = "1" then "argument" else "arguments")
+    (extractArity arityB)
+
+
 (* Pasted from typecore.ml. Needed for some cases in report_error below *)
 (* Records *)
 let label_of_kind kind =
@@ -169,10 +185,10 @@ let report_error env ppf = function
     ) ->
     fprintf ppf "This function is a curried function where an uncurried function is expected"
   | Expr_type_clash (
-      (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),a,_),_,_)}) ::
-      (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),b,_),_,_)}) :: _
-    ) when a <> b ->
-    fprintf ppf "This function has %s but was expected %s" a b
+      (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),arityA,_),_,_)}) ::
+      (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),arityB,_),_,_)}) :: _
+    ) ->
+    reportJsFnArityMismatch ~arityA ~arityB ppf
   | Expr_type_clash (
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),a,_),_,_)}) ::
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),b,_),_,_)}) :: _
