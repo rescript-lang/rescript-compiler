@@ -292,6 +292,20 @@ let report_error env ppf = function
         name (*kind*) Printtyp.path p;
        end;
       spellcheck ppf name valid_names;
+  | Name_type_mismatch (
+      "record",
+      Ldot (Ldot ((Lident "Js"), "Fn"), _arityFieldName),
+      (
+        _,
+        (Pdot (Pdot ((Pident {name = "Js"}), "Fn", _), arityA, _))
+      ),
+      [(
+        _,
+        (Pdot (Pdot ((Pident {name = "Js"}), "Fn", _), arityB, _))
+      )]
+    ) ->
+      (* modified *)
+      reportJsFnArityMismatch ~arityA ~arityB ppf
   | anythingElse ->
       Typecore.super_report_error_no_wrap_printing_env env ppf anythingElse
 
