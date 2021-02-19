@@ -104,7 +104,7 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
       (Ext_list.flat_map assignment (fun 
         ((xlabel : External_arg_spec.obj_param), (arg  : J.expression )) -> 
       match xlabel with 
-      | {obj_arg_label = Obj_optional {name = label} } -> 
+      | {obj_arg_label = Obj_optional {name = label;for_sure_no_nested_option} } -> 
         (* Need make sure whether assignment is effectful or not
           to avoid code duplication
         *)
@@ -114,7 +114,7 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
             Lam_compile_external_call.ocaml_to_js_eff 
             ~arg_label:
              Arg_empty ~arg_type:xlabel.obj_arg_type 
-              (Js_of_lam_option.val_from_option arg) in 
+              (if for_sure_no_nested_option then arg else Js_of_lam_option.val_from_option arg) in 
           begin match acc with 
           | Splice1 v  ->                         
             [S.if_ (Js_of_lam_option.is_not_none arg )
@@ -134,7 +134,7 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
             ~arg_label:
              Arg_empty
              ~arg_type:xlabel.obj_arg_type             
-              (Js_of_lam_option.val_from_option arg) in 
+              (if for_sure_no_nested_option then arg else Js_of_lam_option.val_from_option arg) in 
           begin match acc with 
           | Splice1 v  ->        
             st ::  
