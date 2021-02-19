@@ -37,7 +37,8 @@ type label_noname =
 type label = 
   | Obj_label of {name : string }
   | Obj_empty 
-  | Obj_optional of {name : string }
+  | Obj_optional of {name : string; for_sure_no_nested_option : bool }
+
   (* it will be ignored , side effect will be recorded *)
 
 
@@ -90,7 +91,8 @@ let empty_label = Obj_empty
 let obj_label name  = 
     Obj_label {name }
   
-let optional name = Obj_optional {name}
+let optional for_sure_no_nested_option name =
+   Obj_optional {name; for_sure_no_nested_option}
 
 let empty_kind obj_arg_type = { obj_arg_label = empty_label ; obj_arg_type }
 let dummy = 
