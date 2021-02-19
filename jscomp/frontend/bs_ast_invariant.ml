@@ -117,27 +117,10 @@ let emit_external_warnings : iterator=
     super with
     type_declaration = (fun self ptyp -> 
         let txt = ptyp.ptype_name.txt in
-        (match txt with 
-         | "int"         
-         | "char"
-         | "bytes"
-         | "float"
-         | "bool"
-         | "unit"
-         | "exn"
-         | "int32"
-         | "int64"
-         | "string" 
-         (* not adding parametric types yet 
-         | "array"
-         | "list"
-         | "option"
-         *)
-          ->
-           Location.raise_errorf ~loc:ptyp.ptype_loc 
-           "built-in type `%s` can not be redefined " txt
-         | _ -> ()
-        );
+        if Ast_core_type.is_builtin_rank0_type txt then 
+          Location.raise_errorf ~loc:ptyp.ptype_loc 
+            "built-in type `%s` can not be redefined " txt
+        ;
         super.type_declaration self ptyp
       );
     attribute = (fun _ attr -> warn_unused_attribute attr);

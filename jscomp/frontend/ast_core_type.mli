@@ -29,13 +29,10 @@ type t = Parsetree.core_type
 
 val lift_option_type : t -> t
 
-(* val replace_result : t -> t -> t *)
-
-(* val opt_arrow: Location.t -> string -> t -> t -> t *)
-
 val is_unit : t -> bool
-(* val is_array : t -> bool *)
 
+val is_builtin_rank0_type : 
+  string -> bool
 
 (** return a function type
     [from_labels ~loc tyvars labels]
@@ -51,11 +48,6 @@ val make_obj :
   t
 
 val is_user_option : t -> bool
-
-(* val is_user_bool : t -> bool
-
-val is_user_int : t -> bool *)
-
 
 
 (**
