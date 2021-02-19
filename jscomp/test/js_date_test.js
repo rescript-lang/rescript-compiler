@@ -45,7 +45,7 @@ var suites_1 = {
         (function (param) {
             return {
                     TAG: /* Ok */4,
-                    _0: isNaN(Date.parse("gibberish"))
+                    _0: Number.isNaN(Date.parse("gibberish"))
                   };
           })
       ],
@@ -77,7 +77,7 @@ var suites_1 = {
               (function (param) {
                   return {
                           TAG: /* Ok */4,
-                          _0: isNaN(new Date("gibberish").getTime())
+                          _0: Number.isNaN(new Date("gibberish").getTime())
                         };
                 })
             ],
