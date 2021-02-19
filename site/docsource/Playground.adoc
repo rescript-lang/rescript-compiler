@@ -1,8 +1,0 @@
-There are two Playgrounds, one for
-https:////bucklescript.github.io/bucklescript-playground[vanilla OCaml],
-the other for
-https://reasonml.github.io/try/[ReasonML]
-
-Note that the playgrounds are only for demos and might not be the
-latest.
-You should always use the command line as your production tool.
