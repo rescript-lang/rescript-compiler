@@ -52,7 +52,7 @@ function make(foo) {
   return function (param) {
     var tmp = {};
     if (partial_arg !== undefined) {
-      tmp.foo = Caml_option.valFromOption(partial_arg);
+      tmp.foo = partial_arg;
     }
     return tmp;
   };
@@ -79,10 +79,10 @@ function test3(_open, xx__hi) {
     hi: 2
   };
   if (_open !== undefined) {
-    tmp.open = Caml_option.valFromOption(_open);
+    tmp.open = _open;
   }
   if (xx__hi !== undefined) {
-    tmp.xx = Caml_option.valFromOption(xx__hi);
+    tmp.xx = xx__hi;
   }
   return tmp;
 }
@@ -94,7 +94,7 @@ function test4(_open, xx__hi) {
     hi: 2
   };
   if (xx__hi !== undefined) {
-    tmp.xx = Caml_option.valFromOption(xx__hi);
+    tmp.xx = xx__hi;
   }
   return tmp;
 }
@@ -106,11 +106,11 @@ function test5(f, x) {
   };
   var tmp$1 = Curry._1(f, x);
   if (tmp$1 !== undefined) {
-    tmp.open = Caml_option.valFromOption(tmp$1);
+    tmp.open = tmp$1;
   }
   var tmp$2 = Curry._1(f, x);
   if (tmp$2 !== undefined) {
-    tmp.xx = Caml_option.valFromOption(tmp$2);
+    tmp.xx = tmp$2;
   }
   return tmp;
 }
@@ -125,11 +125,11 @@ function test6(f, x) {
   };
   var tmp$1 = (x$1.contents = x$1.contents + 1 | 0, x$1.contents);
   if (tmp$1 !== undefined) {
-    tmp.open = Caml_option.valFromOption(tmp$1);
+    tmp.open = tmp$1;
   }
   var tmp$2 = f(x$1);
   if (tmp$2 !== undefined) {
-    tmp.xx = Caml_option.valFromOption(tmp$2);
+    tmp.xx = tmp$2;
   }
   return tmp;
 }

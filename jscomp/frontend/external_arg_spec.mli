@@ -32,7 +32,8 @@ type label = private
   | Obj_label of {name : string}
   | Obj_empty 
   
-  | Obj_optional of {name : string}
+  | Obj_optional of {name : string;
+    for_sure_no_nested_option : bool}
   (* it will be ignored , side effect will be recorded *)
 
 
@@ -83,6 +84,8 @@ val cst_string : string -> cst
 val empty_label : label
 (* val empty_lit : cst -> label  *)
 val obj_label :  string -> label
-val optional  : string -> label
+val optional  : 
+  bool ->
+  string -> label
 val empty_kind : attr -> obj_param
 val dummy : param

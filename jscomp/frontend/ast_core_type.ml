@@ -56,10 +56,25 @@ open Ast_helper
     | _ -> result in
   aux ty *)
 
+let is_builtin_rank0_type txt =   
+  match txt with 
+  | "int"         
+  | "char"
+  | "bytes"
+  | "float"
+  | "bool"
+  | "unit"
+  | "exn"
+  | "int32"
+  | "int64"
+  | "string" -> true 
+  | _ -> false
+    
 let is_unit (ty : t ) =
   match ty.ptyp_desc with
   | Ptyp_constr({txt =Lident "unit"}, []) -> true
   | _ -> false
+
 
 (* let is_array (ty : t) =
   match ty.ptyp_desc with

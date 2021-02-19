@@ -71,14 +71,15 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
       let (accs, eff, assign) as r = aux labels args  in 
       Js_of_lam_option.destruct_optional arg 
         ~for_sure_none:r 
-        ~for_sure_some:(fun x -> let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff 
-            ~arg_label:Arg_label ~arg_type:obj_arg_type x in 
-          begin match acc with 
-          | Splice2 _
-          | Splice0 -> assert false 
-          | Splice1 x ->
-            (Js_op.Lit label, x) :: accs , Ext_list.append new_eff  eff , assign
-          end )
+        ~for_sure_some:(fun x -> 
+            let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff 
+                ~arg_label:Arg_label ~arg_type:obj_arg_type x in 
+            begin match acc with 
+              | Splice2 _
+              | Splice0 -> assert false 
+              | Splice1 x ->
+                (Js_op.Lit label, x) :: accs , Ext_list.append new_eff  eff , assign
+            end )
         ~not_sure:(fun _ -> accs, eff , (arg_kind,arg)::assign )
     | {obj_arg_label = Obj_empty  | Obj_label _ | Obj_optional _  } :: _ , [] -> assert false 
     | [],  _ :: _  -> assert false 
@@ -103,7 +104,7 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
       (Ext_list.flat_map assignment (fun 
         ((xlabel : External_arg_spec.obj_param), (arg  : J.expression )) -> 
       match xlabel with 
-      | {obj_arg_label = Obj_optional {name = label} } -> 
+      | {obj_arg_label = Obj_optional {name = label;for_sure_no_nested_option} } -> 
         (* Need make sure whether assignment is effectful or not
           to avoid code duplication
         *)
@@ -113,7 +114,7 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
             Lam_compile_external_call.ocaml_to_js_eff 
             ~arg_label:
              Arg_empty ~arg_type:xlabel.obj_arg_type 
-              (Js_of_lam_option.val_from_option arg) in 
+              (if for_sure_no_nested_option then arg else Js_of_lam_option.val_from_option arg) in 
           begin match acc with 
           | Splice1 v  ->                         
             [S.if_ (Js_of_lam_option.is_not_none arg )
@@ -133,7 +134,7 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
             ~arg_label:
              Arg_empty
              ~arg_type:xlabel.obj_arg_type             
-              (Js_of_lam_option.val_from_option arg) in 
+              (if for_sure_no_nested_option then arg else Js_of_lam_option.val_from_option arg) in 
           begin match acc with 
           | Splice1 v  ->        
             st ::  
