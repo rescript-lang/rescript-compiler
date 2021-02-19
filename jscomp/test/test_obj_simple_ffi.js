@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_option = require("../../lib/js/caml_option.js");
 
 function v(displayName, param) {
   var tmp = {
@@ -9,7 +8,7 @@ function v(displayName, param) {
     hi: "ghos"
   };
   if (displayName !== undefined) {
-    tmp.displayName = Caml_option.valFromOption(displayName);
+    tmp.displayName = displayName;
   }
   return tmp;
 }
