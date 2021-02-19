@@ -77,7 +77,7 @@ let warn_discarded_unused_attributes (attrs : Parsetree.attributes) =
     
 
 type iterator = Ast_iterator.iterator
-let default_iterator = Ast_iterator.default_iterator
+let super = Ast_iterator.default_iterator
 
 let check_constant loc kind (const : Parsetree.constant) = 
   match const with 
@@ -114,7 +114,32 @@ let check_constant loc kind (const : Parsetree.constant) =
    rolling our own*)
 let emit_external_warnings : iterator=
   {
-    default_iterator with
+    super with
+    type_declaration = (fun self ptyp -> 
+        let txt = ptyp.ptype_name.txt in
+        (match txt with 
+         | "int"         
+         | "char"
+         | "bytes"
+         | "float"
+         | "bool"
+         | "unit"
+         | "exn"
+         | "int32"
+         | "int64"
+         | "string" 
+         (* not adding parametric types yet 
+         | "array"
+         | "list"
+         | "option"
+         *)
+          ->
+           Location.raise_errorf ~loc:ptyp.ptype_loc 
+           "built-in type `%s` can not be redefined " txt
+         | _ -> ()
+        );
+        super.type_declaration self ptyp
+      );
     attribute = (fun _ attr -> warn_unused_attribute attr);
     structure_item = (fun self str_item -> 
       match str_item.pstr_desc with 
@@ -122,12 +147,12 @@ let emit_external_warnings : iterator=
         when !Config.syntax_kind = `rescript ->        
           Location.raise_errorf ~loc:str_item.pstr_loc 
           "GADT has to be recursive types, please try `type rec'" 
-      | _ -> default_iterator.structure_item self str_item  
+      | _ -> super.structure_item self str_item  
     );
     expr = (fun self a -> 
         match a.pexp_desc with  
         | Pexp_constant(const) -> check_constant a.pexp_loc `expr const
-        | _ -> default_iterator.expr self a 
+        | _ -> super.expr self a 
       );
     label_declaration = (fun self lbl ->     
      
@@ -137,7 +162,7 @@ let emit_external_warnings : iterator=
           | {txt = "bs.as" | "as"}, _ -> mark_used_bs_attribute attr
           | _ -> ()
           );
-      default_iterator.label_declaration self lbl      
+      super.label_declaration self lbl      
     );  
     constructor_declaration = (fun self ({pcd_name = {txt;loc}} as ctr) -> 
       (match txt with  
@@ -146,7 +171,7 @@ let emit_external_warnings : iterator=
       | "()" -> 
         Location.raise_errorf ~loc:loc "%s can not be redefined " txt
       | _ -> ());
-      default_iterator.constructor_declaration self ctr  
+      super.constructor_declaration self ctr  
     );
     value_description =
       (fun self v -> 
@@ -164,13 +189,13 @@ let emit_external_warnings : iterator=
              ~loc:pval_loc
              "%%identity expect its type to be of form 'a -> 'b (arity 1)"
          | _ ->
-           default_iterator.value_description self v 
+           super.value_description self v 
       );
     pat = begin fun self (pat : Parsetree.pattern) -> 
       match pat.ppat_desc with
       |  Ppat_constant(constant) ->
         check_constant pat.ppat_loc `pat constant
-      | _ -> default_iterator.pat self pat
+      | _ -> super.pat self pat
     end 
   }
 
