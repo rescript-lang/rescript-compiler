@@ -148,8 +148,8 @@ external concatMany : t -> t array -> t = "concat" [@@bs.send] [@@bs.splice]
     [endsWith substr str] returns [true] if the [str] ends with [substr], [false] otherwise.
 
 @example {[
-  endsWith "BuckleScript" "Script" = true;;
-  endsWith "BuckleShoes" "Script" = false;;
+  endsWith "ReScript" "Script" = true;;
+  endsWith "ReShoes" "Script" = false;;
 ]}
 *)
 external endsWith : t -> t -> bool = "endsWith" [@@bs.send]
@@ -491,9 +491,9 @@ external splitByReAtMost : t -> Js_re.t -> limit:int ->  t option array = "split
     [startsWith substr str] returns [true] if the [str] starts with [substr], [false] otherwise.
 
 @example {[
-  startsWith "BuckleScript" "Buckle" = true;;
-  startsWith "BuckleScript" "" = true;;
-  startsWith "JavaScript" "Buckle" = false;;
+  startsWith "ReScript" "Re" = true;;
+  startsWith "ReScript" "" = true;;
+  startsWith "JavaScript" "Re" = false;;
 ]}
 *)
 external startsWith : t -> t -> bool = "startsWith" [@@bs.send]
@@ -502,9 +502,9 @@ external startsWith : t -> t -> bool = "startsWith" [@@bs.send]
     [startsWithFrom substr n str] returns [true] if the [str] starts with [substr] starting at position [n], [false] otherwise. If [n] is negative, the search starts at the beginning of [str].
 
 @example {[
-  startsWithFrom "BuckleScript" "kle" 3 = true;;
-  startsWithFrom "BuckleScript" "" 3 = true;;
-  startsWithFrom "JavaScript" "Buckle" 2 = false;;
+  startsWithFrom "ReScript" "cri" 3 = true;;
+  startsWithFrom "ReScript" "" 3 = true;;
+  startsWithFrom "JavaScript" "Re" 2 = false;;
 ]}
 *)
 external startsWithFrom : t -> t -> int -> bool = "startsWith" [@@bs.send]
