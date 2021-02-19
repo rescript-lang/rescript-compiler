@@ -71,14 +71,15 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
       let (accs, eff, assign) as r = aux labels args  in 
       Js_of_lam_option.destruct_optional arg 
         ~for_sure_none:r 
-        ~for_sure_some:(fun x -> let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff 
-            ~arg_label:Arg_label ~arg_type:obj_arg_type x in 
-          begin match acc with 
-          | Splice2 _
-          | Splice0 -> assert false 
-          | Splice1 x ->
-            (Js_op.Lit label, x) :: accs , Ext_list.append new_eff  eff , assign
-          end )
+        ~for_sure_some:(fun x -> 
+            let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff 
+                ~arg_label:Arg_label ~arg_type:obj_arg_type x in 
+            begin match acc with 
+              | Splice2 _
+              | Splice0 -> assert false 
+              | Splice1 x ->
+                (Js_op.Lit label, x) :: accs , Ext_list.append new_eff  eff , assign
+            end )
         ~not_sure:(fun _ -> accs, eff , (arg_kind,arg)::assign )
     | {obj_arg_label = Obj_empty  | Obj_label _ | Obj_optional _  } :: _ , [] -> assert false 
     | [],  _ :: _  -> assert false 
