@@ -21,7 +21,7 @@ var suites_1 = {
         return {
                 TAG: /* Eq */0,
                 _0: true,
-                _1: isNaN(NaN)
+                _1: Number.isNaN(NaN)
               };
       })
   ],
@@ -32,7 +32,7 @@ var suites_1 = {
           return {
                   TAG: /* Eq */0,
                   _0: false,
-                  _1: isNaN(0)
+                  _1: Number.isNaN(0)
                 };
         })
     ],
@@ -43,7 +43,7 @@ var suites_1 = {
             return {
                     TAG: /* Eq */0,
                     _0: false,
-                    _1: isFinite(Pervasives.infinity)
+                    _1: Number.isFinite(Pervasives.infinity)
                   };
           })
       ],
@@ -54,7 +54,7 @@ var suites_1 = {
               return {
                       TAG: /* Eq */0,
                       _0: false,
-                      _1: isFinite(Pervasives.neg_infinity)
+                      _1: Number.isFinite(Pervasives.neg_infinity)
                     };
             })
         ],
@@ -65,7 +65,7 @@ var suites_1 = {
                 return {
                         TAG: /* Eq */0,
                         _0: false,
-                        _1: isFinite(NaN)
+                        _1: Number.isFinite(NaN)
                       };
               })
           ],
@@ -76,7 +76,7 @@ var suites_1 = {
                   return {
                           TAG: /* Eq */0,
                           _0: true,
-                          _1: isFinite(0)
+                          _1: Number.isFinite(0)
                         };
                 })
             ],
@@ -490,7 +490,7 @@ var suites_1 = {
                                                                                           return {
                                                                                                   TAG: /* Eq */0,
                                                                                                   _0: true,
-                                                                                                  _1: isNaN(Number("foo"))
+                                                                                                  _1: Number.isNaN(Number("foo"))
                                                                                                 };
                                                                                         })
                                                                                     ],

@@ -40,7 +40,7 @@ therefore necessary to test for [_NaN].
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN> MDN
 *)
-external isNaN : float -> bool = "isNaN" [@@bs.val]
+external isNaN : float -> bool = "isNaN" [@@bs.val] [@@bs.scope "Number"]
 
 (** Tests if the given value is finite
 
@@ -62,7 +62,7 @@ let _ = Js.Float.isFinite 1234
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite> MDN
 *)
-external isFinite : float -> bool = "isFinite" [@@bs.val]
+external isFinite : float -> bool = "isFinite" [@@bs.val] [@@bs.scope "Number"]
 
 (** Formats a [float] using exponential (scientific) notation
 

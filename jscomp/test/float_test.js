@@ -163,8 +163,8 @@ Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 48, characte
 var match$3 = Caml_float.caml_modf_float(Number.NaN);
 
 Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 49, characters 5-12", [
-      isNaN(match$3[0]),
-      isNaN(match$3[1])
+      Number.isNaN(match$3[0]),
+      Number.isNaN(match$3[1])
     ], [
       true,
       true
