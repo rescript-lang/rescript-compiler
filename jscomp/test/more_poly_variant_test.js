@@ -54,10 +54,14 @@ function g(x) {
 }
 
 function f1(param) {
-  if (param === "As") {
-    return "A";
-  } else {
-    return "other";
+  switch (param) {
+    case "A" :
+    case "B" :
+    case "C" :
+        return "other";
+    case "As" :
+        return "A";
+    
   }
 }
 

@@ -26,12 +26,14 @@ function fff(x) {
 }
 
 function h(x) {
-  if (x === "B") {
-    return 1;
-  } else if (x === "C") {
-    return 2;
-  } else {
-    return 0;
+  switch (x) {
+    case "A" :
+        return 0;
+    case "B" :
+        return 1;
+    case "C" :
+        return 2;
+    
   }
 }
 

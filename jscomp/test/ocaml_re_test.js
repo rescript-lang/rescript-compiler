@@ -1242,15 +1242,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
             marks
           ];
         var y$prime$prime = match[0];
-        if (s._0 === "Non_greedy") {
-          return {
-                  hd: {
-                    TAG: /* TMatch */2,
-                    _0: marks
-                  },
-                  tl: tseq(kind, y$prime$prime, x, rem)
-                };
-        } else {
+        if (s._0 === "Greedy") {
           return tseq(kind, y$prime$prime, x, {
                       hd: {
                         TAG: /* TMatch */2,
@@ -1258,6 +1250,14 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
                       },
                       tl: rem
                     });
+        } else {
+          return {
+                  hd: {
+                    TAG: /* TMatch */2,
+                    _0: marks
+                  },
+                  tl: tseq(kind, y$prime$prime, x, rem)
+                };
         }
     case /* Mark */4 :
         var i = s._0;
@@ -1352,14 +1352,16 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
   if (marks === undefined) {
     return tseq(kind, y, z, rem);
   }
-  if (kind === "Longest") {
-    return tseq(kind, Curry._1(remove_matches, y), z, delta_1(marks, c, next_cat, prev_cat, z, rem));
+  switch (kind) {
+    case "Shortest" :
+        return delta_1(marks, c, next_cat, prev_cat, z, tseq(kind, Curry._1(remove_matches, y), z, rem));
+    case "Longest" :
+        return tseq(kind, Curry._1(remove_matches, y), z, delta_1(marks, c, next_cat, prev_cat, z, rem));
+    case "First" :
+        var match = split_at_match_rec(/* [] */0, y);
+        return tseq(kind, match[0], z, delta_1(marks, c, next_cat, prev_cat, z, tseq(kind, match[1], z, rem)));
+    
   }
-  if (kind !== "First") {
-    return delta_1(marks, c, next_cat, prev_cat, z, tseq(kind, Curry._1(remove_matches, y), z, rem));
-  }
-  var match = split_at_match_rec(/* [] */0, y);
-  return tseq(kind, match[0], z, delta_1(marks, c, next_cat, prev_cat, z, tseq(kind, match[1], z, rem)));
 }
 
 function delta_4(c, next_cat, prev_cat, l, rem) {
@@ -2372,12 +2374,12 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
             var cr = match$1[0];
             var rem;
             if (j !== undefined) {
-              var f = greedy === "Non_greedy" ? (function(cr,kind$prime){
+              var f = greedy === "Greedy" ? (function(cr,kind$prime){
                 return function (rem) {
                   return alt(ids, {
-                              hd: mk_expr(ids, /* Eps */0),
+                              hd: seq$1(ids, kind$prime, rename(ids, cr), rem),
                               tl: {
-                                hd: seq$1(ids, kind$prime, rename(ids, cr), rem),
+                                hd: mk_expr(ids, /* Eps */0),
                                 tl: /* [] */0
                               }
                             });
@@ -2385,9 +2387,9 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
                 }(cr,kind$prime)) : (function(cr,kind$prime){
                 return function (rem) {
                   return alt(ids, {
-                              hd: seq$1(ids, kind$prime, rename(ids, cr), rem),
+                              hd: mk_expr(ids, /* Eps */0),
                               tl: {
-                                hd: mk_expr(ids, /* Eps */0),
+                                hd: seq$1(ids, kind$prime, rename(ids, cr), rem),
                                 tl: /* [] */0
                               }
                             });
@@ -4114,12 +4116,14 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
 function re(flagsOpt, pat) {
   var flags = flagsOpt !== undefined ? flagsOpt : /* [] */0;
   var opts = List.map((function (param) {
-          if (param === "CASELESS") {
-            return "Caseless";
-          } else if (param === "ANCHORED") {
-            return "Anchored";
-          } else {
-            return "Multiline";
+          switch (param) {
+            case "MULTILINE" :
+                return "Multiline";
+            case "CASELESS" :
+                return "Caseless";
+            case "ANCHORED" :
+                return "Anchored";
+            
           }
         }), flags);
   var optsOpt = opts;

@@ -2119,207 +2119,207 @@ function print(scope) {
 }
 
 function runtime_function(param) {
-  var match = param[0];
-  if (match === "Decode") {
-    var match$1 = param[1];
-    if (typeof match$1 === "number") {
-      switch (match$1) {
-        case /* Pk_bits32 */0 :
-            switch (param[2]) {
-              case /* Bt_float */1 :
-                  return "Pbrt.Decoder.float_as_bits32";
-              case /* Bt_int */2 :
-                  return "Pbrt.Decoder.int_as_bits32";
-              case /* Bt_int32 */3 :
-                  return "Pbrt.Decoder.int32_as_bits32";
-              case /* Bt_string */0 :
-              case /* Bt_int64 */4 :
-              case /* Bt_bytes */5 :
-              case /* Bt_bool */6 :
-                  throw {
-                        RE_EXN_ID: "Failure",
-                        _1: "Invalid encoding/OCaml type combination",
-                        Error: new Error()
-                      };
-              
-            }
-        case /* Pk_bits64 */1 :
-            switch (param[2]) {
-              case /* Bt_float */1 :
-                  return "Pbrt.Decoder.float_as_bits64";
-              case /* Bt_int */2 :
-                  return "Pbrt.Decoder.int_as_bits64";
-              case /* Bt_int64 */4 :
-                  return "Pbrt.Decoder.int64_as_bits64";
-              case /* Bt_string */0 :
-              case /* Bt_int32 */3 :
-              case /* Bt_bytes */5 :
-              case /* Bt_bool */6 :
-                  throw {
-                        RE_EXN_ID: "Failure",
-                        _1: "Invalid encoding/OCaml type combination",
-                        Error: new Error()
-                      };
-              
-            }
-        case /* Pk_bytes */2 :
-            var match$2 = param[2];
-            if (match$2 === 5) {
-              return "Pbrt.Decoder.bytes";
-            }
-            if (match$2 === 0) {
-              return "Pbrt.Decoder.string";
-            }
-            throw {
-                  RE_EXN_ID: "Failure",
-                  _1: "Invalid encoding/OCaml type combination",
-                  Error: new Error()
-                };
-        
-      }
-    } else if (match$1._0) {
-      switch (param[2]) {
-        case /* Bt_int */2 :
-            return "Pbrt.Decoder.int_as_zigzag";
-        case /* Bt_int32 */3 :
-            return "Pbrt.Decoder.int32_as_zigzag";
-        case /* Bt_int64 */4 :
-            return "Pbrt.Decoder.int64_as_zigzag";
-        case /* Bt_string */0 :
-        case /* Bt_float */1 :
-        case /* Bt_bytes */5 :
-        case /* Bt_bool */6 :
-            throw {
-                  RE_EXN_ID: "Failure",
-                  _1: "Invalid encoding/OCaml type combination",
-                  Error: new Error()
-                };
-        
-      }
-    } else {
-      switch (param[2]) {
-        case /* Bt_int */2 :
-            return "Pbrt.Decoder.int_as_varint";
-        case /* Bt_int32 */3 :
-            return "Pbrt.Decoder.int32_as_varint";
-        case /* Bt_int64 */4 :
-            return "Pbrt.Decoder.int64_as_varint";
-        case /* Bt_string */0 :
-        case /* Bt_float */1 :
-        case /* Bt_bytes */5 :
-            throw {
-                  RE_EXN_ID: "Failure",
-                  _1: "Invalid encoding/OCaml type combination",
-                  Error: new Error()
-                };
-        case /* Bt_bool */6 :
-            return "Pbrt.Decoder.bool";
-        
-      }
-    }
-  } else if (match === "Encode") {
-    var match$3 = param[1];
-    if (typeof match$3 === "number") {
-      switch (match$3) {
-        case /* Pk_bits32 */0 :
-            switch (param[2]) {
-              case /* Bt_float */1 :
-                  return "Pbrt.Encoder.float_as_bits32";
-              case /* Bt_int */2 :
-                  return "Pbrt.Encoder.int_as_bits32";
-              case /* Bt_int32 */3 :
-                  return "Pbrt.Encoder.int32_as_bits32";
-              case /* Bt_string */0 :
-              case /* Bt_int64 */4 :
-              case /* Bt_bytes */5 :
-              case /* Bt_bool */6 :
-                  throw {
-                        RE_EXN_ID: "Failure",
-                        _1: "Invalid encoding/OCaml type combination",
-                        Error: new Error()
-                      };
-              
-            }
-        case /* Pk_bits64 */1 :
-            switch (param[2]) {
-              case /* Bt_float */1 :
-                  return "Pbrt.Encoder.float_as_bits64";
-              case /* Bt_int */2 :
-                  return "Pbrt.Encoder.int_as_bits64";
-              case /* Bt_int64 */4 :
-                  return "Pbrt.Encoder.int64_as_bits64";
-              case /* Bt_string */0 :
-              case /* Bt_int32 */3 :
-              case /* Bt_bytes */5 :
-              case /* Bt_bool */6 :
-                  throw {
-                        RE_EXN_ID: "Failure",
-                        _1: "Invalid encoding/OCaml type combination",
-                        Error: new Error()
-                      };
-              
-            }
-        case /* Pk_bytes */2 :
-            var match$4 = param[2];
-            if (match$4 === 5) {
-              return "Pbrt.Encoder.bytes";
-            }
-            if (match$4 === 0) {
-              return "Pbrt.Encoder.string";
-            }
-            throw {
-                  RE_EXN_ID: "Failure",
-                  _1: "Invalid encoding/OCaml type combination",
-                  Error: new Error()
-                };
-        
-      }
-    } else if (match$3._0) {
-      switch (param[2]) {
-        case /* Bt_int */2 :
-            return "Pbrt.Encoder.int_as_zigzag";
-        case /* Bt_int32 */3 :
-            return "Pbrt.Encoder.int32_as_zigzag";
-        case /* Bt_int64 */4 :
-            return "Pbrt.Encoder.int64_as_zigzag";
-        case /* Bt_string */0 :
-        case /* Bt_float */1 :
-        case /* Bt_bytes */5 :
-        case /* Bt_bool */6 :
-            throw {
-                  RE_EXN_ID: "Failure",
-                  _1: "Invalid encoding/OCaml type combination",
-                  Error: new Error()
-                };
-        
-      }
-    } else {
-      switch (param[2]) {
-        case /* Bt_int */2 :
-            return "Pbrt.Encoder.int_as_varint";
-        case /* Bt_int32 */3 :
-            return "Pbrt.Encoder.int32_as_varint";
-        case /* Bt_int64 */4 :
-            return "Pbrt.Encoder.int64_as_varint";
-        case /* Bt_string */0 :
-        case /* Bt_float */1 :
-        case /* Bt_bytes */5 :
-            throw {
-                  RE_EXN_ID: "Failure",
-                  _1: "Invalid encoding/OCaml type combination",
-                  Error: new Error()
-                };
-        case /* Bt_bool */6 :
-            return "Pbrt.Encoder.bool";
-        
-      }
-    }
-  } else {
-    throw {
-          RE_EXN_ID: "Failure",
-          _1: "Invalid encoding/OCaml type combination",
-          Error: new Error()
-        };
+  switch (param[0]) {
+    case "Decode" :
+        var match = param[1];
+        if (typeof match === "number") {
+          switch (match) {
+            case /* Pk_bits32 */0 :
+                switch (param[2]) {
+                  case /* Bt_float */1 :
+                      return "Pbrt.Decoder.float_as_bits32";
+                  case /* Bt_int */2 :
+                      return "Pbrt.Decoder.int_as_bits32";
+                  case /* Bt_int32 */3 :
+                      return "Pbrt.Decoder.int32_as_bits32";
+                  case /* Bt_string */0 :
+                  case /* Bt_int64 */4 :
+                  case /* Bt_bytes */5 :
+                  case /* Bt_bool */6 :
+                      throw {
+                            RE_EXN_ID: "Failure",
+                            _1: "Invalid encoding/OCaml type combination",
+                            Error: new Error()
+                          };
+                  
+                }
+            case /* Pk_bits64 */1 :
+                switch (param[2]) {
+                  case /* Bt_float */1 :
+                      return "Pbrt.Decoder.float_as_bits64";
+                  case /* Bt_int */2 :
+                      return "Pbrt.Decoder.int_as_bits64";
+                  case /* Bt_int64 */4 :
+                      return "Pbrt.Decoder.int64_as_bits64";
+                  case /* Bt_string */0 :
+                  case /* Bt_int32 */3 :
+                  case /* Bt_bytes */5 :
+                  case /* Bt_bool */6 :
+                      throw {
+                            RE_EXN_ID: "Failure",
+                            _1: "Invalid encoding/OCaml type combination",
+                            Error: new Error()
+                          };
+                  
+                }
+            case /* Pk_bytes */2 :
+                var match$1 = param[2];
+                if (match$1 === 5) {
+                  return "Pbrt.Decoder.bytes";
+                }
+                if (match$1 === 0) {
+                  return "Pbrt.Decoder.string";
+                }
+                throw {
+                      RE_EXN_ID: "Failure",
+                      _1: "Invalid encoding/OCaml type combination",
+                      Error: new Error()
+                    };
+            
+          }
+        } else if (match._0) {
+          switch (param[2]) {
+            case /* Bt_int */2 :
+                return "Pbrt.Decoder.int_as_zigzag";
+            case /* Bt_int32 */3 :
+                return "Pbrt.Decoder.int32_as_zigzag";
+            case /* Bt_int64 */4 :
+                return "Pbrt.Decoder.int64_as_zigzag";
+            case /* Bt_string */0 :
+            case /* Bt_float */1 :
+            case /* Bt_bytes */5 :
+            case /* Bt_bool */6 :
+                throw {
+                      RE_EXN_ID: "Failure",
+                      _1: "Invalid encoding/OCaml type combination",
+                      Error: new Error()
+                    };
+            
+          }
+        } else {
+          switch (param[2]) {
+            case /* Bt_int */2 :
+                return "Pbrt.Decoder.int_as_varint";
+            case /* Bt_int32 */3 :
+                return "Pbrt.Decoder.int32_as_varint";
+            case /* Bt_int64 */4 :
+                return "Pbrt.Decoder.int64_as_varint";
+            case /* Bt_string */0 :
+            case /* Bt_float */1 :
+            case /* Bt_bytes */5 :
+                throw {
+                      RE_EXN_ID: "Failure",
+                      _1: "Invalid encoding/OCaml type combination",
+                      Error: new Error()
+                    };
+            case /* Bt_bool */6 :
+                return "Pbrt.Decoder.bool";
+            
+          }
+        }
+    case "Encode" :
+        var match$2 = param[1];
+        if (typeof match$2 === "number") {
+          switch (match$2) {
+            case /* Pk_bits32 */0 :
+                switch (param[2]) {
+                  case /* Bt_float */1 :
+                      return "Pbrt.Encoder.float_as_bits32";
+                  case /* Bt_int */2 :
+                      return "Pbrt.Encoder.int_as_bits32";
+                  case /* Bt_int32 */3 :
+                      return "Pbrt.Encoder.int32_as_bits32";
+                  case /* Bt_string */0 :
+                  case /* Bt_int64 */4 :
+                  case /* Bt_bytes */5 :
+                  case /* Bt_bool */6 :
+                      throw {
+                            RE_EXN_ID: "Failure",
+                            _1: "Invalid encoding/OCaml type combination",
+                            Error: new Error()
+                          };
+                  
+                }
+            case /* Pk_bits64 */1 :
+                switch (param[2]) {
+                  case /* Bt_float */1 :
+                      return "Pbrt.Encoder.float_as_bits64";
+                  case /* Bt_int */2 :
+                      return "Pbrt.Encoder.int_as_bits64";
+                  case /* Bt_int64 */4 :
+                      return "Pbrt.Encoder.int64_as_bits64";
+                  case /* Bt_string */0 :
+                  case /* Bt_int32 */3 :
+                  case /* Bt_bytes */5 :
+                  case /* Bt_bool */6 :
+                      throw {
+                            RE_EXN_ID: "Failure",
+                            _1: "Invalid encoding/OCaml type combination",
+                            Error: new Error()
+                          };
+                  
+                }
+            case /* Pk_bytes */2 :
+                var match$3 = param[2];
+                if (match$3 === 5) {
+                  return "Pbrt.Encoder.bytes";
+                }
+                if (match$3 === 0) {
+                  return "Pbrt.Encoder.string";
+                }
+                throw {
+                      RE_EXN_ID: "Failure",
+                      _1: "Invalid encoding/OCaml type combination",
+                      Error: new Error()
+                    };
+            
+          }
+        } else if (match$2._0) {
+          switch (param[2]) {
+            case /* Bt_int */2 :
+                return "Pbrt.Encoder.int_as_zigzag";
+            case /* Bt_int32 */3 :
+                return "Pbrt.Encoder.int32_as_zigzag";
+            case /* Bt_int64 */4 :
+                return "Pbrt.Encoder.int64_as_zigzag";
+            case /* Bt_string */0 :
+            case /* Bt_float */1 :
+            case /* Bt_bytes */5 :
+            case /* Bt_bool */6 :
+                throw {
+                      RE_EXN_ID: "Failure",
+                      _1: "Invalid encoding/OCaml type combination",
+                      Error: new Error()
+                    };
+            
+          }
+        } else {
+          switch (param[2]) {
+            case /* Bt_int */2 :
+                return "Pbrt.Encoder.int_as_varint";
+            case /* Bt_int32 */3 :
+                return "Pbrt.Encoder.int32_as_varint";
+            case /* Bt_int64 */4 :
+                return "Pbrt.Encoder.int64_as_varint";
+            case /* Bt_string */0 :
+            case /* Bt_float */1 :
+            case /* Bt_bytes */5 :
+                throw {
+                      RE_EXN_ID: "Failure",
+                      _1: "Invalid encoding/OCaml type combination",
+                      Error: new Error()
+                    };
+            case /* Bt_bool */6 :
+                return "Pbrt.Encoder.bool";
+            
+          }
+        }
+    default:
+      throw {
+            RE_EXN_ID: "Failure",
+            _1: "Invalid encoding/OCaml type combination",
+            Error: new Error()
+          };
   }
 }
 
@@ -7499,52 +7499,57 @@ function compile(proto_definition) {
                                         var mutable_ = is_mutable(field_name$1, field_options$1);
                                         var match$1 = field_label(field$1);
                                         var record_field_type;
-                                        if (match$1 === "Optional") {
-                                          record_field_type = {
-                                            TAG: /* Rft_optional */1,
-                                            _0: [
-                                              field_type$1,
-                                              encoding_number,
-                                              pk,
-                                              field_default$1
-                                            ]
-                                          };
-                                        } else if (match$1 === "Required") {
-                                          record_field_type = {
-                                            TAG: /* Rft_required */0,
-                                            _0: [
-                                              field_type$1,
-                                              encoding_number,
-                                              pk,
-                                              field_default$1
-                                            ]
-                                          };
-                                        } else {
-                                          var match$2 = ocaml_container(field_options$1);
-                                          var repeated_type;
-                                          if (match$2 !== undefined) {
-                                            if (match$2 === "repeated_field") {
-                                              repeated_type = /* Rt_repeated_field */1;
-                                            } else {
-                                              throw {
-                                                    RE_EXN_ID: "Failure",
-                                                    _1: "Invalid ocaml_container attribute value",
-                                                    Error: new Error()
-                                                  };
-                                            }
-                                          } else {
-                                            repeated_type = /* Rt_list */0;
-                                          }
-                                          record_field_type = {
-                                            TAG: /* Rft_repeated_field */2,
-                                            _0: [
-                                              repeated_type,
-                                              field_type$1,
-                                              encoding_number,
-                                              pk,
-                                              match[2]
-                                            ]
-                                          };
+                                        switch (match$1) {
+                                          case "Repeated" :
+                                              var match$2 = ocaml_container(field_options$1);
+                                              var repeated_type;
+                                              if (match$2 !== undefined) {
+                                                if (match$2 === "repeated_field") {
+                                                  repeated_type = /* Rt_repeated_field */1;
+                                                } else {
+                                                  throw {
+                                                        RE_EXN_ID: "Failure",
+                                                        _1: "Invalid ocaml_container attribute value",
+                                                        Error: new Error()
+                                                      };
+                                                }
+                                              } else {
+                                                repeated_type = /* Rt_list */0;
+                                              }
+                                              record_field_type = {
+                                                TAG: /* Rft_repeated_field */2,
+                                                _0: [
+                                                  repeated_type,
+                                                  field_type$1,
+                                                  encoding_number,
+                                                  pk,
+                                                  match[2]
+                                                ]
+                                              };
+                                              break;
+                                          case "Optional" :
+                                              record_field_type = {
+                                                TAG: /* Rft_optional */1,
+                                                _0: [
+                                                  field_type$1,
+                                                  encoding_number,
+                                                  pk,
+                                                  field_default$1
+                                                ]
+                                              };
+                                              break;
+                                          case "Required" :
+                                              record_field_type = {
+                                                TAG: /* Rft_required */0,
+                                                _0: [
+                                                  field_type$1,
+                                                  encoding_number,
+                                                  pk,
+                                                  field_default$1
+                                                ]
+                                              };
+                                              break;
+                                          
                                         }
                                         var record_field_rf_label = label_name_of_field_name(field_name$1);
                                         var record_field = {

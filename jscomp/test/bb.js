@@ -2,12 +2,14 @@
 
 
 function f(x) {
-  if (x === "b") {
-    return "b";
-  } else if (x === "c") {
-    return "c";
-  } else {
-    return "a";
+  switch (x) {
+    case "a" :
+        return "a";
+    case "b" :
+        return "b";
+    case "c" :
+        return "c";
+    
   }
 }
 
@@ -55,12 +57,14 @@ function test(x) {
             Error: new Error()
           };
   }
-  if (match === "b") {
-    return "b";
-  } else if (match === "c") {
-    return "c";
-  } else {
-    return "a";
+  switch (match) {
+    case "a" :
+        return "a";
+    case "b" :
+        return "b";
+    case "c" :
+        return "c";
+    
   }
 }
 
@@ -79,4 +83,4 @@ exports.test_poly = test_poly;
 exports.c = c;
 exports.d = d;
 exports.e = e;
-/* c Not a pure module */
+/* test_poly Not a pure module */

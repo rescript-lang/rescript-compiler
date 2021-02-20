@@ -15,10 +15,10 @@ function eq(loc, x, y) {
 }
 
 function f0(x) {
-  if (x === "azdwbie") {
-    return 1;
-  } else {
+  if (x === "Eric_Cooper") {
     return 0;
+  } else {
+    return 1;
   }
 }
 
@@ -35,9 +35,9 @@ var hi = [
   "azdwbie"
 ];
 
-eq("File \"hash_collision_test.ml\", line 24, characters 9-16", 0, 0);
+eq("File \"hash_collision_test.ml\", line 24, characters 9-16", f0("Eric_Cooper"), 0);
 
-eq("File \"hash_collision_test.ml\", line 25, characters 9-16", 1, 1);
+eq("File \"hash_collision_test.ml\", line 25, characters 9-16", f0("azdwbie"), 1);
 
 eq("File \"hash_collision_test.ml\", line 27, characters 9-16", f1({
           NAME: "Eric_Cooper",

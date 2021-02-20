@@ -55,7 +55,7 @@ let convert  (xs : input) : output =
     @ !os in 
   Ext_list.sort_via_arrayf result (fun x y -> compare x.stamp y.stamp ) (fun x -> x.hash_names_act )   
 
-let or_list (arg : lam) (hash_names : (int * string) list) = 
+let or_list (arg : lam) (hash_names : (int * string) list) : lam = 
   match hash_names with 
   | (hash,name):: rest ->  
     let init : lam = 
@@ -76,15 +76,24 @@ let or_list (arg : lam) (hash_names : (int * string) list) =
 let make_test_sequence_variant_constant
     (fail : lam option) (arg : lam) 
     (int_lambda_list : (int * (string * lam) ) list) : lam =
-  let int_lambda_list : ((int * string) list * lam) list = 
+ Lstringswitch(arg,
+      Ext_list.map int_lambda_list (fun (_, s) -> s),
+      fail,
+      Location.none
+ )   
+  (* let int_lambda_list : ((int * string) list * lam) list = 
     convert int_lambda_list in 
   match int_lambda_list, fail with 
   | (_, act) :: rest, None 
   | rest, Some act ->                     
+    (* Lstringswitch(arg,
+    Ext_list.map rest (fun (i,s) -> s),
+    Some act, Location.none
+    ) *)
     Ext_list.fold_right rest act (fun (hash_names,act1) acc -> 
         let predicate  : lam = or_list arg hash_names in    
         Lifthenelse (predicate,act1, acc))
-  | [], None -> assert false
+  | [], None -> assert false *)
 
 
 let call_switcher_variant_constant

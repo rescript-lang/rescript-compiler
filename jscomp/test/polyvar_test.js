@@ -1,10 +1,18 @@
 'use strict';
 
 
+function f(x) {
+  if (x === "A") {
+    return "A";
+  } else {
+    return "B";
+  }
+}
+
 var ff = "B";
 
 console.log([
-      "A",
+      f("A"),
       ff,
       "A"
     ]);

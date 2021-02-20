@@ -22375,31 +22375,29 @@ function directive_parse(token_with_comments, lexbuf) {
                   }
                   var version = match[1][0];
                   var major = version[0];
-                  var pred = match[0];
                   var match$1 = semantic_version_parse(lhs$1, 0, lhs$1.length - 1 | 0);
                   var lversion = match$1[0];
-                  if (pred === "Ge") {
-                    return Caml_obj.caml_greaterequal(lversion, version);
-                  }
-                  if (pred === "Gt") {
-                    return Caml_obj.caml_greaterthan(lversion, version);
-                  }
-                  if (pred === "Le") {
-                    return Caml_obj.caml_lessequal(lversion, version);
-                  }
-                  if (pred === "Lt") {
-                    return Caml_obj.caml_lessthan(lversion, version);
-                  }
-                  if (pred === "Exact") {
-                    return Caml_obj.caml_equal(lversion, version);
-                  }
                   var l_major = lversion[0];
-                  if (pred === "Compatible") {
-                    return major === l_major;
-                  } else if (major === l_major) {
-                    return version[1] === lversion[1];
-                  } else {
-                    return false;
+                  switch (match[0]) {
+                    case "Approximate" :
+                        if (major === l_major) {
+                          return version[1] === lversion[1];
+                        } else {
+                          return false;
+                        }
+                    case "Ge" :
+                        return Caml_obj.caml_greaterequal(lversion, version);
+                    case "Gt" :
+                        return Caml_obj.caml_greaterthan(lversion, version);
+                    case "Le" :
+                        return Caml_obj.caml_lessequal(lversion, version);
+                    case "Lt" :
+                        return Caml_obj.caml_lessthan(lversion, version);
+                    case "Exact" :
+                        return Caml_obj.caml_equal(lversion, version);
+                    case "Compatible" :
+                        return major === l_major;
+                    
                   }
                 }
                 exit$2 = 3;
