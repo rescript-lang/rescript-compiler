@@ -464,21 +464,25 @@ let rec scan scanner =
   skipWhitespace scanner;
   let startPos = position scanner in
   let ch = scanner.ch in
-  let token = if ch == CharacterCodes.underscore then (
+  let token =
+  if CharacterCodes.isLetter ch then
+    scanIdentifier scanner
+  else if CharacterCodes.isDigit ch then
+    scanNumber scanner
+  else if ch == CharacterCodes.underscore then (
     let nextCh = peek scanner in
-    if nextCh == CharacterCodes.underscore || CharacterCodes.isDigit nextCh || CharacterCodes.isLetter nextCh then
+    if CharacterCodes.isLetter nextCh || CharacterCodes.isDigit nextCh || nextCh == CharacterCodes.underscore then
       scanIdentifier scanner
     else (
       next scanner;
       Token.Underscore
     )
-  ) else if CharacterCodes.isLetter ch then
-    scanIdentifier scanner
-  else if CharacterCodes.isDigit ch then
-    scanNumber scanner
+  )
   else begin
     next scanner;
-    if ch == CharacterCodes.dot then
+    if ch = -1 then Token.Eof
+    else match char_of_int ch with
+    | '.' ->
       if scanner.ch == CharacterCodes.dot then (
         next scanner;
         if scanner.ch == CharacterCodes.dot then (
@@ -490,9 +494,8 @@ let rec scan scanner =
       ) else (
         Token.Dot
       )
-    else if ch == CharacterCodes.doubleQuote then
-      scanString scanner
-    else if ch == CharacterCodes.singleQuote then (
+    | '"' -> scanString scanner
+    | '\'' ->
       if scanner.ch == CharacterCodes.backslash
         && not ((peek scanner) == CharacterCodes.doubleQuote) (* start of exotic ident *)
       then (
@@ -506,7 +509,7 @@ let rec scan scanner =
       ) else (
         SingleQuote
       )
-    ) else if ch == CharacterCodes.bang then
+    | '!' ->
       if scanner.ch == CharacterCodes.equal then (
         next scanner;
         if scanner.ch == CharacterCodes.equal then (
@@ -518,9 +521,8 @@ let rec scan scanner =
       ) else (
         Token.Bang
       )
-    else if ch == CharacterCodes.semicolon then
-      Token.Semicolon
-    else if ch == CharacterCodes.equal then (
+    | ';' -> Token.Semicolon
+    | '=' ->
       if scanner.ch == CharacterCodes.greaterThan then (
         next scanner;
         Token.EqualGreater
@@ -535,7 +537,7 @@ let rec scan scanner =
       ) else (
         Token.Equal
       )
-    ) else if ch == CharacterCodes.bar then
+    | '|' ->
       if scanner.ch == CharacterCodes.bar then (
         next scanner;
         Token.Lor
@@ -545,28 +547,21 @@ let rec scan scanner =
       ) else (
         Token.Bar
       )
-    else if ch == CharacterCodes.ampersand then
+    | '&' ->
       if scanner.ch == CharacterCodes.ampersand then (
         next scanner;
         Token.Land
       ) else (
         Token.Band
       )
-    else if ch == CharacterCodes.lparen then
-      Token.Lparen
-    else if ch == CharacterCodes.rparen then
-      Token.Rparen
-    else if ch == CharacterCodes.lbracket then
-      Token.Lbracket
-    else if ch == CharacterCodes.rbracket then
-      Token.Rbracket
-    else if ch == CharacterCodes.lbrace then
-      Token.Lbrace
-    else if ch == CharacterCodes.rbrace then
-      Token.Rbrace
-    else if ch == CharacterCodes.comma then
-      Token.Comma
-    else if ch == CharacterCodes.colon then
+    | '(' -> Token.Lparen
+    | ')' -> Token.Rparen
+    | '[' -> Token.Lbracket
+    | ']' -> Token.Rbracket
+    | '{' -> Token.Lbrace
+    | '}' -> Token.Rbrace
+    | ',' -> Token.Comma
+    | ':' ->
      if scanner.ch == CharacterCodes.equal then(
         next scanner;
         Token.ColonEqual
@@ -576,9 +571,8 @@ let rec scan scanner =
       ) else (
         Token.Colon
       )
-    else if ch == CharacterCodes.backslash then
-      scanExoticIdentifier scanner
-    else if ch == CharacterCodes.forwardslash then
+    | '\\' -> scanExoticIdentifier scanner
+    | '/' ->
       if scanner.ch == CharacterCodes.forwardslash then (
         next scanner;
         scanSingleLineComment scanner
@@ -591,7 +585,7 @@ let rec scan scanner =
       ) else (
         Token.Forwardslash
       )
-    else if ch == CharacterCodes.minus then
+    | '-' ->
       if scanner.ch == CharacterCodes.dot then (
         next scanner;
         Token.MinusDot
@@ -601,7 +595,7 @@ let rec scan scanner =
       ) else (
         Token.Minus
       )
-    else if ch == CharacterCodes.plus then
+    | '+' ->
       if scanner.ch == CharacterCodes.dot then (
         next scanner;
         Token.PlusDot
@@ -614,14 +608,14 @@ let rec scan scanner =
       ) else (
         Token.Plus
       )
-    else if ch == CharacterCodes.greaterThan then
+    | '>' ->
       if scanner.ch == CharacterCodes.equal && not (inDiamondMode scanner) then (
         next scanner;
         Token.GreaterEqual
       ) else (
         Token.GreaterThan
       )
-    else if ch == CharacterCodes.lessThan then
+    | '<' ->
       (* Imagine the following: <div><
        * < indicates the start of a new jsx-element, the parser expects
        * the name of a new element after the <
@@ -645,14 +639,14 @@ let rec scan scanner =
       ) else (
         Token.LessThan
       )
-    else if ch == CharacterCodes.hash then
-      if scanner.ch == CharacterCodes.equal then(
+    | '#' ->
+      if scanner.ch == CharacterCodes.equal then (
         next scanner;
         Token.HashEqual
       ) else (
         Token.Hash
       )
-    else if ch == CharacterCodes.asterisk then
+    | '*' ->
       if scanner.ch == CharacterCodes.asterisk then (
         next scanner;
         Token.Exponentiation;
@@ -662,36 +656,30 @@ let rec scan scanner =
       ) else (
         Token.Asterisk
       )
-    else if ch == CharacterCodes.tilde then
-      Token.Tilde
-    else if ch == CharacterCodes.question then
-      Token.Question
-    else if ch == CharacterCodes.at then
+    | '~' -> Token.Tilde
+    | '?' -> Token.Question
+    | '@' ->
       if scanner.ch == CharacterCodes.at then (
         next scanner;
         Token.AtAt
       ) else (
         Token.At
       )
-  else if ch == CharacterCodes.percent then
-    if scanner.ch == CharacterCodes.percent then (
-      next scanner;
-      Token.PercentPercent
-    ) else (
-      Token.Percent
-    )
-    else if ch == CharacterCodes.backtick  then
-      Token.Backtick
-    else if ch == -1 then
-      Token.Eof
-    else (
+    | '%' ->
+      if scanner.ch == CharacterCodes.percent then (
+        next scanner;
+        Token.PercentPercent
+      ) else (
+        Token.Percent
+      )
+    | '`' -> Token.Backtick
+    | _ ->
       (* if we arrive here, we're dealing with an unkown character,
        * report the error and continue scanning… *)
       let endPos = position scanner in
       scanner.err ~startPos ~endPos (Diagnostics.unknownUchar ch);
       let (_, _, token) = scan scanner in
       token
-    )
   end in
   let endPos = position scanner in
   (startPos, endPos, token)
