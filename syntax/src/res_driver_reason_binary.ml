@@ -15,7 +15,7 @@ let extractConcreteSyntax filename =
     if String.length filename > 0 then IO.readFile ~filename
     else IO.readStdin ()
   in
-  let scanner = Res_scanner.make (Bytes.of_string src) ~filename in
+  let scanner = Res_scanner.make src ~filename in
 
   let rec next prevEndPos scanner =
     let (startPos, endPos, token) = Res_scanner.scan scanner in

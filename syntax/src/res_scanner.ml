@@ -13,7 +13,7 @@ type charEncoding = Char.t
 
 type t = {
   filename: string;
-  src: bytes;
+  src: string;
   mutable err:
     startPos: Lexing.position
     -> endPos: Lexing.position
@@ -61,26 +61,26 @@ let position scanner = Lexing.{
 }
 
 let next scanner =
-  if scanner.rdOffset < Bytes.length scanner.src then (
+  if scanner.rdOffset < String.length scanner.src then (
     scanner.offset <- scanner.rdOffset;
-    let ch = (Bytes.get [@doesNotRaise]) scanner.src scanner.rdOffset in
+    let ch = (String.get [@doesNotRaise]) scanner.src scanner.rdOffset in
     scanner.rdOffset <- scanner.rdOffset + 1;
     scanner.ch <- ch
   ) else (
-    scanner.offset <- Bytes.length scanner.src;
+    scanner.offset <- String.length scanner.src;
     scanner.ch <- hackyEOFChar
   )
 
 let peek scanner =
-  if scanner.rdOffset < Bytes.length scanner.src then
-    Bytes.unsafe_get scanner.src scanner.rdOffset
+  if scanner.rdOffset < String.length scanner.src then
+    String.unsafe_get scanner.src scanner.rdOffset
   else
     hackyEOFChar
 
-let make ?(line=1) ~filename b =
+let make ?(line=1) ~filename src =
   let scanner = {
     filename;
-    src = b;
+    src = src;
     err = (fun ~startPos:_ ~endPos:_ _ -> ());
     ch = ' ';
     offset = 0;
@@ -118,7 +118,7 @@ let scanIdentifier scanner =
   ) do
     next scanner
   done;
-  let str = Bytes.sub_string scanner.src startOff (scanner.offset - startOff) in
+  let str = (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff) in
   if '{' == scanner.ch && str = "list"
   then begin
     next scanner;
@@ -185,7 +185,7 @@ let scanNumber scanner =
     | _ -> isFloat
   in
   let literal =
-    Bytes.sub_string scanner.src startOff (scanner.offset - startOff)
+    (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff)
   in
 
   (* suffix *)
@@ -323,7 +323,7 @@ let scanString scanner =
     )
   in
   scan ();
-  Token.String (Bytes.sub_string scanner.src offs (scanner.offset - offs - 1))
+  Token.String ((String.sub [@doesNotRaise]) scanner.src offs (scanner.offset - offs - 1))
 
 let scanEscape scanner =
   let convertNumber scanner ~n ~base =
@@ -366,7 +366,7 @@ let scanSingleLineComment scanner =
   Token.Comment (
     Comment.makeSingleLineComment
       ~loc:(Location.{loc_start = startPos; loc_end = endPos; loc_ghost = false})
-      (Bytes.sub_string scanner.src startOff (scanner.offset - startOff))
+      ((String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff))
   )
 
 let scanMultiLineComment scanner =
@@ -399,7 +399,7 @@ let scanMultiLineComment scanner =
   Token.Comment (
     Comment.makeMultiLineComment
       ~loc:(Location.{loc_start = startPos; loc_end = (position scanner); loc_ghost = false})
-      (Bytes.sub_string scanner.src startOff (scanner.offset - 2 - startOff))
+      ((String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - 2 - startOff))
   )
 
 let scanTemplateLiteralToken scanner =
@@ -416,19 +416,19 @@ let scanTemplateLiteralToken scanner =
       let endPos = position scanner in
       scanner.err ~startPos ~endPos Diagnostics.unclosedTemplate;
       Token.TemplateTail(
-        Bytes.sub_string scanner.src startOff (scanner.offset - 1 - startOff)
+        (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - 1 - startOff)
       )
     ) else if scanner.ch == '`' then (
       next scanner;
       Token.TemplateTail(
-        Bytes.sub_string scanner.src startOff (scanner.offset - 1 - startOff)
+        (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - 1 - startOff)
       )
     ) else if scanner.ch == '$' &&
               (peek scanner) == '{' then (
       next scanner; (* consume $ *)
       next scanner; (* consume { *)
       let contents =
-        Bytes.sub_string scanner.src startOff (scanner.offset - 2 - startOff)
+        (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - 2 - startOff)
       in
       Token.TemplatePart contents
     ) else if scanner.ch == '\\' then (
@@ -697,7 +697,7 @@ let isBinaryOp src startCnum endCnum =
     let leftOk =
       let c =
         (startCnum - 1)
-        |> (Bytes.get [@doesNotRaise]) src
+        |> (String.get [@doesNotRaise]) src
       in
       c == ' ' ||
       c == '\t' ||
@@ -705,8 +705,8 @@ let isBinaryOp src startCnum endCnum =
     in
     let rightOk =
       let c =
-        if endCnum == Bytes.length src then hackyEOFChar
-        else endCnum |> (Bytes.get [@doesNotRaise]) src
+        if endCnum == String.length src then hackyEOFChar
+        else endCnum |> (String.get [@doesNotRaise]) src
       in
       c == ' ' ||
       c == '\t' ||
@@ -728,7 +728,7 @@ let tryAdvanceQuotedString scanner =
         while CharacterCodes.isLowerCase scanner.ch do
           next scanner
         done;
-        let suffix = Bytes.sub_string scanner.src startOff (scanner.offset - startOff) in
+        let suffix = (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff) in
         if tag = suffix then (
           if scanner.ch = '}' then
             next scanner
@@ -755,7 +755,7 @@ let tryAdvanceQuotedString scanner =
     while CharacterCodes.isLowerCase scanner.ch do
       next scanner
     done;
-    let tag = Bytes.sub_string scanner.src startOff (scanner.offset - startOff) in
+    let tag = (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff) in
     if scanner.ch = '|' then
       scanContents tag ()
     else

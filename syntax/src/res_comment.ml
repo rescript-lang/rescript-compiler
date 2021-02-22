@@ -57,17 +57,16 @@ let trimSpaces s =
   let len = String.length s in
   if len = 0 then s
   else if String.unsafe_get s 0 = ' ' || String.unsafe_get s (len - 1) = ' ' then (
-    let b = Bytes.of_string s in
     let i = ref 0 in
-    while !i < len && (Bytes.unsafe_get b !i) = ' ' do
+    while !i < len && (String.unsafe_get s !i) = ' ' do
       incr i
     done;
     let j = ref (len - 1) in
-    while !j >= !i && (Bytes.unsafe_get b !j) = ' ' do
+    while !j >= !i && (String.unsafe_get s !j) = ' ' do
       decr j
     done;
     if !j >= !i then
-      (Bytes.sub [@doesNotRaise]) b !i (!j - !i + 1) |> Bytes.to_string
+      (String.sub [@doesNotRaise]) s !i (!j - !i + 1)
     else
       ""
   ) else s

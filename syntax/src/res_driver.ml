@@ -50,7 +50,7 @@ let parsingEngine = {
     | _ as diagnostics -> (true, diagnostics)
     in {
       filename = engine.scanner.filename;
-      source = Bytes.to_string engine.scanner.src;
+      source = engine.scanner.src;
       parsetree = structure;
       diagnostics;
       invalid;
@@ -65,7 +65,7 @@ let parsingEngine = {
     | _ as diagnostics -> (true, diagnostics)
     in {
       filename = engine.scanner.filename;
-      source = Bytes.to_string engine.scanner.src;
+      source = engine.scanner.src;
       parsetree = signature;
       diagnostics;
       invalid;
