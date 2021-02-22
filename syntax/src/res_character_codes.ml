@@ -1,7 +1,5 @@
-let lineSeparator = Char.unsafe_chr 0x2028
-let paragraphSeparator = Char.unsafe_chr 0x2029
-
 let isUpperCase ch = 'A' <= ch && ch <= 'Z' [@@inline]
+
 let isLowerCase ch = 'a' <= ch && ch <= 'z' [@@inline]
 
 let isDigit ch = '0' <= ch && ch <= '9' [@@inline]
@@ -12,23 +10,7 @@ let isHex = function
   | '0'..'9' | 'a'..'f' | 'A'..'F' -> true
   | _ -> false
 
-  (*
-    // ES5 7.3:
-    // The ECMAScript line terminator characters are listed in Table 3.
-    //     Table 3: Line Terminator Characters
-    //     Code Unit Value     Name                    Formal Name
-    //     \u000A              Line Feed               <LF>
-    //     \u000D              Carriage Return         <CR>
-    //     \u2028              Line separator          <LS>
-    //     \u2029              Paragraph separator     <PS>
-    // Only the characters in Table 3 are treated as line terminators. Other new line or line
-    // breaking characters are treated as white space but not as line terminators.
-*)
-let isLineBreak ch =
-     ch == '\n'
-  || ch == '\r'
-  || ch == lineSeparator
-  || ch == paragraphSeparator
+let isLineBreak ch = ch == '\n' || ch == '\r' [@@inline]
 
 let digitValue ch =
   match ch with
