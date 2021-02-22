@@ -212,7 +212,7 @@ let isKeyword = function
 let lookupKeyword str =
   try keywordTable str with
   | Not_found ->
-    if CharacterCodes.isUpperCase (int_of_char (str.[0] [@doesNotRaise])) then
+    if CharacterCodes.isUpperCase ((str.[0] [@doesNotRaise])) then
       Uident str
     else Lident str
 

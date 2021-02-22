@@ -17,7 +17,7 @@ val lident: Token.t -> category
 val unclosedString: category
 val unclosedTemplate: category
 val unclosedComment: category
-val unknownUchar: int -> category
+val unknownUchar: Char.t -> category
 val message: string -> category
 
 val make:

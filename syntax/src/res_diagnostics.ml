@@ -10,7 +10,7 @@ type category =
   | UnclosedString
   | UnclosedTemplate
   | UnclosedComment
-  | UnknownUchar of int
+  | UnknownUchar of Char.t
 
 type t = {
   startPos: Lexing.position;
@@ -65,7 +65,7 @@ let explain t =
     "This comment seems to be missing a closing `*/`"
   | UnknownUchar uchar ->
     begin match uchar with
-    | 94 (* ^ *) ->
+    | '^' ->
       "Hmm, not sure what I should do here with this character.\nIf you're trying to deref an expression, use `foo.contents` instead."
     | _ ->
       "Hmm, I have no idea what this character means…"

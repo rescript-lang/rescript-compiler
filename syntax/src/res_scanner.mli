@@ -8,7 +8,7 @@ type t = {
     -> endPos: Lexing.position
     -> Res_diagnostics.category
     -> unit;
-  mutable ch: int; (* current character *)
+  mutable ch: Char.t; (* current character *)
   mutable offset: int; (* character offset *)
   mutable rdOffset: int; (* reading offset (position after current character) *)
   mutable lineOffset: int; (* current line offset *)

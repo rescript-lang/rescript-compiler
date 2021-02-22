@@ -12,7 +12,7 @@ type t = {
     -> endPos: Lexing.position
     -> Diagnostics.category
     -> unit;
-  mutable ch: int; (* current character *)
+  mutable ch: Char.t; (* current character *)
   mutable offset: int; (* character offset *)
   mutable rdOffset: int; (* reading offset (position after current character) *)
   mutable lineOffset: int; (* current line offset *)
@@ -54,28 +54,28 @@ let position scanner = Lexing.{
 }
 
 let next scanner =
-  if scanner.rdOffset < (Bytes.length scanner.src) then (
+  if scanner.rdOffset < Bytes.length scanner.src then (
     scanner.offset <- scanner.rdOffset;
     let ch = (Bytes.get [@doesNotRaise]) scanner.src scanner.rdOffset in
     scanner.rdOffset <- scanner.rdOffset + 1;
-    scanner.ch <- int_of_char ch
+    scanner.ch <- ch
   ) else (
     scanner.offset <- Bytes.length scanner.src;
-    scanner.ch <- -1
+    scanner.ch <- CharacterCodes.eof
   )
 
 let peek scanner =
-  if scanner.rdOffset < (Bytes.length scanner.src) then
-    int_of_char (Bytes.unsafe_get scanner.src scanner.rdOffset)
+  if scanner.rdOffset < Bytes.length scanner.src then
+    Bytes.unsafe_get scanner.src scanner.rdOffset
   else
-    -1
+    CharacterCodes.eof
 
 let make ?(line=1) ~filename b =
   let scanner = {
     filename;
     src = b;
     err = (fun ~startPos:_ ~endPos:_ _ -> ());
-    ch = CharacterCodes.space;
+    ch = ' ';
     offset = 0;
     rdOffset = 0;
     lineOffset = 0;
@@ -87,7 +87,7 @@ let make ?(line=1) ~filename b =
 
 let skipWhitespace scanner =
   let rec scan () =
-    if scanner.ch == CharacterCodes.space || scanner.ch == CharacterCodes.tab then (
+    if scanner.ch == ' ' || scanner.ch == '\t' then (
       next scanner;
       scan()
     ) else if CharacterCodes.isLineBreak scanner.ch then (
@@ -106,13 +106,13 @@ let scanIdentifier scanner =
   while (
     CharacterCodes.isLetter scanner.ch ||
     CharacterCodes.isDigit scanner.ch ||
-    CharacterCodes.underscore == scanner.ch ||
-    CharacterCodes.singleQuote == scanner.ch
+    '_' == scanner.ch ||
+    '\'' == scanner.ch
   ) do
     next scanner
   done;
   let str = Bytes.sub_string scanner.src startOff (scanner.offset - startOff) in
-  if CharacterCodes.lbrace == scanner.ch && str = "list"
+  if '{' == scanner.ch && str = "list"
   then begin
     next scanner;
     Token.lookupKeyword "list{"
@@ -121,11 +121,11 @@ let scanIdentifier scanner =
 
 let scanDigits scanner ~base =
   if base <= 10 then (
-    while CharacterCodes.isDigit scanner.ch || scanner.ch == CharacterCodes.underscore do
+    while CharacterCodes.isDigit scanner.ch || scanner.ch == '_' do
       next scanner
     done;
   ) else (
-    while CharacterCodes.isHex scanner.ch || scanner.ch == CharacterCodes.underscore do
+    while CharacterCodes.isHex scanner.ch || scanner.ch == '_' do
       next scanner
     done;
   )
@@ -135,22 +135,21 @@ let scanNumber scanner =
   let startOff = scanner.offset in
 
   (* integer part *)
-  let base, _prefix = if scanner.ch != CharacterCodes.dot then (
-    if scanner.ch == CharacterCodes._0 then (
+  let base, _prefix = if scanner.ch != '.' then (
+    if scanner.ch == '0' then (
       next scanner;
-      let ch = CharacterCodes.lower scanner.ch in
-      if ch == CharacterCodes.Lower.x then (
+      match scanner.ch with
+      | 'x' | 'X' ->
         next scanner;
         16, 'x'
-      ) else if ch == CharacterCodes.Lower.o then (
+      | 'o' | 'O' ->
         next scanner;
         8, 'o'
-      ) else if ch == CharacterCodes.Lower.b then (
+      | 'b' | 'B' ->
         next scanner;
         2, 'b'
-      ) else (
+      | _ ->
         8, '0'
-      )
     ) else (
       10, ' '
     )
@@ -159,7 +158,7 @@ let scanNumber scanner =
   scanDigits scanner ~base;
 
   (*  *)
-  let isFloat = if CharacterCodes.dot == scanner.ch then (
+  let isFloat = if '.' == scanner.ch then (
     next scanner;
     scanDigits scanner ~base;
     true
@@ -169,16 +168,14 @@ let scanNumber scanner =
 
   (* exponent part *)
   let isFloat =
-    if let exp = CharacterCodes.lower scanner.ch in
-      exp == CharacterCodes.Lower.e || exp == CharacterCodes.Lower.p
-    then (
+    match scanner.ch with
+    | 'e' | 'E' | 'p' | 'P' ->
       next scanner;
-      if scanner.ch == CharacterCodes.plus || scanner.ch == CharacterCodes.minus then
+      if scanner.ch == '+' || scanner.ch == '-' then
         next scanner;
       scanDigits scanner ~base;
       true
-    ) else
-      isFloat
+    | _ -> isFloat
   in
   let literal =
     Bytes.sub_string scanner.src startOff (scanner.offset - startOff)
@@ -186,11 +183,10 @@ let scanNumber scanner =
 
   (* suffix *)
   let suffix =
-    if scanner.ch >= CharacterCodes.Lower.g && scanner.ch <= CharacterCodes.Lower.z
-       || scanner.ch >= CharacterCodes.Upper.g && scanner.ch <= CharacterCodes.Upper.z
-    then (
+    match scanner.ch with
+    | 'g'..'z' | 'G'..'Z' ->
       let ch = scanner.ch in
-      if CharacterCodes.Lower.n = ch then (
+      if 'n' = ch then (
         let msg =
           "Unsupported number type (nativeint). Did you mean `"
           ^ literal
@@ -203,8 +199,8 @@ let scanNumber scanner =
           (Diagnostics.message msg)
       );
       next scanner;
-      Some (Char.unsafe_chr ch)
-    ) else
+      Some ( ch)
+    | _ ->
       None
   in
   if isFloat then
@@ -221,7 +217,7 @@ let scanExoticIdentifier scanner =
     if scanner.ch == CharacterCodes.eof then
       let endPos = position scanner in
       scanner.err ~startPos ~endPos (Diagnostics.message "Did you forget a \" here?")
-    else if scanner.ch == CharacterCodes.doubleQuote then (
+    else if scanner.ch == '"' then (
       next scanner
     ) else if CharacterCodes.isLineBreak scanner.ch then (
       scanner.lineOffset <- scanner.offset + 1;
@@ -230,7 +226,7 @@ let scanExoticIdentifier scanner =
       scanner.err ~startPos ~endPos (Diagnostics.message "Did you forget a \" here?");
       next scanner
     ) else (
-      Buffer.add_char buffer ((Char.chr [@doesNotRaise]) scanner.ch);
+      Buffer.add_char buffer (scanner.ch);
       next scanner;
       scan()
     )
@@ -239,27 +235,20 @@ let scanExoticIdentifier scanner =
   Token.Lident (Buffer.contents buffer)
 
 let scanStringEscapeSequence ~startPos scanner =
+  match scanner.ch with
   (* \ already consumed *)
-  if CharacterCodes.Lower.n == scanner.ch
-    || CharacterCodes.Lower.t == scanner.ch
-    || CharacterCodes.Lower.b == scanner.ch
-    || CharacterCodes.Lower.r == scanner.ch
-    || CharacterCodes.backslash == scanner.ch
-    || CharacterCodes.space == scanner.ch
-    || CharacterCodes.singleQuote == scanner.ch
-    || CharacterCodes.doubleQuote == scanner.ch
-  then
+  | 'n' | 't' | 'b' | 'r' | '\\' | ' ' | '\'' | '"' ->
     next scanner
-  else
+  | _ ->
     let (n, base, max) =
       if CharacterCodes.isDigit scanner.ch then
         (* decimal *)
         (3, 10, 255)
-      else if scanner.ch == CharacterCodes.Lower.o then
+      else if scanner.ch == 'o' then
         (* octal *)
         let () = next scanner in
         (3, 8, 255)
-      else if scanner.ch == CharacterCodes.Lower.x then
+      else if scanner.ch == 'x' then
         (* hex *)
         let () = next scanner in
         (2, 16, 255)
@@ -284,7 +273,7 @@ let scanStringEscapeSequence ~startPos scanner =
             let d = CharacterCodes.digitValue scanner.ch in
             if d >= base then
               let pos = position scanner in
-              let msg = if scanner.ch == -1 then
+              let msg = if scanner.ch == CharacterCodes.eof then
                 "unclosed escape sequence"
               else "unknown escape sequence"
               in
@@ -309,9 +298,9 @@ let scanString scanner =
     if scanner.ch == CharacterCodes.eof then
       let endPos = position scanner in
       scanner.err ~startPos ~endPos Diagnostics.unclosedString
-    else if scanner.ch == CharacterCodes.doubleQuote then (
+    else if scanner.ch == '"' then (
       next scanner;
-    ) else if scanner.ch == CharacterCodes.backslash then (
+    ) else if scanner.ch == '\\' then (
       let startPos = position scanner in
       next scanner;
       scanStringEscapeSequence ~startPos scanner;
@@ -329,37 +318,33 @@ let scanString scanner =
   scan ();
   Token.String (Bytes.sub_string scanner.src offs (scanner.offset - offs - 1))
 
-(* I wonder if this gets inlined *)
-let convertNumber scanner ~n ~base =
-  let x = ref 0 in
-  for _ = n downto 1 do
-    let d = CharacterCodes.digitValue scanner.ch in
-    x := (!x * base) + d;
-    next scanner
-  done;
-  !x
-
 let scanEscape scanner =
+  let convertNumber scanner ~n ~base =
+    let x = ref 0 in
+    for _ = n downto 1 do
+      let d = CharacterCodes.digitValue scanner.ch in
+      x := (!x * base) + d;
+      next scanner
+    done;
+    (Char.chr [@doesNotRaise]) !x
+  in
   (* let offset = scanner.offset in *)
   let c = match scanner.ch with
-  | 98 (* b *)  -> next scanner; '\008'
-  | 110 (* n *) -> next scanner; '\010'
-  | 114 (* r *) -> next scanner; '\013'
-  | 116 (* t *) -> next scanner; '\009'
+  | 'b' -> next scanner; '\008'
+  | 'n' -> next scanner; '\010'
+  | 'r' -> next scanner; '\013'
+  | 't' -> next scanner; '\009'
+  | 'x' ->
+    next scanner;
+    convertNumber scanner ~n:2 ~base:16
+  | 'o' ->
+    next scanner;
+    convertNumber scanner ~n:3 ~base:8
   | ch when CharacterCodes.isDigit ch ->
-    let x = convertNumber scanner ~n:3 ~base:10 in
-    (Char.chr [@doesNotRaise]) x
-  | ch when ch == CharacterCodes.Lower.x ->
-    next scanner;
-    let x = convertNumber scanner ~n:2 ~base:16 in
-    (Char.chr [@doesNotRaise]) x
-  | ch when ch == CharacterCodes.Lower.o ->
-    next scanner;
-    let x = convertNumber scanner ~n:3 ~base:8 in
-    (Char.chr [@doesNotRaise]) x
+    convertNumber scanner ~n:3 ~base:10
   | ch ->
     next scanner;
-    (Char.chr [@doesNotRaise]) ch
+    ch
   in
   next scanner; (* Consume \' *)
   Token.Character c
@@ -367,7 +352,7 @@ let scanEscape scanner =
 let scanSingleLineComment scanner =
   let startOff = scanner.offset in
   let startPos = position scanner in
-  while not (CharacterCodes.isLineBreak scanner.ch) && scanner.ch >= 0 do
+  while scanner.ch != CharacterCodes.eof && not (CharacterCodes.isLineBreak scanner.ch) do
     next scanner
   done;
   let endPos = position scanner in
@@ -381,16 +366,16 @@ let scanMultiLineComment scanner =
   let startOff = scanner.offset in
   let startPos = position scanner in
   let rec scan ~depth () =
-    if scanner.ch == CharacterCodes.asterisk &&
-       peek scanner == CharacterCodes.forwardslash then (
+    if scanner.ch == '*' &&
+       peek scanner == '/' then (
       next scanner;
       next scanner;
       if depth > 0 then scan ~depth:(depth - 1) () else ()
     ) else if scanner.ch == CharacterCodes.eof then (
       let endPos = position scanner in
       scanner.err ~startPos ~endPos Diagnostics.unclosedComment
-    ) else if scanner.ch == CharacterCodes.forwardslash
-      && peek scanner == CharacterCodes. asterisk then (
+    ) else if scanner.ch == '/'
+      && peek scanner == '*' then (
       next scanner;
       next scanner;
       scan ~depth:(depth + 1) ()
@@ -414,7 +399,7 @@ let scanTemplateLiteralToken scanner =
   let startOff = scanner.offset in
 
   (* if starting } here, consume it *)
-  if scanner.ch == CharacterCodes.rbrace then (
+  if scanner.ch == '}' then (
     next scanner
   );
   let startPos = position scanner in
@@ -426,24 +411,24 @@ let scanTemplateLiteralToken scanner =
       Token.TemplateTail(
         Bytes.sub_string scanner.src startOff (scanner.offset - 1 - startOff)
       )
-    ) else if scanner.ch == CharacterCodes.backtick then (
+    ) else if scanner.ch == '`' then (
       next scanner;
       Token.TemplateTail(
         Bytes.sub_string scanner.src startOff (scanner.offset - 1 - startOff)
       )
-    ) else if scanner.ch == CharacterCodes.dollar &&
-              (peek scanner) == CharacterCodes.lbrace then (
+    ) else if scanner.ch == '$' &&
+              (peek scanner) == '{' then (
       next scanner; (* consume $ *)
       next scanner; (* consume { *)
       let contents =
         Bytes.sub_string scanner.src startOff (scanner.offset - 2 - startOff)
       in
       Token.TemplatePart contents
-    ) else if scanner.ch == CharacterCodes.backslash then (
+    ) else if scanner.ch == '\\' then (
       next scanner;
-      if scanner.ch == CharacterCodes.backtick
-        || scanner.ch == CharacterCodes.backslash
-        || scanner.ch == CharacterCodes.dollar
+      if scanner.ch == '`'
+        || scanner.ch == '\\'
+        || scanner.ch == '$'
         || CharacterCodes.isLineBreak scanner.ch
       then next scanner;
       scan()
@@ -469,9 +454,9 @@ let rec scan scanner =
     scanIdentifier scanner
   else if CharacterCodes.isDigit ch then
     scanNumber scanner
-  else if ch == CharacterCodes.underscore then (
+  else if ch == '_' then (
     let nextCh = peek scanner in
-    if CharacterCodes.isLetter nextCh || CharacterCodes.isDigit nextCh || nextCh == CharacterCodes.underscore then
+    if CharacterCodes.isLetter nextCh || CharacterCodes.isDigit nextCh || nextCh == '_' then
       scanIdentifier scanner
     else (
       next scanner;
@@ -480,12 +465,12 @@ let rec scan scanner =
   )
   else begin
     next scanner;
-    if ch = -1 then Token.Eof
-    else match char_of_int ch with
+    if ch == CharacterCodes.eof then Token.Eof
+    else match ch with
     | '.' ->
-      if scanner.ch == CharacterCodes.dot then (
+      if scanner.ch == '.' then (
         next scanner;
-        if scanner.ch == CharacterCodes.dot then (
+        if scanner.ch == '.' then (
           next scanner;
           Token.DotDotDot
         ) else (
@@ -496,23 +481,23 @@ let rec scan scanner =
       )
     | '"' -> scanString scanner
     | '\'' ->
-      if scanner.ch == CharacterCodes.backslash
-        && not ((peek scanner) == CharacterCodes.doubleQuote) (* start of exotic ident *)
+      if scanner.ch == '\\'
+        && not ((peek scanner) == '"') (* start of exotic ident *)
       then (
         next scanner;
         scanEscape scanner
-      ) else if (peek scanner) == CharacterCodes.singleQuote then (
+      ) else if (peek scanner) == '\'' then (
         let ch = scanner.ch in
         next scanner;
         next scanner;
-        Token.Character ((Char.chr [@doesNotRaise]) ch)
+        Token.Character (ch)
       ) else (
         SingleQuote
       )
     | '!' ->
-      if scanner.ch == CharacterCodes.equal then (
+      if scanner.ch == '=' then (
         next scanner;
-        if scanner.ch == CharacterCodes.equal then (
+        if scanner.ch == '=' then (
           next scanner;
           Token.BangEqualEqual
         ) else (
@@ -523,12 +508,12 @@ let rec scan scanner =
       )
     | ';' -> Token.Semicolon
     | '=' ->
-      if scanner.ch == CharacterCodes.greaterThan then (
+      if scanner.ch == '>' then (
         next scanner;
         Token.EqualGreater
-      ) else if scanner.ch == CharacterCodes.equal then (
+      ) else if scanner.ch == '=' then (
         next scanner;
-        if scanner.ch == CharacterCodes.equal then (
+        if scanner.ch == '=' then (
           next scanner;
           Token.EqualEqualEqual
         ) else (
@@ -538,17 +523,17 @@ let rec scan scanner =
         Token.Equal
       )
     | '|' ->
-      if scanner.ch == CharacterCodes.bar then (
+      if scanner.ch == '|' then (
         next scanner;
         Token.Lor
-      ) else if scanner.ch == CharacterCodes.greaterThan then (
+      ) else if scanner.ch == '>' then (
         next scanner;
         Token.BarGreater
       ) else (
         Token.Bar
       )
     | '&' ->
-      if scanner.ch == CharacterCodes.ampersand then (
+      if scanner.ch == '&' then (
         next scanner;
         Token.Land
       ) else (
@@ -562,10 +547,10 @@ let rec scan scanner =
     | '}' -> Token.Rbrace
     | ',' -> Token.Comma
     | ':' ->
-     if scanner.ch == CharacterCodes.equal then(
+     if scanner.ch == '=' then(
         next scanner;
         Token.ColonEqual
-      ) else if (scanner.ch == CharacterCodes.greaterThan) then (
+      ) else if (scanner.ch == '>') then (
         next scanner;
         Token.ColonGreaterThan
       ) else (
@@ -573,43 +558,43 @@ let rec scan scanner =
       )
     | '\\' -> scanExoticIdentifier scanner
     | '/' ->
-      if scanner.ch == CharacterCodes.forwardslash then (
+      if scanner.ch == '/' then (
         next scanner;
         scanSingleLineComment scanner
-      ) else if (scanner.ch == CharacterCodes.asterisk) then (
+      ) else if (scanner.ch == '*') then (
         next scanner;
         scanMultiLineComment scanner
-      ) else if scanner.ch == CharacterCodes.dot then (
+      ) else if scanner.ch == '.' then (
         next scanner;
         Token.ForwardslashDot
       ) else (
         Token.Forwardslash
       )
     | '-' ->
-      if scanner.ch == CharacterCodes.dot then (
+      if scanner.ch == '.' then (
         next scanner;
         Token.MinusDot
-      ) else if scanner.ch == CharacterCodes.greaterThan then (
+      ) else if scanner.ch == '>' then (
         next scanner;
         Token.MinusGreater;
       ) else (
         Token.Minus
       )
     | '+' ->
-      if scanner.ch == CharacterCodes.dot then (
+      if scanner.ch == '.' then (
         next scanner;
         Token.PlusDot
-      ) else if scanner.ch == CharacterCodes.plus then (
+      ) else if scanner.ch == '+' then (
         next scanner;
         Token.PlusPlus
-      ) else if scanner.ch == CharacterCodes.equal then (
+      ) else if scanner.ch == '=' then (
         next scanner;
         Token.PlusEqual
       ) else (
         Token.Plus
       )
     | '>' ->
-      if scanner.ch == CharacterCodes.equal && not (inDiamondMode scanner) then (
+      if scanner.ch == '=' && not (inDiamondMode scanner) then (
         next scanner;
         Token.GreaterEqual
       ) else (
@@ -625,32 +610,32 @@ let rec scan scanner =
        * the </ is emitted as a single new token LessThanSlash *)
       if inJsxMode scanner then (
         skipWhitespace scanner;
-        if scanner.ch == CharacterCodes.forwardslash then
+        if scanner.ch == '/' then
           let () = next scanner in
           Token.LessThanSlash
-        else if scanner.ch == CharacterCodes.equal then (
+        else if scanner.ch == '=' then (
           next scanner;
           Token.LessEqual
         ) else
           Token.LessThan
-      ) else if scanner.ch == CharacterCodes.equal then (
+      ) else if scanner.ch == '=' then (
         next scanner;
         Token.LessEqual
       ) else (
         Token.LessThan
       )
     | '#' ->
-      if scanner.ch == CharacterCodes.equal then (
+      if scanner.ch == '=' then (
         next scanner;
         Token.HashEqual
       ) else (
         Token.Hash
       )
     | '*' ->
-      if scanner.ch == CharacterCodes.asterisk then (
+      if scanner.ch == '*' then (
         next scanner;
         Token.Exponentiation;
-      ) else if scanner.ch == CharacterCodes.dot then (
+      ) else if scanner.ch == '.' then (
         next scanner;
         Token.AsteriskDot
       ) else (
@@ -659,14 +644,14 @@ let rec scan scanner =
     | '~' -> Token.Tilde
     | '?' -> Token.Question
     | '@' ->
-      if scanner.ch == CharacterCodes.at then (
+      if scanner.ch == '@' then (
         next scanner;
         Token.AtAt
       ) else (
         Token.At
       )
     | '%' ->
-      if scanner.ch == CharacterCodes.percent then (
+      if scanner.ch == '%' then (
         next scanner;
         Token.PercentPercent
       ) else (
@@ -692,7 +677,7 @@ let rec scan scanner =
 let reconsiderLessThan scanner =
   (* < consumed *)
   skipWhitespace scanner;
-  if scanner.ch == CharacterCodes.forwardslash then
+  if scanner.ch == '/' then
     let () = next scanner in
     Token.LessThanSlash
   else
@@ -706,19 +691,18 @@ let isBinaryOp src startCnum endCnum =
       let c =
         (startCnum - 1)
         |> (Bytes.get [@doesNotRaise]) src
-        |> Char.code
       in
-      c == CharacterCodes.space ||
-      c == CharacterCodes.tab ||
+      c == ' ' ||
+      c == '\t' ||
       CharacterCodes.isLineBreak c
     in
     let rightOk =
       let c =
-        if endCnum == Bytes.length src then -1
-        else endCnum |> (Bytes.get [@doesNotRaise]) src |> Char.code
+        if endCnum == Bytes.length src then CharacterCodes.eof
+        else endCnum |> (Bytes.get [@doesNotRaise]) src
       in
-      c == CharacterCodes.space ||
-      c == CharacterCodes.tab ||
+      c == ' ' ||
+      c == '\t' ||
       CharacterCodes.isLineBreak c ||
       c == CharacterCodes.eof
     in
@@ -730,22 +714,22 @@ let tryAdvanceQuotedString scanner =
   let rec scanContents tag () =
     if scanner.ch == CharacterCodes.eof then (
       ()
-    ) else if scanner.ch == CharacterCodes.bar then (
+    ) else if scanner.ch == '|' then (
       next scanner;
-      if CharacterCodes.Lower.a <= scanner.ch && scanner.ch <= CharacterCodes.Lower.z then (
+      if CharacterCodes.isLowerCase scanner.ch then (
         let startOff = scanner.offset in
-        while CharacterCodes.Lower.a <= scanner.ch && scanner.ch <= CharacterCodes.Lower.z do
+        while CharacterCodes.isLowerCase scanner.ch do
           next scanner
         done;
         let suffix = Bytes.sub_string scanner.src startOff (scanner.offset - startOff) in
         if tag = suffix then (
-          if scanner.ch = CharacterCodes.rbrace then
+          if scanner.ch = '}' then
             next scanner
           else
             scanContents tag ()
         ) else
           scanContents tag ()
-      ) else if CharacterCodes.rbrace = scanner.ch then (
+      ) else if '}' = scanner.ch then (
         next scanner
       ) else (
         scanContents tag ()
@@ -759,17 +743,17 @@ let tryAdvanceQuotedString scanner =
       scanContents tag ()
     )
   in
-  if CharacterCodes.Lower.a <= scanner.ch && scanner.ch <= CharacterCodes.Lower.z then (
+  if CharacterCodes.isLowerCase scanner.ch then (
     let startOff = scanner.offset in
-    while CharacterCodes.Lower.a <= scanner.ch && scanner.ch <= CharacterCodes.Lower.z do
+    while CharacterCodes.isLowerCase scanner.ch do
       next scanner
     done;
     let tag = Bytes.sub_string scanner.src startOff (scanner.offset - startOff) in
-    if scanner.ch = CharacterCodes.bar then
+    if scanner.ch = '|' then
       scanContents tag ()
     else
       ()
-  ) else if scanner.ch = CharacterCodes.bar then
+  ) else if scanner.ch = '|' then
     scanContents "" ()
   else
     ()
