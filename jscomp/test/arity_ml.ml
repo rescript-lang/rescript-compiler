@@ -30,7 +30,7 @@ or [@@unboxed]. *)
 
 ;; h (object [@bs] method hi x y =x + y end )
 
-Error: This expression has type < hi : (int -> int -> int [@bs.meth]) > Js.t
+Error: This expression has type < hi : (int -> int -> int [@bs.meth]) > 
        but an expression was expected of type
-         < hi : (int -> int -> 'a [@bs]); .. > Js.t
+         < hi : (int -> int -> 'a [@bs]); .. > 
        Types for method hi are incompatible *)

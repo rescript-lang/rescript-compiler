@@ -99,7 +99,7 @@ class type date =
     method toJSON__1 : 'a -> string
   end[@bs]
 
-type t = date Js.t
+type t = date 
 
 external current_date_as_string : unit -> string = ""
   [@@bs.val "Date"] (* [@@bs.nullary] *)

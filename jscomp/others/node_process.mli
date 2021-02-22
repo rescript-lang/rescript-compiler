@@ -32,7 +32,7 @@ type t =
     disconnect : unit -> unit [@bs.meth];
     platform : string;
     env : string Js_dict.t; (* ocamldep sucks which can not map [Js.Dic.t] to [Js_dict.t]*)
-  >   Js.t
+  >   
 (* FIXME : use record *)
 
 external process : t = "process" [@@bs.module] 

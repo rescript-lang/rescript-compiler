@@ -23,7 +23,7 @@ let my_scoop2 = ice_cream_2 ~flavor:`vanilla ~num:3 ()
 
 
 
-type opt_test = < x : int Js.Undefined.t ; y : int Js.Undefined.t> Js.t
+type opt_test = < x : int Js.Undefined.t ; y : int Js.Undefined.t> 
 external opt_test : ?x:int -> ?y:int -> unit -> _ = "" 
 [@@bs.obj]
 
@@ -38,7 +38,7 @@ external ice_cream3:
     unit -> 
     _ =  ""
 [@@bs.obj] (* TODO: warn when [_] happens in any place except `bs.obj` *)
-type ice_cream3_expect = < flavor: string Js.undefined ; num : int > Js.t 
+type ice_cream3_expect = < flavor: string Js.undefined ; num : int >  
 
 let v_ice_cream3 : ice_cream3_expect list = 
     [ ice_cream3 ~flavor:`vanilla ~num:3 ();
@@ -62,7 +62,7 @@ external label_test : x__ignore:int -> unit -> _ = "" [@@bs.obj]
 
 (** here the type label should be the same, 
     when get the object, it will be mangled *)
-type label_expect = < x__ignore : int > Js.t 
+type label_expect = < x__ignore : int >  
 
 let vv : label_expect = label_test ~x__ignore:3 ()
 
@@ -71,13 +71,13 @@ let vv : label_expect = label_test ~x__ignore:3 ()
 
 external int_test : x__ignore:([`a|`b] [@bs.int]) -> unit -> _ = "" [@@bs.obj]
 (* translate [`a] to 0, [`b] to 1 *)
-type int_expect = < x__ignore : int > Js.t 
+type int_expect = < x__ignore : int >  
 
 let int_expect : int_expect = int_test ~x__ignore:`a ()
 
 external int_test2 : ?x__ignore:([`a|`b] [@bs.int]) -> unit -> _ = "" [@@bs.obj]
 
-type int_expect2  = < x__ignore : int Js.Undefined.t > Js.t 
+type int_expect2  = < x__ignore : int Js.Undefined.t >  
 
 let int_expect2  : int_expect2 = int_test2 ~x__ignore:`a ()
 
@@ -95,7 +95,7 @@ external ice :
   _ =
   "" [@@bs.obj]
 
-let mk_ice  : < flavour : flavor  ; num : int > Js.t  = 
+let mk_ice  : < flavour : flavor  ; num : int >   = 
     ice ~flavour:`vanilla ~num:3 ()
 
 external ice2 :
@@ -104,22 +104,22 @@ external ice2 :
   _ =
   "" [@@bs.obj]
   
-let my_ice2 : < flavour : flavor Js.Undefined.t  ; num : int > Js.t = ice2 ~flavour:`vanilla ~num:1  ()
+let my_ice2 : < flavour : flavor Js.Undefined.t  ; num : int >  = ice2 ~flavour:`vanilla ~num:1  ()
 
-let my_ice3  : < flavour : flavor Js.Undefined.t  ; num : int > Js.t = ice2 ~num:2 ()
+let my_ice3  : < flavour : flavor Js.Undefined.t  ; num : int >  = ice2 ~num:2 ()
 
 
 external mk4:x__ignore:([`a|`b][@bs.ignore]) -> y:int -> unit -> _ = "" [@@bs.obj]
 
-let v_mk4 : < y: int > Js.t  = mk4 ~x__ignore:`a ~y:3 ()
+let v_mk4 : < y: int >   = mk4 ~x__ignore:`a ~y:3 ()
 
 external mk5: x:unit -> y:int -> unit -> _ = "" [@@bs.obj]
 
-let v_mk5 : < x :unit ; y: int > Js.t = mk5 ~x:() ~y:3 ()
+let v_mk5 : < x :unit ; y: int >  = mk5 ~x:() ~y:3 ()
 
 external mk6: ?x:unit -> y:int -> unit -> _ = "" [@@bs.obj]
 
-let v_mk6 : < x : unit Js.Undefined.t ; y : int > Js.t = mk6 ~y:3 ()
+let v_mk6 : < x : unit Js.Undefined.t ; y : int >  = mk6 ~y:3 ()
 
 let v_mk6_1 = mk6 ~x:() ~y:3 ()
 type mk
@@ -128,11 +128,11 @@ external mk :  ?x__ignore:([`a|`b] [@bs.int]) -> unit -> _ = "" [@@bs.obj]
 
 
 (* TODO: fix me *)
-let mk_u : <x__ignore: int Js.Undefined.t > Js.t  = mk ~x__ignore:`a ()
+let mk_u : <x__ignore: int Js.Undefined.t >   = mk ~x__ignore:`a ()
 
 external mk7 : ?x:([`a|`b][@bs.ignore]) -> y:int -> unit -> _ = "" [@@bs.obj]
 
-let v_mk7   :  < y : int > Js.t list   = [
+let v_mk7   :  < y : int >  list   = [
     mk7 ~x:`a ~y:3 ();
     mk7 ~x:`b ~y:2 () ;
     mk7 ~y:2 ()

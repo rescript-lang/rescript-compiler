@@ -8,23 +8,23 @@ let v3  = mk_obj_spec ~test:3 ~config:3 ~hi:"ghos" ~displayName:"display" ()
 
 
 class type x = object 
-  method tet : (x Js.t -> int -> int -> int  [@bs.this])
+  method tet : (x  -> int -> int -> int  [@bs.this])
 end
 
 
 class type y = object 
-  method tet : y Js.t -> int -> int -> int  [@bs.this]
+  method tet : y  -> int -> int -> int  [@bs.this]
 end
 
 
 let u (x : x) : y = x 
 
-type h = < bark : 'self -> int -> int [@bs.this] > Js.t as 'self
-type hh = < bark :( 'self -> int -> int [@bs.this]) > Js.t as 'self
+type h = < bark : 'self -> int -> int [@bs.this] >  as 'self
+type hh = < bark :( 'self -> int -> int [@bs.this]) >  as 'self
 
 let ff (x  : h) : hh = x 
 
-(* let f (u : x Js.t) =  *)
+(* let f (u : x ) =  *)
 (*   u#.tet (1,2) *)
 
 

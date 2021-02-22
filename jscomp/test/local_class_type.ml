@@ -5,7 +5,7 @@ class type _u = object
   method height : int [@@bs.set]
 end[@bs]
 
-type u = _u Js.t
+type u = _u 
 
 let f (x : u) = 
   x##height #= 3

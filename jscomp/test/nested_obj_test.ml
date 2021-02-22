@@ -1,6 +1,6 @@
 
 
-type f_obj = < x : < y : < z : int > Js.t > Js.t > Js.t
+type f_obj = < x : < y : < z : int >  >  > 
 let f : f_obj = [%obj{ x = [%obj{ y = [%obj{ z = 3 }]}]}]
 
 type 'a x = {x : 'a }
@@ -15,7 +15,7 @@ let f : f_obj = [%bs.obj { x = [%obj{ y = ([%obj{ z = 3 }]) }]}]
 
 
 let f2 : 
-  < x : < y : < z : int > Js.t > Js.t > Js.t  list  * < x : < y : < z : int > Js.t > Js.t > Js.t array
+  < x : < y : < z : int >  >  >   list  * < x : < y : < z : int >  >  >  array
  = 
   
     [ 
@@ -30,7 +30,7 @@ let f2 :
 
 let f3 = 
   
-    ([%obj{x = [%obj{y = [%obj{z = 3 }]}]}] : < x : < y : < z : int > Js.t > Js.t > Js.t )
+    ([%obj{x = [%obj{y = [%obj{z = 3 }]}]}] : < x : < y : < z : int >  >  >  )
   
 (* how about 
 let f x = [%bs.obj (x : < x : int > ) ] 

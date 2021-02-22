@@ -16,16 +16,16 @@ external string: string => reactElement = "%identity";
 
 external array: array(reactElement) => reactElement = "%identity";
 
-external refToJsObj: reactRef => Js.t({..}) = "%identity";
+external refToJsObj: reactRef => ({..}) = "%identity";
 
 [@bs.splice] [@bs.val] [@bs.module "react"]
 external createElement:
-  (reactClass, ~props: Js.t({..})=?, array(reactElement)) => reactElement =
+  (reactClass, ~props: ({..})=?, array(reactElement)) => reactElement =
   "createElement";
 
 [@bs.splice] [@bs.module "react"]
 external cloneElement:
-  (reactElement, ~props: Js.t({..})=?, array(reactElement)) => reactElement =
+  (reactElement, ~props: ({..})=?, array(reactElement)) => reactElement =
   "cloneElement";
 
 [@bs.val] [@bs.module "react"]

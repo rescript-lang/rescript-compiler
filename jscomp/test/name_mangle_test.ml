@@ -9,73 +9,73 @@ let eq loc x y =
 (* FIXME: paren needed here 
     {[ x##xh#= (g z )  ]}
 *)
-let f0 (x : < _open : int [@bs.set] > Js.t) = 
+let f0 (x : < _open : int [@bs.set] > ) = 
     let old = x##_open in  
     x##_open #=  (old + 1) ; 
     x##_open 
 
-let f1 (x : < _in : int [@bs.set] > Js.t) = 
+let f1 (x : < _in : int [@bs.set] > ) = 
     let old = x##_in in  
     x##_in #=  (old + 1) ; 
     x##_in
 
 
-let f2 (x : < _MAX_LENGTH : int [@bs.set] > Js.t ) = 
+let f2 (x : < _MAX_LENGTH : int [@bs.set] >  ) = 
     let old = x##_MAX_LENGTH in  
     x##_MAX_LENGTH #=  (old + 1) ; 
     x##_MAX_LENGTH
 
-let f3 (x : < _Capital : int [@bs.set] > Js.t)  = 
+let f3 (x : < _Capital : int [@bs.set] > )  = 
     let old = x##_Capital in  
     x##_Capital #=  (old + 1) ; 
     x##_Capital
     
 
     
-let f4 (x : <_open__ : int [@bs.set] > Js.t) =     
+let f4 (x : <_open__ : int [@bs.set] > ) =     
    let old = x##_open__ in  
     x##_open__ #=  (old + 1) ; 
     x##_open__
 
-let f5 (x : < open__ : int [@bs.set] > Js.t) =     
+let f5 (x : < open__ : int [@bs.set] > ) =     
    let old = x##open__ in  
     x##open__ #=  (old + 1) ; 
     x##open__
 
 (* < _ : int > -> is a syntax error  *)
 
-let f6 (x : < _'x : int [@bs.set] > Js.t) =     
+let f6 (x : < _'x : int [@bs.set] > ) =     
    let old = x##_'x in  
     x##_'x #=  (old + 1) ; 
     x##_'x
 
-let f7 (x : < _Capital__ : int [@bs.set] > Js.t) =     
+let f7 (x : < _Capital__ : int [@bs.set] > ) =     
    let old = x##_Capital__ in  
     x##_Capital__ #=  (old + 1) ; 
     x##_Capital__
 
-let f8 (x : < _MAX__ : int [@bs.set] > Js.t) =     
+let f8 (x : < _MAX__ : int [@bs.set] > ) =     
    let old = x##_MAX__ in  
     x##_MAX__ #=  (old + 1) ; 
     x##_MAX__
 
-let f9 (x : < __ : int [@bs.set] > Js.t) =     
+let f9 (x : < __ : int [@bs.set] > ) =     
    let old = x##__ in  
     x##__ #=  (old + 1) ; 
     x##__
 
-let f10 (x : < __x : int [@bs.set] > Js.t) =     
+let f10 (x : < __x : int [@bs.set] > ) =     
    let old = x##__x in  
     x##__x #=  (old + 1) ; 
     x##__x
 
 (* triple _ *)
-let f11 (x : < ___ : int [@bs.set] > Js.t) =     
+let f11 (x : < ___ : int [@bs.set] > ) =     
    let old = x##___ in  
     x##___ #=  (old + 1) ; 
     x##___
 (* quad _ *)
-let f12 (x : < ____ : int [@bs.set] > Js.t) =     
+let f12 (x : < ____ : int [@bs.set] > ) =     
    let old = x##____ in  
     x##____ #=  (old + 1) ; 
     x##____

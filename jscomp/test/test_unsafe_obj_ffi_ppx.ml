@@ -4,12 +4,12 @@ class type _v = object
   method width  : int [@@bs.set]
 
 end[@bs]
-type v = _v Js.t 
+type v = _v  
 class type ['a] _g = object 
   method method1 : int -> unit 
   method method2 : int -> int -> 'a
 end[@bs]
-type 'a g = 'a _g Js.t
+type 'a g = 'a _g 
 
 let  f x = 
   x##length +. x##width

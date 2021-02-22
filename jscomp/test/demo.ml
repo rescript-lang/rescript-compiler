@@ -2,22 +2,22 @@ open Demo_binding
 external addChild : stackPanel -> #widget -> unit = "x" [@@bs.send]
 
 
-external new_HostedWindow : unit -> hostedWindow Js.t = "HostedWindow"
+external new_HostedWindow : unit -> hostedWindow  = "HostedWindow"
     [@@bs.new ] [@@bs.module "@blp/ui", "BUI"]
 
-external new_HostedContent : unit -> hostedContent Js.t = "" 
+external new_HostedContent : unit -> hostedContent  = "" 
     [@@bs.new "HostedContent"] [@@bs.module "@blp/ui", "BUI"]
 
-external new_StackPanel : unit -> stackPanel Js.t = "" 
+external new_StackPanel : unit -> stackPanel  = "" 
     [@@bs.new "StackPanel"] [@@bs.module "@ui", "UI"]
 
-external new_textArea : unit -> textArea Js.t = "" 
+external new_textArea : unit -> textArea  = "" 
     [@@bs.new "TextArea"] [@@bs.module "@ui", "UI"]
 
-external new_button : unit -> button Js.t = ""
+external new_button : unit -> button  = ""
     [@@bs.new "Button"] [@@bs.module "@ui", "UI"]
 
-external new_grid : unit -> grid Js.t = ""
+external new_grid : unit -> grid  = ""
     [@@bs.new "Grid"] [@@bs.module "@ui", "UI"]
 
 (* Note, strictly speaking, it 's not returning a primitive string, it returns
@@ -48,7 +48,7 @@ let data =
 
 let ui_layout 
     (compile  : string -> (string -> float) -> float) lookup  appContext
-  : hostedWindow Js.t = 
+  : hostedWindow  = 
   let init = compile "bid  - ask" in
   let computeFunction = ref (fun env -> init (fun key -> lookup env key) ) in
   let hw1 = new_HostedWindow ()  in

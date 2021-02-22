@@ -36,6 +36,6 @@ let suites = Mt.[
 (* create real js object with [this] semantics *)
 (* fun _ -> let module N =  *)
 (*     struct *)
-(*       external mk : say:'a -> say Js.t = ""[@@bs.obj]  *)
+(*       external mk : say:'a -> say  = ""[@@bs.obj]  *)
 (*     end  *)
 (*   in  *)

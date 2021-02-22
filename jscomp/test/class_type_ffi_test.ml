@@ -12,14 +12,14 @@ class type floatArray = [int, float] arrayLike
 class type intArray = [int, int] arrayLike
 
 
-let sum_float_array (arr : floatArray Js.t) = 
+let sum_float_array (arr : floatArray ) = 
   let v = ref 0. in
   for i = 0 to arr##length - 1 do 
     v := !v +. arr##case__unsafe i     
   done;
   !v 
 
-let sum_int_array (arr : intArray Js.t) = 
+let sum_int_array (arr : intArray ) = 
   let v = ref 0 in
   for i = 0 to arr##length - 1 do 
     v := !v + arr## case__unsafe i     
@@ -27,7 +27,7 @@ let sum_int_array (arr : intArray Js.t) =
   !v 
 
 (* TODO: warning about unprocessed attributes *)
-let sum_poly zero add (arr : _ arrayLike Js.t) = 
+let sum_poly zero add (arr : _ arrayLike ) = 
   let v = ref zero in 
   for i = 0 to arr##length - 1 do 
     v := add  !v  (arr##case__unsafe i ) [@bs] 
@@ -41,7 +41,7 @@ let sum_poly zero add (arr : _ arrayLike Js.t) =
 let test_set x = 
   x##length__aux #= 3 
 
-let f (x : < bark : string -> unit [@bs.meth] ; fight : unit -> unit [@bs.meth] > Js.t)  =
+let f (x : < bark : string -> unit [@bs.meth] ; fight : unit -> unit [@bs.meth] > )  =
   x##bark "he";
   x##fight ()
 

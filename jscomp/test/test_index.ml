@@ -16,7 +16,7 @@ end[@bs]
 (*   x ## case 3  *)
 
 
-let ff (x : int case  Js.t)
+let ff (x : int case  )
  = 
   x##case__set 3 2 ;
   x##case 3 
@@ -25,7 +25,7 @@ let ff (x : int case  Js.t)
 type 'a return = int -> 'a [@bs]
 
 let h (x : 
-         < cse : int -> 'a return [@bs] ; .. >   Js.t) = 
+         < cse : int -> 'a return [@bs] ; .. >   ) = 
    (x#@cse 3) 2 [@bs]
 
 
@@ -34,7 +34,7 @@ type x_obj =
    < 
     cse : int ->  int [@bs] ; 
     cse__st : int -> int -> unit [@bs];
-  > Js.t
+  > 
 
 let f_ext 
     (x : x_obj)
@@ -46,7 +46,7 @@ let f_ext
 type 'a h_obj = 
   < 
     cse : int ->  'a return [@bs]
-  > Js.t
+  > 
 
 let h_ext  (x : 'a h_obj) = 
    (x #@cse 3) 2 [@bs]

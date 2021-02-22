@@ -56,7 +56,7 @@ let u =
 
 let test_type = [u ; v]
 
-let z : < getX : (unit -> int [@bs.meth]); setX : (int -> unit [@bs.meth]) > Js.t  =
+let z : < getX : (unit -> int [@bs.meth]); setX : (int -> unit [@bs.meth]) >   =
   object (self)
     val x = ref 3 
     method setX x = self##x := x
@@ -68,7 +68,7 @@ let eventObj  : <
     needRebuild : (unit -> bool [@bs.meth]);
     push : string  * string -> unit [@bs.meth]
   >
-  Js.t
+  
   = 
   object (self)
     val events : (string * string) array = [||]
@@ -79,7 +79,7 @@ let eventObj  : <
   end [@bs]
 
 let test__ x = eventObj##push   x 
-let zz : < getX : (unit -> int [@bs.meth]); setX : (int -> unit [@bs.meth]) > Js.t=
+let zz : < getX : (unit -> int [@bs.meth]); setX : (int -> unit [@bs.meth]) > =
   object (self)
     val mutable x =  3 
     method setX x = self##x #= x

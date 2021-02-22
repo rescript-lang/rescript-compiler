@@ -26,7 +26,7 @@
 *)
 
 (** [empty ()] returns the empty object [\{\}] *)
-external empty : unit -> < .. > Js.t = "" [@@bs.obj]
+external empty : unit -> < .. >  = "" [@@bs.obj]
 
 (** [assign target source] copies properties from [source] to [target]
 
@@ -63,7 +63,7 @@ let _ = Js.log target
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign> MDN
 *)
-external assign : < .. > Js.t -> < .. > Js.t -> < .. > Js.t = "Object.assign" [@@bs.val]
+external assign : < .. > -> < .. >  -> < .. >  = "Object.assign" [@@bs.val]
 
 (* TODO:
 
@@ -103,4 +103,4 @@ Put directly on Js?
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys> MDN
 *)
-external keys : _ Js.t -> string array = "Object.keys" [@@bs.val]
+external keys : < .. >  -> string array = "Object.keys" [@@bs.val]

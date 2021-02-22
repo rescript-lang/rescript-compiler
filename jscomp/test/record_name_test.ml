@@ -84,7 +84,7 @@ type t6 = {
 
 
 external ff : x:int -> h:(_[@bs.as 3]) -> _ = "" [@@bs.obj] 
-external ff2 : x:int -> h:(_[@bs.as 3]) -> <x:int> Js.t = "" [@@bs.obj] 
+external ff2 : x:int -> h:(_[@bs.as 3]) -> <x:int>  = "" [@@bs.obj] 
 let u () = 
     ignore (ff ~x:3 );
     ff2 ~x:22

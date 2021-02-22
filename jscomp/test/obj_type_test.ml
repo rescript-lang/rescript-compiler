@@ -5,7 +5,7 @@
 
 
 type x = (
-  (< x : int ; y : 'self -> int > Js.t)
+  (< x : int ; y : 'self -> int > )
   as 'self
 )
 

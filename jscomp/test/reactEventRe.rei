@@ -25,7 +25,7 @@ module Synthetic: {
   [@deprecated "Please use ReactEvent.Synthetic.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.synthetic('a) => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.Synthetic.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.synthetic('a) => Js.t({..}) =
+  external nativeEvent: ReactEvent.synthetic('a) => ({..}) =
     "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.Synthetic.preventDefault"]
   [@bs.send.pipe: ReactEvent.synthetic('a)]
@@ -81,7 +81,7 @@ module Clipboard: {
   [@deprecated "Please use ReactEvent.Clipboard.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.Clipboard.t => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.Clipboard.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.Clipboard.t => Js.t({..}) = "nativeEvent";
+  external nativeEvent: ReactEvent.Clipboard.t => ({..}) = "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.Clipboard.preventDefault"]
   [@bs.send.pipe: ReactEvent.Clipboard.t]
   external preventDefault: unit = "preventDefault";
@@ -107,7 +107,7 @@ module Clipboard: {
   [@bs.send.pipe: ReactEvent.Clipboard.t]
   external persist: unit = "persist";
   [@deprecated "Please use ReactEvent.Clipboard.clipboardData"] [@bs.get]
-  external clipboardData: ReactEvent.Clipboard.t => Js.t({..}) =
+  external clipboardData: ReactEvent.Clipboard.t => ({..}) =
     "clipboardData"; /* Should return Dom.dataTransfer */
 };
 
@@ -134,7 +134,7 @@ module Composition: {
   [@deprecated "Please use ReactEvent.Composition.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.Composition.t => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.Composition.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.Composition.t => Js.t({..}) =
+  external nativeEvent: ReactEvent.Composition.t => ({..}) =
     "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.Composition.preventDefault"]
   [@bs.send.pipe: ReactEvent.Composition.t]
@@ -189,7 +189,7 @@ module Keyboard: {
   [@deprecated "Please use ReactEvent.Keyboard.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.Keyboard.t => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.Keyboard.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.Keyboard.t => Js.t({..}) = "nativeEvent";
+  external nativeEvent: ReactEvent.Keyboard.t => ({..}) = "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.Keyboard.preventDefault"]
   [@bs.send.pipe: ReactEvent.Keyboard.t]
   external preventDefault: unit = "preventDefault";
@@ -262,7 +262,7 @@ module Focus: {
   [@deprecated "Please use ReactEvent.Focus.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.Focus.t => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.Focus.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.Focus.t => Js.t({..}) = "nativeEvent";
+  external nativeEvent: ReactEvent.Focus.t => ({..}) = "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.Focus.preventDefault"]
   [@bs.send.pipe: ReactEvent.Focus.t]
   external preventDefault: unit = "preventDefault";
@@ -315,7 +315,7 @@ module Form: {
   [@deprecated "Please use ReactEvent.Form.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.Form.t => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.Form.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.Form.t => Js.t({..}) = "nativeEvent";
+  external nativeEvent: ReactEvent.Form.t => ({..}) = "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.Form.preventDefault"]
   [@bs.send.pipe: ReactEvent.Form.t]
   external preventDefault: unit = "preventDefault";
@@ -363,7 +363,7 @@ module Mouse: {
   [@deprecated "Please use ReactEvent.Mouse.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.Mouse.t => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.Mouse.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.Mouse.t => Js.t({..}) = "nativeEvent";
+  external nativeEvent: ReactEvent.Mouse.t => ({..}) = "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.Mouse.preventDefault"]
   [@bs.send.pipe: ReactEvent.Mouse.t]
   external preventDefault: unit = "preventDefault";
@@ -445,7 +445,7 @@ module Selection: {
   [@deprecated "Please use ReactEvent.Selection.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.Selection.t => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.Selection.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.Selection.t => Js.t({..}) = "nativeEvent";
+  external nativeEvent: ReactEvent.Selection.t => ({..}) = "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.Selection.preventDefault"]
   [@bs.send.pipe: ReactEvent.Selection.t]
   external preventDefault: unit = "preventDefault";
@@ -493,7 +493,7 @@ module Touch: {
   [@deprecated "Please use ReactEvent.Touch.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.Touch.t => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.Touch.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.Touch.t => Js.t({..}) = "nativeEvent";
+  external nativeEvent: ReactEvent.Touch.t => ({..}) = "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.Touch.preventDefault"]
   [@bs.send.pipe: ReactEvent.Touch.t]
   external preventDefault: unit = "preventDefault";
@@ -521,7 +521,7 @@ module Touch: {
   [@deprecated "Please use ReactEvent.Touch.altKey"] [@bs.get]
   external altKey: ReactEvent.Touch.t => bool = "altKey";
   [@deprecated "Please use ReactEvent.Touch.changedTouches"] [@bs.get]
-  external changedTouches: ReactEvent.Touch.t => Js.t({..}) =
+  external changedTouches: ReactEvent.Touch.t => ({..}) =
     "changedTouches"; /* Should return Dom.touchList */
   [@deprecated "Please use ReactEvent.Touch.ctrlKey"] [@bs.get]
   external ctrlKey: ReactEvent.Touch.t => bool = "ctrlKey";
@@ -533,9 +533,9 @@ module Touch: {
   [@deprecated "Please use ReactEvent.Touch.shiftKey"] [@bs.get]
   external shiftKey: ReactEvent.Touch.t => bool = "shiftKey";
   [@deprecated "Please use ReactEvent.Touch.targetTouches"] [@bs.get]
-  external targetTouches: ReactEvent.Touch.t => Js.t({..}) = "targetTouches"; /* Should return Dom.touchList */
+  external targetTouches: ReactEvent.Touch.t => ({..}) = "targetTouches"; /* Should return Dom.touchList */
   [@deprecated "Please use ReactEvent.Touch.touches"] [@bs.get]
-  external touches: ReactEvent.Touch.t => Js.t({..}) = "touches"; /* Should return Dom.touchList */
+  external touches: ReactEvent.Touch.t => ({..}) = "touches"; /* Should return Dom.touchList */
 };
 
 module UI: {
@@ -559,7 +559,7 @@ module UI: {
   [@deprecated "Please use ReactEvent.UI.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.UI.t => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.UI.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.UI.t => Js.t({..}) = "nativeEvent";
+  external nativeEvent: ReactEvent.UI.t => ({..}) = "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.UI.preventDefault"]
   [@bs.send.pipe: ReactEvent.UI.t]
   external preventDefault: unit = "preventDefault";
@@ -611,7 +611,7 @@ module Wheel: {
   [@deprecated "Please use ReactEvent.Wheel.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.Wheel.t => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.Wheel.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.Wheel.t => Js.t({..}) = "nativeEvent";
+  external nativeEvent: ReactEvent.Wheel.t => ({..}) = "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.Wheel.preventDefault"]
   [@bs.send.pipe: ReactEvent.Wheel.t]
   external preventDefault: unit = "preventDefault";
@@ -667,7 +667,7 @@ module Media: {
   [@deprecated "Please use ReactEvent.Media.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.Media.t => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.Media.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.Media.t => Js.t({..}) = "nativeEvent";
+  external nativeEvent: ReactEvent.Media.t => ({..}) = "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.Media.preventDefault"]
   [@bs.send.pipe: ReactEvent.Media.t]
   external preventDefault: unit = "preventDefault";
@@ -715,7 +715,7 @@ module Image: {
   [@deprecated "Please use ReactEvent.Image.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.Image.t => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.Image.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.Image.t => Js.t({..}) = "nativeEvent";
+  external nativeEvent: ReactEvent.Image.t => ({..}) = "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.Image.preventDefault"]
   [@bs.send.pipe: ReactEvent.Image.t]
   external preventDefault: unit = "preventDefault";
@@ -765,7 +765,7 @@ module Animation: {
   [@deprecated "Please use ReactEvent.Animation.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.Animation.t => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.Animation.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.Animation.t => Js.t({..}) = "nativeEvent";
+  external nativeEvent: ReactEvent.Animation.t => ({..}) = "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.Animation.preventDefault"]
   [@bs.send.pipe: ReactEvent.Animation.t]
   external preventDefault: unit = "preventDefault";
@@ -821,7 +821,7 @@ module Transition: {
   [@deprecated "Please use ReactEvent.Transition.isTrusted"] [@bs.get]
   external isTrusted: ReactEvent.Transition.t => bool = "isTrusted";
   [@deprecated "Please use ReactEvent.Transition.nativeEvent"] [@bs.get]
-  external nativeEvent: ReactEvent.Transition.t => Js.t({..}) = "nativeEvent";
+  external nativeEvent: ReactEvent.Transition.t => ({..}) = "nativeEvent";
   [@deprecated "Please use myEvent->ReactEvent.Transition.preventDefault"]
   [@bs.send.pipe: ReactEvent.Transition.t]
   external preventDefault: unit = "preventDefault";

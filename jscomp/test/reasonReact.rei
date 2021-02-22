@@ -18,7 +18,7 @@ external string: string => reactElement = "%identity";
 
 external array: array(reactElement) => reactElement = "%identity";
 
-external refToJsObj: reactRef => Js.t({..}) = "%identity";
+external refToJsObj: reactRef => ({..}) = "%identity";
 
 /* This should _not_ be used directly, unless you're passing a class like this:
 
@@ -37,12 +37,12 @@ external refToJsObj: reactRef => Js.t({..}) = "%identity";
    */
 [@bs.splice] [@bs.val] [@bs.module "react"]
 external createElement:
-  (reactClass, ~props: Js.t({..})=?, array(reactElement)) => reactElement =
+  (reactClass, ~props: ({..})=?, array(reactElement)) => reactElement =
   "createElement";
 
 [@bs.splice] [@bs.module "react"]
 external cloneElement:
-  (reactElement, ~props: Js.t({..})=?, array(reactElement)) => reactElement =
+  (reactElement, ~props: ({..})=?, array(reactElement)) => reactElement =
   "cloneElement";
 
 type renderNotImplemented =
@@ -214,7 +214,7 @@ Were you using this because you needed to pass a children array reference to a D
 Alternatively, if you're using this because the prop name contains a hyphen, please use `ReactDOMRe.createElementVariadic` instead."
 ]
 let createDomElement:
-  (string, ~props: Js.t({..}), array(reactElement)) => reactElement;
+  (string, ~props: ({..}), array(reactElement)) => reactElement;
 
 /**
  * Wrap props into a JS component

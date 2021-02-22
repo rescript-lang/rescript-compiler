@@ -7,7 +7,7 @@ module MakeSyntheticWrapper = (Type: {type t;}) => {
   [@bs.get] external defaultPrevented: Type.t => bool = "defaultPrevented";
   [@bs.get] external eventPhase: Type.t => int = "eventPhase";
   [@bs.get] external isTrusted: Type.t => bool = "isTrusted";
-  [@bs.get] external nativeEvent: Type.t => Js.t({..}) = "nativeEvent"; /* Should return Dom.event */
+  [@bs.get] external nativeEvent: Type.t => ({..}) = "nativeEvent"; /* Should return Dom.event */
   [@bs.send.pipe: Type.t] external preventDefault: unit = "preventDefault";
   [@bs.send.pipe: Type.t]
   external isDefaultPrevented: bool = "isDefaultPrevented";
@@ -32,7 +32,7 @@ module Synthetic = {
   [@bs.get] external eventPhase: synthetic('a) => int = "eventPhase";
   [@bs.get] external isTrusted: synthetic('a) => bool = "isTrusted";
   [@bs.get]
-  external nativeEvent: synthetic('a) => Js.t({..}) = "nativeEvent"; /* Should return Dom.event */
+  external nativeEvent: synthetic('a) => ({..}) = "nativeEvent"; /* Should return Dom.event */
   [@bs.send.pipe: synthetic('a)]
   external preventDefault: unit = "preventDefault";
   [@bs.send.pipe: synthetic('a)]
@@ -56,7 +56,7 @@ module Clipboard = {
   include MakeSyntheticWrapper({
     type nonrec t = t;
   });
-  [@bs.get] external clipboardData: t => Js.t({..}) = "clipboardData"; /* Should return Dom.dataTransfer */
+  [@bs.get] external clipboardData: t => ({..}) = "clipboardData"; /* Should return Dom.dataTransfer */
 };
 
 module Composition = {
@@ -144,14 +144,14 @@ module Touch = {
     type nonrec t = t;
   });
   [@bs.get] external altKey: t => bool = "altKey";
-  [@bs.get] external changedTouches: t => Js.t({..}) = "changedTouches"; /* Should return Dom.touchList */
+  [@bs.get] external changedTouches: t => ({..}) = "changedTouches"; /* Should return Dom.touchList */
   [@bs.get] external ctrlKey: t => bool = "ctrlKey";
   [@bs.send.pipe: t]
   external getModifierState: string => bool = "getModifierState";
   [@bs.get] external metaKey: t => bool = "metaKey";
   [@bs.get] external shiftKey: t => bool = "shiftKey";
-  [@bs.get] external targetTouches: t => Js.t({..}) = "targetTouches"; /* Should return Dom.touchList */
-  [@bs.get] external touches: t => Js.t({..}) = "touches"; /* Should return Dom.touchList */
+  [@bs.get] external targetTouches: t => ({..}) = "targetTouches"; /* Should return Dom.touchList */
+  [@bs.get] external touches: t => ({..}) = "touches"; /* Should return Dom.touchList */
 };
 
 module UI = {
