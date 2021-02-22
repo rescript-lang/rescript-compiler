@@ -2,7 +2,14 @@ module CharacterCodes = Res_character_codes
 module Diagnostics = Res_diagnostics
 module Token = Res_token
 module Comment = Res_comment
+
 type mode = Jsx | Diamond
+
+(* We hide the implementation detail of the scanner reading character. Our char
+will also contain the special -1 value to indicate end-of-file. This isn't
+ideal; we should clean this up *)
+let hackyEOFChar = Char.unsafe_chr (-1)
+type charEncoding = Char.t
 
 type t = {
   filename: string;
@@ -12,7 +19,7 @@ type t = {
     -> endPos: Lexing.position
     -> Diagnostics.category
     -> unit;
-  mutable ch: Char.t; (* current character *)
+  mutable ch: charEncoding; (* current character *)
   mutable offset: int; (* character offset *)
   mutable rdOffset: int; (* reading offset (position after current character) *)
   mutable lineOffset: int; (* current line offset *)
@@ -61,14 +68,14 @@ let next scanner =
     scanner.ch <- ch
   ) else (
     scanner.offset <- Bytes.length scanner.src;
-    scanner.ch <- CharacterCodes.eof
+    scanner.ch <- hackyEOFChar
   )
 
 let peek scanner =
   if scanner.rdOffset < Bytes.length scanner.src then
     Bytes.unsafe_get scanner.src scanner.rdOffset
   else
-    CharacterCodes.eof
+    hackyEOFChar
 
 let make ?(line=1) ~filename b =
   let scanner = {
@@ -199,7 +206,7 @@ let scanNumber scanner =
           (Diagnostics.message msg)
       );
       next scanner;
-      Some ( ch)
+      Some ch
     | _ ->
       None
   in
@@ -214,7 +221,7 @@ let scanExoticIdentifier scanner =
   let startPos = position scanner in
 
   let rec scan () =
-    if scanner.ch == CharacterCodes.eof then
+    if scanner.ch == hackyEOFChar then
       let endPos = position scanner in
       scanner.err ~startPos ~endPos (Diagnostics.message "Did you forget a \" here?")
     else if scanner.ch == '"' then (
@@ -273,7 +280,7 @@ let scanStringEscapeSequence ~startPos scanner =
             let d = CharacterCodes.digitValue scanner.ch in
             if d >= base then
               let pos = position scanner in
-              let msg = if scanner.ch == CharacterCodes.eof then
+              let msg = if scanner.ch == hackyEOFChar then
                 "unclosed escape sequence"
               else "unknown escape sequence"
               in
@@ -295,7 +302,7 @@ let scanString scanner =
 
   let startPos = position scanner in
   let rec scan () =
-    if scanner.ch == CharacterCodes.eof then
+    if scanner.ch == hackyEOFChar then
       let endPos = position scanner in
       scanner.err ~startPos ~endPos Diagnostics.unclosedString
     else if scanner.ch == '"' then (
@@ -352,7 +359,7 @@ let scanEscape scanner =
 let scanSingleLineComment scanner =
   let startOff = scanner.offset in
   let startPos = position scanner in
-  while scanner.ch != CharacterCodes.eof && not (CharacterCodes.isLineBreak scanner.ch) do
+  while scanner.ch != hackyEOFChar && not (CharacterCodes.isLineBreak scanner.ch) do
     next scanner
   done;
   let endPos = position scanner in
@@ -371,7 +378,7 @@ let scanMultiLineComment scanner =
       next scanner;
       next scanner;
       if depth > 0 then scan ~depth:(depth - 1) () else ()
-    ) else if scanner.ch == CharacterCodes.eof then (
+    ) else if scanner.ch == hackyEOFChar then (
       let endPos = position scanner in
       scanner.err ~startPos ~endPos Diagnostics.unclosedComment
     ) else if scanner.ch == '/'
@@ -405,7 +412,7 @@ let scanTemplateLiteralToken scanner =
   let startPos = position scanner in
 
   let rec scan () =
-    if scanner.ch == CharacterCodes.eof then (
+    if scanner.ch == hackyEOFChar then (
       let endPos = position scanner in
       scanner.err ~startPos ~endPos Diagnostics.unclosedTemplate;
       Token.TemplateTail(
@@ -465,7 +472,7 @@ let rec scan scanner =
   )
   else begin
     next scanner;
-    if ch == CharacterCodes.eof then Token.Eof
+    if ch == hackyEOFChar then Token.Eof
     else match ch with
     | '.' ->
       if scanner.ch == '.' then (
@@ -698,13 +705,13 @@ let isBinaryOp src startCnum endCnum =
     in
     let rightOk =
       let c =
-        if endCnum == Bytes.length src then CharacterCodes.eof
+        if endCnum == Bytes.length src then hackyEOFChar
         else endCnum |> (Bytes.get [@doesNotRaise]) src
       in
       c == ' ' ||
       c == '\t' ||
       CharacterCodes.isLineBreak c ||
-      c == CharacterCodes.eof
+      c == hackyEOFChar
     in
     leftOk && rightOk
 
@@ -712,7 +719,7 @@ let isBinaryOp src startCnum endCnum =
  * In {| foo bar |} the scanner will be advanced until after the `|}` *)
 let tryAdvanceQuotedString scanner =
   let rec scanContents tag () =
-    if scanner.ch == CharacterCodes.eof then (
+    if scanner.ch == hackyEOFChar then (
       ()
     ) else if scanner.ch == '|' then (
       next scanner;

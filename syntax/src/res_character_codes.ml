@@ -1,5 +1,3 @@
-let eof = Char.unsafe_chr (-1)
-
 let lineSeparator = Char.unsafe_chr 0x2028
 let paragraphSeparator = Char.unsafe_chr 0x2029
 

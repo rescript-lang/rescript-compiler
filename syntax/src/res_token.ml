@@ -1,5 +1,4 @@
 module Comment = Res_comment
-module CharacterCodes = Res_character_codes
 
 type t =
   | Open
@@ -212,7 +211,7 @@ let isKeyword = function
 let lookupKeyword str =
   try keywordTable str with
   | Not_found ->
-    if CharacterCodes.isUpperCase ((str.[0] [@doesNotRaise])) then
+    if Res_character_codes.isUpperCase ((str.[0] [@doesNotRaise])) then
       Uident str
     else Lident str
 

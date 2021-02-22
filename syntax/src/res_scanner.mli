@@ -1,5 +1,7 @@
 type mode = Jsx | Diamond
 
+type charEncoding
+
 type t = {
   filename: string;
   src: bytes;
@@ -8,7 +10,7 @@ type t = {
     -> endPos: Lexing.position
     -> Res_diagnostics.category
     -> unit;
-  mutable ch: Char.t; (* current character *)
+  mutable ch: charEncoding; (* current character *)
   mutable offset: int; (* character offset *)
   mutable rdOffset: int; (* reading offset (position after current character) *)
   mutable lineOffset: int; (* current line offset *)
