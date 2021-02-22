@@ -326,15 +326,6 @@ and print_simple_out_type ppf =
     fprintf ppf "@[<0>(%a)@ [%@this]@]" (print_out_type_1 ~uncurried:false) res
 
   (* also ReScript-specific. Turns Js.t({. foo: bar}) into {. "foo": bar} *)
-  | Otyp_constr (
-      (Oide_dot ((Oide_ident "Js"), "t")),
-      [Otyp_object (fields, rest)]
-    ) ->
-      let dot = match rest with
-        Some non_gen -> (if non_gen then "_" else "") ^ ".."
-      | None -> "."
-      in
-      fprintf ppf "@[<2>{%s %a}@]" dot (print_object_fields ~quote_fields:true) fields
 
   | Otyp_constr (id, tyl) ->
       pp_open_box ppf 0;

@@ -57,7 +57,7 @@ module Lid = struct
       Ldot (js_oo , "Meth")
   let js_meth_callback : t =
       Ldot (js_oo, "Callback")
-  let js_obj : t = Ldot (Lident "Js", "t")
+
   let ignore_id : t = Ldot (Lident "Pervasives", "ignore")
   let hidden_field n : t = Lident ("I" ^ n)
   let js_null  : t = Ldot (Lident "Js", "null")
