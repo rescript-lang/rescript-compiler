@@ -142,7 +142,12 @@ let emit_external_warnings : iterator=
         | Pexp_new _  -> 
           Location.raise_errorf ~loc:a.pexp_loc
             "OCaml style objects are not supported"
-        (* | Pexp_send  *)
+        | Pexp_send (obj, _) ->
+          begin match obj with 
+            | {pexp_desc = Pexp_apply ({pexp_desc = Pexp_ident ({txt = Ldot(_,"unsafe_downgrade")})},_)} -> ()
+            | _ -> Location.raise_errorf ~loc:a.pexp_loc
+                     "OCaml style objects are not supported"
+          end
         | _ -> super.expr self a         
       );
     label_declaration = (fun self lbl ->     
