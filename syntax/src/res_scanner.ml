@@ -63,7 +63,7 @@ let position scanner = Lexing.{
 let next scanner =
   if scanner.rdOffset < String.length scanner.src then (
     scanner.offset <- scanner.rdOffset;
-    let ch = (String.get [@doesNotRaise]) scanner.src scanner.rdOffset in
+    let ch = String.unsafe_get scanner.src scanner.rdOffset in
     scanner.rdOffset <- scanner.rdOffset + 1;
     scanner.ch <- ch
   ) else (
