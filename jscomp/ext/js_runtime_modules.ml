@@ -36,9 +36,9 @@ let bytes = "Caml_bytes"
 let float = "Caml_float"
 let hash_primitive = "Caml_hash_primitive" 
 let hash = "Caml_hash"
-let oo = "Caml_oo"
+
 let curry = "Curry"
-let caml_oo_curry = "Caml_oo_curry"
+
 let caml_primitive = "Caml_primitive"
 let int64 = "Caml_int64"
 let md5 = "Caml_md5"

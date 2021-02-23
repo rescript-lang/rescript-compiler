@@ -106,7 +106,7 @@ val runtime_ref :
   string -> 
   t  
 
-val public_method_call : string -> t -> t -> Int32.t -> t list -> t
+
 
 
 val str : 
