@@ -1,17 +1,13 @@
 .DS_STORE
 _build
-_esy
-esy.lock
 node_modules
 *.cm*
 *.o
+*.s
 lib/bs
 lib/rescript.exe
 lib/refmt.exe
 lib/test.exe
 lib/bench.exe
-Rescript2.ml
-./lib/rescript2.exe
-lib/Rescript.ml
 .vscode/settings.json
  # each person has its own preferences
