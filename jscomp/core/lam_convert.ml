@@ -842,7 +842,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | Levent _ ->
       (* disabled by upstream*)
       assert false
-    | Lifused (_, e) -> convert_aux e (* TODO: remove it ASAP *)
+    | Lifused (_, _) -> assert false
 
   and convert_let (kind : Lam_compat.let_kind) id (e : Lambda.lambda) body : Lam.t = 
     match kind, e with
