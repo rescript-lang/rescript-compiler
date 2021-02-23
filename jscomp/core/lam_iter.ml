@@ -73,8 +73,6 @@ let inner_iter (l : t) (f : t -> unit ) : unit =
     f e1 ;  f e2;  f e3
   | Lassign(_id, e) ->
     f e
-  | Lsend (_k, met, obj, args, _loc) ->
-    f met; f obj; List.iter f args   
 
 
 let inner_exists (l : t) (f : t -> bool) : bool =
@@ -124,5 +122,3 @@ let inner_exists (l : t) (f : t -> bool) : bool =
     f e1 ||  f e2 ||  f e3
   | Lassign(_id, e) ->
     f e
-  | Lsend (_k, met, obj, args, _loc) ->
-    f met || f obj || Ext_list.exists args f 

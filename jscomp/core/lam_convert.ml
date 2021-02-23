@@ -131,8 +131,6 @@ let exception_id_destructed (l : Lam.t) (fv : Ident.t): bool  =
       hit e1 || hit e2
     | Lwhile(e1, e2) ->
       hit e1 || hit e2
-    | Lsend (_k, met, obj, args, _) ->
-      hit met || hit obj || hit_list args
   in hit l
 
 
@@ -818,7 +816,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       Lam.for_ id (convert_aux from_) (convert_aux to_) dir (convert_aux loop)
     | Lassign (id, body) ->
       Lam.assign id (convert_aux body)
-    | Lsend (kind, a,b,ls, loc) ->
+    | Lsend (kind, _,b,ls, _loc) ->
       (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
         (match convert_aux b with
         | Lprim {primitive =  Pjs_unsafe_downgrade {loc};  args}
@@ -836,8 +834,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
                 ~args loc
             | _ -> assert false
           end
-        | b ->
-          Lam.send kind (convert_aux a)  b (Ext_list.map ls convert_aux) loc)
+        | _ ->
+          assert false)
       
     | Levent _ ->
       (* disabled by upstream*)

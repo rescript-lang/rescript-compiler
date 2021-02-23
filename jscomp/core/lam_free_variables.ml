@@ -81,8 +81,6 @@
       free e1; free e2
     | Lwhile(e1, e2) ->
       free e1; free e2
-    | Lsend (_k, met, obj, args, _) ->
-      free met; free obj;  free_list args
   in free l;
   !fv
 

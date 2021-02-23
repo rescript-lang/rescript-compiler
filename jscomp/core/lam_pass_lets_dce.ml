@@ -244,8 +244,6 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
     | Lfor(v, l1, l2, dir, l3) ->
       Lam.for_ v (simplif l1) (simplif l2) dir (simplif l3)
     | Lassign(v, l) -> Lam.assign v (simplif l)
-    | Lsend(k, m, o, ll, loc) ->
-      Lam.send k (simplif m) (simplif o) (Ext_list.map ll simplif) loc
   in simplif lam 
 
 

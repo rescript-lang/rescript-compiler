@@ -55,10 +55,6 @@ let rec
     no_bounded_variables e1 && no_bounded_variables e2
   | Lwhile(e1, e2) ->
     no_bounded_variables e1 && no_bounded_variables e2
-  | Lsend (_k, met, obj, args, _) ->
-    no_bounded_variables met  &&
-    no_bounded_variables obj &&
-    no_list args
   | Lstaticcatch(e1, (_,vars), e2) ->
     vars = [] && no_bounded_variables e1 &&  no_bounded_variables e2
   | Lfunction{body;params} ->
@@ -255,8 +251,6 @@ let subst_helper (subst : subst_tbl) (query : int -> int) (lam : Lam.t) : Lam.t 
       Lam.for_ v (simplif l1) (simplif l2) dir (simplif l3)
     | Lassign (v, l) -> 
       Lam.assign v (simplif l)
-    | Lsend (k, m, o, ll, loc) ->
-      Lam.send k (simplif m) (simplif o) (Ext_list.map ll simplif ) loc
   in 
   simplif lam 
 

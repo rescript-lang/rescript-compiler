@@ -131,7 +131,6 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
     all_lambdas meta [l2;l3]
   | Lsequence(_, l2) -> get_arity meta l2 
   | Lstaticraise _ (* since it will not be in tail position *)
-  | Lsend _
      -> Lam_arity.na 
   | Lwhile _ 
   | Lfor _  

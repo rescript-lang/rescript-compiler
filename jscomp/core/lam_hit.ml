@@ -78,8 +78,6 @@ let hit_variables (fv : Set_ident.t) (l : t) : bool  =
         hit e1 || hit e2
       | Lwhile(e1, e2) ->
         hit e1 || hit e2
-      | Lsend (_k, met, obj, args, _) ->
-        hit met || hit obj ||  hit_list args
     end
   in hit l
 
@@ -137,7 +135,5 @@ let hit_variable (fv : Ident.t) (l : t) : bool  =
         hit e1 || hit e2
       | Lwhile(e1, e2) ->
         hit e1 || hit e2
-      | Lsend (_k, met, obj, args, _) ->
-        hit met || hit obj ||  hit_list args
     end
   in hit l

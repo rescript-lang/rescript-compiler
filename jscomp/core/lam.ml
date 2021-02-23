@@ -131,7 +131,7 @@ module Types = struct
     | Lwhile of t * t
     | Lfor of ident * t * t * Asttypes.direction_flag * t
     | Lassign of ident * t
-    | Lsend of Lam_compat.meth_kind * t * t * t list * Location.t
+    (* | Lsend of Lam_compat.meth_kind * t * t * t list * Location.t *)
 end
 
 module X = struct
@@ -187,7 +187,7 @@ module X = struct
       | Lwhile of t * t
       | Lfor of ident * t * t * Asttypes.direction_flag * t
       | Lassign of ident * t
-      | Lsend of Lam_compat.meth_kind * t * t * t list * Location.t
+      (* | Lsend of Lam_compat.meth_kind * t * t * t list * Location.t *)
 end
 include Types
 
@@ -258,11 +258,11 @@ let inner_map
   | Lassign(id, e) ->
     let e = f e in
     Lassign(id,e)
-  | Lsend (k, met, obj, args, loc) ->
+  (* | Lsend (k, met, obj, args, loc) ->
     let met = f met in
     let obj = f obj in
     let args = Ext_list.map args f in
-    Lsend(k,met,obj,args,loc)
+    Lsend(k,met,obj,args,loc) *)
 
 
 
@@ -415,7 +415,6 @@ let rec
   | Lstaticcatch _ 
   | Ltrywith _ 
   | Lfor (_,_,_,_,_) 
-  | Lsend _
     -> false    
 and eq_option l1 l2 = 
     match l1 with 
@@ -487,8 +486,6 @@ let for_ v e1 e2 dir e3 : t  =
   Lfor(v,e1,e2,dir,e3)
 
 let assign v l : t = Lassign(v,l)
-let send u m o ll v : t =
-  Lsend(u, m, o, ll, v)
 let staticcatch  a b c : t = Lstaticcatch(a,b,c)
 let staticraise a b : t = Lstaticraise(a,b)
 

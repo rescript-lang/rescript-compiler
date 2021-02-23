@@ -424,12 +424,6 @@ let lambda ppf v  =
         lam hi lam body
     | Lassign(id, expr) ->
       fprintf ppf "@[<2>(assign@ %a@ %a)@]" Ident.print id lam expr
-    | Lsend (k, met, obj, largs, _) ->
-      let args ppf largs =
-        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
-      let kind =
-        if k = Self then "self" else if k = Cached then "cache" else "" in
-      fprintf ppf "@[<2>(send%s@ %a@ %a%a)@]" kind lam obj lam met args largs
 
   and sequence ppf = function
     | Lsequence(l1, l2) ->
