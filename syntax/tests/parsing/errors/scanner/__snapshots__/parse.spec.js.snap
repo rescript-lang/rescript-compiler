@@ -28,6 +28,52 @@ let x = \\"\\\\\\\\0AAA\\"
 ========================================================"
 `;
 
+exports[`exoticIdent.js 1`] = `
+"=====Parsetree==========================================
+let a = b
+;;c
+;;\\" = 1\\"
+=====Errors=============================================
+
+  Syntax error!
+  /Users/chenglou/github/rescript-lang/syntax/tests/parsing/errors/scanner/exoticIdent.js
+  
+  Did you forget a \\" here?
+
+
+  Syntax error!
+  parsing/errors/scanner/exoticIdent.js:2:1  
+  1 │ let \\\\\\"a
+  2 │ b
+  3 │ c\\" = 1
+  4 │ 
+  
+  Did you forget a \`=\` here?
+
+
+  Syntax error!
+  parsing/errors/scanner/exoticIdent.js:3:3-4:0  
+  1 │ let \\\\\\"a
+  2 │ b
+  3 │ c\\" = 1
+  4 │ 
+  
+  This string is missing a double quote at the end
+
+
+  Syntax error!
+  parsing/errors/scanner/exoticIdent.js:3:2-4:0  
+  1 │ let \\\\\\"a
+  2 │ b
+  3 │ c\\" = 1
+  4 │ 
+  
+  consecutive statements on a line must be separated by ';' or a newline
+
+
+========================================================"
+`;
+
 exports[`nativeint.res 1`] = `
 "=====Parsetree==========================================
 let nativeint = 3n
