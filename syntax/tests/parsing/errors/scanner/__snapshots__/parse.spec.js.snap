@@ -36,9 +36,12 @@ let a = b
 =====Errors=============================================
 
   Syntax error!
-  /Users/chenglou/github/rescript-lang/syntax/tests/parsing/errors/scanner/exoticIdent.js
+  parsing/errors/scanner/exoticIdent.js:1:7  
+  1 │ let \\\\\\"a
+  2 │ b
+  3 │ c\\" = 1
   
-  Did you forget a \\" here?
+  A quoted identifier can't contain line breaks.
 
 
   Syntax error!

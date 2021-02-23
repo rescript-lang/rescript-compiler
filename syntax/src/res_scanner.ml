@@ -227,10 +227,10 @@ let scanExoticIdentifier scanner =
     else if scanner.ch == '"' then (
       next scanner
     ) else if CharacterCodes.isLineBreak scanner.ch then (
+      let endPos = position scanner in
+      scanner.err ~startPos ~endPos (Diagnostics.message "A quoted identifier can't contain line breaks.");
       scanner.lineOffset <- scanner.offset + 1;
       scanner.lnum <- scanner.lnum + 1;
-      let endPos = position scanner in
-      scanner.err ~startPos ~endPos (Diagnostics.message "Did you forget a \" here?");
       next scanner
     ) else (
       Buffer.add_char buffer (scanner.ch);
