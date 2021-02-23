@@ -1,10 +1,11 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
+var Curry = require("../../lib/js/curry.js");
 
 function f(u) {
-  return Caml_oo_curry.js2(5740587, 1, u, 32);
+  var h = u.say;
+  return Curry._1(h, 32);
 }
 
 function f_js(u) {

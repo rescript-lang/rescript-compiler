@@ -6,7 +6,7 @@ type  x = < say : int -> int >
 
 
 
-let f  (u : x ) = u # say 32 (* This should fail *)
+let f  (u : x ) = let h = u ## say in h 32 
 
 let f_js u = u#@say 32
 

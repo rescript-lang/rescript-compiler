@@ -14,4 +14,4 @@ class type v = object
   method height : int
 end
 
-let h (x : v) = x#height
+let h (x : v) = x##height
