@@ -60,6 +60,29 @@ let position scanner = Lexing.{
   pos_cnum = scanner.offset;
 }
 
+(* Small debugging util
+❯ ./lib/rescript.exe baah/test.res
+let a = 1
+^ let
+let a = 1
+    ^ a
+let a = 1
+      ^ =
+let a = 1
+        ^ int 1
+let a = 1
+         ^ eof
+let a = 1
+*)
+let _printDebug ~startPos scanner token =
+  let open Lexing in
+  print_endline scanner.src;
+  print_string ((String.make [@doesNotRaise]) startPos.pos_cnum ' ');
+  print_char '^';
+  print_char ' ';
+  print_endline (Res_token.toString token)
+[@@live]
+
 let next scanner =
   if scanner.rdOffset < String.length scanner.src then (
     scanner.offset <- scanner.rdOffset;
@@ -71,9 +94,24 @@ let next scanner =
     scanner.ch <- hackyEOFChar
   )
 
+let next2 scanner =
+  next scanner;
+  next scanner
+
+let next3 scanner =
+  next scanner;
+  next scanner;
+  next scanner
+
 let peek scanner =
   if scanner.rdOffset < String.length scanner.src then
     String.unsafe_get scanner.src scanner.rdOffset
+  else
+    hackyEOFChar
+
+let peek2 scanner =
+  if scanner.rdOffset + 1 < String.length scanner.src then
+    String.unsafe_get scanner.src (scanner.rdOffset + 1)
   else
     hackyEOFChar
 
@@ -455,225 +493,142 @@ let scanTemplateLiteralToken scanner =
 let rec scan scanner =
   skipWhitespace scanner;
   let startPos = position scanner in
-  let ch = scanner.ch in
-  let token =
-  if CharacterCodes.isLetter ch then
-    scanIdentifier scanner
-  else if CharacterCodes.isDigit ch then
-    scanNumber scanner
-  else if ch == '_' then (
-    let nextCh = peek scanner in
-    if CharacterCodes.isLetter nextCh || CharacterCodes.isDigit nextCh || nextCh == '_' then
-      scanIdentifier scanner
-    else (
-      next scanner;
-      Token.Underscore
-    )
-  )
-  else begin
+
+  let token = match scanner.ch with
+  (* peeking 0 char *)
+  | 'A'..'Z' | 'a'..'z' -> scanIdentifier scanner
+  | '0'..'9' -> scanNumber scanner
+  | '`' -> next scanner; Token.Backtick
+  | '~' -> next scanner; Token.Tilde
+  | '?' -> next scanner; Token.Question
+  | ';' -> next scanner; Token.Semicolon
+  | '(' -> next scanner; Token.Lparen
+  | ')' -> next scanner; Token.Rparen
+  | '[' -> next scanner; Token.Lbracket
+  | ']' -> next scanner; Token.Rbracket
+  | '{' -> next scanner; Token.Lbrace
+  | '}' -> next scanner; Token.Rbrace
+  | ',' -> next scanner; Token.Comma
+  | '"' -> next scanner; scanString scanner
+
+  (* peeking 1 chars *)
+  | '_' ->
+    (match peek scanner with
+    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' -> scanIdentifier scanner
+    | _ -> next scanner; Token.Underscore)
+  | '#' ->
+    (match peek scanner with
+    | '=' -> next2 scanner; Token.HashEqual
+    | _ -> next scanner; Token.Hash)
+  | '*' ->
+    (match peek scanner with
+    | '*' -> next2 scanner; Token.Exponentiation
+    | '.' -> next2 scanner; Token.AsteriskDot
+    | _ -> next scanner; Token.Asterisk)
+  | '@' ->
+    (match peek scanner with
+    | '@' -> next2 scanner; Token.AtAt
+    | _ -> next scanner; Token.At)
+  | '%' ->
+    (match peek scanner with
+    | '%' -> next2 scanner; Token.PercentPercent
+    | _ -> next scanner; Token.Percent)
+  | '|' ->
+    (match peek scanner with
+    | '|' -> next2 scanner; Token.Lor
+    | '>' -> next2 scanner; Token.BarGreater
+    | _ -> next scanner; Token.Bar)
+  | '&' ->
+    (match peek scanner with
+    | '&' -> next2 scanner; Token.Land
+    | _ -> next scanner; Token.Band)
+  | ':' ->
+    (match peek scanner with
+    | '=' -> next2 scanner; Token.ColonEqual
+    | '>' -> next2 scanner; Token.ColonGreaterThan
+    | _ -> next scanner; Token.Colon)
+  | '\\' -> next scanner; scanExoticIdentifier scanner
+  | '/' ->
+    (match peek scanner with
+    | '/' -> next2 scanner; scanSingleLineComment scanner
+    | '*' -> next2 scanner; scanMultiLineComment scanner
+    | '.' -> next2 scanner; Token.ForwardslashDot
+    | _ -> next scanner; Token.Forwardslash)
+  | '-' ->
+    (match peek scanner with
+    | '.' -> next2 scanner; Token.MinusDot
+    | '>' -> next2 scanner; Token.MinusGreater
+    | _ -> next scanner; Token.Minus)
+  | '+' ->
+    (match peek scanner with
+    | '.' -> next2 scanner; Token.PlusDot
+    | '+' -> next2 scanner; Token.PlusPlus
+    | '=' -> next2 scanner; Token.PlusEqual
+    | _ -> next scanner; Token.Plus)
+  | '>' ->
+    (match peek scanner with
+    | '=' when not (inDiamondMode scanner) -> next2 scanner; Token.GreaterEqual
+    | _ -> next scanner; Token.GreaterThan)
+  | '<' when not (inJsxMode scanner) ->
+    (match peek scanner with
+    | '=' -> next2 scanner; Token.LessEqual
+    | _ -> next scanner; Token.LessThan)
+  (* special handling for JSX < *)
+  | '<' ->
+    (* Imagine the following: <div><
+     * < indicates the start of a new jsx-element, the parser expects
+     * the name of a new element after the <
+     * Example: <div> <div
+     * But what if we have a / here: example </ in  <div></div>
+     * This signals a closing element. To simulate the two-token lookahead,
+     * the </ is emitted as a single new token LessThanSlash *)
     next scanner;
-    if ch == hackyEOFChar then Token.Eof
-    else match ch with
-    | '.' ->
-      if scanner.ch == '.' then (
-        next scanner;
-        if scanner.ch == '.' then (
-          next scanner;
-          Token.DotDotDot
-        ) else (
-          Token.DotDot
-        )
-      ) else (
-        Token.Dot
-      )
-    | '"' -> scanString scanner
-    | '\'' ->
-      if scanner.ch == '\\'
-        && not ((peek scanner) == '"') (* start of exotic ident *)
-      then (
-        next scanner;
-        scanEscape scanner
-      ) else if (peek scanner) == '\'' then (
-        let ch = scanner.ch in
-        next scanner;
-        next scanner;
-        Token.Character (ch)
-      ) else (
-        SingleQuote
-      )
-    | '!' ->
-      if scanner.ch == '=' then (
-        next scanner;
-        if scanner.ch == '=' then (
-          next scanner;
-          Token.BangEqualEqual
-        ) else (
-          Token.BangEqual
-        )
-      ) else (
-        Token.Bang
-      )
-    | ';' -> Token.Semicolon
-    | '=' ->
-      if scanner.ch == '>' then (
-        next scanner;
-        Token.EqualGreater
-      ) else if scanner.ch == '=' then (
-        next scanner;
-        if scanner.ch == '=' then (
-          next scanner;
-          Token.EqualEqualEqual
-        ) else (
-          Token.EqualEqual
-        )
-      ) else (
-        Token.Equal
-      )
-    | '|' ->
-      if scanner.ch == '|' then (
-        next scanner;
-        Token.Lor
-      ) else if scanner.ch == '>' then (
-        next scanner;
-        Token.BarGreater
-      ) else (
-        Token.Bar
-      )
-    | '&' ->
-      if scanner.ch == '&' then (
-        next scanner;
-        Token.Land
-      ) else (
-        Token.Band
-      )
-    | '(' -> Token.Lparen
-    | ')' -> Token.Rparen
-    | '[' -> Token.Lbracket
-    | ']' -> Token.Rbracket
-    | '{' -> Token.Lbrace
-    | '}' -> Token.Rbrace
-    | ',' -> Token.Comma
-    | ':' ->
-     if scanner.ch == '=' then(
-        next scanner;
-        Token.ColonEqual
-      ) else if (scanner.ch == '>') then (
-        next scanner;
-        Token.ColonGreaterThan
-      ) else (
-        Token.Colon
-      )
-    | '\\' -> scanExoticIdentifier scanner
-    | '/' ->
-      if scanner.ch == '/' then (
-        next scanner;
-        scanSingleLineComment scanner
-      ) else if (scanner.ch == '*') then (
-        next scanner;
-        scanMultiLineComment scanner
-      ) else if scanner.ch == '.' then (
-        next scanner;
-        Token.ForwardslashDot
-      ) else (
-        Token.Forwardslash
-      )
-    | '-' ->
-      if scanner.ch == '.' then (
-        next scanner;
-        Token.MinusDot
-      ) else if scanner.ch == '>' then (
-        next scanner;
-        Token.MinusGreater;
-      ) else (
-        Token.Minus
-      )
-    | '+' ->
-      if scanner.ch == '.' then (
-        next scanner;
-        Token.PlusDot
-      ) else if scanner.ch == '+' then (
-        next scanner;
-        Token.PlusPlus
-      ) else if scanner.ch == '=' then (
-        next scanner;
-        Token.PlusEqual
-      ) else (
-        Token.Plus
-      )
-    | '>' ->
-      if scanner.ch == '=' && not (inDiamondMode scanner) then (
-        next scanner;
-        Token.GreaterEqual
-      ) else (
-        Token.GreaterThan
-      )
-    | '<' ->
-      (* Imagine the following: <div><
-       * < indicates the start of a new jsx-element, the parser expects
-       * the name of a new element after the <
-       * Example: <div> <div
-       * But what if we have a / here: example </ in  <div></div>
-       * This signals a closing element. To simulate the two-token lookahead,
-       * the </ is emitted as a single new token LessThanSlash *)
-      if inJsxMode scanner then (
-        skipWhitespace scanner;
-        if scanner.ch == '/' then
-          let () = next scanner in
-          Token.LessThanSlash
-        else if scanner.ch == '=' then (
-          next scanner;
-          Token.LessEqual
-        ) else
-          Token.LessThan
-      ) else if scanner.ch == '=' then (
-        next scanner;
-        Token.LessEqual
-      ) else (
-        Token.LessThan
-      )
-    | '#' ->
-      if scanner.ch == '=' then (
-        next scanner;
-        Token.HashEqual
-      ) else (
-        Token.Hash
-      )
-    | '*' ->
-      if scanner.ch == '*' then (
-        next scanner;
-        Token.Exponentiation;
-      ) else if scanner.ch == '.' then (
-        next scanner;
-        Token.AsteriskDot
-      ) else (
-        Token.Asterisk
-      )
-    | '~' -> Token.Tilde
-    | '?' -> Token.Question
-    | '@' ->
-      if scanner.ch == '@' then (
-        next scanner;
-        Token.AtAt
-      ) else (
-        Token.At
-      )
-    | '%' ->
-      if scanner.ch == '%' then (
-        next scanner;
-        Token.PercentPercent
-      ) else (
-        Token.Percent
-      )
-    | '`' -> Token.Backtick
-    | _ ->
-      (* if we arrive here, we're dealing with an unkown character,
-       * report the error and continue scanning… *)
-      let endPos = position scanner in
-      scanner.err ~startPos ~endPos (Diagnostics.unknownUchar ch);
-      let (_, _, token) = scan scanner in
-      token
-  end in
+    skipWhitespace scanner;
+    (match scanner.ch with
+    | '/' -> next scanner; Token.LessThanSlash
+    | '=' -> next scanner; Token.LessEqual
+    | _ -> Token.LessThan)
+
+  (* peeking 2 chars *)
+  | '.' ->
+    (match peek scanner, peek2 scanner with
+    | '.', '.' -> next3 scanner; Token.DotDotDot
+    | '.', _ -> next2 scanner; Token.DotDot
+    | _ -> next scanner; Token.Dot)
+  | '\'' ->
+    (match peek scanner, peek2 scanner with
+    | '\\', '"' ->
+      (* careful with this one! We're next-ing _once_ (not twice),
+        then relying on matching on the quote *)
+      next scanner; SingleQuote
+    | '\\', _ -> next2 scanner; scanEscape scanner
+    | ch, '\'' -> next3 scanner; Token.Character ch
+    | _ -> next scanner; SingleQuote)
+  | '!' ->
+    (match peek scanner, peek2 scanner with
+    | '=', '=' -> next3 scanner; Token.BangEqualEqual
+    | '=', _ -> next2 scanner; Token.BangEqual
+    | _ -> next scanner; Token.Bang)
+  | '=' ->
+    (match peek scanner, peek2 scanner with
+    | '=', '=' -> next3 scanner; Token.EqualEqualEqual
+    | '=', _ -> next2 scanner; Token.EqualEqual
+    | '>', _ -> next2 scanner; Token.EqualGreater
+    | _ -> next scanner; Token.Equal)
+
+  (* special cases *)
+  | ch when ch == hackyEOFChar -> next scanner; Token.Eof
+  | ch ->
+    (* if we arrive here, we're dealing with an unknown character,
+     * report the error and continue scanning… *)
+    next scanner;
+    let endPos = position scanner in
+    scanner.err ~startPos ~endPos (Diagnostics.unknownUchar ch);
+    let (_, _, token) = scan scanner in
+    token
+  in
   let endPos = position scanner in
+  (* _printDebug ~startPos scanner token; *)
   (startPos, endPos, token)
 
 (* Imagine: <div> <Navbar /> <
