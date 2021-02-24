@@ -1,2 +1,2 @@
 
-(* val create_server : Http_types.http Js.t -> unit *)
+(* val create_server : Http_types.http  -> unit *)

@@ -99,8 +99,6 @@ let check file lam =
 
       | Lassign(_id, e) ->
         check_staticfails e cxt
-      | Lsend (_k, met, obj, args, _) ->
-        check_list (met::obj::args) cxt
   in
   let rec 
     iter_list xs = Ext_list.iter xs iter   
@@ -160,10 +158,6 @@ let check file lam =
       | Lassign(id, e) ->
         use id ;
         iter e
-      | Lsend (_k, met, obj, args, _) ->
-        iter met; iter obj;
-        iter_list args
-
   in
   begin
     check_staticfails lam Set_int.empty;

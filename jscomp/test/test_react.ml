@@ -8,7 +8,7 @@ class type document =
     method getElementById : string -> html_element 
   end[@bs]
 
-type doc = document Js.t 
+type doc = document  
 external doc :  doc  = "doc" [@@bs.val ]
 
 class type con = 
@@ -16,7 +16,7 @@ class type con =
     method log : 'a -> unit 
   end[@bs]
 
-type console = con Js.t 
+type console = con  
 external console : console  = "console" [@@bs.val ]
 
 let v = console##log "hey";;

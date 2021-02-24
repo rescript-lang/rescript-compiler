@@ -883,21 +883,7 @@ let tag ?comment e : t =
 (* according to the compiler, [Btype.hash_variant], 
    it's reduced to 31 bits for hash
 *)
-(* FIXME: unused meth_name *)
-let public_method_call _meth_name obj label cache args = 
-  let len = List.length args in 
-  (* econd (int_equal (tag obj ) obj_int_tag_literal) *)
-  if len <= 7 then          
-    runtime_call Js_runtime_modules.caml_oo_curry 
-      ("js" ^ string_of_int (len + 1) )
-      (label:: ( int cache) :: obj::args)
-  else 
-    runtime_call Js_runtime_modules.caml_oo_curry "js"
-      [label; 
-       int cache;
-       obj ;  
-       array NA (obj::args)
-      ]
+
 
 (* TODO: handle arbitrary length of args .. 
    we can reduce part of the overhead by using

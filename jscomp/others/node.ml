@@ -50,7 +50,7 @@ type node_module = <
        loaded : bool;
        children : node_module array ;
        paths : string array;
-> Js.t
+> 
  (* WARN:
      its path name should not be changed
      see {!Ppx_entry}
@@ -61,7 +61,7 @@ type node_require = <
 
   resolve : string -> string [@bs]
   (* @raise exception   *)
-> Js.t
+> 
 (* WARN:
     its path name should not be changed
     see {!Ppx_entry}

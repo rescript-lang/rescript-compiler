@@ -3,18 +3,18 @@ type synthetic('a);
 module MakeEventWithType = (Type: {type t;}) => {
   [@bs.get] external bubbles: Type.t => bool = "bubbles";
   [@bs.get] external cancelable: Type.t => bool = "cancelable";
-  [@bs.get] external currentTarget: Type.t => Js.t({..}) = "currentTarget"; /* Should return Dom.eventTarget */
+  [@bs.get] external currentTarget: Type.t => ({..}) = "currentTarget"; /* Should return Dom.eventTarget */
   [@bs.get] external defaultPrevented: Type.t => bool = "defaultPrevented";
   [@bs.get] external eventPhase: Type.t => int = "eventPhase";
   [@bs.get] external isTrusted: Type.t => bool = "isTrusted";
-  [@bs.get] external nativeEvent: Type.t => Js.t({..}) = "nativeEvent"; /* Should return Dom.event */
+  [@bs.get] external nativeEvent: Type.t => ({..}) = "nativeEvent"; /* Should return Dom.event */
   [@bs.send] external preventDefault: Type.t => unit = "preventDefault";
   [@bs.send]
   external isDefaultPrevented: Type.t => bool = "isDefaultPrevented";
   [@bs.send] external stopPropagation: Type.t => unit = "stopPropagation";
   [@bs.send]
   external isPropagationStopped: Type.t => bool = "isPropagationStopped";
-  [@bs.get] external target: Type.t => Js.t({..}) = "target"; /* Should return Dom.eventTarget */
+  [@bs.get] external target: Type.t => ({..}) = "target"; /* Should return Dom.eventTarget */
   [@bs.get] external timeStamp: Type.t => float = "timeStamp";
   [@bs.get] external type_: Type.t => string = "type";
   [@bs.send] external persist: Type.t => unit = "persist";
@@ -26,13 +26,13 @@ module Synthetic = {
   [@bs.get] external bubbles: synthetic('a) => bool = "bubbles";
   [@bs.get] external cancelable: synthetic('a) => bool = "cancelable";
   [@bs.get]
-  external currentTarget: synthetic('a) => Js.t({..}) = "currentTarget"; /* Should return Dom.eventTarget */
+  external currentTarget: synthetic('a) => ({..}) = "currentTarget"; /* Should return Dom.eventTarget */
   [@bs.get]
   external defaultPrevented: synthetic('a) => bool = "defaultPrevented";
   [@bs.get] external eventPhase: synthetic('a) => int = "eventPhase";
   [@bs.get] external isTrusted: synthetic('a) => bool = "isTrusted";
   [@bs.get]
-  external nativeEvent: synthetic('a) => Js.t({..}) = "nativeEvent"; /* Should return Dom.event */
+  external nativeEvent: synthetic('a) => ({..}) = "nativeEvent"; /* Should return Dom.event */
   [@bs.send]
   external preventDefault: synthetic('a) => unit = "preventDefault";
   [@bs.send]
@@ -42,7 +42,7 @@ module Synthetic = {
   [@bs.send]
   external isPropagationStopped: synthetic('a) => bool =
     "isPropagationStopped";
-  [@bs.get] external target: synthetic('a) => Js.t({..}) = "target"; /* Should return Dom.eventTarget */
+  [@bs.get] external target: synthetic('a) => ({..}) = "target"; /* Should return Dom.eventTarget */
   [@bs.get] external timeStamp: synthetic('a) => float = "timeStamp";
   [@bs.get] external type_: synthetic('a) => string = "type";
   [@bs.send] external persist: synthetic('a) => unit = "persist";
@@ -57,7 +57,7 @@ module Clipboard = {
   include MakeEventWithType({
     type nonrec t = t;
   });
-  [@bs.get] external clipboardData: t => Js.t({..}) = "clipboardData"; /* Should return Dom.dataTransfer */
+  [@bs.get] external clipboardData: t => ({..}) = "clipboardData"; /* Should return Dom.dataTransfer */
 };
 
 module Composition = {
@@ -97,7 +97,7 @@ module Focus = {
     type nonrec t = t;
   });
   [@bs.get] [@bs.return nullable]
-  external relatedTarget: t => option(Js.t({..})) = "relatedTarget"; /* Should return Dom.eventTarget */
+  external relatedTarget: t => option(({..})) = "relatedTarget"; /* Should return Dom.eventTarget */
 };
 
 module Form = {
@@ -128,7 +128,7 @@ module Mouse = {
   [@bs.get] external pageX: t => int = "pageX";
   [@bs.get] external pageY: t => int = "pageY";
   [@bs.get] [@bs.return nullable]
-  external relatedTarget: t => option(Js.t({..})) = "relatedTarget"; /* Should return Dom.eventTarget */
+  external relatedTarget: t => option(({..})) = "relatedTarget"; /* Should return Dom.eventTarget */
   [@bs.get] external screenX: t => int = "screenX";
   [@bs.get] external screenY: t => int = "screenY";
   [@bs.get] external shiftKey: t => bool = "shiftKey";
@@ -149,14 +149,14 @@ module Touch = {
     type nonrec t = t;
   });
   [@bs.get] external altKey: t => bool = "altKey";
-  [@bs.get] external changedTouches: t => Js.t({..}) = "changedTouches"; /* Should return Dom.touchList */
+  [@bs.get] external changedTouches: t => ({..}) = "changedTouches"; /* Should return Dom.touchList */
   [@bs.get] external ctrlKey: t => bool = "ctrlKey";
   [@bs.send]
   external getModifierState: (t, string) => bool = "getModifierState";
   [@bs.get] external metaKey: t => bool = "metaKey";
   [@bs.get] external shiftKey: t => bool = "shiftKey";
-  [@bs.get] external targetTouches: t => Js.t({..}) = "targetTouches"; /* Should return Dom.touchList */
-  [@bs.get] external touches: t => Js.t({..}) = "touches"; /* Should return Dom.touchList */
+  [@bs.get] external targetTouches: t => ({..}) = "targetTouches"; /* Should return Dom.touchList */
+  [@bs.get] external touches: t => ({..}) = "touches"; /* Should return Dom.touchList */
 };
 
 module UI = {

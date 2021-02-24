@@ -18,7 +18,7 @@ class type js_obj =  object
   method say : float -> float
   method hi : float -> float -> float
 end [@bs]  
-val js_obj : js_obj Js.t
+val js_obj : js_obj 
 *)
 
 let v2  = 

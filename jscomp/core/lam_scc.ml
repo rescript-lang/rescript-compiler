@@ -83,8 +83,6 @@ let hit_mask ( mask : Hash_set_ident_mask.t) (l : Lam.t) : bool =
       hit e1 || hit e2
     | Lwhile(e1, e2) ->
       hit e1 || hit e2
-    | Lsend (_k, met, obj, args, _) ->
-      hit met || hit obj || hit_list args  
   in hit l
 
 

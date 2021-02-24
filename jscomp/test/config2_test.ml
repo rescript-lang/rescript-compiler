@@ -13,13 +13,13 @@ end [@bs]
 type vv = 
    < 
     hey : int -> int -> int [@bs]
-  > Js.t
+  > 
 
 
 type vv2 = 
   < 
     hey : int ->  int -> int [@bs]
-  > Js.t
+  > 
 
 
 let hh (x : v) : v2 = x 
@@ -27,7 +27,7 @@ let hh (x : v) : v2 = x
 let hh2 ( x : vv) : vv2 = x 
 
 
-let test_v (x : v Js.t) = 
+let test_v (x : v ) = 
   x##hey 1 2
 
 let test_vv (h : vv) =

@@ -7,7 +7,7 @@ external config :
   (<
      x : unit -> 'x [@bs.meth];
      say : 'x -> 'say [@bs.meth]      
-  > Js.t as 'self_type)  = "" [@@bs.obj] 
+  >  as 'self_type)  = "" [@@bs.obj] 
 
 
 let v =

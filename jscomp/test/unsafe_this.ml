@@ -15,29 +15,29 @@ let u : 'self =
         x : int ; 
       y : int ;
       bark : 'self -> int ->  int -> unit [@bs]; 
-      length : int >      Js.t )
+      length : int >       )
   
 
 
 let u  = u#@bark u 1 2 
 
-let uux_this : < length : int > Js.t -> int -> int -> int [@bs.this] 
+let uux_this : < length : int >  -> int -> int -> int [@bs.this] 
   =
   fun[@bs.this] o x y -> o##length + x + y
 
 
 type (-'this, +'tuple) u 
 
-type 'a fn = (< > Js.t, 'a) u
+type 'a fn = (< > , 'a) u
 
 
 let f (x : 'a fn) =  
   (x  : 'a fn :> 
-     (< l : int ; y :int > Js.t, 'a) u  )
+     (< l : int ; y :int > , 'a) u  )
 
-let h  (u : (< l : int ; y :int > Js.t, int) u) = u 
+let h  (u : (< l : int ; y :int > , int) u) = u 
 
-let hh (x : 'a fn) = h (x : _ fn :>   (< l : int ; y :int > Js.t, int) u )
+let hh (x : 'a fn) = h (x : _ fn :>   (< l : int ; y :int > , int) u )
 
 (* let m = [%bs.method fun o (x,y) -> o##length < x && o##length > y ] *)
 
@@ -69,7 +69,7 @@ let uu : 'self =
         x : int ; 
       y : int ;
       bark : ('self -> int -> int -> _ [@bs.this]); 
-      length : int >       Js.t)
+      length : int >       )
   
 
 let js_obj : 'self = 

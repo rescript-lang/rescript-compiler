@@ -76,7 +76,7 @@ let rec apply_with_arity_aux (fn : J.expression)
 let apply_with_arity ~arity fn args  = 
   apply_with_arity_aux fn arity args (List.length args)  
 
-let method_cache_id = ref 1 (*TODO: move to js runtime for re-entrant *)
+
 
 let change_tail_type_in_try 
   (x : Lam_compile_context.tail_type)
@@ -1145,71 +1145,6 @@ and compile_trywith lam id catch (lambda_cxt : Lam_compile_context.t) =
          mutable initializers: (obj -> unit) list }
    ]}
 *)
-and compile_send  (meth_kind : Lam_compat.meth_kind)
-    (met : Lam.t) 
-    (obj : Lam.t) (args : Lam.t list) 
-    (lambda_cxt : Lam_compile_context.t) =       
-    let new_cxt = {lambda_cxt with continuation = NeedValue Not_tail} in 
-    match Ext_list.split_map (met :: obj :: args) (fun x  ->
-          match x with
-          | Lprim {primitive = Pccall {prim_name ; _}; args =  []}
-            (* nullary external call*)
-            ->
-            [], E.var (Ext_ident.create_js prim_name)
-          | _ ->
-              match compile_lambda new_cxt x with
-              | {value = None} -> assert false        
-              | {block; value = Some b} -> block, b
-        ) with
-    | _, ([] | [_]) -> assert false
-    | (args_code, label::nobj::args)
-      ->
-      let cont3 nobj k =
-        match Js_ast_util.named_expression nobj with
-        | None ->
-          let cont =
-            Js_output.output_of_block_and_expression
-              lambda_cxt.continuation (List.concat args_code)
-          in
-          cont (k nobj)
-        | Some (obj_code, v) ->
-          let cont2 obj_code v =
-            Js_output.output_of_block_and_expression
-              lambda_cxt.continuation 
-              ( Ext_list.concat_append args_code  [obj_code]) v in
-          let cobj = E.var v in
-          cont2 obj_code (k cobj) in
-      match meth_kind with
-      | Self ->
-        (* TODO: horrible hack -- fixed later -- CHECK*)
-        cont3 nobj (fun aobj -> E.call ~info:Js_call_info.dummy
-                       (Js_of_lam_array.ref_array
-                          (E.array_index_by_int aobj 0l) label )
-                       (aobj :: args))
-      (* [E.small_int 1] is because we use array,
-          when we change the runtime represenation, it needs to be adapted
-      *)
-
-      | Cached | Public None
-        (* TODO: check -- 1. js object propagate 2. js object create  *)
-        ->
-        let get = E.runtime_ref  Js_runtime_modules.oo "caml_get_public_method" in
-        let cache = !method_cache_id in
-        let () = incr method_cache_id  in
-        cont3 nobj (fun obj' ->
-            E.call ~info:Js_call_info.dummy
-              (E.call ~info:Js_call_info.dummy get
-                 [obj'; label; E.small_int cache]) (obj'::args)
-          ) (* avoid duplicated compuattion *)
-
-
-      | Public (Some name) ->
-        let cache = !method_cache_id in
-        incr method_cache_id ;
-        cont3 nobj
-          (fun aobj -> E.public_method_call name aobj label
-              (Int32.of_int cache) args )
-
 
 and compile_ifthenelse 
       (predicate : Lam.t)
@@ -1661,5 +1596,3 @@ and compile_lambda
       compile_assign id lambda lambda_cxt
     | Ltrywith(lam,id, catch) ->  (* generate documentation *)
       compile_trywith lam id catch lambda_cxt
-    | Lsend(meth_kind,met, obj, args,_loc) ->
-      compile_send meth_kind met obj args  lambda_cxt

@@ -11,13 +11,13 @@ end [@bs]
 type vv = 
    < 
     hey : int -> int -> int [@bs]
-  >  Js.t
+  >  
 
 type vv2 = 
    < 
     hey : int -> int -> int [@bs]
-  > Js.t
+  > 
 
 
-val test_v : v Js.t -> int
+val test_v : v  -> int
 val test_vv : vv -> int 

@@ -8,11 +8,11 @@ let f p =
 
 class type ['b] promise =
   object [@bs]
-    method _then : 'a -> 'b promise Js.t
+    method _then : 'a -> 'b promise 
     method catch : 'a -> 'b
   end 
 
-external new_promise : unit -> _ promise Js.t = 
+external new_promise : unit -> _ promise  = 
   "Promise" [@@bs.new] [@@bs.module "sys-bluebird"]
 
 let () =

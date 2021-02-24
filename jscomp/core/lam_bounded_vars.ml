@@ -159,11 +159,6 @@ let rewrite (map :   _ Hash_ident.t)
       Lam.while_  l1  l2
     | Lassign(v, l) 
       -> Lam.assign v (aux  l)
-    | Lsend(u, m, o, ll, v) ->
-      let m = aux m in 
-      let o = aux o in 
-      let ll = Ext_list.map ll aux in
-      Lam.send u  m  o  ll v
   in 
   aux lam
 

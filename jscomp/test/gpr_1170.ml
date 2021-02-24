@@ -12,7 +12,7 @@ external set_hi :
 #if 0 then
 external ff_json  : hi:int -> lo:(_[@bs.as {json|null|json}]) -> _ = "" [@@bs.obj]
 
-let uu : < hi : int; lo : string > Js.t = ff_json ~hi:3
+let uu : < hi : int; lo : string >  = ff_json ~hi:3
 #end
 
 let f resp =

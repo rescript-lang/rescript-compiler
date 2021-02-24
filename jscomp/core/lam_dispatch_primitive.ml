@@ -413,9 +413,6 @@ let translate loc (prim_name : string)
       call Js_runtime_modules.exceptions
     | "caml_as_js_exn" ->
       call Js_runtime_modules.caml_js_exceptions  
-    | "caml_set_oo_id" (* needed in {!camlinternalOO.set_id} *)
-      ->
-      call Js_runtime_modules.oo
 
     | "caml_sys_get_argv" 
     (** TODO: refine
@@ -543,9 +540,7 @@ let translate loc (prim_name : string)
       begin match args with 
         | [e] -> E.tag e 
         | _ -> assert false end    
-    | "caml_get_public_method"
-      ->
-      call Js_runtime_modules.oo
+
     (** TODO: Primitives not implemented yet ...*)
     | "caml_install_signal_handler"
       -> 

@@ -25,11 +25,11 @@ imagine you have
 
 the type should be 
    {[
-       < _set_height : int -> unit> Js.t     
+       < _set_height : int -> unit>      
    ]}
 or 
    {[
-     < _set_height : (int, unit) t > Js.t
+     < _set_height : (int, unit) t > 
    ]}   
 
 so {[

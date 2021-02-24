@@ -1,6 +1,6 @@
 
 
-let uux_this : < length : int > Js.t -> int -> int -> int [@bs.this] 
+let uux_this : < length : int >  -> int -> int -> int [@bs.this] 
   =
   fun[@bs.this] o x y -> o##length + x + y
 
@@ -25,11 +25,11 @@ let js_obj : 'self =
       }
   ]
 class type _x = object [@bs]
-  method onload : _x Js.t -> unit [@this] [@@bs.set]
-  method addEventListener : string -> (_x Js.t -> unit [@bs.this]) -> unit 
+  method onload : _x  -> unit [@this] [@@bs.set]
+  method addEventListener : string -> (_x  -> unit [@bs.this]) -> unit 
   method response : string
 end
-type x = _x Js.t 
+type x = _x  
 
 let f (x : x ) = 
   begin 

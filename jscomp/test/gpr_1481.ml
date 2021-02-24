@@ -1,6 +1,6 @@
 
 
-type moduleId = < name : string > Js.t
+type moduleId = < name : string > 
   
 external moduleId : moduleId = "#moduleid" [@@bs.module]
 

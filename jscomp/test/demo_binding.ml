@@ -44,7 +44,7 @@ class type applicationContext =
   end[@bs]
 class type contentable = 
   object
-    method content : #widget Js.t [@@bs.set]
+    method content : #widget  [@@bs.set]
     method contentWidth : int  [@@bs.set]
   end[@bs]
 
@@ -72,7 +72,7 @@ class type stackPanel =
     inherit layout 
     inherit widget
 
-    method addChild : #widget Js.t -> unit 
+    method addChild : #widget  -> unit 
 
   end[@bs]
 
@@ -80,11 +80,11 @@ class type grid  =
   object
     inherit widget
     inherit measure
-    method columns :  <width : int; .. >  Js.t  array [@@bs.set]
+    method columns :  <width : int; .. >    array [@@bs.set]
     method titleRows : 
-       <label : <text : string; .. > Js.t   ; ..> Js.t   array [@@bs.set]
+       <label : <text : string; .. >    ; ..>    array [@@bs.set]
     method dataSource :
-       <label : <text : string; .. >  Js.t ; ..>  Js.t  array array [@@bs.set]
+       <label : <text : string; .. >   ; ..>    array array [@@bs.set]
   end[@bs]
 
 

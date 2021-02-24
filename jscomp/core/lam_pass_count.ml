@@ -170,10 +170,6 @@ let collect_occurs  lam : occ_tbl =
     | Ltrywith(l1, _v, l2) -> count bv l1; count bv l2
     | Lifthenelse(l1, l2, l3) -> count bv l1; count bv l2; count bv l3
     | Lsequence(l1, l2) -> count bv l1; count bv l2 
-    | Lsend(_, m, o, ll, _) -> 
-      count bv m ;
-      count bv o;
-      List.iter (count bv) ll
   and count_default bv sw = 
     match sw.sw_failaction with
     | None -> ()

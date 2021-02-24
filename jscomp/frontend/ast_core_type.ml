@@ -116,7 +116,7 @@ let from_labels ~loc arity labels
     ((Ext_list.init arity (fun i ->
          Typ.var ~loc ("a" ^ string_of_int i)))) in
   let result_type =
-    Ast_comb.to_js_type loc
+    
       (Typ.object_ ~loc
          (Ext_list.map2 labels tyvars 
           (fun x y -> Parsetree.Otag (x ,[], y))) Closed)
@@ -128,7 +128,6 @@ let from_labels ~loc arity labels
 
 
 let make_obj ~loc xs =
-  Ast_comb.to_js_type loc
     (Typ.object_  ~loc xs Closed)
 
 

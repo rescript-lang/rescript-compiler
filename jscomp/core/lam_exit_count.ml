@@ -85,7 +85,6 @@ let count_helper  (lam : Lam.t) : collection =
     | Lwhile(l1, l2) -> count l1; count l2
     | Lfor(_, l1, l2, _dir, l3) -> count l1; count l2; count l3
     | Lassign(_, l) -> count l
-    | Lsend(_, m, o, ll, _) -> count m; count o; List.iter count ll
   and count_default sw =
     match sw.sw_failaction with
     | None -> ()

@@ -24,7 +24,7 @@
 
 [@@@bs.config {flags = [|"-unboxed-types"|]}]
 (**/**)
-external unsafe_downgrade : 'a Js.t -> 'a = "#unsafe_downgrade"
+external unsafe_downgrade : 'a  -> 'a = "#unsafe_downgrade"
 external unsafe_to_method : 'a -> 'a = "#fn_method"
 (**/**)
 module Callback = struct

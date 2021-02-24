@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 
 function f(x) {
   x.height = 3;
@@ -8,7 +7,7 @@ function f(x) {
 }
 
 function h(x) {
-  return Caml_oo_curry.js1(38537191, 1, x);
+  return x.height;
 }
 
 exports.f = f;

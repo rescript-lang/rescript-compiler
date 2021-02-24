@@ -67,13 +67,13 @@ module rec R:
 module rec R1 : sig 
    class type ['a] container =
    object [@bs]
-     method map : 'b. ('a -> 'b) -> 'b R1.container_aux Js.t
+     method map : 'b. ('a -> 'b) -> 'b R1.container_aux 
    end 
  type 'a container_aux = 
     { container: 'a container }
     [@@unboxed]
 end = R1 
 
-let f ( x: int R1.container Js.t) = 
+let f ( x: int R1.container ) = 
   (* let u = (x##map) in  *)
   x##map (fun x -> string_of_int x) 

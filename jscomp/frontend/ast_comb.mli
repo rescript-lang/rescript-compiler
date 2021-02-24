@@ -40,10 +40,6 @@ val tuple_type_pair :
   [< `Make | `Run ] ->
   int -> Parsetree.core_type * Parsetree.core_type list * Parsetree.core_type
 
-val to_js_type :
-  Location.t -> Parsetree.core_type -> Parsetree.core_type
-
-
 
 val to_undefined_type :
   Location.t -> Parsetree.core_type -> Parsetree.core_type  

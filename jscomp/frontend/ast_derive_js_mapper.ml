@@ -432,7 +432,6 @@ let init () =
                 | Ptype_record label_declarations ->            
 
                   let objType flag =                     
-                    Ast_comb.to_js_type loc @@  
                     Typ.object_
                       (Ext_list.map label_declarations
                          (fun {pld_name ; pld_type } -> 

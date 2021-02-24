@@ -41,7 +41,7 @@ type pathObject =
     base : string ;
     name : string ;
     ext : string          
-  >   Js.t         
+  >   
   
 external format : pathObject -> string = "format" [@@bs.module "path"]
 

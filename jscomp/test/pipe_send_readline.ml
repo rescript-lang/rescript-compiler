@@ -17,7 +17,7 @@ let u rl =
 
 
 
-external send : string -> 'self   = "send" [@@bs.send.pipe: < hi : int > Js.t as 'self]
+external send : string -> 'self   = "send" [@@bs.send.pipe: < hi : int >  as 'self]
 
 
 let xx h : int  =

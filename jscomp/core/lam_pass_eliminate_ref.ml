@@ -111,10 +111,6 @@ let rec eliminate_ref id (lam : Lam.t) =
       (eliminate_ref id e3)
   | Lassign(v, e) ->
     Lam.assign v (eliminate_ref id e)
-  | Lsend(k, m, o, el, loc) ->
-    Lam.send k 
-      (eliminate_ref id m) (eliminate_ref id o)
-      (Ext_list.map el (eliminate_ref id)) loc
   
 
 

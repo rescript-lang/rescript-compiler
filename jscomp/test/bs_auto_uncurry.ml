@@ -160,7 +160,7 @@ external config :
 
 type expected = 
     < hi : int -> int [@bs]; 
-      lo : int > Js.t 
+      lo : int >  
 
 let f : expected = 
     config 

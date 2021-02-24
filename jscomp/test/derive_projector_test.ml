@@ -42,7 +42,7 @@ let h = [
 type hh = Xx of int 
 [@@bs.deriving accessors]
 
-type xx = < x : int > Js.t
+type xx = < x : int > 
 [@@bs.deriving accessors]
 
 type t = 

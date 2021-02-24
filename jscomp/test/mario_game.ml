@@ -165,12 +165,12 @@ external addEventListener : Dom.document -> string -> ('a Dom.event_like -> bool
 external addEventListenerImg : imageElement -> string -> ('a Dom.event_like -> bool) -> bool -> unit = "addEventListener" [@@bs.send]
 
 (* unsafe casts *)
-external imageElementToJsObj : imageElement -> < .. > Js.t = "%identity"
-external canvasRenderingContext2DToJsObj : canvasRenderingContext2D -> < .. > Js.t = "%identity"
-external canvasElementToJsObj : canvasElement -> < .. > Js.t = "%identity"
-external keyboardEventToJsObj : Dom.keyboardEvent -> < .. > Js.t = "%identity"
+external imageElementToJsObj : imageElement -> < .. >  = "%identity"
+external canvasRenderingContext2DToJsObj : canvasRenderingContext2D -> < .. >  = "%identity"
+external canvasElementToJsObj : canvasElement -> < .. >  = "%identity"
+external keyboardEventToJsObj : Dom.keyboardEvent -> < .. >  = "%identity"
 external elementToCanvasElement : Dom.element -> canvasElement = "%identity"
-external windowToJsObj : Dom.window -> < .. > Js.t = "%identity"
+external windowToJsObj : Dom.window -> < .. >  = "%identity"
 
 
 end

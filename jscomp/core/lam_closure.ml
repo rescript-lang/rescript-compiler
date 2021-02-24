@@ -144,10 +144,7 @@ let free_variables
     | Lassign(id, e) ->
       used top  id ; 
       iter top e
-    | Lsend (_k, met, obj, args, _) ->
-      iter sink_pos met ; 
-      iter sink_pos obj;
-      List.iter (iter sink_pos) args in
+    in
   iter Lam_var_stats.fresh_env  lam ; 
   !fv 
 

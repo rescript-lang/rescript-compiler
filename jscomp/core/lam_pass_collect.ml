@@ -166,7 +166,6 @@ let collect_info  (meta : Lam_stats.t) (lam : Lam.t)  =
       (* Lalias-bound variables are never assigned, so don't increase
          v's refcollect *)
       collect  l
-    | Lsend(_, m, o, ll, _) -> collect m ; collect o; List.iter collect ll
   in collect lam 
 
 

@@ -106,7 +106,7 @@ external unmountComponentAtNode: Dom.element => unit =
 [@bs.val] [@bs.module "react-dom"]
 external findDOMNode: ReasonReact.reactRef => Dom.element = "findDOMNode";
 
-external domElementToObj: Dom.element => Js.t({..}) = "%identity";
+external domElementToObj: Dom.element => ({..}) = "%identity";
 
 type style;
 
@@ -2128,7 +2128,7 @@ type props = {
   suppressContentEditableWarning: bool,
 };
 
-external objToDOMProps: Js.t({..}) => props = "%identity";
+external objToDOMProps: ({..}) => props = "%identity";
 
 [@deprecated "Please use ReactDOMRe.props instead"]
 type reactDOMProps = props;
@@ -2604,6 +2604,6 @@ module Style = {
 
   [@bs.val]
   external unsafeAddStyle:
-    ([@bs.as {json|{}|json}] _, style, Js.t({..})) => style =
+    ([@bs.as {json|{}|json}] _, style, ({..})) => style =
     "Object.assign";
 };

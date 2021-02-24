@@ -45,5 +45,5 @@ external readAs : spawnResult ->
     status : int Js.null;
     signal : string Js.null ; 
     stdout : Node.string_buffer Js.null ;
-    stderr : Node.string_buffer Js.null > Js.t = 
+    stderr : Node.string_buffer Js.null >  = 
   "%identity"

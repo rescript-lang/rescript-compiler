@@ -303,6 +303,4 @@ let deep_flatten
       (* Lalias-bound variables are never assigned, so don't increase
          v's refaux *)
       Lam.assign v (aux  l)
-    | Lsend(u, m, o, ll, v) ->
-      Lam.send u (aux m) (aux o) (Ext_list.map ll aux) v
   in aux lam

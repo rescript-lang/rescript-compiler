@@ -1,11 +1,11 @@
   (** 
-     [%bs (req Js.t * resp Js.t => unit ) => server Js.t 
+     [%bs (req  * resp  => unit ) => server  
      ]
 
      A syntax extension
 
-     (req Js.t ->  resp Js.t -> unit  [@bs] )-> server Js.t [@bs]
-     type a = [%bs (req Js.t * resp Js.t => unit ) => server Js.t ]
+     (req  ->  resp  -> unit  [@bs] )-> server  [@bs]
+     type a = [%bs (req  * resp  => unit ) => server  ]
   *)
 
 
@@ -20,17 +20,17 @@ class type _resp =
     method setHeader : string -> string -> unit
     method _end : string -> unit 
   end[@bs]
-type resp = _resp Js.t 
+type resp = _resp  
 class type _server = 
   object 
     method listen : int ->  string -> (unit -> unit [@bs]) -> unit
   end[@bs]
-type server = _server Js.t 
+type server = _server  
 class type _http = 
   object 
     method createServer : (req  -> resp  -> unit [@bs]) ->  server
   end[@bs]
-type http = _http Js.t
+type http = _http 
 
 
 

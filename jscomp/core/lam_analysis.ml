@@ -211,7 +211,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lwhile _ -> false (* conservative here, non-terminating loop does have side effect *)
   | Lfor _ -> false 
   | Lassign _ -> false (* actually it depends ... *)
-  | Lsend _ -> false 
+  (* | Lsend _ -> false  *)
   | Lapply {
       ap_func = Lprim {primitive = Pfield (_, Fld_module {name = "from_fun"})};
      ap_args = [arg]}
@@ -272,7 +272,7 @@ let rec size (lam : Lam.t) =
     | Lwhile _ -> really_big ()
     | Lfor _ -> really_big () 
     | Lassign (_,v) -> 1 + size v  (* This is side effectful,  be careful *)
-    | Lsend _  ->  really_big ()
+    (* | Lsend _  ->  really_big () *)
 
   with Too_big_to_inline ->  1000 
 and size_constant x = 

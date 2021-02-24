@@ -43,13 +43,9 @@
 
 (** Types for JS objects *)
 
-type +'a t
-(** Js object type.
-
-    @example {[
-        let x : < x : int ; y : int > Js.t =
-            [%obj{ x = 1 ; y = 2}]
-    ]}
+type 'a t = 'a
+(** This used to be mark a Js object type.
+  It is not needed any more, it is kept here for compatibility reasons
  *)
 
 

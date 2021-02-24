@@ -262,9 +262,6 @@ let simplify_alias
       (* Lalias-bound variables are never assigned, so don't increase
          v's refsimpl *)
       Lam.assign v (simpl  l)
-    | Lsend (u, m, o, ll, v) 
-      -> 
-      Lam.send u (simpl m) (simpl o) (Ext_list.map ll simpl) v
   in 
   simpl lam
 
