@@ -66,9 +66,11 @@ let explain t =
   | UnknownUchar uchar ->
     begin match uchar with
     | '^' ->
-      "Hmm, not sure what I should do here with this character.\nIf you're trying to deref an expression, use `foo.contents` instead."
+      "Not sure what to do with this character.\n" ^
+      "  If you're trying to dereference a mutable value, use `myValue.contents` instead.\n" ^
+      "  To concatenate strings, use `\"a\" ++ \"b\"` instead."
     | _ ->
-      "Hmm, I have no idea what this character means…"
+      "I have no idea what this character means…"
     end
   | Expected {context; token = t} ->
     let hint = match context with

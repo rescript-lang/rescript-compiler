@@ -105,8 +105,9 @@ let newX = x +. (newVelocity *. secondPerFrame)
   2 │ let newX = x +. newVelocity *. secondPerFrame^;
   3 │ 
   
-  Hmm, not sure what I should do here with this character.
-If you're trying to deref an expression, use \`foo.contents\` instead.
+  Not sure what to do with this character.
+  If you're trying to dereference a mutable value, use \`myValue.contents\` instead.
+  To concatenate strings, use \`\\"a\\" ++ \\"b\\"\` instead.
 
 
   Syntax error!
@@ -115,8 +116,9 @@ If you're trying to deref an expression, use \`foo.contents\` instead.
   2 │ let newX = x +. newVelocity *. secondPerFrame^;
   3 │ 
   
-  Hmm, not sure what I should do here with this character.
-If you're trying to deref an expression, use \`foo.contents\` instead.
+  Not sure what to do with this character.
+  If you're trying to dereference a mutable value, use \`myValue.contents\` instead.
+  To concatenate strings, use \`\\"a\\" ++ \\"b\\"\` instead.
 
 
 ========================================================"
