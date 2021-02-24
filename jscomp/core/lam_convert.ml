@@ -817,7 +817,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | Lassign (id, body) ->
       Lam.assign id (convert_aux body)
     | Lsend (kind, _,b,ls, _loc) ->
-      (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
+        (* we should add Pjs_* to any send, so that the preprocessing is not needed any more
+        *)
         (match convert_aux b with
         | Lprim {primitive =  Pjs_unsafe_downgrade {loc};  args}
           ->
@@ -834,8 +835,21 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
                 ~args loc
             | _ -> assert false
           end
-        | _ ->
-          assert false)
+        | obj ->
+          begin match kind, ls with
+            | Public (Some name), [] ->
+              let setter = Ext_string.ends_with name Literals.setter_suffix in 
+              let property = 
+                if setter then   
+                  Lam_methname.translate 
+                    (String.sub name 0
+                       (String.length name - Literals.setter_suffix_len))
+                else Lam_methname.translate  name in 
+              prim ~primitive:(Pjs_unsafe_downgrade {name = property;loc=_loc; setter})
+                ~args:[obj] _loc
+            | _ -> assert false
+      end
+         )
       
     | Levent _ ->
       (* disabled by upstream*)

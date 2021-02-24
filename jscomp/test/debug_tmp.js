@@ -1,1 +1,12 @@
-/* This output is empty. Its source's type definitions, externals and/or unused code got optimized away. */
+'use strict';
+
+
+function u(x) {
+  return [
+          x.hi,
+          x.yo
+        ];
+}
+
+exports.u = u;
+/* No side effect */

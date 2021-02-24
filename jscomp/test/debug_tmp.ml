@@ -11,3 +11,5 @@
   |]
 }]
 
+
+let u x = x#hi,x#yo 
