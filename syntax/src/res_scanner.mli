@@ -12,7 +12,6 @@ type t = {
     -> unit;
   mutable ch: charEncoding; (* current character *)
   mutable offset: int; (* character offset *)
-  mutable rdOffset: int; (* reading offset (position after current character) *)
   mutable lineOffset: int; (* current line offset *)
   mutable lnum: int; (* current line number *)
   mutable mode: mode list;

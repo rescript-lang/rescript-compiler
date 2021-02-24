@@ -21,7 +21,6 @@ type t = {
     -> unit;
   mutable ch: charEncoding; (* current character *)
   mutable offset: int; (* character offset *)
-  mutable rdOffset: int; (* reading offset (position after current character) *)
   mutable lineOffset: int; (* current line offset *)
   mutable lnum: int; (* current line number *)
   mutable mode: mode list;
@@ -84,11 +83,9 @@ let _printDebug ~startPos scanner token =
 [@@live]
 
 let next scanner =
-  if scanner.rdOffset < String.length scanner.src then (
-    scanner.offset <- scanner.rdOffset;
-    let ch = String.unsafe_get scanner.src scanner.rdOffset in
-    scanner.rdOffset <- scanner.rdOffset + 1;
-    scanner.ch <- ch
+  if scanner.offset + 1 < String.length scanner.src then (
+    scanner.offset <- scanner.offset + 1;
+    scanner.ch <- String.unsafe_get scanner.src scanner.offset
   ) else (
     scanner.offset <- String.length scanner.src;
     scanner.ch <- hackyEOFChar
@@ -104,31 +101,28 @@ let next3 scanner =
   next scanner
 
 let peek scanner =
-  if scanner.rdOffset < String.length scanner.src then
-    String.unsafe_get scanner.src scanner.rdOffset
+  if scanner.offset + 1 < String.length scanner.src then
+    String.unsafe_get scanner.src (scanner.offset + 1)
   else
     hackyEOFChar
 
 let peek2 scanner =
-  if scanner.rdOffset + 1 < String.length scanner.src then
-    String.unsafe_get scanner.src (scanner.rdOffset + 1)
+  if scanner.offset + 2 < String.length scanner.src then
+    String.unsafe_get scanner.src (scanner.offset + 2)
   else
     hackyEOFChar
 
 let make ?(line=1) ~filename src =
-  let scanner = {
+  {
     filename;
     src = src;
     err = (fun ~startPos:_ ~endPos:_ _ -> ());
-    ch = ' ';
+    ch = if src = "" then hackyEOFChar else String.unsafe_get src 0;
     offset = 0;
-    rdOffset = 0;
     lineOffset = 0;
     lnum = line;
     mode = [];
-  } in
-  next scanner;
-  scanner
+  }
 
 let skipWhitespace scanner =
   let rec scan () =

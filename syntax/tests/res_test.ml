@@ -183,7 +183,6 @@ module ParserApiTest = struct
     assert (parser.scanner.lnum == 1);
     assert (parser.scanner.lineOffset == 0);
     assert (parser.scanner.offset == 6);
-    assert (parser.scanner.rdOffset == 7);
     assert (parser.token = Res_token.Let);
     print_endline "✅ Parser make: initializes parser defaulting to line 1 "
 
@@ -193,7 +192,6 @@ module ParserApiTest = struct
     assert (parser.scanner.lnum == 2);
     assert (parser.scanner.lineOffset == 0);
     assert (parser.scanner.offset == 3);
-    assert (parser.scanner.rdOffset == 4);
     assert (parser.token = Res_token.Let);
     print_endline "✅ Parser make: initializes parser with line set to 2"
 
