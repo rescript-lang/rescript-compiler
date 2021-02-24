@@ -74,8 +74,8 @@ let checkProgress ~prevEndPos ~result p =
   then None
   else Some result
 
-let make ?(mode=ParseForTypeChecker) ?line src filename =
-  let scanner = Scanner.make ~filename ?line src in
+let make ?(mode=ParseForTypeChecker) src filename =
+  let scanner = Scanner.make ~filename src in
   let parserState = {
     mode;
     scanner;

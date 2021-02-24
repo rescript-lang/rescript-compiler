@@ -112,7 +112,7 @@ let peek2 scanner =
   else
     hackyEOFChar
 
-let make ?(line=1) ~filename src =
+let make ~filename src =
   {
     filename;
     src = src;
@@ -120,7 +120,7 @@ let make ?(line=1) ~filename src =
     ch = if src = "" then hackyEOFChar else String.unsafe_get src 0;
     offset = 0;
     lineOffset = 0;
-    lnum = line;
+    lnum = 1;
     mode = [];
   }
 

@@ -17,7 +17,7 @@ type t = {
   mutable mode: mode list;
 }
 
-val make: ?line:int -> filename:string -> string -> t
+val make: filename:string -> string -> t
 
 (* TODO: make this a record *)
 val scan: t -> (Lexing.position * Lexing.position * Res_token.t)
