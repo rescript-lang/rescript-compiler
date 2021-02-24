@@ -112,7 +112,6 @@ type t =
     { 
       name : string ; 
       setter : bool;
-      loc : Location.t;
     }
   | Pinit_mod
   | Pupdate_mod

@@ -701,7 +701,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
 
         | "#fn_mk" -> Pjs_fn_make (Ext_pervasives.nat_of_string_exn p.prim_native_name)
         | "#fn_method" -> Pjs_fn_method 
-        | "#unsafe_downgrade" -> Pjs_unsafe_downgrade {name = Ext_string.empty; loc ; setter = false}
+        | "#unsafe_downgrade" -> Pjs_unsafe_downgrade {name = Ext_string.empty;  setter = false}
         | _ -> Location.raise_errorf ~loc
                  "@{<error>Error:@} internal error, using unrecognized primitive %s" s
       in
@@ -819,7 +819,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | Lsend (kind, _,b,ls, _loc) ->
       (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
         (match convert_aux b with
-        | Lprim {primitive =  Pjs_unsafe_downgrade {loc};  args}
+        | Lprim {primitive =  Pjs_unsafe_downgrade _;  args;loc}
           ->
           begin match kind, ls with
             | Public (Some name), [] ->
@@ -830,7 +830,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
                     (String.sub name 0
                        (String.length name - Literals.setter_suffix_len))
                 else Lam_methname.translate  name in 
-              prim ~primitive:(Pjs_unsafe_downgrade {name = property;loc; setter})
+              prim ~primitive:(Pjs_unsafe_downgrade {name = property; setter})
                 ~args loc
             | _ -> assert false
           end
