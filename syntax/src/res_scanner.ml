@@ -124,21 +124,18 @@ let make ?(line=1) ~filename src =
     mode = [];
   }
 
-let skipWhitespace scanner =
-  let rec scan () =
-    if scanner.ch == ' ' || scanner.ch == '\t' then (
-      next scanner;
-      scan()
-    ) else if CharacterCodes.isLineBreak scanner.ch then (
-      scanner.lineOffset <- scanner.offset + 1;
-      scanner.lnum <- scanner.lnum + 1;
-      next scanner;
-      scan()
-    ) else (
-      ()
-    )
-  in
-  scan()
+let rec skipWhitespace scanner =
+  match scanner.ch with
+  | ' ' | '\t' ->
+    next scanner;
+    skipWhitespace scanner
+  | '\n' | '\r' ->
+    (* line break *)
+    scanner.lineOffset <- scanner.offset + 1;
+    scanner.lnum <- scanner.lnum + 1;
+    next scanner;
+    skipWhitespace scanner
+  | _ -> ()
 
 let scanIdentifier scanner =
   let startOff = scanner.offset in
@@ -151,9 +148,9 @@ let scanIdentifier scanner =
     next scanner
   done;
   let str = (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff) in
-  if '{' == scanner.ch && str = "list"
-  then begin
+  if '{' == scanner.ch && str = "list" then begin
     next scanner;
+    (* TODO: this isn't great *)
     Token.lookupKeyword "list{"
   end
   else Token.lookupKeyword str
@@ -174,25 +171,14 @@ let scanNumber scanner =
   let startOff = scanner.offset in
 
   (* integer part *)
-  let base, _prefix = if scanner.ch != '.' then (
-    if scanner.ch == '0' then (
-      next scanner;
-      match scanner.ch with
-      | 'x' | 'X' ->
-        next scanner;
-        16, 'x'
-      | 'o' | 'O' ->
-        next scanner;
-        8, 'o'
-      | 'b' | 'B' ->
-        next scanner;
-        2, 'b'
-      | _ ->
-        8, '0'
-    ) else (
-      10, ' '
-    )
-  ) else (10, ' ')
+  let base = match scanner.ch with
+  | '0' ->
+    (match peek scanner with
+    | 'x' | 'X' -> next2 scanner; 16
+    | 'o' | 'O' -> next2 scanner; 8
+    | 'b' | 'B' -> next2 scanner; 2
+    | _ -> next scanner; 8)
+  | _ -> 10
   in
   scanDigits scanner ~base;
 
@@ -201,17 +187,17 @@ let scanNumber scanner =
     next scanner;
     scanDigits scanner ~base;
     true
-  ) else (
+  ) else
     false
-  ) in
+  in
 
   (* exponent part *)
   let isFloat =
     match scanner.ch with
     | 'e' | 'E' | 'p' | 'P' ->
-      next scanner;
-      if scanner.ch == '+' || scanner.ch == '-' then
-        next scanner;
+      (match peek scanner with
+      | '+' | '-' -> next2 scanner
+      | _ -> next scanner);
       scanDigits scanner ~base;
       true
     | _ -> isFloat
@@ -223,20 +209,17 @@ let scanNumber scanner =
   (* suffix *)
   let suffix =
     match scanner.ch with
-    | 'g'..'z' | 'G'..'Z' ->
-      let ch = scanner.ch in
-      if 'n' = ch then (
-        let msg =
-          "Unsupported number type (nativeint). Did you mean `"
-          ^ literal
-          ^ "`?"
-        in
-        let pos = position scanner in
-        scanner.err
-          ~startPos:pos
-          ~endPos:pos
-          (Diagnostics.message msg)
-      );
+    | 'n' ->
+      let msg =
+        "Unsupported number type (nativeint). Did you mean `"
+        ^ literal
+        ^ "`?"
+      in
+      let pos = position scanner in
+      scanner.err ~startPos:pos ~endPos:pos (Diagnostics.message msg);
+      next scanner;
+      Some 'n'
+    | 'g'..'z' | 'G'..'Z' as ch ->
       next scanner;
       Some ch
     | _ ->
@@ -248,111 +231,109 @@ let scanNumber scanner =
     Token.Int {i = literal; suffix}
 
 let scanExoticIdentifier scanner =
+  (* TODO are we disregarding the current char...? Should be a quote *)
   next scanner;
   let buffer = Buffer.create 20 in
   let startPos = position scanner in
 
   let rec scan () =
-    if scanner.ch == hackyEOFChar then
-      let endPos = position scanner in
-      scanner.err ~startPos ~endPos (Diagnostics.message "Did you forget a \" here?")
-    else if scanner.ch == '"' then (
-      next scanner
-    ) else if CharacterCodes.isLineBreak scanner.ch then (
+    match scanner.ch with
+    | '"' -> next scanner
+    | '\n' | '\r' ->
+      (* line break *)
       let endPos = position scanner in
       scanner.err ~startPos ~endPos (Diagnostics.message "A quoted identifier can't contain line breaks.");
       scanner.lineOffset <- scanner.offset + 1;
       scanner.lnum <- scanner.lnum + 1;
       next scanner
-    ) else (
-      Buffer.add_char buffer (scanner.ch);
+    | ch when ch == hackyEOFChar ->
+      let endPos = position scanner in
+      scanner.err ~startPos ~endPos (Diagnostics.message "Did you forget a \" here?")
+    | ch ->
+      Buffer.add_char buffer ch;
       next scanner;
-      scan()
-    )
+      scan ()
   in
-  scan();
+  scan ();
+  (* TODO: do we really need to create a new buffer instead of substring once? *)
   Token.Lident (Buffer.contents buffer)
 
 let scanStringEscapeSequence ~startPos scanner =
+  let scan ~n ~base ~max =
+    let rec loop n x =
+      if n == 0 then x
+      else
+        let d = CharacterCodes.digitValue scanner.ch in
+        if d >= base then
+          let pos = position scanner in
+          let msg =
+            if scanner.ch == hackyEOFChar then "unclosed escape sequence"
+            else "unknown escape sequence"
+          in
+          scanner.err ~startPos ~endPos:pos (Diagnostics.message msg);
+          -1
+        else
+          let () = next scanner in
+          loop (n - 1) (x * base + d)
+    in
+    let x = loop n 0 in
+    if x > max then
+      let pos = position scanner in
+      let msg = "invalid escape sequence (value too high)" in
+      scanner.err ~startPos ~endPos:pos (Diagnostics.message msg)
+  in
   match scanner.ch with
   (* \ already consumed *)
   | 'n' | 't' | 'b' | 'r' | '\\' | ' ' | '\'' | '"' ->
     next scanner
+  | '0'..'9' ->
+    (* decimal *)
+    scan ~n:3 ~base:10 ~max:255
+  | 'o' ->
+    (* octal *)
+    next scanner;
+    scan ~n:3 ~base:8 ~max:255
+  | 'x' ->
+    (* hex *)
+    next scanner;
+    scan ~n:2 ~base:16 ~max:255
   | _ ->
-    let (n, base, max) =
-      if CharacterCodes.isDigit scanner.ch then
-        (* decimal *)
-        (3, 10, 255)
-      else if scanner.ch == 'o' then
-        (* octal *)
-        let () = next scanner in
-        (3, 8, 255)
-      else if scanner.ch == 'x' then
-        (* hex *)
-        let () = next scanner in
-        (2, 16, 255)
-      else
-        (* unknown escape sequence
-         * TODO: we should warn the user here. Let's not make it a hard error for now, for reason compat *)
-        (* let pos = position scanner in *)
-        (* let () = *)
-          (* let msg = if scanner.ch == -1 then *)
-            (* "unclosed escape sequence" *)
-          (* else "unknown escape sequence" *)
-          (* in *)
-          (* scanner.err ~startPos ~endPos:pos (Diagnostics.message msg) *)
-        (* in *)
-        (-1, -1, -1)
+    (* unknown escape sequence
+     * TODO: we should warn the user here. Let's not make it a hard error for now, for reason compat *)
+    (*
+      let pos = position scanner in
+      let msg =
+        if ch == -1 then "unclosed escape sequence"
+        else "unknown escape sequence"
       in
-      if n < 0 then ()
-      else
-        let rec while_ n x =
-          if n == 0 then x
-          else
-            let d = CharacterCodes.digitValue scanner.ch in
-            if d >= base then
-              let pos = position scanner in
-              let msg = if scanner.ch == hackyEOFChar then
-                "unclosed escape sequence"
-              else "unknown escape sequence"
-              in
-              scanner.err ~startPos ~endPos:pos (Diagnostics.message msg);
-              -1
-            else
-              let () = next scanner in
-              while_ (n - 1) (x * base + d)
-        in
-        let x = while_ n 0 in
-        if x > max then
-          let pos = position scanner in
-          let msg = "invalid escape sequence (value too high)" in
-          scanner.err ~startPos ~endPos:pos (Diagnostics.message msg);
-        ()
+      scanner.err ~startPos ~endPos:pos (Diagnostics.message msg)
+     *)
+    ()
 
 let scanString scanner =
   let offs = scanner.offset in
 
   let startPos = position scanner in
   let rec scan () =
-    if scanner.ch == hackyEOFChar then
-      let endPos = position scanner in
-      scanner.err ~startPos ~endPos Diagnostics.unclosedString
-    else if scanner.ch == '"' then (
-      next scanner;
-    ) else if scanner.ch == '\\' then (
+    match scanner.ch with
+    | '"' -> next scanner
+    | '\\' ->
       let startPos = position scanner in
       next scanner;
       scanStringEscapeSequence ~startPos scanner;
       scan ()
-    ) else if CharacterCodes.isLineBreak scanner.ch then (
+    | '\n' | '\r' ->
+      (* line break *)
       scanner.lineOffset <- scanner.offset + 1;
       scanner.lnum <- scanner.lnum + 1;
       next scanner;
       scan ()
-    ) else (
+    | ch when ch == hackyEOFChar ->
+      let endPos = position scanner in
+      scanner.err ~startPos ~endPos Diagnostics.unclosedString
+    | _ ->
       next scanner;
       scan ()
-    )
   in
   scan ();
   Token.String ((String.sub [@doesNotRaise]) scanner.src offs (scanner.offset - offs - 1))
@@ -369,23 +350,17 @@ let scanEscape scanner =
   in
   (* let offset = scanner.offset in *)
   let c = match scanner.ch with
+  | '0'..'9' -> convertNumber scanner ~n:3 ~base:10
   | 'b' -> next scanner; '\008'
   | 'n' -> next scanner; '\010'
   | 'r' -> next scanner; '\013'
   | 't' -> next scanner; '\009'
-  | 'x' ->
-    next scanner;
-    convertNumber scanner ~n:2 ~base:16
-  | 'o' ->
-    next scanner;
-    convertNumber scanner ~n:3 ~base:8
-  | ch when CharacterCodes.isDigit ch ->
-    convertNumber scanner ~n:3 ~base:10
-  | ch ->
-    next scanner;
-    ch
+  | 'x' -> next scanner; convertNumber scanner ~n:2 ~base:16
+  | 'o' -> next scanner; convertNumber scanner ~n:3 ~base:8
+  | ch -> next scanner; ch
   in
   next scanner; (* Consume \' *)
+  (* TODO: do we know it's \' ? *)
   Token.Character c
 
 let scanSingleLineComment scanner =
@@ -404,30 +379,28 @@ let scanSingleLineComment scanner =
 let scanMultiLineComment scanner =
   let startOff = scanner.offset in
   let startPos = position scanner in
-  let rec scan ~depth () =
-    if scanner.ch == '*' &&
-       peek scanner == '/' then (
-      next scanner;
-      next scanner;
-      if depth > 0 then scan ~depth:(depth - 1) () else ()
-    ) else if scanner.ch == hackyEOFChar then (
+  let rec scan ~depth =
+    match scanner.ch, peek scanner with
+    | '*', '/' ->
+      next2 scanner;
+      if depth > 0 then scan ~depth:(depth - 1)
+    | '/', '*' ->
+      next2 scanner;
+      scan ~depth:(depth + 1)
+    | ch, _ when ch == hackyEOFChar ->
       let endPos = position scanner in
       scanner.err ~startPos ~endPos Diagnostics.unclosedComment
-    ) else if scanner.ch == '/'
-      && peek scanner == '*' then (
+    | ('\n' | '\r'), _ ->
+      (* line break *)
+      scanner.lineOffset <- scanner.offset + 1;
+      scanner.lnum <- scanner.lnum + 1;
       next scanner;
+      scan ~depth
+    | _ ->
       next scanner;
-      scan ~depth:(depth + 1) ()
-    ) else (
-      if CharacterCodes.isLineBreak scanner.ch then (
-        scanner.lineOffset <- scanner.offset + 1;
-        scanner.lnum <- scanner.lnum + 1;
-      );
-      next scanner;
-      scan ~depth ()
-    )
+      scan ~depth
   in
-  scan ~depth:0 ();
+  scan ~depth:0;
   Token.Comment (
     Comment.makeMultiLineComment
       ~loc:(Location.{loc_start = startPos; loc_end = (position scanner); loc_ghost = false})
@@ -438,49 +411,55 @@ let scanTemplateLiteralToken scanner =
   let startOff = scanner.offset in
 
   (* if starting } here, consume it *)
-  if scanner.ch == '}' then (
-    next scanner
-  );
+  if scanner.ch == '}' then next scanner;
+
   let startPos = position scanner in
 
   let rec scan () =
-    if scanner.ch == hackyEOFChar then (
+    match scanner.ch with
+    | '`' ->
+      next scanner;
+      Token.TemplateTail(
+        (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - 1 - startOff)
+      )
+    | '$' ->
+      (match peek scanner with
+      | '{' ->
+        next2 scanner;
+        let contents =
+          (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - 2 - startOff)
+        in
+        Token.TemplatePart contents
+      | _ ->
+        next2 scanner;
+        scan())
+    | '\\' ->
+      (match peek scanner with
+      | '`' | '\\' | '$'
+      | '\n' | '\r' ->
+        (* line break *)
+        next2 scanner;
+        scan ()
+      | _ ->
+        next scanner;
+        scan ())
+    | ch when ch == hackyEOFChar ->
       let endPos = position scanner in
       scanner.err ~startPos ~endPos Diagnostics.unclosedTemplate;
       Token.TemplateTail(
         (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - 1 - startOff)
       )
-    ) else if scanner.ch == '`' then (
+    | '\n' | '\r' ->
+      (* line break *)
+      scanner.lineOffset <- scanner.offset + 1;
+      scanner.lnum <- scanner.lnum + 1;
       next scanner;
-      Token.TemplateTail(
-        (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - 1 - startOff)
-      )
-    ) else if scanner.ch == '$' &&
-              (peek scanner) == '{' then (
-      next scanner; (* consume $ *)
-      next scanner; (* consume { *)
-      let contents =
-        (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - 2 - startOff)
-      in
-      Token.TemplatePart contents
-    ) else if scanner.ch == '\\' then (
+      scan ()
+    | _ ->
       next scanner;
-      if scanner.ch == '`'
-        || scanner.ch == '\\'
-        || scanner.ch == '$'
-        || CharacterCodes.isLineBreak scanner.ch
-      then next scanner;
-      scan()
-    ) else (
-      if CharacterCodes.isLineBreak scanner.ch then (
-        scanner.lineOffset <- scanner.offset + 1;
-        scanner.lnum <- scanner.lnum + 1;
-      );
-      next scanner;
-      scan()
-    )
+      scan ()
   in
-  let token = scan() in
+  let token = scan () in
   let endPos = position scanner in
   (startPos, endPos, token)
 
@@ -645,8 +624,7 @@ let isBinaryOp src startCnum endCnum =
   else
     let leftOk =
       let c =
-        (startCnum - 1)
-        |> (String.get [@doesNotRaise]) src
+        (startCnum - 1) |> (String.get [@doesNotRaise]) src
       in
       c == ' ' ||
       c == '\t' ||
@@ -667,49 +645,50 @@ let isBinaryOp src startCnum endCnum =
 (* Assume `{` consumed, advances the scanner towards the ends of Reason quoted strings. (for conversion)
  * In {| foo bar |} the scanner will be advanced until after the `|}` *)
 let tryAdvanceQuotedString scanner =
-  let rec scanContents tag () =
-    if scanner.ch == hackyEOFChar then (
-      ()
-    ) else if scanner.ch == '|' then (
+  let rec scanContents tag =
+    match scanner.ch with
+    | '|' ->
       next scanner;
-      if CharacterCodes.isLowerCase scanner.ch then (
+      (match scanner.ch with
+      | 'a'..'z' ->
         let startOff = scanner.offset in
         while CharacterCodes.isLowerCase scanner.ch do
           next scanner
         done;
-        let suffix = (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff) in
+        let suffix =
+          (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff)
+        in begin
         if tag = suffix then (
           if scanner.ch = '}' then
             next scanner
           else
-            scanContents tag ()
+            scanContents tag
         ) else
-          scanContents tag ()
-      ) else if '}' = scanner.ch then (
-        next scanner
-      ) else (
-        scanContents tag ()
-      )
-    ) else (
-      if CharacterCodes.isLineBreak scanner.ch then (
-        scanner.lineOffset <- scanner.offset + 1;
-        scanner.lnum <- scanner.lnum + 1;
-      );
+          scanContents tag
+        end
+      | '}' -> next scanner
+      | _ -> scanContents tag)
+    | '\n' | '\r' ->
+      (* line break *)
+      scanner.lineOffset <- scanner.offset + 1;
+      scanner.lnum <- scanner.lnum + 1;
       next scanner;
-      scanContents tag ()
-    )
+      scanContents tag
+    | ch when ch == hackyEOFChar ->
+      (* TODO: why is this place checking EOF and not others? *)
+      ()
+    | _ ->
+      next scanner;
+      scanContents tag
   in
-  if CharacterCodes.isLowerCase scanner.ch then (
+  match scanner.ch with
+  | 'a'..'z' ->
     let startOff = scanner.offset in
     while CharacterCodes.isLowerCase scanner.ch do
       next scanner
     done;
     let tag = (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff) in
-    if scanner.ch = '|' then
-      scanContents tag ()
-    else
-      ()
-  ) else if scanner.ch = '|' then
-    scanContents "" ()
-  else
-    ()
+    if scanner.ch = '|' then scanContents tag
+  | '|' ->
+    scanContents ""
+  | _ -> ()
