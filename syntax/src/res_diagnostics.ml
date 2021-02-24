@@ -70,7 +70,7 @@ let explain t =
       "  If you're trying to dereference a mutable value, use `myValue.contents` instead.\n" ^
       "  To concatenate strings, use `\"a\" ++ \"b\"` instead."
     | _ ->
-      "I have no idea what this character means…"
+      "Not sure what to do with this character."
     end
   | Expected {context; token = t} ->
     let hint = match context with

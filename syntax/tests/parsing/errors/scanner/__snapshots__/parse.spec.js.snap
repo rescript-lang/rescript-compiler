@@ -1,5 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`badCharacter.js 1`] = `
+"=====Parsetree==========================================
+let 1 = [%rescript.exprhole ]
+=====Errors=============================================
+
+  Syntax error!
+  parsing/errors/scanner/badCharacter.js:1:5  
+  1 │ let $ = 1
+  
+  Not sure what to do with this character.
+
+
+  Syntax error!
+  parsing/errors/scanner/badCharacter.js:1:5-7  
+  1 │ let $ = 1
+  
+  I was expecting a name for this let-binding. Example: \`let message = \\"hello\\"\`
+
+
+========================================================"
+`;
+
 exports[`escapeSequence.js 1`] = `
 "=====Parsetree==========================================
 let x = \\"\\\\\\\\0\\"
