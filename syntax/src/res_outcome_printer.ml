@@ -310,6 +310,8 @@ let printPolyVarIdent txt =
            Doc.join ~sep:Doc.space (
              List.map (fun var -> Doc.text ("'" ^ var)) vars
            );
+           Doc.dot;
+           Doc.space;
            printOutTypeDoc outType;
          ]
        )
