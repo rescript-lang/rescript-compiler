@@ -414,6 +414,83 @@ let x =
 ========================================================"
 `;
 
+exports[`letBinding.js 1`] = `
+"=====Parsetree==========================================
+let foo = 2.
+let foo = true
+let foo = 2
+let foo = f ()
+let foo = ((2)[@ns.braces ])
+let foo = ((\\"foo\\")[@ns.braces ])
+=====Errors=============================================
+
+  Syntax error!
+  parsing/errors/expressions/letBinding.js:1:10-11  
+  1 │ let foo = '2.
+  2 │ 
+  3 │ let foo = }true
+  
+  This let-binding misses an expression
+
+
+  Syntax error!
+  parsing/errors/expressions/letBinding.js:3:10-11  
+  1 │ let foo = '2.
+  2 │ 
+  3 │ let foo = }true
+  4 │ 
+  5 │ let foo = )2
+  
+  This let-binding misses an expression
+
+
+  Syntax error!
+  parsing/errors/expressions/letBinding.js:5:10-11  
+  3 │ let foo = }true
+  4 │ 
+  5 │ let foo = )2
+  6 │ 
+  7 │ let foo = }f()
+  
+  This let-binding misses an expression
+
+
+  Syntax error!
+  parsing/errors/expressions/letBinding.js:7:10-11  
+  5 │ let foo = )2
+  6 │ 
+  7 │ let foo = }f()
+  8 │ 
+  9 │ let foo = }}{2}
+  
+  This let-binding misses an expression
+
+
+  Syntax error!
+  parsing/errors/expressions/letBinding.js:9:10-11  
+   7 │ let foo = }f()
+   8 │ 
+   9 │ let foo = }}{2}
+  10 │ 
+  11 │ let foo = == {
+  
+  This let-binding misses an expression
+
+
+  Syntax error!
+  parsing/errors/expressions/letBinding.js:11:10-12  
+   9 │ let foo = }}{2}
+  10 │ 
+  11 │ let foo = == {
+  12 │   \\"foo\\"
+  13 │ }
+  
+  This let-binding misses an expression
+
+
+========================================================"
+`;
+
 exports[`misc.js 1`] = `
 "=====Parsetree==========================================
 let x = ([%rescript.exprhole ]) + 1
@@ -435,6 +512,7 @@ exports[`record.js 1`] = `
 let newWrapper = { updateF; value = (f xWrapper.currentValue) }
 let newWrapper = { updateF; updateF2; value = (f xWrapper.currentValue) }
 let record = { field = ([%rescript.exprhole ]) }
+let record = { field = 2 }
 =====Errors=============================================
 
   Syntax error!
@@ -460,14 +538,25 @@ let record = { field = ([%rescript.exprhole ]) }
 
 
   Syntax error!
-  parsing/errors/expressions/record.js:13:9-17:0  
+  parsing/errors/expressions/record.js:13:9-14:1  
   11 │ 
   12 │ let record = {
   13 │   field:
   14 │ }
   15 │ 
   16 │ 
-  17 │ 
+  
+  Missing expression
+
+
+  Syntax error!
+  parsing/errors/expressions/record.js:18:9-19:2  
+  16 │ 
+  17 │ let record = {
+  18 │   field: 
+  19 │  }
+  20 │  2
+  21 │ }
   
   Missing expression
 

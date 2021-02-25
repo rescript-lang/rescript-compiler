@@ -1866,10 +1866,9 @@ and parseAtomicExpr p =
       Recover.defaultExpr ()
     | token ->
       let errPos = p.prevEndPos in
+      Parser.err ~startPos:errPos p (Diagnostics.unexpected token p.breadcrumbs);
       begin match skipTokensAndMaybeRetry p ~isStartOfGrammar:Grammar.isAtomicExprStart with
-      | None ->
-        Parser.err ~startPos:errPos p (Diagnostics.unexpected token p.breadcrumbs);
-        Recover.defaultExpr ()
+      | None -> Recover.defaultExpr()
       | Some () -> parseAtomicExpr p
       end
   in
