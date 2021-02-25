@@ -115,7 +115,6 @@ type t =
     { 
       name : string ;
       setter : bool;
-      loc : Location.t;
      }
   | Pinit_mod
   | Pupdate_mod
@@ -280,7 +279,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pasrint64   -> rhs = Pasrint64
   | Pint64comp ( comparison) -> (match rhs with Pint64comp(comparison1) -> Lam_compat.eq_comparison comparison comparison1 | _ -> false)  
   | Pctconst compile_time_constant -> (match rhs with Pctconst compile_time_constant1 -> Lam_compat.eq_compile_time_constant compile_time_constant compile_time_constant1 | _ -> false)
-  | Pjs_unsafe_downgrade {name; loc=_; setter } -> (match rhs with Pjs_unsafe_downgrade rhs -> name = rhs.name && setter = rhs.setter | _ -> false)  
+  | Pjs_unsafe_downgrade {name;  setter } -> (match rhs with Pjs_unsafe_downgrade rhs -> name = rhs.name && setter = rhs.setter | _ -> false)  
   | Pjs_fn_make i -> (match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)
   | Pvoid_run  -> rhs = Pvoid_run
   | Pfull_apply -> rhs = Pfull_apply 
