@@ -3738,7 +3738,7 @@ and parseAtomicTypExpr ~attrs p =
     let loc = mkLoc startPos p.prevEndPos in
     Ast_helper.Typ.extension ~attrs ~loc extension
   | Lbrace ->
-    parseBsObjectType ~attrs p
+    parseRecordOrBsObjectType ~attrs p
   | token ->
     Parser.err p (Diagnostics.unexpected token p.breadcrumbs);
     begin match skipTokensAndMaybeRetry p ~isStartOfGrammar:Grammar.isAtomicTypExprStart with
@@ -3797,7 +3797,8 @@ and parsePackageConstraint p =
     Some (typeConstr, typ)
   | _ -> None
 
-and parseBsObjectType ~attrs p =
+and parseRecordOrBsObjectType ~attrs p =
+  (* for inline record in constructor *)
   let startPos = p.Parser.startPos in
   Parser.expect Lbrace p;
   let closedFlag = match p.token with
