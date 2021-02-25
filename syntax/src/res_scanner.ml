@@ -79,13 +79,22 @@ let _printDebug ~startPos scanner token =
   print_string ((String.make [@doesNotRaise]) startPos.pos_cnum ' ');
   print_char '^';
   print_char ' ';
-  print_endline (Res_token.toString token)
+  print_string (Res_token.toString token);
+  print_char ' ';
+  print_int startPos.pos_cnum;
+  print_endline ""
 [@@live]
 
 let next scanner =
-  if scanner.offset + 1 < String.length scanner.src then (
-    scanner.offset <- scanner.offset + 1;
-    scanner.ch <- String.unsafe_get scanner.src scanner.offset
+  let nextOffset = scanner.offset + 1 in
+  (match scanner.ch with
+  | '\n' | '\r' ->
+    scanner.lineOffset <- nextOffset;
+    scanner.lnum <- scanner.lnum + 1;
+  | _ -> ());
+  if nextOffset < String.length scanner.src then (
+    scanner.offset <- nextOffset;
+    scanner.ch <- String.unsafe_get scanner.src scanner.offset;
   ) else (
     scanner.offset <- String.length scanner.src;
     scanner.ch <- hackyEOFChar
@@ -126,13 +135,7 @@ let make ~filename src =
 
 let rec skipWhitespace scanner =
   match scanner.ch with
-  | ' ' | '\t' ->
-    next scanner;
-    skipWhitespace scanner
-  | '\n' | '\r' ->
-    (* line break *)
-    scanner.lineOffset <- scanner.offset + 1;
-    scanner.lnum <- scanner.lnum + 1;
+  | ' ' | '\t'| '\n' | '\r' ->
     next scanner;
     skipWhitespace scanner
   | _ -> ()
@@ -243,8 +246,6 @@ let scanExoticIdentifier scanner =
       (* line break *)
       let endPos = position scanner in
       scanner.err ~startPos ~endPos (Diagnostics.message "A quoted identifier can't contain line breaks.");
-      scanner.lineOffset <- scanner.offset + 1;
-      scanner.lnum <- scanner.lnum + 1;
       next scanner
     | ch when ch == hackyEOFChar ->
       let endPos = position scanner in
@@ -322,12 +323,6 @@ let scanString scanner =
       next scanner;
       scanStringEscapeSequence ~startPos scanner;
       scan ()
-    | '\n' | '\r' ->
-      (* line break *)
-      scanner.lineOffset <- scanner.offset + 1;
-      scanner.lnum <- scanner.lnum + 1;
-      next scanner;
-      scan ()
     | ch when ch == hackyEOFChar ->
       let endPos = position scanner in
       scanner.err ~startPos ~endPos Diagnostics.unclosedString
@@ -390,12 +385,6 @@ let scanMultiLineComment scanner =
     | ch, _ when ch == hackyEOFChar ->
       let endPos = position scanner in
       scanner.err ~startPos ~endPos Diagnostics.unclosedComment
-    | ('\n' | '\r'), _ ->
-      (* line break *)
-      scanner.lineOffset <- scanner.offset + 1;
-      scanner.lnum <- scanner.lnum + 1;
-      next scanner;
-      scan ~depth
     | _ ->
       next scanner;
       scan ~depth
@@ -449,12 +438,6 @@ let scanTemplateLiteralToken scanner =
       Token.TemplateTail(
         (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - 1 - startOff)
       )
-    | '\n' | '\r' ->
-      (* line break *)
-      scanner.lineOffset <- scanner.offset + 1;
-      scanner.lnum <- scanner.lnum + 1;
-      next scanner;
-      scan ()
     | _ ->
       next scanner;
       scan ()
@@ -668,12 +651,6 @@ let tryAdvanceQuotedString scanner =
         end
       | '}' -> next scanner
       | _ -> scanContents tag)
-    | '\n' | '\r' ->
-      (* line break *)
-      scanner.lineOffset <- scanner.offset + 1;
-      scanner.lnum <- scanner.lnum + 1;
-      next scanner;
-      scanContents tag
     | ch when ch == hackyEOFChar ->
       (* TODO: why is this place checking EOF and not others? *)
       ()
