@@ -47,7 +47,7 @@ o $SNAP/unstable/bspack.ml: bspack | ./bin/bspack.exe $LTO
     main = Bspack_main
 
 o $SNAP/unstable/js_compiler.ml: bspack | ./bin/bspack.exe $LTO
-    flags = -D BS_BROWSER=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER -I stubs -I ext -I napkin -I frontend -I depends -I common -I core -I super_errors -I bsb -I outcome_printer -I js_parser -I main
+    flags = -D BS_BROWSER=true -D BS_ONLY=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER -I stubs -I ext -I napkin -I frontend -I depends -I common -I core -I super_errors -I bsb -I outcome_printer -I js_parser -I main
     main  = Jsoo_main
 
 
