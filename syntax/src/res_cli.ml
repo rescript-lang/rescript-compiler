@@ -1,6 +1,6 @@
 (*
   This CLI isn't used apart for this repo's testing purposes. The syntax
-  itself is used by BS programmatically through various other apis.
+  itself is used by ReScript's compiler programmatically through various other apis.
 *)
 
 (*
@@ -21,8 +21,8 @@
   But when used by this cli file, that coloring logic doesn't render properly
   because we're compiling against vanilla OCaml 4.06 instead of ReScript's
   OCaml fork. For example, the vanilla compiler doesn't support the `dim`
-  color (grey). So we emulate the right coloring logic by copy pasting how BS'
-  OCaml does it.
+  color (grey). So we emulate the right coloring logic by copy pasting how our
+  forked OCaml compiler does it.
 *)
 module Color = struct
   (* use ANSI color codes, see https://en.wikipedia.org/wiki/ANSI_escape_code *)
@@ -164,7 +164,6 @@ module ResClflags: sig
   val origin: string ref
   val files: string list ref
   val interface: bool ref
-  val report: string ref
   val ppx: string ref
 
   val parse: unit -> unit
@@ -175,27 +174,26 @@ end = struct
   let files = ref []
   let addFilename filename = files := filename::(!files)
 
-  let print = ref ""
-  let origin = ref ""
+  let print = ref "res"
+  let origin = ref "res"
   let interface = ref false
-  let report = ref "pretty"
   let ppx = ref ""
 
-  let usage = "Usage:\n  rescript <options> <file>\n\n" ^
+  let usage = "\n**This command line is for the repo developer's testing purpose only. DO NOT use it in production**!\n\n" ^
+  "Usage:\n  rescript <options> <file>\n\n" ^
   "Examples:\n" ^
   "  rescript myFile.res\n" ^
-  "  rescript -parse ml -print ns myFile.ml\n" ^
-  "  rescript -parse ns -print binary -interface myFile.resi\n\n" ^
+  "  rescript -parse ml -print res myFile.ml\n" ^
+  "  rescript -parse res -print binary -interface myFile.resi\n\n" ^
   "Options are:"
 
   let spec = [
     ("-recover", Arg.Unit (fun () -> recover := true), "Emit partial ast");
-    ("-parse", Arg.String (fun txt -> origin := txt), "Parse reasonBinary, ml or ns. Default: ns");
-    ("-print", Arg.String (fun txt -> print := txt), "Print either binary or ns. Default: ns");
+    ("-parse", Arg.String (fun txt -> origin := txt), "Parse reasonBinary, ml or res. Default: res");
+    ("-print", Arg.String (fun txt -> print := txt), "Print either binary, ml, ast, sexp or res. Default: res");
     ("-width", Arg.Int (fun w -> width := w), "Specify the line length for the printer (formatter)");
     ("-interface", Arg.Unit (fun () -> interface := true), "Parse as interface");
     ("-ppx", Arg.String (fun txt -> ppx := txt), "Apply a specific built-in ppx before parsing, none or jsx. Default: none");
-    (* ("-report", Arg.String (fun txt -> report := txt), "Stylize errors and messages using color and context. Accepts `Pretty` and `Plain`. Default `Plain`") *)
   ]
 
   let parse () = Arg.parse spec addFilename usage
@@ -204,29 +202,35 @@ end
 module CliArgProcessor = struct
   type backend = Parser: ('diagnostics) Res_driver.parsingEngine -> backend [@@unboxed]
 
-  let processFile ~isInterface ~width ~recover ~origin ~target ~report:_ ~ppx filename =
+  let processFile ~isInterface ~width ~recover ~origin ~target ~ppx filename =
     try
       let len = String.length filename in
       let processInterface =
         isInterface || len > 0 && (String.get [@doesNotRaise]) filename (len - 1) = 'i'
       in
       let parsingEngine =
-          match origin with
-          | "reasonBinary" -> Parser Res_driver_reason_binary.parsingEngine
-          | "ml" | "ocaml" -> Parser Res_driver_ml_parser.parsingEngine
-          | _ -> Parser Res_driver.parsingEngine
+        match origin with
+        | "reasonBinary" -> Parser Res_driver_reason_binary.parsingEngine
+        | "ml" -> Parser Res_driver_ml_parser.parsingEngine
+        | "res" -> Parser Res_driver.parsingEngine
+        | origin ->
+          print_endline ("-parse needs to be either reasonBinary, ml or res. You provided " ^ origin);
+          exit 1
       in
       let printEngine =
         match target with
-        | "ml" | "ocaml" -> Res_driver_ml_parser.printEngine
+        | "binary" -> Res_driver_binary.printEngine
+        | "ml" -> Res_driver_ml_parser.printEngine
         | "ast" -> Res_ast_debugger.printEngine
         | "sexp" -> Res_ast_debugger.sexpPrintEngine
-        | "binary" -> Res_driver_binary.printEngine
-        | _  -> Res_driver.printEngine
+        | "res"  -> Res_driver.printEngine
+        | target ->
+          print_endline ("-print needs to be either binary, ml, ast, sexp or res. You provided " ^ target);
+          exit 1
       in
 
       let forPrinter = match target with
-      | "res" | "rescript" | "sexp" -> true
+      | "res" | "sexp" -> true
       | _ -> false
       in
 
@@ -239,7 +243,7 @@ module CliArgProcessor = struct
           backend.stringOfDiagnostics
             ~source:parseResult.source
             ~filename:parseResult.filename
-            parseResult.diagnostics; 
+            parseResult.diagnostics;
           if recover then
             printEngine.printInterface
               ~width ~filename ~comments:parseResult.comments parseResult.parsetree
@@ -292,7 +296,6 @@ let [@raises Invalid_argument, exit] () =
         ~recover:!ResClflags.recover
         ~target:!ResClflags.print
         ~origin:!ResClflags.origin
-        ~report:!ResClflags.report
         ~ppx:!ResClflags.ppx
         ""
     | files ->
@@ -303,7 +306,6 @@ let [@raises Invalid_argument, exit] () =
           ~recover:!ResClflags.recover
           ~target:!ResClflags.print
           ~origin:!ResClflags.origin
-          ~report:!ResClflags.report
           ~ppx:!ResClflags.ppx
           filename
         ) files

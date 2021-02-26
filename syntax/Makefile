@@ -51,7 +51,7 @@ build-native: lib/refmt.exe lib/rescript.exe depend
 
 bootstrap: build-native
 	ocaml unix.cma ./scripts/bspack.ml -bs-main Res_cli -I src -o ./lib/rescript.ml
-	./lib/rescript.exe -parse ml -print ns ./lib/rescript.ml > ./lib/rescript2.ml
+	./lib/rescript.exe -parse ml -print res ./lib/rescript.ml > ./lib/rescript2.ml
 	$(OCAMLOPT) -w a -pp "./lib/rescript.exe -print binary" -O2 -o ./lib/rescript2.exe -I +compiler-libs ocamlcommon.cmxa -I lib ./lib/rescript2.ml
 	mv ./lib/rescript2.exe ./lib/rescript.exe
 
