@@ -153,7 +153,7 @@ let toString = function
   | ColonEqual -> ":="
   | At -> "@" | AtAt -> "@@"
   | Percent -> "%" | PercentPercent -> "%%"
-  | Comment c -> "Comment(" ^ (Comment.toString c) ^ ")"
+  | Comment c -> "Comment" ^ (Comment.toString c)
   | List -> "list{"
   | TemplatePart text -> text ^ "${"
   | TemplateTail text -> "TemplateTail(" ^ text ^ ")"
