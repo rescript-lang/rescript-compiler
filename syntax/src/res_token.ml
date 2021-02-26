@@ -211,9 +211,9 @@ let isKeyword = function
 let lookupKeyword str =
   try keywordTable str with
   | Not_found ->
-    if Res_character_codes.isUpperCase ((str.[0] [@doesNotRaise])) then
-      Uident str
-    else Lident str
+    match str.[0] [@doesNotRaise] with
+    | 'A'..'Z' -> Uident str
+    | _ -> Lident str
 
 let isKeywordTxt str =
   try let _ = keywordTable str in true with

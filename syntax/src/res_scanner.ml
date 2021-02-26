@@ -1,4 +1,3 @@
-module CharacterCodes = Res_character_codes
 module Diagnostics = Res_diagnostics
 module Token = Res_token
 module Comment = Res_comment
@@ -133,6 +132,9 @@ let make ~filename src =
     mode = [];
   }
 
+
+(* generic helpers *)
+
 let isWhitespace ch =
   match ch with
   | ' ' | '\t' | '\n' | '\r' -> true
@@ -143,6 +145,23 @@ let rec skipWhitespace scanner =
     next scanner;
     skipWhitespace scanner
   )
+
+let digitValue ch =
+  match ch with
+  | '0'..'9' -> (Char.code ch) - 48
+  | 'a'..'f' ->
+    (Char.code ch) - (Char.code 'a') + 10
+  | 'A'..'F' ->
+    (Char.code ch) + 32 - (Char.code 'a') + 10
+  | _ -> 16 (* larger than any legal value *)
+
+let rec skipLowerCaseChars scanner =
+  match scanner.ch with
+  | 'a'..'z' -> next scanner; skipLowerCaseChars scanner
+  | _ -> ()
+
+
+(* scanning helpers *)
 
 let scanIdentifier scanner =
   let startOff = scanner.offset in
@@ -163,15 +182,19 @@ let scanIdentifier scanner =
   else Token.lookupKeyword str
 
 let scanDigits scanner ~base =
-  if base <= 10 then (
-    while CharacterCodes.isDigit scanner.ch || scanner.ch == '_' do
-      next scanner
-    done;
-  ) else (
-    while CharacterCodes.isHex scanner.ch || scanner.ch == '_' do
-      next scanner
-    done;
-  )
+  if base <= 10 then
+    let rec loop scanner =
+      match scanner.ch with
+      | '0'..'9' | '_' -> next scanner; loop scanner
+      | _ -> ()
+    in loop scanner
+  else
+    let rec loop scanner =
+      match scanner.ch with
+      (* hex *)
+      | '0'..'9' | 'a'..'f' | 'A'..'F' | '_' -> next scanner; loop scanner
+      | _ -> ()
+    in loop scanner
 
 (* float: (0…9) { 0…9∣ _ } [. { 0…9∣ _ }] [(e∣ E) [+∣ -] (0…9) { 0…9∣ _ }]   *)
 let scanNumber scanner =
@@ -268,7 +291,7 @@ let scanStringEscapeSequence ~startPos scanner =
     let rec loop n x =
       if n == 0 then x
       else
-        let d = CharacterCodes.digitValue scanner.ch in
+        let d = digitValue scanner.ch in
         if d >= base then
           let pos = position scanner in
           let msg =
@@ -341,7 +364,7 @@ let scanEscape scanner =
   let convertNumber scanner ~n ~base =
     let x = ref 0 in
     for _ = n downto 1 do
-      let d = CharacterCodes.digitValue scanner.ch in
+      let d = digitValue scanner.ch in
       x := (!x * base) + d;
       next scanner
     done;
@@ -597,6 +620,9 @@ let rec scan scanner =
   (* _printDebug ~startPos scanner token; *)
   (startPos, endPos, token)
 
+
+(* misc helpers used elsewhere *)
+
 (* Imagine: <div> <Navbar /> <
  * is `<` the start of a jsx-child? <div …
  * or is it the start of a closing tag?  </div>
@@ -626,10 +652,6 @@ let isBinaryOp src startCnum endCnum =
     leftOk && rightOk
   end
 
-let rec skipLowerCaseChars scanner =
-  match scanner.ch with
-  | 'a'..'z' -> next scanner; skipLowerCaseChars scanner
-  | _ -> ()
 (* Assume `{` consumed, advances the scanner towards the ends of Reason quoted strings. (for conversion)
  * In {| foo bar |} the scanner will be advanced until after the `|}` *)
 let tryAdvanceQuotedString scanner =

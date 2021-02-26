@@ -15,7 +15,6 @@ API_FILES = \
 	src/res_io.cmx\
 	src/res_minibuffer.cmx\
 	src/res_doc.cmx\
-	src/res_character_codes.cmx\
 	src/res_comment.cmx\
 	src/res_token.cmx\
 	src/res_grammar.cmx\
