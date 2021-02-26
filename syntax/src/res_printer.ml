@@ -355,30 +355,23 @@ type identifierStyle =
   | NormalIdent
 
 let classifyIdentContent ?(allowUident=false) txt =
-  let len = String.length txt in
-  let rec go i =
-    if i == len then NormalIdent
-    else
-      let c = String.unsafe_get txt i in
-      if i == 0 && not (
-        (allowUident && (c >= 'A' && c <= 'Z')) ||
-        (c >= 'a' && c <= 'z') || c = '_' ) then
-        ExoticIdent
-      else if not (
-           (c >= 'a' && c <= 'z')
-        || (c >= 'A' && c <= 'Z')
-        || c = '\''
-        || c = '_'
-        || (c >= '0' && c <= '9'))
-      then
-        ExoticIdent
-      else
-        go (i + 1)
-  in
   if Token.isKeywordTxt txt then
     ExoticIdent
   else
-    go 0
+    let len = String.length txt in
+    let rec loop i =
+      if i == len then NormalIdent
+      else if i == 0 then
+        match String.unsafe_get txt i with
+        | 'A'..'Z' when allowUident -> loop (i + 1)
+        | 'a'..'z' | '_' -> loop (i + 1)
+        | _ -> ExoticIdent
+      else
+        match String.unsafe_get txt i with
+        | 'A'..'Z' | 'a'..'z' | '0'..'9' | '\'' | '_' -> loop (i + 1)
+        | _ -> ExoticIdent
+    in
+      loop 0
 
 let printIdentLike ?allowUident txt =
   match classifyIdentContent ?allowUident txt with
