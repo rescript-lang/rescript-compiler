@@ -9,7 +9,7 @@ let create n =
  let s = (Bytes.create [@doesNotRaise]) n in
  {buffer = s; position = 0; length = n}
 
-let contents b = Bytes.sub_string b.buffer 0 b.position
+let contents b = (Bytes.sub_string [@doesNotRaise]) b.buffer 0 b.position
 
 (* Can't be called directly, don't add to the interface *)
 let resize_internal b more =
