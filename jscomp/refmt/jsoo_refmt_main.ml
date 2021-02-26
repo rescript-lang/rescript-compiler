@@ -583,9 +583,11 @@ module Compile = struct
           Pprintast.structure Format.str_formatter structure;
           Format.flush_str_formatter ()
         | (Res, Res) ->
-          (* Basically pretty printing *)
+          (* Essentially pretty printing.
+           * IMPORTANT: we need forPrinter:true when parsing code here,
+           * otherwise we will loose some information for the ReScript printer *)
           let (structure, comments) =
-            ResDriver.parse_implementation ~forPrinter:false ~sourcefile:filename ~src
+            ResDriver.parse_implementation ~forPrinter:true ~sourcefile:filename ~src
           in
           Res_printer.printImplementation ~width:80 structure ~comments
         | (OCaml, OCaml) -> src
