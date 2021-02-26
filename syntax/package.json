@@ -1,8 +1,7 @@
 {
   "name": "rescript-syntax",
   "version": "0.0.1",
-  "description": "",
-  "main": "Napkinscript.ml",
+  "description": "Source of truth for the ReScript parser & printer",
   "dependencies": {},
   "devDependencies": {
     "jest": "^24.9.0",
