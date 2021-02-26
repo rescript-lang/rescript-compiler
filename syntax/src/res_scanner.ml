@@ -133,23 +133,27 @@ let make ~filename src =
     mode = [];
   }
 
+let isWhitespace ch =
+  match ch with
+  | ' ' | '\t' | '\n' | '\r' -> true
+  | _ -> false
+
 let rec skipWhitespace scanner =
-  match scanner.ch with
-  | ' ' | '\t'| '\n' | '\r' ->
+  if isWhitespace scanner.ch then (
     next scanner;
     skipWhitespace scanner
-  | _ -> ()
+  )
 
 let scanIdentifier scanner =
   let startOff = scanner.offset in
-  while (
-    CharacterCodes.isLetter scanner.ch ||
-    CharacterCodes.isDigit scanner.ch ||
-    '_' == scanner.ch ||
-    '\'' == scanner.ch
-  ) do
-    next scanner
-  done;
+  let rec skipGoodChars scanner =
+    match scanner.ch with
+    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' ->
+      next scanner;
+      skipGoodChars scanner
+    | _ -> ()
+  in
+  skipGoodChars scanner;
   let str = (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff) in
   if '{' == scanner.ch && str = "list" then begin
     next scanner;
@@ -361,9 +365,15 @@ let scanEscape scanner =
 let scanSingleLineComment scanner =
   let startOff = scanner.offset in
   let startPos = position scanner in
-  while scanner.ch != hackyEOFChar && not (CharacterCodes.isLineBreak scanner.ch) do
-    next scanner
-  done;
+  let rec skip scanner =
+    match scanner.ch with
+    | '\n' | '\r' -> ()
+    | ch when ch == hackyEOFChar -> ()
+    | _ ->
+      next scanner;
+      skip scanner
+  in
+  skip scanner;
   let endPos = position scanner in
   Token.Comment (
     Comment.makeSingleLineComment
@@ -602,29 +612,24 @@ let reconsiderLessThan scanner =
     Token.LessThan
 
 (* If an operator has whitespace around both sides, it's a binary operator *)
+(* TODO: this helper seems out of place *)
 let isBinaryOp src startCnum endCnum =
   if startCnum == 0 then false
-  else
-    let leftOk =
-      let c =
-        (startCnum - 1) |> (String.get [@doesNotRaise]) src
-      in
-      c == ' ' ||
-      c == '\t' ||
-      CharacterCodes.isLineBreak c
-    in
-    let rightOk =
-      let c =
-        if endCnum == String.length src then hackyEOFChar
-        else endCnum |> (String.get [@doesNotRaise]) src
-      in
-      c == ' ' ||
-      c == '\t' ||
-      CharacterCodes.isLineBreak c ||
-      c == hackyEOFChar
-    in
+  else begin
+    (* we're gonna put some assertions and invariant checks here because this is
+     used outside of the scanner's normal invariant assumptions *)
+    assert (endCnum >= 0);
+    assert (startCnum > 0 && startCnum < String.length src);
+    let leftOk = isWhitespace (String.unsafe_get src (startCnum - 1)) in
+    (* we need some stronger confidence that endCnum is ok *)
+    let rightOk = endCnum >= String.length src || isWhitespace (String.unsafe_get src endCnum) in
     leftOk && rightOk
+  end
 
+let rec skipLowerCaseChars scanner =
+  match scanner.ch with
+  | 'a'..'z' -> next scanner; skipLowerCaseChars scanner
+  | _ -> ()
 (* Assume `{` consumed, advances the scanner towards the ends of Reason quoted strings. (for conversion)
  * In {| foo bar |} the scanner will be advanced until after the `|}` *)
 let tryAdvanceQuotedString scanner =
@@ -635,9 +640,7 @@ let tryAdvanceQuotedString scanner =
       (match scanner.ch with
       | 'a'..'z' ->
         let startOff = scanner.offset in
-        while CharacterCodes.isLowerCase scanner.ch do
-          next scanner
-        done;
+        skipLowerCaseChars scanner;
         let suffix =
           (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff)
         in begin
@@ -661,9 +664,7 @@ let tryAdvanceQuotedString scanner =
   match scanner.ch with
   | 'a'..'z' ->
     let startOff = scanner.offset in
-    while CharacterCodes.isLowerCase scanner.ch do
-      next scanner
-    done;
+    skipLowerCaseChars scanner;
     let tag = (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - startOff) in
     if scanner.ch = '|' then scanContents tag
   | '|' ->

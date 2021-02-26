@@ -1,12 +1,6 @@
 let isUpperCase ch = 'A' <= ch && ch <= 'Z' [@@inline]
 
-let isLowerCase ch = 'a' <= ch && ch <= 'z' [@@inline]
-
 let isDigit ch = '0' <= ch && ch <= '9' [@@inline]
-
-let isLetter ch = match ch with
-| 'a'..'z' | 'A'..'Z' -> true
-| _ -> false
 
 let isHex = function
   | '0'..'9' | 'a'..'f' | 'A'..'F' -> true
