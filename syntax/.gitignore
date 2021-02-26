@@ -4,12 +4,7 @@ node_modules
 *.cm*
 *.o
 *.s
-lib/bs
-lib/rescript.exe
-lib/refmt.exe
-lib/test.exe
-lib/bench.exe
-lib/Rescript2.ml
-lib/rescript.ml
+lib/*
+!lib/README.md
 .vscode/settings.json
  # each person has its own preferences

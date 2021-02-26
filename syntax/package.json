@@ -1,11 +1,8 @@
 {
   "name": "rescript-syntax",
-  "version": "0.0.8-dev",
+  "version": "0.0.1",
   "description": "",
   "main": "Napkinscript.ml",
-  "bin": {
-    "napkinscript": "./lib/napkinscript.exe"
-  },
   "dependencies": {},
   "devDependencies": {
     "jest": "^24.9.0",

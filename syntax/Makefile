@@ -51,8 +51,8 @@ build-native: lib/refmt.exe lib/rescript.exe depend
 
 bootstrap: build-native
 	ocaml unix.cma ./scripts/bspack.ml -bs-main Res_cli -I src -o ./lib/rescript.ml
-	./lib/rescript.exe -parse ml -print ns ./lib/Rescript.ml > ./lib/Rescript2.ml
-	$(OCAMLOPT) -w a -pp "./lib/rescript.exe -print binary" -O2 -o ./lib/rescript2.exe -I +compiler-libs ocamlcommon.cmxa -I lib ./lib/Rescript2.ml
+	./lib/rescript.exe -parse ml -print ns ./lib/rescript.ml > ./lib/rescript2.ml
+	$(OCAMLOPT) -w a -pp "./lib/rescript.exe -print binary" -O2 -o ./lib/rescript2.exe -I +compiler-libs ocamlcommon.cmxa -I lib ./lib/rescript2.ml
 	mv ./lib/rescript2.exe ./lib/rescript.exe
 
 lib/refmt.exe: vendor/refmt_main3.ml
@@ -84,14 +84,5 @@ reanalyze: build-native lib/test.exe
 	./node_modules/.bin/reanalyze -all-cmt . -suppress tests -suppress benchmarks
 
 clean:
-	rm -rf src/*.cm*
-	rm -rf src/*.o
-	rm -rf tests/*.cm*
-	rm -rf tests/*.o
-	rm -rf benchmarks/*.cm*
-	rm -rf benchmarks/*.o
-	rm -rf lib/bench.exe
-	rm -rf lib/rescript.exe
-	rm -rf lib/test.exe
-	git clean -dfx src
+	git clean -dfx src benchmarks lib tests
 .PHONY: clean test roundtrip-test termination dce exception reanalyze bootstrap build-native
