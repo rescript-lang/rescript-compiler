@@ -1,0 +1,1 @@
+type asd = Js.t<{"a": b}>

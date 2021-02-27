@@ -25,22 +25,25 @@ type t = {
 }
 
 let err ?startPos ?endPos p error =
-  let d = Diagnostics.make
-    ~startPos:(match startPos with | Some pos -> pos | None -> p.startPos)
-    ~endPos:(match endPos with | Some pos -> pos | None -> p.endPos)
-    error
-  in
-  try
-    if (!(List.hd p.regions) = Report) then (
+  match p.regions with
+  | {contents = Report} as region::_ ->
+    let d =
+      Diagnostics.make
+        ~startPos:(match startPos with | Some pos -> pos | None -> p.startPos)
+        ~endPos:(match endPos with | Some pos -> pos | None -> p.endPos)
+        error
+    in (
       p.diagnostics <- d::p.diagnostics;
-      List.hd p.regions := Silent
+      region := Silent
     )
-  with Failure _ -> ()
+  | _ -> ()
 
 let beginRegion p =
   p.regions <- ref Report :: p.regions
 let endRegion p =
-  try p.regions <- List.tl p.regions with Failure _ -> ()
+  match p.regions with
+  | [] -> ()
+  | _::rest -> p.regions <- rest
 
 (* Advance to the next non-comment token and store any encountered comment
 * in the parser's state. Every comment contains the end position of its
