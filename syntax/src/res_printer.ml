@@ -1426,7 +1426,7 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
 
   (* object printings *)
   | Ptyp_object (fields, openFlag) ->
-    printBsObjectSugar ~inline:false fields openFlag cmtTbl
+    printObject ~inline:false fields openFlag cmtTbl
   | Ptyp_constr(longidentLoc, [{ptyp_desc = Ptyp_object (fields, openFlag)}]) ->
     (* for foo<{"a": b}>, when the object is long and needs a line break, we
        want the <{ and }> to stay hugged together *)
@@ -1434,7 +1434,7 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
     Doc.concat([
       constrName;
       Doc.lessThan;
-      printBsObjectSugar ~inline:true fields openFlag cmtTbl;
+      printObject ~inline:true fields openFlag cmtTbl;
       Doc.greaterThan;
     ])
 
@@ -1641,8 +1641,7 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
     )
   in
   let shouldPrintItsOwnAttributes = match typExpr.ptyp_desc with
-  | Ptyp_arrow _ (* es6 arrow types print their own attributes *)
-  | Ptyp_constr({txt = Longident.Ldot(Longident.Lident "Js", "t")}, _) -> true
+  | Ptyp_arrow _ (* es6 arrow types print their own attributes *) -> true
   | _ -> false
   in
   let doc = begin match typExpr.ptyp_attributes with
@@ -1658,7 +1657,7 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
   in
   printComments doc cmtTbl typExpr.ptyp_loc
 
-and printBsObjectSugar ~inline fields openFlag cmtTbl =
+and printObject ~inline fields openFlag cmtTbl =
   let doc = match fields with
   | [] -> Doc.concat [
       Doc.lbrace;
