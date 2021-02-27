@@ -5,23 +5,22 @@ exports[`exceptionDefinition.js 1`] = `
 exception ExitEarly of int 
 exception ExitEarly of {
   x: int } 
-exception ExitEarly of < jsExit: int   >  Js.t 
-exception ExitEarly of < jsExit: int [@attr ]  >  Js.t 
-exception ExitEarly of < jsExit: int [@attr ]  >  Js.t 
-exception ExitEarly of < jsExit: int [@attr ] ;code: int [@attr ]  >  Js.t 
-exception ExitEarly of < jsExit: int   >  Js.t 
-exception ExitEarly of < jsExit: int   >  Js.t * < code: int   >  Js.t 
-exception ExitEarly of < jsExit: int   >  Js.t * int * < code: int   >  Js.t 
-exception ExitEarly of < jsExit: int [@attr ] ;code: int [@attr ]  >  Js.t *
-  < jsExit: int [@attr ] ;code: int [@attr ]  >  Js.t 
-exception ExitJsStyle of < .. >  Js.t 
-exception ExitJsStyle of < code: int   ;.. >  Js.t 
-exception ExitJsStyle of < code: int   ;.. >  Js.t 
-exception ExitJsStyle of < code: int [@attr ]  ;.. >  Js.t 
-exception ExitJsStyle of < code: int [@attr ]  ;.. >  Js.t 
-exception ExitJsStyle of < code: int  ;time: int   ;.. >  Js.t 
-exception ExitJsStyle of < code: int [@attr ] ;time: int [@attr ]  ;.. > 
-  Js.t 
+exception ExitEarly of < jsExit: int   >  
+exception ExitEarly of < jsExit: int [@attr ]  >  
+exception ExitEarly of < jsExit: int [@attr ]  >  
+exception ExitEarly of < jsExit: int [@attr ] ;code: int [@attr ]  >  
+exception ExitEarly of < jsExit: int   >  
+exception ExitEarly of < jsExit: int   >  * < code: int   >  
+exception ExitEarly of < jsExit: int   >  * int * < code: int   >  
+exception ExitEarly of < jsExit: int [@attr ] ;code: int [@attr ]  >  *
+  < jsExit: int [@attr ] ;code: int [@attr ]  >  
+exception ExitJsStyle of < .. >  
+exception ExitJsStyle of < code: int   ;.. >  
+exception ExitJsStyle of < code: int   ;.. >  
+exception ExitJsStyle of < code: int [@attr ]  ;.. >  
+exception ExitJsStyle of < code: int [@attr ]  ;.. >  
+exception ExitJsStyle of < code: int  ;time: int   ;.. >  
+exception ExitJsStyle of < code: int [@attr ] ;time: int [@attr ]  ;.. >  
 exception ExitEarly [@onConstructor ]
 exception ExitEarly of int [@onConstructor ]
 exception Exit = Terminate

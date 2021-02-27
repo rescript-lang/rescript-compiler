@@ -59,24 +59,22 @@ module Error3 =
 exports[`bsObjSugar.js 1`] = `
 "=====Parsetree==========================================
 type nonrec state =
-  < url: [%rescript.typehole ]  ;protocols: string array   >  Js.t
+  < url: [%rescript.typehole ]  ;protocols: string array   > 
 type nonrec state =
-  < url: [%rescript.typehole ] [@attr ] ;protocols: string array   >  Js.t
+  < url: [%rescript.typehole ] [@attr ] ;protocols: string array   > 
 type nonrec state =
   < url: string  ;protocols: [%rescript.typehole ]  ;websocket: Websocket.t  
-    >  Js.t
+    > 
+type nonrec state = < url: string  ;protocols: [%rescript.typehole ]   > 
+type nonrec state = < send: string -> [%rescript.typehole ] [@bs.meth ]  > 
+type nonrec state = < age: [%rescript.typehole ]  ;name: string   > 
 type nonrec state =
-  < url: string  ;protocols: [%rescript.typehole ]   >  Js.t
-type nonrec state =
-  < send: string -> [%rescript.typehole ] [@bs.meth ]  >  Js.t
-type nonrec state = < age: [%rescript.typehole ]  ;name: string   >  Js.t
-type nonrec state =
-  < age: [%rescript.typehole ] [@bs.set ] ;name: string   >  Js.t
-type nonrec state = < age: [%rescript.typehole ]   ;.. >  Js.t
-type nonrec state = < age: [%rescript.typehole ]  ;name: string   ;.. >  Js.t
+  < age: [%rescript.typehole ] [@bs.set ] ;name: string   > 
+type nonrec state = < age: [%rescript.typehole ]   ;.. > 
+type nonrec state = < age: [%rescript.typehole ]  ;name: string   ;.. > 
 type nonrec websocket =
-  < id: [%rescript.typehole ]  ;channel: channelTyp   >  Js.t
-type nonrec websocket = < id: [%rescript.typehole ]   >  Js.t
+  < id: [%rescript.typehole ]  ;channel: channelTyp   > 
+type nonrec websocket = < id: [%rescript.typehole ]   > 
 =====Errors=============================================
 
   Syntax error!

@@ -216,23 +216,14 @@ let makePropsExternalSig fnName loc namedArgListWithKeyAndRef propsType =
   { psig_loc = loc; psig_desc = Psig_value (makePropsValue fnName loc namedArgListWithKeyAndRef propsType) }
   [@@raises Invalid_argument]
 
-(* Build an AST node for the props name when converted to a Js.t inside the function signature  *)
+(* Build an AST node for the props name when converted to an object inside the function signature  *)
 let makePropsName ~loc name = { ppat_desc = Ppat_var { txt = name; loc }; ppat_loc = loc; ppat_attributes = [] }
 
 let makeObjectField loc (str, attrs, type_) = Otag ({ loc; txt = str }, attrs, type_)
 
-(* Build an AST node representing a "closed" Js.t object representing a component's props *)
+(* Build an AST node representing a "closed" object representing a component's props *)
 let makePropsType ~loc namedTypeList =
-  Typ.mk ~loc
-    (Ptyp_constr
-       ( { txt = Ldot (Lident "Js", "t"); loc },
-         [
-           {
-             ptyp_desc = Ptyp_object (List.map (makeObjectField loc) namedTypeList, Closed);
-             ptyp_loc = loc;
-             ptyp_attributes = [];
-           };
-         ] ))
+  Typ.mk ~loc (Ptyp_object (List.map (makeObjectField loc) namedTypeList, Closed))
 
 (* Builds an AST node for the entire `external` definition of props *)
 let makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList =

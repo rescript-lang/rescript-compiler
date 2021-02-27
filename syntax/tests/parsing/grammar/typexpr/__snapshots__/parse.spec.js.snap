@@ -39,15 +39,15 @@ let (t : _) = x"
 `;
 
 exports[`bsObject.js 1`] = `
-"type nonrec t = < age: int   >  Js.t
-type nonrec t = < age: int   >  Js.t
-type nonrec t = < age: int  ;name: string   >  Js.t
-type nonrec t = < age: int  ;name: string   >  Js.t
+"type nonrec t = < age: int   > 
+type nonrec t = < age: int   > 
+type nonrec t = < age: int  ;name: string   > 
+type nonrec t = < age: int  ;name: string   > 
 type nonrec t =
-  < age: int [@attr ] ;name: ((string)[@onTypeString ]) [@attr2 ]  >  Js.t
-type nonrec t = <  >  Js.t
-type nonrec t = private <  >  Js.t
-type nonrec t = < .. >  Js.t"
+  < age: int [@attr ] ;name: ((string)[@onTypeString ]) [@attr2 ]  > 
+type nonrec t = <  > 
+type nonrec t = private <  > 
+type nonrec t = < .. > "
 `;
 
 exports[`es6Arrow.js 1`] = `
@@ -95,7 +95,7 @@ type nonrec t =
   [@attrBeforeLblA ])
 type nonrec t = ((a:((int)[@ns.namedArgLoc ]) -> unit)[@attr ])
 type nonrec 'a getInitialPropsFn =
-  < query: string Js.Dict.t  ;req: 'a Js.t Js.Nullable.t   >  Js.t ->
+  < query: string Js.Dict.t  ;req: 'a Js.t Js.Nullable.t   >  ->
     'a Js.t Js.Promise.t"
 `;
 
@@ -126,8 +126,8 @@ exports[`poly.js 1`] = `
   unit ->
     <
       log: 'a -> unit  ;log2: 'a . int -> int  ;log3: 'a 'b . 'a -> 'b -> int
-                                                    > 
-      Js.t = \\"./src/logger.mock.js\\""
+                                                    >  =
+    \\"./src/logger.mock.js\\""
 `;
 
 exports[`polyVariant.res 1`] = `
@@ -165,20 +165,20 @@ type nonrec t = (a, b, c) Mod.Sub.t
 type nonrec t = (a, b, c) Mod.Sub.t
 type nonrec t = list
 type nonrec t = string list
-type nonrec t = < age: int   >  Js.t list
-type nonrec t = (< age: int   >  Js.t, < name: string   >  Js.t) list
-type nonrec t = < .. >  Js.t
-type nonrec t = < .. >  Js.t list
-type nonrec t = < age: int   ;.. >  Js.t
-type nonrec t = < age: int   ;.. >  Js.t list
-type nonrec t = < age: int [@attr ]  ;.. >  Js.t
-type nonrec t = < age: int [@attr ]  ;.. >  Js.t list
-type nonrec t = < age: int [@attr ] ;name: string [@attr ]  ;.. >  Js.t
-type nonrec t = < age: int [@attr ] ;name: string [@attr ]  ;.. >  Js.t list
-type nonrec t = < age: int   ;.. >  Js.t
-type nonrec t = < age: int   ;.. >  Js.t list
-type nonrec t = < age: int  ;name: string   ;.. >  Js.t
-type nonrec t = < age: int  ;name: string   ;.. >  Js.t list
+type nonrec t = < age: int   >  list
+type nonrec t = (< age: int   > , < name: string   > ) list
+type nonrec t = < .. > 
+type nonrec t = < .. >  list
+type nonrec t = < age: int   ;.. > 
+type nonrec t = < age: int   ;.. >  list
+type nonrec t = < age: int [@attr ]  ;.. > 
+type nonrec t = < age: int [@attr ]  ;.. >  list
+type nonrec t = < age: int [@attr ] ;name: string [@attr ]  ;.. > 
+type nonrec t = < age: int [@attr ] ;name: string [@attr ]  ;.. >  list
+type nonrec t = < age: int   ;.. > 
+type nonrec t = < age: int   ;.. >  list
+type nonrec t = < age: int  ;name: string   ;.. > 
+type nonrec t = < age: int  ;name: string   ;.. >  list
 let (t : string) = x
 let (t : Parser.t) = x
 let (t : Lang.Parser.t) = x
@@ -190,28 +190,27 @@ let (t : (a, b, c) Mod.Sub.t) = x
 let (t : (a, b, c) Mod.Sub.t) = x
 let (t : list) = x
 let (t : string list) = x
-let (t : < age: int   >  Js.t list) = x
-let (t : < age: int   >  Js.t list) = x
-let (t : < age: int [@attr ]  >  Js.t list) = x
-let (t : < age: int [@attr ]  >  Js.t list) = x
-let (t : < age: int [@attr ] ;name: string [@attr ]  >  Js.t list) = x
-let (t : (< age: int   >  Js.t, < name: string   >  Js.t) list) = x
+let (t : < age: int   >  list) = x
+let (t : < age: int   >  list) = x
+let (t : < age: int [@attr ]  >  list) = x
+let (t : < age: int [@attr ]  >  list) = x
+let (t : < age: int [@attr ] ;name: string [@attr ]  >  list) = x
+let (t : (< age: int   > , < name: string   > ) list) = x
+let (t : (< age: int [@attr ]  > , < name: string [@attr ]  > ) list) = x
 let (t :
-  (< age: int [@attr ]  >  Js.t, < name: string [@attr ]  >  Js.t) list) = x
-let (t :
-  (< age: int [@attr ] ;name: string [@attr ]  >  Js.t,
-    < name: string [@attr ] ;age: int [@attr ]  >  Js.t) list)
+  (< age: int [@attr ] ;name: string [@attr ]  > ,
+    < name: string [@attr ] ;age: int [@attr ]  > ) list)
   = x
-let (t : < .. >  Js.t list) = x
-let (t : <  >  Js.t list) = x
-let (t : < age: int   ;.. >  Js.t list) = x
-let (t : < age: int   >  Js.t list) = x
-let (t : < age: int   ;.. >  Js.t list) = x
-let (t : < age: int [@attr ]  ;.. >  Js.t list) = x
-let (t : < age: int [@attr ]  >  Js.t list) = x
-let (t : < age: int [@attr ]  ;.. >  Js.t list) = x
-let (t : < age: int  ;name: string   ;.. >  Js.t list) = x
-let (t : < age: int [@attr ] ;name: string [@attr ]  ;.. >  Js.t list) = x
+let (t : < .. >  list) = x
+let (t : <  >  list) = x
+let (t : < age: int   ;.. >  list) = x
+let (t : < age: int   >  list) = x
+let (t : < age: int   ;.. >  list) = x
+let (t : < age: int [@attr ]  ;.. >  list) = x
+let (t : < age: int [@attr ]  >  list) = x
+let (t : < age: int [@attr ]  ;.. >  list) = x
+let (t : < age: int  ;name: string   ;.. >  list) = x
+let (t : < age: int [@attr ] ;name: string [@attr ]  ;.. >  list) = x
 let (t : string list) = x"
 `;
 

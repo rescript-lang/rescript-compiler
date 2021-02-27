@@ -327,7 +327,8 @@ external test: (
   foo,
   bar,
   baz,
-) => @attr {..
+) => @attr
+{..
   \\"age\\": int,
   \\"name\\": string,
   \\"moreFields\\": veryVeryVeryLongtype,

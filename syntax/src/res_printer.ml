@@ -1423,16 +1423,21 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
         doc
     in
     Doc.concat [typ; Doc.text " as "; Doc.concat [Doc.text "'"; printIdentLike alias]]
-  | Ptyp_constr({txt = Longident.Ldot(Longident.Lident "Js", "t")}, [{ptyp_desc = Ptyp_object (_fields, _openFlag)} as typ]) ->
-    let bsObject = printTypExpr typ cmtTbl in
-    begin match typExpr.ptyp_attributes with
-    | [] -> bsObject
-    | attrs ->
-      Doc.concat [
-        printAttributes ~inline:true attrs cmtTbl;
-        printTypExpr typ cmtTbl;
-      ]
-    end
+
+  (* object printings *)
+  | Ptyp_object (fields, openFlag) ->
+    printBsObjectSugar ~inline:false fields openFlag cmtTbl
+  | Ptyp_constr(longidentLoc, [{ptyp_desc = Ptyp_object (fields, openFlag)}]) ->
+    (* for foo<{"a": b}>, when the object is long and needs a line break, we
+       want the <{ and }> to stay hugged together *)
+    let constrName = printLidentPath longidentLoc cmtTbl in
+    Doc.concat([
+      constrName;
+      Doc.lessThan;
+      printBsObjectSugar ~inline:true fields openFlag cmtTbl;
+      Doc.greaterThan;
+    ])
+
   | Ptyp_constr(longidentLoc, [{ ptyp_desc = Parsetree.Ptyp_tuple tuple }]) ->
     let constrName = printLidentPath longidentLoc cmtTbl in
     Doc.group(
@@ -1447,17 +1452,6 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
     let constrName = printLidentPath longidentLoc cmtTbl in
     begin match constrArgs with
     | [] -> constrName
-    | [{
-        Parsetree.ptyp_desc =
-          Ptyp_constr({txt = Longident.Ldot(Longident.Lident "Js", "t")},
-        [{ptyp_desc = Ptyp_object (fields, openFlag)}])
-      }] ->
-      Doc.concat([
-        constrName;
-        Doc.lessThan;
-        printBsObjectSugar ~inline:true fields openFlag cmtTbl;
-        Doc.greaterThan;
-      ])
     | _args -> Doc.group(
       Doc.concat([
         constrName;
@@ -1561,8 +1555,6 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
       )
     end
   | Ptyp_tuple types -> printTupleType ~inline:false types cmtTbl
-  | Ptyp_object (fields, openFlag) ->
-    printBsObjectSugar ~inline:false fields openFlag cmtTbl
   | Ptyp_poly([], typ) ->
     printTypExpr typ cmtTbl
   | Ptyp_poly(stringLocs, typ) ->

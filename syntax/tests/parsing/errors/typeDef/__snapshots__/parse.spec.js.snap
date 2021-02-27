@@ -42,15 +42,14 @@ exports[`inlineRecord.res 1`] = `
 "=====Parsetree==========================================
 type nonrec entity =
   | Director 
-  | Student of
-  {
+  | Student of {
   name: string ;
-  reportCard: < passing: bool  ;score: int   >  Js.t } 
+  reportCard: < passing: bool  ;score: int   >  } 
 type nonrec user =
   {
   name: string ;
-  address: < street: string  ;country: string   >  Js.t }
-let make (props : < handleClick: Click.t -> unit  ;value: string   >  Js.t) =
+  address: < street: string  ;country: string   >  }
+let make (props : < handleClick: Click.t -> unit  ;value: string   > ) =
   render props
 =====Errors=============================================
 
