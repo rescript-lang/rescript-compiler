@@ -385,19 +385,10 @@ let normalize =
     end;
     typ = (fun mapper typ ->
       match typ.ptyp_desc with
-      | Ptyp_constr(
-          {txt = Longident.Ldot(Longident.Lident "Js", "t")},
-          [{ptyp_desc = Ptyp_object (fields, openFlag)} as objectType]
-        ) ->
-        (* Js.t({"a": b}) -> {"a": b}. Since compiler >9.0.1 objects don't
-           need Js.t wrapping anymore *)
-        let newFields = fields |> List.map (fun (field: Parsetree.object_field) ->
-          match field with
-          | Otag (label, attributes, typ) -> Parsetree.Otag (label, attributes, mapper.typ mapper typ)
-          | Oinherit typ -> Oinherit (mapper.typ mapper typ)
-        )
-        in
-        {objectType with ptyp_desc = Ptyp_object (newFields, openFlag)}
+      | Ptyp_constr({txt = Longident.Ldot(Longident.Lident "Js", "t")}, [arg]) ->
+        (* Js.t({"a": b}) -> {"a": b}
+          Since compiler >9.0.1 objects don't need Js.t wrapping anymore *)
+         mapper.typ mapper arg
       | _ -> default_mapper.typ mapper typ
     );
     expr = (fun mapper expr ->

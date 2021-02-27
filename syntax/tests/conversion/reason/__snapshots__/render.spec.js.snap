@@ -1257,6 +1257,27 @@ let element = props[\\"element\\"]
 
 let y = {\\"age\\": 30}
 let y = {\\"age\\": 30, \\"name\\": \\"steve\\"}
+
+type propField<'a> = {.}
+type propField<'a> = {..} as 'a
+type propField<'a> = {..} as 'a
+type propField<'a> = Js.nullable<{..} as 'a>
+
+type propField<'a> = {\\"a\\": b}
+type propField<'a> = {..\\"a\\": b}
+type propField<'a> = {\\"a\\": {\\"b\\": c}}
+"
+`;
+
+exports[`jsObject.rei 1`] = `
+"type propField<'a> = {.}
+type propField<'a> = {..} as 'a
+type propField<'a> = {..} as 'a
+type propField<'a> = Js.nullable<{..} as 'a>
+
+type propField<'a> = {\\"a\\": b}
+type propField<'a> = {..\\"a\\": b}
+type propField<'a> = {\\"a\\": {\\"b\\": c}}
 "
 `;
 
