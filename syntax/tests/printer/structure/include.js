@@ -8,7 +8,7 @@ include (
   {
     @val @module("react")
     external createElementInternalHack: 'a = "createElement"
-    @bs.send
+    @send
     external apply: (
       'theFunction,
       'theContext,

@@ -1,6 +1,6 @@
 src/reactjs_jsx_ppx_v3.cmx : src/reactjs_jsx_ppx_v3.cmi
 src/reactjs_jsx_ppx_v3.cmi :
-src/res_ast_conversion.cmx : src/res_ast_conversion.cmi
+src/res_ast_conversion.cmx : src/res_printer.cmx src/res_ast_conversion.cmi
 src/res_ast_conversion.cmi :
 src/res_ast_debugger.cmx : src/res_driver.cmx src/res_doc.cmx \
     src/res_ast_debugger.cmi

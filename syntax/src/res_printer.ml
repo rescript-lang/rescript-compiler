@@ -16,6 +16,49 @@ type callbackStyle =
    *)
   | ArgumentsFitOnOneLine
 
+(* Since compiler version 8.3, the bs. prefix is no longer needed *)
+(* Synced from
+  https://github.com/rescript-lang/rescript-compiler/blob/29174de1a5fde3b16cf05d10f5ac109cfac5c4ca/jscomp/frontend/ast_external_process.ml#L291-L367 *)
+let convertBsExternalAttribute = function
+  | "bs.as" -> "as"
+  | "bs.deriving" -> "deriving"
+  | "bs.get" -> "get"
+  | "bs.get_index" -> "get_index"
+  | "bs.ignore" -> "ignore"
+  | "bs.inline" -> "inline"
+  | "bs.int" -> "int"
+  | "bs.meth" -> "meth"
+  | "bs.module" -> "module"
+  | "bs.new" -> "new"
+  | "bs.obj" -> "obj"
+  | "bs.optional" -> "optional"
+  | "bs.return" -> "return"
+  | "bs.send" -> "send"
+  | "bs.scope" -> "scope"
+  | "bs.set" -> "set"
+  | "bs.set_index" -> "set_index"
+  | "bs.splice" | "bs.variadic" -> "variadic"
+  | "bs.string" -> "string"
+  | "bs.this" -> "this"
+  | "bs.uncurry" -> "uncurry"
+  | "bs.unwrap" -> "unwrap"
+  | "bs.val" -> "val"
+  (* bs.send.pipe shouldn't be transformed *)
+  | txt -> txt
+
+(* These haven't been needed for a long time now *)
+(* Synced from
+  https://github.com/rescript-lang/rescript-compiler/blob/29174de1a5fde3b16cf05d10f5ac109cfac5c4ca/jscomp/frontend/ast_exp_extension.ml *)
+let convertBsExtension = function
+  | "bs.debugger" -> "debugger"
+  | "bs.external" -> "raw"
+  (* We should never see this one since we use the sugared object form, but still *)
+  | "bs.obj" -> "obj"
+  | "bs.raw" -> "raw"
+  | "bs.re" -> "re"
+  (* TODO: what about bs.time and bs.node? *)
+  | txt -> txt
+
 let addParens doc =
   Doc.group (
     Doc.concat [
@@ -1985,11 +2028,7 @@ and printPackageConstraint i cmtTbl (longidentLoc, typ) =
   ]
 
 and printExtension ~atModuleLvl (stringLoc, payload) cmtTbl =
-  let txt = match stringLoc.Location.txt with
-  | "bs.raw" -> "raw"
-  | "bs.obj" -> "obj"
-  | txt -> txt
-  in
+  let txt = convertBsExtension stringLoc.Location.txt in
   let extName =
     let doc = Doc.concat [
       Doc.text "%";
@@ -4808,34 +4847,10 @@ and printPayload (payload : Parsetree.payload) cmtTbl =
     ]
 
 and printAttribute ((id, payload) : Parsetree.attribute) cmtTbl =
-  let contents = match id.txt with
-  | "bs.val" -> "val"
-  | "bs.module" -> "module"
-  | "bs.scope" -> "scope"
-  | "bs.splice" | "bs.variadic" -> "variadic"
-  | "bs.set" -> "set"
-  | "bs.set_index" -> "set_index"
-  | "bs.get" -> "get"
-  | "bs.get_index" -> "get_index"
-  | "bs.new" -> "new"
-  | "bs.obj" -> "obj"
-  | "bs.return" -> "return"
-  | "bs.uncurry" -> "uncurry"
-  | "bs.this" -> "this"
-  | "bs.meth" -> "meth"
-  | "bs.deriving" -> "deriving"
-  | "bs.string" -> "string"
-  | "bs.int" -> "int"
-  | "bs.ignore" -> "ignore"
-  | "bs.unwrap" -> "unwrap"
-  | "bs.as" -> "as"
-  | "bs.optional" -> "optional"
-  | txt -> txt
-  in
   Doc.group (
     Doc.concat [
       Doc.text "@";
-      Doc.text contents;
+      Doc.text (convertBsExternalAttribute id.txt);
       printPayload payload cmtTbl
     ]
   )
