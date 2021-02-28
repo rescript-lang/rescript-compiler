@@ -14,3 +14,13 @@ let x = 1
 ) 
 
 %%ext("A"; "B")
+
+@@superPrivate(
+  @module("./logo.svg") external logo: string = "default"
+)
+
+@inlinePrivate(
+  @module("./logo.svg") external logo: string = "default"
+)
+let x = 1
+

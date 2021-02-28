@@ -6111,6 +6111,7 @@ and parseAttributeId ~startPos p =
 and parsePayload p =
   match p.Parser.token with
   | Lparen when p.startPos.pos_cnum = p.prevEndPos.pos_cnum  ->
+    Parser.leaveBreadcrumb p Grammar.AttributePayload;
     Parser.next p;
     begin match p.token with
     | Colon ->
@@ -6127,6 +6128,7 @@ and parsePayload p =
         Parsetree.PTyp (parseTypExpr p)
       in
       Parser.expect Rparen p;
+      Parser.eatBreadcrumb p;
       payload
     | Question ->
       Parser.next p;
@@ -6139,6 +6141,7 @@ and parsePayload p =
         None
       in
       Parser.expect Rparen p;
+      Parser.eatBreadcrumb p;
       Parsetree.PPat (pattern, expr)
     | _ ->
       let items = parseDelimitedRegion
@@ -6148,6 +6151,7 @@ and parsePayload p =
         p
       in
       Parser.expect Rparen p;
+      Parser.eatBreadcrumb p;
       Parsetree.PStr items
     end
   | _ -> Parsetree.PStr []

@@ -8,3 +8,7 @@
 
 @attrStructureLvl @attrStructureLvl2 @attrStructureLvl3 @attrStructureLvl4 @attrStructureLvl5
 %%raw("__eval__gc()")
+
+%%private(
+  @module("./logo.svg") external logo: string = "default"
+)

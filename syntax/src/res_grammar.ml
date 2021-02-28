@@ -58,6 +58,7 @@ type t =
   | ListExpr
   | JsFfiImport
   | Pattern
+  | AttributePayload
 
 let toString = function
   | OpenDescription -> "an open description"
@@ -118,6 +119,7 @@ let toString = function
   | JsxChild -> "jsx child"
   | Pattern -> "pattern"
   | ExprFor -> "a for expression"
+  | AttributePayload -> "an attribute payload"
 
 let isSignatureItemStart = function
   | Token.At
@@ -336,6 +338,7 @@ let isListElement grammar token =
   | Primitive -> begin match token with Token.String _ -> true | _ -> false end
   | JsxAttribute -> isJsxAttributeStart token
   | JsFfiImport -> isJsFfiImportStart token
+  | AttributePayload -> token = Lparen
   | _ -> false
 
 let isListTerminator grammar token =
@@ -362,6 +365,7 @@ let isListTerminator grammar token =
   | ConstructorDeclaration, token when token <> Bar -> true
   | Primitive, Semicolon -> true
   | Primitive, token when isStructureItemStart token -> true
+  | AttributePayload, Rparen -> true
 
   | _ -> false
 

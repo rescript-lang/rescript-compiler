@@ -90,6 +90,8 @@ exports[`extension.js 1`] = `
 @attrStructureLvl4
 @attrStructureLvl5
 %%raw(\\"__eval__gc()\\")
+
+%%private(@module(\\"./logo.svg\\") external logo: string = \\"default\\")
 "
 `;
 
