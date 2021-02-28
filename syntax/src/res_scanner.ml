@@ -261,7 +261,7 @@ let scanNumber scanner =
     Token.Int {i = literal; suffix}
 
 let scanExoticIdentifier scanner =
-  (* TODO are we disregarding the current char...? Should be a quote *)
+  (* TODO: are we disregarding the current char...? Should be a quote *)
   next scanner;
   let buffer = Buffer.create 20 in
   let startPos = position scanner in
@@ -405,16 +405,18 @@ let scanSingleLineComment scanner =
   )
 
 let scanMultiLineComment scanner =
-  let startOff = scanner.offset in
+  (* assumption: we're only ever using this helper in `scan` after detecting a comment *)
+  let contentStartOff = scanner.offset + 2 in
   let startPos = position scanner in
   let rec scan ~depth =
+    (* invariant: depth > 0 right after this match. See assumption *)
     match scanner.ch, peek scanner with
-    | '*', '/' ->
-      next2 scanner;
-      if depth > 0 then scan ~depth:(depth - 1)
     | '/', '*' ->
       next2 scanner;
       scan ~depth:(depth + 1)
+    | '*', '/' ->
+      next2 scanner;
+      if depth > 1 then scan ~depth:(depth - 1)
     | ch, _ when ch == hackyEOFChar ->
       let endPos = position scanner in
       scanner.err ~startPos ~endPos Diagnostics.unclosedComment
@@ -426,7 +428,7 @@ let scanMultiLineComment scanner =
   Token.Comment (
     Comment.makeMultiLineComment
       ~loc:(Location.{loc_start = startPos; loc_end = (position scanner); loc_ghost = false})
-      ((String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - 2 - startOff))
+      ((String.sub [@doesNotRaise]) scanner.src contentStartOff (scanner.offset - 2 - contentStartOff))
   )
 
 let scanTemplateLiteralToken scanner =
@@ -500,7 +502,7 @@ let rec scan scanner =
   | ',' -> next scanner; Token.Comma
   | '"' -> next scanner; scanString scanner
 
-  (* peeking 1 chars *)
+  (* peeking 1 char *)
   | '_' ->
     (match peek scanner with
     | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' -> scanIdentifier scanner
@@ -540,7 +542,7 @@ let rec scan scanner =
   | '/' ->
     (match peek scanner with
     | '/' -> next2 scanner; scanSingleLineComment scanner
-    | '*' -> next2 scanner; scanMultiLineComment scanner
+    | '*' -> scanMultiLineComment scanner
     | '.' -> next2 scanner; Token.ForwardslashDot
     | _ -> next scanner; Token.Forwardslash)
   | '-' ->
