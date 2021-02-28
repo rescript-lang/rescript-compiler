@@ -386,7 +386,7 @@ type kind = Parenthesized | Braced of Location.t | Nothing
        module type Functor = (SetLike => Set) with type t = A.t
   *)
   let modTypeWithOperand modType = match modType with
-    | {Parsetree.pmty_desc = Pmty_functor _} -> true
+    | {Parsetree.pmty_desc = Pmty_functor _ | Pmty_with _} -> true
     | _ -> false
 
   let modExprFunctorConstraint modType = match modType with
