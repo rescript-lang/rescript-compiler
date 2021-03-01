@@ -590,7 +590,6 @@
 ../lib/4.06.1/whole_compiler.ml: ./napkin/reactjs_jsx_ppx_v3.mli
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_ast_conversion.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_ast_conversion.mli
-../lib/4.06.1/whole_compiler.ml: ./napkin/res_character_codes.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_comment.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_comment.mli
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_comments_table.ml
