@@ -11958,6 +11958,7 @@ val as_ppx : bool ref
 
 val mono_empty_array : bool ref
 val customize_runtime : string option ref 
+val as_pp: bool ref
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -12053,6 +12054,8 @@ let as_ppx = ref false
 let mono_empty_array = ref true
 
 let customize_runtime = ref None 
+
+let as_pp = ref false
 end
 module Map_gen : sig 
 #1 "map_gen.mli"
