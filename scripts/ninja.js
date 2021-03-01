@@ -119,12 +119,7 @@ var getVersionString = () => {
   }
   return versionString;
 };
-/**
- * @returns {boolean}
- */
-var version6 = () => {
-  return !getVersionString().includes("4.02");
-};
+
 /**
  *
  * @param {string} ninjaCwd
@@ -562,9 +557,9 @@ function replaceCmj(x) {
  * @param {string} y
  */
 function sourceToTarget(y) {
-  if (y.endsWith(".ml") || y.endsWith(".re")) {
+  if (y.endsWith(".ml") || y.endsWith(".re") || y.endsWith(".res")) {
     return replaceExt(y, ".cmj");
-  } else if (y.endsWith(".mli") || y.endsWith(".rei")) {
+  } else if (y.endsWith(".mli") || y.endsWith(".rei") || y.endsWith(".resi")) {
     return replaceExt(y, ".cmi");
   }
   return y;
@@ -622,6 +617,7 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
 function depModulesForBscAsync(files, dir, depsMap) {
   let ocamlFiles = files.filter((x) => x.endsWith(".ml") || x.endsWith(".mli"));
   let reFiles = files.filter((x) => x.endsWith(".re") || x.endsWith(".rei"));
+  let resFiles = files.filter((x) => x.endsWith(".res") || x.endsWith(".resi"));
   /**
    *
    * @param {(value:void) =>void} resolve
@@ -677,11 +673,22 @@ function depModulesForBscAsync(files, dir, depsMap) {
         cb(resolve, reject)
       );
     }),
+    new Promise((resolve, reject) => {
+      cp.exec(
+        `${getOcamldepFile()} -pp '../../${
+          process.platform
+        }/bsc.byte -as-pp' -modules -one-line -native -ml-synonym .res -mli-synonym .resi ${resFiles.join(
+          " "
+        )}`,
+        config,
+        cb(resolve, reject)
+      );
+    }),
   ];
 }
 
 /**
- * @typedef {('HAS_ML' | 'HAS_MLI' | 'HAS_BOTH' | 'HAS_RE' | 'HAS_REI' | 'HAS_BOTH_RE')} FileInfo
+ * @typedef {('HAS_ML' | 'HAS_MLI' | 'HAS_BOTH' | 'HAS_RE' | 'HAS_RES' | 'HAS_REI' | 'HAS_RESI' | 'HAS_BOTH_RE' | 'HAS_BOTH_RES')} FileInfo
  * @param {string[]} sourceFiles
  * @returns {Map<string, FileInfo>}
  * We make a set to ensure that `sourceFiles` are not duplicated
@@ -701,8 +708,12 @@ function collectTarget(sourceFiles) {
         allTargets.set(name, "HAS_MLI");
       } else if (ext === ".re") {
         allTargets.set(name, "HAS_RE");
+      } else if (ext === ".res") {
+        allTargets.set(name, "HAS_RES");
       } else if (ext === ".rei") {
         allTargets.set(name, "HAS_REI");
+      } else if (ext === ".resi") {
+        allTargets.set(name, "HAS_RESI");
       }
     } else {
       switch (existExt) {
@@ -716,6 +727,11 @@ function collectTarget(sourceFiles) {
             allTargets.set(name, "HAS_BOTH_RE");
           }
           break;
+        case "HAS_RES":
+          if (ext === ".resi") {
+            allTargets.set(name, "HAS_BOTH_RES");
+          }
+          break;
         case "HAS_MLI":
           if (ext === ".ml") {
             allTargets.set(name, "HAS_BOTH");
@@ -726,8 +742,14 @@ function collectTarget(sourceFiles) {
             allTargets.set(name, "HAS_BOTH_RE");
           }
           break;
+        case "HAS_RESI":
+          if (ext === ".res") {
+            allTargets.set(name, "HAS_BOTH_RES");
+          }
+          break;
         case "HAS_BOTH_RE":
         case "HAS_BOTH":
+        case "HAS_BOTH_RES":  
           break;
       }
     }
@@ -748,13 +770,16 @@ function scanFileTargets(allTargets, collIn) {
     switch (ext) {
       case "HAS_MLI":
       case "HAS_REI":
+      case "HAS_RESI":
         coll.push(`${mod}.cmi`);
         break;
+      case "HAS_BOTH_RES":
       case "HAS_BOTH_RE":
       case "HAS_BOTH":
         coll.push(`${mod}.cmi`, `${mod}.cmj`);
         break;
       case "HAS_RE":
+      case "HAS_RES":
       case "HAS_ML":
         coll.push(`${mod}.cmi`, `${mod}.cmj`);
         break;
@@ -782,7 +807,9 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
     let input_ml = mod + ".ml";
     let input_mli = mod + ".mli";
     let input_re = mod + ".re";
+    let input_res = mod + ".res";
     let input_rei = mod + ".rei";
+    let input_resi = mod + ".resi";
     /**
      * @type {Override[]}
      */
@@ -811,14 +838,25 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
         mk([ouptput_cmj], [input_re], "cc_cmi");
         mk([output_cmi], [input_rei], "cc");
         break;
+      case "HAS_BOTH_RES":
+        mk([ouptput_cmj], [input_res], "cc_cmi");
+        mk([output_cmi], [input_resi], "cc");
+        break;
       case "HAS_RE":
         mk([output_cmi, ouptput_cmj], [input_re], "cc");
+        break;
+      case "HAS_RES":
+        mk([output_cmi, ouptput_cmj], [input_res], "cc");
         break;
       case "HAS_ML":
         mk([output_cmi, ouptput_cmj], [input_ml]);
         break;
       case "HAS_REI":
         mk([output_cmi], [input_rei], "cc");
+        break;
+      case "HAS_RESI":
+        mk([output_cmi], [input_resi], "cc");
+        break;
       case "HAS_MLI":
         mk([output_cmi], [input_mli]);
         break;
@@ -1042,7 +1080,7 @@ ${ninjaQuickBuidList([
  * generate build.ninja/release.ninja for stdlib-402
  */
 async function stdlibNinja(devmode = true) {
-  var stdlibVersion = version6() ? "stdlib-406" : "stdlib-402";
+  var stdlibVersion = "stdlib-406";
   var ninjaCwd = stdlibVersion;
   var stdlibDir = path.join(jscompDir, stdlibVersion);
   var externalDeps = [othersTarget];
@@ -1206,6 +1244,8 @@ ${mllList(ninjaCwd, [
     return (
       x.endsWith(".re") ||
       x.endsWith(".rei") ||
+      x.endsWith(".resi") ||
+      x.endsWith(".res") ||
       ((x.endsWith(".ml") || x.endsWith(".mli")) && !x.endsWith("bspack.ml"))
     );
   });
@@ -1358,7 +1398,7 @@ function updateDev() {
     path.join(jscompDir, "build.ninja"),
     `
 ${getVendorConfigNinja()}
-stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
+stdlib = stdlib-406
 ${BSC_COMPILER}      
 subninja compiler.ninja
 subninja runtime/build.ninja
@@ -1373,7 +1413,7 @@ o all: phony runtime others $stdlib test
     `
 ocamlopt = ocamlopt.opt 
 ext = exe
-INCL= ${version6() ? "4.06.1+BS" : "4.02.3+BS"}
+INCL= "4.06.1+BS"
 include body.ninja               
 `
   );
@@ -1431,13 +1471,15 @@ function getVendorConfigNinja() {
   return `
 ocamlopt = ${prefix}/ocamlopt.opt
 ocamllex = ${prefix}/ocamllex.opt
+ocamlc = ${prefix}/ocamlc.opt
 ocamlmklib = ${prefix}/ocamlmklib
 ocaml = ${prefix}/ocaml
 `;
 }
 function getEnnvConfigNinja() {
   return `
-ocamlopt = ocamlopt.opt    
+ocamlopt = ocamlopt.opt
+ocamlc = ocamlc.opt
 ocamllex = ocamllex.opt
 ocamlmklib = ocamlmklib
 ocaml = ocaml
@@ -1454,7 +1496,7 @@ function getPreprocessorFileName() {
  * Built cppo.exe refmt.exe etc for dev purpose
  */
 function preprocessorNinjaSync() {
-  var refmtMainPath = version6() ? "../lib/4.06.1" : "../lib/4.02.3";
+  var refmtMainPath = "../lib/4.06.1";
   var napkinFiles = fs
     .readdirSync(path.join(jscompDir, "..", "syntax", "src"), "ascii")
     .filter((x) => x.endsWith(".ml") || x.endsWith(".mli"));
@@ -1465,6 +1507,8 @@ function preprocessorNinjaSync() {
 ${getVendorConfigNinja()}
 rule link
     command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out
+rule bytelink
+    command =  $ocamlc -g  -I +compiler-libs $flags $libs $in -o $out
 o ${cppoFile}: link ${cppoMonoFile}
     libs = unix.cmxa str.cmxa
     generator = true
@@ -1500,10 +1544,17 @@ ${cppoList("outcome_printer", [
 ])}
 o ../${
     process.platform
-  }/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
-    libs = ocamlcommon.cmxa
+  }/refmt.exe: bytelink  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
+    libs = ocamlcommon.cma
     flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30-3 -no-alias-deps
     generator = true
+o ../${
+    process.platform
+  }/bsc.byte: bytelink  ${refmtMainPath}/whole_compiler.mli ${refmtMainPath}/whole_compiler.ml
+      libs = ocamlcommon.cma
+      flags = -custom ./stubs/ext_basic_hash_stubs.c -I ${refmtMainPath} -I +compiler-libs -w -40-30-3 -no-alias-deps
+      generator = true
+  
 rule copy
   command = cp $in $out
   description = $in -> $out    
