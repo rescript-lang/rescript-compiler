@@ -119,12 +119,7 @@ var getVersionString = () => {
   }
   return versionString;
 };
-/**
- * @returns {boolean}
- */
-var version6 = () => {
-  return !getVersionString().includes("4.02");
-};
+
 /**
  *
  * @param {string} ninjaCwd
@@ -1042,7 +1037,7 @@ ${ninjaQuickBuidList([
  * generate build.ninja/release.ninja for stdlib-402
  */
 async function stdlibNinja(devmode = true) {
-  var stdlibVersion = version6() ? "stdlib-406" : "stdlib-402";
+  var stdlibVersion = "stdlib-406";
   var ninjaCwd = stdlibVersion;
   var stdlibDir = path.join(jscompDir, stdlibVersion);
   var externalDeps = [othersTarget];
@@ -1358,7 +1353,7 @@ function updateDev() {
     path.join(jscompDir, "build.ninja"),
     `
 ${getVendorConfigNinja()}
-stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
+stdlib = stdlib-406
 ${BSC_COMPILER}      
 subninja compiler.ninja
 subninja runtime/build.ninja
@@ -1373,7 +1368,7 @@ o all: phony runtime others $stdlib test
     `
 ocamlopt = ocamlopt.opt 
 ext = exe
-INCL= ${version6() ? "4.06.1+BS" : "4.02.3+BS"}
+INCL= "4.06.1+BS"
 include body.ninja               
 `
   );
@@ -1454,7 +1449,7 @@ function getPreprocessorFileName() {
  * Built cppo.exe refmt.exe etc for dev purpose
  */
 function preprocessorNinjaSync() {
-  var refmtMainPath = version6() ? "../lib/4.06.1" : "../lib/4.02.3";
+  var refmtMainPath = "../lib/4.06.1";
   var napkinFiles = fs
     .readdirSync(path.join(jscompDir, "..", "syntax", "src"), "ascii")
     .filter((x) => x.endsWith(".ml") || x.endsWith(".mli"));
