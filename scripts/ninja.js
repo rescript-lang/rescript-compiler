@@ -557,9 +557,9 @@ function replaceCmj(x) {
  * @param {string} y
  */
 function sourceToTarget(y) {
-  if (y.endsWith(".ml") || y.endsWith(".re")) {
+  if (y.endsWith(".ml") || y.endsWith(".re") || y.endsWith(".res")) {
     return replaceExt(y, ".cmj");
-  } else if (y.endsWith(".mli") || y.endsWith(".rei")) {
+  } else if (y.endsWith(".mli") || y.endsWith(".rei") || y.endsWith(".resi")) {
     return replaceExt(y, ".cmi");
   }
   return y;
@@ -1201,6 +1201,8 @@ ${mllList(ninjaCwd, [
     return (
       x.endsWith(".re") ||
       x.endsWith(".rei") ||
+      x.endsWith(".resi") ||
+      x.endsWith(".res") ||
       ((x.endsWith(".ml") || x.endsWith(".mli")) && !x.endsWith("bspack.ml"))
     );
   });
