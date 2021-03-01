@@ -87,7 +87,9 @@ function onSourceChange(eventType, filename) {
     filename.endsWith(".mli") ||
     filename.endsWith(".json") ||
     filename.endsWith(".re") || 
-    filename.endsWith(".rei")
+    filename.endsWith(".rei") ||
+    filename.endsWith(".res") ||
+    filename.endsWith(".resi")
   ) {
     rebuild();
   }
