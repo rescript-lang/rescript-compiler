@@ -67,7 +67,12 @@ let after_parsing_sig ppf  outputprefix ast  =
         ast 
 
     end;
-  if !Js_config.syntax_only then 
+  if !Js_config.as_pp then begin 
+      output_string stdout Config.ast_intf_magic_number;
+      output_value stdout (!Location.input_name : string);
+      output_value stdout ast;
+  end; 
+  if !Js_config.syntax_only then
     Warnings.check_fatal()
   else 
     begin 
@@ -170,6 +175,11 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
       Ml ~output:(outputprefix ^ Literals.suffix_ast)
       ast
   end ;
+  if !Js_config.as_pp then begin 
+    output_string stdout Config.ast_impl_magic_number;
+    output_value stdout (!Location.input_name : string);
+    output_value stdout ast;
+  end; 
   if !Js_config.syntax_only then 
     Warnings.check_fatal ()
   else 

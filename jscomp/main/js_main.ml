@@ -287,7 +287,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-as-ppx", set Js_config.as_ppx, 
     "*internal*As ppx for editor integration";
-
+    "-as-pp", unit_call(fun _ ->  Js_config.as_pp := true ; Js_config.syntax_only := true),
+    "*internal*As pp to interact with native tools";
     "-no-alias-deps", set Clflags.transparent_modules, 
     "*internal*Do not record dependencies for module aliases";
 

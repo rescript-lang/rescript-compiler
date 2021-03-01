@@ -101,3 +101,4 @@ val as_ppx : bool ref
 
 val mono_empty_array : bool ref
 val customize_runtime : string option ref 
+val as_pp: bool ref
