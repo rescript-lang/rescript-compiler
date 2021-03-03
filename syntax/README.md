@@ -21,9 +21,7 @@ was more than if I hand wrote the code myself.
 "
 J. Blow.
 
-### Setup & Usage
-
-Currently for devs only.
+### Setup & Usage (For Repo Devs Only)
 
 Required:
 - [NodeJS](https://nodejs.org/)
@@ -38,7 +36,7 @@ npm install
 make # or: make -j9 for faster build
 ```
 
-This will produce the final binary `lib/rescript.exe` used for testing
+This will produce the final binary `lib/rescript.exe` used for testing.
 
 First build is super slow because we're also building our vendored `refmt` (only used for the conversion tool). Subsequent builds should be <2s. If not, please file an issue (build speed is a priority).
 
@@ -77,6 +75,14 @@ Benchmark:
 ```sh
 make bench
 ```
+
+Enable stack trace:
+```sh
+# Before you run the binary
+export OCAMLRUNPARAM="b"
+```
+
+This is likely a known knowledge: add the above line into your shell rc file so that every shell startup you have OCaml stack trace enabled.
 
 ### Development Docs
 

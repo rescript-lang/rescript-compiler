@@ -203,89 +203,82 @@ module CliArgProcessor = struct
   type backend = Parser: ('diagnostics) Res_driver.parsingEngine -> backend [@@unboxed]
 
   let processFile ~isInterface ~width ~recover ~origin ~target ~ppx filename =
-    try
-      let len = String.length filename in
-      let processInterface =
-        isInterface || len > 0 && (String.get [@doesNotRaise]) filename (len - 1) = 'i'
-      in
-      let parsingEngine =
-        match origin with
-        | "reasonBinary" -> Parser Res_driver_reason_binary.parsingEngine
-        | "ml" -> Parser Res_driver_ml_parser.parsingEngine
-        | "res" -> Parser Res_driver.parsingEngine
-        | origin ->
-          print_endline ("-parse needs to be either reasonBinary, ml or res. You provided " ^ origin);
-          exit 1
-      in
-      let printEngine =
-        match target with
-        | "binary" -> Res_driver_binary.printEngine
-        | "ml" -> Res_driver_ml_parser.printEngine
-        | "ast" -> Res_ast_debugger.printEngine
-        | "sexp" -> Res_ast_debugger.sexpPrintEngine
-        | "res"  -> Res_driver.printEngine
-        | target ->
-          print_endline ("-print needs to be either binary, ml, ast, sexp or res. You provided " ^ target);
-          exit 1
-      in
+    let len = String.length filename in
+    let processInterface =
+      isInterface || len > 0 && (String.get [@doesNotRaise]) filename (len - 1) = 'i'
+    in
+    let parsingEngine =
+      match origin with
+      | "reasonBinary" -> Parser Res_driver_reason_binary.parsingEngine
+      | "ml" -> Parser Res_driver_ml_parser.parsingEngine
+      | "res" -> Parser Res_driver.parsingEngine
+      | origin ->
+        print_endline ("-parse needs to be either reasonBinary, ml or res. You provided " ^ origin);
+        exit 1
+    in
+    let printEngine =
+      match target with
+      | "binary" -> Res_driver_binary.printEngine
+      | "ml" -> Res_driver_ml_parser.printEngine
+      | "ast" -> Res_ast_debugger.printEngine
+      | "sexp" -> Res_ast_debugger.sexpPrintEngine
+      | "res"  -> Res_driver.printEngine
+      | target ->
+        print_endline ("-print needs to be either binary, ml, ast, sexp or res. You provided " ^ target);
+        exit 1
+    in
 
-      let forPrinter = match target with
-      | "res" | "sexp" -> true
-      | _ -> false
-      in
+    let forPrinter = match target with
+    | "res" | "sexp" -> true
+    | _ -> false
+    in
 
-      let Parser backend = parsingEngine in
-      (* This is the whole purpose of the Color module above *)
-      Color.setup None;
-      if processInterface then
-        let parseResult = backend.parseInterface ~forPrinter ~filename in
-        if parseResult.invalid then begin
-          backend.stringOfDiagnostics
-            ~source:parseResult.source
-            ~filename:parseResult.filename
-            parseResult.diagnostics;
-          if recover then
-            printEngine.printInterface
-              ~width ~filename ~comments:parseResult.comments parseResult.parsetree
-          else exit 1
-        end
-        else
-          let parsetree = match ppx with
-            | "jsx" -> Reactjs_jsx_ppx_v3.rewrite_signature parseResult.parsetree
-            | _ -> parseResult.parsetree
-          in
+    let Parser backend = parsingEngine in
+    (* This is the whole purpose of the Color module above *)
+    Color.setup None;
+    if processInterface then
+      let parseResult = backend.parseInterface ~forPrinter ~filename in
+      if parseResult.invalid then begin
+        backend.stringOfDiagnostics
+          ~source:parseResult.source
+          ~filename:parseResult.filename
+          parseResult.diagnostics;
+        if recover then
           printEngine.printInterface
-            ~width ~filename ~comments:parseResult.comments parsetree
+            ~width ~filename ~comments:parseResult.comments parseResult.parsetree
+        else exit 1
+      end
       else
-        let parseResult = backend.parseImplementation ~forPrinter ~filename in
-        if parseResult.invalid then begin
-          backend.stringOfDiagnostics
-            ~source:parseResult.source
-            ~filename:parseResult.filename
-            parseResult.diagnostics;
-          if recover then
-            printEngine.printImplementation
-              ~width ~filename ~comments:parseResult.comments parseResult.parsetree
-          else exit 1
-        end
-        else
-          let parsetree = match ppx with
-            | "jsx" -> Reactjs_jsx_ppx_v3.rewrite_implementation parseResult.parsetree
-            | _ -> parseResult.parsetree
-          in
+        let parsetree = match ppx with
+          | "jsx" -> Reactjs_jsx_ppx_v3.rewrite_signature parseResult.parsetree
+          | _ -> parseResult.parsetree
+        in
+        printEngine.printInterface
+          ~width ~filename ~comments:parseResult.comments parsetree
+    else
+      let parseResult = backend.parseImplementation ~forPrinter ~filename in
+      if parseResult.invalid then begin
+        backend.stringOfDiagnostics
+          ~source:parseResult.source
+          ~filename:parseResult.filename
+          parseResult.diagnostics;
+        if recover then
           printEngine.printImplementation
-            ~width ~filename ~comments:parseResult.comments parsetree
-    with
-    | Failure txt ->
-      prerr_string txt;
-      prerr_newline();
-      exit 1
-    | _ -> exit 1
-  [@@raises Invalid_argument, exit]
+            ~width ~filename ~comments:parseResult.comments parseResult.parsetree
+        else exit 1
+      end
+      else
+        let parsetree = match ppx with
+          | "jsx" -> Reactjs_jsx_ppx_v3.rewrite_implementation parseResult.parsetree
+          | _ -> parseResult.parsetree
+        in
+        printEngine.printImplementation
+          ~width ~filename ~comments:parseResult.comments parsetree
+  [@@raises Invalid_argument, Failure, exit]
 end
 
 
-let [@raises Invalid_argument, exit] () =
+let [@raises Invalid_argument, Failure, exit] () =
   if not !Sys.interactive then begin
     ResClflags.parse ();
     match !ResClflags.files with

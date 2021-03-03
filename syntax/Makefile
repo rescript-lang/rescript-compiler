@@ -1,5 +1,5 @@
 OCAMLOPT=ocamlopt.opt
-OCAMLFLAGS= -w +a-4-42-40-9-48 -warn-error +a -bin-annot -I +compiler-libs -I src -I tests -absname
+OCAMLFLAGS=-g -w +a-4-42-40-9-48 -warn-error +a -bin-annot -I +compiler-libs -I src -I tests -absname
 OCAMLDEP=ocamldep.opt
 %.cmi : %.mli
 	$(OCAMLOPT) $(OCAMLFLAGS) -c $<
