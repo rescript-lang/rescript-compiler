@@ -167,13 +167,17 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
              pvb_attributes; 
              pvb_loc = _}], body)             
           -> 
-          default_expr_mapper self 
-            {e with 
-             pexp_desc = Pexp_match(pvb_expr,
-                                    [{pc_lhs = p; pc_guard = None; 
-                                      pc_rhs = body}]);
-             pexp_attributes = e.pexp_attributes @  pvb_attributes
-            }
+          begin match pvb_expr.pexp_desc with 
+            | Pexp_pack _ -> default_expr_mapper self e 
+            | _ -> 
+              default_expr_mapper self 
+                {e with 
+                 pexp_desc = Pexp_match(pvb_expr,
+                                        [{pc_lhs = p; pc_guard = None; 
+                                          pc_rhs = body}]);
+                 pexp_attributes = e.pexp_attributes @  pvb_attributes
+                }
+          end
          (* let [@warning "a"] {a;b} = c in body 
             The attribute is attached to value binding, 
             after the transformation value binding does not exist so we attach 
