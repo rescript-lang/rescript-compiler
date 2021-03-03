@@ -52,8 +52,8 @@ let flattern_tuple_pattern_vb
   let pvb_pat = self.pat self vb.pvb_pat in
   let pvb_expr = self.expr self vb.pvb_expr in
   let pvb_attributes = self.attributes self vb.pvb_attributes in
-  match pvb_pat.ppat_desc with
-  | Ppat_tuple xs when List.for_all is_simple_pattern xs ->
+  match pvb_pat.ppat_desc, pvb_expr.pexp_desc with
+  | Ppat_tuple xs, _ when List.for_all is_simple_pattern xs ->
     begin match Ast_open_cxt.destruct_open_tuple pvb_expr []  with
       | Some (wholes, es, tuple_attributes)
         when
@@ -77,6 +77,22 @@ let flattern_tuple_pattern_vb
          pvb_loc = vb.pvb_loc;
          pvb_attributes} :: acc
     end
+  | Ppat_record (lid_pats,_),  Pexp_pack {pmod_desc= Pmod_ident id} 
+    ->
+    Ext_list.map_append lid_pats acc (fun (lid,pat) -> 
+        match lid.txt with 
+        | Lident s ->
+          {
+            pvb_pat = pat;
+            pvb_expr = 
+              Ast_helper.Exp.ident ~loc:lid.loc
+                ({lid with txt = Ldot(id.txt,s)});
+            pvb_attributes  = [];
+            pvb_loc = pat.ppat_loc; 
+          }
+        | _ -> 
+          Location.raise_errorf ~loc:lid.loc "Not supported pattern match on modules"
+      )
   | _ ->
     {pvb_pat ;
      pvb_expr ;
