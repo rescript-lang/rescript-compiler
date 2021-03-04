@@ -5,7 +5,7 @@
   "dependencies": {},
   "devDependencies": {
     "jest": "^24.9.0",
-    "reanalyze": "^2.14.0"
+    "reanalyze": "^2.15.0"
   },
   "private": true,
   "scripts": {},
