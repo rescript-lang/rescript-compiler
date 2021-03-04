@@ -128,13 +128,12 @@ let printMultilineCommentContent txt =
     | [lastLine] ->
       let line = String.trim lastLine in
       let doc = Doc.text (" " ^ line) in
-      let trailingSpace = if String.length line > 0 then Doc.space else Doc.nil in
+      let trailingSpace = if line = "" then Doc.nil else Doc.space in
       List.rev (trailingSpace::doc::acc) |> Doc.concat
     | line::lines ->
       let line = String.trim line in
-      let len = String.length line in
-      if len > 0 && (String.get [@doesNotRaise]) line 0 == '*' then
-        let doc = Doc.text (" " ^ (String.trim line)) in
+      if line != "" && String.unsafe_get line 0 == '*' then
+        let doc = Doc.text (" " ^ line) in
         indentStars lines (Doc.hardLine::doc::acc)
       else
         let trailingSpace =
@@ -158,8 +157,9 @@ let printMultilineCommentContent txt =
     let firstLine = Comment.trimSpaces first in
     Doc.concat [
       Doc.text "/*";
-      if String.length firstLine > 0 && not (String.equal firstLine "*") then
-        Doc.space else Doc.nil;
+      (match firstLine with
+      | "" | "*" -> Doc.nil
+      | _ -> Doc.space);
       indentStars rest [Doc.hardLine; Doc.text firstLine];
       Doc.text "*/";
     ]
@@ -1654,7 +1654,6 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
       else if labelsOpt = None
       then Doc.softLine
       else Doc.concat [Doc.lessThan; Doc.line] in
-    let hasLabels = labelsOpt <> None && labelsOpt <> Some [] in
     let labels = match labelsOpt with
     | None
     | Some([]) ->
@@ -1666,7 +1665,10 @@ and printTypExpr (typExpr : Parsetree.core_type) cmtTbl =
         ) labels
       )
     in
-    let closingSymbol = if hasLabels then Doc.text " >" else Doc.nil in
+    let closingSymbol = match labelsOpt with
+    | None | Some [] -> Doc.nil
+    | _ -> Doc.text " >"
+    in
     Doc.breakableGroup ~forceBreak (
       Doc.concat [
         Doc.lbracket;
