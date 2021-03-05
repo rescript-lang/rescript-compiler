@@ -205,14 +205,13 @@ let fits0 w ops =
       doConcat ind mode rest
   in
   let rec doOps ops = match ops with
-    | _ when !res != None -> ()
+    | _ when !res != None -> !res = Some true
     | (ind, mode, doc)::rest ->
       doOp ind mode doc;
       doOps rest
-    | [] -> res := Some (!wr >= 0)
+    | [] -> !wr >= 0
   in
-  doOps ops;
-  !res = Some true
+  doOps ops
 
 
 let _ = fits0
