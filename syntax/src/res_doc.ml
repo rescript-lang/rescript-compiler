@@ -28,7 +28,18 @@ let hardLine = LineBreak Hard
 let softLine = LineBreak Soft
 let literalLine = LineBreak Literal
 let text s = Text s
-let concat l = Concat l
+
+let rec concat2 tail l = match l with
+| Text s1 :: Text s2 :: rest -> Text (s1 ^ s2) :: concat2 tail rest
+| Nil :: rest -> concat2 tail rest
+| Concat l2 :: rest -> concat2 (concat2 tail rest) l2 
+| x :: rest ->
+  let rest1 = concat2 tail rest in
+  if rest1 == rest then l else x :: rest1  
+| [] -> tail
+
+let concat l = Concat(concat2 [] l)
+
 let indent d = Indent d
 let ifBreaks t f = IfBreaks {yes = t; no = f}
 let lineSuffix d = LineSuffix d
@@ -118,8 +129,9 @@ let join ~sep docs =
     | [x] -> List.rev (x::acc)
     | x::xs -> loop (sep::x::acc) sep xs
   in
-  Concat(loop [] sep docs)
+  concat(loop [] sep docs)
 
+  
 let rec fits w doc = match doc with
   | _ when w < 0 -> false
   | [] -> true
