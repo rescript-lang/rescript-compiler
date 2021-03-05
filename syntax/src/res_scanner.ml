@@ -59,28 +59,39 @@ let position scanner = Lexing.{
 }
 
 (* Small debugging util
-❯ ./lib/rescript.exe baah/test.res
-let a = 1
-^ let
-let a = 1
-    ^ a
-let a = 1
-      ^ =
-let a = 1
-        ^ int 1
-let a = 1
-         ^ eof
-let a = 1
+❯ echo 'let msg = "hello"' | ./lib/rescript.exe
+let msg = "hello"
+^-^ let 0-3
+let msg = "hello"
+    ^-^ msg 4-7
+let msg = "hello"
+        ^ = 8-9
+let msg = "hello"
+          ^-----^ string "hello" 10-17
+let msg = "hello"
+                  ^ eof 18-18
+let msg = "hello"
 *)
-let _printDebug ~startPos scanner token =
+let _printDebug ~startPos ~endPos scanner token =
   let open Lexing in
-  print_endline scanner.src;
+  print_string scanner.src;
   print_string ((String.make [@doesNotRaise]) startPos.pos_cnum ' ');
   print_char '^';
+  (match endPos.pos_cnum - startPos.pos_cnum with
+  | 0 ->
+    if token = Token.Eof then ()
+    else assert false
+  | 1 -> ()
+  | n -> (
+    print_string ((String.make [@doesNotRaise]) (n - 2) '-');
+    print_char '^';
+  ));
   print_char ' ';
   print_string (Res_token.toString token);
   print_char ' ';
   print_int startPos.pos_cnum;
+  print_char '-';
+  print_int endPos.pos_cnum;
   print_endline ""
 [@@live]
 
@@ -619,7 +630,7 @@ let rec scan scanner =
     token
   in
   let endPos = position scanner in
-  (* _printDebug ~startPos scanner token; *)
+  (* _printDebug ~startPos ~endPos scanner token; *)
   (startPos, endPos, token)
 
 
