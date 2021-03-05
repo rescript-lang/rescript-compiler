@@ -166,6 +166,60 @@ let rec fits w doc = match doc with
   | (_ind, _mode, CustomLayout _)::rest ->
     fits w rest
 
+(* Version of fits that does not allocate *)
+let fits0 w ops =
+  let wr = ref w in
+  let res = ref None in
+  let rec doOp ind mode doc = match (mode, doc) with
+    | _ when !res <> None -> ()
+    | _ when !wr < 0 -> res := Some false
+    | _, Text txt -> wr := !wr - (String.length txt)
+    | _, Indent doc -> doOp (ind + 2) mode doc
+    | Flat, LineBreak break ->
+      if break = Hard || break = Literal then res := Some true
+      else wr := if break = Classic then !wr - 1 else !wr
+    | _, Nil -> ()
+    | Break, LineBreak _break -> res := Some true
+    | _, Group {shouldBreak = forceBreak; doc} ->
+      let mode = if forceBreak then Break else mode in
+      doOp ind mode doc
+    | _, IfBreaks {yes = breakDoc; no = flatDoc} ->
+      if mode = Break then
+        doOp ind mode breakDoc
+      else
+        doOp ind mode flatDoc
+    | _, Concat docs ->
+      doConcat ind mode docs
+    | _, LineSuffix _ -> ()
+    | _, BreakParent -> ()
+    | _, CustomLayout (hd::_) ->
+      (* TODO: if we have nested custom layouts, what we should do here? *)
+        doOp ind mode hd
+    | _, CustomLayout [] ->
+      ()
+  and doConcat ind mode docs = match docs with
+    | _ when !res <> None -> ()
+    | [] -> ()
+    | doc::rest ->
+      doOp ind mode doc;
+      doConcat ind mode rest
+  in
+  let rec doOps ops = match ops with
+    | _ when !res != None -> ()
+    | (ind, mode, doc)::rest ->
+      doOp ind mode doc;
+      doOps rest
+    | [] -> res := Some (!wr >= 0)
+  in
+  doOps ops;
+  !res = Some true
+
+
+let _ = fits0
+let _ = fits
+
+let fits = fits0
+
 let toString ~width doc =
   let doc = propagateForcedBreaks doc in
   let buffer = MiniBuffer.create 1000 in
