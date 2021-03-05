@@ -29,16 +29,18 @@ let softLine = LineBreak Soft
 let literalLine = LineBreak Literal
 let text s = Text s
 
-let rec concat2 tail l = match l with
-| Text s1 :: Text s2 :: rest -> Text (s1 ^ s2) :: concat2 tail rest
-| Nil :: rest -> concat2 tail rest
-| Concat l2 :: rest -> concat2 (concat2 tail rest) l2 
-| x :: rest ->
-  let rest1 = concat2 tail rest in
-  if rest1 == rest then l else x :: rest1  
-| [] -> tail
+(* Optimization. We eagerly collapse and reduce whatever allocation we can *)
+let rec _concat acc l =
+  match l with
+  | Text s1 :: Text s2 :: rest -> Text (s1 ^ s2) :: _concat acc rest
+  | Nil :: rest -> _concat acc rest
+  | Concat l2 :: rest -> _concat (_concat acc rest) l2 (* notice the order here *)
+  | x :: rest ->
+    let rest1 = _concat acc rest in
+    if rest1 == rest then l else x :: rest1
+  | [] -> acc
 
-let concat l = Concat(concat2 [] l)
+let concat l = Concat(_concat [] l)
 
 let indent d = Indent d
 let ifBreaks t f = IfBreaks {yes = t; no = f}
@@ -131,7 +133,7 @@ let join ~sep docs =
   in
   concat(loop [] sep docs)
 
-  
+
 let rec fits w doc = match doc with
   | _ when w < 0 -> false
   | [] -> true
