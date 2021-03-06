@@ -15,6 +15,9 @@ B ounit
 S ounit_tests
 B ounit_tests
 
+S main
+B main
+
 S depends
 B depends
 
