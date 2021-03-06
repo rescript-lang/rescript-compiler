@@ -177,7 +177,9 @@ let app_exp_mapper
             )
             ;
              pexp_loc}
-           (* f##paint  *)
+           (* f##paint  
+            TODO: this is not relevant: remove it later
+           *)
            ->
            sane_property_name_check pexp_loc name ;
            { e with pexp_desc =

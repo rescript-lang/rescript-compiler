@@ -335,6 +335,8 @@ o test/gray_code_test.cmi test/gray_code_test.cmj : cc test/gray_code_test.ml | 
 o test/guide_for_ext.cmi test/guide_for_ext.cmj : cc test/guide_for_ext.ml | $stdlib
 o test/hamming_test.cmi test/hamming_test.cmj : cc test/hamming_test.ml | test/mt.cmj $stdlib
 o test/hash_collision_test.cmi test/hash_collision_test.cmj : cc test/hash_collision_test.ml | test/mt.cmj $stdlib
+o test/hash_sugar_desugar.cmj : cc_cmi test/hash_sugar_desugar.ml | test/hash_sugar_desugar.cmi $stdlib
+o test/hash_sugar_desugar.cmi : cc test/hash_sugar_desugar.mli | $stdlib
 o test/hash_test.cmi test/hash_test.cmj : cc test/hash_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
 o test/hashtbl_test.cmi test/hashtbl_test.cmj : cc test/hashtbl_test.ml | test/mt.cmj $stdlib
 o test/hello.foo.cmi test/hello.foo.cmj : cc test/hello.foo.ml | $stdlib

@@ -29,11 +29,7 @@ type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 
 let js_property loc obj (name : string) =
   Parsetree.Pexp_send
-    ((Ast_compatible.app1 ~loc
-        (Exp.ident ~loc
-           {loc;
-            txt = Ldot (Ast_literal.Lid.js_oo, Literals.unsafe_downgrade)})
-        obj), 
+    (obj, 
         {loc; txt = name}
         )
 
