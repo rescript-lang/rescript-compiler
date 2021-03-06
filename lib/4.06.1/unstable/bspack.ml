@@ -10840,7 +10840,7 @@ let setter_suffix = "#="
 let setter_suffix_len = String.length setter_suffix
 
 let debugger = "debugger"
-let unsafe_downgrade = "unsafe_downgrade"
+
 let fn_run = "fn_run"
 let method_run = "method_run"
 

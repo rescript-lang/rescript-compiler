@@ -816,22 +816,20 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       Lam.for_ id (convert_aux from_) (convert_aux to_) dir (convert_aux loop)
     | Lassign (id, body) ->
       Lam.assign id (convert_aux body)
-    | Lsend (Public(Some name), _, obj, _, _loc) ->
+    | Lsend (Public(Some name), _, obj, _, loc) ->
       (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
-        (match convert_aux obj with
-        | Lprim {primitive =  Pjs_unsafe_downgrade _;  args;loc}
-          ->
-              let setter = Ext_string.ends_with name Literals.setter_suffix in 
-              let property = 
-                if setter then   
-                  Lam_methname.translate 
-                    (String.sub name 0
-                       (String.length name - Literals.setter_suffix_len))
-                else Lam_methname.translate  name in 
-              prim ~primitive:(Pjs_unsafe_downgrade {name = property; setter})
-                ~args loc                
-        | _ ->
-          assert false)
+      let obj =  convert_aux obj in 
+      let args = [obj] in 
+      let setter = Ext_string.ends_with name Literals.setter_suffix in 
+      let property = 
+        if setter then   
+          Lam_methname.translate 
+            (String.sub name 0
+               (String.length name - Literals.setter_suffix_len))
+        else Lam_methname.translate  name in 
+      prim ~primitive:(Pjs_unsafe_downgrade {name = property; setter})
+        ~args loc                
+
     | Lsend _ -> assert false  
     | Levent _ ->
       (* disabled by upstream*)
