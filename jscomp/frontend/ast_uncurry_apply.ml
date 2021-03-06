@@ -86,7 +86,7 @@ let method_apply  loc
       Ext_list.map args (fun (lbl,e) -> 
            Bs_syntaxerr.optional_err loc lbl; 
           (lbl,self.expr self e)) in
-    let fn = Exp.mk ~loc (Ast_util.js_property loc obj name) in   
+    let fn = Exp.send ~loc obj {txt = name;loc} in   
     let args  = 
       match args with 
       | [ Nolabel, {pexp_desc =
@@ -115,4 +115,4 @@ let uncurry_fn_apply loc self fn args =
 
 let property_apply loc self obj name args  
   =  generic_apply loc self obj args 
-    (fun loc obj -> Exp.mk ~loc (Ast_util.js_property loc obj name))
+    (fun loc obj -> Exp.send ~loc obj {txt = name; loc})
