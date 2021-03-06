@@ -1,5 +1,4 @@
 .DS_STORE
-_build
 node_modules
 *.cm*
 *.o

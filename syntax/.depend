@@ -70,9 +70,6 @@ src/res_scanner.cmx : src/res_token.cmx src/res_diagnostics.cmx \
     src/res_comment.cmx src/res_scanner.cmi
 src/res_scanner.cmi : src/res_token.cmx src/res_diagnostics.cmi
 src/res_token.cmx : src/res_comment.cmx
-tests/napkin_test.cmx : src/res_token.cmx src/res_parser.cmx \
-    src/res_outcome_printer.cmx src/res_multi_printer.cmx src/res_io.cmx \
-    src/res_driver.cmx tests/res_diff.cmx
 tests/res_diff.cmx : tests/res_diff.cmi
 tests/res_diff.cmi :
 tests/res_test.cmx : src/res_token.cmx src/res_parser.cmx \

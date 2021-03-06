@@ -1,5 +1,5 @@
 (* The purpose of this module is to convert a parsetree coming from the reason
- * or ocaml parser, into something consumable by the napkinscript printer. *)
+ * or ocaml parser, into something consumable by the rescript printer. *)
 
 (* Ocaml/Reason parser interprets string literals: i.e. escape sequences and unicode.
  * For printing purposes you want to preserve the original string.
@@ -19,6 +19,6 @@ val normalizeReasonAritySignature:
   forPrinter:bool -> Parsetree.signature -> Parsetree.signature
 
 (* transform parts of the parsetree into a suitable parsetree suitable
- * for printing. Example: convert reason ternaries into napkin ternaries *)
+ * for printing. Example: convert reason ternaries into rescript ternaries *)
 val structure: Parsetree.structure -> Parsetree.structure
 val signature: Parsetree.signature -> Parsetree.signature

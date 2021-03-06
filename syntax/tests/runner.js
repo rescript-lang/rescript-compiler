@@ -53,7 +53,7 @@ function parseFile(filename, recover, env) {
   }
 }
 
-function parseOcamlFileToNapkin(filename) {
+function parseOcamlFileToReScript(filename) {
   let { stdout } = cp.spawnSync(parser, [
     "-parse",
     "ml",
@@ -87,7 +87,7 @@ function parseReasonFileToSexp(filename) {
     .stdout.toString();
 }
 
-function parseNapkinFileToSexp(filename) {
+function parseReScriptFileToSexp(filename) {
   let { stdout } = cp.spawnSync(parser, [
     "-parse",
     "res",
@@ -109,11 +109,11 @@ function parseFileToSexp(filename) {
       return parseOcamlFileToSexp(filename);
 
     default:
-      return parseNapkinFileToSexp(filename);
+      return parseReScriptFileToSexp(filename);
   }
 }
 
-function parseReasonFileToNapkin(filename, width = 100) {
+function parseReasonFileToReScript(filename, width = 100) {
   let intf = isInterface(filename);
   let reasonBinary = parseBinaryReason(filename);
   let args = ["-parse", "reasonBinary", "-print", "res", "-width", width.toString()];
@@ -127,7 +127,7 @@ function parseReasonFileToNapkin(filename, width = 100) {
     .stdout.toString("utf8");
 }
 
-function parseNapkinToSexp(src, isInterface) {
+function parseReScriptToSexp(src, isInterface) {
   let args = ["-parse", "res", "-print", "sexp", src];
   if (isInterface) {
     args.push("-interface");
@@ -137,7 +137,7 @@ function parseNapkinToSexp(src, isInterface) {
     .stdout.toString("utf8");
 }
 
-function parseNapkinToNapkin(src, isInterface, width = 100) {
+function parseReScriptToReScript(src, isInterface, width = 100) {
   let args = ["-parse", "res", "-print", "res", "-width", width, src];
   if (isInterface) {
     args.push("-interface");
@@ -157,11 +157,11 @@ function printFile(filename, ppx) {
     case "reason":
       parserSrc = "re";
       return {
-        result: parseReasonFileToNapkin(filename, 80),
+        result: parseReasonFileToReScript(filename, 80),
         status: 0,
         errorOutput: ""
       };
-    
+
     case "rescript":
     default:
       parserSrc = "res";
@@ -227,15 +227,15 @@ Make sure the test input is syntactically valid.`;
         let intf = isInterface(filename);
         let sexpAst = parseFileToSexp(filename);
 
-        let napkinOutput = filename + '.napkin';
-        fs.writeFileSync(napkinOutput, result);
+        let rescriptOutput = filename + '.res';
+        fs.writeFileSync(rescriptOutput, result);
 
-        let result2 = parseNapkinToNapkin(napkinOutput, intf, 80);
-        let resultSexpAst = parseNapkinToSexp(napkinOutput, intf);
+        let result2 = parseReScriptToReScript(rescriptOutput, intf, 80);
+        let resultSexpAst = parseReScriptToSexp(rescriptOutput, intf);
         expect(sexpAst).toEqual(resultSexpAst);
         expect(result).toEqual(result2);
 
-        fs.unlinkSync(napkinOutput);
+        fs.unlinkSync(rescriptOutput);
       }
     });
   });
@@ -290,32 +290,32 @@ global.idemPotency = (dirname) => {
 
       let lang = classifyLang(base);
 
-      let parseToNapkin;
+      let parseFunction;
 
       switch (lang) {
         case "reason":
-          parseToNapkin = parseReasonFileToNapkin;
+          parseFunction = parseReasonFileToReScript;
           break;
 
         case "ocaml":
         default:
-          parseToNapkin = parseOcamlFileToNapkin;
+          parseFunction = parseOcamlFileToReScript;
       }
 
       test(base, () => {
         let intf = isInterface(filename);
-        let napkin = parseToNapkin(filename);
+        let rescript = parseFunction(filename);
         let sexpAst = parseFileToSexp(filename);
 
-        let napkinOutput = filename + '.napkin';
-        fs.writeFileSync(napkinOutput, parseToNapkin(filename));
+        let rescriptOutput = filename + '.res';
+        fs.writeFileSync(rescriptOutput, parseFunction(filename));
 
-        let napkinSexpAst = parseNapkinToSexp(napkinOutput, intf);
-        let napkin2 = parseNapkinToNapkin(napkinOutput, intf);
-        expect(sexpAst).toEqual(napkinSexpAst);
-        expect(napkin).toEqual(napkin2);
+        let rescriptSexpAst = parseReScriptToSexp(rescriptOutput, intf);
+        let rescript2 = parseReScriptToReScript(rescriptOutput, intf);
+        expect(sexpAst).toEqual(rescriptSexpAst);
+        expect(rescript).toEqual(rescript2);
 
-        fs.unlinkSync(napkinOutput);
+        fs.unlinkSync(rescriptOutput);
       });
     });
   });

@@ -1034,7 +1034,7 @@ let printPolyVarIdent txt =
            Doc.rparen;
          ]
        )
-     (* Not supported by NapkinScript *)
+     (* Not supported by ReScript *)
      | Oval_variant _ -> Doc.nil
 
    let printOutExceptionDoc exc outValue =
@@ -1141,7 +1141,7 @@ let printPolyVarIdent txt =
 
 
 
-(* Not supported in Napkin *)
+(* Not supported in ReScript *)
 (* Oprint.out_class_type *)
    let setup  = lazy begin
     Oprint.out_value := printOutValue;

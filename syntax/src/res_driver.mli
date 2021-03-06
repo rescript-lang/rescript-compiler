@@ -42,7 +42,7 @@ val parse_implementation:
 [@@live]
 [@@raises Location.Error]
 
-(* Napkin interface parsing compatible with ocaml pparse driver. Used by the compiler *)
+(* ReScript interface parsing compatible with ocaml pparse driver. Used by the compiler *)
 val parse_interface:
    string -> Parsetree.signature
 [@@live]
