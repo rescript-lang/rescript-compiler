@@ -35,7 +35,7 @@ type printEngine = {
 }
 
 let setup ~filename ~forPrinter () =
-  let src = if filename = "" then IO.readStdin () else IO.readFile ~filename in
+  let src = IO.readFile ~filename in
   let mode = if forPrinter then Res_parser.Default
     else ParseForTypeChecker
   in

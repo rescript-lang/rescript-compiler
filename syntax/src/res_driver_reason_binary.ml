@@ -11,10 +11,7 @@ let isReasonDocComment (comment: Res_comment.t) =
 let extractConcreteSyntax filename =
   let commentData = ref [] in
   let stringData = ref [] in
-  let src =
-    if String.length filename > 0 then IO.readFile ~filename
-    else IO.readStdin ()
-  in
+  let src = IO.readFile ~filename in
   let scanner = Res_scanner.make src ~filename in
 
   let rec next prevEndPos scanner =
