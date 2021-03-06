@@ -127,27 +127,23 @@ function parseReasonFileToNapkin(filename, width = 100) {
     .stdout.toString("utf8");
 }
 
-function parseNapkinStdinToSexp(src, isInterface) {
-  let args = ["-parse", "res", "-print", "sexp"];
+function parseNapkinToSexp(src, isInterface) {
+  let args = ["-parse", "res", "-print", "sexp", src];
   if (isInterface) {
     args.push("-interface");
   }
   return cp
-    .spawnSync(parser, args, {
-      input: src,
-    })
+    .spawnSync(parser, args)
     .stdout.toString("utf8");
 }
 
-function parseNapkinStdinToNapkin(src, isInterface, width = 100) {
-  let args = ["-parse", "res", "-print", "res", "-width", width];
+function parseNapkinToNapkin(src, isInterface, width = 100) {
+  let args = ["-parse", "res", "-print", "res", "-width", width, src];
   if (isInterface) {
     args.push("-interface");
   }
   return cp
-    .spawnSync(parser, args, {
-      input: src,
-    })
+    .spawnSync(parser, args)
     .stdout.toString("utf8");
 }
 
@@ -230,10 +226,16 @@ Make sure the test input is syntactically valid.`;
       if (process.env.ROUNDTRIP_TEST && ppx === "") {
         let intf = isInterface(filename);
         let sexpAst = parseFileToSexp(filename);
-        let result2 = parseNapkinStdinToNapkin(result, intf, 80);
-        let resultSexpAst = parseNapkinStdinToSexp(result, intf);
+
+        let napkinOutput = filename + '.napkin';
+        fs.writeFileSync(napkinOutput, result);
+
+        let result2 = parseNapkinToNapkin(napkinOutput, intf, 80);
+        let resultSexpAst = parseNapkinToSexp(napkinOutput, intf);
         expect(sexpAst).toEqual(resultSexpAst);
         expect(result).toEqual(result2);
+
+        fs.unlinkSync(napkinOutput);
       }
     });
   });
@@ -304,10 +306,16 @@ global.idemPotency = (dirname) => {
         let intf = isInterface(filename);
         let napkin = parseToNapkin(filename);
         let sexpAst = parseFileToSexp(filename);
-        let napkinSexpAst = parseNapkinStdinToSexp(napkin, intf);
-        let napkin2 = parseNapkinStdinToNapkin(napkin, intf);
+
+        let napkinOutput = filename + '.napkin';
+        fs.writeFileSync(napkinOutput, parseToNapkin(filename));
+
+        let napkinSexpAst = parseNapkinToSexp(napkinOutput, intf);
+        let napkin2 = parseNapkinToNapkin(napkinOutput, intf);
         expect(sexpAst).toEqual(napkinSexpAst);
         expect(napkin).toEqual(napkin2);
+
+        fs.unlinkSync(napkinOutput);
       });
     });
   });
