@@ -260,3 +260,7 @@ type obj2 = Js.t<{"a": int}>
 type obj3 = Js.t<{. "a": int}>
 type obj4 = {"a": int}
 type obj5<'a> = Js.t<{..} as 'a>
+type obj6 = {"a": int}
+type obj7 = {. "a": int}
+type obj8<'a> = {.. "a": int} as 'a
+
