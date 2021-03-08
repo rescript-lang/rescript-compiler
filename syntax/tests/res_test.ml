@@ -159,9 +159,19 @@ module OutcomePrinterTests = struct
       Typetexp.report_error env Format.str_formatter err;
       prerr_string (Format.flush_str_formatter ());
       exit 1;
-    | _ ->
-      prerr_string "Unknown error while trying to print outcome tree";
-      exit 1
+    | Typemod.Error (_, _, err) ->
+      Typemod.report_error env Format.str_formatter err;
+      prerr_string (Format.flush_str_formatter ());
+      exit 1;
+    | Typedecl.Error (_, err) ->
+      Typedecl.report_error Format.str_formatter err;
+      prerr_string (Format.flush_str_formatter ());
+      exit 1;
+    | e ->
+      prerr_string
+        ("Unknown error while trying to print outcome tree.\n" ^
+        "We don't display all the outcome type errors; try adding the new case to the `try` pattern match.\n");
+      raise e
 
   (* `tests/oprint/oprint.res` will be read into memory and typechecked.
    * The inferred signature (i.e. the type of the module `oprint.res`) will
