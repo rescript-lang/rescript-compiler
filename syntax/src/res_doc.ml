@@ -133,91 +133,51 @@ let join ~sep docs =
   in
   concat(loop [] sep docs)
 
+let fits w stack =
+  let width = ref w in
+  let result = ref None in
 
-let rec fits w doc = match doc with
-  | _ when w < 0 -> false
-  | [] -> true
-  | (_ind, _mode, Text txt)::rest -> fits (w - String.length txt) rest
-  | (ind, mode, Indent doc)::rest -> fits w ((ind + 2, mode, doc)::rest)
-  | (_ind, Flat, LineBreak break)::rest ->
-      if break = Hard || break = Literal then true
-      else
-        let w = if break = Classic then w - 1 else w in
-        fits w rest
-  | (_ind, _mode, Nil)::rest -> fits w rest
-  | (_ind, Break, LineBreak _break)::_rest -> true
-  | (ind, mode, Group {shouldBreak = forceBreak; doc})::rest ->
-    let mode = if forceBreak then Break else mode in
-    fits w ((ind, mode, doc)::rest)
-  | (ind, mode, IfBreaks {yes = breakDoc; no = flatDoc})::rest ->
-      if mode = Break then
-        fits w ((ind, mode, breakDoc)::rest)
-      else
-        fits w ((ind, mode, flatDoc)::rest)
-  | (ind, mode, Concat docs)::rest ->
-    let ops = List.map (fun doc -> (ind, mode, doc)) docs in
-    fits w (List.append ops rest)
-  (* | (_ind, _mode, Cursor)::rest -> fits w rest *)
-  | (_ind, _mode, LineSuffix _)::rest -> fits w rest
-  | (_ind, _mode, BreakParent)::rest -> fits w rest
-  | (ind, mode, CustomLayout (hd::_))::rest ->
-    (* TODO: if we have nested custom layouts, what we should do here? *)
-    fits w ((ind, mode, hd)::rest)
-  | (_ind, _mode, CustomLayout _)::rest ->
-    fits w rest
-
-(* Version of fits that does not allocate *)
-let fits0 w ops =
-  let wr = ref w in
-  let res = ref None in
-  let rec doOp ind mode doc = match (mode, doc) with
-    | _ when !res <> None -> ()
-    | _ when !wr < 0 -> res := Some false
-    | _, Text txt -> wr := !wr - (String.length txt)
-    | _, Indent doc -> doOp (ind + 2) mode doc
-    | Flat, LineBreak break ->
-      if break = Hard || break = Literal then res := Some true
-      else wr := if break = Classic then !wr - 1 else !wr
-    | _, Nil -> ()
-    | Break, LineBreak _break -> res := Some true
-    | _, Group {shouldBreak = forceBreak; doc} ->
-      let mode = if forceBreak then Break else mode in
-      doOp ind mode doc
-    | _, IfBreaks {yes = breakDoc; no = flatDoc} ->
-      if mode = Break then
-        doOp ind mode breakDoc
-      else
-        doOp ind mode flatDoc
-    | _, Concat docs ->
-      doConcat ind mode docs
-    | _, LineSuffix _ -> ()
+  let rec calculate indent mode doc =
+    match mode, doc with
+    | _ when result.contents != None -> ()
+    | _ when width.contents < 0 -> result := Some false
+    | _, Nil
+    | _, LineSuffix _
     | _, BreakParent -> ()
+    | _, Text txt -> width := width.contents - (String.length txt)
+    | _, Indent doc -> calculate (indent + 2) mode doc
+    | Flat, LineBreak Hard
+    | Flat, LineBreak Literal -> result := Some true
+    | Flat, LineBreak Classic -> width := width.contents - 1
+    | Flat, LineBreak Soft -> ()
+    | Break, LineBreak _ -> result := Some true
+    | _, Group {shouldBreak = true; doc} -> calculate indent Break doc
+    | _, Group {doc} -> calculate indent mode doc
+    | Break, IfBreaks {yes = breakDoc} -> calculate indent mode breakDoc
+    | Flat, IfBreaks {no = flatDoc} -> calculate indent mode flatDoc
+    | _, Concat docs -> calculateConcat indent mode docs
     | _, CustomLayout (hd::_) ->
       (* TODO: if we have nested custom layouts, what we should do here? *)
-        doOp ind mode hd
-    | _, CustomLayout [] ->
-      ()
-  and doConcat ind mode docs = match docs with
-    | _ when !res <> None -> ()
-    | [] -> ()
-    | doc::rest ->
-      doOp ind mode doc;
-      doConcat ind mode rest
+        calculate indent mode hd
+    | _, CustomLayout [] -> ()
+  and calculateConcat indent mode docs =
+    if result.contents == None then (
+      match docs with
+      | [] -> ()
+      | doc::rest ->
+        calculate indent mode doc;
+        calculateConcat indent mode rest
+    )
   in
-  let rec doOps ops = match ops with
-    | _ when !res != None -> !res = Some true
-    | (ind, mode, doc)::rest ->
-      doOp ind mode doc;
-      doOps rest
-    | [] -> !wr >= 0
+  let rec calculateAll stack =
+    match result.contents, stack with
+    | Some r, _ -> r
+    | None, [] -> !width >= 0
+    | None, (indent, mode, doc)::rest ->
+      calculate indent mode doc;
+      calculateAll rest
   in
-  doOps ops
-
-
-let _ = fits0
-let _ = fits
-
-let fits = fits0
+  calculateAll stack
 
 let toString ~width doc =
   let doc = propagateForcedBreaks doc in
@@ -293,7 +253,7 @@ let toString ~width doc =
         process ~pos:0 [] (List.rev suffices)
       end
   in
-  process ~pos:0 [] [0, Flat, doc];
+  process ~pos:0 [] [(0, Flat, doc)];
   MiniBuffer.contents buffer
 
 
