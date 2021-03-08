@@ -150,6 +150,7 @@ type \"type" = [#"Point🗿"(\"let", float)]
 type t23 = [#"1" | #"10space" | #"123"]
 type exoticUser = {\"let": string, \"type": float}
 module Js = {
+  type t<'a> = 'a
   module Fn = {
     type arity0<'a> = {i0: unit => 'a}
     type arity1<'a> = {i1: 'a}
@@ -398,3 +399,10 @@ type arity22 = (.
   int,
   int,
 ) => int
+type obj1<'a> = option<{"a": int}>
+type obj2 = {"a": int}
+type obj3 = {"a": int}
+type obj4 = {"a": int}
+type obj5<'a> = Js.t<'a>
+
+  constraint 'a = {..}

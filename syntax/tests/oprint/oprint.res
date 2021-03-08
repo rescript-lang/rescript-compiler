@@ -29,21 +29,21 @@ module Diff2 = Diff
 
 type rec tree<'value> =
   | Nil
-  | Node(tree<'value>, 'value, tree<'value>) 
+  | Node(tree<'value>, 'value, tree<'value>)
 
 type intTree = tree<int>
 
 type rec tree2<'value> =
   | Niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiil2
-  | Noooooooooooooooooooooooooooooooooooode2(tree2<'value>, 'value, tree2<'value>) 
+  | Noooooooooooooooooooooooooooooooooooode2(tree2<'value>, 'value, tree2<'value>)
 
 type rec tree3<'value> =
   | Nil3
-  | Node3({left: tree3<'value>, value: 'value, right: tree3<'value>}) 
+  | Node3({left: tree3<'value>, value: 'value, right: tree3<'value>})
 
 type rec tree4<'value> =
   | Nil4
-  | Node4({leeeeeeeeeeeeeeeeeeeeeeeeeeeeft: tree3<'value>, vaaaaaaaaaaaaaaaaaaaaalue: 'value, riiiiiiiiiiiiiiiiiiiiiiight: tree3<'value>}) 
+  | Node4({leeeeeeeeeeeeeeeeeeeeeeeeeeeeft: tree3<'value>, vaaaaaaaaaaaaaaaaaaaaalue: 'value, riiiiiiiiiiiiiiiiiiiiiiight: tree3<'value>})
 
 type color = ..
 
@@ -137,7 +137,7 @@ let computeAreaPlus = (sp: shapePlus) =>
 
 let computeAreaExotic = (sp) =>
   switch sp {
-  | #"R-Triangle+"(_p1, _p2, _p3) => () 
+  | #"R-Triangle+"(_p1, _p2, _p3) => ()
   | #...shape as s => ignore(s); ()
   }
 
@@ -201,6 +201,8 @@ type exoticUser = {
 }
 
 module Js = {
+  type t<'a> = 'a
+
   module Fn = {
     type arity0<'a> = {i0: unit => 'a}
     type arity1<'a> = {i1: 'a}
@@ -253,3 +255,8 @@ type arity20 = Js.Fn.arity20<(int, int, int, int, int, int, int, int, int, int, 
 type arity21 = Js.Fn.arity21<(int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int) => int>
 type arity22 = Js.Fn.arity22<(int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int) => int>
 
+type obj1<'a> = option<Js.t<{"a": int}>>
+type obj2 = Js.t<{"a": int}>
+type obj3 = Js.t<{. "a": int}>
+type obj4 = {"a": int}
+type obj5<'a> = Js.t<{..} as 'a>
