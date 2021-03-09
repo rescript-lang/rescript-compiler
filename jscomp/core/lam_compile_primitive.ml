@@ -50,7 +50,7 @@ let translate  loc
       Js_of_lam_option.is_not_none (Ext_list.singleton_exn args)      
   | Pcreate_extension s 
     -> 
-    Js_of_lam_exception.make (E.str s)
+    E.make_exception s 
   | Pwrap_exn -> 
     E.runtime_call Js_runtime_modules.caml_js_exceptions "internalToOCamlException" args 
   | Praw_js_code {code; code_info} -> 

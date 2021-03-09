@@ -409,3 +409,7 @@ val resolve_and_apply :
   string ->
   t list ->
   t
+  
+val make_exception :
+  string -> 
+  t 
