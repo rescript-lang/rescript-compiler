@@ -114,8 +114,8 @@ let ml_module_as_var ?comment (id : Ident.t) : t  =
   {expression_desc = Var (Qualified ({id; kind = Ml}, None)); comment}
 
 (* Static_index .....................**)        
-let runtime_call ?comment module_name fn_name args = 
-  call ?comment 
+let runtime_call module_name fn_name args = 
+  call 
     ~info:Js_call_info.builtin_runtime_call
     (runtime_var_dot  module_name fn_name) args
 
