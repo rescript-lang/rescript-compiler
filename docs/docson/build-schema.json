@@ -154,8 +154,7 @@
                    
                         "type": {
                             "enum": [
-                                "dev",
-                                "lib"
+                                "dev"
                             ]
                         },
                         "files": {
