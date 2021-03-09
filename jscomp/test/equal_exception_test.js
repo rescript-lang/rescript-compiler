@@ -65,7 +65,7 @@ function is_exception(param) {
 }
 
 function is_normal_exception(_x) {
-  var A = /* @__PURE__ */Caml_exceptions.create("A");
+  var A = Caml_exceptions.create("A");
   var v = {
     RE_EXN_ID: A,
     _1: 3
@@ -86,7 +86,7 @@ function is_normal_exception(_x) {
 }
 
 function is_arbitrary_exception(param) {
-  var A = /* @__PURE__ */Caml_exceptions.create("A");
+  var A = Caml_exceptions.create("A");
   try {
     throw {
           RE_EXN_ID: A,

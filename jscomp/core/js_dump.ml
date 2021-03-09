@@ -53,7 +53,6 @@
 let name_symbol = Js_op.Symbol_name
 module P = Ext_pp
 module E = Js_exp_make
-(* module S = Js_stmt_make *)
 
 module L = Js_dump_lit
 
@@ -496,7 +495,7 @@ and pp_one_case_clause : 'a .
           P.group f 1 (fun _ ->
               P.string f L.case;
               P.space f ;
-              pp_comment_option f comment;
+              pp_comment f comment;
               pp_cond  f switch_case; (* could be integer or string *)
               P.space f ;
               P.string f L.colon  );
@@ -542,7 +541,7 @@ and vident cxt f  (v : J.vident) =
 
 (* The higher the level, the more likely that inner has to add parens *)
 and expression ~level:l cxt  f (exp : J.expression) : cxt =
-  pp_comment_option f exp.comment ;
+  pp_comment f exp.comment ;
   expression_desc cxt ~level:l f exp.expression_desc
 
 and expression_desc cxt ~(level:int) f x : cxt  =
@@ -854,7 +853,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
       else (Js_op.Lit L.tag,
         if !Js_config.debug then tag else {tag with comment = Some p.name}) :: tails in 
     if p.num_nonconst = 1 && not !Js_config.debug then 
-      pp_comment_option f (Some p.name);
+      pp_comment f (Some p.name);
     expression_desc cxt ~level f (Object objs)  
   | Caml_block(el,_,tag, (Blk_constructor p)) -> 
     let not_is_cons = p.name <> Literals.cons in   
@@ -877,7 +876,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
     in 
     if p.num_nonconst = 1 && not !Js_config.debug 
       && not_is_cons then 
-      pp_comment_option f (Some p.name);
+      pp_comment f (Some p.name);
     expression_desc cxt ~level f (Object objs)
   | Caml_block ( _, _, _, (Blk_module_export | Blk_na _ )) -> assert false
   | Caml_block( el, mutable_flag, _tag, (Blk_tuple  | Blk_class | Blk_array  ))
@@ -1006,7 +1005,12 @@ and variable_declaration top cxt f
           params b env      
       | _ ->
         let cxt = pp_var_assign cxt f name in 
-        let cxt = expression ~level:1 cxt f e in
+        let cxt = 
+          if top then begin
+            pp_comment ~ignore_pure:false f e.comment;
+            expression_desc ~level:1 cxt f e.expression_desc
+          end else expression ~level:1 cxt f e
+        in
         semi f;
         cxt
 
@@ -1023,20 +1027,21 @@ and ipp_comment : 'a . P.t -> 'a  -> unit = fun   _f _comment ->
     ]}
 *)
 
-and pp_comment f comment =
-  if String.length comment > 0 then
-    begin
-      P.string f "/* "; P.string f comment ; P.string f " */"
-    end
-
-and pp_comment_option f comment  =
+and pp_comment ?(ignore_pure = true) f comment  =
   match comment with
   | None -> ()
-  | Some x -> pp_comment f x
+  | Some comment -> 
+    if ignore_pure && comment = Literals.pure then ()       
+    else  if String.length comment > 0 then
+        begin
+          P.string f "/* "; P.string f comment ; P.string f " */"
+        end
+
+
 and statement top cxt f
     ({statement_desc = s;  comment ; _} : J.statement)  : cxt =
 
-  pp_comment_option f comment ;
+  pp_comment f comment ;
   statement_desc top cxt f s
 
 and statement_desc top cxt f (s : J.statement_desc) : cxt =

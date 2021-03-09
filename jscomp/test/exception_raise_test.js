@@ -17,7 +17,7 @@ var C = /* @__PURE__ */Caml_exceptions.create("Exception_raise_test.C");
 var D = /* @__PURE__ */Caml_exceptions.create("Exception_raise_test.D");
 
 function appf(g, x) {
-  var A = /* @__PURE__ */Caml_exceptions.create("A");
+  var A = Caml_exceptions.create("A");
   try {
     return Curry._1(g, x);
   }
