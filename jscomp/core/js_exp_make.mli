@@ -89,7 +89,6 @@ val ml_module_as_var :
   t
 
 val runtime_call : 
-  ?comment:string -> 
   string -> (* module_name *)
   string -> (* fn_name *)
   t list -> (* args *)
