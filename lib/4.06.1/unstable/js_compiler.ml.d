@@ -185,8 +185,6 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_of_lam_array.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_of_lam_block.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_of_lam_block.mli
-../lib/4.06.1/unstable/js_compiler.ml: ./core/js_of_lam_exception.ml
-../lib/4.06.1/unstable/js_compiler.ml: ./core/js_of_lam_exception.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_of_lam_option.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_of_lam_option.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_of_lam_string.ml
