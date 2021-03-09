@@ -8,7 +8,7 @@ var v = {
   contents: 0
 };
 
-var arr = Caml_array.caml_make_vect(10, (function (param) {
+var arr = /* @__PURE__ */Caml_array.caml_make_vect(10, (function (param) {
         
       }));
 

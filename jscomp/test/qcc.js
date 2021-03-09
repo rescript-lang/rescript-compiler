@@ -71,7 +71,7 @@ function peekch(param) {
   return ch;
 }
 
-var symtab = Caml_array.caml_make_vect(100, "");
+var symtab = /* @__PURE__ */Caml_array.caml_make_vect(100, "");
 
 var syms = {
   contents: 0
@@ -520,7 +520,7 @@ function read(param) {
   
 }
 
-var globs = Caml_array.caml_make_vect(100, {
+var globs = /* @__PURE__ */Caml_array.caml_make_vect(100, {
       loc: 0,
       va: -1
     });

@@ -5389,7 +5389,7 @@ function undo_change(param) {
   }
 }
 
-var trail = Caml_array.caml_make_vect(1, undefined);
+var trail = /* @__PURE__ */Caml_array.caml_make_vect(1, undefined);
 
 var last_snapshot = {
   contents: 0

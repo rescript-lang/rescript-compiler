@@ -449,8 +449,10 @@ let translate loc (prim_name : string)
     (*external concat: 'a array list -> 'a array 
        Not good for inline *)
     | "caml_array_blit"    
-    | "caml_make_vect" -> 
+      ->
       call Js_runtime_modules.array
+    | "caml_make_vect" -> 
+      E.pure_runtime_call Js_runtime_modules.array prim_name args
     | "caml_ml_flush"
     | "caml_ml_out_channels_list"
     | "caml_ml_output_char"

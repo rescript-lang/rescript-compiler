@@ -169,21 +169,21 @@ function mkVar(x) {
   return mkNode(/* Zero */1, x, /* One */0);
 }
 
-var andslot1 = Caml_array.caml_make_vect(1999, 0);
+var andslot1 = /* @__PURE__ */Caml_array.caml_make_vect(1999, 0);
 
-var andslot2 = Caml_array.caml_make_vect(1999, 0);
+var andslot2 = /* @__PURE__ */Caml_array.caml_make_vect(1999, 0);
 
-var andslot3 = Caml_array.caml_make_vect(1999, /* Zero */1);
+var andslot3 = /* @__PURE__ */Caml_array.caml_make_vect(1999, /* Zero */1);
 
-var xorslot1 = Caml_array.caml_make_vect(1999, 0);
+var xorslot1 = /* @__PURE__ */Caml_array.caml_make_vect(1999, 0);
 
-var xorslot2 = Caml_array.caml_make_vect(1999, 0);
+var xorslot2 = /* @__PURE__ */Caml_array.caml_make_vect(1999, 0);
 
-var xorslot3 = Caml_array.caml_make_vect(1999, /* Zero */1);
+var xorslot3 = /* @__PURE__ */Caml_array.caml_make_vect(1999, /* Zero */1);
 
-var notslot1 = Caml_array.caml_make_vect(1999, 0);
+var notslot1 = /* @__PURE__ */Caml_array.caml_make_vect(1999, 0);
 
-var notslot2 = Caml_array.caml_make_vect(1999, /* One */0);
+var notslot2 = /* @__PURE__ */Caml_array.caml_make_vect(1999, /* One */0);
 
 function hash(x, y) {
   return ((x << 1) + y | 0) % 1999;
