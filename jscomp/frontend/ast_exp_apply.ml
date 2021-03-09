@@ -202,25 +202,32 @@ let app_exp_mapper
         ]}
      *)
      | Some {op = "#="; loc; args = [obj; arg]}  ->
-       begin match view_as_app obj ["##"] with
-         | Some { args = [obj; {
-             pexp_desc = 
-               Pexp_ident {txt = Lident name}
+       let gen_assignment obj name name_loc = 
+         sane_property_name_check name_loc name;
+         Exp.constraint_ ~loc
+           { e with
+             pexp_desc =
+               Ast_uncurry_apply.method_apply loc self obj
+                 (name ^ Literals.setter_suffix) [Nolabel,arg]  }
+           (Ast_literal.type_unit ~loc ()) in 
+       begin match obj.pexp_desc with 
+         | Pexp_send (obj , {txt = name; loc = name_loc}) 
+           -> gen_assignment obj name name_loc
+         | _ ->    
+           match view_as_app obj ["##"] with
+           | Some { args = [obj; {
+               pexp_desc = 
+                 Pexp_ident {txt = Lident name}
                | Pexp_constant (
-              Pconst_string
-                  (name, None)); pexp_loc
-           }
-           ]
-           }
-           -> 
-           sane_property_name_check pexp_loc name;
-           Exp.constraint_ ~loc
-             { e with
-               pexp_desc =
-                 Ast_uncurry_apply.method_apply loc self obj
-                   (name ^ Literals.setter_suffix) [Nolabel,arg]  }
-             (Ast_literal.type_unit ~loc ())
-         | _ -> assert false
+                   Pconst_string
+                     (name, None)); pexp_loc = name_loc
+             }
+             ]
+             }
+             -> 
+             gen_assignment obj name name_loc
+           | _ -> 
+            Location.raise_errorf ~loc "invalid #= assignment"
        end
      | Some { op = "|.";  loc; } ->
        Location.raise_errorf ~loc

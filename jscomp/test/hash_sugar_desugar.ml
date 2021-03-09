@@ -29,6 +29,8 @@ let h3 u =
   u ["hi"] (1, 2) 
 *)
 
+let g5 u = 
+  u#hi #= 3   
 let h5 u =
   u ##hi #= 3   
 (* assignment 
