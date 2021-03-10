@@ -27272,7 +27272,7 @@ function in_pervasives(p) {
 
 function is_datatype(decl) {
   var match = decl.type_kind;
-  return match === 0;
+  return match !== 0;
 }
 
 function object_fields(ty) {
