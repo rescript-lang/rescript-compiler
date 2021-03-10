@@ -1,3 +1,7 @@
+let {from_pair_suites;eq_suites} = (module Mt )
+let suites = ref []
+let id = ref 0
+
 type t = 
   | A 
   | B 
@@ -18,6 +22,9 @@ let u2 b =
   | A -> false 
   | B | C _ -> true 
 
+;; eq_suites id suites __LOC__ (u2 A) false
+;; eq_suites id suites __LOC__ (u2 B ) true 
+;; eq_suites id suites __LOC__ (u2 (C 2)) true
 let u3 b = 
   match  b with 
   | A -> 3 
@@ -37,3 +44,6 @@ let u6 b =
   match  b with 
   | A -> true
   | _ -> false
+
+
+;; from_pair_suites __LOC__ !suites  
