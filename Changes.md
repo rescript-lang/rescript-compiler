@@ -11,7 +11,7 @@ Provide user with a sugar to pattern match over modules:
 ```res
 let {length, cons} = module(List)
 ```
-
+More discussions can be found [here](https://forum.rescript-lang.org/t/introducing-an-extension-to-make-pattern-match-works-on-modules/1196)
 # 9.0
 
 - #4933 update syntax bf6561bb5d84
