@@ -1,6 +1,6 @@
 `*` means  potential break changes
 
-# 9.0.1
+# 9.0.2
 
 - #4990 Fix an optimization bug introduced in 9.0
 
