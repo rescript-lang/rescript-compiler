@@ -162,7 +162,7 @@ module ResClflags: sig
   val print: string ref
   val width: int ref
   val origin: string ref
-  val files: string list ref
+  val file: string ref
   val interface: bool ref
   val ppx: string ref
 
@@ -171,13 +171,11 @@ end = struct
   let recover = ref false
   let width = ref 100
 
-  let files = ref []
-  let addFilename filename = files := filename::(!files)
-
   let print = ref "res"
   let origin = ref "res"
   let interface = ref false
   let ppx = ref ""
+  let file = ref ""
 
   let usage = "\n**This command line is for the repo developer's testing purpose only. DO NOT use it in production**!\n\n" ^
   "Usage:\n  rescript <options> <file>\n\n" ^
@@ -196,7 +194,7 @@ end = struct
     ("-ppx", Arg.String (fun txt -> ppx := txt), "Apply a specific built-in ppx before parsing, none or jsx. Default: none");
   ]
 
-  let parse () = Arg.parse spec addFilename usage
+  let parse () = Arg.parse spec (fun f -> file := f) usage
 end
 
 module CliArgProcessor = struct
@@ -281,25 +279,12 @@ end
 let [@raises Invalid_argument, Failure, exit] () =
   if not !Sys.interactive then begin
     ResClflags.parse ();
-    match !ResClflags.files with
-    | [] -> (* stdin *)
-      CliArgProcessor.processFile
-        ~isInterface:!ResClflags.interface
-        ~width:!ResClflags.width
-        ~recover:!ResClflags.recover
-        ~target:!ResClflags.print
-        ~origin:!ResClflags.origin
-        ~ppx:!ResClflags.ppx
-        ""
-    | files ->
-      List.iter (fun filename ->
-        CliArgProcessor.processFile
-          ~isInterface:!ResClflags.interface
-          ~width:!ResClflags.width
-          ~recover:!ResClflags.recover
-          ~target:!ResClflags.print
-          ~origin:!ResClflags.origin
-          ~ppx:!ResClflags.ppx
-          filename
-        ) files
+    CliArgProcessor.processFile
+      ~isInterface:!ResClflags.interface
+      ~width:!ResClflags.width
+      ~recover:!ResClflags.recover
+      ~target:!ResClflags.print
+      ~origin:!ResClflags.origin
+      ~ppx:!ResClflags.ppx
+      !ResClflags.file
 end
