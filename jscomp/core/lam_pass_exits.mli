@@ -14,7 +14,7 @@
 
 (** A pass used to optimize the exit code compilation, adaped from the compiler's
     [simplif] module
- *)
+*)
 
 
 

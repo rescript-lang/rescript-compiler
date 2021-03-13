@@ -44,9 +44,9 @@ let param_hash :  _ Hash_ident.t = Hash_ident.create 20
 
 
 (* optimize cases like 
-  (fun f (a,b){ g (a,b,1)} (e0, e1))
-  cases like
-  (fun f (a,b){ g (a,b,a)} (e0, e1)) needs avoids double eval
+   (fun f (a,b){ g (a,b,1)} (e0, e1))
+   cases like
+   (fun f (a,b){ g (a,b,a)} (e0, e1)) needs avoids double eval
 
     Note in a very special case we can avoid any allocation
    {[
@@ -85,20 +85,20 @@ let simple_beta_reduce params body args =
       List.iter2 (fun p a -> Hash_ident.add param_hash p {lambda = a; used = false }) params args  
     in 
     begin match aux [] ap_args with 
-    | new_args -> 
-      let result = 
-        Hash_ident.fold param_hash (Lam.prim ~primitive ~args:new_args ap_loc) (fun _param {lambda; used} acc -> 
-            if not used then
-              Lam.seq lambda acc
-            else acc)  in 
-      Hash_ident.clear param_hash;
-      Some result 
-    | exception _ -> 
-      Hash_ident.clear param_hash ;
-      None
+      | new_args -> 
+        let result = 
+          Hash_ident.fold param_hash (Lam.prim ~primitive ~args:new_args ap_loc) (fun _param {lambda; used} acc -> 
+              if not used then
+                Lam.seq lambda acc
+              else acc)  in 
+        Hash_ident.clear param_hash;
+        Some result 
+      | exception _ -> 
+        Hash_ident.clear param_hash ;
+        None
     end
   | Lapply { ap_func = 
-          (Lvar _ | Lprim {primitive = Pfield _; args = [Lglobal_module _ ]} as f) ; ap_args ;  ap_info  }
+               (Lvar _ | Lprim {primitive = Pfield _; args = [Lglobal_module _ ]} as f) ; ap_args ;  ap_info  }
     ->  
     let () = 
       List.iter2 (fun p a -> Hash_ident.add param_hash p {lambda = a; used = false }) params args  

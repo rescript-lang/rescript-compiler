@@ -24,10 +24,10 @@
 
 type constructor_tag =  { name : string; const : int; non_const : int} 
 type pointer_info = 
-    | None 
-    | Pt_constructor of constructor_tag
-    | Pt_assertfalse
-    | Some of string
+  | None 
+  | Pt_constructor of constructor_tag
+  | Pt_assertfalse
+  | Some of string
 let string_of_pointer_info (x : pointer_info) : string option =     
   match x with 
   | Some name
@@ -51,9 +51,9 @@ type t =
   | Const_float_array of string list
   | Const_some of t 
   | Const_module_alias 
-    (* eventually we can remove it, since we know
-      [constant] is [undefined] or not 
-    *) 
+  (* eventually we can remove it, since we know
+     [constant] is [undefined] or not 
+  *) 
 
 
 let rec eq_approx (x : t) (y : t) = 
@@ -79,15 +79,15 @@ let rec eq_approx (x : t) (y : t) =
     (match y with Const_pointer (iy) -> ix = iy | _ -> false)
   | Const_block(ix,_,ixs) -> 
     (match y with Const_block(iy,_,iys) -> ix = iy && Ext_list.for_all2_no_exn ixs iys eq_approx
-    | _ -> false)
+                | _ -> false)
   | Const_float_array ixs ->   
     (match y with Const_float_array iys -> 
-      Ext_list.for_all2_no_exn ixs iys Ext_string.equal
-    | _ -> false
+       Ext_list.for_all2_no_exn ixs iys Ext_string.equal
+                | _ -> false
     )
   | Const_some ix ->  
     (match y with Const_some iy -> eq_approx ix iy | _ -> false)
 
 
 let lam_none : t = 
-   Const_js_undefined 
+  Const_js_undefined 

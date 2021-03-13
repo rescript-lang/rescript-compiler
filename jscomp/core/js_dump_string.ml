@@ -35,9 +35,9 @@ let array_conv =
   [|"0"; "1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "a"; "b"; "c"; "d";
     "e"; "f"|]
 
- (* https://mathiasbynens.be/notes/javascript-escapes *)
+(* https://mathiasbynens.be/notes/javascript-escapes *)
 let (+>) = Ext_buffer.add_string
- let escape_to_buffer f  (* ?(utf=false)*) s =
+let escape_to_buffer f  (* ?(utf=false)*) s =
   let pp_raw_string f (* ?(utf=false)*) s = 
     let l = String.length s in
     for i = 0 to l - 1 do
@@ -87,16 +87,16 @@ let escape_to_string s =
   (Ext_buffer.contents buf)
 
 let pp_string f s = 
-    P.string f (escape_to_string s)
+  P.string f (escape_to_string s)
 (* let _best_string_quote s =
-  let simple = ref 0 in
-  let double = ref 0 in
-  for i = 0 to String.length s - 1 do
+   let simple = ref 0 in
+   let double = ref 0 in
+   for i = 0 to String.length s - 1 do
     match s.[i] with
     | '\'' -> incr simple
     | '"' -> incr double
     | _ -> ()
-  done;
-  if !simple < !double
-  then '\''
-  else '"' *)
+   done;
+   if !simple < !double
+   then '\''
+   else '"' *)

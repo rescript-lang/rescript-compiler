@@ -33,7 +33,7 @@ let hex_of_float f = hexstring_of_float f (-1) '-'
 (* This should not lose any preicision *)
 (* let id (f : float) = 
     float_of_string (hex_of_float f) = f
- *)
+*)
 
 
 
@@ -71,12 +71,12 @@ let rec check_aux cwd (xs : string list)  =
     -> 
     match Ext_string.split item '\t' with 
     | [file; stamp] -> 
-       let stamp = float_of_string stamp in 
-       let cur_file = (Filename.concat cwd file) in 
-       let stat = Unix.stat cur_file in 
-       if stat.st_mtime <= stamp then 
+      let stamp = float_of_string stamp in 
+      let cur_file = (Filename.concat cwd file) in 
+      let stat = Unix.stat cur_file in 
+      if stat.st_mtime <= stamp then 
         check_aux cwd rest 
-       else Other  cur_file
+      else Other  cur_file
     | _ -> Bsb_file_corrupted 
 and check_global rest = 
   match rest with 
@@ -97,33 +97,33 @@ and check_global rest =
 
 
 let record 
-  ~(package_kind : Bsb_package_kind.t)
-  ~per_proj_dir ~file  
-  ~(config:Bsb_config_types.t) (file_or_dirs : string list) : unit =
+    ~(package_kind : Bsb_package_kind.t)
+    ~per_proj_dir ~file  
+    ~(config:Bsb_config_types.t) (file_or_dirs : string list) : unit =
   let _ = config in 
   let buf = Ext_buffer.create 1_000 in   
   Ext_buffer.add_string_char buf Bs_version.version '\n';  
   Ext_buffer.add_string_char buf per_proj_dir '\n';
   (match package_kind with 
-  | Toplevel -> Ext_buffer.add_string buf "0\n"
-  | Dependency _ -> Ext_buffer.add_string buf "1\n"
-  | Pinned_dependency _ -> Ext_buffer.add_string buf "2\n"
+   | Toplevel -> Ext_buffer.add_string buf "0\n"
+   | Dependency _ -> Ext_buffer.add_string buf "1\n"
+   | Pinned_dependency _ -> Ext_buffer.add_string buf "2\n"
   );
   Ext_list.iter file_or_dirs (fun f -> 
-    Ext_buffer.add_string_char buf f '\t'; 
-    Ext_buffer.add_string_char buf 
-      (hex_of_float (Unix.stat (Filename.concat per_proj_dir f)).st_mtime) '\n'; 
-  );
+      Ext_buffer.add_string_char buf f '\t'; 
+      Ext_buffer.add_string_char buf 
+        (hex_of_float (Unix.stat (Filename.concat per_proj_dir f)).st_mtime) '\n'; 
+    );
   begin match config.ppx_files with 
-  | [] -> ()
-  | files ->
-    Ext_buffer.add_string buf "===\n";
-    Ext_list.iter files (fun {name ; args = _} -> 
-    try
-      let stamp = (Unix.stat name).st_mtime in 
-      Ext_buffer.add_string_char buf name '\t';
-      Ext_buffer.add_string_char buf (hex_of_float stamp) '\n' 
-    with  _ -> ())
+    | [] -> ()
+    | files ->
+      Ext_buffer.add_string buf "===\n";
+      Ext_list.iter files (fun {name ; args = _} -> 
+          try
+            let stamp = (Unix.stat name).st_mtime in 
+            Ext_buffer.add_string_char buf name '\t';
+            Ext_buffer.add_string_char buf (hex_of_float stamp) '\n' 
+          with  _ -> ())
   end;      
   let oc = open_out_bin file in
   Ext_buffer.output_buffer oc buf ;
@@ -136,8 +136,8 @@ let record
     bit in case we found a different version of compiler
 *)
 let check 
-  ~(package_kind : Bsb_package_kind.t)
-  ~(per_proj_dir:string) ~forced ~file : check_result =
+    ~(package_kind : Bsb_package_kind.t)
+    ~(per_proj_dir:string) ~forced ~file : check_result =
   match  open_in_bin file with   (* Windows binary mode*)    
   | exception _ -> Bsb_file_not_exist
   | ic ->
@@ -146,17 +146,17 @@ let check
     | version :: source_directory ::package_kind_str:: dir_or_files ->
       if version <> Bs_version.version then Bsb_bsc_version_mismatch
       else 
-        if per_proj_dir <> source_directory then Bsb_source_directory_changed else
-        if forced then Bsb_forced (* No need walk through *)
-        else if 
-          
-          not (match package_kind, package_kind_str with 
-          | Toplevel, "0" 
-          | Dependency _, "1"
-          | Pinned_dependency _, "2" -> true 
-          | _ -> false ) then 
-          Bsb_package_kind_inconsistent
-        else
+      if per_proj_dir <> source_directory then Bsb_source_directory_changed else
+      if forced then Bsb_forced (* No need walk through *)
+      else if 
+
+        not (match package_kind, package_kind_str with 
+            | Toplevel, "0" 
+            | Dependency _, "1"
+            | Pinned_dependency _, "2" -> true 
+            | _ -> false ) then 
+        Bsb_package_kind_inconsistent
+      else
         begin 
           try
             check_aux per_proj_dir dir_or_files 
@@ -168,5 +168,5 @@ let check
               Bsb_file_not_exist        
             end
         end 
-   | _ -> Bsb_file_corrupted         
+    | _ -> Bsb_file_corrupted         
 

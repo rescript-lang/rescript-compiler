@@ -24,16 +24,15 @@
 
 
 let rec unsafe_mem_aux arr  i (key : int) bound = 
-    if i <= bound then 
-        if Array.unsafe_get arr i = (key : int) then 
-            true 
-         else unsafe_mem_aux arr (i + 1) key bound    
-    else false 
-    
+  if i <= bound then 
+    if Array.unsafe_get arr i = (key : int) then 
+      true 
+    else unsafe_mem_aux arr (i + 1) key bound    
+  else false 
+
 
 
 let mem key (x : Vec_int.t) =
-    let internal_array = Vec_int.unsafe_internal_array x in 
-    let len = Vec_int.length x in 
-    unsafe_mem_aux internal_array 0 key (len - 1)
-    
+  let internal_array = Vec_int.unsafe_internal_array x in 
+  let len = Vec_int.length x in 
+  unsafe_mem_aux internal_array 0 key (len - 1)

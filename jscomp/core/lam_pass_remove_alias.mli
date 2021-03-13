@@ -34,7 +34,7 @@
 (**
     One way:  guarantee that all global aliases *would be removed* ,
     it will not be aliased 
-    
+
     So the only remaining place for globals is either 
     just  Pgetglobal in functor application or 
     `Lprim (Pfield( i ), [Pgetglobal])`

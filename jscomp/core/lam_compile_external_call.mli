@@ -42,8 +42,8 @@ val translate_ffi :
   External_ffi_types.external_spec -> 
   J.expression list -> 
   J.expression 
-  
+
 (** TODO: document supported attributes
     Attributes starting with `js` are reserved
     examples: "variadic"
- *)
+*)

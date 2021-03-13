@@ -88,13 +88,13 @@ let emit_module_build
   let output_iast = filename_sans_extension  ^ Literals.suffix_iast in
   let output_d = filename_sans_extension ^ Literals.suffix_d in
   let output_filename_sans_extension =  
-      Ext_namespace_encode.make ?ns:namespace filename_sans_extension
+    Ext_namespace_encode.make ?ns:namespace filename_sans_extension
   in 
   let output_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
     Bsb_package_specs.get_list_of_output_js package_specs output_filename_sans_extension in 
-  
+
   Bsb_ninja_targets.output_build oc
     ~outputs:[output_ast]
     ~inputs:[input_impl]
@@ -154,7 +154,7 @@ let handle_files_per_dir
     | Export_none -> fun _ -> false
     | Export_set set ->  
       fun module_name ->
-      Set_string.mem set module_name in
+        Set_string.mem set module_name in
   Map_string.iter group.sources   (fun  module_name module_info   ->
       if installable module_name && not is_dev then 
         Queue.add 
@@ -166,8 +166,8 @@ let handle_files_per_dir
         namespace module_info
     )
 
-    (* ; 
-    Bsb_ninja_targets.phony
-    oc ~order_only_deps:[] ~inputs:[] ~output:group.dir *)
+(* ; 
+   Bsb_ninja_targets.phony
+   oc ~order_only_deps:[] ~inputs:[] ~output:group.dir *)
 
-    (* pseuduo targets per directory *)
+(* pseuduo targets per directory *)

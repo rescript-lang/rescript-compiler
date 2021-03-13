@@ -28,7 +28,7 @@ type module_system =
   | Es6
   | Es6_global  
 
-  
+
 val runtime_dir_of_module_system :  
   module_system ->
   string
@@ -53,8 +53,8 @@ val runtime_test_package_specs : t
 val is_runtime_package:
   t ->
   bool
-  
-  
+
+
 
 val same_package_by_name :   
   t ->
@@ -75,7 +75,7 @@ val dump_packages_info :
 
 
 (** used by command line option 
-  e.g [-bs-package-output commonjs:xx/path]
+    e.g [-bs-package-output commonjs:xx/path]
 *)
 val add_npm_package_path :   
   t ->
@@ -106,7 +106,7 @@ val query_package_infos:
   module_system ->
   info_query
 (** Note here we compare the package info by order
-  in theory, we can compare it by set semantics
+    in theory, we can compare it by set semantics
 *)
 
 

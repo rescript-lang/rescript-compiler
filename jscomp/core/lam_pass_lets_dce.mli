@@ -15,12 +15,12 @@
    This pass would do beta reduction, and dead code elimination (adapted from compiler's built-in [Simplif] module )
 
    1. beta reduction -> Llet (Strict )
-  
+
    2. The global table [occ] associates to each let-bound identifier
    the number of its uses (as a reference):
-     - 0 if never used
-     - 1 if used exactly once in and *not under a lambda or within a loop
-     - > 1 if used several times or under a lambda or within a loop.
+   - 0 if never used
+   - 1 if used exactly once in and *not under a lambda or within a loop
+   - > 1 if used several times or under a lambda or within a loop.
 
    The local table [bv] associates to each locally-let-bound variable
    its reference count, as above.  [bv] is enriched at let bindings
@@ -31,5 +31,5 @@
 
    [bv] is used to help caculate [occ] it is not useful outside
 
- *)
+*)
 val simplify_lets :  Lam.t -> Lam.t

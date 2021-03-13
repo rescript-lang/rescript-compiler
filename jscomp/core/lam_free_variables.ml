@@ -23,12 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- let pass_free_variables (l : Lam.t) : Set_ident.t =
+let pass_free_variables (l : Lam.t) : Set_ident.t =
   let fv = ref Set_ident.empty in
   let rec 
-  free_list xs = List.iter free xs 
+    free_list xs = List.iter free xs 
   and free_list_snd : 'a. ('a * Lam.t) list -> unit = fun xs -> 
-  Ext_list.iter_snd  xs free
+    Ext_list.iter_snd  xs free
   and free (l : Lam.t) =
 
     match l with

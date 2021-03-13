@@ -58,7 +58,7 @@ let regenerate_ninja
       Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
       Bsb_clean.clean_self  per_proj_dir; 
     end ; 
-    
+
     let config : Bsb_config_types.t = 
       Bsb_config_parse.interpret_json 
         ~package_kind
@@ -67,19 +67,19 @@ let regenerate_ninja
     Bsb_build_util.mkp lib_bs_dir;         
     Bsb_package_specs.list_dirs_by config.package_specs
       (fun x -> 
-        let dir = per_proj_dir // x in (*Unix.EEXIST error*)
-        if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
+         let dir = per_proj_dir // x in (*Unix.EEXIST error*)
+         if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
     (match package_kind with 
-    | Toplevel -> 
-      Bsb_watcher_gen.generate_sourcedirs_meta
-        ~name:(lib_bs_dir // Literals.sourcedirs_meta)
-        config.file_groups
-    | Pinned_dependency _ (* FIXME: seems need to be watched *)
-    | Dependency _ -> ())    
+     | Toplevel -> 
+       Bsb_watcher_gen.generate_sourcedirs_meta
+         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
+         config.file_groups
+     | Pinned_dependency _ (* FIXME: seems need to be watched *)
+     | Dependency _ -> ())    
     ;
 
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
-       config;       
+      config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
       ~per_proj_dir  ~package_kind config ;                 
     (* PR2184: we still need record empty dir 

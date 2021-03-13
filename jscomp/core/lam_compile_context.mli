@@ -30,7 +30,7 @@
 
 
 (** Type definition to keep track of compilation state 
-  *)
+*)
 
 (** Some types are defined in this module to help avoiding generating unnecessary symbols 
     (generating too many symbols will make the output code unreadable)
@@ -50,10 +50,10 @@ type return_label = {
 
 
 type value = {
-    exit_id : Ident.t ; 
-    bindings : Ident.t list ;
-    order_id : int
-  }
+  exit_id : Ident.t ; 
+  bindings : Ident.t list ;
+  order_id : int
+}
 
 type let_kind = Lam_compat.let_kind
 
@@ -62,8 +62,8 @@ type tail = {
   in_staticcatch : bool;
 }
 type maybe_tail = 
-    | Tail_in_try    
-    | Tail_with_name of tail
+  | Tail_in_try    
+  | Tail_with_name of tail
 
 type tail_type = 
   | Not_tail 
@@ -72,7 +72,7 @@ type tail_type =
 
 (* delegate to the callee to generate expression 
       Invariant: [output] should return a trailing expression
-  *)
+*)
 
 type continuation = 
   | EffectCall of tail_type
@@ -81,7 +81,7 @@ type continuation =
   | Assign of J.ident 
   (** when use [Assign], var is not needed, since it's already declared 
       make sure all [Assign] are declared first, otherwise you are creating global variables
-   *)
+  *)
 
 
 
@@ -109,7 +109,7 @@ type handler = {
 val no_static_raise_in_handler : 
   handler -> 
   bool 
-  
+
 val add_jmps :
   jmp_table -> 
   Ident.t ->

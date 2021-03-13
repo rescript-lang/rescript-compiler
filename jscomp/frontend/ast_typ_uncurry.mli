@@ -26,16 +26,16 @@
 (* Note that currently there is no way to consume [Js.meth_callback]
     so it is fine to encode it with a freedom, 
     but we need make it better for error message.
-    - all are encoded as 
-    {[ 
-      type fn =  (`Args_n of _ , 'result ) Js.fn
-      type method = (`Args_n of _, 'result) Js.method
-      type method_callback = (`Args_n of _, 'result) Js.method_callback
-    ]}
+   - all are encoded as 
+   {[ 
+     type fn =  (`Args_n of _ , 'result ) Js.fn
+     type method = (`Args_n of _, 'result) Js.method
+     type method_callback = (`Args_n of _, 'result) Js.method_callback
+   ]}
     For [method_callback], the arity is never zero, so both [method] 
     and  [fn] requires (unit -> 'a) to encode arity zero
 *)
- 
+
 type typ = Parsetree.core_type
 
 
@@ -54,7 +54,7 @@ type uncurry_type_gen =
     {[ int -> int -> int [@bs]]}
 *)
 val to_uncurry_type : uncurry_type_gen
-  
+
 
 (** syntax
     {[ method : int -> itn -> int ]}

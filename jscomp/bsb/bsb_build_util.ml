@@ -25,7 +25,7 @@
 let flag_concat flag xs =   
   String.concat Ext_string.single_space
     (Ext_list.flat_map xs  (fun x -> [flag ; x]))
-  
+
 let (//) = Ext_path.combine
 
 
@@ -42,7 +42,7 @@ let ppx_flags (xs : Bsb_config_types.ppx list) =
        ))
 
 let pp_flag (xs : string) = 
-   "-pp " ^ Ext_filename.maybe_quote xs
+  "-pp " ^ Ext_filename.maybe_quote xs
 
 let include_dirs dirs = 
   String.concat Ext_string.single_space
@@ -178,12 +178,12 @@ let pp_packages_rev ppf lst =
 
 
 let rec walk_all_deps_aux 
-  (visited : string Hash_string.t) 
-  (paths : string list) 
-  ~(top : top) 
-  (dir : string)  
-  (queue : _ Queue.t) 
-  ~pinned_dependencies = 
+    (visited : string Hash_string.t) 
+    (paths : string list) 
+    ~(top : top) 
+    (dir : string)  
+    (queue : _ Queue.t) 
+    ~pinned_dependencies = 
   let bsconfig_json =  dir // Literals.bsconfig_json in
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
@@ -193,9 +193,9 @@ let rec walk_all_deps_aux
         (match top with 
          | Expect_none -> ()  
          | Expect_name s ->  
-          if s <> str then 
-            Bsb_exception.errorf 
-            ~loc "package name is expected to be %s but got %s" s str 
+           if s <> str then 
+             Bsb_exception.errorf 
+               ~loc "package name is expected to be %s but got %s" s str 
         );
         str
       | Some _ 
@@ -225,7 +225,7 @@ let rec walk_all_deps_aux
                      Bsb_pkg.resolve_bs_package ~cwd:dir 
                        (Bsb_pkg_types.string_as_package   new_package) in 
                    walk_all_deps_aux visited package_stacks  ~top:(Expect_name new_package) package_dir queue  
-                   ~pinned_dependencies ;
+                     ~pinned_dependencies ;
                  | _ -> 
                    Bsb_exception.errorf ~loc 
                      "%s expect an array"

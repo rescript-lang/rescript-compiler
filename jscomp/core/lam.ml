@@ -197,7 +197,7 @@ include Types
 (** apply [f] to direct successor which has type [Lam.t] *)
 
 let inner_map 
-   (l : t) (f : t -> X.t ) : X.t =
+    (l : t) (f : t -> X.t ) : X.t =
   match l  with
   | Lvar (_ : ident)
   | Lconst (_ : Lam_constant.t) ->
@@ -258,11 +258,11 @@ let inner_map
   | Lassign(id, e) ->
     let e = f e in
     Lassign(id,e)
-  (* | Lsend (k, met, obj, args, loc) ->
-    let met = f met in
-    let obj = f obj in
-    let args = Ext_list.map args f in
-    Lsend(k,met,obj,args,loc) *)
+(* | Lsend (k, met, obj, args, loc) ->
+   let met = f met in
+   let obj = f obj in
+   let args = Ext_list.map args f in
+   Lsend(k,met,obj,args,loc) *)
 
 
 
@@ -309,17 +309,17 @@ let rec is_eta_conversion_exn
 let rec apply fn args (ap_info : ap_info) : t =
   match fn with
   | Lfunction {
-               params;
-               body = Lprim {primitive =
-                               (Pundefined_to_opt |
-                                Pnull_to_opt |
-                                Pnull_undefined_to_opt |
-                                Pis_null |
-                                Pis_null_undefined |
-                                Pjs_typeof ) as wrap;
-                             args = [Lprim ({primitive = _; args = inner_args} as primitive_call)]
-                            }
-              } ->
+      params;
+      body = Lprim {primitive =
+                      (Pundefined_to_opt |
+                       Pnull_to_opt |
+                       Pnull_undefined_to_opt |
+                       Pis_null |
+                       Pis_null_undefined |
+                       Pjs_typeof ) as wrap;
+                    args = [Lprim ({primitive = _; args = inner_args} as primitive_call)]
+                   }
+    } ->
     begin match is_eta_conversion_exn params inner_args args with
       | args
         ->
@@ -329,8 +329,8 @@ let rec apply fn args (ap_info : ap_info) : t =
         Lapply { ap_func = fn; ap_args = args; ap_info; }
     end
   | Lfunction {
-               params;
-               body =Lprim ({primitive = _; args = inner_args}as primitive_call) }
+      params;
+      body =Lprim ({primitive = _; args = inner_args}as primitive_call) }
     ->
     begin match is_eta_conversion_exn params inner_args args with
       | args
@@ -340,8 +340,8 @@ let rec apply fn args (ap_info : ap_info) : t =
         Lapply { ap_func = fn; ap_args = args;  ap_info;}
     end
   | Lfunction {
-               params;
-               body = Lsequence (Lprim ({primitive = _; args = inner_args}as primitive_call), (Lconst _ as const )) }
+      params;
+      body = Lsequence (Lprim ({primitive = _; args = inner_args}as primitive_call), (Lconst _ as const )) }
     ->
     begin match is_eta_conversion_exn params inner_args args with
       | args
@@ -357,7 +357,7 @@ let rec apply fn args (ap_info : ap_info) : t =
   | Llet (kind,id, e, (Lfunction _ as fn)) -> 
     Llet (kind, id, e, apply fn args ap_info )    
   (* | Llet (kind0, id0, e0, Llet (kind,id, e, (Lfunction _ as fn))) -> 
-    Llet(kind0,id0,e0,Llet (kind, id, e, apply fn args loc status))       *)
+     Llet(kind0,id0,e0,Llet (kind, id, e, apply fn args loc status))       *)
   | _ ->
     Lapply { ap_func = fn; ap_args = args;  ap_info}
 
@@ -373,8 +373,8 @@ let rec
     (match l2 with  Lconst c2 -> Lam_constant.eq_approx c1 c2  | _ -> false)
   | Lapply app1 -> 
     (match l2 with Lapply app2 ->
-    eq_approx app1.ap_func app2.ap_func  && eq_approx_list app1.ap_args app2.ap_args
-    |_ -> false)
+       eq_approx app1.ap_func app2.ap_func  && eq_approx_list app1.ap_args app2.ap_args
+                 |_ -> false)
   | Lifthenelse (a,b,c) -> 
     (match l2 with  
      |Lifthenelse (a0,b0,c0) ->
@@ -382,31 +382,31 @@ let rec
      | _ -> false)
   | Lsequence (a,b) -> 
     (match l2 with Lsequence (a0,b0) ->
-    eq_approx a a0 && eq_approx b b0
-    | _ -> false)
+       eq_approx a a0 && eq_approx b b0
+                 | _ -> false)
   | Lwhile (p,b) -> 
     (match l2 with  Lwhile (p0,b0) -> eq_approx p p0 && eq_approx b b0
-    | _ -> false)
+                  | _ -> false)
   | Lassign(v0,l0) -> 
     (match l2 with  Lassign(v1,l1) -> Ident.same v0 v1 && eq_approx l0 l1
-    | _ -> false)  
+                  | _ -> false)  
   | Lstaticraise(id,ls) -> 
     (match l2 with  Lstaticraise(id1,ls1) -> 
-      id  = id1 && eq_approx_list ls ls1
-    | _ -> false)
+       id  = id1 && eq_approx_list ls ls1
+                  | _ -> false)
   | Lprim info1 -> 
     (match l2 with 
-    Lprim info2 ->
-    Lam_primitive.eq_primitive_approx info1.primitive info2.primitive &&
-    eq_approx_list info1.args info2.args
-    | _ -> false)
+       Lprim info2 ->
+       Lam_primitive.eq_primitive_approx info1.primitive info2.primitive &&
+       eq_approx_list info1.args info2.args
+     | _ -> false)
   | Lstringswitch (arg, patterns, default) ->
     begin match l2 with 
-    |Lstringswitch(arg2,patterns2, default2) ->
-      eq_approx arg arg2 &&
-      eq_option default default2 &&
-      Ext_list.for_all2_no_exn patterns patterns2 (fun ((k:string),v) (k2,v2) -> k = k2 && eq_approx v v2)
-    | _ -> false  
+      |Lstringswitch(arg2,patterns2, default2) ->
+        eq_approx arg arg2 &&
+        eq_option default default2 &&
+        Ext_list.for_all2_no_exn patterns patterns2 (fun ((k:string),v) (k2,v2) -> k = k2 && eq_approx v v2)
+      | _ -> false  
     end
   | Lfunction _  
   | Llet (_,_,_,_)
@@ -417,9 +417,9 @@ let rec
   | Lfor (_,_,_,_,_) 
     -> false    
 and eq_option l1 l2 = 
-    match l1 with 
-    | None -> l2 = None 
-    | Some l1 -> (match l2 with Some l2 -> eq_approx l1 l2 | None -> false)
+  match l1 with 
+  | None -> l2 = None 
+  | Some l1 -> (match l2 with Some l2 -> eq_approx l1 l2 | None -> false)
 and eq_approx_list ls ls1 =  Ext_list.for_all2_no_exn ls ls1 eq_approx
 
 
@@ -455,15 +455,15 @@ let unit : t = Lconst Const_js_undefined
 
 
 let rec seq (a : t) b : t =
-   match a with
+  match a with
   | Lprim 
-    {primitive = Pmakeblock(_); 
-     args= x::xs} -> 
+      {primitive = Pmakeblock(_); 
+       args= x::xs} -> 
     seq (Ext_list.fold_left xs x seq ) b 
   | Lprim {primitive = Pnull_to_opt | Pundefined_to_opt | Pnull_undefined_to_opt; args = [a]} 
     ->   seq a b 
   | _ -> 
-  Lsequence (a, b)
+    Lsequence (a, b)
 
 
 let var id : t = Lvar id
@@ -496,7 +496,7 @@ module Lift = struct
 
 
   (* let int32 i : t =
-    Lconst ((Const_int32 i)) *)
+     Lconst ((Const_int32 i)) *)
 
   let bool b = if b then true_ else false_
 
@@ -504,12 +504,12 @@ module Lift = struct
      yet , due to cross platform problem
   *)
   (* let float b  : t =
-    Lconst ((Const_float b)) *)
+     Lconst ((Const_float b)) *)
 
   (* let nativeint b : t =
-    Lconst ((Const_nativeint b)) *)
+     Lconst ((Const_nativeint b)) *)
 
-  
+
 
   let int64 b : t =
     Lconst ((Const_int64 b))
@@ -558,15 +558,15 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
         -> Lift.bool (Lam_compat.cmp_int32  cmp a.i b.i)
       | Pfloatcomp  cmp,  (Const_float a),  (Const_float b)
         -> (** FIXME: could raise? *)
-          Lift.bool (Lam_compat.cmp_float  cmp (float_of_string a) (float_of_string b))
-      
+        Lift.bool (Lam_compat.cmp_float  cmp (float_of_string a) (float_of_string b))
+
       | Pintcomp (Ceq | Cneq as op) ,
-         Const_pointer a,
-         Const_pointer b
+        Const_pointer a,
+        Const_pointer b
         -> Lift.bool (match op with
-        | Ceq ->  a  = (b : string)
-        | Cneq -> a <> b 
-        | _ -> assert false )
+            | Ceq ->  a  = (b : string)
+            | Cneq -> a <> b 
+            | _ -> assert false )
       | (Paddint
         | Psubint
         | Pmulint
@@ -659,12 +659,12 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
         | [], [] -> true 
         | f :: fields, Lprim {primitive = Pfield (pos, Fld_module {name = f1}); args = [Lglobal_module v1 | Lvar v1]} :: args 
           -> 
-            pos = i && 
-            f = f1 &&
-            Ident.same var v1 && aux fields args var (i + 1)
+          pos = i && 
+          f = f1 &&
+          Ident.same var v1 && aux fields args var (i + 1)
         | _, _ -> false in   
       begin match fields, args with   
-      | field1 :: rest, 
+        | field1 :: rest, 
           Lprim{primitive = Pfield (pos, Fld_module {name = f1}); args = [Lglobal_module v1 | Lvar v1 as lam]} :: args1
           ->
           if pos = 0 && field1 = f1 && aux rest args1 v1 1 then 
@@ -673,12 +673,12 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
             default ()
         | _ -> default ()                    
       end 
-      (* In this level, include is already expanded, so that 
-        {[
-          { x0 : y0 ; x1 : y1 }
-        ]}
-        such module x can indeed be replaced by module y
-      *)
+    (* In this level, include is already expanded, so that 
+       {[
+         { x0 : y0 ; x1 : y1 }
+       ]}
+       such module x can indeed be replaced by module y
+    *)
     | _ ->    
       default ()
 
@@ -693,15 +693,15 @@ let not_ loc x  : t =
 let has_boolean_type (x : t) = 
   match x with 
   | Lprim {primitive =
-    Pnot | Psequand |
-    Psequor 
-    | Pisout _
-    | Pintcomp _ 
-    | Pis_not_none
-    | Pfloatcomp _
-    | Pccall {prim_name = "caml_string_equal" | "caml_string_notequal"}; 
-    loc}
-   -> Some loc
+             Pnot | Psequand |
+             Psequor 
+             | Pisout _
+             | Pintcomp _ 
+             | Pis_not_none
+             | Pfloatcomp _
+             | Pccall {prim_name = "caml_string_equal" | "caml_string_notequal"}; 
+           loc}
+    -> Some loc
   | _ -> None
 
 (** [complete_range sw_consts 0 7]
@@ -712,9 +712,9 @@ let rec complete_range  (sw_consts : (int * _) list) ~(start : int) ~finish=
   | [] -> finish < start
   | (i,_)::rest 
     -> 
-      start <= finish &&
-      i = start &&
-      complete_range  rest ~start:(start + 1) ~finish
+    start <= finish &&
+    i = start &&
+    complete_range  rest ~start:(start + 1) ~finish
 
 let rec eval_const_as_bool (v : Lam_constant.t ) : bool = 
   match v with  
@@ -774,29 +774,29 @@ let if_ (a : t) (b : t) (c : t) : t =
                      )
              when Ident.same xx yy 
                && complete_range sw_consts 
-                ~start:(-off) ~finish:(range - off)
+                    ~start:(-off) ~finish:(range - off)
              ->  
              Lswitch(switch_arg, 
                      { body with sw_failaction = Some b; sw_consts_full = false; })
            |  _ -> Lifthenelse(a,b,c)      
          end
-         | Lprim{primitive = Pisint; args = [Lvar i];_}
+       | Lprim{primitive = Pisint; args = [Lvar i];_}
          -> 
          begin match b with 
-         | Lifthenelse(Lprim{primitive = Pintcomp Ceq ; args = [Lvar j; Lconst _]}  , _, b_f)
-          when Ident.same i j && eq_approx b_f c ->
-            b
-         | Lprim{primitive = Pintcomp Ceq ; args = [Lvar j; Lconst _]}  
-           when Ident.same i j && eq_approx false_ c -> b
-         | Lifthenelse(Lprim({primitive = Pintcomp Cneq ; args = [Lvar j; Lconst _]} as b_pred)  , b_t, b_f)
-           when Ident.same i j && eq_approx b_t c ->
-           Lifthenelse(Lprim{b_pred with primitive = Pintcomp Ceq}, b_f, b_t)      
-         | Lprim({primitive = Pintcomp Cneq ; args = [Lvar j; Lconst _] as args ; loc} )
-         | Lprim(
-            {primitive = Pnot ; args = [Lprim{primitive = Pintcomp Ceq ; args = [Lvar j; Lconst _] as args; loc}]})
-           when Ident.same i j && eq_approx true_ c
-           -> Lprim{primitive = Pintcomp Cneq; args; loc}
-         | _ -> Lifthenelse(a,b,c)
+           | Lifthenelse(Lprim{primitive = Pintcomp Ceq ; args = [Lvar j; Lconst _]}  , _, b_f)
+             when Ident.same i j && eq_approx b_f c ->
+             b
+           | Lprim{primitive = Pintcomp Ceq ; args = [Lvar j; Lconst _]}  
+             when Ident.same i j && eq_approx false_ c -> b
+           | Lifthenelse(Lprim({primitive = Pintcomp Cneq ; args = [Lvar j; Lconst _]} as b_pred)  , b_t, b_f)
+             when Ident.same i j && eq_approx b_t c ->
+             Lifthenelse(Lprim{b_pred with primitive = Pintcomp Ceq}, b_f, b_t)      
+           | Lprim({primitive = Pintcomp Cneq ; args = [Lvar j; Lconst _] as args ; loc} )
+           | Lprim(
+               {primitive = Pnot ; args = [Lprim{primitive = Pintcomp Ceq ; args = [Lvar j; Lconst _] as args; loc}]})
+             when Ident.same i j && eq_approx true_ c
+             -> Lprim{primitive = Pintcomp Cneq; args; loc}
+           | _ -> Lifthenelse(a,b,c)
          end 
        | _ ->  Lifthenelse (a,b,c))
 
@@ -868,11 +868,11 @@ let handle_bs_non_obj_ffi
     prim_name =
   if no_auto_uncurried_arg_types arg_types then
     result_wrap loc result_type (prim ~primitive:(Pjs_call {prim_name; arg_types; ffi})
-      ~args loc)
+                                   ~args loc)
   else
     let n_arg_types, n_args =
       transform_uncurried_arg_type loc  arg_types args in
     result_wrap loc result_type (
-    prim ~primitive:(Pjs_call {prim_name; arg_types = n_arg_types; ffi})
-      ~args:n_args loc)
+      prim ~primitive:(Pjs_call {prim_name; arg_types = n_arg_types; ffi})
+        ~args:n_args loc)
 

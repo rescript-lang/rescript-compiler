@@ -30,7 +30,7 @@
 
 
 (** Extension to standard library [Pervavives] module, safe to open 
-  *)
+*)
 
 external reraise: exn -> 'a = "%reraise"
 
@@ -59,7 +59,7 @@ val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
 (** Copied from {!Btype.hash_variant}:
     need sync up and add test case
- *)
+*)
 (* val hash_variant : string -> int *)
 
 (* val todo : string -> 'a *)

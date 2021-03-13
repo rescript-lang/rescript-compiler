@@ -29,7 +29,7 @@ let arr = Ext_json_noloc.arr
 let str = Ext_json_noloc.str 
 
 let generate_sourcedirs_meta 
-  ~name (res : Bsb_file_groups.t) = 
+    ~name (res : Bsb_file_groups.t) = 
   let v = 
     kvs [
       "dirs" ,
@@ -42,17 +42,16 @@ let generate_sourcedirs_meta
             (fun x -> 
                Ext_list.map x.output str)   
         ));        
-        "pkgs", arr 
-          (Array.of_list
-            (Bsb_pkg.to_list (fun pkg path ->
-              arr [|
-                str (Bsb_pkg_types.to_string pkg);
-                str path
+      "pkgs", arr 
+        (Array.of_list
+           (Bsb_pkg.to_list (fun pkg path ->
+                arr [|
+                  str (Bsb_pkg_types.to_string pkg);
+                  str path
                 |]
               ))
-          )
+        )
     ]
   in 
   Ext_json_noloc.to_file 
-  name v
-  
+    name v

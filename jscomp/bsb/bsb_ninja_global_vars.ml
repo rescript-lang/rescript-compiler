@@ -23,16 +23,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- 
+
 
 
 (* Invariant: the two string literal has 
-  to be "a" and "$a"
+   to be "a" and "$a"
 *)
 
 (* let src_root_dir = "g_root"
 
-let lazy_src_root_dir = "$g_root"  *)
+   let lazy_src_root_dir = "$g_root"  *)
 let g_finger = "g_finger"
 
 

@@ -46,7 +46,7 @@ type t = {
   modules : Spec_set.t;
   runtime: string option;  
   (* This has to be resolved as early as possible, since 
-    the path will be inherited in sub projects
+     the path will be inherited in sub projects
   *)
 }
 
@@ -94,7 +94,7 @@ let rec from_array suffix (arr : Ext_json_types.t array) : Spec_set.t =
 and from_json_single suffix (x : Ext_json_types.t) : spec =
   match x with
   | Str {str = format; loc } ->    
-      {format = supported_format format loc  ; in_source = false ; suffix }    
+    {format = supported_format format loc  ; in_source = false ; suffix }    
   | Obj {map; loc} ->
     begin match map .?("module") with
       | Some(Str {str = format}) ->
@@ -143,9 +143,9 @@ let package_flag ({format; in_source; suffix } : spec) dir =
        (string_of_format format)
        Ext_string.single_colon
        (if in_source then dir else
-        Bsb_config.top_prefix_of_format format // dir)
-      Ext_string.single_colon  
-      (Ext_js_suffix.to_string suffix)
+          Bsb_config.top_prefix_of_format format // dir)
+       Ext_string.single_colon  
+       (Ext_js_suffix.to_string suffix)
     )
 
 (* FIXME: we should adapt it *)    
@@ -171,29 +171,29 @@ let default_package_specs suffix =
 let get_list_of_output_js 
     (package_specs : t)
     (output_file_sans_extension : string)
-    = 
+  = 
   Spec_set.fold 
     (fun (spec : spec) acc ->
-        let basename =  
-          Ext_namespace.change_ext_ns_suffix
-             output_file_sans_extension
-             (Ext_js_suffix.to_string spec.suffix)
-        in 
-        (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
+       let basename =  
+         Ext_namespace.change_ext_ns_suffix
+           output_file_sans_extension
+           (Ext_js_suffix.to_string spec.suffix)
+       in 
+       (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
         else Bsb_config.lib_bs_prefix_of_format spec.format // basename) 
        :: acc
     ) package_specs.modules []
 
 
 let list_dirs_by
-  (package_specs : t)
-  (f : string -> unit)
+    (package_specs : t)
+    (f : string -> unit)
   =  
   Spec_set.iter (fun (spec : spec)  -> 
-    if not spec.in_source then     
-      f (Bsb_config.top_prefix_of_format spec.format) 
-  ) package_specs.modules 
-  
+      if not spec.in_source then     
+        f (Bsb_config.top_prefix_of_format spec.format) 
+    ) package_specs.modules 
+
 type json_map = Ext_json_types.t Map_string.t 
 
 let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
@@ -212,14 +212,14 @@ let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =
 let from_map ~(cwd:string) map =  
   let suffix = extract_bs_suffix_exn map in   
   let modules = match map.?(Bsb_build_schemas.package_specs) with 
-  | Some x ->
-    from_json suffix x 
-  | None ->  default_package_specs suffix in 
+    | Some x ->
+      from_json suffix x 
+    | None ->  default_package_specs suffix in 
   let runtime = 
     match map.?(Bsb_build_schemas.external_stdlib) with
     | None -> None 
     | Some(Str{str; _}) ->
-       Some (Bsb_pkg.resolve_bs_package ~cwd (Bsb_pkg_types.string_as_package str))
+      Some (Bsb_pkg.resolve_bs_package ~cwd (Bsb_pkg_types.string_as_package str))
     | _ -> assert false in   
   {
     runtime;  

@@ -30,10 +30,10 @@ type ident = Ident.t
 type bucket =
   | Empty 
   | Cons of {
-    ident : ident; 
-    mutable mask : bool;
-    rest : bucket
-  }
+      ident : ident; 
+      mutable mask : bool;
+      rest : bucket
+    }
 
 type t = {
   mutable size : int ; 
@@ -106,7 +106,7 @@ let resize indexfun h =
         let nidx = indexfun h key in
         Array.unsafe_set 
           ndata (nidx)  
-            (Cons {ident = key; mask; rest = Array.unsafe_get ndata (nidx)});
+          (Cons {ident = key; mask; rest = Array.unsafe_get ndata (nidx)});
         insert_bucket rest
     in
     for i = 0 to osize - 1 do

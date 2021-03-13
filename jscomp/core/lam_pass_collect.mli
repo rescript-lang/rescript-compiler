@@ -34,7 +34,7 @@
 
     It includes:
     alias table, arity for identifiers and might more information,
-    
+
     ATTENTION:
     For later pass to keep its information complete and up to date,
     we  need update its table accordingly
@@ -48,23 +48,23 @@
     Design choice:
 
     Side effectful operations:
-       - Lassign 
-       - Psetfield
+    - Lassign 
+    - Psetfield
 
     1. What information should be collected:
 
     2. What's the key
        If it's identifier, 
-       
+
     Information that is always sound, not subject to change 
 
     - shall we collect that if an identifier is passed as a parameter, (useful for escape analysis), 
-    however, since it's going to change after inlning (for local function)
+      however, since it's going to change after inlning (for local function)
 
     - function arity, subject to change when you make it a mutable ref and change it later
-    
+
     - Immutable blocks of identifiers
-     
+
       if identifier itself is function/non block then the access can be inlined 
       if identifier itself is immutable block can be inlined
       if identifier is mutable block can be inlined (without Lassign) since
@@ -72,9 +72,9 @@
     - When collect some information, shall we propogate this information to 
       all alias table immeidately
 
-      - annotation identifiers (at first time)
+    - annotation identifiers (at first time)
       -
- *)
+*)
 
 (** Modify existing [meta] *)
 val collect_info : Lam_stats.t -> Lam.t -> unit

@@ -32,6 +32,6 @@ type t = {
 
 
 val coerce_and_group_big_lambda : 
-    Lam_stats.t ->
-    Lam.t -> 
-    t * Lam_stats.t
+  Lam_stats.t ->
+  Lam.t -> 
+  t * Lam_stats.t

@@ -2,20 +2,20 @@
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
 
 #ifdef TYPE_STRING
-  type key = string 
-  let compare_key = Ext_string.compare
-  let [@inline] eq_key (x : key) y = x = y
-#elif defined TYPE_INT
-  type key = int
-  let compare_key = Ext_int.compare
-  let [@inline] eq_key (x : key) y = x = y
-#elif defined TYPE_IDENT
-  type key = Ident.t
-  let compare_key = Ext_ident.compare
-  let [@inline] eq_key (x : key) y = Ident.same x y
-#else
+type key = string 
+let compare_key = Ext_string.compare
+let [@inline] eq_key (x : key) y = x = y
+                                       #elif defined TYPE_INT
+type key = int
+let compare_key = Ext_int.compare
+let [@inline] eq_key (x : key) y = x = y
+                                       #elif defined TYPE_IDENT
+type key = Ident.t
+let compare_key = Ext_ident.compare
+let [@inline] eq_key (x : key) y = Ident.same x y
+                                                #else
   [%error "unknown type"]
-#endif
+  #endif
 (* let [@inline] (=) (a : int) b = a = b *)
 type + 'a t = (key,'a) Map_gen.t
 
@@ -132,8 +132,8 @@ let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with
       bal l k v (remove r x )
 
 type 'a split = 
-    | Yes of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t ; v : 'a}
-    | No of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t }
+  | Yes of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t ; v : 'a}
+  | No of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t }
 
 
 let rec split  (tree : (key,'a) Map_gen.t) x : 'a split  = 
@@ -176,10 +176,10 @@ let rec disjoint_merge_exn
         else Map_gen.unsafe_two_elements l2.k l2.v k l1.v
       | Node _ -> 
         adjust s2 k (fun data -> 
-          match data with 
-          |  None -> l1.v
-          | Some s2v  -> raise_notrace (fail k l1.v s2v)
-        )        
+            match data with 
+            |  None -> l1.v
+            | Some s2v  -> raise_notrace (fail k l1.v s2v)
+          )        
     end
   | Node ({k} as xs1) -> 
     if  xs1.h >= height s2 then

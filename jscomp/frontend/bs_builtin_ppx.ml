@@ -72,119 +72,119 @@ let default_mapper = Bs_ast_mapper.default_mapper
 let default_expr_mapper = Bs_ast_mapper.default_mapper.expr 
 
 let expr_mapper  (self : mapper) (e : Parsetree.expression) =
-        match e.pexp_desc with
-        (** Its output should not be rewritten anymore *)
-        | Pexp_extension extension ->
-          Ast_exp_extension.handle_extension e self extension
-        | Pexp_constant (
-            Pconst_string
-            (s, (Some delim)))
-          ->
-            Ast_utf8_string_interp.transform e s delim
-        | Pexp_array [] when !Js_config.mono_empty_array &&
-          not (Ext_list.exists e.pexp_attributes (fun ({txt},_) -> txt = ""))->  
-        (* `ocamlfind query ppx_tools`/dumpast -loc_underscore -e 'let emptyArray () = [||] in emptyArray ()'*)          
-          let loc = e.pexp_loc in
-          let name =  "emptyArray" in 
-          let unit : _ Asttypes.loc  = {txt = Ast_literal.Lid.val_unit ; loc  } in 
-          let open Ast_helper in 
-          Exp.let_ Nonrecursive ~loc 
-            [{pvb_pat =
-                Pat.var  {txt = name ; loc} ~loc ;
-              pvb_expr =
-                Exp.fun_ Nolabel None
-                  (Pat.construct unit None)
-                  (Exp.array [] ~attrs:[{txt = ""; loc}, PStr []]);
-              pvb_loc  = loc; pvb_attributes = []}]
-            (Exp.apply ~loc
-               (Exp.ident ~loc {txt = Lident name; loc})
-               [Nolabel,
-                Exp.construct unit None ~loc;
-               ])
+  match e.pexp_desc with
+  (** Its output should not be rewritten anymore *)
+  | Pexp_extension extension ->
+    Ast_exp_extension.handle_extension e self extension
+  | Pexp_constant (
+      Pconst_string
+        (s, (Some delim)))
+    ->
+    Ast_utf8_string_interp.transform e s delim
+  | Pexp_array [] when !Js_config.mono_empty_array &&
+                       not (Ext_list.exists e.pexp_attributes (fun ({txt},_) -> txt = ""))->  
+    (* `ocamlfind query ppx_tools`/dumpast -loc_underscore -e 'let emptyArray () = [||] in emptyArray ()'*)          
+    let loc = e.pexp_loc in
+    let name =  "emptyArray" in 
+    let unit : _ Asttypes.loc  = {txt = Ast_literal.Lid.val_unit ; loc  } in 
+    let open Ast_helper in 
+    Exp.let_ Nonrecursive ~loc 
+      [{pvb_pat =
+          Pat.var  {txt = name ; loc} ~loc ;
+        pvb_expr =
+          Exp.fun_ Nolabel None
+            (Pat.construct unit None)
+            (Exp.array [] ~attrs:[{txt = ""; loc}, PStr []]);
+        pvb_loc  = loc; pvb_attributes = []}]
+      (Exp.apply ~loc
+         (Exp.ident ~loc {txt = Lident name; loc})
+         [Nolabel,
+          Exp.construct unit None ~loc;
+         ])
 
-        (** End rewriting *)
-        | Pexp_function cases ->
-          (* {[ function [@bs.exn]
-                | Not_found -> 0
-                | Invalid_argument -> 1
-              ]}*)
-          (match Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes with
-           | false, _ ->
-             default_expr_mapper self  e
-           | true, pexp_attributes ->
-             Ast_bs_open.convertBsErrorFunction e.pexp_loc self  pexp_attributes cases)
-          
-        | Pexp_fun (label, _, pat , body)
-          ->
-          begin match Ast_attributes.process_attributes_rev e.pexp_attributes with
-            | Nothing, _
-              -> default_expr_mapper self e
-            | Uncurry _, pexp_attributes
-              ->
-              {e with
-               pexp_desc = Ast_uncurry_gen.to_uncurry_fn e.pexp_loc self label pat body  ;
-               pexp_attributes}
-            | Method _ , _
-              ->  Location.raise_errorf ~loc:e.pexp_loc "%@meth is not supported in function expression"
-            | Meth_callback _, pexp_attributes
-              ->
-              (** FIXME: does it make sense to have a label for [this] ? *)
-              {e with pexp_desc = Ast_uncurry_gen.to_method_callback e.pexp_loc  self label pat body ;
-                      pexp_attributes }
-          end
-        | Pexp_apply (fn, args  ) ->
-          Ast_exp_apply.app_exp_mapper e self fn args
-        | Pexp_object {pcstr_self;  pcstr_fields} ->
-            (match Ast_attributes.process_bs e.pexp_attributes with
-            | true, pexp_attributes
-              ->
-              {e with
-               pexp_desc =
-                 Ast_util.ocaml_obj_as_js_object
-                   e.pexp_loc self pcstr_self pcstr_fields;
-               pexp_attributes
-              }
-            | false , _ ->
-              default_expr_mapper self e)
-        | Pexp_match(b,
-                     [
-                       {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident "true"},None)};pc_guard=None;pc_rhs=t_exp};
-                       {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident"false"}, None)};pc_guard=None;pc_rhs=f_exp}
-                     ]) 
-        | Pexp_match(b,
-                     [
-                       {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident "false"},None)};pc_guard=None;pc_rhs=f_exp};
-                       {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident"true"}, None)};pc_guard=None;pc_rhs=t_exp}
-                     ])   
-          -> 
-            default_expr_mapper self {e with pexp_desc = Pexp_ifthenelse (b,t_exp,Some f_exp)}    
-        | Pexp_let (Nonrecursive, 
-                    [{pvb_pat = 
-                        ({ ppat_desc = Ppat_record _ }
-                        |{ ppat_desc = Ppat_alias ({ppat_desc = Ppat_record _},_)}
-                        ) as p; 
-                      pvb_expr; 
-             pvb_attributes; 
-             pvb_loc = _}], body)             
-          -> 
-          begin match pvb_expr.pexp_desc with 
-            | Pexp_pack _ -> default_expr_mapper self e 
-            | _ -> 
-              default_expr_mapper self 
-                {e with 
-                 pexp_desc = Pexp_match(pvb_expr,
-                                        [{pc_lhs = p; pc_guard = None; 
-                                          pc_rhs = body}]);
-                 pexp_attributes = e.pexp_attributes @  pvb_attributes
-                }
-          end
-         (* let [@warning "a"] {a;b} = c in body 
-            The attribute is attached to value binding, 
-            after the transformation value binding does not exist so we attach 
-            the attribute to the whole expression, in general, when shuffuling the ast
-            it is very hard to place attributes correctly
-         *)
-        | _ ->  default_expr_mapper self e
+  (** End rewriting *)
+  | Pexp_function cases ->
+    (* {[ function [@bs.exn]
+         | Not_found -> 0
+         | Invalid_argument -> 1
+       ]}*)
+    (match Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes with
+     | false, _ ->
+       default_expr_mapper self  e
+     | true, pexp_attributes ->
+       Ast_bs_open.convertBsErrorFunction e.pexp_loc self  pexp_attributes cases)
+
+  | Pexp_fun (label, _, pat , body)
+    ->
+    begin match Ast_attributes.process_attributes_rev e.pexp_attributes with
+      | Nothing, _
+        -> default_expr_mapper self e
+      | Uncurry _, pexp_attributes
+        ->
+        {e with
+         pexp_desc = Ast_uncurry_gen.to_uncurry_fn e.pexp_loc self label pat body  ;
+         pexp_attributes}
+      | Method _ , _
+        ->  Location.raise_errorf ~loc:e.pexp_loc "%@meth is not supported in function expression"
+      | Meth_callback _, pexp_attributes
+        ->
+        (** FIXME: does it make sense to have a label for [this] ? *)
+        {e with pexp_desc = Ast_uncurry_gen.to_method_callback e.pexp_loc  self label pat body ;
+                pexp_attributes }
+    end
+  | Pexp_apply (fn, args  ) ->
+    Ast_exp_apply.app_exp_mapper e self fn args
+  | Pexp_object {pcstr_self;  pcstr_fields} ->
+    (match Ast_attributes.process_bs e.pexp_attributes with
+     | true, pexp_attributes
+       ->
+       {e with
+        pexp_desc =
+          Ast_util.ocaml_obj_as_js_object
+            e.pexp_loc self pcstr_self pcstr_fields;
+        pexp_attributes
+       }
+     | false , _ ->
+       default_expr_mapper self e)
+  | Pexp_match(b,
+               [
+                 {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident "true"},None)};pc_guard=None;pc_rhs=t_exp};
+                 {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident"false"}, None)};pc_guard=None;pc_rhs=f_exp}
+               ]) 
+  | Pexp_match(b,
+               [
+                 {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident "false"},None)};pc_guard=None;pc_rhs=f_exp};
+                 {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident"true"}, None)};pc_guard=None;pc_rhs=t_exp}
+               ])   
+    -> 
+    default_expr_mapper self {e with pexp_desc = Pexp_ifthenelse (b,t_exp,Some f_exp)}    
+  | Pexp_let (Nonrecursive, 
+              [{pvb_pat = 
+                  ({ ppat_desc = Ppat_record _ }
+                  |{ ppat_desc = Ppat_alias ({ppat_desc = Ppat_record _},_)}
+                  ) as p; 
+                pvb_expr; 
+                pvb_attributes; 
+                pvb_loc = _}], body)             
+    -> 
+    begin match pvb_expr.pexp_desc with 
+      | Pexp_pack _ -> default_expr_mapper self e 
+      | _ -> 
+        default_expr_mapper self 
+          {e with 
+           pexp_desc = Pexp_match(pvb_expr,
+                                  [{pc_lhs = p; pc_guard = None; 
+                                    pc_rhs = body}]);
+           pexp_attributes = e.pexp_attributes @  pvb_attributes
+          }
+    end
+  (* let [@warning "a"] {a;b} = c in body 
+     The attribute is attached to value binding, 
+     after the transformation value binding does not exist so we attach 
+     the attribute to the whole expression, in general, when shuffuling the ast
+     it is very hard to place attributes correctly
+  *)
+  | _ ->  default_expr_mapper self e
 
 
 let typ_mapper (self : mapper) (typ : Parsetree.core_type) = 
@@ -195,126 +195,126 @@ let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Pars
   | false,  _ ->
     default_mapper.class_type self ctd
   | true, pcty_attributes ->
-      (match ctd.pcty_desc with
-      | Pcty_signature ({pcsig_self; pcsig_fields })
-        ->
-        let pcsig_self = self.typ self pcsig_self in
-        {ctd with
-         pcty_desc = Pcty_signature {
-             pcsig_self ;
-             pcsig_fields = Ast_core_type_class_type.handle_class_type_fields self pcsig_fields
-           };
-         pcty_attributes
-        }               
+    (match ctd.pcty_desc with
+     | Pcty_signature ({pcsig_self; pcsig_fields })
+       ->
+       let pcsig_self = self.typ self pcsig_self in
+       {ctd with
+        pcty_desc = Pcty_signature {
+            pcsig_self ;
+            pcsig_fields = Ast_core_type_class_type.handle_class_type_fields self pcsig_fields
+          };
+        pcty_attributes
+       }               
      | Pcty_open _ (* let open M in CT *)
-      | Pcty_constr _
-      | Pcty_extension _
-      | Pcty_arrow _ ->
-        Location.raise_errorf ~loc:pcty_loc "invalid or unused attribute `bs`")
+     | Pcty_constr _
+     | Pcty_extension _
+     | Pcty_arrow _ ->
+       Location.raise_errorf ~loc:pcty_loc "invalid or unused attribute `bs`")
 (* {[class x : int -> object
-             end [@bs]
-           ]}
+     end [@bs]
+   ]}
            Actually this is not going to happpen as below is an invalid syntax
-           {[class type x = int -> object
-               end[@bs]]}
+   {[class type x = int -> object
+       end[@bs]]}
 *)
 
 
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =        
-      match sigi.psig_desc with
-      | Psig_type (
-          rf, 
-          tdcls) ->  
-          Ast_tdcls.handleTdclsInSigi self sigi rf tdcls
-      | Psig_value ({pval_attributes; pval_prim} as value_desc)
-        
-        ->
-        let pval_attributes = self.attributes self pval_attributes in 
-        if pval_prim <> [] && (*  It is external *)
-          Ast_attributes.external_needs_to_be_encoded pval_attributes then 
-          Ast_external.handleExternalInSig self value_desc sigi
-        else 
-          (match 
-           Ast_attributes.has_inline_payload
+  match sigi.psig_desc with
+  | Psig_type (
+      rf, 
+      tdcls) ->  
+    Ast_tdcls.handleTdclsInSigi self sigi rf tdcls
+  | Psig_value ({pval_attributes; pval_prim} as value_desc)
+
+    ->
+    let pval_attributes = self.attributes self pval_attributes in 
+    if pval_prim <> [] && (*  It is external *)
+       Ast_attributes.external_needs_to_be_encoded pval_attributes then 
+      Ast_external.handleExternalInSig self value_desc sigi
+    else 
+      (match 
+         Ast_attributes.has_inline_payload
            pval_attributes with 
-         | Some ((_,PStr [{pstr_desc = Pstr_eval ({pexp_desc },_)}]) as attr) ->
-           begin match pexp_desc with
-             | Pexp_constant (
-               Pconst_string
-               (s,dec)) -> 
-               succeed attr pval_attributes;
-               { sigi with 
-                 psig_desc = Psig_value
-                     { 
-                       value_desc with
-                       pval_prim = External_ffi_types.inline_string_primitive s dec;
-                       pval_attributes = []
-                     }}
-             | Pexp_constant(
-               Pconst_integer (s,None)
-               ) ->       
-               succeed attr pval_attributes;  
-               let s = Int32.of_string s in  
-               { sigi with 
-                 psig_desc = Psig_value
-                     { 
-                       value_desc with
-                       pval_prim = External_ffi_types.inline_int_primitive s ;
-                       pval_attributes = []
-                     }}
-             | Pexp_constant(Pconst_integer (s, Some 'L'))
-               -> 
-               let s = Int64.of_string s in  
-               succeed attr pval_attributes;
-               {sigi with psig_desc = Psig_value  {
-                    value_desc with 
-                    pval_prim = External_ffi_types.inline_int64_primitive s;
-                    pval_attributes = [];
-                  } }
-              | Pexp_constant (Pconst_float(s,None)) -> 
-                succeed attr pval_attributes;
-                {sigi with psig_desc = Psig_value  {
-                    value_desc with 
-                    pval_prim = External_ffi_types.inline_float_primitive s;
-                    pval_attributes = [];
-                  } }
-              | Pexp_construct ({txt = Lident ("true" | "false" as txt)}, None)       
-                -> 
-                succeed attr pval_attributes;
-                { sigi with 
-                 psig_desc = Psig_value
-                     { 
-                       value_desc with
-                       pval_prim = External_ffi_types.inline_bool_primitive (txt = "true") ;
-                       pval_attributes = []
-                     }}
-              | _ -> 
-                default_mapper.signature_item self sigi
-           end 
-         | Some  _            
-         | None ->
-         default_mapper.signature_item self sigi
-          )
-      | _ -> default_mapper.signature_item self sigi
+      | Some ((_,PStr [{pstr_desc = Pstr_eval ({pexp_desc },_)}]) as attr) ->
+        begin match pexp_desc with
+          | Pexp_constant (
+              Pconst_string
+                (s,dec)) -> 
+            succeed attr pval_attributes;
+            { sigi with 
+              psig_desc = Psig_value
+                  { 
+                    value_desc with
+                    pval_prim = External_ffi_types.inline_string_primitive s dec;
+                    pval_attributes = []
+                  }}
+          | Pexp_constant(
+              Pconst_integer (s,None)
+            ) ->       
+            succeed attr pval_attributes;  
+            let s = Int32.of_string s in  
+            { sigi with 
+              psig_desc = Psig_value
+                  { 
+                    value_desc with
+                    pval_prim = External_ffi_types.inline_int_primitive s ;
+                    pval_attributes = []
+                  }}
+          | Pexp_constant(Pconst_integer (s, Some 'L'))
+            -> 
+            let s = Int64.of_string s in  
+            succeed attr pval_attributes;
+            {sigi with psig_desc = Psig_value  {
+                 value_desc with 
+                 pval_prim = External_ffi_types.inline_int64_primitive s;
+                 pval_attributes = [];
+               } }
+          | Pexp_constant (Pconst_float(s,None)) -> 
+            succeed attr pval_attributes;
+            {sigi with psig_desc = Psig_value  {
+                 value_desc with 
+                 pval_prim = External_ffi_types.inline_float_primitive s;
+                 pval_attributes = [];
+               } }
+          | Pexp_construct ({txt = Lident ("true" | "false" as txt)}, None)       
+            -> 
+            succeed attr pval_attributes;
+            { sigi with 
+              psig_desc = Psig_value
+                  { 
+                    value_desc with
+                    pval_prim = External_ffi_types.inline_bool_primitive (txt = "true") ;
+                    pval_attributes = []
+                  }}
+          | _ -> 
+            default_mapper.signature_item self sigi
+        end 
+      | Some  _            
+      | None ->
+        default_mapper.signature_item self sigi
+      )
+  | _ -> default_mapper.signature_item self sigi
 
 
 let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
   match str.pstr_desc with
   | Pstr_type (
-          rf, 
-          tdcls) (* [ {ptype_attributes} as tdcl ] *)->
-          Ast_tdcls.handleTdclsInStru self str rf tdcls
-   | Pstr_primitive prim when Ast_attributes.external_needs_to_be_encoded prim.pval_attributes
-      ->
-      Ast_external.handleExternalInStru self prim str
-   | Pstr_value 
-    (Nonrecursive, [
-      {
-        pvb_pat = ({ppat_desc = Ppat_var pval_name} as pvb_pat); 
-        pvb_expr ; 
-        pvb_attributes ; 
-        pvb_loc}]) 
-    
+      rf, 
+      tdcls) (* [ {ptype_attributes} as tdcl ] *)->
+    Ast_tdcls.handleTdclsInStru self str rf tdcls
+  | Pstr_primitive prim when Ast_attributes.external_needs_to_be_encoded prim.pval_attributes
+    ->
+    Ast_external.handleExternalInStru self prim str
+  | Pstr_value 
+      (Nonrecursive, [
+          {
+            pvb_pat = ({ppat_desc = Ppat_var pval_name} as pvb_pat); 
+            pvb_expr ; 
+            pvb_attributes ; 
+            pvb_loc}]) 
+
     ->   
     let pvb_expr = self.expr self pvb_expr in 
     let pvb_attributes = self.attributes self pvb_attributes in 
@@ -438,7 +438,7 @@ let rec
       in  aux  [] stru
     | _ ->    
       self.structure_item self item  :: structure_mapper self rest
-  
+
 let  mapper : mapper =
   { default_mapper with
     expr = expr_mapper;
@@ -450,13 +450,13 @@ let  mapper : mapper =
     structure = structure_mapper;
     (** Ad-hoc way to internalize stuff *)
     label_declaration = (fun self lbl -> 
-      let lbl = default_mapper.label_declaration self lbl in 
-      match lbl.pld_attributes with 
-      | [ {txt="internal"}, _ ] -> 
-        {lbl with pld_name = {lbl.pld_name with txt = String.capitalize_ascii lbl.pld_name.txt };
-                  pld_attributes = []}
-      | _ -> lbl  
-    )
+        let lbl = default_mapper.label_declaration self lbl in 
+        match lbl.pld_attributes with 
+        | [ {txt="internal"}, _ ] -> 
+          {lbl with pld_name = {lbl.pld_name with txt = String.capitalize_ascii lbl.pld_name.txt };
+                    pld_attributes = []}
+        | _ -> lbl  
+      )
   }
 
 
@@ -468,7 +468,7 @@ let  mapper : mapper =
 
 
 
-  
+
 
 
 

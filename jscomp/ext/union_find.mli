@@ -23,12 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- type t 
+type t 
 
 val init : int -> t 
 
-  
- 
+
+
 val find : t -> int -> int
 
 val union : t -> int -> int -> unit 

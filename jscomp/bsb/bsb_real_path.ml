@@ -14,9 +14,9 @@ let real_path p =
   | exception _ ->
     let rec resolve dir =
       if Sys.file_exists dir then normalize_exn dir else
-      let parent = Filename.dirname dir in
-      if dir = parent then dir
-      else  (resolve parent) // (Filename.basename dir)
+        let parent = Filename.dirname dir in
+        if dir = parent then dir
+        else  (resolve parent) // (Filename.basename dir)
     in
     let p =
       if Filename.is_relative p then (Sys.getcwd ()) // p

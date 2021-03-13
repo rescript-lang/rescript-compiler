@@ -26,7 +26,7 @@
 (** 
     [function] can only take one argument, that is the reason we did not adopt it
     syntax:
-    {[ fun [@bs] pat pat1-> body ]}
+   {[ fun [@bs] pat pat1-> body ]}
     [to_uncurry_fn (fun pat -> (fun pat1 -> ...  body))]
 
 *)

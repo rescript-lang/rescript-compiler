@@ -80,15 +80,15 @@ let extract_package_name_and_namespace
       Some (Ext_namespace.namespace_of_package_name str)        
     | Some x ->
       Bsb_exception.config_error x 
-      "namespace field expects string or boolean"
+        "namespace field expects string or boolean"
   in 
   package_name, namespace
 
 
 (**
     There are two things to check:
-    - the running bsb and vendoring bsb is the same
-    - the running bsb need delete stale build artifacts
+   - the running bsb and vendoring bsb is the same
+   - the running bsb need delete stale build artifacts
       (kinda check npm upgrade)
 
       Note if the setup is correct: 
@@ -122,11 +122,11 @@ let extract_gentype_config (map : json_map) cwd
              match obj.?(Bsb_build_schemas.path) with
              | None -> 
                (Bsb_build_util.resolve_bsb_magic_file
-                 ~cwd ~desc:"gentype.exe"
-                 "gentype/gentype.exe").path
+                  ~cwd ~desc:"gentype.exe"
+                  "gentype/gentype.exe").path
              | Some (Str {str}) ->  
                (Bsb_build_util.resolve_bsb_magic_file
-                 ~cwd ~desc:"gentype.exe" str).path 
+                  ~cwd ~desc:"gentype.exe" str).path 
              | Some config -> 
                Bsb_exception.config_error config
                  "path expect to be a string"
@@ -143,7 +143,7 @@ let extract_string (map : json_map) (field : string) cb =
   | Some (Str{str}) -> cb str 
   | Some config -> 
     Bsb_exception.config_error config (field ^ " expect a string" )
-  
+
 let extract_boolean (map : json_map) (field : string) (default : bool) : bool = 
   match map.?(field) with 
   | None -> default 
@@ -151,7 +151,7 @@ let extract_boolean (map : json_map) (field : string) (default : bool) : bool =
   | Some (False _) -> false 
   | Some config -> 
     Bsb_exception.config_error config (field ^ " expect a boolean" )
-  
+
 let extract_reason_react_jsx (map : json_map) = 
   let default : Bsb_config_types.reason_react_jsx option ref = ref None in 
   map
@@ -212,7 +212,7 @@ let extract_generators (map : json_map) =
      Bsb_exception.config_error config (Bsb_build_schemas.generators ^ " expect an array field")       
   );
   !generators
-  
+
 
 let extract_dependencies (map : json_map) cwd (field : string )
   : Bsb_config_types.dependencies =   
@@ -223,7 +223,7 @@ let extract_dependencies (map : json_map) cwd (field : string )
   | Some config -> 
     Bsb_exception.config_error config 
       (field ^ " expect an array")
-  
+
 (* return an empty array if not found *)     
 let extract_string_list (map : json_map) (field : string) : string list = 
   match map.?(field) with 
@@ -234,9 +234,9 @@ let extract_string_list (map : json_map) (field : string) : string list =
     Bsb_exception.config_error config (field ^ " expect an array")
 
 let extract_ppx 
-  (map : json_map) 
-  (field : string) 
-  ~(cwd : string) : Bsb_config_types.ppx list =     
+    (map : json_map) 
+    (field : string) 
+    ~(cwd : string) : Bsb_config_types.ppx list =     
   match map.?(field) with 
   | None -> []
   | Some (Arr {content }) -> 
@@ -245,23 +245,23 @@ let extract_ppx
       else 
         (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags s).path in 
     Ext_array.to_list_f content (fun x -> 
-      match x with 
-      | Str x ->    
-      
-        {Bsb_config_types.name = 
-          resolve x.str; 
-          args = []}
-      | Arr {content } -> 
+        match x with 
+        | Str x ->    
+
+          {Bsb_config_types.name = 
+             resolve x.str; 
+           args = []}
+        | Arr {content } -> 
 
           let xs = Bsb_build_util.get_list_string content in 
           (match xs with 
-          | [] -> Bsb_exception.config_error x " empty array is not allowed"
-          | name :: args -> 
-            {Bsb_config_types.name = resolve name ; args}
+           | [] -> Bsb_exception.config_error x " empty array is not allowed"
+           | name :: args -> 
+             {Bsb_config_types.name = resolve name ; args}
           )
-      | config -> Bsb_exception.config_error config 
-        (field ^ "expect each item to be either string or array")
-    )
+        | config -> Bsb_exception.config_error config 
+                      (field ^ "expect each item to be either string or array")
+      )
   | Some config -> 
     Bsb_exception.config_error config (field ^ " expect an array")
 
@@ -293,16 +293,16 @@ let interpret_json
   (** we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
-  
-  
- 
-  
+
+
+
+
   (* When we plan to add more deps here,
      Make sure check it is consistent that for nested deps, we have a 
      quck check by just re-parsing deps 
      Make sure it works with [-make-world] [-clean-world]
   *)
-  
+
   (* Setting ninja is a bit complex
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
@@ -317,14 +317,14 @@ let interpret_json
 
     (* The default situation is empty *)
     let built_in_package : bool = check_stdlib map  in
-    
+
     let pp_flags : string option = 
       extract_string map Bsb_build_schemas.pp_flags (fun p -> 
-        if p = "" then 
-          Bsb_exception.invalid_spec "invalid pp, empty string found"
-        else 
-          Some (Bsb_build_util.resolve_bsb_magic_file ~cwd:per_proj_dir ~desc:Bsb_build_schemas.pp_flags p).path
-      ) in 
+          if p = "" then 
+            Bsb_exception.invalid_spec "invalid pp, empty string found"
+          else 
+            Some (Bsb_build_util.resolve_bsb_magic_file ~cwd:per_proj_dir ~desc:Bsb_build_schemas.pp_flags p).path
+        ) in 
     let reason_react_jsx = extract_reason_react_jsx map in 
     let bs_dependencies = extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies in    
     let bs_dev_dependencies = 
@@ -383,8 +383,8 @@ let interpret_json
           cut_generators ;
         }
       | None -> 
-          Bsb_exception.invalid_spec
-            "no sources specified in bsconfig.json"
+        Bsb_exception.invalid_spec
+          "no sources specified in bsconfig.json"
     end
   | _ -> 
     Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"

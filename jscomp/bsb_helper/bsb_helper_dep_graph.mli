@@ -27,9 +27,9 @@ val sort_files_by_dependencies : domain:Set_string.t -> Set_string.t Map_string.
 
 (* Returns a topologically sorted Queue of module names found from the given main module. *)
 val simple_collect_from_main :
-           ?alias_map:string Hash_string.t ->
-           Set_string.t Map_string.t ->
-           string -> string Queue.t
+  ?alias_map:string Hash_string.t ->
+  Set_string.t Map_string.t ->
+  string -> string Queue.t
 
 (* Returns a list of extra modules which are part of the "otherlibs" stdlib to link in. *)
 val get_otherlibs_dependencies : Set_string.t Map_string.t -> string -> string list

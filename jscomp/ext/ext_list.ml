@@ -67,7 +67,7 @@ let rec has_string l f =
     x1 = f || x2 = f || x3 = f
   | x1 :: x2 :: x3 :: x4 ->
     x1 = f || x2 = f || x3 = f || has_string x4 f 
-  
+
 let rec map_combine l1 l2 f =
   match (l1, l2) with
     ([], []) -> []
@@ -94,7 +94,7 @@ let combine_array arr l f =
   combine_array_unsafe arr l 0 len [] f 
 
 let rec map_split_opt 
-  (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
+    (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
   : 'b list * 'c list = 
   match xs with 
   | [] -> [], []
@@ -315,10 +315,10 @@ let rec fold_left_with_offset l accu i f =
   | [] -> accu
   | a::l -> 
     fold_left_with_offset 
-    l     
-    (f  a accu  i)  
-    (i + 1)
-    f  
+      l     
+      (f  a accu  i)  
+      (i + 1)
+      f  
 
 
 let rec filter_map xs (f: 'a -> 'b option)= 
@@ -509,7 +509,7 @@ let rec length_ge l n =
     | _ :: tl -> length_ge tl (n - 1)
     | [] -> false
   else true
-  
+
 (**
    {[length xs = length ys + n ]}
 *)
@@ -716,7 +716,7 @@ let rec iter_snd lst f =
   | (_,x)::xs -> 
     f x ; 
     iter_snd xs f 
-    
+
 let rec iter_fst lst f =     
   match lst with
   | [] -> ()
@@ -740,8 +740,8 @@ let rec exists_snd l p =
   | (_, a)::l -> p a || exists_snd l p 
 
 let rec concat_append 
-  (xss : 'a list list)  
-  (xs : 'a list) : 'a list = 
+    (xss : 'a list list)  
+    (xs : 'a list) : 'a list = 
   match xss with 
   | [] -> xs 
   | l::r -> append l (concat_append r xs)
@@ -750,7 +750,7 @@ let rec fold_left l accu f =
   match l with
     [] -> accu
   | a::l -> fold_left l (f accu a) f 
-  
+
 let reduce_from_left lst fn = 
   match lst with 
   | first :: rest ->  fold_left rest first fn 

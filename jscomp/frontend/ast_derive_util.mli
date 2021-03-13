@@ -23,9 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** Given a type declaration, extaract the type expression, mostly 
-  used in code gen later
- *)
- val core_type_of_type_declaration :
+    used in code gen later
+*)
+val core_type_of_type_declaration :
   Parsetree.type_declaration -> Parsetree.core_type
 
 val new_type_of_type_declaration : 
@@ -35,14 +35,14 @@ val new_type_of_type_declaration :
 
 
 (* val mk_fun :
-  loc:Location.t ->
-  Parsetree.core_type ->
-  string -> Parsetree.expression -> Parsetree.expression
-val destruct_label_declarations :
-  loc:Location.t ->
-  string ->
-  Parsetree.label_declaration list ->
-  (Parsetree.core_type * Parsetree.expression) list * string list *)
+   loc:Location.t ->
+   Parsetree.core_type ->
+   string -> Parsetree.expression -> Parsetree.expression
+   val destruct_label_declarations :
+   loc:Location.t ->
+   string ->
+   Parsetree.label_declaration list ->
+   (Parsetree.core_type * Parsetree.expression) list * string list *)
 
 val notApplicable:   
   Location.t ->

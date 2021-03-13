@@ -43,14 +43,14 @@ type style
 
 
 (* let ansi_of_color = function
-  | Black -> "0"
-  | Red -> "1"
-  | Green -> "2"
-  | Yellow -> "3"
-  | Blue -> "4"
-  | Magenta -> "5"
-  | Cyan -> "6"
-  | White -> "7" *)
+   | Black -> "0"
+   | Red -> "1"
+   | Green -> "2"
+   | Yellow -> "3"
+   | Blue -> "4"
+   | Magenta -> "5"
+   | Cyan -> "6"
+   | White -> "7" *)
 
 let code_of_style = function
   | FG Black -> "30"
@@ -61,7 +61,7 @@ let code_of_style = function
   | FG Magenta -> "35"
   | FG Cyan -> "36"
   | FG White -> "37"
-  
+
   | BG Black -> "40"
   | BG Red -> "41"
   | BG Green -> "42"

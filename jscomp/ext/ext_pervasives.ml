@@ -32,12 +32,12 @@ external reraise: exn -> 'a = "%reraise"
 let finally v ~clean:action f   = 
   match f v with
   | exception e -> 
-      action v ;
-      reraise e 
+    action v ;
+    reraise e 
   | e ->  action v ; e 
 
 (* let try_it f  =   
-  try ignore (f ()) with _ -> () *)
+   try ignore (f ()) with _ -> () *)
 
 let with_file_as_chan filename f = 
   finally (open_out_bin filename) ~clean:close_out f 
@@ -61,8 +61,8 @@ let hash_variant s =
   if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu *)
 
 (* let todo loc = 
-  failwith (loc ^ " Not supported yet")
- *)
+   failwith (loc ^ " Not supported yet")
+*)
 
 
 

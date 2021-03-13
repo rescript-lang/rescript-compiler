@@ -35,7 +35,7 @@
 
 (** @raise  when not found *)
 val resolve_bs_package : 
-    cwd:string ->  Bsb_pkg_types.t -> string 
+  cwd:string ->  Bsb_pkg_types.t -> string 
 
 
 (** used by watcher *)    

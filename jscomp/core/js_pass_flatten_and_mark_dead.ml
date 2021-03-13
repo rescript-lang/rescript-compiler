@@ -45,49 +45,49 @@ let mark_dead_code (js : J.program) : J.program =
   let ident_use_stats : meta_info Hash_ident.t
     = Hash_ident.create 17 in 
   let mark_dead  = { super with 
-    ident = (fun _ ident -> 
-      (match Hash_ident.find_opt ident_use_stats ident with
-       | None -> (* First time *)
-         Hash_ident.add ident_use_stats ident Recursive 
-       (* recursive identifiers *)
-       | Some Recursive
-         -> ()
-       | Some (Info x) ->  Js_op_util.update_used_stats x Used ));
-     variable_declaration = fun self vd -> 
-      match vd.ident_info.used_stats with 
-      |  Dead_pure 
-        -> ()
-      |  Dead_non_pure  -> 
-        begin match vd.value with
-          | None -> ()
-          | Some x -> self.expression self x 
-        end
-      |  _ -> 
-        let ({ident; ident_info ; value ; _} : J.variable_declaration) = vd in 
-        let pure = 
-          match value with 
-          | None  -> true
-          | Some x ->  self.expression self x; Js_analyzer.no_side_effect_expression x in
-        (
-         let () = 
-           if Set_ident.mem js.export_set ident then 
-             Js_op_util.update_used_stats ident_info Exported 
-         in
-         match Hash_ident.find_opt ident_use_stats ident with
-         | Some (Recursive) -> 
-           Js_op_util.update_used_stats ident_info Used; 
-           Hash_ident.replace ident_use_stats ident (Info ident_info)
-         | Some (Info _) ->  
-           (** check [camlinternlFormat,box_type] inlined twice 
-               FIXME: seems we have redeclared identifiers
-           *)
-           ()
-         (* assert false *)
-         | None ->  (* First time *)
-           Hash_ident.add ident_use_stats ident (Info ident_info);
-           Js_op_util.update_used_stats ident_info 
-             (if pure then Scanning_pure else Scanning_non_pure))
-    }  in 
+                     ident = (fun _ ident -> 
+                         (match Hash_ident.find_opt ident_use_stats ident with
+                          | None -> (* First time *)
+                            Hash_ident.add ident_use_stats ident Recursive 
+                          (* recursive identifiers *)
+                          | Some Recursive
+                            -> ()
+                          | Some (Info x) ->  Js_op_util.update_used_stats x Used ));
+                     variable_declaration = fun self vd -> 
+                       match vd.ident_info.used_stats with 
+                       |  Dead_pure 
+                         -> ()
+                       |  Dead_non_pure  -> 
+                         begin match vd.value with
+                           | None -> ()
+                           | Some x -> self.expression self x 
+                         end
+                       |  _ -> 
+                         let ({ident; ident_info ; value ; _} : J.variable_declaration) = vd in 
+                         let pure = 
+                           match value with 
+                           | None  -> true
+                           | Some x ->  self.expression self x; Js_analyzer.no_side_effect_expression x in
+                         (
+                           let () = 
+                             if Set_ident.mem js.export_set ident then 
+                               Js_op_util.update_used_stats ident_info Exported 
+                           in
+                           match Hash_ident.find_opt ident_use_stats ident with
+                           | Some (Recursive) -> 
+                             Js_op_util.update_used_stats ident_info Used; 
+                             Hash_ident.replace ident_use_stats ident (Info ident_info)
+                           | Some (Info _) ->  
+                             (** check [camlinternlFormat,box_type] inlined twice 
+                                 FIXME: seems we have redeclared identifiers
+                             *)
+                             ()
+                           (* assert false *)
+                           | None ->  (* First time *)
+                             Hash_ident.add ident_use_stats ident (Info ident_info);
+                             Js_op_util.update_used_stats ident_info 
+                               (if pure then Scanning_pure else Scanning_non_pure))
+                   }  in 
   mark_dead.program mark_dead js;
   Hash_ident.iter ident_use_stats (fun _id (info : meta_info) ->
       match info  with 
@@ -98,7 +98,7 @@ let mark_dead_code (js : J.program) : J.program =
       | _ -> ())
   ;
   js
-        
+
 (*
    when we do optmizations, we might need track it will break invariant 
    of other optimizations, especially for [mutable] meta data, 
@@ -115,7 +115,7 @@ let mark_dead_code (js : J.program) : J.program =
        end      
    ]}   
    Since user may use `bsc.exe -c xx.ml xy.ml xz.ml` and we need clean up state
- *)
+*)
 
 (** we can do here, however, we should 
     be careful that it can only be done 
@@ -155,109 +155,109 @@ let mark_dead_code (js : J.program) : J.program =
 
 let super = Js_record_map.super
 let add_substitue substitution (ident : Ident.t) (e:J.expression) = 
-    Hash_ident.replace  substitution ident e
+  Hash_ident.replace  substitution ident e
 let subst_map (substitution : J.expression Hash_ident.t) = { super
-  with statement  =  (fun self v ->
-    match v.statement_desc with 
-    | Variable ({ident = _; ident_info = {used_stats = Dead_pure } ; _}) -> 
-      {v with statement_desc = Block []}
-    | Variable ({ident = _; ident_info = {used_stats = Dead_non_pure } ; value = None}) -> 
-      {v with statement_desc = Block []}
-    | Variable ({ident = _; ident_info = {used_stats = Dead_non_pure } ; value = Some x}) -> 
-      {v with statement_desc =  (Exp x)}
+                                                             with statement  =  (fun self v ->
+                                                                 match v.statement_desc with 
+                                                                 | Variable ({ident = _; ident_info = {used_stats = Dead_pure } ; _}) -> 
+                                                                   {v with statement_desc = Block []}
+                                                                 | Variable ({ident = _; ident_info = {used_stats = Dead_non_pure } ; value = None}) -> 
+                                                                   {v with statement_desc = Block []}
+                                                                 | Variable ({ident = _; ident_info = {used_stats = Dead_non_pure } ; value = Some x}) -> 
+                                                                   {v with statement_desc =  (Exp x)}
 
-    | Variable ({ ident ; 
-                  property = (Strict | StrictOpt | Alias);
-                  value = Some (
-                      {expression_desc = (Caml_block ( _:: _ :: _ as ls, Immutable, tag, tag_info) 
-                                         )} as block)
-                } as variable) -> 
-      (** If we do this, we should prevent incorrect inlning to inline it into an array :) 
-          do it only when block size is larger than one
-      *)
-      let (_, e, bindings) = 
-        Ext_list.fold_left ls (0, [], []) (fun (i,e, acc) x -> 
-             match x.expression_desc with 
-             | Var _ | Number _ | Str _ | J.Bool _ | Undefined
-               ->  (* TODO: check the optimization *)
-               (i + 1, x :: e, acc)
-             | _ ->                
-               (* tradeoff, 
-                   when the block is small, it does not make 
-                   sense too much -- 
-                   bottomline, when the block size is one, no need to do 
-                   this
-               *)
-               let v' = self.expression self x in 
-               let match_id =
-                 Ext_ident.create
-                   (ident.name ^ "_" ^
-                    (match tag_info with 
-                     | Blk_module fields -> 
-                       (match Ext_list.nth_opt fields i with 
-                        | None -> Printf.sprintf "%d" i                      
-                        | Some x -> x )
-                     | Blk_record fields ->    
-                      Ext_array.get_or fields i (fun _ -> Printf.sprintf "%d" i)                     
-                     | _ -> Printf.sprintf "%d" i    
-                    )) in
-               (i + 1, E.var match_id :: e, (match_id, v') :: acc))  in
-      let e = 
-        {block with 
-         expression_desc = 
-           Caml_block(List.rev e, Immutable, tag, tag_info)
-        } in
-      let () = add_substitue substitution ident e in
-      (* let bindings =  !bindings in *)
-      let original_statement = 
-        { v with 
-          statement_desc = Variable {variable with value =  Some   e }
-        } in
-      begin match bindings with 
-        | [] -> 
-          original_statement
-        | _ ->  
-          (* self#add_substitue ident e ; *)
-          S.block @@
-          (Ext_list.rev_map_append bindings [original_statement]
-            (fun (id,v) -> 
-               S.define_variable ~kind:Strict id v)  )
-      end
-    | _ -> super.statement self v 
-  );
-  expression = fun self x -> 
-    match x.expression_desc with 
-    | Array_index ({expression_desc = Var (Id (id))}, 
-              {expression_desc = Number (Int {i; _})})
-    | Static_index ({expression_desc = Var (Id (id))}, _, Some i)          
-     -> 
-      (match Hash_ident.find_opt substitution id with 
-       | Some {expression_desc = Caml_block (ls, Immutable, _, _) } 
-         -> 
-         (* user program can be wrong, we should not 
-            turn a runtime crash into compile time crash : )
-         *)          
-         (match Ext_list.nth_opt ls (Int32.to_int i) with 
-          | Some ({expression_desc = J.Var _ | Number _ | Str _ | Undefined} as x)
-            -> x 
-          | None | Some _ -> 
-            super.expression self x )          
-       | Some _ | None -> super.expression self x )
-      
-    | _ -> super.expression self x
-}
+                                                                 | Variable ({ ident ; 
+                                                                               property = (Strict | StrictOpt | Alias);
+                                                                               value = Some (
+                                                                                   {expression_desc = (Caml_block ( _:: _ :: _ as ls, Immutable, tag, tag_info) 
+                                                                                                      )} as block)
+                                                                             } as variable) -> 
+                                                                   (** If we do this, we should prevent incorrect inlning to inline it into an array :) 
+                                                                       do it only when block size is larger than one
+                                                                   *)
+                                                                   let (_, e, bindings) = 
+                                                                     Ext_list.fold_left ls (0, [], []) (fun (i,e, acc) x -> 
+                                                                         match x.expression_desc with 
+                                                                         | Var _ | Number _ | Str _ | J.Bool _ | Undefined
+                                                                           ->  (* TODO: check the optimization *)
+                                                                           (i + 1, x :: e, acc)
+                                                                         | _ ->                
+                                                                           (* tradeoff, 
+                                                                               when the block is small, it does not make 
+                                                                               sense too much -- 
+                                                                               bottomline, when the block size is one, no need to do 
+                                                                               this
+                                                                           *)
+                                                                           let v' = self.expression self x in 
+                                                                           let match_id =
+                                                                             Ext_ident.create
+                                                                               (ident.name ^ "_" ^
+                                                                                (match tag_info with 
+                                                                                 | Blk_module fields -> 
+                                                                                   (match Ext_list.nth_opt fields i with 
+                                                                                    | None -> Printf.sprintf "%d" i                      
+                                                                                    | Some x -> x )
+                                                                                 | Blk_record fields ->    
+                                                                                   Ext_array.get_or fields i (fun _ -> Printf.sprintf "%d" i)                     
+                                                                                 | _ -> Printf.sprintf "%d" i    
+                                                                                )) in
+                                                                           (i + 1, E.var match_id :: e, (match_id, v') :: acc))  in
+                                                                   let e = 
+                                                                     {block with 
+                                                                      expression_desc = 
+                                                                        Caml_block(List.rev e, Immutable, tag, tag_info)
+                                                                     } in
+                                                                   let () = add_substitue substitution ident e in
+                                                                   (* let bindings =  !bindings in *)
+                                                                   let original_statement = 
+                                                                     { v with 
+                                                                       statement_desc = Variable {variable with value =  Some   e }
+                                                                     } in
+                                                                   begin match bindings with 
+                                                                     | [] -> 
+                                                                       original_statement
+                                                                     | _ ->  
+                                                                       (* self#add_substitue ident e ; *)
+                                                                       S.block @@
+                                                                       (Ext_list.rev_map_append bindings [original_statement]
+                                                                          (fun (id,v) -> 
+                                                                             S.define_variable ~kind:Strict id v)  )
+                                                                   end
+                                                                 | _ -> super.statement self v 
+                                                               );
+                                                                  expression = fun self x -> 
+                                                                    match x.expression_desc with 
+                                                                    | Array_index ({expression_desc = Var (Id (id))}, 
+                                                                                   {expression_desc = Number (Int {i; _})})
+                                                                    | Static_index ({expression_desc = Var (Id (id))}, _, Some i)          
+                                                                      -> 
+                                                                      (match Hash_ident.find_opt substitution id with 
+                                                                       | Some {expression_desc = Caml_block (ls, Immutable, _, _) } 
+                                                                         -> 
+                                                                         (* user program can be wrong, we should not 
+                                                                            turn a runtime crash into compile time crash : )
+                                                                         *)          
+                                                                         (match Ext_list.nth_opt ls (Int32.to_int i) with 
+                                                                          | Some ({expression_desc = J.Var _ | Number _ | Str _ | Undefined} as x)
+                                                                            -> x 
+                                                                          | None | Some _ -> 
+                                                                            super.expression self x )          
+                                                                       | Some _ | None -> super.expression self x )
+
+                                                                    | _ -> super.expression self x
+                                                           }
 
 (* Top down or bottom up ?*)
 (* A pass to support nullary argument in JS 
     Nullary information can be done in one pass, 
     there is no need to add another pass
- *)
+*)
 
 let program  (js : J.program) = 
   let obj = (subst_map (Hash_ident.create 32) )  in 
   let js = obj.program obj js in 
   mark_dead_code js
-  (* |> mark_dead_code *)
-  (* mark dead code twice does have effect in some cases, however, we disabled it 
-    since the benefit is not obvious
-   *)
+(* |> mark_dead_code *)
+(* mark dead code twice does have effect in some cases, however, we disabled it 
+   since the benefit is not obvious
+*)

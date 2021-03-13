@@ -30,40 +30,40 @@
 
 
 (** we also need make it complete 
- *)
+*)
 let get_initial_exports 
     count_non_variable_declaration_statement 
     (export_set : Set_ident.t) (block : J.block ) = 
   let result = Ext_list.fold_left block export_set 
-    (fun acc st -> 
-      match st.statement_desc with
-      | Variable {ident ; value; _} ->
-          if Set_ident.mem acc ident then 
-            begin match value with
-            | None -> acc  
-            | Some x -> 
-              (* If not a function, we have to calcuate again and again 
-                  TODO: add hashtbl for a cache
-               *)
-                Set_ident.(
-                union (Js_analyzer.free_variables_of_expression  x) acc)
-            end
-          else 
-            begin match value with
-            | None -> acc 
-            | Some x -> 
-                if Js_analyzer.no_side_effect_expression x then acc 
-                else 
-                  Set_ident.(
-                  union (Js_analyzer.free_variables_of_expression x) 
-                    (add acc ident))
-            end
-      | _ -> 
-          (* recalcuate again and again ... *)
-          if Js_analyzer.no_side_effect_statement st || (not count_non_variable_declaration_statement)
-          then acc
-          else Set_ident.(union (Js_analyzer.free_variables_of_statement  st) acc)
-    ) in result, Set_ident.(diff result export_set)
+      (fun acc st -> 
+         match st.statement_desc with
+         | Variable {ident ; value; _} ->
+           if Set_ident.mem acc ident then 
+             begin match value with
+               | None -> acc  
+               | Some x -> 
+                 (* If not a function, we have to calcuate again and again 
+                     TODO: add hashtbl for a cache
+                 *)
+                 Set_ident.(
+                   union (Js_analyzer.free_variables_of_expression  x) acc)
+             end
+           else 
+             begin match value with
+               | None -> acc 
+               | Some x -> 
+                 if Js_analyzer.no_side_effect_expression x then acc 
+                 else 
+                   Set_ident.(
+                     union (Js_analyzer.free_variables_of_expression x) 
+                       (add acc ident))
+             end
+         | _ -> 
+           (* recalcuate again and again ... *)
+           if Js_analyzer.no_side_effect_statement st || (not count_non_variable_declaration_statement)
+           then acc
+           else Set_ident.(union (Js_analyzer.free_variables_of_statement  st) acc)
+      ) in result, Set_ident.(diff result export_set)
 
 let shake_program (program : J.program) = 
   let shake_block block export_set = 
@@ -100,17 +100,17 @@ let shake_program (program : J.program) =
     let really_set = loop block export_set in 
     Ext_list.fold_right block []
       (fun  (st : J.statement) acc -> 
-        match st.statement_desc with
-        | Variable {ident; value ; _} -> 
-            if Set_ident.mem really_set ident then st:: acc 
-            else 
-              begin match value with 
-              | None -> acc 
-              | Some x -> 
-                  if Js_analyzer.no_side_effect_expression x then acc
-                  else st::acc
-              end
-        | _ -> if Js_analyzer.no_side_effect_statement st then acc else st::acc
+         match st.statement_desc with
+         | Variable {ident; value ; _} -> 
+           if Set_ident.mem really_set ident then st:: acc 
+           else 
+             begin match value with 
+               | None -> acc 
+               | Some x -> 
+                 if Js_analyzer.no_side_effect_expression x then acc
+                 else st::acc
+             end
+         | _ -> if Js_analyzer.no_side_effect_statement st then acc else st::acc
       ) 
   in
 

@@ -37,6 +37,6 @@ val make_array : J.mutable_flag -> J.expression list -> J.expression
 val set_array : J.expression -> J.expression -> J.expression -> J.expression
 (** Here we don't care about [array_kind],  
     In the future, we might used TypedArray for FloatArray
- *)
+*)
 
 val ref_array :  J.expression -> J.expression -> J.expression

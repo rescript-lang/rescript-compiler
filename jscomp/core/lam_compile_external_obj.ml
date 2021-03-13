@@ -42,7 +42,7 @@ module S = Js_stmt_make
 (* TODO: check stackoverflow *)
 let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.expression list) 
   : J.block * J.expression = 
-   let rec aux (labels : External_arg_spec.obj_params) args 
+  let rec aux (labels : External_arg_spec.obj_params) args 
     : (Js_op.property_name * E.t ) list  * J.expression list * _ = 
     match labels, args with 
     | [] , []  ->  [], [], []
@@ -96,60 +96,60 @@ let assemble_obj_args (labels : External_arg_spec.obj_params)  (args : J.express
     let v  = Ext_ident.create_tmp () in 
     let var_v = E.var v in 
     S.define_variable ~kind:Variable v 
-    (begin match eff with
-      | [] -> 
-        E.obj map 
-      | x::xs -> E.seq (E.fuse_to_seq x xs) (E.obj map)     
-    end) :: 
-      (Ext_list.flat_map assignment (fun 
-        ((xlabel : External_arg_spec.obj_param), (arg  : J.expression )) -> 
-      match xlabel with 
-      | {obj_arg_label = Obj_optional {name = label;for_sure_no_nested_option} } -> 
-        (* Need make sure whether assignment is effectful or not
-          to avoid code duplication
-        *)
-        begin match Js_ast_util.named_expression arg with 
-        | None ->
-          let acc,new_eff = 
-            Lam_compile_external_call.ocaml_to_js_eff 
-            ~arg_label:
-             Arg_empty ~arg_type:xlabel.obj_arg_type 
-              (if for_sure_no_nested_option then arg else Js_of_lam_option.val_from_option arg) in 
-          begin match acc with 
-          | Splice1 v  ->                         
-            [S.if_ (Js_of_lam_option.is_not_none arg )
-              [S.exp (E.assign (E.dot var_v label) 
-            (
-              match new_eff with 
-              | [] -> v 
-              | x :: xs ->
-                E.seq (E.fuse_to_seq  x xs ) v
-             ) ) ] ] 
-          | Splice0 | Splice2 _ -> assert false
-          end
-        | Some (st,id) -> (* FIXME: see #2503 *)
-          let arg = E.var id in         
-          let acc,new_eff = 
-            Lam_compile_external_call.ocaml_to_js_eff 
-            ~arg_label:
-             Arg_empty
-             ~arg_type:xlabel.obj_arg_type             
-              (if for_sure_no_nested_option then arg else Js_of_lam_option.val_from_option arg) in 
-          begin match acc with 
-          | Splice1 v  ->        
-            st ::  
-            [S.if_ 
-              (Js_of_lam_option.is_not_none arg) 
-              [S.exp (E.assign (E.dot var_v label) 
-              (match new_eff with 
-              | [] -> v 
-              | x :: xs ->
-                E.seq (E.fuse_to_seq x xs) v 
-              )) ]]
-          | Splice0 | Splice2 _ -> assert false
-          end 
-        end 
-      |  _ -> assert false    
-      )
-      )
-    , var_v                    
+      (begin match eff with
+         | [] -> 
+           E.obj map 
+         | x::xs -> E.seq (E.fuse_to_seq x xs) (E.obj map)     
+       end) :: 
+    (Ext_list.flat_map assignment (fun 
+                                    ((xlabel : External_arg_spec.obj_param), (arg  : J.expression )) -> 
+                                    match xlabel with 
+                                    | {obj_arg_label = Obj_optional {name = label;for_sure_no_nested_option} } -> 
+                                      (* Need make sure whether assignment is effectful or not
+                                         to avoid code duplication
+                                      *)
+                                      begin match Js_ast_util.named_expression arg with 
+                                        | None ->
+                                          let acc,new_eff = 
+                                            Lam_compile_external_call.ocaml_to_js_eff 
+                                              ~arg_label:
+                                                Arg_empty ~arg_type:xlabel.obj_arg_type 
+                                              (if for_sure_no_nested_option then arg else Js_of_lam_option.val_from_option arg) in 
+                                          begin match acc with 
+                                            | Splice1 v  ->                         
+                                              [S.if_ (Js_of_lam_option.is_not_none arg )
+                                                 [S.exp (E.assign (E.dot var_v label) 
+                                                           (
+                                                             match new_eff with 
+                                                             | [] -> v 
+                                                             | x :: xs ->
+                                                               E.seq (E.fuse_to_seq  x xs ) v
+                                                           ) ) ] ] 
+                                            | Splice0 | Splice2 _ -> assert false
+                                          end
+                                        | Some (st,id) -> (* FIXME: see #2503 *)
+                                          let arg = E.var id in         
+                                          let acc,new_eff = 
+                                            Lam_compile_external_call.ocaml_to_js_eff 
+                                              ~arg_label:
+                                                Arg_empty
+                                              ~arg_type:xlabel.obj_arg_type             
+                                              (if for_sure_no_nested_option then arg else Js_of_lam_option.val_from_option arg) in 
+                                          begin match acc with 
+                                            | Splice1 v  ->        
+                                              st ::  
+                                              [S.if_ 
+                                                 (Js_of_lam_option.is_not_none arg) 
+                                                 [S.exp (E.assign (E.dot var_v label) 
+                                                           (match new_eff with 
+                                                            | [] -> v 
+                                                            | x :: xs ->
+                                                              E.seq (E.fuse_to_seq x xs) v 
+                                                           )) ]]
+                                            | Splice0 | Splice2 _ -> assert false
+                                          end 
+                                      end 
+                                    |  _ -> assert false    
+                                  )
+    )
+  , var_v                    

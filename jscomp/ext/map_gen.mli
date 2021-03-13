@@ -67,44 +67,44 @@ val concat_or_join :
   ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
 
 module type S =
-  sig
-    type key
-    type +'a t
-    val empty : 'a t
-    val compare_key : key -> key -> int
-    val is_empty : 'a t -> bool
-    val mem : 'a t -> key -> bool
-    val to_sorted_array : 'a t -> (key * 'a) array
-    val to_sorted_array_with_f : 'a t -> (key -> 'a -> 'b) -> 'b array
-    val add : 'a t -> key -> 'a -> 'a t
-    val adjust : 'a t -> key -> ('a option -> 'a) -> 'a t
-    val singleton : key -> 'a -> 'a t
-    val remove : 'a t -> key -> 'a t
-    (* val merge :
-      'a t -> 'b t -> (key -> 'a option -> 'b option -> 'c option) -> 'c t *)
-    val disjoint_merge_exn : 
+sig
+  type key
+  type +'a t
+  val empty : 'a t
+  val compare_key : key -> key -> int
+  val is_empty : 'a t -> bool
+  val mem : 'a t -> key -> bool
+  val to_sorted_array : 'a t -> (key * 'a) array
+  val to_sorted_array_with_f : 'a t -> (key -> 'a -> 'b) -> 'b array
+  val add : 'a t -> key -> 'a -> 'a t
+  val adjust : 'a t -> key -> ('a option -> 'a) -> 'a t
+  val singleton : key -> 'a -> 'a t
+  val remove : 'a t -> key -> 'a t
+  (* val merge :
+     'a t -> 'b t -> (key -> 'a option -> 'b option -> 'c option) -> 'c t *)
+  val disjoint_merge_exn : 
     'a t -> 
     'a t -> 
     (key -> 'a -> 'a -> exn) -> 
     'a t
-    
-    val iter : 'a t -> (key -> 'a -> unit) -> unit
-    val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
-    val for_all : 'a t -> (key -> 'a -> bool) -> bool
-    val exists : 'a t -> (key -> 'a -> bool) -> bool
-    (* val filter : 'a t -> (key -> 'a -> bool) -> 'a t *)
-    (* val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t *)
-    val cardinal : 'a t -> int
-    val bindings : 'a t -> (key * 'a) list
-    val keys : 'a t -> key list
-    (* val choose : 'a t -> key * 'a *)
 
-    val find_exn : 'a t -> key -> 'a
-    val find_opt : 'a t -> key -> 'a option
-    val find_default : 'a t -> key -> 'a -> 'a
-    val map : 'a t -> ('a -> 'b) -> 'b t
-    val mapi : 'a t -> (key -> 'a -> 'b) -> 'b t
-    val of_list : (key * 'a) list -> 'a t
-    val of_array : (key * 'a) array -> 'a t
-    val add_list : (key * 'b) list -> 'b t -> 'b t
-  end
+  val iter : 'a t -> (key -> 'a -> unit) -> unit
+  val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
+  val for_all : 'a t -> (key -> 'a -> bool) -> bool
+  val exists : 'a t -> (key -> 'a -> bool) -> bool
+  (* val filter : 'a t -> (key -> 'a -> bool) -> 'a t *)
+  (* val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t *)
+  val cardinal : 'a t -> int
+  val bindings : 'a t -> (key * 'a) list
+  val keys : 'a t -> key list
+  (* val choose : 'a t -> key * 'a *)
+
+  val find_exn : 'a t -> key -> 'a
+  val find_opt : 'a t -> key -> 'a option
+  val find_default : 'a t -> key -> 'a -> 'a
+  val map : 'a t -> ('a -> 'b) -> 'b t
+  val mapi : 'a t -> (key -> 'a -> 'b) -> 'b t
+  val of_list : (key * 'a) list -> 'a t
+  val of_array : (key * 'a) array -> 'a t
+  val add_list : (key * 'b) list -> 'b t -> 'b t
+end

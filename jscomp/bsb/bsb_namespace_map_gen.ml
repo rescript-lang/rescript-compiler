@@ -35,12 +35,12 @@ let write_file fname digest contents =
   Ext_buffer.output_buffer oc contents;
   close_out oc 
 (** 
-  TODO:
-  sort filegroupts to ensure deterministic behavior
-  
-  if [.bsbuild] is not changed
-  [.mlmap] does not need to be changed too
-  
+   TODO:
+   sort filegroupts to ensure deterministic behavior
+
+   if [.bsbuild] is not changed
+   [.mlmap] does not need to be changed too
+
 *)
 let output 
     ~dir 
@@ -63,8 +63,7 @@ let output
     let old_digest = really_input_string ic Ext_digest.length in 
     close_in ic ;
     (if old_digest <> digest then 
-      write_file fname digest buf)
+       write_file fname digest buf)
   else 
     write_file fname digest buf
-    
-  
+

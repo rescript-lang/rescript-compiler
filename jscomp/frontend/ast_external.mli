@@ -34,4 +34,4 @@ val handleExternalInStru:
   Parsetree.value_description ->
   Parsetree.structure_item ->
   Parsetree.structure_item
-  
+

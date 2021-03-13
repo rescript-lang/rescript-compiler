@@ -26,7 +26,7 @@
 
 val add_structure : 
   string -> 
-    (Parsetree.expression option -> unit) -> unit
+  (Parsetree.expression option -> unit) -> unit
 
 val add_signature :
   string -> 

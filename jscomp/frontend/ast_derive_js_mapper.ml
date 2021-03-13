@@ -102,17 +102,17 @@ let buildMap (row_fields : Parsetree.row_field list) =
       | []  -> ()
       | tag :: rest ->      
         (match tag with 
-        | Rtag ({txt}, attrs, _, []) ->                                                     
-          let name : string = 
-            match Ast_attributes.iter_process_bs_string_as attrs with 
-            | Some name -> 
-              has_bs_as := true;
-              name
-            | None -> txt in
-          let last = rest = [] in 
-          add_key_value buf txt name last ;
-          add_key_value revBuf name txt last
-        | _ -> assert false (* checked by [is_enum_polyvar] *)
+         | Rtag ({txt}, attrs, _, []) ->                                                     
+           let name : string = 
+             match Ast_attributes.iter_process_bs_string_as attrs with 
+             | Some name -> 
+               has_bs_as := true;
+               name
+             | None -> txt in
+           let last = rest = [] in 
+           add_key_value buf txt name last ;
+           add_key_value revBuf name txt last
+         | _ -> assert false (* checked by [is_enum_polyvar] *)
         ); aux rest
     in 
     aux row_fields;
@@ -163,11 +163,11 @@ let raiseWhenNotFound x =
     (Exp.ident 
        {loc = noloc; 
         txt = Longident.Ldot (jsMapperRt,"raiseWhenNotFound")})
-  x
+    x
 let assertExp e = 
   Exp.assert_
     e
-        
+
 let derivingName = "jsConverter"
 
 (* let notApplicable loc = 
@@ -201,8 +201,8 @@ let init () =
                let newType,newTdcl =
                  U.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
                let newTypeStr = 
-                  (* Abstract type *)
-                  Ast_compatible.rec_type_str Nonrecursive [newTdcl] in   
+                 (* Abstract type *)
+                 Ast_compatible.rec_type_str Nonrecursive [newTdcl] in   
                let toJsBody body = 
                  Ast_comb.single_non_rec_value patToJs
                    (Ast_compatible.fun_ (Pat.constraint_ (Pat.var pat_param) core_type) 
@@ -280,23 +280,23 @@ let init () =
                            (Exp.extension ({txt = "raw";loc}, PStr [Str.eval (Exp.constant(Const.string revData))]))
                          else expMap);
                       toJsBody
-                      (if has_bs_as then
-                        app2  unsafeIndexGetExp expMap exp_param 
-                      else  app1 eraseTypeExp exp_param)
+                        (if has_bs_as then
+                           app2  unsafeIndexGetExp expMap exp_param 
+                         else  app1 eraseTypeExp exp_param)
                       ;
                       Ast_comb.single_non_rec_value
                         patFromJs
                         (Ast_compatible.fun_
                            (Pat.var pat_param)
                            (
-                           let result = 
-                              app2 
-                                unsafeIndexGetExp
-                                revExpMap
-                                exp_param in 
-                           if createType then 
-                            raiseWhenNotFound result
-                            else result     
+                             let result = 
+                               app2 
+                                 unsafeIndexGetExp
+                                 revExpMap
+                                 exp_param in 
+                             if createType then 
+                               raiseWhenNotFound result
+                             else result     
                            )
                         )
                     ] in 
@@ -327,7 +327,7 @@ let init () =
                        toJsBody                        
                          (
                            app2 unsafeIndexGetExp
-                            constantArrayExp
+                             constantArrayExp
                              exp_param                             
                          )                       
                        ;
@@ -362,7 +362,7 @@ let init () =
                             coerceResultToNewType
                               (eraseType exp_param +~ Ast_compatible.const_exp_int offset)
                           )
-                          ;
+                       ;
                           let len = List.length ctors in 
                           let range_low = Ast_compatible.const_exp_int (offset + 0) in 
                           let range_upper = Ast_compatible.const_exp_int (offset + len - 1) in 

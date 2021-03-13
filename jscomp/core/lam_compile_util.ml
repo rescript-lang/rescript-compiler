@@ -51,12 +51,12 @@ let comment_of_tag_info  (x : Lam_tag_info.t) =
   | Blk_record_ext _ -> None
   | Blk_array -> 
     (* so far only appears in {!Translclass} 
-      and some constant immutable array block
+       and some constant immutable array block
     *)
     Some "array"
   | Blk_module_export
   | Blk_module _ ->  
-     (* Turn it on next time to save some noise diff*)
+    (* Turn it on next time to save some noise diff*)
     None
   | Blk_extension (* TODO: enhance it later *)
     -> None

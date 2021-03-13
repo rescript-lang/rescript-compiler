@@ -84,7 +84,7 @@ let simple_collect_from_main ?alias_map ast_table main_module =
           (visit
              (Set_string.add visiting current)
              (current::path))
-          ;
+        ;
         Queue.push current result;
         Hash_string.add visited current ();
       end in
@@ -99,8 +99,8 @@ let get_otherlibs_dependencies dependency_graph file_extension =
       acc
   in
   let set_of_otherlib_deps = Map_string.fold dependency_graph Set_string.empty (fun _k v acc ->
-    let addIfPresent = addIfPresentInSet v in
-    acc
+      let addIfPresent = addIfPresentInSet v in
+      acc
       |> addIfPresent "Unix"     "unix"
       |> addIfPresent "Bigarray" "bigarray"
       |> addIfPresent "Str"      "str"
@@ -108,5 +108,5 @@ let get_otherlibs_dependencies dependency_graph file_extension =
       |> addIfPresent "Threads"  "threads"
       |> addIfPresent "Dynlink"  "dynlink"
       |> addIfPresent "Graphics" "graphics"
-  )  in
+    )  in
   Set_string.fold set_of_otherlib_deps [] (fun v acc -> v :: acc) 

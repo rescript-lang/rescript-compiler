@@ -61,7 +61,7 @@ let mkdir_or_not_if_exists dir =
   | Non_directory_file 
     -> 
     Format.fprintf Format.err_formatter 
-     "%s expected to be added as dir but exist file is not a dir" dir
+      "%s expected to be added as dir but exist file is not a dir" dir
   | Non_exists -> Unix.mkdir dir 0o777
 
 let rec process_theme_aux env cwd (x : Bsb_templates.node) =

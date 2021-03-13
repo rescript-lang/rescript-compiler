@@ -42,11 +42,11 @@ type t  =  {
 type continuation = Lam_compile_context.continuation
 
 let make ?value ?(output_finished=False) block =
-    { block ; value ; output_finished  }
+  { block ; value ; output_finished  }
 
 
 let dummy =
-    {value = None; block = []; output_finished = Dummy }
+  {value = None; block = []; output_finished = Dummy }
 
 (** This can be merged with 
     {!output_of_block_and_expression} *)    
@@ -84,16 +84,16 @@ let output_of_block_and_expression
 
 
 let block_with_opt_expr block (x : J.expression option) : J.block =
-    match x with
-    | None  -> block
-    | Some x when Js_analyzer.no_side_effect_expression x -> block
-    | Some x -> block @ [S.exp x ]
+  match x with
+  | None  -> block
+  | Some x when Js_analyzer.no_side_effect_expression x -> block
+  | Some x -> block @ [S.exp x ]
 
 let opt_expr_with_block (x : J.expression option) block : J.block =
-    match x with
-    | None  -> block
-    | Some x when Js_analyzer.no_side_effect_expression x -> block
-    | Some x -> (S.exp x) :: block
+  match x with
+  | None  -> block
+  | Some x when Js_analyzer.no_side_effect_expression x -> block
+  | Some x -> (S.exp x) :: block
 
 
 let rec unnest_block (block : J.block) : J.block =
@@ -104,26 +104,26 @@ let rec unnest_block (block : J.block) : J.block =
 let output_as_block ( x : t)  : J.block =
   match x with
   | {block; value = opt; output_finished} ->
-      let block = unnest_block block in
-      if output_finished = True  then block
-      else
-        block_with_opt_expr block opt
+    let block = unnest_block block in
+    if output_finished = True  then block
+    else
+      block_with_opt_expr block opt
 
 
 let to_break_block (x : t) : J.block * bool =
-    let block = unnest_block x.block in
-    match x with
-    | {output_finished = True;  _ } ->
-        block, false
-       (* value does not matter when [finished] is true
-           TODO: check if it has side efects
-        *)
-    | { value =  None; output_finished } ->
-        block,
-        (match output_finished with | True -> false | (False | Dummy)  -> true  )
+  let block = unnest_block x.block in
+  match x with
+  | {output_finished = True;  _ } ->
+    block, false
+  (* value does not matter when [finished] is true
+      TODO: check if it has side efects
+  *)
+  | { value =  None; output_finished } ->
+    block,
+    (match output_finished with | True -> false | (False | Dummy)  -> true  )
 
-    | {value = Some _ as opt; _} ->
-        block_with_opt_expr block opt, true
+  | {value = Some _ as opt; _} ->
+    block_with_opt_expr block opt, true
 
 
 (** TODO: make everything expression make inlining hard, and code not readable?
@@ -132,7 +132,7 @@ let to_break_block (x : t) : J.block * bool =
               we need capture [Exp e]
 
            can we call them all [statement]? statement has no value
-        *)
+*)
 (* | {block = [{statement_desc = Exp e }]; value = None ; _}, _ *)
 (*   -> *)
 (*     append { x with block = []; value = Some e} y *)
@@ -141,26 +141,26 @@ let to_break_block (x : t) : J.block * bool =
 (*     append x { y with block = []; value = Some e} *)
 
 let  append_output  (x : t ) (y : t ) : t =
-    match x , y with (* ATTTENTION: should not optimize [opt_e2], it has to conform to [NeedValue]*)
-    | { output_finished = True; _ }, _ -> x
-    | _, {block = []; value= None; output_finished = Dummy } -> x
-          (* finished = true --> value = E.undefined otherwise would throw*)
-    | {block = []; value= None; _ }, y  -> y
-    | {block = []; value= Some _; _}, {block = []; value= None; _ } -> x
-    | {block = []; value =  Some e1; _}, ({block = []; value = Some e2; output_finished } as z) ->
-        if Js_analyzer.no_side_effect_expression e1
-        then z
-            (* It would optimize cases like [module aliases]
-                Bigarray, List
-             *)
-        else
-          {block = []; value = Some (E.seq e1 e2); output_finished}
-          (* {block = [S.exp e1]; value =  Some e2(\* (E.seq e1 e2) *\); finished} *)
+  match x , y with (* ATTTENTION: should not optimize [opt_e2], it has to conform to [NeedValue]*)
+  | { output_finished = True; _ }, _ -> x
+  | _, {block = []; value= None; output_finished = Dummy } -> x
+  (* finished = true --> value = E.undefined otherwise would throw*)
+  | {block = []; value= None; _ }, y  -> y
+  | {block = []; value= Some _; _}, {block = []; value= None; _ } -> x
+  | {block = []; value =  Some e1; _}, ({block = []; value = Some e2; output_finished } as z) ->
+    if Js_analyzer.no_side_effect_expression e1
+    then z
+    (* It would optimize cases like [module aliases]
+        Bigarray, List
+    *)
+    else
+      {block = []; value = Some (E.seq e1 e2); output_finished}
+  (* {block = [S.exp e1]; value =  Some e2(\* (E.seq e1 e2) *\); finished} *)
 
-    | {block = block1; value = opt_e1; _},  {block = block2; value = opt_e2; output_finished} ->
-        let block1 = unnest_block block1 in
-        make (block1 @ (opt_expr_with_block opt_e1  @@ unnest_block block2))
-          ?value:opt_e2 ~output_finished:output_finished
+  | {block = block1; value = opt_e1; _},  {block = block2; value = opt_e2; output_finished} ->
+    let block1 = unnest_block block1 in
+    make (block1 @ (opt_expr_with_block opt_e1  @@ unnest_block block2))
+      ?value:opt_e2 ~output_finished:output_finished
 
 
 

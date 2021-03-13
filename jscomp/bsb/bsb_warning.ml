@@ -67,7 +67,7 @@ let to_merlin_string x =
 *)
 
 
-   
+
 let from_map (m : Ext_json_types.t Map_string.t) =
   let number_opt = Map_string.find_opt m Bsb_build_schemas.number in
   let error_opt = Map_string.find_opt m  Bsb_build_schemas.error in
@@ -98,22 +98,22 @@ let to_bsb_string ~(package_kind: Bsb_package_kind.t) warning =
   | Toplevel 
   | Pinned_dependency _ -> 
     (match warning with
-    | None -> Ext_string.empty
-    | Some warning ->     
-      (match warning.number with
-       | None ->
-         Ext_string.empty
-       | Some x ->
-         prepare_warning_concat ~beg:true x  
-      ) ^
-      (
-        match warning.error with
-        | Warn_error_true ->
-          " -warn-error A"
-        | Warn_error_number y ->
-          " -warn-error " ^ y
-        | Warn_error_false ->
+     | None -> Ext_string.empty
+     | Some warning ->     
+       (match warning.number with
+        | None ->
           Ext_string.empty
-      ))
+        | Some x ->
+          prepare_warning_concat ~beg:true x  
+       ) ^
+       (
+         match warning.error with
+         | Warn_error_true ->
+           " -warn-error A"
+         | Warn_error_number y ->
+           " -warn-error " ^ y
+         | Warn_error_false ->
+           Ext_string.empty
+       ))
   | Dependency _ ->  " -w a" 
-  (* TODO: this is the current default behavior *)
+(* TODO: this is the current default behavior *)

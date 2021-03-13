@@ -47,7 +47,7 @@ let convert  (xs : input) : output =
       | Some key -> 
         Coll.add_or_update coll key
           ~update:(fun ({hash_names_act = hash_names, act } as acc) -> 
-            {acc with hash_names_act = (hash,name) :: hash_names, act })
+              {acc with hash_names_act = (hash,name) :: hash_names, act })
           {hash_names_act = [hash,name],act; stamp = i }        
     );
   let result = 
@@ -93,7 +93,7 @@ let call_switcher_variant_constant
     (arg : lam) 
     (int_lambda_list :  (int * (string * lam)) list) 
     (_names : Lambda.switch_names option) =
-  
+
   let int_lambda_list = convert int_lambda_list in 
   match int_lambda_list, fail with 
   | (_,act) :: rest, None 

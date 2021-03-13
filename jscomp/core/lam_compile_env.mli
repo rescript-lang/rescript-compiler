@@ -38,26 +38,26 @@
 val reset : unit -> unit 
 
 (** 
-  [add_js_module hint_name module_name]
-  Given a js module name and hint name, assign an id to it
-  we also bookkeep it as [External] dependency.
+   [add_js_module hint_name module_name]
+   Given a js module name and hint name, assign an id to it
+   we also bookkeep it as [External] dependency.
 
-  Note the complexity lies in that we should consolidate all 
-  same external dependencies into a single dependency.
-  
-  The strategy is that we first create a [Lam_module_ident.t] 
-  and  query it if already exists in [cache_tbl], if it already
-  exists, we discard the freshly made one, and use the cached one,
-  otherwise, use the freshly made one instead
+   Note the complexity lies in that we should consolidate all 
+   same external dependencies into a single dependency.
 
-  Invariant: 
+   The strategy is that we first create a [Lam_module_ident.t] 
+   and  query it if already exists in [cache_tbl], if it already
+   exists, we discard the freshly made one, and use the cached one,
+   otherwise, use the freshly made one instead
+
+   Invariant: 
     any [id] as long as put in the [cached_tbl] should be always valid,
 *)  
 val add_js_module : 
-    External_ffi_types.module_bind_name -> 
-    string  -> 
-    bool -> 
-    Ident.t 
+  External_ffi_types.module_bind_name -> 
+  string  -> 
+  bool -> 
+  Ident.t 
 
 
 (* The other dependencies are captured by querying 
@@ -74,8 +74,8 @@ val add_js_module :
    pay attention to for those modules are actually used or not
 *)
 (**
-  [query_external_id_info id pos env found]
-  will raise if not found
+   [query_external_id_info id pos env found]
+   will raise if not found
 *)
 val query_external_id_info : 
   Ident.t ->
@@ -89,7 +89,7 @@ val is_pure_module : Lam_module_ident.t -> bool
 val get_package_path_from_cmj : 
   Lam_module_ident.t -> 
   string * Js_packages_info.t * Ext_js_file_kind.case 
-  
+
 
 
 

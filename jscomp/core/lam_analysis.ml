@@ -37,9 +37,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lconst _ 
   | Lfunction _ -> true
   | Lglobal_module _ -> true 
-    (* we record side effect in the global level, 
-      this expression itself is side effect free
-    *)
+  (* we record side effect in the global level, 
+     this expression itself is side effect free
+  *)
   | Lprim {primitive;  args; _} -> 
     Ext_list.for_all args  no_side_effects && 
     (
@@ -50,7 +50,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
           | ("caml_register_named_value"
             (* register to c runtime does not make sense  in ocaml *)
             | "caml_int64_float_of_bits"
-             (* more safe to check if arguments are constant *)
+            (* more safe to check if arguments are constant *)
             (* non-observable side effect *)    
             | "caml_sys_get_config"
             | "caml_sys_get_argv" (* should be fine *)
@@ -73,7 +73,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
             -> true
           (* we can not mark it pure
              only when we guarantee this exception is caught...
-           *)
+          *)
           | _ , _-> false
         end 
       | Pmodint
@@ -81,10 +81,10 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pdivint64
       | Pmodint64
         -> begin match args with 
-          | [_ ; Lconst cst ] -> not_zero_constant cst 
-          | _ -> false 
-        end
-      
+            | [_ ; Lconst cst ] -> not_zero_constant cst 
+            | _ -> false 
+          end
+
       | Pcreate_extension _
       | Pjs_typeof
       | Pis_null
@@ -98,7 +98,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pnull_undefined_to_opt 
       | Pjs_fn_make _         
       | Pjs_object_create _
-        (** TODO: check *)      
+      (** TODO: check *)      
       | Pbytes_to_string 
       | Pbytes_of_string 
       | Pmakeblock _  (* whether it's mutable or not *)
@@ -106,13 +106,13 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pfield_computed
       | Pval_from_option
       | Pval_from_option_not_nest
-        (* NOP The compiler already [t option] is the same as t *)
+      (* NOP The compiler already [t option] is the same as t *)
       | Pduprecord _ 
       (* Boolean operations *)
       | Psequand | Psequor | Pnot
       (* Integer operations *)
       | Pnegint | Paddint | Psubint | Pmulint 
-     
+
       | Pandint | Porint | Pxorint
       | Plslint | Plsrint | Pasrint
       | Pintcomp _ 
@@ -214,10 +214,10 @@ let rec no_side_effects (lam : Lam.t) : bool =
   (* | Lsend _ -> false  *)
   | Lapply {
       ap_func = Lprim {primitive = Pfield (_, Fld_module {name = "from_fun"})};
-     ap_args = [arg]}
-        -> no_side_effects arg 
+      ap_args = [arg]}
+    -> no_side_effects arg 
   | Lapply _ -> false (* we need purity analysis .. *)
-  
+
 
 
 (* 
@@ -245,8 +245,8 @@ let rec size (lam : Lam.t) =
       -> size l
     | Lglobal_module _ -> 1       
     | Lprim {primitive = 
-        Praw_js_code _ 
-      } -> really_big ()
+               Praw_js_code _ 
+            } -> really_big ()
     | Lprim {args = ll; _} -> size_lams 1 ll
 
     (** complicated 
@@ -254,17 +254,17 @@ let rec size (lam : Lam.t) =
         2. ...
         exports.Make=
         function(funarg)
-        {var $$let=Make(funarg);
-        return [0, $$let[5],... $$let[16]]}
-     *)      
+    {var $$let=Make(funarg);
+      return [0, $$let[5],... $$let[16]]}
+    *)      
     | Lapply{ ap_func;
-             ap_args; _} -> size_lams (size ap_func) ap_args
+              ap_args; _} -> size_lams (size ap_func) ap_args
     (* | Lfunction(_, params, l) -> really_big () *)
     | Lfunction {body} -> size body 
     | Lswitch _ -> really_big ()
     | Lstringswitch(_,_,_) -> really_big ()
     | Lstaticraise (_i,ls) -> 
-        Ext_list.fold_left ls 1 (fun acc x -> size x + acc) 
+      Ext_list.fold_left ls 1 (fun acc x -> size x + acc) 
     | Lstaticcatch _ -> really_big () 
     | Ltrywith _ -> really_big ()
     | Lifthenelse(l1, l2, l3) -> 1 + size  l1 + size  l2 +  size  l3
@@ -272,7 +272,7 @@ let rec size (lam : Lam.t) =
     | Lwhile _ -> really_big ()
     | Lfor _ -> really_big () 
     | Lassign (_,v) -> 1 + size v  (* This is side effectful,  be careful *)
-    (* | Lsend _  ->  really_big () *)
+  (* | Lsend _  ->  really_big () *)
 
   with Too_big_to_inline ->  1000 
 and size_constant x = 
@@ -295,7 +295,7 @@ and size_lams acc (lams : Lam.t list) =
   Ext_list.fold_left lams acc (fun acc l -> acc  + size l ) 
 let args_all_const (args : Lam.t list) =
   Ext_list.for_all args (fun x -> match x with Lconst _ -> true | _ -> false) 
-    
+
 let exit_inline_size = 7 
 let small_inline_size = 5
 
@@ -333,22 +333,22 @@ let destruct_pattern (body : Lam.t) params args =
       | Some _ | None -> false          
     end      
   | _ -> false
-    
+
 (** Hints to inlining *)
 let ok_to_inline_fun_when_app 
-  (m : Lam.lfunction)
-  (args : Lam.t list) =
+    (m : Lam.lfunction)
+    (args : Lam.t list) =
   match m.attr.inline with
   | Always_inline -> true
   | Never_inline -> false
   | Default_inline ->
     match m with 
     | {body; params} -> 
-    let s = size body in
-    s < small_inline_size ||
-    (destruct_pattern body params args) ||  
-    (args_all_const args &&
-     (s < 10 && no_side_effects body )) 
+      let s = size body in
+      s < small_inline_size ||
+      (destruct_pattern body params args) ||  
+      (args_all_const args &&
+       (s < 10 && no_side_effects body )) 
 
 
 
@@ -358,15 +358,15 @@ let ok_to_inline_fun_when_app
 
 (* TODO:  We can relax this a bit later,
     but decide whether to inline it later in the call site
- *)
+*)
 let safe_to_inline (lam : Lam.t) = 
   match lam with 
   | Lfunction _ ->  true
   | Lconst 
-    (Const_pointer _  
-    |Const_int {comment = Pt_constructor _}
-    | Const_js_true 
-    | Const_js_false
-    | Const_js_undefined
-    ) -> true
+      (Const_pointer _  
+      |Const_int {comment = Pt_constructor _}
+      | Const_js_true 
+      | Const_js_false
+      | Const_js_undefined
+      ) -> true
   | _ -> false

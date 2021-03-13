@@ -24,7 +24,7 @@
 
 
 
- type kind =
+type kind =
   | String
   | Var of int * int (* int records its border length *)
 

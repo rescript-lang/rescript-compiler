@@ -66,10 +66,10 @@ let resize indexfun h =
       | Cons {key; next} as cell ->
         let nidx = indexfun h key in
         begin match Array.unsafe_get ndata_tail nidx with 
-        | Empty -> 
-          Array.unsafe_set ndata nidx cell
-        | Cons tail ->
-          tail.next <- cell  
+          | Empty -> 
+            Array.unsafe_set ndata nidx cell
+          | Cons tail ->
+            tail.next <- cell  
         end;
         Array.unsafe_set ndata_tail nidx cell;
         insert_bucket next

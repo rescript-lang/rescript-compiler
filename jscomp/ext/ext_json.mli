@@ -40,7 +40,7 @@ type callback =
   | `Obj of (Ext_json_types.t Map_string.t -> unit)
   | `Arr of (Ext_json_types.t array -> unit )
   | `Arr_loc of 
-    (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
+      (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
   | `Null of (unit -> unit)
   | `Not_found of (unit -> unit)
   | `Id of (Ext_json_types.t -> unit )
@@ -50,7 +50,7 @@ val test:
   ?fail:(unit -> unit) ->
   string -> callback 
   -> Ext_json_types.t Map_string.t
-   -> Ext_json_types.t Map_string.t
+  -> Ext_json_types.t Map_string.t
 
 
 val loc_of : Ext_json_types.t -> Ext_position.t

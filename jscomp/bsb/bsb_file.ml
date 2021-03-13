@@ -5,9 +5,9 @@
 let set_infos filename (infos : Unix.stats) =
   Unix.utimes filename infos.st_atime infos.st_mtime;
   Unix.chmod filename infos.st_perm
-  (** it is not necessary to call [chown] since it is within the same user 
+(** it is not necessary to call [chown] since it is within the same user 
     and {!Unix.chown} is not implemented under Windows
-   *)
+*)
   (*
   try
     Unix.chown filename infos.st_uid infos.st_gid
@@ -31,15 +31,15 @@ let file_copy input_name output_name =
 
 
 let copy_with_permission input_name output_name =
-    file_copy input_name output_name ;
-    set_infos output_name (Unix.lstat input_name)  
+  file_copy input_name output_name ;
+  set_infos output_name (Unix.lstat input_name)  
 
 let install_if_exists ~destdir input_name = 
-    if Sys.file_exists input_name then 
-      let output_name = (Filename.concat destdir (Filename.basename input_name)) in
-      match Unix.stat output_name , Unix.stat input_name with
-      | {st_mtime = output_stamp;_}, {st_mtime = input_stamp;_} when input_stamp <= output_stamp 
-        -> false
-      | _ -> copy_with_permission input_name output_name; true 
-      | exception _ -> copy_with_permission input_name output_name; true
-    else false
+  if Sys.file_exists input_name then 
+    let output_name = (Filename.concat destdir (Filename.basename input_name)) in
+    match Unix.stat output_name , Unix.stat input_name with
+    | {st_mtime = output_stamp;_}, {st_mtime = input_stamp;_} when input_stamp <= output_stamp 
+      -> false
+    | _ -> copy_with_permission input_name output_name; true 
+    | exception _ -> copy_with_permission input_name output_name; true
+  else false

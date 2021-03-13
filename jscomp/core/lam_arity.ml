@@ -122,7 +122,7 @@ let rec
   | x::xs, y::ys when x = y ->
     merge_arities_aux (y :: acc)   xs ys tail tail2
   | _, _  -> 
-  info (List.rev acc) false
+    info (List.rev acc) false
 
 let merge_arities  xs ys t t2 = 
   merge_arities_aux []  xs ys t t2

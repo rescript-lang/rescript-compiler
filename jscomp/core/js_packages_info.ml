@@ -30,7 +30,7 @@ type module_system =
   | NodeJS 
   | Es6
   | Es6_global (* ignore node_modules, just calcluating relative path *)
-  
+
 
 (* ocamlopt could not optimize such simple case..*)
 let compatible (dep : module_system) 
@@ -88,7 +88,7 @@ let runtime_package_specs : t = {
 }   
 
 (**
-  populated by the command line
+   populated by the command line
 *)
 let runtime_test_package_specs : t = {
   name = Pkg_runtime; 
@@ -103,13 +103,13 @@ let same_package_by_name (x : t) (y : t) =
     y.name = Pkg_runtime 
   | Pkg_normal s -> 
     begin match y.name with 
-    | Pkg_normal y -> s = y
-    | Pkg_empty | Pkg_runtime -> false
+      | Pkg_normal y -> s = y
+      | Pkg_empty | Pkg_runtime -> false
     end
-   
+
 
 let is_runtime_package (x : t) = 
-    x.name = Pkg_runtime
+  x.name = Pkg_runtime
 
 let iter (x : t) cb =    
   Ext_list.iter x.module_systems cb 
@@ -139,14 +139,14 @@ let from_name (name : string) : t = {
 
 let is_empty  (x : t) =
   x.name = Pkg_empty
-  
+
 
 let string_of_module_system (ms : module_system) = 
   match ms with 
   | NodeJS -> "NodeJS"
   | Es6 -> "Es6"
   | Es6_global -> "Es6_global"
-  
+
 
 let module_system_of_string package_name : module_system option = 
   match package_name with
@@ -196,7 +196,7 @@ type info_query =
   | Package_found of package_found_info
 
 (* Note that package-name has to be exactly the same as 
-  npm package name, otherwise the path resolution will be wrong *)
+   npm package name, otherwise the path resolution will be wrong *)
 let query_package_infos 
     ({name; module_systems } : t) 
     (module_system  : module_system) : info_query =
@@ -205,17 +205,17 @@ let query_package_infos
     Package_script 
   | Pkg_normal name ->
     (match Ext_list.find_first module_systems (fun k -> 
-        compatible k.module_system  module_system)  with
-    | Some k -> 
-      let rel_path = k.path in 
-      let pkg_rel_path = name // rel_path in 
-      Package_found 
-        { 
-          rel_path ;
-          pkg_rel_path ;
-          suffix = k.suffix
-        }
-    | None -> Package_not_found)
+         compatible k.module_system  module_system)  with
+     | Some k -> 
+       let rel_path = k.path in 
+       let pkg_rel_path = name // rel_path in 
+       Package_found 
+         { 
+           rel_path ;
+           pkg_rel_path ;
+           suffix = k.suffix
+         }
+     | None -> Package_not_found)
   | Pkg_runtime -> 
     (*FIXME: [compatible] seems not correct *)
     match Ext_list.find_first module_systems (fun k -> 
@@ -236,7 +236,7 @@ let query_package_infos
 let get_js_path 
     (x : t )
     (module_system : module_system) 
-    : string
+  : string
   = 
   match Ext_list.find_first x.module_systems (fun k -> 
       compatible k.module_system  module_system) with
@@ -272,8 +272,8 @@ let add_npm_package_path (packages_info : t) (s : string)  : t =
         {module_system = NodeJS; path; suffix =  Js}
       | [ module_system; path]  ->
         { module_system = handle_module_system module_system;
-         path;
-         suffix =  Js
+          path;
+          suffix =  Js
         }
       | [module_system ; path; suffix] -> 
         { module_system = handle_module_system module_system;

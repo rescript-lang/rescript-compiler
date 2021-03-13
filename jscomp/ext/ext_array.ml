@@ -101,7 +101,7 @@ let rec tolist_f_aux a f  i res =
     let v = Array.unsafe_get a i in
     tolist_f_aux a f  (i - 1)
       (f v :: res)
-       
+
 let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
 
 let rec tolist_aux a f  i res =
@@ -259,14 +259,14 @@ let iter a f =
   for i = 0 to length a - 1 do f(unsafe_get a i) done
 
 
-  let fold_left a x f =
-    let open Array in 
-    let r = ref x in    
-    for i = 0 to length a - 1 do
-      r := f !r (unsafe_get a i)
-    done;
-    !r
-  
+let fold_left a x f =
+  let open Array in 
+  let r = ref x in    
+  for i = 0 to length a - 1 do
+    r := f !r (unsafe_get a i)
+  done;
+  !r
+
 let get_or arr i cb =     
   if i >=0 && i < Array.length arr then 
     Array.unsafe_get arr i 

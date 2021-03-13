@@ -41,20 +41,20 @@ let clean tmpfile =
   (if not !Clflags.verbose then try Sys.remove tmpfile with _ -> () )
 
 (* Sync up with {!Pparse.preprocess} 
-  The generated file should not sit 
-  in the same directory as sourctree
+   The generated file should not sit 
+   in the same directory as sourctree
 *)
 let pp (sourcefile : string) =    
   let tmpfile = Filename.temp_file "bspp" "" in
   let pp = (*TODO: check to avoid double quoting *)
-      (match !Js_config.refmt with 
-       | None ->
-         Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe" 
-       | Some x -> x)
+    (match !Js_config.refmt with 
+     | None ->
+       Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe" 
+     | Some x -> x)
   in 
   let comm = 
-      if Sys.win32 then cmd_windows_quote pp sourcefile tmpfile 
-      else cmd_nix_quote pp sourcefile tmpfile
+    if Sys.win32 then cmd_windows_quote pp sourcefile tmpfile 
+    else cmd_nix_quote pp sourcefile tmpfile
   in  
   if Ccomp.command comm <> 0 then begin
     clean tmpfile;

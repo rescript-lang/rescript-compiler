@@ -29,4 +29,3 @@ open Ast_helper
 
 let fuseAll ?(loc=Location.none)  (t : t) : item = 
   Sig.include_ ~loc (Incl.mk ~loc (Mty.signature ~loc t))
-  

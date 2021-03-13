@@ -51,12 +51,12 @@ module Lid = struct
   let js_internal_full_apply : t = Ldot (js_internal, "opaqueFullApply")
   let opaque : t = Ldot (js_internal, "opaque")
   let js_fn : t =
-      Ldot (Lident "Js",  "Fn")
+    Ldot (Lident "Js",  "Fn")
   let js_oo : t = Lident "Js_OO"    
   let js_meth : t =
-      Ldot (js_oo , "Meth")
+    Ldot (js_oo , "Meth")
   let js_meth_callback : t =
-      Ldot (js_oo, "Callback")
+    Ldot (js_oo, "Callback")
 
   let ignore_id : t = Ldot (Lident "Pervasives", "ignore")
   let hidden_field n : t = Lident ("I" ^ n)
@@ -128,7 +128,7 @@ let type_int ?loc () =
   match loc with
   | None -> No_loc.type_int
   | Some loc ->
-  Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_int; loc}, []))
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_int; loc}, []))
 
 let type_int64 =     
   Ast_helper.Typ.mk   

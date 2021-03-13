@@ -30,12 +30,12 @@ type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 let js_property loc obj (name : string) =
   Parsetree.Pexp_send
     (obj, 
-        {loc; txt = name}
-        )
+     {loc; txt = name}
+    )
 
 
 
- 
+
 
 
 let ocaml_obj_as_js_object
@@ -65,7 +65,7 @@ let ocaml_obj_as_js_object
     (Parsetree.Otag (val_name , [], result ) ::
      (if is_mutable then 
         [ Otag ({val_name with txt = val_name.txt ^ Literals.setter_suffix},[],
-         Ast_typ_uncurry.to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ())) ]
+                Ast_typ_uncurry.to_method_type loc mapper Nolabel result (Ast_literal.type_unit ~loc ())) ]
       else 
         []) )
   in 

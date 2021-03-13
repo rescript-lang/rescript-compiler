@@ -23,9 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type t = 
-    | Toplevel
-    | Dependency of Bsb_package_specs.t 
-    | Pinned_dependency of Bsb_package_specs.t 
-        (*  This package specs comes from the toplevel to 
-            override the current settings
-        *)
+  | Toplevel
+  | Dependency of Bsb_package_specs.t 
+  | Pinned_dependency of Bsb_package_specs.t 
+  (*  This package specs comes from the toplevel to 
+      override the current settings
+  *)

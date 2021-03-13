@@ -51,14 +51,14 @@ let deps_program_is_empty (x : J.deps_program) =
 let rec extract_block_comments acc (x : J.block) = 
   match x with 
   | {statement_desc = Exp {expression_desc = Raw_js_code {code ; code_info = Stmt (Js_stmt_comment)}} } :: rest
-      -> extract_block_comments (code :: acc) rest 
+    -> extract_block_comments (code :: acc) rest 
   | _ -> (acc ,x)
 
 
 let extract_file_comments  (x : J.deps_program) = 
   let comments, new_block = extract_block_comments [] x.program.block in 
   comments , {x with program = {x.program with block = new_block}}
-    
+
 
 
 
@@ -109,7 +109,7 @@ let es6_program  ~output_dir fmt f (  x : J.deps_program) =
             Js_name_of_module_id.string_of_module_id x ~output_dir
               fmt,
             is_default x.kind
-              ))
+         ))
   in
   let () = P.force_newline f in 
   let cxt = Js_dump.statement_list true cxt f x.program.block in 

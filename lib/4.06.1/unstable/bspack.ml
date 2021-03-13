@@ -6618,9 +6618,9 @@ val filter :
   'a array
 
 val filter_map : 
-'a array -> 
-('a -> 'b option) -> 
-'b array
+  'a array -> 
+  ('a -> 'b option) -> 
+  'b array
 
 val range : int -> int -> int array
 
@@ -6632,7 +6632,7 @@ val to_list_f :
   'b list 
 
 val to_list_map : 
-'a array -> ('a -> 'b option) -> 'b list 
+  'a array -> ('a -> 'b option) -> 'b list 
 
 val to_list_map_acc : 
   'a array -> 
@@ -6674,7 +6674,7 @@ val for_alli :
   'a array -> 
   (int -> 'a -> bool) -> 
   bool 
-    
+
 val map :   
   'a array -> 
   ('a -> 'b) -> 
@@ -6801,7 +6801,7 @@ let rec tolist_f_aux a f  i res =
     let v = Array.unsafe_get a i in
     tolist_f_aux a f  (i - 1)
       (f v :: res)
-       
+
 let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
 
 let rec tolist_aux a f  i res =
@@ -6959,14 +6959,14 @@ let iter a f =
   for i = 0 to length a - 1 do f(unsafe_get a i) done
 
 
-  let fold_left a x f =
-    let open Array in 
-    let r = ref x in    
-    for i = 0 to length a - 1 do
-      r := f !r (unsafe_get a i)
-    done;
-    !r
-  
+let fold_left a x f =
+  let open Array in 
+  let r = ref x in    
+  for i = 0 to length a - 1 do
+    r := f !r (unsafe_get a i)
+  done;
+  !r
+
 let get_or arr i cb =     
   if i >=0 && i < Array.length arr then 
     Array.unsafe_get arr i 
@@ -7022,7 +7022,7 @@ val combine_array_append:
   ('c * 'b) list -> 
   ('a -> 'c) ->
   ('c * 'b) list   
-  
+
 val has_string :   
   string list ->
   string -> 
@@ -7053,8 +7053,8 @@ val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list
     For empty list, it returns empty
 *)
 val map_last : 
-    'a list -> 
-    (bool -> 'a -> 'b) -> 'b list
+  'a list -> 
+  (bool -> 'a -> 'b) -> 'b list
 
 (** [last l]
     return the last element
@@ -7097,8 +7097,8 @@ val fold_right3 :
   'd -> 
   ('a -> 'b -> 'c -> 'd -> 'd) -> 
   'd
-  
-  
+
+
 val map2 : 
   'a list ->
   'b list ->
@@ -7182,8 +7182,8 @@ val length_ge : 'a list -> int -> bool
 val length_larger_than_n : 
   'a list -> 
   'a list -> 
-   int -> 
-   bool
+  int -> 
+  bool
 
 
 (**
@@ -7240,10 +7240,10 @@ val drop :
   'a list 
 
 val find_first :   
-    'a list ->
-    ('a -> bool) ->
-    'a option 
-    
+  'a list ->
+  ('a -> bool) ->
+  'a option 
+
 (** [find_first_not p lst ]
     if all elements in [lst] pass, return [None] 
     otherwise return the first element [e] as [Some e] which
@@ -7264,30 +7264,30 @@ val find_opt :
   'b option 
 
 val find_def : 
-    'a list -> 
-    ('a -> 'b option) ->
-    'b ->
-    'b 
+  'a list -> 
+  ('a -> 'b option) ->
+  'b ->
+  'b 
 
-    
+
 val rev_iter : 
   'a list -> 
   ('a -> unit) -> 
   unit 
 
 val iter:   
-   'a list ->  
-   ('a -> unit) -> 
-   unit
-   
+  'a list ->  
+  ('a -> unit) -> 
+  unit
+
 val for_all:  
-    'a list -> 
-    ('a -> bool) -> 
-    bool
+  'a list -> 
+  ('a -> bool) -> 
+  bool
 val for_all_snd:    
-    ('a * 'b) list -> 
-    ('b -> bool) -> 
-    bool
+  ('a * 'b) list -> 
+  ('b -> bool) -> 
+  bool
 
 (** [for_all2_no_exn p xs ys]
     return [true] if all satisfied,
@@ -7322,7 +7322,7 @@ val sort_via_arrayf:
   'a list -> 
   ('a -> 'a -> int) ->
   ('a -> 'b ) -> 
-   'b list  
+  'b list  
 
 
 
@@ -7363,30 +7363,30 @@ val exists_snd :
   bool
 
 val concat_append:
-    'a list list -> 
-    'a list -> 
-    'a list
+  'a list list -> 
+  'a list -> 
+  'a list
 
 val fold_left2:
-    'a list -> 
-    'b list -> 
-    'c -> 
-    ('a -> 'b -> 'c -> 'c)
-    -> 'c 
+  'a list -> 
+  'b list -> 
+  'c -> 
+  ('a -> 'b -> 'c -> 'c)
+  -> 'c 
 
 val fold_left:    
-    'a list -> 
-    'b -> 
-    ('b -> 'a -> 'b) -> 
-    'b
+  'a list -> 
+  'b -> 
+  ('b -> 'a -> 'b) -> 
+  'b
 
 val singleton_exn:     
-    'a list -> 'a
+  'a list -> 'a
 
 val mem_string :     
-    string list -> 
-    string -> 
-    bool
+  string list -> 
+  string -> 
+  bool
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7458,7 +7458,7 @@ let rec has_string l f =
     x1 = f || x2 = f || x3 = f
   | x1 :: x2 :: x3 :: x4 ->
     x1 = f || x2 = f || x3 = f || has_string x4 f 
-  
+
 let rec map_combine l1 l2 f =
   match (l1, l2) with
     ([], []) -> []
@@ -7485,7 +7485,7 @@ let combine_array arr l f =
   combine_array_unsafe arr l 0 len [] f 
 
 let rec map_split_opt 
-  (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
+    (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
   : 'b list * 'c list = 
   match xs with 
   | [] -> [], []
@@ -7706,10 +7706,10 @@ let rec fold_left_with_offset l accu i f =
   | [] -> accu
   | a::l -> 
     fold_left_with_offset 
-    l     
-    (f  a accu  i)  
-    (i + 1)
-    f  
+      l     
+      (f  a accu  i)  
+      (i + 1)
+      f  
 
 
 let rec filter_map xs (f: 'a -> 'b option)= 
@@ -7900,7 +7900,7 @@ let rec length_ge l n =
     | _ :: tl -> length_ge tl (n - 1)
     | [] -> false
   else true
-  
+
 (**
    {[length xs = length ys + n ]}
 *)
@@ -8107,7 +8107,7 @@ let rec iter_snd lst f =
   | (_,x)::xs -> 
     f x ; 
     iter_snd xs f 
-    
+
 let rec iter_fst lst f =     
   match lst with
   | [] -> ()
@@ -8131,8 +8131,8 @@ let rec exists_snd l p =
   | (_, a)::l -> p a || exists_snd l p 
 
 let rec concat_append 
-  (xss : 'a list list)  
-  (xs : 'a list) : 'a list = 
+    (xss : 'a list list)  
+    (xs : 'a list) : 'a list = 
   match xss with 
   | [] -> xs 
   | l::r -> append l (concat_append r xs)
@@ -8141,7 +8141,7 @@ let rec fold_left l accu f =
   match l with
     [] -> accu
   | a::l -> fold_left l (f accu a) f 
-  
+
 let reduce_from_left lst fn = 
   match lst with 
   | first :: rest ->  fold_left rest first fn 
@@ -8652,9 +8652,9 @@ module Ext_bytes : sig
 
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-                     = "caml_blit_string" 
+  = "caml_blit_string" 
 [@@noalloc]
-    
+
 
 
 
@@ -8691,7 +8691,7 @@ end = struct
 
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-                     = "caml_blit_string" 
+  = "caml_blit_string" 
 [@@noalloc]                     
 
 
@@ -8713,10 +8713,10 @@ module Ext_buffer : sig
 
 (** Extensible buffers.
 
-   This module implements buffers that automatically expand
-   as necessary.  It provides accumulative concatenation of strings
-   in quasi-linear time (instead of quadratic time when strings are
-   concatenated pairwise).
+    This module implements buffers that automatically expand
+    as necessary.  It provides accumulative concatenation of strings
+    in quasi-linear time (instead of quadratic time when strings are
+    concatenated pairwise).
 *)
 
 (* ReScript customization: customized for efficient digest *)
@@ -8726,17 +8726,17 @@ type t
 
 val create : int -> t
 (** [create n] returns a fresh buffer, initially empty.
-   The [n] parameter is the initial size of the internal byte sequence
-   that holds the buffer contents. That byte sequence is automatically
-   reallocated when more than [n] characters are stored in the buffer,
-   but shrinks back to [n] characters when [reset] is called.
-   For best performance, [n] should be of the same order of magnitude
-   as the number of characters that are expected to be stored in
-   the buffer (for instance, 80 for a buffer that holds one output
-   line).  Nothing bad will happen if the buffer grows beyond that
-   limit, however. In doubt, take [n = 16] for instance.
-   If [n] is not between 1 and {!Sys.max_string_length}, it will
-   be clipped to that interval. *)
+    The [n] parameter is the initial size of the internal byte sequence
+    that holds the buffer contents. That byte sequence is automatically
+    reallocated when more than [n] characters are stored in the buffer,
+    but shrinks back to [n] characters when [reset] is called.
+    For best performance, [n] should be of the same order of magnitude
+    as the number of characters that are expected to be stored in
+    the buffer (for instance, 80 for a buffer that holds one output
+    line).  Nothing bad will happen if the buffer grows beyond that
+    limit, however. In doubt, take [n = 16] for instance.
+    If [n] is not between 1 and {!Sys.max_string_length}, it will
+    be clipped to that interval. *)
 
 val contents : t -> string
 (** Return a copy of the current contents of the buffer.
@@ -8763,7 +8763,7 @@ val add_string : t -> string -> unit
 
 (* val add_substring : t -> string -> int -> int -> unit *)
 (** [add_substring b s ofs len] takes [len] characters from offset
-   [ofs] in string [s] and appends them at the end of the buffer [b]. *)
+    [ofs] in string [s] and appends them at the end of the buffer [b]. *)
 
 (* val add_subbytes : t -> bytes -> int -> int -> unit *)
 (** [add_substring b s ofs len] takes [len] characters from offset
@@ -8772,17 +8772,17 @@ val add_string : t -> string -> unit
 
 (* val add_buffer : t -> t -> unit *)
 (** [add_buffer b1 b2] appends the current contents of buffer [b2]
-   at the end of buffer [b1].  [b2] is not modified. *)    
+    at the end of buffer [b1].  [b2] is not modified. *)    
 
 (* val add_channel : t -> in_channel -> int -> unit *)
 (** [add_channel b ic n] reads exactly [n] character from the
-   input channel [ic] and stores them at the end of buffer [b].
-   Raise [End_of_file] if the channel contains fewer than [n]
-   characters. *)
+    input channel [ic] and stores them at the end of buffer [b].
+    Raise [End_of_file] if the channel contains fewer than [n]
+    characters. *)
 
 val output_buffer : out_channel -> t -> unit
 (** [output_buffer oc b] writes the current contents of buffer [b]
-   on the output channel [oc]. *)   
+    on the output channel [oc]. *)   
 
 val digest : t -> Digest.t   
 
@@ -8792,34 +8792,34 @@ val not_equal :
   bool 
 
 val add_int_1 :    
-   t -> int -> unit 
+  t -> int -> unit 
 
 val add_int_2 :    
-   t -> int -> unit 
+  t -> int -> unit 
 
 val add_int_3 :    
-   t -> int -> unit 
+  t -> int -> unit 
 
 val add_int_4 :    
-   t -> int -> unit 
+  t -> int -> unit 
 
 val add_string_char :    
-   t -> 
-   string ->
-   char -> 
-   unit
-   
+  t -> 
+  string ->
+  char -> 
+  unit
+
 val add_ninja_prefix_var : 
-   t -> 
-   string -> 
-   unit 
-   
-   
+  t -> 
+  string -> 
+  unit 
+
+
 val add_char_string :    
-   t -> 
-   char -> 
-   string -> 
-   unit
+  t -> 
+  char -> 
+  string -> 
+  unit
 end = struct
 #1 "ext_buffer.ml"
 (**************************************************************************)
@@ -8840,30 +8840,30 @@ end = struct
 (* Extensible buffers *)
 
 type t =
- {mutable buffer : bytes;
-  mutable position : int;
-  mutable length : int;
-  initial_buffer : bytes}
+  {mutable buffer : bytes;
+   mutable position : int;
+   mutable length : int;
+   initial_buffer : bytes}
 
 let create n =
- let n = if n < 1 then 1 else n in
- let s = Bytes.create n in
- {buffer = s; position = 0; length = n; initial_buffer = s}
+  let n = if n < 1 then 1 else n in
+  let s = Bytes.create n in
+  {buffer = s; position = 0; length = n; initial_buffer = s}
 
 let contents b = Bytes.sub_string b.buffer 0 b.position
 (* let to_bytes b = Bytes.sub b.buffer 0 b.position  *)
 
 (* let sub b ofs len =
-  if ofs < 0 || len < 0 || ofs > b.position - len
-  then invalid_arg "Ext_buffer.sub"
-  else Bytes.sub_string b.buffer ofs len *)
+   if ofs < 0 || len < 0 || ofs > b.position - len
+   then invalid_arg "Ext_buffer.sub"
+   else Bytes.sub_string b.buffer ofs len *)
 
 
 (* let blit src srcoff dst dstoff len =
-  if len < 0 || srcoff < 0 || srcoff > src.position - len
+   if len < 0 || srcoff < 0 || srcoff > src.position - len
              || dstoff < 0 || dstoff > (Bytes.length dst) - len
-  then invalid_arg "Ext_buffer.blit"
-  else
+   then invalid_arg "Ext_buffer.blit"
+   else
     Bytes.unsafe_blit src.buffer srcoff dst dstoff len *)
 
 let length b = b.position
@@ -8871,8 +8871,8 @@ let is_empty b = b.position = 0
 let clear b = b.position <- 0
 
 (* let reset b =
-  b.position <- 0; b.buffer <- b.initial_buffer;
-  b.length <- Bytes.length b.buffer *)
+   b.position <- 0; b.buffer <- b.initial_buffer;
+   b.length <- Bytes.length b.buffer *)
 
 let resize b more =
   let len = b.length in
@@ -8893,16 +8893,16 @@ let [@inline] add_char b c =
   b.position <- pos + 1  
 
 (* let add_substring b s offset len =
-  if offset < 0 || len < 0 || offset > String.length s - len
-  then invalid_arg "Ext_buffer.add_substring/add_subbytes";
-  let new_position = b.position + len in
-  if new_position > b.length then resize b len;
-  Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
-  b.position <- new_position   *)
+   if offset < 0 || len < 0 || offset > String.length s - len
+   then invalid_arg "Ext_buffer.add_substring/add_subbytes";
+   let new_position = b.position + len in
+   if new_position > b.length then resize b len;
+   Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
+   b.position <- new_position   *)
 
 
 (* let add_subbytes b s offset len =
-  add_substring b (Bytes.unsafe_to_string s) offset len *)
+   add_substring b (Bytes.unsafe_to_string s) offset len *)
 
 let add_string b s =
   let len = String.length s in
@@ -8949,17 +8949,17 @@ let add_ninja_prefix_var b s =
 
 (* let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
 
-let add_buffer b bs =
-  add_subbytes b bs.buffer 0 bs.position *)
+   let add_buffer b bs =
+   add_subbytes b bs.buffer 0 bs.position *)
 
 (* let add_channel b ic len =
-  if len < 0 
+   if len < 0 
     || len > Sys.max_string_length 
     then   (* PR#5004 *)
     invalid_arg "Ext_buffer.add_channel";
-  if b.position + len > b.length then resize b len;
-  really_input ic b.buffer b.position len;
-  b.position <- b.position + len *)
+   if b.position + len > b.length then resize b len;
+   really_input ic b.buffer b.position len;
+   b.position <- b.position + len *)
 
 let output_buffer oc b =
   output oc b.buffer 0 b.position  
@@ -8968,15 +8968,15 @@ external unsafe_string: bytes -> int -> int -> Digest.t = "caml_md5_string"
 
 let digest b = 
   unsafe_string 
-  b.buffer 0 b.position    
+    b.buffer 0 b.position    
 
 let rec not_equal_aux (b : bytes) (s : string) i len = 
-    if i >= len then false
-    else 
-      (Bytes.unsafe_get b i 
-      <>
-      String.unsafe_get s i )
-      || not_equal_aux b s (i + 1) len 
+  if i >= len then false
+  else 
+    (Bytes.unsafe_get b i 
+     <>
+     String.unsafe_get s i )
+    || not_equal_aux b s (i + 1) len 
 
 (** avoid a large copy *)
 let not_equal  (b : t) (s : string) = 
@@ -8987,8 +8987,8 @@ let not_equal  (b : t) (s : string) =
 
 
 (**
-  It could be one byte, two bytes, three bytes and four bytes 
-  TODO: inline for better performance
+   It could be one byte, two bytes, three bytes and four bytes 
+   TODO: inline for better performance
 *)
 let add_int_1 (b : t ) (x : int ) = 
   let c = (Char.unsafe_chr (x land 0xff)) in 
@@ -8996,7 +8996,7 @@ let add_int_1 (b : t ) (x : int ) =
   if pos >= b.length then resize b 1;
   Bytes.unsafe_set b.buffer pos c;
   b.position <- pos + 1  
-  
+
 let add_int_2 (b : t ) (x : int ) = 
   let c1 = (Char.unsafe_chr (x land 0xff)) in 
   let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
@@ -9176,11 +9176,11 @@ val ends_with_index : string -> string -> int
 val ends_with : string -> string -> bool
 
 (**
-  [ends_with_then_chop name ext]
-  @example:
+   [ends_with_then_chop name ext]
+   @example:
    {[
      ends_with_then_chop "a.cmj" ".cmj"
-     "a"
+       "a"
    ]}
    This is useful in controlled or file case sensitve system
 *)
@@ -9190,9 +9190,9 @@ val ends_with_then_chop : string -> string -> string option
 
 
 (**
-  [for_all_from  s start p]
-  if [start] is negative, it raises,
-  if [start] is too large, it returns true
+   [for_all_from  s start p]
+   if [start] is negative, it raises,
+   if [start] is too large, it returns true
 *)
 val for_all_from:
   string -> 
@@ -9212,7 +9212,7 @@ val repeat : int -> string -> string
 val equal : string -> string -> bool
 
 (**
-  [extract_until s cursor sep]
+   [extract_until s cursor sep]
    When [sep] not found, the cursor is updated to -1,
    otherwise cursor is increased to 1 + [sep_position]
    User can not determine whether it is found or not by
@@ -9220,10 +9220,10 @@ val equal : string -> string -> bool
    "\n\n" would result in an empty string too.
 *)
 (* val extract_until:
-  string -> 
-  int ref -> (* cursor to be updated *)
-  char -> 
-  string *)
+   string -> 
+   int ref -> (* cursor to be updated *)
+   char -> 
+   string *)
 
 val index_count:  
   string -> 
@@ -9233,15 +9233,15 @@ val index_count:
   int 
 
 (* val index_next :
-  string -> 
-  int ->
-  char -> 
-  int  *)
+   string -> 
+   int ->
+   char -> 
+   int  *)
 
-  
+
 (**
-  [find ~start ~sub s]
-  returns [-1] if not found
+   [find ~start ~sub s]
+   returns [-1] if not found
 *)
 val find : ?start:int -> sub:string -> string -> int
 
@@ -9252,7 +9252,7 @@ val non_overlap_count : sub:string -> string -> int
 val rfind : sub:string -> string -> int
 
 (** [tail_from s 1]
-  return a substring from offset 1 (inclusive)
+    return a substring from offset 1 (inclusive)
 *)
 val tail_from : string -> int -> string
 
@@ -9305,7 +9305,7 @@ val capitalize_sub:
   string -> 
   int -> 
   string
-  
+
 val uncapitalize_ascii : string -> string
 
 val lowercase_ascii : string -> string 
@@ -9447,17 +9447,17 @@ let ends_with_then_chop s beg =
 (* let check_suffix_case_then_chop = ends_with_then_chop *)
 
 (* let check_any_suffix_case s suffixes = 
-  Ext_list.exists suffixes (fun x -> check_suffix_case s x)  *)
+   Ext_list.exists suffixes (fun x -> check_suffix_case s x)  *)
 
 (* let check_any_suffix_case_then_chop s suffixes = 
-  let rec aux suffixes = 
+   let rec aux suffixes = 
     match suffixes with 
     | [] -> None 
     | x::xs -> 
       let id = ends_with_index s x in 
       if id >= 0 then Some (String.sub s 0 id)
       else aux xs in 
-  aux suffixes     *)
+   aux suffixes     *)
 
 
 
@@ -9559,9 +9559,9 @@ let tail_from s x =
 let equal (x : string) y  = x = y
 
 (* let rec index_rec s lim i c =
-  if i >= lim then -1 else
-  if String.unsafe_get s i = c then i 
-  else index_rec s lim (i + 1) c *)
+   if i >= lim then -1 else
+   if String.unsafe_get s i = c then i 
+   else index_rec s lim (i + 1) c *)
 
 
 
@@ -9579,16 +9579,16 @@ let index_count s i c count =
   index_rec_count s lim i c count 
 
 (* let index_next s i c =   
-  index_count s i c 1  *)
+   index_count s i c 1  *)
 
 (* let extract_until s cursor c =       
-  let len = String.length s in   
-  let start = !cursor in 
-  if start < 0 || start >= len then (
+   let len = String.length s in   
+   let start = !cursor in 
+   if start < 0 || start >= len then (
     cursor := -1;
     ""
     )
-  else 
+   else 
     let i = index_rec s len start c in   
     let finish = 
       if i < 0 then (      
@@ -9600,7 +9600,7 @@ let index_count s i c count =
         i 
       ) in 
     String.sub s start (finish - start) *)
-  
+
 let rec rindex_rec s i c =
   if i < 0 then i else
   if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
@@ -9796,10 +9796,10 @@ let capitalize_sub (s : string) len : string =
     done ;
     Bytes.unsafe_to_string bytes 
 
-    
+
 
 let uncapitalize_ascii =
-    String.uncapitalize_ascii
+  String.uncapitalize_ascii
 
 let lowercase_ascii = String.lowercase_ascii
 
@@ -9811,7 +9811,7 @@ let get_int_1 (x : string) off : int =
 let get_int_2 (x : string) off : int = 
   Char.code x.[off] lor   
   Char.code x.[off+1] lsl 8
-  
+
 let get_int_3 (x : string) off : int = 
   Char.code x.[off] lor   
   Char.code x.[off+1] lsl 8  lor 
@@ -9924,38 +9924,38 @@ end = struct
 
 
 
- 
- type anon_fun = rev_args:string list -> unit
- 
- type string_action = 
-   | String_call of (string -> unit)  
-   | String_set of string ref
-   | String_optional_set of string option ref 
-   | String_list_add of string list ref 
 
- type unit_action = 
-    | Unit_call of (unit -> unit) 
-    | Unit_lazy of unit lazy_t
-    | Unit_set of bool ref
-    | Unit_clear of bool ref 
+type anon_fun = rev_args:string list -> unit
 
- type spec =
-   | Unit_dummy  
-   | Unit of unit_action
-   | String of string_action 
- 
- 
- exception Bad = Arg.Bad
- 
- let bad_arg s = raise_notrace (Bad s)
+type string_action = 
+  | String_call of (string -> unit)  
+  | String_set of string ref
+  | String_optional_set of string option ref 
+  | String_list_add of string list ref 
 
- type error =
-   | Unknown of string
-   | Missing of string
- 
+type unit_action = 
+  | Unit_call of (unit -> unit) 
+  | Unit_lazy of unit lazy_t
+  | Unit_set of bool ref
+  | Unit_clear of bool ref 
+
+type spec =
+  | Unit_dummy  
+  | Unit of unit_action
+  | String of string_action 
+
+
+exception Bad = Arg.Bad
+
+let bad_arg s = raise_notrace (Bad s)
+
+type error =
+  | Unknown of string
+  | Missing of string
+
 type t = spec Ext_spec.t 
 
- 
+
 let (+>) = Ext_buffer.add_string
 
 let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
@@ -10106,7 +10106,7 @@ module Ext_filename : sig
 
 val is_dir_sep : 
   char -> bool 
-  
+
 val maybe_quote:
   string -> 
   string
@@ -10221,8 +10221,8 @@ let chop_all_extensions_maybe name =
   let rec search_dot i last =
     if i < 0 || is_dir_sep (String.unsafe_get name i) then 
       (match last with 
-      | None -> name
-      | Some i -> String.sub name 0 i)  
+       | None -> name
+       | Some i -> String.sub name 0 i)  
     else if String.unsafe_get name i = '.' then 
       search_dot (i - 1) (Some i)
     else search_dot (i - 1) last in
@@ -10245,11 +10245,11 @@ let new_extension name (ext : string) =
 
 
 (** TODO: improve efficiency
-   given a path, calcuate its module name 
-   Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
-   we can not strip all extensions, otherwise
-   we can not tell the difference between "x.cpp.ml" 
-   and "x.ml"
+    given a path, calcuate its module name 
+    Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
+    we can not strip all extensions, otherwise
+    we can not tell the difference between "x.cpp.ml" 
+    and "x.ml"
 *)
 let module_name name = 
   let rec search_dot i  name =
@@ -10328,7 +10328,7 @@ let as_module ~basename =
       search_dot (i - 1) name name_len in  
   let name_len = String.length basename in       
   search_dot (name_len - 1)  basename name_len
-    
+
 end
 module Ext_format : sig 
 #1 "ext_format.mli"
@@ -10364,40 +10364,40 @@ module Ext_format : sig
 
 
 (** Simplified wrapper module for the standard library [Format] module. 
-  *) 
+*) 
 
 type t = private Format.formatter
 
 (* val string : t -> string -> unit
 
-val break : t -> unit
+   val break : t -> unit
 
-val break1 : t -> unit
+   val break1 : t -> unit
 
-val space :  t -> unit
+   val space :  t -> unit
 
-val group : t -> int -> (unit -> 'a) -> 'a
-(** [group] will record current indentation 
+   val group : t -> int -> (unit -> 'a) -> 'a
+   (** [group] will record current indentation 
     and indent futher
  *)
 
-val vgroup : t -> int -> (unit -> 'a) -> 'a
+   val vgroup : t -> int -> (unit -> 'a) -> 'a
 
-val paren : t -> (unit -> 'a) -> 'a
+   val paren : t -> (unit -> 'a) -> 'a
 
-val paren_group : t -> int -> (unit -> 'a) -> 'a
+   val paren_group : t -> int -> (unit -> 'a) -> 'a
 
-val brace_group : t -> int -> (unit -> 'a) -> 'a
+   val brace_group : t -> int -> (unit -> 'a) -> 'a
 
-val brace_vgroup : t -> int -> (unit -> 'a) -> 'a
+   val brace_vgroup : t -> int -> (unit -> 'a) -> 'a
 
-val bracket_group : t -> int -> (unit -> 'a) -> 'a
+   val bracket_group : t -> int -> (unit -> 'a) -> 'a
 
-val newline : t -> unit
+   val newline : t -> unit
 
-val to_out_channel : out_channel -> t
+   val to_out_channel : out_channel -> t
 
-val flush : t -> unit -> unit *)
+   val flush : t -> unit -> unit *)
 
 val pp_print_queue :
   ?pp_sep:(Format.formatter -> unit -> unit) ->
@@ -10444,51 +10444,51 @@ type t = formatter
 
 (* let break = fun fmt -> pp_print_break fmt 0 0
 
-let break1 =
-  fun fmt -> pp_print_break fmt 0 1 
+   let break1 =
+   fun fmt -> pp_print_break fmt 0 1 
 
-let space  fmt  = 
-  pp_print_break fmt 1 0
- *)
+   let space  fmt  = 
+   pp_print_break fmt 1 0
+*)
 (* let vgroup fmt indent u = 
-  pp_open_vbox fmt indent; 
-  let v = u () in
-  pp_close_box fmt ();
-  v
+   pp_open_vbox fmt indent; 
+   let v = u () in
+   pp_close_box fmt ();
+   v
 
-let group fmt indent u = 
-  pp_open_hovbox fmt indent; 
-  let v = u () in
-  pp_close_box fmt ();
-  v
-  
-let paren fmt u = 
-  string fmt "(";
-  let v = u () in
-  string fmt ")";
-  v
+   let group fmt indent u = 
+   pp_open_hovbox fmt indent; 
+   let v = u () in
+   pp_close_box fmt ();
+   v
 
-let brace fmt u = 
-  string fmt "{";
-  (* break1 fmt ; *)
-  let v = u () in
-  string fmt "}";
-  v 
+   let paren fmt u = 
+   string fmt "(";
+   let v = u () in
+   string fmt ")";
+   v
 
-let bracket fmt u = 
-  string fmt "[";
-  let v = u () in
-  string fmt "]";
-  v  *)
+   let brace fmt u = 
+   string fmt "{";
+   (* break1 fmt ; *)
+   let v = u () in
+   string fmt "}";
+   v 
+
+   let bracket fmt u = 
+   string fmt "[";
+   let v = u () in
+   string fmt "]";
+   v  *)
 
 (* let paren_group st n action = 
-  group st n (fun _ -> paren st action)
+   group st n (fun _ -> paren st action)
 
-let brace_group st n action = 
-  group st n (fun _ -> brace st action )
+   let brace_group st n action = 
+   group st n (fun _ -> brace st action )
 
-let brace_vgroup st n action = 
-  vgroup st n (fun _ -> 
+   let brace_vgroup st n action = 
+   vgroup st n (fun _ -> 
     string st "{";
     pp_print_break st 0 2;
     let v = vgroup st 0 action in
@@ -10496,17 +10496,17 @@ let brace_vgroup st n action =
     string st "}";
     v
               )
-let bracket_group st n action = 
-  group st n (fun _ -> bracket st action)
+   let bracket_group st n action = 
+   group st n (fun _ -> bracket st action)
 
-let newline fmt = pp_print_newline fmt ()
+   let newline fmt = pp_print_newline fmt ()
 
-let to_out_channel = formatter_of_out_channel
+   let to_out_channel = formatter_of_out_channel
 
-(* let non_breaking_space  fmt = string fmt " " *)
-(* let set_needed_space_function _ _ = () *)
-let flush = pp_print_flush
- *)
+   (* let non_breaking_space  fmt = string fmt " " *)
+   (* let set_needed_space_function _ _ = () *)
+   let flush = pp_print_flush
+*)
 (* let list = pp_print_list *)
 
 let pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
@@ -10547,7 +10547,7 @@ module Ext_pervasives : sig
 
 
 (** Extension to standard library [Pervavives] module, safe to open 
-  *)
+*)
 
 external reraise: exn -> 'a = "%reraise"
 
@@ -10576,7 +10576,7 @@ val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
 (** Copied from {!Btype.hash_variant}:
     need sync up and add test case
- *)
+*)
 (* val hash_variant : string -> int *)
 
 (* val todo : string -> 'a *)
@@ -10623,12 +10623,12 @@ external reraise: exn -> 'a = "%reraise"
 let finally v ~clean:action f   = 
   match f v with
   | exception e -> 
-      action v ;
-      reraise e 
+    action v ;
+    reraise e 
   | e ->  action v ; e 
 
 (* let try_it f  =   
-  try ignore (f ()) with _ -> () *)
+   try ignore (f ()) with _ -> () *)
 
 let with_file_as_chan filename f = 
   finally (open_out_bin filename) ~clean:close_out f 
@@ -10652,8 +10652,8 @@ let hash_variant s =
   if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu *)
 
 (* let todo loc = 
-  failwith (loc ^ " Not supported yet")
- *)
+   failwith (loc ^ " Not supported yet")
+*)
 
 
 
@@ -10697,17 +10697,17 @@ module Ext_fmt
 let with_file_as_pp filename f = 
   Ext_pervasives.finally (open_out_bin filename) ~clean:close_out
     (fun chan -> 
-      let fmt = Format.formatter_of_out_channel chan in
-      let v = f  fmt in
-      Format.pp_print_flush fmt ();
-      v
+       let fmt = Format.formatter_of_out_channel chan in
+       let v = f  fmt in
+       Format.pp_print_flush fmt ();
+       v
     ) 
 
 
 
 let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
     fmt
-    
+
 let invalid_argf fmt = Format.ksprintf invalid_arg fmt
 
 
@@ -11079,12 +11079,12 @@ let cwd = lazy (Sys.getcwd())
 
 let split_by_sep_per_os : string -> string list = 
   if Ext_sys.is_windows_or_cygwin then 
-  fun x -> 
-    (* on Windows, we can still accept -bs-package-output lib/js *)
-    Ext_string.split_by 
-      (fun x -> match x with |'/' |'\\' -> true | _ -> false) x
+    fun x -> 
+      (* on Windows, we can still accept -bs-package-output lib/js *)
+      Ext_string.split_by 
+        (fun x -> match x with |'/' |'\\' -> true | _ -> false) x
   else 
-  fun x -> Ext_string.split x '/'
+    fun x -> Ext_string.split x '/'
 
 (** example
     {[
@@ -11141,14 +11141,14 @@ let node_concat ~dir base =
   dir ^ Literals.node_sep ^ base 
 
 let node_rebase_file ~from ~to_ file = 
-  
+
   node_concat
     ~dir:(
       if from = to_ then Literals.node_current
       else node_relative_path ~from:(Dir from) (Dir to_)) 
     file
-    
-    
+
+
 (***
    {[
      Filename.concat "." "";;
@@ -11251,7 +11251,7 @@ let rel_normalized_absolute_path ~from to_ =
       | [], y::ys -> Ext_list.fold_left ys y (fun acc x -> acc // x) 
       | _::xs, [] ->
         Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ -> acc // Ext_string.parent_dir_lit )
-     in
+    in
     let v =  go paths1 paths2  in 
 
     if Ext_string.is_empty v then  Literals.node_current
@@ -11333,15 +11333,15 @@ let absolute_cwd_path s =
   absolute_path cwd  s 
 
 (* let absolute cwd s =   
-  match s with 
-  | File x -> File (absolute_path cwd x )
-  | Dir x -> Dir (absolute_path cwd x) *)
+   match s with 
+   | File x -> File (absolute_path cwd x )
+   | Dir x -> Dir (absolute_path cwd x) *)
 
 let concat dirname filename =
   if filename = Filename.current_dir_name then dirname
   else if dirname = Filename.current_dir_name then filename
   else Filename.concat dirname filename
-  
+
 
 let check_suffix_case =
   Ext_string.ends_with
@@ -11392,7 +11392,7 @@ module Ext_util : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- 
+
 val power_2_above : int -> int -> int
 
 
@@ -11514,10 +11514,10 @@ let resize indexfun h =
       | Cons {key; next} as cell ->
         let nidx = indexfun h key in
         begin match Array.unsafe_get ndata_tail nidx with 
-        | Empty -> 
-          Array.unsafe_set ndata nidx cell
-        | Cons tail ->
-          tail.next <- cell  
+          | Empty -> 
+            Array.unsafe_set ndata nidx cell
+          | Cons tail ->
+            tail.next <- cell  
         end;
         Array.unsafe_set ndata_tail nidx cell;
         insert_bucket next
@@ -12128,47 +12128,47 @@ val concat_or_join :
   ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
 
 module type S =
-  sig
-    type key
-    type +'a t
-    val empty : 'a t
-    val compare_key : key -> key -> int
-    val is_empty : 'a t -> bool
-    val mem : 'a t -> key -> bool
-    val to_sorted_array : 'a t -> (key * 'a) array
-    val to_sorted_array_with_f : 'a t -> (key -> 'a -> 'b) -> 'b array
-    val add : 'a t -> key -> 'a -> 'a t
-    val adjust : 'a t -> key -> ('a option -> 'a) -> 'a t
-    val singleton : key -> 'a -> 'a t
-    val remove : 'a t -> key -> 'a t
-    (* val merge :
-      'a t -> 'b t -> (key -> 'a option -> 'b option -> 'c option) -> 'c t *)
-    val disjoint_merge_exn : 
+sig
+  type key
+  type +'a t
+  val empty : 'a t
+  val compare_key : key -> key -> int
+  val is_empty : 'a t -> bool
+  val mem : 'a t -> key -> bool
+  val to_sorted_array : 'a t -> (key * 'a) array
+  val to_sorted_array_with_f : 'a t -> (key -> 'a -> 'b) -> 'b array
+  val add : 'a t -> key -> 'a -> 'a t
+  val adjust : 'a t -> key -> ('a option -> 'a) -> 'a t
+  val singleton : key -> 'a -> 'a t
+  val remove : 'a t -> key -> 'a t
+  (* val merge :
+     'a t -> 'b t -> (key -> 'a option -> 'b option -> 'c option) -> 'c t *)
+  val disjoint_merge_exn : 
     'a t -> 
     'a t -> 
     (key -> 'a -> 'a -> exn) -> 
     'a t
-    
-    val iter : 'a t -> (key -> 'a -> unit) -> unit
-    val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
-    val for_all : 'a t -> (key -> 'a -> bool) -> bool
-    val exists : 'a t -> (key -> 'a -> bool) -> bool
-    (* val filter : 'a t -> (key -> 'a -> bool) -> 'a t *)
-    (* val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t *)
-    val cardinal : 'a t -> int
-    val bindings : 'a t -> (key * 'a) list
-    val keys : 'a t -> key list
-    (* val choose : 'a t -> key * 'a *)
 
-    val find_exn : 'a t -> key -> 'a
-    val find_opt : 'a t -> key -> 'a option
-    val find_default : 'a t -> key -> 'a -> 'a
-    val map : 'a t -> ('a -> 'b) -> 'b t
-    val mapi : 'a t -> (key -> 'a -> 'b) -> 'b t
-    val of_list : (key * 'a) list -> 'a t
-    val of_array : (key * 'a) array -> 'a t
-    val add_list : (key * 'b) list -> 'b t -> 'b t
-  end
+  val iter : 'a t -> (key -> 'a -> unit) -> unit
+  val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
+  val for_all : 'a t -> (key -> 'a -> bool) -> bool
+  val exists : 'a t -> (key -> 'a -> bool) -> bool
+  (* val filter : 'a t -> (key -> 'a -> bool) -> 'a t *)
+  (* val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t *)
+  val cardinal : 'a t -> int
+  val bindings : 'a t -> (key * 'a) list
+  val keys : 'a t -> key list
+  (* val choose : 'a t -> key * 'a *)
+
+  val find_exn : 'a t -> key -> 'a
+  val find_opt : 'a t -> key -> 'a option
+  val find_default : 'a t -> key -> 'a -> 'a
+  val map : 'a t -> ('a -> 'b) -> 'b t
+  val mapi : 'a t -> (key -> 'a -> 'b) -> 'b t
+  val of_list : (key * 'a) list -> 'a t
+  val of_array : (key * 'a) array -> 'a t
+  val add_list : (key * 'b) list -> 'b t -> 'b t
+end
 
 end = struct
 #1 "map_gen.ml"
@@ -12192,12 +12192,12 @@ type ('key,'a) t0 =
   | Empty
   | Leaf of {k : 'key ; v : 'a}
   | Node of {
-    l : ('key,'a) t0 ;
-    k : 'key ;
-    v : 'a ;
-    r : ('key,'a) t0 ;
-    h : int
-  }
+      l : ('key,'a) t0 ;
+      k : 'key ;
+      v : 'a ;
+      r : ('key,'a) t0 ;
+      h : int
+    }
 
 let  empty = Empty
 let rec map x f = match x with
@@ -12234,13 +12234,13 @@ let [@inline] unsafe_node_maybe_leaf k v l r h =
   else Node{l;k;v;r; h }           
 
 
-  type ('key, + 'a) t = ('key,'a) t0 = private
-    | Empty
-    | Leaf of {
+type ('key, + 'a) t = ('key,'a) t0 = private
+  | Empty
+  | Leaf of {
       k : 'key ;
       v : 'a
     }
-    | Node of {
+  | Node of {
       l : ('key,'a) t ;
       k : 'key ;
       v : 'a ;
@@ -12448,7 +12448,7 @@ let rec join l v d r =
   match l with
   | Empty -> add_min v d r
   | Leaf leaf ->
-      add_min leaf.k leaf.v (add_min v d r)
+    add_min leaf.k leaf.v (add_min v d r)
   | Node xl ->
     match r with  
     | Empty -> add_max v d l
@@ -12478,129 +12478,129 @@ let concat_or_join t1 v d t2 =
   | Some d -> join t1 v d t2
   | None -> concat t1 t2
 
-    
+
 module type S =
-  sig
-    type key
-    type +'a t
-    val empty: 'a t
-    val compare_key: key -> key -> int 
-    val is_empty: 'a t -> bool
-    val mem: 'a t -> key -> bool
-    val to_sorted_array : 
-      'a t -> (key * 'a ) array
-    val to_sorted_array_with_f : 
-      'a t -> (key -> 'a -> 'b) -> 'b array  
-    val add: 'a t -> key -> 'a -> 'a t
-    (** [add x y m] 
-        If [x] was already bound in [m], its previous binding disappears. *)
+sig
+  type key
+  type +'a t
+  val empty: 'a t
+  val compare_key: key -> key -> int 
+  val is_empty: 'a t -> bool
+  val mem: 'a t -> key -> bool
+  val to_sorted_array : 
+    'a t -> (key * 'a ) array
+  val to_sorted_array_with_f : 
+    'a t -> (key -> 'a -> 'b) -> 'b array  
+  val add: 'a t -> key -> 'a -> 'a t
+  (** [add x y m] 
+      If [x] was already bound in [m], its previous binding disappears. *)
 
-    val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
-    (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
-        [add k v (replace (Some old))]
-    *)
-    
-    val singleton: key -> 'a -> 'a t
+  val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
+  (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
+      [add k v (replace (Some old))]
+  *)
 
-    val remove: 'a t -> key -> 'a t
-    (** [remove x m] returns a map containing the same bindings as
-       [m], except for [x] which is unbound in the returned map. *)
+  val singleton: key -> 'a -> 'a t
 
-    (* val merge:
-         'a t -> 'b t ->
-         (key -> 'a option -> 'b option -> 'c option) ->  'c t *)
-    (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
-        and of [m2]. The presence of each such binding, and the corresponding
-        value, is determined with the function [f].
-        @since 3.12.0
-     *)
+  val remove: 'a t -> key -> 'a t
+  (** [remove x m] returns a map containing the same bindings as
+      [m], except for [x] which is unbound in the returned map. *)
 
-    val disjoint_merge_exn : 
-      'a t 
-      -> 'a t 
-      -> (key -> 'a -> 'a -> exn)
-      -> 'a t
-     (* merge two maps, will raise if they have the same key *)
+  (* val merge:
+       'a t -> 'b t ->
+       (key -> 'a option -> 'b option -> 'c option) ->  'c t *)
+  (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
+      and of [m2]. The presence of each such binding, and the corresponding
+      value, is determined with the function [f].
+      @since 3.12.0
+  *)
 
-
-
-    val iter: 'a t -> (key -> 'a -> unit) ->  unit
-    (** [iter f m] applies [f] to all bindings in map [m].
-        The bindings are passed to [f] in increasing order. *)
-
-    val fold: 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
-    (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
-       where [k1 ... kN] are the keys of all bindings in [m]
-       (in increasing order) *)
-
-    val for_all: 'a t -> (key -> 'a -> bool) -> bool
-    (** [for_all p m] checks if all the bindings of the map.
-        order unspecified
-     *)
-
-    val exists: 'a t -> (key -> 'a -> bool) -> bool
-    (** [exists p m] checks if at least one binding of the map
-        satisfy the predicate [p]. 
-        order unspecified
-     *)
-
-    (* val filter: 'a t -> (key -> 'a -> bool) -> 'a t *)
-    (** [filter p m] returns the map with all the bindings in [m]
-        that satisfy predicate [p].
-        order unspecified
-     *)
-
-    (* val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t *)
-    (** [partition p m] returns a pair of maps [(m1, m2)], where
-        [m1] contains all the bindings of [s] that satisfy the
-        predicate [p], and [m2] is the map with all the bindings of
-        [s] that do not satisfy [p].
-     *)
-
-    val cardinal: 'a t -> int
-    (** Return the number of bindings of a map. *)
-
-    val bindings: 'a t -> (key * 'a) list
-    (** Return the list of all bindings of the given map.
-       The returned list is sorted in increasing order with respect
-       to the ordering *)
-    val keys : 'a t -> key list 
-    (* Increasing order *)
+  val disjoint_merge_exn : 
+    'a t 
+    -> 'a t 
+    -> (key -> 'a -> 'a -> exn)
+    -> 'a t
+  (* merge two maps, will raise if they have the same key *)
 
 
 
-    (* val split: 'a t -> key -> 'a t * 'a option * 'a t *)
-    (** [split x m] returns a triple [(l, data, r)], where
-          [l] is the map with all the bindings of [m] whose key
-        is strictly less than [x];
-          [r] is the map with all the bindings of [m] whose key
-        is strictly greater than [x];
-          [data] is [None] if [m] contains no binding for [x],
-          or [Some v] if [m] binds [v] to [x].
-        @since 3.12.0
-     *)
+  val iter: 'a t -> (key -> 'a -> unit) ->  unit
+  (** [iter f m] applies [f] to all bindings in map [m].
+      The bindings are passed to [f] in increasing order. *)
 
-    val find_exn: 'a t -> key ->  'a
-    (** [find x m] returns the current binding of [x] in [m],
-       or raises [Not_found] if no such binding exists. *)
-    val find_opt:  'a t ->  key ->'a option
-    val find_default: 'a t -> key  ->  'a  -> 'a 
-    val map: 'a t -> ('a -> 'b) -> 'b t
-    (** [map f m] returns a map with same domain as [m], where the
-       associated value [a] of all bindings of [m] has been
-       replaced by the result of the application of [f] to [a].
-       The bindings are passed to [f] in increasing order
-       with respect to the ordering over the type of the keys. *)
+  val fold: 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
+  (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
+      where [k1 ... kN] are the keys of all bindings in [m]
+      (in increasing order) *)
 
-    val mapi: 'a t ->  (key -> 'a -> 'b) -> 'b t
-    (** Same as {!Map.S.map}, but the function receives as arguments both the
-       key and the associated value for each binding of the map. *)
+  val for_all: 'a t -> (key -> 'a -> bool) -> bool
+  (** [for_all p m] checks if all the bindings of the map.
+      order unspecified
+  *)
 
-    val of_list : (key * 'a) list -> 'a t 
-    val of_array : (key * 'a ) array -> 'a t 
-    val add_list : (key * 'b) list -> 'b t -> 'b t
+  val exists: 'a t -> (key -> 'a -> bool) -> bool
+  (** [exists p m] checks if at least one binding of the map
+      satisfy the predicate [p]. 
+      order unspecified
+  *)
 
-  end
+  (* val filter: 'a t -> (key -> 'a -> bool) -> 'a t *)
+  (** [filter p m] returns the map with all the bindings in [m]
+      that satisfy predicate [p].
+      order unspecified
+  *)
+
+  (* val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t *)
+  (** [partition p m] returns a pair of maps [(m1, m2)], where
+      [m1] contains all the bindings of [s] that satisfy the
+      predicate [p], and [m2] is the map with all the bindings of
+      [s] that do not satisfy [p].
+  *)
+
+  val cardinal: 'a t -> int
+  (** Return the number of bindings of a map. *)
+
+  val bindings: 'a t -> (key * 'a) list
+  (** Return the list of all bindings of the given map.
+      The returned list is sorted in increasing order with respect
+      to the ordering *)
+  val keys : 'a t -> key list 
+  (* Increasing order *)
+
+
+
+  (* val split: 'a t -> key -> 'a t * 'a option * 'a t *)
+  (** [split x m] returns a triple [(l, data, r)], where
+        [l] is the map with all the bindings of [m] whose key
+      is strictly less than [x];
+        [r] is the map with all the bindings of [m] whose key
+      is strictly greater than [x];
+        [data] is [None] if [m] contains no binding for [x],
+        or [Some v] if [m] binds [v] to [x].
+      @since 3.12.0
+  *)
+
+  val find_exn: 'a t -> key ->  'a
+  (** [find x m] returns the current binding of [x] in [m],
+      or raises [Not_found] if no such binding exists. *)
+  val find_opt:  'a t ->  key ->'a option
+  val find_default: 'a t -> key  ->  'a  -> 'a 
+  val map: 'a t -> ('a -> 'b) -> 'b t
+  (** [map f m] returns a map with same domain as [m], where the
+      associated value [a] of all bindings of [m] has been
+      replaced by the result of the application of [f] to [a].
+      The bindings are passed to [f] in increasing order
+      with respect to the ordering over the type of the keys. *)
+
+  val mapi: 'a t ->  (key -> 'a -> 'b) -> 'b t
+  (** Same as {!Map.S.map}, but the function receives as arguments both the
+      key and the associated value for each binding of the map. *)
+
+  val of_list : (key * 'a) list -> 'a t 
+  val of_array : (key * 'a ) array -> 'a t 
+  val add_list : (key * 'b) list -> 'b t -> 'b t
+
+end
 
 end
 module Map_string : sig 
@@ -12638,11 +12638,10 @@ end = struct
 # 2 "ext/map.cppo.ml"
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
 
-  
 # 5 "ext/map.cppo.ml"
-  type key = string 
-  let compare_key = Ext_string.compare
-  let [@inline] eq_key (x : key) y = x = y
+type key = string 
+let compare_key = Ext_string.compare
+let [@inline] eq_key (x : key) y = x = y
 # 19 "ext/map.cppo.ml"
 (* let [@inline] (=) (a : int) b = a = b *)
 type + 'a t = (key,'a) Map_gen.t
@@ -12760,8 +12759,8 @@ let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with
       bal l k v (remove r x )
 
 type 'a split = 
-    | Yes of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t ; v : 'a}
-    | No of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t }
+  | Yes of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t ; v : 'a}
+  | No of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t }
 
 
 let rec split  (tree : (key,'a) Map_gen.t) x : 'a split  = 
@@ -12804,10 +12803,10 @@ let rec disjoint_merge_exn
         else Map_gen.unsafe_two_elements l2.k l2.v k l1.v
       | Node _ -> 
         adjust s2 k (fun data -> 
-          match data with 
-          |  None -> l1.v
-          | Some s2v  -> raise_notrace (fail k l1.v s2v)
-        )        
+            match data with 
+            |  None -> l1.v
+            | Some s2v  -> raise_notrace (fail k l1.v s2v)
+          )        
     end
   | Node ({k} as xs1) -> 
     if  xs1.h >= height s2 then
@@ -12879,30 +12878,30 @@ val is_ordered : cmp:('a -> 'a -> int) -> 'a t-> bool
 val invariant : cmp:('a -> 'a -> int) -> 'a t-> bool
 
 module type S =
-  sig
-    type elt
-    type t
-    val empty : t
-    val is_empty : t -> bool
-    val iter : t -> (elt -> unit) -> unit
-    val fold : t -> 'a -> (elt -> 'a -> 'a) -> 'a
-    val for_all : t -> (elt -> bool) -> bool
-    val exists : t -> (elt -> bool) -> bool
-    val singleton : elt -> t
-    val cardinal : t -> int
-    val elements : t -> elt list
-    val choose : t -> elt
-    val mem : t -> elt -> bool
-    val add : t -> elt -> t
-    val remove : t -> elt -> t
-    val union : t -> t -> t
-    val inter : t -> t -> t
-    val diff : t -> t -> t    
-    val of_list : elt list -> t
-    val of_sorted_array : elt array -> t
-    val invariant : t -> bool
-    val print : Format.formatter -> t -> unit
-  end
+sig
+  type elt
+  type t
+  val empty : t
+  val is_empty : t -> bool
+  val iter : t -> (elt -> unit) -> unit
+  val fold : t -> 'a -> (elt -> 'a -> 'a) -> 'a
+  val for_all : t -> (elt -> bool) -> bool
+  val exists : t -> (elt -> bool) -> bool
+  val singleton : elt -> t
+  val cardinal : t -> int
+  val elements : t -> elt list
+  val choose : t -> elt
+  val mem : t -> elt -> bool
+  val add : t -> elt -> t
+  val remove : t -> elt -> t
+  val union : t -> t -> t
+  val inter : t -> t -> t
+  val diff : t -> t -> t    
+  val of_list : elt list -> t
+  val of_sorted_array : elt array -> t
+  val invariant : t -> bool
+  val print : Format.formatter -> t -> unit
+end
 
 end = struct
 #1 "set_gen.ml"
@@ -12952,7 +12951,7 @@ let [@inline] singleton x = Leaf x
 
 let [@inline] unsafe_two_elements x v = 
   unsafe_node v (singleton x) empty 2 
-  
+
 type 'a t = 'a t0 = private
   | Empty 
   | Leaf of 'a
@@ -14040,11 +14039,11 @@ let load_file f =
 
 
 let  rev_lines_of_chann chan = 
-    let rec loop acc chan = 
-      match input_line chan with
-      | line -> loop (line :: acc) chan
-      | exception End_of_file -> close_in chan ; acc in
-    loop [] chan
+  let rec loop acc chan = 
+    match input_line chan with
+    | line -> loop (line :: acc) chan
+    | exception End_of_file -> close_in chan ; acc in
+  loop [] chan
 
 
 let rev_lines_of_file file = 

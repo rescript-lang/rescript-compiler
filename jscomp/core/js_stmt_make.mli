@@ -37,7 +37,7 @@ type t = J.statement
 
 (** empty statement, block of length 0 *)  
 (* val empty_stmt :  
-  t *)
+   t *)
 
 val throw_stmt :
   ?comment:string  ->
@@ -56,8 +56,8 @@ val if_ :
   t
 
 (**   
-  turn a block into  a single statement,
-  avoid nested block
+   turn a block into  a single statement,
+   avoid nested block
 *)  
 val block : 
   ?comment:string  -> 
@@ -66,18 +66,18 @@ val block :
 
 (** [int_switch ~declaration e clauses]
 
-  The [declaration] is attached to peepwhole 
-  such pattern 
+    The [declaration] is attached to peepwhole 
+    such pattern 
 
-  {[
-    var x ;
-    x = yy
-  ]}
-  
-  into
-  {[
-    var x = yy;
-  ]}
+    {[
+      var x ;
+      x = yy
+    ]}
+
+    into
+    {[
+      var x = yy;
+    ]}
 *)  
 val int_switch :
   ?comment:string -> 
@@ -114,10 +114,10 @@ val define_variable :
 
 (** created an alias expression *)  
 (* val alias_variable :
-  ?comment:string ->
-  exp:J.expression ->
-  Ident.t ->
-  t *)
+   ?comment:string ->
+   exp:J.expression ->
+   Ident.t ->
+   t *)
 
 val assign :
   ?comment:string  ->
@@ -126,28 +126,28 @@ val assign :
   t
 
 (** Used in cases like 
-  {[
-    let x = while true do 
-      ...
-    done in ..
-  ]}
+    {[
+      let x = while true do 
+          ...
+        done in ..
+    ]}
 *)  
 (* val assign_unit :
-  ?comment:string  ->
-  J.ident ->
-  t *)
+   ?comment:string  ->
+   J.ident ->
+   t *)
 
 (** used in cases like 
-  {[
-    let x = while true do 
-      ...
-    done in ..
-  ]}
+    {[
+      let x = while true do 
+          ...
+        done in ..
+    ]}
 *)  
 (* val declare_unit :
-  ?comment:string  ->
-  J.ident ->
-  t *)
+   ?comment:string  ->
+   J.ident ->
+   t *)
 
 val while_ :
   ?comment:string ->
@@ -191,11 +191,11 @@ val return_stmt :
 
 (** if [label] is not set, it will default to empty *)  
 (* val continue_stmt :
-  ?comment:string  ->
-  ?label:J.label ->
-  unit  ->
-  t *)
-  
+   ?comment:string  ->
+   ?label:J.label ->
+   unit  ->
+   t *)
+
 val continue_ : t   
 
 val debugger_block :  t list

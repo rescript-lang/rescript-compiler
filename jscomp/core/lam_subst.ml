@@ -31,7 +31,7 @@
    Assumes that the image of the substitution is out of reach
    of the bound variables of the lambda-term (no capture). *)
 
- let subst (s : Lam.t Map_ident.t) lam =
+let subst (s : Lam.t Map_ident.t) lam =
   let rec subst_aux (x : Lam.t) : Lam.t =
     match x with 
     | Lvar id ->

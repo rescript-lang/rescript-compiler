@@ -68,7 +68,7 @@ let spec_of_ptyp
       | Ptyp_variant (row_fields, Closed, _)
         when variant_unwrap row_fields ->
         Unwrap 
-        (* Unwrap attribute can only be attached to things like `[a of a0 | b of b0]` *)
+      (* Unwrap attribute can only be attached to things like `[a of a0 | b of b0]` *)
       | _ ->
         Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
     end
@@ -137,13 +137,13 @@ let refine_obj_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t)
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
     | Some (Int i) -> (* (_[@as ])*)
       (* This type is used in obj only to construct obj type*)
-       Arg_cst(External_arg_spec.cst_int i)
+      Arg_cst(External_arg_spec.cst_int i)
     | Some (Str i)->
-       Arg_cst (External_arg_spec.cst_string i)
+      Arg_cst (External_arg_spec.cst_string i)
     | Some (Js_literal_str s ) ->
-       Arg_cst (External_arg_spec.cst_obj_literal s)
+      Arg_cst (External_arg_spec.cst_obj_literal s)
   else (* ([`a|`b] [@string]) *)
-     spec_of_ptyp nolabel ptyp      
+    spec_of_ptyp nolabel ptyp      
 
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
@@ -282,13 +282,13 @@ let parse_external_attributes
       ->
         if txt = Literals.gentype_import then 
           let bundle = 
-              "./" ^ Ext_filename.new_extension
-                (Filename.basename !Location.input_name)  ".gen"
-            in 
-            attr::attrs, 
-            {st with external_module_name = Some { bundle; module_bind_name = Phint_nothing}}          
+            "./" ^ Ext_filename.new_extension
+              (Filename.basename !Location.input_name)  ".gen"
+          in 
+          attr::attrs, 
+          {st with external_module_name = Some { bundle; module_bind_name = Phint_nothing}}          
         else         
-           let action () = begin match txt with
+          let action () = begin match txt with
             | "bs.val" | "val" ->
               if no_arguments then
                 {st with val_name = name_from_payload_or_prim ~loc payload}
@@ -334,7 +334,7 @@ let parse_external_attributes
             | "bs.set" | "set" ->
               {st with set_name = name_from_payload_or_prim ~loc  payload}
             | "bs.get" | "get" ->
-             {st with get_name = name_from_payload_or_prim ~loc payload}
+              {st with get_name = name_from_payload_or_prim ~loc payload}
 
             | "bs.new" | "new" -> {st with new_name = name_from_payload_or_prim ~loc payload}
             | "bs.set_index" | "set_index" -> 
@@ -360,7 +360,7 @@ let parse_external_attributes
           try attrs, action () with 
           | Not_handled_external_attribute -> attr::attrs, st
     )
-    
+
 
 
 let has_bs_uncurry (attrs : Ast_attributes.t) = 
@@ -917,15 +917,15 @@ let handle_attributes
                | Optional _ -> 
                  Location.raise_errorf ~loc "%@variadic expect the last type to be a non optional"
                | Labelled _ | Nolabel 
-                -> 
-                if ty.ptyp_desc = Ptyp_any then 
-                  Location.raise_errorf ~loc "%@variadic expect the last type to be an array";                  
-                if spec_of_ptyp true ty <> Nothing then 
-                  Location.raise_errorf ~loc "%@variadic expect the last type to be an array";
-                match ty.ptyp_desc with 
-                | Ptyp_constr({txt = Lident "array"; _}, [_])
-                  -> ()
-                | _ -> Location.raise_errorf ~loc "%@variadic expect the last type to be an array";
+                 -> 
+                 if ty.ptyp_desc = Ptyp_any then 
+                   Location.raise_errorf ~loc "%@variadic expect the last type to be an array";                  
+                 if spec_of_ptyp true ty <> Nothing then 
+                   Location.raise_errorf ~loc "%@variadic expect the last type to be an array";
+                 match ty.ptyp_desc with 
+                 | Ptyp_constr({txt = Lident "array"; _}, [_])
+                   -> ()
+                 | _ -> Location.raise_errorf ~loc "%@variadic expect the last type to be an array";
              end ; 
            let (arg_label : External_arg_spec.label_noname), arg_type, new_arg_types =
              match arg_label with
@@ -1031,5 +1031,5 @@ let pval_prim_of_option_labels
           {obj_arg_type = Nothing ;
            obj_arg_label  } :: arg_kinds) in
   External_ffi_types.ffi_obj_as_prims arg_kinds
-  
+
 

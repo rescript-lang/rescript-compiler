@@ -69,8 +69,8 @@ let chop_all_extensions_maybe name =
   let rec search_dot i last =
     if i < 0 || is_dir_sep (String.unsafe_get name i) then 
       (match last with 
-      | None -> name
-      | Some i -> String.sub name 0 i)  
+       | None -> name
+       | Some i -> String.sub name 0 i)  
     else if String.unsafe_get name i = '.' then 
       search_dot (i - 1) (Some i)
     else search_dot (i - 1) last in
@@ -93,11 +93,11 @@ let new_extension name (ext : string) =
 
 
 (** TODO: improve efficiency
-   given a path, calcuate its module name 
-   Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
-   we can not strip all extensions, otherwise
-   we can not tell the difference between "x.cpp.ml" 
-   and "x.ml"
+    given a path, calcuate its module name 
+    Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
+    we can not strip all extensions, otherwise
+    we can not tell the difference between "x.cpp.ml" 
+    and "x.ml"
 *)
 let module_name name = 
   let rec search_dot i  name =
@@ -176,4 +176,3 @@ let as_module ~basename =
       search_dot (i - 1) name name_len in  
   let name_len = String.length basename in       
   search_dot (name_len - 1)  basename name_len
-    

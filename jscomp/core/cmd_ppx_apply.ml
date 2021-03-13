@@ -56,10 +56,10 @@ let rewrite kind ppxs ast =
   let fn_in = temp_ppx_file () in
   write_ast kind fn_in ast;
   let temp_files = List.fold_right (fun ppx fns -> 
-    match fns with 
-    | [] -> assert false
-    | fn_in :: _ -> (apply_rewriter kind fn_in ppx) :: fns
-  ) ppxs [fn_in] in 
+      match fns with 
+      | [] -> assert false
+      | fn_in :: _ -> (apply_rewriter kind fn_in ppx) :: fns
+    ) ppxs [fn_in] in 
   match temp_files with 
   | last_fn :: _ ->  
     let out = read_ast kind last_fn in 

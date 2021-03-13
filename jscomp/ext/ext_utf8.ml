@@ -51,9 +51,9 @@ let classify chr =
 exception Invalid_utf8 of string 
 
 (* when the first char is [Leading],
-  TODO: need more error checking 
-  when out of bond
- *)
+   TODO: need more error checking 
+   when out of bond
+*)
 let rec follow s n (c : int) offset = 
   if n = 0 then (c, offset)
   else 
@@ -100,4 +100,4 @@ let decode_utf8_string s =
 *)  
 
 (* let verify s loc = 
-  assert false *)
+   assert false *)

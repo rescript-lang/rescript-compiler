@@ -27,8 +27,8 @@
 
 
 (** output should always be marked explicitly,
-   otherwise the build system can not figure out clearly
-   however, for the command we don't need pass `-o`
+    otherwise the build system can not figure out clearly
+    however, for the command we don't need pass `-o`
 *)
 val output_build :
   outputs:string list ->

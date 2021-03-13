@@ -65,7 +65,7 @@ let view_as_app (fn : exp) (s : string list) : app_pattern option =
   | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident op; _}}, args ) 
     when Ext_list.has_string s op
     -> 
-      Some {op; loc = fn.pexp_loc; args = check_and_discard args}
+    Some {op; loc = fn.pexp_loc; args = check_and_discard args}
   | _ -> None 
 
 
@@ -73,27 +73,27 @@ let view_as_app (fn : exp) (s : string list) : app_pattern option =
 let inner_ops = ["##"; "#@"]      
 let infix_ops = [ "|."; "#=" ; "##"]
 let app_exp_mapper 
-  (e : exp)
-  (self : Bs_ast_mapper.mapper)
-  (fn : exp)
-  (args : Ast_compatible.args) : exp = 
+    (e : exp)
+    (self : Bs_ast_mapper.mapper)
+    (fn : exp)
+    (args : Ast_compatible.args) : exp = 
   (* - (f##paint) 1 2 
      - (f#@paint) 1 2 
   *)
   match view_as_app fn inner_ops with
   | Some { op;  loc;
            args = [obj;
-          {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}]}
+                   {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}]}
     ->  
     {e with pexp_desc = 
               if op = "##" then
                 Ast_uncurry_apply.method_apply loc self obj name args
               else Ast_uncurry_apply.property_apply loc self obj name  args
     }
-   | Some {op; loc} ->
-      Location.raise_errorf ~loc "%s expect f%sproperty arg0 arg2 form" op op
-   | None -> 
-     (match view_as_app e infix_ops with   
+  | Some {op; loc} ->
+    Location.raise_errorf ~loc "%s expect f%sproperty arg0 arg2 form" op op
+  | None -> 
+    (match view_as_app e infix_ops with   
      | Some { op = "|."; args =  [obj_arg; fn];loc} ->
       (*
         a |. f
@@ -153,8 +153,8 @@ let app_exp_mapper
      | Some { op = "##" ; loc; args =  [obj; rest]} ->
        (* - obj##property
           - obj#(method a b )
-          we should warn when we discard attributes 
-          gpr#1063 foo##(bar##baz) we should rewrite (bar##baz)
+            we should warn when we discard attributes 
+            gpr#1063 foo##(bar##baz) we should rewrite (bar##baz)
               first  before pattern match.
               currently the pattern match is written in a top down style.
               Another corner case: f##(g a b [@bs])
@@ -171,14 +171,14 @@ let app_exp_mapper
            {pexp_desc = 
               (Pexp_ident {txt = Lident name;_ } 
 
-            | Pexp_constant (
-              Pconst_string
-              (name,None))
-            )
-            ;
+              | Pexp_constant (
+                  Pconst_string
+                    (name,None))
+              )
+           ;
              pexp_loc}
            (* f##paint  
-            TODO: this is not relevant: remove it later
+              TODO: this is not relevant: remove it later
            *)
            ->
            sane_property_name_check pexp_loc name ;
@@ -227,7 +227,7 @@ let app_exp_mapper
              -> 
              gen_assignment obj name name_loc
            | _ -> 
-            Location.raise_errorf ~loc "invalid #= assignment"
+             Location.raise_errorf ~loc "invalid #= assignment"
        end
      | Some { op = "|.";  loc; } ->
        Location.raise_errorf ~loc
@@ -243,6 +243,6 @@ let app_exp_mapper
            Ast_attributes.is_bs with
        | None -> default_expr_mapper self e
        | Some pexp_attributes ->
-           {e with pexp_desc = Ast_uncurry_apply.uncurry_fn_apply e.pexp_loc self fn  args ;
-                   pexp_attributes }
-     )
+         {e with pexp_desc = Ast_uncurry_apply.uncurry_fn_apply e.pexp_loc self fn  args ;
+                 pexp_attributes }
+    )

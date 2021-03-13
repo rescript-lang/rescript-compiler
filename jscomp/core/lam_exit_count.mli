@@ -23,11 +23,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- type collection 
+type collection 
 
- 
- val count_helper : Lam.t -> collection
 
- val count_exit : collection -> int -> int 
+val count_helper : Lam.t -> collection
+
+val count_exit : collection -> int -> int 
 
 

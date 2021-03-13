@@ -23,14 +23,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- (** This module is platform dependent, on browser environment, 
+(** This module is platform dependent, on browser environment, 
     it depends on {!Js_cmj_datasets}, for non-browser environment, it fails
- *)
+*)
 
 
 
 
 
 val load_unit :
-    (string ->  
-    Js_cmj_format.cmj_load_info) ref
+  (string ->  
+   Js_cmj_format.cmj_load_info) ref

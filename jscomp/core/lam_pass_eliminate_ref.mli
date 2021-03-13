@@ -26,9 +26,9 @@
 exception Real_reference 
 
 val eliminate_ref : 
-    Ident.t -> 
-    Lam.t -> 
-    Lam.t
+  Ident.t -> 
+  Lam.t -> 
+  Lam.t
 
 
 

@@ -10,7 +10,7 @@ type tdcls = Parsetree.type_declaration list
 
 let derivingName = "accessors" 
 let init () =
-  
+
   Ast_derive.register
     derivingName
     (fun (x : Parsetree.expression option) ->
@@ -63,10 +63,10 @@ let init () =
                                     Exp.construct {loc ; txt = Longident.Lident con_name} @@ 
                                     Some
                                       (if  arity = 1 then 
-                                          Exp.ident { loc ; txt = Lident (List.hd vars )}
-                                        else 
-                                          Exp.tuple (Ext_list.map vars 
-                                                       (fun x -> Exp.ident {loc ; txt = Lident x})))) annotate_type
+                                         Exp.ident { loc ; txt = Lident (List.hd vars )}
+                                       else 
+                                         Exp.tuple (Ext_list.map vars 
+                                                      (fun x -> Exp.ident {loc ; txt = Lident x})))) annotate_type
                               in 
                               Ext_list.fold_right vars exp (fun var b -> 
                                   Ast_compatible.fun_  (Pat.var {loc ; txt = var}) b 
@@ -76,8 +76,8 @@ let init () =
                   )
               | Ptype_abstract | Ptype_open ->
                 Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
-               []
-              (* Location.raise_errorf "projector only works with record" *)
+                []
+                (* Location.raise_errorf "projector only works with record" *)
             in Ext_list.flat_map tdcls handle_tdcl
 
 
@@ -108,8 +108,8 @@ let init () =
                       Ast_comb.single_non_rec_val {loc ; txt = (Ext_string.uncapitalize_ascii con_name)}
                         (Ext_list.fold_right pcd_args annotate_type (fun x acc -> Ast_compatible.arrow x acc)))
               | Ptype_open | Ptype_abstract -> 
-              Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
-              [] 
+                Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
+                [] 
             in 
             Ext_list.flat_map tdcls handle_tdcl 
           end;

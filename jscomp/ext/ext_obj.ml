@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- let rec dump r =
+let rec dump r =
   if Obj.is_int r then
     string_of_int (Obj.magic r : int)
   else (* Block. *)
@@ -105,7 +105,7 @@ let dump v = dump (Obj.repr v)
 
 let pp_any fmt v = 
   Format.fprintf fmt "@[%s@]"
-  (dump v )
+    (dump v )
 
 
 let bt () = 

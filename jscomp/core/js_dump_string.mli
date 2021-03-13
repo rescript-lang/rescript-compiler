@@ -24,7 +24,7 @@
 
 
 (* Make sure the escaped string conforms to 
-  JS lexing convention
+   JS lexing convention
 *)
 val escape_to_string : 
   string -> 

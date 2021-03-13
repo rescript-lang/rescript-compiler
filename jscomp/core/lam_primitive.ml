@@ -25,11 +25,11 @@
 [@@@ocaml.warning "+9"]
 
 type ident = Ident.t
-  
+
 type record_representation = 
-    | Record_regular
-    | Record_inlined of {tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
-    | Record_extension                    (* Inlined record under extension *)
+  | Record_regular
+  | Record_inlined of {tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
+  | Record_extension                    (* Inlined record under extension *)
 
 type t =
   | Pbytes_to_string
@@ -57,7 +57,7 @@ type t =
   | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
   | Pandint | Porint | Pxorint
   | Plslint | Plsrint | Pasrint
-  
+
   | Poffsetint of int
   | Poffsetref of int
   (* Float operations *)
@@ -115,7 +115,7 @@ type t =
     { 
       name : string ;
       setter : bool;
-     }
+    }
   | Pinit_mod
   | Pupdate_mod
   | Praw_js_code of Js_raw_info.t  
@@ -123,11 +123,11 @@ type t =
   | Pvoid_run
   | Pfull_apply 
   (* we wrap it when do the conversion to prevent 
-    accendential optimization
-    play safe first
+     accendential optimization
+     play safe first
   *)
   | Pjs_fn_method 
-  
+
 
   | Pundefined_to_opt
   | Pnull_to_opt
@@ -165,9 +165,9 @@ let eq_record_representation ( p : record_representation) ( p1 : record_represen
   | Record_regular -> p1 = Record_regular
   | Record_inlined {tag ; name ; num_nonconsts} -> 
     (match p1 with 
-    |Record_inlined rhs ->
+     |Record_inlined rhs ->
        tag = rhs.tag && name = rhs.name && num_nonconsts = rhs.num_nonconsts
-    | _ -> false)
+     | _ -> false)
   | Record_extension -> 
     p1 = Record_extension   
 
@@ -238,17 +238,17 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pcaml_obj_length -> rhs = Pcaml_obj_length
   (* | Pcaml_obj_set_length -> rhs = Pcaml_obj_set_length *)
   | Pccall {prim_name = n0 } -> 
-   (match rhs with 
-   | Pccall {prim_name = n1} 
-    -> n0 = n1 
-   | _ -> false )    
+    (match rhs with 
+     | Pccall {prim_name = n1} 
+       -> n0 = n1 
+     | _ -> false )    
   | Pfield (n0, info0) ->  
     (match rhs with Pfield (n1, info1) ->  n0 = n1 && eq_field_dbg_info info0 info1 | _ -> false )    
   | Psetfield(i0, info0) -> 
     (match rhs with Psetfield(i1, info1) ->  i0 = i1 && eq_set_field_dbg_info info0 info1 | _ -> false)  
   | Pmakeblock (i0, info0, flag0) -> 
     (match rhs with Pmakeblock(i1,info1,flag1) ->  
-      i0 = i1 && flag0 = flag1 && eq_tag_info info0 info1 | _ -> false)  
+       i0 = i1 && flag0 = flag1 && eq_tag_info info0 info1 | _ -> false)  
   | Pduprecord record_repesentation0 -> (match rhs with Pduprecord record_repesentation1 ->  eq_record_representation record_repesentation0 record_repesentation1  | _ -> false)
   | Pjs_call {prim_name; arg_types; ffi} ->  ( match rhs with Pjs_call rhs -> prim_name = rhs.prim_name && arg_types = rhs.arg_types && ffi = rhs.ffi | _ -> false)
   | Pjs_object_create obj_create -> (match rhs with Pjs_object_create obj_create1 -> obj_create = obj_create1 | _ -> false )
@@ -285,7 +285,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pfull_apply -> rhs = Pfull_apply 
   | Pjs_fn_method  -> rhs = Pjs_fn_method 
   | Praw_js_code _ 
-   -> false (* TOO lazy, here comparison is only approximation*)
-  
+    -> false (* TOO lazy, here comparison is only approximation*)
+
   | Pfield_computed -> rhs = Pfield_computed
   | Psetfield_computed -> rhs = Psetfield_computed

@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- let bsbuild_cache = Literals.bsbuild_cache
+let bsbuild_cache = Literals.bsbuild_cache
 
 
 type group = 
@@ -79,7 +79,7 @@ and decode_modules (x : string) (offset : cursor) module_number : string array =
         let offs = !last in 
         let len = (!cur - !last) in         
         Array.unsafe_set result !tasks
-        (Ext_string.unsafe_sub x offs len);
+          (Ext_string.unsafe_sub x offs len);
         incr tasks;
         last := !cur + 1;
       end;
@@ -87,7 +87,7 @@ and decode_modules (x : string) (offset : cursor) module_number : string array =
   done ;
   offset := !cur;
   result
-  
+
 
 (* TODO: shall we check the consistency of digest *)
 let read_build_cache ~dir  : t =   
@@ -104,37 +104,37 @@ type module_info =  {
 
 
 let find_opt 
-  ({content = whole} as db : t )  
+    ({content = whole} as db : t )  
     lib (key : string) 
-    : module_info option = 
+  : module_info option = 
   match if lib then db.lib else db.dev with  
   | Dummy -> None
   | Group ({modules ;} as group) ->
-  let i = Ext_string_array.find_sorted  modules key in 
-  match i with 
-  | None -> None 
-  | Some count ->     
-    let encode_len = group.dir_length in 
-    let index = 
-      Ext_string.get_1_2_3_4 whole 
-      ~off:(group.module_info_offset + 1 + count * encode_len)
-      encode_len
-    in 
-    let case = not (index mod 2 = 0) in 
-    let ith = index lsr 1 in 
-    let dir_name_start = 
-      if ith = 0 then group.dir_info_offset 
-      else 
-        Ext_string.index_count 
-          whole group.dir_info_offset '\t'
-          ith + 1
-    in 
-    let dir_name_finish = 
-      String.index_from
-        whole dir_name_start '\t' 
-    in    
-    Some {case ; dir_name = String.sub whole dir_name_start (dir_name_finish - dir_name_start)}
-  
+    let i = Ext_string_array.find_sorted  modules key in 
+    match i with 
+    | None -> None 
+    | Some count ->     
+      let encode_len = group.dir_length in 
+      let index = 
+        Ext_string.get_1_2_3_4 whole 
+          ~off:(group.module_info_offset + 1 + count * encode_len)
+          encode_len
+      in 
+      let case = not (index mod 2 = 0) in 
+      let ith = index lsr 1 in 
+      let dir_name_start = 
+        if ith = 0 then group.dir_info_offset 
+        else 
+          Ext_string.index_count 
+            whole group.dir_info_offset '\t'
+            ith + 1
+      in 
+      let dir_name_finish = 
+        String.index_from
+          whole dir_name_start '\t' 
+      in    
+      Some {case ; dir_name = String.sub whole dir_name_start (dir_name_finish - dir_name_start)}
+
 let find db dependent_module is_not_lib_dir =         
   let opt = find_opt db true dependent_module in 
   match opt with 

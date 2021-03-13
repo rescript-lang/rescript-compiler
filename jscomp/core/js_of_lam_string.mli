@@ -31,8 +31,8 @@
 
 (** Utilities to wrap [string] and [bytes] compilation, 
 
-   this is isolated, so that we can swap different representation in the future.
-   [string] is Immutable, so there is not [set_string] method
+    this is isolated, so that we can swap different representation in the future.
+    [string] is Immutable, so there is not [set_string] method
 *)
 
 val ref_string : J.expression -> J.expression -> J.expression
@@ -42,7 +42,7 @@ val ref_byte : J.expression -> J.expression -> J.expression
 val set_byte : J.expression -> J.expression -> J.expression -> J.expression 
 
 val caml_char_of_int : 
-   J.expression -> J.expression
+  J.expression -> J.expression
 
 val caml_char_to_int : 
 

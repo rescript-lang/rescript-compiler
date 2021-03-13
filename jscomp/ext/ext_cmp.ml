@@ -12,7 +12,7 @@ end
 type ('key, 'id) t = (module S with type t = 'key and type id = 'id)
 
 module Make (M : sig
-   type t
+    type t
     val cmp : t -> t -> int [@bs]
   end) =
 struct
@@ -22,8 +22,8 @@ struct
 end
 
 let make 
-  (type key) 
-  (cmp : key -> key -> int [@bs])   
+    (type key) 
+    (cmp : key -> key -> int [@bs])   
   =
   let module M = struct 
     type t = key

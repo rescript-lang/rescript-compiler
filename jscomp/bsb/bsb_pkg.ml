@@ -28,8 +28,8 @@ let (//) = Filename.concat
 type t = Bsb_pkg_types.t
 
 (* TODO: be more restrict 
-  [bsconfig.json] does not always make sense, 
-  when resolving [ppx-flags]
+   [bsconfig.json] does not always make sense, 
+   when resolving [ppx-flags]
 *)
 let make_sub_path (x : t) : string = 
   Literals.node_modules // Bsb_pkg_types.to_string x
@@ -62,18 +62,18 @@ let  resolve_bs_package_aux  ~cwd (pkg : t) =
         | Some(resolved_dir) -> resolved_dir
         | None -> Bsb_exception.package_not_found ~pkg ~json:None)    
   in
-   aux cwd 
-    
-    
-    
-    
-    
+  aux cwd 
+
+
+
+
+
 
 module Coll = Hash.Make(struct
-  type nonrec t = t 
-  let equal = Bsb_pkg_types.equal
-  let hash (x : t) = Hashtbl.hash x     
-end)
+    type nonrec t = t 
+    let equal = Bsb_pkg_types.equal
+    let hash (x : t) = Hashtbl.hash x     
+  end)
 
 
 let cache : string Coll.t = Coll.create 0
@@ -81,27 +81,27 @@ let cache : string Coll.t = Coll.create 0
 
 let to_list cb  =   
   Coll.to_list cache  cb 
-  
+
 
 
 (** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd (package : t) =
-    match Coll.find_opt cache package with
-    | None ->
-      let result = resolve_bs_package_aux ~cwd package in
-      Bsb_log.info "@{<info>Package@} %a -> %s@." Bsb_pkg_types.print package result ;
-      Coll.add cache package result ;
-      result
-    | Some x
-      ->
-      let result = resolve_bs_package_aux ~cwd package in
-      if not (Bsb_real_path.is_same_paths_via_io result x) then
-        begin
-          Bsb_log.warn
-            "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @." 
-              Bsb_pkg_types.print package x result cwd;
-        end;
-      x
+  match Coll.find_opt cache package with
+  | None ->
+    let result = resolve_bs_package_aux ~cwd package in
+    Bsb_log.info "@{<info>Package@} %a -> %s@." Bsb_pkg_types.print package result ;
+    Coll.add cache package result ;
+    result
+  | Some x
+    ->
+    let result = resolve_bs_package_aux ~cwd package in
+    if not (Bsb_real_path.is_same_paths_via_io result x) then
+      begin
+        Bsb_log.warn
+          "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @." 
+          Bsb_pkg_types.print package x result cwd;
+      end;
+    x
 
 
 (** The package does not need to be a bspackage

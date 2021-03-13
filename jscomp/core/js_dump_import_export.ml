@@ -88,7 +88,7 @@ let es6_export cxt f (idents : Ident.t list) =
       ) ;
   end;
   outer_cxt  
-  
+
 
 (** Node or Google module style imports *)
 let requires require_lit cxt f (modules : (Ident.t * string * bool) list ) =

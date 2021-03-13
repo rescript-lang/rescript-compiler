@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- (** TODO: the interface is not reusable, it depends on too much context *)
+(** TODO: the interface is not reusable, it depends on too much context *)
 (** syntax: {[f arg0 arg1 [@bs]]}*)
 val uncurry_fn_apply : 
   Location.t -> 

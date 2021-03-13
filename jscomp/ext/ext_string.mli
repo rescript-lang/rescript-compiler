@@ -59,11 +59,11 @@ val ends_with_index : string -> string -> int
 val ends_with : string -> string -> bool
 
 (**
-  [ends_with_then_chop name ext]
-  @example:
+   [ends_with_then_chop name ext]
+   @example:
    {[
      ends_with_then_chop "a.cmj" ".cmj"
-     "a"
+       "a"
    ]}
    This is useful in controlled or file case sensitve system
 *)
@@ -73,9 +73,9 @@ val ends_with_then_chop : string -> string -> string option
 
 
 (**
-  [for_all_from  s start p]
-  if [start] is negative, it raises,
-  if [start] is too large, it returns true
+   [for_all_from  s start p]
+   if [start] is negative, it raises,
+   if [start] is too large, it returns true
 *)
 val for_all_from:
   string -> 
@@ -95,7 +95,7 @@ val repeat : int -> string -> string
 val equal : string -> string -> bool
 
 (**
-  [extract_until s cursor sep]
+   [extract_until s cursor sep]
    When [sep] not found, the cursor is updated to -1,
    otherwise cursor is increased to 1 + [sep_position]
    User can not determine whether it is found or not by
@@ -103,10 +103,10 @@ val equal : string -> string -> bool
    "\n\n" would result in an empty string too.
 *)
 (* val extract_until:
-  string -> 
-  int ref -> (* cursor to be updated *)
-  char -> 
-  string *)
+   string -> 
+   int ref -> (* cursor to be updated *)
+   char -> 
+   string *)
 
 val index_count:  
   string -> 
@@ -116,15 +116,15 @@ val index_count:
   int 
 
 (* val index_next :
-  string -> 
-  int ->
-  char -> 
-  int  *)
+   string -> 
+   int ->
+   char -> 
+   int  *)
 
-  
+
 (**
-  [find ~start ~sub s]
-  returns [-1] if not found
+   [find ~start ~sub s]
+   returns [-1] if not found
 *)
 val find : ?start:int -> sub:string -> string -> int
 
@@ -135,7 +135,7 @@ val non_overlap_count : sub:string -> string -> int
 val rfind : sub:string -> string -> int
 
 (** [tail_from s 1]
-  return a substring from offset 1 (inclusive)
+    return a substring from offset 1 (inclusive)
 *)
 val tail_from : string -> int -> string
 
@@ -190,7 +190,7 @@ val capitalize_sub:
   string -> 
   int -> 
   string
-  
+
 val uncapitalize_ascii : string -> string
 
 val lowercase_ascii : string -> string 

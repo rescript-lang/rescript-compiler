@@ -35,10 +35,10 @@ val no_side_effects : Lam.t -> bool
 val size : Lam.t -> int
 
 val ok_to_inline_fun_when_app :
-   Lam.lfunction -> 
-   Lam.t list -> 
-   bool
-  
+  Lam.lfunction -> 
+  Lam.t list -> 
+  bool
+
 
 
 val small_inline_size : int  

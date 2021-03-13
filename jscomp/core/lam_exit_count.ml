@@ -35,22 +35,22 @@ let incr_exit (exits : collection) i =
 
 
 (** 
-  This funcition counts how each [exit] is used, it will affect how the following optimizations performed.
-  
-  Some smart cases (this requires the following optimizations follow it): 
-  
-  {[
-    Lstaticcatch(l1, (i,_), l2) 
-  ]}
-  If [l1] does not contain [(exit i)],
-  [l2] will be removed, so don't count it.
-  
-  About Switch default branch handling, it maybe backend-specific
-  See https://github.com/ocaml/ocaml/commit/fcf3571123e2c914768e34f1bd17e4cbaaa7d212#diff-704f66c0fa0fc9339230b39ce7d90919 
-  For Lstringswitch ^
-  
-  For Lswitch, if it is not exhuastive pattern match, default will be counted twice.
-  Since for pattern match,  we will  test whether it is  an integer or block, both have default cases predicate: [sw_consts_full] vs nconsts
+   This funcition counts how each [exit] is used, it will affect how the following optimizations performed.
+
+   Some smart cases (this requires the following optimizations follow it): 
+
+   {[
+     Lstaticcatch(l1, (i,_), l2) 
+   ]}
+   If [l1] does not contain [(exit i)],
+   [l2] will be removed, so don't count it.
+
+   About Switch default branch handling, it maybe backend-specific
+   See https://github.com/ocaml/ocaml/commit/fcf3571123e2c914768e34f1bd17e4cbaaa7d212#diff-704f66c0fa0fc9339230b39ce7d90919 
+   For Lstringswitch ^
+
+   For Lswitch, if it is not exhuastive pattern match, default will be counted twice.
+   Since for pattern match,  we will  test whether it is  an integer or block, both have default cases predicate: [sw_consts_full] vs nconsts
 *)
 let count_helper  (lam : Lam.t) : collection = 
   let exits : collection = Hash_int.create 17 in
@@ -91,9 +91,9 @@ let count_helper  (lam : Lam.t) : collection =
     | Some al ->
       if not sw.sw_consts_full && not sw.sw_blocks_full
       then 
-          (count al ; count al)    
+        (count al ; count al)    
       else 
-          count al in 
+        count al in 
   count lam ; 
   exits
 ;;

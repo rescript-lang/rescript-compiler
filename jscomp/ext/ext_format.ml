@@ -37,51 +37,51 @@ type t = formatter
 
 (* let break = fun fmt -> pp_print_break fmt 0 0
 
-let break1 =
-  fun fmt -> pp_print_break fmt 0 1 
+   let break1 =
+   fun fmt -> pp_print_break fmt 0 1 
 
-let space  fmt  = 
-  pp_print_break fmt 1 0
- *)
+   let space  fmt  = 
+   pp_print_break fmt 1 0
+*)
 (* let vgroup fmt indent u = 
-  pp_open_vbox fmt indent; 
-  let v = u () in
-  pp_close_box fmt ();
-  v
+   pp_open_vbox fmt indent; 
+   let v = u () in
+   pp_close_box fmt ();
+   v
 
-let group fmt indent u = 
-  pp_open_hovbox fmt indent; 
-  let v = u () in
-  pp_close_box fmt ();
-  v
-  
-let paren fmt u = 
-  string fmt "(";
-  let v = u () in
-  string fmt ")";
-  v
+   let group fmt indent u = 
+   pp_open_hovbox fmt indent; 
+   let v = u () in
+   pp_close_box fmt ();
+   v
 
-let brace fmt u = 
-  string fmt "{";
-  (* break1 fmt ; *)
-  let v = u () in
-  string fmt "}";
-  v 
+   let paren fmt u = 
+   string fmt "(";
+   let v = u () in
+   string fmt ")";
+   v
 
-let bracket fmt u = 
-  string fmt "[";
-  let v = u () in
-  string fmt "]";
-  v  *)
+   let brace fmt u = 
+   string fmt "{";
+   (* break1 fmt ; *)
+   let v = u () in
+   string fmt "}";
+   v 
+
+   let bracket fmt u = 
+   string fmt "[";
+   let v = u () in
+   string fmt "]";
+   v  *)
 
 (* let paren_group st n action = 
-  group st n (fun _ -> paren st action)
+   group st n (fun _ -> paren st action)
 
-let brace_group st n action = 
-  group st n (fun _ -> brace st action )
+   let brace_group st n action = 
+   group st n (fun _ -> brace st action )
 
-let brace_vgroup st n action = 
-  vgroup st n (fun _ -> 
+   let brace_vgroup st n action = 
+   vgroup st n (fun _ -> 
     string st "{";
     pp_print_break st 0 2;
     let v = vgroup st 0 action in
@@ -89,17 +89,17 @@ let brace_vgroup st n action =
     string st "}";
     v
               )
-let bracket_group st n action = 
-  group st n (fun _ -> bracket st action)
+   let bracket_group st n action = 
+   group st n (fun _ -> bracket st action)
 
-let newline fmt = pp_print_newline fmt ()
+   let newline fmt = pp_print_newline fmt ()
 
-let to_out_channel = formatter_of_out_channel
+   let to_out_channel = formatter_of_out_channel
 
-(* let non_breaking_space  fmt = string fmt " " *)
-(* let set_needed_space_function _ _ = () *)
-let flush = pp_print_flush
- *)
+   (* let non_breaking_space  fmt = string fmt " " *)
+   (* let set_needed_space_function _ _ = () *)
+   let flush = pp_print_flush
+*)
 (* let list = pp_print_list *)
 
 let pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =

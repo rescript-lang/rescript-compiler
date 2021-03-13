@@ -116,17 +116,17 @@ let ends_with_then_chop s beg =
 (* let check_suffix_case_then_chop = ends_with_then_chop *)
 
 (* let check_any_suffix_case s suffixes = 
-  Ext_list.exists suffixes (fun x -> check_suffix_case s x)  *)
+   Ext_list.exists suffixes (fun x -> check_suffix_case s x)  *)
 
 (* let check_any_suffix_case_then_chop s suffixes = 
-  let rec aux suffixes = 
+   let rec aux suffixes = 
     match suffixes with 
     | [] -> None 
     | x::xs -> 
       let id = ends_with_index s x in 
       if id >= 0 then Some (String.sub s 0 id)
       else aux xs in 
-  aux suffixes     *)
+   aux suffixes     *)
 
 
 
@@ -228,9 +228,9 @@ let tail_from s x =
 let equal (x : string) y  = x = y
 
 (* let rec index_rec s lim i c =
-  if i >= lim then -1 else
-  if String.unsafe_get s i = c then i 
-  else index_rec s lim (i + 1) c *)
+   if i >= lim then -1 else
+   if String.unsafe_get s i = c then i 
+   else index_rec s lim (i + 1) c *)
 
 
 
@@ -248,16 +248,16 @@ let index_count s i c count =
   index_rec_count s lim i c count 
 
 (* let index_next s i c =   
-  index_count s i c 1  *)
+   index_count s i c 1  *)
 
 (* let extract_until s cursor c =       
-  let len = String.length s in   
-  let start = !cursor in 
-  if start < 0 || start >= len then (
+   let len = String.length s in   
+   let start = !cursor in 
+   if start < 0 || start >= len then (
     cursor := -1;
     ""
     )
-  else 
+   else 
     let i = index_rec s len start c in   
     let finish = 
       if i < 0 then (      
@@ -269,7 +269,7 @@ let index_count s i c count =
         i 
       ) in 
     String.sub s start (finish - start) *)
-  
+
 let rec rindex_rec s i c =
   if i < 0 then i else
   if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
@@ -467,10 +467,10 @@ let capitalize_sub (s : string) len : string =
     done ;
     Bytes.unsafe_to_string bytes 
 
-    
+
 
 let uncapitalize_ascii =
-    String.uncapitalize_ascii
+  String.uncapitalize_ascii
 
 let lowercase_ascii = String.lowercase_ascii
 
@@ -482,7 +482,7 @@ let get_int_1 (x : string) off : int =
 let get_int_2 (x : string) off : int = 
   Char.code x.[off] lor   
   Char.code x.[off+1] lsl 8
-  
+
 let get_int_3 (x : string) off : int = 
   Char.code x.[off] lor   
   Char.code x.[off+1] lsl 8  lor 

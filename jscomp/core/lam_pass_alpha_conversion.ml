@@ -53,7 +53,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
             {ap_info with ap_status = App_infer_full}
         )
           (Ext_list.map rest simpl ) ap_info  (* TODO refien *)
-    
+
   and simpl  (lam : Lam.t) = 
     match lam with 
     | Lconst _ -> lam
@@ -70,18 +70,18 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
       Lam.letrec bindings (simpl body) 
     | Lglobal_module _ -> lam 
     | Lprim {primitive = (Pjs_fn_make len) as primitive ; args = [arg] 
-      ; loc } -> 
-      
+            ; loc } -> 
+
       begin match 
-      Lam_arity.get_first_arity 
-      (Lam_arity_analysis.get_arity meta arg) with       
+          Lam_arity.get_first_arity 
+            (Lam_arity_analysis.get_arity meta arg) with       
       | Some x 
         -> 
         let arg = simpl arg in
-          Lam_eta_conversion.unsafe_adjust_to_arity loc 
-            ~to_:len 
-            ~from:x
-            arg 
+        Lam_eta_conversion.unsafe_adjust_to_arity loc 
+          ~to_:len 
+          ~from:x
+          arg 
       | None ->  Lam.prim ~primitive ~args:[simpl arg] loc
       end
     | Lprim {primitive; args ; loc} -> 
@@ -90,25 +90,25 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
       (* Lam_mk.lfunction kind params (simpl l) *)
       Lam.function_ ~arity  ~params  ~body:(simpl body) ~attr
     | Lswitch (l, {sw_failaction; 
-                  sw_consts; 
-                  sw_blocks;
-                  sw_blocks_full;
-                  sw_consts_full;
-                  sw_names;
-                 }) ->
+                   sw_consts; 
+                   sw_blocks;
+                   sw_blocks_full;
+                   sw_consts_full;
+                   sw_names;
+                  }) ->
       Lam.switch (simpl  l)
-              {sw_consts = 
-                 Ext_list.map_snd  sw_consts simpl;
-               sw_blocks = Ext_list.map_snd  sw_blocks simpl;
-               sw_consts_full;
-               sw_blocks_full;
-               sw_failaction = Ext_option.map sw_failaction simpl;
-               sw_names;
-              }
+        {sw_consts = 
+           Ext_list.map_snd  sw_consts simpl;
+         sw_blocks = Ext_list.map_snd  sw_blocks simpl;
+         sw_consts_full;
+         sw_blocks_full;
+         sw_failaction = Ext_option.map sw_failaction simpl;
+         sw_names;
+        }
     | Lstringswitch (l, sw, d) ->
       Lam.stringswitch (simpl  l)
-                    (Ext_list.map_snd sw simpl)
-                    (Ext_option.map d simpl)
+        (Ext_list.map_snd sw simpl)
+        (Ext_option.map d simpl)
     | Lstaticraise (i,ls) ->
       Lam.staticraise i (Ext_list.map ls simpl)
     | Lstaticcatch (l1, ids, l2) 

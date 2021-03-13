@@ -27,7 +27,7 @@ let has_exit_code lam  exits =
   let rec aux (lam : Lam.t) = 
     match lam with 
     | Lfunction _ -> false 
-      (* static exit can not cross function boundary *)
+    (* static exit can not cross function boundary *)
     | Lstaticraise(p,_) 
       when exits p -> true 
 

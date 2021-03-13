@@ -56,8 +56,8 @@ let process_getter_setter
     if st.set = None then get_acc 
     else
       set ty 
-    ({name with txt = name.Asttypes.txt ^ Literals.setter_suffix} : _ Asttypes.loc)
-      pctf_attributes         
+        ({name with txt = name.Asttypes.txt ^ Literals.setter_suffix} : _ Asttypes.loc)
+        pctf_attributes         
       :: get_acc 
 
 
@@ -118,7 +118,7 @@ let handle_class_type_field self
   | Pctf_attribute _ 
   | Pctf_extension _  -> 
     Bs_ast_mapper.default_mapper.class_type_field self ctf :: acc 
-      
+
 
 let default_typ_mapper = Bs_ast_mapper.default_mapper.typ
 (*
@@ -158,55 +158,55 @@ let typ_mapper
       {typ with ptyp_attributes = attr :: typ.ptyp_attributes} in           
     let new_methods =
       Ext_list.fold_right  methods []  (fun  meth_ acc ->
-        match meth_ with 
-        | Parsetree.Oinherit _ -> meth_ :: acc 
-        | Parsetree.Otag 
-          (label, ptyp_attrs, core_type) -> 
-          let get ty name attrs =
-            let attrs, core_type =
-              match Ast_attributes.process_attributes_rev attrs with
-              | Nothing, attrs -> attrs, ty (* #1678 *)
-              | Uncurry attr , attrs ->
-                attrs, attr +> ty
-              | Method _, _
-                -> Location.raise_errorf ~loc "%@get/set conflicts with %@meth"
-              | Meth_callback attr, attrs ->
-                attrs, attr +> ty 
-            in 
-            Ast_compatible.object_field name  attrs (self.typ self core_type) in
-          let set ty name attrs =
-            let attrs, core_type =
-              match Ast_attributes.process_attributes_rev attrs with
-              | Nothing, attrs -> attrs, ty
-              | Uncurry attr, attrs ->
-                attrs, attr +> ty 
-              | Method _, _
-                -> Location.raise_errorf ~loc "%@get/set conflicts with %@meth"
-              | Meth_callback attr, attrs ->
-                attrs, attr +> ty
-            in               
-            Ast_compatible.object_field name attrs (Ast_typ_uncurry.to_method_type loc self Nolabel core_type 
-              (Ast_literal.type_unit ~loc ())) in
-          let not_getter_setter ty =
-            let attrs, core_type =
-              match Ast_attributes.process_attributes_rev ptyp_attrs with
-              | Nothing, attrs -> attrs, ty
-              | Uncurry attr, attrs ->
-                attrs, attr +> ty 
-              | Method attr, attrs -> 
-                attrs, attr +> ty 
-              | Meth_callback attr, attrs ->
-                attrs, attr +> ty  in            
-            Ast_compatible.object_field label attrs (self.typ self core_type) in
-          process_getter_setter ~not_getter_setter ~get ~set
-            loc label ptyp_attrs core_type acc
+          match meth_ with 
+          | Parsetree.Oinherit _ -> meth_ :: acc 
+          | Parsetree.Otag 
+              (label, ptyp_attrs, core_type) -> 
+            let get ty name attrs =
+              let attrs, core_type =
+                match Ast_attributes.process_attributes_rev attrs with
+                | Nothing, attrs -> attrs, ty (* #1678 *)
+                | Uncurry attr , attrs ->
+                  attrs, attr +> ty
+                | Method _, _
+                  -> Location.raise_errorf ~loc "%@get/set conflicts with %@meth"
+                | Meth_callback attr, attrs ->
+                  attrs, attr +> ty 
+              in 
+              Ast_compatible.object_field name  attrs (self.typ self core_type) in
+            let set ty name attrs =
+              let attrs, core_type =
+                match Ast_attributes.process_attributes_rev attrs with
+                | Nothing, attrs -> attrs, ty
+                | Uncurry attr, attrs ->
+                  attrs, attr +> ty 
+                | Method _, _
+                  -> Location.raise_errorf ~loc "%@get/set conflicts with %@meth"
+                | Meth_callback attr, attrs ->
+                  attrs, attr +> ty
+              in               
+              Ast_compatible.object_field name attrs (Ast_typ_uncurry.to_method_type loc self Nolabel core_type 
+                                                        (Ast_literal.type_unit ~loc ())) in
+            let not_getter_setter ty =
+              let attrs, core_type =
+                match Ast_attributes.process_attributes_rev ptyp_attrs with
+                | Nothing, attrs -> attrs, ty
+                | Uncurry attr, attrs ->
+                  attrs, attr +> ty 
+                | Method attr, attrs -> 
+                  attrs, attr +> ty 
+                | Meth_callback attr, attrs ->
+                  attrs, attr +> ty  in            
+              Ast_compatible.object_field label attrs (self.typ self core_type) in
+            process_getter_setter ~not_getter_setter ~get ~set
+              loc label ptyp_attrs core_type acc
         )in          
     { ty
       with ptyp_desc = Ptyp_object(new_methods, closed_flag);
     } 
   | _ -> default_typ_mapper self ty
-    
+
 let handle_class_type_fields self fields = 
   Ext_list.fold_right fields []
-  (handle_class_type_field self)
-  
+    (handle_class_type_field self)
+

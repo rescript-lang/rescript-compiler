@@ -144,9 +144,9 @@ let simplify_alias
       end
     (* Function inlining interact with other optimizations...
 
-        - parameter attributes
-        - scope issues 
-        - code bloat 
+       - parameter attributes
+       - scope issues 
+       - code bloat 
     *)      
     | Lapply{ap_func = (Lvar v as fn);  ap_args = args; ap_info } ->
       (* Check info for always inlining *)
@@ -194,7 +194,7 @@ let simplify_alias
               | false, (_, param_map)
               | true, (true, param_map) -> 
                 begin match rec_flag with 
-                  
+
                   | Lam_rec  ->  Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args
                   | Lam_self_rec -> normal ()
                   | Lam_non_rec -> 

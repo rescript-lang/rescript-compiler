@@ -79,7 +79,7 @@ let set_byte  e e0 e1 =
 *)
 let bytes_to_string e = 
   E.runtime_call Js_runtime_modules.bytes "bytes_to_string" [e]
-  
+
 let bytes_of_string s =
   E.runtime_call Js_runtime_modules.bytes "bytes_of_string" [s]
 

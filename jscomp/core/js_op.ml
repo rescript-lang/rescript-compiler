@@ -38,7 +38,7 @@ type binop =
   (* acutally assignment ..
      TODO: move it into statement, so that all expressions 
      are side efffect free (except function calls)
-   *)
+  *)
 
   | Or
   | And
@@ -65,42 +65,42 @@ type binop =
   | Mod
 
 (**
-note that we don't need raise [Div_by_zero] in ReScript
+   note that we don't need raise [Div_by_zero] in ReScript
 
-{[
-let add x y = x + y  (* | 0 *)
-let minus x y = x - y (* | 0 *)
-let mul x y = x * y   (* caml_mul | Math.imul *)
-let div x y = x / y (* caml_div (x/y|0)*)
-let imod x y = x mod y  (* caml_mod (x%y) (zero_divide)*)
+   {[
+     let add x y = x + y  (* | 0 *)
+     let minus x y = x - y (* | 0 *)
+     let mul x y = x * y   (* caml_mul | Math.imul *)
+     let div x y = x / y (* caml_div (x/y|0)*)
+     let imod x y = x mod y  (* caml_mod (x%y) (zero_divide)*)
 
-let bor x y = x lor y   (* x  | y *)
-let bxor x y = x lxor y (* x ^ y *)
-let band x y = x land y (* x & y *)
-let ilnot  y  = lnot y (* let lnot x = x lxor (-1) *)
-let ilsl x y = x lsl y (* x << y*)
-let ilsr x y = x lsr y  (* x >>> y | 0 *)
-let iasr  x y = x asr y (* x >> y *)
-]}
+     let bor x y = x lor y   (* x  | y *)
+     let bxor x y = x lxor y (* x ^ y *)
+     let band x y = x land y (* x & y *)
+     let ilnot  y  = lnot y (* let lnot x = x lxor (-1) *)
+     let ilsl x y = x lsl y (* x << y*)
+     let ilsr x y = x lsr y  (* x >>> y | 0 *)
+     let iasr  x y = x asr y (* x >> y *)
+   ]}
 
 
-Note that js treat unsigned shift 0 bits in a special way
+   Note that js treat unsigned shift 0 bits in a special way
    Unsigned shifts convert their left-hand side to Uint32, 
    signed shifts convert it to Int32.
    Shifting by 0 digits returns the converted value.
    {[
-    function ToUint32(x) {
-        return x >>> 0;
-    }
-    function ToInt32(x) {
-        return x >> 0;
-    }
+     function ToUint32(x) {
+         return x >>> 0;
+       }
+         function ToInt32(x) {
+             return x >> 0;
+           }
    ]}
    So in Js, [-1 >>>0] will be the largest Uint32, while [-1>>0] will remain [-1]
    and [-1 >>> 0 >> 0 ] will be [-1]
 *)
 type int_op = 
-    
+
   | Bor
   | Bxor
   | Band
@@ -109,25 +109,25 @@ type int_op =
   | Asr
 
   | Plus
-      (* for [+], given two numbers 
-         x + y | 0
-       *)
+  (* for [+], given two numbers 
+     x + y | 0
+  *)
   | Minus
-      (* x - y | 0 *)
+  (* x - y | 0 *)
   | Mul
-      (* *)
+  (* *)
   | Div
-      (* x / y | 0 *)
+  (* x / y | 0 *)
   | Mod
-      (* x  % y *)
+  (* x  % y *)
 
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_Operators#Bitwise_operators
-    {[
-    ~
-    ]}
+   {[
+     ~
+   ]}
     ~0xff -> -256
     design; make sure each operation type is consistent
- *)
+*)
 type level = 
   | Log 
   | Info
@@ -147,14 +147,14 @@ type property = Lam_compat.let_kind =
 
 
 type property_name = 
-   | Lit of string
-   | Symbol_name
-  
+  | Lit of string
+  | Symbol_name
+
 type 'a access = 
   | Getter
   | Setter
 
- (* literal char *)
+(* literal char *)
 type float_lit = { f :  string } [@@unboxed]
 
 type number = 
@@ -162,11 +162,11 @@ type number =
   | Int of { i  : int32; c : char option}
   | Uint of int32
 
-  (* becareful when constant folding +/-, 
-     since we treat it as js nativeint, bitwise operators:
-     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators
-     The operands of all bitwise operators are converted to signed 32-bit integers in two's complement format.'
-  *)      
+(* becareful when constant folding +/-, 
+   since we treat it as js nativeint, bitwise operators:
+   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators
+   The operands of all bitwise operators are converted to signed 32-bit integers in two's complement format.'
+*)      
 
 type mutable_flag = 
   | Mutable
@@ -178,11 +178,11 @@ type direction_flag =
   | Up
 
 (* 
-    {[
-    let rec x = 1 :: y 
-    and y = 1 :: x
-    ]}
- *)
+   {[
+     let rec x = 1 :: y 
+     and y = 1 :: x
+   ]}
+*)
 type recursive_info = 
   | SingleRecursive 
   | NonRecursie
@@ -190,22 +190,22 @@ type recursive_info =
 
 type used_stats = 
   | Dead_pure 
-        (* only [Dead] should be taken serious, 
-            other status can be converted during
-            inlining
-            -- all exported symbols can not be dead
-            -- once a symbole is called Dead_pure, 
-            it can not be alive anymore, we should avoid iterating it
-            
-          *)
+  (* only [Dead] should be taken serious, 
+      other status can be converted during
+      inlining
+      -- all exported symbols can not be dead
+      -- once a symbole is called Dead_pure, 
+      it can not be alive anymore, we should avoid iterating it
+
+  *)
   | Dead_non_pure 
-      (* we still need iterating it, 
-         just its bindings does not make sense any more *)
+  (* we still need iterating it, 
+     just its bindings does not make sense any more *)
   | Exported (* Once it's exported, shall we change its status anymore? *)
-      (* In general, we should count in one pass, and eliminate code in another 
-         pass, you can not do it in a single pass, however, some simple 
-         dead code can be detected in a single pass
-       *)
+  (* In general, we should count in one pass, and eliminate code in another 
+     pass, you can not do it in a single pass, however, some simple 
+     dead code can be detected in a single pass
+  *)
   | Once_pure (* used only once so that, if we do the inlining, it will be [Dead] *)
   | Used (**)
   | Scanning_pure
@@ -214,9 +214,9 @@ type used_stats =
 
 
 type ident_info = {
-    (* mutable recursive_info : recursive_info; *)
-    mutable used_stats : used_stats;
-  }
+  (* mutable recursive_info : recursive_info; *)
+  mutable used_stats : used_stats;
+}
 
 type exports = Ident.t list 
 

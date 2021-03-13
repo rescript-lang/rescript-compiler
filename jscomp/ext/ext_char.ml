@@ -28,15 +28,15 @@
 
 (** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
     backport it here
- *)
+*)
 
 
 let valid_hex x = 
-    match x with 
-    | '0' .. '9'
-    | 'a' .. 'f'
-    | 'A' .. 'F' -> true
-    | _ -> false 
+  match x with 
+  | '0' .. '9'
+  | 'a' .. 'f'
+  | 'A' .. 'F' -> true
+  | _ -> false 
 
 
 

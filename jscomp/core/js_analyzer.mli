@@ -41,8 +41,8 @@ val free_variables_of_expression :
   J.finish_ident_expression -> Set_ident.t
 
 (* val no_side_effect_expression_desc :
-  J.expression_desc -> bool    *)
-  
+   J.expression_desc -> bool    *)
+
 val no_side_effect_expression : 
   J.expression -> bool
 (** [no_side_effect] means this expression has no side effect, 
@@ -72,7 +72,7 @@ val eq_statement :
 
 val eq_block :  
   J.block -> J.block -> bool 
-  
+
 val rev_flatten_seq : J.expression -> J.block 
 
 val rev_toplevel_flatten : J.block -> J.block

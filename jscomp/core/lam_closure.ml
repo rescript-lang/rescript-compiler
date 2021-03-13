@@ -32,10 +32,10 @@ type stats = Lam_var_stats.stats
 let adjust (fv : stats Map_ident.t) (pos : position) (v : Ident.t)  : stats Map_ident.t = 
   Map_ident.adjust fv v
     (fun v -> 
-      let stat = match v with None -> Lam_var_stats.fresh_stats | Some v -> v in 
-      Lam_var_stats.update stat pos )
-    
-    
+       let stat = match v with None -> Lam_var_stats.fresh_stats | Some v -> v in 
+       Lam_var_stats.update stat pos )
+
+
 
 
 
@@ -144,26 +144,26 @@ let free_variables
     | Lassign(id, e) ->
       used top  id ; 
       iter top e
-    in
+  in
   iter Lam_var_stats.fresh_env  lam ; 
   !fv 
 
 
 (* let is_closed_by (set : Set_ident.t) (lam : Lam.t) : bool = 
-  Map_ident.is_empty (free_variables set (Map_ident.empty ) lam   ) *)
+   Map_ident.is_empty (free_variables set (Map_ident.empty ) lam   ) *)
 
 
 (** A bit consverative , it should be empty *)
 let is_closed  lam = 
   Map_ident.for_all (free_variables Set_ident.empty Map_ident.empty lam)
     (fun k _ -> Ident.global k)
-      
+
 
 
 let is_closed_with_map 
-  (exports : Set_ident.t) 
-  (params : Ident.t list) 
-  (body : Lam.t) : bool * stats Map_ident.t = 
+    (exports : Set_ident.t) 
+    (params : Ident.t list) 
+    (body : Lam.t) : bool * stats Map_ident.t = 
   let param_map = free_variables exports (param_map_of_list params) body in
   let old_count = List.length params in
   let new_count = Map_ident.cardinal param_map in

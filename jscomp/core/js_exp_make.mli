@@ -66,7 +66,7 @@ val runtime_var_dot : ?comment:string -> string -> string -> t
 val ml_var_dot : ?comment:string -> Ident.t -> string -> t
 
 (** [external_var_field ~external_name ~dot id]
-  Used in FFI
+    Used in FFI
 *)
 val external_var_field : 
   ?comment:string ->  
@@ -81,8 +81,8 @@ val external_var :
   external_name:string ->
   Ident.t -> 
   t
-  
-  
+
+
 val ml_module_as_var :  
   ?comment:string -> 
   Ident.t -> 
@@ -118,7 +118,7 @@ val unicode :
   ?comment:string -> 
   string -> 
   t
-  
+
 val ocaml_fun : ?comment:string ->
   ?immutable_mask:bool array -> J.ident list -> J.block -> t
 
@@ -188,12 +188,12 @@ val array_index :
   t -> 
   t ->
   t
-  
+
 val array_index_by_int : 
   ?comment:string -> 
   t -> 
   Int32.t ->
-   t
+  t
 
 val record_access :   
   t ->
@@ -236,7 +236,7 @@ val poly_var_tag_access :
 val poly_var_value_access : 
   t -> t  
 
-  
+
 val extension_assign : 
   t -> 
   int32 -> 
@@ -334,7 +334,7 @@ val array :
 val optional_block :
   J.expression -> 
   J.expression 
-  
+
 val optional_not_nest_block : 
   J.expression -> 
   J.expression  
@@ -409,7 +409,7 @@ val resolve_and_apply :
   string ->
   t list ->
   t
-  
+
 val make_exception :
   string -> 
   t 

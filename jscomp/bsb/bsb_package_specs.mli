@@ -37,7 +37,7 @@ val get_list_of_output_js :
   string list
 
 (**
-  Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
+   Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
 *)
 val package_flag_of_package_specs : 
   t -> 

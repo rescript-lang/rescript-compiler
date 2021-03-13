@@ -26,7 +26,7 @@
 
 let ninja_ansi_forced = lazy 
   (try Sys.getenv "NINJA_ANSI_FORCED" with 
-    Not_found  ->""
+     Not_found  ->""
   )  
 let color_enabled = lazy (Unix.isatty Unix.stdout)
 
@@ -50,7 +50,7 @@ let color_functions : Format.formatter_tag_functions = {
 }
 
 (* let set_color ppf =
-  Format.pp_set_formatter_tag_functions ppf color_functions *)
+   Format.pp_set_formatter_tag_functions ppf color_functions *)
 
 
 let setup () = 
@@ -79,7 +79,7 @@ let int_of_level (x : level) =
 let log_level = ref Warn
 
 let verbose () =
-   log_level := Debug
+  log_level := Debug
 let dfprintf level fmt = 
   if int_of_level level >= int_of_level  !log_level then 
     Format.fprintf fmt 
@@ -106,4 +106,4 @@ let info_args (args : string array) =
       Format.pp_print_newline Format.std_formatter ()
     end
   else ()
-  
+

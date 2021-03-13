@@ -34,8 +34,8 @@ let load_builin_unit (unit_name : string) : Js_cmj_format.cmj_load_info =
     let cmj_table : Js_cmj_format.t = 
       let values, pure =  Ext_marshal.from_string_uncheck Builtin_cmj_datasets.module_data.(i)  in   
       {values; pure; 
-        package_spec = Js_packages_info.runtime_package_specs;
-        case = Little;
+       package_spec = Js_packages_info.runtime_package_specs;
+       case = Little;
       } (* FIXME when we change it *)
     in 
     if Js_config.get_diagnose () then

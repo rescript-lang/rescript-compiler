@@ -34,7 +34,7 @@
     print more beautiful code:     
     print [identifer] instead of [identifier$1234] 
     when it can
- *)
+*)
 
 type t 
 

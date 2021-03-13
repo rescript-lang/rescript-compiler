@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- let is_nullary_variant (x : Types.constructor_arguments) = 
+let is_nullary_variant (x : Types.constructor_arguments) = 
   match x with 
   | Types.Cstr_tuple [] -> true 
   | _ -> false
@@ -31,11 +31,11 @@
 let names_from_construct_pattern (pat: Typedtree.pattern) =
   let names_from_type_variant (cstrs : Types.constructor_declaration list) =
     let (consts, blocks) = Ext_list.fold_left cstrs ([], [])  
-      (fun (consts, blocks) cstr ->
-        if is_nullary_variant cstr.cd_args 
-        then (Ident.name cstr.cd_id :: consts, blocks)
-        else (consts, Ident.name cstr.cd_id :: blocks))
-      in
+        (fun (consts, blocks) cstr ->
+           if is_nullary_variant cstr.cd_args 
+           then (Ident.name cstr.cd_id :: consts, blocks)
+           else (consts, Ident.name cstr.cd_id :: blocks))
+    in
     Some {Lambda.consts = Ext_array.reverse_of_list consts;
           blocks = Ext_array.reverse_of_list blocks } in
   let rec resolve_path n (path : Path.t) =
@@ -54,5 +54,5 @@ let names_from_construct_pattern (pat: Typedtree.pattern) =
       None in
 
   match (Btype.repr pat.pat_type).desc with
-    | Tconstr (path, _, _) -> resolve_path 0 path
-    | _ -> assert false 
+  | Tconstr (path, _, _) -> resolve_path 0 path
+  | _ -> assert false 

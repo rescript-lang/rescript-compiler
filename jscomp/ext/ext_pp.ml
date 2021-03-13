@@ -98,7 +98,7 @@ let group t i action =
     let old = t.indent_level in
     t.indent_level <- t.indent_level + i;
     Ext_pervasives.finally ~clean:(fun _ -> t.indent_level <- old)
-    ()  action
+      ()  action
 
 let vgroup = group
 
@@ -158,7 +158,7 @@ let paren_vgroup st n action =
   v
 
 let paren_group st n action = 
-    group st n (fun _ -> paren st action)
+  group st n (fun _ -> paren st action)
 
 let cond_paren_group st b n action =    
   if b then 
@@ -171,6 +171,6 @@ let brace_group st n action =
   group st n (fun _ -> brace st action )
 
 (* let indent t n =
-  t.indent_level <- t.indent_level + n *)
+   t.indent_level <- t.indent_level + n *)
 
 let flush t () = t.flush ()

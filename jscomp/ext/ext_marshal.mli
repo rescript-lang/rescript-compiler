@@ -30,7 +30,7 @@
 
 
 (** Extension to the standard library [Marshall] module 
- *)
+*)
 
 (* val to_file : string -> 'a -> unit *)
 

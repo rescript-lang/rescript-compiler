@@ -34,7 +34,7 @@
 (** This module defines a function to compile the program directly into [js]
     given [filename] and [outputprefix], 
     it will be useful if we don't care about bytecode output(generating js only).
- *)
+*)
 val interface : 
   parser:(string -> Parsetree.signature) ->
   Format.formatter -> 
@@ -47,14 +47,14 @@ val interface_mliast :
   string  -> 
   ([`ml | `rescript | `reason ] -> unit) ->
   unit
-  
+
 
 
 (* val after_parsing_impl : 
-  Format.formatter -> 
-  string ->
-  Parsetree.structure ->
-  unit *)
+   Format.formatter -> 
+   string ->
+   Parsetree.structure ->
+   unit *)
 (** [after_parsing_impl ppf sourcefile outputprefix ast ]
     Make sure you need run {!Res_compmisc.init_path} for set up
     Used in eval

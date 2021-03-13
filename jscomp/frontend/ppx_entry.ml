@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let unsafe_mapper = Bs_builtin_ppx.mapper
-  
+
 let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =  
   Bs_ast_invariant.iter_warnings_on_sigi ast;  
   Ast_config.iter_on_bs_config_sigi ast; 
@@ -41,7 +41,7 @@ let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
     result
 
 
-  
+
 
 let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =   
   Bs_ast_invariant.iter_warnings_on_stru ast ;   

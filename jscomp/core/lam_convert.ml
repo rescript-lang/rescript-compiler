@@ -38,7 +38,7 @@ let lazy_block_info : Lam_tag_info.t =
       Literals.lazy_val|]  
 
 let unbox_extension info (args : Lam.t list) mutable_flag loc =
-    prim ~primitive:(Pmakeblock (0,info,mutable_flag)) ~args loc 
+  prim ~primitive:(Pmakeblock (0,info,mutable_flag)) ~args loc 
 
 
 (** A conservative approach to avoid packing exceptions
@@ -73,9 +73,9 @@ let unbox_extension info (args : Lam.t list) mutable_flag loc =
 let exception_id_destructed (l : Lam.t) (fv : Ident.t): bool  =
   let rec 
     hit_opt (x : _ option) = 
-  match x with 
-  | None -> false
-  | Some a -> hit a   
+    match x with 
+    | None -> false
+    | Some a -> hit a   
   and hit_list_snd : 'a. ('a * _ ) list -> bool = fun x ->    
     Ext_list.exists_snd  x  hit
   and hit_list xs = Ext_list.exists xs hit 
@@ -83,12 +83,12 @@ let exception_id_destructed (l : Lam.t) (fv : Ident.t): bool  =
     match l  with
     (* | Lprim {primitive = Pintcomp _ ;
              args = ([x;y ])  } ->
-      begin match x,y with
+       begin match x,y with
         | Lvar _, Lvar _ -> false
         | Lvar _, _ -> hit y
         | _, Lvar _ -> hit x
         | _, _  -> hit x || hit y
-      end *) (* FIXME: this can be uncovered after we do the unboxing *)
+       end *) (* FIXME: this can be uncovered after we do the unboxing *)
     | Lprim {primitive = Praise ; args = [Lvar _]} -> false 
     | Lprim {primitive = _; args; _} ->
       hit_list args
@@ -152,10 +152,10 @@ let happens_to_be_diff
   | (a, Lconst (Const_pointer (a0,Pt_constructor _)| Const_base (Const_int a0)))::
     (b, Lconst (Const_pointer (b0,Pt_constructor _)| Const_base (Const_int b0)))::
     rest when
-     no_over_flow a  &&
-     no_over_flow a0 &&
-     no_over_flow b &&
-     no_over_flow b0 ->
+      no_over_flow a  &&
+      no_over_flow a0 &&
+      no_over_flow b &&
+      no_over_flow b0 ->
     let diff = a0 - a in
     if b0 - b = diff then
       if Ext_list.for_all rest (fun (x, lam) ->
@@ -178,8 +178,8 @@ let happens_to_be_diff
 
 
 (** drop Lseq (List! ) etc 
-  see #3852, we drop all these required global modules
-  but added it back based on our own module analysis
+    see #3852, we drop all these required global modules
+    but added it back based on our own module analysis
 *)
 let rec drop_global_marker (lam : Lam.t) =
   match lam with
@@ -197,7 +197,7 @@ let convert_record_repr ( x : Types.record_representation)
   | Record_float ->  Record_regular
   | Record_extension -> Record_extension 
   | Record_unboxed _ -> assert false 
-    (* see patches in {!Typedecl.get_unboxed_from_attributes}*)
+  (* see patches in {!Typedecl.get_unboxed_from_attributes}*)
   | Record_inlined {tag; name; num_nonconsts} -> 
     Record_inlined {tag; name; num_nonconsts}
 
@@ -223,93 +223,93 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     drop_global_marker (Ext_list.singleton_exn args)
   (* prim ~primitive:(Psetglobal id) ~args loc *)
   | Pmakeblock (tag,info, mutable_flag
-    , _block_shape 
-  )
+               , _block_shape 
+               )
     -> 
     begin match info with 
-    | Blk_some_not_nested 
-      -> 
-      prim ~primitive:Psome_not_nest ~args loc 
-    | Blk_some 
-      ->    
-      prim ~primitive:Psome ~args loc 
-    | Blk_constructor{name ; num_nonconst } ->  
-      let info : Lam_tag_info.t = Blk_constructor {name; num_nonconst} in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-    | Blk_tuple  -> 
-      let info : Lam_tag_info.t = Blk_tuple in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-    | Blk_extension  -> 
-      let info : Lam_tag_info.t = Blk_extension in
-      unbox_extension info args mutable_flag loc 
-    | Blk_record_ext s ->
-      let info : Lam_tag_info.t = Blk_record_ext s in
-      unbox_extension info args mutable_flag loc 
-    | Blk_extension_slot -> 
-      ( 
-        match args with 
-        | [ Lconst (Const_string name)] -> 
-          prim ~primitive:(Pcreate_extension name) ~args:[] loc
-        | _ ->
-          assert false
-      )
+      | Blk_some_not_nested 
+        -> 
+        prim ~primitive:Psome_not_nest ~args loc 
+      | Blk_some 
+        ->    
+        prim ~primitive:Psome ~args loc 
+      | Blk_constructor{name ; num_nonconst } ->  
+        let info : Lam_tag_info.t = Blk_constructor {name; num_nonconst} in
+        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+      | Blk_tuple  -> 
+        let info : Lam_tag_info.t = Blk_tuple in
+        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+      | Blk_extension  -> 
+        let info : Lam_tag_info.t = Blk_extension in
+        unbox_extension info args mutable_flag loc 
+      | Blk_record_ext s ->
+        let info : Lam_tag_info.t = Blk_record_ext s in
+        unbox_extension info args mutable_flag loc 
+      | Blk_extension_slot -> 
+        ( 
+          match args with 
+          | [ Lconst (Const_string name)] -> 
+            prim ~primitive:(Pcreate_extension name) ~args:[] loc
+          | _ ->
+            assert false
+        )
 
-    | Blk_class  -> 
-      let info : Lam_tag_info.t = Blk_class in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
-    | Blk_array -> 
-      let info : Lam_tag_info.t = Blk_array in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    
-    | Blk_record s -> 
-      let info : Lam_tag_info.t = Blk_record s in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    
-    | Blk_record_inlined {name; fields; num_nonconst} ->
-      let info : Lam_tag_info.t = Blk_record_inlined {name; fields; num_nonconst} in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-    | Blk_module s -> 
-      let info : Lam_tag_info.t = Blk_module s in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-    | Blk_module_export _ -> 
-      let info : Lam_tag_info.t = Blk_module_export in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
-    | Blk_poly_var s -> 
-      begin match args with 
-      | [_; value] -> 
-        let info : Lam_tag_info.t = Blk_poly_var  in
-        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args:[Lam.const (Const_string s); value] loc      
-      | _ -> assert false  
-      end
-    | Blk_lazy_general  
-      ->
-      begin match args with 
-      | [Lvar _ | Lconst _ | Lfunction _ as result ] -> 
-        let args = 
-          [ Lam.const Const_js_true ; 
-           result
-          ] in 
-        prim ~primitive:(Pmakeblock (tag,lazy_block_info,Mutable)) ~args loc  
-      | [computation] -> 
-        let args = 
-          [ Lam.const Const_js_false ; 
-            (* FIXME: arity 0 does not get proper supported*)
-            prim ~primitive:(Pjs_fn_make 0) ~args:[Lam.function_ ~arity:1 ~params:[Ident.create "param"] ~body:computation 
-            ~attr:Lam.default_fn_attr] 
-            loc             
-          ] in 
-        prim ~primitive:(Pmakeblock (tag,lazy_block_info,Mutable)) ~args loc  
+      | Blk_class  -> 
+        let info : Lam_tag_info.t = Blk_class in
+        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
+      | Blk_array -> 
+        let info : Lam_tag_info.t = Blk_array in
+        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    
+      | Blk_record s -> 
+        let info : Lam_tag_info.t = Blk_record s in
+        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    
+      | Blk_record_inlined {name; fields; num_nonconst} ->
+        let info : Lam_tag_info.t = Blk_record_inlined {name; fields; num_nonconst} in
+        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+      | Blk_module s -> 
+        let info : Lam_tag_info.t = Blk_module s in
+        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+      | Blk_module_export _ -> 
+        let info : Lam_tag_info.t = Blk_module_export in
+        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
+      | Blk_poly_var s -> 
+        begin match args with 
+          | [_; value] -> 
+            let info : Lam_tag_info.t = Blk_poly_var  in
+            prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args:[Lam.const (Const_string s); value] loc      
+          | _ -> assert false  
+        end
+      | Blk_lazy_general  
+        ->
+        begin match args with 
+          | [Lvar _ | Lconst _ | Lfunction _ as result ] -> 
+            let args = 
+              [ Lam.const Const_js_true ; 
+                result
+              ] in 
+            prim ~primitive:(Pmakeblock (tag,lazy_block_info,Mutable)) ~args loc  
+          | [computation] -> 
+            let args = 
+              [ Lam.const Const_js_false ; 
+                (* FIXME: arity 0 does not get proper supported*)
+                prim ~primitive:(Pjs_fn_make 0) ~args:[Lam.function_ ~arity:1 ~params:[Ident.create "param"] ~body:computation 
+                                                         ~attr:Lam.default_fn_attr] 
+                  loc             
+              ] in 
+            prim ~primitive:(Pmakeblock (tag,lazy_block_info,Mutable)) ~args loc  
 
-      | _ -> assert false
-      end
-    | Blk_na s -> 
-      let info : Lam_tag_info.t = Blk_na s in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+          | _ -> assert false
+        end
+      | Blk_na s -> 
+        let info : Lam_tag_info.t = Blk_na s in
+        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     end  
   | Pfield (id,info)
     -> prim ~primitive:(Pfield (id,info)) ~args loc
 
   | Psetfield (id, _,
-    _initialization_or_assignment,
-      info)
+               _initialization_or_assignment,
+               info)
     -> prim ~primitive:(Psetfield (id,info)) ~args loc
   | Psetfloatfield _
   | Pfloatfield _
@@ -329,10 +329,10 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Psubint -> prim ~primitive:Psubint ~args loc
   | Pmulint -> prim ~primitive:Pmulint ~args loc
   | Pdivint 
-    _is_safe (*FIXME*)
+      _is_safe (*FIXME*)
     -> prim ~primitive:Pdivint ~args loc
   | Pmodint 
-    _is_safe (*FIXME*)
+      _is_safe (*FIXME*)
     -> prim ~primitive:Pmodint ~args loc
   | Pandint -> prim ~primitive:Pandint ~args loc
   | Porint -> prim ~primitive:Porint ~args loc
@@ -352,16 +352,16 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pisint -> prim ~primitive:Pisint ~args loc
   | Pisout -> 
     begin match args with 
-    | [ range; Lprim {primitive = Poffsetint i; args = [x]}] ->
+      | [ range; Lprim {primitive = Poffsetint i; args = [x]}] ->
 
-      prim ~primitive:(Pisout i) ~args:[range;x] loc 
-    | _ ->     
-      prim ~primitive:(Pisout 0) ~args loc
+        prim ~primitive:(Pisout i) ~args:[range;x] loc 
+      | _ ->     
+        prim ~primitive:(Pisout 0) ~args loc
     end
   | Pintoffloat -> prim ~primitive:Pintoffloat ~args loc
   | Pfloatofint -> prim ~primitive:Pfloatofint ~args loc
   | Pnegfloat -> prim ~primitive:Pnegfloat ~args loc
-  
+
   | Paddfloat -> prim ~primitive:Paddfloat ~args loc
   | Psubfloat -> prim ~primitive:Psubfloat ~args loc
   | Pmulfloat -> prim ~primitive:Pmulfloat ~args loc
@@ -371,7 +371,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args  loc
   | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args loc
   | Pmakearray 
-    (_, _mutable_flag) (*FIXME*)
+      (_, _mutable_flag) (*FIXME*)
     -> prim ~primitive:Pmakearray ~args  loc
   | Parraylength _ -> prim ~primitive:Parraylength ~args loc
   | Parrayrefu _ -> prim ~primitive:(Parrayrefu ) ~args loc
@@ -380,8 +380,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Parraysets _ -> prim ~primitive:(Parraysets ) ~args loc
   | Pbintofint x -> 
     begin match x with 
-    | Pint32 | Pnativeint -> Ext_list.singleton_exn args
-    | Pint64 -> prim ~primitive:(Pint64ofint ) ~args loc
+      | Pint32 | Pnativeint -> Ext_list.singleton_exn args
+      | Pint64 -> prim ~primitive:(Pint64ofint ) ~args loc
     end
   | Pintofbint x -> 
     begin match x with 
@@ -390,44 +390,44 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     end
   | Pnegbint x -> 
     begin match x with 
-    | Pnativeint 
-    | Pint32 -> prim ~primitive:Pnegint ~args loc 
-    | Pint64 -> prim ~primitive:Pnegint64 ~args loc 
+      | Pnativeint 
+      | Pint32 -> prim ~primitive:Pnegint ~args loc 
+      | Pint64 -> prim ~primitive:Pnegint64 ~args loc 
     end  
   | Paddbint x -> 
     begin match x with 
-    | Pnativeint 
-    | Pint32  -> prim ~primitive:Paddint ~args loc 
-    | Pint64 -> prim ~primitive:Paddint64 ~args loc
+      | Pnativeint 
+      | Pint32  -> prim ~primitive:Paddint ~args loc 
+      | Pint64 -> prim ~primitive:Paddint64 ~args loc
     end 
   | Psubbint x -> 
     begin match x with 
-    | Pnativeint 
-    | Pint32 -> prim ~primitive:(Psubint) ~args loc
-    | Pint64 -> prim ~primitive:(Psubint64) ~args loc
+      | Pnativeint 
+      | Pint32 -> prim ~primitive:(Psubint) ~args loc
+      | Pint64 -> prim ~primitive:(Psubint64) ~args loc
     end
   | Pmulbint x -> 
     begin match x with 
-    | Pnativeint
-    | Pint32 -> prim ~primitive:Pmulint ~args loc
-    | Pint64 -> prim ~primitive:Pmulint64 ~args loc
+      | Pnativeint
+      | Pint32 -> prim ~primitive:Pmulint ~args loc
+      | Pint64 -> prim ~primitive:Pmulint64 ~args loc
     end
   | Pdivbint 
-    {size = x; is_safe = _} (*FIXME*)
+      {size = x; is_safe = _} (*FIXME*)
     ->
     begin match x with 
-    | Pnativeint 
-    | Pint32 ->  prim ~primitive:(Pdivint) ~args loc
-    | Pint64->  prim ~primitive:(Pdivint64) ~args loc
+      | Pnativeint 
+      | Pint32 ->  prim ~primitive:(Pdivint) ~args loc
+      | Pint64->  prim ~primitive:(Pdivint64) ~args loc
     end
   | Pmodbint 
-    {size = x; is_safe = _} (*FIXME*)
+      {size = x; is_safe = _} (*FIXME*)
     -> 
-      begin match x with 
+    begin match x with 
       | Pnativeint 
       | Pint32 -> prim ~primitive:(Pmodint ) ~args loc
       | Pint64 -> prim ~primitive:(Pmodint64 ) ~args loc
-      end
+    end
   | Pandbint x -> 
     begin match x with 
       | Pnativeint
@@ -453,21 +453,21 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     end
   | Plslbint x -> 
     begin match x with 
-    | Pnativeint 
-    | Pint32 -> prim ~primitive:(Plslint) ~args loc
-    | Pint64 -> prim ~primitive:(Plslint64) ~args loc
+      | Pnativeint 
+      | Pint32 -> prim ~primitive:(Plslint) ~args loc
+      | Pint64 -> prim ~primitive:(Plslint64) ~args loc
     end
   | Plsrbint x -> 
     begin match x with 
-    | Pnativeint 
-    | Pint32 -> prim ~primitive:(Plsrint) ~args loc
-    | Pint64 -> prim ~primitive:(Plsrint64) ~args loc
+      | Pnativeint 
+      | Pint32 -> prim ~primitive:(Plsrint) ~args loc
+      | Pint64 -> prim ~primitive:(Plsrint64) ~args loc
     end
   | Pasrbint x -> 
     begin match x with 
-    | Pnativeint 
-    | Pint32 -> prim ~primitive:(Pasrint) ~args loc
-    | Pint64 -> prim ~primitive:(Pasrint64) ~args loc
+      | Pnativeint 
+      | Pint32 -> prim ~primitive:(Pasrint) ~args loc
+      | Pint64 -> prim ~primitive:(Pasrint64) ~args loc
     end
   | Pbigarraydim _ 
   | Pbigstring_load_16 _
@@ -502,23 +502,23 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
         -> prim ~primitive:(Pctconst Backend_type) ~args loc
     end
 
-  
+
   | Pcvtbint (a,b) -> 
     begin match a, b with 
-    | (Pnativeint | Pint32), (Pnativeint | Pint32) 
-    | Pint64, Pint64 ->   Ext_list.singleton_exn args 
-    | Pint64, (Pnativeint | Pint32) 
-      -> 
-      prim ~primitive:(Pintofint64) ~args loc
-    | (Pnativeint | Pint32) , Pint64 
-      ->   
-      prim ~primitive:(Pint64ofint) ~args loc
+      | (Pnativeint | Pint32), (Pnativeint | Pint32) 
+      | Pint64, Pint64 ->   Ext_list.singleton_exn args 
+      | Pint64, (Pnativeint | Pint32) 
+        -> 
+        prim ~primitive:(Pintofint64) ~args loc
+      | (Pnativeint | Pint32) , Pint64 
+        ->   
+        prim ~primitive:(Pint64ofint) ~args loc
     end
   | Pbintcomp (a,b) -> 
     begin match a with 
-    | Pnativeint 
-    | Pint32 -> prim ~primitive:(Pintcomp b) ~args loc
-    | Pint64 -> prim ~primitive:(Pint64comp b) ~args loc
+      | Pnativeint 
+      | Pint32 -> prim ~primitive:(Pintcomp b) ~args loc
+      | Pint64 -> prim ~primitive:(Pint64comp b) ~args loc
     end
   | Pfield_computed -> 
     prim ~primitive:Pfield_computed ~args loc 
@@ -529,7 +529,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pbswap16 
   | Pbittest
   | Pduparray _ ->  assert false 
-    (* Does not exist since we compile array in js backend unlike native backend *)
+(* Does not exist since we compile array in js backend unlike native backend *)
 
 let convert_inline_attr (inline : Lambda.inline_attribute) : Lam.inline_attribute = 
   match inline with    
@@ -553,20 +553,20 @@ let rec rename_optional_parameters map params  (body : Lambda.lambda) =
   match body with 
   | Llet(k,value_kind,id, (Lifthenelse(
       Lprim(p,[Lvar ({name = "*opt*"} as opt)],p_loc), 
-        Lprim(p1,[Lvar ({name = "*opt*"} as opt2)],x_loc), f)),rest)
+      Lprim(p1,[Lvar ({name = "*opt*"} as opt2)],x_loc), f)),rest)
     when Ident.same opt opt2 && List.mem opt params 
     ->
     let map, rest = rename_optional_parameters map params rest in 
     let new_id = Ident.create (id.name ^ "Opt") in 
     Map_ident.add map opt new_id,
     Lambda.Llet(k,value_kind,id, 
-    (Lifthenelse(
-      Lprim(p,[Lvar new_id],p_loc), 
-        Lprim(p1,[Lvar new_id],x_loc), f)),rest)
+                (Lifthenelse(
+                    Lprim(p,[Lvar new_id],p_loc), 
+                    Lprim(p1,[Lvar new_id],x_loc), f)),rest)
   | _ -> 
     map, body
-  
-  
+
+
 let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_ident.Hash_set.t  =
   let alias_tbl = Hash_ident.create 64 in
   let exit_map = Hash_int.create 0 in
@@ -616,13 +616,13 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | _ when s = "#raw_expr" ->
       (match args with
        | [Lconst( Const_base (Const_string(code,_)))] ->
-        (* js parsing here *)
-        let kind = 
-            Classify_function.classify code in 
+         (* js parsing here *)
+         let kind = 
+           Classify_function.classify code in 
          prim ~primitive:(Praw_js_code {code; code_info = Exp kind})
            ~args:[] loc
        | _ -> assert false)
-            
+
     | _ when s = "#raw_stmt" ->
       begin match args with
         | [Lconst( Const_base (Const_string(code,_)))] ->
@@ -643,27 +643,27 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | _ when s = "#init_mod" ->
       let args = Ext_list.map args  convert_aux in
       begin match args with
-      | [_loc; Lconst(Const_block(0,_,[Const_block(0,_,[])]))]
-        ->
-        Lam.unit
-      | _ -> prim ~primitive:Pinit_mod ~args loc
+        | [_loc; Lconst(Const_block(0,_,[Const_block(0,_,[])]))]
+          ->
+          Lam.unit
+        | _ -> prim ~primitive:Pinit_mod ~args loc
       end
     | _ when s = "#update_mod" ->
       let args = Ext_list.map args convert_aux in
       begin match args with
-      | [Lconst(Const_block(0,_,[Const_block(0,_,[])]));_;_]
-        -> Lam.unit
-      | _ -> prim ~primitive:Pupdate_mod ~args loc
+        | [Lconst(Const_block(0,_,[Const_block(0,_,[])]));_;_]
+          -> Lam.unit
+        | _ -> prim ~primitive:Pupdate_mod ~args loc
       end
     | _ when s = "#extension_slot_eq" -> 
       begin match Ext_list.map args convert_aux with 
-      | [lhs; rhs] -> 
-        prim 
-          ~primitive:(Pccall {prim_name = "caml_string_equal"})
-          ~args:[lam_extension_id loc lhs ;
-                 rhs;
-                ] loc
-      | _ -> assert false end  
+        | [lhs; rhs] -> 
+          prim 
+            ~primitive:(Pccall {prim_name = "caml_string_equal"})
+            ~args:[lam_extension_id loc lhs ;
+                   rhs;
+                  ] loc
+        | _ -> assert false end  
     | _ ->
       let primitive : Lam_primitive.t =
         match s with
@@ -711,8 +711,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
           let ap_func = convert_aux ap_func in 
           let ap_args = Ext_list.map ap_args convert_aux  in 
           prim ~primitive ~args:(ap_func::ap_args) loc
-          (* There may be some optimization opportunities here
-            for cases like `(fun [@bs] a b -> a + b ) 1 2 [@bs]` *)          
+        (* There may be some optimization opportunities here
+           for cases like `(fun [@bs] a b -> a + b ) 1 2 [@bs]` *)          
         | _ -> assert false  
       else
         let args = Ext_list.map args convert_aux in
@@ -726,10 +726,10 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | Lapply 
         {ap_func = fn; ap_args = args; ap_loc = loc; ap_inlined}
       ->
-          (** we need do this eargly in case [aux fn] add some wrapper *)
-          Lam.apply (convert_aux fn) (Ext_list.map args convert_aux ) {ap_loc = loc; ap_inlined = (convert_inline_attr ap_inlined); ap_status =  App_na}
+      (** we need do this eargly in case [aux fn] add some wrapper *)
+      Lam.apply (convert_aux fn) (Ext_list.map args convert_aux ) {ap_loc = loc; ap_inlined = (convert_inline_attr ap_inlined); ap_status =  App_na}
     | Lfunction 
-    {kind; params; body ; attr }
+        {kind; params; body ; attr }
       ->  
       assert (kind = Curried);
       let new_map,body = rename_optional_parameters Map_ident.empty params body in 
@@ -745,7 +745,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
           ~body:(convert_aux body)
 
     | Llet 
-      (kind,_value_kind, id,e,body) (*FIXME*)
+        (kind,_value_kind, id,e,body) (*FIXME*)
       -> convert_let kind id e body
 
     | Lletrec (bindings,body)
@@ -777,15 +777,15 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       let args = Ext_list.map args convert_aux in
       lam_prim ~primitive ~args loc
     | Lswitch 
-      (e,s, _loc)
+        (e,s, _loc)
       -> convert_switch e s
     | Lstringswitch (e, cases, default, _ ) ->
       Lam.stringswitch 
-      (convert_aux e) 
-      (Ext_list.map_snd cases convert_aux)
-      (Ext_option.map default convert_aux)
+        (convert_aux e) 
+        (Ext_list.map_snd cases convert_aux)
+        (Ext_option.map default convert_aux)
     | Lstaticraise (id,[]) ->
-        Lam.staticraise (Hash_int.find_default exit_map id id) []
+      Lam.staticraise (Hash_int.find_default exit_map id id) []
     | Lstaticraise (id, args) ->
       Lam.staticraise id (Ext_list.map args convert_aux )
     | Lstaticcatch (b, (i,[]), Lstaticraise (j,[]) )
@@ -800,10 +800,10 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       if exception_id_destructed handler id then
         let newId = Ident.create ("raw_" ^ id.name) in
         Lam.try_ body newId
-                  (Lam.let_ StrictOpt id
-                    (prim ~primitive:Pwrap_exn ~args:[Lam.var newId] Location.none)
-                    handler
-                 )
+          (Lam.let_ StrictOpt id
+             (prim ~primitive:Pwrap_exn ~args:[Lam.var newId] Location.none)
+             handler
+          )
       else
         Lam.try_  body id handler
     | Lifthenelse (b,then_,else_) ->
@@ -884,78 +884,78 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       | _ -> 
         Lam.let_ kind id new_e new_body
   and convert_pipe (f : Lambda.lambda) (x : Lambda.lambda) outer_loc =        
-      let x  = convert_aux x in
-      let f =  convert_aux f in
-      match  f with
-      | Lfunction {params = [param]; body = Lprim{primitive; args = [Lvar inner_arg];  }}
-        when Ident.same param inner_arg -> 
-        Lam.prim ~primitive ~args:[x] outer_loc
-      | Lapply {ap_func = Lfunction{params; body = Lprim{primitive; args = inner_args}}; ap_args=args}
-        when Ext_list.for_all2_no_exn inner_args params lam_is_var &&
-             Ext_list.length_larger_than_n inner_args args 1 
-        ->
-        Lam.prim ~primitive ~args:(Ext_list.append_one args x) outer_loc
-      | Lapply{ap_func;ap_args; ap_info} ->
-        Lam.apply ap_func (Ext_list.append_one ap_args x) {ap_loc = outer_loc; ap_inlined = ap_info.ap_inlined; ap_status =  App_na }
-      | _ ->
-        Lam.apply f [x] {ap_loc = outer_loc; ap_inlined = Default_inline; ap_status = App_na}
-    and convert_switch (e : Lambda.lambda) (s : Lambda.lambda_switch) = 
-        let  e = convert_aux e in
-        match s with
-        | {
-          sw_failaction = None ;
-          sw_blocks = [];
-          sw_numblocks = 0;
-          sw_consts ;
-          sw_numconsts ;
-        } ->
-          begin match happens_to_be_diff sw_consts with
-            | Some 0 -> e
-            | Some i ->
-              prim
-                ~primitive:Paddint
-                ~args:[e; Lam.const(Const_int {i = Int32.of_int i; comment = None})]
-                Location.none
-            | None ->
-              Lam.switch e
-                {sw_failaction = None;
-                 sw_blocks = [];
-                 sw_blocks_full = true;
-                 sw_consts =
-                   Ext_list.map_snd  sw_consts convert_aux;
-                 sw_consts_full = 
-                   Ext_list.length_ge sw_consts sw_numconsts;
-                 sw_names = s.sw_names;
-                }
-          end
-        | _ -> 
-          Lam.switch  e   
-            { sw_consts_full =  Ext_list.length_ge s.sw_consts s.sw_numconsts ;
-              sw_consts = Ext_list.map_snd  s.sw_consts convert_aux;
-              sw_blocks_full = Ext_list.length_ge s.sw_blocks s.sw_numblocks;
-              sw_blocks = Ext_list.map_snd s.sw_blocks convert_aux;
-              sw_failaction =Ext_option.map s.sw_failaction convert_aux;
-              sw_names = s.sw_names } in
+    let x  = convert_aux x in
+    let f =  convert_aux f in
+    match  f with
+    | Lfunction {params = [param]; body = Lprim{primitive; args = [Lvar inner_arg];  }}
+      when Ident.same param inner_arg -> 
+      Lam.prim ~primitive ~args:[x] outer_loc
+    | Lapply {ap_func = Lfunction{params; body = Lprim{primitive; args = inner_args}}; ap_args=args}
+      when Ext_list.for_all2_no_exn inner_args params lam_is_var &&
+           Ext_list.length_larger_than_n inner_args args 1 
+      ->
+      Lam.prim ~primitive ~args:(Ext_list.append_one args x) outer_loc
+    | Lapply{ap_func;ap_args; ap_info} ->
+      Lam.apply ap_func (Ext_list.append_one ap_args x) {ap_loc = outer_loc; ap_inlined = ap_info.ap_inlined; ap_status =  App_na }
+    | _ ->
+      Lam.apply f [x] {ap_loc = outer_loc; ap_inlined = Default_inline; ap_status = App_na}
+  and convert_switch (e : Lambda.lambda) (s : Lambda.lambda_switch) = 
+    let  e = convert_aux e in
+    match s with
+    | {
+      sw_failaction = None ;
+      sw_blocks = [];
+      sw_numblocks = 0;
+      sw_consts ;
+      sw_numconsts ;
+    } ->
+      begin match happens_to_be_diff sw_consts with
+        | Some 0 -> e
+        | Some i ->
+          prim
+            ~primitive:Paddint
+            ~args:[e; Lam.const(Const_int {i = Int32.of_int i; comment = None})]
+            Location.none
+        | None ->
+          Lam.switch e
+            {sw_failaction = None;
+             sw_blocks = [];
+             sw_blocks_full = true;
+             sw_consts =
+               Ext_list.map_snd  sw_consts convert_aux;
+             sw_consts_full = 
+               Ext_list.length_ge sw_consts sw_numconsts;
+             sw_names = s.sw_names;
+            }
+      end
+    | _ -> 
+      Lam.switch  e   
+        { sw_consts_full =  Ext_list.length_ge s.sw_consts s.sw_numconsts ;
+          sw_consts = Ext_list.map_snd  s.sw_consts convert_aux;
+          sw_blocks_full = Ext_list.length_ge s.sw_blocks s.sw_numblocks;
+          sw_blocks = Ext_list.map_snd s.sw_blocks convert_aux;
+          sw_failaction =Ext_option.map s.sw_failaction convert_aux;
+          sw_names = s.sw_names } in
   convert_aux lam , may_depends
 
 
 (** FIXME: more precise analysis of [id], if it is not 
     used, we can remove it
         only two places emit [Lifused],
-        {[
-          lsequence (Lifused(id, set_inst_var obj id expr)) rem
-          Lifused (env2, Lprim(Parrayset Paddrarray, [Lvar self; Lvar env2; Lvar env1']))
-        ]}
+    {[
+      lsequence (Lifused(id, set_inst_var obj id expr)) rem
+        Lifused (env2, Lprim(Parrayset Paddrarray, [Lvar self; Lvar env2; Lvar env1']))
+    ]}
 
         Note the variable, [id], or [env2] is already defined, it can be removed if it is not
         used. This optimization seems useful, but doesnt really matter since it only hit translclass
 
         more details, see [translclass] and [if_used_test]
         seems to be an optimization trick for [translclass]
-        
+
         | Lifused(v, l) ->
           if count_var v > 0 then simplif l else lambda_unit
-      *)  
+*)  
 
 
       (*
@@ -977,49 +977,49 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
             aux (Lprim(prim,args,inner_loc))
           else
 
-           {[
-             (fun x y -> f x y) (computation;e) -->
-             (fun y -> f (computation;e) y)
-           ]}
-              is wrong
+   {[
+     (fun x y -> f x y) (computation;e) -->
+     (fun y -> f (computation;e) y)
+   ]}
+        is wrong
 
-              or
-           {[
-             (fun x y -> f x y ) ([|1;2;3|]) -->
-             (fun y -> f [|1;2;3|] y)
-           ]}
-              is also wrong.
+        or
+   {[
+     (fun x y -> f x y ) ([|1;2;3|]) -->
+     (fun y -> f [|1;2;3|] y)
+   ]}
+        is also wrong.
 
-              It seems, we need handle [@variadic] earlier
+        It seems, we need handle [@variadic] earlier
 
-              or
-           {[
-             (fun x y -> f x y) ([|1;2;3|]) -->
-             let x0, x1, x2 =1,2,3 in
-             (fun y -> f [|x0;x1;x2|] y)
-           ]}
-              But this still need us to know [@variadic] in advance
+        or
+   {[
+     (fun x y -> f x y) ([|1;2;3|]) -->
+     let x0, x1, x2 =1,2,3 in
+     (fun y -> f [|x0;x1;x2|] y)
+   ]}
+        But this still need us to know [@variadic] in advance
 
 
-           we should not remove it immediately, since we have to be careful
-                  where it is used, it can be [exported], [Lvar] or [Lassign] etc
-                  The other common mistake is that
-           {[
-             let x = y (* elimiated x/y*)
-             let u = x  (* eliminated u/x *)
-           ]}
+     we should not remove it immediately, since we have to be careful
+            where it is used, it can be [exported], [Lvar] or [Lassign] etc
+            The other common mistake is that
+   {[
+     let x = y (* elimiated x/y*)
+     let u = x  (* eliminated u/x *)
+   ]}
 
-            however, [x] is already eliminated
-           To improve the algorithm
-           {[
-             let x = y (* x/y *)
-             let u = x (* u/y *)
-           ]}
-                  This looks more correct, but lets be conservative here
+      however, [x] is already eliminated
+     To improve the algorithm
+   {[
+     let x = y (* x/y *)
+     let u = x (* u/y *)
+   ]}
+            This looks more correct, but lets be conservative here
 
-                  global module inclusion {[ include List ]}
-                  will cause code like {[ let include =a Lglobal_module (list)]}
+            global module inclusion {[ include List ]}
+            will cause code like {[ let include =a Lglobal_module (list)]}
 
-                  when [u] is global, it can not be bound again,
-                  it should always be the leaf
-        *)      
+            when [u] is global, it can not be bound again,
+            it should always be the leaf
+*)      

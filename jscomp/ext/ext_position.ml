@@ -24,17 +24,17 @@
 
 
 type t = Lexing.position = {
-    pos_fname : string ;
-    pos_lnum : int ;
-    pos_bol : int ;
-    pos_cnum : int
+  pos_fname : string ;
+  pos_lnum : int ;
+  pos_bol : int ;
+  pos_cnum : int
 }
 
 let offset (x : t) (y:t) =
   {
     x with 
     pos_lnum =
-       x.pos_lnum + y.pos_lnum - 1;
+      x.pos_lnum + y.pos_lnum - 1;
     pos_cnum = 
       x.pos_cnum + y.pos_cnum;
     pos_bol = 

@@ -31,9 +31,9 @@ let is_single_string (x : t ) =
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-                (Pconst_string(name,dec))
-              ;
-           _},_);
+               (Pconst_string(name,dec))
+          ;
+            _},_);
       _}] -> Some (name,dec)
   | _  -> None
 
@@ -45,13 +45,13 @@ let is_single_string_as_ast (x : t )
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-                (Pconst_string(_,_))
-              ;
-           _} as e ,_);
+               (Pconst_string(_,_))
+          ;
+            _} as e ,_);
       _}] -> Some e
   | _  -> None
 
-  
+
 (** TODO also need detect empty phrase case *)  
 let is_single_int (x : t ) : int option = 
   match x with  
@@ -70,8 +70,8 @@ let is_single_int (x : t ) : int option =
 
 
 let raw_as_string_exp_exn 
-  ~(kind: Js_raw_info.raw_kind)
-  (x : t ) : _ option = 
+    ~(kind: Js_raw_info.raw_kind)
+    (x : t ) : _ option = 
   match x with  (** TODO also need detect empty phrase case *)
   | PStr [ {
       pstr_desc =  
@@ -79,8 +79,8 @@ let raw_as_string_exp_exn
           {pexp_desc = 
              Pexp_constant 
                (Pconst_string (str,deli))            
-               ;
-           pexp_loc = loc} as e ,_);
+          ;
+            pexp_loc = loc} as e ,_);
       _}] -> 
     Bs_flow_ast_utils.check_flow_errors ~loc ~offset:(Bs_flow_ast_utils.flow_deli_offset deli) (match kind with 
         | Raw_re 
@@ -88,8 +88,8 @@ let raw_as_string_exp_exn
           let (_loc,e),errors =  Parser_flow.parse_expression (Parser_env.init_env None str) false in 
           if kind = Raw_re then 
             (match e with 
-            | Literal {value = RegExp _} -> ()
-            | _ -> Location.raise_errorf ~loc "Syntax error: a valid JS regex literal expected"
+             | Literal {value = RegExp _} -> ()
+             | _ -> Location.raise_errorf ~loc "Syntax error: a valid JS regex literal expected"
             );
           errors
         | Raw_program ->  
@@ -179,7 +179,7 @@ let ident_or_record_as_config
     ] -> [ {Asttypes.txt ; loc = lloc}, None] 
   | PStr [] -> []
   | _ -> 
-      unrecognizedConfigRecord loc "invalid attribute config-record, ignoring"; []
+    unrecognizedConfigRecord loc "invalid attribute config-record, ignoring"; []
 
 
 
@@ -195,11 +195,11 @@ let assert_strings loc (x : t) : string list
             pstr_loc = loc ;            
             _}] ->
     (try 
-        Ext_list.map strs (fun e ->
+       Ext_list.map strs (fun e ->
            match (e : Parsetree.expression) with
            | {pexp_desc = Pexp_constant (
-              Pconst_string
-               (name,_)); _} -> 
+               Pconst_string
+                 (name,_)); _} -> 
              name
            | _ -> raise Not_str)
      with Not_str ->

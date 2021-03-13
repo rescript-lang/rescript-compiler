@@ -24,7 +24,7 @@
 
 
 
- type response = {
+type response = {
   pval_type : Parsetree.core_type ; 
   pval_prim : string list ; 
   pval_attributes : Parsetree.attributes;
@@ -32,12 +32,12 @@
 }
 
 (**
-  [handle_attributes_as_string
-  loc pval_name.txt pval_type pval_attributes pval_prim]
-  [pval_name.txt] is the name of identifier
-  [pval_prim] is the name of string literal
+   [handle_attributes_as_string
+   loc pval_name.txt pval_type pval_attributes pval_prim]
+   [pval_name.txt] is the name of identifier
+   [pval_prim] is the name of string literal
 
-  return value is of [pval_type, pval_prims, new_attrs]
+   return value is of [pval_type, pval_prims, new_attrs]
 *)
 val handle_attributes_as_string :
   Bs_loc.t ->

@@ -31,7 +31,7 @@
 
 
 (* Refer https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence
-  for precedence   
+   for precedence   
 *)
 
 let op_prec (op : Js_op.binop ) =
@@ -81,7 +81,7 @@ let op_str (op : Js_op.binop) =
   | Le      -> "<="
   | Gt      -> ">"
   | Ge      -> ">="
-  (* | InstanceOf -> "instanceof" *)
+(* | InstanceOf -> "instanceof" *)
 
 let op_int_str (op : Js_op.int_op) = 
   match op with
@@ -96,7 +96,7 @@ let op_int_str (op : Js_op.int_op) =
   | Mul     -> "*"
   | Div     -> "/"
   | Mod     -> "%"
-  
+
 let str_of_used_stats x = 
   match (x : Js_op.used_stats) with
   | Js_op.Dead_pure ->  "Dead_pure"
@@ -126,7 +126,7 @@ let same_str_opt ( x : string option  ) (y : string option) =
   | None, Some _ 
   | Some _ , None 
     -> false 
-  
+
 let same_vident (x : J.vident) (y : J.vident) = 
   match x, y with 
   | Id x0, Id y0 -> Ident.same x0 y0

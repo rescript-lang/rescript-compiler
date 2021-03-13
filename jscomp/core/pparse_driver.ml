@@ -4,15 +4,15 @@
 (* Optionally preprocess a source file *)
 
 let call_external_preprocessor sourcefile pp =
-      let tmpfile = Filename.temp_file "ocamlpp" "" in
-      let comm = Printf.sprintf "%s %s > %s"
-                                pp (Filename.quote sourcefile) tmpfile
-      in
-      if Ccomp.command comm <> 0 then begin
-        Misc.remove_file tmpfile;
-        Cmd_ast_exception.cannot_run comm
-      end;
-      tmpfile
+  let tmpfile = Filename.temp_file "ocamlpp" "" in
+  let comm = Printf.sprintf "%s %s > %s"
+      pp (Filename.quote sourcefile) tmpfile
+  in
+  if Ccomp.command comm <> 0 then begin
+    Misc.remove_file tmpfile;
+    Cmd_ast_exception.cannot_run comm
+  end;
+  tmpfile
 
 let preprocess sourcefile =
   match !Clflags.preprocessor with
@@ -38,7 +38,7 @@ let parse (type a) (kind : a Ml_binary.kind) : _ -> a =
   | Ml_binary.Mli -> Parse.interface 
 
 let file_aux  inputfile (type a) (parse_fun  : _ -> a)
-             (kind : a Ml_binary.kind) : a  =
+    (kind : a Ml_binary.kind) : a  =
   let ast_magic = Ml_binary.magic_of_kind kind in
   let ic = open_in_bin inputfile in
   let is_ast_file =
@@ -63,8 +63,8 @@ let file_aux  inputfile (type a) (parse_fun  : _ -> a)
     with x -> close_in ic; raise x
   in
   close_in ic; ast   
-  
-  
+
+
 
 
 

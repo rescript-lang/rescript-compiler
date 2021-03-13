@@ -25,38 +25,38 @@
 
 
 
- 
- type anon_fun = rev_args:string list -> unit
- 
- type string_action = 
-   | String_call of (string -> unit)  
-   | String_set of string ref
-   | String_optional_set of string option ref 
-   | String_list_add of string list ref 
 
- type unit_action = 
-    | Unit_call of (unit -> unit) 
-    | Unit_lazy of unit lazy_t
-    | Unit_set of bool ref
-    | Unit_clear of bool ref 
+type anon_fun = rev_args:string list -> unit
 
- type spec =
-   | Unit_dummy  
-   | Unit of unit_action
-   | String of string_action 
- 
- 
- exception Bad = Arg.Bad
- 
- let bad_arg s = raise_notrace (Bad s)
+type string_action = 
+  | String_call of (string -> unit)  
+  | String_set of string ref
+  | String_optional_set of string option ref 
+  | String_list_add of string list ref 
 
- type error =
-   | Unknown of string
-   | Missing of string
- 
+type unit_action = 
+  | Unit_call of (unit -> unit) 
+  | Unit_lazy of unit lazy_t
+  | Unit_set of bool ref
+  | Unit_clear of bool ref 
+
+type spec =
+  | Unit_dummy  
+  | Unit of unit_action
+  | String of string_action 
+
+
+exception Bad = Arg.Bad
+
+let bad_arg s = raise_notrace (Bad s)
+
+type error =
+  | Unknown of string
+  | Missing of string
+
 type t = spec Ext_spec.t 
 
- 
+
 let (+>) = Ext_buffer.add_string
 
 let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
