@@ -164,48 +164,46 @@ let toString = function
   | Export -> "export"
 
 let keywordTable = function
-| "true" -> True
-| "false" -> False
-| "open" -> Open
-| "let" -> Let
-| "rec" -> Rec
 | "and" -> And
 | "as" -> As
-| "exception" -> Exception
 | "assert" -> Assert
-| "lazy" -> Lazy
-| "if" -> If
-| "else" -> Else
-| "for" -> For
-| "in" -> In
-| "to" -> To
-| "downto" -> Downto
-| "while" -> While
-| "switch" -> Switch
-| "when" -> When
-| "external" -> External
-| "type" -> Typ
-| "private" -> Private
-| "mutable" -> Mutable
 | "constraint" -> Constraint
-| "include" -> Include
-| "module" -> Module
-| "of" -> Of
-| "list{" -> List
-| "with" -> With
-| "try" -> Try
-| "import" -> Import
+| "downto" -> Downto
+| "else" -> Else
+| "exception" -> Exception
 | "export" -> Export
+| "external" -> External
+| "false" -> False
+| "for" -> For
+| "if" -> If
+| "import" -> Import
+| "in" -> In
+| "include" -> Include
+| "lazy" -> Lazy
+| "let" -> Let
+| "list{" -> List
+| "module" -> Module
+| "mutable" -> Mutable
+| "of" -> Of
+| "open" -> Open
+| "private" -> Private
+| "rec" -> Rec
+| "switch" -> Switch
+| "to" -> To
+| "true" -> True
+| "try" -> Try
+| "type" -> Typ
+| "when" -> When
+| "while" -> While
+| "with" -> With
 | _ -> raise Not_found
 [@@raises Not_found]
 
 let isKeyword = function
-  | True | False | Open | Let | Rec | And | As
-  | Exception | Assert | Lazy | If | Else | For | In | To
-  | Downto | While | Switch | When | External | Typ | Private
-  | Mutable | Constraint | Include | Module | Of
-  | Land | Lor | List | With
-  | Try | Import | Export -> true
+  | And | As | Assert | Constraint | Downto | Else | Exception | Export
+  | External | False | For | If | Import | In | Include | Land | Lazy
+  | Let | List | Lor | Module | Mutable | Of | Open | Private | Rec
+  | Switch | To | True | Try | Typ | When | While | With -> true
   | _ -> false
 
 let lookupKeyword str =
