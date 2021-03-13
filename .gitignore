@@ -1,6 +1,5 @@
 *~
 _build
-_esy
 *.obj
 *.out
 *.compile

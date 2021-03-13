@@ -178,17 +178,14 @@ function provideCompiler() {
     return myVersion;
   } else {
     myVersion = "4.06.1";
-    var ocamlopt =
-      process.env.ESY === "true"
-        ? "ocamlopt.opt"
-        : path.join(
-            __dirname,
-            "..",
-            "native",
-            myVersion,
-            "bin",
-            "ocamlopt.opt"
-          );
+    var ocamlopt = path.join(
+      __dirname,
+      "..",
+      "native",
+      myVersion,
+      "bin",
+      "ocamlopt.opt"
+    );
     if (!fs.existsSync(ocamlopt)) {
       require("./buildocaml.js").build(true);
     } else {
