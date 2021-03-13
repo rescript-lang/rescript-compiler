@@ -11,7 +11,7 @@
    - [ __1 o] .. [ __n o]
 *)
 let prelude ={|
-(* Copyright (C) 2015 -  Authors of ReScript
+(* Copyright (C) 2015 -  Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

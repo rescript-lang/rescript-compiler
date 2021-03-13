@@ -886,7 +886,7 @@ val assoc3 :
 
 end = struct
 #1 "ext_spec.ml"
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -1704,7 +1704,7 @@ val parse_exn :
 val bad_arg : string -> 'a  
 end = struct
 #1 "bsb_arg.ml"
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -1861,7 +1861,7 @@ end
 module Bsb_build_schemas
 = struct
 #1 "bsb_build_schemas.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -4858,7 +4858,7 @@ val is_empty :
 
 end = struct
 #1 "bsb_file_groups.ml"
-(* Copyright (C) 2018- Authors of ReScript
+(* Copyright (C) 2018- Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -5479,7 +5479,7 @@ val package_dir : string Lazy.t
 
 end = struct
 #1 "ext_path.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -5974,7 +5974,7 @@ val string_as_package : string -> t
 end = struct
 #1 "bsb_pkg_types.ml"
 
-(* Copyright (C) 2018- Authors of ReScript
+(* Copyright (C) 2018- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -6763,7 +6763,7 @@ val info_args : string array -> unit
 
 end = struct
 #1 "bsb_log.ml"
-(* Copyright (C) 2017- Authors of ReScript
+(* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -7462,7 +7462,7 @@ val to_list:
 end = struct
 #1 "bsb_pkg.ml"
 
-(* Copyright (C) 2017- Authors of ReScript
+(* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -7956,7 +7956,7 @@ end
 module Ext_js_file_kind
 = struct
 #1 "ext_js_file_kind.ml"
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8229,7 +8229,7 @@ val list_dirs_by :
   unit
 end = struct
 #1 "bsb_package_specs.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8462,7 +8462,7 @@ end
 module Bsb_package_kind
 = struct
 #1 "bsb_package_kind.ml"
-(* Copyright (C) 2020- Authors of ReScript 
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8498,7 +8498,7 @@ end
 module Bsc_warnings
 = struct
 #1 "bsc_warnings.ml"
-(* Copyright (C) 2020- Authors of ReScript 
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8625,7 +8625,7 @@ val to_bsb_string :
 val use_default : t
 end = struct
 #1 "bsb_warning.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -10160,7 +10160,7 @@ val vendor_bsdep : string
 
 end = struct
 #1 "bsb_global_paths.ml"
-(* Copyright (C) 2019 - Authors of ReScript
+(* Copyright (C) 2019 - Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -11657,7 +11657,7 @@ val clean_self :
 
 end = struct
 #1 "bsb_clean.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12356,7 +12356,7 @@ val write_build_cache :
 
 end = struct
 #1 "bsb_db_encode.ml"
-(* Copyright (C) 2019 - Present Authors of ReScript
+(* Copyright (C) 2019 - Present Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12495,7 +12495,7 @@ module Ext_digest : sig
  val hex_length : int
 end = struct
 #1 "ext_digest.ml"
-(* Copyright (C) 2019- Authors of ReScript
+(* Copyright (C) 2019- Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12561,7 +12561,7 @@ val output :
   unit 
 end = struct
 #1 "bsb_namespace_map_gen.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12635,7 +12635,7 @@ end
 module Bsb_ninja_global_vars
 = struct
 #1 "bsb_ninja_global_vars.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13248,7 +13248,7 @@ val make :
  
 end = struct
 #1 "ext_namespace_encode.ml"
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13316,7 +13316,7 @@ val handle_files_per_dir :
 
 end = struct
 #1 "bsb_ninja_file_groups.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13879,7 +13879,7 @@ val to_file :
 
 end = struct
 #1 "ext_json_noloc.ml"
-(* Copyright (C) 2017- Authors of ReScript
+(* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14063,7 +14063,7 @@ val generate_sourcedirs_meta :
   unit 
 end = struct
 #1 "bsb_watcher_gen.ml"
-(* Copyright (C) 2017- Authors of ReScript
+(* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14162,7 +14162,7 @@ val regenerate_ninja :
   Bsb_config_types.t option 
 end = struct
 #1 "bsb_ninja_regen.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14290,7 +14290,7 @@ val global_substitute:
   string
 end = struct
 #1 "bsb_regex.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15614,7 +15614,7 @@ let root = ([
     </html>"
     );
     File("loader.js",
-    "/* Copyright (C) 2018 Authors of ReScript\n\
+    "/* Copyright (C) 2018 Hongbo Zhang, Authors of ReScript\n\
     \ * \n\
     \ * This program is free software: you can redistribute it and/or modify\n\
     \ * it under the terms of the GNU Lesser General Public License as published by\n\
@@ -16480,7 +16480,7 @@ val make_world_deps:
   unit  
 end = struct
 #1 "bsb_world.ml"
-(* Copyright (C) 2017- Authors of ReScript
+(* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16650,7 +16650,7 @@ val parse_exn :
 
 end = struct
 #1 "bsc_args.ml"
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

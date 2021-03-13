@@ -10,7 +10,7 @@
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
 (***********************************************************************)
-(**  Adapted by Authors of ReScript 2017                           *)
+(**  Adapted by Hongbo Zhang, Authors of ReScript 2017                           *)
 
 (* For JS backends, we use [undefined] as default value, so that buckets
    could be allocated lazily

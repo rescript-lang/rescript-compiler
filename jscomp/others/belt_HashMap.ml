@@ -9,7 +9,7 @@
 (*  under the terms of the GNU Library General Public License, with    *)
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
-(*  Adapted by Authors of ReScript 2017                            *)
+(*  Adapted by Hongbo Zhang, Authors of ReScript 2017                            *)
 (***********************************************************************)
 
 
