@@ -491,17 +491,6 @@
             },
             "description": "(Not needed usually) external include directories, which will be applied `-I` to all compilation units"
         },
-        "refmt": {
-            "$ref": "#/definitions/refmt-specs",
-            "description": "Reason syntax configuration"
-        },
-        "refmt-flags": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            },
-            "description": "(Not needed usually) arguments to pass to `refmt` above. Default: `[\"--print\", \"binary\"]`."
-        },
         "suffix" : {
             "$ref" : "#/definitions/suffix-spec"
         }

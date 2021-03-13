@@ -1,8 +1,0 @@
-{
-  "source": "./esy.json",
-  "override": {
-    "resolutions": {
-      "ocaml": "ulrikstrid/ocaml:package.json#68e181a3a44f0b6be1b1ab1e585d2c9f2718c37b"
-    }
-  }
-}

@@ -886,7 +886,7 @@ val assoc3 :
 
 end = struct
 #1 "ext_spec.ml"
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -1704,7 +1704,7 @@ val parse_exn :
 val bad_arg : string -> 'a  
 end = struct
 #1 "bsb_arg.ml"
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -1861,7 +1861,7 @@ end
 module Bsb_build_schemas
 = struct
 #1 "bsb_build_schemas.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -1894,7 +1894,7 @@ let bsdep = "bsdep"
 let ppx_flags = "ppx-flags"
 let pp_flags = "pp-flags"
 let bsc = "bsc"
-let refmt = "refmt"
+
 
 let bs_external_includes = "bs-external-includes"
 let bs_lib_dir = "bs-lib-dir"
@@ -4858,7 +4858,7 @@ val is_empty :
 
 end = struct
 #1 "bsb_file_groups.ml"
-(* Copyright (C) 2018- Authors of ReScript
+(* Copyright (C) 2018- Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -5479,7 +5479,7 @@ val package_dir : string Lazy.t
 
 end = struct
 #1 "ext_path.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -5974,7 +5974,7 @@ val string_as_package : string -> t
 end = struct
 #1 "bsb_pkg_types.ml"
 
-(* Copyright (C) 2018- Authors of ReScript
+(* Copyright (C) 2018- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -6763,7 +6763,7 @@ val info_args : string array -> unit
 
 end = struct
 #1 "bsb_log.ml"
-(* Copyright (C) 2017- Authors of ReScript
+(* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -7462,7 +7462,7 @@ val to_list:
 end = struct
 #1 "bsb_pkg.ml"
 
-(* Copyright (C) 2017- Authors of ReScript
+(* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -7545,66 +7545,10 @@ let cache : string Coll.t = Coll.create 0
 let to_list cb  =   
   Coll.to_list cache  cb 
   
-(* Some package managers will implement "postinstall" caches, that do not
- * keep their build artifacts in the local node_modules. Similar to
- * npm_config_prefix, bs_custom_resolution allows these to specify the
- * exact location of build cache, but on a per-package basis. Implemented as
- * environment lookup to avoid invasive changes to bsconfig and mandates. *)
-let custom_resolution = lazy
-  (match Sys.getenv "bs_custom_resolution" with
-  | exception Not_found  -> false
-  | "true"  -> true
-  | _ -> false)
 
-let pkg_name_as_variable package =
-  Bsb_pkg_types.to_string package
-  |> fun s -> Ext_string.split s '@'
-  |> String.concat ""
-  |> fun s -> Ext_string.split s '_'
-  |> String.concat "__"
-  |> fun s -> Ext_string.split s '/'
-  |> String.concat "__slash__"
-  |> fun s -> Ext_string.split s '.'
-  |> String.concat "__dot__"
-  |> fun s -> Ext_string.split s '-'
-  |> String.concat "_"
 
 (** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd (package : t) =
-  if Lazy.force custom_resolution then
-  begin
-    Bsb_log.info "@{<info>Using Custom Resolution@}@.";
-    let custom_pkg_loc = pkg_name_as_variable package ^ "__install" in
-    let custom_pkg_location = lazy (Sys.getenv custom_pkg_loc) in
-    match Lazy.force custom_pkg_location with
-    | exception Not_found ->
-        begin
-          Bsb_log.error
-            "@{<error>Custom resolution of package %s does not exist in var %s @}@."
-            (Bsb_pkg_types.to_string package)
-            custom_pkg_loc;
-          Bsb_exception.package_not_found ~pkg:package ~json:None
-        end
-    | path when not (Sys.file_exists path) ->
-        begin
-          Bsb_log.error
-            "@{<error>Custom resolution of package %s does not exist on disk: %s=%s @}@."
-            (Bsb_pkg_types.to_string package)
-            custom_pkg_loc
-            path;
-          Bsb_exception.package_not_found ~pkg:package ~json:None
-        end
-    | path ->
-      begin
-        Bsb_log.info
-          "@{<info>Custom Resolution of package %s in var %s found at %s@}@."
-          (Bsb_pkg_types.to_string package)
-          custom_pkg_loc
-          path;
-        path
-      end
-    end
-  else
     match Coll.find_opt cache package with
     | None ->
       let result = resolve_bs_package_aux ~cwd package in
@@ -7956,7 +7900,7 @@ end
 module Ext_js_file_kind
 = struct
 #1 "ext_js_file_kind.ml"
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8229,7 +8173,7 @@ val list_dirs_by :
   unit
 end = struct
 #1 "bsb_package_specs.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8462,7 +8406,7 @@ end
 module Bsb_package_kind
 = struct
 #1 "bsb_package_kind.ml"
-(* Copyright (C) 2020- Authors of ReScript 
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8498,7 +8442,7 @@ end
 module Bsc_warnings
 = struct
 #1 "bsc_warnings.ml"
-(* Copyright (C) 2020- Authors of ReScript 
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8625,7 +8569,7 @@ val to_bsb_string :
 val use_default : t
 end = struct
 #1 "bsb_warning.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8788,7 +8732,7 @@ type reason_react_jsx =
   | Jsx_v3
   (* string option  *)
 
-type refmt = string option
+
 
 type gentype_config = {
   path : string (* resolved *)
@@ -8818,7 +8762,6 @@ type t =
       so that we can calculate correct relative path in 
       [.merlin]
     *)
-    refmt : refmt;
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
     file_groups : Bsb_file_groups.t;
@@ -10160,7 +10103,7 @@ val vendor_bsdep : string
 
 end = struct
 #1 "bsb_global_paths.ml"
-(* Copyright (C) 2019 - Authors of ReScript
+(* Copyright (C) 2019 - Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -11193,22 +11136,6 @@ let extract_gentype_config (map : json_map) cwd
     Bsb_exception.config_error 
       config "gentypeconfig expect an object"  
 
-let extract_refmt (map : json_map) cwd : Bsb_config_types.refmt =      
-  match map.?(Bsb_build_schemas.refmt) with 
-  | Some (Flo {flo} as config) -> 
-    begin match flo with 
-      | "3" -> None
-      | _ -> Bsb_exception.config_error config "expect version 3 only"
-    end
-  | Some (Str {str}) 
-    -> 
-    Some
-      (Bsb_build_util.resolve_bsb_magic_file 
-              ~cwd ~desc:Bsb_build_schemas.refmt str).path
-  | Some config  -> 
-    Bsb_exception.config_error config "expect version 2 or 3"
-  | None ->
-    None
 
 let extract_string (map : json_map) (field : string) cb = 
   match  map.?( field) with 
@@ -11384,7 +11311,6 @@ let interpret_json
   | Obj { map } ->
     let package_name, namespace = 
       extract_package_name_and_namespace  map in 
-    let refmt = extract_refmt map per_proj_dir in 
     let gentype_config  = extract_gentype_config map per_proj_dir in  
     (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries 
          array from the bsconfig and set the backend_ref to the first entry, if any. *)
@@ -11441,7 +11367,6 @@ let interpret_json
                in
              ]}
           *)          
-          refmt;
           js_post_build_cmd = (extract_js_post_build map per_proj_dir);
           package_specs = 
             (match package_kind with 
@@ -11657,7 +11582,7 @@ val clean_self :
 
 end = struct
 #1 "bsb_clean.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12356,7 +12281,7 @@ val write_build_cache :
 
 end = struct
 #1 "bsb_db_encode.ml"
-(* Copyright (C) 2019 - Present Authors of ReScript
+(* Copyright (C) 2019 - Present Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12495,7 +12420,7 @@ module Ext_digest : sig
  val hex_length : int
 end = struct
 #1 "ext_digest.ml"
-(* Copyright (C) 2019- Authors of ReScript
+(* Copyright (C) 2019- Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12561,7 +12486,7 @@ val output :
   unit 
 end = struct
 #1 "bsb_namespace_map_gen.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12635,7 +12560,7 @@ end
 module Bsb_ninja_global_vars
 = struct
 #1 "bsb_ninja_global_vars.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12756,7 +12681,6 @@ val make_custom_rules :
   has_builtin:bool -> 
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
   digest:string ->
-  refmt:string option ->
   package_specs:Bsb_package_specs.t ->
   namespace:string option ->
   package_name:string ->
@@ -12895,7 +12819,6 @@ let make_custom_rules
   ~(has_builtin : bool)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
-  ~(refmt : string option) (* set refmt path when needed *)
   ~(package_specs: Bsb_package_specs.t)
   ~(namespace : string option)
   ~package_name
@@ -12983,12 +12906,6 @@ let make_custom_rules
          );
        Ext_buffer.add_char_string buf ' ' 
          (Bsb_build_util.ppx_flags ppx_files)); 
-    (match refmt with 
-    | None -> ()
-    | Some x ->
-      Ext_buffer.add_string buf " -bs-refmt ";
-      Ext_buffer.add_string buf (Ext_filename.maybe_quote x);
-    );
     (match pp_file with 
      | None -> ()
      | Some flag ->
@@ -13248,7 +13165,7 @@ val make :
  
 end = struct
 #1 "ext_namespace_encode.ml"
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13316,7 +13233,7 @@ val handle_files_per_dir :
 
 end = struct
 #1 "bsb_ninja_file_groups.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13706,7 +13623,6 @@ let output_ninja_and_namespace_map
 
       bs_dependencies;
       bs_dev_dependencies;
-      refmt;
       js_post_build_cmd;
       package_specs;
       file_groups = { files = bs_file_groups};
@@ -13761,8 +13677,7 @@ let output_ninja_and_namespace_map
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   let lib_incls = emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace in
   let rules : Bsb_ninja_rule.builtin = 
-      Bsb_ninja_rule.make_custom_rules 
-      ~refmt
+      Bsb_ninja_rule.make_custom_rules
       ~gentype_config
       ~has_postbuild:js_post_build_cmd 
       ~pp_file
@@ -13879,7 +13794,7 @@ val to_file :
 
 end = struct
 #1 "ext_json_noloc.ml"
-(* Copyright (C) 2017- Authors of ReScript
+(* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14063,7 +13978,7 @@ val generate_sourcedirs_meta :
   unit 
 end = struct
 #1 "bsb_watcher_gen.ml"
-(* Copyright (C) 2017- Authors of ReScript
+(* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14162,7 +14077,7 @@ val regenerate_ninja :
   Bsb_config_types.t option 
 end = struct
 #1 "bsb_ninja_regen.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14290,7 +14205,7 @@ val global_substitute:
   string
 end = struct
 #1 "bsb_regex.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15614,7 +15529,7 @@ let root = ([
     </html>"
     );
     File("loader.js",
-    "/* Copyright (C) 2018 Authors of ReScript\n\
+    "/* Copyright (C) 2018 Hongbo Zhang, Authors of ReScript\n\
     \ * \n\
     \ * This program is free software: you can redistribute it and/or modify\n\
     \ * it under the terms of the GNU Lesser General Public License as published by\n\
@@ -16480,7 +16395,7 @@ val make_world_deps:
   unit  
 end = struct
 #1 "bsb_world.ml"
-(* Copyright (C) 2017- Authors of ReScript
+(* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16650,7 +16565,7 @@ val parse_exn :
 
 end = struct
 #1 "bsc_args.ml"
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

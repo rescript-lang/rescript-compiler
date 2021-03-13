@@ -1,5 +1,5 @@
 
-(* Copyright (C) 2017- Authors of ReScript
+(* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -82,66 +82,10 @@ let cache : string Coll.t = Coll.create 0
 let to_list cb  =   
   Coll.to_list cache  cb 
   
-(* Some package managers will implement "postinstall" caches, that do not
- * keep their build artifacts in the local node_modules. Similar to
- * npm_config_prefix, bs_custom_resolution allows these to specify the
- * exact location of build cache, but on a per-package basis. Implemented as
- * environment lookup to avoid invasive changes to bsconfig and mandates. *)
-let custom_resolution = lazy
-  (match Sys.getenv "bs_custom_resolution" with
-  | exception Not_found  -> false
-  | "true"  -> true
-  | _ -> false)
 
-let pkg_name_as_variable package =
-  Bsb_pkg_types.to_string package
-  |> fun s -> Ext_string.split s '@'
-  |> String.concat ""
-  |> fun s -> Ext_string.split s '_'
-  |> String.concat "__"
-  |> fun s -> Ext_string.split s '/'
-  |> String.concat "__slash__"
-  |> fun s -> Ext_string.split s '.'
-  |> String.concat "__dot__"
-  |> fun s -> Ext_string.split s '-'
-  |> String.concat "_"
 
 (** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd (package : t) =
-  if Lazy.force custom_resolution then
-  begin
-    Bsb_log.info "@{<info>Using Custom Resolution@}@.";
-    let custom_pkg_loc = pkg_name_as_variable package ^ "__install" in
-    let custom_pkg_location = lazy (Sys.getenv custom_pkg_loc) in
-    match Lazy.force custom_pkg_location with
-    | exception Not_found ->
-        begin
-          Bsb_log.error
-            "@{<error>Custom resolution of package %s does not exist in var %s @}@."
-            (Bsb_pkg_types.to_string package)
-            custom_pkg_loc;
-          Bsb_exception.package_not_found ~pkg:package ~json:None
-        end
-    | path when not (Sys.file_exists path) ->
-        begin
-          Bsb_log.error
-            "@{<error>Custom resolution of package %s does not exist on disk: %s=%s @}@."
-            (Bsb_pkg_types.to_string package)
-            custom_pkg_loc
-            path;
-          Bsb_exception.package_not_found ~pkg:package ~json:None
-        end
-    | path ->
-      begin
-        Bsb_log.info
-          "@{<info>Custom Resolution of package %s in var %s found at %s@}@."
-          (Bsb_pkg_types.to_string package)
-          custom_pkg_loc
-          path;
-        path
-      end
-    end
-  else
     match Coll.find_opt cache package with
     | None ->
       let result = resolve_bs_package_aux ~cwd package in

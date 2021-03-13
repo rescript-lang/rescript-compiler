@@ -9049,7 +9049,7 @@ val assoc3 :
 
 end = struct
 #1 "ext_spec.ml"
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -9897,7 +9897,7 @@ val parse_exn :
 
 end = struct
 #1 "bsc_args.ml"
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -11038,7 +11038,7 @@ val package_dir : string Lazy.t
 
 end = struct
 #1 "ext_path.ml"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13643,7 +13643,7 @@ val build_lazy_queue :
 
 end = struct
 #1 "bspack_ast_extract.ml"
-(* Copyright (C) 2020 - Authors of ReScript
+(* Copyright (C) 2020 - Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

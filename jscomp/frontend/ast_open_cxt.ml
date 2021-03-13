@@ -1,4 +1,4 @@
-(* Copyright (C) 2019 - Present Authors of ReScript
+(* Copyright (C) 2019 - Present Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

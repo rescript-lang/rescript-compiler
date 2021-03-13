@@ -1,4 +1,4 @@
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -31,7 +31,7 @@ let bsdep = "bsdep"
 let ppx_flags = "ppx-flags"
 let pp_flags = "pp-flags"
 let bsc = "bsc"
-let refmt = "refmt"
+
 
 let bs_external_includes = "bs-external-includes"
 let bs_lib_dir = "bs-lib-dir"

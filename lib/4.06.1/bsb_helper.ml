@@ -1100,7 +1100,7 @@ val find_sorted_assoc :
   'a option
 end = struct
 #1 "ext_string_array.ml"
-(* Copyright (C) 2020 - Present Authors of ReScript
+(* Copyright (C) 2020 - Present Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -1407,7 +1407,7 @@ val find:
 val decode : string -> t   
 end = struct
 #1 "bsb_db_decode.ml"
-(* Copyright (C) 2019 - Present Authors of ReScript
+(* Copyright (C) 2019 - Present Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -2199,7 +2199,7 @@ val make :
  
 end = struct
 #1 "ext_namespace_encode.ml"
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

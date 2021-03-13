@@ -177,7 +177,6 @@ let output_ninja_and_namespace_map
 
       bs_dependencies;
       bs_dev_dependencies;
-      refmt;
       js_post_build_cmd;
       package_specs;
       file_groups = { files = bs_file_groups};
@@ -232,8 +231,7 @@ let output_ninja_and_namespace_map
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   let lib_incls = emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace in
   let rules : Bsb_ninja_rule.builtin = 
-      Bsb_ninja_rule.make_custom_rules 
-      ~refmt
+      Bsb_ninja_rule.make_custom_rules
       ~gentype_config
       ~has_postbuild:js_post_build_cmd 
       ~pp_file

@@ -1249,7 +1249,7 @@ let root = ([
     </html>"
     );
     File("loader.js",
-    "/* Copyright (C) 2018 Authors of ReScript\n\
+    "/* Copyright (C) 2018 Hongbo Zhang, Authors of ReScript\n\
     \ * \n\
     \ * This program is free software: you can redistribute it and/or modify\n\
     \ * it under the terms of the GNU Lesser General Public License as published by\n\
