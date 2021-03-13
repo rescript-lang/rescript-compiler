@@ -1894,7 +1894,7 @@ let bsdep = "bsdep"
 let ppx_flags = "ppx-flags"
 let pp_flags = "pp-flags"
 let bsc = "bsc"
-let refmt = "refmt"
+
 
 let bs_external_includes = "bs-external-includes"
 let bs_lib_dir = "bs-lib-dir"
@@ -8732,7 +8732,7 @@ type reason_react_jsx =
   | Jsx_v3
   (* string option  *)
 
-type refmt = string option
+
 
 type gentype_config = {
   path : string (* resolved *)
@@ -8762,7 +8762,6 @@ type t =
       so that we can calculate correct relative path in 
       [.merlin]
     *)
-    refmt : refmt;
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
     file_groups : Bsb_file_groups.t;
@@ -11137,22 +11136,6 @@ let extract_gentype_config (map : json_map) cwd
     Bsb_exception.config_error 
       config "gentypeconfig expect an object"  
 
-let extract_refmt (map : json_map) cwd : Bsb_config_types.refmt =      
-  match map.?(Bsb_build_schemas.refmt) with 
-  | Some (Flo {flo} as config) -> 
-    begin match flo with 
-      | "3" -> None
-      | _ -> Bsb_exception.config_error config "expect version 3 only"
-    end
-  | Some (Str {str}) 
-    -> 
-    Some
-      (Bsb_build_util.resolve_bsb_magic_file 
-              ~cwd ~desc:Bsb_build_schemas.refmt str).path
-  | Some config  -> 
-    Bsb_exception.config_error config "expect version 2 or 3"
-  | None ->
-    None
 
 let extract_string (map : json_map) (field : string) cb = 
   match  map.?( field) with 
@@ -11328,7 +11311,6 @@ let interpret_json
   | Obj { map } ->
     let package_name, namespace = 
       extract_package_name_and_namespace  map in 
-    let refmt = extract_refmt map per_proj_dir in 
     let gentype_config  = extract_gentype_config map per_proj_dir in  
     (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries 
          array from the bsconfig and set the backend_ref to the first entry, if any. *)
@@ -11385,7 +11367,6 @@ let interpret_json
                in
              ]}
           *)          
-          refmt;
           js_post_build_cmd = (extract_js_post_build map per_proj_dir);
           package_specs = 
             (match package_kind with 
@@ -12700,7 +12681,6 @@ val make_custom_rules :
   has_builtin:bool -> 
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
   digest:string ->
-  refmt:string option ->
   package_specs:Bsb_package_specs.t ->
   namespace:string option ->
   package_name:string ->
@@ -12839,7 +12819,6 @@ let make_custom_rules
   ~(has_builtin : bool)
   ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
   ~(digest : string)
-  ~(refmt : string option) (* set refmt path when needed *)
   ~(package_specs: Bsb_package_specs.t)
   ~(namespace : string option)
   ~package_name
@@ -12927,12 +12906,6 @@ let make_custom_rules
          );
        Ext_buffer.add_char_string buf ' ' 
          (Bsb_build_util.ppx_flags ppx_files)); 
-    (match refmt with 
-    | None -> ()
-    | Some x ->
-      Ext_buffer.add_string buf " -bs-refmt ";
-      Ext_buffer.add_string buf (Ext_filename.maybe_quote x);
-    );
     (match pp_file with 
      | None -> ()
      | Some flag ->
@@ -13650,7 +13623,6 @@ let output_ninja_and_namespace_map
 
       bs_dependencies;
       bs_dev_dependencies;
-      refmt;
       js_post_build_cmd;
       package_specs;
       file_groups = { files = bs_file_groups};
@@ -13705,8 +13677,7 @@ let output_ninja_and_namespace_map
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   let lib_incls = emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace in
   let rules : Bsb_ninja_rule.builtin = 
-      Bsb_ninja_rule.make_custom_rules 
-      ~refmt
+      Bsb_ninja_rule.make_custom_rules
       ~gentype_config
       ~has_postbuild:js_post_build_cmd 
       ~pp_file

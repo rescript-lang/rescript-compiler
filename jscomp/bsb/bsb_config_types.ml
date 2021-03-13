@@ -37,7 +37,7 @@ type reason_react_jsx =
   | Jsx_v3
   (* string option  *)
 
-type refmt = string option
+
 
 type gentype_config = {
   path : string (* resolved *)
@@ -67,7 +67,6 @@ type t =
       so that we can calculate correct relative path in 
       [.merlin]
     *)
-    refmt : refmt;
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
     file_groups : Bsb_file_groups.t;

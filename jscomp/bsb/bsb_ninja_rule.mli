@@ -75,7 +75,6 @@ val make_custom_rules :
   has_builtin:bool -> 
   reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
   digest:string ->
-  refmt:string option ->
   package_specs:Bsb_package_specs.t ->
   namespace:string option ->
   package_name:string ->

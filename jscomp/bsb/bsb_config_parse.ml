@@ -136,22 +136,6 @@ let extract_gentype_config (map : json_map) cwd
     Bsb_exception.config_error 
       config "gentypeconfig expect an object"  
 
-let extract_refmt (map : json_map) cwd : Bsb_config_types.refmt =      
-  match map.?(Bsb_build_schemas.refmt) with 
-  | Some (Flo {flo} as config) -> 
-    begin match flo with 
-      | "3" -> None
-      | _ -> Bsb_exception.config_error config "expect version 3 only"
-    end
-  | Some (Str {str}) 
-    -> 
-    Some
-      (Bsb_build_util.resolve_bsb_magic_file 
-              ~cwd ~desc:Bsb_build_schemas.refmt str).path
-  | Some config  -> 
-    Bsb_exception.config_error config "expect version 2 or 3"
-  | None ->
-    None
 
 let extract_string (map : json_map) (field : string) cb = 
   match  map.?( field) with 
@@ -327,7 +311,6 @@ let interpret_json
   | Obj { map } ->
     let package_name, namespace = 
       extract_package_name_and_namespace  map in 
-    let refmt = extract_refmt map per_proj_dir in 
     let gentype_config  = extract_gentype_config map per_proj_dir in  
     (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries 
          array from the bsconfig and set the backend_ref to the first entry, if any. *)
@@ -384,7 +367,6 @@ let interpret_json
                in
              ]}
           *)          
-          refmt;
           js_post_build_cmd = (extract_js_post_build map per_proj_dir);
           package_specs = 
             (match package_kind with 

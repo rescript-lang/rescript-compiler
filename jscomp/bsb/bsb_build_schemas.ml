@@ -31,7 +31,7 @@ let bsdep = "bsdep"
 let ppx_flags = "ppx-flags"
 let pp_flags = "pp-flags"
 let bsc = "bsc"
-let refmt = "refmt"
+
 
 let bs_external_includes = "bs-external-includes"
 let bs_lib_dir = "bs-lib-dir"
