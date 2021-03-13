@@ -26,7 +26,7 @@ open Ast_helper
 
 (* Handling `fun [@this]` used in `object [@bs] end` *)
 let to_method_callback  loc (self : Bs_ast_mapper.mapper) 
-  label pat body : Parsetree.expression_desc
+    label pat body : Parsetree.expression_desc
   = 
   Bs_syntaxerr.optional_err loc label;  
   let rec aux acc (body : Parsetree.expression) = 
@@ -59,10 +59,10 @@ let to_method_callback  loc (self : Bs_ast_mapper.mapper)
               txt = Ast_literal.Lid.hidden_field arity_s},body]
              None) 
          (Typ.constr ~loc {loc; txt = Ldot (Ast_literal.Lid.js_meth_callback, "arity"^arity_s)} [Typ.any ~loc ()] )
-         )])
+      )])
 
 let to_uncurry_fn  loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label) pat body 
-    : Parsetree.expression_desc
+  : Parsetree.expression_desc
   = 
   Bs_syntaxerr.optional_err loc label;  
   let rec aux acc (body : Parsetree.expression) = 

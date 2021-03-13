@@ -24,6 +24,6 @@
 
 
 
- val names_from_construct_pattern:
+val names_from_construct_pattern:
   Typedtree.pattern -> 
   Lambda.switch_names option

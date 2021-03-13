@@ -26,8 +26,8 @@ let init_path () =
   let dirs = !Clflags.include_dirs in
   let exp_dirs =
     List.map (Misc.expand_directory Config.standard_library) dirs in
-    Config.load_path :=
-         List.rev_append exp_dirs (Clflags.std_include_dir ());
+  Config.load_path :=
+    List.rev_append exp_dirs (Clflags.std_include_dir ());
   Env.reset_cache ()
 
 (* Return the initial environment in which compilation proceeds. *)
@@ -49,9 +49,9 @@ let initial_env () =
   in
   let env =
     if !Clflags.nopervasives then initial else
-    open_implicit_module "Pervasives" initial
+      open_implicit_module "Pervasives" initial
   in
   List.fold_left (fun env m ->
-    open_implicit_module m env
-  ) env (List.rev !Clflags.open_modules)
+      open_implicit_module m env
+    ) env (List.rev !Clflags.open_modules)
 

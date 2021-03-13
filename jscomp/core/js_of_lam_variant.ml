@@ -44,10 +44,10 @@ let eval (arg : J.expression) (dispatches : (string * string) list ) : E.t =
         [(S.string_switch arg
             (Ext_list.map dispatches (fun (i,r) ->
                  i, J.{
-                  switch_body = [S.return_stmt (E.str r)];
-                  should_break = false; (* FIXME: if true, still print break*)
-                  comment = None;
-                 })))]
+                     switch_body = [S.return_stmt (E.str r)];
+                     should_break = false; (* FIXME: if true, still print break*)
+                     comment = None;
+                   })))]
 
 (** invariant: optional is not allowed in this case *)
 (** arg is a polyvar *)
@@ -65,49 +65,49 @@ let eval_as_event (arg : J.expression) (dispatches : (string * string) list opti
     Splice2
       (
         (match dispatches with 
-        | Some dispatches ->     
-        E.of_block
-      [
-      
-        (S.string_switch (E.poly_var_tag_access arg)
-        (Ext_list.map dispatches (fun (i,r) ->
-              i, J.{
-               switch_body = [S.return_stmt (E.str r)];
-               should_break = false; (* FIXME: if true, still print break*)
-               comment = None;
-              }) ))
+         | Some dispatches ->     
+           E.of_block
+             [
 
-        ]
-        | None -> E.poly_var_tag_access arg )
-      , (* TODO: improve, one dispatch later,
-           the problem is that we can not create bindings
-           due to the
-        *)
-     (E.poly_var_value_access  arg)
+               (S.string_switch (E.poly_var_tag_access arg)
+                  (Ext_list.map dispatches (fun (i,r) ->
+                       i, J.{
+                           switch_body = [S.return_stmt (E.str r)];
+                           should_break = false; (* FIXME: if true, still print break*)
+                           comment = None;
+                         }) ))
+
+             ]
+         | None -> E.poly_var_tag_access arg )
+        , (* TODO: improve, one dispatch later,
+             the problem is that we can not create bindings
+             due to the
+          *)
+        (E.poly_var_value_access  arg)
       )
-      (** FIXME:
-        1. duplicated evaluation of expressions arg
-           Solution: calcuate the arg once in the beginning
-        2. avoid block for branches <  3
-          or always?
-          a === 444? "a" : a==222? "b"
-      *)
+(** FIXME:
+    1. duplicated evaluation of expressions arg
+     Solution: calcuate the arg once in the beginning
+    2. avoid block for branches <  3
+    or always?
+    a === 444? "a" : a==222? "b"
+*)
 
 (* we need destruct [undefined] when input is optional *)
 let eval_as_int (arg : J.expression) (dispatches : (string * int) list ) : E.t  =
   if arg == E.undefined then E.undefined else
-  match arg.expression_desc with
-  | Str(_,i) ->
-    E.int (Int32.of_int (Ext_list.assoc_by_string dispatches i None))
-  | _ ->
-    E.of_block
-      [(S.string_switch arg
-      (Ext_list.map dispatches (fun (i,r) ->
-              i, J.{
-               switch_body = [S.return_stmt (E.int (Int32.of_int  r))];
-               should_break = false; (* FIXME: if true, still print break*)
-               comment = None;
-              }) ))]
+    match arg.expression_desc with
+    | Str(_,i) ->
+      E.int (Int32.of_int (Ext_list.assoc_by_string dispatches i None))
+    | _ ->
+      E.of_block
+        [(S.string_switch arg
+            (Ext_list.map dispatches (fun (i,r) ->
+                 i, J.{
+                     switch_body = [S.return_stmt (E.int (Int32.of_int  r))];
+                     should_break = false; (* FIXME: if true, still print break*)
+                     comment = None;
+                   }) ))]
 
 let eval_as_unwrap (arg : J.expression) : E.t =
   match arg.expression_desc with

@@ -45,7 +45,7 @@ let rec nested_some_none   n none =
 
 
 let rec 
-translate_some (x : Lam_constant.t) : J.expression = 
+  translate_some (x : Lam_constant.t) : J.expression = 
   let depth = is_some_none_aux x 0 in 
   if depth < 0 then E.optional_not_nest_block (translate x )
   else nested_some_none depth (E.optional_block (translate Const_js_undefined))
@@ -60,7 +60,7 @@ and translate (x : Lam_constant.t ) : J.expression =
   | Const_int {i; comment } -> E.int i ?comment:(Lam_constant.string_of_pointer_info comment)
   | Const_char i ->
     Js_of_lam_string.const_char i
-  
+
   (* E.float (Int32.to_string i) *)
   | Const_int64 i -> 
           (*
@@ -89,7 +89,7 @@ and translate (x : Lam_constant.t ) : J.expression =
 
 
   | Const_pointer name ->     
-     E.str name
+    E.str name
   | Const_block(tag, tag_info, xs ) -> 
     Js_of_lam_block.make_block NA tag_info 
       (E.small_int  tag) (Ext_list.map xs translate)
@@ -108,20 +108,20 @@ and translate (x : Lam_constant.t ) : J.expression =
     (* TODO-- *)
     Js_of_lam_array.make_array Mutable
       (Ext_list.map ars E.float )
-  (* E.arr Mutable ~comment:"float array" *)
-  (*   (Ext_list.map (fun x ->  E.float  x ) ars) *)
+(* E.arr Mutable ~comment:"float array" *)
+(*   (Ext_list.map (fun x ->  E.float  x ) ars) *)
 
 
 (* and translate_optional s = 
-  let  b = 
-  match s with 
-  | Const_js_undefined -> E.optional_block (translate s) *)
+   let  b = 
+   match s with 
+   | Const_js_undefined -> E.optional_block (translate s) *)
 
 let translate_arg_cst (cst : External_arg_spec.cst) = 
   match cst with 
-   | Arg_int_lit i -> 
-     E.int (Int32.of_int i)
-   | Arg_string_lit i -> 
-     E.str i
-   | Arg_js_literal s 
-     -> E.raw_js_code (Exp (Js_literal {comment = None})) s
+  | Arg_int_lit i -> 
+    E.int (Int32.of_int i)
+  | Arg_string_lit i -> 
+    E.str i
+  | Arg_js_literal s 
+    -> E.raw_js_code (Exp (Js_literal {comment = None})) s

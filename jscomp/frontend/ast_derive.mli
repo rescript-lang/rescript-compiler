@@ -40,10 +40,10 @@ val register :
   unit
 
 (* val gen_structure: 
-  tdcls  ->
-  Ast_payload.action list ->
-  bool -> 
-  Ast_structure.t *)
+   tdcls  ->
+   Ast_payload.action list ->
+   bool -> 
+   Ast_structure.t *)
 
 val gen_signature: 
   tdcls ->

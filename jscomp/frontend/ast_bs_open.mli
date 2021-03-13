@@ -25,9 +25,9 @@
 
 
 
- val convertBsErrorFunction :    
-   Location.t -> 
-   Bs_ast_mapper.mapper -> 
-   Ast_helper.attrs -> 
-   Parsetree.case list ->
-   Parsetree.expression
+val convertBsErrorFunction :    
+  Location.t -> 
+  Bs_ast_mapper.mapper -> 
+  Ast_helper.attrs -> 
+  Parsetree.case list ->
+  Parsetree.expression

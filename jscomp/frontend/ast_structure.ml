@@ -32,11 +32,11 @@ open Ast_helper
 let fuseAll ?(loc=Location.none)  (t : t) : item = 
   Str.include_ ~loc 
     (Incl.mk ~loc (Mod.structure ~loc t ))
-    
+
 (* let fuse_with_constraint
     ?(loc=Location.none) 
     (item : Parsetree.type_declaration list ) (t : t) (coercion) = 
-  Str.include_ ~loc 
+   Str.include_ ~loc 
     (Incl.mk ~loc 
        (Mod.constraint_
          (Mod.structure ~loc 

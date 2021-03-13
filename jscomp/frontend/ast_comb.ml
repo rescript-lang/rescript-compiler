@@ -28,11 +28,11 @@ open Ast_helper
 
 
 (* let fun_no_label ?loc ?attrs  pat body = 
-  Ast_compatible.fun_ ?loc ?attrs  pat body *)
+   Ast_compatible.fun_ ?loc ?attrs  pat body *)
 
 
 (* let discard_exp_as_unit loc e = 
-  Ast_compatible.apply_simple ~loc     
+   Ast_compatible.apply_simple ~loc     
     (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
     [Exp.constraint_ ~loc e 
        (Ast_literal.type_unit ~loc ())] *)
@@ -59,10 +59,10 @@ let tuple_type_pair ?loc kind arity =
       Ext_list.reduce_from_left tys (fun r arg -> Ast_compatible.arrow ?loc arg r) , 
       List.rev rest , result
     | [] -> assert false
-    
-    
 
- 
+
+
+
 
 let re_id  = 
   Ast_literal.Lid.js_re_id 
@@ -70,7 +70,7 @@ let re_id  =
 
 let to_js_re_type loc  =
   Typ.constr ~loc { txt = re_id ; loc} []
-    
+
 let to_undefined_type loc x =
   Typ.constr ~loc
     {txt = Ast_literal.Lid.js_undefined ; loc}

@@ -24,10 +24,10 @@
 
 
 type t = Lexing.position = {
-    pos_fname : string ;
-    pos_lnum : int ;
-    pos_bol : int ;
-    pos_cnum : int
+  pos_fname : string ;
+  pos_lnum : int ;
+  pos_bol : int ;
+  pos_cnum : int
 }
 
 (** [offset pos newpos]
@@ -40,7 +40,7 @@ type t = Lexing.position = {
 val offset : t -> t -> t 
 
 val lexbuf_from_channel_with_fname:
-    in_channel -> string -> 
-    Lexing.lexbuf
+  in_channel -> string -> 
+  Lexing.lexbuf
 
 val print : Format.formatter -> t -> unit 

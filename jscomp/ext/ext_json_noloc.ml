@@ -68,7 +68,7 @@ let naive_escaped (unmodified_input : string) : string =
   end
 
 let quot x = 
-    "\"" ^ naive_escaped x ^ "\""
+  "\"" ^ naive_escaped x ^ "\""
 let true_ = True
 let false_ = False
 let null = Null 
@@ -78,7 +78,7 @@ let arr s = Arr s
 let obj s = Obj s 
 let kvs s = 
   Obj (Map_string.of_list s)
-  
+
 let rec encode_buf (x : t ) 
     (buf : Buffer.t) : unit =  
   let a str = Buffer.add_string buf str in 
@@ -112,7 +112,7 @@ let rec encode_buf (x : t )
     else 
       begin  
         (*prerr_endline "WEIRD";
-        prerr_endline (string_of_int @@ Map_string.cardinal map );   *)
+          prerr_endline (string_of_int @@ Map_string.cardinal map );   *)
         a "{ ";
         let _ : int =  Map_string.fold map 0 (fun  k v i -> 
             if i <> 0 then begin
@@ -123,19 +123,19 @@ let rec encode_buf (x : t )
             encode_buf v buf ;
             i + 1 
           ) in 
-          a " }"
+        a " }"
       end
 
 
 let to_string x  = 
-    let buf = Buffer.create 1024 in 
-    encode_buf x buf ;
-    Buffer.contents buf 
+  let buf = Buffer.create 1024 in 
+  encode_buf x buf ;
+  Buffer.contents buf 
 
 let to_channel (oc : out_channel) x  = 
-    let buf = Buffer.create 1024 in 
-    encode_buf x buf ;
-    Buffer.output_buffer oc buf   
+  let buf = Buffer.create 1024 in 
+  encode_buf x buf ;
+  Buffer.output_buffer oc buf   
 
 let to_file name v =     
   let ochan = open_out_bin name in 

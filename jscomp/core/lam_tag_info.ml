@@ -23,9 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (* Similiar to {!Lambda.tag_info}
-  In particular, 
-  it reduces some branches e.g, 
-  [Blk_some], [Blk_some_not_nested]
+   In particular, 
+   it reduces some branches e.g, 
+   [Blk_some], [Blk_some_not_nested]
 *)
 type t =   
   | Blk_tuple

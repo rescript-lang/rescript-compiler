@@ -25,7 +25,7 @@
 (** [output dir namespace file_groups]
     when [build.ninja] is generated, we output a module map [.mlmap] file 
     such [.mlmap] file will be consumed by [bsc.exe] to generate [.cmi] file
- *)
+*)
 val output : 
   dir:string ->
   string -> 

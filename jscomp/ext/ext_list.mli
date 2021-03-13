@@ -46,7 +46,7 @@ val combine_array_append:
   ('c * 'b) list -> 
   ('a -> 'c) ->
   ('c * 'b) list   
-  
+
 val has_string :   
   string list ->
   string -> 
@@ -77,8 +77,8 @@ val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list
     For empty list, it returns empty
 *)
 val map_last : 
-    'a list -> 
-    (bool -> 'a -> 'b) -> 'b list
+  'a list -> 
+  (bool -> 'a -> 'b) -> 'b list
 
 (** [last l]
     return the last element
@@ -121,8 +121,8 @@ val fold_right3 :
   'd -> 
   ('a -> 'b -> 'c -> 'd -> 'd) -> 
   'd
-  
-  
+
+
 val map2 : 
   'a list ->
   'b list ->
@@ -206,8 +206,8 @@ val length_ge : 'a list -> int -> bool
 val length_larger_than_n : 
   'a list -> 
   'a list -> 
-   int -> 
-   bool
+  int -> 
+  bool
 
 
 (**
@@ -264,10 +264,10 @@ val drop :
   'a list 
 
 val find_first :   
-    'a list ->
-    ('a -> bool) ->
-    'a option 
-    
+  'a list ->
+  ('a -> bool) ->
+  'a option 
+
 (** [find_first_not p lst ]
     if all elements in [lst] pass, return [None] 
     otherwise return the first element [e] as [Some e] which
@@ -288,30 +288,30 @@ val find_opt :
   'b option 
 
 val find_def : 
-    'a list -> 
-    ('a -> 'b option) ->
-    'b ->
-    'b 
+  'a list -> 
+  ('a -> 'b option) ->
+  'b ->
+  'b 
 
-    
+
 val rev_iter : 
   'a list -> 
   ('a -> unit) -> 
   unit 
 
 val iter:   
-   'a list ->  
-   ('a -> unit) -> 
-   unit
-   
+  'a list ->  
+  ('a -> unit) -> 
+  unit
+
 val for_all:  
-    'a list -> 
-    ('a -> bool) -> 
-    bool
+  'a list -> 
+  ('a -> bool) -> 
+  bool
 val for_all_snd:    
-    ('a * 'b) list -> 
-    ('b -> bool) -> 
-    bool
+  ('a * 'b) list -> 
+  ('b -> bool) -> 
+  bool
 
 (** [for_all2_no_exn p xs ys]
     return [true] if all satisfied,
@@ -346,7 +346,7 @@ val sort_via_arrayf:
   'a list -> 
   ('a -> 'a -> int) ->
   ('a -> 'b ) -> 
-   'b list  
+  'b list  
 
 
 
@@ -387,27 +387,27 @@ val exists_snd :
   bool
 
 val concat_append:
-    'a list list -> 
-    'a list -> 
-    'a list
+  'a list list -> 
+  'a list -> 
+  'a list
 
 val fold_left2:
-    'a list -> 
-    'b list -> 
-    'c -> 
-    ('a -> 'b -> 'c -> 'c)
-    -> 'c 
+  'a list -> 
+  'b list -> 
+  'c -> 
+  ('a -> 'b -> 'c -> 'c)
+  -> 'c 
 
 val fold_left:    
-    'a list -> 
-    'b -> 
-    ('b -> 'a -> 'b) -> 
-    'b
+  'a list -> 
+  'b -> 
+  ('b -> 'a -> 'b) -> 
+  'b
 
 val singleton_exn:     
-    'a list -> 'a
+  'a list -> 'a
 
 val mem_string :     
-    string list -> 
-    string -> 
-    bool
+  string list -> 
+  string -> 
+  bool

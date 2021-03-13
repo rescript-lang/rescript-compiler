@@ -22,12 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- type t = Lam.t 
+type t = Lam.t 
 
 
 let hit_variables (fv : Set_ident.t) (l : t) : bool  =
   let rec 
-  hit_opt (x : t option) = 
+    hit_opt (x : t option) = 
     match x with 
     | None -> false 
     | Some a -> hit a
@@ -84,7 +84,7 @@ let hit_variables (fv : Set_ident.t) (l : t) : bool  =
 
 let hit_variable (fv : Ident.t) (l : t) : bool  =
   let rec 
-  hit_opt (x : t option) = 
+    hit_opt (x : t option) = 
     match x with 
     | None -> false 
     | Some a -> hit a

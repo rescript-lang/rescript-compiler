@@ -42,9 +42,9 @@ val change_ext_ns_suffix :
   string
 
 
-  
+
 (** [js_name_of_modulename ~little A-Ns]
-  *)
+*)
 val js_name_of_modulename : 
   string -> 
   Ext_js_file_kind.case -> 

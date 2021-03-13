@@ -51,10 +51,10 @@ let is_not_none  (e : J.expression) : J.expression =
   let desc = e.expression_desc in 
   if is_none_static desc then E.false_
   else match desc with 
-  | Optional_block _ -> E.true_
-  | _ -> 
-    E.not (E.triple_equal e none)
-  
+    | Optional_block _ -> E.true_
+    | _ -> 
+      E.not (E.triple_equal e none)
+
 let val_from_option (arg : J.expression) =   
   match arg.expression_desc with 
   | Optional_block (x,_) -> x 
@@ -62,77 +62,77 @@ let val_from_option (arg : J.expression) =
     E.runtime_call Js_runtime_modules.option
       "valFromOption" [arg]
 (**
-  Invrariant: 
-  - optional encoding
-  -  None encoding
+   Invrariant: 
+   - optional encoding
+   -  None encoding
 
-  when no argumet is supplied, [undefined] 
-  if we detect that all rest arguments are [null], 
-  we can remove them
+   when no argumet is supplied, [undefined] 
+   if we detect that all rest arguments are [null], 
+   we can remove them
 
 
-  - avoid duplicate evlauation of [arg] when it
-   is not a variable
-  {!Js_ast_util.named_expression} does not help 
-   since we need an expression here, it might be a statement
+   - avoid duplicate evlauation of [arg] when it
+     is not a variable
+     {!Js_ast_util.named_expression} does not help 
+     since we need an expression here, it might be a statement
 *)
 
 let get_default_undefined_from_optional
     (arg : J.expression)
-    : J.expression =
+  : J.expression =
   let desc = arg.expression_desc in 
   if is_none_static desc then E.undefined else 
-  match desc with  
-  | Optional_block (x,_) 
-    -> x (* invariant: option encoding *)
-  | _ ->
-    if Js_analyzer.is_okay_to_duplicate arg then
-      (* FIXME: no need do such inlining*)
-      E.econd (is_not_none arg )
-        (val_from_option arg) E.undefined
-    else
-      (E.runtime_call Js_runtime_modules.option "option_get" [arg])
+    match desc with  
+    | Optional_block (x,_) 
+      -> x (* invariant: option encoding *)
+    | _ ->
+      if Js_analyzer.is_okay_to_duplicate arg then
+        (* FIXME: no need do such inlining*)
+        E.econd (is_not_none arg )
+          (val_from_option arg) E.undefined
+      else
+        (E.runtime_call Js_runtime_modules.option "option_get" [arg])
 
 let option_unwrap (arg : J.expression) : J.expression =
   let desc = arg.expression_desc in
   if is_none_static desc then E.undefined else
-  match desc with
-  | Optional_block (x,_) 
-    -> 
-    E.poly_var_value_access x 
+    match desc with
+    | Optional_block (x,_) 
+      -> 
+      E.poly_var_value_access x 
     (* invariant: option encoding *)
-  | _ ->
-    E.runtime_call Js_runtime_modules.option "option_unwrap" [arg]
+    | _ ->
+      E.runtime_call Js_runtime_modules.option "option_unwrap" [arg]
 
 let destruct_optional
-  ~for_sure_none
-  ~for_sure_some
-  ~not_sure 
-  (arg : J.expression)
+    ~for_sure_none
+    ~for_sure_some
+    ~not_sure 
+    (arg : J.expression)
   =       
   let desc = arg.expression_desc in 
   if is_none_static desc then for_sure_none else
-  match desc with 
-  | Optional_block (x,_) 
-    ->
-    for_sure_some x 
-  | _ -> not_sure ()
+    match desc with 
+    | Optional_block (x,_) 
+      ->
+      for_sure_some x 
+    | _ -> not_sure ()
 
 
 
 
 let some  = E.optional_block 
-  
+
 let null_to_opt e = 
   E.econd (E.is_null e) none (some e)           
 
 
 let undef_to_opt e = 
   E.econd (E.is_undef e)
-  none (some e)
+    none (some e)
 
 let null_undef_to_opt e = 
   E.econd 
-  (E.is_null_undefined e)
-  none 
-  (some e)    
+    (E.is_null_undefined e)
+    none 
+    (some e)    

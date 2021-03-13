@@ -26,12 +26,12 @@ open Ast_helper
 
 
 
-  
+
 let handle_extension  e (self : Bs_ast_mapper.mapper)
     (({txt ; loc}  , payload) : Parsetree.extension) = 
   begin match txt with
     | "bs.raw" | "raw" -> 
-       Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload      
+      Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload      
     | "bs.re" | "re" ->
       Exp.constraint_ ~loc
         (Ast_exp_handle_external.handle_raw ~kind:Raw_re loc payload)
@@ -104,17 +104,17 @@ let handle_extension  e (self : Bs_ast_mapper.mapper)
             Ast_exp_handle_external.handle_external loc (strip name)  in
           let typ =
             Ast_core_type.lift_option_type  
-            (
-            if name = "_module" then
-              Typ.constr ~loc
-                { txt = Ldot (Lident "Node", "node_module") ;
-                  loc} []   
-            else if name = "require" then
-              (Typ.constr ~loc
-                 { txt = Ldot (Lident "Node", "node_require") ;
-                   loc} [] )  
-            else
-              Ast_literal.type_string ~loc ()) in                  
+              (
+                if name = "_module" then
+                  Typ.constr ~loc
+                    { txt = Ldot (Lident "Node", "node_module") ;
+                      loc} []   
+                else if name = "require" then
+                  (Typ.constr ~loc
+                     { txt = Ldot (Lident "Node", "node_require") ;
+                       loc} [] )  
+                else
+                  Ast_literal.type_string ~loc ()) in                  
           Exp.constraint_ ~loc exp typ                
         | Some _ | None ->
           begin match payload with 
@@ -137,16 +137,16 @@ let handle_extension  e (self : Bs_ast_mapper.mapper)
         |PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record(label_exprs, None)} as e,_)}]
           -> 
           {e 
-            with 
+           with 
             pexp_desc = 
               Ast_util.record_as_js_object e.pexp_loc self label_exprs
           }
-        
+
         | _ -> Location.raise_errorf ~loc "Expect a record expression here"
       end
     | _ ->
-        e (* For an unknown extension, we don't really need to process further*)
-        (* Exp.extension ~loc ~attrs:e.pexp_attributes (
-            self.extension self extension) *)
-        (* Bs_ast_mapper.default_mapper.expr self e   *)
+      e (* For an unknown extension, we don't really need to process further*)
+      (* Exp.extension ~loc ~attrs:e.pexp_attributes (
+          self.extension self extension) *)
+      (* Bs_ast_mapper.default_mapper.expr self e   *)
   end 

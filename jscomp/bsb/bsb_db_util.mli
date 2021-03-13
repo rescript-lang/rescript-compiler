@@ -37,8 +37,8 @@ val merge : Bsb_db.map -> Bsb_db.map -> Bsb_db.map
 val sanity_check : Bsb_db.map -> unit
 
 (** 
-  Currently it is okay to have duplicated module, 
-  In the future, we may emit a warning 
+   Currently it is okay to have duplicated module, 
+   In the future, we may emit a warning 
 *)
 
 val add_basename:

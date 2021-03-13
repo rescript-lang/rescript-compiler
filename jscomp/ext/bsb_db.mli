@@ -48,8 +48,8 @@ type module_info =
     dir : string;
     syntax_kind : syntax_kind;
     (* This is actually not stored in bsbuild meta info 
-      since creating .d file only emit .cmj/.cmi dependencies, so it does not
-      need know which syntax it is written
+       since creating .d file only emit .cmj/.cmi dependencies, so it does not
+       need know which syntax it is written
     *)
     case : bool;
     name_sans_extension : string;
@@ -65,12 +65,12 @@ type 'a cat  = {
 type t = map cat  
 
 (** store  the meta data indexed by {!Bsb_dir_index}
-  {[
-    0 --> lib group
-    1 --> dev 1 group
-    .
-    
-  ]}
+    {[
+      0 --> lib group
+        1 --> dev 1 group
+                    .
+
+    ]}
 *)
 
 

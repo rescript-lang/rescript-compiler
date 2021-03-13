@@ -33,7 +33,7 @@
 
 (* Hongbo Should we rename this module js_of_lambda since it looks like it's
    containing that step
- *)
+*)
 
 
 type finished =
@@ -65,21 +65,21 @@ val output_as_block :
 val to_break_block :
   t ->
   J.block * bool
-  (* the second argument is
-    [true] means [break] needed
+(* the second argument is
+   [true] means [break] needed
 
-    When we know the output is gonna finished true
-    we can reduce
-    {[
-      return xx ;
-      break
-    ]}
-    into
-    {[
-      return ;
-    ]}
+   When we know the output is gonna finished true
+   we can reduce
+   {[
+     return xx ;
+     break
+   ]}
+   into
+   {[
+     return ;
+   ]}
 
-  *)
+*)
 
 val append_output: t -> t -> t
 
@@ -88,19 +88,19 @@ val dummy : t
 
 
 val output_of_expression :
-    Lam_compile_context.continuation ->
-  
-    J.expression -> (* compiled expression *)
-    no_effects: bool Lazy.t -> 
-    t
+  Lam_compile_context.continuation ->
+
+  J.expression -> (* compiled expression *)
+  no_effects: bool Lazy.t -> 
+  t
 
 (** - needed for instrument [return] statement properly
 *)
 val output_of_block_and_expression :
-    Lam_compile_context.continuation ->
-    J.block ->
-    J.expression ->
-    t
+  Lam_compile_context.continuation ->
+  J.block ->
+  J.expression ->
+  t
 
 val concat :
   t list ->

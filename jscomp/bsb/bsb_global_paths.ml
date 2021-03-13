@@ -28,7 +28,7 @@ let cwd = Sys.getcwd ()
 (**
    If [Sys.executable_name] gives an absolute path, 
    nothing needs to be done.
-   
+
    If [Sys.executable_name] is not an absolute path, for example
    (rlwrap ./ocaml)
    it is a relative path, 
@@ -41,8 +41,8 @@ let cwd = Sys.getcwd ()
    there are two cases: 
    - bsb.exe
    - ./bsb.exe 
-   The first should also not be touched
-   Only the latter need be adapted based on project root  
+     The first should also not be touched
+     Only the latter need be adapted based on project root  
 *)
 
 let bsc_dir  = 
@@ -55,12 +55,12 @@ let vendor_bsc =
 
 
 let vendor_ninja = 
-    Filename.concat bsc_dir "ninja.exe"      
+  Filename.concat bsc_dir "ninja.exe"      
 
 let vendor_bsdep =     
   Filename.concat bsc_dir "bsb_helper.exe"
 
 
-  
+
 ;; assert (Sys.file_exists bsc_dir)       
 

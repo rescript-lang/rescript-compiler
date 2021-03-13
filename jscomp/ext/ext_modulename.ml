@@ -40,7 +40,7 @@ let good_hint_name module_name offset =
       | 'A' .. 'Z' 
       | '0' .. '9' 
       | '_' 
-         -> true
+        -> true
       | _ -> false)
 
 let rec collect_start buf s off len = 
@@ -49,8 +49,8 @@ let rec collect_start buf s off len =
     let next = succ off in 
     match String.unsafe_get  s off with     
     | 'a' .. 'z' as c ->
-    Ext_buffer.add_char buf (Char.uppercase_ascii c)
-    ;
+      Ext_buffer.add_char buf (Char.uppercase_ascii c)
+      ;
       collect_next buf s next len
     | 'A' .. 'Z' as c -> 
       Ext_buffer.add_char buf c ;
@@ -75,12 +75,12 @@ and collect_next buf s off len =
       collect_next buf s next len 
 
 (** This is for a js exeternal module, we can change it when printing
-   for example
-   {[
-     var React$1 = require('react');
-     React$1.render(..)
-   ]}
-   Given a name, if duplicated, they should  have the same id
+    for example
+    {[
+      var React$1 = require('react');
+      React$1.render(..)
+    ]}
+    Given a name, if duplicated, they should  have the same id
 *)
 let js_id_name_of_hint_name module_name =       
   let i = Ext_string.rindex_neg module_name '/' in 

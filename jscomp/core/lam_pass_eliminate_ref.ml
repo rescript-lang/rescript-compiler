@@ -80,17 +80,17 @@ let rec eliminate_ref id (lam : Lam.t) =
          Ext_list.map sw.sw_blocks (fun (n, e) -> (n, eliminate_ref id e)) ;
        sw_failaction =
          (match sw.sw_failaction with 
-         | None -> None 
-         | Some x -> Some (eliminate_ref id x));
+          | None -> None 
+          | Some x -> Some (eliminate_ref id x));
        sw_names = sw.sw_names;
-          }
+      }
   | Lstringswitch(e, sw, default) ->
     Lam.stringswitch
       (eliminate_ref id e)
       (Ext_list.map  sw (fun (s, e) -> (s, eliminate_ref id e)))
       (match default with 
-      | None -> None 
-      | Some x ->  Some (eliminate_ref id x))
+       | None -> None 
+       | Some x ->  Some (eliminate_ref id x))
   | Lstaticraise (i,args) ->
     Lam.staticraise i (Ext_list.map args (eliminate_ref id) )
   | Lstaticcatch(e1, i, e2) ->
@@ -111,6 +111,6 @@ let rec eliminate_ref id (lam : Lam.t) =
       (eliminate_ref id e3)
   | Lassign(v, e) ->
     Lam.assign v (eliminate_ref id e)
-  
+
 
 

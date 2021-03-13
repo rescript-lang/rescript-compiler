@@ -36,15 +36,15 @@ type abstractKind =
 let  isAbstract (xs :Ast_payload.action list) = 
   match xs with 
   | [{ txt = "abstract"}, 
-    (None 
-    )]  -> 
+     (None 
+     )]  -> 
     Complex_abstract
   | [{ txt = "abstract"}, 
-    Some {pexp_desc = Pexp_ident {txt = Lident "light"}}  
+     Some {pexp_desc = Pexp_ident {txt = Lident "light"}}  
     ] -> Light_abstract
   | [{loc; txt = "abstract"}, Some _ ]
     -> 
-      Location.raise_errorf ~loc "invalid config for abstract"
+    Location.raise_errorf ~loc "invalid config for abstract"
   | xs -> 
     Ext_list.iter xs (function (({loc; txt}),_) ->  
       match txt with 
@@ -52,13 +52,13 @@ let  isAbstract (xs :Ast_payload.action list) =
         Location.raise_errorf ~loc 
           "deriving abstract does not work with any other deriving"
       | _ -> ()
-    ) ;
+      ) ;
     Not_abstract
 (* let handle_config (config : Parsetree.expression option) =
-  match config with
-  | Some config ->
+   match config with
+   | Some config ->
     U.invalid_config config
-  | None -> () *)
+   | None -> () *)
 
 
 
@@ -66,9 +66,9 @@ let get_optional_attrs =
   [ 
     Ast_attributes.bs_get; 
     Ast_attributes.bs_return_undefined
-    ]
+  ]
 (** For this attributes, its type was wrapped as an option,
-   so we can still reuse existing frame work
+    so we can still reuse existing frame work
 *)  
 
 let get_attrs = [ Ast_attributes.bs_get_arity]
@@ -77,8 +77,8 @@ let set_attrs = [Ast_attributes.bs_set]
 
 
 let handleTdcl 
-  light
-  (tdcl : Parsetree.type_declaration) 
+    light
+    (tdcl : Parsetree.type_declaration) 
   : Parsetree.type_declaration * Parsetree.value_description list 
   =
   let core_type = U.core_type_of_type_declaration tdcl in
@@ -123,20 +123,20 @@ let handleTdcl
           in
           let prim = [prim_as_name] in 
           let is_optional = Ast_attributes.has_bs_optional pld_attributes in
-          
+
           let maker, acc =
             if is_optional then
               let optional_type = Ast_core_type.lift_option_type pld_type in
               (Ast_compatible.opt_arrow ~loc:pld_loc label_name 
-                pld_type  
-                maker,
-                (Val.mk ~loc:pld_loc
-                 (if light then pld_name else 
-                  {pld_name with txt = pld_name.txt ^ "Get"})
-                ~attrs:get_optional_attrs ~prim
-                (Ast_compatible.arrow ~loc  core_type optional_type)
-                ) :: acc                                   
-)
+                 pld_type  
+                 maker,
+               (Val.mk ~loc:pld_loc
+                  (if light then pld_name else 
+                     {pld_name with txt = pld_name.txt ^ "Get"})
+                  ~attrs:get_optional_attrs ~prim
+                  (Ast_compatible.arrow ~loc  core_type optional_type)
+               ) :: acc                                   
+              )
             else
               Ast_compatible.label_arrow ~loc:pld_loc label_name pld_type maker,
               (
@@ -145,12 +145,12 @@ let handleTdcl
                       {pld_name with txt = pld_name.txt ^ "Get"}
                    ) ~attrs:get_attrs
                    ~prim:(
-                      (* Not needed actually*)
-                      External_ffi_types.ffi_bs_as_prims 
-                            [External_arg_spec.dummy]
-                            Return_identity
-                            (Js_get {js_get_name = prim_as_name; js_get_scopes = []})                      
-                           )
+                     (* Not needed actually*)
+                     External_ffi_types.ffi_bs_as_prims 
+                       [External_arg_spec.dummy]
+                       Return_identity
+                       (Js_get {js_get_name = prim_as_name; js_get_scopes = []})                      
+                   )
                    (Ast_compatible.arrow ~loc  core_type pld_type))
                 :: acc                
               )
@@ -180,10 +180,10 @@ let handleTdcl
        setter_accessor
      else
        let myPrims =
-        Ast_external_process.pval_prim_of_option_labels
-          labels
-          has_optional_field
-        in
+         Ast_external_process.pval_prim_of_option_labels
+           labels
+           has_optional_field
+       in
        let myMaker =
          Val.mk  ~loc
            {loc; txt = type_name}
@@ -205,7 +205,7 @@ let handleTdclsInStr ~light rf tdcls =
           ntdcl::tdcls,
           Ext_list.map_append value_descriptions sts (fun x -> Str.primitive x) 
       ) in
-Ast_compatible.rec_type_str rf tdcls :: code
+  Ast_compatible.rec_type_str rf tdcls :: code
 (* still need perform transformation for non-abstract type*)
 
 let handleTdclsInSig ~light rf tdcls =

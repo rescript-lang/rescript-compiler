@@ -42,7 +42,7 @@ let newTdcls
            { x with
              Parsetree.ptype_attributes = newAttrs}
          else x )
-      
+
 
 
 
@@ -70,7 +70,7 @@ let handleTdclsInSigi
                   (Mod.constraint_ ~loc
                      (Mod.structure ~loc [
                          Ast_compatible.rec_type_str ~loc rf newTdclsNewAttrs
-                         ] )
+                       ] )
                      (Mty.signature ~loc [])) ) )
           :: (* include module type of struct [processed_code for checking like invariance ]end *)
           self.signature self  codes
@@ -79,10 +79,10 @@ let handleTdclsInSigi
       Ast_signature.fuseAll ~loc
         ( 
           Ast_compatible.rec_type_sig ~loc rf newTdclsNewAttrs
-        ::
-         self.signature
-           self
-           (Ast_derive.gen_signature tdcls actions rf))
+          ::
+          self.signature
+            self
+            (Ast_derive.gen_signature tdcls actions rf))
   | {bs_deriving = None }, _  ->
     Bs_ast_mapper.default_mapper.signature_item self sigi
 
@@ -108,7 +108,7 @@ let handleTdclsInStru
     let kind = Ast_derive_abstract.isAbstract actions in 
     if kind <> Not_abstract then
       let codes =
-          Ast_derive_abstract.handleTdclsInStr ~light:(kind = Light_abstract) rf originalTdclsNewAttrs in
+        Ast_derive_abstract.handleTdclsInStr ~light:(kind = Light_abstract) rf originalTdclsNewAttrs in
       (* use [tdcls2] avoid nonterminating *)
       Ast_structure.fuseAll ~loc
         (

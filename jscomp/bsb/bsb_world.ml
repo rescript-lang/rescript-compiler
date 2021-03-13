@@ -46,16 +46,16 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
   let queue = 
     Bsb_build_util.walk_all_deps  cwd ~pinned_dependencies in 
   (* let oc = open_out_bin ".deps.log" in 
-  queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) -> 
-    match top with 
-    | Expect_none -> ()
-    | Expect_name s ->       
+     queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) -> 
+     match top with 
+     | Expect_none -> ()
+     | Expect_name s ->       
       output_string oc s ;
       output_string oc " : ";
       output_string oc proj_dir;
       output_string oc "\n"
-   );
-  close_out oc ;   *)
+     );
+     close_out oc ;   *)
   queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) ->
       match top with 
       | Expect_none -> ()
@@ -63,8 +63,8 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
         begin 
           let is_pinned =  Set_string.mem pinned_dependencies s in 
           (if is_pinned then  
-            print_endline ("Dependency pinned on " ^ s )
-          else print_endline ("Dependency on " ^ s ));
+             print_endline ("Dependency pinned on " ^ s )
+           else print_endline ("Dependency on " ^ s ));
           let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
           Bsb_build_util.mkp lib_bs_dir;
           let _config : _ option = 
@@ -103,4 +103,4 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
 
         end
     );
-    print_endline "Dependency Finished"
+  print_endline "Dependency Finished"

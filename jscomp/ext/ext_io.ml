@@ -34,11 +34,11 @@ let load_file f =
 
 
 let  rev_lines_of_chann chan = 
-    let rec loop acc chan = 
-      match input_line chan with
-      | line -> loop (line :: acc) chan
-      | exception End_of_file -> close_in chan ; acc in
-    loop [] chan
+  let rec loop acc chan = 
+    match input_line chan with
+    | line -> loop (line :: acc) chan
+    | exception End_of_file -> close_in chan ; acc in
+  loop [] chan
 
 
 let rev_lines_of_file file = 

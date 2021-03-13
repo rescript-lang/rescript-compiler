@@ -31,22 +31,22 @@
 
 (* Make it mutable so that we can do
    in-place change without constructing a new one
-  -- however, it's a design choice -- to be reviewed later
+   -- however, it's a design choice -- to be reviewed later
 *)
 
 type immutable_mask = 
   | All_immutable_and_no_tail_call 
-     (** iff not tailcalled 
-         if tailcalled, in theory, it does not need change params, 
-         for example
-         {[
-         let rec f  (n : int ref) = 
-            if !n > 0 then decr n; print_endline "hi"
-            else  f n
-         ]}
-         in this case, we still create [Immutable_mask], 
-         since the inline behavior is slightly different
-      *)
+  (** iff not tailcalled 
+      if tailcalled, in theory, it does not need change params, 
+      for example
+      {[
+        let rec f  (n : int ref) = 
+          if !n > 0 then decr n; print_endline "hi"
+      else  f n
+      ]}
+      in this case, we still create [Immutable_mask], 
+      since the inline behavior is slightly different
+  *)
   | Immutable_mask of bool array
 
 type t = { 
@@ -68,7 +68,7 @@ let make ?immutable_mask n = {
   bound_loop_mutable_values =Set_ident.empty;
 }
 
- let no_tailcall x = 
+let no_tailcall x = 
   match x.immutable_mask with
   | All_immutable_and_no_tail_call -> []
   | Immutable_mask arr -> Array.to_list arr 
@@ -82,7 +82,7 @@ let get_unused t i =
 (* let get_length t = Array.length t.used_mask *)
 
 (* let to_string env =  
-  String.concat "," 
+   String.concat "," 
     (Ext_list.map (Set_ident.elements  env.unbounded ) 
       (fun id  -> Printf.sprintf "%s/%d" id.name id.stamp)
        ) *)
@@ -91,8 +91,8 @@ let get_mutable_params (params : Ident.t list) (x : t ) =
   match x.immutable_mask with 
   | All_immutable_and_no_tail_call -> []
   | Immutable_mask xs -> 
-      Ext_list.filter_mapi params
-        (fun p i -> if not xs.(i) then Some p else None) 
+    Ext_list.filter_mapi params
+      (fun p i -> if not xs.(i) then Some p else None) 
 
 
 let get_unbounded t = t.unbounded
@@ -101,7 +101,7 @@ let set_unbounded env v =
   (* Ext_log.err "%s -- set @." (to_string env); *)
   (* if Set_ident.is_empty env.bound then *)
   env.unbounded <- v 
- (* else assert false *)
+(* else assert false *)
 
 let set_lexical_scope env bound_loop_mutable_values = 
   env.bound_loop_mutable_values <- bound_loop_mutable_values
@@ -111,5 +111,5 @@ let get_lexical_scope env =
 
 (* TODO:  can be refined if it 
     only enclose toplevel variables 
- *)
+*)
 (* let is_empty t = Set_ident.is_empty t.unbounded *)

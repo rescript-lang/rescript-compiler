@@ -69,7 +69,7 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_variant
   | Fld_cons
   | Fld_array
-  
+
 val str_of_field_info : 
   field_dbg_info -> 
   string option

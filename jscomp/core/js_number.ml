@@ -43,7 +43,7 @@ type t = float
    support in 4.3
 
    The Hex part is quite different   
- *)
+*)
 
 
 
@@ -73,9 +73,9 @@ let to_string (v : float) =
 
 
 let rec is_hex_format_aux (v : string) cur = 
-    if v.[cur] = '-' || v.[cur]= '+' then 
-      is_hex_format_ox v (cur + 1)
-    else is_hex_format_ox v cur 
+  if v.[cur] = '-' || v.[cur]= '+' then 
+    is_hex_format_ox v (cur + 1)
+  else is_hex_format_ox v cur 
 and is_hex_format_ox v cur = 
   v.[cur] = '0' && 
   (v.[cur + 1] = 'x' || v.[cur + 1] = 'X')
@@ -119,4 +119,4 @@ let caml_float_literal_to_js_string (float_str : string) : string =
   if len >= 2 && is_hex_format float_str then  
     to_string (float_of_string float_str)
   else    
-  transform float_str len
+    transform float_str len

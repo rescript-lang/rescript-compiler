@@ -47,15 +47,15 @@ let pp_occ_tbl fmt tbl =
    the number of its uses (as a reference):
    - 0 if never used
    - 1 if used exactly once in and not under a lambda or within a loop
-       - when under a lambda, 
-       - it's probably a closure
-       - within a loop
-       - update reference,
+   - when under a lambda, 
+   - it's probably a closure
+   - within a loop
+   - update reference,
        niether is good for inlining
    - > 1 if used several times or under a lambda or within a loop.
-   The local table [bv] associates to each locally-let-bound variable
-   its reference count, as above.  [bv] is enriched at let bindings
-   but emptied when crossing lambdas and loops. *)
+     The local table [bv] associates to each locally-let-bound variable
+     its reference count, as above.  [bv] is enriched at let bindings
+     but emptied when crossing lambdas and loops. *)
 let collect_occurs  lam : occ_tbl =
   let occ : occ_tbl = Hash_ident.create 83 in
 
@@ -137,7 +137,7 @@ let collect_occurs  lam : occ_tbl =
     | Lletrec(bindings, body) ->
       List.iter (fun (_v, l) -> count bv l) bindings;
       count bv body
-        (** Note there is a difference here when do beta reduction for *)
+    (** Note there is a difference here when do beta reduction for *)
     | Lapply{ap_func = Lfunction{params; body};  ap_args = args; _}
       when  Ext_list.same_length params args ->
       count bv (Lam_beta_reduce.no_names_beta_reduce  params body args)

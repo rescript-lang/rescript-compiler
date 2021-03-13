@@ -35,13 +35,13 @@
 
     Use case :
     1. switch case -- common fall through
- *)
+*)
 
 (* lambda pass for alpha conversion 
     and alias
     we need think about the order of the pass, might be the alias pass can be done 
     in the  beginning, when we do alpha conversion, we can instrument the table 
- *)
+*)
 
 
 
@@ -60,29 +60,29 @@ type t = {
   (** we don't need count arities for all identifiers, for identifiers
       for sure it's not a function, there is no need to count them
   *)
-  
+
 }
 
 let pp = Format.fprintf
 
 (* let pp_alias_tbl fmt (tbl : alias_tbl) = 
-  Hash_ident.iter  tbl (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v) *)
-  
+   Hash_ident.iter  tbl (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v) *)
+
 
 
 
 let pp_ident_tbl fmt (ident_tbl : ident_tbl) = 
   Hash_ident.iter ident_tbl (fun k v -> pp fmt "@[%a -> %a@]@." 
-    Ident.print k Lam_id_kind.print v)
-    
+                                Ident.print k Lam_id_kind.print v)
+
 
 let print fmt (v : t) = 
-    pp fmt "@[Ident table:@ @[%a@]@]" pp_ident_tbl v.ident_tbl ;
-    pp fmt "@[exports:@ @[%a@]@]"
-        (Format.pp_print_list 
-            ~pp_sep:(fun fmt () -> pp fmt "@ ;")             
-            Ident.print
-        ) v.exports
+  pp fmt "@[Ident table:@ @[%a@]@]" pp_ident_tbl v.ident_tbl ;
+  pp fmt "@[exports:@ @[%a@]@]"
+    (Format.pp_print_list 
+       ~pp_sep:(fun fmt () -> pp fmt "@ ;")             
+       Ident.print
+    ) v.exports
 
 let make ~export_idents ~export_ident_sets : t = {
   ident_tbl = Hash_ident.create 31;

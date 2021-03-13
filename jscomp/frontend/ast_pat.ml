@@ -42,10 +42,10 @@ let arity_of_fun
   let rec aux (e : Parsetree.expression)  =
     match e.pexp_desc with
     | Pexp_fun (_, _, _, e) 
-     ->
+      ->
       1 + aux e    (*FIXME error on optional*)
     (* | Pexp_fun _
-      -> Location.raise_errorf
+       -> Location.raise_errorf
            ~loc:e.pexp_loc "Label is not allowed in JS object" *)
     | _ -> 0 in
   is_unit_cont ~yes:0 ~no:1 pat + aux e 
@@ -65,5 +65,5 @@ let rec is_single_variable_pattern_conservative  (p : t ) =
   | Parsetree.Ppat_alias (p,_) 
   | Parsetree.Ppat_constraint (p, _) -> 
     is_single_variable_pattern_conservative p 
-  
+
   | _ -> false

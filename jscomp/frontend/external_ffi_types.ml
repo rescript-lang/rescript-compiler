@@ -24,7 +24,7 @@
 
 type module_bind_name =
   | Phint_name of string
-    (* explicit hint name *)
+  (* explicit hint name *)
 
   | Phint_nothing
 
@@ -37,7 +37,7 @@ type external_module_name =
 type pipe = bool
 
 (** TODO: information between [arg_type] and [arg_label] are duplicated,
-  design a more compact representation so that it is also easy to seralize by hand
+    design a more compact representation so that it is also easy to seralize by hand
 *)
 type arg_type = External_arg_spec.attr
 
@@ -47,29 +47,29 @@ type arg_label = External_arg_spec.label
 
 type external_spec =
   | Js_var of {
-    name : string ;
-    external_module_name : external_module_name option;
-    scopes : string list
-  }
+      name : string ;
+      external_module_name : external_module_name option;
+      scopes : string list
+    }
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of   { external_module_name : external_module_name;
                            splice : bool
                          }
   | Js_module_as_class of external_module_name
   | Js_call of {
-    name : string;
-    external_module_name : external_module_name option;
-    splice : bool ;
-    scopes : string list
-  }
-  
+      name : string;
+      external_module_name : external_module_name option;
+      splice : bool ;
+      scopes : string list
+    }
+
   | Js_send of {
-    name : string ;
-    splice : bool ;
-    pipe : pipe  ;
-    js_send_scopes : string list;
-  } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
-  
+      name : string ;
+      splice : bool ;
+      pipe : pipe  ;
+      js_send_scopes : string list;
+    } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
+
   | Js_new of {
       name : string ;
       external_module_name : external_module_name option;
@@ -83,31 +83,31 @@ type external_spec =
                  js_get_scopes :  string list;
                }
   | Js_get_index of  {
-    js_get_index_scopes : string list
-  }
+      js_get_index_scopes : string list
+    }
   | Js_set_index of {
-    js_set_index_scopes : string list
-  }
+      js_set_index_scopes : string list
+    }
 
 (* let not_inlineable (x : external_spec) =     *)
 
 
 (* let name_of_ffi ffi =
-  match ffi with
-  | Js_get_index _scope -> "@get_index .."
-  | Js_set_index _scope -> "@set_index .."
-  | Js_get { js_get_name = s} -> Printf.sprintf "[@@get %S]" s
-  | Js_set { js_set_name = s} -> Printf.sprintf "[@@set %S]" s
-  | Js_call v  -> Printf.sprintf "[@@val %S]" v.name
-  | Js_send v  -> Printf.sprintf "[@@send %S]" v.name
-  | Js_module_as_fn v  -> Printf.sprintf "[@@val %S]" v.external_module_name.bundle
-  | Js_new v  -> Printf.sprintf "[@@new %S]" v.name
-  | Js_module_as_class v
+   match ffi with
+   | Js_get_index _scope -> "@get_index .."
+   | Js_set_index _scope -> "@set_index .."
+   | Js_get { js_get_name = s} -> Printf.sprintf "[@@get %S]" s
+   | Js_set { js_set_name = s} -> Printf.sprintf "[@@set %S]" s
+   | Js_call v  -> Printf.sprintf "[@@val %S]" v.name
+   | Js_send v  -> Printf.sprintf "[@@send %S]" v.name
+   | Js_module_as_fn v  -> Printf.sprintf "[@@val %S]" v.external_module_name.bundle
+   | Js_new v  -> Printf.sprintf "[@@new %S]" v.name
+   | Js_module_as_class v
     -> Printf.sprintf "[@@module] %S " v.bundle
-  | Js_module_as_var v
+   | Js_module_as_var v
     ->
     Printf.sprintf "[@@module] %S " v.bundle
-  | Js_var v (* FIXME: could be [@@module "xx"] as well *)
+   | Js_var v (* FIXME: could be [@@module "xx"] as well *)
     ->
     Printf.sprintf "[@@val] %S " v.name *)
 
@@ -125,7 +125,7 @@ type params =
 
 type t  =
   | Ffi_bs of params  *
-     return_wrapper * external_spec
+              return_wrapper * external_spec
   (**  [Ffi_bs(args,return,attr) ]
        [return] means return value is unit or not,
         [true] means is [unit]
@@ -165,9 +165,9 @@ let valid_ident (s : string) =
    with E.E -> false )
 
 let is_package_relative_path (x : string) = 
-     Ext_string.starts_with x "./" ||
-     Ext_string.starts_with x "../"
-  
+  Ext_string.starts_with x "./" ||
+  Ext_string.starts_with x "../"
+
 let valid_global_name ?loc txt =
   if not (valid_ident txt) then
     let v = Ext_string.split_by ~keep_empty:true (fun x -> x = '.') txt in
@@ -183,9 +183,9 @@ let valid_global_name ?loc txt =
 *)
 
 let valid_method_name ?loc:_  _txt  =
-    ()
-  (* if not (valid_ident txt) then
-    Location.raise_errorf ?loc "Not a valid method name %s"  txt *)
+  ()
+(* if not (valid_ident txt) then
+   Location.raise_errorf ?loc "Not a valid method name %s"  txt *)
 
 
 
@@ -203,41 +203,41 @@ let check_ffi ?loc ffi : bool =
   let upgrade bool =    
     if not (!xrelative) then xrelative := bool in 
   begin match ffi with
-  | Js_var {name; external_module_name} ->     
-    upgrade (is_package_relative_path name);
-    Ext_option.iter external_module_name (fun name -> 
-    upgrade (is_package_relative_path name.bundle));
-    valid_global_name ?loc  name
-  | Js_send {name }
-  | Js_set  {js_set_name = name}
-  | Js_get { js_get_name = name}
-    ->  valid_method_name ?loc name
-  | Js_get_index  _ (* TODO: check scopes *)
-  | Js_set_index _
-    -> ()
+    | Js_var {name; external_module_name} ->     
+      upgrade (is_package_relative_path name);
+      Ext_option.iter external_module_name (fun name -> 
+          upgrade (is_package_relative_path name.bundle));
+      valid_global_name ?loc  name
+    | Js_send {name }
+    | Js_set  {js_set_name = name}
+    | Js_get { js_get_name = name}
+      ->  valid_method_name ?loc name
+    | Js_get_index  _ (* TODO: check scopes *)
+    | Js_set_index _
+      -> ()
 
-  | Js_module_as_var external_module_name
-  | Js_module_as_fn {external_module_name; splice = _}
-  | Js_module_as_class external_module_name
-    -> 
+    | Js_module_as_var external_module_name
+    | Js_module_as_fn {external_module_name; splice = _}
+    | Js_module_as_class external_module_name
+      -> 
       upgrade (is_package_relative_path external_module_name.bundle);
       check_external_module_name external_module_name
-  | Js_new {external_module_name ;  name}
-  | Js_call {external_module_name ;  name ; splice = _; scopes = _ }
-    ->
-    Ext_option.iter external_module_name (fun external_module_name ->
-        upgrade (is_package_relative_path external_module_name.bundle));
-    Ext_option.iter external_module_name (fun name ->
-        check_external_module_name ?loc name
-      );
+    | Js_new {external_module_name ;  name}
+    | Js_call {external_module_name ;  name ; splice = _; scopes = _ }
+      ->
+      Ext_option.iter external_module_name (fun external_module_name ->
+          upgrade (is_package_relative_path external_module_name.bundle));
+      Ext_option.iter external_module_name (fun name ->
+          check_external_module_name ?loc name
+        );
 
-    valid_global_name ?loc name 
+      valid_global_name ?loc name 
   end; 
   !xrelative
 
 (* let bs_prefix = "BS:"
-let bs_prefix_length = String.length bs_prefix
- *)
+   let bs_prefix_length = String.length bs_prefix
+*)
 
 (** TODO: Make sure each version is not prefix of each other
     Solution:
@@ -258,10 +258,10 @@ let to_string  (t : t) =
    https://github.com/ocaml/merlin/commit/b094c937c3a360eb61054f7652081b88e4f3612f
 *)
 let is_bs_primitive s =  
-   String.length s >= 20 (* Marshal.header_size*) &&
-     String.unsafe_get s 0 = '\132' &&
-     String.unsafe_get s 1 = '\149' 
-     
+  String.length s >= 20 (* Marshal.header_size*) &&
+  String.unsafe_get s 0 = '\132' &&
+  String.unsafe_get s 1 = '\149' 
+
 let () = Oprint.map_primitive_name := 
 #if BS_RELEASE_BUILD then  
   (fun s ->    
@@ -282,7 +282,7 @@ let inline_string_primitive (s : string) (op : string option) : string list =
   let lam : Lam_constant.t = 
     match op with 
     | Some op
-    when Ast_utf8_string_interp.is_unicode_string op ->
+      when Ast_utf8_string_interp.is_unicode_string op ->
       Const_unicode s
     | _ ->
       (Const_string s) in 
@@ -304,9 +304,9 @@ let inline_bool_primitive b : string list =
 (* FIXME: check overflow ?*)
 let inline_int_primitive (i : int32) : string list =   
   [""; 
-    to_string 
-    (Ffi_inline_const 
-      (Const_int {i; comment = None}))
+   to_string 
+     (Ffi_inline_const 
+        (Const_int {i; comment = None}))
   ]
 
 let inline_int64_primitive (i : int64) : string list =   
@@ -318,15 +318,15 @@ let inline_int64_primitive (i : int64) : string list =
 
 let inline_float_primitive (i : string) : string list =
   ["";
-    to_string 
-      (Ffi_inline_const (Const_float i))
+   to_string 
+     (Ffi_inline_const (Const_float i))
   ]    
 let rec ffi_bs_aux acc (params : External_arg_spec.params) = 
   match params with 
   | {arg_type = Nothing; arg_label = Arg_empty} 
-  (* same as External_arg_spec.dummy*)
+    (* same as External_arg_spec.dummy*)
     :: rest -> 
-      ffi_bs_aux (acc + 1) rest 
+    ffi_bs_aux (acc + 1) rest 
   | _ :: _ -> -1    
   | [] -> acc         
 
@@ -339,7 +339,7 @@ let ffi_bs_as_prims params return attr =
   [""; to_string (ffi_bs params return attr)]
 
 let ffi_obj_create obj_params =
-   Ffi_obj_create obj_params
+  Ffi_obj_create obj_params
 
 let ffi_obj_as_prims obj_params = 
   ["";to_string (Ffi_obj_create obj_params)]

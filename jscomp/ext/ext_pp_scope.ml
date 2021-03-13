@@ -83,16 +83,16 @@ let add_ident ~mangled:name (stamp : int) (cxt : t) : int * t =
    - collision
       It is obvious that for the same identifier that they 
       print the same name.
-      
+
       It also needs to be hold that for two different identifiers,  
       they print different names:
-      - This happens when they escape to the same name and 
+   - This happens when they escape to the same name and 
         share the  same stamp
       So the key has to be mangled name  + stamp
       otherwise, if two identifier happens to have same mangled name,
       if we use the original name as key, they can have same id (like 0).
       then it caused a collision
-      
+
       Here we can guarantee that if mangled name and stamp are not all the same
       they can not have a collision
 
@@ -130,7 +130,7 @@ let sub_scope (scope : t) (idents : Set_ident.t) : t =
       match Map_string.find_exn scope mangled with 
       | exception Not_found -> assert false 
       | imap -> 
-          if Map_string.mem acc  mangled then acc 
-          else Map_string.add acc mangled imap 
+        if Map_string.mem acc  mangled then acc 
+        else Map_string.add acc mangled imap 
     )
 

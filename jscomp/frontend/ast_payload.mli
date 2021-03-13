@@ -31,7 +31,7 @@ type t = Parsetree.payload
 type lid = string Asttypes.loc
 type label_expr = lid  * Parsetree.expression
 type action = 
-   lid * Parsetree.expression option
+  lid * Parsetree.expression option
 
 val is_single_string : t -> (string * string option) option
 val is_single_string_as_ast : 
@@ -47,7 +47,7 @@ val raw_as_string_exp_exn :
   kind: Js_raw_info.raw_kind ->
   t ->
   Parsetree.expression option
-  
+
 val as_core_type : Location.t -> t -> Parsetree.core_type    
 (* val as_empty_structure :  t -> bool  *)
 val as_ident : t -> Longident.t Asttypes.loc option
@@ -85,7 +85,7 @@ val table_dispatch :
   (Parsetree.expression option  -> 'a) Map_string.t -> action -> 'a
 
 (** Report to the user, as a warning, that the bs-attribute parser is bailing out. (This is to allow
-  external ppx, like ppx_deriving, to pick up where the builtin ppx leave off.) *)
+    external ppx, like ppx_deriving, to pick up where the builtin ppx leave off.) *)
 val unrecognizedConfigRecord:
   Location.t ->
   string ->

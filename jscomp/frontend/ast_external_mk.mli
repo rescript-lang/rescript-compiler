@@ -23,17 +23,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (**
-  [local_module loc ~pval_prim ~pval_type args]
-  generate such code 
-  {[
-    let module J = struct 
+   [local_module loc ~pval_prim ~pval_type args]
+   generate such code 
+   {[
+     let module J = struct 
        external unsafe_expr : pval_type = pval_prim 
-    end in 
-    J.unssafe_expr args
-  ]}
+     end in 
+     J.unssafe_expr args
+   ]}
 *)
 val local_external_apply :
-   Location.t ->
+  Location.t ->
   ?pval_attributes:Parsetree.attributes ->
   pval_prim:string list ->
   pval_type:Parsetree.core_type ->
@@ -44,7 +44,7 @@ val local_external_apply :
 
 
 val local_external_obj :
-   Location.t ->
+  Location.t ->
   ?pval_attributes:Parsetree.attributes ->
   pval_prim:string list ->
   pval_type:Parsetree.core_type ->

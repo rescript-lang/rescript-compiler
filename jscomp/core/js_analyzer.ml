@@ -134,11 +134,11 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Cond _ 
   | FlatCall _ 
   | Call _ 
-  
+
   | New _ 
   | Raw_js_code _ 
-  (* | Caml_block_set_tag _  *)
-  (* actually true? *)
+    (* | Caml_block_set_tag _  *)
+    (* actually true? *)
     -> false 
 and no_side_effect (x : J.expression)  = 
   no_side_effect_expression_desc x.expression_desc
@@ -148,20 +148,20 @@ let no_side_effect_expression (x : J.expression) = no_side_effect x
 let super = Js_record_iter.super
 let no_side_effect_obj  = 
   {super with 
-    statement = (fun self s -> 
-        match s.statement_desc with 
-        | Throw _ 
-        | Debugger 
-        | Break 
-        | Variable _ 
-        | Continue _ ->  
-          raise_notrace Not_found
-        | Exp e -> self.expression self e 
-        | Int_switch _ | String_switch _ | ForRange _ 
-        | If _ | While _   | Block _ | Return _ | Try _  -> super.statement self s );
-    expression = begin fun _ s ->  
-      if not (no_side_effect_expression s) then raise_notrace Not_found
-  end}
+   statement = (fun self s -> 
+       match s.statement_desc with 
+       | Throw _ 
+       | Debugger 
+       | Break 
+       | Variable _ 
+       | Continue _ ->  
+         raise_notrace Not_found
+       | Exp e -> self.expression self e 
+       | Int_switch _ | String_switch _ | ForRange _ 
+       | If _ | While _   | Block _ | Return _ | Try _  -> super.statement self s );
+   expression = begin fun _ s ->  
+     if not (no_side_effect_expression s) then raise_notrace Not_found
+   end}
 let no_side_effect_statement st = 
   try 
     no_side_effect_obj.statement no_side_effect_obj st; true
@@ -191,11 +191,11 @@ let rec eq_expression
         | _ -> false 
       end
     | Number (Float _) -> false
-      (* begin match y0 with 
-        | Number (Float j) ->
-          false (* conservative *)
-        | _ -> false 
-      end     *)
+    (* begin match y0 with 
+       | Number (Float j) ->
+        false (* conservative *)
+       | _ -> false 
+       end     *)
     | String_index (a0,a1) -> 
       begin match y0 with 
         | String_index(b0,b1) -> 
@@ -251,16 +251,16 @@ let rec eq_expression
       end
     | Optional_block (a0,b0) -> 
       begin match y0 with   
-      | Optional_block (a1,b1) -> b0 = b1 && eq_expression a0 a1
-      | _ -> false 
+        | Optional_block (a1,b1) -> b0 = b1 && eq_expression a0 a1
+        | _ -> false 
       end 
     | Caml_block (ls0,flag0,tag0,_) ->    
       begin match y0 with 
-      | Caml_block(ls1,flag1,tag1,_) -> 
-        eq_expression_list ls0 ls1 &&
-        flag0 = flag1 &&
-        eq_expression tag0 tag1 
-      | _ -> false 
+        | Caml_block(ls1,flag1,tag1,_) -> 
+          eq_expression_list ls0 ls1 &&
+          flag0 = flag1 &&
+          eq_expression tag0 tag1 
+        | _ -> false 
       end 
     | Length _ 
     | Char_of_int _
@@ -271,14 +271,14 @@ let rec eq_expression
     | Js_not _ 
     | Cond _ 
     | FlatCall  _
-  
+
     | New _ 
     | Fun _ 
     | Unicode _ 
     | Raw_js_code _
     | Array _ 
     | Caml_block_tag _ 
-    
+
     | Object _ 
     | Number (Uint _ )
 
@@ -307,16 +307,16 @@ and eq_statement
   | Break -> y0 = Break 
   | Block xs0 -> 
     begin match y0 with 
-    | Block ys0 -> 
-      eq_block xs0 ys0
-    | _ -> false 
-  end
+      | Block ys0 -> 
+        eq_block xs0 ys0
+      | _ -> false 
+    end
   | Variable _ 
   | If _ 
   | While _ 
   | ForRange _ 
   | Continue _ 
-  
+
   | Int_switch _ 
   | String_switch _ 
   | Throw _ 
@@ -350,16 +350,16 @@ let rev_toplevel_flatten block =
   aux [] block
 
 (* let rec is_constant (x : J.expression)  = 
-  match x.expression_desc with 
-  | Array_index (a,b) -> is_constant a && is_constant b 
-  | Str (b,_) -> b
-  | Number _ -> true (* Can be refined later *)
-  | Array (xs,_mutable_flag)  -> Ext_list.for_all xs  is_constant 
-  | Caml_block(xs, Immutable, tag, _) 
+   match x.expression_desc with 
+   | Array_index (a,b) -> is_constant a && is_constant b 
+   | Str (b,_) -> b
+   | Number _ -> true (* Can be refined later *)
+   | Array (xs,_mutable_flag)  -> Ext_list.for_all xs  is_constant 
+   | Caml_block(xs, Immutable, tag, _) 
     -> Ext_list.for_all xs is_constant && is_constant tag 
-  | Bin (_op, a, b) -> 
+   | Bin (_op, a, b) -> 
     is_constant a && is_constant b     
-  | _ -> false  *)
+   | _ -> false  *)
 
 
 let rec is_okay_to_duplicate (e : J.expression) = 

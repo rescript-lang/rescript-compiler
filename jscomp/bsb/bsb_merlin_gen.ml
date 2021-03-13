@@ -96,7 +96,7 @@ let output_merlin_namespace buffer ns=
 *)      
 let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
   let flags = (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) ( 
-     bsc_flags)) in 
+      bsc_flags)) in 
   if flags <> [] then    
     merlin_flg ^ 
     String.concat Ext_string.single_space flags
@@ -139,8 +139,8 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
             (Printf.sprintf fmt ppx.name (String.concat " " ppx.args))
       );
     Ext_option.iter pp_file (fun x -> 
-      Buffer.add_string buffer (merlin_flg_pp ^ x)
-    );  
+        Buffer.add_string buffer (merlin_flg_pp ^ x)
+      );  
     Buffer.add_string buffer 
       (merlin_flg_ppx  ^ 
        (match reason_react_jsx with 
@@ -183,12 +183,12 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
         Buffer.add_string buffer path ;
       );
     Ext_list.iter bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
-    (fun package ->    
-        let path = package.package_install_path in
-        Buffer.add_string buffer merlin_s ;
-        Buffer.add_string buffer path ;
-        Buffer.add_string buffer merlin_b;
-        Buffer.add_string buffer path ;
+      (fun package ->    
+         let path = package.package_install_path in
+         Buffer.add_string buffer merlin_s ;
+         Buffer.add_string buffer path ;
+         Buffer.add_string buffer merlin_b;
+         Buffer.add_string buffer path ;
       );
     let lib_artifacts_dir = Bsb_config.lib_bs in
     Ext_list.iter res_files.files (fun x -> 

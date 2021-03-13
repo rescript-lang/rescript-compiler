@@ -41,10 +41,10 @@ let arrow ?loc ?attrs a b  =
   Ast_helper.Typ.arrow ?loc ?attrs Nolabel a b  
 
 let apply_simple
- ?(loc = default_loc) 
- ?(attrs = [])
-  (fn : expression) 
-  (args : expression list) : expression = 
+    ?(loc = default_loc) 
+    ?(attrs = [])
+    (fn : expression) 
+    (args : expression list) : expression = 
   { pexp_loc = loc; 
     pexp_attributes = attrs;
     pexp_desc = 
@@ -53,21 +53,21 @@ let apply_simple
         (Ext_list.map args (fun x -> Asttypes.Nolabel, x) ) ) }
 
 let app1        
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 : expression = 
+    ?(loc = default_loc)
+    ?(attrs = [])
+    fn arg1 : expression = 
   { pexp_loc = loc; 
     pexp_attributes = attrs;
     pexp_desc = 
       Pexp_apply(
         fn, 
         [Nolabel, arg1]
-        ) }
+      ) }
 
 let app2
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 arg2 : expression = 
+    ?(loc = default_loc)
+    ?(attrs = [])
+    fn arg1 arg2 : expression = 
   { pexp_loc = loc; 
     pexp_attributes = attrs;
     pexp_desc = 
@@ -76,12 +76,12 @@ let app2
         [
           Nolabel, arg1;
           Nolabel, arg2 ]
-        ) }
+      ) }
 
 let app3
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 arg2 arg3 : expression = 
+    ?(loc = default_loc)
+    ?(attrs = [])
+    fn arg1 arg2 arg3 : expression = 
   { pexp_loc = loc; 
     pexp_attributes = attrs;
     pexp_desc = 
@@ -92,13 +92,13 @@ let app3
           Nolabel, arg2;
           Nolabel, arg3
         ]
-        ) }
+      ) }
 
 let fun_         
-  ?(loc = default_loc) 
-  ?(attrs = [])
-  pat
-  exp = 
+    ?(loc = default_loc) 
+    ?(attrs = [])
+    pat
+    exp = 
   {
     pexp_loc = loc; 
     pexp_attributes = attrs;
@@ -108,10 +108,10 @@ let fun_
 
 
 let const_exp_string 
-  ?(loc = default_loc)
-  ?(attrs = [])
-  ?delimiter
-  (s : string) : expression = 
+    ?(loc = default_loc)
+    ?(attrs = [])
+    ?delimiter
+    (s : string) : expression = 
   {
     pexp_loc = loc; 
     pexp_attributes = attrs;
@@ -121,9 +121,9 @@ let const_exp_string
 
 
 let const_exp_int 
-  ?(loc = default_loc)
-  ?(attrs = [])
-  (s : int) : expression = 
+    ?(loc = default_loc)
+    ?(attrs = [])
+    (s : int) : expression = 
   {
     pexp_loc = loc; 
     pexp_attributes = attrs;
@@ -132,9 +132,9 @@ let const_exp_int
 
 
 let apply_labels
- ?(loc = default_loc) 
- ?(attrs = [])
-  fn (args : (string * expression) list) : expression = 
+    ?(loc = default_loc) 
+    ?(attrs = [])
+    fn (args : (string * expression) list) : expression = 
   { pexp_loc = loc; 
     pexp_attributes = attrs;
     pexp_desc = 
@@ -147,67 +147,67 @@ let apply_labels
 
 let label_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
   {
-      ptyp_desc = Ptyp_arrow(
-      Asttypes.Labelled s
-  
-      ,
-      a,
-      b);
-      ptyp_loc = loc;
-      ptyp_attributes = attrs
+    ptyp_desc = Ptyp_arrow(
+        Asttypes.Labelled s
+
+        ,
+        a,
+        b);
+    ptyp_loc = loc;
+    ptyp_attributes = attrs
   }
 
 let opt_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
   {
-      ptyp_desc = Ptyp_arrow( 
+    ptyp_desc = Ptyp_arrow( 
 
         Asttypes.Optional s
         ,
         a,
         b);
-      ptyp_loc = loc;
-      ptyp_attributes = attrs
+    ptyp_loc = loc;
+    ptyp_attributes = attrs
   }    
 
 let rec_type_str 
-  ?(loc=default_loc) 
-  rf tds : structure_item = 
+    ?(loc=default_loc) 
+    rf tds : structure_item = 
   {
     pstr_loc = loc;
     pstr_desc = Pstr_type ( 
-      rf,
-      tds)
+        rf,
+        tds)
   }
 
 
 
 let rec_type_sig 
-  ?(loc=default_loc)
-   rf tds : signature_item = 
+    ?(loc=default_loc)
+    rf tds : signature_item = 
   {
     psig_loc = loc;
     psig_desc = Psig_type ( 
-      rf,
-      tds)
+        rf,
+        tds)
   }
 
 (* FIXME: need address migration of `[@nonrec]` attributes in older ocaml *)  
 (* let nonrec_type_sig ?(loc=default_loc)  tds : signature_item = 
-  {
+   {
     psig_loc = loc;
     psig_desc = Psig_type ( 
       Nonrecursive,
       tds)
-  }   *)
+   }   *)
 
 
 let const_exp_int_list_as_array xs = 
   Ast_helper.Exp.array 
-  (Ext_list.map  xs (fun x -> const_exp_int x ))  
+    (Ext_list.map  xs (fun x -> const_exp_int x ))  
 
 (* let const_exp_string_list_as_array xs =   
-  Ast_helper.Exp.array 
-  (Ext_list.map xs (fun x -> const_exp_string x ) )   *)
+   Ast_helper.Exp.array 
+   (Ext_list.map xs (fun x -> const_exp_string x ) )   *)
 
 type param_type = 
   {label : Asttypes.arg_label ;
@@ -216,16 +216,16 @@ type param_type =
    loc : loc
   }
 
- let mk_fn_type 
-  (new_arg_types_ty : param_type list)
-  (result : core_type) : core_type = 
+let mk_fn_type 
+    (new_arg_types_ty : param_type list)
+    (result : core_type) : core_type = 
   Ext_list.fold_right new_arg_types_ty result (fun {label; ty; attr ; loc} acc -> 
-    {
-      ptyp_desc = Ptyp_arrow(label,ty,acc);
-      ptyp_loc = loc; 
-      ptyp_attributes = attr
-    }
-  )
+      {
+        ptyp_desc = Ptyp_arrow(label,ty,acc);
+        ptyp_loc = loc; 
+        ptyp_attributes = attr
+      }
+    )
 
 type object_field = 
   Parsetree.object_field 
@@ -233,7 +233,7 @@ type object_field =
 let object_field   l attrs ty = 
 
   Parsetree.Otag 
-  (l,attrs,ty)  
+    (l,attrs,ty)  
 
 
 

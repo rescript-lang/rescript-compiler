@@ -47,7 +47,7 @@ let translate  loc
     (args : J.expression list) : J.expression = 
   match prim with
   | Pis_not_none -> 
-      Js_of_lam_option.is_not_none (Ext_list.singleton_exn args)      
+    Js_of_lam_option.is_not_none (Ext_list.singleton_exn args)      
   | Pcreate_extension s 
     -> 
     E.make_exception s 
@@ -55,10 +55,10 @@ let translate  loc
     E.runtime_call Js_runtime_modules.caml_js_exceptions "internalToOCamlException" args 
   | Praw_js_code {code; code_info} -> 
     E.raw_js_code code_info code
-    (* FIXME: save one allocation 
-       trim can not be done before syntax checking
-       otherwise location is incorrect
-    *)
+  (* FIXME: save one allocation 
+     trim can not be done before syntax checking
+     otherwise location is incorrect
+  *)
   | Pjs_runtime_apply -> 
     (match args with 
      | [f ;  args] -> 
@@ -79,7 +79,7 @@ let translate  loc
           E.runtime_call Js_runtime_modules.option
             "null_to_opt" args)         
      | _ -> assert false )
-    
+
   | Pundefined_to_opt ->
     (match args with 
      | [e] -> 
@@ -90,7 +90,7 @@ let translate  loc
           E.runtime_call Js_runtime_modules.option  
             "undefined_to_opt" args )
      | _ -> assert false )
-    
+
   | Pnull_undefined_to_opt -> 
     begin match args with 
       | [e] -> 
@@ -116,7 +116,7 @@ let translate  loc
     E.is_null_undefined (Ext_list.singleton_exn args)
   | Pjs_typeof -> 
     E.typeof (Ext_list.singleton_exn args)
-    
+
   | Pjs_unsafe_downgrade _
   | Pdebugger 
   | Pvoid_run 
@@ -162,19 +162,19 @@ let translate  loc
     Ext_list.singleton_exn args 
   | Pfield (i, fld_info) -> 
     Js_of_lam_block.field fld_info (Ext_list.singleton_exn args) (Int32.of_int i)
-    (* Invariant depends on runtime *)
-   | Pfield_computed ->  
+  (* Invariant depends on runtime *)
+  | Pfield_computed ->  
     (match args with 
-    | [self; index] -> 
-      Js_of_lam_block.field_by_exp self  index 
-    | _ -> assert false
+     | [self; index] -> 
+       Js_of_lam_block.field_by_exp self  index 
+     | _ -> assert false
     )
   (** Negate boxed int *)
-      
+
   | Pnegint
     -> 
-      (* #977 *)
-      E.int32_minus (E.zero_int_literal)  (Ext_list.singleton_exn args)
+    (* #977 *)
+    E.int32_minus (E.zero_int_literal)  (Ext_list.singleton_exn args)
   | Pnegint64
     -> 
     Js_long.neg args 
@@ -182,7 +182,7 @@ let translate  loc
 
   | Pnegfloat 
     -> 
-      E.float_minus (E.zero_float_lit) (Ext_list.singleton_exn args) 
+    E.float_minus (E.zero_float_lit) (Ext_list.singleton_exn args) 
   (** Negate boxed int end*)
   (* Int addition and subtraction *)
   | Paddint 
@@ -389,10 +389,10 @@ let translate  loc
       | _ -> assert false
     end
   | Pbytes_of_string -> 
-      (* TODO: write a js primitive  - or is it necessary ?
-         if we have byte_get/string_get
-         still necessary, since you can set it now.
-      *)
+    (* TODO: write a js primitive  - or is it necessary ?
+       if we have byte_get/string_get
+       still necessary, since you can set it now.
+    *)
     Js_of_lam_string.bytes_of_string (Ext_list.singleton_exn args)      
   | Pbytes_to_string  -> 
     Js_of_lam_string.bytes_to_string (Ext_list.singleton_exn args)      
@@ -444,10 +444,10 @@ let translate  loc
      | _ -> assert false)    
   | Psetfield_computed ->      
     (match args with 
-    | [self; index; value] ->
-      ensure_value_unit cxt.continuation
-        (Js_of_lam_block.set_field_by_exp self index value)
-    | _ -> assert false
+     | [self; index; value] ->
+       ensure_value_unit cxt.continuation
+         (Js_of_lam_block.set_field_by_exp self index value)
+     | _ -> assert false
     )
   | Parrayrefu ->  
     (match args with
@@ -460,9 +460,9 @@ let translate  loc
   | Pmakearray  -> 
     Js_of_lam_array.make_array Mutable  args 
   | Parraysetu  -> 
-      (match args with (* wrong*)
-      | [e;e0;e1] -> ensure_value_unit cxt.continuation (Js_of_lam_array.set_array  e e0 e1)
-      | _ -> assert false)    
+    (match args with (* wrong*)
+     | [e;e0;e1] -> ensure_value_unit cxt.continuation (Js_of_lam_array.set_array  e e0 e1)
+     | _ -> assert false)    
   | Pccall prim -> 
     Lam_dispatch_primitive.translate loc prim.prim_name  args
   (* Lam_compile_external_call.translate loc cxt prim args *)
@@ -473,7 +473,7 @@ let translate  loc
 
   | Pjs_call {arg_types; ffi} -> 
     Lam_compile_external_call.translate_ffi 
-       cxt arg_types ffi args 
+      cxt arg_types ffi args 
   (** FIXME, this can be removed later *)
   | Pisint -> 
     E.is_type_number (Ext_list.singleton_exn args)
@@ -483,37 +483,37 @@ let translate  loc
     (match ct with 
      | Big_endian -> E.bool Sys.big_endian
      | Ostype ->
-      (E.runtime_call Js_runtime_modules.sys "os_type" args)
+       (E.runtime_call Js_runtime_modules.sys "os_type" args)
      | Ostype_unix -> 
        E.string_equal
-       (E.runtime_call Js_runtime_modules.sys "os_type" args)
+         (E.runtime_call Js_runtime_modules.sys "os_type" args)
          (E.str "Unix")
      | Ostype_win32 -> 
        E.string_equal
          (E.runtime_call Js_runtime_modules.sys "os_type" args)
          (E.str "Win32")
      (* | Max_wosize ->
-      (* max_array_length*)
-       E.int 2147483647l (* 2 ^ 31 - 1 *)  *)
-        (* 4_294_967_295l  not representable*)
-        (* 2 ^ 32 - 1*)
+        (* max_array_length*)
+        E.int 2147483647l (* 2 ^ 31 - 1 *)  *)
+     (* 4_294_967_295l  not representable*)
+     (* 2 ^ 32 - 1*)
      | Backend_type  -> 
-      E.make_block
-        E.zero_int_literal 
-        (Blk_constructor {name = "Other"; num_nonconst = 1})
-        [E.str "BS"] Immutable
-     )
+       E.make_block
+         E.zero_int_literal 
+         (Blk_constructor {name = "Other"; num_nonconst = 1})
+         [E.str "BS"] Immutable
+    )
   | Pduprecord (Record_regular| Record_extension| Record_inlined _ ) -> 
-      Lam_dispatch_primitive.translate loc "caml_obj_dup" args
+    Lam_dispatch_primitive.translate loc "caml_obj_dup" args
 
   | Plazyforce  
     (* FIXME: we don't inline lazy force or at least 
-      let buckle handle it
+       let buckle handle it
     *)
-  (*   let parm = Ident.create "prim" in 
-       Lfunction(Curried, [parm], 
-                 Matching.inline_lazy_force (Lvar parm) Location.none) 
-   It is inlined, this should not appear here *)    
+    (*   let parm = Ident.create "prim" in 
+         Lfunction(Curried, [parm], 
+                   Matching.inline_lazy_force (Lvar parm) Location.none) 
+         It is inlined, this should not appear here *)    
 
 
     -> 

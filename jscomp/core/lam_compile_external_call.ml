@@ -38,17 +38,17 @@ let splice_obj_fn_apply obj name args =
     Js_runtime_modules.caml_splice_call
     "spliceObjApply"
     [obj; E.str name; E.array Immutable args]
-    
+
 (** 
    [bind_name] is a hint to the compiler to generate 
    better names for external module 
 *)
 (* let handle_external 
     ({bundle ; module_bind_name} : External_ffi_types.external_module_name)
-  : Ident.t * string 
-  =
-  Lam_compile_env.add_js_module module_bind_name bundle , 
-  bundle *)
+   : Ident.t * string 
+   =
+   Lam_compile_env.add_js_module module_bind_name bundle , 
+   bundle *)
 
 let external_var ({bundle ; module_bind_name} : External_ffi_types.external_module_name) =
   let id =  Lam_compile_env.add_js_module module_bind_name bundle false in 
@@ -56,11 +56,11 @@ let external_var ({bundle ; module_bind_name} : External_ffi_types.external_modu
 
 (* let handle_external_opt 
     (module_name : External_ffi_types.external_module_name option) 
-  : (Ident.t * string) option = 
-  match module_name with 
-  | Some module_name -> Some (handle_external module_name) 
-  | None -> None 
- *)
+   : (Ident.t * string) option = 
+   match module_name with 
+   | Some module_name -> Some (handle_external module_name) 
+   | None -> None 
+*)
 
 type arg_expression = Js_of_lam_variant.arg_expression = 
   | Splice0
@@ -111,7 +111,7 @@ let ocaml_to_js_eff
   (* has to be preprocessed by {!Lam} module first *)
   | Extern_unit ->  
     (if arg_label = Arg_empty then 
-      Splice0 else Splice1 E.unit), 
+       Splice0 else Splice1 E.unit), 
     (if Js_analyzer.no_side_effect_expression arg then 
        []
      else 
@@ -126,11 +126,11 @@ let ocaml_to_js_eff
     Splice1 (Js_of_lam_variant.eval arg descr),[]
   | Poly_var {descr} -> 
     Js_of_lam_variant.eval_as_event arg descr,[]    
-    (* FIXME: encode invariant below in the signature*)
-    (* length of 2
-      - the poly var tag 
-      - the value
-     *)
+  (* FIXME: encode invariant below in the signature*)
+  (* length of 2
+     - the poly var tag 
+     - the value
+  *)
   | Int dispatches -> 
     Splice1 (Js_of_lam_variant.eval_as_int arg dispatches),[]
   | Unwrap ->
@@ -144,7 +144,7 @@ let ocaml_to_js_eff
            - if ocaml arg is `Some x`, unwrap the arg to get the `x`, then
              unwrap the `x` itself
            - Here `Some x` is `x` due to the current encoding
-           Lets inline here since it depends on the runtime encoding
+             Lets inline here since it depends on the runtime encoding
         *)
         Js_of_lam_option.option_unwrap raw_arg
       | _ ->
@@ -174,8 +174,8 @@ type exprs = E.t list
    @return arguments and effect
 *)
 let assemble_args_no_splice 
-  (arg_types : specs) 
-  (args : exprs) : exprs * E.t option = 
+    (arg_types : specs) 
+    (args : exprs) : exprs * E.t option = 
   let rec aux (labels : specs) (args : exprs) : exprs * exprs = 
     match labels, args with 
     | [], _  
@@ -185,12 +185,12 @@ let assemble_args_no_splice
       let accs, eff = aux labels args in
       Lam_compile_const.translate_arg_cst cst :: accs, eff 
     | {arg_label  ; arg_type } ::labels,
-       arg :: args
+      arg :: args
       ->  
-        let accs, eff = aux labels args in 
-        let acc, new_eff = ocaml_to_js_eff  
+      let accs, eff = aux labels args in 
+      let acc, new_eff = ocaml_to_js_eff  
           ~arg_label ~arg_type arg in 
-        append_list acc  accs, Ext_list.append new_eff  eff
+      append_list acc  accs, Ext_list.append new_eff  eff
     | _ :: _ , [] 
       -> assert false     
   in 
@@ -229,14 +229,14 @@ let assemble_args_has_splice  (arg_types : specs) (args : exprs)
   let args, eff = aux arg_types args  in 
   args,
   (match eff with
-    | [] -> None 
-    | x::xs ->  (** FIXME: the order of effects? *)
-      Some (E.fuse_to_seq x xs)), !dynamic
-  
+   | [] -> None 
+   | x::xs ->  (** FIXME: the order of effects? *)
+     Some (E.fuse_to_seq x xs)), !dynamic
+
 
 let translate_scoped_module_val 
-  (module_name : External_ffi_types.external_module_name option) (fn: string)  
-  (scopes :string list) = 
+    (module_name : External_ffi_types.external_module_name option) (fn: string)  
+    (scopes :string list) = 
   match  module_name with 
   | Some {bundle; module_bind_name} ->     
     begin match scopes with 
@@ -266,7 +266,7 @@ let translate_scoped_access scopes obj =
   | [] ->  obj
   | x::xs -> 
     Ext_list.fold_left xs (E.dot obj x) E.dot
-  
+
 let translate_ffi 
     (cxt  : Lam_compile_context.t)
     arg_types 
@@ -280,7 +280,7 @@ let translate_ffi
     let fn =  translate_scoped_module_val module_name fn scopes in 
     if splice then 
       let args, eff, dynamic  = 
-          assemble_args_has_splice    arg_types args in 
+        assemble_args_has_splice    arg_types args in 
       add_eff eff 
         (if dynamic then splice_fn_apply fn args
          else E.call ~info:{arity=Full; call_info = Call_na} fn args)
@@ -293,7 +293,7 @@ let translate_ffi
     let fn = external_var external_module_name in           
     if splice then 
       let args, eff, dynamic = 
-          assemble_args_has_splice  arg_types args in 
+        assemble_args_has_splice  arg_types args in 
       (* TODO: fix in rest calling convention *)          
       add_eff eff (
         if dynamic then
@@ -385,7 +385,7 @@ let translate_ffi
        2. support [@@scope "window"]
        we need know whether we should call [add_js_module] or not 
     *)
-      translate_scoped_module_val external_module_name name scopes
+    translate_scoped_module_val external_module_name name scopes
 
 
   | Js_module_as_class module_name ->
@@ -402,7 +402,7 @@ let translate_ffi
         ;
         E.new_ fn args
       end            
-  
+
   | Js_get {js_get_name = name; js_get_scopes = scopes } -> 
     let args,cur_eff = assemble_args_no_splice   arg_types args in 
     add_eff cur_eff @@ 
@@ -438,7 +438,7 @@ let translate_ffi
     add_eff cur_eff @@ 
     begin match args with 
       | [obj; v ; value] -> 
-          Js_arr.set_array (translate_scoped_access scopes obj) v value
+        Js_arr.set_array (translate_scoped_access scopes obj) v value
       | _ -> assert false
     end
 

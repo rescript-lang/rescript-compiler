@@ -24,9 +24,9 @@
 
 
 (** 
-  [transform n loc status fn args]
-  n is the number of missing arguments required for [fn].
-  Return a function of airty [n]
+   [transform n loc status fn args]
+   n is the number of missing arguments required for [fn].
+   Return a function of airty [n]
 *) 
 
 val transform_under_supply : 

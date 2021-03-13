@@ -35,14 +35,14 @@
     This module define how the FFI (via `external`) works with attributes. 
     Note it will route to {!Lam_compile_global} 
     for compiling normal functions without attributes.
- *)
+*)
 
 val assemble_obj_args :
   External_arg_spec.obj_params -> 
   J.expression list -> 
   J.block * J.expression 
 (* It returns a block in cases we need set the property dynamically: we need
-  create a place holder assignment first and then set it accordingly
+   create a place holder assignment first and then set it accordingly
 *)
 
 

@@ -38,27 +38,27 @@ let process_method_attributes_rev (attrs : t) =
         let result =
           Ext_list.fold_left (Ast_payload.ident_or_record_as_config loc payload) (false, false)
             (fun (null, undefined) ({txt ; loc}, opt_expr) ->
-              match txt with
-              | "null" ->
-                (match opt_expr with
-                 | None -> true
-                 | Some e ->
-                   Ast_payload.assert_bool_lit e), undefined
-
-              |  "undefined" ->
-                null,
-                (match opt_expr with
-                 | None ->  true
-                 | Some e ->
-                   Ast_payload.assert_bool_lit e)
-              | "nullable" ->
-                begin match opt_expr with
-                  | None -> true, true
+               match txt with
+               | "null" ->
+                 (match opt_expr with
+                  | None -> true
                   | Some e ->
-                    let v = Ast_payload.assert_bool_lit e in
-                    v,v
-                end
-              | _ -> Bs_syntaxerr.err loc Unsupported_predicates
+                    Ast_payload.assert_bool_lit e), undefined
+
+               |  "undefined" ->
+                 null,
+                 (match opt_expr with
+                  | None ->  true
+                  | Some e ->
+                    Ast_payload.assert_bool_lit e)
+               | "nullable" ->
+                 begin match opt_expr with
+                   | None -> true, true
+                   | Some e ->
+                     let v = Ast_payload.assert_bool_lit e in
+                     v,v
+                 end
+               | _ -> Bs_syntaxerr.err loc Unsupported_predicates
             ) in
 
         ({st with get = Some result}, acc  )
@@ -153,13 +153,13 @@ let external_needs_to_be_encoded (attrs : t)=
 let is_inline : attr -> bool =        
   (fun 
     (({txt;},_)) -> 
-     txt = "bs.inline" || txt = "inline" 
+    txt = "bs.inline" || txt = "inline" 
   )  
-  
+
 
 let has_inline_payload (attrs : t)  = 
   Ext_list.find_first attrs is_inline
-    
+
 
 type derive_attr = {
   bs_deriving : Ast_payload.action list option
@@ -187,17 +187,17 @@ let process_derive_type (attrs : t) : derive_attr * t =
 
 
 (* duplicated @uncurry @string not allowed,
-  it is worse in @uncurry since it will introduce
-  inconsistency in arity
- *)  
+   it is worse in @uncurry since it will introduce
+   inconsistency in arity
+*)  
 let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
   let st = ref `Nothing in 
   let assign v (({loc;_}, _ ) as attr : attr) = 
     if !st = `Nothing then 
-    begin 
-      Bs_ast_invariant.mark_used_bs_attribute attr;
-      st := v ;
-    end  
+      begin 
+        Bs_ast_invariant.mark_used_bs_attribute attr;
+        st := v ;
+      end  
     else Bs_syntaxerr.err loc Conflict_attributes  in 
   Ext_list.iter attrs (fun (({txt ; loc=_}, (payload : _ ) ) as attr)  ->
       match  txt with
@@ -241,14 +241,14 @@ let iter_process_bs_string_as  (attrs : t) : string option =
 
 let has_bs_optional  (attrs : t) : bool =
   Ext_list.exists attrs (fun
-      (({txt ; }, _ ) as attr)  ->
-      match  txt with
-      | "bs.optional" | "optional"
-        ->
-        Bs_ast_invariant.mark_used_bs_attribute attr ;
-        true
-      | _  -> false
-    ) 
+                          (({txt ; }, _ ) as attr)  ->
+                          match  txt with
+                          | "bs.optional" | "optional"
+                            ->
+                            Bs_ast_invariant.mark_used_bs_attribute attr ;
+                            true
+                          | _  -> false
+                        ) 
 
 
 
@@ -296,19 +296,19 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
                           Pexp_constant 
                             (Pconst_string(s, (None | Some "json" as dec)))
                        ; pexp_loc ;
-                         _},_);
+                        _},_);
                    _}] -> 
                  if dec = None then
                    st := Some (Str (s))
                  else
-                 begin 
-                   (match Classify_function.classify ~check:(pexp_loc, Bs_flow_ast_utils.flow_deli_offset dec)
-                            s with 
-                   | Js_literal _ -> ()
-                   | _ -> 
-                    Location.raise_errorf ~loc:pexp_loc "an object literal expected");
-                   st := Some (Js_literal_str s )
-                 end
+                   begin 
+                     (match Classify_function.classify ~check:(pexp_loc, Bs_flow_ast_utils.flow_deli_offset dec)
+                              s with 
+                     | Js_literal _ -> ()
+                     | _ -> 
+                       Location.raise_errorf ~loc:pexp_loc "an object literal expected");
+                     st := Some (Js_literal_str s )
+                   end
                | _ -> 
                  Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
              end
@@ -324,7 +324,7 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
 
 let locg = Location.none
 (* let bs : attr
-  =  {txt = "bs" ; loc = locg}, Ast_payload.empty *)
+   =  {txt = "bs" ; loc = locg}, Ast_payload.empty *)
 
 let is_bs (attr : attr) =
   match attr with
@@ -336,21 +336,21 @@ let is_bs (attr : attr) =
 
 
 let bs_get : attr
-=  {txt = "bs.get"; loc = locg}, Ast_payload.empty
+  =  {txt = "bs.get"; loc = locg}, Ast_payload.empty
 
 let bs_get_index : attr =  
-   {txt = "bs.get_index"; loc = locg}, Ast_payload.empty  
+  {txt = "bs.get_index"; loc = locg}, Ast_payload.empty  
 
 let bs_get_arity : attr
   =  {txt = "internal.arity"; loc = locg}, 
-    PStr 
-    [{pstr_desc =
-         Pstr_eval (
-          Ast_compatible.const_exp_int ~loc:locg 1
-           ,
-           [])
-      ; pstr_loc = locg}]
-  
+     PStr 
+       [{pstr_desc =
+           Pstr_eval (
+             Ast_compatible.const_exp_int ~loc:locg 1
+             ,
+             [])
+        ; pstr_loc = locg}]
+
 
 let bs_set : attr
   =  {txt = "bs.set"; loc = locg}, Ast_payload.empty

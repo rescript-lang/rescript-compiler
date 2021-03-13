@@ -39,9 +39,9 @@ val filter :
   'a array
 
 val filter_map : 
-'a array -> 
-('a -> 'b option) -> 
-'b array
+  'a array -> 
+  ('a -> 'b option) -> 
+  'b array
 
 val range : int -> int -> int array
 
@@ -53,7 +53,7 @@ val to_list_f :
   'b list 
 
 val to_list_map : 
-'a array -> ('a -> 'b option) -> 'b list 
+  'a array -> ('a -> 'b option) -> 'b list 
 
 val to_list_map_acc : 
   'a array -> 
@@ -95,7 +95,7 @@ val for_alli :
   'a array -> 
   (int -> 'a -> bool) -> 
   bool 
-    
+
 val map :   
   'a array -> 
   ('a -> 'b) -> 

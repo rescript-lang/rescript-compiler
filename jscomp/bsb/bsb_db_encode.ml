@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- 
+
 let bsbuild_cache = Literals.bsbuild_cache
 
 
@@ -32,13 +32,13 @@ let nl buf =
 
 
 (* IDEAS: 
-  Pros: 
-    - could be even shortened to a single byte
-  Cons: 
-    - decode would allocate
-    - code too verbose
-    - not readable 
- *)  
+   Pros: 
+   - could be even shortened to a single byte
+     Cons: 
+   - decode would allocate
+   - code too verbose
+   - not readable 
+*)  
 
 let make_encoding length buf : Ext_buffer.t -> int -> unit =
   let max_range = length lsl 1 + 1 in 
@@ -59,8 +59,8 @@ let make_encoding length buf : Ext_buffer.t -> int -> unit =
     Ext_buffer.add_int_4
   end else assert false 
 (* Make sure [tmp_buf1] and [tmp_buf2] is cleared ,
-  they are only used to control the order.
-  Strictly speaking, [tmp_buf1] is not needed
+   they are only used to control the order.
+   Strictly speaking, [tmp_buf1] is not needed
 *)
 let encode_single (db : Bsb_db.map) (buf : Ext_buffer.t) =    
   (* module name section *)  
@@ -91,10 +91,10 @@ let encode (dbs : Bsb_db.t) buf =
 
 
 (*  shall we avoid writing such file (checking the digest)?
-  It is expensive to start scanning the whole code base,
-  we should we avoid it in the first place, if we do start scanning,
-  this operation seems affordable
- *)
+    It is expensive to start scanning the whole code base,
+    we should we avoid it in the first place, if we do start scanning,
+    this operation seems affordable
+*)
 let write_build_cache ~dir (bs_files : Bsb_db.t)  : string = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   let buf = Ext_buffer.create 100_000 in 

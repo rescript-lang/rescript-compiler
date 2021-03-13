@@ -54,7 +54,7 @@ let inner_iter (l : t) (f : t -> unit ) : unit =
     ->  ()
   | Lprim {args; primitive = _; loc = _}  ->
     List.iter f args;
-  
+
   | Lstaticraise (_id,args) ->
     List.iter f args;
   | Lstaticcatch(e1, _vars , e2) ->
@@ -100,10 +100,10 @@ let inner_exists (l : t) (f : t -> bool) : bool =
     f arg ||
     Ext_list.exists_snd cases f ||
     Ext_option.exists default f     
-  
+
   | Lprim {args; primitive = _; loc = _}  ->
     Ext_list.exists args f;
-  
+
   | Lstaticraise (_id,args) ->
     Ext_list.exists args f;
   | Lstaticcatch(e1, _vars , e2) ->

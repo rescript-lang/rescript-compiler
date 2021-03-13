@@ -40,21 +40,21 @@
 *)
 let annotate (meta : Lam_stats.t)  rec_flag  (k:Ident.t) (arity : Lam_arity.t) lambda = 
   Hash_ident.add meta.ident_tbl k 
-      (FunctionId {arity; lambda = Some (lambda, rec_flag) })
-  (* see #3609 
-    we have to update since bounded function lambda
-    may contain staled unbounded varaibles
-  *)
-  (* match Hash_ident.find_opt  meta.ident_tbl k  with 
-  | None -> (** FIXME: need do a sanity check of arity is NA or Determin(_,[],_) *)
-    
-  |  Some (FunctionId old)  ->  
-    Hash_ident.add meta.ident_tbl k 
-      (FunctionId {arity; lambda = Some (lambda, rec_flag) })
-    (* old.arity <- arity   *)
-    (* due to we keep refining arity analysis after each round*)      
-  | _ -> assert false  *)
-  (* TODO -- avoid exception *)
+    (FunctionId {arity; lambda = Some (lambda, rec_flag) })
+(* see #3609 
+   we have to update since bounded function lambda
+   may contain staled unbounded varaibles
+*)
+(* match Hash_ident.find_opt  meta.ident_tbl k  with 
+   | None -> (** FIXME: need do a sanity check of arity is NA or Determin(_,[],_) *)
+
+   |  Some (FunctionId old)  ->  
+   Hash_ident.add meta.ident_tbl k 
+    (FunctionId {arity; lambda = Some (lambda, rec_flag) })
+   (* old.arity <- arity   *)
+   (* due to we keep refining arity analysis after each round*)      
+   | _ -> assert false  *)
+(* TODO -- avoid exception *)
 
 
 (** it only make senses recording arities for 

@@ -33,7 +33,7 @@ let print_if_pipe ppf flag printer arg =
 
 let print_if ppf flag printer arg =
   if !flag then fprintf ppf "%a@." printer arg
-  
+
 
 
 let process_with_gentype filename =    
@@ -68,9 +68,9 @@ let after_parsing_sig ppf  outputprefix ast  =
 
     end;
   if !Js_config.as_pp then begin 
-      output_string stdout Config.ast_intf_magic_number;
-      output_value stdout (!Location.input_name : string);
-      output_value stdout ast;
+    output_string stdout Config.ast_intf_magic_number;
+    output_value stdout (!Location.input_name : string);
+    output_value stdout ast;
   end; 
   if !Js_config.syntax_only then
     Warnings.check_fatal()
@@ -129,25 +129,25 @@ let interface_mliast ppf fname  setup =
 
 let all_module_alias (ast : Parsetree.structure)= 
   Ext_list.for_all ast (fun {pstr_desc} -> 
-    match pstr_desc with 
-    | Pstr_module {pmb_expr = {pmod_desc = Pmod_ident _ }} 
-      -> true 
-    | Pstr_attribute _ -> true   
-    | Pstr_eval _ 
-    | Pstr_value _ 
-    | Pstr_primitive _ 
-    | Pstr_type _ 
-    | Pstr_typext  _ 
-    | Pstr_exception _ 
-    | Pstr_module _ 
-    | Pstr_recmodule _  
-    | Pstr_modtype _
-    | Pstr_open _
-    | Pstr_class _ 
-    | Pstr_class_type _ 
-    | Pstr_include _
-    | Pstr_extension _ -> false 
-   )
+      match pstr_desc with 
+      | Pstr_module {pmb_expr = {pmod_desc = Pmod_ident _ }} 
+        -> true 
+      | Pstr_attribute _ -> true   
+      | Pstr_eval _ 
+      | Pstr_value _ 
+      | Pstr_primitive _ 
+      | Pstr_type _ 
+      | Pstr_typext  _ 
+      | Pstr_exception _ 
+      | Pstr_module _ 
+      | Pstr_recmodule _  
+      | Pstr_modtype _
+      | Pstr_open _
+      | Pstr_class _ 
+      | Pstr_class_type _ 
+      | Pstr_include _
+      | Pstr_extension _ -> false 
+    )
 
 let no_export (rest : Parsetree.structure) : Parsetree.structure = 
   match rest with 
@@ -212,9 +212,9 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
     end
 let implementation ~parser ppf ?outputprefix fname   =
   let outputprefix = 
-      match outputprefix with   
-      | None -> Config_util.output_prefix fname 
-      | Some x -> x in 
+    match outputprefix with   
+    | None -> Config_util.output_prefix fname 
+    | Some x -> x in 
   Res_compmisc.init_path ();  
   parser fname
   |> Cmd_ppx_apply.apply_rewriters ~restore:false ~tool_name:Js_config.tool_name Ml  
@@ -224,7 +224,7 @@ let implementation ~parser ppf ?outputprefix fname   =
   |> after_parsing_impl ppf outputprefix 
 
 let implementation_mlast ppf fname  setup = 
-  
+
   Res_compmisc.init_path ();
   Binary_ast.read_ast_exn ~fname Ml  setup
   |> print_if_pipe ppf Clflags.dump_parsetree Printast.implementation
@@ -249,7 +249,7 @@ let make_structure_item ~ns cunit : Parsetree.structure_item =
 
 
 (** decoding [.mlmap]
-  keep in sync {!Bsb_namespace_map_gen.output}
+    keep in sync {!Bsb_namespace_map_gen.output}
 *)
 let implementation_map ppf sourcefile = 
   let () = Js_config.cmj_only := true in 

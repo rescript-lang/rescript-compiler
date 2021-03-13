@@ -35,7 +35,7 @@ type exp = Parsetree.expression
 
 type destruct_output =
   exp list
-  
+
 (**
    destruct such pattern
    {[ A.B.let open C in (a,b)]}
@@ -64,7 +64,7 @@ let rec destruct
       cont
       (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
   | _ -> e, acc
-  
+
 
 
 let restore_exp 

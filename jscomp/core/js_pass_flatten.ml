@@ -28,9 +28,9 @@
 
 
 (* open recursion is hard
-  Take cond for example:
-  CHECK? Trick semantics difference 
-  super#statement (S.if_ a ([ (\* self#statement *\) (S.exp b) ]) 
+   Take cond for example:
+   CHECK? Trick semantics difference 
+   super#statement (S.if_ a ([ (\* self#statement *\) (S.exp b) ]) 
      ~else_:([self#statement (S.exp c)]) 
                  ) 
 *)
@@ -38,66 +38,66 @@ module E = Js_exp_make
 module S = Js_stmt_make 
 let super = Js_record_map.super 
 let flatten_map = { super with 
-  
-    statement = (fun self x ->
-      match x.statement_desc with 
-      |  Exp ({expression_desc = Seq _; _} as v) ->
-          S.block ( List.rev_map (fun x -> self.statement self x) (Js_analyzer.rev_flatten_seq v ))
-      | Exp {expression_desc = Caml_block (args, _mutable_flag, _tag, _tag_info )}
-        ->         
-        S.block (Ext_list.map args (fun arg -> self.statement self (S.exp arg)))         
-      |  Exp ({expression_desc = Cond(a,b,c); comment} ) -> 
-          { statement_desc = If (a, [ self.statement self (S.exp b)],  
-                                  [ self.statement self (S.exp c)]); comment}
 
-      |  Exp ({expression_desc = Bin(Eq, a, ({expression_desc = Seq _; _ } as v)); _} )
-        ->
-          let block = Js_analyzer.rev_flatten_seq v in
-          begin match block with
-          | {statement_desc = Exp last_one ; _} :: rest_rev
-            ->  
-              S.block (Ext_list.rev_map_append  rest_rev 
-                [self.statement self (S.exp (E.assign a  last_one))]
-                (fun x -> self.statement self x)
-              )
-                (* TODO: here we introduce a block, should avoid it *)
-              (* super#statement *)
-              (*   (S.block (List.rev_append rest_rev [S.exp (E.assign a  last_one)])) *)
-          | _ ->
-              assert false
-          end
-      | Return {expression_desc = Cond (a,b,c);  comment}
-        -> 
-          { statement_desc = If (a, [self.statement self (S.return_stmt b)],  
-                                  [ self.statement self (S.return_stmt c)]); comment}
+                    statement = (fun self x ->
+                        match x.statement_desc with 
+                        |  Exp ({expression_desc = Seq _; _} as v) ->
+                          S.block ( List.rev_map (fun x -> self.statement self x) (Js_analyzer.rev_flatten_seq v ))
+                        | Exp {expression_desc = Caml_block (args, _mutable_flag, _tag, _tag_info )}
+                          ->         
+                          S.block (Ext_list.map args (fun arg -> self.statement self (S.exp arg)))         
+                        |  Exp ({expression_desc = Cond(a,b,c); comment} ) -> 
+                          { statement_desc = If (a, [ self.statement self (S.exp b)],  
+                                                 [ self.statement self (S.exp c)]); comment}
 
-      | Return ({expression_desc = Seq _; _} as v) ->
-          let block = Js_analyzer.rev_flatten_seq v  in
-          begin match block with
-          | {statement_desc = Exp last_one ; _} :: rest_rev
-            ->  
-              super.statement self
-                (S.block (Ext_list.rev_map_append rest_rev [S.return_stmt last_one] (fun x -> self.statement self x)))
-          | _ -> assert false
-          end
-      | Block [x]
-          -> 
-            self.statement self x 
-      | _ -> super.statement self x 
-    );      
-    block = fun self b ->
-      match b with
-      | {statement_desc = Block bs } :: rest ->
-          self.block self ( bs @  rest)
-      | x::rest  
-        -> 
-          let st = self.statement self x in 
-          let block = self.block self rest in 
-          begin match st.statement_desc with 
-          | Block bs ->  bs @ block
-          | _ -> st :: block
-          end  
-      | [] -> []
-}
+                        |  Exp ({expression_desc = Bin(Eq, a, ({expression_desc = Seq _; _ } as v)); _} )
+                          ->
+                          let block = Js_analyzer.rev_flatten_seq v in
+                          begin match block with
+                            | {statement_desc = Exp last_one ; _} :: rest_rev
+                              ->  
+                              S.block (Ext_list.rev_map_append  rest_rev 
+                                         [self.statement self (S.exp (E.assign a  last_one))]
+                                         (fun x -> self.statement self x)
+                                      )
+                            (* TODO: here we introduce a block, should avoid it *)
+                            (* super#statement *)
+                            (*   (S.block (List.rev_append rest_rev [S.exp (E.assign a  last_one)])) *)
+                            | _ ->
+                              assert false
+                          end
+                        | Return {expression_desc = Cond (a,b,c);  comment}
+                          -> 
+                          { statement_desc = If (a, [self.statement self (S.return_stmt b)],  
+                                                 [ self.statement self (S.return_stmt c)]); comment}
+
+                        | Return ({expression_desc = Seq _; _} as v) ->
+                          let block = Js_analyzer.rev_flatten_seq v  in
+                          begin match block with
+                            | {statement_desc = Exp last_one ; _} :: rest_rev
+                              ->  
+                              super.statement self
+                                (S.block (Ext_list.rev_map_append rest_rev [S.return_stmt last_one] (fun x -> self.statement self x)))
+                            | _ -> assert false
+                          end
+                        | Block [x]
+                          -> 
+                          self.statement self x 
+                        | _ -> super.statement self x 
+                      );      
+                    block = fun self b ->
+                      match b with
+                      | {statement_desc = Block bs } :: rest ->
+                        self.block self ( bs @  rest)
+                      | x::rest  
+                        -> 
+                        let st = self.statement self x in 
+                        let block = self.block self rest in 
+                        begin match st.statement_desc with 
+                          | Block bs ->  bs @ block
+                          | _ -> st :: block
+                        end  
+                      | [] -> []
+                  }
 
 let program ( x : J.program) = flatten_map.program flatten_map x 

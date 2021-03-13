@@ -24,5 +24,5 @@
 
 
 
- val get_stats:
+val get_stats:
   J.program -> J.variable_declaration Hash_ident.t

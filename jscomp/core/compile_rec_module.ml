@@ -98,44 +98,44 @@ let rec is_function_or_const_block (lam : Lambda.lambda) acc =
 
 
 let is_strict_or_all_functions (xs : binding list) = 
-    Ext_list.for_all xs (fun (_, opt, rhs) -> 
+  Ext_list.for_all xs (fun (_, opt, rhs) -> 
       match opt with 
       | None -> true 
       | _ -> is_function_or_const_block rhs Set_ident.empty
     )
-    
+
 
 (* Without such optimizations:
 
-{[
-  module rec X : sig 
-    val f : int -> int   
-  end = struct 
-    let f x = x + 1
-  end   
-  and Y : sig 
-    val f : int -> int  
-  end = struct 
-    let f x  = x + 2
-  end
-]}
-would generate such rawlambda:
+   {[
+     module rec X : sig 
+       val f : int -> int   
+     end = struct 
+       let f x = x + 1
+     end   
+     and Y : sig 
+       val f : int -> int  
+     end = struct 
+       let f x  = x + 2
+     end
+   ]}
+   would generate such rawlambda:
 
-{[
-  (setglobal Debug_tmp!
-  (let
-    (X/1002 = (#init_mod [0: "debug_tmp.ml" 15 6] [0: [0: [0: 0a "f"]]])
-     Y/1003 = (#init_mod [0: "debug_tmp.ml" 20 6] [0: [0: [0: 0a "f"]]]))
-    (seq
-      (#update_mod [0: [0: [0: 0a "f"]]] X/1002
-        (let (f/1010 = (function x/1011 (+ x/1011 1)))
-          (makeblock 0/[f] f/1010)))
-      (#update_mod [0: [0: [0: 0a "f"]]] Y/1003
-        (let (f/1012 = (function x/1013 (+ x/1013 2)))
-          (makeblock 0/[f] f/1012)))
-      (makeblock 0/module/exports X/1002 Y/1003))))
+   {[
+     (setglobal Debug_tmp!
+        (let
+          (X/1002 = (#init_mod [0: "debug_tmp.ml" 15 6] [0: [0: [0: 0a "f"]]])
+             Y/1003 = (#init_mod [0: "debug_tmp.ml" 20 6] [0: [0: [0: 0a "f"]]]))
+            (seq
+               (#update_mod [0: [0: [0: 0a "f"]]] X/1002
+                  (let (f/1010 = (function x/1011 (+ x/1011 1)))
+                       (makeblock 0/[f] f/1010)))
+               (#update_mod [0: [0: [0: 0a "f"]]] Y/1003
+                  (let (f/1012 = (function x/1013 (+ x/1013 2)))
+                       (makeblock 0/[f] f/1012)))
+               (makeblock 0/module/exports X/1002 Y/1003))))
 
-]}
+   ]}
 *)
 let eval_rec_bindings 
     (bindings : binding list) 

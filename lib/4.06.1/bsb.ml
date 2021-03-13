@@ -104,9 +104,9 @@ val filter :
   'a array
 
 val filter_map : 
-'a array -> 
-('a -> 'b option) -> 
-'b array
+  'a array -> 
+  ('a -> 'b option) -> 
+  'b array
 
 val range : int -> int -> int array
 
@@ -118,7 +118,7 @@ val to_list_f :
   'b list 
 
 val to_list_map : 
-'a array -> ('a -> 'b option) -> 'b list 
+  'a array -> ('a -> 'b option) -> 'b list 
 
 val to_list_map_acc : 
   'a array -> 
@@ -160,7 +160,7 @@ val for_alli :
   'a array -> 
   (int -> 'a -> bool) -> 
   bool 
-    
+
 val map :   
   'a array -> 
   ('a -> 'b) -> 
@@ -287,7 +287,7 @@ let rec tolist_f_aux a f  i res =
     let v = Array.unsafe_get a i in
     tolist_f_aux a f  (i - 1)
       (f v :: res)
-       
+
 let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
 
 let rec tolist_aux a f  i res =
@@ -445,14 +445,14 @@ let iter a f =
   for i = 0 to length a - 1 do f(unsafe_get a i) done
 
 
-  let fold_left a x f =
-    let open Array in 
-    let r = ref x in    
-    for i = 0 to length a - 1 do
-      r := f !r (unsafe_get a i)
-    done;
-    !r
-  
+let fold_left a x f =
+  let open Array in 
+  let r = ref x in    
+  for i = 0 to length a - 1 do
+    r := f !r (unsafe_get a i)
+  done;
+  !r
+
 let get_or arr i cb =     
   if i >=0 && i < Array.length arr then 
     Array.unsafe_get arr i 
@@ -489,9 +489,9 @@ module Ext_bytes : sig
 
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-                     = "caml_blit_string" 
+  = "caml_blit_string" 
 [@@noalloc]
-    
+
 
 
 
@@ -528,7 +528,7 @@ end = struct
 
 
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-                     = "caml_blit_string" 
+  = "caml_blit_string" 
 [@@noalloc]                     
 
 
@@ -550,10 +550,10 @@ module Ext_buffer : sig
 
 (** Extensible buffers.
 
-   This module implements buffers that automatically expand
-   as necessary.  It provides accumulative concatenation of strings
-   in quasi-linear time (instead of quadratic time when strings are
-   concatenated pairwise).
+    This module implements buffers that automatically expand
+    as necessary.  It provides accumulative concatenation of strings
+    in quasi-linear time (instead of quadratic time when strings are
+    concatenated pairwise).
 *)
 
 (* ReScript customization: customized for efficient digest *)
@@ -563,17 +563,17 @@ type t
 
 val create : int -> t
 (** [create n] returns a fresh buffer, initially empty.
-   The [n] parameter is the initial size of the internal byte sequence
-   that holds the buffer contents. That byte sequence is automatically
-   reallocated when more than [n] characters are stored in the buffer,
-   but shrinks back to [n] characters when [reset] is called.
-   For best performance, [n] should be of the same order of magnitude
-   as the number of characters that are expected to be stored in
-   the buffer (for instance, 80 for a buffer that holds one output
-   line).  Nothing bad will happen if the buffer grows beyond that
-   limit, however. In doubt, take [n = 16] for instance.
-   If [n] is not between 1 and {!Sys.max_string_length}, it will
-   be clipped to that interval. *)
+    The [n] parameter is the initial size of the internal byte sequence
+    that holds the buffer contents. That byte sequence is automatically
+    reallocated when more than [n] characters are stored in the buffer,
+    but shrinks back to [n] characters when [reset] is called.
+    For best performance, [n] should be of the same order of magnitude
+    as the number of characters that are expected to be stored in
+    the buffer (for instance, 80 for a buffer that holds one output
+    line).  Nothing bad will happen if the buffer grows beyond that
+    limit, however. In doubt, take [n = 16] for instance.
+    If [n] is not between 1 and {!Sys.max_string_length}, it will
+    be clipped to that interval. *)
 
 val contents : t -> string
 (** Return a copy of the current contents of the buffer.
@@ -600,7 +600,7 @@ val add_string : t -> string -> unit
 
 (* val add_substring : t -> string -> int -> int -> unit *)
 (** [add_substring b s ofs len] takes [len] characters from offset
-   [ofs] in string [s] and appends them at the end of the buffer [b]. *)
+    [ofs] in string [s] and appends them at the end of the buffer [b]. *)
 
 (* val add_subbytes : t -> bytes -> int -> int -> unit *)
 (** [add_substring b s ofs len] takes [len] characters from offset
@@ -609,17 +609,17 @@ val add_string : t -> string -> unit
 
 (* val add_buffer : t -> t -> unit *)
 (** [add_buffer b1 b2] appends the current contents of buffer [b2]
-   at the end of buffer [b1].  [b2] is not modified. *)    
+    at the end of buffer [b1].  [b2] is not modified. *)    
 
 (* val add_channel : t -> in_channel -> int -> unit *)
 (** [add_channel b ic n] reads exactly [n] character from the
-   input channel [ic] and stores them at the end of buffer [b].
-   Raise [End_of_file] if the channel contains fewer than [n]
-   characters. *)
+    input channel [ic] and stores them at the end of buffer [b].
+    Raise [End_of_file] if the channel contains fewer than [n]
+    characters. *)
 
 val output_buffer : out_channel -> t -> unit
 (** [output_buffer oc b] writes the current contents of buffer [b]
-   on the output channel [oc]. *)   
+    on the output channel [oc]. *)   
 
 val digest : t -> Digest.t   
 
@@ -629,34 +629,34 @@ val not_equal :
   bool 
 
 val add_int_1 :    
-   t -> int -> unit 
+  t -> int -> unit 
 
 val add_int_2 :    
-   t -> int -> unit 
+  t -> int -> unit 
 
 val add_int_3 :    
-   t -> int -> unit 
+  t -> int -> unit 
 
 val add_int_4 :    
-   t -> int -> unit 
+  t -> int -> unit 
 
 val add_string_char :    
-   t -> 
-   string ->
-   char -> 
-   unit
-   
+  t -> 
+  string ->
+  char -> 
+  unit
+
 val add_ninja_prefix_var : 
-   t -> 
-   string -> 
-   unit 
-   
-   
+  t -> 
+  string -> 
+  unit 
+
+
 val add_char_string :    
-   t -> 
-   char -> 
-   string -> 
-   unit
+  t -> 
+  char -> 
+  string -> 
+  unit
 end = struct
 #1 "ext_buffer.ml"
 (**************************************************************************)
@@ -677,30 +677,30 @@ end = struct
 (* Extensible buffers *)
 
 type t =
- {mutable buffer : bytes;
-  mutable position : int;
-  mutable length : int;
-  initial_buffer : bytes}
+  {mutable buffer : bytes;
+   mutable position : int;
+   mutable length : int;
+   initial_buffer : bytes}
 
 let create n =
- let n = if n < 1 then 1 else n in
- let s = Bytes.create n in
- {buffer = s; position = 0; length = n; initial_buffer = s}
+  let n = if n < 1 then 1 else n in
+  let s = Bytes.create n in
+  {buffer = s; position = 0; length = n; initial_buffer = s}
 
 let contents b = Bytes.sub_string b.buffer 0 b.position
 (* let to_bytes b = Bytes.sub b.buffer 0 b.position  *)
 
 (* let sub b ofs len =
-  if ofs < 0 || len < 0 || ofs > b.position - len
-  then invalid_arg "Ext_buffer.sub"
-  else Bytes.sub_string b.buffer ofs len *)
+   if ofs < 0 || len < 0 || ofs > b.position - len
+   then invalid_arg "Ext_buffer.sub"
+   else Bytes.sub_string b.buffer ofs len *)
 
 
 (* let blit src srcoff dst dstoff len =
-  if len < 0 || srcoff < 0 || srcoff > src.position - len
+   if len < 0 || srcoff < 0 || srcoff > src.position - len
              || dstoff < 0 || dstoff > (Bytes.length dst) - len
-  then invalid_arg "Ext_buffer.blit"
-  else
+   then invalid_arg "Ext_buffer.blit"
+   else
     Bytes.unsafe_blit src.buffer srcoff dst dstoff len *)
 
 let length b = b.position
@@ -708,8 +708,8 @@ let is_empty b = b.position = 0
 let clear b = b.position <- 0
 
 (* let reset b =
-  b.position <- 0; b.buffer <- b.initial_buffer;
-  b.length <- Bytes.length b.buffer *)
+   b.position <- 0; b.buffer <- b.initial_buffer;
+   b.length <- Bytes.length b.buffer *)
 
 let resize b more =
   let len = b.length in
@@ -730,16 +730,16 @@ let [@inline] add_char b c =
   b.position <- pos + 1  
 
 (* let add_substring b s offset len =
-  if offset < 0 || len < 0 || offset > String.length s - len
-  then invalid_arg "Ext_buffer.add_substring/add_subbytes";
-  let new_position = b.position + len in
-  if new_position > b.length then resize b len;
-  Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
-  b.position <- new_position   *)
+   if offset < 0 || len < 0 || offset > String.length s - len
+   then invalid_arg "Ext_buffer.add_substring/add_subbytes";
+   let new_position = b.position + len in
+   if new_position > b.length then resize b len;
+   Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
+   b.position <- new_position   *)
 
 
 (* let add_subbytes b s offset len =
-  add_substring b (Bytes.unsafe_to_string s) offset len *)
+   add_substring b (Bytes.unsafe_to_string s) offset len *)
 
 let add_string b s =
   let len = String.length s in
@@ -786,17 +786,17 @@ let add_ninja_prefix_var b s =
 
 (* let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
 
-let add_buffer b bs =
-  add_subbytes b bs.buffer 0 bs.position *)
+   let add_buffer b bs =
+   add_subbytes b bs.buffer 0 bs.position *)
 
 (* let add_channel b ic len =
-  if len < 0 
+   if len < 0 
     || len > Sys.max_string_length 
     then   (* PR#5004 *)
     invalid_arg "Ext_buffer.add_channel";
-  if b.position + len > b.length then resize b len;
-  really_input ic b.buffer b.position len;
-  b.position <- b.position + len *)
+   if b.position + len > b.length then resize b len;
+   really_input ic b.buffer b.position len;
+   b.position <- b.position + len *)
 
 let output_buffer oc b =
   output oc b.buffer 0 b.position  
@@ -805,15 +805,15 @@ external unsafe_string: bytes -> int -> int -> Digest.t = "caml_md5_string"
 
 let digest b = 
   unsafe_string 
-  b.buffer 0 b.position    
+    b.buffer 0 b.position    
 
 let rec not_equal_aux (b : bytes) (s : string) i len = 
-    if i >= len then false
-    else 
-      (Bytes.unsafe_get b i 
-      <>
-      String.unsafe_get s i )
-      || not_equal_aux b s (i + 1) len 
+  if i >= len then false
+  else 
+    (Bytes.unsafe_get b i 
+     <>
+     String.unsafe_get s i )
+    || not_equal_aux b s (i + 1) len 
 
 (** avoid a large copy *)
 let not_equal  (b : t) (s : string) = 
@@ -824,8 +824,8 @@ let not_equal  (b : t) (s : string) =
 
 
 (**
-  It could be one byte, two bytes, three bytes and four bytes 
-  TODO: inline for better performance
+   It could be one byte, two bytes, three bytes and four bytes 
+   TODO: inline for better performance
 *)
 let add_int_1 (b : t ) (x : int ) = 
   let c = (Char.unsafe_chr (x land 0xff)) in 
@@ -833,7 +833,7 @@ let add_int_1 (b : t ) (x : int ) =
   if pos >= b.length then resize b 1;
   Bytes.unsafe_set b.buffer pos c;
   b.position <- pos + 1  
-  
+
 let add_int_2 (b : t ) (x : int ) = 
   let c1 = (Char.unsafe_chr (x land 0xff)) in 
   let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
@@ -988,11 +988,11 @@ val ends_with_index : string -> string -> int
 val ends_with : string -> string -> bool
 
 (**
-  [ends_with_then_chop name ext]
-  @example:
+   [ends_with_then_chop name ext]
+   @example:
    {[
      ends_with_then_chop "a.cmj" ".cmj"
-     "a"
+       "a"
    ]}
    This is useful in controlled or file case sensitve system
 *)
@@ -1002,9 +1002,9 @@ val ends_with_then_chop : string -> string -> string option
 
 
 (**
-  [for_all_from  s start p]
-  if [start] is negative, it raises,
-  if [start] is too large, it returns true
+   [for_all_from  s start p]
+   if [start] is negative, it raises,
+   if [start] is too large, it returns true
 *)
 val for_all_from:
   string -> 
@@ -1024,7 +1024,7 @@ val repeat : int -> string -> string
 val equal : string -> string -> bool
 
 (**
-  [extract_until s cursor sep]
+   [extract_until s cursor sep]
    When [sep] not found, the cursor is updated to -1,
    otherwise cursor is increased to 1 + [sep_position]
    User can not determine whether it is found or not by
@@ -1032,10 +1032,10 @@ val equal : string -> string -> bool
    "\n\n" would result in an empty string too.
 *)
 (* val extract_until:
-  string -> 
-  int ref -> (* cursor to be updated *)
-  char -> 
-  string *)
+   string -> 
+   int ref -> (* cursor to be updated *)
+   char -> 
+   string *)
 
 val index_count:  
   string -> 
@@ -1045,15 +1045,15 @@ val index_count:
   int 
 
 (* val index_next :
-  string -> 
-  int ->
-  char -> 
-  int  *)
+   string -> 
+   int ->
+   char -> 
+   int  *)
 
-  
+
 (**
-  [find ~start ~sub s]
-  returns [-1] if not found
+   [find ~start ~sub s]
+   returns [-1] if not found
 *)
 val find : ?start:int -> sub:string -> string -> int
 
@@ -1064,7 +1064,7 @@ val non_overlap_count : sub:string -> string -> int
 val rfind : sub:string -> string -> int
 
 (** [tail_from s 1]
-  return a substring from offset 1 (inclusive)
+    return a substring from offset 1 (inclusive)
 *)
 val tail_from : string -> int -> string
 
@@ -1117,7 +1117,7 @@ val capitalize_sub:
   string -> 
   int -> 
   string
-  
+
 val uncapitalize_ascii : string -> string
 
 val lowercase_ascii : string -> string 
@@ -1259,17 +1259,17 @@ let ends_with_then_chop s beg =
 (* let check_suffix_case_then_chop = ends_with_then_chop *)
 
 (* let check_any_suffix_case s suffixes = 
-  Ext_list.exists suffixes (fun x -> check_suffix_case s x)  *)
+   Ext_list.exists suffixes (fun x -> check_suffix_case s x)  *)
 
 (* let check_any_suffix_case_then_chop s suffixes = 
-  let rec aux suffixes = 
+   let rec aux suffixes = 
     match suffixes with 
     | [] -> None 
     | x::xs -> 
       let id = ends_with_index s x in 
       if id >= 0 then Some (String.sub s 0 id)
       else aux xs in 
-  aux suffixes     *)
+   aux suffixes     *)
 
 
 
@@ -1371,9 +1371,9 @@ let tail_from s x =
 let equal (x : string) y  = x = y
 
 (* let rec index_rec s lim i c =
-  if i >= lim then -1 else
-  if String.unsafe_get s i = c then i 
-  else index_rec s lim (i + 1) c *)
+   if i >= lim then -1 else
+   if String.unsafe_get s i = c then i 
+   else index_rec s lim (i + 1) c *)
 
 
 
@@ -1391,16 +1391,16 @@ let index_count s i c count =
   index_rec_count s lim i c count 
 
 (* let index_next s i c =   
-  index_count s i c 1  *)
+   index_count s i c 1  *)
 
 (* let extract_until s cursor c =       
-  let len = String.length s in   
-  let start = !cursor in 
-  if start < 0 || start >= len then (
+   let len = String.length s in   
+   let start = !cursor in 
+   if start < 0 || start >= len then (
     cursor := -1;
     ""
     )
-  else 
+   else 
     let i = index_rec s len start c in   
     let finish = 
       if i < 0 then (      
@@ -1412,7 +1412,7 @@ let index_count s i c count =
         i 
       ) in 
     String.sub s start (finish - start) *)
-  
+
 let rec rindex_rec s i c =
   if i < 0 then i else
   if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
@@ -1608,10 +1608,10 @@ let capitalize_sub (s : string) len : string =
     done ;
     Bytes.unsafe_to_string bytes 
 
-    
+
 
 let uncapitalize_ascii =
-    String.uncapitalize_ascii
+  String.uncapitalize_ascii
 
 let lowercase_ascii = String.lowercase_ascii
 
@@ -1623,7 +1623,7 @@ let get_int_1 (x : string) off : int =
 let get_int_2 (x : string) off : int = 
   Char.code x.[off] lor   
   Char.code x.[off+1] lsl 8
-  
+
 let get_int_3 (x : string) off : int = 
   Char.code x.[off] lor   
   Char.code x.[off+1] lsl 8  lor 
@@ -1731,132 +1731,132 @@ end = struct
 
 
 
- type anon_fun = rev_args:string list -> unit
- 
- type string_action = 
-   | String_call of (string -> unit)  
-   | String_set of string ref
+type anon_fun = rev_args:string list -> unit
 
- type unit_action = 
-    | Unit_call of (unit -> unit) 
-    | Unit_set of bool ref
+type string_action = 
+  | String_call of (string -> unit)  
+  | String_set of string ref
 
- type spec =
-   | Unit of unit_action
-   | String of string_action 
- 
- 
+type unit_action = 
+  | Unit_call of (unit -> unit) 
+  | Unit_set of bool ref
 
- 
- type error =
-   | Unknown of string
-   | Missing of string
- 
+type spec =
+  | Unit of unit_action
+  | String of string_action 
+
+
+
+
+type error =
+  | Unknown of string
+  | Missing of string
+
 type t = spec Ext_spec.t
 
- 
+
 exception Bad of string 
 
 let bad_arg s = raise_notrace (Bad s)
 
 let (+>) = Ext_buffer.add_string
- 
- let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
-   buf +> usage;
-   buf +> "\nOptions:\n";
-   let max_col = ref 0 in 
-   Ext_array.iter speclist (fun (key,_,_) -> 
-       if String.length key > !max_col then 
-         max_col := String.length key
-     );
-   Ext_array.iter speclist (fun (key,_,doc) -> 
-       if not (Ext_string.starts_with doc "*internal*") then begin 
-         buf +> "  ";
-         buf +> key ; 
-         buf +> (String.make (!max_col - String.length key + 2 ) ' ');
-         let cur = ref 0 in 
-         let doc_length = String.length doc in 
-         while !cur < doc_length do 
-           match String.index_from_opt doc !cur '\n' with 
-           | None -> 
-             if !cur <> 0 then begin 
-               buf +>  "\n";
-               buf +> String.make (!max_col + 4) ' ' ;
-             end;
-             buf +> String.sub doc !cur (String.length doc - !cur );
-             cur := doc_length
-           | Some new_line_pos -> 
-             if !cur <> 0 then begin 
-               buf +>  "\n";
-               buf +> String.make (!max_col + 4) ' ' ;
-             end;
-             buf +> String.sub doc !cur (new_line_pos - !cur );
-             cur := new_line_pos + 1
-         done ;
-         buf +> "\n"
-       end
-     )
- ;;
- 
- 
-   
- let stop_raise ~usage ~(error : error) (speclist : t )  =
-   let b = Ext_buffer.create 200 in  
-   begin match error with
-     | Unknown ("-help" | "--help" | "-h") -> 
-       usage_b b ~usage speclist ;
-       Ext_buffer.output_buffer stdout b;
-       exit 0      
-     | Unknown s ->
-       b +> "unknown option: '";
-       b +> s ;
-       b +> "'.\n"
-     | Missing s ->
-       b +> "option '";
-       b +> s;
-       b +> "' needs an argument.\n"      
-   end;
-   usage_b b ~usage speclist ;
-   bad_arg (Ext_buffer.contents b)
- 
- 
- let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) anonfun = 
-   let current = ref start in 
-   let rev_list = ref [] in 
-   while !current < finish do
-     let s = argv.(!current) in
-     incr current;  
-     if s <> "" && s.[0] = '-' then begin
-       match Ext_spec.assoc3 speclist s with 
-       | Some action -> begin       
-           begin match action with 
-             | Unit r -> 
-               begin match r with 
-                 | Unit_set r -> r.contents <- true
-                 | Unit_call f -> f ()
-               end
-             | String f  ->
-               if !current >= finish then stop_raise ~usage ~error:(Missing s) speclist 
-               else begin                 
-                 let arg = argv.(!current) in 
-                 incr current;  
-                 match f with 
-                 | String_call f ->   
-                   f arg
-                 | String_set u -> u.contents <- arg
-               end             
-           end;      
-         end;      
-       | None -> stop_raise ~usage ~error:(Unknown s) speclist 
-     end else begin
-       rev_list := s :: !rev_list;      
-     end;
-   done;
-   anonfun ~rev_args:!rev_list
- ;;
- 
- 
- 
+
+let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
+  buf +> usage;
+  buf +> "\nOptions:\n";
+  let max_col = ref 0 in 
+  Ext_array.iter speclist (fun (key,_,_) -> 
+      if String.length key > !max_col then 
+        max_col := String.length key
+    );
+  Ext_array.iter speclist (fun (key,_,doc) -> 
+      if not (Ext_string.starts_with doc "*internal*") then begin 
+        buf +> "  ";
+        buf +> key ; 
+        buf +> (String.make (!max_col - String.length key + 2 ) ' ');
+        let cur = ref 0 in 
+        let doc_length = String.length doc in 
+        while !cur < doc_length do 
+          match String.index_from_opt doc !cur '\n' with 
+          | None -> 
+            if !cur <> 0 then begin 
+              buf +>  "\n";
+              buf +> String.make (!max_col + 4) ' ' ;
+            end;
+            buf +> String.sub doc !cur (String.length doc - !cur );
+            cur := doc_length
+          | Some new_line_pos -> 
+            if !cur <> 0 then begin 
+              buf +>  "\n";
+              buf +> String.make (!max_col + 4) ' ' ;
+            end;
+            buf +> String.sub doc !cur (new_line_pos - !cur );
+            cur := new_line_pos + 1
+        done ;
+        buf +> "\n"
+      end
+    )
+;;
+
+
+
+let stop_raise ~usage ~(error : error) (speclist : t )  =
+  let b = Ext_buffer.create 200 in  
+  begin match error with
+    | Unknown ("-help" | "--help" | "-h") -> 
+      usage_b b ~usage speclist ;
+      Ext_buffer.output_buffer stdout b;
+      exit 0      
+    | Unknown s ->
+      b +> "unknown option: '";
+      b +> s ;
+      b +> "'.\n"
+    | Missing s ->
+      b +> "option '";
+      b +> s;
+      b +> "' needs an argument.\n"      
+  end;
+  usage_b b ~usage speclist ;
+  bad_arg (Ext_buffer.contents b)
+
+
+let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) anonfun = 
+  let current = ref start in 
+  let rev_list = ref [] in 
+  while !current < finish do
+    let s = argv.(!current) in
+    incr current;  
+    if s <> "" && s.[0] = '-' then begin
+      match Ext_spec.assoc3 speclist s with 
+      | Some action -> begin       
+          begin match action with 
+            | Unit r -> 
+              begin match r with 
+                | Unit_set r -> r.contents <- true
+                | Unit_call f -> f ()
+              end
+            | String f  ->
+              if !current >= finish then stop_raise ~usage ~error:(Missing s) speclist 
+              else begin                 
+                let arg = argv.(!current) in 
+                incr current;  
+                match f with 
+                | String_call f ->   
+                  f arg
+                | String_set u -> u.contents <- arg
+              end             
+          end;      
+        end;      
+      | None -> stop_raise ~usage ~error:(Unknown s) speclist 
+    end else begin
+      rev_list := s :: !rev_list;      
+    end;
+  done;
+  anonfun ~rev_args:!rev_list
+;;
+
+
+
 end
 module Bsb_build_schemas
 = struct
@@ -2001,7 +2001,7 @@ val combine_array_append:
   ('c * 'b) list -> 
   ('a -> 'c) ->
   ('c * 'b) list   
-  
+
 val has_string :   
   string list ->
   string -> 
@@ -2032,8 +2032,8 @@ val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list
     For empty list, it returns empty
 *)
 val map_last : 
-    'a list -> 
-    (bool -> 'a -> 'b) -> 'b list
+  'a list -> 
+  (bool -> 'a -> 'b) -> 'b list
 
 (** [last l]
     return the last element
@@ -2076,8 +2076,8 @@ val fold_right3 :
   'd -> 
   ('a -> 'b -> 'c -> 'd -> 'd) -> 
   'd
-  
-  
+
+
 val map2 : 
   'a list ->
   'b list ->
@@ -2161,8 +2161,8 @@ val length_ge : 'a list -> int -> bool
 val length_larger_than_n : 
   'a list -> 
   'a list -> 
-   int -> 
-   bool
+  int -> 
+  bool
 
 
 (**
@@ -2219,10 +2219,10 @@ val drop :
   'a list 
 
 val find_first :   
-    'a list ->
-    ('a -> bool) ->
-    'a option 
-    
+  'a list ->
+  ('a -> bool) ->
+  'a option 
+
 (** [find_first_not p lst ]
     if all elements in [lst] pass, return [None] 
     otherwise return the first element [e] as [Some e] which
@@ -2243,30 +2243,30 @@ val find_opt :
   'b option 
 
 val find_def : 
-    'a list -> 
-    ('a -> 'b option) ->
-    'b ->
-    'b 
+  'a list -> 
+  ('a -> 'b option) ->
+  'b ->
+  'b 
 
-    
+
 val rev_iter : 
   'a list -> 
   ('a -> unit) -> 
   unit 
 
 val iter:   
-   'a list ->  
-   ('a -> unit) -> 
-   unit
-   
+  'a list ->  
+  ('a -> unit) -> 
+  unit
+
 val for_all:  
-    'a list -> 
-    ('a -> bool) -> 
-    bool
+  'a list -> 
+  ('a -> bool) -> 
+  bool
 val for_all_snd:    
-    ('a * 'b) list -> 
-    ('b -> bool) -> 
-    bool
+  ('a * 'b) list -> 
+  ('b -> bool) -> 
+  bool
 
 (** [for_all2_no_exn p xs ys]
     return [true] if all satisfied,
@@ -2301,7 +2301,7 @@ val sort_via_arrayf:
   'a list -> 
   ('a -> 'a -> int) ->
   ('a -> 'b ) -> 
-   'b list  
+  'b list  
 
 
 
@@ -2342,30 +2342,30 @@ val exists_snd :
   bool
 
 val concat_append:
-    'a list list -> 
-    'a list -> 
-    'a list
+  'a list list -> 
+  'a list -> 
+  'a list
 
 val fold_left2:
-    'a list -> 
-    'b list -> 
-    'c -> 
-    ('a -> 'b -> 'c -> 'c)
-    -> 'c 
+  'a list -> 
+  'b list -> 
+  'c -> 
+  ('a -> 'b -> 'c -> 'c)
+  -> 'c 
 
 val fold_left:    
-    'a list -> 
-    'b -> 
-    ('b -> 'a -> 'b) -> 
-    'b
+  'a list -> 
+  'b -> 
+  ('b -> 'a -> 'b) -> 
+  'b
 
 val singleton_exn:     
-    'a list -> 'a
+  'a list -> 'a
 
 val mem_string :     
-    string list -> 
-    string -> 
-    bool
+  string list -> 
+  string -> 
+  bool
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2437,7 +2437,7 @@ let rec has_string l f =
     x1 = f || x2 = f || x3 = f
   | x1 :: x2 :: x3 :: x4 ->
     x1 = f || x2 = f || x3 = f || has_string x4 f 
-  
+
 let rec map_combine l1 l2 f =
   match (l1, l2) with
     ([], []) -> []
@@ -2464,7 +2464,7 @@ let combine_array arr l f =
   combine_array_unsafe arr l 0 len [] f 
 
 let rec map_split_opt 
-  (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
+    (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
   : 'b list * 'c list = 
   match xs with 
   | [] -> [], []
@@ -2685,10 +2685,10 @@ let rec fold_left_with_offset l accu i f =
   | [] -> accu
   | a::l -> 
     fold_left_with_offset 
-    l     
-    (f  a accu  i)  
-    (i + 1)
-    f  
+      l     
+      (f  a accu  i)  
+      (i + 1)
+      f  
 
 
 let rec filter_map xs (f: 'a -> 'b option)= 
@@ -2879,7 +2879,7 @@ let rec length_ge l n =
     | _ :: tl -> length_ge tl (n - 1)
     | [] -> false
   else true
-  
+
 (**
    {[length xs = length ys + n ]}
 *)
@@ -3086,7 +3086,7 @@ let rec iter_snd lst f =
   | (_,x)::xs -> 
     f x ; 
     iter_snd xs f 
-    
+
 let rec iter_fst lst f =     
   match lst with
   | [] -> ()
@@ -3110,8 +3110,8 @@ let rec exists_snd l p =
   | (_, a)::l -> p a || exists_snd l p 
 
 let rec concat_append 
-  (xss : 'a list list)  
-  (xs : 'a list) : 'a list = 
+    (xss : 'a list list)  
+    (xs : 'a list) : 'a list = 
   match xss with 
   | [] -> xs 
   | l::r -> append l (concat_append r xs)
@@ -3120,7 +3120,7 @@ let rec fold_left l accu f =
   match l with
     [] -> accu
   | a::l -> fold_left l (f accu a) f 
-  
+
 let reduce_from_left lst fn = 
   match lst with 
   | first :: rest ->  fold_left rest first fn 
@@ -3211,47 +3211,47 @@ val concat_or_join :
   ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
 
 module type S =
-  sig
-    type key
-    type +'a t
-    val empty : 'a t
-    val compare_key : key -> key -> int
-    val is_empty : 'a t -> bool
-    val mem : 'a t -> key -> bool
-    val to_sorted_array : 'a t -> (key * 'a) array
-    val to_sorted_array_with_f : 'a t -> (key -> 'a -> 'b) -> 'b array
-    val add : 'a t -> key -> 'a -> 'a t
-    val adjust : 'a t -> key -> ('a option -> 'a) -> 'a t
-    val singleton : key -> 'a -> 'a t
-    val remove : 'a t -> key -> 'a t
-    (* val merge :
-      'a t -> 'b t -> (key -> 'a option -> 'b option -> 'c option) -> 'c t *)
-    val disjoint_merge_exn : 
+sig
+  type key
+  type +'a t
+  val empty : 'a t
+  val compare_key : key -> key -> int
+  val is_empty : 'a t -> bool
+  val mem : 'a t -> key -> bool
+  val to_sorted_array : 'a t -> (key * 'a) array
+  val to_sorted_array_with_f : 'a t -> (key -> 'a -> 'b) -> 'b array
+  val add : 'a t -> key -> 'a -> 'a t
+  val adjust : 'a t -> key -> ('a option -> 'a) -> 'a t
+  val singleton : key -> 'a -> 'a t
+  val remove : 'a t -> key -> 'a t
+  (* val merge :
+     'a t -> 'b t -> (key -> 'a option -> 'b option -> 'c option) -> 'c t *)
+  val disjoint_merge_exn : 
     'a t -> 
     'a t -> 
     (key -> 'a -> 'a -> exn) -> 
     'a t
-    
-    val iter : 'a t -> (key -> 'a -> unit) -> unit
-    val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
-    val for_all : 'a t -> (key -> 'a -> bool) -> bool
-    val exists : 'a t -> (key -> 'a -> bool) -> bool
-    (* val filter : 'a t -> (key -> 'a -> bool) -> 'a t *)
-    (* val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t *)
-    val cardinal : 'a t -> int
-    val bindings : 'a t -> (key * 'a) list
-    val keys : 'a t -> key list
-    (* val choose : 'a t -> key * 'a *)
 
-    val find_exn : 'a t -> key -> 'a
-    val find_opt : 'a t -> key -> 'a option
-    val find_default : 'a t -> key -> 'a -> 'a
-    val map : 'a t -> ('a -> 'b) -> 'b t
-    val mapi : 'a t -> (key -> 'a -> 'b) -> 'b t
-    val of_list : (key * 'a) list -> 'a t
-    val of_array : (key * 'a) array -> 'a t
-    val add_list : (key * 'b) list -> 'b t -> 'b t
-  end
+  val iter : 'a t -> (key -> 'a -> unit) -> unit
+  val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
+  val for_all : 'a t -> (key -> 'a -> bool) -> bool
+  val exists : 'a t -> (key -> 'a -> bool) -> bool
+  (* val filter : 'a t -> (key -> 'a -> bool) -> 'a t *)
+  (* val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t *)
+  val cardinal : 'a t -> int
+  val bindings : 'a t -> (key * 'a) list
+  val keys : 'a t -> key list
+  (* val choose : 'a t -> key * 'a *)
+
+  val find_exn : 'a t -> key -> 'a
+  val find_opt : 'a t -> key -> 'a option
+  val find_default : 'a t -> key -> 'a -> 'a
+  val map : 'a t -> ('a -> 'b) -> 'b t
+  val mapi : 'a t -> (key -> 'a -> 'b) -> 'b t
+  val of_list : (key * 'a) list -> 'a t
+  val of_array : (key * 'a) array -> 'a t
+  val add_list : (key * 'b) list -> 'b t -> 'b t
+end
 
 end = struct
 #1 "map_gen.ml"
@@ -3275,12 +3275,12 @@ type ('key,'a) t0 =
   | Empty
   | Leaf of {k : 'key ; v : 'a}
   | Node of {
-    l : ('key,'a) t0 ;
-    k : 'key ;
-    v : 'a ;
-    r : ('key,'a) t0 ;
-    h : int
-  }
+      l : ('key,'a) t0 ;
+      k : 'key ;
+      v : 'a ;
+      r : ('key,'a) t0 ;
+      h : int
+    }
 
 let  empty = Empty
 let rec map x f = match x with
@@ -3317,13 +3317,13 @@ let [@inline] unsafe_node_maybe_leaf k v l r h =
   else Node{l;k;v;r; h }           
 
 
-  type ('key, + 'a) t = ('key,'a) t0 = private
-    | Empty
-    | Leaf of {
+type ('key, + 'a) t = ('key,'a) t0 = private
+  | Empty
+  | Leaf of {
       k : 'key ;
       v : 'a
     }
-    | Node of {
+  | Node of {
       l : ('key,'a) t ;
       k : 'key ;
       v : 'a ;
@@ -3531,7 +3531,7 @@ let rec join l v d r =
   match l with
   | Empty -> add_min v d r
   | Leaf leaf ->
-      add_min leaf.k leaf.v (add_min v d r)
+    add_min leaf.k leaf.v (add_min v d r)
   | Node xl ->
     match r with  
     | Empty -> add_max v d l
@@ -3561,129 +3561,129 @@ let concat_or_join t1 v d t2 =
   | Some d -> join t1 v d t2
   | None -> concat t1 t2
 
-    
+
 module type S =
-  sig
-    type key
-    type +'a t
-    val empty: 'a t
-    val compare_key: key -> key -> int 
-    val is_empty: 'a t -> bool
-    val mem: 'a t -> key -> bool
-    val to_sorted_array : 
-      'a t -> (key * 'a ) array
-    val to_sorted_array_with_f : 
-      'a t -> (key -> 'a -> 'b) -> 'b array  
-    val add: 'a t -> key -> 'a -> 'a t
-    (** [add x y m] 
-        If [x] was already bound in [m], its previous binding disappears. *)
+sig
+  type key
+  type +'a t
+  val empty: 'a t
+  val compare_key: key -> key -> int 
+  val is_empty: 'a t -> bool
+  val mem: 'a t -> key -> bool
+  val to_sorted_array : 
+    'a t -> (key * 'a ) array
+  val to_sorted_array_with_f : 
+    'a t -> (key -> 'a -> 'b) -> 'b array  
+  val add: 'a t -> key -> 'a -> 'a t
+  (** [add x y m] 
+      If [x] was already bound in [m], its previous binding disappears. *)
 
-    val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
-    (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
-        [add k v (replace (Some old))]
-    *)
-    
-    val singleton: key -> 'a -> 'a t
+  val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
+  (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
+      [add k v (replace (Some old))]
+  *)
 
-    val remove: 'a t -> key -> 'a t
-    (** [remove x m] returns a map containing the same bindings as
-       [m], except for [x] which is unbound in the returned map. *)
+  val singleton: key -> 'a -> 'a t
 
-    (* val merge:
-         'a t -> 'b t ->
-         (key -> 'a option -> 'b option -> 'c option) ->  'c t *)
-    (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
-        and of [m2]. The presence of each such binding, and the corresponding
-        value, is determined with the function [f].
-        @since 3.12.0
-     *)
+  val remove: 'a t -> key -> 'a t
+  (** [remove x m] returns a map containing the same bindings as
+      [m], except for [x] which is unbound in the returned map. *)
 
-    val disjoint_merge_exn : 
-      'a t 
-      -> 'a t 
-      -> (key -> 'a -> 'a -> exn)
-      -> 'a t
-     (* merge two maps, will raise if they have the same key *)
+  (* val merge:
+       'a t -> 'b t ->
+       (key -> 'a option -> 'b option -> 'c option) ->  'c t *)
+  (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
+      and of [m2]. The presence of each such binding, and the corresponding
+      value, is determined with the function [f].
+      @since 3.12.0
+  *)
 
-
-
-    val iter: 'a t -> (key -> 'a -> unit) ->  unit
-    (** [iter f m] applies [f] to all bindings in map [m].
-        The bindings are passed to [f] in increasing order. *)
-
-    val fold: 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
-    (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
-       where [k1 ... kN] are the keys of all bindings in [m]
-       (in increasing order) *)
-
-    val for_all: 'a t -> (key -> 'a -> bool) -> bool
-    (** [for_all p m] checks if all the bindings of the map.
-        order unspecified
-     *)
-
-    val exists: 'a t -> (key -> 'a -> bool) -> bool
-    (** [exists p m] checks if at least one binding of the map
-        satisfy the predicate [p]. 
-        order unspecified
-     *)
-
-    (* val filter: 'a t -> (key -> 'a -> bool) -> 'a t *)
-    (** [filter p m] returns the map with all the bindings in [m]
-        that satisfy predicate [p].
-        order unspecified
-     *)
-
-    (* val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t *)
-    (** [partition p m] returns a pair of maps [(m1, m2)], where
-        [m1] contains all the bindings of [s] that satisfy the
-        predicate [p], and [m2] is the map with all the bindings of
-        [s] that do not satisfy [p].
-     *)
-
-    val cardinal: 'a t -> int
-    (** Return the number of bindings of a map. *)
-
-    val bindings: 'a t -> (key * 'a) list
-    (** Return the list of all bindings of the given map.
-       The returned list is sorted in increasing order with respect
-       to the ordering *)
-    val keys : 'a t -> key list 
-    (* Increasing order *)
+  val disjoint_merge_exn : 
+    'a t 
+    -> 'a t 
+    -> (key -> 'a -> 'a -> exn)
+    -> 'a t
+  (* merge two maps, will raise if they have the same key *)
 
 
 
-    (* val split: 'a t -> key -> 'a t * 'a option * 'a t *)
-    (** [split x m] returns a triple [(l, data, r)], where
-          [l] is the map with all the bindings of [m] whose key
-        is strictly less than [x];
-          [r] is the map with all the bindings of [m] whose key
-        is strictly greater than [x];
-          [data] is [None] if [m] contains no binding for [x],
-          or [Some v] if [m] binds [v] to [x].
-        @since 3.12.0
-     *)
+  val iter: 'a t -> (key -> 'a -> unit) ->  unit
+  (** [iter f m] applies [f] to all bindings in map [m].
+      The bindings are passed to [f] in increasing order. *)
 
-    val find_exn: 'a t -> key ->  'a
-    (** [find x m] returns the current binding of [x] in [m],
-       or raises [Not_found] if no such binding exists. *)
-    val find_opt:  'a t ->  key ->'a option
-    val find_default: 'a t -> key  ->  'a  -> 'a 
-    val map: 'a t -> ('a -> 'b) -> 'b t
-    (** [map f m] returns a map with same domain as [m], where the
-       associated value [a] of all bindings of [m] has been
-       replaced by the result of the application of [f] to [a].
-       The bindings are passed to [f] in increasing order
-       with respect to the ordering over the type of the keys. *)
+  val fold: 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
+  (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
+      where [k1 ... kN] are the keys of all bindings in [m]
+      (in increasing order) *)
 
-    val mapi: 'a t ->  (key -> 'a -> 'b) -> 'b t
-    (** Same as {!Map.S.map}, but the function receives as arguments both the
-       key and the associated value for each binding of the map. *)
+  val for_all: 'a t -> (key -> 'a -> bool) -> bool
+  (** [for_all p m] checks if all the bindings of the map.
+      order unspecified
+  *)
 
-    val of_list : (key * 'a) list -> 'a t 
-    val of_array : (key * 'a ) array -> 'a t 
-    val add_list : (key * 'b) list -> 'b t -> 'b t
+  val exists: 'a t -> (key -> 'a -> bool) -> bool
+  (** [exists p m] checks if at least one binding of the map
+      satisfy the predicate [p]. 
+      order unspecified
+  *)
 
-  end
+  (* val filter: 'a t -> (key -> 'a -> bool) -> 'a t *)
+  (** [filter p m] returns the map with all the bindings in [m]
+      that satisfy predicate [p].
+      order unspecified
+  *)
+
+  (* val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t *)
+  (** [partition p m] returns a pair of maps [(m1, m2)], where
+      [m1] contains all the bindings of [s] that satisfy the
+      predicate [p], and [m2] is the map with all the bindings of
+      [s] that do not satisfy [p].
+  *)
+
+  val cardinal: 'a t -> int
+  (** Return the number of bindings of a map. *)
+
+  val bindings: 'a t -> (key * 'a) list
+  (** Return the list of all bindings of the given map.
+      The returned list is sorted in increasing order with respect
+      to the ordering *)
+  val keys : 'a t -> key list 
+  (* Increasing order *)
+
+
+
+  (* val split: 'a t -> key -> 'a t * 'a option * 'a t *)
+  (** [split x m] returns a triple [(l, data, r)], where
+        [l] is the map with all the bindings of [m] whose key
+      is strictly less than [x];
+        [r] is the map with all the bindings of [m] whose key
+      is strictly greater than [x];
+        [data] is [None] if [m] contains no binding for [x],
+        or [Some v] if [m] binds [v] to [x].
+      @since 3.12.0
+  *)
+
+  val find_exn: 'a t -> key ->  'a
+  (** [find x m] returns the current binding of [x] in [m],
+      or raises [Not_found] if no such binding exists. *)
+  val find_opt:  'a t ->  key ->'a option
+  val find_default: 'a t -> key  ->  'a  -> 'a 
+  val map: 'a t -> ('a -> 'b) -> 'b t
+  (** [map f m] returns a map with same domain as [m], where the
+      associated value [a] of all bindings of [m] has been
+      replaced by the result of the application of [f] to [a].
+      The bindings are passed to [f] in increasing order
+      with respect to the ordering over the type of the keys. *)
+
+  val mapi: 'a t ->  (key -> 'a -> 'b) -> 'b t
+  (** Same as {!Map.S.map}, but the function receives as arguments both the
+      key and the associated value for each binding of the map. *)
+
+  val of_list : (key * 'a) list -> 'a t 
+  val of_array : (key * 'a ) array -> 'a t 
+  val add_list : (key * 'b) list -> 'b t -> 'b t
+
+end
 
 end
 module Map_string : sig 
@@ -3721,11 +3721,10 @@ end = struct
 # 2 "ext/map.cppo.ml"
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
 
-  
 # 5 "ext/map.cppo.ml"
-  type key = string 
-  let compare_key = Ext_string.compare
-  let [@inline] eq_key (x : key) y = x = y
+type key = string 
+let compare_key = Ext_string.compare
+let [@inline] eq_key (x : key) y = x = y
 # 19 "ext/map.cppo.ml"
 (* let [@inline] (=) (a : int) b = a = b *)
 type + 'a t = (key,'a) Map_gen.t
@@ -3843,8 +3842,8 @@ let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with
       bal l k v (remove r x )
 
 type 'a split = 
-    | Yes of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t ; v : 'a}
-    | No of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t }
+  | Yes of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t ; v : 'a}
+  | No of {l : (key,'a) Map_gen.t; r : (key,'a)Map_gen.t }
 
 
 let rec split  (tree : (key,'a) Map_gen.t) x : 'a split  = 
@@ -3887,10 +3886,10 @@ let rec disjoint_merge_exn
         else Map_gen.unsafe_two_elements l2.k l2.v k l1.v
       | Node _ -> 
         adjust s2 k (fun data -> 
-          match data with 
-          |  None -> l1.v
-          | Some s2v  -> raise_notrace (fail k l1.v s2v)
-        )        
+            match data with 
+            |  None -> l1.v
+            | Some s2v  -> raise_notrace (fail k l1.v s2v)
+          )        
     end
   | Node ({k} as xs1) -> 
     if  xs1.h >= height s2 then
@@ -3980,8 +3979,8 @@ type module_info =
     dir : string;
     syntax_kind : syntax_kind;
     (* This is actually not stored in bsbuild meta info 
-      since creating .d file only emit .cmj/.cmi dependencies, so it does not
-      need know which syntax it is written
+       since creating .d file only emit .cmj/.cmi dependencies, so it does not
+       need know which syntax it is written
     *)
     case : bool;
     name_sans_extension : string;
@@ -3997,12 +3996,12 @@ type 'a cat  = {
 type t = map cat  
 
 (** store  the meta data indexed by {!Bsb_dir_index}
-  {[
-    0 --> lib group
-    1 --> dev 1 group
-    .
-    
-  ]}
+    {[
+      0 --> lib group
+        1 --> dev 1 group
+                    .
+
+    ]}
 *)
 
 
@@ -4050,7 +4049,7 @@ type syntax_kind =
   | Ml 
   | Reason     
   | Res
-  
+
 type module_info = 
   {
     mutable info : info;
@@ -4111,30 +4110,30 @@ val is_ordered : cmp:('a -> 'a -> int) -> 'a t-> bool
 val invariant : cmp:('a -> 'a -> int) -> 'a t-> bool
 
 module type S =
-  sig
-    type elt
-    type t
-    val empty : t
-    val is_empty : t -> bool
-    val iter : t -> (elt -> unit) -> unit
-    val fold : t -> 'a -> (elt -> 'a -> 'a) -> 'a
-    val for_all : t -> (elt -> bool) -> bool
-    val exists : t -> (elt -> bool) -> bool
-    val singleton : elt -> t
-    val cardinal : t -> int
-    val elements : t -> elt list
-    val choose : t -> elt
-    val mem : t -> elt -> bool
-    val add : t -> elt -> t
-    val remove : t -> elt -> t
-    val union : t -> t -> t
-    val inter : t -> t -> t
-    val diff : t -> t -> t    
-    val of_list : elt list -> t
-    val of_sorted_array : elt array -> t
-    val invariant : t -> bool
-    val print : Format.formatter -> t -> unit
-  end
+sig
+  type elt
+  type t
+  val empty : t
+  val is_empty : t -> bool
+  val iter : t -> (elt -> unit) -> unit
+  val fold : t -> 'a -> (elt -> 'a -> 'a) -> 'a
+  val for_all : t -> (elt -> bool) -> bool
+  val exists : t -> (elt -> bool) -> bool
+  val singleton : elt -> t
+  val cardinal : t -> int
+  val elements : t -> elt list
+  val choose : t -> elt
+  val mem : t -> elt -> bool
+  val add : t -> elt -> t
+  val remove : t -> elt -> t
+  val union : t -> t -> t
+  val inter : t -> t -> t
+  val diff : t -> t -> t    
+  val of_list : elt list -> t
+  val of_sorted_array : elt array -> t
+  val invariant : t -> bool
+  val print : Format.formatter -> t -> unit
+end
 
 end = struct
 #1 "set_gen.ml"
@@ -4184,7 +4183,7 @@ let [@inline] singleton x = Leaf x
 
 let [@inline] unsafe_two_elements x v = 
   unsafe_node v (singleton x) empty 2 
-  
+
 type 'a t = 'a t0 = private
   | Empty 
   | Leaf of 'a
@@ -4806,11 +4805,11 @@ module Bsb_file_groups : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- type public = 
+type public = 
   | Export_none
   | Export_all 
   | Export_set of Set_string.t 
-  
+
 
 type build_generator = 
   { input : string list ;
@@ -4883,11 +4882,11 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- type public = 
+type public = 
   | Export_none
   | Export_all 
   | Export_set of Set_string.t 
-  
+
 
 type build_generator = 
   { input : string list ;
@@ -4952,7 +4951,7 @@ module Ext_module_system
 
 
 type t =
-     | NodeJS | Es6 | Es6_global
+  | NodeJS | Es6 | Es6_global
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -4988,7 +4987,7 @@ module Ext_pervasives : sig
 
 
 (** Extension to standard library [Pervavives] module, safe to open 
-  *)
+*)
 
 external reraise: exn -> 'a = "%reraise"
 
@@ -5017,7 +5016,7 @@ val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
 (** Copied from {!Btype.hash_variant}:
     need sync up and add test case
- *)
+*)
 (* val hash_variant : string -> int *)
 
 (* val todo : string -> 'a *)
@@ -5064,12 +5063,12 @@ external reraise: exn -> 'a = "%reraise"
 let finally v ~clean:action f   = 
   match f v with
   | exception e -> 
-      action v ;
-      reraise e 
+    action v ;
+    reraise e 
   | e ->  action v ; e 
 
 (* let try_it f  =   
-  try ignore (f ()) with _ -> () *)
+   try ignore (f ()) with _ -> () *)
 
 let with_file_as_chan filename f = 
   finally (open_out_bin filename) ~clean:close_out f 
@@ -5093,8 +5092,8 @@ let hash_variant s =
   if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu *)
 
 (* let todo loc = 
-  failwith (loc ^ " Not supported yet")
- *)
+   failwith (loc ^ " Not supported yet")
+*)
 
 
 
@@ -5138,17 +5137,17 @@ module Ext_fmt
 let with_file_as_pp filename f = 
   Ext_pervasives.finally (open_out_bin filename) ~clean:close_out
     (fun chan -> 
-      let fmt = Format.formatter_of_out_channel chan in
-      let v = f  fmt in
-      Format.pp_print_flush fmt ();
-      v
+       let fmt = Format.formatter_of_out_channel chan in
+       let v = f  fmt in
+       Format.pp_print_flush fmt ();
+       v
     ) 
 
 
 
 let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
     fmt
-    
+
 let invalid_argf fmt = Format.ksprintf invalid_arg fmt
 
 
@@ -5520,12 +5519,12 @@ let cwd = lazy (Sys.getcwd())
 
 let split_by_sep_per_os : string -> string list = 
   if Ext_sys.is_windows_or_cygwin then 
-  fun x -> 
-    (* on Windows, we can still accept -bs-package-output lib/js *)
-    Ext_string.split_by 
-      (fun x -> match x with |'/' |'\\' -> true | _ -> false) x
+    fun x -> 
+      (* on Windows, we can still accept -bs-package-output lib/js *)
+      Ext_string.split_by 
+        (fun x -> match x with |'/' |'\\' -> true | _ -> false) x
   else 
-  fun x -> Ext_string.split x '/'
+    fun x -> Ext_string.split x '/'
 
 (** example
     {[
@@ -5582,14 +5581,14 @@ let node_concat ~dir base =
   dir ^ Literals.node_sep ^ base 
 
 let node_rebase_file ~from ~to_ file = 
-  
+
   node_concat
     ~dir:(
       if from = to_ then Literals.node_current
       else node_relative_path ~from:(Dir from) (Dir to_)) 
     file
-    
-    
+
+
 (***
    {[
      Filename.concat "." "";;
@@ -5692,7 +5691,7 @@ let rel_normalized_absolute_path ~from to_ =
       | [], y::ys -> Ext_list.fold_left ys y (fun acc x -> acc // x) 
       | _::xs, [] ->
         Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ -> acc // Ext_string.parent_dir_lit )
-     in
+    in
     let v =  go paths1 paths2  in 
 
     if Ext_string.is_empty v then  Literals.node_current
@@ -5774,15 +5773,15 @@ let absolute_cwd_path s =
   absolute_path cwd  s 
 
 (* let absolute cwd s =   
-  match s with 
-  | File x -> File (absolute_path cwd x )
-  | Dir x -> Dir (absolute_path cwd x) *)
+   match s with 
+   | File x -> File (absolute_path cwd x )
+   | Dir x -> Dir (absolute_path cwd x) *)
 
 let concat dirname filename =
   if filename = Filename.current_dir_name then dirname
   else if dirname = Filename.current_dir_name then filename
   else Filename.concat dirname filename
-  
+
 
 let check_suffix_case =
   Ext_string.ends_with
@@ -5895,14 +5894,14 @@ let all_lib_artifacts =
 let rev_lib_bs = ".."// ".."
 
 (* access the js directory from "lib/bs", 
-  it would be '../js'
+   it would be '../js'
 *)
 let lib_bs_prefix_of_format (x : Ext_module_system.t) = 
   ".." // match x with 
   | NodeJS -> "js"
   | Es6 -> "es6"
   | Es6_global -> "es6_global"
-  
+
 (* lib/js, lib/es6, lib/es6_global *)
 let top_prefix_of_format (x : Ext_module_system.t)  =   
   match x with 
@@ -6025,14 +6024,14 @@ let equal (x : t) y =
   | Global _, Scope _ -> false
 
 (**
-  input: {[
-    @hello/yy/xx
-    hello/yy
-  ]}
-  FIXME: fix invalid input
-  {[
-    hello//xh//helo
-  ]}
+   input: {[
+     @hello/yy/xx
+        hello/yy
+   ]}
+   FIXME: fix invalid input
+   {[
+     hello//xh//helo
+   ]}
 *)
 let extract_pkg_name_and_file (s : string) =   
   let len = String.length s in 
@@ -6045,22 +6044,22 @@ let extract_pkg_name_and_file (s : string) =
     let pkg_id =   
       Ext_string.no_slash_idx_from
         s (scope_id + 1)   in 
-     let scope =     
+    let scope =     
       String.sub s 0 scope_id in 
-     
-     if pkg_id < 0 then     
+
+    if pkg_id < 0 then     
       (Scope(String.sub s (scope_id + 1) (len - scope_id - 1), scope),"")
-     else 
+    else 
       (Scope(
-        String.sub s (scope_id + 1) (pkg_id - scope_id - 1), scope), 
+          String.sub s (scope_id + 1) (pkg_id - scope_id - 1), scope), 
        String.sub s (pkg_id + 1) (len - pkg_id - 1))
   else     
-      let pkg_id = Ext_string.no_slash_idx s in 
-      if pkg_id < 0 then 
+    let pkg_id = Ext_string.no_slash_idx s in 
+    if pkg_id < 0 then 
       Global s , ""
-      else 
+    else 
       Global (String.sub s 0 pkg_id), 
-              (String.sub s (pkg_id + 1) (len - pkg_id - 1))
+      (String.sub s (pkg_id + 1) (len - pkg_id - 1))
 
 
 let string_as_package (s : string) : t = 
@@ -6069,15 +6068,15 @@ let string_as_package (s : string) : t =
   let v = String.unsafe_get s 0 in 
   if v = '@' then 
     let scope_id = 
-        Ext_string.no_slash_idx s in 
+      Ext_string.no_slash_idx s in 
     assert (scope_id > 0); 
     (* better-eror message for invalid scope package:
-      @rescript/std
+       @rescript/std
     *)
     Scope(
       String.sub s (scope_id + 1) (len - scope_id - 1),
       String.sub s 0 scope_id
-      )    
+    )    
   else Global s       
 end
 module Ext_json_types
@@ -6129,7 +6128,7 @@ and t =
   | Str of json_str
   | Arr  of json_array
   | Obj of json_map
-   
+
 
 end
 module Ext_position : sig 
@@ -6160,10 +6159,10 @@ module Ext_position : sig
 
 
 type t = Lexing.position = {
-    pos_fname : string ;
-    pos_lnum : int ;
-    pos_bol : int ;
-    pos_cnum : int
+  pos_fname : string ;
+  pos_lnum : int ;
+  pos_bol : int ;
+  pos_cnum : int
 }
 
 (** [offset pos newpos]
@@ -6176,8 +6175,8 @@ type t = Lexing.position = {
 val offset : t -> t -> t 
 
 val lexbuf_from_channel_with_fname:
-    in_channel -> string -> 
-    Lexing.lexbuf
+  in_channel -> string -> 
+  Lexing.lexbuf
 
 val print : Format.formatter -> t -> unit 
 end = struct
@@ -6208,17 +6207,17 @@ end = struct
 
 
 type t = Lexing.position = {
-    pos_fname : string ;
-    pos_lnum : int ;
-    pos_bol : int ;
-    pos_cnum : int
+  pos_fname : string ;
+  pos_lnum : int ;
+  pos_bol : int ;
+  pos_cnum : int
 }
 
 let offset (x : t) (y:t) =
   {
     x with 
     pos_lnum =
-       x.pos_lnum + y.pos_lnum - 1;
+      x.pos_lnum + y.pos_lnum - 1;
     pos_cnum = 
       x.pos_cnum + y.pos_cnum;
     pos_bol = 
@@ -6290,7 +6289,7 @@ type callback =
   | `Obj of (Ext_json_types.t Map_string.t -> unit)
   | `Arr of (Ext_json_types.t array -> unit )
   | `Arr_loc of 
-    (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
+      (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
   | `Null of (unit -> unit)
   | `Not_found of (unit -> unit)
   | `Id of (Ext_json_types.t -> unit )
@@ -6300,7 +6299,7 @@ val test:
   ?fail:(unit -> unit) ->
   string -> callback 
   -> Ext_json_types.t Map_string.t
-   -> Ext_json_types.t Map_string.t
+  -> Ext_json_types.t Map_string.t
 
 
 val loc_of : Ext_json_types.t -> Ext_position.t
@@ -6431,8 +6430,8 @@ val print : Format.formatter -> error -> unit
 val package_not_found : pkg:Bsb_pkg_types.t -> json:string option -> 'a
 
 val conflict_module:
-    string -> string -> string -> exn
-    
+  string -> string -> string -> exn
+
 val errorf : loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
 
 val config_error : Ext_json_types.t -> string -> 'a 
@@ -6491,48 +6490,48 @@ let print (fmt : Format.formatter) (x : error) =
   match x with
   | Conflict_module (modname,dir1,dir2) ->
     Format.fprintf fmt
-    "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
-    File names must be unique per project"
+      "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
+       File names must be unique per project"
       modname dir1 dir2
   | Not_consistent modname ->     
     Format.fprintf fmt 
-    "@{<error>Error:@} %s has implementation/interface in non-consistent syntax(reason/ocaml)" modname
+      "@{<error>Error:@} %s has implementation/interface in non-consistent syntax(reason/ocaml)" modname
   | No_implementation (modname) ->     
     Format.fprintf fmt 
-    "@{<error>Error:@} %s does not have implementation file" modname
+      "@{<error>Error:@} %s does not have implementation file" modname
   | Package_not_found (name,json_opt) ->
     let in_json = match json_opt with
-    | None -> Ext_string.empty
-    | Some x -> " in " ^ x in
+      | None -> Ext_string.empty
+      | Some x -> " in " ^ x in
     let name = Bsb_pkg_types.to_string name in 
     if Ext_string.equal name !Bs_version.package_name then
       Format.fprintf fmt
-      "File \"bsconfig.json\", line 1\n\
-       @{<error>Error:@} package @{<error>%s@} is not found %s\n\
-       It's the basic, required package. If you have it installed globally,\n\
-       Please run `npm link bs-platform` to make it available" name in_json
+        "File \"bsconfig.json\", line 1\n\
+         @{<error>Error:@} package @{<error>%s@} is not found %s\n\
+         It's the basic, required package. If you have it installed globally,\n\
+         Please run `npm link bs-platform` to make it available" name in_json
     else
       Format.fprintf fmt
         "File \"bsconfig.json\", line 1\n\
          @{<error>Error:@} package @{<error>%s@} not found or built %s\n\
          - Did you install it?\n\
          - If you did, did you run `bsb -make-world`?"
-         name
-         in_json
+        name
+        in_json
 
   | Json_config (pos,s) ->
     Format.fprintf fmt "File %S, line %d:\n\
                         @{<error>Error:@} %s \n\
                         For more details, please checkout the schema https://rescript-lang.org/docs/manual/latest/build-configuration-schema"
-                        pos.pos_fname
-                        pos.pos_lnum s
+      pos.pos_fname
+      pos.pos_lnum s
   | Invalid_spec s ->
     Format.fprintf fmt
-    "@{<error>Error: Invalid bsconfig.json %s@}" s
+      "@{<error>Error: Invalid bsconfig.json %s@}" s
   | Invalid_json s ->
     Format.fprintf fmt
-    "File %S, line 1\n\
-    @{<error>Error: Invalid json format@}" s
+      "File %S, line 1\n\
+       @{<error>Error: Invalid json format@}" s
 
 let conflict_module modname dir1 dir2 =
   Error (Conflict_module (modname,dir1,dir2))
@@ -6656,14 +6655,14 @@ type style
 
 
 (* let ansi_of_color = function
-  | Black -> "0"
-  | Red -> "1"
-  | Green -> "2"
-  | Yellow -> "3"
-  | Blue -> "4"
-  | Magenta -> "5"
-  | Cyan -> "6"
-  | White -> "7" *)
+   | Black -> "0"
+   | Red -> "1"
+   | Green -> "2"
+   | Yellow -> "3"
+   | Blue -> "4"
+   | Magenta -> "5"
+   | Cyan -> "6"
+   | White -> "7" *)
 
 let code_of_style = function
   | FG Black -> "30"
@@ -6674,7 +6673,7 @@ let code_of_style = function
   | FG Magenta -> "35"
   | FG Cyan -> "36"
   | FG White -> "37"
-  
+
   | BG Black -> "40"
   | BG Red -> "41"
   | BG Green -> "42"
@@ -6791,7 +6790,7 @@ end = struct
 
 let ninja_ansi_forced = lazy 
   (try Sys.getenv "NINJA_ANSI_FORCED" with 
-    Not_found  ->""
+     Not_found  ->""
   )  
 let color_enabled = lazy (Unix.isatty Unix.stdout)
 
@@ -6815,7 +6814,7 @@ let color_functions : Format.formatter_tag_functions = {
 }
 
 (* let set_color ppf =
-  Format.pp_set_formatter_tag_functions ppf color_functions *)
+   Format.pp_set_formatter_tag_functions ppf color_functions *)
 
 
 let setup () = 
@@ -6844,7 +6843,7 @@ let int_of_level (x : level) =
 let log_level = ref Warn
 
 let verbose () =
-   log_level := Debug
+  log_level := Debug
 let dfprintf level fmt = 
   if int_of_level level >= int_of_level  !log_level then 
     Format.fprintf fmt 
@@ -6871,7 +6870,7 @@ let info_args (args : string array) =
       Format.pp_print_newline Format.std_formatter ()
     end
   else ()
-  
+
 
 end
 module Bsb_real_path : sig 
@@ -6922,9 +6921,9 @@ let real_path p =
   | exception _ ->
     let rec resolve dir =
       if Sys.file_exists dir then normalize_exn dir else
-      let parent = Filename.dirname dir in
-      if dir = parent then dir
-      else  (resolve parent) // (Filename.basename dir)
+        let parent = Filename.dirname dir in
+        if dir = parent then dir
+        else  (resolve parent) // (Filename.basename dir)
     in
     let p =
       if Filename.is_relative p then (Sys.getcwd ()) // p
@@ -6972,7 +6971,7 @@ module Ext_util : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- 
+
 val power_2_above : int -> int -> int
 
 
@@ -7094,10 +7093,10 @@ let resize indexfun h =
       | Cons {key; next} as cell ->
         let nidx = indexfun h key in
         begin match Array.unsafe_get ndata_tail nidx with 
-        | Empty -> 
-          Array.unsafe_set ndata nidx cell
-        | Cons tail ->
-          tail.next <- cell  
+          | Empty -> 
+            Array.unsafe_set ndata nidx cell
+          | Cons tail ->
+            tail.next <- cell  
         end;
         Array.unsafe_set ndata_tail nidx cell;
         insert_bucket next
@@ -7450,7 +7449,7 @@ module Bsb_pkg : sig
 
 (** @raise  when not found *)
 val resolve_bs_package : 
-    cwd:string ->  Bsb_pkg_types.t -> string 
+  cwd:string ->  Bsb_pkg_types.t -> string 
 
 
 (** used by watcher *)    
@@ -7491,8 +7490,8 @@ let (//) = Filename.concat
 type t = Bsb_pkg_types.t
 
 (* TODO: be more restrict 
-  [bsconfig.json] does not always make sense, 
-  when resolving [ppx-flags]
+   [bsconfig.json] does not always make sense, 
+   when resolving [ppx-flags]
 *)
 let make_sub_path (x : t) : string = 
   Literals.node_modules // Bsb_pkg_types.to_string x
@@ -7525,18 +7524,18 @@ let  resolve_bs_package_aux  ~cwd (pkg : t) =
         | Some(resolved_dir) -> resolved_dir
         | None -> Bsb_exception.package_not_found ~pkg ~json:None)    
   in
-   aux cwd 
-    
-    
-    
-    
-    
+  aux cwd 
+
+
+
+
+
 
 module Coll = Hash.Make(struct
-  type nonrec t = t 
-  let equal = Bsb_pkg_types.equal
-  let hash (x : t) = Hashtbl.hash x     
-end)
+    type nonrec t = t 
+    let equal = Bsb_pkg_types.equal
+    let hash (x : t) = Hashtbl.hash x     
+  end)
 
 
 let cache : string Coll.t = Coll.create 0
@@ -7544,27 +7543,27 @@ let cache : string Coll.t = Coll.create 0
 
 let to_list cb  =   
   Coll.to_list cache  cb 
-  
+
 
 
 (** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd (package : t) =
-    match Coll.find_opt cache package with
-    | None ->
-      let result = resolve_bs_package_aux ~cwd package in
-      Bsb_log.info "@{<info>Package@} %a -> %s@." Bsb_pkg_types.print package result ;
-      Coll.add cache package result ;
-      result
-    | Some x
-      ->
-      let result = resolve_bs_package_aux ~cwd package in
-      if not (Bsb_real_path.is_same_paths_via_io result x) then
-        begin
-          Bsb_log.warn
-            "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @." 
-              Bsb_pkg_types.print package x result cwd;
-        end;
-      x
+  match Coll.find_opt cache package with
+  | None ->
+    let result = resolve_bs_package_aux ~cwd package in
+    Bsb_log.info "@{<info>Package@} %a -> %s@." Bsb_pkg_types.print package result ;
+    Coll.add cache package result ;
+    result
+  | Some x
+    ->
+    let result = resolve_bs_package_aux ~cwd package in
+    if not (Bsb_real_path.is_same_paths_via_io result x) then
+      begin
+        Bsb_log.warn
+          "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @." 
+          Bsb_pkg_types.print package x result cwd;
+      end;
+    x
 
 
 (** The package does not need to be a bspackage
@@ -7673,7 +7672,7 @@ module Ext_filename : sig
 
 val is_dir_sep : 
   char -> bool 
-  
+
 val maybe_quote:
   string -> 
   string
@@ -7788,8 +7787,8 @@ let chop_all_extensions_maybe name =
   let rec search_dot i last =
     if i < 0 || is_dir_sep (String.unsafe_get name i) then 
       (match last with 
-      | None -> name
-      | Some i -> String.sub name 0 i)  
+       | None -> name
+       | Some i -> String.sub name 0 i)  
     else if String.unsafe_get name i = '.' then 
       search_dot (i - 1) (Some i)
     else search_dot (i - 1) last in
@@ -7812,11 +7811,11 @@ let new_extension name (ext : string) =
 
 
 (** TODO: improve efficiency
-   given a path, calcuate its module name 
-   Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
-   we can not strip all extensions, otherwise
-   we can not tell the difference between "x.cpp.ml" 
-   and "x.ml"
+    given a path, calcuate its module name 
+    Note that `ocamlc.opt -c aa.xx.mli` gives `aa.xx.cmi`
+    we can not strip all extensions, otherwise
+    we can not tell the difference between "x.cpp.ml" 
+    and "x.ml"
 *)
 let module_name name = 
   let rec search_dot i  name =
@@ -7895,7 +7894,7 @@ let as_module ~basename =
       search_dot (i - 1) name name_len in  
   let name_len = String.length basename in       
   search_dot (name_len - 1)  basename name_len
-    
+
 end
 module Ext_js_file_kind
 = struct
@@ -7984,9 +7983,9 @@ val change_ext_ns_suffix :
   string
 
 
-  
+
 (** [js_name_of_modulename ~little A-Ns]
-  *)
+*)
 val js_name_of_modulename : 
   string -> 
   Ext_js_file_kind.case -> 
@@ -8059,7 +8058,7 @@ let try_split_module_name name =
 
 
 
-  
+
 
 let js_name_of_modulename s (case : Ext_js_file_kind.case) suffix : string = 
   let s = match case with 
@@ -8159,7 +8158,7 @@ val get_list_of_output_js :
   string list
 
 (**
-  Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
+   Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
 *)
 val package_flag_of_package_specs : 
   t -> 
@@ -8221,7 +8220,7 @@ type t = {
   modules : Spec_set.t;
   runtime: string option;  
   (* This has to be resolved as early as possible, since 
-    the path will be inherited in sub projects
+     the path will be inherited in sub projects
   *)
 }
 
@@ -8269,7 +8268,7 @@ let rec from_array suffix (arr : Ext_json_types.t array) : Spec_set.t =
 and from_json_single suffix (x : Ext_json_types.t) : spec =
   match x with
   | Str {str = format; loc } ->    
-      {format = supported_format format loc  ; in_source = false ; suffix }    
+    {format = supported_format format loc  ; in_source = false ; suffix }    
   | Obj {map; loc} ->
     begin match map .?("module") with
       | Some(Str {str = format}) ->
@@ -8318,9 +8317,9 @@ let package_flag ({format; in_source; suffix } : spec) dir =
        (string_of_format format)
        Ext_string.single_colon
        (if in_source then dir else
-        Bsb_config.top_prefix_of_format format // dir)
-      Ext_string.single_colon  
-      (Ext_js_suffix.to_string suffix)
+          Bsb_config.top_prefix_of_format format // dir)
+       Ext_string.single_colon  
+       (Ext_js_suffix.to_string suffix)
     )
 
 (* FIXME: we should adapt it *)    
@@ -8346,29 +8345,29 @@ let default_package_specs suffix =
 let get_list_of_output_js 
     (package_specs : t)
     (output_file_sans_extension : string)
-    = 
+  = 
   Spec_set.fold 
     (fun (spec : spec) acc ->
-        let basename =  
-          Ext_namespace.change_ext_ns_suffix
-             output_file_sans_extension
-             (Ext_js_suffix.to_string spec.suffix)
-        in 
-        (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
+       let basename =  
+         Ext_namespace.change_ext_ns_suffix
+           output_file_sans_extension
+           (Ext_js_suffix.to_string spec.suffix)
+       in 
+       (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
         else Bsb_config.lib_bs_prefix_of_format spec.format // basename) 
        :: acc
     ) package_specs.modules []
 
 
 let list_dirs_by
-  (package_specs : t)
-  (f : string -> unit)
+    (package_specs : t)
+    (f : string -> unit)
   =  
   Spec_set.iter (fun (spec : spec)  -> 
-    if not spec.in_source then     
-      f (Bsb_config.top_prefix_of_format spec.format) 
-  ) package_specs.modules 
-  
+      if not spec.in_source then     
+        f (Bsb_config.top_prefix_of_format spec.format) 
+    ) package_specs.modules 
+
 type json_map = Ext_json_types.t Map_string.t 
 
 let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
@@ -8387,14 +8386,14 @@ let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =
 let from_map ~(cwd:string) map =  
   let suffix = extract_bs_suffix_exn map in   
   let modules = match map.?(Bsb_build_schemas.package_specs) with 
-  | Some x ->
-    from_json suffix x 
-  | None ->  default_package_specs suffix in 
+    | Some x ->
+      from_json suffix x 
+    | None ->  default_package_specs suffix in 
   let runtime = 
     match map.?(Bsb_build_schemas.external_stdlib) with
     | None -> None 
     | Some(Str{str; _}) ->
-       Some (Bsb_pkg.resolve_bs_package ~cwd (Bsb_pkg_types.string_as_package str))
+      Some (Bsb_pkg.resolve_bs_package ~cwd (Bsb_pkg_types.string_as_package str))
     | _ -> assert false in   
   {
     runtime;  
@@ -8431,12 +8430,12 @@ module Bsb_package_kind
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type t = 
-    | Toplevel
-    | Dependency of Bsb_package_specs.t 
-    | Pinned_dependency of Bsb_package_specs.t 
-        (*  This package specs comes from the toplevel to 
-            override the current settings
-        *)
+  | Toplevel
+  | Dependency of Bsb_package_specs.t 
+  | Pinned_dependency of Bsb_package_specs.t 
+  (*  This package specs comes from the toplevel to 
+      override the current settings
+  *)
 
 end
 module Bsc_warnings
@@ -8469,21 +8468,21 @@ module Bsc_warnings
 
 
 (**
-  See the meanings of the warning codes here: https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec281
+   See the meanings of the warning codes here: https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec281
 
-  - 30 Two labels or constructors of the same name are defined in two mutually recursive types.
-  - 40 Constructor or label name used out of scope.
+   - 30 Two labels or constructors of the same name are defined in two mutually recursive types.
+   - 40 Constructor or label name used out of scope.
 
-  - 6 Label omitted in function application.
-  - 7 Method overridden.
-  - 9 Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)
-  - 27 Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.
-  - 29 Unescaped end-of-line in a string constant (non-portable code).
-  - 32 .. 39 Unused blabla
-  - 44 Open statement shadows an already defined identifier.
-  - 45 Open statement shadows an already defined label or constructor.
-  - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
-  - 101 (bsb-specific) unsafe polymorphic comparison.
+   - 6 Label omitted in function application.
+   - 7 Method overridden.
+   - 9 Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)
+   - 27 Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.
+   - 29 Unescaped end-of-line in a string constant (non-portable code).
+   - 32 .. 39 Unused blabla
+   - 44 Open statement shadows an already defined identifier.
+   - 45 Open statement shadows an already defined label or constructor.
+   - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
+   - 101 (bsb-specific) unsafe polymorphic comparison.
 *) 
 
 
@@ -8493,28 +8492,28 @@ module Bsc_warnings
 
   -4 Fragile pattern matching: matching that will remain complete even if additional con- structors are added to one of the variant types matched.
   We turn it off since common pattern
-  {[
-    match x with | A -> .. |  _ -> false
-  ]}
+   {[
+     match x with | A -> .. |  _ -> false
+   ]}
 
-  -9 Missing fields in a record pattern.
-  only in some special cases that we need all fields being listed
+   -9 Missing fields in a record pattern.
+   only in some special cases that we need all fields being listed
 
-  We encourage people to write code based on type based disambigution
-  40,41,42 are enabled for compatiblity reasons  
-  -40 Constructor or label name used out of scope
-  This is intentional, we should never warn it
-  - 41 Ambiguous constructor or label name.
-  It is turned off since it prevents such cases below:
-  {[
-    type a = A |B 
-    type b = A | B | C
-  ]}
-  - 42 Disambiguated constructor or label name (compatibility warning).
-  
-  - 50 Unexpected documentation comment.
+   We encourage people to write code based on type based disambigution
+   40,41,42 are enabled for compatiblity reasons  
+   -40 Constructor or label name used out of scope
+   This is intentional, we should never warn it
+   - 41 Ambiguous constructor or label name.
+     It is turned off since it prevents such cases below:
+   {[
+     type a = A |B 
+     type b = A | B | C
+   ]}
+   - 42 Disambiguated constructor or label name (compatibility warning).
 
-  - 102 Bs_polymorphic_comparison
+   - 50 Unexpected documentation comment.
+
+   - 102 Bs_polymorphic_comparison
 *)
 let defaults_w = "+a-4-9-20-40-41-42-50-61-102"
 let defaults_warn_error = "-a+5+6+101+109";;
@@ -8638,7 +8637,7 @@ let to_merlin_string x =
 *)
 
 
-   
+
 let from_map (m : Ext_json_types.t Map_string.t) =
   let number_opt = Map_string.find_opt m Bsb_build_schemas.number in
   let error_opt = Map_string.find_opt m  Bsb_build_schemas.error in
@@ -8669,25 +8668,25 @@ let to_bsb_string ~(package_kind: Bsb_package_kind.t) warning =
   | Toplevel 
   | Pinned_dependency _ -> 
     (match warning with
-    | None -> Ext_string.empty
-    | Some warning ->     
-      (match warning.number with
-       | None ->
-         Ext_string.empty
-       | Some x ->
-         prepare_warning_concat ~beg:true x  
-      ) ^
-      (
-        match warning.error with
-        | Warn_error_true ->
-          " -warn-error A"
-        | Warn_error_number y ->
-          " -warn-error " ^ y
-        | Warn_error_false ->
+     | None -> Ext_string.empty
+     | Some warning ->     
+       (match warning.number with
+        | None ->
           Ext_string.empty
-      ))
+        | Some x ->
+          prepare_warning_concat ~beg:true x  
+       ) ^
+       (
+         match warning.error with
+         | Warn_error_true ->
+           " -warn-error A"
+         | Warn_error_number y ->
+           " -warn-error " ^ y
+         | Warn_error_false ->
+           Ext_string.empty
+       ))
   | Dependency _ ->  " -w a" 
-  (* TODO: this is the current default behavior *)
+(* TODO: this is the current default behavior *)
 
 end
 module Bsb_config_types
@@ -8830,17 +8829,17 @@ type error =
   | Expect_string_or_rbrace 
   | Expect_eof 
   (* | Trailing_comma_in_obj *)
-  (* | Trailing_comma_in_array *)
+(* | Trailing_comma_in_array *)
 
 
 let fprintf  = Format.fprintf
 let report_error ppf = function
   | Illegal_character c ->
-      fprintf ppf "Illegal character (%s)" (Char.escaped c)
+    fprintf ppf "Illegal character (%s)" (Char.escaped c)
   | Illegal_escape s ->
-      fprintf ppf "Illegal backslash escape in string or character (%s)" s
+    fprintf ppf "Illegal backslash escape in string or character (%s)" s
   | Unterminated_string -> 
-      fprintf ppf "Unterminated_string"
+    fprintf ppf "Unterminated_string"
   | Expect_comma_or_rbracket ->
     fprintf ppf "Expect_comma_or_rbracket"
   | Expect_comma_or_rbrace -> 
@@ -8860,7 +8859,7 @@ let report_error ppf = function
   (*   -> fprintf ppf "Trailing_comma_in_array" *)
   | Unterminated_comment 
     -> fprintf ppf "Unterminated_comment"
-         
+
 
 exception Error of Lexing.position * Lexing.position * error
 
@@ -8871,11 +8870,11 @@ let () =
      match x with 
      | Error (loc_start,loc_end,error) -> 
        Some (Format.asprintf 
-          "@[%a:@ %a@ -@ %a)@]" 
-          report_error  error
-          Ext_position.print loc_start
-          Ext_position.print loc_end
-       )
+               "@[%a:@ %a@ -@ %a)@]" 
+               report_error  error
+               Ext_position.print loc_start
+               Ext_position.print loc_end
+            )
 
      | _ -> None
     )
@@ -8897,7 +8896,7 @@ type token =
   | Rbracket
   | String of string
   | True   
-  
+
 let error  (lexbuf : Lexing.lexbuf) e = 
   raise (Error (lexbuf.lex_start_p, lexbuf.lex_curr_p, e))
 
@@ -8941,191 +8940,191 @@ let lf = '\010'
 # 124 "ext/ext_json_parse.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base =
-   "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
-    \245\255\246\255\247\255\248\255\249\255\000\000\000\000\000\000\
-    \041\000\001\000\254\255\005\000\005\000\253\255\001\000\002\000\
-    \252\255\000\000\000\000\003\000\251\255\001\000\003\000\250\255\
-    \079\000\089\000\099\000\121\000\131\000\141\000\153\000\163\000\
-    \001\000\253\255\254\255\023\000\255\255\006\000\246\255\189\000\
-    \248\255\215\000\255\255\249\255\249\000\181\000\252\255\009\000\
-    \063\000\075\000\234\000\251\255\032\001\250\255";
+    "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
+     \245\255\246\255\247\255\248\255\249\255\000\000\000\000\000\000\
+     \041\000\001\000\254\255\005\000\005\000\253\255\001\000\002\000\
+     \252\255\000\000\000\000\003\000\251\255\001\000\003\000\250\255\
+     \079\000\089\000\099\000\121\000\131\000\141\000\153\000\163\000\
+     \001\000\253\255\254\255\023\000\255\255\006\000\246\255\189\000\
+     \248\255\215\000\255\255\249\255\249\000\181\000\252\255\009\000\
+     \063\000\075\000\234\000\251\255\032\001\250\255";
   Lexing.lex_backtrk =
-   "\255\255\255\255\255\255\255\255\013\000\013\000\016\000\255\255\
-    \255\255\255\255\255\255\255\255\255\255\016\000\016\000\016\000\
-    \016\000\016\000\255\255\000\000\012\000\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\013\000\255\255\013\000\255\255\013\000\255\255\
-    \255\255\255\255\255\255\001\000\255\255\255\255\255\255\008\000\
-    \255\255\255\255\255\255\255\255\006\000\006\000\255\255\006\000\
-    \001\000\002\000\255\255\255\255\255\255\255\255";
+    "\255\255\255\255\255\255\255\255\013\000\013\000\016\000\255\255\
+     \255\255\255\255\255\255\255\255\255\255\016\000\016\000\016\000\
+     \016\000\016\000\255\255\000\000\012\000\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\013\000\255\255\013\000\255\255\013\000\255\255\
+     \255\255\255\255\255\255\001\000\255\255\255\255\255\255\008\000\
+     \255\255\255\255\255\255\255\255\006\000\006\000\255\255\006\000\
+     \001\000\002\000\255\255\255\255\255\255\255\255";
   Lexing.lex_default =
-   "\001\000\000\000\000\000\000\000\255\255\255\255\255\255\000\000\
-    \000\000\000\000\000\000\000\000\000\000\255\255\255\255\255\255\
-    \255\255\255\255\000\000\255\255\020\000\000\000\255\255\255\255\
-    \000\000\255\255\255\255\255\255\000\000\255\255\255\255\000\000\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \042\000\000\000\000\000\255\255\000\000\047\000\000\000\047\000\
-    \000\000\051\000\000\000\000\000\255\255\255\255\000\000\255\255\
-    \255\255\255\255\255\255\000\000\255\255\000\000";
+    "\001\000\000\000\000\000\000\000\255\255\255\255\255\255\000\000\
+     \000\000\000\000\000\000\000\000\000\000\255\255\255\255\255\255\
+     \255\255\255\255\000\000\255\255\020\000\000\000\255\255\255\255\
+     \000\000\255\255\255\255\255\255\000\000\255\255\255\255\000\000\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \042\000\000\000\000\000\255\255\000\000\047\000\000\000\047\000\
+     \000\000\051\000\000\000\000\000\255\255\255\255\000\000\255\255\
+     \255\255\255\255\255\255\000\000\255\255\000\000";
   Lexing.lex_trans =
-   "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\019\000\018\000\018\000\019\000\017\000\019\000\255\255\
-    \048\000\019\000\255\255\057\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \019\000\000\000\003\000\000\000\000\000\019\000\000\000\000\000\
-    \050\000\000\000\000\000\043\000\008\000\006\000\033\000\016\000\
-    \004\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
-    \005\000\005\000\007\000\004\000\005\000\005\000\005\000\005\000\
-    \005\000\005\000\005\000\005\000\005\000\032\000\044\000\033\000\
-    \056\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
-    \005\000\005\000\005\000\021\000\057\000\000\000\000\000\000\000\
-    \020\000\000\000\000\000\012\000\000\000\011\000\032\000\056\000\
-    \000\000\025\000\049\000\000\000\000\000\032\000\014\000\024\000\
-    \028\000\000\000\000\000\057\000\026\000\030\000\013\000\031\000\
-    \000\000\000\000\022\000\027\000\015\000\029\000\023\000\000\000\
-    \000\000\000\000\039\000\010\000\039\000\009\000\032\000\038\000\
-    \038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\037\000\000\000\037\000\000\000\
-    \035\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\255\255\
-    \035\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\038\000\038\000\000\000\000\000\255\255\
-    \000\000\056\000\000\000\000\000\055\000\058\000\058\000\058\000\
-    \058\000\058\000\058\000\058\000\058\000\058\000\058\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\054\000\
-    \000\000\054\000\000\000\000\000\000\000\000\000\054\000\000\000\
-    \002\000\041\000\000\000\000\000\000\000\255\255\046\000\053\000\
-    \053\000\053\000\053\000\053\000\053\000\053\000\053\000\053\000\
-    \053\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\255\255\059\000\059\000\059\000\059\000\059\000\059\000\
-    \059\000\059\000\059\000\059\000\000\000\000\000\000\000\000\000\
-    \000\000\060\000\060\000\060\000\060\000\060\000\060\000\060\000\
-    \060\000\060\000\060\000\054\000\000\000\000\000\000\000\000\000\
-    \000\000\054\000\060\000\060\000\060\000\060\000\060\000\060\000\
-    \000\000\000\000\000\000\000\000\000\000\054\000\000\000\000\000\
-    \000\000\054\000\000\000\054\000\000\000\000\000\000\000\052\000\
-    \061\000\061\000\061\000\061\000\061\000\061\000\061\000\061\000\
-    \061\000\061\000\060\000\060\000\060\000\060\000\060\000\060\000\
-    \000\000\061\000\061\000\061\000\061\000\061\000\061\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\061\000\061\000\061\000\061\000\061\000\061\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\255\255\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\255\255\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000";
+    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\019\000\018\000\018\000\019\000\017\000\019\000\255\255\
+     \048\000\019\000\255\255\057\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \019\000\000\000\003\000\000\000\000\000\019\000\000\000\000\000\
+     \050\000\000\000\000\000\043\000\008\000\006\000\033\000\016\000\
+     \004\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
+     \005\000\005\000\007\000\004\000\005\000\005\000\005\000\005\000\
+     \005\000\005\000\005\000\005\000\005\000\032\000\044\000\033\000\
+     \056\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
+     \005\000\005\000\005\000\021\000\057\000\000\000\000\000\000\000\
+     \020\000\000\000\000\000\012\000\000\000\011\000\032\000\056\000\
+     \000\000\025\000\049\000\000\000\000\000\032\000\014\000\024\000\
+     \028\000\000\000\000\000\057\000\026\000\030\000\013\000\031\000\
+     \000\000\000\000\022\000\027\000\015\000\029\000\023\000\000\000\
+     \000\000\000\000\039\000\010\000\039\000\009\000\032\000\038\000\
+     \038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
+     \038\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
+     \034\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
+     \034\000\034\000\034\000\034\000\034\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\037\000\000\000\037\000\000\000\
+     \035\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
+     \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
+     \036\000\036\000\036\000\036\000\036\000\036\000\036\000\036\000\
+     \036\000\036\000\036\000\036\000\036\000\036\000\036\000\255\255\
+     \035\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
+     \038\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
+     \038\000\038\000\038\000\038\000\038\000\000\000\000\000\255\255\
+     \000\000\056\000\000\000\000\000\055\000\058\000\058\000\058\000\
+     \058\000\058\000\058\000\058\000\058\000\058\000\058\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\054\000\
+     \000\000\054\000\000\000\000\000\000\000\000\000\054\000\000\000\
+     \002\000\041\000\000\000\000\000\000\000\255\255\046\000\053\000\
+     \053\000\053\000\053\000\053\000\053\000\053\000\053\000\053\000\
+     \053\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\255\255\059\000\059\000\059\000\059\000\059\000\059\000\
+     \059\000\059\000\059\000\059\000\000\000\000\000\000\000\000\000\
+     \000\000\060\000\060\000\060\000\060\000\060\000\060\000\060\000\
+     \060\000\060\000\060\000\054\000\000\000\000\000\000\000\000\000\
+     \000\000\054\000\060\000\060\000\060\000\060\000\060\000\060\000\
+     \000\000\000\000\000\000\000\000\000\000\054\000\000\000\000\000\
+     \000\000\054\000\000\000\054\000\000\000\000\000\000\000\052\000\
+     \061\000\061\000\061\000\061\000\061\000\061\000\061\000\061\000\
+     \061\000\061\000\060\000\060\000\060\000\060\000\060\000\060\000\
+     \000\000\061\000\061\000\061\000\061\000\061\000\061\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\061\000\061\000\061\000\061\000\061\000\061\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\255\255\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\255\255\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000";
   Lexing.lex_check =
-   "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\000\000\000\000\017\000\000\000\000\000\019\000\020\000\
-    \045\000\019\000\020\000\055\000\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \000\000\255\255\000\000\255\255\255\255\019\000\255\255\255\255\
-    \045\000\255\255\255\255\040\000\000\000\000\000\004\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\006\000\006\000\006\000\006\000\006\000\
-    \006\000\006\000\006\000\006\000\006\000\004\000\043\000\005\000\
-    \056\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
-    \005\000\005\000\005\000\016\000\057\000\255\255\255\255\255\255\
-    \016\000\255\255\255\255\000\000\255\255\000\000\005\000\056\000\
-    \255\255\014\000\045\000\255\255\255\255\004\000\000\000\023\000\
-    \027\000\255\255\255\255\057\000\025\000\029\000\000\000\030\000\
-    \255\255\255\255\015\000\026\000\000\000\013\000\022\000\255\255\
-    \255\255\255\255\032\000\000\000\032\000\000\000\005\000\032\000\
-    \032\000\032\000\032\000\032\000\032\000\032\000\032\000\032\000\
-    \032\000\033\000\033\000\033\000\033\000\033\000\033\000\033\000\
-    \033\000\033\000\033\000\034\000\034\000\034\000\034\000\034\000\
-    \034\000\034\000\034\000\034\000\034\000\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\035\000\255\255\035\000\255\255\
-    \034\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
-    \035\000\035\000\035\000\036\000\036\000\036\000\036\000\036\000\
-    \036\000\036\000\036\000\036\000\036\000\037\000\037\000\037\000\
-    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\047\000\
-    \034\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
-    \038\000\038\000\038\000\039\000\039\000\039\000\039\000\039\000\
-    \039\000\039\000\039\000\039\000\039\000\255\255\255\255\047\000\
-    \255\255\049\000\255\255\255\255\049\000\053\000\053\000\053\000\
-    \053\000\053\000\053\000\053\000\053\000\053\000\053\000\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\049\000\
-    \255\255\049\000\255\255\255\255\255\255\255\255\049\000\255\255\
-    \000\000\040\000\255\255\255\255\255\255\020\000\045\000\049\000\
-    \049\000\049\000\049\000\049\000\049\000\049\000\049\000\049\000\
-    \049\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\047\000\058\000\058\000\058\000\058\000\058\000\058\000\
-    \058\000\058\000\058\000\058\000\255\255\255\255\255\255\255\255\
-    \255\255\052\000\052\000\052\000\052\000\052\000\052\000\052\000\
-    \052\000\052\000\052\000\049\000\255\255\255\255\255\255\255\255\
-    \255\255\049\000\052\000\052\000\052\000\052\000\052\000\052\000\
-    \255\255\255\255\255\255\255\255\255\255\049\000\255\255\255\255\
-    \255\255\049\000\255\255\049\000\255\255\255\255\255\255\049\000\
-    \060\000\060\000\060\000\060\000\060\000\060\000\060\000\060\000\
-    \060\000\060\000\052\000\052\000\052\000\052\000\052\000\052\000\
-    \255\255\060\000\060\000\060\000\060\000\060\000\060\000\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\060\000\060\000\060\000\060\000\060\000\060\000\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\047\000\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\049\000\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255";
+    "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\000\000\000\000\017\000\000\000\000\000\019\000\020\000\
+     \045\000\019\000\020\000\055\000\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \000\000\255\255\000\000\255\255\255\255\019\000\255\255\255\255\
+     \045\000\255\255\255\255\040\000\000\000\000\000\004\000\000\000\
+     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+     \000\000\000\000\000\000\006\000\006\000\006\000\006\000\006\000\
+     \006\000\006\000\006\000\006\000\006\000\004\000\043\000\005\000\
+     \056\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
+     \005\000\005\000\005\000\016\000\057\000\255\255\255\255\255\255\
+     \016\000\255\255\255\255\000\000\255\255\000\000\005\000\056\000\
+     \255\255\014\000\045\000\255\255\255\255\004\000\000\000\023\000\
+     \027\000\255\255\255\255\057\000\025\000\029\000\000\000\030\000\
+     \255\255\255\255\015\000\026\000\000\000\013\000\022\000\255\255\
+     \255\255\255\255\032\000\000\000\032\000\000\000\005\000\032\000\
+     \032\000\032\000\032\000\032\000\032\000\032\000\032\000\032\000\
+     \032\000\033\000\033\000\033\000\033\000\033\000\033\000\033\000\
+     \033\000\033\000\033\000\034\000\034\000\034\000\034\000\034\000\
+     \034\000\034\000\034\000\034\000\034\000\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\035\000\255\255\035\000\255\255\
+     \034\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
+     \035\000\035\000\035\000\036\000\036\000\036\000\036\000\036\000\
+     \036\000\036\000\036\000\036\000\036\000\037\000\037\000\037\000\
+     \037\000\037\000\037\000\037\000\037\000\037\000\037\000\047\000\
+     \034\000\038\000\038\000\038\000\038\000\038\000\038\000\038\000\
+     \038\000\038\000\038\000\039\000\039\000\039\000\039\000\039\000\
+     \039\000\039\000\039\000\039\000\039\000\255\255\255\255\047\000\
+     \255\255\049\000\255\255\255\255\049\000\053\000\053\000\053\000\
+     \053\000\053\000\053\000\053\000\053\000\053\000\053\000\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\049\000\
+     \255\255\049\000\255\255\255\255\255\255\255\255\049\000\255\255\
+     \000\000\040\000\255\255\255\255\255\255\020\000\045\000\049\000\
+     \049\000\049\000\049\000\049\000\049\000\049\000\049\000\049\000\
+     \049\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\047\000\058\000\058\000\058\000\058\000\058\000\058\000\
+     \058\000\058\000\058\000\058\000\255\255\255\255\255\255\255\255\
+     \255\255\052\000\052\000\052\000\052\000\052\000\052\000\052\000\
+     \052\000\052\000\052\000\049\000\255\255\255\255\255\255\255\255\
+     \255\255\049\000\052\000\052\000\052\000\052\000\052\000\052\000\
+     \255\255\255\255\255\255\255\255\255\255\049\000\255\255\255\255\
+     \255\255\049\000\255\255\049\000\255\255\255\255\255\255\049\000\
+     \060\000\060\000\060\000\060\000\060\000\060\000\060\000\060\000\
+     \060\000\060\000\052\000\052\000\052\000\052\000\052\000\052\000\
+     \255\255\060\000\060\000\060\000\060\000\060\000\060\000\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\060\000\060\000\060\000\060\000\060\000\060\000\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\047\000\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\049\000\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+     \255\255";
   Lexing.lex_base_code =
-   "";
+    "";
   Lexing.lex_backtrk_code =
-   "";
+    "";
   Lexing.lex_default_code =
-   "";
+    "";
   Lexing.lex_trans_code =
-   "";
+    "";
   Lexing.lex_check_code =
-   "";
+    "";
   Lexing.lex_code =
-   "";
+    "";
 }
 
 let rec lex_json buf lexbuf =
-   __ocaml_lex_lex_json_rec buf lexbuf 0
+  __ocaml_lex_lex_json_rec buf lexbuf 0
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
+  | 0 ->
 # 142 "ext/ext_json_parse.mll"
           ( lex_json buf lexbuf)
 # 314 "ext/ext_json_parse.ml"
@@ -9133,9 +9132,9 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   | 1 ->
 # 143 "ext/ext_json_parse.mll"
                    ( 
-    update_loc lexbuf 0;
-    lex_json buf  lexbuf
-  )
+      update_loc lexbuf 0;
+      lex_json buf  lexbuf
+    )
 # 322 "ext/ext_json_parse.ml"
 
   | 2 ->
@@ -9201,12 +9200,12 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   | 14 ->
 # 161 "ext/ext_json_parse.mll"
       (
-  let pos = Lexing.lexeme_start_p lexbuf in
-  scan_string buf pos lexbuf;
-  let content = (Buffer.contents  buf) in 
-  Buffer.clear buf ;
-  String content 
-)
+      let pos = Lexing.lexeme_start_p lexbuf in
+      scan_string buf pos lexbuf;
+      let content = (Buffer.contents  buf) in 
+      Buffer.clear buf ;
+      String content 
+    )
 # 393 "ext/ext_json_parse.ml"
 
   | 15 ->
@@ -9215,7 +9214,7 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
 # 398 "ext/ext_json_parse.ml"
 
   | 16 ->
-let
+    let
 # 169 "ext/ext_json_parse.mll"
        c
 # 404 "ext/ext_json_parse.ml"
@@ -9225,13 +9224,13 @@ let
 # 408 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
-      __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
+    __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
 
 and comment buf lexbuf =
-   __ocaml_lex_comment_rec buf lexbuf 40
+  __ocaml_lex_comment_rec buf lexbuf 40
 and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
+  | 0 ->
 # 171 "ext/ext_json_parse.mll"
               (lex_json buf lexbuf)
 # 420 "ext/ext_json_parse.ml"
@@ -9247,13 +9246,13 @@ and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
 # 430 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
-      __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
+    __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
 
 and scan_string buf start lexbuf =
-   __ocaml_lex_scan_string_rec buf start lexbuf 45
+  __ocaml_lex_scan_string_rec buf start lexbuf 45
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
+  | 0 ->
 # 177 "ext/ext_json_parse.mll"
       ( () )
 # 442 "ext/ext_json_parse.ml"
@@ -9261,132 +9260,132 @@ and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   | 1 ->
 # 179 "ext/ext_json_parse.mll"
   (
-        let len = lexeme_len lexbuf - 2 in
-        update_loc lexbuf len;
+      let len = lexeme_len lexbuf - 2 in
+      update_loc lexbuf len;
 
-        scan_string buf start lexbuf
-      )
+      scan_string buf start lexbuf
+    )
 # 452 "ext/ext_json_parse.ml"
 
   | 2 ->
 # 186 "ext/ext_json_parse.mll"
       (
-        let len = lexeme_len lexbuf - 3 in
-        update_loc lexbuf len;
-        scan_string buf start lexbuf
-      )
+      let len = lexeme_len lexbuf - 3 in
+      update_loc lexbuf len;
+      scan_string buf start lexbuf
+    )
 # 461 "ext/ext_json_parse.ml"
 
   | 3 ->
-let
+    let
 # 191 "ext/ext_json_parse.mll"
                                                c
 # 467 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
 # 192 "ext/ext_json_parse.mll"
       (
-        Buffer.add_char buf (char_for_backslash c);
-        scan_string buf start lexbuf
-      )
+      Buffer.add_char buf (char_for_backslash c);
+      scan_string buf start lexbuf
+    )
 # 474 "ext/ext_json_parse.ml"
 
   | 4 ->
-let
+    let
 # 196 "ext/ext_json_parse.mll"
                  c1
 # 480 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
-and
+    and
 # 196 "ext/ext_json_parse.mll"
                                c2
 # 485 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
-and
+    and
 # 196 "ext/ext_json_parse.mll"
                                              c3
 # 490 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
-and
+    and
 # 196 "ext/ext_json_parse.mll"
                                                     s
 # 495 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
 # 197 "ext/ext_json_parse.mll"
       (
-        let v = dec_code c1 c2 c3 in
-        if v > 255 then
-          error lexbuf (Illegal_escape s) ;
-        Buffer.add_char buf (Char.chr v);
+      let v = dec_code c1 c2 c3 in
+      if v > 255 then
+        error lexbuf (Illegal_escape s) ;
+      Buffer.add_char buf (Char.chr v);
 
-        scan_string buf start lexbuf
-      )
+      scan_string buf start lexbuf
+    )
 # 506 "ext/ext_json_parse.ml"
 
   | 5 ->
-let
+    let
 # 205 "ext/ext_json_parse.mll"
                         c1
 # 512 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
-and
+    and
 # 205 "ext/ext_json_parse.mll"
                                          c2
 # 517 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
 # 206 "ext/ext_json_parse.mll"
       (
-        let v = hex_code c1 c2 in
-        Buffer.add_char buf (Char.chr v);
+      let v = hex_code c1 c2 in
+      Buffer.add_char buf (Char.chr v);
 
-        scan_string buf start lexbuf
-      )
+      scan_string buf start lexbuf
+    )
 # 526 "ext/ext_json_parse.ml"
 
   | 6 ->
-let
+    let
 # 212 "ext/ext_json_parse.mll"
              c
 # 532 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
 # 213 "ext/ext_json_parse.mll"
       (
-        Buffer.add_char buf '\\';
-        Buffer.add_char buf c;
+      Buffer.add_char buf '\\';
+      Buffer.add_char buf c;
 
-        scan_string buf start lexbuf
-      )
+      scan_string buf start lexbuf
+    )
 # 541 "ext/ext_json_parse.ml"
 
   | 7 ->
 # 220 "ext/ext_json_parse.mll"
       (
-        update_loc lexbuf 0;
-        Buffer.add_char buf lf;
+      update_loc lexbuf 0;
+      Buffer.add_char buf lf;
 
-        scan_string buf start lexbuf
-      )
+      scan_string buf start lexbuf
+    )
 # 551 "ext/ext_json_parse.ml"
 
   | 8 ->
 # 227 "ext/ext_json_parse.mll"
       (
-        let ofs = lexbuf.lex_start_pos in
-        let len = lexbuf.lex_curr_pos - ofs in
-        Buffer.add_subbytes buf lexbuf.lex_buffer ofs len;
+      let ofs = lexbuf.lex_start_pos in
+      let len = lexbuf.lex_curr_pos - ofs in
+      Buffer.add_subbytes buf lexbuf.lex_buffer ofs len;
 
-        scan_string buf start lexbuf
-      )
+      scan_string buf start lexbuf
+    )
 # 562 "ext/ext_json_parse.ml"
 
   | 9 ->
 # 235 "ext/ext_json_parse.mll"
       (
-        error lexbuf Unterminated_string
-      )
+      error lexbuf Unterminated_string
+    )
 # 569 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
-      __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
+    __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
 
@@ -9420,58 +9419,58 @@ let  parse_json lexbuf =
     | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
     | Lbrace -> parse_map lexbuf.lex_start_p Map_string.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
-(** Note if we remove [trailing_comma] support 
-    we should report errors (actually more work), for example 
-    {[
-    match token () with 
-    | Rbracket ->
-      if trailing_comma then
-        error lexbuf Trailing_comma_in_array
-      else
-    ]} 
-    {[
-    match token () with 
-    | Rbrace -> 
-      if trailing_comma then
-        error lexbuf Trailing_comma_in_obj
-      else
+  (** Note if we remove [trailing_comma] support 
+      we should report errors (actually more work), for example 
+      {[
+        match token () with 
+        | Rbracket ->
+          if trailing_comma then
+            error lexbuf Trailing_comma_in_array
+          else
+      ]} 
+      {[
+        match token () with 
+        | Rbrace -> 
+          if trailing_comma then
+            error lexbuf Trailing_comma_in_obj
+          else
 
-    ]}   
- *)
+      ]}   
+  *)
   and parse_array   loc_start loc_finish acc lexbuf 
     : Ext_json_types.t =
     match token () with 
     | Rbracket ->
-        Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
-              loc_end = lexbuf.lex_curr_p }
+      Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
+           loc_end = lexbuf.lex_curr_p }
     | x -> 
       push x ;
       let new_one = json lexbuf in 
       begin match token ()  with 
-      | Comma -> 
+        | Comma -> 
           parse_array  loc_start loc_finish (new_one :: acc) lexbuf 
-      | Rbracket 
-        -> Arr {content = (Ext_array.reverse_of_list (new_one::acc));
-                     loc_start ; 
-                     loc_end = lexbuf.lex_curr_p }
-      | _ -> 
-        error lexbuf Expect_comma_or_rbracket
+        | Rbracket 
+          -> Arr {content = (Ext_array.reverse_of_list (new_one::acc));
+                  loc_start ; 
+                  loc_end = lexbuf.lex_curr_p }
+        | _ -> 
+          error lexbuf Expect_comma_or_rbracket
       end
   and parse_map loc_start  acc lexbuf : Ext_json_types.t = 
     match token () with 
     | Rbrace -> 
-        Obj { map = acc ; loc = loc_start}
+      Obj { map = acc ; loc = loc_start}
     | String key -> 
       begin match token () with 
-      | Colon ->
-        let value = json lexbuf in
-        begin match token () with 
-        | Rbrace -> Obj {map = Map_string.add acc key value  ; loc = loc_start}
-        | Comma -> 
-          parse_map loc_start  (Map_string.add acc key value ) lexbuf 
-        | _ -> error lexbuf Expect_comma_or_rbrace
-        end
-      | _ -> error lexbuf Expect_colon
+        | Colon ->
+          let value = json lexbuf in
+          begin match token () with 
+            | Rbrace -> Obj {map = Map_string.add acc key value  ; loc = loc_start}
+            | Comma -> 
+              parse_map loc_start  (Map_string.add acc key value ) lexbuf 
+            | _ -> error lexbuf Expect_comma_or_rbrace
+          end
+        | _ -> error lexbuf Expect_colon
       end
     | _ -> error lexbuf Expect_string_or_rbrace
   in 
@@ -9486,14 +9485,14 @@ let parse_json_from_string s =
 let parse_json_from_chan fname in_chan = 
   let lexbuf = 
     Ext_position.lexbuf_from_channel_with_fname
-    in_chan fname in 
+      in_chan fname in 
   parse_json lexbuf 
 
 let parse_json_from_file s = 
   let in_chan = open_in s in 
   let lexbuf = 
     Ext_position.lexbuf_from_channel_with_fname
-    in_chan s in 
+      in_chan s in 
   match parse_json lexbuf with 
   | exception e -> close_in in_chan ; raise e
   | v  -> close_in in_chan;  v
@@ -9714,32 +9713,32 @@ module Bsb_build_util : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (**
-  Use:
-  {[
-  flag_concat "-ppx" [ppxs]
-  ]}
-  *)
-  val flag_concat : string -> string list -> string
+   Use:
+   {[
+     flag_concat "-ppx" [ppxs]
+   ]}
+*)
+val flag_concat : string -> string list -> string
 
 (**
-Build quoted commandline arguments for bsc.exe for the given ppx flags
+   Build quoted commandline arguments for bsc.exe for the given ppx flags
 
-Use:
-{[
-ppx_flags [ppxs]
-]}
+   Use:
+   {[
+     ppx_flags [ppxs]
+   ]}
 *)
 val ppx_flags : Bsb_config_types.ppx list -> string
 
 val pp_flag : string  -> string
 
 (**
-Build unquoted command line arguments for bsc.exe for the given include dirs
+   Build unquoted command line arguments for bsc.exe for the given include dirs
 
-Use:
-{[
-include_dirs [dirs]
-]}
+   Use:
+   {[
+     include_dirs [dirs]
+   ]}
 *)
 val include_dirs : string list -> string
 
@@ -9747,17 +9746,17 @@ val include_dirs_by :
   'a list ->   
   ('a -> string ) ->
   string
-  
+
 
 val mkp : string -> unit
 
 
 (* The path of [bsc] and [bsdep] is normalized so that the invokation of [./jscomp/bin/bsb.exe] 
    and [bsb.exe] (combined with a dirty bsconfig.json) will not trigger unnecessary rebuild.
-   
+
    The location of [bsc] and [bsdep] is configured by the combination of [Sys.executable_name] 
    and [cwd].
-   
+
    In theory, we should also check the integrity of [bsb.exe], if it is changed, the rebuild 
    should be regen, but that is too much in practice, not only you need check the integrity of 
    path of [bsb.exe] but also the timestamp, to make it 100% correct, also the integrity of 
@@ -9769,13 +9768,13 @@ val mkp : string -> unit
 
 
 val get_list_string_acc : 
-    Ext_json_types.t array -> 
-    string list -> 
-    string list
+  Ext_json_types.t array -> 
+  string list -> 
+  string list
 
 val get_list_string : 
-    Ext_json_types.t array -> 
-    string list
+  Ext_json_types.t array -> 
+  string list
 
 type top = 
   | Expect_none 
@@ -9802,7 +9801,7 @@ val walk_all_deps :
   string -> 
   pinned_dependencies:Set_string.t ->
   package_context Queue.t
-  
+
 
 end = struct
 #1 "bsb_build_util.ml"
@@ -9833,7 +9832,7 @@ end = struct
 let flag_concat flag xs =   
   String.concat Ext_string.single_space
     (Ext_list.flat_map xs  (fun x -> [flag ; x]))
-  
+
 let (//) = Ext_path.combine
 
 
@@ -9850,7 +9849,7 @@ let ppx_flags (xs : Bsb_config_types.ppx list) =
        ))
 
 let pp_flag (xs : string) = 
-   "-pp " ^ Ext_filename.maybe_quote xs
+  "-pp " ^ Ext_filename.maybe_quote xs
 
 let include_dirs dirs = 
   String.concat Ext_string.single_space
@@ -9986,12 +9985,12 @@ let pp_packages_rev ppf lst =
 
 
 let rec walk_all_deps_aux 
-  (visited : string Hash_string.t) 
-  (paths : string list) 
-  ~(top : top) 
-  (dir : string)  
-  (queue : _ Queue.t) 
-  ~pinned_dependencies = 
+    (visited : string Hash_string.t) 
+    (paths : string list) 
+    ~(top : top) 
+    (dir : string)  
+    (queue : _ Queue.t) 
+    ~pinned_dependencies = 
   let bsconfig_json =  dir // Literals.bsconfig_json in
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
@@ -10001,9 +10000,9 @@ let rec walk_all_deps_aux
         (match top with 
          | Expect_none -> ()  
          | Expect_name s ->  
-          if s <> str then 
-            Bsb_exception.errorf 
-            ~loc "package name is expected to be %s but got %s" s str 
+           if s <> str then 
+             Bsb_exception.errorf 
+               ~loc "package name is expected to be %s but got %s" s str 
         );
         str
       | Some _ 
@@ -10033,7 +10032,7 @@ let rec walk_all_deps_aux
                      Bsb_pkg.resolve_bs_package ~cwd:dir 
                        (Bsb_pkg_types.string_as_package   new_package) in 
                    walk_all_deps_aux visited package_stacks  ~top:(Expect_name new_package) package_dir queue  
-                   ~pinned_dependencies ;
+                     ~pinned_dependencies ;
                  | _ -> 
                    Bsb_exception.errorf ~loc 
                      "%s expect an array"
@@ -10133,7 +10132,7 @@ let cwd = Sys.getcwd ()
 (**
    If [Sys.executable_name] gives an absolute path, 
    nothing needs to be done.
-   
+
    If [Sys.executable_name] is not an absolute path, for example
    (rlwrap ./ocaml)
    it is a relative path, 
@@ -10146,8 +10145,8 @@ let cwd = Sys.getcwd ()
    there are two cases: 
    - bsb.exe
    - ./bsb.exe 
-   The first should also not be touched
-   Only the latter need be adapted based on project root  
+     The first should also not be touched
+     Only the latter need be adapted based on project root  
 *)
 
 let bsc_dir  = 
@@ -10160,13 +10159,13 @@ let vendor_bsc =
 
 
 let vendor_ninja = 
-    Filename.concat bsc_dir "ninja.exe"      
+  Filename.concat bsc_dir "ninja.exe"      
 
 let vendor_bsdep =     
   Filename.concat bsc_dir "bsb_helper.exe"
 
 
-  
+
 ;; assert (Sys.file_exists bsc_dir)       
 
 
@@ -10212,8 +10211,8 @@ val merge : Bsb_db.map -> Bsb_db.map -> Bsb_db.map
 val sanity_check : Bsb_db.map -> unit
 
 (** 
-  Currently it is okay to have duplicated module, 
-  In the future, we may emit a warning 
+   Currently it is okay to have duplicated module, 
+   In the future, we may emit a warning 
 *)
 
 val add_basename:
@@ -10253,7 +10252,7 @@ type t = Bsb_db.map
 (* type case = Bsb_db.case *)
 
 
-     
+
 let conflict_module_info modname (a : module_info) (b : module_info) = 
   Bsb_exception.conflict_module
     modname
@@ -10271,13 +10270,13 @@ let sanity_check (map : t) =
     )    
 
 (* invariant check:
-  ml and mli should have the same case, same path
+   ml and mli should have the same case, same path
 *)  
 let check (x : module_info) 
-  name_sans_extension 
-  case 
-  syntax_kind 
-  (module_info : Bsb_db.info)
+    name_sans_extension 
+    case 
+    syntax_kind 
+    (module_info : Bsb_db.info)
   =  
   let x_ml_info = x.info in  
   (if x.name_sans_extension <> name_sans_extension 
@@ -10296,7 +10295,7 @@ let check (x : module_info)
 
 let warning_unused_file : _ format = 
   "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. \n\
-  The build system transforms a file name into a module name by upper-casing the first letter@."
+   The build system transforms a file name into a module name by upper-casing the first letter@."
 (* TODO: add a link for more explanations *)
 
 
@@ -10314,56 +10313,56 @@ let add_basename
     basename : t =   
   if is_editor_temporary_files basename then map 
   else
-  let info = ref Bsb_db.Impl in   
-  let syntax_kind = ref Bsb_db.Ml in 
-  let invalid_suffix = ref false in
-  let file_suffix = Ext_filename.get_extension_maybe basename in 
-  (match ()  with 
-   | _ when file_suffix = Literals.suffix_ml -> 
-     () 
-   | _ when file_suffix = Literals.suffix_res -> 
-     syntax_kind := Res     
-   | _ when file_suffix = Literals.suffix_re -> 
-     syntax_kind := Reason
-   | _ when file_suffix = Literals.suffix_mli -> 
-     info := Intf
-   | _ when file_suffix = Literals.suffix_resi -> 
-     info :=  Intf;
-     syntax_kind := Res   
-   | _ when file_suffix = Literals.suffix_rei  -> 
-     info := Intf;
-     syntax_kind := Reason 
-   | _ -> 
-     invalid_suffix := true
-  );   
-  let info= !info in 
-  let syntax_kind = !syntax_kind in 
-  let invalid_suffix = !invalid_suffix in 
-  if invalid_suffix then 
-    match error_on_invalid_suffix with
-    | None -> map 
-    | Some loc -> 
-      Bsb_exception.errorf ~loc:loc
-        "invalid suffix %s" basename
-  else  
-    match Ext_filename.as_module ~basename:(Filename.basename basename) with 
-    | None -> 
-      Bsb_log.warn warning_unused_file basename dir; 
-      map 
-    | Some {module_name; case} ->     
-      let name_sans_extension = 
-        Filename.concat dir (Ext_filename.chop_extension_maybe basename) in 
-      let dir = Filename.dirname name_sans_extension in                
-      Map_string.adjust 
-        map
-        module_name 
-        (fun  opt_module_info -> 
-           match opt_module_info with 
-           | None -> 
-             {dir ; name_sans_extension ; info ; syntax_kind ; case }
-           | Some x -> 
-             check x name_sans_extension case syntax_kind info      
-        )
+    let info = ref Bsb_db.Impl in   
+    let syntax_kind = ref Bsb_db.Ml in 
+    let invalid_suffix = ref false in
+    let file_suffix = Ext_filename.get_extension_maybe basename in 
+    (match ()  with 
+     | _ when file_suffix = Literals.suffix_ml -> 
+       () 
+     | _ when file_suffix = Literals.suffix_res -> 
+       syntax_kind := Res     
+     | _ when file_suffix = Literals.suffix_re -> 
+       syntax_kind := Reason
+     | _ when file_suffix = Literals.suffix_mli -> 
+       info := Intf
+     | _ when file_suffix = Literals.suffix_resi -> 
+       info :=  Intf;
+       syntax_kind := Res   
+     | _ when file_suffix = Literals.suffix_rei  -> 
+       info := Intf;
+       syntax_kind := Reason 
+     | _ -> 
+       invalid_suffix := true
+    );   
+    let info= !info in 
+    let syntax_kind = !syntax_kind in 
+    let invalid_suffix = !invalid_suffix in 
+    if invalid_suffix then 
+      match error_on_invalid_suffix with
+      | None -> map 
+      | Some loc -> 
+        Bsb_exception.errorf ~loc:loc
+          "invalid suffix %s" basename
+    else  
+      match Ext_filename.as_module ~basename:(Filename.basename basename) with 
+      | None -> 
+        Bsb_log.warn warning_unused_file basename dir; 
+        map 
+      | Some {module_name; case} ->     
+        let name_sans_extension = 
+          Filename.concat dir (Ext_filename.chop_extension_maybe basename) in 
+        let dir = Filename.dirname name_sans_extension in                
+        Map_string.adjust 
+          map
+          module_name 
+          (fun  opt_module_info -> 
+             match opt_module_info with 
+             | None -> 
+               {dir ; name_sans_extension ; info ; syntax_kind ; case }
+             | Some x -> 
+               check x name_sans_extension case syntax_kind info      
+          )
 
 end
 module Ext_option : sig 
@@ -10497,9 +10496,9 @@ val scan :
   Bsb_file_groups.t 
 
 (** This function has some duplication 
-  from [scan],
-  the parsing assuming the format is 
-  already valid
+    from [scan],
+    the parsing assuming the format is 
+    already valid
 *) 
 val clean_re_js:  
   string -> unit 
@@ -10563,7 +10562,7 @@ type cxt = {
 }
 
 (** [public] has a list of modules, we do a sanity check to see if all the listed 
-  modules are indeed valid module components
+    modules are indeed valid module components
 *)
 let collect_pub_modules 
     (xs : Ext_json_types.t array)
@@ -10615,27 +10614,27 @@ let extract_input_output (edge : Ext_json_types.t) : string list * string list =
   in  
   match edge with 
   | Arr {content} -> 
-  (match Ext_array.find_and_split content 
-          (fun x () -> match x with Str { str =":"} -> true | _ -> false )
-          () with 
-  | No_split -> error ()
-  | Split (  output, input) -> 
-    (Ext_array.to_list_map output (fun x -> 
-        match x with
-        | Str {str = ":"} -> 
-          error ()
-        | Str {str } ->           
-          Some str 
-        | _ -> None) 
-    ,
-    Ext_array.to_list_map input (fun x -> 
-        match x with
-        | Str {str = ":"} -> 
-          error () 
-        | Str {str} -> 
-          Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
-        | _ -> None) ))
-    | _ -> error ()    
+    (match Ext_array.find_and_split content 
+             (fun x () -> match x with Str { str =":"} -> true | _ -> false )
+             () with 
+    | No_split -> error ()
+    | Split (  output, input) -> 
+      (Ext_array.to_list_map output (fun x -> 
+           match x with
+           | Str {str = ":"} -> 
+             error ()
+           | Str {str } ->           
+             Some str 
+           | _ -> None) 
+       ,
+       Ext_array.to_list_map input (fun x -> 
+           match x with
+           | Str {str = ":"} -> 
+             error () 
+           | Str {str} -> 
+             Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
+           | _ -> None) ))
+  | _ -> error ()    
 type json_map = Ext_json_types.t Map_string.t
 
 let extract_generators (input : json_map) : build_generator list  =
@@ -10685,7 +10684,7 @@ let extract_predicate (m : json_map)  : string -> bool =
 
 
 (** This is the only place where we do some removal during scanning,
-  configurabl
+    configurabl
 *)    
 
 
@@ -10708,7 +10707,7 @@ let rec
     let scanned_generators = extract_generators input in        
     let sub_dirs_field = input.?(Bsb_build_schemas.subdirs) in 
     let base_name_array = 
-        lazy (cur_globbed_dirs := true ; Sys.readdir (Filename.concat cxt.root dir)) in 
+      lazy (cur_globbed_dirs := true ; Sys.readdir (Filename.concat cxt.root dir)) in 
     let output_sources = 
       Ext_list.fold_left (Ext_list.flat_map scanned_generators (fun x -> x.output))
         Map_string.empty (fun acc o -> 
@@ -10785,15 +10784,15 @@ and parsing_single_source ({package_kind; is_dev ; cwd} as cxt ) (x : Ext_json_t
   match x with 
   | Str  { str = dir }  -> 
     begin match package_kind, is_dev with 
-    | Dependency _ , true ->  
-      Bsb_file_groups.empty
-    | Dependency _, false  
-    | (Toplevel | Pinned_dependency _), _ ->
-      parsing_source_dir_map 
-        {cxt with 
-         cwd = Ext_path.concat cwd (Ext_path.simple_convert_node_path_to_os_path dir)}
-        Map_string.empty  
-     end   
+      | Dependency _ , true ->  
+        Bsb_file_groups.empty
+      | Dependency _, false  
+      | (Toplevel | Pinned_dependency _), _ ->
+        parsing_source_dir_map 
+          {cxt with 
+           cwd = Ext_path.concat cwd (Ext_path.simple_convert_node_path_to_os_path dir)}
+          Map_string.empty  
+    end   
   | Obj {map} ->
     let current_dir_index = 
       match map.?(Bsb_build_schemas.type_) with 
@@ -10802,25 +10801,25 @@ and parsing_single_source ({package_kind; is_dev ; cwd} as cxt ) (x : Ext_json_t
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> is_dev in 
     begin match package_kind, current_dir_index with 
-    | Dependency _ , true -> 
-      Bsb_file_groups.empty 
-    | Dependency _, false 
-    | (Toplevel | Pinned_dependency _), _ ->       
-      let dir = 
-        match map.?(Bsb_build_schemas.dir) with 
-        | Some (Str{str}) -> 
-          Ext_path.simple_convert_node_path_to_os_path str 
-        | Some x -> Bsb_exception.config_error x "dir expected to be a string"
-        | None -> 
-          Bsb_exception.config_error x
-            (
-              "required field :" ^ Bsb_build_schemas.dir ^ " missing" )
+      | Dependency _ , true -> 
+        Bsb_file_groups.empty 
+      | Dependency _, false 
+      | (Toplevel | Pinned_dependency _), _ ->       
+        let dir = 
+          match map.?(Bsb_build_schemas.dir) with 
+          | Some (Str{str}) -> 
+            Ext_path.simple_convert_node_path_to_os_path str 
+          | Some x -> Bsb_exception.config_error x "dir expected to be a string"
+          | None -> 
+            Bsb_exception.config_error x
+              (
+                "required field :" ^ Bsb_build_schemas.dir ^ " missing" )
 
-      in
-      parsing_source_dir_map 
-        {cxt with is_dev = current_dir_index; 
-                  cwd= Ext_path.concat cwd dir} map
-      end            
+        in
+        parsing_source_dir_map 
+          {cxt with is_dev = current_dir_index; 
+                    cwd= Ext_path.concat cwd dir} map
+    end            
   | _ -> Bsb_file_groups.empty
 and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
   Ext_array.fold_left file_groups Bsb_file_groups.empty (fun  origin x ->
@@ -10835,12 +10834,12 @@ and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  =
 
 
 let scan 
-  ~package_kind 
-  ~root 
-  ~cut_generators 
-  ~namespace 
-  ~ignored_dirs
-  x : t  = 
+    ~package_kind 
+    ~root 
+    ~cut_generators 
+    ~namespace 
+    ~ignored_dirs
+    x : t  = 
   parse_sources {
     ignored_dirs;
     package_kind;
@@ -10856,13 +10855,13 @@ let scan
 
 (* Walk through to do some work *) 
 type walk_cxt = {
-    cwd : string ;
-    root : string;
-    traverse : bool;
-    ignored_dirs : Set_string.t;
-    gentype_language: string;
-  }
-  
+  cwd : string ;
+  root : string;
+  traverse : bool;
+  ignored_dirs : Set_string.t;
+  gentype_language: string;
+}
+
 let rec walk_sources (cxt : walk_cxt) (sources : Ext_json_types.t) = 
   match sources with 
   | Arr {content} -> 
@@ -10874,53 +10873,53 @@ and walk_single_source cxt (x : Ext_json_types.t) =
     -> 
     let dir = Ext_path.simple_convert_node_path_to_os_path dir in
     walk_source_dir_map 
-    {cxt with cwd = Ext_path.concat cxt.cwd dir } None 
+      {cxt with cwd = Ext_path.concat cxt.cwd dir } None 
   | Obj {map} ->       
     begin match map.?(Bsb_build_schemas.dir) with 
-    | Some (Str{str}) -> 
-      let dir = Ext_path.simple_convert_node_path_to_os_path str  in 
-      walk_source_dir_map 
-      {cxt with cwd = Ext_path.concat cxt.cwd dir} map.?(Bsb_build_schemas.subdirs)
-    | _ -> ()
+      | Some (Str{str}) -> 
+        let dir = Ext_path.simple_convert_node_path_to_os_path str  in 
+        walk_source_dir_map 
+          {cxt with cwd = Ext_path.concat cxt.cwd dir} map.?(Bsb_build_schemas.subdirs)
+      | _ -> ()
     end
   | _ -> ()  
 and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field =   
-    let working_dir = Filename.concat cxt.root cxt.cwd in 
-    if not (Set_string.mem cxt.ignored_dirs cxt.cwd) then begin 
-      let file_array = Sys.readdir working_dir in 
-      (* Remove .gen.js/.gen.tsx during clean up *)
-      Ext_array.iter file_array begin fun file ->
-        let is_typescript = cxt.gentype_language = "typescript" in
-        if ((not is_typescript) && Ext_string.ends_with file Literals.suffix_gen_js) 
-        || (is_typescript && Ext_string.ends_with file Literals.suffix_gen_tsx)
-        then 
-          Sys.remove (Filename.concat working_dir file)
-      end; 
-      let cxt_traverse = cxt.traverse in     
-      match sub_dirs_field, cxt_traverse with     
-      | None, true 
-      | Some(True _), _ -> 
-        Ext_array.iter file_array begin fun f -> 
-          if not (Set_string.mem cxt.ignored_dirs f) && 
-             Ext_sys.is_directory_no_exn (Filename.concat working_dir f ) then 
-            walk_source_dir_map 
-              {cxt with 
-               cwd = 
-                 Ext_path.concat cxt.cwd
-                   (Ext_path.simple_convert_node_path_to_os_path f);
-               traverse = true
-              } None 
-        end   
-      | None, _ 
-      | Some (False _), _ -> ()      
-      | Some s, _ -> walk_sources cxt s 
-    end
+  let working_dir = Filename.concat cxt.root cxt.cwd in 
+  if not (Set_string.mem cxt.ignored_dirs cxt.cwd) then begin 
+    let file_array = Sys.readdir working_dir in 
+    (* Remove .gen.js/.gen.tsx during clean up *)
+    Ext_array.iter file_array begin fun file ->
+      let is_typescript = cxt.gentype_language = "typescript" in
+      if ((not is_typescript) && Ext_string.ends_with file Literals.suffix_gen_js) 
+      || (is_typescript && Ext_string.ends_with file Literals.suffix_gen_tsx)
+      then 
+        Sys.remove (Filename.concat working_dir file)
+    end; 
+    let cxt_traverse = cxt.traverse in     
+    match sub_dirs_field, cxt_traverse with     
+    | None, true 
+    | Some(True _), _ -> 
+      Ext_array.iter file_array begin fun f -> 
+        if not (Set_string.mem cxt.ignored_dirs f) && 
+           Ext_sys.is_directory_no_exn (Filename.concat working_dir f ) then 
+          walk_source_dir_map 
+            {cxt with 
+             cwd = 
+               Ext_path.concat cxt.cwd
+                 (Ext_path.simple_convert_node_path_to_os_path f);
+             traverse = true
+            } None 
+      end   
+    | None, _ 
+    | Some (False _), _ -> ()      
+    | Some s, _ -> walk_sources cxt s 
+  end
 (* It makes use of the side effect when [walk_sources], removing suffix_re_js,
    TODO: make it configurable
- *)
+*)
 let clean_re_js root =     
   match Ext_json_parse.parse_json_from_file 
-      (Filename.concat root Literals.bsconfig_json) with 
+          (Filename.concat root Literals.bsconfig_json) with 
   | Obj { map } -> 
     let ignored_dirs = 
       match map .?(Bsb_build_schemas.ignored_dirs) with       
@@ -10930,27 +10929,27 @@ let clean_re_js root =
     in
     let gentype_language =
       match map.?(Bsb_build_schemas.gentypeconfig) with
-        | None -> ""
-        | Some (Obj { map }) ->
-          (match map.?(Bsb_build_schemas.language) with
-          | None -> ""
-          | Some (Str {str}) -> str
-          | Some _ -> "")
-        | Some _ -> ""
+      | None -> ""
+      | Some (Obj { map }) ->
+        (match map.?(Bsb_build_schemas.language) with
+         | None -> ""
+         | Some (Str {str}) -> str
+         | Some _ -> "")
+      | Some _ -> ""
     in
     Ext_option.iter map.?(Bsb_build_schemas.sources) begin fun config -> 
       try (
-          walk_sources { root ;                           
-                         traverse = true; 
-                         cwd = Filename.current_dir_name;
-                         ignored_dirs;
-                         gentype_language;
-                         } config
-        ) with _ -> ()      
+        walk_sources { root ;                           
+                       traverse = true; 
+                       cwd = Filename.current_dir_name;
+                       ignored_dirs;
+                       gentype_language;
+                     } config
+      ) with _ -> ()      
     end
   | _  -> () 
   | exception _ -> ()    
-  
+
 
 end
 module Bsb_config_parse : sig 
@@ -10980,16 +10979,16 @@ module Bsb_config_parse : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 val package_specs_from_bsconfig : 
-    unit -> 
-    Bsb_package_specs.t * Set_string.t
+  unit -> 
+  Bsb_package_specs.t * Set_string.t
 
 
 
 
 val interpret_json : 
-    package_kind:Bsb_package_kind.t  -> 
-    per_proj_dir:string -> 
-    Bsb_config_types.t
+  package_kind:Bsb_package_kind.t  -> 
+  per_proj_dir:string -> 
+  Bsb_config_types.t
 
 
 
@@ -11080,15 +11079,15 @@ let extract_package_name_and_namespace
       Some (Ext_namespace.namespace_of_package_name str)        
     | Some x ->
       Bsb_exception.config_error x 
-      "namespace field expects string or boolean"
+        "namespace field expects string or boolean"
   in 
   package_name, namespace
 
 
 (**
     There are two things to check:
-    - the running bsb and vendoring bsb is the same
-    - the running bsb need delete stale build artifacts
+   - the running bsb and vendoring bsb is the same
+   - the running bsb need delete stale build artifacts
       (kinda check npm upgrade)
 
       Note if the setup is correct: 
@@ -11122,11 +11121,11 @@ let extract_gentype_config (map : json_map) cwd
              match obj.?(Bsb_build_schemas.path) with
              | None -> 
                (Bsb_build_util.resolve_bsb_magic_file
-                 ~cwd ~desc:"gentype.exe"
-                 "gentype/gentype.exe").path
+                  ~cwd ~desc:"gentype.exe"
+                  "gentype/gentype.exe").path
              | Some (Str {str}) ->  
                (Bsb_build_util.resolve_bsb_magic_file
-                 ~cwd ~desc:"gentype.exe" str).path 
+                  ~cwd ~desc:"gentype.exe" str).path 
              | Some config -> 
                Bsb_exception.config_error config
                  "path expect to be a string"
@@ -11143,7 +11142,7 @@ let extract_string (map : json_map) (field : string) cb =
   | Some (Str{str}) -> cb str 
   | Some config -> 
     Bsb_exception.config_error config (field ^ " expect a string" )
-  
+
 let extract_boolean (map : json_map) (field : string) (default : bool) : bool = 
   match map.?(field) with 
   | None -> default 
@@ -11151,7 +11150,7 @@ let extract_boolean (map : json_map) (field : string) (default : bool) : bool =
   | Some (False _) -> false 
   | Some config -> 
     Bsb_exception.config_error config (field ^ " expect a boolean" )
-  
+
 let extract_reason_react_jsx (map : json_map) = 
   let default : Bsb_config_types.reason_react_jsx option ref = ref None in 
   map
@@ -11212,7 +11211,7 @@ let extract_generators (map : json_map) =
      Bsb_exception.config_error config (Bsb_build_schemas.generators ^ " expect an array field")       
   );
   !generators
-  
+
 
 let extract_dependencies (map : json_map) cwd (field : string )
   : Bsb_config_types.dependencies =   
@@ -11223,7 +11222,7 @@ let extract_dependencies (map : json_map) cwd (field : string )
   | Some config -> 
     Bsb_exception.config_error config 
       (field ^ " expect an array")
-  
+
 (* return an empty array if not found *)     
 let extract_string_list (map : json_map) (field : string) : string list = 
   match map.?(field) with 
@@ -11234,9 +11233,9 @@ let extract_string_list (map : json_map) (field : string) : string list =
     Bsb_exception.config_error config (field ^ " expect an array")
 
 let extract_ppx 
-  (map : json_map) 
-  (field : string) 
-  ~(cwd : string) : Bsb_config_types.ppx list =     
+    (map : json_map) 
+    (field : string) 
+    ~(cwd : string) : Bsb_config_types.ppx list =     
   match map.?(field) with 
   | None -> []
   | Some (Arr {content }) -> 
@@ -11245,23 +11244,23 @@ let extract_ppx
       else 
         (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags s).path in 
     Ext_array.to_list_f content (fun x -> 
-      match x with 
-      | Str x ->    
-      
-        {Bsb_config_types.name = 
-          resolve x.str; 
-          args = []}
-      | Arr {content } -> 
+        match x with 
+        | Str x ->    
+
+          {Bsb_config_types.name = 
+             resolve x.str; 
+           args = []}
+        | Arr {content } -> 
 
           let xs = Bsb_build_util.get_list_string content in 
           (match xs with 
-          | [] -> Bsb_exception.config_error x " empty array is not allowed"
-          | name :: args -> 
-            {Bsb_config_types.name = resolve name ; args}
+           | [] -> Bsb_exception.config_error x " empty array is not allowed"
+           | name :: args -> 
+             {Bsb_config_types.name = resolve name ; args}
           )
-      | config -> Bsb_exception.config_error config 
-        (field ^ "expect each item to be either string or array")
-    )
+        | config -> Bsb_exception.config_error config 
+                      (field ^ "expect each item to be either string or array")
+      )
   | Some config -> 
     Bsb_exception.config_error config (field ^ " expect an array")
 
@@ -11293,16 +11292,16 @@ let interpret_json
   (** we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
-  
-  
- 
-  
+
+
+
+
   (* When we plan to add more deps here,
      Make sure check it is consistent that for nested deps, we have a 
      quck check by just re-parsing deps 
      Make sure it works with [-make-world] [-clean-world]
   *)
-  
+
   (* Setting ninja is a bit complex
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
@@ -11317,14 +11316,14 @@ let interpret_json
 
     (* The default situation is empty *)
     let built_in_package : bool = check_stdlib map  in
-    
+
     let pp_flags : string option = 
       extract_string map Bsb_build_schemas.pp_flags (fun p -> 
-        if p = "" then 
-          Bsb_exception.invalid_spec "invalid pp, empty string found"
-        else 
-          Some (Bsb_build_util.resolve_bsb_magic_file ~cwd:per_proj_dir ~desc:Bsb_build_schemas.pp_flags p).path
-      ) in 
+          if p = "" then 
+            Bsb_exception.invalid_spec "invalid pp, empty string found"
+          else 
+            Some (Bsb_build_util.resolve_bsb_magic_file ~cwd:per_proj_dir ~desc:Bsb_build_schemas.pp_flags p).path
+        ) in 
     let reason_react_jsx = extract_reason_react_jsx map in 
     let bs_dependencies = extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies in    
     let bs_dev_dependencies = 
@@ -11383,8 +11382,8 @@ let interpret_json
           cut_generators ;
         }
       | None -> 
-          Bsb_exception.invalid_spec
-            "no sources specified in bsconfig.json"
+        Bsb_exception.invalid_spec
+          "no sources specified in bsconfig.json"
     end
   | _ -> 
     Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"
@@ -11569,7 +11568,7 @@ module Bsb_clean : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** clean bsc generated artifacts.
-  TODO: clean staled in source js artifacts
+    TODO: clean staled in source js artifacts
 *)
 
 val clean_bs_deps : 
@@ -11641,14 +11640,14 @@ let clean_bs_garbage proj_dir =
 let clean_bs_deps  proj_dir =
   let _, pinned_dependencies = Bsb_config_parse.package_specs_from_bsconfig () in   
   let queue =   
-  Bsb_build_util.walk_all_deps  proj_dir ~pinned_dependencies in 
+    Bsb_build_util.walk_all_deps  proj_dir ~pinned_dependencies in 
   Queue.iter (fun (pkg_cxt : Bsb_build_util.package_context )->
       (* whether top or not always do the cleaning *)
       clean_bs_garbage  pkg_cxt.proj_dir
     ) queue
 
 let clean_self  proj_dir = 
-    clean_bs_garbage  proj_dir
+  clean_bs_garbage  proj_dir
 
 end
 module Ext_io : sig 
@@ -11723,11 +11722,11 @@ let load_file f =
 
 
 let  rev_lines_of_chann chan = 
-    let rec loop acc chan = 
-      match input_line chan with
-      | line -> loop (line :: acc) chan
-      | exception End_of_file -> close_in chan ; acc in
-    loop [] chan
+  let rec loop acc chan = 
+    match input_line chan with
+    | line -> loop (line :: acc) chan
+    | exception End_of_file -> close_in chan ; acc in
+  loop [] chan
 
 
 let rev_lines_of_file file = 
@@ -11876,7 +11875,7 @@ let output_merlin_namespace buffer ns=
 *)      
 let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
   let flags = (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) ( 
-     bsc_flags)) in 
+      bsc_flags)) in 
   if flags <> [] then    
     merlin_flg ^ 
     String.concat Ext_string.single_space flags
@@ -11919,8 +11918,8 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
             (Printf.sprintf fmt ppx.name (String.concat " " ppx.args))
       );
     Ext_option.iter pp_file (fun x -> 
-      Buffer.add_string buffer (merlin_flg_pp ^ x)
-    );  
+        Buffer.add_string buffer (merlin_flg_pp ^ x)
+      );  
     Buffer.add_string buffer 
       (merlin_flg_ppx  ^ 
        (match reason_react_jsx with 
@@ -11963,12 +11962,12 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
         Buffer.add_string buffer path ;
       );
     Ext_list.iter bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
-    (fun package ->    
-        let path = package.package_install_path in
-        Buffer.add_string buffer merlin_s ;
-        Buffer.add_string buffer path ;
-        Buffer.add_string buffer merlin_b;
-        Buffer.add_string buffer path ;
+      (fun package ->    
+         let path = package.package_install_path in
+         Buffer.add_string buffer merlin_s ;
+         Buffer.add_string buffer path ;
+         Buffer.add_string buffer merlin_b;
+         Buffer.add_string buffer path ;
       );
     let lib_artifacts_dir = Bsb_config.lib_bs in
     Ext_list.iter res_files.files (fun x -> 
@@ -12105,7 +12104,7 @@ let hex_of_float f = hexstring_of_float f (-1) '-'
 (* This should not lose any preicision *)
 (* let id (f : float) = 
     float_of_string (hex_of_float f) = f
- *)
+*)
 
 
 
@@ -12143,12 +12142,12 @@ let rec check_aux cwd (xs : string list)  =
     -> 
     match Ext_string.split item '\t' with 
     | [file; stamp] -> 
-       let stamp = float_of_string stamp in 
-       let cur_file = (Filename.concat cwd file) in 
-       let stat = Unix.stat cur_file in 
-       if stat.st_mtime <= stamp then 
+      let stamp = float_of_string stamp in 
+      let cur_file = (Filename.concat cwd file) in 
+      let stat = Unix.stat cur_file in 
+      if stat.st_mtime <= stamp then 
         check_aux cwd rest 
-       else Other  cur_file
+      else Other  cur_file
     | _ -> Bsb_file_corrupted 
 and check_global rest = 
   match rest with 
@@ -12169,33 +12168,33 @@ and check_global rest =
 
 
 let record 
-  ~(package_kind : Bsb_package_kind.t)
-  ~per_proj_dir ~file  
-  ~(config:Bsb_config_types.t) (file_or_dirs : string list) : unit =
+    ~(package_kind : Bsb_package_kind.t)
+    ~per_proj_dir ~file  
+    ~(config:Bsb_config_types.t) (file_or_dirs : string list) : unit =
   let _ = config in 
   let buf = Ext_buffer.create 1_000 in   
   Ext_buffer.add_string_char buf Bs_version.version '\n';  
   Ext_buffer.add_string_char buf per_proj_dir '\n';
   (match package_kind with 
-  | Toplevel -> Ext_buffer.add_string buf "0\n"
-  | Dependency _ -> Ext_buffer.add_string buf "1\n"
-  | Pinned_dependency _ -> Ext_buffer.add_string buf "2\n"
+   | Toplevel -> Ext_buffer.add_string buf "0\n"
+   | Dependency _ -> Ext_buffer.add_string buf "1\n"
+   | Pinned_dependency _ -> Ext_buffer.add_string buf "2\n"
   );
   Ext_list.iter file_or_dirs (fun f -> 
-    Ext_buffer.add_string_char buf f '\t'; 
-    Ext_buffer.add_string_char buf 
-      (hex_of_float (Unix.stat (Filename.concat per_proj_dir f)).st_mtime) '\n'; 
-  );
+      Ext_buffer.add_string_char buf f '\t'; 
+      Ext_buffer.add_string_char buf 
+        (hex_of_float (Unix.stat (Filename.concat per_proj_dir f)).st_mtime) '\n'; 
+    );
   begin match config.ppx_files with 
-  | [] -> ()
-  | files ->
-    Ext_buffer.add_string buf "===\n";
-    Ext_list.iter files (fun {name ; args = _} -> 
-    try
-      let stamp = (Unix.stat name).st_mtime in 
-      Ext_buffer.add_string_char buf name '\t';
-      Ext_buffer.add_string_char buf (hex_of_float stamp) '\n' 
-    with  _ -> ())
+    | [] -> ()
+    | files ->
+      Ext_buffer.add_string buf "===\n";
+      Ext_list.iter files (fun {name ; args = _} -> 
+          try
+            let stamp = (Unix.stat name).st_mtime in 
+            Ext_buffer.add_string_char buf name '\t';
+            Ext_buffer.add_string_char buf (hex_of_float stamp) '\n' 
+          with  _ -> ())
   end;      
   let oc = open_out_bin file in
   Ext_buffer.output_buffer oc buf ;
@@ -12208,8 +12207,8 @@ let record
     bit in case we found a different version of compiler
 *)
 let check 
-  ~(package_kind : Bsb_package_kind.t)
-  ~(per_proj_dir:string) ~forced ~file : check_result =
+    ~(package_kind : Bsb_package_kind.t)
+    ~(per_proj_dir:string) ~forced ~file : check_result =
   match  open_in_bin file with   (* Windows binary mode*)    
   | exception _ -> Bsb_file_not_exist
   | ic ->
@@ -12218,17 +12217,17 @@ let check
     | version :: source_directory ::package_kind_str:: dir_or_files ->
       if version <> Bs_version.version then Bsb_bsc_version_mismatch
       else 
-        if per_proj_dir <> source_directory then Bsb_source_directory_changed else
-        if forced then Bsb_forced (* No need walk through *)
-        else if 
-          
-          not (match package_kind, package_kind_str with 
-          | Toplevel, "0" 
-          | Dependency _, "1"
-          | Pinned_dependency _, "2" -> true 
-          | _ -> false ) then 
-          Bsb_package_kind_inconsistent
-        else
+      if per_proj_dir <> source_directory then Bsb_source_directory_changed else
+      if forced then Bsb_forced (* No need walk through *)
+      else if 
+
+        not (match package_kind, package_kind_str with 
+            | Toplevel, "0" 
+            | Dependency _, "1"
+            | Pinned_dependency _, "2" -> true 
+            | _ -> false ) then 
+        Bsb_package_kind_inconsistent
+      else
         begin 
           try
             check_aux per_proj_dir dir_or_files 
@@ -12240,7 +12239,7 @@ let check
               Bsb_file_not_exist        
             end
         end 
-   | _ -> Bsb_file_corrupted         
+    | _ -> Bsb_file_corrupted         
 
 
 end
@@ -12305,7 +12304,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- 
+
 let bsbuild_cache = Literals.bsbuild_cache
 
 
@@ -12315,13 +12314,13 @@ let nl buf =
 
 
 (* IDEAS: 
-  Pros: 
-    - could be even shortened to a single byte
-  Cons: 
-    - decode would allocate
-    - code too verbose
-    - not readable 
- *)  
+   Pros: 
+   - could be even shortened to a single byte
+     Cons: 
+   - decode would allocate
+   - code too verbose
+   - not readable 
+*)  
 
 let make_encoding length buf : Ext_buffer.t -> int -> unit =
   let max_range = length lsl 1 + 1 in 
@@ -12342,8 +12341,8 @@ let make_encoding length buf : Ext_buffer.t -> int -> unit =
     Ext_buffer.add_int_4
   end else assert false 
 (* Make sure [tmp_buf1] and [tmp_buf2] is cleared ,
-  they are only used to control the order.
-  Strictly speaking, [tmp_buf1] is not needed
+   they are only used to control the order.
+   Strictly speaking, [tmp_buf1] is not needed
 *)
 let encode_single (db : Bsb_db.map) (buf : Ext_buffer.t) =    
   (* module name section *)  
@@ -12374,10 +12373,10 @@ let encode (dbs : Bsb_db.t) buf =
 
 
 (*  shall we avoid writing such file (checking the digest)?
-  It is expensive to start scanning the whole code base,
-  we should we avoid it in the first place, if we do start scanning,
-  this operation seems affordable
- *)
+    It is expensive to start scanning the whole code base,
+    we should we avoid it in the first place, if we do start scanning,
+    this operation seems affordable
+*)
 let write_build_cache ~dir (bs_files : Bsb_db.t)  : string = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   let buf = Ext_buffer.create 100_000 in 
@@ -12415,9 +12414,9 @@ module Ext_digest : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- val length : int 
+val length : int 
 
- val hex_length : int
+val hex_length : int
 end = struct
 #1 "ext_digest.ml"
 (* Copyright (C) 2019- Hongbo Zhang, Authors of ReScript
@@ -12445,9 +12444,9 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- let length = 16
+let length = 16
 
- let hex_length = 32
+let hex_length = 32
 end
 module Bsb_namespace_map_gen : sig 
 #1 "bsb_namespace_map_gen.mli"
@@ -12478,7 +12477,7 @@ module Bsb_namespace_map_gen : sig
 (** [output dir namespace file_groups]
     when [build.ninja] is generated, we output a module map [.mlmap] file 
     such [.mlmap] file will be consumed by [bsc.exe] to generate [.cmi] file
- *)
+*)
 val output : 
   dir:string ->
   string -> 
@@ -12523,12 +12522,12 @@ let write_file fname digest contents =
   Ext_buffer.output_buffer oc contents;
   close_out oc 
 (** 
-  TODO:
-  sort filegroupts to ensure deterministic behavior
-  
-  if [.bsbuild] is not changed
-  [.mlmap] does not need to be changed too
-  
+   TODO:
+   sort filegroupts to ensure deterministic behavior
+
+   if [.bsbuild] is not changed
+   [.mlmap] does not need to be changed too
+
 *)
 let output 
     ~dir 
@@ -12551,11 +12550,11 @@ let output
     let old_digest = really_input_string ic Ext_digest.length in 
     close_in ic ;
     (if old_digest <> digest then 
-      write_file fname digest buf)
+       write_file fname digest buf)
   else 
     write_file fname digest buf
-    
-  
+
+
 end
 module Bsb_ninja_global_vars
 = struct
@@ -12585,16 +12584,16 @@ module Bsb_ninja_global_vars
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- 
+
 
 
 (* Invariant: the two string literal has 
-  to be "a" and "$a"
+   to be "a" and "$a"
 *)
 
 (* let src_root_dir = "g_root"
 
-let lazy_src_root_dir = "$g_root"  *)
+   let lazy_src_root_dir = "$g_root"  *)
 let g_finger = "g_finger"
 
 
@@ -12631,7 +12630,7 @@ module Bsb_ninja_rule : sig
 
 
 (** The complexity comes from the fact that we allow custom rules which could
-  conflict with our custom built-in rules
+    conflict with our custom built-in rules
 *)
 type t  
 
@@ -12641,7 +12640,7 @@ val get_name : t  -> out_channel -> string
 (***********************************************************)
 (** A list of existing rules *)
 type builtin = {
-  
+
   build_ast : t;
   build_ast_from_re : t ;
 
@@ -12735,15 +12734,15 @@ type t = {
 
 let get_name (x : t) oc = x.name oc
 let print_rule (oc : out_channel) 
-  ?description 
-  ?(restat : unit option)  
-  ?(dyndep : unit option)
-  ~command   
-  name  =
+    ?description 
+    ?(restat : unit option)  
+    ?(dyndep : unit option)
+    ~command   
+    name  =
   output_string oc "rule "; output_string oc name ; output_string oc "\n";
   output_string oc "  command = "; output_string oc command; output_string oc "\n";
   (if dyndep <> None then
-      output_string oc "  dyndep = 1\n");
+     output_string oc "  dyndep = 1\n");
   (if restat <>  None then   
      output_string oc "  restat = 1\n");
   begin match description with 
@@ -12752,7 +12751,7 @@ let print_rule (oc : out_channel)
       output_string oc "  description = " ; output_string oc description;
       output_string oc "\n"
   end 
-  
+
 
 
 
@@ -12804,7 +12803,7 @@ type builtin = {
   mij_dev : t ;
   mi : t;
   mi_dev : t ;
-  
+
   build_package : t ;
   customs : t Map_string.t
 }
@@ -12813,24 +12812,24 @@ type builtin = {
 ;;
 
 let make_custom_rules 
-  ~(gentype_config : Bsb_config_types.gentype_config option)        
-  ~(has_postbuild : string option)
-  ~(pp_file : string option)
-  ~(has_builtin : bool)
-  ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
-  ~(digest : string)
-  ~(package_specs: Bsb_package_specs.t)
-  ~(namespace : string option)
-  ~package_name
-  ~warnings  
-  ~(ppx_files : Bsb_config_types.ppx list)
-  ~bsc_flags
-  ~(dpkg_incls : string)
-  ~(lib_incls : string)
-  ~(dev_incls : string)
-  ~bs_dependencies
-  ~bs_dev_dependencies
-  (custom_rules : command Map_string.t) : 
+    ~(gentype_config : Bsb_config_types.gentype_config option)        
+    ~(has_postbuild : string option)
+    ~(pp_file : string option)
+    ~(has_builtin : bool)
+    ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
+    ~(digest : string)
+    ~(package_specs: Bsb_package_specs.t)
+    ~(namespace : string option)
+    ~package_name
+    ~warnings  
+    ~(ppx_files : Bsb_config_types.ppx list)
+    ~bsc_flags
+    ~(dpkg_incls : string)
+    ~(lib_incls : string)
+    ~(dev_incls : string)
+    ~bs_dependencies
+    ~bs_dev_dependencies
+    (custom_rules : command Map_string.t) : 
   builtin = 
   let bs_dep = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep in
   let bsc = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc in 
@@ -12839,7 +12838,7 @@ let make_custom_rules
   let buf = Ext_buffer.create 100 in     
   let ns_flag = 
     match namespace with None -> ""    
-    | Some n -> " -bs-ns " ^ n in 
+                       | Some n -> " -bs-ns " ^ n in 
   let mk_ml_cmj_cmd 
       ~(read_cmi : [`yes | `is_cmi | `no])
       ~is_dev 
@@ -12860,7 +12859,7 @@ let make_custom_rules
     Ext_buffer.add_char_string buf ' ' bsc_flags;
     Ext_buffer.add_char_string buf ' ' warnings; 
     (* we need "-w a" in the end position to take effect
-      in non-toplevel mode
+       in non-toplevel mode
     *)
     begin match gentype_config with 
       | None -> ()
@@ -12875,18 +12874,18 @@ let make_custom_rules
         (Bsb_package_specs.package_flag_of_package_specs package_specs ~dirname:"$in_d")
     end;
     begin match bs_dependencies, bs_dev_dependencies with 
-    | [], [] -> ()
-    | _, _  -> 
-      Ext_buffer.add_string buf " -bs-v";    
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_finger;
+      | [], [] -> ()
+      | _, _  -> 
+        Ext_buffer.add_string buf " -bs-v";    
+        Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_finger;
     end;
     Ext_buffer.add_string buf " $i";
     begin match postbuild with 
-    | None -> ()
-    | Some cmd -> 
-      Ext_buffer.add_string buf " && ";
-      Ext_buffer.add_string buf cmd ; 
-      Ext_buffer.add_string buf " $out_last"
+      | None -> ()
+      | Some cmd -> 
+        Ext_buffer.add_string buf " && ";
+        Ext_buffer.add_string buf cmd ; 
+        Ext_buffer.add_string buf " $out_last"
     end ;
     Ext_buffer.contents buf
   in   
@@ -12918,7 +12917,7 @@ let make_custom_rules
      | _, Some Jsx_v3 
        -> Ext_buffer.add_string buf " -bs-jsx 3"
     );
-    
+
     Ext_buffer.add_char_string buf ' ' bsc_flags;
     Ext_buffer.add_string buf " -absname -bs-ast -o $out $i";   
     Ext_buffer.contents buf
@@ -12931,7 +12930,7 @@ let make_custom_rules
     define
       ~command:(mk_ast  ~has_reason_react_jsx:true)
       "astj" in 
- 
+
   let copy_resources =    
     define 
       ~command:(
@@ -12945,13 +12944,13 @@ let make_custom_rules
     define
       ~restat:()
       ~command:
-      (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
+        (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
       "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
-      (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $in")
+        (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $in")
       "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define
@@ -12978,7 +12977,7 @@ let make_custom_rules
       ~name:"mij" ~postbuild:has_postbuild in  
   let mi, mi_dev =
     aux 
-       ~read_cmi:`is_cmi  ~postbuild:None
+      ~read_cmi:`is_cmi  ~postbuild:None
       ~name:"mi" in 
   let build_package = 
     define
@@ -13000,10 +12999,10 @@ let make_custom_rules
     mj_dev  ;
     mij  ;
     mi  ;
-    
+
     mij_dev;
     mi_dev ;
-    
+
     build_package ;
     customs =
       Map_string.mapi custom_rules begin fun name command -> 
@@ -13045,8 +13044,8 @@ module Bsb_ninja_targets : sig
 
 
 (** output should always be marked explicitly,
-   otherwise the build system can not figure out clearly
-   however, for the command we don't need pass `-o`
+    otherwise the build system can not figure out clearly
+    however, for the command we don't need pass `-o`
 *)
 val output_build :
   outputs:string list ->
@@ -13162,7 +13161,7 @@ module Ext_namespace_encode : sig
 *)
 val make : 
   ?ns:string -> string -> string 
- 
+
 end = struct
 #1 "ext_namespace_encode.ml"
 (* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
@@ -13189,7 +13188,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- let make ?ns cunit  = 
+let make ?ns cunit  = 
   match ns with 
   | None -> cunit
   | Some ns -> cunit ^ Literals.ns_sep ^ ns 
@@ -13323,13 +13322,13 @@ let emit_module_build
   let output_iast = filename_sans_extension  ^ Literals.suffix_iast in
   let output_d = filename_sans_extension ^ Literals.suffix_d in
   let output_filename_sans_extension =  
-      Ext_namespace_encode.make ?ns:namespace filename_sans_extension
+    Ext_namespace_encode.make ?ns:namespace filename_sans_extension
   in 
   let output_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
     Bsb_package_specs.get_list_of_output_js package_specs output_filename_sans_extension in 
-  
+
   Bsb_ninja_targets.output_build oc
     ~outputs:[output_ast]
     ~inputs:[input_impl]
@@ -13389,7 +13388,7 @@ let handle_files_per_dir
     | Export_none -> fun _ -> false
     | Export_set set ->  
       fun module_name ->
-      Set_string.mem set module_name in
+        Set_string.mem set module_name in
   Map_string.iter group.sources   (fun  module_name module_info   ->
       if installable module_name && not is_dev then 
         Queue.add 
@@ -13401,11 +13400,11 @@ let handle_files_per_dir
         namespace module_info
     )
 
-    (* ; 
-    Bsb_ninja_targets.phony
-    oc ~order_only_deps:[] ~inputs:[] ~output:group.dir *)
+(* ; 
+   Bsb_ninja_targets.phony
+   oc ~order_only_deps:[] ~inputs:[] ~output:group.dir *)
 
-    (* pseuduo targets per directory *)
+(* pseuduo targets per directory *)
 
 end
 module Bsb_ninja_gen : sig 
@@ -13435,7 +13434,7 @@ module Bsb_ninja_gen : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** 
-  generate ninja file based on [cwd] 
+   generate ninja file based on [cwd] 
 *)
 val output_ninja_and_namespace_map :
   per_proj_dir:string ->  
@@ -13490,9 +13489,9 @@ let get_bsc_flags
 
 let emit_bsc_lib_includes 
     (bs_dependencies : Bsb_config_types.dependencies)
-  (source_dirs : string list) 
-  (external_includes) 
-  (namespace : _ option): string = 
+    (source_dirs : string list) 
+    (external_includes) 
+    (namespace : _ option): string = 
   (* TODO: bsc_flags contain stdlib path which is in the latter position currently *)
   let all_includes source_dirs  = 
     source_dirs @
@@ -13554,11 +13553,11 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
   let bs = ".."//"bs" in  
   let sb = ".."//".." in 
   o (if Ext_sys.is_windows_or_cygwin then 
-      "rule cp\n  command = cmd.exe /C copy /Y $i $out >NUL\n\
-       rule touch\n command = cmd.exe /C type nul >>$out & copy $out+,, >NUL\n"
-    else
-      "rule cp\n  command = cp $i $out\n\
-       rule touch\n command = touch $out\n"
+       "rule cp\n  command = cmd.exe /C copy /Y $i $out >NUL\n\
+        rule touch\n command = cmd.exe /C type nul >>$out & copy $out+,, >NUL\n"
+     else
+       "rule cp\n  command = cp $i $out\n\
+        rule touch\n command = touch $out\n"
     );
   let essentials = Ext_buffer.create 1_000 in   
   files_to_install 
@@ -13570,7 +13569,7 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
       oo Literals.suffix_cmi ~dest ~src;
       oo Literals.suffix_cmj ~dest ~src;      
       oo Literals.suffix_cmt ~dest ~src;
-      
+
       Ext_buffer.add_string essentials  dest ;
       Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';    
       Ext_buffer.add_string essentials dest ;
@@ -13595,16 +13594,16 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
         oo Literals.suffix_cmti ~dest ~src
     );
   begin match namespace with 
-  | None -> ()      
-  | Some dest -> 
-    let src = bs // dest in   
-    oo Literals.suffix_cmi ~dest ~src; 
-    oo Literals.suffix_cmj ~dest ~src;
-    oo Literals.suffix_cmt ~dest ~src;
-    Ext_buffer.add_string essentials dest ; 
-    Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';
-    Ext_buffer.add_string essentials dest ;
-    Ext_buffer.add_string essentials Literals.suffix_cmj 
+    | None -> ()      
+    | Some dest -> 
+      let src = bs // dest in   
+      oo Literals.suffix_cmi ~dest ~src; 
+      oo Literals.suffix_cmj ~dest ~src;
+      oo Literals.suffix_cmt ~dest ~src;
+      Ext_buffer.add_string essentials dest ; 
+      Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';
+      Ext_buffer.add_string essentials dest ;
+      Ext_buffer.add_string essentials Literals.suffix_cmj 
   end;
   Ext_buffer.add_char essentials '\n';
   o "build install.stamp : touch ";
@@ -13673,11 +13672,11 @@ let output_ninja_and_namespace_map
          raise (Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k))
     ) ;
   let dev_incls = 
-      (Bsb_build_util.include_dirs source_dirs.dev) in 
+    (Bsb_build_util.include_dirs source_dirs.dev) in 
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   let lib_incls = emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace in
   let rules : Bsb_ninja_rule.builtin = 
-      Bsb_ninja_rule.make_custom_rules
+    Bsb_ninja_rule.make_custom_rules
       ~gentype_config
       ~has_postbuild:js_post_build_cmd 
       ~pp_file
@@ -13711,8 +13710,8 @@ let output_ninja_and_namespace_map
         (finger_file x) oc
     );
   (match gentype_config with 
-  | None -> ()
-  | Some x -> output_string oc ("cleaner = " ^ x.path ^ "\n"));   
+   | None -> ()
+   | Some x -> output_string oc ("cleaner = " ^ x.path ^ "\n"));   
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 
@@ -13864,7 +13863,7 @@ let naive_escaped (unmodified_input : string) : string =
   end
 
 let quot x = 
-    "\"" ^ naive_escaped x ^ "\""
+  "\"" ^ naive_escaped x ^ "\""
 let true_ = True
 let false_ = False
 let null = Null 
@@ -13874,7 +13873,7 @@ let arr s = Arr s
 let obj s = Obj s 
 let kvs s = 
   Obj (Map_string.of_list s)
-  
+
 let rec encode_buf (x : t ) 
     (buf : Buffer.t) : unit =  
   let a str = Buffer.add_string buf str in 
@@ -13908,7 +13907,7 @@ let rec encode_buf (x : t )
     else 
       begin  
         (*prerr_endline "WEIRD";
-        prerr_endline (string_of_int @@ Map_string.cardinal map );   *)
+          prerr_endline (string_of_int @@ Map_string.cardinal map );   *)
         a "{ ";
         let _ : int =  Map_string.fold map 0 (fun  k v i -> 
             if i <> 0 then begin
@@ -13919,19 +13918,19 @@ let rec encode_buf (x : t )
             encode_buf v buf ;
             i + 1 
           ) in 
-          a " }"
+        a " }"
       end
 
 
 let to_string x  = 
-    let buf = Buffer.create 1024 in 
-    encode_buf x buf ;
-    Buffer.contents buf 
+  let buf = Buffer.create 1024 in 
+  encode_buf x buf ;
+  Buffer.contents buf 
 
 let to_channel (oc : out_channel) x  = 
-    let buf = Buffer.create 1024 in 
-    encode_buf x buf ;
-    Buffer.output_buffer oc buf   
+  let buf = Buffer.create 1024 in 
+  encode_buf x buf ;
+  Buffer.output_buffer oc buf   
 
 let to_file name v =     
   let ochan = open_out_bin name in 
@@ -13965,12 +13964,12 @@ module Bsb_watcher_gen : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** This module try to generate some meta data so that
-  everytime [bsconfig.json] is reload, we can re-read
-  such meta data changes in the watcher.
-  
-  Another way of doing it is processing [bsconfig.json] 
-  directly in [watcher] but that would 
-  mean the duplication of logic in [bsb] and [bsb_watcher]
+    everytime [bsconfig.json] is reload, we can re-read
+    such meta data changes in the watcher.
+
+    Another way of doing it is processing [bsconfig.json] 
+    directly in [watcher] but that would 
+    mean the duplication of logic in [bsb] and [bsb_watcher]
 *)
 val generate_sourcedirs_meta : 
   name:string -> 
@@ -14009,7 +14008,7 @@ let arr = Ext_json_noloc.arr
 let str = Ext_json_noloc.str 
 
 let generate_sourcedirs_meta 
-  ~name (res : Bsb_file_groups.t) = 
+    ~name (res : Bsb_file_groups.t) = 
   let v = 
     kvs [
       "dirs" ,
@@ -14022,20 +14021,20 @@ let generate_sourcedirs_meta
             (fun x -> 
                Ext_list.map x.output str)   
         ));        
-        "pkgs", arr 
-          (Array.of_list
-            (Bsb_pkg.to_list (fun pkg path ->
-              arr [|
-                str (Bsb_pkg_types.to_string pkg);
-                str path
+      "pkgs", arr 
+        (Array.of_list
+           (Bsb_pkg.to_list (fun pkg path ->
+                arr [|
+                  str (Bsb_pkg_types.to_string pkg);
+                  str path
                 |]
               ))
-          )
+        )
     ]
   in 
   Ext_json_noloc.to_file 
-  name v
-  
+    name v
+
 end
 module Bsb_ninja_regen : sig 
 #1 "bsb_ninja_regen.mli"
@@ -14137,7 +14136,7 @@ let regenerate_ninja
       Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
       Bsb_clean.clean_self  per_proj_dir; 
     end ; 
-    
+
     let config : Bsb_config_types.t = 
       Bsb_config_parse.interpret_json 
         ~package_kind
@@ -14146,19 +14145,19 @@ let regenerate_ninja
     Bsb_build_util.mkp lib_bs_dir;         
     Bsb_package_specs.list_dirs_by config.package_specs
       (fun x -> 
-        let dir = per_proj_dir // x in (*Unix.EEXIST error*)
-        if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
+         let dir = per_proj_dir // x in (*Unix.EEXIST error*)
+         if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
     (match package_kind with 
-    | Toplevel -> 
-      Bsb_watcher_gen.generate_sourcedirs_meta
-        ~name:(lib_bs_dir // Literals.sourcedirs_meta)
-        config.file_groups
-    | Pinned_dependency _ (* FIXME: seems need to be watched *)
-    | Dependency _ -> ())    
+     | Toplevel -> 
+       Bsb_watcher_gen.generate_sourcedirs_meta
+         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
+         config.file_groups
+     | Pinned_dependency _ (* FIXME: seems need to be watched *)
+     | Dependency _ -> ())    
     ;
 
     Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
-       config;       
+      config;       
     Bsb_ninja_gen.output_ninja_and_namespace_map 
       ~per_proj_dir  ~package_kind config ;                 
     (* PR2184: we still need record empty dir 
@@ -14234,11 +14233,11 @@ let string_after s n = String.sub s n (String.length s - n)
 
 
 (* There seems to be a bug in {!Str.global_substitute} 
-{[
-Str.global_substitute (Str.regexp "\\${bsb:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^":found")) {|   ${bsb:hello-world}  ${bsb:x} ${x}|}  ;;
-- : bytes =
-"      ${bsb:hello-world}  ${bsb:x} ${x}:found     ${bsb:hello-world}  ${bsb:x} ${x}:found ${x}"
-]}
+   {[
+     Str.global_substitute (Str.regexp "\\${bsb:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^":found")) {|   ${bsb:hello-world}  ${bsb:x} ${x}|}  ;;
+     - : bytes =
+     "      ${bsb:hello-world}  ${bsb:x} ${x}:found     ${bsb:hello-world}  ${bsb:x} ${x}:found ${x}"
+   ]}
 *)
 let global_substitute text ~reg:expr repl_fun =
   let text_len = String.length text in 
@@ -14255,12 +14254,12 @@ let global_substitute text ~reg:expr repl_fun =
         let end_pos = Str.match_end() in
         let matched = (Str.matched_string text) in 
         let  groups = 
-            let rec aux n  acc = 
-                match Str.matched_group n text with 
-                | exception (Not_found | Invalid_argument _ ) 
-                    -> acc 
-                | v -> aux (succ n) (v::acc) in 
-             aux 1 []  in 
+          let rec aux n  acc = 
+            match Str.matched_group n text with 
+            | exception (Not_found | Invalid_argument _ ) 
+              -> acc 
+            | v -> aux (succ n) (v::acc) in 
+          aux 1 []  in 
         let repl_text = repl_fun matched groups  in
         replace (repl_text :: String.sub text start (pos-start) :: accu)
           end_pos (end_pos = pos)
@@ -14283,1885 +14282,1885 @@ type  node =
   | Dir of string *  node list 
   | File of string *  string  
 let root = ([
-   Dir("basic",[
-    File(".gitignore",
-    "*.exe\n\
-    *.obj\n\
-    *.out\n\
-    *.compile\n\
-    *.native\n\
-    *.byte\n\
-    *.cmo\n\
-    *.annot\n\
-    *.cmi\n\
-    *.cmx\n\
-    *.cmt\n\
-    *.cmti\n\
-    *.cma\n\
-    *.a\n\
-    *.cmxa\n\
-    *.obj\n\
-    *~\n\
-    *.annot\n\
-    *.cmj\n\
-    *.bak\n\
-    lib/bs\n\
-    *.mlast\n\
-    *.mliast\n\
-    .vscode\n\
-    .merlin\n\
-    .bsb.lock\n\
-    /node_modules/\n\
-    "
-    );
-    File("README.md",
-    "\n\
-    \n\
-    # Build\n\
-    ```\n\
-    npm run build\n\
-    ```\n\
-    \n\
-    # Watch\n\
-    \n\
-    ```\n\
-    npm run watch\n\
-    ```\n\
-    \n\
-    "
-    );
-    File("bsconfig.json",
-    "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
-    \  \"sources\": {\n\
-    \    \"dir\" : \"src\",\n\
-    \    \"subdirs\" : true\n\
-    \  }\n\
-    }\n\
-    "
-    );
-    File("package.json",
-    "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
-    \  \"scripts\": {\n\
-    \    \"clean\": \"bsb -clean-world\",\n\
-    \    \"build\": \"bsb -make-world\",\n\
-    \    \"watch\": \"bsb -make-world -w\"\n\
-    \  },\n\
-    \  \"keywords\": [\n\
-    \    \"ReScript\"\n\
-    \  ],\n\
-    \  \"author\": \"\",\n\
-    \  \"license\": \"MIT\",\n\
-    \  \"devDependencies\": {\n\
-    \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
-    \  }\n\
-    }"
-    );
-    Dir("src",[
-     File("demo.res",
-     "\n\
-     Js.log(\"Hello, ReScript\")"
-     )        
-    ])        
-   ]);
-   Dir("basic-reason",[
-    File(".gitignore",
-    ".DS_Store\n\
-    .merlin\n\
-    .bsb.lock\n\
-    npm-debug.log\n\
-    /lib/bs/\n\
-    /node_modules/\n\
-    "
-    );
-    File("README.md",
-    "# Basic Reason Template\n\
-    \n\
-    Hello! This project allows you to quickly get started with ReScript using Reason syntax. If you wanted a more sophisticated version, try the `react` template (`bsb -theme react -init .`).\n\
-    \n\
-    # Build\n\
-    \n\
-    ```bash\n\
-    # for yarn\n\
-    yarn build\n\
-    \n\
-    # for npm\n\
-    npm run build\n\
-    ```\n\
-    \n\
-    # Build + Watch\n\
-    \n\
-    ```bash\n\
-    # for yarn\n\
-    yarn start\n\
-    \n\
-    # for npm\n\
-    npm run start\n\
-    ```\n\
-    \n\
-    "
-    );
-    File("bsconfig.json",
-    "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
-    \  \"sources\": {\n\
-    \    \"dir\" : \"src\",\n\
-    \    \"subdirs\" : true\n\
-    \  },\n\
-    \  \"package-specs\": {\n\
-    \    \"module\": \"commonjs\",\n\
-    \    \"in-source\": true\n\
-    \  },\n\
-    \  \"suffix\": \".bs.js\",\n\
-    \  \"bs-dependencies\": [\n\
-    \n\
-    \  ],\n\
-    \  \"warnings\": {\n\
-    \    \"error\" : \"+101\"\n\
-    \  },\n\
-    \  \"namespace\": true,\n\
-    \  \"refmt\": 3\n\
-    }\n\
-    "
-    );
-    File("package.json",
-    "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
-    \  \"scripts\": {\n\
-    \    \"build\": \"bsb -make-world\",\n\
-    \    \"start\": \"bsb -make-world -w\",\n\
-    \    \"clean\": \"bsb -clean-world\"\n\
-    \  },\n\
-    \  \"keywords\": [\n\
-    \    \"ReScript\"\n\
-    \  ],\n\
-    \  \"author\": \"\",\n\
-    \  \"license\": \"MIT\",\n\
-    \  \"devDependencies\": {\n\
-    \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
-    \  }\n\
-    }\n\
-    "
-    );
-    Dir("src",[
-     File("Demo.re",
-     "Js.log(\"Hello, ReScript!\");\n\
-     "
-     )        
-    ])        
-   ]);
-   Dir("generator",[
-    File(".gitignore",
-    "*.exe\n\
-    *.obj\n\
-    *.out\n\
-    *.compile\n\
-    *.native\n\
-    *.byte\n\
-    *.cmo\n\
-    *.annot\n\
-    *.cmi\n\
-    *.cmx\n\
-    *.cmt\n\
-    *.cmti\n\
-    *.cma\n\
-    *.a\n\
-    *.cmxa\n\
-    *.obj\n\
-    *~\n\
-    *.annot\n\
-    *.cmj\n\
-    *.bak\n\
-    lib/bs\n\
-    *.mlast\n\
-    *.mliast\n\
-    .vscode\n\
-    .merlin\n\
-    .bsb.lock\n\
-    /node_modules/\n\
-    "
-    );
-    File("README.md",
-    "\n\
-    \n\
-    # Build\n\
-    ```\n\
-    npm run build\n\
-    ```\n\
-    \n\
-    # Watch\n\
-    \n\
-    ```\n\
-    npm run watch\n\
-    ```\n\
-    \n\
-    \n\
-    # Editor\n\
-    If you use `vscode`, Press `Windows + Shift + B` it will build automatically"
-    );
-    File("bsconfig.json",
-    "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
-    \  \"sources\": {\n\
-    \    \"dir\": \"src\",\n\
-    \    \"generators\": [{\n\
-    \      \"name\": \"cpp\",\n\
-    \      \"edge\": [\"test.ml\", \":\", \"test.cpp.ml\"]\n\
-    \    }],\n\
-    \    \"subdirs\": true  \n\
-    \  },\n\
-    \  \"generators\": [{\n\
-    \    \"name\" : \"cpp\",\n\
-    \    \"command\": \"sed 's/OCAML/3/' $in > $out\"\n\
-    \  }],\n\
-    \  \"bs-dependencies\" : [\n\
-    \  ]\n\
-    }"
-    );
-    File("package.json",
-    "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
-    \  \"scripts\": {\n\
-    \    \"clean\": \"bsb -clean-world\",\n\
-    \    \"build\": \"bsb -make-world\",\n\
-    \    \"watch\": \"bsb -make-world -w\"\n\
-    \  },\n\
-    \  \"keywords\": [\n\
-    \    \"ReScript\"\n\
-    \  ],\n\
-    \  \"author\": \"\",\n\
-    \  \"license\": \"MIT\",\n\
-    \  \"devDependencies\": {\n\
-    \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
-    \  }\n\
-    }"
-    );
-    Dir("src",[
-     File("demo.ml",
-     "\n\
-     \n\
-     let () = Js.log \"Hello, ReScript\""
-     );
-     File("test.cpp.ml",
-     "\n\
-     (* \n\
-     #define FS_VAL(name,ty) external name : ty = \"\" [@@bs.module \"fs\"]\n\
-     \n\
-     \n\
-     FS_VAL(readdirSync, string -> string array)\n\
-     \ *)\n\
-     \n\
-     \n\
-     \ let ocaml = OCAML"
-     )        
-    ])        
-   ]);
-   Dir("minimal",[
-    File(".gitignore",
-    ".DS_Store\n\
-    .merlin\n\
-    .bsb.lock\n\
-    npm-debug.log\n\
-    /lib/bs/\n\
-    /node_modules/"
-    );
-    File("README.md",
-    "\n\
-    \  # ${bsb:name}"
-    );
-    File("bsconfig.json",
-    "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"sources\": {\n\
-    \      \"dir\": \"src\",\n\
-    \      \"subdirs\": true\n\
-    \  }\n\
-    }"
-    );
-    File("package.json",
-    "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
-    \  \"scripts\": {\n\
-    \    \"clean\": \"bsb -clean-world\",\n\
-    \    \"build\": \"bsb -make-world\",\n\
-    \    \"start\": \"bsb -make-world -w\"\n\
-    \  },\n\
-    \  \"keywords\": [\n\
-    \    \"ReScript\"\n\
-    \  ],\n\
-    \  \"author\": \"\",\n\
-    \  \"license\": \"MIT\",\n\
-    \  \"devDependencies\": {\n\
-    \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
-    \  }\n\
-    }"
-    );
-    Dir("src",[
-     File("main.ml",
-     ""
-     )        
-    ])        
-   ]);
-   Dir("node",[
-    File(".gitignore",
-    "*.exe\n\
-    *.obj\n\
-    *.out\n\
-    *.compile\n\
-    *.native\n\
-    *.byte\n\
-    *.cmo\n\
-    *.annot\n\
-    *.cmi\n\
-    *.cmx\n\
-    *.cmt\n\
-    *.cmti\n\
-    *.cma\n\
-    *.a\n\
-    *.cmxa\n\
-    *.obj\n\
-    *~\n\
-    *.annot\n\
-    *.cmj\n\
-    *.bak\n\
-    lib/bs\n\
-    *.mlast\n\
-    *.mliast\n\
-    .vscode\n\
-    .merlin\n\
-    .bsb.lock\n\
-    /node_modules/\n\
-    "
-    );
-    File("README.md",
-    "\n\
-    \n\
-    # Build\n\
-    ```\n\
-    npm run build\n\
-    ```\n\
-    \n\
-    # Watch\n\
-    \n\
-    ```\n\
-    npm run watch\n\
-    ```\n\
-    \n\
-    \n\
-    # Editor\n\
-    If you use `vscode`, Press `Windows + Shift + B` it will build automatically\n\
-    "
-    );
-    File("bsconfig.json",
-    "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
-    \  \"sources\": {\n\
-    \      \"dir\": \"src\",\n\
-    \      \"subdirs\" : true\n\
-    \  },\n\
-    \  \"package-specs\": {\n\
-    \    \"module\": \"commonjs\",\n\
-    \    \"in-source\": true\n\
-    \  },\n\
-    \  \"suffix\": \".bs.js\",\n\
-    \  \"bs-dependencies\": [\n\
-    \   ]\n\
-    }"
-    );
-    File("package.json",
-    "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
-    \  \"scripts\": {\n\
-    \    \"clean\": \"bsb -clean-world\",\n\
-    \    \"build\": \"bsb -make-world\",\n\
-    \    \"watch\": \"bsb -make-world -w\"\n\
-    \  },\n\
-    \  \"keywords\": [\n\
-    \    \"ReScript\"\n\
-    \  ],\n\
-    \  \"author\": \"\",\n\
-    \  \"license\": \"MIT\",\n\
-    \  \"devDependencies\": {\n\
-    \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
-    \  }\n\
-    }"
-    );
-    Dir("src",[
-     File("demo.ml",
-     "\n\
-     \n\
-     let () = Js.log \"Hello, ReScript\""
-     )        
-    ])        
-   ]);
-   Dir("react-hooks",[
-    File(".gitignore",
-    ".DS_Store\n\
-    .merlin\n\
-    .bsb.lock\n\
-    npm-debug.log\n\
-    /lib/bs/\n\
-    /node_modules/\n\
-    /bundleOutput/"
-    );
-    File("README.md",
-    "# ReasonReact Template & Examples\n\
-    \n\
-    This is:\n\
-    - A template for your new ReasonReact project.\n\
-    - A collection of thin examples illustrating ReasonReact usage.\n\
-    - Extra helper documentation for ReasonReact (full ReasonReact docs [here](https://reasonml.github.io/reason-react/)).\n\
-    \n\
-    `src` contains 4 sub-folders, each an independent, self-contained ReasonReact example. Feel free to delete any of them and shape this into your project! This template's more malleable than you might be used to =).\n\
-    \n\
-    The point of this template and examples is to let you understand and personally tweak the entirely of it. We **don't** give you an opaque, elaborate mega build setup just to put some boxes on the screen. It strikes to stay transparent, learnable, and simple. You're encouraged to read every file; it's a great feeling, having the full picture of what you're using and being able to touch any part.\n\
-    \n\
-    ## Run\n\
-    \n\
-    ```sh\n\
-    npm install\n\
-    npm run server\n\
-    # in a new tab\n\
-    npm start\n\
-    ```\n\
-    \n\
-    Open a new web page to `http://localhost:8000/`. Change any `.re` file in `src` to see the page auto-reload. **You don't need any bundler when you're developing**!\n\
-    \n\
-    **How come we don't need any bundler during development**? We highly encourage you to open up `index.html` to check for yourself!\n\
-    \n\
-    # Features Used\n\
-    \n\
-    |                           | Blinking Greeting | Reducer from ReactJS Docs | Fetch Dog Pictures | Reason Using JS Using Reason |\n\
-    |---------------------------|-------------------|---------------------------|--------------------|------------------------------|\n\
-    | No props                  |                   | ✓                         |                    |                              |\n\
-    | Has props                 |                   |                           |                    | ✓                            |\n\
-    | Children props            | ✓                 |                           |                    |                              |\n\
-    | No state                  |                   |                           |                    | ✓                            |\n\
-    | Has state                 | ✓                 |                           |  ✓                 |                              |\n\
-    | Has state with useReducer |                   | ✓                         |                    |                              |\n\
-    | ReasonReact using ReactJS |                   |                           |                    | ✓                            |\n\
-    | ReactJS using ReasonReact |                   |                           |                    | ✓                            |\n\
-    | useEffect                 | ✓                 |                           |  ✓                 |                              |\n\
-    | Dom attribute             | ✓                 | ✓                         |                    | ✓                            |\n\
-    | Styling                   | ✓                 | ✓                         |  ✓                 | ✓                            |\n\
-    | React.array               |                   |                           |  ✓                 |                              |\n\
-    \n\
-    # Bundle for Production\n\
-    \n\
-    We've included a convenience `UNUSED_webpack.config.js`, in case you want to ship your project to production. You can rename and/or remove that in favor of other bundlers, e.g. Rollup.\n\
-    \n\
-    We've also provided a barebone `indexProduction.html`, to serve your bundle.\n\
-    \n\
-    ```sh\n\
-    npm install webpack webpack-cli\n\
-    # rename file\n\
-    mv UNUSED_webpack.config.js webpack.config.js\n\
-    # call webpack to bundle for production\n\
-    ./node_modules/.bin/webpack\n\
-    open indexProduction.html\n\
-    ```\n\
-    \n\
-    # Handle Routing Yourself\n\
-    \n\
-    To serve the files, this template uses a minimal dependency called `moduleserve`. A URL such as `localhost:8000/scores/john` resolves to the file `scores/john.html`. If you'd like to override this and handle URL resolution yourself, change the `server` command in `package.json` from `moduleserve ./ --port 8000` to `moduleserve ./ --port 8000 --spa` (for \"single page application\"). This will make `moduleserve` serve the default `index.html` for any URL. Since `index.html` loads `Index.bs.js`, you can grab hold of the URL in the corresponding `Index.re` and do whatever you want.\n\
-    \n\
-    By the way, ReasonReact comes with a small [router](https://reasonml.github.io/reason-react/docs/en/router) you might be interested in.\n\
-    "
-    );
-    File("UNUSED_webpack.config.js",
-    "const path = require('path');\n\
-    \n\
-    module.exports = {\n\
-    \  entry: './src/Index.bs.js',\n\
-    \  // If you ever want to use webpack during development, change 'production'\n\
-    \  // to 'development' as per webpack documentation. Again, you don't have to\n\
-    \  // use webpack or any other bundler during development! Recheck README if\n\
-    \  // you didn't know this\n\
-    \  mode: 'production',\n\
-    \  output: {\n\
-    \    path: path.join(__dirname, \"bundleOutput\"),\n\
-    \    filename: 'index.js',\n\
-    \  },\n\
-    };"
-    );
-    File("bsconfig.json",
-    "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"reason\": {\n\
-    \    \"react-jsx\": 3\n\
-    \  },\n\
-    \  \"sources\": {\n\
-    \    \"dir\" : \"src\",\n\
-    \    \"subdirs\" : true\n\
-    \  },\n\
-    \  \"bsc-flags\": [\"-bs-super-errors\", \"-bs-no-version-header\"],\n\
-    \  \"package-specs\": [{\n\
-    \    \"module\": \"commonjs\",\n\
-    \    \"in-source\": true\n\
-    \  }],\n\
-    \  \"suffix\": \".bs.js\",\n\
-    \  \"namespace\": true,\n\
-    \  \"bs-dependencies\": [\n\
-    \    \"reason-react\"\n\
-    \  ],\n\
-    \  \"refmt\": 3\n\
-    }\n\
-    "
-    );
-    File("index.html",
-    "<!DOCTYPE html>\n\
-    <html lang=\"en\">\n\
-    <head>\n\
-    \  <meta charset=\"UTF-8\">\n\
-    \  <title>ReasonReact Examples</title>\n\
-    </head>\n\
-    <body>\n\
-    \  <script>\n\
-    \    // stub a variable ReactJS checks. ReactJS assumes you're using a bundler, NodeJS or similar system that provides it the `process.env.NODE_ENV` variable.\n\
-    \    window.process = {\n\
-    \      env: {\n\
-    \        NODE_ENV: 'development'\n\
-    \      }\n\
-    \    };\n\
-    \  </script>\n\
-    \n\
-    \  <!-- This is https://github.com/marijnh/moduleserve, the secret sauce that allows us not need to bundle things during development, and have instantaneous iteration feedback, without any hot-reloading or extra build pipeline needed. -->\n\
-    \  <script src=\"/moduleserve/load.js\" data-module=\"/src/Index.bs.js\"></script>\n\
-    \  <!-- Our little watcher. Super clean. Check it out! -->\n\
-    \  <script src=\"/watcher.js\"></script>\n\
-    </body>\n\
-    </html>\n\
-    "
-    );
-    File("indexProduction.html",
-    "<!DOCTYPE html>\n\
-    <html lang=\"en\">\n\
-    <head>\n\
-    \  <meta charset=\"UTF-8\">\n\
-    \  <title>ReasonReact Examples</title>\n\
-    </head>\n\
-    <body>\n\
-    \  <script src=\"./bundleOutput/index.js\"></script>\n\
-    </body>\n\
-    </html>\n\
-    "
-    );
-    File("package.json",
-    "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
-    \  \"scripts\": {\n\
-    \    \"build\": \"bsb -make-world\",\n\
-    \    \"start\": \"bsb -make-world -w -ws _ \",\n\
-    \    \"clean\": \"bsb -clean-world\",\n\
-    \    \"server\": \"moduleserve ./ --port 8000\",\n\
-    \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"\n\
-    \  },\n\
-    \  \"keywords\": [\n\
-    \    \"ReScript\",\n\
-    \    \"ReasonReact\",\n\
-    \    \"reason-react\"\n\
-    \  ],\n\
-    \  \"author\": \"\",\n\
-    \  \"license\": \"MIT\",\n\
-    \  \"dependencies\": {\n\
-    \    \"react\": \"^16.8.1\",\n\
-    \    \"react-dom\": \"^16.8.1\",\n\
-    \    \"reason-react\": \">=0.7.1\"\n\
-    \  },\n\
-    \  \"devDependencies\": {\n\
-    \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
-    \    \"moduleserve\": \"^0.9.0\"\n\
-    \  }\n\
-    }\n\
-    "
-    );
-    Dir("src",[
-     Dir("BlinkingGreeting",[
-      File("BlinkingGreeting.re",
-      "[@react.component]\n\
-      let make = (~children) => {\n\
-      \  let (show, setShow) = React.useState(() => true);\n\
-      \n\
-      \  // Notice that instead of `useEffect`, we have `useEffect0`. See\n\
-      \  // reasonml.github.io/reason-react/docs/en/components#hooks for more info\n\
-      \  React.useEffect0(() => {\n\
-      \    let id =\n\
-      \      Js.Global.setInterval(\n\
-      \        () => setShow(previousShow => !previousShow),\n\
-      \        1000,\n\
-      \      );\n\
-      \n\
-      \    Some(() => Js.Global.clearInterval(id));\n\
-      \  });\n\
-      \n\
-      \  let style =\n\
-      \    if (show) {\n\
-      \      ReactDOMRe.Style.make(~opacity=\"1\", ~transition=\"opacity 1s\", ());\n\
-      \    } else {\n\
-      \      ReactDOMRe.Style.make(~opacity=\"0\", ~transition=\"opacity 1s\", ());\n\
-      \    };\n\
-      \n\
-      \  <div style> children </div>;\n\
-      };\n\
-      "
-      )        
-     ]);
-     File("ExampleStyles.re",
-     "let reasonReactBlue = \"#48a9dc\";\n\
-     \n\
-     // The {j|...|j} feature is just string interpolation, from\n\
-     // bucklescript.github.io/docs/en/interop-cheatsheet#string-unicode-interpolation\n\
-     // This allows us to conveniently write CSS, together with variables, by\n\
-     // constructing a string\n\
-     let style = {j|\n\
-     \  body {\n\
-     \    background-color: rgb(224, 226, 229);\n\
-     \    display: flex;\n\
-     \    flex-direction: column;\n\
-     \    align-items: center;\n\
-     \  }\n\
-     \  button {\n\
-     \    background-color: white;\n\
-     \    color: $reasonReactBlue;\n\
-     \    box-shadow: 0 0 0 1px $reasonReactBlue;\n\
-     \    border: none;\n\
-     \    padding: 8px;\n\
-     \    font-size: 16px;\n\
-     \  }\n\
-     \  button:active {\n\
-     \    background-color: $reasonReactBlue;\n\
-     \    color: white;\n\
-     \  }\n\
-     \  .container {\n\
-     \    margin: 12px 0px;\n\
-     \    box-shadow: 0px 4px 16px rgb(200, 200, 200);\n\
-     \    width: 720px;\n\
-     \    border-radius: 12px;\n\
-     \    font-family: sans-serif;\n\
-     \  }\n\
-     \  .containerTitle {\n\
-     \    background-color: rgb(242, 243, 245);\n\
-     \    border-radius: 12px 12px 0px 0px;\n\
-     \    padding: 12px;\n\
-     \    font-weight: bold;\n\
-     \  }\n\
-     \  .containerContent {\n\
-     \    background-color: white;\n\
-     \    padding: 16px;\n\
-     \    border-radius: 0px 0px 12px 12px;\n\
-     \  }\n\
-     |j};\n\
-     "
-     );
-     Dir("FetchedDogPictures",[
-      File("FetchedDogPictures.re",
-      "[@bs.val] external fetch: string => Js.Promise.t('a) = \"fetch\";\n\
-      \n\
-      type state =\n\
-      \  | LoadingDogs\n\
-      \  | ErrorFetchingDogs\n\
-      \  | LoadedDogs(array(string));\n\
-      \n\
-      [@react.component]\n\
-      let make = () => {\n\
-      \  let (state, setState) = React.useState(() => LoadingDogs);\n\
-      \n\
-      \  // Notice that instead of `useEffect`, we have `useEffect0`. See\n\
-      \  // reasonml.github.io/reason-react/docs/en/components#hooks for more info\n\
-      \  React.useEffect0(() => {\n\
-      \    Js.Promise.(\n\
-      \      fetch(\"https://dog.ceo/api/breeds/image/random/3\")\n\
-      \      |> then_(response => response##json())\n\
-      \      |> then_(jsonResponse => {\n\
-      \           setState(_previousState => LoadedDogs(jsonResponse##message));\n\
-      \           Js.Promise.resolve();\n\
-      \         })\n\
-      \      |> catch(_err => {\n\
-      \           setState(_previousState => ErrorFetchingDogs);\n\
-      \           Js.Promise.resolve();\n\
-      \         })\n\
-      \      |> ignore\n\
-      \    );\n\
-      \n\
-      \    // Returning None, instead of Some(() => ...), means we don't have any\n\
-      \    // cleanup to do before unmounting. That's not 100% true. We should\n\
-      \    // technically cancel the promise. Unofortunately, there's currently no\n\
-      \    // way to cancel a promise. Promises in general should be way less used\n\
-      \    // for React components; but since folks do use them, we provide such an\n\
-      \    // example here. In reality, this fetch should just be a plain callback,\n\
-      \    // with a cancellation API\n\
-      \    None;\n\
-      \  });\n\
-      \n\
-      \  <div\n\
-      \    style={ReactDOMRe.Style.make(\n\
-      \      ~height=\"120px\",\n\
-      \      ~display=\"flex\",\n\
-      \      ~alignItems=\"center\",\n\
-      \      ~justifyContent=\"center\",\n\
-      \      (),\n\
-      \    )}>\n\
-      \    {switch (state) {\n\
-      \     | ErrorFetchingDogs => React.string(\"An error occurred!\")\n\
-      \     | LoadingDogs => React.string(\"Loading...\")\n\
-      \     | LoadedDogs(dogs) =>\n\
-      \       dogs\n\
-      \       ->Belt.Array.mapWithIndex((i, dog) => {\n\
-      \           let imageStyle =\n\
-      \             ReactDOMRe.Style.make(\n\
-      \               ~height=\"120px\",\n\
-      \               ~width=\"100%\",\n\
-      \               ~marginRight=i === Js.Array.length(dogs) - 1 ? \"0px\" : \"8px\",\n\
-      \               ~borderRadius=\"8px\",\n\
-      \               ~boxShadow=\"0px 4px 16px rgb(200, 200, 200)\",\n\
-      \               ~backgroundSize=\"cover\",\n\
-      \               ~backgroundImage={j|url($dog)|j},\n\
-      \               ~backgroundPosition=\"center\",\n\
-      \               (),\n\
-      \             );\n\
-      \           <div key=dog style=imageStyle />;\n\
-      \         })\n\
-      \       ->React.array\n\
-      \     }}\n\
-      \  </div>;\n\
-      };\n\
-      "
-      )        
-     ]);
-     File("Index.re",
-     "// Entry point\n\
-     \n\
-     [@bs.val] external document: Js.t({..}) = \"document\";\n\
-     \n\
-     // We're using raw DOM manipulations here, to avoid making you read\n\
-     // ReasonReact when you might precisely be trying to learn it for the first\n\
-     // time through the examples later.\n\
-     let style = document##createElement(\"style\");\n\
-     document##head##appendChild(style);\n\
-     style##innerHTML #= ExampleStyles.style;\n\
-     \n\
-     let makeContainer = text => {\n\
-     \  let container = document##createElement(\"div\");\n\
-     \  container##className #= \"container\";\n\
-     \n\
-     \  let title = document##createElement(\"div\");\n\
-     \  title##className #= \"containerTitle\";\n\
-     \  title##innerText #= text;\n\
-     \n\
-     \  let content = document##createElement(\"div\");\n\
-     \  content##className #= \"containerContent\";\n\
-     \n\
-     \  let () = container##appendChild(title);\n\
-     \  let () = container##appendChild(content);\n\
-     \  let () = document##body##appendChild(container);\n\
-     \n\
-     \  content;\n\
-     };\n\
-     \n\
-     // All 4 examples.\n\
-     ReactDOMRe.render(\n\
-     \  <BlinkingGreeting>\n\
-     \    {React.string(\"Hello!\")}\n\
-     \  </BlinkingGreeting>,\n\
-     \  makeContainer(\"Blinking Greeting\"),\n\
-     );\n\
-     \n\
-     ReactDOMRe.render(\n\
-     \  <ReducerFromReactJSDocs />,\n\
-     \  makeContainer(\"Reducer From ReactJS Docs\"),\n\
-     );\n\
-     \n\
-     ReactDOMRe.render(\n\
-     \  <FetchedDogPictures />,\n\
-     \  makeContainer(\"Fetched Dog Pictures\"),\n\
-     );\n\
-     \n\
-     ReactDOMRe.render(\n\
-     \  <ReasonUsingJSUsingReason />,\n\
-     \  makeContainer(\"Reason Using JS Using Reason\"),\n\
-     );\n\
-     "
-     );
-     Dir("ReasonUsingJSUsingReason",[
-      File("ReactJSCard.js",
-      "// In this Interop example folder, we have:\n\
-      // - A ReasonReact component, ReasonReactCard.re\n\
-      // - Used by a ReactJS component, ReactJSCard.js (this file)\n\
-      // - ReactJSCard.js can be used by ReasonReact, through bindings in ReasonUsingJSUsingReason.re\n\
-      // - ReasonUsingJSUsingReason.re is used by Index.re\n\
-      \n\
-      var ReactDOM = require('react-dom');\n\
-      var React = require('react');\n\
-      \n\
-      var ReasonReactCard = require('./ReasonReactCard.bs').make;\n\
-      \n\
-      var ReactJSComponent = function() {\n\
-      \  let backgroundColor = \"rgba(0, 0, 0, 0.05)\";\n\
-      \  let padding = \"12px\";\n\
-      \n\
-      \  // We're not using JSX here, to avoid folks needing to install the related\n\
-      \  // React toolchains just for this example.\n\
-      \  // <div style={...}>\n\
-      \  //   <div style={...}>This is a ReactJS card</div>\n\
-      \  //   <ReasonReactCard style={...} />\n\
-      \  // </div>\n\
-      \  return React.createElement(\n\
-      \    \"div\",\n\
-      \    {style: {backgroundColor, padding, borderRadius: \"8px\"}},\n\
-      \    React.createElement(\"div\", {style: {marginBottom: \"8px\"}}, \"This is a ReactJS card\"),\n\
-      \    React.createElement(ReasonReactCard, {style: {backgroundColor, padding, borderRadius: \"4px\"}}),\n\
-      \  )\n\
-      };\n\
-      ReactJSComponent.displayName = \"MyBanner\";\n\
-      \n\
-      module.exports = ReactJSComponent;\n\
-      "
-      );
-      File("ReasonReactCard.re",
-      "// In this Interop example folder, we have:\n\
-      // - A ReasonReact component, ReasonReactCard.re (this file)\n\
-      // - Used by a ReactJS component, ReactJSCard.js\n\
-      // - ReactJSCard.js can be used by ReasonReact, through bindings in ReasonUsingJSUsingReason.re\n\
-      // - ReasonUsingJSUsingReason.re is used by Index.re\n\
-      \n\
-      [@react.component]\n\
-      let make = (~style) => {\n\
-      \  <div style> {React.string(\"This is a ReasonReact card\")} </div>;\n\
-      };\n\
-      "
-      );
-      File("ReasonUsingJSUsingReason.re",
-      "// In this Interop example folder, we have:\n\
-      // - A ReasonReact component, ReasonReactCard.re\n\
-      // - Used by a ReactJS component, ReactJSCard.js\n\
-      // - ReactJSCard.js can be used by ReasonReact, through bindings in ReasonUsingJSUsingReason.re (this file)\n\
-      // - ReasonUsingJSUsingReason.re is used by Index.re\n\
-      \n\
-      // All you need to do to use a ReactJS component in ReasonReact, is to write the lines below!\n\
-      // reasonml.github.io/reason-react/docs/en/components#import-from-js\n\
-      [@react.component] [@bs.module]\n\
-      external make: unit => React.element = \"./ReactJSCard\";\n\
-      "
-      )        
-     ]);
-     Dir("ReducerFromReactJSDocs",[
-      File("ReducerFromReactJSDocs.re",
-      "// This is the ReactJS documentation's useReducer example, directly ported over\n\
-      // https://reactjs.org/docs/hooks-reference.html#usereducer\n\
-      \n\
-      // A little extra we've put, because the ReactJS example has no styling\n\
-      let leftButtonStyle = ReactDOMRe.Style.make(~borderRadius=\"4px 0px 0px 4px\", ~width=\"48px\", ());\n\
-      let rightButtonStyle = ReactDOMRe.Style.make(~borderRadius=\"0px 4px 4px 0px\", ~width=\"48px\", ());\n\
-      let containerStyle = ReactDOMRe.Style.make(~display=\"flex\", ~alignItems=\"center\", ~justifyContent=\"space-between\", ());\n\
-      \n\
-      // Record and variant need explicit declarations.\n\
-      type state = {count: int};\n\
-      \n\
-      type action =\n\
-      \  | Increment\n\
-      \  | Decrement;\n\
-      \n\
-      let initialState = {count: 0};\n\
-      \n\
-      let reducer = (state, action) => {\n\
-      \  switch (action) {\n\
-      \  | Increment => {count: state.count + 1}\n\
-      \  | Decrement => {count: state.count - 1}\n\
-      \  };\n\
-      };\n\
-      \n\
-      [@react.component]\n\
-      let make = () => {\n\
-      \  let (state, dispatch) = React.useReducer(reducer, initialState);\n\
-      \n\
-      \  // We can use a fragment here, but we don't, because we want to style the counter\n\
-      \  <div style=containerStyle>\n\
-      \    <div>\n\
-      \      {React.string(\"Count: \")}\n\
-      \      {React.string(string_of_int(state.count))}\n\
-      \    </div>\n\
-      \    <div>\n\
-      \      <button style=leftButtonStyle onClick={_event => dispatch(Decrement)}>\n\
-      \        {React.string(\"-\")}\n\
-      \      </button>\n\
-      \      <button style=rightButtonStyle onClick={_event => dispatch(Increment)}>\n\
-      \        {React.string(\"+\")}\n\
-      \      </button>\n\
-      \    </div>\n\
-      \  </div>;\n\
-      };\n\
-      "
-      )        
-     ])        
-    ]);
-    File("watcher.js",
-    "// This is our simple, robust watcher. It hooks into the ReScript build\n\
-    // system to listen for build events.\n\
-    // See package.json's `start` script and `./node_modules/.bin/bsb --help`\n\
-    \n\
-    // Btw, if you change this file and reload the page, your browser cache\n\
-    // _might_ not pick up the new version. If you're in Chrome, do Force Reload.\n\
-    \n\
-    var websocketReloader;\n\
-    var LAST_SUCCESS_BUILD_STAMP = localStorage.getItem('LAST_SUCCESS_BUILD_STAMP') || 0;\n\
-    // package.json's `start` script's `bsb -ws _` means it'll pipe build events\n\
-    // through a websocket connection to a default port of 9999. This is\n\
-    // configurable, e.g. `-ws 5000`\n\
-    var webSocketPort = 9999;\n\
-    \n\
-    function setUpWebSocket() {\n\
-    \  if (websocketReloader == null || websocketReloader.readyState !== 1) {\n\
-    \    try {\n\
-    \      websocketReloader = new WebSocket(`ws://${window.location.hostname}:${webSocketPort}`);\n\
-    \      websocketReloader.onmessage = (message) => {\n\
-    \        var newData = JSON.parse(message.data).LAST_SUCCESS_BUILD_STAMP;\n\
-    \        if (newData > LAST_SUCCESS_BUILD_STAMP) {\n\
-    \          LAST_SUCCESS_BUILD_STAMP = newData;\n\
-    \          localStorage.setItem('LAST_SUCCESS_BUILD_STAMP', LAST_SUCCESS_BUILD_STAMP);\n\
-    \          // Refresh the page! This will naturally re-run everything,\n\
-    \          // including our moduleserve which will re-resolve all the modules.\n\
-    \          // No stable build!\n\
-    \          location.reload(true);\n\
-    \        }\n\
-    \n\
-    \      }\n\
-    \    } catch (exn) {\n\
-    \      console.error(\"The watcher tried to connect to web socket, but failed. Here's the message:\");\n\
-    \      console.error(exn);\n\
-    \    }\n\
-    \  }\n\
-    };\n\
-    \n\
-    setUpWebSocket();\n\
-    setInterval(setUpWebSocket, 2000);\n\
-    "
-    )        
-   ]);
-   Dir("react-starter",[
-    File(".gitignore",
-    ".DS_Store\n\
-    .merlin\n\
-    .bsb.lock\n\
-    npm-debug.log\n\
-    /lib/bs/\n\
-    /node_modules/\n\
-    *.bs.js\n\
-    "
-    );
-    File("README.md",
-    "# Reason react starter\n\
-    \n\
-    ## Run Project\n\
-    \n\
-    ```sh\n\
-    npm install\n\
-    npm start\n\
-    # in another tab\n\
-    npm run server\n\
-    ```\n\
-    \n\
-    View the app in the browser at http://localhost:8000. Running in this environment provides hot reloading and support for routing; just edit and save the file and the browser will automatically refresh.\n\
-    \n\
-    To use a port other than 8000 set the `PORT` environment variable (`PORT=8080 npm run server`).\n\
-    \n\
-    ## Build for Production\n\
-    \n\
-    ```sh\n\
-    npm run clean\n\
-    npm run build\n\
-    npm run webpack:production\n\
-    ```\n\
-    \n\
-    This will replace the development artifact `build/Index.js` for an optimized version as well as copy `src/index.html` into `build/`. You can then deploy the contents of the `build` directory (`index.html` and `Index.js`).\n\
-    \n\
-    **To enable dead code elimination**, change `bsconfig.json`'s `package-specs` `module` from `\"commonjs\"` to `\"es6\"`. Then re-run the above 2 commands. This will allow Webpack to remove unused code.\n\
-    "
-    );
-    File("bsconfig.json",
-    "{\n\
-    \  \"name\": \"reason-react-starter\",\n\
-    \  \"reason\": {\n\
-    \    \"react-jsx\": 3\n\
-    \  },\n\
-    \  \"sources\": {\n\
-    \    \"dir\": \"src\",\n\
-    \    \"subdirs\": true\n\
-    \  },\n\
-    \  \"bsc-flags\": [\"-bs-super-errors\", \"-bs-no-version-header\"],\n\
-    \  \"package-specs\": [\n\
-    \    {\n\
-    \      \"module\": \"commonjs\",\n\
-    \      \"in-source\": true\n\
-    \    }\n\
-    \  ],\n\
-    \  \"suffix\": \".bs.js\",\n\
-    \  \"namespace\": true,\n\
-    \  \"bs-dependencies\": [\"reason-react\"],\n\
-    \  \"refmt\": 3\n\
-    }\n\
-    "
-    );
-    File("package.json",
-    "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
-    \  \"scripts\": {\n\
-    \    \"build\": \"bsb -make-world\",\n\
-    \    \"start\": \"bsb -make-world -w -ws _ \",\n\
-    \    \"clean\": \"bsb -clean-world\",\n\
-    \    \"webpack\": \"webpack -w\",\n\
-    \    \"webpack:production\": \"NODE_ENV=production webpack\",\n\
-    \    \"server\": \"webpack-dev-server\",\n\
-    \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"\n\
-    \  },\n\
-    \  \"keywords\": [\n\
-    \    \"ReScript\",\n\
-    \    \"ReasonReact\",\n\
-    \    \"reason-react\"\n\
-    \  ],\n\
-    \  \"author\": \"\",\n\
-    \  \"license\": \"MIT\",\n\
-    \  \"dependencies\": {\n\
-    \    \"react\": \"^17.0.1\",\n\
-    \    \"react-dom\": \"^17.0.1\",\n\
-    \    \"reason-react\": \"^0.9.1\"\n\
-    \  },\n\
-    \  \"devDependencies\": {\n\
-    \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
-    \    \"css-loader\": \"^5.0.0\",\n\
-    \    \"html-webpack-plugin\": \"^4.5.0\",\n\
-    \    \"style-loader\": \"^2.0.0\",\n\
-    \    \"webpack\": \"^4.44.2\",\n\
-    \    \"webpack-cli\": \"^3.3.12\",\n\
-    \    \"webpack-dev-server\": \"^3.11.0\"\n\
-    \  }\n\
-    }\n\
-    "
-    );
-    Dir("src",[
-     File("App.re",
-     "type state = {count: int};\n\
-     \n\
-     type action =\n\
-     \  | Increment\n\
-     \  | Decrement;\n\
-     \n\
-     let initialState = {count: 0};\n\
-     \n\
-     let reducer = (state, action) =>\n\
-     \  switch (action) {\n\
-     \  | Increment => {count: state.count + 1}\n\
-     \  | Decrement => {count: state.count - 1}\n\
-     \  };\n\
-     \n\
-     [@react.component]\n\
-     let make = () => {\n\
-     \  let (state, dispatch) = React.useReducer(reducer, initialState);\n\
-     \n\
-     \  <main>\n\
-     \    {React.string(\"Simple counter with reducer\")}\n\
-     \    <div>\n\
-     \      <button onClick={_ => dispatch(Decrement)}>\n\
-     \        {React.string(\"Decrement\")}\n\
-     \      </button>\n\
-     \      <span className=\"counter\">\n\
-     \        {state.count |> string_of_int |> React.string}\n\
-     \      </span>\n\
-     \      <button onClick={_ => dispatch(Increment)}>\n\
-     \        {React.string(\"Increment\")}\n\
-     \      </button>\n\
-     \    </div>\n\
-     \  </main>;\n\
-     };\n\
-     "
-     );
-     File("Index.re",
-     "[%bs.raw {|require(\"./index.css\")|}];\n\
-     \n\
-     ReactDOMRe.renderToElementWithId(<App />, \"root\");\n\
-     "
-     );
-     File("index.css",
-     "body {\n\
-     \  margin: 0;\n\
-     \  font-family: -apple-system, system-ui, \"Segoe UI\", Helvetica, Arial,\n\
-     \    sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\";\n\
-     }\n\
-     \n\
-     main {\n\
-     \  padding: 20px;\n\
-     }\n\
-     \n\
-     .counter {\n\
-     \  padding: 20px;\n\
-     \  display: inline-block;\n\
-     }\n\
-     "
-     );
-     File("index.html",
-     "<!DOCTYPE html>\n\
-     <html lang=\"en\">\n\
-     \  <head>\n\
-     \    <meta charset=\"UTF-8\" />\n\
-     \    <title>Reason react starter</title>\n\
-     \  </head>\n\
-     \  <body>\n\
-     \    <div id=\"root\"></div>\n\
-     \    <script src=\"/Index.js\"></script>\n\
-     \  </body>\n\
-     </html>\n\
-     "
-     )        
-    ]);
-    File("webpack.config.js",
-    "const path = require(\"path\")\n\
-    const HtmlWebpackPlugin = require(\"html-webpack-plugin\")\n\
-    const outputDir = path.join(__dirname, \"build/\")\n\
-    \n\
-    const isProd = process.env.NODE_ENV === \"production\"\n\
-    \n\
-    module.exports = {\n\
-    \  entry: \"./src/Index.bs.js\",\n\
-    \  mode: isProd ? \"production\" : \"development\",\n\
-    \  devtool: \"source-map\",\n\
-    \  output: {\n\
-    \    path: outputDir,\n\
-    \    filename: \"Index.js\"\n\
-    \  },\n\
-    \  plugins: [\n\
-    \    new HtmlWebpackPlugin({\n\
-    \      template: \"src/index.html\",\n\
-    \      inject: false\n\
-    \    })\n\
-    \  ],\n\
-    \  devServer: {\n\
-    \    compress: true,\n\
-    \    contentBase: outputDir,\n\
-    \    port: process.env.PORT || 8000,\n\
-    \    historyApiFallback: true\n\
-    \  },\n\
-    \  module: {\n\
-    \    rules: [\n\
-    \      {\n\
-    \        test: /\\.css$/,\n\
-    \        use: [\"style-loader\", \"css-loader\"]\n\
-    \      }\n\
-    \    ]\n\
-    \  }\n\
-    }\n\
-    "
-    )        
-   ]);
-   Dir("tea",[
-    File("README.md",
-    "\n\
-    \n\
-    # Build\n\
-    ```\n\
-    npm run build\n\
-    ```\n\
-    \n\
-    # Watch\n\
-    \n\
-    ```\n\
-    npm run watch\n\
-    ```\n\
-    \n\
-    create a http-server\n\
-    \n\
-    ```\n\
-    npm install -g http-server\n\
-    ```\n\
-    \n\
-    Edit the file and see the changes automatically reloaded in the browser\n\
-    "
-    );
-    File("bsconfig.json",
-    "{\n\
-    \  \"name\": \"tea\",\n\
-    \  \"version\": \"0.1.0\",\n\
-    \  \"sources\": {\n\
-    \    \"dir\" : \"src\",\n\
-    \    \"subdirs\" : true\n\
-    \  },\n\
-    \  \"package-specs\": {\n\
-    \    \"module\": \"commonjs\",\n\
-    \    \"in-source\": true\n\
-    \  },\n\
-    \  \"suffix\": \".bs.js\",\n\
-    \  \"bs-dependencies\": [\n\
-    \      \"bucklescript-tea\"\n\
-    \  ]\n\
-    }\n\
-    "
-    );
-    File("index.html",
-    "<!DOCTYPE html>\n\
-    <html lang=\"en\">\n\
-    \  <head>\n\
-    \    <meta charset=\"utf-8\">\n\
-    \    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n\
-    \    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\
-    \    <meta name=\"description\" content=\"\">\n\
-    \    <meta name=\"author\" content=\"\">\n\
-    \    <title>Bucklescript TEA Starter Kit</title>\n\
-    \  </head>\n\
-    \  \n\
-    \n\
-    \n\
-    \  <body>\n\
-    \    <div id=\"my-element\"> </div>\n\
-    \    <script src=\"./loader.js\" type=\"module\" data-main=\"./src/main.bs.js\"></script>\n\
-    \    <script src=\"./watcher.js\" type=\"module\"></script>\n\
-    \    \n\
-    \  </body>\n\
-    </html>"
-    );
-    File("loader.js",
-    "/* Copyright (C) 2018 Hongbo Zhang, Authors of ReScript\n\
-    \ * \n\
-    \ * This program is free software: you can redistribute it and/or modify\n\
-    \ * it under the terms of the GNU Lesser General Public License as published by\n\
-    \ * the Free Software Foundation, either version 3 of the License, or\n\
-    \ * (at your option) any later version.\n\
-    \ *\n\
-    \ * In addition to the permissions granted to you by the LGPL, you may combine\n\
-    \ * or link a \"work that uses the Library\" with a publicly distributed version\n\
-    \ * of this file to produce a combined library or application, then distribute\n\
-    \ * that combined work under the terms of your choosing, with no requirement\n\
-    \ * to comply with the obligations normally placed on you by section 4 of the\n\
-    \ * LGPL version 3 (or the corresponding section of a later version of the LGPL\n\
-    \ * should you choose to use a later version).\n\
-    \ *\n\
-    \ * This program is distributed in the hope that it will be useful,\n\
-    \ * but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
-    \ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
-    \ * GNU Lesser General Public License for more details.\n\
-    \ * \n\
-    \ * You should have received a copy of the GNU Lesser General Public License\n\
-    \ * along with this program; if not, write to the Free Software\n\
-    \ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */\n\
-    \n\
-    \n\
-    \n\
-    //@ts-check\n\
-    \n\
-    // @ts-ignore\n\
-    window.process = { env: { NODE_ENV: 'dev' } }\n\
-    \n\
-    \n\
-    // local to getPath\n\
-    var relativeElement = document.createElement(\"a\");\n\
-    var baseElement = document.createElement(\"base\");\n\
-    document.head.appendChild(baseElement);\n\
-    \n\
-    export function BsGetPath(id, parent) {\n\
-    \    var oldPath = baseElement.href\n\
-    \    baseElement.href = parent\n\
-    \    relativeElement.href = id\n\
-    \    var result = relativeElement.href\n\
-    \    baseElement.href = oldPath\n\
-    \    return result\n\
-    }\n\
-    /**\n\
-    \ * \n\
-    \ * Given current link and its parent, return the new link\n\
-    \ * @param {string} id \n\
-    \ * @param {string} parent \n\
-    \ * @return {string}\n\
-    \ */\n\
-    function getPathWithJsSuffix(id, parent) {\n\
-    \    var oldPath = baseElement.href\n\
-    \    baseElement.href = parent\n\
-    \    relativeElement.href = id\n\
-    \    var result = addSuffixJsIfNot(relativeElement.href)\n\
-    \    baseElement.href = oldPath\n\
-    \    return result\n\
-    }\n\
-    \n\
-    /**\n\
-    \ * \n\
-    \ * @param {string} x \n\
-    \ */\n\
-    function addSuffixJsIfNot(x) {\n\
-    \    if (x.endsWith('.js')) {\n\
-    \        return x\n\
-    \    } else {\n\
-    \        return x + '.js'\n\
-    \    }\n\
-    }\n\
-    \n\
-    \n\
-    var falsePromise = Promise.resolve(false)\n\
-    var fetchConfig = {'cache' : 'no-cache'}\n\
-    // package.json semantics\n\
-    // a string to module object \n\
-    // from url -> module object \n\
-    // Modules : Map<string, Promise < boolean | string > \n\
-    // fetch the link:\n\
-    // - if it is already fetched before, return the stored promise\n\
-    //   otherwise create the promise which will be filled with the text if successful\n\
-    //   or filled with boolean false when failed\n\
-    var MODULES = new Map()\n\
-    function cachedFetch(link) {\n\
-    \    // console.info(link)\n\
-    \    var linkResult = MODULES.get(link)\n\
-    \    if (linkResult) {\n\
-    \        return linkResult\n\
-    \    } else {\n\
-    \        var p = fetch(link, fetchConfig)\n\
-    \            .then(resp => {\n\
-    \                if (resp.ok) {\n\
-    \                    return resp.text()\n\
-    \                } else {\n\
-    \                    return falsePromise\n\
-    \                }\n\
-    \            })\n\
-    \n\
-    \        MODULES.set(link, p)\n\
-    \        return p\n\
-    \    }\n\
-    }\n\
-    \n\
-    // from location id -> url \n\
-    // There are two rounds of caching:\n\
-    // 1. if location and relative path is hit, no need to run \n\
-    // 2. if location and relative path is not hit, but the resolved link is hit, no need \n\
-    //     for network request\n\
-    /**\n\
-    \ * @type {Map<string, Map<string, Promise<any> > > }\n\
-    \ */\n\
-    var IDLocations = new Map()\n\
-    \n\
-    /**\n\
-    \ * @type {Map<string, Map<string, any> > }\n\
-    \ */\n\
-    var SyncedIDLocations = new Map()\n\
-    // Its value is an object \n\
-    // { link : String }\n\
-    // We will first mark it when visiting (to avoid duplicated computation)\n\
-    // and populate its link later\n\
-    \n\
-    /**\n\
-    \ * \n\
-    \ * @param {string} id \n\
-    \ * @param {string} location \n\
-    \ */\n\
-    function getIdLocation(id, location) {\n\
-    \    var idMap = IDLocations.get(location)\n\
-    \    if (idMap) {\n\
-    \        return idMap.get(id)\n\
-    \    }\n\
-    }\n\
-    \n\
-    /**\n\
-    \ * \n\
-    \ * @param {string} id \n\
-    \ * @param {string} location \n\
-    \ */\n\
-    function getIdLocationSync(id, location) {\n\
-    \    var idMap = SyncedIDLocations.get(location)\n\
-    \    if (idMap) {\n\
-    \        return idMap.get(id)\n\
-    \    }\n\
-    }\n\
-    \n\
-    function countIDLocations() {\n\
-    \    var count = 0\n\
-    \    for (let [k, vv] of IDLocations) {\n\
-    \        for (let [kv, v] of vv) {\n\
-    \            count += 1\n\
-    \        }\n\
-    \    }\n\
-    \    console.log(count, 'modules loaded')\n\
-    }\n\
-    \n\
-    \n\
-    /**\n\
-    \ * \n\
-    \ * @param {string} id \n\
-    \ * @param {string} location \n\
-    \ * @param {Function} cb \n\
-    \ * @returns Promise<any>\n\
-    \ */\n\
-    function visitIdLocation(id, location, cb) {\n\
-    \    var result;\n\
-    \    var idMap = IDLocations.get(location)\n\
-    \    if (idMap && (result = idMap.get(id))) {\n\
-    \        return result\n\
-    \    }\n\
-    \    else {\n\
-    \        result = new Promise(resolve => {\n\
-    \            return (cb()).then(res => {\n\
-    \                var idMap = SyncedIDLocations.get(location)\n\
-    \                if (idMap) {\n\
-    \                    idMap.set(id, res)\n\
-    \                } else {\n\
-    \                    SyncedIDLocations.set(location, new Map([[id, res]]))\n\
-    \                }\n\
-    \                return resolve(res)\n\
-    \            })\n\
-    \        })\n\
-    \        if (idMap) {\n\
-    \            idMap.set(id, result)\n\
-    \        }\n\
-    \        else {\n\
-    \            IDLocations.set(location, new Map([[id, result]]))\n\
-    \        }\n\
-    \        return result\n\
-    \    }\n\
-    }\n\
-    \n\
-    \n\
-    \n\
-    /**\n\
-    \ * \n\
-    \ * @param {string} text \n\
-    \ * @return {string[]}\n\
-    \ */\n\
-    function getDeps(text) {\n\
-    \    var deps = []\n\
-    \    text.replace(/(\\/\\*[\\w\\W]*?\\*\\/|\\/\\/[^\\n]*|[.$]r)|\\brequire\\s*\\(\\s*[\"']([^\"']*)[\"']\\s*\\)/g, function (_, ignore, id) {\n\
-    \        if (!ignore) deps.push(id);\n\
-    \    });\n\
-    \    return deps;\n\
-    }\n\
-    \n\
-    \n\
-    \n\
-    // By using a named \"eval\" most browsers will execute in the global scope.\n\
-    // http://www.davidflanagan.com/2010/12/global-eval-in.html\n\
-    var globalEval = eval;\n\
-    \n\
-    // function parentURL(url) {\n\
-    //     if (url.endsWith('/')) {\n\
-    //         return url + '../'\n\
-    //     } else {\n\
-    //         return url + '/../'\n\
-    //     }\n\
-    // }\n\
-    \n\
-    \n\
-    \n\
-    // loader.js:23 http://localhost:8080/node_modules/react-dom/cjs/react-dom.development.js/..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//../ fbjs/lib/containsNode Promise {<pending>}\n\
-    // 23:10:02.884 loader.js:23 http://localhost:8080/node_modules/react-dom/cjs/react-dom.development.js/..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//../ fbjs/lib/invariant Promise {<pending>}\n\
-    \n\
-    \n\
-    /**\n\
-    \ * \n\
-    \ * @param {string} id \n\
-    \ * @param {string} parent \n\
-    \ */\n\
-    function getParentModulePromise(id, parent) {\n\
-    \    var parentLink = BsGetPath('..', parent)\n\
-    \    if (parentLink === parent) {\n\
-    \        return falsePromise\n\
-    \    }\n\
-    \    return getPackageJsPromise(id, parentLink)\n\
-    }\n\
-    // In the beginning\n\
-    // it is `resolveModule('./main.js', '')\n\
-    // return the promise of link and text \n\
-    \n\
-    /**\n\
-    \ * \n\
-    \ * @param {string} id \n\
-    \ */\n\
-    function getPackageName(id) {\n\
-    \    var index = id.indexOf('/')\n\
-    \    if (id[0] === '@') index = id.indexOf('/', index + 1)\n\
-    \    if (index === -1) {\n\
-    \        return id\n\
-    \    }\n\
-    \    return id.substring(0, index)\n\
-    }\n\
-    \n\
-    /**\n\
-    \ * \n\
-    \ * @param {string} s \n\
-    \ * @param {string} text \n\
-    \ * @returns {undefined | string }\n\
-    \ */\n\
-    function isJustAPackageAndHasMainField(s,text){\n\
-    \    if(s.indexOf('/') >= 0){\n\
-    \        return \n\
-    \    } else {\n\
-    \        var mainField; \n\
-    \        try {\n\
-    \            mainField = JSON.parse(text).main\n\
-    \        }catch(_){\n\
-    \        }\n\
-    \        if(mainField === undefined){\n\
-    \            return \n\
-    \        } else {\n\
-    \            return mainField\n\
-    \        }\n\
-    \    }\n\
-    }\n\
-    function getPackageJsPromise(id, parent) {\n\
-    \    var idNodeModulesPrefix = './node_modules/' + id\n\
-    \    var link = getPathWithJsSuffix(idNodeModulesPrefix, parent)\n\
-    \    if (parent.endsWith('node_modules/')) {\n\
-    \        // impossible that `node_modules/node_modules/xx/x\n\
-    \        // return falsePromise\n\
-    \        return getParentModulePromise(id, parent)\n\
-    \    }\n\
-    \n\
-    \    var packageJson = BsGetPath(`./node_modules/${getPackageName(id)}/package.json`, parent)\n\
-    \n\
-    \    return cachedFetch(packageJson)\n\
-    \        .then(\n\
-    \            function (text) {\n\
-    \                if (text !== false) {\n\
-    \                    var mainField; \n\
-    \                    if( (mainField = isJustAPackageAndHasMainField(id, text)) !== undefined){\n\
-    \                        var packageLink = BsGetPath(addSuffixJsIfNot(`./node_modules/${id}/${mainField}`), parent)\n\
-    \                        return cachedFetch(packageLink)\n\
-    \                            .then(function(text){\n\
-    \                                if(text !== false){\n\
-    \                                    return {text, link : packageLink}\n\
-    \                                } else {\n\
-    \                                    return getParentModulePromise(id,parent)\n\
-    \                                }\n\
-    \                            })\n\
-    \n\
-    \                    } else {\n\
-    \                    // package indeed exist\n\
-    \                    return cachedFetch(link).then(function (text) {\n\
-    \                        if (text !== false) {\n\
-    \                            return { text, link }\n\
-    \                        } else if (!id.endsWith('.js')) {\n\
-    \                            var linkNew = getPathWithJsSuffix(idNodeModulesPrefix + `/index.js`, parent)\n\
-    \                            return cachedFetch(linkNew)\n\
-    \                                .then(function (text) {\n\
-    \                                    if (text !== false) {\n\
-    \                                        return { text, link: linkNew }\n\
-    \                                    } else {\n\
-    \                                        return getParentModulePromise(id, parent)\n\
-    \                                    }\n\
-    \                                })\n\
-    \n\
-    \                        } else {\n\
-    \                            return getParentModulePromise(id, parent)\n\
-    \                        }\n\
-    \                    })\n\
-    \                }\n\
-    \                }\n\
-    \                else {\n\
-    \                    return getParentModulePromise(id, parent)\n\
-    \                }\n\
-    \            }\n\
-    \        )\n\
-    \n\
-    \n\
-    }\n\
-    \n\
-    /**\n\
-    \ * \n\
-    \ * @param {string} id \n\
-    \ * @param {string} parent \n\
-    \ * can return Promise <boolean | object>, false means\n\
-    \ * this module can not be resolved\n\
-    \ */\n\
-    function getModulePromise(id, parent) {\n\
-    \    var done = getIdLocation(id, parent)\n\
-    \    if (!done) {\n\
-    \        return visitIdLocation(id, parent, function () {\n\
-    \            if (id[0] != '.') { // package path\n\
-    \                return getPackageJsPromise(id, parent)\n\
-    \            } else { // relative path, one shot resolve            \n\
-    \                let link = getPathWithJsSuffix(id, parent)\n\
-    \                return cachedFetch(link).then(\n\
-    \                    function (text) {\n\
-    \                        if (text !== false) {\n\
-    \                            return { text, link }\n\
-    \                        } else if (!id.endsWith('.js')){                            \n\
-    \                            // could be \"./dir\"\n\
-    \                            var newLink = getPathWithJsSuffix( id +\"/index.js\",parent)\n\
-    \                            return cachedFetch(newLink)\n\
-    \                            .then(function(text){\n\
-    \                                if(text !== false){\n\
-    \                                    return{text, link : newLink }\n\
-    \                                } else {\n\
-    \                                    throw new Error(` ${id} : ${parent} could not be resolved`)\n\
-    \                                }\n\
-    \                            })\n\
-    \                        }\n\
-    \                        else {\n\
-    \                            throw new Error(` ${id} : ${parent} could not be resolved`)\n\
-    \                        }\n\
-    \                    }\n\
-    \                )\n\
-    \            }\n\
-    \        })\n\
-    \    } else {\n\
-    \        return done\n\
-    \    }\n\
-    }\n\
-    \n\
-    \n\
-    /**\n\
-    \ * \n\
-    \ * @param {string} id \n\
-    \ * @param {string} parent \n\
-    \ * @returns {Promise<any>}\n\
-    \ */\n\
-    function getAll(id, parent) {\n\
-    \    return getModulePromise(id, parent)\n\
-    \        .then(function (obj) {\n\
-    \            if (obj) {\n\
-    \                var deps = getDeps(obj.text)\n\
-    \                return Promise.all(deps.map(x => getAll(x, obj.link)))\n\
-    \            } else {\n\
-    \                throw new Error(`${id}@${parent} was not resolved successfully`)\n\
-    \            }\n\
-    \        })\n\
-    };\n\
-    \n\
-    /**\n\
-    \ * \n\
-    \ * @param {string} text \n\
-    \ * @param {string} parent \n\
-    \ * @returns {Promise<any>}\n\
-    \ */\n\
-    function getAllFromText(text, parent) {\n\
-    \    var deps = getDeps(text)\n\
-    \    return Promise.all(deps.map(x => getAll(x, parent)))\n\
-    }\n\
-    \n\
-    var evaluatedModules = new Map()\n\
-    \n\
-    function loadSync(id, parent) {\n\
-    \    var baseOrModule = getIdLocationSync(id, parent)\n\
-    \    if (baseOrModule && baseOrModule.link !== undefined) {\n\
-    \        if(evaluatedModules.has(baseOrModule.link)){\n\
-    \            return evaluatedModules.get(baseOrModule.link).exports\n\
-    \        }\n\
-    \        if (!baseOrModule.exports) {\n\
-    \            baseOrModule.exports = {}\n\
-    \            globalEval(`(function(require,exports,module){${baseOrModule.text}\\n})//# sourceURL=${baseOrModule.link}`)(\n\
-    \                function require(id) {\n\
-    \                    return loadSync(id, baseOrModule.link);\n\
-    \                }, // require\n\
-    \                baseOrModule.exports = {}, // exports\n\
-    \                baseOrModule // module\n\
-    \            );\n\
-    \        }\n\
-    \        if(!evaluatedModules.has(baseOrModule.link)){\n\
-    \            evaluatedModules.set(baseOrModule.link,baseOrModule)\n\
-    \        }\n\
-    \        return baseOrModule.exports\n\
-    \    } else {\n\
-    \        throw new Error(`${id} : ${parent} could not be resolved`)\n\
-    \    }\n\
-    }\n\
-    \n\
-    \n\
-    function genEvalName() {\n\
-    \    return \"eval-\" + ((\"\" + Math.random()).substr(2, 5))\n\
-    }\n\
-    /**\n\
-    \ * \n\
-    \ * @param {string} text \n\
-    \ * @param {string} link\n\
-    \ * In this case [text] evaluated result will not be cached\n\
-    \ */\n\
-    function loadTextSync(text, link) {\n\
-    \    var baseOrModule = { exports: {}, text, link }\n\
-    \    globalEval(`(function(require,exports,module){${baseOrModule.text}\\n})//# sourceURL=${baseOrModule.link}/${genEvalName()}.js`)(\n\
-    \        function require(id) {\n\
-    \            return loadSync(id, baseOrModule.link);\n\
-    \        }, // require\n\
-    \        baseOrModule.exports, // exports\n\
-    \        baseOrModule // module\n\
-    \    );\n\
-    \    return baseOrModule.exports\n\
-    }\n\
-    \n\
-    /**\n\
-    \ * \n\
-    \ * @param {string} text \n\
-    \ */\n\
-    function BSloadText(text) {\n\
-    \    console.time(\"Loading\")\n\
-    \    var parent = BsGetPath(\".\", document.baseURI)\n\
-    \    return getAllFromText(text, parent).then(function () {\n\
-    \        var result = loadTextSync(text, parent)\n\
-    \        console.timeEnd(\"Loading\")\n\
-    \        return result\n\
-    \    })\n\
-    };\n\
-    \n\
-    \n\
-    function load(id, parent) {\n\
-    \    return getAll(id, parent).then(function () {\n\
-    \        return loadSync(id, parent)\n\
-    \    })\n\
-    \n\
-    };\n\
-    \n\
-    \n\
-    export function BSload(id) {\n\
-    \    var parent = BsGetPath(\".\", document.baseURI)\n\
-    \    return load(id, parent)\n\
-    }\n\
-    \n\
-    export var BSLoader = {\n\
-    \    loadText: BSloadText,\n\
-    \    load: BSload,\n\
-    \    SyncedIDLocations: SyncedIDLocations\n\
-    };\n\
-    \n\
-    window.BSLoader = BSLoader;\n\
-    \n\
-    var main = document.querySelector('script[data-main]')\n\
-    if (main) {\n\
-    \    BSload(main.dataset.main)\n\
-    }\n\
-    "
-    );
-    File("package.json",
-    "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
-    \  \"scripts\": {\n\
-    \    \"clean\": \"bsb -clean-world\",\n\
-    \    \"build\": \"bsb -make-world\",\n\
-    \    \"watch\": \"bsb -make-world -w -ws _\"\n\
-    \  },\n\
-    \  \"keywords\": [\n\
-    \    \"ReScript\"\n\
-    \  ],\n\
-    \  \"author\": \"\",\n\
-    \  \"license\": \"MIT\",\n\
-    \  \"devDependencies\": {\n\
-    \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
-    \  },\n\
-    \  \"dependencies\": {\n\
-    \    \"bucklescript-tea\": \"^0.7.4\"\n\
-    \  }\n\
-    }\n\
-    "
-    );
-    Dir("src",[
-     File("demo.ml",
-     "(* This line opens the Tea.App modules into the current scope for Program access functions and types *)\n\
-     open Tea.App\n\
-     \n\
-     (* This opens the Elm-style virtual-dom functions and types into the current scope *)\n\
-     open Tea.Html\n\
-     \n\
-     (* Let's create a new type here to be our main message type that is passed around *)\n\
-     type msg =\n\
-     \  | Increment  (* This will be our message to increment the counter *)\n\
-     \  | Decrement  (* This will be our message to decrement the counter *)\n\
-     \  | Reset      (* This will be our message to reset the counter to 0 *)\n\
-     \  | Set of int (* This will be our message to set the counter to a specific value *)\n\
-     \  [@@bs.deriving {accessors}] (* This is a nice quality-of-life addon from Bucklescript, it will generate function names for each constructor name, optional, but nice to cut down on code, this is unused in this example but good to have regardless *)\n\
-     \n\
-     (* This is optional for such a simple example, but it is good to have an `init` function to define your initial model default values, the model for Counter is just an integer *)\n\
-     let init () = 4\n\
-     \n\
-     (* This is the central message handler, it takes the model as the first argument *)\n\
-     let update model = function (* These should be simple enough to be self-explanatory, mutate the model based on the message, easy to read and follow *)\n\
-     \  | Increment -> model + 1\n\
-     \  | Decrement -> model - 1\n\
-     \  | Reset -> 0\n\
-     \  | Set v -> v\n\
-     \n\
-     (* This is just a helper function for the view, a simple function that returns a button based on some argument *)\n\
-     let view_button title msg =\n\
-     \  button\n\
-     \    [ onClick msg\n\
-     \    ]\n\
-     \    [ text title\n\
-     \    ]\n\
-     \n\
-     (* This is the main callback to generate the virtual-dom.\n\
-     \  This returns a virtual-dom node that becomes the view, only changes from call-to-call are set on the real DOM for efficiency, this is also only called once per frame even with many messages sent in within that frame, otherwise does nothing *)\n\
-     let view model =\n\
-     \  div\n\
-     \    []\n\
-     \    [ span\n\
-     \        [ style \"text-weight\" \"bold\" ]\n\
-     \        [ text (string_of_int model) ]\n\
-     \    ; br []\n\
-     \    ; view_button \"Increment\" Increment\n\
-     \    ; br []\n\
-     \    ; view_button \"Decrement\" Decrement\n\
-     \    ; br []\n\
-     \    ; view_button \"Set to 2\" (Set 42)\n\
-     \    ; br []\n\
-     \    ; if model <> 0 then view_button \"Reset\" Reset else noNode\n\
-     \    ]\n\
-     \n\
-     (* This is the main function, it can be named anything you want but `main` is traditional.\n\
-     \  The Program returned here has a set of callbacks that can easily be called from\n\
-     \  Bucklescript or from javascript for running this main attached to an element,\n\
-     \  or even to pass a message into the event loop.  You can even expose the\n\
-     \  constructors to the messages to javascript via the above [@@bs.deriving {accessors}]\n\
-     \  attribute on the `msg` type or manually, that way even javascript can use it safely. *)\n\
-     let main =\n\
-     \  beginnerProgram { (* The beginnerProgram just takes a set model state and the update and view functions *)\n\
-     \    model = init (); (* Since model is a set value here, we call our init function to generate that value *)\n\
-     \    update;\n\
-     \    view;\n\
-     \  }"
-     );
-     File("main.ml",
-     "\n\
-     \n\
-     \n\
-     Js.Global.setTimeout\n\
-     \  (fun _ -> \n\
-     \  Demo.main (Web.Document.getElementById \"my-element\") () \n\
-     \  |. ignore\n\
-     \  )  \n\
-     0"
-     )        
-    ]);
-    File("watcher.js",
-    "\n\
-    \n\
-    var wsReloader;\n\
-    var LAST_SUCCESS_BUILD_STAMP = (localStorage.getItem('LAST_SUCCESS_BUILD_STAMP') || 0)\n\
-    var WS_PORT = 9999; // configurable\n\
-    \n\
-    function setUpWebScoket() {\n\
-    \    if (wsReloader == null || wsReloader.readyState !== 1) {\n\
-    \        try {\n\
-    \            wsReloader = new WebSocket(`ws://${window.location.hostname}:${WS_PORT}`)\n\
-    \            wsReloader.onmessage = (msg) => {\n\
-    \                var newData = JSON.parse(msg.data).LAST_SUCCESS_BUILD_STAMP\n\
-    \                if (newData > LAST_SUCCESS_BUILD_STAMP) {\n\
-    \                    LAST_SUCCESS_BUILD_STAMP = newData\n\
-    \                    localStorage.setItem('LAST_SUCCESS_BUILD_STAMP', LAST_SUCCESS_BUILD_STAMP)\n\
-    \                    location.reload(true)\n\
-    \                }\n\
-    \n\
-    \            }\n\
-    \        } catch (exn) {\n\
-    \            console.error(\"web socket failed connect\")\n\
-    \        }\n\
-    \    }\n\
-    };\n\
-    \n\
-    setUpWebScoket();\n\
-    setInterval(setUpWebScoket, 2000);"
-    )        
-   ])
-])
+    Dir("basic",[
+        File(".gitignore",
+             "*.exe\n\
+              *.obj\n\
+              *.out\n\
+              *.compile\n\
+              *.native\n\
+              *.byte\n\
+              *.cmo\n\
+              *.annot\n\
+              *.cmi\n\
+              *.cmx\n\
+              *.cmt\n\
+              *.cmti\n\
+              *.cma\n\
+              *.a\n\
+              *.cmxa\n\
+              *.obj\n\
+              *~\n\
+              *.annot\n\
+              *.cmj\n\
+              *.bak\n\
+              lib/bs\n\
+              *.mlast\n\
+              *.mliast\n\
+              .vscode\n\
+              .merlin\n\
+              .bsb.lock\n\
+              /node_modules/\n\
+             "
+            );
+        File("README.md",
+             "\n\
+              \n\
+              # Build\n\
+              ```\n\
+              npm run build\n\
+              ```\n\
+              \n\
+              # Watch\n\
+              \n\
+              ```\n\
+              npm run watch\n\
+              ```\n\
+              \n\
+             "
+            );
+        File("bsconfig.json",
+             "{\n\
+             \  \"name\": \"${bsb:name}\",\n\
+             \  \"version\": \"${bsb:proj-version}\",\n\
+             \  \"sources\": {\n\
+             \    \"dir\" : \"src\",\n\
+             \    \"subdirs\" : true\n\
+             \  }\n\
+              }\n\
+             "
+            );
+        File("package.json",
+             "{\n\
+             \  \"name\": \"${bsb:name}\",\n\
+             \  \"version\": \"${bsb:proj-version}\",\n\
+             \  \"scripts\": {\n\
+             \    \"clean\": \"bsb -clean-world\",\n\
+             \    \"build\": \"bsb -make-world\",\n\
+             \    \"watch\": \"bsb -make-world -w\"\n\
+             \  },\n\
+             \  \"keywords\": [\n\
+             \    \"ReScript\"\n\
+             \  ],\n\
+             \  \"author\": \"\",\n\
+             \  \"license\": \"MIT\",\n\
+             \  \"devDependencies\": {\n\
+             \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
+             \  }\n\
+              }"
+            );
+        Dir("src",[
+            File("demo.res",
+                 "\n\
+                  Js.log(\"Hello, ReScript\")"
+                )        
+          ])        
+      ]);
+    Dir("basic-reason",[
+        File(".gitignore",
+             ".DS_Store\n\
+              .merlin\n\
+              .bsb.lock\n\
+              npm-debug.log\n\
+              /lib/bs/\n\
+              /node_modules/\n\
+             "
+            );
+        File("README.md",
+             "# Basic Reason Template\n\
+              \n\
+              Hello! This project allows you to quickly get started with ReScript using Reason syntax. If you wanted a more sophisticated version, try the `react` template (`bsb -theme react -init .`).\n\
+              \n\
+              # Build\n\
+              \n\
+              ```bash\n\
+              # for yarn\n\
+              yarn build\n\
+              \n\
+              # for npm\n\
+              npm run build\n\
+              ```\n\
+              \n\
+              # Build + Watch\n\
+              \n\
+              ```bash\n\
+              # for yarn\n\
+              yarn start\n\
+              \n\
+              # for npm\n\
+              npm run start\n\
+              ```\n\
+              \n\
+             "
+            );
+        File("bsconfig.json",
+             "{\n\
+             \  \"name\": \"${bsb:name}\",\n\
+             \  \"version\": \"${bsb:proj-version}\",\n\
+             \  \"sources\": {\n\
+             \    \"dir\" : \"src\",\n\
+             \    \"subdirs\" : true\n\
+             \  },\n\
+             \  \"package-specs\": {\n\
+             \    \"module\": \"commonjs\",\n\
+             \    \"in-source\": true\n\
+             \  },\n\
+             \  \"suffix\": \".bs.js\",\n\
+             \  \"bs-dependencies\": [\n\
+              \n\
+             \  ],\n\
+             \  \"warnings\": {\n\
+             \    \"error\" : \"+101\"\n\
+             \  },\n\
+             \  \"namespace\": true,\n\
+             \  \"refmt\": 3\n\
+              }\n\
+             "
+            );
+        File("package.json",
+             "{\n\
+             \  \"name\": \"${bsb:name}\",\n\
+             \  \"version\": \"${bsb:proj-version}\",\n\
+             \  \"scripts\": {\n\
+             \    \"build\": \"bsb -make-world\",\n\
+             \    \"start\": \"bsb -make-world -w\",\n\
+             \    \"clean\": \"bsb -clean-world\"\n\
+             \  },\n\
+             \  \"keywords\": [\n\
+             \    \"ReScript\"\n\
+             \  ],\n\
+             \  \"author\": \"\",\n\
+             \  \"license\": \"MIT\",\n\
+             \  \"devDependencies\": {\n\
+             \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
+             \  }\n\
+              }\n\
+             "
+            );
+        Dir("src",[
+            File("Demo.re",
+                 "Js.log(\"Hello, ReScript!\");\n\
+                 "
+                )        
+          ])        
+      ]);
+    Dir("generator",[
+        File(".gitignore",
+             "*.exe\n\
+              *.obj\n\
+              *.out\n\
+              *.compile\n\
+              *.native\n\
+              *.byte\n\
+              *.cmo\n\
+              *.annot\n\
+              *.cmi\n\
+              *.cmx\n\
+              *.cmt\n\
+              *.cmti\n\
+              *.cma\n\
+              *.a\n\
+              *.cmxa\n\
+              *.obj\n\
+              *~\n\
+              *.annot\n\
+              *.cmj\n\
+              *.bak\n\
+              lib/bs\n\
+              *.mlast\n\
+              *.mliast\n\
+              .vscode\n\
+              .merlin\n\
+              .bsb.lock\n\
+              /node_modules/\n\
+             "
+            );
+        File("README.md",
+             "\n\
+              \n\
+              # Build\n\
+              ```\n\
+              npm run build\n\
+              ```\n\
+              \n\
+              # Watch\n\
+              \n\
+              ```\n\
+              npm run watch\n\
+              ```\n\
+              \n\
+              \n\
+              # Editor\n\
+              If you use `vscode`, Press `Windows + Shift + B` it will build automatically"
+            );
+        File("bsconfig.json",
+             "{\n\
+             \  \"name\": \"${bsb:name}\",\n\
+             \  \"version\": \"${bsb:proj-version}\",\n\
+             \  \"sources\": {\n\
+             \    \"dir\": \"src\",\n\
+             \    \"generators\": [{\n\
+             \      \"name\": \"cpp\",\n\
+             \      \"edge\": [\"test.ml\", \":\", \"test.cpp.ml\"]\n\
+             \    }],\n\
+             \    \"subdirs\": true  \n\
+             \  },\n\
+             \  \"generators\": [{\n\
+             \    \"name\" : \"cpp\",\n\
+             \    \"command\": \"sed 's/OCAML/3/' $in > $out\"\n\
+             \  }],\n\
+             \  \"bs-dependencies\" : [\n\
+             \  ]\n\
+              }"
+            );
+        File("package.json",
+             "{\n\
+             \  \"name\": \"${bsb:name}\",\n\
+             \  \"version\": \"${bsb:proj-version}\",\n\
+             \  \"scripts\": {\n\
+             \    \"clean\": \"bsb -clean-world\",\n\
+             \    \"build\": \"bsb -make-world\",\n\
+             \    \"watch\": \"bsb -make-world -w\"\n\
+             \  },\n\
+             \  \"keywords\": [\n\
+             \    \"ReScript\"\n\
+             \  ],\n\
+             \  \"author\": \"\",\n\
+             \  \"license\": \"MIT\",\n\
+             \  \"devDependencies\": {\n\
+             \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
+             \  }\n\
+              }"
+            );
+        Dir("src",[
+            File("demo.ml",
+                 "\n\
+                  \n\
+                  let () = Js.log \"Hello, ReScript\""
+                );
+            File("test.cpp.ml",
+                 "\n\
+                  (* \n\
+                  #define FS_VAL(name,ty) external name : ty = \"\" [@@bs.module \"fs\"]\n\
+                  \n\
+                  \n\
+                  FS_VAL(readdirSync, string -> string array)\n\
+                 \ *)\n\
+                  \n\
+                  \n\
+                 \ let ocaml = OCAML"
+                )        
+          ])        
+      ]);
+    Dir("minimal",[
+        File(".gitignore",
+             ".DS_Store\n\
+              .merlin\n\
+              .bsb.lock\n\
+              npm-debug.log\n\
+              /lib/bs/\n\
+              /node_modules/"
+            );
+        File("README.md",
+             "\n\
+             \  # ${bsb:name}"
+            );
+        File("bsconfig.json",
+             "{\n\
+             \  \"name\": \"${bsb:name}\",\n\
+             \  \"sources\": {\n\
+             \      \"dir\": \"src\",\n\
+             \      \"subdirs\": true\n\
+             \  }\n\
+              }"
+            );
+        File("package.json",
+             "{\n\
+             \  \"name\": \"${bsb:name}\",\n\
+             \  \"version\": \"${bsb:proj-version}\",\n\
+             \  \"scripts\": {\n\
+             \    \"clean\": \"bsb -clean-world\",\n\
+             \    \"build\": \"bsb -make-world\",\n\
+             \    \"start\": \"bsb -make-world -w\"\n\
+             \  },\n\
+             \  \"keywords\": [\n\
+             \    \"ReScript\"\n\
+             \  ],\n\
+             \  \"author\": \"\",\n\
+             \  \"license\": \"MIT\",\n\
+             \  \"devDependencies\": {\n\
+             \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
+             \  }\n\
+              }"
+            );
+        Dir("src",[
+            File("main.ml",
+                 ""
+                )        
+          ])        
+      ]);
+    Dir("node",[
+        File(".gitignore",
+             "*.exe\n\
+              *.obj\n\
+              *.out\n\
+              *.compile\n\
+              *.native\n\
+              *.byte\n\
+              *.cmo\n\
+              *.annot\n\
+              *.cmi\n\
+              *.cmx\n\
+              *.cmt\n\
+              *.cmti\n\
+              *.cma\n\
+              *.a\n\
+              *.cmxa\n\
+              *.obj\n\
+              *~\n\
+              *.annot\n\
+              *.cmj\n\
+              *.bak\n\
+              lib/bs\n\
+              *.mlast\n\
+              *.mliast\n\
+              .vscode\n\
+              .merlin\n\
+              .bsb.lock\n\
+              /node_modules/\n\
+             "
+            );
+        File("README.md",
+             "\n\
+              \n\
+              # Build\n\
+              ```\n\
+              npm run build\n\
+              ```\n\
+              \n\
+              # Watch\n\
+              \n\
+              ```\n\
+              npm run watch\n\
+              ```\n\
+              \n\
+              \n\
+              # Editor\n\
+              If you use `vscode`, Press `Windows + Shift + B` it will build automatically\n\
+             "
+            );
+        File("bsconfig.json",
+             "{\n\
+             \  \"name\": \"${bsb:name}\",\n\
+             \  \"version\": \"${bsb:proj-version}\",\n\
+             \  \"sources\": {\n\
+             \      \"dir\": \"src\",\n\
+             \      \"subdirs\" : true\n\
+             \  },\n\
+             \  \"package-specs\": {\n\
+             \    \"module\": \"commonjs\",\n\
+             \    \"in-source\": true\n\
+             \  },\n\
+             \  \"suffix\": \".bs.js\",\n\
+             \  \"bs-dependencies\": [\n\
+             \   ]\n\
+              }"
+            );
+        File("package.json",
+             "{\n\
+             \  \"name\": \"${bsb:name}\",\n\
+             \  \"version\": \"${bsb:proj-version}\",\n\
+             \  \"scripts\": {\n\
+             \    \"clean\": \"bsb -clean-world\",\n\
+             \    \"build\": \"bsb -make-world\",\n\
+             \    \"watch\": \"bsb -make-world -w\"\n\
+             \  },\n\
+             \  \"keywords\": [\n\
+             \    \"ReScript\"\n\
+             \  ],\n\
+             \  \"author\": \"\",\n\
+             \  \"license\": \"MIT\",\n\
+             \  \"devDependencies\": {\n\
+             \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
+             \  }\n\
+              }"
+            );
+        Dir("src",[
+            File("demo.ml",
+                 "\n\
+                  \n\
+                  let () = Js.log \"Hello, ReScript\""
+                )        
+          ])        
+      ]);
+    Dir("react-hooks",[
+        File(".gitignore",
+             ".DS_Store\n\
+              .merlin\n\
+              .bsb.lock\n\
+              npm-debug.log\n\
+              /lib/bs/\n\
+              /node_modules/\n\
+              /bundleOutput/"
+            );
+        File("README.md",
+             "# ReasonReact Template & Examples\n\
+              \n\
+              This is:\n\
+              - A template for your new ReasonReact project.\n\
+              - A collection of thin examples illustrating ReasonReact usage.\n\
+              - Extra helper documentation for ReasonReact (full ReasonReact docs [here](https://reasonml.github.io/reason-react/)).\n\
+              \n\
+              `src` contains 4 sub-folders, each an independent, self-contained ReasonReact example. Feel free to delete any of them and shape this into your project! This template's more malleable than you might be used to =).\n\
+              \n\
+              The point of this template and examples is to let you understand and personally tweak the entirely of it. We **don't** give you an opaque, elaborate mega build setup just to put some boxes on the screen. It strikes to stay transparent, learnable, and simple. You're encouraged to read every file; it's a great feeling, having the full picture of what you're using and being able to touch any part.\n\
+              \n\
+              ## Run\n\
+              \n\
+              ```sh\n\
+              npm install\n\
+              npm run server\n\
+              # in a new tab\n\
+              npm start\n\
+              ```\n\
+              \n\
+              Open a new web page to `http://localhost:8000/`. Change any `.re` file in `src` to see the page auto-reload. **You don't need any bundler when you're developing**!\n\
+              \n\
+              **How come we don't need any bundler during development**? We highly encourage you to open up `index.html` to check for yourself!\n\
+              \n\
+              # Features Used\n\
+              \n\
+              |                           | Blinking Greeting | Reducer from ReactJS Docs | Fetch Dog Pictures | Reason Using JS Using Reason |\n\
+              |---------------------------|-------------------|---------------------------|--------------------|------------------------------|\n\
+              | No props                  |                   | ✓                         |                    |                              |\n\
+              | Has props                 |                   |                           |                    | ✓                            |\n\
+              | Children props            | ✓                 |                           |                    |                              |\n\
+              | No state                  |                   |                           |                    | ✓                            |\n\
+              | Has state                 | ✓                 |                           |  ✓                 |                              |\n\
+              | Has state with useReducer |                   | ✓                         |                    |                              |\n\
+              | ReasonReact using ReactJS |                   |                           |                    | ✓                            |\n\
+              | ReactJS using ReasonReact |                   |                           |                    | ✓                            |\n\
+              | useEffect                 | ✓                 |                           |  ✓                 |                              |\n\
+              | Dom attribute             | ✓                 | ✓                         |                    | ✓                            |\n\
+              | Styling                   | ✓                 | ✓                         |  ✓                 | ✓                            |\n\
+              | React.array               |                   |                           |  ✓                 |                              |\n\
+              \n\
+              # Bundle for Production\n\
+              \n\
+              We've included a convenience `UNUSED_webpack.config.js`, in case you want to ship your project to production. You can rename and/or remove that in favor of other bundlers, e.g. Rollup.\n\
+              \n\
+              We've also provided a barebone `indexProduction.html`, to serve your bundle.\n\
+              \n\
+              ```sh\n\
+              npm install webpack webpack-cli\n\
+              # rename file\n\
+              mv UNUSED_webpack.config.js webpack.config.js\n\
+              # call webpack to bundle for production\n\
+              ./node_modules/.bin/webpack\n\
+              open indexProduction.html\n\
+              ```\n\
+              \n\
+              # Handle Routing Yourself\n\
+              \n\
+              To serve the files, this template uses a minimal dependency called `moduleserve`. A URL such as `localhost:8000/scores/john` resolves to the file `scores/john.html`. If you'd like to override this and handle URL resolution yourself, change the `server` command in `package.json` from `moduleserve ./ --port 8000` to `moduleserve ./ --port 8000 --spa` (for \"single page application\"). This will make `moduleserve` serve the default `index.html` for any URL. Since `index.html` loads `Index.bs.js`, you can grab hold of the URL in the corresponding `Index.re` and do whatever you want.\n\
+              \n\
+              By the way, ReasonReact comes with a small [router](https://reasonml.github.io/reason-react/docs/en/router) you might be interested in.\n\
+             "
+            );
+        File("UNUSED_webpack.config.js",
+             "const path = require('path');\n\
+              \n\
+              module.exports = {\n\
+             \  entry: './src/Index.bs.js',\n\
+             \  // If you ever want to use webpack during development, change 'production'\n\
+             \  // to 'development' as per webpack documentation. Again, you don't have to\n\
+             \  // use webpack or any other bundler during development! Recheck README if\n\
+             \  // you didn't know this\n\
+             \  mode: 'production',\n\
+             \  output: {\n\
+             \    path: path.join(__dirname, \"bundleOutput\"),\n\
+             \    filename: 'index.js',\n\
+             \  },\n\
+              };"
+            );
+        File("bsconfig.json",
+             "{\n\
+             \  \"name\": \"${bsb:name}\",\n\
+             \  \"reason\": {\n\
+             \    \"react-jsx\": 3\n\
+             \  },\n\
+             \  \"sources\": {\n\
+             \    \"dir\" : \"src\",\n\
+             \    \"subdirs\" : true\n\
+             \  },\n\
+             \  \"bsc-flags\": [\"-bs-super-errors\", \"-bs-no-version-header\"],\n\
+             \  \"package-specs\": [{\n\
+             \    \"module\": \"commonjs\",\n\
+             \    \"in-source\": true\n\
+             \  }],\n\
+             \  \"suffix\": \".bs.js\",\n\
+             \  \"namespace\": true,\n\
+             \  \"bs-dependencies\": [\n\
+             \    \"reason-react\"\n\
+             \  ],\n\
+             \  \"refmt\": 3\n\
+              }\n\
+             "
+            );
+        File("index.html",
+             "<!DOCTYPE html>\n\
+              <html lang=\"en\">\n\
+              <head>\n\
+             \  <meta charset=\"UTF-8\">\n\
+             \  <title>ReasonReact Examples</title>\n\
+              </head>\n\
+              <body>\n\
+             \  <script>\n\
+             \    // stub a variable ReactJS checks. ReactJS assumes you're using a bundler, NodeJS or similar system that provides it the `process.env.NODE_ENV` variable.\n\
+             \    window.process = {\n\
+             \      env: {\n\
+             \        NODE_ENV: 'development'\n\
+             \      }\n\
+             \    };\n\
+             \  </script>\n\
+              \n\
+             \  <!-- This is https://github.com/marijnh/moduleserve, the secret sauce that allows us not need to bundle things during development, and have instantaneous iteration feedback, without any hot-reloading or extra build pipeline needed. -->\n\
+             \  <script src=\"/moduleserve/load.js\" data-module=\"/src/Index.bs.js\"></script>\n\
+             \  <!-- Our little watcher. Super clean. Check it out! -->\n\
+             \  <script src=\"/watcher.js\"></script>\n\
+              </body>\n\
+              </html>\n\
+             "
+            );
+        File("indexProduction.html",
+             "<!DOCTYPE html>\n\
+              <html lang=\"en\">\n\
+              <head>\n\
+             \  <meta charset=\"UTF-8\">\n\
+             \  <title>ReasonReact Examples</title>\n\
+              </head>\n\
+              <body>\n\
+             \  <script src=\"./bundleOutput/index.js\"></script>\n\
+              </body>\n\
+              </html>\n\
+             "
+            );
+        File("package.json",
+             "{\n\
+             \  \"name\": \"${bsb:name}\",\n\
+             \  \"version\": \"${bsb:proj-version}\",\n\
+             \  \"scripts\": {\n\
+             \    \"build\": \"bsb -make-world\",\n\
+             \    \"start\": \"bsb -make-world -w -ws _ \",\n\
+             \    \"clean\": \"bsb -clean-world\",\n\
+             \    \"server\": \"moduleserve ./ --port 8000\",\n\
+             \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"\n\
+             \  },\n\
+             \  \"keywords\": [\n\
+             \    \"ReScript\",\n\
+             \    \"ReasonReact\",\n\
+             \    \"reason-react\"\n\
+             \  ],\n\
+             \  \"author\": \"\",\n\
+             \  \"license\": \"MIT\",\n\
+             \  \"dependencies\": {\n\
+             \    \"react\": \"^16.8.1\",\n\
+             \    \"react-dom\": \"^16.8.1\",\n\
+             \    \"reason-react\": \">=0.7.1\"\n\
+             \  },\n\
+             \  \"devDependencies\": {\n\
+             \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
+             \    \"moduleserve\": \"^0.9.0\"\n\
+             \  }\n\
+              }\n\
+             "
+            );
+        Dir("src",[
+            Dir("BlinkingGreeting",[
+                File("BlinkingGreeting.re",
+                     "[@react.component]\n\
+                      let make = (~children) => {\n\
+                     \  let (show, setShow) = React.useState(() => true);\n\
+                      \n\
+                     \  // Notice that instead of `useEffect`, we have `useEffect0`. See\n\
+                     \  // reasonml.github.io/reason-react/docs/en/components#hooks for more info\n\
+                     \  React.useEffect0(() => {\n\
+                     \    let id =\n\
+                     \      Js.Global.setInterval(\n\
+                     \        () => setShow(previousShow => !previousShow),\n\
+                     \        1000,\n\
+                     \      );\n\
+                      \n\
+                     \    Some(() => Js.Global.clearInterval(id));\n\
+                     \  });\n\
+                      \n\
+                     \  let style =\n\
+                     \    if (show) {\n\
+                     \      ReactDOMRe.Style.make(~opacity=\"1\", ~transition=\"opacity 1s\", ());\n\
+                     \    } else {\n\
+                     \      ReactDOMRe.Style.make(~opacity=\"0\", ~transition=\"opacity 1s\", ());\n\
+                     \    };\n\
+                      \n\
+                     \  <div style> children </div>;\n\
+                      };\n\
+                     "
+                    )        
+              ]);
+            File("ExampleStyles.re",
+                 "let reasonReactBlue = \"#48a9dc\";\n\
+                  \n\
+                  // The {j|...|j} feature is just string interpolation, from\n\
+                  // bucklescript.github.io/docs/en/interop-cheatsheet#string-unicode-interpolation\n\
+                  // This allows us to conveniently write CSS, together with variables, by\n\
+                  // constructing a string\n\
+                  let style = {j|\n\
+                 \  body {\n\
+                 \    background-color: rgb(224, 226, 229);\n\
+                 \    display: flex;\n\
+                 \    flex-direction: column;\n\
+                 \    align-items: center;\n\
+                 \  }\n\
+                 \  button {\n\
+                 \    background-color: white;\n\
+                 \    color: $reasonReactBlue;\n\
+                 \    box-shadow: 0 0 0 1px $reasonReactBlue;\n\
+                 \    border: none;\n\
+                 \    padding: 8px;\n\
+                 \    font-size: 16px;\n\
+                 \  }\n\
+                 \  button:active {\n\
+                 \    background-color: $reasonReactBlue;\n\
+                 \    color: white;\n\
+                 \  }\n\
+                 \  .container {\n\
+                 \    margin: 12px 0px;\n\
+                 \    box-shadow: 0px 4px 16px rgb(200, 200, 200);\n\
+                 \    width: 720px;\n\
+                 \    border-radius: 12px;\n\
+                 \    font-family: sans-serif;\n\
+                 \  }\n\
+                 \  .containerTitle {\n\
+                 \    background-color: rgb(242, 243, 245);\n\
+                 \    border-radius: 12px 12px 0px 0px;\n\
+                 \    padding: 12px;\n\
+                 \    font-weight: bold;\n\
+                 \  }\n\
+                 \  .containerContent {\n\
+                 \    background-color: white;\n\
+                 \    padding: 16px;\n\
+                 \    border-radius: 0px 0px 12px 12px;\n\
+                 \  }\n\
+                  |j};\n\
+                 "
+                );
+            Dir("FetchedDogPictures",[
+                File("FetchedDogPictures.re",
+                     "[@bs.val] external fetch: string => Js.Promise.t('a) = \"fetch\";\n\
+                      \n\
+                      type state =\n\
+                     \  | LoadingDogs\n\
+                     \  | ErrorFetchingDogs\n\
+                     \  | LoadedDogs(array(string));\n\
+                      \n\
+                      [@react.component]\n\
+                      let make = () => {\n\
+                     \  let (state, setState) = React.useState(() => LoadingDogs);\n\
+                      \n\
+                     \  // Notice that instead of `useEffect`, we have `useEffect0`. See\n\
+                     \  // reasonml.github.io/reason-react/docs/en/components#hooks for more info\n\
+                     \  React.useEffect0(() => {\n\
+                     \    Js.Promise.(\n\
+                     \      fetch(\"https://dog.ceo/api/breeds/image/random/3\")\n\
+                     \      |> then_(response => response##json())\n\
+                     \      |> then_(jsonResponse => {\n\
+                     \           setState(_previousState => LoadedDogs(jsonResponse##message));\n\
+                     \           Js.Promise.resolve();\n\
+                     \         })\n\
+                     \      |> catch(_err => {\n\
+                     \           setState(_previousState => ErrorFetchingDogs);\n\
+                     \           Js.Promise.resolve();\n\
+                     \         })\n\
+                     \      |> ignore\n\
+                     \    );\n\
+                      \n\
+                     \    // Returning None, instead of Some(() => ...), means we don't have any\n\
+                     \    // cleanup to do before unmounting. That's not 100% true. We should\n\
+                     \    // technically cancel the promise. Unofortunately, there's currently no\n\
+                     \    // way to cancel a promise. Promises in general should be way less used\n\
+                     \    // for React components; but since folks do use them, we provide such an\n\
+                     \    // example here. In reality, this fetch should just be a plain callback,\n\
+                     \    // with a cancellation API\n\
+                     \    None;\n\
+                     \  });\n\
+                      \n\
+                     \  <div\n\
+                     \    style={ReactDOMRe.Style.make(\n\
+                     \      ~height=\"120px\",\n\
+                     \      ~display=\"flex\",\n\
+                     \      ~alignItems=\"center\",\n\
+                     \      ~justifyContent=\"center\",\n\
+                     \      (),\n\
+                     \    )}>\n\
+                     \    {switch (state) {\n\
+                     \     | ErrorFetchingDogs => React.string(\"An error occurred!\")\n\
+                     \     | LoadingDogs => React.string(\"Loading...\")\n\
+                     \     | LoadedDogs(dogs) =>\n\
+                     \       dogs\n\
+                     \       ->Belt.Array.mapWithIndex((i, dog) => {\n\
+                     \           let imageStyle =\n\
+                     \             ReactDOMRe.Style.make(\n\
+                     \               ~height=\"120px\",\n\
+                     \               ~width=\"100%\",\n\
+                     \               ~marginRight=i === Js.Array.length(dogs) - 1 ? \"0px\" : \"8px\",\n\
+                     \               ~borderRadius=\"8px\",\n\
+                     \               ~boxShadow=\"0px 4px 16px rgb(200, 200, 200)\",\n\
+                     \               ~backgroundSize=\"cover\",\n\
+                     \               ~backgroundImage={j|url($dog)|j},\n\
+                     \               ~backgroundPosition=\"center\",\n\
+                     \               (),\n\
+                     \             );\n\
+                     \           <div key=dog style=imageStyle />;\n\
+                     \         })\n\
+                     \       ->React.array\n\
+                     \     }}\n\
+                     \  </div>;\n\
+                      };\n\
+                     "
+                    )        
+              ]);
+            File("Index.re",
+                 "// Entry point\n\
+                  \n\
+                  [@bs.val] external document: Js.t({..}) = \"document\";\n\
+                  \n\
+                  // We're using raw DOM manipulations here, to avoid making you read\n\
+                  // ReasonReact when you might precisely be trying to learn it for the first\n\
+                  // time through the examples later.\n\
+                  let style = document##createElement(\"style\");\n\
+                  document##head##appendChild(style);\n\
+                  style##innerHTML #= ExampleStyles.style;\n\
+                  \n\
+                  let makeContainer = text => {\n\
+                 \  let container = document##createElement(\"div\");\n\
+                 \  container##className #= \"container\";\n\
+                  \n\
+                 \  let title = document##createElement(\"div\");\n\
+                 \  title##className #= \"containerTitle\";\n\
+                 \  title##innerText #= text;\n\
+                  \n\
+                 \  let content = document##createElement(\"div\");\n\
+                 \  content##className #= \"containerContent\";\n\
+                  \n\
+                 \  let () = container##appendChild(title);\n\
+                 \  let () = container##appendChild(content);\n\
+                 \  let () = document##body##appendChild(container);\n\
+                  \n\
+                 \  content;\n\
+                  };\n\
+                  \n\
+                  // All 4 examples.\n\
+                  ReactDOMRe.render(\n\
+                 \  <BlinkingGreeting>\n\
+                 \    {React.string(\"Hello!\")}\n\
+                 \  </BlinkingGreeting>,\n\
+                 \  makeContainer(\"Blinking Greeting\"),\n\
+                  );\n\
+                  \n\
+                  ReactDOMRe.render(\n\
+                 \  <ReducerFromReactJSDocs />,\n\
+                 \  makeContainer(\"Reducer From ReactJS Docs\"),\n\
+                  );\n\
+                  \n\
+                  ReactDOMRe.render(\n\
+                 \  <FetchedDogPictures />,\n\
+                 \  makeContainer(\"Fetched Dog Pictures\"),\n\
+                  );\n\
+                  \n\
+                  ReactDOMRe.render(\n\
+                 \  <ReasonUsingJSUsingReason />,\n\
+                 \  makeContainer(\"Reason Using JS Using Reason\"),\n\
+                  );\n\
+                 "
+                );
+            Dir("ReasonUsingJSUsingReason",[
+                File("ReactJSCard.js",
+                     "// In this Interop example folder, we have:\n\
+                      // - A ReasonReact component, ReasonReactCard.re\n\
+                      // - Used by a ReactJS component, ReactJSCard.js (this file)\n\
+                      // - ReactJSCard.js can be used by ReasonReact, through bindings in ReasonUsingJSUsingReason.re\n\
+                      // - ReasonUsingJSUsingReason.re is used by Index.re\n\
+                      \n\
+                      var ReactDOM = require('react-dom');\n\
+                      var React = require('react');\n\
+                      \n\
+                      var ReasonReactCard = require('./ReasonReactCard.bs').make;\n\
+                      \n\
+                      var ReactJSComponent = function() {\n\
+                     \  let backgroundColor = \"rgba(0, 0, 0, 0.05)\";\n\
+                     \  let padding = \"12px\";\n\
+                      \n\
+                     \  // We're not using JSX here, to avoid folks needing to install the related\n\
+                     \  // React toolchains just for this example.\n\
+                     \  // <div style={...}>\n\
+                     \  //   <div style={...}>This is a ReactJS card</div>\n\
+                     \  //   <ReasonReactCard style={...} />\n\
+                     \  // </div>\n\
+                     \  return React.createElement(\n\
+                     \    \"div\",\n\
+                     \    {style: {backgroundColor, padding, borderRadius: \"8px\"}},\n\
+                     \    React.createElement(\"div\", {style: {marginBottom: \"8px\"}}, \"This is a ReactJS card\"),\n\
+                     \    React.createElement(ReasonReactCard, {style: {backgroundColor, padding, borderRadius: \"4px\"}}),\n\
+                     \  )\n\
+                      };\n\
+                      ReactJSComponent.displayName = \"MyBanner\";\n\
+                      \n\
+                      module.exports = ReactJSComponent;\n\
+                     "
+                    );
+                File("ReasonReactCard.re",
+                     "// In this Interop example folder, we have:\n\
+                      // - A ReasonReact component, ReasonReactCard.re (this file)\n\
+                      // - Used by a ReactJS component, ReactJSCard.js\n\
+                      // - ReactJSCard.js can be used by ReasonReact, through bindings in ReasonUsingJSUsingReason.re\n\
+                      // - ReasonUsingJSUsingReason.re is used by Index.re\n\
+                      \n\
+                      [@react.component]\n\
+                      let make = (~style) => {\n\
+                     \  <div style> {React.string(\"This is a ReasonReact card\")} </div>;\n\
+                      };\n\
+                     "
+                    );
+                File("ReasonUsingJSUsingReason.re",
+                     "// In this Interop example folder, we have:\n\
+                      // - A ReasonReact component, ReasonReactCard.re\n\
+                      // - Used by a ReactJS component, ReactJSCard.js\n\
+                      // - ReactJSCard.js can be used by ReasonReact, through bindings in ReasonUsingJSUsingReason.re (this file)\n\
+                      // - ReasonUsingJSUsingReason.re is used by Index.re\n\
+                      \n\
+                      // All you need to do to use a ReactJS component in ReasonReact, is to write the lines below!\n\
+                      // reasonml.github.io/reason-react/docs/en/components#import-from-js\n\
+                      [@react.component] [@bs.module]\n\
+                      external make: unit => React.element = \"./ReactJSCard\";\n\
+                     "
+                    )        
+              ]);
+            Dir("ReducerFromReactJSDocs",[
+                File("ReducerFromReactJSDocs.re",
+                     "// This is the ReactJS documentation's useReducer example, directly ported over\n\
+                      // https://reactjs.org/docs/hooks-reference.html#usereducer\n\
+                      \n\
+                      // A little extra we've put, because the ReactJS example has no styling\n\
+                      let leftButtonStyle = ReactDOMRe.Style.make(~borderRadius=\"4px 0px 0px 4px\", ~width=\"48px\", ());\n\
+                      let rightButtonStyle = ReactDOMRe.Style.make(~borderRadius=\"0px 4px 4px 0px\", ~width=\"48px\", ());\n\
+                      let containerStyle = ReactDOMRe.Style.make(~display=\"flex\", ~alignItems=\"center\", ~justifyContent=\"space-between\", ());\n\
+                      \n\
+                      // Record and variant need explicit declarations.\n\
+                      type state = {count: int};\n\
+                      \n\
+                      type action =\n\
+                     \  | Increment\n\
+                     \  | Decrement;\n\
+                      \n\
+                      let initialState = {count: 0};\n\
+                      \n\
+                      let reducer = (state, action) => {\n\
+                     \  switch (action) {\n\
+                     \  | Increment => {count: state.count + 1}\n\
+                     \  | Decrement => {count: state.count - 1}\n\
+                     \  };\n\
+                      };\n\
+                      \n\
+                      [@react.component]\n\
+                      let make = () => {\n\
+                     \  let (state, dispatch) = React.useReducer(reducer, initialState);\n\
+                      \n\
+                     \  // We can use a fragment here, but we don't, because we want to style the counter\n\
+                     \  <div style=containerStyle>\n\
+                     \    <div>\n\
+                     \      {React.string(\"Count: \")}\n\
+                     \      {React.string(string_of_int(state.count))}\n\
+                     \    </div>\n\
+                     \    <div>\n\
+                     \      <button style=leftButtonStyle onClick={_event => dispatch(Decrement)}>\n\
+                     \        {React.string(\"-\")}\n\
+                     \      </button>\n\
+                     \      <button style=rightButtonStyle onClick={_event => dispatch(Increment)}>\n\
+                     \        {React.string(\"+\")}\n\
+                     \      </button>\n\
+                     \    </div>\n\
+                     \  </div>;\n\
+                      };\n\
+                     "
+                    )        
+              ])        
+          ]);
+        File("watcher.js",
+             "// This is our simple, robust watcher. It hooks into the ReScript build\n\
+              // system to listen for build events.\n\
+              // See package.json's `start` script and `./node_modules/.bin/bsb --help`\n\
+              \n\
+              // Btw, if you change this file and reload the page, your browser cache\n\
+              // _might_ not pick up the new version. If you're in Chrome, do Force Reload.\n\
+              \n\
+              var websocketReloader;\n\
+              var LAST_SUCCESS_BUILD_STAMP = localStorage.getItem('LAST_SUCCESS_BUILD_STAMP') || 0;\n\
+              // package.json's `start` script's `bsb -ws _` means it'll pipe build events\n\
+              // through a websocket connection to a default port of 9999. This is\n\
+              // configurable, e.g. `-ws 5000`\n\
+              var webSocketPort = 9999;\n\
+              \n\
+              function setUpWebSocket() {\n\
+             \  if (websocketReloader == null || websocketReloader.readyState !== 1) {\n\
+             \    try {\n\
+             \      websocketReloader = new WebSocket(`ws://${window.location.hostname}:${webSocketPort}`);\n\
+             \      websocketReloader.onmessage = (message) => {\n\
+             \        var newData = JSON.parse(message.data).LAST_SUCCESS_BUILD_STAMP;\n\
+             \        if (newData > LAST_SUCCESS_BUILD_STAMP) {\n\
+             \          LAST_SUCCESS_BUILD_STAMP = newData;\n\
+             \          localStorage.setItem('LAST_SUCCESS_BUILD_STAMP', LAST_SUCCESS_BUILD_STAMP);\n\
+             \          // Refresh the page! This will naturally re-run everything,\n\
+             \          // including our moduleserve which will re-resolve all the modules.\n\
+             \          // No stable build!\n\
+             \          location.reload(true);\n\
+             \        }\n\
+              \n\
+             \      }\n\
+             \    } catch (exn) {\n\
+             \      console.error(\"The watcher tried to connect to web socket, but failed. Here's the message:\");\n\
+             \      console.error(exn);\n\
+             \    }\n\
+             \  }\n\
+              };\n\
+              \n\
+              setUpWebSocket();\n\
+              setInterval(setUpWebSocket, 2000);\n\
+             "
+            )        
+      ]);
+    Dir("react-starter",[
+        File(".gitignore",
+             ".DS_Store\n\
+              .merlin\n\
+              .bsb.lock\n\
+              npm-debug.log\n\
+              /lib/bs/\n\
+              /node_modules/\n\
+              *.bs.js\n\
+             "
+            );
+        File("README.md",
+             "# Reason react starter\n\
+              \n\
+              ## Run Project\n\
+              \n\
+              ```sh\n\
+              npm install\n\
+              npm start\n\
+              # in another tab\n\
+              npm run server\n\
+              ```\n\
+              \n\
+              View the app in the browser at http://localhost:8000. Running in this environment provides hot reloading and support for routing; just edit and save the file and the browser will automatically refresh.\n\
+              \n\
+              To use a port other than 8000 set the `PORT` environment variable (`PORT=8080 npm run server`).\n\
+              \n\
+              ## Build for Production\n\
+              \n\
+              ```sh\n\
+              npm run clean\n\
+              npm run build\n\
+              npm run webpack:production\n\
+              ```\n\
+              \n\
+              This will replace the development artifact `build/Index.js` for an optimized version as well as copy `src/index.html` into `build/`. You can then deploy the contents of the `build` directory (`index.html` and `Index.js`).\n\
+              \n\
+              **To enable dead code elimination**, change `bsconfig.json`'s `package-specs` `module` from `\"commonjs\"` to `\"es6\"`. Then re-run the above 2 commands. This will allow Webpack to remove unused code.\n\
+             "
+            );
+        File("bsconfig.json",
+             "{\n\
+             \  \"name\": \"reason-react-starter\",\n\
+             \  \"reason\": {\n\
+             \    \"react-jsx\": 3\n\
+             \  },\n\
+             \  \"sources\": {\n\
+             \    \"dir\": \"src\",\n\
+             \    \"subdirs\": true\n\
+             \  },\n\
+             \  \"bsc-flags\": [\"-bs-super-errors\", \"-bs-no-version-header\"],\n\
+             \  \"package-specs\": [\n\
+             \    {\n\
+             \      \"module\": \"commonjs\",\n\
+             \      \"in-source\": true\n\
+             \    }\n\
+             \  ],\n\
+             \  \"suffix\": \".bs.js\",\n\
+             \  \"namespace\": true,\n\
+             \  \"bs-dependencies\": [\"reason-react\"],\n\
+             \  \"refmt\": 3\n\
+              }\n\
+             "
+            );
+        File("package.json",
+             "{\n\
+             \  \"name\": \"${bsb:name}\",\n\
+             \  \"version\": \"${bsb:proj-version}\",\n\
+             \  \"scripts\": {\n\
+             \    \"build\": \"bsb -make-world\",\n\
+             \    \"start\": \"bsb -make-world -w -ws _ \",\n\
+             \    \"clean\": \"bsb -clean-world\",\n\
+             \    \"webpack\": \"webpack -w\",\n\
+             \    \"webpack:production\": \"NODE_ENV=production webpack\",\n\
+             \    \"server\": \"webpack-dev-server\",\n\
+             \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"\n\
+             \  },\n\
+             \  \"keywords\": [\n\
+             \    \"ReScript\",\n\
+             \    \"ReasonReact\",\n\
+             \    \"reason-react\"\n\
+             \  ],\n\
+             \  \"author\": \"\",\n\
+             \  \"license\": \"MIT\",\n\
+             \  \"dependencies\": {\n\
+             \    \"react\": \"^17.0.1\",\n\
+             \    \"react-dom\": \"^17.0.1\",\n\
+             \    \"reason-react\": \"^0.9.1\"\n\
+             \  },\n\
+             \  \"devDependencies\": {\n\
+             \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
+             \    \"css-loader\": \"^5.0.0\",\n\
+             \    \"html-webpack-plugin\": \"^4.5.0\",\n\
+             \    \"style-loader\": \"^2.0.0\",\n\
+             \    \"webpack\": \"^4.44.2\",\n\
+             \    \"webpack-cli\": \"^3.3.12\",\n\
+             \    \"webpack-dev-server\": \"^3.11.0\"\n\
+             \  }\n\
+              }\n\
+             "
+            );
+        Dir("src",[
+            File("App.re",
+                 "type state = {count: int};\n\
+                  \n\
+                  type action =\n\
+                 \  | Increment\n\
+                 \  | Decrement;\n\
+                  \n\
+                  let initialState = {count: 0};\n\
+                  \n\
+                  let reducer = (state, action) =>\n\
+                 \  switch (action) {\n\
+                 \  | Increment => {count: state.count + 1}\n\
+                 \  | Decrement => {count: state.count - 1}\n\
+                 \  };\n\
+                  \n\
+                  [@react.component]\n\
+                  let make = () => {\n\
+                 \  let (state, dispatch) = React.useReducer(reducer, initialState);\n\
+                  \n\
+                 \  <main>\n\
+                 \    {React.string(\"Simple counter with reducer\")}\n\
+                 \    <div>\n\
+                 \      <button onClick={_ => dispatch(Decrement)}>\n\
+                 \        {React.string(\"Decrement\")}\n\
+                 \      </button>\n\
+                 \      <span className=\"counter\">\n\
+                 \        {state.count |> string_of_int |> React.string}\n\
+                 \      </span>\n\
+                 \      <button onClick={_ => dispatch(Increment)}>\n\
+                 \        {React.string(\"Increment\")}\n\
+                 \      </button>\n\
+                 \    </div>\n\
+                 \  </main>;\n\
+                  };\n\
+                 "
+                );
+            File("Index.re",
+                 "[%bs.raw {|require(\"./index.css\")|}];\n\
+                  \n\
+                  ReactDOMRe.renderToElementWithId(<App />, \"root\");\n\
+                 "
+                );
+            File("index.css",
+                 "body {\n\
+                 \  margin: 0;\n\
+                 \  font-family: -apple-system, system-ui, \"Segoe UI\", Helvetica, Arial,\n\
+                 \    sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\";\n\
+                  }\n\
+                  \n\
+                  main {\n\
+                 \  padding: 20px;\n\
+                  }\n\
+                  \n\
+                  .counter {\n\
+                 \  padding: 20px;\n\
+                 \  display: inline-block;\n\
+                  }\n\
+                 "
+                );
+            File("index.html",
+                 "<!DOCTYPE html>\n\
+                  <html lang=\"en\">\n\
+                 \  <head>\n\
+                 \    <meta charset=\"UTF-8\" />\n\
+                 \    <title>Reason react starter</title>\n\
+                 \  </head>\n\
+                 \  <body>\n\
+                 \    <div id=\"root\"></div>\n\
+                 \    <script src=\"/Index.js\"></script>\n\
+                 \  </body>\n\
+                  </html>\n\
+                 "
+                )        
+          ]);
+        File("webpack.config.js",
+             "const path = require(\"path\")\n\
+              const HtmlWebpackPlugin = require(\"html-webpack-plugin\")\n\
+              const outputDir = path.join(__dirname, \"build/\")\n\
+              \n\
+              const isProd = process.env.NODE_ENV === \"production\"\n\
+              \n\
+              module.exports = {\n\
+             \  entry: \"./src/Index.bs.js\",\n\
+             \  mode: isProd ? \"production\" : \"development\",\n\
+             \  devtool: \"source-map\",\n\
+             \  output: {\n\
+             \    path: outputDir,\n\
+             \    filename: \"Index.js\"\n\
+             \  },\n\
+             \  plugins: [\n\
+             \    new HtmlWebpackPlugin({\n\
+             \      template: \"src/index.html\",\n\
+             \      inject: false\n\
+             \    })\n\
+             \  ],\n\
+             \  devServer: {\n\
+             \    compress: true,\n\
+             \    contentBase: outputDir,\n\
+             \    port: process.env.PORT || 8000,\n\
+             \    historyApiFallback: true\n\
+             \  },\n\
+             \  module: {\n\
+             \    rules: [\n\
+             \      {\n\
+             \        test: /\\.css$/,\n\
+             \        use: [\"style-loader\", \"css-loader\"]\n\
+             \      }\n\
+             \    ]\n\
+             \  }\n\
+              }\n\
+             "
+            )        
+      ]);
+    Dir("tea",[
+        File("README.md",
+             "\n\
+              \n\
+              # Build\n\
+              ```\n\
+              npm run build\n\
+              ```\n\
+              \n\
+              # Watch\n\
+              \n\
+              ```\n\
+              npm run watch\n\
+              ```\n\
+              \n\
+              create a http-server\n\
+              \n\
+              ```\n\
+              npm install -g http-server\n\
+              ```\n\
+              \n\
+              Edit the file and see the changes automatically reloaded in the browser\n\
+             "
+            );
+        File("bsconfig.json",
+             "{\n\
+             \  \"name\": \"tea\",\n\
+             \  \"version\": \"0.1.0\",\n\
+             \  \"sources\": {\n\
+             \    \"dir\" : \"src\",\n\
+             \    \"subdirs\" : true\n\
+             \  },\n\
+             \  \"package-specs\": {\n\
+             \    \"module\": \"commonjs\",\n\
+             \    \"in-source\": true\n\
+             \  },\n\
+             \  \"suffix\": \".bs.js\",\n\
+             \  \"bs-dependencies\": [\n\
+             \      \"bucklescript-tea\"\n\
+             \  ]\n\
+              }\n\
+             "
+            );
+        File("index.html",
+             "<!DOCTYPE html>\n\
+              <html lang=\"en\">\n\
+             \  <head>\n\
+             \    <meta charset=\"utf-8\">\n\
+             \    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n\
+             \    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\
+             \    <meta name=\"description\" content=\"\">\n\
+             \    <meta name=\"author\" content=\"\">\n\
+             \    <title>Bucklescript TEA Starter Kit</title>\n\
+             \  </head>\n\
+             \  \n\
+              \n\
+              \n\
+             \  <body>\n\
+             \    <div id=\"my-element\"> </div>\n\
+             \    <script src=\"./loader.js\" type=\"module\" data-main=\"./src/main.bs.js\"></script>\n\
+             \    <script src=\"./watcher.js\" type=\"module\"></script>\n\
+             \    \n\
+             \  </body>\n\
+              </html>"
+            );
+        File("loader.js",
+             "/* Copyright (C) 2018 Hongbo Zhang, Authors of ReScript\n\
+             \ * \n\
+             \ * This program is free software: you can redistribute it and/or modify\n\
+             \ * it under the terms of the GNU Lesser General Public License as published by\n\
+             \ * the Free Software Foundation, either version 3 of the License, or\n\
+             \ * (at your option) any later version.\n\
+             \ *\n\
+             \ * In addition to the permissions granted to you by the LGPL, you may combine\n\
+             \ * or link a \"work that uses the Library\" with a publicly distributed version\n\
+             \ * of this file to produce a combined library or application, then distribute\n\
+             \ * that combined work under the terms of your choosing, with no requirement\n\
+             \ * to comply with the obligations normally placed on you by section 4 of the\n\
+             \ * LGPL version 3 (or the corresponding section of a later version of the LGPL\n\
+             \ * should you choose to use a later version).\n\
+             \ *\n\
+             \ * This program is distributed in the hope that it will be useful,\n\
+             \ * but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+             \ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
+             \ * GNU Lesser General Public License for more details.\n\
+             \ * \n\
+             \ * You should have received a copy of the GNU Lesser General Public License\n\
+             \ * along with this program; if not, write to the Free Software\n\
+             \ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */\n\
+              \n\
+              \n\
+              \n\
+              //@ts-check\n\
+              \n\
+              // @ts-ignore\n\
+              window.process = { env: { NODE_ENV: 'dev' } }\n\
+              \n\
+              \n\
+              // local to getPath\n\
+              var relativeElement = document.createElement(\"a\");\n\
+              var baseElement = document.createElement(\"base\");\n\
+              document.head.appendChild(baseElement);\n\
+              \n\
+              export function BsGetPath(id, parent) {\n\
+             \    var oldPath = baseElement.href\n\
+             \    baseElement.href = parent\n\
+             \    relativeElement.href = id\n\
+             \    var result = relativeElement.href\n\
+             \    baseElement.href = oldPath\n\
+             \    return result\n\
+              }\n\
+              /**\n\
+             \ * \n\
+             \ * Given current link and its parent, return the new link\n\
+             \ * @param {string} id \n\
+             \ * @param {string} parent \n\
+             \ * @return {string}\n\
+             \ */\n\
+              function getPathWithJsSuffix(id, parent) {\n\
+             \    var oldPath = baseElement.href\n\
+             \    baseElement.href = parent\n\
+             \    relativeElement.href = id\n\
+             \    var result = addSuffixJsIfNot(relativeElement.href)\n\
+             \    baseElement.href = oldPath\n\
+             \    return result\n\
+              }\n\
+              \n\
+              /**\n\
+             \ * \n\
+             \ * @param {string} x \n\
+             \ */\n\
+              function addSuffixJsIfNot(x) {\n\
+             \    if (x.endsWith('.js')) {\n\
+             \        return x\n\
+             \    } else {\n\
+             \        return x + '.js'\n\
+             \    }\n\
+              }\n\
+              \n\
+              \n\
+              var falsePromise = Promise.resolve(false)\n\
+              var fetchConfig = {'cache' : 'no-cache'}\n\
+              // package.json semantics\n\
+              // a string to module object \n\
+              // from url -> module object \n\
+              // Modules : Map<string, Promise < boolean | string > \n\
+              // fetch the link:\n\
+              // - if it is already fetched before, return the stored promise\n\
+              //   otherwise create the promise which will be filled with the text if successful\n\
+              //   or filled with boolean false when failed\n\
+              var MODULES = new Map()\n\
+              function cachedFetch(link) {\n\
+             \    // console.info(link)\n\
+             \    var linkResult = MODULES.get(link)\n\
+             \    if (linkResult) {\n\
+             \        return linkResult\n\
+             \    } else {\n\
+             \        var p = fetch(link, fetchConfig)\n\
+             \            .then(resp => {\n\
+             \                if (resp.ok) {\n\
+             \                    return resp.text()\n\
+             \                } else {\n\
+             \                    return falsePromise\n\
+             \                }\n\
+             \            })\n\
+              \n\
+             \        MODULES.set(link, p)\n\
+             \        return p\n\
+             \    }\n\
+              }\n\
+              \n\
+              // from location id -> url \n\
+              // There are two rounds of caching:\n\
+              // 1. if location and relative path is hit, no need to run \n\
+              // 2. if location and relative path is not hit, but the resolved link is hit, no need \n\
+              //     for network request\n\
+              /**\n\
+             \ * @type {Map<string, Map<string, Promise<any> > > }\n\
+             \ */\n\
+              var IDLocations = new Map()\n\
+              \n\
+              /**\n\
+             \ * @type {Map<string, Map<string, any> > }\n\
+             \ */\n\
+              var SyncedIDLocations = new Map()\n\
+              // Its value is an object \n\
+              // { link : String }\n\
+              // We will first mark it when visiting (to avoid duplicated computation)\n\
+              // and populate its link later\n\
+              \n\
+              /**\n\
+             \ * \n\
+             \ * @param {string} id \n\
+             \ * @param {string} location \n\
+             \ */\n\
+              function getIdLocation(id, location) {\n\
+             \    var idMap = IDLocations.get(location)\n\
+             \    if (idMap) {\n\
+             \        return idMap.get(id)\n\
+             \    }\n\
+              }\n\
+              \n\
+              /**\n\
+             \ * \n\
+             \ * @param {string} id \n\
+             \ * @param {string} location \n\
+             \ */\n\
+              function getIdLocationSync(id, location) {\n\
+             \    var idMap = SyncedIDLocations.get(location)\n\
+             \    if (idMap) {\n\
+             \        return idMap.get(id)\n\
+             \    }\n\
+              }\n\
+              \n\
+              function countIDLocations() {\n\
+             \    var count = 0\n\
+             \    for (let [k, vv] of IDLocations) {\n\
+             \        for (let [kv, v] of vv) {\n\
+             \            count += 1\n\
+             \        }\n\
+             \    }\n\
+             \    console.log(count, 'modules loaded')\n\
+              }\n\
+              \n\
+              \n\
+              /**\n\
+             \ * \n\
+             \ * @param {string} id \n\
+             \ * @param {string} location \n\
+             \ * @param {Function} cb \n\
+             \ * @returns Promise<any>\n\
+             \ */\n\
+              function visitIdLocation(id, location, cb) {\n\
+             \    var result;\n\
+             \    var idMap = IDLocations.get(location)\n\
+             \    if (idMap && (result = idMap.get(id))) {\n\
+             \        return result\n\
+             \    }\n\
+             \    else {\n\
+             \        result = new Promise(resolve => {\n\
+             \            return (cb()).then(res => {\n\
+             \                var idMap = SyncedIDLocations.get(location)\n\
+             \                if (idMap) {\n\
+             \                    idMap.set(id, res)\n\
+             \                } else {\n\
+             \                    SyncedIDLocations.set(location, new Map([[id, res]]))\n\
+             \                }\n\
+             \                return resolve(res)\n\
+             \            })\n\
+             \        })\n\
+             \        if (idMap) {\n\
+             \            idMap.set(id, result)\n\
+             \        }\n\
+             \        else {\n\
+             \            IDLocations.set(location, new Map([[id, result]]))\n\
+             \        }\n\
+             \        return result\n\
+             \    }\n\
+              }\n\
+              \n\
+              \n\
+              \n\
+              /**\n\
+             \ * \n\
+             \ * @param {string} text \n\
+             \ * @return {string[]}\n\
+             \ */\n\
+              function getDeps(text) {\n\
+             \    var deps = []\n\
+             \    text.replace(/(\\/\\*[\\w\\W]*?\\*\\/|\\/\\/[^\\n]*|[.$]r)|\\brequire\\s*\\(\\s*[\"']([^\"']*)[\"']\\s*\\)/g, function (_, ignore, id) {\n\
+             \        if (!ignore) deps.push(id);\n\
+             \    });\n\
+             \    return deps;\n\
+              }\n\
+              \n\
+              \n\
+              \n\
+              // By using a named \"eval\" most browsers will execute in the global scope.\n\
+              // http://www.davidflanagan.com/2010/12/global-eval-in.html\n\
+              var globalEval = eval;\n\
+              \n\
+              // function parentURL(url) {\n\
+              //     if (url.endsWith('/')) {\n\
+              //         return url + '../'\n\
+              //     } else {\n\
+              //         return url + '/../'\n\
+              //     }\n\
+              // }\n\
+              \n\
+              \n\
+              \n\
+              // loader.js:23 http://localhost:8080/node_modules/react-dom/cjs/react-dom.development.js/..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//../ fbjs/lib/containsNode Promise {<pending>}\n\
+              // 23:10:02.884 loader.js:23 http://localhost:8080/node_modules/react-dom/cjs/react-dom.development.js/..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//../ fbjs/lib/invariant Promise {<pending>}\n\
+              \n\
+              \n\
+              /**\n\
+             \ * \n\
+             \ * @param {string} id \n\
+             \ * @param {string} parent \n\
+             \ */\n\
+              function getParentModulePromise(id, parent) {\n\
+             \    var parentLink = BsGetPath('..', parent)\n\
+             \    if (parentLink === parent) {\n\
+             \        return falsePromise\n\
+             \    }\n\
+             \    return getPackageJsPromise(id, parentLink)\n\
+              }\n\
+              // In the beginning\n\
+              // it is `resolveModule('./main.js', '')\n\
+              // return the promise of link and text \n\
+              \n\
+              /**\n\
+             \ * \n\
+             \ * @param {string} id \n\
+             \ */\n\
+              function getPackageName(id) {\n\
+             \    var index = id.indexOf('/')\n\
+             \    if (id[0] === '@') index = id.indexOf('/', index + 1)\n\
+             \    if (index === -1) {\n\
+             \        return id\n\
+             \    }\n\
+             \    return id.substring(0, index)\n\
+              }\n\
+              \n\
+              /**\n\
+             \ * \n\
+             \ * @param {string} s \n\
+             \ * @param {string} text \n\
+             \ * @returns {undefined | string }\n\
+             \ */\n\
+              function isJustAPackageAndHasMainField(s,text){\n\
+             \    if(s.indexOf('/') >= 0){\n\
+             \        return \n\
+             \    } else {\n\
+             \        var mainField; \n\
+             \        try {\n\
+             \            mainField = JSON.parse(text).main\n\
+             \        }catch(_){\n\
+             \        }\n\
+             \        if(mainField === undefined){\n\
+             \            return \n\
+             \        } else {\n\
+             \            return mainField\n\
+             \        }\n\
+             \    }\n\
+              }\n\
+              function getPackageJsPromise(id, parent) {\n\
+             \    var idNodeModulesPrefix = './node_modules/' + id\n\
+             \    var link = getPathWithJsSuffix(idNodeModulesPrefix, parent)\n\
+             \    if (parent.endsWith('node_modules/')) {\n\
+             \        // impossible that `node_modules/node_modules/xx/x\n\
+             \        // return falsePromise\n\
+             \        return getParentModulePromise(id, parent)\n\
+             \    }\n\
+              \n\
+             \    var packageJson = BsGetPath(`./node_modules/${getPackageName(id)}/package.json`, parent)\n\
+              \n\
+             \    return cachedFetch(packageJson)\n\
+             \        .then(\n\
+             \            function (text) {\n\
+             \                if (text !== false) {\n\
+             \                    var mainField; \n\
+             \                    if( (mainField = isJustAPackageAndHasMainField(id, text)) !== undefined){\n\
+             \                        var packageLink = BsGetPath(addSuffixJsIfNot(`./node_modules/${id}/${mainField}`), parent)\n\
+             \                        return cachedFetch(packageLink)\n\
+             \                            .then(function(text){\n\
+             \                                if(text !== false){\n\
+             \                                    return {text, link : packageLink}\n\
+             \                                } else {\n\
+             \                                    return getParentModulePromise(id,parent)\n\
+             \                                }\n\
+             \                            })\n\
+              \n\
+             \                    } else {\n\
+             \                    // package indeed exist\n\
+             \                    return cachedFetch(link).then(function (text) {\n\
+             \                        if (text !== false) {\n\
+             \                            return { text, link }\n\
+             \                        } else if (!id.endsWith('.js')) {\n\
+             \                            var linkNew = getPathWithJsSuffix(idNodeModulesPrefix + `/index.js`, parent)\n\
+             \                            return cachedFetch(linkNew)\n\
+             \                                .then(function (text) {\n\
+             \                                    if (text !== false) {\n\
+             \                                        return { text, link: linkNew }\n\
+             \                                    } else {\n\
+             \                                        return getParentModulePromise(id, parent)\n\
+             \                                    }\n\
+             \                                })\n\
+              \n\
+             \                        } else {\n\
+             \                            return getParentModulePromise(id, parent)\n\
+             \                        }\n\
+             \                    })\n\
+             \                }\n\
+             \                }\n\
+             \                else {\n\
+             \                    return getParentModulePromise(id, parent)\n\
+             \                }\n\
+             \            }\n\
+             \        )\n\
+              \n\
+              \n\
+              }\n\
+              \n\
+              /**\n\
+             \ * \n\
+             \ * @param {string} id \n\
+             \ * @param {string} parent \n\
+             \ * can return Promise <boolean | object>, false means\n\
+             \ * this module can not be resolved\n\
+             \ */\n\
+              function getModulePromise(id, parent) {\n\
+             \    var done = getIdLocation(id, parent)\n\
+             \    if (!done) {\n\
+             \        return visitIdLocation(id, parent, function () {\n\
+             \            if (id[0] != '.') { // package path\n\
+             \                return getPackageJsPromise(id, parent)\n\
+             \            } else { // relative path, one shot resolve            \n\
+             \                let link = getPathWithJsSuffix(id, parent)\n\
+             \                return cachedFetch(link).then(\n\
+             \                    function (text) {\n\
+             \                        if (text !== false) {\n\
+             \                            return { text, link }\n\
+             \                        } else if (!id.endsWith('.js')){                            \n\
+             \                            // could be \"./dir\"\n\
+             \                            var newLink = getPathWithJsSuffix( id +\"/index.js\",parent)\n\
+             \                            return cachedFetch(newLink)\n\
+             \                            .then(function(text){\n\
+             \                                if(text !== false){\n\
+             \                                    return{text, link : newLink }\n\
+             \                                } else {\n\
+             \                                    throw new Error(` ${id} : ${parent} could not be resolved`)\n\
+             \                                }\n\
+             \                            })\n\
+             \                        }\n\
+             \                        else {\n\
+             \                            throw new Error(` ${id} : ${parent} could not be resolved`)\n\
+             \                        }\n\
+             \                    }\n\
+             \                )\n\
+             \            }\n\
+             \        })\n\
+             \    } else {\n\
+             \        return done\n\
+             \    }\n\
+              }\n\
+              \n\
+              \n\
+              /**\n\
+             \ * \n\
+             \ * @param {string} id \n\
+             \ * @param {string} parent \n\
+             \ * @returns {Promise<any>}\n\
+             \ */\n\
+              function getAll(id, parent) {\n\
+             \    return getModulePromise(id, parent)\n\
+             \        .then(function (obj) {\n\
+             \            if (obj) {\n\
+             \                var deps = getDeps(obj.text)\n\
+             \                return Promise.all(deps.map(x => getAll(x, obj.link)))\n\
+             \            } else {\n\
+             \                throw new Error(`${id}@${parent} was not resolved successfully`)\n\
+             \            }\n\
+             \        })\n\
+              };\n\
+              \n\
+              /**\n\
+             \ * \n\
+             \ * @param {string} text \n\
+             \ * @param {string} parent \n\
+             \ * @returns {Promise<any>}\n\
+             \ */\n\
+              function getAllFromText(text, parent) {\n\
+             \    var deps = getDeps(text)\n\
+             \    return Promise.all(deps.map(x => getAll(x, parent)))\n\
+              }\n\
+              \n\
+              var evaluatedModules = new Map()\n\
+              \n\
+              function loadSync(id, parent) {\n\
+             \    var baseOrModule = getIdLocationSync(id, parent)\n\
+             \    if (baseOrModule && baseOrModule.link !== undefined) {\n\
+             \        if(evaluatedModules.has(baseOrModule.link)){\n\
+             \            return evaluatedModules.get(baseOrModule.link).exports\n\
+             \        }\n\
+             \        if (!baseOrModule.exports) {\n\
+             \            baseOrModule.exports = {}\n\
+             \            globalEval(`(function(require,exports,module){${baseOrModule.text}\\n})//# sourceURL=${baseOrModule.link}`)(\n\
+             \                function require(id) {\n\
+             \                    return loadSync(id, baseOrModule.link);\n\
+             \                }, // require\n\
+             \                baseOrModule.exports = {}, // exports\n\
+             \                baseOrModule // module\n\
+             \            );\n\
+             \        }\n\
+             \        if(!evaluatedModules.has(baseOrModule.link)){\n\
+             \            evaluatedModules.set(baseOrModule.link,baseOrModule)\n\
+             \        }\n\
+             \        return baseOrModule.exports\n\
+             \    } else {\n\
+             \        throw new Error(`${id} : ${parent} could not be resolved`)\n\
+             \    }\n\
+              }\n\
+              \n\
+              \n\
+              function genEvalName() {\n\
+             \    return \"eval-\" + ((\"\" + Math.random()).substr(2, 5))\n\
+              }\n\
+              /**\n\
+             \ * \n\
+             \ * @param {string} text \n\
+             \ * @param {string} link\n\
+             \ * In this case [text] evaluated result will not be cached\n\
+             \ */\n\
+              function loadTextSync(text, link) {\n\
+             \    var baseOrModule = { exports: {}, text, link }\n\
+             \    globalEval(`(function(require,exports,module){${baseOrModule.text}\\n})//# sourceURL=${baseOrModule.link}/${genEvalName()}.js`)(\n\
+             \        function require(id) {\n\
+             \            return loadSync(id, baseOrModule.link);\n\
+             \        }, // require\n\
+             \        baseOrModule.exports, // exports\n\
+             \        baseOrModule // module\n\
+             \    );\n\
+             \    return baseOrModule.exports\n\
+              }\n\
+              \n\
+              /**\n\
+             \ * \n\
+             \ * @param {string} text \n\
+             \ */\n\
+              function BSloadText(text) {\n\
+             \    console.time(\"Loading\")\n\
+             \    var parent = BsGetPath(\".\", document.baseURI)\n\
+             \    return getAllFromText(text, parent).then(function () {\n\
+             \        var result = loadTextSync(text, parent)\n\
+             \        console.timeEnd(\"Loading\")\n\
+             \        return result\n\
+             \    })\n\
+              };\n\
+              \n\
+              \n\
+              function load(id, parent) {\n\
+             \    return getAll(id, parent).then(function () {\n\
+             \        return loadSync(id, parent)\n\
+             \    })\n\
+              \n\
+              };\n\
+              \n\
+              \n\
+              export function BSload(id) {\n\
+             \    var parent = BsGetPath(\".\", document.baseURI)\n\
+             \    return load(id, parent)\n\
+              }\n\
+              \n\
+              export var BSLoader = {\n\
+             \    loadText: BSloadText,\n\
+             \    load: BSload,\n\
+             \    SyncedIDLocations: SyncedIDLocations\n\
+              };\n\
+              \n\
+              window.BSLoader = BSLoader;\n\
+              \n\
+              var main = document.querySelector('script[data-main]')\n\
+              if (main) {\n\
+             \    BSload(main.dataset.main)\n\
+              }\n\
+             "
+            );
+        File("package.json",
+             "{\n\
+             \  \"name\": \"${bsb:name}\",\n\
+             \  \"version\": \"${bsb:proj-version}\",\n\
+             \  \"scripts\": {\n\
+             \    \"clean\": \"bsb -clean-world\",\n\
+             \    \"build\": \"bsb -make-world\",\n\
+             \    \"watch\": \"bsb -make-world -w -ws _\"\n\
+             \  },\n\
+             \  \"keywords\": [\n\
+             \    \"ReScript\"\n\
+             \  ],\n\
+             \  \"author\": \"\",\n\
+             \  \"license\": \"MIT\",\n\
+             \  \"devDependencies\": {\n\
+             \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
+             \  },\n\
+             \  \"dependencies\": {\n\
+             \    \"bucklescript-tea\": \"^0.7.4\"\n\
+             \  }\n\
+              }\n\
+             "
+            );
+        Dir("src",[
+            File("demo.ml",
+                 "(* This line opens the Tea.App modules into the current scope for Program access functions and types *)\n\
+                  open Tea.App\n\
+                  \n\
+                  (* This opens the Elm-style virtual-dom functions and types into the current scope *)\n\
+                  open Tea.Html\n\
+                  \n\
+                  (* Let's create a new type here to be our main message type that is passed around *)\n\
+                  type msg =\n\
+                 \  | Increment  (* This will be our message to increment the counter *)\n\
+                 \  | Decrement  (* This will be our message to decrement the counter *)\n\
+                 \  | Reset      (* This will be our message to reset the counter to 0 *)\n\
+                 \  | Set of int (* This will be our message to set the counter to a specific value *)\n\
+                 \  [@@bs.deriving {accessors}] (* This is a nice quality-of-life addon from Bucklescript, it will generate function names for each constructor name, optional, but nice to cut down on code, this is unused in this example but good to have regardless *)\n\
+                  \n\
+                  (* This is optional for such a simple example, but it is good to have an `init` function to define your initial model default values, the model for Counter is just an integer *)\n\
+                  let init () = 4\n\
+                  \n\
+                  (* This is the central message handler, it takes the model as the first argument *)\n\
+                  let update model = function (* These should be simple enough to be self-explanatory, mutate the model based on the message, easy to read and follow *)\n\
+                 \  | Increment -> model + 1\n\
+                 \  | Decrement -> model - 1\n\
+                 \  | Reset -> 0\n\
+                 \  | Set v -> v\n\
+                  \n\
+                  (* This is just a helper function for the view, a simple function that returns a button based on some argument *)\n\
+                  let view_button title msg =\n\
+                 \  button\n\
+                 \    [ onClick msg\n\
+                 \    ]\n\
+                 \    [ text title\n\
+                 \    ]\n\
+                  \n\
+                  (* This is the main callback to generate the virtual-dom.\n\
+                 \  This returns a virtual-dom node that becomes the view, only changes from call-to-call are set on the real DOM for efficiency, this is also only called once per frame even with many messages sent in within that frame, otherwise does nothing *)\n\
+                  let view model =\n\
+                 \  div\n\
+                 \    []\n\
+                 \    [ span\n\
+                 \        [ style \"text-weight\" \"bold\" ]\n\
+                 \        [ text (string_of_int model) ]\n\
+                 \    ; br []\n\
+                 \    ; view_button \"Increment\" Increment\n\
+                 \    ; br []\n\
+                 \    ; view_button \"Decrement\" Decrement\n\
+                 \    ; br []\n\
+                 \    ; view_button \"Set to 2\" (Set 42)\n\
+                 \    ; br []\n\
+                 \    ; if model <> 0 then view_button \"Reset\" Reset else noNode\n\
+                 \    ]\n\
+                  \n\
+                  (* This is the main function, it can be named anything you want but `main` is traditional.\n\
+                 \  The Program returned here has a set of callbacks that can easily be called from\n\
+                 \  Bucklescript or from javascript for running this main attached to an element,\n\
+                 \  or even to pass a message into the event loop.  You can even expose the\n\
+                 \  constructors to the messages to javascript via the above [@@bs.deriving {accessors}]\n\
+                 \  attribute on the `msg` type or manually, that way even javascript can use it safely. *)\n\
+                  let main =\n\
+                 \  beginnerProgram { (* The beginnerProgram just takes a set model state and the update and view functions *)\n\
+                 \    model = init (); (* Since model is a set value here, we call our init function to generate that value *)\n\
+                 \    update;\n\
+                 \    view;\n\
+                 \  }"
+                );
+            File("main.ml",
+                 "\n\
+                  \n\
+                  \n\
+                  Js.Global.setTimeout\n\
+                 \  (fun _ -> \n\
+                 \  Demo.main (Web.Document.getElementById \"my-element\") () \n\
+                 \  |. ignore\n\
+                 \  )  \n\
+                  0"
+                )        
+          ]);
+        File("watcher.js",
+             "\n\
+              \n\
+              var wsReloader;\n\
+              var LAST_SUCCESS_BUILD_STAMP = (localStorage.getItem('LAST_SUCCESS_BUILD_STAMP') || 0)\n\
+              var WS_PORT = 9999; // configurable\n\
+              \n\
+              function setUpWebScoket() {\n\
+             \    if (wsReloader == null || wsReloader.readyState !== 1) {\n\
+             \        try {\n\
+             \            wsReloader = new WebSocket(`ws://${window.location.hostname}:${WS_PORT}`)\n\
+             \            wsReloader.onmessage = (msg) => {\n\
+             \                var newData = JSON.parse(msg.data).LAST_SUCCESS_BUILD_STAMP\n\
+             \                if (newData > LAST_SUCCESS_BUILD_STAMP) {\n\
+             \                    LAST_SUCCESS_BUILD_STAMP = newData\n\
+             \                    localStorage.setItem('LAST_SUCCESS_BUILD_STAMP', LAST_SUCCESS_BUILD_STAMP)\n\
+             \                    location.reload(true)\n\
+             \                }\n\
+              \n\
+             \            }\n\
+             \        } catch (exn) {\n\
+             \            console.error(\"web socket failed connect\")\n\
+             \        }\n\
+             \    }\n\
+              };\n\
+              \n\
+              setUpWebScoket();\n\
+              setInterval(setUpWebScoket, 2000);"
+            )        
+      ])
+  ])
 end
 module Bsb_theme_init : sig 
 #1 "bsb_theme_init.mli"
@@ -16260,7 +16259,7 @@ let mkdir_or_not_if_exists dir =
   | Non_directory_file 
     -> 
     Format.fprintf Format.err_formatter 
-     "%s expected to be added as dir but exist file is not a dir" dir
+      "%s expected to be added as dir but exist file is not a dir" dir
   | Non_exists -> Unix.mkdir dir 0o777
 
 let rec process_theme_aux env cwd (x : Bsb_templates.node) =
@@ -16443,16 +16442,16 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
   let queue = 
     Bsb_build_util.walk_all_deps  cwd ~pinned_dependencies in 
   (* let oc = open_out_bin ".deps.log" in 
-  queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) -> 
-    match top with 
-    | Expect_none -> ()
-    | Expect_name s ->       
+     queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) -> 
+     match top with 
+     | Expect_none -> ()
+     | Expect_name s ->       
       output_string oc s ;
       output_string oc " : ";
       output_string oc proj_dir;
       output_string oc "\n"
-   );
-  close_out oc ;   *)
+     );
+     close_out oc ;   *)
   queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) ->
       match top with 
       | Expect_none -> ()
@@ -16460,8 +16459,8 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
         begin 
           let is_pinned =  Set_string.mem pinned_dependencies s in 
           (if is_pinned then  
-            print_endline ("Dependency pinned on " ^ s )
-          else print_endline ("Dependency on " ^ s ));
+             print_endline ("Dependency pinned on " ^ s )
+           else print_endline ("Dependency on " ^ s ));
           let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
           Bsb_build_util.mkp lib_bs_dir;
           let _config : _ option = 
@@ -16500,7 +16499,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
 
         end
     );
-    print_endline "Dependency Finished"
+  print_endline "Dependency Finished"
 
 end
 module Bsc_args : sig 
@@ -16592,38 +16591,38 @@ end = struct
 
 
 
- 
- type anon_fun = rev_args:string list -> unit
- 
- type string_action = 
-   | String_call of (string -> unit)  
-   | String_set of string ref
-   | String_optional_set of string option ref 
-   | String_list_add of string list ref 
 
- type unit_action = 
-    | Unit_call of (unit -> unit) 
-    | Unit_lazy of unit lazy_t
-    | Unit_set of bool ref
-    | Unit_clear of bool ref 
+type anon_fun = rev_args:string list -> unit
 
- type spec =
-   | Unit_dummy  
-   | Unit of unit_action
-   | String of string_action 
- 
- 
- exception Bad = Arg.Bad
- 
- let bad_arg s = raise_notrace (Bad s)
+type string_action = 
+  | String_call of (string -> unit)  
+  | String_set of string ref
+  | String_optional_set of string option ref 
+  | String_list_add of string list ref 
 
- type error =
-   | Unknown of string
-   | Missing of string
- 
+type unit_action = 
+  | Unit_call of (unit -> unit) 
+  | Unit_lazy of unit lazy_t
+  | Unit_set of bool ref
+  | Unit_clear of bool ref 
+
+type spec =
+  | Unit_dummy  
+  | Unit of unit_action
+  | String of string_action 
+
+
+exception Bad = Arg.Bad
+
+let bad_arg s = raise_notrace (Bad s)
+
+type error =
+  | Unknown of string
+  | Missing of string
+
 type t = spec Ext_spec.t 
 
- 
+
 let (+>) = Ext_buffer.add_string
 
 let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =

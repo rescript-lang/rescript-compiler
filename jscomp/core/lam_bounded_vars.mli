@@ -30,5 +30,5 @@ val rewrite : Lam.t Hash_ident.t -> Lam.t -> Lam.t
 
 (** refresh lambda to replace all bounded vars for new ones *)
 (* val refresh : 
-  Lam.t -> 
-  Lam.t  *)
+   Lam.t -> 
+   Lam.t  *)

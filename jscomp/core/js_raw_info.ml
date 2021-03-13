@@ -27,27 +27,27 @@ type exp =
   | Js_function of {arity : int ; arrow : bool}     
   | Js_literal of {comment : string option}
   (* A special handling of 
-    [%raw "/*lint*/ 0"]
+     [%raw "/*lint*/ 0"]
   *)
   (* Flow ast module 
-  {[
-  and value =
-    | String of string
-    | Boolean of bool
-    | Null
-    | Number of float
-    | BigInt of float
-    | RegExp of RegExp.t
-  ]}
+     {[
+       and value =
+           | String of string
+         | Boolean of bool
+         | Null
+         | Number of float
+         | BigInt of float
+         | RegExp of RegExp.t
+     ]}
   *)
   | Js_exp_unknown
 
 
-  type raw_kind = 
-    | Raw_re 
-    | Raw_exp
-    | Raw_program
-    
+type raw_kind = 
+  | Raw_re 
+  | Raw_exp
+  | Raw_program
+
 type stmt = 
   | Js_stmt_comment
   | Js_stmt_unknown

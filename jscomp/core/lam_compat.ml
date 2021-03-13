@@ -96,11 +96,11 @@ let cmp_int (cmp : comparison) (a : int) b : bool =
 
 
 type compile_time_constant =
-    | Big_endian  
-    | Ostype_unix
-    | Ostype_win32    
-    | Ostype
-    | Backend_type
+  | Big_endian  
+  | Ostype_unix
+  | Ostype_win32    
+  | Ostype
+  | Backend_type
 
 (** relies on the fact that [compile_time_constant] is enum type *)
 let eq_compile_time_constant ( p : compile_time_constant) (p1 : compile_time_constant) = 
@@ -114,7 +114,7 @@ type let_kind = Lambda.let_kind
 
 
 type meth_kind = Lambda.meth_kind
-  = Self
+= Self
 | Public of string option
 | Cached
 
@@ -131,7 +131,7 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_variant
   | Fld_cons
   | Fld_array 
-  
+
 let str_of_field_info (x : field_dbg_info) : string option =  
   match x with 
   | Fld_na  s -> if s = "" then None else Some s
@@ -142,13 +142,13 @@ let str_of_field_info (x : field_dbg_info) : string option =
   | Fld_poly_var_tag 
   | Fld_poly_var_content
   | Fld_tuple 
-     -> None   
+    -> None   
   | Fld_record {name ; _} 
   | Fld_module {name ; _}
   | Fld_record_inline {name}
   | Fld_record_extension {name}
-     -> 
-      Some name
+    -> 
+    Some name
 
 type set_field_dbg_info = Lambda.set_field_dbg_info = 
   | Fld_set_na

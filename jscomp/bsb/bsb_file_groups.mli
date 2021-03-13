@@ -23,11 +23,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- type public = 
+type public = 
   | Export_none
   | Export_all 
   | Export_set of Set_string.t 
-  
+
 
 type build_generator = 
   { input : string list ;

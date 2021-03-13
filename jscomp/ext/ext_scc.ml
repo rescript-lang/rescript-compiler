@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
- 
+
 type node = Vec_int.t 
 
 (** 
@@ -33,7 +33,7 @@ type node = Vec_int.t
    4. Easy to print output
    Cons:
    1. post processing input data  
- *)
+*)
 let min_int (x : int) y = if x < y then x else y  
 
 
@@ -43,11 +43,11 @@ let graph  e =
 
   let output = Int_vec_vec.empty () in (* collect output *)
   let node_numes = Array.length e in
-  
+
   let on_stack_array = Array.make node_numes false in
   let index_array = Array.make node_numes (-1) in 
   let lowlink_array = Array.make node_numes (-1) in
-  
+
   let rec scc v_data  =
     let new_index = !index + 1 in 
     index := new_index ;

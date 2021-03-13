@@ -25,12 +25,12 @@
 
 type t = private
   | Arity_info of int list  * bool
-    (**
-      when the first argument is true, it is for sure 
-      the last one means it can take any params later, 
-      for an exception: it is (Arity_info([], true))
-       approximation sound but not complete       
-   *)
+  (**
+     when the first argument is true, it is for sure 
+     the last one means it can take any params later, 
+     for an exception: it is (Arity_info([], true))
+     approximation sound but not complete       
+  *)
   | Arity_na 
 
 val equal : t -> t -> bool  

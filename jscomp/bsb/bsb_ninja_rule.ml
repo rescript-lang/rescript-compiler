@@ -35,15 +35,15 @@ type t = {
 
 let get_name (x : t) oc = x.name oc
 let print_rule (oc : out_channel) 
-  ?description 
-  ?(restat : unit option)  
-  ?(dyndep : unit option)
-  ~command   
-  name  =
+    ?description 
+    ?(restat : unit option)  
+    ?(dyndep : unit option)
+    ~command   
+    name  =
   output_string oc "rule "; output_string oc name ; output_string oc "\n";
   output_string oc "  command = "; output_string oc command; output_string oc "\n";
   (if dyndep <> None then
-      output_string oc "  dyndep = 1\n");
+     output_string oc "  dyndep = 1\n");
   (if restat <>  None then   
      output_string oc "  restat = 1\n");
   begin match description with 
@@ -52,7 +52,7 @@ let print_rule (oc : out_channel)
       output_string oc "  description = " ; output_string oc description;
       output_string oc "\n"
   end 
-  
+
 
 
 
@@ -104,7 +104,7 @@ type builtin = {
   mij_dev : t ;
   mi : t;
   mi_dev : t ;
-  
+
   build_package : t ;
   customs : t Map_string.t
 }
@@ -113,24 +113,24 @@ type builtin = {
 ;;
 
 let make_custom_rules 
-  ~(gentype_config : Bsb_config_types.gentype_config option)        
-  ~(has_postbuild : string option)
-  ~(pp_file : string option)
-  ~(has_builtin : bool)
-  ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
-  ~(digest : string)
-  ~(package_specs: Bsb_package_specs.t)
-  ~(namespace : string option)
-  ~package_name
-  ~warnings  
-  ~(ppx_files : Bsb_config_types.ppx list)
-  ~bsc_flags
-  ~(dpkg_incls : string)
-  ~(lib_incls : string)
-  ~(dev_incls : string)
-  ~bs_dependencies
-  ~bs_dev_dependencies
-  (custom_rules : command Map_string.t) : 
+    ~(gentype_config : Bsb_config_types.gentype_config option)        
+    ~(has_postbuild : string option)
+    ~(pp_file : string option)
+    ~(has_builtin : bool)
+    ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
+    ~(digest : string)
+    ~(package_specs: Bsb_package_specs.t)
+    ~(namespace : string option)
+    ~package_name
+    ~warnings  
+    ~(ppx_files : Bsb_config_types.ppx list)
+    ~bsc_flags
+    ~(dpkg_incls : string)
+    ~(lib_incls : string)
+    ~(dev_incls : string)
+    ~bs_dependencies
+    ~bs_dev_dependencies
+    (custom_rules : command Map_string.t) : 
   builtin = 
   let bs_dep = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep in
   let bsc = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc in 
@@ -139,7 +139,7 @@ let make_custom_rules
   let buf = Ext_buffer.create 100 in     
   let ns_flag = 
     match namespace with None -> ""    
-    | Some n -> " -bs-ns " ^ n in 
+                       | Some n -> " -bs-ns " ^ n in 
   let mk_ml_cmj_cmd 
       ~(read_cmi : [`yes | `is_cmi | `no])
       ~is_dev 
@@ -160,7 +160,7 @@ let make_custom_rules
     Ext_buffer.add_char_string buf ' ' bsc_flags;
     Ext_buffer.add_char_string buf ' ' warnings; 
     (* we need "-w a" in the end position to take effect
-      in non-toplevel mode
+       in non-toplevel mode
     *)
     begin match gentype_config with 
       | None -> ()
@@ -175,18 +175,18 @@ let make_custom_rules
         (Bsb_package_specs.package_flag_of_package_specs package_specs ~dirname:"$in_d")
     end;
     begin match bs_dependencies, bs_dev_dependencies with 
-    | [], [] -> ()
-    | _, _  -> 
-      Ext_buffer.add_string buf " -bs-v";    
-      Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_finger;
+      | [], [] -> ()
+      | _, _  -> 
+        Ext_buffer.add_string buf " -bs-v";    
+        Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_finger;
     end;
     Ext_buffer.add_string buf " $i";
     begin match postbuild with 
-    | None -> ()
-    | Some cmd -> 
-      Ext_buffer.add_string buf " && ";
-      Ext_buffer.add_string buf cmd ; 
-      Ext_buffer.add_string buf " $out_last"
+      | None -> ()
+      | Some cmd -> 
+        Ext_buffer.add_string buf " && ";
+        Ext_buffer.add_string buf cmd ; 
+        Ext_buffer.add_string buf " $out_last"
     end ;
     Ext_buffer.contents buf
   in   
@@ -218,7 +218,7 @@ let make_custom_rules
      | _, Some Jsx_v3 
        -> Ext_buffer.add_string buf " -bs-jsx 3"
     );
-    
+
     Ext_buffer.add_char_string buf ' ' bsc_flags;
     Ext_buffer.add_string buf " -absname -bs-ast -o $out $i";   
     Ext_buffer.contents buf
@@ -231,7 +231,7 @@ let make_custom_rules
     define
       ~command:(mk_ast  ~has_reason_react_jsx:true)
       "astj" in 
- 
+
   let copy_resources =    
     define 
       ~command:(
@@ -245,13 +245,13 @@ let make_custom_rules
     define
       ~restat:()
       ~command:
-      (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
+        (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
       "deps" in 
   let build_bin_deps_dev =
     define
       ~restat:()
       ~command:
-      (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $in")
+        (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $in")
       "deps_dev" in     
   let aux ~name ~read_cmi  ~postbuild =
     define
@@ -278,7 +278,7 @@ let make_custom_rules
       ~name:"mij" ~postbuild:has_postbuild in  
   let mi, mi_dev =
     aux 
-       ~read_cmi:`is_cmi  ~postbuild:None
+      ~read_cmi:`is_cmi  ~postbuild:None
       ~name:"mi" in 
   let build_package = 
     define
@@ -300,10 +300,10 @@ let make_custom_rules
     mj_dev  ;
     mij  ;
     mi  ;
-    
+
     mij_dev;
     mi_dev ;
-    
+
     build_package ;
     customs =
       Map_string.mapi custom_rules begin fun name command -> 

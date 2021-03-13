@@ -37,8 +37,8 @@
 let single_na = Js_cmj_format.single_na
 
 let values_of_export 
-  (meta : Lam_stats.t) 
-  (export_map  : Lam.t Map_ident.t)
+    (meta : Lam_stats.t) 
+    (export_map  : Lam.t Map_ident.t)
   : Js_cmj_format.cmj_value Map_string.t 
   = 
   Ext_list.fold_left meta.exports  Map_string.empty    
@@ -47,7 +47,7 @@ let values_of_export
          match Hash_ident.find_opt meta.ident_tbl x with 
          | Some (FunctionId {arity ; _}) -> Single arity 
          | Some (ImmutableBlock(elems)) ->  
-          (* FIXME: field name for dumping*)
+           (* FIXME: field name for dumping*)
            Submodule(Ext_array.map elems (fun x -> 
                match x with 
                | NA -> Lam_arity.na
@@ -65,12 +65,12 @@ let values_of_export
        in
        let persistent_closed_lambda = 
          let optlam = Map_ident.find_opt export_map x in
-          match optlam with 
+         match optlam with 
          | Some Lconst (Const_js_null | Const_js_undefined | Const_js_true | Const_js_false ) 
          | None  -> optlam
          | Some lambda  ->
-         if not !Js_config.cross_module_inline then None
-         else
+           if not !Js_config.cross_module_inline then None
+           else
            if Lam_analysis.safe_to_inline lambda
            (* when inlning a non function, we have to be very careful,
               only truly immutable values can be inlined
@@ -78,12 +78,12 @@ let values_of_export
            then
              match lambda with 
              | Lfunction {attr = {inline = Always_inline}} 
-              (* FIXME: is_closed lambda is too restrictive 
+             (* FIXME: is_closed lambda is too restrictive 
                 It precludes ues cases
                 - inline forEach but not forEachU
-              *)
+             *)
              | Lfunction {attr = {is_a_functor = Functor_yes}}
-              ->
+               ->
                if Lam_closure.is_closed lambda (* TODO: seriealize more*)
                then optlam
                else None
@@ -105,10 +105,10 @@ let values_of_export
                else None
            else
              None
-         in 
+       in 
        match arity, persistent_closed_lambda with 
        | Single Arity_na, 
-        (None | Some (Lconst Const_module_alias)) -> acc
+         (None | Some (Lconst Const_module_alias)) -> acc
        | Submodule [||], None -> acc          
        | _ ->  
          let cmj_value : Js_cmj_format.cmj_value =  
@@ -117,11 +117,11 @@ let values_of_export
     )
 
 (* ATTENTION: all runtime modules, if it is not hard required, 
-  it should be okay to not reference it 
+   it should be okay to not reference it 
 *)
 let get_dependent_module_effect 
-  (maybe_pure : string option) 
-  (external_ids : Lam_module_ident.t list) = 
+    (maybe_pure : string option) 
+    (external_ids : Lam_module_ident.t list) = 
   if maybe_pure = None then
     let non_pure_module =  
       Ext_list.find_first_not external_ids        
@@ -151,14 +151,14 @@ let export_to_cmj
     case
   : Js_cmj_format.t = 
   let values =  values_of_export meta export_map in
-  
+
   Js_cmj_format.make
     ~values
     ~effect 
     ~package_spec: (Js_packages_state.get_packages_info ())
     ~case
-    (* FIXME: make sure [-o] would not change its case 
-      add test for ns/non-ns
-    *)
-  
+(* FIXME: make sure [-o] would not change its case 
+   add test for ns/non-ns
+*)
+
 

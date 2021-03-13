@@ -32,11 +32,11 @@
 (** ReScript entry point in the OCaml compiler *) 
 
 (** Compile and register the hook of function to compile  a lambda to JS IR 
- *)
+*)
 
 (** For toplevel, [filename] is [""] which is the same as
     {!Env.get_unit_name ()}
- *)
+*)
 val compile :  
   string -> 
   Lambda.lambda -> 

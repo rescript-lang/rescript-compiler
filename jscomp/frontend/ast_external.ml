@@ -55,7 +55,7 @@ let handleExternalInSig
             pval_prim = if no_inline_cross_module then [] else pval_prim ;
             pval_attributes
            }}
-  
+
 let handleExternalInStru
     (self : Bs_ast_mapper.mapper)
     (prim : Parsetree.value_description)

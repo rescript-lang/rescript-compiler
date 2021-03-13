@@ -34,7 +34,7 @@ type t = J.statement
 let return_stmt ?comment e : t = 
   {statement_desc = Return  e; comment}
 
-  
+
 let empty_stmt  : t = 
   { statement_desc = Block []; comment = None}
 (* let empty_block : J.block = [] *)
@@ -72,21 +72,21 @@ let declare_variable ?comment  ?ident_info  ~kind (ident:Ident.t)  : t=
    comment}
 
 let define_variable ?comment  ?ident_info 
-  ~kind (v:Ident.t) (exp : J.expression) : t=
+    ~kind (v:Ident.t) (exp : J.expression) : t=
   if exp.expression_desc = Undefined then declare_variable ?comment ?ident_info ~kind v
   else 
-  let property : J.property =  kind in
-  let ident_info  : J.ident_info  = 
-    match ident_info with
-    | None ->  {used_stats = NA}
-    | Some x -> x in
-  {statement_desc = 
-     Variable { ident = v; value =  Some exp; property ; 
-                ident_info ;};
-   comment}
+    let property : J.property =  kind in
+    let ident_info  : J.ident_info  = 
+      match ident_info with
+      | None ->  {used_stats = NA}
+      | Some x -> x in
+    {statement_desc = 
+       Variable { ident = v; value =  Some exp; property ; 
+                  ident_info ;};
+     comment}
 
 (* let alias_variable ?comment  ~exp (v:Ident.t)  : t=
-  {statement_desc = 
+   {statement_desc = 
      Variable {
        ident = v; value = Some exp; property = Alias;
        ident_info = {used_stats = NA }   };
@@ -133,19 +133,19 @@ let int_switch
     | None ->  { statement_desc = J.Int_switch (e,clauses, default); comment}    
 
 let string_switch 
-  ?(comment:string option) 
-  ?(declaration : (J.property * Ident.t) option) 
-  ?(default : J.block option)
-  (e : J.expression)  
-  (clauses : (string * J.case_clause) list): t= 
+    ?(comment:string option) 
+    ?(declaration : (J.property * Ident.t) option) 
+    ?(default : J.block option)
+    (e : J.expression)  
+    (clauses : (string * J.case_clause) list): t= 
   match e.expression_desc with 
   | Str (_,s) -> 
     let continuation = 
       match Ext_list.find_opt clauses (fun  (switch_case, x) ->
-                 if switch_case = s then 
-                   Some x.switch_body
-                 else None  
-              ) with 
+          if switch_case = s then 
+            Some x.switch_body
+          else None  
+        ) with 
       | Some case ->  case
       | None -> 
         match default with 
@@ -173,8 +173,8 @@ let rec block_last_is_return_throw_or_continue (x : J.block) =
   | [] -> false 
   | [x ] ->
     (match x.statement_desc with 
-    |  Return _ | Throw _ | Continue _ -> 
-     true 
+     |  Return _ | Throw _ | Continue _ -> 
+       true 
      | _ -> false)
   | _ :: rest -> block_last_is_return_throw_or_continue rest 
 
@@ -199,22 +199,22 @@ let rec block_last_is_return_throw_or_continue (x : J.block) =
            TODO: check how we compile [Lifthenelse]
     The declaration argument is introduced to merge assignment in both branches           
 
-  Note we can transfer code as below:
-  {[
-    if (x){
-      return /throw e;
-    } else {
-      blabla
-    }
-  ]}
-  into 
-  {[
-    if (x){
-      return /throw e;
-    } 
-    blabla    
-  ]}
-  Not clear the benefit
+   Note we can transfer code as below:
+   {[
+     if (x){
+         return /throw e;
+       } else {
+     blabla
+   }
+   ]}
+   into 
+   {[
+     if (x){
+         return /throw e;
+       } 
+         blabla    
+   ]}
+   Not clear the benefit
 *)
 let if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t = 
   let declared = ref false in
@@ -230,7 +230,7 @@ let if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t
       match ifso, ifnot with 
       |  [], [] -> exp e 
       |  [], _ ->
-         aux ?comment (E.not e) ifnot [] (*Make sure no infinite loop*)        
+        aux ?comment (E.not e) ifnot [] (*Make sure no infinite loop*)        
       | [ {statement_desc = Return ret_ifso; _}], 
         [ {statement_desc = Return ret_ifnot; _}]
         ->      
@@ -267,7 +267,7 @@ let if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t
         [ {statement_desc = Exp exp_ifnot; _}]
         ->
         exp (E.econd e exp_ifso exp_ifnot)
-              
+
       | [ {statement_desc = If (pred1, ifso1, ifnot1) }],
         _ when Js_analyzer.eq_block ifnot1 ifnot
         ->
@@ -298,7 +298,7 @@ let if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t
         { statement_desc =
             If (e, 
                 ifso,
-                  ifnot); 
+                ifnot); 
           comment } in
   let if_block = 
     aux ?comment e then_ (match else_ with None -> [] | Some v -> v)  in
@@ -357,11 +357,11 @@ let try_ ?comment   ?with_ ?finally body : t =
     actually, only loops can be labelled
 *)    
 (* let continue_stmt  ?comment   ?(label="") ()  : t = 
-  { 
+   { 
     statement_desc = J.Continue  label;
     comment;
-  } *)
-  
+   } *)
+
 let continue_ : t = {
   statement_desc = Continue "" ;
   comment = None
@@ -369,5 +369,5 @@ let continue_ : t = {
 
 let debugger_block : t list = 
   [{ statement_desc = Debugger ; 
-    comment = None 
-  }]
+     comment = None 
+   }]

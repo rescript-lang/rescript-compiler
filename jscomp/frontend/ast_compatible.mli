@@ -58,7 +58,7 @@ val const_exp_int_list_as_array:
 
 
 
-  
+
 val apply_simple:
   ?loc:Location.t -> 
   ?attrs:attrs -> 
@@ -91,9 +91,9 @@ val app3:
   expression 
 
 (** Note this function would slightly 
-  change its semantics depending on compiler versions
-  for newer version: it means always label
-  for older version: it could be optional (which we should avoid)
+    change its semantics depending on compiler versions
+    for newer version: it means always label
+    for older version: it could be optional (which we should avoid)
 *)  
 val apply_labels:  
   ?loc:Location.t -> 
@@ -113,12 +113,12 @@ val fun_ :
 (* val opt_label : string -> Asttypes.arg_label *)
 
 (* val label_fun :
-  ?loc:Location.t ->
-  ?attrs:attrs ->
-  label:Asttypes.arg_label ->
-  pattern ->
-  expression ->
-  expression *)
+   ?loc:Location.t ->
+   ?attrs:attrs ->
+   label:Asttypes.arg_label ->
+   pattern ->
+   expression ->
+   expression *)
 
 val arrow :
   ?loc:Location.t -> 
@@ -146,9 +146,9 @@ val opt_arrow:
 
 
 (* val nonrec_type_str:  
-  ?loc:loc -> 
-  type_declaration list -> 
-  structure_item *)
+   ?loc:loc -> 
+   type_declaration list -> 
+   structure_item *)
 
 val rec_type_str:  
   ?loc:loc -> 
@@ -157,9 +157,9 @@ val rec_type_str:
   structure_item
 
 (* val nonrec_type_sig:  
-  ?loc:loc -> 
-  type_declaration list -> 
-  signature_item  *)
+   ?loc:loc -> 
+   type_declaration list -> 
+   signature_item  *)
 
 val rec_type_sig:  
   ?loc:loc -> 

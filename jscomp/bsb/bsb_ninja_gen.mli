@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** 
-  generate ninja file based on [cwd] 
+   generate ninja file based on [cwd] 
 *)
 val output_ninja_and_namespace_map :
   per_proj_dir:string ->  

@@ -26,6 +26,6 @@
 
 
 (** Given an JS bundle name, generate a meaningful
-  bounded module name
+    bounded module name
 *)
 val js_id_name_of_hint_name : string -> string 

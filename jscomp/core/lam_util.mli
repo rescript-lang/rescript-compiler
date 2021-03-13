@@ -36,7 +36,7 @@ val kind_of_lambda_block : Lam.t list -> Lam_id_kind.t
     try to remove the indirection of [v.(i)] by inlining when [v]
     is a known block, 
     if not, it will call [cb ()].
-    
+
     Note due to different control flow, a constant block
     may result in out-of bound access, in that case, we should
     just ignore it. This does not mean our
@@ -65,8 +65,8 @@ val alias_ident_or_global :
 
 
 val refine_let : 
-    kind:Lam_compat.let_kind  ->
-      Ident.t -> Lam.t -> Lam.t -> Lam.t
+  kind:Lam_compat.let_kind  ->
+  Ident.t -> Lam.t -> Lam.t -> Lam.t
 
 
 

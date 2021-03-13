@@ -38,7 +38,7 @@ module Typ = Ast_helper.Typ
 
 
 let to_method_callback_type  loc 
-  (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
+    (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
     (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type)  =
   let first_arg = mapper.typ mapper first_arg in
@@ -64,7 +64,7 @@ let generate_method_type
     lbl 
     pat 
     e
-     : Parsetree.core_type =
+  : Parsetree.core_type =
   let arity = Ast_pat.arity_of_fun pat e in    
   let result = Typ.var ~loc method_name in   
   let self_type loc = Typ.var ~loc self_type_lit in 
@@ -80,7 +80,7 @@ let generate_method_type
   else
     let tyvars =
       Ext_list.mapi (lbl :: Ast_pat.labels_of_fun e) (fun i x -> 
-        x, Typ.var ~loc (method_name ^ string_of_int i)
+          x, Typ.var ~loc (method_name ^ string_of_int i)
         ) 
       (* Ext_list.init arity (fun i -> Typ.var ~loc (method_name ^ string_of_int i)) *)
     in
@@ -88,18 +88,18 @@ let generate_method_type
     | (label,x) :: rest ->
       let method_rest =
         Ext_list.fold_right rest result (fun (label,v) acc -> 
-          Typ.arrow ~loc  label v acc)
+            Typ.arrow ~loc  label v acc)
       in         
       (to_method_callback_type loc mapper  Nolabel self_type
          (Typ.arrow ~loc  label x method_rest))
     | _ -> assert false
 
-  
+
 
 let to_method_type loc 
-  (mapper : Bs_ast_mapper.mapper) 
-  (label : Asttypes.arg_label )
-  (first_arg : Parsetree.core_type) (typ : Parsetree.core_type) = 
+    (mapper : Bs_ast_mapper.mapper) 
+    (label : Asttypes.arg_label )
+    (first_arg : Parsetree.core_type) (typ : Parsetree.core_type) = 
   let first_arg = mapper.typ mapper first_arg in
   let typ = mapper.typ mapper typ in 
   let meth_type = Typ.arrow ~loc label first_arg typ in 
@@ -112,34 +112,34 @@ let to_method_type loc
        loc
       }) [typ]
   | Some n -> 
-      Typ.constr (
-        {txt = 
-          Ldot(Ast_literal.Lid.js_meth,"arity" ^ string_of_int n);
-          loc
+    Typ.constr (
+      {txt = 
+         Ldot(Ast_literal.Lid.js_meth,"arity" ^ string_of_int n);
+       loc
       }) [meth_type]
   | None -> assert false
 
 let generate_arg_type loc (mapper  : Bs_ast_mapper.mapper)
-  method_name label pat body  : Ast_core_type.t = 
-let arity = Ast_pat.arity_of_fun pat body in   
-let result = Typ.var ~loc method_name in   
-if arity = 0 then
-  to_method_type loc mapper Nolabel (Ast_literal.type_unit ~loc ()) result 
+    method_name label pat body  : Ast_core_type.t = 
+  let arity = Ast_pat.arity_of_fun pat body in   
+  let result = Typ.var ~loc method_name in   
+  if arity = 0 then
+    to_method_type loc mapper Nolabel (Ast_literal.type_unit ~loc ()) result 
 
-else
-  let tyvars =
-    Ext_list.mapi (label::Ast_pat.labels_of_fun body) (fun i x -> 
-     x, Typ.var ~loc (method_name ^ string_of_int i))
-  in
-  begin match tyvars with
-    | (label,x) :: rest ->
-      let method_rest =
-        Ext_list.fold_right rest result (fun (label,v) acc -> 
-          Typ.arrow ~loc label v acc)
-      in         
-      to_method_type loc mapper label x method_rest
-    | _ -> assert false
-  end     
+  else
+    let tyvars =
+      Ext_list.mapi (label::Ast_pat.labels_of_fun body) (fun i x -> 
+          x, Typ.var ~loc (method_name ^ string_of_int i))
+    in
+    begin match tyvars with
+      | (label,x) :: rest ->
+        let method_rest =
+          Ext_list.fold_right rest result (fun (label,v) acc -> 
+              Typ.arrow ~loc label v acc)
+        in         
+        to_method_type loc mapper label x method_rest
+      | _ -> assert false
+    end     
 let to_uncurry_type   loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
     (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type)  =
@@ -151,7 +151,7 @@ let to_uncurry_type   loc (mapper : Bs_ast_mapper.mapper) (label : Asttypes.arg_
   *)
   let first_arg = mapper.typ mapper first_arg in
   let typ = mapper.typ mapper typ in 
-  
+
   let fn_type = Typ.arrow ~loc label first_arg typ in 
   let arity = Ast_core_type.get_uncurry_arity fn_type in 
   match arity with 

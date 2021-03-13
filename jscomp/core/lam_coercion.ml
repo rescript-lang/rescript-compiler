@@ -59,7 +59,7 @@
         if we rename export/99 to be export id, then we don't need
         the  coercion any more, and export/100 will be dced later
    - avoid rebound
-   check [map.ml] here coercion, we introduced
+     check [map.ml] here coercion, we introduced
                     rebound which is not corrrect
    {[
      let Make/identifier = function (funarg){
@@ -102,58 +102,58 @@ let handle_exports (meta : Lam_stats.t)
          (match lam  with
           | Lvar id ->
             if
-             Ident.name id = original_name then
-            { acc with
-              export_list = id :: acc.export_list ;
-              export_set =
-                if id.stamp = original_export_id.stamp then acc.export_set
-                else (Set_ident.add (Set_ident.remove acc.export_set original_export_id) id )
-            }
-            else
-             let newid = Ident.rename original_export_id in
-             let kind : Lam_compat.let_kind = Alias in
-             Lam_util.alias_ident_or_global meta newid id NA ;
+              Ident.name id = original_name then
               { acc with
-              export_list = newid :: acc.export_list;
-              export_map = Map_ident.add acc.export_map newid lam ;
-              groups = Single(kind, newid, lam) :: acc.groups
+                export_list = id :: acc.export_list ;
+                export_set =
+                  if id.stamp = original_export_id.stamp then acc.export_set
+                  else (Set_ident.add (Set_ident.remove acc.export_set original_export_id) id )
+              }
+            else
+              let newid = Ident.rename original_export_id in
+              let kind : Lam_compat.let_kind = Alias in
+              Lam_util.alias_ident_or_global meta newid id NA ;
+              { acc with
+                export_list = newid :: acc.export_list;
+                export_map = Map_ident.add acc.export_map newid lam ;
+                groups = Single(kind, newid, lam) :: acc.groups
               }
           | _ ->
             (*
               Example:
-              {[
-              let N = [a0,a1,a2,a3]
-              in [[ N[0], N[2]]]
+               {[
+                 let N = [a0,a1,a2,a3]
+                 in [[ N[0], N[2]]]
 
-              ]}
-              After optimization
-              {[
-                [ [ a0, a2] ]
-              ]}
-              Here [N] is elminated while N is still exported identifier
-              Invariant: [eid] can not be bound before
-              FIX: this invariant is not guaranteed.
-              Bug manifested: when querying arity info about N, it returns an array
-              of size 4 instead of 2
-              *)
-             let newid = Ident.rename original_export_id in
-             (
-                let arity = Lam_arity_analysis.get_arity meta lam in  
-                if not (Lam_arity.first_arity_na arity) then 
+               ]}
+               After optimization
+               {[
+                 [ [ a0, a2] ]
+               ]}
+               Here [N] is elminated while N is still exported identifier
+               Invariant: [eid] can not be bound before
+               FIX: this invariant is not guaranteed.
+               Bug manifested: when querying arity info about N, it returns an array
+               of size 4 instead of 2
+            *)
+            let newid = Ident.rename original_export_id in
+            (
+              let arity = Lam_arity_analysis.get_arity meta lam in  
+              if not (Lam_arity.first_arity_na arity) then 
                 Hash_ident.add meta.ident_tbl newid
-                (FunctionId{arity ; lambda = 
-                match lam with 
-                | Lfunction _ -> 
-                  Some (lam,  Lam_non_rec)
-                | _ -> None })
-              );
+                  (FunctionId{arity ; lambda = 
+                                        match lam with 
+                                        | Lfunction _ -> 
+                                          Some (lam,  Lam_non_rec)
+                                        | _ -> None })
+            );
             { acc with
               export_list = newid :: acc.export_list;
               export_map = Map_ident.add acc.export_map newid lam ;
               groups = Single(Strict, newid, lam) :: acc.groups
             })
       )
-      
+
 
   in
 
@@ -163,9 +163,9 @@ let handle_exports (meta : Lam_stats.t)
          (match x with
           | Single (_,id,lam) when Set_ident.mem export_set id 
             -> Map_ident.add export_map id lam 
-              (** relies on the Invariant that [eoid] can not be bound before
-                  FIX: such invariant may not hold
-              *)
+          (** relies on the Invariant that [eoid] can not be bound before
+              FIX: such invariant may not hold
+          *)
           | _ -> export_map), x :: acc )  in
   { result with export_map ; groups = Lam_dce.remove export_list coerced_input }
 
@@ -206,24 +206,24 @@ let coerce_and_group_big_lambda
     ->
     let coerced_input =
       handle_exports
-      meta lambda_exports reverse_input  in
+        meta lambda_exports reverse_input  in
     coerced_input,
-      {meta with export_idents = coerced_input.export_set ;
-        exports = coerced_input.export_list}
+    {meta with export_idents = coerced_input.export_set ;
+               exports = coerced_input.export_list}
   | _ ->
     (* This could happen see #2474*)
     (* #3595 
-    TODO: FIXME later
+       TODO: FIXME later
     *)
     assert false
-    (* {
-      export_list = meta.exports;
-      export_set = meta.export_idents;
-      export_map = Map_ident.empty ;
-      (** not used in code generation, mostly used
-          for store some information in cmj files *)
-      groups = [Nop lam] ;
-      (* all code to be compiled later = original code + rebound coercions *)
-    }
-    , meta *)
+(* {
+   export_list = meta.exports;
+   export_set = meta.export_idents;
+   export_map = Map_ident.empty ;
+   (** not used in code generation, mostly used
+      for store some information in cmj files *)
+   groups = [Nop lam] ;
+   (* all code to be compiled later = original code + rebound coercions *)
+   }
+   , meta *)
 

@@ -23,17 +23,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- let offset_pos 
-  ({pos_lnum; pos_bol; pos_cnum} as loc : Lexing.position) 
-  ({line; column} : Loc.position) 
-  first_line_offset : Lexing.position = 
- if line = 1 then 
-   {loc with pos_cnum = pos_cnum + column + first_line_offset }
- else {
-   loc with 
-   pos_lnum = pos_lnum + line - 1;
-   pos_cnum =  pos_bol + column
- } 
+let offset_pos 
+    ({pos_lnum; pos_bol; pos_cnum} as loc : Lexing.position) 
+    ({line; column} : Loc.position) 
+    first_line_offset : Lexing.position = 
+  if line = 1 then 
+    {loc with pos_cnum = pos_cnum + column + first_line_offset }
+  else {
+    loc with 
+    pos_lnum = pos_lnum + line - 1;
+    pos_cnum =  pos_bol + column
+  } 
 
 
 let flow_deli_offset deli = 
@@ -57,8 +57,8 @@ let check_flow_errors ~(loc : Location.t)
     let loc_start = loc.loc_start in     
     Location.prerr_warning 
       {loc with 
-            loc_start = offset_pos loc_start start 
-                offset ;
-            loc_end = offset_pos loc_start _end 
-                offset } 
+       loc_start = offset_pos loc_start start 
+           offset ;
+       loc_end = offset_pos loc_start _end 
+           offset } 
       (Bs_ffi_warning (Parse_error.PP.error first_error))

@@ -30,7 +30,7 @@
 
 
 (** A simple pretty printer
-    
+
     Advantage compared with [Format], 
     [P.newline] does not screw the layout, have better control when do a newline (sicne JS has ASI)
     Easy to tweak
@@ -53,7 +53,7 @@ val nspace : t -> int ->  unit
 val group : t -> int -> (unit -> 'a) -> 'a
 (** [group] will record current indentation 
     and indent futher
- *)
+*)
 
 val vgroup : t -> int -> (unit -> 'a) -> 'a
 
@@ -64,11 +64,11 @@ val brace : t -> (unit -> 'a) -> 'a
 val paren_group : t -> int -> (unit -> 'a) -> 'a
 
 val cond_paren_group :
-    t -> 
-    bool -> 
-    int -> 
-    (unit -> 'a) -> 
-    'a 
+  t -> 
+  bool -> 
+  int -> 
+  (unit -> 'a) -> 
+  'a 
 
 val paren_vgroup : t -> int -> (unit -> 'a) -> 'a
 

@@ -25,7 +25,7 @@
 
 (* Invariant: the same as encoding Map_string.compare_key  *)  
 let cmp  =  Ext_string.compare
-    
+
 
 let rec binarySearchAux (arr : string array) (lo : int) (hi : int) (key : string)  : _ option = 
   let mid = (lo + hi)/2 in 

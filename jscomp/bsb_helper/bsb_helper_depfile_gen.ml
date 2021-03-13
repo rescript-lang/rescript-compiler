@@ -47,7 +47,7 @@ let write_file name  (buf : Ext_buffer.t) =
     load_file name buf 
   else 
     write_buf name buf 
-    
+
 (* return an non-decoded string *)
 let extract_dep_raw_string (fn : string) : string =   
   let ic = open_in_bin fn in 
@@ -72,7 +72,7 @@ let deps_of_channel (ic : in_channel) : string list =
   in 
   aux s [] 1 size 
 
-  
+
 
 
 
@@ -81,11 +81,11 @@ let deps_of_channel (ic : in_channel) : string list =
     not depend on compler-libs
 *)
 (* let read_deps (fn : string) : string list = 
-  let ic = open_in_bin fn in 
-  let v = deps_of_channel ic in 
-  close_in ic;
-  v
- *)
+   let ic = open_in_bin fn in 
+   let v = deps_of_channel ic in 
+   close_in ic;
+   v
+*)
 
 
 
@@ -107,14 +107,14 @@ let oc_cmi buf namespace source =
 
 (* For cases with self cycle
     e.g, in b.ml
-    {[
-      include B
-    ]}
+   {[
+     include B
+   ]}
     When ns is not turned on, it makes sense that b may come from third party package.
     Hoever, this case is wont supported. 
     It complicates when it has interface file or not.
-    - if it has interface file, the current interface will have priority, failed to build?
-    - if it does not have interface file, the build will not open this module at all(-bs-read-cmi)
+   - if it has interface file, the current interface will have priority, failed to build?
+   - if it does not have interface file, the build will not open this module at all(-bs-read-cmi)
 
     When ns is turned on, `B` is interprted as `Ns-B` which is a cyclic dependency,
     it can be errored out earlier
@@ -147,33 +147,33 @@ let oc_deps
     let next_tab = String.index_from s !offset magic_sep_char in
     let dependent_module = String.sub s !offset (next_tab - !offset) in 
     (if dependent_module = cur_module_name then 
-      begin
-        prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
-        exit 2
-      end
+       begin
+         prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
+         exit 2
+       end
     );
     (match  
-      Bsb_db_decode.find db dependent_module is_dev 
-    with      
-    | None -> ()
-    | Some ({dir_name; case }) -> 
-      begin 
-        Lazy.force at_most_once;
-        let source = 
-          Filename.concat dir_name
-          (if case then 
-            dependent_module
-          else 
-            Ext_string.uncapitalize_ascii dependent_module) in 
-        Ext_buffer.add_char buf ' ';    
-        if kind = `impl then begin     
-          output_file buf source namespace;
-          Ext_buffer.add_string buf Literals.suffix_cmj;
-        end;
-        (* #3260 cmj changes does not imply cmi change anymore *)
-        oc_cmi buf namespace source
+       Bsb_db_decode.find db dependent_module is_dev 
+     with      
+     | None -> ()
+     | Some ({dir_name; case }) -> 
+       begin 
+         Lazy.force at_most_once;
+         let source = 
+           Filename.concat dir_name
+             (if case then 
+                dependent_module
+              else 
+                Ext_string.uncapitalize_ascii dependent_module) in 
+         Ext_buffer.add_char buf ' ';    
+         if kind = `impl then begin     
+           output_file buf source namespace;
+           Ext_buffer.add_string buf Literals.suffix_cmj;
+         end;
+         (* #3260 cmj changes does not imply cmi change anymore *)
+         oc_cmi buf namespace source
 
-      end);     
+       end);     
     offset := next_tab + 1  
   done ;
   if Lazy.is_val at_most_once then  
@@ -181,21 +181,21 @@ let oc_deps
 
 
 let emit_d 
-  (is_dev : bool) 
-  (namespace : string option) (mlast : string) (mliast : string) = 
+    (is_dev : bool) 
+    (namespace : string option) (mlast : string) (mliast : string) = 
   let data  =
     Bsb_db_decode.read_build_cache 
       ~dir:Filename.current_dir_name in   
   let buf = Ext_buffer.create 2048 in 
   let filename = 
-      Ext_filename.new_extension mlast Literals.suffix_d in   
+    Ext_filename.new_extension mlast Literals.suffix_d in   
   oc_deps 
     mlast
     is_dev
     data
     namespace
     buf `impl
-    ;      
+  ;      
   if mliast <> "" then begin
     oc_deps
       mliast

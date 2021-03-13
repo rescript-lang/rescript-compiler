@@ -32,7 +32,7 @@ let rec struct_const ppf (cst : Lam_constant.t) =
   |  (Const_int64 n) -> fprintf ppf "%LiL" n
   | Const_pointer(name) ->
     fprintf ppf "`%s" name 
-  
+
   | Const_some n -> fprintf ppf "[some-c]%a" struct_const n
   | Const_block(tag,_, []) ->
     fprintf ppf "[%i]" tag
@@ -58,12 +58,12 @@ let record_rep ppf (r : Lam_primitive.record_representation) =
 ;;
 
 (* let string_of_loc_kind (loc : Lambda.loc_kind) =
-  match loc with 
-  | Loc_FILE -> "loc_FILE"
-  | Loc_LINE -> "loc_LINE"
-  | Loc_MODULE -> "loc_MODULE"
-  | Loc_POS -> "loc_POS"
-  | Loc_LOC -> "loc_LOC" *)
+   match loc with 
+   | Loc_FILE -> "loc_FILE"
+   | Loc_LINE -> "loc_LINE"
+   | Loc_MODULE -> "loc_MODULE"
+   | Loc_POS -> "loc_POS"
+   | Loc_LOC -> "loc_LOC" *)
 
 let primitive ppf (prim : Lam_primitive.t) = match prim with 
   (* | Pcreate_exception s -> fprintf ppf "[exn-create]%S" s  *)
@@ -250,20 +250,20 @@ let rec aux (acc : (print_kind * Ident.t * Lam.t ) list) (lam : Lam.t) =
   | Lletrec (bind_args, body) ->
     aux 
       (Ext_list.map_append 
-        bind_args
-        acc
-        (fun (id,l) -> (Recursive,id,l)) ) body
+         bind_args
+         acc
+         (fun (id,l) -> (Recursive,id,l)) ) body
   | e ->  (acc , e) 
 
 (* type left_var = 
-  {
+   {
     kind : print_kind ;
     id : Ident.t
-  } *)
+   } *)
 
 (* type left = 
-  | Id of left_var *)
-  (* | Nop *)
+   | Id of left_var *)
+(* | Nop *)
 
 
 
@@ -280,8 +280,8 @@ let  flatten (lam : Lam.t) : (print_kind * Ident.t * Lam.t ) list * Lam.t =
 
 
 (* let get_string ((id : Ident.t), (pos : int)) (env : Env.t) : string = 
-  match  Env.find_module (Pident id) env with 
-  | {md_type = Mty_signature signature  ; _ } -> 
+   match  Env.find_module (Pident id) env with 
+   | {md_type = Mty_signature signature  ; _ } -> 
     (* Env.prefix_idents, could be cached  *)
     let serializable_sigs = 
       List.filter (fun x ->
@@ -290,21 +290,21 @@ let  flatten (lam : Lam.t) : (print_kind * Ident.t * Lam.t ) list * Lam.t =
           | Sig_module _
           | Sig_class _ -> true
           | Sig_value(_, {val_kind = Val_prim _}) -> false
-          | Sig_value _ -> true
-          | _ -> false
-        ) signature  in
-    (begin match Ext_list.nth_opt  serializable_sigs  pos  with 
-       | Some (Sig_value (i,_) 
-       | Sig_module (i,_,_) 
-       | Sig_typext (i,_,_) 
-       | Sig_modtype(i,_) 
-       | Sig_class (i,_,_) 
-       | Sig_class_type(i,_,_) 
-       | Sig_type(i,_,_)) -> i 
-       | None -> assert false
-     end).name
-  | _ -> assert false
- *)
+                           | Sig_value _ -> true
+                           | _ -> false
+                           ) signature  in
+                           (begin match Ext_list.nth_opt  serializable_sigs  pos  with 
+                           | Some (Sig_value (i,_) 
+                           | Sig_module (i,_,_) 
+                           | Sig_typext (i,_,_) 
+                           | Sig_modtype(i,_) 
+                           | Sig_class (i,_,_) 
+                           | Sig_class_type(i,_,_) 
+                           | Sig_type(i,_,_)) -> i 
+                           | None -> assert false
+                           end).name
+                           | _ -> assert false
+                         *)
 
 
 let lambda ppf v  =
@@ -321,16 +321,16 @@ let lambda ppf v  =
       fprintf ppf "@[<2>(apply%s@ %a%a)@]" (match ap_inlined with Always_inline -> "%inlned" | _ -> "") lam ap_func lams ap_args
     | Lfunction{params; body; _} ->
       let pr_params ppf params =
-          List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
-          (* | Tupled -> *)
-          (*     fprintf ppf " ("; *)
-          (*     let first = ref true in *)
-          (*     List.iter *)
-          (*       (fun param -> *)
-          (*         if !first then first := false else fprintf ppf ",@ "; *)
-          (*         Ident.print ppf param) *)
-          (*       params; *)
-          (*     fprintf ppf ")"  *)
+        List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
+        (* | Tupled -> *)
+        (*     fprintf ppf " ("; *)
+        (*     let first = ref true in *)
+        (*     List.iter *)
+        (*       (fun param -> *)
+        (*         if !first then first := false else fprintf ppf ",@ "; *)
+        (*         Ident.print ppf param) *)
+        (*       params; *)
+        (*     fprintf ppf ")"  *)
       in
       fprintf ppf "@[<2>(function%a@ %a)@]" pr_params params lam body
     | Llet _ | Lletrec _ as x ->
@@ -437,28 +437,28 @@ let lambda ppf v  =
 
 
 (* let rec flatten_seq acc (lam : Lam.t) =
-  match lam with 
-  | Lsequence(l1,l2) -> 
+   match lam with 
+   | Lsequence(l1,l2) -> 
     flatten_seq (flatten_seq acc l1) l2
-  | x -> x :: acc  *)
+   | x -> x :: acc  *)
 
 (* exception Not_a_module *)
 
 (* let rec flat (acc : (left * Lam.t) list ) (lam : Lam.t) = 
-  match lam with 
-  | Llet (str,id,arg,body) ->
+   match lam with 
+   | Llet (str,id,arg,body) ->
     flat ( (Id {kind = to_print_kind str;  id}, arg) :: acc) body 
-  | Lletrec (bind_args, body) ->
+   | Lletrec (bind_args, body) ->
     flat 
       (Ext_list.map_append bind_args acc
         (fun (id, arg ) -> (Id {kind = Recursive;  id}, arg)) ) 
       body 
-  | Lsequence (l,r) -> 
+   | Lsequence (l,r) -> 
     flat (flat acc l) r
-  | x -> (Nop, x) :: acc  *)
+   | x -> (Nop, x) :: acc  *)
 
 (* let lambda_as_module env  ppf (lam : Lam.t) = 
-  try
+   try
     (* match lam with *)
     (* | Lprim {primitive = Psetglobal id ; args =  [biglambda]; _} *)
     (* might be wrong in toplevel *) 
@@ -483,8 +483,8 @@ let lambda ppf v  =
 
       | _ -> raise Not_a_module
     end
-  (* | _ -> raise Not_a_module *)
-  with _ -> 
+   (* | _ -> raise Not_a_module *)
+   with _ -> 
     lambda ppf lam;
     fprintf ppf "; lambda-failure" *)
 

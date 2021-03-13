@@ -34,7 +34,7 @@
 
 
 (** Keep track of which identifiers are aliased
-  *)
+*)
 
 
 
@@ -48,7 +48,7 @@ type t = {
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers
       for sure it's not a function, there is no need to count them
-   *)
+  *)
 
 
 }

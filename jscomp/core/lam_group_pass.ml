@@ -2,7 +2,7 @@
 
 
 (*type bindings = (Ident.t * Lam.t) list
-let scc  (groups :  bindings)  
+  let scc  (groups :  bindings)  
     (lam : Lam.t)
     (body : Lam.t)
     (cont : bindings -> Lam.t-> Lam.t) =     
@@ -33,8 +33,8 @@ let scc  (groups :  bindings)
 *)
 
 let rec scc_pass (lam : Lam.t) =  
-    let lam = Lam.inner_map lam scc_pass in 
-    match lam with 
-    | Lletrec (bindings, body) -> 
-         Lam_scc.scc bindings lam body   
-    | _ -> lam  
+  let lam = Lam.inner_map lam scc_pass in 
+  match lam with 
+  | Lletrec (bindings, body) -> 
+    Lam_scc.scc bindings lam body   
+  | _ -> lam  

@@ -18,12 +18,12 @@ type ('key,'a) t0 =
   | Empty
   | Leaf of {k : 'key ; v : 'a}
   | Node of {
-    l : ('key,'a) t0 ;
-    k : 'key ;
-    v : 'a ;
-    r : ('key,'a) t0 ;
-    h : int
-  }
+      l : ('key,'a) t0 ;
+      k : 'key ;
+      v : 'a ;
+      r : ('key,'a) t0 ;
+      h : int
+    }
 
 let  empty = Empty
 let rec map x f = match x with
@@ -60,13 +60,13 @@ let [@inline] unsafe_node_maybe_leaf k v l r h =
   else Node{l;k;v;r; h }           
 
 
-  type ('key, + 'a) t = ('key,'a) t0 = private
-    | Empty
-    | Leaf of {
+type ('key, + 'a) t = ('key,'a) t0 = private
+  | Empty
+  | Leaf of {
       k : 'key ;
       v : 'a
     }
-    | Node of {
+  | Node of {
       l : ('key,'a) t ;
       k : 'key ;
       v : 'a ;
@@ -274,7 +274,7 @@ let rec join l v d r =
   match l with
   | Empty -> add_min v d r
   | Leaf leaf ->
-      add_min leaf.k leaf.v (add_min v d r)
+    add_min leaf.k leaf.v (add_min v d r)
   | Node xl ->
     match r with  
     | Empty -> add_max v d l
@@ -304,126 +304,126 @@ let concat_or_join t1 v d t2 =
   | Some d -> join t1 v d t2
   | None -> concat t1 t2
 
-    
+
 module type S =
-  sig
-    type key
-    type +'a t
-    val empty: 'a t
-    val compare_key: key -> key -> int 
-    val is_empty: 'a t -> bool
-    val mem: 'a t -> key -> bool
-    val to_sorted_array : 
-      'a t -> (key * 'a ) array
-    val to_sorted_array_with_f : 
-      'a t -> (key -> 'a -> 'b) -> 'b array  
-    val add: 'a t -> key -> 'a -> 'a t
-    (** [add x y m] 
-        If [x] was already bound in [m], its previous binding disappears. *)
+sig
+  type key
+  type +'a t
+  val empty: 'a t
+  val compare_key: key -> key -> int 
+  val is_empty: 'a t -> bool
+  val mem: 'a t -> key -> bool
+  val to_sorted_array : 
+    'a t -> (key * 'a ) array
+  val to_sorted_array_with_f : 
+    'a t -> (key -> 'a -> 'b) -> 'b array  
+  val add: 'a t -> key -> 'a -> 'a t
+  (** [add x y m] 
+      If [x] was already bound in [m], its previous binding disappears. *)
 
-    val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
-    (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
-        [add k v (replace (Some old))]
-    *)
-    
-    val singleton: key -> 'a -> 'a t
+  val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
+  (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
+      [add k v (replace (Some old))]
+  *)
 
-    val remove: 'a t -> key -> 'a t
-    (** [remove x m] returns a map containing the same bindings as
-       [m], except for [x] which is unbound in the returned map. *)
+  val singleton: key -> 'a -> 'a t
 
-    (* val merge:
-         'a t -> 'b t ->
-         (key -> 'a option -> 'b option -> 'c option) ->  'c t *)
-    (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
-        and of [m2]. The presence of each such binding, and the corresponding
-        value, is determined with the function [f].
-        @since 3.12.0
-     *)
+  val remove: 'a t -> key -> 'a t
+  (** [remove x m] returns a map containing the same bindings as
+      [m], except for [x] which is unbound in the returned map. *)
 
-    val disjoint_merge_exn : 
-      'a t 
-      -> 'a t 
-      -> (key -> 'a -> 'a -> exn)
-      -> 'a t
-     (* merge two maps, will raise if they have the same key *)
+  (* val merge:
+       'a t -> 'b t ->
+       (key -> 'a option -> 'b option -> 'c option) ->  'c t *)
+  (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
+      and of [m2]. The presence of each such binding, and the corresponding
+      value, is determined with the function [f].
+      @since 3.12.0
+  *)
 
-
-
-    val iter: 'a t -> (key -> 'a -> unit) ->  unit
-    (** [iter f m] applies [f] to all bindings in map [m].
-        The bindings are passed to [f] in increasing order. *)
-
-    val fold: 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
-    (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
-       where [k1 ... kN] are the keys of all bindings in [m]
-       (in increasing order) *)
-
-    val for_all: 'a t -> (key -> 'a -> bool) -> bool
-    (** [for_all p m] checks if all the bindings of the map.
-        order unspecified
-     *)
-
-    val exists: 'a t -> (key -> 'a -> bool) -> bool
-    (** [exists p m] checks if at least one binding of the map
-        satisfy the predicate [p]. 
-        order unspecified
-     *)
-
-    (* val filter: 'a t -> (key -> 'a -> bool) -> 'a t *)
-    (** [filter p m] returns the map with all the bindings in [m]
-        that satisfy predicate [p].
-        order unspecified
-     *)
-
-    (* val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t *)
-    (** [partition p m] returns a pair of maps [(m1, m2)], where
-        [m1] contains all the bindings of [s] that satisfy the
-        predicate [p], and [m2] is the map with all the bindings of
-        [s] that do not satisfy [p].
-     *)
-
-    val cardinal: 'a t -> int
-    (** Return the number of bindings of a map. *)
-
-    val bindings: 'a t -> (key * 'a) list
-    (** Return the list of all bindings of the given map.
-       The returned list is sorted in increasing order with respect
-       to the ordering *)
-    val keys : 'a t -> key list 
-    (* Increasing order *)
+  val disjoint_merge_exn : 
+    'a t 
+    -> 'a t 
+    -> (key -> 'a -> 'a -> exn)
+    -> 'a t
+  (* merge two maps, will raise if they have the same key *)
 
 
 
-    (* val split: 'a t -> key -> 'a t * 'a option * 'a t *)
-    (** [split x m] returns a triple [(l, data, r)], where
-          [l] is the map with all the bindings of [m] whose key
-        is strictly less than [x];
-          [r] is the map with all the bindings of [m] whose key
-        is strictly greater than [x];
-          [data] is [None] if [m] contains no binding for [x],
-          or [Some v] if [m] binds [v] to [x].
-        @since 3.12.0
-     *)
+  val iter: 'a t -> (key -> 'a -> unit) ->  unit
+  (** [iter f m] applies [f] to all bindings in map [m].
+      The bindings are passed to [f] in increasing order. *)
 
-    val find_exn: 'a t -> key ->  'a
-    (** [find x m] returns the current binding of [x] in [m],
-       or raises [Not_found] if no such binding exists. *)
-    val find_opt:  'a t ->  key ->'a option
-    val find_default: 'a t -> key  ->  'a  -> 'a 
-    val map: 'a t -> ('a -> 'b) -> 'b t
-    (** [map f m] returns a map with same domain as [m], where the
-       associated value [a] of all bindings of [m] has been
-       replaced by the result of the application of [f] to [a].
-       The bindings are passed to [f] in increasing order
-       with respect to the ordering over the type of the keys. *)
+  val fold: 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
+  (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
+      where [k1 ... kN] are the keys of all bindings in [m]
+      (in increasing order) *)
 
-    val mapi: 'a t ->  (key -> 'a -> 'b) -> 'b t
-    (** Same as {!Map.S.map}, but the function receives as arguments both the
-       key and the associated value for each binding of the map. *)
+  val for_all: 'a t -> (key -> 'a -> bool) -> bool
+  (** [for_all p m] checks if all the bindings of the map.
+      order unspecified
+  *)
 
-    val of_list : (key * 'a) list -> 'a t 
-    val of_array : (key * 'a ) array -> 'a t 
-    val add_list : (key * 'b) list -> 'b t -> 'b t
+  val exists: 'a t -> (key -> 'a -> bool) -> bool
+  (** [exists p m] checks if at least one binding of the map
+      satisfy the predicate [p]. 
+      order unspecified
+  *)
 
-  end
+  (* val filter: 'a t -> (key -> 'a -> bool) -> 'a t *)
+  (** [filter p m] returns the map with all the bindings in [m]
+      that satisfy predicate [p].
+      order unspecified
+  *)
+
+  (* val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t *)
+  (** [partition p m] returns a pair of maps [(m1, m2)], where
+      [m1] contains all the bindings of [s] that satisfy the
+      predicate [p], and [m2] is the map with all the bindings of
+      [s] that do not satisfy [p].
+  *)
+
+  val cardinal: 'a t -> int
+  (** Return the number of bindings of a map. *)
+
+  val bindings: 'a t -> (key * 'a) list
+  (** Return the list of all bindings of the given map.
+      The returned list is sorted in increasing order with respect
+      to the ordering *)
+  val keys : 'a t -> key list 
+  (* Increasing order *)
+
+
+
+  (* val split: 'a t -> key -> 'a t * 'a option * 'a t *)
+  (** [split x m] returns a triple [(l, data, r)], where
+        [l] is the map with all the bindings of [m] whose key
+      is strictly less than [x];
+        [r] is the map with all the bindings of [m] whose key
+      is strictly greater than [x];
+        [data] is [None] if [m] contains no binding for [x],
+        or [Some v] if [m] binds [v] to [x].
+      @since 3.12.0
+  *)
+
+  val find_exn: 'a t -> key ->  'a
+  (** [find x m] returns the current binding of [x] in [m],
+      or raises [Not_found] if no such binding exists. *)
+  val find_opt:  'a t ->  key ->'a option
+  val find_default: 'a t -> key  ->  'a  -> 'a 
+  val map: 'a t -> ('a -> 'b) -> 'b t
+  (** [map f m] returns a map with same domain as [m], where the
+      associated value [a] of all bindings of [m] has been
+      replaced by the result of the application of [f] to [a].
+      The bindings are passed to [f] in increasing order
+      with respect to the ordering over the type of the keys. *)
+
+  val mapi: 'a t ->  (key -> 'a -> 'b) -> 'b t
+  (** Same as {!Map.S.map}, but the function receives as arguments both the
+      key and the associated value for each binding of the map. *)
+
+  val of_list : (key * 'a) list -> 'a t 
+  val of_array : (key * 'a ) array -> 'a t 
+  val add_list : (key * 'b) list -> 'b t -> 'b t
+
+end

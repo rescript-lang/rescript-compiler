@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** Keep track of which identifiers are aliased
-  *)
+*)
 
 
 
@@ -31,10 +31,10 @@ type rec_flag =
   | Lam_rec 
   | Lam_non_rec
   | Lam_self_rec 
-    (* only a 
-      single mutual 
-      recursive function      
-    *)
+  (* only a 
+     single mutual 
+     recursive function      
+  *)
 
 
 
@@ -56,7 +56,7 @@ type t =
   | MutableBlock of element array
   | Constant of Lam_constant.t
   | Module of Ident.t
-        (** TODO: static module vs first class module *)
+  (** TODO: static module vs first class module *)
   | FunctionId of {
       mutable arity : Lam_arity.t;
       (* TODO: This may contain some closure environment,
@@ -67,12 +67,12 @@ type t =
 
   | Exception 
   | Parameter
-      (** For this case, it can help us determine whether it should be inlined or not *)
+  (** For this case, it can help us determine whether it should be inlined or not *)
 
   | NA (** Not such information is associated with an identifier, it is immutable, 
            if you only associate a property to an identifier 
            we should consider [Lassign]
-        *)
+       *)
 
 let pp = Format.fprintf 
 

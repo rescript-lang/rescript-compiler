@@ -49,115 +49,115 @@ let check file lam =
   (* TODO: replaced by a slow version of {!Lam_iter.inner_iter} *)
   let rec 
     check_list xs (cxt : Set_int.t)  = Ext_list.iter xs (fun x -> check_staticfails x cxt)  
-    and check_list_snd : 'a. ('a * Lam.t) list -> _ -> unit = fun xs cxt ->     
-      Ext_list.iter_snd  xs (fun x -> check_staticfails x cxt)
-    and check_staticfails (l : Lam.t) (cxt : Set_int.t)=
-      match l with
-      | Lvar _ 
-      | Lconst _ 
-      | Lglobal_module _ -> ()
-      | Lprim {args; _} ->
-        check_list args cxt       
-      | Lapply{ap_func; ap_args; _} ->
-        check_list (ap_func::ap_args) cxt
-        (* check invariant that staticfaill does not cross function/while/for loop*)
-      | Lfunction{body;params = _} ->        
-        check_staticfails body Set_int.empty
-      | Lwhile(e1, e2) ->
-        check_staticfails e1 cxt;
-        check_staticfails e2 Set_int.empty
-      | Lfor(_v, e1, e2, _dir, e3) ->
-        check_staticfails e1 cxt; check_staticfails e2 cxt;        
-        check_staticfails e3 Set_int.empty;                
-      | Llet(_str, _id, arg, body) ->
-        check_list [arg;body] cxt 
-      | Lletrec(decl, body) ->
-        check_list_snd  decl cxt;
-        check_staticfails body cxt
-      | Lswitch(arg, sw) ->
-        check_staticfails arg cxt ;
-        check_list_snd sw.sw_consts cxt;
-        check_list_snd sw.sw_blocks cxt;
-        Ext_option.iter sw.sw_failaction (fun x -> check_staticfails x cxt);         
-      | Lstringswitch (arg,cases,default) ->
-        check_staticfails arg cxt ;
-        check_list_snd cases cxt;
-        Ext_option.iter default (fun x -> check_staticfails x cxt)
-      | Lstaticraise (i,args) ->
-        if Set_int.mem cxt i  then  check_list args cxt 
-        else failwith ("exit " ^ string_of_int i ^ " unbound")
-      | Lstaticcatch(e1, (j,_vars), e2) ->
-        check_staticfails e1 (Set_int.add cxt j);        
-        check_staticfails e2 cxt
-      | Ltrywith(e1, _exn, e2) ->
-        check_staticfails e1 cxt;
-        check_staticfails e2 cxt
-      | Lifthenelse(e1, e2, e3) ->
-        check_list [e1;e2;e3] cxt
-      | Lsequence(e1, e2) ->
-        check_list [e1;e2] cxt
+  and check_list_snd : 'a. ('a * Lam.t) list -> _ -> unit = fun xs cxt ->     
+    Ext_list.iter_snd  xs (fun x -> check_staticfails x cxt)
+  and check_staticfails (l : Lam.t) (cxt : Set_int.t)=
+    match l with
+    | Lvar _ 
+    | Lconst _ 
+    | Lglobal_module _ -> ()
+    | Lprim {args; _} ->
+      check_list args cxt       
+    | Lapply{ap_func; ap_args; _} ->
+      check_list (ap_func::ap_args) cxt
+    (* check invariant that staticfaill does not cross function/while/for loop*)
+    | Lfunction{body;params = _} ->        
+      check_staticfails body Set_int.empty
+    | Lwhile(e1, e2) ->
+      check_staticfails e1 cxt;
+      check_staticfails e2 Set_int.empty
+    | Lfor(_v, e1, e2, _dir, e3) ->
+      check_staticfails e1 cxt; check_staticfails e2 cxt;        
+      check_staticfails e3 Set_int.empty;                
+    | Llet(_str, _id, arg, body) ->
+      check_list [arg;body] cxt 
+    | Lletrec(decl, body) ->
+      check_list_snd  decl cxt;
+      check_staticfails body cxt
+    | Lswitch(arg, sw) ->
+      check_staticfails arg cxt ;
+      check_list_snd sw.sw_consts cxt;
+      check_list_snd sw.sw_blocks cxt;
+      Ext_option.iter sw.sw_failaction (fun x -> check_staticfails x cxt);         
+    | Lstringswitch (arg,cases,default) ->
+      check_staticfails arg cxt ;
+      check_list_snd cases cxt;
+      Ext_option.iter default (fun x -> check_staticfails x cxt)
+    | Lstaticraise (i,args) ->
+      if Set_int.mem cxt i  then  check_list args cxt 
+      else failwith ("exit " ^ string_of_int i ^ " unbound")
+    | Lstaticcatch(e1, (j,_vars), e2) ->
+      check_staticfails e1 (Set_int.add cxt j);        
+      check_staticfails e2 cxt
+    | Ltrywith(e1, _exn, e2) ->
+      check_staticfails e1 cxt;
+      check_staticfails e2 cxt
+    | Lifthenelse(e1, e2, e3) ->
+      check_list [e1;e2;e3] cxt
+    | Lsequence(e1, e2) ->
+      check_list [e1;e2] cxt
 
-      | Lassign(_id, e) ->
-        check_staticfails e cxt
+    | Lassign(_id, e) ->
+      check_staticfails e cxt
   in
   let rec 
     iter_list xs = Ext_list.iter xs iter   
-    and iter_list_snd : 'a. ('a * Lam.t) list -> unit = fun xs ->     
-      Ext_list.iter_snd  xs iter
-    and iter (l : Lam.t) =
-      match l with
-      | Lvar id -> use id
-      | Lglobal_module _ -> ()
-      | Lprim {args; _} ->
-        iter_list args
-      | Lconst _ -> ()
-      | Lapply{ap_func; ap_args; _} ->
-        iter ap_func; iter_list ap_args
-      | Lfunction{body;params} ->
-        List.iter def params;
-        iter body
-      | Llet(_str, id, arg, body) ->
-        iter arg;
-        def id;
-        iter body
-      | Lletrec(decl, body) ->
-        Ext_list.iter_fst decl def;
-        iter_list_snd  decl;
-        iter body
+  and iter_list_snd : 'a. ('a * Lam.t) list -> unit = fun xs ->     
+    Ext_list.iter_snd  xs iter
+  and iter (l : Lam.t) =
+    match l with
+    | Lvar id -> use id
+    | Lglobal_module _ -> ()
+    | Lprim {args; _} ->
+      iter_list args
+    | Lconst _ -> ()
+    | Lapply{ap_func; ap_args; _} ->
+      iter ap_func; iter_list ap_args
+    | Lfunction{body;params} ->
+      List.iter def params;
+      iter body
+    | Llet(_str, id, arg, body) ->
+      iter arg;
+      def id;
+      iter body
+    | Lletrec(decl, body) ->
+      Ext_list.iter_fst decl def;
+      iter_list_snd  decl;
+      iter body
 
-      | Lswitch(arg, sw) ->
-        iter arg;
-        iter_list_snd sw.sw_consts;
-        iter_list_snd sw.sw_blocks;
-        Ext_option.iter sw.sw_failaction iter;         
-        assert (not (sw.sw_failaction <> None && sw.sw_consts_full && sw.sw_blocks_full))
-      | Lstringswitch (arg,cases,default) ->
-        iter arg ;
-        iter_list_snd cases ;
-        Ext_option.iter default iter
-      | Lstaticraise (_i,args) ->
-        iter_list args
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        iter e1;
-        List.iter def vars;
-        iter e2
-      | Ltrywith(e1, exn, e2) ->
-        iter e1;
-        def exn;
-        iter e2
-      | Lifthenelse(e1, e2, e3) ->
-        iter e1; iter e2; iter e3
-      | Lsequence(e1, e2) ->
-        iter e1; iter e2
-      | Lwhile(e1, e2) ->
-        iter e1; iter e2
-      | Lfor(v, e1, e2, _dir, e3) ->
-        iter e1; iter e2;
-        def v;
-        iter e3;
-      | Lassign(id, e) ->
-        use id ;
-        iter e
+    | Lswitch(arg, sw) ->
+      iter arg;
+      iter_list_snd sw.sw_consts;
+      iter_list_snd sw.sw_blocks;
+      Ext_option.iter sw.sw_failaction iter;         
+      assert (not (sw.sw_failaction <> None && sw.sw_consts_full && sw.sw_blocks_full))
+    | Lstringswitch (arg,cases,default) ->
+      iter arg ;
+      iter_list_snd cases ;
+      Ext_option.iter default iter
+    | Lstaticraise (_i,args) ->
+      iter_list args
+    | Lstaticcatch(e1, (_,vars), e2) ->
+      iter e1;
+      List.iter def vars;
+      iter e2
+    | Ltrywith(e1, exn, e2) ->
+      iter e1;
+      def exn;
+      iter e2
+    | Lifthenelse(e1, e2, e3) ->
+      iter e1; iter e2; iter e3
+    | Lsequence(e1, e2) ->
+      iter e1; iter e2
+    | Lwhile(e1, e2) ->
+      iter e1; iter e2
+    | Lfor(v, e1, e2, _dir, e3) ->
+      iter e1; iter e2;
+      def v;
+      iter e3;
+    | Lassign(id, e) ->
+      use id ;
+      iter e
   in
   begin
     check_staticfails lam Set_int.empty;

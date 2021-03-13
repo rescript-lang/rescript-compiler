@@ -49,8 +49,8 @@ let register key value =
     (tdcls : tdcls)
     (actions :  Ast_payload.action list ) 
     (explict_nonrec : bool )
-  : Ast_structure.t = 
-  Ext_list.flat_map
+   : Ast_structure.t = 
+   Ext_list.flat_map
     (fun action -> 
        (Ast_payload.table_dispatch !derive_table action).structure_gen 
          tdcls explict_nonrec) actions *)

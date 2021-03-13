@@ -84,17 +84,17 @@ let property_access f s =
   else
     begin 
       P.bracket_group f 1 (fun _ ->
-      (* avoid cases like 
-        "0123", "123_456"
-      *)
-      match string_of_int (int_of_string s ) with 
-      | s0 when s0 = s -> 
-        P.string f s 
-      | _  ->
-        Js_dump_string.pp_string f s
-      | exception _ -> 
-        Js_dump_string.pp_string f s
-    )
+          (* avoid cases like 
+             "0123", "123_456"
+          *)
+          match string_of_int (int_of_string s ) with 
+          | s0 when s0 = s -> 
+            P.string f s 
+          | _  ->
+            Js_dump_string.pp_string f s
+          | exception _ -> 
+            Js_dump_string.pp_string f s
+        )
     end
 
 let property_key (s : J.property_name) : string =     
@@ -103,5 +103,5 @@ let property_key (s : J.property_name) : string =
     if obj_property_no_need_quot s then 
       s 
     else Js_dump_string.escape_to_string  s  
- | Symbol_name -> 
-       {|[Symbol.for("name")]|}
+  | Symbol_name -> 
+    {|[Symbol.for("name")]|}

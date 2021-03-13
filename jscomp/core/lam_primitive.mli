@@ -27,9 +27,9 @@
 type ident = Ident.t 
 
 type record_representation = 
-    | Record_regular
-    | Record_inlined of { tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
-    | Record_extension                    (* Inlined record under extension *)
+  | Record_regular
+  | Record_inlined of { tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
+  | Record_extension                    (* Inlined record under extension *)
 
 
 type t = 
@@ -43,10 +43,10 @@ type t =
 
   | Pccall of  {prim_name : string }
   | Pjs_call of
-    (* Location.t *  [loc] is passed down *)
-    { prim_name : string;
-      arg_types : External_arg_spec.params ;
-      ffi : External_ffi_types.external_spec}
+      (* Location.t *  [loc] is passed down *)
+      { prim_name : string;
+        arg_types : External_arg_spec.params ;
+        ffi : External_ffi_types.external_spec}
   | Pjs_object_create of External_arg_spec.obj_params
 
   | Praise 
@@ -59,7 +59,7 @@ type t =
   | Poffsetref of int
   | Pintoffloat | Pfloatofint
   | Pnegfloat 
-  
+
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pintcomp of Lam_compat.comparison
   | Pfloatcomp of Lam_compat.comparison
@@ -124,7 +124,7 @@ type t =
   | Pundefined_to_opt
   | Pnull_to_opt
   | Pnull_undefined_to_opt 
-  
+
   | Pis_null
   | Pis_undefined
   | Pis_null_undefined

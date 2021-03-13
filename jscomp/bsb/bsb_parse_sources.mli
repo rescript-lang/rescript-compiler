@@ -39,9 +39,9 @@ val scan :
   Bsb_file_groups.t 
 
 (** This function has some duplication 
-  from [scan],
-  the parsing assuming the format is 
-  already valid
+    from [scan],
+    the parsing assuming the format is 
+    already valid
 *) 
 val clean_re_js:  
   string -> unit 

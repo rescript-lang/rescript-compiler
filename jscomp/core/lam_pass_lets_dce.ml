@@ -34,7 +34,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
         try (** TODO: record all references variables *)
           Lam_util.refine_let
             ~kind:Variable v slinit
-             (Lam_pass_eliminate_ref.eliminate_ref v slbody)
+            (Lam_pass_eliminate_ref.eliminate_ref v slbody)
         with Lam_pass_eliminate_ref.Real_reference ->
           Lam_util.refine_let 
             ~kind v (Lam.prim ~primitive ~args:[slinit] loc)
@@ -51,8 +51,8 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
         | {times = 1; captured = true }, (Lconst _ | Lvar _)
         |  _, (Lconst 
                  ((
-                     Const_int _ | Const_char _ | Const_float _ 
-                     )
+                   Const_int _ | Const_char _ | Const_float _ 
+                 )
                  | Const_pointer _ |Const_js_true | Const_js_false | Const_js_undefined) (* could be poly-variant [`A] -> [65a]*)
               | Lprim {primitive = Pfield (_);
                        args = [ 
@@ -70,7 +70,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
           (** only "" added for later inlining *)
           Hash_ident.add string_table v s;
           Lam.let_ Alias v l1 (simplif l2)
-          (* we need move [simplif l2] later, since adding Hash does have side effect *)
+        (* we need move [simplif l2] later, since adding Hash does have side effect *)
         | _ -> Lam.let_ Alias v (simplif l1) (simplif l2)
         (* for Alias, in most cases [l1] is already simplified *)
       end
@@ -81,7 +81,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
           ]}
           get [StrictOpt] here,  we can not inline v, 
           since the value of [v] can be changed
-          
+
           GPR #1476 
           Note to pass the sanitizer, we do need remove dead code (not just best effort)
           This logic is tied to {!Lam_pass_count.count}
@@ -95,33 +95,33 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
       then simplif lbody (* GPR #1476 *)
       else
         begin match l1 with 
-        | (Lprim {primitive = (Pmakeblock(0, _, Mutable) 
-                                    as primitive); 
-                       args = [linit] ; loc})
-          -> 
-          let slinit = simplif linit in
-          let slbody = simplif lbody in
-          begin 
-            try (** TODO: record all references variables *)
-              Lam_util.refine_let
-                ~kind:Variable v slinit
-                (Lam_pass_eliminate_ref.eliminate_ref v slbody)
-            with Lam_pass_eliminate_ref.Real_reference ->
-              Lam_util.refine_let 
-                ~kind v (Lam.prim ~primitive ~args:[slinit] loc)
-                slbody
-          end
+          | (Lprim {primitive = (Pmakeblock(0, _, Mutable) 
+                                 as primitive); 
+                    args = [linit] ; loc})
+            -> 
+            let slinit = simplif linit in
+            let slbody = simplif lbody in
+            begin 
+              try (** TODO: record all references variables *)
+                Lam_util.refine_let
+                  ~kind:Variable v slinit
+                  (Lam_pass_eliminate_ref.eliminate_ref v slbody)
+              with Lam_pass_eliminate_ref.Real_reference ->
+                Lam_util.refine_let 
+                  ~kind v (Lam.prim ~primitive ~args:[slinit] loc)
+                  slbody
+            end
 
-        | _ -> 
-          let l1 = simplif l1 in         
-          begin match l1 with 
-            | Lconst(Const_string s) -> 
-              Hash_ident.add string_table v s; 
-              (* we need move [simplif lbody] later, since adding Hash does have side effect *)
-              Lam.let_ Alias v l1 (simplif lbody)
-            | _ -> 
-              Lam_util.refine_let ~kind v l1 (simplif lbody)
-          end  
+          | _ -> 
+            let l1 = simplif l1 in         
+            begin match l1 with 
+              | Lconst(Const_string s) -> 
+                Hash_ident.add string_table v s; 
+                (* we need move [simplif lbody] later, since adding Hash does have side effect *)
+                Lam.let_ Alias v l1 (simplif lbody)
+              | _ -> 
+                Lam_util.refine_let ~kind v l1 (simplif lbody)
+            end  
         end
     (* TODO: check if it is correct rollback to [StrictOpt]? *)
 
@@ -135,14 +135,14 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
         else Lam.seq l1 l2
       else 
         let l1 = (simplif l1) in 
-        
-         begin match kind, l1 with 
-         | Strict, Lconst((Const_string s))
-           -> 
+
+        begin match kind, l1 with 
+          | Strict, Lconst((Const_string s))
+            -> 
             Hash_ident.add string_table v s;
             Lam.let_ Alias v l1 (simplif l2)
-         | _ -> 
-           Lam_util.refine_let ~kind v l1 (simplif l2)
+          | _ -> 
+            Lam_util.refine_let ~kind v l1 (simplif l2)
         end
     | Lsequence(l1, l2) -> Lam.seq (simplif l1) (simplif l2)
 
@@ -183,36 +183,36 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
             | Lconst ( (Const_string rs)) -> Some rs 
             | Lvar i -> Hash_ident.find_opt string_table i 
             | _ -> None in 
-            begin match opt_r with 
+          begin match opt_r with 
             | None -> Lam.prim ~primitive:Pstringadd ~args:[l';r'] loc 
             | Some r_s -> 
               Lam.const (Const_string(l_s^r_s))
-            end
+          end
       end
 
     | Lprim {primitive = (Pstringrefu|Pstringrefs) as primitive ; 
-      args = [l;r] ; loc 
-      } ->  (* TODO: introudce new constant *)
+             args = [l;r] ; loc 
+            } ->  (* TODO: introudce new constant *)
       let l' = simplif l in 
       let r' = simplif r in 
       let opt_l =
-         match l' with 
-         | Lconst (Const_string ls) -> 
-            Some ls 
-         | Lvar i -> Hash_ident.find_opt string_table i 
-         | _ -> None in 
+        match l' with 
+        | Lconst (Const_string ls) -> 
+          Some ls 
+        | Lvar i -> Hash_ident.find_opt string_table i 
+        | _ -> None in 
       begin match opt_l with 
-      | None -> Lam.prim ~primitive ~args:[l';r'] loc 
-      | Some l_s -> 
-        match r with 
-        |Lconst((Const_int {i})) -> 
-          let i = Int32.to_int i in
-          if i < String.length l_s && i >= 0  then
-            Lam.const ((Const_char l_s.[i]))
-          else 
+        | None -> Lam.prim ~primitive ~args:[l';r'] loc 
+        | Some l_s -> 
+          match r with 
+          |Lconst((Const_int {i})) -> 
+            let i = Int32.to_int i in
+            if i < String.length l_s && i >= 0  then
+              Lam.const ((Const_char l_s.[i]))
+            else 
+              Lam.prim ~primitive ~args:[l';r'] loc 
+          | _ -> 
             Lam.prim ~primitive ~args:[l';r'] loc 
-        | _ -> 
-          Lam.prim ~primitive ~args:[l';r'] loc 
       end    
     | Lglobal_module _ -> lam    
     | Lprim {primitive; args; loc} 

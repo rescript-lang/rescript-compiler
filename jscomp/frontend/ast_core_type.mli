@@ -51,8 +51,8 @@ val is_user_option : t -> bool
 
 
 (**
-  returns 0 when it can not tell arity from the syntax
-  None -- means not a function
+   returns 0 when it can not tell arity from the syntax
+   None -- means not a function
 *)
 val get_uncurry_arity : t -> int option
 

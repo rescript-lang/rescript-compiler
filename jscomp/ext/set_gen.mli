@@ -30,27 +30,27 @@ val is_ordered : cmp:('a -> 'a -> int) -> 'a t-> bool
 val invariant : cmp:('a -> 'a -> int) -> 'a t-> bool
 
 module type S =
-  sig
-    type elt
-    type t
-    val empty : t
-    val is_empty : t -> bool
-    val iter : t -> (elt -> unit) -> unit
-    val fold : t -> 'a -> (elt -> 'a -> 'a) -> 'a
-    val for_all : t -> (elt -> bool) -> bool
-    val exists : t -> (elt -> bool) -> bool
-    val singleton : elt -> t
-    val cardinal : t -> int
-    val elements : t -> elt list
-    val choose : t -> elt
-    val mem : t -> elt -> bool
-    val add : t -> elt -> t
-    val remove : t -> elt -> t
-    val union : t -> t -> t
-    val inter : t -> t -> t
-    val diff : t -> t -> t    
-    val of_list : elt list -> t
-    val of_sorted_array : elt array -> t
-    val invariant : t -> bool
-    val print : Format.formatter -> t -> unit
-  end
+sig
+  type elt
+  type t
+  val empty : t
+  val is_empty : t -> bool
+  val iter : t -> (elt -> unit) -> unit
+  val fold : t -> 'a -> (elt -> 'a -> 'a) -> 'a
+  val for_all : t -> (elt -> bool) -> bool
+  val exists : t -> (elt -> bool) -> bool
+  val singleton : elt -> t
+  val cardinal : t -> int
+  val elements : t -> elt list
+  val choose : t -> elt
+  val mem : t -> elt -> bool
+  val add : t -> elt -> t
+  val remove : t -> elt -> t
+  val union : t -> t -> t
+  val inter : t -> t -> t
+  val diff : t -> t -> t    
+  val of_list : elt list -> t
+  val of_sorted_array : elt array -> t
+  val invariant : t -> bool
+  val print : Format.formatter -> t -> unit
+end

@@ -48,5 +48,5 @@ val find_opt : string -> string option
     out: src/hello-Ns
 *)
 val output_prefix : 
-    string -> 
-    string 
+  string -> 
+  string 

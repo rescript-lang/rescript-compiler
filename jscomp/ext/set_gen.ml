@@ -44,7 +44,7 @@ let [@inline] singleton x = Leaf x
 
 let [@inline] unsafe_two_elements x v = 
   unsafe_node v (singleton x) empty 2 
-  
+
 type 'a t = 'a t0 = private
   | Empty 
   | Leaf of 'a

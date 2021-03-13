@@ -37,16 +37,16 @@ let lift_option_type ({ptyp_loc} as ty:t) : t =
      Ptyp_constr(
        {txt = Ast_literal.predef_option;
         loc = ptyp_loc}
-        , [ty]);
-        ptyp_loc = ptyp_loc;
-      ptyp_attributes = []
-    }
+     , [ty]);
+   ptyp_loc = ptyp_loc;
+   ptyp_attributes = []
+  }
 
 
 open Ast_helper
 
 (* let replace_result (ty : t) (result : t) : t =
-  let rec aux (ty : Parsetree.core_type) =
+   let rec aux (ty : Parsetree.core_type) =
     match ty with
     | { ptyp_desc =
           Ptyp_arrow (label,t1,t2)
@@ -54,7 +54,7 @@ open Ast_helper
     | {ptyp_desc = Ptyp_poly(fs,ty)}
       ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
     | _ -> result in
-  aux ty *)
+   aux ty *)
 
 let is_builtin_rank0_type txt =   
   match txt with 
@@ -69,7 +69,7 @@ let is_builtin_rank0_type txt =
   | "int64"
   | "string" -> true 
   | _ -> false
-    
+
 let is_unit (ty : t ) =
   match ty.ptyp_desc with
   | Ptyp_constr({txt =Lident "unit"}, []) -> true
@@ -77,27 +77,27 @@ let is_unit (ty : t ) =
 
 
 (* let is_array (ty : t) =
-  match ty.ptyp_desc with
-  | Ptyp_constr({txt =Lident "array"}, [_]) -> true
-  | _ -> false *)
+   match ty.ptyp_desc with
+   | Ptyp_constr({txt =Lident "array"}, [_]) -> true
+   | _ -> false *)
 
 let is_user_option (ty : t) =
   match ty.ptyp_desc with
   | Ptyp_constr(
-    {txt = Lident "option" |
-     (Ldot (Lident "*predef*", "option")) },
-    [_]) -> true
+      {txt = Lident "option" |
+             (Ldot (Lident "*predef*", "option")) },
+      [_]) -> true
   | _ -> false
 
 (* let is_user_bool (ty : t) =
-  match ty.ptyp_desc with
-  | Ptyp_constr({txt = Lident "bool"},[]) -> true
-  | _ -> false *)
+   match ty.ptyp_desc with
+   | Ptyp_constr({txt = Lident "bool"},[]) -> true
+   | _ -> false *)
 
 (* let is_user_int (ty : t) =
-  match ty.ptyp_desc with
-  | Ptyp_constr({txt = Lident "int"},[]) -> true
-  | _ -> false *)
+   match ty.ptyp_desc with
+   | Ptyp_constr({txt = Lident "int"},[]) -> true
+   | _ -> false *)
 
 
 
@@ -116,9 +116,9 @@ let from_labels ~loc arity labels
     ((Ext_list.init arity (fun i ->
          Typ.var ~loc ("a" ^ string_of_int i)))) in
   let result_type =
-    
-      (Typ.object_ ~loc
-         (Ext_list.map2 labels tyvars 
+
+    (Typ.object_ ~loc
+       (Ext_list.map2 labels tyvars 
           (fun x y -> Parsetree.Otag (x ,[], y))) Closed)
   in
   Ext_list.fold_right2 labels tyvars  result_type
@@ -128,24 +128,24 @@ let from_labels ~loc arity labels
 
 
 let make_obj ~loc xs =
-    (Typ.object_  ~loc xs Closed)
+  (Typ.object_  ~loc xs Closed)
 
 
 
 (**
 
-{[ 'a . 'a -> 'b ]}
-OCaml does not support such syntax yet
-{[ 'a -> ('a. 'a -> 'b) ]}
+   {[ 'a . 'a -> 'b ]}
+   OCaml does not support such syntax yet
+   {[ 'a -> ('a. 'a -> 'b) ]}
 
 *)
 let rec get_uncurry_arity_aux  (ty : t) acc =
-    match ty.ptyp_desc with
-    | Ptyp_arrow(_, _ , new_ty) ->
-      get_uncurry_arity_aux new_ty (succ acc)
-    | Ptyp_poly (_,ty) ->
-      get_uncurry_arity_aux ty acc
-    | _ -> acc
+  match ty.ptyp_desc with
+  | Ptyp_arrow(_, _ , new_ty) ->
+    get_uncurry_arity_aux new_ty (succ acc)
+  | Ptyp_poly (_,ty) ->
+    get_uncurry_arity_aux ty acc
+  | _ -> acc
 
 (**
    {[ unit -> 'b ]} return arity 0
@@ -155,11 +155,11 @@ let rec get_uncurry_arity_aux  (ty : t) acc =
 let get_uncurry_arity (ty : t ) =
   match ty.ptyp_desc  with
   | Ptyp_arrow(Nolabel, {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))},
-     rest  )  -> 
-     begin match rest with 
-     | {ptyp_desc = Ptyp_arrow _ } ->  
-      Some (get_uncurry_arity_aux rest 1 )
-    | _ -> Some 0 
+               rest  )  -> 
+    begin match rest with 
+      | {ptyp_desc = Ptyp_arrow _ } ->  
+        Some (get_uncurry_arity_aux rest 1 )
+      | _ -> Some 0 
     end
   | Ptyp_arrow(_,_,rest ) ->
     Some (get_uncurry_arity_aux rest 1)
@@ -180,9 +180,9 @@ let list_of_arrow
     | Ptyp_arrow(label,t1,t2) ->
       aux t2 
         (({label; 
-          ty = t1; 
-          attr = ty.ptyp_attributes;
-          loc = ty.ptyp_loc} : Ast_compatible.param_type) :: acc
+           ty = t1; 
+           attr = ty.ptyp_attributes;
+           loc = ty.ptyp_loc} : Ast_compatible.param_type) :: acc
         )
     | Ptyp_poly(_, ty) -> (* should not happen? *)
       Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type

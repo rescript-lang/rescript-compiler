@@ -44,9 +44,9 @@ let get_bsc_flags
 
 let emit_bsc_lib_includes 
     (bs_dependencies : Bsb_config_types.dependencies)
-  (source_dirs : string list) 
-  (external_includes) 
-  (namespace : _ option): string = 
+    (source_dirs : string list) 
+    (external_includes) 
+    (namespace : _ option): string = 
   (* TODO: bsc_flags contain stdlib path which is in the latter position currently *)
   let all_includes source_dirs  = 
     source_dirs @
@@ -108,11 +108,11 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
   let bs = ".."//"bs" in  
   let sb = ".."//".." in 
   o (if Ext_sys.is_windows_or_cygwin then 
-      "rule cp\n  command = cmd.exe /C copy /Y $i $out >NUL\n\
-       rule touch\n command = cmd.exe /C type nul >>$out & copy $out+,, >NUL\n"
-    else
-      "rule cp\n  command = cp $i $out\n\
-       rule touch\n command = touch $out\n"
+       "rule cp\n  command = cmd.exe /C copy /Y $i $out >NUL\n\
+        rule touch\n command = cmd.exe /C type nul >>$out & copy $out+,, >NUL\n"
+     else
+       "rule cp\n  command = cp $i $out\n\
+        rule touch\n command = touch $out\n"
     );
   let essentials = Ext_buffer.create 1_000 in   
   files_to_install 
@@ -124,7 +124,7 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
       oo Literals.suffix_cmi ~dest ~src;
       oo Literals.suffix_cmj ~dest ~src;      
       oo Literals.suffix_cmt ~dest ~src;
-      
+
       Ext_buffer.add_string essentials  dest ;
       Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';    
       Ext_buffer.add_string essentials dest ;
@@ -149,16 +149,16 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
         oo Literals.suffix_cmti ~dest ~src
     );
   begin match namespace with 
-  | None -> ()      
-  | Some dest -> 
-    let src = bs // dest in   
-    oo Literals.suffix_cmi ~dest ~src; 
-    oo Literals.suffix_cmj ~dest ~src;
-    oo Literals.suffix_cmt ~dest ~src;
-    Ext_buffer.add_string essentials dest ; 
-    Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';
-    Ext_buffer.add_string essentials dest ;
-    Ext_buffer.add_string essentials Literals.suffix_cmj 
+    | None -> ()      
+    | Some dest -> 
+      let src = bs // dest in   
+      oo Literals.suffix_cmi ~dest ~src; 
+      oo Literals.suffix_cmj ~dest ~src;
+      oo Literals.suffix_cmt ~dest ~src;
+      Ext_buffer.add_string essentials dest ; 
+      Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';
+      Ext_buffer.add_string essentials dest ;
+      Ext_buffer.add_string essentials Literals.suffix_cmj 
   end;
   Ext_buffer.add_char essentials '\n';
   o "build install.stamp : touch ";
@@ -227,11 +227,11 @@ let output_ninja_and_namespace_map
          raise (Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k))
     ) ;
   let dev_incls = 
-      (Bsb_build_util.include_dirs source_dirs.dev) in 
+    (Bsb_build_util.include_dirs source_dirs.dev) in 
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
   let lib_incls = emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace in
   let rules : Bsb_ninja_rule.builtin = 
-      Bsb_ninja_rule.make_custom_rules
+    Bsb_ninja_rule.make_custom_rules
       ~gentype_config
       ~has_postbuild:js_post_build_cmd 
       ~pp_file
@@ -265,8 +265,8 @@ let output_ninja_and_namespace_map
         (finger_file x) oc
     );
   (match gentype_config with 
-  | None -> ()
-  | Some x -> output_string oc ("cleaner = " ^ x.path ^ "\n"));   
+   | None -> ()
+   | Some x -> output_string oc ("cleaner = " ^ x.path ^ "\n"));   
   output_static_resources static_resources rules.copy_resources oc ;
   (** Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 

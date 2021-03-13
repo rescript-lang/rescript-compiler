@@ -30,7 +30,7 @@
 
 
 (** Define intemediate format to be serialized for cross module optimization
- *)
+*)
 
 (** In this module, 
     currently only arity information is  exported, 
@@ -84,7 +84,7 @@ val make:
   package_spec: Js_packages_info.t ->
   case:Ext_js_file_kind.case ->
   t
-  
+
 
 val query_by_name : 
   t ->
@@ -100,7 +100,7 @@ val single_na : arity
 val from_file : string -> t
 
 val from_file_with_digest :
-   string -> t * Digest.t
+  string -> t * Digest.t
 
 val from_string : string -> t
 

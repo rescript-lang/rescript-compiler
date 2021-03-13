@@ -28,19 +28,19 @@ let map_row_fields_into_ints ptyp_loc
   = 
   let _, acc = 
     Ext_list.fold_left row_fields (0, []) 
-       (fun (i,acc) rtag -> 
-          match rtag with 
-          | Rtag ({txt}, attrs, true,  [])
-            -> 
-            let i = 
-              match Ast_attributes.iter_process_bs_int_as attrs with 
-              | Some i ->  i | None -> i 
-            in 
-            i + 1, 
-            ((txt , i):: acc )
-          | _ -> 
-            Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
-       )  in 
+      (fun (i,acc) rtag -> 
+         match rtag with 
+         | Rtag ({txt}, attrs, true,  [])
+           -> 
+           let i = 
+             match Ast_attributes.iter_process_bs_int_as attrs with 
+             | Some i ->  i | None -> i 
+           in 
+           i + 1, 
+           ((txt , i):: acc )
+         | _ -> 
+           Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
+      )  in 
   List.rev acc
 
 (** Note this is okay with enums, for variants,
@@ -54,22 +54,22 @@ let map_constructor_declarations_into_ints
   let _, acc
     = 
     Ext_list.fold_left row_fields (0, []) 
-       (fun (i,acc) rtag -> 
-          let attrs = rtag.pcd_attributes in 
-           match Ast_attributes.iter_process_bs_int_as attrs with 
-            | Some j -> 
-              if j <> i then 
-                (
-                  if i = 0 then mark := `offset j
-                  else mark := `complex
-                )
-              ;
-              (j + 1, 
-               (j:: acc ) )
-            | None -> 
-              i + 1 , 
-              ( i:: acc )
-       ) in 
+      (fun (i,acc) rtag -> 
+         let attrs = rtag.pcd_attributes in 
+         match Ast_attributes.iter_process_bs_int_as attrs with 
+         | Some j -> 
+           if j <> i then 
+             (
+               if i = 0 then mark := `offset j
+               else mark := `complex
+             )
+           ;
+           (j + 1, 
+            (j:: acc ) )
+         | None -> 
+           i + 1 , 
+           ( i:: acc )
+      ) in 
   match !mark with 
   | `nothing -> `Offset 0
   | `offset j -> `Offset j 
@@ -143,8 +143,8 @@ let is_enum_constructors
     (fun (x : Parsetree.constructor_declaration) ->
        match x with 
        | {pcd_args = 
-  Pcstr_tuple [] (* Note the enum is encoded using [Pcstr_tuple []]*)
-        } -> true 
+            Pcstr_tuple [] (* Note the enum is encoded using [Pcstr_tuple []]*)
+         } -> true 
        | _ -> false 
     )
     constructors

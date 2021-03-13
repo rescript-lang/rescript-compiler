@@ -39,12 +39,12 @@ let cwd = lazy (Sys.getcwd())
 
 let split_by_sep_per_os : string -> string list = 
   if Ext_sys.is_windows_or_cygwin then 
-  fun x -> 
-    (* on Windows, we can still accept -bs-package-output lib/js *)
-    Ext_string.split_by 
-      (fun x -> match x with |'/' |'\\' -> true | _ -> false) x
+    fun x -> 
+      (* on Windows, we can still accept -bs-package-output lib/js *)
+      Ext_string.split_by 
+        (fun x -> match x with |'/' |'\\' -> true | _ -> false) x
   else 
-  fun x -> Ext_string.split x '/'
+    fun x -> Ext_string.split x '/'
 
 (** example
     {[
@@ -101,14 +101,14 @@ let node_concat ~dir base =
   dir ^ Literals.node_sep ^ base 
 
 let node_rebase_file ~from ~to_ file = 
-  
+
   node_concat
     ~dir:(
       if from = to_ then Literals.node_current
       else node_relative_path ~from:(Dir from) (Dir to_)) 
     file
-    
-    
+
+
 (***
    {[
      Filename.concat "." "";;
@@ -211,7 +211,7 @@ let rel_normalized_absolute_path ~from to_ =
       | [], y::ys -> Ext_list.fold_left ys y (fun acc x -> acc // x) 
       | _::xs, [] ->
         Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ -> acc // Ext_string.parent_dir_lit )
-     in
+    in
     let v =  go paths1 paths2  in 
 
     if Ext_string.is_empty v then  Literals.node_current
@@ -293,15 +293,15 @@ let absolute_cwd_path s =
   absolute_path cwd  s 
 
 (* let absolute cwd s =   
-  match s with 
-  | File x -> File (absolute_path cwd x )
-  | Dir x -> Dir (absolute_path cwd x) *)
+   match s with 
+   | File x -> File (absolute_path cwd x )
+   | Dir x -> Dir (absolute_path cwd x) *)
 
 let concat dirname filename =
   if filename = Filename.current_dir_name then dirname
   else if dirname = Filename.current_dir_name then filename
   else Filename.concat dirname filename
-  
+
 
 let check_suffix_case =
   Ext_string.ends_with

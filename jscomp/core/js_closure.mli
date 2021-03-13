@@ -31,7 +31,7 @@
 
 (** Define a type used in JS IR to help convert lexical scope to JS [var] 
     based scope convention
- *)
+*)
 
 type t = {
   mutable outer_loop_mutable_values :  Set_ident.t 

@@ -31,22 +31,22 @@ type cst = private
 type label = private
   | Obj_label of {name : string}
   | Obj_empty 
-  
+
   | Obj_optional of {name : string;
-    for_sure_no_nested_option : bool}
+                     for_sure_no_nested_option : bool}
   (* it will be ignored , side effect will be recorded *)
 
 
 
 type attr = 
   | Poly_var_string of { 
-    descr :
-    (string * string) list
-  } 
+      descr :
+        (string * string) list
+    } 
   | Poly_var of {
-    descr : 
-    (string * string) list option 
-  }   
+      descr : 
+        (string * string) list option 
+    }   
   | Int of (string * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)

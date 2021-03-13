@@ -38,7 +38,7 @@
 
    ATTENTION: [let] bound idents have to be renamed, 
    Note we rely on an invariant that parameter could not be rebound 
- *)
+*)
 
 (* 
   Small function inline heuristics:
@@ -124,19 +124,19 @@ let rewrite (map :   _ Hash_ident.t)
                  }) ->
       let l = aux l in
       Lam.switch l
-              {sw_consts = 
-                 Ext_list.map_snd  sw_consts aux;
-               sw_blocks = Ext_list.map_snd  sw_blocks aux;
-               sw_consts_full = sw_consts_full;
-               sw_blocks_full = sw_blocks_full;
-               sw_failaction = option_map sw_failaction;
-               sw_names;
-              }
+        {sw_consts = 
+           Ext_list.map_snd  sw_consts aux;
+         sw_blocks = Ext_list.map_snd  sw_blocks aux;
+         sw_consts_full = sw_consts_full;
+         sw_blocks_full = sw_blocks_full;
+         sw_failaction = option_map sw_failaction;
+         sw_names;
+        }
     | Lstringswitch(l, sw, d) ->
       let l = aux  l in
       Lam.stringswitch l 
-                     (Ext_list.map_snd sw aux)
-                     (option_map d)
+        (Ext_list.map_snd sw aux)
+        (option_map d)
     | Lstaticraise (i,ls) 
       -> Lam.staticraise i (Ext_list.map ls aux)
     | Ltrywith(l1, v, l2) -> 

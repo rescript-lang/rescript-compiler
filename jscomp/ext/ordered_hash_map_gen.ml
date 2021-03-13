@@ -25,7 +25,7 @@
 
 (** Hash based datastrucure which does not support [remove], 
     so that the adding order is strict and continous  
- *)
+*)
 
 module type S =
 sig
@@ -58,11 +58,11 @@ end
 type ('a,'b) bucket = 
   | Empty 
   | Cons of {
-    key : 'a ;
-    ord :  int ;
-    data :'b  ;
-    next :  ('a,'b) bucket
-  }
+      key : 'a ;
+      ord :  int ;
+      data :'b  ;
+      next :  ('a,'b) bucket
+    }
 
 type ('a,'b) t =
   { mutable size: int;                        (* number of entries *)

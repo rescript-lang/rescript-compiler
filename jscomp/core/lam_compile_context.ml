@@ -84,7 +84,7 @@ let continuation_is_return ( x : continuation) =
   | EffectCall Not_tail | NeedValue Not_tail 
   | Declare _ | Assign _
     -> false
-    
+
 type t = {
   continuation : continuation ;
   jmp_table : jmp_table;
@@ -132,11 +132,11 @@ let add_pseudo_jmp
     (m  : jmp_table)
     (exit_id : Ident.t)  (* TODO not needed, remove it later *)
     (code_table : handler) :
-    jmp_table * Lam.t
-     = 
-   HandlerMap.add m 
+  jmp_table * Lam.t
+  = 
+  HandlerMap.add m 
     code_table.label {exit_id; bindings = code_table.bindings; order_id = -1}, 
-   code_table.handler
+  code_table.handler
 
 
 

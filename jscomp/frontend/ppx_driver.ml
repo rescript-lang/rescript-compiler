@@ -25,7 +25,7 @@
 
 
 
-  
+
 let usage = "Usage: [prog] [extra_args] <infile> <outfile>\n%!"
 let main impl intf =
   try

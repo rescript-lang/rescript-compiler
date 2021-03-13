@@ -50,21 +50,21 @@ let post_process_stats my_export_set (defined_idents : J.variable_declaration Ha
 *)
 let super = Js_record_iter.super  
 let count_collects 
-  (* collect used status*)
-  (stats : int Hash_ident.t)
-  (* collect all def sites *)
-  (defined_idents : J.variable_declaration Hash_ident.t) 
-   = 
+    (* collect used status*)
+    (stats : int Hash_ident.t)
+    (* collect all def sites *)
+    (defined_idents : J.variable_declaration Hash_ident.t) 
+  = 
   {super with 
-     variable_declaration = (fun self 
-        ({ident; value ; property = _ ; ident_info = _}  as v) -> 
-      
-      Hash_ident.add defined_idents ident v; 
-      match value with 
-      | None -> ()
-      | Some x
-        -> self.expression self x );
-    ident = fun _ id -> add_use stats id
+   variable_declaration = (fun self 
+                            ({ident; value ; property = _ ; ident_info = _}  as v) -> 
+
+                            Hash_ident.add defined_idents ident v; 
+                            match value with 
+                            | None -> ()
+                            | Some x
+                              -> self.expression self x );
+   ident = fun _ id -> add_use stats id
   }
 
 

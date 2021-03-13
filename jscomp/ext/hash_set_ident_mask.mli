@@ -10,7 +10,7 @@ val create: int ->  t
 
 
 (* add one ident 
-  ident is unmaksed by default
+   ident is unmaksed by default
 *)
 val add_unmask :  t -> ident -> unit
 
@@ -35,4 +35,4 @@ val iter_and_unmask:
 
 
 
-  
+

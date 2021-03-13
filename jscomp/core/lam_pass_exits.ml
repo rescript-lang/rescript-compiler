@@ -22,13 +22,13 @@
 *)
 let rec 
   no_list args = Ext_list.for_all args no_bounded_variables 
-  and no_list_snd : 'a. ('a * Lam.t ) list -> bool  = fun args ->
-    Ext_list.for_all_snd  args no_bounded_variables
-  and no_opt x =   
-    match x with 
-    | None -> true 
-    | Some a -> no_bounded_variables a 
-  and no_bounded_variables (l : Lam.t) =
+and no_list_snd : 'a. ('a * Lam.t ) list -> bool  = fun args ->
+  Ext_list.for_all_snd  args no_bounded_variables
+and no_opt x =   
+  match x with 
+  | None -> true 
+  | Some a -> no_bounded_variables a 
+and no_bounded_variables (l : Lam.t) =
   match l with
   | Lvar _ -> true
   | Lconst _ -> true
@@ -85,29 +85,29 @@ let rec
 *)
 
 (** The third argument is its occurrence,
-  when do the substitution, if its occurence is > 1,
-  we should refresh
- *)
+    when do the substitution, if its occurence is > 1,
+    we should refresh
+*)
 type lam_subst = 
   | Id of Lam.t [@@unboxed]
-  (* | Refresh of Lam.t *)
+(* | Refresh of Lam.t *)
 
 type subst_tbl = (Ident.t list * lam_subst ) Hash_int.t
 
 let to_lam x = 
   match x with 
   | Id x -> x 
-  (* | Refresh x -> Lam_bounded_vars.refresh x  *)
+(* | Refresh x -> Lam_bounded_vars.refresh x  *)
 
 (**
    Simplify  ``catch body with (i ...) handler''
-      - if (exit i ...) does not occur in body, suppress catch
-      - if (exit i ...) occurs exactly once in body,
+   - if (exit i ...) does not occur in body, suppress catch
+   - if (exit i ...) occurs exactly once in body,
         substitute it with handler
-      - If handler is a single variable, replace (exit i ..) with it
+   - If handler is a single variable, replace (exit i ..) with it
 
 
-  Note:
+   Note:
     In ``catch body with (i x1 .. xn) handler''
      Substituted expression is
       let y1 = x1 and ... yn = xn in
@@ -117,31 +117,31 @@ let to_lam x =
      (No alpha conversion of ``handler'' is presently needed, since
      substitution of several ``(exit i ...)''
      occurs only when ``handler'' is a variable.)
-  Note that 
+   Note that 
            for [query] result = 2, 
            the non-inline cost is 
-           {[
-             var exit ;
+   {[
+     var exit ;
 
-             exit = 11;
-             exit = 11;
+     exit = 11;
+     exit = 11;
 
-             switch(exit){
-               case exit = 11 : body ; break
-             }
+     switch(exit){
+       case exit = 11 : body ; break
+     }
 
-           ]}
+   ]}
            the inline cost is 
 
-           {[
-             body;
-             body;
-           ]}
+   {[
+     body;
+     body;
+   ]}
 
            when [i] is negative, we can not inline in general, 
            since the outer is a traditional [try .. catch] body, 
            if it is guaranteed to be non throw, then we can inline
-        *)
+*)
 
 (** TODO: better heuristics, also if we can group same exit code [j] 
        in a very early stage -- maybe we can define our enhanced [Lambda] 
@@ -163,35 +163,35 @@ let subst_helper (subst : subst_tbl) (query : int -> int) (lam : Lam.t) : Lam.t 
   let rec simplif (lam : Lam.t) = 
     match lam with 
     | Lstaticcatch (l1,(i,xs),l2) ->      
-        let i_occur = query i in 
-        (match i_occur , l2 with
-        | 0,_ -> simplif l1
-        | ( _ , Lvar _
-          | _, Lconst _) (* when i >= 0  # 2316 *) ->  
-          Hash_int.add subst i (xs, Id (simplif l2)) ;
-          simplif l1 (** l1 will inline *)
-        | 1,_ when i >= 0 -> (** Ask: Note that we have predicate i >=0 *)
-          Hash_int.add subst i (xs, Id (simplif l2)) ;
-          simplif l1 (** l1 will inline *)
-        |  _ ->
-          let l2 = simplif l2 in 
-          (* we only inline when [l2] does not contain bound variables
-             no need to refresh
-          *)
-          let ok_to_inline = 
-            i >=0 && 
-            (no_bounded_variables l2) &&
-            (let lam_size = Lam_analysis.size l2 in
-             (i_occur <= 2 && lam_size < Lam_analysis.exit_inline_size   )
-             || (lam_size < 5 ))
-          in 
-          if ok_to_inline 
-          then 
-            begin            
-              Hash_int.add subst i (xs,  Id l2) ;
-              simplif l1 
-            end
-          else Lam.staticcatch (simplif l1) (i,xs) l2)
+      let i_occur = query i in 
+      (match i_occur , l2 with
+       | 0,_ -> simplif l1
+       | ( _ , Lvar _
+         | _, Lconst _) (* when i >= 0  # 2316 *) ->  
+         Hash_int.add subst i (xs, Id (simplif l2)) ;
+         simplif l1 (** l1 will inline *)
+       | 1,_ when i >= 0 -> (** Ask: Note that we have predicate i >=0 *)
+         Hash_int.add subst i (xs, Id (simplif l2)) ;
+         simplif l1 (** l1 will inline *)
+       |  _ ->
+         let l2 = simplif l2 in 
+         (* we only inline when [l2] does not contain bound variables
+            no need to refresh
+         *)
+         let ok_to_inline = 
+           i >=0 && 
+           (no_bounded_variables l2) &&
+           (let lam_size = Lam_analysis.size l2 in
+            (i_occur <= 2 && lam_size < Lam_analysis.exit_inline_size   )
+            || (lam_size < 5 ))
+         in 
+         if ok_to_inline 
+         then 
+           begin            
+             Hash_int.add subst i (xs,  Id l2) ;
+             simplif l1 
+           end
+         else Lam.staticcatch (simplif l1) (i,xs) l2)
     | Lstaticraise (i,[])  ->
       (match Hash_int.find_opt subst i with
        | Some (_,handler) -> to_lam handler

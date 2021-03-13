@@ -28,7 +28,7 @@ val mark_used_bs_attribute :
   Parsetree.attribute -> unit 
 
 (** [warn_discarded_unused_attributes discarded]
-  warn if [discarded] has unused bs attribute
+    warn if [discarded] has unused bs attribute
 *)  
 val warn_discarded_unused_attributes :   
   Parsetree.attributes -> unit 
@@ -40,7 +40,7 @@ val iter_warnings_on_stru:
 
 val iter_warnings_on_sigi: 
   Parsetree.signature -> unit 
-  
+
 val emit_external_warnings_on_structure:
   Parsetree.structure -> unit 
 

@@ -23,32 +23,32 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (**
-  Use:
-  {[
-  flag_concat "-ppx" [ppxs]
-  ]}
-  *)
-  val flag_concat : string -> string list -> string
+   Use:
+   {[
+     flag_concat "-ppx" [ppxs]
+   ]}
+*)
+val flag_concat : string -> string list -> string
 
 (**
-Build quoted commandline arguments for bsc.exe for the given ppx flags
+   Build quoted commandline arguments for bsc.exe for the given ppx flags
 
-Use:
-{[
-ppx_flags [ppxs]
-]}
+   Use:
+   {[
+     ppx_flags [ppxs]
+   ]}
 *)
 val ppx_flags : Bsb_config_types.ppx list -> string
 
 val pp_flag : string  -> string
 
 (**
-Build unquoted command line arguments for bsc.exe for the given include dirs
+   Build unquoted command line arguments for bsc.exe for the given include dirs
 
-Use:
-{[
-include_dirs [dirs]
-]}
+   Use:
+   {[
+     include_dirs [dirs]
+   ]}
 *)
 val include_dirs : string list -> string
 
@@ -56,17 +56,17 @@ val include_dirs_by :
   'a list ->   
   ('a -> string ) ->
   string
-  
+
 
 val mkp : string -> unit
 
 
 (* The path of [bsc] and [bsdep] is normalized so that the invokation of [./jscomp/bin/bsb.exe] 
    and [bsb.exe] (combined with a dirty bsconfig.json) will not trigger unnecessary rebuild.
-   
+
    The location of [bsc] and [bsdep] is configured by the combination of [Sys.executable_name] 
    and [cwd].
-   
+
    In theory, we should also check the integrity of [bsb.exe], if it is changed, the rebuild 
    should be regen, but that is too much in practice, not only you need check the integrity of 
    path of [bsb.exe] but also the timestamp, to make it 100% correct, also the integrity of 
@@ -78,13 +78,13 @@ val mkp : string -> unit
 
 
 val get_list_string_acc : 
-    Ext_json_types.t array -> 
-    string list -> 
-    string list
+  Ext_json_types.t array -> 
+  string list -> 
+  string list
 
 val get_list_string : 
-    Ext_json_types.t array -> 
-    string list
+  Ext_json_types.t array -> 
+  string list
 
 type top = 
   | Expect_none 
@@ -111,4 +111,4 @@ val walk_all_deps :
   string -> 
   pinned_dependencies:Set_string.t ->
   package_context Queue.t
-  
+

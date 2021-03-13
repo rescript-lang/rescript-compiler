@@ -61,11 +61,11 @@ let calculate_hard_dependencies block =
 
 *)
 (* let depends_j (lam : J.expression) (variables : Set_ident.t) = 
-  let v = ref Set_ident.empty in
-  let add id = 
+   let v = ref Set_ident.empty in
+   let add id = 
     if Set_ident.mem variables id then 
       v := Set_ident.add !v id
-  in
-  ignore @@ (new count_deps add ) # expression lam ;
-  !v
- *)
+   in
+   ignore @@ (new count_deps add ) # expression lam ;
+   !v
+*)

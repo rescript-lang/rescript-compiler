@@ -50,14 +50,14 @@ let equal (x : t) y =
   | Global _, Scope _ -> false
 
 (**
-  input: {[
-    @hello/yy/xx
-    hello/yy
-  ]}
-  FIXME: fix invalid input
-  {[
-    hello//xh//helo
-  ]}
+   input: {[
+     @hello/yy/xx
+        hello/yy
+   ]}
+   FIXME: fix invalid input
+   {[
+     hello//xh//helo
+   ]}
 *)
 let extract_pkg_name_and_file (s : string) =   
   let len = String.length s in 
@@ -70,22 +70,22 @@ let extract_pkg_name_and_file (s : string) =
     let pkg_id =   
       Ext_string.no_slash_idx_from
         s (scope_id + 1)   in 
-     let scope =     
+    let scope =     
       String.sub s 0 scope_id in 
-     
-     if pkg_id < 0 then     
+
+    if pkg_id < 0 then     
       (Scope(String.sub s (scope_id + 1) (len - scope_id - 1), scope),"")
-     else 
+    else 
       (Scope(
-        String.sub s (scope_id + 1) (pkg_id - scope_id - 1), scope), 
+          String.sub s (scope_id + 1) (pkg_id - scope_id - 1), scope), 
        String.sub s (pkg_id + 1) (len - pkg_id - 1))
   else     
-      let pkg_id = Ext_string.no_slash_idx s in 
-      if pkg_id < 0 then 
+    let pkg_id = Ext_string.no_slash_idx s in 
+    if pkg_id < 0 then 
       Global s , ""
-      else 
+    else 
       Global (String.sub s 0 pkg_id), 
-              (String.sub s (pkg_id + 1) (len - pkg_id - 1))
+      (String.sub s (pkg_id + 1) (len - pkg_id - 1))
 
 
 let string_as_package (s : string) : t = 
@@ -94,13 +94,13 @@ let string_as_package (s : string) : t =
   let v = String.unsafe_get s 0 in 
   if v = '@' then 
     let scope_id = 
-        Ext_string.no_slash_idx s in 
+      Ext_string.no_slash_idx s in 
     assert (scope_id > 0); 
     (* better-eror message for invalid scope package:
-      @rescript/std
+       @rescript/std
     *)
     Scope(
       String.sub s (scope_id + 1) (len - scope_id - 1),
       String.sub s 0 scope_id
-      )    
+    )    
   else Global s       

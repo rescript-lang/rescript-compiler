@@ -78,24 +78,24 @@ let js_module_table : Ident.t Hash_string.t = Hash_string.create 31
    Given a name, if duplicated, they should  have the same id
 *)
 (* let create_js_module (name : string) : Ident.t =
-  let name =
+   let name =
     String.concat "" @@ Ext_list.map
     (Ext_string.split name '-')  Ext_string.capitalize_ascii in
-  (* TODO: if we do such transformation, we should avoid       collision for example:
+   (* TODO: if we do such transformation, we should avoid       collision for example:
       react-dom
       react--dom
       check collision later
   *)
-  match Hash_string.find_exn js_module_table name  with
-  | exception Not_found ->
+   match Hash_string.find_exn js_module_table name  with
+   | exception Not_found ->
     let ans = Ident.create name in
     (* let ans = { v with flags = js_module_flag} in  *)
     Hash_string.add js_module_table name ans;
     ans
-  | v -> (* v *) Ident.rename v
+   | v -> (* v *) Ident.rename v
 
 
- *)
+*)
 
 
 
@@ -163,7 +163,7 @@ let name_mangle name =
        | '=' -> Buffer.add_string buffer "$eq"
        | '+' -> Buffer.add_string buffer "$plus"
        | '-' -> Buffer.add_string buffer "$"
-        (* Note ocaml compiler also has [self-] *)
+       (* Note ocaml compiler also has [self-] *)
        | '@' -> Buffer.add_string buffer "$at"
        | '^' -> Buffer.add_string buffer "$caret"
        | '/' -> Buffer.add_string buffer "$slash"
@@ -205,7 +205,7 @@ let convert (name : string) =
 
 (* It is currently made a persistent ident to avoid fresh ids
     which would result in different signature files
-    - other solution: use lazy values
+   - other solution: use lazy values
 *)
 let make_unused () = create "_"
 

@@ -33,10 +33,10 @@ let rec is_obj_literal ( x : _ Flow_ast.Expression.t) : bool =
     Ext_list.for_all properties is_literal_kv 
   | Array  {elements} ->  
     Ext_list.for_all elements (fun x -> 
-      match x with 
-      | None -> true
-      | Some (Expression x) -> is_obj_literal x 
-      | Some _ -> false
+        match x with 
+        | None -> true
+        | Some (Expression x) -> is_obj_literal x 
+        | Some _ -> false
       ) 
   | _ -> false
 and is_literal_kv (x  : _ Flow_ast.Expression.Object.property) = 
@@ -48,41 +48,41 @@ and is_literal_kv (x  : _ Flow_ast.Expression.Object.property) =
 let classify_exp (prog : _ Flow_ast.Expression.t  )  : Js_raw_info.exp = 
   match  prog with 
   | (_, Function {
-    id = _;
-    params = (_, {params});
-    async = false;
-    generator = false;
-    predicate = None
-  })  -> 
+      id = _;
+      params = (_, {params});
+      async = false;
+      generator = false;
+      predicate = None
+    })  -> 
     Js_function {arity = List.length params; arrow = false}
   | (_, ArrowFunction {
-    id = None;
-    params = (_, {params});
-    async = false;
-    generator = false;
-    predicate = None
-  })  -> 
+      id = None;
+      params = (_, {params});
+      async = false;
+      generator = false;
+      predicate = None
+    })  -> 
     Js_function
       {arity = List.length params; arrow = true} 
- |(_, Literal {comments}) -> 
-  let comment = 
-    match comments with 
-    | None -> None 
-    | Some {leading = [_, Block comment]} -> Some ("/*" ^ comment ^ "*/")
-    | Some {leading = [_, Line comment]} -> Some ("//" ^ comment)
-    | Some _ -> None
-  in   
-  Js_literal {comment}   
- | (_, Identifier(_,{name = "undefined"})) -> Js_literal {comment =None} 
- | (_, _)  -> 
+  |(_, Literal {comments}) -> 
+    let comment = 
+      match comments with 
+      | None -> None 
+      | Some {leading = [_, Block comment]} -> Some ("/*" ^ comment ^ "*/")
+      | Some {leading = [_, Line comment]} -> Some ("//" ^ comment)
+      | Some _ -> None
+    in   
+    Js_literal {comment}   
+  | (_, Identifier(_,{name = "undefined"})) -> Js_literal {comment =None} 
+  | (_, _)  -> 
     if is_obj_literal prog then Js_literal {comment = None} else Js_exp_unknown
- | exception _ -> 
-  Js_exp_unknown
+  | exception _ -> 
+    Js_exp_unknown
 
 (** It seems we do the parse twice
     - in parsing
     - in code generation
- *)
+*)
 let classify ?(check : (Location.t*int) option) (prog : string) : Js_raw_info.exp = 
   let prog, errors  =
     Parser_flow.parse_expression 
@@ -96,7 +96,7 @@ let classify ?(check : (Location.t*int) option) (prog : string) : Js_raw_info.ex
   | None , []  -> 
     classify_exp prog
   | None , _ :: _ ->  Js_exp_unknown
-  
+
 
 
 let classify_stmt (prog : string) : Js_raw_info.stmt = 
@@ -106,5 +106,5 @@ let classify_stmt (prog : string) : Js_raw_info.stmt =
     Js_stmt_comment 
   | _ -> Js_stmt_unknown
 (* we can also analayze throw
-  x.x pure access
- *)
+   x.x pure access
+*)

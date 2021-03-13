@@ -26,7 +26,7 @@
 let isCamlExceptionOrOpenVariant : Longident.t = 
   Ldot (Ldot (Lident "Js","Exn"), "isCamlExceptionOrOpenVariant")
 
-  
+
 let obj_magic : Longident.t = 
   Ldot (Lident "Obj", "magic")
 
@@ -43,9 +43,9 @@ and check_pat (pat : Parsetree.pattern) =
   | _ ->  Location.raise_errorf ~loc:pat.ppat_loc "Unsupported pattern in `bs.open`" 
 
 let convertBsErrorFunction loc  
-  (self : Bs_ast_mapper.mapper) 
-  attrs 
-  (cases : Parsetree.case list ) =
+    (self : Bs_ast_mapper.mapper) 
+    attrs 
+    (cases : Parsetree.case list ) =
   let open Ast_helper in
   let txt  = "match" in 
   let txt_expr = Exp.ident ~loc {txt = Lident txt; loc} in 
@@ -54,23 +54,23 @@ let convertBsErrorFunction loc
   let cases = self.cases self cases in 
   Ast_compatible.fun_ ~attrs ~loc ( Pat.var ~loc  {txt; loc })
     (Exp.ifthenelse
-    ~loc 
-    (Ast_compatible.app1 ~loc (Exp.ident ~loc {txt = isCamlExceptionOrOpenVariant ; loc}) txt_expr )
-    (Exp.match_ ~loc 
-       (Exp.constraint_ ~loc 
-          (Ast_compatible.app1  ~loc (Exp.ident ~loc {txt =  obj_magic; loc})  txt_expr)
-          (Ast_literal.type_exn ~loc ())
-       )
-      (Ext_list.map_append cases 
-        [ Exp.case  (Pat.any ~loc ()) none] 
-        (fun x ->
-           let pc_rhs = x.pc_rhs in 
-           let  loc  = pc_rhs.pexp_loc in
-           {
-             x with pc_rhs = Exp.construct ~loc {txt = Ast_literal.predef_some;loc} (Some pc_rhs)
-                        
-           })))
-    (Some none))
-    
-                       
-    
+       ~loc 
+       (Ast_compatible.app1 ~loc (Exp.ident ~loc {txt = isCamlExceptionOrOpenVariant ; loc}) txt_expr )
+       (Exp.match_ ~loc 
+          (Exp.constraint_ ~loc 
+             (Ast_compatible.app1  ~loc (Exp.ident ~loc {txt =  obj_magic; loc})  txt_expr)
+             (Ast_literal.type_exn ~loc ())
+          )
+          (Ext_list.map_append cases 
+             [ Exp.case  (Pat.any ~loc ()) none] 
+             (fun x ->
+                let pc_rhs = x.pc_rhs in 
+                let  loc  = pc_rhs.pexp_loc in
+                {
+                  x with pc_rhs = Exp.construct ~loc {txt = Ast_literal.predef_some;loc} (Some pc_rhs)
+
+                })))
+       (Some none))
+
+
+

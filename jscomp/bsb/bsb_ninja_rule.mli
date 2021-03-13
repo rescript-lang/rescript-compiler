@@ -25,7 +25,7 @@
 
 
 (** The complexity comes from the fact that we allow custom rules which could
-  conflict with our custom built-in rules
+    conflict with our custom built-in rules
 *)
 type t  
 
@@ -35,7 +35,7 @@ val get_name : t  -> out_channel -> string
 (***********************************************************)
 (** A list of existing rules *)
 type builtin = {
-  
+
   build_ast : t;
   build_ast_from_re : t ;
 

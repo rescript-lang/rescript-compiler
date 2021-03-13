@@ -30,8 +30,8 @@
 
 
 (** A module to shake JS IR
-   
+
     Tree shaking is not going to change the closure 
- *)
+*)
 
 val shake_program : J.program -> J.program

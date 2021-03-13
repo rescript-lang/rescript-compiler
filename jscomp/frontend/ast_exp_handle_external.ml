@@ -24,25 +24,25 @@
 
 open Ast_helper
 (*
-{[
-  Js.undefinedToOption 
-    (if Js.typeof x = "undefined" then undefined 
-    else x  )
+   {[
+     Js.undefinedToOption 
+       (if Js.typeof x = "undefined" then undefined 
+        else x  )
 
-]}
+   ]}
 *)
 let handle_external loc (x : string) : Parsetree.expression = 
   let raw_exp : Ast_exp.t = 
     let str_exp = 
       (Ast_compatible.const_exp_string ~loc x  ~delimiter:Ext_string.empty) in 
     {str_exp with pexp_desc = Ast_external_mk.local_external_apply
-      loc ~pval_prim:["#raw_expr"]
-      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
-      [str_exp]}   
+                      loc ~pval_prim:["#raw_expr"]
+                      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+                      [str_exp]}   
   in 
   let empty = (* FIXME: the empty delimiter does not make sense*)
     Exp.ident ~loc 
-    {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    
+      {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    
   in 
   let undefined_typeof = 
     Exp.ident {loc ; txt = Ldot(Lident "Js","undefinedToOption")} in 
@@ -51,11 +51,11 @@ let handle_external loc (x : string) : Parsetree.expression =
 
   Ast_compatible.app1 ~loc undefined_typeof (
     Exp.ifthenelse ~loc
-    (Ast_compatible.app2 ~loc 
-      (Exp.ident ~loc {loc ; txt = Ldot (Lident "Pervasives", "=")} )            
-        (Ast_compatible.app1 ~loc typeof raw_exp)      
-        (Ast_compatible.const_exp_string ~loc "undefined")
-        )      
+      (Ast_compatible.app2 ~loc 
+         (Exp.ident ~loc {loc ; txt = Ldot (Lident "Pervasives", "=")} )            
+         (Ast_compatible.app1 ~loc typeof raw_exp)      
+         (Ast_compatible.const_exp_string ~loc "undefined")
+      )      
       empty
       (Some raw_exp)
   )

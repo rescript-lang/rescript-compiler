@@ -29,14 +29,14 @@ let quot x =
 
 (* let rec encode_aux (x : Ext_json_types.t ) 
     (buf : Buffer.t) : unit =  
-  let a str = Buffer.add_string buf str in 
-  match x with 
-  | Null _ -> a "null"
-  | Str {str = s }  -> a (quot s)
-  | Flo {flo = s} -> 
+   let a str = Buffer.add_string buf str in 
+   match x with 
+   | Null _ -> a "null"
+   | Str {str = s }  -> a (quot s)
+   | Flo {flo = s} -> 
     a s (* 
     since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
-  | Arr  {content} -> 
+   | Arr  {content} -> 
     begin match content with 
       | [||] -> a "[]"
       | _ -> 
@@ -52,9 +52,9 @@ let quot x =
         done;    
         a " ]"
     end
-  | True _ -> a "true"
-  | False _ -> a "false"
-  | Obj {map} -> 
+   | True _ -> a "true"
+   | False _ -> a "false"
+   | Obj {map} -> 
     if Map_string.is_empty map then 
       a "{}"
     else 
@@ -73,14 +73,14 @@ let quot x =
           ) in 
           a " }"
       end
- *)
+*)
 
 (* let to_string (x : Ext_json_types.t) = 
     let buf = Buffer.create 1024 in 
     encode_aux x buf ;
     Buffer.contents buf 
 
-let to_channel (oc : out_channel) x  = 
+   let to_channel (oc : out_channel) x  = 
     let buf = Buffer.create 1024 in 
     encode_aux x buf ;
     Buffer.output_buffer oc buf  *)

@@ -59,7 +59,7 @@ let make
     ~effect 
     ~package_spec 
     ~case
-     : t = 
+  : t = 
   {
     values = Map_string.to_sorted_array_with_f values (fun k v -> {
           name = k ; 
@@ -91,7 +91,7 @@ let from_file_with_digest name : t * Digest.t =
 
 
 let from_string s : t = 
-    Marshal.from_string s  Ext_digest.length
+  Marshal.from_string s  Ext_digest.length
 
 
 let for_sure_not_changed (name : string) (header : string) =   
@@ -102,9 +102,9 @@ let for_sure_not_changed (name : string) (header : string) =
     close_in ic; 
     holder = header
   else false  
-    
+
 (* This may cause some build system always rebuild
-  maybe should not be turned on by default
+   maybe should not be turned on by default
 *) 
 let to_file name ~check_exists (v : t) = 
   let s = Marshal.to_string v [] in 
@@ -117,7 +117,7 @@ let to_file name ~check_exists (v : t) =
     close_out oc 
 
 let keyComp (a : string) b = 
-    Map_string.compare_key  a b.name 
+  Map_string.compare_key  a b.name 
 
 let not_found key = {name = key; arity = single_na; persistent_closed_lambda =  None }
 
@@ -130,7 +130,7 @@ let get_result  midVal =
   | Some _ -> 
     if !Js_config.cross_module_inline  then midVal
     else {midVal with persistent_closed_lambda = None}  
-  
+
 let rec binarySearchAux arr lo hi (key : string) = 
   let mid = (lo + hi)/2 in 
   let midVal = Array.unsafe_get arr mid in 
@@ -165,7 +165,7 @@ let binarySearch (sorted : keyed_cmj_values) (key : string) : keyed_cmj_value =
 
 
 (* FIXME: better error message when ocamldep
-  get self-cycle
+   get self-cycle
 *)    
 let query_by_name (cmj_table : t ) name  : keyed_cmj_value =   
   let values = cmj_table.values in    

@@ -41,14 +41,14 @@ let all_lib_artifacts =
 let rev_lib_bs = ".."// ".."
 
 (* access the js directory from "lib/bs", 
-  it would be '../js'
+   it would be '../js'
 *)
 let lib_bs_prefix_of_format (x : Ext_module_system.t) = 
   ".." // match x with 
   | NodeJS -> "js"
   | Es6 -> "es6"
   | Es6_global -> "es6_global"
-  
+
 (* lib/js, lib/es6, lib/es6_global *)
 let top_prefix_of_format (x : Ext_module_system.t)  =   
   match x with 

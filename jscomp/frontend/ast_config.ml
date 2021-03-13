@@ -29,14 +29,14 @@ type action_table =
 
 let structural_config_table : action_table ref =
   ref (Map_string.singleton
-     "no_export" 
-       (fun x ->
-          Js_config.no_export := (
-            match x with
-            |Some e -> Ast_payload.assert_bool_lit e
-            | None -> true)
-       ))
-     
+         "no_export" 
+         (fun x ->
+            Js_config.no_export := (
+              match x with
+              |Some e -> Ast_payload.assert_bool_lit e
+              | None -> true)
+         ))
+
 let add_structure k v = 
   structural_config_table := 
     Map_string.add !structural_config_table k v 

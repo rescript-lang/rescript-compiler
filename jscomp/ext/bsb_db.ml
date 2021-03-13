@@ -36,7 +36,7 @@ type syntax_kind =
   | Ml 
   | Reason     
   | Res
-  
+
 type module_info = 
   {
     mutable info : info;

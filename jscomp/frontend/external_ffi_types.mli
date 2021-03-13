@@ -155,7 +155,7 @@ val ffi_bs_as_prims:
   return_wrapper -> 
   external_spec -> 
   string list 
-  
+
 val ffi_obj_create:
   External_arg_spec.obj_params ->
   t 
