@@ -76,18 +76,14 @@ exports.vendorNinjaPath = vendorNinjaPath;
  * Note ocamldep.opt has built-in macro handling OCAML_VERSION
  */
 var getOcamldepFile = () => {
-  if (process.env.ESY === "true") {
-    return `ocamldep.opt`;
-  } else {
-    return path.join(
-      __dirname,
-      "..",
-      "native",
-      require("./buildocaml.js").getVersionPrefix(),
-      "bin",
-      "ocamldep.opt"
-    );
-  }
+  return path.join(
+    __dirname,
+    "..",
+    "native",
+    require("./buildocaml.js").getVersionPrefix(),
+    "bin",
+    "ocamldep.opt"
+  );
 };
 
 /**
@@ -749,7 +745,7 @@ function collectTarget(sourceFiles) {
           break;
         case "HAS_BOTH_RE":
         case "HAS_BOTH":
-        case "HAS_BOTH_RES":  
+        case "HAS_BOTH_RES":
           break;
       }
     }
@@ -1466,7 +1462,6 @@ function setSortedToStringAsNativeDeps(xs) {
  * @returns {string}
  */
 function getVendorConfigNinja() {
-  if (process.env.ESY === "true") return getEnnvConfigNinja();
   var prefix = `../native/${require("./buildocaml.js").getVersionPrefix()}/bin`;
   return `
 ocamlopt = ${prefix}/ocamlopt.opt
@@ -1474,15 +1469,6 @@ ocamllex = ${prefix}/ocamllex.opt
 ocamlc = ${prefix}/ocamlc.opt
 ocamlmklib = ${prefix}/ocamlmklib
 ocaml = ${prefix}/ocaml
-`;
-}
-function getEnnvConfigNinja() {
-  return `
-ocamlopt = ocamlopt.opt
-ocamlc = ocamlc.opt
-ocamllex = ocamllex.opt
-ocamlmklib = ocamlmklib
-ocaml = ocaml
 `;
 }
 

@@ -4,10 +4,7 @@ var cp = require("child_process");
 var path = require("path");
 var fs = require("fs");
 
-var ocamlSrcDir =
-  process.env.ESY === "true"
-    ? process.env.OCAMLLIB
-    : path.join(__dirname, "..", "ocaml");
+var ocamlSrcDir = path.join(__dirname, "..", "ocaml");
 var ocamlVersionFilePath = path.join(ocamlSrcDir, "VERSION");
 
 /**
@@ -21,7 +18,7 @@ function ensureOCamlExistsSync() {
   if (!fs.existsSync(ocamlVersionFilePath)) {
     cp.execSync(`tar xzvf ../vendor/ocaml.tar.gz`, {
       cwd: ocamlSrcDir,
-      stdio: [0, 1, 2]
+      stdio: [0, 1, 2],
     });
   }
 }
@@ -56,26 +53,24 @@ exports.getVersionPrefix = getVersionPrefix;
 function build(config) {
   ensureOCamlExistsSync();
 
-  if (process.env.ESY !== "true") {
-    var prefix = path.normalize(
-      path.join(__dirname, "..", "native", getVersionPrefix())
+  var prefix = path.normalize(
+    path.join(__dirname, "..", "native", getVersionPrefix())
+  );
+
+  if (config) {
+    var { make } = require("./config.js");
+    cp.execSync(
+      './configure -cc "gcc -Wno-implicit-function-declaration -fcommon" -flambda -prefix ' +
+        prefix +
+        ` -no-ocamlbuild  -no-curses -no-graph -no-pthread -no-debugger && ${make} clean`,
+      { cwd: ocamlSrcDir, stdio: [0, 1, 2] }
     );
-
-    if (config) {
-      var { make } = require("./config.js");
-      cp.execSync(
-        "./configure -cc \"gcc -Wno-implicit-function-declaration -fcommon\" -flambda -prefix " +
-          prefix +
-          ` -no-ocamlbuild  -no-curses -no-graph -no-pthread -no-debugger && ${make} clean`,
-        { cwd: ocamlSrcDir, stdio: [0, 1, 2] }
-      );
-    }
-
-    cp.execSync(`${make} -j9 world.opt && ${make} install `, {
-      cwd: ocamlSrcDir,
-      stdio: [0, 1, 2]
-    });
   }
+
+  cp.execSync(`${make} -j9 world.opt && ${make} install `, {
+    cwd: ocamlSrcDir,
+    stdio: [0, 1, 2],
+  });
 }
 
 exports.build = build;
