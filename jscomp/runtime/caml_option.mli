@@ -40,10 +40,7 @@ val isNested : Obj.t -> bool
 
 val option_get : Obj.t option -> Obj.t Caml_undefined_extern.t 
 
-type poly = {
-    hash : int [@bs.as "HASH"]; 
-    value : Obj.t [@bs.as "VAL"]
-}  
+type poly 
 
 (** When it is None, return none
     When it is (Some (`a 3)) return 3
