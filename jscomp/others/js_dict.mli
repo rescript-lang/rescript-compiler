@@ -26,7 +26,7 @@
 type 'a t
 (** Dictionary type (ie an '\{ \}' JS object). However it is restricted 
     to hold a single type; therefore values must have the same type. 
-    
+
     This Dictionary type is mostly used with the [Js_json.t] type. *)
 
 type key = string
@@ -45,9 +45,9 @@ external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index]
     when the existence of a key is certain. (i.e. when having called [keys]
     function previously. 
 
-@example {[
-Array.iter (fun key -> Js.log (Js_dict.unsafeGet dic key)) (Js_dict.keys dict) 
-]} 
+    @example {[
+      Array.iter (fun key -> Js.log (Js_dict.unsafeGet dic key)) (Js_dict.keys dict) 
+    ]} 
 *)
 
 external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]  
@@ -72,12 +72,12 @@ val values : 'a t -> 'a array
 
 val fromList : (key * 'a) list -> 'a t
 (** [fromList entries] creates a new dictionary containing each
-[(key, value)] pair in [entries] *)
+    [(key, value)] pair in [entries] *)
 
 val fromArray : (key * 'a) array -> 'a t
 (** [fromArray entries] creates a new dictionary containing each
-[(key, value)] pair in [entries] *)
+    [(key, value)] pair in [entries] *)
 
 val map : ('a -> 'b [@bs]) -> 'a t -> 'b t
 (** [map f dict] maps [dict] to a new dictionary with the same keys,
-using [f] to map each value *)
+    using [f] to map each value *)

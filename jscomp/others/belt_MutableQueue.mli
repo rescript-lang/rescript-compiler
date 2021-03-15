@@ -35,7 +35,7 @@ val fromArray: 'a array -> 'a t
 
 val add: 'a t -> 'a -> unit
 (** [add q x] adds the element [x] at the end of the queue [q]. *)
-    
+
 val peek: 'a t -> 'a option
 (** [peekOpt q] returns the first element in queue [q], without removing
     it from the queue. *)
@@ -61,7 +61,7 @@ val popExn: 'a t -> 'a
 
     {b raise} an exception if [q] is empty
 *)
-  
+
 val copy: 'a t -> 'a t
 (** [copy q]
 

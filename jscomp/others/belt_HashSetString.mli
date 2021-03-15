@@ -45,21 +45,21 @@ val make: hintSize:int -> t
 val clear: t -> unit
 
 val isEmpty: t -> bool
-  
+
 val add:  t -> key -> unit
 
 val copy: t -> t
-  
+
 val has: t -> key -> bool
-  
+
 val remove: t -> key -> unit
 
 val forEachU: t -> (key  -> unit [@bs]) ->  unit
 val forEach: t -> (key  -> unit) ->  unit
-  
+
 val reduceU: t -> 'c -> ( 'c -> key -> 'c [@bs]) ->   'c
 val reduce: t -> 'c -> ( 'c -> key -> 'c) ->   'c
-  
+
 val size: t -> int  
 
 val logStats: t -> unit

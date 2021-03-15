@@ -30,12 +30,12 @@
 
 
 (** A Poor man's logging utility
-    
+
     Example:
     {[ 
-    err __LOC__ "xx"
+      err __LOC__ "xx"
     ]}
- *)
+*)
 
 
 
@@ -48,4 +48,4 @@ type 'a logging =  ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
 val dwarn : 
   ?__POS__:(string * int * int *int) ->
   'a logging 
-  
+

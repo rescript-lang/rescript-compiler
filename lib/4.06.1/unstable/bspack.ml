@@ -8313,8 +8313,8 @@ module Ml_binary : sig
 
 
 (* This file was used to read reason ast
-  and part of parsing binary ast
- *)
+   and part of parsing binary ast
+*)
 type _ kind = 
   | Ml : Parsetree.structure kind 
   | Mli : Parsetree.signature kind
@@ -8323,7 +8323,7 @@ type _ kind =
 val read_ast : 'a kind -> in_channel -> 'a 
 
 val write_ast :
-   'a kind -> string -> 'a -> out_channel -> unit
+  'a kind -> string -> 'a -> out_channel -> unit
 
 val magic_of_kind : 'a kind -> string   
 
@@ -11896,16 +11896,16 @@ val no_version_header : bool ref
 *)
 
 (* val get_current_package_name_and_path : 
-  Js_packages_info.module_system -> 
-  Js_packages_info.info_query *)
+   Js_packages_info.module_system -> 
+   Js_packages_info.info_query *)
 
 
 (* val set_package_name : string -> unit  
-val get_package_name : unit -> string option *)
+   val get_package_name : unit -> string option *)
 
 (** cross module inline option *)
 val cross_module_inline : bool ref
-  
+
 (** diagnose option *)
 val diagnose : bool ref 
 val get_diagnose : unit -> bool 
@@ -12002,7 +12002,7 @@ let cross_module_inline = ref false
 
 let diagnose = ref false
 let get_diagnose () = 
-    !diagnose
+  !diagnose
 
 
 (* let (//) = Filename.concat *)
@@ -13622,7 +13622,7 @@ val build_queue :
   ('b, 'c) t Map_string.t ->
   (Format.formatter -> string -> string -> 'b -> unit) ->
   (Format.formatter -> string -> string -> 'c -> unit) -> unit
-  
+
 val handle_queue :
   string Queue.t ->
   ('a, 'b) t Map_string.t ->
@@ -32920,7 +32920,7 @@ val read_lines : string -> string  -> string list
      Filename.concat "/bb/x/" "/bb/x/";;
    ]}
 *)
-  
+
 
 end = struct
 #1 "bspack_main.ml"

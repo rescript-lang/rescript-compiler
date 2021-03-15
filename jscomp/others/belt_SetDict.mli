@@ -55,7 +55,7 @@ val diff: ('value, 'id) t -> ('value, 'id) t -> cmp:('value, 'id) cmp -> ('value
 
 val subset: ('value, 'id) t -> ('value, 'id) t -> cmp:('value, 'id) cmp -> bool
 (** [subset s1 s2] tests whether the set [s1] is a subset of
-   the set [s2]. *)
+    the set [s2]. *)
 
 val cmp: ('value, 'id) t -> ('value, 'id) t -> cmp:('value, 'id) cmp -> int
 (** Total ordering between sets. Can be used as the ordering function
@@ -63,7 +63,7 @@ val cmp: ('value, 'id) t -> ('value, 'id) t -> cmp:('value, 'id) cmp -> int
 
 val eq: ('value, 'id) t -> ('value, 'id) t -> cmp:('value, 'id) cmp -> bool
 (** [eq s1 s2] tests whether the sets [s1] and [s2] are
-   equal, that is, contain equal elements. *)
+    equal, that is, contain equal elements. *)
 
 val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) -> unit
 val forEach: ('value, 'id) t -> ('value -> unit) -> unit
@@ -82,19 +82,19 @@ val every: ('value, 'id) t -> ('value -> bool) -> bool
 val someU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
 val some: ('value, 'id) t -> ('value -> bool) -> bool
 (** [some p s] checks if at least one element of
-   the set satisfies the predicate [p]. Oder unspecified. *)
+    the set satisfies the predicate [p]. Oder unspecified. *)
 
 val keepU: ('value, 'id) t -> ('value -> bool [@bs]) -> ('value, 'id) t
 val keep: ('value, 'id) t -> ('value -> bool) -> ('value, 'id) t
 (** [keep p s] returns the set of all elements in [s]
-   that satisfy predicate [p]. *)
+    that satisfy predicate [p]. *)
 
 val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) -> ('value, 'id) t * ('value, 'id) t
 val partition: ('value, 'id) t -> ('value -> bool) -> ('value, 'id) t * ('value, 'id) t
 (** [partition p s] returns a pair of sets [(s1, s2)], where
-   [s1] is the set of all the elements of [s] that satisfy the
-   predicate [p], and [s2] is the set of all the elements of
-   [s] that do not satisfy [p]. *)
+    [s1] is the set of all the elements of [s] that satisfy the
+    predicate [p], and [s2] is the set of all the elements of
+    [s] that do not satisfy [p]. *)
 
 val size: ('value, 'id) t -> int
 

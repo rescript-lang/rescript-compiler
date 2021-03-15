@@ -35,8 +35,8 @@ type element = string
 # 39 "others/sort.cppo.mli"
 val strictlySortedLength: element array -> int 
 (**
-  The same as {!Belt_SortArray.strictlySortedLength } except the comparator is fixed
-  @return [+n] means increasing order  [-n] means negative order
+   The same as {!Belt_SortArray.strictlySortedLength } except the comparator is fixed
+   @return [+n] means increasing order  [-n] means negative order
 *)
 
 
@@ -47,23 +47,23 @@ val stableSortInPlace: element array -> unit
 (**
    The same as {!Belt_SortArray.stableSortInPlaceBy} except the comparator is fixed 
 *)
-  
+
 val stableSort: element array -> element array
 (** The same as {!Belt_SortArray.stableSortBy} except the comparator is fixed *)
-    
+
 val binarySearch: element array -> element -> int 
 (**
 
-  If value is not found and value is less than one or more elements in array, 
-  the negative number returned is the bitwise complement of the index of the first element 
-  that is larger than value. 
-  
-  If value is not found and value is greater than all elements in array,
-  the negative number returned is the bitwise complement of 
-  (the index of the last element plus 1)
+   If value is not found and value is less than one or more elements in array, 
+   the negative number returned is the bitwise complement of the index of the first element 
+   that is larger than value. 
 
-  for example, if [key] is smaller than all elements return [-1] since [lnot (-1) = 0]
-  if [key] is larger than all elements return [- (len + 1)] since [lnot (-(len+1)) = len]
+   If value is not found and value is greater than all elements in array,
+   the negative number returned is the bitwise complement of 
+   (the index of the last element plus 1)
+
+   for example, if [key] is smaller than all elements return [-1] since [lnot (-1) = 0]
+   if [key] is larger than all elements return [- (len + 1)] since [lnot (-(len+1)) = len]
 
 *)  
 
@@ -74,10 +74,10 @@ val union:
   element array -> int 
   -> int
 (**
-  [union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp]
-  assume [src] and [src2] is strictly sorted.
-  for equivalent elements, it is picked from [src]
-  also assume that [dst] is large enough to store all elements
+   [union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp]
+   assume [src] and [src2] is strictly sorted.
+   for equivalent elements, it is picked from [src]
+   also assume that [dst] is large enough to store all elements
 *)  
 
 val intersect:
@@ -85,7 +85,7 @@ val intersect:
   element array -> int -> int -> 
   element array -> int 
   -> int
-  
+
 val diff:  
   element array -> int -> int -> 
   element array -> int -> int -> 

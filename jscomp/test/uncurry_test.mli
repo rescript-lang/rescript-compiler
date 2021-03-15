@@ -9,19 +9,19 @@ val f6 :
   ('a -> 'b -> 'c -> 'd -> 'e -> 'f -> 'a * 'b * 'c * 'd * 'e * 'f [@bs])
 val f7 :
   ('a -> 'b -> 'c -> 'd -> 'e -> 'f -> 'g -> 'a * 'b * 'c * 'd * 'e * 'f * 'g
-  [@bs])
+   [@bs])
 val f8 :
   ('a ->
    'b ->
    'c -> 'd -> 'e -> 'f -> 'g -> 'h -> 'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h
-  [@bs])
+   [@bs])
 val f9 :
   ('a ->
    'b ->
    'c ->
    'd ->
    'e -> 'f -> 'g -> 'h -> 'i -> 'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i
-  [@bs])
+   [@bs])
 val f10 :
   ('a ->
    'b ->
@@ -30,7 +30,7 @@ val f10 :
    'e ->
    'f ->
    'g -> 'h -> 'i -> 'j -> 'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i * 'j
-  [@bs])
+   [@bs])
 val f11 :
   ('a ->
    'b ->
@@ -41,7 +41,7 @@ val f11 :
    'g ->
    'h ->
    'i -> 'j -> 'k -> 'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i * 'j * 'k
-  [@bs])
+   [@bs])
 val f12 :
   ('a ->
    'b ->
@@ -54,7 +54,7 @@ val f12 :
    'i ->
    'j ->
    'k -> 'l -> 'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i * 'j * 'k * 'l
-  [@bs])
+   [@bs])
 val f13 :
   ('a ->
    'b ->
@@ -68,7 +68,7 @@ val f13 :
    'j ->
    'k ->
    'l -> 'm -> 'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i * 'j * 'k * 'l * 'm
-  [@bs])
+   [@bs])
 val f14 :
   ('a ->
    'b ->
@@ -84,7 +84,7 @@ val f14 :
    'l ->
    'm ->
    'n -> 'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i * 'j * 'k * 'l * 'm * 'n
-  [@bs])
+   [@bs])
 val f15 :
   ('a ->
    'b ->
@@ -102,7 +102,7 @@ val f15 :
    'n ->
    'o ->
    'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i * 'j * 'k * 'l * 'm * 'n * 'o
-  [@bs])
+   [@bs])
 val f16 :
   ('a ->
    'b ->
@@ -122,7 +122,7 @@ val f16 :
    'p ->
    'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i * 'j * 'k * 'l * 'm * 'n * 'o *
    'p
-  [@bs])
+   [@bs])
 val f17 :
   ('a ->
    'b ->
@@ -143,7 +143,7 @@ val f17 :
    'q ->
    'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i * 'j * 'k * 'l * 'm * 'n * 'o *
    'p * 'q
-  [@bs])
+   [@bs])
 val f18 :
   ('a ->
    'b ->
@@ -165,7 +165,7 @@ val f18 :
    'r ->
    'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i * 'j * 'k * 'l * 'm * 'n * 'o *
    'p * 'q * 'r
-  [@bs])
+   [@bs])
 val f19 :
   ('a ->
    'b ->
@@ -188,7 +188,7 @@ val f19 :
    's ->
    'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i * 'j * 'k * 'l * 'm * 'n * 'o *
    'p * 'q * 'r * 's
-  [@bs])
+   [@bs])
 val f20 :
   ('a ->
    'b ->
@@ -212,7 +212,7 @@ val f20 :
    't ->
    'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i * 'j * 'k * 'l * 'm * 'n * 'o *
    'p * 'q * 'r * 's * 't
-  [@bs])
+   [@bs])
 val f21 :
   ('a ->
    'b ->
@@ -237,7 +237,7 @@ val f21 :
    'u ->
    'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i * 'j * 'k * 'l * 'm * 'n * 'o *
    'p * 'q * 'r * 's * 't * 'u
-  [@bs])
+   [@bs])
 val f22 :
   ('a ->
    'b ->
@@ -263,6 +263,6 @@ val f22 :
    'v ->
    'a * 'b * 'c * 'd * 'e * 'f * 'g * 'h * 'i * 'j * 'k * 'l * 'm * 'n * 'o *
    'p * 'q * 'r * 's * 't * 'u * 'v
-  [@bs])
+   [@bs])
 
 val xx : unit -> 'a [@bs]

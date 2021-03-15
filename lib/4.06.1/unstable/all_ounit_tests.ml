@@ -7940,7 +7940,7 @@ val perform : string -> string array -> output
 val perform_bsc : string array -> output 
 
 
- val bsc_check_eval : string -> output  
+val bsc_check_eval : string -> output  
 
 val debug_output : output -> unit 
 end = struct
@@ -8534,8 +8534,8 @@ module Ml_binary : sig
 
 
 (* This file was used to read reason ast
-  and part of parsing binary ast
- *)
+   and part of parsing binary ast
+*)
 type _ kind = 
   | Ml : Parsetree.structure kind 
   | Mli : Parsetree.signature kind
@@ -8544,7 +8544,7 @@ type _ kind =
 val read_ast : 'a kind -> in_channel -> 'a 
 
 val write_ast :
-   'a kind -> string -> 'a -> out_channel -> unit
+  'a kind -> string -> 'a -> out_channel -> unit
 
 val magic_of_kind : 'a kind -> string   
 
@@ -18302,9 +18302,9 @@ let merge (l: t) (r : t) =
   if is_ghost l then r 
   else if is_ghost r then l 
   else match l,r with 
-  | {loc_start ; _}, {loc_end; _} (* TODO: improve*)
-    -> 
-    {loc_start ;loc_end; loc_ghost = false}
+    | {loc_start ; _}, {loc_end; _} (* TODO: improve*)
+      -> 
+      {loc_start ;loc_end; loc_ghost = false}
 
 (* let none = Location.none *)
 

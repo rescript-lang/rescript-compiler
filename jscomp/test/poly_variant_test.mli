@@ -2,7 +2,7 @@
 
 
 external test_string_type : flag:([`on_closed | `on_open | `in_ [@bs.as "in"]]
-                [@bs.string]) -> string  = 
+                                  [@bs.string]) -> string  = 
   "hey_string" [@@bs.val]
 
 
@@ -12,7 +12,7 @@ external test_int_type :
    | `again [@bs.as 5]
    | `hey 
    ]
-     [@bs.int]) -> int  = 
+   [@bs.int]) -> int  = 
   "hey_int" [@@bs.val]
 
 val uu : string array
@@ -32,8 +32,8 @@ val on2 :
   readline -> 
   ([ `line of (string -> unit [@bs]) 
    | `close of (unit -> unit [@bs])] 
-     ) ->
-unit
+  ) ->
+  unit
 
 val read : string -> string
 val readN : string -> string

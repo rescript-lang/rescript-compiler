@@ -49,15 +49,15 @@ type y3 = _y3
 
 
 type yy2 = 
-    < height : int 
-     [@bs.get nullable]
-     [@bs.set] > 
+  < height : int 
+             [@bs.get nullable]
+             [@bs.set] > 
 
 
 val fff : 
-    yy2 -> unit 
+  yy2 -> unit 
 
 val ff :     
-    y2 ->
-    yy2 -> 
-    int Js.nullable list 
+  y2 ->
+  yy2 -> 
+  int Js.nullable list 

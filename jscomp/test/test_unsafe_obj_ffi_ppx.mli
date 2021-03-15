@@ -21,14 +21,14 @@ val g : 'a g -> 'a
 
 (** Another proposal :
 
-{[
-  val g :
-    [%bs.obj: < 
-           method1 : int -> unit ; 
-           method2 : int * int -> 'a ;
-           ..
-                    >
-    ] -> 'a 
-]}
+    {[
+      val g :
+        [%bs.obj: < 
+          method1 : int -> unit ; 
+          method2 : int * int -> 'a ;
+          ..
+        >
+        ] -> 'a 
+    ]}
 *)
 

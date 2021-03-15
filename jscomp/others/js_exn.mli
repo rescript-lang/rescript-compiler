@@ -30,13 +30,13 @@ external asJsExn : exn -> t option =
   "caml_as_js_exn"
 
 external stack : t -> string option = "stack"
-  [@@bs.get] 
+[@@bs.get] 
 external message : t -> string option = "message"
-  [@@bs.get] 
+[@@bs.get] 
 external name : t -> string option = "name"
-  [@@bs.get] 
+[@@bs.get] 
 external fileName : t -> string option = "fileName"
-  [@@bs.get] 
+[@@bs.get] 
 
 
 external isCamlExceptionOrOpenVariant:
@@ -56,14 +56,14 @@ val anyToExnInternal: 'a -> exn
  * IMPORTANT: This is an internal API and may be changed / removed any time in the future.
  *
  * @example {[
- *   switch (Js.Exn.unsafeAnyToExn("test")) {
- *     | Js.Exn.Error(v) =>
- *       switch(Js.Exn.message(v)) {
- *         | Some(str) => Js.log("We won't end up here")
-           | None => Js.log2("We will land here: ", v)
- *       }
- *   }
- * ]}
+     *   switch (Js.Exn.unsafeAnyToExn("test")) {
+       *     | Js.Exn.Error(v) =>
+       *       switch(Js.Exn.message(v)) {
+         *         | Some(str) => Js.log("We won't end up here")
+       | None => Js.log2("We will land here: ", v)
+                 *       }
+       *   }
+     * ]}
  * **)
 
 (** Raise Js exception Error object with stacktrace *)

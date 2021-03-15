@@ -1,14 +1,14 @@
 (**
-  Since [others] depend on this file, its public mli files **should not
-  export types** introduced here, otherwise it would cause 
-  conflicts here.
+   Since [others] depend on this file, its public mli files **should not
+   export types** introduced here, otherwise it would cause 
+   conflicts here.
 
-  If the type exported here is also exported in modules from others,
-  you will get a type not equivalent.
+   If the type exported here is also exported in modules from others,
+   you will get a type not equivalent.
 
-  
-  Types defined here but should not export:
-  - ref (make sure not exported in public others/*.mli)
+
+   Types defined here but should not export:
+   - ref (make sure not exported in public others/*.mli)
 *)
 
 external (^) : string -> string -> string = "#string_append"

@@ -77,29 +77,29 @@ type ('key, 'id) comparable =
 
 module MakeComparableU :
   functor (M : sig
-    type t
-    val cmp : t -> t -> int [@bs]
-  end) ->
-  Comparable with type t = M.t
+             type t
+             val cmp : t -> t -> int [@bs]
+           end) ->
+    Comparable with type t = M.t
 
 module MakeComparable :
   functor (M : sig
-    type t
-    val cmp : t -> t -> int
-  end) ->
-  Comparable with type t = M.t
+             type t
+             val cmp : t -> t -> int
+           end) ->
+    Comparable with type t = M.t
 
 val comparableU:
   cmp:('a -> 'a -> int [@bs]) ->
   (module Comparable with type t = 'a)
 
 (**
-    {[
-      module C = (
-        val Belt.Id.comparable ~cmp:(compare : int -> int -> int)
-      )
-      let m = Belt.Set.make(module C)
-    ]}
+   {[
+     module C = (
+       val Belt.Id.comparable ~cmp:(compare : int -> int -> int)
+     )
+     let m = Belt.Set.make(module C)
+   ]}
     Note that the name of C can not be ignored
 *)
 val comparable:
@@ -129,19 +129,19 @@ type ('key, 'id) hashable =
 
 module MakeHashableU :
   functor (M : sig
-    type t
-     val hash : t -> int [@bs]
-     val eq : t -> t -> bool [@bs]
-  end) ->
-  Hashable with type t = M.t
+             type t
+             val hash : t -> int [@bs]
+             val eq : t -> t -> bool [@bs]
+           end) ->
+    Hashable with type t = M.t
 
 module MakeHashable :
   functor (M : sig
-    type t
-     val hash : t -> int
-     val eq : t -> t -> bool
-  end) ->
-  Hashable with type t = M.t
+             type t
+             val hash : t -> int
+             val eq : t -> t -> bool
+           end) ->
+    Hashable with type t = M.t
 
 val hashableU :
   hash:('a -> int [@bs]) ->

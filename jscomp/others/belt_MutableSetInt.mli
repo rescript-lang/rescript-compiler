@@ -34,13 +34,14 @@
 
 # 37 "others/setm.cppo.mli"
 type value = int
+  
 # 41 "others/setm.cppo.mli"
-(** The type of the set elements. *)
+  (** The type of the set elements. *)
 
 
 type t
 (** The type of sets. *)
-  
+
 val make: unit -> t
 
 val fromArray: value array -> t
@@ -56,12 +57,12 @@ val mergeMany: t -> value array -> unit
 val remove: t -> value -> unit
 val removeCheck: t -> value -> bool 
 val removeMany: t -> value array -> unit
-  
+
 val union: t -> t -> t
 val intersect: t -> t -> t
 val diff: t -> t -> t
 val subset: t -> t -> bool
-  
+
 val cmp: t -> t -> int
 val eq: t -> t -> bool
 

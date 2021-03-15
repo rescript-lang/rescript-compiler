@@ -29,7 +29,7 @@ module String = Belt_MutableMapString
 
 (** A {b mutable} sorted map module which allows customize {i compare} behavior.
 
-   Same as Belt.Map, but mutable.
+    Same as Belt.Map, but mutable.
 *)
 
 type ('k,'v,'id) t
@@ -41,15 +41,15 @@ val isEmpty: _ t -> bool
 val has: ('k, _, _) t -> 'k  -> bool
 
 val cmpU:
-    ('k, 'a, 'id) t ->
-    ('k, 'a, 'id) t ->
-    ('a -> 'a -> int [@bs]) ->
-     int
+  ('k, 'a, 'id) t ->
+  ('k, 'a, 'id) t ->
+  ('a -> 'a -> int [@bs]) ->
+  int
 val cmp:
-    ('k, 'a, 'id) t ->
-    ('k, 'a, 'id) t ->
-    ('a -> 'a -> int ) ->
-     int
+  ('k, 'a, 'id) t ->
+  ('k, 'a, 'id) t ->
+  ('a -> 'a -> int ) ->
+  int
 (** [cmp m1 m2 cmp]
     First compare by size, if size is the same,
     compare by key, value pair
@@ -111,7 +111,7 @@ val maxUndefined:('k, 'a, _) t -> ('k * 'a) Js.undefined
 val get:  ('k, 'a, 'id) t -> 'k -> 'a option
 val getUndefined: ('k, 'a, 'id) t -> 'k ->  'a Js.undefined
 val getWithDefault:
-    ('k, 'a, 'id) t -> 'k ->  'a -> 'a
+  ('k, 'a, 'id) t -> 'k ->  'a -> 'a
 val getExn:  ('k, 'a, 'id) t -> 'k ->  'a
 val checkInvariantInternal: _ t -> unit
 (**

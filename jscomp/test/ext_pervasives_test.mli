@@ -30,7 +30,7 @@
 
 
 (** Extension to standard library [Pervavives] module, safe to open 
-  *)
+*)
 
 external reraise: exn -> 'a = "%reraise"
 
@@ -53,5 +53,5 @@ val bad_argf : ('a, unit, string, 'b) format4 -> 'a
 
 (** Copied from {!Btype.hash_variant}:
     need sync up and add test case
- *)
+*)
 val hash_variant : string -> int
