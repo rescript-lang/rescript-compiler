@@ -118,7 +118,7 @@ type token =
   | WHILE
   | WITH
   | COMMENT of (string * Location.t)
-#if HAS_DOCSTRINGS then
+#if HAS_DOCSTRINGS
   | DOCSTRING of (Docstrings.docstring)
 #end
   | EOL

@@ -16,7 +16,7 @@
 (* type 'a option = None | Some of 'a *)
 
 (* Exceptions *)
-#if BS then
+#if BS
 #else
 external register_named_value : string -> 'a -> unit
                               = "caml_register_named_value"
@@ -62,7 +62,7 @@ external ( <= ) : 'a -> 'a -> bool = "%lessequal"
 external ( >= ) : 'a -> 'a -> bool = "%greaterequal"
 external compare : 'a -> 'a -> int = "%compare"
 
-#if BS then 
+#if BS
 external min : 'a -> 'a -> 'a = "%bs_min"
 external max : 'a -> 'a -> 'a = "%bs_max"
 #else
@@ -117,7 +117,7 @@ external ( +. ) : float -> float -> float = "%addfloat"
 external ( -. ) : float -> float -> float = "%subfloat"
 external ( *. ) : float -> float -> float = "%mulfloat"
 external ( /. ) : float -> float -> float = "%divfloat"
-#if BS then
+#if BS
 external ( ** ) : float -> float -> float = "pow" [@@bs.val] [@@bs.scope "Math"]
 external exp : float -> float = "exp" [@@bs.val][@@bs.scope "Math"]
 #else
@@ -127,7 +127,7 @@ external exp : float -> float = "caml_exp_float" "exp" [@@unboxed] [@@noalloc]
 #end
 external expm1 : float -> float = "caml_expm1_float" "caml_expm1"
   [@@unboxed] [@@noalloc]
-#if BS then
+#if BS
 external acos : float -> float =  "acos" [@@bs.val] [@@bs.scope "Math"]
 external asin : float -> float = "asin" [@@bs.val] [@@bs.scope "Math"]
 external atan : float -> float = "atan" [@@bs.val] [@@bs.scope "Math"]
@@ -144,7 +144,7 @@ external atan2 : float -> float -> float = "caml_atan2_float" "atan2"
 #end  
 external hypot : float -> float -> float
                = "caml_hypot_float" "caml_hypot" [@@unboxed] [@@noalloc]
-#if BS then                
+#if BS
 external cos : float -> float = "cos" [@@bs.val] [@@bs.scope "Math"]
 external cosh : float -> float = "cosh" [@@bs.val] [@@bs.scope "Math"]
 external log : float -> float =  "log" [@@bs.val] [@@bs.scope "Math"]
@@ -195,13 +195,13 @@ external float_of_int : int -> float = "%floatofint"
 external truncate : float -> int = "%intoffloat"
 external int_of_float : float -> int = "%intoffloat"
 
-#if BS then (* better unused finding *)
+#if BS (* better unused finding *)
 #else
 external float_of_bits : int64 -> float
   = "caml_int64_float_of_bits" "caml_int64_float_of_bits_unboxed"
   [@@unboxed] [@@noalloc]
 #end
-#if BS then 
+#if BS 
 let infinity = 0x1p2047
 let neg_infinity = -0x1p2047
 external nan : float = "NaN"
@@ -230,7 +230,7 @@ type fpclass =
   | FP_zero
   | FP_infinite
   | FP_nan
-#if BS then  
+#if BS  
 let classify_float (x : float) : fpclass =   
   if ([%raw{|isFinite|}] : _ -> _ [@bs]) x [@bs] then
     if abs_float x >= (* 0x1p-1022 *) (* 2.22507385850720138e-308*) min_float  then
@@ -250,7 +250,7 @@ external classify_float : (float [@unboxed]) -> fpclass =
 external string_length : string -> int = "%string_length"
 external bytes_length : bytes -> int = "%bytes_length"
 external bytes_create : int -> bytes = "caml_create_bytes"
-#if BS then
+#if BS
 #else
 external string_blit : string -> int -> bytes -> int -> int -> unit
                      = "caml_blit_string" [@@noalloc]
@@ -259,7 +259,7 @@ external bytes_blit : bytes -> int -> bytes -> int -> int -> unit
                         = "caml_blit_bytes" [@@noalloc]
 external bytes_unsafe_to_string : bytes -> string = "%bytes_to_string"
 
-#if BS then 
+#if BS
 external (^) : string -> string -> string = "#string_append"
 #else
 let ( ^ ) s1 s2 =
@@ -301,7 +301,7 @@ type ('a, 'b) result = ('a, 'b) Belt.Result.t =
   | Error of 'b
 
 (* String conversion functions *)
-#if BS then
+#if BS 
 #else
 external format_int : string -> int -> string = "caml_format_int"
 #end
@@ -319,7 +319,7 @@ let bool_of_string_opt = function
   | "false" -> Some false
   | _ -> None
 
-#if BS then   
+#if BS
 external string_of_int : int -> string = "String" [@@bs.val]
 #else  
 let string_of_int n =
@@ -546,7 +546,7 @@ let print_string s = output_string stdout s
 let print_bytes s = output_bytes stdout s
 let print_int i = output_string stdout (string_of_int i)
 let print_float f = output_string stdout (string_of_float f)
-#if BS then
+#if BS 
 external print_endline : string -> unit = "log" 
 [@@bs.val] [@@bs.scope "console"]
 #else    
@@ -562,7 +562,7 @@ let prerr_string s = output_string stderr s
 let prerr_bytes s = output_bytes stderr s
 let prerr_int i = output_string stderr (string_of_int i)
 let prerr_float f = output_string stderr (string_of_float f)
-#if BS then
+#if BS 
 external prerr_endline : string -> unit = "error" 
 [@@bs.val] [@@bs.scope "console"]    
 #else    
@@ -627,7 +627,7 @@ let exit retcode =
   do_at_exit ();
   sys_exit retcode
 
-#if BS then  
+#if BS
 #else
 let _ = register_named_value "Pervasives.do_at_exit" do_at_exit
 #end

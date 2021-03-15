@@ -23,7 +23,7 @@ type t =
 
 let create n =
  let n = if n < 1 then 1 else n in
-#if BS then  
+#if BS
 #else 
  let n = if n > Sys.max_string_length then Sys.max_string_length else n in
 #end 
@@ -65,7 +65,7 @@ let resize b more =
   let len = b.length in
   let new_len = ref len in
   while b.position + more > !new_len do new_len := 2 * !new_len done;
-#if BS then   
+#if BS
 #else   
   if !new_len > Sys.max_string_length then begin
     if b.position + more <= Sys.max_string_length
@@ -198,7 +198,7 @@ let rec add_channel_rec b ic len =
 
 let add_channel b ic len =
   if len < 0 
-#if BS then  
+#if BS
 #else
   || len > Sys.max_string_length 
 #end

@@ -9524,10 +9524,10 @@ external hash_int :  int  -> int = "caml_bs_hash_int" [@@noalloc];;
 external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" [@@noalloc];;
 
 external    
-    int_unsafe_blit : 
-    int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" [@@noalloc];;
+  int_unsafe_blit : 
+  int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" [@@noalloc];;
 
-    
+
 
 
 

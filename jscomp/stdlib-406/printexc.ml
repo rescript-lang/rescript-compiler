@@ -106,7 +106,7 @@ let _ = [Known_location { is_raise = false; filename = "";
                           is_inline = false };
          Unknown_location { is_raise = false }]
 
-#if BS then
+#if BS
 let convert_raw_backtrace_slot:
   raw_backtrace_slot -> backtrace_slot = 
     fun _ -> failwith "convert_raw_backtrace_slot not implemented"
@@ -251,7 +251,7 @@ let register_printer fn =
 external get_callstack: int -> raw_backtrace = "caml_get_current_callstack"
 
 
-#if BS then
+#if BS
 let set_uncaught_exception_handler _ = ()
 #else
 let uncaught_exception_handler = ref None

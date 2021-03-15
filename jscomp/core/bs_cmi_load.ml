@@ -22,10 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-#if 
-  BS_RELEASE_BUILD 
+#if BS_RELEASE_BUILD 
   (*true *)
-then
+
 
 let load_cmi ~unit_name : Env.Persistent_signature.t option =
   match Config_util.find_opt (unit_name ^".cmi") with 

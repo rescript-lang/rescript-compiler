@@ -15,7 +15,7 @@
 [@@@bs.config { flags = [|"-bs-no-cross-module-opt" |]}]
 (* Registering OCaml values with the C runtime for later callbacks *)
 
-#if BS then 
+#if BS
 let register _ _ = ()
 let register_exception _ _  = ()
 #else

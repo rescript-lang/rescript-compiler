@@ -7,7 +7,7 @@ let (=~) = OUnit.assert_equal
 let suites = 
   __FILE__
   >::: [
-#if 0 then    
+#if 0
     __LOC__ >:: begin fun _ -> 
       let a = [|"a";"b";"c"|] in 
       Ordered_hash_set_string.(to_sorted_array (of_array a))

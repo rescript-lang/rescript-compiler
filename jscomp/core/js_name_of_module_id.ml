@@ -190,7 +190,7 @@ let string_of_module_id
   
 
 (* Override it in browser *)
-#if BS_BROWSER then   
+#if BS_BROWSER
 let string_of_module_id_in_browser (x : Lam_module_ident.t) =  
    match x.kind with
    | External {name} -> name

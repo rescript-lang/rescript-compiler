@@ -126,7 +126,7 @@ module State = struct
     then invalid_arg "Random.int64"
     else int64aux s bound
 
-#if 0 then
+#if 0
   let nativeint =
     if Nativeint.size = 32
     then fun s bound -> Nativeint.of_int32 (int32 s (Nativeint.to_int32 bound))
@@ -168,7 +168,7 @@ let default = {
 let bits () = State.bits default
 let int bound = State.int default bound
 let int32 bound = State.int32 default bound
-#if 0 then
+#if 0
 let nativeint bound = State.nativeint default bound
 #end
 let int64 bound = State.int64 default bound

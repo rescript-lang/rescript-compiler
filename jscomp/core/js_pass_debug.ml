@@ -26,7 +26,7 @@
 
 
 
-#if BS_BROWSER || BS_RELEASE_BUILD then
+#if BS_BROWSER || BS_RELEASE_BUILD
  let dump _ (prog : J.program) = 
   prog
 #else

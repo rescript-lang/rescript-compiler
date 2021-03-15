@@ -211,7 +211,7 @@ let bs_version_string =
   " ( Using OCaml:" ^ Config.version ^ " )" 
 
 let print_version_string () = 
-#if undefined BS_RELEASE_BUILD then 
+#if undefined BS_RELEASE_BUILD
     print_string "DEV VERSION: ";
 #end  
     print_endline bs_version_string;
@@ -499,7 +499,7 @@ let _ : unit =
     exit 2
   | x -> 
     begin
-#if false (* undefined BS_RELEASE_BUILD *) then      
+#if false (* undefined BS_RELEASE_BUILD *)
       Ext_obj.bt ();
 #end
       Location.report_exception ppf x;

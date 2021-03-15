@@ -1,4 +1,4 @@
-#if 0 then
+#if 0 
 type error 
 
 external readFile : string -> (error -> string -> unit) -> unit = "read"

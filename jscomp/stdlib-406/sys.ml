@@ -37,7 +37,7 @@ external cygwin : unit -> bool = "%ostype_cygwin"
 external get_backend_type : unit -> backend_type = "%backend_type"
 
 let (executable_name, argv) = get_argv()
-#if BS then
+#if BS 
 external get_os_type : unit -> string = "#os_type"
 let os_type = get_os_type ()
 #else
@@ -50,7 +50,7 @@ let int_size = int_size ()
 let unix = unix ()
 let win32 = win32 ()
 let cygwin = cygwin ()
-#if BS then 
+#if BS 
 let max_array_length = 2147483647 (* 2^ 31 - 1 *)
 let max_string_length = 2147483647
 #else
@@ -66,7 +66,7 @@ external remove: string -> unit = "caml_sys_remove"
 external rename : string -> string -> unit = "caml_sys_rename"
 external getenv: string -> string = "caml_sys_getenv"
 
-#if BS then
+#if BS 
 external getEnv : 'a -> string -> string option = "" [@@bs.get_index] 
 let getenv_opt s =
     match [%external process ] with 
@@ -135,7 +135,7 @@ let catch_break on =
   else
     set_signal sigint Signal_default
 
-#if BS then
+#if BS
 let enable_runtime_warnings : bool -> unit = fun _ -> () 
 let runtime_warnings_enabled : unit -> bool = fun _ -> false
 #else
