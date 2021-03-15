@@ -36,9 +36,9 @@ function eq(loc, x, y) {
   
 }
 
-eq("File \"condition_compilation_test.ml\", line 98, characters 5-12", 3, 3);
+eq("File \"condition_compilation_test.ml\", line 100, characters 5-12", 3, 3);
 
-eq("File \"condition_compilation_test.ml\", line 99, characters 5-12", v.contents, 2);
+eq("File \"condition_compilation_test.ml\", line 101, characters 5-12", v.contents, 2);
 
 Mt.from_pair_suites("Condition_compilation_test", suites.contents);
 

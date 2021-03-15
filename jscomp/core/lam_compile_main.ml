@@ -108,7 +108,7 @@ let no_side_effects (rest : Lam_group.t list) : string option =
 
 
 let _d  = fun  s lam -> 
-#if undefined BS_RELEASE_BUILD then 
+#if undefined BS_RELEASE_BUILD
     Lam_util.dump  s lam ;
     Ext_log.dwarn ~__POS__ "START CHECKING PASS %s@." s;
     ignore @@ Lam_check.check !Location.input_name lam;
@@ -128,7 +128,7 @@ let compile
   let export_ident_sets = Set_ident.of_list export_idents in 
   (* To make toplevel happy - reentrant for js-demo *)
   let () = 
-#if undefined BS_RELEASE_BUILD then     
+#if undefined BS_RELEASE_BUILD
     Ext_list.iter export_idents 
       (fun id -> Ext_log.dwarn ~__POS__ "export idents: %s/%d"  id.name id.stamp) ;
 #end      
@@ -187,7 +187,7 @@ let compile
        |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
-#if undefined BS_RELEASE_BUILD then    
+#if undefined BS_RELEASE_BUILD
     |> (fun lam -> 
        let () = 
         Ext_log.dwarn ~__POS__ "Before coercion: %a@." Lam_stats.print meta in 
@@ -200,7 +200,7 @@ let compile
     Lam_coercion.coerce_and_group_big_lambda  meta lam
   in 
 
-#if undefined BS_RELEASE_BUILD then   
+#if undefined BS_RELEASE_BUILD
   let () =
     Ext_log.dwarn ~__POS__ "After coercion: %a@." Lam_stats.print meta ;
     if Js_config.get_diagnose () then
@@ -213,7 +213,7 @@ let compile
   in
 #end  
   let maybe_pure = no_side_effects groups in
-#if undefined BS_RELEASE_BUILD then 
+#if undefined BS_RELEASE_BUILD
   let () = Ext_log.dwarn ~__POS__ "\n@[[TIME:]Pre-compile: %f@]@."  (Sys.time () *. 1000.) in      
 #end  
   let body  =     
@@ -221,7 +221,7 @@ let compile
     |> Js_output.concat
     |> Js_output.output_as_block
   in
-#if undefined BS_RELEASE_BUILD then 
+#if undefined BS_RELEASE_BUILD
   let () = Ext_log.dwarn ~__POS__ "\n@[[TIME:]Post-compile: %f@]@."  (Sys.time () *. 1000.) in      
 #end    
   (* The file is not big at all compared with [cmo] *)

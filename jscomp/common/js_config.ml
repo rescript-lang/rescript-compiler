@@ -40,7 +40,7 @@ let cross_module_inline = ref false
 let diagnose = ref false
 let get_diagnose () = 
   !diagnose
-#if undefined BS_RELEASE_BUILD then
+#if undefined BS_RELEASE_BUILD
   || Sys.getenv_opt "RES_DEBUG_FILE" <> None
 #end
 

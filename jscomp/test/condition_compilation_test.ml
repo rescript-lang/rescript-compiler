@@ -1,15 +1,17 @@
 let b = 
-#if BUFFER_SIZE && BUFFER_SIZE > 20 then
-"cool"
+#if BUFFER_SIZE 
+    && 
+    BUFFER_SIZE > 20 
+      "cool"
 #else
-"u"
+      "u"
 #end
 
 let buffer_size =
-#if true || BUFFER_SIZE then
-    1
+#if true || BUFFER_SIZE 
+      1
 #else
-    32
+      32
 #end
 
 
@@ -27,61 +29,61 @@ type open_flag =
   | O_DSYNC
   | O_SYNC
   | O_RSYNC
-#if OCAML_VERSION =~ ">=3.13" then
+#if OCAML_VERSION =~ ">=3.13"
   | O_SHARE_DELETE
 #end
-#if OCAML_VERSION =~ ">=4.01" then
+#if OCAML_VERSION =~ ">=4.01"
   | O_CLOEXEC
 #end
-#if OCAML_VERSION =~ ">=4.03" then
+#if OCAML_VERSION =~ ">=4.03"
   | O_KEEPEXEC
 #end
 
 let vv =
-#if OCAML_PATCH = "BS" then
-    3
+#if OCAML_PATCH = "BS"
+      3
 #else
-    1
+      1
 #end
 
 
 let v = ref 1
 
 let a =
-#if OCAML_PATCH = "BS" then
- let () = incr v  in
+#if OCAML_PATCH = "BS"
+let () = incr v  in
 #end !v
 
 let version_gt_3 =
-#if OCAML_VERSION  (* comment *) =~ ">1" then
-    true
+#if OCAML_VERSION  (* comment *) =~ ">1" 
+      true
 #else
-    false
+      false
 #end
 
 let version =
-#if OCAML_VERSION =~ "~2" then
-   2
-#elif OCAML_VERSION =~ "~1" then
-   1
-#elif OCAML_VERSION =~ "~0" then
-   0
+#if OCAML_VERSION =~ "~2" 
+      2
+#elif OCAML_VERSION =~ "~1"
+      1
+#elif OCAML_VERSION =~ "~0" 
+      0
 #else
-  -1
+                       -1
 #end
 
 let ocaml_veriosn =
-#if OCAML_VERSION =~ "~4.02.0" then
-   "4.02.3"
+#if OCAML_VERSION =~ "~4.02.0" 
+      "4.02.3"
 #else "unknown"
 #end
 
 (**
-#if OCAML_VERSION =~ "4.02.3" #then
+   #if OCAML_VERSION =~ "4.02.3" #then
 
-#elif OCAML_VERSION =~ "4.03" #then
+   #elif OCAML_VERSION =~ "4.03" #then
    gsho
-#end
+   #end
 *)
 (* #if OCAML_VERSION =~ ">4.02" #then *)
 (* #else *)

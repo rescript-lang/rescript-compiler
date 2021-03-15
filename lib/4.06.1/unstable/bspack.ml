@@ -9094,7 +9094,6 @@ module Bs_hash_stubs
 
 
 
-
 let hash_string : string -> int = Hashtbl.hash
 let hash_string_int s i = Hashtbl.hash (s,i)
 let hash_string_small_int :  string -> int  -> int = hash_string_int
@@ -9662,7 +9661,6 @@ let replace_backward_slash (x : string)=
         | x -> x) x
 
 let empty = ""
-
 
 let compare = Bs_hash_stubs.string_length_based_compare
 
@@ -29606,7 +29604,7 @@ let directive_parse token_with_comments lexbuf =
         match token_with_comments lexbuf  with
         | COMMENT _ 
         | DOCSTRING _ 
-        | EOL -> skip ()
+        (*|  EOL*) -> skip ()
         | EOF -> raise (Error (Unterminated_if, Location.curr lexbuf)) 
         | t -> t 
         in  skip ()
@@ -29740,7 +29738,7 @@ let directive_parse token_with_comments lexbuf =
   in
   let v = parse_or true in
   begin match token () with
-  | THEN ->  v 
+  | THEN | EOL ->  v 
   | _ -> raise (Error (Expect_hash_then_in_conditional, Location.curr lexbuf))
   end
 

@@ -130,9 +130,7 @@ let () =
 #end
 
 
-#if 
-  (* OCAML_VERSION =~ ">4.03.0" *) 0
-then
+#if 0
 
 
 

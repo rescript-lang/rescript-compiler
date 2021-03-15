@@ -178,7 +178,7 @@ sig
 end
 
 
-#if 0 then 
+#if 0
 let rec bucket_length accu = function
   | Empty -> accu
   | Cons l -> bucket_length (accu + 1) l.next

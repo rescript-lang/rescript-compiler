@@ -91,7 +91,7 @@ let suites =
 
     end 
     ;
-#if 0 then    
+#if 0
     __LOC__ >:: begin fun _ ->
       let v = Ordered_hash_set_string.create 3 in 
       for i =  0 to 10 do

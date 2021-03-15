@@ -2785,7 +2785,7 @@ let fmt_ebb_of_string ?legacy_behavior str =
     match str.[str_ind] with
     | '0' .. '9' as c ->
       let new_acc = acc * 10 + (int_of_char c - int_of_char '0') in
-#if BS then      
+#if BS
 #else
       if new_acc > Sys.max_string_length then
         failwith_message

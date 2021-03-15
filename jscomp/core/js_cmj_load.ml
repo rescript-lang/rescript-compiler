@@ -55,7 +55,7 @@ let load_unit_with_file unit_name : Js_cmj_format.cmj_load_info =
   | None -> 
     if !Js_config.no_stdlib then Bs_exception.error (Cmj_not_found unit_name)
     else 
-#if BS_RELEASE_BUILD then    
+#if BS_RELEASE_BUILD
   Js_cmj_load_builtin_unit.load_builin_unit unit_name 
 #else
   Bs_exception.error (Cmj_not_found unit_name)

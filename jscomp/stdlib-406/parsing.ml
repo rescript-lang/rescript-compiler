@@ -177,10 +177,11 @@ let yyparse tables start lexer lexbuf =
     | _ ->
         current_lookahead_fun :=
           (fun tok ->
-#if BS then           
-            if Js.typeof tok <> "number" 
+             if
+#if BS 
+                 (Js.typeof tok <> "number")
 #else            
-            if Obj.is_block tok 
+                 (Obj.is_block tok )
 #end            
             then tables.transl_block.(Obj.tag tok) = curr_char
             else tables.transl_const.(Obj.magic tok) = curr_char);
