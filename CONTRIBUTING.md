@@ -238,6 +238,22 @@ For any other dependency needed in the playground, such as `ReasonReact`, you wi
 The highlevel architecture is illustrated as below:
 
 ```
+Source Language
+  |
+  | (Parser)
+  v
+Surface Syntax Tree
+  |
+  | (Built-in Syntax tree transformation)
+  v
+Surface Syntax Tree
+  |
+  | (Reuse OCaml Type checker)
+  v
+Typedtree
+  |
+  | (Reuse OCaml pattern match compiler and erase types)
+  v
 Lambda IR (OCaml compiler libs) ---+
   |   ^                            |
   |   |                     Lambda Passes (lam_* files)
