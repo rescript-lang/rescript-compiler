@@ -131,7 +131,23 @@ let (-1)..(-1.) = x
   | ((-3.14) : float) -> true
   | (lazy 5.678) -> true
   | exception 19.34 -> true
-  | _ -> false"
+  | _ -> false
+;;match literal with
+  | {js|literal|js} -> true
+  | ({js|literal1|js}, {js|literal2|js}) -> true
+  | [|{js|literal1|js};{js|literal2|js}|] -> true
+  | {js|literal1|js}::{js|literal2|js}::[] -> true
+  | { x = {js|literal1|js}; y = {js|literal2|js} } -> true
+  | Constructor ({js|literal1|js}, {js|literal2|js}) -> true
+  | \`Constuctor ({js|literal1|js}, {js|literal2|js}) -> true
+  | {js|literal|js} as x -> true
+  | {js|literal|js}|{js|literal|js} -> true
+  | ({js|literal|js} : string) -> true
+  | (lazy {js|literal|js}) -> true
+  | exception {js|literal|js} -> true
+  | _ -> false
+let {js|literal constant|js} = x
+;;for {js|literal constant|js} = 0 to 10 do () done"
 `;
 
 exports[`constraint.js 1`] = `

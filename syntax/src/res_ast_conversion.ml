@@ -355,6 +355,17 @@ let normalize =
       | Ppat_open ({txt = longidentOpen}, pattern) ->
         let p = rewritePpatOpen longidentOpen pattern in
         default_mapper.pat mapper p
+      | Ppat_constant (Pconst_string (txt, tag)) ->
+        let newTag = match tag with
+        (* transform {|abc|} into {js|abc|js}, because `template string` is interpreted as {js||js} *)
+        | Some "" -> Some "js"
+        | tag -> tag
+        in
+        let s = Parsetree.Pconst_string ((escapeTemplateLiteral txt), newTag) in
+        {p with
+          ppat_attributes = mapper.attributes mapper p.ppat_attributes;
+          ppat_desc = Ppat_constant s
+        }
       | _ ->
         default_mapper.pat mapper p
     end;

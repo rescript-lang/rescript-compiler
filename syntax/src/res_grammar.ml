@@ -136,7 +136,7 @@ let isSignatureItemStart = function
   | _ -> false
 
 let isAtomicPatternStart = function
-  | Token.Int _ | String _ | Character _
+  | Token.Int _ | String _ | Character _ | Backtick
   | Lparen | Lbracket | Lbrace
   | Underscore
   | Lident _ | Uident _ | List
@@ -196,7 +196,7 @@ let isStructureItemStart = function
   | _ -> false
 
 let isPatternStart = function
-  | Token.Int _ | Float _ | String _ | Character _ | True | False | Minus | Plus
+  | Token.Int _ | Float _ | String _ | Character _ | Backtick | True | False | Minus | Plus
   | Lparen | Lbracket | Lbrace | List
   | Underscore
   | Lident _ | Uident _ | Hash

@@ -38,3 +38,23 @@ switch science {
       </div>
     }}
 </div>
+
+switch literal {
+| `literal` => true
+| (`literal1`, `literal2`) => true
+| [`literal1`, `literal2`] => true
+| list{`literal1`, `literal2`} => true
+| {x: `literal1`, y: `literal2`} => true
+| Constructor(`literal1`, `literal2`) => true
+| #Constuctor(`literal1`, `literal2`) => true
+| `literal` as x => true
+| `literal` | `literal` => true
+| (`literal` : string) => true
+| lazy `literal`  => true
+| exception `literal` => true
+| _ => false
+}
+
+let `literal constant` = x
+
+for `literal constant` in 0 to 10 { () }

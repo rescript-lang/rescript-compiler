@@ -109,6 +109,9 @@ Solution: directly use `concat`."
       "A labeled parameter starts with a `~`."
     else
       ("A labeled parameter starts with a `~`. Did you mean: `~" ^ name ^ "`?")
+
+  let stringInterpolationInPattern =
+    "String interpolation is not supported in pattern matching."
 end
 
 
@@ -903,6 +906,27 @@ let parseConstant p =
   Parser.next p;
   constant
 
+let parseTemplateConstant ~prefix (p : Parser.t) =
+  (* Arrived at the ` char *)
+  let startPos = p.startPos in
+  Parser.nextTemplateLiteralToken p;
+  match p.token with
+  | TemplateTail txt ->
+    Parser.next p;
+    let txt = if p.mode = ParseForTypeChecker then parseTemplateStringLiteral txt else txt in
+    Parsetree.Pconst_string (txt, prefix)
+  | _ ->
+    let rec skipTokens () =
+      Parser.next p;
+      match p.token with
+      | Backtick -> Parser.next p; ()
+      | _ -> skipTokens ()
+    in
+    skipTokens ();
+    Parser.err ~startPos ~endPos:p.prevEndPos p
+      (Diagnostics.message ErrorMessages.stringInterpolationInPattern);
+    Pconst_string ("", None)
+
 let parseCommaDelimitedRegion p ~grammar ~closing ~f =
   Parser.leaveBreadcrumb p grammar;
   let rec loop nodes =
@@ -1076,6 +1100,9 @@ let rec parsePattern ?(alias=true) ?(or_=true) p =
       | _ ->
         Ast_helper.Pat.constant ~loc:(mkLoc startPos p.prevEndPos) c
     end
+  | Backtick ->
+    let constant = parseTemplateConstant ~prefix:(Some "js") p in
+    Ast_helper.Pat.constant ~loc:(mkLoc startPos p.prevEndPos) constant
   | Lparen ->
     Parser.next p;
     begin match p.token with
@@ -1109,7 +1136,13 @@ let rec parsePattern ?(alias=true) ?(or_=true) p =
     let endPos = p.endPos in
     let loc = mkLoc startPos endPos in
     Parser.next p;
-    Ast_helper.Pat.var ~loc ~attrs (Location.mkloc ident loc)
+    begin match p.token with
+    | Backtick ->
+      let constant = parseTemplateConstant ~prefix:(Some ident) p in
+      Ast_helper.Pat.constant ~loc:(mkLoc startPos p.prevEndPos) constant
+    | _ ->
+      Ast_helper.Pat.var ~loc ~attrs (Location.mkloc ident loc)
+    end
   | Uident _ ->
     let constr = parseModuleLongIdent ~lowercase:false p in
     begin match p.Parser.token with
