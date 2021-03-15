@@ -63,15 +63,15 @@ let setup_env () =
     Matching_polyfill.names_from_construct_pattern;
 #if undefined BS_RELEASE_BUILD 
     Printexc.record_backtrace true;
-    (let root_dir = 
-        Filename.dirname 
-          (Filename.dirname Sys.executable_name) in 
-    let (//) = Filename.concat in       
-    Clflags.include_dirs :=
-      (root_dir//"jscomp"//"others") ::
-      (root_dir//"jscomp"//"stdlib-406") ::
-      (root_dir//"jscomp"//"runtime") ::
-      !Clflags.include_dirs);
+  (let root_dir = 
+     Filename.dirname 
+       (Filename.dirname Sys.executable_name) in 
+   let (//) = Filename.concat in       
+   Clflags.include_dirs :=
+     (root_dir//"jscomp"//"others") ::
+     (root_dir//"jscomp"//"stdlib-406") ::
+     (root_dir//"jscomp"//"runtime") ::
+     !Clflags.include_dirs);
 #end
   Lexer.replace_directive_bool "BS" true;
   Lexer.replace_directive_bool "JS" true;
@@ -81,4 +81,4 @@ let setup_env () =
 #end  
 
 let () = 
-    at_exit (fun _ -> Format.pp_print_flush Format.err_formatter ())
+  at_exit (fun _ -> Format.pp_print_flush Format.err_formatter ())
