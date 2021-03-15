@@ -17,7 +17,7 @@ type ('a, 'b) t3 =
   [`A of (int, string) t3_aux
   | `B ]
 and ('a,'b)  t3_aux = {
-field : ('a,'b) t3
+  field : ('a,'b) t3
 } [@@ocaml.unboxed]
 ;;
 

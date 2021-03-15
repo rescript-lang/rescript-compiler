@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 module C = Belt_internalBucketsType
-  
+
 type ('a,'b) bucket = {
   mutable key : 'a;
   mutable value : 'b;
@@ -42,7 +42,7 @@ val reduce: (_, _, 'a, 'b) t -> 'c -> ('c -> 'a -> 'b -> 'c) -> 'c
 
 val logStats : _ t -> unit
 
-  
+
 val keepMapInPlaceU: (_, _, 'a, 'b) t -> ('a -> 'b -> 'b option [@bs]) -> unit
 val keepMapInPlace: (_, _, 'a, 'b) t -> ('a -> 'b -> 'b option) -> unit
 

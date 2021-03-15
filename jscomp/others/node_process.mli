@@ -41,7 +41,7 @@ external exit : int -> 'a = "exit" [@@bs.module "process"]
 external cwd : unit -> string = "cwd" [@@bs.module "process"]
 
 (** The process.uptime() method returns the number of seconds 
-   the current Node.js process has been running.) *)
+    the current Node.js process has been running.) *)
 external uptime : t -> unit -> float = "uptime" [@@bs.send]
 
 val putEnvVar : string -> string -> unit

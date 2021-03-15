@@ -25,8 +25,8 @@
 
 
 (* This file was used to read reason ast
-  and part of parsing binary ast
- *)
+   and part of parsing binary ast
+*)
 type _ kind = 
   | Ml : Parsetree.structure kind 
   | Mli : Parsetree.signature kind
@@ -35,7 +35,7 @@ type _ kind =
 val read_ast : 'a kind -> in_channel -> 'a 
 
 val write_ast :
-   'a kind -> string -> 'a -> out_channel -> unit
+  'a kind -> string -> 'a -> out_channel -> unit
 
 val magic_of_kind : 'a kind -> string   
 

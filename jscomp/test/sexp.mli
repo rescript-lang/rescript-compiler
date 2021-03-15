@@ -25,10 +25,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (** {1 Handling S-expressions}
 
-@since 0.4
+    @since 0.4
 
-@since 0.7
-Moved the streaming parser to CCSexpStream
+    @since 0.7
+    Moved the streaming parser to CCSexpStream
 *)
 
 (** {2 Basics} *)
@@ -36,7 +36,7 @@ Moved the streaming parser to CCSexpStream
 type t = [
   | `Atom of string
   | `List of t list
-  ]
+]
 
 val equal : t -> t -> bool
 val compare : t -> t -> int
@@ -67,25 +67,25 @@ val of_record : (string * t) list -> t
 
 (** {6 Traversal of S-exp}
 
-Example: serializing 2D points
-{[
-type pt = {x:int; y:int };;
+    Example: serializing 2D points
+    {[
+      type pt = {x:int; y:int };;
 
-let pt_of_sexp e =
-  Sexp.Traverse.(
-    field "x" to_int e >>= fun x ->
-    field "y" to_int e >>= fun y ->
-    return {x;y}
-  );;
+      let pt_of_sexp e =
+        Sexp.Traverse.(
+          field "x" to_int e >>= fun x ->
+          field "y" to_int e >>= fun y ->
+          return {x;y}
+        );;
 
-let sexp_of_pt pt = Sexp.(of_record ["x", of_int pt.x; "y", of_int pt.y]);;
+      let sexp_of_pt pt = Sexp.(of_record ["x", of_int pt.x; "y", of_int pt.y]);;
 
-let l = [{x=1;y=1}; {x=2;y=10}];;
+      let l = [{x=1;y=1}; {x=2;y=10}];;
 
-let sexp = Sexp.(of_list (List.map sexp_of_pt l));;
+      let sexp = Sexp.(of_list (List.map sexp_of_pt l));;
 
-Sexp.Traverse.list_all pt_of_sexp sexp;;
-]}
+      Sexp.Traverse.list_all pt_of_sexp sexp;;
+    ]}
 
 *)
 
@@ -136,7 +136,7 @@ module Traverse : sig
   val to_triple : (t * t * t) conv
 
   val to_triple_with : 'a conv -> 'b conv -> 'c conv -> ('a * 'b * 'c) conv
-      (* @since 0.4.1 *)
+  (* @since 0.4.1 *)
 
   val get_field : string -> t conv
   (** [get_field name e], when [e = List [(n1,x1); (n2,x2) ... ]], extracts

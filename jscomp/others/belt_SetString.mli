@@ -32,8 +32,9 @@
 
 # 33 "others/belt_Set.cppo.mli"
 type value = string
+  
 # 39 "others/belt_Set.cppo.mli"
-(** The type of the set elements. *)
+  (** The type of the set elements. *)
 
 
 type t
@@ -68,7 +69,7 @@ val diff: t -> t -> t
 
 val subset: t -> t -> bool
 (** [subset s1 s2] tests whether the set [s1] is a subset of
-   the set [s2]. *)
+    the set [s2]. *)
 
 val cmp: t -> t -> int
 (** Total ordering between sets. Can be used as the ordering function
@@ -76,7 +77,7 @@ val cmp: t -> t -> int
 
 val eq: t -> t -> bool
 (** [eq s1 s2] tests whether the sets [s1] and [s2] are
-   equal, that is, contain equal elements. *)
+    equal, that is, contain equal elements. *)
 
 val forEachU: t -> (value -> unit [@bs]) -> unit
 val forEach: t -> (value -> unit) -> unit
@@ -95,19 +96,19 @@ val every: t -> (value -> bool) -> bool
 val someU: t -> (value -> bool [@bs]) -> bool
 val some: t -> (value -> bool) -> bool
 (** [some p s] checks if at least one element of
-   the set satisfies the predicate [p]. Oder unspecified. *)
+    the set satisfies the predicate [p]. Oder unspecified. *)
 
 val keepU: t -> (value -> bool [@bs]) -> t
 val keep: t -> (value -> bool) -> t
 (** [keep p s] returns the set of all elements in [s]
-   that satisfy predicate [p]. *)
+    that satisfy predicate [p]. *)
 
 val partitionU: t -> (value -> bool [@bs]) -> t * t
 val partition: t -> (value -> bool) -> t * t
 (** [partition p s] returns a pair of sets [(s1, s2)], where
-   [s1] is the set of all the elements of [s] that satisfy the
-   predicate [p], and [s2] is the set of all the elements of
-   [s] that do not satisfy [p]. *)
+    [s1] is the set of all the elements of [s] that satisfy the
+    predicate [p], and [s2] is the set of all the elements of
+    [s] that do not satisfy [p]. *)
 
 val size: t -> int
 

@@ -16,8 +16,8 @@ val cmp: 'v t -> 'v t -> ('v -> 'v -> int) -> int
 val eqU: 'v t -> 'v t -> ('v -> 'v -> bool [@bs]) -> bool
 val eq: 'v t -> 'v t -> ('v -> 'v -> bool) -> bool
 (** [eq m1 m2] tests whether the maps [m1] and [m2] are
-   equal, that is, contain equal keys and associate them with
-   equal data. *)
+    equal, that is, contain equal keys and associate them with
+    equal data. *)
 
 val findFirstByU : 'v t -> (key -> 'v -> bool [@bs]) -> (key * 'v) option
 val findFirstBy : 'v t -> (key -> 'v -> bool) -> (key * 'v) option
@@ -90,7 +90,7 @@ val getUndefined: 'v t -> key -> 'v Js.undefined
 val getWithDefault: 'v t -> key -> 'v -> 'v
 
 val getExn: 'v t -> key -> 'v
- 
+
 val checkInvariantInternal: _ t -> unit
 (**
    {b raise} when invariant is not held
@@ -98,58 +98,58 @@ val checkInvariantInternal: _ t -> unit
 
 val remove: 'v t -> key -> 'v t
 (** [remove m x] returns a map containing the same bindings as
-   [m], except for [x] which is unbound in the returned map. *)
+    [m], except for [x] which is unbound in the returned map. *)
 
 val removeMany: 'v t -> key array -> 'v t
 
 val set: 'v t -> key -> 'v -> 'v t
 (** [set m x y] returns a map containing the same bindings as
-   [m], plus a binding of [x] to [y]. If [x] was already bound
-   in [m], its previous binding disappears. *)
+    [m], plus a binding of [x] to [y]. If [x] was already bound
+    in [m], its previous binding disappears. *)
 
 val updateU: 'v t -> key -> ('v option -> 'v option [@bs]) -> 'v t
 val update: 'v t -> key -> ('v option -> 'v option) -> 'v t
 
 val mergeU:
-    'v t -> 'v2 t ->
-    (key -> 'v option -> 'v2 option -> 'c option [@bs]) ->
-    'c t
+  'v t -> 'v2 t ->
+  (key -> 'v option -> 'v2 option -> 'c option [@bs]) ->
+  'c t
 val merge:
-    'v t -> 'v2 t ->
-    (key -> 'v option -> 'v2 option -> 'c option) ->
-    'c t
+  'v t -> 'v2 t ->
+  (key -> 'v option -> 'v2 option -> 'c option) ->
+  'c t
 (** [merge m1 m2 f] computes a map whose keys is a subset of keys of [m1]
     and of [m2]. The presence of each such binding, and the corresponding
     value, is determined with the function [f].
- *)
+*)
 
 val mergeMany: 'v t -> (key * 'v) array -> 'v t
 
 
 val keepU:
-    'v t ->
-    (key -> 'v -> bool [@bs]) ->
-    'v t
+  'v t ->
+  (key -> 'v -> bool [@bs]) ->
+  'v t
 val keep:
-    'v t ->
-    (key -> 'v -> bool) ->
-    'v t
+  'v t ->
+  (key -> 'v -> bool) ->
+  'v t
 (** [keep m p] returns the map with all the bindings in [m]
     that satisfy predicate [p]. *)
 
 val partitionU:
-    'v t ->
-    (key -> 'v -> bool [@bs]) ->
-    'v t * 'v t
+  'v t ->
+  (key -> 'v -> bool [@bs]) ->
+  'v t * 'v t
 val partition: 
-    'v t ->
-    (key -> 'v -> bool) ->
-    'v t * 'v t
+  'v t ->
+  (key -> 'v -> bool) ->
+  'v t * 'v t
 (** [partition m p] returns a pair of maps [(m1, m2)], where
     [m1] contains all the bindings of [s] that satisfy the
     predicate [p], and [m2] is the map with all the bindings of
     [s] that do not satisfy [p].
- *)
+*)
 
 val split: key -> 'v t -> 'v t * 'v option * 'v t
 (** [split x m] returns a triple [(l, data, r)], where
@@ -159,7 +159,7 @@ val split: key -> 'v t -> 'v t * 'v option * 'v t
     is strictly greater than [x];
       [data] is [None] if [m] contains no binding for [x],
       or [Some v] if [m] binds [v] to [x].
- *)
+*)
 
 val mapU: 'v t -> ('v -> 'v2 [@bs]) -> 'v2 t
 val map: 'v t -> ('v -> 'v2) -> 'v2 t

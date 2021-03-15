@@ -36,7 +36,7 @@ and ('k,  'v) node  =  {
 
 
 type ('k, 'id) cmp = ('k, 'id) Belt_Id.cmp
-    
+
 val copy : ('k, 'v) t -> ('k, 'v) t
 val create :
   ('a,'b) t -> 'a -> 'b -> ('a,'b) t -> ('a,'b) t
@@ -72,13 +72,13 @@ val findFirstBy : ('a, 'b) t -> ('a -> 'b -> bool ) -> ('a * 'b) option
 
 val forEachU:  ('a,'b) t -> ('a -> 'b -> unit [@bs]) -> unit
 val forEach:  ('a,'b) t -> ('a -> 'b -> unit) -> unit
-  
+
 val mapU:  ('c, 'a) t -> ('a -> 'b [@bs]) -> ('c, 'b) t
 val map:  ('c, 'a) t -> ('a -> 'b) -> ('c, 'b) t    
 
 val mapWithKeyU: ('a,'b) t -> ('a -> 'b -> 'c [@bs]) -> ('a, 'c) t
 val mapWithKey: ('a,'b) t -> ('a -> 'b -> 'c) -> ('a, 'c) t
-     
+
 val reduceU: ('a,'b) t -> 'c -> ( 'c -> 'a -> 'b -> 'c [@bs]) ->  'c
 val reduce: ('a,'b) t -> 'c -> ( 'c -> 'a -> 'b -> 'c ) ->  'c
 
@@ -112,7 +112,7 @@ val keepMap:
   ('a, 'b) t -> 
   ('a -> 'b -> 'c option ) -> 
   ('a, 'c) t
-    
+
 (* seems no sharing, could be shared with mutation *)
 val partitionSharedU:  
   ('a,'b) t -> 
@@ -132,7 +132,7 @@ val checkInvariantInternal : ('a,'b) t -> unit
 (**
    {b raise} when invariant is not held
 *)  
-  
+
 
 val fillArray : ('a,'b) node -> int -> ('a * 'b) array -> int  
 
@@ -198,7 +198,7 @@ val has:
   bool
 
 
-  
+
 val fromArray : ('a * 'b) array ->  cmp:('a,'id) cmp -> ('a, 'b) t
 
 val updateMutate :   

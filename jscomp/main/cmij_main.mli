@@ -1,7 +1,7 @@
 
 type mode = 
-| Native
-| Playground of string list (* 3rd party libraries folders paths *)
+  | Native
+  | Playground of string list (* 3rd party libraries folders paths *)
 
 val from_cmj : 
   mode: mode ->

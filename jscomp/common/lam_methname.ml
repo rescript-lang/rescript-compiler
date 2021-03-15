@@ -24,38 +24,38 @@
 
 
 (**
-  {[
-    _open -> open 
-    _in -> in 
-    _MAX_LENGTH -> MAX_LENGTH
-    _Capital -> Capital 
-    
-    _open__ ->  _open
-    open__ -> open 
-    
-    _'x -> 'x 
+   {[
+     _open -> open 
+     _in -> in 
+   _MAX_LENGTH -> MAX_LENGTH
+     _Capital -> Capital 
 
-    _Capital__ -> _Capital 
-    _MAX__ -> _MAX
-    __ -> __ 
-    __x -> __x 
-    ___ -> _     
-    ____ -> __
-    _ -> _  (* error *)   
-    
+     _open__ ->  _open
+     open__ -> open 
 
-  ]}
-  First we scan '__' from end to start, 
-  If found, discard it.
-  Otherwise, check if it is [_ + keyword] or followed by capital letter,
-  If so, discard [_].
+     _'x -> 'x 
 
-  Limitations: user can not have [_Capital__, _Capital__other] to 
-  make it all compile to [Capital].
-  Keyword is fine [open__, open__other].
-  So we loose polymorphism over capital letter. 
-  It is okay, otherwise, if [_Captial__] is interpreted as [Capital], then
-  there is no way to express [_Capital]
+       _Capital__ -> _Capital 
+       _MAX__ -> _MAX
+       __ -> __ 
+       __x -> __x 
+       ___ -> _     
+       ____ -> __
+       _ -> _  (* error *)   
+
+
+   ]}
+   First we scan '__' from end to start, 
+   If found, discard it.
+   Otherwise, check if it is [_ + keyword] or followed by capital letter,
+   If so, discard [_].
+
+   Limitations: user can not have [_Capital__, _Capital__other] to 
+   make it all compile to [Capital].
+   Keyword is fine [open__, open__other].
+   So we loose polymorphism over capital letter. 
+   It is okay, otherwise, if [_Captial__] is interpreted as [Capital], then
+   there is no way to express [_Capital]
 *)
 
 (* Copied from [ocaml/parsing/lexer.mll] *)
@@ -95,7 +95,7 @@ let key_words = Hash_set_string.of_array [|
     "of";
     "open";
     "or";
-(*  "parser", PARSER; *)
+    (*  "parser", PARSER; *)
     "private";
     "rec";
     "sig";
@@ -118,14 +118,14 @@ let key_words = Hash_set_string.of_array [|
     "lsl";
     "lsr";
     "asr";
-|]
+  |]
 let double_underscore = "__"
 
 (*https://caml.inria.fr/pub/docs/manual-ocaml/lex.html
-{[
+  {[
 
-  label-name	::=	 lowercase-ident 
-]}
+    label-name	::=	 lowercase-ident 
+  ]}
 *)
 let valid_start_char x =
   match x with 
@@ -139,8 +139,8 @@ let translate name =
     if name.[0] = '_' then  begin 
       let try_key_word = (String.sub name 1 (name_len - 1)) in 
       if name_len > 1 && 
-        (not (valid_start_char try_key_word.[0])
-        || Hash_set_string.mem key_words try_key_word)  then 
+         (not (valid_start_char try_key_word.[0])
+          || Hash_set_string.mem key_words try_key_word)  then 
         try_key_word
       else 
         name 

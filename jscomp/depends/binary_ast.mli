@@ -50,7 +50,7 @@ val magic_sep_char : char
 
    Use case cat - | fan -printer -impl -
    redirect the standard input to fan
- *)
+*)
 val write_ast : 
   sourcefile:string -> 
   output:string -> 

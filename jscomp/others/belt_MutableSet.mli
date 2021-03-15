@@ -25,7 +25,7 @@
 
 (** A {i mutable} sorted set module which allows customize {i compare} behavior.
 
-   Same as Belt.Set, but mutable.
+    Same as Belt.Set, but mutable.
 *)
 
 
@@ -61,7 +61,7 @@ val mergeMany:
 val remove: ('value, 'id) t -> 'value -> unit
 
 val removeCheck: ('value, 'id) t -> 'value -> bool
-   (* [b = removeCheck s e] [b] is true means one element removed *)
+(* [b = removeCheck s e] [b] is true means one element removed *)
 
 val removeMany:
   ('value, 'id) t -> 'value array -> unit

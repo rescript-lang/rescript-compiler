@@ -36,30 +36,30 @@ val has:
   bool
 
 val cmpU:
-    ('k, 'v, 'id) t ->
-    ('k, 'v, 'id) t ->
-    kcmp:('k, 'id) cmp ->
-    vcmp:('v -> 'v -> int [@bs]) -> 
-     int
+  ('k, 'v, 'id) t ->
+  ('k, 'v, 'id) t ->
+  kcmp:('k, 'id) cmp ->
+  vcmp:('v -> 'v -> int [@bs]) -> 
+  int
 val cmp: 
-    ('k, 'v, 'id) t ->
-    ('k, 'v, 'id) t ->
-    kcmp:('k, 'id) cmp ->
-    vcmp:('v -> 'v -> int) ->
-     int
+  ('k, 'v, 'id) t ->
+  ('k, 'v, 'id) t ->
+  kcmp:('k, 'id) cmp ->
+  vcmp:('v -> 'v -> int) ->
+  int
 
 val eqU:
-    ('k, 'a, 'id) t ->
-    ('k, 'a, 'id) t ->
-    kcmp:('k, 'id) cmp ->
-    veq:('a -> 'a -> bool [@bs]) ->
-    bool
+  ('k, 'a, 'id) t ->
+  ('k, 'a, 'id) t ->
+  kcmp:('k, 'id) cmp ->
+  veq:('a -> 'a -> bool [@bs]) ->
+  bool
 val eq:
-    ('k, 'a, 'id) t ->
-    ('k, 'a, 'id) t ->
-    kcmp:('k, 'id) cmp ->
-    veq:('a -> 'a -> bool) ->
-    bool
+  ('k, 'a, 'id) t ->
+  ('k, 'a, 'id) t ->
+  kcmp:('k, 'id) cmp ->
+  veq:('a -> 'a -> bool) ->
+  bool
 (** [eq m1 m2 cmp] tests whether the maps [m1] and [m2] are
     equal, that is, contain equal keys and associate them with
     equal data.  [cmp] is the equality predicate used to compare
@@ -140,9 +140,9 @@ val getUndefined:
   'a Js.undefined
 
 val getWithDefault:
-    ('k, 'a, 'id) t -> 'k -> 'a ->
-    cmp:('k, 'id) cmp ->
-    'a
+  ('k, 'a, 'id) t -> 'k -> 'a ->
+  cmp:('k, 'id) cmp ->
+  'a
 
 val getExn:
   ('k, 'a, 'id) t -> 'k ->
@@ -159,7 +159,7 @@ val remove:
   cmp:('a, 'id) cmp ->
   ('a, 'b, 'id) t
 (** [remove m x] returns a map containing the same bindings as
-   [m], except for [x] which is unbound in the returned map. *)
+    [m], except for [x] which is unbound in the returned map. *)
 
 val removeMany:
   ('a, 'b, 'id) t ->
@@ -172,8 +172,8 @@ val set:
   cmp:('a, 'id) cmp ->
   ('a, 'b, 'id) t
 (** [set m x y] returns a map containing the same bindings as
-   [m], plus a binding of [x] to [y]. If [x] was already bound
-   in [m], its previous binding disappears. *)
+    [m], plus a binding of [x] to [y]. If [x] was already bound
+    in [m], its previous binding disappears. *)
 
 val updateU:
   ('a, 'b, 'id) t ->
@@ -201,7 +201,7 @@ val merge:
 (** [merge m1 m2 f] computes a map whose keys is a subset of keys of [m1]
     and of [m2]. The presence of each such binding, and the corresponding
     value, is determined with the function [f].
- *)
+*)
 
 val mergeMany:
   ('a, 'b, 'id) t ->
@@ -210,24 +210,24 @@ val mergeMany:
   ('a, 'b, 'id) t
 
 val keepU:
-    ('k, 'a, 'id) t ->
-    ('k -> 'a -> bool [@bs]) ->
-    ('k, 'a, 'id) t
+  ('k, 'a, 'id) t ->
+  ('k -> 'a -> bool [@bs]) ->
+  ('k, 'a, 'id) t
 val keep:
-    ('k, 'a, 'id) t ->
-    ('k -> 'a -> bool) ->
-    ('k, 'a, 'id) t
+  ('k, 'a, 'id) t ->
+  ('k -> 'a -> bool) ->
+  ('k, 'a, 'id) t
 (** [keep m p] returns the map with all the bindings in [m]
     that satisfy predicate [p]. *)
 
 val partitionU:
-    ('k, 'a, 'id) t ->
-    ('k -> 'a -> bool [@bs]) ->
-    ('k, 'a, 'id) t * ('k, 'a, 'id) t
+  ('k, 'a, 'id) t ->
+  ('k -> 'a -> bool [@bs]) ->
+  ('k, 'a, 'id) t * ('k, 'a, 'id) t
 val partition:
-    ('k, 'a, 'id) t ->
-    ('k -> 'a -> bool) -> 
-    ('k, 'a, 'id) t * ('k, 'a, 'id) t
+  ('k, 'a, 'id) t ->
+  ('k -> 'a -> bool) -> 
+  ('k, 'a, 'id) t * ('k, 'a, 'id) t
 (** [partition m p] returns a pair of maps [(m1, m2)], where
     [m1] contains all the bindings of [s] that satisfy the
     predicate [p], and [m2] is the map with all the bindings of
@@ -246,7 +246,7 @@ val split:
     is strictly greater than [x];
       [data] is [None] if [m] contains no binding for [x],
       or [Some v] if [m] binds [v] to [x].
- *)
+*)
 
 val mapU: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) -> ('k ,'b,'id) t
 val map: ('k, 'a, 'id) t -> ('a -> 'b) -> ('k ,'b,'id) t

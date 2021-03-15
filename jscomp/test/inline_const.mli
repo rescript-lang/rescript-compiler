@@ -4,11 +4,11 @@ val f : string [@@bs.inline "hello"]
 
 val f1 : 
   string 
-  [@@bs.inline {j|a|j}]
+[@@bs.inline {j|a|j}]
 
 val f2 :   
   string 
-  [@@bs.inline {j|中文|j}]
+[@@bs.inline {j|中文|j}]
 
 module N : sig   
   val f3 : string [@@bs.inline {j|中文|j} ]

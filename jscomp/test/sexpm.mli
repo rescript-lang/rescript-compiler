@@ -14,7 +14,7 @@ type 'a gen = unit -> 'a option
 type t = [
   | `Atom of string
   | `List of t list
-  ]
+]
 type sexp = t
 
 (** {2 Serialization (encoding)} *)

@@ -35,4 +35,4 @@ type hh = Xx of int
 
 type t = 
   | A of (int -> int [@bs]) 
-  [@@bs.deriving accessors]
+[@@bs.deriving accessors]

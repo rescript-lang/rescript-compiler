@@ -25,9 +25,9 @@
 (** This function set up built in compile time variables used in 
     conditional compilation so that 
     {[
-        #if  BS then 
-        #elif .. then 
-        #end
+      #if  BS then 
+      #elif .. then 
+      #end
     ]}
     Is understood, also make sure the playground do the same initialization. 
 *)

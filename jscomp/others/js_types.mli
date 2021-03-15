@@ -50,8 +50,8 @@ type _ t =
 
 val test : 'a -> 'b t -> bool
 (** @example{[
-  test "x" String = true
-  ]}*)
+      test "x" String = true
+    ]}*)
 
 
 type tagged_t = 

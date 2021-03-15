@@ -10,7 +10,7 @@ type nonrec vv =
     tuple : int * string * string list * 
             float list * string array array * int 
   }
-  [@@bs.deriving {dynval}]
+[@@bs.deriving {dynval}]
 
 type nonrec uu = 
   | A of int 
@@ -27,11 +27,11 @@ val h : Bs_dyn.value
 val hh : Bs_dyn.value 
 
 (**
-{[ 
-let f u = [%bs.deriving.dynval: uu] u [@bs]
-let f v = [%bs.deriving.dynval: vv] v [@bs]
+   {[ 
+     let f u = [%bs.deriving.dynval: uu] u [@bs]
+     let f v = [%bs.deriving.dynval: vv] v [@bs]
 
-[%bs.deriving.dynval int list]
-]}
+         [%bs.deriving.dynval int list]
+   ]}
 *)
 #end

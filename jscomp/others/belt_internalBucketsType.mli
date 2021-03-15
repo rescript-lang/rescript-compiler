@@ -24,7 +24,7 @@
 
 type 'a opt = 'a Js.undefined
 type ('hash, 'eq, 'c) container =
-   { 
+  { 
     mutable size: int;                        (* number of entries *)
     mutable buckets: 'c opt array;  (* the buckets *)
     hash: 'hash;
@@ -40,7 +40,7 @@ val make :
   eq:'eq -> 
   hintSize:int ->
   ('hash, 'eq, _) container
-  
+
 val clear : _ container -> unit
 
 val isEmpty: _ container -> bool

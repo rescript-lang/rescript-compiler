@@ -26,5 +26,5 @@
     reverse namespace printing to 
     avoid namespace leaking
 *) 
- val out_ident :
+val out_ident :
   Format.formatter -> string -> unit 

@@ -2507,16 +2507,16 @@ module Bsb_helper_main : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- (** Used to generate .d file, for example 
-  {[
-    bsb_helper.exe -g 0 -MD  src/hi/hello.ml
-  ]}
-  It will read the cache file and generate the corresponding
-     [.d] file. This [.d] file will be used as attribute [depfile]
-  whether we use namespace or not, the filename of [.mlast], [.d] 
-  should be kept the same, we only need change the name of [.cm*]
-  and the contents of filename in [.d]
- *)
+(** Used to generate .d file, for example 
+    {[
+      bsb_helper.exe -g 0 -MD  src/hi/hello.ml
+    ]}
+    It will read the cache file and generate the corresponding
+    [.d] file. This [.d] file will be used as attribute [depfile]
+    whether we use namespace or not, the filename of [.mlast], [.d] 
+    should be kept the same, we only need change the name of [.cm*]
+    and the contents of filename in [.d]
+*)
 
 end = struct
 #1 "bsb_helper_main.ml"

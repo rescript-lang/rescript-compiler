@@ -14,28 +14,28 @@
 
 (** A {i immutable} sorted map module which allows customize {i compare} behavior.
 
-   The implementation uses balanced binary trees, and therefore searching
-   and insertion take time logarithmic in the size of the map.
+    The implementation uses balanced binary trees, and therefore searching
+    and insertion take time logarithmic in the size of the map.
 
-  For more info on this module's usage of identity, `make` and others, please see
-  the top level documentation of Belt, {b A special encoding for collection safety}.
+    For more info on this module's usage of identity, `make` and others, please see
+    the top level documentation of Belt, {b A special encoding for collection safety}.
 
-  Example usage:
+    Example usage:
 
-   @example {[
-    module PairComparator = Belt.Id.MakeComparable(struct
-      type t = int * int
-      let cmp (a0, a1) (b0, b1) =
-        match Pervasives.compare a0 b0 with
-        | 0 -> Pervasives.compare a1 b1
-        | c -> c
-    end)
+    @example {[
+      module PairComparator = Belt.Id.MakeComparable(struct
+          type t = int * int
+          let cmp (a0, a1) (b0, b1) =
+            match Pervasives.compare a0 b0 with
+            | 0 -> Pervasives.compare a1 b1
+            | c -> c
+        end)
 
-    let myMap = Belt.Map.make ~id:(module PairComparator)
-    let myMap2 = Belt.Map.set myMap (1, 2) "myValue"
-  ]}
+      let myMap = Belt.Map.make ~id:(module PairComparator)
+      let myMap2 = Belt.Map.set myMap (1, 2) "myValue"
+    ]}
 
-  The API documentation below will assume a predeclared comparator module for integers, IntCmp
+    The API documentation below will assume a predeclared comparator module for integers, IntCmp
 *)
 
 
@@ -100,7 +100,7 @@ val make: id:('k, 'id) id -> ('k, 'v, 'id) t
     @example {[
       let m = Belt.Map.make ~id:(module IntCmp)
     ]}
- *)
+*)
 
 
 val isEmpty: _ t -> bool
@@ -115,18 +115,18 @@ val has: ('k, 'v, 'id) t -> 'k  -> bool
     @example {[
       has (fromArray [|1,"1"|] ~id:(module IntCmp)) 1 = true
     ]}
-  *)
+*)
 
 val cmpU:
-    ('k, 'v, 'id) t ->
-    ('k, 'v, 'id) t ->
-    ('v -> 'v -> int [@bs]) ->
-     int
+  ('k, 'v, 'id) t ->
+  ('k, 'v, 'id) t ->
+  ('v -> 'v -> int [@bs]) ->
+  int
 val cmp:
-    ('k, 'v, 'id) t ->
-    ('k, 'v, 'id) t ->
-    ('v -> 'v -> int ) ->
-     int
+  ('k, 'v, 'id) t ->
+  ('k, 'v, 'id) t ->
+  ('v -> 'v -> int ) ->
+  int
 (** [cmp m0 m1 vcmp]
 
     Total ordering of map given total ordering of value function.
@@ -135,15 +135,15 @@ val cmp:
 *)
 
 val eqU:
-    ('k, 'v, 'id) t ->
-    ('k, 'v, 'id) t ->
-    ('v -> 'v -> bool [@bs]) ->
-    bool
+  ('k, 'v, 'id) t ->
+  ('k, 'v, 'id) t ->
+  ('v -> 'v -> bool [@bs]) ->
+  bool
 val eq:
-    ('k, 'v, 'id) t ->
-    ('k, 'v, 'id) t ->
-    ('v -> 'v -> bool) ->
-    bool
+  ('k, 'v, 'id) t ->
+  ('k, 'v, 'id) t ->
+  ('v -> 'v -> bool) ->
+  bool
 (** [eq m1 m2 veq] tests whether the maps [m1] and [m2] are
     equal, that is, contain equal keys and associate them with
     equal data.  [veq] is the equality predicate used to compare
@@ -297,10 +297,10 @@ val getUndefined: ('k, 'v, 'id) t -> 'k ->  'v Js.undefined
 *)
 
 val getWithDefault:
-    ('k, 'v, 'id) t -> 'k ->  'v -> 'v
+  ('k, 'v, 'id) t -> 'k ->  'v -> 'v
 (** [getWithDefault s k default]
 
-   {b See} {!get}
+    {b See} {!get}
 
     @return [default] when [k] is not found
 
@@ -309,7 +309,7 @@ val getWithDefault:
 val getExn:  ('k, 'v, 'id) t -> 'k -> 'v
 (** [getExn s k]
 
-   {b See} {!getExn}
+    {b See} {!getExn}
 
     {b raise} when [k] not exist
 *)
@@ -339,7 +339,7 @@ val removeMany: ('k, 'v, 'id) t -> 'k array -> ('k, 'v, 'id) t
 *)
 
 val set:
-    ('k, 'v, 'id) t -> 'k -> 'v ->  ('k, 'v, 'id) t
+  ('k, 'v, 'id) t -> 'k -> 'v ->  ('k, 'v, 'id) t
 (** [set m x y ] returns a map containing the same bindings as
     [m], with a new binding of [x] to [y]. If [x] was already bound
     in [m], its previous binding disappears.
@@ -365,7 +365,7 @@ val update: ('k, 'v, 'id) t -> 'k -> ('v option -> 'v option) -> ('k, 'v, 'id) t
 *)
 
 val mergeMany:
-    ('k, 'v, 'id) t -> ('k * 'v) array ->  ('k, 'v, 'id) t
+  ('k, 'v, 'id) t -> ('k * 'v) array ->  ('k, 'v, 'id) t
 (** [mergeMany s xs]
 
     Adding each of [xs] to [s], note unlike {!add},
@@ -374,15 +374,15 @@ val mergeMany:
 *)
 
 val mergeU:
-   ('k, 'v, 'id ) t ->
-   ('k, 'v2, 'id) t ->
-   ('k -> 'v option -> 'v2 option -> 'v3 option [@bs]) ->
-   ('k, 'v3, 'id) t
+  ('k, 'v, 'id ) t ->
+  ('k, 'v2, 'id) t ->
+  ('k -> 'v option -> 'v2 option -> 'v3 option [@bs]) ->
+  ('k, 'v3, 'id) t
 val merge:
-   ('k, 'v, 'id ) t ->
-   ('k, 'v2, 'id) t ->
-   ('k -> 'v option -> 'v2 option -> 'v3 option) ->
-   ('k, 'v3, 'id) t
+  ('k, 'v, 'id ) t ->
+  ('k, 'v2, 'id) t ->
+  ('k -> 'v option -> 'v2 option -> 'v3 option) ->
+  ('k, 'v3, 'id) t
 (** [merge m1 m2 f] computes a map whose keys is a subset of keys of [m1]
     and of [m2]. The presence of each such binding, and the corresponding
     value, is determined with the function [f].
@@ -390,24 +390,24 @@ val merge:
 
 
 val keepU:
-    ('k, 'v, 'id) t ->
-    ('k -> 'v -> bool [@bs]) ->
-    ('k, 'v, 'id) t
+  ('k, 'v, 'id) t ->
+  ('k -> 'v -> bool [@bs]) ->
+  ('k, 'v, 'id) t
 val keep:
-    ('k, 'v, 'id) t ->
-    ('k -> 'v -> bool) ->
-    ('k, 'v, 'id) t
+  ('k, 'v, 'id) t ->
+  ('k -> 'v -> bool) ->
+  ('k, 'v, 'id) t
 (** [keep m p] returns the map with all the bindings in [m]
     that satisfy predicate [p]. *)
 
 val partitionU:
-    ('k, 'v, 'id) t ->
-    ('k -> 'v -> bool [@bs]) ->
-    ('k, 'v, 'id) t * ('k, 'v, 'id) t
+  ('k, 'v, 'id) t ->
+  ('k -> 'v -> bool [@bs]) ->
+  ('k, 'v, 'id) t * ('k, 'v, 'id) t
 val partition:
-    ('k, 'v, 'id) t ->
-    ('k -> 'v -> bool) ->
-    ('k, 'v, 'id) t * ('k, 'v, 'id) t
+  ('k, 'v, 'id) t ->
+  ('k -> 'v -> bool) ->
+  ('k, 'v, 'id) t * ('k, 'v, 'id) t
 (** [partition m p] returns a pair of maps [(m1, m2)], where
     [m1] contains all the bindings of [s] that satisfy the
     predicate [p], and [m2] is the map with all the bindings of
@@ -415,8 +415,8 @@ val partition:
 *)
 
 val split:
-    ('k, 'v, 'id) t -> 'k ->
-    (('k, 'v, 'id) t * ('k, 'v, 'id) t )* 'v option
+  ('k, 'v, 'id) t -> 'k ->
+  (('k, 'v, 'id) t * ('k, 'v, 'id) t )* 'v option
 (** [split x m] returns a tuple [(l r), data], where
       [l] is the map with all the bindings of [m] whose 'k
     is strictly less than [x];

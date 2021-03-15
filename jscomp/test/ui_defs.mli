@@ -1,9 +1,9 @@
 
 (* external stackPanel : unit -> stackPanel = ""  
     [@@bs.new] [@@bs.module "blp/ui" "UI"] 
-   
-https://github.com/jaked/ocamljs/issues/2
- *)
+
+   https://github.com/jaked/ocamljs/issues/2
+*)
 
 (* external dom : widget = "x" [@@bs.val ] *)
 

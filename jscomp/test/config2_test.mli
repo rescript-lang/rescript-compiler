@@ -9,12 +9,12 @@ class type v2 = object
 end [@bs]
 
 type vv = 
-   < 
+  < 
     hey : int -> int -> int [@bs]
   >  
 
 type vv2 = 
-   < 
+  < 
     hey : int -> int -> int [@bs]
   > 
 

@@ -24,28 +24,28 @@
 
 (** A {i immutable} sorted set module which allows customize {i compare} behavior.
 
-   The implementation uses balanced binary trees, and therefore searching
-   and insertion take time logarithmic in the size of the map.
+    The implementation uses balanced binary trees, and therefore searching
+    and insertion take time logarithmic in the size of the map.
 
-  For more info on this module's usage of identity, `make` and others, please see
-  the top level documentation of Belt, {b A special encoding for collection safety}.
+    For more info on this module's usage of identity, `make` and others, please see
+    the top level documentation of Belt, {b A special encoding for collection safety}.
 
-  Example usage:
+    Example usage:
 
-   @example {[
-    module PairComparator = Belt.Id.MakeComparable(struct
-      type t = int * int
-      let cmp (a0, a1) (b0, b1) =
-        match Pervasives.compare a0 b0 with
-        | 0 -> Pervasives.compare a1 b1
-        | c -> c
-    end)
+    @example {[
+      module PairComparator = Belt.Id.MakeComparable(struct
+          type t = int * int
+          let cmp (a0, a1) (b0, b1) =
+            match Pervasives.compare a0 b0 with
+            | 0 -> Pervasives.compare a1 b1
+            | c -> c
+        end)
 
-    let mySet = Belt.Set.make ~id:(module PairComparator)
-    let mySet2 = Belt.Set.add mySet (1, 2)
-  ]}
+      let mySet = Belt.Set.make ~id:(module PairComparator)
+      let mySet2 = Belt.Set.add mySet (1, 2)
+    ]}
 
-  The API documentation below will assume a predeclared comparator module for integers, IntCmp
+    The API documentation below will assume a predeclared comparator module for integers, IntCmp
 *)
 
 (** Specalized when value type is [int], more efficient
@@ -93,7 +93,7 @@ val fromArray:  'value array -> id:('value, 'id) id ->  ('value, 'id) t
 (** [fromArray xs ~id]
 
     @example{[
-     toArray (fromArray [1;3;2;4] (module IntCmp)) = [1;2;3;4]
+      toArray (fromArray [1;3;2;4] (module IntCmp)) = [1;2;3;4]
     ]}
 *)
 
@@ -130,15 +130,15 @@ val add:
 (** [add s x] If [x] was already in [s], [s] is returned unchanged.
 
     @example {[
-     let s0 = make ~id:(module IntCmp);;
-     let s1 = add s0 1 ;;
-     let s2 = add s1 2;;
-     let s3 = add s2 2;;
-     toArray s0 = [||];;
-     toArray s1 = [|1|];;
-     toArray s2 = [|1;2|];;
-     toArray s3 = [|1;2|];;
-     s2 == s3;;
+      let s0 = make ~id:(module IntCmp);;
+      let s1 = add s0 1 ;;
+      let s2 = add s1 2;;
+      let s3 = add s2 2;;
+      toArray s0 = [||];;
+      toArray s1 = [|1|];;
+      toArray s2 = [|1;2|];;
+      toArray s3 = [|1;2|];;
+      s2 == s3;;
     ]}
 *)
 
@@ -188,11 +188,11 @@ val union: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 
 val intersect: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 (** [intersect s0 s1]
-   @example {[
-     let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-     let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
-     toArray (intersect s0 s1) =  [|2;3;5|]
-   ]}
+    @example {[
+      let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+      let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
+      toArray (intersect s0 s1) =  [|2;3;5|]
+    ]}
 
 *)
 
@@ -289,7 +289,7 @@ val size:  ('value, 'id) t -> int
 
 val toArray: ('value, 'id) t -> 'value array
 (** [toArray s0]
-   @example {[
+    @example {[
       let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
       toArray s0 = [|2;3;5;6|];;
     ]}*)
@@ -309,7 +309,7 @@ val minimum: ('value, 'id) t -> 'value option
 val minUndefined: ('value, 'id) t -> 'value Js.undefined
 (** [minUndefined s0]
 
-   @return the minimum element of the collection, [undefined] if it is empty
+    @return the minimum element of the collection, [undefined] if it is empty
 *)
 
 val maximum: ('value, 'id) t -> 'value option
@@ -334,7 +334,7 @@ val get: ('value, 'id) t -> 'value -> 'value option
 
 val getUndefined: ('value, 'id) t -> 'value -> 'value Js.undefined
 (** {b See} {!get}
-    *)
+*)
 
 val getExn: ('value, 'id) t -> 'value -> 'value
 (** {b See} {!get}

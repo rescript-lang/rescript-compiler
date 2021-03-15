@@ -26,16 +26,16 @@ external size: 'a array -> int = "%array_length"
 
 val get: 'a array -> int -> 'a option
 (**
-  [get arr i]
+   [get arr i]
 
-  If [i <= 0 <= length arr];returns [Some value] where [value] is the item at index [i]
-  If [i] is out of range;returns [None]
+   If [i <= 0 <= length arr];returns [Some value] where [value] is the item at index [i]
+   If [i] is out of range;returns [None]
 
-  @example {[
-    Belt.Array.get [|"a";"b";"c"|] 0 = Some "a";;
-    Belt.Array.get [|"a";"b";"c"|] 3 = None;;
-    Belt.Array.get [|"a";"b";"c"|] (-1) = None;;
-  ]}
+   @example {[
+     Belt.Array.get [|"a";"b";"c"|] 0 = Some "a";;
+     Belt.Array.get [|"a";"b";"c"|] 3 = None;;
+     Belt.Array.get [|"a";"b";"c"|] (-1) = None;;
+   ]}
 *)
 
 val getExn: 'a array -> int -> 'a
@@ -84,11 +84,11 @@ val shuffle: 'a array -> 'a array
 val reverseInPlace: 'a array -> unit
 (** [reverseInPlace arr] reverses items in [arr] in place
 
-  @example {[
-    let arr = [|10;11;12;13;14|];;
-    let () = reverseInPlace arr;;
-    arr = [|14;13;12;11;10|];;
-  ]}
+    @example {[
+      let arr = [|10;11;12;13;14|];;
+      let () = reverseInPlace arr;;
+      arr = [|14;13;12;11;10|];;
+    ]}
 *)
 
 val reverse: 'a array -> 'a array
@@ -102,13 +102,13 @@ val reverse: 'a array -> 'a array
 
 external makeUninitialized: int -> 'a Js.undefined array = "Array" [@@bs.new]
 (**
-  [makeUninitialized n] creates an array of length [n] filled with the undefined value.
-  You must specify the type of data that will eventually fill the array.
+   [makeUninitialized n] creates an array of length [n] filled with the undefined value.
+   You must specify the type of data that will eventually fill the array.
 
-  @example {[
-    let arr: string Js.undefined array = makeUninitialized 5;;
-    getExn arr 0 = Js.undefined;;
-  ]}
+   @example {[
+     let arr: string Js.undefined array = makeUninitialized 5;;
+     getExn arr 0 = Js.undefined;;
+   ]}
 *)
 
 external makeUninitializedUnsafe: int -> 'a array = "Array" [@@bs.new]
@@ -117,10 +117,10 @@ external makeUninitializedUnsafe: int -> 'a array = "Array" [@@bs.new]
     {b Unsafe}
 
     @example {[
-    let arr = Belt.Array.makeUninitializedUnsafe 5;;
-    let () = Js.log(Belt.Array.getExn arr 0);; (* undefined *)
-    Belt.Array.setExn arr 0 "example";;
-    let () = Js.log(Belt.Array.getExn arr 0 = "example");;
+      let arr = Belt.Array.makeUninitializedUnsafe 5;;
+      let () = Js.log(Belt.Array.getExn arr 0);; (* undefined *)
+      Belt.Array.setExn arr 0 "example";;
+      let () = Js.log(Belt.Array.getExn arr 0 = "example");;
     ]}
 *)
 
@@ -147,14 +147,14 @@ val rangeBy: int -> int -> step:int -> int array
     it also return empty array when [start > finish]
 
     @example {[
-     rangeBy 0 10 ~step:3 = [|0;3;6;9|];;
-     rangeBy 0 12 ~step:3 = [|0;3;6;9;12|];;
-     rangeBy 33 0 ~step:1 =  [||];;
-     rangeBy 33 0 ~step:(-1) = [||];;
-     rangeBy 3 12 ~step:(-1) = [||];;
-     rangeBy 3 3 ~step:0 = [||] ;;
-     rangeBy 3 3 ~step:(1) = [|3|] ;;
-   ]}
+      rangeBy 0 10 ~step:3 = [|0;3;6;9|];;
+      rangeBy 0 12 ~step:3 = [|0;3;6;9;12|];;
+      rangeBy 33 0 ~step:1 =  [||];;
+      rangeBy 33 0 ~step:(-1) = [||];;
+      rangeBy 3 12 ~step:(-1) = [||];;
+      rangeBy 3 3 ~step:0 = [||] ;;
+      rangeBy 3 3 ~step:(1) = [|3|] ;;
+    ]}
 *)
 
 val makeByU: int -> (int -> 'a [@bs]) -> 'a array
@@ -187,23 +187,23 @@ val zip: 'a array -> 'b array -> ('a * 'b) array
     @example {[
       zip [|1;2|] [|3;4;5|] = [|(1, 3);(2, 4)|]
     ]}
- *)
+*)
 
 
- val zipByU: 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array
- val zipBy: 'a array -> 'b array -> ('a -> 'b -> 'c ) -> 'c array
- (**
-    [zipBy xs ys f]
+val zipByU: 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array
+val zipBy: 'a array -> 'b array -> ('a -> 'b -> 'c ) -> 'c array
+(**
+   [zipBy xs ys f]
 
-    Create an array by applying [f] to corresponding elements of [xs] and [ys]
-    Stops with shorter array
+   Create an array by applying [f] to corresponding elements of [xs] and [ys]
+   Stops with shorter array
 
-    Equivalent to [map (zip xs ys) (fun (a,b) -> f a b) ]
+   Equivalent to [map (zip xs ys) (fun (a,b) -> f a b) ]
 
-    @example {[
-      zipBy [|1;2;3|] [|4;5|] (fun a b -> 2 * a + b) = [|6;9|];;
-    ]}
- *)
+   @example {[
+     zipBy [|1;2;3|] [|4;5|] (fun a b -> 2 * a + b) = [|6;9|];;
+   ]}
+*)
 
 val unzip: ('a * 'b) array -> 'a array * 'b array
 (** [unzip a] takes an array of pairs and creates a pair of arrays. The first array contains all the first items of the pairs; the second array contains all the second items.
@@ -234,8 +234,8 @@ val concatMany: 'a array array -> 'a array
     @return a fresh array as the concatenation of [xss] (an array of arrays)
 
     @example {[
-      concatMany [| [|1;2;3|]; [|4;5;6|]; [|7;8|] |] = [|1;2;3;4;5;6;7;8|];;
-    ]}
+     concatMany [| [|1;2;3|]; [|4;5;6|]; [|7;8|] |] = [|1;2;3;4;5;6;7;8|];;
+   ]}
 *)
 
 val slice: 'a array -> offset:int -> len:int -> 'a array
@@ -277,7 +277,7 @@ external copy : 'a array -> (_ [@bs.as 0]) -> 'a array = "slice" [@@bs.send]
 (** [copy a]
 
     @return a copy of [a];that is;a fresh array
-   containing the same elements as [a].
+    containing the same elements as [a].
 *)
 
 val fill: 'a array -> offset:int -> len:int -> 'a -> unit
@@ -299,15 +299,15 @@ val fill: 'a array -> offset:int -> len:int -> 'a -> unit
       fill arr ~offset:7 ~len:2 8;;
       arr = [|0;1;9;9;4|];;
     ]}
- *)
+*)
 
 val blit:
-    src:'a array -> srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit
+  src:'a array -> srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit
 (** [blit ~src:v1 ~srcOffset:o1 ~dst:v2 ~dstOffset:o2 ~len]
 
     copies [len] elements
-   from array [v1];starting at element number [o1];to array [v2],
-   starting at element number [o2].
+    from array [v1];starting at element number [o1];to array [v2],
+    starting at element number [o2].
 
     It works correctly even if
     [v1] and [v2] are the same array;and the source and
@@ -321,10 +321,10 @@ val blit:
 
     @example {[
       Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v2 ~dstOffset: 2 ~len: 3 |.
-        [|20;21;14;15;16;25;26;27|]
-      Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v1 ~dstOffset: 2 ~len: 3 |.
-        [|10;11;14;15;16;15;16;17|]
-      ]}
+      [|20;21;14;15;16;25;26;27|]
+        Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v1 ~dstOffset: 2 ~len: 3 |.
+      [|10;11;14;15;16;15;16;17|]
+    ]}
 
 *)
 
@@ -345,9 +345,9 @@ val forEach: 'a array ->  ('a -> unit ) -> unit
     @example {[
       forEach [|"a";"b";"c"|] (fun x -> Js.log("Item: " ^ x));;
       (*  prints:
-        Item: a
-        Item: b
-        Item: c
+          Item: a
+          Item: b
+          Item: c
       *)
 
       let total = ref 0;;
@@ -365,8 +365,8 @@ val map: 'a array ->  ('a -> 'b ) -> 'b array
     the beginning to end
 
     @example {[
-     map [|1;2|] (fun x-> x + 10) = [|11;12|]
-   ]}
+      map [|1;2|] (fun x-> x + 10) = [|11;12|]
+    ]}
 
 *)
 
@@ -374,9 +374,9 @@ val getByU: 'a array -> ('a -> bool [@bs]) -> 'a option
 val getBy: 'a array -> ('a -> bool) -> 'a option
 (** [getBy xs p] returns [Some value] for the first value in [xs] that satisifies the predicate function [p]; returns [None] if no element satisifies the function.
 
-  @example {[
+    @example {[
       getBy [|1;4;3;2|] (fun x -> x mod 2 = 0) = Some 4
-      getBy [|15;13;11|] (fun x -> x mod 2 = 0) = None
+        getBy [|15;13;11|] (fun x -> x mod 2 = 0) = None
     ]}
 *)
 
@@ -384,9 +384,9 @@ val getIndexByU: 'a array -> ('a -> bool [@bs]) -> int option
 val getIndexBy: 'a array -> ('a -> bool) -> int option
 (** [getIndexBy xs p] returns [Some index] for the first value in [xs] that satisifies the predicate function [p]; returns [None] if no element satisifies the function.
 
-  @example {[
+    @example {[
       getIndexBy [|1;4;3;2|] (fun x -> x mod 2 = 0) = Some 1
-      getIndexBy [|15;13;11|] (fun x -> x mod 2 = 0) = None
+        getIndexBy [|15;13;11|] (fun x -> x mod 2 = 0) = None
     ]}
 *)
 
@@ -434,9 +434,9 @@ val forEachWithIndex: 'a array ->  (int -> 'a -> unit ) -> unit
 
       forEachWithIndex [|"a";"b";"c"|] (fun i x -> Js.log("Item " ^ (string_of_int i) ^ " is " ^ x));;
       (*  prints:
-        Item 0 is a
-        Item 1 is b
-        Item 2 is c
+          Item 0 is a
+          Item 1 is b
+          Item 2 is c
       *)
 
       let total = ref 0 ;;
@@ -451,7 +451,7 @@ val mapWithIndex: 'a array ->  (int -> 'a -> 'b ) -> 'b array
 (** [mapWithIndex xs f ]
 
     [mapWithIndex xs f] applies [f] to each element of [xs]. Function [f] takes two arguments:
-  the index starting from 0 and the element from [xs].
+    the index starting from 0 and the element from [xs].
 
     @example {[
       mapWithIndex [|1;2;3|] (fun i x -> i + x) =
@@ -518,7 +518,7 @@ val reduceWithIndex:  'a array -> 'b -> ('b -> 'a -> int -> 'b) -> 'b
     Applies [f] to each element of [xs] from beginning to end. Function [f] has three parameters: the item
     from the array and an “accumulator”, which starts with a value of [init] and the index of each element. [reduceWithIndex]
     returns the final value of the accumulator.
-    
+
     @example {[
       reduceWithIndex [|1;2;3;4|] 0 (fun acc x i -> acc + x + i) = 16;
     ]}
@@ -527,7 +527,7 @@ val reduceWithIndex:  'a array -> 'b -> ('b -> 'a -> int -> 'b) -> 'b
 val joinWithU: 'a array -> string -> ('a -> string [@bs]) -> string
 val joinWith: 'a array -> string -> ('a -> string) -> string
 (** [joinWith xs sep toString]
-    
+
     Concatenates all the elements of [xs] converted to string with [toString], each separated by [sep], the string 
     given as the second argument, into a single string.
     If the array has only one element, then that element will be returned 
@@ -535,8 +535,8 @@ val joinWith: 'a array -> string -> ('a -> string) -> string
     If the array is empty, the empty string will be returned.
     @example{[
       joinWith [|0; 1|] ", " string_of_int = "0, 1"
-      joinWith [||] " " string_of_int = ""
-      joinWith [|1|] " " string_of_int = "1"
+        joinWith [||] " " string_of_int = ""
+        joinWith [|1|] " " string_of_int = "1"
     ]}
 *)
 
@@ -569,7 +569,7 @@ val every: 'a array -> ('a -> bool ) -> bool
 val every2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
 val every2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
 (** [every2 xs ys p] returns true if [p xi yi] is true for all pairs of elements
-  up to the shorter length (i.e. [min (length xs) (length ys)])
+    up to the shorter length (i.e. [min (length xs) (length ys)])
     @example {[
       every2 [|1;2;3|] [|0;1|] (>) = true;;
       every2 [||] [|1|] (fun  x y -> x > y) = true;;
@@ -581,7 +581,7 @@ val every2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
 val some2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
 val some2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
 (** [some2 xs ys p] returns true if [p xi yi] is true for any pair of elements
-  up to the shorter length (i.e. [min (length xs) (length ys)])
+    up to the shorter length (i.e. [min (length xs) (length ys)])
 
     @example {[
       some2 [|0;2|] [|1;0;3|] (>) = true ;;
@@ -596,9 +596,9 @@ val cmp: 'a array -> 'a array -> ('a -> 'a -> int ) -> int
 
     - Compared by length if [length xs <> length ys];returning -1 if[length xs < length ys] or 1 if [length xs > length ys]
     - Otherwise compare one by one [f x y]. [f] returns
-      - a negative number if [x] is “less than” [y]
-      - zero if [x] is “equal to” [y]
-      - a positive number if [x] is “greater than” [y]
+    - a negative number if [x] is “less than” [y]
+    - zero if [x] is “equal to” [y]
+    - a positive number if [x] is “greater than” [y]
     - The comparison returns the first non-zero result of [f];or zero if [f] returns zero for all [x] and [y].
 
     @example {[
@@ -622,16 +622,16 @@ val eq:  'a array -> 'a array -> ('a -> 'a -> bool ) -> bool
 
 external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]
 (** {b Unsafe}
-  [truncateToLengthUnsafe xs n] sets length of array [xs] to [n].
+    [truncateToLengthUnsafe xs n] sets length of array [xs] to [n].
 
-  If [n] is greater than the length of [xs];the extra elements are set to [Js.Null_undefined.null]
+    If [n] is greater than the length of [xs];the extra elements are set to [Js.Null_undefined.null]
 
-  If [n] is less than zero;raises a [RangeError].
+    If [n] is less than zero;raises a [RangeError].
 
-  @example {[
-    let arr = [|"ant";"bee";"cat";"dog";"elk"|];;
-    let () = truncateToLengthUnsafe arr 3;;
-    arr = [|"ant";"bee";"cat"|];;
-  ]}
+    @example {[
+      let arr = [|"ant";"bee";"cat";"dog";"elk"|];;
+      let () = truncateToLengthUnsafe arr 3;;
+      arr = [|"ant";"bee";"cat"|];;
+    ]}
 
 *)
