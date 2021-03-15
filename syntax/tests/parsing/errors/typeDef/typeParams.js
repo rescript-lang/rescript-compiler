@@ -2,7 +2,7 @@ type node('a) = {
   _value: Js.Nullable.value<'a>
 }
 
-type derivedNode<'from, 'to> = {
+type derivedNode<'from, 'for> = {
   mutable value: 'to_,
   updateF: 'from => 'to_,
 }

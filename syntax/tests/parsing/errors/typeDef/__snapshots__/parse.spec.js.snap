@@ -211,7 +211,7 @@ exports[`typeParams.js 1`] = `
 "=====Parsetree==========================================
 type nonrec 'a node = {
   _value: 'a Js.Nullable.value }
-type nonrec ('from, 'to) derivedNode =
+type nonrec ('from, 'for) derivedNode =
   {
   mutable value: 'to_ ;
   updateF: 'from -> 'to_ }
@@ -240,14 +240,14 @@ type nonrec ('from, 'foo) derivedNode =
 
 
   Syntax error!
-  parsing/errors/typeDef/typeParams.js:5:26-27  
+  parsing/errors/typeDef/typeParams.js:5:26-28  
   3 │ }
   4 │ 
-  5 │ type derivedNode<'from, 'to> = {
+  5 │ type derivedNode<'from, 'for> = {
   6 │   mutable value: 'to_,
   7 │   updateF: 'from => 'to_,
   
-  \`to\` is a reserved keyword. Keywords need to be escaped: \\\\\\"to\\"
+  \`for\` is a reserved keyword. Keywords need to be escaped: \\\\\\"for\\"
 
 
   Syntax error!

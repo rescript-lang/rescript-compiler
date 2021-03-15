@@ -44,7 +44,7 @@ type t =
   | Lazy
   | Tilde
   | Question
-  | If | Else | For | In | To | Downto | While | Switch
+  | If | Else | For | In | While | Switch
   | When
   | EqualGreater | MinusGreater
   | External
@@ -131,8 +131,6 @@ let toString = function
   | Else -> "else"
   | For -> "for"
   | In -> "in"
-  | To -> "to"
-  | Downto -> "downto"
   | While -> "while"
   | Switch -> "switch"
   | When -> "when"
@@ -168,7 +166,6 @@ let keywordTable = function
 | "as" -> As
 | "assert" -> Assert
 | "constraint" -> Constraint
-| "downto" -> Downto
 | "else" -> Else
 | "exception" -> Exception
 | "export" -> Export
@@ -189,7 +186,6 @@ let keywordTable = function
 | "private" -> Private
 | "rec" -> Rec
 | "switch" -> Switch
-| "to" -> To
 | "true" -> True
 | "try" -> Try
 | "type" -> Typ
@@ -200,10 +196,10 @@ let keywordTable = function
 [@@raises Not_found]
 
 let isKeyword = function
-  | And | As | Assert | Constraint | Downto | Else | Exception | Export
+  | And | As | Assert | Constraint | Else | Exception | Export
   | External | False | For | If | Import | In | Include | Land | Lazy
   | Let | List | Lor | Module | Mutable | Of | Open | Private | Rec
-  | Switch | To | True | Try | Typ | When | While | With -> true
+  | Switch | True | Try | Typ | When | While | With -> true
   | _ -> false
 
 let lookupKeyword str =

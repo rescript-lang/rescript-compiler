@@ -3148,8 +3148,8 @@ and parseForRest hasOpeningParen pattern startPos p =
   Parser.expect In p;
   let e1 = parseExpr p in
   let direction = match p.Parser.token with
-  | To -> Asttypes.Upto
-  | Downto -> Asttypes.Downto
+  | Lident "to" -> Asttypes.Upto
+  | Lident "downto" -> Asttypes.Downto
   | token ->
     Parser.err p (Diagnostics.unexpected token p.breadcrumbs);
     Asttypes.Upto

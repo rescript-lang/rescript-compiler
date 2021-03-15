@@ -247,19 +247,19 @@ let [%rescript.patternhole ] = 3
   Syntax error!
   parsing/errors/structure/letBindingPatternKeyword.js:1:5-8  
   1 │ let open = 1
-  2 │ let to = 3
+  2 │ let for = 3
   3 │ 
   
   \`open\` is a reserved keyword. Keywords need to be escaped: \\\\\\"open\\"
 
 
   Syntax error!
-  parsing/errors/structure/letBindingPatternKeyword.js:2:5-6  
+  parsing/errors/structure/letBindingPatternKeyword.js:2:5-7  
   1 │ let open = 1
-  2 │ let to = 3
+  2 │ let for = 3
   3 │ 
   
-  \`to\` is a reserved keyword. Keywords need to be escaped: \\\\\\"to\\"
+  \`for\` is a reserved keyword. Keywords need to be escaped: \\\\\\"for\\"
 
 
 ========================================================"
