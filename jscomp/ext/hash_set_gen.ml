@@ -193,7 +193,7 @@ let stats h =
     (fun b ->
        let l = bucket_length 0 b in
        histo.(l) <- histo.(l) + 1)
-    ;
+  ;
   {Hashtbl.num_bindings = h.size;
    num_buckets = Array.length h.data;
    max_bucket_length = mbl;

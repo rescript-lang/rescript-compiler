@@ -2913,7 +2913,7 @@ var __ocaml_lex_tables = {
 };
 
 function token(env, lexbuf) {
-  lexbuf.lex_mem = Caml_array.caml_make_vect(8, -1);
+  lexbuf.lex_mem = Caml_array.make(8, -1);
   var ___ocaml_lex_state = 0;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
@@ -3413,16 +3413,16 @@ function string_quote(env, q, buf, raw, octal, lexbuf) {
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          var q$prime = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
-          $$Buffer.add_char(raw, q$prime);
-          if (q === q$prime) {
+          var q$p = Caml_bytes.get(lexbuf.lex_buffer, lexbuf.lex_start_pos);
+          $$Buffer.add_char(raw, q$p);
+          if (q === q$p) {
             return [
                     env,
                     from_lb(env.lex_source, lexbuf),
                     octal
                   ];
           } else {
-            $$Buffer.add_char(buf, q$prime);
+            $$Buffer.add_char(buf, q$p);
             return string_quote(env, q, buf, raw, octal, lexbuf);
           }
       case 1 :
@@ -3459,7 +3459,7 @@ function string_quote(env, q, buf, raw, octal, lexbuf) {
 }
 
 function type_token(env, lexbuf) {
-  lexbuf.lex_mem = Caml_array.caml_make_vect(26, -1);
+  lexbuf.lex_mem = Caml_array.make(26, -1);
   Caml_array.set(lexbuf.lex_mem, 17, lexbuf.lex_curr_pos);
   Caml_array.set(lexbuf.lex_mem, 16, lexbuf.lex_curr_pos);
   Caml_array.set(lexbuf.lex_mem, 15, lexbuf.lex_curr_pos);
@@ -6008,9 +6008,9 @@ function lex_env(iOpt, env) {
 }
 
 function is_line_terminator(env) {
-  var loc$prime = env.last_loc.contents;
-  if (loc$prime !== undefined) {
-    return loc(undefined, env).start.line > loc$prime.start.line;
+  var loc$p = env.last_loc.contents;
+  if (loc$p !== undefined) {
+    return loc(undefined, env).start.line > loc$p.start.line;
   } else {
     return false;
   }
@@ -8585,8 +8585,8 @@ function conditional(env) {
     return expr;
   }
   token$4(env, /* T_PLING */76);
-  var env$prime = with_no_in(false, env);
-  var consequent = Curry._1(assignment, env$prime);
+  var env$p = with_no_in(false, env);
+  var consequent = Curry._1(assignment, env$p);
   token$4(env, /* T_COLON */77);
   var match = with_loc(assignment, env);
   var loc = btwn(start_loc, match[0]);
@@ -8858,8 +8858,8 @@ function _new(env, _finish_fn) {
     if (match === 42) {
       var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
       token$4(env, /* T_NEW */42);
-      var finish_fn$prime = (function(finish_fn,start_loc){
-      return function finish_fn$prime(callee, args) {
+      var finish_fn$p = (function(finish_fn,start_loc){
+      return function finish_fn$p(callee, args) {
         var match = args !== undefined ? [
             args[0],
             args[1]
@@ -8867,22 +8867,22 @@ function _new(env, _finish_fn) {
             callee[0],
             /* [] */0
           ];
-        var callee$prime_0 = btwn(start_loc, match[0]);
-        var callee$prime_1 = {
+        var callee$p_0 = btwn(start_loc, match[0]);
+        var callee$p_1 = {
           TAG: /* New */11,
           _0: {
             callee: callee,
             arguments: match[1]
           }
         };
-        var callee$prime = [
-          callee$prime_0,
-          callee$prime_1
+        var callee$p = [
+          callee$p_0,
+          callee$p_1
         ];
-        return Curry._2(finish_fn, callee$prime, undefined);
+        return Curry._2(finish_fn, callee$p, undefined);
       }
       }(finish_fn,start_loc));
-      _finish_fn = finish_fn$prime;
+      _finish_fn = finish_fn$p;
       continue ;
     }
     Curry._2(Parser_env_Peek.token, undefined, env);
@@ -10033,7 +10033,7 @@ function argument(env) {
         };
 }
 
-function arguments$prime(env, _acc) {
+function arguments$p(env, _acc) {
   while(true) {
     var acc = _acc;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
@@ -10062,7 +10062,7 @@ function arguments$prime(env, _acc) {
 function $$arguments(env) {
   var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   token$4(env, /* T_LPAREN */3);
-  var args = arguments$prime(env, /* [] */0);
+  var args = arguments$p(env, /* [] */0);
   var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   token$4(env, /* T_RPAREN */4);
   return [

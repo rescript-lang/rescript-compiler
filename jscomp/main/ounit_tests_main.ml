@@ -6,7 +6,7 @@ module Int_array = Vec.Make(struct type t = int let null = 0 end);;
 let v = Int_array.init 10 (fun i -> i);;
 
 let ((>::),
-    (>:::)) = OUnit.((>::),(>:::))
+     (>:::)) = OUnit.((>::),(>:::))
 
 
 let (=~) x y = OUnit.assert_equal ~cmp:(Int_array.equal  (fun (x: int) y -> x=y)) x y

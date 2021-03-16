@@ -71,37 +71,37 @@ let implementation ~use_super_errors impl str  : Js.Unsafe.obj =
       (* finalenv := c ; *)
       types_signature := signature;
       (a,b) in      
-  typed_tree
-  |>  Translmod.transl_implementation modulename
-  |> (* Printlambda.lambda ppf *) (fun 
-    {Lambda.code = lam}
-    ->
-      let buffer = Buffer.create 1000 in
-      let () = Js_dump_program.pp_deps_program
-                          ~output_prefix:"" (* does not matter here *)
-                          NodeJS
-                          (Lam_compile_main.compile ""
-                              lam)
-                          (Ext_pp.from_buffer buffer) in
-      let v = Buffer.contents buffer in
-      Js.Unsafe.(obj [| "js_code", inject @@ Js.string v |]) )
-      (* Format.fprintf output_ppf {| { "js_code" : %S }|} v ) *)
+    typed_tree
+    |>  Translmod.transl_implementation modulename
+    |> (* Printlambda.lambda ppf *) (fun 
+                                      {Lambda.code = lam}
+                                      ->
+                                        let buffer = Buffer.create 1000 in
+                                        let () = Js_dump_program.pp_deps_program
+                                            ~output_prefix:"" (* does not matter here *)
+                                            NodeJS
+                                            (Lam_compile_main.compile ""
+                                               lam)
+                                            (Ext_pp.from_buffer buffer) in
+                                        let v = Buffer.contents buffer in
+                                        Js.Unsafe.(obj [| "js_code", inject @@ Js.string v |]) )
+  (* Format.fprintf output_ppf {| { "js_code" : %S }|} v ) *)
   with
   | e ->
-      begin match error_of_exn  e with
+    begin match error_of_exn  e with
       | Some error ->
-          Location.report_error Format.err_formatter  error;
-          Jsoo_common.mk_js_error error.loc error.msg
+        Location.report_error Format.err_formatter  error;
+        Jsoo_common.mk_js_error error.loc error.msg
       | None ->
         Js.Unsafe.(obj [|
-        "js_error_msg" , inject @@ Js.string (Printexc.to_string e)
-        |])
+            "js_error_msg" , inject @@ Js.string (Printexc.to_string e)
+          |])
 
-      end
+    end
 
 
 let compile impl ~use_super_errors  =
-    implementation ~use_super_errors impl
+  implementation ~use_super_errors impl
 
 let export (field : string) v =
   Js.Unsafe.set (Js.Unsafe.global) field v

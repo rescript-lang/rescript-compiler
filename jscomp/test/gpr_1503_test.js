@@ -42,9 +42,9 @@ var i = [
 
 var s = Caml_int64.to_string(i);
 
-var i$prime = Caml_format.caml_int64_of_string(s);
+var i$p = Caml_format.caml_int64_of_string(s);
 
-eq("File \"gpr_1503_test.ml\", line 18, characters 5-12", i, i$prime);
+eq("File \"gpr_1503_test.ml\", line 18, characters 5-12", i, i$p);
 
 eq("File \"gpr_1503_test.ml\", line 21, characters 7-14", Int64.max_int, Caml_format.caml_int64_of_string(Caml_int64.to_string(Int64.max_int)));
 

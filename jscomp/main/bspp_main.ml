@@ -13,7 +13,7 @@
            Buffer.clear buf;
          end
     )*)
-  
+
 
 let preprocess fn oc = 
   let ic = open_in_bin fn in 
@@ -24,8 +24,8 @@ let preprocess fn oc =
   lexbuf
   |> Lexer.filter_directive_from_lexbuf  
   (* Get a list of segments
-    TODO: output line directive
-   *)
+     TODO: output line directive
+  *)
   |> List.iter
     (fun (start, stop) ->       
        let len = stop - start in 

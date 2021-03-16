@@ -39,7 +39,7 @@ function reverse_of_list(l) {
     return [];
   }
   var len = List.length(l);
-  var a = Caml_array.caml_make_vect(len, l.hd);
+  var a = Caml_array.make(len, l.hd);
   var _i = 0;
   var _param = l.tl;
   while(true) {
@@ -164,7 +164,7 @@ function of_list_map(f, a) {
   var tl = a.tl;
   var hd = Curry._1(f, a.hd);
   var len = List.length(tl) + 1 | 0;
-  var arr = Caml_array.caml_make_vect(len, hd);
+  var arr = Caml_array.make(len, hd);
   var _i = 1;
   var _param = tl;
   while(true) {

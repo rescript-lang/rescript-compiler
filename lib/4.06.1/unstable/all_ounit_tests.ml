@@ -5249,8 +5249,9 @@ end = struct
 type key = string 
 let compare_key = Ext_string.compare
 let [@inline] eq_key (x : key) y = x = y
+    
 # 19 "ext/map.cppo.ml"
-(* let [@inline] (=) (a : int) b = a = b *)
+    (* let [@inline] (=) (a : int) b = a = b *)
 type + 'a t = (key,'a) Map_gen.t
 
 let empty = Map_gen.empty 
@@ -7105,115 +7106,116 @@ let key_index (h : _ t ) (key : key) =
   (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
 let eq_key = Ext_string.equal 
 
-# 33 "ext/hash.cppo.ml"
-type ('a, 'b) bucket = ('a,'b) Hash_gen.bucket
-let create = Hash_gen.create
-let clear = Hash_gen.clear
-let reset = Hash_gen.reset
-let iter = Hash_gen.iter
-let to_list = Hash_gen.to_list
-let fold = Hash_gen.fold
-let length = Hash_gen.length
-(* let stats = Hash_gen.stats *)
-
-
-
-let add (h : _ t) key data =
-  let i = key_index h key in
-  let h_data = h.data in   
-  Array.unsafe_set h_data i (Cons{key; data; next=Array.unsafe_get h_data i});
-  h.size <- h.size + 1;
-  if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h
-
-(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
-let add_or_update 
-  (h : 'a t) 
-  (key : key) 
-  ~update:(modf : 'a -> 'a) 
-  (default :  'a) : unit =
-  let rec find_bucket (bucketlist : _ bucket) : bool =
-    match bucketlist with
-    | Cons rhs  ->
-      if eq_key rhs.key key then begin rhs.data <- modf rhs.data; false end
-      else find_bucket rhs.next
-    | Empty -> true in
-  let i = key_index h key in 
-  let h_data = h.data in 
-  if find_bucket (Array.unsafe_get h_data i) then
-    begin 
-      Array.unsafe_set h_data i  (Cons{key; data=default; next = Array.unsafe_get h_data i});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h 
-    end
-
-let remove (h : _ t ) key =
-  let i = key_index h key in
-  let h_data = h.data in 
-  Hash_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key
-
-(* for short bucket list, [find_rec is not called ] *)
-let rec find_rec key (bucketlist : _ bucket) = match bucketlist with  
-  | Empty ->
-    raise Not_found
-  | Cons rhs  ->
-    if eq_key key rhs.key then rhs.data else find_rec key rhs.next
-
-let find_exn (h : _ t) key =
-  match Array.unsafe_get h.data (key_index h key) with
-  | Empty -> raise Not_found
-  | Cons rhs  ->
-    if eq_key key rhs.key then rhs.data else
-      match rhs.next with
-      | Empty -> raise Not_found
-      | Cons rhs  ->
-        if eq_key key rhs.key then rhs.data else
-          match rhs.next with
-          | Empty -> raise Not_found
-          | Cons rhs ->
-            if eq_key key rhs.key  then rhs.data else find_rec key rhs.next
-
-let find_opt (h : _ t) key =
-  Hash_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
-
-let find_key_opt (h : _ t) key =
-  Hash_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
   
-let find_default (h : _ t) key default = 
-  Hash_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
+# 33 "ext/hash.cppo.ml"
+  type ('a, 'b) bucket = ('a,'b) Hash_gen.bucket
+  let create = Hash_gen.create
+  let clear = Hash_gen.clear
+  let reset = Hash_gen.reset
+  let iter = Hash_gen.iter
+  let to_list = Hash_gen.to_list
+  let fold = Hash_gen.fold
+  let length = Hash_gen.length
+  (* let stats = Hash_gen.stats *)
 
-let find_all (h : _ t) key =
-  let rec find_in_bucket (bucketlist : _ bucket) = match bucketlist with 
+
+
+  let add (h : _ t) key data =
+    let i = key_index h key in
+    let h_data = h.data in   
+    Array.unsafe_set h_data i (Cons{key; data; next=Array.unsafe_get h_data i});
+    h.size <- h.size + 1;
+    if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h
+
+  (* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
+  let add_or_update 
+      (h : 'a t) 
+      (key : key) 
+      ~update:(modf : 'a -> 'a) 
+      (default :  'a) : unit =
+    let rec find_bucket (bucketlist : _ bucket) : bool =
+      match bucketlist with
+      | Cons rhs  ->
+        if eq_key rhs.key key then begin rhs.data <- modf rhs.data; false end
+        else find_bucket rhs.next
+      | Empty -> true in
+    let i = key_index h key in 
+    let h_data = h.data in 
+    if find_bucket (Array.unsafe_get h_data i) then
+      begin 
+        Array.unsafe_set h_data i  (Cons{key; data=default; next = Array.unsafe_get h_data i});
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h 
+      end
+
+  let remove (h : _ t ) key =
+    let i = key_index h key in
+    let h_data = h.data in 
+    Hash_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key
+
+  (* for short bucket list, [find_rec is not called ] *)
+  let rec find_rec key (bucketlist : _ bucket) = match bucketlist with  
     | Empty ->
-      []
+      raise Not_found
     | Cons rhs  ->
-      if eq_key key rhs.key
-      then rhs.data :: find_in_bucket rhs.next
-      else find_in_bucket rhs.next in
-  find_in_bucket (Array.unsafe_get h.data (key_index h key))
+      if eq_key key rhs.key then rhs.data else find_rec key rhs.next
+
+  let find_exn (h : _ t) key =
+    match Array.unsafe_get h.data (key_index h key) with
+    | Empty -> raise Not_found
+    | Cons rhs  ->
+      if eq_key key rhs.key then rhs.data else
+        match rhs.next with
+        | Empty -> raise Not_found
+        | Cons rhs  ->
+          if eq_key key rhs.key then rhs.data else
+            match rhs.next with
+            | Empty -> raise Not_found
+            | Cons rhs ->
+              if eq_key key rhs.key  then rhs.data else find_rec key rhs.next
+
+  let find_opt (h : _ t) key =
+    Hash_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+  let find_key_opt (h : _ t) key =
+    Hash_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+  let find_default (h : _ t) key default = 
+    Hash_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
+
+  let find_all (h : _ t) key =
+    let rec find_in_bucket (bucketlist : _ bucket) = match bucketlist with 
+      | Empty ->
+        []
+      | Cons rhs  ->
+        if eq_key key rhs.key
+        then rhs.data :: find_in_bucket rhs.next
+        else find_in_bucket rhs.next in
+    find_in_bucket (Array.unsafe_get h.data (key_index h key))
 
 
-let replace h key data =
-  let i = key_index h key in
-  let h_data = h.data in 
-  let l = Array.unsafe_get h_data i in
-  if Hash_gen.replace_bucket key data l eq_key then 
-    begin 
-      Array.unsafe_set h_data i (Cons{key; data; next=l});
-      h.size <- h.size + 1;
-      if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h;
-    end 
+  let replace h key data =
+    let i = key_index h key in
+    let h_data = h.data in 
+    let l = Array.unsafe_get h_data i in
+    if Hash_gen.replace_bucket key data l eq_key then 
+      begin 
+        Array.unsafe_set h_data i (Cons{key; data; next=l});
+        h.size <- h.size + 1;
+        if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h;
+      end 
 
-let mem (h : _ t) key = 
-  Hash_gen.small_bucket_mem 
-    (Array.unsafe_get h.data (key_index h key))
-    eq_key key 
+  let mem (h : _ t) key = 
+    Hash_gen.small_bucket_mem 
+      (Array.unsafe_get h.data (key_index h key))
+      eq_key key 
 
 
-let of_list2 ks vs = 
-  let len = List.length ks in 
-  let map = create len in 
-  List.iter2 (fun k v -> add map k v) ks vs ; 
-  map
+  let of_list2 ks vs = 
+    let len = List.length ks in 
+    let map = create len in 
+    List.iter2 (fun k v -> add map k v) ks vs ; 
+    map
 
 
 end
@@ -8690,15 +8692,15 @@ type 'a kind = 'a Ml_binary.kind
 let read_parse_and_extract (type t) (k : t kind) (ast : t) : Set_string.t =
   Depend.free_structure_names := Set_string.empty;
   Ext_ref.protect Clflags.transparent_modules false begin fun _ -> 
-  List.iter (* check *)
-    (fun modname  ->
-       ignore @@ 
-       Depend.open_module bound_vars (Longident.Lident modname))
-    (!Clflags.open_modules);
-  (match k with
-   | Ml_binary.Ml  -> Depend.add_implementation bound_vars ast
-   | Ml_binary.Mli  -> Depend.add_signature bound_vars ast  ); 
-  !Depend.free_structure_names
+    List.iter (* check *)
+      (fun modname  ->
+         ignore @@ 
+         Depend.open_module bound_vars (Longident.Lident modname))
+      (!Clflags.open_modules);
+    (match k with
+     | Ml_binary.Ml  -> Depend.add_implementation bound_vars ast
+     | Ml_binary.Mli  -> Depend.add_signature bound_vars ast  ); 
+    !Depend.free_structure_names
   end
 
 
@@ -9068,74 +9070,75 @@ end = struct
 [@@@warning "-32"] (* FIXME *)
 # 44 "ext/hash_set.cppo.ml"
 module Make (H: Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t) = struct 
-type key = H.t 
-let eq_key = H.equal
-let key_index (h :  _ Hash_set_gen.t ) key =
-  (H.hash  key) land (Array.length h.data - 1)
-type t = key Hash_set_gen.t
+  type key = H.t 
+  let eq_key = H.equal
+  let key_index (h :  _ Hash_set_gen.t ) key =
+    (H.hash  key) land (Array.length h.data - 1)
+  type t = key Hash_set_gen.t
 
 
 
+      
 # 65 "ext/hash_set.cppo.ml"
-let create = Hash_set_gen.create
-let clear = Hash_set_gen.clear
-let reset = Hash_set_gen.reset
-(* let copy = Hash_set_gen.copy *)
-let iter = Hash_set_gen.iter
-let fold = Hash_set_gen.fold
-let length = Hash_set_gen.length
-(* let stats = Hash_set_gen.stats *)
-let to_list = Hash_set_gen.to_list
+      let create = Hash_set_gen.create
+  let clear = Hash_set_gen.clear
+  let reset = Hash_set_gen.reset
+  (* let copy = Hash_set_gen.copy *)
+  let iter = Hash_set_gen.iter
+  let fold = Hash_set_gen.fold
+  let length = Hash_set_gen.length
+  (* let stats = Hash_set_gen.stats *)
+  let to_list = Hash_set_gen.to_list
 
 
 
-let remove (h : _ Hash_set_gen.t ) key =
-  let i = key_index h key in
-  let h_data = h.data in 
-  Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
+  let remove (h : _ Hash_set_gen.t ) key =
+    let i = key_index h key in
+    let h_data = h.data in 
+    Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
 
 
 
-let add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in 
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i (Cons {key = key ; next =  old_bucket});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
-    end
+  let add (h : _ Hash_set_gen.t) key =
+    let i = key_index h key  in 
+    let h_data = h.data in 
+    let old_bucket = (Array.unsafe_get h_data i) in
+    if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+      begin 
+        Array.unsafe_set h_data i (Cons {key = key ; next =  old_bucket});
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
+      end
 
-let of_array arr = 
-  let len = Array.length arr in 
-  let tbl = create len in 
-  for i = 0 to len - 1  do
-    add tbl (Array.unsafe_get arr i);
-  done ;
-  tbl 
-  
-    
-let check_add (h : _ Hash_set_gen.t) key : bool =
-  let i = key_index h key  in 
-  let h_data = h.data in  
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i  (Cons { key = key ; next =  old_bucket});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
-      true 
-    end
-  else false 
+  let of_array arr = 
+    let len = Array.length arr in 
+    let tbl = create len in 
+    for i = 0 to len - 1  do
+      add tbl (Array.unsafe_get arr i);
+    done ;
+    tbl 
 
 
-let mem (h :  _ Hash_set_gen.t) key =
-  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+  let check_add (h : _ Hash_set_gen.t) key : bool =
+    let i = key_index h key  in 
+    let h_data = h.data in  
+    let old_bucket = (Array.unsafe_get h_data i) in
+    if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+      begin 
+        Array.unsafe_set h_data i  (Cons { key = key ; next =  old_bucket});
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
+        true 
+      end
+    else false 
+
+
+  let mem (h :  _ Hash_set_gen.t) key =
+    Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
 # 122 "ext/hash_set.cppo.ml"
 end
-  
+
 
 end
 module Hash_set_poly : sig 
@@ -9215,75 +9218,77 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 [@@@warning "-32"] (* FIXME *)
+  
 # 52 "ext/hash_set.cppo.ml"
-[@@@ocaml.warning "-3"]
-(* we used cppo the mixture does not work*)
-external seeded_hash_param :
-  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
-let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =
-  seeded_hash_param 10 100 0 key land (Array.length h.data - 1)
-let eq_key = (=)
-type  'a t = 'a Hash_set_gen.t 
+  [@@@ocaml.warning "-3"]
+  (* we used cppo the mixture does not work*)
+  external seeded_hash_param :
+    int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
+  let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =
+    seeded_hash_param 10 100 0 key land (Array.length h.data - 1)
+  let eq_key = (=)
+  type  'a t = 'a Hash_set_gen.t 
 
 
+      
 # 65 "ext/hash_set.cppo.ml"
-let create = Hash_set_gen.create
-let clear = Hash_set_gen.clear
-let reset = Hash_set_gen.reset
-(* let copy = Hash_set_gen.copy *)
-let iter = Hash_set_gen.iter
-let fold = Hash_set_gen.fold
-let length = Hash_set_gen.length
-(* let stats = Hash_set_gen.stats *)
-let to_list = Hash_set_gen.to_list
+      let create = Hash_set_gen.create
+  let clear = Hash_set_gen.clear
+  let reset = Hash_set_gen.reset
+  (* let copy = Hash_set_gen.copy *)
+  let iter = Hash_set_gen.iter
+  let fold = Hash_set_gen.fold
+  let length = Hash_set_gen.length
+  (* let stats = Hash_set_gen.stats *)
+  let to_list = Hash_set_gen.to_list
 
 
 
-let remove (h : _ Hash_set_gen.t ) key =
-  let i = key_index h key in
-  let h_data = h.data in 
-  Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
+  let remove (h : _ Hash_set_gen.t ) key =
+    let i = key_index h key in
+    let h_data = h.data in 
+    Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
 
 
 
-let add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in 
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i (Cons {key = key ; next =  old_bucket});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
-    end
+  let add (h : _ Hash_set_gen.t) key =
+    let i = key_index h key  in 
+    let h_data = h.data in 
+    let old_bucket = (Array.unsafe_get h_data i) in
+    if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+      begin 
+        Array.unsafe_set h_data i (Cons {key = key ; next =  old_bucket});
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
+      end
 
-let of_array arr = 
-  let len = Array.length arr in 
-  let tbl = create len in 
-  for i = 0 to len - 1  do
-    add tbl (Array.unsafe_get arr i);
-  done ;
-  tbl 
-  
-    
-let check_add (h : _ Hash_set_gen.t) key : bool =
-  let i = key_index h key  in 
-  let h_data = h.data in  
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i  (Cons { key = key ; next =  old_bucket});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
-      true 
-    end
-  else false 
+  let of_array arr = 
+    let len = Array.length arr in 
+    let tbl = create len in 
+    for i = 0 to len - 1  do
+      add tbl (Array.unsafe_get arr i);
+    done ;
+    tbl 
 
 
-let mem (h :  _ Hash_set_gen.t) key =
-  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+  let check_add (h : _ Hash_set_gen.t) key : bool =
+    let i = key_index h key  in 
+    let h_data = h.data in  
+    let old_bucket = (Array.unsafe_get h_data i) in
+    if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+      begin 
+        Array.unsafe_set h_data i  (Cons { key = key ; next =  old_bucket});
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
+        true 
+      end
+    else false 
 
-  
+
+  let mem (h :  _ Hash_set_gen.t) key =
+    Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+
 
 end
 module Hash_set_string : sig 
@@ -9350,64 +9355,65 @@ let eq_key = Ext_string.equal
 type  t = key  Hash_set_gen.t 
 
 
+      
 # 65 "ext/hash_set.cppo.ml"
-let create = Hash_set_gen.create
-let clear = Hash_set_gen.clear
-let reset = Hash_set_gen.reset
-(* let copy = Hash_set_gen.copy *)
-let iter = Hash_set_gen.iter
-let fold = Hash_set_gen.fold
-let length = Hash_set_gen.length
-(* let stats = Hash_set_gen.stats *)
-let to_list = Hash_set_gen.to_list
+      let create = Hash_set_gen.create
+  let clear = Hash_set_gen.clear
+  let reset = Hash_set_gen.reset
+  (* let copy = Hash_set_gen.copy *)
+  let iter = Hash_set_gen.iter
+  let fold = Hash_set_gen.fold
+  let length = Hash_set_gen.length
+  (* let stats = Hash_set_gen.stats *)
+  let to_list = Hash_set_gen.to_list
 
 
 
-let remove (h : _ Hash_set_gen.t ) key =
-  let i = key_index h key in
-  let h_data = h.data in 
-  Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
+  let remove (h : _ Hash_set_gen.t ) key =
+    let i = key_index h key in
+    let h_data = h.data in 
+    Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
 
 
 
-let add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in 
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i (Cons {key = key ; next =  old_bucket});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
-    end
+  let add (h : _ Hash_set_gen.t) key =
+    let i = key_index h key  in 
+    let h_data = h.data in 
+    let old_bucket = (Array.unsafe_get h_data i) in
+    if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+      begin 
+        Array.unsafe_set h_data i (Cons {key = key ; next =  old_bucket});
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
+      end
 
-let of_array arr = 
-  let len = Array.length arr in 
-  let tbl = create len in 
-  for i = 0 to len - 1  do
-    add tbl (Array.unsafe_get arr i);
-  done ;
-  tbl 
-  
-    
-let check_add (h : _ Hash_set_gen.t) key : bool =
-  let i = key_index h key  in 
-  let h_data = h.data in  
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i  (Cons { key = key ; next =  old_bucket});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
-      true 
-    end
-  else false 
+  let of_array arr = 
+    let len = Array.length arr in 
+    let tbl = create len in 
+    for i = 0 to len - 1  do
+      add tbl (Array.unsafe_get arr i);
+    done ;
+    tbl 
 
 
-let mem (h :  _ Hash_set_gen.t) key =
-  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+  let check_add (h : _ Hash_set_gen.t) key : bool =
+    let i = key_index h key  in 
+    let h_data = h.data in  
+    let old_bucket = (Array.unsafe_get h_data i) in
+    if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+      begin 
+        Array.unsafe_set h_data i  (Cons { key = key ; next =  old_bucket});
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
+        true 
+      end
+    else false 
 
-  
+
+  let mem (h :  _ Hash_set_gen.t) key =
+    Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+
 
 end
 module Ounit_hash_set_tests
@@ -9601,64 +9607,65 @@ let eq_key = Ext_int.equal
 type  t = key  Hash_set_gen.t 
 
 
+      
 # 65 "ext/hash_set.cppo.ml"
-let create = Hash_set_gen.create
-let clear = Hash_set_gen.clear
-let reset = Hash_set_gen.reset
-(* let copy = Hash_set_gen.copy *)
-let iter = Hash_set_gen.iter
-let fold = Hash_set_gen.fold
-let length = Hash_set_gen.length
-(* let stats = Hash_set_gen.stats *)
-let to_list = Hash_set_gen.to_list
+      let create = Hash_set_gen.create
+  let clear = Hash_set_gen.clear
+  let reset = Hash_set_gen.reset
+  (* let copy = Hash_set_gen.copy *)
+  let iter = Hash_set_gen.iter
+  let fold = Hash_set_gen.fold
+  let length = Hash_set_gen.length
+  (* let stats = Hash_set_gen.stats *)
+  let to_list = Hash_set_gen.to_list
 
 
 
-let remove (h : _ Hash_set_gen.t ) key =
-  let i = key_index h key in
-  let h_data = h.data in 
-  Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
+  let remove (h : _ Hash_set_gen.t ) key =
+    let i = key_index h key in
+    let h_data = h.data in 
+    Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
 
 
 
-let add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in 
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i (Cons {key = key ; next =  old_bucket});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
-    end
+  let add (h : _ Hash_set_gen.t) key =
+    let i = key_index h key  in 
+    let h_data = h.data in 
+    let old_bucket = (Array.unsafe_get h_data i) in
+    if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+      begin 
+        Array.unsafe_set h_data i (Cons {key = key ; next =  old_bucket});
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
+      end
 
-let of_array arr = 
-  let len = Array.length arr in 
-  let tbl = create len in 
-  for i = 0 to len - 1  do
-    add tbl (Array.unsafe_get arr i);
-  done ;
-  tbl 
-  
-    
-let check_add (h : _ Hash_set_gen.t) key : bool =
-  let i = key_index h key  in 
-  let h_data = h.data in  
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i  (Cons { key = key ; next =  old_bucket});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
-      true 
-    end
-  else false 
+  let of_array arr = 
+    let len = Array.length arr in 
+    let tbl = create len in 
+    for i = 0 to len - 1  do
+      add tbl (Array.unsafe_get arr i);
+    done ;
+    tbl 
 
 
-let mem (h :  _ Hash_set_gen.t) key =
-  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+  let check_add (h : _ Hash_set_gen.t) key : bool =
+    let i = key_index h key  in 
+    let h_data = h.data in  
+    let old_bucket = (Array.unsafe_get h_data i) in
+    if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+      begin 
+        Array.unsafe_set h_data i  (Cons { key = key ; next =  old_bucket});
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
+        true 
+      end
+    else false 
 
-  
+
+  let mem (h :  _ Hash_set_gen.t) key =
+    Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+
 
 end
 module Ounit_hash_stubs_test
@@ -10894,95 +10901,59 @@ let js_module_table : Ident.t Hash_string.t = Hash_string.create 31
 
 *)
 
+let [@inline] convert (c : char) : string =
+  (match c with
+   | '*' ->   "$star"
+   | '\'' ->   "$p"
+   | '!' ->   "$bang"
+   | '>' ->   "$great"
+   | '<' ->   "$less"
+   | '=' ->   "$eq"
+   | '+' ->   "$plus"
+   | '-' ->   "$neg"
+   | '@' ->   "$at"
+   | '^' ->   "$caret"
+   | '/' ->   "$slash"
+   | '|' ->   "$pipe"
+   | '.' ->   "$dot"
+   | '%' ->   "$percent"
+   | '~' ->   "$tilde"
+   | '#' ->   "$hash"
+   | ':' ->   "$colon"
+   | '?' ->   "$question"
+   | '&' ->   "$amp"
+   | '(' ->   "$lpar"
+   | ')' ->   "$rpar"
+   | '{' ->   "$lbrace"
+   | '}' ->   "$lbrace"
+   | '[' ->   "$lbrack"
+   | ']' ->   "$rbrack"
 
-
-exception Not_normal_letter of int
+   | _ ->   "$unknown")  
+let [@inline] no_escape (c : char) =  
+  match c with   
+  | 'a' .. 'z' | 'A' .. 'Z'
+  | '0' .. '9' | '_' | '$' -> true 
+  | _ -> false
+exception Not_normal_letter 
 let name_mangle name =
-
   let len = String.length name  in
   try
     for i  = 0 to len - 1 do
-      match String.unsafe_get name i with
-      | 'a' .. 'z' | 'A' .. 'Z'
-      | '0' .. '9' | '_' | '$'
-        -> ()
-      | _ -> raise (Not_normal_letter i)
+      if not (no_escape (String.unsafe_get name i)) then
+        raise_notrace (Not_normal_letter )
     done;
     name (* Normal letter *)
   with
-  | Not_normal_letter 0 ->
-
-    let buffer = Buffer.create len in
+  | Not_normal_letter ->
+    let buffer = Ext_buffer.create len in
     for j = 0 to  len - 1 do
       let c = String.unsafe_get name j in
-      match c with
-      | '*' -> Buffer.add_string buffer "$star"
-      | '\'' -> Buffer.add_string buffer "$prime"
-      | '!' -> Buffer.add_string buffer "$bang"
-      | '>' -> Buffer.add_string buffer "$great"
-      | '<' -> Buffer.add_string buffer "$less"
-      | '=' -> Buffer.add_string buffer "$eq"
-      | '+' -> Buffer.add_string buffer "$plus"
-      | '-' -> Buffer.add_string buffer "$neg"
-      | '@' -> Buffer.add_string buffer "$at"
-      | '^' -> Buffer.add_string buffer "$caret"
-      | '/' -> Buffer.add_string buffer "$slash"
-      | '|' -> Buffer.add_string buffer "$pipe"
-      | '.' -> Buffer.add_string buffer "$dot"
-      | '%' -> Buffer.add_string buffer "$percent"
-      | '~' -> Buffer.add_string buffer "$tilde"
-      | '#' -> Buffer.add_string buffer "$hash"
-      | ':' -> Buffer.add_string buffer "$colon"
-      | '?' -> Buffer.add_string buffer "$question"
-      | '&' -> Buffer.add_string buffer "$amp"
-      | '(' -> Buffer.add_string buffer "$lpar"
-      | ')' -> Buffer.add_string buffer "$rpar"
-      | '{' -> Buffer.add_string buffer "$lbrace"
-      | '}' -> Buffer.add_string buffer "$lbrace"
-      | '[' -> Buffer.add_string buffer "$lbrack"
-      | ']' -> Buffer.add_string buffer "$rbrack"
-      | 'a'..'z' | 'A'..'Z'| '_'
-      | '$'
-      | '0'..'9'-> Buffer.add_char buffer  c
-      | _ -> Buffer.add_string buffer "$unknown"
-    done; Buffer.contents buffer
-  | Not_normal_letter i ->
-    String.sub name 0 i ^
-    (let buffer = Buffer.create len in
-     for j = i to  len - 1 do
-       let c = String.unsafe_get name j in
-       match c with
-       | '*' -> Buffer.add_string buffer "$star"
-       | '\'' -> Buffer.add_string buffer "$prime"
-       | '!' -> Buffer.add_string buffer "$bang"
-       | '>' -> Buffer.add_string buffer "$great"
-       | '<' -> Buffer.add_string buffer "$less"
-       | '=' -> Buffer.add_string buffer "$eq"
-       | '+' -> Buffer.add_string buffer "$plus"
-       | '-' -> Buffer.add_string buffer "$"
-       (* Note ocaml compiler also has [self-] *)
-       | '@' -> Buffer.add_string buffer "$at"
-       | '^' -> Buffer.add_string buffer "$caret"
-       | '/' -> Buffer.add_string buffer "$slash"
-       | '|' -> Buffer.add_string buffer "$pipe"
-       | '.' -> Buffer.add_string buffer "$dot"
-       | '%' -> Buffer.add_string buffer "$percent"
-       | '~' -> Buffer.add_string buffer "$tilde"
-       | '#' -> Buffer.add_string buffer "$hash"
-       | ':' -> Buffer.add_string buffer "$colon"
-       | '?' -> Buffer.add_string buffer "$question"
-       | '&' -> Buffer.add_string buffer "$amp"
-       | '$' -> Buffer.add_string buffer "$dollar"
-       | '(' -> Buffer.add_string buffer "$lpar"
-       | ')' -> Buffer.add_string buffer "$rpar"
-       | '{' -> Buffer.add_string buffer "$lbrace"
-       | '}' -> Buffer.add_string buffer "$lbrace"
-       | '[' -> Buffer.add_string buffer "$lbrack"
-       | ']' -> Buffer.add_string buffer "$rbrack"
-       | 'a'..'z' | 'A'..'Z'| '_'
-       | '0'..'9'-> Buffer.add_char buffer  c
-       | _ -> Buffer.add_string buffer "$unknown"
-     done; Buffer.contents buffer)
+      if no_escape c then Ext_buffer.add_char buffer c 
+      else 
+        Ext_buffer.add_string buffer (convert c)        
+    done; Ext_buffer.contents buffer
+
 (* TODO:
     check name conflicts with javascript conventions
    {[
@@ -13909,8 +13880,9 @@ end = struct
 type key = int
 let compare_key = Ext_int.compare
 let [@inline] eq_key (x : key) y = x = y
+    
 # 19 "ext/map.cppo.ml"
-(* let [@inline] (=) (a : int) b = a = b *)
+    (* let [@inline] (=) (a : int) b = a = b *)
 type + 'a t = (key,'a) Map_gen.t
 
 let empty = Map_gen.empty 
@@ -20558,7 +20530,7 @@ module Int_array = Vec.Make(struct type t = int let null = 0 end);;
 let v = Int_array.init 10 (fun i -> i);;
 
 let ((>::),
-    (>:::)) = OUnit.((>::),(>:::))
+     (>:::)) = OUnit.((>::),(>:::))
 
 
 let (=~) x y = OUnit.assert_equal ~cmp:(Int_array.equal  (fun (x: int) y -> x=y)) x y

@@ -9,7 +9,7 @@ var v = {
 };
 
 function f(param) {
-  var arr = Caml_array.caml_make_vect(10, (function (param) {
+  var arr = Caml_array.make(10, (function (param) {
           
         }));
   for(var i = 0; i <= 9; ++i){

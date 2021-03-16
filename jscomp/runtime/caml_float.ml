@@ -39,15 +39,15 @@ external float_of_int : int -> float = "%floatofint"
 let caml_int32_float_of_bits : int32 -> float = [%raw{|function(x){
     return new Float32Array(new Int32Array([x]).buffer)[0] 
     }|}]
-  (* let int32 = Int32_array.make [| x |] in
-  let float32 = Float32_array.fromBuffer ( Int32_array.buffer int32) in
-  Float32_array.unsafe_get float32 0 *)
+(* let int32 = Int32_array.make [| x |] in
+   let float32 = Float32_array.fromBuffer ( Int32_array.buffer int32) in
+   Float32_array.unsafe_get float32 0 *)
 
 let caml_int32_bits_of_float : float -> int32 = [%raw{|function(x){
   return new Int32Array(new Float32Array([x]).buffer)[0] 
 }|}]
-  (* let float32 = Float32_array.make [|x|] in
-  Int32_array.unsafe_get (Int32_array.fromBuffer (Float32_array.buffer float32)) 0 *)
+(* let float32 = Float32_array.make [|x|] in
+   Int32_array.unsafe_get (Int32_array.fromBuffer (Float32_array.buffer float32)) 0 *)
 
 
 let caml_modf_float (x : float) : float * float =
@@ -128,7 +128,7 @@ let caml_hypot_float (x: float) (y: float): float =
 
 
 let caml_log10_float (x: float): float =
-   _LOG10E *. log x
+  _LOG10E *. log x
 
 (* 
 let caml_cosh_float x = exp x +. exp (-. x) /. 2.
@@ -137,4 +137,4 @@ let caml_tan_float x =
   let y = exp x in
   let z = exp (-. x) in
   (y +. z) /. (y -. z   ) *)
-  
+

@@ -25,15 +25,14 @@ let mk_js_error (loc: Location.t) (msg: string) =
   let (_file,line,startchar) = Location.get_pos_info loc.Location.loc_start in
   let (_file,endline,endchar) = Location.get_pos_info loc.Location.loc_end in
   Js.Unsafe.(obj
-  [|
-  "js_error_msg",
-    inject @@ Js.string (Printf.sprintf "Line %d, %d:\n  %s"  line startchar msg);
-  "row"    , inject (line - 1);
-  "column" , inject startchar;
-  "endRow" , inject (endline - 1);
-  "endColumn" , inject endchar;
-  "text" , inject @@ Js.string msg;
-  "type" , inject @@ Js.string "error"
-  |]
-  )
-  
+               [|
+                 "js_error_msg",
+                 inject @@ Js.string (Printf.sprintf "Line %d, %d:\n  %s"  line startchar msg);
+                 "row"    , inject (line - 1);
+                 "column" , inject startchar;
+                 "endRow" , inject (endline - 1);
+                 "endColumn" , inject endchar;
+                 "text" , inject @@ Js.string msg;
+                 "type" , inject @@ Js.string "error"
+               |]
+            )

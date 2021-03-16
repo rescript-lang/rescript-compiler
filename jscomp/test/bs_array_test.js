@@ -215,7 +215,7 @@ eq("File \"bs_array_test.ml\", line 45, characters 6-13", Js_vector.map((functio
       4
     ]);
 
-eq("File \"bs_array_test.ml\", line 48, characters 5-12", Caml_array.caml_make_vect(5, 3), [
+eq("File \"bs_array_test.ml\", line 48, characters 5-12", Caml_array.make(5, 3), [
       3,
       3,
       3,

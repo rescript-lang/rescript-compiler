@@ -116,7 +116,7 @@ var array_suites_1 = {
                     4,
                     5
                   ],
-                  _1: Caml_array.caml_array_concat({
+                  _1: Caml_array.concat({
                         hd: [
                           0,
                           1,
@@ -146,8 +146,8 @@ var array_suites_1 = {
             return {
                     TAG: /* Eq */0,
                     _0: [
-                      Caml_array.caml_make_vect(100, /* 'a' */97),
-                      Caml_array.caml_make_float_vect(100)
+                      Caml_array.make(100, /* 'a' */97),
+                      Caml_array.make_float(100)
                     ],
                     _1: [
                       $$Array.init(100, (function (param) {
@@ -306,7 +306,7 @@ var array_suites_1 = {
                   (function (param) {
                       return {
                               TAG: /* Eq */0,
-                              _0: Caml_array.caml_make_vect(2, 1),
+                              _0: Caml_array.make(2, 1),
                               _1: [
                                 1,
                                 1

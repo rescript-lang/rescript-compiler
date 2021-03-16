@@ -41,19 +41,19 @@ let create_queue () =
 
 (* Added to tail *)
 let push_back (q :'a t) (v : 'a) = 
-   let cell = 
-      Some
-        {content=v ; next=None}
-   in 
-   match q.last with 
-   | None ->
-     q . length<- 1 ;
-     q . first <- cell;
-     q . last <- cell
-   | Some last -> 
-     q . length <- q . length + 1;
+  let cell = 
+    Some
+      {content=v ; next=None}
+  in 
+  match q.last with 
+  | None ->
+    q . length<- 1 ;
+    q . first <- cell;
+    q . last <- cell
+  | Some last -> 
+    q . length <- q . length + 1;
     last . next <- cell;
-     q . last <- cell
+    q . last <- cell
 
 let is_empty_queue q = q.length  = 0     
 
@@ -83,7 +83,7 @@ let caml_hash_mix_string =  Caml_hash_primitive.caml_hash_mix_string
 
 
 let caml_hash (count : int) _limit (seed : int) 
-  (obj : Obj.t) : int = 
+    (obj : Obj.t) : int = 
   let hash = ref seed in 
   if Js.typeof obj = "number" then
     begin 
@@ -102,8 +102,8 @@ let caml_hash (count : int) _limit (seed : int)
     let queue =  create_queue () in 
     let num = ref count in 
     let () = 
-       push_back  queue obj; 
-       num.contents <- num.contents - 1
+      push_back  queue obj; 
+      num.contents <- num.contents - 1
     in 
     while not ( is_empty_queue queue) && num.contents > 0 do
       let obj =  unsafe_pop queue in 
@@ -157,4 +157,4 @@ let caml_hash (count : int) _limit (seed : int)
           end
     done;
     caml_hash_final_mix hash.contents
-    
+

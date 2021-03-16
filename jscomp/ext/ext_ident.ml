@@ -97,95 +97,59 @@ let js_module_table : Ident.t Hash_string.t = Hash_string.create 31
 
 *)
 
+let [@inline] convert (c : char) : string =
+  (match c with
+   | '*' ->   "$star"
+   | '\'' ->   "$p"
+   | '!' ->   "$bang"
+   | '>' ->   "$great"
+   | '<' ->   "$less"
+   | '=' ->   "$eq"
+   | '+' ->   "$plus"
+   | '-' ->   "$neg"
+   | '@' ->   "$at"
+   | '^' ->   "$caret"
+   | '/' ->   "$slash"
+   | '|' ->   "$pipe"
+   | '.' ->   "$dot"
+   | '%' ->   "$percent"
+   | '~' ->   "$tilde"
+   | '#' ->   "$hash"
+   | ':' ->   "$colon"
+   | '?' ->   "$question"
+   | '&' ->   "$amp"
+   | '(' ->   "$lpar"
+   | ')' ->   "$rpar"
+   | '{' ->   "$lbrace"
+   | '}' ->   "$lbrace"
+   | '[' ->   "$lbrack"
+   | ']' ->   "$rbrack"
 
-
-exception Not_normal_letter of int
+   | _ ->   "$unknown")  
+let [@inline] no_escape (c : char) =  
+  match c with   
+  | 'a' .. 'z' | 'A' .. 'Z'
+  | '0' .. '9' | '_' | '$' -> true 
+  | _ -> false
+exception Not_normal_letter 
 let name_mangle name =
-
   let len = String.length name  in
   try
     for i  = 0 to len - 1 do
-      match String.unsafe_get name i with
-      | 'a' .. 'z' | 'A' .. 'Z'
-      | '0' .. '9' | '_' | '$'
-        -> ()
-      | _ -> raise (Not_normal_letter i)
+      if not (no_escape (String.unsafe_get name i)) then
+        raise_notrace (Not_normal_letter )
     done;
     name (* Normal letter *)
   with
-  | Not_normal_letter 0 ->
-
-    let buffer = Buffer.create len in
+  | Not_normal_letter ->
+    let buffer = Ext_buffer.create len in
     for j = 0 to  len - 1 do
       let c = String.unsafe_get name j in
-      match c with
-      | '*' -> Buffer.add_string buffer "$star"
-      | '\'' -> Buffer.add_string buffer "$prime"
-      | '!' -> Buffer.add_string buffer "$bang"
-      | '>' -> Buffer.add_string buffer "$great"
-      | '<' -> Buffer.add_string buffer "$less"
-      | '=' -> Buffer.add_string buffer "$eq"
-      | '+' -> Buffer.add_string buffer "$plus"
-      | '-' -> Buffer.add_string buffer "$neg"
-      | '@' -> Buffer.add_string buffer "$at"
-      | '^' -> Buffer.add_string buffer "$caret"
-      | '/' -> Buffer.add_string buffer "$slash"
-      | '|' -> Buffer.add_string buffer "$pipe"
-      | '.' -> Buffer.add_string buffer "$dot"
-      | '%' -> Buffer.add_string buffer "$percent"
-      | '~' -> Buffer.add_string buffer "$tilde"
-      | '#' -> Buffer.add_string buffer "$hash"
-      | ':' -> Buffer.add_string buffer "$colon"
-      | '?' -> Buffer.add_string buffer "$question"
-      | '&' -> Buffer.add_string buffer "$amp"
-      | '(' -> Buffer.add_string buffer "$lpar"
-      | ')' -> Buffer.add_string buffer "$rpar"
-      | '{' -> Buffer.add_string buffer "$lbrace"
-      | '}' -> Buffer.add_string buffer "$lbrace"
-      | '[' -> Buffer.add_string buffer "$lbrack"
-      | ']' -> Buffer.add_string buffer "$rbrack"
-      | 'a'..'z' | 'A'..'Z'| '_'
-      | '$'
-      | '0'..'9'-> Buffer.add_char buffer  c
-      | _ -> Buffer.add_string buffer "$unknown"
-    done; Buffer.contents buffer
-  | Not_normal_letter i ->
-    String.sub name 0 i ^
-    (let buffer = Buffer.create len in
-     for j = i to  len - 1 do
-       let c = String.unsafe_get name j in
-       match c with
-       | '*' -> Buffer.add_string buffer "$star"
-       | '\'' -> Buffer.add_string buffer "$prime"
-       | '!' -> Buffer.add_string buffer "$bang"
-       | '>' -> Buffer.add_string buffer "$great"
-       | '<' -> Buffer.add_string buffer "$less"
-       | '=' -> Buffer.add_string buffer "$eq"
-       | '+' -> Buffer.add_string buffer "$plus"
-       | '-' -> Buffer.add_string buffer "$"
-       (* Note ocaml compiler also has [self-] *)
-       | '@' -> Buffer.add_string buffer "$at"
-       | '^' -> Buffer.add_string buffer "$caret"
-       | '/' -> Buffer.add_string buffer "$slash"
-       | '|' -> Buffer.add_string buffer "$pipe"
-       | '.' -> Buffer.add_string buffer "$dot"
-       | '%' -> Buffer.add_string buffer "$percent"
-       | '~' -> Buffer.add_string buffer "$tilde"
-       | '#' -> Buffer.add_string buffer "$hash"
-       | ':' -> Buffer.add_string buffer "$colon"
-       | '?' -> Buffer.add_string buffer "$question"
-       | '&' -> Buffer.add_string buffer "$amp"
-       | '$' -> Buffer.add_string buffer "$dollar"
-       | '(' -> Buffer.add_string buffer "$lpar"
-       | ')' -> Buffer.add_string buffer "$rpar"
-       | '{' -> Buffer.add_string buffer "$lbrace"
-       | '}' -> Buffer.add_string buffer "$lbrace"
-       | '[' -> Buffer.add_string buffer "$lbrack"
-       | ']' -> Buffer.add_string buffer "$rbrack"
-       | 'a'..'z' | 'A'..'Z'| '_'
-       | '0'..'9'-> Buffer.add_char buffer  c
-       | _ -> Buffer.add_string buffer "$unknown"
-     done; Buffer.contents buffer)
+      if no_escape c then Ext_buffer.add_char buffer c 
+      else 
+        Ext_buffer.add_string buffer (convert c)        
+    done; Ext_buffer.contents buffer
+
 (* TODO:
     check name conflicts with javascript conventions
    {[

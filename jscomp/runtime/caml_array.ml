@@ -23,13 +23,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-external caml_array_dup : 'a array -> (_ [@bs.as 0]) -> 'a array = 
+external dup : 'a array -> (_ [@bs.as 0]) -> 'a array = 
   "slice"  [@@bs.send]
 
-let (.!()) = Caml_array_extern.unsafe_get  
-let (.!()<-) = Caml_array_extern.unsafe_set
+let %private {unsafe_get = (.!()) ; unsafe_set = (.!()<-)} = 
+  (module Caml_array_extern)
 
-let caml_array_sub (x : 'a array) (offset : int) (len : int) = 
+
+let sub (x : 'a array) (offset : int) (len : int) = 
   let result = Caml_array_extern.new_uninitialized len  in
   let j = {contents = 0} and i =  {contents = offset} in
   while j.contents < len do
@@ -49,17 +50,17 @@ let rec fill arr i l =
   match l with 
   | [] -> ()
   | x :: xs -> 
-      let l = Caml_array_extern.length x in
-      let k = {contents =  i} in
-      let j = {contents = 0} in
-      while j.contents < l do 
-        arr.!(k.contents) <- x .!(j.contents);
-        k.contents <- k.contents + 1; 
-        j.contents <- j.contents + 1;
-      done;
-      fill arr k.contents  xs 
+    let l = Caml_array_extern.length x in
+    let k = {contents =  i} in
+    let j = {contents = 0} in
+    while j.contents < l do 
+      arr.!(k.contents) <- x .!(j.contents);
+      k.contents <- k.contents + 1; 
+      j.contents <- j.contents + 1;
+    done;
+    fill arr k.contents  xs 
 
-let  caml_array_concat (l : 'a array list) : 'a array =
+let  concat (l : 'a array list) : 'a array =
   let v = len 0 l in
   let result = Caml_array_extern.new_uninitialized v in
   fill result 0 l ;
@@ -76,27 +77,27 @@ let get xs index =
   else  xs.!( index)
 
 
-let caml_make_vect len init = 
+let make len init = 
   let b = Caml_array_extern.new_uninitialized len in
   for i = 0 to len - 1 do 
-     b.!(i) <-  init
+    b.!(i) <-  init
   done;
   b
 
-let caml_make_float_vect len = 
+let make_float len = 
   let b = Caml_array_extern.new_uninitialized len in
   for i = 0 to len - 1 do 
-       b.!(i) <-  0.
+    b.!(i) <-  0.
   done;
   b  
-  
-let caml_array_blit a1 i1 a2 i2 len = 
+
+let blit a1 i1 a2 i2 len = 
   if i2 <= i1 then 
     for j = 0 to len - 1 do
       a2.! (j+i2) <- a1.! (j+i1)
     done
   else
     for j = len - 1 downto 0 do
-       a2 .!(j+i2) <-  a1.! (j+i1)
+      a2 .!(j+i2) <-  a1.! (j+i1)
     done
 

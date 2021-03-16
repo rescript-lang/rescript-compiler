@@ -46,10 +46,10 @@ let caml_hash_final_mix h =
   h.contents <- h.contents lxor (h.contents lsr 13);
   h.contents <- h.contents * 0xc2b2ae35 ;
   h.contents lxor (h.contents lsr 16)
-  (* Caml_nativeint_extern.logand  (h.contents ^ (h.contents >>> 16)) 0x3FFFFFFFn *)
+(* Caml_nativeint_extern.logand  (h.contents ^ (h.contents >>> 16)) 0x3FFFFFFFn *)
 
 let caml_hash_mix_string h  s = 
-  
+
   let len =Caml_string_extern.length s in
   let block = len / 4 - 1  in
   let hash = ref h in  
@@ -73,7 +73,7 @@ let caml_hash_mix_string h  s =
           s.![len - 3]
         else if modulo = 2 then 
           (s.![len -1] lsl 8) lor 
-           s.![len -2]
+          s.![len -2]
         else  s.![len - 1] 
       in 
       hash.contents <- caml_hash_mix_int hash.contents  w
@@ -81,4 +81,4 @@ let caml_hash_mix_string h  s =
   hash.contents <- hash.contents lxor len ;
   hash.contents 
 
- 
+

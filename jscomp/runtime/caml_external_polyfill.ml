@@ -41,7 +41,7 @@ let resolve : string -> dyn [@bs] = [%raw {|function(s){
   }
   return myGlobal[s]
 }|}]
-  
+
 (* FIXME: it does not have to global states *)
 type fn 
 

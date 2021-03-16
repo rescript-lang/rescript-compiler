@@ -26,11 +26,11 @@
 
 (* This module would  only work with js backend, since it requires
    [int] behaves as js  numbers
- *)
+*)
 
 (* TODO: see GPR#333
    the encoding of int is platform dependent *)
-   
+
 
 
 
@@ -41,9 +41,9 @@ let lognot x =  x lxor (-1)
 
 (* [hi] is signed 
    [lo] is unsigned
-   
-  signedness does not matter when they are doing int32 bits operation   
-  however, they are different when doing comparison
+
+   signedness does not matter when they are doing int32 bits operation   
+   however, they are different when doing comparison
 *)
 type t =   {  hi : int ; [@as "0"] lo : int ; [@as "1" ]  }
 
@@ -56,7 +56,7 @@ let min_int =  mk  ~lo: 0 ~hi:(0x80000000)
 (* The high bits are signed 0x80000000 |~ 0 *)
 
 let max_int =
- mk  ~lo:(0xffff_ffff) ~hi: 0x7fff_ffff
+  mk  ~lo:(0xffff_ffff) ~hi: 0x7fff_ffff
 
 let one = mk ~lo: 1 ~hi:0
 let zero = mk ~lo: 0 ~hi: 0
@@ -71,7 +71,7 @@ let succ_aux ~x_lo ~x_hi =
   mk ~lo ~hi:(( x_hi +~ if lo = 0 then 1 else 0) lor 0)
 let succ ( {lo = x_lo; hi = x_hi} : t) =
   succ_aux ~x_lo ~x_hi
-  
+
 let neg ( {lo;hi} ) =
   let other_lo = (lognot lo +~  1) lor 0 in   
   mk ~lo:other_lo 
@@ -89,12 +89,12 @@ let add_aux
   let overflow =
     if (neg_signed x_lo && ( neg_signed y_lo  ||  (non_neg_signed lo)))
     || (neg_signed y_lo  &&  (non_neg_signed lo))
-    (* we can make it symmetric by adding (neg_signed x_lo) but it will make it 
-       verbose and slow
-       a (b+c) + b (a+c)
-       --> bc + ac + ab 
-       --> a (b+c) + bc
-    *)
+       (* we can make it symmetric by adding (neg_signed x_lo) but it will make it 
+          verbose and slow
+          a (b+c) + b (a+c)
+          --> bc + ac + ab 
+          --> a (b+c) + bc
+       *)
     then 1 
     else  0
   in
@@ -142,10 +142,10 @@ let lsl_ ( {lo; hi} as x) numBits =
     mk ~lo:0 ~hi:(lo lsl (numBits - 32))
   else
     mk ~lo:(lo lsl numBits)
-     ~hi:
-       (
-         ( lo >>>~  (32 - numBits)) lor
-         ( hi lsl numBits))
+      ~hi:
+        (
+          ( lo >>>~  (32 - numBits)) lor
+          ( hi lsl numBits))
 
 
 let lsr_ ( {lo; hi} as x) numBits =
@@ -153,16 +153,16 @@ let lsr_ ( {lo; hi} as x) numBits =
   else
     let offset = numBits - 32 in
     if offset = 0 then
-        mk ~lo:hi ~hi:0
+      mk ~lo:hi ~hi:0
     else if offset > 0 then
       mk ~lo:(hi >>>~ offset) ~hi:0
     else
       mk
-      ~hi: ( hi >>>~ numBits)
+        ~hi: ( hi >>>~ numBits)
         ~lo:(          
-            (hi lsl (-offset))
-            lor
-            ( lo >>>~ numBits))
+          (hi lsl (-offset))
+          lor
+          ( lo >>>~ numBits))
 
 
 let asr_ ( {lo; hi } as x) numBits =
@@ -172,9 +172,9 @@ let asr_ ( {lo; hi } as x) numBits =
   if numBits < 32  then
     mk ~hi:(  hi asr numBits)
       ~lo:(
-         ( hi lsl (32 - numBits)) (* zero filled *)
-         lor
-         ( lo >>>~ numBits))
+        ( hi lsl (32 - numBits)) (* zero filled *)
+        lor
+        ( lo >>>~ numBits))
 
 
   else
@@ -238,12 +238,12 @@ let rec mul this
         c32.contents <-  c32.contents land 0xffff;
         c48.contents <-  (c48.contents  +~ (a48 *~ b00 +~ a32 *~ b16 +~ a16 *~ b32 +~ a00 *~ b48)) land 0xffff;
         mk ~lo:
-           (
-             (c00 land 0xffff) lor
-             ( (c16.contents land 0xffff) lsl 16))
-         ~hi:( 
-             c32.contents lor
-             ( c48.contents lsl 16))
+          (
+            (c00 land 0xffff) lor
+            ( (c16.contents land 0xffff) lsl 16))
+          ~hi:( 
+            c32.contents lor
+            ( c48.contents lsl 16))
 
       end
 
@@ -253,9 +253,9 @@ let rec mul this
 
 (* Dispatched by the compiler, idea: should we do maximum sharing
 *)
- let xor ( {lo = this_lo; hi= this_hi}) ( {lo = other_lo; hi = other_hi}) =
-   mk
-     ~lo:(this_lo lxor other_lo)
+let xor ( {lo = this_lo; hi= this_hi}) ( {lo = other_lo; hi = other_hi}) =
+  mk
+    ~lo:(this_lo lxor other_lo)
     ~hi:(this_hi lxor other_hi)
 
 
@@ -293,7 +293,7 @@ let gt ( x) ( y) =
   else if x.hi < y.hi  then
     false
   else
-     x.lo >  y.lo
+    x.lo >  y.lo
 
 
 let le x y = Pervasives.not (gt x y)
@@ -307,7 +307,7 @@ let to_float ( {hi; lo} : t) =
 
 
 (** sign: Positive  
-  -FIXME: hex notation
+    -FIXME: hex notation
 *)
 let two_ptr_32_dbl = 4294967296. (* 2. ** 32*)
 let two_ptr_63_dbl = 9.22337203685477581e+18 (* 2. ** 63.*)
@@ -331,7 +331,7 @@ let rec of_float (x : float) : t =
   else if x < 0. then
     neg (of_float (-. x))
   else mk  ~lo:(Caml_nativeint_extern.of_float (mod_float  x two_ptr_32_dbl))
-         ~hi:(Caml_nativeint_extern.of_float (x /. two_ptr_32_dbl))
+      ~hi:(Caml_nativeint_extern.of_float (x /. two_ptr_32_dbl))
 
 
 external log2 : float = "LN2" [@@bs.val]  [@@bs.scope "Math"]
@@ -341,30 +341,30 @@ external floor : float -> float =  "floor" [@@bs.val] [@@bs.scope "Math"]
 (* external maxFloat : float -> float -> float = "Math.max" [@@bs.val] *)
 
 (* either top 11 bits are all 0 or all 1 
-  when it is all 1, we need exclude -2^53
+   when it is all 1, we need exclude -2^53
 *)
 let isSafeInteger ({hi;lo}) = 
   let top11Bits = hi asr 21 in   
   top11Bits = 0 || 
   (top11Bits = -1 && 
-  Pervasives.not (lo = 0 && hi = 0xff_e0_00_00))
+   Pervasives.not (lo = 0 && hi = 0xff_e0_00_00))
 
 external string_of_float : float -> string = "String" [@@bs.val] 
 let rec to_string ( self : int64) = 
   let ({hi=self_hi;_} as self) = unsafe_of_int64 self in
   if isSafeInteger self then 
-     string_of_float (to_float self)
+    string_of_float (to_float self)
   else 
-  
+
   if self_hi <0 then 
     if eq self min_int then "-9223372036854775808"
     else "-" ^ to_string (unsafe_to_int64 (neg self))
   else (* large positive number *)    
     let ( {lo ; hi} as approx_div1) =  (of_float (floor (to_float self /. 10.) )) in
     let ( { lo = rem_lo ;hi = rem_hi} ) = (* rem should be a pretty small number *)
-        self 
-        |. sub_aux  ~lo:(lo lsl 3) ~hi:((lo>>>~29) lor (hi lsl 3))
-        |. sub_aux ~lo:(lo lsl 1) ~hi: ((lo >>>~ 31) lor (hi lsl 1))
+      self 
+      |. sub_aux  ~lo:(lo lsl 3) ~hi:((lo>>>~29) lor (hi lsl 3))
+      |. sub_aux ~lo:(lo lsl 1) ~hi: ((lo >>>~ 31) lor (hi lsl 1))
     in 
     if rem_lo =0 && rem_hi = 0 then to_string (unsafe_to_int64 approx_div1) ^ "0"
     else 
@@ -385,9 +385,9 @@ let rec to_string ( self : int64) =
       let delta =  (floor (rem_lo /. 10.)) in 
       let remainder = rem_lo -. 10. *. delta in 
       (approx_div1 
-      |. add_aux ~y_lo:(Caml_nativeint_extern.of_float delta) ~y_hi:0
-      |. unsafe_to_int64 
-      |. to_string)
+       |. add_aux ~y_lo:(Caml_nativeint_extern.of_float delta) ~y_hi:0
+       |. unsafe_to_int64 
+       |. to_string)
       ^                                                    
       Caml_nativeint_extern.to_string (Caml_nativeint_extern.of_float remainder) 
 
@@ -407,7 +407,7 @@ let rec div self other =
       else if eq other min_int then one
       else
         let ( {hi = other_hi;_}) = other in
-      (* now |other| >= 2, so |this/other| < |MIN_VALUE|*)
+        (* now |other| >= 2, so |this/other| < |MIN_VALUE|*)
         let half_this = asr_ self 1  in
         let approx = lsl_ (div half_this other) 1 in
         match approx with
@@ -435,7 +435,7 @@ let rec div self other =
       (* assert false *)
       while ge rem.contents other  do
         let approx = ref ( float_max 1.
-             (Caml_float.floor (to_float rem.contents /. to_float other) )) in
+                             (Caml_float.floor (to_float rem.contents /. to_float other) )) in
         let log2 = ceil (log approx.contents /. log2) in
         let delta =
           if log2 <= 48. then 1.
@@ -448,7 +448,7 @@ let rec div self other =
           approxRem.contents <- mul approxRes.contents other
         done;
         (if is_zero approxRes.contents then
-          approxRes.contents <- one);
+           approxRes.contents <- one);
         res.contents <- add res.contents approxRes.contents;
         rem.contents <- sub rem.contents approxRem.contents
       done;
@@ -505,7 +505,7 @@ let to_hex (x : int64) =
 let discard_sign (x : int64) : int64 = 
   let v = unsafe_of_int64 x in   
   unsafe_to_int64 
-  (match v with  v ->  {  v with hi = 0x7fff_ffff land v.hi })
+    (match v with  v ->  {  v with hi = 0x7fff_ffff land v.hi })
 
 (* >>> 0 does not change its bit representation
       it simply makes sure it is an unsigned integer
@@ -513,25 +513,25 @@ let discard_sign (x : int64) : int64 =
       Which is still (-1) if you interpret it as a signed integer
       When we do the call (new Int32Array(x[1], x[0]), it will
       convert x[0] from an unsigned integer to signed integer
-      {[
-        new Int32Array([-1 >>> 0])
-        Int32Array(1)[-1]
-      ]}
+   {[
+     new Int32Array([-1 >>> 0])
+       Int32Array(1)[-1]
+   ]}
 *)
 
 let float_of_bits ( x : t) : float =  
-   ([%raw{|function(lo,hi){ return (new Float64Array(new Int32Array([lo,hi]).buffer))[0]}|}] : _ -> _ -> _ ) x.lo x.hi 
+  ([%raw{|function(lo,hi){ return (new Float64Array(new Int32Array([lo,hi]).buffer))[0]}|}] : _ -> _ -> _ ) x.lo x.hi 
 
-  (* let to_int32 (x : nativeint) = x |> Caml_nativeint_extern.to_int32
-  in
-  (*TODO:
-    This should get inlined, we should apply a simple inliner in the js layer,
-    the thing is its lambda representation is complex but after js layer,
-    it's qutie simple
-  *)
-  let int32 = Int32_array.make  [| to_int32 x.lo; to_int32 x.hi |] in
+(* let to_int32 (x : nativeint) = x |> Caml_nativeint_extern.to_int32
+   in
+   (*TODO:
+   This should get inlined, we should apply a simple inliner in the js layer,
+   the thing is its lambda representation is complex but after js layer,
+   it's qutie simple
+ *)
+   let int32 = Int32_array.make  [| to_int32 x.lo; to_int32 x.hi |] in
    Float64_array.unsafe_get (Float64_array.fromBuffer (Int32_array.buffer int32)) 0 *)
 
 let  bits_of_float : float -> t  = fun x -> 
-    let lo,hi = ([%raw{|function(x){return new Int32Array(new Float64Array([x]).buffer)}|}] : _ -> _) x in 
-    mk ~lo ~hi
+  let lo,hi = ([%raw{|function(x){return new Int32Array(new Float64Array([x]).buffer)}|}] : _ -> _) x in 
+  mk ~lo ~hi

@@ -36,7 +36,7 @@ function test_closure(param) {
   var v = {
     contents: 0
   };
-  var arr = Caml_array.caml_make_vect(6, (function (x) {
+  var arr = Caml_array.make(6, (function (x) {
           return x;
         }));
   for(var i = 0; i <= 5; ++i){
@@ -57,7 +57,7 @@ function test_closure2(param) {
   var v = {
     contents: 0
   };
-  var arr = Caml_array.caml_make_vect(6, (function (x) {
+  var arr = Caml_array.make(6, (function (x) {
           return x;
         }));
   for(var i = 0; i <= 5; ++i){

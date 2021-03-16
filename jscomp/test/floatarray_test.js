@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var v = Caml_array.caml_make_float_vect(5);
+var v = Caml_array.make_float(5);
 
 for(var i = 0; i <= 4; ++i){
   v[i] = 0;

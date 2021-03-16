@@ -262,7 +262,7 @@ let stats h =
     (fun b ->
        let l = bucket_length 0 b in
        histo.(l) <- histo.(l) + 1)
-    ;
+  ;
   {Hash.
     num_bindings = h.size;
     num_buckets = Array.length h.data;

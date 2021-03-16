@@ -1015,17 +1015,17 @@ function filter(p, t) {
   var r = t.r;
   var v = t.v;
   var l = t.l;
-  var l$prime = filter(p, l);
+  var l$p = filter(p, l);
   var pv = Curry._1(p, v);
-  var r$prime = filter(p, r);
+  var r$p = filter(p, r);
   if (pv) {
-    if (l === l$prime && r === r$prime) {
+    if (l === l$p && r === r$p) {
       return t;
     } else {
-      return join(l$prime, v, r$prime);
+      return join(l$p, v, r$p);
     }
   } else {
-    return concat(l$prime, r$prime);
+    return concat(l$p, r$p);
   }
 }
 
@@ -1257,15 +1257,15 @@ function map(f, t) {
   var r = t.r;
   var v = t.v;
   var l = t.l;
-  var l$prime = map(f, l);
-  var v$prime = Curry._1(f, v);
-  var r$prime = map(f, r);
-  if (l === l$prime && v === v$prime && r === r$prime) {
+  var l$p = map(f, l);
+  var v$p = Curry._1(f, v);
+  var r$p = map(f, r);
+  if (l === l$p && v === v$p && r === r$p) {
     return t;
-  } else if ((l$prime === /* Empty */0 || Caml_primitive.caml_string_compare(max_elt(l$prime), v$prime) < 0) && (r$prime === /* Empty */0 || Caml_primitive.caml_string_compare(v$prime, min_elt(r$prime)) < 0)) {
-    return join(l$prime, v$prime, r$prime);
+  } else if ((l$p === /* Empty */0 || Caml_primitive.caml_string_compare(max_elt(l$p), v$p) < 0) && (r$p === /* Empty */0 || Caml_primitive.caml_string_compare(v$p, min_elt(r$p)) < 0)) {
+    return join(l$p, v$p, r$p);
   } else {
-    return union(l$prime, add(v$prime, r$prime));
+    return union(l$p, add(v$p, r$p));
   }
 }
 

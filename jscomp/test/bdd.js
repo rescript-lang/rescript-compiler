@@ -38,7 +38,7 @@ var sz_1 = {
 };
 
 var htab = {
-  contents: Caml_array.caml_make_vect(sz_1.contents + 1 | 0, /* [] */0)
+  contents: Caml_array.make(sz_1.contents + 1 | 0, /* [] */0)
 };
 
 var n_items = {
@@ -52,7 +52,7 @@ function hashVal(x, y, v) {
 function resize(newSize) {
   var arr = htab.contents;
   var newSz_1 = newSize - 1 | 0;
-  var newArr = Caml_array.caml_make_vect(newSize, /* [] */0);
+  var newArr = Caml_array.make(newSize, /* [] */0);
   var copyBucket = function (_bucket) {
     while(true) {
       var bucket = _bucket;
@@ -107,7 +107,7 @@ function insert(idl, idh, v, ind, bucket, newNode) {
 
 function resetUnique(param) {
   sz_1.contents = 8191;
-  htab.contents = Caml_array.caml_make_vect(sz_1.contents + 1 | 0, /* [] */0);
+  htab.contents = Caml_array.make(sz_1.contents + 1 | 0, /* [] */0);
   n_items.contents = 0;
   nodeC.contents = 1;
   
@@ -169,21 +169,21 @@ function mkVar(x) {
   return mkNode(/* Zero */1, x, /* One */0);
 }
 
-var andslot1 = Caml_array.caml_make_vect(1999, 0);
+var andslot1 = Caml_array.make(1999, 0);
 
-var andslot2 = Caml_array.caml_make_vect(1999, 0);
+var andslot2 = Caml_array.make(1999, 0);
 
-var andslot3 = Caml_array.caml_make_vect(1999, /* Zero */1);
+var andslot3 = Caml_array.make(1999, /* Zero */1);
 
-var xorslot1 = Caml_array.caml_make_vect(1999, 0);
+var xorslot1 = Caml_array.make(1999, 0);
 
-var xorslot2 = Caml_array.caml_make_vect(1999, 0);
+var xorslot2 = Caml_array.make(1999, 0);
 
-var xorslot3 = Caml_array.caml_make_vect(1999, /* Zero */1);
+var xorslot3 = Caml_array.make(1999, /* Zero */1);
 
-var notslot1 = Caml_array.caml_make_vect(1999, 0);
+var notslot1 = Caml_array.make(1999, 0);
 
-var notslot2 = Caml_array.caml_make_vect(1999, /* One */0);
+var notslot2 = Caml_array.make(1999, /* One */0);
 
 function hash(x, y) {
   return ((x << 1) + y | 0) % 1999;
@@ -330,7 +330,7 @@ function random(param) {
 }
 
 function random_vars(n) {
-  var vars = Caml_array.caml_make_vect(n, false);
+  var vars = Caml_array.make(n, false);
   for(var i = 0; i < n; ++i){
     Caml_array.set(vars, i, random(undefined));
   }

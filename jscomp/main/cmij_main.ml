@@ -23,10 +23,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- 
+
 type mode = 
-| Native
-| Playground of string list (* 3rd party libraries folders paths *)
+  | Native
+  | Playground of string list (* 3rd party libraries folders paths *)
 
 
 let get_files ext dir = 
@@ -61,24 +61,24 @@ let from_cmj ~mode (files : string list) (output_file : string) : unit =
         let module_name = (cmp file) in 
         let content : Js_cmj_format.t = Js_cmj_format.from_file file in 
         let () = match mode with
-        | Native ->
-          begin match content with 
-            | {case = Little; package_spec}
-              when package_spec = Js_packages_info.runtime_package_specs
-              -> ()
+          | Native ->
+            begin match content with 
+              | {case = Little; package_spec}
+                when package_spec = Js_packages_info.runtime_package_specs
+                -> ()
               (*TODO: assert its suffixes*)
-            | _ -> 
-              Format.fprintf Format.err_formatter
-                 "@[%s: @[%a@]@]@." file
-              Js_packages_info.dump_packages_info  content.package_spec;              
-              assert false   
-          end
-        | Playground _ -> ()
+              | _ -> 
+                Format.fprintf Format.err_formatter
+                  "@[%s: @[%a@]@]@." file
+                  Js_packages_info.dump_packages_info  content.package_spec;              
+                assert false   
+            end
+          | Playground _ -> ()
         in
         (* prerr_endline (Ext_obj.dump content.package_spec); *)
         let c = 
           Marshal.to_string (content.values, content.pure) []
-           in 
+        in 
         Printf.sprintf {|%S (* %d *)|} module_name           
           (String.length c),
         Printf.sprintf {|(* %s *)%S|} module_name c   
@@ -91,7 +91,7 @@ let module_data : string array = Obj.magic (
 %s
 )
 |} (String.concat ",\n" (Ext_list.map abs fst)) (String.concat ",\n" (Ext_list.map abs snd))
-     );
+  );
   buf +> "\n" ;
   let digest  = Digest.to_hex (Ext_buffer.digest buf) in  
   let same = check_digest output_file digest in     
@@ -109,7 +109,7 @@ let from_cmi (files : string list) (output_file : string) =
   let cmp = Ext_filename.module_name in   
   let files = List.sort (fun filea fileb  ->
       Ext_string_array.cmp (cmp filea) (cmp fileb)) files in 
-  
+
   let buf = Ext_buffer.create 10000 in 
   let abs =  Ext_list.map files (fun file -> 
       let module_name = cmp file in 
@@ -142,8 +142,8 @@ let module_data : string array = Obj.magic (
         output_string f ("(* " ^ digest ^ " *)\n");
         Ext_buffer.output_buffer f buf 
       )
-    
-      ;;
+
+;;
 
 let stdlib = "stdlib-406"
 let (//) = Filename.concat 
@@ -161,14 +161,14 @@ let mode =
   match Sys.argv with
   | [|_; "-playground"; folders |] 
     -> 
-      Playground (folders
-      |> String.split_on_char ','
-      |> List.filter (fun s -> s <> ""))
+    Playground (folders
+                |> String.split_on_char ','
+                |> List.filter (fun s -> s <> ""))
   | _ -> Native
 let () = 
   let third_party_cmj_files = match mode with
-  | Native -> []
-  | Playground folders -> List.fold_left (fun acc folder -> acc @ get_files Literals.suffix_cmj folder) [] folders
+    | Native -> []
+    | Playground folders -> List.fold_left (fun acc folder -> acc @ get_files Literals.suffix_cmj folder) [] folders
   in
   let cmj_files = 
     ( 
@@ -179,23 +179,23 @@ let () =
   from_cmj ~mode cmj_files
     (Filename.dirname Sys.argv.(0) // ".." // "main" // "builtin_cmj_datasets.ml");
   let third_party_cmi_files = match mode with
-  | Native -> []
-  | Playground folders -> List.fold_left (fun acc folder -> acc @ get_files Literals.suffix_cmi folder) [] folders
+    | Native -> []
+    | Playground folders -> List.fold_left (fun acc folder -> acc @ get_files Literals.suffix_cmi folder) [] folders
   in
   let cmi_files = 
     if release_cmi then   
       get_files Literals.suffix_cmi (".."//"lib"//"ocaml")  
-   else    
-     (Filename.dirname Sys.argv.(0) // ".." // "runtime" // "js.cmi") ::       
-     (get_files Literals.suffix_cmi (Filename.dirname Sys.argv.(0) // ".." // stdlib) @
-      get_files Literals.suffix_cmi (Filename.dirname Sys.argv.(0) // ".." // "others") @
-      third_party_cmi_files)
-     |> List.filter (fun x -> 
-         x|~ "js_OO" ||
-         x|~  "camlinternal" ||
-         not (x |~ "internal")) 
+    else    
+      (Filename.dirname Sys.argv.(0) // ".." // "runtime" // "js.cmi") ::       
+      (get_files Literals.suffix_cmi (Filename.dirname Sys.argv.(0) // ".." // stdlib) @
+       get_files Literals.suffix_cmi (Filename.dirname Sys.argv.(0) // ".." // "others") @
+       third_party_cmi_files)
+      |> List.filter (fun x -> 
+          x|~ "js_OO" ||
+          x|~  "camlinternal" ||
+          not (x |~ "internal")) 
   in     
   from_cmi 
-  cmi_files
-  cmi_target_file
+    cmi_files
+    cmi_target_file
 

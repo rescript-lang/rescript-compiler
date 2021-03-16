@@ -255,14 +255,14 @@ function Make(Ord) {
     if (!param) {
       return /* Empty */0;
     }
-    var l$prime = map(f, param._0);
-    var d$prime = Curry._1(f, param._2);
-    var r$prime = map(f, param._3);
+    var l$p = map(f, param._0);
+    var d$p = Curry._1(f, param._2);
+    var r$p = map(f, param._3);
     return /* Node */{
-            _0: l$prime,
+            _0: l$p,
             _1: param._1,
-            _2: d$prime,
-            _3: r$prime,
+            _2: d$p,
+            _3: r$p,
             _4: param._4
           };
   };
@@ -271,14 +271,14 @@ function Make(Ord) {
       return /* Empty */0;
     }
     var v = param._1;
-    var l$prime = mapi(f, param._0);
-    var d$prime = Curry._2(f, v, param._2);
-    var r$prime = mapi(f, param._3);
+    var l$p = mapi(f, param._0);
+    var d$p = Curry._2(f, v, param._2);
+    var r$p = mapi(f, param._3);
     return /* Node */{
-            _0: l$prime,
+            _0: l$p,
             _1: v,
-            _2: d$prime,
-            _3: r$prime,
+            _2: d$p,
+            _3: r$p,
             _4: param._4
           };
   };
@@ -441,13 +441,13 @@ function Make(Ord) {
     }
     var d = param._2;
     var v = param._1;
-    var l$prime = filter(p, param._0);
+    var l$p = filter(p, param._0);
     var pvd = Curry._2(p, v, d);
-    var r$prime = filter(p, param._3);
+    var r$p = filter(p, param._3);
     if (pvd) {
-      return join(l$prime, v, d, r$prime);
+      return join(l$p, v, d, r$p);
     } else {
-      return concat(l$prime, r$prime);
+      return concat(l$p, r$p);
     }
   };
   var partition = function (p, param) {
@@ -879,14 +879,14 @@ function map(f, param) {
   if (!param) {
     return /* Empty */0;
   }
-  var l$prime = map(f, param._0);
-  var d$prime = Curry._1(f, param._2);
-  var r$prime = map(f, param._3);
+  var l$p = map(f, param._0);
+  var d$p = Curry._1(f, param._2);
+  var r$p = map(f, param._3);
   return /* Node */{
-          _0: l$prime,
+          _0: l$p,
           _1: param._1,
-          _2: d$prime,
-          _3: r$prime,
+          _2: d$p,
+          _3: r$p,
           _4: param._4
         };
 }
@@ -896,14 +896,14 @@ function mapi(f, param) {
     return /* Empty */0;
   }
   var v = param._1;
-  var l$prime = mapi(f, param._0);
-  var d$prime = Curry._2(f, v, param._2);
-  var r$prime = mapi(f, param._3);
+  var l$p = mapi(f, param._0);
+  var d$p = Curry._2(f, v, param._2);
+  var r$p = mapi(f, param._3);
   return /* Node */{
-          _0: l$prime,
+          _0: l$p,
           _1: v,
-          _2: d$prime,
-          _3: r$prime,
+          _2: d$p,
+          _3: r$p,
           _4: param._4
         };
 }
@@ -1077,13 +1077,13 @@ function filter(p, param) {
   }
   var d = param._2;
   var v = param._1;
-  var l$prime = filter(p, param._0);
+  var l$p = filter(p, param._0);
   var pvd = Curry._2(p, v, d);
-  var r$prime = filter(p, param._3);
+  var r$p = filter(p, param._3);
   if (pvd) {
-    return join(l$prime, v, d, r$prime);
+    return join(l$p, v, d, r$p);
   } else {
-    return concat(l$prime, r$prime);
+    return concat(l$p, r$p);
   }
 }
 
@@ -1550,14 +1550,14 @@ function map$1(f, param) {
   if (!param) {
     return /* Empty */0;
   }
-  var l$prime = map$1(f, param._0);
-  var d$prime = Curry._1(f, param._2);
-  var r$prime = map$1(f, param._3);
+  var l$p = map$1(f, param._0);
+  var d$p = Curry._1(f, param._2);
+  var r$p = map$1(f, param._3);
   return /* Node */{
-          _0: l$prime,
+          _0: l$p,
           _1: param._1,
-          _2: d$prime,
-          _3: r$prime,
+          _2: d$p,
+          _3: r$p,
           _4: param._4
         };
 }
@@ -1567,14 +1567,14 @@ function mapi$1(f, param) {
     return /* Empty */0;
   }
   var v = param._1;
-  var l$prime = mapi$1(f, param._0);
-  var d$prime = Curry._2(f, v, param._2);
-  var r$prime = mapi$1(f, param._3);
+  var l$p = mapi$1(f, param._0);
+  var d$p = Curry._2(f, v, param._2);
+  var r$p = mapi$1(f, param._3);
   return /* Node */{
-          _0: l$prime,
+          _0: l$p,
           _1: v,
-          _2: d$prime,
-          _3: r$prime,
+          _2: d$p,
+          _3: r$p,
           _4: param._4
         };
 }
@@ -1748,13 +1748,13 @@ function filter$1(p, param) {
   }
   var d = param._2;
   var v = param._1;
-  var l$prime = filter$1(p, param._0);
+  var l$p = filter$1(p, param._0);
   var pvd = Curry._2(p, v, d);
-  var r$prime = filter$1(p, param._3);
+  var r$p = filter$1(p, param._3);
   if (pvd) {
-    return join$1(l$prime, v, d, r$prime);
+    return join$1(l$p, v, d, r$p);
   } else {
-    return concat$1(l$prime, r$prime);
+    return concat$1(l$p, r$p);
   }
 }
 

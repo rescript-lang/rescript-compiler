@@ -36,7 +36,7 @@ let add_required_modules ( x : Ident.t list) (meta : Lam_stats.t) =
   let meta_require_modules = meta.required_modules in
   List.iter (fun x -> add meta_require_modules (Lam_module_ident.of_ml x)) x 
 *)
-  
+
 
 (* 
     It's impossible to have a case like below:
@@ -52,8 +52,8 @@ let refine_let
   match (kind : Lam_compat.let_kind ), arg, l  with 
   | _, _, Lvar w when Ident.same w param 
     (* let k = xx in k
-      there is no [rec] so [k] would not appear in [xx]
-     *)
+       there is no [rec] so [k] would not appear in [xx]
+    *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
   | _, _, Lprim {primitive ; args =  [Lvar w]; loc ; _} when Ident.same w param 
                                                           &&  (function | Lam_primitive.Pmakeblock _ -> false | _ ->  true) primitive
@@ -67,9 +67,9 @@ let refine_let
   (*     Ext_log.err "@[substitution << @]@."; *)
   (* v *)
   | _, _, Lapply {ap_func=fn; ap_args = [Lvar w]; ap_info} when
-   Ident.same w param &&
-    (not (Lam_hit.hit_variable param fn ))
-   -> 
+      Ident.same w param &&
+      (not (Lam_hit.hit_variable param fn ))
+    -> 
     (** does not work for multiple args since 
         evaluation order unspecified, does not apply 
         for [js] in general, since the scope of js ir is loosen
@@ -116,36 +116,36 @@ let refine_let
     Lam.let_ Variable  param arg l
   | kind, _, _ -> 
     Lam.let_ kind  param arg l
-  (* | None , _, _ -> 
-    Lam.let_ Strict param arg  l *)
+(* | None , _, _ -> 
+   Lam.let_ Strict param arg  l *)
 
 let alias_ident_or_global (meta : Lam_stats.t) (k:Ident.t) (v:Ident.t) 
     (v_kind : Lam_id_kind.t)  =
   (** treat rec as Strict, k is assigned to v 
       {[ let k = v ]}
   *)
-    match v_kind with 
-    | NA ->
-      begin 
-        match Hash_ident.find_opt meta.ident_tbl v  with 
-        | None -> ()
-        | Some ident_info -> Hash_ident.add meta.ident_tbl k ident_info
-      end
-    | ident_info -> Hash_ident.add meta.ident_tbl k ident_info
-  
-  (* share -- it is safe to share most properties,
-      for arity, we might be careful, only [Alias] can share,
-      since two values have same type, can have different arities
-      TODO: check with reference pass, it might break 
-      since it will create new identifier, we can avoid such issue??
+  match v_kind with 
+  | NA ->
+    begin 
+      match Hash_ident.find_opt meta.ident_tbl v  with 
+      | None -> ()
+      | Some ident_info -> Hash_ident.add meta.ident_tbl k ident_info
+    end
+  | ident_info -> Hash_ident.add meta.ident_tbl k ident_info
 
-      actually arity is a dynamic property, for a reference, it can 
-      be changed across 
-      we should treat
-      reference specially. or maybe we should track any 
-      mutable reference
-  *)
-  
+(* share -- it is safe to share most properties,
+    for arity, we might be careful, only [Alias] can share,
+    since two values have same type, can have different arities
+    TODO: check with reference pass, it might break 
+    since it will create new identifier, we can avoid such issue??
+
+    actually arity is a dynamic property, for a reference, it can 
+    be changed across 
+    we should treat
+    reference specially. or maybe we should track any 
+    mutable reference
+*)
+
 
 
 
@@ -157,8 +157,8 @@ let alias_ident_or_global (meta : Lam_stats.t) (k:Ident.t) (v:Ident.t)
       like [matched] -- these are blocks constructed temporary
    2. how the variable is used 
       if it is guarateed to be 
-      - non export 
-      - and non escaped (there is no place it is used as a whole)
+   - non export 
+   - and non escaped (there is no place it is used as a whole)
       then we can always destruct it 
       if some fields are used in multiple places, we can create 
       a temporary field 
@@ -179,10 +179,10 @@ let element_of_lambda (lam : Lam.t) : Lam_id_kind.element =
 
 let kind_of_lambda_block (xs : Lam.t list) : Lam_id_kind.t = 
   ImmutableBlock( Ext_array.of_list_map xs (fun x -> 
-    element_of_lambda x ))
+      element_of_lambda x ))
 
 let field_flatten_get
-   lam v i info (tbl : Lam_id_kind.t Hash_ident.t) : Lam.t =
+    lam v i info (tbl : Lam_id_kind.t Hash_ident.t) : Lam.t =
   match Hash_ident.find_opt tbl v  with 
   | Some (Module g) -> 
     Lam.prim ~primitive:(Pfield (i, info)) 
@@ -195,8 +195,8 @@ let field_flatten_get
     end
   | Some (Constant (Const_block (_,_,ls))) -> 
     begin match Ext_list.nth_opt ls i with 
-    | None -> lam  ()
-    | Some x -> Lam.const x
+      | None -> lam  ()
+      | Some x -> Lam.const x
     end
   | Some _
   | None -> lam ()
@@ -217,20 +217,20 @@ let dump ext  lam =
 #else
 let log_counter = ref 0
 let dump ext  lam = 
-   if Js_config.get_diagnose ()
-    then 
-      (* ATTENTION: easy to introduce a bug during refactoring when forgeting `begin` `end`*)
-      begin 
-        incr log_counter;
-        Ext_log.dwarn ~__POS__ "\n@[[TIME:]%s: %f@]@." ext (Sys.time () *. 1000.);
-        Lam_print.seriaize  
-          (Ext_filename.new_extension
-             !Location.input_name
+  if Js_config.get_diagnose ()
+  then 
+    (* ATTENTION: easy to introduce a bug during refactoring when forgeting `begin` `end`*)
+    begin 
+      incr log_counter;
+      Ext_log.dwarn ~__POS__ "\n@[[TIME:]%s: %f@]@." ext (Sys.time () *. 1000.);
+      Lam_print.seriaize  
+        (Ext_filename.new_extension
+           !Location.input_name
            (Printf.sprintf ".%02d%s.lam" !log_counter ext)
-          ) lam;
-      end
+        ) lam;
+    end
 #end      
-  
+
 
 
 
@@ -248,7 +248,7 @@ let is_var (lam : Lam.t) id =
   | Lvar id0 -> Ident.same id0 id 
   | _ -> false *)
 
-  
+
 (* TODO: we need create 
    1. a smart [let] combinator, reusable beta-reduction 
    2. [lapply fn args info] 

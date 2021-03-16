@@ -45,57 +45,57 @@ function eq(loc, x, y) {
   
 }
 
-function union(_l, _l$prime) {
+function union(_l, _l$p) {
   while(true) {
-    var l$prime = _l$prime;
+    var l$p = _l$p;
     var l = _l;
-    if (!l$prime) {
+    if (!l$p) {
       return l;
     }
     if (!l) {
-      return l$prime;
+      return l$p;
     }
-    var r$prime = l$prime.tl;
-    var match = l$prime.hd;
-    var c2$prime = match[1];
-    var c1$prime = match[0];
+    var r$p = l$p.tl;
+    var match = l$p.hd;
+    var c2$p = match[1];
+    var c1$p = match[0];
     var r = l.tl;
     var match$1 = l.hd;
     var c2 = match$1[1];
     var c1 = match$1[0];
-    if ((c2 + 1 | 0) < c1$prime) {
+    if ((c2 + 1 | 0) < c1$p) {
       return {
               hd: [
                 c1,
                 c2
               ],
-              tl: union(r, l$prime)
+              tl: union(r, l$p)
             };
     }
-    if ((c2$prime + 1 | 0) < c1) {
+    if ((c2$p + 1 | 0) < c1) {
       return {
               hd: [
-                c1$prime,
-                c2$prime
+                c1$p,
+                c2$p
               ],
-              tl: union(l, r$prime)
+              tl: union(l, r$p)
             };
     }
-    if (c2 < c2$prime) {
-      _l$prime = {
+    if (c2 < c2$p) {
+      _l$p = {
         hd: [
-          c1 < c1$prime ? c1 : c1$prime,
-          c2$prime
+          c1 < c1$p ? c1 : c1$p,
+          c2$p
         ],
-        tl: r$prime
+        tl: r$p
       };
       _l = r;
       continue ;
     }
-    _l$prime = r$prime;
+    _l$p = r$p;
     _l = {
       hd: [
-        c1 < c1$prime ? c1 : c1$prime,
+        c1 < c1$p ? c1 : c1$p,
         c2
       ],
       tl: r
@@ -104,101 +104,101 @@ function union(_l, _l$prime) {
   };
 }
 
-function inter(_l, _l$prime) {
+function inter(_l, _l$p) {
   while(true) {
-    var l$prime = _l$prime;
+    var l$p = _l$p;
     var l = _l;
-    if (!l$prime) {
+    if (!l$p) {
       return /* [] */0;
     }
     if (!l) {
       return /* [] */0;
     }
-    var r$prime = l$prime.tl;
-    var match = l$prime.hd;
-    var c2$prime = match[1];
-    var c1$prime = match[0];
+    var r$p = l$p.tl;
+    var match = l$p.hd;
+    var c2$p = match[1];
+    var c1$p = match[0];
     var r = l.tl;
     var match$1 = l.hd;
     var c2 = match$1[1];
     var c1 = match$1[0];
-    if (Caml_obj.caml_lessthan(c2, c1$prime)) {
+    if (Caml_obj.caml_lessthan(c2, c1$p)) {
       _l = r;
       continue ;
     }
-    if (!Caml_obj.caml_lessthan(c2$prime, c1)) {
-      if (Caml_obj.caml_lessthan(c2, c2$prime)) {
+    if (!Caml_obj.caml_lessthan(c2$p, c1)) {
+      if (Caml_obj.caml_lessthan(c2, c2$p)) {
         return {
                 hd: [
-                  Caml_obj.caml_max(c1, c1$prime),
+                  Caml_obj.caml_max(c1, c1$p),
                   c2
                 ],
-                tl: inter(r, l$prime)
+                tl: inter(r, l$p)
               };
       } else {
         return {
                 hd: [
-                  Caml_obj.caml_max(c1, c1$prime),
-                  c2$prime
+                  Caml_obj.caml_max(c1, c1$p),
+                  c2$p
                 ],
-                tl: inter(l, r$prime)
+                tl: inter(l, r$p)
               };
       }
     }
-    _l$prime = r$prime;
+    _l$p = r$p;
     continue ;
   };
 }
 
-function diff(_l, _l$prime) {
+function diff(_l, _l$p) {
   while(true) {
-    var l$prime = _l$prime;
+    var l$p = _l$p;
     var l = _l;
-    if (!l$prime) {
+    if (!l$p) {
       return l;
     }
     if (!l) {
       return /* [] */0;
     }
-    var r$prime = l$prime.tl;
-    var match = l$prime.hd;
-    var c2$prime = match[1];
-    var c1$prime = match[0];
+    var r$p = l$p.tl;
+    var match = l$p.hd;
+    var c2$p = match[1];
+    var c1$p = match[0];
     var r = l.tl;
     var match$1 = l.hd;
     var c2 = match$1[1];
     var c1 = match$1[0];
-    if (c2 < c1$prime) {
+    if (c2 < c1$p) {
       return {
               hd: [
                 c1,
                 c2
               ],
-              tl: diff(r, l$prime)
+              tl: diff(r, l$p)
             };
     }
-    if (c2$prime < c1) {
-      _l$prime = r$prime;
+    if (c2$p < c1) {
+      _l$p = r$p;
       continue ;
     }
-    var r$prime$prime = c2$prime < c2 ? ({
+    var r$p$p = c2$p < c2 ? ({
           hd: [
-            c2$prime + 1 | 0,
+            c2$p + 1 | 0,
             c2
           ],
           tl: r
         }) : r;
-    if (c1 < c1$prime) {
+    if (c1 < c1$p) {
       return {
               hd: [
                 c1,
-                c1$prime - 1 | 0
+                c1$p - 1 | 0
               ],
-              tl: diff(r$prime$prime, r$prime)
+              tl: diff(r$p$p, r$p)
             };
     }
-    _l$prime = r$prime;
-    _l = r$prime$prime;
+    _l$p = r$p;
+    _l = r$p$p;
     continue ;
   };
 }
@@ -213,19 +213,19 @@ function single(c) {
         };
 }
 
-function seq(c, c$prime) {
-  if (Caml_obj.caml_lessequal(c, c$prime)) {
+function seq(c, c$p) {
+  if (Caml_obj.caml_lessequal(c, c$p)) {
     return {
             hd: [
               c,
-              c$prime
+              c$p
             ],
             tl: /* [] */0
           };
   } else {
     return {
             hd: [
-              c$prime,
+              c$p,
               c
             ],
             tl: /* [] */0
@@ -748,11 +748,11 @@ function rep(ids, kind, sem, x) {
             });
 }
 
-function erase(ids, m, m$prime) {
+function erase(ids, m, m$p) {
   return mk_expr(ids, {
               TAG: /* Erase */5,
               _0: m,
-              _1: m$prime
+              _1: m$p
             });
 }
 
@@ -1020,7 +1020,7 @@ function free_index(tbl_ref, l) {
   var len = tbl.length;
   var idx = find_free(tbl, 0, len);
   if (idx === len) {
-    tbl_ref.contents = Caml_array.caml_make_vect((len << 1), false);
+    tbl_ref.contents = Caml_array.make((len << 1), false);
   }
   return idx;
 }
@@ -1036,24 +1036,24 @@ var remove_matches = List.filter(function (param) {
       }
     });
 
-function split_at_match_rec(_l$prime, _param) {
+function split_at_match_rec(_l$p, _param) {
   while(true) {
     var param = _param;
-    var l$prime = _l$prime;
+    var l$p = _l$p;
     if (param) {
       var x = param.hd;
       switch (x.TAG | 0) {
         case /* TSeq */0 :
         case /* TExp */1 :
             _param = param.tl;
-            _l$prime = {
+            _l$p = {
               hd: x,
-              tl: l$prime
+              tl: l$p
             };
             continue ;
         case /* TMatch */2 :
             return [
-                    List.rev(l$prime),
+                    List.rev(l$p),
                     Curry._1(remove_matches, param.tl)
                   ];
         
@@ -1219,12 +1219,12 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
     case /* Alt */1 :
         return delta_2(marks, c, next_cat, prev_cat, s._0, rem);
     case /* Seq */2 :
-        var y$prime = delta_1(marks, c, next_cat, prev_cat, s._1, /* [] */0);
-        return delta_seq(c, next_cat, prev_cat, s._0, y$prime, s._2, rem);
+        var y$p = delta_1(marks, c, next_cat, prev_cat, s._1, /* [] */0);
+        return delta_seq(c, next_cat, prev_cat, s._0, y$p, s._2, rem);
     case /* Rep */3 :
         var kind = s._1;
-        var y$prime$1 = delta_1(marks, c, next_cat, prev_cat, s._2, /* [] */0);
-        var marks$prime = first((function (marks) {
+        var y$p$1 = delta_1(marks, c, next_cat, prev_cat, s._2, /* [] */0);
+        var marks$p = first((function (marks) {
                 switch (marks.TAG | 0) {
                   case /* TSeq */0 :
                   case /* TExp */1 :
@@ -1233,25 +1233,25 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
                       return marks._0;
                   
                 }
-              }), y$prime$1);
-        var match = marks$prime !== undefined ? [
-            Curry._1(remove_matches, y$prime$1),
-            marks$prime
+              }), y$p$1);
+        var match = marks$p !== undefined ? [
+            Curry._1(remove_matches, y$p$1),
+            marks$p
           ] : [
-            y$prime$1,
+            y$p$1,
             marks
           ];
-        var y$prime$prime = match[0];
+        var y$p$p = match[0];
         if (s._0 === "Non_greedy") {
           return {
                   hd: {
                     TAG: /* TMatch */2,
                     _0: marks
                   },
-                  tl: tseq(kind, y$prime$prime, x, rem)
+                  tl: tseq(kind, y$p$p, x, rem)
                 };
         } else {
-          return tseq(kind, y$prime$prime, x, {
+          return tseq(kind, y$p$p, x, {
                       hd: {
                         TAG: /* TMatch */2,
                         _0: match[1]
@@ -1368,8 +1368,8 @@ function delta_4(c, next_cat, prev_cat, l, rem) {
     var rem$1 = delta_4(c, next_cat, prev_cat, l.tl, rem);
     switch (x.TAG | 0) {
       case /* TSeq */0 :
-          var y$prime = delta_4(c, next_cat, prev_cat, x._0, /* [] */0);
-          return delta_seq(c, next_cat, prev_cat, x._2, y$prime, x._1, rem$1);
+          var y$p = delta_4(c, next_cat, prev_cat, x._0, /* [] */0);
+          return delta_seq(c, next_cat, prev_cat, x._2, y$p, x._1, rem$1);
       case /* TExp */1 :
           return delta_1(x._0, c, next_cat, prev_cat, x._1, rem$1);
       case /* TMatch */2 :
@@ -1387,17 +1387,17 @@ function delta_4(c, next_cat, prev_cat, l, rem) {
 function delta(tbl_ref, next_cat, $$char, st) {
   var prev_cat = st.category;
   var match = remove_duplicates(/* [] */0, delta_4($$char, next_cat, prev_cat, st.desc, /* [] */0), eps_expr);
-  var expr$prime = match[0];
-  var idx = free_index(tbl_ref, expr$prime);
-  var expr$prime$prime = set_idx(idx, expr$prime);
-  return mk(idx, next_cat, expr$prime$prime);
+  var expr$p = match[0];
+  var idx = free_index(tbl_ref, expr$p);
+  var expr$p$p = set_idx(idx, expr$p);
+  return mk(idx, next_cat, expr$p$p);
 }
 
 function flatten_match(m) {
   var ma = List.fold_left((function (ma, param) {
           return Caml_primitive.caml_int_max(ma, param[0]);
         }), -1, m);
-  var res = Caml_array.caml_make_vect(ma + 1 | 0, -1);
+  var res = Caml_array.make(ma + 1 | 0, -1);
   List.iter((function (param) {
           return Caml_array.set(res, param[0], param[1]);
         }), m);
@@ -1490,7 +1490,7 @@ function mk_state(ncol, desc) {
   return {
           idx: break_state ? -3 : desc.idx,
           real_idx: desc.idx,
-          next: break_state ? dummy_next : Caml_array.caml_make_vect(ncol, unknown_state),
+          next: break_state ? dummy_next : Caml_array.make(ncol, unknown_state),
           final: /* [] */0,
           desc: desc
         };
@@ -1516,7 +1516,7 @@ function delta$1(info, cat, c, st) {
   var len = info.positions.length;
   if (desc.idx === len && len > 0) {
     var pos = info.positions;
-    info.positions = Caml_array.caml_make_vect((len << 1), 0);
+    info.positions = Caml_array.make((len << 1), 0);
     $$Array.blit(pos, 0, info.positions, 0, len);
   }
   return desc;
@@ -1525,27 +1525,27 @@ function delta$1(info, cat, c, st) {
 function validate(info, s, pos, st) {
   var c = Caml_bytes.get(info.i_cols, Caml_string.get(s, pos));
   var cat = category(info.re, c);
-  var desc$prime = delta$1(info, cat, c, st);
-  var st$prime = find_state(info.re, desc$prime);
-  return Caml_array.set(st.next, c, st$prime);
+  var desc$p = delta$1(info, cat, c, st);
+  var st$p = find_state(info.re, desc$p);
+  return Caml_array.set(st.next, c, st$p);
 }
 
 function loop(info, s, pos, st) {
   if (pos >= info.last) {
     return st;
   }
-  var st$prime = Caml_array.get(st.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos)));
+  var st$p = Caml_array.get(st.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos)));
   var _pos = pos;
   var _st = st;
-  var _st$prime = st$prime;
+  var _st$p = st$p;
   while(true) {
-    var st$prime$1 = _st$prime;
+    var st$p$1 = _st$p;
     var st$1 = _st;
     var pos$1 = _pos;
-    if (st$prime$1.idx < 0) {
-      if (st$prime$1.idx === -3) {
-        Caml_array.set(info.positions, st$prime$1.real_idx, pos$1 + 1 | 0);
-        return st$prime$1;
+    if (st$p$1.idx < 0) {
+      if (st$p$1.idx === -3) {
+        Caml_array.set(info.positions, st$p$1.real_idx, pos$1 + 1 | 0);
+        return st$p$1;
       } else {
         validate(info, s, pos$1, st$1);
         return loop(info, s, pos$1, st$1);
@@ -1553,15 +1553,15 @@ function loop(info, s, pos, st) {
     }
     var pos$2 = pos$1 + 1 | 0;
     if (pos$2 < info.last) {
-      var st$prime$prime = Caml_array.get(st$prime$1.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos$2)));
-      Caml_array.set(info.positions, st$prime$1.idx, pos$2);
-      _st$prime = st$prime$prime;
-      _st = st$prime$1;
+      var st$p$p = Caml_array.get(st$p$1.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos$2)));
+      Caml_array.set(info.positions, st$p$1.idx, pos$2);
+      _st$p = st$p$p;
+      _st = st$p$1;
       _pos = pos$2;
       continue ;
     }
-    Caml_array.set(info.positions, st$prime$1.idx, pos$2);
-    return st$prime$1;
+    Caml_array.set(info.positions, st$p$1.idx, pos$2);
+    return st$p$1;
   };
 }
 
@@ -1572,9 +1572,9 @@ function $$final(info, st, cat) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
-      var st$prime = delta$1(info, cat, -1, st);
-      var res_0 = st$prime.idx;
-      var res_1 = status(st$prime);
+      var st$p = delta$1(info, cat, -1, st);
+      var res_0 = st$p.idx;
+      var res_1 = status(st$p);
       var res = [
         res_0,
         res_1
@@ -1642,14 +1642,14 @@ function scan_str(info, s, initial_state, groups) {
         if (pos$1 >= last) {
           return st;
         }
-        var st$prime = Caml_array.get(st.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos$1)));
-        if (st$prime.idx >= 0) {
-          _st = st$prime;
+        var st$p = Caml_array.get(st.next, Caml_bytes.get(info.i_cols, Caml_string.get(s, pos$1)));
+        if (st$p.idx >= 0) {
+          _st = st$p;
           _pos = pos$1 + 1 | 0;
           continue ;
         }
-        if (st$prime.idx === -3) {
-          return st$prime;
+        if (st$p.idx === -3) {
+          return st$p;
         }
         validate(info, s, pos$1, st);
         continue ;
@@ -1669,25 +1669,25 @@ function scan_str(info, s, initial_state, groups) {
   } else {
     var pos$2 = last - 1 | 0;
     while(true) {
-      var st$prime$1 = Caml_array.get(st$1.next, info$1.re.lnl);
-      if (st$prime$1.idx >= 0) {
+      var st$p$1 = Caml_array.get(st$1.next, info$1.re.lnl);
+      if (st$p$1.idx >= 0) {
         if (groups) {
-          Caml_array.set(info$1.positions, st$prime$1.idx, pos$2 + 1 | 0);
+          Caml_array.set(info$1.positions, st$p$1.idx, pos$2 + 1 | 0);
         }
-        return st$prime$1;
+        return st$p$1;
       }
-      if (st$prime$1.idx === -3) {
+      if (st$p$1.idx === -3) {
         if (groups) {
-          Caml_array.set(info$1.positions, st$prime$1.real_idx, pos$2 + 1 | 0);
+          Caml_array.set(info$1.positions, st$p$1.real_idx, pos$2 + 1 | 0);
         }
-        return st$prime$1;
+        return st$p$1;
       }
       var c = info$1.re.lnl;
       var real_c = Caml_bytes.get(info$1.i_cols, /* '\n' */10);
       var cat = category(info$1.re, c);
-      var desc$prime = delta$1(info$1, cat, real_c, st$1);
-      var st$prime$2 = find_state(info$1.re, desc$prime);
-      Caml_array.set(st$1.next, c, st$prime$2);
+      var desc$p = delta$1(info$1, cat, real_c, st$1);
+      var st$p$2 = find_state(info$1.re, desc$p);
+      Caml_array.set(st$1.next, c, st$p$2);
       continue ;
     };
   }
@@ -2131,18 +2131,18 @@ function merge_sequences(_param) {
     if (!param) {
       return /* [] */0;
     }
-    var l$prime = param.hd;
-    if (typeof l$prime !== "number") {
-      switch (l$prime.TAG | 0) {
+    var l$p = param.hd;
+    if (typeof l$p !== "number") {
+      switch (l$p.TAG | 0) {
         case /* Sequence */1 :
-            var match = l$prime._0;
+            var match = l$p._0;
             if (match) {
               var y = match.tl;
               var x = match.hd;
-              var r$prime = merge_sequences(param.tl);
+              var r$p = merge_sequences(param.tl);
               var exit = 0;
-              if (r$prime) {
-                var match$1 = r$prime.hd;
+              if (r$p) {
+                var match$1 = r$p.hd;
                 if (typeof match$1 === "number" || match$1.TAG !== /* Sequence */1) {
                   exit = 2;
                 } else {
@@ -2169,7 +2169,7 @@ function merge_sequences(_param) {
                                   }
                                 }
                               },
-                              tl: r$prime.tl
+                              tl: r$p.tl
                             };
                     }
                     exit = 2;
@@ -2189,29 +2189,29 @@ function merge_sequences(_param) {
                             tl: y
                           }
                         },
-                        tl: r$prime
+                        tl: r$p
                       };
               }
               
             }
             break;
         case /* Alternative */2 :
-            _param = Pervasives.$at(l$prime._0, param.tl);
+            _param = Pervasives.$at(l$p._0, param.tl);
             continue ;
         default:
           
       }
     }
     return {
-            hd: l$prime,
+            hd: l$p,
             tl: merge_sequences(param.tl)
           };
   };
 }
 
-function enforce_kind(ids, kind, kind$prime, cr) {
-  if (kind === "First" && kind$prime !== "First") {
-    return seq$1(ids, kind$prime, cr, mk_expr(ids, /* Eps */0));
+function enforce_kind(ids, kind, kind$p, cr) {
+  if (kind === "First" && kind$p !== "First") {
+    return seq$1(ids, kind$p, cr, mk_expr(ids, /* Eps */0));
   } else {
     return cr;
   }
@@ -2357,8 +2357,8 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
             }
             return [
                     alt(ids, List.map((function(ign_group,greedy){
-                            return function (r$prime) {
-                              var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$prime);
+                            return function (r$p) {
+                              var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$p);
                               return enforce_kind(ids, kind, match[1], match[0]);
                             }
                             }(ign_group,greedy)), merged_sequences)),
@@ -2368,63 +2368,63 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
             var j = s._2;
             var i = s._1;
             var match$1 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, s._0);
-            var kind$prime = match$1[1];
+            var kind$p = match$1[1];
             var cr = match$1[0];
             var rem;
             if (j !== undefined) {
-              var f = greedy === "Non_greedy" ? (function(cr,kind$prime){
+              var f = greedy === "Non_greedy" ? (function(cr,kind$p){
                 return function (rem) {
                   return alt(ids, {
                               hd: mk_expr(ids, /* Eps */0),
                               tl: {
-                                hd: seq$1(ids, kind$prime, rename(ids, cr), rem),
+                                hd: seq$1(ids, kind$p, rename(ids, cr), rem),
                                 tl: /* [] */0
                               }
                             });
                 }
-                }(cr,kind$prime)) : (function(cr,kind$prime){
+                }(cr,kind$p)) : (function(cr,kind$p){
                 return function (rem) {
                   return alt(ids, {
-                              hd: seq$1(ids, kind$prime, rename(ids, cr), rem),
+                              hd: seq$1(ids, kind$p, rename(ids, cr), rem),
                               tl: {
                                 hd: mk_expr(ids, /* Eps */0),
                                 tl: /* [] */0
                               }
                             });
                 }
-                }(cr,kind$prime));
+                }(cr,kind$p));
               rem = iter(j - i | 0, f, mk_expr(ids, /* Eps */0));
             } else {
-              rem = rep(ids, greedy, kind$prime, cr);
+              rem = rep(ids, greedy, kind$p, cr);
             }
             return [
-                    iter(i, (function(cr,kind$prime){
+                    iter(i, (function(cr,kind$p){
                         return function (rem) {
-                          return seq$1(ids, kind$prime, rename(ids, cr), rem);
+                          return seq$1(ids, kind$p, rename(ids, cr), rem);
                         }
-                        }(cr,kind$prime)), rem),
+                        }(cr,kind$p)), rem),
                     kind
                   ];
         case /* Sem */4 :
-            var kind$prime$1 = s._0;
-            var match$2 = translate(ids, kind$prime$1, ign_group, ign_case, greedy, pos, cache, c, s._1);
+            var kind$p$1 = s._0;
+            var match$2 = translate(ids, kind$p$1, ign_group, ign_case, greedy, pos, cache, c, s._1);
             return [
-                    enforce_kind(ids, kind$prime$1, match$2[1], match$2[0]),
-                    kind$prime$1
+                    enforce_kind(ids, kind$p$1, match$2[1], match$2[0]),
+                    kind$p$1
                   ];
         case /* Sem_greedy */5 :
             _s = s._1;
             _greedy = s._0;
             continue ;
         case /* Group */6 :
-            var r$prime = s._0;
+            var r$p = s._0;
             if (ign_group) {
-              _s = r$prime;
+              _s = r$p;
               continue ;
             }
             var p = pos.contents;
             pos.contents = pos.contents + 2 | 0;
-            var match$3 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$prime);
+            var match$3 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r$p);
             return [
                     seq$1(ids, "First", mk_expr(ids, {
                               TAG: /* Mark */4,
@@ -2442,18 +2442,18 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
         case /* Nest */8 :
             var b = pos.contents;
             var match$4 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, s._0);
-            var kind$prime$2 = match$4[1];
+            var kind$p$2 = match$4[1];
             var cr$1 = match$4[0];
             var e = pos.contents - 1 | 0;
             if (e < b) {
               return [
                       cr$1,
-                      kind$prime$2
+                      kind$p$2
                     ];
             } else {
               return [
                       seq$1(ids, "First", erase(ids, b, e), cr$1),
-                      kind$prime$2
+                      kind$p$2
                     ];
             }
         case /* Pmark */14 :
@@ -2488,14 +2488,14 @@ function trans_seq(ids, kind, ign_group, ign_case, greedy, pos, cache, c, param)
   var r = param.hd;
   if (rem) {
     var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r);
-    var cr$prime = match[0];
-    var cr$prime$prime = trans_seq(ids, kind, ign_group, ign_case, greedy, pos, cache, c, rem);
-    if (is_eps(cr$prime$prime)) {
-      return cr$prime;
-    } else if (is_eps(cr$prime)) {
-      return cr$prime$prime;
+    var cr$p = match[0];
+    var cr$p$p = trans_seq(ids, kind, ign_group, ign_case, greedy, pos, cache, c, rem);
+    if (is_eps(cr$p$p)) {
+      return cr$p;
+    } else if (is_eps(cr$p)) {
+      return cr$p$p;
     } else {
-      return seq$1(ids, match[1], cr$prime, cr$prime$prime);
+      return seq$1(ids, match[1], cr$p, cr$p$p);
     }
   }
   var match$1 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r);
@@ -2556,25 +2556,25 @@ function handle_case(_ign_case, _s) {
                       }(ign_case)), s._0)
                 };
       case /* Alternative */2 :
-          var l$prime = List.map((function(ign_case){
+          var l$p = List.map((function(ign_case){
               return function (param) {
                 return handle_case(ign_case, param);
               }
               }(ign_case)), s._0);
           if (is_charset({
                   TAG: /* Alternative */2,
-                  _0: l$prime
+                  _0: l$p
                 })) {
             return {
                     TAG: /* Set */0,
                     _0: List.fold_left((function (s, r) {
                             return union(s, as_set(r));
-                          }), /* [] */0, l$prime)
+                          }), /* [] */0, l$p)
                   };
           } else {
             return {
                     TAG: /* Alternative */2,
-                    _0: l$prime
+                    _0: l$p
                   };
           }
       case /* Repeat */3 :
@@ -2585,25 +2585,25 @@ function handle_case(_ign_case, _s) {
                   _2: s._2
                 };
       case /* Sem */4 :
-          var r$prime = handle_case(ign_case, s._1);
-          if (is_charset(r$prime)) {
-            return r$prime;
+          var r$p = handle_case(ign_case, s._1);
+          if (is_charset(r$p)) {
+            return r$p;
           } else {
             return {
                     TAG: /* Sem */4,
                     _0: s._0,
-                    _1: r$prime
+                    _1: r$p
                   };
           }
       case /* Sem_greedy */5 :
-          var r$prime$1 = handle_case(ign_case, s._1);
-          if (is_charset(r$prime$1)) {
-            return r$prime$1;
+          var r$p$1 = handle_case(ign_case, s._1);
+          if (is_charset(r$p$1)) {
+            return r$p$1;
           } else {
             return {
                     TAG: /* Sem_greedy */5,
                     _0: s._0,
-                    _1: r$prime$1
+                    _1: r$p$1
                   };
           }
       case /* Group */6 :
@@ -2612,23 +2612,23 @@ function handle_case(_ign_case, _s) {
                   _0: handle_case(ign_case, s._0)
                 };
       case /* No_group */7 :
-          var r$prime$2 = handle_case(ign_case, s._0);
-          if (is_charset(r$prime$2)) {
-            return r$prime$2;
+          var r$p$2 = handle_case(ign_case, s._0);
+          if (is_charset(r$p$2)) {
+            return r$p$2;
           } else {
             return {
                     TAG: /* No_group */7,
-                    _0: r$prime$2
+                    _0: r$p$2
                   };
           }
       case /* Nest */8 :
-          var r$prime$3 = handle_case(ign_case, s._0);
-          if (is_charset(r$prime$3)) {
-            return r$prime$3;
+          var r$p$3 = handle_case(ign_case, s._0);
+          if (is_charset(r$p$3)) {
+            return r$p$3;
           } else {
             return {
                     TAG: /* Nest */8,
-                    _0: r$prime$3
+                    _0: r$p$3
                   };
           }
       case /* Case */9 :
@@ -2640,7 +2640,7 @@ function handle_case(_ign_case, _s) {
           _ign_case = true;
           continue ;
       case /* Intersection */11 :
-          var l$prime$1 = List.map((function(ign_case){
+          var l$p$1 = List.map((function(ign_case){
               return function (r) {
                 return handle_case(ign_case, r);
               }
@@ -2649,10 +2649,10 @@ function handle_case(_ign_case, _s) {
                   TAG: /* Set */0,
                   _0: List.fold_left((function (s, r) {
                           return inter(s, as_set(r));
-                        }), cany, l$prime$1)
+                        }), cany, l$p$1)
                 };
       case /* Complement */12 :
-          var l$prime$2 = List.map((function(ign_case){
+          var l$p$2 = List.map((function(ign_case){
               return function (r) {
                 return handle_case(ign_case, r);
               }
@@ -2661,7 +2661,7 @@ function handle_case(_ign_case, _s) {
                   TAG: /* Set */0,
                   _0: diff(cany, List.fold_left((function (s, r) {
                               return union(s, as_set(r));
-                            }), /* [] */0, l$prime$2))
+                            }), /* [] */0, l$p$2))
                 };
       case /* Difference */13 :
           return {
@@ -3167,7 +3167,7 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
         0,
         0,
         0
-      ] : Caml_array.caml_make_vect(n, 0);
+      ] : Caml_array.make(n, 0);
   } else {
     tmp = [];
   }
@@ -3300,12 +3300,12 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     }
     return r;
   };
-  var accept_s = function (s$prime) {
-    var len = s$prime.length;
+  var accept_s = function (s$p) {
+    var len = s$p.length;
     try {
       for(var j = 0; j < len; ++j){
         try {
-          if (Caml_string.get(s$prime, j) !== Caml_string.get(s, i.contents + j | 0)) {
+          if (Caml_string.get(s$p, j) !== Caml_string.get(s, i.contents + j | 0)) {
             throw {
                   RE_EXN_ID: Pervasives.Exit,
                   Error: new Error()
@@ -3364,7 +3364,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (accept(/* '(' */40)) {
       if (accept(/* '?' */63)) {
         if (accept(/* ':' */58)) {
-          var r = regexp$prime(branch$prime(/* [] */0));
+          var r = regexp$p(branch$p(/* [] */0));
           if (!accept(/* ')' */41)) {
             throw {
                   RE_EXN_ID: Parse_error,
@@ -3389,7 +3389,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               Error: new Error()
             };
       }
-      var r$1 = regexp$prime(branch$prime(/* [] */0));
+      var r$1 = regexp$p(branch$p(/* [] */0));
       if (!accept(/* ')' */41)) {
         throw {
               RE_EXN_ID: Parse_error,
@@ -3650,19 +3650,19 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
           i.contents = i.contents - 1 | 0;
           return i$1;
         }
-        var i$prime = Math.imul(10, i$1) + (d$1 - /* '0' */48 | 0) | 0;
-        if (i$prime < i$1) {
+        var i$p = Math.imul(10, i$1) + (d$1 - /* '0' */48 | 0) | 0;
+        if (i$p < i$1) {
           throw {
                 RE_EXN_ID: Parse_error,
                 Error: new Error()
               };
         }
-        _i = i$prime;
+        _i = i$p;
         continue ;
       };
     }
   };
-  var branch$prime = function (_left) {
+  var branch$p = function (_left) {
     while(true) {
       var left = _left;
       if (i.contents === l || test(/* '|' */124) || test(/* ')' */41)) {
@@ -3675,7 +3675,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       continue ;
     };
   };
-  var regexp$prime = function (_left) {
+  var regexp$p = function (_left) {
     while(true) {
       var left = _left;
       if (!accept(/* '|' */124)) {
@@ -3684,7 +3684,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       _left = alt$1({
             hd: left,
             tl: {
-              hd: branch$prime(/* [] */0),
+              hd: branch$p(/* [] */0),
               tl: /* [] */0
             }
           });
@@ -4101,7 +4101,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     i.contents = i.contents - 1 | 0;
     return r;
   };
-  var res = regexp$prime(branch$prime(/* [] */0));
+  var res = regexp$p(branch$p(/* [] */0));
   if (i.contents !== l) {
     throw {
           RE_EXN_ID: Parse_error,

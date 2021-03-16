@@ -1310,7 +1310,7 @@ function for4(param) {
 
 function create(str_size) {
   var tbl_size = Caml_int32.div(str_size, Sys.max_string_length) + 1 | 0;
-  var tbl = Caml_array.caml_make_vect(tbl_size, Bytes.empty);
+  var tbl = Caml_array.make(tbl_size, Bytes.empty);
   for(var i = 0 ,i_finish = tbl_size - 2 | 0; i <= i_finish; ++i){
     Caml_array.set(tbl, i, Caml_bytes.caml_create_bytes(Sys.max_string_length));
   }
@@ -1594,7 +1594,7 @@ function set_color_tag_handling(ppf) {
   var functions = Format.pp_get_formatter_tag_functions(ppf, undefined);
   var partial_arg = functions.mark_open_tag;
   var partial_arg$1 = functions.mark_close_tag;
-  var functions$prime_mark_open_tag = function (param) {
+  var functions$p_mark_open_tag = function (param) {
     try {
       var style = style_of_tag(param);
       if (color_enabled.contents) {
@@ -1611,7 +1611,7 @@ function set_color_tag_handling(ppf) {
       throw exn;
     }
   };
-  var functions$prime_mark_close_tag = function (param) {
+  var functions$p_mark_close_tag = function (param) {
     try {
       style_of_tag(param);
       if (color_enabled.contents) {
@@ -1631,16 +1631,16 @@ function set_color_tag_handling(ppf) {
       throw exn;
     }
   };
-  var functions$prime_print_open_tag = functions.print_open_tag;
-  var functions$prime_print_close_tag = functions.print_close_tag;
-  var functions$prime = {
-    mark_open_tag: functions$prime_mark_open_tag,
-    mark_close_tag: functions$prime_mark_close_tag,
-    print_open_tag: functions$prime_print_open_tag,
-    print_close_tag: functions$prime_print_close_tag
+  var functions$p_print_open_tag = functions.print_open_tag;
+  var functions$p_print_close_tag = functions.print_close_tag;
+  var functions$p = {
+    mark_open_tag: functions$p_mark_open_tag,
+    mark_close_tag: functions$p_mark_close_tag,
+    print_open_tag: functions$p_print_open_tag,
+    print_close_tag: functions$p_print_close_tag
   };
   ppf.pp_mark_tags = true;
-  return Format.pp_set_formatter_tag_functions(ppf, functions$prime);
+  return Format.pp_set_formatter_tag_functions(ppf, functions$p);
 }
 
 var first = {
@@ -2044,8 +2044,8 @@ function letter(param) {
 
 var current = {
   contents: {
-    active: Caml_array.caml_make_vect(105, true),
-    error: Caml_array.caml_make_vect(105, false)
+    active: Caml_array.make(105, true),
+    error: Caml_array.make(105, false)
   }
 };
 
@@ -15540,7 +15540,7 @@ var __ocaml_lex_tables = {
 };
 
 function token(lexbuf) {
-  lexbuf.lex_mem = Caml_array.caml_make_vect(8, -1);
+  lexbuf.lex_mem = Caml_array.make(8, -1);
   var ___ocaml_lex_state = 0;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
@@ -16218,7 +16218,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
 }
 
 function string(lexbuf) {
-  lexbuf.lex_mem = Caml_array.caml_make_vect(2, -1);
+  lexbuf.lex_mem = Caml_array.make(2, -1);
   var ___ocaml_lex_state = 164;
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
@@ -16564,8 +16564,8 @@ function token$1(lexbuf) {
               }
               break;
           case /* EOL */100 :
-              var lines$prime = lines !== 0 ? /* BlankLine */2 : /* NewLine */1;
-              _lines = lines$prime;
+              var lines$p = lines !== 0 ? /* BlankLine */2 : /* NewLine */1;
+              _lines = lines$p;
               continue ;
           default:
             
@@ -16578,15 +16578,15 @@ function token$1(lexbuf) {
                     match[0],
                     match[1]
                   ]);
-              var lines$prime$1 = lines >= 2 ? /* BlankLine */2 : /* NoLine */0;
-              _lines = lines$prime$1;
+              var lines$p$1 = lines >= 2 ? /* BlankLine */2 : /* NoLine */0;
+              _lines = lines$p$1;
               continue ;
           case /* DOCSTRING */19 :
               var doc$1 = doc._0;
               add_docstring_comment(doc$1);
-              var docs$prime;
+              var docs$p;
               if (typeof docs === "number") {
-                docs$prime = lines >= 2 ? ({
+                docs$p = lines >= 2 ? ({
                       TAG: /* Before */1,
                       _0: /* [] */0,
                       _1: /* [] */0,
@@ -16603,7 +16603,7 @@ function token$1(lexbuf) {
                     });
               } else if (docs.TAG === /* After */0) {
                 var a = docs._0;
-                docs$prime = lines >= 2 ? ({
+                docs$p = lines >= 2 ? ({
                       TAG: /* Before */1,
                       _0: a,
                       _1: /* [] */0,
@@ -16622,7 +16622,7 @@ function token$1(lexbuf) {
                 var b = docs._2;
                 var f = docs._1;
                 var a$1 = docs._0;
-                docs$prime = lines >= 2 ? ({
+                docs$p = lines >= 2 ? ({
                       TAG: /* Before */1,
                       _0: a$1,
                       _1: Pervasives.$at(b, f),
@@ -16640,7 +16640,7 @@ function token$1(lexbuf) {
                       }
                     });
               }
-              _docs = docs$prime;
+              _docs = docs$p;
               _lines = /* NoLine */0;
               continue ;
           default:

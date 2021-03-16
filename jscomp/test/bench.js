@@ -10,7 +10,7 @@ function map(f, a) {
   if (l === 0) {
     return [];
   }
-  var r = Caml_array.caml_make_vect(l, f$1(a[0]));
+  var r = Caml_array.make(l, f$1(a[0]));
   for(var i = 1; i < l; ++i){
     r[i] = f$1(a[i]);
   }
@@ -29,7 +29,7 @@ function init(l, f) {
           Error: new Error()
         };
   }
-  var res = Caml_array.caml_make_vect(l, f$1(0));
+  var res = Caml_array.make(l, f$1(0));
   for(var i = 1; i < l; ++i){
     res[i] = f$1(i);
   }

@@ -122,7 +122,7 @@ function for_7(param) {
   var v = {
     contents: 0
   };
-  var arr = Caml_array.caml_make_vect(21, (function (param) {
+  var arr = Caml_array.make(21, (function (param) {
           
         }));
   for(var i = 0; i <= 6; ++i){
@@ -147,7 +147,7 @@ function for_8(param) {
   var v = {
     contents: 0
   };
-  var arr = Caml_array.caml_make_vect(21, (function (param) {
+  var arr = Caml_array.make(21, (function (param) {
           
         }));
   for(var i = 0; i <= 6; ++i){
@@ -187,10 +187,10 @@ function for_9(param) {
   var vv2 = {
     contents: 0
   };
-  var arr = Caml_array.caml_make_vect(4, (function (param) {
+  var arr = Caml_array.make(4, (function (param) {
           
         }));
-  var arr2 = Caml_array.caml_make_vect(2, (function (param) {
+  var arr2 = Caml_array.make(2, (function (param) {
           
         }));
   for(var i = 0; i <= 1; ++i){
@@ -234,7 +234,7 @@ var suites_0 = [
       return {
               TAG: /* Eq */0,
               _0: 90,
-              _1: for_3(Caml_array.caml_make_vect(10, 2))
+              _1: for_3(Caml_array.make(10, 2))
             };
     })
 ];
@@ -246,7 +246,7 @@ var suites_1 = {
         return {
                 TAG: /* Eq */0,
                 _0: 180,
-                _1: for_4(Caml_array.caml_make_vect(10, 2))
+                _1: for_4(Caml_array.make(10, 2))
               };
       })
   ],
@@ -257,7 +257,7 @@ var suites_1 = {
           return {
                   TAG: /* Eq */0,
                   _0: 2420,
-                  _1: for_5(Caml_array.caml_make_vect(10, 2), 11)
+                  _1: for_5(Caml_array.make(10, 2), 11)
                 };
         })
     ],
@@ -273,7 +273,7 @@ var suites_1 = {
                       2,
                       3
                     ],
-                    _1: for_6(Caml_array.caml_make_vect(3, 0), 0)
+                    _1: for_6(Caml_array.make(3, 0), 0)
                   };
           })
       ],

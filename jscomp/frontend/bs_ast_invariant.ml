@@ -24,8 +24,8 @@
 
 
 (** Warning unused bs attributes
-  Note if we warn `deriving` too, 
-  it may fail third party ppxes
+    Note if we warn `deriving` too, 
+    it may fail third party ppxes
 *)
 let is_bs_attribute txt = 
   let len = String.length txt  in
@@ -38,12 +38,12 @@ let is_bs_attribute txt =
   )
 
 let used_attributes : string Asttypes.loc Hash_set_poly.t = 
-    Hash_set_poly.create 16 
+  Hash_set_poly.create 16 
 
 
 #if false then
-let dump_attribute fmt = (fun ( (sloc : string Asttypes.loc),payload) -> 
-    Format.fprintf fmt "@[%s %a@]" sloc.txt (Printast.payload 0 ) payload
+  let dump_attribute fmt = (fun ( (sloc : string Asttypes.loc),payload) -> 
+      Format.fprintf fmt "@[%s %a@]" sloc.txt (Printast.payload 0 ) payload
     )
 
 let dump_used_attributes fmt = 
@@ -59,22 +59,22 @@ let mark_used_bs_attribute ((x,_) : Parsetree.attribute) =
 
 
 let warn_unused_attribute 
-  (({txt; loc} as sloc, _) : Parsetree.attribute) = 
+    (({txt; loc} as sloc, _) : Parsetree.attribute) = 
   if is_bs_attribute txt && 
      not loc.loc_ghost &&
      not (Hash_set_poly.mem used_attributes sloc) then 
     begin    
 #if false then (*COMMENT*)
-      dump_used_attributes Format.err_formatter; 
-      dump_attribute Format.err_formatter attr ;
+  dump_used_attributes Format.err_formatter; 
+dump_attribute Format.err_formatter attr ;
 #end
-      Location.prerr_warning loc (Bs_unused_attribute txt)
-    end
+Location.prerr_warning loc (Bs_unused_attribute txt)
+end
 
 let warn_discarded_unused_attributes (attrs : Parsetree.attributes) = 
   if attrs <> [] then 
     Ext_list.iter attrs warn_unused_attribute
-    
+
 
 type iterator = Ast_iterator.iterator
 let super = Ast_iterator.default_iterator
@@ -82,20 +82,20 @@ let super = Ast_iterator.default_iterator
 let check_constant loc kind (const : Parsetree.constant) = 
   match const with 
   | Pconst_string
-    (_, Some s) -> 
+      (_, Some s) -> 
     begin match kind with 
       | `expr ->
-          (if Ast_utf8_string_interp.is_unescaped s  then 
-             Bs_warnings.error_unescaped_delimiter loc s) 
+        (if Ast_utf8_string_interp.is_unescaped s  then 
+           Bs_warnings.error_unescaped_delimiter loc s) 
       | `pat ->
         if s =  "j" then 
-        Location.raise_errorf ~loc  "Unicode string is not allowed in pattern match"    
+          Location.raise_errorf ~loc  "Unicode string is not allowed in pattern match"    
     end 
   | Pconst_integer(s,None) -> 
     (* range check using int32 
-      It is better to give a warning instead of error to avoid make people unhappy.
-      It also has restrictions in which platform bsc is running on since it will 
-      affect int ranges
+       It is better to give a warning instead of error to avoid make people unhappy.
+       It also has restrictions in which platform bsc is running on since it will 
+       affect int ranges
     *)
     (
       try 
@@ -125,16 +125,16 @@ let emit_external_warnings : iterator=
       );
     attribute = (fun _ attr -> warn_unused_attribute attr);
     structure_item = (fun self str_item -> 
-      match str_item.pstr_desc with 
-       | Pstr_type (Nonrecursive, [{ptype_kind = Ptype_variant ({pcd_res = Some _} :: _)}])
-        when !Config.syntax_kind = `rescript ->        
+        match str_item.pstr_desc with 
+        | Pstr_type (Nonrecursive, [{ptype_kind = Ptype_variant ({pcd_res = Some _} :: _)}])
+          when !Config.syntax_kind = `rescript ->        
           Location.raise_errorf ~loc:str_item.pstr_loc 
-          "GADT has to be recursive types, please try `type rec'" 
-       | Pstr_class _ -> 
-         Location.raise_errorf ~loc:str_item.pstr_loc 
-           "OCaml style classes are not supported"   
-      | _ -> super.structure_item self str_item  
-    );
+            "GADT has to be recursive types, please try `type rec'" 
+        | Pstr_class _ -> 
+          Location.raise_errorf ~loc:str_item.pstr_loc 
+            "OCaml style classes are not supported"   
+        | _ -> super.structure_item self str_item  
+      );
     expr = (fun self a -> 
         match a.pexp_desc with  
         | Pexp_constant(const) -> check_constant a.pexp_loc `expr const
@@ -145,24 +145,24 @@ let emit_external_warnings : iterator=
         | _ -> super.expr self a         
       );
     label_declaration = (fun self lbl ->     
-     
-      Ext_list.iter lbl.pld_attributes 
-        (fun attr -> 
-          match attr with 
-          | {txt = "bs.as" | "as"}, _ -> mark_used_bs_attribute attr
-          | _ -> ()
+
+        Ext_list.iter lbl.pld_attributes 
+          (fun attr -> 
+             match attr with 
+             | {txt = "bs.as" | "as"}, _ -> mark_used_bs_attribute attr
+             | _ -> ()
           );
-      super.label_declaration self lbl      
-    );  
+        super.label_declaration self lbl      
+      );  
     constructor_declaration = (fun self ({pcd_name = {txt;loc}} as ctr) -> 
-      (match txt with  
-      | "false"
-      | "true" 
-      | "()" -> 
-        Location.raise_errorf ~loc:loc "%s can not be redefined " txt
-      | _ -> ());
-      super.constructor_declaration self ctr  
-    );
+        (match txt with  
+         | "false"
+         | "true" 
+         | "()" -> 
+           Location.raise_errorf ~loc:loc "%s can not be redefined " txt
+         | _ -> ());
+        super.constructor_declaration self ctr  
+      );
     value_description =
       (fun self v -> 
          match v with 

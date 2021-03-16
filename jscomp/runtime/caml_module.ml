@@ -22,33 +22,33 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 (** This module replaced camlinternalMod completely. 
-  Note we can replace {!CamlinternalMod} completely, but it is not replaced 
-  due to we believe this is an even low level dependency
+    Note we can replace {!CamlinternalMod} completely, but it is not replaced 
+    due to we believe this is an even low level dependency
 *)
 
 [@@@warning "-37"] (* `Function` may be used in runtime *)
 
 type shape = 
-   | Function
-   | Lazy
-   | Class
-   | Module of (shape * string) array
-   | Value of Obj.t
-(* ATTENTION: check across versions *)
+  | Function
+  | Lazy
+  | Class
+  | Module of (shape * string) array
+  | Value of Obj.t
+  (* ATTENTION: check across versions *)
 module Array = Caml_array_extern 
 
 external set_field : Obj.t -> string -> Obj.t -> unit   = ""
-  [@@bs.set_index]
+[@@bs.set_index]
 
 external get_field : Obj.t -> string -> Obj.t = ""
-  [@@bs.get_index]
+[@@bs.get_index]
 
 module type Empty = sig end
 
 (** Note that we have to provide a drop in replacement, since compiler internally will
     spit out ("CamlinternalMod".[init_mod|update_mod] unless we intercept it 
     in the lambda layer
- *)
+*)
 let init_mod (loc : string * int * int) (shape : shape) =    
   let undef_module _ = raise (Undefined_recursive_module loc) in
   let rec loop (shape : shape) (struct_ : Obj.t) idx = 
@@ -81,7 +81,7 @@ let init_mod (loc : string * int * int) (shape : shape) =
 
 (* Note the [shape] passed between [init_mod] and [update_mod] is always the same 
    and we assume [module] is encoded as an array
- *)
+*)
 let update_mod (shape : shape)  (o : Obj.t)  (n : Obj.t) :  unit = 
   let rec aux (shape : shape) o n parent i  =
     match shape with
