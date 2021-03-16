@@ -9,3 +9,5 @@ let x = __ident__
 
 let x = list
 let x = Foo.Bar.list
+
+let with = with

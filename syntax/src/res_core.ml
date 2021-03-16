@@ -3782,7 +3782,7 @@ and parseAtomicTypExpr ~attrs p =
 and parsePackageType ~startPos ~attrs p =
   let modTypePath = parseModuleLongIdent ~lowercase:true p in
   begin match p.Parser.token with
-  | With ->
+  | Lident "with" ->
     Parser.next p;
     let constraints = parsePackageConstraints p in
     let loc = mkLoc startPos p.prevEndPos in
@@ -5769,7 +5769,7 @@ and parseFunctorModuleType p =
 
 and parseWithConstraints moduleType p =
   match p.Parser.token with
-  | With ->
+  | Lident "with" ->
     Parser.next p;
     let first = parseWithConstraint p in
     let rec loop p acc =

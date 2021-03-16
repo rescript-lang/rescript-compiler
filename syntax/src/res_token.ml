@@ -55,7 +55,6 @@ type t =
   | Include
   | Module
   | Of
-  | With
   | Land | Lor
   | Band (* Bitwise and: & *)
   | BangEqual | BangEqualEqual
@@ -143,7 +142,6 @@ let toString = function
   | Include -> "include"
   | Module -> "module"
   | Of -> "of"
-  | With -> "with"
   | Lor -> "||"
   | Band -> "&" | Land -> "&&"
   | BangEqual -> "!=" | BangEqualEqual -> "!=="
@@ -191,7 +189,6 @@ let keywordTable = function
 | "type" -> Typ
 | "when" -> When
 | "while" -> While
-| "with" -> With
 | _ -> raise Not_found
 [@@raises Not_found]
 
@@ -199,7 +196,7 @@ let isKeyword = function
   | And | As | Assert | Constraint | Else | Exception | Export
   | External | False | For | If | Import | In | Include | Land | Lazy
   | Let | List | Lor | Module | Mutable | Of | Open | Private | Rec
-  | Switch | True | Try | Typ | When | While | With -> true
+  | Switch | True | Try | Typ | When | While -> true
   | _ -> false
 
 let lookupKeyword str =
