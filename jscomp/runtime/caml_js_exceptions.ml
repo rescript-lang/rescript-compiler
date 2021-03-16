@@ -1,7 +1,7 @@
 
 
 type  t = 
-    | Any : 'a ->  t [@@unboxed]
+  | Any : 'a ->  t [@@unboxed]
 
 exception Error of  t 
 

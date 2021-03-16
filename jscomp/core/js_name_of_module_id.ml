@@ -117,7 +117,7 @@ let string_of_module_id
       match Lam_compile_env.get_package_path_from_cmj dep_module_id with 
       | (package_path, dep_package_info, case) -> 
 
-        
+
         let dep_info_query =  
           Js_packages_info.query_package_infos dep_package_info module_system 
         in 
@@ -131,7 +131,7 @@ let string_of_module_id
         | Package_found ({suffix} as pkg), Package_script 
           ->    
           let js_file =  
-              Ext_namespace.js_name_of_modulename dep_module_id.id.name case suffix in 
+            Ext_namespace.js_name_of_modulename dep_module_id.id.name case suffix in 
           pkg.pkg_rel_path // js_file
         | Package_found ({suffix } as dep_pkg),
           Package_found cur_pkg -> 
@@ -155,7 +155,7 @@ let string_of_module_id
                 dep_pkg.pkg_rel_path // js_file
               (** Note we did a post-processing when working on Windows *)
               | Es6_global 
-              ->             
+                ->             
                 begin 
                   Ext_path.rel_normalized_absolute_path              
                     ~from:(
@@ -178,27 +178,27 @@ let string_of_module_id
             Ext_path.node_rebase_file
               ~from:(
                 Ext_path.absolute_cwd_path 
-                output_dir)
+                  output_dir)
               ~to_:(
                 Ext_path.absolute_cwd_path 
-                
+
                   dirname)
               basename  
           | None -> 
             Bs_exception.error (Js_not_found js_file))
 
-  
+
 
 (* Override it in browser *)
 #if BS_BROWSER
 let string_of_module_id_in_browser (x : Lam_module_ident.t) =  
-   match x.kind with
-   | External {name} -> name
-   | Runtime | Ml -> 
-                   "./stdlib/" ^  Ext_string.uncapitalize_ascii x.id.name ^ ".js"
+  match x.kind with
+  | External {name} -> name
+  | Runtime | Ml -> 
+    "./stdlib/" ^  Ext_string.uncapitalize_ascii x.id.name ^ ".js"
 let string_of_module_id 
     (id : Lam_module_ident.t)
     ~output_dir:(_:string)
     (_module_system : Js_packages_info.module_system)
-     = string_of_module_id_in_browser id
+  = string_of_module_id_in_browser id
 #end

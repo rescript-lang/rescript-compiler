@@ -264,11 +264,11 @@ let is_bs_primitive s =
 
 let () = Oprint.map_primitive_name := 
 #if BS_RELEASE_BUILD
-  (fun s ->    
-  if is_bs_primitive s then "BS:external"
-  else s )
+      (fun s ->    
+         if is_bs_primitive s then "BS:external"
+         else s )
 #else  
-  (fun s -> String.escaped s) (* For debugging*)
+      (fun s -> String.escaped s) (* For debugging*)
 #end
 
 (* TODO:  better error message when version mismatch *)

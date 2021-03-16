@@ -52,7 +52,7 @@ type 'a selector = 'a -> 'a -> 'a
 
 (* could be replaced by [Math.min], but it seems those built-ins are slower *)
 let caml_bool_min (x : bool) y : bool =  
-    if x then y else x 
+  if x then y else x 
 let caml_int_min (x : int) (y : int) : int =
   if x < y then x else y 
 let caml_float_min (x : float) y   =

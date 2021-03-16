@@ -63,30 +63,30 @@ let bsb_main_flags : (string * spec * string) array =
     "Install public interface files into lib/ocaml";
     "-init", String (String_call (fun path -> generate_theme_with_path := Some path)),
     "Init sample project to get started. \n\
-    Note (`bsb -init sample` will create a sample project while \n\
-    `bsb -init .` will reuse current directory)";
+     Note (`bsb -init sample` will create a sample project while \n\
+     `bsb -init .` will reuse current directory)";
     "-theme", String (String_set current_theme),
     "The theme for project initialization. \n\
-    default is basic:\n\
-    https://github.com/rescript-lang/rescript-compiler/tree/master/jscomp/bsb/templates";
-    
+     default is basic:\n\
+     https://github.com/rescript-lang/rescript-compiler/tree/master/jscomp/bsb/templates";
+
     "-regen", unit_set_spec force_regenerate,
     "*internal* \n\
-    Always regenerate build.ninja no matter bsconfig.json is changed or not";
+     Always regenerate build.ninja no matter bsconfig.json is changed or not";
     "-themes", call_spec Bsb_theme_init.list_themes,
     "List all available themes";
     "-where",
     call_spec (fun _ -> 
         print_endline (Filename.dirname Sys.executable_name)),
     "Show where bsb.exe is located";
-(** Below flags are only for bsb script, it is not available for bsb.exe 
-  we make it at this time to make `bsb -help` easier
-*)
+    (** Below flags are only for bsb script, it is not available for bsb.exe 
+        we make it at this time to make `bsb -help` easier
+    *)
     "-ws", call_spec ignore, 
     "[host:]port \n\
-    specify a websocket number (and optionally, a host). \n\
-    When a build finishes, we send a message to that port. \n\
-    For tools that listen on build completion." ;
+     specify a websocket number (and optionally, a host). \n\
+     When a build finishes, we send a message to that port. \n\
+     For tools that listen on build completion." ;
 
   |]
 
@@ -163,7 +163,7 @@ let install_target () =
       install_command in 
   if eid <> 0 then   
     Bsb_unix.command_fatal_error install_command eid  
-  
+
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
   try begin 
@@ -195,7 +195,7 @@ let () =
                    [bsb -regen ]
                 *)
                 (if !watch_mode then 
-                    program_exit ()) (* bsb -verbose hit here *)
+                   program_exit ()) (* bsb -verbose hit here *)
               else
                 (let config_opt = 
                    Bsb_ninja_regen.regenerate_ninja 
@@ -218,29 +218,29 @@ let () =
                  end)
           end
         else
-           (* -make-world all dependencies fall into this category *)
+          (* -make-world all dependencies fall into this category *)
           begin
             Bsb_arg.parse_exn 
-            ~usage
-            ~argv:argv
-            ~finish:i
-            bsb_main_flags handle_anonymous_arg  ;
+              ~usage
+              ~argv:argv
+              ~finish:i
+              bsb_main_flags handle_anonymous_arg  ;
             let ninja_args = Array.sub argv (i + 1) (Array.length argv - i - 1) in 
             match ninja_args with 
             | [|"-h"|] -> ninja_command_exit ninja_args
             | _ ->  
-            let config_opt = 
-              (Bsb_ninja_regen.regenerate_ninja 
-                ~package_kind:Toplevel 
-                ~per_proj_dir:Bsb_global_paths.cwd 
-                ~forced:!force_regenerate) in
-            (* [-make-world] should never be combined with [-package-specs] *)
-            if !make_world then
-              Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
-            if !do_install then
-              install_target ();
-            if !watch_mode then program_exit ()
-            else ninja_command_exit  ninja_args 
+              let config_opt = 
+                (Bsb_ninja_regen.regenerate_ninja 
+                   ~package_kind:Toplevel 
+                   ~per_proj_dir:Bsb_global_paths.cwd 
+                   ~forced:!force_regenerate) in
+              (* [-make-world] should never be combined with [-package-specs] *)
+              if !make_world then
+                Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
+              if !do_install then
+                install_target ();
+              if !watch_mode then program_exit ()
+              else ninja_command_exit  ninja_args 
           end
       end
   end

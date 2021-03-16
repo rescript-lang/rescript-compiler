@@ -22,9 +22,9 @@ function split(delim, s) {
       if (i === 0) {
         return l;
       }
-      var i$prime;
+      var i$p;
       try {
-        i$prime = $$String.rindex_from(s, i - 1 | 0, delim);
+        i$p = $$String.rindex_from(s, i - 1 | 0, delim);
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -36,16 +36,16 @@ function split(delim, s) {
         }
         throw exn;
       }
-      var l_0 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
+      var l_0 = $$String.sub(s, i$p + 1 | 0, (i - i$p | 0) - 1 | 0);
       var l$1 = {
         hd: l_0,
         tl: l
       };
-      var l$2 = i$prime === 0 ? ({
+      var l$2 = i$p === 0 ? ({
             hd: "",
             tl: l$1
           }) : l$1;
-      _i = i$prime;
+      _i = i$p;
       _l = l$2;
       continue ;
     };
@@ -660,14 +660,14 @@ function map(f, param) {
   if (!param) {
     return /* Empty */0;
   }
-  var l$prime = map(f, param.l);
-  var d$prime = Curry._1(f, param.d);
-  var r$prime = map(f, param.r);
+  var l$p = map(f, param.l);
+  var d$p = Curry._1(f, param.d);
+  var r$p = map(f, param.r);
   return /* Node */{
-          l: l$prime,
+          l: l$p,
           v: param.v,
-          d: d$prime,
-          r: r$prime,
+          d: d$p,
+          r: r$p,
           h: param.h
         };
 }
@@ -677,14 +677,14 @@ function mapi(f, param) {
     return /* Empty */0;
   }
   var v = param.v;
-  var l$prime = mapi(f, param.l);
-  var d$prime = Curry._2(f, v, param.d);
-  var r$prime = mapi(f, param.r);
+  var l$p = mapi(f, param.l);
+  var d$p = Curry._2(f, v, param.d);
+  var r$p = mapi(f, param.r);
   return /* Node */{
-          l: l$prime,
+          l: l$p,
           v: v,
-          d: d$prime,
-          r: r$prime,
+          d: d$p,
+          r: r$p,
           h: param.h
         };
 }
@@ -893,17 +893,17 @@ function filter(p, m) {
   var d = m.d;
   var v = m.v;
   var l = m.l;
-  var l$prime = filter(p, l);
+  var l$p = filter(p, l);
   var pvd = Curry._2(p, v, d);
-  var r$prime = filter(p, r);
+  var r$p = filter(p, r);
   if (pvd) {
-    if (l === l$prime && r === r$prime) {
+    if (l === l$p && r === r$p) {
       return m;
     } else {
-      return join(l$prime, v, d, r$prime);
+      return join(l$p, v, d, r$p);
     }
   } else {
-    return concat(l$prime, r$prime);
+    return concat(l$p, r$p);
   }
 }
 

@@ -49,16 +49,16 @@ let load_unit_with_file unit_name : Js_cmj_format.cmj_load_info =
   | Some f
     -> 
     {package_path = 
-      (** hacking relying on the convention of pkg/lib/ocaml/xx.cmj*)
-      Filename.dirname (Filename.dirname (Filename.dirname f)); 
-      cmj_table =  Js_cmj_format.from_file f}
+       (** hacking relying on the convention of pkg/lib/ocaml/xx.cmj*)
+       Filename.dirname (Filename.dirname (Filename.dirname f)); 
+     cmj_table =  Js_cmj_format.from_file f}
   | None -> 
     if !Js_config.no_stdlib then Bs_exception.error (Cmj_not_found unit_name)
     else 
 #if BS_RELEASE_BUILD
-  Js_cmj_load_builtin_unit.load_builin_unit unit_name 
+        Js_cmj_load_builtin_unit.load_builin_unit unit_name 
 #else
-  Bs_exception.error (Cmj_not_found unit_name)
+        Bs_exception.error (Cmj_not_found unit_name)
 #end      
 
 

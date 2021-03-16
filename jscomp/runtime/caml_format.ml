@@ -24,8 +24,8 @@
 
 
 
- external (.![]) : string -> int -> int = "%string_unsafe_get" 
- external (.!()) : string -> int -> char = "%string_unsafe_get" 
+external (.![]) : string -> int -> int = "%string_unsafe_get" 
+external (.!()) : string -> int -> char = "%string_unsafe_get" 
 
 let code_0 = "0".![0]
 let code_a = "a".![0]
@@ -67,7 +67,7 @@ let int_of_string_base = function
   | Hex -> 16
   | Dec -> 10
   | Bin -> 2
-    
+
 let parse_sign_and_base (s : string) = 
   let sign = ref 1 in
   let base = ref Dec in
@@ -122,7 +122,7 @@ let caml_int_of_string (s : string) : int =
   let res = sign *~ aux d (i + 1) in 
   let or_res =  res lor 0 in 
   (if base = 10 && res <> or_res then 
-    failwith "int_of_string");
+     failwith "int_of_string");
   or_res
 
 let hex_threshold, 
@@ -174,7 +174,7 @@ let caml_int64_of_string s =
   let res = sign *~ aux d (i + 1) in 
   let or_res = Caml_int64_extern.logor res 0L in 
   (if base = 10L && res <> or_res then 
-    failwith "int64_of_string");
+     failwith "int64_of_string");
   or_res
 
 type base = 
@@ -183,7 +183,7 @@ let int_of_base = function
   | Oct -> 8
   | Hex -> 16
   | Dec -> 10
-    
+
 type fmt = {
   mutable justify : string; 
   mutable signstyle : string;
@@ -316,7 +316,7 @@ let finish_formatting (config : fmt) rawbuffer =
   if alternate then 
     begin 
       if base = Oct then
-         len.contents <- len.contents + 1
+        len.contents <- len.contents + 1
       else
       if base = Hex then 
         len.contents<- len.contents + 2
@@ -370,7 +370,7 @@ let aux f (i : int) : string =
           (* when i is min_int, [-i] could overflow *)
         end
       else 
-         i >>> 0 
+        i >>> 0 
     else  i  in
   let s = ref (Caml_string_extern.of_int i ~base:(int_of_base f.base)) in 
   if f.prec >= 0 then 
@@ -389,37 +389,37 @@ let caml_format_int fmt i =
     aux f i 
 
 (* This can handle unsigned integer (-1L) and print it as "%Lu" which 
-  will overflow signed integer in general
+   will overflow signed integer in general
 *)
 let dec_of_pos_int64 x = 
-  
+
 
   (if  x < 0L then
-     
+
      let wbase  =  10L  in
      let  cvtbl = "0123456789" in
-    let y  = Caml_int64.discard_sign x in
-    (* 2 ^  63 + y `div_mod` 10 *)        
+     let y  = Caml_int64.discard_sign x in
+     (* 2 ^  63 + y `div_mod` 10 *)        
 
-    let quotient_l  = 922337203685477580L (* 2 ^ 63 / 10 *)
-      (* {lo =   -858993460n; hi =  214748364n} *)
-      (* TODO:  int64 constant folding so that we can do idiomatic code
-         2 ^ 63 / 10 *)in 
-    let modulus_l  =  8L  in
-    (* let c, d = Caml_int64.div_mod (Caml_int64.add y modulus_l) wbase in
-       we can not do the code above, it can overflow when y is really large           
-    *)
-    let c, d = Caml_int64.div_mod  y  wbase in
-    let e ,f = Caml_int64.div_mod (Caml_int64_extern.add modulus_l d) wbase in        
-    let quotient =
+     let quotient_l  = 922337203685477580L (* 2 ^ 63 / 10 *)
+     (* {lo =   -858993460n; hi =  214748364n} *)
+     (* TODO:  int64 constant folding so that we can do idiomatic code
+        2 ^ 63 / 10 *)in 
+     let modulus_l  =  8L  in
+     (* let c, d = Caml_int64.div_mod (Caml_int64.add y modulus_l) wbase in
+        we can not do the code above, it can overflow when y is really large           
+     *)
+     let c, d = Caml_int64.div_mod  y  wbase in
+     let e ,f = Caml_int64.div_mod (Caml_int64_extern.add modulus_l d) wbase in        
+     let quotient =
        (Caml_int64_extern.add (Caml_int64_extern.add quotient_l c )
-             e)  in
-    Caml_int64.to_string quotient ^ 
-      (Caml_string_extern.get_string_unsafe 
+          e)  in
+     Caml_int64.to_string quotient ^ 
+     (Caml_string_extern.get_string_unsafe 
         cvtbl (Caml_int64_extern.to_int f))     
-  else
-   Caml_int64.to_string x)
-    
+   else
+     Caml_int64.to_string x)
+
 let oct_of_int64 x =   
   let s = ref "" in  
   let wbase  = 8L  in
@@ -468,41 +468,41 @@ let oct_of_int64 x =
 
 
 (* FIXME: improve codegen for such cases
-let div_mod (x : int64) (y : int64) : int64 * int64 =  
-  let a, b = Caml_int64.(div_mod (unsafe_of_int64 x) (unsafe_of_int64 y)) in   
-  Caml_int64.unsafe_to_int64 a , Caml_int64.unsafe_to_int64 b 
+   let div_mod (x : int64) (y : int64) : int64 * int64 =  
+   let a, b = Caml_int64.(div_mod (unsafe_of_int64 x) (unsafe_of_int64 y)) in   
+   Caml_int64.unsafe_to_int64 a , Caml_int64.unsafe_to_int64 b 
 *)
 let caml_int64_format fmt x =
   if fmt = "%d" then Caml_int64.to_string  x
   else
-  let f = parse_format fmt in
-  let x =
-    if f.signedconv &&  x < 0L then
-      begin
-        f.sign <- -1;
-        Caml_int64_extern.neg x
-      end
-    else x in
-  let s = 
+    let f = parse_format fmt in
+    let x =
+      if f.signedconv &&  x < 0L then
+        begin
+          f.sign <- -1;
+          Caml_int64_extern.neg x
+        end
+      else x in
+    let s = 
 
-  begin match f.base with
-    | Hex ->
-       Caml_int64.to_hex x 
-    | Oct ->
-       oct_of_int64 x 
-    | Dec ->
-         dec_of_pos_int64 x
-  end in 
-  let fill_s = 
-  if f.prec >= 0 then
-    begin
-      f.filter <- " ";
-      let n = f.prec -Caml_string_extern.length s in
-      if n > 0 then
-        ("0" |. Caml_string_extern.repeat n)  ^ s else s 
-    end  else s in 
+      begin match f.base with
+        | Hex ->
+          Caml_int64.to_hex x 
+        | Oct ->
+          oct_of_int64 x 
+        | Dec ->
+          dec_of_pos_int64 x
+      end in 
+    let fill_s = 
+      if f.prec >= 0 then
+        begin
+          f.filter <- " ";
+          let n = f.prec -Caml_string_extern.length s in
+          if n > 0 then
+            ("0" |. Caml_string_extern.repeat n)  ^ s else s 
+        end  else s in 
 
-  finish_formatting f fill_s
+    finish_formatting f fill_s
 
 let caml_format_float fmt x = 
   let module String = Caml_string_extern in 
@@ -551,7 +551,7 @@ let caml_format_float fmt x =
         if exp < -4 || x >= 1e21 ||Caml_string_extern.length (Caml_float_extern.toFixed x) > prec then 
           let i = ref (j - 1)  in
           while s.contents.[i.contents] = '0' do 
-             i.contents <- i.contents - 1 
+            i.contents <- i.contents - 1 
           done;
           if s.contents.[i.contents] = '.' then 
             i.contents <- i.contents - 1 ;
@@ -636,7 +636,7 @@ let caml_hexstring_of_float : float -> int -> char -> string =
 
 
 let float_of_string : string -> exn ->  float  = 
-    [%raw{|function(s,exn){
+  [%raw{|function(s,exn){
 
     var res = +s;
     if ((s.length > 0) && (res === res))
@@ -666,15 +666,15 @@ let float_of_string : string -> exn ->  float  =
 
 
 (**
- Pervasives.float_of_string : string -> float = "caml_float_of_string"
- Semantics is slightly different from javascript :
- console.assert(caml_float_of_string('infinity')===Infinity)
- console.assert(caml_float_of_string('Infinity')===Infinity
- parseFloat('Infinity') === Infinity
- parseFloat('infinity') === Nan
+   Pervasives.float_of_string : string -> float = "caml_float_of_string"
+   Semantics is slightly different from javascript :
+   console.assert(caml_float_of_string('infinity')===Infinity)
+   console.assert(caml_float_of_string('Infinity')===Infinity
+   parseFloat('Infinity') === Infinity
+   parseFloat('infinity') === Nan
 *)
 let caml_float_of_string (s : string) : float  = 
-    float_of_string s (Failure "float_of_string") 
+  float_of_string s (Failure "float_of_string") 
 
 let caml_nativeint_format = caml_format_int
 let caml_int32_format = caml_format_int

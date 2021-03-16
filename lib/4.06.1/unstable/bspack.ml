@@ -8467,15 +8467,15 @@ type 'a kind = 'a Ml_binary.kind
 let read_parse_and_extract (type t) (k : t kind) (ast : t) : Set_string.t =
   Depend.free_structure_names := Set_string.empty;
   Ext_ref.protect Clflags.transparent_modules false begin fun _ -> 
-  List.iter (* check *)
-    (fun modname  ->
-       ignore @@ 
-       Depend.open_module bound_vars (Longident.Lident modname))
-    (!Clflags.open_modules);
-  (match k with
-   | Ml_binary.Ml  -> Depend.add_implementation bound_vars ast
-   | Ml_binary.Mli  -> Depend.add_signature bound_vars ast  ); 
-  !Depend.free_structure_names
+    List.iter (* check *)
+      (fun modname  ->
+         ignore @@ 
+         Depend.open_module bound_vars (Longident.Lident modname))
+      (!Clflags.open_modules);
+    (match k with
+     | Ml_binary.Ml  -> Depend.add_implementation bound_vars ast
+     | Ml_binary.Mli  -> Depend.add_signature bound_vars ast  ); 
+    !Depend.free_structure_names
   end
 
 
@@ -11737,115 +11737,116 @@ let key_index (h : _ t ) (key : key) =
   (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
 let eq_key = Ext_string.equal 
 
-# 33 "ext/hash.cppo.ml"
-type ('a, 'b) bucket = ('a,'b) Hash_gen.bucket
-let create = Hash_gen.create
-let clear = Hash_gen.clear
-let reset = Hash_gen.reset
-let iter = Hash_gen.iter
-let to_list = Hash_gen.to_list
-let fold = Hash_gen.fold
-let length = Hash_gen.length
-(* let stats = Hash_gen.stats *)
-
-
-
-let add (h : _ t) key data =
-  let i = key_index h key in
-  let h_data = h.data in   
-  Array.unsafe_set h_data i (Cons{key; data; next=Array.unsafe_get h_data i});
-  h.size <- h.size + 1;
-  if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h
-
-(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
-let add_or_update 
-  (h : 'a t) 
-  (key : key) 
-  ~update:(modf : 'a -> 'a) 
-  (default :  'a) : unit =
-  let rec find_bucket (bucketlist : _ bucket) : bool =
-    match bucketlist with
-    | Cons rhs  ->
-      if eq_key rhs.key key then begin rhs.data <- modf rhs.data; false end
-      else find_bucket rhs.next
-    | Empty -> true in
-  let i = key_index h key in 
-  let h_data = h.data in 
-  if find_bucket (Array.unsafe_get h_data i) then
-    begin 
-      Array.unsafe_set h_data i  (Cons{key; data=default; next = Array.unsafe_get h_data i});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h 
-    end
-
-let remove (h : _ t ) key =
-  let i = key_index h key in
-  let h_data = h.data in 
-  Hash_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key
-
-(* for short bucket list, [find_rec is not called ] *)
-let rec find_rec key (bucketlist : _ bucket) = match bucketlist with  
-  | Empty ->
-    raise Not_found
-  | Cons rhs  ->
-    if eq_key key rhs.key then rhs.data else find_rec key rhs.next
-
-let find_exn (h : _ t) key =
-  match Array.unsafe_get h.data (key_index h key) with
-  | Empty -> raise Not_found
-  | Cons rhs  ->
-    if eq_key key rhs.key then rhs.data else
-      match rhs.next with
-      | Empty -> raise Not_found
-      | Cons rhs  ->
-        if eq_key key rhs.key then rhs.data else
-          match rhs.next with
-          | Empty -> raise Not_found
-          | Cons rhs ->
-            if eq_key key rhs.key  then rhs.data else find_rec key rhs.next
-
-let find_opt (h : _ t) key =
-  Hash_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
-
-let find_key_opt (h : _ t) key =
-  Hash_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
   
-let find_default (h : _ t) key default = 
-  Hash_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
+# 33 "ext/hash.cppo.ml"
+  type ('a, 'b) bucket = ('a,'b) Hash_gen.bucket
+  let create = Hash_gen.create
+  let clear = Hash_gen.clear
+  let reset = Hash_gen.reset
+  let iter = Hash_gen.iter
+  let to_list = Hash_gen.to_list
+  let fold = Hash_gen.fold
+  let length = Hash_gen.length
+  (* let stats = Hash_gen.stats *)
 
-let find_all (h : _ t) key =
-  let rec find_in_bucket (bucketlist : _ bucket) = match bucketlist with 
+
+
+  let add (h : _ t) key data =
+    let i = key_index h key in
+    let h_data = h.data in   
+    Array.unsafe_set h_data i (Cons{key; data; next=Array.unsafe_get h_data i});
+    h.size <- h.size + 1;
+    if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h
+
+  (* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
+  let add_or_update 
+      (h : 'a t) 
+      (key : key) 
+      ~update:(modf : 'a -> 'a) 
+      (default :  'a) : unit =
+    let rec find_bucket (bucketlist : _ bucket) : bool =
+      match bucketlist with
+      | Cons rhs  ->
+        if eq_key rhs.key key then begin rhs.data <- modf rhs.data; false end
+        else find_bucket rhs.next
+      | Empty -> true in
+    let i = key_index h key in 
+    let h_data = h.data in 
+    if find_bucket (Array.unsafe_get h_data i) then
+      begin 
+        Array.unsafe_set h_data i  (Cons{key; data=default; next = Array.unsafe_get h_data i});
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h 
+      end
+
+  let remove (h : _ t ) key =
+    let i = key_index h key in
+    let h_data = h.data in 
+    Hash_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key
+
+  (* for short bucket list, [find_rec is not called ] *)
+  let rec find_rec key (bucketlist : _ bucket) = match bucketlist with  
     | Empty ->
-      []
+      raise Not_found
     | Cons rhs  ->
-      if eq_key key rhs.key
-      then rhs.data :: find_in_bucket rhs.next
-      else find_in_bucket rhs.next in
-  find_in_bucket (Array.unsafe_get h.data (key_index h key))
+      if eq_key key rhs.key then rhs.data else find_rec key rhs.next
+
+  let find_exn (h : _ t) key =
+    match Array.unsafe_get h.data (key_index h key) with
+    | Empty -> raise Not_found
+    | Cons rhs  ->
+      if eq_key key rhs.key then rhs.data else
+        match rhs.next with
+        | Empty -> raise Not_found
+        | Cons rhs  ->
+          if eq_key key rhs.key then rhs.data else
+            match rhs.next with
+            | Empty -> raise Not_found
+            | Cons rhs ->
+              if eq_key key rhs.key  then rhs.data else find_rec key rhs.next
+
+  let find_opt (h : _ t) key =
+    Hash_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+  let find_key_opt (h : _ t) key =
+    Hash_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+  let find_default (h : _ t) key default = 
+    Hash_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
+
+  let find_all (h : _ t) key =
+    let rec find_in_bucket (bucketlist : _ bucket) = match bucketlist with 
+      | Empty ->
+        []
+      | Cons rhs  ->
+        if eq_key key rhs.key
+        then rhs.data :: find_in_bucket rhs.next
+        else find_in_bucket rhs.next in
+    find_in_bucket (Array.unsafe_get h.data (key_index h key))
 
 
-let replace h key data =
-  let i = key_index h key in
-  let h_data = h.data in 
-  let l = Array.unsafe_get h_data i in
-  if Hash_gen.replace_bucket key data l eq_key then 
-    begin 
-      Array.unsafe_set h_data i (Cons{key; data; next=l});
-      h.size <- h.size + 1;
-      if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h;
-    end 
+  let replace h key data =
+    let i = key_index h key in
+    let h_data = h.data in 
+    let l = Array.unsafe_get h_data i in
+    if Hash_gen.replace_bucket key data l eq_key then 
+      begin 
+        Array.unsafe_set h_data i (Cons{key; data; next=l});
+        h.size <- h.size + 1;
+        if h.size > Array.length h_data lsl 1 then Hash_gen.resize key_index h;
+      end 
 
-let mem (h : _ t) key = 
-  Hash_gen.small_bucket_mem 
-    (Array.unsafe_get h.data (key_index h key))
-    eq_key key 
+  let mem (h : _ t) key = 
+    Hash_gen.small_bucket_mem 
+      (Array.unsafe_get h.data (key_index h key))
+      eq_key key 
 
 
-let of_list2 ks vs = 
-  let len = List.length ks in 
-  let map = create len in 
-  List.iter2 (fun k v -> add map k v) ks vs ; 
-  map
+  let of_list2 ks vs = 
+    let len = List.length ks in 
+    let map = create len in 
+    List.iter2 (fun k v -> add map k v) ks vs ; 
+    map
 
 
 end
@@ -12638,8 +12639,9 @@ end = struct
 type key = string 
 let compare_key = Ext_string.compare
 let [@inline] eq_key (x : key) y = x = y
+    
 # 19 "ext/map.cppo.ml"
-(* let [@inline] (=) (a : int) b = a = b *)
+    (* let [@inline] (=) (a : int) b = a = b *)
 type + 'a t = (key,'a) Map_gen.t
 
 let empty = Map_gen.empty 
@@ -13664,7 +13666,7 @@ end = struct
 
 open Ast_extract
 
- type ('a,'b) ast_info =
+type ('a,'b) ast_info =
   | Ml of
       string * (* sourcefile *)
       'a *
@@ -13763,61 +13765,61 @@ let check_suffix  name  =
 let collect_ast_map ppf files parse_implementation parse_interface  =
   Ext_list.fold_left files Map_string.empty
     (fun acc source_file ->
-      match check_suffix source_file with
-      | `Ml, opref ->
-        let module_name = Ext_filename.module_name source_file in
-        begin match Map_string.find_exn acc module_name with
-          | exception Not_found ->
-            Map_string.add acc module_name
-              {ast_info =
-                 (Ml (source_file, parse_implementation
-                        ppf source_file, opref));
-               module_name ;
-              } 
-          | {ast_info = (Ml (source_file2, _, _)
-                        | Ml_mli(source_file2, _, _,_,_,_))} ->
-            Bs_exception.error
-              (Bs_duplicated_module (source_file, source_file2))
-          | {ast_info =  Mli (source_file2, intf, opref2)}
-            ->
-            Map_string.add acc module_name
-              {ast_info =
-                 Ml_mli (source_file,
-                         parse_implementation ppf source_file,
-                         opref,
-                         source_file2,
-                         intf,
-                         opref2
-                        );
-               module_name} 
-        end
-      | `Mli, opref ->
-        let module_name = Ext_filename.module_name source_file in
-        begin match Map_string.find_exn acc module_name with
-          | exception Not_found ->
-            Map_string.add acc module_name
-              {ast_info = (Mli (source_file, parse_interface
-                                  ppf source_file, opref));
-               module_name } 
-          | {ast_info =
-               (Mli (source_file2, _, _) |
-                Ml_mli(_,_,_,source_file2,_,_)) } ->
-            Bs_exception.error
-              (Bs_duplicated_module (source_file, source_file2))
-          | {ast_info = Ml (source_file2, impl, opref2)}
-            ->
-            Map_string.add acc module_name
-              {ast_info =
-                 Ml_mli
-                   (source_file2,
-                    impl,
-                    opref2,
-                    source_file,
-                    parse_interface ppf source_file,
-                    opref
-                   );
-               module_name} 
-        end
+       match check_suffix source_file with
+       | `Ml, opref ->
+         let module_name = Ext_filename.module_name source_file in
+         begin match Map_string.find_exn acc module_name with
+           | exception Not_found ->
+             Map_string.add acc module_name
+               {ast_info =
+                  (Ml (source_file, parse_implementation
+                         ppf source_file, opref));
+                module_name ;
+               } 
+           | {ast_info = (Ml (source_file2, _, _)
+                         | Ml_mli(source_file2, _, _,_,_,_))} ->
+             Bs_exception.error
+               (Bs_duplicated_module (source_file, source_file2))
+           | {ast_info =  Mli (source_file2, intf, opref2)}
+             ->
+             Map_string.add acc module_name
+               {ast_info =
+                  Ml_mli (source_file,
+                          parse_implementation ppf source_file,
+                          opref,
+                          source_file2,
+                          intf,
+                          opref2
+                         );
+                module_name} 
+         end
+       | `Mli, opref ->
+         let module_name = Ext_filename.module_name source_file in
+         begin match Map_string.find_exn acc module_name with
+           | exception Not_found ->
+             Map_string.add acc module_name
+               {ast_info = (Mli (source_file, parse_interface
+                                   ppf source_file, opref));
+                module_name } 
+           | {ast_info =
+                (Mli (source_file2, _, _) |
+                 Ml_mli(_,_,_,source_file2,_,_)) } ->
+             Bs_exception.error
+               (Bs_duplicated_module (source_file, source_file2))
+           | {ast_info = Ml (source_file2, impl, opref2)}
+             ->
+             Map_string.add acc module_name
+               {ast_info =
+                  Ml_mli
+                    (source_file2,
+                     impl,
+                     opref2,
+                     source_file,
+                     parse_interface ppf source_file,
+                     opref
+                    );
+                module_name} 
+         end
     ) 
 ;;
 type dir_spec = 
@@ -13843,10 +13845,10 @@ let collect_from_main
             (*   dirname, excludes *)
             (* | `Dir_with_excludes (dirname, dir_excludes) -> *)
             dirname,
-             (Ext_list.flat_map_append 
-              dir_excludes  excludes
-              (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
-              ) 
+            (Ext_list.flat_map_append 
+               dir_excludes  excludes
+               (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
+            ) 
         in 
         Ext_array.fold_left (Sys.readdir dirname) acc (fun acc source_file -> 
             if (Ext_string.ends_with source_file ".ml" ||
@@ -13942,26 +13944,26 @@ let handle_queue
 
     )
 
-  
-  
-  let build_lazy_queue ppf queue (ast_table : _ t Map_string.t)
-      after_parsing_impl
-      after_parsing_sig    
-    =
-    queue |> Queue.iter (fun modname -> 
-        match Map_string.find_exn ast_table modname  with
-        | {ast_info = Ml(source_file,lazy ast, opref)}
-          -> 
-          after_parsing_impl ppf source_file opref ast 
-        | {ast_info = Mli (source_file,lazy ast,opref) ; }  
-          ->
-          after_parsing_sig ppf source_file opref ast 
-        | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
-          -> 
-          after_parsing_sig ppf source_file1 opref1 intf ;
-          after_parsing_impl ppf source_file2 opref2 impl
-        | exception Not_found -> assert false 
-      )
+
+
+let build_lazy_queue ppf queue (ast_table : _ t Map_string.t)
+    after_parsing_impl
+    after_parsing_sig    
+  =
+  queue |> Queue.iter (fun modname -> 
+      match Map_string.find_exn ast_table modname  with
+      | {ast_info = Ml(source_file,lazy ast, opref)}
+        -> 
+        after_parsing_impl ppf source_file opref ast 
+      | {ast_info = Mli (source_file,lazy ast,opref) ; }  
+        ->
+        after_parsing_sig ppf source_file opref ast 
+      | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
+        -> 
+        after_parsing_sig ppf source_file1 opref1 intf ;
+        after_parsing_impl ppf source_file2 opref2 impl
+      | exception Not_found -> assert false 
+    )
 end
 module Ext_io : sig 
 #1 "ext_io.mli"
@@ -33270,7 +33272,7 @@ let specs : (string * Arg.spec * string) list =
     " with header of time stamp" ; 
     "-bs-exclude-I", (Arg.String add_exclude),
     " don't read and pack such modules from -I (in the future, we should detect conflicts in mllib or commandline) "
-    ;
+  ;
     "-bs-main", (Arg.String set_main_module),
     " set the main entry module";
     "-main-export", (Arg.String set_main_export),
@@ -33321,9 +33323,9 @@ let () =
        (if  out_chan != stdout then close_out out_chan) in
      let files =
        Ext_list.append (match mllib with
-        | Some s
-          -> read_lines (Sys.getcwd ()) s
-        | None -> []) command_files in
+           | Some s
+             -> read_lines (Sys.getcwd ()) s
+           | None -> []) command_files in
 
      match !main_module, files with
      | Some _ , _ :: _
@@ -33420,23 +33422,23 @@ let () =
              let output = file ^ ".d" in
              let sorted_dep_queue = 
                Queue.fold 
-               (fun acc collection_module -> 
-                  L_string_set.add 
-                  (
+                 (fun acc collection_module -> 
+                    L_string_set.add 
+                      (
                         (*FIXME: now we normalized path,
-                        we need a beautiful output too for relative path
-                        The relative path should be also be normalized..
-                      *)
-                      Filename.concat 
-                        (Ext_path.rel_normalized_absolute_path
-                           ~from:cwd                             
-                           (Filename.dirname collection_module)
-                        ) (Filename.basename collection_module)
+                          we need a beautiful output too for relative path
+                          The relative path should be also be normalized..
+                        *)
+                        Filename.concat 
+                          (Ext_path.rel_normalized_absolute_path
+                             ~from:cwd                             
+                             (Filename.dirname collection_module)
+                          ) (Filename.basename collection_module)
 
-                  )
-                  (* collection_module  *)
-                  acc
-                ) L_string_set.empty  collection_modules in 
+                      )
+                      (* collection_module  *)
+                      acc
+                 ) L_string_set.empty  collection_modules in 
              Ext_io.write_file 
                output
                (                 

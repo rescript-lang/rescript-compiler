@@ -443,14 +443,19 @@ let translate loc (prim_name : string)
     | "caml_floatarray_create" (* TODO: compile float array into TypedArray*)
       ->
       E.runtime_call Js_runtime_modules.array 
-        "caml_make_float_vect" args 
+        "make_float" args 
     | "caml_array_sub"
+      -> E.runtime_call Js_runtime_modules.array "sub" args
     | "caml_array_concat"
+      -> E.runtime_call Js_runtime_modules.array "concat" args
     (*external concat: 'a array list -> 'a array 
        Not good for inline *)
-    | "caml_array_blit"    
-    | "caml_make_vect" -> 
-      call Js_runtime_modules.array
+    | "caml_array_blit" 
+      -> E.runtime_call Js_runtime_modules.array "blit" args
+
+    | "caml_make_vect" 
+      -> E.runtime_call Js_runtime_modules.array "make" args
+
     | "caml_ml_flush"
     | "caml_ml_out_channels_list"
     | "caml_ml_output_char"
@@ -470,7 +475,7 @@ let translate loc (prim_name : string)
                and discarded it immediately
                This could be canceled              
             *)
-            | _ -> call Js_runtime_modules.array
+            | _ -> E.runtime_call  Js_runtime_modules.array "dup" args
           end
         | _ -> assert false 
       end

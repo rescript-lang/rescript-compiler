@@ -35,17 +35,17 @@ let expr_mapper (self : mapper) ( e : Parsetree.expression) =
   | Pexp_apply(fn, args) -> 
     Ast_exp_apply.app_exp_mapper e self fn args 
   | Pexp_constant (
-    Pconst_string
-    (s, (Some delim)))
-  ->
+      Pconst_string
+        (s, (Some delim)))
+    ->
     Ast_utf8_string_interp.transform e s delim
   | Pexp_fun (Nolabel, _, _pat , _body)
     ->
     begin match Ext_list.exclude_with_val
-          e.pexp_attributes
-          Ast_attributes.is_bs with
-      | None -> default_expr_mapper self e
-      | Some pexp_attributes -> default_expr_mapper self {e with pexp_attributes = pexp_attributes}
+                  e.pexp_attributes
+                  Ast_attributes.is_bs with
+    | None -> default_expr_mapper self e
+    | Some pexp_attributes -> default_expr_mapper self {e with pexp_attributes = pexp_attributes}
     end
   | _  -> default_expr_mapper self e
 
@@ -56,10 +56,10 @@ let typ_mapper (self : mapper) (typ : Parsetree.core_type) =
      ptyp_loc = _loc
     } ->
     begin match Ext_list.exclude_with_val
-          ptyp_attributes
-          Ast_attributes.is_bs with
-      | None -> default_typ_mapper self typ
-      | Some ptyp_attributes -> default_typ_mapper self {typ with ptyp_attributes = ptyp_attributes}
+                  ptyp_attributes
+                  Ast_attributes.is_bs with
+    | None -> default_typ_mapper self typ
+    | Some ptyp_attributes -> default_typ_mapper self {typ with ptyp_attributes = ptyp_attributes}
     end
   | _ -> default_typ_mapper self typ
 
@@ -67,16 +67,16 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
   match str.pstr_desc with
   | Pstr_type (
       rf,
-    (_ :: _ as tdcls )) ->
-      Ast_tdcls.handleTdclsInStru self str rf tdcls
+      (_ :: _ as tdcls )) ->
+    Ast_tdcls.handleTdclsInStru self str rf tdcls
   | _ -> default_str_mapper self str
 
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
   match sigi.psig_desc with
   | Psig_type (
       rf,
-       (_ :: _ as tdcls)) ->  (*FIXME: check recursive handling*)
-      Ast_tdcls.handleTdclsInSigi self sigi rf tdcls
+      (_ :: _ as tdcls)) ->  (*FIXME: check recursive handling*)
+    Ast_tdcls.handleTdclsInSigi self sigi rf tdcls
   | _ -> default_sig_mapper self sigi
 
 let my_mapper : mapper = {

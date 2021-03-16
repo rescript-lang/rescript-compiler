@@ -205,10 +205,10 @@ function file_option(file_options, name) {
 function rev_split_by_char(c, s) {
   var loop = function (i, l) {
     try {
-      var i$prime = $$String.index_from(s, i, c);
-      var s$prime = $$String.sub(s, i, i$prime - i | 0);
-      return loop(i$prime + 1 | 0, s$prime === "" ? l : ({
-                      hd: s$prime,
+      var i$p = $$String.index_from(s, i, c);
+      var s$p = $$String.sub(s, i, i$p - i | 0);
+      return loop(i$p + 1 | 0, s$p === "" ? l : ({
+                      hd: s$p,
                       tl: l
                     }));
     }
@@ -4012,14 +4012,14 @@ function map$1(f, param) {
   if (!param) {
     return /* Empty */0;
   }
-  var l$prime = map$1(f, param.l);
-  var d$prime = Curry._1(f, param.d);
-  var r$prime = map$1(f, param.r);
+  var l$p = map$1(f, param.l);
+  var d$p = Curry._1(f, param.d);
+  var r$p = map$1(f, param.r);
   return /* Node */{
-          l: l$prime,
+          l: l$p,
           v: param.v,
-          d: d$prime,
-          r: r$prime,
+          d: d$p,
+          r: r$p,
           h: param.h
         };
 }

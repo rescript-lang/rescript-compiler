@@ -41,7 +41,7 @@ function dynamic(arr) {
         1,
         arr
       ]);
-  return eq("File \"splice_test.ml\", line 34, characters 5-12", a, Caml_array.caml_array_concat({
+  return eq("File \"splice_test.ml\", line 34, characters 5-12", a, Caml_array.concat({
                   hd: [1],
                   tl: {
                     hd: arr,
@@ -81,7 +81,7 @@ function dynamic$1(arr) {
         1,
         arr
       ]);
-  return eq("File \"splice_test.ml\", line 56, characters 7-14", a, Caml_array.caml_array_concat({
+  return eq("File \"splice_test.ml\", line 56, characters 7-14", a, Caml_array.concat({
                   hd: [1],
                   tl: {
                     hd: arr,

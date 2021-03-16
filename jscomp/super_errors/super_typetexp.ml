@@ -19,11 +19,11 @@ let spellcheck ppf fold env lid =
     let env : string list = fold (fun x  _ _ xs -> x ::xs ) path env []   in
     Misc.spellcheck env name in 
   match lid with
-    | Longident.Lapply _ -> false
-    | Longident.Lident s ->
-      did_you_mean ppf (fun _ -> choices None s)
-    | Longident.Ldot (r, s) ->
-      did_you_mean ppf (fun _ -> choices (Some r) s)
+  | Longident.Lapply _ -> false
+  | Longident.Lident s ->
+    did_you_mean ppf (fun _ -> choices None s)
+  | Longident.Ldot (r, s) ->
+    did_you_mean ppf (fun _ -> choices (Some r) s)
 
 
 let fold_descr fold get_name f = fold (fun descr acc -> f (get_name descr) acc)
@@ -40,71 +40,71 @@ let report_error env ppf = function
     if !Config.syntax_kind = `rescript && not has_candidate then 
       Format.fprintf ppf "If you wanted to write a recursive type, don't forget the `rec` in `type rec`@]"
   | Unbound_value lid ->
-      (* modified *)
-      begin
-        match lid with
-        | Ldot (outer, inner) ->
-          Format.fprintf ppf "The value %s can't be found in %a"
-            inner
-            Printtyp.longident outer;
-        | other_ident -> Format.fprintf ppf "The value %a can't be found" Printtyp.longident other_ident
-      end;
-      spellcheck ppf Env.fold_values env lid |> ignore
+    (* modified *)
+    begin
+      match lid with
+      | Ldot (outer, inner) ->
+        Format.fprintf ppf "The value %s can't be found in %a"
+          inner
+          Printtyp.longident outer;
+      | other_ident -> Format.fprintf ppf "The value %a can't be found" Printtyp.longident other_ident
+    end;
+    spellcheck ppf Env.fold_values env lid |> ignore
   | Unbound_module lid ->
-      (* modified *)
-      begin match lid with
+    (* modified *)
+    begin match lid with
       | Lident "Str" ->
         begin
           Format.fprintf ppf "@[\
-              @{<info>The module or file %a can't be found.@}@,@,\
-              Are you trying to use the standard library's Str?@ \
-              If you're compiling to JavaScript,@ use @{<info>Js.Re@} instead.@ \
-              Otherwise, add str.cma to your ocamlc/ocamlopt command.\
-            @]"
+                              @{<info>The module or file %a can't be found.@}@,@,\
+                              Are you trying to use the standard library's Str?@ \
+                              If you're compiling to JavaScript,@ use @{<info>Js.Re@} instead.@ \
+                              Otherwise, add str.cma to your ocamlc/ocamlopt command.\
+                              @]"
             Printtyp.longident lid
         end
       | lid ->
         begin
           Format.fprintf ppf "@[<v>\
-              @{<info>The module or file %a can't be found.@}@,\
-              @[<v 2>- If it's a third-party dependency:@,\
-                - Did you list it in bsconfig.json?@,\
-                - @[Did you run `bsb` instead of `bsb -make-world`@ (latter builds third-parties)@]?\
-              @]@,\
-              - Did you include the file's directory in bsconfig.json?@]\
-            @]"
+                              @{<info>The module or file %a can't be found.@}@,\
+                              @[<v 2>- If it's a third-party dependency:@,\
+                              - Did you list it in bsconfig.json?@,\
+                              - @[Did you run `bsb` instead of `bsb -make-world`@ (latter builds third-parties)@]?\
+                              @]@,\
+                              - Did you include the file's directory in bsconfig.json?@]\
+                              @]"
             Printtyp.longident lid
         end
-      end;
-      spellcheck ppf Env.fold_modules env lid |> ignore
+    end;
+    spellcheck ppf Env.fold_modules env lid |> ignore
   | Unbound_constructor lid ->
-      (* modified *)
-      Format.fprintf ppf "@[<v>\
-      @{<info>The variant constructor %a can't be found.@}@,@,\
-      @[<v 2>- If it's defined in another module or file, bring it into scope by:@,\
-        @[- Prefixing it with said module name:@ @{<info>TheModule.%a@}@]@,\
-        @[- Or specifying its type:@ @{<info>let theValue: TheModule.theType = %a@}@]\
-      @]@,\
-      - @[Constructors and modules are both capitalized.@ Did you want the latter?@ Then instead of @{<dim>let foo = Bar@}, try @{<info>module Foo = Bar@}.@]\
-      @]"
+    (* modified *)
+    Format.fprintf ppf "@[<v>\
+                        @{<info>The variant constructor %a can't be found.@}@,@,\
+                        @[<v 2>- If it's defined in another module or file, bring it into scope by:@,\
+                        @[- Prefixing it with said module name:@ @{<info>TheModule.%a@}@]@,\
+                        @[- Or specifying its type:@ @{<info>let theValue: TheModule.theType = %a@}@]\
+                        @]@,\
+                        - @[Constructors and modules are both capitalized.@ Did you want the latter?@ Then instead of @{<dim>let foo = Bar@}, try @{<info>module Foo = Bar@}.@]\
+                        @]"
       Printtyp.longident lid
       Printtyp.longident lid
       Printtyp.longident lid;
-      Typetexp.spellcheck ppf fold_constructors env lid
+    Typetexp.spellcheck ppf fold_constructors env lid
   | Unbound_label lid ->
-      (* modified *)
-      Format.fprintf ppf "@[<v>\
-      @{<info>The record field %a can't be found.@}@,@,\
-      If it's defined in another module or file, bring it into scope by:@,\
-      @[- Prefixing it with said module name:@ @{<info>TheModule.%a@}@]@,\
-      @[- Or specifying its type:@ @{<info>let theValue: TheModule.theType = {%a: VALUE}@}@]\
-      @]"
+    (* modified *)
+    Format.fprintf ppf "@[<v>\
+                        @{<info>The record field %a can't be found.@}@,@,\
+                        If it's defined in another module or file, bring it into scope by:@,\
+                        @[- Prefixing it with said module name:@ @{<info>TheModule.%a@}@]@,\
+                        @[- Or specifying its type:@ @{<info>let theValue: TheModule.theType = {%a: VALUE}@}@]\
+                        @]"
       Printtyp.longident lid
       Printtyp.longident lid
       Printtyp.longident lid;
-      Typetexp.spellcheck ppf fold_labels env lid
+    Typetexp.spellcheck ppf fold_labels env lid
   | anythingElse ->
-      Typetexp.report_error env ppf anythingElse
+    Typetexp.report_error env ppf anythingElse
 
 (* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
 let setup () =
@@ -114,7 +114,7 @@ let setup () =
         Some (Super_location.error_of_printer loc (report_error env) err)
       (* typetexp doesn't expose Error_forward  *)
       (* | Error_forward err ->
-        Some err *)
+         Some err *)
       | _ ->
         None
     )

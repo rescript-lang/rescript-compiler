@@ -42,43 +42,43 @@ let pp_cmj
   pp_cmj_case  case ;
 
   f "effect: %s\n"
-      (if pure then "pure" else "not pure");
-   Ext_array.iter values 
+    (if pure then "pure" else "not pure");
+  Ext_array.iter values 
     (fun ({name ; arity; persistent_closed_lambda}) -> 
-      begin match arity with             
-        | Single arity ->
-          f "%s: %s\n" name (Format.asprintf "%a" Lam_arity.print arity);
-          (match persistent_closed_lambda with 
-           | None -> 
-             f "%s: not saved\n" name 
-           | Some lam -> 
-             begin 
-               f "%s: ======[start]\n" name ;
-               f "%s\n" (Lam_print.lambda_to_string lam);
-               f "%s: ======[finish]\n" name
-             end )         
-        | Submodule xs -> 
-          (match persistent_closed_lambda with 
-           | None -> f "%s: not saved\n" name 
-           | Some lam -> 
-             begin 
-               f "%s: ======[start]\n" name ;
-               f "%s" (Lam_print.lambda_to_string lam);
-               f "%s: ======[finish]\n" name
-             end 
-          );
-          Array.iteri 
-            (fun i arity -> f "%s[%i] : %s \n" 
-                name i 
-                (Format.asprintf "%a" Lam_arity.print arity ))
-            xs;
-      end ; f "\n"
+       begin match arity with             
+         | Single arity ->
+           f "%s: %s\n" name (Format.asprintf "%a" Lam_arity.print arity);
+           (match persistent_closed_lambda with 
+            | None -> 
+              f "%s: not saved\n" name 
+            | Some lam -> 
+              begin 
+                f "%s: ======[start]\n" name ;
+                f "%s\n" (Lam_print.lambda_to_string lam);
+                f "%s: ======[finish]\n" name
+              end )         
+         | Submodule xs -> 
+           (match persistent_closed_lambda with 
+            | None -> f "%s: not saved\n" name 
+            | Some lam -> 
+              begin 
+                f "%s: ======[start]\n" name ;
+                f "%s" (Lam_print.lambda_to_string lam);
+                f "%s: ======[finish]\n" name
+              end 
+           );
+           Array.iteri 
+             (fun i arity -> f "%s[%i] : %s \n" 
+                 name i 
+                 (Format.asprintf "%a" Lam_arity.print arity ))
+             xs;
+       end ; f "\n"
     )    
 let () = 
   match Sys.argv  with
   | [|_; file |] 
     -> 
-      let cmj,digest = Js_cmj_format.from_file_with_digest file in 
-      Format.fprintf Format.std_formatter "@[Digest: %s@]@." (Digest.to_hex digest);
-      pp_cmj cmj
+    let cmj,digest = Js_cmj_format.from_file_with_digest file in 
+    Format.fprintf Format.std_formatter "@[Digest: %s@]@." (Digest.to_hex digest);
+    pp_cmj cmj
   | _ -> failwith "expect one argument"

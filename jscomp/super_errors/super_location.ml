@@ -26,38 +26,38 @@ let print_loc ~normalizedRange ppf (loc : Location.t) =
 ;;
 
 let print ~message_kind intro ppf (loc : Location.t) =
-    begin match message_kind with
+  begin match message_kind with
     | `warning -> fprintf ppf "@[@{<info>%s@}@]@," intro
     | `warning_as_error -> fprintf ppf "@[@{<error>%s@} (configured as error) @]@," intro
     | `error -> fprintf ppf "@[@{<error>%s@}@]@," intro
-    end;
-    (* ocaml's reported line/col numbering is horrible and super error-prone
-      when being handled programmatically (or humanly for that matter. If you're
-      an ocaml contributor reading this: who the heck reads the character count
-      starting from the first erroring character?) *)
-    let (file, start_line, start_char) = Location.get_pos_info loc.loc_start in
-    let (_, end_line, end_char) = Location.get_pos_info loc.loc_end in
-    (* line is 1-indexed, column is 0-indexed. We convert all of them to 1-indexed to avoid confusion *)
-    (* start_char is inclusive, end_char is exclusive *)
-    let normalizedRange =
-      if start_char == -1 || end_char == -1 then
-        (* happens sometimes. Syntax error for example *)
-        None
-      else if start_line = end_line && start_char >= end_char then
-        (* in some errors, starting char and ending char can be the same. But
-           since ending char was supposed to be exclusive, here it might end up
-           smaller than the starting char if we naively did start_char + 1 to
-           just the starting char and forget ending char *)
-        let same_char = start_char + 1 in
-        Some ((start_line, same_char), (end_line, same_char))
-      else
-        (* again: end_char is exclusive, so +1-1=0 *)
-        Some ((start_line, start_char + 1), (end_line, end_char))
-    in
-    fprintf ppf "@[%a@]@," (print_loc ~normalizedRange) loc;
-    match normalizedRange with
-    | None -> ()
-    | Some range -> begin
+  end;
+  (* ocaml's reported line/col numbering is horrible and super error-prone
+     when being handled programmatically (or humanly for that matter. If you're
+     an ocaml contributor reading this: who the heck reads the character count
+     starting from the first erroring character?) *)
+  let (file, start_line, start_char) = Location.get_pos_info loc.loc_start in
+  let (_, end_line, end_char) = Location.get_pos_info loc.loc_end in
+  (* line is 1-indexed, column is 0-indexed. We convert all of them to 1-indexed to avoid confusion *)
+  (* start_char is inclusive, end_char is exclusive *)
+  let normalizedRange =
+    if start_char == -1 || end_char == -1 then
+      (* happens sometimes. Syntax error for example *)
+      None
+    else if start_line = end_line && start_char >= end_char then
+      (* in some errors, starting char and ending char can be the same. But
+         since ending char was supposed to be exclusive, here it might end up
+         smaller than the starting char if we naively did start_char + 1 to
+         just the starting char and forget ending char *)
+      let same_char = start_char + 1 in
+      Some ((start_line, same_char), (end_line, same_char))
+    else
+      (* again: end_char is exclusive, so +1-1=0 *)
+      Some ((start_line, start_char + 1), (end_line, end_char))
+  in
+  fprintf ppf "@[%a@]@," (print_loc ~normalizedRange) loc;
+  match normalizedRange with
+  | None -> ()
+  | Some range -> begin
       try
         let lines = file_lines file in
         (* we're putting the line break `@,` here rather than above, because this
@@ -68,7 +68,7 @@ let print ~message_kind intro ppf (loc : Location.t) =
           ()
       with
       (* this might happen if the file is e.g. "", "_none_" or any of the fake file name placeholders.
-        we've already printed the location above, so nothing more to do here. *)
+         we've already printed the location above, so nothing more to do here. *)
       | Sys_error _ -> ()
     end
 ;;
@@ -80,7 +80,7 @@ let rec super_error_reporter ppf ({loc; msg; sub} : Location.error) =
   (* open a vertical box. Everything in our message is indented 2 spaces *)
   Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print ~message_kind:`error "We've found a bug for you!") loc msg;
   List.iter (Format.fprintf ppf "@,@[%a@]" super_error_reporter) sub
-    (* no need to flush here; location's report_exception (which uses this ultimately) flushes *)
+(* no need to flush here; location's report_exception (which uses this ultimately) flushes *)
 
 
 (* extracted from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L299 *)
@@ -96,13 +96,13 @@ let super_warning_printer loc ppf w =
       loc
       (Warnings.message w);
     (* at this point, you can display sub_locs too, from e.g. https://github.com/ocaml/ocaml/commit/f6d53cc38f87c67fbf49109f5fb79a0334bab17a
-      but we won't bother for now *)
+       but we won't bother for now *)
 ;;
 
 (* taken from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L354 *)
 let print_phanton_error_prefix ppf =
   (* modified from the original. We use only 2 indentations for error report
-    (see super_error_reporter above) *)
+     (see super_error_reporter above) *)
   Format.pp_print_as ppf 2 ""
 
 let errorf ?(loc = Location.none) ?(sub = []) ?(if_highlight = "") fmt =

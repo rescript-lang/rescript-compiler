@@ -36,9 +36,9 @@ let some ( x : Obj.t) : Obj.t =
     (Obj.repr {depth = 0})
   else 
     (* [x] is neither None nor null so it is safe to do property access *)
-    if x != Obj.repr Js.null &&  isNested x then   
-      Obj.repr {depth = (Obj.magic x : nested).depth + 1}
-    else  x 
+  if x != Obj.repr Js.null &&  isNested x then   
+    Obj.repr {depth = (Obj.magic x : nested).depth + 1}
+  else  x 
 
 let nullable_to_opt (type t) ( x : t Js.nullable) : t option = 
   if Js.isNullable x then 
@@ -46,15 +46,15 @@ let nullable_to_opt (type t) ( x : t Js.nullable) : t option =
   else Obj.magic (some (Obj.magic x : 'a))
 
 let undefined_to_opt (type t) ( x : t Js.undefined) : t option = 
-    if (Obj.magic x) == Js.undefined then None 
-    else Obj.magic (some (Obj.magic x : 'a))
+  if (Obj.magic x) == Js.undefined then None 
+  else Obj.magic (some (Obj.magic x : 'a))
 
 let null_to_opt (type t ) ( x : t Js.null) : t option = 
   if (Obj.magic x) == Js.null then None 
   else Obj.magic (some (Obj.magic x : 'a) )
 
 (* external valFromOption : 'a option -> 'a = 
-  "#val_from_option"   *)
+   "#val_from_option"   *)
 
 
 

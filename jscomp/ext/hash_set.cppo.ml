@@ -42,83 +42,83 @@ let eq_key = Ext_ident.equal
 type t = key Hash_set_gen.t
 #elif defined TYPE_FUNCTOR
 module Make (H: Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t) = struct 
-type key = H.t 
-let eq_key = H.equal
-let key_index (h :  _ Hash_set_gen.t ) key =
-  (H.hash  key) land (Array.length h.data - 1)
-type t = key Hash_set_gen.t
+  type key = H.t 
+  let eq_key = H.equal
+  let key_index (h :  _ Hash_set_gen.t ) key =
+    (H.hash  key) land (Array.length h.data - 1)
+  type t = key Hash_set_gen.t
 
 #elif defined TYPE_POLY
-[@@@ocaml.warning "-3"]
-(* we used cppo the mixture does not work*)
-external seeded_hash_param :
-  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
-let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =
-  seeded_hash_param 10 100 0 key land (Array.length h.data - 1)
-let eq_key = (=)
-type  'a t = 'a Hash_set_gen.t 
+  [@@@ocaml.warning "-3"]
+  (* we used cppo the mixture does not work*)
+  external seeded_hash_param :
+    int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
+  let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =
+    seeded_hash_param 10 100 0 key land (Array.length h.data - 1)
+  let eq_key = (=)
+  type  'a t = 'a Hash_set_gen.t 
 #else 
-[%error "unknown type"]
+      [%error "unknown type"]
 #endif 
 
 
-let create = Hash_set_gen.create
-let clear = Hash_set_gen.clear
-let reset = Hash_set_gen.reset
-(* let copy = Hash_set_gen.copy *)
-let iter = Hash_set_gen.iter
-let fold = Hash_set_gen.fold
-let length = Hash_set_gen.length
-(* let stats = Hash_set_gen.stats *)
-let to_list = Hash_set_gen.to_list
+      let create = Hash_set_gen.create
+  let clear = Hash_set_gen.clear
+  let reset = Hash_set_gen.reset
+  (* let copy = Hash_set_gen.copy *)
+  let iter = Hash_set_gen.iter
+  let fold = Hash_set_gen.fold
+  let length = Hash_set_gen.length
+  (* let stats = Hash_set_gen.stats *)
+  let to_list = Hash_set_gen.to_list
 
 
 
-let remove (h : _ Hash_set_gen.t ) key =
-  let i = key_index h key in
-  let h_data = h.data in 
-  Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
+  let remove (h : _ Hash_set_gen.t ) key =
+    let i = key_index h key in
+    let h_data = h.data in 
+    Hash_set_gen.remove_bucket h i key ~prec:Empty (Array.unsafe_get h_data i) eq_key    
 
 
 
-let add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in 
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i (Cons {key = key ; next =  old_bucket});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
-    end
+  let add (h : _ Hash_set_gen.t) key =
+    let i = key_index h key  in 
+    let h_data = h.data in 
+    let old_bucket = (Array.unsafe_get h_data i) in
+    if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+      begin 
+        Array.unsafe_set h_data i (Cons {key = key ; next =  old_bucket});
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
+      end
 
-let of_array arr = 
-  let len = Array.length arr in 
-  let tbl = create len in 
-  for i = 0 to len - 1  do
-    add tbl (Array.unsafe_get arr i);
-  done ;
-  tbl 
-  
-    
-let check_add (h : _ Hash_set_gen.t) key : bool =
-  let i = key_index h key  in 
-  let h_data = h.data in  
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i  (Cons { key = key ; next =  old_bucket});
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
-      true 
-    end
-  else false 
+  let of_array arr = 
+    let len = Array.length arr in 
+    let tbl = create len in 
+    for i = 0 to len - 1  do
+      add tbl (Array.unsafe_get arr i);
+    done ;
+    tbl 
 
 
-let mem (h :  _ Hash_set_gen.t) key =
-  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+  let check_add (h : _ Hash_set_gen.t) key : bool =
+    let i = key_index h key  in 
+    let h_data = h.data in  
+    let old_bucket = (Array.unsafe_get h_data i) in
+    if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+      begin 
+        Array.unsafe_set h_data i  (Cons { key = key ; next =  old_bucket});
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
+        true 
+      end
+    else false 
+
+
+  let mem (h :  _ Hash_set_gen.t) key =
+    Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
 #ifdef TYPE_FUNCTOR
 end
 #endif
-  
+

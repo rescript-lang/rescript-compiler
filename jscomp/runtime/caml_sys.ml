@@ -27,7 +27,7 @@
 external getEnv : 'a -> string -> string option = "" [@@bs.get_index] 
 let caml_sys_getenv s =
   if Js.typeof [%raw{|process|}] = "undefined"
-     || [%raw{|process.env|}] = Caml_undefined_extern.empty 
+  || [%raw{|process.env|}] = Caml_undefined_extern.empty 
   then raise Not_found
   else  
     match getEnv [%raw{|process.env|}] s with 
@@ -35,9 +35,9 @@ let caml_sys_getenv s =
     | Some x -> x 
 
 (* https://nodejs.org/dist/latest-v12.x/docs/api/os.html#os_os_platform 
-  The value is set at compile time. Possible values are 'aix', 'darwin','freebsd', 'linux', 'openbsd', 'sunos', and 'win32'.
-  The return value is equivalent to process.platform. 
-  NodeJS does not support Cygwin very well
+   The value is set at compile time. Possible values are 'aix', 'darwin','freebsd', 'linux', 'openbsd', 'sunos', and 'win32'.
+   The return value is equivalent to process.platform. 
+   NodeJS does not support Cygwin very well
 *)
 let os_type : unit -> string = [%raw{|function(_){
   if(typeof process !== 'undefined' && process.platform === 'win32'){
@@ -59,10 +59,10 @@ external exit : process -> int -> 'a =  "exit"  [@@bs.send]
 
 let caml_sys_time () =
   if Js.typeof [%raw{|process|}] = "undefined" 
-    || [%raw{|process.uptime|}] = Caml_undefined_extern.empty
+  || [%raw{|process.uptime|}] = Caml_undefined_extern.empty
   then -1.
   else uptime [%raw{|process|}] ()
-  
+
 
 
 

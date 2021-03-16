@@ -113,11 +113,11 @@ function to_buf(b, t) {
     if (l) {
       if (l.tl) {
         $$Buffer.add_char(b, /* '(' */40);
-        List.iteri((function (i, t$prime) {
+        List.iteri((function (i, t$p) {
                 if (i > 0) {
                   $$Buffer.add_char(b, /* ' ' */32);
                 }
-                return to_buf(b, t$prime);
+                return to_buf(b, t$p);
               }), l);
         return $$Buffer.add_char(b, /* ')' */41);
       } else {
@@ -197,7 +197,7 @@ function print(fmt, t) {
               },
               _1: "@[<hov1>("
             });
-        List.iteri((function (i, t$prime) {
+        List.iteri((function (i, t$p) {
                 if (i > 0) {
                   Format.fprintf(fmt, /* Format */{
                         _0: {
@@ -213,7 +213,7 @@ function print(fmt, t) {
                         _1: "@ "
                       });
                 }
-                return print(fmt, t$prime);
+                return print(fmt, t$p);
               }), l);
         return Format.fprintf(fmt, /* Format */{
                     _0: {
@@ -295,11 +295,11 @@ function print_noindent(fmt, t) {
     if (l) {
       if (l.tl) {
         Format.pp_print_char(fmt, /* '(' */40);
-        List.iteri((function (i, t$prime) {
+        List.iteri((function (i, t$p) {
                 if (i > 0) {
                   Format.pp_print_char(fmt, /* ' ' */32);
                 }
-                return print_noindent(fmt, t$prime);
+                return print_noindent(fmt, t$p);
               }), l);
         return Format.pp_print_char(fmt, /* ')' */41);
       } else {
@@ -479,10 +479,10 @@ function _error(t, msg) {
             _1: "at %d, %d: "
           }), t.line, t.col);
   return Printf.kbprintf((function (b) {
-                var msg$prime = $$Buffer.contents(b);
+                var msg$p = $$Buffer.contents(b);
                 return {
                         NAME: "Error",
-                        VAL: msg$prime
+                        VAL: msg$p
                       };
               }), b, msg);
 }
@@ -1090,10 +1090,10 @@ function MakeDecode(funarg) {
               _1: "at %d, %d: "
             }), t.line, t.col);
     return Printf.kbprintf((function (b) {
-                  var msg$prime = $$Buffer.contents(b);
+                  var msg$p = $$Buffer.contents(b);
                   return Curry._1(funarg.$$return, {
                               NAME: "Error",
-                              VAL: msg$prime
+                              VAL: msg$p
                             });
                 }), b, msg);
   };

@@ -5,18 +5,18 @@
 type key = string 
 let compare_key = Ext_string.compare
 let [@inline] eq_key (x : key) y = x = y
-                                       #elif defined TYPE_INT
+#elif defined TYPE_INT
 type key = int
 let compare_key = Ext_int.compare
 let [@inline] eq_key (x : key) y = x = y
-                                       #elif defined TYPE_IDENT
+#elif defined TYPE_IDENT
 type key = Ident.t
 let compare_key = Ext_ident.compare
 let [@inline] eq_key (x : key) y = Ident.same x y
-                                                #else
-  [%error "unknown type"]
-  #endif
-(* let [@inline] (=) (a : int) b = a = b *)
+#else
+    [%error "unknown type"]
+#endif
+    (* let [@inline] (=) (a : int) b = a = b *)
 type + 'a t = (key,'a) Map_gen.t
 
 let empty = Map_gen.empty 

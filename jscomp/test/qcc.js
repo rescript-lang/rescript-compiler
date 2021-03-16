@@ -71,7 +71,7 @@ function peekch(param) {
   return ch;
 }
 
-var symtab = Caml_array.caml_make_vect(100, "");
+var symtab = Caml_array.make(100, "");
 
 var syms = {
   contents: 0
@@ -386,7 +386,7 @@ function patch(rel, loc, n) {
     return ;
   }
   var i = opos.contents;
-  var loc$prime = get32(loc);
+  var loc$p = get32(loc);
   var x = rel ? n - (loc + 4 | 0) | 0 : n;
   if (dbg.contents) {
     Curry._3(Printf.eprintf(/* Format */{
@@ -430,7 +430,7 @@ function patch(rel, loc, n) {
   }
   opos.contents = loc;
   le(32, x);
-  patch(rel, loc$prime, n);
+  patch(rel, loc$p, n);
   opos.contents = i;
   
 }
@@ -520,7 +520,7 @@ function read(param) {
   
 }
 
-var globs = Caml_array.caml_make_vect(100, {
+var globs = Caml_array.make(100, {
       loc: 0,
       va: -1
     });
@@ -892,9 +892,9 @@ function binary(stk, lvl) {
       var o = Curry._1(next$1, undefined);
       if (o.TAG === /* Op */0) {
         if (lvlof(o._0) === lvl) {
-          var loc$prime = test(lvl - 8 | 0, loc);
+          var loc$p = test(lvl - 8 | 0, loc);
           binary(stk, lvl - 1 | 0);
-          _loc = loc$prime;
+          _loc = loc$p;
           continue ;
         }
         Curry._1(unnext, o);
@@ -1250,8 +1250,8 @@ function decl(g, _n, _stk) {
           var s = Curry._1(next$1, undefined);
           if (s.TAG === /* Sym */3) {
             var s$1 = s._0;
-            var n$prime = n + 1 | 0;
-            var stk$prime;
+            var n$p = n + 1 | 0;
+            var stk$p;
             if (g) {
               var glo = Caml_array.get(globs, s$1);
               if (glo.va >= 0) {
@@ -1267,12 +1267,12 @@ function decl(g, _n, _stk) {
                     va: va
                   });
               gpos.contents = gpos.contents + 8 | 0;
-              stk$prime = stk;
+              stk$p = stk;
             } else {
-              stk$prime = {
+              stk$p = {
                 hd: [
                   s$1,
-                  top - (n$prime << 3) | 0
+                  top - (n$p << 3) | 0
                 ],
                 tl: stk
               };
@@ -1282,13 +1282,13 @@ function decl(g, _n, _stk) {
                     _0: ","
                   })) {
               return [
-                      n$prime,
-                      stk$prime
+                      n$p,
+                      stk$p
                     ];
             }
             Curry._1(next$1, undefined);
-            _stk = stk$prime;
-            _n = n$prime;
+            _stk = stk$p;
+            _n = n$p;
             continue ;
           }
           throw {
@@ -1495,13 +1495,13 @@ function stmt(brk, stk) {
 
 function block(brk, stk) {
   var match = decl(false, 0, stk);
-  var stk$prime = match[1];
+  var stk$p = match[1];
   var n = match[0];
   while(!nextis({
           TAG: /* Op */0,
           _0: "}"
         })) {
-    stmt(brk, stk$prime);
+    stmt(brk, stk$p);
   };
   Curry._1(next$1, undefined);
   if (n !== 0) {
@@ -1573,15 +1573,15 @@ function top(_param) {
                       })) {
                   Curry._1(next$1, undefined);
                 }
-                var stk$prime_0 = [
+                var stk$p_0 = [
                   i._0,
                   ((-n | 0) << 3)
                 ];
-                var stk$prime = {
-                  hd: stk$prime_0,
+                var stk$p = {
+                  hd: stk$p_0,
                   tl: stk
                 };
-                _stk = stk$prime;
+                _stk = stk$p;
                 _n = n + 1 | 0;
                 _regs = List.tl(regs);
                 continue ;

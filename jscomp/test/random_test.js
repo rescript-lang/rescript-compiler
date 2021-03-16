@@ -38,7 +38,7 @@ Mt_global.collect_neq(id, suites, "File \"random_test.ml\", line 12, characters 
 
 Random.init(0);
 
-var v = Caml_array.caml_make_vect(10, false);
+var v = Caml_array.make(10, false);
 
 for(var i = 0; i <= 9; ++i){
   Caml_array.set(v, i, Random.bool(undefined));

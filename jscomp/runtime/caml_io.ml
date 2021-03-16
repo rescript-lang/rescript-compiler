@@ -34,14 +34,14 @@ type out_channel  = {
 let stdout = {
   buffer = "";
   output = (fun [@bs] _ s ->
-    let module String = Caml_string_extern in
-    let v =Caml_string_extern.length s - 1 in
-    if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write|}] then
-      ([%bs.raw{| process.stdout.write |} ] : string -> unit [@bs]) s [@bs]
-    else
-    if s.[v] = '\n' then
-      Js.log (Caml_string_extern.slice s 0 v)
-    else Js.log s)
+      let module String = Caml_string_extern in
+      let v =Caml_string_extern.length s - 1 in
+      if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write|}] then
+        ([%bs.raw{| process.stdout.write |} ] : string -> unit [@bs]) s [@bs]
+      else
+      if s.[v] = '\n' then
+        Js.log (Caml_string_extern.slice s 0 v)
+      else Js.log s)
 }
 
 let stderr = {
@@ -64,7 +64,7 @@ let caml_ml_input (ic : in_channel) (bytes : bytes) offset len : int =
   raise (Failure  "caml_ml_input ic not implemented")
 let caml_ml_input_char (ic : in_channel) : char = 
   raise  (Failure "caml_ml_input_char not implemnted")   
-  
+
 #end
 
 (*TODO: we need flush all buffers in the end *)

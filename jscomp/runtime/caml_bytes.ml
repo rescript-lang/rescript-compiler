@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
- 
+
 
 external new_uninitialized : int -> bytes = "Array"  [@@bs.new]
 
@@ -45,7 +45,7 @@ let caml_fill_bytes (s : bytes) i l (c : char) =
     for k = i to l + i - 1 do 
       s.![k] <- c 
     done
-  
+
 let caml_create_bytes len : bytes = 
   (* Node raise [RangeError] exception *)
   if len < 0 then raise (Invalid_argument "String.create")
@@ -76,7 +76,7 @@ let copyWithin (s1 : bytes) i1 i2 len =
 
 (* TODO: when the compiler could optimize small function calls, 
    use high order functions instead
- *)
+*)
 let caml_blit_bytes (s1:bytes) i1 (s2:bytes) i2 len = 
   if len > 0 then
     if s1 == s2 then
@@ -90,10 +90,10 @@ let caml_blit_bytes (s1:bytes) i1 (s2:bytes) i2 len =
       else 
         begin
           for i = 0 to off1 - 1 do 
-             s2.![i2 + i] <- s1.![i1 + i]
+            s2.![i2 + i] <- s1.![i1 + i]
           done;
           for i = off1 to len - 1 do 
-             s2.![i2 + i] <- '\000'
+            s2.![i2 + i] <- '\000'
           done
         end    
 
@@ -125,7 +125,7 @@ let bytes_to_string a  =
 
 (**
    TODO: [min] is not type specialized in OCaml
- *)
+*)
 let caml_blit_string (s1 : string) i1 (s2 : bytes) i2 (len : int ) = 
   if len > 0 then
     let off1 = Caml_string_extern.length s1 - i1 in
@@ -149,21 +149,21 @@ let bytes_of_string  s =
   let res = new_uninitialized len  in
   for i = 0 to len - 1 do 
     res.![i] <- Caml_string_extern.unsafe_get s i
-      (* Note that when get a char and convert it to int immedately, should be optimized
-         should be [s.charCodeAt[i]]
-       *)
+    (* Note that when get a char and convert it to int immedately, should be optimized
+       should be [s.charCodeAt[i]]
+    *)
   done;
   res
 
 
-  let rec caml_bytes_compare_aux (s1 : bytes) (s2 : bytes) off len def =   
-    if off < len then 
-      let a, b = s1.![off], s2.![off] in  
-      if a > b then 1
-      else if a < b then -1 
-      else caml_bytes_compare_aux s1 s2 (off + 1) len def 
-    else def   
-  
+let rec caml_bytes_compare_aux (s1 : bytes) (s2 : bytes) off len def =   
+  if off < len then 
+    let a, b = s1.![off], s2.![off] in  
+    if a > b then 1
+    else if a < b then -1 
+    else caml_bytes_compare_aux s1 s2 (off + 1) len def 
+  else def   
+
 (* code path could be using a tuple if we can eliminate the tuple allocation for code below
    {[
      let (len, v) = 
@@ -201,6 +201,6 @@ let caml_bytes_greaterequal (s1 : bytes) s2 =
 
 let caml_bytes_lessthan (s1 : bytes) s2 = 
   caml_bytes_compare s1 s2 < 0
-  
+
 let caml_bytes_lessequal (s1 : bytes) s2 =    
   caml_bytes_compare s1 s2 <= 0  

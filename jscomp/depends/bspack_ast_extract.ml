@@ -24,7 +24,7 @@
 
 open Ast_extract
 
- type ('a,'b) ast_info =
+type ('a,'b) ast_info =
   | Ml of
       string * (* sourcefile *)
       'a *
@@ -123,61 +123,61 @@ let check_suffix  name  =
 let collect_ast_map ppf files parse_implementation parse_interface  =
   Ext_list.fold_left files Map_string.empty
     (fun acc source_file ->
-      match check_suffix source_file with
-      | `Ml, opref ->
-        let module_name = Ext_filename.module_name source_file in
-        begin match Map_string.find_exn acc module_name with
-          | exception Not_found ->
-            Map_string.add acc module_name
-              {ast_info =
-                 (Ml (source_file, parse_implementation
-                        ppf source_file, opref));
-               module_name ;
-              } 
-          | {ast_info = (Ml (source_file2, _, _)
-                        | Ml_mli(source_file2, _, _,_,_,_))} ->
-            Bs_exception.error
-              (Bs_duplicated_module (source_file, source_file2))
-          | {ast_info =  Mli (source_file2, intf, opref2)}
-            ->
-            Map_string.add acc module_name
-              {ast_info =
-                 Ml_mli (source_file,
-                         parse_implementation ppf source_file,
-                         opref,
-                         source_file2,
-                         intf,
-                         opref2
-                        );
-               module_name} 
-        end
-      | `Mli, opref ->
-        let module_name = Ext_filename.module_name source_file in
-        begin match Map_string.find_exn acc module_name with
-          | exception Not_found ->
-            Map_string.add acc module_name
-              {ast_info = (Mli (source_file, parse_interface
-                                  ppf source_file, opref));
-               module_name } 
-          | {ast_info =
-               (Mli (source_file2, _, _) |
-                Ml_mli(_,_,_,source_file2,_,_)) } ->
-            Bs_exception.error
-              (Bs_duplicated_module (source_file, source_file2))
-          | {ast_info = Ml (source_file2, impl, opref2)}
-            ->
-            Map_string.add acc module_name
-              {ast_info =
-                 Ml_mli
-                   (source_file2,
-                    impl,
-                    opref2,
-                    source_file,
-                    parse_interface ppf source_file,
-                    opref
-                   );
-               module_name} 
-        end
+       match check_suffix source_file with
+       | `Ml, opref ->
+         let module_name = Ext_filename.module_name source_file in
+         begin match Map_string.find_exn acc module_name with
+           | exception Not_found ->
+             Map_string.add acc module_name
+               {ast_info =
+                  (Ml (source_file, parse_implementation
+                         ppf source_file, opref));
+                module_name ;
+               } 
+           | {ast_info = (Ml (source_file2, _, _)
+                         | Ml_mli(source_file2, _, _,_,_,_))} ->
+             Bs_exception.error
+               (Bs_duplicated_module (source_file, source_file2))
+           | {ast_info =  Mli (source_file2, intf, opref2)}
+             ->
+             Map_string.add acc module_name
+               {ast_info =
+                  Ml_mli (source_file,
+                          parse_implementation ppf source_file,
+                          opref,
+                          source_file2,
+                          intf,
+                          opref2
+                         );
+                module_name} 
+         end
+       | `Mli, opref ->
+         let module_name = Ext_filename.module_name source_file in
+         begin match Map_string.find_exn acc module_name with
+           | exception Not_found ->
+             Map_string.add acc module_name
+               {ast_info = (Mli (source_file, parse_interface
+                                   ppf source_file, opref));
+                module_name } 
+           | {ast_info =
+                (Mli (source_file2, _, _) |
+                 Ml_mli(_,_,_,source_file2,_,_)) } ->
+             Bs_exception.error
+               (Bs_duplicated_module (source_file, source_file2))
+           | {ast_info = Ml (source_file2, impl, opref2)}
+             ->
+             Map_string.add acc module_name
+               {ast_info =
+                  Ml_mli
+                    (source_file2,
+                     impl,
+                     opref2,
+                     source_file,
+                     parse_interface ppf source_file,
+                     opref
+                    );
+                module_name} 
+         end
     ) 
 ;;
 type dir_spec = 
@@ -203,10 +203,10 @@ let collect_from_main
             (*   dirname, excludes *)
             (* | `Dir_with_excludes (dirname, dir_excludes) -> *)
             dirname,
-             (Ext_list.flat_map_append 
-              dir_excludes  excludes
-              (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
-              ) 
+            (Ext_list.flat_map_append 
+               dir_excludes  excludes
+               (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
+            ) 
         in 
         Ext_array.fold_left (Sys.readdir dirname) acc (fun acc source_file -> 
             if (Ext_string.ends_with source_file ".ml" ||
@@ -302,23 +302,23 @@ let handle_queue
 
     )
 
-  
-  
-  let build_lazy_queue ppf queue (ast_table : _ t Map_string.t)
-      after_parsing_impl
-      after_parsing_sig    
-    =
-    queue |> Queue.iter (fun modname -> 
-        match Map_string.find_exn ast_table modname  with
-        | {ast_info = Ml(source_file,lazy ast, opref)}
-          -> 
-          after_parsing_impl ppf source_file opref ast 
-        | {ast_info = Mli (source_file,lazy ast,opref) ; }  
-          ->
-          after_parsing_sig ppf source_file opref ast 
-        | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
-          -> 
-          after_parsing_sig ppf source_file1 opref1 intf ;
-          after_parsing_impl ppf source_file2 opref2 impl
-        | exception Not_found -> assert false 
-      )
+
+
+let build_lazy_queue ppf queue (ast_table : _ t Map_string.t)
+    after_parsing_impl
+    after_parsing_sig    
+  =
+  queue |> Queue.iter (fun modname -> 
+      match Map_string.find_exn ast_table modname  with
+      | {ast_info = Ml(source_file,lazy ast, opref)}
+        -> 
+        after_parsing_impl ppf source_file opref ast 
+      | {ast_info = Mli (source_file,lazy ast,opref) ; }  
+        ->
+        after_parsing_sig ppf source_file opref ast 
+      | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
+        -> 
+        after_parsing_sig ppf source_file1 opref1 intf ;
+        after_parsing_impl ppf source_file2 opref2 impl
+      | exception Not_found -> assert false 
+    )

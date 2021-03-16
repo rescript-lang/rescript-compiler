@@ -23,7 +23,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- (** Synced up with module {!Bsb_helper_depfile_gen} *)
+(** Synced up with module {!Bsb_helper_depfile_gen} *)
 module Set_string = Ast_extract.Set_string
 
 type 'a kind = 'a Ml_binary.kind =

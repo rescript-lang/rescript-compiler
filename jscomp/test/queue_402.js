@@ -76,10 +76,10 @@ function copy(q) {
           };
   }
   var tail = q.tail;
-  var tail$prime = {};
-  Caml_obj.update_dummy(tail$prime, {
+  var tail$p = {};
+  Caml_obj.update_dummy(tail$p, {
         content: tail.content,
-        next: tail$prime
+        next: tail$p
       });
   var copy$1 = function (_prev, _cell) {
     while(true) {
@@ -90,7 +90,7 @@ function copy(q) {
       }
       var res = {
         content: cell.content,
-        next: tail$prime
+        next: tail$p
       };
       prev.next = res;
       _cell = cell.next;
@@ -98,10 +98,10 @@ function copy(q) {
       continue ;
     };
   };
-  copy$1(tail$prime, tail.next);
+  copy$1(tail$p, tail.next);
   return {
           length: q.length,
-          tail: tail$prime
+          tail: tail$p
         };
 }
 

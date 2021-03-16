@@ -493,13 +493,13 @@ function Make(Ord) {
       return /* Empty */0;
     }
     var v = param._1;
-    var l$prime = filter(p, param._0);
+    var l$p = filter(p, param._0);
     var pv = Curry._1(p, v);
-    var r$prime = filter(p, param._2);
+    var r$p = filter(p, param._2);
     if (pv) {
-      return join(l$prime, v, r$prime);
+      return join(l$p, v, r$p);
     } else {
-      return concat(l$prime, r$prime);
+      return concat(l$p, r$p);
     }
   };
   var partition = function (p, param) {

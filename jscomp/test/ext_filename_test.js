@@ -197,8 +197,8 @@ function find_root_filename(_cwd, filename) {
     if (Caml_external_polyfill.resolve("caml_sys_file_exists")(Filename.concat(cwd, filename))) {
       return cwd;
     }
-    var cwd$prime = Curry._1(Filename.dirname, cwd);
-    if (cwd$prime.length >= cwd.length) {
+    var cwd$p = Curry._1(Filename.dirname, cwd);
+    if (cwd$p.length >= cwd.length) {
       return Curry._2(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 205, characters 13-20", /* Format */{
                       _0: {
                         TAG: /* String */2,
@@ -216,7 +216,7 @@ function find_root_filename(_cwd, filename) {
                       _1: "%s not found from %s"
                     }), filename, cwd);
     }
-    _cwd = cwd$prime;
+    _cwd = cwd$p;
     continue ;
   };
 }

@@ -22,17 +22,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val caml_array_dup : 'a array ->  'a array 
+val dup : 'a array ->  'a array 
 
-val caml_array_sub : 'a array -> int -> int -> 'a array
+val sub : 'a array -> int -> int -> 'a array
 
-val caml_array_concat : 'a array list -> 'a array
+val concat : 'a array list -> 'a array
 
-val caml_make_vect : int -> 'a -> 'a array
+val make : int -> 'a -> 'a array
 
-val caml_make_float_vect : int -> float array
+val make_float : int -> float array
 
-val caml_array_blit : 'a array -> int -> 'a array -> int -> int -> unit
+val blit : 'a array -> int -> 'a array -> int -> int -> unit
 
 val get: 'a array -> int -> 'a
 

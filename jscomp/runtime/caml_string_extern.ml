@@ -41,26 +41,26 @@ external get_string_unsafe : string -> int ->  string = ""
 external toUpperCase : string -> string = "toUpperCase" [@@bs.send] 
 external of_int : int -> base:int -> string = "toString" [@@bs.send]
 external slice : string -> int -> int -> string = "slice" 
-    [@@bs.send]
+[@@bs.send]
 external slice_rest : string -> int -> string = "slice" 
-    [@@bs.send]
+[@@bs.send]
 external index_of : string -> string -> int = "indexOf"
-    [@@bs.send]
+[@@bs.send]
 
 external of_small_int_array :  
-    (_ [@bs.as {json|null|json}] ) -> 
-    int array -> string = 
-    "String.fromCharCode.apply" 
+  (_ [@bs.as {json|null|json}] ) -> 
+  int array -> string = 
+  "String.fromCharCode.apply" 
 [@@bs.val]
 
 external of_small_int32_array : 
-    int32 array -> string = 
-    "String.fromCharCode" 
+  int32 array -> string = 
+  "String.fromCharCode" 
 [@@bs.val] [@@bs.splice]   
 
 external lastIndexOf : string -> string -> int = "lastIndexOf"
 [@@bs.send] (* used in {!Caml_io} *)
- 
+
 
 
 external length : string -> int = "%string_length"

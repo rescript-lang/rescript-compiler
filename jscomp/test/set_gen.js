@@ -397,13 +397,13 @@ function filter(p, param) {
     return /* Empty */0;
   }
   var v = param._1;
-  var l$prime = filter(p, param._0);
+  var l$p = filter(p, param._0);
   var pv = Curry._1(p, v);
-  var r$prime = filter(p, param._2);
+  var r$p = filter(p, param._2);
   if (pv) {
-    return internal_join(l$prime, v, r$prime);
+    return internal_join(l$p, v, r$p);
   } else {
-    return internal_concat(l$prime, r$prime);
+    return internal_concat(l$p, r$p);
   }
 }
 

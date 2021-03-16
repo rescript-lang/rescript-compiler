@@ -349,7 +349,7 @@ let specs : (string * Arg.spec * string) list =
     " with header of time stamp" ; 
     "-bs-exclude-I", (Arg.String add_exclude),
     " don't read and pack such modules from -I (in the future, we should detect conflicts in mllib or commandline) "
-    ;
+  ;
     "-bs-main", (Arg.String set_main_module),
     " set the main entry module";
     "-main-export", (Arg.String set_main_export),
@@ -400,9 +400,9 @@ let () =
        (if  out_chan != stdout then close_out out_chan) in
      let files =
        Ext_list.append (match mllib with
-        | Some s
-          -> read_lines (Sys.getcwd ()) s
-        | None -> []) command_files in
+           | Some s
+             -> read_lines (Sys.getcwd ()) s
+           | None -> []) command_files in
 
      match !main_module, files with
      | Some _ , _ :: _
@@ -499,23 +499,23 @@ let () =
              let output = file ^ ".d" in
              let sorted_dep_queue = 
                Queue.fold 
-               (fun acc collection_module -> 
-                  L_string_set.add 
-                  (
+                 (fun acc collection_module -> 
+                    L_string_set.add 
+                      (
                         (*FIXME: now we normalized path,
-                        we need a beautiful output too for relative path
-                        The relative path should be also be normalized..
-                      *)
-                      Filename.concat 
-                        (Ext_path.rel_normalized_absolute_path
-                           ~from:cwd                             
-                           (Filename.dirname collection_module)
-                        ) (Filename.basename collection_module)
+                          we need a beautiful output too for relative path
+                          The relative path should be also be normalized..
+                        *)
+                        Filename.concat 
+                          (Ext_path.rel_normalized_absolute_path
+                             ~from:cwd                             
+                             (Filename.dirname collection_module)
+                          ) (Filename.basename collection_module)
 
-                  )
-                  (* collection_module  *)
-                  acc
-                ) L_string_set.empty  collection_modules in 
+                      )
+                      (* collection_module  *)
+                      acc
+                 ) L_string_set.empty  collection_modules in 
              Ext_io.write_file 
                output
                (                 

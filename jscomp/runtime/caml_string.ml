@@ -38,6 +38,5 @@ let get s i=
 
 let make n (ch : char) : string = 
   (Caml_string_extern.of_char ch)   
-   |. Caml_string_extern.repeat   n
-   
-  
+  |. Caml_string_extern.repeat   n
+

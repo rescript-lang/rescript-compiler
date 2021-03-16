@@ -61,10 +61,10 @@ function gg(x) {
 function rev_split_by_char(c, s) {
   var loop = function (i, l) {
     try {
-      var i$prime = $$String.index_from(s, i, c);
-      var s$prime = $$String.sub(s, i, i$prime - i | 0);
-      return loop(i$prime + 1 | 0, s$prime === "" ? l : ({
-                      hd: s$prime,
+      var i$p = $$String.index_from(s, i, c);
+      var s$p = $$String.sub(s, i, i$p - i | 0);
+      return loop(i$p + 1 | 0, s$p === "" ? l : ({
+                      hd: s$p,
                       tl: l
                     }));
     }
@@ -93,9 +93,9 @@ function xsplit(delim, s) {
       if (i === 0) {
         return l;
       }
-      var i$prime;
+      var i$p;
       try {
-        i$prime = $$String.rindex_from(s, i - 1 | 0, delim);
+        i$p = $$String.rindex_from(s, i - 1 | 0, delim);
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -107,16 +107,16 @@ function xsplit(delim, s) {
         }
         throw exn;
       }
-      var l_0 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
+      var l_0 = $$String.sub(s, i$p + 1 | 0, (i - i$p | 0) - 1 | 0);
       var l$1 = {
         hd: l_0,
         tl: l
       };
-      var l$2 = i$prime === 0 ? ({
+      var l$2 = i$p === 0 ? ({
             hd: "",
             tl: l$1
           }) : l$1;
-      _i = i$prime;
+      _i = i$p;
       _l = l$2;
       continue ;
     };

@@ -12,7 +12,7 @@ let number_of_digits n =
   let digits = ref 1 in
   let nn = ref n in
   while ((!nn) / 10) > 0 do (nn := ((!nn) / 10); digits := ((!digits) + 1))
-    done;
+  done;
   !digits
 
 let pad ?(ch=' ') content n =
@@ -34,21 +34,21 @@ type current_printed_line_status =
   | Not_error_line
 
 (* Range coordinates all 1-indexed, like for editors. Otherwise this code
-  would have way too many off-by-one errors *)
+   would have way too many off-by-one errors *)
 let print_file 
-~is_warning 
-(* start_line_start_char inclusive, end_line_end_char exclusive *)
-~range:((start_line, start_line_start_char), (end_line, end_line_end_char)) 
-~lines
-ppf 
-() =
+    ~is_warning 
+    (* start_line_start_char inclusive, end_line_end_char exclusive *)
+    ~range:((start_line, start_line_start_char), (end_line, end_line_end_char)) 
+    ~lines
+    ppf 
+    () =
   (* show 2 lines before & after the erroring lines. if there are too many lines, trim the middle *)
   let first_shown_line = max 1 (start_line - 2) in
   let last_shown_line = min (Array.length lines) (end_line + 2) in
   let max_line_number_number_of_digits = number_of_digits last_shown_line in
   (* sometimes the code's very indented, and we'd end up displaying quite a
-    few columsn of leading whitespace; left-trim these. The general spirit is
-    to center the erroring spot. In this case, almost literally *)
+     few columsn of leading whitespace; left-trim these. The general spirit is
+     to center the erroring spot. In this case, almost literally *)
   (* to achieve this, go through the shown lines and check the minimum number of leading whitespaces *)
   let columns_to_cut = ref None in
   for i = first_shown_line to last_shown_line do
@@ -65,8 +65,8 @@ ppf
       | Some _ -> ()
   done;
   let columns_to_cut = match !columns_to_cut with
-  | None -> 0
-  | Some n -> n
+    | None -> 0
+    | Some n -> n
   in
   (* coloring *)
   let highlighted_line_number : _ format = if is_warning then "@{<info>%s@}%a" else "@{<error>%s@}%a" in
@@ -80,7 +80,7 @@ ppf
 
   let print_separator ppf () = 
     (* these are unicode chars. They're not of length 1. Careful; we need to
-      explicitly tell Format to treat them as length 1 *)
+       explicitly tell Format to treat them as length 1 *)
     if columns_to_cut = 0 then fprintf ppf " @{<dim>@<1>│@} "
     else fprintf ppf " @{<dim>@<1>┆@} "
   in
@@ -94,7 +94,7 @@ ppf
         (* Insert one line that's just a dimmed "..." *)
         let padded_line_number = pad "." max_line_number_number_of_digits in
         fprintf ppf "@{<dim>%s@}%a@{<dim>...@}@," padded_line_number print_separator ()
-      end
+    end
     else
       let current_line = lines.(i - 1) in
       let padded_line_number = pad (string_of_int i) max_line_number_number_of_digits in
@@ -156,11 +156,11 @@ ppf
             ~begin_highlight_line:false 
             ~end_highlight_line:false
             current_char 
-    done;
+      done;
 
-    fprintf ppf "@]"; (* hov *)
+      fprintf ppf "@]"; (* hov *)
 
-    fprintf ppf "@]@," (* h *)
+      fprintf ppf "@]@," (* h *)
 
   done;
   fprintf ppf "@]" (* v *)

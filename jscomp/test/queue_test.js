@@ -9,7 +9,7 @@ var Caml_array = require("../../lib/js/caml_array.js");
 
 function Test(Queue) {
   var to_array = function (q) {
-    var v = Caml_array.caml_make_vect(Curry._1(Queue.length, q), 0);
+    var v = Caml_array.make(Curry._1(Queue.length, q), 0);
     Curry._3(Queue.fold, (function (i, e) {
             Caml_array.set(v, i, e);
             return i + 1 | 0;
@@ -30,7 +30,7 @@ function Test(Queue) {
 }
 
 function to_array(q) {
-  var v = Caml_array.caml_make_vect(q.length, 0);
+  var v = Caml_array.make(q.length, 0);
   Queue.fold((function (i, e) {
           Caml_array.set(v, i, e);
           return i + 1 | 0;
@@ -56,7 +56,7 @@ var T1 = {
 };
 
 function to_array$1(q) {
-  var v = Caml_array.caml_make_vect(q.length, 0);
+  var v = Caml_array.make(q.length, 0);
   Queue_402.fold((function (i, e) {
           Caml_array.set(v, i, e);
           return i + 1 | 0;

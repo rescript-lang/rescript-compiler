@@ -22,7 +22,7 @@ function f(_n, _acc) {
 }
 
 function test_closure(param) {
-  var arr = Caml_array.caml_make_vect(6, (function (x) {
+  var arr = Caml_array.make(6, (function (x) {
           return x;
         }));
   for(var i = 0; i <= 6; ++i){
