@@ -1,6 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`eof.js 1`] = `"let x = \\"eof here\\""`;
+exports[`emptyeof.js 1`] = `"let x = \\"\\\\n\\""`;
+
+exports[`eof.js 1`] = `"let x = \\"eof here\\\\n\\""`;
 
 exports[`es6template.js 1`] = `"let x = ({js|this contains |js} ^ foo) ^ {js|, missing closing|js}"`;
 

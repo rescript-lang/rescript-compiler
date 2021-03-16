@@ -350,12 +350,18 @@ let scanStringEscapeSequence ~startPos scanner =
     ()
 
 let scanString scanner =
-  let offs = scanner.offset in
+  (* assumption: we've just matched a quote *)
 
-  let startPos = position scanner in
+  let startPosWithQuote = position scanner in
+  next scanner;
+  let firstCharOffset = scanner.offset in
+
   let rec scan () =
     match scanner.ch with
-    | '"' -> next scanner
+    | '"' ->
+      let lastCharOffset = scanner.offset in
+      next scanner;
+      (String.sub [@doesNotRaise]) scanner.src firstCharOffset (lastCharOffset - firstCharOffset)
     | '\\' ->
       let startPos = position scanner in
       next scanner;
@@ -363,13 +369,13 @@ let scanString scanner =
       scan ()
     | ch when ch == hackyEOFChar ->
       let endPos = position scanner in
-      scanner.err ~startPos ~endPos Diagnostics.unclosedString
+      scanner.err ~startPos:startPosWithQuote ~endPos Diagnostics.unclosedString;
+      (String.sub [@doesNotRaise]) scanner.src firstCharOffset (scanner.offset - firstCharOffset)
     | _ ->
       next scanner;
       scan ()
   in
-  scan ();
-  Token.String ((String.sub [@doesNotRaise]) scanner.src offs (scanner.offset - offs - 1))
+  Token.String (scan ())
 
 let scanEscape scanner =
   let convertNumber scanner ~n ~base =
@@ -511,7 +517,7 @@ let rec scan scanner =
   | '{' -> next scanner; Token.Lbrace
   | '}' -> next scanner; Token.Rbrace
   | ',' -> next scanner; Token.Comma
-  | '"' -> next scanner; scanString scanner
+  | '"' -> scanString scanner
 
   (* peeking 1 char *)
   | '_' ->

@@ -241,6 +241,22 @@ let f a b = ((())[@ns.braces ])
 ========================================================"
 `;
 
+exports[`emptyeof.js 1`] = `
+"=====Parsetree==========================================
+let x = \\"\\\\n\\"
+=====Errors=============================================
+
+  Syntax error!
+  parsing/errors/expressions/emptyeof.js:1:9-2:0  
+  1 │ let x = \\"
+  2 │ 
+  
+  This string is missing a double quote at the end
+
+
+========================================================"
+`;
+
 exports[`if.js 1`] = `
 "=====Parsetree==========================================
 ;;if match then let a = 1 in a + 1

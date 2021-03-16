@@ -54,7 +54,7 @@ exports[`exoticIdent.js 1`] = `
 "=====Parsetree==========================================
 let a = b
 ;;c
-;;\\" = 1\\"
+;;\\" = 1\\\\n\\"
 =====Errors=============================================
 
   Syntax error!
@@ -77,7 +77,7 @@ let a = b
 
 
   Syntax error!
-  parsing/errors/scanner/exoticIdent.js:3:3-4:0  
+  parsing/errors/scanner/exoticIdent.js:3:2-4:0  
   1 │ let \\\\\\"a
   2 │ b
   3 │ c\\" = 1
@@ -165,11 +165,11 @@ exports[`unclosedComment.js 1`] = `
 
 exports[`unclosedString.js 1`] = `
 "=====Parsetree==========================================
-let z = \\"eof\\"
+let z = \\"eof\\\\n\\"
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/scanner/unclosedString.js:1:10-2:0  
+  parsing/errors/scanner/unclosedString.js:1:9-2:0  
   1 │ let z = \\"eof
   2 │ 
   
