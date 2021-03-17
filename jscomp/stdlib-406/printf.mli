@@ -12,7 +12,7 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-
+[@@@ocaml.deprecated "This module is deprecated"]
 (** Formatted output functions. *)
 
 val fprintf : out_channel -> ('a, out_channel, unit) format -> 'a

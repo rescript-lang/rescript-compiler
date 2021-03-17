@@ -12,7 +12,7 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-
+[@@@ocaml.deprecated "This module is deprecated"]
 (** Formatted input functions. *)
 
 (** {1 Introduction} *)

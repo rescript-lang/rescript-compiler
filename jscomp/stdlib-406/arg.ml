@@ -356,7 +356,7 @@ let align ?(limit=max_int) speclist =
   let len = List.fold_left max_arg_len 0 completed in
   let len = min len limit in
   List.map (add_padding len) completed
-
+#if 0
 let trim_cr s =
   let len = String.length s in
   if len > 0 && String.get s (len - 1) = '\r' then
@@ -401,3 +401,4 @@ let write_aux sep file args =
 let write_arg = write_aux '\n'
 
 let write_arg0 = write_aux '\x00'
+#end

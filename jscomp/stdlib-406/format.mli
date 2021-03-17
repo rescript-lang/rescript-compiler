@@ -12,7 +12,7 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-
+[@@@ocaml.deprecated "This module is deprecated"]
 (** Pretty-printing.
 
    This module implements a pretty-printing facility to format values
