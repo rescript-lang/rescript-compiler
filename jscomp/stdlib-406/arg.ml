@@ -55,7 +55,7 @@ type error =
 
 exception Stop of error (* used internally *)
 
-open Printf
+
 
 let rec assoc3 x l =
   match l with
@@ -80,9 +80,18 @@ let print_spec buf (key, spec, doc) =
   if String.length doc > 0 then
     match spec with
     | Symbol (l, _) ->
+#if 0    
         bprintf buf "  %s %s%s\n" key (make_symlist "{" "|" "}" l) doc
+#else
+        let sym = make_symlist "{" "|" "}" l in 
+        Buffer.add_string buf {j|  $(key) $(sym)$(doc)\n|j}
+#end
     | _ ->
+#if 0    
         bprintf buf "  %s %s\n" key doc
+#else
+        Buffer.add_string buf {j|  $(key) $(doc)\n|j}
+#end
 
 
 let help_action () = raise (Stop (Unknown "-help"))
@@ -101,7 +110,11 @@ let add_help speclist =
 
 
 let usage_b buf speclist errmsg =
+#if 0  
   bprintf buf "%s\n" errmsg;
+#else
+  Buffer.add_string buf {j|$(errmsg)\n|j};
+#end
   List.iter (print_spec buf) (add_help speclist)
 
 
@@ -112,7 +125,7 @@ let usage_string speclist errmsg =
 
 
 let usage speclist errmsg =
-  eprintf "%s" (usage_string speclist errmsg)
+  Js.log (usage_string speclist errmsg)
 
 
 let current = ref 0
@@ -142,14 +155,30 @@ let parse_and_expand_argv_dynamic_aux allow_expand current argv speclist anonfun
       | Unknown "-help" -> ()
       | Unknown "--help" -> ()
       | Unknown s ->
+#if 0      
           bprintf b "%s: unknown option '%s'.\n" progname s
+#else
+          Buffer.add_string b {j|$(progname): unknown option '$(s)'.\n|j} 
+#end          
       | Missing s ->
+#if 0      
           bprintf b "%s: option '%s' needs an argument.\n" progname s
+#else
+          Buffer.add_string b {j|$(progname): option '$(s)' needs an argument.\n|j}
+#end          
       | Wrong (opt, arg, expected) ->
+#if 0      
           bprintf b "%s: wrong argument '%s'; option '%s' expects %s.\n"
                   progname arg opt expected
+#else
+          Buffer.add_string b {j|$(progname): wrong argument '$(arg)'; option '$(opt)' expects $(expected).\n|j}
+#end                  
       | Message s -> (* user error message *)
+#if 0      
           bprintf b "%s: %s.\n" progname s
+#else
+          Buffer.add_string b {j|$(progname): $(s).\n|j}
+#end          
     end;
     usage_b b !speclist errmsg;
     if error = Unknown "-help" || error = Unknown "--help"
@@ -280,16 +309,16 @@ let parse l f msg =
   try
     parse_argv Sys.argv l f msg
   with
-  | Bad msg -> eprintf "%s" msg; exit 2
-  | Help msg -> printf "%s" msg; exit 0
+  | Bad msg -> Js.log msg; exit 2
+  | Help msg -> Js.log msg; exit 0
 
 
 let parse_dynamic l f msg =
   try
     parse_argv_dynamic Sys.argv l f msg
   with
-  | Bad msg -> eprintf "%s" msg; exit 2
-  | Help msg -> printf "%s" msg; exit 0
+  | Bad msg -> Js.log msg; exit 2
+  | Help msg -> Js.log msg; exit 0
 
 let parse_expand l f msg =
   try
@@ -298,8 +327,8 @@ let parse_expand l f msg =
     let current = ref (!current) in
     parse_and_expand_argv_dynamic current argv spec f msg
   with
-  | Bad msg -> eprintf "%s" msg; exit 2
-  | Help msg -> printf "%s" msg; exit 0
+  | Bad msg -> Js.log msg; exit 2
+  | Help msg -> Js.log msg; exit 0
 
 
 let second_word s =
