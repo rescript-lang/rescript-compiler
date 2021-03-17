@@ -114,7 +114,6 @@ let from_cmi (files : string list) (output_file : string) =
   let abs =  Ext_list.map files (fun file -> 
       let module_name = cmp file in 
       let cmi = Cmi_format.read_cmi file in 
-      assert (cmi.cmi_flags = []);
       assert (cmi.cmi_name = module_name);
       let content = 
         Marshal.to_string 

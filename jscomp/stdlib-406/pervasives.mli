@@ -1282,11 +1282,13 @@ type ('a, 'b, 'c, 'd) format4 = ('a, 'b, 'c, 'c, 'c, 'd) format6
 type ('a, 'b, 'c) format = ('a, 'b, 'c, 'c) format4
 
 val string_of_format : ('a, 'b, 'c, 'd, 'e, 'f) format6 -> string
+[@@ocaml.deprecated "This function is deprecated"]
 (** Converts a format string into a string. *)
 
 external format_of_string :
   ('a, 'b, 'c, 'd, 'e, 'f) format6 ->
   ('a, 'b, 'c, 'd, 'e, 'f) format6 = "%identity"
+[@@ocaml.deprecated "This function is deprecated"]  
 (** [format_of_string s] returns a format string read from the string
     literal [s].
     Note: [format_of_string] can not convert a string argument that is not a

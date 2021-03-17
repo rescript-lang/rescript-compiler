@@ -12,7 +12,7 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-
+[@@@ocaml.deprecated "This module is deprecated"]
 (** Facilities for printing exceptions and inspecting current call stack. *)
 
 val to_string: exn -> string
