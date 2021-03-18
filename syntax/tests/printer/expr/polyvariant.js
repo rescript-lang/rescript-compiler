@@ -132,3 +132,6 @@ external openSync: (
     | @as("ax+") #Append_read_fail_if_exists
   ],
 ) => unit = "openSync"
+
+let x = #a(())
+let x = #a()

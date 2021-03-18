@@ -33,3 +33,8 @@ let cmp = (selectedChoice, value) =>
   | #space10 => x
   | _ => false
   }
+
+switch x {
+| #a(()) => ()
+| #a() => ()
+}

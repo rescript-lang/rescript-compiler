@@ -1520,6 +1520,11 @@ and parseVariantPatternArgs p ident startPos attrs =
       p ~grammar:Grammar.PatternList ~closing:Rparen ~f:parseConstrainedPatternRegion in
   let args =
     match patterns with
+    | [] ->
+      let loc = mkLoc lparen p.prevEndPos in
+      Some (
+        Ast_helper.Pat.construct ~loc (Location.mkloc (Longident.Lident "()") loc) None
+      )
     | [{ppat_desc = Ppat_tuple _} as pat] as patterns ->
       if p.mode = ParseForTypeChecker then
         (* #ident(1, 2) for type-checker *)

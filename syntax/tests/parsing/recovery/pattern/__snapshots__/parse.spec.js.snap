@@ -30,7 +30,8 @@ exports[`polyvariant.js 1`] = `
 ";;match x with
   | \`Rgb (r, g, b) -> ()
   | \`Rgb (r, g, Color (a, b)) -> ()
-  | \`Rgb (r, g, 1::2::[]) -> ()"
+  | \`Rgb (r, g, 1::2::[]) -> ()
+;;match x with | \`a () -> () | \`a () -> ()"
 `;
 
 exports[`record.js 1`] = `";;match x with | { a; b = { x; y } } -> () | { x; y } -> () | { a; b } -> ()"`;
