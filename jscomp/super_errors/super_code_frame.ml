@@ -264,7 +264,4 @@ let print ~is_warning ~src ~startPos ~endPos =
       );
     end
   );
-  (* TODO: remove the extra space that catered to making existing tests pass *)
-  Buffer.add_string buf (col NoColor "  ");
   Buffer.contents buf
-

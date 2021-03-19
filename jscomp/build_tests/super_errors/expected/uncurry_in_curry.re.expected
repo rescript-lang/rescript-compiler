@@ -1,11 +1,11 @@
 
   [1;31mWe've found a bug for you![0m
   [36m/.../fixtures/uncurry_in_curry.re[0m:[2m3:1[0m
-  
+
   1 [2m│[0m let f = (.a,b) => a + b;
   2 [2m│[0m 
   [1;31m3[0m [2m│[0m [1;31mf[0m(2,2);
-  
+
   This is an uncurried ReScript function. [1;33mIt must be applied with a dot[0m.
   
   Like this: [1;33mfoo(. a, b)[0m
