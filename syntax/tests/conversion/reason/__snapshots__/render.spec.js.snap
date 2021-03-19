@@ -1233,8 +1233,8 @@ let aggregateTotal = (forecast, ~audienceType) =>
 
 exports[`gentype.re 1`] = `
 "module M: {
-  @after
-  export type t
+  @genType @after
+  type t
 
   @genType @after
   let x: int
@@ -1248,8 +1248,8 @@ exports[`gentype.re 1`] = `
 }
 
 module type MT = {
-  @after
-  export type t
+  @genType @after
+  type t
 
   @genType @after
   let x: int

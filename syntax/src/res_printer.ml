@@ -1148,16 +1148,12 @@ and printTypeDeclaration2 ~recFlag (td: Parsetree.type_declaration) cmtTbl i =
     printComments doc cmtTbl td.ptype_name.loc
   in
   let equalSign = "=" in
-  let (hasGenType, attrs) = ParsetreeViewer.splitGenTypeAttr td.ptype_attributes in
-  let attrs = printAttributes ~loc:td.ptype_loc attrs cmtTbl in
+  let attrs = printAttributes ~loc:td.ptype_loc td.ptype_attributes cmtTbl in
   let prefix = if i > 0 then
-    Doc.concat [
-      Doc.text "and ";
-      if hasGenType then Doc.text "export " else Doc.nil
-    ]
+    Doc.text "and "
   else
     Doc.concat [
-      Doc.text (if hasGenType then "export type " else "type ");
+      Doc.text "type ";
       recFlag
     ]
   in
@@ -1809,18 +1805,14 @@ and printTypeParameter (attrs, lbl, typ) cmtTbl =
   printComments doc cmtTbl loc
 
 and printValueBinding ~recFlag vb cmtTbl i =
-  let (hasGenType, attrs) = ParsetreeViewer.splitGenTypeAttr vb.pvb_attributes in
-  let attrs = printAttributes ~loc:vb.pvb_pat.ppat_loc attrs cmtTbl in
+  let attrs = printAttributes ~loc:vb.pvb_pat.ppat_loc vb.pvb_attributes cmtTbl in
   let header =
     if i == 0 then
       Doc.concat [
-        if hasGenType then Doc.text "export " else Doc.text "let ";
+        Doc.text "let ";
         recFlag
     ] else
-      Doc.concat [
-        Doc.text "and ";
-        if hasGenType then Doc.text "export " else Doc.nil
-      ]
+      Doc.text "and "
   in
   match vb with
   | {pvb_pat =

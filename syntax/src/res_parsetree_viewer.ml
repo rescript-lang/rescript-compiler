@@ -501,11 +501,6 @@ let modExprFunctor modExpr =
   in
   loop [] modExpr
 
-let splitGenTypeAttr attrs =
-  match attrs with
-  | ({Location.txt = "genType"}, PStr [])::attrs -> (true, attrs)
-  | attrs -> (false, attrs)
-
 let rec collectPatternsFromListConstruct acc pattern =
   let open Parsetree in
   match pattern.ppat_desc with

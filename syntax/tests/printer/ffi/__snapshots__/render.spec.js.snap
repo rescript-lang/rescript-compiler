@@ -1,18 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`export.res 1`] = `
-"export type callback = ReactEvent.Mouse.t => unit
+"@genType type callback = ReactEvent.Mouse.t => unit
 
-export type t = int and export s = string
-export type t = int and s = string
-type t = int and export s = string
+@genType type t = int @genType and s = string
+@genType type t = int and s = string
+type t = int @genType and s = string
 
-export callback = _ => Js.log(\\"Clicked\\")
-export callback = _ => Js.log(\\"Clicked\\")
+@genType let callback = _ => Js.log(\\"Clicked\\")
+@genType let callback = _ => Js.log(\\"Clicked\\")
 
-export x = \\"hello world\\" and export y = 2
-export x = \\"hello world\\" and export y = 2
-let x = \\"hello world\\" and export y = 2
+@genType let x = \\"hello world\\" @genType and y = 2
+@genType let x = \\"hello world\\" @genType and y = 2
+let x = \\"hello world\\" @genType and y = 2
 "
 `;
 
