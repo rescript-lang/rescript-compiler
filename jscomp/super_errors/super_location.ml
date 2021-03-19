@@ -1,11 +1,8 @@
 let fprintf = Format.fprintf
 
-let file_lines filePath =
-  Ext_array.reverse_of_list
-    (Ext_io.rev_lines_of_file filePath)
-
 let setup_colors () =
-  Misc.Color.setup !Clflags.color
+  Misc.Color.setup !Clflags.color;
+  Super_code_frame.setup !Clflags.color
 
 let print_filename = Location.print_filename
 
@@ -54,18 +51,24 @@ let print ~message_kind intro ppf (loc : Location.t) =
       (* again: end_char is exclusive, so +1-1=0 *)
       Some ((start_line, start_char + 1), (end_line, end_char))
   in
-  fprintf ppf "@[%a@]@," (print_loc ~normalizedRange) loc;
+  (* TODO: remove the extra space that catered to making existing tests pass *)
+  fprintf ppf "  @[%a@]@,  " (print_loc ~normalizedRange) loc;
+  (* TODO: clean up *)
   match normalizedRange with
   | None -> ()
-  | Some range -> begin
+  | Some _ -> begin
       try
-        let lines = file_lines file in
+        let src = Ext_io.load_file file in
         (* we're putting the line break `@,` here rather than above, because this
            branch might not be reached (aka no inline file content display) so
            we don't wanna end up with two line breaks in the the consequent *)
-        fprintf ppf "@,%a"
-          (Super_misc.print_file ~is_warning:(message_kind=`warning) ~lines ~range)
-          ()
+        fprintf ppf "@,%s"
+          (Super_code_frame.print
+            ~is_warning:(message_kind=`warning)
+            ~src
+            ~startPos:loc.loc_start
+            ~endPos:loc.loc_end
+          )
       with
       (* this might happen if the file is e.g. "", "_none_" or any of the fake file name placeholders.
          we've already printed the location above, so nothing more to do here. *)
@@ -78,7 +81,8 @@ let print ~message_kind intro ppf (loc : Location.t) =
 let rec super_error_reporter ppf ({loc; msg; sub} : Location.error) =
   setup_colors ();
   (* open a vertical box. Everything in our message is indented 2 spaces *)
-  Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print ~message_kind:`error "We've found a bug for you!") loc msg;
+  (* TODO: clean up after next PR *)
+  Format.fprintf ppf "@[<v 0>@,  %a@,  %s@,@]" (print ~message_kind:`error "We've found a bug for you!") loc msg;
   List.iter (Format.fprintf ppf "@,@[%a@]" super_error_reporter) sub
 (* no need to flush here; location's report_exception (which uses this ultimately) flushes *)
 
@@ -91,7 +95,8 @@ let super_warning_printer loc ppf w =
   | `Active { Warnings. number = _; message = _; is_error; sub_locs = _} ->
     setup_colors ();
     let message_kind = if is_error then `warning_as_error else `warning in
-    Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]@."
+    (* TODO: clean up after next PR *)
+    Format.fprintf ppf "@[<v 0>@,  %a@,  %s@,  @]@."
       (print ~message_kind ("Warning number " ^ (Warnings.number w |> string_of_int)))
       loc
       (Warnings.message w);
