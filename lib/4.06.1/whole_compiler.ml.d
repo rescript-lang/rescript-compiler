@@ -633,12 +633,12 @@
 ../lib/4.06.1/whole_compiler.ml: ./outcome_printer/reason_syntax_util.mli
 ../lib/4.06.1/whole_compiler.ml: ./outcome_printer/tweaked_reason_oprint.ml
 ../lib/4.06.1/whole_compiler.ml: ./stubs/bs_hash_stubs.ml
+../lib/4.06.1/whole_compiler.ml: ./super_errors/super_code_frame.ml
+../lib/4.06.1/whole_compiler.ml: ./super_errors/super_code_frame.mli
 ../lib/4.06.1/whole_compiler.ml: ./super_errors/super_env.ml
 ../lib/4.06.1/whole_compiler.ml: ./super_errors/super_location.ml
 ../lib/4.06.1/whole_compiler.ml: ./super_errors/super_location.mli
 ../lib/4.06.1/whole_compiler.ml: ./super_errors/super_main.ml
-../lib/4.06.1/whole_compiler.ml: ./super_errors/super_misc.ml
-../lib/4.06.1/whole_compiler.ml: ./super_errors/super_misc.mli
 ../lib/4.06.1/whole_compiler.ml: ./super_errors/super_pparse.ml
 ../lib/4.06.1/whole_compiler.ml: ./super_errors/super_typecore.ml
 ../lib/4.06.1/whole_compiler.ml: ./super_errors/super_typemod.ml

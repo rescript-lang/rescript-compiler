@@ -567,12 +567,12 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./outcome_printer/outcome_printer_ns.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./outcome_printer/outcome_printer_ns.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./stubs/bs_hash_stubs.ml
+../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_code_frame.ml
+../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_code_frame.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_env.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_location.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_location.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_main.ml
-../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_misc.ml
-../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_misc.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_pparse.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_typecore.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_typemod.ml
