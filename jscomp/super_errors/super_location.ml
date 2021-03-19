@@ -51,9 +51,7 @@ let print ~message_kind intro ppf (loc : Location.t) =
       (* again: end_char is exclusive, so +1-1=0 *)
       Some ((start_line, start_char + 1), (end_line, end_char))
   in
-  (* TODO: remove the extra space that catered to making existing tests pass *)
-  fprintf ppf "  @[%a@]@,  " (print_loc ~normalizedRange) loc;
-  (* TODO: clean up *)
+  fprintf ppf "  @[%a@]@," (print_loc ~normalizedRange) loc;
   match normalizedRange with
   | None -> ()
   | Some _ -> begin
@@ -81,8 +79,7 @@ let print ~message_kind intro ppf (loc : Location.t) =
 let rec super_error_reporter ppf ({loc; msg; sub} : Location.error) =
   setup_colors ();
   (* open a vertical box. Everything in our message is indented 2 spaces *)
-  (* TODO: clean up after next PR *)
-  Format.fprintf ppf "@[<v 0>@,  %a@,  %s@,@]" (print ~message_kind:`error "We've found a bug for you!") loc msg;
+  Format.fprintf ppf "@[<v>@,  %a@,  %s@,@]" (print ~message_kind:`error "We've found a bug for you!") loc msg;
   List.iter (Format.fprintf ppf "@,@[%a@]" super_error_reporter) sub
 (* no need to flush here; location's report_exception (which uses this ultimately) flushes *)
 
@@ -95,8 +92,7 @@ let super_warning_printer loc ppf w =
   | `Active { Warnings. number = _; message = _; is_error; sub_locs = _} ->
     setup_colors ();
     let message_kind = if is_error then `warning_as_error else `warning in
-    (* TODO: clean up after next PR *)
-    Format.fprintf ppf "@[<v 0>@,  %a@,  %s@,  @]@."
+    Format.fprintf ppf "@[<v>@,  %a@,  %s@,@]@."
       (print ~message_kind ("Warning number " ^ (Warnings.number w |> string_of_int)))
       loc
       (Warnings.message w);
