@@ -238,20 +238,15 @@ let print ~is_warning ~src ~startPos ~endPos =
       Buffer.add_string buf (col NoColor "\n");
     | Number line_number -> begin
       content |> List.iteri (fun i line ->
-        if i = 0 then begin
-          let gutter_color =
-            if i = 0
-              && line_number >= highlight_line_start_line
-              && line_number <= highlight_line_end_line then
-              if is_warning then Warn else Err
-            else NoColor
-          in
-          draw_gutter gutter_color (string_of_int line_number);
-        end else begin
-          (* TODO: remove this branch after the next PR *)
-          let pad = String.make (max_line_digits_count + indent + 3) ' ' in
-          Buffer.add_string buf (col NoColor pad);
-        end;
+        let gutter_content = if i = 0 then string_of_int line_number else "" in
+        let gutter_color =
+          if i = 0
+            && line_number >= highlight_line_start_line
+            && line_number <= highlight_line_end_line then
+            if is_warning then Warn else Err
+          else NoColor
+        in
+        draw_gutter gutter_color gutter_content;
 
         line.s |> String.iteri (fun ii ch ->
           let c =
