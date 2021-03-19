@@ -162,16 +162,6 @@ let print ~is_warning ~src ~startPos ~endPos =
   let lines =
     (* TODO: off-by-one danger *)
     String.sub src start_line_line_offset (end_line_line_end_offset - start_line_line_offset)
-  in
-  (* TODO: remove this after the next PR *)
-  let len = String.length lines in
-  let lines =
-    if len > 1 && (String.get src (len - 1)) = '\n' then
-      String.sub lines 0 (len - 1)
-    else
-      lines
-  in
-  let lines = lines
     |> String.split_on_char '\n'
     |> filter_mapi (fun i line ->
       let line_number = i + first_shown_line in

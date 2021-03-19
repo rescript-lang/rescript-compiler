@@ -4,5 +4,6 @@
   
   1 [2m│[0m let x = (~a, ~b) => a + b;
   [1;31m2[0m [2m│[0m let y = [1;31mx(~a=2)[0m + 2;
+  3 [2m│[0m 
   
   [1;33mThis call is missing an argument[0m of type (~b: int)
