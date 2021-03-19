@@ -37,6 +37,9 @@ let print ~message_kind intro ppf (loc : Location.t) =
   (* line is 1-indexed, column is 0-indexed. We convert all of them to 1-indexed to avoid confusion *)
   (* start_char is inclusive, end_char is exclusive *)
   let normalizedRange =
+    (* TODO: lots of the handlings here aren't needed anymore because the new
+      rescript syntax has much stronger invariants regarding positions, e.g.
+      no -1 *)
     if start_char == -1 || end_char == -1 then
       (* happens sometimes. Syntax error for example *)
       None

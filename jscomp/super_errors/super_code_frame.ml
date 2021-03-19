@@ -1,4 +1,3 @@
-
 let digits_count n =
   let rec loop n base count =
     if n >= base then loop n (base * 10) (count + 1) else count
@@ -65,69 +64,48 @@ let filter_mapi f l =
   in
   loop f l 0 [] |> List.rev
 
-type color =
-  | Dim
-  (* | Filename *)
-  | Err
-  | Warn
-  | NoColor
+(* Spiritual equivalent of
+  https://github.com/ocaml/ocaml/blob/414bdec9ae387129b8102cc6bf3c0b6ae173eeb9/utils/misc.ml#L601
+*)
+module Color = struct
+  type color =
+    | Dim
+    (* | Filename *)
+    | Err
+    | Warn
+    | NoColor
 
-let dim = "\x1b[2m"
-(* let filename = "\x1b[46m" *)
-let err = "\x1b[1;31m"
-let warn = "\x1b[1;33m"
-let reset = "\x1b[0m"
+  let dim = "\x1b[2m"
+  (* let filename = "\x1b[46m" *)
+  let err = "\x1b[1;31m"
+  let warn = "\x1b[1;33m"
+  let reset = "\x1b[0m"
 
-external isatty : out_channel -> bool = "caml_sys_isatty"
-(* reasonable heuristic on whether colors should be enabled *)
-let should_enable_color () =
-  let term = try Sys.getenv "TERM" with Not_found -> "" in
-  term <> "dumb"
-  && term <> ""
-  && isatty stderr
+  external isatty : out_channel -> bool = "caml_sys_isatty"
+  (* reasonable heuristic on whether colors should be enabled *)
+  let should_enable_color () =
+    let term = try Sys.getenv "TERM" with Not_found -> "" in
+    term <> "dumb"
+    && term <> ""
+    && isatty stderr
 
-let color_enabled = ref true
+  let color_enabled = ref true
 
-let setup =
-  let first = ref true in (* initialize only once *)
-  fun o ->
-    if !first then (
-      first := false;
-      color_enabled := (match o with
-          | Some Misc.Color.Always -> true
-          | Some Auto -> should_enable_color ()
-          | Some Never -> false
-          | None -> should_enable_color ())
-    );
-    ()
+  let setup =
+    let first = ref true in (* initialize only once *)
+    fun o ->
+      if !first then (
+        first := false;
+        color_enabled := (match o with
+            | Some Misc.Color.Always -> true
+            | Some Auto -> should_enable_color ()
+            | Some Never -> false
+            | None -> should_enable_color ())
+      );
+      ()
+end
 
-(* external isatty : out_channel -> bool = "caml_sys_isatty"
-
-let should_enable_color =
-  let term = try Sys.getenv "TERM" with Not_found -> "" in
-  term <> "dumb"
-  && term <> ""
-  && isatty stderr
- *)
-let last_color = ref NoColor
-let col color str =
-  if not !color_enabled then str
-  else begin
-    let s = match !last_color, color with
-    | c1, c2 when c1 = c2 -> str
-    | NoColor, Dim -> dim ^ str
-    (* | NoColor, Filename -> filename ^ str *)
-    | NoColor, Err -> err ^ str
-    | NoColor, Warn -> warn ^ str
-    | _, NoColor -> reset ^ str
-    | _, Dim -> reset ^ dim ^ str
-    (* | _, Filename -> reset ^ filename ^ str *)
-    | _, Err -> reset ^ err ^ str
-    | _, Warn -> reset ^ warn ^ str
-    in
-    last_color := color;
-    s
-  end
+let setup = Color.setup
 
 type gutter = Number of int | Elided
 type highlighted_string = {s: string; start: int; end_: int}
@@ -160,7 +138,6 @@ let print ~is_warning ~src ~startPos ~endPos =
   (* 3 for separator + the 2 spaces around it *)
   let line_width = 78 - max_line_digits_count - indent - 3 in
   let lines =
-    (* TODO: off-by-one danger *)
     String.sub src start_line_line_offset (end_line_line_end_offset - start_line_line_offset)
     |> String.split_on_char '\n'
     |> filter_mapi (fun i line ->
@@ -219,23 +196,46 @@ let print ~is_warning ~src ~startPos ~endPos =
   )
   in
   let buf = Buffer.create 100 in
+  let open Color in
+  let add_ch =
+    let last_color = ref NoColor in
+    fun color ch ->
+      if not !Color.color_enabled || !last_color = color then
+        Buffer.add_char buf ch
+      else begin
+        let ansi = match !last_color, color with
+        | NoColor, Dim -> dim
+        (* | NoColor, Filename -> filename *)
+        | NoColor, Err -> err
+        | NoColor, Warn -> warn
+        | _, NoColor -> reset
+        | _, Dim -> reset ^ dim
+        (* | _, Filename -> reset ^ filename *)
+        | _, Err -> reset ^ err
+        | _, Warn -> reset ^ warn
+        in
+        Buffer.add_string buf ansi;
+        Buffer.add_char buf ch;
+        last_color := color;
+      end
+  in
   let draw_gutter color s =
-    (* TODO: simplify after the next PR *)
-    let pad = String.make (max_line_digits_count + indent - String.length s) ' ' in
-    (* TODO: encapstulate adding string/char *)
-    Buffer.add_string buf (col NoColor pad);
-    Buffer.add_string buf (col color s);
-    Buffer.add_string buf (col NoColor " ");
-    Buffer.add_string buf (col Dim separator);
-    Buffer.add_string buf (col NoColor " ");
+    for _i = 1 to (max_line_digits_count + indent - String.length s) do
+      add_ch NoColor ' '
+    done;
+    s |> String.iter (add_ch color);
+    add_ch NoColor ' ';
+    separator |> String.iter (add_ch Dim);
+    add_ch NoColor ' ';
   in
   stripped_lines |> List.iter (fun {gutter; content} ->
     match gutter with
     | Elided ->
       draw_gutter Dim ".";
-      Buffer.add_string buf (col Dim "...");
-      (* TODO: remove this after the next PR *)
-      Buffer.add_string buf (col NoColor "\n");
+      add_ch Dim '.';
+      add_ch Dim '.';
+      add_ch Dim '.';
+      add_ch NoColor '\n';
     | Number line_number -> begin
       content |> List.iteri (fun i line ->
         let gutter_content = if i = 0 then string_of_int line_number else "" in
@@ -253,9 +253,9 @@ let print ~is_warning ~src ~startPos ~endPos =
             if ii >= line.start && ii < line.end_ then
               if is_warning then Warn else Err
             else NoColor in
-          Buffer.add_string buf (col c (String.make 1 ch));
+          add_ch c ch;
         );
-        Buffer.add_string buf (col NoColor "\n");
+        add_ch NoColor '\n';
       );
     end
   );
