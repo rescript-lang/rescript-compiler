@@ -62,7 +62,6 @@ let setup_env () =
   Matching.names_from_construct_pattern := 
     Matching_polyfill.names_from_construct_pattern;
 #if undefined BS_RELEASE_BUILD 
-    Printexc.record_backtrace true;
   (let root_dir = 
      Filename.dirname 
        (Filename.dirname Sys.executable_name) in 

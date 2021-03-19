@@ -1649,7 +1649,7 @@ let unsafe_sub  x offs len =
 end
 module Bsb_arg : sig 
 #1 "bsb_arg.mli"
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -4781,7 +4781,7 @@ let print fmt s =
 end
 module Bsb_file_groups : sig 
 #1 "bsb_file_groups.mli"
-(* Copyright (C) 2018- Authors of ReScript
+(* Copyright (C) 2018- Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -5933,7 +5933,7 @@ let proj_rel path = rev_lib_bs // path
 end
 module Bsb_pkg_types : sig 
 #1 "bsb_pkg_types.mli"
-(* Copyright (C) 2019- Authors of ReScript
+(* Copyright (C) 2019- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -6714,7 +6714,7 @@ let reset_lit = "\x1b[0m"
 end
 module Bsb_log : sig 
 #1 "bsb_log.mli"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -6877,7 +6877,7 @@ end
 module Bsb_real_path : sig 
 #1 "bsb_real_path.mli"
 
-(* Copyright (C) 2020- Authors of ReScript
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8121,7 +8121,7 @@ let namespace_of_package_name (s : string) : string =
 end
 module Bsb_package_specs : sig 
 #1 "bsb_package_specs.mli"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8524,7 +8524,7 @@ let defaults_warn_error = "-a+5+6+101+109";;
 end
 module Bsb_warning : sig 
 #1 "bsb_warning.mli"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -10067,7 +10067,7 @@ let walk_all_deps dir ~pinned_dependencies : package_context Queue.t =
 end
 module Bsb_global_paths : sig 
 #1 "bsb_global_paths.mli"
-(* Copyright (C) 2019 - Authors of ReScript
+(* Copyright (C) 2019 - Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -11546,7 +11546,7 @@ let rec remove_dir_recursive dir =
 end
 module Bsb_clean : sig 
 #1 "bsb_clean.mli"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12248,7 +12248,7 @@ let check
 end
 module Bsb_db_encode : sig 
 #1 "bsb_db_encode.mli"
-(* Copyright (C) 2019 - Present Authors of ReScript
+(* Copyright (C) 2019 - Present Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -12453,7 +12453,7 @@ let hex_length = 32
 end
 module Bsb_namespace_map_gen : sig 
 #1 "bsb_namespace_map_gen.mli"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13198,7 +13198,7 @@ let make ?ns cunit  =
 end
 module Bsb_ninja_file_groups : sig 
 #1 "bsb_ninja_file_groups.mli"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13942,7 +13942,7 @@ let to_file name v =
 end
 module Bsb_watcher_gen : sig 
 #1 "bsb_watcher_gen.mli"
-(* Copyright (C) 2017- Authors of ReScript
+(* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14041,7 +14041,7 @@ let generate_sourcedirs_meta
 end
 module Bsb_ninja_regen : sig 
 #1 "bsb_ninja_regen.mli"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14174,7 +14174,7 @@ let regenerate_ninja
 end
 module Bsb_regex : sig 
 #1 "bsb_regex.mli"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16366,7 +16366,7 @@ let init_sample_project ~cwd ~theme name =
 end
 module Bsb_world : sig 
 #1 "bsb_world.mli"
-(* Copyright (C) 2017- Authors of ReScript
+(* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

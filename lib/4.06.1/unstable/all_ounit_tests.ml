@@ -7221,7 +7221,7 @@ let eq_key = Ext_string.equal
 end
 module Bsb_db_encode : sig 
 #1 "bsb_db_encode.mli"
-(* Copyright (C) 2019 - Present Authors of ReScript
+(* Copyright (C) 2019 - Present Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -7365,7 +7365,7 @@ let write_build_cache ~dir (bs_files : Bsb_db.t)  : string =
 end
 module Bsb_pkg_types : sig 
 #1 "bsb_pkg_types.mli"
-(* Copyright (C) 2019- Authors of ReScript
+(* Copyright (C) 2019- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -7634,7 +7634,7 @@ let suites =
 end
 module Bsb_regex : sig 
 #1 "bsb_regex.mli"
-(* Copyright (C) 2017 Authors of ReScript
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -10697,24 +10697,24 @@ let sorted_keywords = [|
   "window";
   "with";
   "yield";
-|]
+  |]
 
 
 type element = string 
 
 let rec binarySearchAux (arr : element array) (lo : int) (hi : int) key : bool =   
-  let mid = (lo + hi)/2 in 
-  let midVal = Array.unsafe_get arr mid in 
-  (* let c = cmp key midVal [@bs] in  *)
-  if key = midVal then true 
-  else if key < midVal then  (*  a[lo] =< key < a[mid] <= a[hi] *)
-    if hi = mid then  
-      (Array.unsafe_get arr lo) = key 
-    else binarySearchAux arr lo mid key 
-  else  (*  a[lo] =< a[mid] < key <= a[hi] *)
-  if lo = mid then 
-    (Array.unsafe_get arr hi) = key 
-  else binarySearchAux arr mid hi key 
+    let mid = (lo + hi)/2 in 
+    let midVal = Array.unsafe_get arr mid in 
+    (* let c = cmp key midVal [@bs] in  *)
+    if key = midVal then true 
+    else if key < midVal then  (*  a[lo] =< key < a[mid] <= a[hi] *)
+      if hi = mid then  
+        (Array.unsafe_get arr lo) = key 
+      else binarySearchAux arr lo mid key 
+    else  (*  a[lo] =< a[mid] < key <= a[hi] *)
+      if lo = mid then 
+        (Array.unsafe_get arr hi) = key 
+      else binarySearchAux arr mid hi key 
 
 let binarySearch (sorted : element array) (key : element)  : bool =  
   let len = Array.length sorted in 
@@ -10724,10 +10724,10 @@ let binarySearch (sorted : element array) (key : element)  : bool =
     (* let c = cmp key lo [@bs] in  *)
     if key < lo then false
     else
-      let hi = Array.unsafe_get sorted (len - 1) in 
-      (* let c2 = cmp key hi [@bs]in  *)
-      if key > hi then false
-      else binarySearchAux sorted 0 (len - 1) key 
+    let hi = Array.unsafe_get sorted (len - 1) in 
+    (* let c2 = cmp key hi [@bs]in  *)
+    if key > hi then false
+    else binarySearchAux sorted 0 (len - 1) key 
 
 let is_reserved s = binarySearch sorted_keywords s     
 
