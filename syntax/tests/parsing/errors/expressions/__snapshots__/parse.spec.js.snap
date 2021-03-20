@@ -8,24 +8,24 @@ let x = ((let a = 1 in let b = 2 in fun pattern -> (\\"test\\" : int))
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/ambiguousArrow.js:1:9-21  
+  parsing/errors/expressions/ambiguousArrow.js:1:9-21
   1 │ let a = b:int => \\"hi\\"
   2 │ 
   3 │ let x = {
-  
+
   Did you mean to annotate the parameter type or the return type?
   1) (b): int => \\"hi\\"
   2) (b: int) => \\"hi\\"
 
 
   Syntax error!
-  parsing/errors/expressions/ambiguousArrow.js:6:3-23  
+  parsing/errors/expressions/ambiguousArrow.js:6:3-23
   4 │   let a = 1
   5 │   let b = 2
   6 │   a + b : int => \\"test\\"
   7 │ }
   8 │ 
-  
+
   Did you mean to annotate the parameter type or the return type?
   1) (pattern): int => \\"test\\"
   2) (pattern: int) => \\"test\\"
@@ -40,11 +40,11 @@ let xs = x.map (fun key -> [|key;(predicates.(key))|])
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/array.js:2:44  
+  parsing/errors/expressions/array.js:2:44
   1 │ // missing ] before )
   2 │ let xs = x.map(key => [key, predicates[key])
   3 │ 
-  
+
   Did you forget a \`]\` here?
 
 
@@ -59,11 +59,11 @@ exports[`arrow.js 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/arrow.js:1:52  
+  parsing/errors/expressions/arrow.js:1:52
   1 │ Object.keys(providers).reduce((elements, providerId] => {
   2 │   let x = 1
   3 │   let b = 2
-  
+
   Did you forget a \`,\` here?
 
 
@@ -97,62 +97,62 @@ let pipeline =
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/block.js:14:4-15:1  
+  parsing/errors/expressions/block.js:14:4-15:1
   12 │ 
   13 │     thisId === id
   14 │   }
   15 │ }
   16 │ 
   17 │ let x = {
-  
+
   Did you forget a \`)\` here?
 
 
   Syntax error!
-  parsing/errors/expressions/block.js:18:25-19:1  
+  parsing/errors/expressions/block.js:18:25-19:1
   16 │ 
   17 │ let x = {
   18 │   loop(0, Nil->push(doc)
   19 │ } // closing ) above is missing
   20 │ 
   21 │ switch stack {
-  
+
   Did you forget a \`)\` here?
 
 
   Syntax error!
-  parsing/errors/expressions/block.js:22:11-23:1  
+  parsing/errors/expressions/block.js:22:11-23:1
   20 │ 
   21 │ switch stack {
   22 │ | Empty =>
   23 │ | Cons(doc, rest) => ()
   24 │ | Join(doc1, doc2) =>
   25 │ 	buffer->Buffer.add_string(indentation)
-  
+
   Looks like there might be an expression missing here
 
 
   Syntax error!
-  parsing/errors/expressions/block.js:26:7-27:1  
+  parsing/errors/expressions/block.js:26:7-27:1
   24 │ | Join(doc1, doc2) =>
   25 │ 	buffer->Buffer.add_string(indentation)
   26 │ 	loop(
   27 │ }
   28 │ 
   29 │ let pipeline = switch scheduler {
-  
+
   Did you forget a \`)\` here?
 
 
   Syntax error!
-  parsing/errors/expressions/block.js:30:10-31:1  
+  parsing/errors/expressions/block.js:30:10-31:1
   28 │ 
   29 │ let pipeline = switch scheduler {
   30 │ | Some =>
   31 │ | None => ()
   32 │ }
   33 │ 
-  
+
   Looks like there might be an expression missing here
 
 
@@ -169,44 +169,44 @@ let () = ((let open Foo in let exception End  in x ())[@ns.braces ])
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/consecutive.res:1:23  
+  parsing/errors/expressions/consecutive.res:1:23
   1 │ let f = (a,b) => a + 3b;
   2 │ 
   3 │ let f = (g, h) => {
-  
+
   consecutive statements on a line must be separated by ';' or a newline
 
 
   Syntax error!
-  parsing/errors/expressions/consecutive.res:4:7  
+  parsing/errors/expressions/consecutive.res:4:7
   2 │ 
   3 │ let f = (g, h) => {
   4 │  a + 3b
   5 │ }
   6 │ 
-  
+
   consecutive expressions on a line must be separated by ';' or a newline
 
 
   Syntax error!
-  parsing/errors/expressions/consecutive.res:8:16-27  
+  parsing/errors/expressions/consecutive.res:8:16-27
    6 │ 
    7 │ let () = {
    8 │   sideEffect1() sideEffect2()
    9 │ }
   10 │ 
-  
+
   consecutive expressions on a line must be separated by ';' or a newline
 
 
   Syntax error!
-  parsing/errors/expressions/consecutive.res:12:11-20  
+  parsing/errors/expressions/consecutive.res:12:11-20
   10 │ 
   11 │ let () = {
   12 │   open Foo exception End
   13 │   x()
   14 │ }
-  
+
   consecutive expressions on a line must be separated by ';' or a newline
 
 
@@ -220,21 +220,21 @@ let f a b = ((())[@ns.braces ])
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/emptyBlock.js:1:10  
+  parsing/errors/expressions/emptyBlock.js:1:10
   1 │ let x = {}
   2 │ 
   3 │ let f = (a, b) => {}
-  
+
   This let-binding misses an expression
 
 
   Syntax error!
-  parsing/errors/expressions/emptyBlock.js:3:20  
+  parsing/errors/expressions/emptyBlock.js:3:20
   1 │ let x = {}
   2 │ 
   3 │ let f = (a, b) => {}
   4 │ 
-  
+
   Missing expression
 
 
@@ -247,10 +247,10 @@ let x = \\"\\\\n\\"
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/emptyeof.js:1:9-2:0  
+  parsing/errors/expressions/emptyeof.js:1:9-2:0
   1 │ let x = \\"
   2 │ 
-  
+
   This string is missing a double quote at the end
 
 
@@ -263,13 +263,13 @@ exports[`if.js 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/if.js:2:11-3:5  
+  parsing/errors/expressions/if.js:2:11-3:5
   1 │ // missing brace below
   2 │ if (match)
   3 │   let a = 1
   4 │   a + 1
   5 │ }
-  
+
   Did you forget a \`{\` here?
 
 
@@ -288,13 +288,13 @@ exports[`ifLet.res 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/ifLet.res:1:1-3:1  
+  parsing/errors/expressions/ifLet.res:1:1-3:1
   1 │ if let Some(x) = result {
   2 │   Js.log(\\"The sky is blue\\")
   3 │ }
   4 │ 
   5 │ if let Error(x) = result {
-  
+
   If-let is currently highly experimental. Use a regular \`switch\` with pattern matching instead:
 
 switch result {
@@ -304,7 +304,7 @@ switch result {
 
 
   Syntax error!
-  parsing/errors/expressions/ifLet.res:7:8-11:1  
+  parsing/errors/expressions/ifLet.res:7:8-11:1
    5 │ if let Error(x) = result {
    6 │   Js.log(\\"The sky is red\\")
    7 │ } else if let Ok(y) = result {
@@ -313,7 +313,7 @@ switch result {
   10 │   ()
   11 │ }
   12 │ 
-  
+
   If-let is currently highly experimental. Use a regular \`switch\` with pattern matching instead:
 
 switch result {
@@ -336,13 +336,13 @@ module LicenseList = struct  end
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/implementation.res:7:1  
+  parsing/errors/expressions/implementation.res:7:1
   5 │   }
   6 │ }
   7 │ }
   8 │ module LicenseList = {
   9 │ 
-  
+
   I'm not sure what to parse here when looking at \\"}\\".
 
 
@@ -366,64 +366,64 @@ let x =
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/jsx.js:1:12  
+  parsing/errors/expressions/jsx.js:1:12
   1 │ let x = <di-v />
   2 │ let x = <Unclosed >;
   3 │ let x = <Foo.Bar></Free.Will>;
-  
+
   I'm not sure what to parse here when looking at \\"-\\".
 
 
   Syntax error!
-  parsing/errors/expressions/jsx.js:2:20  
+  parsing/errors/expressions/jsx.js:2:20
   1 │ let x = <di-v />
   2 │ let x = <Unclosed >;
   3 │ let x = <Foo.Bar></Free.Will>;
   4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
-  
+
   Did you forget a \`</\` here?
 
 
   Syntax error!
-  parsing/errors/expressions/jsx.js:3:9-28  
+  parsing/errors/expressions/jsx.js:3:9-28
   1 │ let x = <di-v />
   2 │ let x = <Unclosed >;
   3 │ let x = <Foo.Bar></Free.Will>;
   4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
   5 │ let x = <Foo.bar> </Foo.baz>
-  
+
   Missing </Foo.Bar>
 
 
   Syntax error!
-  parsing/errors/expressions/jsx.js:4:9-34  
+  parsing/errors/expressions/jsx.js:4:9-34
   2 │ let x = <Unclosed >;
   3 │ let x = <Foo.Bar></Free.Will>;
   4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
   5 │ let x = <Foo.bar> </Foo.baz>
   6 │ let x = <Foo.bar.baz />
-  
+
   Missing </Foo.Bar.Baz>
 
 
   Syntax error!
-  parsing/errors/expressions/jsx.js:5:9-27  
+  parsing/errors/expressions/jsx.js:5:9-27
   3 │ let x = <Foo.Bar></Free.Will>;
   4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
   5 │ let x = <Foo.bar> </Foo.baz>
   6 │ let x = <Foo.bar.baz />
   7 │ 
-  
+
   Missing </Foo.bar>
 
 
   Syntax error!
-  parsing/errors/expressions/jsx.js:6:17  
+  parsing/errors/expressions/jsx.js:6:17
   4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
   5 │ let x = <Foo.bar> </Foo.baz>
   6 │ let x = <Foo.bar.baz />
   7 │ 
-  
+
   I'm not sure what to parse here when looking at \\".\\".
 
 
@@ -441,66 +441,66 @@ let foo = ((\\"foo\\")[@ns.braces ])
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/letBinding.js:1:10-11  
+  parsing/errors/expressions/letBinding.js:1:10-11
   1 │ let foo = '2.
   2 │ 
   3 │ let foo = }true
-  
+
   This let-binding misses an expression
 
 
   Syntax error!
-  parsing/errors/expressions/letBinding.js:3:10-11  
+  parsing/errors/expressions/letBinding.js:3:10-11
   1 │ let foo = '2.
   2 │ 
   3 │ let foo = }true
   4 │ 
   5 │ let foo = )2
-  
+
   This let-binding misses an expression
 
 
   Syntax error!
-  parsing/errors/expressions/letBinding.js:5:10-11  
+  parsing/errors/expressions/letBinding.js:5:10-11
   3 │ let foo = }true
   4 │ 
   5 │ let foo = )2
   6 │ 
   7 │ let foo = }f()
-  
+
   This let-binding misses an expression
 
 
   Syntax error!
-  parsing/errors/expressions/letBinding.js:7:10-11  
+  parsing/errors/expressions/letBinding.js:7:10-11
   5 │ let foo = )2
   6 │ 
   7 │ let foo = }f()
   8 │ 
   9 │ let foo = }}{2}
-  
+
   This let-binding misses an expression
 
 
   Syntax error!
-  parsing/errors/expressions/letBinding.js:9:10-11  
+  parsing/errors/expressions/letBinding.js:9:10-11
    7 │ let foo = }f()
    8 │ 
    9 │ let foo = }}{2}
   10 │ 
   11 │ let foo = == {
-  
+
   This let-binding misses an expression
 
 
   Syntax error!
-  parsing/errors/expressions/letBinding.js:11:10-12  
+  parsing/errors/expressions/letBinding.js:11:10-12
    9 │ let foo = }}{2}
   10 │ 
   11 │ let foo = == {
   12 │   \\"foo\\"
   13 │ }
-  
+
   This let-binding misses an expression
 
 
@@ -513,10 +513,10 @@ let x = ([%rescript.exprhole ]) + 1
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/misc.js:1:9  
+  parsing/errors/expressions/misc.js:1:9
   1 │ let x = _ + 1
   2 │ 
-  
+
   \`_\` isn't a valid name.
 
 
@@ -532,48 +532,48 @@ let record = { field = 2 }
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/record.js:2:10-3:7  
+  parsing/errors/expressions/record.js:2:10-3:7
   1 │ let newWrapper = {
   2 │   updateF
   3 │   value: f(xWrapper.currentValue),
   4 │ }
   5 │ 
-  
+
   Did you forget a \`,\` here?
 
 
   Syntax error!
-  parsing/errors/expressions/record.js:8:10-18  
+  parsing/errors/expressions/record.js:8:10-18
    6 │ 
    7 │ let newWrapper = {
    8 │   updateF updateF2
    9 │   value: f(xWrapper.currentValue),
   10 │ }
-  
+
   Did you forget a \`:\` here?
 
 
   Syntax error!
-  parsing/errors/expressions/record.js:13:9-14:1  
+  parsing/errors/expressions/record.js:13:9-14:1
   11 │ 
   12 │ let record = {
   13 │   field:
   14 │ }
   15 │ 
   16 │ 
-  
+
   Missing expression
 
 
   Syntax error!
-  parsing/errors/expressions/record.js:18:9-19:2  
+  parsing/errors/expressions/record.js:18:9-19:2
   16 │ 
   17 │ let record = {
   18 │   field: 
   19 │  }
   20 │  2
   21 │ }
-  
+
   Missing expression
 
 
@@ -588,14 +588,14 @@ exports[`setField.js 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/setField.js:4:30-5:1  
+  parsing/errors/expressions/setField.js:4:30-5:1
   2 │   let a = 1
   3 │ 	// notice missing expression after = 
   4 │   m.left.compatibleTypeArgs =
   5 │ } else {
   6 │   sideEffect()
   7 │ }
-  
+
   It seems that this record field mutation misses an expression
 
 
@@ -608,10 +608,10 @@ exports[`taggedTemplateLiterals.js 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/taggedTemplateLiterals.js:1:1-5  
+  parsing/errors/expressions/taggedTemplateLiterals.js:1:1-5
   1 │ foo()\`null\`
   2 │ 
-  
+
   Tagged template literals are currently restricted to names like: json\`null\`.
 
 
@@ -624,12 +624,12 @@ let parsedPayload = try Js.Json.parseExn response with | _ -> Js.Json.null
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/try.js:2:37-38  
+  parsing/errors/expressions/try.js:2:37-38
   1 ┆ let parsedPayload =
   2 ┆   try (Js.Json.parseExn(response)) {
   3 ┆   | _ => Js.Json.null
   4 ┆   }
-  
+
   Did you forget a \`catch\` here?
 
 
@@ -643,24 +643,24 @@ let x = (\\"hi\\" : string)
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/unexpectedConstraint.js:4:3-13  
+  parsing/errors/expressions/unexpectedConstraint.js:4:3-13
   2 │   let a = 1
   3 │   let b = 2
   4 │   a + b : int
   5 │ }
   6 │ 
-  
+
   Expressions with type constraints need to be wrapped in parens:
   (a + b: int)
 
 
   Syntax error!
-  parsing/errors/expressions/unexpectedConstraint.js:7:9-20  
+  parsing/errors/expressions/unexpectedConstraint.js:7:9-20
   5 │ }
   6 │ 
   7 │ let x = \\"hi\\": string 
   8 │ 
-  
+
   Expressions with type constraints need to be wrapped in parens:
   (\\"hi\\": string)
 

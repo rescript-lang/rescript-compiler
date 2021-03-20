@@ -6,16 +6,16 @@ let 1 = [%rescript.exprhole ]
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/scanner/badCharacter.js:1:5  
+  parsing/errors/scanner/badCharacter.js:1:5
   1 │ let $ = 1
-  
+
   Not sure what to do with this character.
 
 
   Syntax error!
-  parsing/errors/scanner/badCharacter.js:1:5-7  
+  parsing/errors/scanner/badCharacter.js:1:5-7
   1 │ let $ = 1
-  
+
   I was expecting a name for this let-binding. Example: \`let message = \\"hello\\"\`
 
 
@@ -29,21 +29,21 @@ let x = \\"\\\\\\\\0AAA\\"
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/scanner/escapeSequence.js:1:10-11  
+  parsing/errors/scanner/escapeSequence.js:1:10-11
   1 │ let x = \\"\\\\0\\"
   2 │ 
   3 │ let x = \\"\\\\oAAA\\"
-  
+
   unknown escape sequence
 
 
   Syntax error!
-  parsing/errors/scanner/escapeSequence.js:3:10-11  
+  parsing/errors/scanner/escapeSequence.js:3:10-11
   1 │ let x = \\"\\\\0\\"
   2 │ 
   3 │ let x = \\"\\\\oAAA\\"
   4 │ 
-  
+
   unknown escape sequence
 
 
@@ -58,41 +58,41 @@ let a = b
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/scanner/exoticIdent.js:1:7  
+  parsing/errors/scanner/exoticIdent.js:1:7
   1 │ let \\\\\\"a
   2 │ b
   3 │ c\\" = 1
-  
+
   A quoted identifier can't contain line breaks.
 
 
   Syntax error!
-  parsing/errors/scanner/exoticIdent.js:2:1  
+  parsing/errors/scanner/exoticIdent.js:2:1
   1 │ let \\\\\\"a
   2 │ b
   3 │ c\\" = 1
   4 │ 
-  
+
   Did you forget a \`=\` here?
 
 
   Syntax error!
-  parsing/errors/scanner/exoticIdent.js:3:2-4:0  
+  parsing/errors/scanner/exoticIdent.js:3:2-4:0
   1 │ let \\\\\\"a
   2 │ b
   3 │ c\\" = 1
   4 │ 
-  
+
   This string is missing a double quote at the end
 
 
   Syntax error!
-  parsing/errors/scanner/exoticIdent.js:3:2-4:0  
+  parsing/errors/scanner/exoticIdent.js:3:2-4:0
   1 │ let \\\\\\"a
   2 │ b
   3 │ c\\" = 1
   4 │ 
-  
+
   consecutive statements on a line must be separated by ';' or a newline
 
 
@@ -105,10 +105,10 @@ let nativeint = 3n
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/scanner/nativeint.res:1:18  
+  parsing/errors/scanner/nativeint.res:1:18
   1 │ let nativeint = 3n
   2 │ 
-  
+
   Unsupported number type (nativeint). Did you mean \`3\`?
 
 
@@ -122,22 +122,22 @@ let newX = x +. (newVelocity *. secondPerFrame)
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/scanner/oldDerefOp.js:1:50  
+  parsing/errors/scanner/oldDerefOp.js:1:50
   1 │ let newVelocity = velocity +. a *. secondPerFrame^;
   2 │ let newX = x +. newVelocity *. secondPerFrame^;
   3 │ 
-  
+
   Not sure what to do with this character.
   If you're trying to dereference a mutable value, use \`myValue.contents\` instead.
   To concatenate strings, use \`\\"a\\" ++ \\"b\\"\` instead.
 
 
   Syntax error!
-  parsing/errors/scanner/oldDerefOp.js:2:46  
+  parsing/errors/scanner/oldDerefOp.js:2:46
   1 │ let newVelocity = velocity +. a *. secondPerFrame^;
   2 │ let newX = x +. newVelocity *. secondPerFrame^;
   3 │ 
-  
+
   Not sure what to do with this character.
   If you're trying to dereference a mutable value, use \`myValue.contents\` instead.
   To concatenate strings, use \`\\"a\\" ++ \\"b\\"\` instead.
@@ -152,11 +152,11 @@ exports[`unclosedComment.js 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/scanner/unclosedComment.js:1:1-3:0  
+  parsing/errors/scanner/unclosedComment.js:1:1-3:0
   1 │ /* eof
   2 │  * reached
   3 │ 
-  
+
   This comment seems to be missing a closing \`*/\`
 
 
@@ -169,10 +169,10 @@ let z = \\"eof\\\\n\\"
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/scanner/unclosedString.js:1:9-2:0  
+  parsing/errors/scanner/unclosedString.js:1:9-2:0
   1 │ let z = \\"eof
   2 │ 
-  
+
   This string is missing a double quote at the end
 
 

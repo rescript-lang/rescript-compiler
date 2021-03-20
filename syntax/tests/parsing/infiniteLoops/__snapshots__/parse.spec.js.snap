@@ -149,13 +149,13 @@ let removeNode rbt node =
 =====Errors=============================================
 
   Syntax error!
-  parsing/infiniteLoops/equalAfterBinaryExpr.js:169:17  
+  parsing/infiniteLoops/equalAfterBinaryExpr.js:169:17
   167 ┆ if isLeaf(. successor) {
   168 ┆   if rbt->root === Some(successor) {
   169 ┆     rbt->root = None
   170 ┆   }
   171 ┆ }
-  
+
   Did you mean \`==\` here?
 
 
@@ -173,20 +173,20 @@ let (a : action) = AddUser \\"test\\"
 =====Errors=============================================
 
   Syntax error!
-  parsing/infiniteLoops/jsxChildren.js:1:22  
+  parsing/infiniteLoops/jsxChildren.js:1:22
   1 │ type action = AddUser<string>
   2 │ 
   3 │ let a: action = AddUser(\\"test\\")
-  
+
   consecutive statements on a line must be separated by ';' or a newline
 
 
   Syntax error!
-  parsing/infiniteLoops/jsxChildren.js:1:22-29  
+  parsing/infiniteLoops/jsxChildren.js:1:22-29
   1 │ type action = AddUser<string>
   2 │ 
   3 │ let a: action = AddUser(\\"test\\")
-  
+
   Missing </string>
 
 
@@ -590,62 +590,60 @@ include
 =====Errors=============================================
 
   Syntax error!
-  parsing/infiniteLoops/nonRecTypes.js:4:29-36  
+  parsing/infiniteLoops/nonRecTypes.js:4:29-36
   2 ┆ include (
   3 ┆           {
   4 ┆             type t('value) = {
   5 ┆               mutable size: int,
   6 ┆               mutable root: option(node('value)),
-  
+
   Type parameters require angle brackets:
   t<'value>
 
 
   Syntax error!
-  parsing/infiniteLoops/nonRecTypes.js:19:45-51  
+  parsing/infiniteLoops/nonRecTypes.js:19:45-51
   17 ┆   ~size: int,
   18 ┆   ~root: option(node('value)),
   19 ┆   ~compare: Js.Internal.fn([ | \`Arity_2('value, 'value)], int)
   20 ┆ ) =>
   21 ┆ t('value) =
-  
+
   consecutive statements on a line must be separated by ';' or a newline
 
 
   Syntax error!
-  parsing/infiniteLoops/nonRecTypes.js:67:26-68:3  
+  parsing/infiniteLoops/nonRecTypes.js:67:26-68:3
   65 │         };
-  66 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None
-       ;
+  66 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None;
   67 │ let rec minNode = node =>
   68 │ let findMin = rbt =>
   69 │ let removeNode = (rbt, node) => {
   70 │   let nodeToRemove =
-  
+
   I'm not sure what to parse here when looking at \\"let\\".
 
 
   Syntax error!
-  parsing/infiniteLoops/nonRecTypes.js:68:21-69:3  
-  66 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None
-       ;
+  parsing/infiniteLoops/nonRecTypes.js:68:21-69:3
+  66 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None;
   67 │ let rec minNode = node =>
   68 │ let findMin = rbt =>
   69 │ let removeNode = (rbt, node) => {
   70 │   let nodeToRemove =
   71 │     switch (leftGet(node), rightGet(node)) {
-  
+
   I'm not sure what to parse here when looking at \\"let\\".
 
 
   Syntax error!
-  parsing/infiniteLoops/nonRecTypes.js:434:31-38  
+  parsing/infiniteLoops/nonRecTypes.js:434:31-38
   432 │     updateSum(Some(node), ~delta);
   433 │   };
   434 │ type nonrec oldNewVisibleNodes('value) = {
   435 │   mutable old: array('value),
   436 │   mutable new_: array('value),
-  
+
   Type parameters require angle brackets:
   oldNewVisibleNodes<'value>
 
