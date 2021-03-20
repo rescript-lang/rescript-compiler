@@ -1,12 +1,10 @@
 # ReScript Syntax ![Tests](https://github.com/rescript-lang/syntax/workflows/CI/badge.svg)
 
-Blog post: https://rescript-lang.org/blog/bucklescript-8-1-new-syntax
-
 Documentation: https://rescript-lang.org/docs/manual/latest/overview
 
 This repo is the source of truth for the ReScript parser & printer. Issues go here.
 
-**You don't need this repo to use the ReScript syntax**. This comes with BuckleScript 8.1. This repo is for syntax contributors.
+**You don't need this repo to use the ReScript syntax**. This comes with ReScript >=8.1. This repo is for syntax developers.
 
 ## Contribute
 
@@ -86,7 +84,18 @@ This is likely a known knowledge: add the above line into your shell rc file so 
 
 ### Development Docs
 
-`src/syntax` contains all the source code. Don't change folder structure without notice; BuckleScript uses this repo as a submodule and assumes `src/syntax`.
+`src/syntax` contains all the source code. Don't change folder structure without notice; ReScript uses this repo as a submodule and assumes `src/syntax`.
+
+#### Error Reporting Logic
+
+Right now, ReScript's compiler's error reporting mechanism, for architectural reasons, is independent from this syntax repo's error reporting mechanism. However, we do want a unified look when they report the errors in the terminal. This is currently achieved by (carefully...) duplicating the error report logic from the compiler repo to here (or vice-versa; either way, just keep them in sync). The files to sync are the compiler repo's [super_location.ml](https://github.com/rescript-lang/rescript-compiler/blob/fcb21790dfb0592f609818df7790192061360631/jscomp/super_errors/super_location.ml) and [super_code_frame.ml](https://github.com/rescript-lang/rescript-compiler/blob/fcb21790dfb0592f609818df7790192061360631/jscomp/super_errors/super_code_frame.ml), into this repo's [res_diagnostics_printing_utils.ml](https://github.com/rescript-lang/syntax/blob/ec5cefb23b659b0a7be170ae0ad26f3fe8a05456/src/res_diagnostics_printing_utils.ml). A few notes:
+
+- Some lines are lightly changed to fit this repo's needs; they're documented in the latter file.
+- Please keep these files lightweight and as dependency-less as possible, for easier syncing.
+- The syntax logic currently doesn't have warnings, only errors, and potentially more than one.
+- In the future, ideally, the error reporting logic would also be unified with GenType and Reanalyze's. It'd be painful to copy paste around all this reporting logic.
+- The errors are reported by the parser [here](https://github.com/rescript-lang/syntax/blob/ec5cefb23b659b0a7be170ae0ad26f3fe8a05456/src/res_diagnostics.ml#L146).
+- Our editor plugin parses the error report from the compiler and from the syntax [here](https://github.com/rescript-lang/rescript-vscode/blob/0dbf2eb9cdb0bd6d95be1aee88b73830feecb5cc/server/src/utils.ts#L129-L329).
 
 ### Example File Conversion
 
