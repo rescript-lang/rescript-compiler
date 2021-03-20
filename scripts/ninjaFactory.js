@@ -24,6 +24,8 @@ rule cc
 # build bspp.exe:  cc bspp.mli bspp.ml
 build ../${process.platform}/bsb$ext:  cc $INCL/bsb.mli $INCL/bsb.ml
     flags = $flags -unboxed-types unix.cmxa str.cmxa
+build ../${process.platform}/rescript$ext:  cc $INCL/rescript.mli $INCL/rescript.ml
+    flags = $flags -unboxed-types unix.cmxa str.cmxa    
 o ../${process.platform}/bsb_helper$ext:  cc $INCL/bsb_helper.mli $INCL/bsb_helper.ml
     flags = $flags  -unboxed-types -w -a
 o ../${process.platform}/refmt$ext: cc $INCL/refmt_main3.mli $INCL/refmt_main3.ml
