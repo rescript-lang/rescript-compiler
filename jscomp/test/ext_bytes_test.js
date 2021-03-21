@@ -1,11 +1,11 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Caml = require("../../lib/js/caml.js");
 var Char = require("../../lib/js/char.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
-var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -200,11 +200,11 @@ function f$1(a, b) {
 
 function f_0(a, b) {
   return [
-          Caml_int64.gt(a, b),
-          Caml_int64.ge(a, b),
-          Caml_int64.lt(a, b),
-          Caml_int64.le(a, b),
-          Caml_int64.eq(a, b)
+          Caml.i64_gt(a, b),
+          Caml.i64_ge(a, b),
+          Caml.i64_lt(a, b),
+          Caml.i64_le(a, b),
+          Caml.i64_eq(a, b)
         ];
 }
 

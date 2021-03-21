@@ -1,13 +1,13 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Caml = require("../../lib/js/caml.js");
 var Belt_Id = require("../../lib/js/belt_Id.js");
 var Belt_Map = require("../../lib/js/belt_Map.js");
 var Belt_Set = require("../../lib/js/belt_Set.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Belt_MapDict = require("../../lib/js/belt_MapDict.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
 
 var suites = {
@@ -26,7 +26,7 @@ function b(loc, v) {
   return Mt.bool_suites(test_id, suites, loc, v);
 }
 
-var Icmp = Belt_Id.comparable(Caml_primitive.caml_int_compare);
+var Icmp = Belt_Id.comparable(Caml.caml_int_compare);
 
 function mapOfArray(x) {
   return Belt_Map.fromArray(x, Icmp);

@@ -2,6 +2,7 @@
 
 var Arg = require("../../lib/js/arg.js");
 var Sys = require("../../lib/js/sys.js");
+var Caml = require("../../lib/js/caml.js");
 var Char = require("../../lib/js/char.js");
 var List = require("../../lib/js/list.js");
 var Path = require("path");
@@ -28,7 +29,6 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -794,7 +794,7 @@ function parse_opt(error, active, flags, s) {
           };
     }
     var match$1 = get_range(i);
-    for(var n = match$1[1] ,n_finish = Caml_primitive.caml_int_min(match$1[2], 104); n <= n_finish; ++n){
+    for(var n = match$1[1] ,n_finish = Caml.caml_int_min(match$1[2], 104); n <= n_finish; ++n){
       Curry._1(myset, n);
     }
     return loop(match$1[0]);

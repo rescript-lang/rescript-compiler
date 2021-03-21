@@ -1,12 +1,12 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_array = require("../../lib/js/caml_array.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -323,7 +323,7 @@ var array_suites_1 = {
                           0,
                           1
                         ];
-                        $$Array.sort(Caml_primitive.caml_int_compare, u);
+                        $$Array.sort(Caml.caml_int_compare, u);
                         return {
                                 TAG: /* Eq */0,
                                 _0: Caml_obj.caml_equal([
@@ -342,7 +342,7 @@ var array_suites_1 = {
                           var v = $$Array.init(4, (function (i) {
                                   return i % 17;
                                 }));
-                          $$Array.sort(Caml_primitive.caml_int_compare, v);
+                          $$Array.sort(Caml.caml_int_compare, v);
                           return {
                                   TAG: /* Eq */0,
                                   _0: true,

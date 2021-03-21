@@ -1,6 +1,6 @@
 'use strict';
 
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
+var Caml = require("../../lib/js/caml.js");
 
 function getcompare(x) {
   return x;
@@ -140,13 +140,13 @@ function empty(v) {
         };
 }
 
-var compare = Caml_primitive.caml_int_compare;
+var compare = Caml.caml_int_compare;
 
 var V0 = {
   compare: compare
 };
 
-var compare$1 = Caml_primitive.caml_int_compare;
+var compare$1 = Caml.caml_int_compare;
 
 var V1 = {
   compare: compare$1

@@ -1,6 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Caml = require("../../lib/js/caml.js");
 var $$Array = require("../../lib/js/array.js");
 var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
@@ -8,7 +9,6 @@ var Mt_global = require("./mt_global.js");
 var Caml_float = require("../../lib/js/caml_float.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var test_id = {
   contents: 0
@@ -151,7 +151,7 @@ function from_pairs(ps) {
                   }), ps));
 }
 
-var float_compare = Caml_primitive.caml_float_compare;
+var float_compare = Caml.caml_float_compare;
 
 Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 47, characters 5-12", Pervasives.classify_float(3), /* FP_normal */0);
 
@@ -179,7 +179,7 @@ Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 52, characte
               return 0;
             }
           }), $$Array.map((function (param) {
-                return Caml_primitive.caml_float_compare(param[0], param[1]);
+                return Caml.caml_float_compare(param[0], param[1]);
               }), [
               [
                 1,

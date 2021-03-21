@@ -1,12 +1,12 @@
 'use strict';
 
+var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 var $$String = require("../../lib/js/string.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_option = require("../../lib/js/caml_option.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -539,7 +539,7 @@ function add(x, t) {
   var r = t.r;
   var v = t.v;
   var l = t.l;
-  var c = Caml_primitive.caml_string_compare(x, v);
+  var c = Caml.caml_string_compare(x, v);
   if (c === 0) {
     return t;
   }
@@ -707,7 +707,7 @@ function split(x, param) {
   var r = param.r;
   var v = param.v;
   var l = param.l;
-  var c = Caml_primitive.caml_string_compare(x, v);
+  var c = Caml.caml_string_compare(x, v);
   if (c === 0) {
     return [
             l,
@@ -745,7 +745,7 @@ function mem(x, _param) {
     if (!param) {
       return false;
     }
-    var c = Caml_primitive.caml_string_compare(x, param.v);
+    var c = Caml.caml_string_compare(x, param.v);
     if (c === 0) {
       return true;
     }
@@ -761,7 +761,7 @@ function remove(x, t) {
   var r = t.r;
   var v = t.v;
   var l = t.l;
-  var c = Caml_primitive.caml_string_compare(x, v);
+  var c = Caml.caml_string_compare(x, v);
   if (c === 0) {
     if (l) {
       if (r) {
@@ -885,7 +885,7 @@ function compare(s1, s2) {
     if (!e2) {
       return 1;
     }
-    var c = Caml_primitive.caml_string_compare(e1._0, e2._0);
+    var c = Caml.caml_string_compare(e1._0, e2._0);
     if (c !== 0) {
       return c;
     }
@@ -914,7 +914,7 @@ function subset(_s1, _s2) {
     var r1 = s1.r;
     var v1 = s1.v;
     var l1 = s1.l;
-    var c = Caml_primitive.caml_string_compare(v1, s2.v);
+    var c = Caml.caml_string_compare(v1, s2.v);
     if (c === 0) {
       if (!subset(l1, l2)) {
         return false;
@@ -1090,7 +1090,7 @@ function find(x, _param) {
     var param = _param;
     if (param) {
       var v = param.v;
-      var c = Caml_primitive.caml_string_compare(x, v);
+      var c = Caml.caml_string_compare(x, v);
       if (c === 0) {
         return v;
       }
@@ -1241,7 +1241,7 @@ function find_opt(x, _param) {
       return ;
     }
     var v = param.v;
-    var c = Caml_primitive.caml_string_compare(x, v);
+    var c = Caml.caml_string_compare(x, v);
     if (c === 0) {
       return Caml_option.some(v);
     }
@@ -1262,7 +1262,7 @@ function map(f, t) {
   var r$p = map(f, r);
   if (l === l$p && v === v$p && r === r$p) {
     return t;
-  } else if ((l$p === /* Empty */0 || Caml_primitive.caml_string_compare(max_elt(l$p), v$p) < 0) && (r$p === /* Empty */0 || Caml_primitive.caml_string_compare(v$p, min_elt(r$p)) < 0)) {
+  } else if ((l$p === /* Empty */0 || Caml.caml_string_compare(max_elt(l$p), v$p) < 0) && (r$p === /* Empty */0 || Caml.caml_string_compare(v$p, min_elt(r$p)) < 0)) {
     return join(l$p, v$p, r$p);
   } else {
     return union(l$p, add(v$p, r$p));

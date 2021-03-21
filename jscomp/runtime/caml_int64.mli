@@ -54,21 +54,13 @@ val or_ : t -> t -> t
 val and_ : t -> t -> t 
 
 
-type comparison = t -> t -> bool 
-val ge : comparison
-val eq : comparison
-val neq : comparison
-val lt : comparison
-val gt : comparison
-val le : comparison
+
 
 
 val equal_null : t -> t Js.null -> bool 
 val equal_undefined : t -> t Js.undefined -> bool 
 val equal_nullable : t -> t Js.nullable -> bool 
 
-val min : t -> t -> t 
-val max : t -> t -> t
 
 val to_float : t -> float
 val of_float : float -> t
