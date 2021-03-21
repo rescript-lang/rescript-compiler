@@ -1,0 +1,17 @@
+@ns.jsFfi
+include {
+  @genType.import("path") @disableGc @disableJit external delimiter: string = "delimiter"
+  @genType.import("path") external currentWorkingDirectory: unit => string = "cwd"
+  @genType.import("path") external isAbsolute: string => bool = "isAbsolute"
+  @genType.import("path") external \"ToNamespacedPath": string => string = "toNamespacedPath"
+}
+
+@ns.jsFfi
+include {
+  @genType.import("firebase/app") external crazyString: float => timestamp = "*crazy_string*"
+}
+
+@ns.jsFfi
+include {
+  @val external document: Dom.document = "document"
+}

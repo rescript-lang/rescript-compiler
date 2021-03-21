@@ -15,6 +15,24 @@ run false ./tests/parsing/grammar/**/*.(res|resi)
 run true ./tests/parsing/infiniteLoops/*.(res|resi)
 run true ./tests/parsing/recovery/**/*.(res|resi)
 
+function exp {
+  echo "$(dirname $1)/expected/$(basename $1).txt"
+}
+
+for file in ./tests/printer/**/*.(res|resi); do
+  ./lib/rescript.exe $file &> $(exp $file) &
+done
+for file in ./tests/printer/**/*.(ml|mli); do
+  ./lib/rescript.exe -parse ml $file &> $(exp $file) &
+done
+for file in tests/printer/**/*.re; do
+  lib/refmt.exe --parse re --print binary $file | lib/rescript.exe -parse reasonBinary &> $(exp $file) &
+done
+for file in tests/printer/**/*.rei; do
+  lib/refmt.exe --parse re --print binary --interface true $file | lib/rescript.exe -parse reasonBinary -interface &> $(exp $file) &
+done
+
+
 wait
 
 warningYellow='\033[0;33m'

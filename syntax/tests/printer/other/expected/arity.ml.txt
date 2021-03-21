@@ -1,0 +1,10 @@
+let _ = Constructor(a, b)
+let _ = #Constructor(a, b)
+
+let _ = switch a {
+| C(c, d) => 1
+}
+
+let _ = switch a {
+| #C(c, d) => 1
+}
