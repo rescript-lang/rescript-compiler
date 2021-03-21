@@ -1,0 +1,27 @@
+let r = { expr with pexp_attributes = [||] }
+let r = { a }
+let r = { a = expr }
+let r = { a = expr }
+let r = { a = expr; b = expr2 }
+let r = { f = (fun x -> x + b) }
+let e = ((a)[@ns.braces ])
+let e = ((a)[@ns.braces ])
+let e = ((a; b ())[@ns.braces ])
+let e = ((- a)[@ns.braces ])
+let e = ((a + b)[@ns.braces ])
+let e = ((if a then true else false)[@ns.braces ][@ns.ternary ])
+let e = ((if a |> computation then true else false)
+  [@ns.braces ][@ns.ternary ])
+let e = ((a.(0))[@ns.braces ])
+let e = ((f b)[@ns.braces ])
+let e = (((a.b).c)[@ns.braces ])
+let e = ((arr.(x) <- 20)[@ns.braces ])
+let e = ((fun x -> (x + 1) |> (doStuff config))[@ns.braces ])
+let e = (((fun x -> x + 1) |> (doStuff config))[@ns.braces ])
+let e = ((if fun x -> x + 1 then true else false)[@ns.braces ][@ns.ternary ])
+let e = (((fun x -> x + 1) |> sideEffect; logToAnalytics Shady.ml)
+  [@ns.braces ])
+let f = ((fun event -> (event.target).value)[@ns.braces ])
+let f = ((fun event -> ((event.target).value : string))[@ns.braces ])
+let x = ((let a = 1 in let b = 2 in a + b)[@ns.braces ])
+;;(([(("\n" |. React.string)[@ns.braces ])])[@JSX ])

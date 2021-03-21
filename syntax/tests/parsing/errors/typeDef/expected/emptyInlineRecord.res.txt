@@ -1,0 +1,15 @@
+
+  Syntax error!
+  ./tests/parsing/errors/typeDef/emptyInlineRecord.res:3:10-11
+
+  1 │ type node<'a> =
+  2 │   | Nil
+  3 │   | Node({})
+  4 │ 
+
+  An inline record declaration needs at least one field
+
+type nonrec 'a node =
+  | Nil 
+  | Node of {
+  } 

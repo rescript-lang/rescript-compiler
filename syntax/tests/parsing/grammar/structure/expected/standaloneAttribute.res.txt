@@ -1,0 +1,3 @@
+[@@@standaloneAttribute ]
+[@@@standaloneAttribute "with payload"]
+[@@@standaloneAttribute fun x -> x + 1]

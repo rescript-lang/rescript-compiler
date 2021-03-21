@@ -1,0 +1,12 @@
+include
+  struct
+    external realValue : complexNumber -> float = "realValue"[@@genType.import
+                                                               "./MyMath"]
+    external maxInt : unit -> int = "maxInt"[@@genType.import "./MyMath"]
+  end[@@ns.jsFfi ]
+include
+  struct
+    external realValue : complexNumber -> float = "realValue"[@@genType.import
+                                                               ("./MyMath",
+                                                                 "default")]
+  end[@@ns.jsFfi ]

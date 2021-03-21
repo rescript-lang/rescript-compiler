@@ -1,0 +1,36 @@
+
+  Syntax error!
+  ./tests/parsing/errors/structure/gh16B.res:19:2
+
+  17 │ 
+  18 │ 
+  19 │ })))))))))))))))))))))))))))))); // this ")" here, this can even be "))
+     │ ))))))))))))))" and should error
+  20 │ 
+  21 │ Js.log("test") // should not be omitted
+
+  I'm not sure what to parse here when looking at ")".
+
+open Ws
+let wss = Server.make { port = 82 }
+let address = wss |. Server.address
+let log msg = Js.log ({js|> Server: |js} ^ msg)
+;;log
+    (((((({js|Running on: |js} ^ address.address) ^ {js|:|js}) ^
+          (address.port |. string_of_int))
+         ^ {js| (|js})
+        ^ address.family)
+       ^ {js|)|js})
+module ClientSet =
+  struct
+    module T =
+      (Belt.Id.MakeComparable)(struct
+                                 type nonrec t = Client.t
+                                 let cmp a b =
+                                   ((compare (a |. Client.getUniqueId)
+                                       (b |. Client.getUniqueId))
+                                   [@ns.braces ])
+                               end)
+    let empty = Belt.Set.make ~id:(((module T))[@ns.namedArgLoc ])
+  end
+;;Js.log "test"

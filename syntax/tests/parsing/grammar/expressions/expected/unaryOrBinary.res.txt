@@ -1,0 +1,9 @@
+;;- x
+let width =
+  (((w -. innerLeft) -. imageWidth) -. imageRightGap) -. rowInnerRight
+let width = (((w - innerLeft) - imageWidth) - imageRightGap) - rowInnerRight
+let width =
+  ((w; -. innerLeft; -. imageWidth; -. imageRightGap; -. rowInnerRight)
+  [@ns.braces ])
+let width = ((w; - innerLeft; - imageWidth; - imageRightGap; - rowInnerRight)
+  [@ns.braces ])

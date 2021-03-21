@@ -1,0 +1,11 @@
+
+  Syntax error!
+  ./tests/parsing/errors/typeDef/emptyRecord.res:1:15-16
+
+  1 │ type record = {}
+  2 │ 
+
+  A record needs at least one field
+
+type nonrec record = {
+  }

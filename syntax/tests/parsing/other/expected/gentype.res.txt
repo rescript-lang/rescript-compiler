@@ -1,0 +1,7 @@
+module M: {
+  @genType type t = int
+  @genType let x: int
+} = {
+  type t = int
+  let x = 34
+}

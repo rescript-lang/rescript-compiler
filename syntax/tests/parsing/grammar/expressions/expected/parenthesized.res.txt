@@ -1,0 +1,23 @@
+let x = 1
+let f = 1.3
+let truth = true
+let truth = false
+let constructor = None
+let longidentConstructor = Option.None
+let txt = "a string"
+let otherTxt = {js|foo bar |js} ^ txt
+let ident = myIdent
+let aList = [1; 2]
+let anArray = [|1;2|]
+let aTuple = (1, 2)
+let aRecord = { name = "steve"; age = 30 }
+let blockExpression = ((let a = 1 in let b = 2 in a + b)[@ns.braces ])
+let assertSmthing = assert true
+let lazyThing = lazy true
+let jsx = ((div ~className:(("cx")[@ns.namedArgLoc ]) ~children:[foo] ())
+  [@JSX ])
+let ifExpr = if true then Js.log true else Js.log false
+let forExpr = for p = 0 to 10 do () done
+let whileExpr = while true do doSomeImperativeThing () done
+let switchExpr = match myVar with | Blue -> "blue" | Red -> "red"
+let constrainedExpr = (x : int)

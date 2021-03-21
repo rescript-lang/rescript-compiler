@@ -1,0 +1,10 @@
+let foo ~a:((a)[@ns.namedArgLoc ])  = ((a ())[@bs ]) +. 1.
+let a = ((fun () -> 2)[@bs ])
+let bar = foo ~a:((a)[@ns.namedArgLoc ])
+let comparisonResult =
+  ((compare currentNode.value ~targetValue:((targetValue)[@ns.namedArgLoc ]))
+  [@bs ])
+;;((callback firstNode ~y:((y)[@ns.namedArgLoc ]))[@bs ])
+;;((document.createElementWithOptions "div"
+      (elementProps ~onClick:((fun _ -> Js.log "hello world")
+         [@ns.namedArgLoc ])))[@bs ])

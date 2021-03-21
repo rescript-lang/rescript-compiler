@@ -1,0 +1,46 @@
+type nonrec t = x -> unit
+type nonrec t = x -> unit
+type nonrec t = int -> string -> unit
+type nonrec t =
+  a:((int)[@ns.namedArgLoc ]) -> b:((int)[@ns.namedArgLoc ]) -> int
+type nonrec t =
+  ?a:((int)[@ns.namedArgLoc ]) -> ?b:((int)[@ns.namedArgLoc ]) -> int
+type nonrec t = int -> int -> int -> int
+type nonrec t =
+  a:((int)[@ns.namedArgLoc ]) ->
+    b:((int)[@ns.namedArgLoc ]) -> c:((int)[@ns.namedArgLoc ]) -> int
+let (f : x -> unit) = xf
+let (f : x -> unit) = xf
+let (f : int -> string -> unit) = xf
+let (t : a:((int)[@ns.namedArgLoc ]) -> b:((int)[@ns.namedArgLoc ]) -> int) =
+  xf
+let (t : ?a:((int)[@ns.namedArgLoc ]) -> ?b:((int)[@ns.namedArgLoc ]) -> int)
+  = xf
+let (t : int -> int -> int -> int) = xf
+let (t :
+  a:((int)[@ns.namedArgLoc ]) ->
+    b:((int)[@ns.namedArgLoc ]) -> c:((int)[@ns.namedArgLoc ]) -> int)
+  = xf
+type nonrec t = f:((int)[@ns.namedArgLoc ]) -> string
+type nonrec t = ?f:((int)[@ns.namedArgLoc ]) -> string
+let (f : f:((int)[@ns.namedArgLoc ]) -> string) = fx
+let (f : ?f:((int)[@ns.namedArgLoc ]) -> string) = fx
+type nonrec t = f:((int)[@ns.namedArgLoc ]) -> string
+type nonrec t = f:((int)[@ns.namedArgLoc ]) -> string
+type nonrec t = f:((int -> string)[@ns.namedArgLoc ]) -> float
+type nonrec t = f:((int -> string)[@ns.namedArgLoc ]) -> float
+type nonrec t = f:((int)[@ns.namedArgLoc ]) -> string -> float
+type nonrec t =
+  ((a:((int)[@ns.namedArgLoc ]) ->
+      ((b:((int)[@ns.namedArgLoc ]) -> ((float)[@attr ]) -> unit)[@attrBeforeLblB
+                                                                   ]))
+  [@attrBeforeLblA ])
+type nonrec t =
+  ((a:((int)[@ns.namedArgLoc ]) ->
+      ((b:((int)[@ns.namedArgLoc ]) -> ((float)[@attr ]) -> unit)[@attrBeforeLblB
+                                                                   ]))
+  [@attrBeforeLblA ])
+type nonrec t = ((a:((int)[@ns.namedArgLoc ]) -> unit)[@attr ])
+type nonrec 'a getInitialPropsFn =
+  < query: string Js.Dict.t  ;req: 'a Js.t Js.Nullable.t   >  ->
+    'a Js.t Js.Promise.t

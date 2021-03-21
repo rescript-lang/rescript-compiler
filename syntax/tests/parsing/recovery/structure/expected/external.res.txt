@@ -1,0 +1,10 @@
+
+  Syntax error!
+  ./tests/parsing/recovery/structure/external.res:1:25
+
+  1 │ external foo: t = "foo" ]]]]]]]]]]] "bar" |||  "baz"
+  2 │ 
+
+  I'm not sure what to parse here when looking at "]".
+
+external foo : t = "foo" "bar" "baz"

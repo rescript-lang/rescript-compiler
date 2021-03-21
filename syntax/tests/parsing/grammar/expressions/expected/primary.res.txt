@@ -1,0 +1,36 @@
+let x = a.b
+let x = (a.b).c
+let x = H20.Water.water.h
+let x = p.Parser.token
+let x = (p.Lang.Parser.token).pos
+;;lexbuf.lnum <- (lexbuf.lnum + 1)
+;;(parser.lexbuf).lnum <- ((parser.lexbuf).lnum + 1)
+let x = arr.(0)
+let x = arr.((x : int))
+let x = (arr.(0)).(1)
+let x = (arr.((x : int))).((y : int))
+;;arr.(0) <- (a + b)
+;;f ()
+;;(f ()) ()
+;;f a
+;;(f a) a
+;;f a
+;;f (x : int)
+;;f a b c
+;;f a b c
+;;f ~a:((a)[@ns.namedArgLoc ]) ~b:((bArg)[@ns.namedArgLoc ]) ?c:((c)
+    [@ns.namedArgLoc ]) ?d:((expr)[@ns.namedArgLoc ])
+;;((f ~a:((a)[@ns.namedArgLoc ]) ~b:((bArg)[@ns.namedArgLoc ]) ?c:((c)
+      [@ns.namedArgLoc ]) ?d:((expr)[@ns.namedArgLoc ])) ~a:((a)
+     [@ns.namedArgLoc ]) ~b:((bArg)[@ns.namedArgLoc ]) ?c:((c)
+     [@ns.namedArgLoc ]) ?d:((expr)[@ns.namedArgLoc ])) ~a:((a)
+    [@ns.namedArgLoc ]) ~b:((bArg)[@ns.namedArgLoc ]) ?c:((c)
+    [@ns.namedArgLoc ]) ?d:((expr)[@ns.namedArgLoc ])
+;;f ~a:(((x : int))[@ns.namedArgLoc ]) ?b:(((y : int))[@ns.namedArgLoc ])
+;;connection ## platformId
+;;((connection ## left) ## account) ## accountName
+;;(john ## age) #= 99
+;;((john ## son) ## age) #= ((steve ## age) - 5)
+;;(dict ## 
+) #= abc
+;;(dict ## ") #= (dict2 ## ")

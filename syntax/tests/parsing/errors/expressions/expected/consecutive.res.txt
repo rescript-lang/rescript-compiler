@@ -1,0 +1,51 @@
+
+  Syntax error!
+  ./tests/parsing/errors/expressions/consecutive.res:1:23
+
+  1 │ let f = (a,b) => a + 3b;
+  2 │ 
+  3 │ let f = (g, h) => {
+
+  consecutive statements on a line must be separated by ';' or a newline
+
+
+  Syntax error!
+  ./tests/parsing/errors/expressions/consecutive.res:4:7
+
+  2 │ 
+  3 │ let f = (g, h) => {
+  4 │  a + 3b
+  5 │ }
+  6 │ 
+
+  consecutive expressions on a line must be separated by ';' or a newline
+
+
+  Syntax error!
+  ./tests/parsing/errors/expressions/consecutive.res:8:16-27
+
+   6 │ 
+   7 │ let () = {
+   8 │   sideEffect1() sideEffect2()
+   9 │ }
+  10 │ 
+
+  consecutive expressions on a line must be separated by ';' or a newline
+
+
+  Syntax error!
+  ./tests/parsing/errors/expressions/consecutive.res:12:11-20
+
+  10 │ 
+  11 │ let () = {
+  12 │   open Foo exception End
+  13 │   x()
+  14 │ }
+
+  consecutive expressions on a line must be separated by ';' or a newline
+
+let f a b = a + 3
+;;b
+let f g h = ((a + 3; b)[@ns.braces ])
+let () = ((sideEffect1 (); sideEffect2 ())[@ns.braces ])
+let () = ((let open Foo in let exception End  in x ())[@ns.braces ])

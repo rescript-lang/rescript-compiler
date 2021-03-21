@@ -1,0 +1,38 @@
+let () = ()
+let () as x = ()
+let () = ()
+let () as x = ()
+let () as x = ()
+let (() : unit) = ()
+let (() : unit) as x = ()
+let (() : unit) as x = ()
+;;match x with
+  | () -> ()
+  | () as _u -> ()
+  | () -> ()
+  | () as _u -> ()
+  | () as _u -> ()
+  | (() : unit) -> ()
+  | (() : unit) as _u -> ()
+  | (() : unit) as _u -> ()
+;;for () = () to () do () done
+;;for () as _u = () to () do () done
+;;for () = () to () do () done
+;;for () as _u = () to () do () done
+;;for () = () to () do () done
+;;for () as _u = () to () do () done
+;;for () as _u = () to () do () done
+;;for (() : unit) = () to () do () done
+;;for (() : unit) as _u = () to () do () done
+;;for ((() as _u) : unit) = () to () do () done
+;;for (() : unit) as _u = () to () do () done
+let f () = ()
+let f () = ()
+let f (() as _u) = ()
+let f () () = ()
+let f (() as _u) (() as _u) = ()
+let f (() : unit) = ()
+let f ((() as _u) : unit) = ()
+let f ((() : unit) as _u) = ()
+let f (() : unit) = ()
+let f ((() : unit) as _u) = ()

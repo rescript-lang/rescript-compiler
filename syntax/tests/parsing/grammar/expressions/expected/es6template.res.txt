@@ -1,0 +1,39 @@
+let s = {js|foo|js}
+let s = {js|multi
+  line
+
+string
+|js}
+let s = foo
+let s = {js|before|js} ^ foo
+let s = {js|before |js} ^ foo
+let s = {js|before  |js} ^ foo
+let s = foo ^ {js|after|js}
+let s = foo ^ {js| after|js}
+let s = foo ^ {js|  after|js}
+let s = foo ^ bar
+let s = (foo ^ bar) ^ baz
+let s = (foo ^ {js| |js}) ^ bar
+let s = (((foo ^ {js| |js}) ^ bar) ^ {js| |js}) ^ baz
+let s = ((({js| before |js} ^ foo) ^ {js| |js}) ^ bar) ^ {js| after |js}
+let s =
+  ((((({js|before |js} ^ foo) ^ {js| middle |js}) ^ bar) ^ {js| |js}) ^ baz)
+    ^ {js| wow |js}
+let s =
+  {js|
+  multiline
+
+  es6
+
+  template
+
+  expression
+
+  so convenient
+
+  :)
+|js}
+let s = {js|$dollar without $braces $interpolation|js}
+let s = {json|null|json}
+let x = {js|foo`bar$\foo|js}
+let x = ((({js|foo`bar$\foo|js} ^ a) ^ {js| ` |js}) ^ b) ^ {js| ` xx|js}

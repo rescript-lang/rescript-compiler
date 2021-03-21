@@ -1,0 +1,9 @@
+type nonrec t = unit
+type nonrec t = unit -> unit
+type nonrec t = unit -> unit -> unit
+type nonrec t = unit -> unit
+let f (f : unit -> unit) = f ()
+let f (f : unit -> unit) = f ()
+let f (f : unit -> unit -> unit) = f () ()
+external svg : unit -> React.element = "svg"
+external thing : unit -> unit = "svg"

@@ -1,0 +1,23 @@
+
+  Syntax error!
+  ./tests/parsing/errors/other/labelledParameters.res:1:13-14
+
+  1 │ let f = (x, y=2, z) => x + y + z
+  2 │ 
+  3 │ type f = (x: int, y: int) => int
+
+  A labeled parameter starts with a `~`. Did you mean: `~y`?
+
+
+  Syntax error!
+  ./tests/parsing/errors/other/labelledParameters.res:3:11
+
+  1 │ let f = (x, y=2, z) => x + y + z
+  2 │ 
+  3 │ type f = (x: int, y: int) => int
+  4 │ 
+
+  A labeled parameter starts with a `~`. Did you mean: `~x`?
+
+let f x ?(y= 2)  z = (x + y) + z
+type nonrec f = x:int -> y:int -> int

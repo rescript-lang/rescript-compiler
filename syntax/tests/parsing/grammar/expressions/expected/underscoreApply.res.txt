@@ -1,0 +1,17 @@
+let l =
+  ([1; 2; 3] |. (fun __x -> List.map (fun i -> i + 1) __x)) |.
+    (fun __x -> List.filter (fun i -> i > 0) __x)
+let l = (fun i -> i + 1) |. (fun __x -> List.map __x [1; 2; 3])
+let x __x = List.length __x
+let nested x __x = List.length __x
+let incr ~v:((v)[@ns.namedArgLoc ])  = v + 1
+let l1 = ([1; 2; 3] |> (List.map (fun __x -> incr ~v:__x))) |> List.length
+let l2 = ([1; 2; 3] |> (List.map (fun __x -> incr ~v:__x))) |> List.length
+let optParam ?v:((v)[@ns.namedArgLoc ])  () = ((if v = None then 0 else 1)
+  [@ns.ternary ])
+let l1 =
+  ([Some 1; None; Some 2] |> (List.map (fun __x -> optParam ?v:__x ()))) |>
+    List.length
+let l2 =
+  ([Some 1; None; Some 2] |> (List.map (fun __x -> optParam ?v:__x ()))) |>
+    List.length

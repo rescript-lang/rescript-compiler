@@ -1,0 +1,77 @@
+let makeSet (type s) cmp =
+  ((let module S = (Set.Make)(struct type nonrec t = s
+                                     let compare = cmp end) in ((module
+      S) : (module Set.S with type elt = s)))
+  [@ns.braces ])
+let three = ((module Three) : (module X_int))
+let numbers = [|three;(module Four)|]
+let numbers = (three, (module Four))
+let numbers = [three; (module Four)]
+let numbers = [|three;(module struct let x = 4 end)|]
+let numbers = (three, (module struct let x = 4 end))
+let numbers = [three; (module struct let x = 4 end)]
+let plus m1 m2 = ((((module
+  struct let x = (to_int m1) + (to_int m2) end) : (module X_int)))
+  [@ns.braces ])
+let plus m1 m2 = ((module
+  struct let x = (to_int m1) + (to_int m2) end) : (module X_int))
+let unique_instance = ((module
+  struct module Query_handler = Unique
+         let this = Unique.create 0 end) : (module Query_handler_instance))
+let build_instance (type a)
+  ((module Q)  : (module Query_handler with type config = a)) config =
+  ((module
+  struct module Query_handler = Q
+         let this = Q.create config end) : (module Query_handler_instance))
+let build_instance (type a)
+  ((module Q)  : (module Query_handler with type config = a)) config =
+  ((((module
+  struct module Query_handler = Q
+         let this = Q.create config end) : (module Query_handler_instance)))
+  [@ns.braces ])
+let unique_instance = build_instance (module Unique) 0
+let build_dispatch_table handlers =
+  ((let table = Hashtbl.create (module String) in
+    List.iter handlers
+      ~f:((fun (((module I)  : (module Query_handler_instance)) as instance)
+             ->
+             Hashtbl.set table ~key:((I.Query_handler.name)
+               [@ns.namedArgLoc ]) ~data:((instance)[@ns.namedArgLoc ]))
+      [@ns.namedArgLoc ]) table)
+  [@ns.braces ])
+;;(module Three)
+;;((module Three) : (module X_int))
+;;(module Teenager).(0)
+;;((module Teenager) |. age) |. Js.log
+;;((module Teenager).(0)) |. Js.log
+;;((if ((module Teenager) |. age) |. isAdult
+    then Js.log "has responsibilities"
+    else Js.log "can play in the playground")[@ns.ternary ])
+;;((if ((module Streets).(0)) |. isExpensive
+    then Js.log "big money"
+    else Js.log "affordable")[@ns.ternary ])
+let () = ((((module Teenager) |. age) |. Js.log)[@ns.braces ])
+let () = (((module Teenager).(0))[@ns.braces ])
+let () =
+  ((if ((module Teenager) |. age) |. isAdult
+    then Js.log "has responsibilities"
+    else Js.log "can play in the playground")
+  [@ns.braces ][@ns.ternary ])
+let () =
+  ((if ((module Streets).(0)) |. isExpensive
+    then Js.log "big money"
+    else Js.log "affordable")
+  [@ns.braces ][@ns.ternary ])
+let () =
+  ((let a = 1 in
+    let b = 2 in (module Teenager).(0); ((module Teenager) |. age) |. Js.log)
+  [@ns.braces ])
+let () =
+  ((let a = 1 in
+    let b = 2 in
+    ((module Teenager) |. age) |. Js.log;
+    ((if (((module Teenager).(0)) |. age) |. isAdult
+      then Js.log "has responsibilities"
+      else Js.log "can play in the playground")
+    [@ns.ternary ]))
+  [@ns.braces ])

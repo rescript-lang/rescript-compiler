@@ -1,0 +1,10 @@
+
+  Syntax error!
+  ./tests/parsing/errors/expressions/taggedTemplateLiterals.res:1:1-5
+
+  1 │ foo()`null`
+  2 │ 
+
+  Tagged template literals are currently restricted to names like: json`null`.
+
+;;{js|null|js}

@@ -1,0 +1,16 @@
+let x = [%obj { age = 30 }]
+let y = [%obj { age = 30 }]
+let y = [%obj { age = 30; name = "steve" }]
+let y = [%obj { age = 30; name = "steve" }]
+let x = (("age")[@ns.braces ])
+let x = (("age".(0))[@ns.braces ])
+let x = (("age" |. Js.log)[@ns.braces ])
+let x = ((if "age" then true else false)[@ns.braces ][@ns.ternary ])
+let x = (("age" |. Js.log; (let foo = 1 in let bar = 2 in foo + bar))
+  [@ns.braces ])
+let x =
+  ((((if "age" then true else false)
+    [@ns.ternary ]);
+    (let foo = 1 in let bar = 2 in foo + bar))
+  [@ns.braces ])
+let x = (("age".(0); (let foo = 1 in let bar = 2 in foo + bar))[@ns.braces ])

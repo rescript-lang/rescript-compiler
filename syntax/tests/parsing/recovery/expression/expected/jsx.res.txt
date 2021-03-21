@@ -1,0 +1,12 @@
+
+  Syntax error!
+  ./tests/parsing/recovery/expression/jsx.res:1:14
+
+  1 │ let x = <div @ @@@ />
+  2 │ 
+
+  I'm not sure what to parse here when looking at "@".
+
+let x = ((div ~children:[] ())[@JSX ])
+[@@@ ]
+;;[%rescript.exprhole ][@@ ]

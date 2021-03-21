@@ -1,0 +1,80 @@
+let f x = x + 1
+let f _ = Js.log "test"
+let f () = Js.log "unit"
+let f (Reducer (inst, comp)) = inst.render comp
+let f (Instance) = ()
+let f a b = a + b
+let f 1 2 = ()
+let f "stringPattern" = ()
+let f "stringPattern" "stringPattern" = ()
+let f () = ()
+let f (a : int) (b : int) = a + b
+let f _ _ = ()
+let f [|a;b|] [|c;d|] = ((a + b) + c) + d
+let f { a } = a + 1
+let f { a; b } { c; d } = ((a + b) + c) + d
+let f (a, b) = a + b
+let f (a, b) (c, d) = ((a + b) + c) + d
+let f exception Terminate = ()
+let f exception Terminate exception Exit = ()
+let f (lazy x) = ()
+let f (lazy x) (lazy y) = ()
+let f [] = ()
+let f (x::xs) = x + (xs |. Belt.List.length)
+let f (x : int) (y : int) = x + y
+let f ~a:((a)[@ns.namedArgLoc ])  ~b:((b)[@ns.namedArgLoc ])  = a + b
+let f ~a:((x)[@ns.namedArgLoc ])  ~b:((y)[@ns.namedArgLoc ])  = x + y
+let f ~a:(((x : int))[@ns.namedArgLoc ])  ~b:(((y : int))[@ns.namedArgLoc ]) 
+  = x + y
+let f ?a:(((a)[@ns.namedArgLoc ])= 1)  ?b:(((b)[@ns.namedArgLoc ])= 2)  c =
+  (a + b) + c
+let f ?a:(((x)[@ns.namedArgLoc ])= 1)  ?b:(((y)[@ns.namedArgLoc ])= 2)  c =
+  (x + y) + c
+let f ?a:((((x : int))[@ns.namedArgLoc ])= 1) 
+  ?b:((((y : int))[@ns.namedArgLoc ])= 2)  c = (x + y) + c
+let f ?a:((a)[@ns.namedArgLoc ])  ?b:((b)[@ns.namedArgLoc ])  c =
+  match (a, b) with | (Some a, Some b) -> (a + b) + c | _ -> 3
+let f ?a:((x)[@ns.namedArgLoc ])  ?b:((y)[@ns.namedArgLoc ])  c =
+  match (x, y) with | (Some a, Some b) -> (a + b) + c | _ -> 3
+let f ?a:(((x : int option))[@ns.namedArgLoc ]) 
+  ?b:(((y : int option))[@ns.namedArgLoc ])  c =
+  match (x, y) with | (Some a, Some b) -> (a + b) + c | _ -> 3
+let f a b = a + b
+let f = ((fun () -> ())[@bs ])
+let f = ((fun () -> ())[@bs ])
+let f = ((fun a -> fun b -> fun c -> ())[@bs ])
+let f = ((fun a -> fun b -> ((fun c -> fun d -> ())[@bs ]))[@bs ])
+let f = ((fun a -> ((fun b -> ((fun c -> ())[@bs ]))[@bs ]))[@bs ])
+let f =
+  ((fun ~a:((a)[@ns.namedArgLoc ]) ->
+      fun b -> ((fun ~c:((c)[@ns.namedArgLoc ]) -> fun d -> ())
+        [@bs ][@attr ]))
+  [@bs ][@attr ])
+let f =
+  ((fun ~a:((a)[@ns.namedArgLoc ]) ->
+      fun ((b)[@attrOnB ]) ->
+        ((fun ~c:((c)[@ns.namedArgLoc ]) -> fun ((d)[@attrOnD ]) -> ())
+        [@bs ][@attr ]))
+  [@bs ][@attr ])
+let f list = list ()
+;;match colour with
+  | Red when
+      (l = l') ||
+        (Clflags.classic.contents &&
+           ((l = Nolabel) && (not (is_optional l'))))
+      -> (t1, t2)
+  | _ -> ()
+let arr =
+  [|((fun _ -> doThings ()));((fun _ -> doThings ()));((fun _ -> doThings ()))|]
+let list =
+  [(fun _ -> doThings ()); (fun _ -> doThings ()); (fun _ -> doThings ())]
+let tuple =
+  ((fun _ -> doThings ()), (fun _ -> doThings ()), (fun _ -> doThings ()))
+;;fun _ -> doThings ()
+let x =
+  Constructore
+    ((fun _ -> copyChecklistItemCB ()), (fun _ -> copyChecklistItemCB ()))
+let y =
+  `Constructore
+    ((fun _ -> copyChecklistItemCB ()), (fun _ -> copyChecklistItemCB ()))
+let f list = list + 1

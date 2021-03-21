@@ -1,0 +1,13 @@
+type nonrec t = private 'a
+type nonrec t = private string
+type nonrec t = private _
+type nonrec t = private int
+type nonrec t = private int -> int
+type nonrec t = private int -> int
+type nonrec t = private int -> int -> int
+type nonrec t = private
+  int -> x:((string)[@ns.namedArgLoc ]) -> float -> unit
+type nonrec t = private string as 'x
+type nonrec t = private [%ext ]
+type nonrec t = private [%ext "console.log"]
+type nonrec t = private React.element

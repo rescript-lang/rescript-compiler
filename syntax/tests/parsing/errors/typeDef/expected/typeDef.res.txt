@@ -1,0 +1,49 @@
+
+  Syntax error!
+  ./tests/parsing/errors/typeDef/typeDef.res:1:15-2:3
+
+  1 │ type rec stack
+  2 │   | Empty
+  3 │ 
+  4 │ // name cannot contain module access paths
+
+  Did you forget a `=` here?
+
+
+  Syntax error!
+  ./tests/parsing/errors/typeDef/typeDef.res:5:6-12
+
+  3 │ 
+  4 │ // name cannot contain module access paths
+  5 │ type Foo.bar = string
+  6 │ 
+  7 │ // missing type
+
+  A type declaration's name cannot contain a module access. Did you mean `bar`?
+
+
+  Syntax error!
+  ./tests/parsing/errors/typeDef/typeDef.res:11:1-4
+
+   9 │ 
+  10 │ // missing type
+  11 │ type state =
+  12 │ 
+
+  Missing a type here
+
+
+  Syntax error!
+  ./tests/parsing/errors/typeDef/typeDef.res:12:1
+
+  10 │ // missing type
+  11 │ type state =
+  12 │ 
+
+  Missing a type here
+
+type stack =
+  | Empty 
+type nonrec bar = string
+type nonrec t = [%rescript.typehole ]
+type nonrec state = [%rescript.typehole ]

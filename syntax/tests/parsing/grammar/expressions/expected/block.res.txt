@@ -1,0 +1,70 @@
+let b =
+  ((let module Array = Belt.Array in
+      ([|1;2|] |. (Array.map (fun x -> x + 1))) |. Js.log)
+  [@ns.braces ])
+let b =
+  ((let open Belt.Array in ([|1;2|] |. (map (fun x -> x + 1))) |. Js.log)
+  [@ns.braces ])
+let b = ((let exception QuitEarly  in raise QuitEarly)[@ns.braces ])
+let b = ((let a = 1 in let b = 2 in a + b)[@ns.braces ])
+let b = ((let _ = sideEffect () in ())[@ns.braces ])
+let b = ((let _ = sideEffect () in ())[@ns.braces ])
+let b = ((a (); b (); c ())[@ns.braces ])
+let b = ((a (); b (); (let a = 1 in f a))[@ns.braces ])
+let b = ((let a = 1 in let b = 2 in ())[@ns.braces ])
+let b =
+  ((let module Array = Belt.Array in
+      let open Array in
+        let exception Terminate of int  in
+          let a = 1 in
+          let b = 2 in
+          sideEffect ();
+          (let x = (1 + 2) |. (fun x -> x + 1) in raise (Terminate x)))
+  [@ns.braces ])
+let b = ((f (); g (); h (); (let arr = [|1;2;3|] in ()))[@ns.braces ])
+let res =
+  ((let a = "a starts out as" in
+    (((print_string a; (let a = 20 in print_int a)))
+    [@ns.braces ]);
+    print_string a)
+  [@ns.braces ])
+let res =
+  ((let a = "first its a string" in
+    let a = 20 in print_int a; print_int a; print_int a)
+  [@ns.braces ])
+let res =
+  ((let a = "a is always a string" in
+    print_string a; (let b = 30 in print_int b))
+  [@ns.braces ])
+let nestedLet = ((let _ = 1 in ())[@ns.braces ])
+let nestedLet = ((let _ = 1 in 2)[@ns.braces ])
+let init () = ((foo (1 == 1); [%assert 1 == 2])[@ns.braces ])
+let init () = (([%assert 1 == 2]; foo (1 == 1); [%assert 1 == 2])
+  [@ns.braces ])
+let f () = ((let x = 1 in fun _ -> ())[@ns.braces ])
+let reifyStyle (type a) (x : 'a) =
+  (((let module Internal =
+       struct
+         type constructor
+         external canvasGradient : constructor = "CanvasGradient"[@@bs.val ]
+         external canvasPattern : constructor = "CanvasPattern"[@@bs.val ]
+         let instanceOf =
+           ([%bs.raw {js|function(x,y) {return +(x instanceof y)}|js}] : 
+           'a -> constructor -> bool)
+       end in
+       ((if (Js.typeof x) = "string"
+         then Obj.magic String
+         else
+           if Internal.instanceOf x Internal.canvasGradient
+           then Obj.magic Gradient
+           else
+             if Internal.instanceOf x Internal.canvasPattern
+             then Obj.magic Pattern
+             else
+               raise
+                 (Invalid_argument
+                    "Unknown canvas style kind. Known values are: String, CanvasGradient, CanvasPattern")),
+         (Obj.magic x)))
+  [@ns.braces ]) : (a style * a))
+let calc_fps t0 t1 = ((let delta = (t1 -. t0) /. 1000. in 1. /. delta)
+  [@ns.braces ])

@@ -1,0 +1,83 @@
+let "stringPattern" = ()
+let "stringPattern" as s = ()
+let ("stringPattern" : string) = ()
+let ("stringPattern" : string) as s = ()
+;;match x with
+  | "stringPattern" -> ()
+  | "stringPattern" as s -> ()
+  | ("stringPattern" : string) as s -> ()
+;;for "stringPattern" = 0 to 10 do () done
+;;for "stringPattern" as s = 0 to 10 do () done
+;;for "stringPattern" = 0 to 10 do () done
+;;for "stringPattern" as s = 0 to 10 do () done
+;;for "stringPattern" as s = 0 to 10 do () done
+let f "stringPattern" = ()
+let f ("stringPattern" as s) = ()
+let f ("stringPattern" as s) = ()
+let f ("stringPattern" : string) = ()
+let f (("stringPattern" : string) as s) = ()
+let f ("stringPattern" : string) = ()
+let 1 = ()
+let 1 as x = ()
+let (1 : int) = ()
+let (1 : int) as x = ()
+;;match x with
+  | 1 -> ()
+  | 1 as x -> ()
+  | (1 : int) -> ()
+  | (1 : int) as x -> ()
+let f 1 = ()
+let f (1 as x) = ()
+let f (1 : int) = ()
+let f ((1 : int) as x) = ()
+let f (1 : int) = ()
+;;for i = 0 to 10 do () done
+;;for i as x = 0 to 10 do () done
+;;for i = 0 to 10 do () done
+;;for i as x = 0 to 10 do () done
+;;for i as x = 0 to 10 do () done
+;;match listPatterns with
+  | (true, pattern)::patterns ->
+      let patterns = (patterns |> (List.map filterSpread)) |> List.rev in
+      makeListPattern loc patterns (Some pattern)
+  | patterns ->
+      let patterns = (patterns |> (List.map filterSpread)) |> List.rev in
+      makeListPattern loc patterns None
+let _0 = 0x9A
+let print ppf i =
+  match i.stamp with
+  | 0 -> fprintf ppf "%s!" i.name
+  | (-1) -> fprintf ppf "%s#" i.name
+  | 1 -> fprintf ppf "%s#" i.name
+  | (-1.) -> fprintf ppf "%s#" i.name
+  | 1. -> fprintf ppf "%s#" i.name
+let (-1)..(-1.) = x
+;;match science with
+  | (1.12, (-3.13)) -> true
+  | [|1.12;(-3.13)|] -> true
+  | 1.12::(-3.13)::[] -> true
+  | { x = 1.12; y = (-3.13) } -> true
+  | Constructor (1.12, (-2.45)) -> true
+  | `Constuctor (1.12, (-2.45)) -> true
+  | (-4.15) as x -> true
+  | (-4.15)|4.15 -> true
+  | ((-3.14) : float) -> true
+  | (lazy 5.678) -> true
+  | exception 19.34 -> true
+  | _ -> false
+;;match literal with
+  | {js|literal|js} -> true
+  | ({js|literal1|js}, {js|literal2|js}) -> true
+  | [|{js|literal1|js};{js|literal2|js}|] -> true
+  | {js|literal1|js}::{js|literal2|js}::[] -> true
+  | { x = {js|literal1|js}; y = {js|literal2|js} } -> true
+  | Constructor ({js|literal1|js}, {js|literal2|js}) -> true
+  | `Constuctor ({js|literal1|js}, {js|literal2|js}) -> true
+  | {js|literal|js} as x -> true
+  | {js|literal|js}|{js|literal|js} -> true
+  | ({js|literal|js} : string) -> true
+  | (lazy {js|literal|js}) -> true
+  | exception {js|literal|js} -> true
+  | _ -> false
+let {js|literal constant|js} = x
+;;for {js|literal constant|js} = 0 to 10 do () done

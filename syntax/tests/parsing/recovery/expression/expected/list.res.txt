@@ -1,0 +1,42 @@
+
+  Syntax error!
+  ./tests/parsing/recovery/expression/list.res:6:26-28
+
+  4 ┆ let rec loop = (items) => {
+  5 ┆   switch(items) {
+  6 ┆     | ["-pp", _ppFlag, ...rest] => loop(rest)
+  7 ┆     | [x, ...rest] => [x, ...loop(rest)]
+  8 ┆     | [] => []
+
+  Array's `...` spread is not supported in pattern matches.
+Explanation: such spread would create a subarray; out of performance concern, our pattern matching currently guarantees to never create new intermediate data.
+Solution: if it's to validate the first few elements, use a `when` clause + Array size check + `get` checks on the current pattern. If it's to obtain a subarray, use `Array.sub` or `Belt.Array.slice`.
+
+
+  Syntax error!
+  ./tests/parsing/recovery/expression/list.res:7:13-15
+
+  5 ┆ switch(items) {
+  6 ┆   | ["-pp", _ppFlag, ...rest] => loop(rest)
+  7 ┆   | [x, ...rest] => [x, ...loop(rest)]
+  8 ┆   | [] => []
+  9 ┆ }
+
+  Array's `...` spread is not supported in pattern matches.
+Explanation: such spread would create a subarray; out of performance concern, our pattern matching currently guarantees to never create new intermediate data.
+Solution: if it's to validate the first few elements, use a `when` clause + Array size check + `get` checks on the current pattern. If it's to obtain a subarray, use `Array.sub` or `Belt.Array.slice`.
+
+let flags =
+  ((if reasonFormat
+    then
+      ((let parts = Utils.split_on_char ' ' flags in
+        let rec loop items =
+          ((match items with
+            | [|"-pp";_ppFlag;rest|] -> loop rest
+            | [|x;rest|] -> [|x;(loop rest)|]
+            | [||] -> [||])
+          [@ns.braces ]) in
+        (loop parts) |> (String.concat " "))
+      [@ns.braces ])
+    else flags)
+  [@ns.ternary ])

@@ -1,0 +1,25 @@
+
+  Syntax error!
+  ./tests/parsing/errors/signature/consecutive.resi:1:11-14
+
+  1 │ let x: int let y: float
+  2 │ 
+  3 │ export z1: int export z2: float
+
+  consecutive specifications on a line must be separated by ';' or a newline
+
+
+  Syntax error!
+  ./tests/parsing/errors/signature/consecutive.resi:3:15-21
+
+  1 │ let x: int let y: float
+  2 │ 
+  3 │ export z1: int export z2: float
+  4 │ 
+
+  consecutive specifications on a line must be separated by ';' or a newline
+
+val x : int
+val y : float
+val z1 : int[@@genType ]
+val z2 : float[@@genType ]

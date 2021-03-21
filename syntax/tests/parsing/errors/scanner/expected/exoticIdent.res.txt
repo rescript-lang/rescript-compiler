@@ -1,0 +1,46 @@
+
+  Syntax error!
+  ./tests/parsing/errors/scanner/exoticIdent.res:1:7
+
+  1 │ let \"a
+  2 │ b
+  3 │ c" = 1
+
+  A quoted identifier can't contain line breaks.
+
+
+  Syntax error!
+  ./tests/parsing/errors/scanner/exoticIdent.res:2:1
+
+  1 │ let \"a
+  2 │ b
+  3 │ c" = 1
+  4 │ 
+
+  Did you forget a `=` here?
+
+
+  Syntax error!
+  ./tests/parsing/errors/scanner/exoticIdent.res:3:2-4:0
+
+  1 │ let \"a
+  2 │ b
+  3 │ c" = 1
+  4 │ 
+
+  This string is missing a double quote at the end
+
+
+  Syntax error!
+  ./tests/parsing/errors/scanner/exoticIdent.res:3:2-4:0
+
+  1 │ let \"a
+  2 │ b
+  3 │ c" = 1
+  4 │ 
+
+  consecutive statements on a line must be separated by ';' or a newline
+
+let a = b
+;;c
+;;" = 1\n"
