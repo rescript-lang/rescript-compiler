@@ -1,10 +1,10 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_option = require("../../lib/js/caml_option.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 function even(n) {
   if (n === 0) {
@@ -79,7 +79,7 @@ var Odd = {};
 function compare(t1, t2) {
   if (t1.TAG === /* Leaf */0) {
     if (t2.TAG === /* Leaf */0) {
-      return Caml_primitive.caml_string_compare(t1._0, t2._0);
+      return Caml.caml_string_compare(t1._0, t2._0);
     } else {
       return 1;
     }

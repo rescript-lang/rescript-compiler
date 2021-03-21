@@ -1,12 +1,12 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Caml = require("../../lib/js/caml.js");
 var Belt_Id = require("../../lib/js/belt_Id.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 var Belt_HashMap = require("../../lib/js/belt_HashMap.js");
 var Belt_SortArray = require("../../lib/js/belt_SortArray.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
 var Belt_internalBucketsType = require("../../lib/js/belt_internalBucketsType.js");
 
@@ -32,7 +32,7 @@ function eq(x, y) {
 
 var hash = Hashtbl.hash;
 
-var cmp = Caml_primitive.caml_int_compare;
+var cmp = Caml.caml_int_compare;
 
 var Y = Belt_Id.hashable(hash, eq);
 

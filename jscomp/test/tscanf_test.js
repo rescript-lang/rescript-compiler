@@ -1,6 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 var Scanf = require("../../lib/js/scanf.js");
@@ -4813,7 +4814,7 @@ function test53(param) {
               _1: "%ld"
             }), (function (i) {
             return (i + 1 | 0) === 125;
-          })) && Caml_int64.eq(Curry._1(Scanf.sscanf("123", /* Format */{
+          })) && Caml.i64_eq(Curry._1(Scanf.sscanf("123", /* Format */{
                   _0: {
                     TAG: /* Int64 */7,
                     _0: /* Int_d */0,
@@ -4836,7 +4837,7 @@ function test53(param) {
                     },
                     _1: "%Ld"
                   }), (function (i) {
-                  return Caml_int64.eq(Caml_int64.sub(i, Caml_int64.one), [
+                  return Caml.i64_eq(Caml_int64.sub(i, Caml_int64.one), [
                               0,
                               123
                             ]);

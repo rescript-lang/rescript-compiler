@@ -1,10 +1,10 @@
 'use strict';
 
+var Caml = require("../../lib/js/caml.js");
 var Belt_Id = require("../../lib/js/belt_Id.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var Belt_HashMap = require("../../lib/js/belt_HashMap.js");
 var Belt_MapDict = require("../../lib/js/belt_MapDict.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Belt_HashMapInt = require("../../lib/js/belt_HashMapInt.js");
 var Belt_HashSetInt = require("../../lib/js/belt_HashSetInt.js");
 var Belt_HashMapString = require("../../lib/js/belt_HashMapString.js");
@@ -139,7 +139,7 @@ function bench3(m) {
       };
 }
 
-var Sx = Belt_Id.comparable(Caml_primitive.caml_string_compare);
+var Sx = Belt_Id.comparable(Caml.caml_string_compare);
 
 function bench4(param) {
   var table = Belt_internalBucketsType.make(undefined, undefined, 1000000);

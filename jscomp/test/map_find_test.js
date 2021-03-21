@@ -1,8 +1,8 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 function height(param) {
   if (param) {
@@ -98,7 +98,7 @@ function add(x, data, m) {
   var d = m.d;
   var v = m.v;
   var l = m.l;
-  var c = Caml_primitive.caml_int_compare(x, v);
+  var c = Caml.caml_int_compare(x, v);
   if (c === 0) {
     if (d === data) {
       return m;
@@ -132,7 +132,7 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_primitive.caml_int_compare(x, param.v);
+      var c = Caml.caml_int_compare(x, param.v);
       if (c === 0) {
         return param.d;
       }
@@ -268,7 +268,7 @@ function add$1(x, data, m) {
   var d = m.d;
   var v = m.v;
   var l = m.l;
-  var c = Caml_primitive.caml_string_compare(x, v);
+  var c = Caml.caml_string_compare(x, v);
   if (c === 0) {
     if (d === data) {
       return m;
@@ -302,7 +302,7 @@ function find$1(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_primitive.caml_string_compare(x, param.v);
+      var c = Caml.caml_string_compare(x, param.v);
       if (c === 0) {
         return param.d;
       }

@@ -34,9 +34,19 @@
 
 
 
-let (>>>~) = Caml_nativeint_extern.shift_right_logical
-let ( +~ ) = Caml_nativeint_extern.add
-let ( *~ ) = Caml_nativeint_extern.mul
+let %private 
+{
+  shift_right_logical =  (>>>~);
+  add = (+~);
+  mul = ( *~ )
+} = 
+  (module Caml_nativeint_extern)
+
+let {i64_eq = eq ;
+  i64_ge = ge;
+  i64_gt = gt;
+  } = (module Caml) 
+
 let lognot x =  x lxor (-1)
 
 (* [hi] is signed 
@@ -45,7 +55,9 @@ let lognot x =  x lxor (-1)
    signedness does not matter when they are doing int32 bits operation   
    however, they are different when doing comparison
 *)
-type t =   {  hi : int ; [@as "0"] lo : int ; [@as "1" ]  }
+type t =   Caml_int64_extern.t = {
+  hi : int ; [@as "0"] lo : int ; [@as "1" ] 
+}
 
 external unsafe_to_int64 : t -> int64 = "%identity"           
 external unsafe_of_int64 : int64 -> t = "%identity"
@@ -109,7 +121,7 @@ let add
 
 (* let not ( {lo; hi })  = mk ~lo:(lognot lo) ~hi:(lognot hi) *)
 
-let eq ( x) ( y) = x.hi = y.hi && x.lo = y.lo
+
 
 let equal_null x y =    
   match Js.nullToOption y with 
@@ -276,29 +288,11 @@ let and_ ( {lo = this_lo; hi= this_hi}) ( {lo = other_lo; hi = other_hi}) =
    however (x>>>0 >>>0) is not that bad
 *)
 
-type comparison = t -> t -> bool
-
-let  ge ( {hi; lo } : t)  ( {hi = other_hi; lo = other_lo}) : bool =
-  if hi > other_hi then true
-  else if hi < other_hi then false
-  else  lo  >=  other_lo
 
 
 
-let neq x y = Pervasives.not (eq x y)
-let lt x y  = Pervasives.not (ge x y)
-let gt ( x) ( y) =
-  if x.hi > y.hi then
-    true
-  else if x.hi < y.hi  then
-    false
-  else
-    x.lo >  y.lo
 
 
-let le x y = Pervasives.not (gt x y)
-let min x y = if lt x  y then x else y 
-let max x y = if gt x y then x else y 
 
 let to_float ( {hi; lo} : t) = 
   Caml_nativeint_extern.to_float ( hi *~ [%raw{|0x100000000|}] +~ lo)

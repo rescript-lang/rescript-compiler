@@ -1,8 +1,8 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 function height(param) {
   if (param) {
@@ -98,7 +98,7 @@ function add(x, data, param) {
   var d = param._2;
   var v = param._1;
   var l = param._0;
-  var c = Caml_primitive.caml_int_compare(x, v);
+  var c = Caml.caml_int_compare(x, v);
   if (c === 0) {
     return /* Node */{
             _0: l,
@@ -118,7 +118,7 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_primitive.caml_int_compare(x, param._1);
+      var c = Caml.caml_int_compare(x, param._1);
       if (c === 0) {
         return param._2;
       }

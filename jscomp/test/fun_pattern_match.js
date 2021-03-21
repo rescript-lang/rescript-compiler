@@ -1,7 +1,7 @@
 'use strict';
 
+var Caml = require("../../lib/js/caml.js");
 var Curry = require("../../lib/js/curry.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 function f(param, v) {
   return ((((param.x0 + param.x1 | 0) + param.x2 | 0) + param.x3 | 0) + param.x4 | 0) + v | 0;
@@ -37,7 +37,7 @@ function f3(param) {
             Error: new Error()
           };
     }
-    return Caml_primitive.caml_int_compare(lhs._0, rhs._0);
+    return Caml.caml_int_compare(lhs._0, rhs._0);
   };
 }
 
@@ -67,7 +67,7 @@ function f4(param) {
             Error: new Error()
           };
     }
-    return Caml_primitive.caml_int_compare(lhs._0, rhs._0);
+    return Caml.caml_int_compare(lhs._0, rhs._0);
   };
 }
 

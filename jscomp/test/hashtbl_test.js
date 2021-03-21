@@ -1,12 +1,12 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
 var Curry = require("../../lib/js/curry.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var MoreLabels = require("../../lib/js/moreLabels.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 function to_list(tbl) {
   return Hashtbl.fold((function (k, v, acc) {
@@ -25,7 +25,7 @@ function f(param) {
   Hashtbl.add(tbl, 1, /* '1' */49);
   Hashtbl.add(tbl, 2, /* '2' */50);
   return List.sort((function (param, param$1) {
-                return Caml_primitive.caml_int_compare(param[0], param$1[0]);
+                return Caml.caml_int_compare(param[0], param$1[0]);
               }), to_list(tbl));
 }
 
@@ -39,7 +39,7 @@ function g(count) {
   }
   var v = to_list(tbl);
   return $$Array.of_list(List.sort((function (param, param$1) {
-                    return Caml_primitive.caml_int_compare(param[0], param$1[0]);
+                    return Caml.caml_int_compare(param[0], param$1[0]);
                   }), v));
 }
 

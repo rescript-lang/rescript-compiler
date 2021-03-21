@@ -1,9 +1,9 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var list_suites_0 = [
   "length",
@@ -70,7 +70,7 @@ var list_suites_1 = {
         (function (param) {
             return {
                     TAG: /* Eq */0,
-                    _0: List.sort(Caml_primitive.caml_int_compare, {
+                    _0: List.sort(Caml.caml_int_compare, {
                           hd: 4,
                           tl: {
                             hd: 1,

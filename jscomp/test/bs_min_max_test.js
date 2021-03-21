@@ -1,9 +1,9 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Caml = require("../../lib/js/caml.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var suites = {
   contents: /* [] */0
@@ -22,14 +22,14 @@ function b(param, param$1) {
 }
 
 function f(x, y) {
-  return Caml_primitive.caml_int_compare(x + y | 0, y + x | 0);
+  return Caml.caml_int_compare(x + y | 0, y + x | 0);
 }
 
 function f2(x, y) {
-  return Caml_primitive.caml_int_compare(x + y | 0, y);
+  return Caml.caml_int_compare(x + y | 0, y);
 }
 
-var f3 = Caml_primitive.caml_int_compare;
+var f3 = Caml.caml_int_compare;
 
 function f4(x, y) {
   if (x < y) {
@@ -43,9 +43,9 @@ var f5_min = Caml_obj.caml_min;
 
 var f5_max = Caml_obj.caml_max;
 
-b("File \"bs_min_max_test.ml\", line 28, characters 4-11", Caml_int64.eq(Caml_int64.min(Caml_int64.zero, Caml_int64.one), Caml_int64.zero));
+b("File \"bs_min_max_test.ml\", line 28, characters 4-11", Caml.i64_eq(Caml.i64_min(Caml_int64.zero, Caml_int64.one), Caml_int64.zero));
 
-b("File \"bs_min_max_test.ml\", line 29, characters 4-11", Caml_int64.eq(Caml_int64.max([
+b("File \"bs_min_max_test.ml\", line 29, characters 4-11", Caml.i64_eq(Caml.i64_max([
               0,
               22
             ], Caml_int64.one), [
@@ -53,7 +53,7 @@ b("File \"bs_min_max_test.ml\", line 29, characters 4-11", Caml_int64.eq(Caml_in
           22
         ]));
 
-b("File \"bs_min_max_test.ml\", line 30, characters 4-11", Caml_int64.eq(Caml_int64.max([
+b("File \"bs_min_max_test.ml\", line 30, characters 4-11", Caml.i64_eq(Caml.i64_max([
               -1,
               4294967293
             ], [

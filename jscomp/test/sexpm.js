@@ -1,6 +1,7 @@
 'use strict';
 
 var Sys = require("../../lib/js/sys.js");
+var Caml = require("../../lib/js/caml.js");
 var Char = require("../../lib/js/char.js");
 var List = require("../../lib/js/list.js");
 var Bytes = require("../../lib/js/bytes.js");
@@ -13,7 +14,6 @@ var Caml_io = require("../../lib/js/caml_io.js");
 var Printexc = require("../../lib/js/printexc.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Pervasives = require("../../lib/js/pervasives.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 
@@ -394,7 +394,7 @@ var ID_MONAD = {
 
 function make(bufsizeOpt, refill) {
   var bufsize = bufsizeOpt !== undefined ? bufsizeOpt : 1024;
-  var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
+  var bufsize$1 = Caml.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
   return {
           buf: Caml_bytes.caml_create_bytes(bufsize$1),
           refill: refill,
@@ -1008,7 +1008,7 @@ function MakeDecode(funarg) {
   var $great$great$eq = funarg.$great$great$eq;
   var make = function (bufsizeOpt, refill) {
     var bufsize = bufsizeOpt !== undefined ? bufsizeOpt : 1024;
-    var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
+    var bufsize$1 = Caml.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
     return {
             buf: Caml_bytes.caml_create_bytes(bufsize$1),
             refill: refill,

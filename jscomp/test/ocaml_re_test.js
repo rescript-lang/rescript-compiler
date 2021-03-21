@@ -1,6 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Caml = require("../../lib/js/caml.js");
 var Char = require("../../lib/js/char.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
@@ -15,7 +16,6 @@ var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -566,7 +566,7 @@ function add$1(x, t) {
   var r = t.r;
   var v = t.v;
   var l = t.l;
-  var c = Caml_primitive.caml_int_compare(x, v);
+  var c = Caml.caml_int_compare(x, v);
   if (c === 0) {
     return t;
   }
@@ -1395,7 +1395,7 @@ function delta(tbl_ref, next_cat, $$char, st) {
 
 function flatten_match(m) {
   var ma = List.fold_left((function (ma, param) {
-          return Caml_primitive.caml_int_max(ma, param[0]);
+          return Caml.caml_int_max(ma, param[0]);
         }), -1, m);
   var res = Caml_array.make(ma + 1 | 0, -1);
   List.iter((function (param) {

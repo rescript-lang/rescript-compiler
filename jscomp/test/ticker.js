@@ -1,5 +1,6 @@
 'use strict';
 
+var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
@@ -8,7 +9,6 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_option = require("../../lib/js/caml_option.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function split(delim, s) {
@@ -1159,7 +1159,7 @@ function compute_update_sequences(all_tickers) {
                                 Error: new Error()
                               };
                         }
-                        return Caml_primitive.caml_int_compare(x._0, y._0);
+                        return Caml.caml_int_compare(x._0, y._0);
                       }), l);
                 return add(k, l$1, map);
               }), map, map);

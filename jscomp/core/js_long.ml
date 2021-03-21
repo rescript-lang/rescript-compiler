@@ -73,14 +73,19 @@ let of_int32 (args : J.expression list) =
   | _ -> int64_call  "of_int32" args
 
 let comp (cmp : Lam_compat.comparison) args = 
-  E.runtime_call  Js_runtime_modules.int64
+  E.runtime_call  Js_runtime_modules.caml_primitive
     (match cmp with 
-     | Ceq -> "eq"
-     | Cneq -> "neq"
-     | Clt -> "lt"
-     | Cgt -> "gt"
-     | Cle -> "le"
-     | Cge -> "ge") args 
+     | Ceq -> "i64_eq"
+     | Cneq -> "i64_neq"
+     | Clt -> "i64_lt"
+     | Cgt -> "i64_gt"
+     | Cle -> "i64_le"
+     | Cge -> "i64_ge") args 
+let min args = 
+  E.runtime_call Js_runtime_modules.caml_primitive "i64_min" args 
+let max args = 
+  E.runtime_call Js_runtime_modules.caml_primitive "i64_max" args   
+  
 
 let neg args = 
   int64_call "neg" args
@@ -161,10 +166,6 @@ let compare (args : J.expression list) =
 (* let get64 = int64_call "get64" *)
 let float_of_bits  =  int64_call "float_of_bits" 
 let bits_of_float = int64_call "bits_of_float"
-let min args = 
-  int64_call "min" args 
-let max args = 
-  int64_call "max" args
 
 
 let equal_null args =   

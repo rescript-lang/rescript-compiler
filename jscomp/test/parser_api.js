@@ -2,6 +2,7 @@
 
 var Arg = require("../../lib/js/arg.js");
 var Sys = require("../../lib/js/sys.js");
+var Caml = require("../../lib/js/caml.js");
 var Char = require("../../lib/js/char.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
@@ -26,7 +27,6 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -1374,7 +1374,7 @@ var LongString = {
 function edit_distance(a, b, cutoff) {
   var la = a.length;
   var lb = b.length;
-  var cutoff$1 = Caml_primitive.caml_int_min(la > lb ? la : lb, cutoff);
+  var cutoff$1 = Caml.caml_int_min(la > lb ? la : lb, cutoff);
   if (Pervasives.abs(la - lb | 0) > cutoff$1) {
     return ;
   }
@@ -1387,10 +1387,10 @@ function edit_distance(a, b, cutoff) {
     Caml_array.set(Caml_array.get(m, 0), j, j);
   }
   for(var i$1 = 1; i$1 <= la; ++i$1){
-    for(var j$1 = Caml_primitive.caml_int_max(1, (i$1 - cutoff$1 | 0) - 1 | 0) ,j_finish = Caml_primitive.caml_int_min(lb, (i$1 + cutoff$1 | 0) + 1 | 0); j$1 <= j_finish; ++j$1){
+    for(var j$1 = Caml.caml_int_max(1, (i$1 - cutoff$1 | 0) - 1 | 0) ,j_finish = Caml.caml_int_min(lb, (i$1 + cutoff$1 | 0) + 1 | 0); j$1 <= j_finish; ++j$1){
       var cost = Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? 0 : 1;
-      var best = Caml_primitive.caml_int_min(1 + Caml_primitive.caml_int_min(Caml_array.get(Caml_array.get(m, i$1 - 1 | 0), j$1), Caml_array.get(Caml_array.get(m, i$1), j$1 - 1 | 0)) | 0, Caml_array.get(Caml_array.get(m, i$1 - 1 | 0), j$1 - 1 | 0) + cost | 0);
-      var best$1 = i$1 > 1 && j$1 > 1 && Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 2 | 0) && Caml_string.get(a, i$1 - 2 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? Caml_primitive.caml_int_min(best, Caml_array.get(Caml_array.get(m, i$1 - 2 | 0), j$1 - 2 | 0) + cost | 0) : best;
+      var best = Caml.caml_int_min(1 + Caml.caml_int_min(Caml_array.get(Caml_array.get(m, i$1 - 1 | 0), j$1), Caml_array.get(Caml_array.get(m, i$1), j$1 - 1 | 0)) | 0, Caml_array.get(Caml_array.get(m, i$1 - 1 | 0), j$1 - 1 | 0) + cost | 0);
+      var best$1 = i$1 > 1 && j$1 > 1 && Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 2 | 0) && Caml_string.get(a, i$1 - 2 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? Caml.caml_int_min(best, Caml_array.get(Caml_array.get(m, i$1 - 2 | 0), j$1 - 2 | 0) + cost | 0) : best;
       Caml_array.set(Caml_array.get(m, i$1), j$1, best$1);
     }
   }
@@ -2228,7 +2228,7 @@ function parse_opt(error, active, flags, s) {
           };
     }
     var match$1 = get_range(i);
-    for(var n = match$1[1] ,n_finish = Caml_primitive.caml_int_min(match$1[2], 104); n <= n_finish; ++n){
+    for(var n = match$1[1] ,n_finish = Caml.caml_int_min(match$1[2], 104); n <= n_finish; ++n){
       Curry._1(myset, n);
     }
     return loop(match$1[0]);

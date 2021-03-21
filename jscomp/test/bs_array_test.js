@@ -1,6 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Caml = require("../../lib/js/caml.js");
 var Curry = require("../../lib/js/curry.js");
 var Js_list = require("../../lib/js/js_list.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
@@ -8,7 +9,6 @@ var Belt_List = require("../../lib/js/belt_List.js");
 var Js_vector = require("../../lib/js/js_vector.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 var Caml_array = require("../../lib/js/caml_array.js");
-var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var suites = {
   contents: /* [] */0
@@ -1518,7 +1518,7 @@ b("File \"bs_array_test.ml\", line 327, characters 4-11", Belt_Array.cmp([
           1,
           2,
           3
-        ], Caml_primitive.caml_int_compare) < 0);
+        ], Caml.caml_int_compare) < 0);
 
 b("File \"bs_array_test.ml\", line 328, characters 4-11", Belt_Array.cmp([
           0,
@@ -1529,7 +1529,7 @@ b("File \"bs_array_test.ml\", line 328, characters 4-11", Belt_Array.cmp([
           1,
           2,
           3
-        ], Caml_primitive.caml_int_compare) > 0);
+        ], Caml.caml_int_compare) > 0);
 
 b("File \"bs_array_test.ml\", line 329, characters 4-11", Belt_Array.cmp([
           1,
@@ -1539,7 +1539,7 @@ b("File \"bs_array_test.ml\", line 329, characters 4-11", Belt_Array.cmp([
           0,
           1,
           2
-        ], Caml_primitive.caml_int_compare) > 0);
+        ], Caml.caml_int_compare) > 0);
 
 b("File \"bs_array_test.ml\", line 330, characters 4-11", Belt_Array.cmp([
           1,
@@ -1549,7 +1549,7 @@ b("File \"bs_array_test.ml\", line 330, characters 4-11", Belt_Array.cmp([
           1,
           2,
           3
-        ], Caml_primitive.caml_int_compare) === 0);
+        ], Caml.caml_int_compare) === 0);
 
 b("File \"bs_array_test.ml\", line 331, characters 4-11", Belt_Array.cmp([
           1,
@@ -1559,7 +1559,7 @@ b("File \"bs_array_test.ml\", line 331, characters 4-11", Belt_Array.cmp([
           1,
           2,
           3
-        ], Caml_primitive.caml_int_compare) > 0);
+        ], Caml.caml_int_compare) > 0);
 
 eq("File \"bs_array_test.ml\", line 334, characters 5-12", Belt_Array.getBy([
           1,
