@@ -45,7 +45,7 @@ val interface :
 val interface_mliast : 
   Format.formatter -> 
   string  -> 
-  ([`ml | `rescript | `reason ] -> unit) ->
+  ([`ml | `rescript | `reason | `default ] -> unit) ->
   unit
 
 
@@ -71,7 +71,7 @@ val implementation :
 val implementation_mlast : 
   Format.formatter ->
   string -> 
-  ([`ml | `rescript | `reason ]  -> unit) ->
+  ([`ml | `rescript | `reason | `default ]  -> unit) ->
   unit
 
 val implementation_map : 

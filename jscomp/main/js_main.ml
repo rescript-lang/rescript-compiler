@@ -19,13 +19,16 @@ let set_abs_input_name sourcefile =
   Location.set_input_name sourcefile;
   sourcefile  
 
-
-let setup_error_printer (syntax_kind : [ `ml | `reason | `rescript ])= 
-  Config.syntax_kind := syntax_kind ;   
+type syntax_kind = [`ml | `reason | `rescript]
+let setup_compiler_printer (syntax_kind : [ syntax_kind | `default])= 
+  (match syntax_kind with 
+   | `default -> ()  
+   | #syntax_kind as k -> Config.syntax_kind := k);   
+  let syntax_kind = !Config.syntax_kind in 
   if syntax_kind = `reason then begin 
     Lazy.force Super_main.setup;  
     Lazy.force Reason_outcome_printer_main.setup
-  end else if !Config.syntax_kind = `rescript then begin 
+  end else if syntax_kind = `rescript then begin 
     Lazy.force Super_main.setup;  
     Lazy.force Res_outcome_printer.setup  
   end  
@@ -46,7 +49,7 @@ let setup_runtime_path path =
   Js_config.customize_runtime := Some path
 
 let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf  = 
-  setup_error_printer `reason;
+  setup_compiler_printer `reason;
   let tmpfile =  Ast_reason_pp.pp sourcefile in   
   let outputprefix = Config_util.output_prefix sourcefile in 
   (match kind with 
@@ -87,42 +90,49 @@ let process_file sourcefile
   | Rei ->
     let sourcefile = set_abs_input_name  sourcefile in 
     handle_reason Mli sourcefile ppf  
+    (* The printer setup is doen in [handle_reason] *)
   | Ml ->
     let sourcefile = set_abs_input_name  sourcefile in     
+    setup_compiler_printer `ml;
     Js_implementation.implementation 
       ~parser:Pparse_driver.parse_implementation
       ppf sourcefile 
   | Mli  ->   
     let sourcefile = set_abs_input_name  sourcefile in   
+    setup_compiler_printer `ml;
     Js_implementation.interface 
       ~parser:Pparse_driver.parse_interface
       ppf sourcefile 
   | Res -> 
     let sourcefile = set_abs_input_name  sourcefile in     
-    setup_error_printer `rescript;
+    setup_compiler_printer `rescript;
     Js_implementation.implementation 
       ~parser:Res_driver.parse_implementation
       ppf sourcefile 
   | Resi ->   
     let sourcefile = set_abs_input_name  sourcefile in 
-    setup_error_printer `rescript;
+    setup_compiler_printer `rescript;
     Js_implementation.interface 
       ~parser:Res_driver.parse_interface
       ppf sourcefile      
   | Intf_ast 
     ->     
     Js_implementation.interface_mliast ppf sourcefile
-      setup_error_printer ;
+      setup_compiler_printer 
+    (* The printer setup is done in the runtime depends on
+      the content of ast
+    *)  
   | Impl_ast 
     -> 
     Js_implementation.implementation_mlast ppf sourcefile 
-      setup_error_printer;  
+      setup_compiler_printer;  
   | Mlmap 
     -> 
     Location.set_input_name  sourcefile;    
     Js_implementation.implementation_map ppf sourcefile 
   | Cmi
     ->
+    setup_compiler_printer `default;
     let cmi_sign = (Cmi_format.read_cmi sourcefile).cmi_sign in 
     Printtyp.signature Format.std_formatter cmi_sign ; 
     Format.pp_print_newline Format.std_formatter ()      
@@ -303,9 +313,10 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-unboxed-types", set Clflags.unboxed_types,
     "Unannotated unboxable types will be unboxed";
 
-    "-bs-re-out", unit_lazy Reason_outcome_printer_main.setup,
+    "-bs-re-out", unit_call (fun _ -> Config.syntax_kind := `reason),
     "Print compiler output in Reason syntax";
-
+    "-bs-ml-out", unit_call (fun _ -> Config.syntax_kind := `ml),
+    "Print compiler output in ML syntax";
     "-bs-refmt", string_optional_set Js_config.refmt,
     "*internal* set customized refmt path";
 
@@ -498,7 +509,7 @@ let _ : unit =
     exit 2
   | x -> 
     begin
-#if false (* undefined BS_RELEASE_BUILD *)
+#if undefined BS_RELEASE_BUILD
         Ext_obj.bt ();
 #end
       Location.report_exception ppf x;
