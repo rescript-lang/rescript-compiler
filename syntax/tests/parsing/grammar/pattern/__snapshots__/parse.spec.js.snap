@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`any.js 1`] = `
+exports[`any.res 1`] = `
 "let _ = 1
 let _|_ = 1
 let (_ : int) = 1
@@ -35,7 +35,7 @@ let g _ a = ()
 ;;for (_ : int) as _x = 0 to 10 do () done"
 `;
 
-exports[`array.js 1`] = `
+exports[`array.res 1`] = `
 "let [||] = ()
 let [|1;2|] = ()
 let [|1;2|] = ()
@@ -64,7 +64,7 @@ let f ([|x|] : int) = ()
 ;;for ([|x|] : int array) = 0 to 10 do () done"
 `;
 
-exports[`constant.js 1`] = `
+exports[`constant.res 1`] = `
 "let \\"stringPattern\\" = ()
 let \\"stringPattern\\" as s = ()
 let (\\"stringPattern\\" : string) = ()
@@ -150,7 +150,7 @@ let {js|literal constant|js} = x
 ;;for {js|literal constant|js} = 0 to 10 do () done"
 `;
 
-exports[`constraint.js 1`] = `
+exports[`constraint.res 1`] = `
 ";;match thing with
   | Some (node : node) -> ()
   | Some (node : Feature.node) -> ()
@@ -162,7 +162,7 @@ exports[`constraint.js 1`] = `
   | SettingChanged ({ fullName; value;_} : Nova.Setting.t) -> ()"
 `;
 
-exports[`constructor.js 1`] = `
+exports[`constructor.res 1`] = `
 "let Instance = i
 let Instance as inst = i
 let React.Instance = i
@@ -237,7 +237,7 @@ let f (Instance (comp : Component.t) : React.t) = ()
 ;;match truth with | true -> Js.log \\"true\\" | false -> Js.log \\"false\\""
 `;
 
-exports[`exception.js 1`] = `
+exports[`exception.res 1`] = `
 "let exception Foo = ()
 let exception Foo as e = ()
 let exception (Foo as e) = ()
@@ -283,7 +283,7 @@ let f (exception Foo : t exc) = ()
 ;;for (exception Foo (a, b) : t exc) = 0 to 10 do () done"
 `;
 
-exports[`extension.js 1`] = `
+exports[`extension.res 1`] = `
 "let [%patternExtension ] = ()
 let [%pattern.extension ] = ()
 let [%bs.raw \\"x\\"] = ()
@@ -319,7 +319,7 @@ let f ([%patExt1 ]|[%patExt2 ]) = ()
 ;;for [%ext.pattern payload] as e|[%ext2 ] as bar = x to y do () done"
 `;
 
-exports[`firstClassModules.js 1`] = `
+exports[`firstClassModules.res 1`] = `
 "let sort (type s) (module Set)  l = ()
 let sort (type s) ((module Set)  : (module Set.S with type elt = s)) l = ()
 let sort (type s)
@@ -334,7 +334,7 @@ let bump_list (type a) ((module B)  : (module Bumpable with type t = a))
       ()"
 `;
 
-exports[`lazy.js 1`] = `
+exports[`lazy.res 1`] = `
 "let (lazy x) = ()
 let (lazy x) as l = ()
 let (lazy (x as l)) = ()
@@ -381,7 +381,7 @@ let f ((lazy x) : int Lazy.t) = ()
 ;;for (lazy ((x : int Lazy.t) as l)) = z to g do () done"
 `;
 
-exports[`list.js 1`] = `
+exports[`list.res 1`] = `
 "let [] = ()
 let [] as l = ()
 let x::[] = ()
@@ -454,7 +454,7 @@ let f (x::xs : int list) = ()
 ;;for (x::xs : int list) = x to y do () done"
 `;
 
-exports[`or.js 1`] = `
+exports[`or.res 1`] = `
 ";;match x with
   | Blue|Red -> ()
   | Blue|Red as colour -> ()
@@ -466,7 +466,7 @@ exports[`or.js 1`] = `
   | (lazy (x|(lazy y))) -> ()"
 `;
 
-exports[`polyvariants.js 1`] = `
+exports[`polyvariants.res 1`] = `
 "let \`Instance = i
 let \`Instance as inst = i
 let \`Instance component = i
@@ -552,7 +552,7 @@ let cmp selectedChoice value =
   | _ -> ()"
 `;
 
-exports[`record.js 1`] = `
+exports[`record.res 1`] = `
 "let { a } = x
 let { a } as p = x
 let { a } = x
@@ -638,7 +638,7 @@ let f (({ a } : myRecord) as p) = ()
 ;;for ({ a } : myRecord) = 0 to 10 do () done"
 `;
 
-exports[`tuple.js 1`] = `
+exports[`tuple.res 1`] = `
 "let (1, 2) = ()
 let (1, 2) as tup = ()
 let ((1 as p1), (2 as p2)) = ()
@@ -676,7 +676,7 @@ let f ((((x, y) as tup1) : (int * int)) as tup) = ()
 ;;for ((x, y) : (int * int)) as ctup = 0 to 10 do () done"
 `;
 
-exports[`unit.js 1`] = `
+exports[`unit.res 1`] = `
 "let () = ()
 let () as x = ()
 let () = ()
@@ -722,7 +722,7 @@ exports[`var.res 1`] = `
 let list = 2"
 `;
 
-exports[`variants.js 1`] = `
+exports[`variants.res 1`] = `
 "let \`Instance = i
 let \`Instance as inst = i
 let \`Instance component = i

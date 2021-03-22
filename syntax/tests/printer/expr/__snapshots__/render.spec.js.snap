@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`apply.js 1`] = `
+exports[`apply.res 1`] = `
 "console.log()
 Js.log(\\"arg1\\", \\"arg2\\")
 let rbt = make(~compare)
@@ -104,7 +104,7 @@ f(. {
 "
 `;
 
-exports[`array.js 1`] = `
+exports[`array.res 1`] = `
 "let x = []
 let x = [a, b, c]
 let x = [
@@ -132,7 +132,7 @@ let x = [biggerThanZero ? 1 : 0, biggerThanZero ? 1 : 0]
 "
 `;
 
-exports[`arrayGet.js 1`] = `
+exports[`arrayGet.res 1`] = `
 "let street = streets[0]
 
 let streetWithAVeryVeryVerrrrrrryVeeeeeeeeeryLongName =
@@ -150,7 +150,7 @@ let street = @attr streets[0]
 "
 `;
 
-exports[`arraySet.js 1`] = `
+exports[`arraySet.res 1`] = `
 "numbers[20] = 10
 
 streetsAddressBookThisIsALongName[
@@ -159,7 +159,7 @@ streetsAddressBookThisIsALongName[
 "
 `;
 
-exports[`assert.js 1`] = `
+exports[`assert.res 1`] = `
 "assert false
 
 assert truth
@@ -232,7 +232,7 @@ assert (true ? 0 : 1)
 "
 `;
 
-exports[`binary.js 1`] = `
+exports[`binary.res 1`] = `
 "let x = a + b
 let x = @attr (a + b)
 let x = @attr (@attr a + @attr b)
@@ -772,7 +772,7 @@ React.useEffect4(() => {
 "
 `;
 
-exports[`block.js 1`] = `
+exports[`block.res 1`] = `
 "let x = {
   module Foo = Bar
   exception Exit
@@ -851,7 +851,7 @@ let calc_fps = (t0, t1) => {
 "
 `;
 
-exports[`braced.js 1`] = `
+exports[`braced.res 1`] = `
 "let f = (a, b) => {a + b}
 let f = (a, b) => {a}
 
@@ -1178,7 +1178,7 @@ let x = {
 "
 `;
 
-exports[`bsObj.js 1`] = `
+exports[`bsObj.res 1`] = `
 "let user = {
   \\"name\\": \\"Steve\\",
   \\"age\\": 30,
@@ -1244,7 +1244,7 @@ React.jsx(
 "
 `;
 
-exports[`callback.js 1`] = `
+exports[`callback.res 1`] = `
 "array->Js.Array2.forEach(((value, height)) => add(rbt, value, ~height)->ignore)
 someArray->Js.Array2.forEach(((value, height)) =>
   add(rbt, value, ~height)->ignore
@@ -1658,7 +1658,7 @@ apply(/* before */ () => () /* after */, a, b, c)
 "
 `;
 
-exports[`coerce.js 1`] = `
+exports[`coerce.res 1`] = `
 "let z = (x :> int)
 
 let z2 = (x :> int)
@@ -1688,7 +1688,7 @@ let x = /* c0 */ (x /* c1 */ :> /* c2 */ int) /* c3 */
 "
 `;
 
-exports[`constant.js 1`] = `
+exports[`constant.res 1`] = `
 "let x = 1
 
 let x = 3.14
@@ -1701,7 +1701,7 @@ let x = @attr \\"mystring\\"
 "
 `;
 
-exports[`constraint.js 1`] = `
+exports[`constraint.res 1`] = `
 "let x = (Numbers.ten: int)
 
 let x = (@attr 10: int)
@@ -1714,7 +1714,7 @@ let x = (true ? 1 : 0: int)
 "
 `;
 
-exports[`constructor.js 1`] = `
+exports[`constructor.res 1`] = `
 "let x = true
 let y = false
 
@@ -1853,7 +1853,7 @@ let first = Some({
 "
 `;
 
-exports[`exoticIdent.js 1`] = `
+exports[`exoticIdent.res 1`] = `
 "let x = \\\\\\"type\\"
 let x = Extension.Type.\\\\\\"type\\"
 
@@ -1921,7 +1921,7 @@ let x = <div \\\\\\"aria-foo\\"=\\\\\\"type\\"> \\\\\\"module\\" \\\\\\"let\\" <
 "
 `;
 
-exports[`extension.js 1`] = `
+exports[`extension.res 1`] = `
 "let x = %eval
 let node = %raw(\\"0\\")
 let node = %raw(@attr (\\"0\\"))
@@ -1954,7 +1954,7 @@ let node = @attr %raw(\\"0\\")
 "
 `;
 
-exports[`field.js 1`] = `
+exports[`field.res 1`] = `
 "let n = user.name
 
 (currentNode.parent->castNotOption).color
@@ -2023,7 +2023,7 @@ let x = (@attrOnTernary (isLeft ? node.left : node.right)).color
 "
 `;
 
-exports[`firstClassModule.js 1`] = `
+exports[`firstClassModule.res 1`] = `
 "module(Three)
 module(Three: X_int)
 
@@ -2074,7 +2074,7 @@ let () = {
 "
 `;
 
-exports[`for.js 1`] = `
+exports[`for.res 1`] = `
 "let () = for i in 0 to 10 {
   ()
 }
@@ -2093,7 +2093,7 @@ let x =
 "
 `;
 
-exports[`fun.js 1`] = `
+exports[`fun.res 1`] = `
 "let f = (a, b) => ()
 let greet = (~person, ~from as hometown) => ()
 let greet = (~person=\\"Steve\\", ~from as hometown=\\"Cupertino\\") => ()
@@ -2501,7 +2501,7 @@ let query = (~url, ()): ((unit, unit, unit) => unit) => {
 "
 `;
 
-exports[`ident.js 1`] = `
+exports[`ident.res 1`] = `
 "let x = a
 
 let c = Configuration.config
@@ -2514,7 +2514,7 @@ let x =
 "
 `;
 
-exports[`if.js 1`] = `
+exports[`if.res 1`] = `
 "let name = if true {
   user.name
 }
@@ -2743,7 +2743,7 @@ if inclusions[index] = (uid, url) {
 "
 `;
 
-exports[`jsObjectAccess.js 1`] = `
+exports[`jsObjectAccess.res 1`] = `
 "let x = address[\\"street\\"]
 let x = address[\\"street\\"][\\"number\\"]
 let x = @attr address[\\"street\\"]
@@ -2757,7 +2757,7 @@ let component = props[\\"Component\\"]
 "
 `;
 
-exports[`jsObjectSet.js 1`] = `
+exports[`jsObjectSet.res 1`] = `
 "address[\\"street\\"] = \\"Brusselsestraat\\"
 address[\\"street\\"] = newYork |> getExpensiveStreet
 
@@ -2767,7 +2767,7 @@ let () = (node[\\"left\\"] = value |> process) |> node[\\"right\\"] = value |> p
 "
 `;
 
-exports[`jsx.js 1`] = `
+exports[`jsx.res 1`] = `
 "let x =
   <div
     className=\\"container\\"
@@ -3111,7 +3111,7 @@ module App = {
 "
 `;
 
-exports[`lazy.js 1`] = `
+exports[`lazy.res 1`] = `
 "let x = lazy sideEffect
 
 // parens
@@ -3183,7 +3183,7 @@ lazy (true ? 0 : 1)
 "
 `;
 
-exports[`let.js 1`] = `
+exports[`let.res 1`] = `
 "let z = {
   let a = 1
   a
@@ -3249,7 +3249,7 @@ let f = x => {
 "
 `;
 
-exports[`letexception.js 1`] = `
+exports[`letexception.res 1`] = `
 "let x = {
   exception Foo
   sideEffect
@@ -3257,7 +3257,7 @@ exports[`letexception.js 1`] = `
 "
 `;
 
-exports[`letmodule.js 1`] = `
+exports[`letmodule.res 1`] = `
 "let x = {
   module M = ME
   Me.x
@@ -3265,7 +3265,7 @@ exports[`letmodule.js 1`] = `
 "
 `;
 
-exports[`list.js 1`] = `
+exports[`list.res 1`] = `
 "let x = list{}
 let x = list{1}
 let x = list{1, 2}
@@ -3288,7 +3288,7 @@ let x = list{
 "
 `;
 
-exports[`newtype.js 1`] = `
+exports[`newtype.res 1`] = `
 "let f = (type t, xs: list<t>) => ()
 let f = (@attr type t, xs: list<t>) => ()
 let f = (type t, xs: list<t>, type s, ys: list<s>) => ()
@@ -3328,7 +3328,7 @@ let cancel_and_collect_callbacks:
 "
 `;
 
-exports[`open.js 1`] = `
+exports[`open.res 1`] = `
 "let element = {
   open React
   element
@@ -3341,7 +3341,7 @@ let element = {
 "
 `;
 
-exports[`polyvariant.js 1`] = `
+exports[`polyvariant.res 1`] = `
 "let r = #Reducer()
 let r = #Reducer(state, nexState, sideEffect)
 let r = #Reducer(
@@ -3491,7 +3491,7 @@ let x = #a()
 "
 `;
 
-exports[`record.js 1`] = `
+exports[`record.res 1`] = `
 "let coord = {x: 3.13, y: 3.14}
 let record = {
   firstField: superLongIdentiiiiiiiifffffffiiiiieeeeeeeer,
@@ -3544,7 +3544,7 @@ let user = {name: {(ceo.name: string)}}
 "
 `;
 
-exports[`sequence.js 1`] = `
+exports[`sequence.res 1`] = `
 "let () = {
   foo()
   bar()
@@ -3557,7 +3557,7 @@ let () = {
 "
 `;
 
-exports[`setfield.js 1`] = `
+exports[`setfield.res 1`] = `
 "user.name = \\"steve\\"
 config.shouldSkip =
   !filePath.includes(allMlSuffixesCategory) &&
@@ -3578,7 +3578,7 @@ dict[\\"\\\\n\\"] = dict2[\\"\\\\\\"\\"]
 "
 `;
 
-exports[`sideEffects.js 1`] = `
+exports[`sideEffects.res 1`] = `
 "foo()
 bar()
 
@@ -3614,7 +3614,7 @@ switch color {
 "
 `;
 
-exports[`switch.js 1`] = `
+exports[`switch.res 1`] = `
 "switch x {
 | A => ()
 | B => ()
@@ -3641,7 +3641,7 @@ let x =
 "
 `;
 
-exports[`templateLiteral.js 1`] = `
+exports[`templateLiteral.res 1`] = `
 "let y = \`In winter the sky is never blue\`
 let x = \`firstname: \${user.firstName} lastname: \${user.lastName}.\`
 let z = \`\${user.name} is his name\`
@@ -3762,7 +3762,7 @@ let box = css\`
 "
 `;
 
-exports[`ternary.js 1`] = `
+exports[`ternary.res 1`] = `
 "condition1 ? value1 : value2
 
 let x = condition1 ? value1 : value2
@@ -4040,7 +4040,7 @@ let x = @attrOnCondition truth ? true : false
 "
 `;
 
-exports[`try.js 1`] = `
+exports[`try.res 1`] = `
 "try {
   let x = 1
   let y = 2
@@ -4076,7 +4076,7 @@ let () =
 "
 `;
 
-exports[`tuple.js 1`] = `
+exports[`tuple.res 1`] = `
 "let x = (1, 2, 3)
 
 let x = (
@@ -4101,7 +4101,7 @@ let x =
 "
 `;
 
-exports[`unary.js 1`] = `
+exports[`unary.res 1`] = `
 "let x = -a
 let x = -.a
 let x = !a
@@ -4252,7 +4252,7 @@ getDirector(a, b, _).name = \\"Steve\\"
 "
 `;
 
-exports[`while.js 1`] = `
+exports[`while.res 1`] = `
 "let () = while true {
   ()
 }
@@ -4282,7 +4282,7 @@ let x =
 "
 `;
 
-exports[`whitespace.js 1`] = `
+exports[`whitespace.res 1`] = `
 "let x = {
   let a = 1
   let b = 2

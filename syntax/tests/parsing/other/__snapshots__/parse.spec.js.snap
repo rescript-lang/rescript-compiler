@@ -13,9 +13,9 @@ let x = 1[@@attr ?var when x == 1]
 
 exports[`comments.res 1`] = `"let x = 1"`;
 
-exports[`emptyFile.js 1`] = `""`;
+exports[`emptyFile.res 1`] = `""`;
 
-exports[`emptyInterface.jsi 1`] = `""`;
+exports[`emptyInterface.resi 1`] = `""`;
 
 exports[`gentype.res 1`] = `
 "module M : sig type nonrec t = int[@@genType ] val x : int[@@genType ] end =
@@ -33,15 +33,15 @@ let y = Ok.Bar.list
 ;;list.list <- list"
 `;
 
-exports[`onlyMultilineComment.js 1`] = `""`;
+exports[`onlyMultilineComment.res 1`] = `""`;
 
-exports[`onlyMultilineComment.jsi 1`] = `""`;
+exports[`onlyMultilineComment.resi 1`] = `""`;
 
-exports[`onlySinglelineComment.js 1`] = `""`;
+exports[`onlySinglelineComment.res 1`] = `""`;
 
-exports[`onlySinglinelineComment.jsi 1`] = `""`;
+exports[`onlySinglinelineComment.resi 1`] = `""`;
 
-exports[`semi.js 1`] = `
+exports[`semi.res 1`] = `
 "type nonrec t =
   | Red 
 ;;Red

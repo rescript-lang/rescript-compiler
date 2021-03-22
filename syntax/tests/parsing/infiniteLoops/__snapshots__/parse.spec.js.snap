@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`equalAfterBinaryExpr.js 1`] = `
+exports[`equalAfterBinaryExpr.res 1`] = `
 "=====Parsetree==========================================
 let rec _addLoop rbt currentNode =
   ((if (Some currentNode) == (rbt |. root)
@@ -149,7 +149,7 @@ let removeNode rbt node =
 =====Errors=============================================
 
   Syntax error!
-  parsing/infiniteLoops/equalAfterBinaryExpr.js:169:17
+  parsing/infiniteLoops/equalAfterBinaryExpr.res:169:17
   167 ┆ if isLeaf(. successor) {
   168 ┆   if rbt->root === Some(successor) {
   169 ┆     rbt->root = None
@@ -162,7 +162,7 @@ let removeNode rbt node =
 ========================================================"
 `;
 
-exports[`jsxChildren.js 1`] = `
+exports[`jsxChildren.res 1`] = `
 "=====Parsetree==========================================
 type nonrec action =
   | AddUser 
@@ -173,7 +173,7 @@ let (a : action) = AddUser \\"test\\"
 =====Errors=============================================
 
   Syntax error!
-  parsing/infiniteLoops/jsxChildren.js:1:22
+  parsing/infiniteLoops/jsxChildren.res:1:22
   1 │ type action = AddUser<string>
   2 │ 
   3 │ let a: action = AddUser(\\"test\\")
@@ -182,7 +182,7 @@ let (a : action) = AddUser \\"test\\"
 
 
   Syntax error!
-  parsing/infiniteLoops/jsxChildren.js:1:22-29
+  parsing/infiniteLoops/jsxChildren.res:1:22-29
   1 │ type action = AddUser<string>
   2 │ 
   3 │ let a: action = AddUser(\\"test\\")
@@ -193,7 +193,7 @@ let (a : action) = AddUser \\"test\\"
 ========================================================"
 `;
 
-exports[`nonRecTypes.js 1`] = `
+exports[`nonRecTypes.res 1`] = `
 "=====Parsetree==========================================
 include
   struct
@@ -590,7 +590,7 @@ include
 =====Errors=============================================
 
   Syntax error!
-  parsing/infiniteLoops/nonRecTypes.js:4:29-36
+  parsing/infiniteLoops/nonRecTypes.res:4:29-36
   2 ┆ include (
   3 ┆           {
   4 ┆             type t('value) = {
@@ -602,7 +602,7 @@ include
 
 
   Syntax error!
-  parsing/infiniteLoops/nonRecTypes.js:19:45-51
+  parsing/infiniteLoops/nonRecTypes.res:19:45-51
   17 ┆   ~size: int,
   18 ┆   ~root: option(node('value)),
   19 ┆   ~compare: Js.Internal.fn([ | \`Arity_2('value, 'value)], int)
@@ -613,7 +613,7 @@ include
 
 
   Syntax error!
-  parsing/infiniteLoops/nonRecTypes.js:67:26-68:3
+  parsing/infiniteLoops/nonRecTypes.res:67:26-68:3
   65 │         };
   66 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None;
   67 │ let rec minNode = node =>
@@ -625,7 +625,7 @@ include
 
 
   Syntax error!
-  parsing/infiniteLoops/nonRecTypes.js:68:21-69:3
+  parsing/infiniteLoops/nonRecTypes.res:68:21-69:3
   66 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None;
   67 │ let rec minNode = node =>
   68 │ let findMin = rbt =>
@@ -637,7 +637,7 @@ include
 
 
   Syntax error!
-  parsing/infiniteLoops/nonRecTypes.js:434:31-38
+  parsing/infiniteLoops/nonRecTypes.res:434:31-38
   432 │     updateSum(Some(node), ~delta);
   433 │   };
   434 │ type nonrec oldNewVisibleNodes('value) = {

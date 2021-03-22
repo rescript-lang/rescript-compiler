@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`extension.js 1`] = `
+exports[`extension.res 1`] = `
 "module type T  = [%ext ]
 module type T  = [%ext.with.args \\"argument\\"]
 module type T  = (([%ext ])[@attr ])"
 `;
 
-exports[`functor.js 1`] = `
+exports[`functor.res 1`] = `
 "module type Functor  = SetLike -> Set
 module type Functor  =
   functor (S : SetLike) -> functor (B : BtreeLike) -> NeoTree
@@ -25,7 +25,7 @@ module type Functor  = (SetLike -> Set with type  t =  A.t)
 module type Functor  = SetLike -> (Set with type  t =  A.t)"
 `;
 
-exports[`ident.js 1`] = `
+exports[`ident.res 1`] = `
 "module type BT  = BTree
 module type BT  = MultiCore.BTree
 module type BT  = Std.MultiCore.BTree
@@ -36,7 +36,7 @@ module type list  = list
 module type t  = s"
 `;
 
-exports[`parenthesized.js 1`] = `
+exports[`parenthesized.res 1`] = `
 "module type Bt  = Btree
 module type Bt  = Std.Btree
 module type Bt  = ((Btree)[@attrIdent ][@attrParens ])
@@ -53,14 +53,14 @@ module type MyHash  =
   end"
 `;
 
-exports[`signature.js 1`] = `
+exports[`signature.res 1`] = `
 "module type BT  = sig val x : int end
 module type BT  = sig val x : int val y : int end
 module type BT  = ((sig val x : int end)[@attr ])
 module type BT  = ((sig val x : int val y : int end)[@attr1 ][@attr2 ])"
 `;
 
-exports[`typeof.js 1`] = `
+exports[`typeof.res 1`] = `
 "module type MyHash  =
   sig
     include module type of struct include Hashtbl end
@@ -73,7 +73,7 @@ module type MyHash  =
   end"
 `;
 
-exports[`with.js 1`] = `
+exports[`with.res 1`] = `
 "module type A  = (Foo with type  t =  string)
 module type A  = (Foo with type  Bar.t =  string)
 module type A  = (Foo with type 'a t =  string)

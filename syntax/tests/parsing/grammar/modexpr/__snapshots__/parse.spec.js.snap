@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`apply.js 1`] = `
+exports[`apply.res 1`] = `
 "module X = (F)(A)
 module X = (((F)(Arg1))(Arg2))(Arg3)
 module X = (((F)(Arg1))(Arg2))(Arg3)
@@ -18,12 +18,12 @@ let someFunctorAsFunction (x : (module MT)) = ((module (SomeFunctor)((val
   x))) : (module ResT))"
 `;
 
-exports[`constrained.js 1`] = `
+exports[`constrained.res 1`] = `
 "module X : MyMod = A 
 include (X : MyMod)"
 `;
 
-exports[`firstClassModules.js 1`] = `
+exports[`firstClassModules.res 1`] = `
 "module Device = (val
   (((let deviceName = parseCmdline () in
      try Hashtbl.find devices deviceName with | Not_found -> exit 2)
@@ -38,7 +38,7 @@ let to_int m = ((let module M = (val (m : (module X_int))) in M.x)
   [@ns.braces ])"
 `;
 
-exports[`functor.js 1`] = `
+exports[`functor.res 1`] = `
 "module F(A:X)(B:Y) = A
 module F(A:X)(B:Y) = A
 module F = ((functor (A : X) -> ((functor (B : Y) -> A)[@attr2 ]))[@attr1 ])
@@ -82,7 +82,7 @@ module DistinctString() : StringBased =
          let inject t = t end "
 `;
 
-exports[`ident.js 1`] = `
+exports[`ident.res 1`] = `
 "module A = Array
 module A = Belt.Array
 include Array
@@ -93,7 +93,7 @@ include ((Array)[@attr ])
 include ((Belt.Array)[@attr ])"
 `;
 
-exports[`parenthesized.js 1`] = `
+exports[`parenthesized.res 1`] = `
 "module A = ParenthesizedModule
 module A = DoubleParenthesizedModule
 module A = ((ParenthesizedModule)[@attr ])
@@ -106,7 +106,7 @@ include ((ParenthesizedModule)[@attr ])
 module A = ((ParenthesizedModule)[@attr2 ][@attr ])"
 `;
 
-exports[`structure.js 1`] = `
+exports[`structure.res 1`] = `
 "module X = struct let a = 1 end
 include struct let b = 2 end"
 `;

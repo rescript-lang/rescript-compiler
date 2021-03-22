@@ -89,7 +89,7 @@ for \`literal constant\` in 0 to 10 {
 "
 `;
 
-exports[`constraint.js 1`] = `
+exports[`constraint.res 1`] = `
 "switch thing {
 | Some(node: node) => ()
 | Some(node: Feature.node) => ()
@@ -185,7 +185,7 @@ exports[`extension.res 1`] = `
 "
 `;
 
-exports[`firstClassModules.js 1`] = `
+exports[`firstClassModules.res 1`] = `
 "let module(Set) = z
 let module(Set: Set.S with type elt = s) = y
 let module(Set: Set.S with type elt = s and type elt2 = t) = x

@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`emptyeof.js 1`] = `"let x = \\"\\\\n\\""`;
+exports[`emptyeof.res 1`] = `"let x = \\"\\\\n\\""`;
 
-exports[`eof.js 1`] = `"let x = \\"eof here\\\\n\\""`;
+exports[`eof.res 1`] = `"let x = \\"eof here\\\\n\\""`;
 
-exports[`es6template.js 1`] = `"let x = ({js|this contains |js} ^ foo) ^ {js|, missing closing|js}"`;
+exports[`es6template.res 1`] = `"let x = ({js|this contains |js} ^ foo) ^ {js|, missing closing|js}"`;
 
-exports[`unclosed.js 1`] = `
+exports[`unclosed.res 1`] = `
 "let x = \\"unclosed\\"
 let y = 1"
 `;

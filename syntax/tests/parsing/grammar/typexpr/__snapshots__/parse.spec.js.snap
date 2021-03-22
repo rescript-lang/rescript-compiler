@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`alias.js 1`] = `
+exports[`alias.res 1`] = `
 "type nonrec t = string as 's
 type nonrec t = _ as 'underscore
 type nonrec t = parenthesizedType as 'parens
@@ -33,12 +33,12 @@ let (t : [%ext.foo \\"raw\\"] as 'extension) = ()
 let (t : ((int as 'x) * (int as 'y)) as 'tupleAlias) = ()"
 `;
 
-exports[`any.js 1`] = `
+exports[`any.res 1`] = `
 "type nonrec t = _
 let (t : _) = x"
 `;
 
-exports[`bsObject.js 1`] = `
+exports[`bsObject.res 1`] = `
 "type nonrec t = < age: int   > 
 type nonrec t = < age: int   > 
 type nonrec t = < age: int  ;name: string   > 
@@ -50,7 +50,7 @@ type nonrec t = private <  >
 type nonrec t = < .. > "
 `;
 
-exports[`es6Arrow.js 1`] = `
+exports[`es6Arrow.res 1`] = `
 "type nonrec t = x -> unit
 type nonrec t = x -> unit
 type nonrec t = int -> string -> unit
@@ -99,7 +99,7 @@ type nonrec 'a getInitialPropsFn =
     'a Js.t Js.Promise.t"
 `;
 
-exports[`extension.js 1`] = `
+exports[`extension.res 1`] = `
 "type nonrec t = [%typ ]
 type nonrec t = [%raw.typ ]
 type nonrec t = [%raw.typ \\"existential\\"]
@@ -108,7 +108,7 @@ let (t : [%raw.typ ]) = x
 let (t : [%raw.typ \\"ex\\"]) = x"
 `;
 
-exports[`firstClassModules.js 1`] = `
+exports[`firstClassModules.res 1`] = `
 "type nonrec t = (module Hashmap)
 type nonrec t = (module Hashmap with type key = string)
 type nonrec t = (module Hashmap with type key = string and type value = int)
@@ -119,9 +119,9 @@ type nonrec t = (module Console) ref
 let (devices : (string, (module DEVICE)) Hastbl.t) = Hashtbl.creat 17"
 `;
 
-exports[`parenthesized.js 1`] = `"type nonrec t = ((a:((int)[@ns.namedArgLoc ]) -> unit)[@attr ])"`;
+exports[`parenthesized.res 1`] = `"type nonrec t = ((a:((int)[@ns.namedArgLoc ]) -> unit)[@attr ])"`;
 
-exports[`poly.js 1`] = `
+exports[`poly.res 1`] = `
 "external getLogger :
   unit ->
     <
@@ -146,14 +146,14 @@ type nonrec t = [ s]
 type nonrec t = [ ListStyleType.t]"
 `;
 
-exports[`tuple.js 1`] = `
+exports[`tuple.res 1`] = `
 "type nonrec t = (string * int)
 type nonrec t = (int option * string option)
 let (t : (string * int)) = x
 let (t : (int option * string option)) = x"
 `;
 
-exports[`typeconstr.js 1`] = `
+exports[`typeconstr.res 1`] = `
 "type nonrec t = string
 type nonrec t = Parser.t
 type nonrec t = Lang.Parser.t
@@ -214,7 +214,7 @@ let (t : < age: int [@attr ] ;name: string [@attr ]  ;.. >  list) = x
 let (t : string list) = x"
 `;
 
-exports[`uncurried.js 1`] = `
+exports[`uncurried.res 1`] = `
 "type nonrec t = {
   mutable field: ((float -> int -> bool -> unit)[@bs ]) }
 type nonrec t = ((float -> int -> bool -> unit)[@bs ])
@@ -237,7 +237,7 @@ external setTimeout :
   (((unit -> unit) -> int -> timerId)[@bs ]) = \\"setTimeout\\""
 `;
 
-exports[`unit.js 1`] = `
+exports[`unit.res 1`] = `
 "type nonrec t = unit
 type nonrec t = unit -> unit
 type nonrec t = unit -> unit -> unit
@@ -249,7 +249,7 @@ external svg : unit -> React.element = \\"svg\\"
 external thing : unit -> unit = \\"svg\\""
 `;
 
-exports[`var.js 1`] = `
+exports[`var.res 1`] = `
 "type nonrec t = 'a
 let (t : 'a) = x
 let t : 'a . t = x

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`apply.js 1`] = `
+exports[`apply.res 1`] = `
 ";;foo (fun _ -> bla) blaz
 ;;foo (fun _ -> bla) blaz
 ;;foo ((fun _ -> bla)[@bs ]) blaz
@@ -11,7 +11,7 @@ let unitUncurried = ((apply ())[@bs ])
 ;;call ~a:(((((a)[@ns.namedArgLoc ]) : int))[@ns.namedArgLoc ])"
 `;
 
-exports[`argument.js 1`] = `
+exports[`argument.res 1`] = `
 "let foo ~a:((a)[@ns.namedArgLoc ])  = ((a ())[@bs ]) +. 1.
 let a = ((fun () -> 2)[@bs ])
 let bar = foo ~a:((a)[@ns.namedArgLoc ])
@@ -24,13 +24,13 @@ let comparisonResult =
          [@ns.namedArgLoc ])))[@bs ])"
 `;
 
-exports[`array.js 1`] = `
+exports[`array.res 1`] = `
 "let x = [|1;2;3|]
 let x = [|1;2;3|]
 let x = [|(1 : int);(2 : int);(3 : int)|]"
 `;
 
-exports[`arrow.js 1`] = `
+exports[`arrow.res 1`] = `
 "let f x = x + 1
 let f _ = Js.log \\"test\\"
 let f () = Js.log \\"unit\\"
@@ -113,7 +113,7 @@ let y =
 let f list = list + 1"
 `;
 
-exports[`binary.js 1`] = `
+exports[`binary.res 1`] = `
 ";;node := (if newBalance == 2 then avl |. (rotateRight node) else node)
 ;;node := ((if newBalance == 2 then avl |. (rotateRight node) else node)
     [@attr ])
@@ -140,7 +140,7 @@ let _ = ((Constructor (a, b); \`Constructor (a, b))[@ns.braces ])
     (Promise.Js.catch (fun _ -> ((Promise.resolved None)[@ns.braces ])))"
 `;
 
-exports[`binaryNoEs6Arrow.js 1`] = `
+exports[`binaryNoEs6Arrow.res 1`] = `
 ";;if (color == Black) && ((sibling == None) || (parent == None)) then ()
 ;;if
     ((color == Black) && (color != Red)) &&
@@ -177,7 +177,7 @@ exports[`binaryNoEs6Arrow.js 1`] = `
 ;;if inclusions.(index) <- (uid, url) then onChange inclusions"
 `;
 
-exports[`block.js 1`] = `
+exports[`block.res 1`] = `
 "let b =
   ((let module Array = Belt.Array in
       ([|1;2|] |. (Array.map (fun x -> x + 1))) |. Js.log)
@@ -250,7 +250,7 @@ let calc_fps t0 t1 = ((let delta = (t1 -. t0) /. 1000. in 1. /. delta)
   [@ns.braces ])"
 `;
 
-exports[`bracedOrRecord.js 1`] = `
+exports[`bracedOrRecord.res 1`] = `
 "let r = { expr with pexp_attributes = [||] }
 let r = { a }
 let r = { a = expr }
@@ -280,7 +280,7 @@ let x = ((let a = 1 in let b = 2 in a + b)[@ns.braces ])
 ;;(([((\\"\\\\n\\" |. React.string)[@ns.braces ])])[@JSX ])"
 `;
 
-exports[`bsObject.js 1`] = `
+exports[`bsObject.res 1`] = `
 "let x = [%obj { age = 30 }]
 let y = [%obj { age = 30 }]
 let y = [%obj { age = 30; name = \\"steve\\" }]
@@ -299,12 +299,12 @@ let x =
 let x = ((\\"age\\".(0); (let foo = 1 in let bar = 2 in foo + bar))[@ns.braces ])"
 `;
 
-exports[`coerce.js 1`] = `
+exports[`coerce.res 1`] = `
 "let foo (x : int) = (x :> int)
 let foo x = ((x : t) :> int)"
 `;
 
-exports[`constants.js 1`] = `
+exports[`constants.res 1`] = `
 "let x = true
 let y = false
 let txt = \\"a string\\"
@@ -368,7 +368,7 @@ let x = \\"\\\\rbar\\"
 let x = \\" bar\\""
 `;
 
-exports[`constructor.js 1`] = `
+exports[`constructor.res 1`] = `
 "let x = Red
 let y = Colors.Blue
 let z = Rgb ()
@@ -377,7 +377,7 @@ let colour = Shades.Colors.White
 let u = ()"
 `;
 
-exports[`es6template.js 1`] = `
+exports[`es6template.res 1`] = `
 "let s = {js|foo|js}
 let s = {js|multi
   line
@@ -419,7 +419,7 @@ let x = {js|foo\`bar$\\\\foo|js}
 let x = ((({js|foo\`bar$\\\\foo|js} ^ a) ^ {js| \` |js}) ^ b) ^ {js| \` xx|js}"
 `;
 
-exports[`extension.js 1`] = `
+exports[`extension.res 1`] = `
 ";;[%expr ]
 ;;[%expr.extension ]
 ;;[%expr.extension.with.args \\"argument\\"]
@@ -427,7 +427,7 @@ exports[`extension.js 1`] = `
 let x = ([%bs.raw \\"1\\"]) + ([%bs.raw \\"2\\"])"
 `;
 
-exports[`firstClassModule.js 1`] = `
+exports[`firstClassModule.res 1`] = `
 "let makeSet (type s) cmp =
   ((let module S = (Set.Make)(struct type nonrec t = s
                                      let compare = cmp end) in ((module
@@ -507,7 +507,7 @@ let () =
   [@ns.braces ])"
 `;
 
-exports[`float.js 1`] = `
+exports[`float.res 1`] = `
 ";;1. /. 2.
 ;;3. *. 4.
 ;;2. ** 2.
@@ -515,7 +515,7 @@ exports[`float.js 1`] = `
 ;;28.9 -. 13.8"
 `;
 
-exports[`for.js 1`] = `
+exports[`for.res 1`] = `
 ";;for p = 0 to 10 do () done
 ;;for p = 10 downto 0 do () done
 ;;for p = a to b do () done
@@ -523,7 +523,7 @@ exports[`for.js 1`] = `
 ;;for p = 0 to x + 1 do () done"
 `;
 
-exports[`ident.js 1`] = `
+exports[`ident.res 1`] = `
 "let x = foo
 let y = Foo.Bar.x
 let x = _identWithUnderscore
@@ -535,7 +535,7 @@ let x = Foo.Bar.list
 let with = with"
 `;
 
-exports[`if.js 1`] = `
+exports[`if.res 1`] = `
 ";;if foo then true else false
 ;;if foo = 2 then let bar = 1 in let foo = 2 in bar + foo
 let ifThenElse = if foo then lala else doStuff x y z
@@ -546,7 +546,7 @@ let ifElseIfThen =
 let x = (if true then 1 else 2) + (if false then 2 else 3)"
 `;
 
-exports[`infix.js 1`] = `
+exports[`infix.res 1`] = `
 ";;a |. (f b)
 ;;\\"string1\\" ^ \\"string2\\"
 ;;a <> b
@@ -555,7 +555,7 @@ exports[`infix.js 1`] = `
 ;;a == b"
 `;
 
-exports[`jsx.js 1`] = `
+exports[`jsx.res 1`] = `
 "let _ = ((div ~children:[] ())[@JSX ])
 let _ = ((div ~children:[] ())[@JSX ])
 let _ = ((div ~className:((\\"menu\\")[@ns.namedArgLoc ]) ~children:[] ())
@@ -1122,7 +1122,7 @@ let _ =
                 [@JSX ])] ())[@JSX ])"
 `;
 
-exports[`list.js 1`] = `
+exports[`list.res 1`] = `
 "let x = []
 let x = [1; 2; 3]
 let x = [1; 2; 3]
@@ -1131,7 +1131,7 @@ let x = 4 :: 5 :: y
 let x = 1 :: 2 :: (y : int list)"
 `;
 
-exports[`locallyAbstractTypes.js 1`] = `
+exports[`locallyAbstractTypes.res 1`] = `
 "let f (type t) (xs : t list) = ()
 let f (type t) (xs : t list) (type s) (ys : s list) = ()
 let f (type t) (type u) (type v) (xs : (t * u * v) list) = ()
@@ -1152,7 +1152,7 @@ let cancel_and_collect_callbacks :
   fun callbacks_accumulator -> fun (p : (_, _, c) promise) -> ()"
 `;
 
-exports[`parenthesized.js 1`] = `
+exports[`parenthesized.res 1`] = `
 "let x = 1
 let f = 1.3
 let truth = true
@@ -1178,14 +1178,14 @@ let switchExpr = match myVar with | Blue -> \\"blue\\" | Red -> \\"red\\"
 let constrainedExpr = (x : int)"
 `;
 
-exports[`polyvariant.js 1`] = `
+exports[`polyvariant.res 1`] = `
 "let x = \`Red
 let z = \`Rgb ()
 let v = \`Vertex (1., 2., 3., 4.)
 let animation = \`ease-in"
 `;
 
-exports[`primary.js 1`] = `
+exports[`primary.res 1`] = `
 "let x = a.b
 let x = (a.b).c
 let x = H20.Water.water.h
@@ -1224,7 +1224,7 @@ let x = (arr.((x : int))).((y : int))
 ;;(dict ## \\") #= (dict2 ## \\")"
 `;
 
-exports[`record.js 1`] = `
+exports[`record.res 1`] = `
 "let r = { a = expr }
 let r = { a = expr }
 let r = { Parsetree.pexp_attributes = [||]; Parsetree.loc = loc }
@@ -1239,7 +1239,7 @@ let r = { (make () : myRecord) with foo = bar }
 let r = { (make () : myRecord) with foo = bar }"
 `;
 
-exports[`sideEffects.js 1`] = `
+exports[`sideEffects.res 1`] = `
 ";;foo ()
 ;;bar ()
 let () = ((foo (); bar ())[@ns.braces ])
@@ -1255,7 +1255,7 @@ let () =
   | Blue -> (getResult (); sideEffect (); (let x = 1 in sideEffect2 ()))"
 `;
 
-exports[`switch.js 1`] = `
+exports[`switch.res 1`] = `
 ";;match x with | A -> () | B -> ()
 ;;match a + b with | _ -> ()
 ;;match a + b with | _ -> ()
@@ -1269,7 +1269,7 @@ exports[`switch.js 1`] = `
   | Student _ -> Js.log \\"Heyo\\""
 `;
 
-exports[`try.js 1`] = `
+exports[`try.res 1`] = `
 ";;try ((let x = 1 in let y = 2 in dangerousCall (x + y))[@ns.braces ])
   with | Foo -> Js.log \\"catched Foo\\" | Exit -> Js.log \\"catched exit\\"
 ;;try myDangerousFn () with | Foo -> Js.log \\"catched Foo\\"[@@attr ]
@@ -1277,20 +1277,20 @@ let x = ((let y = 1 in try ((apply y)[@ns.braces ]) with | _ -> 2)
   [@ns.braces ])"
 `;
 
-exports[`tuple.js 1`] = `
+exports[`tuple.res 1`] = `
 "let x = (1, 2, 3)
 let x = (1, 2, 3)
 let x = ((1 : int), (2 : int), (3 : int))"
 `;
 
-exports[`tupleVsDivision.js 1`] = `
+exports[`tupleVsDivision.res 1`] = `
 ";;(foo ()) / 1
 ;;foo ()
 ;;(1, 2) |. printTuple
 let f () = (((foo ()) / 1; foo (); (1, 2) |. printTuple)[@ns.braces ])"
 `;
 
-exports[`unary.js 1`] = `
+exports[`unary.res 1`] = `
 "let x = not true
 let m = (-1)
 let m = (-2.5)
@@ -1299,7 +1299,7 @@ let x = 5.4
 let sum = (- a) - (- b)"
 `;
 
-exports[`unaryOrBinary.js 1`] = `
+exports[`unaryOrBinary.res 1`] = `
 ";;- x
 let width =
   (((w -. innerLeft) -. imageWidth) -. imageRightGap) -. rowInnerRight
@@ -1311,7 +1311,7 @@ let width = ((w; - innerLeft; - imageWidth; - imageRightGap; - rowInnerRight)
   [@ns.braces ])"
 `;
 
-exports[`uncurried.js 1`] = `
+exports[`uncurried.res 1`] = `
 "let f = ((fun a -> fun b -> a + b)[@bs ])
 let f = ((fun a -> ((fun b -> a + b)[@bs ]))[@bs ])
 let f = ((fun a -> fun b -> ((fun c -> fun d -> ((a + b) + c) + d)[@bs ]))
@@ -1334,7 +1334,7 @@ let f =
 ;;((((((add 2 3 4)[@bs ]) 5 6 7)[@bs ]) 8 9 10)[@bs ])"
 `;
 
-exports[`underscoreApply.js 1`] = `
+exports[`underscoreApply.res 1`] = `
 "let l =
   ([1; 2; 3] |. (fun __x -> List.map (fun i -> i + 1) __x)) |.
     (fun __x -> List.filter (fun i -> i > 0) __x)
@@ -1354,7 +1354,7 @@ let l2 =
     List.length"
 `;
 
-exports[`while.js 1`] = `
+exports[`while.res 1`] = `
 ";;while not eofReached do
     let a = 1 in let b = 2 in Lexbuf.next (); (a + b) |. Js.log done
 ;;while (not (isLineEnding buf)) && true do foo (); next () done"

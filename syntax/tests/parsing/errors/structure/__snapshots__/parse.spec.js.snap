@@ -130,7 +130,7 @@ module ClientSet =
 ========================================================"
 `;
 
-exports[`letBinding.js 1`] = `
+exports[`letBinding.res 1`] = `
 "=====Parsetree==========================================
 let rightResource =
   (ur.resources).find
@@ -145,7 +145,7 @@ let (x : int1) = (int2 = 3 :> int3)
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/structure/letBinding.js:2:18-20
+  parsing/errors/structure/letBinding.res:2:18-20
   1 │ // missing =
   2 │ let rightResource ur.resources.find(
   3 │   r => r.account_id === connection.left.account.id
@@ -155,7 +155,7 @@ let (x : int1) = (int2 = 3 :> int3)
 
 
   Syntax error!
-  parsing/errors/structure/letBinding.js:8:12-13
+  parsing/errors/structure/letBinding.res:8:12-13
    6 │ let x = {
    7 │   // missing =
    8 │   let field p->parseFieldDeclaration 
@@ -166,7 +166,7 @@ let (x : int1) = (int2 = 3 :> int3)
 
 
   Syntax error!
-  parsing/errors/structure/letBinding.js:14:19-26
+  parsing/errors/structure/letBinding.res:14:19-26
   12 │ let t = {
   13 │ 	// missing =
   14 │ 	let (_, _, token) scanner->scan
@@ -177,7 +177,7 @@ let (x : int1) = (int2 = 3 :> int3)
 
 
   Syntax error!
-  parsing/errors/structure/letBinding.js:18:39-20:3
+  parsing/errors/structure/letBinding.res:18:39-20:3
   16 │ }
   17 │ 
   18 │ let keyTable: Belt.Map.String.t<int> =
@@ -190,7 +190,7 @@ let (x : int1) = (int2 = 3 :> int3)
 
 
   Syntax error!
-  parsing/errors/structure/letBinding.js:20:10-23:3
+  parsing/errors/structure/letBinding.res:20:10-23:3
   18 │ let keyTable: Belt.Map.String.t<int> =
   19 │ 
   20 │ let foo = 
@@ -204,7 +204,7 @@ let (x : int1) = (int2 = 3 :> int3)
 
 
   Syntax error!
-  parsing/errors/structure/letBinding.js:23:11-13
+  parsing/errors/structure/letBinding.res:23:11-13
   21 │ 
   22 │ // no magic in the syntax
   23 │ let x: int :> string = y
@@ -215,7 +215,7 @@ let (x : int1) = (int2 = 3 :> int3)
 
 
   Syntax error!
-  parsing/errors/structure/letBinding.js:26:6-8
+  parsing/errors/structure/letBinding.res:26:6-8
   24 │ 
   25 │ // no magic in the syntax
   26 │ let x :> string = y
@@ -226,7 +226,7 @@ let (x : int1) = (int2 = 3 :> int3)
 
 
   Syntax error!
-  parsing/errors/structure/letBinding.js:29:13-15
+  parsing/errors/structure/letBinding.res:29:13-15
   27 │ 
   28 │ // no magic in the syntax
   29 │ let x : int1 :> int2 = 3 :> int3
@@ -238,14 +238,14 @@ let (x : int1) = (int2 = 3 :> int3)
 ========================================================"
 `;
 
-exports[`letBindingPatternKeyword.js 1`] = `
+exports[`letBindingPatternKeyword.res 1`] = `
 "=====Parsetree==========================================
 let [%rescript.patternhole ] = 1
 let [%rescript.patternhole ] = 3
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/structure/letBindingPatternKeyword.js:1:5-8
+  parsing/errors/structure/letBindingPatternKeyword.res:1:5-8
   1 │ let open = 1
   2 │ let for = 3
   3 │ 
@@ -254,7 +254,7 @@ let [%rescript.patternhole ] = 3
 
 
   Syntax error!
-  parsing/errors/structure/letBindingPatternKeyword.js:2:5-7
+  parsing/errors/structure/letBindingPatternKeyword.res:2:5-7
   1 │ let open = 1
   2 │ let for = 3
   3 │ 

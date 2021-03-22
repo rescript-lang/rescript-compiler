@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`exceptionDefinition.js 1`] = `
+exports[`exceptionDefinition.res 1`] = `
 "exception ExitEarly 
 exception ExitEarly of int 
 exception ExitEarly of {
@@ -30,7 +30,7 @@ exception Exit[@onConstructor ] = Terminate
 exception Exit[@onConstructor ] = Lib.Terminate"
 `;
 
-exports[`externalDefinition.js 1`] = `
+exports[`externalDefinition.res 1`] = `
 "external clear : t -> int -> unit = \\"clear\\"
 external add_nat : nat -> int = \\"add_nat_bytecode\\" \\"add_nat_native\\"
 external attachShader :
@@ -44,12 +44,12 @@ external createDate : unit -> unit -> date = \\"Date\\"[@@bs.new ]
 let foobar = (createDate ()) ()"
 `;
 
-exports[`includeStatement.js 1`] = `
+exports[`includeStatement.res 1`] = `
 "include Belt.Array
 include Belt.Array[@@onInclude ]"
 `;
 
-exports[`itemExtension.js 1`] = `
+exports[`itemExtension.res 1`] = `
 "[%%itemExtension ]
 [%%item.extension ]
 [%%item.extension.with.args \\"argument\\"]
@@ -57,7 +57,7 @@ exports[`itemExtension.js 1`] = `
 [%%itemExtension ][@@attrOnExtension ]"
 `;
 
-exports[`jsFfiSugar.js 1`] = `
+exports[`jsFfiSugar.res 1`] = `
 "include
   struct
     external setTimeout : (unit -> unit) -> unit -> float = \\"setTimeout\\"
@@ -87,7 +87,7 @@ include
   end[@@ns.jsFfi ]"
 `;
 
-exports[`letBinding.js 1`] = `
+exports[`letBinding.res 1`] = `
 "let a = 1
 let a = 1[@@onFirstBinding ]
 let a = 1[@@onFirstBinding ]
@@ -100,31 +100,31 @@ let f : type t. t foo =
 let f : type t x u. (t * x * y) list = fun l -> f l"
 `;
 
-exports[`modExprExtension.js 1`] = `
+exports[`modExprExtension.res 1`] = `
 "module A = [%modExprExtension ]
 module B = [%mod.expr.extension ]
 module C = [%mod.expr.extension.with.args \\"argument\\"]
 module D = [%mod.expr.extension.with.args fun x -> f x]"
 `;
 
-exports[`modType.js 1`] = `
+exports[`modType.res 1`] = `
 "module type X  = Foo
 module type X  = Foo[@@attr ]"
 `;
 
-exports[`module.js 1`] = `
+exports[`module.res 1`] = `
 "module A : Map = struct let m = 2 end 
 module A = struct let m = 2 end"
 `;
 
-exports[`moduleTypeExtension.js 1`] = `
+exports[`moduleTypeExtension.res 1`] = `
 "module type A  = [%modTypeExtension ]
 module type B  = [%mod.type.extension ]
 module type C  = [%mod.type.extension.with.args \\"argument\\"]
 module type D  = [%mod.type.extension.with.args fun x -> f x]"
 `;
 
-exports[`openDescription.js 1`] = `
+exports[`openDescription.res 1`] = `
 "open Belt
 open! Belt
 open Belt[@@onOpen ]
@@ -133,7 +133,7 @@ open! Belt.Array
 open! Belt.Array[@@onOpen ]"
 `;
 
-exports[`recursiveModules.js 1`] = `
+exports[`recursiveModules.res 1`] = `
 "module rec A:Map = struct let m = 2 end  and B:Set = struct let s = 1 end
 module rec A:Map = struct let m = 2 end[@@onFirstBinding ]
  and B:Set = struct let s = 1 end[@@onSecondBinding ]
@@ -141,13 +141,13 @@ module rec A:Map = struct let m = 2 end[@@onFirstBindingOfNext ]
  and B:Set = struct let s = 1 end[@@onSecondBindingOfNext ]"
 `;
 
-exports[`standaloneAttribute.js 1`] = `
+exports[`standaloneAttribute.res 1`] = `
 "[@@@standaloneAttribute ]
 [@@@standaloneAttribute \\"with payload\\"]
 [@@@standaloneAttribute fun x -> x + 1]"
 `;
 
-exports[`typeDefinition.js 1`] = `
+exports[`typeDefinition.res 1`] = `
 "type nonrec t = string
 type nonrec t = string[@@onStructureItem ]
 module X =

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`abstract.js 1`] = `
+exports[`abstract.res 1`] = `
 "type t
 
 type t<'a, 'b>
@@ -40,7 +40,7 @@ type t = 't constraint 't = ('s, 'a) => 'sub
 "
 `;
 
-exports[`attributes.js 1`] = `
+exports[`attributes.res 1`] = `
 "@attr type t = float
 @attr
 type t = float
@@ -63,12 +63,12 @@ type t = string
 "
 `;
 
-exports[`constraint.js 1`] = `
+exports[`constraint.res 1`] = `
 "type t = Reducer constraint 't = @attr ('state, 'action) => 'nextSubtree
 "
 `;
 
-exports[`exoticIdent.js 1`] = `
+exports[`exoticIdent.res 1`] = `
 "type \\\\\\"type\\" = User.\\\\\\"type\\" = {
   \\\\\\"module\\": \\\\\\"type\\",
   \\\\\\"let\\": \\\\\\"module\\",
@@ -84,7 +84,7 @@ type \\\\\\"type\\"<'\\\\\\"😆SuperIdent\\"> += Blue(\\\\\\"type\\", \\\\\\"Ex
 "
 `;
 
-exports[`open.js 1`] = `
+exports[`open.res 1`] = `
 "type t = ..
 type t = private ..
 type t<'a, 'b> = ..
@@ -94,7 +94,7 @@ type t = .. constraint 't = ('s, 'a) => 'sub
 "
 `;
 
-exports[`record.js 1`] = `
+exports[`record.res 1`] = `
 "type user = {name: string, age: int}
 type result<'success, 'failure> = {ok: 'success, fail: 'failure}
 type result<
@@ -183,7 +183,7 @@ type user = {
 "
 `;
 
-exports[`typeParams.js 1`] = `
+exports[`typeParams.res 1`] = `
 "type t<'a, 'b>
 type t<+'a, -'b>
 
@@ -218,7 +218,7 @@ module Test = {
 "
 `;
 
-exports[`variant.js 1`] = `
+exports[`variant.res 1`] = `
 "type color = Red | Blue
 type color =
   | Red

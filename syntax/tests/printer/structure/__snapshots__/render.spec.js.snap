@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`attribute.js 1`] = `
+exports[`attribute.res 1`] = `
 "@@standaloneAttribute
 
 @@import(\\"react\\")
@@ -47,7 +47,7 @@ exception GadtExit(int): exit<int>
 "
 `;
 
-exports[`expr.js 1`] = `
+exports[`expr.res 1`] = `
 "@attrOnStructure
 expr
 
@@ -75,7 +75,7 @@ expr
 "
 `;
 
-exports[`extension.js 1`] = `
+exports[`extension.res 1`] = `
 "%%raw(\\"__eval__gc()\\")
 
 @attr
@@ -95,7 +95,7 @@ exports[`extension.js 1`] = `
 "
 `;
 
-exports[`external.js 1`] = `
+exports[`external.res 1`] = `
 "@val external null: reactElement = \\"null\\"
 
 external string: string => reactElement = \\"%identity\\"
@@ -108,7 +108,7 @@ external \\\\\\"type\\": \\\\\\"let\\" => \\\\\\"Uident\\" = \\"unsafe_call\\"
 "
 `;
 
-exports[`include.js 1`] = `
+exports[`include.res 1`] = `
 "include Belt
 
 @attr
@@ -142,7 +142,7 @@ include (
 "
 `;
 
-exports[`moduleBinding.js 1`] = `
+exports[`moduleBinding.res 1`] = `
 "module React = {
   type t
 
@@ -151,12 +151,12 @@ exports[`moduleBinding.js 1`] = `
 "
 `;
 
-exports[`moduleTypeDeclaration.js 1`] = `
+exports[`moduleTypeDeclaration.res 1`] = `
 "module type S = X
 "
 `;
 
-exports[`open.js 1`] = `
+exports[`open.res 1`] = `
 "open Belt
 
 @attr
@@ -166,7 +166,7 @@ open! Belt
 "
 `;
 
-exports[`recModules.js 1`] = `
+exports[`recModules.res 1`] = `
 "module rec A: Map = {
   let m = 2
 }
@@ -194,7 +194,7 @@ and B: Set = {
 "
 `;
 
-exports[`type.js 1`] = `
+exports[`type.res 1`] = `
 "type t = string and s = int and z = float
 
 type t = string
@@ -209,7 +209,7 @@ and z = float
 "
 `;
 
-exports[`typeExtension.js 1`] = `
+exports[`typeExtension.res 1`] = `
 "type t += Foo
 type Foo.Bar.t += Foo
 type t<'a, 'b> += Foo('a)
@@ -304,7 +304,7 @@ module type Tid = {
 "
 `;
 
-exports[`valueBinding.js 1`] = `
+exports[`valueBinding.res 1`] = `
 "let x = 1 and y = 2 and z = 3
 
 let x = 1

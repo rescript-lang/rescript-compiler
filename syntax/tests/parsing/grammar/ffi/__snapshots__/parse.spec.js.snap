@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`export.js 1`] = `
+exports[`export.res 1`] = `
 "type nonrec callback = ReactEvent.Mouse.t -> unit[@@genType ]
 type nonrec t = int[@@genType ]
 and s = string[@@genType ]
@@ -18,7 +18,7 @@ let x = \\"hello world\\"
 and y = 2[@@genType ]"
 `;
 
-exports[`import.js 1`] = `
+exports[`import.res 1`] = `
 "include
   struct
     external realValue : complexNumber -> float = \\"realValue\\"[@@genType.import

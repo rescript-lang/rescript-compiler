@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`bsObject.js 1`] = `
+exports[`bsObject.res 1`] = `
 "type nonrec 'a foo = < foo: int   ;.. >  as 'a
 type nonrec 'a foo = < foo: int   >  as 'a"
 `;
 
-exports[`constructorDeclaration.js 1`] = `
+exports[`constructorDeclaration.res 1`] = `
 "type nonrec t =
   | Rgb 
 type nonrec t =
@@ -95,9 +95,9 @@ type nonrec (_, 'value) node =
   mutable updatedTime: float } -> (derived, 'value) node "
 `;
 
-exports[`diamond.js 1`] = `"type nonrec ('a, 'b) t = .."`;
+exports[`diamond.res 1`] = `"type nonrec ('a, 'b) t = .."`;
 
-exports[`polyvariant.js 1`] = `
+exports[`polyvariant.res 1`] = `
 "type t = [ \`X ]
 type t = [>]
 type t = [> s]
@@ -158,7 +158,7 @@ type nonrec t =
 let f (x : [ \`b ]) = x"
 `;
 
-exports[`privateTypeEquation.js 1`] = `
+exports[`privateTypeEquation.res 1`] = `
 "type nonrec t = private 'a
 type nonrec t = private string
 type nonrec t = private _
@@ -174,7 +174,7 @@ type nonrec t = private [%ext \\"console.log\\"]
 type nonrec t = private React.element"
 `;
 
-exports[`recordDeclaration.js 1`] = `
+exports[`recordDeclaration.res 1`] = `
 "type nonrec t = {
   x: int }
 type nonrec t = {
@@ -233,13 +233,13 @@ type nonrec domProps =
   loop: bool [@bs.optional ]}"
 `;
 
-exports[`typeConstraint.js 1`] = `
+exports[`typeConstraint.res 1`] = `
 "type nonrec t = x constraint 'x = int
 type nonrec t = x constraint 'x = string constraint 'y = unit
 type nonrec t = x constraint 'a = ((typExpr)[@attr ])"
 `;
 
-exports[`typeDefinition.js 1`] = `
+exports[`typeDefinition.res 1`] = `
 "type nonrec t = string
 type nonrec t = string
 and s = int
@@ -254,7 +254,7 @@ and s = int
 and u = float"
 `;
 
-exports[`typeInformation.js 1`] = `
+exports[`typeInformation.res 1`] = `
 "type nonrec t
 type nonrec t = Module.t
 type nonrec t = Module.t constraint 'a = int
@@ -332,12 +332,12 @@ type nonrec callback = ReactEvent.Mouse.t -> unit as 'u
 type nonrec callback = (ReactEvent.Mouse.t -> unit) as 'callback"
 `;
 
-exports[`typeNonrec.js 1`] = `
+exports[`typeNonrec.res 1`] = `
 "type nonrec t =
   | Water "
 `;
 
-exports[`typeRepresentation.js 1`] = `
+exports[`typeRepresentation.res 1`] = `
 "type nonrec t = ..
 type nonrec t = private ..
 type nonrec t =
@@ -384,7 +384,7 @@ type nonrec t = private {
   y: int }"
 `;
 
-exports[`typedef.js 1`] = `
+exports[`typedef.res 1`] = `
 "type nonrec t
 type nonrec t
 and s
@@ -397,7 +397,7 @@ type nonrec 'a t = 'a node
 and 'b s = 'b edge"
 `;
 
-exports[`typeparams.js 1`] = `
+exports[`typeparams.res 1`] = `
 "type nonrec 'a t
 type nonrec ('a, 'b) t
 type nonrec ('a, 'b, 'c) t
@@ -405,7 +405,7 @@ type nonrec (+'a, -'b, +_, -_) t
 type nonrec _ t"
 `;
 
-exports[`typext.js 1`] = `
+exports[`typext.res 1`] = `
 "type t +=  
   | Foo 
 type Foo.Bar.t +=  

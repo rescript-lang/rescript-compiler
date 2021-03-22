@@ -1,21 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`emptyBlock.js 1`] = `
+exports[`emptyBlock.res 1`] = `
 "let x = ((())[@ns.braces ])
 let f a b = ((())[@ns.braces ])"
 `;
 
-exports[`if.js 1`] = `";;if foo = bar then Js.log \\"if-branch\\" else Js.log \\"else-branch\\""`;
+exports[`if.res 1`] = `";;if foo = bar then Js.log \\"if-branch\\" else Js.log \\"else-branch\\""`;
 
-exports[`infinite.js 1`] = `"let smallest = ((heap.compare ())[@bs ]) < (a |. (f b))"`;
+exports[`infinite.res 1`] = `"let smallest = ((heap.compare ())[@bs ]) < (a |. (f b))"`;
 
-exports[`jsx.js 1`] = `
+exports[`jsx.res 1`] = `
 "let x = ((div ~children:[] ())[@JSX ])
 [@@@ ]
 ;;[%rescript.exprhole ][@@ ]"
 `;
 
-exports[`list.js 1`] = `
+exports[`list.res 1`] = `
 "let flags =
   ((if reasonFormat
     then

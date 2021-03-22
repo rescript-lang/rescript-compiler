@@ -1,23 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`array.js 1`] = `";;match x with | [|a;b|] -> () | [|a;[|c;d|]|] -> ()"`;
+exports[`array.res 1`] = `";;match x with | [|a;b|] -> () | [|a;[|c;d|]|] -> ()"`;
 
-exports[`constrained.js 1`] = `";;match x with | (a : int -> unit) -> [%rescript.exprhole ]"`;
+exports[`constrained.res 1`] = `";;match x with | (a : int -> unit) -> [%rescript.exprhole ]"`;
 
-exports[`constructor.js 1`] = `
+exports[`constructor.res 1`] = `
 ";;match x with
   | Rgb (r, g, b) -> ()
   | Rgb (r, g, Color (a, b)) -> ()
   | Rgb (r, g, 1::2::[]) -> ()"
 `;
 
-exports[`list.js 1`] = `
+exports[`list.res 1`] = `
 ";;match x with | [] -> () | 1::[]::[] -> () | [] -> 1
 ;;[3; 4]
 ;;()"
 `;
 
-exports[`parenthesized.js 1`] = `
+exports[`parenthesized.res 1`] = `
 ";;match x with
   | a -> ()
   | [|a;b|] -> ()
@@ -26,7 +26,7 @@ exports[`parenthesized.js 1`] = `
   | (1, 2) -> ()"
 `;
 
-exports[`polyvariant.js 1`] = `
+exports[`polyvariant.res 1`] = `
 ";;match x with
   | \`Rgb (r, g, b) -> ()
   | \`Rgb (r, g, Color (a, b)) -> ()
@@ -34,6 +34,6 @@ exports[`polyvariant.js 1`] = `
 ;;match x with | \`a () -> () | \`a () -> ()"
 `;
 
-exports[`record.js 1`] = `";;match x with | { a; b = { x; y } } -> () | { x; y } -> () | { a; b } -> ()"`;
+exports[`record.res 1`] = `";;match x with | { a; b = { x; y } } -> () | { x; y } -> () | { a; b } -> ()"`;
 
-exports[`tuple.js 1`] = `";;match x with | a -> () | (a, (b, c)) -> () | (a, (b, c)) -> ()"`;
+exports[`tuple.res 1`] = `";;match x with | a -> () | (a, (b, c)) -> () | (a, (b, c)) -> ()"`;

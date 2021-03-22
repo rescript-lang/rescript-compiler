@@ -21,14 +21,14 @@ type nonrec 'a node =
 ========================================================"
 `;
 
-exports[`emptyRecord.js 1`] = `
+exports[`emptyRecord.res 1`] = `
 "=====Parsetree==========================================
 type nonrec record = {
   }
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/typeDef/emptyRecord.js:1:15-16
+  parsing/errors/typeDef/emptyRecord.res:1:15-16
   1 │ type record = {}
   2 │ 
 
@@ -89,13 +89,13 @@ let make (props : < handleClick: Click.t -> unit  ;value: string   > ) =
 ========================================================"
 `;
 
-exports[`namedParameters.js 1`] = `
+exports[`namedParameters.res 1`] = `
 "=====Parsetree==========================================
 type nonrec draw = stroke:pencil -> unit
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/typeDef/namedParameters.js:1:15-20
+  parsing/errors/typeDef/namedParameters.res:1:15-20
   1 │ type  draw = (stroke: pencil) => unit
   2 │ 
 
@@ -105,7 +105,7 @@ type nonrec draw = stroke:pencil -> unit
 ========================================================"
 `;
 
-exports[`polyvariant.js 1`] = `
+exports[`polyvariant.res 1`] = `
 "=====Parsetree==========================================
 type nonrec t = [< [%rescript.typehole ]]
 type nonrec z = [< \`A  | \`B ]
@@ -113,7 +113,7 @@ type t = [ [%rescript.typehole ] | [%rescript.typehole ]]
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/typeDef/polyvariant.js:1:13
+  parsing/errors/typeDef/polyvariant.res:1:13
   1 │ type t = [< ]
   2 │ 
   3 │ type z = [< | #A | #B > ]
@@ -122,7 +122,7 @@ type t = [ [%rescript.typehole ] | [%rescript.typehole ]]
 
 
   Syntax error!
-  parsing/errors/typeDef/polyvariant.js:5:15
+  parsing/errors/typeDef/polyvariant.res:5:15
   3 │ type z = [< | #A | #B > ]
   4 │ 
   5 │ type rec t = []
@@ -155,7 +155,7 @@ type nonrec observation = {
 ========================================================"
 `;
 
-exports[`typeDef.js 1`] = `
+exports[`typeDef.res 1`] = `
 "=====Parsetree==========================================
 type stack =
   | Empty 
@@ -165,7 +165,7 @@ type nonrec state = [%rescript.typehole ]
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/typeDef/typeDef.js:1:15-2:3
+  parsing/errors/typeDef/typeDef.res:1:15-2:3
   1 │ type rec stack
   2 │   | Empty
   3 │ 
@@ -175,7 +175,7 @@ type nonrec state = [%rescript.typehole ]
 
 
   Syntax error!
-  parsing/errors/typeDef/typeDef.js:5:6-12
+  parsing/errors/typeDef/typeDef.res:5:6-12
   3 │ 
   4 │ // name cannot contain module access paths
   5 │ type Foo.bar = string
@@ -186,7 +186,7 @@ type nonrec state = [%rescript.typehole ]
 
 
   Syntax error!
-  parsing/errors/typeDef/typeDef.js:11:1-4
+  parsing/errors/typeDef/typeDef.res:11:1-4
    9 │ 
   10 │ // missing type
   11 │ type state =
@@ -196,7 +196,7 @@ type nonrec state = [%rescript.typehole ]
 
 
   Syntax error!
-  parsing/errors/typeDef/typeDef.js:12:1
+  parsing/errors/typeDef/typeDef.res:12:1
   10 │ // missing type
   11 │ type state =
   12 │ 
@@ -207,7 +207,7 @@ type nonrec state = [%rescript.typehole ]
 ========================================================"
 `;
 
-exports[`typeParams.js 1`] = `
+exports[`typeParams.res 1`] = `
 "=====Parsetree==========================================
 type nonrec 'a node = {
   _value: 'a Js.Nullable.value }
@@ -230,7 +230,7 @@ type nonrec ('from, 'foo) derivedNode =
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/typeDef/typeParams.js:1:10-13
+  parsing/errors/typeDef/typeParams.res:1:10-13
   1 │ type node('a) = {
   2 │   _value: Js.Nullable.value<'a>
   3 │ }
@@ -240,7 +240,7 @@ type nonrec ('from, 'foo) derivedNode =
 
 
   Syntax error!
-  parsing/errors/typeDef/typeParams.js:5:26-28
+  parsing/errors/typeDef/typeParams.res:5:26-28
   3 │ }
   4 │ 
   5 │ type derivedNode<'from, 'for> = {
@@ -251,7 +251,7 @@ type nonrec ('from, 'foo) derivedNode =
 
 
   Syntax error!
-  parsing/errors/typeDef/typeParams.js:10:26
+  parsing/errors/typeDef/typeParams.res:10:26
    8 │ }
    9 │ 
   10 │ type derivedNode<'from, '+> = {
@@ -262,7 +262,7 @@ type nonrec ('from, 'foo) derivedNode =
 
 
   Syntax error!
-  parsing/errors/typeDef/typeParams.js:15:26
+  parsing/errors/typeDef/typeParams.res:15:26
   13 │ }
   14 │ 
   15 │ type derivedNode<'from, '_> = {
@@ -273,7 +273,7 @@ type nonrec ('from, 'foo) derivedNode =
 
 
   Syntax error!
-  parsing/errors/typeDef/typeParams.js:21:25-27
+  parsing/errors/typeDef/typeParams.res:21:25-27
   19 │ 
   20 │ 
   21 │ type derivedNode<'from, foo> = {

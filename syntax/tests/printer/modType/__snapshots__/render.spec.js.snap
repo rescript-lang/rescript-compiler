@@ -1,18 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`exoticIdent.js 1`] = `
+exports[`exoticIdent.res 1`] = `
 "module type A = Foo with type Foo.\\\\\\"let\\"<'\\\\\\"type\\"> = \\\\\\"module\\"
 
 module type A = Foo with type Foo.\\\\\\"let\\"<'\\\\\\"type\\"> := \\\\\\"module\\"
 "
 `;
 
-exports[`extension.js 1`] = `
+exports[`extension.res 1`] = `
 "module type ReactInterface = %import(\\"react-bindings\\")
 "
 `;
 
-exports[`functor.js 1`] = `
+exports[`functor.res 1`] = `
 "module type Functor = SetLike => Set
 module type Functor = (S: SetLike, B: BtreeLike) => NeoTree
 module type Functor = (SetLike, BtreeLike) => NeoTree
@@ -30,7 +30,7 @@ module type Functor = SetLike => (Set with type t = A.t)
 "
 `;
 
-exports[`ident.js 1`] = `
+exports[`ident.res 1`] = `
 "module type T = Tree
 
 module type T = @attr
@@ -41,14 +41,14 @@ module type t = s
 "
 `;
 
-exports[`moduleTypeOf.js 1`] = `
+exports[`moduleTypeOf.res 1`] = `
 "module type LinkedList = module type of List
 module type LinkedList = @attr
 module type of List
 "
 `;
 
-exports[`signature.js 1`] = `
+exports[`signature.res 1`] = `
 "module type Printable = {
   type t
   let print: (Format.formatter, t) => unit
@@ -79,7 +79,7 @@ module type Foo = {
 "
 `;
 
-exports[`withConstraints.js 1`] = `
+exports[`withConstraints.res 1`] = `
 "module type A = Foo with type t = string
 module type A = Foo with type Bar.t = string
 module type A = Foo with type t<'a> = string

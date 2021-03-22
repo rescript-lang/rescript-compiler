@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`exception.js 1`] = `
+exports[`exception.res 1`] = `
 "module type Signature  =
   sig
     exception Exit 
@@ -18,7 +18,7 @@ exports[`exception.js 1`] = `
   end"
 `;
 
-exports[`external.js 1`] = `
+exports[`external.res 1`] = `
 "module type Signature  =
   sig
     type nonrec t
@@ -32,7 +32,7 @@ exports[`external.js 1`] = `
   end"
 `;
 
-exports[`include.js 1`] = `
+exports[`include.res 1`] = `
 "module type Sig  =
   sig
     include BtreeType
@@ -55,7 +55,7 @@ exports[`include.js 1`] = `
   end"
 `;
 
-exports[`itemExtension.js 1`] = `
+exports[`itemExtension.res 1`] = `
 "module type Ext  =
   sig
     [%%item.extension ]
@@ -65,9 +65,9 @@ exports[`itemExtension.js 1`] = `
   end"
 `;
 
-exports[`let.js 1`] = `"module type Sig  = sig val x : int val y : string[@@attr ] end"`;
+exports[`let.res 1`] = `"module type Sig  = sig val x : int val y : string[@@attr ] end"`;
 
-exports[`modDecl.js 1`] = `
+exports[`modDecl.res 1`] = `
 "module type Signature  =
   sig
     module Tree : sig val x : int end
@@ -79,7 +79,7 @@ exports[`modDecl.js 1`] = `
   end"
 `;
 
-exports[`modtype.js 1`] = `
+exports[`modtype.res 1`] = `
 "module type Signature  =
   sig
     module type Belt
@@ -91,7 +91,7 @@ exports[`modtype.js 1`] = `
 module type my_module_type  = sig  end"
 `;
 
-exports[`open.js 1`] = `
+exports[`open.res 1`] = `
 "module type Signature  =
   sig
     open Belt
@@ -105,7 +105,7 @@ exports[`open.js 1`] = `
   end"
 `;
 
-exports[`recModule.js 1`] = `
+exports[`recModule.res 1`] = `
 "module type Signature  =
   sig
     module rec A:
@@ -130,7 +130,7 @@ exports[`recModule.js 1`] = `
   end"
 `;
 
-exports[`standAloneAttribute.js 1`] = `
+exports[`standAloneAttribute.res 1`] = `
 "module type StandaloneAttribute  =
   sig
     [@@@standaloneAttribute ]
@@ -139,7 +139,7 @@ exports[`standAloneAttribute.js 1`] = `
   end"
 `;
 
-exports[`typLvlModAlias.js 1`] = `
+exports[`typLvlModAlias.res 1`] = `
 "module type Signature  =
   sig
     module Tree = Btree
@@ -149,7 +149,7 @@ exports[`typLvlModAlias.js 1`] = `
   end"
 `;
 
-exports[`typeDefinition.js 1`] = `
+exports[`typeDefinition.res 1`] = `
 "module type Signature  =
   sig
     type nonrec t
@@ -160,7 +160,7 @@ exports[`typeDefinition.js 1`] = `
   end"
 `;
 
-exports[`typext.js 1`] = `
+exports[`typext.res 1`] = `
 "type t +=  
   | Foo 
 type Foo.Bar.t +=  

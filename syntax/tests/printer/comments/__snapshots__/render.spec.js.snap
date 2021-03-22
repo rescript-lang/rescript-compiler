@@ -1713,7 +1713,7 @@ exports[`trailingComments.res 1`] = `
 "
 `;
 
-exports[`typeDefinition.js 1`] = `
+exports[`typeDefinition.res 1`] = `
 "/* before */ type t /* after */
 /* before */ type /* before name */ t /* after name */ /* after */
 

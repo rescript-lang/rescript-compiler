@@ -103,13 +103,13 @@ type nonrec faultyTuple = (string)
 ========================================================"
 `;
 
-exports[`patternMatching.js 1`] = `
+exports[`patternMatching.res 1`] = `
 "=====Parsetree==========================================
 ;;match expr with
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/other/patternMatching.js:1:14-2:1
+  parsing/errors/other/patternMatching.res:1:14-2:1
   1 │ switch expr {
   2 │ }
   3 │ 
@@ -158,7 +158,7 @@ type nonrec 'extraInfo student =
 ========================================================"
 `;
 
-exports[`spread.js 1`] = `
+exports[`spread.res 1`] = `
 "=====Parsetree==========================================
 let arr = [|x;y|]
 let [|arr;_|] = [|1;2;3|]
@@ -169,7 +169,7 @@ let x::y = myList
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/other/spread.js:1:12-14
+  parsing/errors/other/spread.res:1:12-14
   1 │ let arr = [...x, ...y]
   2 │ let [...arr, _] = [1, 2, 3]
   3 │ 
@@ -178,7 +178,7 @@ let x::y = myList
 
 
   Syntax error!
-  parsing/errors/other/spread.js:2:6-8
+  parsing/errors/other/spread.res:2:6-8
   1 │ let arr = [...x, ...y]
   2 │ let [...arr, _] = [1, 2, 3]
   3 │ 
@@ -190,7 +190,7 @@ Solution: if it's to validate the first few elements, use a \`when\` clause + Ar
 
 
   Syntax error!
-  parsing/errors/other/spread.js:4:21-23
+  parsing/errors/other/spread.res:4:21-23
   2 │ let [...arr, _] = [1, 2, 3]
   3 │ 
   4 │ let record = {...x, ...y}
@@ -202,7 +202,7 @@ Explanation: since records have a known, fixed shape, a spread like \`{a, ...b}\
 
 
   Syntax error!
-  parsing/errors/other/spread.js:5:15-18
+  parsing/errors/other/spread.res:5:15-18
   3 │ 
   4 │ let record = {...x, ...y}
   5 │ let {...x, ...y} = myRecord
@@ -215,7 +215,7 @@ Solution: you need to pull out each field you want explicitly.
 
 
   Syntax error!
-  parsing/errors/other/spread.js:8:13-22
+  parsing/errors/other/spread.res:8:13-22
   6 │ 
   7 │ let myList = list{...x, ...y}
   8 │ let list{...x, ...y} = myList

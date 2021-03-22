@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`arrow.js 1`] = `
+exports[`arrow.res 1`] = `
 "=====Parsetree==========================================
 external add_nat : nat -> int = \\"add_nat_bytecode\\" \\"add_nat_native\\"
 module Error2 =
@@ -22,7 +22,7 @@ module Error3 =
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/typexpr/arrow.js:2:22-24
+  parsing/errors/typexpr/arrow.res:2:22-24
   1 │ // notice usage of -> instead of =>
   2 │ external add_nat: nat -> int = \\"add_nat_bytecode\\" \\"add_nat_native\\"
   3 │ 
@@ -32,7 +32,7 @@ module Error3 =
 
 
   Syntax error!
-  parsing/errors/typexpr/arrow.js:7:27-30
+  parsing/errors/typexpr/arrow.res:7:27-30
   5 │   type observation ={
   6 │     observed: int,
   7 │     onStep: (~currentValue   ) => unit
@@ -43,7 +43,7 @@ module Error3 =
 
 
   Syntax error!
-  parsing/errors/typexpr/arrow.js:14:26-29
+  parsing/errors/typexpr/arrow.res:14:26-29
   12 │   type observation ={
   13 │     observed: int,
   14 │     onStep: ~currentValue  => unit
@@ -56,7 +56,7 @@ module Error3 =
 ========================================================"
 `;
 
-exports[`bsObjSugar.js 1`] = `
+exports[`bsObjSugar.res 1`] = `
 "=====Parsetree==========================================
 type nonrec state =
   < url: [%rescript.typehole ]  ;protocols: string array   > 
@@ -78,7 +78,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js:2:8-3:13
+  parsing/errors/typexpr/bsObjSugar.res:2:8-3:13
   1 │ type state = {
   2 │   \\"url\\"
   3 │   \\"protocols\\": array<string>
@@ -89,7 +89,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >
 
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js:7:14-8:13
+  parsing/errors/typexpr/bsObjSugar.res:7:14-8:13
    5 │ 
    6 │ type state = {
    7 │   @attr \\"url\\"
@@ -101,7 +101,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >
 
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js:13:14-14:13
+  parsing/errors/typexpr/bsObjSugar.res:13:14-14:13
   11 │ type state = {
   12 │   \\"url\\": string,
   13 │   \\"protocols\\"
@@ -113,7 +113,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >
 
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js:19:14-20:1
+  parsing/errors/typexpr/bsObjSugar.res:19:14-20:1
   17 │ type state = {
   18 │   \\"url\\": string,
   19 │   \\"protocols\\"
@@ -125,7 +125,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >
 
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js:25:1
+  parsing/errors/typexpr/bsObjSugar.res:25:1
   23 │   @bs.meth
   24 │   \\"send\\": string =>
   25 │ }
@@ -136,7 +136,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >
 
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js:28:10
+  parsing/errors/typexpr/bsObjSugar.res:28:10
   26 │ 
   27 │ type state = {
   28 │   \\"age\\": ,
@@ -147,7 +147,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >
 
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js:33:18
+  parsing/errors/typexpr/bsObjSugar.res:33:18
   31 │ 
   32 │ type state = {
   33 │   @bs.set \\"age\\": ,
@@ -158,7 +158,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >
 
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js:37:25
+  parsing/errors/typexpr/bsObjSugar.res:37:25
   35 │ }
   36 │ 
   37 │ type state = {.. \\"age\\": }
@@ -169,7 +169,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >
 
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js:40:8-41:8
+  parsing/errors/typexpr/bsObjSugar.res:40:8-41:8
   38 │ type state = {
   39 │   ..
   40 │   \\"age\\" 
@@ -181,7 +181,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >
 
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js:46:3-11
+  parsing/errors/typexpr/bsObjSugar.res:46:3-11
   44 │ type websocket = {
   45 │   \\"id\\":
   46 │   \\"channel\\": channelTyp
@@ -192,7 +192,7 @@ type nonrec websocket = < id: [%rescript.typehole ]   >
 
 
   Syntax error!
-  parsing/errors/typexpr/bsObjSugar.js:50:7-51:0
+  parsing/errors/typexpr/bsObjSugar.res:50:7-51:0
   48 │ 
   49 │ type websocket = {
   50 │   \\"id\\"
@@ -222,7 +222,7 @@ external printName : name:((unit)[@ns.namedArgLoc ]) -> unit = \\"printName\\"
 ========================================================"
 `;
 
-exports[`typeConstructorArgs.js 1`] = `
+exports[`typeConstructorArgs.res 1`] = `
 "=====Parsetree==========================================
 type nonrec 'a node = {
   _value: 'a Js.Nullable.value }
@@ -233,7 +233,7 @@ type nonrec t = int node option
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/typexpr/typeConstructorArgs.js:2:28-31
+  parsing/errors/typexpr/typeConstructorArgs.res:2:28-31
   1 │ type node<'a> = {
   2 │   _value: Js.Nullable.value('a)
   3 │ }
@@ -244,7 +244,7 @@ type nonrec t = int node option
 
 
   Syntax error!
-  parsing/errors/typexpr/typeConstructorArgs.js:5:24-27
+  parsing/errors/typexpr/typeConstructorArgs.res:5:24-27
   3 │ }
   4 │ 
   5 │ type t<'a> = Belt.Map.t('a)
@@ -256,7 +256,7 @@ type nonrec t = int node option
 
 
   Syntax error!
-  parsing/errors/typexpr/typeConstructorArgs.js:6:32-35
+  parsing/errors/typexpr/typeConstructorArgs.res:6:32-35
   4 │ 
   5 │ type t<'a> = Belt.Map.t('a)
   6 │ type t<'a> = private Belt.Map.t('a)
@@ -268,7 +268,7 @@ type nonrec t = int node option
 
 
   Syntax error!
-  parsing/errors/typexpr/typeConstructorArgs.js:9:28
+  parsing/errors/typexpr/typeConstructorArgs.res:9:28
    7 │ 
    8 │ type t = option<<node<int>>
    9 │ type t = option(<node<int>>)

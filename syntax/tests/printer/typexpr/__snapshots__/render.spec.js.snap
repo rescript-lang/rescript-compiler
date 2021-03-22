@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`alias.js 1`] = `
+exports[`alias.res 1`] = `
 "type t = string as 'x
 type t = ((string, float) => unit) as 'x
 type t = ((string, float) => unit) as 'x
@@ -8,7 +8,7 @@ type t = (string, float) => (unit as 'x)
 "
 `;
 
-exports[`any.js 1`] = `
+exports[`any.res 1`] = `
 "type t = _
 type t = node<_>
 
@@ -29,7 +29,7 @@ external foo: @attr _ = \\"foo_c_binding\\"
 "
 `;
 
-exports[`arrow.js 1`] = `
+exports[`arrow.res 1`] = `
 "type t = (string, string) => string
 type t = (~firstName: string, ~lastName: string) => string
 type t = (~firstName: string=?, ~lastName: string=?) => string
@@ -284,7 +284,7 @@ external fromPoly: ([> ] as 'a, [> ] as 'b) => t = \\"%identity\\"
 "
 `;
 
-exports[`bsObject.js 1`] = `
+exports[`bsObject.res 1`] = `
 "type user = {\\"age\\": int}
 type user = {\\"age\\": int, \\"name\\": string}
 type user = {
@@ -344,7 +344,7 @@ type t = {hr: React.component<{.}>}
 "
 `;
 
-exports[`exoticIdent.js 1`] = `
+exports[`exoticIdent.res 1`] = `
 "type s = \\\\\\"type\\"
 type s = '\\\\\\"type\\"
 type s = \\\\\\"module\\" as '\\\\\\"type\\"
@@ -360,7 +360,7 @@ let f: 'a. \\\\\\"let\\" => \\\\\\"type\\" = ()
 "
 `;
 
-exports[`extension.js 1`] = `
+exports[`extension.res 1`] = `
 "type t = %extension
 type t = @attr %extension
 
@@ -372,7 +372,7 @@ let x: @attr %extension = z
 "
 `;
 
-exports[`firstClassModule.js 1`] = `
+exports[`firstClassModule.res 1`] = `
 "type t = module(S)
 type t = module(Hashmap with type key = string)
 type t = module(Hashmap with type key = string and type value = int)
@@ -409,7 +409,7 @@ let devices: @attr Hastbl.t<string, module(DEVICE)> = xyz
 "
 `;
 
-exports[`polyTyp.js 1`] = `
+exports[`polyTyp.res 1`] = `
 "external getLogger: unit => {
   \\"log\\": 'a => unit,
   \\"log2\\": 'a. int => int,
@@ -424,7 +424,7 @@ type reducer<'state> = {
 "
 `;
 
-exports[`tuple.js 1`] = `
+exports[`tuple.res 1`] = `
 "type t = (string, int, float)
 
 type t = (
@@ -473,7 +473,7 @@ type t = @attr (@attr string, @attr int, @attr float)
 "
 `;
 
-exports[`typeConstr.js 1`] = `
+exports[`typeConstr.res 1`] = `
 "type t = Option.t<string>
 type t = Mod.Sub.t<a, b, c>
 type t = Mod.Sub.t<
@@ -567,7 +567,7 @@ let dangerousHtml: string => Js.t<'a> = html => {\\"__html\\": html}
 "
 `;
 
-exports[`var.js 1`] = `
+exports[`var.res 1`] = `
 "type t = 'a
 type t = @attr 'a
 
@@ -583,7 +583,7 @@ type x<'A> = 'A
 "
 `;
 
-exports[`variant.js 1`] = `
+exports[`variant.res 1`] = `
 "type rgb = [#Red | #Green | #Blue]
 type color = [rgb | #Orange | #Yellow | #Purple]
 

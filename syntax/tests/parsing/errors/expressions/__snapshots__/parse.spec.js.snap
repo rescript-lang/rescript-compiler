@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ambiguousArrow.js 1`] = `
+exports[`ambiguousArrow.res 1`] = `
 "=====Parsetree==========================================
 let a b = (\\"hi\\" : int)
 let x = ((let a = 1 in let b = 2 in fun pattern -> (\\"test\\" : int))
@@ -8,7 +8,7 @@ let x = ((let a = 1 in let b = 2 in fun pattern -> (\\"test\\" : int))
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/ambiguousArrow.js:1:9-21
+  parsing/errors/expressions/ambiguousArrow.res:1:9-21
   1 │ let a = b:int => \\"hi\\"
   2 │ 
   3 │ let x = {
@@ -19,7 +19,7 @@ let x = ((let a = 1 in let b = 2 in fun pattern -> (\\"test\\" : int))
 
 
   Syntax error!
-  parsing/errors/expressions/ambiguousArrow.js:6:3-23
+  parsing/errors/expressions/ambiguousArrow.res:6:3-23
   4 │   let a = 1
   5 │   let b = 2
   6 │   a + b : int => \\"test\\"
@@ -34,13 +34,13 @@ let x = ((let a = 1 in let b = 2 in fun pattern -> (\\"test\\" : int))
 ========================================================"
 `;
 
-exports[`array.js 1`] = `
+exports[`array.res 1`] = `
 "=====Parsetree==========================================
 let xs = x.map (fun key -> [|key;(predicates.(key))|])
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/array.js:2:44
+  parsing/errors/expressions/array.res:2:44
   1 │ // missing ] before )
   2 │ let xs = x.map(key => [key, predicates[key])
   3 │ 
@@ -51,7 +51,7 @@ let xs = x.map (fun key -> [|key;(predicates.(key))|])
 ========================================================"
 `;
 
-exports[`arrow.js 1`] = `
+exports[`arrow.res 1`] = `
 "=====Parsetree==========================================
 ;;(Object.keys providers).reduce
     (fun elements ->
@@ -59,7 +59,7 @@ exports[`arrow.js 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/arrow.js:1:52
+  parsing/errors/expressions/arrow.res:1:52
   1 │ Object.keys(providers).reduce((elements, providerId] => {
   2 │   let x = 1
   3 │   let b = 2
@@ -70,7 +70,7 @@ exports[`arrow.js 1`] = `
 ========================================================"
 `;
 
-exports[`block.js 1`] = `
+exports[`block.res 1`] = `
 "=====Parsetree==========================================
 let findThreadByIdLinearScan ~threads:((threads)[@ns.namedArgLoc ]) 
   ~id:((id)[@ns.namedArgLoc ])  =
@@ -97,7 +97,7 @@ let pipeline =
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/block.js:14:4-15:1
+  parsing/errors/expressions/block.res:14:4-15:1
   12 │ 
   13 │     thisId === id
   14 │   }
@@ -109,7 +109,7 @@ let pipeline =
 
 
   Syntax error!
-  parsing/errors/expressions/block.js:18:25-19:1
+  parsing/errors/expressions/block.res:18:25-19:1
   16 │ 
   17 │ let x = {
   18 │   loop(0, Nil->push(doc)
@@ -121,7 +121,7 @@ let pipeline =
 
 
   Syntax error!
-  parsing/errors/expressions/block.js:22:11-23:1
+  parsing/errors/expressions/block.res:22:11-23:1
   20 │ 
   21 │ switch stack {
   22 │ | Empty =>
@@ -133,7 +133,7 @@ let pipeline =
 
 
   Syntax error!
-  parsing/errors/expressions/block.js:26:7-27:1
+  parsing/errors/expressions/block.res:26:7-27:1
   24 │ | Join(doc1, doc2) =>
   25 │ 	buffer->Buffer.add_string(indentation)
   26 │ 	loop(
@@ -145,7 +145,7 @@ let pipeline =
 
 
   Syntax error!
-  parsing/errors/expressions/block.js:30:10-31:1
+  parsing/errors/expressions/block.res:30:10-31:1
   28 │ 
   29 │ let pipeline = switch scheduler {
   30 │ | Some =>
@@ -213,14 +213,14 @@ let () = ((let open Foo in let exception End  in x ())[@ns.braces ])
 ========================================================"
 `;
 
-exports[`emptyBlock.js 1`] = `
+exports[`emptyBlock.res 1`] = `
 "=====Parsetree==========================================
 let x = ((())[@ns.braces ])
 let f a b = ((())[@ns.braces ])
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/emptyBlock.js:1:10
+  parsing/errors/expressions/emptyBlock.res:1:10
   1 │ let x = {}
   2 │ 
   3 │ let f = (a, b) => {}
@@ -229,7 +229,7 @@ let f a b = ((())[@ns.braces ])
 
 
   Syntax error!
-  parsing/errors/expressions/emptyBlock.js:3:20
+  parsing/errors/expressions/emptyBlock.res:3:20
   1 │ let x = {}
   2 │ 
   3 │ let f = (a, b) => {}
@@ -241,13 +241,13 @@ let f a b = ((())[@ns.braces ])
 ========================================================"
 `;
 
-exports[`emptyeof.js 1`] = `
+exports[`emptyeof.res 1`] = `
 "=====Parsetree==========================================
 let x = \\"\\\\n\\"
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/emptyeof.js:1:9-2:0
+  parsing/errors/expressions/emptyeof.res:1:9-2:0
   1 │ let x = \\"
   2 │ 
 
@@ -257,13 +257,13 @@ let x = \\"\\\\n\\"
 ========================================================"
 `;
 
-exports[`if.js 1`] = `
+exports[`if.res 1`] = `
 "=====Parsetree==========================================
 ;;if match then let a = 1 in a + 1
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/if.js:2:11-3:5
+  parsing/errors/expressions/if.res:2:11-3:5
   1 │ // missing brace below
   2 │ if (match)
   3 │   let a = 1
@@ -349,7 +349,7 @@ module LicenseList = struct  end
 ========================================================"
 `;
 
-exports[`jsx.js 1`] = `
+exports[`jsx.res 1`] = `
 "=====Parsetree==========================================
 let x = ((di ~children:[] ())[@JSX ]) - (v / ([%rescript.exprhole ]))
 let x = ((Unclosed.createElement ~children:[] ())[@JSX ])
@@ -366,7 +366,7 @@ let x =
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/jsx.js:1:12
+  parsing/errors/expressions/jsx.res:1:12
   1 │ let x = <di-v />
   2 │ let x = <Unclosed >;
   3 │ let x = <Foo.Bar></Free.Will>;
@@ -375,7 +375,7 @@ let x =
 
 
   Syntax error!
-  parsing/errors/expressions/jsx.js:2:20
+  parsing/errors/expressions/jsx.res:2:20
   1 │ let x = <di-v />
   2 │ let x = <Unclosed >;
   3 │ let x = <Foo.Bar></Free.Will>;
@@ -385,7 +385,7 @@ let x =
 
 
   Syntax error!
-  parsing/errors/expressions/jsx.js:3:9-28
+  parsing/errors/expressions/jsx.res:3:9-28
   1 │ let x = <di-v />
   2 │ let x = <Unclosed >;
   3 │ let x = <Foo.Bar></Free.Will>;
@@ -396,7 +396,7 @@ let x =
 
 
   Syntax error!
-  parsing/errors/expressions/jsx.js:4:9-34
+  parsing/errors/expressions/jsx.res:4:9-34
   2 │ let x = <Unclosed >;
   3 │ let x = <Foo.Bar></Free.Will>;
   4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
@@ -407,7 +407,7 @@ let x =
 
 
   Syntax error!
-  parsing/errors/expressions/jsx.js:5:9-27
+  parsing/errors/expressions/jsx.res:5:9-27
   3 │ let x = <Foo.Bar></Free.Will>;
   4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
   5 │ let x = <Foo.bar> </Foo.baz>
@@ -418,7 +418,7 @@ let x =
 
 
   Syntax error!
-  parsing/errors/expressions/jsx.js:6:17
+  parsing/errors/expressions/jsx.res:6:17
   4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>
   5 │ let x = <Foo.bar> </Foo.baz>
   6 │ let x = <Foo.bar.baz />
@@ -430,7 +430,7 @@ let x =
 ========================================================"
 `;
 
-exports[`letBinding.js 1`] = `
+exports[`letBinding.res 1`] = `
 "=====Parsetree==========================================
 let foo = 2.
 let foo = true
@@ -441,7 +441,7 @@ let foo = ((\\"foo\\")[@ns.braces ])
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/letBinding.js:1:10-11
+  parsing/errors/expressions/letBinding.res:1:10-11
   1 │ let foo = '2.
   2 │ 
   3 │ let foo = }true
@@ -450,7 +450,7 @@ let foo = ((\\"foo\\")[@ns.braces ])
 
 
   Syntax error!
-  parsing/errors/expressions/letBinding.js:3:10-11
+  parsing/errors/expressions/letBinding.res:3:10-11
   1 │ let foo = '2.
   2 │ 
   3 │ let foo = }true
@@ -461,7 +461,7 @@ let foo = ((\\"foo\\")[@ns.braces ])
 
 
   Syntax error!
-  parsing/errors/expressions/letBinding.js:5:10-11
+  parsing/errors/expressions/letBinding.res:5:10-11
   3 │ let foo = }true
   4 │ 
   5 │ let foo = )2
@@ -472,7 +472,7 @@ let foo = ((\\"foo\\")[@ns.braces ])
 
 
   Syntax error!
-  parsing/errors/expressions/letBinding.js:7:10-11
+  parsing/errors/expressions/letBinding.res:7:10-11
   5 │ let foo = )2
   6 │ 
   7 │ let foo = }f()
@@ -483,7 +483,7 @@ let foo = ((\\"foo\\")[@ns.braces ])
 
 
   Syntax error!
-  parsing/errors/expressions/letBinding.js:9:10-11
+  parsing/errors/expressions/letBinding.res:9:10-11
    7 │ let foo = }f()
    8 │ 
    9 │ let foo = }}{2}
@@ -494,7 +494,7 @@ let foo = ((\\"foo\\")[@ns.braces ])
 
 
   Syntax error!
-  parsing/errors/expressions/letBinding.js:11:10-12
+  parsing/errors/expressions/letBinding.res:11:10-12
    9 │ let foo = }}{2}
   10 │ 
   11 │ let foo = == {
@@ -507,13 +507,13 @@ let foo = ((\\"foo\\")[@ns.braces ])
 ========================================================"
 `;
 
-exports[`misc.js 1`] = `
+exports[`misc.res 1`] = `
 "=====Parsetree==========================================
 let x = ([%rescript.exprhole ]) + 1
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/misc.js:1:9
+  parsing/errors/expressions/misc.res:1:9
   1 │ let x = _ + 1
   2 │ 
 
@@ -523,7 +523,7 @@ let x = ([%rescript.exprhole ]) + 1
 ========================================================"
 `;
 
-exports[`record.js 1`] = `
+exports[`record.res 1`] = `
 "=====Parsetree==========================================
 let newWrapper = { updateF; value = (f xWrapper.currentValue) }
 let newWrapper = { updateF; updateF2; value = (f xWrapper.currentValue) }
@@ -532,7 +532,7 @@ let record = { field = 2 }
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/record.js:2:10-3:7
+  parsing/errors/expressions/record.res:2:10-3:7
   1 │ let newWrapper = {
   2 │   updateF
   3 │   value: f(xWrapper.currentValue),
@@ -543,7 +543,7 @@ let record = { field = 2 }
 
 
   Syntax error!
-  parsing/errors/expressions/record.js:8:10-18
+  parsing/errors/expressions/record.res:8:10-18
    6 │ 
    7 │ let newWrapper = {
    8 │   updateF updateF2
@@ -554,7 +554,7 @@ let record = { field = 2 }
 
 
   Syntax error!
-  parsing/errors/expressions/record.js:13:9-14:1
+  parsing/errors/expressions/record.res:13:9-14:1
   11 │ 
   12 │ let record = {
   13 │   field:
@@ -566,7 +566,7 @@ let record = { field = 2 }
 
 
   Syntax error!
-  parsing/errors/expressions/record.js:18:9-19:2
+  parsing/errors/expressions/record.res:18:9-19:2
   16 │ 
   17 │ let record = {
   18 │   field: 
@@ -580,7 +580,7 @@ let record = { field = 2 }
 ========================================================"
 `;
 
-exports[`setField.js 1`] = `
+exports[`setField.res 1`] = `
 "=====Parsetree==========================================
 ;;if match
   then let a = 1 in (m.left).compatibleTypeArgs <- ([%rescript.exprhole ])
@@ -588,7 +588,7 @@ exports[`setField.js 1`] = `
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/setField.js:4:30-5:1
+  parsing/errors/expressions/setField.res:4:30-5:1
   2 │   let a = 1
   3 │ 	// notice missing expression after = 
   4 │   m.left.compatibleTypeArgs =
@@ -602,13 +602,13 @@ exports[`setField.js 1`] = `
 ========================================================"
 `;
 
-exports[`taggedTemplateLiterals.js 1`] = `
+exports[`taggedTemplateLiterals.res 1`] = `
 "=====Parsetree==========================================
 ;;{js|null|js}
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/taggedTemplateLiterals.js:1:1-5
+  parsing/errors/expressions/taggedTemplateLiterals.res:1:1-5
   1 │ foo()\`null\`
   2 │ 
 
@@ -618,13 +618,13 @@ exports[`taggedTemplateLiterals.js 1`] = `
 ========================================================"
 `;
 
-exports[`try.js 1`] = `
+exports[`try.res 1`] = `
 "=====Parsetree==========================================
 let parsedPayload = try Js.Json.parseExn response with | _ -> Js.Json.null
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/try.js:2:37-38
+  parsing/errors/expressions/try.res:2:37-38
   1 ┆ let parsedPayload =
   2 ┆   try (Js.Json.parseExn(response)) {
   3 ┆   | _ => Js.Json.null
@@ -636,14 +636,14 @@ let parsedPayload = try Js.Json.parseExn response with | _ -> Js.Json.null
 ========================================================"
 `;
 
-exports[`unexpectedConstraint.js 1`] = `
+exports[`unexpectedConstraint.res 1`] = `
 "=====Parsetree==========================================
 let x = ((let a = 1 in let b = 2 in (a + b : int))[@ns.braces ])
 let x = (\\"hi\\" : string)
 =====Errors=============================================
 
   Syntax error!
-  parsing/errors/expressions/unexpectedConstraint.js:4:3-13
+  parsing/errors/expressions/unexpectedConstraint.res:4:3-13
   2 │   let a = 1
   3 │   let b = 2
   4 │   a + b : int
@@ -655,7 +655,7 @@ let x = (\\"hi\\" : string)
 
 
   Syntax error!
-  parsing/errors/expressions/unexpectedConstraint.js:7:9-20
+  parsing/errors/expressions/unexpectedConstraint.res:7:9-20
   5 │ }
   6 │ 
   7 │ let x = \\"hi\\": string 

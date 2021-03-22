@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`apply.js 1`] = `
+exports[`apply.res 1`] = `
 "module X = F(A)
 module X = F(Arg1, Arg2, Arg3)
 
@@ -33,12 +33,12 @@ let someFunctorAsFunction = (x: module(MT)): module(ResT) =>
 "
 `;
 
-exports[`extension.js 1`] = `
+exports[`extension.res 1`] = `
 "module React = %import(\\"react\\")
 "
 `;
 
-exports[`functor.js 1`] = `
+exports[`functor.res 1`] = `
 "module F = (A: X, B: Y) => A
 module F = (@attr1 A: X, @attr2 B: Y) => A
 include (X: Map, Y: Set) => Z
@@ -146,7 +146,7 @@ module DistinctString = (): StringBased => {
 "
 `;
 
-exports[`structure.js 1`] = `
+exports[`structure.res 1`] = `
 "module StringArray = {
   type t = array<string>
 
@@ -168,7 +168,7 @@ module EmptyModule = {
 "
 `;
 
-exports[`unpack.js 1`] = `
+exports[`unpack.res 1`] = `
 "module Device = unpack({
   let deviceName = parseCmdline()
   try Hashtbl.find(devices, deviceName) catch {

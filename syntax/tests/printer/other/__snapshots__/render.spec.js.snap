@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`StaticReactTypes.js 1`] = `
+exports[`StaticReactTypes.res 1`] = `
 "type empty = Empty_
 /*
  * Also create another form for splicing in nodes into otherwise fixed length
@@ -130,7 +130,7 @@ let x = 1
 "
 `;
 
-exports[`case.js 1`] = `
+exports[`case.res 1`] = `
 "let printExprFunParameters = (~uncurried, parameters) =>
   switch parameters {
   | list{([], Asttypes.Nolabel, None, {Parsetree.ppat_desc: Ppat_any})}
@@ -268,7 +268,7 @@ switch a {
 "
 `;
 
-exports[`char.js 1`] = `
+exports[`char.res 1`] = `
 "let x = 'a'
 let x = '\\\\\\\\'
 let x = '\\\\''
@@ -381,7 +381,7 @@ let make = () => {
 "
 `;
 
-exports[`lor.js 1`] = `
+exports[`lor.res 1`] = `
 "let lower = ch => lor(32, ch)
 "
 `;
@@ -461,7 +461,7 @@ exports[`nesting.res 1`] = `
 "
 `;
 
-exports[`number.js 1`] = `
+exports[`number.res 1`] = `
 "let x = 0b0000_0001
 
 let int32 = 42l
@@ -644,7 +644,7 @@ let make = () => {
 "
 `;
 
-exports[`string.js 1`] = `
+exports[`string.res 1`] = `
 "let s = \\"a string with \\\\b \\\\n \\\\r \\\\t abcdef\\"
 
 let s = \\"🚀 🤭 🔥 😀 with emojis 😅 👌 test 👀\\"
