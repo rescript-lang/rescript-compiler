@@ -90,7 +90,7 @@ let process_file sourcefile
   | Rei ->
     let sourcefile = set_abs_input_name  sourcefile in 
     handle_reason Mli sourcefile ppf  
-    (* The printer setup is doen in [handle_reason] *)
+  (* The printer setup is doen in [handle_reason] *)
   | Ml ->
     let sourcefile = set_abs_input_name  sourcefile in     
     setup_compiler_printer `ml;
@@ -119,9 +119,9 @@ let process_file sourcefile
     ->     
     Js_implementation.interface_mliast ppf sourcefile
       setup_compiler_printer 
-    (* The printer setup is done in the runtime depends on
-      the content of ast
-    *)  
+  (* The printer setup is done in the runtime depends on
+     the content of ast
+  *)  
   | Impl_ast 
     -> 
     Js_implementation.implementation_mlast ppf sourcefile 
@@ -181,7 +181,12 @@ let format_file input =
     | Res | Resi -> `res 
     | Re | Rei -> `refmt (Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe") 
     | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) in   
-  output_string stdout (Res_multi_printer.print syntax ~input)
+  let formatted =   Res_multi_printer.print syntax ~input in 
+  match !Clflags.output_name with 
+  | None ->
+    output_string stdout formatted
+  | Some fname -> 
+    Ext_io.write_file fname formatted
 
 let set_color_option option = 
   match Clflags.parse_color_setting option with
