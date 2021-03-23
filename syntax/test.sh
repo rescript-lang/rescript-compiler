@@ -2,24 +2,19 @@
 
 setopt extendedglob
 
-function run {
-  if [ $1 = true ]; then recover="-recover" else recover="" fi
-  for file in ${@:2}; do
-    expected=$(dirname $file)/expected/$(basename $file).txt
-    ./lib/rescript.exe $recover -print ml $file &> $expected &
-  done
-}
-
-run true ./tests/parsing/errors/**/*.(res|resi)
-run false ./tests/parsing/grammar/**/*.(res|resi)
-run true ./tests/parsing/infiniteLoops/*.(res|resi)
-run false ./tests/parsing/other/*.(res|resi)
-run true ./tests/parsing/recovery/**/*.(res|resi)
-
 function exp {
   echo "$(dirname $1)/expected/$(basename $1).txt"
 }
 
+# parsing
+for file in ./tests/parsing/{errors,infiniteLoops,recovery}/**/*.(res|resi); do
+  ./lib/rescript.exe -recover -print ml $file &> $(exp $file) &
+done
+for file in ./tests/parsing/{grammar,other}/**/*.(res|resi); do
+  ./lib/rescript.exe -print ml $file &> $(exp $file) &
+done
+
+# printing
 for file in ./tests/printer/**/*.(res|resi); do
   ./lib/rescript.exe $file &> $(exp $file) &
 done
@@ -33,6 +28,7 @@ for file in tests/{printer,conversion}/**/*.rei; do
   lib/refmt.exe --parse re --print binary --interface true $file | lib/rescript.exe -parse reasonBinary -interface &> $(exp $file) &
 done
 
+# printing with ppx
 for file in ./tests/ppx/react/*.(res|resi); do
   ./lib/rescript.exe -ppx jsx $file &> $(exp $file) &
 done
