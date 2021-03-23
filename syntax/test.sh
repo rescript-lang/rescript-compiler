@@ -23,13 +23,13 @@ function exp {
 for file in ./tests/printer/**/*.(res|resi); do
   ./lib/rescript.exe $file &> $(exp $file) &
 done
-for file in ./tests/printer/**/*.(ml|mli); do
+for file in ./tests/{printer,conversion}/**/*.(ml|mli); do
   ./lib/rescript.exe -parse ml $file &> $(exp $file) &
 done
-for file in tests/printer/**/*.re; do
+for file in tests/{printer,conversion}/**/*.re; do
   lib/refmt.exe --parse re --print binary $file | lib/rescript.exe -parse reasonBinary &> $(exp $file) &
 done
-for file in tests/printer/**/*.rei; do
+for file in tests/{printer,conversion}/**/*.rei; do
   lib/refmt.exe --parse re --print binary --interface true $file | lib/rescript.exe -parse reasonBinary -interface &> $(exp $file) &
 done
 
@@ -40,11 +40,11 @@ warningYellow='\033[0;33m'
 successGreen='\033[0;32m'
 reset='\033[0m'
 
-git diff --quiet ./tests/parsing/
+git diff --quiet ./tests/
 if [[ "$?" -eq 0 ]]; then
   printf "${successGreen}✅ No unstaged tests difference.${reset}\n"
 else
-  printf "${warningYellow}⚠️ There are unstaged differences in tests/parsing/! Did you break a test?\n\n"
-  git ls-files --modified ./tests/parsing
+  printf "${warningYellow}⚠️ There are unstaged differences in tests/! Did you break a test?\n\n"
+  git ls-files --modified ./tests
   printf $reset
 fi

@@ -1,0 +1,60 @@
+module type Id = {
+  type t
+  let toString: t => string
+  let ofString: string => option<t>
+}
+module type A = {
+  module Id: Id
+  type name = string
+  let name: name
+}
+module type B = {
+  module A: A
+  let fullName: A.Id.t => string
+}
+module MakeB = (A: A): (B with module A.Id := A.Id) => {
+  module A = A
+  let fullName = id => A.name ++ ("-" ++ A.Id.toString(id))
+}
+module StringId: Id = {
+  type t = string
+  external toString: t => string = "%identity"
+  external ofString: string => t = "%identity"
+  let ofString = id => Some(id |> ofString)
+}
+module A = {
+  module Id = StringId
+  type name = string
+  let name = "A"
+}
+module B = MakeB(A)
+let test = switch "someId" |> StringId.ofString {
+| Some(id) => Some(id |> B.fullName)
+| None as none => none
+}
+
+module type Printable = {
+  type t
+  let print: (Format.formatter, t) => unit
+}
+
+module type Comparable = {
+  type t
+  let compare: (t, t) => int
+}
+
+module type PrintableComparable = {
+  include Printable
+  include Comparable with type t := t
+}
+
+module type S = Comparable with type t := int
+
+module type S = {
+  type u
+  include Comparable with type t := u
+}
+
+module type ComparableInt = Comparable with type t = int
+
+module type CompareInt = ComparableInt with type t := int
