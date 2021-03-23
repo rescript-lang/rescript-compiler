@@ -133,18 +133,18 @@ if (!isInBuildMode) {
   }
   process.exit(0);
 }
-var watch_mode = delegate_args.includes("-watch");
+
+var watch_mode = delegate_args.includes("-w");
+verbose = delegate_args.includes("-verbose");
+
 try {
   child_process.execFileSync(bsb_exe, delegate_args, { stdio: "inherit" });
 } catch (e) {
   if (e.code === "ENOENT") {
     // when bsb is actually not found
     console.error(String(e));
-    process.exit(2);
   }
-  if (!watch_mode) {
-    process.exit(2);
-  }
+  process.exit(2);
 }
 
 if (watch_mode) {

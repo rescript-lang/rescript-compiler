@@ -132,9 +132,9 @@ let build_subcommand ~start  argv argv_len =
 
   Bsb_arg.parse_exn 
     ~usage:build_usage ~start ?finish:(if i < 0 then None else Some i )~argv [|
-    "-watch", unit_set_spec watch_mode, 
+    "-w", unit_set_spec watch_mode, 
     "Watch mode";
-    "-build-deps", unit_set_spec make_world,
+    "-with-deps", unit_set_spec make_world,
     "Build with deps";
     "-install", unit_set_spec do_install,
     "Install public interface files for dependencies ";
@@ -168,7 +168,7 @@ let build_subcommand ~start  argv argv_len =
 let clean_subcommand ~start argv =
   Bsb_arg.parse_exn 
     ~usage:clean_usage ~start ~argv [|
-    "-build-deps", unit_set_spec make_world,
+    "-with-deps", unit_set_spec make_world,
     "clean its deps too"
   |] failed_annon;
   if !make_world then 
