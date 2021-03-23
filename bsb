@@ -178,7 +178,6 @@ try {
 
 if (watch_mode) {
     var fs = require('fs')
-    var path = require('path')
     if (useWebSocket) {
         setUpWebSocket()
     }

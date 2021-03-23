@@ -131,4 +131,5 @@
 ../lib/4.06.1/rescript.ml: ./ext/set_string.ml
 ../lib/4.06.1/rescript.ml: ./ext/set_string.mli
 ../lib/4.06.1/rescript.ml: ./main/rescript_main.ml
+../lib/4.06.1/rescript.ml: ./main/rescript_main.mli
 ../lib/4.06.1/rescript.ml: ./stubs/bs_hash_stubs.ml

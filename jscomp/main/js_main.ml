@@ -462,10 +462,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-warn-help", unit_call Warnings.help_warnings, 
     "Show description of warning numbers";
-    "-bin-annot", Unit_dummy,
-    "*internal* keep the compatibility with RLS";
-    "-c", Unit_dummy,
-    "*internal* keep the compatibility with RLS";
     "-warn-error", string_call (Warnings.parse_options true),
     "<list>  Enable or disable error status for warnings according\n\
      to <list>.  See option -w for the syntax of <list>.\n\
