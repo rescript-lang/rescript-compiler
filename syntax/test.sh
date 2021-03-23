@@ -33,6 +33,9 @@ for file in tests/{printer,conversion}/**/*.rei; do
   lib/refmt.exe --parse re --print binary --interface true $file | lib/rescript.exe -parse reasonBinary -interface &> $(exp $file) &
 done
 
+for file in ./tests/ppx/react/*.(res|resi); do
+  ./lib/rescript.exe -ppx jsx $file &> $(exp $file) &
+done
 
 wait
 

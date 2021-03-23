@@ -1,0 +1,9 @@
+module Foo = {
+  @obj
+  external componentProps: (~a: int, ~b: string, ~key: string=?, unit) => {"a": int, "b": string} =
+    ""
+  @module("Foo")
+  external component: React.componentLike<{"a": int, "b": string}, React.element> = "component"
+}
+
+let t = React.createElement(Foo.component, Foo.componentProps(~a=1, ~b={"1"}, ()))

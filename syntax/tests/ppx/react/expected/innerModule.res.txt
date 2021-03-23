@@ -1,0 +1,25 @@
+module Bar = {
+  @obj external makeProps: (~a: 'a, ~b: 'b, ~key: string=?, unit) => {"a": 'a, "b": 'b} = ""
+  let make =
+    (@warning("-16") ~a, @warning("-16") ~b, _) => {
+      Js.log("This function should be named `InnerModule.react$Bar`")
+      ReactDOMRe.createDOMElementVariadic("div", [])
+    }
+  let make = {
+    let \"InnerModule$Bar" = (\"Props": {"a": 'a, "b": 'b}) =>
+      make(~b=\"Props"["b"], ~a=\"Props"["a"], ())
+    \"InnerModule$Bar"
+  }
+  @obj external componentProps: (~a: 'a, ~b: 'b, ~key: string=?, unit) => {"a": 'a, "b": 'b} = ""
+
+  let component =
+    (@warning("-16") ~a, @warning("-16") ~b, _) => {
+      Js.log("This function should be named `InnerModule.react$Bar$component`")
+      ReactDOMRe.createDOMElementVariadic("div", [])
+    }
+  let component = {
+    let \"InnerModule$Bar$component" = (\"Props": {"a": 'a, "b": 'b}) =>
+      component(~b=\"Props"["b"], ~a=\"Props"["a"], ())
+    \"InnerModule$Bar$component"
+  }
+}
