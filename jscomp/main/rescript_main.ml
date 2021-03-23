@@ -51,12 +51,12 @@ let failed_annon = (fun ~rev_args ->
 (*Note that [keepdepfile] only makes sense when combined with [deps] for optimization*)
 
 (**  Invariant: it has to be the last command of [bsb] *)
-let exec_command_then_exit  command =
+let exec_command_then_exit (type t) (command : string) : t =
   Bsb_log.info "@{<info>CMD:@} %s@." command;
   exit (Sys.command command ) 
 
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
-let ninja_command_exit   ninja_args  =
+let ninja_command_exit (type t) (ninja_args : string array)  : t =
   let ninja_args_len = Array.length ninja_args in
   let lib_artifacts_dir = Bsb_config.lib_bs in
   if Ext_sys.is_windows_or_cygwin then
@@ -206,16 +206,16 @@ let () =
           "-theme", String(String_set current_theme),
           "The theme for project initialization"
         |] (fun ~rev_args -> 
-              let location = 
-                match rev_args with 
-                | x :: _  ->
-                  x 
-                | [] -> 
-                  "." in  
-              Bsb_theme_init.init_sample_project 
-                ~cwd:Bsb_global_paths.cwd
-                ~theme:!current_theme location
-            )
+             let location = 
+               match rev_args with 
+               | x :: _  ->
+                 x 
+               | [] -> 
+                 "." in  
+             Bsb_theme_init.init_sample_project 
+               ~cwd:Bsb_global_paths.cwd
+               ~theme:!current_theme location
+           )
 
 
       | "help" -> global_help ()
