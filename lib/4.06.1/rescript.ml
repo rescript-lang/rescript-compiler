@@ -16505,8 +16505,33 @@ let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : strin
   print_endline "Dependency Finished"
 
 end
-module Rescript_main
-= struct
+module Rescript_main : sig 
+#1 "rescript_main.mli"
+(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+end = struct
 #1 "rescript_main.ml"
 (* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  *
@@ -16561,12 +16586,12 @@ let failed_annon = (fun ~rev_args ->
 (*Note that [keepdepfile] only makes sense when combined with [deps] for optimization*)
 
 (**  Invariant: it has to be the last command of [bsb] *)
-let exec_command_then_exit  command =
+let exec_command_then_exit (type t) (command : string) : t =
   Bsb_log.info "@{<info>CMD:@} %s@." command;
   exit (Sys.command command ) 
 
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
-let ninja_command_exit   ninja_args  =
+let ninja_command_exit (type t) (ninja_args : string array)  : t =
   let ninja_args_len = Array.length ninja_args in
   let lib_artifacts_dir = Bsb_config.lib_bs in
   if Ext_sys.is_windows_or_cygwin then
@@ -16637,13 +16662,77 @@ Subcommands:
 Run rescript subcommand -h for more details, for example
   rescript build -h
 |}     
+
+let build_subcommand ~start  argv argv_len =
+  let i =  Ext_array.rfind_with_index argv Ext_string.equal separator in   
+
+  Bsb_arg.parse_exn 
+    ~usage:build_usage ~start ?finish:(if i < 0 then None else Some i )~argv [|
+    "-watch", unit_set_spec watch_mode, 
+    "Watch mode";
+    "-with-deps", unit_set_spec make_world,
+    "Build with deps";
+    "-install", unit_set_spec do_install,
+    "Install public interface files for dependencies ";
+    "-regen", unit_set_spec force_regenerate,
+    "*internal* \n\
+     Always regenerate build.ninja no matter bsconfig.json is changed or not";
+    "-verbose", call_spec Bsb_log.verbose,
+    "Set the output to be verbose";
+
+  |] failed_annon;
+
+  let ninja_args = 
+    if i < 0 then [||] else (Array.sub argv (i + 1) (argv_len - i - 1)) in 
+  begin match ninja_args with 
+    | [|"-h"|] -> ninja_command_exit ninja_args
+    | _ -> 
+      let config_opt = 
+        Bsb_ninja_regen.regenerate_ninja
+          ~package_kind:Toplevel 
+          ~per_proj_dir:Bsb_global_paths.cwd
+          ~forced:!force_regenerate in 
+      if !make_world then 
+        Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
+      if !do_install then 
+        install_target ();
+      if !watch_mode then 
+        exit 0 (* let the watcher do the build*)
+      else ninja_command_exit ninja_args    
+  end  
+
+let clean_subcommand ~start argv =
+  Bsb_arg.parse_exn 
+    ~usage:clean_usage ~start ~argv [|
+    "-with-deps", unit_set_spec make_world,
+    "clean its deps too"
+  |] failed_annon;
+  if !make_world then 
+    Bsb_clean.clean_bs_deps Bsb_global_paths.cwd ; 
+  Bsb_clean.clean_self Bsb_global_paths.cwd      
+
+let init_subcommand ~start argv =   
+  Bsb_arg.parse_exn 
+    ~usage:"init the project" ~start ~argv [|
+  |] (fun 
+       ~rev_args -> 
+       let location = 
+         match rev_args with 
+         | x :: _  ->
+           x 
+         | [] -> 
+           "." in  
+       Bsb_theme_init.init_sample_project 
+         ~cwd:Bsb_global_paths.cwd
+         ~theme:!current_theme location
+     )  
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =  
   let argv = Sys.argv in   
   let argv_len = Array.length argv in   
   try
     if argv_len = 1 then begin 
-      (* specialize this path [bsb.exe] which is used in watcher *)
+      (* specialize this path which is used in watcher *)
       Bsb_ninja_regen.regenerate_ninja 
         ~package_kind:Toplevel 
         ~forced:false 
@@ -16651,85 +16740,21 @@ let () =
       ninja_command_exit  [||] 
     end else
 
-      let cur = ref 1 in (* the first one is the command *)
-      let first_arg = argv.(!cur) in 
-      match first_arg with 
+
+
+      match argv.(1) with 
       | "-version" | "-v"
         -> print_version_string ()
       | "-help" | "-h"
         -> global_help ()
       | "build" -> 
-
-        incr cur ; 
-        let i =  Ext_array.rfind_with_index argv Ext_string.equal separator in   
-
-        Bsb_arg.parse_exn 
-          ~usage:build_usage ~start:!cur ?finish:(if i < 0 then None else Some i )~argv [|
-          "-watch", unit_set_spec watch_mode, 
-          "Watch mode";
-          "-with-deps", unit_set_spec make_world,
-          "Build with deps";
-          "-install", unit_set_spec do_install,
-          "Install public interface files for dependencies ";
-          "-regen", unit_set_spec force_regenerate,
-          "*internal* \n\
-           Always regenerate build.ninja no matter bsconfig.json is changed or not";
-          "-verbose", call_spec Bsb_log.verbose,
-          "Set the output to be verbose";
-
-        |] failed_annon;
-
-        let ninja_args = 
-          if i < 0 then [||] else (Array.sub argv (i + 1) (argv_len - i - 1)) in 
-        begin match ninja_args with 
-          | [|"-h"|] -> ninja_command_exit ninja_args
-          | _ -> 
-            let config_opt = 
-              Bsb_ninja_regen.regenerate_ninja
-                ~package_kind:Toplevel 
-                ~per_proj_dir:Bsb_global_paths.cwd
-                ~forced:!force_regenerate in 
-            if !make_world then 
-              Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
-            if !do_install then 
-              install_target ();
-            if !watch_mode then exit 0
-            else ninja_command_exit ninja_args    
-        end
-
-
-      | "clean" -> 
-        incr cur ; 
-        Bsb_arg.parse_exn 
-          ~usage:clean_usage ~start:!cur ~argv [|
-          "-with-deps", unit_set_spec make_world,
-          "clean its deps too"
-        |] failed_annon;
-        if !make_world then 
-          Bsb_clean.clean_bs_deps Bsb_global_paths.cwd ; 
-        Bsb_clean.clean_self Bsb_global_paths.cwd  
-      | "format" -> assert false 
+        build_subcommand ~start:2 argv argv_len
+      | "clean" ->         
+        clean_subcommand ~start:2 argv      
       | "init" ->  
-        incr cur; 
-        Bsb_arg.parse_exn 
-          ~usage:"init the project" ~start:!cur ~argv [|
-          "-theme", String(String_set current_theme),
-          "The theme for project initialization"
-        |] (fun ~rev_args -> 
-              let location = 
-                match rev_args with 
-                | x :: _  ->
-                  x 
-                | [] -> 
-                  "." in  
-              Bsb_theme_init.init_sample_project 
-                ~cwd:Bsb_global_paths.cwd
-                ~theme:!current_theme location
-            )
-
-
+        init_subcommand ~start:2 argv 
       | "help" -> global_help ()
-      | _ -> 
+      | first_arg -> 
         prerr_endline @@ "Unknown subcommand or flags: " ^ first_arg;
         exit 1
   with 
