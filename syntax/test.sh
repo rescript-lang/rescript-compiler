@@ -13,6 +13,7 @@ function run {
 run true ./tests/parsing/errors/**/*.(res|resi)
 run false ./tests/parsing/grammar/**/*.(res|resi)
 run true ./tests/parsing/infiniteLoops/*.(res|resi)
+run false ./tests/parsing/other/*.(res|resi)
 run true ./tests/parsing/recovery/**/*.(res|resi)
 
 function exp {

@@ -1,7 +1,3 @@
-module M: {
-  @genType type t = int
-  @genType let x: int
-} = {
-  type t = int
-  let x = 34
-}
+module M : sig type nonrec t = int[@@genType ] val x : int[@@genType ] end =
+  struct type nonrec t = int
+         let x = 34 end 

@@ -1,3 +1,4 @@
-type t = Red
-Red
-foo := 1
+type nonrec t =
+  | Red 
+;;Red
+;;foo := 1

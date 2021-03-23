@@ -1,4 +1,0 @@
-/*
- * one comment
- * here
- */
