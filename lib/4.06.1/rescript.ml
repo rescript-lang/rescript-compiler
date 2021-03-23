@@ -16657,7 +16657,6 @@ let global_help () =
 Subcommands:
   build    
   clean
-  format
   help
 Run rescript subcommand -h for more details, for example
   rescript build -h
