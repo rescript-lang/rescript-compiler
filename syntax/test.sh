@@ -33,7 +33,28 @@ for file in ./tests/ppx/react/*.(res|resi); do
   ./lib/rescript.exe -ppx jsx $file &> $(exp $file) &
 done
 
+wait
+
+warningYellow='\033[0;33m'
+successGreen='\033[0;32m'
+reset='\033[0m'
+
+git diff --quiet ./tests/
+if [[ "$?" = 0 ]]; then
+  printf "${successGreen}✅ No unstaged tests difference.${reset}\n"
+else
+  printf "${warningYellow}⚠️ There are unstaged differences in tests/! Did you break a test?\n\n"
+  git ls-files --modified ./tests
+  printf $reset
+  exit 1
+fi
+
+# roundtrip tests
 if [[ $ROUNDTRIP_TEST = 1 ]]; then
+  echo "Running roundtrip tests…"
+  roundtripTestsResult="temp/result.txt"
+  echo 0 > $roundtripTestsResult
+
   function run {
     file=$1
     class=$2
@@ -43,24 +64,26 @@ if [[ $ROUNDTRIP_TEST = 1 ]]; then
     fi
     mkdir -p temp/$(dirname $file)
     reasonBinaryFile=temp/$file.reasonBinary
-    touch reasonBinaryFile
     lib/refmt.exe --parse $class --print binary $refmtInterfaceArg $file > $reasonBinaryFile
     sexpAst=temp/$file.sexp
-    touch sexpAst
     lib/rescript.exe -parse reasonBinary -print sexp $rescriptInterfaceArg $reasonBinaryFile > $sexpAst
     rescript=temp/$file.rescript
-    touch rescript
     lib/rescript.exe -parse reasonBinary $rescriptInterfaceArg $reasonBinaryFile > $rescript
     rescriptSexpAst=temp/$file.ressexp
-    touch rescriptSexpAst
     lib/rescript.exe -parse res -print sexp $rescriptInterfaceArg $rescript > $rescriptSexpAst
     rescript2=temp/$file.rescript2
-    touch rescript2
     lib/rescript.exe -parse res $rescriptInterfaceArg $rescript > $rescript2
 
-    diff -u $sexpAst $rescriptSexpAst
-    diff -u $rescript $rescript2
+    diff --unified $sexpAst $rescriptSexpAst
+    if [[ "$?" = 1 ]]; then
+      echo 1 > $roundtripTestsResult
+    fi
+    diff --unified $rescript $rescript2
+    if [[ "$?" = 1 ]]; then
+      echo 1 > $roundtripTestsResult
+    fi
   }
+
   for file in tests/idempotency/**/*.re; do
     run $file re false &
   done
@@ -75,21 +98,15 @@ if [[ $ROUNDTRIP_TEST = 1 ]]; then
   done
 
   wait
+
+  result=$(cat $roundtripTestsResult)
   rm -r temp/
 
-fi
+  if [[ $result = "1" ]]; then
+    printf "${warningYellow}⚠️ Roundtrip tests failed.${reset}\n"
+    exit 1
+  else
+    printf "${successGreen}⚠️ Roundtrip tests succeeded.${reset}\n"
+  fi
 
-wait
-
-warningYellow='\033[0;33m'
-successGreen='\033[0;32m'
-reset='\033[0m'
-
-git diff --quiet ./tests/
-if [[ "$?" = 0 ]]; then
-  printf "${successGreen}✅ No unstaged tests difference.${reset}\n"
-else
-  printf "${warningYellow}⚠️ There are unstaged differences in tests/! Did you break a test?\n\n"
-  git ls-files --modified ./tests
-  printf $reset
 fi
