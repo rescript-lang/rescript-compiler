@@ -33,6 +33,52 @@ for file in ./tests/ppx/react/*.(res|resi); do
   ./lib/rescript.exe -ppx jsx $file &> $(exp $file) &
 done
 
+if [[ $ROUNDTRIP_TEST = 1 ]]; then
+  function run {
+    file=$1
+    class=$2
+    if [[ $3 = true ]]; then
+      refmtInterfaceArg=--interface true
+      rescriptInterfaceArg=-interface
+    fi
+    mkdir -p temp/$(dirname $file)
+    reasonBinaryFile=temp/$file.reasonBinary
+    touch reasonBinaryFile
+    lib/refmt.exe --parse $class --print binary $refmtInterfaceArg $file > $reasonBinaryFile
+    sexpAst=temp/$file.sexp
+    touch sexpAst
+    lib/rescript.exe -parse reasonBinary -print sexp $rescriptInterfaceArg $reasonBinaryFile > $sexpAst
+    rescript=temp/$file.rescript
+    touch rescript
+    lib/rescript.exe -parse reasonBinary $rescriptInterfaceArg $reasonBinaryFile > $rescript
+    rescriptSexpAst=temp/$file.ressexp
+    touch rescriptSexpAst
+    lib/rescript.exe -parse res -print sexp $rescriptInterfaceArg $rescript > $rescriptSexpAst
+    rescript2=temp/$file.rescript2
+    touch rescript2
+    lib/rescript.exe -parse res $rescriptInterfaceArg $rescript > $rescript2
+
+    diff -u $sexpAst $rescriptSexpAst
+    diff -u $rescript $rescript2
+  }
+  for file in tests/idempotency/**/*.re; do
+    run $file re false &
+  done
+  for file in tests/idempotency/**/*.rei; do
+    run $file re true &
+  done
+  for file in tests/idempotency/**/*.ml; do
+    run $file ml false &
+  done
+  for file in tests/idempotency/**/*.mli; do
+    run $file ml true &
+  done
+
+  wait
+  rm -r temp/
+
+fi
+
 wait
 
 warningYellow='\033[0;33m'
@@ -40,7 +86,7 @@ successGreen='\033[0;32m'
 reset='\033[0m'
 
 git diff --quiet ./tests/
-if [[ "$?" -eq 0 ]]; then
+if [[ "$?" = 0 ]]; then
   printf "${successGreen}✅ No unstaged tests difference.${reset}\n"
 else
   printf "${warningYellow}⚠️ There are unstaged differences in tests/! Did you break a test?\n\n"
