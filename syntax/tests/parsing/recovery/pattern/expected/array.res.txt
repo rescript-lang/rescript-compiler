@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/array.res:2:8-10
+  tests/parsing/recovery/pattern/array.res:2:8-10
 
   1 │ switch x {
   2 │ | [a, b => ()
@@ -11,7 +11,7 @@
 
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/array.res:3:12-14
+  tests/parsing/recovery/pattern/array.res:3:12-14
 
   1 │ switch x {
   2 │ | [a, b => ()

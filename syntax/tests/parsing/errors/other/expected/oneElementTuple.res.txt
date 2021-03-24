@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/other/oneElementTuple.res:1:19-23
+  tests/parsing/errors/other/oneElementTuple.res:1:19-23
 
   1 │ let faultyTuple = (a, )
   2 │ 
@@ -10,7 +10,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/other/oneElementTuple.res:4:3-7
+  tests/parsing/errors/other/oneElementTuple.res:4:3-7
 
   2 │ 
   3 │ switch faultyTuple {
@@ -22,7 +22,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/other/oneElementTuple.res:8:20-29
+  tests/parsing/errors/other/oneElementTuple.res:8:20-29
 
   6 │ }
   7 │ 

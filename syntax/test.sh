@@ -7,19 +7,19 @@ function exp {
 }
 
 # parsing
-for file in ./tests/parsing/{errors,infiniteLoops,recovery}/**/*.(res|resi); do
-  ./lib/rescript.exe -recover -print ml $file &> $(exp $file) &
+for file in tests/parsing/{errors,infiniteLoops,recovery}/**/*.(res|resi); do
+  lib/rescript.exe -recover -print ml $file &> $(exp $file) &
 done
-for file in ./tests/parsing/{grammar,other}/**/*.(res|resi); do
-  ./lib/rescript.exe -print ml $file &> $(exp $file) &
+for file in tests/parsing/{grammar,other}/**/*.(res|resi); do
+  lib/rescript.exe -print ml $file &> $(exp $file) &
 done
 
 # printing
-for file in ./tests/printer/**/*.(res|resi); do
-  ./lib/rescript.exe $file &> $(exp $file) &
+for file in tests/printer/**/*.(res|resi); do
+  lib/rescript.exe $file &> $(exp $file) &
 done
-for file in ./tests/{printer,conversion}/**/*.(ml|mli); do
-  ./lib/rescript.exe -parse ml $file &> $(exp $file) &
+for file in tests/{printer,conversion}/**/*.(ml|mli); do
+  lib/rescript.exe -parse ml $file &> $(exp $file) &
 done
 for file in tests/{printer,conversion}/**/*.re; do
   lib/refmt.exe --parse re --print binary $file | lib/rescript.exe -parse reasonBinary &> $(exp $file) &
@@ -29,8 +29,8 @@ for file in tests/{printer,conversion}/**/*.rei; do
 done
 
 # printing with ppx
-for file in ./tests/ppx/react/*.(res|resi); do
-  ./lib/rescript.exe -ppx jsx $file &> $(exp $file) &
+for file in tests/ppx/react/*.(res|resi); do
+  lib/rescript.exe -ppx jsx $file &> $(exp $file) &
 done
 
 wait
@@ -39,12 +39,12 @@ warningYellow='\033[0;33m'
 successGreen='\033[0;32m'
 reset='\033[0m'
 
-git diff --quiet ./tests/
+git diff --quiet tests/
 if [[ "$?" = 0 ]]; then
   printf "${successGreen}✅ No unstaged tests difference.${reset}\n"
 else
   printf "${warningYellow}⚠️ There are unstaged differences in tests/! Did you break a test?\n\n"
-  git ls-files --modified ./tests
+  git ls-files --modified tests/
   printf $reset
   exit 1
 fi
@@ -52,8 +52,9 @@ fi
 # roundtrip tests
 if [[ $ROUNDTRIP_TEST = 1 ]]; then
   echo "Running roundtrip tests…"
+  mkdir -p temp
   roundtripTestsResult="temp/result.txt"
-  echo 0 > $roundtripTestsResult
+  touch $roundtripTestsResult
 
   function run {
     file=$1

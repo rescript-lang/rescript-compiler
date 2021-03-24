@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/expressions/arrow.res:1:52
+  tests/parsing/errors/expressions/arrow.res:1:52
 
   1 │ Object.keys(providers).reduce((elements, providerId] => {
   2 │   let x = 1

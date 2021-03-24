@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/string/es6template.res:1:30-2:0
+  tests/parsing/recovery/string/es6template.res:1:30-2:0
 
   1 │ let x = `this contains ${foo}, missing closing
   2 │ 

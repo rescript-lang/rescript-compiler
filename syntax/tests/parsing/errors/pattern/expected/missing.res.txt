@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/pattern/missing.res:1:5
+  tests/parsing/errors/pattern/missing.res:1:5
 
   1 │ let = 2
   2 │ let = 4
@@ -10,7 +10,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/pattern/missing.res:2:5
+  tests/parsing/errors/pattern/missing.res:2:5
 
   1 │ let = 2
   2 │ let = 4
@@ -21,7 +21,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/pattern/missing.res:4:5-6
+  tests/parsing/errors/pattern/missing.res:4:5-6
 
   2 │ let = 4
   3 │ 
@@ -33,7 +33,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/pattern/missing.res:9:3-4
+  tests/parsing/errors/pattern/missing.res:9:3-4
 
    7 │ 
    8 │ switch x {

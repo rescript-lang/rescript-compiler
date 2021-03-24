@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/other/spread.res:1:12-14
+  tests/parsing/errors/other/spread.res:1:12-14
 
   1 │ let arr = [...x, ...y]
   2 │ let [...arr, _] = [1, 2, 3]
@@ -10,7 +10,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/other/spread.res:2:6-8
+  tests/parsing/errors/other/spread.res:2:6-8
 
   1 │ let arr = [...x, ...y]
   2 │ let [...arr, _] = [1, 2, 3]
@@ -23,7 +23,7 @@ Solution: if it's to validate the first few elements, use a `when` clause + Arra
 
 
   Syntax error!
-  ./tests/parsing/errors/other/spread.res:4:21-23
+  tests/parsing/errors/other/spread.res:4:21-23
 
   2 │ let [...arr, _] = [1, 2, 3]
   3 │ 
@@ -36,7 +36,7 @@ Explanation: since records have a known, fixed shape, a spread like `{a, ...b}` 
 
 
   Syntax error!
-  ./tests/parsing/errors/other/spread.res:5:15-18
+  tests/parsing/errors/other/spread.res:5:15-18
 
   3 │ 
   4 │ let record = {...x, ...y}
@@ -50,7 +50,7 @@ Solution: you need to pull out each field you want explicitly.
 
 
   Syntax error!
-  ./tests/parsing/errors/other/spread.res:8:13-22
+  tests/parsing/errors/other/spread.res:8:13-22
 
   6 │ 
   7 │ let myList = list{...x, ...y}

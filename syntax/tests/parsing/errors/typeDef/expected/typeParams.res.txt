@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/typeDef/typeParams.res:1:10-13
+  tests/parsing/errors/typeDef/typeParams.res:1:10-13
 
   1 │ type node('a) = {
   2 │   _value: Js.Nullable.value<'a>
@@ -11,7 +11,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typeDef/typeParams.res:5:26-28
+  tests/parsing/errors/typeDef/typeParams.res:5:26-28
 
   3 │ }
   4 │ 
@@ -23,7 +23,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typeDef/typeParams.res:10:26
+  tests/parsing/errors/typeDef/typeParams.res:10:26
 
    8 │ }
    9 │ 
@@ -35,7 +35,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typeDef/typeParams.res:15:26
+  tests/parsing/errors/typeDef/typeParams.res:15:26
 
   13 │ }
   14 │ 
@@ -47,7 +47,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typeDef/typeParams.res:21:25-27
+  tests/parsing/errors/typeDef/typeParams.res:21:25-27
 
   19 │ 
   20 │ 

@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/expressions/setField.res:4:30-5:1
+  tests/parsing/errors/expressions/setField.res:4:30-5:1
 
   2 │   let a = 1
   3 │ 	// notice missing expression after = 

@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/typeDef/record.res:4:1
+  tests/parsing/errors/typeDef/record.res:4:1
 
   2 │   observed: int,
   3 │   observer:

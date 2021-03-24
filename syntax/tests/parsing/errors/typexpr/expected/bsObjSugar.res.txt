@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/typexpr/bsObjSugar.res:2:8-3:13
+  tests/parsing/errors/typexpr/bsObjSugar.res:2:8-3:13
 
   1 │ type state = {
   2 │   "url"
@@ -12,7 +12,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typexpr/bsObjSugar.res:7:14-8:13
+  tests/parsing/errors/typexpr/bsObjSugar.res:7:14-8:13
 
    5 │ 
    6 │ type state = {
@@ -25,7 +25,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typexpr/bsObjSugar.res:13:14-14:13
+  tests/parsing/errors/typexpr/bsObjSugar.res:13:14-14:13
 
   11 │ type state = {
   12 │   "url": string,
@@ -38,7 +38,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typexpr/bsObjSugar.res:19:14-20:1
+  tests/parsing/errors/typexpr/bsObjSugar.res:19:14-20:1
 
   17 │ type state = {
   18 │   "url": string,
@@ -51,7 +51,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typexpr/bsObjSugar.res:25:1
+  tests/parsing/errors/typexpr/bsObjSugar.res:25:1
 
   23 │   @bs.meth
   24 │   "send": string =>
@@ -63,7 +63,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typexpr/bsObjSugar.res:28:10
+  tests/parsing/errors/typexpr/bsObjSugar.res:28:10
 
   26 │ 
   27 │ type state = {
@@ -75,7 +75,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typexpr/bsObjSugar.res:33:18
+  tests/parsing/errors/typexpr/bsObjSugar.res:33:18
 
   31 │ 
   32 │ type state = {
@@ -87,7 +87,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typexpr/bsObjSugar.res:37:25
+  tests/parsing/errors/typexpr/bsObjSugar.res:37:25
 
   35 │ }
   36 │ 
@@ -99,7 +99,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typexpr/bsObjSugar.res:40:8-41:8
+  tests/parsing/errors/typexpr/bsObjSugar.res:40:8-41:8
 
   38 │ type state = {
   39 │   ..
@@ -112,7 +112,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typexpr/bsObjSugar.res:46:3-11
+  tests/parsing/errors/typexpr/bsObjSugar.res:46:3-11
 
   44 │ type websocket = {
   45 │   "id":
@@ -124,7 +124,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typexpr/bsObjSugar.res:50:7-51:0
+  tests/parsing/errors/typexpr/bsObjSugar.res:50:7-51:0
 
   48 │ 
   49 │ type websocket = {

@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/structure/letBinding.res:1:8-9
+  tests/parsing/recovery/structure/letBinding.res:1:8-9
 
   1 │ let x = = doStuff(y)
   2 │ 

@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/string/eof.res:1:9-2:0
+  tests/parsing/recovery/string/eof.res:1:9-2:0
 
   1 │ let x = "eof here
   2 │ 

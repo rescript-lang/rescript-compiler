@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/typexpr/typeVar.res:1:15
+  tests/parsing/errors/typexpr/typeVar.res:1:15
 
   1 │ type x<'A> = '_
   2 │ type x<'A> = 'let
@@ -10,7 +10,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typexpr/typeVar.res:2:15-17
+  tests/parsing/errors/typexpr/typeVar.res:2:15-17
 
   1 │ type x<'A> = '_
   2 │ type x<'A> = 'let

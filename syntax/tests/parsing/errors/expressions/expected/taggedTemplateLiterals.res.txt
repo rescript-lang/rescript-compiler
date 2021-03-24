@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/expressions/taggedTemplateLiterals.res:1:1-5
+  tests/parsing/errors/expressions/taggedTemplateLiterals.res:1:1-5
 
   1 │ foo()`null`
   2 │ 

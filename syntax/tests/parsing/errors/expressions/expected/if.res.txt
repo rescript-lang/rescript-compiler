@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/expressions/if.res:2:11-3:5
+  tests/parsing/errors/expressions/if.res:2:11-3:5
 
   1 │ // missing brace below
   2 │ if (match)

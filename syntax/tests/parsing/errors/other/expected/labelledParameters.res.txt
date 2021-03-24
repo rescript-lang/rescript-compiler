@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/other/labelledParameters.res:1:13-14
+  tests/parsing/errors/other/labelledParameters.res:1:13-14
 
   1 │ let f = (x, y=2, z) => x + y + z
   2 │ 
@@ -10,7 +10,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/other/labelledParameters.res:3:11
+  tests/parsing/errors/other/labelledParameters.res:3:11
 
   1 │ let f = (x, y=2, z) => x + y + z
   2 │ 

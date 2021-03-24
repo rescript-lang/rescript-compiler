@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/list.res:3:17-19
+  tests/parsing/recovery/pattern/list.res:3:17-19
 
   1 │ switch x {
   2 │ | list{} => ()
@@ -12,7 +12,7 @@
 
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/list.res:4:9-11
+  tests/parsing/recovery/pattern/list.res:4:9-11
 
   2 │ | list{} => ()
   3 │ | list{1, list{} => ()
@@ -24,7 +24,7 @@
 
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/list.res:4:13
+  tests/parsing/recovery/pattern/list.res:4:13
 
   2 │ | list{} => ()
   3 │ | list{1, list{} => ()

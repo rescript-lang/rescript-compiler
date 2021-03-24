@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/signature/consecutive.resi:1:11-14
+  tests/parsing/errors/signature/consecutive.resi:1:11-14
 
   1 │ let x: int let y: float
   2 │ 
@@ -10,7 +10,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/signature/consecutive.resi:3:15-21
+  tests/parsing/errors/signature/consecutive.resi:3:15-21
 
   1 │ let x: int let y: float
   2 │ 

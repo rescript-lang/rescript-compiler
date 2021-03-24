@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/comments/eof.res:2:1-3:0
+  tests/parsing/recovery/comments/eof.res:2:1-3:0
 
   1 │ let x = 1
   2 │ /* eof

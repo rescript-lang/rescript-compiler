@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/tuple.res:2:5-7
+  tests/parsing/recovery/pattern/tuple.res:2:5-7
 
   1 │ switch x {
   2 │ | (a => ()
@@ -11,7 +11,7 @@
 
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/tuple.res:3:13-15
+  tests/parsing/recovery/pattern/tuple.res:3:13-15
 
   1 │ switch x {
   2 │ | (a => ()
@@ -23,7 +23,7 @@
 
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/tuple.res:4:12-14
+  tests/parsing/recovery/pattern/tuple.res:4:12-14
 
   2 │ | (a => ()
   3 │ | (a, (b, c) => ()

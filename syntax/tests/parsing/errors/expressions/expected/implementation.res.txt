@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/expressions/implementation.res:7:1
+  tests/parsing/errors/expressions/implementation.res:7:1
 
   5 │   }
   6 │ }

@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/expressions/array.res:2:44
+  tests/parsing/errors/expressions/array.res:2:44
 
   1 │ // missing ] before )
   2 │ let xs = x.map(key => [key, predicates[key])

@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/signature/external.res:1:25
+  tests/parsing/recovery/signature/external.res:1:25
 
   1 │ external foo: t = "foo" ]]]]]]]]]]] "bar" |||  "baz"
   2 │ 

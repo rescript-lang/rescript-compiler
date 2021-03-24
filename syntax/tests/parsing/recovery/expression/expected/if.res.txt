@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/expression/if.res:1:16-18
+  tests/parsing/recovery/expression/if.res:1:16-18
 
   1 │ if (foo == bar) Js.log("if-branch") else Js.log("else-branch")
   2 │ 
@@ -9,7 +9,7 @@
 
 
   Syntax error!
-  ./tests/parsing/recovery/expression/if.res:1:41-43
+  tests/parsing/recovery/expression/if.res:1:41-43
 
   1 │ if (foo == bar) Js.log("if-branch") else Js.log("else-branch")
   2 │ 

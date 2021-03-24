@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/scanner/unclosedString.res:1:9-2:0
+  tests/parsing/errors/scanner/unclosedString.res:1:9-2:0
 
   1 │ let z = "eof
   2 │ 

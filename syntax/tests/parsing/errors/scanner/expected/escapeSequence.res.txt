@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/scanner/escapeSequence.res:1:10-11
+  tests/parsing/errors/scanner/escapeSequence.res:1:10-11
 
   1 │ let x = "\0"
   2 │ 
@@ -10,7 +10,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/scanner/escapeSequence.res:3:10-11
+  tests/parsing/errors/scanner/escapeSequence.res:3:10-11
 
   1 │ let x = "\0"
   2 │ 

@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/infiniteLoops/equalAfterBinaryExpr.res:169:17
+  tests/parsing/infiniteLoops/equalAfterBinaryExpr.res:169:17
 
   167 ┆ if isLeaf(. successor) {
   168 ┆   if rbt->root === Some(successor) {

@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/scanner/exoticIdent.res:1:7
+  tests/parsing/errors/scanner/exoticIdent.res:1:7
 
   1 │ let \"a
   2 │ b
@@ -10,7 +10,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/scanner/exoticIdent.res:2:1
+  tests/parsing/errors/scanner/exoticIdent.res:2:1
 
   1 │ let \"a
   2 │ b
@@ -21,7 +21,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/scanner/exoticIdent.res:3:2-4:0
+  tests/parsing/errors/scanner/exoticIdent.res:3:2-4:0
 
   1 │ let \"a
   2 │ b
@@ -32,7 +32,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/scanner/exoticIdent.res:3:2-4:0
+  tests/parsing/errors/scanner/exoticIdent.res:3:2-4:0
 
   1 │ let \"a
   2 │ b

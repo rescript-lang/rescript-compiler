@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/scanner/oldDerefOp.res:1:50
+  tests/parsing/errors/scanner/oldDerefOp.res:1:50
 
   1 │ let newVelocity = velocity +. a *. secondPerFrame^;
   2 │ let newX = x +. newVelocity *. secondPerFrame^;
@@ -12,7 +12,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/scanner/oldDerefOp.res:2:46
+  tests/parsing/errors/scanner/oldDerefOp.res:2:46
 
   1 │ let newVelocity = velocity +. a *. secondPerFrame^;
   2 │ let newX = x +. newVelocity *. secondPerFrame^;

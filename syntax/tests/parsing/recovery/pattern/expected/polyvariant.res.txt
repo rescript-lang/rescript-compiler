@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/polyvariant.res:2:15-17
+  tests/parsing/recovery/pattern/polyvariant.res:2:15-17
 
   1 │ switch x {
   2 │ | #Rgb(r, g, b => ()
@@ -11,7 +11,7 @@
 
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/polyvariant.res:3:24-26
+  tests/parsing/recovery/pattern/polyvariant.res:3:24-26
 
   1 │ switch x {
   2 │ | #Rgb(r, g, b => ()
@@ -23,7 +23,7 @@
 
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/polyvariant.res:4:23-25
+  tests/parsing/recovery/pattern/polyvariant.res:4:23-25
 
   2 │ | #Rgb(r, g, b => ()
   3 │ | #Rgb(r, g, Color(a, b => ()

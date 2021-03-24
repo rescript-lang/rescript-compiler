@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/structure/letBindingPatternKeyword.res:1:5-8
+  tests/parsing/errors/structure/letBindingPatternKeyword.res:1:5-8
 
   1 │ let open = 1
   2 │ let for = 3
@@ -10,7 +10,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/structure/letBindingPatternKeyword.res:2:5-7
+  tests/parsing/errors/structure/letBindingPatternKeyword.res:2:5-7
 
   1 │ let open = 1
   2 │ let for = 3

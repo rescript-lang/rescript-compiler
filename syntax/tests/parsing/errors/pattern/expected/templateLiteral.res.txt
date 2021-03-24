@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/pattern/templateLiteral.res:4:3-27
+  tests/parsing/errors/pattern/templateLiteral.res:4:3-27
 
   2 │ 
   3 │ switch l {
@@ -12,7 +12,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/pattern/templateLiteral.res:5:33
+  tests/parsing/errors/pattern/templateLiteral.res:5:33
 
   3 │ switch l {
   4 │ | `zero coord ${zeroCoord}` => ()
@@ -24,7 +24,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/pattern/templateLiteral.res:5:3-46
+  tests/parsing/errors/pattern/templateLiteral.res:5:3-46
 
   3 │ switch l {
   4 │ | `zero coord ${zeroCoord}` => ()

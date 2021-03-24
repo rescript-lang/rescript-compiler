@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/signature/attributes.resi:2:3-7
+  tests/parsing/errors/signature/attributes.resi:2:3-7
 
   1 │ module type MissingItem = {
   2 │   @attr
@@ -12,7 +12,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/signature/attributes.resi:5:1-16
+  tests/parsing/errors/signature/attributes.resi:5:1-16
 
   3 │ }
   4 │ 

@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/structure/gh16A.res:6:1
+  tests/parsing/errors/structure/gh16A.res:6:1
 
   4 │   })
   5 │ }

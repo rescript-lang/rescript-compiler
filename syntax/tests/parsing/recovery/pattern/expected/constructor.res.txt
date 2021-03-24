@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/constructor.res:2:14-16
+  tests/parsing/recovery/pattern/constructor.res:2:14-16
 
   1 │ switch x {
   2 │ | Rgb(r, g, b => ()
@@ -11,7 +11,7 @@
 
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/constructor.res:3:23-25
+  tests/parsing/recovery/pattern/constructor.res:3:23-25
 
   1 │ switch x {
   2 │ | Rgb(r, g, b => ()
@@ -23,7 +23,7 @@
 
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/constructor.res:4:22-24
+  tests/parsing/recovery/pattern/constructor.res:4:22-24
 
   2 │ | Rgb(r, g, b => ()
   3 │ | Rgb(r, g, Color(a, b => ()

@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/expression/jsx.res:1:14
+  tests/parsing/recovery/expression/jsx.res:1:14
 
   1 │ let x = <div @ @@@ />
   2 │ 

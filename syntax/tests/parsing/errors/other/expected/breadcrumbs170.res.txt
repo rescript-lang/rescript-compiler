@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/other/breadcrumbs170.res:9:1
+  tests/parsing/errors/other/breadcrumbs170.res:9:1
 
    7 │   }
    8 │ }

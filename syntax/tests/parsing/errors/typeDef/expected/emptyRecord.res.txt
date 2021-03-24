@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/typeDef/emptyRecord.res:1:15-16
+  tests/parsing/errors/typeDef/emptyRecord.res:1:15-16
 
   1 │ type record = {}
   2 │ 

@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/infiniteLoops/nonRecTypes.res:4:29-36
+  tests/parsing/infiniteLoops/nonRecTypes.res:4:29-36
 
   2 ┆ include (
   3 ┆           {
@@ -13,7 +13,7 @@
 
 
   Syntax error!
-  ./tests/parsing/infiniteLoops/nonRecTypes.res:19:45-51
+  tests/parsing/infiniteLoops/nonRecTypes.res:19:45-51
 
   17 ┆   ~size: int,
   18 ┆   ~root: option(node('value)),
@@ -25,7 +25,7 @@
 
 
   Syntax error!
-  ./tests/parsing/infiniteLoops/nonRecTypes.res:67:26-68:3
+  tests/parsing/infiniteLoops/nonRecTypes.res:67:26-68:3
 
   65 │         };
   66 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None;
@@ -38,7 +38,7 @@
 
 
   Syntax error!
-  ./tests/parsing/infiniteLoops/nonRecTypes.res:68:21-69:3
+  tests/parsing/infiniteLoops/nonRecTypes.res:68:21-69:3
 
   66 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None;
   67 │ let rec minNode = node =>
@@ -51,7 +51,7 @@
 
 
   Syntax error!
-  ./tests/parsing/infiniteLoops/nonRecTypes.res:434:31-38
+  tests/parsing/infiniteLoops/nonRecTypes.res:434:31-38
 
   432 │     updateSum(Some(node), ~delta);
   433 │   };

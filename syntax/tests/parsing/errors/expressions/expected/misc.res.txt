@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/expressions/misc.res:1:9
+  tests/parsing/errors/expressions/misc.res:1:9
 
   1 │ let x = _ + 1
   2 │ 

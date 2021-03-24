@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/expressions/ambiguousArrow.res:1:9-21
+  tests/parsing/errors/expressions/ambiguousArrow.res:1:9-21
 
   1 │ let a = b:int => "hi"
   2 │ 
@@ -12,7 +12,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/expressions/ambiguousArrow.res:6:3-23
+  tests/parsing/errors/expressions/ambiguousArrow.res:6:3-23
 
   4 │   let a = 1
   5 │   let b = 2

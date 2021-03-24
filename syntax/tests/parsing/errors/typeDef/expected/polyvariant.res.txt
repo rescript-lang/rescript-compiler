@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/typeDef/polyvariant.res:1:13
+  tests/parsing/errors/typeDef/polyvariant.res:1:13
 
   1 │ type t = [< ]
   2 │ 
@@ -10,7 +10,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typeDef/polyvariant.res:5:15
+  tests/parsing/errors/typeDef/polyvariant.res:5:15
 
   3 │ type z = [< | #A | #B > ]
   4 │ 

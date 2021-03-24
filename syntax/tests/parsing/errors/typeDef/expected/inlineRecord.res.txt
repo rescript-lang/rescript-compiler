@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/typeDef/inlineRecord.res:6:9-15
+  tests/parsing/errors/typeDef/inlineRecord.res:6:9-15
 
   4 ┆ name: string,
   5 ┆ reportCard: {
@@ -12,7 +12,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typeDef/inlineRecord.res:14:5-10
+  tests/parsing/errors/typeDef/inlineRecord.res:14:5-10
 
   12 ┆ name: string,
   13 ┆ address: {
@@ -24,7 +24,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/typeDef/inlineRecord.res:19:21-31
+  tests/parsing/errors/typeDef/inlineRecord.res:19:21-31
 
   17 │ }
   18 │ 

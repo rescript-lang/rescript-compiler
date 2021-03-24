@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/expressions/unexpectedConstraint.res:4:3-13
+  tests/parsing/errors/expressions/unexpectedConstraint.res:4:3-13
 
   2 │   let a = 1
   3 │   let b = 2
@@ -13,7 +13,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/expressions/unexpectedConstraint.res:7:9-20
+  tests/parsing/errors/expressions/unexpectedConstraint.res:7:9-20
 
   5 │ }
   6 │ 

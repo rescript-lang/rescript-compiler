@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/parenthesized.res:2:5-8
+  tests/parsing/recovery/pattern/parenthesized.res:2:5-8
 
   1 │ switch x {
   2 │ | (a  => ()
@@ -11,7 +11,7 @@
 
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/parenthesized.res:3:9-11
+  tests/parsing/recovery/pattern/parenthesized.res:3:9-11
 
   1 │ switch x {
   2 │ | (a  => ()
@@ -23,7 +23,7 @@
 
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/parenthesized.res:4:12-14
+  tests/parsing/recovery/pattern/parenthesized.res:4:12-14
 
   2 │ | (a  => ()
   3 │ | ([a, b => ()
@@ -35,7 +35,7 @@
 
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/parenthesized.res:5:11-13
+  tests/parsing/recovery/pattern/parenthesized.res:5:11-13
 
   3 │ | ([a, b => ()
   4 │ | ({a, ...b => ()
@@ -47,7 +47,7 @@
 
 
   Syntax error!
-  ./tests/parsing/recovery/pattern/parenthesized.res:6:9-11
+  tests/parsing/recovery/pattern/parenthesized.res:6:9-11
 
   4 │ | ({a, ...b => ()
   5 │ | (list{1, => ()

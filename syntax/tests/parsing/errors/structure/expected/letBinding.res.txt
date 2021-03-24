@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/structure/letBinding.res:2:18-20
+  tests/parsing/errors/structure/letBinding.res:2:18-20
 
   1 │ // missing =
   2 │ let rightResource ur.resources.find(
@@ -11,7 +11,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/structure/letBinding.res:8:12-13
+  tests/parsing/errors/structure/letBinding.res:8:12-13
 
    6 │ let x = {
    7 │   // missing =
@@ -23,7 +23,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/structure/letBinding.res:14:19-26
+  tests/parsing/errors/structure/letBinding.res:14:19-26
 
   12 │ let t = {
   13 │ 	// missing =
@@ -35,7 +35,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/structure/letBinding.res:18:39-20:3
+  tests/parsing/errors/structure/letBinding.res:18:39-20:3
 
   16 │ }
   17 │ 
@@ -49,7 +49,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/structure/letBinding.res:20:10-23:3
+  tests/parsing/errors/structure/letBinding.res:20:10-23:3
 
   18 │ let keyTable: Belt.Map.String.t<int> =
   19 │ 
@@ -64,7 +64,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/structure/letBinding.res:23:11-13
+  tests/parsing/errors/structure/letBinding.res:23:11-13
 
   21 │ 
   22 │ // no magic in the syntax
@@ -76,7 +76,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/structure/letBinding.res:26:6-8
+  tests/parsing/errors/structure/letBinding.res:26:6-8
 
   24 │ 
   25 │ // no magic in the syntax
@@ -88,7 +88,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/structure/letBinding.res:29:13-15
+  tests/parsing/errors/structure/letBinding.res:29:13-15
 
   27 │ 
   28 │ // no magic in the syntax

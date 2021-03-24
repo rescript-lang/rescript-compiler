@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/expressions/block.res:14:4-15:1
+  tests/parsing/errors/expressions/block.res:14:4-15:1
 
   12 │ 
   13 │     thisId === id
@@ -13,7 +13,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/expressions/block.res:18:25-19:1
+  tests/parsing/errors/expressions/block.res:18:25-19:1
 
   16 │ 
   17 │ let x = {
@@ -26,7 +26,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/expressions/block.res:22:11-23:1
+  tests/parsing/errors/expressions/block.res:22:11-23:1
 
   20 │ 
   21 │ switch stack {
@@ -39,7 +39,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/expressions/block.res:26:7-27:1
+  tests/parsing/errors/expressions/block.res:26:7-27:1
 
   24 │ | Join(doc1, doc2) =>
   25 │ 	buffer->Buffer.add_string(indentation)
@@ -52,7 +52,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/expressions/block.res:30:10-31:1
+  tests/parsing/errors/expressions/block.res:30:10-31:1
 
   28 │ 
   29 │ let pipeline = switch scheduler {

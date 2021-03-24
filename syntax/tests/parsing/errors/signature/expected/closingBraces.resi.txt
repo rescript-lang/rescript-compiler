@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/signature/closingBraces.resi:3:1
+  tests/parsing/errors/signature/closingBraces.resi:3:1
 
   1 │ let x: int
   2 │ 

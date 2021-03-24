@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/structure/gh16B.res:19:2
+  tests/parsing/errors/structure/gh16B.res:19:2
 
   17 │ 
   18 │ 

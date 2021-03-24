@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/typeDef/typeParams.res:1:10-13
+  tests/parsing/recovery/typeDef/typeParams.res:1:10-13
 
   1 │ type node('a) = {
   2 │   _value: Js.Nullable.value<'a>

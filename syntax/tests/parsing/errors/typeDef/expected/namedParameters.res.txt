@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/typeDef/namedParameters.res:1:15-20
+  tests/parsing/errors/typeDef/namedParameters.res:1:15-20
 
   1 │ type  draw = (stroke: pencil) => unit
   2 │ 

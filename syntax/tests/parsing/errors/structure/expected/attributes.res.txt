@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/errors/structure/attributes.res:2:3-7
+  tests/parsing/errors/structure/attributes.res:2:3-7
 
   1 │ module MissingExpression = {
   2 │   @attr
@@ -12,7 +12,7 @@
 
 
   Syntax error!
-  ./tests/parsing/errors/structure/attributes.res:5:1-21
+  tests/parsing/errors/structure/attributes.res:5:1-21
 
   3 │ }
   4 │ 

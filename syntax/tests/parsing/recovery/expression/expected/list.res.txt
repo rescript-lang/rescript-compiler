@@ -1,6 +1,6 @@
 
   Syntax error!
-  ./tests/parsing/recovery/expression/list.res:6:26-28
+  tests/parsing/recovery/expression/list.res:6:26-28
 
   4 ┆ let rec loop = (items) => {
   5 ┆   switch(items) {
@@ -14,7 +14,7 @@ Solution: if it's to validate the first few elements, use a `when` clause + Arra
 
 
   Syntax error!
-  ./tests/parsing/recovery/expression/list.res:7:13-15
+  tests/parsing/recovery/expression/list.res:7:13-15
 
   5 ┆ switch(items) {
   6 ┆   | ["-pp", _ppFlag, ...rest] => loop(rest)
