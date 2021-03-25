@@ -15,11 +15,8 @@ for file in tests/parsing/{grammar,other}/**/*.(res|resi); do
 done
 
 # printing
-for file in tests/printer/**/*.(res|resi); do
+for file in tests/{printer,conversion}/**/*.(res|resi|ml|mli); do
   lib/rescript.exe $file &> $(exp $file) &
-done
-for file in tests/{printer,conversion}/**/*.(ml|mli); do
-  lib/rescript.exe -parse ml $file &> $(exp $file) &
 done
 for file in tests/{printer,conversion}/**/*.re; do
   lib/refmt.exe --parse re --print binary $file | lib/rescript.exe -parse reasonBinary &> $(exp $file) &
@@ -68,12 +65,12 @@ if [[ $ROUNDTRIP_TEST = 1 ]]; then
     lib/refmt.exe --parse $class --print binary $refmtInterfaceArg $file > $reasonBinaryFile
     sexpAst=temp/$file.sexp
     lib/rescript.exe -parse reasonBinary -print sexp $rescriptInterfaceArg $reasonBinaryFile > $sexpAst
-    rescript=temp/$file.rescript
+    rescript=temp/$file.res
     lib/rescript.exe -parse reasonBinary $rescriptInterfaceArg $reasonBinaryFile > $rescript
     rescriptSexpAst=temp/$file.ressexp
-    lib/rescript.exe -parse res -print sexp $rescriptInterfaceArg $rescript > $rescriptSexpAst
-    rescript2=temp/$file.rescript2
-    lib/rescript.exe -parse res $rescriptInterfaceArg $rescript > $rescript2
+    lib/rescript.exe -print sexp $rescriptInterfaceArg $rescript > $rescriptSexpAst
+    rescript2=temp/$file.2.res
+    lib/rescript.exe $rescriptInterfaceArg $rescript > $rescript2
 
     diff --unified $sexpAst $rescriptSexpAst
     if [[ "$?" = 1 ]]; then

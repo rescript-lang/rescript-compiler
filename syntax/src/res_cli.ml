@@ -172,7 +172,7 @@ end = struct
   let width = ref 100
 
   let print = ref "res"
-  let origin = ref "res"
+  let origin = ref ""
   let interface = ref false
   let ppx = ref ""
   let file = ref ""
@@ -210,6 +210,12 @@ module CliArgProcessor = struct
       | "reasonBinary" -> Parser Res_driver_reason_binary.parsingEngine
       | "ml" -> Parser Res_driver_ml_parser.parsingEngine
       | "res" -> Parser Res_driver.parsingEngine
+      | "" -> (
+        match Filename.extension filename with
+        | ".ml" | ".mli" -> Parser Res_driver_ml_parser.parsingEngine
+        | ".re" | ".rei" -> Parser Res_driver_reason_binary.parsingEngine
+        | _ -> Parser Res_driver.parsingEngine
+      )
       | origin ->
         print_endline ("-parse needs to be either reasonBinary, ml or res. You provided " ^ origin);
         exit 1

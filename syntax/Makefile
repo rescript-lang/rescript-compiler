@@ -50,10 +50,10 @@ lib/rescript.exe: $(CLI_FILES)
 build-native: lib/refmt.exe lib/rescript.exe depend
 
 bootstrap: build-native
+	# pack and parse the whole codebase using the compiler itself. Kind of a test
 	ocaml unix.cma ./scripts/bspack.ml -bs-main Res_cli -I src -o ./lib/rescript.ml
-	./lib/rescript.exe -parse ml -print res ./lib/rescript.ml > ./lib/rescript2.ml
-	$(OCAMLOPT) -w a -pp "./lib/rescript.exe -print binary" -O2 -o ./lib/rescript2.exe -I +compiler-libs ocamlcommon.cmxa -I lib ./lib/rescript2.ml
-	mv ./lib/rescript2.exe ./lib/rescript.exe
+	./lib/rescript.exe ./lib/rescript.ml > ./lib/rescript.res
+	$(OCAMLOPT) -w a -pp "./lib/rescript.exe -print binary" -O2 -o ./lib/rescript.exe -I +compiler-libs ocamlcommon.cmxa -I lib -impl ./lib/rescript.res
 
 lib/refmt.exe: vendor/refmt_main3.ml
 	$(OCAMLOPT) -w a -O2 -I vendor -I +compiler-libs ocamlcommon.cmxa -o lib/refmt.exe vendor/refmt_main3.ml
