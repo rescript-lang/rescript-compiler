@@ -43,3 +43,7 @@ let h = {
   Js.log(v)
 }
 
+let to = 3
+let downto = 1
+
+Js.log([to,downto])

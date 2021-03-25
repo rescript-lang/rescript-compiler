@@ -30,5 +30,16 @@ List.length({
 
 console.log(3);
 
+console.log([
+      3,
+      1
+    ]);
+
+var to = 3;
+
+var downto = 1;
+
 exports.a = a;
+exports.to = to;
+exports.downto = downto;
 /* b Not a pure module */
