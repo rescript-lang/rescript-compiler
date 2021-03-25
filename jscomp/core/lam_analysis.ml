@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -137,7 +137,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Parrayrefs  
       (* Test if the argument is a block or an immediate integer *)
       | Pisint
-      | Pis_poly_var_const
+      | Pis_poly_var_block
       (* Test if the (integer) argument is outside an interval *)
       | Pisout _
       | Pint64ofint 

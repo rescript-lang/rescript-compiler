@@ -1,4 +1,4 @@
-(* Copyright (C) 2018- Hongbo Zhang, Authors of ReScript
+(* Copyright (C) 2018 - Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -25,7 +25,7 @@
 let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t =
   match const with
   | Const_base (Const_int i) -> Const_int {i = Int32.of_int i; comment = None}
-  | Const_base (Const_char i) -> (Const_char i)
+  | Const_base (Const_char i) -> Const_char i
   | Const_base (Const_string(i,opt)) ->
     (match opt with
      | Some opt when
@@ -34,9 +34,9 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
      | _ ->
        Const_string i)
 
-  | Const_base (Const_float i) -> (Const_float i)
-  | Const_base (Const_int32 i) -> (Const_int {i;comment = None})
-  | Const_base (Const_int64 i) -> (Const_int64 i)
+  | Const_base (Const_float i) -> Const_float i
+  | Const_base (Const_int32 i) -> Const_int {i;comment = None}
+  | Const_base (Const_int64 i) -> Const_int64 i
   | Const_base (Const_nativeint _) -> assert false
   | Const_pointer(0, Pt_constructor{name = "()"; const = 1; non_const = 0})
     -> Const_js_undefined
@@ -50,7 +50,10 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
         Const_int { i = Int32.of_int i ; comment = Pt_assertfalse}
       | Pt_constructor {name;const;non_const} ->
         Const_int {i = Int32.of_int i ; comment = Pt_constructor {name;const;non_const}} 
-      | Pt_variant {name} -> Const_pointer name
+      | Pt_variant {name} -> 
+        if Ext_string.is_valid_hash_number name then
+          Const_int {i = Int32.of_string name; comment = None}
+        else Const_pointer name
       | Pt_na ->  Const_int{i = Int32.of_int i ; comment = None}      
     end 
   | Const_float_array (s) -> Const_float_array(s)

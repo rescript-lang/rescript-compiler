@@ -244,7 +244,10 @@ var rec_variant_a = {
 };
 
 function phd(l) {
-  if (typeof l === "string") {
+  if (typeof l === "object") {
+    if (l.NAME === "Cons") {
+      return l.VAL[0];
+    }
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
@@ -254,9 +257,6 @@ function phd(l) {
           ],
           Error: new Error()
         };
-  }
-  if (l.NAME === "Cons") {
-    return l.VAL[0];
   }
   throw {
         RE_EXN_ID: "Assert_failure",
@@ -270,7 +270,10 @@ function phd(l) {
 }
 
 function ptl(l) {
-  if (typeof l === "string") {
+  if (typeof l === "object") {
+    if (l.NAME === "Cons") {
+      return l.VAL[1];
+    }
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
@@ -280,9 +283,6 @@ function ptl(l) {
           ],
           Error: new Error()
         };
-  }
-  if (l.NAME === "Cons") {
-    return l.VAL[1];
   }
   throw {
         RE_EXN_ID: "Assert_failure",

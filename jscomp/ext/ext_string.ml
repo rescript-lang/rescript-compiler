@@ -1,5 +1,5 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -474,34 +474,47 @@ let uncapitalize_ascii =
 
 let lowercase_ascii = String.lowercase_ascii
 
+external (.![]) : string -> int -> int = "%string_unsafe_get"
+
+let get_int_1_unsafe (x : string) off : int = 
+  x.![off]
+
+let get_int_2_unsafe (x : string) off : int =   
+  x.![off] lor   
+  x.![off+1] lsl 8
+
+let get_int_3_unsafe (x : string) off : int = 
+  x.![off] lor   
+  x.![off+1] lsl 8  lor 
+  x.![off+2] lsl 16
 
 
-let get_int_1 (x : string) off : int = 
-  Char.code x.[off]
-
-let get_int_2 (x : string) off : int = 
-  Char.code x.[off] lor   
-  Char.code x.[off+1] lsl 8
-
-let get_int_3 (x : string) off : int = 
-  Char.code x.[off] lor   
-  Char.code x.[off+1] lsl 8  lor 
-  Char.code x.[off+2] lsl 16
-
-let get_int_4 (x : string) off : int =   
-  Char.code x.[off] lor   
-  Char.code x.[off+1] lsl 8  lor 
-  Char.code x.[off+2] lsl 16 lor
-  Char.code x.[off+3] lsl 24 
+let get_int_4_unsafe (x : string) off : int =     
+  x.![off] lor   
+  x.![off+1] lsl 8  lor 
+  x.![off+2] lsl 16 lor
+  x.![off+3] lsl 24 
 
 let get_1_2_3_4 (x : string) ~off len : int =  
-  if len = 1 then get_int_1 x off 
-  else if len = 2 then get_int_2 x off 
-  else if len = 3 then get_int_3 x off 
-  else if len = 4 then get_int_4 x off 
+  if len = 1 then get_int_1_unsafe x off 
+  else if len = 2 then get_int_2_unsafe x off 
+  else if len = 3 then get_int_3_unsafe x off 
+  else if len = 4 then get_int_4_unsafe x off 
   else assert false
 
 let unsafe_sub  x offs len =
   let b = Bytes.create len in 
   Ext_bytes.unsafe_blit_string x offs b 0 len;
-  (Bytes.unsafe_to_string b);
+  (Bytes.unsafe_to_string b)
+
+let is_valid_hash_number (x:string) = 
+  let len = String.length x in 
+  len > 0 && (
+    let a = x.![0] in 
+    a <= 57 &&
+    (if len > 1 then 
+       a > 48 && 
+       for_all_from x 1 (function '0' .. '9' -> true | _ -> false)
+     else
+       a >= 48 )
+  ) 

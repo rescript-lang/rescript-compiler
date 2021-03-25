@@ -1,4 +1,4 @@
-(* Copyright (C) 2018 Authors of ReScript
+(* Copyright (C) 2018 - Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -85,7 +85,7 @@ type t =
   | Parraysets 
   (* Test if the argument is a block or an immediate integer *)
   | Pisint
-  | Pis_poly_var_const
+  | Pis_poly_var_block
   (* Test if the (integer) argument is outside an interval *)
   | Pisout of int
   (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)

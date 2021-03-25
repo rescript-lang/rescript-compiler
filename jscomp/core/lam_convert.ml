@@ -609,9 +609,9 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       -> 
       prim ~primitive:Pval_from_option
         ~args:(Ext_list.map args convert_aux ) loc
-    | _ when s = "#is_poly_var_const"
+    | _ when s = "#is_poly_var_block"
       ->     
-      prim ~primitive:Pis_poly_var_const
+      prim ~primitive:Pis_poly_var_block
         ~args:(Ext_list.map args convert_aux ) loc
     | _ when s = "#raw_expr" ->
       (match args with

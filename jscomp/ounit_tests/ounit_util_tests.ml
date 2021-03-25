@@ -22,7 +22,7 @@ let suites =
       (v,!cursor) =~ (0,0)
     end;
 
-    __LOC__ >:: begin fun _ -> 
+    (* __LOC__ >:: begin fun _ -> 
       for i = 0 to 0xff do 
         let buf = Ext_buffer.create 0 in 
         Ext_buffer.add_int_1 buf i;
@@ -30,9 +30,9 @@ let suites =
         s =~ String.make 1 (Char.chr i);
         Ext_string.get_int_1 s 0 =~ i
       done 
-    end;
+    end; *)
 
-    __LOC__ >:: begin fun _ -> 
+    (* __LOC__ >:: begin fun _ -> 
       for i = 0x100 to 0xff_ff do 
         let buf = Ext_buffer.create 0 in 
         Ext_buffer.add_int_2 buf i;
@@ -46,7 +46,7 @@ let suites =
       let buf = Ext_buffer.create 0 in 
       Ext_buffer.add_int_4 buf 0x1_ff_ff_ff;
       Ext_string.get_int_4 (Ext_buffer.contents buf) 0 =~ 0x1_ff_ff_ff
-    end;
+    end; *)
     __LOC__ >:: begin fun _ -> 
         let buf = Ext_buffer.create 0 in 
         Ext_buffer.add_string_char buf "hello" 'v';
