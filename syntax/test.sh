@@ -107,7 +107,7 @@ if [[ $ROUNDTRIP_TEST = 1 ]]; then
     printf "${warningYellow}⚠️ Roundtrip tests failed.${reset}\n"
     exit 1
   else
-    printf "${successGreen}⚠️ Roundtrip tests succeeded.${reset}\n"
+    printf "${successGreen}✅ Roundtrip tests succeeded.${reset}\n"
   fi
 
 fi

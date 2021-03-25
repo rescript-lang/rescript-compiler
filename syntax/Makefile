@@ -72,12 +72,12 @@ lib/test.exe: $(TEST_FILES)
 
 test: build-native lib/test.exe
 	./node_modules/.bin/reanalyze -all-cmt . -suppress tests -suppress benchmarks
-	./node_modules/.bin/jest
+	./test.sh
 	./lib/test.exe
 
 roundtrip-test: bootstrap lib/test.exe
 	./node_modules/.bin/reanalyze -all-cmt . -suppress tests -suppress benchmarks
-	ROUNDTRIP_TEST=1 ./node_modules/.bin/jest
+	ROUNDTRIP_TEST=1 ./test.sh
 	./lib/test.exe
 
 reanalyze: build-native lib/test.exe
