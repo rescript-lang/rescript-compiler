@@ -169,6 +169,7 @@ let x::y = myList
 type nonrec t = < a  > 
 type nonrec t =
   | Foo of < a  >  
+type nonrec t = (foo, < x  > ) option
 =====Errors=============================================
 
   Syntax error!
@@ -235,9 +236,9 @@ Explanation: a list spread at the tail is efficient, but a spread in the middle 
    9 │ 
   10 │ type t = {...a}
   11 │ type t = Foo({...a})
-  12 │ 
+  12 │ type t = option<foo, {...x}>
 
-  The … spread is only supported for record value update and object type declaration.
+  You're using a ... spread without extra fields. This is the same type.
 
 
   Syntax error!
@@ -245,9 +246,20 @@ Explanation: a list spread at the tail is efficient, but a spread in the middle 
    9 │ 
   10 │ type t = {...a}
   11 │ type t = Foo({...a})
-  12 │ 
+  12 │ type t = option<foo, {...x}>
+  13 │ 
 
-  The … spread is only supported for record value update and object type declaration.
+  You're using a ... spread without extra fields. This is the same type.
+
+
+  Syntax error!
+  parsing/errors/other/spread.res:12:23-26
+  10 │ type t = {...a}
+  11 │ type t = Foo({...a})
+  12 │ type t = option<foo, {...x}>
+  13 │ 
+
+  You're using a ... spread without extra fields. This is the same type.
 
 
 ========================================================"
