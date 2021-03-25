@@ -603,17 +603,17 @@ function is_ordered(cmp, tree) {
     var r = tree._2;
     var v = tree._1;
     var match = is_ordered_min_max(tree._0);
-    if (typeof match === "string") {
-      if (match !== "Empty") {
-        return "No";
-      }
-      var match$1 = is_ordered_min_max(r);
-      if (typeof match$1 === "string") {
-        if (match$1 === "Empty") {
+    if (typeof match === "object") {
+      var match$1 = match.VAL;
+      var max_v = match$1[1];
+      var min_v = match$1[0];
+      var match$2 = is_ordered_min_max(r);
+      if (typeof match$2 !== "object") {
+        if (match$2 === "Empty" && Curry._2(cmp, max_v, v) < 0) {
           return {
                   NAME: "V",
                   VAL: [
-                    v,
+                    min_v,
                     v
                   ]
                 };
@@ -621,29 +621,29 @@ function is_ordered(cmp, tree) {
           return "No";
         }
       }
-      var match$2 = match$1.VAL;
-      if (Curry._2(cmp, v, match$2[0]) < 0) {
+      var match$3 = match$2.VAL;
+      if (Curry._2(cmp, max_v, match$3[0]) < 0) {
         return {
                 NAME: "V",
                 VAL: [
-                  v,
-                  match$2[1]
+                  min_v,
+                  match$3[1]
                 ]
               };
       } else {
         return "No";
       }
     }
-    var match$3 = match.VAL;
-    var max_v = match$3[1];
-    var min_v = match$3[0];
+    if (match !== "Empty") {
+      return "No";
+    }
     var match$4 = is_ordered_min_max(r);
-    if (typeof match$4 === "string") {
-      if (match$4 === "Empty" && Curry._2(cmp, max_v, v) < 0) {
+    if (typeof match$4 !== "object") {
+      if (match$4 === "Empty") {
         return {
                 NAME: "V",
                 VAL: [
-                  min_v,
+                  v,
                   v
                 ]
               };
@@ -652,11 +652,11 @@ function is_ordered(cmp, tree) {
       }
     }
     var match$5 = match$4.VAL;
-    if (Curry._2(cmp, max_v, match$5[0]) < 0) {
+    if (Curry._2(cmp, v, match$5[0]) < 0) {
       return {
               NAME: "V",
               VAL: [
-                min_v,
+                v,
                 match$5[1]
               ]
             };

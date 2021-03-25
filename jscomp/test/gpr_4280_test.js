@@ -36,9 +36,31 @@ function string(s) {
 
 function fn(authState, route) {
   var onboardingRoute;
-  if (typeof authState === "string") {
+  if (typeof authState === "object") {
     var exit = 0;
-    if (typeof route === "string") {
+    if (typeof route === "object" && route.NAME === "Onboarding") {
+      onboardingRoute = route.VAL;
+    } else {
+      exit = 2;
+    }
+    if (exit === 2) {
+      console.log(authState.VAL);
+      div({
+            hd: string("VerifyEmail"),
+            tl: /* [] */0
+          }, undefined);
+      return 2;
+    }
+    
+  } else {
+    var exit$1 = 0;
+    if (typeof route === "object") {
+      if (route.NAME === "Onboarding") {
+        onboardingRoute = route.VAL;
+      } else {
+        exit$1 = 2;
+      }
+    } else {
       if (route === "SignUp" || route === "SignIn" || route === "Invite" || route === "PasswordReset") {
         div({
               hd: string("LoggedOut"),
@@ -46,34 +68,14 @@ function fn(authState, route) {
             }, undefined);
         return 1;
       }
-      exit = 2;
-    } else if (route.NAME === "Onboarding") {
-      onboardingRoute = route.VAL;
-    } else {
-      exit = 2;
+      exit$1 = 2;
     }
-    if (exit === 2) {
+    if (exit$1 === 2) {
       div({
             hd: string("Redirect"),
             tl: /* [] */0
           }, undefined);
       return 3;
-    }
-    
-  } else {
-    var exit$1 = 0;
-    if (typeof route === "string" || route.NAME !== "Onboarding") {
-      exit$1 = 2;
-    } else {
-      onboardingRoute = route.VAL;
-    }
-    if (exit$1 === 2) {
-      console.log(authState.VAL);
-      div({
-            hd: string("VerifyEmail"),
-            tl: /* [] */0
-          }, undefined);
-      return 2;
     }
     
   }

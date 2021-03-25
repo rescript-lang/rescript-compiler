@@ -3,7 +3,7 @@
  * http://www.ocsigen.org/js_of_ocaml/
  * Copyright (C) 2010 Jérôme Vouillon
  * Laboratoire PPS - CNRS Université Paris Diderot
- *
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, with linking exception;

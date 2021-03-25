@@ -928,13 +928,13 @@ function parse_string(s) {
   };
   var d = make(n, refill);
   var res = next(d);
-  if (typeof res === "string") {
+  if (typeof res === "object") {
+    return res;
+  } else {
     return {
             NAME: "Error",
             VAL: "unexpected end of file"
           };
-  } else {
-    return res;
   }
 }
 
@@ -943,13 +943,13 @@ function parse_chan(bufsize, ic) {
           return Pervasives.input(ic, param, param$1, param$2);
         }));
   var res = next(d);
-  if (typeof res === "string") {
+  if (typeof res === "object") {
+    return res;
+  } else {
     return {
             NAME: "Error",
             VAL: "unexpected end of file"
           };
-  } else {
-    return res;
   }
 }
 
@@ -959,11 +959,10 @@ function parse_chan_gen(bufsize, ic) {
         }));
   return function (param) {
     var e = next(d);
-    if (typeof e === "string") {
-      return ;
-    } else {
+    if (typeof e === "object") {
       return e;
     }
+    
   };
 }
 
@@ -975,7 +974,7 @@ function parse_chan_list(bufsize, ic) {
   while(true) {
     var acc = _acc;
     var e = next(d);
-    if (typeof e === "string") {
+    if (typeof e !== "object") {
       return {
               NAME: "Ok",
               VAL: List.rev(acc)

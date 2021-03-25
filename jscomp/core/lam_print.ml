@@ -197,7 +197,7 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
     in
     fprintf ppf "sys.constant_%s" const_name
   | Pisint -> fprintf ppf "isint"
-  | Pis_poly_var_const -> fprintf ppf "#is_poly_var_const"
+  | Pis_poly_var_block -> fprintf ppf "#is_poly_var_block"
   | Pisout i -> fprintf ppf "isout %d" i
   | Pint64ofint -> fprintf ppf "of_int" 
   | Pintofint64 -> fprintf ppf "to_int"   

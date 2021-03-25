@@ -58,9 +58,9 @@ var message_counter = {
 };
 
 function extension_range_range(from, to_) {
-  var to_$1 = typeof to_ === "string" ? /* To_max */0 : /* To_number */({
+  var to_$1 = typeof to_ === "object" ? /* To_number */({
         _0: to_.VAL
-      });
+      }) : /* To_max */0;
   return {
           TAG: /* Extension_range */1,
           _0: from,

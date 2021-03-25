@@ -85,10 +85,10 @@ hey_string("on_closed");
 hey_string("in");
 
 function p_is_int_test(x) {
-  if (typeof x === "string") {
-    return 2;
-  } else {
+  if (typeof x === "object") {
     return 3;
+  } else {
+    return 2;
   }
 }
 

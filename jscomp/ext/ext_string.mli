@@ -1,5 +1,5 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -196,10 +196,10 @@ val uncapitalize_ascii : string -> string
 val lowercase_ascii : string -> string 
 
 (** Play parity to {!Ext_buffer.add_int_1} *)
-val get_int_1 : string -> int -> int 
-val get_int_2 : string -> int -> int 
-val get_int_3 : string -> int -> int 
-val get_int_4 : string -> int -> int 
+(* val get_int_1 : string -> int -> int 
+   val get_int_2 : string -> int -> int 
+   val get_int_3 : string -> int -> int 
+   val get_int_4 : string -> int -> int  *)
 
 val get_1_2_3_4 : 
   string -> 
@@ -212,3 +212,7 @@ val unsafe_sub :
   int -> 
   int -> 
   string
+
+val is_valid_hash_number:
+  string -> 
+  bool

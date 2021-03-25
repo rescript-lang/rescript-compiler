@@ -260,7 +260,7 @@ function to_string(e) {
 }
 
 function to_pair(e) {
-  if (typeof e === "string") {
+  if (typeof e !== "object") {
     return ;
   }
   if (e.NAME !== "List") {
@@ -295,7 +295,7 @@ function to_pair_with(f1, f2, e) {
 }
 
 function to_triple(e) {
-  if (typeof e === "string") {
+  if (typeof e !== "object") {
     return ;
   }
   if (e.NAME !== "List") {
@@ -361,27 +361,27 @@ function get_field(name, e) {
         return ;
       }
       var match = l.hd;
-      if (typeof match === "string") {
-        _l = l.tl;
-        continue ;
-      }
-      if (match.NAME === "List") {
-        var match$1 = match.VAL;
-        if (match$1) {
-          var match$2 = match$1.hd;
-          if (typeof match$2 === "string") {
-            _l = l.tl;
-            continue ;
-          }
-          if (match$2.NAME === "Atom") {
-            var match$3 = match$1.tl;
-            if (match$3) {
-              if (match$3.tl) {
+      if (typeof match === "object") {
+        if (match.NAME === "List") {
+          var match$1 = match.VAL;
+          if (match$1) {
+            var match$2 = match$1.hd;
+            if (typeof match$2 === "object") {
+              if (match$2.NAME === "Atom") {
+                var match$3 = match$1.tl;
+                if (match$3) {
+                  if (match$3.tl) {
+                    _l = l.tl;
+                    continue ;
+                  }
+                  if (Caml_obj.caml_equal(name, match$2.VAL)) {
+                    return match$3.hd;
+                  }
+                  _l = l.tl;
+                  continue ;
+                }
                 _l = l.tl;
                 continue ;
-              }
-              if (Caml_obj.caml_equal(name, match$2.VAL)) {
-                return match$3.hd;
               }
               _l = l.tl;
               continue ;
@@ -413,21 +413,21 @@ function _get_field_list(name, _l) {
       return ;
     }
     var match = l.hd;
-    if (typeof match === "string") {
-      _l = l.tl;
-      continue ;
-    }
-    if (match.NAME === "List") {
-      var match$1 = match.VAL;
-      if (match$1) {
-        var match$2 = match$1.hd;
-        if (typeof match$2 === "string") {
-          _l = l.tl;
-          continue ;
-        }
-        if (match$2.NAME === "Atom") {
-          if (Caml_obj.caml_equal(name, match$2.VAL)) {
-            return match$1.tl;
+    if (typeof match === "object") {
+      if (match.NAME === "List") {
+        var match$1 = match.VAL;
+        if (match$1) {
+          var match$2 = match$1.hd;
+          if (typeof match$2 === "object") {
+            if (match$2.NAME === "Atom") {
+              if (Caml_obj.caml_equal(name, match$2.VAL)) {
+                return match$1.tl;
+              }
+              _l = l.tl;
+              continue ;
+            }
+            _l = l.tl;
+            continue ;
           }
           _l = l.tl;
           continue ;
@@ -474,11 +474,10 @@ function get_variant(l, e) {
     return ;
   }
   var match$1 = match.hd;
-  if (typeof match$1 === "string" || match$1.NAME !== "Atom") {
-    return ;
-  } else {
+  if (typeof match$1 === "object" && match$1.NAME === "Atom") {
     return _get_variant(match$1.VAL, match.tl, l);
   }
+  
 }
 
 function get_exn(e) {

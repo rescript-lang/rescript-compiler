@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -867,6 +867,9 @@ let is_type_number ?comment (e : t) : t =
 
 let is_type_string ?comment (e : t) : t = 
   string_equal ?comment (typeof e) (str "string")    
+
+let is_type_object  (e : t) : t = 
+  string_equal (typeof e) (str "object") 
 
 (* we are calling [Caml_primitive.primitive_name], since it's under our
    control, we should make it follow the javascript name convention, and

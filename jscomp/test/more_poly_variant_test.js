@@ -2,7 +2,7 @@
 
 
 function map(f, param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     return "Nil";
   }
   var match = param.VAL;
@@ -16,24 +16,24 @@ function map(f, param) {
 }
 
 function split_cases(x) {
-  if (typeof x === "string" || x.NAME !== "Snoc") {
+  if (typeof x === "object" && x.NAME === "Snoc") {
     return {
-            NAME: "A",
+            NAME: "B",
             VAL: x
           };
   } else {
     return {
-            NAME: "B",
+            NAME: "A",
             VAL: x
           };
   }
 }
 
 function f(param) {
-  if (typeof param === "string") {
-    return "Tag3";
-  } else {
+  if (typeof param === "object") {
     return "myvariant";
+  } else {
+    return "Tag3";
   }
 }
 
@@ -46,10 +46,10 @@ function g1(param) {
 }
 
 function g(x) {
-  if (typeof x === "string") {
-    return "Tag3";
-  } else {
+  if (typeof x === "object") {
     return g1(x);
+  } else {
+    return "Tag3";
   }
 }
 
@@ -62,20 +62,18 @@ function f1(param) {
 }
 
 function f2(x) {
-  if (typeof x === "string") {
-    if (x === "h") {
-      return 2;
-    } else if (x === "hello") {
-      return 3;
-    } else if (x === "Tag4") {
-      console.log(x);
-      return 2;
-    } else {
-      return 333;
-    }
-  } else {
+  if (typeof x === "object") {
     console.log(x);
     return 2;
+  } else if (x === "h") {
+    return 2;
+  } else if (x === "hello") {
+    return 3;
+  } else if (x === "Tag4") {
+    console.log(x);
+    return 2;
+  } else {
+    return 333;
   }
 }
 
