@@ -36,13 +36,11 @@ warningYellow='\033[0;33m'
 successGreen='\033[0;32m'
 reset='\033[0m'
 
-git diff --quiet tests/
-if [[ "$?" = 0 ]]; then
+diff=$(git ls-files --modified tests/)
+if [[ $diff = "" ]]; then
   printf "${successGreen}✅ No unstaged tests difference.${reset}\n"
 else
-  printf "${warningYellow}⚠️ There are unstaged differences in tests/! Did you break a test?\n\n"
-  git ls-files --modified tests/
-  printf $reset
+  printf "${warningYellow}⚠️ There are unstaged differences in tests/! Did you break a test?\n${diff}\n${reset}"
   exit 1
 fi
 
@@ -53,46 +51,30 @@ if [[ $ROUNDTRIP_TEST = 1 ]]; then
   roundtripTestsResult="temp/result.txt"
   touch $roundtripTestsResult
 
-  function run {
-    file=$1
-    class=$2
-    if [[ $3 = true ]]; then
-      refmtInterfaceArg=--interface true
-      rescriptInterfaceArg=-interface
-    fi
+  for file in tests/idempotency/**/*.(re|rei|ml|mli); do {
+    case $file in
+      *.re ) class="re"; refmtIntf=false ;;
+      *.rei ) class="re"; refmtIntf=true; resIntf=-interface ;;
+      *.ml ) class="ml"; refmtIntf=false ;;
+      *.mli ) class="ml"; refmtIntf=true; resIntf=-interface ;;
+    esac
     mkdir -p temp/$(dirname $file)
     reasonBinaryFile=temp/$file.reasonBinary
-    lib/refmt.exe --parse $class --print binary $refmtInterfaceArg $file > $reasonBinaryFile
+    lib/refmt.exe --parse $class --print binary --interface $refmtIntf $file > $reasonBinaryFile
     sexpAst=temp/$file.sexp
-    lib/rescript.exe -parse reasonBinary -print sexp $rescriptInterfaceArg $reasonBinaryFile > $sexpAst
+    lib/rescript.exe -parse reasonBinary -print sexp $resIntf $reasonBinaryFile > $sexpAst
     rescript=temp/$file.res
-    lib/rescript.exe -parse reasonBinary $rescriptInterfaceArg $reasonBinaryFile > $rescript
+    lib/rescript.exe -parse reasonBinary $resIntf $reasonBinaryFile > $rescript
     rescriptSexpAst=temp/$file.ressexp
-    lib/rescript.exe -print sexp $rescriptInterfaceArg $rescript > $rescriptSexpAst
+    lib/rescript.exe -print sexp $resIntf $rescript > $rescriptSexpAst
     rescript2=temp/$file.2.res
-    lib/rescript.exe $rescriptInterfaceArg $rescript > $rescript2
+    lib/rescript.exe $resIntf $rescript > $rescript2
 
     diff --unified $sexpAst $rescriptSexpAst
-    if [[ "$?" = 1 ]]; then
-      echo 1 > $roundtripTestsResult
-    fi
+    if [[ "$?" = 1 ]]; then { echo 1 > $roundtripTestsResult } fi
     diff --unified $rescript $rescript2
-    if [[ "$?" = 1 ]]; then
-      echo 1 > $roundtripTestsResult
-    fi
-  }
-
-  for file in tests/idempotency/**/*.re; do
-    run $file re false &
-  done
-  for file in tests/idempotency/**/*.rei; do
-    run $file re true &
-  done
-  for file in tests/idempotency/**/*.ml; do
-    run $file ml false &
-  done
-  for file in tests/idempotency/**/*.mli; do
-    run $file ml true &
+    if [[ "$?" = 1 ]]; then { echo 1 > $roundtripTestsResult } fi
+  } &
   done
 
   wait
