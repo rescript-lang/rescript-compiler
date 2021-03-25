@@ -3137,8 +3137,26 @@ and printExpression (e : Parsetree.expression) cmtTbl =
       Doc.concat [Doc.text ": "; printTypExpr typ1 cmtTbl]
     in
     Doc.concat [Doc.lparen; docExpr; ofType; Doc.text " :> "; docTyp; Doc.rparen]
-  | Pexp_send _ ->
-    Doc.text "Pexp_send not impemented in printer"
+  | Pexp_send (parentExpr, label) ->
+    let parentDoc =
+      let doc = printExpressionWithComments parentExpr cmtTbl in
+      match Parens.unaryExprOperand parentExpr with
+      | Parens.Parenthesized -> addParens doc
+      | Braced braces  -> printBraces doc parentExpr braces
+      | Nothing -> doc
+    in
+    let member =
+      let memberDoc = printComments (Doc.text label.txt) cmtTbl label.loc in
+      Doc.concat [Doc.text "\""; memberDoc; Doc.text "\""]
+    in
+    Doc.group (
+      Doc.concat [
+        parentDoc;
+        Doc.lbracket;
+        member;
+        Doc.rbracket;
+      ]
+    )
   | Pexp_new _ ->
     Doc.text "Pexp_new not impemented in printer"
   | Pexp_setinstvar _ ->

@@ -421,7 +421,7 @@ let normalize =
                   pexp_attributes = [];
                   pexp_desc = Pexp_ident (Location.mknoloc (Longident.Lident "x"))
                 },
-                (default_mapper.cases mapper cases)
+                (mapper.cases mapper cases)
               )
 
             }
@@ -435,21 +435,19 @@ let normalize =
         {
           pexp_loc = expr.pexp_loc;
           pexp_attributes = expr.pexp_attributes;
-          pexp_desc = Pexp_field (operand, (Location.mknoloc (Longident.Lident "contents")))
+          pexp_desc = Pexp_field (mapper.expr mapper operand, (Location.mknoloc (Longident.Lident "contents")))
         }
       | Pexp_apply (
-          {pexp_desc = Pexp_ident {txt = Longident.Lident "##"}} as op,
-          [Asttypes.Nolabel, lhs; Nolabel, ({pexp_desc = Pexp_constant (Pconst_string (txt, None))} as stringExpr)]
+          {pexp_desc = Pexp_ident {txt = Longident.Lident "##"}},
+          [
+            Asttypes.Nolabel, lhs; Nolabel,
+            ({pexp_desc = Pexp_constant (Pconst_string (txt, None)) | (Pexp_ident ({txt = Longident.Lident txt})); pexp_loc = labelLoc})]
         ) ->
-        let ident = {
-          Parsetree.pexp_loc = stringExpr.pexp_loc;
-          pexp_attributes = [];
-          pexp_desc = Pexp_ident (Location.mkloc (Longident.Lident txt) stringExpr.pexp_loc)
-        } in
+        let label = Location.mkloc txt labelLoc in
         {
           pexp_loc = expr.pexp_loc;
           pexp_attributes = expr.pexp_attributes;
-          pexp_desc = Pexp_apply (op, [Asttypes.Nolabel, lhs; Nolabel, ident])
+          pexp_desc = Pexp_send (mapper.expr mapper lhs, label)
         }
       | Pexp_match (
           condition,
@@ -461,9 +459,9 @@ let normalize =
         let ternaryMarker = (Location.mknoloc "ns.ternary", Parsetree.PStr []) in
         {Parsetree.pexp_loc = expr.pexp_loc;
           pexp_desc = Pexp_ifthenelse (
-            default_mapper.expr mapper condition,
-            default_mapper.expr mapper thenExpr,
-            (Some (default_mapper.expr mapper elseExpr))
+            mapper.expr mapper condition,
+            mapper.expr mapper thenExpr,
+            (Some (mapper.expr mapper elseExpr))
           );
           pexp_attributes = ternaryMarker::expr.pexp_attributes;
         }

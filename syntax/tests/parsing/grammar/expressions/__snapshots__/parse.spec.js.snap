@@ -778,10 +778,10 @@ let icon =
   [@JSX ])
 let _ =
   ((MessengerSharedPhotosAlbumViewPhotoReact.createElement
-      ?ref:((if (foo ## bar) == baz
+      ?ref:((if foo#bar == baz
              then Some (foooooooooooooooooooooooo setRefChild)
              else None)[@ns.namedArgLoc ][@ns.ternary ])
-      ~key:((node ## legacy_attachment_id)[@ns.namedArgLoc ]) ~children:[] ())
+      ~key:((node#legacy_attachment_id)[@ns.namedArgLoc ]) ~children:[] ())
   [@JSX ])
 let _ = ((Foo.createElement ~bar:((bar)[@ns.namedArgLoc ]) ~children:[] ())
   [@JSX ])
@@ -792,7 +792,7 @@ let _ =
   [@JSX ])
 let x = ((div ~children:[] ())[@JSX ])
 let _ = ((div ~asd:((1)[@ns.namedArgLoc ]) ~children:[] ())[@JSX ])
-;;(foo ## bar) #= ((bar ~children:[] ())[@JSX ])
+;;foo#bar #= ((bar ~children:[] ())[@JSX ])
 ;;foo #= ((bar ~children:[] ())[@JSX ])
 ;;foo #= ((bar ~children:[] ())[@JSX ])
 let x = [|((div ~children:[] ())[@JSX ])|]
@@ -1078,12 +1078,11 @@ let _ =
                 [@ns.braces ])] ())
   [@JSX ])
 let _ =
-  ((View.createElement ~style:((styles ## backgroundImageWrapper)
+  ((View.createElement ~style:((styles#backgroundImageWrapper)
       [@ns.namedArgLoc ])
       ~children:[(((let uri = \\"/images/header-background.png\\" in
                     ((Image.createElement ~resizeMode:((Contain)
-                        [@ns.namedArgLoc ])
-                        ~style:((styles ## backgroundImage)
+                        [@ns.namedArgLoc ]) ~style:((styles#backgroundImage)
                         [@ns.namedArgLoc ]) ~uri:((uri)[@ns.namedArgLoc ])
                         ~children:[] ())
                       [@JSX ])))
@@ -1215,13 +1214,13 @@ let x = (arr.((x : int))).((y : int))
     [@ns.namedArgLoc ]) ~b:((bArg)[@ns.namedArgLoc ]) ?c:((c)
     [@ns.namedArgLoc ]) ?d:((expr)[@ns.namedArgLoc ])
 ;;f ~a:(((x : int))[@ns.namedArgLoc ]) ?b:(((y : int))[@ns.namedArgLoc ])
-;;connection ## platformId
-;;((connection ## left) ## account) ## accountName
-;;(john ## age) #= 99
-;;((john ## son) ## age) #= ((steve ## age) - 5)
-;;(dict ## 
-) #= abc
-;;(dict ## \\") #= (dict2 ## \\")"
+;;connection#platformId
+;;((connection#left)#account)#accountName
+;;john#age #= 99
+;;(john#son)#age #= (steve#age - 5)
+;;dict#
+ #= abc
+;;dict#\\" #= dict2#\\""
 `;
 
 exports[`record.res 1`] = `

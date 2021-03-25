@@ -3,7 +3,7 @@
 exports[`breadcrumbs170.res 1`] = `
 "=====Parsetree==========================================
 let l = (Some [1; 2; 3]) |> Obj.magic
-module M = struct ;;match l with | None -> [] | Some l -> l ## prop end
+module M = struct ;;match l with | None -> [] | Some l -> l#prop end
 ;;from
 ;;now
 ;;on

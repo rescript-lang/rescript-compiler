@@ -1955,9 +1955,7 @@ and parseBracketAccess p expr startPos =
     let e =
       let identLoc = mkLoc stringStart stringEnd in
       let loc = mkLoc lbracket rbracket in
-      Ast_helper.Exp.apply ~loc
-      (Ast_helper.Exp.ident ~loc (Location.mkloc (Longident.Lident "##") loc))
-      [Nolabel, expr; Nolabel, (Ast_helper.Exp.ident ~loc:identLoc (Location.mkloc (Longident.Lident s) identLoc))]
+      Ast_helper.Exp.send ~loc expr (Location.mkloc s identLoc)
     in
     let e = parsePrimaryExpr ~operand:e p in
     let equalStart = p.startPos in

@@ -27,10 +27,10 @@ let x = (arr.((x : int))).((y : int))
     [@ns.namedArgLoc ]) ~b:((bArg)[@ns.namedArgLoc ]) ?c:((c)
     [@ns.namedArgLoc ]) ?d:((expr)[@ns.namedArgLoc ])
 ;;f ~a:(((x : int))[@ns.namedArgLoc ]) ?b:(((y : int))[@ns.namedArgLoc ])
-;;connection ## platformId
-;;((connection ## left) ## account) ## accountName
-;;(john ## age) #= 99
-;;((john ## son) ## age) #= ((steve ## age) - 5)
-;;(dict ## 
-) #= abc
-;;(dict ## ") #= (dict2 ## ")
+;;connection#platformId
+;;((connection#left)#account)#accountName
+;;john#age #= 99
+;;(john#son)#age #= (steve#age - 5)
+;;dict#
+ #= abc
+;;dict#" #= dict2#"
