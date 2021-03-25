@@ -52,13 +52,49 @@ Solution: you need to pull out each field you want explicitly.
   Syntax error!
   tests/parsing/errors/other/spread.res:8:13-22
 
-  6 │ 
-  7 │ let myList = list{...x, ...y}
-  8 │ let list{...x, ...y} = myList
-  9 │ 
+   6 │ 
+   7 │ let myList = list{...x, ...y}
+   8 │ let list{...x, ...y} = myList
+   9 │ 
+  10 │ type t = {...a}
 
   List pattern matches only supports one `...` spread, at the end.
 Explanation: a list spread at the tail is efficient, but a spread in the middle would create new list[s]; out of performance concern, our pattern matching currently guarantees to never create new intermediate data.
+
+
+  Syntax error!
+  tests/parsing/errors/other/spread.res:10:11-13
+
+   8 │ let list{...x, ...y} = myList
+   9 │ 
+  10 │ type t = {...a}
+  11 │ type t = Foo({...a})
+  12 │ type t = option<foo, {...x}>
+
+  You're using a ... spread without extra fields. This is the same type.
+
+
+  Syntax error!
+  tests/parsing/errors/other/spread.res:11:15-17
+
+   9 │ 
+  10 │ type t = {...a}
+  11 │ type t = Foo({...a})
+  12 │ type t = option<foo, {...x}>
+  13 │ 
+
+  You're using a ... spread without extra fields. This is the same type.
+
+
+  Syntax error!
+  tests/parsing/errors/other/spread.res:12:23-26
+
+  10 │ type t = {...a}
+  11 │ type t = Foo({...a})
+  12 │ type t = option<foo, {...x}>
+  13 │ 
+
+  You're using a ... spread without extra fields. This is the same type.
 
 let arr = [|x;y|]
 let [|arr;_|] = [|1;2;3|]
@@ -66,3 +102,7 @@ let record = { x with y }
 let { x; y } = myRecord
 let myList = x :: y
 let x::y = myList
+type nonrec t = < a  > 
+type nonrec t =
+  | Foo of < a  >  
+type nonrec t = (foo, < x  > ) option

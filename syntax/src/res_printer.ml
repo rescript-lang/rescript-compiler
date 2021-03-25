@@ -1712,7 +1712,14 @@ and printObject ~inline fields openFlag cmtTbl =
       Doc.lbrace;
       (match openFlag with
       | Asttypes.Closed -> Doc.nil
-      | Open -> Doc.dotdot);
+      | Open ->
+        begin match fields with
+        (* handle `type t = {.. ...objType, "x": int}`
+         * .. and ... should have a space in between *)
+        | (Oinherit _)::_ -> Doc.text ".. "
+        | _ -> Doc.dotdot
+        end
+      );
       Doc.indent (
         Doc.concat [
           Doc.softLine;
@@ -1761,7 +1768,11 @@ and printObjectField (field : Parsetree.object_field) cmtTbl =
     ] in
     let cmtLoc = {labelLoc.loc with loc_end = typ.ptyp_loc.loc_end} in
     printComments doc cmtTbl cmtLoc
-  | _ -> Doc.nil
+  | Oinherit typexpr ->
+    Doc.concat [
+      Doc.dotdotdot;
+      printTypExpr typexpr cmtTbl
+    ]
 
 (* es6 arrow type arg
  * type t = (~foo: string, ~bar: float=?, unit) => unit

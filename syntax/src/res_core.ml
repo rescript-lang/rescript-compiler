@@ -112,6 +112,18 @@ Solution: directly use `concat`."
 
   let stringInterpolationInPattern =
     "String interpolation is not supported in pattern matching."
+
+  let spreadInRecordDeclaration =
+    "A record type declaration doesn't support the ... spread. Only an object (with quoted field names) does."
+
+  let objectQuotedFieldName name =
+    "An object type declaration needs quoted field names. Did you mean \"" ^ name ^ "\"?"
+
+  let forbiddenInlineRecordDeclaration =
+    "An inline record type declaration is only allowed in a variant constructor's declaration"
+
+  let sameTypeSpread =
+    "You're using a ... spread without extra fields. This is the same type."
 end
 
 
@@ -3766,7 +3778,7 @@ and parseAtomicTypExpr ~attrs p =
     let loc = mkLoc startPos p.prevEndPos in
     Ast_helper.Typ.extension ~attrs ~loc extension
   | Lbrace ->
-    parseRecordOrBsObjectType ~attrs p
+    parseRecordOrObjectType ~attrs p
   | token ->
     Parser.err p (Diagnostics.unexpected token p.breadcrumbs);
     begin match skipTokensAndMaybeRetry p ~isStartOfGrammar:Grammar.isAtomicTypExprStart with
@@ -3825,7 +3837,7 @@ and parsePackageConstraint p =
     Some (typeConstr, typ)
   | _ -> None
 
-and parseRecordOrBsObjectType ~attrs p =
+and parseRecordOrObjectType ~attrs p =
   (* for inline record in constructor *)
   let startPos = p.Parser.startPos in
   Parser.expect Lbrace p;
@@ -3834,12 +3846,25 @@ and parseRecordOrBsObjectType ~attrs p =
   | Dot -> Parser.next p; Asttypes.Closed
   | _ -> Asttypes.Closed
   in
+  let () = match p.token with
+  | Lident _ ->
+    Parser.err p (Diagnostics.message ErrorMessages.forbiddenInlineRecordDeclaration)
+  | _ -> ()
+  in
+  let startFirstField = p.startPos in
   let fields =
     parseCommaDelimitedRegion
       ~grammar:Grammar.StringFieldDeclarations
       ~closing:Rbrace
       ~f:parseStringFieldDeclaration
       p
+  in
+  let () = match fields with
+  | [Parsetree.Oinherit {ptyp_loc}] ->
+    (* {...x}, spread without extra fields *)
+    Parser.err p ~startPos:startFirstField ~endPos:ptyp_loc.loc_end
+      (Diagnostics.message ErrorMessages.sameTypeSpread)
+  | _ -> ()
   in
   Parser.expect Rbrace p;
   let loc = mkLoc startPos p.prevEndPos in
@@ -4130,9 +4155,13 @@ and parseStringFieldDeclaration p =
     Parser.expect ~grammar:Grammar.TypeExpression Colon p;
     let typ = parsePolyTypeExpr p in
     Some(Parsetree.Otag (fieldName, attrs, typ))
+  | DotDotDot ->
+    Parser.next p;
+    let typ = parseTypExpr p in
+    Some(Parsetree.Oinherit typ)
   | Lident name ->
     let nameLoc = mkLoc p.startPos p.endPos in
-    Parser.err p (Diagnostics.message "An inline record type declaration is only allowed in a variant constructor's declaration");
+    Parser.err p (Diagnostics.message (ErrorMessages.objectQuotedFieldName name));
     Parser.next p;
     let fieldName = Location.mkloc name nameLoc in
     Parser.expect ~grammar:Grammar.TypeExpression Colon p;
@@ -4253,6 +4282,50 @@ and parseConstrDeclArgs p =
           ~closing:Rparen
           ~f:parseTypExprRegion
           p
+        in
+        Parser.expect Rparen p;
+        Parsetree.Pcstr_tuple (typ::moreArgs)
+      | DotDotDot ->
+        let dotdotdotStart = p.startPos in
+        let dotdotdotEnd = p.endPos in
+        (* start of object type spreading, e.g. `User({...a, "u": int})` *)
+        Parser.next p;
+        let typ = parseTypExpr p in
+        let () = match p.token with
+        | Rbrace ->
+          (* {...x}, spread without extra fields *)
+          Parser.err ~startPos:dotdotdotStart ~endPos:dotdotdotEnd p
+            (Diagnostics.message ErrorMessages.sameTypeSpread);
+          Parser.next p;
+        | _ -> Parser.expect Comma p
+        in
+        let () = match p.token with
+        | Lident _ ->
+          Parser.err ~startPos:dotdotdotStart ~endPos:dotdotdotEnd p
+            (Diagnostics.message ErrorMessages.spreadInRecordDeclaration)
+        | _ -> ()
+        in
+        let fields =
+          (Parsetree.Oinherit typ)::(
+            parseCommaDelimitedRegion
+              ~grammar:Grammar.StringFieldDeclarations
+              ~closing:Rbrace
+              ~f:parseStringFieldDeclaration
+              p
+          )
+        in
+        Parser.expect Rbrace p;
+        let loc = mkLoc startPos p.prevEndPos in
+        let typ =
+          Ast_helper.Typ.object_ ~loc fields Asttypes.Closed |> parseTypeAlias p
+        in
+        let typ = parseArrowTypeRest ~es6Arrow:true ~startPos typ p in
+        Parser.optional p Comma |> ignore;
+        let moreArgs =
+          parseCommaDelimitedRegion
+            ~grammar:Grammar.TypExprList
+            ~closing:Rparen
+            ~f:parseTypExprRegion p
         in
         Parser.expect Rparen p;
         Parsetree.Pcstr_tuple (typ::moreArgs)
@@ -4608,7 +4681,7 @@ and parseTypeEquationOrConstrDecl p =
     (* TODO: is this a good idea? *)
     (None, Asttypes.Public, Parsetree.Ptype_abstract)
 
-and parseRecordOrBsObjectDecl p =
+and parseRecordOrObjectDecl p =
   let startPos = p.Parser.startPos in
   Parser.expect Lbrace p;
   match p.Parser.token with
@@ -4630,6 +4703,42 @@ and parseRecordOrBsObjectDecl p =
     let typ =
       Ast_helper.Typ.object_ ~loc ~attrs:[] fields closedFlag
       |> parseTypeAlias p
+    in
+    let typ = parseArrowTypeRest ~es6Arrow:true ~startPos typ p in
+    (Some typ, Asttypes.Public, Parsetree.Ptype_abstract)
+   | DotDotDot ->
+    let dotdotdotStart = p.startPos in
+    let dotdotdotEnd = p.endPos in
+    (* start of object type spreading, e.g. `type u = {...a, "u": int}` *)
+    Parser.next p;
+    let typ = parseTypExpr p in
+    let () = match p.token with
+    | Rbrace ->
+      (* {...x}, spread without extra fields *)
+      Parser.err ~startPos:dotdotdotStart ~endPos:dotdotdotEnd p
+        (Diagnostics.message ErrorMessages.sameTypeSpread);
+      Parser.next p;
+    | _ -> Parser.expect Comma p
+    in
+    let () = match p.token with
+    | Lident _ ->
+      Parser.err ~startPos:dotdotdotStart ~endPos:dotdotdotEnd p
+        (Diagnostics.message ErrorMessages.spreadInRecordDeclaration)
+    | _ -> ()
+    in
+    let fields =
+      (Parsetree.Oinherit typ)::(
+        parseCommaDelimitedRegion
+          ~grammar:Grammar.StringFieldDeclarations
+          ~closing:Rbrace
+          ~f:parseStringFieldDeclaration
+          p
+      )
+    in
+    Parser.expect Rbrace p;
+    let loc = mkLoc startPos p.prevEndPos in
+    let typ =
+      Ast_helper.Typ.object_ ~loc fields Asttypes.Closed |> parseTypeAlias p
     in
     let typ = parseArrowTypeRest ~es6Arrow:true ~startPos typ p in
     (Some typ, Asttypes.Public, Parsetree.Ptype_abstract)
@@ -4723,7 +4832,7 @@ and parsePrivateEqOrRepr p =
   Parser.expect Private p;
   match p.Parser.token with
   | Lbrace ->
-    let (manifest, _ ,kind) = parseRecordOrBsObjectDecl p in
+    let (manifest, _ ,kind) = parseRecordOrObjectDecl p in
     (manifest, Asttypes.Private, kind)
   | Uident _ ->
     let (manifest, _, kind) = parseTypeEquationOrConstrDecl p in
@@ -4925,7 +5034,7 @@ and parseTypeEquationAndRepresentation p =
     | Uident _ ->
       parseTypeEquationOrConstrDecl p
     | Lbrace ->
-      parseRecordOrBsObjectDecl p
+      parseRecordOrObjectDecl p
     | Private ->
       parsePrivateEqOrRepr p
     | Bar | DotDot ->

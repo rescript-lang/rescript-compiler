@@ -1430,6 +1430,14 @@ let make = (
 "
 `;
 
+exports[`object.ml 1`] = `
+"type hi = {\\"z\\": int}
+type u<'a> = {.. ...hi, \\"x\\": int, \\"y\\": int} as 'a
+type u1<'a> = {.. ...hi} as 'a
+type u2<'a> = {.. ...hi, ...hi, \\"y\\": int, ...hi} as 'a
+"
+`;
+
 exports[`openPattern.re 1`] = `
 "let {T.a: a} = a()
 let [Color.Blue] = a()

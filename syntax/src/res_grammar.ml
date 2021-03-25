@@ -211,7 +211,7 @@ let isParameterStart = function
 
 (* TODO: overparse Uident ? *)
 let isStringFieldDeclStart = function
-  | Token.String _ | Lident _ | At -> true
+  | Token.String _ | Lident _ | At | DotDotDot -> true
   | _ -> false
 
 (* TODO: overparse Uident ? *)
