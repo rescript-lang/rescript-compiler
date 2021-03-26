@@ -21,7 +21,7 @@
     "reason-react": ">=0.7.1"
   },
   "devDependencies": {
-    "bs-platform": "^${bsb:bs-version}",
+    "${bsb:platform}": "^${bsb:bs-version}",
     "moduleserve": "^0.9.0"
   }
 }

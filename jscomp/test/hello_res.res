@@ -11,7 +11,9 @@ Js.log ("hello, res")
 type t = { "x" : int }
 
 
+type h = {... t , "y" : string}
 
+let u01 : h = {"x" : 3 , "y" : "x"} 
 let u : t = {"x" : 3 }
 
 let h = u["x"]
@@ -43,3 +45,7 @@ let h = {
   Js.log(v)
 }
 
+let to = 3
+let downto = 1
+
+Js.log([to,downto])

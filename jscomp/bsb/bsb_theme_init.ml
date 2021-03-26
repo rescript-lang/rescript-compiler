@@ -105,7 +105,8 @@ let init_sample_project ~cwd ~theme name =
   List.iter (fun (k,v) -> Hash_string.add env k v  ) [
     "proj-version", "0.1.0";
     "bs-version", Bs_version.version;
-    "bsb" , Filename.current_dir_name // "node_modules" // ".bin" // "bsb"
+    "bsb" , Filename.current_dir_name // "node_modules" // ".bin" // "bsb";
+    "platform", !Bs_version.package_name
   ];
   let action = fun _ ->
     process_themes env  theme Filename.current_dir_name Bsb_templates.root

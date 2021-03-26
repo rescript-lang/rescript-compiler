@@ -7,7 +7,7 @@
   3 [2m│[0m let _ = string_of_float(34.)
 
   deprecated: Pervasives.string_of_float
-Please use Js.Float.toString instead, string_of_float generates unparseable floats
+  Please use Js.Float.toString instead, string_of_float generates unparseable floats
 
 
   [1;33mWarning number 3[0m
@@ -19,7 +19,7 @@ Please use Js.Float.toString instead, string_of_float generates unparseable floa
   4 [2m│[0m 
 
   deprecated: Pervasives.string_of_float
-Please use Js.Float.toString instead, string_of_float generates unparseable floats
+  Please use Js.Float.toString instead, string_of_float generates unparseable floats
 
 
   [1;33mWarning number 3[0m
@@ -31,4 +31,4 @@ Please use Js.Float.toString instead, string_of_float generates unparseable floa
   4 [2m│[0m 
 
   deprecated: Pervasives.string_of_float
-Please use Js.Float.toString instead, string_of_float generates unparseable floats
+  Please use Js.Float.toString instead, string_of_float generates unparseable floats
