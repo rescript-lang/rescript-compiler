@@ -11,7 +11,9 @@ Js.log ("hello, res")
 type t = { "x" : int }
 
 
+type h = {... t , "y" : string}
 
+let u01 : h = {"x" : 3 , "y" : "x"} 
 let u : t = {"x" : 3 }
 
 let h = u["x"]
