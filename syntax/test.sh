@@ -6,28 +6,35 @@ function exp {
   echo "$(dirname $1)/expected/$(basename $1).txt"
 }
 
+taskCount=0
+function maybeWait {
+  let taskCount+=1
+  # spawn in batch of 20 processes
+  [[ $((taskCount % 20)) = 0 ]] && wait
+}
+
 # parsing
 for file in tests/parsing/{errors,infiniteLoops,recovery}/**/*.(res|resi); do
-  lib/rescript.exe -recover -print ml $file &> $(exp $file) &
+  lib/rescript.exe -recover -print ml $file &> $(exp $file) & maybeWait
 done
 for file in tests/parsing/{grammar,other}/**/*.(res|resi); do
-  lib/rescript.exe -print ml $file &> $(exp $file) &
+  lib/rescript.exe -print ml $file &> $(exp $file) & maybeWait
 done
 
 # printing
 for file in tests/{printer,conversion}/**/*.(res|resi|ml|mli); do
-  lib/rescript.exe $file &> $(exp $file) &
+  lib/rescript.exe $file &> $(exp $file) & maybeWait
 done
 for file in tests/{printer,conversion}/**/*.re; do
-  lib/refmt.exe --parse re --print binary $file | lib/rescript.exe -parse reasonBinary &> $(exp $file) &
+  lib/refmt.exe --parse re --print binary $file | lib/rescript.exe -parse reasonBinary &> $(exp $file) & maybeWait
 done
 for file in tests/{printer,conversion}/**/*.rei; do
-  lib/refmt.exe --parse re --print binary --interface true $file | lib/rescript.exe -parse reasonBinary -interface &> $(exp $file) &
+  lib/refmt.exe --parse re --print binary --interface true $file | lib/rescript.exe -parse reasonBinary -interface &> $(exp $file) & maybeWait
 done
 
 # printing with ppx
 for file in tests/ppx/react/*.(res|resi); do
-  lib/rescript.exe -ppx jsx $file &> $(exp $file) &
+  lib/rescript.exe -ppx jsx $file &> $(exp $file) & maybeWait
 done
 
 wait
