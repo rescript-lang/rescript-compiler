@@ -49,7 +49,7 @@ src/res_multi_printer.cmx : src/res_printer.cmx src/res_io.cmx \
 src/res_multi_printer.cmi :
 src/res_outcome_printer.cmx : src/res_token.cmx src/res_doc.cmx \
     src/res_outcome_printer.cmi
-src/res_outcome_printer.cmi :
+src/res_outcome_printer.cmi : src/res_doc.cmi
 src/res_parens.cmx : src/res_parsetree_viewer.cmx src/res_parens.cmi
 src/res_parens.cmi :
 src/res_parser.cmx : src/res_token.cmx src/res_scanner.cmx \
