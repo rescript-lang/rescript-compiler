@@ -53,10 +53,10 @@ if [[ $ROUNDTRIP_TEST = 1 ]]; then
 
   for file in tests/idempotency/**/*.(re|rei|ml|mli); do {
     case $file in
-      *.re ) class="re"; refmtIntf=false ;;
-      *.rei ) class="re"; refmtIntf=true; resIntf=-interface ;;
-      *.ml ) class="ml"; refmtIntf=false ;;
-      *.mli ) class="ml"; refmtIntf=true; resIntf=-interface ;;
+      *.re  ) class="re"; refmtIntf=false; resIntf=""         ;;
+      *.rei ) class="re"; refmtIntf=true ; resIntf=-interface ;;
+      *.ml  ) class="ml"; refmtIntf=false; resIntf=""         ;;
+      *.mli ) class="ml"; refmtIntf=true ; resIntf=-interface ;;
     esac
     mkdir -p temp/$(dirname $file)
     reasonBinaryFile=temp/$file.reasonBinary
@@ -71,10 +71,10 @@ if [[ $ROUNDTRIP_TEST = 1 ]]; then
     lib/rescript.exe $resIntf $rescript > $rescript2
 
     diff --unified $sexpAst $rescriptSexpAst
-    if [[ "$?" = 1 ]]; then { echo 1 > $roundtripTestsResult } fi
+    [[ "$?" = 1 ]] && echo 1 > $roundtripTestsResult
     diff --unified $rescript $rescript2
-    if [[ "$?" = 1 ]]; then { echo 1 > $roundtripTestsResult } fi
-  } &
+    [[ "$?" = 1 ]] && echo 1 > $roundtripTestsResult
+  } & maybeWait
   done
 
   wait
