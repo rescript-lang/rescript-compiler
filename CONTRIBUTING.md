@@ -45,6 +45,9 @@ If this doesn't work (rare), then:
 
 > Note: production, only `path/to/bsc myTestFile.ml` is needed. During development, you need to pass the `-I jscomp/runtime/` flag for various reasons (e.g. to avoid cyclic dependencies).
 
+Tips:
+- To get a nice stack trace when you debug type errors from running `bsc`/`bsb`, uncomment the conditional compilation check in [`js_main.ml`](https://github.com/rescript-lang/rescript-compiler/blob/496c70d1d4e709c26dba23629e430dc944bd59f9/jscomp/main/js_main.ml#L501).
+
 ### Integration Test
 
 If you'd like to use your modified ReScript like an end-user, try:
