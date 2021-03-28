@@ -435,8 +435,8 @@ let printPolyVarIdent txt =
              )
            ]
          );
-         Doc.softLine;
          Doc.trailingComma;
+         Doc.softLine;
          Doc.rbrace;
        ]
      )
@@ -678,29 +678,22 @@ let printPolyVarIdent txt =
      let constraints =  match outTypeDecl.otype_cstrs with
      | [] -> Doc.nil
      | _ -> Doc.group (
-       Doc.concat [
-         Doc.line;
-         Doc.indent (
-           Doc.concat [
-             Doc.hardLine;
-             Doc.join ~sep:Doc.line (List.map (fun (typ1, typ2) ->
-               Doc.group (
-                 Doc.concat [
-                   Doc.text "constraint ";
-                   printOutTypeDoc typ1;
-                   Doc.text " =";
-                   Doc.indent (
-                     Doc.concat [
-                       Doc.line;
-                       printOutTypeDoc typ2;
-                     ]
-                   )
-                 ]
-               )
-             ) outTypeDecl.otype_cstrs)
-           ]
-         )
-       ]
+       Doc.indent (
+         Doc.concat [
+           Doc.hardLine;
+           Doc.join ~sep:Doc.line (List.map (fun (typ1, typ2) ->
+             Doc.group (
+               Doc.concat [
+                 Doc.text "constraint ";
+                 printOutTypeDoc typ1;
+                 Doc.text " =";
+                     Doc.space;
+                     printOutTypeDoc typ2;
+               ]
+             )
+           ) outTypeDecl.otype_cstrs)
+         ]
+       )
      ) in
      Doc.group (
        Doc.concat [

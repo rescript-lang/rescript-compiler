@@ -264,3 +264,18 @@ type obj6 = {"a": int}
 type obj7 = {. "a": int}
 type obj8<'a> = {.. "a": int} as 'a
 
+type objUser = {"name": string, "age": int}
+type objUserWithLongFields = {"name": string, "x": int, "age": int, "looooooongFiiiiiiiieeeeeeeldName": string, "anoooooooooooooooootherLongFiiiiiieeeeeeeldName": int}
+
+type objectCoordinate =  {"x": float, "y": float}
+type threeDimensionalCoordinate = {...objectCoordinate, "z": float}
+type differentSpreadedCoordinate = {"z": float, ...objectCoordinate, "alpha": int}
+
+type multiSpreadedCoordinate = {
+  ...threeDimensionalCoordinate,
+  "a": int,
+  ...differentSpreadedCoordinate,
+  "b": int
+}
+
+type dotdotObjectCoordinate<'a> =  {.. "suuuuuuuuuuuperLooooooooooooongFieldNaaaaaaaaaaaame": float, "suuuuuuuuuuuperLooooooooooooongFieldNaaaaaaaaaaaame2222222222222": float} as 'a
