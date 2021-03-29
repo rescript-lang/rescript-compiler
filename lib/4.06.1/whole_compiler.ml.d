@@ -582,8 +582,8 @@
 ../lib/4.06.1/whole_compiler.ml: ./main/builtin_cmi_datasets.mli
 ../lib/4.06.1/whole_compiler.ml: ./main/builtin_cmj_datasets.ml
 ../lib/4.06.1/whole_compiler.ml: ./main/builtin_cmj_datasets.mli
-../lib/4.06.1/whole_compiler.ml: ./main/js_main.ml
-../lib/4.06.1/whole_compiler.ml: ./main/js_main.mli
+../lib/4.06.1/whole_compiler.ml: ./main/rescript_compiler_main.ml
+../lib/4.06.1/whole_compiler.ml: ./main/rescript_compiler_main.mli
 ../lib/4.06.1/whole_compiler.ml: ./napkin/reactjs_jsx_ppx_v3.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/reactjs_jsx_ppx_v3.mli
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_ast_conversion.ml

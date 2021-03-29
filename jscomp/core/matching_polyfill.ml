@@ -56,3 +56,28 @@ let names_from_construct_pattern (pat: Typedtree.pattern) =
   match (Btype.repr pat.pat_type).desc with
   | Tconstr (path, _, _) -> resolve_path 0 path
   | _ -> assert false 
+
+
+(**
+    Note it is a bit tricky when there is unbound var, 
+    its type will be Tvar which is too complicated to support subtyping
+*)  
+let variant_is_subtype 
+    (env : Env.t) (row_desc : Types.row_desc) 
+    (ty : Types.type_expr) : bool = 
+  match row_desc with 
+  | {row_closed = true; row_fixed= _; row_fields = (name, (Rabsent | Rpresent None) )::rest }
+    ->
+    if Ext_string.is_valid_hash_number name then 
+      Ext_list.for_all rest (function 
+          | (name, (Rabsent | Rpresent None))
+            -> Ext_string.is_valid_hash_number name
+          | _ -> false
+        ) && Typeopt.is_base_type env ty Predef.path_int
+    else    
+      Ext_list.for_all rest (function 
+          | (name, (Rabsent | Rpresent None))
+            -> not (Ext_string.is_valid_hash_number name)
+          | _ -> false
+        ) && Typeopt.is_base_type env ty Predef.path_string
+  | _ -> false     

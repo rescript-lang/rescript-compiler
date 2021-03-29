@@ -1,4 +1,4 @@
-(* the entry point. This is used by js_main.ml *)
+(* the entry point. This is used by rescript_compiler_main.ml *)
 let setup =
   lazy (match Sys.getenv_opt "BS_VSCODE" with 
       | Some ("true" | "1") -> 

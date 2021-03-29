@@ -41,13 +41,11 @@
     ]}
 *)
 
+(**/**)
 (** Types for JS objects *)
-
 type 'a t = 'a
-(** This used to be mark a Js object type.
-    It is not needed any more, it is kept here for compatibility reasons
-*)
-
+[@@ocaml.deprecated "Js.t is not needed any more, you can remove it"]
+(**/**)
 
 (* internal types for FFI, these types are not used by normal users 
     Absent cmi file when looking up module alias.

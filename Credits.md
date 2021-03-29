@@ -8,9 +8,9 @@ ReScript builds on parts of OCaml:
 These modules were adapted from [`ocaml/bytecomp/simplif.ml`](ocaml/bytecomp/simplif.ml) for
 JavaScript specific optimization purposes.
 
-* [`jscomp/main/js_main.ml`](jscomp/main/js_main.ml)
+* [`jscomp/main/rescript_compiler_main.ml`](jscomp/main/rescript_compiler_main.ml)
 
-`jscomp/main/js_main.ml` is adapted from [`ocaml/driver/main.ml`](ocaml/driver/main.ml). It is the main entry
+`jscomp/main/rescript_compiler_main.ml` is adapted from [`ocaml/driver/main.ml`](ocaml/driver/main.ml). It is the main entry
 point of the underlying compiler.
 
 *  [`jscomp/stdlib-406`](jscomp/stdlib-406)
