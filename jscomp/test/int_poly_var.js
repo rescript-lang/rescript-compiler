@@ -35,16 +35,6 @@ function nest(x) {
   }
 }
 
-function f(x) {
-  if (x === 1) {
-    return /* 'b' */98;
-  } else if (x === 2) {
-    return /* 'c' */99;
-  } else {
-    return /* 'a' */97;
-  }
-}
-
 function f2(x, b) {
   if (x === 1) {
     return b;
@@ -160,6 +150,18 @@ Mt.eq_suites(id, suites, "File \"int_poly_var.res\", line 82, characters 20-27",
       false
     ]);
 
+function hh0(x) {
+  return x;
+}
+
+function hh1(x) {
+  return x;
+}
+
+function f(x) {
+  return x;
+}
+
 Mt.from_pair_suites("int_poly_var.res", suites.contents);
 
 var eq_suites = Mt.eq_suites;
@@ -175,7 +177,6 @@ exports.id = id;
 exports.suites = suites;
 exports.u = u;
 exports.nest = nest;
-exports.f = f;
 exports.f2 = f2;
 exports.f3 = f3;
 exports.h = h;
@@ -184,4 +185,7 @@ exports.hihi = hihi;
 exports.hh9 = hh9;
 exports.hh10 = hh10;
 exports.tuple = tuple;
+exports.hh0 = hh0;
+exports.hh1 = hh1;
+exports.f = f;
 /* hihi Not a pure module */

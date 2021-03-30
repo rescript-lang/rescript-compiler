@@ -33,6 +33,7 @@ let setup_env () =
   Matching.make_test_sequence_variant_constant := Polyvar_pattern_match.make_test_sequence_variant_constant;
   Matching.call_switcher_variant_constant := Polyvar_pattern_match.call_switcher_variant_constant;
   Matching.call_switcher_variant_constr := Polyvar_pattern_match.call_switcher_variant_constr;
+  Ctype.variant_is_subtype := Matching_polyfill.variant_is_subtype;
   Clflags.no_std_include := true;
   Warnings.parse_options false Bsc_warnings.defaults_w;
   Warnings.parse_options true Bsc_warnings.defaults_warn_error;

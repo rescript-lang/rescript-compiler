@@ -1,4 +1,4 @@
-(* This is used by js_main.ml *)
+(* This is used by rescript_compiler_main.ml *)
 let setup  = lazy begin
   Oprint.out_value := Tweaked_reason_oprint.print_out_value;
   Oprint.out_type := Tweaked_reason_oprint.print_out_type;

@@ -47,11 +47,7 @@ let clean tmpfile =
 let pp (sourcefile : string) =    
   let tmpfile = Filename.temp_file "bspp" "" in
   let pp = (*TODO: check to avoid double quoting *)
-    (match !Js_config.refmt with 
-     | None ->
-       Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe" 
-     | Some x -> x)
-  in 
+    Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe" in 
   let comm = 
     if Sys.win32 then cmd_windows_quote pp sourcefile tmpfile 
     else cmd_nix_quote pp sourcefile tmpfile

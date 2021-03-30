@@ -1629,15 +1629,15 @@ o common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
 o ../${
     process.platform
-  }/bsc.exe: link napkin/napkin.cmxa js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa frontend/frontend.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
+  }/bsc.exe: link napkin/napkin.cmxa js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa frontend/frontend.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/rescript_compiler_main.cmx
     libs = ocamlcommon.cmxa
 o ../${
     process.platform
   }/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 o ../${
-      process.platform
-    }/rescript.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/rescript_main.cmx
+    process.platform
+  }/rescript.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/rescript_main.cmx
       libs = ocamlcommon.cmxa unix.cmxa str.cmxa    
 o ../${
     process.platform

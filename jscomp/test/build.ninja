@@ -376,7 +376,7 @@ o test/int64_test.cmi test/int64_test.cmj : cc test/int64_test.ml | test/ext_arr
 o test/int_hashtbl_test.cmi test/int_hashtbl_test.cmj : cc test/int_hashtbl_test.ml | test/mt.cmj $stdlib
 o test/int_map.cmi test/int_map.cmj : cc test/int_map.ml | $stdlib
 o test/int_overflow_test.cmi test/int_overflow_test.cmj : cc test/int_overflow_test.ml | test/mt.cmj $stdlib
-o test/int_poly_var.cmi test/int_poly_var.cmj : cc test/int_poly_var.res | test/mt.cmj $stdlib
+o test/int_poly_var.cmi test/int_poly_var.cmj : cc test/int_poly_var.res | test/mt.cmj test/test2.cmj $stdlib
 o test/int_switch_test.cmi test/int_switch_test.cmj : cc test/int_switch_test.ml | test/mt.cmj $stdlib
 o test/internal_unused_test.cmi test/internal_unused_test.cmj : cc test/internal_unused_test.ml | $stdlib
 o test/io_test.cmi test/io_test.cmj : cc test/io_test.ml | $stdlib
@@ -428,6 +428,7 @@ o test/map_find_test.cmi test/map_find_test.cmj : cc test/map_find_test.ml | tes
 o test/map_test.cmj : cc_cmi test/map_test.ml | test/map_test.cmi test/mt.cmj $stdlib
 o test/map_test.cmi : cc test/map_test.mli | $stdlib
 o test/mario_game.cmi test/mario_game.cmj : cc test/mario_game.ml | $stdlib
+o test/marshal.cmi test/marshal.cmj : cc test/marshal.ml | $stdlib
 o test/method_chain.cmi test/method_chain.cmj : cc test/method_chain.ml | $stdlib
 o test/method_name_test.cmi test/method_name_test.cmj : cc test/method_name_test.ml | test/mt.cmj $stdlib
 o test/method_string_name.cmi test/method_string_name.cmj : cc test/method_string_name.re | $stdlib
@@ -471,7 +472,7 @@ o test/ocaml_parsetree_test.cmi : cc test/ocaml_parsetree_test.mli | $stdlib
 o test/ocaml_proto_test.cmj : cc_cmi test/ocaml_proto_test.ml | test/mt.cmj test/ocaml_proto_test.cmi $stdlib
 o test/ocaml_proto_test.cmi : cc test/ocaml_proto_test.mli | $stdlib
 o test/ocaml_re_test.cmi test/ocaml_re_test.cmj : cc test/ocaml_re_test.ml | test/mt.cmj $stdlib
-o test/ocaml_typedtree_test.cmj : cc_cmi test/ocaml_typedtree_test.ml | test/nativeint.cmj test/ocaml_typedtree_test.cmi $stdlib
+o test/ocaml_typedtree_test.cmj : cc_cmi test/ocaml_typedtree_test.ml | test/marshal.cmj test/nativeint.cmj test/ocaml_typedtree_test.cmi $stdlib
 o test/ocaml_typedtree_test.cmi : cc test/ocaml_typedtree_test.mli | $stdlib
 o test/of_string_test.cmi test/of_string_test.cmj : cc test/of_string_test.ml | test/mt.cmj $stdlib
 o test/offset.cmi test/offset.cmj : cc test/offset.ml | $stdlib
@@ -590,6 +591,7 @@ o test/swap_test.cmi test/swap_test.cmj : cc test/swap_test.ml | $stdlib
 o test/switch_case_test.cmi test/switch_case_test.cmj : cc test/switch_case_test.ml | test/mt.cmj $stdlib
 o test/tailcall_inline_test.cmi test/tailcall_inline_test.cmj : cc test/tailcall_inline_test.ml | test/mt.cmj $stdlib
 o test/test.cmi test/test.cmj : cc test/test.ml | $stdlib
+o test/test2.cmi test/test2.cmj : cc test/test2.ml | $stdlib
 o test/test_alias.cmi test/test_alias.cmj : cc test/test_alias.ml | test/test_global_print.cmj $stdlib
 o test/test_ari.cmi test/test_ari.cmj : cc test/test_ari.ml | $stdlib
 o test/test_array.cmi test/test_array.cmj : cc test/test_array.ml | $stdlib

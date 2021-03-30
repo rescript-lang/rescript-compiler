@@ -27,3 +27,9 @@
 val names_from_construct_pattern:
   Typedtree.pattern -> 
   Lambda.switch_names option
+
+val variant_is_subtype:
+  Env.t -> 
+  Types.row_desc ->
+  Types.type_expr -> 
+  bool

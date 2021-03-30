@@ -80,4 +80,19 @@ let tuple = (
 )
 eq_suites(id,suites,__LOC__,hihi,3)
 eq_suites(id,suites,__LOC__,tuple,(0,1,2,3,4,5,5,3,6,true,false))
+
+let hh0 = ( x :  list<t>) => ( x :> list <int>)
+let hh1 = ( x :  list< [ #a | #b ]>) => ( x :> list <string>)
+
+// let hh2 = ( x : [#a (int)]) => ( x :> string) 
+// let hh2 = ( x : [#a (int)]) => ( x :> int) 
+// let hh1 = ( x :  list< [< #a | #b ]>) => ( x :> list <string>)
+
+
+
+type t0 = [#a|#b]
+
+let f = (x : list<t0>) => 
+  (x :>  list<Test2.U.H.t>)
+
 Mt.from_pair_suites(__FILE__,suites.contents)
