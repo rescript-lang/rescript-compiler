@@ -4,7 +4,7 @@ Bsb is ReScript's build system. User-facing documentations are [here](https://re
 
 This directory hosts its implementation. It reads into `bsconfig.json`, uses some BS/OCaml/Reason-specific logic, and generates a [ninja](https://ninja-build.org) build file then calls `ninja` on it. So much of the incremental build and perf work is delegated to Ninja.
 
-There's a `templates/` subdirectory. It's the thing shown when you do `bsb -themes`. To generate a template for the user, it basically picks the chosen template from `templates/` and copy pastes it into the destined user directory while substituting some strings in those templates, like `${bsb:proj-version}` in the `package.json`s. 
+There's a `templates/` subdirectory. It's the thing shown when you do `bsb -themes`. To generate a template for the user, it basically picks the chosen template from `templates/` and copy pastes it into the destined user directory while substituting some strings in those templates, like `${rescript:proj-version}` in the `package.json`s. 
 
 ## Add/edit a template
 

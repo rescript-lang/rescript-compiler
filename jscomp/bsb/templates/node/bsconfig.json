@@ -1,6 +1,6 @@
 {
-  "name": "${bsb:name}",
-  "version": "${bsb:proj-version}",
+  "name": "${rescript:name}",
+  "version": "${rescript:proj-version}",
   "sources": {
       "dir": "src",
       "subdirs" : true

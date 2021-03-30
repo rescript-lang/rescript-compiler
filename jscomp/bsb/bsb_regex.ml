@@ -28,9 +28,9 @@ let string_after s n = String.sub s n (String.length s - n)
 
 (* There seems to be a bug in {!Str.global_substitute} 
    {[
-     Str.global_substitute (Str.regexp "\\${bsb:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^":found")) {|   ${bsb:hello-world}  ${bsb:x} ${x}|}  ;;
+     Str.global_substitute (Str.regexp "\\${rescript:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^":found")) {|   ${rescript:hello-world}  ${rescript:x} ${x}|}  ;;
      - : bytes =
-     "      ${bsb:hello-world}  ${bsb:x} ${x}:found     ${bsb:hello-world}  ${bsb:x} ${x}:found ${x}"
+     "      ${rescript:hello-world}  ${rescript:x} ${x}:found     ${rescript:hello-world}  ${rescript:x} ${x}:found ${x}"
    ]}
 *)
 let global_substitute text ~reg:expr repl_fun =

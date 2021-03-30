@@ -52,8 +52,8 @@ let root = ([
     );
     File("bsconfig.json",
     "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
+    \  \"name\": \"${rescript:name}\",\n\
+    \  \"version\": \"${rescript:proj-version}\",\n\
     \  \"sources\": {\n\
     \    \"dir\" : \"src\",\n\
     \    \"subdirs\" : true\n\
@@ -63,8 +63,8 @@ let root = ([
     );
     File("package.json",
     "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
+    \  \"name\": \"${rescript:name}\",\n\
+    \  \"version\": \"${rescript:proj-version}\",\n\
     \  \"scripts\": {\n\
     \    \"clean\": \"bsb -clean-world\",\n\
     \    \"build\": \"bsb -make-world\",\n\
@@ -76,7 +76,7 @@ let root = ([
     \  \"author\": \"\",\n\
     \  \"license\": \"MIT\",\n\
     \  \"devDependencies\": {\n\
-    \    \"${bsb:platform}\": \"^${bsb:bs-version}\"\n\
+    \    \"${rescript:platform}\": \"^${rescript:bs-version}\"\n\
     \  }\n\
     }"
     );
@@ -126,8 +126,8 @@ let root = ([
     );
     File("bsconfig.json",
     "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
+    \  \"name\": \"${rescript:name}\",\n\
+    \  \"version\": \"${rescript:proj-version}\",\n\
     \  \"sources\": {\n\
     \    \"dir\" : \"src\",\n\
     \    \"subdirs\" : true\n\
@@ -150,8 +150,8 @@ let root = ([
     );
     File("package.json",
     "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
+    \  \"name\": \"${rescript:name}\",\n\
+    \  \"version\": \"${rescript:proj-version}\",\n\
     \  \"scripts\": {\n\
     \    \"build\": \"bsb -make-world\",\n\
     \    \"start\": \"bsb -make-world -w\",\n\
@@ -163,7 +163,7 @@ let root = ([
     \  \"author\": \"\",\n\
     \  \"license\": \"MIT\",\n\
     \  \"devDependencies\": {\n\
-    \    \"${bsb:platform}\": \"^${bsb:bs-version}\"\n\
+    \    \"${rescript:platform}\": \"^${rescript:bs-version}\"\n\
     \  }\n\
     }\n\
     "
@@ -226,8 +226,8 @@ let root = ([
     );
     File("bsconfig.json",
     "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
+    \  \"name\": \"${rescript:name}\",\n\
+    \  \"version\": \"${rescript:proj-version}\",\n\
     \  \"sources\": {\n\
     \    \"dir\": \"src\",\n\
     \    \"generators\": [{\n\
@@ -246,8 +246,8 @@ let root = ([
     );
     File("package.json",
     "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
+    \  \"name\": \"${rescript:name}\",\n\
+    \  \"version\": \"${rescript:proj-version}\",\n\
     \  \"scripts\": {\n\
     \    \"clean\": \"bsb -clean-world\",\n\
     \    \"build\": \"bsb -make-world\",\n\
@@ -259,7 +259,7 @@ let root = ([
     \  \"author\": \"\",\n\
     \  \"license\": \"MIT\",\n\
     \  \"devDependencies\": {\n\
-    \    \"${bsb:platform}\": \"^${bsb:bs-version}\"\n\
+    \    \"${rescript:platform}\": \"^${rescript:bs-version}\"\n\
     \  }\n\
     }\n\
     "
@@ -295,11 +295,11 @@ let root = ([
     );
     File("README.md",
     "\n\
-    \  # ${bsb:name}"
+    \  # ${rescript:name}"
     );
     File("bsconfig.json",
     "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
+    \  \"name\": \"${rescript:name}\",\n\
     \  \"sources\": {\n\
     \      \"dir\": \"src\",\n\
     \      \"subdirs\": true\n\
@@ -308,8 +308,8 @@ let root = ([
     );
     File("package.json",
     "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
+    \  \"name\": \"${rescript:name}\",\n\
+    \  \"version\": \"${rescript:proj-version}\",\n\
     \  \"scripts\": {\n\
     \    \"clean\": \"bsb -clean-world\",\n\
     \    \"build\": \"bsb -make-world\",\n\
@@ -321,7 +321,7 @@ let root = ([
     \  \"author\": \"\",\n\
     \  \"license\": \"MIT\",\n\
     \  \"devDependencies\": {\n\
-    \    \"${bsb:platform}\": \"^${bsb:bs-version}\"\n\
+    \    \"${rescript:platform}\": \"^${rescript:bs-version}\"\n\
     \  }\n\
     }\n\
     "
@@ -384,8 +384,8 @@ let root = ([
     );
     File("bsconfig.json",
     "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
+    \  \"name\": \"${rescript:name}\",\n\
+    \  \"version\": \"${rescript:proj-version}\",\n\
     \  \"sources\": {\n\
     \      \"dir\": \"src\",\n\
     \      \"subdirs\" : true\n\
@@ -401,8 +401,8 @@ let root = ([
     );
     File("package.json",
     "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
+    \  \"name\": \"${rescript:name}\",\n\
+    \  \"version\": \"${rescript:proj-version}\",\n\
     \  \"scripts\": {\n\
     \    \"clean\": \"bsb -clean-world\",\n\
     \    \"build\": \"bsb -make-world\",\n\
@@ -414,7 +414,7 @@ let root = ([
     \  \"author\": \"\",\n\
     \  \"license\": \"MIT\",\n\
     \  \"devDependencies\": {\n\
-    \    \"${bsb:platform}\": \"^${bsb:bs-version}\"\n\
+    \    \"${rescript:platform}\": \"^${rescript:bs-version}\"\n\
     \  }\n\
     }\n\
     "
@@ -519,7 +519,7 @@ let root = ([
     );
     File("bsconfig.json",
     "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
+    \  \"name\": \"${rescript:name}\",\n\
     \  \"reason\": {\n\
     \    \"react-jsx\": 3\n\
     \  },\n\
@@ -581,8 +581,8 @@ let root = ([
     );
     File("package.json",
     "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
+    \  \"name\": \"${rescript:name}\",\n\
+    \  \"version\": \"${rescript:proj-version}\",\n\
     \  \"scripts\": {\n\
     \    \"build\": \"bsb -make-world\",\n\
     \    \"start\": \"bsb -make-world -w -ws _ \",\n\
@@ -603,7 +603,7 @@ let root = ([
     \    \"reason-react\": \">=0.7.1\"\n\
     \  },\n\
     \  \"devDependencies\": {\n\
-    \    \"${bsb:platform}\": \"^${bsb:bs-version}\",\n\
+    \    \"${rescript:platform}\": \"^${rescript:bs-version}\",\n\
     \    \"moduleserve\": \"^0.9.0\"\n\
     \  }\n\
     }\n\
@@ -1044,8 +1044,8 @@ let root = ([
     );
     File("package.json",
     "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
+    \  \"name\": \"${rescript:name}\",\n\
+    \  \"version\": \"${rescript:proj-version}\",\n\
     \  \"scripts\": {\n\
     \    \"build\": \"bsb -make-world\",\n\
     \    \"start\": \"bsb -make-world -w -ws _ \",\n\
@@ -1068,7 +1068,7 @@ let root = ([
     \    \"reason-react\": \"^0.9.1\"\n\
     \  },\n\
     \  \"devDependencies\": {\n\
-    \    \"${bsb:platform}\": \"^${bsb:bs-version}\",\n\
+    \    \"${rescript:platform}\": \"^${rescript:bs-version}\",\n\
     \    \"css-loader\": \"^5.0.0\",\n\
     \    \"html-webpack-plugin\": \"^4.5.0\",\n\
     \    \"style-loader\": \"^2.0.0\",\n\
@@ -1747,8 +1747,8 @@ let root = ([
     );
     File("package.json",
     "{\n\
-    \  \"name\": \"${bsb:name}\",\n\
-    \  \"version\": \"${bsb:proj-version}\",\n\
+    \  \"name\": \"${rescript:name}\",\n\
+    \  \"version\": \"${rescript:proj-version}\",\n\
     \  \"scripts\": {\n\
     \    \"clean\": \"bsb -clean-world\",\n\
     \    \"build\": \"bsb -make-world\",\n\
@@ -1760,7 +1760,7 @@ let root = ([
     \  \"author\": \"\",\n\
     \  \"license\": \"MIT\",\n\
     \  \"devDependencies\": {\n\
-    \    \"${bsb:platform}\": \"^${bsb:bs-version}\"\n\
+    \    \"${rescript:platform}\": \"^${rescript:bs-version}\"\n\
     \  },\n\
     \  \"dependencies\": {\n\
     \    \"bucklescript-tea\": \"^0.7.4\"\n\

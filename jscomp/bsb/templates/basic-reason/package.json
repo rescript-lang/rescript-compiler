@@ -1,6 +1,6 @@
 {
-  "name": "${bsb:name}",
-  "version": "${bsb:proj-version}",
+  "name": "${rescript:name}",
+  "version": "${rescript:proj-version}",
   "scripts": {
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
@@ -12,6 +12,6 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "${bsb:platform}": "^${bsb:bs-version}"
+    "${rescript:platform}": "^${rescript:bs-version}"
   }
 }

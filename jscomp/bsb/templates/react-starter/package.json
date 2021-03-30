@@ -1,6 +1,6 @@
 {
-  "name": "${bsb:name}",
-  "version": "${bsb:proj-version}",
+  "name": "${rescript:name}",
+  "version": "${rescript:proj-version}",
   "scripts": {
     "build": "bsb -make-world",
     "start": "bsb -make-world -w -ws _ ",
@@ -23,7 +23,7 @@
     "reason-react": "^0.9.1"
   },
   "devDependencies": {
-    "${bsb:platform}": "^${bsb:bs-version}",
+    "${rescript:platform}": "^${rescript:bs-version}",
     "css-loader": "^5.0.0",
     "html-webpack-plugin": "^4.5.0",
     "style-loader": "^2.0.0",

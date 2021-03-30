@@ -1,5 +1,5 @@
 {
-  "name": "${bsb:name}",
+  "name": "${rescript:name}",
   "reason": {
     "react-jsx": 3
   },
