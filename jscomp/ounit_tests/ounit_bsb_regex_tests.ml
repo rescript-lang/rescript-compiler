@@ -7,7 +7,7 @@ let (=~) = OUnit.assert_equal
 
 
 let test_eq x y  = 
-    Bsb_regex.global_substitute ~reg:"\\${bsb:\\([-a-zA-Z0-9]+\\)}" x
+    Bsb_regex.global_substitute ~reg:"\\${rescript:\\([-a-zA-Z0-9]+\\)}" x
         (fun _ groups -> 
             match groups with 
             | x::_ -> x 
@@ -21,9 +21,9 @@ let suites =
     [
         __LOC__ >:: begin fun _ -> 
         test_eq 
-        {| hi hi hi ${bsb:name}
-        ${bsb:x}
-        ${bsb:u}
+        {| hi hi hi ${rescript:name}
+        ${rescript:x}
+        ${rescript:u}
         |}        
         {| hi hi hi name
         x
@@ -32,20 +32,20 @@ let suites =
     end;
     __LOC__ >:: begin  fun _ ->
     test_eq  "xx" "xx";
-    test_eq "${bsb:x}" "x";
-    test_eq "a${bsb:x}" "ax";
+    test_eq "${rescript:x}" "x";
+    test_eq "a${rescript:x}" "ax";
     
     end;
 
     __LOC__ >:: begin fun _ ->
-        test_eq "${bsb:x}x" "xx"
+        test_eq "${rescript:x}x" "xx"
     end;
 
     __LOC__ >:: begin fun _ -> 
         test_eq {|
 {
-  "name": "${bsb:name}",
-  "version": "${bsb:proj-version}",
+  "name": "${rescript:name}",
+  "version": "${rescript:proj-version}",
   "sources": [
     "src"
   ],
@@ -73,8 +73,8 @@ let suites =
     __LOC__ >:: begin fun _ -> 
     test_eq {|
 {
-  "name": "${bsb:name}",
-  "version": "${bsb:proj-version}",
+  "name": "${rescript:name}",
+  "version": "${rescript:proj-version}",
   "scripts": {
     "clean": "bsb -clean",
     "clean:all": "bsb -clean-world",
@@ -87,7 +87,7 @@ let suites =
   ],
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "${bsb:bs-version}"
+    "bs-platform": "${rescript:bs-version}"
   }
 }
 |} {|
@@ -115,7 +115,7 @@ let suites =
     test_eq {|
 {
     "version": "0.1.0",
-    "command": "${bsb:bsb}",
+    "command": "${rescript:bsb}",
     "options": {
         "cwd": "${workspaceRoot}"
     },

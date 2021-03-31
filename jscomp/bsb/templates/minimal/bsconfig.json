@@ -1,5 +1,5 @@
 {
-  "name": "${bsb:name}",
+  "name": "${rescript:name}",
   "sources": {
       "dir": "src",
       "subdirs": true

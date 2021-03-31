@@ -1,2 +1,2 @@
 
-  # ${bsb:name}
+  # ${rescript:name}
