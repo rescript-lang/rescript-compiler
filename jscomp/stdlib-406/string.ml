@@ -23,14 +23,10 @@
 
 external length : string -> int = "%string_length"
 external get : string -> int -> char = "%string_safe_get"
-external set : bytes -> int -> char -> unit = "%bytes_safe_set"
-external create : int -> bytes = "caml_create_bytes"
 external unsafe_get : string -> int -> char = "%string_unsafe_get"
-external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
+
 external unsafe_blit : string -> int ->  bytes -> int -> int -> unit
                      = "caml_blit_string" [@@noalloc]
-external unsafe_fill : bytes -> int -> int -> char -> unit
-                     = "caml_fill_bytes" [@@noalloc]
 
 module B = Bytes
 
@@ -41,12 +37,8 @@ external make : int -> char -> string = "caml_string_repeat"
 
 let init n f =
   B.init n f |> bts
-let copy s =
-  B.copy (bos s) |> bts
 let sub s ofs len =
   B.sub (bos s) ofs len |> bts
-let fill =
-  B.fill
 let blit =
   B.blit_string
 

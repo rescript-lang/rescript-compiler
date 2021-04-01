@@ -24,24 +24,6 @@ external get : string -> int -> char = "%string_safe_get"
 
    Raise [Invalid_argument] if [n] not a valid index in [s]. *)
 
-external set : bytes -> int -> char -> unit = "%bytes_safe_set"
-  [@@ocaml.deprecated "Use BytesLabels.set instead."]
-(** [String.set s n c] modifies byte sequence [s] in place,
-   replacing the byte at index [n] with [c].
-   You can also write [s.[n] <- c] instead of [String.set s n c].
-
-   Raise [Invalid_argument] if [n] is not a valid index in [s].
-
-   @deprecated This is a deprecated alias of {!BytesLabels.set}. *)
-
-external create : int -> bytes = "caml_create_bytes"
-  [@@ocaml.deprecated "Use BytesLabels.create instead."]
-(** [String.create n] returns a fresh byte sequence of length [n].
-   The sequence is uninitialized and contains arbitrary bytes.
-
-   Raise [Invalid_argument] if [n < 0] or [n > ]{!Sys.max_string_length}.
-
-   @deprecated This is a deprecated alias of {!BytesLabels.create}. *)
 
 val make : int -> char -> string
 (** [String.make n c] returns a fresh string of length [n],
@@ -56,8 +38,6 @@ val init : int -> f:(int -> char) -> string
    Raise [Invalid_argument] if [n < 0] or [n > ]{!Sys.max_string_length}.
    @since 4.02.0 *)
 
-val copy : string -> string  [@@ocaml.deprecated]
-(** Return a copy of the given string. *)
 
 val sub : string -> pos:int -> len:int -> string
 (** [String.sub s start len] returns a fresh string of length [len],
@@ -67,15 +47,6 @@ val sub : string -> pos:int -> len:int -> string
    Raise [Invalid_argument] if [start] and [len] do not
    designate a valid substring of [s]. *)
 
-val fill : bytes -> pos:int -> len:int -> char -> unit
-  [@@ocaml.deprecated "Use BytesLabels.fill instead."]
-(** [String.fill s start len c] modifies byte sequence [s] in place,
-   replacing [len] bytes by [c], starting at [start].
-
-   Raise [Invalid_argument] if [start] and [len] do not
-   designate a valid substring of [s].
-
-   @deprecated This is a deprecated alias of {!BytesLabels.fill}. *)
 
 val blit :
   src:string -> src_pos:int -> dst:bytes -> dst_pos:int -> len:int
@@ -293,11 +264,3 @@ val split_on_char: sep:char -> string -> string list
 (* The following is for system use only. Do not call directly. *)
 
 external unsafe_get : string -> int -> char = "%string_unsafe_get"
-external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
-  [@@ocaml.deprecated]
-external unsafe_blit :
-  src:string -> src_pos:int -> dst:bytes -> dst_pos:int -> len:int ->
-    unit = "caml_blit_string" [@@noalloc]
-external unsafe_fill :
-  bytes -> pos:int -> len:int -> char -> unit = "caml_fill_bytes" [@@noalloc]
-  [@@ocaml.deprecated]

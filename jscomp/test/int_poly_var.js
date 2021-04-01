@@ -134,9 +134,9 @@ var tuple = [
   hh10
 ];
 
-Mt.eq_suites(id, suites, "File \"int_poly_var.res\", line 81, characters 20-27", hihi, 3);
+Mt.eq_suites(id, suites, "File \"int_poly_var.res\", line 83, characters 20-27", hihi, 3);
 
-Mt.eq_suites(id, suites, "File \"int_poly_var.res\", line 82, characters 20-27", tuple, [
+Mt.eq_suites(id, suites, "File \"int_poly_var.res\", line 84, characters 20-27", tuple, [
       0,
       1,
       2,
@@ -172,6 +172,8 @@ var g = /* 'b' */98;
 
 var hh9 = true;
 
+var begin = 3;
+
 exports.eq_suites = eq_suites;
 exports.id = id;
 exports.suites = suites;
@@ -185,6 +187,7 @@ exports.hihi = hihi;
 exports.hh9 = hh9;
 exports.hh10 = hh10;
 exports.tuple = tuple;
+exports.begin = begin;
 exports.hh0 = hh0;
 exports.hh1 = hh1;
 exports.f = f;
