@@ -409,6 +409,7 @@ o test/key_word_property.cmi test/key_word_property.cmj : cc test/key_word_prope
 o test/key_word_property2.cmi test/key_word_property2.cmj : cc test/key_word_property2.ml | test/export_keyword.cmj $stdlib
 o test/key_word_property_plus_test.cmi test/key_word_property_plus_test.cmj : cc test/key_word_property_plus_test.ml | test/global_mangles.cmj test/mt.cmj $stdlib
 o test/label_uncurry.cmi test/label_uncurry.cmj : cc test/label_uncurry.ml | $stdlib
+o test/large_integer_pat.cmi test/large_integer_pat.cmj : cc test/large_integer_pat.ml | $stdlib
 o test/large_record_duplication_test.cmi test/large_record_duplication_test.cmj : cc test/large_record_duplication_test.ml | test/mt.cmj $stdlib
 o test/largest_int_flow.cmi test/largest_int_flow.cmj : cc test/largest_int_flow.ml | $stdlib
 o test/lazy_demo.cmi test/lazy_demo.cmj : cc test/lazy_demo.re | $stdlib

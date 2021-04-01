@@ -172,7 +172,7 @@ var g = /* 'b' */98;
 
 var hh9 = true;
 
-var bigin = 3;
+var begin = 3;
 
 exports.eq_suites = eq_suites;
 exports.id = id;
@@ -187,7 +187,7 @@ exports.hihi = hihi;
 exports.hh9 = hh9;
 exports.hh10 = hh10;
 exports.tuple = tuple;
-exports.bigin = bigin;
+exports.begin = begin;
 exports.hh0 = hh0;
 exports.hh1 = hh1;
 exports.f = f;
