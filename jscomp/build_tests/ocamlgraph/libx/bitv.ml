@@ -451,7 +451,7 @@ let to_string v =
   let n = v.length in
   let s = Bytes.make n '0' in
   for i = 0 to n - 1 do
-    if unsafe_get v i then s.[i] <- '1'
+    if unsafe_get v i then Bytes.set s i  '1'
   done;
   Bytes.to_string s
 
