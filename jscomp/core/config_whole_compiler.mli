@@ -25,6 +25,8 @@ val syntax_kind : [`ml | `reason | `rescript ] ref
 
 val bs_only : bool ref
 
+val unsafe_empty_array : bool ref 
+
 val standard_runtime: string
         (* The full path to the standard bytecode interpreter ocamlrun *)
 val ccomp_type: string

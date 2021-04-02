@@ -1,6 +1,6 @@
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,7 +24,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type module_info = Bsb_db.module_info
 type t = Bsb_db.map
-(* type case = Bsb_db.case *)
+
 
 
 
@@ -87,54 +87,56 @@ let add_basename
     ?(error_on_invalid_suffix)
     basename : t =   
   if is_editor_temporary_files basename then map 
-  else
-    let info = ref Bsb_db.Impl in   
-    let syntax_kind = ref Bsb_db.Ml in 
-    let invalid_suffix = ref false in
-    let file_suffix = Ext_filename.get_extension_maybe basename in 
-    (match ()  with 
-     | _ when file_suffix = Literals.suffix_ml -> 
-       () 
-     | _ when file_suffix = Literals.suffix_res -> 
-       syntax_kind := Res     
-     | _ when file_suffix = Literals.suffix_re -> 
-       syntax_kind := Reason
-     | _ when file_suffix = Literals.suffix_mli -> 
-       info := Intf
-     | _ when file_suffix = Literals.suffix_resi -> 
-       info :=  Intf;
-       syntax_kind := Res   
-     | _ when file_suffix = Literals.suffix_rei  -> 
-       info := Intf;
-       syntax_kind := Reason 
-     | _ -> 
-       invalid_suffix := true
-    );   
-    let info= !info in 
-    let syntax_kind = !syntax_kind in 
-    let invalid_suffix = !invalid_suffix in 
-    if invalid_suffix then 
-      match error_on_invalid_suffix with
-      | None -> map 
-      | Some loc -> 
-        Bsb_exception.errorf ~loc:loc
-          "invalid suffix %s" basename
-    else  
-      match Ext_filename.as_module ~basename:(Filename.basename basename) with 
-      | None -> 
-        Bsb_log.warn warning_unused_file basename dir; 
-        map 
-      | Some {module_name; case} ->     
-        let name_sans_extension = 
-          Filename.concat dir (Ext_filename.chop_extension_maybe basename) in 
-        let dir = Filename.dirname name_sans_extension in                
-        Map_string.adjust 
-          map
-          module_name 
-          (fun  opt_module_info -> 
-             match opt_module_info with 
-             | None -> 
-               {dir ; name_sans_extension ; info ; syntax_kind ; case }
-             | Some x -> 
-               check x name_sans_extension case syntax_kind info      
-          )
+  else 
+    begin 
+      let info = ref Bsb_db.Impl in   
+      let syntax_kind = ref Bsb_db.Ml in 
+      let invalid_suffix = ref false in
+      let file_suffix = Ext_filename.get_extension_maybe basename in 
+      begin match ()  with 
+        | _ when file_suffix = Literals.suffix_ml -> 
+          () 
+        | _ when file_suffix = Literals.suffix_res -> 
+          syntax_kind := Res     
+        | _ when file_suffix = Literals.suffix_re -> 
+          syntax_kind := Reason
+        | _ when file_suffix = Literals.suffix_mli -> 
+          info := Intf
+        | _ when file_suffix = Literals.suffix_resi -> 
+          info :=  Intf;
+          syntax_kind := Res   
+        | _ when file_suffix = Literals.suffix_rei  -> 
+          info := Intf;
+          syntax_kind := Reason 
+        | _ -> 
+          invalid_suffix := true
+      end;   
+      let info= !info in 
+      let syntax_kind = !syntax_kind in 
+      let invalid_suffix = !invalid_suffix in 
+      if invalid_suffix then 
+        match error_on_invalid_suffix with
+        | None -> map 
+        | Some loc -> 
+          Bsb_exception.errorf ~loc:loc
+            "invalid suffix %s" basename
+      else  
+        match Ext_filename.as_module ~basename:(Filename.basename basename) with 
+        | None -> 
+          Bsb_log.warn warning_unused_file basename dir; 
+          map 
+        | Some {module_name; case} ->     
+          let name_sans_extension = 
+            Filename.concat dir (Ext_filename.chop_extension_maybe basename) in 
+          let dir = Filename.dirname name_sans_extension in                
+          Map_string.adjust 
+            map
+            module_name 
+            (fun  opt_module_info -> 
+               match opt_module_info with 
+               | None -> 
+                 {dir ; name_sans_extension ; info ; syntax_kind ; case }
+               | Some x -> 
+                 check x name_sans_extension case syntax_kind info      
+            )
+    end

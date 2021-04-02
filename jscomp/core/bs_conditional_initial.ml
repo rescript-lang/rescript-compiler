@@ -40,6 +40,7 @@ let setup_env () =
   Clflags.dump_location := false;  
   Clflags.compile_only := true;
   Config.syntax_kind := `rescript;
+  Config.unsafe_empty_array := false;
   Config.bs_only := true;  
   Clflags.no_implicit_current_dir := true; 
   Clflags.color := Some Always;
@@ -64,15 +65,15 @@ let setup_env () =
   Matching.names_from_construct_pattern := 
     Matching_polyfill.names_from_construct_pattern;
 #if undefined BS_RELEASE_BUILD 
-  (let root_dir = 
-     Filename.dirname 
-       (Filename.dirname Sys.executable_name) in 
-   let (//) = Filename.concat in       
-   Clflags.include_dirs :=
-     (root_dir//"jscomp"//"others") ::
-     (root_dir//"jscomp"//"stdlib-406") ::
-     (root_dir//"jscomp"//"runtime") ::
-     !Clflags.include_dirs);
+    (let root_dir = 
+       Filename.dirname 
+         (Filename.dirname Sys.executable_name) in 
+     let (//) = Filename.concat in       
+     Clflags.include_dirs :=
+       (root_dir//"jscomp"//"others") ::
+       (root_dir//"jscomp"//"stdlib-406") ::
+       (root_dir//"jscomp"//"runtime") ::
+       !Clflags.include_dirs);
 #end
   Lexer.replace_directive_bool "BS" true;
   Lexer.replace_directive_bool "JS" true;

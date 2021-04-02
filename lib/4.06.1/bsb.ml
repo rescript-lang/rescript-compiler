@@ -1666,7 +1666,7 @@ let is_valid_hash_number (x:string) =
 end
 module Bsb_arg : sig 
 #1 "bsb_arg.mli"
-(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
+(* Copyright (C) 2020 - Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -1878,7 +1878,7 @@ end
 module Bsb_build_schemas
 = struct
 #1 "bsb_build_schemas.ml"
-(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
+(* Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -4798,7 +4798,7 @@ let print fmt s =
 end
 module Bsb_file_groups : sig 
 #1 "bsb_file_groups.mli"
-(* Copyright (C) 2018- Hongbo Zhang, Authors of ReScript
+(* Copyright (C) 2018 - Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -4875,7 +4875,7 @@ val is_empty :
 
 end = struct
 #1 "bsb_file_groups.ml"
-(* Copyright (C) 2018- Hongbo Zhang, Authors of ReScript
+(* Copyright (C) 2018 - Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -5825,8 +5825,8 @@ let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 end
 module Bsb_config : sig 
 #1 "bsb_config.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -5870,7 +5870,7 @@ val top_prefix_of_format : Ext_module_system.t -> string
 end = struct
 #1 "bsb_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -6414,7 +6414,7 @@ end
 module Bsb_exception : sig 
 #1 "bsb_exception.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -6464,7 +6464,7 @@ val not_consistent : string -> 'a
 end = struct
 #1 "bsb_exception.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -6923,6 +6923,30 @@ val is_same_paths_via_io : string -> string -> bool
 
 end = struct
 #1 "bsb_real_path.ml"
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
 let (//) = Filename.concat
 
 
@@ -7432,8 +7456,8 @@ end
 module Bsb_pkg : sig 
 #1 "bsb_pkg.mli"
 
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -8424,7 +8448,7 @@ end
 module Bsb_package_kind
 = struct
 #1 "bsb_package_kind.ml"
-(* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript 
+(* Copyright (C) 2020 - Hongbo Zhang, Authors of ReScript 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -8712,7 +8736,7 @@ module Bsb_config_types
 = struct
 #1 "bsb_config_types.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -9709,7 +9733,7 @@ end
 module Bsb_build_util : sig 
 #1 "bsb_build_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -9825,8 +9849,8 @@ val walk_all_deps :
 
 end = struct
 #1 "bsb_build_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -10193,8 +10217,8 @@ end
 module Bsb_db_util : sig 
 #1 "bsb_db_util.mli"
 
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -10245,7 +10269,7 @@ end = struct
 #1 "bsb_db_util.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -10269,7 +10293,7 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type module_info = Bsb_db.module_info
 type t = Bsb_db.map
-(* type case = Bsb_db.case *)
+
 
 
 
@@ -10332,58 +10356,59 @@ let add_basename
     ?(error_on_invalid_suffix)
     basename : t =   
   if is_editor_temporary_files basename then map 
-  else
-    let info = ref Bsb_db.Impl in   
-    let syntax_kind = ref Bsb_db.Ml in 
-    let invalid_suffix = ref false in
-    let file_suffix = Ext_filename.get_extension_maybe basename in 
-    (match ()  with 
-     | _ when file_suffix = Literals.suffix_ml -> 
-       () 
-     | _ when file_suffix = Literals.suffix_res -> 
-       syntax_kind := Res     
-     | _ when file_suffix = Literals.suffix_re -> 
-       syntax_kind := Reason
-     | _ when file_suffix = Literals.suffix_mli -> 
-       info := Intf
-     | _ when file_suffix = Literals.suffix_resi -> 
-       info :=  Intf;
-       syntax_kind := Res   
-     | _ when file_suffix = Literals.suffix_rei  -> 
-       info := Intf;
-       syntax_kind := Reason 
-     | _ -> 
-       invalid_suffix := true
-    );   
-    let info= !info in 
-    let syntax_kind = !syntax_kind in 
-    let invalid_suffix = !invalid_suffix in 
-    if invalid_suffix then 
-      match error_on_invalid_suffix with
-      | None -> map 
-      | Some loc -> 
-        Bsb_exception.errorf ~loc:loc
-          "invalid suffix %s" basename
-    else  
-      match Ext_filename.as_module ~basename:(Filename.basename basename) with 
-      | None -> 
-        Bsb_log.warn warning_unused_file basename dir; 
-        map 
-      | Some {module_name; case} ->     
-        let name_sans_extension = 
-          Filename.concat dir (Ext_filename.chop_extension_maybe basename) in 
-        let dir = Filename.dirname name_sans_extension in                
-        Map_string.adjust 
-          map
-          module_name 
-          (fun  opt_module_info -> 
-             match opt_module_info with 
-             | None -> 
-               {dir ; name_sans_extension ; info ; syntax_kind ; case }
-             | Some x -> 
-               check x name_sans_extension case syntax_kind info      
-          )
-
+  else 
+    begin 
+      let info = ref Bsb_db.Impl in   
+      let syntax_kind = ref Bsb_db.Ml in 
+      let invalid_suffix = ref false in
+      let file_suffix = Ext_filename.get_extension_maybe basename in 
+      begin match ()  with 
+        | _ when file_suffix = Literals.suffix_ml -> 
+          () 
+        | _ when file_suffix = Literals.suffix_res -> 
+          syntax_kind := Res     
+        | _ when file_suffix = Literals.suffix_re -> 
+          syntax_kind := Reason
+        | _ when file_suffix = Literals.suffix_mli -> 
+          info := Intf
+        | _ when file_suffix = Literals.suffix_resi -> 
+          info :=  Intf;
+          syntax_kind := Res   
+        | _ when file_suffix = Literals.suffix_rei  -> 
+          info := Intf;
+          syntax_kind := Reason 
+        | _ -> 
+          invalid_suffix := true
+      end;   
+      let info= !info in 
+      let syntax_kind = !syntax_kind in 
+      let invalid_suffix = !invalid_suffix in 
+      if invalid_suffix then 
+        match error_on_invalid_suffix with
+        | None -> map 
+        | Some loc -> 
+          Bsb_exception.errorf ~loc:loc
+            "invalid suffix %s" basename
+      else  
+        match Ext_filename.as_module ~basename:(Filename.basename basename) with 
+        | None -> 
+          Bsb_log.warn warning_unused_file basename dir; 
+          map 
+        | Some {module_name; case} ->     
+          let name_sans_extension = 
+            Filename.concat dir (Ext_filename.chop_extension_maybe basename) in 
+          let dir = Filename.dirname name_sans_extension in                
+          Map_string.adjust 
+            map
+            module_name 
+            (fun  opt_module_info -> 
+               match opt_module_info with 
+               | None -> 
+                 {dir ; name_sans_extension ; info ; syntax_kind ; case }
+               | Some x -> 
+                 check x name_sans_extension case syntax_kind info      
+            )
+    end
 end
 module Ext_option : sig 
 #1 "ext_option.mli"
@@ -10475,8 +10500,8 @@ let exists v f =
 end
 module Bsb_parse_sources : sig 
 #1 "bsb_parse_sources.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -10524,8 +10549,8 @@ val clean_re_js:
   string -> unit 
 end = struct
 #1 "bsb_parse_sources.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -10975,7 +11000,7 @@ end
 module Bsb_config_parse : sig 
 #1 "bsb_config_parse.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -11017,8 +11042,8 @@ val interpret_json :
 
 end = struct
 #1 "bsb_config_parse.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -11421,8 +11446,8 @@ let package_specs_from_bsconfig () =
 end
 module Bsb_unix : sig 
 #1 "bsb_unix.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -11462,7 +11487,7 @@ val remove_dir_recursive : string -> unit
 end = struct
 #1 "bsb_unix.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -11764,8 +11789,8 @@ let write_file f content =
 end
 module Bsb_merlin_gen : sig 
 #1 "bsb_merlin_gen.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -11797,8 +11822,8 @@ val merlin_file_gen :
   unit 
 end = struct
 #1 "bsb_merlin_gen.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -12008,8 +12033,8 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
 end
 module Bsb_ninja_check : sig 
 #1 "bsb_ninja_check.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -12089,8 +12114,8 @@ val check :
 
 end = struct
 #1 "bsb_ninja_check.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -12623,8 +12648,8 @@ let g_finger = "g_finger"
 end
 module Bsb_ninja_rule : sig 
 #1 "bsb_ninja_rule.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -12717,8 +12742,8 @@ val make_custom_rules :
 
 end = struct
 #1 "bsb_ninja_rule.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13035,8 +13060,8 @@ let make_custom_rules
 end
 module Bsb_ninja_targets : sig 
 #1 "bsb_ninja_targets.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13086,8 +13111,8 @@ val output_finger : string ->  string -> out_channel -> unit
 
 end = struct
 #1 "bsb_ninja_targets.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13429,8 +13454,8 @@ let handle_files_per_dir
 end
 module Bsb_ninja_gen : sig 
 #1 "bsb_ninja_gen.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13463,8 +13488,8 @@ val output_ninja_and_namespace_map :
 
 end = struct
 #1 "bsb_ninja_gen.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16180,8 +16205,8 @@ module Bsb_theme_init : sig
 #1 "bsb_theme_init.mli"
 
 
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16212,7 +16237,7 @@ end = struct
 #1 "bsb_theme_init.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
