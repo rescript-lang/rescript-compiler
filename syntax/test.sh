@@ -58,28 +58,41 @@ if [[ $ROUNDTRIP_TEST = 1 ]]; then
   roundtripTestsResult="temp/result.txt"
   touch $roundtripTestsResult
 
-  for file in tests/idempotency/**/*.(re|rei|ml|mli); do {
-    case $file in
-      *.re  ) class="re"; refmtIntf=false; resIntf=""         ;;
-      *.rei ) class="re"; refmtIntf=true ; resIntf=-interface ;;
-      *.ml  ) class="ml"; refmtIntf=false; resIntf=""         ;;
-      *.mli ) class="ml"; refmtIntf=true ; resIntf=-interface ;;
-    esac
+  for file in tests/{idempotency,printer}/**/*.(res|resi|re|rei|ml|mli); do {
     mkdir -p temp/$(dirname $file)
-    reasonBinaryFile=temp/$file.reasonBinary
-    lib/refmt.exe --parse $class --print binary --interface $refmtIntf $file > $reasonBinaryFile
-    sexpAst=temp/$file.sexp
-    lib/rescript.exe -parse reasonBinary -print sexp $resIntf $reasonBinaryFile > $sexpAst
-    rescript=temp/$file.res
-    lib/rescript.exe -parse reasonBinary $resIntf $reasonBinaryFile > $rescript
-    rescriptSexpAst=temp/$file.ressexp
-    lib/rescript.exe -print sexp $resIntf $rescript > $rescriptSexpAst
+    sexpAst1=temp/$file.sexp
+    sexpAst2=temp/$file.2.sexp
+    rescript1=temp/$file.res
     rescript2=temp/$file.2.res
-    lib/rescript.exe $resIntf $rescript > $rescript2
 
-    diff --unified $sexpAst $rescriptSexpAst
+    case $file in
+      *.re   ) class="re" ; refmtIntf=false; resIntf=""         ;;
+      *.rei  ) class="re" ; refmtIntf=true ; resIntf=-interface ;;
+      *.ml   ) class="ml" ; refmtIntf=false; resIntf=""         ;;
+      *.mli  ) class="ml" ; refmtIntf=true ; resIntf=-interface ;;
+      *.res  ) class="res"; refmtIntf=false; resIntf=""         ;;
+      *.resi ) class="res"; refmtIntf=true ; resIntf=-interface ;;
+    esac
+    case $file in
+      *.re  ) ;&
+      *.rei )
+        reasonBinary=temp/$file.reasonBinary
+        lib/refmt.exe --parse $class --print binary --interface $refmtIntf $file > $reasonBinary
+        lib/rescript.exe $resIntf -parse reasonBinary -print sexp $reasonBinary > $sexpAst1
+        lib/rescript.exe $resIntf -parse reasonBinary -print res $reasonBinary > $rescript1
+        ;;
+      * )
+        lib/rescript.exe $resIntf -parse $class -print sexp $file > $sexpAst1
+        lib/rescript.exe $resIntf -parse $class -print res $file > $rescript1
+        ;;
+    esac
+
+    lib/rescript.exe $resIntf -print sexp $rescript1 > $sexpAst2
+    lib/rescript.exe $resIntf -print res $rescript1 > $rescript2
+
+    diff --unified $sexpAst1 $sexpAst2
     [[ "$?" = 1 ]] && echo 1 > $roundtripTestsResult
-    diff --unified $rescript $rescript2
+    diff --unified $rescript1 $rescript2
     [[ "$?" = 1 ]] && echo 1 > $roundtripTestsResult
   } & maybeWait
   done
