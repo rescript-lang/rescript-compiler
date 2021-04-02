@@ -1,0 +1,13 @@
+
+
+This project was originally created by Hongbo Zhang in 2015 and 
+still actively maintained by Hongbo Zhang hosted at 
+https://github.com/rescript-lang/rescript-compiler
+
+It was named BuckleScript and rebranded into ReScript in 2021.
+The major contributions from contributors include super_errors from 
+Cheng and Cristiano, react_jsx_ppx from Ricky. Cristiano also
+contributed to several important patches in the upstream native compiler,
+in particular, the pattern match compilation.
+
+
