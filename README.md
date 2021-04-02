@@ -30,4 +30,6 @@ Refer to its copyright and license notices for information about its licensing.
 The `vendor/ninja.tar.gz` contains the vendored [ninja](https://github.com/ninja-build/ninja).
 Refer to its copyright and license notices for information about its licensing.
 
+Note that OSS is for sharing of knowledge, but the authorship should be respected. Copyright headers in each file, Acknowledgements section in this file and [History](./History.md) should be kept **intact**.
+
 See [Credits](./Credits.md) for more details.
