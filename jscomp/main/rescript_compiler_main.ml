@@ -325,7 +325,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-D",  string_call define_variable,
     "Define conditional variable e.g, -D DEBUG=true";
 
-    "-bs-unsafe-empty-array",  clear Js_config.mono_empty_array,
+    "-bs-unsafe-empty-array",  set Config.unsafe_empty_array,
     "*internal* Allow [||] to be polymorphic";
 
     "-nostdlib",  set Js_config.no_stdlib,

@@ -224,6 +224,8 @@ val syntax_kind : [`ml | `reason | `rescript ] ref
 
 val bs_only : bool ref
 
+val unsafe_empty_array : bool ref 
+
 val standard_runtime: string
         (* The full path to the standard bytecode interpreter ocamlrun *)
 val ccomp_type: string
@@ -413,6 +415,7 @@ let standard_library =
 let standard_library_default = standard_library
 let syntax_kind = ref `ml
 let bs_only = ref true
+let unsafe_empty_array = ref true
 let standard_runtime = "ocamlrun" (*dont care:path to ocamlrun*)
 let ccomp_type = "cc"
 let c_compiler = "gcc"
@@ -11969,7 +11972,7 @@ val no_export: bool ref
 
 val as_ppx : bool ref 
 
-val mono_empty_array : bool ref
+
 val customize_runtime : string option ref 
 val as_pp: bool ref
 end = struct
@@ -12062,7 +12065,7 @@ let no_export = ref false
 
 let as_ppx = ref false
 
-let mono_empty_array = ref true
+
 
 let customize_runtime = ref None 
 
