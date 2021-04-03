@@ -121,3 +121,6 @@ a => a ? aasdasdasdasdasdasdaaasdasdasdasdasdasdasdasdasdasdasdasdasdaaaaaaaaa :
 
 let x = @attrOnTernary (truth ? true : false)
 let x = @attrOnCondition truth ? true : false
+
+x ? y => () : onChange
+let y = <input value onChange={x ? _ => () : onChange} />

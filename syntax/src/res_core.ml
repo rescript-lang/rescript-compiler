@@ -1576,7 +1576,7 @@ and parseTernaryExpr leftOperand p =
   | _ ->
     leftOperand
 
-and parseEs6ArrowExpression ?parameters p =
+and parseEs6ArrowExpression ?context ?parameters p =
   let startPos = p.Parser.startPos in
   Parser.leaveBreadcrumb p Grammar.Es6ArrowExpr;
   let parameters = match parameters with
@@ -1592,7 +1592,7 @@ and parseEs6ArrowExpression ?parameters p =
   in
   Parser.expect EqualGreater p;
   let body =
-    let expr = parseExpr p in
+    let expr = parseExpr ?context p in
     match returnType with
     | Some typ ->
       Ast_helper.Exp.constraint_
@@ -2108,7 +2108,7 @@ and parseOperandExpr ~context p =
     if (context != WhenExpr) &&
        isEs6ArrowExpression ~inTernary:(context=TernaryTrueBranchExpr) p
     then
-      parseEs6ArrowExpression p
+      parseEs6ArrowExpression ~context p
     else
       parseUnaryExpr p
   in
