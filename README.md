@@ -20,6 +20,21 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## [Roadmap](https://github.com/rescript-lang/rescript-compiler/wiki)
 
+## History
+
+This project was originally created by [Hongbo Zhang](https://github.com/bobzhang) in 2015 and 
+still actively maintained by Hongbo Zhang hosted at 
+[here](https://github.com/rescript-lang/rescript-compiler)
+
+It was named BuckleScript and rebranded into [ReScript](https://rescript-lang.org/) in 2020.
+The major contributions from contributors include super_errors from 
+[Cheng](https://github.com/chenglou) and [Cristiano](https://github.com/cristianoc), react_jsx_ppx from [Ricky](https://github.com/rickyvetter). 
+Cristiano also contributed to several important patches in the upstream native compiler,
+in particular, the pattern match compilation.
+
+More details are available [here](https://github.com/rescript-lang/rescript-compiler/graphs/contributors).
+
+
 ## Licensing
 
 See [COPYING](./COPYING) and [COPYING.LESSER](./COPYING.LESSER)
@@ -30,6 +45,6 @@ Refer to its copyright and license notices for information about its licensing.
 The `vendor/ninja.tar.gz` contains the vendored [ninja](https://github.com/ninja-build/ninja).
 Refer to its copyright and license notices for information about its licensing.
 
-Note that OSS is for sharing of knowledge, but the authorship should be respected. Copyright headers in each file, Acknowledgements section in this file and [History](./History.md) should be kept **intact**.
+Note that OSS is for sharing of knowledge, but the authorship should be respected. Copyright headers in each file, Acknowledgements and History section in this file should be kept **intact**.
 
 See [Credits](./Credits.md) for more details.
