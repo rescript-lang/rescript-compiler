@@ -109,7 +109,7 @@ mv myFile.re myFile.re.backup # random backup name. Could be anything
 
 ### Example API usage
 
-```rescript
+```ocaml
 module Parser = ResCore.Parser
 module Diagnostics = ResCore.Diagnostics
 
