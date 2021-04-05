@@ -8126,7 +8126,7 @@ let suites =
       ok (v_output.exit_code = 0) v_output
     end;
     __LOC__ >:: begin fun _ -> 
-    let v_output = perform_bsc [|"-bs-eval"; {|type 'a arra = 'a array
+      let v_output = perform_bsc [|"-bs-eval"; {|type 'a arra = 'a array
     external
       f : 
       int -> int -> int arra -> unit
@@ -8135,8 +8135,8 @@ let suites =
       [@@bs.splice]|}|] in  
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "variadic")
     end;
-        __LOC__ >:: begin fun _ -> 
-    let v_output = perform_bsc [|"-bs-eval"; {|external
+    __LOC__ >:: begin fun _ -> 
+      let v_output = perform_bsc [|"-bs-eval"; {|external
   f2 : 
   int -> int -> ?y:int array -> unit  
   = ""
@@ -8152,13 +8152,13 @@ let suites =
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring
                                    should_be_warning.stderr "Unused")
     end;
-     __LOC__ >:: begin fun _ ->
+    __LOC__ >:: begin fun _ ->
       let should_be_warning =
         bsc_check_eval  {| external mk : int -> ([`a|`b [@bs.string]]) = "mk" [@@bs.val] |} in
-        OUnit.assert_bool __LOC__
+      OUnit.assert_bool __LOC__
         (Ext_string.contain_substring
-                                   should_be_warning.stderr "Unused")
-     end;
+           should_be_warning.stderr "Unused")
+    end;
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
 external ff :
@@ -8261,12 +8261,12 @@ external ff :
     end;
 
     (* __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-     external f : string -> unit -> unit = "x.y" [@@bs.send]
-     |} in
-      OUnit.assert_bool __LOC__
+       let should_err = bsc_check_eval {|
+       external f : string -> unit -> unit = "x.y" [@@bs.send]
+       |} in
+       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr "Not a valid method name")
-    end; *)
+       end; *)
 
 
     __LOC__ >:: begin fun _ -> 
@@ -8276,7 +8276,7 @@ type t10 = A of t10 [@@ocaml.unboxed];;
 let rec x = A x;;
       |} in 
       OUnit.assert_bool __LOC__
-      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
+        (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
     end;
 
     __LOC__ >:: begin fun _ -> 
@@ -8285,7 +8285,7 @@ let rec x = A x;;
 let rec x = {x = y} and y = 3L;;
       |} in 
       OUnit.assert_bool __LOC__
-      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
+        (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
     end;
     __LOC__ >:: begin fun _ -> 
       let should_err = bsc_check_eval {|
@@ -8293,7 +8293,7 @@ let rec x = {x = y} and y = 3L;;
 let rec y = A y;;
       |} in 
       OUnit.assert_bool __LOC__
-      (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
+        (Ext_string.contain_substring should_err.stderr "This kind of expression is not allowed")
     end;
 
     __LOC__ >:: begin fun _ ->
@@ -8336,60 +8336,71 @@ let rec y = A y;;
 
     end;
     __LOC__ >:: begin fun _ ->
-    let should_err = bsc_check_eval {|
+      let should_err = bsc_check_eval {|
     external foo_bar :
     (_ [@bs.as "foo"]) ->
     string ->
     string = "bar"
   [@@bs.send]
     |} in
-    OUnit.assert_bool __LOC__
-    (Ext_string.contain_substring should_err.stderr "Ill defined attribute")
-  end;
+      OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring should_err.stderr "Ill defined attribute")
+    end;
     __LOC__ >:: begin fun _ ->
-    let should_err = bsc_check_eval {|
+      let should_err = bsc_check_eval {|
       let bla4 foo x y = foo##(method1 x y [@bs])
     |} in
-    (* Ounit_cmd_util.debug_output should_err ;  *)
-    OUnit.assert_bool __LOC__
-    (Ext_string.contain_substring should_err.stderr
-    "Unused")
-  end;
+      (* Ounit_cmd_util.debug_output should_err ;  *)
+      OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring should_err.stderr
+           "Unused")
+    end;
     __LOC__ >:: begin fun _ ->
-    let should_err = bsc_check_eval {|
+      let should_err = bsc_check_eval {|
     external mk : int ->
   (
     [`a|`b]
      [@bs.string]
   ) = "mk" [@@bs.val]
     |} in
-    (* Ounit_cmd_util.debug_output should_err ;  *)
-    OUnit.assert_bool __LOC__
-    (Ext_string.contain_substring should_err.stderr
-    "Unused")
-  end;
-  __LOC__ >:: begin fun _ ->
-    let should_err = bsc_check_eval {|
+      (* Ounit_cmd_util.debug_output should_err ;  *)
+      OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring should_err.stderr
+           "Unused")
+    end;
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
     type -'a t = {k : 'a } [@@bs.deriving abstract]
     |} in
-    OUnit.assert_bool __LOC__
-    (Ext_string.contain_substring should_err.stderr "contravariant")
-  end;
-  __LOC__ >:: begin fun _ ->
-    let should_err = bsc_check_eval {|
+      OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring should_err.stderr "contravariant")
+    end;
+    __LOC__ >:: begin fun _ ->
+      let should_err = bsc_check_eval {|
     let u = [||]
     |} in
-    OUnit.assert_bool __LOC__
-    (Ext_string.contain_substring should_err.stderr "cannot be generalized")
-  end
+      OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring should_err.stderr "cannot be generalized")
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let should_err = bsc_check_eval {|  
+external push : 'a array -> 'a -> unit = "push" [@@send]
+let a = [||]
+let () = 
+  push a 3 |. ignore ; 
+  push a "3" |. ignore  
+  |} in
+      OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring should_err.stderr "has type string")
+    end
     (* __LOC__ >:: begin fun _ ->  *)
     (*   let should_infer = perform_bsc [| "-i"; "-bs-eval"|] {| *)
-    (*      let  f = fun [@bs] x -> let (a,b) = x in a + b  *)
-    (* |}  in  *)
+         (*      let  f = fun [@bs] x -> let (a,b) = x in a + b  *)
+         (* |}  in  *)
     (*   let infer_type  = bsc_eval (Printf.sprintf {| *)
 
-    (*      let f : %s  = fun [@bs] x -> let (a,b) = x in a + b  *)
-    (*  |} should_infer.stdout ) in  *)
+         (*      let f : %s  = fun [@bs] x -> let (a,b) = x in a + b  *)
+         (*  |} should_infer.stdout ) in  *)
     (*  begin  *)
     (*    Ounit_cmd_util.debug_output should_infer ; *)
     (*    Ounit_cmd_util.debug_output infer_type ; *)
