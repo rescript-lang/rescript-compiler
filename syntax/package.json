@@ -2,9 +2,7 @@
   "name": "rescript-syntax",
   "version": "0.0.1",
   "description": "Source of truth for the ReScript parser & printer",
-  "dependencies": {},
   "devDependencies": {
-    "jest": "^24.9.0",
     "reanalyze": "^2.15.0"
   },
   "private": true,

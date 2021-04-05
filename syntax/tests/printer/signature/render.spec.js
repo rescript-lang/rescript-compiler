@@ -1,1 +1,0 @@
-runPrinter(__dirname)

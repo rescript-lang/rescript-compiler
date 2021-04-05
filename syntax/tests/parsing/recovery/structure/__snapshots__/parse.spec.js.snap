@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`external.res 1`] = `"external foo : t = \\"foo\\" \\"bar\\" \\"baz\\""`;
-
-exports[`letBinding.res 1`] = `"let x = doStuff y"`;

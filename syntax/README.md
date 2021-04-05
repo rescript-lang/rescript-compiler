@@ -55,10 +55,7 @@ Run the extended tests:
 make roundtrip-test
 ```
 
-Update jest snapshots:
-```sh
-./node_modules/.bin/jest -u
-```
+Those will tell you whether you've got a test output difference. If it's intentional, check them in.
 
 Debug a file:
 ```sh

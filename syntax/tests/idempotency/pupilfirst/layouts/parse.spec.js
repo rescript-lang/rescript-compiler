@@ -1,1 +1,0 @@
-idemPotency(__dirname);
