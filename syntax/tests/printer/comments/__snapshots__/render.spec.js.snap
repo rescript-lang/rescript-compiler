@@ -1757,8 +1757,8 @@ type color =
   | /* before Blue */ Blue /* after Blue */: /* before gadt */ color /* after gadt */
 
 type color =
-  /* before constr */ | Rgb(
-      /* after constructor */ /* before red */ red,
+  /* before constr */ | Rgb /* after constructor */(
+      /* before red */ red,
       green,
       blue,
     )

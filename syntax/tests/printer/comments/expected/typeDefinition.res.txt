@@ -37,7 +37,7 @@ type color =
   | /* before Red */ Red /* after Red */: /* before gadt */ color /* after gadt */
   | /* before Blue */ Blue /* after Blue */: /* before gadt */ color /* after gadt */
 
-type color = /* before constr */ Rgb(/* after constructor */ /* before red */ red, green, blue)
+type color = /* before constr */ Rgb /* after constructor */(/* before red */ red, green, blue)
 
 type color =
   | /* before constr */ Rgb /* after constructor */(

@@ -4662,7 +4662,7 @@ and parseTypeEquationOrConstrDecl p =
       | _ -> (Some typ, Asttypes.Public, Parsetree.Ptype_abstract)
       end
     | _ ->
-      let uidentEndPos = p.endPos in
+      let uidentEndPos = p.prevEndPos in
       let (args, res) = parseConstrDeclArgs p in
       let first = Some (
         let uidentLoc = mkLoc uidentStartPos uidentEndPos in
