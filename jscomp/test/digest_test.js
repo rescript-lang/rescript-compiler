@@ -2,9 +2,7 @@
 
 var Mt = require("./mt.js");
 var $$Array = require("../../lib/js/array.js");
-var Curry = require("../../lib/js/curry.js");
 var Digest = require("../../lib/js/digest.js");
-var Printf = require("../../lib/js/printf.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Ext_array_test = require("./ext_array_test.js");
@@ -220,16 +218,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
           }
         }, $$Array.to_list($$Array.map((function (i) {
                     return [
-                            Curry._1(Printf.sprintf(/* Format */{
-                                      _0: {
-                                        TAG: /* Int */4,
-                                        _0: /* Int_d */0,
-                                        _1: /* No_padding */0,
-                                        _2: /* No_precision */0,
-                                        _3: /* End_of_format */0
-                                      },
-                                      _1: "%d"
-                                    }), i),
+                            String(i),
                             (function (param) {
                                 return {
                                         TAG: /* Eq */0,

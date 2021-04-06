@@ -37,7 +37,7 @@ let results =
 
 let from_pairs ps = 
   ps 
-  |> Array.mapi (fun i (a,b) -> Printf.sprintf "pair %d" i , (fun _ -> Mt.Approx(a,b)))
+  |> Array.mapi (fun i (a,b) -> {j|pair $(i)|j}  , (fun _ -> Mt.Approx(a,b)))
   |> Array.to_list
 
 ;;

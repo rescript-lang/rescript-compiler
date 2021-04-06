@@ -10,7 +10,6 @@ var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
-var CamlinternalFormatBasics = require("../../lib/js/camlinternalFormatBasics.js");
 
 function failwith(s) {
   throw {
@@ -503,17 +502,6 @@ function read_float(param) {
 
 var LargeFile = {};
 
-function string_of_format(param) {
-  return param._1;
-}
-
-function $caret$caret(param, param$1) {
-  return /* Format */{
-          _0: CamlinternalFormatBasics.concat_fmt(param._0, param$1._0),
-          _1: $caret(param._1, $caret("%,", param$1._1))
-        };
-}
-
 var exit_function = {
   contents: flush_all
 };
@@ -604,8 +592,6 @@ exports.read_line = read_line;
 exports.read_int = read_int;
 exports.read_float = read_float;
 exports.LargeFile = LargeFile;
-exports.string_of_format = string_of_format;
-exports.$caret$caret = $caret$caret;
 exports.exit_function = exit_function;
 exports.at_exit = at_exit;
 exports.do_at_exit = do_at_exit;

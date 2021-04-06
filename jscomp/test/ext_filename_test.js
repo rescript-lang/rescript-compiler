@@ -4,7 +4,6 @@ var Sys = require("../../lib/js/sys.js");
 var List = require("../../lib/js/list.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
-var Format = require("../../lib/js/format.js");
 var $$String = require("../../lib/js/string.js");
 var Caml_sys = require("../../lib/js/caml_sys.js");
 var Filename = require("../../lib/js/filename.js");
@@ -14,7 +13,6 @@ var Test_literals = require("./test_literals.js");
 var Ext_string_test = require("./ext_string_test.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
-var Ext_pervasives_test = require("./ext_pervasives_test.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 
 var node_sep = "/";
@@ -70,30 +68,12 @@ function chop_extension(locOpt, name) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Invalid_argument") {
-      return Curry._2(Format.ksprintf(Pervasives.invalid_arg, /* Format */{
-                      _0: {
-                        TAG: /* String_literal */11,
-                        _0: "Filename.chop_extension ( ",
-                        _1: {
-                          TAG: /* String */2,
-                          _0: /* No_padding */0,
-                          _1: {
-                            TAG: /* String_literal */11,
-                            _0: " : ",
-                            _1: {
-                              TAG: /* String */2,
-                              _0: /* No_padding */0,
-                              _1: {
-                                TAG: /* String_literal */11,
-                                _0: " )",
-                                _1: /* End_of_format */0
-                              }
-                            }
-                          }
-                        }
-                      },
-                      _1: "Filename.chop_extension ( %s : %s )"
-                    }), loc, name);
+      var s = "Filename.chop_extension ( " + loc + " : " + name + " )";
+      throw {
+            RE_EXN_ID: "Invalid_argument",
+            _1: s,
+            Error: new Error()
+          };
     }
     throw exn;
   }
@@ -167,18 +147,12 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
     while(true) {
       var i = _i;
       if (i >= len) {
-        return Curry._1(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 162, characters 43-50", /* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "invalid path: ",
-                          _1: {
-                            TAG: /* String */2,
-                            _0: /* No_padding */0,
-                            _1: /* End_of_format */0
-                          }
-                        },
-                        _1: "invalid path: %s"
-                      }), file2);
+        var s = "invalid path: " + file2;
+        throw {
+              RE_EXN_ID: "Failure",
+              _1: s,
+              Error: new Error()
+            };
       }
       var curr_char = file2.charCodeAt(i);
       if (!(curr_char === os_path_separator_char || curr_char === /* '.' */46)) {
@@ -198,26 +172,16 @@ function find_root_filename(_cwd, filename) {
       return cwd;
     }
     var cwd$p = Curry._1(Filename.dirname, cwd);
-    if (cwd$p.length >= cwd.length) {
-      return Curry._2(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 205, characters 13-20", /* Format */{
-                      _0: {
-                        TAG: /* String */2,
-                        _0: /* No_padding */0,
-                        _1: {
-                          TAG: /* String_literal */11,
-                          _0: " not found from ",
-                          _1: {
-                            TAG: /* String */2,
-                            _0: /* No_padding */0,
-                            _1: /* End_of_format */0
-                          }
-                        }
-                      },
-                      _1: "%s not found from %s"
-                    }), filename, cwd);
+    if (cwd$p.length < cwd.length) {
+      _cwd = cwd$p;
+      continue ;
     }
-    _cwd = cwd$p;
-    continue ;
+    var s = "" + filename + " not found from " + cwd;
+    throw {
+          RE_EXN_ID: "Failure",
+          _1: s,
+          Error: new Error()
+        };
   };
 }
 

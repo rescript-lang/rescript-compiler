@@ -2007,7 +2007,7 @@ let load _ =
   let canvas_id = "canvas" in
   let canvas = match Dom_html.getElementById Dom_html.document canvas_id with
     | None ->
-      Printf.printf "cant find canvas %s \n" canvas_id;
+      Js.log {j|cant find canvas $(canvas_id) |j} ;
       failwith "fail"
     | Some el -> Dom_html.elementToCanvasElement el
   in

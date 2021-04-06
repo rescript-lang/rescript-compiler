@@ -80,7 +80,7 @@ let f x = Digest.to_hex @@ Digest.string x
      Ext_array_test.range 0 129
      |> 
      Array.map (fun i -> 
-         Printf.sprintf "%d" i, (fun _ -> 
+         Belt.Int.toString i, (fun _ -> 
              Mt.Eq ((Digest.to_hex @@ Digest.string @@ String.make i 'a'), ref.(i)))
        )
      |> Array.to_list )

@@ -31,13 +31,13 @@ let suites = ref (Mt.[
   __LOC__, (fun _ -> Eq (0xffff_ffffl *~ 0xffff_ffffl, 1l));
   __LOC__, (fun _ -> Eq (0xffff_ffffl *~ 0x7fff_ffffl, -2147483647l))
 ] @ ((let (a,b) = shift_right_logical_tests in    
-                                   Ext_array_test.map2i (fun i a b -> Format.asprintf "shift_right_logical_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
+                                   Ext_array_test.map2i (fun i a b ->  {j|shift_right_logical_cases $(i)|j} , (fun _ -> Mt.Eq(a,b)) ) a b
                                    |>  Array.to_list))
   @ ((let (a,b) = shift_right_tests in    
-                                   Ext_array_test.map2i (fun i a b -> Format.asprintf "shift_right_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
+                                   Ext_array_test.map2i (fun i a b ->  {j|shift_right_cases $(i)|j} , (fun _ -> Mt.Eq(a,b)) ) a b
                                    |>  Array.to_list))
   @ ((let (a,b) = shift_left_tests in    
-                                   Ext_array_test.map2i (fun i a b -> Format.asprintf "shift_left_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
+                                   Ext_array_test.map2i (fun i a b ->  {j|shift_left_cases $(i)|j}, (fun _ -> Mt.Eq(a,b)) ) a b
                                    |>  Array.to_list)))
 
 let test_id = ref 0

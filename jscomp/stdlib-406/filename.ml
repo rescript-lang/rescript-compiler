@@ -232,7 +232,7 @@ let prng = lazy(Random.State.make_self_init ())
 
 let temp_file_name temp_dir prefix suffix =
   let rnd = (Random.State.bits (Lazy.force prng)) land 0xFFFFFF in
-  concat temp_dir (Printf.sprintf "%s%06x%s" prefix rnd suffix)
+  concat temp_dir {j|$(prefix)$(rnd)$(suffix)|j} 
 
 
 let current_temp_dir_name = ref temp_dir_name

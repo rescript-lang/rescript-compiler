@@ -2,7 +2,6 @@
 
 var $$Array = require("../../lib/js/array.js");
 var Curry = require("../../lib/js/curry.js");
-var Format = require("../../lib/js/format.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
@@ -222,22 +221,6 @@ function pop_back(param) {
       };
 }
 
-function pp(fmt, s) {
-  var v = "[ ";
-  for(var i = 0 ,i_finish = length(s); i < i_finish; ++i){
-    v = v + (", " + String(get(s, i)));
-  }
-  v = v + "]";
-  return Curry._1(Format.fprintf(fmt, /* Format */{
-                  _0: {
-                    TAG: /* String */2,
-                    _0: /* No_padding */0,
-                    _1: /* End_of_format */0
-                  },
-                  _1: "%s"
-                }), v);
-}
-
 function filter_from(i, p, s) {
   var u = empty;
   for(var i$1 = i ,i_finish = length(s); i$1 < i_finish; ++i$1){
@@ -294,7 +277,6 @@ var Int_array = {
   pop_front: pop_front,
   push_back: push_back,
   pop_back: pop_back,
-  pp: pp,
   append: append,
   sort: sort,
   of_array: of_array,
@@ -328,7 +310,7 @@ if (!Caml_obj.caml_equal(x, of_array([
         RE_EXN_ID: "Assert_failure",
         _1: [
           "flexible_array_test.ml",
-          166,
+          157,
           4
         ],
         Error: new Error()
