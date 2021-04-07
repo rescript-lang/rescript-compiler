@@ -97,7 +97,7 @@ class type date =
     method toISOString : unit -> string
     method toJSON__ : unit -> string
     method toJSON__1 : 'a -> string
-  end[@bs]
+  end
 
 type t = date 
 

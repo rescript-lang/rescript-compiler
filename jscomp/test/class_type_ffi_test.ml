@@ -5,10 +5,13 @@ class type ['k,'v] arrayLike =
     method caseSet : 'k * 'v -> unit 
     method case__unsafe : 'k -> 'v 
     method length : int 
-  end[@bs]
+  end
 
 class type floatArray = [int, float] arrayLike
 (** here we can see [@bs] is really attached to `object end` instead of `class type` *)
+
+
+
 class type intArray = [int, int] arrayLike
 
 
@@ -68,7 +71,7 @@ let mk_f () =
 
 (* Test [fn_method] *)
 let omk_f ()= 
-  object
+  object[@bs]  
    method huge_methdo a0  a1  a2  a3  a4  a5  a6  a7  a8  a9  a10  a11 a12 =
   a0  a1  a2  a3  a4  a5  a6  a7  a8  a9  a10  a11 a12
-end [@bs]  
+end 

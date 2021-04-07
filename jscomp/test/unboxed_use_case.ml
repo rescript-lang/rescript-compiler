@@ -66,7 +66,7 @@ module rec R:
 
 module rec R1 : sig 
    class type ['a] container =
-   object [@bs]
+   object 
      method map : 'b. ('a -> 'b) -> 'b R1.container_aux 
    end 
  type 'a container_aux = 

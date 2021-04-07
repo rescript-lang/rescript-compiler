@@ -171,26 +171,29 @@ let typ_mapper (self : mapper) (typ : Parsetree.core_type) =
   Ast_core_type_class_type.typ_mapper self typ
 
 let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Parsetree.class_type) = 
-  match Ast_attributes.process_bs pcty_attributes with
-  | false,  _ ->
-    default_mapper.class_type self ctd
-  | true, pcty_attributes ->
-    (match ctd.pcty_desc with
-     | Pcty_signature ({pcsig_self; pcsig_fields })
-       ->
-       let pcsig_self = self.typ self pcsig_self in
-       {ctd with
-        pcty_desc = Pcty_signature {
-            pcsig_self ;
-            pcsig_fields = Ast_core_type_class_type.handle_class_type_fields self pcsig_fields
-          };
-        pcty_attributes
-       }               
-     | Pcty_open _ (* let open M in CT *)
-     | Pcty_constr _
-     | Pcty_extension _
-     | Pcty_arrow _ ->
-       Location.raise_errorf ~loc:pcty_loc "invalid or unused attribute `bs`")
+  let pcty_attributes = 
+    match Ast_attributes.process_bs pcty_attributes with
+    | false,  _ ->
+      pcty_attributes
+    | true, pcty_attributes -> 
+      Location.prerr_warning pcty_loc (Bs_ffi_warning "Here @bs attribute is not needed any more.");
+      pcty_attributes in 
+  (match ctd.pcty_desc with
+   | Pcty_signature ({pcsig_self; pcsig_fields })
+     ->
+     let pcsig_self = self.typ self pcsig_self in
+     {ctd with
+      pcty_desc = Pcty_signature {
+          pcsig_self ;
+          pcsig_fields = Ast_core_type_class_type.handle_class_type_fields self pcsig_fields
+        };
+      pcty_attributes
+     }               
+   | Pcty_open _ (* let open M in CT *)
+   | Pcty_constr _
+   | Pcty_extension _
+   | Pcty_arrow _ ->
+     default_mapper.class_type self ctd)
 (* {[class x : int -> object
      end [@bs]
    ]}
