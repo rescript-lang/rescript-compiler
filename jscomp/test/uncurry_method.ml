@@ -16,7 +16,7 @@ let h = obj##hi
 
 let x h = h##raw ~x:0 ~y:0
 
-class type pro = object [@bs]
+class type pro = object 
   method exit : code:int -> unit
 end
 

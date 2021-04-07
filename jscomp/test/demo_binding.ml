@@ -2,28 +2,28 @@
 class type titlex = 
   object 
     method title : string [@@bs.set] [@@bs.get {null ; undefined}]
-  end[@bs]
+  end
 
 class type widget = 
   object 
       method on : string ->  (event -> unit [@bs]) -> unit 
-  end[@bs]
+  end
 and  event = 
   object 
     method source : widget
     method target : widget
-  end[@bs]
+  end
 
 
 class type title = 
   object 
     method title : string [@@bs.set]
-  end[@bs]
+  end
 
 class type text = 
   object
     method text : string [@@set]
-  end[@bs]
+  end
 
 class type measure =
     object
@@ -31,22 +31,22 @@ class type measure =
       method minWidth : int [@@bs.set]
       method maxHeight : int  [@@bs.set]
       method maxWidth : int [@@bs.set]
-    end[@bs]
+    end
 
 class type layout = 
     object 
       method orientation : string [@@bs.set]
-    end[@bs]
+    end
 
 class type applicationContext = 
   object 
     method exit : int -> unit 
-  end[@bs]
+  end
 class type contentable = 
   object
     method content : #widget  [@@bs.set]
     method contentWidth : int  [@@bs.set]
-  end[@bs]
+  end
 
 class type hostedWindow =
   object
@@ -57,13 +57,13 @@ class type hostedWindow =
     method hide : unit -> unit 
     method focus : unit -> unit 
     method appContext : applicationContext [@@bs.set]
-  end[@bs]
+  end
 
 class type hostedContent =
   object 
     inherit widget
     inherit contentable
-  end[@bs]
+  end
 
 
 class type stackPanel = 
@@ -74,7 +74,7 @@ class type stackPanel =
 
     method addChild : #widget  -> unit 
 
-  end[@bs]
+  end
 
 class type grid  = 
   object
@@ -85,7 +85,7 @@ class type grid  =
        <label : <text : string; .. >    ; ..>    array [@@bs.set]
     method dataSource :
        <label : <text : string; .. >   ; ..>    array array [@@bs.set]
-  end[@bs]
+  end
 
 
 class type button = 
@@ -93,14 +93,14 @@ class type button =
     inherit widget
     inherit text
     inherit measure
-  end[@bs]
+  end
 
 class type textArea = 
   object
     inherit widget
     inherit measure
     inherit text 
-  end[@bs]
+  end
 
 
 external set_interval : (unit -> unit [@bs]) -> float -> unit  =  "setInterval"

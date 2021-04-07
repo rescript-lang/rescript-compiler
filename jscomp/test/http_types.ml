@@ -19,17 +19,17 @@ class type _resp =
     method statusCode : int [@@bs.set]
     method setHeader : string -> string -> unit
     method _end : string -> unit 
-  end[@bs]
+  end
 type resp = _resp  
 class type _server = 
   object 
     method listen : int ->  string -> (unit -> unit [@bs]) -> unit
-  end[@bs]
+  end
 type server = _server  
 class type _http = 
   object 
     method createServer : (req  -> resp  -> unit [@bs]) ->  server
-  end[@bs]
+  end
 type http = _http 
 
 

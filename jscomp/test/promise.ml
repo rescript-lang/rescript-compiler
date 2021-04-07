@@ -7,7 +7,7 @@ let f p =
   catch p 3
 
 class type ['b] promise =
-  object [@bs]
+  object 
     method _then : 'a -> 'b promise 
     method catch : 'a -> 'b
   end 

@@ -24,12 +24,12 @@ let js_obj : 'self =
 
       }
   ]
-class type _x = object [@bs]
-  method onload : _x  -> unit [@this] [@@bs.set]
-  method addEventListener : string -> (_x  -> unit [@bs.this]) -> unit 
+class type x = object 
+  method onload : x  -> unit [@this] [@@bs.set]
+  method addEventListener : string -> (x  -> unit [@bs.this]) -> unit 
   method response : string
 end
-type x = _x  
+
 
 let f (x : x ) = 
   begin 

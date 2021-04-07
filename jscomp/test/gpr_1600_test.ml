@@ -9,25 +9,25 @@ let obj : < hi : (int * int -> unit [@bs.meth]) >   = object
 end [@bs]
 (** expect *)
 
-class type _a = object
+class type a = object
   method empty : unit -> unit
   method currentEvents : unit -> (string * string) array
   method push : string * string -> unit 
   method needRebuild : unit -> bool 
-end [@bs]
+end 
 
-type a = _a  
+
 
 let eventObj : < currentEvents : (unit -> (string * string) array [@bs.meth]);
     empty : (unit -> unit [@bs.meth]);
     needRebuild : (unit -> bool [@bs.meth]);
     push : (string * string -> unit [@bs.meth]) >
-   =  object (self)
+   =  object [@bs](self)
   val events : (string * string) array = [||]
   method empty () = ()
   method push a = Array.unsafe_set self##events 0 a 
   method needRebuild () = Array.length self##events <>  0
   method currentEvents () = self##events
-end [@bs]
+end 
  
 let f () = (eventObj : a)

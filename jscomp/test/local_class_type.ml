@@ -1,11 +1,11 @@
 
 
 
-class type _u = object
+class type u = object
   method height : int [@@bs.set]
-end[@bs]
+end
 
-type u = _u 
+
 
 let f (x : u) = 
   x##height #= 3

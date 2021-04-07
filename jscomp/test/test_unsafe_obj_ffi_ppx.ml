@@ -1,26 +1,26 @@
 
-class type _v = object 
-  method height : int [@@bs.set]
-  method width  : int [@@bs.set]
+class type v = object 
+  method height : int [@@set]
+  method width  : int [@@set]
 
-end[@bs]
-type v = _v  
-class type ['a] _g = object 
+end
+
+class type ['a] g = object 
   method method1 : int -> unit 
   method method2 : int -> int -> 'a
-end[@bs]
-type 'a g = 'a _g 
+end
+
 
 let  f x = 
-  x##length +. x##width
+  x#length +. x#width
 let i () =  ()
 
 let h x : unit = 
-  x ##height #= 3 ;
-  i @@ x ##width #= 3 
+  x #height #= 3 ;
+  i @@ x #width #= 3 
 
 let chain x = 
-  x##element##length + x##element##length
+  x#element#length + x#element#length
 
 
 (* current error message : 
@@ -30,8 +30,8 @@ let chain x =
 (*   x ## _set_height 3 3  *)
 
 let g x  = 
-  let () = x ## method1 3  in 
-  x ## method2 3  3 
+  let () = x##method1 3  in 
+  x##method2 3  3 
 
 
 
