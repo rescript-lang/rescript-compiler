@@ -6,7 +6,7 @@ let f : (int * int -> int [@bs]) = fun [@bs] x -> let a,b = x in a + b
 
 let obj : < hi : (int * int -> unit [@bs.meth]) >   = object
   method hi (x : int * int) =  Js.log x 
-end [@bs]
+end 
 (** expect *)
 
 class type a = object
@@ -22,7 +22,7 @@ let eventObj : < currentEvents : (unit -> (string * string) array [@bs.meth]);
     empty : (unit -> unit [@bs.meth]);
     needRebuild : (unit -> bool [@bs.meth]);
     push : (string * string -> unit [@bs.meth]) >
-   =  object [@bs](self)
+   =  object(self)
   val events : (string * string) array = [||]
   method empty () = ()
   method push a = Array.unsafe_set self##events 0 a 
