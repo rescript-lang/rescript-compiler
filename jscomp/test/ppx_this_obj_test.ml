@@ -11,7 +11,7 @@ let v  =
     method x () = x
     method say x = x *. self## x ()
     method hi x y = self##say x +. y                      
-  end [@bs]
+  end
 (** compile infer 
 class type js_obj =  object
   method x : unit -> float
@@ -27,7 +27,7 @@ let v2  =
     method hi x  = fun y -> self##say x +. y                            
     method say  = fun x ->  x *. self## x ()
     method x () = x
-  end [@bs]
+  end 
 
 
 let v3 =
@@ -38,14 +38,14 @@ let v3 =
       self##say u##x +. y +.x                            
     method say  = fun x ->  x *. self## x ()
     method x () = x
-  end [@bs]
+  end 
 
 let v4 =
   object
     method hi x y = x +. y
     method say x = x
     method x () = 1.      
-  end [@bs]
+  end 
 
 (* let v5 =  *)
 (*   object *)

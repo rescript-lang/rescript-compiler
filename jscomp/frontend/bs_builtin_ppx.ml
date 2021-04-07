@@ -115,17 +115,20 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
   | Pexp_apply (fn, args  ) ->
     Ast_exp_apply.app_exp_mapper e self fn args
   | Pexp_object {pcstr_self;  pcstr_fields} ->
-    (match Ast_attributes.process_bs e.pexp_attributes with
-     | true, pexp_attributes
-       ->
-       {e with
-        pexp_desc =
-          Ast_util.ocaml_obj_as_js_object
-            e.pexp_loc self pcstr_self pcstr_fields;
-        pexp_attributes
-       }
-     | false , _ ->
-       default_expr_mapper self e)
+    let pexp_attributes = 
+      match Ast_attributes.process_bs e.pexp_attributes with
+      | true, pexp_attributes
+        -> 
+        Location.prerr_warning e.pexp_loc (Bs_ffi_warning "Here @bs attribute not needed any more");
+        pexp_attributes 
+      | false, e -> e in    
+    {e with
+     pexp_desc =
+       Ast_util.ocaml_obj_as_js_object
+         e.pexp_loc self pcstr_self pcstr_fields;
+     pexp_attributes
+    }
+
   | Pexp_match(b,
                [
                  {pc_lhs= {ppat_desc = Ppat_construct ({txt = Lident "true"},None)};pc_guard=None;pc_rhs=t_exp};

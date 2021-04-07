@@ -37,7 +37,7 @@ let same_type =
    [string_config ; [%obj{hi = 3 ; low = "32"}]]
   )
 
-let v_obj = object method hi__x () = Js.log "hei" end [@bs]
+let v_obj = object method hi__x () = Js.log "hei" end
 
 
 let () =

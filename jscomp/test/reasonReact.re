@@ -190,7 +190,6 @@ let convertPropsIfTheyreFromJs = (props, jsPropsToReason, debugName) => {
 let createClass =
     (type reasonState, type retainedProps, type action, debugName): reactClass =>
   ReasonReactOptimizedCreateClass.createClass(.
-    [@bs]
     {
       /***
        * TODO: Null out fields that aren't overridden beyond defaults in
