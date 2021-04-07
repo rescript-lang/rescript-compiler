@@ -81,8 +81,8 @@ let absolute_path s =
 let chop_extension ?(loc="") name =
   try Filename.chop_extension name 
   with Invalid_argument _ -> 
-    Ext_pervasives_test.invalid_argf 
-      "Filename.chop_extension ( %s : %s )"  loc name
+    invalid_arg
+      {j|Filename.chop_extension ( $(loc) : $(name) )|j}
 
 let chop_extension_if_any fname =
   try Filename.chop_extension fname with Invalid_argument _ -> fname
@@ -159,7 +159,7 @@ let node_relative_path node_modules_shorten (file1 : t)
     
     let rec skip  i =       
       if i >= len then
-        Ext_pervasives_test.failwithf ~loc:__LOC__ "invalid path: %s"  file2
+        failwith  {j|invalid path: $(file2)|j}  
       else 
         (* https://en.wikipedia.org/wiki/Path_(computing))
            most path separator are a single char 
@@ -201,9 +201,8 @@ let rec find_root_filename ~cwd filename   =
     if String.length cwd' < String.length cwd then  
       find_root_filename ~cwd:cwd'  filename 
     else 
-      Ext_pervasives_test.failwithf 
-        ~loc:__LOC__
-        "%s not found from %s" filename cwd
+      failwith        
+        {j|$(filename) not found from $(cwd)|j}
 
 
 let find_package_json_dir cwd  = 

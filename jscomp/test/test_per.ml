@@ -452,26 +452,8 @@ module LargeFile =
 
 (* Formats *)
 
-type ('a, 'b, 'c, 'd, 'e, 'f) format6
-   = ('a, 'b, 'c, 'd, 'e, 'f) CamlinternalFormatBasics.format6
-   = Format of ('a, 'b, 'c, 'd, 'e, 'f) CamlinternalFormatBasics.fmt
-               * string
 
-type ('a, 'b, 'c, 'd) format4 = ('a, 'b, 'c, 'c, 'c, 'd) format6
 
-type ('a, 'b, 'c) format = ('a, 'b, 'c, 'c) format4
-
-let string_of_format (Format (fmt, str)) = str
-
-external format_of_string :
- ('a, 'b, 'c, 'd, 'e, 'f) format6 ->
- ('a, 'b, 'c, 'd, 'e, 'f) format6 = "%identity"
-
-let (^^) (Format (fmt1, str1)) (Format (fmt2, str2)) =
-  Format (CamlinternalFormatBasics.concat_fmt fmt1 fmt2,
-          str1 ^ "%," ^ str2)
-
-(* Miscellaneous *)
 
 external sys_exit : int -> 'a = "caml_sys_exit"
 

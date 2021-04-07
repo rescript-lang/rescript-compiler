@@ -74,7 +74,6 @@ module Int_array : sig
   val pop_front : t -> t 
   val push_back : t -> int  -> t 
   val pop_back : t -> t 
-  val pp : Format.formatter -> t -> unit 
   val append : t -> t -> t 
   val sort : t -> t 
   val of_array : int array -> t 
@@ -107,15 +106,7 @@ end = struct
   let pop_back (tree, k) =        
     if k > 0 then (delete tree k , k - 1 ) 
     else invalid_arg "Array.pop_back"
-  
-  
-  let pp fmt s = 
-    let v = ref "[ " in 
-    for i = 0 to length s - 1 do 
-      v := !v ^ ", " ^ string_of_int (get s i)
-    done ;
-    v := !v ^ "]";
-    Format.fprintf fmt "%s" !v 
+      
   
   let filter_from i p s = 
       let u = ref empty in 

@@ -4,11 +4,11 @@
 
 class type v = object 
   method hey : int -> int -> int 
-end [@bs]
+end
 
 class type v2 = object
   method hey : int ->  int -> int 
-end [@bs]
+end
 
 type vv = 
    < 

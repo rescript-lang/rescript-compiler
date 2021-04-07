@@ -2,9 +2,7 @@
 
 var Mt = require("./mt.js");
 var $$Array = require("../../lib/js/array.js");
-var Curry = require("../../lib/js/curry.js");
 var Int32 = require("../../lib/js/int32.js");
-var Format = require("../../lib/js/format.js");
 var Caml_float = require("../../lib/js/caml_float.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Ext_array_test = require("./ext_array_test.js");
@@ -180,20 +178,7 @@ var suites = {
         }
       }, Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
                       return [
-                              Curry._1(Format.asprintf(/* Format */{
-                                        _0: {
-                                          TAG: /* String_literal */11,
-                                          _0: "shift_right_logical_cases ",
-                                          _1: {
-                                            TAG: /* Int */4,
-                                            _0: /* Int_d */0,
-                                            _1: /* No_padding */0,
-                                            _2: /* No_precision */0,
-                                            _3: /* End_of_format */0
-                                          }
-                                        },
-                                        _1: "shift_right_logical_cases %d"
-                                      }), i),
+                              "shift_right_logical_cases " + i,
                               (function (param) {
                                   return {
                                           TAG: /* Eq */0,
@@ -204,20 +189,7 @@ var suites = {
                             ];
                     }), shift_right_logical_tests_0, shift_right_logical_tests_1)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
                           return [
-                                  Curry._1(Format.asprintf(/* Format */{
-                                            _0: {
-                                              TAG: /* String_literal */11,
-                                              _0: "shift_right_cases ",
-                                              _1: {
-                                                TAG: /* Int */4,
-                                                _0: /* Int_d */0,
-                                                _1: /* No_padding */0,
-                                                _2: /* No_precision */0,
-                                                _3: /* End_of_format */0
-                                              }
-                                            },
-                                            _1: "shift_right_cases %d"
-                                          }), i),
+                                  "shift_right_cases " + i,
                                   (function (param) {
                                       return {
                                               TAG: /* Eq */0,
@@ -228,20 +200,7 @@ var suites = {
                                 ];
                         }), shift_right_tests_0, shift_right_tests_1)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
                           return [
-                                  Curry._1(Format.asprintf(/* Format */{
-                                            _0: {
-                                              TAG: /* String_literal */11,
-                                              _0: "shift_left_cases ",
-                                              _1: {
-                                                TAG: /* Int */4,
-                                                _0: /* Int_d */0,
-                                                _1: /* No_padding */0,
-                                                _2: /* No_precision */0,
-                                                _3: /* End_of_format */0
-                                              }
-                                            },
-                                            _1: "shift_left_cases %d"
-                                          }), i),
+                                  "shift_left_cases " + i,
                                   (function (param) {
                                       return {
                                               TAG: /* Eq */0,

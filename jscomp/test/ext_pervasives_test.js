@@ -1,8 +1,6 @@
 'use strict';
 
-var Arg = require("../../lib/js/arg.js");
 var Curry = require("../../lib/js/curry.js");
-var Format = require("../../lib/js/format.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
@@ -23,15 +21,6 @@ function $$finally(v, action, f) {
 
 function with_file_as_chan(filename, f) {
   return $$finally(Pervasives.open_out_bin(filename), Pervasives.close_out, f);
-}
-
-function with_file_as_pp(filename, f) {
-  return $$finally(Pervasives.open_out_bin(filename), Pervasives.close_out, (function (chan) {
-                var fmt = Format.formatter_of_out_channel(chan);
-                var v = Curry._1(f, fmt);
-                Format.pp_print_flush(fmt, undefined);
-                return v;
-              }));
 }
 
 function is_pos_pow(n) {
@@ -68,31 +57,6 @@ function is_pos_pow(n) {
   }
 }
 
-function failwithf(loc, fmt) {
-  return Format.ksprintf((function (s) {
-                var s$1 = loc + s;
-                throw {
-                      RE_EXN_ID: "Failure",
-                      _1: s$1,
-                      Error: new Error()
-                    };
-              }), fmt);
-}
-
-function invalid_argf(fmt) {
-  return Format.ksprintf(Pervasives.invalid_arg, fmt);
-}
-
-function bad_argf(fmt) {
-  return Format.ksprintf((function (x) {
-                throw {
-                      RE_EXN_ID: Arg.Bad,
-                      _1: x,
-                      Error: new Error()
-                    };
-              }), fmt);
-}
-
 function hash_variant(s) {
   var accu = 0;
   for(var i = 0 ,i_finish = s.length; i < i_finish; ++i){
@@ -108,10 +72,6 @@ function hash_variant(s) {
 
 exports.$$finally = $$finally;
 exports.with_file_as_chan = with_file_as_chan;
-exports.with_file_as_pp = with_file_as_pp;
 exports.is_pos_pow = is_pos_pow;
-exports.failwithf = failwithf;
-exports.invalid_argf = invalid_argf;
-exports.bad_argf = bad_argf;
 exports.hash_variant = hash_variant;
-/* Format Not a pure module */
+/* No side effect */

@@ -30,10 +30,10 @@ val to_file_seq : string -> t sequence -> unit
 
 val to_chan : out_channel -> t -> unit
 
-val print : Format.formatter -> t -> unit
+
 (** Pretty-printer nice on human eyes (including indentation) *)
 
-val print_noindent : Format.formatter -> t -> unit
+
 (** Raw, direct printing as compact as possible *)
 
 (** {2 Deserialization (decoding)} *)

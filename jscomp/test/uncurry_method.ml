@@ -1,5 +1,5 @@
 
-let obj = object [@bs]
+let obj = object 
   method hi  a b = a + b
   method say a b = a - b
   method xx a b = a - b
@@ -16,7 +16,7 @@ let h = obj##hi
 
 let x h = h##raw ~x:0 ~y:0
 
-class type pro = object [@bs]
+class type pro = object 
   method exit : code:int -> unit
 end
 
@@ -38,7 +38,7 @@ let f1 (u : pro ) = u##exit ~code:2
       ~hi:(
                  (fun [@bs.this] _ -> fun ~name -> fun ~age -> Js.log name)
              ) *)
-let obj3 = object [@bs](self)
+let obj3 = object (self)
   method hi ~(name : string) ~(age : int) = name |. Js.log
   method hh () =  self##hi ~name:"x" ~age:20
 end 
@@ -55,7 +55,7 @@ let obj2 : <
   hi : add_meth;
   say : add_meth;
   xx : add_meth
->  = object [@bs] (self : 'a)
+>  = object (self : 'a)
   method hi  a b = a + b
   method say a b = self##hi a  b - 1
   method xx a b = a - b

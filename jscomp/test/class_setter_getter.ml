@@ -1,29 +1,29 @@
 
 
 
-class type _y = object 
+class type y = object 
   method height : int [@@bs.set {no_get}]
-end [@bs]
-type y = _y  
-class type _y0 = object 
+end 
+
+class type y0 = object 
   method height : int [@@bs.set] [@@bs.get {null}]
-end [@bs]
-type y0 = _y0  
+end 
 
-class type _y1 = object 
+
+class type y1 = object 
   method height : int [@@bs.set] [@@bs.get {undefined}]
-end[@bs]
-type y1 = _y1  
+end
 
-class type _y2 = object 
+
+class type y2 = object 
   method height : int [@@bs.set] [@@bs.get {undefined; null}]
-end [@bs]
-type y2 = _y2  
+end 
 
-class type _y3 = object 
+
+class type y3 = object 
   method height : int  [@@bs.get {undefined ; null}]
-end[@bs]
-type y3 = _y3 
+end
+
 
 
 type yy2 = < height : int [@bs.get{undefined ; null}] [@bs.set] > 

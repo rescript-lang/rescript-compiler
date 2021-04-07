@@ -3,7 +3,7 @@
 class type ['a] case = object 
   method case : int -> 'a 
   method case__set : int -> 'a -> unit 
-end[@bs]
+end
 
 
 

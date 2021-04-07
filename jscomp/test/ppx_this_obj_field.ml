@@ -20,7 +20,7 @@ let v5  =
     method private bark () = 
       Js.log "bark"
     method xz () =  3
-  end [@bs]
+  end
 
 let v = 
   object(self)
@@ -44,7 +44,7 @@ let v =
     *)
     method getY () = self##y
     method say () = self##x + self##y
-  end[@bs]
+  end
      
 
 let u = 
@@ -52,7 +52,7 @@ let u =
     method incr () = Js.log "hey"
     method getY () = 3 
     method say () = 7 
-  end [@bs]
+  end 
 
 let test_type = [u ; v]
 
@@ -61,7 +61,7 @@ let z : < getX : (unit -> int [@bs.meth]); setX : (int -> unit [@bs.meth]) >   =
     val x = ref 3 
     method setX x = self##x := x
     method getX () =  ! (self##x)
-  end [@bs]
+  end 
 
 let eventObj  : <
   empty : (unit -> unit [@bs.meth]);
@@ -76,7 +76,7 @@ let eventObj  : <
     method push a = (Js.Vector.pushBack a (self##events) : unit )
     method needRebuild () = Array.length self##events <> 0
     (* method currentEvents () = self##events *)
-  end [@bs]
+  end
 
 let test__ x = eventObj##push   x 
 let zz : < getX : (unit -> int [@bs.meth]); setX : (int -> unit [@bs.meth]) > =
@@ -84,7 +84,7 @@ let zz : < getX : (unit -> int [@bs.meth]); setX : (int -> unit [@bs.meth]) > =
     val mutable x =  3 
     method setX x = self##x #= x
     method getX () =   (self##x)
-  end [@bs]
+  end 
 
 let test_type2 = [z;zz]
 

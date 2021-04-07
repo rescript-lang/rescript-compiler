@@ -2,8 +2,6 @@
 
 var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
-var Curry = require("../../lib/js/curry.js");
-var Printf = require("../../lib/js/printf.js");
 var Random = require("../../lib/js/random.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
@@ -3218,22 +3216,7 @@ function load(param) {
   if (el !== null) {
     canvas = el;
   } else {
-    Curry._1(Printf.printf(/* Format */{
-              _0: {
-                TAG: /* String_literal */11,
-                _0: "cant find canvas ",
-                _1: {
-                  TAG: /* String */2,
-                  _0: /* No_padding */0,
-                  _1: {
-                    TAG: /* String_literal */11,
-                    _0: " \n",
-                    _1: /* End_of_format */0
-                  }
-                }
-              },
-              _1: "cant find canvas %s \n"
-            }), canvas_id);
+    console.log("cant find canvas " + canvas_id + " ");
     throw {
           RE_EXN_ID: "Failure",
           _1: "fail",

@@ -3,8 +3,6 @@
 var Mt = require("./mt.js");
 var Caml = require("../../lib/js/caml.js");
 var $$Array = require("../../lib/js/array.js");
-var Curry = require("../../lib/js/curry.js");
-var Printf = require("../../lib/js/printf.js");
 var Mt_global = require("./mt_global.js");
 var Caml_float = require("../../lib/js/caml_float.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
@@ -126,20 +124,7 @@ function from_pairs(ps) {
                     var b = param[1];
                     var a = param[0];
                     return [
-                            Curry._1(Printf.sprintf(/* Format */{
-                                      _0: {
-                                        TAG: /* String_literal */11,
-                                        _0: "pair ",
-                                        _1: {
-                                          TAG: /* Int */4,
-                                          _0: /* Int_d */0,
-                                          _1: /* No_padding */0,
-                                          _2: /* No_precision */0,
-                                          _3: /* End_of_format */0
-                                        }
-                                      },
-                                      _1: "pair %d"
-                                    }), i),
+                            "pair " + i,
                             (function (param) {
                                 return {
                                         TAG: /* Approx */5,

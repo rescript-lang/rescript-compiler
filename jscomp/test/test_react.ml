@@ -6,7 +6,7 @@ type html_element
 class type document = 
   object
     method getElementById : string -> html_element 
-  end[@bs]
+  end
 
 type doc = document  
 external doc :  doc  = "doc" [@@bs.val ]
@@ -14,7 +14,7 @@ external doc :  doc  = "doc" [@@bs.val ]
 class type con = 
   object
     method log : 'a -> unit 
-  end[@bs]
+  end
 
 type console = con  
 external console : console  = "console" [@@bs.val ]

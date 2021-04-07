@@ -389,44 +389,7 @@ function patch(rel, loc, n) {
   var loc$p = get32(loc);
   var x = rel ? n - (loc + 4 | 0) | 0 : n;
   if (dbg.contents) {
-    Curry._3(Printf.eprintf(/* Format */{
-              _0: {
-                TAG: /* String_literal */11,
-                _0: "patching at ",
-                _1: {
-                  TAG: /* Int */4,
-                  _0: /* Int_d */0,
-                  _1: /* No_padding */0,
-                  _2: /* No_precision */0,
-                  _3: {
-                    TAG: /* String_literal */11,
-                    _0: " to ",
-                    _1: {
-                      TAG: /* Int */4,
-                      _0: /* Int_d */0,
-                      _1: /* No_padding */0,
-                      _2: /* No_precision */0,
-                      _3: {
-                        TAG: /* String_literal */11,
-                        _0: " (n=",
-                        _1: {
-                          TAG: /* Int */4,
-                          _0: /* Int_d */0,
-                          _1: /* No_padding */0,
-                          _2: /* No_precision */0,
-                          _3: {
-                            TAG: /* String_literal */11,
-                            _0: ")\n",
-                            _1: /* End_of_format */0
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              _1: "patching at %d to %d (n=%d)\n"
-            }), loc, x, n);
+    console.log("patching at " + loc + " to " + x + " (n=" + n + ")\n");
   }
   opos.contents = loc;
   le(32, x);

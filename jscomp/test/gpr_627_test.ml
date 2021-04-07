@@ -8,7 +8,7 @@ let eq loc (x, y) =
 
 let u = object
   method say x y = x + y
-end [@bs]
+end 
 
 let v =
   let x = 3. in
@@ -18,7 +18,7 @@ let v =
       self##say u##x +. y +.x                            
     method say  = fun x ->  x *. self## x ()
     method x () = x
-  end [@bs]
+  end 
 
 
 let () =

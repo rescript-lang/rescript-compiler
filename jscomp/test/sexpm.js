@@ -289,63 +289,6 @@ function print(fmt, t) {
   }
 }
 
-function print_noindent(fmt, t) {
-  if (t.NAME === "List") {
-    var l = t.VAL;
-    if (l) {
-      if (l.tl) {
-        Format.pp_print_char(fmt, /* '(' */40);
-        List.iteri((function (i, t$p) {
-                if (i > 0) {
-                  Format.pp_print_char(fmt, /* ' ' */32);
-                }
-                return print_noindent(fmt, t$p);
-              }), l);
-        return Format.pp_print_char(fmt, /* ')' */41);
-      } else {
-        return Curry._2(Format.fprintf(fmt, /* Format */{
-                        _0: {
-                          TAG: /* Char_literal */12,
-                          _0: /* '(' */40,
-                          _1: {
-                            TAG: /* Alpha */15,
-                            _0: {
-                              TAG: /* Char_literal */12,
-                              _0: /* ')' */41,
-                              _1: /* End_of_format */0
-                            }
-                          }
-                        },
-                        _1: "(%a)"
-                      }), print_noindent, l.hd);
-      }
-    } else {
-      return Format.pp_print_string(fmt, "()");
-    }
-  }
-  var s = t.VAL;
-  if (_must_escape(s)) {
-    return Curry._1(Format.fprintf(fmt, /* Format */{
-                    _0: {
-                      TAG: /* Char_literal */12,
-                      _0: /* '"' */34,
-                      _1: {
-                        TAG: /* String */2,
-                        _0: /* No_padding */0,
-                        _1: {
-                          TAG: /* Char_literal */12,
-                          _0: /* '"' */34,
-                          _1: /* End_of_format */0
-                        }
-                      }
-                    },
-                    _1: "\"%s\""
-                  }), $$String.escaped(s));
-  } else {
-    return Format.pp_print_string(fmt, s);
-  }
-}
-
 function to_chan(oc, t) {
   var fmt = Format.formatter_of_out_channel(oc);
   print(fmt, t);
@@ -1524,8 +1467,6 @@ exports.to_string = to_string;
 exports.to_file = to_file;
 exports.to_file_seq = to_file_seq;
 exports.to_chan = to_chan;
-exports.print = print;
-exports.print_noindent = print_noindent;
 exports.MakeDecode = MakeDecode;
 exports.ID_MONAD = ID_MONAD;
 exports.D = D;

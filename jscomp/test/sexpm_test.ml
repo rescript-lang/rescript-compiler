@@ -6,10 +6,10 @@ let eq loc (x, y) =
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
 
-let print_or_error fmt x  =
+let print_or_error x  =
   match x with
-  | `Ok  a -> Format.fprintf fmt "@[Ok:%a@]@." Sexpm.print a
-  | `Error a -> Format.fprintf fmt "@[Error:%s@]@." a
+  | `Ok  a ->  "Ok:" ^ Sexpm.to_string a
+  | `Error a -> "Error:" ^ a
 
 let () =
   begin
@@ -19,7 +19,7 @@ let () =
         `Ok (`List [`Atom "x"; `Atom "x"; `Atom "gh"; `Atom "3"; `Atom "3"]) ,
          a );
     eq __LOC__
-      (Js.String2.trim (Format.asprintf "%a" print_or_error a) , Js.String2.trim "Ok:(x x gh 3 3)\n")
+      (Js.String2.trim (print_or_error a) , Js.String2.trim "Ok:(x x gh 3 3)\n")
   end
 
 

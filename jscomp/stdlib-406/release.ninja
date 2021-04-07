@@ -46,7 +46,7 @@ o stdlib-406/complex.cmj : cc_cmi stdlib-406/complex.ml | stdlib-406/complex.cmi
 o stdlib-406/complex.cmi : cc stdlib-406/complex.mli | stdlib-406/pervasives.cmj others
 o stdlib-406/digest.cmj : cc_cmi stdlib-406/digest.ml | stdlib-406/bytes.cmj stdlib-406/char.cmj stdlib-406/digest.cmi stdlib-406/string.cmj others
 o stdlib-406/digest.cmi : cc stdlib-406/digest.mli | stdlib-406/pervasives.cmj others
-o stdlib-406/filename.cmj : cc_cmi stdlib-406/filename.ml | stdlib-406/buffer.cmj stdlib-406/filename.cmi stdlib-406/lazy.cmj stdlib-406/printf.cmj stdlib-406/random.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
+o stdlib-406/filename.cmj : cc_cmi stdlib-406/filename.ml | stdlib-406/buffer.cmj stdlib-406/filename.cmi stdlib-406/lazy.cmj stdlib-406/random.cmj stdlib-406/string.cmj stdlib-406/sys.cmj others
 o stdlib-406/filename.cmi : cc stdlib-406/filename.mli | stdlib-406/pervasives.cmj others
 o stdlib-406/format.cmj : cc_cmi stdlib-406/format.ml | stdlib-406/buffer.cmj stdlib-406/camlinternalFormat.cmj stdlib-406/camlinternalFormatBasics.cmj stdlib-406/format.cmi stdlib-406/list.cmj stdlib-406/pervasives.cmj stdlib-406/string.cmj others
 o stdlib-406/format.cmi : cc stdlib-406/format.mli | stdlib-406/buffer.cmi stdlib-406/pervasives.cmi stdlib-406/pervasives.cmj others
@@ -78,7 +78,7 @@ o stdlib-406/obj.cmj : cc_cmi stdlib-406/obj.ml | stdlib-406/obj.cmi others
 o stdlib-406/obj.cmi : cc stdlib-406/obj.mli | stdlib-406/pervasives.cmj others
 o stdlib-406/parsing.cmj : cc_cmi stdlib-406/parsing.ml | stdlib-406/array.cmj stdlib-406/lexing.cmj stdlib-406/obj.cmj stdlib-406/parsing.cmi others
 o stdlib-406/parsing.cmi : cc stdlib-406/parsing.mli | stdlib-406/lexing.cmi stdlib-406/obj.cmi stdlib-406/pervasives.cmj others
-o stdlib-406/printexc.cmj : cc_cmi stdlib-406/printexc.ml | stdlib-406/array.cmj stdlib-406/buffer.cmj stdlib-406/obj.cmj stdlib-406/pervasives.cmj stdlib-406/printexc.cmi stdlib-406/printf.cmj others
+o stdlib-406/printexc.cmj : cc_cmi stdlib-406/printexc.ml | stdlib-406/printexc.cmi others
 o stdlib-406/printexc.cmi : cc stdlib-406/printexc.mli | stdlib-406/pervasives.cmj others
 o stdlib-406/printf.cmj : cc_cmi stdlib-406/printf.ml | stdlib-406/buffer.cmj stdlib-406/camlinternalFormat.cmj stdlib-406/camlinternalFormatBasics.cmj stdlib-406/printf.cmi others
 o stdlib-406/printf.cmi : cc stdlib-406/printf.mli | stdlib-406/buffer.cmi stdlib-406/pervasives.cmj others

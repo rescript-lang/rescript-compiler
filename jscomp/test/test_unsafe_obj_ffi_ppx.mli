@@ -1,15 +1,16 @@
 
-class type _v = object 
-  method height : int  [@@bs.set]
-  method width  : int [@@bs.set]
-end[@bs]
-type v = _v  
 
-class type ['a] _g = object 
+class type v = object 
+  method height : int  [@@set]
+  method width  : int [@@set]
+end
+
+
+class type ['a] g = object 
   method method1 : int -> unit 
   method method2 : int -> int -> 'a
-end[@bs]
-type 'a g = 'a _g 
+end
+
 
 val f : < length : float; width : float; .. >  -> float
 

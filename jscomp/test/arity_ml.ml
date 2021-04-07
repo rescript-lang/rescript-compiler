@@ -1,5 +1,5 @@
 [@@@warning "A-61-42-40"]
-let o = object [@bs]
+let o = object
   method hi x y = x + y  
 end
 (* Error (warning 61): This primitive declaration uses type Js_OO.Callback.arity3, which is unannotated and

@@ -9,8 +9,8 @@ let int32_pairs =
 
 let from_pairs pair = 
   int32_pairs |> Array.mapi (fun i (i32, f) -> 
-      [ Printf.sprintf "int32_float_of_bits %d" i , (fun _ -> Mt.Eq (Int32.float_of_bits i32, f));
-          Printf.sprintf "int32_bits_of_float %d" i , (fun _ -> Mt.Eq (Int32.bits_of_float  f, i32));
+      [ {j|int32_float_of_bits $(i)|j}  , (fun _ -> Mt.Eq (Int32.float_of_bits i32, f));
+          {j|int32_bits_of_float $(i)|j}  , (fun _ -> Mt.Eq (Int32.bits_of_float  f, i32));
        ]
     ) |> Array.to_list |> List.concat
 let suites = Mt.[

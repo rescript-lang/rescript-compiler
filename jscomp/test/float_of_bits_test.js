@@ -3,8 +3,6 @@
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
-var Curry = require("../../lib/js/curry.js");
-var Printf = require("../../lib/js/printf.js");
 var Caml_float = require("../../lib/js/caml_float.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
@@ -31,20 +29,7 @@ function from_pairs(pair) {
                         var i32 = param[0];
                         return {
                                 hd: [
-                                  Curry._1(Printf.sprintf(/* Format */{
-                                            _0: {
-                                              TAG: /* String_literal */11,
-                                              _0: "int32_float_of_bits ",
-                                              _1: {
-                                                TAG: /* Int */4,
-                                                _0: /* Int_d */0,
-                                                _1: /* No_padding */0,
-                                                _2: /* No_precision */0,
-                                                _3: /* End_of_format */0
-                                              }
-                                            },
-                                            _1: "int32_float_of_bits %d"
-                                          }), i),
+                                  "int32_float_of_bits " + i,
                                   (function (param) {
                                       return {
                                               TAG: /* Eq */0,
@@ -55,20 +40,7 @@ function from_pairs(pair) {
                                 ],
                                 tl: {
                                   hd: [
-                                    Curry._1(Printf.sprintf(/* Format */{
-                                              _0: {
-                                                TAG: /* String_literal */11,
-                                                _0: "int32_bits_of_float ",
-                                                _1: {
-                                                  TAG: /* Int */4,
-                                                  _0: /* Int_d */0,
-                                                  _1: /* No_padding */0,
-                                                  _2: /* No_precision */0,
-                                                  _3: /* End_of_format */0
-                                                }
-                                              },
-                                              _1: "int32_bits_of_float %d"
-                                            }), i),
+                                    "int32_bits_of_float " + i,
                                     (function (param) {
                                         return {
                                                 TAG: /* Eq */0,

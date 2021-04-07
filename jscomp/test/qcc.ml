@@ -160,7 +160,7 @@ let rec patch rel loc n =
     let loc' = get32 loc in
     let x = if rel then n - (loc+4) else n in
     if !dbg then
-      Printf.eprintf "patching at %d to %d (n=%d)\n" loc x n;
+      Js.log {j|patching at $(loc) to $(x) (n=$(n))\n|j} ;
     opos := loc; le 32 x;
     patch rel loc' n;
     opos := i
