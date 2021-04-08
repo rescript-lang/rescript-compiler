@@ -85,4 +85,4 @@ reanalyze: build-native lib/test.exe
 
 clean:
 	git clean -dfx src benchmarks lib tests
-.PHONY: clean test roundtrip-test termination dce exception reanalyze bootstrap build-native
+.PHONY: clean test roundtrip-test reanalyze bootstrap build-native
