@@ -2138,7 +2138,7 @@ and printPattern (p : Parsetree.pattern) cmtTbl =
       ])
     )
   | Ppat_construct(constrName, constructorArgs) ->
-    let constrName = printLongident constrName.txt in
+    let constrName = printLongidentLocation constrName cmtTbl in
     let argsDoc = match constructorArgs with
     | None -> Doc.nil
     | Some({ppat_loc; ppat_desc = Ppat_construct ({txt = Longident.Lident "()"}, _)}) ->

@@ -1656,7 +1656,11 @@ and walkExprArgument (_argLabel, expr) t comments =
     | Ppat_construct (constr, Some pat) ->
       let (leading, trailing) = partitionLeadingTrailing comments constr.loc in
       attach t.leading constr.loc leading;
-      let (leading, inside, trailing) = partitionByLoc trailing pat.ppat_loc in
+      let (afterConstructor, rest) =
+        partitionAdjacentTrailing constr.loc trailing
+      in
+      attach t.trailing constr.loc afterConstructor;
+      let (leading, inside, trailing) = partitionByLoc rest pat.ppat_loc in
       attach t.leading pat.ppat_loc leading;
       walkPattern pat t inside;
       attach t.trailing pat.ppat_loc trailing
