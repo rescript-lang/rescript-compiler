@@ -388,3 +388,15 @@ React.useEffect4(
   },
   (context.library, context.account, context.chainId, dispatch),
 )
+
+@react.component
+let make = (~keycap) =>
+  <Kbd keycap="Ctrl" /> +
+  <Kbd keycap="Shift" /> +
+  <Kbd keycap />
+
+
+<Kbd keycap="Cmd" /> +
+<Kbd keycap="Option" /> +
+<Kbd keycap="Shift" /> +
+<Kbd keycap />

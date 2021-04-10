@@ -453,13 +453,13 @@ let shouldInlineRhsBinaryExpr rhs = match rhs.pexp_desc with
 
 let filterPrinteableAttributes attrs =
   List.filter (fun attr -> match attr with
-    | ({Location.txt="bs" | "ns.ternary" | "ns.iflet"}, _) -> false
+    | ({Location.txt="bs" | "ns.ternary" | "ns.iflet" | "JSX"}, _) -> false
     | _ -> true
   ) attrs
 
 let partitionPrinteableAttributes attrs =
   List.partition (fun attr -> match attr with
-    | ({Location.txt="bs" | "ns.ternary" | "ns.iflet"}, _) -> false
+    | ({Location.txt="bs" | "ns.ternary" | "ns.iflet" | "JSX"}, _) -> false
     | _ -> true
   ) attrs
 
