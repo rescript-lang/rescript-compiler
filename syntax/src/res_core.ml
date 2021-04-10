@@ -673,6 +673,9 @@ let parseHashIdent ~startPos p =
     Parser.next p;
     let text = if p.mode = ParseForTypeChecker then parseStringLiteral text else text in
     (text, mkLoc startPos p.prevEndPos)
+  | Int {i} ->
+    Parser.next p;
+    (i, mkLoc startPos p.prevEndPos)
   | _ ->
     parseIdent ~startPos ~msg:ErrorMessages.variantIdent p
 
@@ -1176,6 +1179,9 @@ let rec parsePattern ?(alias=true) ?(or_=true) p =
         Parser.next p;
         let text = if p.mode = ParseForTypeChecker then parseStringLiteral text else text in
         (text, mkLoc startPos p.prevEndPos)
+      | Int {i} ->
+        Parser.next p;
+        (i, mkLoc startPos p.prevEndPos)
       | _ ->
         parseIdent ~msg:ErrorMessages.variantIdent ~startPos p
       in

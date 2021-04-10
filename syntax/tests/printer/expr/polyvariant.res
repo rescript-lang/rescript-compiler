@@ -135,3 +135,6 @@ external openSync: (
 
 let x = #a(())
 let x = #a()
+
+let oneString = #1("payload")
+let twoIntString = #2(3, "payload")

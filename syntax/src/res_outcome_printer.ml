@@ -10,6 +10,28 @@
 module Doc = Res_doc
 module Token = Res_token
 
+let rec unsafe_for_all_range s ~start ~finish p =
+  start > finish ||
+  p (String.unsafe_get s start) &&
+  unsafe_for_all_range s ~start:(start + 1) ~finish p
+
+let for_all_from s start  p =
+  let len = String.length s in
+  unsafe_for_all_range s ~start ~finish:(len - 1) p
+
+(* See https://github.com/rescript-lang/rescript-compiler/blob/726cfa534314b586e5b5734471bc2023ad99ebd9/jscomp/ext/ext_string.ml#L510 *)
+let isValidNumericPolyvarNumber (x : string) =
+  let len = String.length x in
+  len > 0 && (
+    let a = Char.code (String.unsafe_get x 0) in
+    a <= 57 &&
+    (if len > 1 then
+       a > 48 &&
+       for_all_from x 1 (function '0' .. '9' -> true | _ -> false)
+     else
+       a >= 48 )
+  )
+
 (* checks if ident contains "arity", like in "arity1", "arity2", "arity3" etc. *)
 let isArityIdent ident =
   if String.length ident >= 6 then
@@ -57,13 +79,17 @@ let printIdentLike ~allowUident txt =
   | NormalIdent -> Doc.text txt
 
 let printPolyVarIdent txt =
-  match classifyIdentContent ~allowUident:true txt with
-  | ExoticIdent -> Doc.concat [
-     Doc.text "\"";
-     Doc.text txt;
-     Doc.text"\""
-   ]
-  | NormalIdent -> Doc.text txt
+  (* numeric poly-vars don't need quotes: #644 *)
+  if isValidNumericPolyvarNumber txt then
+    Doc.text txt
+  else
+    match classifyIdentContent ~allowUident:true txt with
+    | ExoticIdent -> Doc.concat [
+       Doc.text "\"";
+       Doc.text txt;
+       Doc.text"\""
+     ]
+    | NormalIdent -> Doc.text txt
 
   (* ReScript doesn't have parenthesized identifiers.
    * We don't support custom operators. *)

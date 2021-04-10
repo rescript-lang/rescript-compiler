@@ -279,3 +279,18 @@ type multiSpreadedCoordinate = {
 }
 
 type dotdotObjectCoordinate<'a> =  {.. "suuuuuuuuuuuperLooooooooooooongFieldNaaaaaaaaaaaame": float, "suuuuuuuuuuuperLooooooooooooongFieldNaaaaaaaaaaaame2222222222222": float} as 'a
+
+type permissions = [
+   | #777
+   | #644
+ ]
+
+ type numericPolyVarWithPayload = [
+   | #1(string)
+   | #2(int, string)
+ ]
+
+ let numericPolyVarMatch = switch #644 {
+   | #777 => #1("payload")
+   | #644 => #2(42, "test")
+ }

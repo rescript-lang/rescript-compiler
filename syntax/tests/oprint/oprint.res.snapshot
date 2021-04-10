@@ -147,7 +147,7 @@ type t21 = [#"va r ia nt"]
 type t22 = [#"Variant ⛰"]
 type \"let" = int
 type \"type" = [#"Point🗿"(\"let", float)]
-type t23 = [#"1" | #"10space" | #"123"]
+type t23 = [#1 | #"10space" | #123]
 type exoticUser = {\"let": string, \"type": float}
 module Js = {
   type t<'a> = 'a
@@ -438,3 +438,6 @@ type dotdotObjectCoordinate<'a> = 'a
     "suuuuuuuuuuuperLooooooooooooongFieldNaaaaaaaaaaaame": float,
     "suuuuuuuuuuuperLooooooooooooongFieldNaaaaaaaaaaaame2222222222222": float,
   }
+type permissions = [#644 | #777]
+type numericPolyVarWithPayload = [#1(string) | #2(int, string)]
+let numericPolyVarMatch: [> #1(string) | #2(int, string)]

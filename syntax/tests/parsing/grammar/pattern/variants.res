@@ -82,3 +82,10 @@ switch x {
     | #...typeVar => ()
     | #lowercase => ()
     }
+
+switch numericPolyVar {
+| #1 => ()
+| #42 => ()
+| #42444 => ()
+| #3(x, y, z) => Js.log3(x, y, z)
+}

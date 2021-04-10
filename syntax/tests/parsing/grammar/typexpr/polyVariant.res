@@ -15,3 +15,14 @@ module type Conjunctive = {
 
 type t = [s]
 type t = [ListStyleType.t];
+
+type number = [
+  | #1
+  | #42
+  | #4244
+]
+
+type complexNumbericPolyVar = [
+  | #1(string)
+  | #2(int, string)
+]
