@@ -500,3 +500,16 @@ let _ = <View style=styles["backgroundImageWrapper"]>
 <div>  {Js.log(a <= 10)} </div>
 <div> <div> {Js.log(a <= 10)} </div> </div>
 <div> <div onClick={_ => Js.log(a <= 10) }> <div> {Js.log(a <= 10)} </div> </div> </div>
+
+
+<div> ...element </div>
+<div> ...{(a) => 1} </div>
+<div> ...<span /> </div>
+<div> ...[a] </div>
+<div> ...(1, 2) </div>
+
+<> ...element </>
+<> ...{(a) => 1} </>
+<> ...<span /> </>
+<> ...[a] </>
+<> ...(1, 2) </>

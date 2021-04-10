@@ -3834,7 +3834,11 @@ and printJsxExpression lident args cmtTbl =
   let name = printJsxName lident in
   let (formattedProps, children) = printJsxProps args cmtTbl in
   (* <div className="test" /> *)
-  let isSelfClosing = match children with | [] -> true | _ -> false in
+  let isSelfClosing =
+    match children with
+    | Some ({Parsetree.pexp_desc = Pexp_construct ({txt = Longident.Lident "[]"}, None)}) -> true
+    | _ -> false
+  in
   Doc.group (
     Doc.concat [
       Doc.group (
@@ -3851,7 +3855,10 @@ and printJsxExpression lident args cmtTbl =
           Doc.indent (
             Doc.concat [
               Doc.line;
-              printJsxChildren children cmtTbl;
+              (match children with
+              | Some childrenExpression -> printJsxChildren childrenExpression cmtTbl
+              | None -> Doc.nil
+              );
             ]
           );
           Doc.line;
@@ -3865,17 +3872,17 @@ and printJsxExpression lident args cmtTbl =
 and printJsxFragment expr cmtTbl =
   let opening = Doc.text "<>" in
   let closing = Doc.text "</>" in
-  let (children, _) = ParsetreeViewer.collectListExpressions expr in
+  (* let (children, _) = ParsetreeViewer.collectListExpressions expr in *)
   Doc.group (
     Doc.concat [
       opening;
-      begin match children with
-      | [] -> Doc.nil
-      | children ->
+      begin match expr.pexp_desc with
+      | Pexp_construct ({txt = Longident.Lident "[]"}, None) -> Doc.nil
+      | _ ->
         Doc.indent (
           Doc.concat [
             Doc.line;
-            printJsxChildren children cmtTbl;
+            printJsxChildren expr cmtTbl;
           ]
         )
       end;
@@ -3884,29 +3891,46 @@ and printJsxFragment expr cmtTbl =
     ]
   )
 
-and printJsxChildren (children: Parsetree.expression list) cmtTbl =
-  Doc.group (
-    Doc.join ~sep:Doc.line (
-      List.map (fun (expr : Parsetree.expression) ->
-        let leadingLineCommentPresent = hasLeadingLineComment cmtTbl expr.pexp_loc in
-        let exprDoc = printExpressionWithComments expr cmtTbl in
-        match Parens.jsxChildExpr expr with
-        | Parenthesized | Braced _ ->
-          (* {(20: int)} make sure that we also protect the expression inside *)
-          let innerDoc = if Parens.bracedExpr expr then addParens exprDoc else exprDoc in
-          if leadingLineCommentPresent then
-            addBraces innerDoc
-          else
-            Doc.concat [Doc.lbrace; innerDoc; Doc.rbrace]
-        | Nothing -> exprDoc
-      ) children
+and printJsxChildren (childrenExpr : Parsetree.expression) cmtTbl =
+  match childrenExpr.pexp_desc with
+  | Pexp_construct ({txt = Longident.Lident "::"}, _) ->
+    let (children, _) = ParsetreeViewer.collectListExpressions childrenExpr in
+    Doc.group (
+      Doc.join ~sep:Doc.line (
+        List.map (fun (expr : Parsetree.expression) ->
+          let leadingLineCommentPresent = hasLeadingLineComment cmtTbl expr.pexp_loc in
+          let exprDoc = printExpressionWithComments expr cmtTbl in
+          match Parens.jsxChildExpr expr with
+          | Parenthesized | Braced _ ->
+            (* {(20: int)} make sure that we also protect the expression inside *)
+            let innerDoc = if Parens.bracedExpr expr then addParens exprDoc else exprDoc in
+            if leadingLineCommentPresent then
+              addBraces innerDoc
+            else
+              Doc.concat [Doc.lbrace; innerDoc; Doc.rbrace]
+          | Nothing -> exprDoc
+        ) children
+      )
     )
-  )
+  | _ ->
+    let leadingLineCommentPresent = hasLeadingLineComment cmtTbl childrenExpr.pexp_loc in
+    let exprDoc = printExpressionWithComments childrenExpr cmtTbl in
+    Doc.concat [
+      Doc.dotdotdot;
+      match Parens.jsxChildExpr childrenExpr with
+      | Parenthesized | Braced _ ->
+        let innerDoc = if Parens.bracedExpr childrenExpr then addParens exprDoc else exprDoc in
+        if leadingLineCommentPresent then
+          addBraces innerDoc
+        else
+          Doc.concat [Doc.lbrace; innerDoc; Doc.rbrace]
+      | Nothing -> exprDoc
+    ]
 
-and printJsxProps args cmtTbl =
+and printJsxProps args cmtTbl :(Doc.t * Parsetree.expression option) =
   let rec loop props args =
     match args with
-    | [] -> (Doc.nil, [])
+    | [] -> (Doc.nil, None)
     | [
         (Asttypes.Labelled "children", children);
         (
@@ -3925,8 +3949,7 @@ and printJsxProps args cmtTbl =
             )
           ]
       ) in
-      let (children, _) = ParsetreeViewer.collectListExpressions children in
-      (formattedProps, children)
+      (formattedProps, Some children)
     | arg::args ->
       let propDoc = printJsxProp arg cmtTbl in
       loop (propDoc::props) args
