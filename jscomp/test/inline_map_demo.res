@@ -2,7 +2,6 @@
 
 let compare = (x: int, y: int) => compare(x, y)
 
-
 type rec t<'a> =
   | Empty
   | Node(t<'a>, int, 'a, t<'a>, int)

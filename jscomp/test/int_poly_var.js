@@ -134,9 +134,9 @@ var tuple = [
   hh10
 ];
 
-Mt.eq_suites(id, suites, "File \"int_poly_var.res\", line 83, characters 20-27", hihi, 3);
+Mt.eq_suites(id, suites, "File \"int_poly_var.res\", line 79, characters 22-29", hihi, 3);
 
-Mt.eq_suites(id, suites, "File \"int_poly_var.res\", line 84, characters 20-27", tuple, [
+Mt.eq_suites(id, suites, "File \"int_poly_var.res\", line 80, characters 22-29", tuple, [
       0,
       1,
       2,
@@ -159,7 +159,11 @@ function hh1(x) {
 }
 
 function f(x) {
-  return x;
+  if (x.NAME === 1) {
+    return x.VAL;
+  } else {
+    return String(x.VAL);
+  }
 }
 
 Mt.from_pair_suites("int_poly_var.res", suites.contents);

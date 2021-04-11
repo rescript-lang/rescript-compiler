@@ -1,28 +1,21 @@
 @@config({
-    flags : [
-        "-dparsetree"
-    ]
+  flags: ["-dparsetree"],
 })
 
-let b = List.length(list{1,2,3})
+let b = List.length(list{1, 2, 3})
 let a = b - 1
-Js.log ("hello, res")
+Js.log("hello, res")
 
-type t = { "x" : int }
+type t = {"x": int}
 
+type h = {...t, "y": string}
 
-type h = {... t , "y" : string}
-
-let u01 : h = {"x" : 3 , "y" : "x"} 
-let u : t = {"x" : 3 }
+let u01: h = {"x": 3, "y": "x"}
+let u: t = {"x": 3}
 
 let h = u["x"]
 
-%%private(
-let {length, cons } = module (List)
-)
-
-
+%%private(let {length, cons} = module(List))
 
 %%private(let {length, cons} = module(List))
 
@@ -48,4 +41,4 @@ let h = {
 let to = 3
 let downto = 1
 
-Js.log([to,downto])
+Js.log([to, downto])
