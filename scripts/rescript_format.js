@@ -33,7 +33,7 @@ in the stdout (in rescript syntax)`,
     "Formatting the whole project ",
   ],
 ];
-
+var formattedExtensions = [".res", ".resi", ".ml", ".mli", ".re", ".rei"];
 async function readStdin() {
   var stream = process.stdin;
   const chunks = [];
@@ -92,14 +92,7 @@ function main(argv, bsb_exe, bsc_exe) {
         }
       }
     } else if (use_stdin) {
-      if (
-        use_stdin.endsWith(".res") ||
-        use_stdin.endsWith(".resi") ||
-        use_stdin.endsWith(".ml") ||
-        use_stdin.endsWith(".mli") ||
-        use_stdin.endsWith(".re") ||
-        use_stdin.endsWith(".rei")
-      ) {
+      if (formattedExtensions.some((x) => use_stdin.endsWith(x))) {
         var crypto = require("crypto");
         var os = require("os");
         var filename = path.join(
@@ -122,6 +115,10 @@ function main(argv, bsb_exe, bsc_exe) {
             }
           );
         })();
+      } else {
+        console.error(`Unsupported exetnsion ${use_stdin}`);
+        console.error(`Supported extensions: ${formattedExtensions} `);
+        process.exit(2);
       }
     } else {
       if (files.length === 0) {
