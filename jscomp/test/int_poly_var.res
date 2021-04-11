@@ -90,4 +90,12 @@ type t0 = [#a | #b]
 
 let f = (x: list<t0>) => (x :> list<Test2.U.H.t>)
 
+type u = [#0(int) | #1(string)]
+
+let f = (x: u) => {
+  switch x {
+  | #0(x) => string_of_int(x)
+  | #1(x) => x
+  }
+}
 Mt.from_pair_suites(__FILE__, suites.contents)

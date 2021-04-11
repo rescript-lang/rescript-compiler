@@ -159,7 +159,11 @@ function hh1(x) {
 }
 
 function f(x) {
-  return x;
+  if (x.NAME === 1) {
+    return x.VAL;
+  } else {
+    return String(x.VAL);
+  }
 }
 
 Mt.from_pair_suites("int_poly_var.res", suites.contents);
