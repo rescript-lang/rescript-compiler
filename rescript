@@ -108,8 +108,6 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
  */
 var delegate_args = [];
 var process_argv = process.argv;
-var maybe_subcommand = process_argv[2];
-var isInBuildMode = maybe_subcommand === "build";
 
 if (process.env.NINJA_ANSI_FORCED === undefined) {
   if (require("tty").isatty(1)) {
@@ -118,9 +116,33 @@ if (process.env.NINJA_ANSI_FORCED === undefined) {
 } else {
   dlog(`NINJA_ANSI_FORCED: "${process.env.NINJA_ANSI_FORCED}"`);
 }
+function help() {
+  console.log(`Available flags
+-v, -version  display version number
+-h, -help     display help 
+Subcommands:
+    build    
+    clean
+    format
+    convert
+    help
+Run rescript subcommand -h for more details,
+For example:
+    rescript build -h
+    rescript format -h
+  `);
+}
 
-var delegate_args = process_argv.slice(2);
-if (!isInBuildMode) {
+var maybe_subcommand = process_argv[2];
+
+if (
+  maybe_subcommand !== undefined &&
+  maybe_subcommand !== "build" &&
+  maybe_subcommand !== "clean" &&
+  maybe_subcommand !== "init" &&
+  maybe_subcommand !== "info"
+  // delegate to native
+) {
   var bsc_exe = path.join(__dirname, process.platform, "bsc.exe");
   switch (maybe_subcommand) {
     case "format":
@@ -138,21 +160,22 @@ if (!isInBuildMode) {
         bsc_exe
       );
       break;
+    case "-h":
+    case "-help":
+    case "help":
+      help();
+      break;
+    case "-v":
+    case "-version":
+      console.log(require("./package.json").version);
+      break;
     default:
-      try {
-        child_process.execFileSync(bsb_exe, delegate_args, {
-          stdio: "inherit",
-        });
-      } catch (e) {
-        if (e.code === "ENOENT") {
-          // when rescript is not found
-          console.log(String(e));
-          process.exit(2);
-        }
-      }
-      process.exit(0);
+      console.error(`Unknown subcommand or flags: ${maybe_subcommand}`);
+      help();
+      process.exit(2);
   }
 } else {
+  var delegate_args = process_argv.slice(2);
   var watch_mode = delegate_args.includes("-w");
   verbose = delegate_args.includes("-verbose");
 

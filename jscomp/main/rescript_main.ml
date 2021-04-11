@@ -30,11 +30,7 @@ let watch_mode = ref false
 let make_world = ref false 
 let do_install = ref false
 let force_regenerate = ref false
-let bs_version_string = Bs_version.version
-let print_version_string () = 
-  print_string bs_version_string;
-  print_newline (); 
-  exit 0 
+
 type spec = Bsb_arg.spec
 
 let call_spec f : spec = Unit (Unit_call f )
@@ -115,17 +111,7 @@ let install_target () =
   if eid <> 0 then   
     Bsb_unix.command_fatal_error install_command eid  
 
-let global_help () =  
-  print_string {|Available flags
--v, -version  display version number
--h, -help     display help 
-Subcommands:
-  build    
-  clean
-  help
-Run rescript subcommand -h for more details, for example
-  rescript build -h
-|}     
+
 
 let build_subcommand ~start  argv argv_len =
   let i =  Ext_array.rfind_with_index argv Ext_string.equal separator in   
@@ -243,23 +229,15 @@ let () =
         ~per_proj_dir:Bsb_global_paths.cwd  |> ignore;
       ninja_command_exit  [||] 
     end else
-
-
-
       match argv.(1) with 
-      | "-version" | "-v"
-        -> print_version_string ()
-      | "-help" | "-h"
-        -> global_help ()
       | "build" -> 
         build_subcommand ~start:2 argv argv_len
       | "clean" ->         
         clean_subcommand ~start:2 argv      
       | "init" ->  
         init_subcommand ~start:2 argv 
-      | "info" ->
+      | "info" -> (* internal *)
         info_subcommand ~start:2 argv   
-      | "help" -> global_help ()
       | first_arg -> 
         prerr_endline @@ "Unknown subcommand or flags: " ^ first_arg;
         exit 1
