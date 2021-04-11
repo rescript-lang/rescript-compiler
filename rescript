@@ -108,7 +108,8 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
  */
 var delegate_args = [];
 var process_argv = process.argv;
-var isInBuildMode = process_argv[2] === "build";
+var maybe_subcommand = process_argv[2];
+var isInBuildMode = maybe_subcommand === "build";
 
 if (process.env.NINJA_ANSI_FORCED === undefined) {
   if (require("tty").isatty(1)) {
@@ -120,355 +121,374 @@ if (process.env.NINJA_ANSI_FORCED === undefined) {
 
 var delegate_args = process_argv.slice(2);
 if (!isInBuildMode) {
+  var bsc_exe = path.join(__dirname, process.platform, "bsc.exe");
+  switch (maybe_subcommand) {
+    case "format":
+      require("./scripts/rescript_format.js").main(
+        process.argv.slice(3),
+        bsb_exe,
+        bsc_exe
+      );
+      break;
+    case "convert":
+      // Todo
+      require("./scripts/rescript_convert.js").main(
+        process.argv.slice(3),
+        bsb_exe,
+        bsc_exe
+      );
+      break;
+    default:
+      try {
+        child_process.execFileSync(bsb_exe, delegate_args, {
+          stdio: "inherit",
+        });
+      } catch (e) {
+        if (e.code === "ENOENT") {
+          // when rescript is not found
+          console.log(String(e));
+          process.exit(2);
+        }
+      }
+      process.exit(0);
+  }
+} else {
+  var watch_mode = delegate_args.includes("-w");
+  verbose = delegate_args.includes("-verbose");
+
   try {
-    child_process.execFileSync(bsb_exe, delegate_args, {
-      stdio: "inherit",
-    });
+    child_process.execFileSync(bsb_exe, delegate_args, { stdio: "inherit" });
   } catch (e) {
     if (e.code === "ENOENT") {
-      // when rescript is not found
-      console.log(String(e));
-      process.exit(2);
+      // when bsb is actually not found
+      console.error(String(e));
     }
+    process.exit(2);
   }
-  process.exit(0);
-}
 
-var watch_mode = delegate_args.includes("-w");
-verbose = delegate_args.includes("-verbose");
-
-try {
-  child_process.execFileSync(bsb_exe, delegate_args, { stdio: "inherit" });
-} catch (e) {
-  if (e.code === "ENOENT") {
-    // when bsb is actually not found
-    console.error(String(e));
-  }
-  process.exit(2);
-}
-
-if (watch_mode) {
-  var fs = require("fs");
-  if (useWebSocket) {
-    setUpWebSocket();
-  }
-  // for column one based error message
-  var cwd = process.cwd();
-  var lockFileName = path.join(cwd, ".bsb.lock");
-  /**
-   * @type {[string,string][]}
-   */
-  var reasons_to_rebuild = [];
-
-  /**
-   * watchers are held so that we close it later
-   */
-  var watchers = [];
-
-  function onUncaughtException(err) {
-    console.error("Uncaught Exception", err);
-    process.exit(1);
-  }
-  function onExit() {
-    try {
-      fs.unlinkSync(lockFileName);
-    } catch (err) {
-      process.exitCode = 1;
+  if (watch_mode) {
+    var fs = require("fs");
+    if (useWebSocket) {
+      setUpWebSocket();
     }
-  }
-  function exitProcess() {
-    process.exit(0);
-  }
+    // for column one based error message
+    var cwd = process.cwd();
+    var lockFileName = path.join(cwd, ".bsb.lock");
+    /**
+     * @type {[string,string][]}
+     */
+    var reasons_to_rebuild = [];
 
-  /**
-   * @return {boolean}
-   */
-  function acquireLockFile() {
-    try {
-      // We use [~perm:0o664] rather than our usual default perms, [0o666], because
-      // lock files shouldn't rely on the umask to disallow tampering by other.
-      var fd = fs.openSync(lockFileName, "wx", 0o664);
+    /**
+     * watchers are held so that we close it later
+     */
+    var watchers = [];
+
+    function onUncaughtException(err) {
+      console.error("Uncaught Exception", err);
+      process.exit(1);
+    }
+    function onExit() {
       try {
-        fs.writeFileSync(fd, String(process.pid), "ascii");
-        fs.closeSync(fd);
-      } catch (err) {}
-
-      process.on("exit", onExit);
-      process.on("uncaughtException", onUncaughtException);
-
-      // OS signal handlers
-      // Ctrl+C
-      process.on("SIGINT", exitProcess);
-      // kill pid
-      process.on("SIGUSR1", exitProcess);
-      process.on("SIGUSR2", exitProcess);
-      process.on("SIGTERM", exitProcess);
-      process.on("SIGHUP", exitProcess);
-
-      process.stdin.on("close", exitProcess);
-      // close when stdin stops
-      if (os.platform() !== "win32") {
-        process.stdin.on("end", exitProcess);
-        process.stdin.resume();
+        fs.unlinkSync(lockFileName);
+      } catch (err) {
+        process.exitCode = 1;
       }
-
-      return true;
-    } catch (exn) {
-      return false;
     }
-  }
-
-  var is_building = false;
-  function releaseBuild() {
-    is_building = false;
-  }
-  function acquireBuild() {
-    if (is_building) {
-      return false;
-    } else {
-      is_building = true;
-      return true;
+    function exitProcess() {
+      process.exit(0);
     }
-  }
-  var sourcedirs = path.join("lib", "bs", ".sourcedirs.json");
-  var watch_generated = [];
 
-  function watch_build(watch_config) {
-    var watch_files = watch_config.dirs;
-    watch_generated = watch_config.generated;
-    // close and remove all unused watchers
-    watchers = watchers.filter(function (watcher) {
-      if (watcher.dir === bsconfig) {
+    /**
+     * @return {boolean}
+     */
+    function acquireLockFile() {
+      try {
+        // We use [~perm:0o664] rather than our usual default perms, [0o666], because
+        // lock files shouldn't rely on the umask to disallow tampering by other.
+        var fd = fs.openSync(lockFileName, "wx", 0o664);
+        try {
+          fs.writeFileSync(fd, String(process.pid), "ascii");
+          fs.closeSync(fd);
+        } catch (err) {}
+
+        process.on("exit", onExit);
+        process.on("uncaughtException", onUncaughtException);
+
+        // OS signal handlers
+        // Ctrl+C
+        process.on("SIGINT", exitProcess);
+        // kill pid
+        process.on("SIGUSR1", exitProcess);
+        process.on("SIGUSR2", exitProcess);
+        process.on("SIGTERM", exitProcess);
+        process.on("SIGHUP", exitProcess);
+
+        process.stdin.on("close", exitProcess);
+        // close when stdin stops
+        if (os.platform() !== "win32") {
+          process.stdin.on("end", exitProcess);
+          process.stdin.resume();
+        }
+
         return true;
-      } else if (watch_files.indexOf(watcher.dir) < 0) {
-        dlog(`${watcher.dir} is no longer watched`);
-        watcher.watcher.close();
+      } catch (exn) {
+        return false;
+      }
+    }
+
+    var is_building = false;
+    function releaseBuild() {
+      is_building = false;
+    }
+    function acquireBuild() {
+      if (is_building) {
         return false;
       } else {
+        is_building = true;
         return true;
       }
-    });
+    }
+    var sourcedirs = path.join("lib", "bs", ".sourcedirs.json");
+    var watch_generated = [];
 
-    // adding new watchers
-    for (var i = 0; i < watch_files.length; ++i) {
-      var dir = watch_files[i];
-      if (
-        !watchers.find(function (watcher) {
-          return watcher.dir === dir;
-        })
-      ) {
-        dlog(`watching dir ${dir} now`);
-        var watcher = fs.watch(dir, on_change);
-        watchers.push({ dir: dir, watcher: watcher });
-      } else {
-        // console.log(dir, 'already watched')
-      }
-    }
-  }
-
-  /**
-   *
-   * @param {string} eventType
-   * @param {string} fileName
-   */
-  function validEvent(eventType, fileName) {
-    // Return true if filename is nil, filename is only provided on Linux, macOS, Windows, and AIX.
-    // On other systems, we just have to assume that any change is valid.
-    // This could cause problems if source builds (generating js files in the same directory) are supported.
-    if (!fileName) return true;
-
-    return !(
-      fileName === ".merlin" ||
-      fileName.endsWith(".js") ||
-      fileName.endsWith(".mjs") ||
-      fileName.endsWith(".cjs") ||
-      fileName.endsWith(".gen.tsx") ||
-      watch_generated.indexOf(fileName) >= 0 ||
-      fileName.endsWith(".swp")
-    );
-  }
-  /**
-   * @return {boolean}
-   */
-  function needRebuild() {
-    return reasons_to_rebuild.length != 0;
-  }
-  var error_is_tty = process.stderr.isTTY;
-  var std_is_tty = process.stdout.isTTY;
-  function logFinish(code) {
-    if (std_is_tty) {
-      if (code === 0) {
-        console.log(
-          "\x1b[36m>>>> Finish compiling\x1b[0m",
-          Math.floor(updateFinishTime() / 1e6),
-          "mseconds"
-        );
-      } else {
-        console.log(
-          "\x1b[1;31m>>>> Finish compiling(exit: " + code + ")\x1b[0m"
-        );
-      }
-    } else {
-      if (code === 0) {
-        console.log(">>>> Finish compiling");
-      } else {
-        console.log(">>>> Finish compiling(exit: " + code + ")");
-      }
-    }
-  }
-  function logStart() {
-    if (std_is_tty) {
-      console.log("\x1b[36m>>>> Start compiling\x1b[0m", updateStartTime());
-    } else {
-      console.log(">>>> Start compiling");
-    }
-  }
-  /**
-   *
-   * @param code {number}
-   * @param signal {string}
-   */
-  function build_finished_callback(code, signal) {
-    if (code === 0) {
-      LAST_SUCCESS_BUILD_STAMP = +new Date();
-      notifyClients();
-      if (postBuild) {
-        dlog(`running postbuild command: ${postBuild}`);
-        child_process.exec(postBuild);
-      }
-    }
-    logFinish(code);
-    releaseBuild();
-    if (needRebuild()) {
-      build();
-    } else {
-      var files = getWatchFiles(sourcedirs);
-      watch_build(files);
-    }
-  }
-
-  /**
-   * TODO: how to make it captured by vscode
-   * @param output {string}
-   * @param highlight {string}
-   */
-  function error_output(output, highlight) {
-    if (error_is_tty && highlight) {
-      process.stderr.write(
-        output.replace(highlight, "\x1b[1;31m" + highlight + "\x1b[0m")
-      );
-    } else {
-      process.stderr.write(output);
-    }
-  }
-  // Note this function filters the error output
-  // it relies on the fact that ninja will merege stdout and stderr
-  // of the compiler output, if it does not
-  // then we should have a way to not filter the compiler output
-  function build() {
-    if (acquireBuild()) {
-      logStart();
-      if (reasons_to_rebuild.length === 0) {
-        dlog("Rebuilding since just got started");
-      } else {
-        dlog(`Rebuilding since ${reasons_to_rebuild}`);
-      }
-      reasons_to_rebuild = [];
-      var p = child_process.spawn(bsb_exe, [], {
-        stdio: ["inherit", "inherit", "pipe"],
-      });
-      p.on("exit", build_finished_callback);
-      p.stderr
-        .setEncoding("utf8")
-        // @ts-ignore
-        .on("data", function (s) {
-          error_output(s, "ninja: error");
-        });
-    }
-  }
-  /**
-   *
-   * @param {string} event
-   * @param {string} reason
-   */
-  function on_change(event, reason) {
-    if (validEvent(event, reason)) {
-      dlog(`Event ${event} ${reason}`);
-      reasons_to_rebuild.push([event, reason]);
-      // Some editors are using temporary files to store edits.
-      // This results in two sync change events: change + rename and two sync builds.
-      // Using setImmediate will ensure that only one build done.
-      setImmediate(() => {
-        if (needRebuild()) {
-          if (process.env.BS_WATCH_CLEAR && console.clear) {
-            console.clear();
-          }
-          build();
+    function watch_build(watch_config) {
+      var watch_files = watch_config.dirs;
+      watch_generated = watch_config.generated;
+      // close and remove all unused watchers
+      watchers = watchers.filter(function (watcher) {
+        if (watcher.dir === bsconfig) {
+          return true;
+        } else if (watch_files.indexOf(watcher.dir) < 0) {
+          dlog(`${watcher.dir} is no longer watched`);
+          watcher.watcher.close();
+          return false;
+        } else {
+          return true;
         }
       });
-    }
-  }
-  function getWatchFiles(file) {
-    if (fs.existsSync(file)) {
-      return JSON.parse(fs.readFileSync(file, "utf8"));
-    } else {
-      return { dirs: [], generated: [] };
-    }
-  }
 
-  /**
-   *
-   * @param potential_pid {number}
-   */
-  function existPid(potential_pid) {
-    try {
-      return process.kill(potential_pid, 0);
-    } catch (err) {
-      return false;
-    }
-  }
-
-  // Initialization and get locker file
-  while (true) {
-    if (acquireLockFile()) {
-      break;
-    } else {
-      var potential_pid;
-      try {
-        var content = fs.readFileSync(lockFileName, "ascii");
-        potential_pid = parseInt(content);
-      } catch (err) {
-        // ignore
+      // adding new watchers
+      for (var i = 0; i < watch_files.length; ++i) {
+        var dir = watch_files[i];
+        if (
+          !watchers.find(function (watcher) {
+            return watcher.dir === dir;
+          })
+        ) {
+          dlog(`watching dir ${dir} now`);
+          var watcher = fs.watch(dir, on_change);
+          watchers.push({ dir: dir, watcher: watcher });
+        } else {
+          // console.log(dir, 'already watched')
+        }
       }
-      var validPid = potential_pid !== undefined && !isNaN(potential_pid);
+    }
 
-      if (validPid && !existPid(potential_pid)) {
-        console.log("Stale file detected : ", lockFileName);
-        try {
-          fs.unlinkSync(lockFileName);
-        } catch (err) {}
-        console.log("Retry:");
-        continue;
-      } else {
-        error_output("Error: could not acquire lockfile", "Error");
-        console.error(" " + lockFileName);
+    /**
+     *
+     * @param {string} eventType
+     * @param {string} fileName
+     */
+    function validEvent(eventType, fileName) {
+      // Return true if filename is nil, filename is only provided on Linux, macOS, Windows, and AIX.
+      // On other systems, we just have to assume that any change is valid.
+      // This could cause problems if source builds (generating js files in the same directory) are supported.
+      if (!fileName) return true;
 
-        console.log(
-          "Could be another process running in the background",
-          "\nEither kill that process or delete the staled lock"
-        );
-        if (validPid) {
-          console.error(
-            "Try run command: ",
-            "`kill ",
-            potential_pid,
-            " || rm -f .bsb.lock`"
+      return !(
+        fileName === ".merlin" ||
+        fileName.endsWith(".js") ||
+        fileName.endsWith(".mjs") ||
+        fileName.endsWith(".cjs") ||
+        fileName.endsWith(".gen.tsx") ||
+        watch_generated.indexOf(fileName) >= 0 ||
+        fileName.endsWith(".swp")
+      );
+    }
+    /**
+     * @return {boolean}
+     */
+    function needRebuild() {
+      return reasons_to_rebuild.length != 0;
+    }
+    var error_is_tty = process.stderr.isTTY;
+    var std_is_tty = process.stdout.isTTY;
+    function logFinish(code) {
+      if (std_is_tty) {
+        if (code === 0) {
+          console.log(
+            "\x1b[36m>>>> Finish compiling\x1b[0m",
+            Math.floor(updateFinishTime() / 1e6),
+            "mseconds"
+          );
+        } else {
+          console.log(
+            "\x1b[1;31m>>>> Finish compiling(exit: " + code + ")\x1b[0m"
           );
         }
-        process.exit(2);
+      } else {
+        if (code === 0) {
+          console.log(">>>> Finish compiling");
+        } else {
+          console.log(">>>> Finish compiling(exit: " + code + ")");
+        }
       }
     }
+    function logStart() {
+      if (std_is_tty) {
+        console.log("\x1b[36m>>>> Start compiling\x1b[0m", updateStartTime());
+      } else {
+        console.log(">>>> Start compiling");
+      }
+    }
+    /**
+     *
+     * @param code {number}
+     * @param signal {string}
+     */
+    function build_finished_callback(code, signal) {
+      if (code === 0) {
+        LAST_SUCCESS_BUILD_STAMP = +new Date();
+        notifyClients();
+        if (postBuild) {
+          dlog(`running postbuild command: ${postBuild}`);
+          child_process.exec(postBuild);
+        }
+      }
+      logFinish(code);
+      releaseBuild();
+      if (needRebuild()) {
+        build();
+      } else {
+        var files = getWatchFiles(sourcedirs);
+        watch_build(files);
+      }
+    }
+
+    /**
+     * TODO: how to make it captured by vscode
+     * @param output {string}
+     * @param highlight {string}
+     */
+    function error_output(output, highlight) {
+      if (error_is_tty && highlight) {
+        process.stderr.write(
+          output.replace(highlight, "\x1b[1;31m" + highlight + "\x1b[0m")
+        );
+      } else {
+        process.stderr.write(output);
+      }
+    }
+    // Note this function filters the error output
+    // it relies on the fact that ninja will merege stdout and stderr
+    // of the compiler output, if it does not
+    // then we should have a way to not filter the compiler output
+    function build() {
+      if (acquireBuild()) {
+        logStart();
+        if (reasons_to_rebuild.length === 0) {
+          dlog("Rebuilding since just got started");
+        } else {
+          dlog(`Rebuilding since ${reasons_to_rebuild}`);
+        }
+        reasons_to_rebuild = [];
+        var p = child_process.spawn(bsb_exe, [], {
+          stdio: ["inherit", "inherit", "pipe"],
+        });
+        p.on("exit", build_finished_callback);
+        p.stderr
+          .setEncoding("utf8")
+          // @ts-ignore
+          .on("data", function (s) {
+            error_output(s, "ninja: error");
+          });
+      }
+    }
+    /**
+     *
+     * @param {string} event
+     * @param {string} reason
+     */
+    function on_change(event, reason) {
+      if (validEvent(event, reason)) {
+        dlog(`Event ${event} ${reason}`);
+        reasons_to_rebuild.push([event, reason]);
+        // Some editors are using temporary files to store edits.
+        // This results in two sync change events: change + rename and two sync builds.
+        // Using setImmediate will ensure that only one build done.
+        setImmediate(() => {
+          if (needRebuild()) {
+            if (process.env.BS_WATCH_CLEAR && console.clear) {
+              console.clear();
+            }
+            build();
+          }
+        });
+      }
+    }
+    function getWatchFiles(file) {
+      if (fs.existsSync(file)) {
+        return JSON.parse(fs.readFileSync(file, "utf8"));
+      } else {
+        return { dirs: [], generated: [] };
+      }
+    }
+
+    /**
+     *
+     * @param potential_pid {number}
+     */
+    function existPid(potential_pid) {
+      try {
+        return process.kill(potential_pid, 0);
+      } catch (err) {
+        return false;
+      }
+    }
+
+    // Initialization and get locker file
+    while (true) {
+      if (acquireLockFile()) {
+        break;
+      } else {
+        var potential_pid;
+        try {
+          var content = fs.readFileSync(lockFileName, "ascii");
+          potential_pid = parseInt(content);
+        } catch (err) {
+          // ignore
+        }
+        var validPid = potential_pid !== undefined && !isNaN(potential_pid);
+
+        if (validPid && !existPid(potential_pid)) {
+          console.log("Stale file detected : ", lockFileName);
+          try {
+            fs.unlinkSync(lockFileName);
+          } catch (err) {}
+          console.log("Retry:");
+          continue;
+        } else {
+          error_output("Error: could not acquire lockfile", "Error");
+          console.error(" " + lockFileName);
+
+          console.log(
+            "Could be another process running in the background",
+            "\nEither kill that process or delete the staled lock"
+          );
+          if (validPid) {
+            console.error(
+              "Try run command: ",
+              "`kill ",
+              potential_pid,
+              " || rm -f .bsb.lock`"
+            );
+          }
+          process.exit(2);
+        }
+      }
+    }
+    watchers.push({ watcher: fs.watch(bsconfig, on_change), dir: bsconfig });
+    build();
   }
-  watchers.push({ watcher: fs.watch(bsconfig, on_change), dir: bsconfig });
-  build();
 }

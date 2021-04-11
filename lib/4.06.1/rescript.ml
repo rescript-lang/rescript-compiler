@@ -1794,19 +1794,15 @@ let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
         let cur = ref 0 in 
         let doc_length = String.length doc in 
         while !cur < doc_length do 
+          if !cur <> 0 then begin 
+            buf +>  "\n";
+            buf +> String.make (!max_col + 4) ' ' ;
+          end;
           match String.index_from_opt doc !cur '\n' with 
           | None -> 
-            if !cur <> 0 then begin 
-              buf +>  "\n";
-              buf +> String.make (!max_col + 4) ' ' ;
-            end;
             buf +> String.sub doc !cur (String.length doc - !cur );
             cur := doc_length
           | Some new_line_pos -> 
-            if !cur <> 0 then begin 
-              buf +>  "\n";
-              buf +> String.make (!max_col + 4) ' ' ;
-            end;
             buf +> String.sub doc !cur (new_line_pos - !cur );
             cur := new_line_pos + 1
         done ;
@@ -1871,7 +1867,6 @@ let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t
   done;
   anonfun ~rev_args:!rev_list
 ;;
-
 
 
 end
@@ -16761,7 +16756,47 @@ let init_subcommand ~start argv =
        Bsb_theme_init.init_sample_project 
          ~cwd:Bsb_global_paths.cwd
          ~theme:!current_theme location
-     )  
+     )
+
+let list_files = ref false     
+let info_subcommand ~start argv =        
+  Bsb_arg.parse_exn 
+    ~usage:"query the project" ~start ~argv [|
+    "-list-files", unit_set_spec list_files,
+    "list source files"
+  |] (fun 
+       ~rev_args -> 
+
+       (match rev_args with 
+        | x :: _  ->
+          raise (Bsb_arg.Bad ("Don't know what to do with " ^ x))
+        | [] -> 
+          ());
+       if !list_files then begin 
+         match 
+           Bsb_ninja_regen.regenerate_ninja 
+             ~package_kind:Toplevel           
+             ~forced:true ~per_proj_dir:Bsb_global_paths.cwd with 
+         | None -> assert false
+         | Some {file_groups = {files}} ->
+           Ext_list.iter files (fun {sources } -> 
+            Map_string.iter sources (fun _ {info;syntax_kind;name_sans_extension} ->
+              let extensions = 
+                  match syntax_kind,info with 
+                  | _, Intf -> assert false 
+                  | Reason , Impl -> [".re" ]
+                  | Reason, Impl_intf -> [".re"; ".rei"]                   
+                  | Ml, Impl -> [".ml"]
+                  | Ml, Impl_intf -> [".ml"; ".mli"]
+                  | Res, Impl -> [".res"]
+                  | Res, Impl_intf -> [".res"; ".resi"] in 
+              Ext_list.iter extensions (fun x -> 
+                print_endline (name_sans_extension ^ x )
+              )      
+             )
+           )
+       end
+     )  ;;
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =  
   let argv = Sys.argv in   
@@ -16789,6 +16824,8 @@ let () =
         clean_subcommand ~start:2 argv      
       | "init" ->  
         init_subcommand ~start:2 argv 
+      | "info" ->
+        info_subcommand ~start:2 argv   
       | "help" -> global_help ()
       | first_arg -> 
         prerr_endline @@ "Unknown subcommand or flags: " ^ first_arg;
