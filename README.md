@@ -18,8 +18,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 * Thanks to [ninja-build](https://ninja-build.org), ReScript also comes with a blazing fast build tool on top of it, `ninja` is a truly [well engineered](http://aosabook.org/en/posa/ninja.html) scalable build tool
 * Thanks to [Bloomberg](https://www.techatbloomberg.com) and [Facebook](https://github.com/facebook/). This project began at Bloomberg and was published in 2016; without the support of Bloomberg, it would not have happened. This project's funded by Facebook since July/2017
 
-## [Roadmap](https://github.com/rescript-lang/rescript-compiler/wiki)
-
 ## History
 
 This project was originally created by [Hongbo Zhang](https://github.com/bobzhang) in 2015 and 
