@@ -92,7 +92,7 @@ let extract_package_name_and_namespace
       (kinda check npm upgrade)
 
       Note if the setup is correct: 
-      the running compiler and node_modules/bs-platform
+      the running compiler and node_modules/rescript
       should be the same version, 
       The exact check is that the running compiler should have a 
       compatible runtime version installed, the location of the

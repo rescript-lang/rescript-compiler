@@ -63,7 +63,7 @@ type t =
     pinned_dependencies : Set_string.t;
     built_in_dependency : bool; 
     warning : Bsb_warning.t;
-    (*TODO: maybe we should always resolve bs-platform 
+    (*TODO: maybe we should always resolve rescript
       so that we can calculate correct relative path in 
       [.merlin]
     *)
