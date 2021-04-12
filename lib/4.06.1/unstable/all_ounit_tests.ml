@@ -9801,6 +9801,7 @@ module Ext_obj : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 val dump : 'a -> string 
+val dump_endline : ?__LOC__:string -> 'a -> unit 
 val pp_any : Format.formatter -> 'a -> unit 
 val bt : unit -> unit
 end = struct
@@ -9909,7 +9910,9 @@ let rec dump r =
       opaque (Printf.sprintf "unknown: tag %d size %d" t s)
 
 let dump v = dump (Obj.repr v)
-
+let dump_endline ?(__LOC__="") v = 
+    print_endline __LOC__;    
+    print_endline (dump v )
 let pp_any fmt v = 
   Format.fprintf fmt "@[%s@]"
     (dump v )
