@@ -1,5 +1,5 @@
 let readFile ~filename =
-  let chan = open_in filename in
+  let chan = open_in_bin filename in
   let content =
     try really_input_string chan (in_channel_length chan)
     with End_of_file -> ""
