@@ -9,9 +9,40 @@ var root_config = { cwd: root, stdio: [0, 1, 2], encoding: "utf8" };
 
 var ocamlVersion = require("./buildocaml.js").getVersionPrefix();
 var fs = require("fs");
+var package_config = require(path.join(__dirname, "..", "package.json"));
+var bsVersion = fs.readFileSync(
+  path.join(__dirname, "..", "jscomp", "common", "bs_version.ml"),
+  "utf-8"
+);
+/**
+ *
+ * @param {string} bsVersion
+ * @param {string} version
+ */
+function verifyVersion(bsVersion, version) {
+  try {
+    let [major, minor] = bsVersion
+      .split("\n")
+      .find((x) => x.startsWith("let version = "))
+      .split("=")[1]
+      .trim()
+      .slice(1, -1)
+      .split(".");
+    let [specifiedMajor, specifiedMinor] = version.split(".");
+    console.log(
+      `package.json ${specifiedMajor}.${specifiedMinor} vs ABI : ${major}.${minor}`
+    );
+    return major === specifiedMajor && minor === specifiedMinor;
+  } catch (e) {
+    return false;
+  }
+}
+var assert = require("assert");
 
-function isHostPlatform(){
-    return process.platform === "darwin" || process.platform === "linux" 
+assert(verifyVersion(bsVersion, package_config.version));
+
+function isHostPlatform() {
+  return process.platform === "darwin" || process.platform === "linux";
 }
 function rebuild() {
   cp.execSync(`node ${path.join(__dirname, "ninja.js")} cleanbuild`, {
@@ -53,7 +84,7 @@ if (!is_windows) {
 }
 
 function createOCamlTar() {
-    if (isHostPlatform()) {
+  if (isHostPlatform()) {
     require("./installUtils.js").install();
     console.log(`status in ocaml submodule:`);
     cp.execSync(`git -C ocaml status -uno`, { cwd: root, stdio: [0, 1, 2] });
