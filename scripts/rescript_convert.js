@@ -6,6 +6,7 @@ rescript convert -- it converts the current directory
 
 var child_process = require("child_process");
 var path = require("path");
+var fs = require("fs");
 
 /**
  * @type {arg.boolref}
@@ -31,6 +32,32 @@ function shouldConvert(file) {
   return [".ml", ".mli", ".re", ".rei"].some((x) => file.endsWith(x));
 }
 
+/**
+ *
+ * @param {string} file
+ * @param {string} bsc_exe
+ * assume the file is convertible
+ */
+function handleOneFile(file, bsc_exe) {
+  // console.log(`processing ${arg}`);
+  var nextExt = file.endsWith("i") ? ".resi" : ".res";
+  child_process.execFile(
+    bsc_exe,
+    ["-o", file.substr(0, file.lastIndexOf(".")) + nextExt, "-format", file],
+    (error, stdout, stderr) => {
+      if (error === null) {
+        // todo
+        fs.unlink(file, () => {
+          //ignore
+        });
+      } else {
+        // todo error handling
+        console.error(`Error when converting ${file}`);
+        console.log(stderr);
+      }
+    }
+  );
+}
 /**
  * @param {string[]} argv
  * @param {string} bsb_exe
@@ -66,26 +93,7 @@ function main(argv, bsb_exe, bsc_exe) {
       files = output.stdout.split("\n").map((x) => x.trim());
       for (let file of files) {
         if (shouldConvert(file)) {
-          // console.log(`processing ${arg}`);
-          var nextExt = file.endsWith("i") ? ".resi" : ".res";
-          child_process.execFile(
-            path.join(__dirname, process.platform, "bsc.exe"),
-            [
-              "-o",
-              file.substr(0, file.lastIndexOf(".")) + nextExt,
-              "-format",
-              file,
-            ],
-            (error, stdout, stderr) => {
-              if (error === null) {
-                // todo
-              } else {
-                // todo error handling
-                console.error(`Error when converting ${file}`);
-                console.log(stderr);
-              }
-            }
-          );
+          handleOneFile(file, bsc_exe);
         }
       }
     } else {
@@ -97,23 +105,7 @@ function main(argv, bsb_exe, bsc_exe) {
         }
       }
       files.forEach((file) => {
-        var nextExt = file.endsWith("i") ? ".resi" : ".res";
-        child_process.execFile(
-          bsc_exe,
-          [
-            "-o",
-            file.substr(0, file.lastIndexOf(".")) + nextExt,
-            "-format",
-            file,
-          ],
-          (error, stdout, stderr) => {
-            if (error === null) {
-            } else {
-              console.error(`Error when converting ${file}`);
-              console.log(stderr);
-            }
-          }
-        );
+        handleOneFile(file, bsc_exe);
       });
     }
   } catch (e) {
