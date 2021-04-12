@@ -33,7 +33,20 @@ in the stdout (in rescript syntax)`,
     "Formatting the whole project ",
   ],
 ];
-var formattedExtensions = [".res", ".resi", ".ml", ".mli", ".re", ".rei"];
+var formattedStdExtensions = [".res", ".resi", ".ml", ".mli", ".re", ".rei"];
+var formattedFileExtensions = [".res", ".resi"];
+var convertedExtensions = [".ml", ".mli", ".re", ".rei"];
+/**
+ *
+ * @param {string[]} extensions
+ */
+function hasExtension(extensions) {
+  /**
+   * @param {string} x
+   */
+  var pred = (x) => extensions.some((ext) => x.endsWith(ext));
+  return pred;
+}
 async function readStdin() {
   var stream = process.stdin;
   const chunks = [];
@@ -47,6 +60,9 @@ async function readStdin() {
  * @param {string} bsc_exe
  */
 function main(argv, bsb_exe, bsc_exe) {
+  var isSupportedFile = hasExtension(formattedFileExtensions);
+  var isSupportedStd = hasExtension(formattedStdExtensions);
+  var isSupportedConvert = hasExtension(convertedExtensions);
   try {
     /**
      * @type {string[]}
@@ -75,7 +91,7 @@ function main(argv, bsb_exe, bsc_exe) {
       }
       files = output.stdout.split("\n").map((x) => x.trim());
       for (let arg of files) {
-        if (arg.endsWith(".res") || arg.endsWith(".resi")) {
+        if (isSupportedFile(arg)) {
           // console.log(`processing ${arg}`);
           child_process.execFile(
             bsc_exe,
@@ -92,7 +108,7 @@ function main(argv, bsb_exe, bsc_exe) {
         }
       }
     } else if (use_stdin) {
-      if (formattedExtensions.some((x) => use_stdin.endsWith(x))) {
+      if (isSupportedStd(use_stdin)) {
         var crypto = require("crypto");
         var os = require("os");
         var filename = path.join(
@@ -107,7 +123,7 @@ function main(argv, bsb_exe, bsc_exe) {
             ["-format", filename],
             (error, stdout, stderr) => {
               if (error === null) {
-                console.log(stdout);
+                console.log(stdout.trimEnd());
               } else {
                 console.log(stderr);
                 process.exit(2);
@@ -117,21 +133,27 @@ function main(argv, bsb_exe, bsc_exe) {
         })();
       } else {
         console.error(`Unsupported exetnsion ${use_stdin}`);
-        console.error(`Supported extensions: ${formattedExtensions} `);
+        console.error(`Supported extensions: ${formattedStdExtensions} `);
         process.exit(2);
       }
     } else {
       if (files.length === 0) {
         // none of argumets set
         // format the current directory
-        files = fs
-          .readdirSync(process.cwd())
-          .filter((x) => x.endsWith(".res") || x.endsWith(".resi"));
+        files = fs.readdirSync(process.cwd()).filter(isSupportedFile);
       }
+
       for (let i = 0; i < files.length; ++i) {
         let file = files[i];
-        if (!(file.endsWith(".res") || file.endsWith(".resi"))) {
-          console.error(`don't know what do with ${file}`);
+        if (!isSupportedFile(file)) {
+          if (isSupportedConvert(file)) {
+            console.error(
+              `You need convert subcommand to handle such file extensions`
+            );
+          } else {
+            console.error(`Don't know what do with ${file}`);
+          }
+          console.error(`Supported extensions: ${formattedFileExtensions}`)
           process.exit(2);
         }
       }
