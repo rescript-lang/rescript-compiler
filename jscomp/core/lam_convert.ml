@@ -816,8 +816,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       Lam.for_ id (convert_aux from_) (convert_aux to_) dir (convert_aux loop)
     | Lassign (id, body) ->
       Lam.assign id (convert_aux body)
-    | Lsend (Public(Some name), _, obj, _, loc) ->
-      (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
+    | Lsend (Public(Some name), _, obj, meth_args, loc) ->
       let obj =  convert_aux obj in 
       let args = [obj] in 
       let setter = Ext_string.ends_with name Literals.setter_suffix in 
@@ -827,8 +826,11 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
             (String.sub name 0
                (String.length name - Literals.setter_suffix_len))
         else Lam_methname.translate  name in 
-      prim ~primitive:(Pjs_unsafe_downgrade {name = property; setter})
-        ~args loc                
+      let new_obj = prim ~primitive:(Pjs_unsafe_downgrade {name = property; setter})
+          ~args loc  in 
+      if meth_args = [] then new_obj 
+      else Lam.apply new_obj 
+          (Ext_list.map meth_args convert_aux) {ap_loc = loc; ap_inlined = Default_inline; ap_status = App_na}             
 
     | Lsend _ -> assert false  
     | Levent _ ->
@@ -1002,8 +1004,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
 
 
    we should not remove it immediately, since we have to be careful
-      where it is used, it can be [exported], [Lvar] or [Lassign] etc
-      The other common mistake is that
+   where it is used, it can be [exported], [Lvar] or [Lassign] etc
+   The other common mistake is that
    {[
      let x = y (* elimiated x/y*)
      let u = x  (* eliminated u/x *)
@@ -1015,11 +1017,11 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
      let x = y (* x/y *)
      let u = x (* u/y *)
    ]}
-      This looks more correct, but lets be conservative here
+   This looks more correct, but lets be conservative here
 
-      global module inclusion {[ include List ]}
-      will cause code like {[ let include =a Lglobal_module (list)]}
+   global module inclusion {[ include List ]}
+   will cause code like {[ let include =a Lglobal_module (list)]}
 
-      when [u] is global, it can not be bound again,
-      it should always be the leaf
+   when [u] is global, it can not be bound again,
+   it should always be the leaf
 *)      

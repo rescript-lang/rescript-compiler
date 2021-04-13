@@ -1,7 +1,9 @@
 'use strict';
 
 
-var u = 0;
+function f($$window, a, b) {
+  return $$window.location(a, b);
+}
 
-exports.u = u;
+exports.f = f;
 /* No side effect */
