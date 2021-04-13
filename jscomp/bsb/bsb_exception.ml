@@ -62,7 +62,7 @@ let print (fmt : Format.formatter) (x : error) =
         "File \"bsconfig.json\", line 1\n\
          @{<error>Error:@} package @{<error>%s@} is not found %s\n\
          It's the basic, required package. If you have it installed globally,\n\
-         Please run `npm link bs-platform` to make it available" name in_json
+         Please run `npm link rescript` to make it available" name in_json
     else
       Format.fprintf fmt
         "File \"bsconfig.json\", line 1\n\

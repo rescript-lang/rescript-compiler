@@ -102,7 +102,9 @@ let rec dump r =
       opaque (Printf.sprintf "unknown: tag %d size %d" t s)
 
 let dump v = dump (Obj.repr v)
-
+let dump_endline ?(__LOC__="") v = 
+    print_endline __LOC__;    
+    print_endline (dump v )
 let pp_any fmt v = 
   Format.fprintf fmt "@[%s@]"
     (dump v )

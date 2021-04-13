@@ -160,7 +160,7 @@ function main() {
           };
           var output;
           try {
-            output = cp.execSync(`npm link bs-platform`, config);
+            output = cp.execSync(`npm link rescript`, config);
             output = cp.execSync(`npm install`, config);
             output = cp.execSync(`npm run clean`, config);
             output = cp.execSync(`npm run build`, config);
@@ -177,7 +177,7 @@ function main() {
   if (bsbTest) {
     console.log("Doing build_tests");
     var buildTestDir = path.join(__dirname, "..", "jscomp", "build_tests");
-    cp.execSync(`npm link bs-platform`, {
+    cp.execSync(`npm link rescript`, {
       cwd: buildTestDir,
       stdio: [0, 1, 2],
       encoding: "utf8",

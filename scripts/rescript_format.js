@@ -145,29 +145,24 @@ function main(argv, bsb_exe, bsc_exe) {
 
       for (let i = 0; i < files.length; ++i) {
         let file = files[i];
-        if (!isSupportedFile(file)) {
-          if (isSupportedConvert(file)) {
-            console.error(
-              `You need convert subcommand to handle such file extensions`
-            );
-          } else {
-            console.error(`Don't know what do with ${file}`);
-          }
-          console.error(`Supported extensions: ${formattedFileExtensions}`)
+        if (!isSupportedStd(file)) {
+          console.error(`Don't know what do with ${file}`);
+          console.error(`Supported extensions: ${formattedFileExtensions}`);
           process.exit(2);
         }
       }
       files.forEach((file) => {
-        child_process.execFile(
-          bsc_exe,
-          ["-o", file, "-format", file],
-          (error, stdout, stderr) => {
-            if (error === null) {
-            } else {
-              console.log(stderr);
+        var write = isSupportedFile(file);
+        var flags = write ? ["-o", file, "-format", file] : ["-format", file];
+        child_process.execFile(bsc_exe, flags, (error, stdout, stderr) => {
+          if (error === null) {
+            if (!write) {
+              console.log(stdout);
             }
+          } else {
+            console.log(stderr);
           }
-        );
+        });
       });
     }
   } catch (e) {
