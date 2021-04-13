@@ -1,5 +1,47 @@
 `*` means  potential break changes
 
+# 9.1
+
+- #5014 #5063 #5027 the new ReScript CLI interface
+Thew new CLI is self explainatory:
+```
+rescript -h
+Available flags
+-v, -version  display version number
+-h, -help     display help 
+Subcommands:
+    build    
+    clean
+    format
+    convert
+    help
+Run rescript subcommand -h for more details,
+For example:
+    rescript build -h
+    rescript format -h
+```
+
+- #5025 in place format support, this is subsumed into `rescript format` subcommand
+- #5060 #5055
+Add formatting support for stdin/sdout
+- #5053 #5050 clean up structural object semantics
+- #5037 
+Allows coercion from nullary types to int/string.
+This applies to collections types too
+- #5029
+int polyvar is compiled into int.
+`#0` is the same as 0 except it is structually typed as `#0`
+- #5023 generate interface file in rescript syntax by default
+- #5021 makes int64 runtime payload small for just comparison
+- #5019, #5017, #5016, #5015, #5010 improve error message
+- #5008 don't trigger a rebuild if mjs file changes, fix an infinite loop in watch mode
+- #5005 not depending on Format for Arg module, smaller size
+- #4985 fix the schema of bsb on `dev` property
+- #4967 #4986, #4984, #4971, #4972, #4969 Breaking changes
+Remove ocaml style classes while structural objects and structural typings are simplified. Js.t is no longer needed. If user does not know
+what ocaml style class is, this should not affect him.
+
+
 # 9.0.2
 
 - #4990 Fix an optimization bug introduced in 9.0
