@@ -16,4 +16,6 @@ type t = { x : int, y : int}
 //     x + y
 // }
 
-let u = #0
+let f = (window,a,b) => {
+    window["location"](.a,b)
+}

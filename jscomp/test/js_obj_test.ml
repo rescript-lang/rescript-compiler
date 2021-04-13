@@ -4,7 +4,7 @@ open Js_obj
 type  x = < say : int -> int >
 
 
-
+let f9 window = window#location 1 2 
 
 let f  (u : x ) = let h = u ## say in h 32 
 
