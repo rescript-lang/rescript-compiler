@@ -273,7 +273,7 @@ external localeCompare : t -> t -> float = "localeCompare" [@@bs.send]
 ]}
 
 *)
-external match_ : t -> Js_re.t -> t array option = "match" [@@bs.send] [@@bs.return {null_to_opt}]
+external match_ : t -> Js_re.t -> t option array option = "match" [@@bs.send] [@@bs.return {null_to_opt}]
 
 (** [normalize str] returns the normalized Unicode string using Normalization Form Canonical (NFC) Composition.
 
