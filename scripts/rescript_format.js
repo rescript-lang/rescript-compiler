@@ -35,7 +35,7 @@ in the stdout (in rescript syntax)`,
 ];
 var formattedStdExtensions = [".res", ".resi", ".ml", ".mli", ".re", ".rei"];
 var formattedFileExtensions = [".res", ".resi"];
-var convertedExtensions = [".ml", ".mli", ".re", ".rei"];
+
 /**
  *
  * @param {string[]} extensions
@@ -62,7 +62,7 @@ async function readStdin() {
 function main(argv, bsb_exe, bsc_exe) {
   var isSupportedFile = hasExtension(formattedFileExtensions);
   var isSupportedStd = hasExtension(formattedStdExtensions);
-  var isSupportedConvert = hasExtension(convertedExtensions);
+
   try {
     /**
      * @type {string[]}
