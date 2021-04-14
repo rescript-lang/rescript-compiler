@@ -231,13 +231,7 @@ let main () =
     succeeded := !succeeded && test_hwb bdd (random_vars n)
   done;
   assert !succeeded
-(*
-  if !succeeded
-  then print_string "OK\n"
-  else print_string "FAILED\n";
-Format.eprintf "%d@." !nodeC;
-  exit 0
-*)
+
 
 let _ = main()
 

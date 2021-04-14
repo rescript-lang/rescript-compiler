@@ -245,8 +245,8 @@ function eq(loc, param) {
 List.iter((function (param) {
         return eq("File \"utf8_decode_test.ml\", line 107, characters 7-14", [
                     true,
-                    eq_list((function (prim, prim$1) {
-                            return prim === prim$1;
+                    eq_list((function (prim0, prim1) {
+                            return prim0 === prim1;
                           }), to_list(utf8_decode(Stream.of_string(param[0]))), param[1])
                   ]);
       }), {

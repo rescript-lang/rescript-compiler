@@ -172,14 +172,14 @@ let suites :  Mt.pair_suites = Mt.[
       )
 ]
                                  @ (let (a,b) = shift_left_tests in    
-     Ext_array_test.map2i (fun i a b -> Format.asprintf "shift_left_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
+     Ext_array_test.map2i (fun i a b ->  {j|shift_left_cases $(i)|j}, (fun _ -> Mt.Eq(a,b)) ) a b
      |>  Array.to_list)
                                  @ 
                                  ((let (a,b) = shift_right_tests in    
-                                   Ext_array_test.map2i (fun i a b -> Format.asprintf "shift_right_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
+                                   Ext_array_test.map2i (fun i a b -> {j|shift_right_cases $(i)|j}, (fun _ -> Mt.Eq(a,b)) ) a b
                                    |>  Array.to_list))    @
                                  ((let (a,b) = shift_right_logical_suites in    
-                                   Ext_array_test.map2i (fun i a b -> Format.asprintf "shift_right_logical_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
+                                   Ext_array_test.map2i (fun i a b ->  {j|shift_right_logical_cases $(i)|j}, (fun _ -> Mt.Eq(a,b)) ) a b
                                    |>  Array.to_list)) 
 
 

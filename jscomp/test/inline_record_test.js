@@ -35,12 +35,12 @@ var v1 = {
 
 function f(x) {
   if (x.TAG === /* A0 */0) {
-    return List.fold_left((function (prim, prim$1) {
-                  return prim + prim$1 | 0;
+    return List.fold_left((function (prim0, prim1) {
+                  return prim0 + prim1 | 0;
                 }), x.lbl, x.more);
   } else {
-    return List.fold_left((function (prim, prim$1) {
-                  return prim + prim$1 | 0;
+    return List.fold_left((function (prim0, prim1) {
+                  return prim0 + prim1 | 0;
                 }), 0, x.more);
   }
 }

@@ -68,7 +68,7 @@ let print (fmt : Format.formatter) (x : error) =
         "File \"bsconfig.json\", line 1\n\
          @{<error>Error:@} package @{<error>%s@} not found or built %s\n\
          - Did you install it?\n\
-         - If you did, did you run `bsb -make-world`?"
+         - If you did, did you run `rescript build -with-deps`?"
         name
         in_json
 

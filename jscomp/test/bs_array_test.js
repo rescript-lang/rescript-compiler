@@ -344,15 +344,15 @@ b("File \"bs_array_test.ml\", line 93, characters 4-11", Caml_obj.caml_equal(Bel
 
 b("File \"bs_array_test.ml\", line 94, characters 4-11", Caml_obj.caml_equal(Belt_Array.rangeBy(3, 3, 1), [3]));
 
-eq("File \"bs_array_test.ml\", line 99, characters 5-12", Belt_Array.reduceReverse([], 100, (function (prim, prim$1) {
-            return prim - prim$1 | 0;
+eq("File \"bs_array_test.ml\", line 99, characters 5-12", Belt_Array.reduceReverse([], 100, (function (prim0, prim1) {
+            return prim0 - prim1 | 0;
           })), 100);
 
 eq("File \"bs_array_test.ml\", line 100, characters 5-12", Belt_Array.reduceReverse([
           1,
           2
-        ], 100, (function (prim, prim$1) {
-            return prim - prim$1 | 0;
+        ], 100, (function (prim0, prim1) {
+            return prim0 - prim1 | 0;
           })), 97);
 
 eq("File \"bs_array_test.ml\", line 101, characters 5-12", Belt_Array.reduceReverse([
@@ -360,8 +360,8 @@ eq("File \"bs_array_test.ml\", line 101, characters 5-12", Belt_Array.reduceReve
           2,
           3,
           4
-        ], 100, (function (prim, prim$1) {
-            return prim - prim$1 | 0;
+        ], 100, (function (prim0, prim1) {
+            return prim0 - prim1 | 0;
           })), 90);
 
 eq("File \"bs_array_test.ml\", line 102, characters 5-12", Belt_Array.reduceWithIndex([
@@ -1124,8 +1124,8 @@ eq("File \"bs_array_test.ml\", line 258, characters 5-12", Belt_Array.zipBy([
           1,
           2,
           3
-        ], (function (prim, prim$1) {
-            return prim - prim$1 | 0;
+        ], (function (prim0, prim1) {
+            return prim0 - prim1 | 0;
           })), [
       1,
       1,
@@ -1141,8 +1141,8 @@ eq("File \"bs_array_test.ml\", line 259, characters 5-12", Belt_Array.zipBy([
           3,
           4,
           1
-        ], (function (prim, prim$1) {
-            return prim - prim$1 | 0;
+        ], (function (prim0, prim1) {
+            return prim0 - prim1 | 0;
           })), Belt_Array.map([
           1,
           1,
@@ -1226,8 +1226,8 @@ b("File \"bs_array_test.ml\", line 273, characters 4-11", !Belt_Array.some([
 b("File \"bs_array_test.ml\", line 274, characters 4-11", !Belt_Array.eq([
           0,
           1
-        ], [1], (function (prim, prim$1) {
-            return prim === prim$1;
+        ], [1], (function (prim0, prim1) {
+            return prim0 === prim1;
           })));
 
 var c$1 = {

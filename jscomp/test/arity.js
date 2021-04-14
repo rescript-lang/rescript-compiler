@@ -18,8 +18,8 @@ function f(x, y) {
   return x + y | 0;
 }
 
-function add(prim, prim$1) {
-  return prim + prim$1 | 0;
+function add(prim0, prim1) {
+  return prim0 + prim1 | 0;
 }
 
 function h(u) {

@@ -159,7 +159,7 @@ o all: phony runtime others $stdlib
     stdio: [0, 1, 2],
     shell: false,
   });
-  var buildArgs = ["-f", "release.ninja", "--verbose"];
+  var buildArgs = ["-f", "release.ninja", "--verbose", "-k", "1"];
   cp.execFileSync(ninja_bin_output, buildArgs, {
     cwd: jscomp_dir,
     stdio: [0, 1, 2],

@@ -1,8 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Curry = require("../../lib/js/curry.js");
-var Format = require("../../lib/js/format.js");
 var Printexc = require("../../lib/js/printexc.js");
 var Exception_def = require("./exception_def.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
@@ -43,24 +41,7 @@ Printexc.register_printer(function (s) {
       if (s.RE_EXN_ID === Hi) {
         return "hey";
       } else if (s.RE_EXN_ID === A) {
-        return Curry._1(Format.asprintf(/* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "A(",
-                          _1: {
-                            TAG: /* Int */4,
-                            _0: /* Int_d */0,
-                            _1: /* No_padding */0,
-                            _2: /* No_precision */0,
-                            _3: {
-                              TAG: /* Char_literal */12,
-                              _0: /* ')' */41,
-                              _1: /* End_of_format */0
-                            }
-                          }
-                        },
-                        _1: "A(%d)"
-                      }), s._1);
+        return "A(" + s._1 + ")";
       } else {
         return ;
       }

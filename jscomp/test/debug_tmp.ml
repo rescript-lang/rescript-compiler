@@ -11,3 +11,4 @@
   |]
 }]
 
+external f : int -> int = "xx" [@@val]

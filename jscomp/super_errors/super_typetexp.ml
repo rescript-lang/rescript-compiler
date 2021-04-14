@@ -69,7 +69,7 @@ let report_error env ppf = function
                               @{<info>The module or file %a can't be found.@}@,\
                               @[<v 2>- If it's a third-party dependency:@,\
                               - Did you list it in bsconfig.json?@,\
-                              - @[Did you run `bsb` instead of `bsb -make-world`@ (latter builds third-parties)@]?\
+                              - @[Did you run `rescript build` instead of `rescript build -with-deps`@ (latter builds third-parties)@]?\
                               @]@,\
                               - Did you include the file's directory in bsconfig.json?@]\
                               @]"

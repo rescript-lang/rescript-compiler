@@ -2,8 +2,8 @@
 
 var React = require("react");
 
-function _assign(prim, prim$1) {
-  return Object.assign(prim, prim$1);
+function _assign(prim0, prim1) {
+  return Object.assign(prim0, prim1);
 }
 
 var emptyObject = {};

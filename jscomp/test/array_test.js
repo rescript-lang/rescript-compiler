@@ -250,8 +250,8 @@ var array_suites_1 = {
                                 26,
                                 27,
                                 28
-                              ], (function (prim, prim$1) {
-                                  return prim === prim$1;
+                              ], (function (prim0, prim1) {
+                                  return prim0 === prim1;
                                 }))
                         };
                 })
@@ -294,8 +294,8 @@ var array_suites_1 = {
                                   18,
                                   19,
                                   20
-                                ], (function (prim, prim$1) {
-                                    return prim === prim$1;
+                                ], (function (prim0, prim1) {
+                                    return prim0 === prim1;
                                   }))
                           };
                   })

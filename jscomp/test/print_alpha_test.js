@@ -14,8 +14,8 @@ Mt.from_pair_suites("Print_alpha_test", {
         (function (param) {
             return {
                     TAG: /* Eq */0,
-                    _0: f((function (prim, prim$1) {
-                              return prim + prim$1 | 0;
+                    _0: f((function (prim0, prim1) {
+                              return prim0 + prim1 | 0;
                             }), undefined)(1, 2),
                     _1: 3
                   };

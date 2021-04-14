@@ -4457,9 +4457,7 @@ let setup_colors () =
 let print_loc ppf loc =
   setup_colors ();
   let (file, line, startchar) = get_pos_info loc.loc_start in
- 
-  let startchar = 
-    if Clflags.bs_vscode then startchar + 1 else startchar in 
+  let startchar =  startchar + 1 in 
       
   let endchar = loc.loc_end.pos_cnum - loc.loc_start.pos_cnum + startchar in
   if file = "//toplevel//" then begin

@@ -21,8 +21,8 @@ Caml_module.update_mod({
           "add"
         ]]
     }, Point, {
-      add: (function (prim, prim$1) {
-          return prim.add(prim$1);
+      add: (function (prim0, prim1) {
+          return prim0.add(prim1);
         })
     });
 

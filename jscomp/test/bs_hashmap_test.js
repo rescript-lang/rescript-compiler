@@ -38,8 +38,8 @@ var Y = Belt_Id.hashable(hash, eq);
 
 var empty = Belt_internalBucketsType.make(Y.hash, Y.eq, 30);
 
-function add(prim, prim$1) {
-  return prim + prim$1 | 0;
+function add(prim0, prim1) {
+  return prim0 + prim1 | 0;
 }
 
 Belt_HashMap.mergeMany(empty, [

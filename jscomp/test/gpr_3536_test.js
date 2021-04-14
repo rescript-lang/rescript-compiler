@@ -23,12 +23,12 @@ function xx(obj, a0, a1, a2, a3, a4, a5) {
 
 eq("File \"gpr_3536_test.ml\", line 29, characters 12-19", 5, 5);
 
-eq("File \"gpr_3536_test.ml\", line 32, characters 6-13", xx(3, (function (prim, prim$1) {
-            return prim - prim$1 | 0;
-          }), 2, (function (prim, prim$1) {
-            return prim + prim$1 | 0;
-          }), 4, (function (prim, prim$1) {
-            return Math.imul(prim, prim$1);
+eq("File \"gpr_3536_test.ml\", line 32, characters 6-13", xx(3, (function (prim0, prim1) {
+            return prim0 - prim1 | 0;
+          }), 2, (function (prim0, prim1) {
+            return prim0 + prim1 | 0;
+          }), 4, (function (prim0, prim1) {
+            return Math.imul(prim0, prim1);
           }), 3), 11);
 
 Mt.from_pair_suites("Gpr_3536_test", suites.contents);

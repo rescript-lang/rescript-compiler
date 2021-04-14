@@ -2,6 +2,8 @@
 var arg = require("./rescript_arg.js");
 var format_usage = `Usage: rescript convert <options> [files]
 rescript convert -- it converts the current directory
+Note this subcommand will remove old reason/ml files and 
+create new ReScript files, make sure your work is saved first.
 `;
 
 var child_process = require("child_process");
