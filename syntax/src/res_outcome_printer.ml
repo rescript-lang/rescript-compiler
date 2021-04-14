@@ -599,7 +599,7 @@ let printPolyVarIdent txt =
                  Doc.line;
                  Doc.group (
                    Doc.join ~sep:Doc.line (List.map (fun prim -> 
-                       let prim = if prim <> "" && prim.[0] = '\132' then "#rescript-external" else prim in 
+                       let prim = if prim <> "" && (prim.[0] [@doesNotRaise]) = '\132' then "#rescript-external" else prim in 
                        (* not display those garbage '\132' is a magic number for marshal *)
                        Doc.text ("\"" ^ prim ^ "\"")) primitives)
                  )
