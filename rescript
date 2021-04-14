@@ -130,6 +130,7 @@ Run rescript subcommand -h for more details,
 For example:
     rescript build -h
     rescript format -h
+The default \`rescript\` is equivalent to \`rescript build\` subcommand
   `);
 }
 
