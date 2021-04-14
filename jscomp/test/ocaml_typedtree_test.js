@@ -44508,8 +44508,8 @@ function normalize_type_path(cacheOpt, env, p) {
     }
     var p1 = match$1._0;
     var tyl = List.map(repr, match$1._1);
-    if (List.length(params) === List.length(tyl) && List.for_all2((function (prim, prim$1) {
-              return prim === prim$1;
+    if (List.length(params) === List.length(tyl) && List.for_all2((function (prim0, prim1) {
+              return prim0 === prim1;
             }), params, tyl)) {
       return normalize_type_path(cache, env, p1);
     }

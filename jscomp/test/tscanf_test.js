@@ -5174,8 +5174,8 @@ function test58(param) {
                 }
               },
               _1: "%s@%%%s"
-            }), (function (prim, prim$1) {
-            return prim + prim$1;
+            }), (function (prim0, prim1) {
+            return prim0 + prim1;
           })) === "string1string2" && Curry._1(Scanf.sscanf("string1@string2", /* Format */{
               _0: {
                 TAG: /* Scan_char_set */20,
@@ -5192,8 +5192,8 @@ function test58(param) {
                 }
               },
               _1: "%[a-z0-9]@%s"
-            }), (function (prim, prim$1) {
-            return prim + prim$1;
+            }), (function (prim0, prim1) {
+            return prim0 + prim1;
           })) === "string1string2") {
     return Curry._1(Scanf.sscanf("string1@%string2", /* Format */{
                     _0: {
@@ -5215,8 +5215,8 @@ function test58(param) {
                       }
                     },
                     _1: "%[a-z0-9]%@%%%s"
-                  }), (function (prim, prim$1) {
-                  return prim + prim$1;
+                  }), (function (prim0, prim1) {
+                  return prim0 + prim1;
                 })) === "string1string2";
   } else {
     return false;

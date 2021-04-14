@@ -10,8 +10,8 @@ var b = Belt_Array.eq([
       1,
       2,
       3
-    ], (function (prim, prim$1) {
-        return prim === prim$1;
+    ], (function (prim0, prim1) {
+        return prim0 === prim1;
       }));
 
 var A;

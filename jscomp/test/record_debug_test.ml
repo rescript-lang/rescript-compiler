@@ -52,8 +52,8 @@ end
 
 ;; Js.log {j| hei $v |j}
 
-let fmt,a, c = Format.std_formatter, (1,2,2,4,3) , [|1;2;3;4;5|]
-;; Js.log {j| $fmt $a $c |j}
+let a, c =  (1,2,2,4,3) , [|1;2;3;4;5|]
+;; Js.log {j|  $a $c |j}
 
 let%private i = 3
 let%private a = 

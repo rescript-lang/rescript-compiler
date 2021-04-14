@@ -163,8 +163,8 @@ function approx(loc, x, y) {
 
 eq("File \"bs_set_int_test.ml\", line 74, characters 5-12", Belt_SetInt.reduce(v$1, 0, (function (x, y) {
             return x + y | 0;
-          })), Belt_Array.reduce(ss, 0, (function (prim, prim$1) {
-            return prim + prim$1 | 0;
+          })), Belt_Array.reduce(ss, 0, (function (prim0, prim1) {
+            return prim0 + prim1 | 0;
           })));
 
 approx("File \"bs_set_int_test.ml\", line 75, characters 9-16", -1, minv);

@@ -2,12 +2,12 @@
 
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
-function min_int(prim, prim$1) {
-  return Math.min(prim, prim$1);
+function min_int(prim0, prim1) {
+  return Math.min(prim0, prim1);
 }
 
-function say(prim, prim$1) {
-  return prim$1.say(prim);
+function say(prim0, prim1) {
+  return prim1.say(prim0);
 }
 
 var v = Caml_obj.caml_compare;

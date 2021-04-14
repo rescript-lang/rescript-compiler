@@ -80,8 +80,8 @@ function add3(x, y, z) {
 }
 
 function h2(x) {
-  return ff(x, (function (prim, prim$1) {
-                return prim + prim$1 | 0;
+  return ff(x, (function (prim0, prim1) {
+                return prim0 + prim1 | 0;
               }));
 }
 

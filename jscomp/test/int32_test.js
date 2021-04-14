@@ -147,8 +147,8 @@ var shift_left_tests = [
   shift_left_tests_1
 ];
 
-function $star$tilde(prim, prim$1) {
-  return Math.imul(prim, prim$1);
+function $star$tilde(prim0, prim1) {
+  return Math.imul(prim0, prim1);
 }
 
 var suites = {

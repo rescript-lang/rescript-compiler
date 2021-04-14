@@ -50,8 +50,8 @@ console.log(6, undefined);
 
 console.log(7, Caml_option.option_unwrap((console.log("trace"), undefined)));
 
-function dyn_log3(prim, prim$1, prim$2) {
-  console.log(prim.VAL, Caml_option.option_unwrap(prim$1));
+function dyn_log3(prim0, prim1, prim2) {
+  console.log(prim0.VAL, Caml_option.option_unwrap(prim1));
   
 }
 

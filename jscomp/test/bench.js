@@ -52,8 +52,8 @@ function f2(param) {
   var b = map((function (i) {
           return i + i - 1;
         }), arr);
-  var v = fold_left((function (prim, prim$1) {
-          return prim + prim$1;
+  var v = fold_left((function (prim0, prim1) {
+          return prim0 + prim1;
         }), 0, b);
   console.log(Pervasives.string_of_float(v));
   

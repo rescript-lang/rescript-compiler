@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Format = require("../../lib/js/format.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var suites = {
@@ -84,7 +83,7 @@ var c = [
   5
 ];
 
-console.log(" " + Format.std_formatter + " " + a + " " + c + " ");
+console.log("  " + a + " " + c + " ");
 
 var a_0 = "";
 
@@ -145,8 +144,6 @@ var v3 = {
   ]
 };
 
-var fmt = Format.std_formatter;
-
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
@@ -161,7 +158,6 @@ exports.v2 = v2;
 exports.v3 = v3;
 exports.N = N;
 exports.N0 = N0;
-exports.fmt = fmt;
 exports.a = a;
 exports.c = c;
 /*  Not a pure module */

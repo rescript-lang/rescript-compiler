@@ -1018,8 +1018,8 @@ b("File \"bs_list_test.ml\", line 182, characters 4-11", Belt_List.hasAssoc({
               tl: /* [] */0
             }
           }
-        }, 2, (function (prim, prim$1) {
-            return prim === prim$1;
+        }, 2, (function (prim0, prim1) {
+            return prim0 === prim1;
           })));
 
 b("File \"bs_list_test.ml\", line 183, characters 4-11", !Belt_List.hasAssoc({
@@ -1040,8 +1040,8 @@ b("File \"bs_list_test.ml\", line 183, characters 4-11", !Belt_List.hasAssoc({
               tl: /* [] */0
             }
           }
-        }, 4, (function (prim, prim$1) {
-            return prim === prim$1;
+        }, 4, (function (prim0, prim1) {
+            return prim0 === prim1;
           })));
 
 b("File \"bs_list_test.ml\", line 184, characters 4-11", Belt_List.hasAssoc({
@@ -1084,8 +1084,8 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc({
               tl: /* [] */0
             }
           }
-        }, 3, (function (prim, prim$1) {
-            return prim === prim$1;
+        }, 3, (function (prim0, prim1) {
+            return prim0 === prim1;
           })), {
       hd: [
         1,
@@ -1118,8 +1118,8 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc({
               tl: /* [] */0
             }
           }
-        }, 1, (function (prim, prim$1) {
-            return prim === prim$1;
+        }, 1, (function (prim0, prim1) {
+            return prim0 === prim1;
           })), {
       hd: [
         2,
@@ -1152,8 +1152,8 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc({
               tl: /* [] */0
             }
           }
-        }, 2, (function (prim, prim$1) {
-            return prim === prim$1;
+        }, 2, (function (prim0, prim1) {
+            return prim0 === prim1;
           })), {
       hd: [
         1,
@@ -1186,8 +1186,8 @@ eq("REMOVEASSOQ", Belt_List.removeAssoc({
               tl: /* [] */0
             }
           }
-        }, 0, (function (prim, prim$1) {
-            return prim === prim$1;
+        }, 0, (function (prim0, prim1) {
+            return prim0 === prim1;
           })), {
       hd: [
         1,
@@ -1330,8 +1330,8 @@ var ll0 = Belt_List.removeAssoc(ll, 0, eqx);
 
 b("File \"bs_list_test.ml\", line 196, characters 5-12", ll === ll0);
 
-var ll1 = Belt_List.setAssoc(ll, 2, "22", (function (prim, prim$1) {
-        return prim === prim$1;
+var ll1 = Belt_List.setAssoc(ll, 2, "22", (function (prim0, prim1) {
+        return prim0 === prim1;
       }));
 
 eq("File \"bs_list_test.ml\", line 198, characters 5-12", ll1, {
@@ -1354,8 +1354,8 @@ eq("File \"bs_list_test.ml\", line 198, characters 5-12", ll1, {
       }
     });
 
-var ll2 = Belt_List.setAssoc(ll1, 22, "2", (function (prim, prim$1) {
-        return prim === prim$1;
+var ll2 = Belt_List.setAssoc(ll1, 22, "2", (function (prim0, prim1) {
+        return prim0 === prim1;
       }));
 
 b("File \"bs_list_test.ml\", line 200, characters 4-11", Caml_obj.caml_equal(ll2, {
@@ -1386,8 +1386,8 @@ b("File \"bs_list_test.ml\", line 202, characters 4-11", Caml_obj.caml_equal(Bel
                   tl: /* [] */0
                 }
               }
-            }, 2, "x", (function (prim, prim$1) {
-                return prim === prim$1;
+            }, 2, "x", (function (prim0, prim1) {
+                return prim0 === prim1;
               })), {
           hd: [
             1,
@@ -1420,8 +1420,8 @@ b("File \"bs_list_test.ml\", line 204, characters 4-11", Caml_obj.caml_equal(Bel
                 ],
                 tl: /* [] */0
               }
-            }, 2, "2", (function (prim, prim$1) {
-                return prim === prim$1;
+            }, 2, "2", (function (prim0, prim1) {
+                return prim0 === prim1;
               })), {
           hd: [
             2,
@@ -1442,8 +1442,8 @@ b("File \"bs_list_test.ml\", line 204, characters 4-11", Caml_obj.caml_equal(Bel
           }
         }));
 
-eq("File \"bs_list_test.ml\", line 206, characters 5-12", Belt_List.setAssoc(/* [] */0, 1, "1", (function (prim, prim$1) {
-            return prim === prim$1;
+eq("File \"bs_list_test.ml\", line 206, characters 5-12", Belt_List.setAssoc(/* [] */0, 1, "1", (function (prim0, prim1) {
+            return prim0 === prim1;
           })), {
       hd: [
         1,
@@ -1460,8 +1460,8 @@ eq("File \"bs_list_test.ml\", line 208, characters 5-12", Belt_List.setAssoc({
             "2"
           ],
           tl: /* [] */0
-        }, 1, "1", (function (prim, prim$1) {
-            return prim === prim$1;
+        }, 1, "1", (function (prim0, prim1) {
+            return prim0 === prim1;
           })), {
       hd: [
         1,
@@ -1482,8 +1482,8 @@ eq("File \"bs_list_test.ml\", line 210, characters 5-12", Belt_List.setAssoc({
             ],
             tl: /* [] */0
           }
-        }, 1, "1", (function (prim, prim$1) {
-            return prim === prim$1;
+        }, 1, "1", (function (prim0, prim1) {
+            return prim0 === prim1;
           })), {
       hd: [
         0,
@@ -1516,8 +1516,8 @@ b("File \"bs_list_test.ml\", line 211, characters 4-11", Caml_obj.caml_equal(Bel
                   tl: /* [] */0
                 }
               }
-            }, 2, (function (prim, prim$1) {
-                return prim === prim$1;
+            }, 2, (function (prim0, prim1) {
+                return prim0 === prim1;
               })), "b"));
 
 b("File \"bs_list_test.ml\", line 212, characters 4-11", Belt_List.getAssoc({
@@ -1538,8 +1538,8 @@ b("File \"bs_list_test.ml\", line 212, characters 4-11", Belt_List.getAssoc({
               tl: /* [] */0
             }
           }
-        }, 4, (function (prim, prim$1) {
-            return prim === prim$1;
+        }, 4, (function (prim0, prim1) {
+            return prim0 === prim1;
           })) === undefined);
 
 eq("File \"bs_list_test.ml\", line 216, characters 5-12", [
@@ -1651,8 +1651,8 @@ eq("File \"bs_list_test.ml\", line 245, characters 5-12", Belt_List.reduceRevers
 
 eq("File \"bs_list_test.ml\", line 247, characters 5-12", Belt_List.reduceReverse(Belt_List.makeBy(10000, (function (i) {
                 return i;
-              })), 0, (function (prim, prim$1) {
-            return prim + prim$1 | 0;
+              })), 0, (function (prim0, prim1) {
+            return prim0 + prim1 | 0;
           })), 49995000);
 
 eq("File \"bs_list_test.ml\", line 252, characters 5-12", sum2(length_10_id, length_10_id), 90);
@@ -1794,8 +1794,8 @@ b("File \"bs_list_test.ml\", line 272, characters 4-11", Belt_List.reduceReverse
               }
             }
           }
-        }, 0, (function (prim, prim$1) {
-            return prim + prim$1 | 0;
+        }, 0, (function (prim0, prim1) {
+            return prim0 + prim1 | 0;
           })) === 10);
 
 b("File \"bs_list_test.ml\", line 273, characters 4-11", Belt_List.reduceReverse({
@@ -1810,8 +1810,8 @@ b("File \"bs_list_test.ml\", line 273, characters 4-11", Belt_List.reduceReverse
               }
             }
           }
-        }, 10, (function (prim, prim$1) {
-            return prim - prim$1 | 0;
+        }, 10, (function (prim0, prim1) {
+            return prim0 - prim1 | 0;
           })) === 0);
 
 b("File \"bs_list_test.ml\", line 274, characters 4-11", Caml_obj.caml_equal(Belt_List.reduceReverse({
@@ -1852,8 +1852,8 @@ b("File \"bs_list_test.ml\", line 275, characters 4-11", Belt_List.reduce({
               }
             }
           }
-        }, 0, (function (prim, prim$1) {
-            return prim + prim$1 | 0;
+        }, 0, (function (prim0, prim1) {
+            return prim0 + prim1 | 0;
           })) === 10);
 
 b("File \"bs_list_test.ml\", line 276, characters 4-11", Belt_List.reduce({
@@ -1868,8 +1868,8 @@ b("File \"bs_list_test.ml\", line 276, characters 4-11", Belt_List.reduce({
               }
             }
           }
-        }, 10, (function (prim, prim$1) {
-            return prim - prim$1 | 0;
+        }, 10, (function (prim0, prim1) {
+            return prim0 - prim1 | 0;
           })) === 0);
 
 b("File \"bs_list_test.ml\", line 277, characters 4-11", Caml_obj.caml_equal(Belt_List.reduce({
@@ -2444,8 +2444,8 @@ b("File \"bs_list_test.ml\", line 340, characters 4-11", !Belt_List.eq({
               }
             }
           }
-        }, (function (prim, prim$1) {
-            return prim === prim$1;
+        }, (function (prim0, prim1) {
+            return prim0 === prim1;
           })));
 
 var u0 = Belt_List.makeBy(20, (function (x) {
