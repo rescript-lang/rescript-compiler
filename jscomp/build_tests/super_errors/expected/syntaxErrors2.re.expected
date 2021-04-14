@@ -1,4 +1,4 @@
-File "/.../fixtures/syntaxErrors2.re", line 2, characters 40-41:
+File "/.../fixtures/syntaxErrors2.re", line 2, characters 41-42:
 Error: Syntax error
 
   [1;31mWe've found a bug for you![0m

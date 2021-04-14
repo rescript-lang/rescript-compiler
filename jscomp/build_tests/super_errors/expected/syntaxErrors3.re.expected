@@ -1,4 +1,4 @@
-File "/.../fixtures/syntaxErrors3.re", line 1, characters 19-20:
+File "/.../fixtures/syntaxErrors3.re", line 1, characters 20-21:
 Error: Unclosed "(" (opened line 1, column 18)
 
   [1;31mWe've found a bug for you![0m
