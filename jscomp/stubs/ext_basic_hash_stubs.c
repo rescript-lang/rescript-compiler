@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include "caml/memory.h"
 #include "caml/signals.h"
+#include "caml/misc.h"
+#include <sys/stat.h>
 typedef uint32_t uint32;
 
 #define FINAL_MIX(h) \
@@ -175,6 +177,37 @@ CAMLprim value caml_stale_file(value path)
   CAMLreturn(Val_unit);
 }
 #endif
+
+
+CAMLprim value caml_sys_is_directory_no_exn(value name)
+{
+  CAMLparam1(name);
+#ifdef _WIN32
+  struct _stati64 st;
+#else
+  struct stat st;
+#endif
+  char_os * p;
+  int ret;
+
+  
+  if(!caml_string_is_c_safe(name)){
+    CAMLreturn(Val_false);
+  }
+
+  p = caml_stat_strdup_to_os(String_val(name));
+  caml_enter_blocking_section();
+  ret = CAML_SYS_STAT(p, &st);
+  caml_leave_blocking_section();
+  caml_stat_free(p);
+
+  if (ret == -1) CAMLreturn(Val_false);
+#ifdef S_ISDIR
+  CAMLreturn(Val_bool(S_ISDIR(st.st_mode)));
+#else
+  CAMLreturn(Val_bool(st.st_mode & S_IFDIR));
+#endif
+}
 /* local variables: */
 /* compile-command: "ocamlopt.opt -c ext_basic_hash_stubs.c" */
 /* end: */

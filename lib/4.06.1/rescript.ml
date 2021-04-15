@@ -5163,8 +5163,9 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** TODO: not exported yet, wait for Windows Fix*)
-let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false 
+
+external is_directory_no_exn : string -> bool = "caml_sys_is_directory_no_exn"
+
 
 
 let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
@@ -16678,7 +16679,25 @@ let install_target () =
   if eid <> 0 then   
     Bsb_unix.command_fatal_error install_command eid  
 
-
+(** check if every dependency installation dierctory is there 
+    This is in hot path, so we want it to be fast.
+    The heuristics is that if the installation directory is not there,
+    we definitely need build the world.
+    If it is there, we do not check if it is up-to-date, since that's
+    going be slow, user can use `-with-deps` to enforce such check
+*)      
+let check_deps_installation_directory (config_opt : Bsb_config_types.t option) 
+    make_world = 
+  match config_opt with 
+  | Some {bs_dependencies; bs_dev_dependencies} ->     
+    if not (
+        Ext_list.for_all bs_dependencies 
+          (fun x -> Ext_sys.is_directory_no_exn x.package_install_path ) &&
+        Ext_list.for_all bs_dev_dependencies 
+          (fun x -> Ext_sys.is_directory_no_exn x.package_install_path)) then 
+      make_world := true 
+  | None -> 
+    ()
 
 let build_subcommand ~start  argv argv_len =
   let i =  Ext_array.rfind_with_index argv Ext_string.equal separator in   
@@ -16708,7 +16727,8 @@ let build_subcommand ~start  argv argv_len =
         Bsb_ninja_regen.regenerate_ninja
           ~package_kind:Toplevel 
           ~per_proj_dir:Bsb_global_paths.cwd
-          ~forced:!force_regenerate in 
+          ~forced:!force_regenerate in   
+      check_deps_installation_directory config_opt make_world;
       if !make_world then 
         Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
       if !do_install then 
@@ -16766,23 +16786,24 @@ let info_subcommand ~start argv =
          | None -> assert false
          | Some {file_groups = {files}} ->
            Ext_list.iter files (fun {sources } -> 
-            Map_string.iter sources (fun _ {info;syntax_kind;name_sans_extension} ->
-              let extensions = 
-                  match syntax_kind,info with 
-                  | _, Intf -> assert false 
-                  | Reason , Impl -> [".re" ]
-                  | Reason, Impl_intf -> [".re"; ".rei"]                   
-                  | Ml, Impl -> [".ml"]
-                  | Ml, Impl_intf -> [".ml"; ".mli"]
-                  | Res, Impl -> [".res"]
-                  | Res, Impl_intf -> [".res"; ".resi"] in 
-              Ext_list.iter extensions (fun x -> 
-                print_endline (name_sans_extension ^ x )
-              )      
+               Map_string.iter sources (fun _ {info;syntax_kind;name_sans_extension} ->
+                   let extensions = 
+                     match syntax_kind,info with 
+                     | _, Intf -> assert false 
+                     | Reason , Impl -> [".re" ]
+                     | Reason, Impl_intf -> [".re"; ".rei"]                   
+                     | Ml, Impl -> [".ml"]
+                     | Ml, Impl_intf -> [".ml"; ".mli"]
+                     | Res, Impl -> [".res"]
+                     | Res, Impl_intf -> [".res"; ".resi"] in 
+                   Ext_list.iter extensions (fun x -> 
+                       print_endline (name_sans_extension ^ x )
+                     )      
+                 )
              )
-           )
        end
      )  ;;
+
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =  
   let argv = Sys.argv in   
@@ -16790,10 +16811,14 @@ let () =
   try
     if argv_len = 1 then begin 
       (* specialize this path which is used in watcher *)
-      Bsb_ninja_regen.regenerate_ninja 
-        ~package_kind:Toplevel 
-        ~forced:false 
-        ~per_proj_dir:Bsb_global_paths.cwd  |> ignore;
+      let config_opt = 
+        Bsb_ninja_regen.regenerate_ninja 
+          ~package_kind:Toplevel 
+          ~forced:false 
+          ~per_proj_dir:Bsb_global_paths.cwd in 
+      check_deps_installation_directory config_opt make_world;
+      if !make_world then 
+        Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||];
       ninja_command_exit  [||] 
     end else
       match argv.(1) with 
