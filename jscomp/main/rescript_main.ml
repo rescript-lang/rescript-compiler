@@ -179,16 +179,21 @@ let clean_subcommand ~start argv =
   if !make_world then 
     Bsb_clean.clean_bs_deps Bsb_global_paths.cwd ; 
   Bsb_clean.clean_self Bsb_global_paths.cwd      
-
+let init_usage = "Init the project\n\
+                  rescript init [project-name]\n\
+                  defaults to the current directory if not set\n\
+                 "
 let init_subcommand ~start argv =   
   Bsb_arg.parse_exn 
-    ~usage:"init the project" ~start ~argv [|
+    ~usage:init_usage ~start ~argv [|
   |] (fun 
        ~rev_args -> 
        let location = 
          match rev_args with 
-         | x :: _  ->
+         | [x]   ->
            x 
+         | last :: _another :: _ -> 
+           raise (Bsb_arg.Bad ("Don't know what to do with " ^ last)) 
          | [] -> 
            "." in  
        Bsb_theme_init.init_sample_project 

@@ -1717,35 +1717,37 @@ let (+>) = Ext_buffer.add_string
 
 let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
   buf +> usage;
-  buf +> "\nOptions:\n";
-  let max_col = ref 0 in 
-  Ext_array.iter speclist (fun (key,_,_) -> 
-      if String.length key > !max_col then 
-        max_col := String.length key
-    );
-  Ext_array.iter speclist (fun (key,_,doc) -> 
-      if not (Ext_string.starts_with doc "*internal*") then begin 
-        buf +> "  ";
-        buf +> key ; 
-        buf +> (String.make (!max_col - String.length key + 2 ) ' ');
-        let cur = ref 0 in 
-        let doc_length = String.length doc in 
-        while !cur < doc_length do 
-          if !cur <> 0 then begin 
-            buf +>  "\n";
-            buf +> String.make (!max_col + 4) ' ' ;
-          end;
-          match String.index_from_opt doc !cur '\n' with 
-          | None -> 
-            buf +> String.sub doc !cur (String.length doc - !cur );
-            cur := doc_length
-          | Some new_line_pos -> 
-            buf +> String.sub doc !cur (new_line_pos - !cur );
-            cur := new_line_pos + 1
-        done ;
-        buf +> "\n"
-      end
-    )
+  if Ext_array.is_empty speclist  then () else begin 
+    buf +> "\nOptions:\n";
+    let max_col = ref 0 in 
+    Ext_array.iter speclist (fun (key,_,_) -> 
+        if String.length key > !max_col then 
+          max_col := String.length key
+      );
+    Ext_array.iter speclist (fun (key,_,doc) -> 
+        if not (Ext_string.starts_with doc "*internal*") then begin 
+          buf +> "  ";
+          buf +> key ; 
+          buf +> (String.make (!max_col - String.length key + 2 ) ' ');
+          let cur = ref 0 in 
+          let doc_length = String.length doc in 
+          while !cur < doc_length do 
+            if !cur <> 0 then begin 
+              buf +>  "\n";
+              buf +> String.make (!max_col + 4) ' ' ;
+            end;
+            match String.index_from_opt doc !cur '\n' with 
+            | None -> 
+              buf +> String.sub doc !cur (String.length doc - !cur );
+              cur := doc_length
+            | Some new_line_pos -> 
+              buf +> String.sub doc !cur (new_line_pos - !cur );
+              cur := new_line_pos + 1
+          done ;
+          buf +> "\n"
+        end
+      )
+  end 
 ;;
 
 
@@ -16747,16 +16749,21 @@ let clean_subcommand ~start argv =
   if !make_world then 
     Bsb_clean.clean_bs_deps Bsb_global_paths.cwd ; 
   Bsb_clean.clean_self Bsb_global_paths.cwd      
-
+let init_usage = "Init the project\n\
+                  rescript init [project-name]\n\
+                  defaults to the current directory if not set\n\
+                 "
 let init_subcommand ~start argv =   
   Bsb_arg.parse_exn 
-    ~usage:"init the project" ~start ~argv [|
+    ~usage:init_usage ~start ~argv [|
   |] (fun 
        ~rev_args -> 
        let location = 
          match rev_args with 
-         | x :: _  ->
+         | [x]   ->
            x 
+         | last :: _another :: _ -> 
+           raise (Bsb_arg.Bad ("Don't know what to do with " ^ last)) 
          | [] -> 
            "." in  
        Bsb_theme_init.init_sample_project 
