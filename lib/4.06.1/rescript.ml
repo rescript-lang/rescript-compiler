@@ -16679,7 +16679,14 @@ let install_target () =
   if eid <> 0 then   
     Bsb_unix.command_fatal_error install_command eid  
 
-let check_deps (config_opt : Bsb_config_types.t option) 
+(** check if every dependency installation dierctory is there 
+    This is in hot path, so we want it to be fast.
+    The heuristics is that if the installation directory is not there,
+    we definitely need build the world.
+    If it is there, we do not check if it is up-to-date, since that's
+    going be slow, user can use `-with-deps` to enforce such check
+*)      
+let check_deps_installation_directory (config_opt : Bsb_config_types.t option) 
     make_world = 
   match config_opt with 
   | Some {bs_dependencies; bs_dev_dependencies} ->     
@@ -16720,9 +16727,8 @@ let build_subcommand ~start  argv argv_len =
         Bsb_ninja_regen.regenerate_ninja
           ~package_kind:Toplevel 
           ~per_proj_dir:Bsb_global_paths.cwd
-          ~forced:!force_regenerate in 
-      (** check if every dependency is there *)    
-      check_deps config_opt make_world;
+          ~forced:!force_regenerate in   
+      check_deps_installation_directory config_opt make_world;
       if !make_world then 
         Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
       if !do_install then 
@@ -16810,7 +16816,7 @@ let () =
           ~package_kind:Toplevel 
           ~forced:false 
           ~per_proj_dir:Bsb_global_paths.cwd in 
-      check_deps config_opt make_world;
+      check_deps_installation_directory config_opt make_world;
       if !make_world then 
         Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||];
       ninja_command_exit  [||] 
