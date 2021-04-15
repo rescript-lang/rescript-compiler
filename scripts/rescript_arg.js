@@ -37,6 +37,9 @@ function bad_arg(s) {
 function usage_b(b, usage, specs) {
   b.add(usage);
   b.add(`\nOptions:\n`);
+  if(specs.length === 0){
+    return 
+  }
   var max_col = 0;
   for (let [key] of specs) {
     if (key.length > max_col) {

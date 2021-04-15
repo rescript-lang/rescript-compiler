@@ -1780,35 +1780,37 @@ let (+>) = Ext_buffer.add_string
 
 let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
   buf +> usage;
-  buf +> "\nOptions:\n";
-  let max_col = ref 0 in 
-  Ext_array.iter speclist (fun (key,_,_) -> 
-      if String.length key > !max_col then 
-        max_col := String.length key
-    );
-  Ext_array.iter speclist (fun (key,_,doc) -> 
-      if not (Ext_string.starts_with doc "*internal*") then begin 
-        buf +> "  ";
-        buf +> key ; 
-        buf +> (String.make (!max_col - String.length key + 2 ) ' ');
-        let cur = ref 0 in 
-        let doc_length = String.length doc in 
-        while !cur < doc_length do 
-          if !cur <> 0 then begin 
-            buf +>  "\n";
-            buf +> String.make (!max_col + 4) ' ' ;
-          end;
-          match String.index_from_opt doc !cur '\n' with 
-          | None -> 
-            buf +> String.sub doc !cur (String.length doc - !cur );
-            cur := doc_length
-          | Some new_line_pos -> 
-            buf +> String.sub doc !cur (new_line_pos - !cur );
-            cur := new_line_pos + 1
-        done ;
-        buf +> "\n"
-      end
-    )
+  if Ext_array.is_empty speclist  then () else begin 
+    buf +> "\nOptions:\n";
+    let max_col = ref 0 in 
+    Ext_array.iter speclist (fun (key,_,_) -> 
+        if String.length key > !max_col then 
+          max_col := String.length key
+      );
+    Ext_array.iter speclist (fun (key,_,doc) -> 
+        if not (Ext_string.starts_with doc "*internal*") then begin 
+          buf +> "  ";
+          buf +> key ; 
+          buf +> (String.make (!max_col - String.length key + 2 ) ' ');
+          let cur = ref 0 in 
+          let doc_length = String.length doc in 
+          while !cur < doc_length do 
+            if !cur <> 0 then begin 
+              buf +>  "\n";
+              buf +> String.make (!max_col + 4) ' ' ;
+            end;
+            match String.index_from_opt doc !cur '\n' with 
+            | None -> 
+              buf +> String.sub doc !cur (String.length doc - !cur );
+              cur := doc_length
+            | Some new_line_pos -> 
+              buf +> String.sub doc !cur (new_line_pos - !cur );
+              cur := new_line_pos + 1
+          done ;
+          buf +> "\n"
+        end
+      )
+  end 
 ;;
 
 
