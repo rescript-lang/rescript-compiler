@@ -1775,7 +1775,7 @@ function main() {
     switch (subcommand) {
       case "build":
         try {
-          cp.execFileSync(vendorNinjaPath, {
+          cp.execFileSync(vendorNinjaPath, ["-k", "1"], {
             encoding: "utf8",
             cwd: jscompDir,
             stdio: [0, 1, 2],

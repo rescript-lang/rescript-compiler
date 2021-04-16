@@ -29,6 +29,8 @@
     ]}
 *)
 
+[@@@warning "-103"]
+
 type + 'a t 
 type error 
 

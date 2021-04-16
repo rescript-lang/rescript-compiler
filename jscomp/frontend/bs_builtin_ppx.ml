@@ -1,5 +1,5 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -206,7 +206,8 @@ let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Pars
 *)
 
 
-let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =        
+let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) 
+  : Parsetree.signature_item =        
   match sigi.psig_desc with
   | Psig_type (
       rf, 
@@ -284,13 +285,14 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
   | _ -> default_mapper.signature_item self sigi
 
 
-let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
+let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) : Parsetree.structure_item =
   match str.pstr_desc with
   | Pstr_type (
       rf, 
       tdcls) (* [ {ptype_attributes} as tdcl ] *)->
     Ast_tdcls.handleTdclsInStru self str rf tdcls
-  | Pstr_primitive prim when Ast_attributes.external_needs_to_be_encoded prim.pval_attributes
+  | Pstr_primitive prim 
+    when Ast_attributes.external_needs_to_be_encoded prim.pval_attributes
     ->
     Ast_external.handleExternalInStru self prim str
   | Pstr_value 

@@ -58,25 +58,25 @@ let () =
 
 type t 
 
-external on_exit_slice1 : 
-    int -> int array -> unit = "xx" [@@bs.send.pipe: t]
+external on_exit_slice1 : t->
+    int -> int array -> unit = "xx" [@@send]
 
-external on_exit_slice2 : 
+external on_exit_slice2 : t ->
     int 
     -> (_ [@bs.as 3]) 
     -> (_ [@bs.as "xxx"]) -> int array -> unit = 
-    "xx"    [@@bs.send.pipe: t]
+    "xx"    [@@send ]
 
-external on_exit_slice3 : 
+external on_exit_slice3 : t ->
     int 
     -> (_ [@bs.as 3]) 
     -> (_ [@bs.as "xxx"]) 
     -> int array
     -> unit 
     = 
-    "xx"    [@@bs.send.pipe: t] [@@bs.splice]
+    "xx"    [@@send] [@@bs.splice]
 
-external on_exit_slice4 : 
+external on_exit_slice4 : t ->
     int 
     -> (_ [@bs.as 3]) 
     -> (_ [@bs.as "xxx"]) 
@@ -85,10 +85,10 @@ external on_exit_slice4 :
     -> int array
     -> unit 
     = 
-    "xx" [@@bs.send.pipe: t] [@@bs.splice]
+    "xx" [@@send] [@@bs.splice]
 
 
-external on_exit_slice5 : 
+external on_exit_slice5 : t ->
     int 
     -> (_ [@bs.as 3]) 
     -> (_ [@bs.as {json|true|json}])
@@ -104,18 +104,18 @@ external on_exit_slice5 :
     -> int array
     -> unit 
     = 
-    "xx" [@@bs.send.pipe: t] [@@bs.splice]
+    "xx" [@@send] [@@bs.splice]
 
 
 (**
  TODO: bs.send conflicts with bs.val: better error message
 *)
 let f (x : t) = 
-    x |> on_exit_slice1 __LINE__ [|1;2;3|];
-    x |> on_exit_slice2 __LINE__ [|1;2;3|];
-    x |> on_exit_slice3 __LINE__ [|1;2;3|];
-    x |> on_exit_slice4 __LINE__ `a `b [|1;2;3;4;5|];
-    x |> on_exit_slice5 __LINE__ `a `b [|1;2;3;4;5|]
+    x |. on_exit_slice1 __LINE__ [|1;2;3|];
+    x |. on_exit_slice2 __LINE__ [|1;2;3|];
+    x |. on_exit_slice3 __LINE__ [|1;2;3|];
+    x |. on_exit_slice4 __LINE__ `a `b [|1;2;3;4;5|];
+    x |. on_exit_slice5 __LINE__ `a `b [|1;2;3;4;5|]
 
 external process_on_exit : (_ [@bs.as "exit"]) -> (int -> unit) -> unit =
   "process.on" [@@bs.val]
@@ -127,10 +127,10 @@ let () =
 
 type process
 
-external on_exit :  (_ [@bs.as "exit"]) -> (int -> unit) -> unit = 
-    "on" [@@bs.send.pipe: process]
+external on_exit : process -> (_ [@bs.as "exit"]) -> (int -> unit) -> unit = 
+    "on" [@@bs.send]
 let register (p : process) = 
-        p |> on_exit (fun i -> Js.log i )
+        p |. on_exit (fun i -> Js.log i )
 
 
 external io_config : 

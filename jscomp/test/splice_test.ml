@@ -38,21 +38,21 @@ let dynamic arr =
 ;; dynamic [|1;1;3|]
 
 module Pipe = struct
-  external push :  int -> int array -> unit = 
-    "push" [@@bs.send.pipe: int array ] [@@bs.splice] 
+  external push :  int array -> int -> int array -> unit = 
+    "push" [@@send] [@@bs.splice] 
 
   (* This is only test, the binding maybe wrong
      since in OCaml array'length is not mutable
   *)
   let () =   
     let a = [||] in 
-    a |> push 1 [|2;3;4|];
+    a |. push 1 [|2;3;4|];
 
     eq __LOC__ a [|1;2;3;4|]
 
   let dynamic arr =   
     let a = [||] in 
-    a |> push 1 arr ;
+    a |. push 1 arr ;
     eq __LOC__ a (Array.concat [[|1|]; arr])
 
   ;; dynamic [|2;3;4|]  

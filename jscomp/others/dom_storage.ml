@@ -1,11 +1,22 @@
 type t = Dom_storage2.t
 
-external getItem : string -> string option = "getItem" [@@bs.send.pipe: t] [@@bs.return null_to_opt]
-external setItem : string -> string -> unit = "setItem" [@@bs.send.pipe: t]
-external removeItem : string -> unit = "removeItem" [@@bs.send.pipe: t]
-external clear : unit = "clear" [@@bs.send.pipe: t]
-external key : int -> string option = "key" [@@bs.send.pipe: t] [@@bs.return null_to_opt]
-external length : t -> int = "length" [@@bs.get]
+external getItem : t -> string -> string option = "getItem" [@@send] [@@bs.return null_to_opt]
+let getItem s obj = obj |. getItem s 
+(* https://developer.mozilla.org/en-US/docs/Web/API/Storage/getItem 
+  If the key does not exist, `null` is returned
+*)
 
-external localStorage : t = "localStorage" [@@bs.val]
-external sessionStorage : t = "sessionStorage" [@@bs.val]
+external setItem : t -> string -> string -> unit = "setItem" [@@send]
+let setItem k v obj : unit = obj |. setItem k v 
+external removeItem : t -> string -> unit = "removeItem" [@@send]
+let removeItem s obj : unit = obj |. removeItem s 
+external clear : t -> unit = "clear" [@@send]
+external key : t -> int -> string option = "key" [@@send] [@@bs.return null_to_opt]
+(* A DOMString containing the name of the key. If the index does not exist, null is returned.
+  If the key does not exist, `null` is returned
+*)
+let key i obj : string option = obj |. key i 
+external length : t -> int = "length" [@@get]
+
+external localStorage : t = "localStorage" [@@val]
+external sessionStorage : t = "sessionStorage" [@@val]

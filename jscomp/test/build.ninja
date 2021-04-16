@@ -324,6 +324,7 @@ o test/gpr_4639_test.cmi test/gpr_4639_test.cmj : cc test/gpr_4639_test.ml | $st
 o test/gpr_4900_test.cmi test/gpr_4900_test.cmj : cc test/gpr_4900_test.ml | test/mt.cmj $stdlib
 o test/gpr_4924_test.cmi test/gpr_4924_test.cmj : cc test/gpr_4924_test.ml | test/mt.cmj $stdlib
 o test/gpr_4931.cmi test/gpr_4931.cmj : cc test/gpr_4931.ml | $stdlib
+o test/gpr_5071_test.cmi test/gpr_5071_test.cmj : cc test/gpr_5071_test.res | test/react.cmj $stdlib
 o test/gpr_627_test.cmi test/gpr_627_test.cmj : cc test/gpr_627_test.ml | test/mt.cmj $stdlib
 o test/gpr_658.cmi test/gpr_658.cmj : cc test/gpr_658.ml | $stdlib
 o test/gpr_858_test.cmi test/gpr_858_test.cmj : cc test/gpr_858_test.ml | $stdlib
@@ -520,8 +521,6 @@ o test/reactDOMRe.cmi test/reactDOMRe.cmj : cc test/reactDOMRe.re | test/react.c
 o test/reactDOMServerRe.cmi test/reactDOMServerRe.cmj : cc test/reactDOMServerRe.re | test/react.cmj $stdlib
 o test/reactEvent.cmj : cc_cmi test/reactEvent.re | test/reactEvent.cmi $stdlib
 o test/reactEvent.cmi : cc test/reactEvent.rei | $stdlib
-o test/reactEventRe.cmj : cc_cmi test/reactEventRe.re | test/reactEvent.cmj test/reactEventRe.cmi $stdlib
-o test/reactEventRe.cmi : cc test/reactEventRe.rei | test/reactEvent.cmi $stdlib
 o test/reactTestUtils.cmj : cc_cmi test/reactTestUtils.re | test/react.cmj test/reactTestUtils.cmi $stdlib
 o test/reactTestUtils.cmi : cc test/reactTestUtils.rei | test/react.cmi $stdlib
 o test/reasonReact.cmj : cc_cmi test/reasonReact.re | test/react.cmj test/reasonReact.cmi test/reasonReactOptimizedCreateClass.cmj test/reasonReactRouter.cmj $stdlib

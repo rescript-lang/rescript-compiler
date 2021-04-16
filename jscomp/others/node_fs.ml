@@ -67,14 +67,6 @@ module Watch = struct
       but to make things simple, let's just introduce an or type
   *)
   
-  external on :
-    ([
-      `change of (string (*eventType*) -> Node.string_buffer (* filename *) -> unit  [@bs])
-    | `error of (unit -> unit [@bs])
-    ] [@bs.string]
-    ) -> t = "on"
-  [@@bs.send.pipe: t]
-  [@@deprecated "Please use `Node.Fs.on_` instead "]
 
   external on_ : 
     t ->

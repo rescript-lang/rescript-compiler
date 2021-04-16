@@ -28,14 +28,14 @@
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray> MDN
 *)
 
+[@@@warning "-103"]
+
 type array_buffer = Js_typed_array2.array_buffer
 type 'a array_like = 'a Js_typed_array2.array_like
 
 module type Type = sig
   type t
 end
-
-
 module ArrayBuffer = struct
   (** The underlying buffer that the typed arrays provide views of
 
