@@ -71,9 +71,9 @@ let root = ([
     \  \"name\": \"${rescript:name}\",\n\
     \  \"version\": \"${rescript:proj-version}\",\n\
     \  \"scripts\": {\n\
-    \    \"clean\": \"bsb -clean-world\",\n\
-    \    \"build\": \"bsb -make-world\",\n\
-    \    \"watch\": \"bsb -make-world -w\"\n\
+    \    \"clean\": \"rescript clean\",\n\
+    \    \"build\": \"rescript build\",\n\
+    \    \"watch\": \"rescript build -w\"\n\
     \  },\n\
     \  \"keywords\": [\n\
     \    \"ReScript\"\n\

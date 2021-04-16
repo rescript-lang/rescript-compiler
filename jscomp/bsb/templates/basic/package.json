@@ -2,9 +2,9 @@
   "name": "${rescript:name}",
   "version": "${rescript:proj-version}",
   "scripts": {
-    "clean": "bsb -clean-world",
-    "build": "bsb -make-world",
-    "watch": "bsb -make-world -w"
+    "clean": "rescript clean",
+    "build": "rescript build",
+    "watch": "rescript build -w"
   },
   "keywords": [
     "ReScript"
