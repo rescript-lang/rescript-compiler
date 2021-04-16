@@ -1,12 +1,12 @@
 type readline
-external on : 
+external on : readline ->
   ([ `line of string -> unit 
    | `close of unit -> unit] 
-     [@bs.string]) ->
+    [@string] ) ->
   readline = 
-  "on" [@@bs.send.pipe:readline]
+  "on" [@@send]
 let register rl =
   rl
-  |> on (`line (fun  x -> Js.log x ))
-  |> on (`close (fun () -> Js.log "finished"))    
+  |. on (`line (fun  x -> Js.log x ))
+  |. on (`close (fun () -> Js.log "finished"))    
 

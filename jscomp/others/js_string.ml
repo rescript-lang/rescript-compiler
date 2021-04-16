@@ -24,6 +24,8 @@
 
 (** JavaScript String API *)
 
+[@@@warning "-103"]
+
 type t = string
 
 (** [make value] converts the given value to a string

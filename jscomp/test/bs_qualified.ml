@@ -95,12 +95,12 @@ external send2 : t -> int -> unit = "send2"
 external send3 : t -> int -> unit = "send3"
 [@@bs.send] [@@bs.scope "a0","a1"]
 
-external psend1 : int -> unit = "psend1" 
-[@@bs.send.pipe:t] [@@bs.scope "a0"]
-external psend2 :  int -> unit = "psend2"
-[@@bs.send.pipe:t] [@@bs.scope "a0","a1"]
-external psend3 :  int -> unit = "psend3"
-[@@bs.send.pipe:t] [@@bs.scope "a0","a1"]
+external psend1 : t -> int -> unit = "psend1" 
+[@@send] [@@bs.scope "a0"]
+external psend2 : t -> int -> unit = "psend2"
+[@@send] [@@bs.scope "a0","a1"]
+external psend3 : t -> int -> unit = "psend3"
+[@@send] [@@bs.scope "a0","a1"]
 
 let f3 x =  
   ignore @@ makeBuffer 20;
@@ -127,7 +127,7 @@ let f3 x =
   send1 x 0;
   send2 x 0;
   send3 x 0;
-  x|> psend1 0;
-  x|> psend2 0;
-  x|> psend3 0;
+  x|. psend1 0;
+  x|. psend2 0;
+  x|. psend3 0;
   create ()

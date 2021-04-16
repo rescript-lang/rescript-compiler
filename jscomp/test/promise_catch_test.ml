@@ -10,8 +10,8 @@ let eq loc x y =
 type 'a t 
 type error
 external resolve : 'a -> 'a t = "Promise.resolve" [@@bs.val]
-external catch : 
-  (error -> 'a t [@bs.uncurry]) -> 'a t  = "catch" [@@bs.send.pipe: 'a t]
+external catch :  'a t ->
+  (error -> 'a t [@bs.uncurry]) -> 'a t  = "catch" [@@send]
 
 
 (** rejectXXError for the FFI .. which is similar to [bs.this] *)
@@ -27,7 +27,7 @@ let myHandler : 'a . 'a -> int option = function [@bs.open]
 
 
 let f x = 
-  x |> catch handler
+  x |. catch handler
 
 
 let () = 

@@ -1,5 +1,5 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,13 +28,6 @@ type cst = private
   | Arg_js_literal of string
 
 
-type label = private
-  | Obj_label of {name : string}
-  | Obj_empty 
-
-  | Obj_optional of {name : string;
-                     for_sure_no_nested_option : bool}
-  (* it will be ignored , side effect will be recorded *)
 
 
 
@@ -62,8 +55,16 @@ type label_noname =
   | Arg_empty 
   | Arg_optional
 
-type obj_param = 
-  {
+type label = private
+  | Obj_empty 
+  | Obj_label of {name : string}  
+  | Obj_optional of {
+      name : string;
+      for_sure_no_nested_option : bool
+    }
+  (* it will be ignored , side effect will be recorded *)
+
+type obj_param = {
     obj_arg_type : attr;
     obj_arg_label :label
   }

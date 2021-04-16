@@ -1,7 +1,7 @@
 `*` means  potential break changes
 
 # 9.1
-
+- Remove depercated APIs Js.Re.exec, Js.Re.test, Node.Fs.on
 - #5014 #5063 #5027 the new ReScript CLI interface
 Thew new CLI is self explainatory:
 ```

@@ -6,9 +6,9 @@ let eq loc x y =
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
 
-external map :
+external map :'a array ->
      ('a -> 'b [@bs.uncurry]) -> 'b array =
-     "map" [@@bs.send.pipe: 'a array]
+     "map" [@@send]
 
 
 [%%raw{|
@@ -31,7 +31,7 @@ let () =
 let () =
     begin
     eq __LOC__
-    ([|1;2;3|] |> map (fun x -> x + 1))
+    ([|1;2;3|] |. map (fun x -> x + 1))
     ([|2;3;4|]);
     eq __LOC__
     ([|1;2;3|] |. Js.Array2.map (fun x -> x + 1))

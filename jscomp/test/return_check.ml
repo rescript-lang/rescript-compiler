@@ -1,11 +1,11 @@
 
 type element
 type dom
-external getElementById : string -> element option = "getElementById" 
-[@@bs.send.pipe:dom] [@@bs.return {null_to_opt}]
+external getElementById : dom -> string -> element option = "getElementById" 
+[@@send] [@@bs.return {null_to_opt}]
 
 let test dom = 
-    let elem = dom |> getElementById "haha"  in
+    let elem = dom |. getElementById "haha"  in
     match elem with 
     | None -> 1 
     | Some ui -> Js.log ui ; 2   

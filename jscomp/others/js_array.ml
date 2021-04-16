@@ -24,6 +24,8 @@
 
 (** JavaScript Array API *)
 
+[@@@warning "-103"]
+
 type 'a t = 'a array
 type 'a array_like = 'a Js_array2.array_like
 

@@ -42,15 +42,15 @@ external sum : t -> unit -> int = "sum" [@@bs.send]
 (* external join : string  -> string = "" [@@bs.module "path"] [@@bs.splice] *)
 external join : string array -> string = "join" [@@bs.module "path"] [@@bs.splice]
 
-external test : string array -> t = "test" [@@bs.send.pipe: t ] [@@bs.splice] (*FIXME*)
+external test : t -> string array -> t = "test" [@@send] [@@bs.splice] (*FIXME*)
 
 (* compile error *)
 (* external test2 : int -> string -> t= "" [@@bs.send.pipe: t ] [@@bs.splice] *)
 let u = [|"x";"d" |]
 let f x  = 
   x 
-  |> test  [| "a"; "b" |]
-  |> test  [| "a"; "b" |]
+  |. test  [| "a"; "b" |]
+  |. test  [| "a"; "b" |]
   (* |> test u *)
 
 let v = make 1 2 3 4

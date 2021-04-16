@@ -1,5 +1,5 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,18 +21,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
+[@@@warning"+9"]
 type module_bind_name =
   | Phint_name of string
   (* explicit hint name *)
-
   | Phint_nothing
 
 
-type external_module_name =
-  { bundle : string ;
-    module_bind_name : module_bind_name
-  }
+type external_module_name = { 
+  bundle : string ;
+  module_bind_name : module_bind_name
+}
 
 type pipe = bool
 
@@ -52,9 +51,10 @@ type external_spec =
       scopes : string list
     }
   | Js_module_as_var of  external_module_name
-  | Js_module_as_fn of   { external_module_name : external_module_name;
-                           splice : bool
-                         }
+  | Js_module_as_fn of   { 
+      external_module_name : external_module_name;
+      splice : bool
+    }
   | Js_module_as_class of external_module_name
   | Js_call of {
       name : string;
@@ -75,13 +75,14 @@ type external_spec =
       external_module_name : external_module_name option;
       scopes : string list;
     }
-  | Js_set of 
-      { js_set_name : string  ;
-        js_set_scopes : string list
-      }
-  | Js_get of  { js_get_name : string   ;
-                 js_get_scopes :  string list;
-               }
+  | Js_set of { 
+      js_set_name : string  ;
+      js_set_scopes : string list
+    }
+  | Js_get of  { 
+      js_get_name : string   ;
+      js_get_scopes :  string list;
+    }
   | Js_get_index of  {
       js_get_index_scopes : string list
     }
@@ -137,6 +138,8 @@ type t  =
 
 
 
+
+
 let valid_js_char =
   let a = Array.init 256 (fun i ->
       let c = Char.chr i in
@@ -155,14 +158,14 @@ let valid_first_js_char =
 let valid_ident (s : string) =
   let len = String.length s in
   len > 0 && valid_js_char s.[0] && valid_first_js_char s.[0] &&
-  (let module E = struct exception E end in
+  (let exception E in
    try
      for i = 1 to len - 1 do
        if not (valid_js_char (String.unsafe_get s i)) then
-         raise E.E
+         raise_notrace E
      done ;
      true
-   with E.E -> false )
+   with E -> false )
 
 let is_package_relative_path (x : string) = 
   Ext_string.starts_with x "./" ||
@@ -192,7 +195,7 @@ let valid_method_name ?loc:_  _txt  =
 let check_external_module_name ?loc x =
   match x with
   | {bundle = ""; _ }
-  | { module_bind_name = Phint_name "" } ->
+  | { module_bind_name = Phint_name ""; bundle = _ } ->
     Location.raise_errorf ?loc "empty name encountered"
   | _ -> ()
 
@@ -203,14 +206,14 @@ let check_ffi ?loc ffi : bool =
   let upgrade bool =    
     if not (!xrelative) then xrelative := bool in 
   begin match ffi with
-    | Js_var {name; external_module_name} ->     
+    | Js_var {name; external_module_name; scopes = _} ->     
       upgrade (is_package_relative_path name);
       Ext_option.iter external_module_name (fun name -> 
           upgrade (is_package_relative_path name.bundle));
       valid_global_name ?loc  name
-    | Js_send {name }
-    | Js_set  {js_set_name = name}
-    | Js_get { js_get_name = name}
+    | Js_send {name ; pipe = _; splice = _; js_send_scopes = _}
+    | Js_set  {js_set_name = name; js_set_scopes = _}
+    | Js_get { js_get_name = name; js_get_scopes = _}
       ->  valid_method_name ?loc name
     | Js_get_index  _ (* TODO: check scopes *)
     | Js_set_index _
@@ -222,7 +225,7 @@ let check_ffi ?loc ffi : bool =
       -> 
       upgrade (is_package_relative_path external_module_name.bundle);
       check_external_module_name external_module_name
-    | Js_new {external_module_name ;  name}
+    | Js_new {external_module_name ;  name; scopes = _}
     | Js_call {external_module_name ;  name ; splice = _; scopes = _ }
       ->
       Ext_option.iter external_module_name (fun external_module_name ->
@@ -268,7 +271,7 @@ let () = Oprint.map_primitive_name :=
          if is_bs_primitive s then "BS:external"
          else s )
 #else  
-      (fun s -> String.escaped s) (* For debugging*)
+      String.escaped
 #end
 
 (* TODO:  better error message when version mismatch *)
@@ -277,7 +280,36 @@ let from_string s : t =
     Ext_marshal.from_string_uncheck s
   else Ffi_normal
 
-
+let () = 
+  Primitive.coerce := 
+    (fun 
+      ({prim_name; prim_arity; prim_native_name; 
+        prim_alloc = _; 
+        prim_native_repr_args = _; 
+        prim_native_repr_res = _} : Primitive.description) 
+      (p2 : Primitive.description) -> 
+      let p2_native = p2.prim_native_name in 
+      prim_name = p2.prim_name && 
+      prim_arity = p2.prim_arity &&
+      prim_native_name = p2_native || (
+        match from_string prim_native_name, from_string p2_native with 
+        | Ffi_obj_create obj_parms, Ffi_obj_create obj_parms2 -> 
+          Ext_list.for_all2_no_exn obj_parms obj_parms2 (fun {obj_arg_type; obj_arg_label} b -> 
+              let b_obj_arg_label = b.obj_arg_label in 
+              obj_arg_type = b.obj_arg_type &&
+              (obj_arg_label = b_obj_arg_label  ||
+               match obj_arg_label, b_obj_arg_label with 
+               | Obj_optional {name; for_sure_no_nested_option}, Obj_optional p
+                 -> 
+                  name = p.name &&
+                  ((Obj.magic for_sure_no_nested_option : int) <= (Obj.magic p.for_sure_no_nested_option))
+               | _ -> false  
+              )
+            )
+        | Ffi_bs _, Ffi_bs _ -> false     
+        | _ -> false        
+      )
+    )
 let inline_string_primitive (s : string) (op : string option) : string list = 
   let lam : Lam_constant.t = 
     match op with 
