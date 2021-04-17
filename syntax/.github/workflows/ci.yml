@@ -19,12 +19,6 @@ jobs:
         path: ~/.opam
         key: macos-latest-ocaml-4.06.1
 
-    - name: Cache npm
-      uses: actions/cache@v2.1.5
-      with:
-        path: ~/.npm
-        key: macos-latest-node-14.4.0-${{hashFiles('package-lock.json')}}
-
     - name: Use OCaml
       uses: avsm/setup-ocaml@v1.1.10
       with:
@@ -35,6 +29,6 @@ jobs:
       with:
         node-version: 14.4.0
 
-    - run: npm install
+    - run: npm ci
 
     - run: eval $(opam env) && make roundtrip-test
