@@ -48,7 +48,7 @@ This is usually the file you want to build for the full playground experience.
  * This will allow the frontend to have different sets of the same bindings,
  * and use the proper interfaces as stated by the apiVersion.
  * *)
-let apiVersion = "1.0"
+let apiVersion = "1.1"
 
 module Js = Jsoo_common.Js
 module Sys_js = Jsoo_common.Sys_js
@@ -360,6 +360,21 @@ let rescript_parse ~filename src =
   in
   structure
 
+
+module Printer = struct
+  let printExpr typ =
+    Printtyp.reset_names();
+    Res_doc.toString
+      ~width:60 (Res_outcome_printer.printOutTypeDoc (Printtyp.tree_of_typexp false typ))
+
+
+  let printDecl ~recStatus name decl =
+    Printtyp.reset_names();
+    Res_doc.toString
+      ~width:60
+      (Res_outcome_printer.printOutSigItemDoc (Printtyp.tree_of_type_declaration (Ident.create name) decl recStatus))
+end
+
 module Compile = struct
   (* Apparently it's not possible to retrieve the loc info from
    * Location.error_of_exn properly, so we need to do some extra
@@ -448,6 +463,76 @@ module Compile = struct
     Warnings.reset_fatal ();
     Env.reset_cache_toplevel ()
 
+  (* Collects the type information from the typed_tree, so we can use that
+   * data to display types on hover etc.
+   *
+   * Note: start / end positions
+   * *)
+  let collectTypeHints typed_tree =
+    let open Typedtree in
+    let createTypeHintObj loc kind hint =
+      let open Lexing in
+      let open Location in
+      let (_ , startline, startcol) = Location.get_pos_info loc.loc_start in
+      let (_ , endline, endcol) = Location.get_pos_info loc.loc_end in
+      Js.Unsafe.(obj [|
+          "start", inject @@ (obj [|
+              "line", inject @@ (startline |> float_of_int |> Js.number_of_float);
+              "col", inject @@ (startcol|> float_of_int |> Js.number_of_float);
+            |]);
+          "end", inject @@ (obj [|
+              "line", inject @@ (endline |> float_of_int |> Js.number_of_float);
+              "col", inject @@ (endcol |> float_of_int |> Js.number_of_float);
+            |]);
+          "kind", inject @@ Js.string kind;
+          "hint", inject @@ Js.string hint;
+        |])
+    in
+    let (structure, _) = typed_tree in
+    let acc = ref [] in
+    let module Iter = TypedtreeIter.MakeIterator (struct
+        include TypedtreeIter.DefaultIteratorArgument
+
+        let cur_rec_status = ref None
+
+        let enter_expression expr =
+          let hint = Printer.printExpr expr.exp_type in
+          let obj = createTypeHintObj expr.exp_loc "expression" hint in
+          acc := obj :: !acc
+
+        let enter_binding binding =
+          let hint = Printer.printExpr binding.vb_expr.exp_type in
+          let obj = createTypeHintObj binding.vb_loc "binding" hint in
+          acc := obj :: !acc
+
+        let enter_core_type ct =
+          let hint = Printer.printExpr ct.ctyp_type in
+          let obj = createTypeHintObj ct.ctyp_loc "core_type" hint in
+          acc := obj :: !acc
+
+        let enter_type_declarations recFlag =
+          let status = match recFlag with
+          | Asttypes.Nonrecursive -> Types.Trec_not
+          | Recursive -> Trec_first
+          in
+          cur_rec_status := Some status
+
+        let enter_type_declaration tdecl =
+          let open Types in
+          match !cur_rec_status with
+          | Some recStatus ->
+            let hint = Printer.printDecl ~recStatus tdecl.typ_name.Asttypes.txt tdecl.typ_type in
+            let obj = createTypeHintObj tdecl.typ_loc "type_declaration" hint in
+            acc := obj :: !acc;
+            (match recStatus with
+              | Trec_not
+              | Trec_first -> cur_rec_status := Some Trec_next
+              | _ -> ())
+          | None -> ()
+      end)
+    in
+    List.iter Iter.iter_structure_item structure.str_items;
+    Js.array (!acc |> Array.of_list)
 
   let implementation ~(config: BundleConfig.t) ~lang str  : Js.Unsafe.obj =
     let {BundleConfig.module_system; warn_flags} = config in
@@ -488,6 +573,7 @@ module Compile = struct
                  lam)
               (Ext_pp.from_buffer buffer) in
           let v = Buffer.contents buffer in
+          let typeHints = collectTypeHints typed_tree in
           Js.Unsafe.(obj [|
               "js_code", inject @@ Js.string v;
               "warnings",
@@ -497,6 +583,7 @@ module Compile = struct
                 |> Js.array
                 |> inject
               );
+              "type_hints", inject @@ typeHints;
               "type" , inject @@ Js.string "success"
             |]))
     with
@@ -650,60 +737,6 @@ module Export = struct
         baseAttrs
     in
     obj attrs
-
-  let make_config_attrs ~(config: BundleConfig.t) =
-    let open Lang in
-    let set_module_system value =
-      match value with
-      | "es6" ->
-        config.module_system <- Js_packages_info.Es6; true
-      | "nodejs" ->
-        config.module_system <- NodeJS; true
-      | _ -> false in
-    let set_filename value =
-      config.filename <- Some value; true
-    in
-    let set_warn_flags value =
-      config.warn_flags <- value; true
-    in
-    Js.Unsafe.(
-      [|
-        "setModuleSystem",
-        inject @@
-        Js.wrap_meth_callback
-          (fun _ value ->
-             (Js.bool (set_module_system (Js.to_string value)))
-          );
-        "setFilename",
-        inject @@
-        Js.wrap_meth_callback
-          (fun _ value ->
-             (Js.bool (set_filename (Js.to_string value)))
-          );
-        "setWarnFlags",
-        inject @@
-        Js.wrap_meth_callback
-          (fun _ value ->
-             (Js.bool (set_warn_flags (Js.to_string value)))
-          );
-        "list",
-        inject @@
-        Js.wrap_meth_callback
-          (fun _ ->
-             (Js.Unsafe.(obj
-                           [|
-                             "module_system",
-                             inject @@ (
-                               config.module_system
-                               |> BundleConfig.string_of_module_system
-                               |> Js.string
-                             );
-                             "warn_flags",
-                             inject @@ (Js.string config.warn_flags);
-                           |]))
-          );
-
-      |])
 
   (* Creates a "compiler instance" binding the configuration context to the specific compile / formatter functions *)
   let make () =
