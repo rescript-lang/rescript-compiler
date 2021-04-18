@@ -84,10 +84,13 @@ let suites = Mt.[
     );
 
     "match", (fun _ ->
-      Eq(Some [| "na"; "na" |], "banana" |. Js.String2.match_ [%re "/na+/g"])
+      Eq(Some [| Some "na"; Some "na" |], "banana" |. Js.String2.match_ [%re "/na+/g"])
     );
     "match - no match", (fun _ ->
       Eq(None, "banana" |. Js.String2.match_ [%re "/nanana+/g"])
+    );
+    "match - not found capture groups", (fun _ ->
+      Eq(Some [| Some "hello "; None |], "hello word" |. Js.String2.match_ [%re "/hello (world)?/"] |. Belt.Option.map Js.Array.copy )
     );
 
     (* es2015 *)
