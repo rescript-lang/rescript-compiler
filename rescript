@@ -178,6 +178,26 @@ if (
 } else {
   var delegate_args = process_argv.slice(2);
   var watch_mode = delegate_args.includes("-w");
+  var wsParamIndex = delegate_args.indexOf("-ws");
+  if(wsParamIndex > -1) {
+    var hostAndPortNumber = (process_argv[wsParamIndex + 1] || '').split(':');
+    /**
+     * @type {number}
+     */
+    var portNumber;
+    if (hostAndPortNumber.length === 1) {
+        portNumber = parseInt(hostAndPortNumber[0]);
+    } else {
+        webSocketHost = hostAndPortNumber[0];
+        portNumber = parseInt(hostAndPortNumber[1]);
+    }
+    if (!isNaN(portNumber)) {
+        webSocketPort = portNumber;
+    }
+    useWebSocket = true;
+    dlog(`WebSocket host & port number: ${webSocketHost}:${webSocketPort}`);
+  };
+
   verbose = delegate_args.includes("-verbose");
 
   try {
