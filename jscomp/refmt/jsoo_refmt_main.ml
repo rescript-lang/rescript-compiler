@@ -265,12 +265,12 @@ module ResDriver = struct
     let startPos = Res_diagnostics.getStartPos(d) in
     let endPos = Res_diagnostics.getEndPos(d) in
     let msg = Res_diagnostics.explain(d) in
+    let loc = {loc_start = startPos; Location.loc_end=endPos; loc_ghost=false} in
+    let err = { Location.loc; msg; sub=[]; if_highlight=""} in
     Res_diagnostics_printing_utils.Super_location.super_error_reporter
       Format.str_formatter
-      ~src
-      ~startPos
-      ~endPos
-      ~msg;
+      src
+      err;
     Format.flush_str_formatter ()
 
   module ReasonBinary = struct
@@ -287,7 +287,7 @@ module ResDriver = struct
     let extractConcreteSyntax ~(filename:string) (src:string) =
       let commentData = ref [] in
       let stringData = ref [] in
-      let scanner = Res_scanner.make (Bytes.of_string src) ~filename in
+      let scanner = Res_scanner.make src ~filename in
 
       let rec next prevEndPos scanner =
         let (startPos, endPos, token) = Res_scanner.scan scanner in
@@ -325,7 +325,7 @@ module ResDriver = struct
         | _ as diagnostics -> (true, diagnostics)
       in {
         filename = engine.scanner.filename;
-        source = Bytes.to_string engine.scanner.src;
+        source = engine.scanner.src;
         parsetree = structure;
         diagnostics;
         invalid;
