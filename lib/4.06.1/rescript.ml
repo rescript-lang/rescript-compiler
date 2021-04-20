@@ -16604,8 +16604,8 @@ let force_regenerate = ref false
 type spec = Bsb_arg.spec
 
 let call_spec f : spec = Unit (Unit_call f )
-let  unit_set_spec b : spec = Unit (Unit_set b)
-
+let unit_set_spec b : spec = Unit (Unit_set b)
+let string_set_spec s : spec = String (String_set s)
 
 
 let failed_annon = (fun ~rev_args -> 
@@ -16712,6 +16712,8 @@ let build_subcommand ~start  argv argv_len =
     "Build with deps";
     "-install", unit_set_spec do_install,
     "Install public interface files for dependencies ";
+    "-ws", string_set_spec (ref ""),
+    "[host]:port set the host, port for websocket build notifications";
     "-regen", unit_set_spec force_regenerate,
     "*internal* \n\
      Always regenerate build.ninja no matter bsconfig.json is changed or not";
