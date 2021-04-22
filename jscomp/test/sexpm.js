@@ -8,7 +8,6 @@ var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var $$Buffer = require("../../lib/js/buffer.js");
 var Format = require("../../lib/js/format.js");
-var Printf = require("../../lib/js/printf.js");
 var $$String = require("../../lib/js/string.js");
 var Caml_io = require("../../lib/js/caml_io.js");
 var Printexc = require("../../lib/js/printexc.js");
@@ -121,21 +120,9 @@ function to_buf(b, t) {
               }), l);
         return $$Buffer.add_char(b, /* ')' */41);
       } else {
-        return Curry._2(Printf.bprintf(b, /* Format */{
-                        _0: {
-                          TAG: /* Char_literal */12,
-                          _0: /* '(' */40,
-                          _1: {
-                            TAG: /* Alpha */15,
-                            _0: {
-                              TAG: /* Char_literal */12,
-                              _0: /* ')' */41,
-                              _1: /* End_of_format */0
-                            }
-                          }
-                        },
-                        _1: "(%a)"
-                      }), to_buf, l.hd);
+        $$Buffer.add_string(b, "(");
+        to_buf(b, l.hd);
+        return $$Buffer.add_string(b, ")");
       }
     } else {
       return $$Buffer.add_string(b, "()");
@@ -143,22 +130,7 @@ function to_buf(b, t) {
   }
   var s = t.VAL;
   if (_must_escape(s)) {
-    return Curry._1(Printf.bprintf(b, /* Format */{
-                    _0: {
-                      TAG: /* Char_literal */12,
-                      _0: /* '"' */34,
-                      _1: {
-                        TAG: /* String */2,
-                        _0: /* No_padding */0,
-                        _1: {
-                          TAG: /* Char_literal */12,
-                          _0: /* '"' */34,
-                          _1: /* End_of_format */0
-                        }
-                      }
-                    },
-                    _1: "\"%s\""
-                  }), $$String.escaped(s));
+    return $$Buffer.add_string(b, "\"" + ($$String.escaped(s) + "\""));
   } else {
     return $$Buffer.add_string(b, s);
   }

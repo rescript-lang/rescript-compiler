@@ -502,7 +502,6 @@ o test/pr_regression_test.cmi test/pr_regression_test.cmj : cc test/pr_regressio
 o test/prepend_data_ffi.cmi test/prepend_data_ffi.cmj : cc test/prepend_data_ffi.ml | $stdlib
 o test/primitive_reg_test.cmi test/primitive_reg_test.cmj : cc test/primitive_reg_test.ml | $stdlib
 o test/print_alpha_test.cmi test/print_alpha_test.cmj : cc test/print_alpha_test.ml | test/mt.cmj $stdlib
-o test/printf_sim.cmi test/printf_sim.cmj : cc test/printf_sim.ml | $stdlib
 o test/printf_test.cmi test/printf_test.cmj : cc test/printf_test.ml | test/mt.cmj $stdlib
 o test/promise.cmi test/promise.cmj : cc test/promise.ml | $stdlib
 o test/promise_catch_test.cmi test/promise_catch_test.cmj : cc test/promise_catch_test.ml | test/mt.cmj $stdlib
@@ -570,7 +569,6 @@ o test/single_module_alias.cmi test/single_module_alias.cmj : cc test/single_mod
 o test/singular_unit_test.cmi test/singular_unit_test.cmj : cc test/singular_unit_test.ml | $stdlib
 o test/small_inline_test.cmi test/small_inline_test.cmj : cc test/small_inline_test.ml | $stdlib
 o test/splice_test.cmi test/splice_test.cmj : cc test/splice_test.ml | test/mt.cmj $stdlib
-o test/sprintf_reg_test.cmi test/sprintf_reg_test.cmj : cc test/sprintf_reg_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
 o test/stack_comp_test.cmi test/stack_comp_test.cmj : cc test/stack_comp_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
 o test/stack_test.cmi test/stack_test.cmj : cc test/stack_test.ml | test/mt.cmj $stdlib
 o test/stream_parser_test.cmi test/stream_parser_test.cmj : cc test/stream_parser_test.ml | test/mt.cmj $stdlib

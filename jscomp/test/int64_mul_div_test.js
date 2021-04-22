@@ -3,9 +3,7 @@
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
-var Curry = require("../../lib/js/curry.js");
 var Int64 = require("../../lib/js/int64.js");
-var Printf = require("../../lib/js/printf.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
@@ -312,24 +310,7 @@ function from_pairs(prefix, pairs) {
                     var a = param[1];
                     var result = param[0];
                     return [
-                            Curry._2(Printf.sprintf(/* Format */{
-                                      _0: {
-                                        TAG: /* String */2,
-                                        _0: /* No_padding */0,
-                                        _1: {
-                                          TAG: /* Char_literal */12,
-                                          _0: /* '_' */95,
-                                          _1: {
-                                            TAG: /* Int */4,
-                                            _0: /* Int_d */0,
-                                            _1: /* No_padding */0,
-                                            _2: /* No_precision */0,
-                                            _3: /* End_of_format */0
-                                          }
-                                        }
-                                      },
-                                      _1: "%s_%d"
-                                    }), prefix, i),
+                            "" + prefix + "_" + i,
                             (function (param) {
                                 return commutative_mul(result, a, b);
                               })
@@ -1533,18 +1514,7 @@ function from(xs) {
                 var b = param[1];
                 var a = param[0];
                 return [
-                        Curry._1(Printf.sprintf(/* Format */{
-                                  _0: {
-                                    TAG: /* String_literal */11,
-                                    _0: "small_divs ",
-                                    _1: {
-                                      TAG: /* Scan_get_counter */21,
-                                      _0: /* Token_counter */2,
-                                      _1: /* End_of_format */0
-                                    }
-                                  },
-                                  _1: "small_divs %L"
-                                }), i),
+                        "small_divs " + i,
                         (function (param) {
                             return {
                                     TAG: /* Eq */0,
@@ -1600,18 +1570,7 @@ function from_compare(xs) {
                 var b = param[1];
                 var a = param[0];
                 return [
-                        Curry._1(Printf.sprintf(/* Format */{
-                                  _0: {
-                                    TAG: /* String_literal */11,
-                                    _0: "int64_compare ",
-                                    _1: {
-                                      TAG: /* Scan_get_counter */21,
-                                      _0: /* Token_counter */2,
-                                      _1: /* End_of_format */0
-                                    }
-                                  },
-                                  _1: "int64_compare %L"
-                                }), i),
+                        "int64_compare " + i,
                         (function (param) {
                             return {
                                     TAG: /* Eq */0,
@@ -1628,18 +1587,7 @@ function from_to_string(xs) {
                 var str_a = param[1];
                 var a = param[0];
                 return [
-                        Curry._1(Printf.sprintf(/* Format */{
-                                  _0: {
-                                    TAG: /* String_literal */11,
-                                    _0: "to_string ",
-                                    _1: {
-                                      TAG: /* Scan_get_counter */21,
-                                      _0: /* Token_counter */2,
-                                      _1: /* End_of_format */0
-                                    }
-                                  },
-                                  _1: "to_string %L"
-                                }), i),
+                        "to_string " + i,
                         (function (param) {
                             return {
                                     TAG: /* Eq */0,
@@ -1655,20 +1603,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                         var f = param[1];
                         var i64 = param[0];
                         return [
-                                Curry._1(Printf.sprintf(/* Format */{
-                                          _0: {
-                                            TAG: /* String_literal */11,
-                                            _0: "to_float_",
-                                            _1: {
-                                              TAG: /* Int */4,
-                                              _0: /* Int_d */0,
-                                              _1: /* No_padding */0,
-                                              _2: /* No_precision */0,
-                                              _3: /* End_of_format */0
-                                            }
-                                          },
-                                          _1: "to_float_%d"
-                                        }), i),
+                                "to_float_" + i,
                                 (function (param) {
                                     return {
                                             TAG: /* Eq */0,
@@ -1681,20 +1616,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                             var i64 = param[1];
                             var f = param[0];
                             return [
-                                    Curry._1(Printf.sprintf(/* Format */{
-                                              _0: {
-                                                TAG: /* String_literal */11,
-                                                _0: "of_float_",
-                                                _1: {
-                                                  TAG: /* Int */4,
-                                                  _0: /* Int_d */0,
-                                                  _1: /* No_padding */0,
-                                                  _2: /* No_precision */0,
-                                                  _3: /* End_of_format */0
-                                                }
-                                              },
-                                              _1: "of_float_%d"
-                                            }), i),
+                                    "of_float_" + i,
                                     (function (param) {
                                         return {
                                                 TAG: /* Eq */0,

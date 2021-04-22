@@ -26,7 +26,7 @@ let pairs = [|(-6369178941122375200L, 7864955043652308640L, 710079015173034099L)
 
 let from_pairs prefix pairs = 
     (Array.to_list @@ Array.mapi (fun i (result,a,b) ->
-    (Printf.sprintf "%s_%d" prefix i) , fun _ -> commutative_mul result a b) pairs)
+    ( {j|$(prefix)_$(i)|j} ) , fun _ -> commutative_mul result a b) pairs)
 
 let small_pairs = 
   [| 121L, 11L, 11L;
@@ -159,7 +159,7 @@ let from xs =
   xs 
   |> Array.to_list 
   |> List.mapi (fun  i (a , b, c, d) -> 
-      (Printf.sprintf "small_divs %L" i), 
+      ({j|small_divs $i|j} ), 
       (fun _ -> Mt.Eq ((c, d), (Int64.div a b, Int64.rem a b )  )))
 let to_string = 
   [| 0L, "0"
@@ -176,7 +176,7 @@ let from_compare xs =
   xs 
   |> Array.to_list 
   |> List.mapi (fun i (a, b,c) -> 
-      (Printf.sprintf "int64_compare %L" i ), 
+      ({j|int64_compare $i|j}  ), 
       (fun _ -> Mt.Eq(c, Int64.compare a b))
     )
 
@@ -184,7 +184,7 @@ let from_to_string xs =
   xs 
   |> Array.to_list 
   |> List.mapi (fun i (a, str_a) -> 
-      (Printf.sprintf "to_string %L" i ),
+      ({j|to_string $i|j}  ),
       (fun _ -> Mt.Eq(str_a, Int64.to_string a))
     )
 
@@ -193,10 +193,10 @@ let from_to_string xs =
    
    from_pairs "small" small_pairs @
    (to_floats |> Array.to_list |> List.mapi (fun i (i64, f) ->
-        (Printf.sprintf "to_float_%d" i), (fun _ ->  Mt.Eq(Int64.to_float i64, f))
+        ({j|to_float_$i|j} ), (fun _ ->  Mt.Eq(Int64.to_float i64, f))
       )) @
    (of_float_pairs |> Array.to_list |> List.mapi (fun i (f, i64) ->
-        (Printf.sprintf  "of_float_%d" i), (fun _ -> Mt.Eq(Int64.of_float f, i64))
+        ({j|of_float_$i|j} ), (fun _ -> Mt.Eq(Int64.of_float f, i64))
       ))   @
    [
      "compare_check_complete",
