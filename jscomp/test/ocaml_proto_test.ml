@@ -4848,7 +4848,7 @@ module L = Logger
 open Codegen_util
 
 let constructor_name s =
-  String.capitalize @@ String.lowercase s 
+  String.capitalize_ascii @@ String.lowercase_ascii s 
 
 let gen_encode_field_key sc number pk is_packed = 
   F.line sc @@ sp "Pbrt.Encoder.key (%i, Pbrt.%s) encoder; " 
@@ -5732,7 +5732,7 @@ let compile_message
           map_options} = mf in 
 
         let key_type = compile_field_type 
-          ~field_name:(Printf.sprintf "key of %s" map_name)
+          ~field_name:({j|key of $(map_name)|j})
           all_types 
           file_options 
           map_options

@@ -307,362 +307,7 @@ function line(param) {
   return param.line;
 }
 
-function to_string(param) {
-  var a = option_default("", param.file_name);
-  return "File " + a + ", line " + param.line + ":";
-}
-
-function string_of_programmatic_error(e) {
-  var tmp;
-  switch (e) {
-    case /* Invalid_string_split */0 :
-        tmp = "string split error";
-        break;
-    case /* Unexpected_field_type */1 :
-        tmp = "unexpected field type";
-        break;
-    case /* No_type_found_for_id */2 :
-        tmp = "no type was found for type id";
-        break;
-    case /* One_of_should_be_inlined_in_message */3 :
-        tmp = "one of variant encoding must be inlined in message";
-        break;
-    
-  }
-  return "Programatic_error" + tmp;
-}
-
 var Compilation_error = /* @__PURE__ */Caml_exceptions.create("Ocaml_proto_test.Exception.Compilation_error");
-
-function prepare_error(e) {
-  if (typeof e === "number") {
-    return Printf.sprintf(/* Format */{
-                _0: {
-                  TAG: /* String_literal */11,
-                  _0: "Syntax error",
-                  _1: /* End_of_format */0
-                },
-                _1: "Syntax error"
-              });
-  }
-  switch (e.TAG | 0) {
-    case /* Unresolved_type */0 :
-        var match = e._0;
-        return Curry._3(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "unresolved type for field name : ",
-                          _1: {
-                            TAG: /* String */2,
-                            _0: /* No_padding */0,
-                            _1: {
-                              TAG: /* String_literal */11,
-                              _0: " (type:",
-                              _1: {
-                                TAG: /* String */2,
-                                _0: /* No_padding */0,
-                                _1: {
-                                  TAG: /* String_literal */11,
-                                  _0: ", in message: ",
-                                  _1: {
-                                    TAG: /* String */2,
-                                    _0: /* No_padding */0,
-                                    _1: {
-                                      TAG: /* Char_literal */12,
-                                      _0: /* ')' */41,
-                                      _1: /* End_of_format */0
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        },
-                        _1: "unresolved type for field name : %s (type:%s, in message: %s)"
-                      }), match.field_name, match.type_, match.message_name);
-    case /* Duplicated_field_number */1 :
-        var match$1 = e._0;
-        return Curry._3(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "duplicated field number for field name: ",
-                          _1: {
-                            TAG: /* String */2,
-                            _0: /* No_padding */0,
-                            _1: {
-                              TAG: /* String_literal */11,
-                              _0: " (previous field name:",
-                              _1: {
-                                TAG: /* String */2,
-                                _0: /* No_padding */0,
-                                _1: {
-                                  TAG: /* String_literal */11,
-                                  _0: ", message: ",
-                                  _1: {
-                                    TAG: /* String */2,
-                                    _0: /* No_padding */0,
-                                    _1: {
-                                      TAG: /* Char_literal */12,
-                                      _0: /* ')' */41,
-                                      _1: /* End_of_format */0
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        },
-                        _1: "duplicated field number for field name: %s (previous field name:%s, message: %s)"
-                      }), match$1.field_name, match$1.previous_field_name, match$1.message_name);
-    case /* Invalid_default_value */2 :
-        var match$2 = e._0;
-        return Curry._2(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "invalid default value for field name:",
-                          _1: {
-                            TAG: /* String */2,
-                            _0: /* No_padding */0,
-                            _1: {
-                              TAG: /* String_literal */11,
-                              _0: " (info: ",
-                              _1: {
-                                TAG: /* String */2,
-                                _0: /* No_padding */0,
-                                _1: {
-                                  TAG: /* Char_literal */12,
-                                  _0: /* ')' */41,
-                                  _1: /* End_of_format */0
-                                }
-                              }
-                            }
-                          }
-                        },
-                        _1: "invalid default value for field name:%s (info: %s)"
-                      }), option_default("", match$2.field_name), match$2.info);
-    case /* Unsupported_field_type */3 :
-        var match$3 = e._0;
-        return Curry._3(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "unsupported field type for field name:",
-                          _1: {
-                            TAG: /* String */2,
-                            _0: /* No_padding */0,
-                            _1: {
-                              TAG: /* String_literal */11,
-                              _0: " with type:",
-                              _1: {
-                                TAG: /* String */2,
-                                _0: /* No_padding */0,
-                                _1: {
-                                  TAG: /* String_literal */11,
-                                  _0: " in bakend: ",
-                                  _1: {
-                                    TAG: /* String */2,
-                                    _0: /* No_padding */0,
-                                    _1: /* End_of_format */0
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        },
-                        _1: "unsupported field type for field name:%s with type:%s in bakend: %s"
-                      }), option_default("", match$3.field_name), match$3.field_type, match$3.backend_name);
-    case /* Programatic_error */4 :
-        return Curry._1(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "programmatic error: ",
-                          _1: {
-                            TAG: /* String */2,
-                            _0: /* No_padding */0,
-                            _1: /* End_of_format */0
-                          }
-                        },
-                        _1: "programmatic error: %s"
-                      }), string_of_programmatic_error(e._0));
-    case /* Invalid_import_qualifier */5 :
-        return Curry._1(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String */2,
-                          _0: /* No_padding */0,
-                          _1: {
-                            TAG: /* String_literal */11,
-                            _0: "Invalid import qualified, only 'public' supported",
-                            _1: /* End_of_format */0
-                          }
-                        },
-                        _1: "%sInvalid import qualified, only 'public' supported"
-                      }), to_string(e._0));
-    case /* Invalid_file_name */6 :
-        return Curry._1(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "Invalid file name: ",
-                          _1: {
-                            TAG: /* String */2,
-                            _0: /* No_padding */0,
-                            _1: {
-                              TAG: /* String_literal */11,
-                              _0: ", format must <name>.proto",
-                              _1: /* End_of_format */0
-                            }
-                          }
-                        },
-                        _1: "Invalid file name: %s, format must <name>.proto"
-                      }), e._0);
-    case /* Import_file_not_found */7 :
-        return Curry._1(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "File: ",
-                          _1: {
-                            TAG: /* String */2,
-                            _0: /* No_padding */0,
-                            _1: {
-                              TAG: /* String_literal */11,
-                              _0: ", could not be found.",
-                              _1: /* End_of_format */0
-                            }
-                          }
-                        },
-                        _1: "File: %s, could not be found."
-                      }), e._0);
-    case /* Invalid_packed_option */8 :
-        return Curry._1(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "Invalid packed option for field: ",
-                          _1: {
-                            TAG: /* String */2,
-                            _0: /* No_padding */0,
-                            _1: /* End_of_format */0
-                          }
-                        },
-                        _1: "Invalid packed option for field: %s"
-                      }), e._0);
-    case /* Missing_semicolon_for_enum_value */9 :
-        return Curry._2(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String */2,
-                          _0: /* No_padding */0,
-                          _1: {
-                            TAG: /* String_literal */11,
-                            _0: "Missing semicolon for enum value: ",
-                            _1: {
-                              TAG: /* String */2,
-                              _0: /* No_padding */0,
-                              _1: /* End_of_format */0
-                            }
-                          }
-                        },
-                        _1: "%sMissing semicolon for enum value: %s"
-                      }), to_string(e._1), e._0);
-    case /* Invalid_enum_specification */10 :
-        return Curry._2(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String */2,
-                          _0: /* No_padding */0,
-                          _1: {
-                            TAG: /* String_literal */11,
-                            _0: "Missing enum specification (<identifier> = <id>;) for enum value: ",
-                            _1: {
-                              TAG: /* String */2,
-                              _0: /* No_padding */0,
-                              _1: /* End_of_format */0
-                            }
-                          }
-                        },
-                        _1: "%sMissing enum specification (<identifier> = <id>;) for enum value: %s"
-                      }), to_string(e._1), e._0);
-    case /* Invalid_mutable_option */11 :
-        return Curry._1(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "Invalid mutable option for field ",
-                          _1: {
-                            TAG: /* String */2,
-                            _0: /* No_padding */0,
-                            _1: /* End_of_format */0
-                          }
-                        },
-                        _1: "Invalid mutable option for field %s"
-                      }), option_default("", e._0));
-    case /* Missing_one_of_name */12 :
-        return Curry._1(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String */2,
-                          _0: /* No_padding */0,
-                          _1: {
-                            TAG: /* String_literal */11,
-                            _0: "Missing oneof name",
-                            _1: /* End_of_format */0
-                          }
-                        },
-                        _1: "%sMissing oneof name"
-                      }), to_string(e._0));
-    case /* Invalid_field_label */13 :
-        return Curry._1(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String */2,
-                          _0: /* No_padding */0,
-                          _1: {
-                            TAG: /* String_literal */11,
-                            _0: "Invalid field label. [required|repeated|optional] expected",
-                            _1: /* End_of_format */0
-                          }
-                        },
-                        _1: "%sInvalid field label. [required|repeated|optional] expected"
-                      }), to_string(e._0));
-    case /* Missing_field_label */14 :
-        return Curry._1(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String */2,
-                          _0: /* No_padding */0,
-                          _1: {
-                            TAG: /* String_literal */11,
-                            _0: "Missing field label. [required|repeated|optional] expected",
-                            _1: /* End_of_format */0
-                          }
-                        },
-                        _1: "%sMissing field label. [required|repeated|optional] expected"
-                      }), to_string(e._0));
-    case /* Parsing_error */15 :
-        return Curry._3(Printf.sprintf(/* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "File ",
-                          _1: {
-                            TAG: /* String */2,
-                            _0: /* No_padding */0,
-                            _1: {
-                              TAG: /* String_literal */11,
-                              _0: ", line ",
-                              _1: {
-                                TAG: /* Int */4,
-                                _0: /* Int_i */3,
-                                _1: /* No_padding */0,
-                                _2: /* No_precision */0,
-                                _3: {
-                                  TAG: /* String_literal */11,
-                                  _0: ":\n",
-                                  _1: {
-                                    TAG: /* String */2,
-                                    _0: /* No_padding */0,
-                                    _1: /* End_of_format */0
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        },
-                        _1: "File %s, line %i:\n%s"
-                      }), e._0, e._1, e._2);
-    
-  }
-}
 
 function add_loc(loc, exn) {
   if (exn.RE_EXN_ID === Compilation_error) {
@@ -695,13 +340,6 @@ function add_loc(loc, exn) {
           }
         };
 }
-
-Printexc.register_printer(function (exn) {
-      if (exn.RE_EXN_ID === Compilation_error) {
-        return prepare_error(exn._1);
-      }
-      
-    });
 
 function invalid_default_value(field_name, info, param) {
   throw {
@@ -1592,34 +1230,6 @@ function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
   };
 }
 
-function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
-  while(true) {
-    var __ocaml_lex_state = ___ocaml_lex_state;
-    var l = _l;
-    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
-    switch (__ocaml_lex_state$1) {
-      case 0 :
-          update_loc(lexbuf);
-          return /* Comment_value */{
-                  _0: $$String.concat("", List.rev(l))
-                };
-      case 1 :
-          ___ocaml_lex_state = 41;
-          _l = {
-            hd: Lexing.lexeme(lexbuf),
-            tl: l
-          };
-          continue ;
-      case 2 :
-          return /* Comment_eof */0;
-      default:
-        Curry._1(lexbuf.refill_buff, lexbuf);
-        ___ocaml_lex_state = __ocaml_lex_state$1;
-        continue ;
-    }
-  };
-}
-
 function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
@@ -1647,6 +1257,34 @@ function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
           continue ;
       case 3 :
           return /* String_eof */0;
+      default:
+        Curry._1(lexbuf.refill_buff, lexbuf);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
+    }
+  };
+}
+
+function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
+  while(true) {
+    var __ocaml_lex_state = ___ocaml_lex_state;
+    var l = _l;
+    var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
+    switch (__ocaml_lex_state$1) {
+      case 0 :
+          update_loc(lexbuf);
+          return /* Comment_value */{
+                  _0: $$String.concat("", List.rev(l))
+                };
+      case 1 :
+          ___ocaml_lex_state = 41;
+          _l = {
+            hd: Lexing.lexeme(lexbuf),
+            tl: l
+          };
+          continue ;
+      case 2 :
+          return /* Comment_eof */0;
       default:
         Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
@@ -1783,18 +1421,8 @@ function lexer(lexbuf) {
       case 20 :
           return /* EOF */25;
       case 21 :
-          var s$1 = Curry._1(Printf.sprintf(/* Format */{
-                    _0: {
-                      TAG: /* String_literal */11,
-                      _0: "Unknown character found ",
-                      _1: {
-                        TAG: /* String */2,
-                        _0: /* No_padding */0,
-                        _1: /* End_of_format */0
-                      }
-                    },
-                    _1: "Unknown character found %s"
-                  }), Lexing.lexeme(lexbuf));
+          var l = Lexing.lexeme(lexbuf);
+          var s$1 = "Unknown character found " + l;
           throw {
                 RE_EXN_ID: "Failure",
                 _1: s$1,
@@ -1933,47 +1561,9 @@ function string_of_record_field_type(param) {
 function function_name_of_user_defined(prefix, param) {
   var module_ = param.udt_module;
   if (module_ !== undefined) {
-    return Curry._3(Printf.sprintf(/* Format */{
-                    _0: {
-                      TAG: /* String */2,
-                      _0: /* No_padding */0,
-                      _1: {
-                        TAG: /* Char_literal */12,
-                        _0: /* '.' */46,
-                        _1: {
-                          TAG: /* String */2,
-                          _0: /* No_padding */0,
-                          _1: {
-                            TAG: /* Char_literal */12,
-                            _0: /* '_' */95,
-                            _1: {
-                              TAG: /* String */2,
-                              _0: /* No_padding */0,
-                              _1: /* End_of_format */0
-                            }
-                          }
-                        }
-                      }
-                    },
-                    _1: "%s.%s_%s"
-                  }), module_, prefix, param.udt_type_name);
+    return "" + module_ + "." + prefix + "_" + param.udt_type_name;
   } else {
-    return Curry._2(Printf.sprintf(/* Format */{
-                    _0: {
-                      TAG: /* String */2,
-                      _0: /* No_padding */0,
-                      _1: {
-                        TAG: /* Char_literal */12,
-                        _0: /* '_' */95,
-                        _1: {
-                          TAG: /* String */2,
-                          _0: /* No_padding */0,
-                          _1: /* End_of_format */0
-                        }
-                      }
-                    },
-                    _1: "%s_%s"
-                  }), prefix, param.udt_type_name);
+    return "" + prefix + "_" + param.udt_type_name;
   }
 }
 
@@ -1996,7 +1586,7 @@ function string_of_payload_kind(capitalize, payload_kind, packed) {
     s = packed ? "bytes" : "varint";
   }
   if (capitalize !== undefined) {
-    return Caml_bytes.bytes_to_string(Bytes.capitalize(Caml_bytes.bytes_of_string(s)));
+    return Caml_bytes.bytes_to_string(Bytes.capitalize_ascii(Caml_bytes.bytes_of_string(s)));
   } else {
     return s;
   }
@@ -5409,7 +4999,7 @@ var Codegen_type = {
 
 function gen_encode_field_key(sc, number, pk, is_packed) {
   var s = string_of_payload_kind(undefined, pk, is_packed);
-  var s$1 = Caml_bytes.bytes_to_string(Bytes.lowercase(Caml_bytes.bytes_of_string(s)));
+  var s$1 = Caml_bytes.bytes_to_string(Bytes.lowercase_ascii(Caml_bytes.bytes_of_string(s)));
   return line$1(sc, Curry._2(Printf.sprintf(/* Format */{
                       _0: {
                         TAG: /* String_literal */11,
@@ -5435,7 +5025,7 @@ function gen_encode_field_key(sc, number, pk, is_packed) {
                         }
                       },
                       _1: "Pbrt.Encoder.key (%i, Pbrt.%s) encoder; "
-                    }), number, Caml_bytes.bytes_to_string(Bytes.capitalize(Caml_bytes.bytes_of_string(s$1)))));
+                    }), number, Caml_bytes.bytes_to_string(Bytes.capitalize_ascii(Caml_bytes.bytes_of_string(s$1)))));
 }
 
 function encode_basic_type(bt, pk) {
@@ -6405,7 +5995,7 @@ function record_field_default_info(record_field) {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
                   "ocaml_proto_test.ml",
-                  5226,
+                  5157,
                   15
                 ],
                 Error: new Error()
@@ -7563,18 +7153,7 @@ function compile(proto_definition) {
                                         var map_value_type = mf.map_value_type;
                                         var map_key_type = mf.map_key_type;
                                         var map_name = mf.map_name;
-                                        var key_type = compile_field_type(Curry._1(Printf.sprintf(/* Format */{
-                                                      _0: {
-                                                        TAG: /* String_literal */11,
-                                                        _0: "key of ",
-                                                        _1: {
-                                                          TAG: /* String */2,
-                                                          _0: /* No_padding */0,
-                                                          _1: /* End_of_format */0
-                                                        }
-                                                      },
-                                                      _1: "key of %s"
-                                                    }), map_name), all_pbtt_msgs$1, file_options, map_options, file_name, map_key_type);
+                                        var key_type = compile_field_type("key of " + map_name, all_pbtt_msgs$1, file_options, map_options, file_name, map_key_type);
                                         var key_pk = encoding_info_of_field_type(all_pbtt_msgs$1, map_key_type);
                                         var key_type$1;
                                         if (typeof key_type === "number") {
@@ -7789,10 +7368,10 @@ function eq(loc, x, y) {
   
 }
 
-eq("File \"ocaml_proto_test.ml\", line 5993, characters 5-12", match[0], "(** tmp.proto Generated Types and Encoding *)\n\n(** {2 Types} *)\n\ntype t = {\n  j : int32;\n}\n\n\n(** {2 Default values} *)\n\nval default_t : \n  ?j:int32 ->\n  unit ->\n  t\n(** [default_t ()] is the default value for type [t] *)\n\n\n(** {2 Protobuf Decoding} *)\n\nval decode_t : Pbrt.Decoder.t -> t\n(** [decode_t decoder] decodes a [t] value from [decoder] *)\n\n\n(** {2 Protobuf Toding} *)\n\nval encode_t : t -> Pbrt.Encoder.t -> unit\n(** [encode_t v encoder] encodes [v] with the given [encoder] *)\n\n\n(** {2 Formatters} *)\n\nval pp_t : Format.formatter -> t -> unit \n(** [pp_t v] formats v] *)\n");
+eq("File \"ocaml_proto_test.ml\", line 5924, characters 5-12", match[0], "(** tmp.proto Generated Types and Encoding *)\n\n(** {2 Types} *)\n\ntype t = {\n  j : int32;\n}\n\n\n(** {2 Default values} *)\n\nval default_t : \n  ?j:int32 ->\n  unit ->\n  t\n(** [default_t ()] is the default value for type [t] *)\n\n\n(** {2 Protobuf Decoding} *)\n\nval decode_t : Pbrt.Decoder.t -> t\n(** [decode_t decoder] decodes a [t] value from [decoder] *)\n\n\n(** {2 Protobuf Toding} *)\n\nval encode_t : t -> Pbrt.Encoder.t -> unit\n(** [encode_t v encoder] encodes [v] with the given [encoder] *)\n\n\n(** {2 Formatters} *)\n\nval pp_t : Format.formatter -> t -> unit \n(** [pp_t v] formats v] *)\n");
 
-eq("File \"ocaml_proto_test.ml\", line 6029, characters 5-12", match[1], "[@@@ocaml.warning \"-30\"]\n\ntype t = {\n  j : int32;\n}\n\nand t_mutable = {\n  mutable j : int32;\n}\n\nlet rec default_t \n  ?j:((j:int32) = 0l)\n  () : t  = {\n  j;\n}\n\nand default_t_mutable () : t_mutable = {\n  j = 0l;\n}\n\nlet rec decode_t d =\n  let v = default_t_mutable () in\n  let rec loop () = \n    match Pbrt.Decoder.key d with\n    | None -> (\n    )\n    | Some (1, Pbrt.Varint) -> (\n      v.j <- Pbrt.Decoder.int32_as_varint d;\n      loop ()\n    )\n    | Some (1, pk) -> raise (\n      Protobuf.Decoder.Failure (Protobuf.Decoder.Unexpected_payload (\"Message(t), field(1)\", pk))\n    )\n    | Some (n, payload_kind) -> Pbrt.Decoder.skip d payload_kind; loop ()\n  in\n  loop ();\n  let v:t = Obj.magic v in\n  v\n\nlet rec encode_t (v:t) encoder = \n  Pbrt.Encoder.key (1, Pbrt.Varint) encoder; \n  Pbrt.Encoder.int32_as_varint v.j encoder;\n  ()\n\nlet rec pp_t fmt (v:t) = \n  let pp_i fmt () =\n    Format.pp_open_vbox fmt 1;\n    Pbrt.Pp.pp_record_field \"j\" Pbrt.Pp.pp_int32 fmt v.j;\n    Format.pp_close_box fmt ()\n  in\n  Pbrt.Pp.pp_brk pp_i fmt ()\n");
+eq("File \"ocaml_proto_test.ml\", line 5960, characters 5-12", match[1], "[@@@ocaml.warning \"-30\"]\n\ntype t = {\n  j : int32;\n}\n\nand t_mutable = {\n  mutable j : int32;\n}\n\nlet rec default_t \n  ?j:((j:int32) = 0l)\n  () : t  = {\n  j;\n}\n\nand default_t_mutable () : t_mutable = {\n  j = 0l;\n}\n\nlet rec decode_t d =\n  let v = default_t_mutable () in\n  let rec loop () = \n    match Pbrt.Decoder.key d with\n    | None -> (\n    )\n    | Some (1, Pbrt.Varint) -> (\n      v.j <- Pbrt.Decoder.int32_as_varint d;\n      loop ()\n    )\n    | Some (1, pk) -> raise (\n      Protobuf.Decoder.Failure (Protobuf.Decoder.Unexpected_payload (\"Message(t), field(1)\", pk))\n    )\n    | Some (n, payload_kind) -> Pbrt.Decoder.skip d payload_kind; loop ()\n  in\n  loop ();\n  let v:t = Obj.magic v in\n  v\n\nlet rec encode_t (v:t) encoder = \n  Pbrt.Encoder.key (1, Pbrt.Varint) encoder; \n  Pbrt.Encoder.int32_as_varint v.j encoder;\n  ()\n\nlet rec pp_t fmt (v:t) = \n  let pp_i fmt () =\n    Format.pp_open_vbox fmt 1;\n    Pbrt.Pp.pp_record_field \"j\" Pbrt.Pp.pp_int32 fmt v.j;\n    Format.pp_close_box fmt ()\n  in\n  Pbrt.Pp.pp_brk pp_i fmt ()\n");
 
 Mt.from_pair_suites("Ocaml_proto_test", suites.contents);
 
-/*  Not a pure module */
+/* match Not a pure module */
