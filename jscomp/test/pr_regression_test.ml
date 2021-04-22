@@ -35,7 +35,6 @@ let d =
   ignore @@ f (+) 3 ;
   !v
 
-(* ;; Printf.printf "%d%d%d%d\n" a b c d *)
 
 ;; Mt.from_pair_suites __MODULE__ Mt.[
   "partial", (fun _ -> Eq((5,5,5,5), (a,b,c,d)))

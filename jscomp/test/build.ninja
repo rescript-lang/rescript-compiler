@@ -177,7 +177,6 @@ o test/ext_array_test.cmi test/ext_array_test.cmj : cc test/ext_array_test.ml | 
 o test/ext_bytes_test.cmi test/ext_bytes_test.cmj : cc test/ext_bytes_test.ml | test/mt.cmj $stdlib
 o test/ext_filename_test.cmi test/ext_filename_test.cmj : cc test/ext_filename_test.ml | test/ext_string_test.cmj test/test_literals.cmj $stdlib
 o test/ext_list_test.cmi test/ext_list_test.cmj : cc test/ext_list_test.ml | test/ext_string_test.cmj $stdlib
-o test/ext_log_test.cmi test/ext_log_test.cmj : cc test/ext_log_test.ml | $stdlib
 o test/ext_pervasives_test.cmj : cc_cmi test/ext_pervasives_test.ml | test/ext_pervasives_test.cmi $stdlib
 o test/ext_pervasives_test.cmi : cc test/ext_pervasives_test.mli | $stdlib
 o test/ext_string_test.cmi test/ext_string_test.cmj : cc test/ext_string_test.ml | test/ext_bytes_test.cmj $stdlib
@@ -503,11 +502,8 @@ o test/pr_regression_test.cmi test/pr_regression_test.cmj : cc test/pr_regressio
 o test/prepend_data_ffi.cmi test/prepend_data_ffi.cmj : cc test/prepend_data_ffi.ml | $stdlib
 o test/primitive_reg_test.cmi test/primitive_reg_test.cmj : cc test/primitive_reg_test.ml | $stdlib
 o test/print_alpha_test.cmi test/print_alpha_test.cmj : cc test/print_alpha_test.ml | test/mt.cmj $stdlib
-o test/printf_sim.cmi test/printf_sim.cmj : cc test/printf_sim.ml | $stdlib
-o test/printf_test.cmi test/printf_test.cmj : cc test/printf_test.ml | test/mt.cmj $stdlib
 o test/promise.cmi test/promise.cmj : cc test/promise.ml | $stdlib
 o test/promise_catch_test.cmi test/promise_catch_test.cmj : cc test/promise_catch_test.ml | test/mt.cmj $stdlib
-o test/qcc.cmi test/qcc.cmj : cc test/qcc.ml | $stdlib
 o test/queue_402.cmi test/queue_402.cmj : cc test/queue_402.ml | $stdlib
 o test/queue_test.cmi test/queue_test.cmj : cc test/queue_test.ml | test/mt.cmj test/queue_402.cmj $stdlib
 o test/random_test.cmi test/random_test.cmj : cc test/random_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
@@ -550,7 +546,6 @@ o test/relative_path.cmi test/relative_path.cmj : cc test/relative_path.ml | $st
 o test/res_debug.cmi test/res_debug.cmj : cc test/res_debug.res | $stdlib
 o test/return_check.cmi test/return_check.cmj : cc test/return_check.ml | $stdlib
 o test/runtime_encoding_test.cmi test/runtime_encoding_test.cmj : cc test/runtime_encoding_test.ml | $stdlib
-o test/scanf_io.cmi test/scanf_io.cmj : cc test/scanf_io.ml | test/testing.cmj $stdlib
 o test/scanf_reference_error_regression_test.cmj : cc_cmi test/scanf_reference_error_regression_test.ml | test/mt.cmj test/mt_global.cmj test/scanf_reference_error_regression_test.cmi $stdlib
 o test/scanf_reference_error_regression_test.cmi : cc test/scanf_reference_error_regression_test.mli | $stdlib
 o test/scanf_test.cmi test/scanf_test.cmj : cc test/scanf_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
@@ -572,7 +567,6 @@ o test/single_module_alias.cmi test/single_module_alias.cmj : cc test/single_mod
 o test/singular_unit_test.cmi test/singular_unit_test.cmj : cc test/singular_unit_test.ml | $stdlib
 o test/small_inline_test.cmi test/small_inline_test.cmj : cc test/small_inline_test.ml | $stdlib
 o test/splice_test.cmi test/splice_test.cmj : cc test/splice_test.ml | test/mt.cmj $stdlib
-o test/sprintf_reg_test.cmi test/sprintf_reg_test.cmj : cc test/sprintf_reg_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
 o test/stack_comp_test.cmi test/stack_comp_test.cmj : cc test/stack_comp_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
 o test/stack_test.cmi test/stack_test.cmj : cc test/stack_test.ml | test/mt.cmj $stdlib
 o test/stream_parser_test.cmi test/stream_parser_test.cmj : cc test/stream_parser_test.ml | test/mt.cmj $stdlib
@@ -703,14 +697,11 @@ o test/test_unsupported_primitive.cmi test/test_unsupported_primitive.cmj : cc t
 o test/test_while_closure.cmi test/test_while_closure.cmj : cc test/test_while_closure.ml | $stdlib
 o test/test_while_side_effect.cmi test/test_while_side_effect.cmj : cc test/test_while_side_effect.ml | $stdlib
 o test/test_zero_nullable.cmi test/test_zero_nullable.cmj : cc test/test_zero_nullable.ml | test/mt.cmj $stdlib
-o test/testing.cmj : cc_cmi test/testing.ml | test/testing.cmi $stdlib
-o test/testing.cmi : cc test/testing.mli | $stdlib
 o test/tfloat_record_test.cmi test/tfloat_record_test.cmj : cc test/tfloat_record_test.ml | test/float_array.cmj test/float_record.cmj test/mt.cmj test/mt_global.cmj $stdlib
 o test/ticker.cmi test/ticker.cmj : cc test/ticker.ml | $stdlib
 o test/to_string_test.cmi test/to_string_test.cmj : cc test/to_string_test.ml | test/mt.cmj $stdlib
 o test/topsort_test.cmi test/topsort_test.cmj : cc test/topsort_test.ml | $stdlib
 o test/tramp_fib.cmi test/tramp_fib.cmj : cc test/tramp_fib.ml | test/mt.cmj $stdlib
-o test/tscanf_test.cmi test/tscanf_test.cmj : cc test/tscanf_test.ml | test/mt.cmj test/mt_global.cmj test/testing.cmj $stdlib
 o test/tuple_alloc.cmi test/tuple_alloc.cmj : cc test/tuple_alloc.ml | $stdlib
 o test/type_disambiguate.cmi test/type_disambiguate.cmj : cc test/type_disambiguate.ml | $stdlib
 o test/typeof_test.cmi test/typeof_test.cmj : cc test/typeof_test.ml | test/mt.cmj $stdlib

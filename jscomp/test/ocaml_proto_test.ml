@@ -2,7 +2,6 @@
 module 
 Pbpt
 = struct
-#1 "pbpt.ml"
 (*
   The MIT License (MIT)
   
@@ -157,7 +156,6 @@ type proto = {
 
 end
 module Pbpt_util : sig 
-#1 "pbpt_util.mli"
 (*
   The MIT License (MIT)
   
@@ -286,7 +284,6 @@ val file_option : Pbpt.file_option list -> string -> Pbpt.constant option
  *)
 
 end = struct
-#1 "pbpt_util.ml"
 (*
   The MIT License (MIT)
   
@@ -400,19 +397,19 @@ let rec message_printer ?level:(level = 0) {
 
   let prefix () = 
     for _ =0 to level  - 1 do 
-      Printf.printf " ";
+      Js.log" ";
     done; 
   in 
   prefix (); print_endline message_name; 
   List.iter (function 
     | Pbpt.Message_field {Pbpt.field_name; _ } -> 
-        prefix (); Printf.printf "- field [%s]\n" field_name
+        prefix (); Js.log {j|"- field [$(field_name)]|j} 
     | Pbpt.Message_map_field {Pbpt.map_name; _ } -> 
-        prefix (); Printf.printf "- map [%s]\n" map_name
+        prefix (); Js.log {j|- map [$(map_name)]|j} 
     | Pbpt.Message_oneof_field {Pbpt.oneof_name ; _ } ->
-        prefix (); Printf.printf "- one of field [%s]\n" oneof_name
+        prefix (); Js.log {j|- one of field [$(oneof_name)]|j}
     | Pbpt.Message_enum {Pbpt.enum_name; _ } ->
-        prefix (); Printf.printf "- enum type [%s]\n" enum_name 
+        prefix (); Js.log {j|- enum type [$(enum_name)]|j} 
     | Pbpt.Message_sub m -> message_printer ~level:(level + 2) m
     | Pbpt.Message_extension _ -> () 
   ) message_body 
@@ -475,7 +472,6 @@ let file_option (file_options:Pbpt.file_option list) (name:string) =
 
 end
 module Util : sig 
-#1 "util.mli"
 (*
   The MIT License (MIT)
   
@@ -539,7 +535,6 @@ val option_default : 'a -> 'a option -> 'a
  *)
 
 end = struct
-#1 "util.ml"
 (*
   The MIT License (MIT)
   
@@ -593,7 +588,8 @@ let rec apply_until f = function
 let is_list_empty = function | [] -> true | _ -> false 
 
 let string_of_string_list l = 
-  Printf.sprintf "[%s]" (String.concat "," l)
+  let a = (String.concat "," l) in 
+  {j|[$(a)]|j}
 
 let string_fold_lefti f e0 s =
   let len = String.length s in 
@@ -610,7 +606,6 @@ let option_default x = function
 
 end
 module Loc : sig 
-#1 "loc.mli"
 (** File Location utilities *)
 
 type t 
@@ -636,7 +631,6 @@ val to_string : t -> string
 (** [to_string loc] convert to the compiler error string *) 
 
 end = struct
-#1 "loc.ml"
 type t = {
   file_name : string option; 
   line : int; 
@@ -657,11 +651,12 @@ let file_name {file_name; _ } = file_name
 let line {line; _ } = line 
 
 let to_string {file_name; line} = 
-  Printf.sprintf "File %s, line %i:\n" (Util.option_default "" file_name) line 
+  let a =   (Util.option_default "" file_name) in 
+  {j|File $(a), line $(line):|j}  
 
 end
 module Exception : sig 
-#1 "exception.mli"
+
 (*
   The MIT License (MIT)
   
@@ -755,7 +750,7 @@ val missing_field_label : Loc.t -> 'a
 val syntax_error : unit  -> 'a 
 
 end = struct
-#1 "exception.ml"
+
 (*
   The MIT License (MIT)
   
@@ -783,7 +778,7 @@ end = struct
 
 (** {2 Compilation errors } *)
 
-module P = Printf
+
 
 type programmatic_error =
   | Invalid_string_split 
@@ -847,69 +842,6 @@ type error =
 exception Compilation_error of error  
 (** Exception raised when a compilation error occurs *)
 
-let prepare_error = function 
-  | Unresolved_type { field_name; type_; message_name} -> 
-    P.sprintf 
-      "unresolved type for field name : %s (type:%s, in message: %s)" 
-      field_name type_ message_name
-
-  | Duplicated_field_number {field_name; previous_field_name; message_name} -> 
-    P.sprintf 
-      "duplicated field number for field name: %s (previous field name:%s, message: %s)"
-      field_name previous_field_name message_name
-
-  | Invalid_default_value {field_name; info}  -> 
-    P.sprintf "invalid default value for field name:%s (info: %s)"
-      (Util.option_default "" field_name) info
-
-  | Unsupported_field_type {field_name; field_type; backend_name} -> 
-    P.sprintf "unsupported field type for field name:%s with type:%s in bakend: %s"
-      (Util.option_default "" field_name) field_type backend_name
-
-  | Programatic_error e -> 
-    P.sprintf "programmatic error: %s" (string_of_programmatic_error e)
-
-  | Invalid_import_qualifier loc ->
-    P.sprintf "%sInvalid import qualified, only 'public' supported" (Loc.to_string loc) 
-
-  | Invalid_file_name file_name -> 
-    P.sprintf 
-      ("Invalid file name: %s, format must <name>.proto") file_name  
-
-  | Import_file_not_found file_name -> 
-    P.sprintf 
-      ("File: %s, could not be found.") file_name  
-
-  | Invalid_packed_option field_name ->
-    P.sprintf "Invalid packed option for field: %s" field_name
-
-  | Missing_semicolon_for_enum_value (enum_value, loc)-> 
-    P.sprintf "%sMissing semicolon for enum value: %s" (Loc.to_string loc) enum_value
-
-  | Missing_one_of_name loc -> 
-    P.sprintf "%sMissing oneof name" (Loc.to_string loc) 
-
-  | Invalid_field_label loc -> 
-    P.sprintf "%sInvalid field label. [required|repeated|optional] expected" (Loc.to_string loc) 
-  
-  | Missing_field_label loc -> 
-    P.sprintf "%sMissing field label. [required|repeated|optional] expected" (Loc.to_string loc) 
-
-  | Parsing_error (file_name, line, detail) -> 
-    Printf.sprintf "File %s, line %i:\n%s" file_name line detail 
-
-  | Syntax_error -> 
-    P.sprintf "Syntax error"
-
-  | Invalid_enum_specification (enum_name, loc) -> 
-    P.sprintf 
-      "%sMissing enum specification (<identifier> = <id>;) for enum value: %s"
-      (Loc.to_string loc) enum_name
-  
-  | Invalid_mutable_option field_name -> 
-    P.sprintf "Invalid mutable option for field %s" (Util.option_default ""
-    field_name) 
-
 
 let add_loc loc exn  = 
   match exn with 
@@ -926,12 +858,6 @@ let add_loc loc exn  =
     Compilation_error (Parsing_error (file_name, line, detail))
   )
 
-let () =
-  Printexc.register_printer (fun exn ->
-    match exn with
-    | Compilation_error e -> Some (prepare_error e)
-    | _                   -> None
-    )
 
 let unresolved_type ~field_name ~type_ ~message_name () = 
   raise (Compilation_error (Unresolved_type {
@@ -996,7 +922,6 @@ let syntax_error () =
 
 end
 module Pbparser : sig 
-#1 "pbparser.mli"
 type token =
   | REQUIRED
   | OPTIONAL
@@ -1057,7 +982,6 @@ val extend_ :
   (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Pbpt.extend
 
 end = struct
-#1 "pbparser.ml"
 type token =
   | REQUIRED
   | OPTIONAL
@@ -1443,217 +1367,159 @@ let yyact = [|
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
     Obj.repr(
-# 111 "src/compilerlib/pbparser.mly"
                                      (_1)
-# 389 "src/compilerlib/pbparser.ml"
                : Pbpt.field_options))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'normal_field) in
     Obj.repr(
-# 112 "src/compilerlib/pbparser.mly"
                                      (_1)
-# 396 "src/compilerlib/pbparser.ml"
                : Pbpt.field_label Pbpt.field))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'enum_value) in
     Obj.repr(
-# 113 "src/compilerlib/pbparser.mly"
                                      (_1)
-# 403 "src/compilerlib/pbparser.ml"
                : Pbpt.enum_value))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'enum) in
     Obj.repr(
-# 114 "src/compilerlib/pbparser.mly"
                                      (_1)
-# 410 "src/compilerlib/pbparser.ml"
                : Pbpt.enum))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'oneof) in
     Obj.repr(
-# 115 "src/compilerlib/pbparser.mly"
                                      (_1)
-# 417 "src/compilerlib/pbparser.ml"
                : Pbpt.oneof))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'message) in
     Obj.repr(
-# 116 "src/compilerlib/pbparser.mly"
                                      (_1)
-# 424 "src/compilerlib/pbparser.ml"
                : Pbpt.message))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'import) in
     Obj.repr(
-# 117 "src/compilerlib/pbparser.mly"
                                      (_1)
-# 431 "src/compilerlib/pbparser.ml"
                : Pbpt.import))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'file_option) in
     Obj.repr(
-# 118 "src/compilerlib/pbparser.mly"
                                      (_1)
-# 438 "src/compilerlib/pbparser.ml"
                : Pbpt.file_option))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'extension_range_list) in
     Obj.repr(
-# 119 "src/compilerlib/pbparser.mly"
                                                  (_1)
-# 445 "src/compilerlib/pbparser.ml"
                : Pbpt.extension_range list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'extension) in
     Obj.repr(
-# 120 "src/compilerlib/pbparser.mly"
                                     (_1)
-# 452 "src/compilerlib/pbparser.ml"
                : Pbpt.extension_range list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'extend) in
     Obj.repr(
-# 121 "src/compilerlib/pbparser.mly"
                                     (_1)
-# 459 "src/compilerlib/pbparser.ml"
                : Pbpt.extend))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'proto) in
     Obj.repr(
-# 125 "src/compilerlib/pbparser.mly"
                                      (_1)
-# 466 "src/compilerlib/pbparser.ml"
                : Pbpt.proto))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'syntax) in
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto_content) in
     Obj.repr(
-# 128 "src/compilerlib/pbparser.mly"
                          (Pbpt_util.proto ~syntax:_1 ~proto:_2 ())
-# 474 "src/compilerlib/pbparser.ml"
                : 'proto))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'proto_content) in
     Obj.repr(
-# 129 "src/compilerlib/pbparser.mly"
                          (_1)
-# 481 "src/compilerlib/pbparser.ml"
                : 'proto))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'import) in
     Obj.repr(
-# 132 "src/compilerlib/pbparser.mly"
                         (Pbpt_util.proto ~import:_1  ())
-# 488 "src/compilerlib/pbparser.ml"
                : 'proto_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'file_option) in
     Obj.repr(
-# 133 "src/compilerlib/pbparser.mly"
                         (Pbpt_util.proto ~file_option:_1  ())
-# 495 "src/compilerlib/pbparser.ml"
                : 'proto_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'package_declaration) in
     Obj.repr(
-# 134 "src/compilerlib/pbparser.mly"
                         (Pbpt_util.proto ~package:_1 ())
-# 502 "src/compilerlib/pbparser.ml"
                : 'proto_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'message) in
     Obj.repr(
-# 135 "src/compilerlib/pbparser.mly"
                         (Pbpt_util.proto ~message:_1 ())
-# 509 "src/compilerlib/pbparser.ml"
                : 'proto_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'enum) in
     Obj.repr(
-# 136 "src/compilerlib/pbparser.mly"
                         (Pbpt_util.proto ~enum:_1 ())
-# 516 "src/compilerlib/pbparser.ml"
                : 'proto_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'extend) in
     Obj.repr(
-# 137 "src/compilerlib/pbparser.mly"
                         (Pbpt_util.proto ~extend:_1 ())
-# 523 "src/compilerlib/pbparser.ml"
                : 'proto_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'import) in
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
     Obj.repr(
-# 139 "src/compilerlib/pbparser.mly"
                               (Pbpt_util.proto ~import:_1  ~proto:_2 ())
-# 531 "src/compilerlib/pbparser.ml"
                : 'proto_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'file_option) in
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
     Obj.repr(
-# 140 "src/compilerlib/pbparser.mly"
                               (Pbpt_util.proto ~file_option:_1  ~proto:_2 ())
-# 539 "src/compilerlib/pbparser.ml"
                : 'proto_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'package_declaration) in
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
     Obj.repr(
-# 141 "src/compilerlib/pbparser.mly"
                               (Pbpt_util.proto ~package:_1 ~proto:_2 ())
-# 547 "src/compilerlib/pbparser.ml"
                : 'proto_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'message) in
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
     Obj.repr(
-# 142 "src/compilerlib/pbparser.mly"
                               (Pbpt_util.proto ~message:_1 ~proto:_2 ())
-# 555 "src/compilerlib/pbparser.ml"
                : 'proto_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'enum) in
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
     Obj.repr(
-# 143 "src/compilerlib/pbparser.mly"
                               (Pbpt_util.proto ~enum:_1 ~proto:_2 ())
-# 563 "src/compilerlib/pbparser.ml"
                : 'proto_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'extend) in
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'proto) in
     Obj.repr(
-# 144 "src/compilerlib/pbparser.mly"
                               (Pbpt_util.proto ~extend:_1 ~proto:_2 ())
-# 571 "src/compilerlib/pbparser.ml"
                : 'proto_content))
 ; (fun __caml_parser_env ->
     let _3 = (Parsing.peek_val __caml_parser_env 1 : string) in
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 147 "src/compilerlib/pbparser.mly"
                                   ( _3 )
-# 579 "src/compilerlib/pbparser.ml"
                : 'syntax))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 2 : Loc.t) in
     let _2 = (Parsing.peek_val __caml_parser_env 1 : string) in
     let _3 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 150 "src/compilerlib/pbparser.mly"
                                     ( Pbpt_util.import _2)
-# 588 "src/compilerlib/pbparser.ml"
                : 'import))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t) in
     let _3 = (Parsing.peek_val __caml_parser_env 1 : string) in
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 151 "src/compilerlib/pbparser.mly"
                                     ( Pbpt_util.import ~public:() _3 )
-# 597 "src/compilerlib/pbparser.ml"
                : 'import))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t) in
@@ -1661,182 +1527,136 @@ let yyact = [|
     let _3 = (Parsing.peek_val __caml_parser_env 1 : string) in
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 152 "src/compilerlib/pbparser.mly"
                                     ( Exception.invalid_import_qualifier _1 )
-# 607 "src/compilerlib/pbparser.ml"
                : 'import))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 1 : Loc.t * string) in
     let _3 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 155 "src/compilerlib/pbparser.mly"
                             (snd _2)
-# 615 "src/compilerlib/pbparser.ml"
                : 'package_declaration))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
     let _4 = (Parsing.peek_val __caml_parser_env 1 : 'message_body_content_list) in
     let _5 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
     Obj.repr(
-# 158 "src/compilerlib/pbparser.mly"
                                                           ( 
     Pbpt_util.message ~content:_4 (snd _2)
   )
-# 626 "src/compilerlib/pbparser.ml"
                : 'message))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 2 : Loc.t * string) in
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
     Obj.repr(
-# 161 "src/compilerlib/pbparser.mly"
                                 ( 
     Pbpt_util.message ~content:[]  (snd _2)
   )
-# 636 "src/compilerlib/pbparser.ml"
                : 'message))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'message_body_content) in
     Obj.repr(
-# 166 "src/compilerlib/pbparser.mly"
                           ( [_1] )
-# 643 "src/compilerlib/pbparser.ml"
                : 'message_body_content_list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'message_body_content) in
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'message_body_content_list) in
     Obj.repr(
-# 167 "src/compilerlib/pbparser.mly"
                                                    ( _1::_2 )
-# 651 "src/compilerlib/pbparser.ml"
                : 'message_body_content_list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'normal_field) in
     Obj.repr(
-# 170 "src/compilerlib/pbparser.mly"
                  ( Pbpt_util.message_body_field  _1 )
-# 658 "src/compilerlib/pbparser.ml"
                : 'message_body_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'map) in
     Obj.repr(
-# 171 "src/compilerlib/pbparser.mly"
                  ( Pbpt_util.message_body_map_field _1 )
-# 665 "src/compilerlib/pbparser.ml"
                : 'message_body_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'oneof) in
     Obj.repr(
-# 172 "src/compilerlib/pbparser.mly"
                  ( Pbpt_util.message_body_oneof_field _1 )
-# 672 "src/compilerlib/pbparser.ml"
                : 'message_body_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'message) in
     Obj.repr(
-# 173 "src/compilerlib/pbparser.mly"
                  ( Pbpt_util.message_body_sub _1 )
-# 679 "src/compilerlib/pbparser.ml"
                : 'message_body_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'enum) in
     Obj.repr(
-# 174 "src/compilerlib/pbparser.mly"
                  ( Pbpt_util.message_body_enum _1 )
-# 686 "src/compilerlib/pbparser.ml"
                : 'message_body_content))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'extension) in
     Obj.repr(
-# 175 "src/compilerlib/pbparser.mly"
                  ( Pbpt_util.message_body_extension _1 )
-# 693 "src/compilerlib/pbparser.ml"
                : 'message_body_content))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 176 "src/compilerlib/pbparser.mly"
                  ( Exception.syntax_error ())
-# 699 "src/compilerlib/pbparser.ml"
                : 'message_body_content))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
     let _4 = (Parsing.peek_val __caml_parser_env 1 : 'normal_field_list) in
     let _5 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
     Obj.repr(
-# 179 "src/compilerlib/pbparser.mly"
                                                  (
     Pbpt_util.extend (snd _2) _4 
   )
-# 710 "src/compilerlib/pbparser.ml"
                : 'extend))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 2 : Loc.t * string) in
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
     Obj.repr(
-# 182 "src/compilerlib/pbparser.mly"
                                (
     Pbpt_util.extend (snd _2) [] 
   )
-# 720 "src/compilerlib/pbparser.ml"
                : 'extend))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'normal_field) in
     Obj.repr(
-# 187 "src/compilerlib/pbparser.mly"
                                    (_1 :: [])
-# 727 "src/compilerlib/pbparser.ml"
                : 'normal_field_list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'normal_field) in
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'normal_field_list) in
     Obj.repr(
-# 188 "src/compilerlib/pbparser.mly"
                                    (_1 :: _2)
-# 735 "src/compilerlib/pbparser.ml"
                : 'normal_field_list))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 1 : 'extension_range_list) in
     let _3 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 191 "src/compilerlib/pbparser.mly"
                                               (_2)
-# 743 "src/compilerlib/pbparser.ml"
                : 'extension))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'extension_range) in
     Obj.repr(
-# 194 "src/compilerlib/pbparser.mly"
                                                (_1 :: [])
-# 750 "src/compilerlib/pbparser.ml"
                : 'extension_range_list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 2 : 'extension_range) in
     let _3 = (Parsing.peek_val __caml_parser_env 0 : 'extension_range_list) in
     Obj.repr(
-# 195 "src/compilerlib/pbparser.mly"
                                                (_1 :: _3)
-# 758 "src/compilerlib/pbparser.ml"
                : 'extension_range_list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : int) in
     Obj.repr(
-# 198 "src/compilerlib/pbparser.mly"
                    ( Pbpt_util.extension_range_single_number _1)
-# 765 "src/compilerlib/pbparser.ml"
                : 'extension_range))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 2 : int) in
     let _3 = (Parsing.peek_val __caml_parser_env 0 : int) in
     Obj.repr(
-# 199 "src/compilerlib/pbparser.mly"
                    ( Pbpt_util.extension_range_range _1 (`Number _3) )
-# 773 "src/compilerlib/pbparser.ml"
                : 'extension_range))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 2 : int) in
     Obj.repr(
-# 200 "src/compilerlib/pbparser.mly"
                    ( Pbpt_util.extension_range_range _1 `Max )
-# 780 "src/compilerlib/pbparser.ml"
                : 'extension_range))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 4 : Loc.t) in
@@ -1844,36 +1664,28 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 1 : 'oneof_field_list) in
     let _5 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
     Obj.repr(
-# 203 "src/compilerlib/pbparser.mly"
                                                 ( 
     Pbpt_util.oneof ~fields:_4 (snd _2) 
   )
-# 792 "src/compilerlib/pbparser.ml"
                : 'oneof))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t) in
     let _3 = (Parsing.peek_val __caml_parser_env 1 : 'oneof_field_list) in
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
     Obj.repr(
-# 206 "src/compilerlib/pbparser.mly"
                                           ( 
     Exception.missing_one_of_name _1
   )
-# 803 "src/compilerlib/pbparser.ml"
                : 'oneof))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 211 "src/compilerlib/pbparser.mly"
                                         ( []   )
-# 809 "src/compilerlib/pbparser.ml"
                : 'oneof_field_list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'oneof_field) in
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'oneof_field_list) in
     Obj.repr(
-# 212 "src/compilerlib/pbparser.mly"
                                         ( _1::_2 )
-# 817 "src/compilerlib/pbparser.ml"
                : 'oneof_field_list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 5 : Loc.t * string) in
@@ -1882,11 +1694,9 @@ let yyact = [|
     let _5 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 215 "src/compilerlib/pbparser.mly"
                                                        ( 
     Pbpt_util.oneof_field ~type_:(snd _1) ~number:_4 ~options:_5 _2  
   )
-# 830 "src/compilerlib/pbparser.ml"
                : 'oneof_field))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 4 : Loc.t * string) in
@@ -1894,11 +1704,9 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 1 : int) in
     let _5 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 218 "src/compilerlib/pbparser.mly"
                                          ( 
     Pbpt_util.oneof_field ~type_:(snd _1) ~number:_4 _2  
   )
-# 842 "src/compilerlib/pbparser.ml"
                : 'oneof_field))
 ; (fun __caml_parser_env ->
     let _3 = (Parsing.peek_val __caml_parser_env 7 : Loc.t * string) in
@@ -1907,11 +1715,9 @@ let yyact = [|
     let _9 = (Parsing.peek_val __caml_parser_env 1 : int) in
     let _10 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 223 "src/compilerlib/pbparser.mly"
                                                                          (
     Pbpt_util.map ~key_type:(snd _3) ~value_type:(snd _5) ~number:_9 _7
   )
-# 855 "src/compilerlib/pbparser.ml"
                : 'map))
 ; (fun __caml_parser_env ->
     let _3 = (Parsing.peek_val __caml_parser_env 8 : Loc.t * string) in
@@ -1921,11 +1727,9 @@ let yyact = [|
     let _10 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
     let _11 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 226 "src/compilerlib/pbparser.mly"
                                                                                        (
     Pbpt_util.map ~options:_10 ~key_type:(snd _3) ~value_type:(snd _5) ~number:_9 _7
   )
-# 869 "src/compilerlib/pbparser.ml"
                : 'map))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 6 : 'label) in
@@ -1935,11 +1739,9 @@ let yyact = [|
     let _6 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
     let _7 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 231 "src/compilerlib/pbparser.mly"
                                                              ( 
     Pbpt_util.field ~label:_1 ~type_:(snd _2) ~number:_5 ~options:_6 _3
   )
-# 883 "src/compilerlib/pbparser.ml"
                : 'normal_field))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 5 : 'label) in
@@ -1948,11 +1750,9 @@ let yyact = [|
     let _5 = (Parsing.peek_val __caml_parser_env 1 : int) in
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 234 "src/compilerlib/pbparser.mly"
                                                ( 
     Pbpt_util.field ~label:_1 ~type_:(snd _2) ~number:_5 _3 
   )
-# 896 "src/compilerlib/pbparser.ml"
                : 'normal_field))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 5 : Loc.t * string) in
@@ -1961,11 +1761,9 @@ let yyact = [|
     let _5 = (Parsing.peek_val __caml_parser_env 1 : 'field_options) in
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 237 "src/compilerlib/pbparser.mly"
                                                        ( 
     Exception.missing_field_label (fst _1) 
   )
-# 909 "src/compilerlib/pbparser.ml"
                : 'normal_field))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 4 : Loc.t * string) in
@@ -1973,353 +1771,253 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 1 : int) in
     let _5 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 240 "src/compilerlib/pbparser.mly"
                                          ( 
     Exception.missing_field_label (fst _1) 
   )
-# 921 "src/compilerlib/pbparser.ml"
                : 'normal_field))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
     Obj.repr(
-# 245 "src/compilerlib/pbparser.mly"
               (snd _1)
-# 928 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 246 "src/compilerlib/pbparser.mly"
               ("required")
-# 934 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 247 "src/compilerlib/pbparser.mly"
               ("optional")
-# 940 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 248 "src/compilerlib/pbparser.mly"
               ("repeated")
-# 946 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t) in
     Obj.repr(
-# 249 "src/compilerlib/pbparser.mly"
               ("oneof")
-# 953 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 250 "src/compilerlib/pbparser.mly"
               ("enum")
-# 959 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 251 "src/compilerlib/pbparser.mly"
               ("package")
-# 965 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t) in
     Obj.repr(
-# 252 "src/compilerlib/pbparser.mly"
               ("import")
-# 972 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 253 "src/compilerlib/pbparser.mly"
               ("public")
-# 978 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 254 "src/compilerlib/pbparser.mly"
               ("option")
-# 984 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 255 "src/compilerlib/pbparser.mly"
               ("extensions")
-# 990 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 256 "src/compilerlib/pbparser.mly"
               ("extend")
-# 996 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 257 "src/compilerlib/pbparser.mly"
               ("syntax")
-# 1002 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 258 "src/compilerlib/pbparser.mly"
               ("message")
-# 1008 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 259 "src/compilerlib/pbparser.mly"
               ("to")
-# 1014 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 260 "src/compilerlib/pbparser.mly"
               ("max")
-# 1020 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 261 "src/compilerlib/pbparser.mly"
               ("map")
-# 1026 "src/compilerlib/pbparser.ml"
                : 'field_name))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 264 "src/compilerlib/pbparser.mly"
              ( `Required )
-# 1032 "src/compilerlib/pbparser.ml"
                : 'label))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 265 "src/compilerlib/pbparser.mly"
              ( `Repeated )
-# 1038 "src/compilerlib/pbparser.ml"
                : 'label))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 266 "src/compilerlib/pbparser.mly"
              ( `Optional )
-# 1044 "src/compilerlib/pbparser.ml"
                : 'label))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
     Obj.repr(
-# 267 "src/compilerlib/pbparser.mly"
              ( Exception.invalid_field_label (fst _1) )
-# 1051 "src/compilerlib/pbparser.ml"
                : 'label))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 1 : 'field_option_list) in
     Obj.repr(
-# 270 "src/compilerlib/pbparser.mly"
                                         ( _2 )
-# 1058 "src/compilerlib/pbparser.ml"
                : 'field_options))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 271 "src/compilerlib/pbparser.mly"
                                         ( [] )
-# 1064 "src/compilerlib/pbparser.ml"
                : 'field_options))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'field_option) in
     Obj.repr(
-# 274 "src/compilerlib/pbparser.mly"
                                           ( [_1] )
-# 1071 "src/compilerlib/pbparser.ml"
                : 'field_option_list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 2 : 'field_option) in
     let _3 = (Parsing.peek_val __caml_parser_env 0 : 'field_option_list) in
     Obj.repr(
-# 275 "src/compilerlib/pbparser.mly"
                                           ( _1::_3 )
-# 1079 "src/compilerlib/pbparser.ml"
                : 'field_option_list))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 2 : Loc.t * string) in
     let _3 = (Parsing.peek_val __caml_parser_env 0 : 'constant) in
     Obj.repr(
-# 278 "src/compilerlib/pbparser.mly"
                                        ( (snd _1, _3) )
-# 1087 "src/compilerlib/pbparser.ml"
                : 'field_option))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
     let _5 = (Parsing.peek_val __caml_parser_env 0 : 'constant) in
     Obj.repr(
-# 279 "src/compilerlib/pbparser.mly"
                                        ( (snd _2, _5))
-# 1095 "src/compilerlib/pbparser.ml"
                : 'field_option))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
     Obj.repr(
-# 282 "src/compilerlib/pbparser.mly"
                             (snd _1)
-# 1102 "src/compilerlib/pbparser.ml"
                : 'file_option_identifier_item))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 1 : Loc.t * string) in
     Obj.repr(
-# 283 "src/compilerlib/pbparser.mly"
                             (snd _2)
-# 1109 "src/compilerlib/pbparser.ml"
                : 'file_option_identifier_item))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'file_option_identifier_item) in
     Obj.repr(
-# 286 "src/compilerlib/pbparser.mly"
                                    (_1)
-# 1116 "src/compilerlib/pbparser.ml"
                : 'file_option_identifier))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'file_option_identifier) in
     let _2 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
     Obj.repr(
-# 287 "src/compilerlib/pbparser.mly"
                                    (_1 ^ (snd _2))
-# 1124 "src/compilerlib/pbparser.ml"
                : 'file_option_identifier))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 3 : 'file_option_identifier) in
     let _4 = (Parsing.peek_val __caml_parser_env 1 : 'constant) in
     let _5 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 290 "src/compilerlib/pbparser.mly"
                                                            ( (_2, _4) )
-# 1133 "src/compilerlib/pbparser.ml"
                : 'file_option))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : int) in
     Obj.repr(
-# 293 "src/compilerlib/pbparser.mly"
                ( Pbpt.Constant_int _1 )
-# 1140 "src/compilerlib/pbparser.ml"
                : 'constant))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : float) in
     Obj.repr(
-# 294 "src/compilerlib/pbparser.mly"
                ( Pbpt.Constant_float _1 )
-# 1147 "src/compilerlib/pbparser.ml"
                : 'constant))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
     Obj.repr(
-# 295 "src/compilerlib/pbparser.mly"
                ( 
     match (snd _1) with 
     | "true"   -> Pbpt.Constant_bool true 
     | "false"  -> Pbpt.Constant_bool false 
     | litteral -> Pbpt.Constant_litteral litteral 
   )
-# 1159 "src/compilerlib/pbparser.ml"
                : 'constant))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : string) in
     Obj.repr(
-# 301 "src/compilerlib/pbparser.mly"
                ( Pbpt.Constant_string _1 )
-# 1166 "src/compilerlib/pbparser.ml"
                : 'constant))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
     let _4 = (Parsing.peek_val __caml_parser_env 1 : 'enum_values) in
     let _5 = (Parsing.peek_val __caml_parser_env 0 : 'rbrace) in
     Obj.repr(
-# 304 "src/compilerlib/pbparser.mly"
                                          (Pbpt_util.enum ~enum_values:_4 (snd _2) )
-# 1175 "src/compilerlib/pbparser.ml"
                : 'enum))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 307 "src/compilerlib/pbparser.mly"
                                  ( [] )
-# 1181 "src/compilerlib/pbparser.ml"
                : 'enum_values))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'enum_value) in
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'enum_values) in
     Obj.repr(
-# 308 "src/compilerlib/pbparser.mly"
                                  ( _1::_2 )
-# 1189 "src/compilerlib/pbparser.ml"
                : 'enum_values))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
     let _3 = (Parsing.peek_val __caml_parser_env 1 : int) in
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'semicolon) in
     Obj.repr(
-# 311 "src/compilerlib/pbparser.mly"
                                ( Pbpt_util.enum_value ~int_value:_3 (snd _1) )
-# 1198 "src/compilerlib/pbparser.ml"
                : 'enum_value))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 2 : Loc.t * string) in
     let _3 = (Parsing.peek_val __caml_parser_env 0 : int) in
     Obj.repr(
-# 312 "src/compilerlib/pbparser.mly"
                     ( 
     Exception.missing_semicolon_for_enum_value (snd _1) (fst _1) 
   )
-# 1208 "src/compilerlib/pbparser.ml"
                : 'enum_value))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 3 : Loc.t * string) in
     let _3 = (Parsing.peek_val __caml_parser_env 1 : int) in
     Obj.repr(
-# 315 "src/compilerlib/pbparser.mly"
                           ( Exception.invalid_enum_specification (snd _1) (fst _1))
-# 1216 "src/compilerlib/pbparser.ml"
                : 'enum_value))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : Loc.t * string) in
     Obj.repr(
-# 316 "src/compilerlib/pbparser.mly"
                           ( Exception.invalid_enum_specification (snd _1) (fst _1))
-# 1223 "src/compilerlib/pbparser.ml"
                : 'enum_value))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : Loc.t * string) in
     Obj.repr(
-# 317 "src/compilerlib/pbparser.mly"
                           ( Exception.invalid_enum_specification (snd _1) (fst _1))
-# 1230 "src/compilerlib/pbparser.ml"
                : 'enum_value))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : Loc.t * string) in
     Obj.repr(
-# 318 "src/compilerlib/pbparser.mly"
                           ( Exception.invalid_enum_specification (snd _1) (fst _1))
-# 1237 "src/compilerlib/pbparser.ml"
                : 'enum_value))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 321 "src/compilerlib/pbparser.mly"
                         (())
-# 1243 "src/compilerlib/pbparser.ml"
                : 'semicolon))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'semicolon) in
     Obj.repr(
-# 322 "src/compilerlib/pbparser.mly"
                         (())
-# 1250 "src/compilerlib/pbparser.ml"
                : 'semicolon))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 325 "src/compilerlib/pbparser.mly"
                      ( () )
-# 1256 "src/compilerlib/pbparser.ml"
                : 'rbrace))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 1 : 'rbrace) in
     Obj.repr(
-# 326 "src/compilerlib/pbparser.mly"
                      ( () )
-# 1263 "src/compilerlib/pbparser.ml"
                : 'rbrace))
 (* Entry field_options_ *)
 ; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))
@@ -2393,8 +2091,6 @@ end
 module 
 Pblexer
 = struct
-#1 "pblexer.ml"
-# 25 "src/compilerlib/pblexer.mll"
  
 open Pbparser 
 
@@ -2455,7 +2151,6 @@ let update_loc lexbuf =
   })
 
 
-# 63 "js/pblexer.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\234\255\235\255\078\000\237\255\238\255\001\000\160\000\
@@ -2813,124 +2508,80 @@ let rec lexer lexbuf =
 and __ocaml_lex_lexer_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 105 "src/compilerlib/pblexer.mll"
                 ( LBRACE )
-# 423 "js/pblexer.ml"
 
   | 1 ->
-# 106 "src/compilerlib/pblexer.mll"
                 ( RBRACE )
-# 428 "js/pblexer.ml"
 
   | 2 ->
-# 107 "src/compilerlib/pblexer.mll"
                 ( LBRACKET)
-# 433 "js/pblexer.ml"
 
   | 3 ->
-# 108 "src/compilerlib/pblexer.mll"
                 ( RBRACKET)
-# 438 "js/pblexer.ml"
 
   | 4 ->
-# 109 "src/compilerlib/pblexer.mll"
                 ( RPAREN )
-# 443 "js/pblexer.ml"
 
   | 5 ->
-# 110 "src/compilerlib/pblexer.mll"
                 ( LPAREN )
-# 448 "js/pblexer.ml"
 
   | 6 ->
-# 111 "src/compilerlib/pblexer.mll"
                 ( LANGLEB )
-# 453 "js/pblexer.ml"
 
   | 7 ->
-# 112 "src/compilerlib/pblexer.mll"
                 ( RANGLEB )
-# 458 "js/pblexer.ml"
 
   | 8 ->
-# 113 "src/compilerlib/pblexer.mll"
                 ( EQUAL )
-# 463 "js/pblexer.ml"
 
   | 9 ->
-# 114 "src/compilerlib/pblexer.mll"
                 ( SEMICOLON )
-# 468 "js/pblexer.ml"
 
   | 10 ->
-# 115 "src/compilerlib/pblexer.mll"
                 ( COMMA )
-# 473 "js/pblexer.ml"
 
   | 11 ->
-# 116 "src/compilerlib/pblexer.mll"
                 ( match comment [] lexbuf with 
     | Comment_eof     -> EOF 
     | Comment_value _ -> lexer lexbuf  
   )
-# 481 "js/pblexer.ml"
 
   | 12 ->
-# 120 "src/compilerlib/pblexer.mll"
                 ( match multi_line_comment [] lexbuf with 
     | Comment_eof     -> EOF 
     | Comment_value _ -> lexer lexbuf  
   )
-# 489 "js/pblexer.ml"
 
   | 13 ->
-# 124 "src/compilerlib/pblexer.mll"
                   ( match string [] lexbuf with 
     | String_eof     -> EOF
     | String_value s -> STRING s
   )
-# 497 "js/pblexer.ml"
 
   | 14 ->
-# 128 "src/compilerlib/pblexer.mll"
                   ( INT (int_of_string @@ Lexing.lexeme lexbuf) )
-# 502 "js/pblexer.ml"
 
   | 15 ->
-# 129 "src/compilerlib/pblexer.mll"
                   ( FLOAT (float_of_string @@ Lexing.lexeme lexbuf) )
-# 507 "js/pblexer.ml"
 
   | 16 ->
-# 130 "src/compilerlib/pblexer.mll"
                   ( FLOAT nan )
-# 512 "js/pblexer.ml"
 
   | 17 ->
-# 131 "src/compilerlib/pblexer.mll"
                   ( update_loc lexbuf; lexer lexbuf )
-# 517 "js/pblexer.ml"
 
   | 18 ->
-# 132 "src/compilerlib/pblexer.mll"
                   ( lexer lexbuf )
-# 522 "js/pblexer.ml"
 
   | 19 ->
-# 133 "src/compilerlib/pblexer.mll"
                   ( resolve_identifier (Loc.from_lexbuf lexbuf) (Lexing.lexeme lexbuf) )
-# 527 "js/pblexer.ml"
 
   | 20 ->
-# 134 "src/compilerlib/pblexer.mll"
                   ( EOF )
-# 532 "js/pblexer.ml"
 
   | 21 ->
-# 135 "src/compilerlib/pblexer.mll"
-                  ( failwith @@ Printf.sprintf "Unknown character found %s" @@
-  Lexing.lexeme lexbuf)
-# 538 "js/pblexer.ml"
+                  ( let l = Lexing.lexeme lexbuf in failwith @@ {j|Unknown character found $(l)|j}
+  )
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_lexer_rec lexbuf __ocaml_lex_state
@@ -2940,19 +2591,13 @@ and comment l lexbuf =
 and __ocaml_lex_comment_rec l lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 139 "src/compilerlib/pblexer.mll"
             (update_loc lexbuf ; comment_value @@ String.concat "" (List.rev l))
-# 550 "js/pblexer.ml"
 
   | 1 ->
-# 140 "src/compilerlib/pblexer.mll"
             (comment ((Lexing.lexeme lexbuf)::l) lexbuf )
-# 555 "js/pblexer.ml"
 
   | 2 ->
-# 141 "src/compilerlib/pblexer.mll"
             (comment_eof )
-# 560 "js/pblexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_comment_rec l lexbuf __ocaml_lex_state
@@ -2962,27 +2607,19 @@ and multi_line_comment l lexbuf =
 and __ocaml_lex_multi_line_comment_rec l lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 144 "src/compilerlib/pblexer.mll"
             (update_loc lexbuf ; multi_line_comment l lexbuf )
-# 572 "js/pblexer.ml"
 
   | 1 ->
-# 145 "src/compilerlib/pblexer.mll"
          (
       ignore @@ Lexing.lexeme lexbuf; 
       comment_value @@ String.concat "" (List.rev l)
   )
-# 580 "js/pblexer.ml"
 
   | 2 ->
-# 149 "src/compilerlib/pblexer.mll"
             (multi_line_comment ((Lexing.lexeme lexbuf)::l) lexbuf )
-# 585 "js/pblexer.ml"
 
   | 3 ->
-# 150 "src/compilerlib/pblexer.mll"
             ( comment_eof )
-# 590 "js/pblexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_multi_line_comment_rec l lexbuf __ocaml_lex_state
@@ -2992,27 +2629,19 @@ and string l lexbuf =
 and __ocaml_lex_string_rec l lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 153 "src/compilerlib/pblexer.mll"
                                              ( 
     let c = Lexing.lexeme_char lexbuf 1 in 
     string ((Char.escaped c)::l) lexbuf 
   )
-# 605 "js/pblexer.ml"
 
   | 1 ->
-# 157 "src/compilerlib/pblexer.mll"
             (string_value  @@ String.concat "" (List.rev l))
-# 610 "js/pblexer.ml"
 
   | 2 ->
-# 158 "src/compilerlib/pblexer.mll"
             (string ((Lexing.lexeme lexbuf)::l) lexbuf )
-# 615 "js/pblexer.ml"
 
   | 3 ->
-# 159 "src/compilerlib/pblexer.mll"
             (string_eof)
-# 620 "js/pblexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_string_rec l lexbuf __ocaml_lex_state
@@ -3024,7 +2653,6 @@ end
 module 
 Ocaml_types
 = struct
-#1 "ocaml_types.ml"
 (*
   The MIT License (MIT)
   
@@ -3157,7 +2785,6 @@ type type_ = {
 
 end
 module Codegen_util : sig 
-#1 "codegen_util.mli"
 (** Common utility functions for OCaml code generation *)
 
 val sp : ('a, unit, string) format -> 'a
@@ -3200,7 +2827,6 @@ val string_of_payload_kind : ?capitalize:unit -> Ocaml_types.payload_kind -> boo
 
 
 end = struct
-#1 "codegen_util.ml"
 module T = Ocaml_types
 
 let sp x =  Printf.sprintf x 
@@ -3262,9 +2888,9 @@ let string_of_record_field_type = function
  *)
 let function_name_of_user_defined prefix = function 
   | {T.udt_module = Some module_; T.udt_type_name} -> 
-    sp "%s.%s_%s" module_ prefix udt_type_name 
+    {j|$(module_).$(prefix)_$(udt_type_name)|j} 
   | {T.udt_module = None; T.udt_type_name} -> 
-    sp "%s_%s" prefix udt_type_name 
+     {j|$(prefix)_$(udt_type_name)|j}
 
 let caml_file_name_of_proto_file_name proto = 
   let splitted = Util.rev_split_by_char '.' proto in 
@@ -3288,12 +2914,11 @@ let string_of_payload_kind ?capitalize payload_kind packed =
   in 
   match capitalize with
   | None -> s 
-  | Some () -> String.capitalize s 
+  | Some () -> String.capitalize_ascii s 
 
 
 end
 module Fmt : sig 
-#1 "fmt.mli"
 (** Formatting utilities for code generation *)
 
 (** {2 types} *) 
@@ -3327,7 +2952,6 @@ val print : scope -> string
  *)
 
 end = struct
-#1 "fmt.ml"
 (*
   The MIT License (MIT)
   
@@ -3402,7 +3026,6 @@ let print scope =
 
 end
 module Codegen : sig 
-#1 "codegen.mli"
 (** Module to define the signature for code generator 
   *) 
 
@@ -3420,7 +3043,6 @@ module type S = sig
 end (* S *)  
 
 end = struct
-#1 "codegen.ml"
 module type S = sig 
   
   val gen_sig : ?and_:unit -> Ocaml_types.type_ -> Fmt.scope -> bool
@@ -3435,7 +3057,6 @@ end
 module 
 Backend_ocaml_static
 = struct
-#1 "backend_ocaml_static.ml"
 (*
   The MIT License (MIT)
   
@@ -3496,13 +3117,11 @@ let runtime_function = function
 
 end
 module Codegen_decode : sig 
-#1 "codegen_decode.mli"
 
 
 include Codegen.S
 
 end = struct
-#1 "codegen_decode.ml"
 
 module T   = Ocaml_types 
 module E   = Exception 
@@ -3755,7 +3374,6 @@ let ocamldoc_title = "Protobuf Decoding"
 
 end
 module Logger : sig 
-#1 "logger.mli"
 (*
   The MIT License (MIT)
   
@@ -3806,7 +3424,6 @@ val endline : string -> unit
  *) 
 
 end = struct
-#1 "logger.ml"
 (*
   The MIT License (MIT)
   
@@ -3847,13 +3464,11 @@ let endline s = log "%s\n" s
 
 end
 module Codegen_pp : sig 
-#1 "codegen_pp.mli"
 
 
 include Codegen.S
 
 end = struct
-#1 "codegen_pp.ml"
 module T = Ocaml_types 
 module F = Fmt
 module L = Logger
@@ -4000,7 +3615,6 @@ end
 module 
 Pbtt
 = struct
-#1 "pbtt.ml"
 (*
   The MIT License (MIT)
   
@@ -4174,7 +3788,6 @@ type 'a proto = 'a proto_type list
 
 end
 module Graph : sig 
-#1 "graph.mli"
 (*
   The MIT License (MIT)
   
@@ -4241,7 +3854,6 @@ val tarjan : graph -> int list list
  *)
 
 end = struct
-#1 "graph.ml"
 (*
   The MIT License (MIT)
   
@@ -4398,7 +4010,6 @@ let tarjan = Tarjan.tarjan
 
 end
 module Pbtt_util : sig 
-#1 "pbtt_util.mli"
 (*
   The MIT License (MIT)
   
@@ -4551,7 +4162,6 @@ val find_all_types_in_field_scope :
   'a Pbtt.proto
 
 end = struct
-#1 "pbtt_util.ml"
 (*
   The MIT License (MIT)
   
@@ -5116,13 +4726,11 @@ let group proto =
 
 end
 module Codegen_type : sig 
-#1 "codegen_type.mli"
   
 
 include Codegen.S
 
 end = struct
-#1 "codegen_type.ml"
 
 module T = Ocaml_types
 module F = Fmt
@@ -5226,13 +4834,11 @@ let ocamldoc_title = "Types"
 
 end
 module Codegen_encode : sig 
-#1 "codegen_encode.mli"
 
 
 include Codegen.S
 
 end = struct
-#1 "codegen_encode.ml"
 
 module T = Ocaml_types
 module F = Fmt 
@@ -5242,7 +4848,7 @@ module L = Logger
 open Codegen_util
 
 let constructor_name s =
-  String.capitalize @@ String.lowercase s 
+  String.capitalize_ascii @@ String.lowercase_ascii s 
 
 let gen_encode_field_key sc number pk is_packed = 
   F.line sc @@ sp "Pbrt.Encoder.key (%i, Pbrt.%s) encoder; " 
@@ -5470,13 +5076,11 @@ let ocamldoc_title = "Protobuf Toding"
 
 end
 module Codegen_default : sig 
-#1 "codegen_default.mli"
 
 
 include Codegen.S
 
 end = struct
-#1 "codegen_default.ml"
 module T = Ocaml_types
 module F = Fmt 
 module E = Exception 
@@ -5664,7 +5268,6 @@ let ocamldoc_title = "Default values"
 
 end
 module Backend_ocaml : sig 
-#1 "backend_ocaml.mli"
 (*
   The MIT License (MIT)
   
@@ -5708,7 +5311,6 @@ val compile :
   Ocaml_types.type_ list 
 
 end = struct
-#1 "backend_ocaml.ml"
 (*
   The MIT License (MIT)
   
@@ -6130,7 +5732,7 @@ let compile_message
           map_options} = mf in 
 
         let key_type = compile_field_type 
-          ~field_name:(Printf.sprintf "key of %s" map_name)
+          ~field_name:({j|key of $(map_name)|j})
           all_types 
           file_options 
           map_options
@@ -6210,7 +5812,6 @@ let compile all_types = function
 
 end
 module Ocaml_protoc_compiler : sig 
-#1 "ocaml_protoc_compiler.mli"
 
 
 
@@ -6219,7 +5820,6 @@ module Ocaml_protoc_compiler : sig
 val compile : string -> string * string 
 
 end = struct
-#1 "ocaml_protoc_compiler.ml"
 
 type codegen_f = ?and_:unit -> Ocaml_types.type_ -> Fmt.scope -> bool 
 
@@ -6312,7 +5912,6 @@ end
 module 
 Ocaml_protc_test
 = struct
-#1 "ocaml_protc_test.ml"
 let (a,b) = Ocaml_protoc_compiler.compile "message T {required int32 j = 1; }"
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0

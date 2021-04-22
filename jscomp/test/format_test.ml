@@ -11,11 +11,6 @@ let eq3 loc a b c =
   eq loc a c 
 
 
-let ( ^^ ) (Format (fmt1, str1) : _ format6) (Format (fmt2, str2) : _ format6) : _ format6 =
-  Format (CamlinternalFormatBasics.concat_fmt fmt1 fmt2,
-          str1 ^ "%," ^ str2)
-
-let u () = "xx %s" ^^ "yy"
 
 module M = struct 
   external infinity : float = "POSITIVE_INFINITY" 
@@ -27,11 +22,6 @@ module M = struct
   external max_float : float = "MAX_VALUE"
   [@@bs.val]  [@@bs.scope "Number"]
 end 
-let () = 
-  eq __LOC__ (Format.asprintf (u ()) "x") ("xx x" ^ "yy");
-  eq __LOC__ (Format.asprintf "%ld" 0x8000_0000l) "-2147483648";
-  eq __LOC__ (Format.asprintf "%d" 0x8000_0000) "-2147483648"
-  
 
 #if OCAML_VERSION =~ ">4.03.0" then
 let () = 
@@ -80,7 +70,7 @@ let f loc ls  =
   List.iter  (fun (a,b) -> 
   eq loc (float_of_string a) b ) ls
 
-#if OCAML_VERSION=~ ">4.03.0" then
+
 let () = 
     f __LOC__ [
       "0x3.fp+1",  0x3.fp+1 ;
@@ -88,13 +78,15 @@ let () =
       " 0x4.fp2", 0x4.fp2
       ];
     
-#end     
+
 ;;
 
+external hexstring_of_float: float -> int -> char -> string
+  = "caml_hexstring_of_float" 
 
-#if OCAML_VERSION =~ ">4.03.0" then 
-let sl f = 
-  Printf.sprintf "%h" f 
+
+let sl (f : float) : string = 
+ hexstring_of_float f (-1) '-'
 
 let aux_list loc ls =   
   List.iter (fun (a,b) -> 
@@ -117,9 +109,11 @@ let () =
   aux_list __LOC__ literals
 
 let () = 
-  eq __LOC__ (Printf.sprintf "%H" 0x3.fp+1) "0X1.F8P+2"  
+  eq __LOC__ (String.uppercase_ascii (hexstring_of_float 0x3.fp+1 (-1) '-')) "0X1.F8P+2"  
+  (* The internal does some thing similar with "%H" *)
 let scan_float loc s expect = 
-    Scanf.sscanf s "%h" (fun result -> eq loc result expect)
+    eq loc (float_of_string s) expect
+    (* Scanf.sscanf s "%h" (fun result -> eq loc result expect) *)
 
 let () =     
   scan_float __LOC__ "0x3f.p1" 0x3f.p1;
@@ -127,13 +121,7 @@ let () =
   List.iter (fun (a,b) -> 
   scan_float __LOC__ b a 
   ) literals
-#end
-
-
-#if 0
 
 
 
-
-#end
 let () = Mt.from_pair_suites __MODULE__ !suites

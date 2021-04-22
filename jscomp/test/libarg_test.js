@@ -3,8 +3,6 @@
 var Mt = require("./mt.js");
 var Arg = require("../../lib/js/arg.js");
 var List = require("../../lib/js/list.js");
-var Curry = require("../../lib/js/curry.js");
-var Printf = require("../../lib/js/printf.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var current = {
@@ -16,43 +14,19 @@ var accum = {
 };
 
 function record(fmt) {
-  return Printf.kprintf((function (s) {
-                accum.contents = {
-                  hd: s,
-                  tl: accum.contents
-                };
-                
-              }), fmt);
+  accum.contents = {
+    hd: fmt,
+    tl: accum.contents
+  };
+  
 }
 
 function f_unit(param) {
-  return record(/* Format */{
-              _0: {
-                TAG: /* String_literal */11,
-                _0: "unit()",
-                _1: /* End_of_format */0
-              },
-              _1: "unit()"
-            });
+  return record("unit()");
 }
 
 function f_bool(b) {
-  return Curry._1(record(/* Format */{
-                  _0: {
-                    TAG: /* String_literal */11,
-                    _0: "bool(",
-                    _1: {
-                      TAG: /* Bool */9,
-                      _0: /* No_padding */0,
-                      _1: {
-                        TAG: /* Char_literal */12,
-                        _0: /* ')' */41,
-                        _1: /* End_of_format */0
-                      }
-                    }
-                  },
-                  _1: "bool(%b)"
-                }), b);
+  return record("bool(" + b + ")");
 }
 
 var r_set = {
@@ -64,22 +38,7 @@ var r_clear = {
 };
 
 function f_string(s) {
-  return Curry._1(record(/* Format */{
-                  _0: {
-                    TAG: /* String_literal */11,
-                    _0: "string(",
-                    _1: {
-                      TAG: /* String */2,
-                      _0: /* No_padding */0,
-                      _1: {
-                        TAG: /* Char_literal */12,
-                        _0: /* ')' */41,
-                        _1: /* End_of_format */0
-                      }
-                    }
-                  },
-                  _1: "string(%s)"
-                }), s);
+  return record("string(" + s + ")");
 }
 
 var r_string = {
@@ -87,24 +46,7 @@ var r_string = {
 };
 
 function f_int(i) {
-  return Curry._1(record(/* Format */{
-                  _0: {
-                    TAG: /* String_literal */11,
-                    _0: "int(",
-                    _1: {
-                      TAG: /* Int */4,
-                      _0: /* Int_d */0,
-                      _1: /* No_padding */0,
-                      _2: /* No_precision */0,
-                      _3: {
-                        TAG: /* Char_literal */12,
-                        _0: /* ')' */41,
-                        _1: /* End_of_format */0
-                      }
-                    }
-                  },
-                  _1: "int(%d)"
-                }), i);
+  return record("int(" + i + ")");
 }
 
 var r_int = {
@@ -112,24 +54,7 @@ var r_int = {
 };
 
 function f_float(f) {
-  return Curry._1(record(/* Format */{
-                  _0: {
-                    TAG: /* String_literal */11,
-                    _0: "float(",
-                    _1: {
-                      TAG: /* Float */8,
-                      _0: /* Float_g */9,
-                      _1: /* No_padding */0,
-                      _2: /* No_precision */0,
-                      _3: {
-                        TAG: /* Char_literal */12,
-                        _0: /* ')' */41,
-                        _1: /* End_of_format */0
-                      }
-                    }
-                  },
-                  _1: "float(%g)"
-                }), f);
+  return record("float(" + f + ")");
 }
 
 var r_float = {
@@ -137,60 +62,15 @@ var r_float = {
 };
 
 function f_symbol(s) {
-  return Curry._1(record(/* Format */{
-                  _0: {
-                    TAG: /* String_literal */11,
-                    _0: "symbol(",
-                    _1: {
-                      TAG: /* String */2,
-                      _0: /* No_padding */0,
-                      _1: {
-                        TAG: /* Char_literal */12,
-                        _0: /* ')' */41,
-                        _1: /* End_of_format */0
-                      }
-                    }
-                  },
-                  _1: "symbol(%s)"
-                }), s);
+  return record("symbol(" + s + ")");
 }
 
 function f_rest(s) {
-  return Curry._1(record(/* Format */{
-                  _0: {
-                    TAG: /* String_literal */11,
-                    _0: "rest(",
-                    _1: {
-                      TAG: /* String */2,
-                      _0: /* No_padding */0,
-                      _1: {
-                        TAG: /* Char_literal */12,
-                        _0: /* ')' */41,
-                        _1: /* End_of_format */0
-                      }
-                    }
-                  },
-                  _1: "rest(%s)"
-                }), s);
+  return record("rest(" + s + ")");
 }
 
 function f_anon(s) {
-  return Curry._1(record(/* Format */{
-                  _0: {
-                    TAG: /* String_literal */11,
-                    _0: "anon(",
-                    _1: {
-                      TAG: /* String */2,
-                      _0: /* No_padding */0,
-                      _1: {
-                        TAG: /* Char_literal */12,
-                        _0: /* ')' */41,
-                        _1: /* End_of_format */0
-                      }
-                    }
-                  },
-                  _1: "anon(%s)"
-                }), s);
+  return record("anon(" + s + ")");
 }
 
 var spec_0 = [
@@ -418,27 +298,14 @@ var args2 = [
 ];
 
 function error(s) {
-  return Curry._1(Printf.printf(/* Format */{
-                  _0: {
-                    TAG: /* String_literal */11,
-                    _0: "error (",
-                    _1: {
-                      TAG: /* String */2,
-                      _0: /* No_padding */0,
-                      _1: {
-                        TAG: /* String_literal */11,
-                        _0: ")\n",
-                        _1: /* End_of_format */0
-                      }
-                    }
-                  },
-                  _1: "error (%s)\n"
-                }), s);
+  console.log("error (%s)");
+  
 }
 
 function check(r, v, msg) {
   if (Caml_obj.caml_notequal(r.contents, v)) {
-    return error(msg);
+    console.log("error (%s)");
+    return ;
   }
   
 }
@@ -501,44 +368,8 @@ function test(argv) {
   };
   if (Caml_obj.caml_notequal(result, reference)) {
     var f = function (x, y) {
-      return Curry._3(Printf.printf(/* Format */{
-                      _0: {
-                        TAG: /* String */2,
-                        _0: {
-                          TAG: /* Lit_padding */0,
-                          _0: /* Right */1,
-                          _1: 20
-                        },
-                        _1: {
-                          TAG: /* Char_literal */12,
-                          _0: /* ' ' */32,
-                          _1: {
-                            TAG: /* Char */0,
-                            _0: {
-                              TAG: /* Char_literal */12,
-                              _0: /* ' ' */32,
-                              _1: {
-                                TAG: /* String */2,
-                                _0: {
-                                  TAG: /* Lit_padding */0,
-                                  _0: /* Left */0,
-                                  _1: 20
-                                },
-                                _1: {
-                                  TAG: /* Char_literal */12,
-                                  _0: /* '\n' */10,
-                                  _1: {
-                                    TAG: /* Flush */10,
-                                    _0: /* End_of_format */0
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      },
-                      _1: "%20s %c %-20s\n%!"
-                    }), x, x === y ? /* '=' */61 : /* '#' */35, y);
+      console.log(x, y);
+      
     };
     List.iter2(f, result, reference);
   }
