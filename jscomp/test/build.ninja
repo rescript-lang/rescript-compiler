@@ -177,7 +177,6 @@ o test/ext_array_test.cmi test/ext_array_test.cmj : cc test/ext_array_test.ml | 
 o test/ext_bytes_test.cmi test/ext_bytes_test.cmj : cc test/ext_bytes_test.ml | test/mt.cmj $stdlib
 o test/ext_filename_test.cmi test/ext_filename_test.cmj : cc test/ext_filename_test.ml | test/ext_string_test.cmj test/test_literals.cmj $stdlib
 o test/ext_list_test.cmi test/ext_list_test.cmj : cc test/ext_list_test.ml | test/ext_string_test.cmj $stdlib
-o test/ext_log_test.cmi test/ext_log_test.cmj : cc test/ext_log_test.ml | $stdlib
 o test/ext_pervasives_test.cmj : cc_cmi test/ext_pervasives_test.ml | test/ext_pervasives_test.cmi $stdlib
 o test/ext_pervasives_test.cmi : cc test/ext_pervasives_test.mli | $stdlib
 o test/ext_string_test.cmi test/ext_string_test.cmj : cc test/ext_string_test.ml | test/ext_bytes_test.cmj $stdlib
