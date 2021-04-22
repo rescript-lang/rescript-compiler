@@ -2,7 +2,7 @@
 (* This file is free software, part of containers. See file "license" for more details. *)
 
 (** {1 Simple S-expression parsing/printing} *)
-
+[@@@warning "a"]
 type 'a or_error = [ `Ok of 'a | `Error of string ]
 type 'a sequence = ('a -> unit) -> unit
 type 'a gen = unit -> 'a option
@@ -65,42 +65,8 @@ let to_string t =
   to_buf b t;
   Buffer.contents b
 
-let rec print fmt t = match t with
-  | `Atom s when _must_escape s -> Format.fprintf fmt "\"%s\"" (String.escaped s)
-  | `Atom s -> Format.pp_print_string fmt s
-  | `List [] -> Format.pp_print_string fmt "()"
-  | `List [x] -> Format.fprintf fmt "@[<hov2>(%a)@]" print x
-  | `List l ->
-    Format.fprintf fmt "@[<hov1>(";
-    List.iteri
-      (fun i t' -> (if i > 0 then Format.fprintf fmt "@ "; print fmt t'))
-      l;
-    Format.fprintf fmt ")@]"
 
-let rec print_noindent fmt t = match t with
-  | `Atom s when _must_escape s -> Format.fprintf fmt "\"%s\"" (String.escaped s)
-  | `Atom s -> Format.pp_print_string fmt s
-  | `List [] -> Format.pp_print_string fmt "()"
-  | `List [x] -> Format.fprintf fmt "(%a)" print_noindent x
-  | `List l ->
-    Format.pp_print_char fmt '(';
-    List.iteri
-      (fun i t' -> (if i > 0 then Format.pp_print_char fmt ' '; print_noindent fmt t'))
-      l;
-    Format.pp_print_char fmt ')'
 
-let to_chan oc t =
-  let fmt = Format.formatter_of_out_channel oc in
-  print fmt t;
-  Format.pp_print_flush fmt ()
-
-let to_file_seq filename seq =
-  _with_out filename
-    (fun oc ->
-       seq (fun t -> to_chan oc t; output_char oc '\n')
-    )
-
-let to_file filename t = to_file_seq filename (fun k -> k t)
 
 (** {2 Deserialization (decoding)} *)
 
@@ -337,8 +303,3 @@ let parse_chan_list ?bufsize ic =
   in
   iter []
 
-let parse_file filename =
-  _with_in filename (fun ic -> parse_chan ic)
-
-let parse_file_list filename =
-  _with_in filename (fun ic -> parse_chan_list ic)
