@@ -841,69 +841,6 @@ type error =
 
 exception Compilation_error of error  
 (** Exception raised when a compilation error occurs *)
-module P = Printf
-let prepare_error = function 
-  | Unresolved_type { field_name; type_; message_name} -> 
-    P.sprintf 
-      "unresolved type for field name : %s (type:%s, in message: %s)" 
-      field_name type_ message_name
-
-  | Duplicated_field_number {field_name; previous_field_name; message_name} -> 
-    P.sprintf 
-      "duplicated field number for field name: %s (previous field name:%s, message: %s)"
-      field_name previous_field_name message_name
-
-  | Invalid_default_value {field_name; info}  -> 
-    P.sprintf "invalid default value for field name:%s (info: %s)"
-      (Util.option_default "" field_name) info
-
-  | Unsupported_field_type {field_name; field_type; backend_name} -> 
-    P.sprintf "unsupported field type for field name:%s with type:%s in bakend: %s"
-      (Util.option_default "" field_name) field_type backend_name
-
-  | Programatic_error e -> 
-    P.sprintf "programmatic error: %s" (string_of_programmatic_error e)
-
-  | Invalid_import_qualifier loc ->
-    P.sprintf "%sInvalid import qualified, only 'public' supported" (Loc.to_string loc) 
-
-  | Invalid_file_name file_name -> 
-    P.sprintf 
-      ("Invalid file name: %s, format must <name>.proto") file_name  
-
-  | Import_file_not_found file_name -> 
-    P.sprintf 
-      ("File: %s, could not be found.") file_name  
-
-  | Invalid_packed_option field_name ->
-    P.sprintf "Invalid packed option for field: %s" field_name
-
-  | Missing_semicolon_for_enum_value (enum_value, loc)-> 
-    P.sprintf "%sMissing semicolon for enum value: %s" (Loc.to_string loc) enum_value
-
-  | Missing_one_of_name loc -> 
-    P.sprintf "%sMissing oneof name" (Loc.to_string loc) 
-
-  | Invalid_field_label loc -> 
-    P.sprintf "%sInvalid field label. [required|repeated|optional] expected" (Loc.to_string loc) 
-  
-  | Missing_field_label loc -> 
-    P.sprintf "%sMissing field label. [required|repeated|optional] expected" (Loc.to_string loc) 
-
-  | Parsing_error (file_name, line, detail) -> 
-    Printf.sprintf "File %s, line %i:\n%s" file_name line detail 
-
-  | Syntax_error -> 
-    P.sprintf "Syntax error"
-
-  | Invalid_enum_specification (enum_name, loc) -> 
-    P.sprintf 
-      "%sMissing enum specification (<identifier> = <id>;) for enum value: %s"
-      (Loc.to_string loc) enum_name
-  
-  | Invalid_mutable_option field_name -> 
-    P.sprintf "Invalid mutable option for field %s" (Util.option_default ""
-    field_name) 
 
 
 let add_loc loc exn  = 
@@ -921,12 +858,6 @@ let add_loc loc exn  =
     Compilation_error (Parsing_error (file_name, line, detail))
   )
 
-let () =
-  Printexc.register_printer (fun exn ->
-    match exn with
-    | Compilation_error e -> Some (prepare_error e)
-    | _                   -> None
-    )
 
 let unresolved_type ~field_name ~type_ ~message_name () = 
   raise (Compilation_error (Unresolved_type {
@@ -2649,8 +2580,8 @@ and __ocaml_lex_lexer_rec lexbuf __ocaml_lex_state =
                   ( EOF )
 
   | 21 ->
-                  ( failwith @@ Printf.sprintf "Unknown character found %s" @@
-  Lexing.lexeme lexbuf)
+                  ( let l = Lexing.lexeme lexbuf in failwith @@ {j|Unknown character found $(l)|j}
+  )
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_lexer_rec lexbuf __ocaml_lex_state
@@ -2957,9 +2888,9 @@ let string_of_record_field_type = function
  *)
 let function_name_of_user_defined prefix = function 
   | {T.udt_module = Some module_; T.udt_type_name} -> 
-    sp "%s.%s_%s" module_ prefix udt_type_name 
+    {j|$(module_).$(prefix)_$(udt_type_name)|j} 
   | {T.udt_module = None; T.udt_type_name} -> 
-    sp "%s_%s" prefix udt_type_name 
+     {j|$(prefix)_$(udt_type_name)|j}
 
 let caml_file_name_of_proto_file_name proto = 
   let splitted = Util.rev_split_by_char '.' proto in 
@@ -2983,7 +2914,7 @@ let string_of_payload_kind ?capitalize payload_kind packed =
   in 
   match capitalize with
   | None -> s 
-  | Some () -> String.capitalize s 
+  | Some () -> String.capitalize_ascii s 
 
 
 end
