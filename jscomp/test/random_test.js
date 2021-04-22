@@ -1,9 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Curry = require("../../lib/js/curry.js");
 var Int64 = require("../../lib/js/int64.js");
-var Printf = require("../../lib/js/printf.js");
 var Random = require("../../lib/js/random.js");
 var Mt_global = require("./mt_global.js");
 var Caml_array = require("../../lib/js/caml_array.js");
@@ -69,61 +67,6 @@ var vv = Random.bits(undefined);
 var xx = Random.$$float(3.0);
 
 var xxx = Random.int32(103);
-
-Curry._5(Printf.printf(/* Format */{
-          _0: {
-            TAG: /* Int64 */7,
-            _0: /* Int_d */0,
-            _1: /* No_padding */0,
-            _2: /* No_precision */0,
-            _3: {
-              TAG: /* Char_literal */12,
-              _0: /* ' ' */32,
-              _1: {
-                TAG: /* Int64 */7,
-                _0: /* Int_d */0,
-                _1: /* No_padding */0,
-                _2: /* No_precision */0,
-                _3: {
-                  TAG: /* Char_literal */12,
-                  _0: /* ' ' */32,
-                  _1: {
-                    TAG: /* Int */4,
-                    _0: /* Int_d */0,
-                    _1: /* No_padding */0,
-                    _2: /* No_precision */0,
-                    _3: {
-                      TAG: /* Char_literal */12,
-                      _0: /* ' ' */32,
-                      _1: {
-                        TAG: /* Float */8,
-                        _0: /* Float_f */0,
-                        _1: /* No_padding */0,
-                        _2: /* No_precision */0,
-                        _3: {
-                          TAG: /* Char_literal */12,
-                          _0: /* ' ' */32,
-                          _1: {
-                            TAG: /* Int32 */5,
-                            _0: /* Int_d */0,
-                            _1: /* No_padding */0,
-                            _2: /* No_precision */0,
-                            _3: {
-                              TAG: /* String_literal */11,
-                              _0: " \n",
-                              _1: /* End_of_format */0
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          _1: "%Ld %Ld %d %f %ld \n"
-        }), f, h, vv, xx, xxx);
 
 Mt.from_pair_suites("Random_test", suites.contents);
 

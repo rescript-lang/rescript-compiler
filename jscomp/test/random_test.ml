@@ -30,8 +30,6 @@ let h = Random.int64 3L
 let vv = Random.bits ()
 let xx = Random.float 3.0 
 let xxx = Random.int32 103l
-let () =
-  Printf.printf "%Ld %Ld %d %f %ld \n" f h vv xx  xxx
 
 let () =
   Mt.from_pair_suites __MODULE__ !suites

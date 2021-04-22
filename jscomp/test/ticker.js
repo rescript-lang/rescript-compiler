@@ -3,7 +3,6 @@
 var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
-var Printf = require("../../lib/js/printf.js");
 var $$String = require("../../lib/js/string.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
@@ -75,24 +74,7 @@ function string_of_rank(i) {
       return "Uninitialized";
     }
   } else {
-    return Curry._1(Printf.sprintf(/* Format */{
-                    _0: {
-                      TAG: /* String_literal */11,
-                      _0: "Ranked(",
-                      _1: {
-                        TAG: /* Int */4,
-                        _0: /* Int_i */3,
-                        _1: /* No_padding */0,
-                        _2: /* No_precision */0,
-                        _3: {
-                          TAG: /* Char_literal */12,
-                          _0: /* ')' */41,
-                          _1: /* End_of_format */0
-                        }
-                      }
-                    },
-                    _1: "Ranked(%i)"
-                  }), i._0);
+    return "Ranked(" + i._0 + ")";
   }
 }
 

@@ -56,7 +56,7 @@ and ticker = {
 let string_of_rank = function
   | Uninitialized -> "Uninitialized"
   | Visited       -> "Visited"
-  | Ranked i      -> Printf.sprintf "Ranked(%i)" i
+  | Ranked i      -> {j|Ranked($i)|j}
 
 let find_ticker_by_name all_tickers ticker = 
   List.find (fun {ticker_name;_ } -> ticker_name = ticker) all_tickers 
@@ -65,8 +65,8 @@ let print_all_composite all_tickers =
   List.iter (function 
     | { type_ = Market; _ } -> () 
     | { type_ = Binary_op _; ticker_name; value; } -> (match value with 
-      | Some v -> (* Printf.printf "%s: %f\n"  ticker_name v  *) print_endline ticker_name
-      | None   -> (* Printf.printf "%s: nan\n" ticker_name *)print_endline ticker_name
+      | Some v ->  print_endline ticker_name
+      | None   -> print_endline ticker_name
     )
   ) all_tickers 
 
