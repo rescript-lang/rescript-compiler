@@ -10,7 +10,7 @@ type 'a gen = unit -> 'a option
 type t = [
   | `Atom of string
   | `List of t list
-  ]
+]
 type sexp = t
 
 let _with_in filename f =
@@ -54,11 +54,11 @@ let rec to_buf b t = match t with
   | `List [] -> Buffer.add_string b "()"
   | `List [x] -> Printf.bprintf b "(%a)" to_buf x
   | `List l ->
-      Buffer.add_char b '(';
-      List.iteri
-        (fun i t' -> (if i > 0 then Buffer.add_char b ' '; to_buf b t'))
-        l;
-      Buffer.add_char b ')'
+    Buffer.add_char b '(';
+    List.iteri
+      (fun i t' -> (if i > 0 then Buffer.add_char b ' '; to_buf b t'))
+      l;
+    Buffer.add_char b ')'
 
 let to_string t =
   let b = Buffer.create 128 in
@@ -71,11 +71,11 @@ let rec print fmt t = match t with
   | `List [] -> Format.pp_print_string fmt "()"
   | `List [x] -> Format.fprintf fmt "@[<hov2>(%a)@]" print x
   | `List l ->
-      Format.fprintf fmt "@[<hov1>(";
-      List.iteri
-        (fun i t' -> (if i > 0 then Format.fprintf fmt "@ "; print fmt t'))
-        l;
-      Format.fprintf fmt ")@]"
+    Format.fprintf fmt "@[<hov1>(";
+    List.iteri
+      (fun i t' -> (if i > 0 then Format.fprintf fmt "@ "; print fmt t'))
+      l;
+    Format.fprintf fmt ")@]"
 
 let rec print_noindent fmt t = match t with
   | `Atom s when _must_escape s -> Format.fprintf fmt "\"%s\"" (String.escaped s)
@@ -83,11 +83,11 @@ let rec print_noindent fmt t = match t with
   | `List [] -> Format.pp_print_string fmt "()"
   | `List [x] -> Format.fprintf fmt "(%a)" print_noindent x
   | `List l ->
-      Format.pp_print_char fmt '(';
-      List.iteri
-        (fun i t' -> (if i > 0 then Format.pp_print_char fmt ' '; print_noindent fmt t'))
-        l;
-      Format.pp_print_char fmt ')'
+    Format.pp_print_char fmt '(';
+    List.iteri
+      (fun i t' -> (if i > 0 then Format.pp_print_char fmt ' '; print_noindent fmt t'))
+      l;
+    Format.pp_print_char fmt ')'
 
 let to_chan oc t =
   let fmt = Format.formatter_of_out_channel oc in
@@ -97,7 +97,7 @@ let to_chan oc t =
 let to_file_seq filename seq =
   _with_out filename
     (fun oc ->
-      seq (fun t -> to_chan oc t; output_char oc '\n')
+       seq (fun t -> to_chan oc t; output_char oc '\n')
     )
 
 let to_file filename t = to_file_seq filename (fun k -> k t)
@@ -156,14 +156,13 @@ module MakeDecode(M : MONAD) = struct
     c
 
   (* return an error *)
-  let _error t msg =
+  let _error {line;col} (msg : string) =
     let b = Buffer.create 32 in
-    Printf.bprintf b "at %d, %d: " t.line t.col;
-    Printf.kbprintf
-      (fun b ->
-        let msg' = Buffer.contents b in
-        M.return (`Error msg')
-      ) b msg
+    Buffer.add_string b {j|at $(line), $(col): |j} ;
+    Buffer.add_string b msg;
+    let msg' = Buffer.contents b in
+    M.return (`Error msg')
+
 
   let _error_eof t = _error t "unexpected end of input"
 
@@ -176,8 +175,8 @@ module MakeDecode(M : MONAD) = struct
   let rec expr k t =
     if t.i = t.len then _refill t (expr k) _error_eof
     else match _get t with
-    | ' ' | '\t' | '\n' -> expr k t
-    | c -> expr_starting_with c k t
+      | ' ' | '\t' | '\n' -> expr k t
+      | c -> expr_starting_with c k t
 
   and expr_starting_with c k t = match c with
     | ' ' | '\t' | '\n' -> assert false
@@ -187,21 +186,21 @@ module MakeDecode(M : MONAD) = struct
     | '\\' -> _error t "unexpected '\\'"
     | '"' -> quoted k t
     | c ->
-        Buffer.add_char t.atom c;
-        atom k t
+      Buffer.add_char t.atom c;
+      atom k t
 
   (* parse list *)
   and expr_list acc k t =
     if t.i = t.len then _refill t (expr_list acc k) _error_eof
     else match _get t with
-    | ' ' | '\t' | '\n' -> expr_list acc k t
-    | ')' -> k None (`List (List.rev acc))
-    | c ->
+      | ' ' | '\t' | '\n' -> expr_list acc k t
+      | ')' -> k None (`List (List.rev acc))
+      | c ->
         expr_starting_with c
           (fun last e -> match last with
-            | Some '(' -> expr_list [] (fun _ l -> expr_list (l::acc) k t) t
-            | Some ')' -> k None (`List (List.rev (e::acc)))
-            | _ -> expr_list (e::acc) k t
+             | Some '(' -> expr_list [] (fun _ l -> expr_list (l::acc) k t) t
+             | Some ')' -> k None (`List (List.rev (e::acc)))
+             | _ -> expr_list (e::acc) k t
           ) t
 
   (* return the current atom (last char: c) *)
@@ -214,11 +213,11 @@ module MakeDecode(M : MONAD) = struct
   and atom k t =
     if t.i = t.len then _refill t (atom k) (_return_atom None k)
     else match _get t with
-    | '\\' -> _error t "unexpected '\\' in non-quoted string"
-    | '"' -> _error t "unexpected '\"' in the middle of an atom"
-    | (' ' | '\n' | '\t' | '(' | ')') as c ->
+      | '\\' -> _error t "unexpected '\\' in non-quoted string"
+      | '"' -> _error t "unexpected '\"' in the middle of an atom"
+      | (' ' | '\n' | '\t' | '(' | ')') as c ->
         _return_atom (Some c) k t
-    | c ->
+      | c ->
         Buffer.add_char t.atom c;
         atom k t
 
@@ -226,15 +225,15 @@ module MakeDecode(M : MONAD) = struct
   and quoted k t =
     if t.i = t.len then _refill t (quoted k) _error_eof
     else match _get t with
-    | '\\' ->
+      | '\\' ->
         (* read escaped char and continue *)
         escaped
           (fun c ->
-            Buffer.add_char t.atom c;
-            quoted k t
+             Buffer.add_char t.atom c;
+             quoted k t
           ) t
-    | '"' -> _return_atom None k t
-    | c ->
+      | '"' -> _return_atom None k t
+      | c ->
         Buffer.add_char t.atom c;
         quoted k t
 
@@ -242,43 +241,43 @@ module MakeDecode(M : MONAD) = struct
   and escaped k t =
     if t.i = t.len then _refill t (escaped k) _error_eof
     else match _get t with
-    | 'n' -> k '\n'
-    | 't' -> k '\t'
-    | 'r' -> k '\r'
-    | 'b' -> k '\b'
-    | '\\' -> k '\\'
-    | '"' -> k '"'
-    | c when _is_digit c ->
+      | 'n' -> k '\n'
+      | 't' -> k '\t'
+      | 'r' -> k '\r'
+      | 'b' -> k '\b'
+      | '\\' -> k '\\'
+      | '"' -> k '"'
+      | c when _is_digit c ->
         read2int (_digit2i c) (fun n -> k (Char.chr n)) t
-    | c -> _error t "unexpected escaped char '%c'" c
+      | c -> _error t {j|unexpected escaped char '$(c)'|j} 
 
   and read2int i k t =
     if t.i = t.len then _refill t (read2int i k) _error_eof
     else match _get t with
-    | c when _is_digit c -> read1int (10 * i + _digit2i c) k t
-    | c -> _error t "unexpected char '%c' when reading byte" c
+      | c when _is_digit c -> read1int (10 * i + _digit2i c) k t
+      | c -> _error t {j|unexpected char '$(c)' when reading byte|j}
 
   and read1int i k t =
     if t.i = t.len then _refill t (read1int i k) _error_eof
     else match _get t with
-    | c when _is_digit c -> k (10 * i + _digit2i c)
-    | c -> _error t "unexpected char '%c' when reading byte" c
+      | c when _is_digit c -> k (10 * i + _digit2i c)
+      | c -> _error t {j|unexpected char '$(c)' when reading byte|j}
 
   (* skip until end of line, then call next() *)
   and skip_comment k t =
     if t.i = t.len
     then _refill t (skip_comment k) _error_eof
     else match _get t with
-    | '\n' -> k None ()
-    | _ -> skip_comment k t
+      | '\n' -> k None ()
+      | _ -> skip_comment k t
 
   (* top-level expression *)
   let rec expr_or_end k t =
     if t.i = t.len
     then _refill t (expr_or_end k) (fun _ -> M.return `End)
     else match _get t with
-    | ' ' | '\t' | '\n' -> expr_or_end k t
-    | c -> expr_starting_with c k t
+      | ' ' | '\t' | '\n' -> expr_or_end k t
+      | c -> expr_starting_with c k t
 
   (* entry point *)
   let next t : sexp parse_result M.t =
@@ -306,8 +305,8 @@ let parse_string s : t or_error =
   | (`Ok _ | `Error _) as res -> res
 
 (*$T
-  CCError.to_opt (parse_string "(abc d/e/f \"hello \\\" () world\" )") <> None
-  CCError.to_opt (parse_string "(abc ( d e ffff   ) \"hello/world\")") <> None
+    CCError.to_opt (parse_string "(abc d/e/f \"hello \\\" () world\" )") <> None
+     CCError.to_opt (parse_string "(abc ( d e ffff   ) \"hello/world\")") <> None
 *)
 
 (*$inject
@@ -315,16 +314,16 @@ let parse_string s : t or_error =
     let mkatom a = `Atom a and mklist l = `List l in
     let atom = Q.Gen.(map mkatom (string_size ~gen:printable (1 -- 30))) in
     let gen = Q.Gen.(
-      sized (fix
-        (fun self n st -> match n with
-        | 0 -> atom st
-        | _ ->
-          frequency
-            [ 1, atom
-            ; 2, map mklist (list_size (0 -- 10) (self (n/10)))
-            ] st
-        )
-    )) in
+        sized (fix
+                 (fun self n st -> match n with
+                    | 0 -> atom st
+                    | _ ->
+                      frequency
+                        [ 1, atom
+                        ; 2, map mklist (list_size (0 -- 10) (self (n/10)))
+                        ] st
+                 )
+              )) in
     let rec small = function
       | `Atom s -> String.length s
       |  `List l -> List.fold_left (fun n x->n+small x) 0 l
@@ -344,7 +343,7 @@ let parse_string s : t or_error =
 *)
 
 (*$Q & ~count:100
-    sexp_gen (fun s -> sexp_valid s ==> (to_string s |> parse_string = `Ok s))
+     sexp_gen (fun s -> sexp_valid s ==> (to_string s |> parse_string = `Ok s))
 *)
 
 let parse_chan ?bufsize ic =

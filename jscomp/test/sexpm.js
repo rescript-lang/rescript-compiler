@@ -391,54 +391,23 @@ function _get(t) {
   return c;
 }
 
-function _error(t, msg) {
-  var b = $$Buffer.create(32);
-  Curry._2(Printf.bprintf(b, /* Format */{
-            _0: {
-              TAG: /* String_literal */11,
-              _0: "at ",
-              _1: {
-                TAG: /* Int */4,
-                _0: /* Int_d */0,
-                _1: /* No_padding */0,
-                _2: /* No_precision */0,
-                _3: {
-                  TAG: /* String_literal */11,
-                  _0: ", ",
-                  _1: {
-                    TAG: /* Int */4,
-                    _0: /* Int_d */0,
-                    _1: /* No_padding */0,
-                    _2: /* No_precision */0,
-                    _3: {
-                      TAG: /* String_literal */11,
-                      _0: ": ",
-                      _1: /* End_of_format */0
-                    }
-                  }
-                }
-              }
-            },
-            _1: "at %d, %d: "
-          }), t.line, t.col);
-  return Printf.kbprintf((function (b) {
-                var msg$p = $$Buffer.contents(b);
-                return {
-                        NAME: "Error",
-                        VAL: msg$p
-                      };
-              }), b, msg);
+function _error(param) {
+  var line = param.line;
+  var col = param.col;
+  return function (msg) {
+    var b = $$Buffer.create(32);
+    $$Buffer.add_string(b, "at " + line + ", " + col + ": ");
+    $$Buffer.add_string(b, msg);
+    var msg$p = $$Buffer.contents(b);
+    return {
+            NAME: "Error",
+            VAL: msg$p
+          };
+  };
 }
 
 function _error_eof(t) {
-  return _error(t, /* Format */{
-              _0: {
-                TAG: /* String_literal */11,
-                _0: "unexpected end of input",
-                _1: /* End_of_format */0
-              },
-              _1: "unexpected end of input"
-            });
+  return _error(t)("unexpected end of input");
 }
 
 function expr(k, t) {
@@ -470,14 +439,7 @@ function expr_starting_with(c, k, t) {
                   }), t);
     }
     if (c === 92) {
-      return _error(t, /* Format */{
-                  _0: {
-                    TAG: /* String_literal */11,
-                    _0: "unexpected '\\'",
-                    _1: /* End_of_format */0
-                  },
-                  _1: "unexpected '\\'"
-                });
+      return _error(t)("unexpected '\\'");
     }
     
   } else if (c >= 11) {
@@ -488,7 +450,7 @@ function expr_starting_with(c, k, t) {
                   RE_EXN_ID: "Assert_failure",
                   _1: [
                     "sexpm.ml",
-                    183,
+                    182,
                     27
                   ],
                   Error: new Error()
@@ -505,14 +467,7 @@ function expr_starting_with(c, k, t) {
         case 40 :
             return expr_list(/* [] */0, k, t);
         case 41 :
-            return _error(t, /* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "unexpected ')'",
-                          _1: /* End_of_format */0
-                        },
-                        _1: "unexpected ')'"
-                      });
+            return _error(t)("unexpected ')'");
         
       }
     }
@@ -522,7 +477,7 @@ function expr_starting_with(c, k, t) {
           RE_EXN_ID: "Assert_failure",
           _1: [
             "sexpm.ml",
-            183,
+            182,
             27
           ],
           Error: new Error()
@@ -609,14 +564,7 @@ function atom(k, t) {
     if (c >= 35) {
       if (c >= 42) {
         if (c === 92) {
-          return _error(t, /* Format */{
-                      _0: {
-                        TAG: /* String_literal */11,
-                        _0: "unexpected '\\' in non-quoted string",
-                        _1: /* End_of_format */0
-                      },
-                      _1: "unexpected '\\' in non-quoted string"
-                    });
+          return _error(t)("unexpected '\\' in non-quoted string");
         }
         exit = 1;
       } else {
@@ -632,14 +580,7 @@ function atom(k, t) {
               exit = 1;
               break;
           case 34 :
-              return _error(t, /* Format */{
-                          _0: {
-                            TAG: /* String_literal */11,
-                            _0: "unexpected '\"' in the middle of an atom",
-                            _1: /* End_of_format */0
-                          },
-                          _1: "unexpected '\"' in the middle of an atom"
-                        });
+              return _error(t)("unexpected '\"' in the middle of an atom");
           
         }
       } else {
@@ -734,21 +675,7 @@ function escaped(k, t) {
                   return Curry._1(k, Char.chr(n));
                 }), t);
   } else {
-    return Curry._1(_error(t, /* Format */{
-                    _0: {
-                      TAG: /* String_literal */11,
-                      _0: "unexpected escaped char '",
-                      _1: {
-                        TAG: /* Char */0,
-                        _0: {
-                          TAG: /* Char_literal */12,
-                          _0: /* '\'' */39,
-                          _1: /* End_of_format */0
-                        }
-                      }
-                    },
-                    _1: "unexpected escaped char '%c'"
-                  }), c);
+    return _error(t)("unexpected escaped char '" + c + "'");
   }
 }
 
@@ -762,21 +689,7 @@ function read2int(i, k, t) {
   if (_is_digit(c)) {
     return read1int(Math.imul(10, i) + (c - /* '0' */48 | 0) | 0, k, t);
   } else {
-    return Curry._1(_error(t, /* Format */{
-                    _0: {
-                      TAG: /* String_literal */11,
-                      _0: "unexpected char '",
-                      _1: {
-                        TAG: /* Char */0,
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "' when reading byte",
-                          _1: /* End_of_format */0
-                        }
-                      }
-                    },
-                    _1: "unexpected char '%c' when reading byte"
-                  }), c);
+    return _error(t)("unexpected char '" + c + "' when reading byte");
   }
 }
 
@@ -790,21 +703,7 @@ function read1int(i, k, t) {
   if (_is_digit(c)) {
     return Curry._1(k, Math.imul(10, i) + (c - /* '0' */48 | 0) | 0);
   } else {
-    return Curry._1(_error(t, /* Format */{
-                    _0: {
-                      TAG: /* String_literal */11,
-                      _0: "unexpected char '",
-                      _1: {
-                        TAG: /* Char */0,
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "' when reading byte",
-                          _1: /* End_of_format */0
-                        }
-                      }
-                    },
-                    _1: "unexpected char '%c' when reading byte"
-                  }), c);
+    return _error(t)("unexpected char '" + c + "' when reading byte");
   }
 }
 
@@ -1001,53 +900,22 @@ function MakeDecode(funarg) {
     }
     return c;
   };
-  var _error = function (t, msg) {
-    var b = $$Buffer.create(32);
-    Curry._2(Printf.bprintf(b, /* Format */{
-              _0: {
-                TAG: /* String_literal */11,
-                _0: "at ",
-                _1: {
-                  TAG: /* Int */4,
-                  _0: /* Int_d */0,
-                  _1: /* No_padding */0,
-                  _2: /* No_precision */0,
-                  _3: {
-                    TAG: /* String_literal */11,
-                    _0: ", ",
-                    _1: {
-                      TAG: /* Int */4,
-                      _0: /* Int_d */0,
-                      _1: /* No_padding */0,
-                      _2: /* No_precision */0,
-                      _3: {
-                        TAG: /* String_literal */11,
-                        _0: ": ",
-                        _1: /* End_of_format */0
-                      }
-                    }
-                  }
-                }
-              },
-              _1: "at %d, %d: "
-            }), t.line, t.col);
-    return Printf.kbprintf((function (b) {
-                  var msg$p = $$Buffer.contents(b);
-                  return Curry._1(funarg.$$return, {
-                              NAME: "Error",
-                              VAL: msg$p
-                            });
-                }), b, msg);
+  var _error = function (param) {
+    var line = param.line;
+    var col = param.col;
+    return function (msg) {
+      var b = $$Buffer.create(32);
+      $$Buffer.add_string(b, "at " + line + ", " + col + ": ");
+      $$Buffer.add_string(b, msg);
+      var msg$p = $$Buffer.contents(b);
+      return Curry._1(funarg.$$return, {
+                  NAME: "Error",
+                  VAL: msg$p
+                });
+    };
   };
   var _error_eof = function (t) {
-    return _error(t, /* Format */{
-                _0: {
-                  TAG: /* String_literal */11,
-                  _0: "unexpected end of input",
-                  _1: /* End_of_format */0
-                },
-                _1: "unexpected end of input"
-              });
+    return _error(t)("unexpected end of input");
   };
   var expr = function (k, t) {
     while(true) {
@@ -1077,14 +945,7 @@ function MakeDecode(funarg) {
                     }), t);
       }
       if (c === 92) {
-        return _error(t, /* Format */{
-                    _0: {
-                      TAG: /* String_literal */11,
-                      _0: "unexpected '\\'",
-                      _1: /* End_of_format */0
-                    },
-                    _1: "unexpected '\\'"
-                  });
+        return _error(t)("unexpected '\\'");
       }
       
     } else if (c >= 11) {
@@ -1095,7 +956,7 @@ function MakeDecode(funarg) {
                     RE_EXN_ID: "Assert_failure",
                     _1: [
                       "sexpm.ml",
-                      183,
+                      182,
                       27
                     ],
                     Error: new Error()
@@ -1112,14 +973,7 @@ function MakeDecode(funarg) {
           case 40 :
               return expr_list(/* [] */0, k, t);
           case 41 :
-              return _error(t, /* Format */{
-                          _0: {
-                            TAG: /* String_literal */11,
-                            _0: "unexpected ')'",
-                            _1: /* End_of_format */0
-                          },
-                          _1: "unexpected ')'"
-                        });
+              return _error(t)("unexpected ')'");
           
         }
       }
@@ -1129,7 +983,7 @@ function MakeDecode(funarg) {
             RE_EXN_ID: "Assert_failure",
             _1: [
               "sexpm.ml",
-              183,
+              182,
               27
             ],
             Error: new Error()
@@ -1213,14 +1067,7 @@ function MakeDecode(funarg) {
       if (c >= 35) {
         if (c >= 42) {
           if (c === 92) {
-            return _error(t, /* Format */{
-                        _0: {
-                          TAG: /* String_literal */11,
-                          _0: "unexpected '\\' in non-quoted string",
-                          _1: /* End_of_format */0
-                        },
-                        _1: "unexpected '\\' in non-quoted string"
-                      });
+            return _error(t)("unexpected '\\' in non-quoted string");
           }
           exit = 1;
         } else {
@@ -1236,14 +1083,7 @@ function MakeDecode(funarg) {
                 exit = 1;
                 break;
             case 34 :
-                return _error(t, /* Format */{
-                            _0: {
-                              TAG: /* String_literal */11,
-                              _0: "unexpected '\"' in the middle of an atom",
-                              _1: /* End_of_format */0
-                            },
-                            _1: "unexpected '\"' in the middle of an atom"
-                          });
+                return _error(t)("unexpected '\"' in the middle of an atom");
             
           }
         } else {
@@ -1336,21 +1176,7 @@ function MakeDecode(funarg) {
                     return Curry._1(k, Char.chr(n));
                   }), t);
     } else {
-      return Curry._1(_error(t, /* Format */{
-                      _0: {
-                        TAG: /* String_literal */11,
-                        _0: "unexpected escaped char '",
-                        _1: {
-                          TAG: /* Char */0,
-                          _0: {
-                            TAG: /* Char_literal */12,
-                            _0: /* '\'' */39,
-                            _1: /* End_of_format */0
-                          }
-                        }
-                      },
-                      _1: "unexpected escaped char '%c'"
-                    }), c);
+      return _error(t)("unexpected escaped char '" + c + "'");
     }
   };
   var read2int = function (i, k, t) {
@@ -1363,21 +1189,7 @@ function MakeDecode(funarg) {
     if (_is_digit(c)) {
       return read1int(Math.imul(10, i) + (c - /* '0' */48 | 0) | 0, k, t);
     } else {
-      return Curry._1(_error(t, /* Format */{
-                      _0: {
-                        TAG: /* String_literal */11,
-                        _0: "unexpected char '",
-                        _1: {
-                          TAG: /* Char */0,
-                          _0: {
-                            TAG: /* String_literal */11,
-                            _0: "' when reading byte",
-                            _1: /* End_of_format */0
-                          }
-                        }
-                      },
-                      _1: "unexpected char '%c' when reading byte"
-                    }), c);
+      return _error(t)("unexpected char '" + c + "' when reading byte");
     }
   };
   var read1int = function (i, k, t) {
@@ -1390,21 +1202,7 @@ function MakeDecode(funarg) {
     if (_is_digit(c)) {
       return Curry._1(k, Math.imul(10, i) + (c - /* '0' */48 | 0) | 0);
     } else {
-      return Curry._1(_error(t, /* Format */{
-                      _0: {
-                        TAG: /* String_literal */11,
-                        _0: "unexpected char '",
-                        _1: {
-                          TAG: /* Char */0,
-                          _0: {
-                            TAG: /* String_literal */11,
-                            _0: "' when reading byte",
-                            _1: /* End_of_format */0
-                          }
-                        }
-                      },
-                      _1: "unexpected char '%c' when reading byte"
-                    }), c);
+      return _error(t)("unexpected char '" + c + "' when reading byte");
     }
   };
   var skip_comment = function (k, t) {
