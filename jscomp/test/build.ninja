@@ -502,7 +502,6 @@ o test/pr_regression_test.cmi test/pr_regression_test.cmj : cc test/pr_regressio
 o test/prepend_data_ffi.cmi test/prepend_data_ffi.cmj : cc test/prepend_data_ffi.ml | $stdlib
 o test/primitive_reg_test.cmi test/primitive_reg_test.cmj : cc test/primitive_reg_test.ml | $stdlib
 o test/print_alpha_test.cmi test/print_alpha_test.cmj : cc test/print_alpha_test.ml | test/mt.cmj $stdlib
-o test/printf_test.cmi test/printf_test.cmj : cc test/printf_test.ml | test/mt.cmj $stdlib
 o test/promise.cmi test/promise.cmj : cc test/promise.ml | $stdlib
 o test/promise_catch_test.cmi test/promise_catch_test.cmj : cc test/promise_catch_test.ml | test/mt.cmj $stdlib
 o test/queue_402.cmi test/queue_402.cmj : cc test/queue_402.ml | $stdlib
@@ -547,7 +546,6 @@ o test/relative_path.cmi test/relative_path.cmj : cc test/relative_path.ml | $st
 o test/res_debug.cmi test/res_debug.cmj : cc test/res_debug.res | $stdlib
 o test/return_check.cmi test/return_check.cmj : cc test/return_check.ml | $stdlib
 o test/runtime_encoding_test.cmi test/runtime_encoding_test.cmj : cc test/runtime_encoding_test.ml | $stdlib
-o test/scanf_io.cmi test/scanf_io.cmj : cc test/scanf_io.ml | test/testing.cmj $stdlib
 o test/scanf_reference_error_regression_test.cmj : cc_cmi test/scanf_reference_error_regression_test.ml | test/mt.cmj test/mt_global.cmj test/scanf_reference_error_regression_test.cmi $stdlib
 o test/scanf_reference_error_regression_test.cmi : cc test/scanf_reference_error_regression_test.mli | $stdlib
 o test/scanf_test.cmi test/scanf_test.cmj : cc test/scanf_test.ml | test/mt.cmj test/mt_global.cmj $stdlib

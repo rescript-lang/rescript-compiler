@@ -70,7 +70,7 @@ let f loc ls  =
   List.iter  (fun (a,b) -> 
   eq loc (float_of_string a) b ) ls
 
-#if OCAML_VERSION=~ ">4.03.0" then
+
 let () = 
     f __LOC__ [
       "0x3.fp+1",  0x3.fp+1 ;
@@ -78,13 +78,15 @@ let () =
       " 0x4.fp2", 0x4.fp2
       ];
     
-#end     
+
 ;;
 
+external hexstring_of_float: float -> int -> char -> string
+  = "caml_hexstring_of_float" 
 
-#if OCAML_VERSION =~ ">4.03.0" then 
-let sl f = 
-  Printf.sprintf "%h" f 
+
+let sl (f : float) : string = 
+ hexstring_of_float f (-1) '-'
 
 let aux_list loc ls =   
   List.iter (fun (a,b) -> 
@@ -107,9 +109,11 @@ let () =
   aux_list __LOC__ literals
 
 let () = 
-  eq __LOC__ (Printf.sprintf "%H" 0x3.fp+1) "0X1.F8P+2"  
+  eq __LOC__ (String.uppercase_ascii (hexstring_of_float 0x3.fp+1 (-1) '-')) "0X1.F8P+2"  
+  (* The internal does some thing similar with "%H" *)
 let scan_float loc s expect = 
-    Scanf.sscanf s "%h" (fun result -> eq loc result expect)
+    eq loc (float_of_string s) expect
+    (* Scanf.sscanf s "%h" (fun result -> eq loc result expect) *)
 
 let () =     
   scan_float __LOC__ "0x3f.p1" 0x3f.p1;
@@ -117,13 +121,7 @@ let () =
   List.iter (fun (a,b) -> 
   scan_float __LOC__ b a 
   ) literals
-#end
-
-
-#if 0
 
 
 
-
-#end
 let () = Mt.from_pair_suites __MODULE__ !suites
