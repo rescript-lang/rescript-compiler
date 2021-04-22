@@ -11,11 +11,6 @@ let eq3 loc a b c =
   eq loc a c 
 
 
-let ( ^^ ) (Format (fmt1, str1) : _ format6) (Format (fmt2, str2) : _ format6) : _ format6 =
-  Format (CamlinternalFormatBasics.concat_fmt fmt1 fmt2,
-          str1 ^ "%," ^ str2)
-
-let u () = "xx %s" ^^ "yy"
 
 module M = struct 
   external infinity : float = "POSITIVE_INFINITY" 
@@ -27,11 +22,6 @@ module M = struct
   external max_float : float = "MAX_VALUE"
   [@@bs.val]  [@@bs.scope "Number"]
 end 
-let () = 
-  eq __LOC__ (Format.asprintf (u ()) "x") ("xx x" ^ "yy");
-  eq __LOC__ (Format.asprintf "%ld" 0x8000_0000l) "-2147483648";
-  eq __LOC__ (Format.asprintf "%d" 0x8000_0000) "-2147483648"
-  
 
 #if OCAML_VERSION =~ ">4.03.0" then
 let () = 

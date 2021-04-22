@@ -4,11 +4,9 @@ var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 var Scanf = require("../../lib/js/scanf.js");
-var Format = require("../../lib/js/format.js");
 var Printf = require("../../lib/js/printf.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
-var CamlinternalFormatBasics = require("../../lib/js/camlinternalFormatBasics.js");
 
 var suites = {
   contents: /* [] */0
@@ -42,96 +40,43 @@ function eq3(loc, a, b, c) {
   return eq(loc, a, c);
 }
 
-function $caret$caret(param, param$1) {
-  return /* Format */{
-          _0: CamlinternalFormatBasics.concat_fmt(param._0, param$1._0),
-          _1: param._1 + ("%," + param$1._1)
-        };
-}
-
-function u(param) {
-  return $caret$caret(/* Format */{
-              _0: {
-                TAG: /* String_literal */11,
-                _0: "xx ",
-                _1: {
-                  TAG: /* String */2,
-                  _0: /* No_padding */0,
-                  _1: /* End_of_format */0
-                }
-              },
-              _1: "xx %s"
-            }, /* Format */{
-              _0: {
-                TAG: /* String_literal */11,
-                _0: "yy",
-                _1: /* End_of_format */0
-              },
-              _1: "yy"
-            });
-}
-
 var M = {};
 
-eq("File \"format_test.ml\", line 31, characters 5-12", Curry._1(Format.asprintf(u(undefined)), "x"), "xx xyy");
+eq("File \"format_test.ml\", line 28, characters 5-12", 7.875, 7.875);
 
-eq("File \"format_test.ml\", line 32, characters 5-12", Curry._1(Format.asprintf(/* Format */{
-              _0: {
-                TAG: /* Int32 */5,
-                _0: /* Int_d */0,
-                _1: /* No_padding */0,
-                _2: /* No_precision */0,
-                _3: /* End_of_format */0
-              },
-              _1: "%ld"
-            }), -2147483648), "-2147483648");
+eq("File \"format_test.ml\", line 31, characters 5-12", -7.875, -7.875);
 
-eq("File \"format_test.ml\", line 33, characters 5-12", Curry._1(Format.asprintf(/* Format */{
-              _0: {
-                TAG: /* Int */4,
-                _0: /* Int_d */0,
-                _1: /* No_padding */0,
-                _2: /* No_precision */0,
-                _3: /* End_of_format */0
-              },
-              _1: "%d"
-            }), -2147483648), "-2147483648");
+eq3("File \"format_test.ml\", line 35, characters 6-13", Infinity, Number.POSITIVE_INFINITY, Pervasives.infinity);
 
-eq("File \"format_test.ml\", line 38, characters 5-12", 7.875, 7.875);
+eq3("File \"format_test.ml\", line 36, characters 6-13", -Infinity, Number.NEGATIVE_INFINITY, Pervasives.neg_infinity);
 
-eq("File \"format_test.ml\", line 41, characters 5-12", -7.875, -7.875);
+eq3("File \"format_test.ml\", line 37, characters 6-13", Pervasives.max_float, 1.79769313486231571e+308, Number.MAX_VALUE);
 
-eq3("File \"format_test.ml\", line 45, characters 6-13", Infinity, Number.POSITIVE_INFINITY, Pervasives.infinity);
+eq("File \"format_test.ml\", line 38, characters 5-12", Pervasives.classify_float(Infinity), /* FP_infinite */3);
 
-eq3("File \"format_test.ml\", line 46, characters 6-13", -Infinity, Number.NEGATIVE_INFINITY, Pervasives.neg_infinity);
+eq("File \"format_test.ml\", line 39, characters 5-12", Pervasives.classify_float(Infinity), /* FP_infinite */3);
 
-eq3("File \"format_test.ml\", line 47, characters 6-13", Pervasives.max_float, 1.79769313486231571e+308, Number.MAX_VALUE);
+eq("File \"format_test.ml\", line 42, characters 5-12", Pervasives.min_float, 2.22507385850720138e-308);
 
-eq("File \"format_test.ml\", line 48, characters 5-12", Pervasives.classify_float(Infinity), /* FP_infinite */3);
+eq("File \"format_test.ml\", line 43, characters 5-12", Pervasives.epsilon_float, 2.22044604925031308e-16);
 
-eq("File \"format_test.ml\", line 49, characters 5-12", Pervasives.classify_float(Infinity), /* FP_infinite */3);
+eq("File \"format_test.ml\", line 44, characters 5-12", 4.94065645841e-324, 5e-324);
 
-eq("File \"format_test.ml\", line 52, characters 5-12", Pervasives.min_float, 2.22507385850720138e-308);
+eq("File \"format_test.ml\", line 45, characters 5-12", 1.00000000000000022 - 1, Pervasives.epsilon_float);
 
-eq("File \"format_test.ml\", line 53, characters 5-12", Pervasives.epsilon_float, 2.22044604925031308e-16);
+eq("File \"format_test.ml\", line 47, characters 5-12", 1.11253692925360069e-308 / 2.22507385850720138e-308, 0.5);
 
-eq("File \"format_test.ml\", line 54, characters 5-12", 4.94065645841e-324, 5e-324);
+eq("File \"format_test.ml\", line 49, characters 5-12", Pervasives.classify_float(1.11253692925360069e-308), /* FP_subnormal */1);
 
-eq("File \"format_test.ml\", line 55, characters 5-12", 1.00000000000000022 - 1, Pervasives.epsilon_float);
+eq("File \"format_test.ml\", line 50, characters 5-12", 1.11253692925360069e-308, 1.11253692925360069e-308);
 
-eq("File \"format_test.ml\", line 57, characters 5-12", 1.11253692925360069e-308 / 2.22507385850720138e-308, 0.5);
+eq("File \"format_test.ml\", line 52, characters 5-12", 2.22507385850720138e-308, 2.22507385850720138e-308);
 
-eq("File \"format_test.ml\", line 59, characters 5-12", Pervasives.classify_float(1.11253692925360069e-308), /* FP_subnormal */1);
+eq("File \"format_test.ml\", line 56, characters 5-12", (1 + 255 / 256) * 8, 15.96875);
 
-eq("File \"format_test.ml\", line 60, characters 5-12", 1.11253692925360069e-308, 1.11253692925360069e-308);
+eq("File \"format_test.ml\", line 59, characters 5-12", (1 + 4095 / 4096) * 8, 15.998046875);
 
-eq("File \"format_test.ml\", line 62, characters 5-12", 2.22507385850720138e-308, 2.22507385850720138e-308);
-
-eq("File \"format_test.ml\", line 66, characters 5-12", (1 + 255 / 256) * 8, 15.96875);
-
-eq("File \"format_test.ml\", line 69, characters 5-12", (1 + 4095 / 4096) * 8, 15.998046875);
-
-eq("File \"format_test.ml\", line 72, characters 5-12", (1 + 65535 / 65536) * 8, 15.9998779296875);
+eq("File \"format_test.ml\", line 62, characters 5-12", (1 + 65535 / 65536) * 8, 15.9998779296875);
 
 function f(loc, ls) {
   return List.iter((function (param) {
@@ -139,7 +84,7 @@ function f(loc, ls) {
               }), ls);
 }
 
-f("File \"format_test.ml\", line 85, characters 6-13", {
+f("File \"format_test.ml\", line 75, characters 6-13", {
       hd: [
         "0x3.fp+1",
         7.875
@@ -238,9 +183,9 @@ var literals = {
   tl: literals_1
 };
 
-aux_list("File \"format_test.ml\", line 117, characters 11-18", literals);
+aux_list("File \"format_test.ml\", line 107, characters 11-18", literals);
 
-eq("File \"format_test.ml\", line 120, characters 5-12", Curry._1(Printf.sprintf(/* Format */{
+eq("File \"format_test.ml\", line 110, characters 5-12", Curry._1(Printf.sprintf(/* Format */{
               _0: {
                 TAG: /* Float */8,
                 _0: /* Float_H */19,
@@ -266,12 +211,12 @@ function scan_float(loc, s, expect) {
               }));
 }
 
-scan_float("File \"format_test.ml\", line 125, characters 13-20", "0x3f.p1", 126);
+scan_float("File \"format_test.ml\", line 115, characters 13-20", "0x3f.p1", 126);
 
-scan_float("File \"format_test.ml\", line 126, characters 13-20", "0x1.3333333333333p-2", 0.3);
+scan_float("File \"format_test.ml\", line 116, characters 13-20", "0x1.3333333333333p-2", 0.3);
 
 List.iter((function (param) {
-        return scan_float("File \"format_test.ml\", line 128, characters 13-20", param[1], param[0]);
+        return scan_float("File \"format_test.ml\", line 118, characters 13-20", param[1], param[0]);
       }), literals);
 
 Mt.from_pair_suites("Format_test", suites.contents);
@@ -280,8 +225,6 @@ exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
 exports.eq3 = eq3;
-exports.$caret$caret = $caret$caret;
-exports.u = u;
 exports.M = M;
 exports.f = f;
 exports.sl = sl;
