@@ -3,22 +3,22 @@ let current = ref 0;;
 let accum = ref [];;
 
 let record fmt (* args *) =
-  Printf.kprintf (fun s -> accum := s :: !accum) fmt
+  accum := fmt :: !accum
 ;;
 
 let f_unit () = record "unit()";;
-let f_bool b = record "bool(%b)" b;;
+let f_bool b = record {j|bool($b)|j};;
 let r_set = ref false;;
 let r_clear = ref true;;
-let f_string s = record "string(%s)" s;;
+let f_string s = record {j|string($s)|j};;
 let r_string = ref "";;
-let f_int i = record "int(%d)" i;;
+let f_int i = record {j|int($i)|j} ;;
 let r_int = ref 0;;
-let f_float f = record "float(%g)" f;;
+let f_float f = record {j|float($f)|j};;
 let r_float = ref 0.0;;
-let f_symbol s = record "symbol(%s)" s;;
-let f_rest s = record "rest(%s)" s;;
-let f_anon s = record "anon(%s)" s;;
+let f_symbol s = record {j|symbol($s)|j} ;;
+let f_rest s = record {j|rest($s)|j} ;;
+let f_anon s = record {j|anon($s)|j} ;;
 
 let spec = Arg.[
   "-u", Unit f_unit, "Unit (0)";
@@ -78,7 +78,7 @@ let args2 = [|
   "-rest"; "r1"; "r2";
 |];;
 
-let error s = Printf.printf "error (%s)\n" s;;
+let error s = Js.log {j|error (%s)|j} 
 let check r v msg = if !r <> v then error msg;;
 
 let test argv =
@@ -108,7 +108,7 @@ let test argv =
   in
   if result <> reference then begin
     let f x y =
-      Printf.printf "%20s %c %-20s\n%!" x (if x = y then '=' else '#') y
+      Js.log2 x y   
     in
     List.iter2 f result reference;
   end;
@@ -120,13 +120,9 @@ let test argv =
 ;;
 
 test args1;;
-#if OCAML_VERSION =~ ">4.03.0" then
+
 test args2;; 
 let suites = [];;
-#else
-  (* Arg accept -key=value since 4.04 *)
-let suites = 
-  Mt.[ "should raise", fun _ -> ThrowAny (fun _ -> test args2)]
-#end
+
 let () =  Mt.from_pair_suites __MODULE__ suites
 

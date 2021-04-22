@@ -70,9 +70,6 @@ let for_7 () =
       arr.(i * j_len + j) <- 
         (fun _ -> 
           begin 
-            (* print_endline @@ Printf.sprintf "%d %d" i j; *)
-            (* print_endline @@ string_of_int ( i * j_len + j) ^ " "  *)
-            (* ^ (string_of_int i) ^ " " ^ string_of_int j; *)
             v:= !v + i + j
           end)
     done
@@ -93,7 +90,6 @@ let for_8 () =
       arr.(i * j_len + j) <- 
         (fun _ -> 
           begin 
-            (* prerr_endline @@ Printf.sprintf "%d %d" i j; *)
             v:= !v + i + j + h + k
           end)
     done
@@ -122,8 +118,6 @@ let for_9 () =
       collect !v ;
       arr.(i * j_len + j)<- 
       fun _ -> 
-        (* prerr_endline @@ Printf.sprintf "<%d" !vv ;  *)
-        (* prerr_endline @@ Printf.sprintf ">%d" !vv ;  *)
         vv := !vv + !v; 
         (* v should not be captured inside , 
            since for next iteration, 
