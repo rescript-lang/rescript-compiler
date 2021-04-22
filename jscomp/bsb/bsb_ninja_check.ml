@@ -66,7 +66,7 @@ let rec check_aux cwd (xs : string list)  =
   match xs with 
   | [] -> Good
   | "===" :: rest ->
-    check_global rest 
+    check_global_atime rest 
   | item :: rest
     -> 
     match Ext_string.split item '\t' with 
@@ -78,7 +78,7 @@ let rec check_aux cwd (xs : string list)  =
         check_aux cwd rest 
       else Other  cur_file
     | _ -> Bsb_file_corrupted 
-and check_global rest = 
+and check_global_atime rest = 
   match rest with 
   | [] -> Good 
   | item :: rest ->
@@ -87,20 +87,22 @@ and check_global rest =
       let stamp = float_of_string stamp in 
       let cur_file = file in 
       let stat = Unix.stat cur_file in 
-      if stat.st_mtime <> stamp then 
-        check_global rest 
+      if stat.st_atime <= stamp then 
+        check_global_atime rest 
       else Other  cur_file
     | _ -> Bsb_file_corrupted 
 
 
 (* TODO: for such small data structure, maybe text format is better *)
 
-
+let record_global_atime buf name = 
+  let stamp = (Unix.stat name).st_atime in 
+  Ext_buffer.add_string_char buf name '\t';
+  Ext_buffer.add_string_char buf (hex_of_float stamp) '\n'   
 let record 
     ~(package_kind : Bsb_package_kind.t)
     ~per_proj_dir ~file  
     ~(config:Bsb_config_types.t) (file_or_dirs : string list) : unit =
-  let _ = config in 
   let buf = Ext_buffer.create 1_000 in   
   Ext_buffer.add_string_char buf Bs_version.version '\n';  
   Ext_buffer.add_string_char buf per_proj_dir '\n';
@@ -114,17 +116,13 @@ let record
       Ext_buffer.add_string_char buf 
         (hex_of_float (Unix.stat (Filename.concat per_proj_dir f)).st_mtime) '\n'; 
     );
-  begin match config.ppx_files with 
-    | [] -> ()
-    | files ->
-      Ext_buffer.add_string buf "===\n";
-      Ext_list.iter files (fun {name ; args = _} -> 
-          try
-            let stamp = (Unix.stat name).st_mtime in 
-            Ext_buffer.add_string_char buf name '\t';
-            Ext_buffer.add_string_char buf (hex_of_float stamp) '\n' 
-          with  _ -> ())
-  end;      
+  Ext_buffer.add_string buf "===\n";
+  record_global_atime buf Sys.executable_name;
+  Ext_list.iter config.ppx_files (fun {name ; args = _} -> 
+      try
+        record_global_atime buf name
+      with  _ -> (* record the ppx files as a best effort *)
+        ());      
   let oc = open_out_bin file in
   Ext_buffer.output_buffer oc buf ;
   close_out oc    
