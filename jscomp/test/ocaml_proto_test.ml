@@ -1,4 +1,4 @@
-[@@@bs.config {flags = [|"-w";"+3";"-bs-no-bin-annot"|]}]
+[@@@bs.config {flags = [|"-w";"a";"-bs-no-bin-annot"|]}]
 module 
 Pbpt
 = struct
@@ -841,7 +841,7 @@ type error =
 
 exception Compilation_error of error  
 (** Exception raised when a compilation error occurs *)
-
+module P = Printf
 let prepare_error = function 
   | Unresolved_type { field_name; type_; message_name} -> 
     P.sprintf 

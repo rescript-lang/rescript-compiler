@@ -261,22 +261,8 @@ function apply_until(f, _param) {
 }
 
 function string_of_string_list(l) {
-  return Curry._1(Printf.sprintf(/* Format */{
-                  _0: {
-                    TAG: /* Char_literal */12,
-                    _0: /* '[' */91,
-                    _1: {
-                      TAG: /* String */2,
-                      _0: /* No_padding */0,
-                      _1: {
-                        TAG: /* Char_literal */12,
-                        _0: /* ']' */93,
-                        _1: /* End_of_format */0
-                      }
-                    }
-                  },
-                  _1: "[%s]"
-                }), $$String.concat(",", l));
+  var a = $$String.concat(",", l);
+  return "[" + a + "]";
 }
 
 function string_fold_lefti(f, e0, s) {
@@ -322,32 +308,8 @@ function line(param) {
 }
 
 function to_string(param) {
-  return Curry._2(Printf.sprintf(/* Format */{
-                  _0: {
-                    TAG: /* String_literal */11,
-                    _0: "File ",
-                    _1: {
-                      TAG: /* String */2,
-                      _0: /* No_padding */0,
-                      _1: {
-                        TAG: /* String_literal */11,
-                        _0: ", line ",
-                        _1: {
-                          TAG: /* Int */4,
-                          _0: /* Int_i */3,
-                          _1: /* No_padding */0,
-                          _2: /* No_precision */0,
-                          _3: {
-                            TAG: /* String_literal */11,
-                            _0: ":\n",
-                            _1: /* End_of_format */0
-                          }
-                        }
-                      }
-                    }
-                  },
-                  _1: "File %s, line %i:\n"
-                }), option_default("", param.file_name), param.line);
+  var a = option_default("", param.file_name);
+  return "File " + a + ", line " + param.line + ":";
 }
 
 function string_of_programmatic_error(e) {
@@ -1598,33 +1560,30 @@ var __ocaml_lex_tables = {
   lex_code: ""
 };
 
-function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
+function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var l = _l;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          var c = Lexing.lexeme_char(lexbuf, 1);
-          ___ocaml_lex_state = 55;
-          _l = {
-            hd: Char.escaped(c),
-            tl: l
-          };
+          update_loc(lexbuf);
+          ___ocaml_lex_state = 47;
           continue ;
       case 1 :
-          return /* String_value */{
+          Lexing.lexeme(lexbuf);
+          return /* Comment_value */{
                   _0: $$String.concat("", List.rev(l))
                 };
       case 2 :
-          ___ocaml_lex_state = 55;
+          ___ocaml_lex_state = 47;
           _l = {
             hd: Lexing.lexeme(lexbuf),
             tl: l
           };
           continue ;
       case 3 :
-          return /* String_eof */0;
+          return /* Comment_eof */0;
       default:
         Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
@@ -1661,30 +1620,33 @@ function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
   };
 }
 
-function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
+function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var l = _l;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     switch (__ocaml_lex_state$1) {
       case 0 :
-          update_loc(lexbuf);
-          ___ocaml_lex_state = 47;
+          var c = Lexing.lexeme_char(lexbuf, 1);
+          ___ocaml_lex_state = 55;
+          _l = {
+            hd: Char.escaped(c),
+            tl: l
+          };
           continue ;
       case 1 :
-          Lexing.lexeme(lexbuf);
-          return /* Comment_value */{
+          return /* String_value */{
                   _0: $$String.concat("", List.rev(l))
                 };
       case 2 :
-          ___ocaml_lex_state = 47;
+          ___ocaml_lex_state = 55;
           _l = {
             hd: Lexing.lexeme(lexbuf),
             tl: l
           };
           continue ;
       case 3 :
-          return /* Comment_eof */0;
+          return /* String_eof */0;
       default:
         Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
@@ -6442,8 +6404,8 @@ function record_field_default_info(record_field) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "codegen_default.ml",
-                  74,
+                  "ocaml_proto_test.ml",
+                  5226,
                   15
                 ],
                 Error: new Error()
@@ -7827,9 +7789,9 @@ function eq(loc, x, y) {
   
 }
 
-eq("File \"ocaml_protc_test.ml\", line 10, characters 5-12", match[0], "(** tmp.proto Generated Types and Encoding *)\n\n(** {2 Types} *)\n\ntype t = {\n  j : int32;\n}\n\n\n(** {2 Default values} *)\n\nval default_t : \n  ?j:int32 ->\n  unit ->\n  t\n(** [default_t ()] is the default value for type [t] *)\n\n\n(** {2 Protobuf Decoding} *)\n\nval decode_t : Pbrt.Decoder.t -> t\n(** [decode_t decoder] decodes a [t] value from [decoder] *)\n\n\n(** {2 Protobuf Toding} *)\n\nval encode_t : t -> Pbrt.Encoder.t -> unit\n(** [encode_t v encoder] encodes [v] with the given [encoder] *)\n\n\n(** {2 Formatters} *)\n\nval pp_t : Format.formatter -> t -> unit \n(** [pp_t v] formats v] *)\n");
+eq("File \"ocaml_proto_test.ml\", line 5993, characters 5-12", match[0], "(** tmp.proto Generated Types and Encoding *)\n\n(** {2 Types} *)\n\ntype t = {\n  j : int32;\n}\n\n\n(** {2 Default values} *)\n\nval default_t : \n  ?j:int32 ->\n  unit ->\n  t\n(** [default_t ()] is the default value for type [t] *)\n\n\n(** {2 Protobuf Decoding} *)\n\nval decode_t : Pbrt.Decoder.t -> t\n(** [decode_t decoder] decodes a [t] value from [decoder] *)\n\n\n(** {2 Protobuf Toding} *)\n\nval encode_t : t -> Pbrt.Encoder.t -> unit\n(** [encode_t v encoder] encodes [v] with the given [encoder] *)\n\n\n(** {2 Formatters} *)\n\nval pp_t : Format.formatter -> t -> unit \n(** [pp_t v] formats v] *)\n");
 
-eq("File \"ocaml_protc_test.ml\", line 46, characters 5-12", match[1], "[@@@ocaml.warning \"-30\"]\n\ntype t = {\n  j : int32;\n}\n\nand t_mutable = {\n  mutable j : int32;\n}\n\nlet rec default_t \n  ?j:((j:int32) = 0l)\n  () : t  = {\n  j;\n}\n\nand default_t_mutable () : t_mutable = {\n  j = 0l;\n}\n\nlet rec decode_t d =\n  let v = default_t_mutable () in\n  let rec loop () = \n    match Pbrt.Decoder.key d with\n    | None -> (\n    )\n    | Some (1, Pbrt.Varint) -> (\n      v.j <- Pbrt.Decoder.int32_as_varint d;\n      loop ()\n    )\n    | Some (1, pk) -> raise (\n      Protobuf.Decoder.Failure (Protobuf.Decoder.Unexpected_payload (\"Message(t), field(1)\", pk))\n    )\n    | Some (n, payload_kind) -> Pbrt.Decoder.skip d payload_kind; loop ()\n  in\n  loop ();\n  let v:t = Obj.magic v in\n  v\n\nlet rec encode_t (v:t) encoder = \n  Pbrt.Encoder.key (1, Pbrt.Varint) encoder; \n  Pbrt.Encoder.int32_as_varint v.j encoder;\n  ()\n\nlet rec pp_t fmt (v:t) = \n  let pp_i fmt () =\n    Format.pp_open_vbox fmt 1;\n    Pbrt.Pp.pp_record_field \"j\" Pbrt.Pp.pp_int32 fmt v.j;\n    Format.pp_close_box fmt ()\n  in\n  Pbrt.Pp.pp_brk pp_i fmt ()\n");
+eq("File \"ocaml_proto_test.ml\", line 6029, characters 5-12", match[1], "[@@@ocaml.warning \"-30\"]\n\ntype t = {\n  j : int32;\n}\n\nand t_mutable = {\n  mutable j : int32;\n}\n\nlet rec default_t \n  ?j:((j:int32) = 0l)\n  () : t  = {\n  j;\n}\n\nand default_t_mutable () : t_mutable = {\n  j = 0l;\n}\n\nlet rec decode_t d =\n  let v = default_t_mutable () in\n  let rec loop () = \n    match Pbrt.Decoder.key d with\n    | None -> (\n    )\n    | Some (1, Pbrt.Varint) -> (\n      v.j <- Pbrt.Decoder.int32_as_varint d;\n      loop ()\n    )\n    | Some (1, pk) -> raise (\n      Protobuf.Decoder.Failure (Protobuf.Decoder.Unexpected_payload (\"Message(t), field(1)\", pk))\n    )\n    | Some (n, payload_kind) -> Pbrt.Decoder.skip d payload_kind; loop ()\n  in\n  loop ();\n  let v:t = Obj.magic v in\n  v\n\nlet rec encode_t (v:t) encoder = \n  Pbrt.Encoder.key (1, Pbrt.Varint) encoder; \n  Pbrt.Encoder.int32_as_varint v.j encoder;\n  ()\n\nlet rec pp_t fmt (v:t) = \n  let pp_i fmt () =\n    Format.pp_open_vbox fmt 1;\n    Pbrt.Pp.pp_record_field \"j\" Pbrt.Pp.pp_int32 fmt v.j;\n    Format.pp_close_box fmt ()\n  in\n  Pbrt.Pp.pp_brk pp_i fmt ()\n");
 
 Mt.from_pair_suites("Ocaml_proto_test", suites.contents);
 
