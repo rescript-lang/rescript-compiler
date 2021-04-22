@@ -333,7 +333,7 @@
                 },
                 {
                     "type": "string",
-                    "description": "(Usually not needed) Alternative path to `refmt`, the Reason syntax binary. Default: path to the `refmt.exe` BuckleScript provides out of the box"
+                    "description": "(Usually not needed) Alternative path to `refmt`, the Reason syntax binary. Default: path to the `refmt.exe` ReScript provides out of the box"
                 }
             ]
         },
@@ -368,7 +368,7 @@
             ]
         }
     },
-    "title": "BuckleScript build configuration",
+    "title": "ReScript build configuration",
     "description": "All paths are required to be in **Unix format** (foo/bar), the build system normalizes them for other platforms internally",
     "type": "object",
     "properties": {
@@ -420,7 +420,7 @@
         },
         "reason": {
             "$ref": "#/definitions/reason-specs",
-            "description": "BuckleScript comes with [Reason](http://reasonml.github.io/) by default. Specific configurations here."
+            "description": "ReScript comes with [Reason](http://reasonml.github.io/) by default. Specific configurations here."
         },
         "gentypeconfig": {
             "$ref" : "#/definitions/gentype-specs",
@@ -466,7 +466,7 @@
         },
         "package-specs": {
             "$ref": "#/definitions/package-specs",
-            "description": "BuckleScript can currently output to [Commonjs](https://en.wikipedia.org/wiki/CommonJS), and [ES6 modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)"
+            "description": "ReScript can currently output to [Commonjs](https://en.wikipedia.org/wiki/CommonJS), and [ES6 modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)"
         },
         "entries": {
             "$ref": "#/definitions/entries",
