@@ -506,7 +506,6 @@ o test/printf_sim.cmi test/printf_sim.cmj : cc test/printf_sim.ml | $stdlib
 o test/printf_test.cmi test/printf_test.cmj : cc test/printf_test.ml | test/mt.cmj $stdlib
 o test/promise.cmi test/promise.cmj : cc test/promise.ml | $stdlib
 o test/promise_catch_test.cmi test/promise_catch_test.cmj : cc test/promise_catch_test.ml | test/mt.cmj $stdlib
-o test/qcc.cmi test/qcc.cmj : cc test/qcc.ml | $stdlib
 o test/queue_402.cmi test/queue_402.cmj : cc test/queue_402.ml | $stdlib
 o test/queue_test.cmi test/queue_test.cmj : cc test/queue_test.ml | test/mt.cmj test/queue_402.cmj $stdlib
 o test/random_test.cmi test/random_test.cmj : cc test/random_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
