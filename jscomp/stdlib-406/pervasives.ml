@@ -579,18 +579,6 @@ let read_int_opt () = int_of_string_opt(read_line())
 let read_float () = float_of_string(read_line())
 let read_float_opt () = float_of_string_opt(read_line())
 
-(* Operations on large files *)
-
-module LargeFile =
-  struct
-    external seek_out : out_channel -> int64 -> unit = "caml_ml_seek_out_64"
-    external pos_out : out_channel -> int64 = "caml_ml_pos_out_64"
-    external out_channel_length : out_channel -> int64
-                                = "caml_ml_channel_size_64"
-    external seek_in : in_channel -> int64 -> unit = "caml_ml_seek_in_64"
-    external pos_in : in_channel -> int64 = "caml_ml_pos_in_64"
-    external in_channel_length : in_channel -> int64 = "caml_ml_channel_size_64"
-  end
 
 (* Formats *)
 
@@ -602,12 +590,6 @@ type ('a, 'b, 'c, 'd, 'e, 'f) format6
 type ('a, 'b, 'c, 'd) format4 = ('a, 'b, 'c, 'c, 'c, 'd) format6
 
 type ('a, 'b, 'c) format = ('a, 'b, 'c, 'c) format4
-
-let string_of_format (Format (_fmt, str)) = str
-
-external format_of_string :
- ('a, 'b, 'c, 'd, 'e, 'f) format6 ->
- ('a, 'b, 'c, 'd, 'e, 'f) format6 = "%identity"
 
 
 

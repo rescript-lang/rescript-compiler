@@ -436,7 +436,7 @@ o test/method_string_name.cmi test/method_string_name.cmj : cc test/method_strin
 o test/minimal_test.cmi test/minimal_test.cmj : cc test/minimal_test.ml | $stdlib
 o test/miss_colon_test.cmi test/miss_colon_test.cmj : cc test/miss_colon_test.ml | $stdlib
 o test/mock_mt.cmi test/mock_mt.cmj : cc test/mock_mt.ml | test/mt.cmj $stdlib
-o test/module_alias_test.cmi test/module_alias_test.cmj : cc test/module_alias_test.ml | test/mt.cmj $stdlib
+o test/module_alias_test.cmi test/module_alias_test.cmj : cc test/module_alias_test.ml | test/ext_pervasives_test.cmj test/mt.cmj $stdlib
 o test/module_as_class_ffi.cmi test/module_as_class_ffi.cmj : cc test/module_as_class_ffi.ml | $stdlib
 o test/module_as_function.cmi test/module_as_function.cmj : cc test/module_as_function.ml | $stdlib
 o test/module_missing_conversion.cmi test/module_missing_conversion.cmj : cc test/module_missing_conversion.ml | $stdlib

@@ -134,13 +134,9 @@ var List$1 = {
   close_in: Pervasives.close_in,
   close_in_noerr: Pervasives.close_in_noerr,
   set_binary_mode_in: Pervasives.set_binary_mode_in,
-  LargeFile: Pervasives.LargeFile,
-  string_of_format: Pervasives.string_of_format,
   exit: Pervasives.exit,
   at_exit: Pervasives.at_exit,
-  valid_float_lexem: Pervasives.valid_float_lexem,
-  unsafe_really_input: Pervasives.unsafe_really_input,
-  do_at_exit: Pervasives.do_at_exit
+  valid_float_lexem: Pervasives.valid_float_lexem
 };
 
 var U = {
@@ -232,13 +228,9 @@ var U = {
   close_in: Pervasives.close_in,
   close_in_noerr: Pervasives.close_in_noerr,
   set_binary_mode_in: Pervasives.set_binary_mode_in,
-  LargeFile: Pervasives.LargeFile,
-  string_of_format: Pervasives.string_of_format,
   exit: Pervasives.exit,
   at_exit: Pervasives.at_exit,
-  valid_float_lexem: Pervasives.valid_float_lexem,
-  unsafe_really_input: Pervasives.unsafe_really_input,
-  do_at_exit: Pervasives.do_at_exit
+  valid_float_lexem: Pervasives.valid_float_lexem
 };
 
 var f = Pervasives.$at;

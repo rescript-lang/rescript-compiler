@@ -42,6 +42,7 @@ val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
 val is_pos_pow : Int32.t -> int
 
+val is_pos_pow_2 : Int32.t -> int
 
 
 
@@ -50,3 +51,7 @@ val is_pos_pow : Int32.t -> int
     need sync up and add test case
 *)
 val hash_variant : string -> int
+
+module LargeFile : sig 
+    val u : int     
+end     

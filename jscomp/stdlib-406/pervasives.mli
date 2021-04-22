@@ -1151,24 +1151,6 @@ val set_binary_mode_in : in_channel -> bool -> unit
    do not distinguish between text mode and binary mode. *)
 
 
-(** {2 Operations on large files} *)
-
-module LargeFile :
-  sig
-    val seek_out : out_channel -> int64 -> unit
-    val pos_out : out_channel -> int64
-    val out_channel_length : out_channel -> int64
-    val seek_in : in_channel -> int64 -> unit
-    val pos_in : in_channel -> int64
-    val in_channel_length : in_channel -> int64
-  end
-(** Operations on large files.
-  This sub-module provides 64-bit variants of the channel functions
-  that manipulate file positions and file sizes.  By representing
-  positions and sizes by 64-bit integers (type [int64]) instead of
-  regular integers (type [int]), these alternate functions allow
-  operating on files whose sizes are greater than [max_int]. *)
-
 
 (** {1 References} *)
 
@@ -1281,20 +1263,6 @@ type ('a, 'b, 'c, 'd) format4 = ('a, 'b, 'c, 'c, 'c, 'd) format6
 
 type ('a, 'b, 'c) format = ('a, 'b, 'c, 'c) format4
 
-val string_of_format : ('a, 'b, 'c, 'd, 'e, 'f) format6 -> string
-[@@ocaml.deprecated "This function is deprecated"]
-(** Converts a format string into a string. *)
-
-external format_of_string :
-  ('a, 'b, 'c, 'd, 'e, 'f) format6 ->
-  ('a, 'b, 'c, 'd, 'e, 'f) format6 = "%identity"
-[@@ocaml.deprecated "This function is deprecated"]  
-(** [format_of_string s] returns a format string read from the string
-    literal [s].
-    Note: [format_of_string] can not convert a string argument that is not a
-    literal. If you need this functionality, use the more general
-    {!Scanf.format_from_string} function.
-*)
 
 
 
@@ -1322,10 +1290,4 @@ val at_exit : (unit -> unit) -> unit
 
 (**/**)
 
-(* The following is for system use only. Do not call directly. *)
-
 val valid_float_lexem : string -> string
-
-val unsafe_really_input : in_channel -> bytes -> int -> int -> unit
-
-val do_at_exit : unit -> unit

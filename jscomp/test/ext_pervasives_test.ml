@@ -32,8 +32,8 @@ external reraise: exn -> 'a = "%reraise"
 let finally v action f   = 
   match f v with
   | exception e -> 
-      action v |. ignore ;
-      reraise e 
+    action v |. ignore ;
+    reraise e 
   | e ->  action v |. ignore; e 
 
 let with_file_as_chan filename f = 
@@ -52,6 +52,15 @@ let  is_pos_pow n =
   try aux 0 n  with M.E -> -1
 
 
+let  is_pos_pow_2 n = 
+  let  exception E in 
+  let rec aux c (n : Int32.t) = 
+    if n <= 0l then -2 
+    else if n = 1l then c 
+    else if Int32.logand n 1l =  0l then   
+      aux (c + 1) (Int32.shift_right n 1 )
+    else raise E in 
+  try aux 0 n  with E -> -1
 
 
 
@@ -65,3 +74,6 @@ let hash_variant s =
   (* make it signed for 64 bits architectures *)
   if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
 
+module LargeFile = struct 
+  let u = 3  
+end  

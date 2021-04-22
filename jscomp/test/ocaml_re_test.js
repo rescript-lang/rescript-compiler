@@ -3497,301 +3497,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     i.contents = i.contents - 1 | 0;
     return r;
   };
-  var $$char = function (param) {
-    if (i.contents === l) {
-      throw {
-            RE_EXN_ID: Parse_error,
-            Error: new Error()
-          };
-    }
-    var c = get(undefined);
-    if (c === /* '[' */91) {
-      if (accept(/* '=' */61)) {
-        throw {
-              RE_EXN_ID: Not_supported,
-              Error: new Error()
-            };
-      }
-      if (accept(/* ':' */58)) {
-        var compl$1 = accept(/* '^' */94);
-        var cls;
-        try {
-          cls = List.find(accept_s, {
-                hd: "alnum",
-                tl: {
-                  hd: "ascii",
-                  tl: {
-                    hd: "blank",
-                    tl: {
-                      hd: "cntrl",
-                      tl: {
-                        hd: "digit",
-                        tl: {
-                          hd: "lower",
-                          tl: {
-                            hd: "print",
-                            tl: {
-                              hd: "space",
-                              tl: {
-                                hd: "upper",
-                                tl: {
-                                  hd: "word",
-                                  tl: {
-                                    hd: "punct",
-                                    tl: {
-                                      hd: "graph",
-                                      tl: {
-                                        hd: "xdigit",
-                                        tl: /* [] */0
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              });
-        }
-        catch (raw_exn){
-          var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-          if (exn.RE_EXN_ID === "Not_found") {
-            throw {
-                  RE_EXN_ID: Parse_error,
-                  Error: new Error()
-                };
-          }
-          throw exn;
-        }
-        if (!accept_s(":]")) {
-          throw {
-                RE_EXN_ID: Parse_error,
-                Error: new Error()
-              };
-        }
-        var posix_class = posix_class_of_string(cls);
-        var re = compl$1 ? compl({
-                hd: posix_class,
-                tl: /* [] */0
-              }) : posix_class;
-        return {
-                NAME: "Set",
-                VAL: re
-              };
-      }
-      if (!accept(/* '.' */46)) {
-        return {
-                NAME: "Char",
-                VAL: c
-              };
-      }
-      if (i.contents === l) {
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      var c$1 = get(undefined);
-      if (!accept(/* '.' */46)) {
-        throw {
-              RE_EXN_ID: Not_supported,
-              Error: new Error()
-            };
-      }
-      if (!accept(/* ']' */93)) {
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      return {
-              NAME: "Char",
-              VAL: c$1
-            };
-    }
-    if (c !== /* '\\' */92) {
-      return {
-              NAME: "Char",
-              VAL: c
-            };
-    }
-    var c$2 = get(undefined);
-    if (c$2 >= 58) {
-      if (c$2 >= 123) {
-        return {
-                NAME: "Char",
-                VAL: c$2
-              };
-      }
-      switch (c$2) {
-        case 68 :
-            return {
-                    NAME: "Set",
-                    VAL: compl({
-                          hd: digit,
-                          tl: /* [] */0
-                        })
-                  };
-        case 83 :
-            return {
-                    NAME: "Set",
-                    VAL: compl({
-                          hd: space,
-                          tl: /* [] */0
-                        })
-                  };
-        case 87 :
-            return {
-                    NAME: "Set",
-                    VAL: compl({
-                          hd: alnum,
-                          tl: {
-                            hd: {
-                              TAG: /* Set */0,
-                              _0: {
-                                hd: [
-                                  /* '_' */95,
-                                  /* '_' */95
-                                ],
-                                tl: /* [] */0
-                              }
-                            },
-                            tl: /* [] */0
-                          }
-                        })
-                  };
-        case 58 :
-        case 59 :
-        case 60 :
-        case 61 :
-        case 62 :
-        case 63 :
-        case 64 :
-        case 91 :
-        case 92 :
-        case 93 :
-        case 94 :
-        case 95 :
-        case 96 :
-            return {
-                    NAME: "Char",
-                    VAL: c$2
-                  };
-        case 98 :
-            return {
-                    NAME: "Char",
-                    VAL: /* '\b' */8
-                  };
-        case 100 :
-            return {
-                    NAME: "Set",
-                    VAL: digit
-                  };
-        case 110 :
-            return {
-                    NAME: "Char",
-                    VAL: /* '\n' */10
-                  };
-        case 114 :
-            return {
-                    NAME: "Char",
-                    VAL: /* '\r' */13
-                  };
-        case 115 :
-            return {
-                    NAME: "Set",
-                    VAL: space
-                  };
-        case 116 :
-            return {
-                    NAME: "Char",
-                    VAL: /* '\t' */9
-                  };
-        case 119 :
-            return {
-                    NAME: "Set",
-                    VAL: alt$1({
-                          hd: alnum,
-                          tl: {
-                            hd: {
-                              TAG: /* Set */0,
-                              _0: {
-                                hd: [
-                                  /* '_' */95,
-                                  /* '_' */95
-                                ],
-                                tl: /* [] */0
-                              }
-                            },
-                            tl: /* [] */0
-                          }
-                        })
-                  };
-        case 65 :
-        case 66 :
-        case 67 :
-        case 69 :
-        case 70 :
-        case 71 :
-        case 72 :
-        case 73 :
-        case 74 :
-        case 75 :
-        case 76 :
-        case 77 :
-        case 78 :
-        case 79 :
-        case 80 :
-        case 81 :
-        case 82 :
-        case 84 :
-        case 85 :
-        case 86 :
-        case 88 :
-        case 89 :
-        case 90 :
-        case 97 :
-        case 99 :
-        case 101 :
-        case 102 :
-        case 103 :
-        case 104 :
-        case 105 :
-        case 106 :
-        case 107 :
-        case 108 :
-        case 109 :
-        case 111 :
-        case 112 :
-        case 113 :
-        case 117 :
-        case 118 :
-        case 120 :
-        case 121 :
-        case 122 :
-            throw {
-                  RE_EXN_ID: Parse_error,
-                  Error: new Error()
-                };
-        
-      }
-    } else {
-      if (c$2 >= 48) {
-        throw {
-              RE_EXN_ID: Not_supported,
-              Error: new Error()
-            };
-      }
-      return {
-              NAME: "Char",
-              VAL: c$2
-            };
-    }
-  };
   var atom = function (param) {
     if (accept(/* '.' */46)) {
       if (dotall) {
@@ -4099,6 +3804,301 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         _i = i$p;
         continue ;
       };
+    }
+  };
+  var $$char = function (param) {
+    if (i.contents === l) {
+      throw {
+            RE_EXN_ID: Parse_error,
+            Error: new Error()
+          };
+    }
+    var c = get(undefined);
+    if (c === /* '[' */91) {
+      if (accept(/* '=' */61)) {
+        throw {
+              RE_EXN_ID: Not_supported,
+              Error: new Error()
+            };
+      }
+      if (accept(/* ':' */58)) {
+        var compl$1 = accept(/* '^' */94);
+        var cls;
+        try {
+          cls = List.find(accept_s, {
+                hd: "alnum",
+                tl: {
+                  hd: "ascii",
+                  tl: {
+                    hd: "blank",
+                    tl: {
+                      hd: "cntrl",
+                      tl: {
+                        hd: "digit",
+                        tl: {
+                          hd: "lower",
+                          tl: {
+                            hd: "print",
+                            tl: {
+                              hd: "space",
+                              tl: {
+                                hd: "upper",
+                                tl: {
+                                  hd: "word",
+                                  tl: {
+                                    hd: "punct",
+                                    tl: {
+                                      hd: "graph",
+                                      tl: {
+                                        hd: "xdigit",
+                                        tl: /* [] */0
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              });
+        }
+        catch (raw_exn){
+          var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
+          if (exn.RE_EXN_ID === "Not_found") {
+            throw {
+                  RE_EXN_ID: Parse_error,
+                  Error: new Error()
+                };
+          }
+          throw exn;
+        }
+        if (!accept_s(":]")) {
+          throw {
+                RE_EXN_ID: Parse_error,
+                Error: new Error()
+              };
+        }
+        var posix_class = posix_class_of_string(cls);
+        var re = compl$1 ? compl({
+                hd: posix_class,
+                tl: /* [] */0
+              }) : posix_class;
+        return {
+                NAME: "Set",
+                VAL: re
+              };
+      }
+      if (!accept(/* '.' */46)) {
+        return {
+                NAME: "Char",
+                VAL: c
+              };
+      }
+      if (i.contents === l) {
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      var c$1 = get(undefined);
+      if (!accept(/* '.' */46)) {
+        throw {
+              RE_EXN_ID: Not_supported,
+              Error: new Error()
+            };
+      }
+      if (!accept(/* ']' */93)) {
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      return {
+              NAME: "Char",
+              VAL: c$1
+            };
+    }
+    if (c !== /* '\\' */92) {
+      return {
+              NAME: "Char",
+              VAL: c
+            };
+    }
+    var c$2 = get(undefined);
+    if (c$2 >= 58) {
+      if (c$2 >= 123) {
+        return {
+                NAME: "Char",
+                VAL: c$2
+              };
+      }
+      switch (c$2) {
+        case 68 :
+            return {
+                    NAME: "Set",
+                    VAL: compl({
+                          hd: digit,
+                          tl: /* [] */0
+                        })
+                  };
+        case 83 :
+            return {
+                    NAME: "Set",
+                    VAL: compl({
+                          hd: space,
+                          tl: /* [] */0
+                        })
+                  };
+        case 87 :
+            return {
+                    NAME: "Set",
+                    VAL: compl({
+                          hd: alnum,
+                          tl: {
+                            hd: {
+                              TAG: /* Set */0,
+                              _0: {
+                                hd: [
+                                  /* '_' */95,
+                                  /* '_' */95
+                                ],
+                                tl: /* [] */0
+                              }
+                            },
+                            tl: /* [] */0
+                          }
+                        })
+                  };
+        case 58 :
+        case 59 :
+        case 60 :
+        case 61 :
+        case 62 :
+        case 63 :
+        case 64 :
+        case 91 :
+        case 92 :
+        case 93 :
+        case 94 :
+        case 95 :
+        case 96 :
+            return {
+                    NAME: "Char",
+                    VAL: c$2
+                  };
+        case 98 :
+            return {
+                    NAME: "Char",
+                    VAL: /* '\b' */8
+                  };
+        case 100 :
+            return {
+                    NAME: "Set",
+                    VAL: digit
+                  };
+        case 110 :
+            return {
+                    NAME: "Char",
+                    VAL: /* '\n' */10
+                  };
+        case 114 :
+            return {
+                    NAME: "Char",
+                    VAL: /* '\r' */13
+                  };
+        case 115 :
+            return {
+                    NAME: "Set",
+                    VAL: space
+                  };
+        case 116 :
+            return {
+                    NAME: "Char",
+                    VAL: /* '\t' */9
+                  };
+        case 119 :
+            return {
+                    NAME: "Set",
+                    VAL: alt$1({
+                          hd: alnum,
+                          tl: {
+                            hd: {
+                              TAG: /* Set */0,
+                              _0: {
+                                hd: [
+                                  /* '_' */95,
+                                  /* '_' */95
+                                ],
+                                tl: /* [] */0
+                              }
+                            },
+                            tl: /* [] */0
+                          }
+                        })
+                  };
+        case 65 :
+        case 66 :
+        case 67 :
+        case 69 :
+        case 70 :
+        case 71 :
+        case 72 :
+        case 73 :
+        case 74 :
+        case 75 :
+        case 76 :
+        case 77 :
+        case 78 :
+        case 79 :
+        case 80 :
+        case 81 :
+        case 82 :
+        case 84 :
+        case 85 :
+        case 86 :
+        case 88 :
+        case 89 :
+        case 90 :
+        case 97 :
+        case 99 :
+        case 101 :
+        case 102 :
+        case 103 :
+        case 104 :
+        case 105 :
+        case 106 :
+        case 107 :
+        case 108 :
+        case 109 :
+        case 111 :
+        case 112 :
+        case 113 :
+        case 117 :
+        case 118 :
+        case 120 :
+        case 121 :
+        case 122 :
+            throw {
+                  RE_EXN_ID: Parse_error,
+                  Error: new Error()
+                };
+        
+      }
+    } else {
+      if (c$2 >= 48) {
+        throw {
+              RE_EXN_ID: Not_supported,
+              Error: new Error()
+            };
+      }
+      return {
+              NAME: "Char",
+              VAL: c$2
+            };
     }
   };
   var res = regexp$p(branch$p(/* [] */0));

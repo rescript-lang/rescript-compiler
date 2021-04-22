@@ -8,7 +8,7 @@ let eq loc x y =
 
 module N = List 
 
-module V = Pervasives.LargeFile
+module V = Ext_pervasives_test.LargeFile
 
 
 module J = Js.Json
