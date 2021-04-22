@@ -1,6 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Belt_Option = require("../../lib/js/belt_Option.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites_0 = [
@@ -272,82 +273,80 @@ var suites_1 = {
                                               ],
                                               tl: {
                                                 hd: [
-                                                  "normalize",
+                                                  "match - not found capture groups",
                                                   (function (param) {
                                                       return {
                                                               TAG: /* Eq */0,
-                                                              _0: "foo",
-                                                              _1: "foo".normalize()
+                                                              _0: [
+                                                                "hello ",
+                                                                undefined
+                                                              ],
+                                                              _1: Belt_Option.map(Caml_option.null_to_opt("hello word".match(/hello (world)?/)), (function (prim) {
+                                                                      return prim.slice();
+                                                                    }))
                                                             };
                                                     })
                                                 ],
                                                 tl: {
                                                   hd: [
-                                                    "normalizeByForm",
+                                                    "normalize",
                                                     (function (param) {
                                                         return {
                                                                 TAG: /* Eq */0,
                                                                 _0: "foo",
-                                                                _1: "foo".normalize("NFKD")
+                                                                _1: "foo".normalize()
                                                               };
                                                       })
                                                   ],
                                                   tl: {
                                                     hd: [
-                                                      "repeat",
+                                                      "normalizeByForm",
                                                       (function (param) {
                                                           return {
                                                                   TAG: /* Eq */0,
-                                                                  _0: "foofoofoo",
-                                                                  _1: "foo".repeat(3)
+                                                                  _0: "foo",
+                                                                  _1: "foo".normalize("NFKD")
                                                                 };
                                                         })
                                                     ],
                                                     tl: {
                                                       hd: [
-                                                        "replace",
+                                                        "repeat",
                                                         (function (param) {
                                                             return {
                                                                     TAG: /* Eq */0,
-                                                                    _0: "fooBORKbaz",
-                                                                    _1: "foobarbaz".replace("bar", "BORK")
+                                                                    _0: "foofoofoo",
+                                                                    _1: "foo".repeat(3)
                                                                   };
                                                           })
                                                       ],
                                                       tl: {
                                                         hd: [
-                                                          "replaceByRe",
+                                                          "replace",
                                                           (function (param) {
                                                               return {
                                                                       TAG: /* Eq */0,
-                                                                      _0: "fooBORKBORK",
-                                                                      _1: "foobarbaz".replace(/ba./g, "BORK")
+                                                                      _0: "fooBORKbaz",
+                                                                      _1: "foobarbaz".replace("bar", "BORK")
                                                                     };
                                                             })
                                                         ],
                                                         tl: {
                                                           hd: [
-                                                            "unsafeReplaceBy0",
+                                                            "replaceByRe",
                                                             (function (param) {
-                                                                var replace = function (whole, offset, s) {
-                                                                  if (whole === "bar") {
-                                                                    return "BORK";
-                                                                  } else {
-                                                                    return "DORK";
-                                                                  }
-                                                                };
                                                                 return {
                                                                         TAG: /* Eq */0,
-                                                                        _0: "fooBORKDORK",
-                                                                        _1: "foobarbaz".replace(/ba./g, replace)
+                                                                        _0: "fooBORKBORK",
+                                                                        _1: "foobarbaz".replace(/ba./g, "BORK")
                                                                       };
                                                               })
                                                           ],
                                                           tl: {
                                                             hd: [
-                                                              "unsafeReplaceBy1",
+                                                              "unsafeReplaceBy0",
                                                               (function (param) {
-                                                                  var replace = function (whole, p1, offset, s) {
+                                                                  var replace = function (whole, offset, s) {
                                                                     if (whole === "bar") {
                                                                       return "BORK";
                                                                     } else {
@@ -363,9 +362,9 @@ var suites_1 = {
                                                             ],
                                                             tl: {
                                                               hd: [
-                                                                "unsafeReplaceBy2",
+                                                                "unsafeReplaceBy1",
                                                                 (function (param) {
-                                                                    var replace = function (whole, p1, p2, offset, s) {
+                                                                    var replace = function (whole, p1, offset, s) {
                                                                       if (whole === "bar") {
                                                                         return "BORK";
                                                                       } else {
@@ -381,9 +380,9 @@ var suites_1 = {
                                                               ],
                                                               tl: {
                                                                 hd: [
-                                                                  "unsafeReplaceBy3",
+                                                                  "unsafeReplaceBy2",
                                                                   (function (param) {
-                                                                      var replace = function (whole, p1, p2, p3, offset, s) {
+                                                                      var replace = function (whole, p1, p2, offset, s) {
                                                                         if (whole === "bar") {
                                                                           return "BORK";
                                                                         } else {
@@ -399,254 +398,273 @@ var suites_1 = {
                                                                 ],
                                                                 tl: {
                                                                   hd: [
-                                                                    "search",
+                                                                    "unsafeReplaceBy3",
                                                                     (function (param) {
+                                                                        var replace = function (whole, p1, p2, p3, offset, s) {
+                                                                          if (whole === "bar") {
+                                                                            return "BORK";
+                                                                          } else {
+                                                                            return "DORK";
+                                                                          }
+                                                                        };
                                                                         return {
                                                                                 TAG: /* Eq */0,
-                                                                                _0: 3,
-                                                                                _1: "foobarbaz".search(/ba./g)
+                                                                                _0: "fooBORKDORK",
+                                                                                _1: "foobarbaz".replace(/ba./g, replace)
                                                                               };
                                                                       })
                                                                   ],
                                                                   tl: {
                                                                     hd: [
-                                                                      "slice",
+                                                                      "search",
                                                                       (function (param) {
                                                                           return {
                                                                                   TAG: /* Eq */0,
-                                                                                  _0: "bar",
-                                                                                  _1: "foobarbaz".slice(3, 6)
+                                                                                  _0: 3,
+                                                                                  _1: "foobarbaz".search(/ba./g)
                                                                                 };
                                                                         })
                                                                     ],
                                                                     tl: {
                                                                       hd: [
-                                                                        "sliceToEnd",
+                                                                        "slice",
                                                                         (function (param) {
                                                                             return {
                                                                                     TAG: /* Eq */0,
-                                                                                    _0: "barbaz",
-                                                                                    _1: "foobarbaz".slice(3)
+                                                                                    _0: "bar",
+                                                                                    _1: "foobarbaz".slice(3, 6)
                                                                                   };
                                                                           })
                                                                       ],
                                                                       tl: {
                                                                         hd: [
-                                                                          "split",
+                                                                          "sliceToEnd",
                                                                           (function (param) {
                                                                               return {
                                                                                       TAG: /* Eq */0,
-                                                                                      _0: [
-                                                                                        "foo",
-                                                                                        "bar",
-                                                                                        "baz"
-                                                                                      ],
-                                                                                      _1: "foo bar baz".split(" ")
+                                                                                      _0: "barbaz",
+                                                                                      _1: "foobarbaz".slice(3)
                                                                                     };
                                                                             })
                                                                         ],
                                                                         tl: {
                                                                           hd: [
-                                                                            "splitAtMost",
+                                                                            "split",
                                                                             (function (param) {
                                                                                 return {
                                                                                         TAG: /* Eq */0,
                                                                                         _0: [
                                                                                           "foo",
-                                                                                          "bar"
+                                                                                          "bar",
+                                                                                          "baz"
                                                                                         ],
-                                                                                        _1: "foo bar baz".split(" ", 2)
+                                                                                        _1: "foo bar baz".split(" ")
                                                                                       };
                                                                               })
                                                                           ],
                                                                           tl: {
                                                                             hd: [
-                                                                              "splitByRe",
+                                                                              "splitAtMost",
                                                                               (function (param) {
                                                                                   return {
                                                                                           TAG: /* Eq */0,
                                                                                           _0: [
-                                                                                            "a",
-                                                                                            "#",
-                                                                                            undefined,
-                                                                                            "b",
-                                                                                            "#",
-                                                                                            ":",
-                                                                                            "c"
+                                                                                            "foo",
+                                                                                            "bar"
                                                                                           ],
-                                                                                          _1: "a#b#:c".split(/(#)(:)?/)
+                                                                                          _1: "foo bar baz".split(" ", 2)
                                                                                         };
                                                                                 })
                                                                             ],
                                                                             tl: {
                                                                               hd: [
-                                                                                "splitByReAtMost",
+                                                                                "splitByRe",
                                                                                 (function (param) {
                                                                                     return {
                                                                                             TAG: /* Eq */0,
                                                                                             _0: [
                                                                                               "a",
                                                                                               "#",
-                                                                                              undefined
+                                                                                              undefined,
+                                                                                              "b",
+                                                                                              "#",
+                                                                                              ":",
+                                                                                              "c"
                                                                                             ],
-                                                                                            _1: "a#b#:c".split(/(#)(:)?/, 3)
+                                                                                            _1: "a#b#:c".split(/(#)(:)?/)
                                                                                           };
                                                                                   })
                                                                               ],
                                                                               tl: {
                                                                                 hd: [
-                                                                                  "startsWith",
+                                                                                  "splitByReAtMost",
                                                                                   (function (param) {
                                                                                       return {
                                                                                               TAG: /* Eq */0,
-                                                                                              _0: true,
-                                                                                              _1: "foobarbaz".startsWith("foo")
+                                                                                              _0: [
+                                                                                                "a",
+                                                                                                "#",
+                                                                                                undefined
+                                                                                              ],
+                                                                                              _1: "a#b#:c".split(/(#)(:)?/, 3)
                                                                                             };
                                                                                     })
                                                                                 ],
                                                                                 tl: {
                                                                                   hd: [
-                                                                                    "startsWithFrom",
+                                                                                    "startsWith",
                                                                                     (function (param) {
                                                                                         return {
                                                                                                 TAG: /* Eq */0,
-                                                                                                _0: false,
-                                                                                                _1: "foobarbaz".startsWith("foo", 1)
+                                                                                                _0: true,
+                                                                                                _1: "foobarbaz".startsWith("foo")
                                                                                               };
                                                                                       })
                                                                                   ],
                                                                                   tl: {
                                                                                     hd: [
-                                                                                      "substr",
+                                                                                      "startsWithFrom",
                                                                                       (function (param) {
                                                                                           return {
                                                                                                   TAG: /* Eq */0,
-                                                                                                  _0: "barbaz",
-                                                                                                  _1: "foobarbaz".substr(3)
+                                                                                                  _0: false,
+                                                                                                  _1: "foobarbaz".startsWith("foo", 1)
                                                                                                 };
                                                                                         })
                                                                                     ],
                                                                                     tl: {
                                                                                       hd: [
-                                                                                        "substrAtMost",
+                                                                                        "substr",
                                                                                         (function (param) {
                                                                                             return {
                                                                                                     TAG: /* Eq */0,
-                                                                                                    _0: "bar",
-                                                                                                    _1: "foobarbaz".substr(3, 3)
+                                                                                                    _0: "barbaz",
+                                                                                                    _1: "foobarbaz".substr(3)
                                                                                                   };
                                                                                           })
                                                                                       ],
                                                                                       tl: {
                                                                                         hd: [
-                                                                                          "substring",
+                                                                                          "substrAtMost",
                                                                                           (function (param) {
                                                                                               return {
                                                                                                       TAG: /* Eq */0,
                                                                                                       _0: "bar",
-                                                                                                      _1: "foobarbaz".substring(3, 6)
+                                                                                                      _1: "foobarbaz".substr(3, 3)
                                                                                                     };
                                                                                             })
                                                                                         ],
                                                                                         tl: {
                                                                                           hd: [
-                                                                                            "substringToEnd",
+                                                                                            "substring",
                                                                                             (function (param) {
                                                                                                 return {
                                                                                                         TAG: /* Eq */0,
-                                                                                                        _0: "barbaz",
-                                                                                                        _1: "foobarbaz".substring(3)
+                                                                                                        _0: "bar",
+                                                                                                        _1: "foobarbaz".substring(3, 6)
                                                                                                       };
                                                                                               })
                                                                                           ],
                                                                                           tl: {
                                                                                             hd: [
-                                                                                              "toLowerCase",
+                                                                                              "substringToEnd",
                                                                                               (function (param) {
                                                                                                   return {
                                                                                                           TAG: /* Eq */0,
-                                                                                                          _0: "bork",
-                                                                                                          _1: "BORK".toLowerCase()
+                                                                                                          _0: "barbaz",
+                                                                                                          _1: "foobarbaz".substring(3)
                                                                                                         };
                                                                                                 })
                                                                                             ],
                                                                                             tl: {
                                                                                               hd: [
-                                                                                                "toLocaleLowerCase",
+                                                                                                "toLowerCase",
                                                                                                 (function (param) {
                                                                                                     return {
                                                                                                             TAG: /* Eq */0,
                                                                                                             _0: "bork",
-                                                                                                            _1: "BORK".toLocaleLowerCase()
+                                                                                                            _1: "BORK".toLowerCase()
                                                                                                           };
                                                                                                   })
                                                                                               ],
                                                                                               tl: {
                                                                                                 hd: [
-                                                                                                  "toUpperCase",
+                                                                                                  "toLocaleLowerCase",
                                                                                                   (function (param) {
                                                                                                       return {
                                                                                                               TAG: /* Eq */0,
-                                                                                                              _0: "FUBAR",
-                                                                                                              _1: "fubar".toUpperCase()
+                                                                                                              _0: "bork",
+                                                                                                              _1: "BORK".toLocaleLowerCase()
                                                                                                             };
                                                                                                     })
                                                                                                 ],
                                                                                                 tl: {
                                                                                                   hd: [
-                                                                                                    "toLocaleUpperCase",
+                                                                                                    "toUpperCase",
                                                                                                     (function (param) {
                                                                                                         return {
                                                                                                                 TAG: /* Eq */0,
                                                                                                                 _0: "FUBAR",
-                                                                                                                _1: "fubar".toLocaleUpperCase()
+                                                                                                                _1: "fubar".toUpperCase()
                                                                                                               };
                                                                                                       })
                                                                                                   ],
                                                                                                   tl: {
                                                                                                     hd: [
-                                                                                                      "trim",
+                                                                                                      "toLocaleUpperCase",
                                                                                                       (function (param) {
                                                                                                           return {
                                                                                                                   TAG: /* Eq */0,
-                                                                                                                  _0: "foo",
-                                                                                                                  _1: "  foo  ".trim()
+                                                                                                                  _0: "FUBAR",
+                                                                                                                  _1: "fubar".toLocaleUpperCase()
                                                                                                                 };
                                                                                                         })
                                                                                                     ],
                                                                                                     tl: {
                                                                                                       hd: [
-                                                                                                        "anchor",
+                                                                                                        "trim",
                                                                                                         (function (param) {
                                                                                                             return {
                                                                                                                     TAG: /* Eq */0,
-                                                                                                                    _0: "<a name=\"bar\">foo</a>",
-                                                                                                                    _1: "foo".anchor("bar")
+                                                                                                                    _0: "foo",
+                                                                                                                    _1: "  foo  ".trim()
                                                                                                                   };
                                                                                                           })
                                                                                                       ],
                                                                                                       tl: {
                                                                                                         hd: [
-                                                                                                          "link",
+                                                                                                          "anchor",
                                                                                                           (function (param) {
                                                                                                               return {
                                                                                                                       TAG: /* Eq */0,
-                                                                                                                      _0: "<a href=\"https://reason.ml\">foo</a>",
-                                                                                                                      _1: "foo".link("https://reason.ml")
+                                                                                                                      _0: "<a name=\"bar\">foo</a>",
+                                                                                                                      _1: "foo".anchor("bar")
                                                                                                                     };
                                                                                                             })
                                                                                                         ],
                                                                                                         tl: {
                                                                                                           hd: [
-                                                                                                            "File \"js_string_test.ml\", line 211, characters 4-11",
+                                                                                                            "link",
                                                                                                             (function (param) {
                                                                                                                 return {
-                                                                                                                        TAG: /* Ok */4,
-                                                                                                                        _0: "ab".includes("a")
+                                                                                                                        TAG: /* Eq */0,
+                                                                                                                        _0: "<a href=\"https://reason.ml\">foo</a>",
+                                                                                                                        _1: "foo".link("https://reason.ml")
                                                                                                                       };
                                                                                                               })
                                                                                                           ],
-                                                                                                          tl: /* [] */0
+                                                                                                          tl: {
+                                                                                                            hd: [
+                                                                                                              "File \"js_string_test.ml\", line 214, characters 4-11",
+                                                                                                              (function (param) {
+                                                                                                                  return {
+                                                                                                                          TAG: /* Ok */4,
+                                                                                                                          _0: "ab".includes("a")
+                                                                                                                        };
+                                                                                                                })
+                                                                                                            ],
+                                                                                                            tl: /* [] */0
+                                                                                                          }
                                                                                                         }
                                                                                                       }
                                                                                                     }
