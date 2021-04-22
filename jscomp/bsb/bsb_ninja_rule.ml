@@ -170,7 +170,7 @@ let make_custom_rules
     end;
     if read_cmi <> `is_cmi then begin 
       Ext_buffer.add_string buf " -bs-package-name ";
-      Ext_buffer.add_string buf package_name;
+      Ext_buffer.add_string buf (Ext_filename.maybe_quote package_name);
       Ext_buffer.add_string buf 
         (Bsb_package_specs.package_flag_of_package_specs package_specs ~dirname:"$in_d")
     end;
