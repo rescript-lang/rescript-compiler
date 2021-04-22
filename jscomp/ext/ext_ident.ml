@@ -97,7 +97,7 @@ let js_module_table : Ident.t Hash_string.t = Hash_string.create 31
 
 *)
 
-let [@inline] convert (c : char) : string =
+let [@inline] convert ?(op=false) (c : char) : string =
   (match c with
    | '*' ->   "$star"
    | '\'' ->   "$p"
@@ -106,7 +106,7 @@ let [@inline] convert (c : char) : string =
    | '<' ->   "$less"
    | '=' ->   "$eq"
    | '+' ->   "$plus"
-   | '-' ->   "$neg"
+   | '-' ->   if op then "$neg" else "$"
    | '@' ->   "$at"
    | '^' ->   "$caret"
    | '/' ->   "$slash"
@@ -131,23 +131,24 @@ let [@inline] no_escape (c : char) =
   | 'a' .. 'z' | 'A' .. 'Z'
   | '0' .. '9' | '_' | '$' -> true 
   | _ -> false
-exception Not_normal_letter 
+
+exception Not_normal_letter of int
 let name_mangle name =
   let len = String.length name  in
   try
     for i  = 0 to len - 1 do
       if not (no_escape (String.unsafe_get name i)) then
-        raise_notrace (Not_normal_letter )
+        raise_notrace (Not_normal_letter i)
     done;
     name (* Normal letter *)
   with
-  | Not_normal_letter ->
+  | Not_normal_letter i ->
     let buffer = Ext_buffer.create len in
     for j = 0 to  len - 1 do
       let c = String.unsafe_get name j in
       if no_escape c then Ext_buffer.add_char buffer c 
       else 
-        Ext_buffer.add_string buffer (convert c)        
+        Ext_buffer.add_string buffer (convert ~op:(i=0) c)        
     done; Ext_buffer.contents buffer
 
 (* TODO:
