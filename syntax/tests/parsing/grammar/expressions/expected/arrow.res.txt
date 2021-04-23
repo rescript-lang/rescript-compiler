@@ -78,3 +78,11 @@ let y =
   `Constructore
     ((fun _ -> copyChecklistItemCB ()), (fun _ -> copyChecklistItemCB ()))
 let f list = list + 1
+let foo = (() : unit)
+type nonrec u = unit
+let un = (() : u)
+type nonrec ('a, 'b) d = ('a * 'b)
+let c () = ((1, 2) : ('a, 'b) d)
+let fn f = f
+type nonrec f = int -> unit
+let a = fn (fun _ -> () : f)

@@ -158,14 +158,15 @@ let getClosingToken = function
   | Lbrace -> Rbrace
   | Lbracket -> Rbracket
   | List -> Rbrace
+  | LessThan -> GreaterThan
   | _ -> assert false
 
 let rec goToClosing closingToken state =
   match (state.Parser.token, closingToken) with
-  | (Rparen, Token.Rparen) | (Rbrace, Rbrace) | (Rbracket, Rbracket) ->
+  | (Rparen, Token.Rparen) | (Rbrace, Rbrace) | (Rbracket, Rbracket) | (GreaterThan, GreaterThan) ->
     Parser.next state;
     ()
-  | (Token.Lbracket | Lparen | Lbrace | List) as t, _ ->
+  | (Token.Lbracket | Lparen | Lbrace | List | LessThan) as t, _ ->
     Parser.next state;
     goToClosing (getClosingToken t) state;
     goToClosing closingToken state
@@ -194,10 +195,32 @@ let isEs6ArrowExpression ~inTernary p =
       let prevEndPos = state.prevEndPos in
       Parser.next state;
       begin match state.token with
+      (* arrived at `()` here *)
       | Rparen ->
         Parser.next state;
         begin match state.Parser.token with
-        | Colon when not inTernary -> true
+        (* arrived at `() :` here *)
+        | Colon when not inTernary ->
+          Parser.next state;
+          begin match state.Parser.token with
+          (* arrived at `() :typ` here *)
+          | Lident _ ->
+            Parser.next state;
+            begin match state.Parser.token with
+            (* arrived at `() :typ<` here *)
+            | LessThan ->
+              Parser.next state;
+              goToClosing GreaterThan state;
+            | _ -> ()
+            end;
+            begin match state.Parser.token with
+            (* arrived at `() :typ =>` or `() :typ<'a,'b> =>` here *)
+            | EqualGreater ->
+              true
+            | _ -> false
+            end
+          | _ -> true
+          end
         | EqualGreater -> true
         | _ -> false
         end

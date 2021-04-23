@@ -96,3 +96,15 @@ let x = Constructore(_ => copyChecklistItemCB(), _ => copyChecklistItemCB())
 let y = #Constructore(_ => copyChecklistItemCB(), _ => copyChecklistItemCB())
 
 let f = (list) => list + 1
+
+let foo = ((): unit)
+
+type u = unit
+let un = (():u)
+
+type d<'a,'b> = ('a,'b)
+let c = (): d<'a,'b> => (1,2)
+
+let fn = f => f;
+type f = int => unit;
+let a = fn(_ => (): f);
