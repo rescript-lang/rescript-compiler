@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Curry = require("../../lib/js/curry.js");
 var $$Buffer = require("../../lib/js/buffer.js");
-var Printf = require("../../lib/js/printf.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Caml_format = require("../../lib/js/caml_format.js");
@@ -85,49 +84,24 @@ var nn1 = [
 
 var buf = $$Buffer.create(5000);
 
+function paddding(s) {
+  if (s.length <= 18) {
+    return "0".repeat(18 - s.length | 0) + s;
+  } else {
+    return s;
+  }
+}
+
 function pr(param) {
   var nh = param[1];
   var nl = param[0];
   if (Caml_int64.compare(nh, n0) === 0) {
-    return Curry._1(Printf.bprintf(buf, /* Format */{
-                    _0: {
-                      TAG: /* Int64 */7,
-                      _0: /* Int_d */0,
-                      _1: /* No_padding */0,
-                      _2: /* No_precision */0,
-                      _3: {
-                        TAG: /* Char_literal */12,
-                        _0: /* '\n' */10,
-                        _1: /* End_of_format */0
-                      }
-                    },
-                    _1: "%Ld\n"
-                  }), nl);
+    $$Buffer.add_string(buf, Caml_int64.to_string(nl));
+    return $$Buffer.add_string(buf, "\n");
   } else {
-    return Curry._2(Printf.bprintf(buf, /* Format */{
-                    _0: {
-                      TAG: /* Int64 */7,
-                      _0: /* Int_d */0,
-                      _1: /* No_padding */0,
-                      _2: /* No_precision */0,
-                      _3: {
-                        TAG: /* Int64 */7,
-                        _0: /* Int_d */0,
-                        _1: {
-                          TAG: /* Lit_padding */0,
-                          _0: /* Zeros */2,
-                          _1: 18
-                        },
-                        _2: /* No_precision */0,
-                        _3: {
-                          TAG: /* Char_literal */12,
-                          _0: /* '\n' */10,
-                          _1: /* End_of_format */0
-                        }
-                      }
-                    },
-                    _1: "%Ld%018Ld\n"
-                  }), nh, nl);
+    $$Buffer.add_string(buf, Caml_int64.to_string(nh));
+    $$Buffer.add_string(buf, paddding(Caml_int64.to_string(nl)));
+    return $$Buffer.add_string(buf, "\n");
   }
 }
 
@@ -264,6 +238,7 @@ exports.x3 = x3;
 exports.x5 = x5;
 exports.nn1 = nn1;
 exports.buf = buf;
+exports.paddding = paddding;
 exports.pr = pr;
 exports.map = map;
 exports.merge = merge;

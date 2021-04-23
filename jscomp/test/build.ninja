@@ -546,8 +546,6 @@ o test/relative_path.cmi test/relative_path.cmj : cc test/relative_path.ml | $st
 o test/res_debug.cmi test/res_debug.cmj : cc test/res_debug.res | $stdlib
 o test/return_check.cmi test/return_check.cmj : cc test/return_check.ml | $stdlib
 o test/runtime_encoding_test.cmi test/runtime_encoding_test.cmj : cc test/runtime_encoding_test.ml | $stdlib
-o test/scanf_reference_error_regression_test.cmj : cc_cmi test/scanf_reference_error_regression_test.ml | test/mt.cmj test/mt_global.cmj test/scanf_reference_error_regression_test.cmi $stdlib
-o test/scanf_reference_error_regression_test.cmi : cc test/scanf_reference_error_regression_test.mli | $stdlib
 o test/scanf_test.cmi test/scanf_test.cmj : cc test/scanf_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
 o test/set_gen.cmi test/set_gen.cmj : cc test/set_gen.ml | $stdlib
 o test/sexp.cmj : cc_cmi test/sexp.ml | test/sexp.cmi $stdlib

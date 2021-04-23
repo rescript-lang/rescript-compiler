@@ -41,22 +41,21 @@ let x5 = fun p -> mul n5 p;;
 
 let nn1 = (n1, n0);;
 let buf = Buffer.create 5000
+let paddding s = 
+  if String.length s <= 18 then 
+    Js.String2.repeat "0" (18-String.length s) ^ s  
+  else s 
 let pr (nl, nh) =
   if compare nh n0 = 0
-  then Printf.bprintf buf "%Ld\n" nl
-  else Printf.bprintf buf "%Ld%018Ld\n" nh nl
+  then begin 
+    Buffer.add_string buf (Int64.to_string nl);
+    Buffer.add_string buf "\n" end 
+  else begin 
+    Buffer.add_string buf (Int64.to_string nh);  
+    Buffer.add_string buf (paddding (Int64.to_string nl));
+    Buffer.add_string buf "\n"
+  end
 ;;
-
-(*
-  (* bignum version *)
-open Num;;
-let nn1 = num_of_int 1;;
-let x2 = fun p -> (num_of_int 2) */ p;;
-let x3 = fun p -> (num_of_int 3) */ p;;
-let x5 = fun p -> (num_of_int 5) */ p;;
-let cmp n p = sign_num (n -/ p);;
-let pr n = Printf.printf "%s\n" (string_of_num n);;
-*)
 
 
 (* This is where the interesting stuff begins. *)
@@ -77,27 +76,27 @@ let rec merge cmp l1 l2 =
   lazy (
     match force l1, force l2 with
     | Cons (x1, ll1), Cons (x2, ll2)
-       -> let c = cmp x1 x2 in
-          if c = 0
-          then Cons (x1, merge cmp ll1 ll2)
-          else if c < 0
-          then Cons (x1, merge cmp ll1 l2)
-          else Cons (x2, merge cmp l1 ll2)
+      -> let c = cmp x1 x2 in
+      if c = 0
+      then Cons (x1, merge cmp ll1 ll2)
+      else if c < 0
+      then Cons (x1, merge cmp ll1 l2)
+      else Cons (x2, merge cmp l1 ll2)
   )
 ;;
 
 let rec iter_interval f l (start, stop) =
   if stop = 0 then ()
   else match force l with
-       | Cons (x, ll)
-          -> if start <= 0 then f x;
-             iter_interval f ll (start-1, stop-1)
+    | Cons (x, ll)
+      -> if start <= 0 then f x;
+      iter_interval f ll (start-1, stop-1)
 ;;
 
 let rec hamming = lazy (Cons (nn1, merge cmp ham2 (merge cmp ham3 ham5)))
-    and ham2 = lazy (force (map x2 hamming))
-    and ham3 = lazy (force (map x3 hamming))
-    and ham5 = lazy (force (map x5 hamming))
+and ham2 = lazy (force (map x2 hamming))
+and ham3 = lazy (force (map x3 hamming))
+and ham5 = lazy (force (map x5 hamming))
 ;;
 
 iter_interval pr hamming (88000, 88100)
