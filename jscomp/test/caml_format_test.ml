@@ -22,14 +22,13 @@ let from_float_of_string xs =
 let from_of_string xs = 
   of_string 
   |>  Array.mapi (fun i (a,b) -> 
-      (Printf.sprintf "of_string %L" i), fun _ -> Mt.Eq(int_of_string b,a ))
+      ({j|of_string $i|j} ), fun _ -> Mt.Eq(int_of_string b,a ))
   |> Array.to_list 
 
-let u v = Printf.sprintf "%33d" v 
 
 let to_str s = int_of_string s
 
-let v = Printf.sprintf "%3d" 3333
+
 external format_int : string -> int -> string = "caml_format_int"
 
 let suites :  Mt.pair_suites = 
@@ -47,7 +46,7 @@ let suites :  Mt.pair_suites =
    pairs 
    |> Array.mapi 
      (fun i (a,b) ->
-        (Printf.sprintf "infinity_of_string %d" i ),
+        ({j|infinity_of_string $i|j}  ),
         (fun _ -> Mt.Eq(a,
                         classify_float @@ float_of_string b))) 
    |> Array.to_list ) @ 
@@ -64,7 +63,7 @@ let suites :  Mt.pair_suites =
    pairs 
    |> Array.mapi 
      (fun i (a,b) ->
-        (Printf.sprintf "normal_float_of_string %d" i ),
+        ({j|normal_float_of_string $i|j}  ),
         (fun _ -> Mt.Eq(a,
                         float_of_string b))) 
    |> Array.to_list ) 
@@ -165,14 +164,10 @@ let lambda_suites =
 
 let from_lambda_pairs p = 
   lambda_suites 
-  |> Array.mapi (fun i (a,b) -> Printf.sprintf "lambda_print %d" i, (fun _ -> Mt.Eq(Lambda_suites.string_of_lambda a, b)))
+  |> Array.mapi (fun i (a,b) -> {j|lambda_print $i|j} , (fun _ -> Mt.Eq(Lambda_suites.string_of_lambda a, b)))
   |> Array.to_list
 
 
-let ksprintf_suites = Mt.[
-    "ksprintf", (fun _ -> Eq ((let f fmt = Format.ksprintf (fun x -> x ^ x ) fmt in f "%s %s a " "x" "xx"),"x xx a x xx a "));
-    "sprintf", (fun _ -> Eq(Format.sprintf "%s %S" "x" "X", "x \"X\""))
-]
 
 (* module Mt = Mock_mt *)
 
@@ -230,11 +225,8 @@ let int64_suites =
     
     "i64_simple20", (fun _ -> Eq(a "%12Lx" 3L, "           3"));
     "i64_simple21", (fun _ -> Eq(a "%LX" 7985179176134664640L, "6ED10E27455A61C0"));
-    "missing_neline", (fun _ -> Eq(Format.asprintf "%Ld\n" 32L, "32\n"));
-    "missing_newline2", (fun _ -> 
-        Eq((let buf = Buffer.create 30 in Printf.bprintf buf "%Ld\n" 32L; Buffer.contents buf),
-           "32\n"
-          ))
+ 
+ 
   ]
 
 let hh = 922337203685477580L (* 2 ^ 63 / 10 *)
@@ -258,14 +250,14 @@ let () =
   suites @
   formatter_suites @
   from_lambda_pairs lambda_suites @
-  ksprintf_suites @
-  (Array.mapi (fun i (fmt, f,str_result) -> (Printf.sprintf "float_format %d" i ) , (fun _ -> Mt.Eq(format_float fmt f, str_result))) float_data |> Array.to_list) @
+
+  (Array.mapi (fun i (fmt, f,str_result) -> ({j|loat_format $i|j}  ) , (fun _ -> Mt.Eq(format_float fmt f, str_result))) float_data |> Array.to_list) @
   
   int64_suites @
   (of_string_data
    |>
    Array.mapi (fun i (a,b) ->
-       ((Printf.sprintf "int64_of_string %d " i),  fun _ -> Mt.Eq(Int64.of_string b, a) )      
+       (({j|int64_of_string $i |j}),  fun _ -> Mt.Eq(Int64.of_string b, a) )      
      ) 
    |> Array.to_list  )
 
