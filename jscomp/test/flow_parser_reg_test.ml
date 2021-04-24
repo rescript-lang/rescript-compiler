@@ -129,26 +129,7 @@ let compare =
       else k
     else k
 
-(**
- * This is mostly useful for debugging purposes.
- * Please don't dead-code delete this!
- *)
-let to_string ?(include_source=false) loc =
-  let source =
-    if include_source
-    then Printf.sprintf "%S: " (
-      match loc.source with
-      | Some src -> string_of_filename src
-      | None -> "<NONE>"
-    ) else ""
-  in
-  let pos = Printf.sprintf "(%d, %d) to (%d, %d)"
-    loc.start.line
-    loc.start.column
-    loc._end.line
-    loc._end.column
-  in
-  source ^ pos
+
 
 let source loc = loc.source
 
@@ -279,7 +260,8 @@ let error loc e =
 
 module PP =
   struct
-    let error = function
+      let error s = Js.String.make s
+    (* let error = function
       | Assertion str -> "Unexpected parser state: "^str
       | UnexpectedToken token->  "Unexpected token "^token
       | UnexpectedTokenWithSuggestion (token, suggestion) ->
@@ -375,7 +357,7 @@ module PP =
           statement!"
       | AmbiguousDeclareModuleKind -> "Found both `declare module.exports` and \
           `declare export` in the same module. Modules can only have 1 since \
-          they are either an ES module xor they are a CommonJS module."
+          they are either an ES module xor they are a CommonJS module." *)
   end
 
 end
@@ -2904,15 +2886,15 @@ open Token
 (* Environment *)
 (*****************************************************************************)
 
-let debug_string_of_lexing_position position =
+(* let debug_string_of_lexing_position position =
   Printf.sprintf
     "{pos_fname=%S; pos_lnum=%d; pos_bol=%d; pos_cnum=%d}"
     position.Lexing.pos_fname
     position.Lexing.pos_lnum
     position.Lexing.pos_bol
-    position.Lexing.pos_cnum
+    position.Lexing.pos_cnum *)
 
-let debug_string_of_lexbuf (lb: Lexing.lexbuf) =
+(* let debug_string_of_lexbuf (lb: Lexing.lexbuf) =
   Printf.sprintf
     "{ \
       lex_buffer = %S; \
@@ -2936,7 +2918,7 @@ let debug_string_of_lexbuf (lb: Lexing.lexbuf) =
     lb.Lexing.lex_last_action
     lb.Lexing.lex_eof_reached
     (debug_string_of_lexing_position lb.Lexing.lex_start_p)
-    (debug_string_of_lexing_position lb.Lexing.lex_curr_p)
+    (debug_string_of_lexing_position lb.Lexing.lex_curr_p) *)
 
 module Lex_env = struct
   type t = {
@@ -2984,7 +2966,7 @@ module Lex_env = struct
     then { env with lex_in_comment_syntax = is_in }
     else env
 
-  let debug_string_of_lex_env (env: t) =
+  (* let debug_string_of_lex_env (env: t) =
     let source = match (source env) with
       | None -> "None"
       | Some x -> Printf.sprintf "Some %S" (Loc.string_of_filename x)
@@ -3002,7 +2984,7 @@ module Lex_env = struct
       (is_in_comment_syntax env)
       (is_comment_syntax_enabled env)
       (List.length (state env).lex_errors_acc)
-      (List.length (state env).lex_comments_acc)
+      (List.length (state env).lex_comments_acc) *)
 end
 open Lex_env
 
@@ -3021,7 +3003,7 @@ module Lex_result = struct
   let comments result = result.lex_comments
   let errors result = result.lex_errors
 
-  let debug_string_of_lex_result lex_result =
+  (* let debug_string_of_lex_result lex_result =
     Printf.sprintf
       "{\n  \
         lex_token = %s\n  \
@@ -3032,7 +3014,7 @@ module Lex_result = struct
     (token_to_string lex_result.lex_token)
     lex_result.lex_value
     (List.length lex_result.lex_errors)
-    (List.length lex_result.lex_comments)
+    (List.length lex_result.lex_comments) *)
 end
 
   let loc_of_lexbuf env lexbuf = Loc.from_lb (source env) lexbuf

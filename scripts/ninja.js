@@ -1093,27 +1093,9 @@ async function stdlibNinja(devmode = true) {
 ${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -make-runtime    ${warnings}  -I runtime  -I others
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuidList([
-  [
-    "camlinternalFormatBasics.cmi",
-    "camlinternalFormatBasics.mli",
-    "cc",
-    ninjaCwd,
-    bsc_builtin_overrides,
-    [],
-    externalDeps,
-  ],
   // we make it still depends on external
   // to enjoy free ride on dev config for compiler-deps
 
-  [
-    "camlinternalFormatBasics.cmj",
-    "camlinternalFormatBasics.ml",
-    "cc_cmi",
-    ninjaCwd,
-    bsc_builtin_overrides,
-    "camlinternalFormatBasics.cmi",
-    externalDeps,
-  ],
   [
     "pervasives.cmj",
     "pervasives.ml",
@@ -1129,7 +1111,7 @@ ${ninjaQuickBuidList([
     "cc",
     ninjaCwd,
     bsc_builtin_overrides,
-    "camlinternalFormatBasics.cmj",
+    [],
     externalDeps,
   ],
 ])}
@@ -1137,17 +1119,13 @@ ${ninjaQuickBuidList([
   var stdlibDirFiles = fs.readdirSync(stdlibDir, "ascii");
   var sources = stdlibDirFiles.filter((x) => {
     return (
-      !x.startsWith("camlinternalFormatBasics") &&
-      !x.startsWith("pervasives") &&
-      (x.endsWith(".ml") || x.endsWith(".mli"))
+      !x.startsWith("pervasives") && (x.endsWith(".ml") || x.endsWith(".mli"))
     );
   });
   let depsMap = new Map();
   await ocamlDepForBscAsync(sources, stdlibDir, depsMap);
   var targets = collectTarget(sources);
   var allTargets = scanFileTargets(targets, [
-    "camlinternalFormatBasics.cmi",
-    "camlinternalFormatBasics.cmj",
     "pervasives.cmi",
     "pervasives.cmj",
   ]);
@@ -1528,12 +1506,12 @@ ${cppoList("outcome_printer", [
   ["reason_syntax_util.ml", "reason_syntax_util.cppo.ml", ""],
   ["reason_syntax_util.mli", "reason_syntax_util.cppo.mli", ""],
 ])}
-o ../${
+# o ../${
     process.platform
   }/refmt.exe: bytelink  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
-    libs = ocamlcommon.cma
-    flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30-3 -no-alias-deps
-    generator = true
+#    libs = ocamlcommon.cma
+#    flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30-3 -no-alias-deps
+#    generator = true
 o ../${
     process.platform
   }/bsc.byte: bytelink  ${refmtMainPath}/whole_compiler.mli ${refmtMainPath}/whole_compiler.ml

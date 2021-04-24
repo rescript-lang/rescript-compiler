@@ -25,24 +25,5 @@
 
 
 
-
-
-
-(* 
-let to_file filename v = 
-  let chan = open_out_bin filename in
-  Marshal.to_channel chan v  [];
-  close_out chan
-
-(** [bin] mode for WIN support *)
-let from_file filename = 
-  let chan = open_in_bin filename in 
-  let v = Marshal.from_channel chan in
-  close_in chan; 
-  v  *)
-
-external from_bytes_unsafe: string -> int -> 'a
-  = "caml_input_value_from_string"
-
-let from_string_uncheck (s:string) = 
-  from_bytes_unsafe s 0  
+let from_string (s:string) = 
+  Marshal.from_string s 0  

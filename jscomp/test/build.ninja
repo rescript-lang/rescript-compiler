@@ -468,21 +468,13 @@ o test/obj_literal_ppx.cmi test/obj_literal_ppx.cmj : cc test/obj_literal_ppx.ml
 o test/obj_literal_ppx_test.cmi test/obj_literal_ppx_test.cmj : cc test/obj_literal_ppx_test.ml | $stdlib
 o test/obj_magic_test.cmi test/obj_magic_test.cmj : cc test/obj_magic_test.ml | test/mt.cmj $stdlib
 o test/obj_type_test.cmi test/obj_type_test.cmj : cc test/obj_type_test.ml | $stdlib
-o test/ocaml_parsetree_test.cmj : cc_cmi test/ocaml_parsetree_test.ml | test/nativeint.cmj test/ocaml_parsetree_test.cmi $stdlib
-o test/ocaml_parsetree_test.cmi : cc test/ocaml_parsetree_test.mli | $stdlib
-o test/ocaml_proto_test.cmj : cc_cmi test/ocaml_proto_test.ml | test/mt.cmj test/ocaml_proto_test.cmi $stdlib
-o test/ocaml_proto_test.cmi : cc test/ocaml_proto_test.mli | $stdlib
 o test/ocaml_re_test.cmi test/ocaml_re_test.cmj : cc test/ocaml_re_test.ml | test/mt.cmj $stdlib
-o test/ocaml_typedtree_test.cmj : cc_cmi test/ocaml_typedtree_test.ml | test/marshal.cmj test/nativeint.cmj test/ocaml_typedtree_test.cmi $stdlib
-o test/ocaml_typedtree_test.cmi : cc test/ocaml_typedtree_test.mli | $stdlib
 o test/of_string_test.cmi test/of_string_test.cmj : cc test/of_string_test.ml | test/mt.cmj $stdlib
 o test/offset.cmi test/offset.cmj : cc test/offset.ml | $stdlib
 o test/oo_js_test_date.cmi test/oo_js_test_date.cmj : cc test/oo_js_test_date.ml | test/mt.cmj $stdlib
 o test/option_repr_test.cmi test/option_repr_test.cmj : cc test/option_repr_test.ml | test/mt.cmj $stdlib
 o test/optional_ffi_test.cmi test/optional_ffi_test.cmj : cc test/optional_ffi_test.ml | test/mt.cmj $stdlib
 o test/optional_regression_test.cmi test/optional_regression_test.cmj : cc test/optional_regression_test.ml | test/mt.cmj $stdlib
-o test/parser_api.cmi test/parser_api.cmj : cc test/parser_api.ml | test/nativeint.cmj $stdlib
-o test/parser_api_test.cmi test/parser_api_test.cmj : cc test/parser_api_test.ml | test/mt.cmj test/parser_api.cmj $stdlib
 o test/pipe_send_readline.cmi test/pipe_send_readline.cmj : cc test/pipe_send_readline.ml | $stdlib
 o test/pipe_syntax.cmi test/pipe_syntax.cmj : cc test/pipe_syntax.ml | $stdlib
 o test/poly_empty_array.cmi test/poly_empty_array.cmj : cc test/poly_empty_array.ml | $stdlib
@@ -546,7 +538,6 @@ o test/relative_path.cmi test/relative_path.cmj : cc test/relative_path.ml | $st
 o test/res_debug.cmi test/res_debug.cmj : cc test/res_debug.res | $stdlib
 o test/return_check.cmi test/return_check.cmj : cc test/return_check.ml | $stdlib
 o test/runtime_encoding_test.cmi test/runtime_encoding_test.cmj : cc test/runtime_encoding_test.ml | $stdlib
-o test/scanf_test.cmi test/scanf_test.cmj : cc test/scanf_test.ml | test/mt.cmj test/mt_global.cmj $stdlib
 o test/set_gen.cmi test/set_gen.cmj : cc test/set_gen.ml | $stdlib
 o test/sexp.cmj : cc_cmi test/sexp.ml | test/sexp.cmi $stdlib
 o test/sexp.cmi : cc test/sexp.mli | $stdlib
@@ -695,7 +686,6 @@ o test/test_unsupported_primitive.cmi test/test_unsupported_primitive.cmj : cc t
 o test/test_while_closure.cmi test/test_while_closure.cmj : cc test/test_while_closure.ml | $stdlib
 o test/test_while_side_effect.cmi test/test_while_side_effect.cmj : cc test/test_while_side_effect.ml | $stdlib
 o test/test_zero_nullable.cmi test/test_zero_nullable.cmj : cc test/test_zero_nullable.ml | test/mt.cmj $stdlib
-o test/tfloat_record_test.cmi test/tfloat_record_test.cmj : cc test/tfloat_record_test.ml | test/float_array.cmj test/float_record.cmj test/mt.cmj test/mt_global.cmj $stdlib
 o test/ticker.cmi test/ticker.cmj : cc test/ticker.ml | $stdlib
 o test/to_string_test.cmi test/to_string_test.cmj : cc test/to_string_test.ml | test/mt.cmj $stdlib
 o test/topsort_test.cmi test/topsort_test.cmj : cc test/topsort_test.ml | $stdlib

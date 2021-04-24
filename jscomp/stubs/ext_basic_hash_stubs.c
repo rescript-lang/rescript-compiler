@@ -197,7 +197,7 @@ CAMLprim value caml_sys_is_directory_no_exn(value name)
 
   p = caml_stat_strdup_to_os(String_val(name));
   caml_enter_blocking_section();
-  ret = CAML_SYS_STAT(p, &st);
+  ret = stat_os(p, &st);
   caml_leave_blocking_section();
   caml_stat_free(p);
 

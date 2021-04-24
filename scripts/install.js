@@ -25,7 +25,7 @@ if (supported_os.indexOf(process.platform) < 0) {
 var is_windows = process.platform === "win32";
 
 var ninja_bin_output = path.join(root_dir, process.platform, "ninja.exe");
-
+var use_env_compiler = process.argv.includes("-use-env-compiler");
 /**
  * Make sure `ninja_bin_output` exists
  * The installation of `ninja.exe` is re-entrant, since we always pre-check if it is already installed
@@ -177,19 +177,22 @@ function provideCompiler() {
   if (myVersion !== undefined) {
     return myVersion;
   } else {
+    var ocamlopt = "ocamlopt.opt";
     myVersion = "4.06.1";
-    var ocamlopt = path.join(
-      __dirname,
-      "..",
-      "native",
-      myVersion,
-      "bin",
-      "ocamlopt.opt"
-    );
-    if (!fs.existsSync(ocamlopt)) {
-      require("./buildocaml.js").build(true);
-    } else {
-      console.log(ocamlopt, "is already there");
+    if (!use_env_compiler) {
+      var ocamlopt = path.join(
+        __dirname,
+        "..",
+        "native",
+        myVersion,
+        "bin",
+        "ocamlopt.opt"
+      );
+      if (!fs.existsSync(ocamlopt)) {
+        require("./buildocaml.js").build(true);
+      } else {
+        console.log(ocamlopt, "is already there");
+      }
     }
     // Note this ninja file only works under *nix due to the suffix
     // under windows require '.exe'

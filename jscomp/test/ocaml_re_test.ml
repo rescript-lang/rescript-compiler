@@ -7,60 +7,8 @@ let eq loc x y =
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
 
-module Re_fmt
-= struct
-#1 "re_fmt.ml"
-(** Very small tooling for format printers. *)
 
-include Format
-
-type 'a t = Format.formatter -> 'a -> unit
-
-(* Only in the stdlib since 4.02, so we copy. *)
-let rec list ?(pp_sep = pp_print_cut) pp ppf = function
-  | [] -> ()
-  | [v] -> pp ppf v
-  | v :: vs ->
-    pp ppf v;
-    pp_sep ppf ();
-    list ~pp_sep pp ppf vs
-
-(* want this name to make sure we don't use pp_print_list from stdlib
-   accidentally *)
-let pp_print_list = list
-
-let str = pp_print_string
-let sexp fmt s pp x = fprintf fmt "@[<3>(%s@ %a)@]" s pp x
-let pair pp1 pp2 fmt (v1,v2) =
-  pp1 fmt v1; pp_print_space fmt () ; pp2 fmt v2
-let triple pp1 pp2 pp3 fmt (v1, v2, v3) =
-  pp1 fmt v1; pp_print_space fmt () ;
-  pp2 fmt v2; pp_print_space fmt () ;
-  pp3 fmt v3
-let int = pp_print_int
-let optint fmt = function
-  | None -> ()
-  | Some i -> fprintf fmt "@ %d" i
-
-let quote fmt s = Format.fprintf fmt "\"%s\"" s
-
-let pp_olist pp_elem fmt =
-  Format.fprintf fmt "@[<3>[@ %a@ ]@]"
-    (pp_print_list
-       ~pp_sep:(fun fmt () -> fprintf fmt ";@ ")
-       pp_elem)
-
-let pp_str_list = pp_olist quote
-
-let to_to_string pp x =
-  let b = Buffer.create 16 in
-  let fmt = Format.formatter_of_buffer b in
-  pp fmt x;
-  Buffer.contents b
-
-end
 module Re_cset : sig 
-#1 "re_cset.mli"
 (*
    RE - A regular expression library
 
@@ -105,7 +53,7 @@ val mem : c -> t -> bool
 type hash
 val hash : t -> hash
 
-val pp : Format.formatter -> t -> unit
+
 
 val one_char : t -> c option
 
@@ -126,7 +74,6 @@ val prepend : t -> 'a list -> (t * 'a list) list -> (t * 'a list) list
 val pick : t -> c
 
 end = struct
-#1 "re_cset.ml"
 (*
    RE - A regular expression library
 
@@ -225,13 +172,9 @@ let hash l = (hash_rec l) land 0x3FFFFFFF
 
 (****)
 
-let print_one ch (c1, c2) =
-  if c1 = c2 then
-    Format.fprintf ch "%d" c1
-  else
-    Format.fprintf ch "%d-%d" c1 c2
 
-let pp = Re_fmt.list print_one
+
+(* let%ignore pp = Re_fmt.list print_one *)
 
 let rec iter t ~f =
   match t with
@@ -287,7 +230,6 @@ let pick = function
 
 end
 module Re_automata : sig 
-#1 "re_automata.mli"
 (*
    RE - A regular expression library
 
@@ -335,20 +277,18 @@ type mark = int
 type sem = [ `Longest | `Shortest | `First ]
 type rep_kind = [ `Greedy | `Non_greedy ]
 
-val pp_sem : Format.formatter -> sem -> unit
-val pp_rep_kind : Format.formatter -> rep_kind -> unit
 
 module Pmark : sig
   type t = private int
   val equal : t -> t -> bool
   val compare : t -> t -> int
   val gen : unit -> t
-  val pp : Format.formatter -> t -> unit
+
 end
 
 type expr
 val is_eps : expr -> bool
-val pp : Format.formatter -> expr -> unit
+
 
 type ids
 val create_ids : unit -> ids
@@ -382,7 +322,7 @@ end
 
 module E : sig
   type t
-  val pp : Format.formatter -> t -> unit
+
 end
 
 type hash
@@ -419,7 +359,6 @@ val deriv :
 val status : State.t -> status
 
 end = struct
-#1 "re_automata.ml"
 (*
    RE - A regular expression library
 
@@ -453,7 +392,7 @@ module Category : sig
   type t
   val equal : t -> t -> bool
   val compare : t -> t -> int
-  val pp : Format.formatter -> t -> unit
+  
   val to_int : t -> int
 
   val intersect : t -> t -> bool
@@ -472,7 +411,7 @@ end = struct
   let equal (x : int) (y : int) = x = y
   let compare (x : int) (y : int) = compare x y
   let to_int x = x
-  let pp = Format.pp_print_int
+  
 
   let intersect x y = x land y <> 0
   let (++) x y = x lor y
@@ -504,7 +443,7 @@ module Pmark : sig
   val equal : t -> t -> bool
   val compare : t -> t -> int
   val gen : unit -> t
-  val pp : Format.formatter -> t -> unit
+
 end
 = struct
   type t = int
@@ -513,7 +452,7 @@ end
   let r = ref 0
   let gen () = incr r ; !r
 
-  let pp = Format.pp_print_int
+
 end
 
 type expr = { id : int; def : def }
@@ -572,30 +511,13 @@ module Marks = struct
   let marks_set_idx marks idx =
     { marks with marks = marks_set_idx idx marks.marks }
 
-  let pp_marks ch t =
-    match t.marks with
-    | [] ->
-      ()
-    | (a, i) :: r ->
-      Format.fprintf ch "%d-%d" a i;
-      List.iter (fun (a, i) -> Format.fprintf ch " %d-%d" a i) r
 end
 
 (****)
 
-let pp_sem ch k =
-  Format.pp_print_string ch
-    (match k with
-       `Shortest -> "short"
-     | `Longest  -> "long"
-     | `First    -> "first")
 
 
-let pp_rep_kind fmt = function
-  | `Greedy -> Format.pp_print_string fmt "Greedy"
-  | `Non_greedy -> Format.pp_print_string fmt "Non_greedy"
-
-let rec pp ch e =
+(* let%ignore rec pp ch e =
   let open Re_fmt in
   match e.def with
     Cst l ->
@@ -619,7 +541,7 @@ let rec pp ch e =
   | After c ->
     sexp ch "after" Category.pp c
 
-
+ *)
 (****)
 
 let rec first f = function
@@ -738,32 +660,7 @@ module E = struct
     | [TExp (marks, {def = Eps ; _})] -> TExp (marks, y) :: rem
     | _                               -> TSeq (x, y, kind) :: rem
 
-  let rec print_state_rec ch e y =
-    match e with
-    | TMatch marks ->
-      Format.fprintf ch "@[<2>(Match@ %a)@]" Marks.pp_marks marks
-    | TSeq (l', x, _kind) ->
-      Format.fprintf ch "@[<2>(Seq@ ";
-      print_state_lst ch l' x;
-      Format.fprintf ch " %a)@]" pp x
-    | TExp (marks, {def = Eps; _}) ->
-      Format.fprintf ch "(Exp %d (%a) (eps))" y.id Marks.pp_marks marks
-    | TExp (marks, x) ->
-      Format.fprintf ch "(Exp %d (%a) %a)" x.id Marks.pp_marks marks pp x
 
-  and print_state_lst ch l y =
-    match l with
-      [] ->
-      Format.fprintf ch "()"
-    | e :: rem ->
-      print_state_rec ch e y;
-      List.iter
-        (fun e ->
-           Format.fprintf ch " | ";
-           print_state_rec ch e y)
-        rem
-
-  let pp ch t = print_state_lst ch [t] { id = 0; def = Eps }
 end
 
 module State = struct
@@ -891,7 +788,7 @@ let filter_marks b e marks =
   {marks with Marks.marks = List.filter (fun (i, _) -> i < b || i > e) marks.Marks.marks }
 
 let rec delta_1 marks c ~next_cat ~prev_cat x rem =
-  (*Format.eprintf "%d@." x.id;*)
+
   match x.def with
     Cst s ->
     if Cset.mem c s then E.texp marks eps_expr :: rem else rem
@@ -1129,9 +1026,6 @@ let deriv tbl_ref all_chars categories st =
   simpl_tr (
     List.fold_right (fun (s, expr) rem ->
         let (expr', _) = remove_duplicates [] expr eps_expr in
-(*
-Format.eprintf "@[<3>@[%a@]: %a / %a@]@." Cset.print s print_state expr print_state expr';
-*)
         let idx = free_index tbl_ref expr' in
         let expr'' = set_idx idx expr' in
         List.fold_right (fun (cat', s') rem ->
@@ -1165,7 +1059,6 @@ let status s =
 
 end
 module Re : sig 
-#1 "re.mli"
 (*
    RE - A regular expression library
 
@@ -1267,7 +1160,7 @@ module Group : sig
   (** Returns the total number of groups defined - matched or not.
       This function is experimental. *)
 
-  val pp : Format.formatter -> t -> unit
+  (* val pp : Format.formatter -> t -> unit *)
 
 end
 
@@ -1533,12 +1426,12 @@ val no_case : t -> t
 
 (** {2 Internal debugging}  *)
 
-val pp : Format.formatter -> t -> unit
+(* val pp : Format.formatter -> t -> unit *)
 
-val pp_re : Format.formatter -> re -> unit
+(* val pp_re : Format.formatter -> re -> unit *)
 
 (** Alias for {!pp_re}. Deprecated *)
-val print_re : Format.formatter -> re -> unit
+(* val print_re : Format.formatter -> re -> unit *)
 
 (** {2 Experimental functions}. *)
 
@@ -1576,7 +1469,6 @@ val mark_set : Group.t -> Mark.Set.t
 (** Same as {!Mark.all}. Deprecated *)
 
 end = struct
-#1 "re.ml"
 (*
    RE - A regular expression library
 
@@ -1682,9 +1574,9 @@ type re =
     group_count : int
     (* Number of groups in the regular expression *) }
 
-let pp_re ch re = Automata.pp ch re.initial
 
-let print_re = pp_re
+
+(* let print_re = pp_re *)
 
 (* Information used during matching *)
 type info =
@@ -1986,7 +1878,7 @@ type regexp =
   | Difference of regexp * regexp
   | Pmark of Automata.Pmark.t * regexp
 
-let rec pp fmt t =
+(* let %ignore rec pp fmt t =
   let open Re_fmt in
   let var s re = sexp fmt s pp re in
   let seq s rel = sexp fmt s (list pp) rel in
@@ -2020,7 +1912,7 @@ let rec pp fmt t =
   | Complement c   -> seq "Complement" c
   | Difference (a, b) -> sexp fmt "Difference" (pair pp pp) (a, b)
   | Pmark (m, r)      -> sexp fmt "Pmark" (pair Automata.Pmark.pp pp) (m, r)
-
+ *)
 let rec is_charset = function
   | Set _ ->
     true
@@ -2610,7 +2502,7 @@ module Group = struct
     done;
     res
 
-  let pp fmt t =
+  (* let%ignore pp fmt t =
     let matches =
       let offsets = all_offset t in
       let strs = all t in
@@ -2620,7 +2512,7 @@ module Group = struct
     let open Re_fmt in
     let pp_match fmt (str, (start, stop)) =
       fprintf fmt "@[(%s (%d %d))@]" str start stop in
-    sexp fmt "Group" (list pp_match) matches
+    sexp fmt "Group" (list pp_match) matches *)
 
   let nb_groups t = t.gcount
 end
@@ -2909,7 +2801,6 @@ Bounded repetition
 
 end
 module Re_perl : sig 
-#1 "re_perl.mli"
 (*
    RE - A regular expression library
 
@@ -2953,7 +2844,6 @@ val compile_pat : ?opts:opt list -> string -> Re.re
 (** (Same as [Re.compile]) *)
 
 end = struct
-#1 "re_perl.ml"
 (*
    RE - A regular expression library
 
@@ -3225,7 +3115,6 @@ let compile_pat ?(opts = []) s = compile (re ~opts s)
 
 end
 module Re_pcre : sig 
-#1 "re_pcre.mli"
 type regexp = Re.re
 
 type flag = [ `CASELESS | `MULTILINE | `ANCHORED ]
@@ -3273,7 +3162,6 @@ val quote : string -> string
 type substrings = Re.groups
 
 end = struct
-#1 "re_pcre.ml"
 type regexp = Re.re
 
 type flag = [ `CASELESS | `MULTILINE | `ANCHORED ]
@@ -3395,7 +3283,6 @@ type substrings = Re.groups
 end
 module Xx
 = struct
-#1 "xx.ml"
 
 let _ =
   let s =
