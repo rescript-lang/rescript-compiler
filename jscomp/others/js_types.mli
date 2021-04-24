@@ -30,10 +30,10 @@ type symbol
 
 type obj_val
 type undefined_val
-(** This type has only one value [undefined] *)
+(** This type has only one value `undefined` *)
 
 type null_val
-(** This type has only one value [null] *)
+(** This type has only one value `null` *)
 
 type function_val
 
@@ -49,9 +49,11 @@ type _ t =
 
 
 val test : 'a -> 'b t -> bool
-(** @example{[
-      test "x" String = true
-    ]}*)
+(** 
+  ```
+  test "x" String = true
+  ```
+*)
 
 
 type tagged_t = 
