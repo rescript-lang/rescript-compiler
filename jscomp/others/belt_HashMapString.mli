@@ -13,9 +13,9 @@ val clear: 'b t -> unit
 val isEmpty: _ t -> bool
 
 val set: 'a t -> key -> 'a -> unit
-(** [setDone tbl k v] if [k] does not exist,
-    add the binding [k,v], otherwise, update the old value with the new
-    [v]
+(** `setDone tbl k v` if `k` does not exist,
+    add the binding `k,v`, otherwise, update the old value with the new
+    `v`
 *)
 
 

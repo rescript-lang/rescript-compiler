@@ -37,8 +37,8 @@
     will be modified accordingly. *)
 
 external intOfBool : bool -> int = "%identity"  
-(** [intOfBool b] returns [1] for when [b] is [true] and [0] when [b] is 
-    [false] *)
+(** `intOfBool b` returns `1` for when `b` is `true` and `0` when `b` is 
+    `false` *)
 
 external floatOfInt : int -> float = "%identity"  
-(** [floatOfInt i] returns the float value of [i] *)
+(** `floatOfInt i` returns the float value of `i` *)

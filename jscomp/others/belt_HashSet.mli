@@ -48,7 +48,7 @@
     The invariant must be held: for two elements who are {i equal},
     their hashed value should be the same
 
-    Here the compiler would infer [s0] and [s1] having different type so that
+    Here the compiler would infer `s0` and `s1` having different type so that
     it would not mix.
 
     {[
@@ -65,15 +65,15 @@
         add s1 1
     ]}
 
-    Since this is an mutable data strucure, [s1] will contain two pairs.
+    Since this is an mutable data strucure, `s1` will contain two pairs.
 *)
 
 
-(** Specalized when key type is [int], more efficient
+(** Specalized when key type is `int`, more efficient
     than the generic type *)
 module Int = Belt_HashSetInt
 
-(** Specalized when key type is [string], more efficient
+(** Specalized when key type is `string`, more efficient
     than the generic type *)
 module String = Belt_HashSetString
 
@@ -86,7 +86,7 @@ module String = Belt_HashSetString
 
 type ('a, 'id) t
 
-(** The type of hash tables from type ['a] to type ['b]. *)
+(** The type of hash tables from type `'a` to type `'b`. *)
 
 type ('a, 'id) id = ('a, 'id) Belt_Id.hashable
 

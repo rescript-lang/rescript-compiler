@@ -36,23 +36,23 @@
 
 
 type ('a, 'id) hash
-(** [('a, 'id) hash]
+(** `('a, 'id) hash`
 
-    Its runtime represenation is a [hash] function, but signed with a
+    Its runtime represenation is a `hash` function, but signed with a
     type parameter, so that different hash functions type mismatch
 *)
 
 type ('a, 'id) eq
-(** [('a, 'id) eq]
+(** `('a, 'id) eq`
 
-    Its runtime represenation is an [eq] function, but signed with a
+    Its runtime represenation is an `eq` function, but signed with a
     type parameter, so that different hash functions type mismatch
 *)
 
 type ('a, 'id) cmp
-(** [('a,'id) cmp]
+(** `('a,'id) cmp`
 
-    Its runtime representation is a [cmp] function, but signed with a
+    Its runtime representation is a `cmp` function, but signed with a
     type parameter, so that different hash functions type mismatch
 *)
 
@@ -64,7 +64,7 @@ end
 
 type ('key, 'id) comparable =
   (module Comparable with type t = 'key and type identity = 'id)
-(** [('key, 'id) cmparable] is a module of functions, here it only includes [cmp].
+(** `('key, 'id) cmparable` is a module of functions, here it only includes `cmp`.
 
     Unlike normal functions, when created, it comes with a unique identity (guaranteed
     by the type system).
@@ -116,7 +116,7 @@ end
 
 type ('key, 'id) hashable =
   (module Hashable with type t = 'key and type identity = 'id)
-(** [('key, 'id) hashable] is a module of functions, here it only includes [hash], [eq].
+(** `('key, 'id) hashable` is a module of functions, here it only includes `hash`, `eq`.
 
     Unlike normal functions, when created, it comes with a unique identity (guaranteed
     by the type system).

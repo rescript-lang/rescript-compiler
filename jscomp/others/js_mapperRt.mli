@@ -28,8 +28,8 @@ val raiseWhenNotFound :
   'a -> 'a
 
 (**
-   [fromInt len array int]
-   return the mapped [enum]
+   `fromInt len array int`
+   return the mapped `enum`
 *)
 val fromInt :   
   int ->

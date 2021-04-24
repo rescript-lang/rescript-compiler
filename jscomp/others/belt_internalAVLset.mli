@@ -27,7 +27,7 @@
 (* This internal module 
    contains methods which does not rely on ordering. 
    Such methods could be shared between 
-   [generic set/specalized set] whether mutable or immutable depends on use cases
+   `generic set/specalized set` whether mutable or immutable depends on use cases
 *)
 type 'value t = 'value node option
 and 'value node  =  {
@@ -53,7 +53,7 @@ val maximum : 'a t -> 'a option
 val maxUndefined : 'a t -> 'a Js.undefined
 
 val removeMinAuxWithRef : 'a node -> 'a ref -> 'a t
-(* [removeMinAuxWithRef n cell] return a new node with
+(* `removeMinAuxWithRef n cell` return a new node with
    minimum removed and stored in cell *)
 
 val isEmpty : 'a t -> bool
@@ -117,6 +117,6 @@ val fromArray: 'a array ->  cmp:('a, 'b) cmp -> 'a t
 val addMutate : cmp:('a, 'b) cmp -> 'a t -> 'a -> 'a t
 val balMutate : 'a node -> 'a node
 val removeMinAuxWithRootMutate : 'a node -> 'a node -> 'a t
-(* [rmeoveMinAuxMutateWithRoot root n]
-   remove the minimum of n in place and store its value in the [key root]
+(* `rmeoveMinAuxMutateWithRoot root n`
+   remove the minimum of n in place and store its value in the `key root`
 *)

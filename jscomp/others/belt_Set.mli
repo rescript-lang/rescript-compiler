@@ -48,12 +48,12 @@
     The API documentation below will assume a predeclared comparator module for integers, IntCmp
 *)
 
-(** Specalized when value type is [int], more efficient
+(** Specalized when value type is `int`, more efficient
     than the generic type, its compare behavior is fixed using the built-in comparison
 *)
 module Int = Belt_SetInt
 
-(** Specalized when value type is [string], more efficient
+(** Specalized when value type is `string`, more efficient
     than the generic type, its compare behavior is fixed using the built-in comparison
 *)
 module String = Belt_SetString
@@ -67,11 +67,11 @@ module Dict = Belt_SetDict
 
 
 type ('value, 'identity) t
-(** [('value, 'identity) t]
+(** `('value, 'identity) t`
 
-    ['value] is the element type
+    `'value` is the element type
 
-    ['identity] the identity of the collection
+    `'identity` the identity of the collection
 *)
 
 
@@ -80,7 +80,7 @@ type ('value, 'id) id = ('value, 'id) Belt_Id.comparable
 *)
 
 val make: id:('value, 'id) id -> ('value, 'id) t
-(** [make ~id] creates a new set by taking in the comparator
+(** `make ~id` creates a new set by taking in the comparator
     @example {[
       let s = make ~id:(module IntCmp)
     ]}
@@ -90,19 +90,19 @@ val make: id:('value, 'id) id -> ('value, 'id) t
 
 
 val fromArray:  'value array -> id:('value, 'id) id ->  ('value, 'id) t
-(** [fromArray xs ~id]
+(** `fromArray xs ~id`
 
     @example{[
-      toArray (fromArray [1;3;2;4] (module IntCmp)) = [1;2;3;4]
+      toArray (fromArray `1;3;2;4` (module IntCmp)) = `1;2;3;4`
     ]}
 *)
 
 
 
 val fromSortedArrayUnsafe: 'value array -> id:('value, 'id) id -> ('value,'id) t
-(** [fromSortedArrayUnsafe xs ~id]
+(** `fromSortedArrayUnsafe xs ~id`
 
-    The same as {!fromArray} except it is after assuming the input array [x] is already sorted
+    The same as {!fromArray} except it is after assuming the input array `x` is already sorted
 
     {b Unsafe}
 *)
@@ -127,7 +127,7 @@ val has: ('value, 'id) t -> 'value ->  bool
 
 val add:
   ('value, 'id) t -> 'value -> ('value, 'id) t
-(** [add s x] If [x] was already in [s], [s] is returned unchanged.
+(** `add s x` If `x` was already in `s`, `s` is returned unchanged.
 
     @example {[
       let s0 = make ~id:(module IntCmp);;
@@ -143,16 +143,16 @@ val add:
 *)
 
 val mergeMany: ('value, 'id) t -> 'value array -> ('value, 'id) t
-(** [mergeMany s xs]
+(** `mergeMany s xs`
 
-    Adding each of [xs] to [s], note unlike {!add},
-    the reference of return value might be changed even if all values in [xs]
-    exist [s]
+    Adding each of `xs` to `s`, note unlike {!add},
+    the reference of return value might be changed even if all values in `xs`
+    exist `s`
 
 *)
 
 val remove: ('value, 'id) t -> 'value -> ('value, 'id) t
-(** [remove m x] If [x] was not in [m], [m] is returned reference unchanged.
+(** `remove m x` If `x` was not in `m`, `m` is returned reference unchanged.
 
     @example {[
       let s0 = fromArray ~id:(module IntCmp) [|2;3;1;4;5|];;
@@ -168,16 +168,16 @@ val remove: ('value, 'id) t -> 'value -> ('value, 'id) t
 
 val removeMany:
   ('value, 'id) t -> 'value array -> ('value, 'id) t
-(** [removeMany s xs]
+(** `removeMany s xs`
 
-    Removing each of [xs] to [s], note unlike {!remove},
-    the reference of return value might be changed even if none in [xs]
-    exists [s]
+    Removing each of `xs` to `s`, note unlike {!remove},
+    the reference of return value might be changed even if none in `xs`
+    exists `s`
 *)
 
 val union: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 (**
-   [union s0 s1]
+   `union s0 s1`
 
    @example {[
      let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
@@ -187,7 +187,7 @@ val union: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 *)
 
 val intersect: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
-(** [intersect s0 s1]
+(** `intersect s0 s1`
     @example {[
       let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
       let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
@@ -197,7 +197,7 @@ val intersect: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 *)
 
 val diff: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
-(** [diff s0 s1]
+(** `diff s0 s1`
     @example {[
       let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
       let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
@@ -207,7 +207,7 @@ val diff: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 *)
 
 val subset: ('value, 'id) t -> ('value, 'id) t -> bool
-(** [subset s0 s1]
+(** `subset s0 s1`
 
     @example {[
       let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
@@ -222,26 +222,26 @@ val subset: ('value, 'id) t -> ('value, 'id) t -> bool
 val cmp: ('value, 'id) t -> ('value, 'id) t -> int
 (** Total ordering between sets. Can be used as the ordering function
     for doing sets of sets.
-    It compare [size] first and then iterate over
+    It compare `size` first and then iterate over
     each element following the order of elements
 *)
 
 val eq: ('value, 'id) t -> ('value, 'id) t -> bool
-(** [eq s0 s1]
+(** `eq s0 s1`
 
-    @return true if [toArray s0 = toArray s1]
+    @return true if `toArray s0 = toArray s1`
 *)
 
 val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
 val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit
-(** [forEach s f] applies [f] in turn to all elements of [s].
+(** `forEach s f` applies `f` in turn to all elements of `s`.
     In increasing order
 
     @example {[
       let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
       let acc = ref [] ;;
       forEach s0 (fun x -> acc := x !acc);;
-      !acc = [6;5;3;2];;
+      !acc = `6;5;3;2`;;
     ]}
 *)
 
@@ -251,35 +251,35 @@ val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a ) ->  'a
 
     @example {[
       let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-      reduce s0 [] Bs.List.add = [6;5;3;2];;
+      reduce s0 `] Bs.List.add = [6;5;3;2`;;
     ]}
 *)
 
 val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
 val every: ('value, 'id) t -> ('value -> bool ) -> bool
-(** [every p s] checks if all elements of the set
-    satisfy the predicate [p]. Order unspecified.
+(** `every p s` checks if all elements of the set
+    satisfy the predicate `p`. Order unspecified.
 *)
 
 val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool
 val some: ('value, 'id) t ->  ('value -> bool ) -> bool
-(** [some p s] checks if at least one element of
-    the set satisfies the predicate [p]. *)
+(** `some p s` checks if at least one element of
+    the set satisfies the predicate `p`. *)
 
 val keepU: ('value, 'id) t ->  ('value -> bool [@bs]) -> ('value, 'id) t
 val keep: ('value, 'id) t ->  ('value -> bool ) -> ('value, 'id) t
-(** [keep m p] returns the set of all elements in [s]
-    that satisfy predicate [p]. *)
+(** `keep m p` returns the set of all elements in `s`
+    that satisfy predicate `p`. *)
 
 val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) ->  ('value, 'id) t * ('value, 'id) t
 val partition: ('value, 'id) t -> ('value -> bool) ->  ('value, 'id) t * ('value, 'id) t
-(** [partition m p] returns a pair of sets [(s1, s2)], where
-    [s1] is the set of all the elements of [s] that satisfy the
-    predicate [p], and [s2] is the set of all the elements of
-    [s] that do not satisfy [p]. *)
+(** `partition m p` returns a pair of sets `(s1, s2)`, where
+    `s1` is the set of all the elements of `s` that satisfy the
+    predicate `p`, and `s2` is the set of all the elements of
+    `s` that do not satisfy `p`. *)
 
 val size:  ('value, 'id) t -> int
-(** [size s]
+(** `size s`
 
     @example {[
       let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
@@ -288,7 +288,7 @@ val size:  ('value, 'id) t -> int
 *)
 
 val toArray: ('value, 'id) t -> 'value array
-(** [toArray s0]
+(** `toArray s0`
     @example {[
       let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
       toArray s0 = [|2;3;5;6|];;
@@ -301,34 +301,34 @@ val toList: ('value, 'id) t -> 'value list
 *)
 
 val minimum: ('value, 'id) t -> 'value option
-(** [minimum s0]
+(** `minimum s0`
 
-    @return the minimum element of the collection, [None] if it is empty
+    @return the minimum element of the collection, `None` if it is empty
 *)
 
 val minUndefined: ('value, 'id) t -> 'value Js.undefined
-(** [minUndefined s0]
+(** `minUndefined s0`
 
-    @return the minimum element of the collection, [undefined] if it is empty
+    @return the minimum element of the collection, `undefined` if it is empty
 *)
 
 val maximum: ('value, 'id) t -> 'value option
-(** [maximum s0]
+(** `maximum s0`
 
-    @return the maximum element of the collection, [None] if it is empty
+    @return the maximum element of the collection, `None` if it is empty
 *)
 
 val maxUndefined: ('value, 'id) t -> 'value Js.undefined
-(** [maxUndefined s0]
+(** `maxUndefined s0`
 
-    @return the maximum element of the collection, [undefined] if it is empty
+    @return the maximum element of the collection, `undefined` if it is empty
 *)
 
 val get: ('value, 'id) t -> 'value -> 'value option
-(** [get s0 k]
+(** `get s0 k`
 
-    @return the reference of the value [k'] which is equivalent to [k]
-    using  the comparator specifiecd by this collection, [None]
+    @return the reference of the value `k'` which is equivalent to `k`
+    using  the comparator specifiecd by this collection, `None`
     if it does not exist
 *)
 
@@ -343,10 +343,10 @@ val getExn: ('value, 'id) t -> 'value -> 'value
 *)
 
 val split: ('value, 'id) t -> 'value -> (('value, 'id) t  * ('value, 'id) t) * bool
-(** [split set ele]
+(** `split set ele`
 
-    @return  a tuple [((smaller, larger), present)],
-    [present] is true when [ele] exist in [set]
+    @return  a tuple `((smaller, larger), present)`,
+    `present` is true when `ele` exist in `set`
 *)
 
 (**/**)
@@ -363,7 +363,7 @@ val checkInvariantInternal: _ t -> unit
 *)
 
 val getData: ('value, 'id) t  -> ('value, 'id) Belt_SetDict.t
-(** [getData s0]
+(** `getData s0`
 
     {b Advanced usage only}
 
@@ -373,15 +373,15 @@ val getData: ('value, 'id) t  -> ('value, 'id) Belt_SetDict.t
 *)
 
 val getId: ('value, 'id) t  -> ('value, 'id) id
-(** [getId s0]
+(** `getId s0`
 
     {b Advanced usage only}
 
-    @return the identity of [s0]
+    @return the identity of `s0`
 *)
 
 val packIdData: id:('value, 'id) id -> data:('value, 'id) Belt_SetDict.t -> ('value, 'id) t
-(** [packIdData ~id ~data]
+(** `packIdData ~id ~data`
 
     {b Advanced usage only}
 

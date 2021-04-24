@@ -39,12 +39,12 @@ type element = string
 val strictlySortedLength: element array -> int 
 (**
    The same as {!Belt_SortArray.strictlySortedLength } except the comparator is fixed
-   @return [+n] means increasing order  [-n] means negative order
+   @return `+n` means increasing order  `-n` means negative order
 *)
 
 
 val isSorted: element array  -> bool
-(** [sorted xs] return true if [xs] is in non strict increasing order *)
+(** `sorted xs` return true if `xs` is in non strict increasing order *)
 
 val stableSortInPlace: element array -> unit
 (**
@@ -65,8 +65,8 @@ val binarySearch: element array -> element -> int
    the negative number returned is the bitwise complement of 
    (the index of the last element plus 1)
 
-   for example, if [key] is smaller than all elements return [-1] since [lnot (-1) = 0]
-   if [key] is larger than all elements return [- (len + 1)] since [lnot (-(len+1)) = len]
+   for example, if `key` is smaller than all elements return `-1` since `lnot (-1) = 0`
+   if `key` is larger than all elements return `- (len + 1)` since `lnot (-(len+1)) = len`
 
 *)  
 
@@ -77,10 +77,10 @@ val union:
   element array -> int 
   -> int
 (**
-   [union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp]
-   assume [src] and [src2] is strictly sorted.
-   for equivalent elements, it is picked from [src]
-   also assume that [dst] is large enough to store all elements
+   `union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp`
+   assume `src` and `src2` is strictly sorted.
+   for equivalent elements, it is picked from `src`
+   also assume that `dst` is large enough to store all elements
 *)  
 
 val intersect:

@@ -79,25 +79,25 @@ val reduce: t -> 'a -> ('a -> value -> 'a ) -> 'a
 
 val everyU: t -> (value -> bool [@bs]) -> bool
 val every: t -> (value -> bool) ->  bool  
-(** [every p s] checks if all elements of the set
-    satisfy the predicate [p]. Order unspecified. *)
+(** `every p s` checks if all elements of the set
+    satisfy the predicate `p`. Order unspecified. *)
 
 val someU: t -> (value -> bool [@bs]) -> bool
 val some: t -> (value -> bool) ->  bool  
-(** [some p s] checks if at least one element of
-    the set satisfies the predicate [p]. Oder unspecified. *)
+(** `some p s` checks if at least one element of
+    the set satisfies the predicate `p`. Oder unspecified. *)
 
 val keepU: t -> (value -> bool [@bs]) ->  t
 val keep: t -> (value -> bool) ->  t  
-(** [keep s p] returns a fresh copy of the set of all elements in [s]
-    that satisfy predicate [p]. *)
+(** `keep s p` returns a fresh copy of the set of all elements in `s`
+    that satisfy predicate `p`. *)
 
 val partitionU: t -> (value -> bool [@bs]) ->  t * t
 val partition: t -> (value -> bool) ->  t * t 
-(** [partition s p] returns a fresh copy pair of sets [(s1, s2)], where
-    [s1] is the set of all the elements of [s] that satisfy the
-    predicate [p], and [s2] is the set of all the elements of
-    [s] that do not satisfy [p]. *)
+(** `partition s p` returns a fresh copy pair of sets `(s1, s2)`, where
+    `s1` is the set of all the elements of `s` that satisfy the
+    predicate `p`, and `s2` is the set of all the elements of
+    `s` that do not satisfy `p`. *)
 
 val size: t -> int
 val toList: t -> value list
@@ -116,7 +116,7 @@ val getUndefined:  t -> value -> value Js.undefined
 val getExn: t -> value -> value
 val split:  t -> value  -> (t * t) * bool 
 (**
-    [split s key] return a fresh copy of each
+    `split s key` return a fresh copy of each
 *)
 
 val checkInvariantInternal: t -> unit

@@ -22,22 +22,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Provides functionality for dealing with the ['a Js.null] type *)
+(** Provides functionality for dealing with the `'a Js.null` type *)
 
 
 
 type + 'a t = 'a Js.null
-(** Local alias for ['a Js.null] *)
+(** Local alias for `'a Js.null` *)
 
 external return : 'a -> 'a t  = "%identity"
-(** Constructs a value of ['a Js.null] containing a value of ['a] *)
+(** Constructs a value of `'a Js.null` containing a value of `'a` *)
 
 
 val test : 'a t -> bool 
 [@@deprecated "Use = Js.null directly "]
-(** Returns [true] if the given value is [empty] ([null]), [false] otherwise *)
+(** Returns `true` if the given value is `empty` (`null`), `false` otherwise *)
 
-(** The empty value, [null] *)
+(** The empty value, `null` *)
 external empty : 'a t = "#null" 
 
 
@@ -47,8 +47,8 @@ val getExn : 'a t -> 'a
 
 (** Maps the contained value using the given function
 
-    If ['a Js.null] contains a value, that value is unwrapped, mapped to a ['b] using
-    the given function [a' -> 'b], then wrapped back up and returned as ['b Js.null]
+    If `'a Js.null` contains a value, that value is unwrapped, mapped to a `'b` using
+    the given function `a' -> 'b`, then wrapped back up and returned as `'b Js.null`
 
     @example {[
       let maybeGreetWorld (maybeGreeting: string Js.null) =
@@ -59,7 +59,7 @@ val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
 
 (** Iterates over the contained value with the given function
 
-    If ['a Js.null] contains a value, that value is unwrapped and applied to
+    If `'a Js.null` contains a value, that value is unwrapped and applied to
     the given function.
 
     @example {[
@@ -69,7 +69,7 @@ val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
 *)
 val iter : 'a t -> ('a -> unit [@bs]) -> unit
 
-(** Maps ['a option] to ['a Js.null]
+(** Maps `'a option` to `'a Js.null`
 
     {%html:
     <table>
@@ -83,7 +83,7 @@ val fromOption: 'a option -> 'a t
 val from_opt : 'a option -> 'a t
 [@@deprecated "Use fromOption instead"]
 
-(** Maps ['a Js.null] to ['a option]
+(** Maps `'a Js.null` to `'a option`
 
     {%html:
     <table>

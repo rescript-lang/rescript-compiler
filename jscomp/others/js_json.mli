@@ -57,30 +57,30 @@ val classify : t -> tagged_t
 
 
 val test : 'a  -> 'b kind -> bool
-(** [test v kind] returns true if [v] is of [kind] *)
+(** `test v kind` returns true if `v` is of `kind` *)
 
 val decodeString : t -> Js_string.t option
-(** [decodeString json] returns [Some s] if [json] is a string, [None]
+(** `decodeString json` returns `Some s` if `json` is a string, `None`
     otherwise *)
 
 val decodeNumber : t -> float option
-(** [decodeNumber json] returns [Some n] if [json] is a number, [None]
+(** `decodeNumber json` returns `Some n` if `json` is a number, `None`
     otherwise *)
 
 val decodeObject : t -> t Js_dict.t option
-(** [decodeObject json] returns [Some o] if [json] is an object, [None]
+(** `decodeObject json` returns `Some o` if `json` is an object, `None`
     otherwise *)
 
 val decodeArray : t -> t array option
-(** [decodeArray json] returns [Some a] if [json] is an array, [None]
+(** `decodeArray json` returns `Some a` if `json` is an array, `None`
     otherwise *)
 
 val decodeBoolean : t -> bool option
-(** [decodeBoolean json] returns [Some b] if [json] is a boolean, [None]
+(** `decodeBoolean json` returns `Some b` if `json` is a boolean, `None`
     otherwise *)
 
 val decodeNull : t -> 'a Js_null.t option
-(** [decodeNull json] returns [Some null] if [json] is a null, [None]
+(** `decodeNull json` returns `Some null` if `json` is a null, `None`
     otherwise *)
 
 (** {2 Construtors} *)
@@ -90,48 +90,48 @@ val decodeNull : t -> 'a Js_null.t option
 *)
 
 external null : t = "null" [@@bs.val]
-(** [null] is the singleton null JSON value *)
+(** `null` is the singleton null JSON value *)
 
 external string : string -> t = "%identity"
-(** [string s] makes a JSON string of the [string] [s] *)
+(** `string s` makes a JSON string of the `string` `s` *)
 
 external number : float -> t = "%identity"
-(** [number n] makes a JSON number of the [float] [n] *)
+(** `number n` makes a JSON number of the `float` `n` *)
 
 external boolean : bool -> t = "%identity" 
-(** [boolean b] makes a JSON boolean of the [bool] [b] *)
+(** `boolean b` makes a JSON boolean of the `bool` `b` *)
 
 external object_ : t Js_dict.t -> t = "%identity"
-(** [object_ dict] makes a JSON object of the [Js.Dict.t] [dict] *)
+(** `object_ dict` makes a JSON object of the `Js.Dict.t` `dict` *)
 
 
 external array : t array -> t = "%identity"
-(** [array_ a] makes a JSON array of the [Js.Json.t array] [a] *)
+(** `array_ a` makes a JSON array of the `Js.Json.t array` `a` *)
 
 (** The functions below are specialized for specific array type which 
     happened to be already JSON object in the ReScript runtime. Therefore
     they are more efficient (constant time rather than linear conversion). *) 
 
 external stringArray : string array -> t = "%identity"
-(** [stringArray a] makes a JSON array of the [string array] [a] *) 
+(** `stringArray a` makes a JSON array of the `string array` `a` *) 
 
 external numberArray : float array -> t = "%identity"
-(** [numberArray a] makes a JSON array of the [float array] [a] *)
+(** `numberArray a` makes a JSON array of the `float array` `a` *)
 
 external booleanArray : bool array -> t = "%identity"
-(** [booleanArray] makes a JSON array of the [bool array] [a] *)
+(** `booleanArray` makes a JSON array of the `bool array` `a` *)
 
 external objectArray : t Js_dict.t array -> t = "%identity"
-(** [objectArray a] makes a JSON array of the [JsDict.t array] [a] *)
+(** `objectArray a` makes a JSON array of the `JsDict.t array` `a` *)
 
 (** {2 String conversion} *)
 
 external parseExn : string -> t = "parse" [@@bs.val] [@@bs.scope "JSON"]
-(** [parseExn s] parses the string [s] into a JSON data structure
+(** `parseExn s` parses the string `s` into a JSON data structure
 
     {b Returns} a JSON data structure
 
-    @raise SyntaxError if given string is not a valid JSON. Note [SyntaxError] is a JavaScript exception. 
+    @raise SyntaxError if given string is not a valid JSON. Note `SyntaxError` is a JavaScript exception. 
 
     @example {[
       (* parse a simple JSON string *)
@@ -174,7 +174,7 @@ external parseExn : string -> t = "parse" [@@bs.val] [@@bs.scope "JSON"]
 
       (* prints `1, 2, 3` *)
       let _ =
-        Js.log \@\@ getIds {| { "ids" : [1, 2, 3 ] } |}
+        Js.log \@\@ getIds {| { "ids" : `1, 2, 3 ` } |}
     ]}
 
     @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse> MDN
@@ -182,7 +182,7 @@ external parseExn : string -> t = "parse" [@@bs.val] [@@bs.scope "JSON"]
 
 external stringify: t -> string = "stringify" 
 [@@bs.val] [@@bs.scope "JSON"]
-(** [stringify json] formats the JSON data structure as a string
+(** `stringify json` formats the JSON data structure as a string
 
     {b Returns} the string representation of a given JSON data structure
 
@@ -203,7 +203,7 @@ external stringify: t -> string = "stringify"
 
 external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string = "stringify" 
 [@@bs.val] [@@bs.scope "JSON"]
-(** [stringify json] formats the JSON data structure as a string
+(** `stringify json` formats the JSON data structure as a string
 
     {b Returns} the string representation of a given JSON data structure
 
@@ -225,10 +225,10 @@ external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string
 
 external stringifyAny : 'a -> string option = "stringify" 
 [@@bs.val]  [@@bs.scope "JSON"]
-(** [stringifyAny value] formats any [value] into a JSON string
+(** `stringifyAny value` formats any `value` into a JSON string
 
     @example {[
-      (* prints `["foo", "bar"]` *)
+      (* prints ``"foo", "bar"`` *)
       Js.log \@\@ Js.Json.stringifyAny [| "foo"; "bar" |]
     ]}
 
