@@ -472,7 +472,7 @@ let scanTemplateLiteralToken scanner =
         in
         Token.TemplatePart contents
       | _ ->
-        next2 scanner;
+        next scanner;
         scan())
     | '\\' ->
       (match peek scanner with

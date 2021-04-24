@@ -45,3 +45,10 @@ let s = json`null`
 
 let x = `foo\`bar\$\\foo`
 let x = `foo\`bar\$\\foo${a} \` ${b} \` xx`
+
+let thisIsFine = `$something`
+let thisIsAlsoFine = `fine\$`
+let isThisFine = `shouldBeFine$`
+
+`$${dollarAmountInt}`
+`\$${dollarAmountInt}`

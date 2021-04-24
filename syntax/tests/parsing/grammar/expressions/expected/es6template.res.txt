@@ -37,3 +37,8 @@ let s = {js|$dollar without $braces $interpolation|js}
 let s = {json|null|json}
 let x = {js|foo`bar$\foo|js}
 let x = ((({js|foo`bar$\foo|js} ^ a) ^ {js| ` |js}) ^ b) ^ {js| ` xx|js}
+let thisIsFine = {js|$something|js}
+let thisIsAlsoFine = {js|fine$|js}
+let isThisFine = {js|shouldBeFine$|js}
+;;{js|$|js} ^ dollarAmountInt
+;;{js|$|js} ^ dollarAmountInt
