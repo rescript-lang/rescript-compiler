@@ -277,7 +277,7 @@ let () = Oprint.map_primitive_name :=
 (* TODO:  better error message when version mismatch *)
 let from_string s : t =
   if is_bs_primitive s  then   
-    Ext_marshal.from_string_uncheck s
+    Ext_marshal.from_string s
   else Ffi_normal
 
 let () = 

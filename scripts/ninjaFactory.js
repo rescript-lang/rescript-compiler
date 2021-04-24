@@ -28,10 +28,9 @@ build ../${process.platform}/rescript$ext:  cc $INCL/rescript.mli $INCL/rescript
     flags = $flags -unboxed-types unix.cmxa str.cmxa    
 o ../${process.platform}/bsb_helper$ext:  cc $INCL/bsb_helper.mli $INCL/bsb_helper.ml
     flags = $flags  -unboxed-types -w -a
-o ../${process.platform}/refmt$ext: cc $INCL/refmt_main3.mli $INCL/refmt_main3.ml
-    flags = $flags  -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa 
+
 o ../${process.platform}/bsc$ext: cc $INCL/whole_compiler.mli $INCL/whole_compiler.ml
-    flags = $flags -w A-4-9-48-40-45-41-44-50-21-30-32-34-37-27-60-42 -warn-error A     
+    flags = $flags -w A-4-9-48-40-45-41-44-50-21-30-32-34-37-27-60-42 
 `;
 }
 

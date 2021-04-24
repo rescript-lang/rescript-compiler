@@ -1759,7 +1759,7 @@ module type Map = sig
     with type key = T.t
      and type 'a t = 'a Map.Make (T).t
 
-  val filter_map : 'a t -> f:(key -> 'a -> 'b option) -> 'b t
+  val filter_map : (key -> 'a -> 'b option) -> 'a t -> 'b t
   val of_list : (key * 'a) list -> 'a t
 
   (** [disjoint_union m1 m2] contains all bindings from [m1] and
@@ -1865,7 +1865,7 @@ module type Map = sig
     with type key = T.t
      and type 'a t = 'a Map.Make (T).t
 
-  val filter_map : 'a t -> f:(key -> 'a -> 'b option) -> 'b t
+  val filter_map : (key -> 'a -> 'b option) -> 'a t -> 'b t
   val of_list : (key * 'a) list -> 'a t
 
   val disjoint_union : ?eq:('a -> 'a -> bool) -> ?print:(Format.formatter -> 'a -> unit) -> 'a t -> 'a t -> 'a t
@@ -1922,7 +1922,7 @@ end
 module Make_map (T : Thing) = struct
   include Map.Make (T)
 
-  let filter_map t ~f =
+  let filter_map f t  =
     fold (fun id v map ->
         match f id v with
         | None -> map
@@ -2814,7 +2814,6 @@ val color : Misc.Color.setting option ref
 
 val unboxed_types : bool ref
 
-
 val arg_spec : (string * Arg.spec * string) list ref
 
 (* [add_arguments __LOC__ args] will add the arguments from [args] at
@@ -2835,7 +2834,6 @@ val print_arguments : string -> unit
 
 (* [reset_arguments ()] clear all declared arguments *)
 val reset_arguments : unit -> unit
-
 
 type mli_status = Mli_na | Mli_exists | Mli_non_exists
 val no_implicit_current_dir : bool ref

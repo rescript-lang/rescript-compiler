@@ -580,16 +580,6 @@ let read_float () = float_of_string(read_line())
 let read_float_opt () = float_of_string_opt(read_line())
 
 
-(* Formats *)
-
-type ('a, 'b, 'c, 'd, 'e, 'f) format6
-   = ('a, 'b, 'c, 'd, 'e, 'f) CamlinternalFormatBasics.format6
-   = Format of ('a, 'b, 'c, 'd, 'e, 'f) CamlinternalFormatBasics.fmt
-               * string
-
-type ('a, 'b, 'c, 'd) format4 = ('a, 'b, 'c, 'c, 'c, 'd) format6
-
-type ('a, 'b, 'c) format = ('a, 'b, 'c, 'c) format4
 
 
 
