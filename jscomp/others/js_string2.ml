@@ -36,7 +36,7 @@ type t = string
 external make : 'a -> t = "String" [@@bs.val]
 
 (** `fromCharCode n`
-  creates a string containing the character corresponding to that number; {i n} ranges from 0 to 65535. If out of range, the lower 16 bits of the value are used. Thus, `fromCharCode 0x1F63A` gives the same result as `fromCharCode 0xF63A`.
+  creates a string containing the character corresponding to that number; _n_ ranges from 0 to 65535. If out of range, the lower 16 bits of the value are used. Thus, `fromCharCode 0x1F63A` gives the same result as `fromCharCode 0xF63A`.
 
 @example {[
   fromCharCode 65 = "A";;
@@ -213,7 +213,7 @@ external indexOf : t -> t -> int = "indexOf" [@@bs.send]
 external indexOfFrom : t -> t -> int -> int = "indexOf" [@@bs.send]
 
 (**
-  `lastIndexOf searchValue s` returns the position of the {i last} occurrence of `searchValue` within `s`, searching backwards from the end of the string. Returns `-1` if `searchValue` is not in `s`. The return value is always relative to the beginning of the string.
+  `lastIndexOf searchValue s` returns the position of the _last_ occurrence of `searchValue` within `s`, searching backwards from the end of the string. Returns `-1` if `searchValue` is not in `s`. The return value is always relative to the beginning of the string.
 
 @example {[
   lastIndexOf "bookseller" "ok" = 2;;
@@ -224,7 +224,7 @@ external indexOfFrom : t -> t -> int -> int = "indexOf" [@@bs.send]
 external lastIndexOf : t -> t -> int = "lastIndexOf" [@@bs.send]
 
 (**
-  `lastIndexOfFrom searchValue start s` returns the position of the {i last} occurrence of `searchValue` within `s`, searching backwards from the given `start` position. Returns `-1` if `searchValue` is not in `s`. The return value is always relative to the beginning of the string.
+  `lastIndexOfFrom searchValue start s` returns the position of the _last_ occurrence of `searchValue` within `s`, searching backwards from the given `start` position. Returns `-1` if `searchValue` is not in `s`. The return value is always relative to the beginning of the string.
 
 @example {[
   lastIndexOfFrom "bookseller" "ok" 6 = 2;;

@@ -25,8 +25,8 @@
 (** A **mutable** Hash set which allows customized {!hash} behavior.
 
     All data are parameterized by not its only type but also a unique identity in
-    the time of initialization, so that two {i HashSets of ints} initialized with different
-    {i hash} functions will have different type.
+    the time of initialization, so that two _HashSets of ints_ initialized with different
+    _hash_ functions will have different type.
 
     For example:
     {[
@@ -45,7 +45,7 @@
       let s1 = make ~id:(module I1) ~hintSize:40
     ]}
 
-    The invariant must be held: for two elements who are {i equal},
+    The invariant must be held: for two elements who are _equal_,
     their hashed value should be the same
 
     Here the compiler would infer `s0` and `s1` having different type so that

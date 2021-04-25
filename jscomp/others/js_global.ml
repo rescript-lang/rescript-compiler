@@ -77,7 +77,7 @@ let procrastinate mins =
 external clearTimeout : timeoutId -> unit = "clearTimeout" [@@bs.val]
 
 
-(** {i Repeatedly} executes a callback with a specified interval (in milliseconds) between calls
+(** _Repeatedly_ executes a callback with a specified interval (in milliseconds) between calls
 
 **Return** an {! intervalId} that can be passed to {! clearInterval} to cancel the timeout
 
@@ -97,7 +97,7 @@ let _ =
 *)
 external setInterval : (unit -> unit) -> int -> intervalId = "setInterval" [@@bs.val]
 
-(** {i Repeatedly} executes a callback with a specified interval (in milliseconds) between calls
+(** _Repeatedly_ executes a callback with a specified interval (in milliseconds) between calls
 
 **Return** an {! intervalId} that can be passed to {! clearInterval} to cancel the timeout
 

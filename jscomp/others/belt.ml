@@ -24,7 +24,7 @@
 
 (** A stdlib shipped with ReScript
 
-    This stdlib is still in {i beta} but we encourage you to try it out and
+    This stdlib is still in _beta_ but we encourage you to try it out and
     give us feedback.
 
     **Motivation**
@@ -35,7 +35,7 @@
     improve:
     {ol
     {- Consistency in name convention: camlCase, and arguments order}
-    {- Exception thrown functions are all suffixed with {i Exn}, e.g, {i getExn}}
+    {- Exception thrown functions are all suffixed with _Exn_, e.g, _getExn_}
     {- Better performance and smaller code size running on JS platform}
     }
 
@@ -55,13 +55,13 @@
    **A special encoding for collection safety**
 
    When we create a collection library for a custom data type we need a way to provide a comparator
-   function. Take {i Set} for example, suppose its element type is a pair of ints,
-    it needs a custom {i compare} function that takes two tuples and returns their order.
-    The {i Set} could not just be typed as ` Set.t (int * int) `, its customized {i compare} function
+   function. Take _Set_ for example, suppose its element type is a pair of ints,
+    it needs a custom _compare_ function that takes two tuples and returns their order.
+    The _Set_ could not just be typed as `Set.t (int * int)`, its customized _compare_ function
     needs to manifest itself in the signature, otherwise, if the user creates another
-    customized {i compare} function, the two collection could mix which would result in runtime error.
+    customized _compare_ function, the two collection could mix which would result in runtime error.
 
-    The original OCaml stdlib solved the problem using {i functor} which creates a big
+    The original OCaml stdlib solved the problem using _functor_ which creates a big
     closure at runtime and makes dead code elimination much harder.
     We use a phantom type to solve the problem:
 
@@ -100,7 +100,7 @@
     **Collection Hierarchy**
 
     In general, we provide a generic collection module, but also create specialized
-    modules for commonly used data type. Take {i Belt.Set} for example, we provide:
+    modules for commonly used data type. Take _Belt.Set_ for example, we provide:
 
     {[
         Belt.Set
@@ -108,13 +108,13 @@
         Belt.Set.String
     ]}
 
-    The specialized modules {i Belt.Set.Int}, {i Belt.Set.String} are in general more
+    The specialized modules _Belt.Set.Int_, _Belt.Set.String_ are in general more
     efficient.
 
-    Currently, both {i Belt_Set} and {i Belt.Set} are accessible to users for some
+    Currently, both _Belt_Set_ and _Belt.Set_ are accessible to users for some
     technical reasons,
-    we **strongly recommend** users stick to qualified import, {i Belt.Set}, we may hide
-    the internal, {i i.e}, {i Belt_Set} in the future
+    we **strongly recommend** users stick to qualified import, _Belt.Set_, we may hide
+    the internal, _i.e_, _Belt_Set_ in the future
 
 *)
 

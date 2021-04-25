@@ -441,7 +441,7 @@ val everyU: 'a t -> ('a -> bool [@bs]) ->  bool
 val every: 'a t -> ('a -> bool ) ->  bool
 (** `every xs p`
 
-    @return true if all elements satisfy `p`, where `p` is a {i predicate}: a function taking
+    @return true if all elements satisfy `p`, where `p` is a _predicate_: a function taking
     an element and returning a `bool`.
 
     @example {[
@@ -454,7 +454,7 @@ val every: 'a t -> ('a -> bool ) ->  bool
 val someU: 'a t -> ('a -> bool [@bs]) -> bool
 val some: 'a t -> ('a -> bool ) -> bool
 (** `some xs p`
-    @return true if at least one of the elements in `xs` satifies `p`, where `p` is a {i predicate}: a function taking
+    @return true if at least one of the elements in `xs` satifies `p`, where `p` is a _predicate_: a function taking
     an element and returning a `bool`.
 
     @example {[
@@ -692,7 +692,7 @@ val setAssoc: ('a * 'c) t -> 'a -> 'c -> ('a -> 'a -> bool) -> ('a * 'c) t
         (fun a b -> a mod 12 = b mod 12) = [9, "morning"; 15, "afternoon"; 22, "night"]
     ]}
 
-    Note carefully the last example! Since `15 mod 12` equals `3 mod 12`, {i both} the key and value are
+    Note carefully the last example! Since `15 mod 12` equals `3 mod 12`, _both_ the key and value are
     replaced in the list.
 *)    
 

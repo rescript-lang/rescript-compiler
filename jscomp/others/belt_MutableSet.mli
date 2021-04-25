@@ -23,7 +23,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** A {i mutable} sorted set module which allows customize {i compare} behavior.
+(** A _mutable_ sorted set module which allows customize _compare_ behavior.
 
     Same as Belt.Set, but mutable.
 *)

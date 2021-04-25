@@ -57,7 +57,7 @@ external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
 (** `getUndefined arr i`
 
     It does the samething in the runtime as {!getUnsafe};
-    it is {i type safe} since the return type still track whether it is
+    it is _type safe_ since the return type still track whether it is
     in range or not
 *)
 
@@ -545,7 +545,7 @@ val someU: 'a array -> ('a -> bool [@bs]) -> bool
 val some: 'a array -> ('a -> bool) -> bool
 (** `some xs p`
 
-    @return `true` if at least one of the elements in `xs` satifies `p`, where `p` is a {i predicate}: a function taking
+    @return `true` if at least one of the elements in `xs` satifies `p`, where `p` is a _predicate_: a function taking
     an element and returning a `bool`.
 
     @example {[
@@ -558,7 +558,7 @@ val everyU: 'a array -> ('a -> bool [@bs]) -> bool
 val every: 'a array -> ('a -> bool ) -> bool
 (** `every xs p`
 
-    @return true if all elements satisfy `p`; where `p` is a {i predicate}: a function taking
+    @return true if all elements satisfy `p`; where `p` is a _predicate_: a function taking
     an element and returning a `bool`.
 
     @example {[

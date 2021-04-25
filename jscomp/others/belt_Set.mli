@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** A {i immutable} sorted set module which allows customize {i compare} behavior.
+(** A _immutable_ sorted set module which allows customize _compare_ behavior.
 
     The implementation uses balanced binary trees, and therefore searching
     and insertion take time logarithmic in the size of the map.

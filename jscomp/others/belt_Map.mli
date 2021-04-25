@@ -12,7 +12,7 @@
 (*  Adapted by authors of ReScript without using functors          *)
 (***********************************************************************)
 
-(** A {i immutable} sorted map module which allows customize {i compare} behavior.
+(** A _immutable_ sorted map module which allows customize _compare_ behavior.
 
     The implementation uses balanced binary trees, and therefore searching
     and insertion take time logarithmic in the size of the map.

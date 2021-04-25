@@ -27,7 +27,7 @@ module Int = Belt_MutableMapInt
 module String = Belt_MutableMapString
 
 
-(** A **mutable** sorted map module which allows customize {i compare} behavior.
+(** A **mutable** sorted map module which allows customize _compare_ behavior.
 
     Same as Belt.Map, but mutable.
 *)
