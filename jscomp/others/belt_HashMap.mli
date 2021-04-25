@@ -33,14 +33,14 @@
       type t = int
       module I0 =
         (val Belt.Id.hashableU
-            ~hash:(fun[\@bs] (a : t)  -> a & 0xff_ff)
-            ~eq:(fun[\@bs] a b -> a = b)
+            ~hash:(fun[@bs] (a : t)  -> a & 0xff_ff)
+            ~eq:(fun[@bs] a b -> a = b)
         )
       let s0 : (_, string,_) t = make ~hintSize:40 ~id:(module I0)
       module I1 =
         (val Belt.Id.hashableU
-            ~hash:(fun[\@bs] (a : t)  -> a & 0xff)
-            ~eq:(fun[\@bs] a b -> a = b)
+            ~hash:(fun[@bs] (a : t)  -> a & 0xff)
+            ~eq:(fun[@bs] a b -> a = b)
         )
       let s1 : (_, string,_) t  = make ~hintSize:40 ~id:(module I1)
     ]}

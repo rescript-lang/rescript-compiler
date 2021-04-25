@@ -39,7 +39,7 @@
 
 @example {[
 (* prints "7.7e+1" *)
-let _ = Js.log \@\@ Js.Int.toExponential 77
+let _ = Js.log @@ Js.Int.toExponential 77
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential> MDN
@@ -59,10 +59,10 @@ The output will be rounded or padded with zeroes if necessary.
 
 @example {[
 (* prints "7.70e+1" *)
-let _ = Js.log \@\@ Js.Int.toExponentialWithPrecision 77 ~digits:2
+let _ = Js.log @@ Js.Int.toExponentialWithPrecision 77 ~digits:2
 
 (* prints "5.68e+3" *)
-let _ = Js.log \@\@ Js.Int.toExponentialWithPrecision 5678 ~digits:2
+let _ = Js.log @@ Js.Int.toExponentialWithPrecision 5678 ~digits:2
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential> MDN
@@ -81,7 +81,7 @@ decimal point.
 
 @example {[
 (* prints "123456789" *)
-let _ = Js.log \@\@ Js.Int.toPrecision 123456789
+let _ = Js.log @@ Js.Int.toPrecision 123456789
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision> MDN
@@ -108,10 +108,10 @@ before the decimal point.
 
 @example {[
 (* prints "1.2e+8" *)
-let _ = Js.log \@\@ Js.Int.toPrecisionWithPrecision 123456789 ~digits:2
+let _ = Js.log @@ Js.Int.toPrecisionWithPrecision 123456789 ~digits:2
 
 (* prints "0.0" *)
-let _ = Js.log \@\@ Js.Int.toPrecisionWithPrecision 0 ~digits:2
+let _ = Js.log @@ Js.Int.toPrecisionWithPrecision 0 ~digits:2
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision> MDN
@@ -125,7 +125,7 @@ external toPrecisionWithPrecision : int -> digits:int -> string = "toPrecision" 
 
 @example {[
 (* prints "123456789" *)
-let _ = Js.log \@\@ Js.Int.toString 123456789
+let _ = Js.log @@ Js.Int.toString 123456789
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString> MDN
@@ -143,13 +143,13 @@ value must be in the range \`2, 36\` (inclusive).
 
 @example {[
 (* prints "110" *)
-let _ = Js.log \@\@ Js.Int.toStringWithRadix 6 ~radix:2
+let _ = Js.log @@ Js.Int.toStringWithRadix 6 ~radix:2
 
 (* prints "deadbeef" *)
-let _ = Js.log \@\@ Js.Int.toStringWithRadix 3735928559 ~radix:16
+let _ = Js.log @@ Js.Int.toStringWithRadix 3735928559 ~radix:16
 
 (* prints "2n9c" *)
-let _ = Js.log \@\@ Js.Int.toStringWithRadix 123456 ~radix:36
+let _ = Js.log @@ Js.Int.toStringWithRadix 123456 ~radix:36
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString> MDN

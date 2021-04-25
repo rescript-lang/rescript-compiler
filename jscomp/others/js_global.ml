@@ -50,7 +50,7 @@ let snooze mins =
   interval := Js.Nullable.return (Js.Global.setInterval remind (mins * 60 * 1000))
   
 let cancel () =
-  Js.Nullable.iter !interval (fun[\@bs] intervalId -> Js.Global.clearInterval intervalId)
+  Js.Nullable.iter !interval (fun[@bs] intervalId -> Js.Global.clearInterval intervalId)
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval> MDN
@@ -68,7 +68,7 @@ let work () =
   IO.closeHackerNewsTab ()
 
 let procrastinate mins =
-  Js.Nullable.iter !timer (fun[\@bs] timer -> Js.Global.clearTimeout timer);
+  Js.Nullable.iter !timer (fun[@bs] timer -> Js.Global.clearTimeout timer);
   timer := Js.Nullable.return (Js.Global.setTimeout work (mins * 60 * 1000))
 ]}
 

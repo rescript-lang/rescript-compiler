@@ -46,7 +46,7 @@
 
     {[
       val forEach  : 'a t -> ('a -> unit) -> unit
-      val forEachU : 'a t -> ('a -> unit [\@bs]) -> unit
+      val forEachU : 'a t -> ('a -> unit [@bs]) -> unit
     ]}
 
     In general, uncurried version will be faster, but it may be less familiar to
