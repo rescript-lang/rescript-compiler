@@ -48,7 +48,7 @@ external make : 'a -> t = "String" [@@bs.val]
 external fromCharCode : int -> t = "String.fromCharCode" [@@bs.val]
 
 external fromCharCodeMany : int array -> t = "String.fromCharCode" [@@bs.val] [@@bs.splice]
-(** `fromCharCodeMany \[|n1;n2;n3|\]` creates a string from the characters corresponding to the given numbers, using the same rules as `fromCharCode`.
+(** `fromCharCodeMany [|n1;n2;n3|]` creates a string from the characters corresponding to the given numbers, using the same rules as `fromCharCode`.
 
 @example {[
   fromCharCodeMany([|0xd55c, 0xae00, 33|]) = {js|한글!|js};;
@@ -68,7 +68,7 @@ external fromCharCodeMany : int array -> t = "String.fromCharCode" [@@bs.val] [@
 *)
 external fromCodePoint : int -> t = "String.fromCodePoint" [@@bs.val] (** ES2015 *)
 
-(** `fromCharCodeMany \[|n1;n2;n3|\]` creates a string from the characters corresponding to the given code point numbers, using the same rules as `fromCodePoint`.
+(** `fromCharCodeMany [|n1;n2;n3|]` creates a string from the characters corresponding to the given code point numbers, using the same rules as `fromCodePoint`.
 
 @example {[
   fromCodePointMany([|0xd55c; 0xae00; 0x1f63a|]) = {js|한글😺|js}
@@ -98,7 +98,7 @@ external length : t -> int = "length" [@@bs.get]
 *)
 external get : t -> int -> t = "" [@@bs.get_index]
 
-(** `charAt n s` gets the character at index `n` within string `s`. If `n` is negative or greater than the length of `s`, returns the empty string. If the string contains characters outside the range [\u0000-\uffff], it will return the first 16-bit value at that position in the string.
+(** `charAt n s` gets the character at index `n` within string `s`. If `n` is negative or greater than the length of `s`, returns the empty string. If the string contains characters outside the range `\u0000-\uffff`, it will return the first 16-bit value at that position in the string.
 
 @example {[
   charAt "Reason" 0 = "R"
@@ -268,7 +268,7 @@ external localeCompare : t -> t -> float = "localeCompare" [@@bs.send]
 @example {[
   match "The better bats" [%re "/b`aeiou`t/"] = Some [|"bet"|]
   match "The better bats" [%re "/b`aeiou`t/g"] = Some [|"bet";"bat"|]
-  match "Today is 2018-04-05." [%re "/(\\d+)-(\\d+)-(\\d+)/"] = Some [|"2018-04-05"; "2018"; "04"; "05"|]
+  match "Today is 2018-04-05." [%re "/(\d+)-(\d+)-(\d+)/"] = Some [|"2018-04-05"; "2018"; "04"; "05"|]
   match "The large container." [%re "/b`aeiou`g/"] = None
 ]}
 
@@ -277,7 +277,7 @@ external match_ : t -> Js_re.t -> t option array option = "match" [@@bs.send] [@
 
 (** `normalize str` returns the normalized Unicode string using Normalization Form Canonical (NFC) Composition.
 
-Consider the character `ã`, which can be represented as the single codepoint [\u00e3] or the combination of a lower case letter A [\u0061] and a combining tilde [\u0303]. Normalization ensures that both can be stored in an equivalent binary representation.
+Consider the character `ã`, which can be represented as the single codepoint `\u00e3` or the combination of a lower case letter A `\u0061` and a combining tilde `\u0303`. Normalization ensures that both can be stored in an equivalent binary representation.
 
 @see <https://www.unicode.org/reports/tr15/tr15-45.html> Unicode technical report for details
 *)
@@ -326,7 +326,7 @@ have been replaced by `replacement`.
 
 @example {[
   replaceByRe "vowels be gone" [%re "/`aeiou`/g"] "x" = "vxwxls bx gxnx"
-  replaceByRe "Juan Fulano" [%re "/(\\w+) (\\w+)/"] "$2, $1" = "Fulano, Juan"
+  replaceByRe "Juan Fulano" [%re "/(\w+) (\w+)/"] "$2, $1" = "Fulano, Juan"
 ]}
 *)
 external replaceByRe : t -> Js_re.t -> t -> t = "replace" [@@bs.send]
@@ -358,7 +358,7 @@ the offset at which the match begins, and the whole string being matched.
 
 @example {[
 let str = "increment 23"
-let re = [%re "/increment (\\d+)/g"]
+let re = [%re "/increment (\d+)/g"]
 let matchFn matchPart p1 offset wholeString =
   wholeString ^ " is " ^ (string_of_int ((int_of_string p1) + 1))
 
@@ -378,7 +378,7 @@ the offset at which the match begins, and the whole string being matched.
 
 @example {[
 let str = "7 times 6"
-let re = [%re "/(\\d+) times (\\d+)/"]
+let re = [%re "/(\d+) times (\d+)/"]
 let matchFn matchPart p1 p2 offset wholeString =
   string_of_int ((int_of_string p1) * (int_of_string p2))
 
@@ -403,8 +403,8 @@ external unsafeReplaceBy3 : t -> Js_re.t -> (t -> t -> t -> t -> int -> t -> t [
 (** `search regexp str` returns the starting position of the first match of `regexp` in the given `str`, or -1 if there is no match.
 
 @example {[
-search "testing 1 2 3" [%re "/\\d+/"] = 8;;
-search "no numbers" [%re "/\\d+/"] = -1;;
+search "testing 1 2 3" [%re "/\d+/"] = 8;;
+search "no numbers" [%re "/\d+/"] = -1;;
 ]}
 *)
 external search : t -> Js_re.t -> int = "search" [@@bs.send]
@@ -469,7 +469,7 @@ external splitAtMost: t -> t -> limit:int -> t array = "split" [@@bs.send]
   array of the resulting substrings.
 
 @example {[
-  splitByRe "art; bed , cog ;dad" [%re "/\\s*[,;]\\s*/"] = [|"art"; "bed"; "cog"; "dad"|];;
+  splitByRe "art; bed , cog ;dad" [%re "/\s*[,;]\s*/"] = [|"art"; "bed"; "cog"; "dad"|];;
   splitByRe "has:no:match" [%re "/[,;]/"] = [|"has:no:match"|];;
 ]};
 *)
@@ -480,9 +480,9 @@ external splitByRe : t -> Js_re.t -> t option array = "split" [@@bs.send]
   array of the first `n` resulting substrings. If `n` is negative or greater than the number of substrings, the array will contain all the substrings.
 
 @example {[
-  splitByReAtMost "one: two: three: four" [%re "/\\s*:\\s*/"] ~limit: 3 = [|"one"; "two"; "three"|];;
-  splitByReAtMost "one: two: three: four" [%re "/\\s*:\\s*/"] ~limit: 0 = [| |];;
-  splitByReAtMost "one: two: three: four" [%re "/\\s*:\\s*/"] ~limit: 8 = [|"one"; "two"; "three"; "four"|];;
+  splitByReAtMost "one: two: three: four" [%re "/\s*:\s*/"] ~limit: 3 = [|"one"; "two"; "three"|];;
+  splitByReAtMost "one: two: three: four" [%re "/\s*:\s*/"] ~limit: 0 = [| |];;
+  splitByReAtMost "one: two: three: four" [%re "/\s*:\s*/"] ~limit: 8 = [|"one"; "two"; "three"; "four"|];;
 ]};
 *)
 external splitByReAtMost : t -> Js_re.t -> limit:int ->  t option array = "split" [@@bs.send]

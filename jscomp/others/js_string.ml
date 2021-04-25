@@ -50,7 +50,7 @@ external make : 'a -> t = "String" [@@bs.val]
 external fromCharCode : int -> t = "String.fromCharCode" [@@bs.val]
 
 external fromCharCodeMany : int array -> t = "String.fromCharCode" [@@bs.val] [@@bs.splice]
-(** `fromCharCodeMany \[|n1;n2;n3|\]` creates a string from the characters corresponding to the given numbers, using the same rules as `fromCharCode`.
+(** `fromCharCodeMany [|n1;n2;n3|]` creates a string from the characters corresponding to the given numbers, using the same rules as `fromCharCode`.
 
 @example {[
   fromCharCodeMany([|0xd55c, 0xae00, 33|]) = {js|한글!|js};;
@@ -70,7 +70,7 @@ external fromCharCodeMany : int array -> t = "String.fromCharCode" [@@bs.val] [@
 *)
 external fromCodePoint : int -> t = "String.fromCodePoint" [@@bs.val] (** ES2015 *)
 
-(** `fromCharCodeMany \[|n1;n2;n3|\]` creates a string from the characters corresponding to the given code point numbers, using the same rules as `fromCodePoint`.
+(** `fromCharCodeMany [|n1;n2;n3|]` creates a string from the characters corresponding to the given code point numbers, using the same rules as `fromCodePoint`.
 
 @example {[
   fromCodePointMany([|0xd55c; 0xae00; 0x1f63a|]) = {js|한글😺|js}
@@ -100,7 +100,7 @@ external length : t -> int = "length" [@@bs.get]
 *)
 external get : t -> int -> t = "" [@@bs.get_index]
 
-(** `charAt n s` gets the character at index `n` within string `s`. If `n` is negative or greater than the length of `s`, returns the empty string. If the string contains characters outside the range [\u0000-\uffff], it will return the first 16-bit value at that position in the string.
+(** `charAt n s` gets the character at index `n` within string `s`. If `n` is negative or greater than the length of `s`, returns the empty string. If the string contains characters outside the range `\u0000-\uffff`, it will return the first 16-bit value at that position in the string.
 
 @example {[
   charAt 0, "Reason" = "R"
@@ -270,7 +270,7 @@ external localeCompare : t -> float = "localeCompare" [@@bs.send.pipe: t]
 @example {[
   match [%re "/b`aeiou`t/"] "The better bats" = Some [|"bet"|]
   match [%re "/b`aeiou`t/g"] "The better bats" = Some [|"bet";"bat"|]
-  match [%re "/(\\d+)-(\\d+)-(\\d+)/"] "Today is 2018-04-05." =
+  match [%re "/(\d+)-(\d+)-(\d+)/"] "Today is 2018-04-05." =
     Some [|"2018-04-05"; "2018"; "04"; "05"|]
   match [%re "/b`aeiou`g/"] "The large container." = None
 ]}
@@ -280,7 +280,7 @@ external match_ : Js_re.t -> t option array option = "match" [@@bs.send.pipe: t]
 
 (** `normalize str` returns the normalized Unicode string using Normalization Form Canonical (NFC) Composition.
 
-Consider the character `ã`, which can be represented as the single codepoint [\u00e3] or the combination of a lower case letter A [\u0061] and a combining tilde [\u0303]. Normalization ensures that both can be stored in an equivalent binary representation.
+Consider the character `ã`, which can be represented as the single codepoint `\u00e3` or the combination of a lower case letter A `\u0061` and a combining tilde `\u0303`. Normalization ensures that both can be stored in an equivalent binary representation.
 
 @see <https://www.unicode.org/reports/tr15/tr15-45.html> Unicode technical report for details
 *)
@@ -329,7 +329,7 @@ have been replaced by `replacement`.
 
 @example {[
   replaceByRe [%re "/`aeiou`/g"] "x" "vowels be gone" = "vxwxls bx gxnx"
-  replaceByRe [%re "/(\\w+) (\\w+)/"] "$2, $1" "Juan Fulano" = "Fulano, Juan"
+  replaceByRe [%re "/(\w+) (\w+)/"] "$2, $1" "Juan Fulano" = "Fulano, Juan"
 ]}
 *)
 external replaceByRe : Js_re.t ->  t ->  t = "replace" [@@bs.send.pipe: t]
@@ -361,7 +361,7 @@ the offset at which the match begins, and the whole string being matched.
 
 @example {[
 let str = "increment 23"
-let re = [%re "/increment (\\d+)/g"]
+let re = [%re "/increment (\d+)/g"]
 let matchFn matchPart p1 offset wholeString =
   wholeString ^ " is " ^ (string_of_int ((int_of_string p1) + 1))
 
@@ -381,7 +381,7 @@ the offset at which the match begins, and the whole string being matched.
 
 @example {[
 let str = "7 times 6"
-let re = [%re "/(\\d+) times (\\d+)/"]
+let re = [%re "/(\d+) times (\d+)/"]
 let matchFn matchPart p1 p2 offset wholeString =
   string_of_int ((int_of_string p1) * (int_of_string p2))
 
@@ -406,8 +406,8 @@ external unsafeReplaceBy3 : Js_re.t -> (t -> t -> t -> t -> int -> t -> t [@bs.u
 (** `search regexp str` returns the starting position of the first match of `regexp` in the given `str`, or -1 if there is no match.
 
 @example {[
-search [%re "/\\d+/"] "testing 1 2 3" = 8;;
-search [%re "/\\d+/"] "no numbers" = -1;;
+search [%re "/\d+/"] "testing 1 2 3" = 8;;
+search [%re "/\d+/"] "no numbers" = -1;;
 ]}
 *)
 external search : Js_re.t -> int = "search" [@@bs.send.pipe: t]
@@ -478,7 +478,7 @@ external splitLimited : t -> int -> t array = "split" [@@bs.send.pipe: t]
   array of the resulting substrings.
 
 @example {[
-  splitByRe [%re "/\\s*[,;]\\s*/"] "art; bed , cog ;dad" = [|Some "art"; Some "bed"; Some "cog"; Some "dad"|];;
+  splitByRe [%re "/\s*[,;]\s*/"] "art; bed , cog ;dad" = [|Some "art"; Some "bed"; Some "cog"; Some "dad"|];;
   splitByRe [%re "/[,;]/"] "has:no:match" = [|Some "has:no:match"|];;
   splitByRe [%re "/(#)(:)?/"] "a#b#:c" = [|Some "a"; Some "#"; None; Some "b"; Some "#"; Some ":"; Some "c"|];;
 ]};
@@ -490,9 +490,9 @@ external splitByRe : Js_re.t ->  t option array = "split" [@@bs.send.pipe: t]
   array of the first `n` resulting substrings. If `n` is negative or greater than the number of substrings, the array will contain all the substrings.
 
 @example {[
-  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 3 "one: two: three: four" = [|Some "one"; Some "two"; Some "three"|];;
-  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 0 "one: two: three: four" = [| |];;
-  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 8 "one: two: three: four" = [|Some "one"; Some "two"; Some "three"; Some "four"|];;
+  splitByReAtMost [%re "/\s*:\s*/"] ~limit: 3 "one: two: three: four" = [|Some "one"; Some "two"; Some "three"|];;
+  splitByReAtMost [%re "/\s*:\s*/"] ~limit: 0 "one: two: three: four" = [| |];;
+  splitByReAtMost [%re "/\s*:\s*/"] ~limit: 8 "one: two: three: four" = [|Some "one"; Some "two"; Some "three"; Some "four"|];;
   splitByReAtMost [%re "/(#)(:)?/"] ~limit:3 "a#b#:c" = [|Some "a"; Some "#"; None|];;
 ]};
 *)

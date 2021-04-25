@@ -179,10 +179,10 @@ external pow_int : base:int -> exp:int -> int = "pow" [@@bs.val] [@@bs.scope "Ma
 (** base to the power of the exponent *)
 external pow_float : base:float -> exp:float -> float = "pow" [@@bs.val] [@@bs.scope "Math"]
 
-(** random number in \[0,1) *)
+(** random number in [0,1) *)
 external random : unit -> float = "random" [@@bs.val] [@@bs.scope "Math"]
 
-(** random number in \[min,max) *)
+(** random number in [min,max) *)
 let random_int min max =
   floor ((random ()) *. (Js_int.toFloat (max - min))) + min
 

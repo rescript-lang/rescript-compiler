@@ -35,7 +35,7 @@
 
 {b Returns} a `string` representing the given value in exponential notation
 
-@raise RangeError if digits is not in the range \`0, 20\` (inclusive)
+@raise RangeError if digits is not in the range [0, 20] (inclusive)
 
 @example {[
 (* prints "7.7e+1" *)
@@ -49,13 +49,13 @@ external toExponential : int -> string = "toExponential" [@@bs.send]
 (** Formats an `int` using exponential (scientific) notation
 
 {b digits} specifies how many digits should appear after the decimal point. The
-value must be in the range \`0, 20\` (inclusive).
+value must be in the range [0, 20] (inclusive).
 
 {b Returns} a `string` representing the given value in exponential notation
 
 The output will be rounded or padded with zeroes if necessary.
 
-@raise RangeError if digits is not in the range \`0, 20\` (inclusive)
+@raise RangeError if digits is not in the range [0, 20] (inclusive)
 
 @example {[
 (* prints "7.70e+1" *)
@@ -135,11 +135,11 @@ external toString : int -> string = "toString" [@@bs.send]
 (** Formats an `int` as a string
 
 {b radix} specifies the radix base to use for the formatted number. The
-value must be in the range \`2, 36\` (inclusive).
+value must be in the range [2, 36] (inclusive).
 
 {b Returns} a `string` representing the given value in fixed-point (usually)
 
-@raise RangeError if radix is not in the range \`2, 36\` (inclusive)
+@raise RangeError if radix is not in the range [2, 36] (inclusive)
 
 @example {[
 (* prints "110" *)

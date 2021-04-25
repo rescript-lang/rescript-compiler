@@ -25,7 +25,7 @@
 (** Provides bindings for JavaScript Regular Expressions
 
 {4 Syntax sugar}
-ReScript provides a bit of syntax sugar for regex literals: `\[%re "/foo/g"\]`
+ReScript provides a bit of syntax sugar for regex literals: `[%re "/foo/g"]`
 will evaluate to a {! t} that can be passed around and used like usual.
 
 {b Note:} This is not an immutable API. A RegExp object with the `global` ("g")
@@ -33,7 +33,7 @@ flag set will modify the {! lastIndex} property when the RegExp object is used,
 and subsequent uses will ocntinue the search from the previous {! lastIndex}.
 
 @example {[
-let maybeMatches = "banana" |> Js.String.match_ \[%re "/na+/g"\]
+let maybeMatches = "banana" |> Js.String.match_ [%re "/na+/g"]
 ]}
 
 @see
@@ -69,14 +69,14 @@ external input : result -> string = "input" [@@bs.get]
 
 (** Constructs a RegExp object ({! t}) from a string
 
-Regex literals (`\[%re "/.../"\]`) should generally be preferred, but
+Regex literals (`[%re "/.../"]`) should generally be preferred, but
 `fromString` is very useful when you need to insert a string into a regex.
 
 @example {[
 (* A function that extracts the content of the first element with the given tag *)
 
 let contentOf tag xmlString =
-  Js.Re.fromString ("<" ^ tag ^ ">(.*?)<\\/" ^ tag ^">")
+  Js.Re.fromString ("<" ^ tag ^ ">(.*?)<\/" ^ tag ^">")
     |> Js.Re.exec xmlString
     |> function
       | Some result -> Js.Nullable.toOption (Js.Re.captures result).(1)

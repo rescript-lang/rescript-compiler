@@ -25,7 +25,7 @@
 (** Provides functions for inspecting and maniplating native JavaScript objects
 *)
 
-(** `empty ()` returns the empty object [\{\}] *)
+(** `empty ()` returns the empty object `{}` *)
 external empty : unit -> < .. >  = "" [@@bs.obj]
 
 (** `assign target source` copies properties from `source` to `target`
