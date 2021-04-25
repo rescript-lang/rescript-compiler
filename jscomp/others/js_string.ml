@@ -242,10 +242,9 @@ external lastIndexOfFrom : t -> int -> int = "lastIndexOf" [@@bs.send.pipe: t]
 (**
   `localeCompare comparison reference` returns
 
-{ul
-  {- a negative value if `reference` comes before `comparison` in sort order}
-  {- zero if `reference` and `comparison` have the same sort order}
-  {- a positive value if `reference` comes after `comparison` in sort order}}
+  - a negative value if `reference` comes before `comparison` in sort order
+  - zero if `reference` and `comparison` have the same sort order
+  - a positive value if `reference` comes after `comparison` in sort order
 
 @example {[
   (localeCompare "ant" "zebra") > 0.0;;
@@ -260,10 +259,8 @@ external localeCompare : t -> float = "localeCompare" [@@bs.send.pipe: t]
   `match regexp str` matches a string against the given `regexp`. If there is no match, it returns `None`.
   For regular expressions without the `g` modifier, if there is a match, the return value is `Some array` where the array contains:
 
-  {ul
-    {- The entire matched string}
-    {- Any capture groups if the `regexp` had parentheses}
-  }
+  - The entire matched string
+  - Any capture groups if the `regexp` had parentheses
 
   For regular expressions with the `g` modifier, a matched expression returns `Some array` with all the matched substrings and no capture groups.
 
@@ -289,12 +286,10 @@ external normalize : t = "normalize" [@@bs.send.pipe: t] (** ES2015 *)
 (**
   `normalize str form` (ES2015) returns the normalized Unicode string using the specified form of normalization, which may be one of:
 
-  {ul
-    {- "NFC" — Normalization Form Canonical Composition.}
-    {- "NFD" — Normalization Form Canonical Decomposition.}
-    {- "NFKC" — Normalization Form Compatibility Composition.}
-    {- "NFKD" — Normalization Form Compatibility Decomposition.}
-  }
+  - "NFC" — Normalization Form Canonical Composition.
+  - "NFD" — Normalization Form Canonical Decomposition.
+  - "NFKC" — Normalization Form Compatibility Composition.
+  - "NFKD" — Normalization Form Compatibility Decomposition.
 
   @see <https://www.unicode.org/reports/tr15/tr15-45.html> Unicode technical report for details
 *)

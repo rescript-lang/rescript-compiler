@@ -33,11 +33,9 @@
     better end-to-end user experience, since the original OCaml stdlib was not
     written with JS in mind. Below is a list of areas this lib aims to
     improve:
-    {ol
-    {- Consistency in name convention: camlCase, and arguments order}
-    {- Exception thrown functions are all suffixed with _Exn_, e.g, _getExn_}
-    {- Better performance and smaller code size running on JS platform}
-    }
+    1. Consistency in name convention: camlCase, and arguments order
+    2. Exception thrown functions are all suffixed with _Exn_, e.g, _getExn_
+    3. Better performance and smaller code size running on JS platform
 
     **Name Convention**
 
