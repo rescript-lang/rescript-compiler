@@ -139,4 +139,4 @@ let mapi f a =
 let append x a =
   Js_array2.concat a [|x|]
 
-(* TODO: add [append] *)
+(* TODO: add `append` *)

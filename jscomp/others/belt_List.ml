@@ -70,7 +70,7 @@ external mutableCell :
 
 
 (*
-    [mutableCell x []] == [x]
+    `mutableCell x []` == `x`
     but tell the compiler that is a mutable cell, so it wont
     be mis-inlined in the future
      dont inline a binding to mutable cell, it is mutable
@@ -107,7 +107,7 @@ let tailExn x =
 
 let add xs x  = x :: xs
 
-(* Assume [n >=0] *)
+(* Assume `n >=0` *)
 let rec nthAux x n =
   match x with
   | h::t -> if n = 0 then Some h else nthAux t (n - 1)
@@ -283,7 +283,7 @@ let rec splitAtAux n cell prec =
      unsafeMutateTail prec cell;
       splitAtAux (n - 1) xs cell
 
-(* invarint [n >= 0] *)
+(* invarint `n >= 0` *)
 let  take lst n =
   if n < 0 then None
   else
@@ -296,7 +296,7 @@ let  take lst n =
       let has = takeAux (n-1) xs cell in
       if has then Some cell
       else None
-(* invariant [n >= 0 ] *)
+(* invariant `n >= 0 ` *)
 let rec dropAux l n =
   if n = 0 then Some l
   else

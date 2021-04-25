@@ -32,7 +32,7 @@ external option : ?cwd:string -> ?encoding:string -> unit -> option = "" [@@bs.o
 external execSync : string -> option -> string = "execSync" [@@bs.module "child_process"]
 
 (* Note we have to make it abstract type, since if you declare it as
-   [ < pid : float > Js.t ], then you will create other external
+   ` < pid : float > Js.t `, then you will create other external
    functions which will work with this type too, it is not what you want
 *)
 type spawnResult

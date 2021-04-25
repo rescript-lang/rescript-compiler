@@ -25,7 +25,7 @@
 
 
 (** Contains functions available in the global scope
-    ([window] in a browser context) *)
+    (`window` in a browser context) *)
 
 
 type intervalId
@@ -159,7 +159,7 @@ external setTimeoutFloat : (unit -> unit) -> float -> timeoutId = "setTimeout" [
 external encodeURI : string -> string = "encodeURI" [@@bs.val]
 
 
-(** Decodes a URL-enmcoded string produced by [encodeURI]
+(** Decodes a URL-enmcoded string produced by `encodeURI`
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI> MDN
 *)
@@ -172,7 +172,7 @@ external decodeURI : string -> string = "decodeURI" [@@bs.val]
 external encodeURIComponent : string -> string = "encodeURIComponent" [@@bs.val]
 
 
-(** Decodes a URL-enmcoded string produced by [encodeURIComponent]
+(** Decodes a URL-enmcoded string produced by `encodeURIComponent`
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent> MDN
 *)

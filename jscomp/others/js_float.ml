@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Provides functions for inspecting and manipulating [float]s
+(** Provides functions for inspecting and manipulating `float`s
 *)
 
 (** The special value "Not a Number"
@@ -31,12 +31,12 @@
 *)
 external _NaN : float = "NaN" [@@bs.val] 
 
-(** Tests if the given value is [_NaN]
+(** Tests if the given value is `_NaN`
 
-Note that both [_NaN = _NaN] and [_NaN == _NaN] will return [false]. [isNaN] is
-therefore necessary to test for [_NaN].
+Note that both `_NaN = _NaN` and `_NaN == _NaN` will return `false`. `isNaN` is
+therefore necessary to test for `_NaN`.
 
-{b Returns} [true] if the given value is [_NaN], [false] otherwise
+{b Returns} `true` if the given value is `_NaN`, `false` otherwise
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN> MDN
 *)
@@ -44,19 +44,19 @@ external isNaN : float -> bool = "isNaN" [@@bs.val] [@@bs.scope "Number"]
 
 (** Tests if the given value is finite
 
-{b Returns} [true] if the given value is a finite number, [false] otherwise
+{b Returns} `true` if the given value is a finite number, `false` otherwise
 
 @example {[
-(* returns [false] *)
+(* returns `false` *)
 let _ = Js.Float.isFinite infinity
 
-(* returns [false] *)
+(* returns `false` *)
 let _ = Js.Float.isFinite neg_infinity
 
-(* returns [false] *)
+(* returns `false` *)
 let _ = Js.Float.isFinite _NaN
 
-(* returns [true] *)
+(* returns `true` *)
 let _ = Js.Float.isFinite 1234
 ]}
 
@@ -64,11 +64,11 @@ let _ = Js.Float.isFinite 1234
 *)
 external isFinite : float -> bool = "isFinite" [@@bs.val] [@@bs.scope "Number"]
 
-(** Formats a [float] using exponential (scientific) notation
+(** Formats a `float` using exponential (scientific) notation
 
-{b Returns} a [string] representing the given value in exponential notation
+{b Returns} a `string` representing the given value in exponential notation
 
-@raise RangeError if digits is not in the range \[0, 20\] (inclusive)
+@raise RangeError if digits is not in the range \`0, 20\` (inclusive)
 
 @example {[
 (* prints "7.71234e+1" *)
@@ -82,16 +82,16 @@ let _ = Js.log \@\@ Js.Float.toExponential 77.
 *)
 external toExponential : float -> string = "toExponential" [@@bs.send]
 
-(** Formats a [float] using exponential (scientific) notation
+(** Formats a `float` using exponential (scientific) notation
 
 {b digits} specifies how many digits should appear after the decimal point. The
-value must be in the range \[0, 20\] (inclusive).
+value must be in the range \`0, 20\` (inclusive).
 
-{b Returns} a [string] representing the given value in exponential notation
+{b Returns} a `string` representing the given value in exponential notation
 
 The output will be rounded or padded with zeroes if necessary.
 
-@raise RangeError if digits is not in the range \[0, 20\] (inclusive)
+@raise RangeError if digits is not in the range \`0, 20\` (inclusive)
 
 @example {[
 (* prints "7.71e+1" *)
@@ -102,11 +102,11 @@ let _ = Js.log \@\@ Js.Float.toExponentialWithPrecision 77.1234 ~digits:2
 *)
 external toExponentialWithPrecision : float -> digits:int -> string = "toExponential" [@@bs.send]
 
-(** Formats a [float] using fixed point notation
+(** Formats a `float` using fixed point notation
 
-{b Returns} a [string] representing the given value in fixed-point notation (usually)
+{b Returns} a `string` representing the given value in fixed-point notation (usually)
 
-@raise RangeError if digits is not in the range \[0, 20\] (inclusive)
+@raise RangeError if digits is not in the range \`0, 20\` (inclusive)
 
 @example {[
 (* prints "12346" (note the rounding) *)
@@ -120,16 +120,16 @@ let _ = Js.log \@\@ Js.Float.toFixed 1.2e21
 *)
 external toFixed : float -> string = "toFixed" [@@bs.send]
 
-(** Formats a [float] using fixed point notation
+(** Formats a `float` using fixed point notation
 
 {b digits} specifies how many digits should appear after the decimal point. The
-value must be in the range \[0, 20\] (inclusive). Defaults to [0].
+value must be in the range \`0, 20\` (inclusive). Defaults to `0`.
 
-{b Returns} a [string] representing the given value in fixed-point notation (usually)
+{b Returns} a `string` representing the given value in fixed-point notation (usually)
 
 The output will be rounded or padded with zeroes if necessary.
 
-@raise RangeError if digits is not in the range \[0, 20\] (inclusive)
+@raise RangeError if digits is not in the range \`0, 20\` (inclusive)
 
 @example {[
 (* prints "12345.7" (note the rounding) *)
@@ -143,11 +143,11 @@ let _ = Js.log \@\@ Js.Float.toFixedWithPrecision 0. ~digits:2
 *)
 external toFixedWithPrecision : float -> digits:int -> string = "toFixed" [@@bs.send]
 
-(** Formats a [float] using some fairly arbitrary rules
+(** Formats a `float` using some fairly arbitrary rules
 
-{b Returns} a [string] representing the given value in fixed-point (usually)
+{b Returns} a `string` representing the given value in fixed-point (usually)
 
-[toPrecision] differs from [toFixed] in that the former will format the number
+`toPrecision` differs from `toFixed` in that the former will format the number
 with full precision, while the latter will not output any digits after the
 decimal point.
 
@@ -165,19 +165,19 @@ let _ = Js.log \@\@ Js.Float.toPrecision 1.2e21
 *)
 external toPrecision : float -> string = "toPrecision" [@@bs.send] (* equivalent to `toString` I think *)
 
-(** Formats a [float] using some fairly arbitrary rules
+(** Formats a `float` using some fairly arbitrary rules
 
 {b digits} specifies how many digits should appear in total. The
 value must between 0 and some arbitrary number that's hopefully at least larger
 than 20 (for Node it's 21. Why? Who knows).
 
-{b Returns} a [string] representing the given value in fixed-point or scientific notation
+{b Returns} a `string` representing the given value in fixed-point or scientific notation
 
 The output will be rounded or padded with zeroes if necessary.
 
-[toPrecisionWithPrecision] differs from [toFixedWithPrecision] in that the former
+`toPrecisionWithPrecision` differs from `toFixedWithPrecision` in that the former
 will count all digits against the precision, while the latter will count only
-the digits after the decimal point. [toPrecisionWithPrecision] will also use
+the digits after the decimal point. `toPrecisionWithPrecision` will also use
 scientific notation if the specified precision is less than the number for digits
 before the decimal point.
 
@@ -196,9 +196,9 @@ let _ = Js.log \@\@ Js.Float.toPrecisionWithPrecision 0. ~digits:2
 external toPrecisionWithPrecision : float -> digits:int -> string = "toPrecision" [@@bs.send]
 
 
-(** Formats a [float] as a string
+(** Formats a `float` as a string
 
-{b Returns} a [string] representing the given value in fixed-point (usually)
+{b Returns} a `string` representing the given value in fixed-point (usually)
 
 @example {[
 (* prints "12345.6789" *)
@@ -209,14 +209,14 @@ let _ = Js.log \@\@ Js.Float.toString 12345.6789
 *)
 external toString : float -> string = "toString" [@@bs.send]
 
-(** Formats a [float] as a string
+(** Formats a `float` as a string
 
 {b radix} specifies the radix base to use for the formatted number. The
-value must be in the range \[2, 36\] (inclusive).
+value must be in the range \`2, 36\` (inclusive).
 
-{b Returns} a [string] representing the given value in fixed-point (usually)
+{b Returns} a `string` representing the given value in fixed-point (usually)
 
-@raise RangeError if radix is not in the range \[2, 36\] (inclusive)
+@raise RangeError if radix is not in the range \`2, 36\` (inclusive)
 
 @example {[
 (* prints "110" *)
@@ -236,9 +236,9 @@ let _ = Js.log \@\@ Js.Float.toStringWithRadix 123.456 ~radix:36
 *)
 external toStringWithRadix : float -> radix:int -> string = "toString" [@@bs.send]
 
-(** Parses the given [string] into a [float] using JavaScript semantics
+(** Parses the given `string` into a `float` using JavaScript semantics
 
-{b Returns} the number as a [float] if successfully parsed, [_NaN] otherwise.
+{b Returns} the number as a `float` if successfully parsed, `_NaN` otherwise.
 
 @example {[
 (* returns 123 *)
@@ -259,10 +259,10 @@ let _ = Js.Float.fromString "0b11"
 (* returns 9 *)
 let _ = Js.Float.fromString "0o11"
 
-(* returns [_NaN] *)
+(* returns `_NaN` *)
 let _ = Js.Float.fromString "foo"
 
-(* returns [_NaN] *)
+(* returns `_NaN` *)
 let _ = Js.Float.fromString "100a"
 ]}
 *)

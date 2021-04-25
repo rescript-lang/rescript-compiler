@@ -295,7 +295,7 @@ let rec keepSharedU n p =
   match  n with
     None -> None
   | Some n  ->
-    (* call [p] in the expected left-to-right order *)
+    (* call `p` in the expected left-to-right order *)
     let  {key = v; value = d} =  n   in
     let newLeft =  keepSharedU n.left p in
     let pvd = p v d [@bs] in
@@ -308,7 +308,7 @@ let rec keepMapU n p =
   match  n with
     None -> None
   | Some n  ->
-    (* call [p] in the expected left-to-right order *)
+    (* call `p` in the expected left-to-right order *)
     let  {key = v; value = d} =  n  in
     let newLeft = keepMapU n.left  p in
     let pvd = p v d [@bs] in
@@ -324,7 +324,7 @@ let rec partitionSharedU n p =
     None -> (None, None)
   | Some n  ->
     let  {key; value } =  n  in
-    (* call [p] in the expected left-to-right order *)
+    (* call `p` in the expected left-to-right order *)
     let (lt, lf) =  partitionSharedU n.left p in
     let pvd = p key value [@bs] in
     let (rt, rf) = partitionSharedU n.right p in

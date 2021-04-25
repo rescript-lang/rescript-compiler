@@ -32,7 +32,7 @@ type ('key, 'id) cmp = ('key, 'id)  Belt_Id.cmp
 
 (* here we relies on reference transparence
    address equality means everything equal across time
-   no need to call [bal] again
+   no need to call `bal` again
 *)  
 let rec add  (t : _ t) x  ~cmp : _ t =
   match t with 
@@ -147,7 +147,7 @@ let split  (t : _ t) x  ~cmp  =
     let v = splitAuxPivot ~cmp n x  pres in 
     v, pres.contents
 
-(* [union s1 s2]
+(* `union s1 s2`
    Use the pivot to split the smaller collection
 *)      
 let rec union (s1 : _ t) (s2 : _ t) ~cmp : _ t =

@@ -58,7 +58,7 @@ external normalize : string -> string = "normalize" [@@bs.module "path"]
 (* TODO: check if there is an exception raised *)
 external parse : string -> pathObject = "parse" [@@bs.module "path"]
 
-(* TODO: provide bindings to [path.posix]*)
+(* TODO: provide bindings to `path.posix`*)
 
 external relative : from:string -> to_:string -> unit -> string =
   "relative" [@@bs.module "path"]
@@ -68,4 +68,4 @@ external resolve : string -> string -> string = "resolve" [@@bs.module "path"]
 
 external sep : string = "sep" [@@bs.module "path"]
 
-(* TODO: provides [path.win32] *)
+(* TODO: provides `path.win32` *)

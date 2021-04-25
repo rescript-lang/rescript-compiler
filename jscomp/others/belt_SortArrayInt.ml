@@ -34,7 +34,7 @@ let strictlySortedLength (xs : element array) =
     else 1  
 
 let rec isSortedAux (a : element array) i  last_bound = 
-  (* when [i = len - 1], it reaches the last element*)
+  (* when `i = len - 1`, it reaches the last element*)
   if i = last_bound then true 
   else 
   if A.getUnsafe a i <= A.getUnsafe a (i+1)  then 
@@ -79,7 +79,7 @@ let union (src : element array) src1ofs src1len src2 src2ofs src2len dst dstofs 
   let rec loop i1 s1 i2 s2 d =
     (* let c = cmp s1 s2 [@bs] in  *)
     if s1 < s2 then begin
-      (* [s1] is larger than all elements in [d] *)
+      (* `s1` is larger than all elements in `d` *)
       A.setUnsafe dst d s1; 
       let i1 = i1 + 1 in
       let d = d + 1 in 
@@ -238,12 +238,12 @@ let rec binarySearchAux (arr : element array) lo hi key =
     let midVal = A.getUnsafe arr mid in 
     (* let c = cmp key midVal [@bs] in  *)
     if key = midVal then mid 
-    else if key < midVal then  (*  a[lo] =< key < a[mid] <= a[hi] *)
+    else if key < midVal then  (*  a`lo` =< key < a`mid` <= a`hi` *)
       if hi = mid then  
         if  (A.getUnsafe arr lo) = key  then lo
         else - (hi + 1)
       else binarySearchAux arr lo mid key 
-    else  (*  a[lo] =< a[mid] < key <= a[hi] *)
+    else  (*  a`lo` =< a`mid` < key <= a`hi` *)
       if lo = mid then 
         if (A.getUnsafe arr hi) = key  then hi
         else - (hi + 1)

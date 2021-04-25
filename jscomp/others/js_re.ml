@@ -25,15 +25,15 @@
 (** Provides bindings for JavaScript Regular Expressions
 
 {4 Syntax sugar}
-ReScript provides a bit of syntax sugar for regex literals: [\[%re "/foo/g"\]]
+ReScript provides a bit of syntax sugar for regex literals: `\[%re "/foo/g"\]`
 will evaluate to a {! t} that can be passed around and used like usual.
 
-{b Note:} This is not an immutable API. A RegExp object with the [global] ("g")
+{b Note:} This is not an immutable API. A RegExp object with the `global` ("g")
 flag set will modify the {! lastIndex} property when the RegExp object is used,
 and subsequent uses will ocntinue the search from the previous {! lastIndex}.
 
 @example {[
-let maybeMatches = "banana" |> Js.String.match_ [\[%re "/na+/g"\]]
+let maybeMatches = "banana" |> Js.String.match_ \[%re "/na+/g"\]
 ]}
 
 @see
@@ -55,7 +55,7 @@ type result
 external captures : result -> string Js.nullable array = "%identity"
 
 (** an array of the matches, the first is the full match and the remaining are the substring matches
- *  @deprecated Use [captures] instead.
+ *  @deprecated Use `captures` instead.
  *)
 external matches : result -> string array = "%identity"
 [@@deprecated "Use Js.Re.captures instead"]
@@ -69,8 +69,8 @@ external input : result -> string = "input" [@@bs.get]
 
 (** Constructs a RegExp object ({! t}) from a string
 
-Regex literals ([\[%re "/.../"\]]) should generally be preferred, but
-[fromString] is very useful when you need to insert a string into a regex.
+Regex literals (`\[%re "/.../"\]`) should generally be preferred, but
+`fromString` is very useful when you need to insert a string into a regex.
 
 @example {[
 (* A function that extracts the content of the first element with the given tag *)
@@ -85,7 +85,7 @@ let contentOf tag xmlString =
 *)
 external fromString : string -> t = "RegExp" [@@bs.new]
 
-(** Constructs a RegExp object ({! t}) from a string with the given [flags]
+(** Constructs a RegExp object ({! t}) from a string with the given `flags`
 
 See {! fromString}
 
@@ -105,15 +105,15 @@ external fromStringWithFlags : string -> flags:string -> t = "RegExp" [@@bs.new]
 (** returns the enabled flags as a string *)
 external flags : t -> string = "flags" [@@bs.get]
 
-(** returns a bool indicating whether the [global] flag is set *)
+(** returns a bool indicating whether the `global` flag is set *)
 external global : t -> bool = "global" [@@bs.get]
 
-(** returns a bool indicating whether the [ignoreCase] flag is set *)
+(** returns a bool indicating whether the `ignoreCase` flag is set *)
 external ignoreCase : t -> bool = "ignoreCase" [@@bs.get]
 
 (** returns the index where the next match will start its search
 
-This property will be modified when the RegExp object is used, if the [global] ("g")
+This property will be modified when the RegExp object is used, if the `global` ("g")
 flag is set.
 
 @example {[
@@ -140,21 +140,21 @@ external lastIndex : t -> int = "lastIndex" [@@bs.get]
 (** sets the index at which the next match will start its search from *)
 external setLastIndex : t -> int -> unit = "lastIndex" [@@bs.set]
 
-(** returns a bool indicating whether the [multiline] flag is set *)
+(** returns a bool indicating whether the `multiline` flag is set *)
 external multiline : t -> bool = "multiline" [@@bs.get]
 
 (** returns the pattern as a string *)
 external source : t -> string = "source" [@@bs.get]
 
-(** returns a bool indicating whether the [sticky] flag is set *)
+(** returns a bool indicating whether the `sticky` flag is set *)
 external sticky : t -> bool = "sticky" [@@bs.get]
 
-(** returns a bool indicating whether the [unicode] flag is set *)
+(** returns a bool indicating whether the `unicode` flag is set *)
 external unicode : t -> bool = "unicode" [@@bs.get]
 
 (** executes a search on a given string using the given RegExp object
 
-{b returns} [Some] {! result} if a match is found, [None] otherwise
+{b returns} `Some` {! result} if a match is found, `None` otherwise
 
 @example {[
 (* Match "quick brown" followed by "jumps", ignoring characters in between
@@ -173,7 +173,7 @@ external exec_ : t -> string -> result option = "exec" [@@bs.send] [@@bs.return 
 
 (** tests whether the given RegExp object will match a given string
 
-{b returns} [true] if a match is found, [false] otherwise
+{b returns} `true` if a match is found, `false` otherwise
 
 @example {[
 (* A simple implementation of Js.String.startsWith *)

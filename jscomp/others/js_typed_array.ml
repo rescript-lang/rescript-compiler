@@ -129,7 +129,7 @@ module type S =  sig
   external every : (elt  -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
 
-  (** should we use [bool] or [boolean] seems they are intechangeable here *)
+  (** should we use `bool` or `boolean` seems they are intechangeable here *)
   external filter : (elt -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
 
@@ -220,13 +220,13 @@ module Int8Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -340,13 +340,13 @@ module Uint8Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -459,13 +459,13 @@ module Uint8ClampedArray = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -578,13 +578,13 @@ module Int16Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -697,13 +697,13 @@ module Uint16Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -816,13 +816,13 @@ module Int32Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -944,13 +944,13 @@ module Uint32Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -1015,7 +1015,7 @@ end
 
 
 (*
- it still return number, [float] in this case
+ it still return number, `float` in this case
 *)
 module Float32Array = struct
   
@@ -1067,13 +1067,13 @@ module Float32Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -1195,13 +1195,13 @@ module Float64Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   

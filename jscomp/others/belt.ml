@@ -57,7 +57,7 @@
    When we create a collection library for a custom data type we need a way to provide a comparator
    function. Take {i Set} for example, suppose its element type is a pair of ints,
     it needs a custom {i compare} function that takes two tuples and returns their order.
-    The {i Set} could not just be typed as [ Set.t (int * int) ], its customized {i compare} function
+    The {i Set} could not just be typed as ` Set.t (int * int) `, its customized {i compare} function
     needs to manifest itself in the signature, otherwise, if the user creates another
     customized {i compare} function, the two collection could mix which would result in runtime error.
 
@@ -87,7 +87,7 @@
     let mySet2 = Belt.Set.make ~id:(module Comparable2)
     ]}
 
-    Here, the compiler would infer [mySet1] and [mySet2] having different type, so
+    Here, the compiler would infer `mySet1` and `mySet2` having different type, so
     e.g. a `merge` operation that tries to merge these two sets will correctly fail.
 
     {[
@@ -95,7 +95,7 @@
       val mySet2 : ((int * int), Comparable2.identity) t
     ]}
 
-    [Comparable1.identity] and [Comparable2.identity] are not the same using our encoding scheme.
+    `Comparable1.identity` and `Comparable2.identity` are not the same using our encoding scheme.
 
     {b Collection Hierarchy}
 
@@ -166,7 +166,7 @@ module List = Belt_List
 
 (** {!Belt.Range}
 
-    Utilities for a closed range [(from, start)]
+    Utilities for a closed range `(from, start)`
 *)
 module Range = Belt_Range
 

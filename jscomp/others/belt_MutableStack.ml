@@ -96,7 +96,7 @@ let rec dynamicPopIterU s  f =
   | Some {tail; head }-> 
     s.root <- tail;
     f head [@bs] ;
-    dynamicPopIterU s  f (* using root, [f] may change it*)
+    dynamicPopIterU s  f (* using root, `f` may change it*)
  | None -> ()   
 
 

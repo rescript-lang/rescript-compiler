@@ -40,7 +40,7 @@ type fd = private int
 type path = string
 (**
    The relative path to a filename can be used. Remember, however, that this path
-   will be relative to [process.cwd()].
+   will be relative to `process.cwd()`.
 *)
 
 module Watch = struct
@@ -59,10 +59,10 @@ module Watch = struct
     unit ->
     t = "watch"
   [@@bs.module "fs"]
-  (** there is no need to accept listener, since we return a [watcher]
+  (** there is no need to accept listener, since we return a `watcher`
       back it can register event listener there .
-      Currently we introduce a type [string_buffer], for the
-      [filename], it will be [Buffer] when the encoding is `utf8.
+      Currently we introduce a type `string_buffer`, for the
+      `filename`, it will be `Buffer` when the encoding is `utf8.
       This is dependent type which can be tracked by GADT in some way,
       but to make things simple, let's just introduce an or type
   *)
@@ -94,7 +94,7 @@ external unlinkSync : string -> unit  = "unlinkSync" [@@bs.module "fs"]
 
 external rmdirSync : string -> unit = "rmdirSync"  [@@bs.module "fs"]
 
-(* TODO: [flags] support *)
+(* TODO: `flags` support *)
 external openSync :
   path ->
   (

@@ -41,8 +41,8 @@ type node_module = <
        id : string ;
        exports : node_exports ;
        parrent : node_module Js.null_undefined;
-       (* in REPL V4 it is [undefined]
-          in CLI it can be [null]
+       (* in REPL V4 it is `undefined`
+          in CLI it can be `null`
        *)
 
        filename : string ;

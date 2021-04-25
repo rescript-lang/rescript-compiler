@@ -100,13 +100,13 @@ end
   external lastIndexOfFrom : t -> elt -> from:int -> int = "lastIndexOf" [@@bs.send]\
   \
   external slice : t -> start:int -> end_:int -> t = "slice" [@@bs.send]\
-  (** [start] is inclusive, [end_] exclusive *)\
+  (** `start` is inclusive, `end_` exclusive *)\
   \
   external copy : t -> t = "slice" [@@bs.send]\
   external sliceFrom : t -> int -> t = "slice" [@@bs.send]\
   \
   external subarray : t -> start:int -> end_:int -> t = "subarray" [@@bs.send]\
-  (** [start] is inclusive, [end_] exclusive *)\
+  (** `start` is inclusive, `end_` exclusive *)\
   \
   external subarrayFrom : t -> int -> t = "subarray" [@@bs.send]\
   \
@@ -201,7 +201,7 @@ module Uint32Array = struct
 end
 
 (*
- it still return number, [float] in this case
+ it still return number, `float` in this case
 *)
 module Float32Array = struct
   COMMON_EXTERNALS(Float32Array,float)

@@ -32,7 +32,7 @@ type t =
     cwd : unit -> string [@bs.meth];
     disconnect : unit -> unit [@bs.meth];
     platform : string;
-    env : string Js_dict.t; (* ocamldep sucks which can not map [Js.Dic.t] to [Js_dict.t]*)
+    env : string Js_dict.t; (* ocamldep sucks which can not map `Js.Dic.t` to `Js_dict.t`*)
   > 
 
 external process : t = "process" [@@bs.module]

@@ -25,15 +25,15 @@
 (** Provides functions for inspecting and maniplating native JavaScript objects
 *)
 
-(** [empty ()] returns the empty object [\{\}] *)
+(** `empty ()` returns the empty object [\{\}] *)
 external empty : unit -> < .. >  = "" [@@bs.obj]
 
-(** [assign target source] copies properties from [source] to [target]
+(** `assign target source` copies properties from `source` to `target`
 
-Properties in [target] will be overwritten by properties in [source] if they
+Properties in `target` will be overwritten by properties in `source` if they
 have the same key.
 
-{b Returns} [target]
+{b Returns} `target`
 
 @example {[
 (* Copy an object *)
@@ -99,7 +99,7 @@ Put directly on Js?
 
 *)
 
-(** [keys obj] returns an array of the keys of [obj]'s own enumerable properties
+(** `keys obj` returns an array of the keys of `obj`'s own enumerable properties
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys> MDN
 *)

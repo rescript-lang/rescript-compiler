@@ -106,7 +106,7 @@ let set0 h key value ~eq ~hash =
     );
     if h.C.size  > buckets_len lsl 1 then resize ~hash h
       
-(* if [key] already exists, replace it, otherwise add it 
+(* if `key` already exists, replace it, otherwise add it 
    Here we add it to the head, it could be tail
 *)      
 let set  h key value =

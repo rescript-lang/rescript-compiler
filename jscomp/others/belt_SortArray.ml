@@ -63,7 +63,7 @@ let strictlySortedLength xs lt =
   strictlySortedLengthU xs (fun[@bs] x y -> lt x y)
     
 let rec isSortedAux a i cmp last_bound = 
-  (* when [i = len - 1], it reaches the last element*)
+  (* when `i = len - 1`, it reaches the last element*)
   if i = last_bound then true 
   else 
   if cmp (A.getUnsafe a i) (A.getUnsafe a (i+1)) [@bs] <= 0 then 
@@ -107,7 +107,7 @@ let unionU src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
   let rec loop i1 s1 i2 s2 d =
     let c = cmp s1 s2 [@bs] in 
     if c < 0 then begin
-      (* [s1] is larger than all elements in [d] *)
+      (* `s1` is larger than all elements in `d` *)
       A.setUnsafe dst d s1; 
       let i1 = i1 + 1 in
       let d = d + 1 in 
@@ -237,7 +237,7 @@ let diff src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
   diffU src src1ofs src1len src2 src2ofs src2len dst dstofs
     (fun [@bs] x y -> cmp x y)
     
-(* [<=] alone is not enough for stable sort *)
+(* `<=` alone is not enough for stable sort *)
 let insertionSort src srcofs dst dstofs len cmp =
   for i = 0 to len - 1 do
     let e = (A.getUnsafe src (srcofs + i)) in
@@ -283,10 +283,10 @@ let stableSortByU a cmp =
 
 let stableSortBy a cmp = stableSortByU a (fun [@bs] x y -> cmp x y) 
 (* 
-  [binarySearchAux arr lo hi key cmp]
+  `binarySearchAux arr lo hi key cmp`
   range [lo, hi]
   input (lo <= hi)
-  [arr[lo] <= key <= arr[hi]] *)
+  `arr[lo] <= key <= arr[hi]` *)
 let rec binarySearchAux arr lo hi key cmp = 
 
   let mid = (lo + hi)/2 in 
