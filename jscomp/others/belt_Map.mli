@@ -248,7 +248,7 @@ val valuesToArray: ('k, 'v, 'id) t -> 'v  array
 
 val minKey: ('k, _, _) t -> 'k option
 (** `minKey s`
-    @return the minimum key, None if not exist
+    **return** the minimum key, None if not exist
 *)
 
 val minKeyUndefined: ('k, _, _) t -> 'k Js.undefined
@@ -256,7 +256,7 @@ val minKeyUndefined: ('k, _, _) t -> 'k Js.undefined
 
 val maxKey: ('k, _, _) t -> 'k option
 (** `maxKey s`
-    @return the maximum key, None if not exist
+    **return** the maximum key, None if not exist
 *)
 
 val maxKeyUndefined: ('k, _, _) t -> 'k Js.undefined
@@ -264,7 +264,7 @@ val maxKeyUndefined: ('k, _, _) t -> 'k Js.undefined
 
 val minimum: ('k, 'v,  _) t -> ('k * 'v) option
 (** `minimum s`
-    @return the minimum key value pair, None if not exist
+    **return** the minimum key value pair, None if not exist
 *)
 
 val minUndefined: ('k, 'v, _) t -> ('k * 'v) Js.undefined
@@ -272,7 +272,7 @@ val minUndefined: ('k, 'v, _) t -> ('k * 'v) Js.undefined
 
 val maximum: ('k, 'v, _) t -> ('k * 'v) option
 (** `maximum s`
-    @return the maximum key value pair, None if not exist
+    **return** the maximum key value pair, None if not exist
 *)
 
 val maxUndefined:('k, 'v, _) t -> ('k * 'v) Js.undefined
@@ -293,7 +293,7 @@ val get:  ('k, 'v, 'id) t -> 'k -> 'v option
 val getUndefined: ('k, 'v, 'id) t -> 'k ->  'v Js.undefined
 (** **See** {!get}
 
-    @return `undefined` when not found
+    **return** `undefined` when not found
 *)
 
 val getWithDefault:
@@ -302,7 +302,7 @@ val getWithDefault:
 
     **See** {!get}
 
-    @return `default` when `k` is not found
+    **return** `default` when `k` is not found
 
 *)
 
@@ -448,7 +448,7 @@ val getData: ('k, 'v, 'id) t -> ('k, 'v, 'id) Belt_MapDict.t
 
     **Advanced usage only**
 
-    @return the raw data (detached from comparator),
+    **return** the raw data (detached from comparator),
     but its type is still manifested, so that user can pass identity directly
     without boxing
 *)
@@ -458,7 +458,7 @@ val getId: ('k, 'v, 'id) t -> ('k, 'id) id
 
     **Advanced usage only**
 
-    @return the identity of `s0`
+    **return** the identity of `s0`
 *)
 
 val packIdData: id:('k, 'id) id -> data:('k, 'v, 'id) Belt_MapDict.t -> ('k, 'v, 'id) t
@@ -466,7 +466,7 @@ val packIdData: id:('k, 'id) id -> data:('k, 'v, 'id) Belt_MapDict.t -> ('k, 'v,
 
     **Advanced usage only**
 
-    @return the packed collection
+    **return** the packed collection
 *)
 
 (**/**)

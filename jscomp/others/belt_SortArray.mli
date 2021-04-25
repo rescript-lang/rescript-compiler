@@ -44,7 +44,7 @@ val strictlySortedLength:
   int
 (**
    `strictlySortedLenght xs cmp`
-   return `+n` means increasing order
+   **return** `+n` means increasing order
    `-n` means negative order
 
   ```
@@ -58,7 +58,7 @@ val strictlySortedLength:
 val isSortedU: 'a array -> ('a -> 'a -> int [@bs]) -> bool
 val isSorted: 'a array -> ('a -> 'a -> int) -> bool
 (** `isSorted arr cmp`
-    @return true if array is increasingly sorted (equal is okay )
+    **return** true if array is increasingly sorted (equal is okay )
     ```
     isSorted [|1;1;2;3;4|] (fun x y -> compare x y) = true
     ```
@@ -75,7 +75,7 @@ val stableSortInPlaceBy: 'a array -> ('a -> 'a -> int ) -> unit
 val stableSortByU: 'a array -> ('a -> 'a -> int [@bs]) -> 'a array
 val stableSortBy: 'a array -> ('a -> 'a -> int) -> 'a array
 (** `stableSort xs cmp`
-    @return a fresh array
+    **return** a fresh array
 
     The same as {!stableSortInPlaceBy} except that `xs` is  not modified
 *)
@@ -134,7 +134,7 @@ val intersect:
   'a array -> int -> ('a -> 'a -> int )
   -> int
 (** `union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp`
-    return the `offset` in the output array
+    **return** the `offset` in the output array
 *)
 
 val diffU:

@@ -64,7 +64,7 @@ external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
 val set: 'a array -> int -> 'a -> bool
 (** `set arr n x` modifies `arr` in place;
     it replaces the nth element of `arr` with `x`
-    @return false means not updated due to out of range
+    **return** false means not updated due to out of range
 *)
 
 val setExn: 'a array -> int -> 'a -> unit
@@ -79,7 +79,7 @@ val shuffleInPlace: 'a array -> unit
 
 val shuffle: 'a array -> 'a array
 (** `shuffle xs`
-    @return a fresh array with items in original array randomly shuffled *)
+    **return** a fresh array with items in original array randomly shuffled *)
 
 val reverseInPlace: 'a array -> unit
 (** `reverseInPlace arr` reverses items in `arr` in place
@@ -93,7 +93,7 @@ val reverseInPlace: 'a array -> unit
 
 val reverse: 'a array -> 'a array
 (** `reverse arr`
-    @return a fresh array with items in `arr` in reverse order
+    **return** a fresh array with items in `arr` in reverse order
 
     ```
     reverse [|10;11;12;13;14|] = [|14;13;12;11;10|];;
@@ -127,8 +127,8 @@ external makeUninitializedUnsafe: int -> 'a array = "Array" [@@bs.new]
 
 val make: int -> 'a  -> 'a array
 (** `make n e`
-    return an array of size `n` filled  with value `e`
-    @return an empty array when `n` is negative.
+    **return** an array of size `n` filled  with value `e`
+    **return** an empty array when `n` is negative.
 *)
 
 val range: int -> int -> int array
@@ -143,7 +143,7 @@ val range: int -> int -> int array
 val rangeBy: int -> int -> step:int -> int array
 (** `rangeBy start finish ~step`
 
-    @return empty array when step is 0 or negative
+    **return** empty array when step is 0 or negative
     it also return empty array when `start > finish`
 
     ```
@@ -161,8 +161,8 @@ val makeByU: int -> (int -> 'a [@bs]) -> 'a array
 val makeBy: int -> (int -> 'a ) -> 'a array
 (** `makeBy n f`
 
-    return an empty array when `n` is negative
-    return an array of size `n` populated by `f i` start from `0` to `n - 1`
+    **return** an empty array when `n` is negative
+    **return** an array of size `n` populated by `f i` start from `0` to `n - 1`
 
     ```
     makeBy 5 (fun i -> i) = [|0;1;2;3;4|];;
@@ -217,7 +217,7 @@ val unzip: ('a * 'b) array -> 'a array * 'b array
 val concat: 'a array -> 'a array -> 'a array
 (** `concat xs ys`
 
-    @return a fresh array containing the
+    **return** a fresh array containing the
     concatenation of the arrays `v1` and `v2`; so even if `v1` or `v2`
     is empty;it can not be shared
 
@@ -231,7 +231,7 @@ val concatMany: 'a array array -> 'a array
 (**
    `concatMany xss`
 
-   @return a fresh array as the concatenation of `xss` (an array of arrays)
+   **return** a fresh array as the concatenation of `xss` (an array of arrays)
 
    ```
    concatMany [| [|1;2;3|]; [|4;5;6|]; [|7;8|] |] = [|1;2;3;4;5;6;7;8|];;
@@ -276,7 +276,7 @@ val sliceToEnd: 'a array -> int -> 'a array
 external copy : 'a array -> (_ [@bs.as 0]) -> 'a array = "slice" [@@bs.send]
 (** `copy a`
 
-    @return a shallow copy of `a`
+    **return** a shallow copy of `a`
 *)
 
 val fill: 'a array -> offset:int -> len:int -> 'a -> unit
@@ -358,7 +358,7 @@ val mapU: 'a array ->  ('a -> 'b [@bs]) -> 'b array
 val map: 'a array ->  ('a -> 'b ) -> 'b array
 (** `map xs f `
 
-    @return a new array by calling `f` for each element of `xs` from
+    **return** a new array by calling `f` for each element of `xs` from
     the beginning to end
 
     ```
@@ -389,7 +389,7 @@ val getIndexBy: 'a array -> ('a -> bool) -> int option
 val keepU: 'a array -> ('a -> bool [@bs]) -> 'a array
 val keep: 'a array -> ('a -> bool ) -> 'a array
 (** `keep xs p `
-    @return a new array that keeps all elements satisfying `p`
+    **return** a new array that keeps all elements satisfying `p`
 
     ```
     keep [|1;2;3|] (fun x -> x mod  2 = 0) = [|2|]
@@ -399,7 +399,7 @@ val keep: 'a array -> ('a -> bool ) -> 'a array
 val keepWithIndexU: 'a array -> ('a -> int -> bool [@bs]) -> 'a array
 val keepWithIndex: 'a array -> ('a -> int -> bool ) -> 'a array
 (** `keepWithIndex xs p `
-    @return a new array that keeps all elements satisfying `p`. 
+    **return** a new array that keeps all elements satisfying `p`. 
     The predicate `p` takes two arguments:
     the element from `xs` and the index starting from 0.
 
@@ -411,7 +411,7 @@ val keepWithIndex: 'a array -> ('a -> int -> bool ) -> 'a array
 val keepMapU: 'a array -> ('a -> 'b option [@bs]) -> 'b array
 val keepMap: 'a array -> ('a -> 'b option) -> 'b array
 (** `keepMap xs p`
-    @return a new array that keeps all elements that return a non-None when applied to `p`
+    **return** a new array that keeps all elements that return a non-None when applied to `p`
 
     ```
     keepMap [|1;2;3|] (fun x -> if x mod 2 = 0 then Some x else None)
@@ -537,7 +537,7 @@ val someU: 'a array -> ('a -> bool [@bs]) -> bool
 val some: 'a array -> ('a -> bool) -> bool
 (** `some xs p`
 
-    @return `true` if at least one of the elements in `xs` satifies `p`, where `p` is a _predicate_: a function taking
+    **return** `true` if at least one of the elements in `xs` satifies `p`, where `p` is a _predicate_: a function taking
     an element and returning a `bool`.
 
     ```
@@ -550,7 +550,7 @@ val everyU: 'a array -> ('a -> bool [@bs]) -> bool
 val every: 'a array -> ('a -> bool ) -> bool
 (** `every xs p`
 
-    @return true if all elements satisfy `p`; where `p` is a _predicate_: a function taking
+    **return** true if all elements satisfy `p`; where `p` is a _predicate_: a function taking
     an element and returning a `bool`.
 
     ```

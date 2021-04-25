@@ -31,7 +31,7 @@ type 'a t
 
 
 val make: unit -> 'a t
-(** @return a new stack, initially empty. *)
+(** **return** a new stack, initially empty. *)
 
 val clear: 'a t -> unit
 (** Discard all elements from the stack. *)

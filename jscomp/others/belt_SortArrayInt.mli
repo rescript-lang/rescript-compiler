@@ -36,7 +36,7 @@ type element = int
 val strictlySortedLength: element array -> int 
 (**
    The same as {!Belt_SortArray.strictlySortedLength } except the comparator is fixed
-   @return `+n` means increasing order  `-n` means negative order
+   **return** `+n` means increasing order  `-n` means negative order
 *)
 
 

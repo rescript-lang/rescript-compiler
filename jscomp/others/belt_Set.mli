@@ -229,7 +229,7 @@ val cmp: ('value, 'id) t -> ('value, 'id) t -> int
 val eq: ('value, 'id) t -> ('value, 'id) t -> bool
 (** `eq s0 s1`
 
-  @return true if `toArray s0 = toArray s1`
+  **return** true if `toArray s0 = toArray s1`
 *)
 
 val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
@@ -305,31 +305,31 @@ val toList: ('value, 'id) t -> 'value list
 val minimum: ('value, 'id) t -> 'value option
 (** `minimum s0`
 
-  @return the minimum element of the collection, `None` if it is empty
+  **return** the minimum element of the collection, `None` if it is empty
 *)
 
 val minUndefined: ('value, 'id) t -> 'value Js.undefined
 (** `minUndefined s0`
 
-  @return the minimum element of the collection, `undefined` if it is empty
+  **return** the minimum element of the collection, `undefined` if it is empty
 *)
 
 val maximum: ('value, 'id) t -> 'value option
 (** `maximum s0`
 
-  @return the maximum element of the collection, `None` if it is empty
+  **return** the maximum element of the collection, `None` if it is empty
 *)
 
 val maxUndefined: ('value, 'id) t -> 'value Js.undefined
 (** `maxUndefined s0`
 
-  @return the maximum element of the collection, `undefined` if it is empty
+  **return** the maximum element of the collection, `undefined` if it is empty
 *)
 
 val get: ('value, 'id) t -> 'value -> 'value option
 (** `get s0 k`
 
-  @return the reference of the value `k'` which is equivalent to `k`
+  **return** the reference of the value `k'` which is equivalent to `k`
   using  the comparator specifiecd by this collection, `None`
   if it does not exist
 *)
@@ -347,7 +347,7 @@ val getExn: ('value, 'id) t -> 'value -> 'value
 val split: ('value, 'id) t -> 'value -> (('value, 'id) t  * ('value, 'id) t) * bool
 (** `split set ele`
 
-  @return  a tuple `((smaller, larger), present)`,
+  **return**  a tuple `((smaller, larger), present)`,
   `present` is true when `ele` exist in `set`
 *)
 
@@ -369,7 +369,7 @@ val getData: ('value, 'id) t  -> ('value, 'id) Belt_SetDict.t
 
   **Advanced usage only**
 
-  @return the raw data (detached from comparator),
+  **return** the raw data (detached from comparator),
   but its type is still manifested, so that user can pass identity directly
   without boxing
 *)
@@ -379,7 +379,7 @@ val getId: ('value, 'id) t  -> ('value, 'id) id
 
   **Advanced usage only**
 
-  @return the identity of `s0`
+  **return** the identity of `s0`
 *)
 
 val packIdData: id:('value, 'id) id -> data:('value, 'id) Belt_SetDict.t -> ('value, 'id) t
@@ -387,6 +387,6 @@ val packIdData: id:('value, 'id) id -> data:('value, 'id) Belt_SetDict.t -> ('va
 
   **Advanced usage only**
 
-  @return the packed collection
+  **return** the packed collection
 *)
 

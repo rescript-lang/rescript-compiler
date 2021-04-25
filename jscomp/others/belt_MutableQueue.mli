@@ -22,13 +22,13 @@ type 'a t
 (** The type of queues containing elements of type `'a`. *)
 
 val make: unit -> 'a t
-(** @return a new queue, initially empty. *)
+(** **return** a new queue, initially empty. *)
 
 val clear: 'a t -> unit
 (** Discard all elements from the queue. *)
 
 val isEmpty: 'a t -> bool
-(** @return `true` if the given queue is empty, `false` otherwise. *)
+(** **return** `true` if the given queue is empty, `false` otherwise. *)
 
 val fromArray: 'a array -> 'a t
 (** `fromArray a` is equivalent to `Array.forEach a (add q a)` *)    
@@ -65,11 +65,11 @@ val popExn: 'a t -> 'a
 val copy: 'a t -> 'a t
 (** `copy q`
 
-    @return a fresh queue
+    **return** a fresh queue
 *)
 
 val size: 'a t -> int
-(** @return the number of elements in a queue. *)
+(** **return** the number of elements in a queue. *)
 
 val mapU: 'a t -> ('a -> 'b [@bs]) -> 'b t
 val map: 'a t -> ('a -> 'b ) -> 'b t
