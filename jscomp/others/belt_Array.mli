@@ -28,8 +28,8 @@ val get: 'a array -> int -> 'a option
 (**
    `get arr i`
 
-   If `i <= 0 <= length arr`;returns `Some value` where `value` is the item at index `i`
-   If `i` is out of range;returns `None`
+   If `i <= 0 <= length arr`, returns `Some value` where `value` is the item at index `i`
+   If `i` is out of range, returns `None`
 
    @example {[
      Belt.Array.get [|"a";"b";"c"|] 0 = Some "a";;
@@ -218,7 +218,7 @@ val concat: 'a array -> 'a array -> 'a array
 (** `concat xs ys`
 
     @return a fresh array containing the
-    concatenation of the arrays `v1` and `v2`;so even if `v1` or `v2`
+    concatenation of the arrays `v1` and `v2`; so even if `v1` or `v2`
     is empty;it can not be shared
 
     @example {[
@@ -241,7 +241,7 @@ val concatMany: 'a array array -> 'a array
 val slice: 'a array -> offset:int -> len:int -> 'a array
 (** `slice xs offset len` creates a new array with the `len` elements of `xs` starting at `offset` for
 
-    `offset` can be negative;and is evaluated as `length xs - offset`
+    `offset` can be negative and is evaluated as `length xs - offset`
     `slice xs -1 1` means get the last element as a singleton array
 
     `slice xs (-len) len` will return a copy of the array
@@ -261,7 +261,7 @@ val slice: 'a array -> offset:int -> len:int -> 'a array
 val sliceToEnd: 'a array -> int -> 'a array
 (** `sliceToEnd xs offset` creates a new array with the elements of `xs` starting at `offset`
 
-    `offset` can be negative;and is evaluated as `length xs - offset`
+    `offset` can be negative and is evaluated as `length xs - offset`
     `sliceToEnd xs -1` means get the last element as a singleton array
 
     `sliceToEnd xs 0` will return a copy of the array
@@ -276,8 +276,7 @@ val sliceToEnd: 'a array -> int -> 'a array
 external copy : 'a array -> (_ [@bs.as 0]) -> 'a array = "slice" [@@bs.send]
 (** `copy a`
 
-    @return a copy of `a`;that is;a fresh array
-    containing the same elements as `a`.
+    @return a shallow copy of `a`
 *)
 
 val fill: 'a array -> offset:int -> len:int -> 'a -> unit
@@ -286,7 +285,7 @@ val fill: 'a array -> offset:int -> len:int -> 'a -> unit
     Modifies `arr` in place,
     storing `x` in elements number `offset` to `offset + len - 1`.
 
-    `offset` can be negative;and is evaluated as `length arr - offset`
+    `offset` can be negative and is evaluated as `length arr - offset`
 
     `fill arr ~offset:(-1) ~len:1` means fill the last element,
     if the array does not have enough data;`fill` will ignore it
@@ -306,24 +305,26 @@ val blit:
 (** `blit ~src:v1 ~srcOffset:o1 ~dst:v2 ~dstOffset:o2 ~len`
 
     copies `len` elements
-    from array `v1`;starting at element number `o1`;to array `v2`,
+    from array `v1`, starting at element number `o1` to array `v2`,
     starting at element number `o2`.
 
     It works correctly even if
     `v1` and `v2` are the same array;and the source and
     destination chunks overlap.
 
-    `offset` can be negative;`-1` means `len - 1`;if `len + offset`  is still
-    negative;it will be set as 0
+    `offset` can be negative. `-1` means `len - 1`. If `len + offset` is still
+    negative, it will be set as 0
 
-    For each of the examples;presume that `v1 = \[|10;11;12;13;14;15;16;17|\`] and
-    `v2 = \[|20;21;22;23;24;25;26;27|\`]. The result shown is the content of the destination array.
+    For each of the examples;presume that `v1 = [|10;11;12;13;14;15;16;17|]` and
+    `v2 = [|20;21;22;23;24;25;26;27|]`. The result shown is the content of the destination array.
 
     @example {[
-      Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v2 ~dstOffset: 2 ~len: 3 |.
-      [|20;21;14;15;16;25;26;27|]
-        Belt.Array.blit ~src: v1 ~srcOffset: 4 ~dst: v1 ~dstOffset: 2 ~len: 3 |.
-      [|10;11;14;15;16;15;16;17|]
+      Belt.Array.blit [|20;21;14;15;16;25;26;27|]
+        ~src: v1 ~srcOffset: 4 ~dst: v2 ~dstOffset: 2 ~len: 3 |.
+      
+      Belt.Array.blit [|10;11;14;15;16;15;16;17|]
+        ~src: v1 ~srcOffset: 4 ~dst: v1 ~dstOffset: 2 ~len: 3 |.
+      
     ]}
 
 *)
@@ -503,7 +504,7 @@ val reduceReverse2:
   'a array -> 'b array -> 'c  -> ('c -> 'a -> 'b ->  'c) ->  'c
 (**
    `reduceReverse2 xs ys init f`
-   Reduces two arrays `xs` and `ys`;taking items starting at `min (length xs) (length ys)`
+   Reduces two arrays `xs` and `ys`, taking items starting at `min (length xs) (length ys)`
    down to and including zero.
 
    @example {[
@@ -544,7 +545,7 @@ val someU: 'a array -> ('a -> bool [@bs]) -> bool
 val some: 'a array -> ('a -> bool) -> bool
 (** `some xs p`
 
-    @return true if at least one of the elements in `xs` satifies `p`;where `p` is a {i predicate}: a function taking
+    @return `true` if at least one of the elements in `xs` satifies `p`, where `p` is a {i predicate}: a function taking
     an element and returning a `bool`.
 
     @example {[
@@ -557,7 +558,7 @@ val everyU: 'a array -> ('a -> bool [@bs]) -> bool
 val every: 'a array -> ('a -> bool ) -> bool
 (** `every xs p`
 
-    @return true if all elements satisfy `p`;where `p` is a {i predicate}: a function taking
+    @return true if all elements satisfy `p`; where `p` is a {i predicate}: a function taking
     an element and returning a `bool`.
 
     @example {[
@@ -599,7 +600,7 @@ val cmp: 'a array -> 'a array -> ('a -> 'a -> int ) -> int
     - a negative number if `x` is “less than” `y`
     - zero if `x` is “equal to” `y`
     - a positive number if `x` is “greater than” `y`
-    - The comparison returns the first non-zero result of `f`;or zero if `f` returns zero for all `x` and `y`.
+    - The comparison returns the first non-zero result of `f`; or zero if `f` returns zero for all `x` and `y`.
 
     @example {[
       cmp [|1; 3; 5|] [|1; 4; 2|] (fun a b -> compare a b) = -1;;
@@ -624,7 +625,7 @@ external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]
 (** {b Unsafe}
     `truncateToLengthUnsafe xs n` sets length of array `xs` to `n`.
 
-    If `n` is greater than the length of `xs`;the extra elements are set to `Js.Null_undefined.null`
+    If `n` is greater than the length of `xs`; the extra elements are set to `Js.Null_undefined.null`
 
     If `n` is less than zero;raises a `RangeError`.
 

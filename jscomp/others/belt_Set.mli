@@ -93,7 +93,7 @@ val fromArray:  'value array -> id:('value, 'id) id ->  ('value, 'id) t
 (** `fromArray xs ~id`
 
     @example{[
-      toArray (fromArray `1;3;2;4` (module IntCmp)) = `1;2;3;4`
+      toArray (fromArray [1;3;2;4] (module IntCmp)) = [1;2;3;4]
     ]}
 *)
 
@@ -241,7 +241,7 @@ val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit
       let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
       let acc = ref [] ;;
       forEach s0 (fun x -> acc := x !acc);;
-      !acc = `6;5;3;2`;;
+      !acc = [6;5;3;2];;
     ]}
 *)
 
@@ -251,7 +251,7 @@ val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a ) ->  'a
 
     @example {[
       let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-      reduce s0 `] Bs.List.add = [6;5;3;2`;;
+      reduce s0 [] Bs.List.add = [6;5;3;2];;
     ]}
 *)
 

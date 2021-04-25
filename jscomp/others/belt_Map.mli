@@ -172,7 +172,7 @@ val forEach:  ('k, 'v, 'id) t -> ('k -> 'v -> unit) -> unit
       let acc = ref [] ;;
       forEach s0 (fun k v -> acc := (k,v) :: !acc);;
 
-      !acc = `4,"4"; 3,"3"; 2,"2"; 1,"1"`
+      !acc = [4,"4"; 3,"3"; 2,"2"; 1,"1"]
     ]}
 *)
 
@@ -184,7 +184,7 @@ val reduce: ('k, 'v, 'id) t -> 'acc -> ('acc -> 'k -> 'v -> 'acc) -> 'acc
 
     @example {[
       let s0 = fromArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
-      reduce s0 `] (fun acc k v -> (k,v) acc ) = [4,"4";3,"3";2,"2";1,"1"`;;
+      reduce s0 [] (fun acc k v -> (k,v) acc ) = [4,"4";3,"3";2,"2";1,"1"];;
     ]}
 *)
 
@@ -202,7 +202,7 @@ val size: ('k, 'v, 'id) t -> int
 (** `size s`
 
     @example {[
-      size (fromArray `2,"2"; 2,"1"; 3,"3"` ~id:(module IntCmp)) = 2 ;;
+      size (fromArray [2,"2"; 2,"1"; 3,"3"] ~id:(module IntCmp)) = 2 ;;
     ]}
 *)
 
@@ -210,7 +210,7 @@ val toArray: ('k, 'v, 'id) t -> ('k * 'v) array
 (** `toArray s`
 
     @example {[
-      toArray (fromArray `2,"2"; 1,"1"; 3,"3"` ~id:(module IntCmp)) = `1,"1";2,"2";3,"3"`
+      toArray (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) = [1,"1";2,"2";3,"3"]
     ]}
 
 *)
@@ -225,14 +225,14 @@ val toList: ('k, 'v, 'id) t -> ('k * 'v) list
 val fromArray:  ('k * 'v) array -> id:('k,'id) id -> ('k,'v,'id) t
 (** `fromArray kvs ~id`
     @example {[
-      toArray (fromArray `2,"2"; 1,"1"; 3,"3"` ~id:(module IntCmp)) = `1,"1";2,"2";3,"3"`
+      toArray (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) = [1,"1";2,"2";3,"3"]
     ]}
 *)
 
 val keysToArray: ('k, 'v, 'id) t -> 'k  array
 (** `keysToArray s`
     @example {[
-      keysToArray (fromArray `2,"2"; 1,"1"; 3,"3"` ~id:(module IntCmp)) =
+      keysToArray (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) =
       [|1;2;3|];;
     ]}
 *)
@@ -240,7 +240,7 @@ val keysToArray: ('k, 'v, 'id) t -> 'k  array
 val valuesToArray: ('k, 'v, 'id) t -> 'v  array
 (** `valuesToArray s`
     @example {[
-      valuesToArray (fromArray `2,"2"; 1,"1"; 3,"3"` ~id:(module IntCmp)) =
+      valuesToArray (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) =
       [|"1";"2";"3"|];;
     ]}
 
@@ -283,9 +283,9 @@ val get:  ('k, 'v, 'id) t -> 'k -> 'v option
 (** `get s k`
 
     @example {[
-      get (fromArray `2,"2"; 1,"1"; 3,"3"` ~id:(module IntCmp)) 2 =
+      get (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) 2 =
       Some "2";;
-      get (fromArray `2,"2"; 1,"1"; 3,"3"` ~id:(module IntCmp)) 2 =
+      get (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) 2 =
       None;;
     ]}
 *)
@@ -345,11 +345,11 @@ val set:
     in `m`, its previous binding disappears.
 
     @example {[
-      let s0 =  (fromArray `2,"2"; 1,"1"; 3,"3"` ~id:(module IntCmp));;
+      let s0 =  (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp));;
 
       let s1 = set s0 2 "3";;
 
-      valuesToArray s1 =  `"1";"3";"3"`;;
+      valuesToArray s1 =  ["1";"3";"3"];;
     ]}
 *)
 

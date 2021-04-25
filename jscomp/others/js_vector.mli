@@ -60,7 +60,7 @@ external get : 'a t -> int -> 'a = "%array_safe_get"
     You can also write `a.(n)` instead of `Array.get a n`.
 
     Raise `Invalid_argument "index out of bounds"`
-    if `n` is outside the range 0 to `(Array.length a - 1)`. *)
+    if `n` is outside the range 0 to `Array.length a - 1`. *)
 
 external set : 'a t -> int -> 'a -> unit = "%array_safe_set"
 (** `Array.set a n x` modifies array `a` in place, replacing
