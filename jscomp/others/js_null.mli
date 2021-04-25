@@ -71,12 +71,8 @@ val iter : 'a t -> ('a -> unit [@bs]) -> unit
 
 (** Maps `'a option` to `'a Js.null`
 
-  {%html:
-  <table>
-  <tr> <td>Some a <td>-> <td>return a
-  <tr> <td>None <td>-> <td>empty
-  </table>
-  %}
+  `Some a` -> `return a`
+  `None` -> `empty`
 *)
 val fromOption: 'a option -> 'a t
 
@@ -85,12 +81,8 @@ val from_opt : 'a option -> 'a t
 
 (** Maps `'a Js.null` to `'a option`
 
-  {%html:
-  <table>
-  <tr> <td>return a <td>-> <td>Some a
-  <tr> <td>empty <td>-> <td>None
-  </table>
-  %}
+  `return a` -> `Some a`
+  `empty` -> `None`
 *)
 external toOption : 'a t -> 'a option = "#null_to_opt"
 

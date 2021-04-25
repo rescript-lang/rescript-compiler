@@ -90,15 +90,12 @@ external fromString : string -> t = "RegExp" [@@bs.new]
 See {! fromString}
 
 Valid flags:
-{%html:
-<table>
-  <tr> <td>g <td>global
-  <tr> <td>i <td>ignore case
-  <tr> <td>m <td>multiline
-  <tr> <td>u <td>unicode <td>(es2015)
-  <tr> <td>y <td>sticky <td>(es2015)
-</table>
-%}
+- g: global
+- i: ignore case
+- m: multiline
+- u: unicode (es2015)
+- y: sticky (es2015)
+
 *)
 external fromStringWithFlags : string -> flags:string -> t = "RegExp" [@@bs.new]
 
