@@ -128,5 +128,5 @@ val split: ('value, 'id) t -> 'value -> cmp:('value, 'id) cmp -> (('value, 'id) 
 
 val checkInvariantInternal: _ t -> unit
 (**
-   {b raise} when invariant is not held
+   **raise** when invariant is not held
 *)

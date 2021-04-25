@@ -58,7 +58,7 @@ external fromCharCodeMany : int array -> t = "String.fromCharCode" [@@bs.val] [@
 *)
 
 (** `fromCodePoint n`
-  creates a string containing the character corresponding to that numeric code point. If the number is not a valid code point, {b raises} `RangeError`. Thus, `fromCodePoint 0x1F63A` will produce a correct value, unlike `fromCharCode 0x1F63A`, and `fromCodePoint -5` will raise a `RangeError`.
+  creates a string containing the character corresponding to that numeric code point. If the number is not a valid code point, **raises** `RangeError`. Thus, `fromCodePoint 0x1F63A` will produce a correct value, unlike `fromCharCode 0x1F63A`, and `fromCodePoint -5` will raise a `RangeError`.
 
 @example {[
   fromCodePoint 65 = "A";;

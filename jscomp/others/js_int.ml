@@ -33,7 +33,7 @@
 
 (** Formats an `int` using exponential (scientific) notation
 
-{b Returns} a `string` representing the given value in exponential notation
+**Returns** a `string` representing the given value in exponential notation
 
 @raise RangeError if digits is not in the range [0, 20] (inclusive)
 
@@ -48,10 +48,10 @@ external toExponential : int -> string = "toExponential" [@@bs.send]
 
 (** Formats an `int` using exponential (scientific) notation
 
-{b digits} specifies how many digits should appear after the decimal point. The
+**digits** specifies how many digits should appear after the decimal point. The
 value must be in the range [0, 20] (inclusive).
 
-{b Returns} a `string` representing the given value in exponential notation
+**Returns** a `string` representing the given value in exponential notation
 
 The output will be rounded or padded with zeroes if necessary.
 
@@ -71,7 +71,7 @@ external toExponentialWithPrecision : int -> digits:int -> string = "toExponenti
 
 (** Formats a `int` using some fairly arbitrary rules
 
-{b Returns} a `string` representing the given value in fixed-point (usually)
+**Returns** a `string` representing the given value in fixed-point (usually)
 
 `toPrecision` differs from `toFixed` in that the former will format the number
 with full precision, while the latter will not output any digits after the
@@ -90,11 +90,11 @@ external toPrecision : int -> string = "toPrecision" [@@bs.send] (* equivalent t
 
 (** Formats an `int` using some fairly arbitrary rules
 
-{b digits} specifies how many digits should appear in total. The
+**digits** specifies how many digits should appear in total. The
 value must between 0 and some arbitrary number that's hopefully at least larger
 than 20 (for Node it's 21. Why? Who knows).
 
-{b Returns} a `string` representing the given value in fixed-point or scientific notation
+**Returns** a `string` representing the given value in fixed-point or scientific notation
 
 The output will be rounded or padded with zeroes if necessary.
 
@@ -121,7 +121,7 @@ external toPrecisionWithPrecision : int -> digits:int -> string = "toPrecision" 
 
 (** Formats a `int` as a string
 
-{b Returns} a `string` representing the given value in fixed-point (usually)
+**Returns** a `string` representing the given value in fixed-point (usually)
 
 @example {[
 (* prints "123456789" *)
@@ -134,10 +134,10 @@ external toString : int -> string = "toString" [@@bs.send]
 
 (** Formats an `int` as a string
 
-{b radix} specifies the radix base to use for the formatted number. The
+**radix** specifies the radix base to use for the formatted number. The
 value must be in the range [2, 36] (inclusive).
 
-{b Returns} a `string` representing the given value in fixed-point (usually)
+**Returns** a `string` representing the given value in fixed-point (usually)
 
 @raise RangeError if radix is not in the range [2, 36] (inclusive)
 

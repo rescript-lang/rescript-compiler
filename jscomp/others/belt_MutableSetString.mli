@@ -28,7 +28,7 @@
     It is more efficient in general, the  API is the same with {!Belt.MutableSet} except its key type is fixed,
     and identity is not needed(using the built-in one)
 
-    {b See} {!Belt.MutableSet}
+    **See** {!Belt.MutableSet}
 *)
 
 
@@ -119,7 +119,7 @@ val split:  t -> value  -> (t * t) * bool
 
 val checkInvariantInternal: t -> unit
 (**
-   {b raise} when invariant is not held
+   **raise** when invariant is not held
 *)  
 
 

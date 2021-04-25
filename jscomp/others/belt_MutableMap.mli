@@ -27,7 +27,7 @@ module Int = Belt_MutableMapInt
 module String = Belt_MutableMapString
 
 
-(** A {b mutable} sorted map module which allows customize {i compare} behavior.
+(** A **mutable** sorted map module which allows customize {i compare} behavior.
 
     Same as Belt.Map, but mutable.
 *)
@@ -115,7 +115,7 @@ val getWithDefault:
 val getExn:  ('k, 'a, 'id) t -> 'k ->  'a
 val checkInvariantInternal: _ t -> unit
 (**
-   {b raise} when invariant is not held
+   **raise** when invariant is not held
 *)
 
 

@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** A {b mutable} Hash set which allows customized {!hash} behavior.
+(** A **mutable** Hash set which allows customized {!hash} behavior.
 
     All data are parameterized by not its only type but also a unique identity in
     the time of initialization, so that two {i HashSets of ints} initialized with different

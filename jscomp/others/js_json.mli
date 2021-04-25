@@ -129,7 +129,7 @@ external objectArray : t Js_dict.t array -> t = "%identity"
 external parseExn : string -> t = "parse" [@@bs.val] [@@bs.scope "JSON"]
 (** `parseExn s` parses the string `s` into a JSON data structure
 
-    {b Returns} a JSON data structure
+    **Returns** a JSON data structure
 
     @raise SyntaxError if given string is not a valid JSON. Note `SyntaxError` is a JavaScript exception. 
 
@@ -184,7 +184,7 @@ external stringify: t -> string = "stringify"
 [@@bs.val] [@@bs.scope "JSON"]
 (** `stringify json` formats the JSON data structure as a string
 
-    {b Returns} the string representation of a given JSON data structure
+    **Returns** the string representation of a given JSON data structure
 
     @example {[
       (* Creates and stringifies a simple JS object *)
@@ -205,7 +205,7 @@ external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string
 [@@bs.val] [@@bs.scope "JSON"]
 (** `stringify json` formats the JSON data structure as a string
 
-    {b Returns} the string representation of a given JSON data structure
+    **Returns** the string representation of a given JSON data structure
 
     @example {[
       (* Creates and stringifies a simple JS object with spacing *)

@@ -36,7 +36,7 @@ external _NaN : float = "NaN" [@@bs.val]
 Note that both `_NaN = _NaN` and `_NaN == _NaN` will return `false`. `isNaN` is
 therefore necessary to test for `_NaN`.
 
-{b Returns} `true` if the given value is `_NaN`, `false` otherwise
+**Returns** `true` if the given value is `_NaN`, `false` otherwise
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN> MDN
 *)
@@ -44,7 +44,7 @@ external isNaN : float -> bool = "isNaN" [@@bs.val] [@@bs.scope "Number"]
 
 (** Tests if the given value is finite
 
-{b Returns} `true` if the given value is a finite number, `false` otherwise
+**Returns** `true` if the given value is a finite number, `false` otherwise
 
 @example {[
 (* returns `false` *)
@@ -66,7 +66,7 @@ external isFinite : float -> bool = "isFinite" [@@bs.val] [@@bs.scope "Number"]
 
 (** Formats a `float` using exponential (scientific) notation
 
-{b Returns} a `string` representing the given value in exponential notation
+**Returns** a `string` representing the given value in exponential notation
 
 @raise RangeError if digits is not in the range [0, 20] (inclusive)
 
@@ -84,10 +84,10 @@ external toExponential : float -> string = "toExponential" [@@bs.send]
 
 (** Formats a `float` using exponential (scientific) notation
 
-{b digits} specifies how many digits should appear after the decimal point. The
+**digits** specifies how many digits should appear after the decimal point. The
 value must be in the range [0, 20] (inclusive).
 
-{b Returns} a `string` representing the given value in exponential notation
+**Returns** a `string` representing the given value in exponential notation
 
 The output will be rounded or padded with zeroes if necessary.
 
@@ -104,7 +104,7 @@ external toExponentialWithPrecision : float -> digits:int -> string = "toExponen
 
 (** Formats a `float` using fixed point notation
 
-{b Returns} a `string` representing the given value in fixed-point notation (usually)
+**Returns** a `string` representing the given value in fixed-point notation (usually)
 
 @raise RangeError if digits is not in the range [0, 20] (inclusive)
 
@@ -122,10 +122,10 @@ external toFixed : float -> string = "toFixed" [@@bs.send]
 
 (** Formats a `float` using fixed point notation
 
-{b digits} specifies how many digits should appear after the decimal point. The
+**digits** specifies how many digits should appear after the decimal point. The
 value must be in the range [0, 20] (inclusive). Defaults to `0`.
 
-{b Returns} a `string` representing the given value in fixed-point notation (usually)
+**Returns** a `string` representing the given value in fixed-point notation (usually)
 
 The output will be rounded or padded with zeroes if necessary.
 
@@ -145,7 +145,7 @@ external toFixedWithPrecision : float -> digits:int -> string = "toFixed" [@@bs.
 
 (** Formats a `float` using some fairly arbitrary rules
 
-{b Returns} a `string` representing the given value in fixed-point (usually)
+**Returns** a `string` representing the given value in fixed-point (usually)
 
 `toPrecision` differs from `toFixed` in that the former will format the number
 with full precision, while the latter will not output any digits after the
@@ -167,11 +167,11 @@ external toPrecision : float -> string = "toPrecision" [@@bs.send] (* equivalent
 
 (** Formats a `float` using some fairly arbitrary rules
 
-{b digits} specifies how many digits should appear in total. The
+**digits** specifies how many digits should appear in total. The
 value must between 0 and some arbitrary number that's hopefully at least larger
 than 20 (for Node it's 21. Why? Who knows).
 
-{b Returns} a `string` representing the given value in fixed-point or scientific notation
+**Returns** a `string` representing the given value in fixed-point or scientific notation
 
 The output will be rounded or padded with zeroes if necessary.
 
@@ -198,7 +198,7 @@ external toPrecisionWithPrecision : float -> digits:int -> string = "toPrecision
 
 (** Formats a `float` as a string
 
-{b Returns} a `string` representing the given value in fixed-point (usually)
+**Returns** a `string` representing the given value in fixed-point (usually)
 
 @example {[
 (* prints "12345.6789" *)
@@ -211,10 +211,10 @@ external toString : float -> string = "toString" [@@bs.send]
 
 (** Formats a `float` as a string
 
-{b radix} specifies the radix base to use for the formatted number. The
+**radix** specifies the radix base to use for the formatted number. The
 value must be in the range [2, 36] (inclusive).
 
-{b Returns} a `string` representing the given value in fixed-point (usually)
+**Returns** a `string` representing the given value in fixed-point (usually)
 
 @raise RangeError if radix is not in the range [2, 36] (inclusive)
 
@@ -238,7 +238,7 @@ external toStringWithRadix : float -> radix:int -> string = "toString" [@@bs.sen
 
 (** Parses the given `string` into a `float` using JavaScript semantics
 
-{b Returns} the number as a `float` if successfully parsed, `_NaN` otherwise.
+**Returns** the number as a `float` if successfully parsed, `_NaN` otherwise.
 
 @example {[
 (* returns 123 *)

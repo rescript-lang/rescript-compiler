@@ -28,7 +28,7 @@
     It is more efficient in general, the  API is the same with {!Belt.HashSet} except its key type is fixed,
     and identity is not needed(using the built-in one)
 
-    {b See} {!Belt.HashSet}
+    **See** {!Belt.HashSet}
 *)
 
 

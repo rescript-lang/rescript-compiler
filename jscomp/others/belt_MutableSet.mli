@@ -138,7 +138,7 @@ val split: ('value, 'id) t -> 'value ->  (('value, 'id) t * ('value, 'id) t) * b
 
 val checkInvariantInternal: _ t -> unit
 (**
-   {b raise} when invariant is not held
+   **raise** when invariant is not held
 *)
 
 (*

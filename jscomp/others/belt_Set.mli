@@ -28,7 +28,7 @@
     and insertion take time logarithmic in the size of the map.
 
     For more info on this module's usage of identity, `make` and others, please see
-    the top level documentation of Belt, {b A special encoding for collection safety}.
+    the top level documentation of Belt, **A special encoding for collection safety**.
 
     Example usage:
 
@@ -104,7 +104,7 @@ val fromSortedArrayUnsafe: 'value array -> id:('value, 'id) id -> ('value,'id) t
 
     The same as {!fromArray} except it is after assuming the input array `x` is already sorted
 
-    {b Unsafe}
+    **Unsafe**
 *)
 
 
@@ -297,7 +297,7 @@ val toArray: ('value, 'id) t -> 'value array
 val toList: ('value, 'id) t -> 'value list
 (** In increasing order
 
-    {b See} {!toArray}
+    **See** {!toArray}
 *)
 
 val minimum: ('value, 'id) t -> 'value option
@@ -333,13 +333,13 @@ val get: ('value, 'id) t -> 'value -> 'value option
 *)
 
 val getUndefined: ('value, 'id) t -> 'value -> 'value Js.undefined
-(** {b See} {!get}
+(** **See** {!get}
 *)
 
 val getExn: ('value, 'id) t -> 'value -> 'value
-(** {b See} {!get}
+(** **See** {!get}
 
-    {b raise} if not exist
+    **raise** if not exist
 *)
 
 val split: ('value, 'id) t -> 'value -> (('value, 'id) t  * ('value, 'id) t) * bool
@@ -352,7 +352,7 @@ val split: ('value, 'id) t -> 'value -> (('value, 'id) t  * ('value, 'id) t) * b
 (**/**)
 val checkInvariantInternal: _ t -> unit
 (**
-   {b raise} when invariant is not held
+   **raise** when invariant is not held
 *)
 (**/**)
 
@@ -365,7 +365,7 @@ val checkInvariantInternal: _ t -> unit
 val getData: ('value, 'id) t  -> ('value, 'id) Belt_SetDict.t
 (** `getData s0`
 
-    {b Advanced usage only}
+    **Advanced usage only**
 
     @return the raw data (detached from comparator),
     but its type is still manifested, so that user can pass identity directly
@@ -375,7 +375,7 @@ val getData: ('value, 'id) t  -> ('value, 'id) Belt_SetDict.t
 val getId: ('value, 'id) t  -> ('value, 'id) id
 (** `getId s0`
 
-    {b Advanced usage only}
+    **Advanced usage only**
 
     @return the identity of `s0`
 *)
@@ -383,7 +383,7 @@ val getId: ('value, 'id) t  -> ('value, 'id) id
 val packIdData: id:('value, 'id) id -> data:('value, 'id) Belt_SetDict.t -> ('value, 'id) t
 (** `packIdData ~id ~data`
 
-    {b Advanced usage only}
+    **Advanced usage only**
 
     @return the packed collection
 *)

@@ -93,7 +93,7 @@ val getExn: 'v t -> key -> 'v
 
 val checkInvariantInternal: _ t -> unit
 (**
-   {b raise} when invariant is not held
+   **raise** when invariant is not held
 *)
 
 val remove: 'v t -> key -> 'v t

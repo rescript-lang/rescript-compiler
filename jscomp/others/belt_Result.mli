@@ -49,7 +49,7 @@ val getExn : ('a, 'b) t -> 'a
    `getExn res`
 
    when `res` is `Ok n`, returns `n`
-   when `res` is `Error m`, {b raise} an exception
+   when `res` is `Error m`, **raise** an exception
 
    @example {[
      getExn good = 42;;

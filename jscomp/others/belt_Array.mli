@@ -22,7 +22,7 @@ external length: 'a array -> int = "%array_length"
 (** `length xs` return the size of the array *)
 
 external size: 'a array -> int = "%array_length"
-(** {b See} {!length} *)
+(** **See** {!length} *)
 
 val get: 'a array -> int -> 'a option
 (**
@@ -41,13 +41,13 @@ val get: 'a array -> int -> 'a option
 val getExn: 'a array -> int -> 'a
 (** `getExn arr i`
 
-    {b raise} an exception if `i` is out of range;otherwise return the value at index `i` in `arr`
+    **raise** an exception if `i` is out of range;otherwise return the value at index `i` in `arr`
 *)
 
 external getUnsafe: 'a array -> int -> 'a = "%array_unsafe_get"
 (** `getUnsafe arr i`
 
-    {b Unsafe}
+    **Unsafe**
 
     no  bounds checking;this would cause type error
     if `i` does not stay within range
@@ -69,7 +69,7 @@ val set: 'a array -> int -> 'a -> bool
 
 val setExn: 'a array -> int -> 'a -> unit
 (** `setExn arr i x`
-    {b raise} an exception if `i` is out of range
+    **raise** an exception if `i` is out of range
 *)
 
 external setUnsafe: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
@@ -114,7 +114,7 @@ external makeUninitialized: int -> 'a Js.undefined array = "Array" [@@bs.new]
 external makeUninitializedUnsafe: int -> 'a array = "Array" [@@bs.new]
 (** `makeUninitializedUnsafe n`
 
-    {b Unsafe}
+    **Unsafe**
 
     @example {[
       let arr = Belt.Array.makeUninitializedUnsafe 5;;
@@ -332,7 +332,7 @@ val blit:
 val blitUnsafe:
   src:'a array -> srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit
 (**
-   {b Unsafe} blit without bounds checking
+   **Unsafe** blit without bounds checking
 *)
 
 val forEachU: 'a array ->  ('a -> unit [@bs]) -> unit
@@ -622,7 +622,7 @@ val eq:  'a array -> 'a array -> ('a -> 'a -> bool ) -> bool
 *)
 
 external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]
-(** {b Unsafe}
+(** **Unsafe**
     `truncateToLengthUnsafe xs n` sets length of array `xs` to `n`.
 
     If `n` is greater than the length of `xs`; the extra elements are set to `Js.Null_undefined.null`

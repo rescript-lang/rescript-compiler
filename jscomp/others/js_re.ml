@@ -28,7 +28,7 @@
 ReScript provides a bit of syntax sugar for regex literals: `[%re "/foo/g"]`
 will evaluate to a {! t} that can be passed around and used like usual.
 
-{b Note:} This is not an immutable API. A RegExp object with the `global` ("g")
+**Note:** This is not an immutable API. A RegExp object with the `global` ("g")
 flag set will modify the {! lastIndex} property when the RegExp object is used,
 and subsequent uses will ocntinue the search from the previous {! lastIndex}.
 
@@ -154,7 +154,7 @@ external unicode : t -> bool = "unicode" [@@bs.get]
 
 (** executes a search on a given string using the given RegExp object
 
-{b returns} `Some` {! result} if a match is found, `None` otherwise
+**returns** `Some` {! result} if a match is found, `None` otherwise
 
 @example {[
 (* Match "quick brown" followed by "jumps", ignoring characters in between
@@ -173,7 +173,7 @@ external exec_ : t -> string -> result option = "exec" [@@bs.send] [@@bs.return 
 
 (** tests whether the given RegExp object will match a given string
 
-{b returns} `true` if a match is found, `false` otherwise
+**returns** `true` if a match is found, `false` otherwise
 
 @example {[
 (* A simple implementation of Js.String.startsWith *)

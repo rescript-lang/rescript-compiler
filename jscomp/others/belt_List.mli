@@ -43,7 +43,7 @@ val length: 'a t -> int
 *)
 
 val size: 'a t -> int
-(** {b See} {!length} *)
+(** **See** {!length} *)
 
 val head: 'a t -> 'a option
 (**
@@ -58,9 +58,9 @@ val head: 'a t -> 'a option
 val headExn: 'a t -> 'a  
 (** `headExn xs`
 
-    {b See} {!head}
+    **See** {!head}
 
-    {b raise} an exception if `xs` is empty
+    **raise** an exception if `xs` is empty
 
 *)
 
@@ -78,9 +78,9 @@ val tail: 'a t -> 'a t option
 val tailExn: 'a t -> 'a t 
 (** `tailExn xs`
 
-    {b See} {!tail}
+    **See** {!tail}
 
-    {b raise} an exception if `xs` is empty
+    **raise** an exception if `xs` is empty
 *)
 
 val add: 'a t -> 'a -> 'a t
@@ -107,9 +107,9 @@ val get: 'a t -> int -> 'a option
 val getExn: 'a t -> int -> 'a
 (** `getExn xs n`
 
-    {b See} {!get}
+    **See** {!get}
 
-    {b raise} an exception if `n` is larger than the length
+    **raise** an exception if `n` is larger than the length
 *)  
 
 val make: int -> 'a -> 'a t
@@ -245,7 +245,7 @@ val zipByU: 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) -> 'c t
 val zipBy: 'a t -> 'b t -> ('a -> 'b -> 'c) -> 'c t
 (** `zipBy xs ys f`
 
-    {b See} {!zip}
+    **See** {!zip}
 
     Equivalent to `zip xs ys |> List.map (fun (x,y) -> f x y)`
 
@@ -522,7 +522,7 @@ val cmp: 'a t -> 'a t -> ('a -> 'a -> int) -> int
      cmp [|1; 3; 5|] [|1; 3; 5|] (fun a b -> compare a b) = 0;;
    ]}
 
-   {b Attention}: The total ordering of List is different from Array,
+   **Attention**: The total ordering of List is different from Array,
    for Array, we compare the length first and, only if the lengths are equal, elements one by one.
    For lists, we just compare elements one by one 
 *)

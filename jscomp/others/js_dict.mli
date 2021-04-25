@@ -41,7 +41,7 @@ val get :
 
 external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index] 
 (** `unsafeGet dict key` return the value if the `key` exists, 
-    otherwise an {b undefined} value is returned. Must be used only 
+    otherwise an **undefined** value is returned. Must be used only 
     when the existence of a key is certain. (i.e. when having called `keys`
     function previously. 
 

@@ -33,7 +33,7 @@ external empty : unit -> < .. >  = "" [@@bs.obj]
 Properties in `target` will be overwritten by properties in `source` if they
 have the same key.
 
-{b Returns} `target`
+**Returns** `target`
 
 @example {[
 (* Copy an object *)

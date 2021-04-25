@@ -94,7 +94,7 @@ val toList: 'a t -> 'a list
 
 val checkInvariantInternal: _ t -> unit
 (**
-   {b raise} when invariant is not held
+   **raise** when invariant is not held
 *)  
 
 val fillArray: 'a node -> int -> 'a array -> int 

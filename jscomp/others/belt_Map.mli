@@ -18,7 +18,7 @@
     and insertion take time logarithmic in the size of the map.
 
     For more info on this module's usage of identity, `make` and others, please see
-    the top level documentation of Belt, {b A special encoding for collection safety}.
+    the top level documentation of Belt, **A special encoding for collection safety**.
 
     Example usage:
 
@@ -52,7 +52,7 @@ module String = Belt_MapString
     more efficient due to the fact that there is no need to pack identity and data back
     after each operation
 
-    {b Advanced usage only}
+    **Advanced usage only**
 *)
 module Dict = Belt_MapDict
 
@@ -218,7 +218,7 @@ val toArray: ('k, 'v, 'id) t -> ('k * 'v) array
 val toList: ('k, 'v, 'id) t -> ('k * 'v) list
 (** In increasing order
 
-    {b See} {!toArray}
+    **See** {!toArray}
 *)
 
 
@@ -252,7 +252,7 @@ val minKey: ('k, _, _) t -> 'k option
 *)
 
 val minKeyUndefined: ('k, _, _) t -> 'k Js.undefined
-(** {b See} {!minKey}*)
+(** **See** {!minKey}*)
 
 val maxKey: ('k, _, _) t -> 'k option
 (** `maxKey s`
@@ -260,7 +260,7 @@ val maxKey: ('k, _, _) t -> 'k option
 *)
 
 val maxKeyUndefined: ('k, _, _) t -> 'k Js.undefined
-(** {b See} {!maxKey} *)
+(** **See** {!maxKey} *)
 
 val minimum: ('k, 'v,  _) t -> ('k * 'v) option
 (** `minimum s`
@@ -268,7 +268,7 @@ val minimum: ('k, 'v,  _) t -> ('k * 'v) option
 *)
 
 val minUndefined: ('k, 'v, _) t -> ('k * 'v) Js.undefined
-(** {b See} {!minimum} *)
+(** **See** {!minimum} *)
 
 val maximum: ('k, 'v, _) t -> ('k * 'v) option
 (** `maximum s`
@@ -276,7 +276,7 @@ val maximum: ('k, 'v, _) t -> ('k * 'v) option
 *)
 
 val maxUndefined:('k, 'v, _) t -> ('k * 'v) Js.undefined
-(** {b See} {!maximum}
+(** **See** {!maximum}
 *)
 
 val get:  ('k, 'v, 'id) t -> 'k -> 'v option
@@ -291,7 +291,7 @@ val get:  ('k, 'v, 'id) t -> 'k -> 'v option
 *)
 
 val getUndefined: ('k, 'v, 'id) t -> 'k ->  'v Js.undefined
-(** {b See} {!get}
+(** **See** {!get}
 
     @return `undefined` when not found
 *)
@@ -300,7 +300,7 @@ val getWithDefault:
   ('k, 'v, 'id) t -> 'k ->  'v -> 'v
 (** `getWithDefault s k default`
 
-    {b See} {!get}
+    **See** {!get}
 
     @return `default` when `k` is not found
 
@@ -309,9 +309,9 @@ val getWithDefault:
 val getExn:  ('k, 'v, 'id) t -> 'k -> 'v
 (** `getExn s k`
 
-    {b See} {!getExn}
+    **See** {!getExn}
 
-    {b raise} when `k` not exist
+    **raise** when `k` not exist
 *)
 
 (****************************************************************************)
@@ -446,7 +446,7 @@ val mapWithKey: ('k, 'v, 'id) t -> ('k -> 'v -> 'v2) -> ('k, 'v2, 'id) t
 val getData: ('k, 'v, 'id) t -> ('k, 'v, 'id) Belt_MapDict.t
 (** `getData s0`
 
-    {b Advanced usage only}
+    **Advanced usage only**
 
     @return the raw data (detached from comparator),
     but its type is still manifested, so that user can pass identity directly
@@ -456,7 +456,7 @@ val getData: ('k, 'v, 'id) t -> ('k, 'v, 'id) Belt_MapDict.t
 val getId: ('k, 'v, 'id) t -> ('k, 'id) id
 (** `getId s0`
 
-    {b Advanced usage only}
+    **Advanced usage only**
 
     @return the identity of `s0`
 *)
@@ -464,7 +464,7 @@ val getId: ('k, 'v, 'id) t -> ('k, 'id) id
 val packIdData: id:('k, 'id) id -> data:('k, 'v, 'id) Belt_MapDict.t -> ('k, 'v, 'id) t
 (** `packIdData ~id ~data`
 
-    {b Advanced usage only}
+    **Advanced usage only**
 
     @return the packed collection
 *)
@@ -472,6 +472,6 @@ val packIdData: id:('k, 'id) id -> data:('k, 'v, 'id) Belt_MapDict.t -> ('k, 'v,
 (**/**)
 val checkInvariantInternal: _ t -> unit
 (**
-   {b raise} when invariant is not held
+   **raise** when invariant is not held
 *)
 (**/**)

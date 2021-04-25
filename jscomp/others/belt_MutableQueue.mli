@@ -46,7 +46,7 @@ val peekUndefined: 'a t -> 'a Js.undefined
 val peekExn: 'a t -> 'a 
 (** `peekExn q`
 
-    {b raise} an exception if `q` is empty *)
+    **raise** an exception if `q` is empty *)
 
 val pop: 'a t -> 'a option 
 (** `pop q` removes and returns the first element in queue `q`.*)
@@ -59,7 +59,7 @@ val popUndefined: 'a t -> 'a Js.undefined
 val popExn: 'a t -> 'a 
 (** `popExn q`
 
-    {b raise} an exception if `q` is empty
+    **raise** an exception if `q` is empty
 *)
 
 val copy: 'a t -> 'a t

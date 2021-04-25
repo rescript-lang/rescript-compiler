@@ -27,7 +27,7 @@
     It is more efficient in general, the  API is the same with {!Belt_Set} except its value type is fixed,
     and identity is not needed(using the built-in one)
 
-    {b See} {!Belt.Set}
+    **See** {!Belt.Set}
 *)
 
 # 33 "others/belt_Set.cppo.mli"
@@ -142,5 +142,5 @@ val split: t -> value -> (t * t) * bool
 
 val checkInvariantInternal: t -> unit
 (**
-   {b raise} when invariant is not held
+   **raise** when invariant is not held
 *)

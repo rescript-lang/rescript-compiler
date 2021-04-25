@@ -27,7 +27,7 @@
     This stdlib is still in {i beta} but we encourage you to try it out and
     give us feedback.
 
-    {b Motivation }
+    **Motivation**
 
     The motivation for creating such library is to provide ReScript users a
     better end-to-end user experience, since the original OCaml stdlib was not
@@ -39,9 +39,9 @@
     {- Better performance and smaller code size running on JS platform}
     }
 
-    {b Name Convention}
+    **Name Convention**
 
-    For higher order functions, it will be suffixed {b U} if it takes uncurried
+    For higher order functions, it will be suffixed **U** if it takes uncurried
     callback.
 
     {[
@@ -52,7 +52,7 @@
     In general, uncurried version will be faster, but it may be less familiar to
     people who have a background in functional programming.
 
-   {b A special encoding for collection safety}
+   **A special encoding for collection safety**
 
    When we create a collection library for a custom data type we need a way to provide a comparator
    function. Take {i Set} for example, suppose its element type is a pair of ints,
@@ -97,7 +97,7 @@
 
     `Comparable1.identity` and `Comparable2.identity` are not the same using our encoding scheme.
 
-    {b Collection Hierarchy}
+    **Collection Hierarchy**
 
     In general, we provide a generic collection module, but also create specialized
     modules for commonly used data type. Take {i Belt.Set} for example, we provide:
@@ -113,7 +113,7 @@
 
     Currently, both {i Belt_Set} and {i Belt.Set} are accessible to users for some
     technical reasons,
-    we {b strongly recommend} users stick to qualified import, {i Belt.Set}, we may hide
+    we **strongly recommend** users stick to qualified import, {i Belt.Set}, we may hide
     the internal, {i i.e}, {i Belt_Set} in the future
 
 *)
@@ -133,7 +133,7 @@ module Id = Belt_Id
 
 (** {!Belt.Array}
 
-    {b mutable array}: Utilities functions
+    **mutable array**: Utilities functions
 *)
 module Array = Belt_Array
 
@@ -172,7 +172,7 @@ module Range = Belt_Range
 
 (** {!Belt.Set}
 
-    The top level provides generic {b immutable} set operations.
+    The top level provides generic **immutable** set operations.
 
     It also has three specialized inner modules
     {!Belt.Set.Int}, {!Belt.Set.String} and
@@ -186,7 +186,7 @@ module Set = Belt_Set
 
 (** {!Belt.Map},
 
-    The top level provides generic {b immutable} map operations.
+    The top level provides generic **immutable** map operations.
 
     It also has three specialized inner modules
     {!Belt.Map.Int}, {!Belt.Map.String} and
@@ -199,7 +199,7 @@ module Map = Belt_Map
 
 (** {!Belt.MutableSet}
 
-    The top level provides generic {b mutable} set operations.
+    The top level provides generic **mutable** set operations.
 
     It also has two specialized inner modules
     {!Belt.MutableSet.Int} and {!Belt.MutableSet.String}
@@ -208,7 +208,7 @@ module MutableSet = Belt_MutableSet
 
 (** {!Belt.MutableMap}
 
-    The top level provides generic {b mutable} map operations.
+    The top level provides generic **mutable** map operations.
 
     It also has two specialized inner modules
     {!Belt.MutableMap.Int} and {!Belt.MutableMap.String}
@@ -219,7 +219,7 @@ module MutableMap = Belt_MutableMap
 
 (** {!Belt.HashSet}
 
-    The top level provides generic {b mutable} hash set operations.
+    The top level provides generic **mutable** hash set operations.
 
     It also has two specialized inner modules
     {!Belt.HashSet.Int} and {!Belt.HashSet.String}
@@ -229,7 +229,7 @@ module HashSet = Belt_HashSet
 
 (** {!Belt.HashMap}
 
-    The top level provides generic {b mutable} hash map operations.
+    The top level provides generic **mutable** hash map operations.
 
     It also has two specialized inner modules
     {!Belt.HashMap.Int} and {!Belt.HashMap.String}

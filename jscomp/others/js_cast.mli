@@ -31,7 +31,7 @@
     applications might benefit from having a safe and zero cost 
     conversion between those types. 
 
-    This modules acts as the {b single place} for such conversion. 
+    This modules acts as the **single place** for such conversion. 
 
     If for any reason, the runtime representation changes, those function 
     will be modified accordingly. *)
