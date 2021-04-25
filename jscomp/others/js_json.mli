@@ -133,49 +133,49 @@ external parseExn : string -> t = "parse" [@@bs.val] [@@bs.scope "JSON"]
 
     @raise SyntaxError if given string is not a valid JSON. Note `SyntaxError` is a JavaScript exception. 
 
-    @example {[
-      (* parse a simple JSON string *)
+    ```
+    (* parse a simple JSON string *)
 
+    let json =
+      try
+        Js.Json.parseExn {| "foo" |}
+      with
+      | _ -> failwith "Error parsing JSON string"
+    in
+    match Js.Json.classify json with
+    | Js.Json.JSONString value -> Js.log value
+    | _ -> failwith "Expected a string"
+    ```
+
+    ```
+    (* parse a complex JSON string *)
+
+    let getIds s =
       let json =
         try
-          Js.Json.parseExn {| "foo" |}
+          Js.Json.parseExn s
         with
         | _ -> failwith "Error parsing JSON string"
       in
       match Js.Json.classify json with
-      | Js.Json.JSONString value -> Js.log value
-      | _ -> failwith "Expected a string"
-    ]}
+      | Js.Json.JSONObject value ->
+        (* In this branch, compiler infer value : Js.Json.t Js.Dict.t *)
+        begin match Js.Dict.get value "ids" with
+          | Some ids ->
+            begin match Js.Json.classify ids with
+              | Js.Json.JSONArray ids ->
+                (* In this branch compiler infer ids : Js.Json.t array *)
+                ids
+              | _ -> failwith "Expected an array"
+            end
+          | None -> failwith "Expected an `ids` property"
+        end
+      | _ -> failwith "Expected an object"
 
-    @example {[
-      (* parse a complex JSON string *)
-
-      let getIds s =
-        let json =
-          try
-            Js.Json.parseExn s
-          with
-          | _ -> failwith "Error parsing JSON string"
-        in
-        match Js.Json.classify json with
-        | Js.Json.JSONObject value ->
-          (* In this branch, compiler infer value : Js.Json.t Js.Dict.t *)
-          begin match Js.Dict.get value "ids" with
-            | Some ids ->
-              begin match Js.Json.classify ids with
-                | Js.Json.JSONArray ids ->
-                  (* In this branch compiler infer ids : Js.Json.t array *)
-                  ids
-                | _ -> failwith "Expected an array"
-              end
-            | None -> failwith "Expected an `ids` property"
-          end
-        | _ -> failwith "Expected an object"
-
-      (* prints `1, 2, 3` *)
-      let _ =
-        Js.log @@ getIds {| { "ids" : [1, 2, 3] } |}
-    ]}
+    (* prints `1, 2, 3` *)
+    let _ =
+      Js.log @@ getIds {| { "ids" : [1, 2, 3] } |}
+    ```
 
     @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse> MDN
 *)
@@ -186,17 +186,17 @@ external stringify: t -> string = "stringify"
 
     **Returns** the string representation of a given JSON data structure
 
-    @example {[
-      (* Creates and stringifies a simple JS object *)
+    ```
+    (* Creates and stringifies a simple JS object *)
 
-      let dict = Js.Dict.empty () in 
-      Js.Dict.set dict "name" (Js.Json.string "John Doe"); 
-      Js.Dict.set dict "age" (Js.Json.number 30.0); 
-      Js.Dict.set dict "likes" 
-        (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
+    let dict = Js.Dict.empty () in 
+    Js.Dict.set dict "name" (Js.Json.string "John Doe"); 
+    Js.Dict.set dict "age" (Js.Json.number 30.0); 
+    Js.Dict.set dict "likes" 
+      (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
 
-      Js.log @@ Js.Json.stringify (Js.Json.object_ dict) 
-    ]}
+    Js.log @@ Js.Json.stringify (Js.Json.object_ dict) 
+    ```
 
     @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
 *)
@@ -207,17 +207,17 @@ external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string
 
     **Returns** the string representation of a given JSON data structure
 
-    @example {[
-      (* Creates and stringifies a simple JS object with spacing *)
+    ```
+    (* Creates and stringifies a simple JS object with spacing *)
 
-      let dict = Js.Dict.empty () in 
-      Js.Dict.set dict "name" (Js.Json.string "John Doe"); 
-      Js.Dict.set dict "age" (Js.Json.number 30.0); 
-      Js.Dict.set dict "likes" 
-        (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
+    let dict = Js.Dict.empty () in 
+    Js.Dict.set dict "name" (Js.Json.string "John Doe"); 
+    Js.Dict.set dict "age" (Js.Json.number 30.0); 
+    Js.Dict.set dict "likes" 
+      (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
 
-      Js.log @@ Js.Json.stringifyWithSpace (Js.Json.object_ dict) 2
-    ]}
+    Js.log @@ Js.Json.stringifyWithSpace (Js.Json.object_ dict) 2
+    ```
 
     @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
 *)
@@ -227,10 +227,10 @@ external stringifyAny : 'a -> string option = "stringify"
 [@@bs.val]  [@@bs.scope "JSON"]
 (** `stringifyAny value` formats any `value` into a JSON string
 
-    @example {[
-      (* prints ``"foo", "bar"`` *)
-      Js.log @@ Js.Json.stringifyAny [| "foo"; "bar" |]
-    ]}
+    ```
+    (* prints ``"foo", "bar"`` *)
+    Js.log @@ Js.Json.stringifyAny [| "foo"; "bar" |]
+    ```
 
     @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
 *)

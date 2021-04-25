@@ -70,10 +70,10 @@ val findFirstBy : ('k, 'v, 'id) t -> ('k -> 'v -> bool ) -> ('k * 'v) option
 (** `findFirstBy m p` uses funcion `f` to find the first key value pair
     to match predicate `p`.
 
-    @example {[
-      let s0 = fromArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
-      findFirstBy s0 (fun k v -> k = 4 ) = option (4, "4");;
-    ]}
+    ```
+    let s0 = fromArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
+    findFirstBy s0 (fun k v -> k = 4 ) = option (4, "4");;
+    ```
 *)
 
 val forEachU: ('k, 'a, 'id) t -> ('k -> 'a -> unit [@bs]) -> unit

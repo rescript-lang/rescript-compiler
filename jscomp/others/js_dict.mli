@@ -45,9 +45,9 @@ external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index]
     when the existence of a key is certain. (i.e. when having called `keys`
     function previously. 
 
-    @example {[
-      Array.iter (fun key -> Js.log (Js_dict.unsafeGet dic key)) (Js_dict.keys dict) 
-    ]} 
+    ```
+    Array.iter (fun key -> Js.log (Js_dict.unsafeGet dic key)) (Js_dict.keys dict) 
+    ```
 *)
 
 external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]  

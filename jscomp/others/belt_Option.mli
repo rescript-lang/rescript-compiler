@@ -37,11 +37,11 @@ val keep : 'a option -> ('a -> bool) -> 'a option
 
    If `optionValue` is `Some value` and `p value = true`, it returns `Some value`; otherwise returns `None`
 
-   @example {[
-     keep (Some 10)(fun x -> x > 5);; (* returns `Some 10` *)
-     keep (Some 4)(fun x -> x > 5);; (* returns `None` *)
-     keep None (fun x -> x > 5);; (* returns `None` *)
-   ]}
+   ```
+   keep (Some 10)(fun x -> x > 5);; (* returns `Some 10` *)
+   keep (Some 4)(fun x -> x > 5);; (* returns `None` *)
+   keep None (fun x -> x > 5);; (* returns `None` *)
+   ```
 *)
 
 val forEachU : 'a option -> ('a -> unit [@bs]) -> unit
@@ -53,20 +53,20 @@ val forEach : 'a option -> ('a -> unit) -> unit
 
    If `optionValue` is `Some value`, it calls `f value`; otherwise returns `()`
 
-   @example {[
-     forEach (Some "thing")(fun x -> Js.log x);; (* logs "thing" *)
-     forEach None (fun x -> Js.log x);; (* returns () *)
-   ]}
+   ```
+   forEach (Some "thing")(fun x -> Js.log x);; (* logs "thing" *)
+   forEach None (fun x -> Js.log x);; (* returns () *)
+   ```
 *)
 
 val getExn : 'a option -> 'a
 (** `getExn optionalValue`
     Returns `value` if `optionalValue` is `Some value`, otherwise raises `getExn`
 
-    @example {[
-      getExn (Some 3) = 3;;
-      getExn None (* Raises getExn error *)
-    ]}
+    ```
+    getExn (Some 3) = 3;;
+    getExn None (* Raises getExn error *)
+    ```
 *)
 
 external getUnsafe :
@@ -85,10 +85,10 @@ val mapWithDefault : 'a option -> 'b -> ('a -> 'b) -> 'b
 
    If `optionValue` is `Some value`, returns `f value`; otherwise returns `default`
 
-   @example {[
-     mapWithDefault (Some 3) 0 (fun x -> x + 5) = 8;;
-     mapWithDefault None 0 (fun x -> x + 5) = 0;;
-   ]}
+   ```
+   mapWithDefault (Some 3) 0 (fun x -> x + 5) = 8;;
+   mapWithDefault None 0 (fun x -> x + 5) = 0;;
+   ```
 *)
 
 val mapU : 'a option -> ('a -> 'b [@bs]) -> 'b option
@@ -100,10 +100,10 @@ val map : 'a option -> ('a -> 'b) -> 'b option
 
    If `optionValue` is `Some value`, returns `Some (f value)`; otherwise returns `None`
 
-   @example {[
-     map (Some 3) (fun x -> x * x) = (Some 9);;
-     map None (fun x -> x * x) = None;;
-   ]}
+   ```
+   map (Some 3) (fun x -> x * x) = (Some 9);;
+   map None (fun x -> x * x) = None;;
+   ```
 *)
 
 val flatMapU : 'a option -> ('a -> 'b option [@bs]) -> 'b option
@@ -116,17 +116,17 @@ val flatMap : 'a option -> ('a -> 'b option) -> 'b option
    If `optionValue` is `Some value`, returns `f value`; otherwise returns `None`
    The function `f` must have a return type of `'a option`
 
-   @example {[
-     let f (x : float) =
-       if x >= 0.0 then
-         Some (sqrt x)
-       else
-         None;;
+   ```
+   let f (x : float) =
+     if x >= 0.0 then
+       Some (sqrt x)
+     else
+       None;;
 
-     flatMap (Some 4.0) f = Some 2.0;;
-     flatMap (Some (-4.0)) f = None;;
-     flatMap None f = None;;
-   ]}
+   flatMap (Some 4.0) f = Some 2.0;;
+   flatMap (Some (-4.0)) f = None;;
+   flatMap None f = None;;
+   ```
 *)
 
 val getWithDefault : 'a option -> 'a -> 'a
@@ -135,10 +135,10 @@ val getWithDefault : 'a option -> 'a -> 'a
 
    If `optionalValue` is `Some value`, returns `value`, otherwise `default`
 
-   @example {[
-     getWithDefault (Some 1812) 1066 = 1812;;
-     getWithDefault None 1066 = 1066;;
-   ]}
+   ```
+   getWithDefault (Some 1812) 1066 = 1812;;
+   getWithDefault None 1066 = 1066;;
+   ```
 *)
 
 val isSome : 'a option -> bool
@@ -169,13 +169,13 @@ val eq : 'a option -> 'b option -> ('a -> 'b -> bool) -> bool
    If arguments are `Some value1` and `Some value2`, returns the result of `predicate value1 value2`;
    the `predicate` function must return a `bool`
 
-   @example {[
-     let clockEqual = (fun a b -> a mod 12 = b mod 12);;
-     eq (Some 3) (Some 15) clockEqual = true;;
-     eq (Some 3) None clockEqual = false;;
-     eq None (Some 3) clockEqual = false;;
-     eq None None clockEqual = true;;
-   ]}
+   ```
+   let clockEqual = (fun a b -> a mod 12 = b mod 12);;
+   eq (Some 3) (Some 15) clockEqual = true;;
+   eq (Some 3) None clockEqual = false;;
+   eq None (Some 3) clockEqual = false;;
+   eq None None clockEqual = true;;
+   ```
 *)
 
 val cmpU : 'a option -> 'b option -> ('a -> 'b -> int [@bs]) -> int
@@ -195,13 +195,13 @@ val cmp : 'a option -> 'b option -> ('a -> 'b -> int) -> int
 
    If the arguments are `Some value1` and `Some value2`, returns the result of `comparisonFcn value1 value2`; `comparisonFcn` takes two arguments and returns -1 if the first argument is less than the second, 0 if the arguments are equal, and 1 if the first argument is greater than the second.
 
-   @example {[
-     let clockCompare = fun a b -> compare (a mod 12) (b mod 12);;
-     cmp (Some 3) (Some 15) clockCompare = 0;;
-     cmp (Some 3) (Some 14) clockCompare = 1;;
-     cmp (Some 2) (Some 15) clockCompare = -1;;
-     cmp None (Some 15) clockCompare = -1;;
-     cmp (Some 14) None clockCompare = 1;;
-     cmp None None clockCompare = 0;;
-   ]}
+   ```
+   let clockCompare = fun a b -> compare (a mod 12) (b mod 12);;
+   cmp (Some 3) (Some 15) clockCompare = 0;;
+   cmp (Some 3) (Some 14) clockCompare = 1;;
+   cmp (Some 2) (Some 15) clockCompare = -1;;
+   cmp None (Some 15) clockCompare = -1;;
+   cmp (Some 14) None clockCompare = 1;;
+   cmp None None clockCompare = 0;;
+   ```
 *)

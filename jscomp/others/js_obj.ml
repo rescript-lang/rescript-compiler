@@ -35,7 +35,7 @@ have the same key.
 
 **Returns** `target`
 
-@example {[
+```
 (* Copy an object *)
 
 let obj = [%obj { a = 1 }]
@@ -44,9 +44,9 @@ let copy = Js.Obj.assign (Js.Obj.empty ()) obj
 
 (* prints "{ a: 1 }" *)
 let _ = Js.log copy
-]}
+```
 
-@example {[
+```
 (* Merge objects with same properties *)
 
 let target = [%obj { a = 1; b = 1; }]
@@ -59,7 +59,7 @@ let _ = Js.log obj
 
 (* prints "{ a: 1, b: 2 }", target is modified *)
 let _ = Js.log target
-]}
+```
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign> MDN
 *)

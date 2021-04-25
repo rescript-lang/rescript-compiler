@@ -32,18 +32,18 @@
 
     Example usage:
 
-    @example {[
-      module PairComparator = Belt.Id.MakeComparable(struct
-          type t = int * int
-          let cmp (a0, a1) (b0, b1) =
-            match Pervasives.compare a0 b0 with
-            | 0 -> Pervasives.compare a1 b1
-            | c -> c
-        end)
+    ```
+    module PairComparator = Belt.Id.MakeComparable(struct
+        type t = int * int
+        let cmp (a0, a1) (b0, b1) =
+          match Pervasives.compare a0 b0 with
+          | 0 -> Pervasives.compare a1 b1
+          | c -> c
+      end)
 
-      let mySet = Belt.Set.make ~id:(module PairComparator)
-      let mySet2 = Belt.Set.add mySet (1, 2)
-    ]}
+    let mySet = Belt.Set.make ~id:(module PairComparator)
+    let mySet2 = Belt.Set.add mySet (1, 2)
+    ```
 
     The API documentation below will assume a predeclared comparator module for integers, IntCmp
 *)
@@ -81,9 +81,9 @@ type ('value, 'id) id = ('value, 'id) Belt_Id.comparable
 
 val make: id:('value, 'id) id -> ('value, 'id) t
 (** `make ~id` creates a new set by taking in the comparator
-    @example {[
-      let s = make ~id:(module IntCmp)
-    ]}
+    ```
+    let s = make ~id:(module IntCmp)
+    ```
 
 *)
 
@@ -110,36 +110,36 @@ val fromSortedArrayUnsafe: 'value array -> id:('value, 'id) id -> ('value,'id) t
 
 val isEmpty: _ t -> bool
 (**
-   @example {[
-     isEmpty (fromArray [||] ~id:(module IntCmp)) = true;;
-     isEmpty (fromArray [|1|] ~id:(module IntCmp)) = true;;
-   ]}
+   ```
+   isEmpty (fromArray [||] ~id:(module IntCmp)) = true;;
+   isEmpty (fromArray [|1|] ~id:(module IntCmp)) = true;;
+   ```
 *)
 
 val has: ('value, 'id) t -> 'value ->  bool
 (**
-   @example {[
-     let v = fromArray [|1;4;2;5|] ~id:(module IntCmp);;
-     has v 3 = false;;
-     has v 1 = true;;
-   ]}
+   ```
+   let v = fromArray [|1;4;2;5|] ~id:(module IntCmp);;
+   has v 3 = false;;
+   has v 1 = true;;
+   ```
 *)
 
 val add:
   ('value, 'id) t -> 'value -> ('value, 'id) t
 (** `add s x` If `x` was already in `s`, `s` is returned unchanged.
 
-    @example {[
-      let s0 = make ~id:(module IntCmp);;
-      let s1 = add s0 1 ;;
-      let s2 = add s1 2;;
-      let s3 = add s2 2;;
-      toArray s0 = [||];;
-      toArray s1 = [|1|];;
-      toArray s2 = [|1;2|];;
-      toArray s3 = [|1;2|];;
-      s2 == s3;;
-    ]}
+    ```
+    let s0 = make ~id:(module IntCmp);;
+    let s1 = add s0 1 ;;
+    let s2 = add s1 2;;
+    let s3 = add s2 2;;
+    toArray s0 = [||];;
+    toArray s1 = [|1|];;
+    toArray s2 = [|1;2|];;
+    toArray s3 = [|1;2|];;
+    s2 == s3;;
+    ```
 *)
 
 val mergeMany: ('value, 'id) t -> 'value array -> ('value, 'id) t
@@ -154,16 +154,16 @@ val mergeMany: ('value, 'id) t -> 'value array -> ('value, 'id) t
 val remove: ('value, 'id) t -> 'value -> ('value, 'id) t
 (** `remove m x` If `x` was not in `m`, `m` is returned reference unchanged.
 
-    @example {[
-      let s0 = fromArray ~id:(module IntCmp) [|2;3;1;4;5|];;
-      let s1 = remove s0 1 ;;
-      let s2 = remove s1 3 ;;
-      let s3 = remove s2 3 ;;
+    ```
+    let s0 = fromArray ~id:(module IntCmp) [|2;3;1;4;5|];;
+    let s1 = remove s0 1 ;;
+    let s2 = remove s1 3 ;;
+    let s3 = remove s2 3 ;;
 
-      toArray s1 = [|2;3;4;5|];;
-      toArray s2 = [|2;4;5|];;
-      s2 == s3;;
-    ]}
+    toArray s1 = [|2;3;4;5|];;
+    toArray s2 = [|2;4;5|];;
+    s2 == s3;;
+    ```
 *)
 
 val removeMany:
@@ -179,44 +179,44 @@ val union: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 (**
    `union s0 s1`
 
-   @example {[
-     let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-     let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
-     toArray (union s0 s1) =  [|1;2;3;4;5;6|]
-   ]}
+   ```
+   let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+   let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
+   toArray (union s0 s1) =  [|1;2;3;4;5;6|]
+   ```
 *)
 
 val intersect: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 (** `intersect s0 s1`
-    @example {[
-      let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-      let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
-      toArray (intersect s0 s1) =  [|2;3;5|]
-    ]}
+    ```
+    let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+    let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
+    toArray (intersect s0 s1) =  [|2;3;5|]
+    ```
 
 *)
 
 val diff: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 (** `diff s0 s1`
-    @example {[
-      let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-      let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
-      toArray (diff s0 s1) = [|6|];;
-      toArray (diff s1 s0) = [|1;4|];;
-    ]}
+    ```
+    let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+    let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
+    toArray (diff s0 s1) = [|6|];;
+    toArray (diff s1 s0) = [|1;4|];;
+    ```
 *)
 
 val subset: ('value, 'id) t -> ('value, 'id) t -> bool
 (** `subset s0 s1`
 
-    @example {[
-      let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-      let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
-      let s2 = intersect s0 s1;;
-      subset s2 s0 = true;;
-      subset s2 s1 = true;;
-      subset s1 s0 = false;;
-    ]}
+    ```
+    let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+    let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
+    let s2 = intersect s0 s1;;
+    subset s2 s0 = true;;
+    subset s2 s1 = true;;
+    subset s1 s0 = false;;
+    ```
 *)
 
 val cmp: ('value, 'id) t -> ('value, 'id) t -> int
@@ -237,22 +237,22 @@ val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit
 (** `forEach s f` applies `f` in turn to all elements of `s`.
     In increasing order
 
-    @example {[
-      let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-      let acc = ref [] ;;
-      forEach s0 (fun x -> acc := x !acc);;
-      !acc = [6;5;3;2];;
-    ]}
+    ```
+    let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+    let acc = ref [] ;;
+    forEach s0 (fun x -> acc := x !acc);;
+    !acc = [6;5;3;2];;
+    ```
 *)
 
 val reduceU: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a [@bs]) ->  'a
 val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a ) ->  'a
 (** In increasing order.
 
-    @example {[
-      let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-      reduce s0 [] Bs.List.add = [6;5;3;2];;
-    ]}
+    ```
+    let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+    reduce s0 [] Bs.List.add = [6;5;3;2];;
+    ```
 *)
 
 val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
@@ -281,18 +281,20 @@ val partition: ('value, 'id) t -> ('value -> bool) ->  ('value, 'id) t * ('value
 val size:  ('value, 'id) t -> int
 (** `size s`
 
-    @example {[
-      let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-      size s0 = 4;;
-    ]}
+    ```
+    let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+    size s0 = 4;;
+    ```
 *)
 
 val toArray: ('value, 'id) t -> 'value array
 (** `toArray s0`
-    @example {[
-      let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-      toArray s0 = [|2;3;5;6|];;
-    ]}*)
+
+    ```
+    let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+    toArray s0 = [|2;3;5;6|];;
+    ```
+*)
 
 val toList: ('value, 'id) t -> 'value list
 (** In increasing order

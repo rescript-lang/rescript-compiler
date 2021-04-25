@@ -32,9 +32,9 @@ will evaluate to a {! t} that can be passed around and used like usual.
 flag set will modify the {! lastIndex} property when the RegExp object is used,
 and subsequent uses will ocntinue the search from the previous {! lastIndex}.
 
-@example {[
+```
 let maybeMatches = "banana" |> Js.String.match_ [%re "/na+/g"]
-]}
+```
 
 @see
   <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp>
@@ -72,7 +72,7 @@ external input : result -> string = "input" [@@bs.get]
 Regex literals (`[%re "/.../"]`) should generally be preferred, but
 `fromString` is very useful when you need to insert a string into a regex.
 
-@example {[
+```
 (* A function that extracts the content of the first element with the given tag *)
 
 let contentOf tag xmlString =
@@ -81,7 +81,7 @@ let contentOf tag xmlString =
     |> function
       | Some result -> Js.Nullable.toOption (Js.Re.captures result).(1)
       | None -> None
-]}
+```
 *)
 external fromString : string -> t = "RegExp" [@@bs.new]
 
@@ -116,7 +116,7 @@ external ignoreCase : t -> bool = "ignoreCase" [@@bs.get]
 This property will be modified when the RegExp object is used, if the `global` ("g")
 flag is set.
 
-@example {[
+```
 (* Finds and prints successive matches *)
 
 let re = [%re "/ab*/g"] in
@@ -131,7 +131,7 @@ while not !break do
       let next = string_of_int (Js.Re.lastIndex re) in
       Js.log ("Found " ^ match_ ^ ". Next match starts at " ^ next)))
 done
-]}
+```
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex> MDN
 *)
@@ -156,7 +156,7 @@ external unicode : t -> bool = "unicode" [@@bs.get]
 
 **returns** `Some` {! result} if a match is found, `None` otherwise
 
-@example {[
+```
 (* Match "quick brown" followed by "jumps", ignoring characters in between
  * Remember "brown" and "jumps"
  * Ignore case
@@ -164,7 +164,7 @@ external unicode : t -> bool = "unicode" [@@bs.get]
 
 let re = [%re "/quick\s(brown).+?(jumps)/ig"] in
 let result = re |. Js.Re.exec_ "The Quick Brown Fox Jumps Over The Lazy Dog"
-]}
+```
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec> MDN
 *)
@@ -175,7 +175,7 @@ external exec_ : t -> string -> result option = "exec" [@@bs.send] [@@bs.return 
 
 **returns** `true` if a match is found, `false` otherwise
 
-@example {[
+```
 (* A simple implementation of Js.String.startsWith *)
 
 let str = "hello world!"
@@ -185,7 +185,7 @@ let startsWith target substring =
     |. Js.Re.test_ target
 
 let () = Js.log (str |. startsWith "hello") (* prints "true" *)
-]}
+```
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test> MDN
 *)
