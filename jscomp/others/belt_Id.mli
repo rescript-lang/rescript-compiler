@@ -94,13 +94,14 @@ val comparableU:
   (module Comparable with type t = 'a)
 
 (**
-   {[
-     module C = (
-       val Belt.Id.comparable ~cmp:(compare : int -> int -> int)
-     )
-     let m = Belt.Set.make(module C)
-   ]}
-    Note that the name of C can not be ignored
+  ```
+  module C = (
+    val Belt.Id.comparable ~cmp:(compare : int -> int -> int)
+  )
+  let m = Belt.Set.make(module C)
+  ```
+
+  Note that the name of C can not be ignored
 *)
 val comparable:
   cmp:('a -> 'a -> int) ->

@@ -47,8 +47,8 @@ external uptime : t -> unit -> float = "uptime" [@@bs.send]
 let putEnvVar key (var : string) = 
   Js_dict.set process##env key var
 (** Note that 
-    {[process.env.X = undefined]} will result in 
-    {[process.env.X = "undefined"]}
+    `process.env.X = undefined` will result in 
+    `process.env.X = "undefined"`
     The only sane way to do it is using `delete`
 *)
 

@@ -430,7 +430,7 @@ If `n` is negative, then it is evaluated as `length str - n`.
 
 If `n` is greater than the length of `str`, then `sliceToEnd` returns the empty string.
 
-```xample {[
+```
 sliceToEnd ~from: 4 "abcdefg" == "efg";;
 sliceToEnd ~from: (-2) "abcdefg" == "fg";;
 sliceToEnd ~from: 7 "abcdefg" == "";;

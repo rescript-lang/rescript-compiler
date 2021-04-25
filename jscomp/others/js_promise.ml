@@ -24,9 +24,6 @@
 
 (** Specialized bindings to Promise. Note: For simplicity,
     this binding does not track the error type, it treat it as an opaque type
-    {[
-
-    ]}
 *)
 
 [@@@warning "-103"]

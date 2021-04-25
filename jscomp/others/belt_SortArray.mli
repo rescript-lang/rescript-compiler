@@ -47,12 +47,12 @@ val strictlySortedLength:
    return `+n` means increasing order
    `-n` means negative order
 
-   @example{[
-     strictlySortedLength [|1;2;3;4;3|] (fun x y -> x < y) = 4;;
-     strictlySortedLength [||] (fun x y -> x < y) = 0;;
-     strictlySortedLength [|1|] (fun x y -> x < y) = 1;;
-     strictlySortedLength [|4;3;2;1|] (fun x y -> x < y) = -4;;
-   ]}
+  ```
+  strictlySortedLength [|1;2;3;4;3|] (fun x y -> x < y) = 4;;
+  strictlySortedLength [||] (fun x y -> x < y) = 0;;
+  strictlySortedLength [|1|] (fun x y -> x < y) = 1;;
+  strictlySortedLength [|4;3;2;1|] (fun x y -> x < y) = -4;;
+  ```
 *)
 
 val isSortedU: 'a array -> ('a -> 'a -> int [@bs]) -> bool

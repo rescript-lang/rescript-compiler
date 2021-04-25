@@ -24,39 +24,39 @@
 
 
 (*
-   perf is not everything, there are better memory represenations
-   {[
-     type 'a cell = {
-       mutable head : 'a;
-       mutable tail : 'a opt_cell
-     }
+  perf is not everything, there are better memory represenations
+  ```
+  type 'a cell = {
+    mutable head : 'a;
+    mutable tail : 'a opt_cell
+  }
 
-     and 'a opt_cell = 'a cell Js.null
+  and 'a opt_cell = 'a cell Js.null
 
-     and 'a t = {
-       length : int ;
-       data : 'a opt_cell
-     }
-   ]}
-   However,
-   - people use List not because of its perf, but its
-   convenencie, in that case, pattern match and compatibility seems
-   more attractive, we could keep a mutable list
-   - The built in types would indicate that
-     its construtor is immutable, a better optimizer would break such code
+  and 'a t = {
+    length : int ;
+    data : 'a opt_cell
+  }
+  ```
+  However,
+  - people use List not because of its perf, but its
+    convenience, in that case, pattern match and compatibility seems
+    more attractive, we could keep a mutable list
+  - The built in types would indicate that
+    its construtor is immutable, a better optimizer would break such code
 
-   {[
-     type 'a t = {
-       head : 'a;
-       mutable tail : 'a t | int
-     }
-   ]}
-   In the future, we could come up with a safer version
-   {[
-     type 'a t =
-       | Nil
-       | Cons of { hd : 'a ; mutable tail : 'a t }
-   ]}
+  ```
+  type 'a t = {
+    head : 'a;
+    mutable tail : 'a t | int
+  }
+  ```
+  In the future, we could come up with a safer version
+  ```
+  type 'a t =
+  | Nil
+  | Cons of { hd : 'a ; mutable tail : 'a t }
+  ```
 *)
 
 [@@@bs.config {flags = [| "-bs-noassertfalse" |]}]

@@ -29,21 +29,21 @@
     _hash_ functions will have different type.
 
     For example:
-    {[
-      type t = int
-      module I0 =
-        (val Belt.Id.hashableU
-            ~hash:(fun[@bs] (a : t)  -> a & 0xff_ff)
-            ~eq:(fun[@bs] a b -> a = b)
-        )
-      let s0 : (_, string,_) t = make ~hintSize:40 ~id:(module I0)
-      module I1 =
-        (val Belt.Id.hashableU
-            ~hash:(fun[@bs] (a : t)  -> a & 0xff)
-            ~eq:(fun[@bs] a b -> a = b)
-        )
-      let s1 : (_, string,_) t  = make ~hintSize:40 ~id:(module I1)
-    ]}
+    ```
+    type t = int
+    module I0 =
+      (val Belt.Id.hashableU
+          ~hash:(fun[@bs] (a : t)  -> a & 0xff_ff)
+          ~eq:(fun[@bs] a b -> a = b)
+      )
+    let s0 : (_, string,_) t = make ~hintSize:40 ~id:(module I0)
+    module I1 =
+      (val Belt.Id.hashableU
+          ~hash:(fun[@bs] (a : t)  -> a & 0xff)
+          ~eq:(fun[@bs] a b -> a = b)
+      )
+    let s1 : (_, string,_) t  = make ~hintSize:40 ~id:(module I1)
+    ```
 
     The invariant must be held: for two elements who are _equal_,
     their hashed value should be the same
@@ -51,19 +51,18 @@
     Here the compiler would infer `s0` and `s1` having different type so that
     it would not mix.
 
-    {[
-      val s0 :  (int, I0.identity) t
-      val s1 :  (int, I1.identity) t
-    ]}
+    ```
+    val s0 :  (int, I0.identity) t
+    val s1 :  (int, I1.identity) t
+    ```
 
     We can add elements to the collection:
 
-    {[
-
-      let () =
-        add s1 0 "3";
-        add s1 1 "3"
-    ]}
+    ```
+    let () =
+      add s1 0 "3";
+      add s1 1 "3"
+    ```
 
     Since this is an mutable data strucure, `s1` will contain two pairs.
 *)
