@@ -13,7 +13,7 @@
 (* Adapted significantly by Authors of ReScript *)
 
 
-(** {!Belt.Array}
+(** [`Belt.Array`]()
   Utililites for Array functions
 *)
 
@@ -22,7 +22,7 @@ external length: 'a array -> int = "%array_length"
 (** `length xs` return the size of the array *)
 
 external size: 'a array -> int = "%array_length"
-(** **See** {!length} *)
+(** **See** [`length`]() *)
 
 val get: 'a array -> int -> 'a option
 (**
@@ -59,7 +59,7 @@ external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
 (**
   `getUndefined arr i`
 
-  It does the samething in the runtime as {!getUnsafe};
+  It does the samething in the runtime as [`getUnsafe`]();
   it is _type safe_ since the return type still track whether it is
   in range or not
 *)
@@ -462,7 +462,7 @@ val forEachWithIndex: 'a array ->  (int -> 'a -> unit ) -> unit
 (**
   `forEachWithIndex xs f`
 
-  The same as {!forEach}; except that `f` is supplied with two arguments:
+  The same as [`forEach`](); except that `f` is supplied with two arguments:
   the index starting from 0 and the element from `xs`
 
   ```
@@ -525,7 +525,7 @@ val reduceReverse: 'b array -> 'a -> ('a -> 'b ->  'a ) ->  'a
 (**
   `reduceReverse xs init f`
 
-  Works like {!reduce};except that function `f` is applied to each item of `xs` from the last
+  Works like [`reduce`]();except that function `f` is applied to each item of `xs` from the last
   back to the first.
 
   ```

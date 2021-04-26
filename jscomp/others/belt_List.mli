@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (**
-  {!Belt.List}
+  [`Belt.List`]()
 
   Utilities for List data type.
 
@@ -45,7 +45,7 @@ val length: 'a t -> int
 *)
 
 val size: 'a t -> int
-(** **See** {!length} *)
+(** **See** [`length`]() *)
 
 val head: 'a t -> 'a option
 (**
@@ -62,7 +62,7 @@ val headExn: 'a t -> 'a
 (**
   `headExn xs`
 
-  **See** {!head}
+  **See** [`head`]()
 
   **raise** an exception if `xs` is empty
 
@@ -83,7 +83,7 @@ val tailExn: 'a t -> 'a t
 (**
   `tailExn xs`
 
-  **See** {!tail}
+  **See** [`tail`]()
 
   **raise** an exception if `xs` is empty
 *)
@@ -114,7 +114,7 @@ val getExn: 'a t -> int -> 'a
 (**
   `getExn xs n`
 
-  **See** {!get}
+  **See** [`get`]()
 
   **raise** an exception if `n` is larger than the length
 *)
@@ -265,7 +265,7 @@ val zipBy: 'a t -> 'b t -> ('a -> 'b -> 'c) -> 'c t
 (**
   `zipBy xs ys f`
 
-  **See** {!zip}
+  **See** [`zip`]()
 
   Equivalent to `zip xs ys |> List.map (fun (x,y) -> f x y)`
 
@@ -410,7 +410,7 @@ val reduceReverse: 'a t -> 'b -> ('b -> 'a ->  'b) -> 'b
 (**
   `reduceReverse xs f`
 
-  Works like {!reduce}, except that function `f` is applied to each item of `xs` from the last
+  Works like [`reduce`](), except that function `f` is applied to each item of `xs` from the last
   back to the first.
 
   ```

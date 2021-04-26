@@ -41,7 +41,7 @@ val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit
 
 (* [@@deprecated "Use Js.List.toVector instead"] *)
 (* val ofList : 'a list -> 'a t   *)
-(* removed, we choose that {!Js.List} depends on Vector to avoid cylic dependency
+(* removed, we choose that [`Js.List`]() depends on Vector to avoid cylic dependency
 *)
 
 val toList : 'a t -> 'a list

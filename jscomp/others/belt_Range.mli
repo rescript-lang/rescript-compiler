@@ -1,6 +1,6 @@
 
 (* Copyright (C) 2017 Authors of ReScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +18,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -45,7 +45,7 @@ val everyByU: int -> int -> step:int -> (int -> bool [@bs]) -> bool
 val everyBy: int -> int -> step:int -> (int -> bool ) -> bool
 (** `everyBy start finish ~step p`
 
-    **See** {!Belt_Array.rangeBy}
+    **See** [`Belt_Array.rangeBy`]()
 
     equivalent to `Belt.Array.(every (rangeBy start finish ~step) p)`
 *)
@@ -58,10 +58,10 @@ val some: int -> int -> (int -> bool ) -> bool
 *)
 
 val someByU: int -> int -> step:int -> (int -> bool [@bs]) -> bool
-val someBy: int -> int -> step:int -> (int -> bool ) -> bool  
+val someBy: int -> int -> step:int -> (int -> bool ) -> bool
 (** `someBy start finish ~step  p`
 
-    **See** {!Belt_Array.rangeBy}
+    **See** [`Belt_Array.rangeBy`]()
 
     equivalent to `Belt.Array.(some (rangeBy start finish ~step) p)`
 *)

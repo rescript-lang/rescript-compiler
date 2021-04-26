@@ -83,7 +83,7 @@ val stableSortBy: 'a array -> ('a -> 'a -> int) -> 'a array
 
   **return** a fresh array
 
-  The same as {!stableSortInPlaceBy} except that `xs` is  not modified
+  The same as [`stableSortInPlaceBy`]() except that `xs` is  not modified
 *)
 
 

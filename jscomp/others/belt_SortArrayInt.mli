@@ -25,7 +25,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(** This is a specialized module for {!Belt_SortArray}, the docs in that module also
+(** This is a specialized module for [`Belt_SortArray`](), the docs in that module also
     applies here, except the comparator is fixed and inlined
 *)
 
@@ -35,7 +35,7 @@ type element = int
 # 39 "others/sort.cppo.mli"
 val strictlySortedLength: element array -> int
 (**
-  The same as {!Belt_SortArray.strictlySortedLength } except the comparator is fixed
+  The same as [`Belt_SortArray.strictlySortedLength`]() except the comparator is fixed
 
   **return** `+n` means increasing order  `-n` means negative order
 *)
@@ -46,11 +46,11 @@ val isSorted: element array  -> bool
 
 val stableSortInPlace: element array -> unit
 (**
-  The same as {!Belt_SortArray.stableSortInPlaceBy} except the comparator is fixed
+  The same as [`Belt_SortArray.stableSortInPlaceBy`]() except the comparator is fixed
 *)
 
 val stableSort: element array -> element array
-(** The same as {!Belt_SortArray.stableSortBy} except the comparator is fixed *)
+(** The same as [`Belt_SortArray.stableSortBy`]() except the comparator is fixed *)
 
 val binarySearch: element array -> element -> int
 (**

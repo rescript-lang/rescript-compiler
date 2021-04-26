@@ -27,11 +27,11 @@
 
   {4 Syntax sugar}
   ReScript provides a bit of syntax sugar for regex literals: `[%re "/foo/g"]`
-  will evaluate to a {! t} that can be passed around and used like usual.
+  will evaluate to a [` t`]() that can be passed around and used like usual.
 
   **Note:** This is not an immutable API. A RegExp object with the `global` ("g")
-  flag set will modify the {! lastIndex} property when the RegExp object is used,
-  and subsequent uses will ocntinue the search from the previous {! lastIndex}.
+  flag set will modify the [` lastIndex`]() property when the RegExp object is used,
+  and subsequent uses will ocntinue the search from the previous [` lastIndex`]().
 
   ```
   let maybeMatches = "banana" |> Js.String.match_ [%re "/na+/g"]
@@ -65,7 +65,7 @@ external input : result -> string = "input" [@@bs.get]
 
 
 (**
-  Constructs a RegExp object ({! t}) from a string
+  Constructs a RegExp object ([` t`]()) from a string
 
   Regex literals (`[%re "/.../"]`) should generally be preferred, but
   `fromString` is very useful when you need to insert a string into a regex.
@@ -84,9 +84,9 @@ external input : result -> string = "input" [@@bs.get]
 external fromString : string -> t = "RegExp" [@@bs.new]
 
 (**
-  Constructs a RegExp object ({! t}) from a string with the given `flags`
+  Constructs a RegExp object ([` t`]()) from a string with the given `flags`
 
-  See {! fromString}
+  See [` fromString`]()
 
   Valid flags:
   - g: global
@@ -152,7 +152,7 @@ external unicode : t -> bool = "unicode" [@@bs.get]
 (**
   executes a search on a given string using the given RegExp object
 
-  **return** `Some` {! result} if a match is found, `None` otherwise
+  **return** `Some` [` result`]() if a match is found, `None` otherwise
 
   ```
   (* Match "quick brown" followed by "jumps", ignoring characters in between

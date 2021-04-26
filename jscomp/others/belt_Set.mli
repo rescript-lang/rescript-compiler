@@ -102,7 +102,7 @@ val fromArray:  'value array -> id:('value, 'id) id ->  ('value, 'id) t
 val fromSortedArrayUnsafe: 'value array -> id:('value, 'id) id -> ('value,'id) t
 (** `fromSortedArrayUnsafe xs ~id`
 
-  The same as {!fromArray} except it is after assuming the input array `x` is already sorted
+  The same as [`fromArray`]() except it is after assuming the input array `x` is already sorted
 
   **Unsafe**
 *)
@@ -145,7 +145,7 @@ val add:
 val mergeMany: ('value, 'id) t -> 'value array -> ('value, 'id) t
 (** `mergeMany s xs`
 
-  Adding each of `xs` to `s`, note unlike {!add},
+  Adding each of `xs` to `s`, note unlike [`add`](),
   the reference of return value might be changed even if all values in `xs`
   exist `s`
 
@@ -170,7 +170,7 @@ val removeMany:
   ('value, 'id) t -> 'value array -> ('value, 'id) t
 (** `removeMany s xs`
 
-  Removing each of `xs` to `s`, note unlike {!remove},
+  Removing each of `xs` to `s`, note unlike [`remove`](),
   the reference of return value might be changed even if none in `xs`
   exists `s`
 *)
@@ -299,7 +299,7 @@ val toArray: ('value, 'id) t -> 'value array
 val toList: ('value, 'id) t -> 'value list
 (** In increasing order
 
-  **See** {!toArray}
+  **See** [`toArray`]()
 *)
 
 val minimum: ('value, 'id) t -> 'value option
@@ -335,11 +335,11 @@ val get: ('value, 'id) t -> 'value -> 'value option
 *)
 
 val getUndefined: ('value, 'id) t -> 'value -> 'value Js.undefined
-(** **See** {!get}
+(** **See** [`get`]()
 *)
 
 val getExn: ('value, 'id) t -> 'value -> 'value
-(** **See** {!get}
+(** **See** [`get`]()
 
   **raise** if not exist
 *)

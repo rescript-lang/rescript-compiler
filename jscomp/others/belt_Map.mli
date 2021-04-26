@@ -218,7 +218,7 @@ val toArray: ('k, 'v, 'id) t -> ('k * 'v) array
 val toList: ('k, 'v, 'id) t -> ('k * 'v) list
 (** In increasing order
 
-    **See** {!toArray}
+    **See** [`toArray`]()
 *)
 
 
@@ -252,7 +252,7 @@ val minKey: ('k, _, _) t -> 'k option
 *)
 
 val minKeyUndefined: ('k, _, _) t -> 'k Js.undefined
-(** **See** {!minKey}*)
+(** **See** [`minKey`]()*)
 
 val maxKey: ('k, _, _) t -> 'k option
 (** `maxKey s`
@@ -260,7 +260,7 @@ val maxKey: ('k, _, _) t -> 'k option
 *)
 
 val maxKeyUndefined: ('k, _, _) t -> 'k Js.undefined
-(** **See** {!maxKey} *)
+(** **See** [`maxKey`]() *)
 
 val minimum: ('k, 'v,  _) t -> ('k * 'v) option
 (** `minimum s`
@@ -268,7 +268,7 @@ val minimum: ('k, 'v,  _) t -> ('k * 'v) option
 *)
 
 val minUndefined: ('k, 'v, _) t -> ('k * 'v) Js.undefined
-(** **See** {!minimum} *)
+(** **See** [`minimum`]() *)
 
 val maximum: ('k, 'v, _) t -> ('k * 'v) option
 (** `maximum s`
@@ -276,7 +276,7 @@ val maximum: ('k, 'v, _) t -> ('k * 'v) option
 *)
 
 val maxUndefined:('k, 'v, _) t -> ('k * 'v) Js.undefined
-(** **See** {!maximum}
+(** **See** [`maximum`]()
 *)
 
 val get:  ('k, 'v, 'id) t -> 'k -> 'v option
@@ -291,7 +291,7 @@ val get:  ('k, 'v, 'id) t -> 'k -> 'v option
 *)
 
 val getUndefined: ('k, 'v, 'id) t -> 'k ->  'v Js.undefined
-(** **See** {!get}
+(** **See** [`get`]()
 
     **return** `undefined` when not found
 *)
@@ -300,7 +300,7 @@ val getWithDefault:
   ('k, 'v, 'id) t -> 'k ->  'v -> 'v
 (** `getWithDefault s k default`
 
-    **See** {!get}
+    **See** [`get`]()
 
     **return** `default` when `k` is not found
 
@@ -309,7 +309,7 @@ val getWithDefault:
 val getExn:  ('k, 'v, 'id) t -> 'k -> 'v
 (** `getExn s k`
 
-    **See** {!getExn}
+    **See** [`getExn`]()
 
     **raise** when `k` not exist
 *)
@@ -333,7 +333,7 @@ val remove:  ('k, 'v, 'id) t -> 'k -> ('k, 'v, 'id) t
 val removeMany: ('k, 'v, 'id) t -> 'k array -> ('k, 'v, 'id) t
 (** `removeMany s xs`
 
-    Removing each of `xs` to `s`, note unlike {!remove},
+    Removing each of `xs` to `s`, note unlike [`remove`](),
     the reference of return value might be changed even if none in `xs`
     exists `s`
 *)
@@ -368,7 +368,7 @@ val mergeMany:
   ('k, 'v, 'id) t -> ('k * 'v) array ->  ('k, 'v, 'id) t
 (** `mergeMany s xs`
 
-    Adding each of `xs` to `s`, note unlike {!add},
+    Adding each of `xs` to `s`, note unlike [`add`](),
     the reference of return value might be changed even if all values in `xs`
     exist `s`
 *)
@@ -438,7 +438,7 @@ val mapWithKeyU: ('k, 'v, 'id) t -> ('k -> 'v -> 'v2 [@bs]) -> ('k, 'v2, 'id) t
 val mapWithKey: ('k, 'v, 'id) t -> ('k -> 'v -> 'v2) -> ('k, 'v2, 'id) t
 (** `mapWithKey m f`
 
-    The same as {!map} except that `f` is supplied with one more argument: the key
+    The same as [`map`]() except that `f` is supplied with one more argument: the key
 *)
 
 

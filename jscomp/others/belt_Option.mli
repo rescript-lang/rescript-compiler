@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** {!Belt.Option}
+(** [`Belt.Option`]()
 
     Utilities for option data type
 *)
@@ -71,8 +71,8 @@ val getExn : 'a option -> 'a
 
 external getUnsafe :
   'a option -> 'a = "%identity"
-(** `getUnsafe x` returns x 
-    This is an unsafe operation, it assumes x is neither not None 
+(** `getUnsafe x` returns x
+    This is an unsafe operation, it assumes x is neither not None
     or (Some (None .. ))
 *)
 

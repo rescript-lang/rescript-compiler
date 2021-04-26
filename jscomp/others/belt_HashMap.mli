@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (**
-  A **mutable** Hash map which allows customized {!hash} behavior.
+  A **mutable** Hash map which allows customized [`hash`]() behavior.
 
   All data are parameterized by not its only type but also a unique identity in
   the time of initialization, so that two _HashMaps of ints_ initialized with different

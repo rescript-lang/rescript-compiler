@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** {!Belt.Result}
+(** [`Belt.Result`]()
 
     Utilities for result data type.
 *)
@@ -94,7 +94,7 @@ val flatMap : ('a, 'c) t -> ('a -> ('b, 'c) t) -> ('b, 'c) t
   Function `f` takes a value of the same type as `n` and returns a `Belt.Result`.
 
   ```
-  let recip x = 
+  let recip x =
     if x != 0.0
     then
       Ok (1.0 /. x)

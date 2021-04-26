@@ -24,12 +24,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (**
-  This module is {!Belt.HashSet} specialized with key type to be a primitive type.
+  This module is [`Belt.HashSet`]() specialized with key type to be a primitive type.
 
-  It is more efficient in general, the  API is the same with {!Belt.HashSet} except its key type is fixed,
+  It is more efficient in general, the  API is the same with [`Belt.HashSet`]() except its key type is fixed,
   and identity is not needed(using the built-in one)
 
-  **See** {!Belt.HashSet}
+  **See** [`Belt.HashSet`]()
 *)
 
 

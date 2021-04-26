@@ -29,14 +29,14 @@
 
 
 type intervalId
-(** Identify an interval started by {! setInterval} *)
+(** Identify an interval started by [` setInterval`]() *)
 
 type timeoutId
-(** Identify timeout started by {! setTimeout} *)
+(** Identify timeout started by [` setTimeout`]() *)
 
 
 (**
-  Clear an interval started by {! setInterval}
+  Clear an interval started by [` setInterval`]()
 
   ```
   (* API for a somewhat aggressive snoozing alarm clock *)
@@ -60,7 +60,7 @@ external clearInterval : intervalId -> unit = "clearInterval" [@@bs.val]
 
 
 (**
-  Clear a timeout started by {! setTimeout}
+  Clear a timeout started by [` setTimeout`]()
 
   ```
   (* A simple model of a code monkey's brain *)
@@ -83,7 +83,7 @@ external clearTimeout : timeoutId -> unit = "clearTimeout" [@@bs.val]
 (**
   _Repeatedly_ executes a callback with a specified interval (in milliseconds) between calls
 
-  **return** an {! intervalId} that can be passed to {! clearInterval} to cancel the timeout
+  **return** an [` intervalId`]() that can be passed to [` clearInterval`]() to cancel the timeout
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval)
 
@@ -104,7 +104,7 @@ external setInterval : (unit -> unit) -> int -> intervalId = "setInterval" [@@bs
 (**
   _Repeatedly_ executes a callback with a specified interval (in milliseconds) between calls
 
-  **return** an {! intervalId} that can be passed to {! clearInterval} to cancel the timeout
+  **return** an [` intervalId`]() that can be passed to [` clearInterval`]() to cancel the timeout
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval)
 
@@ -126,7 +126,7 @@ external setIntervalFloat : (unit -> unit) -> float -> intervalId = "setInterval
 (**
   Execute a callback after a specified delay (in milliseconds)
 
-  **return** a {! timeoutId} that can be passed to {! clearTimeout} to cancel the timeout
+  **return** a [` timeoutId`]() that can be passed to [` clearTimeout`]() to cancel the timeout
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout)
 
@@ -144,7 +144,7 @@ external setTimeout : (unit -> unit) -> int -> timeoutId = "setTimeout" [@@bs.va
 (**
   Execute a callback after a specified delay (in milliseconds)
 
-  **return** a {! timeoutId} that can be passed to {! clearTimeout} to cancel the timeout
+  **return** a [` timeoutId`]() that can be passed to [` clearTimeout`]() to cancel the timeout
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout)
 

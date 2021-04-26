@@ -53,7 +53,7 @@ type node_module = <
 >
 (* WARN:
   its path name should not be changed
-  see {!Ppx_entry}
+  see [`Ppx_entry`]()
 *)
 
 type node_require = <
@@ -64,7 +64,7 @@ type node_require = <
 >
 (* WARN:
   its path name should not be changed
-  see {!Ppx_entry}
+  see [`Ppx_entry`]()
 *)
 
 type string_buffer (* can be either string or buffer *)
