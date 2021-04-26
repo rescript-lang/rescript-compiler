@@ -36,7 +36,8 @@ val test : 'a t -> bool
 (** Returns `true` if the given value is `empty` (`undefined`), `false` otherwise *)
 
 (**
-  @since 1.6.1
+  **since** 1.6.1
+
   **return** `true` if the given value is `empty` (`undefined`)
 *)
 val testAny : 'a -> bool

@@ -35,7 +35,7 @@
 
 # 36 "others/setm.cppo.mli"
 type value = string
-
+  
 # 42 "others/setm.cppo.mli"
   (** The type of the set elements. *)
 
@@ -93,12 +93,10 @@ val keep: t -> (value -> bool) ->  t
 
 val partitionU: t -> (value -> bool [@bs]) ->  t * t
 val partition: t -> (value -> bool) ->  t * t
-(**
-  `partition s p` returns a fresh copy pair of sets `(s1, s2)`, where
+(** `partition s p` returns a fresh copy pair of sets `(s1, s2)`, where
   `s1` is the set of all the elements of `s` that satisfy the
   predicate `p`, and `s2` is the set of all the elements of
-  `s` that do not satisfy `p`.
-*)
+  `s` that do not satisfy `p`. *)
 
 val size: t -> int
 val toList: t -> value list

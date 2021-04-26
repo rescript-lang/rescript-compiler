@@ -51,7 +51,7 @@ val mapi : (int -> 'a -> 'b [@bs]) -> 'a t -> 'b t
 val foldLeft : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b t -> 'a
 val foldRight : ('b -> 'a -> 'a [@bs]) -> 'b t -> 'a -> 'a
 external length : 'a t -> int = "%array_length"
-(** Return the length (number of elements) of the given array. *)
+(** **return** the length (number of elements) of the given array. *)
 
 external get : 'a t -> int -> 'a = "%array_safe_get"
 (**
@@ -93,9 +93,11 @@ external make : int -> 'a -> 'a t = "caml_make_vect"
 
 val init : int -> (int -> 'a [@bs]) -> 'a t
 (**
-  @param n size
-  @param fn callback
-  @raise RangeError when `n` is negative
+  **param** n size
+
+  **param** fn callback
+
+  **raise** RangeError when `n` is negative
 *)
 
 val append : 'a -> 'a t -> 'a t

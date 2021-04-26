@@ -267,12 +267,18 @@ end
   (** can throw *)\
   \
   external fromBufferOffset : array_buffer -> int -> t = STRINGIFY(moduleName) [@@bs.new]\
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)\
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)\
   \
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = STRINGIFY(moduleName) [@@bs.new]\
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)\
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)\
   \
   external fromLength : int -> t = STRINGIFY(moduleName) [@@bs.new]\
   external from : elt array_like -> t = STRINGIFY(moduleName.from) [@@bs.val]\

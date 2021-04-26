@@ -71,7 +71,7 @@ external isFinite : float -> bool = "isFinite" [@@bs.val] [@@bs.scope "Number"]
 
   **return** a `string` representing the given value in exponential notation
 
-  @raise RangeError if digits is not in the range [0, 20] (inclusive)
+  **raise** RangeError if digits is not in the range [0, 20] (inclusive)
 
   ```
   (* prints "7.71234e+1" *)
@@ -95,7 +95,7 @@ external toExponential : float -> string = "toExponential" [@@bs.send]
 
   The output will be rounded or padded with zeroes if necessary.
 
-  @raise RangeError if digits is not in the range [0, 20] (inclusive)
+  **raise** RangeError if digits is not in the range [0, 20] (inclusive)
 
   ```
   (* prints "7.71e+1" *)
@@ -111,7 +111,7 @@ external toExponentialWithPrecision : float -> digits:int -> string = "toExponen
 
   **return** a `string` representing the given value in fixed-point notation (usually)
 
-  @raise RangeError if digits is not in the range [0, 20] (inclusive)
+  **raise** RangeError if digits is not in the range [0, 20] (inclusive)
 
   ```
   (* prints "12346" (note the rounding) *)
@@ -135,7 +135,7 @@ external toFixed : float -> string = "toFixed" [@@bs.send]
 
   The output will be rounded or padded with zeroes if necessary.
 
-  @raise RangeError if digits is not in the range [0, 20] (inclusive)
+  **raise** RangeError if digits is not in the range [0, 20] (inclusive)
 
   ```
   (* prints "12345.7" (note the rounding) *)
@@ -158,7 +158,7 @@ external toFixedWithPrecision : float -> digits:int -> string = "toFixed" [@@bs.
   with full precision, while the latter will not output any digits after the
   decimal point.
 
-  @raise RangeError if digits is not in the range accepted by this function (what do you mean "vague"?)
+  **raise** RangeError if digits is not in the range accepted by this function (what do you mean "vague"?)
 
   ```
   (* prints "12345.6789" *)
@@ -189,7 +189,7 @@ external toPrecision : float -> string = "toPrecision" [@@bs.send] (* equivalent
   scientific notation if the specified precision is less than the number for digits
   before the decimal point.
 
-  @raise RangeError if digits is not in the range accepted by this function (what do you mean "vague"?)
+  **raise** RangeError if digits is not in the range accepted by this function (what do you mean "vague"?)
 
   ```
   (* prints "1e+4" *)
@@ -226,7 +226,7 @@ external toString : float -> string = "toString" [@@bs.send]
 
   **return** a `string` representing the given value in fixed-point (usually)
 
-  @raise RangeError if radix is not in the range [2, 36] (inclusive)
+  **raise** RangeError if radix is not in the range [2, 36] (inclusive)
 
   ```
   (* prints "110" *)

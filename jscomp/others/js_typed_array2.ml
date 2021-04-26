@@ -58,14 +58,14 @@ end
 
 
   
-# 172 "others/js_typed_array2.cppo.ml"
+# 178 "others/js_typed_array2.cppo.ml"
   (* commented out until bs has a plan for iterators
   external values : t -> elt array_iter = "" [@@bs.send]
   *)
 
 module Int8Array = struct
   
-# 177 "others/js_typed_array2.cppo.ml"
+# 183 "others/js_typed_array2.cppo.ml"
   
   (** *)
   type elt = int
@@ -169,23 +169,29 @@ module Int8Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Int8Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Int8Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Int8Array" [@@bs.new]
   external from : elt array_like -> t = "Int8Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 178 "others/js_typed_array2.cppo.ml"
+# 184 "others/js_typed_array2.cppo.ml"
 end
 
 
 module Uint8Array = struct
   
-# 182 "others/js_typed_array2.cppo.ml"
+# 188 "others/js_typed_array2.cppo.ml"
   
   (** *)
   type elt = int
@@ -289,22 +295,28 @@ module Uint8Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Uint8Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint8Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Uint8Array" [@@bs.new]
   external from : elt array_like -> t = "Uint8Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 183 "others/js_typed_array2.cppo.ml"
+# 189 "others/js_typed_array2.cppo.ml"
 end
 
 module Uint8ClampedArray = struct
   
-# 186 "others/js_typed_array2.cppo.ml"
+# 192 "others/js_typed_array2.cppo.ml"
   
   (** *)
   type elt = int
@@ -408,22 +420,28 @@ module Uint8ClampedArray = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Uint8ClampedArray" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint8ClampedArray" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Uint8ClampedArray" [@@bs.new]
   external from : elt array_like -> t = "Uint8ClampedArray.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 187 "others/js_typed_array2.cppo.ml"
+# 193 "others/js_typed_array2.cppo.ml"
 end
 
 module Int16Array = struct
   
-# 190 "others/js_typed_array2.cppo.ml"
+# 196 "others/js_typed_array2.cppo.ml"
   
   (** *)
   type elt = int
@@ -527,22 +545,28 @@ module Int16Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Int16Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Int16Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Int16Array" [@@bs.new]
   external from : elt array_like -> t = "Int16Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 191 "others/js_typed_array2.cppo.ml"
+# 197 "others/js_typed_array2.cppo.ml"
 end
 
 module Uint16Array = struct
   
-# 194 "others/js_typed_array2.cppo.ml"
+# 200 "others/js_typed_array2.cppo.ml"
   
   (** *)
   type elt = int
@@ -646,22 +670,28 @@ module Uint16Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Uint16Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint16Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Uint16Array" [@@bs.new]
   external from : elt array_like -> t = "Uint16Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 195 "others/js_typed_array2.cppo.ml"
+# 201 "others/js_typed_array2.cppo.ml"
 end
 
 module Int32Array = struct
   
-# 198 "others/js_typed_array2.cppo.ml"
+# 204 "others/js_typed_array2.cppo.ml"
   
   (** *)
   type elt = int32
@@ -765,22 +795,28 @@ module Int32Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Int32Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Int32Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Int32Array" [@@bs.new]
   external from : elt array_like -> t = "Int32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 199 "others/js_typed_array2.cppo.ml"
+# 205 "others/js_typed_array2.cppo.ml"
 end
 
 module Uint32Array = struct
   
-# 202 "others/js_typed_array2.cppo.ml"
+# 208 "others/js_typed_array2.cppo.ml"
   
   (** *)
   type elt = int
@@ -884,17 +920,23 @@ module Uint32Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Uint32Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint32Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Uint32Array" [@@bs.new]
   external from : elt array_like -> t = "Uint32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 203 "others/js_typed_array2.cppo.ml"
+# 209 "others/js_typed_array2.cppo.ml"
 end
 
 (*
@@ -902,7 +944,7 @@ end
 *)
 module Float32Array = struct
   
-# 209 "others/js_typed_array2.cppo.ml"
+# 215 "others/js_typed_array2.cppo.ml"
   
   (** *)
   type elt = float
@@ -1006,22 +1048,28 @@ module Float32Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Float32Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Float32Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Float32Array" [@@bs.new]
   external from : elt array_like -> t = "Float32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 210 "others/js_typed_array2.cppo.ml"
+# 216 "others/js_typed_array2.cppo.ml"
 end
 
 module Float64Array = struct
   
-# 213 "others/js_typed_array2.cppo.ml"
+# 219 "others/js_typed_array2.cppo.ml"
   
   (** *)
   type elt = float
@@ -1125,17 +1173,23 @@ module Float64Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Float64Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Float64Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Float64Array" [@@bs.new]
   external from : elt array_like -> t = "Float64Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 214 "others/js_typed_array2.cppo.ml"
+# 220 "others/js_typed_array2.cppo.ml"
 end
 
 

@@ -37,7 +37,7 @@
 
   **return** a `string` representing the given value in exponential notation
 
-  @raise RangeError if digits is not in the range [0, 20] (inclusive)
+  **raise** RangeError if digits is not in the range [0, 20] (inclusive)
 
   ```
   (* prints "7.7e+1" *)
@@ -58,7 +58,7 @@ external toExponential : int -> string = "toExponential" [@@bs.send]
 
   The output will be rounded or padded with zeroes if necessary.
 
-  @raise RangeError if digits is not in the range [0, 20] (inclusive)
+  **raise** RangeError if digits is not in the range [0, 20] (inclusive)
 
   ```
   (* prints "7.70e+1" *)
@@ -81,7 +81,7 @@ external toExponentialWithPrecision : int -> digits:int -> string = "toExponenti
   with full precision, while the latter will not output any digits after the
   decimal point.
 
-  @raise RangeError if digits is not in the range accepted by this function (what do you mean "vague"?)
+  **raise** RangeError if digits is not in the range accepted by this function (what do you mean "vague"?)
 
   ```
   (* prints "123456789" *)
@@ -109,7 +109,7 @@ external toPrecision : int -> string = "toPrecision" [@@bs.send] (* equivalent t
   scientific notation if the specified precision is less than the number for digits
   before the decimal point.
 
-  @raise RangeError if digits is not in the range accepted by this function (what do you mean "vague"?)
+  **raise** RangeError if digits is not in the range accepted by this function (what do you mean "vague"?)
 
   ```
   (* prints "1.2e+8" *)
@@ -146,7 +146,7 @@ external toString : int -> string = "toString" [@@bs.send]
 
   **return** a `string` representing the given value in fixed-point (usually)
 
-  @raise RangeError if radix is not in the range [2, 36] (inclusive)
+  **raise** RangeError if radix is not in the range [2, 36] (inclusive)
 
   ```
   (* prints "110" *)

@@ -60,7 +60,7 @@ type node_require = <
   main : node_module Js.undefined;
 
   resolve : string -> string [@bs]
-  (* @raise exception   *)
+  (* **raise** exception *)
 >
 (* WARN:
   its path name should not be changed

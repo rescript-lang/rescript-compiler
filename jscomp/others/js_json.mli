@@ -135,7 +135,7 @@ external parseExn : string -> t = "parse" [@@bs.val] [@@bs.scope "JSON"]
 
   **return** a JSON data structure
 
-  @raise SyntaxError if given string is not a valid JSON. Note `SyntaxError` is a JavaScript exception.
+  **raise** SyntaxError if given string is not a valid JSON. Note `SyntaxError` is a JavaScript exception.
 
   ```
   (* parse a simple JSON string *)
