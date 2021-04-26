@@ -2,7 +2,6 @@
   "": [
     ".gitattributes",
     ".gitmodules",
-    "bsb",
     "bsc",
     "bsrefmt",
     "COPYING",
@@ -22,7 +21,6 @@
     "bsc.byte",
     "ninja.COPYING",
     "bsb_helper.exe",
-    "bsb.exe",
     "bsc.exe",
     "ninja.exe",
     "refmt.exe",
@@ -961,7 +959,6 @@
   "linux": [
     "ninja.COPYING",
     "bsb_helper.exe",
-    "bsb.exe",
     "bsc.exe",
     "ninja.exe",
     "refmt.exe",
@@ -1012,7 +1009,6 @@
   "win32": [
     "ninja.COPYING",
     "bsb_helper.exe",
-    "bsb.exe",
     "bsc.exe",
     "ninja.exe",
     "refmt.exe",
