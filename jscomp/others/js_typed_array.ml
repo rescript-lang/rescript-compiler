@@ -23,9 +23,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** JavaScript Typed Array API
+(**
+  JavaScript Typed Array API
 
-@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray)
 *)
 
 [@@@warning "-103"]
@@ -37,9 +38,10 @@ module type Type = sig
   type t
 end
 module ArrayBuffer = struct
-  (** The underlying buffer that the typed arrays provide views of
+  (**
+    The underlying buffer that the typed arrays provide views of
 
-    @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer> MDN
+    **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
   *)
 
   type t = array_buffer
@@ -129,7 +131,7 @@ module type S =  sig
   external every : (elt  -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
   external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
 
-  (** should we use [bool] or [boolean] seems they are intechangeable here *)
+  (** should we use `bool` or `boolean` seems they are intechangeable here *)
   external filter : (elt -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
   external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
 
@@ -165,14 +167,14 @@ end
 
 
   
-# 279 "others/js_typed_array.cppo.ml"
+# 287 "others/js_typed_array.cppo.ml"
   (* commented out until bs has a plan for iterators
   external values : elt array_iter = "" [@@bs.send.pipe: t]
   *)
 
 module Int8Array = struct
   
-# 284 "others/js_typed_array.cppo.ml"
+# 292 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -220,13 +222,13 @@ module Int8Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -276,23 +278,29 @@ module Int8Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Int8Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Int8Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Int8Array" [@@bs.new]
   external from : elt array_like -> t = "Int8Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 285 "others/js_typed_array.cppo.ml"
+# 293 "others/js_typed_array.cppo.ml"
 end
 
 
 module Uint8Array = struct
   
-# 289 "others/js_typed_array.cppo.ml"
+# 297 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -340,13 +348,13 @@ module Uint8Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -396,22 +404,28 @@ module Uint8Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Uint8Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint8Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Uint8Array" [@@bs.new]
   external from : elt array_like -> t = "Uint8Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 290 "others/js_typed_array.cppo.ml"
+# 298 "others/js_typed_array.cppo.ml"
 end
 
 module Uint8ClampedArray = struct
   
-# 293 "others/js_typed_array.cppo.ml"
+# 301 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -459,13 +473,13 @@ module Uint8ClampedArray = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -515,22 +529,28 @@ module Uint8ClampedArray = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Uint8ClampedArray" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint8ClampedArray" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Uint8ClampedArray" [@@bs.new]
   external from : elt array_like -> t = "Uint8ClampedArray.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 294 "others/js_typed_array.cppo.ml"
+# 302 "others/js_typed_array.cppo.ml"
 end
 
 module Int16Array = struct
   
-# 297 "others/js_typed_array.cppo.ml"
+# 305 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -578,13 +598,13 @@ module Int16Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -634,22 +654,28 @@ module Int16Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Int16Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Int16Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Int16Array" [@@bs.new]
   external from : elt array_like -> t = "Int16Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 298 "others/js_typed_array.cppo.ml"
+# 306 "others/js_typed_array.cppo.ml"
 end
 
 module Uint16Array = struct
   
-# 301 "others/js_typed_array.cppo.ml"
+# 309 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -697,13 +723,13 @@ module Uint16Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -753,22 +779,28 @@ module Uint16Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Uint16Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint16Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Uint16Array" [@@bs.new]
   external from : elt array_like -> t = "Uint16Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 302 "others/js_typed_array.cppo.ml"
+# 310 "others/js_typed_array.cppo.ml"
 end
 
 module Int32Array = struct
   
-# 305 "others/js_typed_array.cppo.ml"
+# 313 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = int32
@@ -816,13 +848,13 @@ module Int32Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -872,19 +904,25 @@ module Int32Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Int32Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Int32Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Int32Array" [@@bs.new]
   external from : elt array_like -> t = "Int32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
 
   
-# 307 "others/js_typed_array.cppo.ml"
+# 315 "others/js_typed_array.cppo.ml"
   external create : int32 array -> t = "Int32Array" [@@bs.new]
   [@@deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Int32Array" [@@bs.new]
@@ -896,7 +934,7 @@ module Int32_array = Int32Array
 
 module Uint32Array = struct
   
-# 317 "others/js_typed_array.cppo.ml"
+# 325 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -944,13 +982,13 @@ module Uint32Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -1000,26 +1038,32 @@ module Uint32Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Uint32Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Uint32Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Uint32Array" [@@bs.new]
   external from : elt array_like -> t = "Uint32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 318 "others/js_typed_array.cppo.ml"
+# 326 "others/js_typed_array.cppo.ml"
 end
 
 
 (*
- it still return number, [float] in this case
+ it still return number, `float` in this case
 *)
 module Float32Array = struct
   
-# 325 "others/js_typed_array.cppo.ml"
+# 333 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = float
@@ -1067,13 +1111,13 @@ module Float32Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -1123,19 +1167,25 @@ module Float32Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Float32Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Float32Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Float32Array" [@@bs.new]
   external from : elt array_like -> t = "Float32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
 
   
-# 327 "others/js_typed_array.cppo.ml"
+# 335 "others/js_typed_array.cppo.ml"
   external create : float array -> t = "Float32Array" [@@bs.new]
   [@@deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Float32Array" [@@bs.new]
@@ -1147,7 +1197,7 @@ module Float32_array = Float32Array
 
 module Float64Array = struct
   
-# 337 "others/js_typed_array.cppo.ml"
+# 345 "others/js_typed_array.cppo.ml"
   
   (** *)
   type elt = float
@@ -1195,13 +1245,13 @@ module Float64Array = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
   
   external slice : start:int -> end_:int -> t = "slice" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
   
   external subarray : start:int -> end_:int -> t = "subarray" [@@bs.send.pipe: t]
-  (** [start] is inclusive, [end_] exclusive *)
+  (** `start` is inclusive, `end_` exclusive *)
   
   external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
   
@@ -1251,19 +1301,25 @@ module Float64Array = struct
   (** can throw *)
   
   external fromBufferOffset : array_buffer -> int -> t = "Float64Array" [@@bs.new]
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)
   
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = "Float64Array" [@@bs.new]
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)
   
   external fromLength : int -> t = "Float64Array" [@@bs.new]
   external from : elt array_like -> t = "Float64Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
 
   
-# 339 "others/js_typed_array.cppo.ml"
+# 347 "others/js_typed_array.cppo.ml"
   external create : float array -> t = "Float64Array" [@@bs.new]
   [@@deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Float64Array" [@@bs.new]
@@ -1273,10 +1329,11 @@ module Float64_array = Float64Array
 [@deprecated "use `Float64Array` instead"]
 
 
-(** The DataView view provides a low-level interface for reading and writing
-    multiple number types in an ArrayBuffer irrespective of the platform's endianness.
+(**
+  The DataView view provides a low-level interface for reading and writing
+  multiple number types in an ArrayBuffer irrespective of the platform's endianness.
 
-    @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView)
 *)
 module DataView = struct
 

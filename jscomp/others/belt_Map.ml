@@ -12,13 +12,13 @@
 (*  Adapted by authors of ReScript without using functors          *)
 (***********************************************************************)
 
-(** specalized when key type is [int], more efficient
+(** specalized when key type is `int`, more efficient
     than the generic type
 *)
 module Int = Belt_MapInt
 
 
-(** specalized when key type is [string], more efficient
+(** specalized when key type is `string`, more efficient
     than the generic type *)
 module String = Belt_MapString
 

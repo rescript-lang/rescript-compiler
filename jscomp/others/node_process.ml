@@ -32,24 +32,27 @@ type t =
     cwd : unit -> string [@bs.meth];
     disconnect : unit -> unit [@bs.meth];
     platform : string;
-    env : string Js_dict.t; (* ocamldep sucks which can not map [Js.Dic.t] to [Js_dict.t]*)
-  > 
+    env : string Js_dict.t; (* ocamldep sucks which can not map `Js.Dic.t` to `Js_dict.t`*)
+  >
 
 external process : t = "process" [@@bs.module]
 external argv : string array = "argv" [@@bs.module "process"]
 external exit : int -> 'a = "exit" [@@bs.module "process"]
 external cwd : unit -> string = "cwd" [@@bs.module "process"]
 
-(** The process.uptime() method returns the number of seconds 
-   the current Node.js process has been running.) *)
+(**
+  The process.uptime() method returns the number of seconds
+  the current Node.js process has been running.)
+*)
 external uptime : t -> unit -> float = "uptime" [@@bs.send]
 
-let putEnvVar key (var : string) = 
+let putEnvVar key (var : string) =
   Js_dict.set process##env key var
-(** Note that 
-    {[process.env.X = undefined]} will result in 
-    {[process.env.X = "undefined"]}
-    The only sane way to do it is using `delete`
+(**
+  Note that
+  `process.env.X = undefined` will result in
+  `process.env.X = "undefined"`
+  The only sane way to do it is using `delete`
 *)
 
 let deleteEnvVar   s  =

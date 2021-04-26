@@ -1,6 +1,6 @@
 
 (* Copyright (C) 2017 Authors of ReScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,17 +18,18 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** This module is {!Belt.HashSet} specialized with key type to be a primitive type.
+(**
+  This module is [`Belt.HashSet`]() specialized with key type to be a primitive type.
 
-    It is more efficient in general, the  API is the same with {!Belt.HashSet} except its key type is fixed,
-    and identity is not needed(using the built-in one)
+  It is more efficient in general, the  API is the same with [`Belt.HashSet`]() except its key type is fixed,
+  and identity is not needed(using the built-in one)
 
-    {b See} {!Belt.HashSet}
+  **See** [`Belt.HashSet`]()
 *)
 
 
@@ -38,12 +39,12 @@ type key = string
 type key = int
 #else
 [%error "unknown type"]
-#endif  
+#endif
 
 
 type t
 
-val make: hintSize:int -> t 
+val make: hintSize:int -> t
 
 val clear: t -> unit
 
@@ -63,13 +64,13 @@ val forEach: t -> (key  -> unit) ->  unit
 val reduceU: t -> 'c -> ( 'c -> key -> 'c [@bs]) ->   'c
 val reduce: t -> 'c -> ( 'c -> key -> 'c) ->   'c
 
-val size: t -> int  
+val size: t -> int
 
 val logStats: t -> unit
 
-val toArray: t -> key array 
+val toArray: t -> key array
 
-val fromArray: key array -> t 
+val fromArray: key array -> t
 
 val mergeMany: t -> key array -> unit
 

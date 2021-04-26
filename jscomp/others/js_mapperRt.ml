@@ -45,6 +45,6 @@ let rec fromIntAssertAux len (enum : int) i  xs =
     if k = enum then  i
     else fromIntAssertAux len enum (i + 1)  xs
 
-(** [length] is not relevant any more *)
+(** `length` is not relevant any more *)
 let fromIntAssert  len (xs : int array) (enum : int )=
   fromIntAssertAux len enum 0  xs

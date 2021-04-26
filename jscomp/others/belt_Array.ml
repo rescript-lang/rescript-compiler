@@ -232,7 +232,7 @@ let blitUnsafe ~src:a1  ~srcOffset:srcofs1 ~dst:a2 ~dstOffset:srcofs2 ~len:blitL
       a2.!(j + srcofs2) <-  a1.!(j + srcofs1)
     done
 
-(* We don't need check [blitLength] since when [blitLength < 0] the
+(* We don't need check `blitLength` since when `blitLength < 0` the
    for loop will be nop
 *)
 let blit ~src:a1 ~srcOffset:ofs1 ~dst:a2 ~dstOffset:ofs2 ~len =

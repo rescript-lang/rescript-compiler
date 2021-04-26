@@ -132,7 +132,7 @@ external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string
 
 
 (* in memory modification does not work until your root is
-   actually None, so we need wrap it as `[v]` and
+   actually None, so we need wrap it as ``v`` and
    return the first element instead *)
 
 let patch : _ -> _ = [%raw{|function (json) {

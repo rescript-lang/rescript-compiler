@@ -38,7 +38,7 @@ let strictlySortedLength (xs : element array) =
     else 1  
 
 let rec isSortedAux (a : element array) i  last_bound = 
-  (* when [i = len - 1], it reaches the last element*)
+  (* when `i = len - 1`, it reaches the last element*)
   if i = last_bound then true 
   else 
   if A.getUnsafe a i <= A.getUnsafe a (i+1)  then 
@@ -83,7 +83,7 @@ let union (src : element array) src1ofs src1len src2 src2ofs src2len dst dstofs 
   let rec loop i1 s1 i2 s2 d =
     (* let c = cmp s1 s2 [@bs] in  *)
     if s1 < s2 then begin
-      (* [s1] is larger than all elements in [d] *)
+      (* `s1` is larger than all elements in `d` *)
       A.setUnsafe dst d s1; 
       let i1 = i1 + 1 in
       let d = d + 1 in 
