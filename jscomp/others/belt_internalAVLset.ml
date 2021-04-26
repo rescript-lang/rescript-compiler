@@ -78,7 +78,7 @@ let heightGe l r =
    Assumes l and r balanced and | treeHeight l - treeHeight r | <= 3.
    Inline expansion of create for better speed in the most frequent case
    where no rebalancing is required. *)
-(* TODO: inline all [create] operation, save duplicated [heightGet] calcuation *)
+(* TODO: inline all `create` operation, save duplicated `heightGet` calcuation *)
 let bal l v r =
   let hl,hr = height l, height r in 
   if hl > hr + 2 then begin
@@ -188,7 +188,7 @@ let rec someU n p =
     someU n.right p
 
 let some n p = someU n (fun[@bs] a -> p a )
-(* [addMinElement v n] and [addMaxElement v n]
+(* `addMinElement v n` and `addMaxElement v n`
    assume that the added v is *strictly*
    smaller (or bigger) than all the present elements in the tree.
    They are only used during the "join" operation which
@@ -207,9 +207,9 @@ let rec addMaxElement n v =
   | Some n  ->
     bal n.left (n.value) (addMaxElement n.right v)
 
-(* [join ln v rn] Some a balanced tree simliar to [create ln v rn]
+(* `join ln v rn` Some a balanced tree simliar to `create ln v rn`
    bal, but no assumptions are made on the
-   relative heights of [ln] and [rn]. *)
+   relative heights of `ln` and `rn`. *)
 
 let rec joinShared ln v rn =
   match (ln, rn) with
@@ -222,7 +222,7 @@ let rec joinShared ln v rn =
     if rh > lh + 2 then bal (joinShared ln v r.left) r.value r.right else
       create ln v rn
 
-(* [concat l r]
+(* `concat l r`
    No assumption on the heights of l and r. *)
 
 let concatShared t1 t2 =

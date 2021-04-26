@@ -130,7 +130,7 @@ val size : ('a,'b) t -> int
 val toList : ('a,'b) t -> ('a * 'b) list
 val checkInvariantInternal : ('a,'b) t -> unit
 (**
-   {b raise} when invariant is not held
+  **raise** when invariant is not held
 *)  
 
 

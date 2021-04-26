@@ -41,8 +41,8 @@ type node_module = <
        id : string ;
        exports : node_exports ;
        parrent : node_module Js.null_undefined;
-       (* in REPL V4 it is [undefined]
-          in CLI it can be [null]
+       (* in REPL V4 it is `undefined`
+          in CLI it can be `null`
        *)
 
        filename : string ;
@@ -50,21 +50,21 @@ type node_module = <
        loaded : bool;
        children : node_module array ;
        paths : string array;
-> 
- (* WARN:
-     its path name should not be changed
-     see {!Ppx_entry}
+>
+(* WARN:
+  its path name should not be changed
+  see [`Ppx_entry`]()
 *)
 
 type node_require = <
   main : node_module Js.undefined;
 
   resolve : string -> string [@bs]
-  (* @raise exception   *)
-> 
+  (* **raise** exception *)
+>
 (* WARN:
-    its path name should not be changed
-    see {!Ppx_entry}
+  its path name should not be changed
+  see [`Ppx_entry`]()
 *)
 
 type string_buffer (* can be either string or buffer *)

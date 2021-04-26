@@ -22,73 +22,69 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Contains functionality for dealing with values that can be both [null] and [undefined] *)
+(** Contains functionality for dealing with values that can be both `null` and `undefined` *)
 
-(** Local alias for ['a Js.null_undefined] *)
+(** Local alias for `'a Js.null_undefined` *)
 type + 'a t = 'a Js.null_undefined
 
-(** Constructs a value of ['a Js.null_undefined] containing a value of ['a] *)
+(** Constructs a value of `'a Js.null_undefined` containing a value of `'a` *)
 external return : 'a -> 'a t = "%identity"
 
 
-(** Returns [true] if the given value is [null] or [undefined], [false] otherwise *)
+(** Returns `true` if the given value is `null` or `undefined`, `false` otherwise *)
 external isNullable : 'a t -> bool =  "#is_nullable"
 
-(** The [null] value of type ['a Js.null_undefined]*)
+(** The `null` value of type `'a Js.null_undefined` *)
 external null : 'a t = "#null"
 
-(** The [undefined] value of type ['a Js.null_undefined] *)
+(** The `undefined` value of type `'a Js.null_undefined` *)
 external undefined : 'a t = "#undefined"
 
 
 
-(** Maps the contained value using the given function
+(**
+  Maps the contained value using the given function
 
-    If ['a Js.null_undefined] contains a value, that value is unwrapped, mapped to a ['b] using
-    the given function [a' -> 'b], then wrapped back up and returned as ['b Js.null_undefined]
+  If `'a Js.null_undefined` contains a value, that value is unwrapped, mapped to a `'b` using
+  the given function `a' -> 'b`, then wrapped back up and returned as `'b Js.null_undefined`
 
-    @example {[
-      let maybeGreetWorld (maybeGreeting: string Js.null_undefined) =
-        Js.Undefined.bind maybeGreeting (fun greeting -> greeting ^ " world!")
-    ]}
+  ```
+  let maybeGreetWorld (maybeGreeting: string Js.null_undefined) =
+    Js.Undefined.bind maybeGreeting (fun greeting -> greeting ^ " world!")
+  ```
 *)
 val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
 
-(** Iterates over the contained value with the given function
+(**
+  Iterates over the contained value with the given function
 
-    If ['a Js.null_undefined] contains a value, that value is unwrapped and applied to
-    the given function.
+  If `'a Js.null_undefined` contains a value, that value is unwrapped and applied to
+  the given function.
 
-    @example {[
-      let maybeSay (maybeMessage: string Js.null_undefined) =
-        Js.Null_undefined.iter maybeMessage (fun message -> Js.log message)
-    ]}
+  ```
+  let maybeSay (maybeMessage: string Js.null_undefined) =
+    Js.Null_undefined.iter maybeMessage (fun message -> Js.log message)
+  ```
 *)
 val iter : 'a t -> ('a -> unit [@bs]) -> unit
 
-(** Maps ['a option] to ['a Js.null_undefined]
+(**
+  Maps `'a option` to `'a Js.null_undefined`
 
-    {%html:
-    <table>
-    <tr> <td>Some a <td>-> <td>return a
-    <tr> <td>None <td>-> <td>undefined
-    </table>
-    %}
+  `Some a` -> `return a`
+  `None` -> `undefined`
 *)
 val fromOption : 'a option -> 'a t
 
 val from_opt: 'a option -> 'a t
 [@@deprecated "Use fromOption instead"]
 
-(** Maps ['a Js.null_undefined] to ['a option]
+(**
+  Maps `'a Js.null_undefined` to `'a option`
 
-    {%html:
-    <table>
-    <tr> <td>return a <td>-> <td>Some a
-    <tr> <td>undefined <td>-> <td>None
-    <tr> <td>null <td>-> <td>None
-    </table>
-    %}
+  `return a` -> `Some a`
+  `undefined` -> `None`
+  `null` -> `None`
 *)
 external toOption : 'a t -> 'a option = "#nullable_to_opt"
 

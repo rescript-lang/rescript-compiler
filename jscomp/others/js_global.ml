@@ -25,155 +25,166 @@
 
 
 (** Contains functions available in the global scope
-    ([window] in a browser context) *)
+    (`window` in a browser context) *)
 
 
 type intervalId
-(** Identify an interval started by {! setInterval} *)
+(** Identify an interval started by [` setInterval`]() *)
 
 type timeoutId
-(** Identify timeout started by {! setTimeout} *)
+(** Identify timeout started by [` setTimeout`]() *)
 
 
-(** Clear an interval started by {! setInterval}
+(**
+  Clear an interval started by [` setInterval`]()
 
-@example {[
-(* API for a somewhat aggressive snoozing alarm clock *)
+  ```
+  (* API for a somewhat aggressive snoozing alarm clock *)
 
-let interval = ref Js.Nullable.null
+  let interval = ref Js.Nullable.null
 
-let remind () =
-  Js.log "Wake Up!";
-  IO.punchSleepyGuy ()
-  
-let snooze mins =
-  interval := Js.Nullable.return (Js.Global.setInterval remind (mins * 60 * 1000))
-  
-let cancel () =
-  Js.Nullable.iter !interval (fun[\@bs] intervalId -> Js.Global.clearInterval intervalId)
-]}
+  let remind () =
+    Js.log "Wake Up!";
+    IO.punchSleepyGuy ()
 
-@see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval> MDN
+  let snooze mins =
+    interval := Js.Nullable.return (Js.Global.setInterval remind (mins * 60 * 1000))
+
+  let cancel () =
+    Js.Nullable.iter !interval (fun[@bs] intervalId -> Js.Global.clearInterval intervalId)
+  ```
+
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval)
 *)
 external clearInterval : intervalId -> unit = "clearInterval" [@@bs.val]
 
 
-(** Clear a timeout started by {! setTimeout}
-@example {[
-(* A simple model of a code monkey's brain *)
+(**
+  Clear a timeout started by [` setTimeout`]()
 
-let timer = ref Js.Nullable.null
+  ```
+  (* A simple model of a code monkey's brain *)
 
-let work () =
-  IO.closeHackerNewsTab ()
+  let timer = ref Js.Nullable.null
 
-let procrastinate mins =
-  Js.Nullable.iter !timer (fun[\@bs] timer -> Js.Global.clearTimeout timer);
-  timer := Js.Nullable.return (Js.Global.setTimeout work (mins * 60 * 1000))
-]}
+  let work () =
+    IO.closeHackerNewsTab ()
 
-@see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearTimeout> MDN
+  let procrastinate mins =
+    Js.Nullable.iter !timer (fun[@bs] timer -> Js.Global.clearTimeout timer);
+    timer := Js.Nullable.return (Js.Global.setTimeout work (mins * 60 * 1000))
+  ```
+
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearTimeout)
 *)
 external clearTimeout : timeoutId -> unit = "clearTimeout" [@@bs.val]
 
 
-(** {i Repeatedly} executes a callback with a specified interval (in milliseconds) between calls
+(**
+  _Repeatedly_ executes a callback with a specified interval (in milliseconds) between calls
 
-{b Return} an {! intervalId} that can be passed to {! clearInterval} to cancel the timeout
+  **return** an [` intervalId`]() that can be passed to [` clearInterval`]() to cancel the timeout
 
-@see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval)
 
-@example {[
-(* Will count up and print the count to the console every second *)
+  ```
+  (* Will count up and print the count to the console every second *)
 
-let count = ref 0
+  let count = ref 0
 
-let tick () =
-  count := !count + 1; Js.log (string_of_int !count)
+  let tick () =
+    count := !count + 1; Js.log (string_of_int !count)
 
-let _ =
-  Js.Global.setInterval tick 1000
-]}
+  let _ =
+    Js.Global.setInterval tick 1000
+  ```
 *)
 external setInterval : (unit -> unit) -> int -> intervalId = "setInterval" [@@bs.val]
 
-(** {i Repeatedly} executes a callback with a specified interval (in milliseconds) between calls
+(**
+  _Repeatedly_ executes a callback with a specified interval (in milliseconds) between calls
 
-{b Return} an {! intervalId} that can be passed to {! clearInterval} to cancel the timeout
+  **return** an [` intervalId`]() that can be passed to [` clearInterval`]() to cancel the timeout
 
-@see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval)
 
-@example {[
-(* Will count up and print the count to the console every second *)
+  ```
+  (* Will count up and print the count to the console every second *)
 
-let count = ref 0
+  let count = ref 0
 
-let tick () =
-  count := !count + 1; Js.log (string_of_int !count)
+  let tick () =
+    count := !count + 1; Js.log (string_of_int !count)
 
-let _ =
-  Js.Global.setIntervalFloat tick 1000.0
-]}
+  let _ =
+    Js.Global.setIntervalFloat tick 1000.0
+  ```
 *)
 external setIntervalFloat : (unit -> unit) -> float -> intervalId = "setInterval" [@@bs.val]
 
 
-(** Execute a callback after a specified delay (in milliseconds)
+(**
+  Execute a callback after a specified delay (in milliseconds)
 
-{b returns} a {! timeoutId} that can be passed to {! clearTimeout} to cancel the timeout
+  **return** a [` timeoutId`]() that can be passed to [` clearTimeout`]() to cancel the timeout
 
-@see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout)
 
-@example {[
-(* Prints "Timed out!" in the console after one second *)
+  ```
+  (* Prints "Timed out!" in the console after one second *)
 
-let message = "Timed out!"
+  let message = "Timed out!"
 
-let _ =
-  Js.Global.setTimeout (fun () -> Js.log message) 1000
-]}
+  let _ =
+    Js.Global.setTimeout (fun () -> Js.log message) 1000
+  ```
 *)
 external setTimeout : (unit -> unit) -> int -> timeoutId = "setTimeout" [@@bs.val]
 
-(** Execute a callback after a specified delay (in milliseconds)
+(**
+  Execute a callback after a specified delay (in milliseconds)
 
-{b returns} a {! timeoutId} that can be passed to {! clearTimeout} to cancel the timeout
+  **return** a [` timeoutId`]() that can be passed to [` clearTimeout`]() to cancel the timeout
 
-@see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout)
 
-@example {[
-(* Prints "Timed out!" in the console after one second *)
+  ```
+  (* Prints "Timed out!" in the console after one second *)
 
-let message = "Timed out!"
+  let message = "Timed out!"
 
-let _ =
-  Js.Global.setTimeoutFloat (fun () -> Js.log message) 1000.0
-]}
+  let _ =
+    Js.Global.setTimeoutFloat (fun () -> Js.log message) 1000.0
+  ```
 *)
 external setTimeoutFloat : (unit -> unit) -> float -> timeoutId = "setTimeout" [@@bs.val]
 
-(** URL-encodes a string.
+(**
+  URL-encodes a string.
 
-@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
 *)
 external encodeURI : string -> string = "encodeURI" [@@bs.val]
 
 
-(** Decodes a URL-enmcoded string produced by [encodeURI]
+(**
+  Decodes a URL-enmcoded string produced by `encodeURI`
 
-@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI)
 *)
 external decodeURI : string -> string = "decodeURI" [@@bs.val]
 
-(** URL-encodes a string, including characters with special meaning in a URI.
+(**
+  URL-encodes a string, including characters with special meaning in a URI.
 
-@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)
 *)
 external encodeURIComponent : string -> string = "encodeURIComponent" [@@bs.val]
 
 
-(** Decodes a URL-enmcoded string produced by [encodeURIComponent]
+(**
+  Decodes a URL-enmcoded string produced by `encodeURIComponent`
 
-@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent)
 *)
 external decodeURIComponent : string -> string = "decodeURIComponent" [@@bs.val]

@@ -22,18 +22,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** JavaScript Typed Array API
+(**
+  JavaScript Typed Array API
 
-@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray)
 *)
 
 type array_buffer
 type 'a array_like (* should be shared with js_array *)
 
 module ArrayBuffer = struct
-  (** The underlying buffer that the typed arrays provide views of
+  (**
+    The underlying buffer that the typed arrays provide views of
 
-    @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer> MDN
+    **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
   *)
 
   type t = array_buffer
@@ -100,13 +102,13 @@ end
   external lastIndexOfFrom : t -> elt -> from:int -> int = "lastIndexOf" [@@bs.send]\
   \
   external slice : t -> start:int -> end_:int -> t = "slice" [@@bs.send]\
-  (** [start] is inclusive, [end_] exclusive *)\
+  (** `start` is inclusive, `end_` exclusive *)\
   \
   external copy : t -> t = "slice" [@@bs.send]\
   external sliceFrom : t -> int -> t = "slice" [@@bs.send]\
   \
   external subarray : t -> start:int -> end_:int -> t = "subarray" [@@bs.send]\
-  (** [start] is inclusive, [end_] exclusive *)\
+  (** `start` is inclusive, `end_` exclusive *)\
   \
   external subarrayFrom : t -> int -> t = "subarray" [@@bs.send]\
   \
@@ -156,12 +158,18 @@ end
   (** can throw *)\
   \
   external fromBufferOffset : array_buffer -> int -> t = STRINGIFY(moduleName) [@@bs.new]\
-  (** @raise Js.Exn.Error raise Js exception
-      @param offset is in bytes *)\
+  (**
+    **raise** Js.Exn.Error raise Js exception
+
+    **param** offset is in bytes
+  *)\
   \
   external fromBufferRange : array_buffer -> offset:int -> length:int -> t = STRINGIFY(moduleName) [@@bs.new]\
-  (** @raise Js.Exn.Error raises Js exception
-      @param offset is in bytes, length in elements *)\
+  (**
+    **raise** Js.Exn.Error raises Js exception
+
+    **param** offset is in bytes, length in elements
+  *)\
   \
   external fromLength : int -> t = STRINGIFY(moduleName) [@@bs.new]\
   external from : elt array_like -> t = STRINGIFY(moduleName.from) [@@bs.val]\
@@ -201,7 +209,7 @@ module Uint32Array = struct
 end
 
 (*
- it still return number, [float] in this case
+ it still return number, `float` in this case
 *)
 module Float32Array = struct
   COMMON_EXTERNALS(Float32Array,float)
@@ -212,14 +220,15 @@ module Float64Array = struct
 end
 
 
-(** The DataView view provides a low-level interface for reading and writing
-      multiple number types in an ArrayBuffer irrespective of the platform's endianness.
+(**
+  The DataView view provides a low-level interface for reading and writing
+  multiple number types in an ArrayBuffer irrespective of the platform's endianness.
 
-    @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView)
 *)
 module DataView = struct
 
-  
+
   type t
 
   external make : array_buffer -> t = "DataView" [@@bs.new]

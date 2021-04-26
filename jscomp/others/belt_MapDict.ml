@@ -132,17 +132,17 @@ let update t newK f ~cmp =
     
 (*  unboxing API was not exported
     since the correct API is really awkard
-    [bool -> 'k Js.null -> ('a Js.null * bool)]
-    even for specialized [k] the first [bool] can 
+    `bool -> 'k Js.null -> ('a Js.null * bool)`
+    even for specialized `k` the first `bool` can 
     be erased, maybe the perf boost does not justify the inclusion of such API
 
-    [updateWithNull m x f]
-    the callback to [f exist v] 
-    when [v] is non-null,
-    [exist] is guaranteed to be true
-    [v] is guranteed to be [null],
-    when [exist] is [true], [v] could be [null], 
-    since ['a] is polymorphic
+    `updateWithNull m x f`
+    the callback to `f exist v` 
+    when `v` is non-null,
+    `exist` is guaranteed to be true
+    `v` is guranteed to be `null`,
+    when `exist` is `true`, `v` could be `null`, 
+    since `'a` is polymorphic
 *)
 
 

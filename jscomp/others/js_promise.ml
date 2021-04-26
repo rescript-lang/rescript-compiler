@@ -24,9 +24,6 @@
 
 (** Specialized bindings to Promise. Note: For simplicity,
     this binding does not track the error type, it treat it as an opaque type
-    {[
-
-    ]}
 *)
 
 [@@@warning "-103"]
@@ -37,7 +34,7 @@ type error
 
 external make : (resolve:('a -> unit [@bs]) ->
                  reject:(exn -> unit [@bs]) -> unit [@bs.uncurry]) -> 'a t = "Promise" [@@bs.new]
-(* [make (fun resolve reject -> .. )] *)
+(* `make (fun resolve reject -> .. )` *)
 external resolve : 'a -> 'a t = "resolve" [@@bs.val] [@@bs.scope "Promise"]
 external reject : exn -> 'a t = "reject" [@@bs.val] [@@bs.scope "Promise"]
 external all : 'a t array -> 'a array t = "all" [@@bs.val] [@@bs.scope "Promise"]
@@ -54,9 +51,9 @@ external then_ : ('a -> 'b t [@bs.uncurry]) -> 'b t = "then" [@@bs.send.pipe: 'a
 
 
 external catch : (error -> 'a t [@bs.uncurry]) -> 'a t = "catch" [@@bs.send.pipe: 'a t]
-(* [ p|> catch handler]
+(* ` p|> catch handler`
     Note in JS the returned promise type is actually runtime dependent,
-    if promise is rejected, it will pick the [handler] otherwise the original promise,
+    if promise is rejected, it will pick the `handler` otherwise the original promise,
     to make it strict we enforce reject handler
     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
  *)

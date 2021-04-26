@@ -49,7 +49,7 @@ let rec everyByAux s f ~step p =
 let everyByU s f ~step p = 
   if step > 0 then 
      everyByAux s f ~step p
-  else true (* return empty range [true]*)  
+  else true (* return empty range `true`*)  
 
 let everyBy s f ~step p = everyByU s f ~step (fun [@bs] a -> p a)
 
@@ -71,6 +71,6 @@ let rec someByAux s f ~step p =
 let someByU s f ~step p = 
     if step > 0 then 
       someByAux s f ~step p 
-    else false  (* return empty range, [false] *) 
+    else false  (* return empty range, `false` *) 
 
 let someBy s f ~step p = someByU s f ~step (fun[@bs] a -> p a)

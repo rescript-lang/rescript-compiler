@@ -27,7 +27,7 @@
 module C = Belt_internalBucketsType
 (* TODO:
    the current implementation relies on the fact that bucket 
-   empty value is [undefined] in both places,
+   empty value is `undefined` in both places,
    in theory, it can be different 
 
 *)

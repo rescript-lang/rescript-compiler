@@ -44,7 +44,7 @@ val map : ('a -> 'b [@bs]) -> 'a option -> 'b option
 val getWithDefault :  'a -> 'a option -> 'a
 
 val default : 'a -> 'a option -> 'a
-[@@deprecated "Use getWithDefault instead since default has special meaning in ES module"]
+[@@deprecated "Use `getWithDefault` instead since default has special meaning in ES module"]
 
 
 val filter : ('a -> bool [@bs]) -> 'a option -> 'a option
