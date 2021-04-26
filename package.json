@@ -4,7 +4,6 @@
     "nyc": "^15.0.0"
   },
   "bin": {
-    "bsb": "bsb",
     "bsc": "bsc",
     "bsrefmt": "bsrefmt",
     "bstracing": "lib/bstracing",
@@ -19,7 +18,7 @@
     "coverage": "nyc --timeout=3000 --reporter=html mocha jscomp/test/*test.js && open ./coverage/index.html"
   },
   "name": "rescript",
-  "version": "9.1.1",
+  "version": "9.1.2",
   "description": "ReScript toolchain",
   "repository": {
     "type": "git",
