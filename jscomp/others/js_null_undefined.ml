@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Contains functionality for dealing with values that can be both [null] and [undefined] *)
+(** Contains functionality for dealing with values that can be both `null` and `undefined` *)
 
 type + 'a t = 'a Js.nullable
 external toOption : 'a t -> 'a option = "#nullable_to_opt"

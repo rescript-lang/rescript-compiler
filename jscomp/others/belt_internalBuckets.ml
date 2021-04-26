@@ -12,7 +12,7 @@
 (***********************************************************************)
 (**  Adapted by Hongbo Zhang, Authors of ReScript 2017                           *)
 
-(* For JS backends, we use [undefined] as default value, so that buckets
+(* For JS backends, we use `undefined` as default value, so that buckets
    could be allocated lazily
 *)
 
@@ -21,7 +21,7 @@
 module C = Belt_internalBucketsType
 (* TODO:
    the current implementation relies on the fact that bucket 
-   empty value is [undefined] in both places,
+   empty value is `undefined` in both places,
    in theory, it can be different 
 
 *)

@@ -106,7 +106,7 @@ external entries : 'a t -> (int * 'a) array_iter = "" [@@bs.send] (* ES2015 *)
 external every : 'a t -> ('a  -> bool[@bs.uncurry]) -> bool = "every" [@@bs.send]
 external everyi : 'a t -> ('a -> int -> bool [@bs.uncurry]) -> bool = "every" [@@bs.send]
 
-(** should we use [bool] or [boolean] seems they are intechangeable here *)
+(** should we use `bool` or `boolean` seems they are intechangeable here *)
 external filter : 'a t -> ('a -> bool [@bs.uncurry]) -> 'a t = "filter" [@@bs.send]
 external filteri : 'a t -> ('a -> int  -> bool[@bs.uncurry]) -> 'a t = "filter" [@@bs.send]
 

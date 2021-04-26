@@ -31,8 +31,9 @@ external make: int -> 'a -> 'a array = "caml_make_vect"
 external unsafe_get : 'a t -> int -> 'a = "%array_unsafe_get"
 external unsafe_set : 'a t -> int -> 'a -> unit = "%array_unsafe_set"
 
-(** @param a array
-    @param p predicate
+(** **param** a array
+
+    **param** p predicate
 *)
 let filterInPlace p a =
   let  i = ref 0 in
@@ -139,4 +140,4 @@ let mapi f a =
 let append x a =
   Js_array2.concat a [|x|]
 
-(* TODO: add [append] *)
+(* TODO: add `append` *)

@@ -24,39 +24,40 @@
 
 
 (*
-   perf is not everything, there are better memory represenations
-   {[
-     type 'a cell = {
-       mutable head : 'a;
-       mutable tail : 'a opt_cell
-     }
+  perf is not everything, there are better memory represenations
 
-     and 'a opt_cell = 'a cell Js.null
+  ```
+  type 'a cell = {
+    mutable head : 'a;
+    mutable tail : 'a opt_cell
+  }
 
-     and 'a t = {
-       length : int ;
-       data : 'a opt_cell
-     }
-   ]}
-   However,
-   - people use List not because of its perf, but its
-   convenencie, in that case, pattern match and compatibility seems
-   more attractive, we could keep a mutable list
-   - The built in types would indicate that
-     its construtor is immutable, a better optimizer would break such code
+  and 'a opt_cell = 'a cell Js.null
 
-   {[
-     type 'a t = {
-       head : 'a;
-       mutable tail : 'a t | int
-     }
-   ]}
-   In the future, we could come up with a safer version
-   {[
-     type 'a t =
-       | Nil
-       | Cons of { hd : 'a ; mutable tail : 'a t }
-   ]}
+  and 'a t = {
+    length : int ;
+    data : 'a opt_cell
+  }
+  ```
+  However,
+  - people use List not because of its perf, but its
+    convenience, in that case, pattern match and compatibility seems
+    more attractive, we could keep a mutable list
+  - The built in types would indicate that
+    its construtor is immutable, a better optimizer would break such code
+
+  ```
+  type 'a t = {
+    head : 'a;
+    mutable tail : 'a t | int
+  }
+  ```
+  In the future, we could come up with a safer version
+  ```
+  type 'a t =
+  | Nil
+  | Cons of { hd : 'a ; mutable tail : 'a t }
+  ```
 *)
 
 [@@@bs.config {flags = [| "-bs-noassertfalse" |]}]
@@ -70,10 +71,10 @@ external mutableCell :
 
 
 (*
-    [mutableCell x []] == [x]
-    but tell the compiler that is a mutable cell, so it wont
-    be mis-inlined in the future
-     dont inline a binding to mutable cell, it is mutable
+  `mutableCell x []` == `x`
+  but tell the compiler that is a mutable cell, so it wont
+  be mis-inlined in the future
+   dont inline a binding to mutable cell, it is mutable
 *)
 (* INVARIANT: relies on Literals.tl (internal representation) *)
 external unsafeMutateTail : 'a t -> 'a t -> unit = "tl" [@@bs.set]
@@ -107,7 +108,7 @@ let tailExn x =
 
 let add xs x  = x :: xs
 
-(* Assume [n >=0] *)
+(* Assume `n >=0` *)
 let rec nthAux x n =
   match x with
   | h::t -> if n = 0 then Some h else nthAux t (n - 1)
@@ -283,7 +284,7 @@ let rec splitAtAux n cell prec =
      unsafeMutateTail prec cell;
       splitAtAux (n - 1) xs cell
 
-(* invarint [n >= 0] *)
+(* invarint `n >= 0` *)
 let  take lst n =
   if n < 0 then None
   else
@@ -296,7 +297,7 @@ let  take lst n =
       let has = takeAux (n-1) xs cell in
       if has then Some cell
       else None
-(* invariant [n >= 0 ] *)
+(* invariant `n >= 0 ` *)
 let rec dropAux l n =
   if n = 0 then Some l
   else

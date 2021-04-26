@@ -167,7 +167,7 @@ end
 (**/**)
 module Internal = struct
   open Meth
-  (* Use opaque instead of [._n] to prevent some optimizations happening *)
+  (* Use opaque instead of `._n` to prevent some optimizations happening *)
 
   external run : 'a arity0 -> 'a = "#run" "0"
   (* 

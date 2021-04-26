@@ -22,14 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Node FS API
-
-@see <https://blogs.janestreet.com/a-and-a/> refernce documentation
+(**
+  Node FS API
 *)
 
-(** Most fs functions let you omit the callback argument. If you do, a default
-    callback is used that rethrows errors. To get a trace to the original call
-    site, set the `NODE_DEBUG` environment variable:
+(**
+  Most fs functions let you omit the callback argument. If you do, a default
+  callback is used that rethrows errors. To get a trace to the original call
+  site, set the `NODE_DEBUG` environment variable:
 *)
 external readdirSync : string -> string array  = "readdirSync" [@@bs.module "fs"]
 
@@ -39,13 +39,13 @@ type fd = private int
 
 type path = string
 (**
-   The relative path to a filename can be used. Remember, however, that this path
-   will be relative to [process.cwd()].
+  The relative path to a filename can be used. Remember, however, that this path
+  will be relative to `process.cwd()`.
 *)
 
 module Watch = struct
-  type t 
-  type config 
+  type t
+  type config
   external config :
     ?persistent: bool ->
     ?recursive: bool ->
@@ -59,16 +59,17 @@ module Watch = struct
     unit ->
     t = "watch"
   [@@bs.module "fs"]
-  (** there is no need to accept listener, since we return a [watcher]
-      back it can register event listener there .
-      Currently we introduce a type [string_buffer], for the
-      [filename], it will be [Buffer] when the encoding is `utf8.
-      This is dependent type which can be tracked by GADT in some way,
-      but to make things simple, let's just introduce an or type
+  (**
+    there is no need to accept listener, since we return a `watcher`
+    back it can register event listener there .
+    Currently we introduce a type `string_buffer`, for the
+    `filename`, it will be `Buffer` when the encoding is `utf8.
+    This is dependent type which can be tracked by GADT in some way,
+    but to make things simple, let's just introduce an or type
   *)
-  
 
-  external on_ : 
+
+  external on_ :
     t ->
     ([
       `change of (string (*eventType*) -> Node.string_buffer (* filename *) -> unit  [@bs])
@@ -94,7 +95,7 @@ external unlinkSync : string -> unit  = "unlinkSync" [@@bs.module "fs"]
 
 external rmdirSync : string -> unit = "rmdirSync"  [@@bs.module "fs"]
 
-(* TODO: [flags] support *)
+(* TODO: `flags` support *)
 external openSync :
   path ->
   (
@@ -112,7 +113,7 @@ external openSync :
     ] [@bs.string]) ->
   unit = "openSync"  [@@bs.module "fs"]
 
-type encoding = 
+type encoding =
   [
     `hex
   | `utf8
@@ -122,7 +123,7 @@ type encoding =
   | `ucs2
   | `base64
   | `binary
-  | `utf16le ]  
+  | `utf16le ]
 external readFileSync :
   string ->
   encoding ->

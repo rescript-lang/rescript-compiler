@@ -78,7 +78,7 @@ external atan2 : y:float -> x:float -> unit -> float = "atan2" [@@bs.val] [@@bs.
 (** cube root, can return NaN, ES2015 *)
 external cbrt : float -> float = "cbrt" [@@bs.val] [@@bs.scope "Math"]
 
-(** may return values not representable by [int] *)
+(** may return values not representable by `int` *)
 external unsafe_ceil_int : float -> int = "ceil" [@@bs.val] [@@bs.scope "Math"]
 let unsafe_ceil = unsafe_ceil_int
 [@@deprecated "Please use `unsafe_ceil_int` instead"]
@@ -110,7 +110,7 @@ external exp : float -> float = "exp" [@@bs.val] [@@bs.scope "Math"]
 (** natural exponential minus 1, ES2015 *)
 external expm1 : float -> float = "expm1" [@@bs.val] [@@bs.scope "Math"]
 
-(** may return values not representable by [int] *)
+(** may return values not representable by `int` *)
 external unsafe_floor_int : float -> int = "floor" [@@bs.val] [@@bs.scope "Math"]
 let unsafe_floor = unsafe_floor_int
 [@@deprecated "Please use `unsafe_floor_int` instead"]
@@ -179,14 +179,14 @@ external pow_int : base:int -> exp:int -> int = "pow" [@@bs.val] [@@bs.scope "Ma
 (** base to the power of the exponent *)
 external pow_float : base:float -> exp:float -> float = "pow" [@@bs.val] [@@bs.scope "Math"]
 
-(** random number in \[0,1) *)
+(** random number in [0,1) *)
 external random : unit -> float = "random" [@@bs.val] [@@bs.scope "Math"]
 
-(** random number in \[min,max) *)
+(** random number in [min,max) *)
 let random_int min max =
   floor ((random ()) *. (Js_int.toFloat (max - min))) + min
 
-(** rounds to nearest integer, returns a value not representable as [int] if NaN *)
+(** rounds to nearest integer, returns a value not representable as `int` if NaN *)
 external unsafe_round : float -> int = "round" [@@bs.val] [@@bs.scope "Math"]
 
 (** rounds to nearest integer *)
@@ -213,8 +213,8 @@ external tan : float -> float = "tan" [@@bs.val][@@bs.scope "Math"]
 (** hyperbolic tangent in radians, ES2015 *)
 external tanh : float -> float = "tanh" [@@bs.val][@@bs.scope "Math"]
 
-(** truncate, ie. remove fractional digits, returns a value not representable as [int] if NaN, ES2015 *)
+(** truncate, ie. remove fractional digits, returns a value not representable as `int` if NaN, ES2015 *)
 external unsafe_trunc : float -> int = "trunc" [@@bs.val][@@bs.scope "Math"]
 
-(** truncate, ie. remove fractional digits, returns a value not representable as [int] if NaN, ES2015 *)
+(** truncate, ie. remove fractional digits, returns a value not representable as `int` if NaN, ES2015 *)
 external trunc : float -> float = "trunc" [@@bs.val][@@bs.scope "Math"]
