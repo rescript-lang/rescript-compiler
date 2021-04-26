@@ -21,10 +21,7 @@ and 'a data =
   | Sapp of 'a data * 'a data
   | Slazy of 'a data Lazy.t
   | Sgen of 'a gen
-  | Sbuffio : buffio -> char data
 and 'a gen = { mutable curr : 'a option option; func : int -> 'a option }
-and buffio =
-  { ic : in_channel; buff : bytes; mutable len : int; mutable ind : int }
 
 exception Failure
 exception Error of string
@@ -36,8 +33,6 @@ let data = function
   | None -> Sempty
   | Some { data } -> data
 
-let fill_buff b =
-  b.len <- input b.ic b.buff 0 (Bytes.length b.buff); b.ind <- 0
 
 
 let rec get_data : type v. int -> v data -> v data = fun count d -> match d with
@@ -61,12 +56,6 @@ let rec get_data : type v. int -> v data -> v data = fun count d -> match d with
      | Some a -> Scons(a, d)
          (* Warning: anyone using g thinks that an item has been read *)
      end
- | Sbuffio b ->
-     if b.ind >= b.len then fill_buff b;
-     if b.len == 0 then Sempty else
-       let r = Bytes.unsafe_get b.buff b.ind in
-       (* Warning: anyone using g thinks that an item has been read *)
-       b.ind <- succ b.ind; Scons(r, d)
  | Slazy f -> get_data count (Lazy.force f)
 
 
@@ -84,10 +73,6 @@ let rec peek_data : type v. v cell -> v option = fun s ->
  | Slazy f -> s.data <- (Lazy.force f); peek_data s
  | Sgen {curr = Some a} -> a
  | Sgen g -> let x = g.func s.count in g.curr <- Some x; x
- | Sbuffio b ->
-     if b.ind >= b.len then fill_buff b;
-     if b.len == 0 then begin s.data <- Sempty; None end
-     else Some (Bytes.unsafe_get b.buff b.ind)
 
 
 let peek = function
@@ -99,7 +84,6 @@ let rec junk_data : type v. v cell -> unit = fun s ->
   match s.data with
     Scons (_, d) -> s.count <- (succ s.count); s.data <- d
   | Sgen ({curr = Some _} as g) -> s.count <- (succ s.count); g.curr <- None
-  | Sbuffio b -> s.count <- (succ s.count); b.ind <- succ b.ind
   | _ ->
       match peek_data s with
         None -> ()
@@ -184,9 +168,6 @@ let of_bytes s =
     else None)
 
 
-let of_channel ic =
-  Some {count = 0;
-        data = Sbuffio {ic = ic; buff = Bytes.create 4096; len = 0; ind = 0}}
 
 
 (* Stream expressions builders *)
@@ -230,4 +211,3 @@ and dump_data : type v. (v -> unit) -> v data -> unit = fun f ->
       print_string ")"
   | Slazy _ -> print_string "Slazy"
   | Sgen _ -> print_string "Sgen"
-  | Sbuffio _ -> print_string "Sbuffio"

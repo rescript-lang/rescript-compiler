@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Int64 = require("../../lib/js/int64.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
-var Pervasives = require("../../lib/js/pervasives.js");
 
 var suites = {
   contents: /* [] */0
@@ -32,12 +31,12 @@ function eq(loc, x, y) {
 }
 
 function f(x) {
-  Pervasives.print_string("f");
+  console.log("f");
   return x;
 }
 
 function g(x) {
-  return Caml_int64.or_(x, (Pervasives.print_string("f"), x));
+  return Caml_int64.or_(x, (console.log("f"), x));
 }
 
 var v = {

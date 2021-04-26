@@ -12,7 +12,8 @@ let rec test n =
 
 let () = test 100        
 
-
+type in_channel
+external input_line : in_channel -> string = "input_line" [@@val]
 
 let read_lines inc =
    let rec loop acc =

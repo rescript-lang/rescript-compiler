@@ -33,19 +33,7 @@
 module E = Js_exp_make  
 (* module S = Js_stmt_make *)
 
-(** not exhaustive *)
-let args_const_unbox_approx_int_zero (args : J.expression list) = 
-  match args with 
-  | [ {expression_desc = Number (Int { i = 0l ; }) }] -> true 
-  | _ -> false
-let args_const_unbox_approx_int_one (args : J.expression list) = 
-  match args with 
-  | [ {expression_desc = Number (Int { i = 1l ; }) }] -> true 
-  | _ -> false
-let args_const_unbox_approx_int_two (args : J.expression list) = 
-  match args with 
-  | [ {expression_desc = Number (Int { i = 2l ; }) }] -> true 
-  | _ -> false
+
 
 (** 
    There are two things we need consider:
@@ -97,24 +85,10 @@ let translate loc (prim_name : string)
         | [e] -> e 
         | _ -> assert false 
       end
-    | "caml_int32_of_int"
-      -> 
-      begin match args with 
-        | [e] -> e 
-        | _ -> assert false 
-      end
-    | "caml_int32_of_float"
     | "caml_int_of_float"
       -> 
       begin match args with 
         | [e] -> E.to_int32 e 
-        | _ -> assert false 
-      end
-    | "caml_int32_to_float"
-    | "caml_int32_to_int"     
-      -> 
-      begin match args with 
-        | [e] -> e (* TODO: do more checking when [to_int32]*)
         | _ -> assert false 
       end
     | "caml_bytes_greaterthan"  
@@ -152,8 +126,8 @@ let translate loc (prim_name : string)
       ->  Js_long.min args 
     | "caml_int64_max" 
       ->  Js_long.max args      
-    | "caml_int32_float_of_bits"
-    | "caml_int32_bits_of_float"
+    | "caml_int_float_of_bits"
+    | "caml_int_bits_of_float"
 
     | "caml_modf_float"
     | "caml_ldexp_float"
@@ -283,10 +257,6 @@ let translate loc (prim_name : string)
     | "caml_int_equal_null"
     | "caml_int_equal_nullable"
     | "caml_int_equal_undefined"
-
-    | "caml_int32_equal_null"
-    | "caml_int32_equal_nullable"
-    | "caml_int32_equal_undefined"
       ->   
       begin match args with 
         | [e0;e1]
@@ -346,7 +316,6 @@ let translate loc (prim_name : string)
           call Js_runtime_modules.caml_primitive
       end
     | "caml_int_compare"
-    | "caml_int32_compare"
       -> E.runtime_call Js_runtime_modules.caml_primitive 
            "caml_int_compare" args
     | "caml_float_compare"
@@ -358,7 +327,7 @@ let translate loc (prim_name : string)
     | "caml_float_min"
     | "caml_string_min"
 
-    | "caml_int32_min"
+
 
       -> 
       begin match args with 
@@ -374,7 +343,7 @@ let translate loc (prim_name : string)
     | "caml_float_max"
     | "caml_string_max"
 
-    | "caml_int32_max"    
+
       -> 
       begin match args with 
         | [a;b] -> 
@@ -456,13 +425,6 @@ let translate loc (prim_name : string)
     | "caml_make_vect" 
       -> E.runtime_call Js_runtime_modules.array "make" args
 
-    | "caml_ml_flush"
-    | "caml_ml_out_channels_list"
-    | "caml_ml_output_char"
-    | "caml_ml_output" 
-      -> 
-      call Js_runtime_modules.io
-
     | "caml_array_dup" -> 
       begin match args with 
         | [a]
@@ -483,10 +445,8 @@ let translate loc (prim_name : string)
     | "caml_format_float"
     | "caml_hexstring_of_float"  
     | "caml_nativeint_format"
-    | "caml_int32_format"
     | "caml_float_of_string"
     | "caml_int_of_string" (* what is the semantics?*)
-    | "caml_int32_of_string"
     | "caml_nativeint_of_string" 
     | "caml_int64_format"
     | "caml_int64_of_string"
@@ -562,15 +522,6 @@ let translate loc (prim_name : string)
       -> call Js_runtime_modules.hash_primitive
     | "caml_hash"
       -> call Js_runtime_modules.hash 
-    | "caml_ml_open_descriptor_in" when   
-        args_const_unbox_approx_int_zero args -> 
-      E.runtime_ref Js_runtime_modules.io "stdin"
-    | "caml_ml_open_descriptor_out" when 
-        args_const_unbox_approx_int_one args -> 
-      E.runtime_ref Js_runtime_modules.io "stdout"
-    | "caml_ml_open_descriptor_out" when 
-        args_const_unbox_approx_int_two args -> 
-      E.runtime_ref Js_runtime_modules.io "stderr"       
     | "nativeint_add" -> 
       begin match args with 
         | [e1;e2] -> 

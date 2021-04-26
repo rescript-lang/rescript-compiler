@@ -33,7 +33,7 @@ function from_pairs(pair) {
                                   (function (param) {
                                       return {
                                               TAG: /* Eq */0,
-                                              _0: Caml_float.caml_int32_float_of_bits(i32),
+                                              _0: Caml_float.caml_int_float_of_bits(i32),
                                               _1: f
                                             };
                                     })
@@ -44,7 +44,7 @@ function from_pairs(pair) {
                                     (function (param) {
                                         return {
                                                 TAG: /* Eq */0,
-                                                _0: Caml_float.caml_int32_bits_of_float(f),
+                                                _0: Caml_float.caml_int_bits_of_float(f),
                                                 _1: i32
                                               };
                                       })

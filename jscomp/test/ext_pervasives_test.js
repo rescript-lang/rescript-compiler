@@ -1,7 +1,6 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
-var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -17,10 +16,6 @@ function $$finally(v, action, f) {
   }
   Curry._1(action, v);
   return e;
-}
-
-function with_file_as_chan(filename, f) {
-  return $$finally(Pervasives.open_out_bin(filename), Pervasives.close_out, f);
 }
 
 function is_pos_pow(n) {
@@ -109,7 +104,6 @@ var LargeFile = {
 };
 
 exports.$$finally = $$finally;
-exports.with_file_as_chan = with_file_as_chan;
 exports.is_pos_pow = is_pos_pow;
 exports.is_pos_pow_2 = is_pos_pow_2;
 exports.hash_variant = hash_variant;

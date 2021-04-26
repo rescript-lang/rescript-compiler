@@ -46,14 +46,14 @@ val caml_int_min : int selector
 val caml_float_min : float selector 
 val caml_string_min : string selector  
 
-val caml_int32_min : int32 selector 
+
 
 val caml_bool_max : bool selector
 val caml_int_max : int selector
 val caml_float_max : float selector 
 val caml_string_max : string selector  
 
-val caml_int32_max : int32 selector 
+
 
 val i64_eq : Caml_int64_extern.t -> Caml_int64_extern.t -> bool
 val i64_neq : Caml_int64_extern.t -> Caml_int64_extern.t -> bool

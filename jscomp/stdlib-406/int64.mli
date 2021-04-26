@@ -128,13 +128,13 @@ external to_float : int64 -> float
 (** Convert the given 64-bit integer to a floating-point number. *)
 
 
-external of_int32 : int32 -> int64 = "%int64_of_int32"
-(** Convert the given 32-bit integer (type [int32])
+external of_int32 : int -> int64 = "%int64_of_int32"
+(** Convert the given 32-bit integer (type [int])
    to a 64-bit integer (type [int64]). *)
 
-external to_int32 : int64 -> int32 = "%int64_to_int32"
+external to_int32 : int64 -> int = "%int64_to_int32"
 (** Convert the given 64-bit integer (type [int64]) to a
-   32-bit integer (type [int32]). The 64-bit integer
+   32-bit integer (type [int]). The 64-bit integer
    is taken modulo 2{^32}, i.e. the top 32 bits are lost
    during the conversion.  *)
 

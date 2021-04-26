@@ -36,9 +36,6 @@ let finally v action f   =
     reraise e 
   | e ->  action v |. ignore; e 
 
-let with_file_as_chan filename f = 
-  finally (open_out_bin filename) close_out f 
-
 
 
 let  is_pos_pow n = 

@@ -70,7 +70,12 @@ let succeed attr attrs =
 type mapper = Bs_ast_mapper.mapper
 let default_mapper = Bs_ast_mapper.default_mapper
 let default_expr_mapper = Bs_ast_mapper.default_mapper.expr 
-
+let default_pat_mapper = Bs_ast_mapper.default_mapper.pat 
+let pat_mapper (self : mapper) (e : Parsetree.pattern) = 
+  match e.ppat_desc with 
+  | Ppat_constant (Pconst_integer (s, Some 'l')) ->
+    {e with ppat_desc = Ppat_constant (Pconst_integer(s,None))}
+  | _ -> default_pat_mapper  self e 
 let expr_mapper  (self : mapper) (e : Parsetree.expression) =
   match e.pexp_desc with
   (** Its output should not be rewritten anymore *)
@@ -81,7 +86,10 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
         (s, (Some delim)))
     ->
     Ast_utf8_string_interp.transform e s delim
-
+  | Pexp_constant(
+    Pconst_integer(s, Some 'l')
+  ) ->
+    {e with pexp_desc = Pexp_constant(Pconst_integer (s,None))} 
   (** End rewriting *)
   | Pexp_function cases ->
     (* {[ function [@bs.exn]
@@ -435,6 +443,7 @@ let rec
 let  mapper : mapper =
   { default_mapper with
     expr = expr_mapper;
+    pat = pat_mapper; 
     typ = typ_mapper ;
     class_type = class_type_mapper;      
     signature_item =  signature_item_mapper ;

@@ -694,7 +694,7 @@ module Int32Array = struct
 # 204 "others/js_typed_array2.cppo.ml"
   
   (** *)
-  type elt = int32
+  type elt = int
   type 'a typed_array
   type t = elt typed_array
   

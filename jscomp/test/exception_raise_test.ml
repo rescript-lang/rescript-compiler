@@ -139,7 +139,8 @@ let () =
 
 
 let fff0 x g = match x () with | exception _ -> 1 | _ -> g ()
-
+type in_channel
+external input_line : in_channel -> string = "input_line" [@@val]
 let rec input_lines ic acc = 
   match input_line ic with 
   | exception _ -> List.rev acc 

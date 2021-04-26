@@ -30,10 +30,10 @@ function hash_variant2(s) {
 }
 
 function fib(n) {
-  if (n !== 0 && n !== 1) {
-    return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
-  } else {
+  if (n === 0 || n === 1) {
     return 1;
+  } else {
+    return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
   }
 }
 

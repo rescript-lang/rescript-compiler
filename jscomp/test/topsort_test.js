@@ -132,7 +132,7 @@ if (!Caml_obj.caml_equal(dfs1({
       };
 }
 
-Pervasives.print_newline(undefined);
+console.log("");
 
 if (!Caml_obj.caml_equal(dfs1({
             hd: "b",

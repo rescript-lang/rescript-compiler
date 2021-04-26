@@ -1,7 +1,6 @@
 'use strict';
 
 var List = require("../../lib/js/list.js");
-var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -34,7 +33,7 @@ function read_lines(inc) {
     var acc = _acc;
     var l;
     try {
-      l = Pervasives.input_line(inc);
+      l = input_line(inc);
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -61,7 +60,7 @@ function read_lines2(inc) {
     var acc = _acc;
     var l;
     try {
-      l = Pervasives.input_line(inc);
+      l = input_line(inc);
     }
     catch (raw_exn){
       var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -81,7 +80,7 @@ function read_lines2(inc) {
 function read_lines3(inc) {
   var loop = function (acc) {
     try {
-      var l = Pervasives.input_line(inc);
+      var l = input_line(inc);
       return loop({
                   hd: l,
                   tl: acc

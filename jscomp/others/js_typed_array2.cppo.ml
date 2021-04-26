@@ -201,7 +201,7 @@ module Uint16Array = struct
 end
 
 module Int32Array = struct
-  COMMON_EXTERNALS(Int32Array,int32)
+  COMMON_EXTERNALS(Int32Array,int)
 end
 
 module Uint32Array = struct

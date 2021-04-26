@@ -165,8 +165,6 @@ let from_function f =
     lex_curr_p = zero_pos;
   }
 
-let from_channel ic =
-  from_function (fun buf n -> input ic buf 0 n)
 
 let from_string s =
   { refill_buff = (fun lexbuf -> lexbuf.lex_eof_reached <- true);

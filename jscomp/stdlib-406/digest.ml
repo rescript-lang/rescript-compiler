@@ -21,7 +21,6 @@ let compare = String.compare
 let equal = String.equal
 
 external unsafe_string: string -> int -> int -> t = "caml_md5_string"
-external channel: in_channel -> int -> t = "caml_md5_chan"
 
 let string str =
   unsafe_string str 0 (String.length str)
@@ -35,16 +34,7 @@ let substring str ofs len =
 
 let subbytes b ofs len = substring (Bytes.unsafe_to_string b) ofs len
 
-let file filename =
-  let ic = open_in_bin filename in
-  match channel ic (-1) with
-    | d -> close_in ic; d
-    | exception e -> close_in ic; raise e
 
-let output chan digest =
-  output_string chan digest
-
-let input chan = really_input_string chan 16
 
 let char_hex n =
   Char.unsafe_chr (n + if n < 10 then Char.code '0' else (Char.code 'a' - 10))
