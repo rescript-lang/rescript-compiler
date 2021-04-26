@@ -22,16 +22,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** JavaScript Typed Array API
+(**
+  JavaScript Typed Array API
 
-@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray> MDN
+  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray> MDN
 *)
 
 type array_buffer
 type 'a array_like (* should be shared with js_array *)
 
 module ArrayBuffer = struct
-  (** The underlying buffer that the typed arrays provide views of
+  (**
+    The underlying buffer that the typed arrays provide views of
 
     @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer> MDN
   *)
@@ -212,14 +214,15 @@ module Float64Array = struct
 end
 
 
-(** The DataView view provides a low-level interface for reading and writing
-      multiple number types in an ArrayBuffer irrespective of the platform's endianness.
+(**
+  The DataView view provides a low-level interface for reading and writing
+  multiple number types in an ArrayBuffer irrespective of the platform's endianness.
 
-    @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView> MDN
+  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView> MDN
 *)
 module DataView = struct
 
-  
+
   type t
 
   external make : array_buffer -> t = "DataView" [@@bs.new]

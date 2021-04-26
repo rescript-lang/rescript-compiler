@@ -31,25 +31,26 @@ type + 'a t = 'a Js.undefined
 external return : 'a -> 'a t = "%identity"
 
 
-val test : 'a t -> bool 
+val test : 'a t -> bool
 [@@deprecated "Use = Js.undefined directly"]
 (** Returns `true` if the given value is `empty` (`undefined`), `false` otherwise *)
 
 (**
   @since 1.6.1
-  Returns `true` if the given value is `empty` (`undefined`)
+  **return** `true` if the given value is `empty` (`undefined`)
 *)
-val testAny : 'a -> bool 
+val testAny : 'a -> bool
 
 
 (** The empty value, `undefined` *)
-external empty : 'a t = "#undefined" 
+external empty : 'a t = "#undefined"
 
 external getUnsafe : 'a t -> 'a = "%identity"
 
 val getExn: 'a t -> 'a
 
-(** Maps the contained value using the given function
+(**
+  Maps the contained value using the given function
 
   If `'a Js.undefined` contains a value, that value is unwrapped, mapped to a `'b` using
   the given function `'a -> 'b`, then wrapped back up and returned as `'b Js.undefined`
@@ -61,7 +62,8 @@ val getExn: 'a t -> 'a
 *)
 val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
 
-(** Iterates over the contained value with the given function
+(**
+  Iterates over the contained value with the given function
 
   If `'a Js.undefined` contains a value, that value is unwrapped and applied to
   the given function.
@@ -73,7 +75,8 @@ val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
 *)
 val iter : 'a t -> ('a -> unit [@bs]) -> unit
 
-(** Maps `'a option` to `'a Js.undefined`
+(**
+  Maps `'a option` to `'a Js.undefined`
 
   `Some a` -> `return a`
   `None` -> `empty`
@@ -82,7 +85,8 @@ val fromOption: 'a option -> 'a t
 val from_opt : 'a option -> 'a t
 [@@deprecated "Use fromOption instead"]
 
-(** Maps `'a Js.undefined` to `'a option`
+(**
+  Maps `'a Js.undefined` to `'a option`
 
   `return a` -> `Some a`
   `empty` -> `None`

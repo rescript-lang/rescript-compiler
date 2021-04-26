@@ -50,10 +50,10 @@ type node_module = <
        loaded : bool;
        children : node_module array ;
        paths : string array;
-> 
- (* WARN:
-     its path name should not be changed
-     see {!Ppx_entry}
+>
+(* WARN:
+  its path name should not be changed
+  see {!Ppx_entry}
 *)
 
 type node_require = <
@@ -61,10 +61,10 @@ type node_require = <
 
   resolve : string -> string [@bs]
   (* @raise exception   *)
-> 
+>
 (* WARN:
-    its path name should not be changed
-    see {!Ppx_entry}
+  its path name should not be changed
+  see {!Ppx_entry}
 *)
 
 type string_buffer (* can be either string or buffer *)

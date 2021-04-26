@@ -22,49 +22,51 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** A **mutable** Hash set which allows customized {!hash} behavior.
+(**
+  A **mutable** Hash set which allows customized {!hash} behavior.
 
-    All data are parameterized by not its only type but also a unique identity in
-    the time of initialization, so that two _HashSets of ints_ initialized with different
-    _hash_ functions will have different type.
+  All data are parameterized by not its only type but also a unique identity in
+  the time of initialization, so that two _HashSets of ints_ initialized with different
+  _hash_ functions will have different type.
 
-    For example:
-    ```
-    type t = int
-    module I0 =
-      (val Belt.Id.hashableU
-          ~hash:(fun[@bs] (a : t)  -> a & 0xff_ff)
-          ~eq:(fun[@bs] a b -> a = b)
-      )
-    let s0 = make ~id:(module I0) ~hintSize:40
-    module I1 =
-      (val Belt.Id.hashableU
-          ~hash:(fun[@bs] (a : t)  -> a & 0xff)
-          ~eq:(fun[@bs] a b -> a = b)
-      )
-    let s1 = make ~id:(module I1) ~hintSize:40
-    ```
+  For example:
 
-    The invariant must be held: for two elements who are _equal_,
-    their hashed value should be the same
+  ```
+  type t = int
+  module I0 =
+    (val Belt.Id.hashableU
+        ~hash:(fun[@bs] (a : t)  -> a & 0xff_ff)
+        ~eq:(fun[@bs] a b -> a = b)
+    )
+  let s0 = make ~id:(module I0) ~hintSize:40
+  module I1 =
+    (val Belt.Id.hashableU
+        ~hash:(fun[@bs] (a : t)  -> a & 0xff)
+        ~eq:(fun[@bs] a b -> a = b)
+    )
+  let s1 = make ~id:(module I1) ~hintSize:40
+  ```
 
-    Here the compiler would infer `s0` and `s1` having different type so that
-    it would not mix.
+  The invariant must be held: for two elements who are _equal_,
+  their hashed value should be the same
 
-    ```
-    val s0 :  (int, I0.identity) t
-    val s1 :  (int, I1.identity) t
-    ```
+  Here the compiler would infer `s0` and `s1` having different type so that
+  it would not mix.
 
-    We can add elements to the collection:
+  ```
+  val s0 :  (int, I0.identity) t
+  val s1 :  (int, I1.identity) t
+  ```
 
-    ```
-    let () =
-      add s1 0;
-      add s1 1
-    ```
+  We can add elements to the collection:
 
-    Since this is an mutable data strucure, `s1` will contain two pairs.
+  ```
+  let () =
+    add s1 0;
+    add s1 1
+  ```
+
+  Since this is an mutable data strucure, `s1` will contain two pairs.
 *)
 
 

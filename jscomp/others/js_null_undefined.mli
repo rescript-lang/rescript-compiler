@@ -42,7 +42,8 @@ external undefined : 'a t = "#undefined"
 
 
 
-(** Maps the contained value using the given function
+(**
+  Maps the contained value using the given function
 
   If `'a Js.null_undefined` contains a value, that value is unwrapped, mapped to a `'b` using
   the given function `a' -> 'b`, then wrapped back up and returned as `'b Js.null_undefined`
@@ -54,7 +55,8 @@ external undefined : 'a t = "#undefined"
 *)
 val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
 
-(** Iterates over the contained value with the given function
+(**
+  Iterates over the contained value with the given function
 
   If `'a Js.null_undefined` contains a value, that value is unwrapped and applied to
   the given function.
@@ -66,7 +68,8 @@ val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
 *)
 val iter : 'a t -> ('a -> unit [@bs]) -> unit
 
-(** Maps `'a option` to `'a Js.null_undefined`
+(**
+  Maps `'a option` to `'a Js.null_undefined`
 
   `Some a` -> `return a`
   `None` -> `undefined`
@@ -76,7 +79,8 @@ val fromOption : 'a option -> 'a t
 val from_opt: 'a option -> 'a t
 [@@deprecated "Use fromOption instead"]
 
-(** Maps `'a Js.null_undefined` to `'a option`
+(**
+  Maps `'a Js.null_undefined` to `'a option`
 
   `return a` -> `Some a`
   `undefined` -> `None`

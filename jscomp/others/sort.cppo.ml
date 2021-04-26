@@ -242,12 +242,12 @@ let rec binarySearchAux (arr : element array) lo hi key =
     let midVal = A.getUnsafe arr mid in 
     (* let c = cmp key midVal [@bs] in  *)
     if key = midVal then mid 
-    else if key < midVal then  (*  a`lo` =< key < a`mid` <= a`hi` *)
+    else if key < midVal then  (*  a[lo] =< key < a[mid] <= a[hi] *)
       if hi = mid then  
         if  (A.getUnsafe arr lo) = key  then lo
         else - (hi + 1)
       else binarySearchAux arr lo mid key 
-    else  (*  a`lo` =< a`mid` < key <= a`hi` *)
+    else  (*  a[lo] =< a[mid] < key <= a[hi] *)
       if lo = mid then 
         if (A.getUnsafe arr hi) = key  then hi
         else - (hi + 1)

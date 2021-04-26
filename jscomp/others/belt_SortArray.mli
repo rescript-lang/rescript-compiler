@@ -43,9 +43,9 @@ val strictlySortedLength:
   ('a -> 'a -> bool) ->
   int
 (**
-   `strictlySortedLenght xs cmp`
-   **return** `+n` means increasing order
-   `-n` means negative order
+  `strictlySortedLenght xs cmp`
+
+  **return** `+n` means increasing order. `-n` means negative order
 
   ```
   strictlySortedLength [|1;2;3;4;3|] (fun x y -> x < y) = 4;;
@@ -57,27 +57,33 @@ val strictlySortedLength:
 
 val isSortedU: 'a array -> ('a -> 'a -> int [@bs]) -> bool
 val isSorted: 'a array -> ('a -> 'a -> int) -> bool
-(** `isSorted arr cmp`
-    **return** true if array is increasingly sorted (equal is okay )
-    ```
-    isSorted [|1;1;2;3;4|] (fun x y -> compare x y) = true
-    ```
+(**
+  `isSorted arr cmp`
+
+  **return** true if array is increasingly sorted (equal is okay )
+
+  ```
+  isSorted [|1;1;2;3;4|] (fun x y -> compare x y) = true
+  ```
 *)
 
 val stableSortInPlaceByU: 'a array -> ('a -> 'a -> int [@bs]) -> unit
 val stableSortInPlaceBy: 'a array -> ('a -> 'a -> int ) -> unit
-(** `stableSortBy xs cmp`
+(**
+  `stableSortBy xs cmp`
 
-    Sort xs in place using comparator `cmp`, the stable means if the elements
-    are equal, their order will be preserved
+  Sort xs in place using comparator `cmp`, the stable means if the elements
+  are equal, their order will be preserved
 *)
 
 val stableSortByU: 'a array -> ('a -> 'a -> int [@bs]) -> 'a array
 val stableSortBy: 'a array -> ('a -> 'a -> int) -> 'a array
-(** `stableSort xs cmp`
-    **return** a fresh array
+(**
+  `stableSort xs cmp`
 
-    The same as {!stableSortInPlaceBy} except that `xs` is  not modified
+  **return** a fresh array
+
+  The same as {!stableSortInPlaceBy} except that `xs` is  not modified
 *)
 
 
@@ -87,7 +93,6 @@ val binarySearchByU:
 val binarySearchBy:
   'a array -> 'a -> ('a -> 'a -> int ) -> int
 (**
-
    If value is not found and value is less than one or more elements in array,
    the negative number returned is the bitwise complement of the index of the first element
    that is larger than value.
@@ -117,10 +122,10 @@ val union:
   'a array -> int -> ('a -> 'a -> int )
   -> int
 (**
-   `union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp`
-   assume `src` and `src2` is strictly sorted.
-   for equivalent elements, it is picked from `src`
-   also assume that `dst` is large enough to store all elements
+  `union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp`
+  assume `src` and `src2` is strictly sorted.
+  for equivalent elements, it is picked from `src`
+  also assume that `dst` is large enough to store all elements
 *)
 
 val intersectU:
@@ -133,8 +138,10 @@ val intersect:
   'a array -> int -> int ->
   'a array -> int -> ('a -> 'a -> int )
   -> int
-(** `union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp`
-    **return** the `offset` in the output array
+(**
+  `union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp`
+
+  **return** the `offset` in the output array
 *)
 
 val diffU:

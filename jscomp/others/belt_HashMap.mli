@@ -22,49 +22,51 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** A **mutable** Hash map which allows customized {!hash} behavior.
+(**
+  A **mutable** Hash map which allows customized {!hash} behavior.
 
-    All data are parameterized by not its only type but also a unique identity in
-    the time of initialization, so that two _HashMaps of ints_ initialized with different
-    _hash_ functions will have different type.
+  All data are parameterized by not its only type but also a unique identity in
+  the time of initialization, so that two _HashMaps of ints_ initialized with different
+  _hash_ functions will have different type.
 
-    For example:
-    ```
-    type t = int
-    module I0 =
-      (val Belt.Id.hashableU
-          ~hash:(fun[@bs] (a : t)  -> a & 0xff_ff)
-          ~eq:(fun[@bs] a b -> a = b)
-      )
-    let s0 : (_, string,_) t = make ~hintSize:40 ~id:(module I0)
-    module I1 =
-      (val Belt.Id.hashableU
-          ~hash:(fun[@bs] (a : t)  -> a & 0xff)
-          ~eq:(fun[@bs] a b -> a = b)
-      )
-    let s1 : (_, string,_) t  = make ~hintSize:40 ~id:(module I1)
-    ```
+  For example:
 
-    The invariant must be held: for two elements who are _equal_,
-    their hashed value should be the same
+  ```
+  type t = int
+  module I0 =
+    (val Belt.Id.hashableU
+        ~hash:(fun[@bs] (a : t)  -> a & 0xff_ff)
+        ~eq:(fun[@bs] a b -> a = b)
+    )
+  let s0 : (_, string,_) t = make ~hintSize:40 ~id:(module I0)
+  module I1 =
+    (val Belt.Id.hashableU
+        ~hash:(fun[@bs] (a : t)  -> a & 0xff)
+        ~eq:(fun[@bs] a b -> a = b)
+    )
+  let s1 : (_, string,_) t  = make ~hintSize:40 ~id:(module I1)
+  ```
 
-    Here the compiler would infer `s0` and `s1` having different type so that
-    it would not mix.
+  The invariant must be held: for two elements who are _equal_,
+  their hashed value should be the same
 
-    ```
-    val s0 :  (int, I0.identity) t
-    val s1 :  (int, I1.identity) t
-    ```
+  Here the compiler would infer `s0` and `s1` having different type so that
+  it would not mix.
 
-    We can add elements to the collection:
+  ```
+  val s0 :  (int, I0.identity) t
+  val s1 :  (int, I1.identity) t
+  ```
 
-    ```
-    let () =
-      add s1 0 "3";
-      add s1 1 "3"
-    ```
+  We can add elements to the collection:
 
-    Since this is an mutable data strucure, `s1` will contain two pairs.
+  ```
+  let () =
+    add s1 0 "3";
+    add s1 1 "3"
+  ```
+
+  Since this is an mutable data strucure, `s1` will contain two pairs.
 *)
 
 
@@ -95,9 +97,10 @@ val clear: ('key, 'value, 'id ) t -> unit
 val isEmpty: _ t -> bool
 
 val set: ('key, 'value, 'id ) t -> 'key -> 'value -> unit
-(** `set tbl k v` if `k` does not exist,
-     add the binding `k,v`, otherwise, update the old value with the new
-     `v`
+(**
+  `set tbl k v` if `k` does not exist,
+  add the binding `k,v`, otherwise, update the old value with the new
+  `v`
 *)
 
 val copy: ('key, 'value, 'id ) t -> ('key, 'value, 'id ) t
@@ -112,23 +115,25 @@ val remove: ('key, 'value, 'id ) t -> 'key ->  unit
 
 val forEachU: ('key, 'value, 'id ) t -> ('key -> 'value -> unit [@bs]) -> unit
 val forEach: ('key, 'value, 'id ) t -> ('key -> 'value -> unit) -> unit
-(** `forEach tbl f` applies `f` to all bindings in table `tbl`.
-    `f` receives the key as first argument, and the associated value
-    as second argument. Each binding is presented exactly once to `f`.
+(**
+  `forEach tbl f` applies `f` to all bindings in table `tbl`.
+  `f` receives the key as first argument, and the associated value
+  as second argument. Each binding is presented exactly once to `f`.
 *)
 
 val reduceU: ('key, 'value, 'id ) t -> 'c -> ('c -> 'key -> 'value ->  'c [@bs]) ->  'c
 val reduce: ('key, 'value, 'id ) t -> 'c -> ('c -> 'key -> 'value ->  'c) ->  'c
-(** `reduce  tbl init f` computes
-    `(f kN dN ... (f k1 d1 init)...)`,
-    where `k1 ... kN` are the keys of all bindings in `tbl`,
-    and `d1 ... dN` are the associated values.
-    Each binding is presented exactly once to `f`.
+(**
+  `reduce tbl init f` computes
+  `(f kN dN ... (f k1 d1 init)...)`,
+  where `k1 ... kN` are the keys of all bindings in `tbl`,
+  and `d1 ... dN` are the associated values.
+  Each binding is presented exactly once to `f`.
 
-    The order in which the bindings are passed to `f` is unspecified.
-    However, if the table contains several bindings for the same key,
-    they are passed to `f` in reverse order of introduction, that is,
-    the most recent binding is passed first.
+  The order in which the bindings are passed to `f` is unspecified.
+  However, if the table contains several bindings for the same key,
+  they are passed to `f` in reverse order of introduction, that is,
+  the most recent binding is passed first.
 *)
 
 

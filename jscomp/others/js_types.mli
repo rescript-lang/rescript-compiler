@@ -26,7 +26,7 @@
 
 
 type symbol
-(**Js symbol type only available in ES6 *)
+(** Js symbol type only available in ES6 *)
 
 type obj_val
 type undefined_val
@@ -49,23 +49,23 @@ type _ t =
 
 
 val test : 'a -> 'b t -> bool
-(** 
+(**
   ```
   test "x" String = true
   ```
 *)
 
 
-type tagged_t = 
+type tagged_t =
   | JSFalse
   | JSTrue
-  | JSNull 
-  | JSUndefined     
-  | JSNumber of float 
+  | JSNull
+  | JSUndefined
+  | JSNumber of float
   | JSString of string
   | JSFunction of function_val
   | JSObject of obj_val
-  | JSSymbol of symbol 
+  | JSSymbol of symbol
 
 
 val classify : 'a -> tagged_t

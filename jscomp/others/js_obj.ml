@@ -22,46 +22,46 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Provides functions for inspecting and maniplating native JavaScript objects
-*)
+(** Provides functions for inspecting and maniplating native JavaScript objects *)
 
 (** `empty ()` returns the empty object `{}` *)
 external empty : unit -> < .. >  = "" [@@bs.obj]
 
-(** `assign target source` copies properties from `source` to `target`
+(**
+  `assign target source` copies properties from `source` to `target`
 
-Properties in `target` will be overwritten by properties in `source` if they
-have the same key.
+  Properties in `target` will be overwritten by properties in `source` if they
+  have the same key.
 
-**Returns** `target`
+  **return** `target`
 
-```
-(* Copy an object *)
+  ```
+  (* Copy an object *)
 
-let obj = [%obj { a = 1 }]
+  let obj = [%obj { a = 1 }]
 
-let copy = Js.Obj.assign (Js.Obj.empty ()) obj
+  let copy = Js.Obj.assign (Js.Obj.empty ()) obj
 
-(* prints "{ a: 1 }" *)
-let _ = Js.log copy
-```
+  (* prints "{ a: 1 }" *)
+  let _ = Js.log copy
+  ```
 
-```
-(* Merge objects with same properties *)
+  ```
+  (* Merge objects with same properties *)
 
-let target = [%obj { a = 1; b = 1; }]
-let source = [%obj { b = 2; }]
+  let target = [%obj { a = 1; b = 1; }]
+  let source = [%obj { b = 2; }]
 
-let obj = Js.Obj.assign target source
+  let obj = Js.Obj.assign target source
 
-(* prints "{ a: 1, b: 2 }" *)
-let _ = Js.log obj
+  (* prints "{ a: 1, b: 2 }" *)
+  let _ = Js.log obj
 
-(* prints "{ a: 1, b: 2 }", target is modified *)
-let _ = Js.log target
-```
+  (* prints "{ a: 1, b: 2 }", target is modified *)
+  let _ = Js.log target
+  ```
 
-@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign> MDN
+  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign> MDN
 *)
 external assign : < .. > -> < .. >  -> < .. >  = "Object.assign" [@@bs.val]
 
@@ -99,8 +99,9 @@ Put directly on Js?
 
 *)
 
-(** `keys obj` returns an array of the keys of `obj`'s own enumerable properties
+(**
+  `keys obj` returns an array of the keys of `obj`'s own enumerable properties
 
-@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys> MDN
+  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys> MDN
 *)
 external keys : < .. >  -> string array = "Object.keys" [@@bs.val]

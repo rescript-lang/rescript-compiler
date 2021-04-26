@@ -30,10 +30,11 @@ type 'a t
 (** The key type, an alias of string *)
 type key = string
 
-(** `unsafeGet dict key` returns the value associated with `key` in `dict`
+(**
+  `unsafeGet dict key` returns the value associated with `key` in `dict`
 
-This function will return an invalid value (`undefined`) if `key` does not exist in `dict`. It
-will not throw an error.
+  This function will return an invalid value (`undefined`) if `key` does not exist in `dict`. It
+  will not throw an error.
 *)
 external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index]
 let (.!()) = unsafeGet

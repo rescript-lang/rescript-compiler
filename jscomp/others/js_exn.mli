@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,26 +17,26 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t 
+type t
 
-type exn += private Error of t 
+type exn += private Error of t
 
-external asJsExn : exn -> t option = 
+external asJsExn : exn -> t option =
   "caml_as_js_exn"
 
 external stack : t -> string option = "stack"
-[@@bs.get] 
+[@@bs.get]
 external message : t -> string option = "message"
-[@@bs.get] 
+[@@bs.get]
 external name : t -> string option = "name"
-[@@bs.get] 
+[@@bs.get]
 external fileName : t -> string option = "fileName"
-[@@bs.get] 
+[@@bs.get]
 
 
 external isCamlExceptionOrOpenVariant:
@@ -47,14 +47,14 @@ val anyToExnInternal: 'a -> exn
 (**
   `anyToExnInternal obj` will take any value `obj` and wrap it
   in a Js.Exn.Error if given value is not an exn already. If
-  `obj` is an exn, it will return `obj` without any changes. 
-  
+  `obj` is an exn, it will return `obj` without any changes.
+
   This function is mostly useful for cases where you want to unify a type of a value
-  that potentially is either exn, a JS error, or any other JS value really (e.g. for 
-  a value passed to a Promise.catch callback) 
-  
+  that potentially is either exn, a JS error, or any other JS value really (e.g. for
+  a value passed to a Promise.catch callback)
+
   IMPORTANT: This is an internal API and may be changed / removed any time in the future.
-  
+
   ```
   switch (Js.Exn.unsafeAnyToExn("test")) {
   | Js.Exn.Error(v) =>

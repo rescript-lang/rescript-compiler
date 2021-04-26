@@ -25,6 +25,7 @@
 
 (*
   perf is not everything, there are better memory represenations
+
   ```
   type 'a cell = {
     mutable head : 'a;
@@ -70,10 +71,10 @@ external mutableCell :
 
 
 (*
-    `mutableCell x []` == `x`
-    but tell the compiler that is a mutable cell, so it wont
-    be mis-inlined in the future
-     dont inline a binding to mutable cell, it is mutable
+  `mutableCell x []` == `x`
+  but tell the compiler that is a mutable cell, so it wont
+  be mis-inlined in the future
+   dont inline a binding to mutable cell, it is mutable
 *)
 (* INVARIANT: relies on Literals.tl (internal representation) *)
 external unsafeMutateTail : 'a t -> 'a t -> unit = "tl" [@@bs.set]
