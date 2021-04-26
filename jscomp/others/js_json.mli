@@ -25,7 +25,7 @@
 (**
   Efficient JSON encoding using JavaScript API
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON)
 *)
 
 (** {2 Types} *)
@@ -181,7 +181,7 @@ external parseExn : string -> t = "parse" [@@bs.val] [@@bs.scope "JSON"]
     Js.log @@ getIds {| { "ids" : [1, 2, 3] } |}
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
 *)
 
 external stringify: t -> string = "stringify"
@@ -203,7 +203,7 @@ external stringify: t -> string = "stringify"
   Js.log @@ Js.Json.stringify (Js.Json.object_ dict)
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
 *)
 
 external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string = "stringify"
@@ -225,7 +225,7 @@ external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string
   Js.log @@ Js.Json.stringifyWithSpace (Js.Json.object_ dict) 2
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
 *)
 
 
@@ -239,7 +239,7 @@ external stringifyAny : 'a -> string option = "stringify"
   Js.log @@ Js.Json.stringifyAny [| "foo"; "bar" |]
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
 *)
 
 

@@ -290,7 +290,7 @@ external match_ : Js_re.t -> t option array option = "match" [@@bs.send.pipe: t]
 
   Consider the character `ã`, which can be represented as the single codepoint `\u00e3` or the combination of a lower case letter A `\u0061` and a combining tilde `\u0303`. Normalization ensures that both can be stored in an equivalent binary representation.
 
-  @see <https://www.unicode.org/reports/tr15/tr15-45.html> Unicode technical report for details
+  **see** [Unicode technical report for details](https://www.unicode.org/reports/tr15/tr15-45.html)
 *)
 external normalize : t = "normalize" [@@bs.send.pipe: t] (** ES2015 *)
 
@@ -302,7 +302,7 @@ external normalize : t = "normalize" [@@bs.send.pipe: t] (** ES2015 *)
   - "NFKC" — Normalization Form Compatibility Composition.
   - "NFKD" — Normalization Form Compatibility Decomposition.
 
-  @see <https://www.unicode.org/reports/tr15/tr15-45.html> Unicode technical report for details
+  **see** [Unicode technical report for details](https://www.unicode.org/reports/tr15/tr15-45.html)
 *)
 external normalizeByForm : t -> t = "normalize" [@@bs.send.pipe: t]
 
@@ -359,7 +359,7 @@ external replaceByRe : Js_re.t ->  t ->  t = "replace" [@@bs.send.pipe: t]
   let () = Js.log replaced (* prints "bEAUtifUl vOwEls" *)
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter)
 *)
 external unsafeReplaceBy0 : Js_re.t -> (t -> int -> t -> t [@bs.uncurry]) -> t = "replace" [@@bs.send.pipe: t]
 
@@ -380,7 +380,7 @@ external unsafeReplaceBy0 : Js_re.t -> (t -> int -> t -> t [@bs.uncurry]) -> t =
   let () = Js.log replaced (* prints "increment 23 is 24" *)
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter)
 *)
 external unsafeReplaceBy1 : Js_re.t -> (t -> t -> int -> t -> t [@bs.uncurry]) -> t = "replace" [@@bs.send.pipe: t]
 
@@ -401,7 +401,7 @@ external unsafeReplaceBy1 : Js_re.t -> (t -> t -> int -> t -> t [@bs.uncurry]) -
   let () = Js.log replaced (* prints "42" *)
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter)
 *)
 external unsafeReplaceBy2 : Js_re.t -> (t -> t -> t -> int -> t -> t [@bs.uncurry]) -> t = "replace" [@@bs.send.pipe: t]
 
@@ -411,7 +411,7 @@ external unsafeReplaceBy2 : Js_re.t -> (t -> t -> t -> int -> t -> t [@bs.uncurr
   The function receives as its parameters the matched string, the captured strings,
   the offset at which the match begins, and the whole string being matched.
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter)
 *)
 external unsafeReplaceBy3 : Js_re.t -> (t -> t -> t -> t -> int -> t -> t [@bs.uncurry]) -> t = "replace" [@@bs.send.pipe: t]
 

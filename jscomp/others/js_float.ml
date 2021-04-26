@@ -27,7 +27,7 @@
 (**
   The special value "Not a Number"
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN)
 *)
 external _NaN : float = "NaN" [@@bs.val]
 
@@ -39,7 +39,7 @@ external _NaN : float = "NaN" [@@bs.val]
 
   **return** `true` if the given value is `_NaN`, `false` otherwise
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN)
 *)
 external isNaN : float -> bool = "isNaN" [@@bs.val] [@@bs.scope "Number"]
 
@@ -62,7 +62,7 @@ external isNaN : float -> bool = "isNaN" [@@bs.val] [@@bs.scope "Number"]
   let _ = Js.Float.isFinite 1234
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite)
 *)
 external isFinite : float -> bool = "isFinite" [@@bs.val] [@@bs.scope "Number"]
 
@@ -81,7 +81,7 @@ external isFinite : float -> bool = "isFinite" [@@bs.val] [@@bs.scope "Number"]
   let _ = Js.log @@ Js.Float.toExponential 77.
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential)
 *)
 external toExponential : float -> string = "toExponential" [@@bs.send]
 
@@ -102,7 +102,7 @@ external toExponential : float -> string = "toExponential" [@@bs.send]
   let _ = Js.log @@ Js.Float.toExponentialWithPrecision 77.1234 ~digits:2
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential)
 *)
 external toExponentialWithPrecision : float -> digits:int -> string = "toExponential" [@@bs.send]
 
@@ -121,7 +121,7 @@ external toExponentialWithPrecision : float -> digits:int -> string = "toExponen
   let _ = Js.log @@ Js.Float.toFixed 1.2e21
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed)
 *)
 external toFixed : float -> string = "toFixed" [@@bs.send]
 
@@ -145,7 +145,7 @@ external toFixed : float -> string = "toFixed" [@@bs.send]
   let _ = Js.log @@ Js.Float.toFixedWithPrecision 0. ~digits:2
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed)
 *)
 external toFixedWithPrecision : float -> digits:int -> string = "toFixed" [@@bs.send]
 
@@ -168,7 +168,7 @@ external toFixedWithPrecision : float -> digits:int -> string = "toFixed" [@@bs.
   let _ = Js.log @@ Js.Float.toPrecision 1.2e21
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision)
 *)
 external toPrecision : float -> string = "toPrecision" [@@bs.send] (* equivalent to `toString` I think *)
 
@@ -199,7 +199,7 @@ external toPrecision : float -> string = "toPrecision" [@@bs.send] (* equivalent
   let _ = Js.log @@ Js.Float.toPrecisionWithPrecision 0. ~digits:2
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision)
 *)
 external toPrecisionWithPrecision : float -> digits:int -> string = "toPrecision" [@@bs.send]
 
@@ -214,7 +214,7 @@ external toPrecisionWithPrecision : float -> digits:int -> string = "toPrecision
   let _ = Js.log @@ Js.Float.toString 12345.6789
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString)
 *)
 external toString : float -> string = "toString" [@@bs.send]
 
@@ -242,7 +242,7 @@ external toString : float -> string = "toString" [@@bs.send]
   let _ = Js.log @@ Js.Float.toStringWithRadix 123.456 ~radix:36
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString)
 *)
 external toStringWithRadix : float -> radix:int -> string = "toString" [@@bs.send]
 

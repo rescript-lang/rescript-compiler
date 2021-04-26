@@ -54,7 +54,7 @@ type timeoutId
     Js.Nullable.iter !interval (fun[@bs] intervalId -> Js.Global.clearInterval intervalId)
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval)
 *)
 external clearInterval : intervalId -> unit = "clearInterval" [@@bs.val]
 
@@ -75,7 +75,7 @@ external clearInterval : intervalId -> unit = "clearInterval" [@@bs.val]
     timer := Js.Nullable.return (Js.Global.setTimeout work (mins * 60 * 1000))
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearTimeout> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearTimeout)
 *)
 external clearTimeout : timeoutId -> unit = "clearTimeout" [@@bs.val]
 
@@ -85,7 +85,7 @@ external clearTimeout : timeoutId -> unit = "clearTimeout" [@@bs.val]
 
   **return** an {! intervalId} that can be passed to {! clearInterval} to cancel the timeout
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval)
 
   ```
   (* Will count up and print the count to the console every second *)
@@ -106,7 +106,7 @@ external setInterval : (unit -> unit) -> int -> intervalId = "setInterval" [@@bs
 
   **return** an {! intervalId} that can be passed to {! clearInterval} to cancel the timeout
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval)
 
   ```
   (* Will count up and print the count to the console every second *)
@@ -128,7 +128,7 @@ external setIntervalFloat : (unit -> unit) -> float -> intervalId = "setInterval
 
   **return** a {! timeoutId} that can be passed to {! clearTimeout} to cancel the timeout
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout)
 
   ```
   (* Prints "Timed out!" in the console after one second *)
@@ -146,7 +146,7 @@ external setTimeout : (unit -> unit) -> int -> timeoutId = "setTimeout" [@@bs.va
 
   **return** a {! timeoutId} that can be passed to {! clearTimeout} to cancel the timeout
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout)
 
   ```
   (* Prints "Timed out!" in the console after one second *)
@@ -162,7 +162,7 @@ external setTimeoutFloat : (unit -> unit) -> float -> timeoutId = "setTimeout" [
 (**
   URL-encodes a string.
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
 *)
 external encodeURI : string -> string = "encodeURI" [@@bs.val]
 
@@ -170,14 +170,14 @@ external encodeURI : string -> string = "encodeURI" [@@bs.val]
 (**
   Decodes a URL-enmcoded string produced by `encodeURI`
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI)
 *)
 external decodeURI : string -> string = "decodeURI" [@@bs.val]
 
 (**
   URL-encodes a string, including characters with special meaning in a URI.
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)
 *)
 external encodeURIComponent : string -> string = "encodeURIComponent" [@@bs.val]
 
@@ -185,6 +185,6 @@ external encodeURIComponent : string -> string = "encodeURIComponent" [@@bs.val]
 (**
   Decodes a URL-enmcoded string produced by `encodeURIComponent`
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent)
 *)
 external decodeURIComponent : string -> string = "decodeURIComponent" [@@bs.val]

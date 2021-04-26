@@ -61,7 +61,7 @@ external empty : unit -> < .. >  = "" [@@bs.obj]
   let _ = Js.log target
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
 *)
 external assign : < .. > -> < .. >  -> < .. >  = "Object.assign" [@@bs.val]
 
@@ -102,6 +102,6 @@ Put directly on Js?
 (**
   `keys obj` returns an array of the keys of `obj`'s own enumerable properties
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys)
 *)
 external keys : < .. >  -> string array = "Object.keys" [@@bs.val]

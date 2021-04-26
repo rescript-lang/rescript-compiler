@@ -37,13 +37,9 @@
   let maybeMatches = "banana" |> Js.String.match_ [%re "/na+/g"]
   ```
 
-  @see
-    <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp>
-    JavaScript API reference on MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp)
 
-  @see
-    <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions>
-    JavaScript Regular Expressions Guide on MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
 *)
 
 (** the RegExp object *)
@@ -134,7 +130,7 @@ external ignoreCase : t -> bool = "ignoreCase" [@@bs.get]
   done
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex)
 *)
 external lastIndex : t -> int = "lastIndex" [@@bs.get]
 
@@ -168,7 +164,7 @@ external unicode : t -> bool = "unicode" [@@bs.get]
   let result = re |. Js.Re.exec_ "The Quick Brown Fox Jumps Over The Lazy Dog"
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec)
 *)
 external exec_ : t -> string -> result option = "exec" [@@bs.send] [@@bs.return null_to_opt]
 
@@ -190,6 +186,6 @@ external exec_ : t -> string -> result option = "exec" [@@bs.send] [@@bs.return 
   let () = Js.log (str |. startsWith "hello") (* prints "true" *)
   ```
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
 *)
 external test_ : t -> string -> bool = "test" [@@bs.send]

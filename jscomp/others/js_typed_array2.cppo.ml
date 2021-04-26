@@ -25,7 +25,7 @@
 (**
   JavaScript Typed Array API
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray)
 *)
 
 type array_buffer
@@ -35,7 +35,7 @@ module ArrayBuffer = struct
   (**
     The underlying buffer that the typed arrays provide views of
 
-    @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer> MDN
+    **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
   *)
 
   type t = array_buffer
@@ -224,7 +224,7 @@ end
   The DataView view provides a low-level interface for reading and writing
   multiple number types in an ArrayBuffer irrespective of the platform's endianness.
 
-  @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView> MDN
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView)
 *)
 module DataView = struct
 
