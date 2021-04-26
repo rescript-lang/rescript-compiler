@@ -5,7 +5,6 @@
     "nyc": "^15.0.0"
   },
   "bin": {
-    "bsb": "bsb",
     "bsc": "bsc",
     "bsrefmt": "bsrefmt",
     "bstracing": "lib/bstracing",
