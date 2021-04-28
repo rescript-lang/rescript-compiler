@@ -620,12 +620,9 @@ val infinity : float
 val neg_infinity : float
 (** Negative infinity. *)
 
-#if BS then
+
 external nan : float = "NaN" [@@bs.val]  [@@bs.scope "Number"]
 (* we could also use [0.  /. 0.] *)
-#else
-val nan : float
-#end
 (** A special floating-point value denoting the result of an
    undefined operation such as [0.0 /. 0.0].  Stands for
    'not a number'.  Any floating-point operation with [nan] as
@@ -652,12 +649,8 @@ type fpclass =
   | FP_nan              (** Not a number: result of an undefined operation *)
 (** The five classes of floating-point numbers, as determined by
    the {!Pervasives.classify_float} function. *)
-#if BS then
+
 val classify_float : float -> fpclass
-#else
-external classify_float : (float [@unboxed]) -> fpclass =
-  "caml_classify_float" "caml_classify_float_unboxed" [@@noalloc]
-#end  
 (** Return the class of the given floating-point number:
    normal, subnormal, zero, infinite, or not a number. *)
 
@@ -666,11 +659,7 @@ external classify_float : (float [@unboxed]) -> fpclass =
 
    More string operations are provided in module {!String}.
 *)
-#if BS then
 external (^) : string -> string -> string = "#string_append"
-#else
-val ( ^ ) : string -> string -> string
-#end
 (** String concatenation.
     Right-associative operator at precedence level 5/11. *)
 
@@ -719,11 +708,8 @@ val bool_of_string_opt: string -> bool option
     @since 4.05
 *)
 
-#if BS then    
+
 external string_of_int : int -> string = "String" [@@bs.val]
-#else
-val string_of_int : int -> string
-#end
 (** Return the string representation of an integer, in decimal. *)
 
 external int_of_string : string -> int = "caml_int_of_string"
@@ -791,8 +777,10 @@ external snd : 'a * 'b -> 'b = "%field1"
 *)
 
 val ( @ ) : 'a list -> 'a list -> 'a list
-(** List concatenation.  Not tail-recursive (length of the first argument).
+[@@ocaml.deprecated "Use Belt.List.append instead"]    
+(** List concatenation.  Tail-recursive (length of the first argument).
     Right-associative operator at precedence level 5/11. *)
+
 
 type int32 = int
 
@@ -866,79 +854,6 @@ external decr : int ref -> unit = "%decr"
 type ('a, 'b) result = ('a, 'b) Belt.Result.t =
   | Ok of 'a
   | Error of 'b
-
-(** {1 Operations on format strings} *)
-
-(** Format strings are character strings with special lexical conventions
-  that defines the functionality of formatted input/output functions. Format
-  strings are used to read data with formatted input functions from module
-  {!Scanf} and to print data with formatted output functions from modules
-  {!Printf} and {!Format}.
-
-  Format strings are made of three kinds of entities:
-  - {e conversions specifications}, introduced by the special character ['%']
-    followed by one or more characters specifying what kind of argument to
-    read or print,
-  - {e formatting indications}, introduced by the special character ['@']
-    followed by one or more characters specifying how to read or print the
-    argument,
-  - {e plain characters} that are regular characters with usual lexical
-    conventions. Plain characters specify string literals to be read in the
-    input or printed in the output.
-
-  There is an additional lexical rule to escape the special characters ['%']
-  and ['@'] in format strings: if a special character follows a ['%']
-  character, it is treated as a plain character. In other words, ["%%"] is
-  considered as a plain ['%'] and ["%@"] as a plain ['@'].
-
-  For more information about conversion specifications and formatting
-  indications available, read the documentation of modules {!Scanf},
-  {!Printf} and {!Format}.
-*)
-
-(** Format strings have a general and highly polymorphic type
-    [('a, 'b, 'c, 'd, 'e, 'f) format6].
-    The two simplified types, [format] and [format4] below are
-    included for backward compatibility with earlier releases of
-    OCaml.
-
-    The meaning of format string type parameters is as follows:
-
-    - ['a] is the type of the parameters of the format for formatted output
-      functions ([printf]-style functions);
-      ['a] is the type of the values read by the format for formatted input
-      functions ([scanf]-style functions).
-
-    - ['b] is the type of input source for formatted input functions and the
-      type of output target for formatted output functions.
-      For [printf]-style functions from module {!Printf}, ['b] is typically
-      [out_channel];
-      for [printf]-style functions from module {!Format}, ['b] is typically
-      {!Format.formatter};
-      for [scanf]-style functions from module {!Scanf}, ['b] is typically
-      {!Scanf.Scanning.in_channel}.
-
-      Type argument ['b] is also the type of the first argument given to
-      user's defined printing functions for [%a] and [%t] conversions,
-      and user's defined reading functions for [%r] conversion.
-
-    - ['c] is the type of the result of the [%a] and [%t] printing
-      functions, and also the type of the argument transmitted to the
-      first argument of [kprintf]-style functions or to the
-      [kscanf]-style functions.
-
-    - ['d] is the type of parameters for the [scanf]-style functions.
-
-    - ['e] is the type of the receiver function for the [scanf]-style functions.
-
-    - ['f] is the final result type of a formatted input/output function
-      invocation: for the [printf]-style functions, it is typically [unit];
-      for the [scanf]-style functions, it is typically the result type of the
-      receiver function.
-*)
-
-
-
 
 
 (** {1 Program termination} *)
