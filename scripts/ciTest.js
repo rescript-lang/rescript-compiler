@@ -118,61 +118,7 @@ function main() {
     });
   }
 
-  var bsbDir = cp
-    .execSync(`bsb -where`, {
-      cwd: path.join(__dirname, ".."),
-      encoding: "utf8",
-    })
-    .trim();
 
-  console.log("BSBDIR:", bsbDir);
-
-  if (themeTest) {
-    console.log("Doing theme tests");
-    var themeOutput = cp.execSync(`bsb -themes`, { encoding: "ascii" });
-    var themes = themeOutput
-      .split("\n")
-      .slice(1)
-      .map((x) => x.trim())
-      .filter((x) => x);
-    var themesDir = path.join(__dirname, "..", "themes");
-
-    if (fs.existsSync(themesDir)) {
-      // fs.rmdirSync(themesDir,{recursive : true})
-      cp.execSync(`rm -rf ${themesDir}`, { stdio: [0, 1, 2] });
-      // we dont remove post-installation
-      // since it is useful for debugging
-    }
-    fs.mkdirSync(themesDir);
-    themes.forEach(function (theme) {
-      cp.exec(
-        `bsb -theme ${theme} -init ${theme}`,
-        { cwd: themesDir, encoding: "utf8" },
-        function (error, stdout, stderr) {
-          console.log(stdout);
-          console.log(stderr);
-          if (error !== null) {
-            throw new Error(`init theme ${theme} failed`);
-          }
-          let config = {
-            cwd: path.join(themesDir, theme),
-            encoding: "utf8",
-          };
-          var output;
-          try {
-            output = cp.execSync(`npm link rescript`, config);
-            output = cp.execSync(`npm install`, config);
-            output = cp.execSync(`npm run clean`, config);
-            output = cp.execSync(`npm run build`, config);
-          } catch (err) {
-            console.error(`failed in theme ${theme}`);
-            console.log(output + "");
-            console.log(err + "");
-          }
-        }
-      );
-    });
-  }
 
   if (bsbTest) {
     console.log("Doing build_tests");
