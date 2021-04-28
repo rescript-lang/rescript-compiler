@@ -4,7 +4,7 @@ var p = require("child_process");
 var assert = require("assert");
 var fs = require("fs");
 var path = require("path");
-p.execSync(`bsb`, { cwd: __dirname, stdio: [0, 1, 2] });
+p.execSync(`rescript`, { cwd: __dirname, stdio: [0, 1, 2] });
 
 var content = fs.readFileSync(path.join(__dirname, "src", "demo.js"), "utf8");
 

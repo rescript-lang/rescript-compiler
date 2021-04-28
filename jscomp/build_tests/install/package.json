@@ -4,7 +4,7 @@
     "scripts": {
       "clean": "rescript clean -with-deps",
       "build": "rescript build",
-      "install": "bsb -install",
+      "install": "rescript build -install",
       "watch": "rescript build -w"
     },
     "keywords": [

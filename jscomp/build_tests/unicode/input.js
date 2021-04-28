@@ -1,7 +1,7 @@
 //@ts-check
 var child_process = require("child_process");
 
-console.log(child_process.execSync(`bsb`, { encoding: "utf8" }));
+console.log(child_process.execSync(`rescript`, { encoding: "utf8" }));
 
 var fs = require("fs");
 var path = require("path");
@@ -10,4 +10,4 @@ var content =
 
 var assert = require("assert");
 
-assert(JSON.parse(content).dirs.some(x => x.includes("📕annotation")));
+assert(JSON.parse(content).dirs.some((x) => x.includes("📕annotation")));

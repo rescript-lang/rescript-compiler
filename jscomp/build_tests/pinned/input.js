@@ -20,10 +20,13 @@ assert.ok(
   out.stdout.split("\n").some((x) => x.includes("Warning 32: unused value"))
 );
 
-var out2 = cp.spawnSync(`npx bsb -- -C node_modules/test/lib/bs/ -t targets`, {
-  encoding: "utf-8",
-  shell: true,
-});
+var out2 = cp.spawnSync(
+  `npx rescript -- -C node_modules/test/lib/bs/ -t targets`,
+  {
+    encoding: "utf-8",
+    shell: true,
+  }
+);
 checkSpawnOut(out2);
 
 // In pinned mode, generators are running

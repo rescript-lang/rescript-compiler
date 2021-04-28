@@ -1,3 +1,3 @@
-var p  = require('child_process')
+var p = require("child_process");
 
-p.execSync(`bsb`,{cwd:__dirname,stdio:[0,1,2]})
+p.execSync(`rescript`, { cwd: __dirname, stdio: [0, 1, 2] });

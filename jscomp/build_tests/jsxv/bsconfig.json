@@ -1,4 +1,4 @@
-// This is the configuration file used by BuckleScript's build system bsb. Its documentation lives here: http://bucklescript.github.io/bucklescript/docson/#build-schema.json
+// This is the configuration file used by BuckleScript's build system rescript. Its documentation lives here: http://bucklescript.github.io/bucklescript/docson/#build-schema.json
 // BuckleScript comes with its own parser for bsconfig.json, which is normal JSON, with the extra support of comments and trailing commas.
 {
   "name": "jsxv",

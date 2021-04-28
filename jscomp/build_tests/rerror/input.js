@@ -5,7 +5,7 @@ child_process.spawnSync(`rescript clean -with-deps`, {
   encoding: "utf8",
   stdio: [0, 1, 2],
 });
-var o = child_process.spawnSync(`bsb `, {
+var o = child_process.spawnSync(`rescript `, {
   cwd: __dirname,
   encoding: "utf8",
   shell: true,
