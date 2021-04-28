@@ -55,22 +55,6 @@ val subbytes : bytes -> int -> int -> t
     of [s] starting at index [ofs] and containing [len] bytes.
     @since 4.02.0 *)
 
-external channel : in_channel -> int -> t = "caml_md5_chan"
-(** If [len] is nonnegative, [Digest.channel ic len] reads [len]
-   characters from channel [ic] and returns their digest, or raises
-   [End_of_file] if end-of-file is reached before [len] characters
-   are read.  If [len] is negative, [Digest.channel ic len] reads
-   all characters from [ic] until end-of-file is reached and return
-   their digest. *)
-
-val file : string -> t
-(** Return the digest of the file whose name is given. *)
-
-val output : out_channel -> t -> unit
-(** Write a digest on the given output channel. *)
-
-val input : in_channel -> t
-(** Read a digest from the given input channel. *)
 
 val to_hex : t -> string
 (** Return the printable hexadecimal representation of the given digest.

@@ -1,8 +1,7 @@
 'use strict';
 
-var Pervasives = require("../../lib/js/pervasives.js");
 
-Pervasives.print_int(3);
+console.log(String(3));
 
 var b = 3;
 

@@ -13,25 +13,6 @@ type t = [
 ]
 type sexp = t
 
-let _with_in filename f =
-  let ic = open_in_bin filename in
-  try
-    let x = f ic in
-    close_in ic;
-    x
-  with e ->
-    close_in ic;
-    `Error (Printexc.to_string e)
-
-let _with_out filename f =
-  let oc = open_out filename in
-  try
-    let x = f oc in
-    close_out oc;
-    x
-  with e ->
-    close_out oc;
-    raise e
 
 (** {2 Serialization (encoding)} *)
 
@@ -279,27 +260,4 @@ let parse_string s : t or_error =
 (*$Q & ~count:100
      sexp_gen (fun s -> sexp_valid s ==> (to_string s |> parse_string = `Ok s))
 *)
-
-let parse_chan ?bufsize ic =
-  let d = D.make ?bufsize (input ic) in
-  match D.next d with
-  | `End -> `Error "unexpected end of file"
-  | (`Ok _ | `Error _) as res -> res
-
-let parse_chan_gen ?bufsize ic =
-  let d = D.make ?bufsize (input ic) in
-  fun () ->
-    match D.next d with
-    | `End -> None
-    | `Error _ as e -> Some e
-    | `Ok _ as res -> Some res
-
-let parse_chan_list ?bufsize ic =
-  let d = D.make ?bufsize (input ic) in
-  let rec iter acc = match D.next d with
-    | `End -> `Ok (List.rev acc)
-    | `Ok x -> iter (x::acc)
-    | `Error _ as e -> e
-  in
-  iter []
 

@@ -75,10 +75,6 @@ type lexbuf =
    end of line -- see also [new_line]).
  *)
 
-val from_channel : in_channel -> lexbuf
-(** Create a lexer buffer on the given input channel.
-   [Lexing.from_channel inchan] returns a lexer buffer which reads
-   from the input channel [inchan], at the current reading position. *)
 
 val from_string : string -> lexbuf
 (** Create a lexer buffer which reads from

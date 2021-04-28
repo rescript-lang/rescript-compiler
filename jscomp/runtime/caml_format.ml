@@ -677,11 +677,11 @@ let caml_float_of_string (s : string) : float  =
   float_of_string s (Failure "float_of_string") 
 
 let caml_nativeint_format = caml_format_int
-let caml_int32_format = caml_format_int
 
 
 
-let caml_int32_of_string = caml_int_of_string
-let caml_nativeint_of_string = caml_int32_of_string
+
+
+let caml_nativeint_of_string = caml_int_of_string
 
 

@@ -74,7 +74,6 @@ let catch fct arg =
   try
     fct arg
   with x ->
-    flush stdout;
     Js.log ("Uncaught exception: " ^ to_string x);
     exit 2
 

@@ -255,9 +255,6 @@ external open_descriptor_out : int -> out_channel
                              = "caml_ml_open_descriptor_out"
 external open_descriptor_in : int -> in_channel = "caml_ml_open_descriptor_in"
 
-let stdin = open_descriptor_in 0
-let stdout = open_descriptor_out 1
-let stderr = open_descriptor_out 2
 
 (* General output functions *)
 
@@ -411,31 +408,12 @@ external set_binary_mode_in : in_channel -> bool -> unit
 
 (* Output functions on standard output *)
 
-let print_char c = output_char stdout c
-let print_string s = output_string stdout s
-let print_bytes s = output_bytes stdout s
-let print_int i = output_string stdout (string_of_int i)
-let print_float f = output_string stdout (string_of_float f)
-let print_endline s =
-  output_string stdout s; output_char stdout '\n'; flush stdout
-let print_newline () = output_char stdout '\n'; flush stdout
 
 (* Output functions on standard error *)
 
-let prerr_char c = output_char stderr c
-let prerr_string s = output_string stderr s
-let prerr_bytes s = output_bytes stderr s
-let prerr_int i = output_string stderr (string_of_int i)
-let prerr_float f = output_string stderr (string_of_float f)
-let prerr_endline s =
-  output_string stderr s; output_char stderr '\n'; flush stderr
-let prerr_newline () = output_char stderr '\n'; flush stderr
 
 (* Input functions on standard input *)
 
-let read_line () = flush stdout; input_line stdin
-let read_int () = int_of_string(read_line())
-let read_float () = float_of_string(read_line())
 
 (* Operations on large files *)
 

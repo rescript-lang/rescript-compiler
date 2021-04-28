@@ -97,39 +97,6 @@ val dirname : string -> string
    This function conforms to the specification of POSIX.1-2008 for the
    [dirname] utility. *)
 
-val temp_file : ?temp_dir: string -> string -> string -> string
-(** [temp_file prefix suffix] returns the name of a
-   fresh temporary file in the temporary directory.
-   The base name of the temporary file is formed by concatenating
-   [prefix], then a suitably chosen integer number, then [suffix].
-   The optional argument [temp_dir] indicates the temporary directory
-   to use, defaulting to the current result of {!Filename.get_temp_dir_name}.
-   The temporary file is created empty, with permissions [0o600]
-   (readable and writable only by the file owner).  The file is
-   guaranteed to be different from any other file that existed when
-   [temp_file] was called.
-   Raise [Sys_error] if the file could not be created.
-   @before 3.11.2 no ?temp_dir optional argument
-*)
-
-val open_temp_file :
-      ?mode: open_flag list -> ?perms: int -> ?temp_dir: string -> string ->
-      string -> string * out_channel
-(** Same as {!Filename.temp_file}, but returns both the name of a fresh
-   temporary file, and an output channel opened (atomically) on
-   this file.  This function is more secure than [temp_file]: there
-   is no risk that the temporary file will be modified (e.g. replaced
-   by a symbolic link) before the program opens it.  The optional argument
-   [mode] is a list of additional flags to control the opening of the file.
-   It can contain one or several of [Open_append], [Open_binary],
-   and [Open_text].  The default is [[Open_text]] (open in text mode). The
-   file is created with permissions [perms] (defaults to readable and
-   writable only by the file owner, [0o600]).
-
-   @raise Sys_error if the file could not be opened.
-   @before 4.03.0 no ?perms optional argument
-   @before 3.11.2 no ?temp_dir optional argument
-*)
 
 val get_temp_dir_name : unit -> string
 (** The name of the temporary directory:

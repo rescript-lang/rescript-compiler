@@ -310,9 +310,9 @@ module Uint16Array = struct
 end
 
 module Int32Array = struct
-  COMMON_EXTERNALS(Int32Array,int32)
+  COMMON_EXTERNALS(Int32Array,int)
 
-  external create : int32 array -> t = "Int32Array" [@@bs.new]
+  external create : int array -> t = "Int32Array" [@@bs.new]
   [@@deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Int32Array" [@@bs.new]
   [@@deprecated "use `fromBuffer` instead"]

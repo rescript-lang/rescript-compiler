@@ -4,7 +4,6 @@ var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 var Js_exn = require("../../lib/js/js_exn.js");
-var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -222,7 +221,7 @@ function input_lines(ic, _acc) {
     var acc = _acc;
     var line;
     try {
-      line = Pervasives.input_line(ic);
+      line = input_line(ic);
     }
     catch (exn){
       return List.rev(acc);
@@ -235,7 +234,7 @@ function input_lines(ic, _acc) {
   };
 }
 
-eq("File \"exception_raise_test.ml\", line 150, characters 5-12", ((a,b,c,_) => a + b + c)(1, 2, 3, 4), 6);
+eq("File \"exception_raise_test.ml\", line 151, characters 5-12", ((a,b,c,_) => a + b + c)(1, 2, 3, 4), 6);
 
 Mt.from_pair_suites("Exception_raise_test", suites.contents);
 

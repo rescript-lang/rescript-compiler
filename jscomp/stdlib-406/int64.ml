@@ -35,8 +35,8 @@ external of_float : float -> int64
 external to_float : int64 -> float
   = "caml_int64_to_float" "caml_int64_to_float_unboxed"
   [@@unboxed] [@@noalloc]
-external of_int32 : int32 -> int64 = "%int64_of_int32"
-external to_int32 : int64 -> int32 = "%int64_to_int32"
+external of_int32 : int -> int64 = "%int64_of_int32"
+external to_int32 : int64 -> int = "%int64_to_int32"
 external of_nativeint : nativeint -> int64 = "%int64_of_nativeint"
 external to_nativeint : int64 -> nativeint = "%int64_to_nativeint"
 

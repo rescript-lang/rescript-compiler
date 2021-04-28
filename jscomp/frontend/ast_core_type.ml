@@ -65,7 +65,6 @@ let is_builtin_rank0_type txt =
   | "bool"
   | "unit"
   | "exn"
-  | "int32"
   | "int64"
   | "string" -> true 
   | _ -> false

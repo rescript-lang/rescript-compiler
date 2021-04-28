@@ -52,8 +52,6 @@ val of_bytes : bytes -> char t
 (** Return the stream of the characters of the bytes parameter.
     @since 4.02.0 *)
 
-val of_channel : in_channel -> char t
-(** Return the stream of the characters read from the input channel. *)
 
 
 (** {1 Stream iterator} *)

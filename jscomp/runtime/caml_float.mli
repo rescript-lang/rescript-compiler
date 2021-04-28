@@ -30,8 +30,8 @@
 external floor : float -> float = "Math.floor" [@@bs.val] 
 external int_of_float : float -> int = "%intoffloat"
 external float_of_int : int -> float = "%floatofint"
-val caml_int32_float_of_bits : int32 -> float
-val caml_int32_bits_of_float : float -> int32
+val caml_int_float_of_bits : int -> float
+val caml_int_bits_of_float : float -> int
 
 val caml_modf_float : float -> float * float
 

@@ -1,7 +1,6 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
-var Caml_io = require("../../lib/js/caml_io.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_sys = require("../../lib/js/caml_sys.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
@@ -175,12 +174,6 @@ function $at(l1, l2) {
   }
 }
 
-var stdin = Caml_io.stdin;
-
-var stdout = Caml_io.stdout;
-
-var stderr = Caml_io.stderr;
-
 function open_out_gen(mode, perm, name) {
   return Caml_external_polyfill.resolve("caml_ml_open_descriptor_out")(Caml_external_polyfill.resolve("caml_sys_open")(name, mode, perm));
 }
@@ -218,14 +211,14 @@ function open_out_bin(name) {
 }
 
 function flush_all(param) {
-  var _param = Caml_io.caml_ml_out_channels_list(undefined);
+  var _param = Caml_external_polyfill.resolve("caml_ml_out_channels_list")(undefined);
   while(true) {
     var param$1 = _param;
     if (!param$1) {
       return ;
     }
     try {
-      Caml_io.caml_ml_flush(param$1.hd);
+      Caml_external_polyfill.resolve("caml_ml_flush")(param$1.hd);
     }
     catch (exn){
       
@@ -236,11 +229,11 @@ function flush_all(param) {
 }
 
 function output_bytes(oc, s) {
-  return Caml_io.caml_ml_output(oc, s, 0, s.length);
+  return Caml_external_polyfill.resolve("caml_ml_output")(oc, s, 0, s.length);
 }
 
 function output_string(oc, s) {
-  return Caml_io.caml_ml_output(oc, s, 0, s.length);
+  return Caml_external_polyfill.resolve("caml_ml_output")(oc, s, 0, s.length);
 }
 
 function output(oc, s, ofs, len) {
@@ -251,7 +244,7 @@ function output(oc, s, ofs, len) {
           Error: new Error()
         };
   }
-  return Caml_io.caml_ml_output(oc, s, ofs, len);
+  return Caml_external_polyfill.resolve("caml_ml_output")(oc, s, ofs, len);
 }
 
 function output_substring(oc, s, ofs, len) {
@@ -262,7 +255,7 @@ function output_substring(oc, s, ofs, len) {
           Error: new Error()
         };
   }
-  return Caml_io.caml_ml_output(oc, s, ofs, len);
+  return Caml_external_polyfill.resolve("caml_ml_output")(oc, s, ofs, len);
 }
 
 function output_value(chan, v) {
@@ -270,13 +263,13 @@ function output_value(chan, v) {
 }
 
 function close_out(oc) {
-  Caml_io.caml_ml_flush(oc);
+  Caml_external_polyfill.resolve("caml_ml_flush")(oc);
   return Caml_external_polyfill.resolve("caml_ml_close_channel")(oc);
 }
 
 function close_out_noerr(oc) {
   try {
-    Caml_io.caml_ml_flush(oc);
+    Caml_external_polyfill.resolve("caml_ml_flush")(oc);
   }
   catch (exn){
     
@@ -425,81 +418,6 @@ function close_in_noerr(ic) {
   }
 }
 
-function print_char(c) {
-  return Caml_io.caml_ml_output_char(stdout, c);
-}
-
-function print_string(s) {
-  return output_string(stdout, s);
-}
-
-function print_bytes(s) {
-  return output_bytes(stdout, s);
-}
-
-function print_int(i) {
-  return output_string(stdout, Caml_format.caml_format_int("%d", i));
-}
-
-function print_float(f) {
-  return output_string(stdout, valid_float_lexem(Caml_format.caml_format_float("%.12g", f)));
-}
-
-function print_endline(s) {
-  output_string(stdout, s);
-  Caml_io.caml_ml_output_char(stdout, /* '\n' */10);
-  return Caml_io.caml_ml_flush(stdout);
-}
-
-function print_newline(param) {
-  Caml_io.caml_ml_output_char(stdout, /* '\n' */10);
-  return Caml_io.caml_ml_flush(stdout);
-}
-
-function prerr_char(c) {
-  return Caml_io.caml_ml_output_char(stderr, c);
-}
-
-function prerr_string(s) {
-  return output_string(stderr, s);
-}
-
-function prerr_bytes(s) {
-  return output_bytes(stderr, s);
-}
-
-function prerr_int(i) {
-  return output_string(stderr, Caml_format.caml_format_int("%d", i));
-}
-
-function prerr_float(f) {
-  return output_string(stderr, valid_float_lexem(Caml_format.caml_format_float("%.12g", f)));
-}
-
-function prerr_endline(s) {
-  output_string(stderr, s);
-  Caml_io.caml_ml_output_char(stderr, /* '\n' */10);
-  return Caml_io.caml_ml_flush(stderr);
-}
-
-function prerr_newline(param) {
-  Caml_io.caml_ml_output_char(stderr, /* '\n' */10);
-  return Caml_io.caml_ml_flush(stderr);
-}
-
-function read_line(param) {
-  Caml_io.caml_ml_flush(stdout);
-  return input_line(stdin);
-}
-
-function read_int(param) {
-  return Caml_format.caml_int_of_string((Caml_io.caml_ml_flush(stdout), input_line(stdin)));
-}
-
-function read_float(param) {
-  return Caml_format.caml_float_of_string((Caml_io.caml_ml_flush(stdout), input_line(stdin)));
-}
-
 var LargeFile = {};
 
 var exit_function = {
@@ -551,9 +469,6 @@ exports.string_of_int = string_of_int;
 exports.valid_float_lexem = valid_float_lexem;
 exports.string_of_float = string_of_float;
 exports.$at = $at;
-exports.stdin = stdin;
-exports.stdout = stdout;
-exports.stderr = stderr;
 exports.open_out_gen = open_out_gen;
 exports.open_out = open_out;
 exports.open_out_bin = open_out_bin;
@@ -574,23 +489,6 @@ exports.really_input = really_input;
 exports.really_input_string = really_input_string;
 exports.input_line = input_line;
 exports.close_in_noerr = close_in_noerr;
-exports.print_char = print_char;
-exports.print_string = print_string;
-exports.print_bytes = print_bytes;
-exports.print_int = print_int;
-exports.print_float = print_float;
-exports.print_endline = print_endline;
-exports.print_newline = print_newline;
-exports.prerr_char = prerr_char;
-exports.prerr_string = prerr_string;
-exports.prerr_bytes = prerr_bytes;
-exports.prerr_int = prerr_int;
-exports.prerr_float = prerr_float;
-exports.prerr_endline = prerr_endline;
-exports.prerr_newline = prerr_newline;
-exports.read_line = read_line;
-exports.read_int = read_int;
-exports.read_float = read_float;
 exports.LargeFile = LargeFile;
 exports.exit_function = exit_function;
 exports.at_exit = at_exit;

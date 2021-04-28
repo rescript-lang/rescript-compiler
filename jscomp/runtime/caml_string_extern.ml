@@ -54,7 +54,7 @@ external of_small_int_array :
 [@@bs.val]
 
 external of_small_int32_array : 
-  int32 array -> string = 
+  int array -> string = 
   "String.fromCharCode" 
 [@@bs.val] [@@bs.splice]   
 

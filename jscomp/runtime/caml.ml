@@ -59,8 +59,6 @@ let caml_float_min (x : float) y   =
   if x < y then x else y   
 let caml_string_min (x : string) y =     
   if x < y then x else y 
-let caml_int32_min (x : int32) y   = 
-  if x < y then x else y 
 
 let caml_bool_max (x : bool) y : bool =   
   if x then x else y
@@ -69,8 +67,6 @@ let caml_int_max (x : int) (y : int) : int =
 let caml_float_max (x : float) y   =
   if x > y then x else y   
 let caml_string_max (x : string) y =     
-  if x > y then x else y 
-let caml_int32_max (x : int32) y   = 
   if x > y then x else y 
 type i64 = Caml_int64_extern.t
 let i64_eq ( x : i64) (y : i64) = 

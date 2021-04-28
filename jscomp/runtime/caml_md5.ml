@@ -46,7 +46,7 @@ let i a b c d x s t =
   cmn (c ^~ (b |~ (lognot d))) a b x s t
 
 
-let cycle (x : int32 array)  (k : int32 array) = 
+let cycle (x : int array)  (k : int array) = 
   let module Array = Caml_array_extern (* reuse the sugar .. *)
   in 
   let a = ref x.(0) in 
@@ -143,7 +143,7 @@ let md5blk = [|
   0l;0l;0l;0l; 
   0l;0l;0l;0l
 |] 
-external (.![]) : string -> int -> int32 = "charCodeAt" [@@bs.send]
+external (.![]) : string -> int -> int = "charCodeAt" [@@bs.send]
 
 let caml_md5_string (s : string) start len = 
   let module String = Caml_string_extern in 

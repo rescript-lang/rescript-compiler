@@ -2,7 +2,6 @@
 
 var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
-var Pervasives = require("../../lib/js/pervasives.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function a4(prim) {
@@ -46,7 +45,7 @@ var a = /* 'a' */97;
 
 function u(b) {
   if (b) {
-    Pervasives.print_int(1);
+    console.log(String(1));
     return 32;
   } else {
     return 7;

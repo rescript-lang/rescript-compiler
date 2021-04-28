@@ -803,7 +803,7 @@ module Int32Array = struct
 # 313 "others/js_typed_array.cppo.ml"
   
   (** *)
-  type elt = int32
+  type elt = int
   type 'a typed_array = 'a Js_typed_array2.Int32Array.typed_array
   type t = elt typed_array
   
@@ -923,7 +923,7 @@ module Int32Array = struct
 
   
 # 315 "others/js_typed_array.cppo.ml"
-  external create : int32 array -> t = "Int32Array" [@@bs.new]
+  external create : int array -> t = "Int32Array" [@@bs.new]
   [@@deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Int32Array" [@@bs.new]
   [@@deprecated "use `fromBuffer` instead"]

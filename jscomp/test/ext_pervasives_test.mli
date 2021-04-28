@@ -36,7 +36,7 @@ external reraise: exn -> 'a = "%reraise"
 
 val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
 
-val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
+
 
 
 

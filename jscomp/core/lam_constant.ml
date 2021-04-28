@@ -78,12 +78,14 @@ let rec eq_approx (x : t) (y : t) =
   | Const_pointer ix ->   
     (match y with Const_pointer (iy) -> ix = iy | _ -> false)
   | Const_block(ix,_,ixs) -> 
-    (match y with Const_block(iy,_,iys) -> ix = iy && Ext_list.for_all2_no_exn ixs iys eq_approx
-                | _ -> false)
+    (match y with
+     | Const_block(iy,_,iys) -> ix = iy && Ext_list.for_all2_no_exn ixs iys eq_approx
+     | _ -> false)
   | Const_float_array ixs ->   
-    (match y with Const_float_array iys -> 
+    (match y with 
+     | Const_float_array iys -> 
        Ext_list.for_all2_no_exn ixs iys Ext_string.equal
-                | _ -> false
+     | _ -> false
     )
   | Const_some ix ->  
     (match y with Const_some iy -> eq_approx ix iy | _ -> false)
