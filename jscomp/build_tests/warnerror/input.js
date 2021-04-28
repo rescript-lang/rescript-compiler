@@ -1,7 +1,7 @@
 var cp = require("child_process");
 var assert = require("assert");
 
-var out = cp.spawnSync(`npx bsb -make-world`, {
+var out = cp.spawnSync(`npx rescript build`, {
   encoding: "utf-8",
   shell: true,
 });

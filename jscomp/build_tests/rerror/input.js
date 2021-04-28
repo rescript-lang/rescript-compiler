@@ -1,14 +1,14 @@
 var child_process = require("child_process");
 var assert = require("assert");
-child_process.spawnSync(`bsb -clean-world`, {
+child_process.spawnSync(`rescript clean -with-deps`, {
   cwd: __dirname,
   encoding: "utf8",
-  stdio: [0, 1, 2]
+  stdio: [0, 1, 2],
 });
 var o = child_process.spawnSync(`bsb `, {
   cwd: __dirname,
   encoding: "utf8",
-  shell: true
+  shell: true,
 });
 
 // verify the output is in reason syntax
@@ -16,7 +16,7 @@ var u = o.stdout.match(/=>/g);
 
 var lines = o.stdout
   .split("\n")
-  .map(x => x.trim())
+  .map((x) => x.trim())
   .filter(Boolean);
 // console.log(`lines: \n${lines}`)
 // console.log(lines[4])
