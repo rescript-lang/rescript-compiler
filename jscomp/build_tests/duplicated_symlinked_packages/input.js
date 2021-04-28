@@ -12,7 +12,7 @@ function postProcessErrorOutput (output) {
   return output
 }
 
-child_process.exec('bsb -clean -make-world', {cwd: __dirname}, (err, stdout, stderr) => {
+child_process.exec('rescript clean -with-deps && rescript', {cwd: __dirname}, (err, stdout, stderr) => {
   const actualErrorOutput = postProcessErrorOutput(stderr.toString())
   if (updateTests) {
     fs.writeFileSync(expectedFilePath, actualErrorOutput)

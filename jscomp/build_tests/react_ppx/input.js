@@ -1,5 +1,4 @@
-
 //@ts-check
-var cp = require('child_process')
+var cp = require("child_process");
 
-cp.execSync(`bsb`,{cwd:__dirname,stdio:[0,1,2]})
+cp.execSync(`rescript`, { cwd: __dirname, stdio: [0, 1, 2] });

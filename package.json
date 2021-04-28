@@ -20,7 +20,7 @@
     "coverage": "nyc --timeout=3000 --reporter=html mocha jscomp/test/*test.js && open ./coverage/index.html"
   },
   "name": "rescript",
-  "version": "9.1.1-dev.2",
+  "version": "10.0.0",
   "description": "ReScript toolchain",
   "repository": {
     "type": "git",
