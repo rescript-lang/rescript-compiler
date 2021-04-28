@@ -16831,6 +16831,8 @@ let () =
       match argv.(1) with 
       | "build" -> 
         build_subcommand ~start:2 argv argv_len
+      | "--" -> 
+        build_subcommand ~start:1 argv argv_len  
       | "clean" ->         
         clean_subcommand ~start:2 argv      
       | "init" ->  

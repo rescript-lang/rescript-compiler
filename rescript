@@ -141,7 +141,8 @@ if (
   maybe_subcommand !== "build" &&
   maybe_subcommand !== "clean" &&
   maybe_subcommand !== "init" &&
-  maybe_subcommand !== "info"
+  maybe_subcommand !== "info" && 
+  maybe_subcommand !== "--"
   // delegate to native
 ) {
   var bsc_exe = path.join(__dirname, process.platform, "bsc.exe");
