@@ -119,17 +119,16 @@ let install_target () =
     going be slow, user can use `-with-deps` to enforce such check
 *)      
 let check_deps_installation_directory (config_opt : Bsb_config_types.t option) 
-    make_world = 
+  : bool = 
   match config_opt with 
   | Some {bs_dependencies; bs_dev_dependencies} ->     
-    if not (
-        Ext_list.for_all bs_dependencies 
-          (fun x -> Ext_sys.is_directory_no_exn x.package_install_path ) &&
-        Ext_list.for_all bs_dev_dependencies 
-          (fun x -> Ext_sys.is_directory_no_exn x.package_install_path)) then 
-      make_world := true 
+    not (
+      Ext_list.for_all bs_dependencies 
+        (fun x -> Ext_sys.is_directory_no_exn x.package_install_path ) &&
+      Ext_list.for_all bs_dev_dependencies 
+        (fun x -> Ext_sys.is_directory_no_exn x.package_install_path))     
   | None -> 
-    ()
+    false
 
 let build_subcommand ~start  argv argv_len =
   let i =  Ext_array.rfind_with_index argv Ext_string.equal separator in   
@@ -165,9 +164,15 @@ let build_subcommand ~start  argv argv_len =
           ~package_kind:Toplevel 
           ~per_proj_dir:Bsb_global_paths.cwd
           ~forced:!force_regenerate in   
-      check_deps_installation_directory config_opt make_world;
-      if !make_world then 
-        Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
+      let implict_build = 
+        check_deps_installation_directory config_opt in 
+      (match !make_world, implict_build with 
+       | true , _ ->
+         Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args
+       | false, true ->
+         Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||]
+       | false, false -> ()  
+      );
       if !do_install then 
         install_target ();
       if !watch_mode then 
@@ -258,8 +263,7 @@ let () =
           ~package_kind:Toplevel 
           ~forced:false 
           ~per_proj_dir:Bsb_global_paths.cwd in 
-      check_deps_installation_directory config_opt make_world;
-      if !make_world then 
+      if !make_world || check_deps_installation_directory config_opt then 
         Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||];
       ninja_command_exit  [||] 
     end else
