@@ -2,7 +2,7 @@
 var cp = require("child_process");
 var path = require("path");
 var assert = require("assert");
-var output = cp.execSync(`bsb -- -t targets`, {
+var output = cp.execSync(`rescript build -- -t targets`, {
   encoding: "utf8",
   cwd: __dirname
 });

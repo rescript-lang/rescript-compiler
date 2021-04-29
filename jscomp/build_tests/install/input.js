@@ -3,12 +3,12 @@ var fs = require("fs");
 var path = require("path");
 var assert = require("assert");
 
-p.spawnSync(`bsb`, [`-clean`], {
+p.spawnSync(`rescript`, [`clean`], {
   encoding: "utf8",
   cwd: __dirname,
   stdio: [0, 1, 2]
 });
-p.spawnSync(`bsb`, [`-install`], {
+p.spawnSync(`rescript`, [`build`,`-install`], {
   encoding: "utf8",
   cwd: __dirname,
   stdio: [0, 1, 2]
@@ -17,12 +17,12 @@ p.spawnSync(`bsb`, [`-install`], {
 var fooExists = fs.existsSync(path.join(__dirname, "lib", "ocaml", "Foo.cmi"));
 assert.ok(fooExists == false);
 
-p.spawnSync(`bsb`, {
+p.spawnSync(`rescript`, {
   encoding: "utf8",
   cwd: __dirname,
   stdio: [0, 1, 2]
 });
-p.spawnSync(`bsb` ,[`-install`], {
+p.spawnSync(`rescript` ,[`build`,`-install`], {
   encoding: "utf8",
   cwd: __dirname,
   stdio: [0, 1, 2]

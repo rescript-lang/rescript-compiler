@@ -7,7 +7,7 @@ var assert = require('assert')
 
 assert.throws(
     () => {
-        var output = child_process.execSync(`bsb -regen`,
+        var output = child_process.execSync(`rescript build -regen`,
             { cwd: __dirname, encoding: 'utf8' }
         )
     }

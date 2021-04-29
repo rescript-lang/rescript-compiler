@@ -1,1 +1,1 @@
-bsb -regen
+rescript build -regen

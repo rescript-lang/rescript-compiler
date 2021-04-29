@@ -47,7 +47,7 @@ Then in your current Bucklescript project just use this as a dependency add this
   "bs-dependencies" : ["bucklescript-tea"]
 ```
 
-_If you install it via any other method make sure that `bucklescript-tea` is a dependency in your npm's package.json file as `bsb` uses that for lookup._
+_If you install it via any other method make sure that `bucklescript-tea` is a dependency in your npm's package.json file as `rescript` uses that for lookup._
 
 ## Usage
 

@@ -1,7 +1,7 @@
 var child_process = require("child_process");
 var fs = require("fs");
 var path = require("path");
-child_process.execSync(`bsb -clean-world && bsb -make-world`, {
+child_process.execSync(`rescript clean -with-deps && rescript build`, {
   cwd: __dirname,
   stdio: [0, 1, 2],
 });
@@ -21,7 +21,7 @@ assert.ok(merlin.includes("-open"));
 assert.ok(merlin.includes(warn_flag));
 assert.ok(merlin.includes("emptydir") !== true);
 
-var testDepsNoWarning = "-w a"
+var testDepsNoWarning = "-w a";
 function hasWarnError(file) {
   return fs.readFileSync(file, "utf8").includes(testDepsNoWarning);
 }

@@ -2,10 +2,10 @@
     "name": "install",
     "version": "0.1.0",
     "scripts": {
-      "clean": "bsb -clean-world",
-      "build": "bsb -make-world",
-      "install": "bsb -install",
-      "watch": "bsb -make-world -w"
+      "clean": "rescript clean -with-deps",
+      "build": "rescript build",
+      "install": "rescript build -install",
+      "watch": "rescript build -w"
     },
     "keywords": [
       "BuckleScript"

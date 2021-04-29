@@ -2,7 +2,7 @@
 'use strict';
 
 var Foo = require("Foo");
-var Curry = require("bs-platform/lib/js/curry.js");
+var Curry = require("rescript/lib/js/curry.js");
 
 var React = {};
 

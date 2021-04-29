@@ -5,24 +5,28 @@ var assert = require("assert");
 var targetOne = `test/test.cmj`;
 var targetTwo = `src/demo.cmj`;
 
-cp.exec(`bsb -- -t commands ${targetOne}`, { encoding: "ascii" }, function(
-  err,
-  output
-) {
-  if (err !== null) {
-    console.error("unexpected");
-    throw err;
-  }
-  assert(output.split("\n").some(x => x.includes("weird")));
-});
 
-cp.exec(`bsb -- -t commands ${targetTwo}`, { encoding: "ascii" }, function(
-  err,
-  output
-) {
-  if (err !== null) {
-    console.error("unexpected");
-    throw err;
+cp.exec(
+  `rescript build -- -t commands ${targetOne}`,
+  { encoding: "ascii" },
+  function (err, output) {
+    if (err !== null) {
+      console.error("unexpected");
+      throw err;
+    }
+    assert(output.split("\n").some((x) => x.includes("weird")));
+    cp.exec(
+      `rescript build -- -t commands ${targetTwo}`,
+      { encoding: "ascii" },
+      function (err, output) {
+        if (err !== null) {
+          console.error("unexpected");
+          throw err;
+        }
+        assert(output.split("\n").some((x) => x.includes("weird")) === false);
+      }
+    );
+    
   }
-  assert(output.split("\n").some(x => x.includes("weird")) === false);
-});
+);
+
