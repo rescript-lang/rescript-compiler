@@ -5,6 +5,8 @@ var assert = require("assert");
 var targetOne = `test/test.cmj`;
 var targetTwo = `src/demo.cmj`;
 
+cp.execSync(`rescript build`, { cwd: __dirname, encoding: "utf8" });
+
 cp.exec(
   `rescript build -- -t commands ${targetOne}`,
   { encoding: "ascii" },
