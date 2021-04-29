@@ -11,8 +11,8 @@ function postProcessErrorOutput (output) {
   output = output.replace(new RegExp(__dirname, 'gi'), '.')
   return output
 }
-
-child_process.exec('rescript clean -with-deps && rescript', {cwd: __dirname}, (err, stdout, stderr) => {
+child_process.execSync(`rescript clean -with-deps`,{cwd:__dirname})
+child_process.exec('rescript', {cwd: __dirname}, (err, stdout, stderr) => {
   const actualErrorOutput = postProcessErrorOutput(stderr.toString())
   if (updateTests) {
     fs.writeFileSync(expectedFilePath, actualErrorOutput)
