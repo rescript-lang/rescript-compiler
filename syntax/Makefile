@@ -8,7 +8,7 @@ OCAMLDEP=ocamldep.opt
 include .depend
 .PHONY: depend
 depend:
-	$(OCAMLDEP) -native -I tests -I src src/*.ml src/*.mli tests/*.ml tests/*.mli > .depend
+	@$(OCAMLDEP) -native -I tests -I src src/*.ml src/*.mli tests/*.ml tests/*.mli > .depend
 
 API_FILES = \
 	src/reactjs_jsx_ppx_v3.cmx\
@@ -40,7 +40,7 @@ API_FILES = \
 
 CLI_FILES = $(API_FILES) src/res_cli.cmx
 
-TEST_FILES = $(API_FILES) tests/res_diff.cmx tests/res_test.cmx
+TEST_FILES = $(API_FILES) tests/res_test.cmx
 
 .DEFAULT_GOAL := build-native
 
@@ -70,19 +70,18 @@ benchmarks/refmt_main3b.cmx: benchmarks/refmt_main3b.ml
 lib/test.exe: $(TEST_FILES)
 	$(OCAMLOPT) $(OCAMLFLAGS) -O2 -o ./lib/test.exe -bin-annot -I +compiler-libs ocamlcommon.cmxa -I src -I tests $(TEST_FILES)
 
-test: build-native lib/test.exe
-	./node_modules/.bin/reanalyze -all-cmt . -suppress tests -suppress benchmarks
+test: reanalyze build-native lib/test.exe
+	./lib/test.exe
 	./test.sh
-	./lib/test.exe
 
-roundtrip-test: bootstrap lib/test.exe
-	./node_modules/.bin/reanalyze -all-cmt . -suppress tests -suppress benchmarks
-	ROUNDTRIP_TEST=1 ./test.sh
+roundtrip-test: reanalyze bootstrap lib/test.exe
 	./lib/test.exe
+	ROUNDTRIP_TEST=1 ./test.sh
 
 reanalyze: build-native lib/test.exe
-	./node_modules/.bin/reanalyze -all-cmt . -suppress tests -suppress benchmarks
+	./node_modules/.bin/reanalyze -all-cmt . -suppress tests
 
 clean:
 	git clean -dfx src benchmarks lib tests
+
 .PHONY: clean test roundtrip-test reanalyze bootstrap build-native

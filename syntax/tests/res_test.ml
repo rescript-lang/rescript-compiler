@@ -1,48 +1,5 @@
 module IO = Res_io
 
-module Snapshot = struct
-  (* If set to true, will always create a new snapshot file.
-   * Previous snapshots will be overwritten *)
-  let forceUpdate = ref false
-
-  let take ~filename ~contents =
-    (* snapshot filename, just append .snapshot *)
-    let snapFilename = filename ^ ".snapshot" in
-    let diff =
-      (* create the file when snapshot doesn't exist or we're force updating *)
-      if !forceUpdate || not (Sys.file_exists snapFilename) then (
-        IO.writeFile ~filename:snapFilename ~contents;
-        None
-      ) else (
-        (* snapshot file exists *)
-        let snapContents = IO.readFile ~filename:snapFilename in
-        (* check for equality, do diffing later if needed *)
-        if contents = snapContents then None else Some snapContents
-      )
-    in
-    match diff with
-    | Some snapContents ->
-      prerr_string ("❌ snapshot " ^ filename);
-      prerr_newline();
-      Res_diff.diffTwoStrings snapContents contents;
-      exit 1
-    | None ->
-      print_endline (
-        if !forceUpdate then
-          "✍️  updated snapshot " ^ filename
-        else
-          "✅ snapshot " ^ filename
-      )
-end
-
-let usage = "Usage: test.exe <options>\nOptions are:"
-
-let spec = [
-  ("-update-snapshot", Arg.Unit (fun () -> Snapshot.forceUpdate.contents <- true), "Update snapshots")
-]
-
-let () = Arg.parse spec (fun _ -> ()) usage
-
 (* test printing of .res file*)
 let () =
   let filename = "./tests/api/resSyntax.res" in
@@ -183,7 +140,7 @@ module OutcomePrinterTests = struct
     let printedOutcomeTree =
       parseFile testFileName |> outcomeOfStructure
     in
-    Snapshot.take ~filename:testFileName ~contents:printedOutcomeTree
+    IO.writeFile ~filename:"tests/oprint/expected/oprint.res.txt" ~contents:printedOutcomeTree
 end
 
 module ParserApiTest = struct
