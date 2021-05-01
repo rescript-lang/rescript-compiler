@@ -343,8 +343,34 @@ let printPolyVarIdent txt =
        )
      | Otyp_arrow _ as typ ->
        printOutArrowType ~uncurried:false typ
-     | Otyp_module (_modName, _stringList, _outTypes) ->
-         Doc.nil
+     | Otyp_module (modName, stringList, outTypes) ->
+      let packageTypeDoc = match (stringList, outTypes) with
+      | [], [] -> Doc.nil
+      | labels, types ->
+        let i = ref 0 in
+        let package = Doc.join ~sep:Doc.line (List.map2 (fun lbl typ ->
+          Doc.concat [
+            Doc.text (if i.contents > 0 then "and " else "with ");
+            Doc.text lbl;
+            Doc.text " = ";
+            printOutTypeDoc typ;
+          ]
+        ) labels types)
+        in
+        Doc.indent (
+          Doc.concat [
+            Doc.line;
+            package
+          ]
+        )
+      in
+       Doc.concat [
+         Doc.text "module";
+         Doc.lparen;
+         Doc.text modName;
+         packageTypeDoc;
+         Doc.rparen;
+       ]
 
    and printOutArrowType ~uncurried typ =
      let (typArgs, typ) = collectArrowArgs typ [] in
@@ -598,8 +624,8 @@ let printPolyVarIdent txt =
                  Doc.text " =";
                  Doc.line;
                  Doc.group (
-                   Doc.join ~sep:Doc.line (List.map (fun prim -> 
-                       let prim = if prim <> "" && (prim.[0] [@doesNotRaise]) = '\132' then "#rescript-external" else prim in 
+                   Doc.join ~sep:Doc.line (List.map (fun prim ->
+                       let prim = if prim <> "" && (prim.[0] [@doesNotRaise]) = '\132' then "#rescript-external" else prim in
                        (* not display those garbage '\132' is a magic number for marshal *)
                        Doc.text ("\"" ^ prim ^ "\"")) primitives)
                  )

@@ -441,3 +441,10 @@ type dotdotObjectCoordinate<'a> = 'a
 type permissions = [#644 | #777]
 type numericPolyVarWithPayload = [#1(string) | #2(int, string)]
 let numericPolyVarMatch: [> #1(string) | #2(int, string)]
+let sort: (module(Set.S with elt = 'a), list<'a>) => list<'a>
+let make_set: (('a, 'a) => int) => module(Set.S with elt = 'a)
+type picture = string
+module type DEVICE = {
+  let draw: picture => unit
+}
+let devices: Hashtbl.t<string, module(DEVICE)>

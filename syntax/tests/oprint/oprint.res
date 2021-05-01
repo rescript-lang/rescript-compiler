@@ -294,3 +294,22 @@ type permissions = [
    | #777 => #1("payload")
    | #644 => #2(42, "test")
  }
+
+let sort = (type s, module(Set: Set.S with type elt = s), l) =>
+  Set.elements(List.fold_right(Set.add, l, Set.empty))
+
+let make_set = (type s, cmp) => {
+  module S = Set.Make({
+    type t = s
+    let compare = cmp
+  })
+  module(S: Set.S with type elt = s)
+}
+
+type picture = string
+
+module type DEVICE = {
+  let draw: picture => unit
+}
+
+let devices: Hashtbl.t<string, module(DEVICE)> = Hashtbl.create(17)
