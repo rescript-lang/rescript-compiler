@@ -448,9 +448,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-nolabels", set Clflags.classic, 
     "*internal* Ignore non-optional labels in types";  
 
-    "-principal", set Clflags.principal, 
-    "*internal* Check principality of type inference";  
-
     "-short-paths", clear Clflags.real_paths, 
     "*internal* Shorten paths in types";
 

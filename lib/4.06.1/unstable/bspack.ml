@@ -11969,6 +11969,8 @@ val as_ppx : bool ref
 
 val customize_runtime : string option ref 
 val as_pp: bool ref
+
+val self_stack : string Stack.t
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -12064,6 +12066,8 @@ let as_ppx = ref false
 let customize_runtime = ref None 
 
 let as_pp = ref false
+
+let self_stack : string Stack.t = Stack.create ()
 end
 module Map_gen : sig 
 #1 "map_gen.mli"

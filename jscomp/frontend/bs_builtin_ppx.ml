@@ -81,6 +81,23 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
   (** Its output should not be rewritten anymore *)
   | Pexp_extension extension ->
     Ast_exp_extension.handle_extension e self extension
+  | Pexp_setinstvar ({txt;loc},expr) -> 
+    if Stack.is_empty Js_config.self_stack then 
+      Location.raise_errorf ~loc:e.pexp_loc "This assignment can only happen in object context";
+    let name = Stack.top Js_config.self_stack in   
+    if name = "" then 
+      Location.raise_errorf ~loc:e.pexp_loc 
+        "The current object does not assign a name";
+    let open Ast_helper in     
+    self.expr self 
+      (Exp.apply ~loc:e.pexp_loc 
+        (Exp.ident ~loc {loc; txt = Lident "#="})
+        [Nolabel,
+         (Exp.send  ~loc 
+            (Exp.ident ~loc {loc; txt = Lident name})
+            {loc ; txt});
+         Nolabel, expr
+         ])
   | Pexp_constant (
       Pconst_string
         (s, (Some delim)))

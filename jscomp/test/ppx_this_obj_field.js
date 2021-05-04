@@ -213,6 +213,15 @@ eq("File \"ppx_this_obj_field.ml\", line 103, characters 5-12", [
       ]
     ]);
 
+var f = {
+  x: 3,
+  hei: (function () {
+      var y = this ;
+      y.x = y.x + 3 | 0;
+      
+    })
+};
+
 Mt.from_pair_suites("Ppx_this_obj_field", suites.contents);
 
 exports.suites = suites;
@@ -227,4 +236,5 @@ exports.eventObj = eventObj;
 exports.test__ = test__;
 exports.zz = zz;
 exports.test_type2 = test_type2;
+exports.f = f;
 /* v5 Not a pure module */

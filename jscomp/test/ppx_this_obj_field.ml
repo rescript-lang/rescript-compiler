@@ -27,9 +27,9 @@ let v =
     val x = 3
     val mutable y = 0
     method private reset () = 
-      self##y#= 0 
+      y <- 0 
     method  incr () =
-      self##y #= (self##y + 1)
+      y <- self#y + 1
     (* TODO: the error message is confusing 
        {[
          self##y #= self##y + 1 
@@ -42,10 +42,10 @@ let v =
        it will not work if `self##y` is indeed a reference
        we need document this behavior
     *)
-    method getY () = self##y
-    method say () = self##x + self##y
+    method getY () = self#y
+    method say () = self#x + self#y
   end
-     
+
 
 let u = 
   object (self)
@@ -59,16 +59,16 @@ let test_type = [u ; v]
 let z : < getX : (unit -> int [@bs.meth]); setX : (int -> unit [@bs.meth]) >   =
   object (self)
     val x = ref 3 
-    method setX x = self##x := x
+    method setX x = self#x := x
     method getX () =  ! (self##x)
   end 
 
 let eventObj  : <
   empty : (unit -> unit [@bs.meth]);
-    needRebuild : (unit -> bool [@bs.meth]);
-    push : string  * string -> unit [@bs.meth]
-  >
-  
+  needRebuild : (unit -> bool [@bs.meth]);
+  push : string  * string -> unit [@bs.meth]
+>
+
   = 
   object (self)
     val events : (string * string) array = [||]
@@ -82,8 +82,8 @@ let test__ x = eventObj##push   x
 let zz : < getX : (unit -> int [@bs.meth]); setX : (int -> unit [@bs.meth]) > =
   object (self)
     val mutable x =  3 
-    method setX x = self##x #= x
-    method getX () =   (self##x)
+    method setX x = x <- x
+    method getX () =   self#x
   end 
 
 let test_type2 = [z;zz]
@@ -102,6 +102,13 @@ let () =
   let bb = z##getX () in
   eq __LOC__ ((3, 32), (aa,bb))
 
+
+let f = object (_ as y)
+  val mutable x =  3 
+  method hei () = 
+    x <- y#x + 3 
+
+end  
 let () =
   Mt.from_pair_suites __MODULE__ !suites
 

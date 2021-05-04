@@ -26,8 +26,15 @@ open Ast_helper
 
 (* Handling `fun [@this]` used in `object [@bs] end` *)
 let to_method_callback  loc (self : Bs_ast_mapper.mapper) 
-    label pat body : Parsetree.expression_desc
+    label (pat : Parsetree.pattern) body : Parsetree.expression_desc
   = 
+  (match pat.ppat_desc with
+  | Ppat_var s 
+  | Ppat_constraint ( {ppat_desc = Ppat_var s },_)
+  | Ppat_alias (_,s) -> Stack.push s.txt Js_config.self_stack 
+  | Ppat_constraint ( {ppat_desc = Ppat_any },_)
+  | Ppat_any  -> Stack.push  "" Js_config.self_stack
+  | _ -> Location.raise_errorf ~loc "This pattern is not supported");
   Bs_syntaxerr.optional_err loc label;  
   let rec aux acc (body : Parsetree.expression) = 
     match Ast_attributes.process_attributes_rev body.pexp_attributes with 
@@ -50,6 +57,7 @@ let to_method_callback  loc (self : Bs_ast_mapper.mapper)
   in
   let arity = List.length rev_extra_args in   
   let arity_s = string_of_int arity in 
+  Stack.pop Js_config.self_stack |> ignore;
   Parsetree.Pexp_apply 
     (Exp.ident ~loc {loc ; txt = Ldot(Ast_literal.Lid.js_oo,"unsafe_to_method")},
      [Nolabel,
