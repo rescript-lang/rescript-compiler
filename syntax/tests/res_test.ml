@@ -86,20 +86,7 @@ let y: float
 let () = print_endline "✅ multi printer api tests"
 
 module OutcomePrinterTests = struct
-  let parseFile filename =
-    let result = Res_driver.parsingEngine.parseImplementation ~forPrinter:false ~filename in
-
-    if result.Res_driver.invalid then (
-      Res_driver.parsingEngine.stringOfDiagnostics
-        ~source:(result.source)
-        ~filename:result.filename
-        result.diagnostics;
-      exit 1
-    ) else
-     result.Res_driver.parsetree
-
-
-  let outcomeOfStructure structure =
+  let signatureToOutcome structure =
     Lazy.force Res_outcome_printer.setup;
 
     Compmisc.init_path false;
@@ -136,11 +123,18 @@ module OutcomePrinterTests = struct
    * The outcome tree is printed to a string
    * and stored in a snapshot `tests/oprint/oprint.res.snapshot` *)
   let run () =
-    let testFileName = "tests/oprint/oprint.res" in
-    let printedOutcomeTree =
-      parseFile testFileName |> outcomeOfStructure
+    let filename = "tests/oprint/oprint.res" in
+    let result = Res_driver.parsingEngine.parseImplementation ~forPrinter:false ~filename in
+    let signature = if result.Res_driver.invalid then (
+      Res_driver.parsingEngine.stringOfDiagnostics
+        ~source:(result.source)
+        ~filename:result.filename
+        result.diagnostics;
+      exit 1
+    ) else
+      result.Res_driver.parsetree
     in
-    IO.writeFile ~filename:"tests/oprint/expected/oprint.res.txt" ~contents:printedOutcomeTree
+    IO.writeFile ~filename:"tests/oprint/expected/oprint.resi.txt" ~contents:(signatureToOutcome signature)
 end
 
 module ParserApiTest = struct
