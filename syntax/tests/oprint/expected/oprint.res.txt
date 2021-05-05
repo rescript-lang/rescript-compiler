@@ -12,7 +12,7 @@ type user2 = {
   aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaage: int,
   emaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaail: string,
 }
-module Diff = {
+module Diff: {
   let string: (string, string) => bool
 }
 module Diff2 = Diff
@@ -42,12 +42,12 @@ type color +=
   | Blaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaack
   | Oraaaaaaaaaaaaaaaaaaaaaaaaaaaaaaange
   | Reeeeeeeeeeeeeeeeeeeed
-module Expr = {
+module Expr: {
   type attr = ..
   type attr += private  Str(string)
   type attr +=  Int(int) | Float(float)
 }
-module User = {
+module User: {
   type t = {name: string, age: int}
 }
 type userT = User.t = {name: string, age: int}
@@ -77,7 +77,7 @@ type redColor = [#Red]
 type greenColor = [#Green]
 type blueColor = [#Blue]
 type rgbColor = [#Blue | #Green | #Red]
-module M = {
+module M: {
   type data = [#IntData(int) | #StrData(string)]
   let stringOfData: data => string
 }
@@ -149,9 +149,9 @@ type \"let" = int
 type \"type" = [#"Point🗿"(\"let", float)]
 type t23 = [#1 | #"10space" | #123]
 type exoticUser = {\"let": string, \"type": float}
-module Js = {
+module Js: {
   type t<'a> = 'a
-  module Fn = {
+  module Fn: {
     type arity0<'a> = {i0: unit => 'a}
     type arity1<'a> = {i1: 'a}
     type arity2<'a> = {i2: 'a}
@@ -448,3 +448,46 @@ module type DEVICE = {
   let draw: picture => unit
 }
 let devices: Hashtbl.t<string, module(DEVICE)>
+module rec A: {
+  type t =  Leaf(string) | Node(ASet.t)
+  let compare: (t, t) => int
+}
+and ASet: {
+  type rec elt = A.t
+  type rec t
+  let empty: t
+  let is_empty: t => bool
+  let mem: (elt, t) => bool
+  let add: (elt, t) => t
+  let singleton: elt => t
+  let remove: (elt, t) => t
+  let union: (t, t) => t
+  let inter: (t, t) => t
+  let diff: (t, t) => t
+  let compare: (t, t) => int
+  let equal: (t, t) => bool
+  let subset: (t, t) => bool
+  let iter: (elt => unit, t) => unit
+  let map: (elt => elt, t) => t
+  let fold: ((elt, 'a) => 'a, t, 'a) => 'a
+  let for_all: (elt => bool, t) => bool
+  let exists: (elt => bool, t) => bool
+  let filter: (elt => bool, t) => t
+  let partition: (elt => bool, t) => (t, t)
+  let cardinal: t => int
+  let elements: t => list<elt>
+  let min_elt: t => elt
+  let min_elt_opt: t => option<elt>
+  let max_elt: t => elt
+  let max_elt_opt: t => option<elt>
+  let choose: t => elt
+  let choose_opt: t => option<elt>
+  let split: (elt, t) => (t, bool, t)
+  let find: (elt, t) => elt
+  let find_opt: (elt, t) => option<elt>
+  let find_first: (elt => bool, t) => elt
+  let find_first_opt: (elt => bool, t) => option<elt>
+  let find_last: (elt => bool, t) => elt
+  let find_last_opt: (elt => bool, t) => option<elt>
+  let of_list: list<elt> => t
+}

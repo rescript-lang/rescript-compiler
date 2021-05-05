@@ -313,3 +313,23 @@ module type DEVICE = {
 }
 
 let devices: Hashtbl.t<string, module(DEVICE)> = Hashtbl.create(17)
+
+module rec A: {
+  type t =
+    | Leaf(string)
+    | Node(ASet.t)
+  let compare: (t, t) => int
+} = {
+  type t =
+    | Leaf(string)
+    | Node(ASet.t)
+  let compare = (t1, t2) =>
+    switch (t1, t2) {
+    | (Leaf(s1), Leaf(s2)) => compare(s1, s2)
+    | (Leaf(_), Node(_)) => 1
+    | (Node(_), Leaf(_)) => -1
+    | (Node(n1), Node(n2)) => ASet.compare(n1, n2)
+    }
+}
+and ASet: Set.S with type elt = A.t = Set.Make(A)
+

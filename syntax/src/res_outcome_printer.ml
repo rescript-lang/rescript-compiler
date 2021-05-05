@@ -666,10 +666,10 @@ let printPolyVarIdent txt =
            match outRecStatus with
            | Orec_not -> "module "
            | Orec_first -> "module rec "
-           | Orec_next -> "and"
+           | Orec_next -> "and "
          );
          Doc.text modName;
-         Doc.text " = ";
+         Doc.text ": ";
          printOutModuleTypeDoc outModType;
        ]
      )
