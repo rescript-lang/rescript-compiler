@@ -35,4 +35,5 @@ val labels_of_fun :
   Parsetree.expression -> 
   Asttypes.arg_label list
 
-val is_single_variable_pattern_conservative : t -> bool
+val is_single_variable_pattern_conservative : 
+  t -> string option 

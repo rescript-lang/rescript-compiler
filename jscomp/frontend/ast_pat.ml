@@ -60,10 +60,9 @@ let rec labels_of_fun (e : Parsetree.expression)  =
 
 let rec is_single_variable_pattern_conservative  (p : t ) =
   match p.ppat_desc with 
-  | Parsetree.Ppat_any 
-  | Parsetree.Ppat_var _ -> true 
+  | Parsetree.Ppat_any -> Some ""
+  | Parsetree.Ppat_var s -> Some s.txt 
   | Parsetree.Ppat_alias (p,_) 
   | Parsetree.Ppat_constraint (p, _) -> 
     is_single_variable_pattern_conservative p 
-
-  | _ -> false
+  | _ -> None
