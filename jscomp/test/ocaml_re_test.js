@@ -435,19 +435,25 @@ function $plus$plus(x, y) {
 
 function from_char(param) {
   if (param >= 170) {
-    if (param >= 187) {
-      if (param > 246 || param < 192) {
-        if (param >= 248) {
-          return 2;
-        } else {
+    if (param >= 192) {
+      if (param > 255 || param < 216) {
+        if (param >= 215) {
           return 4;
+        } else {
+          return 2;
         }
-      } else if (param !== 215) {
+      } else if (param !== 247) {
         return 2;
       } else {
         return 4;
       }
-    } else if (!(param > 185 || param < 171) && param !== 181) {
+    } else if (param > 185 || param < 171) {
+      if (param >= 187) {
+        return 4;
+      } else {
+        return 2;
+      }
+    } else if (param !== 181) {
       return 4;
     } else {
       return 2;

@@ -567,7 +567,7 @@ o test/string_runtime_test.cmi test/string_runtime_test.cmj : cc test/string_run
 o test/string_set.cmi test/string_set.cmj : cc test/string_set.ml | test/set_gen.cmj $stdlib
 o test/string_set_test.cmi test/string_set_test.cmj : cc test/string_set_test.ml | test/mt.cmj test/string_set.cmj $stdlib
 o test/string_test.cmi test/string_test.cmj : cc test/string_test.ml | test/ext_string_test.cmj test/mt.cmj $stdlib
-o test/string_unicode_test.cmi test/string_unicode_test.cmj : cc test/string_unicode_test.ml | $stdlib
+o test/string_unicode_test.cmi test/string_unicode_test.cmj : cc test/string_unicode_test.ml | test/mt.cmj $stdlib
 o test/stringmatch_test.cmi test/stringmatch_test.cmj : cc test/stringmatch_test.ml | $stdlib
 o test/submodule.cmi test/submodule.cmj : cc test/submodule.ml | $stdlib
 o test/submodule_call.cmi test/submodule_call.cmj : cc test/submodule_call.ml | test/submodule.cmj $stdlib
