@@ -93,3 +93,5 @@ let as_ppx = ref false
 let customize_runtime = ref None 
 
 let as_pp = ref false
+
+let self_stack : string Stack.t = Stack.create ()

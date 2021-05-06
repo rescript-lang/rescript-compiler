@@ -100,3 +100,5 @@ val as_ppx : bool ref
 
 val customize_runtime : string option ref 
 val as_pp: bool ref
+
+val self_stack : string Stack.t

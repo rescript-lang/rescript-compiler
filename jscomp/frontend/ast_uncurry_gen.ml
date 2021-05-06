@@ -26,8 +26,13 @@ open Ast_helper
 
 (* Handling `fun [@this]` used in `object [@bs] end` *)
 let to_method_callback  loc (self : Bs_ast_mapper.mapper) 
-    label pat body : Parsetree.expression_desc
+    label (self_pat : Parsetree.pattern) body : Parsetree.expression_desc
   = 
+  let self_pat = self.pat self self_pat in  
+  (match (Ast_pat.is_single_variable_pattern_conservative self_pat) with 
+  | None -> 
+     Bs_syntaxerr.err self_pat.ppat_loc  Bs_this_simple_pattern
+  | Some self -> Stack.push self Js_config.self_stack);  
   Bs_syntaxerr.optional_err loc label;  
   let rec aux acc (body : Parsetree.expression) = 
     match Ast_attributes.process_attributes_rev body.pexp_attributes with 
@@ -41,15 +46,13 @@ let to_method_callback  loc (self : Bs_ast_mapper.mapper)
       end 
     | _, _ -> self.expr self body, acc  
   in 
-  let first_arg = self.pat self pat in  
-  (if not  (Ast_pat.is_single_variable_pattern_conservative first_arg) then
-     Bs_syntaxerr.err first_arg.ppat_loc  Bs_this_simple_pattern);  
-  let result, rev_extra_args = aux [label,first_arg] body in 
+  let result, rev_extra_args = aux [label,self_pat] body in 
   let body = 
     Ext_list.fold_left rev_extra_args result (fun e (label,p) -> Ast_helper.Exp.fun_ ~loc label None p e )
   in
   let arity = List.length rev_extra_args in   
   let arity_s = string_of_int arity in 
+  Stack.pop Js_config.self_stack |> ignore;
   Parsetree.Pexp_apply 
     (Exp.ident ~loc {loc ; txt = Ldot(Ast_literal.Lid.js_oo,"unsafe_to_method")},
      [Nolabel,
