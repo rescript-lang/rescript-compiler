@@ -39,7 +39,7 @@ int polyvar is compiled into int.
 - #4985 fix the schema of bsb on `dev` property
 - #4967 #4986, #4984, #4971, #4972, #4969 Breaking changes
 Remove ocaml style classes while structural objects and structural typings are simplified. Js.t is no longer needed. If user does not know
-what ocaml style class is, this should not affect him.
+what ocaml style class is, this should not affect them.
 
 
 # 9.0.2
