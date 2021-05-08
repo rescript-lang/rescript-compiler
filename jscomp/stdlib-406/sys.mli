@@ -62,7 +62,7 @@ val getenv_opt: string -> string option
     @since 4.05
 *)
 
-external command : string -> int = "caml_sys_system_command"
+val command : string -> int
 (** Execute the given shell command and return its exit code. *)
 
 external time : unit -> (float [@unboxed]) =

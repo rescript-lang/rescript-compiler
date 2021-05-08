@@ -85,8 +85,6 @@ let translate loc (prim_name : string)
       -> Js_long.bits_of_float args     
     | "caml_int64_float_of_bits"
       -> Js_long.float_of_bits args 
-    | "caml_int64_bswap"
-      -> Js_long.swap args    
     | "caml_int64_min"       
       ->  Js_long.min args 
     | "caml_int64_max" 
@@ -318,9 +316,6 @@ let translate loc (prim_name : string)
             call Js_runtime_modules.caml_primitive
         | _ -> assert false 
       end
-    | "caml_string_get"    
-      -> 
-      E.runtime_call Js_runtime_modules.string "get" args
     | "caml_fill_bytes"
     | "bytes_to_string"
     | "bytes_of_string"
@@ -328,17 +323,6 @@ let translate loc (prim_name : string)
     | "caml_blit_bytes"
       -> 
       call Js_runtime_modules.bytes
-    | "caml_backtrace_status"
-    | "caml_get_exception_backtrace"
-    | "caml_get_exception_raw_backtrace"
-    | "caml_record_backtrace"
-    | "caml_convert_raw_backtrace" 
-    | "caml_get_current_callstack"
-      -> E.unit
-    (* unit -> unit 
-       _ -> unit  
-       major_slice : int -> int 
-    *)
     (** Note we captured [exception/extension] creation in the early pass, this primitive is 
         like normal one to set the identifier *)
     | "caml_exn_slot_id"
@@ -358,11 +342,9 @@ let translate loc (prim_name : string)
     (*                      ] *)
     | "caml_sys_time"
     | "caml_sys_getenv"
-    | "caml_sys_system_command" 
     | "caml_sys_getcwd" (* check browser or nodejs *)
     | "caml_sys_is_directory"
     | "caml_sys_exit"
-      (* | "caml_sys_file_exists" *)
       -> 
       call Js_runtime_modules.sys
     | "caml_lex_engine"

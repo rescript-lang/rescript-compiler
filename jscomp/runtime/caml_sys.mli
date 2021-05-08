@@ -30,7 +30,6 @@ val caml_sys_time : unit -> float
 
 val os_type : unit -> string 
 
-val caml_sys_system_command : string -> int
 
 val caml_sys_getcwd : unit -> string 
 
