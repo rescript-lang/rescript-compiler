@@ -1143,6 +1143,10 @@ val unsafe_sub :
 val is_valid_hash_number:
   string -> 
   bool
+
+val hash_number_as_i32_exn:
+  string ->
+  int32
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
@@ -1663,6 +1667,11 @@ let is_valid_hash_number (x:string) =
      else
        a >= 48 )
   ) 
+
+
+let hash_number_as_i32_exn 
+    ( x : string) : int32 = 
+  Int32.of_string x    
 end
 module Bsb_arg : sig 
 #1 "bsb_arg.mli"
