@@ -2,7 +2,7 @@
 
 The compiler for ReScript.
 
-[![npm version](https://badge.fury.io/js/bs-platform.svg)](https://badge.fury.io/js/bs-platform) ![Build Status](https://circleci.com/gh/rescript-lang/rescript-compiler.svg?style=svg)
+[![npm version](https://badge.fury.io/js/rescript.svg)](https://badge.fury.io/js/rescript) ![Build Status](https://circleci.com/gh/rescript-lang/rescript-compiler.svg?style=svg)
 
 ## Documentation
 
