@@ -135,13 +135,22 @@ let emit_external_warnings : iterator=
             "OCaml style classes are not supported"   
         | _ -> super.structure_item self str_item  
       );
-    expr = (fun self a -> 
+    expr = (fun self ({pexp_loc = loc} as a) -> 
         match a.pexp_desc with  
-        | Pexp_constant(const) -> check_constant a.pexp_loc `expr const
+        | Pexp_constant(const) -> check_constant loc `expr const
         | Pexp_object _ 
         | Pexp_new _  -> 
-          Location.raise_errorf ~loc:a.pexp_loc
+          Location.raise_errorf ~loc
             "OCaml style objects are not supported"
+        | Pexp_variant (s,None) 
+          when Ext_string.is_valid_hash_number s 
+          ->
+          (try ignore (Ext_string.hash_number_as_i32_exn s : int32)  
+           with 
+           | _ -> 
+             Location.raise_errorf ~loc
+               "This number is too large to cause int overlow"
+          )
         | _ -> super.expr self a         
       );
     label_declaration = (fun self lbl ->     
