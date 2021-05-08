@@ -6712,81 +6712,26 @@ var Parse = Caml_module.init_mod([
       ]
     });
 
-function prefix(env) {
-  var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (match !== 76) {
-    var t = primary(env);
-    return postfix_with(env, t);
-  }
-  var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-  token$4(env, /* T_PLING */76);
-  var t$1 = prefix(env);
-  return [
-          btwn(loc, t$1[0]),
-          {
-            TAG: /* Nullable */0,
-            _0: t$1
-          }
-        ];
-}
-
-function rev_nonempty_acc(acc) {
-  var end_loc;
-  if (acc) {
-    end_loc = acc.hd[0];
-  } else {
-    throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "parser_flow.ml",
-            127,
-            13
-          ],
-          Error: new Error()
-        };
-  }
-  var acc$1 = List.rev(acc);
-  var start_loc;
-  if (acc$1) {
-    start_loc = acc$1.hd[0];
-  } else {
-    throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "parser_flow.ml",
-            131,
-            13
-          ],
-          Error: new Error()
-        };
-  }
-  return [
-          btwn(start_loc, end_loc),
-          acc$1
-        ];
-}
-
-function intersection(env) {
-  maybe(env, /* T_BIT_AND */82);
-  var left = prefix(env);
-  return Curry._2(intersection_with, env, left);
-}
-
-function function_param_list(env) {
-  token$4(env, /* T_LPAREN */3);
-  var ret = Curry._2(function_param_list_without_parens, env, /* [] */0);
-  token$4(env, /* T_RPAREN */4);
-  return ret;
-}
-
-function union(env) {
-  maybe(env, /* T_BIT_OR */80);
-  var left = intersection(env);
-  return Curry._2(union_with, env, left);
-}
-
-function generic(env) {
-  return Curry._2(raw_generic_with_identifier, env, Curry._2(Parse.identifier, undefined, env));
+function postfix_with(env, _t) {
+  while(true) {
+    var t = _t;
+    if (!(!Curry._1(Parser_env_Peek.is_line_terminator, env) && maybe(env, /* T_LBRACKET */5))) {
+      return t;
+    }
+    var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+    token$4(env, /* T_RBRACKET */6);
+    var loc = btwn(t[0], end_loc);
+    var t_1 = {
+      TAG: /* Array */3,
+      _0: t
+    };
+    var t$1 = [
+      loc,
+      t_1
+    ];
+    _t = t$1;
+    continue ;
+  };
 }
 
 function primary(env) {
@@ -6981,29 +6926,17 @@ function primary(env) {
   }
 }
 
-function primitive(param) {
-  if (typeof param !== "number") {
-    return ;
-  }
-  if (param === 27) {
-    return /* Null */2;
-  }
-  if (param < 107) {
-    return ;
-  }
-  switch (param) {
-    case /* T_ANY_TYPE */107 :
-        return /* Any */0;
-    case /* T_BOOLEAN_TYPE */108 :
-        return /* Boolean */5;
-    case /* T_NUMBER_TYPE */109 :
-        return /* Number */3;
-    case /* T_STRING_TYPE */110 :
-        return /* String */4;
-    case /* T_VOID_TYPE */111 :
-        return /* Void */1;
-    
-  }
+function function_param_list(env) {
+  token$4(env, /* T_LPAREN */3);
+  var ret = Curry._2(function_param_list_without_parens, env, /* [] */0);
+  token$4(env, /* T_RPAREN */4);
+  return ret;
+}
+
+function union(env) {
+  maybe(env, /* T_BIT_OR */80);
+  var left = intersection(env);
+  return Curry._2(union_with, env, left);
 }
 
 function function_param_with_id(env, name) {
@@ -7021,59 +6954,6 @@ function function_param_with_id(env, name) {
             optional: optional
           }
         ];
-}
-
-function postfix_with(env, _t) {
-  while(true) {
-    var t = _t;
-    if (!(!Curry._1(Parser_env_Peek.is_line_terminator, env) && maybe(env, /* T_LBRACKET */5))) {
-      return t;
-    }
-    var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-    token$4(env, /* T_RBRACKET */6);
-    var loc = btwn(t[0], end_loc);
-    var t_1 = {
-      TAG: /* Array */3,
-      _0: t
-    };
-    var t$1 = [
-      loc,
-      t_1
-    ];
-    _t = t$1;
-    continue ;
-  };
-}
-
-function generic_type_with_identifier(env, id) {
-  var match = Curry._2(raw_generic_with_identifier, env, id);
-  return [
-          match[0],
-          {
-            TAG: /* Generic */4,
-            _0: match[1]
-          }
-        ];
-}
-
-function function_param_or_generic_type(env) {
-  var id = Curry._2(Parse.identifier, undefined, env);
-  var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match === "number" && (match === 77 || match === 76)) {
-    var param = function_param_with_id(env, id);
-    maybe(env, /* T_COMMA */8);
-    return {
-            TAG: /* ParamList */0,
-            _0: Curry._2(function_param_list_without_parens, env, {
-                  hd: param,
-                  tl: /* [] */0
-                })
-          };
-  }
-  return {
-          TAG: /* Type */1,
-          _0: Curry._2(union_with, env, Curry._2(intersection_with, env, postfix_with(env, generic_type_with_identifier(env, id))))
-        };
 }
 
 function param_list_or_type(env) {
@@ -7178,78 +7058,124 @@ function param_list_or_type(env) {
   return ret;
 }
 
-function intersection_with(env, left) {
-  if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_BIT_AND */82) {
-    var _acc = {
-      hd: left,
-      tl: /* [] */0
-    };
-    while(true) {
-      var acc = _acc;
-      var match = Curry._2(Parser_env_Peek.token, undefined, env);
-      if (match === 82) {
-        token$4(env, /* T_BIT_AND */82);
-        _acc = {
-          hd: prefix(env),
-          tl: acc
+function intersection(env) {
+  maybe(env, /* T_BIT_AND */82);
+  var left = prefix(env);
+  return Curry._2(intersection_with, env, left);
+}
+
+function function_param_or_generic_type(env) {
+  var id = Curry._2(Parse.identifier, undefined, env);
+  var match = Curry._2(Parser_env_Peek.token, undefined, env);
+  if (typeof match === "number" && (match === 77 || match === 76)) {
+    var param = function_param_with_id(env, id);
+    maybe(env, /* T_COMMA */8);
+    return {
+            TAG: /* ParamList */0,
+            _0: Curry._2(function_param_list_without_parens, env, {
+                  hd: param,
+                  tl: /* [] */0
+                })
+          };
+  }
+  return {
+          TAG: /* Type */1,
+          _0: Curry._2(union_with, env, Curry._2(intersection_with, env, postfix_with(env, generic_type_with_identifier(env, id))))
         };
-        continue ;
-      }
-      var match$1 = rev_nonempty_acc(acc);
-      return [
-              match$1[0],
-              {
-                TAG: /* Intersection */6,
-                _0: match$1[1]
-              }
-            ];
-    };
-  } else {
-    return left;
+}
+
+function primitive(param) {
+  if (typeof param !== "number") {
+    return ;
+  }
+  if (param === 27) {
+    return /* Null */2;
+  }
+  if (param < 107) {
+    return ;
+  }
+  switch (param) {
+    case /* T_ANY_TYPE */107 :
+        return /* Any */0;
+    case /* T_BOOLEAN_TYPE */108 :
+        return /* Boolean */5;
+    case /* T_NUMBER_TYPE */109 :
+        return /* Number */3;
+    case /* T_STRING_TYPE */110 :
+        return /* String */4;
+    case /* T_VOID_TYPE */111 :
+        return /* Void */1;
+    
   }
 }
 
-function param(env) {
-  var match = Curry._1(Parse.identifier_or_reserved_keyword, env);
-  return function_param_with_id(env, match[0]);
+function generic_type_with_identifier(env, id) {
+  var match = Curry._2(raw_generic_with_identifier, env, id);
+  return [
+          match[0],
+          {
+            TAG: /* Generic */4,
+            _0: match[1]
+          }
+        ];
 }
 
-function function_param_list_without_parens(env) {
-  return function (param$1) {
-    var _acc = param$1;
-    while(true) {
-      var acc = _acc;
-      var t = Curry._2(Parser_env_Peek.token, undefined, env);
-      var exit = 0;
-      exit = typeof t === "number" ? (
-          t > 11 || t < 4 ? (
-              t !== 105 ? 1 : 2
-            ) : (
-              t > 10 || t < 5 ? 2 : 1
-            )
-        ) : 1;
-      switch (exit) {
-        case 1 :
-            var acc_0 = param(env);
-            var acc$1 = {
-              hd: acc_0,
-              tl: acc
-            };
-            if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RPAREN */4) {
-              token$4(env, /* T_COMMA */8);
-            }
-            _acc = acc$1;
-            continue ;
-        case 2 :
-            var rest = t === /* T_ELLIPSIS */11 ? (token$4(env, /* T_ELLIPSIS */11), param(env)) : undefined;
-            return [
-                    rest,
-                    List.rev(acc)
-                  ];
-        
-      }
-    };
-  };
+function prefix(env) {
+  var match = Curry._2(Parser_env_Peek.token, undefined, env);
+  if (match !== 76) {
+    var t = primary(env);
+    return postfix_with(env, t);
+  }
+  var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+  token$4(env, /* T_PLING */76);
+  var t$1 = prefix(env);
+  return [
+          btwn(loc, t$1[0]),
+          {
+            TAG: /* Nullable */0,
+            _0: t$1
+          }
+        ];
+}
+
+function rev_nonempty_acc(acc) {
+  var end_loc;
+  if (acc) {
+    end_loc = acc.hd[0];
+  } else {
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "parser_flow.ml",
+            127,
+            13
+          ],
+          Error: new Error()
+        };
+  }
+  var acc$1 = List.rev(acc);
+  var start_loc;
+  if (acc$1) {
+    start_loc = acc$1.hd[0];
+  } else {
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "parser_flow.ml",
+            131,
+            13
+          ],
+          Error: new Error()
+        };
+  }
+  return [
+          btwn(start_loc, end_loc),
+          acc$1
+        ];
+}
+
+function generic(env) {
+  return Curry._2(raw_generic_with_identifier, env, Curry._2(Parse.identifier, undefined, env));
 }
 
 function params(env, allow_default, _require_default, _acc) {
@@ -7331,6 +7257,209 @@ function type_parameter_declaration(allow_default, env) {
           loc,
           {
             params: params$1
+          }
+        ];
+}
+
+function identifier(env, _param) {
+  while(true) {
+    var param = _param;
+    var qualification = param[1];
+    var q_loc = param[0];
+    if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_PERIOD */9) {
+      return [
+              q_loc,
+              qualification
+            ];
+    }
+    token$4(env, /* T_PERIOD */9);
+    var id = Curry._2(Parse.identifier, undefined, env);
+    var loc = btwn(q_loc, id[0]);
+    var qualification$1 = {
+      TAG: /* Qualified */1,
+      _0: [
+        loc,
+        {
+          qualification: qualification,
+          id: id
+        }
+      ]
+    };
+    _param = [
+      loc,
+      qualification$1
+    ];
+    continue ;
+  };
+}
+
+function raw_generic_with_identifier(env, id) {
+  var id_0 = id[0];
+  var id_1 = {
+    TAG: /* Unqualified */0,
+    _0: id
+  };
+  var id$1 = [
+    id_0,
+    id_1
+  ];
+  var match = identifier(env, id$1);
+  var id_loc = match[0];
+  var typeParameters = Curry._1(type_parameter_instantiation, env);
+  var loc = typeParameters !== undefined ? btwn(id_loc, typeParameters[0]) : id_loc;
+  return [
+          loc,
+          {
+            id: match[1],
+            typeParameters: typeParameters
+          }
+        ];
+}
+
+function union_with(env, left) {
+  if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_BIT_OR */80) {
+    var _acc = {
+      hd: left,
+      tl: /* [] */0
+    };
+    while(true) {
+      var acc = _acc;
+      var match = Curry._2(Parser_env_Peek.token, undefined, env);
+      if (match === 80) {
+        token$4(env, /* T_BIT_OR */80);
+        _acc = {
+          hd: intersection(env),
+          tl: acc
+        };
+        continue ;
+      }
+      var match$1 = rev_nonempty_acc(acc);
+      return [
+              match$1[0],
+              {
+                TAG: /* Union */5,
+                _0: match$1[1]
+              }
+            ];
+    };
+  } else {
+    return left;
+  }
+}
+
+function param(env) {
+  var match = Curry._1(Parse.identifier_or_reserved_keyword, env);
+  return function_param_with_id(env, match[0]);
+}
+
+function function_param_list_without_parens(env) {
+  return function (param$1) {
+    var _acc = param$1;
+    while(true) {
+      var acc = _acc;
+      var t = Curry._2(Parser_env_Peek.token, undefined, env);
+      var exit = 0;
+      exit = typeof t === "number" ? (
+          t > 11 || t < 4 ? (
+              t !== 105 ? 1 : 2
+            ) : (
+              t > 10 || t < 5 ? 2 : 1
+            )
+        ) : 1;
+      switch (exit) {
+        case 1 :
+            var acc_0 = param(env);
+            var acc$1 = {
+              hd: acc_0,
+              tl: acc
+            };
+            if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RPAREN */4) {
+              token$4(env, /* T_COMMA */8);
+            }
+            _acc = acc$1;
+            continue ;
+        case 2 :
+            var rest = t === /* T_ELLIPSIS */11 ? (token$4(env, /* T_ELLIPSIS */11), param(env)) : undefined;
+            return [
+                    rest,
+                    List.rev(acc)
+                  ];
+        
+      }
+    };
+  };
+}
+
+function intersection_with(env, left) {
+  if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_BIT_AND */82) {
+    var _acc = {
+      hd: left,
+      tl: /* [] */0
+    };
+    while(true) {
+      var acc = _acc;
+      var match = Curry._2(Parser_env_Peek.token, undefined, env);
+      if (match === 82) {
+        token$4(env, /* T_BIT_AND */82);
+        _acc = {
+          hd: prefix(env),
+          tl: acc
+        };
+        continue ;
+      }
+      var match$1 = rev_nonempty_acc(acc);
+      return [
+              match$1[0],
+              {
+                TAG: /* Intersection */6,
+                _0: match$1[1]
+              }
+            ];
+    };
+  } else {
+    return left;
+  }
+}
+
+function params$1(env, _acc) {
+  while(true) {
+    var acc = _acc;
+    var match = Curry._2(Parser_env_Peek.token, undefined, env);
+    if (typeof match === "number") {
+      if (match === 90) {
+        return List.rev(acc);
+      }
+      if (match === 105) {
+        return List.rev(acc);
+      }
+      
+    }
+    var acc_0 = union(env);
+    var acc$1 = {
+      hd: acc_0,
+      tl: acc
+    };
+    if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_GREATER_THAN */90) {
+      token$4(env, /* T_COMMA */8);
+    }
+    _acc = acc$1;
+    continue ;
+  };
+}
+
+function type_parameter_instantiation(env) {
+  var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+  if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_LESS_THAN */89) {
+    return ;
+  }
+  token$4(env, /* T_LESS_THAN */89);
+  var params$2 = params$1(env, /* [] */0);
+  var loc = btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env));
+  token$4(env, /* T_GREATER_THAN */90);
+  return [
+          loc,
+          {
+            params: params$2
           }
         ];
 }
@@ -7618,135 +7747,6 @@ function types(env, _acc) {
     _acc = acc$1;
     continue ;
   };
-}
-
-function params$1(env, _acc) {
-  while(true) {
-    var acc = _acc;
-    var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "number") {
-      if (match === 90) {
-        return List.rev(acc);
-      }
-      if (match === 105) {
-        return List.rev(acc);
-      }
-      
-    }
-    var acc_0 = union(env);
-    var acc$1 = {
-      hd: acc_0,
-      tl: acc
-    };
-    if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_GREATER_THAN */90) {
-      token$4(env, /* T_COMMA */8);
-    }
-    _acc = acc$1;
-    continue ;
-  };
-}
-
-function type_parameter_instantiation(env) {
-  var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-  if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_LESS_THAN */89) {
-    return ;
-  }
-  token$4(env, /* T_LESS_THAN */89);
-  var params$2 = params$1(env, /* [] */0);
-  var loc = btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env));
-  token$4(env, /* T_GREATER_THAN */90);
-  return [
-          loc,
-          {
-            params: params$2
-          }
-        ];
-}
-
-function identifier(env, _param) {
-  while(true) {
-    var param = _param;
-    var qualification = param[1];
-    var q_loc = param[0];
-    if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_PERIOD */9) {
-      return [
-              q_loc,
-              qualification
-            ];
-    }
-    token$4(env, /* T_PERIOD */9);
-    var id = Curry._2(Parse.identifier, undefined, env);
-    var loc = btwn(q_loc, id[0]);
-    var qualification$1 = {
-      TAG: /* Qualified */1,
-      _0: [
-        loc,
-        {
-          qualification: qualification,
-          id: id
-        }
-      ]
-    };
-    _param = [
-      loc,
-      qualification$1
-    ];
-    continue ;
-  };
-}
-
-function raw_generic_with_identifier(env, id) {
-  var id_0 = id[0];
-  var id_1 = {
-    TAG: /* Unqualified */0,
-    _0: id
-  };
-  var id$1 = [
-    id_0,
-    id_1
-  ];
-  var match = identifier(env, id$1);
-  var id_loc = match[0];
-  var typeParameters = Curry._1(type_parameter_instantiation, env);
-  var loc = typeParameters !== undefined ? btwn(id_loc, typeParameters[0]) : id_loc;
-  return [
-          loc,
-          {
-            id: match[1],
-            typeParameters: typeParameters
-          }
-        ];
-}
-
-function union_with(env, left) {
-  if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_BIT_OR */80) {
-    var _acc = {
-      hd: left,
-      tl: /* [] */0
-    };
-    while(true) {
-      var acc = _acc;
-      var match = Curry._2(Parser_env_Peek.token, undefined, env);
-      if (match === 80) {
-        token$4(env, /* T_BIT_OR */80);
-        _acc = {
-          hd: intersection(env),
-          tl: acc
-        };
-        continue ;
-      }
-      var match$1 = rev_nonempty_acc(acc);
-      return [
-              match$1[0],
-              {
-                TAG: /* Union */5,
-                _0: match$1[1]
-              }
-            ];
-    };
-  } else {
-    return left;
-  }
 }
 
 var _type = union;
@@ -11214,177 +11214,20 @@ function class_expression(env) {
         ];
 }
 
-function declare(in_moduleOpt, env) {
-  var in_module = in_moduleOpt !== undefined ? in_moduleOpt : false;
-  if (!env.parse_options.types) {
-    error(env, /* UnexpectedTypeDeclaration */7);
-  }
-  var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-  var match = Curry._2(Parser_env_Peek.token, 1, env);
-  if (typeof match === "number") {
-    if (match >= 22) {
-      if (match >= 38) {
-        if (match < 62) {
-          switch (match) {
-            case /* T_CLASS */38 :
-                token$4(env, /* T_DECLARE */58);
-                var match$1 = Curry._2(declare_class, env, start_loc);
-                return [
-                        match$1[0],
-                        {
-                          TAG: /* DeclareClass */24,
-                          _0: match$1[1]
-                        }
-                      ];
-            case /* T_EXPORT */47 :
-                if (in_module) {
-                  return declare_export_declaration(in_module, env);
-                }
-                break;
-            case /* T_INTERFACE */51 :
-                token$4(env, /* T_DECLARE */58);
-                return $$interface(env);
-            case /* T_TYPE */59 :
-                token$4(env, /* T_DECLARE */58);
-                return type_alias(env);
-            case /* T_EXTENDS */39 :
-            case /* T_STATIC */40 :
-            case /* T_ELSE */41 :
-            case /* T_NEW */42 :
-            case /* T_DELETE */43 :
-            case /* T_TYPEOF */44 :
-            case /* T_VOID */45 :
-            case /* T_ENUM */46 :
-            case /* T_IMPORT */48 :
-            case /* T_SUPER */49 :
-            case /* T_IMPLEMENTS */50 :
-            case /* T_PACKAGE */52 :
-            case /* T_PRIVATE */53 :
-            case /* T_PROTECTED */54 :
-            case /* T_PUBLIC */55 :
-            case /* T_YIELD */56 :
-            case /* T_DEBUGGER */57 :
-            case /* T_DECLARE */58 :
-            case /* T_OF */60 :
-                break;
-            case /* T_ASYNC */61 :
-                token$4(env, /* T_DECLARE */58);
-                error(env, /* DeclareAsync */49);
-                token$4(env, /* T_ASYNC */61);
-                return declare_function_statement(env, start_loc);
-            
-          }
-        }
-        
-      } else if (match < 23) {
-        token$4(env, /* T_DECLARE */58);
-        return declare_var_statement(env, start_loc);
-      }
-      
-    } else if (match !== 13) {
-      if (match === 0 && Curry._2(Parser_env_Peek.value, 1, env) === "module") {
-        token$4(env, /* T_DECLARE */58);
-        contextual(env, "module");
-        if (in_module || Curry._2(Parser_env_Peek.token, undefined, env) === /* T_PERIOD */9) {
-          token$4(env, /* T_PERIOD */9);
-          contextual(env, "exports");
-          var type_annot = wrap(annotation, env);
-          var loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-          var end_loc = loc !== undefined ? loc : type_annot[0];
-          semicolon(env);
-          var loc$1 = btwn(start_loc, end_loc);
-          return [
-                  loc$1,
-                  {
-                    TAG: /* DeclareModuleExports */26,
-                    _0: type_annot
-                  }
-                ];
-        } else {
-          var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
-          var id;
-          if (typeof match$2 === "number" || match$2.TAG !== /* T_STRING */1) {
-            id = {
-              TAG: /* Identifier */0,
-              _0: Curry._2(Parse.identifier, undefined, env)
-            };
-          } else {
-            var match$3 = match$2._0;
-            var octal = match$3[3];
-            var raw = match$3[2];
-            var value = match$3[1];
-            var loc$2 = match$3[0];
-            if (octal) {
-              strict_error(env, /* StrictOctalLiteral */31);
+function expression(env) {
+  var expression$1 = Curry._1(Parse.expression, env);
+  var loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+  var end_loc = loc !== undefined ? loc : expression$1[0];
+  semicolon(env);
+  return [
+          btwn(expression$1[0], end_loc),
+          {
+            TAG: /* Expression */1,
+            _0: {
+              expression: expression$1
             }
-            token$4(env, {
-                  TAG: /* T_STRING */1,
-                  _0: [
-                    loc$2,
-                    value,
-                    raw,
-                    octal
-                  ]
-                });
-            var value$1 = {
-              TAG: /* String */0,
-              _0: value
-            };
-            id = {
-              TAG: /* Literal */1,
-              _0: [
-                loc$2,
-                {
-                  value: value$1,
-                  raw: raw
-                }
-              ]
-            };
           }
-          var body_start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-          token$4(env, /* T_LCURLY */1);
-          var match$4 = module_items(env, undefined, /* [] */0);
-          var module_kind = match$4[0];
-          token$4(env, /* T_RCURLY */2);
-          var body_end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-          var body_loc = btwn(body_start_loc, body_end_loc);
-          var body_1 = {
-            body: match$4[1]
-          };
-          var body = [
-            body_loc,
-            body_1
-          ];
-          var loc$3 = btwn(start_loc, body_loc);
-          var kind = module_kind !== undefined ? module_kind : ({
-                TAG: /* CommonJS */0,
-                _0: loc$3
-              });
-          return [
-                  loc$3,
-                  {
-                    TAG: /* DeclareModule */25,
-                    _0: {
-                      id: id,
-                      body: body,
-                      kind: kind
-                    }
-                  }
-                ];
-        }
-      }
-      
-    } else {
-      token$4(env, /* T_DECLARE */58);
-      return declare_function_statement(env, start_loc);
-    }
-  }
-  if (in_module) {
-    token$4(env, /* T_DECLARE */58);
-    return declare_var_statement(env, start_loc);
-  } else {
-    return Curry._1(Parse.statement, env);
-  }
+        ];
 }
 
 function type_alias_helper(env) {
@@ -11408,72 +11251,6 @@ function type_alias_helper(env) {
             id: id,
             typeParameters: typeParameters,
             right: right
-          }
-        ];
-}
-
-function export_source(env) {
-  contextual(env, "from");
-  var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "number" && match.TAG === /* T_STRING */1) {
-    var match$1 = match._0;
-    var octal = match$1[3];
-    var raw = match$1[2];
-    var value = match$1[1];
-    var loc = match$1[0];
-    if (octal) {
-      strict_error(env, /* StrictOctalLiteral */31);
-    }
-    token$4(env, {
-          TAG: /* T_STRING */1,
-          _0: [
-            loc,
-            value,
-            raw,
-            octal
-          ]
-        });
-    var value$1 = {
-      TAG: /* String */0,
-      _0: value
-    };
-    return [
-            loc,
-            {
-              value: value$1,
-              raw: raw
-            }
-          ];
-  }
-  var raw$1 = Curry._2(Parser_env_Peek.value, undefined, env);
-  var value$2 = {
-    TAG: /* String */0,
-    _0: raw$1
-  };
-  var ret_0 = Curry._2(Parser_env_Peek.loc, undefined, env);
-  var ret_1 = {
-    value: value$2,
-    raw: raw$1
-  };
-  var ret = [
-    ret_0,
-    ret_1
-  ];
-  error_unexpected(env);
-  return ret;
-}
-
-function declare_var(env, start_loc) {
-  token$4(env, /* T_VAR */22);
-  var id = Curry._2(Parse.identifier_with_type, env, /* StrictVarName */27);
-  var loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-  var end_loc = loc !== undefined ? loc : id[0];
-  var loc$1 = btwn(start_loc, end_loc);
-  semicolon(env);
-  return [
-          loc$1,
-          {
-            id: id
           }
         ];
 }
@@ -11552,6 +11329,10 @@ function export_specifiers_and_errs(env, _specifiers, _errs) {
   };
 }
 
+function extract_ident_name(param) {
+  return param[1].name;
+}
+
 function declare_function(env, start_loc) {
   token$4(env, /* T_FUNCTION */13);
   var id = Curry._2(Parse.identifier, undefined, env);
@@ -11604,8 +11385,70 @@ function declare_function(env, start_loc) {
         ];
 }
 
-function extract_ident_name(param) {
-  return param[1].name;
+function export_source(env) {
+  contextual(env, "from");
+  var match = Curry._2(Parser_env_Peek.token, undefined, env);
+  if (typeof match !== "number" && match.TAG === /* T_STRING */1) {
+    var match$1 = match._0;
+    var octal = match$1[3];
+    var raw = match$1[2];
+    var value = match$1[1];
+    var loc = match$1[0];
+    if (octal) {
+      strict_error(env, /* StrictOctalLiteral */31);
+    }
+    token$4(env, {
+          TAG: /* T_STRING */1,
+          _0: [
+            loc,
+            value,
+            raw,
+            octal
+          ]
+        });
+    var value$1 = {
+      TAG: /* String */0,
+      _0: value
+    };
+    return [
+            loc,
+            {
+              value: value$1,
+              raw: raw
+            }
+          ];
+  }
+  var raw$1 = Curry._2(Parser_env_Peek.value, undefined, env);
+  var value$2 = {
+    TAG: /* String */0,
+    _0: raw$1
+  };
+  var ret_0 = Curry._2(Parser_env_Peek.loc, undefined, env);
+  var ret_1 = {
+    value: value$2,
+    raw: raw$1
+  };
+  var ret = [
+    ret_0,
+    ret_1
+  ];
+  error_unexpected(env);
+  return ret;
+}
+
+function declare_var(env, start_loc) {
+  token$4(env, /* T_VAR */22);
+  var id = Curry._2(Parse.identifier_with_type, env, /* StrictVarName */27);
+  var loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+  var end_loc = loc !== undefined ? loc : id[0];
+  var loc$1 = btwn(start_loc, end_loc);
+  semicolon(env);
+  return [
+          loc$1,
+          {
+            id: id
+          }
+        ];
 }
 
 function type_alias(env) {
@@ -11982,62 +11825,180 @@ function declare_function_statement(env, start_loc) {
         ];
 }
 
-function expression(env) {
-  var expression$1 = Curry._1(Parse.expression, env);
-  var loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-  var end_loc = loc !== undefined ? loc : expression$1[0];
-  semicolon(env);
-  return [
-          btwn(expression$1[0], end_loc),
-          {
-            TAG: /* Expression */1,
-            _0: {
-              expression: expression$1
-            }
+function declare(in_moduleOpt, env) {
+  var in_module = in_moduleOpt !== undefined ? in_moduleOpt : false;
+  if (!env.parse_options.types) {
+    error(env, /* UnexpectedTypeDeclaration */7);
+  }
+  var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+  var match = Curry._2(Parser_env_Peek.token, 1, env);
+  if (typeof match === "number") {
+    if (match >= 22) {
+      if (match >= 38) {
+        if (match < 62) {
+          switch (match) {
+            case /* T_CLASS */38 :
+                token$4(env, /* T_DECLARE */58);
+                var match$1 = Curry._2(declare_class, env, start_loc);
+                return [
+                        match$1[0],
+                        {
+                          TAG: /* DeclareClass */24,
+                          _0: match$1[1]
+                        }
+                      ];
+            case /* T_EXPORT */47 :
+                if (in_module) {
+                  return declare_export_declaration(in_module, env);
+                }
+                break;
+            case /* T_INTERFACE */51 :
+                token$4(env, /* T_DECLARE */58);
+                return $$interface(env);
+            case /* T_TYPE */59 :
+                token$4(env, /* T_DECLARE */58);
+                return type_alias(env);
+            case /* T_EXTENDS */39 :
+            case /* T_STATIC */40 :
+            case /* T_ELSE */41 :
+            case /* T_NEW */42 :
+            case /* T_DELETE */43 :
+            case /* T_TYPEOF */44 :
+            case /* T_VOID */45 :
+            case /* T_ENUM */46 :
+            case /* T_IMPORT */48 :
+            case /* T_SUPER */49 :
+            case /* T_IMPLEMENTS */50 :
+            case /* T_PACKAGE */52 :
+            case /* T_PRIVATE */53 :
+            case /* T_PROTECTED */54 :
+            case /* T_PUBLIC */55 :
+            case /* T_YIELD */56 :
+            case /* T_DEBUGGER */57 :
+            case /* T_DECLARE */58 :
+            case /* T_OF */60 :
+                break;
+            case /* T_ASYNC */61 :
+                token$4(env, /* T_DECLARE */58);
+                error(env, /* DeclareAsync */49);
+                token$4(env, /* T_ASYNC */61);
+                return declare_function_statement(env, start_loc);
+            
           }
-        ];
+        }
+        
+      } else if (match < 23) {
+        token$4(env, /* T_DECLARE */58);
+        return declare_var_statement(env, start_loc);
+      }
+      
+    } else if (match !== 13) {
+      if (match === 0 && Curry._2(Parser_env_Peek.value, 1, env) === "module") {
+        token$4(env, /* T_DECLARE */58);
+        contextual(env, "module");
+        if (in_module || Curry._2(Parser_env_Peek.token, undefined, env) === /* T_PERIOD */9) {
+          token$4(env, /* T_PERIOD */9);
+          contextual(env, "exports");
+          var type_annot = wrap(annotation, env);
+          var loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+          var end_loc = loc !== undefined ? loc : type_annot[0];
+          semicolon(env);
+          var loc$1 = btwn(start_loc, end_loc);
+          return [
+                  loc$1,
+                  {
+                    TAG: /* DeclareModuleExports */26,
+                    _0: type_annot
+                  }
+                ];
+        } else {
+          var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
+          var id;
+          if (typeof match$2 === "number" || match$2.TAG !== /* T_STRING */1) {
+            id = {
+              TAG: /* Identifier */0,
+              _0: Curry._2(Parse.identifier, undefined, env)
+            };
+          } else {
+            var match$3 = match$2._0;
+            var octal = match$3[3];
+            var raw = match$3[2];
+            var value = match$3[1];
+            var loc$2 = match$3[0];
+            if (octal) {
+              strict_error(env, /* StrictOctalLiteral */31);
+            }
+            token$4(env, {
+                  TAG: /* T_STRING */1,
+                  _0: [
+                    loc$2,
+                    value,
+                    raw,
+                    octal
+                  ]
+                });
+            var value$1 = {
+              TAG: /* String */0,
+              _0: value
+            };
+            id = {
+              TAG: /* Literal */1,
+              _0: [
+                loc$2,
+                {
+                  value: value$1,
+                  raw: raw
+                }
+              ]
+            };
+          }
+          var body_start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+          token$4(env, /* T_LCURLY */1);
+          var match$4 = module_items(env, undefined, /* [] */0);
+          var module_kind = match$4[0];
+          token$4(env, /* T_RCURLY */2);
+          var body_end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+          var body_loc = btwn(body_start_loc, body_end_loc);
+          var body_1 = {
+            body: match$4[1]
+          };
+          var body = [
+            body_loc,
+            body_1
+          ];
+          var loc$3 = btwn(start_loc, body_loc);
+          var kind = module_kind !== undefined ? module_kind : ({
+                TAG: /* CommonJS */0,
+                _0: loc$3
+              });
+          return [
+                  loc$3,
+                  {
+                    TAG: /* DeclareModule */25,
+                    _0: {
+                      id: id,
+                      body: body,
+                      kind: kind
+                    }
+                  }
+                ];
+        }
+      }
+      
+    } else {
+      token$4(env, /* T_DECLARE */58);
+      return declare_function_statement(env, start_loc);
+    }
+  }
+  if (in_module) {
+    token$4(env, /* T_DECLARE */58);
+    return declare_var_statement(env, start_loc);
+  } else {
+    return Curry._1(Parse.statement, env);
+  }
 }
 
 function supers(env, _acc) {
-  while(true) {
-    var acc = _acc;
-    var $$super = wrap(generic, env);
-    var acc$1 = {
-      hd: $$super,
-      tl: acc
-    };
-    var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (match !== 8) {
-      return List.rev(acc$1);
-    }
-    token$4(env, /* T_COMMA */8);
-    _acc = acc$1;
-    continue ;
-  };
-}
-
-function declare_class(env, start_loc) {
-  var env$1 = with_strict(true, env);
-  token$4(env$1, /* T_CLASS */38);
-  var id = Curry._2(Parse.identifier, undefined, env$1);
-  var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env$1);
-  var $$extends = Curry._2(Parser_env_Peek.token, undefined, env$1) === /* T_EXTENDS */39 ? (token$4(env$1, /* T_EXTENDS */39), supers(env$1, /* [] */0)) : /* [] */0;
-  var mixins = Curry._2(Parser_env_Peek.value, undefined, env$1) === "mixins" ? (contextual(env$1, "mixins"), supers(env$1, /* [] */0)) : /* [] */0;
-  var body = _object$1(true, env$1);
-  var loc = btwn(start_loc, body[0]);
-  return [
-          loc,
-          {
-            id: id,
-            typeParameters: typeParameters,
-            body: body,
-            extends: $$extends,
-            mixins: mixins
-          }
-        ];
-}
-
-function supers$1(env, _acc) {
   while(true) {
     var acc = _acc;
     var $$super = wrap(generic, env);
@@ -12063,7 +12024,7 @@ function interface_helper(env) {
   token$4(env, /* T_INTERFACE */51);
   var id = Curry._2(Parse.identifier, undefined, env);
   var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env);
-  var $$extends = Curry._2(Parser_env_Peek.token, undefined, env) === /* T_EXTENDS */39 ? (token$4(env, /* T_EXTENDS */39), supers$1(env, /* [] */0)) : /* [] */0;
+  var $$extends = Curry._2(Parser_env_Peek.token, undefined, env) === /* T_EXTENDS */39 ? (token$4(env, /* T_EXTENDS */39), supers(env, /* [] */0)) : /* [] */0;
   var body = _object$1(true, env);
   var loc = btwn(start_loc, body[0]);
   return [
@@ -12074,6 +12035,45 @@ function interface_helper(env) {
             body: body,
             extends: $$extends,
             mixins: /* [] */0
+          }
+        ];
+}
+
+function supers$1(env, _acc) {
+  while(true) {
+    var acc = _acc;
+    var $$super = wrap(generic, env);
+    var acc$1 = {
+      hd: $$super,
+      tl: acc
+    };
+    var match = Curry._2(Parser_env_Peek.token, undefined, env);
+    if (match !== 8) {
+      return List.rev(acc$1);
+    }
+    token$4(env, /* T_COMMA */8);
+    _acc = acc$1;
+    continue ;
+  };
+}
+
+function declare_class(env, start_loc) {
+  var env$1 = with_strict(true, env);
+  token$4(env$1, /* T_CLASS */38);
+  var id = Curry._2(Parse.identifier, undefined, env$1);
+  var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env$1);
+  var $$extends = Curry._2(Parser_env_Peek.token, undefined, env$1) === /* T_EXTENDS */39 ? (token$4(env$1, /* T_EXTENDS */39), supers$1(env$1, /* [] */0)) : /* [] */0;
+  var mixins = Curry._2(Parser_env_Peek.value, undefined, env$1) === "mixins" ? (contextual(env$1, "mixins"), supers$1(env$1, /* [] */0)) : /* [] */0;
+  var body = _object$1(true, env$1);
+  var loc = btwn(start_loc, body[0]);
+  return [
+          loc,
+          {
+            id: id,
+            typeParameters: typeParameters,
+            body: body,
+            extends: $$extends,
+            mixins: mixins
           }
         ];
 }
@@ -13423,6 +13423,546 @@ function element_without_lt(env, start_loc) {
         ];
 }
 
+function module_item(env) {
+  var decorators = decorator_list(env);
+  var match = Curry._2(Parser_env_Peek.token, undefined, env);
+  if (typeof match !== "number") {
+    return statement_list_item(decorators, env);
+  }
+  switch (match) {
+    case /* T_EXPORT */47 :
+        var env$1 = with_in_export(true, with_strict(true, env));
+        var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
+        token$4(env$1, /* T_EXPORT */47);
+        var match$1 = Curry._2(Parser_env_Peek.token, undefined, env$1);
+        var exit = 0;
+        if (typeof match$1 === "number") {
+          if (match$1 >= 51) {
+            if (match$1 !== 97) {
+              if (match$1 >= 62) {
+                exit = 1;
+              } else {
+                switch (match$1) {
+                  case /* T_INTERFACE */51 :
+                      if (!env$1.parse_options.types) {
+                        error(env$1, /* UnexpectedTypeExport */9);
+                      }
+                      var $$interface$1 = $$interface(env$1);
+                      var match$2 = $$interface$1[1];
+                      if (typeof match$2 === "number") {
+                        throw {
+                              RE_EXN_ID: "Failure",
+                              _1: "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!",
+                              Error: new Error()
+                            };
+                      }
+                      if (match$2.TAG === /* InterfaceDeclaration */21) {
+                        record_export(env$1, [
+                              $$interface$1[0],
+                              extract_ident_name(match$2._0.id)
+                            ]);
+                      } else {
+                        throw {
+                              RE_EXN_ID: "Failure",
+                              _1: "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!",
+                              Error: new Error()
+                            };
+                      }
+                      var end_loc = $$interface$1[0];
+                      return [
+                              btwn(start_loc, end_loc),
+                              {
+                                TAG: /* ExportDeclaration */28,
+                                _0: {
+                                  default: false,
+                                  declaration: {
+                                    TAG: /* Declaration */0,
+                                    _0: $$interface$1
+                                  },
+                                  specifiers: undefined,
+                                  source: undefined,
+                                  exportKind: /* ExportType */0
+                                }
+                              }
+                            ];
+                  case /* T_TYPE */59 :
+                      if (Curry._2(Parser_env_Peek.token, 1, env$1) !== /* T_LCURLY */1) {
+                        if (!env$1.parse_options.types) {
+                          error(env$1, /* UnexpectedTypeExport */9);
+                        }
+                        var type_alias$1 = type_alias(env$1);
+                        var match$3 = type_alias$1[1];
+                        if (typeof match$3 === "number") {
+                          throw {
+                                RE_EXN_ID: "Failure",
+                                _1: "Internal Flow Error! Parsed `export type` into something other than a type alias!",
+                                Error: new Error()
+                              };
+                        }
+                        if (match$3.TAG === /* TypeAlias */7) {
+                          record_export(env$1, [
+                                type_alias$1[0],
+                                extract_ident_name(match$3._0.id)
+                              ]);
+                        } else {
+                          throw {
+                                RE_EXN_ID: "Failure",
+                                _1: "Internal Flow Error! Parsed `export type` into something other than a type alias!",
+                                Error: new Error()
+                              };
+                        }
+                        var end_loc$1 = type_alias$1[0];
+                        return [
+                                btwn(start_loc, end_loc$1),
+                                {
+                                  TAG: /* ExportDeclaration */28,
+                                  _0: {
+                                    default: false,
+                                    declaration: {
+                                      TAG: /* Declaration */0,
+                                      _0: type_alias$1
+                                    },
+                                    specifiers: undefined,
+                                    source: undefined,
+                                    exportKind: /* ExportType */0
+                                  }
+                                }
+                              ];
+                      }
+                      exit = 1;
+                      break;
+                  case /* T_PACKAGE */52 :
+                  case /* T_PRIVATE */53 :
+                  case /* T_PROTECTED */54 :
+                  case /* T_PUBLIC */55 :
+                  case /* T_YIELD */56 :
+                  case /* T_DEBUGGER */57 :
+                  case /* T_DECLARE */58 :
+                  case /* T_OF */60 :
+                      exit = 1;
+                      break;
+                  case /* T_ASYNC */61 :
+                      exit = 2;
+                      break;
+                  
+                }
+              }
+            } else {
+              var loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
+              token$4(env$1, /* T_MULT */97);
+              var parse_export_star_as = env$1.parse_options.esproposal_export_star_as;
+              var local_name = Curry._2(Parser_env_Peek.value, undefined, env$1) === "as" ? (contextual(env$1, "as"), parse_export_star_as ? Curry._2(Parse.identifier, undefined, env$1) : (error(env$1, /* UnexpectedTypeDeclaration */7), undefined)) : undefined;
+              var specifiers = {
+                TAG: /* ExportBatchSpecifier */1,
+                _0: loc,
+                _1: local_name
+              };
+              var source$1 = export_source(env$1);
+              var loc$1 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+              var end_loc$2 = loc$1 !== undefined ? loc$1 : source$1[0];
+              var source$2 = source$1;
+              semicolon(env$1);
+              return [
+                      btwn(start_loc, end_loc$2),
+                      {
+                        TAG: /* ExportDeclaration */28,
+                        _0: {
+                          default: false,
+                          declaration: undefined,
+                          specifiers: specifiers,
+                          source: source$2,
+                          exportKind: /* ExportValue */1
+                        }
+                      }
+                    ];
+            }
+          } else {
+            switch (match$1) {
+              case /* T_DEFAULT */34 :
+                  token$4(env$1, /* T_DEFAULT */34);
+                  record_export(env$1, [
+                        btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env$1)),
+                        "default"
+                      ]);
+                  var match$4 = Curry._2(Parser_env_Peek.token, undefined, env$1);
+                  var match$5;
+                  if (match$4 === 13) {
+                    var fn = _function(env$1);
+                    match$5 = [
+                      fn[0],
+                      {
+                        TAG: /* Declaration */0,
+                        _0: fn
+                      }
+                    ];
+                  } else if (Curry._2(Parser_env_Peek.is_class, undefined, env$1)) {
+                    var _class = class_declaration(env$1, decorators);
+                    match$5 = [
+                      _class[0],
+                      {
+                        TAG: /* Declaration */0,
+                        _0: _class
+                      }
+                    ];
+                  } else {
+                    var expr = Curry._1(Parse.assignment, env$1);
+                    var loc$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+                    var end_loc$3 = loc$2 !== undefined ? loc$2 : expr[0];
+                    semicolon(env$1);
+                    match$5 = [
+                      end_loc$3,
+                      {
+                        TAG: /* Expression */1,
+                        _0: expr
+                      }
+                    ];
+                  }
+                  return [
+                          btwn(start_loc, match$5[0]),
+                          {
+                            TAG: /* ExportDeclaration */28,
+                            _0: {
+                              default: true,
+                              declaration: match$5[1],
+                              specifiers: undefined,
+                              source: undefined,
+                              exportKind: /* ExportValue */1
+                            }
+                          }
+                        ];
+              case /* T_IF */14 :
+              case /* T_IN */15 :
+              case /* T_INSTANCEOF */16 :
+              case /* T_RETURN */17 :
+              case /* T_SWITCH */18 :
+              case /* T_THIS */19 :
+              case /* T_THROW */20 :
+              case /* T_TRY */21 :
+              case /* T_WHILE */23 :
+              case /* T_WITH */24 :
+              case /* T_NULL */27 :
+              case /* T_FALSE */28 :
+              case /* T_TRUE */29 :
+              case /* T_BREAK */30 :
+              case /* T_CASE */31 :
+              case /* T_CATCH */32 :
+              case /* T_CONTINUE */33 :
+              case /* T_DO */35 :
+              case /* T_FINALLY */36 :
+              case /* T_FOR */37 :
+                  exit = 1;
+                  break;
+              case /* T_AT */12 :
+              case /* T_FUNCTION */13 :
+              case /* T_VAR */22 :
+              case /* T_CONST */25 :
+              case /* T_LET */26 :
+              case /* T_CLASS */38 :
+                  exit = 2;
+                  break;
+              default:
+                exit = 1;
+            }
+          }
+        } else {
+          exit = 1;
+        }
+        switch (exit) {
+          case 1 :
+              var match$6 = Curry._2(Parser_env_Peek.token, undefined, env$1);
+              var exportKind = match$6 === 59 ? (token$3(env$1), /* ExportType */0) : /* ExportValue */1;
+              token$4(env$1, /* T_LCURLY */1);
+              var match$7 = export_specifiers_and_errs(env$1, /* [] */0, /* [] */0);
+              var specifiers$1 = {
+                TAG: /* ExportSpecifiers */0,
+                _0: match$7[0]
+              };
+              var end_loc$4 = Curry._2(Parser_env_Peek.loc, undefined, env$1);
+              token$4(env$1, /* T_RCURLY */2);
+              var source$3 = Curry._2(Parser_env_Peek.value, undefined, env$1) === "from" ? export_source(env$1) : (List.iter((function (param) {
+                          return error_at(env$1, param);
+                        }), match$7[1]), undefined);
+              var loc$3 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
+              var end_loc$5 = loc$3 !== undefined ? loc$3 : (
+                  source$3 !== undefined ? source$3[0] : end_loc$4
+                );
+              semicolon(env$1);
+              return [
+                      btwn(start_loc, end_loc$5),
+                      {
+                        TAG: /* ExportDeclaration */28,
+                        _0: {
+                          default: false,
+                          declaration: undefined,
+                          specifiers: specifiers$1,
+                          source: source$3,
+                          exportKind: exportKind
+                        }
+                      }
+                    ];
+          case 2 :
+              var stmt = Curry._2(Parse.statement_list_item, decorators, env$1);
+              var match$8 = stmt[1];
+              var loc$4 = stmt[0];
+              var names;
+              if (typeof match$8 === "number") {
+                throw {
+                      RE_EXN_ID: "Failure",
+                      _1: "Internal Flow Error! Unexpected export statement declaration!",
+                      Error: new Error()
+                    };
+              }
+              switch (match$8.TAG | 0) {
+                case /* FunctionDeclaration */18 :
+                    var id = match$8._0.id;
+                    if (id !== undefined) {
+                      names = {
+                        hd: [
+                          loc$4,
+                          extract_ident_name(id)
+                        ],
+                        tl: /* [] */0
+                      };
+                    } else {
+                      error_at(env$1, [
+                            loc$4,
+                            /* ExportNamelessFunction */56
+                          ]);
+                      names = /* [] */0;
+                    }
+                    break;
+                case /* VariableDeclaration */19 :
+                    names = List.fold_left((function (names, param) {
+                            var id = param[1].id;
+                            var param$1 = {
+                              hd: id,
+                              tl: /* [] */0
+                            };
+                            return List.fold_left(fold, names, param$1);
+                          }), /* [] */0, match$8._0.declarations);
+                    break;
+                case /* ClassDeclaration */20 :
+                    var id$1 = match$8._0.id;
+                    if (id$1 !== undefined) {
+                      names = {
+                        hd: [
+                          loc$4,
+                          extract_ident_name(id$1)
+                        ],
+                        tl: /* [] */0
+                      };
+                    } else {
+                      error_at(env$1, [
+                            loc$4,
+                            /* ExportNamelessClass */55
+                          ]);
+                      names = /* [] */0;
+                    }
+                    break;
+                default:
+                  throw {
+                        RE_EXN_ID: "Failure",
+                        _1: "Internal Flow Error! Unexpected export statement declaration!",
+                        Error: new Error()
+                      };
+              }
+              List.iter((function (param) {
+                      return record_export(env$1, param);
+                    }), names);
+              var declaration = {
+                TAG: /* Declaration */0,
+                _0: stmt
+              };
+              return [
+                      btwn(start_loc, stmt[0]),
+                      {
+                        TAG: /* ExportDeclaration */28,
+                        _0: {
+                          default: false,
+                          declaration: declaration,
+                          specifiers: undefined,
+                          source: undefined,
+                          exportKind: /* ExportValue */1
+                        }
+                      }
+                    ];
+          
+        }
+    case /* T_IMPORT */48 :
+        error_on_decorators(env)(decorators);
+        var env$2 = with_strict(true, env);
+        var start_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env$2);
+        token$4(env$2, /* T_IMPORT */48);
+        var match$9 = Curry._2(Parser_env_Peek.token, undefined, env$2);
+        var match$10 = typeof match$9 === "number" ? (
+            match$9 !== 44 ? (
+                match$9 !== 59 ? [
+                    /* ImportValue */2,
+                    undefined
+                  ] : (!env$2.parse_options.types ? error(env$2, /* UnexpectedTypeImport */8) : undefined, [
+                      /* ImportType */0,
+                      Curry._2(Parse.identifier, undefined, env$2)
+                    ])
+              ) : (!env$2.parse_options.types ? error(env$2, /* UnexpectedTypeImport */8) : undefined, token$4(env$2, /* T_TYPEOF */44), [
+                  /* ImportTypeof */1,
+                  undefined
+                ])
+          ) : [
+            /* ImportValue */2,
+            undefined
+          ];
+        var type_ident = match$10[1];
+        var importKind = match$10[0];
+        var match$11 = Curry._2(Parser_env_Peek.token, undefined, env$2);
+        var match$12 = Curry._2(Parser_env_Peek.is_identifier, undefined, env$2);
+        var exit$1 = 0;
+        var exit$2 = 0;
+        if (typeof match$11 === "number") {
+          if (match$11 === /* T_COMMA */8) {
+            exit$1 = 1;
+          } else {
+            exit$2 = 2;
+          }
+        } else if (match$11.TAG === /* T_STRING */1) {
+          if (importKind === /* ImportValue */2) {
+            var match$13 = match$11._0;
+            var octal = match$13[3];
+            var raw = match$13[2];
+            var value = match$13[1];
+            var str_loc = match$13[0];
+            if (octal) {
+              strict_error(env$2, /* StrictOctalLiteral */31);
+            }
+            token$4(env$2, {
+                  TAG: /* T_STRING */1,
+                  _0: [
+                    str_loc,
+                    value,
+                    raw,
+                    octal
+                  ]
+                });
+            var value$1 = {
+              TAG: /* String */0,
+              _0: value
+            };
+            var source_1 = {
+              value: value$1,
+              raw: raw
+            };
+            var source$4 = [
+              str_loc,
+              source_1
+            ];
+            var loc$5 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
+            var end_loc$6 = loc$5 !== undefined ? loc$5 : str_loc;
+            semicolon(env$2);
+            return [
+                    btwn(start_loc$1, end_loc$6),
+                    {
+                      TAG: /* ImportDeclaration */29,
+                      _0: {
+                        importKind: importKind,
+                        source: source$4,
+                        specifiers: /* [] */0
+                      }
+                    }
+                  ];
+          }
+          exit$2 = 2;
+        } else {
+          exit$2 = 2;
+        }
+        if (exit$2 === 2) {
+          if (match$12) {
+            exit$1 = 1;
+          } else {
+            var specifiers$2 = named_or_namespace_specifier(env$2);
+            var source$5 = source(env$2);
+            var loc$6 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
+            var end_loc$7 = loc$6 !== undefined ? loc$6 : source$5[0];
+            semicolon(env$2);
+            return [
+                    btwn(start_loc$1, end_loc$7),
+                    {
+                      TAG: /* ImportDeclaration */29,
+                      _0: {
+                        importKind: importKind,
+                        source: source$5,
+                        specifiers: specifiers$2
+                      }
+                    }
+                  ];
+          }
+        }
+        if (exit$1 === 1) {
+          var match$14 = Curry._2(Parser_env_Peek.token, undefined, env$2);
+          var match$15 = Curry._2(Parser_env_Peek.value, undefined, env$2);
+          var match$16;
+          var exit$3 = 0;
+          if (type_ident !== undefined && typeof match$14 === "number" && !(match$14 !== 8 && (match$14 !== 0 || match$15 !== "from"))) {
+            match$16 = [
+              /* ImportValue */2,
+              {
+                TAG: /* ImportDefaultSpecifier */1,
+                _0: type_ident
+              }
+            ];
+          } else {
+            exit$3 = 2;
+          }
+          if (exit$3 === 2) {
+            match$16 = [
+              importKind,
+              {
+                TAG: /* ImportDefaultSpecifier */1,
+                _0: Curry._2(Parse.identifier, undefined, env$2)
+              }
+            ];
+          }
+          var match$17 = Curry._2(Parser_env_Peek.token, undefined, env$2);
+          var additional_specifiers = match$17 === 8 ? (token$4(env$2, /* T_COMMA */8), named_or_namespace_specifier(env$2)) : /* [] */0;
+          var source$6 = source(env$2);
+          var loc$7 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
+          var end_loc$8 = loc$7 !== undefined ? loc$7 : source$6[0];
+          semicolon(env$2);
+          return [
+                  btwn(start_loc$1, end_loc$8),
+                  {
+                    TAG: /* ImportDeclaration */29,
+                    _0: {
+                      importKind: match$16[0],
+                      source: source$6,
+                      specifiers: {
+                        hd: match$16[1],
+                        tl: additional_specifiers
+                      }
+                    }
+                  }
+                ];
+        }
+        case /* T_SUPER */49 :
+    case /* T_IMPLEMENTS */50 :
+    case /* T_INTERFACE */51 :
+    case /* T_PACKAGE */52 :
+    case /* T_PRIVATE */53 :
+    case /* T_PROTECTED */54 :
+    case /* T_PUBLIC */55 :
+    case /* T_YIELD */56 :
+    case /* T_DEBUGGER */57 :
+        return statement_list_item(decorators, env);
+    case /* T_DECLARE */58 :
+        if (Curry._2(Parser_env_Peek.token, 1, env) === /* T_EXPORT */47) {
+          error_on_decorators(env)(decorators);
+          return declare_export_declaration(undefined, env);
+        } else {
+          return statement_list_item(decorators, env);
+        }
+    default:
+      return statement_list_item(decorators, env);
+  }
+}
+
 function statement_list_item(decoratorsOpt, env) {
   var decorators = decoratorsOpt !== undefined ? decoratorsOpt : /* [] */0;
   if (!Curry._2(Parser_env_Peek.is_class, undefined, env)) {
@@ -14167,566 +14707,7 @@ function statement(env) {
   };
 }
 
-function module_item(env) {
-  var decorators = decorator_list(env);
-  var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "number") {
-    return statement_list_item(decorators, env);
-  }
-  switch (match) {
-    case /* T_EXPORT */47 :
-        var env$1 = with_in_export(true, with_strict(true, env));
-        var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
-        token$4(env$1, /* T_EXPORT */47);
-        var match$1 = Curry._2(Parser_env_Peek.token, undefined, env$1);
-        var exit = 0;
-        if (typeof match$1 === "number") {
-          if (match$1 >= 51) {
-            if (match$1 !== 97) {
-              if (match$1 >= 62) {
-                exit = 1;
-              } else {
-                switch (match$1) {
-                  case /* T_INTERFACE */51 :
-                      if (!env$1.parse_options.types) {
-                        error(env$1, /* UnexpectedTypeExport */9);
-                      }
-                      var $$interface$1 = $$interface(env$1);
-                      var match$2 = $$interface$1[1];
-                      if (typeof match$2 === "number") {
-                        throw {
-                              RE_EXN_ID: "Failure",
-                              _1: "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!",
-                              Error: new Error()
-                            };
-                      }
-                      if (match$2.TAG === /* InterfaceDeclaration */21) {
-                        record_export(env$1, [
-                              $$interface$1[0],
-                              extract_ident_name(match$2._0.id)
-                            ]);
-                      } else {
-                        throw {
-                              RE_EXN_ID: "Failure",
-                              _1: "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!",
-                              Error: new Error()
-                            };
-                      }
-                      var end_loc = $$interface$1[0];
-                      return [
-                              btwn(start_loc, end_loc),
-                              {
-                                TAG: /* ExportDeclaration */28,
-                                _0: {
-                                  default: false,
-                                  declaration: {
-                                    TAG: /* Declaration */0,
-                                    _0: $$interface$1
-                                  },
-                                  specifiers: undefined,
-                                  source: undefined,
-                                  exportKind: /* ExportType */0
-                                }
-                              }
-                            ];
-                  case /* T_TYPE */59 :
-                      if (Curry._2(Parser_env_Peek.token, 1, env$1) !== /* T_LCURLY */1) {
-                        if (!env$1.parse_options.types) {
-                          error(env$1, /* UnexpectedTypeExport */9);
-                        }
-                        var type_alias$1 = type_alias(env$1);
-                        var match$3 = type_alias$1[1];
-                        if (typeof match$3 === "number") {
-                          throw {
-                                RE_EXN_ID: "Failure",
-                                _1: "Internal Flow Error! Parsed `export type` into something other than a type alias!",
-                                Error: new Error()
-                              };
-                        }
-                        if (match$3.TAG === /* TypeAlias */7) {
-                          record_export(env$1, [
-                                type_alias$1[0],
-                                extract_ident_name(match$3._0.id)
-                              ]);
-                        } else {
-                          throw {
-                                RE_EXN_ID: "Failure",
-                                _1: "Internal Flow Error! Parsed `export type` into something other than a type alias!",
-                                Error: new Error()
-                              };
-                        }
-                        var end_loc$1 = type_alias$1[0];
-                        return [
-                                btwn(start_loc, end_loc$1),
-                                {
-                                  TAG: /* ExportDeclaration */28,
-                                  _0: {
-                                    default: false,
-                                    declaration: {
-                                      TAG: /* Declaration */0,
-                                      _0: type_alias$1
-                                    },
-                                    specifiers: undefined,
-                                    source: undefined,
-                                    exportKind: /* ExportType */0
-                                  }
-                                }
-                              ];
-                      }
-                      exit = 1;
-                      break;
-                  case /* T_PACKAGE */52 :
-                  case /* T_PRIVATE */53 :
-                  case /* T_PROTECTED */54 :
-                  case /* T_PUBLIC */55 :
-                  case /* T_YIELD */56 :
-                  case /* T_DEBUGGER */57 :
-                  case /* T_DECLARE */58 :
-                  case /* T_OF */60 :
-                      exit = 1;
-                      break;
-                  case /* T_ASYNC */61 :
-                      exit = 2;
-                      break;
-                  
-                }
-              }
-            } else {
-              var loc = Curry._2(Parser_env_Peek.loc, undefined, env$1);
-              token$4(env$1, /* T_MULT */97);
-              var parse_export_star_as = env$1.parse_options.esproposal_export_star_as;
-              var local_name = Curry._2(Parser_env_Peek.value, undefined, env$1) === "as" ? (contextual(env$1, "as"), parse_export_star_as ? Curry._2(Parse.identifier, undefined, env$1) : (error(env$1, /* UnexpectedTypeDeclaration */7), undefined)) : undefined;
-              var specifiers = {
-                TAG: /* ExportBatchSpecifier */1,
-                _0: loc,
-                _1: local_name
-              };
-              var source$1 = export_source(env$1);
-              var loc$1 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
-              var end_loc$2 = loc$1 !== undefined ? loc$1 : source$1[0];
-              var source$2 = source$1;
-              semicolon(env$1);
-              return [
-                      btwn(start_loc, end_loc$2),
-                      {
-                        TAG: /* ExportDeclaration */28,
-                        _0: {
-                          default: false,
-                          declaration: undefined,
-                          specifiers: specifiers,
-                          source: source$2,
-                          exportKind: /* ExportValue */1
-                        }
-                      }
-                    ];
-            }
-          } else {
-            switch (match$1) {
-              case /* T_DEFAULT */34 :
-                  token$4(env$1, /* T_DEFAULT */34);
-                  record_export(env$1, [
-                        btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env$1)),
-                        "default"
-                      ]);
-                  var match$4 = Curry._2(Parser_env_Peek.token, undefined, env$1);
-                  var match$5;
-                  if (match$4 === 13) {
-                    var fn = _function(env$1);
-                    match$5 = [
-                      fn[0],
-                      {
-                        TAG: /* Declaration */0,
-                        _0: fn
-                      }
-                    ];
-                  } else if (Curry._2(Parser_env_Peek.is_class, undefined, env$1)) {
-                    var _class = class_declaration(env$1, decorators);
-                    match$5 = [
-                      _class[0],
-                      {
-                        TAG: /* Declaration */0,
-                        _0: _class
-                      }
-                    ];
-                  } else {
-                    var expr = Curry._1(Parse.assignment, env$1);
-                    var loc$2 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
-                    var end_loc$3 = loc$2 !== undefined ? loc$2 : expr[0];
-                    semicolon(env$1);
-                    match$5 = [
-                      end_loc$3,
-                      {
-                        TAG: /* Expression */1,
-                        _0: expr
-                      }
-                    ];
-                  }
-                  return [
-                          btwn(start_loc, match$5[0]),
-                          {
-                            TAG: /* ExportDeclaration */28,
-                            _0: {
-                              default: true,
-                              declaration: match$5[1],
-                              specifiers: undefined,
-                              source: undefined,
-                              exportKind: /* ExportValue */1
-                            }
-                          }
-                        ];
-              case /* T_IF */14 :
-              case /* T_IN */15 :
-              case /* T_INSTANCEOF */16 :
-              case /* T_RETURN */17 :
-              case /* T_SWITCH */18 :
-              case /* T_THIS */19 :
-              case /* T_THROW */20 :
-              case /* T_TRY */21 :
-              case /* T_WHILE */23 :
-              case /* T_WITH */24 :
-              case /* T_NULL */27 :
-              case /* T_FALSE */28 :
-              case /* T_TRUE */29 :
-              case /* T_BREAK */30 :
-              case /* T_CASE */31 :
-              case /* T_CATCH */32 :
-              case /* T_CONTINUE */33 :
-              case /* T_DO */35 :
-              case /* T_FINALLY */36 :
-              case /* T_FOR */37 :
-                  exit = 1;
-                  break;
-              case /* T_AT */12 :
-              case /* T_FUNCTION */13 :
-              case /* T_VAR */22 :
-              case /* T_CONST */25 :
-              case /* T_LET */26 :
-              case /* T_CLASS */38 :
-                  exit = 2;
-                  break;
-              default:
-                exit = 1;
-            }
-          }
-        } else {
-          exit = 1;
-        }
-        switch (exit) {
-          case 1 :
-              var match$6 = Curry._2(Parser_env_Peek.token, undefined, env$1);
-              var exportKind = match$6 === 59 ? (token$3(env$1), /* ExportType */0) : /* ExportValue */1;
-              token$4(env$1, /* T_LCURLY */1);
-              var match$7 = export_specifiers_and_errs(env$1, /* [] */0, /* [] */0);
-              var specifiers$1 = {
-                TAG: /* ExportSpecifiers */0,
-                _0: match$7[0]
-              };
-              var end_loc$4 = Curry._2(Parser_env_Peek.loc, undefined, env$1);
-              token$4(env$1, /* T_RCURLY */2);
-              var source$3 = Curry._2(Parser_env_Peek.value, undefined, env$1) === "from" ? export_source(env$1) : (List.iter((function (param) {
-                          return error_at(env$1, param);
-                        }), match$7[1]), undefined);
-              var loc$3 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$1);
-              var end_loc$5 = loc$3 !== undefined ? loc$3 : (
-                  source$3 !== undefined ? source$3[0] : end_loc$4
-                );
-              semicolon(env$1);
-              return [
-                      btwn(start_loc, end_loc$5),
-                      {
-                        TAG: /* ExportDeclaration */28,
-                        _0: {
-                          default: false,
-                          declaration: undefined,
-                          specifiers: specifiers$1,
-                          source: source$3,
-                          exportKind: exportKind
-                        }
-                      }
-                    ];
-          case 2 :
-              var stmt = Curry._2(Parse.statement_list_item, decorators, env$1);
-              var match$8 = stmt[1];
-              var loc$4 = stmt[0];
-              var names;
-              if (typeof match$8 === "number") {
-                throw {
-                      RE_EXN_ID: "Failure",
-                      _1: "Internal Flow Error! Unexpected export statement declaration!",
-                      Error: new Error()
-                    };
-              }
-              switch (match$8.TAG | 0) {
-                case /* FunctionDeclaration */18 :
-                    var id = match$8._0.id;
-                    if (id !== undefined) {
-                      names = {
-                        hd: [
-                          loc$4,
-                          extract_ident_name(id)
-                        ],
-                        tl: /* [] */0
-                      };
-                    } else {
-                      error_at(env$1, [
-                            loc$4,
-                            /* ExportNamelessFunction */56
-                          ]);
-                      names = /* [] */0;
-                    }
-                    break;
-                case /* VariableDeclaration */19 :
-                    names = List.fold_left((function (names, param) {
-                            var id = param[1].id;
-                            var param$1 = {
-                              hd: id,
-                              tl: /* [] */0
-                            };
-                            return List.fold_left(fold, names, param$1);
-                          }), /* [] */0, match$8._0.declarations);
-                    break;
-                case /* ClassDeclaration */20 :
-                    var id$1 = match$8._0.id;
-                    if (id$1 !== undefined) {
-                      names = {
-                        hd: [
-                          loc$4,
-                          extract_ident_name(id$1)
-                        ],
-                        tl: /* [] */0
-                      };
-                    } else {
-                      error_at(env$1, [
-                            loc$4,
-                            /* ExportNamelessClass */55
-                          ]);
-                      names = /* [] */0;
-                    }
-                    break;
-                default:
-                  throw {
-                        RE_EXN_ID: "Failure",
-                        _1: "Internal Flow Error! Unexpected export statement declaration!",
-                        Error: new Error()
-                      };
-              }
-              List.iter((function (param) {
-                      return record_export(env$1, param);
-                    }), names);
-              var declaration = {
-                TAG: /* Declaration */0,
-                _0: stmt
-              };
-              return [
-                      btwn(start_loc, stmt[0]),
-                      {
-                        TAG: /* ExportDeclaration */28,
-                        _0: {
-                          default: false,
-                          declaration: declaration,
-                          specifiers: undefined,
-                          source: undefined,
-                          exportKind: /* ExportValue */1
-                        }
-                      }
-                    ];
-          
-        }
-    case /* T_IMPORT */48 :
-        error_on_decorators(env)(decorators);
-        var env$2 = with_strict(true, env);
-        var start_loc$1 = Curry._2(Parser_env_Peek.loc, undefined, env$2);
-        token$4(env$2, /* T_IMPORT */48);
-        var match$9 = Curry._2(Parser_env_Peek.token, undefined, env$2);
-        var match$10 = typeof match$9 === "number" ? (
-            match$9 !== 44 ? (
-                match$9 !== 59 ? [
-                    /* ImportValue */2,
-                    undefined
-                  ] : (!env$2.parse_options.types ? error(env$2, /* UnexpectedTypeImport */8) : undefined, [
-                      /* ImportType */0,
-                      Curry._2(Parse.identifier, undefined, env$2)
-                    ])
-              ) : (!env$2.parse_options.types ? error(env$2, /* UnexpectedTypeImport */8) : undefined, token$4(env$2, /* T_TYPEOF */44), [
-                  /* ImportTypeof */1,
-                  undefined
-                ])
-          ) : [
-            /* ImportValue */2,
-            undefined
-          ];
-        var type_ident = match$10[1];
-        var importKind = match$10[0];
-        var match$11 = Curry._2(Parser_env_Peek.token, undefined, env$2);
-        var match$12 = Curry._2(Parser_env_Peek.is_identifier, undefined, env$2);
-        var exit$1 = 0;
-        var exit$2 = 0;
-        if (typeof match$11 === "number") {
-          if (match$11 === /* T_COMMA */8) {
-            exit$1 = 1;
-          } else {
-            exit$2 = 2;
-          }
-        } else if (match$11.TAG === /* T_STRING */1) {
-          if (importKind === /* ImportValue */2) {
-            var match$13 = match$11._0;
-            var octal = match$13[3];
-            var raw = match$13[2];
-            var value = match$13[1];
-            var str_loc = match$13[0];
-            if (octal) {
-              strict_error(env$2, /* StrictOctalLiteral */31);
-            }
-            token$4(env$2, {
-                  TAG: /* T_STRING */1,
-                  _0: [
-                    str_loc,
-                    value,
-                    raw,
-                    octal
-                  ]
-                });
-            var value$1 = {
-              TAG: /* String */0,
-              _0: value
-            };
-            var source_1 = {
-              value: value$1,
-              raw: raw
-            };
-            var source$4 = [
-              str_loc,
-              source_1
-            ];
-            var loc$5 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
-            var end_loc$6 = loc$5 !== undefined ? loc$5 : str_loc;
-            semicolon(env$2);
-            return [
-                    btwn(start_loc$1, end_loc$6),
-                    {
-                      TAG: /* ImportDeclaration */29,
-                      _0: {
-                        importKind: importKind,
-                        source: source$4,
-                        specifiers: /* [] */0
-                      }
-                    }
-                  ];
-          }
-          exit$2 = 2;
-        } else {
-          exit$2 = 2;
-        }
-        if (exit$2 === 2) {
-          if (match$12) {
-            exit$1 = 1;
-          } else {
-            var specifiers$2 = named_or_namespace_specifier(env$2);
-            var source$5 = source(env$2);
-            var loc$6 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
-            var end_loc$7 = loc$6 !== undefined ? loc$6 : source$5[0];
-            semicolon(env$2);
-            return [
-                    btwn(start_loc$1, end_loc$7),
-                    {
-                      TAG: /* ImportDeclaration */29,
-                      _0: {
-                        importKind: importKind,
-                        source: source$5,
-                        specifiers: specifiers$2
-                      }
-                    }
-                  ];
-          }
-        }
-        if (exit$1 === 1) {
-          var match$14 = Curry._2(Parser_env_Peek.token, undefined, env$2);
-          var match$15 = Curry._2(Parser_env_Peek.value, undefined, env$2);
-          var match$16;
-          var exit$3 = 0;
-          if (type_ident !== undefined && typeof match$14 === "number" && !(match$14 !== 8 && (match$14 !== 0 || match$15 !== "from"))) {
-            match$16 = [
-              /* ImportValue */2,
-              {
-                TAG: /* ImportDefaultSpecifier */1,
-                _0: type_ident
-              }
-            ];
-          } else {
-            exit$3 = 2;
-          }
-          if (exit$3 === 2) {
-            match$16 = [
-              importKind,
-              {
-                TAG: /* ImportDefaultSpecifier */1,
-                _0: Curry._2(Parse.identifier, undefined, env$2)
-              }
-            ];
-          }
-          var match$17 = Curry._2(Parser_env_Peek.token, undefined, env$2);
-          var additional_specifiers = match$17 === 8 ? (token$4(env$2, /* T_COMMA */8), named_or_namespace_specifier(env$2)) : /* [] */0;
-          var source$6 = source(env$2);
-          var loc$7 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env$2);
-          var end_loc$8 = loc$7 !== undefined ? loc$7 : source$6[0];
-          semicolon(env$2);
-          return [
-                  btwn(start_loc$1, end_loc$8),
-                  {
-                    TAG: /* ImportDeclaration */29,
-                    _0: {
-                      importKind: match$16[0],
-                      source: source$6,
-                      specifiers: {
-                        hd: match$16[1],
-                        tl: additional_specifiers
-                      }
-                    }
-                  }
-                ];
-        }
-        case /* T_SUPER */49 :
-    case /* T_IMPLEMENTS */50 :
-    case /* T_INTERFACE */51 :
-    case /* T_PACKAGE */52 :
-    case /* T_PRIVATE */53 :
-    case /* T_PROTECTED */54 :
-    case /* T_PUBLIC */55 :
-    case /* T_YIELD */56 :
-    case /* T_DEBUGGER */57 :
-        return statement_list_item(decorators, env);
-    case /* T_DECLARE */58 :
-        if (Curry._2(Parser_env_Peek.token, 1, env) === /* T_EXPORT */47) {
-          error_on_decorators(env)(decorators);
-          return declare_export_declaration(undefined, env);
-        } else {
-          return statement_list_item(decorators, env);
-        }
-    default:
-      return statement_list_item(decorators, env);
-  }
-}
-
-function statement_list(term_fn, env) {
-  var _acc = /* [] */0;
-  while(true) {
-    var acc = _acc;
-    var t = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (t === 105) {
-      return List.rev(acc);
-    }
-    if (Curry._1(term_fn, t)) {
-      return List.rev(acc);
-    }
-    _acc = {
-      hd: statement_list_item(undefined, env),
-      tl: acc
-    };
-    continue ;
-  };
-}
-
-function statement_list$1(_env, term_fn, item_fn, _param) {
+function statement_list(_env, term_fn, item_fn, _param) {
   while(true) {
     var param = _param;
     var env = _env;
@@ -14821,7 +14802,7 @@ function statement_list$1(_env, term_fn, item_fn, _param) {
 }
 
 function directives(env, term_fn, item_fn) {
-  var match = statement_list$1(env, term_fn, item_fn, [
+  var match = statement_list(env, term_fn, item_fn, [
         /* [] */0,
         /* [] */0
       ]);
@@ -14851,8 +14832,6 @@ function directives(env, term_fn, item_fn) {
         ];
 }
 
-var class_declaration$1 = class_declaration;
-
 function module_body(term_fn, env) {
   var _acc = /* [] */0;
   while(true) {
@@ -14866,6 +14845,27 @@ function module_body(term_fn, env) {
     }
     _acc = {
       hd: module_item(env),
+      tl: acc
+    };
+    continue ;
+  };
+}
+
+var class_declaration$1 = class_declaration;
+
+function statement_list$1(term_fn, env) {
+  var _acc = /* [] */0;
+  while(true) {
+    var acc = _acc;
+    var t = Curry._2(Parser_env_Peek.token, undefined, env);
+    if (t === 105) {
+      return List.rev(acc);
+    }
+    if (Curry._1(term_fn, t)) {
+      return List.rev(acc);
+    }
+    _acc = {
+      hd: statement_list_item(undefined, env),
       tl: acc
     };
     continue ;
@@ -14910,23 +14910,12 @@ function identifier$2(restricted_error, env) {
         ];
 }
 
-function module_body_with_directives(env, term_fn) {
-  var match = Curry._3(directives, env, term_fn, module_item);
-  var stmts = Curry._2(module_body, term_fn, match[0]);
-  return List.fold_left((function (acc, stmt) {
-                return {
-                        hd: stmt,
-                        tl: acc
-                      };
-              }), stmts, match[1]);
-}
-
 function statement_list_with_directives(term_fn, env) {
   var match = Curry._3(directives, env, term_fn, (function (eta) {
           return statement_list_item(undefined, eta);
         }));
   var env$1 = match[0];
-  var stmts = Curry._2(statement_list, term_fn, env$1);
+  var stmts = Curry._2(statement_list$1, term_fn, env$1);
   var stmts$1 = List.fold_left((function (acc, stmt) {
           return {
                   hd: stmt,
@@ -14937,6 +14926,17 @@ function statement_list_with_directives(term_fn, env) {
           stmts$1,
           env$1.in_strict_mode
         ];
+}
+
+function module_body_with_directives(env, term_fn) {
+  var match = Curry._3(directives, env, term_fn, module_item);
+  var stmts = Curry._2(module_body, term_fn, match[0]);
+  return List.fold_left((function (acc, stmt) {
+                return {
+                        hd: stmt,
+                        tl: acc
+                      };
+              }), stmts, match[1]);
 }
 
 function program(env) {
@@ -15019,7 +15019,7 @@ function block_body(env) {
   var term_fn = function (t) {
     return t === /* T_RCURLY */2;
   };
-  var body = Curry._2(statement_list, term_fn, env);
+  var body = Curry._2(statement_list$1, term_fn, env);
   var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   token$4(env, /* T_RCURLY */2);
   return [
@@ -15172,7 +15172,7 @@ Caml_module.update_mod({
       program: program,
       statement: statement,
       statement_list_item: statement_list_item,
-      statement_list: statement_list,
+      statement_list: statement_list$1,
       statement_list_with_directives: statement_list_with_directives,
       module_body: module_body,
       expression: expression$1,
@@ -15504,121 +15504,22 @@ function parse(content, options) {
                   ]
                 ]);
     };
-    var type_annotation = function (param) {
-      return node("TypeAnnotation", param[0], [[
-                    "typeAnnotation",
-                    _type(param[1])
+    var type_parameter_declaration = function (param) {
+      return node("TypeParameterDeclaration", param[0], [[
+                    "params",
+                    array_of_list(type_param, param[1].params)
                   ]]);
     };
-    var pattern = function (param) {
-      var obj = param[1];
-      var loc = param[0];
-      switch (obj.TAG | 0) {
-        case /* Object */0 :
-            var obj$1 = obj._0;
-            return node("ObjectPattern", loc, [
-                        [
-                          "properties",
-                          array_of_list(object_pattern_property, obj$1.properties)
-                        ],
-                        [
-                          "typeAnnotation",
-                          option(type_annotation, obj$1.typeAnnotation)
-                        ]
-                      ]);
-        case /* Array */1 :
-            var arr = obj._0;
-            return node("ArrayPattern", loc, [
-                        [
-                          "elements",
-                          array_of_list((function (param) {
-                                  return option(array_pattern_element, param);
-                                }), arr.elements)
-                        ],
-                        [
-                          "typeAnnotation",
-                          option(type_annotation, arr.typeAnnotation)
-                        ]
-                      ]);
-        case /* Assignment */2 :
-            var match = obj._0;
-            return node("AssignmentPattern", loc, [
-                        [
-                          "left",
-                          pattern(match.left)
-                        ],
-                        [
-                          "right",
-                          expression(match.right)
-                        ]
-                      ]);
-        case /* Identifier */3 :
-            return identifier(obj._0);
-        case /* Expression */4 :
-            return expression(obj._0);
-        
-      }
-    };
-    var object_pattern_property = function (param) {
-      if (param.TAG === /* Property */0) {
-        var match = param._0;
-        var prop = match[1];
-        var lit = prop.key;
-        var match$1;
-        switch (lit.TAG | 0) {
-          case /* Literal */0 :
-              match$1 = [
-                literal(lit._0),
-                false
-              ];
-              break;
-          case /* Identifier */1 :
-              match$1 = [
-                identifier(lit._0),
-                false
-              ];
-              break;
-          case /* Computed */2 :
-              match$1 = [
-                expression(lit._0),
-                true
-              ];
-              break;
-          
-        }
-        return node("PropertyPattern", match[0], [
-                    [
-                      "key",
-                      match$1[0]
-                    ],
-                    [
-                      "pattern",
-                      pattern(prop.pattern)
-                    ],
-                    [
-                      "computed",
-                      bool(match$1[1])
-                    ],
-                    [
-                      "shorthand",
-                      bool(prop.shorthand)
-                    ]
-                  ]);
-      }
-      var match$2 = param._0;
-      return node("SpreadPropertyPattern", match$2[0], [[
-                    "argument",
-                    pattern(match$2[1].argument)
+    var type_parameter_instantiation = function (param) {
+      return node("TypeParameterInstantiation", param[0], [[
+                    "params",
+                    array_of_list(_type, param[1].params)
                   ]]);
     };
-    var array_pattern_element = function (p) {
-      if (p.TAG === /* Element */0) {
-        return pattern(p._0);
-      }
-      var match = p._0;
-      return node("SpreadElementPattern", match[0], [[
-                    "argument",
-                    pattern(match[1].argument)
+    var class_body = function (param) {
+      return node("ClassBody", param[0], [[
+                    "body",
+                    array_of_list(class_element, param[1].body)
                   ]]);
     };
     var expression = function (param) {
@@ -16128,16 +16029,347 @@ function parse(content, options) {
         
       }
     };
-    var variable_declarator = function (param) {
-      var declarator = param[1];
-      return node("VariableDeclarator", param[0], [
+    var class_implements = function (param) {
+      var $$implements = param[1];
+      return node("ClassImplements", param[0], [
                   [
                     "id",
-                    pattern(declarator.id)
+                    identifier($$implements.id)
                   ],
                   [
-                    "init",
-                    option(expression, declarator.init)
+                    "typeParameters",
+                    option(type_parameter_instantiation, $$implements.typeParameters)
+                  ]
+                ]);
+    };
+    var jsx_identifier = function (param) {
+      return node("JSXIdentifier", param[0], [[
+                    "name",
+                    string(param[1].name)
+                  ]]);
+    };
+    var object_pattern_property = function (param) {
+      if (param.TAG === /* Property */0) {
+        var match = param._0;
+        var prop = match[1];
+        var lit = prop.key;
+        var match$1;
+        switch (lit.TAG | 0) {
+          case /* Literal */0 :
+              match$1 = [
+                literal(lit._0),
+                false
+              ];
+              break;
+          case /* Identifier */1 :
+              match$1 = [
+                identifier(lit._0),
+                false
+              ];
+              break;
+          case /* Computed */2 :
+              match$1 = [
+                expression(lit._0),
+                true
+              ];
+              break;
+          
+        }
+        return node("PropertyPattern", match[0], [
+                    [
+                      "key",
+                      match$1[0]
+                    ],
+                    [
+                      "pattern",
+                      pattern(prop.pattern)
+                    ],
+                    [
+                      "computed",
+                      bool(match$1[1])
+                    ],
+                    [
+                      "shorthand",
+                      bool(prop.shorthand)
+                    ]
+                  ]);
+      }
+      var match$2 = param._0;
+      return node("SpreadPropertyPattern", match$2[0], [[
+                    "argument",
+                    pattern(match$2[1].argument)
+                  ]]);
+    };
+    var array_pattern_element = function (p) {
+      if (p.TAG === /* Element */0) {
+        return pattern(p._0);
+      }
+      var match = p._0;
+      return node("SpreadElementPattern", match[0], [[
+                    "argument",
+                    pattern(match[1].argument)
+                  ]]);
+    };
+    var pattern = function (param) {
+      var obj = param[1];
+      var loc = param[0];
+      switch (obj.TAG | 0) {
+        case /* Object */0 :
+            var obj$1 = obj._0;
+            return node("ObjectPattern", loc, [
+                        [
+                          "properties",
+                          array_of_list(object_pattern_property, obj$1.properties)
+                        ],
+                        [
+                          "typeAnnotation",
+                          option(type_annotation, obj$1.typeAnnotation)
+                        ]
+                      ]);
+        case /* Array */1 :
+            var arr = obj._0;
+            return node("ArrayPattern", loc, [
+                        [
+                          "elements",
+                          array_of_list((function (param) {
+                                  return option(array_pattern_element, param);
+                                }), arr.elements)
+                        ],
+                        [
+                          "typeAnnotation",
+                          option(type_annotation, arr.typeAnnotation)
+                        ]
+                      ]);
+        case /* Assignment */2 :
+            var match = obj._0;
+            return node("AssignmentPattern", loc, [
+                        [
+                          "left",
+                          pattern(match.left)
+                        ],
+                        [
+                          "right",
+                          expression(match.right)
+                        ]
+                      ]);
+        case /* Identifier */3 :
+            return identifier(obj._0);
+        case /* Expression */4 :
+            return expression(obj._0);
+        
+      }
+    };
+    var type_annotation = function (param) {
+      return node("TypeAnnotation", param[0], [[
+                    "typeAnnotation",
+                    _type(param[1])
+                  ]]);
+    };
+    var literal = function (param) {
+      var lit = param[1];
+      var raw = lit.raw;
+      var value = lit.value;
+      var loc = param[0];
+      var value_;
+      if (typeof value === "number") {
+        value_ = $$null;
+      } else {
+        switch (value.TAG | 0) {
+          case /* String */0 :
+              value_ = string(value._0);
+              break;
+          case /* Boolean */1 :
+              value_ = bool(value._0);
+              break;
+          case /* Number */2 :
+              value_ = number$1(value._0);
+              break;
+          case /* RegExp */3 :
+              var match = value._0;
+              value_ = regexp$1(loc, match.pattern, match.flags);
+              break;
+          
+        }
+      }
+      var props;
+      var exit = 0;
+      if (typeof value === "number" || value.TAG !== /* RegExp */3) {
+        exit = 1;
+      } else {
+        var match$1 = value._0;
+        var regex = obj([
+              [
+                "pattern",
+                string(match$1.pattern)
+              ],
+              [
+                "flags",
+                string(match$1.flags)
+              ]
+            ]);
+        props = [
+          [
+            "value",
+            value_
+          ],
+          [
+            "raw",
+            string(raw)
+          ],
+          [
+            "regex",
+            regex
+          ]
+        ];
+      }
+      if (exit === 1) {
+        props = [
+          [
+            "value",
+            value_
+          ],
+          [
+            "raw",
+            string(raw)
+          ]
+        ];
+      }
+      return node("Literal", loc, props);
+    };
+    var object_type = function (param) {
+      var o = param[1];
+      return node("ObjectTypeAnnotation", param[0], [
+                  [
+                    "properties",
+                    array_of_list(object_type_property, o.properties)
+                  ],
+                  [
+                    "indexers",
+                    array_of_list(object_type_indexer, o.indexers)
+                  ],
+                  [
+                    "callProperties",
+                    array_of_list(object_type_call_property, o.callProperties)
+                  ]
+                ]);
+    };
+    var interface_extends = function (param) {
+      var g = param[1];
+      var id = g.id;
+      var id$1;
+      id$1 = id.TAG === /* Unqualified */0 ? identifier(id._0) : generic_type_qualified_identifier(id._0);
+      return node("InterfaceExtends", param[0], [
+                  [
+                    "id",
+                    id$1
+                  ],
+                  [
+                    "typeParameters",
+                    option(type_parameter_instantiation, g.typeParameters)
+                  ]
+                ]);
+    };
+    var function_type = function (param) {
+      var fn = param[1];
+      return node("FunctionTypeAnnotation", param[0], [
+                  [
+                    "params",
+                    array_of_list(function_type_param, fn.params)
+                  ],
+                  [
+                    "returnType",
+                    _type(fn.returnType)
+                  ],
+                  [
+                    "rest",
+                    option(function_type_param, fn.rest)
+                  ],
+                  [
+                    "typeParameters",
+                    option(type_parameter_declaration, fn.typeParameters)
+                  ]
+                ]);
+    };
+    var jsx_member_expression = function (param) {
+      var member_expression = param[1];
+      var id = member_expression._object;
+      var _object;
+      _object = id.TAG === /* Identifier */0 ? jsx_identifier(id._0) : jsx_member_expression(id._0);
+      return node("JSXMemberExpression", param[0], [
+                  [
+                    "object",
+                    _object
+                  ],
+                  [
+                    "property",
+                    jsx_identifier(member_expression.property)
+                  ]
+                ]);
+    };
+    var function_expression = function (param) {
+      var _function = param[1];
+      var b = _function.body;
+      var body;
+      body = b.TAG === /* BodyBlock */0 ? block(b._0) : expression(b._0);
+      return node("FunctionExpression", param[0], [
+                  [
+                    "id",
+                    option(identifier, _function.id)
+                  ],
+                  [
+                    "params",
+                    array_of_list(pattern, _function.params)
+                  ],
+                  [
+                    "defaults",
+                    array_of_list((function (param) {
+                            return option(expression, param);
+                          }), _function.defaults)
+                  ],
+                  [
+                    "rest",
+                    option(identifier, _function.rest)
+                  ],
+                  [
+                    "body",
+                    body
+                  ],
+                  [
+                    "async",
+                    bool(_function.async)
+                  ],
+                  [
+                    "generator",
+                    bool(_function.generator)
+                  ],
+                  [
+                    "expression",
+                    bool(_function.expression)
+                  ],
+                  [
+                    "returnType",
+                    option(type_annotation, _function.returnType)
+                  ],
+                  [
+                    "typeParameters",
+                    option(type_parameter_declaration, _function.typeParameters)
+                  ]
+                ]);
+    };
+    var function_type_param = function (param) {
+      var param$1 = param[1];
+      return node("FunctionTypeParam", param[0], [
+                  [
+                    "name",
+                    identifier(param$1.name)
+                  ],
+                  [
+                    "typeAnnotation",
+                    _type(param$1.typeAnnotation)
+                  ],
+                  [
+                    "optional",
+                    bool(param$1.optional)
                   ]
                 ]);
     };
@@ -16167,6 +16399,22 @@ function parse(content, options) {
                   ]
                 ]);
     };
+    var generic_type_qualified_identifier = function (param) {
+      var q = param[1];
+      var id = q.qualification;
+      var qualification;
+      qualification = id.TAG === /* Unqualified */0 ? identifier(id._0) : generic_type_qualified_identifier(id._0);
+      return node("QualifiedTypeIdentifier", param[0], [
+                  [
+                    "qualification",
+                    qualification
+                  ],
+                  [
+                    "id",
+                    identifier(q.id)
+                  ]
+                ]);
+    };
     var jsx_name = function (id) {
       switch (id.TAG | 0) {
         case /* Identifier */0 :
@@ -16178,80 +16426,97 @@ function parse(content, options) {
         
       }
     };
-    var jsx_member_expression = function (param) {
-      var member_expression = param[1];
-      var id = member_expression._object;
-      var _object;
-      _object = id.TAG === /* Identifier */0 ? jsx_identifier(id._0) : jsx_member_expression(id._0);
-      return node("JSXMemberExpression", param[0], [
+    var jsx_namespaced_name = function (param) {
+      var namespaced_name = param[1];
+      return node("JSXNamespacedName", param[0], [
                   [
-                    "object",
-                    _object
+                    "namespace",
+                    jsx_identifier(namespaced_name.namespace)
                   ],
                   [
-                    "property",
-                    jsx_identifier(member_expression.property)
-                  ]
-                ]);
-    };
-    var jsx_identifier = function (param) {
-      return node("JSXIdentifier", param[0], [[
                     "name",
-                    string(param[1].name)
-                  ]]);
-    };
-    var object_type = function (param) {
-      var o = param[1];
-      return node("ObjectTypeAnnotation", param[0], [
-                  [
-                    "properties",
-                    array_of_list(object_type_property, o.properties)
-                  ],
-                  [
-                    "indexers",
-                    array_of_list(object_type_indexer, o.indexers)
-                  ],
-                  [
-                    "callProperties",
-                    array_of_list(object_type_call_property, o.callProperties)
+                    jsx_identifier(namespaced_name.name)
                   ]
                 ]);
     };
-    var function_type = function (param) {
-      var fn = param[1];
-      return node("FunctionTypeAnnotation", param[0], [
+    var template_element = function (param) {
+      var element = param[1];
+      var value = obj([
+            [
+              "raw",
+              string(element.value.raw)
+            ],
+            [
+              "cooked",
+              string(element.value.cooked)
+            ]
+          ]);
+      return node("TemplateElement", param[0], [
                   [
-                    "params",
-                    array_of_list(function_type_param, fn.params)
-                  ],
-                  [
-                    "returnType",
-                    _type(fn.returnType)
-                  ],
-                  [
-                    "rest",
-                    option(function_type_param, fn.rest)
-                  ],
-                  [
-                    "typeParameters",
-                    option(type_parameter_declaration, fn.typeParameters)
-                  ]
-                ]);
-    };
-    var comment = function (param) {
-      var c = param[1];
-      var match;
-      match = c.TAG === /* Block */0 ? [
-          "Block",
-          c._0
-        ] : [
-          "Line",
-          c._0
-        ];
-      return node(match[0], param[0], [[
                     "value",
-                    string(match[1])
+                    value
+                  ],
+                  [
+                    "tail",
+                    bool(element.tail)
+                  ]
+                ]);
+    };
+    var jsx_closing = function (param) {
+      return node("JSXClosingElement", param[0], [[
+                    "name",
+                    jsx_name(param[1].name)
                   ]]);
+    };
+    var jsx_opening = function (param) {
+      var opening = param[1];
+      return node("JSXOpeningElement", param[0], [
+                  [
+                    "name",
+                    jsx_name(opening.name)
+                  ],
+                  [
+                    "attributes",
+                    array_of_list(jsx_opening_attribute, opening.attributes)
+                  ],
+                  [
+                    "selfClosing",
+                    bool(opening.selfClosing)
+                  ]
+                ]);
+    };
+    var jsx_child = function (param) {
+      var element = param[1];
+      var loc = param[0];
+      switch (element.TAG | 0) {
+        case /* Element */0 :
+            return jsx_element([
+                        loc,
+                        element._0
+                      ]);
+        case /* ExpressionContainer */1 :
+            return jsx_expression_container([
+                        loc,
+                        element._0
+                      ]);
+        case /* Text */2 :
+            var param$1 = [
+              loc,
+              element._0
+            ];
+            var text = param$1[1];
+            return node("JSXText", param$1[0], [
+                        [
+                          "value",
+                          string(text.value)
+                        ],
+                        [
+                          "raw",
+                          string(text.raw)
+                        ]
+                      ]);
+        
+      }
     };
     var statement = function (param) {
       var b = param[1];
@@ -16773,99 +17038,74 @@ function parse(content, options) {
         
       }
     };
-    var literal = function (param) {
-      var lit = param[1];
-      var raw = lit.raw;
-      var value = lit.value;
-      var loc = param[0];
-      var value_;
-      if (typeof value === "number") {
-        value_ = $$null;
-      } else {
-        switch (value.TAG | 0) {
-          case /* String */0 :
-              value_ = string(value._0);
-              break;
-          case /* Boolean */1 :
-              value_ = bool(value._0);
-              break;
-          case /* Number */2 :
-              value_ = number$1(value._0);
-              break;
-          case /* RegExp */3 :
-              var match = value._0;
-              value_ = regexp$1(loc, match.pattern, match.flags);
-              break;
-          
-        }
-      }
-      var props;
-      var exit = 0;
-      if (typeof value === "number" || value.TAG !== /* RegExp */3) {
-        exit = 1;
-      } else {
-        var match$1 = value._0;
-        var regex = obj([
-              [
-                "pattern",
-                string(match$1.pattern)
-              ],
-              [
-                "flags",
-                string(match$1.flags)
-              ]
-            ]);
-        props = [
-          [
-            "value",
-            value_
-          ],
-          [
-            "raw",
-            string(raw)
-          ],
-          [
-            "regex",
-            regex
-          ]
-        ];
-      }
-      if (exit === 1) {
-        props = [
-          [
-            "value",
-            value_
-          ],
-          [
-            "raw",
-            string(raw)
-          ]
-        ];
-      }
-      return node("Literal", loc, props);
-    };
-    var template_element = function (param) {
-      var element = param[1];
-      var value = obj([
-            [
-              "raw",
-              string(element.value.raw)
-            ],
-            [
-              "cooked",
-              string(element.value.cooked)
-            ]
-          ]);
-      return node("TemplateElement", param[0], [
+    var variable_declarator = function (param) {
+      var declarator = param[1];
+      return node("VariableDeclarator", param[0], [
                   [
-                    "value",
-                    value
+                    "id",
+                    pattern(declarator.id)
                   ],
                   [
-                    "tail",
-                    bool(element.tail)
+                    "init",
+                    option(expression, declarator.init)
                   ]
                 ]);
+    };
+    var type_param = function (param) {
+      var tp = param[1];
+      var variance = function (param) {
+        if (param) {
+          return string("minus");
+        } else {
+          return string("plus");
+        }
+      };
+      return node("TypeParameter", param[0], [
+                  [
+                    "name",
+                    string(tp.name)
+                  ],
+                  [
+                    "bound",
+                    option(type_annotation, tp.bound)
+                  ],
+                  [
+                    "variance",
+                    option(variance, tp.variance)
+                  ],
+                  [
+                    "default",
+                    option(_type, tp.default)
+                  ]
+                ]);
+    };
+    var block = function (param) {
+      return node("BlockStatement", param[0], [[
+                    "body",
+                    array_of_list(statement, param[1].body)
+                  ]]);
+    };
+    var let_assignment = function (assignment) {
+      return obj([
+                  [
+                    "id",
+                    pattern(assignment.id)
+                  ],
+                  [
+                    "init",
+                    option(expression, assignment.init)
+                  ]
+                ]);
+    };
+    var expression_or_spread = function (expr) {
+      if (expr.TAG === /* Expression */0) {
+        return expression(expr._0);
+      }
+      var match = expr._0;
+      return node("SpreadElement", match[0], [[
+                    "argument",
+                    expression(match[1].argument)
+                  ]]);
     };
     var template_literal = function (param) {
       var value = param[1];
@@ -16896,12 +17136,6 @@ function parse(content, options) {
                     bool(b.each)
                   ]
                 ]);
-    };
-    var block = function (param) {
-      return node("BlockStatement", param[0], [[
-                    "body",
-                    array_of_list(statement, param[1].body)
-                  ]]);
     };
     var object_property = function (param) {
       if (param.TAG === /* Property */0) {
@@ -16975,148 +17209,6 @@ function parse(content, options) {
       return node("SpreadProperty", match$3[0], [[
                     "argument",
                     expression(match$3[1].argument)
-                  ]]);
-    };
-    var let_assignment = function (assignment) {
-      return obj([
-                  [
-                    "id",
-                    pattern(assignment.id)
-                  ],
-                  [
-                    "init",
-                    option(expression, assignment.init)
-                  ]
-                ]);
-    };
-    var function_expression = function (param) {
-      var _function = param[1];
-      var b = _function.body;
-      var body;
-      body = b.TAG === /* BodyBlock */0 ? block(b._0) : expression(b._0);
-      return node("FunctionExpression", param[0], [
-                  [
-                    "id",
-                    option(identifier, _function.id)
-                  ],
-                  [
-                    "params",
-                    array_of_list(pattern, _function.params)
-                  ],
-                  [
-                    "defaults",
-                    array_of_list((function (param) {
-                            return option(expression, param);
-                          }), _function.defaults)
-                  ],
-                  [
-                    "rest",
-                    option(identifier, _function.rest)
-                  ],
-                  [
-                    "body",
-                    body
-                  ],
-                  [
-                    "async",
-                    bool(_function.async)
-                  ],
-                  [
-                    "generator",
-                    bool(_function.generator)
-                  ],
-                  [
-                    "expression",
-                    bool(_function.expression)
-                  ],
-                  [
-                    "returnType",
-                    option(type_annotation, _function.returnType)
-                  ],
-                  [
-                    "typeParameters",
-                    option(type_parameter_declaration, _function.typeParameters)
-                  ]
-                ]);
-    };
-    var expression_or_spread = function (expr) {
-      if (expr.TAG === /* Expression */0) {
-        return expression(expr._0);
-      }
-      var match = expr._0;
-      return node("SpreadElement", match[0], [[
-                    "argument",
-                    expression(match[1].argument)
-                  ]]);
-    };
-    var type_parameter_declaration = function (param) {
-      return node("TypeParameterDeclaration", param[0], [[
-                    "params",
-                    array_of_list(type_param, param[1].params)
-                  ]]);
-    };
-    var interface_extends = function (param) {
-      var g = param[1];
-      var id = g.id;
-      var id$1;
-      id$1 = id.TAG === /* Unqualified */0 ? identifier(id._0) : generic_type_qualified_identifier(id._0);
-      return node("InterfaceExtends", param[0], [
-                  [
-                    "id",
-                    id$1
-                  ],
-                  [
-                    "typeParameters",
-                    option(type_parameter_instantiation, g.typeParameters)
-                  ]
-                ]);
-    };
-    var jsx_namespaced_name = function (param) {
-      var namespaced_name = param[1];
-      return node("JSXNamespacedName", param[0], [
-                  [
-                    "namespace",
-                    jsx_identifier(namespaced_name.namespace)
-                  ],
-                  [
-                    "name",
-                    jsx_identifier(namespaced_name.name)
-                  ]
-                ]);
-    };
-    var generic_type_qualified_identifier = function (param) {
-      var q = param[1];
-      var id = q.qualification;
-      var qualification;
-      qualification = id.TAG === /* Unqualified */0 ? identifier(id._0) : generic_type_qualified_identifier(id._0);
-      return node("QualifiedTypeIdentifier", param[0], [
-                  [
-                    "qualification",
-                    qualification
-                  ],
-                  [
-                    "id",
-                    identifier(q.id)
-                  ]
-                ]);
-    };
-    var jsx_attribute_value = function (param) {
-      if (param.TAG === /* Literal */0) {
-        return literal([
-                    param._0,
-                    param._1
-                  ]);
-      } else {
-        return jsx_expression_container([
-                    param._0,
-                    param._1
-                  ]);
-      }
-    };
-    var type_parameter_instantiation = function (param) {
-      return node("TypeParameterInstantiation", param[0], [[
-                    "params",
-                    array_of_list(_type, param[1].params)
                   ]]);
     };
     var class_element = function (m) {
@@ -17238,117 +17330,145 @@ function parse(content, options) {
                   ]);
       }
     };
-    var function_type_param = function (param) {
-      var param$1 = param[1];
-      return node("FunctionTypeParam", param[0], [
+    var $$case = function (param) {
+      var c = param[1];
+      return node("SwitchCase", param[0], [
                   [
-                    "name",
-                    identifier(param$1.name)
+                    "test",
+                    option(expression, c.test)
                   ],
                   [
-                    "typeAnnotation",
-                    _type(param$1.typeAnnotation)
-                  ],
-                  [
-                    "optional",
-                    bool(param$1.optional)
+                    "consequent",
+                    array_of_list(statement, c.consequent)
                   ]
                 ]);
     };
-    var export_specifier = function (param) {
-      var specifier = param[1];
-      return node("ExportSpecifier", param[0], [
+    var declare_class = function (param) {
+      var d = param[1];
+      return node("DeclareClass", param[0], [
                   [
                     "id",
-                    identifier(specifier.id)
+                    identifier(d.id)
                   ],
                   [
-                    "name",
-                    option(identifier, specifier.name)
+                    "typeParameters",
+                    option(type_parameter_declaration, d.typeParameters)
+                  ],
+                  [
+                    "body",
+                    object_type(d.body)
+                  ],
+                  [
+                    "extends",
+                    array_of_list(interface_extends, d.extends)
                   ]
                 ]);
     };
-    var jsx_opening = function (param) {
-      var opening = param[1];
-      return node("JSXOpeningElement", param[0], [
+    var type_alias = function (param) {
+      var alias = param[1];
+      return node("TypeAlias", param[0], [
                   [
-                    "name",
-                    jsx_name(opening.name)
+                    "id",
+                    identifier(alias.id)
                   ],
                   [
-                    "attributes",
-                    array_of_list(jsx_opening_attribute, opening.attributes)
+                    "typeParameters",
+                    option(type_parameter_declaration, alias.typeParameters)
                   ],
                   [
-                    "selfClosing",
-                    bool(opening.selfClosing)
+                    "right",
+                    _type(alias.right)
                   ]
                 ]);
     };
-    var jsx_closing = function (param) {
-      return node("JSXClosingElement", param[0], [[
-                    "name",
-                    jsx_name(param[1].name)
+    var declare_function = function (param) {
+      return node("DeclareFunction", param[0], [[
+                    "id",
+                    identifier(param[1].id)
                   ]]);
     };
-    var jsx_child = function (param) {
-      var element = param[1];
-      var loc = param[0];
-      switch (element.TAG | 0) {
-        case /* Element */0 :
-            return jsx_element([
-                        loc,
-                        element._0
-                      ]);
-        case /* ExpressionContainer */1 :
-            return jsx_expression_container([
-                        loc,
-                        element._0
-                      ]);
-        case /* Text */2 :
-            var param$1 = [
-              loc,
-              element._0
-            ];
-            var text = param$1[1];
-            return node("JSXText", param$1[0], [
-                        [
-                          "value",
-                          string(text.value)
-                        ],
-                        [
-                          "raw",
-                          string(text.raw)
-                        ]
-                      ]);
+    var declare_variable = function (param) {
+      return node("DeclareVariable", param[0], [[
+                    "id",
+                    identifier(param[1].id)
+                  ]]);
+    };
+    var variable_declaration = function (param) {
+      var $$var = param[1];
+      var match = $$var.kind;
+      var kind;
+      switch (match) {
+        case /* Var */0 :
+            kind = "var";
+            break;
+        case /* Let */1 :
+            kind = "let";
+            break;
+        case /* Const */2 :
+            kind = "const";
+            break;
         
       }
+      return node("VariableDeclaration", param[0], [
+                  [
+                    "declarations",
+                    array_of_list(variable_declarator, $$var.declarations)
+                  ],
+                  [
+                    "kind",
+                    string(kind)
+                  ]
+                ]);
     };
-    var type_param = function (param) {
-      var tp = param[1];
-      var variance = function (param) {
-        if (param) {
-          return string("minus");
+    var $$catch = function (param) {
+      var c = param[1];
+      return node("CatchClause", param[0], [
+                  [
+                    "param",
+                    pattern(c.param)
+                  ],
+                  [
+                    "guard",
+                    option(expression, c.guard)
+                  ],
+                  [
+                    "body",
+                    block(c.body)
+                  ]
+                ]);
+    };
+    var export_specifiers = function (param) {
+      if (param !== undefined) {
+        if (param.TAG === /* ExportSpecifiers */0) {
+          return array_of_list(export_specifier, param._0);
         } else {
-          return string("plus");
+          return array([node("ExportBatchSpecifier", param._0, [[
+                              "name",
+                              option(identifier, param._1)
+                            ]])]);
         }
-      };
-      return node("TypeParameter", param[0], [
+      } else {
+        return array([]);
+      }
+    };
+    var interface_declaration = function (param) {
+      var i = param[1];
+      return node("InterfaceDeclaration", param[0], [
                   [
-                    "name",
-                    string(tp.name)
+                    "id",
+                    identifier(i.id)
                   ],
                   [
-                    "bound",
-                    option(type_annotation, tp.bound)
+                    "typeParameters",
+                    option(type_parameter_declaration, i.typeParameters)
                   ],
                   [
-                    "variance",
-                    option(variance, tp.variance)
+                    "body",
+                    object_type(i.body)
                   ],
                   [
-                    "default",
-                    option(_type, tp.default)
+                    "extends",
+                    array_of_list(interface_extends, i.extends)
                   ]
                 ]);
     };
@@ -17398,6 +17518,19 @@ function parse(content, options) {
                   ]
                 ]);
     };
+    var object_type_call_property = function (param) {
+      var callProperty = param[1];
+      return node("ObjectTypeCallProperty", param[0], [
+                  [
+                    "value",
+                    function_type(callProperty.value)
+                  ],
+                  [
+                    "static",
+                    bool(callProperty.static)
+                  ]
+                ]);
+    };
     var object_type_property = function (param) {
       var prop = param[1];
       var lit = prop.key;
@@ -17436,177 +17569,44 @@ function parse(content, options) {
                   ]
                 ]);
     };
-    var object_type_call_property = function (param) {
-      var callProperty = param[1];
-      return node("ObjectTypeCallProperty", param[0], [
-                  [
+    var comment = function (param) {
+      var c = param[1];
+      var match;
+      match = c.TAG === /* Block */0 ? [
+          "Block",
+          c._0
+        ] : [
+          "Line",
+          c._0
+        ];
+      return node(match[0], param[0], [[
                     "value",
-                    function_type(callProperty.value)
-                  ],
-                  [
-                    "static",
-                    bool(callProperty.static)
-                  ]
-                ]);
-    };
-    var declare_variable = function (param) {
-      return node("DeclareVariable", param[0], [[
-                    "id",
-                    identifier(param[1].id)
+                    string(match[1])
                   ]]);
     };
-    var interface_declaration = function (param) {
-      var i = param[1];
-      return node("InterfaceDeclaration", param[0], [
-                  [
-                    "id",
-                    identifier(i.id)
-                  ],
-                  [
-                    "typeParameters",
-                    option(type_parameter_declaration, i.typeParameters)
-                  ],
-                  [
-                    "body",
-                    object_type(i.body)
-                  ],
-                  [
-                    "extends",
-                    array_of_list(interface_extends, i.extends)
-                  ]
-                ]);
-    };
-    var type_alias = function (param) {
-      var alias = param[1];
-      return node("TypeAlias", param[0], [
-                  [
-                    "id",
-                    identifier(alias.id)
-                  ],
-                  [
-                    "typeParameters",
-                    option(type_parameter_declaration, alias.typeParameters)
-                  ],
-                  [
-                    "right",
-                    _type(alias.right)
-                  ]
-                ]);
-    };
-    var declare_function = function (param) {
-      return node("DeclareFunction", param[0], [[
-                    "id",
-                    identifier(param[1].id)
-                  ]]);
-    };
-    var $$catch = function (param) {
-      var c = param[1];
-      return node("CatchClause", param[0], [
-                  [
-                    "param",
-                    pattern(c.param)
-                  ],
-                  [
-                    "guard",
-                    option(expression, c.guard)
-                  ],
-                  [
-                    "body",
-                    block(c.body)
-                  ]
-                ]);
-    };
-    var $$case = function (param) {
-      var c = param[1];
-      return node("SwitchCase", param[0], [
-                  [
-                    "test",
-                    option(expression, c.test)
-                  ],
-                  [
-                    "consequent",
-                    array_of_list(statement, c.consequent)
-                  ]
-                ]);
-    };
-    var variable_declaration = function (param) {
-      var $$var = param[1];
-      var match = $$var.kind;
-      var kind;
-      switch (match) {
-        case /* Var */0 :
-            kind = "var";
-            break;
-        case /* Let */1 :
-            kind = "let";
-            break;
-        case /* Const */2 :
-            kind = "const";
-            break;
-        
-      }
-      return node("VariableDeclaration", param[0], [
-                  [
-                    "declarations",
-                    array_of_list(variable_declarator, $$var.declarations)
-                  ],
-                  [
-                    "kind",
-                    string(kind)
-                  ]
-                ]);
-    };
-    var export_specifiers = function (param) {
-      if (param !== undefined) {
-        if (param.TAG === /* ExportSpecifiers */0) {
-          return array_of_list(export_specifier, param._0);
-        } else {
-          return array([node("ExportBatchSpecifier", param._0, [[
-                              "name",
-                              option(identifier, param._1)
-                            ]])]);
-        }
+    var jsx_attribute_value = function (param) {
+      if (param.TAG === /* Literal */0) {
+        return literal([
+                    param._0,
+                    param._1
+                  ]);
       } else {
-        return array([]);
+        return jsx_expression_container([
+                    param._0,
+                    param._1
+                  ]);
       }
     };
-    var declare_class = function (param) {
-      var d = param[1];
-      return node("DeclareClass", param[0], [
+    var export_specifier = function (param) {
+      var specifier = param[1];
+      return node("ExportSpecifier", param[0], [
                   [
                     "id",
-                    identifier(d.id)
+                    identifier(specifier.id)
                   ],
                   [
-                    "typeParameters",
-                    option(type_parameter_declaration, d.typeParameters)
-                  ],
-                  [
-                    "body",
-                    object_type(d.body)
-                  ],
-                  [
-                    "extends",
-                    array_of_list(interface_extends, d.extends)
-                  ]
-                ]);
-    };
-    var class_body = function (param) {
-      return node("ClassBody", param[0], [[
-                    "body",
-                    array_of_list(class_element, param[1].body)
-                  ]]);
-    };
-    var class_implements = function (param) {
-      var $$implements = param[1];
-      return node("ClassImplements", param[0], [
-                  [
-                    "id",
-                    identifier($$implements.id)
-                  ],
-                  [
-                    "typeParameters",
-                    option(type_parameter_instantiation, $$implements.typeParameters)
+                    "name",
+                    option(identifier, specifier.name)
                   ]
                 ]);
     };

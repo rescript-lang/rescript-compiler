@@ -320,10 +320,3 @@ type t = bytes
 let compare (x: t) (y: t) = Pervasives.compare x y
 external equal : t -> t -> bool = "caml_bytes_equal"
 
-(* Deprecated functions implemented via other deprecated functions *)
-[@@@ocaml.warning "-3"]
-let uppercase s = map Char.uppercase s
-let lowercase s = map Char.lowercase s
-
-let capitalize s = apply1 Char.uppercase s
-let uncapitalize s = apply1 Char.lowercase s

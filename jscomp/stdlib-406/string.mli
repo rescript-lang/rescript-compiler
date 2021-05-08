@@ -229,31 +229,6 @@ val rcontains_from : string -> int -> char -> bool
    Raise [Invalid_argument] if [stop < 0] or [stop+1] is not a valid
    position in [s]. *)
 
-val uppercase : string -> string
-  [@@ocaml.deprecated "Use String.uppercase_ascii instead."]
-(** Return a copy of the argument, with all lowercase letters
-   translated to uppercase, including accented letters of the ISO
-   Latin-1 (8859-1) character set.
-   @deprecated Functions operating on Latin-1 character set are deprecated. *)
-
-val lowercase : string -> string
-  [@@ocaml.deprecated "Use String.lowercase_ascii instead."]
-(** Return a copy of the argument, with all uppercase letters
-   translated to lowercase, including accented letters of the ISO
-   Latin-1 (8859-1) character set.
-   @deprecated Functions operating on Latin-1 character set are deprecated. *)
-
-val capitalize : string -> string
-  [@@ocaml.deprecated "Use String.capitalize_ascii instead."]
-(** Return a copy of the argument, with the first character set to uppercase,
-   using the ISO Latin-1 (8859-1) character set..
-   @deprecated Functions operating on Latin-1 character set are deprecated. *)
-
-val uncapitalize : string -> string
-  [@@ocaml.deprecated "Use String.uncapitalize_ascii instead."]
-(** Return a copy of the argument, with the first character set to lowercase,
-   using the ISO Latin-1 (8859-1) character set..
-   @deprecated Functions operating on Latin-1 character set are deprecated. *)
 
 val uppercase_ascii : string -> string
 (** Return a copy of the argument, with all lowercase letters
