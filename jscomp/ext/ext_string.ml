@@ -518,3 +518,8 @@ let is_valid_hash_number (x:string) =
      else
        a >= 48 )
   ) 
+
+
+let hash_number_as_i32_exn 
+    ( x : string) : int32 = 
+  Int32.of_string x    
