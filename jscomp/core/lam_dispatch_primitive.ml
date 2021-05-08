@@ -50,41 +50,6 @@ let translate loc (prim_name : string)
   let [@inline] call m = 
     E.runtime_call m prim_name args in 
   begin match prim_name with 
-    |  "caml_add_float" -> 
-      begin match args with 
-        | [e0;e1] -> E.float_add e0 e1 (** TODO float plus*)
-        | _ -> assert false
-      end
-    |"caml_div_float" -> 
-      begin match args with 
-        | [e0;e1] -> E.float_div e0 e1
-        | _ -> assert false 
-      end
-    |"caml_sub_float" -> 
-      begin match args with 
-        | [e0;e1] -> E.float_minus e0 e1 
-        | _ -> assert false 
-      end
-    | "caml_eq_float" -> 
-      begin match args with 
-        | [e0;e1] -> E.float_equal e0 e1 
-        | _ -> assert false 
-      end
-    | "caml_ge_float"  ->
-      begin match args with 
-        | [e0;e1] -> E.float_comp Cge e0 e1
-        | _ -> assert false 
-      end
-    |"caml_gt_float"  ->
-      begin match args with 
-        | [e0;e1] -> E.float_comp Cgt  e0 e1
-        | _ -> assert false 
-      end
-    | "caml_float_of_int" -> 
-      begin match args with 
-        | [e] -> e 
-        | _ -> assert false 
-      end
     | "caml_int_of_float"
       -> 
       begin match args with 
@@ -453,8 +418,6 @@ let translate loc (prim_name : string)
     | "caml_format_int" 
       -> 
       call Js_runtime_modules.format 
-    (*   "caml_alloc_dummy"; *)
-    (* TODO:   "caml_alloc_dummy_float"; *)
     | "caml_obj_dup" 
       -> 
       call Js_runtime_modules.obj_runtime
@@ -506,14 +469,7 @@ let translate loc (prim_name : string)
         | [e] -> E.tag e 
         | _ -> assert false end    
 
-    (** TODO: Primitives not implemented yet ...*)
-    | "caml_install_signal_handler"
-      -> 
-      begin match args with
-        | [num; behavior] 
-          -> E.seq num behavior (*TODO:*)
-        | _ -> assert false
-      end
+
     | "caml_md5_string"
       -> call Js_runtime_modules.md5
     | "caml_hash_mix_string"

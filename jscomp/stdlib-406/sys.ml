@@ -93,8 +93,8 @@ type signal_behavior =
   | Signal_ignore
   | Signal_handle of (int -> unit)
 
-external signal : int -> signal_behavior -> signal_behavior
-                = "caml_install_signal_handler"
+let signal : int -> signal_behavior -> signal_behavior
+                = fun _ _ -> Signal_default
 
 let set_signal sig_num sig_beh = ignore(signal sig_num sig_beh)
 
