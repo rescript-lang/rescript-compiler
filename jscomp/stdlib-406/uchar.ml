@@ -13,7 +13,7 @@
 (*                                                                        *)
 (**************************************************************************)
 
-external format_int : string -> int -> string = "caml_format_int"
+external format_int : string -> int -> string = "?format_int"
 
 let err_no_pred = "U+0000 has no predecessor"
 let err_no_succ = "U+10FFFF has no successor"

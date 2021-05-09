@@ -25,8 +25,8 @@ type backend_type =
   | Other of string
   (* System interface *)
 
-(* external get_config: unit -> string * int * bool = "caml_sys_get_config" *)
-external get_argv: unit -> string * string array = "caml_sys_get_argv"
+
+external get_argv: unit -> string * string array = "?sys_get_argv"
 external big_endian : unit -> bool = "%big_endian"
 external word_size : unit -> int = "%word_size"
 external int_size : unit -> int = "%int_size"
@@ -51,14 +51,14 @@ let cygwin = cygwin ()
 let max_array_length = 2147483647 (* 2^ 31 - 1 *)
 let max_string_length = 2147483647
 
-external runtime_variant : unit -> string = "caml_runtime_variant"
-external runtime_parameters : unit -> string = "caml_runtime_parameters"
+external runtime_variant : unit -> string = "?runtime_variant"
+external runtime_parameters : unit -> string = "?runtime_parameters"
 
-external file_exists: string -> bool = "caml_sys_file_exists"
-external is_directory : string -> bool = "caml_sys_is_directory"
-external remove: string -> unit = "caml_sys_remove"
-external rename : string -> string -> unit = "caml_sys_rename"
-external getenv: string -> string = "caml_sys_getenv"
+external file_exists: string -> bool = "?sys_file_exists"
+external is_directory : string -> bool = "?sys_is_directory"
+external remove: string -> unit = "?sys_remove"
+external rename : string -> string -> unit = "?sys_rename"
+external getenv: string -> string = "?sys_getenv"
 
 
 external getEnv : 'a -> string -> string option = "" [@@bs.get_index] 
@@ -68,11 +68,11 @@ let getenv_opt s =
   | Some x -> getEnv x#env s
 
 let command: string -> int = fun _ -> 127
-external time: unit -> (float [@unboxed]) =
-  "caml_sys_time" "caml_sys_time_unboxed" [@@noalloc]
-external chdir: string -> unit = "caml_sys_chdir"
-external getcwd: unit -> string = "caml_sys_getcwd"
-external readdir : string -> string array = "caml_sys_read_directory"
+external time: unit -> float =
+  "?sys_time" 
+external chdir: string -> unit = "?sys_chdir"
+external getcwd: unit -> string = "?sys_getcwd"
+external readdir : string -> string array = "?sys_read_directory"
 
 let interactive = ref false
 

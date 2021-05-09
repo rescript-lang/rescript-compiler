@@ -40,13 +40,8 @@ let get s i =
     raise (Invalid_argument "index out of bounds")
   else s.![i]      
 
-let caml_fill_bytes (s : bytes) i l (c : char) = 
-  if l > 0 then
-    for k = i to l + i - 1 do 
-      s.![k] <- c 
-    done
 
-let caml_create_bytes len : bytes = 
+let create len : bytes = 
   (* Node raise [RangeError] exception *)
   if len < 0 then raise (Invalid_argument "String.create")
   else 
@@ -55,106 +50,7 @@ let caml_create_bytes len : bytes =
       result.![i] <- '\000'
     done ;
     result 
-
-
-(** Same as {!Array.prototype.copyWithin} *)
-let copyWithin (s1 : bytes) i1 i2 len = 
-  if i1 < i2  then (* nop for i1 = i2 *)
-    let range_a =  length s1 - i2 - 1 in
-    let range_b = len - 1 in         
-    let range = if range_a > range_b then range_b else range_a in
-    for j = range downto 0 do
-      s1.![i2 + j] <- s1.![i1 + j]
-    done
-  else if i1 > i2 then
-    let range_a = length s1 - i1 - 1 in 
-    let range_b = len - 1 in 
-    let range = if range_a > range_b then range_b else range_a in 
-    for k = 0 to range  do 
-      s1.![i2 + k] <- s1.![i1 + k]
-    done
-
-(* TODO: when the compiler could optimize small function calls, 
-   use high order functions instead
-*)
-let caml_blit_bytes (s1:bytes) i1 (s2:bytes) i2 len = 
-  if len > 0 then
-    if s1 == s2 then
-      copyWithin s1 i1 i2 len 
-    else
-      let off1 = length s1 - i1 in
-      if len <= off1 then 
-        for i = 0 to len - 1 do 
-          s2.![i2 + i] <-  s1.![i1 + i]
-        done
-      else 
-        begin
-          for i = 0 to off1 - 1 do 
-            s2.![i2 + i] <- s1.![i1 + i]
-          done;
-          for i = off1 to len - 1 do 
-            s2.![i2 + i] <- '\000'
-          done
-        end    
-
-external to_int_array : bytes -> int array = "%identity"
-let string_of_large_bytes (bytes : bytes) i len = 
-  let s = ref "" in
-  let s_len = ref len in
-  let seg = 1024 in
-  if i = 0 && len <= 4 * seg && len = length bytes then 
-    Caml_string_extern.of_small_int_array  (to_int_array bytes)
-  else 
-    begin
-      let offset = ref 0 in
-      while s_len.contents > 0 do 
-        let next = if s_len.contents < 1024 then s_len.contents else seg in
-        let tmp_bytes = new_uninitialized next in
-        for k = 0 to next - 1 do 
-          tmp_bytes.![k] <- bytes.![k + offset.contents]  
-        done;   
-        s.contents <- s.contents ^ Caml_string_extern.of_small_int_array (to_int_array tmp_bytes);
-        s_len.contents <- s_len.contents - next ; 
-        offset.contents <- offset.contents + next;
-      done;
-      s.contents
-    end
-
-let bytes_to_string a  = 
-  string_of_large_bytes a 0 (length a)   
-
-(**
-   TODO: [min] is not type specialized in OCaml
-*)
-let caml_blit_string (s1 : string) i1 (s2 : bytes) i2 (len : int ) = 
-  if len > 0 then
-    let off1 = Caml_string_extern.length s1 - i1 in
-    if len <= off1 then 
-      for i = 0 to len - 1 do 
-        s2.![i2 + i] <- Caml_string_extern.unsafe_get s1 (i1 + i)
-      done
-    else 
-      begin
-        for i = 0 to off1 - 1 do 
-          s2.![i2 + i] <- Caml_string_extern.unsafe_get s1 (i1 + i)
-        done;
-        for i = off1 to len - 1 do 
-          s2.![i2 + i] <- '\000'
-        done
-      end
-
-(** checkout [Bytes.empty] -- to be inlined? *)
-let bytes_of_string  s = 
-  let len = Caml_string_extern.length s in
-  let res = new_uninitialized len  in
-  for i = 0 to len - 1 do 
-    res.![i] <- Caml_string_extern.unsafe_get s i
-    (* Note that when get a char and convert it to int immedately, should be optimized
-       should be [s.charCodeAt[i]]
-    *)
-  done;
-  res
-
+  
 
 let rec caml_bytes_compare_aux (s1 : bytes) (s2 : bytes) off len def =   
   if off < len then 

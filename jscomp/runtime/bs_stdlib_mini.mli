@@ -57,7 +57,7 @@ module Obj : sig
   type t 
   external field : t -> int -> t = "%obj_field" 
   external set_field : t -> int -> t -> unit = "%obj_set_field"
-  external tag : t -> int = "caml_obj_tag" 
+  external tag : t -> int = "?obj_tag" 
   (* The compiler ensures (|0) operation *)
   external set_tag : t -> int -> unit = "TAG" [@@bs.set]  
   external repr : 'a -> t = "%identity"

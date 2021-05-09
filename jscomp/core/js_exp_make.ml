@@ -627,7 +627,7 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
     | Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ )
     when  no_side_effect e1 -> 
-    false_ (* TODO: rename it as [caml_false] *)
+    false_ 
   | 
     (Char_of_int _ | Char_to_int _ 
     | Bool _ | Number _ | Typeof _
@@ -985,7 +985,7 @@ let rec int_comp (cmp : Lam_compat.comparison) ?comment  (e0 : t) (e1 : t) =
       expression_desc = 
         Var (Qualified 
                ({kind = Runtime}, 
-                Some ("caml_int_compare"))); _}, 
+                Some ("int_compare"))); _}, 
       [l;r], _), 
     Number (Int {i = 0l})
     -> int_comp cmp l r (* = 0 > 0 < 0 *)
@@ -993,14 +993,18 @@ let rec int_comp (cmp : Lam_compat.comparison) ?comment  (e0 : t) (e1 : t) =
       expression_desc = 
         Var (Qualified 
                ({id = _; kind = Runtime} as iid, 
-                Some ("caml_compare"))); _} as fn, 
+                Some ("compare"))); _} as fn, 
       ([_;_] as args), call_info), 
     Number (Int {i = 0l})
     -> 
+    (* This is now generalized for runtime modules
+      `RuntimeModule.compare x y = 0 ` -->
+      `RuntimeModule.equal x y`
+    *)
     {e0 with expression_desc =
                Call( 
                  {fn with expression_desc = 
-                            Var(Qualified (iid, Some "caml_equal")) 
+                            Var(Qualified (iid, Some "equal")) 
                  } , args, call_info)}
   | Ceq, Optional_block _,  Undefined
   | Ceq, Undefined, Optional_block _
@@ -1426,7 +1430,8 @@ let resolve_and_apply
     (runtime_call
        Js_runtime_modules.external_polyfill
        "resolve" 
-       [str s ]
+       [str 
+        (if s.[0] = '?' then String.sub s 1 (String.length s - 1) else s) ]
     ) args 
 
 let make_exception (s : string) = 

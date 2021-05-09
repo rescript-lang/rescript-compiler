@@ -49,7 +49,7 @@ var V = {
   List: List$1
 };
 
-var f = Caml_obj.caml_equal;
+var f = Caml_obj.equal;
 
 eq("File \"block_alias_test.ml\", line 32, characters 6-13", List.length({
           hd: 1,
@@ -59,7 +59,7 @@ eq("File \"block_alias_test.ml\", line 32, characters 6-13", List.length({
           }
         }), 2);
 
-b("File \"block_alias_test.ml\", line 33, characters 5-12", Caml_obj.caml_equal(v0, {
+b("File \"block_alias_test.ml\", line 33, characters 5-12", Caml_obj.equal(v0, {
           TAG: /* A */1,
           _0: 0,
           _1: 1

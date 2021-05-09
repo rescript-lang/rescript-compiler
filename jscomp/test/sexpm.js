@@ -125,7 +125,7 @@ function make(bufsizeOpt, refill) {
   var bufsize = bufsizeOpt !== undefined ? bufsizeOpt : 1024;
   var bufsize$1 = Caml.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
   return {
-          buf: Caml_bytes.caml_create_bytes(bufsize$1),
+          buf: Caml_bytes.create(bufsize$1),
           refill: refill,
           atom: $$Buffer.create(32),
           i: 0,

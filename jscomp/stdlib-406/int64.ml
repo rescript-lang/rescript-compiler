@@ -44,17 +44,17 @@ let zero = 0L
 let one = 1L
 let minus_one = -1L
 (* let succ n = add n 1L *)
-external succ : int64 -> int64 = "caml_int64_succ"
+external succ : int64 -> int64 = "?int64_succ"
 let pred n = sub n 1L
 let abs n = if n >= 0L then n else neg n
 let min_int = 0x8000000000000000L
 let max_int = 0x7FFFFFFFFFFFFFFFL
 let lognot n = logxor n (-1L)
 
-external format : string -> int64 -> string = "caml_int64_format"
-external to_string : int64 -> string = "caml_int64_to_string"
+external format : string -> int64 -> string = "?int64_format"
+external to_string : int64 -> string = "?int64_to_string"
 
-external of_string : string -> int64 = "caml_int64_of_string"
+external of_string : string -> int64 = "?int64_of_string"
 
 let of_string_opt s =
   (* TODO: expose a non-raising primitive directly. *)

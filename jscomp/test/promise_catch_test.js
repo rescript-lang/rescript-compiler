@@ -53,7 +53,7 @@ function handler(e) {
 }
 
 function myHandler(match) {
-  if (Caml_exceptions.caml_is_extension(match)) {
+  if (Caml_exceptions.is_extension(match)) {
     if (match.RE_EXN_ID === "Not_found") {
       return 1;
     } else if (match.RE_EXN_ID === Js_exn.$$Error) {

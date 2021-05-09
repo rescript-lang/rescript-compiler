@@ -3236,7 +3236,7 @@ let split ~rex str =
 (* From PCRE *)
 let string_unsafe_sub s ofs len =
   let r = Bytes.create len in
-  Bytes.unsafe_blit s ofs r 0 len;
+  Bytes.blit s ofs r 0 len;
   Bytes.unsafe_to_string r
 
 let quote s =

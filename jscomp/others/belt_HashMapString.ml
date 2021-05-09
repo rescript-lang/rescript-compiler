@@ -16,8 +16,8 @@
 # 16 "others/hashmap.cppo.ml"
 type key = string
 type seed = int
-external caml_hash_mix_string : seed -> string -> seed  = "caml_hash_mix_string"
-external final_mix : seed -> seed = "caml_hash_final_mix"
+external caml_hash_mix_string : seed -> string -> seed  = "?hash_mix_string"
+external final_mix : seed -> seed = "?hash_final_mix"
 let hash (s : key) =   
   final_mix  (caml_hash_mix_string 0 s )
 

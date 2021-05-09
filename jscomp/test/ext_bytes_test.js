@@ -44,7 +44,7 @@ function escaped(s) {
   if (n === s.length) {
     return Bytes.copy(s);
   }
-  var s$p = Caml_bytes.caml_create_bytes(n);
+  var s$p = Caml_bytes.create(n);
   n = 0;
   for(var i$1 = 0 ,i_finish$1 = s.length; i$1 < i_finish$1; ++i$1){
     var c = s[i$1];
@@ -168,7 +168,7 @@ eq("File \"ext_bytes_test.ml\", line 102, characters 7-14", a$1, Bytes.of_string
 
 var f = Char.chr;
 
-var a$2 = Caml_bytes.bytes_to_string(Bytes.init(100, f));
+var a$2 = Bytes.unsafe_to_string(Bytes.init(100, f));
 
 var b = Bytes.init(100, (function (i) {
         return /* '\000' */0;

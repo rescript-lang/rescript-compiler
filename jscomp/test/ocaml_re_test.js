@@ -121,15 +121,15 @@ function inter(_l, _l$p) {
     var match$1 = l.hd;
     var c2 = match$1[1];
     var c1 = match$1[0];
-    if (Caml_obj.caml_lessthan(c2, c1$p)) {
+    if (Caml_obj.lessthan(c2, c1$p)) {
       _l = r;
       continue ;
     }
-    if (!Caml_obj.caml_lessthan(c2$p, c1)) {
-      if (Caml_obj.caml_lessthan(c2, c2$p)) {
+    if (!Caml_obj.lessthan(c2$p, c1)) {
+      if (Caml_obj.lessthan(c2, c2$p)) {
         return {
                 hd: [
-                  Caml_obj.caml_max(c1, c1$p),
+                  Caml_obj.max(c1, c1$p),
                   c2
                 ],
                 tl: inter(r, l$p)
@@ -137,7 +137,7 @@ function inter(_l, _l$p) {
       } else {
         return {
                 hd: [
-                  Caml_obj.caml_max(c1, c1$p),
+                  Caml_obj.max(c1, c1$p),
                   c2$p
                 ],
                 tl: inter(l, r$p)
@@ -213,7 +213,7 @@ function single(c) {
 }
 
 function seq(c, c$p) {
-  if (Caml_obj.caml_lessequal(c, c$p)) {
+  if (Caml_obj.lessequal(c, c$p)) {
     return {
             hd: [
               c,
@@ -278,18 +278,18 @@ function one_char(param) {
   }
   var match = param.hd;
   var i = match[0];
-  if (Caml_obj.caml_equal(i, match[1])) {
+  if (Caml_obj.equal(i, match[1])) {
     return Caml_option.some(i);
   }
   
 }
 
 function compare(param, param$1) {
-  var c = Caml_obj.caml_compare(param[0], param$1[0]);
+  var c = Caml_obj.compare(param[0], param$1[0]);
   if (c !== 0) {
     return c;
   } else {
-    return Caml_obj.caml_compare(param[1], param$1[1]);
+    return Caml_obj.compare(param[1], param$1[1]);
   }
 }
 
@@ -571,7 +571,7 @@ function add$1(x, t) {
   var r = t.r;
   var v = t.v;
   var l = t.l;
-  var c = Caml.caml_int_compare(x, v);
+  var c = Caml.int_compare(x, v);
   if (c === 0) {
     return t;
   }
@@ -837,7 +837,7 @@ function equal(_l1, _l2) {
                 if (marks1._1.id !== match$1._1.id) {
                   return false;
                 }
-                if (!Caml_obj.caml_equal(marks1._0, match$1._0)) {
+                if (!Caml_obj.equal(marks1._0, match$1._0)) {
                   return false;
                 }
                 _l2 = l2.tl;
@@ -858,7 +858,7 @@ function equal(_l1, _l2) {
             case /* TExp */1 :
                 return false;
             case /* TMatch */2 :
-                if (!Caml_obj.caml_equal(marks1._0, marks2._0)) {
+                if (!Caml_obj.equal(marks1._0, marks2._0)) {
                   return false;
                 }
                 _l2 = l2.tl;
@@ -1897,8 +1897,8 @@ function colorize(c, regexp) {
 }
 
 function flatten_cmap(cm) {
-  var c = Caml_bytes.caml_create_bytes(256);
-  var col_repr = Caml_bytes.caml_create_bytes(256);
+  var c = Caml_bytes.create(256);
+  var col_repr = Caml_bytes.create(256);
   var v = 0;
   Caml_bytes.set(c, 0, /* '\000' */0);
   Caml_bytes.set(col_repr, 0, /* '\000' */0);
@@ -1954,7 +1954,7 @@ function equal$2(_x1, _x2) {
             if (typeof x2 === "number" || x2.TAG !== /* Set */0) {
               return false;
             } else {
-              return Caml_obj.caml_equal(x1._0, x2._0);
+              return Caml_obj.equal(x1._0, x2._0);
             }
         case /* Sequence */1 :
             if (typeof x2 === "number" || x2.TAG !== /* Sequence */1) {
@@ -1978,7 +1978,7 @@ function equal$2(_x1, _x2) {
             if (x1._1 !== x2._1) {
               return false;
             }
-            if (!Caml_obj.caml_equal(x1._2, x2._2)) {
+            if (!Caml_obj.equal(x1._2, x2._2)) {
               return false;
             }
             _x2 = x2._0;

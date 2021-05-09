@@ -34,13 +34,13 @@ function eq(loc, x, y) {
 
 Node_process.putEnvVar("Caml_sys_poly_fill_test", "X");
 
-var v = Caml_sys.caml_sys_getenv("Caml_sys_poly_fill_test");
+var v = Caml_sys.sys_getenv("Caml_sys_poly_fill_test");
 
 eq("File \"caml_sys_poly_fill_test.ml\", line 11, characters 5-12", "X", (Node_process.deleteEnvVar("Caml_sys_poly_fill_test"), v));
 
 Node_process.putEnvVar("Caml_sys_poly_fill_test", "Y");
 
-var v$1 = Caml_sys.caml_sys_getenv("Caml_sys_poly_fill_test");
+var v$1 = Caml_sys.sys_getenv("Caml_sys_poly_fill_test");
 
 eq("File \"caml_sys_poly_fill_test.ml\", line 17, characters 5-12", "Y", (Node_process.deleteEnvVar("Caml_sys_poly_fill_test"), v$1));
 
@@ -49,7 +49,7 @@ Node_process.deleteEnvVar("Caml_sys_poly_fill_test");
 var tmp;
 
 try {
-  tmp = Caml_sys.caml_sys_getenv("Caml_sys_poly_fill_test");
+  tmp = Caml_sys.sys_getenv("Caml_sys_poly_fill_test");
 }
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -63,8 +63,8 @@ catch (raw_exn){
 eq("File \"caml_sys_poly_fill_test.ml\", line 23, characters 5-12", "Z", tmp);
 
 console.log([
-      Caml_sys.caml_sys_getcwd(undefined),
-      Caml_sys.caml_sys_time(undefined),
+      Caml_sys.sys_getcwd(undefined),
+      Caml_sys.sys_time(undefined),
       Sys.argv,
       Sys.executable_name
     ]);

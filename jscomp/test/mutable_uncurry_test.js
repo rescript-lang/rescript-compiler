@@ -24,7 +24,7 @@ function eq(param, param$1) {
 
 function eq2(x, param) {
   var y = param.contents;
-  return Caml_obj.caml_equal(x.contents, y);
+  return Caml_obj.equal(x.contents, y);
 }
 
 eqs("File \"mutable_uncurry_test.ml\", line 13, characters 7-14", false, eq({

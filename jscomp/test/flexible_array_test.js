@@ -251,10 +251,10 @@ function sort(s) {
   }
   var head = get(s, 0);
   var larger = sort(filter_from(1, (function (x) {
-              return Caml_obj.caml_greaterthan(x, head);
+              return Caml_obj.greaterthan(x, head);
             }), s));
   var smaller = sort(filter_from(1, (function (x) {
-              return Caml_obj.caml_lessequal(x, head);
+              return Caml_obj.lessequal(x, head);
             }), s));
   return append(smaller, push_front(larger, head));
 }
@@ -267,7 +267,7 @@ function of_array(arr) {
   return v;
 }
 
-var equal = Caml_obj.caml_equal;
+var equal = Caml_obj.equal;
 
 var Int_array = {
   empty: empty,
@@ -284,7 +284,7 @@ var Int_array = {
 };
 
 function $eq$tilde(x, y) {
-  return Caml_obj.caml_equal(x, of_array(y));
+  return Caml_obj.equal(x, of_array(y));
 }
 
 var u = of_array([
@@ -298,7 +298,7 @@ var u = of_array([
 
 var x = sort(u);
 
-if (!Caml_obj.caml_equal(x, of_array([
+if (!Caml_obj.equal(x, of_array([
             1,
             2,
             2,
@@ -327,7 +327,7 @@ var y = $$Array.init(500, (function (i) {
 
 var x$1 = sort(of_array(v));
 
-Caml_obj.caml_equal(x$1, of_array(y));
+Caml_obj.equal(x$1, of_array(y));
 
 exports.sub = sub;
 exports.update = update;

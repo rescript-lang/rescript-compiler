@@ -25,7 +25,7 @@ function f(param) {
   Hashtbl.add(tbl, 1, /* '1' */49);
   Hashtbl.add(tbl, 2, /* '2' */50);
   return List.sort((function (param, param$1) {
-                return Caml.caml_int_compare(param[0], param$1[0]);
+                return Caml.int_compare(param[0], param$1[0]);
               }), to_list(tbl));
 }
 
@@ -39,7 +39,7 @@ function g(count) {
   }
   var v = to_list(tbl);
   return $$Array.of_list(List.sort((function (param, param$1) {
-                    return Caml.caml_int_compare(param[0], param$1[0]);
+                    return Caml.int_compare(param[0], param$1[0]);
                   }), v));
 }
 

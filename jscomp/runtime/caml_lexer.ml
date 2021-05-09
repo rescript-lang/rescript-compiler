@@ -175,7 +175,7 @@ let caml_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int = [%raw{|fun
 
 let empty_token_lit = "lexing: empty token"
 
-let caml_lex_engine : lex_tables -> int -> lexbuf -> int =
+let lex_engine : lex_tables -> int -> lexbuf -> int =
     fun tbls i buf -> 
     caml_lex_engine_aux tbls i buf (Failure empty_token_lit)
 
@@ -229,7 +229,7 @@ function caml_lex_run_tag(s, i, mem) {
 |}]
 
 (**
- * external c_new_engine : lex_tables -> int -> lexbuf -> int = "caml_new_lex_engine"
+ * external c_new_engine : lex_tables -> int -> lexbuf -> int = "?new_lex_engine"
  * @param tbl
  * @param start_state
  * @param lexbuf
@@ -328,7 +328,7 @@ let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= [%raw{|
 
 
 
-let caml_new_lex_engine : lex_tables -> int -> lexbuf -> int
+let new_lex_engine : lex_tables -> int -> lexbuf -> int
   = fun tbl i buf -> 
 caml_new_lex_engine_aux tbl i buf (Failure empty_token_lit)
 

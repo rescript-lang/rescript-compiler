@@ -7,7 +7,7 @@ var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var function_equal_test;
 
 try {
-  function_equal_test = Caml_obj.caml_equal((function (x) {
+  function_equal_test = Caml_obj.equal((function (x) {
           return x + 1 | 0;
         }), (function (x) {
           return x + 2 | 0;
@@ -26,7 +26,7 @@ var suites = {
           return {
                   TAG: /* Eq */0,
                   _0: true,
-                  _1: Caml_obj.caml_lessthan(undefined, 1)
+                  _1: Caml_obj.lessthan(undefined, 1)
                 };
         })
     ],
@@ -37,7 +37,7 @@ var suites = {
             return {
                     TAG: /* Eq */0,
                     _0: true,
-                    _1: Caml_obj.caml_lessthan(1, 2)
+                    _1: Caml_obj.lessthan(1, 2)
                   };
           })
       ],
@@ -48,7 +48,7 @@ var suites = {
               return {
                       TAG: /* Eq */0,
                       _0: true,
-                      _1: Caml_obj.caml_greaterthan({
+                      _1: Caml_obj.greaterthan({
                             hd: 1,
                             tl: /* [] */0
                           }, /* [] */0)
@@ -62,7 +62,7 @@ var suites = {
                 return {
                         TAG: /* Eq */0,
                         _0: true,
-                        _1: Caml_obj.caml_equal({
+                        _1: Caml_obj.equal({
                               hd: 1,
                               tl: {
                                 hd: 2,
@@ -91,7 +91,7 @@ var suites = {
                   return {
                           TAG: /* Eq */0,
                           _0: true,
-                          _1: Caml_obj.caml_greaterthan({
+                          _1: Caml_obj.greaterthan({
                                 hd: 1,
                                 tl: {
                                   hd: 2,
@@ -120,7 +120,7 @@ var suites = {
                     return {
                             TAG: /* Eq */0,
                             _0: true,
-                            _1: Caml_obj.caml_greaterthan([
+                            _1: Caml_obj.greaterthan([
                                   {
                                     TAG: /* A */0,
                                     _0: 3
@@ -159,7 +159,7 @@ var suites = {
                       return {
                               TAG: /* Eq */0,
                               _0: true,
-                              _1: Caml_obj.caml_equal([
+                              _1: Caml_obj.equal([
                                     {
                                       TAG: /* A */0,
                                       _0: 3
@@ -209,7 +209,7 @@ var suites = {
                           return {
                                   TAG: /* Eq */0,
                                   _0: true,
-                                  _1: Caml_obj.caml_lessthan(undefined, 1)
+                                  _1: Caml_obj.lessthan(undefined, 1)
                                 };
                         })
                     ],
@@ -220,7 +220,7 @@ var suites = {
                             return {
                                     TAG: /* Eq */0,
                                     _0: true,
-                                    _1: Caml_obj.caml_lessthan(undefined, [
+                                    _1: Caml_obj.lessthan(undefined, [
                                           1,
                                           30
                                         ])
@@ -234,7 +234,7 @@ var suites = {
                               return {
                                       TAG: /* Eq */0,
                                       _0: true,
-                                      _1: Caml_obj.caml_greaterthan([
+                                      _1: Caml_obj.greaterthan([
                                             1,
                                             30
                                           ], undefined)
@@ -248,7 +248,7 @@ var suites = {
                                 return {
                                         TAG: /* Eq */0,
                                         _0: true,
-                                        _1: Caml_obj.caml_lessthan({
+                                        _1: Caml_obj.lessthan({
                                               hd: 2,
                                               tl: {
                                                 hd: 6,
@@ -316,7 +316,7 @@ var suites = {
                                   return {
                                           TAG: /* Eq */0,
                                           _0: true,
-                                          _1: Caml_obj.caml_lessthan({
+                                          _1: Caml_obj.lessthan({
                                                 hd: 1,
                                                 tl: /* [] */0
                                               }, {
@@ -336,7 +336,7 @@ var suites = {
                                     return {
                                             TAG: /* Eq */0,
                                             _0: true,
-                                            _1: Caml_obj.caml_lessthan(/* [] */0, {
+                                            _1: Caml_obj.lessthan(/* [] */0, {
                                                   hd: 409,
                                                   tl: /* [] */0
                                                 })
@@ -350,7 +350,7 @@ var suites = {
                                       return {
                                               TAG: /* Eq */0,
                                               _0: true,
-                                              _1: Caml_obj.caml_greaterthan({
+                                              _1: Caml_obj.greaterthan({
                                                     hd: 2,
                                                     tl: {
                                                       hd: 6,
@@ -440,7 +440,7 @@ var suites = {
                                             return {
                                                     TAG: /* Eq */0,
                                                     _0: false,
-                                                    _1: Caml_obj.caml_equal({
+                                                    _1: Caml_obj.equal({
                                                           hd: 2,
                                                           tl: {
                                                             hd: 6,
@@ -508,7 +508,7 @@ var suites = {
                                               return {
                                                       TAG: /* Eq */0,
                                                       _0: false,
-                                                      _1: Caml_obj.caml_equal({
+                                                      _1: Caml_obj.equal({
                                                             hd: 2,
                                                             tl: {
                                                               hd: 6,
@@ -575,7 +575,7 @@ var suites = {
                                             (function (param) {
                                                 return {
                                                         TAG: /* Eq */0,
-                                                        _0: Caml_obj.caml_compare({
+                                                        _0: Caml_obj.compare({
                                                               x: 1,
                                                               y: 2
                                                             }, {
@@ -592,7 +592,7 @@ var suites = {
                                               (function (param) {
                                                   return {
                                                           TAG: /* Eq */0,
-                                                          _0: Caml_obj.caml_compare({
+                                                          _0: Caml_obj.compare({
                                                                 x: 1
                                                               }, {
                                                                 x: 2
@@ -607,7 +607,7 @@ var suites = {
                                                 (function (param) {
                                                     return {
                                                             TAG: /* Eq */0,
-                                                            _0: Caml_obj.caml_compare({
+                                                            _0: Caml_obj.compare({
                                                                   x: 2
                                                                 }, {
                                                                   x: 1
@@ -622,7 +622,7 @@ var suites = {
                                                   (function (param) {
                                                       return {
                                                               TAG: /* Eq */0,
-                                                              _0: Caml_obj.caml_compare({}, {}),
+                                                              _0: Caml_obj.compare({}, {}),
                                                               _1: 0
                                                             };
                                                     })
@@ -633,7 +633,7 @@ var suites = {
                                                     (function (param) {
                                                         return {
                                                                 TAG: /* Eq */0,
-                                                                _0: Caml_obj.caml_compare({}, {x:1}),
+                                                                _0: Caml_obj.compare({}, {x:1}),
                                                                 _1: -1
                                                               };
                                                       })
@@ -644,7 +644,7 @@ var suites = {
                                                       (function (param) {
                                                           return {
                                                                   TAG: /* Eq */0,
-                                                                  _0: Caml_obj.caml_compare({
+                                                                  _0: Caml_obj.compare({
                                                                         x: 1,
                                                                         y: 2
                                                                       }, {
@@ -661,7 +661,7 @@ var suites = {
                                                         (function (param) {
                                                             return {
                                                                     TAG: /* Eq */0,
-                                                                    _0: Caml_obj.caml_compare({x:1}, {x:1, y:2}),
+                                                                    _0: Caml_obj.compare({x:1}, {x:1, y:2}),
                                                                     _1: -1
                                                                   };
                                                           })
@@ -672,7 +672,7 @@ var suites = {
                                                           (function (param) {
                                                               return {
                                                                       TAG: /* Eq */0,
-                                                                      _0: Caml_obj.caml_compare({x:1, y:2}, {x:1}),
+                                                                      _0: Caml_obj.compare({x:1, y:2}, {x:1}),
                                                                       _1: 1
                                                                     };
                                                             })
@@ -683,7 +683,7 @@ var suites = {
                                                             (function (param) {
                                                                 return {
                                                                         TAG: /* Eq */0,
-                                                                        _0: Caml_obj.caml_compare({
+                                                                        _0: Caml_obj.compare({
                                                                               x: 0,
                                                                               y: 1
                                                                             }, {
@@ -700,7 +700,7 @@ var suites = {
                                                               (function (param) {
                                                                   return {
                                                                           TAG: /* Eq */0,
-                                                                          _0: Caml_obj.caml_compare({
+                                                                          _0: Caml_obj.compare({
                                                                                 x: 1,
                                                                                 y: 0
                                                                               }, {
@@ -717,7 +717,7 @@ var suites = {
                                                                 (function (param) {
                                                                     return {
                                                                             TAG: /* Eq */0,
-                                                                            _0: Caml_obj.caml_compare({
+                                                                            _0: Caml_obj.compare({
                                                                                   hd: {
                                                                                     x: 1
                                                                                   },
@@ -738,7 +738,7 @@ var suites = {
                                                                   (function (param) {
                                                                       return {
                                                                               TAG: /* Eq */0,
-                                                                              _0: Caml_obj.caml_compare({
+                                                                              _0: Caml_obj.compare({
                                                                                     hd: {
                                                                                       x: 2
                                                                                     },
@@ -759,7 +759,7 @@ var suites = {
                                                                     (function (param) {
                                                                         return {
                                                                                 TAG: /* Eq */0,
-                                                                                _0: Caml_obj.caml_compare({
+                                                                                _0: Caml_obj.compare({
                                                                                       x: {
                                                                                         hd: 0,
                                                                                         tl: /* [] */0
@@ -780,7 +780,7 @@ var suites = {
                                                                       (function (param) {
                                                                           return {
                                                                                   TAG: /* Eq */0,
-                                                                                  _0: Caml_obj.caml_compare({
+                                                                                  _0: Caml_obj.compare({
                                                                                         x: {
                                                                                           hd: 1,
                                                                                           tl: /* [] */0
@@ -801,7 +801,7 @@ var suites = {
                                                                         (function (param) {
                                                                             return {
                                                                                     TAG: /* Ok */4,
-                                                                                    _0: Caml_obj.caml_equal({
+                                                                                    _0: Caml_obj.equal({
                                                                                           x: 1,
                                                                                           y: 2
                                                                                         }, {
@@ -817,7 +817,7 @@ var suites = {
                                                                           (function (param) {
                                                                               return {
                                                                                       TAG: /* Eq */0,
-                                                                                      _0: Caml_obj.caml_equal({
+                                                                                      _0: Caml_obj.equal({
                                                                                             x: 1
                                                                                           }, {
                                                                                             x: 2
@@ -832,7 +832,7 @@ var suites = {
                                                                             (function (param) {
                                                                                 return {
                                                                                         TAG: /* Eq */0,
-                                                                                        _0: Caml_obj.caml_equal({
+                                                                                        _0: Caml_obj.equal({
                                                                                               x: 2
                                                                                             }, {
                                                                                               x: 1
@@ -847,7 +847,7 @@ var suites = {
                                                                               (function (param) {
                                                                                   return {
                                                                                           TAG: /* Eq */0,
-                                                                                          _0: Caml_obj.caml_equal({}, {}),
+                                                                                          _0: Caml_obj.equal({}, {}),
                                                                                           _1: true
                                                                                         };
                                                                                 })
@@ -858,7 +858,7 @@ var suites = {
                                                                                 (function (param) {
                                                                                     return {
                                                                                             TAG: /* Eq */0,
-                                                                                            _0: Caml_obj.caml_equal({}, {x:1}),
+                                                                                            _0: Caml_obj.equal({}, {x:1}),
                                                                                             _1: false
                                                                                           };
                                                                                   })
@@ -869,7 +869,7 @@ var suites = {
                                                                                   (function (param) {
                                                                                       return {
                                                                                               TAG: /* Ok */4,
-                                                                                              _0: Caml_obj.caml_equal({
+                                                                                              _0: Caml_obj.equal({
                                                                                                     x: 1,
                                                                                                     y: 2
                                                                                                   }, {
@@ -885,7 +885,7 @@ var suites = {
                                                                                     (function (param) {
                                                                                         return {
                                                                                                 TAG: /* Eq */0,
-                                                                                                _0: Caml_obj.caml_equal({x:1}, {x:1, y:2}),
+                                                                                                _0: Caml_obj.equal({x:1}, {x:1, y:2}),
                                                                                                 _1: false
                                                                                               };
                                                                                       })
@@ -896,7 +896,7 @@ var suites = {
                                                                                       (function (param) {
                                                                                           return {
                                                                                                   TAG: /* Eq */0,
-                                                                                                  _0: Caml_obj.caml_equal({x:1, y:2}, {x:1}),
+                                                                                                  _0: Caml_obj.equal({x:1, y:2}, {x:1}),
                                                                                                   _1: false
                                                                                                 };
                                                                                         })
@@ -907,7 +907,7 @@ var suites = {
                                                                                         (function (param) {
                                                                                             return {
                                                                                                     TAG: /* Eq */0,
-                                                                                                    _0: Caml_obj.caml_equal({
+                                                                                                    _0: Caml_obj.equal({
                                                                                                           hd: {
                                                                                                             x: 1
                                                                                                           },
@@ -928,7 +928,7 @@ var suites = {
                                                                                           (function (param) {
                                                                                               return {
                                                                                                       TAG: /* Eq */0,
-                                                                                                      _0: Caml_obj.caml_equal({
+                                                                                                      _0: Caml_obj.equal({
                                                                                                             hd: {
                                                                                                               x: 2
                                                                                                             },
@@ -949,7 +949,7 @@ var suites = {
                                                                                             (function (param) {
                                                                                                 return {
                                                                                                         TAG: /* Eq */0,
-                                                                                                        _0: Caml_obj.caml_equal({
+                                                                                                        _0: Caml_obj.equal({
                                                                                                               x: {
                                                                                                                 hd: 0,
                                                                                                                 tl: /* [] */0
@@ -970,7 +970,7 @@ var suites = {
                                                                                               (function (param) {
                                                                                                   return {
                                                                                                           TAG: /* Eq */0,
-                                                                                                          _0: Caml_obj.caml_equal({
+                                                                                                          _0: Caml_obj.equal({
                                                                                                                 x: {
                                                                                                                   hd: 0,
                                                                                                                   tl: /* [] */0
@@ -991,7 +991,7 @@ var suites = {
                                                                                                 (function (param) {
                                                                                                     return {
                                                                                                             TAG: /* Eq */0,
-                                                                                                            _0: Caml_obj.caml_compare(null, {
+                                                                                                            _0: Caml_obj.compare(null, {
                                                                                                                   hd: 3,
                                                                                                                   tl: /* [] */0
                                                                                                                 }),
@@ -1005,7 +1005,7 @@ var suites = {
                                                                                                   (function (param) {
                                                                                                       return {
                                                                                                               TAG: /* Eq */0,
-                                                                                                              _0: Caml_obj.caml_compare({
+                                                                                                              _0: Caml_obj.compare({
                                                                                                                     hd: 3,
                                                                                                                     tl: /* [] */0
                                                                                                                   }, null),
@@ -1019,7 +1019,7 @@ var suites = {
                                                                                                     (function (param) {
                                                                                                         return {
                                                                                                                 TAG: /* Eq */0,
-                                                                                                                _0: Caml_obj.caml_compare(null, 0),
+                                                                                                                _0: Caml_obj.compare(null, 0),
                                                                                                                 _1: -1
                                                                                                               };
                                                                                                       })
@@ -1030,7 +1030,7 @@ var suites = {
                                                                                                       (function (param) {
                                                                                                           return {
                                                                                                                   TAG: /* Eq */0,
-                                                                                                                  _0: Caml_obj.caml_compare(0, null),
+                                                                                                                  _0: Caml_obj.compare(0, null),
                                                                                                                   _1: 1
                                                                                                                 };
                                                                                                         })
@@ -1041,7 +1041,7 @@ var suites = {
                                                                                                         (function (param) {
                                                                                                             return {
                                                                                                                     TAG: /* Eq */0,
-                                                                                                                    _0: Caml_obj.caml_compare(undefined, 0),
+                                                                                                                    _0: Caml_obj.compare(undefined, 0),
                                                                                                                     _1: -1
                                                                                                                   };
                                                                                                           })
@@ -1052,7 +1052,7 @@ var suites = {
                                                                                                           (function (param) {
                                                                                                               return {
                                                                                                                       TAG: /* Eq */0,
-                                                                                                                      _0: Caml_obj.caml_compare(0, undefined),
+                                                                                                                      _0: Caml_obj.compare(0, undefined),
                                                                                                                       _1: 1
                                                                                                                     };
                                                                                                             })
@@ -1119,21 +1119,21 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-eq("File \"caml_compare_test.ml\", line 112, characters 6-13", true, Caml_obj.caml_greaterthan(1, undefined));
+eq("File \"caml_compare_test.ml\", line 112, characters 6-13", true, Caml_obj.greaterthan(1, undefined));
 
-eq("File \"caml_compare_test.ml\", line 113, characters 6-13", true, Caml_obj.caml_lessthan(/* [] */0, {
+eq("File \"caml_compare_test.ml\", line 113, characters 6-13", true, Caml_obj.lessthan(/* [] */0, {
           hd: 1,
           tl: /* [] */0
         }));
 
-eq("File \"caml_compare_test.ml\", line 114, characters 6-13", false, Caml_obj.caml_greaterthan(undefined, 1));
+eq("File \"caml_compare_test.ml\", line 114, characters 6-13", false, Caml_obj.greaterthan(undefined, 1));
 
-eq("File \"caml_compare_test.ml\", line 115, characters 6-13", false, Caml_obj.caml_greaterthan(undefined, [
+eq("File \"caml_compare_test.ml\", line 115, characters 6-13", false, Caml_obj.greaterthan(undefined, [
           1,
           30
         ]));
 
-eq("File \"caml_compare_test.ml\", line 116, characters 6-13", false, Caml_obj.caml_lessthan([
+eq("File \"caml_compare_test.ml\", line 116, characters 6-13", false, Caml_obj.lessthan([
           1,
           30
         ], undefined));

@@ -24,18 +24,18 @@
 
 
 
-val caml_sys_getenv : string -> string
+val sys_getenv : string -> string
 
-val caml_sys_time : unit -> float 
+val sys_time : unit -> float 
 
 val os_type : unit -> string 
 
 
-val caml_sys_getcwd : unit -> string 
+val sys_getcwd : unit -> string 
 
-val caml_sys_get_argv : unit -> string * string array
+val sys_get_argv : unit -> string * string array
 
-val caml_sys_exit : int -> unit 
+val sys_exit : int -> unit 
 
-val caml_sys_is_directory : string -> bool 
-val caml_sys_file_exists : string -> bool 
+val sys_is_directory : string -> bool 
+val sys_file_exists : string -> bool 

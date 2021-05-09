@@ -17,7 +17,7 @@ o runtime/caml.cmj : cc_cmi runtime/caml.ml | runtime/caml.cmi runtime/caml_int6
 o runtime/caml.cmi : cc runtime/caml.mli | runtime/bs_stdlib_mini.cmi runtime/caml_int64_extern.cmj runtime/js.cmi runtime/js.cmj
 o runtime/caml_array.cmj : cc_cmi runtime/caml_array.ml | runtime/caml_array.cmi runtime/caml_array_extern.cmj
 o runtime/caml_array.cmi : cc runtime/caml_array.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
-o runtime/caml_bytes.cmj : cc_cmi runtime/caml_bytes.ml | runtime/caml_bytes.cmi runtime/caml_string_extern.cmj
+o runtime/caml_bytes.cmj : cc_cmi runtime/caml_bytes.ml | runtime/caml_bytes.cmi
 o runtime/caml_bytes.cmi : cc runtime/caml_bytes.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 o runtime/caml_float.cmj : cc_cmi runtime/caml_float.ml | runtime/caml_float.cmi runtime/caml_float_extern.cmj
 o runtime/caml_float.cmi : cc runtime/caml_float.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj

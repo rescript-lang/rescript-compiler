@@ -284,7 +284,7 @@ let starts_with_and_number s ~offset beg =
 
 let equal (x : string) y  = x = y
 
-let unsafe_concat_with_length len sep l =
+(* let unsafe_concat_with_length len sep l =
   match l with 
   | [] -> ""
   | hd :: tl -> (* num is positive *)
@@ -301,7 +301,7 @@ let unsafe_concat_with_length len sep l =
          String.unsafe_blit s 0 r !pos s_len;
          pos := !pos + s_len)
       tl;
-    Bytes.unsafe_to_string r
+    Bytes.unsafe_to_string r *)
 
 
 let rec rindex_rec s i c =
@@ -424,7 +424,7 @@ external compare : string -> string -> int = "caml_string_length_based_compare" 
 let single_space = " "
 let single_colon = ":"
 
-let concat_array sep (s : string array) =   
+(* let concat_array sep (s : string array) =   
   let s_len = Array.length s in 
   match s_len with 
   | 0 -> empty 
@@ -451,9 +451,9 @@ let concat_array sep (s : string array) =
       current_offset := 
         new_off_set + cur_len ; 
     done;
-    Bytes.unsafe_to_string target   
+    Bytes.unsafe_to_string target    *)
 
-let concat3 a b c = 
+(* let concat3 a b c = 
   let a_len = String.length a in 
   let b_len = String.length b in 
   let c_len = String.length c in 
@@ -462,9 +462,9 @@ let concat3 a b c =
   String.unsafe_blit a 0 target 0 a_len ; 
   String.unsafe_blit b 0 target a_len b_len;
   String.unsafe_blit c 0 target (a_len + b_len) c_len;
-  Bytes.unsafe_to_string target
+  Bytes.unsafe_to_string target *)
 
-let concat4 a b c d =
+(* let concat4 a b c d =
   let a_len = String.length a in 
   let b_len = String.length b in 
   let c_len = String.length c in 
@@ -477,8 +477,8 @@ let concat4 a b c d =
   String.unsafe_blit c 0 target (a_len + b_len) c_len;
   String.unsafe_blit d 0 target (a_len + b_len + c_len) d_len;
   Bytes.unsafe_to_string target
-
-
+ *)
+(* 
 let concat5 a b c d e =
   let a_len = String.length a in 
   let b_len = String.length b in 
@@ -494,22 +494,22 @@ let concat5 a b c d e =
   String.unsafe_blit d 0 target (a_len + b_len + c_len) d_len;
   String.unsafe_blit e 0 target (a_len + b_len + c_len + d_len) e_len;
   Bytes.unsafe_to_string target
+ *)
+
+
+(* let inter2 a b = 
+    concat3 a single_space b  *)
+
+
+(* let inter3 a b c = 
+  concat5 a  single_space  b  single_space  c  *)
 
 
 
-let inter2 a b = 
-    concat3 a single_space b 
 
 
-let inter3 a b c = 
-  concat5 a  single_space  b  single_space  c 
-
-
-
-
-
-let inter4 a b c d =
-  concat_array single_space [| a; b ; c; d|]
+(* let inter4 a b c d =
+  concat_array single_space [| a; b ; c; d|] *)
   
     
 let parent_dir_lit = ".."    

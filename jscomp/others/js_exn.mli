@@ -27,7 +27,7 @@ type t
 type exn += private Error of t
 
 external asJsExn : exn -> t option =
-  "caml_as_js_exn"
+  "?as_js_exn"
 
 external stack : t -> string option = "stack"
 [@@bs.get]
@@ -40,7 +40,7 @@ external fileName : t -> string option = "fileName"
 
 
 external isCamlExceptionOrOpenVariant:
-  'a -> bool = "caml_is_extension"
+  'a -> bool = "?is_extension"
 (** internal use only *)
 
 val anyToExnInternal: 'a -> exn

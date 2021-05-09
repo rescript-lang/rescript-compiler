@@ -148,7 +148,7 @@ external to_nativeint : int64 -> nativeint = "%int64_to_nativeint"
    is taken modulo 2{^32}.  On 64-bit platforms,
    the conversion is exact. *)
 
-external of_string : string -> int64 = "caml_int64_of_string"
+external of_string : string -> int64 = "?int64_of_string"
 (** Convert the given string to a 64-bit integer.
    The string is read in decimal (by default, or if the string 
    begins with [0u]) or in hexadecimal, octal or binary if the
@@ -205,6 +205,6 @@ val equal: t -> t -> bool
 
 (** {1 Deprecated functions} *)
 
-external format : string -> int64 -> string = "caml_int64_format"
+external format : string -> int64 -> string = "?int64_format"
 (** Do not use this deprecated function.  Instead,
    used {!Printf.sprintf} with a [%L...] format. *)

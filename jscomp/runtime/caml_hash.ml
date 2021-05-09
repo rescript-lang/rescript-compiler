@@ -77,24 +77,25 @@ let unsafe_pop (q : 'a t) =
 
 
 
-let caml_hash_mix_int = Caml_hash_primitive.caml_hash_mix_int
-let caml_hash_final_mix = Caml_hash_primitive.caml_hash_final_mix
-let caml_hash_mix_string =  Caml_hash_primitive.caml_hash_mix_string
+let {hash_mix_int =  caml_hash_mix_int;
+     hash_final_mix = caml_hash_final_mix;
+     hash_mix_string = caml_hash_mix_string
+    } =  (module Caml_hash_primitive)
 
 
-let caml_hash (count : int) _limit (seed : int) 
+let hash (count : int) _limit (seed : int) 
     (obj : Obj.t) : int = 
-  let hash = ref seed in 
+  let s = ref seed in 
   if Js.typeof obj = "number" then
     begin 
       let u = Caml_nativeint_extern.of_float (Obj.magic obj) in
-      hash.contents <- caml_hash_mix_int hash.contents (u + u + 1) ;
-      caml_hash_final_mix hash.contents
+      s.contents <- caml_hash_mix_int s.contents (u + u + 1) ;
+      caml_hash_final_mix s.contents
     end
   else if Js.typeof obj = "string" then 
     begin 
-      hash.contents <- caml_hash_mix_string hash.contents (Obj.magic obj : string);
-      caml_hash_final_mix hash.contents
+      s.contents <- caml_hash_mix_string s.contents (Obj.magic obj : string);
+      caml_hash_final_mix s.contents
     end
     (* TODO: hash [null] [undefined] as well *)
   else 
@@ -110,12 +111,12 @@ let caml_hash (count : int) _limit (seed : int)
       if Js.typeof obj = "number" then
         begin 
           let u = Caml_nativeint_extern.of_float (Obj.magic obj) in
-          hash.contents <- caml_hash_mix_int hash.contents (u + u + 1) ;
+          s.contents <- caml_hash_mix_int s.contents (u + u + 1) ;
           num.contents <- num.contents - 1;
         end 
       else if Js.typeof obj = "string" then 
         begin 
-          hash.contents <- caml_hash_mix_string hash.contents (Obj.magic obj : string);
+          s.contents <- caml_hash_mix_string s.contents (Obj.magic obj : string);
           num.contents <- num.contents - 1 
         end
       else if Js.typeof obj = "boolean" then 
@@ -132,11 +133,11 @@ let caml_hash (count : int) _limit (seed : int)
           let obj_tag = Obj.tag obj in
           let tag = (size lsl 10) lor obj_tag in 
           if obj_tag = 248 (* Obj.object_tag*) then 
-            hash.contents <- caml_hash_mix_int hash.contents 
+            s.contents <- caml_hash_mix_int s.contents 
                 (Obj.obj (Obj.field obj 1) : int)
           else 
             begin 
-              hash.contents <- caml_hash_mix_int hash.contents tag ;
+              s.contents <- caml_hash_mix_int s.contents tag ;
               let block = 
                 let v = size - 1 in if v <  num.contents then v else num.contents in 
               for i = 0 to block do
@@ -153,8 +154,8 @@ let caml_hash (count : int) _limit (seed : int)
             }
             return size
           }|}] obj (fun [@bs] v -> push_back queue v ) [@bs]) in    
-            hash.contents <- caml_hash_mix_int hash.contents  ((size lsl 10) lor 0) (*tag*) ;
+            s.contents <- caml_hash_mix_int s.contents  ((size lsl 10) lor 0) (*tag*) ;
           end
     done;
-    caml_hash_final_mix hash.contents
+    caml_hash_final_mix s.contents
 

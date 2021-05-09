@@ -245,17 +245,6 @@ let rec eliminate_tuple (id : Ident.t) (lam : Lam.t) acc =
                     (* This kind of simple optimizations should be done each time
                        and as early as possible *)
 
-                    (* | Lprim {primitive = Pccall{prim_name = "caml_int64_float_of_bits"; _};
-                            args = [ Lconst (  (Const_int64 i))]; _}
-                       ->
-                       Lam.const
-                        (  (Const_float (Js_number.to_string (Int64.float_of_bits i) ))) *)
-                    (* | Lprim {primitive = Pccall{prim_name = "caml_int64_to_float"; _};
-                             args = [ Lconst (  (Const_int64 i))]; _}
-                       ->
-                       (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
-                       Lam.const
-                        (  (Const_float (Js_number.to_string (Int64.to_float i) ))) *)
                     | Lglobal_module _ -> lam
                     | Lprim {primitive ; args; loc }
                       ->

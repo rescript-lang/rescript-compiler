@@ -32,7 +32,7 @@ function eq(loc, x, y) {
 }
 
 function id(x) {
-  return Caml_format.caml_int64_of_string(Caml_int64.to_string(x));
+  return Caml_format.int64_of_string(Caml_int64.to_string(x));
 }
 
 var i = [
@@ -42,13 +42,13 @@ var i = [
 
 var s = Caml_int64.to_string(i);
 
-var i$p = Caml_format.caml_int64_of_string(s);
+var i$p = Caml_format.int64_of_string(s);
 
 eq("File \"gpr_1503_test.ml\", line 18, characters 5-12", i, i$p);
 
-eq("File \"gpr_1503_test.ml\", line 21, characters 7-14", Int64.max_int, Caml_format.caml_int64_of_string(Caml_int64.to_string(Int64.max_int)));
+eq("File \"gpr_1503_test.ml\", line 21, characters 7-14", Int64.max_int, Caml_format.int64_of_string(Caml_int64.to_string(Int64.max_int)));
 
-eq("File \"gpr_1503_test.ml\", line 22, characters 7-14", Int64.min_int, Caml_format.caml_int64_of_string(Caml_int64.to_string(Int64.min_int)));
+eq("File \"gpr_1503_test.ml\", line 22, characters 7-14", Int64.min_int, Caml_format.int64_of_string(Caml_int64.to_string(Int64.min_int)));
 
 Mt.from_pair_suites("Gpr_1503_test", suites.contents);
 

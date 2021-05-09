@@ -114,7 +114,7 @@ function add(x, data, tree) {
   var d = tree._2;
   var v = tree._1;
   var l = tree._0;
-  var c = Caml.caml_int_compare(x, v);
+  var c = Caml.int_compare(x, v);
   if (c === 0) {
     return /* Node */{
             _0: l,
@@ -162,7 +162,7 @@ function find(px, _x) {
   while(true) {
     var x = _x;
     if (x) {
-      var c = Caml.caml_int_compare(px, x._1);
+      var c = Caml.int_compare(px, x._1);
       if (c === 0) {
         return x._2;
       }

@@ -57,9 +57,9 @@ type lex_tables =
     lex_check_code : string;
     lex_code: string;}
 
-external c_engine : lex_tables -> int -> lexbuf -> int = "caml_lex_engine"
+external c_engine : lex_tables -> int -> lexbuf -> int = "?lex_engine"
 external c_new_engine : lex_tables -> int -> lexbuf -> int
-                      = "caml_new_lex_engine"
+                      = "?new_lex_engine"
 
 let engine tbl state buf =
   let result = c_engine tbl state buf in

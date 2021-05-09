@@ -68,7 +68,7 @@ if (!(to_list(q) === /* [] */0 && q.length === 0)) {
 
 Queue.add(1, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), {
+if (!(Caml_obj.equal(to_list(q), {
           hd: 1,
           tl: /* [] */0
         }) && q.length === 1)) {
@@ -85,7 +85,7 @@ if (!(Caml_obj.caml_equal(to_list(q), {
 
 Queue.add(2, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), {
+if (!(Caml_obj.equal(to_list(q), {
           hd: 1,
           tl: {
             hd: 2,
@@ -105,7 +105,7 @@ if (!(Caml_obj.caml_equal(to_list(q), {
 
 Queue.add(3, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), {
+if (!(Caml_obj.equal(to_list(q), {
           hd: 1,
           tl: {
             hd: 2,
@@ -128,7 +128,7 @@ if (!(Caml_obj.caml_equal(to_list(q), {
 
 Queue.add(4, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), {
+if (!(Caml_obj.equal(to_list(q), {
           hd: 1,
           tl: {
             hd: 2,
@@ -164,7 +164,7 @@ if (Queue.take(q) !== 1) {
       };
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), {
+if (!(Caml_obj.equal(to_list(q), {
           hd: 2,
           tl: {
             hd: 3,
@@ -197,7 +197,7 @@ if (Queue.take(q) !== 2) {
       };
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), {
+if (!(Caml_obj.equal(to_list(q), {
           hd: 3,
           tl: {
             hd: 4,
@@ -227,7 +227,7 @@ if (Queue.take(q) !== 3) {
       };
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), {
+if (!(Caml_obj.equal(to_list(q), {
           hd: 4,
           tl: /* [] */0
         }) && q.length === 1)) {
@@ -528,7 +528,7 @@ if (!does_raise(Queue.take, q$3)) {
       };
 }
 
-if (!Caml_obj.caml_equal(q$3, {
+if (!Caml_obj.equal(q$3, {
         length: 0,
         first: /* Nil */0,
         last: /* Nil */0
@@ -570,7 +570,7 @@ for(var i$1 = 1; i$1 <= 10; ++i$1){
 
 var q2 = Queue.copy(q1);
 
-if (!Caml_obj.caml_equal(to_list(q1), {
+if (!Caml_obj.equal(to_list(q1), {
         hd: 1,
         tl: {
           hd: 2,
@@ -612,7 +612,7 @@ if (!Caml_obj.caml_equal(to_list(q1), {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2), {
+if (!Caml_obj.equal(to_list(q2), {
         hd: 1,
         tl: {
           hd: 2,
@@ -971,7 +971,7 @@ if (q1$2.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q1$2), {
+if (!Caml_obj.equal(to_list(q1$2), {
         hd: 1,
         tl: {
           hd: 2,
@@ -1057,7 +1057,7 @@ if (q2$2.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$2), {
+if (!Caml_obj.equal(to_list(q2$2), {
         hd: 1,
         tl: {
           hd: 2,
@@ -1133,7 +1133,7 @@ if (q2$3.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$3), {
+if (!Caml_obj.equal(to_list(q2$3), {
         hd: 5,
         tl: {
           hd: 6,
@@ -1195,7 +1195,7 @@ if (q2$3.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$3), {
+if (!Caml_obj.equal(to_list(q2$3), {
         hd: 5,
         tl: {
           hd: 6,
@@ -1251,7 +1251,7 @@ if (q1$4.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q1$4), {
+if (!Caml_obj.equal(to_list(q1$4), {
         hd: 1,
         tl: {
           hd: 2,
@@ -1287,7 +1287,7 @@ if (q2$4.length !== 4) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$4), {
+if (!Caml_obj.equal(to_list(q2$4), {
         hd: 5,
         tl: {
           hd: 6,
@@ -1349,7 +1349,7 @@ if (q2$4.length !== 8) {
       };
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$4), {
+if (!Caml_obj.equal(to_list(q2$4), {
         hd: 5,
         tl: {
           hd: 6,

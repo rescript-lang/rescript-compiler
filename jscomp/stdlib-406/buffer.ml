@@ -44,7 +44,7 @@ let blit src srcoff dst dstoff len =
              || dstoff < 0 || dstoff > (Bytes.length dst) - len
   then invalid_arg "Buffer.blit"
   else
-    Bytes.unsafe_blit src.buffer srcoff dst dstoff len
+    Bytes.blit src.buffer srcoff dst dstoff len
 
 
 let nth b ofs =

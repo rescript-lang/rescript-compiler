@@ -36,21 +36,21 @@ external pow_float : base:float -> exp:float -> float = "Math.pow" [@@bs.val]
 external int_of_float : float -> int = "%intoffloat"
 external float_of_int : int -> float = "%floatofint"
 
-let caml_int_float_of_bits : int -> float = [%raw{|function(x){
+let int_float_of_bits : int -> float = [%raw{|function(x){
     return new Float32Array(new Int32Array([x]).buffer)[0] 
     }|}]
 (* let int = Int32_array.make [| x |] in
    let float32 = Float32_array.fromBuffer ( Int32_array.buffer int) in
    Float32_array.unsafe_get float32 0 *)
 
-let caml_int_bits_of_float : float -> int = [%raw{|function(x){
+let int_bits_of_float : float -> int = [%raw{|function(x){
   return new Int32Array(new Float32Array([x]).buffer)[0] 
 }|}]
 (* let float32 = Float32_array.make [|x|] in
    Int32_array.unsafe_get (Int32_array.fromBuffer (Float32_array.buffer float32)) 0 *)
 
 
-let caml_modf_float (x : float) : float * float =
+let modf_float (x : float) : float * float =
   if Caml_float_extern.isFinite x then
     let neg = 1. /. x < 0. in
     let x = abs_float x  in
@@ -62,7 +62,7 @@ let caml_modf_float (x : float) : float * float =
   else if Caml_float_extern.isNaN x then Caml_float_extern._NaN, Caml_float_extern._NaN
   else (1. /. x , x)
 
-let caml_ldexp_float (x: float) (exp: int) : float =
+let ldexp_float (x: float) (exp: int) : float =
   let x', exp' = ref x, ref (float_of_int exp) in
   if exp'.contents > 1023. then begin
     exp' .contents <- exp'.contents -. 1023.;
@@ -79,7 +79,7 @@ let caml_ldexp_float (x: float) (exp: int) : float =
   x'.contents *. pow_float ~base:2. ~exp:exp'.contents
 
 
-let caml_frexp_float (x: float): float * int =
+let frexp_float (x: float): float * int =
   if x = 0. || not  (Caml_float_extern.isFinite x) then
     (x, 0)
   else begin
@@ -99,14 +99,14 @@ let caml_frexp_float (x: float): float * int =
 
 
 
-let caml_copysign_float   (x : float) (y :  float) :  float =
+let copysign_float   (x : float) (y :  float) :  float =
   let x = abs_float x in
   let y =
     if y = 0. then 1. /. y else y in
   if y < 0. then -. x else x
 
 (* http://www.johndcook.com/blog/cpp_expm1/ *)
-let  caml_expm1_float : float -> float = function x ->
+let  expm1_float : float -> float = function x ->
   let y = exp x in
   let z = y -. 1. in
   if abs_float x > 1. then z
@@ -114,21 +114,20 @@ let  caml_expm1_float : float -> float = function x ->
 
 (* 
 (* http://blog.csdn.net/liyuanbhu/article/details/8544644 *)
-let caml_log1p_float : float -> float = function x ->
+let log1p_float : float -> float = function x ->
   let y = 1. +.  x  in
   let z =  y -. 1. in
   if z = 0. then x else x *. log y /. z *)
 
 
-let caml_hypot_float (x: float) (y: float): float =
+let hypot_float (x: float) (y: float): float =
   let x0, y0 = abs_float x, abs_float y in
   let a = Pervasives.max x0 y0 in
   let b = Pervasives.min x0 y0 /. if a <> 0. then a else 1. in
   a *. sqrt (1. +. b *. b)
 
 
-let caml_log10_float (x: float): float =
-  _LOG10E *. log x
+
 
 (* 
 let caml_cosh_float x = exp x +. exp (-. x) /. 2.

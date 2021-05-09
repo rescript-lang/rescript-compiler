@@ -26,11 +26,11 @@ function b(loc, v) {
   return Mt.bool_suites(test_id, suites, loc, v);
 }
 
-var Icmp = Belt_Id.comparable(Caml.caml_int_compare);
+var Icmp = Belt_Id.comparable(Caml.int_compare);
 
-var Icmp2 = Belt_Id.comparable(Caml.caml_int_compare);
+var Icmp2 = Belt_Id.comparable(Caml.int_compare);
 
-var Ic3 = Belt_Id.comparable(Caml.caml_int_compare);
+var Ic3 = Belt_Id.comparable(Caml.int_compare);
 
 var m0_cmp = Icmp.cmp;
 
@@ -47,7 +47,7 @@ var m00 = {
 };
 
 var I2 = Belt_Id.comparable(function (x, y) {
-      return Caml.caml_int_compare(y, x);
+      return Caml.int_compare(y, x);
     });
 
 var m_cmp = Icmp2.cmp;

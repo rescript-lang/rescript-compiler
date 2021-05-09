@@ -16,7 +16,7 @@
 (* Hash tables *)
 
 external seeded_hash_param :
-  int -> int -> int -> 'a -> int = "caml_hash" [@@noalloc]
+  int -> int -> int -> 'a -> int = "?hash" [@@noalloc]
 (* external old_hash_param :
   int -> int -> 'a -> int = "caml_hash_univ_param" [@@noalloc] *)
 

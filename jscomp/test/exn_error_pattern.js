@@ -5,7 +5,7 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function f(match) {
-  if (Caml_exceptions.caml_is_extension(match)) {
+  if (Caml_exceptions.is_extension(match)) {
     if (match.RE_EXN_ID === "Not_found") {
       return 0;
     } else if (match.RE_EXN_ID === "Invalid_argument" || match.RE_EXN_ID === "Stack_overflow") {
@@ -24,7 +24,7 @@ var A = /* @__PURE__ */Caml_exceptions.create("Exn_error_pattern.A");
 var B = /* @__PURE__ */Caml_exceptions.create("Exn_error_pattern.B");
 
 function g(match) {
-  if (Caml_exceptions.caml_is_extension(match)) {
+  if (Caml_exceptions.is_extension(match)) {
     if (match.RE_EXN_ID === "Not_found" || match.RE_EXN_ID === "Invalid_argument") {
       return 0;
     } else if (match.RE_EXN_ID === "Sys_error") {

@@ -37,7 +37,7 @@ function f3(param) {
             Error: new Error()
           };
     }
-    return Caml.caml_int_compare(lhs._0, rhs._0);
+    return Caml.int_compare(lhs._0, rhs._0);
   };
 }
 
@@ -67,7 +67,7 @@ function f4(param) {
             Error: new Error()
           };
     }
-    return Caml.caml_int_compare(lhs._0, rhs._0);
+    return Caml.int_compare(lhs._0, rhs._0);
   };
 }
 

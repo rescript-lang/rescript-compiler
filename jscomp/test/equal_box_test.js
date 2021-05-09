@@ -4,11 +4,11 @@ var Mt = require("./mt.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 
-var aa = Caml_obj.caml_equal_null;
+var aa = Caml_obj.equal_null;
 
-var bb = Caml_obj.caml_equal_undefined;
+var bb = Caml_obj.equal_undefined;
 
-var cc = Caml_obj.caml_equal_nullable;
+var cc = Caml_obj.equal_nullable;
 
 var suites = {
   contents: /* [] */0
@@ -48,15 +48,15 @@ b("File \"equal_box_test.ml\", line 29, characters 4-11", 0 !== null);
 
 b("File \"equal_box_test.ml\", line 30, characters 4-11", true);
 
-b("File \"equal_box_test.ml\", line 31, characters 4-11", !Caml_obj.caml_equal_null(undefined, null));
+b("File \"equal_box_test.ml\", line 31, characters 4-11", !Caml_obj.equal_null(undefined, null));
 
-b("File \"equal_box_test.ml\", line 32, characters 4-11", Caml_obj.caml_equal_null(null, null));
+b("File \"equal_box_test.ml\", line 32, characters 4-11", Caml_obj.equal_null(null, null));
 
 b("File \"equal_box_test.ml\", line 33, characters 4-11", true);
 
 b("File \"equal_box_test.ml\", line 34, characters 4-11", true);
 
-b("File \"equal_box_test.ml\", line 35, characters 4-11", !Caml_obj.caml_equal_null(3, undefined));
+b("File \"equal_box_test.ml\", line 35, characters 4-11", !Caml_obj.equal_null(3, undefined));
 
 var v = null;
 
@@ -74,15 +74,15 @@ b("File \"equal_box_test.ml\", line 44, characters 4-11", 0 !== v);
 
 b("File \"equal_box_test.ml\", line 45, characters 4-11", 0 !== v);
 
-b("File \"equal_box_test.ml\", line 46, characters 4-11", !Caml_obj.caml_equal_nullable(undefined, v));
+b("File \"equal_box_test.ml\", line 46, characters 4-11", !Caml_obj.equal_nullable(undefined, v));
 
-b("File \"equal_box_test.ml\", line 47, characters 4-11", Caml_obj.caml_equal_nullable(null, v));
+b("File \"equal_box_test.ml\", line 47, characters 4-11", Caml_obj.equal_nullable(null, v));
 
 b("File \"equal_box_test.ml\", line 48, characters 4-11", true);
 
 b("File \"equal_box_test.ml\", line 49, characters 4-11", true);
 
-b("File \"equal_box_test.ml\", line 50, characters 4-11", !Caml_obj.caml_equal_nullable(3, undefined));
+b("File \"equal_box_test.ml\", line 50, characters 4-11", !Caml_obj.equal_nullable(3, undefined));
 
 b("File \"equal_box_test.ml\", line 55, characters 4-11", 3 !== undefined);
 
@@ -98,15 +98,15 @@ b("File \"equal_box_test.ml\", line 60, characters 4-11", 0 !== undefined);
 
 b("File \"equal_box_test.ml\", line 61, characters 4-11", true);
 
-b("File \"equal_box_test.ml\", line 62, characters 4-11", Caml_obj.caml_equal_undefined(undefined, undefined));
+b("File \"equal_box_test.ml\", line 62, characters 4-11", Caml_obj.equal_undefined(undefined, undefined));
 
-b("File \"equal_box_test.ml\", line 66, characters 4-11", !Caml_obj.caml_equal_undefined(null, undefined));
+b("File \"equal_box_test.ml\", line 66, characters 4-11", !Caml_obj.equal_undefined(null, undefined));
 
 b("File \"equal_box_test.ml\", line 67, characters 4-11", true);
 
 b("File \"equal_box_test.ml\", line 68, characters 4-11", true);
 
-b("File \"equal_box_test.ml\", line 69, characters 4-11", !Caml_obj.caml_equal_undefined(3, undefined));
+b("File \"equal_box_test.ml\", line 69, characters 4-11", !Caml_obj.equal_undefined(3, undefined));
 
 Mt.from_pair_suites("File \"equal_box_test.ml\", line 74, characters 23-30", suites.contents);
 

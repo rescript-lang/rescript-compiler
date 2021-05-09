@@ -25,7 +25,7 @@ external obj : t -> 'a = "%identity"
 external magic : 'a -> 'b = "%identity"
 val [@inline always] is_block : t -> bool
 
-external tag : t -> int = "caml_obj_tag"
+external tag : t -> int = "?obj_tag"
 external size : t -> int = "#obj_length"
 
   (**
@@ -54,7 +54,7 @@ external field : t -> int -> t = "%obj_field"
     be propagated.
 *)
 external set_field : t -> int -> t -> unit = "%obj_set_field"
-external dup : t -> t = "caml_obj_dup"
+external dup : t -> t = "?obj_dup"
 
 
 

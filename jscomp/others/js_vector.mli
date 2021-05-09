@@ -75,7 +75,7 @@ external set : 'a t -> int -> 'a -> unit = "%array_safe_set"
 *)
 
 
-external make : int -> 'a -> 'a t = "caml_make_vect"
+external make : int -> 'a -> 'a t = "?make_vect"
 (**
   `Array.make n x` returns a fresh array of length `n`,
   initialized with `x`.

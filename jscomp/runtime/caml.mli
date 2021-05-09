@@ -33,11 +33,11 @@ type 'a selector = 'a -> 'a -> 'a
 
 
 
-val caml_int_compare : int -> int -> int
-val caml_bool_compare : bool -> bool -> int
-val caml_float_compare : float -> float -> int 
+val int_compare : int -> int -> int
+val bool_compare : bool -> bool -> int
+val float_compare : float -> float -> int 
 
-val caml_string_compare : string -> string -> int 
+val string_compare : string -> string -> int 
 
 
 

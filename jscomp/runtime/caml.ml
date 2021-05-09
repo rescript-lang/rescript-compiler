@@ -23,9 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let caml_int_compare (x : int) (y: int) : int =
+let int_compare (x : int) (y: int) : int =
   if  x < y then -1 else if x = y then 0 else  1
-let caml_bool_compare (x : bool) (y : bool): int = 
+let bool_compare (x : bool) (y : bool): int = 
   match x,y with 
   | true, true | false , false -> 0 
   | true, false -> 1 
@@ -33,7 +33,7 @@ let caml_bool_compare (x : bool) (y : bool): int =
 
 
 
-let caml_float_compare (x : float) (y : float ) =
+let float_compare (x : float) (y : float ) =
   if x = y then 0
   else if x < y then  -1
   else if x > y then 1
@@ -42,7 +42,7 @@ let caml_float_compare (x : float) (y : float ) =
   else 0
 
 (* Lexical order *)
-let caml_string_compare (s1 : string) (s2 : string) : int = 
+let string_compare (s1 : string) (s2 : string) : int = 
   if s1 = s2 then 0 
   else if s1 < s2 then -1
   else 1

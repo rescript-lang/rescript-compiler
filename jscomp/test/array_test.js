@@ -46,7 +46,7 @@ function is_sorted(x) {
     if (i >= (len - 1 | 0)) {
       return true;
     }
-    if (!Caml_obj.caml_lessthan(Caml_array.get(x, i), Caml_array.get(x, i + 1 | 0))) {
+    if (!Caml_obj.lessthan(Caml_array.get(x, i), Caml_array.get(x, i + 1 | 0))) {
       return false;
     }
     _i = i + 1 | 0;
@@ -323,10 +323,10 @@ var array_suites_1 = {
                           0,
                           1
                         ];
-                        $$Array.sort(Caml.caml_int_compare, u);
+                        $$Array.sort(Caml.int_compare, u);
                         return {
                                 TAG: /* Eq */0,
-                                _0: Caml_obj.caml_equal([
+                                _0: Caml_obj.equal([
                                       0,
                                       1,
                                       3
@@ -342,7 +342,7 @@ var array_suites_1 = {
                           var v = $$Array.init(4, (function (i) {
                                   return i % 17;
                                 }));
-                          $$Array.sort(Caml.caml_int_compare, v);
+                          $$Array.sort(Caml.int_compare, v);
                           return {
                                   TAG: /* Eq */0,
                                   _0: true,

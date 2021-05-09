@@ -35,7 +35,7 @@ var $slash = Caml_int64.div;
 
 var $plus = Caml_int64.add;
 
-var digit = Caml_format.caml_int64_of_string("1000000000000000000");
+var digit = Caml_format.int64_of_string("1000000000000000000");
 
 function mul(n, param) {
   var pl = param[0];
@@ -48,17 +48,17 @@ function mul(n, param) {
 function cmp(param, param$1) {
   var ph = param$1[1];
   var nh = param[1];
-  if (Caml_obj.caml_lessthan(nh, ph)) {
+  if (Caml_obj.lessthan(nh, ph)) {
     return -1;
   }
-  if (Caml_obj.caml_greaterthan(nh, ph)) {
+  if (Caml_obj.greaterthan(nh, ph)) {
     return 1;
   }
   var pl = param$1[0];
   var nl = param[0];
-  if (Caml_obj.caml_lessthan(nl, pl)) {
+  if (Caml_obj.lessthan(nl, pl)) {
     return -1;
-  } else if (Caml_obj.caml_greaterthan(nl, pl)) {
+  } else if (Caml_obj.greaterthan(nl, pl)) {
     return 1;
   } else {
     return 0;
@@ -95,7 +95,7 @@ function paddding(s) {
 function pr(param) {
   var nh = param[1];
   var nl = param[0];
-  if (Caml_int64.compare(nh, n0) === 0) {
+  if (Caml_int64.equal(nh, n0)) {
     $$Buffer.add_string(buf, Caml_int64.to_string(nl));
     return $$Buffer.add_string(buf, "\n");
   } else {

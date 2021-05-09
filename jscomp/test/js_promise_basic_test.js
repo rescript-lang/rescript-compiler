@@ -74,7 +74,7 @@ function andThenTest(param) {
 var h = Promise.resolve(undefined);
 
 function assertIsNotFound(x) {
-  var match = Caml_exceptions.caml_is_extension(x) && x.RE_EXN_ID === "Not_found" ? 0 : undefined;
+  var match = Caml_exceptions.is_extension(x) && x.RE_EXN_ID === "Not_found" ? 0 : undefined;
   if (match !== undefined) {
     return h;
   }
@@ -145,7 +145,7 @@ function orElseRejectedRejectTest(param) {
                               RE_EXN_ID: "Stack_overflow"
                             });
                 }).then(fail).catch(function (error) {
-              var match = Caml_exceptions.caml_is_extension(error) && error.RE_EXN_ID === "Stack_overflow" ? 0 : undefined;
+              var match = Caml_exceptions.is_extension(error) && error.RE_EXN_ID === "Stack_overflow" ? 0 : undefined;
               if (match !== undefined) {
                 return h;
               }

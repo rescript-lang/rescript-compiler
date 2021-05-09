@@ -10,7 +10,7 @@ function say(prim0, prim1) {
   return prim0.say(prim1);
 }
 
-var v = Caml_obj.caml_compare;
+var v = Caml_obj.compare;
 
 exports.min_int = min_int;
 exports.say = say;

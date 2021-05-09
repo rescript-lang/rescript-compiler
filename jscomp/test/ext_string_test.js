@@ -194,7 +194,7 @@ function escaped(s) {
     };
   };
   if (needs_escape(0)) {
-    return Caml_bytes.bytes_to_string(Ext_bytes_test.escaped(Caml_bytes.bytes_of_string(s)));
+    return Bytes.unsafe_to_string(Ext_bytes_test.escaped(Bytes.unsafe_of_string(s)));
   } else {
     return s;
   }
@@ -236,7 +236,7 @@ function is_empty(s) {
 
 function repeat(n, s) {
   var len = s.length;
-  var res = Caml_bytes.caml_create_bytes(Math.imul(n, len));
+  var res = Caml_bytes.create(Math.imul(n, len));
   for(var i = 0; i < n; ++i){
     $$String.blit(s, 0, res, Math.imul(i, len), len);
   }
@@ -390,29 +390,6 @@ function starts_with_and_number(s, offset, beg) {
 
 function equal(x, y) {
   return x === y;
-}
-
-function unsafe_concat_with_length(len, sep, l) {
-  if (!l) {
-    return "";
-  }
-  var hd = l.hd;
-  var r = Caml_bytes.caml_create_bytes(len);
-  var hd_len = hd.length;
-  var sep_len = sep.length;
-  Caml_bytes.caml_blit_string(hd, 0, r, 0, hd_len);
-  var pos = {
-    contents: hd_len
-  };
-  List.iter((function (s) {
-          var s_len = s.length;
-          Caml_bytes.caml_blit_string(sep, 0, r, pos.contents, sep_len);
-          pos.contents = pos.contents + sep_len | 0;
-          Caml_bytes.caml_blit_string(s, 0, r, pos.contents, s_len);
-          pos.contents = pos.contents + s_len | 0;
-          
-        }), l.tl);
-  return Caml_bytes.bytes_to_string(r);
 }
 
 function rindex_rec(s, _i, c) {
@@ -615,101 +592,13 @@ function replace_backward_slash(x) {
   }
 }
 
-var empty = "";
-
-var single_space = " ";
-
-function concat_array(sep, s) {
-  var s_len = s.length;
-  if (s_len === 0) {
-    return empty;
-  }
-  if (s_len === 1) {
-    return s[0];
-  }
-  var sep_len = sep.length;
-  var len = 0;
-  for(var i = 0; i < s_len; ++i){
-    len = len + s[i].length | 0;
-  }
-  var target = Caml_bytes.caml_create_bytes(len + Math.imul(s_len - 1 | 0, sep_len) | 0);
-  var hd = s[0];
-  var hd_len = hd.length;
-  Caml_bytes.caml_blit_string(hd, 0, target, 0, hd_len);
-  var current_offset = hd_len;
-  for(var i$1 = 1; i$1 < s_len; ++i$1){
-    Caml_bytes.caml_blit_string(sep, 0, target, current_offset, sep_len);
-    var cur = s[i$1];
-    var cur_len = cur.length;
-    var new_off_set = current_offset + sep_len | 0;
-    Caml_bytes.caml_blit_string(cur, 0, target, new_off_set, cur_len);
-    current_offset = new_off_set + cur_len | 0;
-  }
-  return Caml_bytes.bytes_to_string(target);
-}
-
-function concat3(a, b, c) {
-  var a_len = a.length;
-  var b_len = b.length;
-  var c_len = c.length;
-  var len = (a_len + b_len | 0) + c_len | 0;
-  var target = Caml_bytes.caml_create_bytes(len);
-  Caml_bytes.caml_blit_string(a, 0, target, 0, a_len);
-  Caml_bytes.caml_blit_string(b, 0, target, a_len, b_len);
-  Caml_bytes.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
-  return Caml_bytes.bytes_to_string(target);
-}
-
-function concat4(a, b, c, d) {
-  var a_len = a.length;
-  var b_len = b.length;
-  var c_len = c.length;
-  var d_len = d.length;
-  var len = ((a_len + b_len | 0) + c_len | 0) + d_len | 0;
-  var target = Caml_bytes.caml_create_bytes(len);
-  Caml_bytes.caml_blit_string(a, 0, target, 0, a_len);
-  Caml_bytes.caml_blit_string(b, 0, target, a_len, b_len);
-  Caml_bytes.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
-  Caml_bytes.caml_blit_string(d, 0, target, (a_len + b_len | 0) + c_len | 0, d_len);
-  return Caml_bytes.bytes_to_string(target);
-}
-
-function concat5(a, b, c, d, e) {
-  var a_len = a.length;
-  var b_len = b.length;
-  var c_len = c.length;
-  var d_len = d.length;
-  var e_len = e.length;
-  var len = (((a_len + b_len | 0) + c_len | 0) + d_len | 0) + e_len | 0;
-  var target = Caml_bytes.caml_create_bytes(len);
-  Caml_bytes.caml_blit_string(a, 0, target, 0, a_len);
-  Caml_bytes.caml_blit_string(b, 0, target, a_len, b_len);
-  Caml_bytes.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
-  Caml_bytes.caml_blit_string(d, 0, target, (a_len + b_len | 0) + c_len | 0, d_len);
-  Caml_bytes.caml_blit_string(e, 0, target, ((a_len + b_len | 0) + c_len | 0) + d_len | 0, e_len);
-  return Caml_bytes.bytes_to_string(target);
-}
-
-function inter2(a, b) {
-  return concat3(a, single_space, b);
-}
-
-function inter3(a, b, c) {
-  return concat5(a, single_space, b, single_space, c);
-}
-
-function inter4(a, b, c, d) {
-  return concat_array(single_space, [
-              a,
-              b,
-              c,
-              d
-            ]);
-}
-
 var check_suffix_case = ends_with;
 
 var check_suffix_case_then_chop = ends_with_then_chop;
+
+var empty = "";
+
+var single_space = " ";
 
 var single_colon = ":";
 
@@ -745,7 +634,6 @@ exports.tail_from = tail_from;
 exports.digits_of_str = digits_of_str;
 exports.starts_with_and_number = starts_with_and_number;
 exports.equal = equal;
-exports.unsafe_concat_with_length = unsafe_concat_with_length;
 exports.rindex_rec = rindex_rec;
 exports.rindex_rec_opt = rindex_rec_opt;
 exports.rindex_neg = rindex_neg;
@@ -763,13 +651,6 @@ exports.replace_backward_slash = replace_backward_slash;
 exports.empty = empty;
 exports.single_space = single_space;
 exports.single_colon = single_colon;
-exports.concat_array = concat_array;
-exports.concat3 = concat3;
-exports.concat4 = concat4;
-exports.concat5 = concat5;
-exports.inter2 = inter2;
-exports.inter3 = inter3;
-exports.inter4 = inter4;
 exports.parent_dir_lit = parent_dir_lit;
 exports.current_dir_lit = current_dir_lit;
 /* Ext_bytes_test Not a pure module */

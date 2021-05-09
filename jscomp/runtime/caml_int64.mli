@@ -56,7 +56,7 @@ val and_ : t -> t -> t
 
 
 
-
+val equal : t -> t -> bool 
 val equal_null : t -> t Js.null -> bool 
 val equal_undefined : t -> t Js.undefined -> bool 
 val equal_nullable : t -> t Js.nullable -> bool 

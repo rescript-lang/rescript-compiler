@@ -56,7 +56,7 @@ external set : bytes -> int -> char -> unit = "%bytes_safe_set"
 
     Raise [Invalid_argument] if [n] is not a valid index in [s]. *)
 
-external create : int -> bytes = "caml_create_bytes"
+external create : int -> bytes = "?create_bytes"
 (** [create n] returns a new byte sequence of length [n]. The
     sequence is uninitialized and contains arbitrary bytes.
 
@@ -428,8 +428,3 @@ let s = Bytes.of_string "hello"
 
 external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
 external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
-external unsafe_blit :
-  bytes -> int -> bytes -> int -> int -> unit
-  = "caml_blit_bytes" [@@noalloc]
-external unsafe_fill :
-  bytes -> int -> int -> char -> unit = "caml_fill_bytes" [@@noalloc]

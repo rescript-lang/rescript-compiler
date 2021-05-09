@@ -283,6 +283,4 @@ val split_on_char: char -> string -> string list
 (* The following is for system use only. Do not call directly. *)
 
 external unsafe_get : string -> int -> char = "%string_unsafe_get"
-external unsafe_blit :
-  string -> int -> bytes -> int -> int -> unit
-  = "caml_blit_string" [@@noalloc]
+

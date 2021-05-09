@@ -27,5 +27,5 @@
 
 (** *)
 
-val caml_md5_string : string -> int -> int -> string
+val md5_string : string -> int -> int -> string
 

@@ -6,17 +6,17 @@ let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y
 module  rec Int32 : sig
   type t
   type buffer
-  external buffer : t -> buffer = "buffer" [@@js.get]
-  external get : t -> int -> int  = "" [@@js.get_index]
-  external set : t -> int -> int -> unit = "" [@@js.set_index]
-  external create : int array -> t = "Int32Array" [@@js.new]
-  external of_buffer : buffer -> t = "Int32Array" [@@js.new]
+  external buffer : t -> buffer = "buffer" [@@get]
+  external get : t -> int -> int  = "" [@@get_index]
+  external set : t -> int -> int -> unit = "" [@@set_index]
+  external create : int array -> t = "Int32Array" [@@new]
+  external of_buffer : buffer -> t = "Int32Array" [@@new]
 end = Int32 (* Int32 is compiled away in 4.06 *)
 
 module Xx : sig
   val f : int -> int -> int 
 end = struct 
-  external f : int -> int -> int = "hfiehi"
+  external f : int -> int -> int = "?hfiehi"
 end 
 
 let uuu = Xx.f 

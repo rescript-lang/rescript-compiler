@@ -10,6 +10,11 @@ var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 
+Caml_external_polyfill.resolve("caml_register_named_value")("Pervasives.array_bound_error", {
+      RE_EXN_ID: "Invalid_argument",
+      _1: "index out of bounds"
+    });
+
 function failwith(s) {
   throw {
         RE_EXN_ID: "Failure",
@@ -29,7 +34,7 @@ function invalid_arg(s) {
 var Exit = /* @__PURE__ */Caml_exceptions.create("Test_per.Exit");
 
 function min(x, y) {
-  if (Caml_obj.caml_lessequal(x, y)) {
+  if (Caml_obj.lessequal(x, y)) {
     return x;
   } else {
     return y;
@@ -37,7 +42,7 @@ function min(x, y) {
 }
 
 function max(x, y) {
-  if (Caml_obj.caml_greaterequal(x, y)) {
+  if (Caml_obj.greaterequal(x, y)) {
     return x;
   } else {
     return y;
@@ -91,9 +96,9 @@ var epsilon_float = Caml_int64.float_of_bits([
 function $caret(s1, s2) {
   var l1 = s1.length;
   var l2 = s2.length;
-  var s = Caml_bytes.caml_create_bytes(l1 + l2 | 0);
-  Caml_bytes.caml_blit_string(s1, 0, s, 0, l1);
-  Caml_bytes.caml_blit_string(s2, 0, s, l1, l2);
+  var s = Caml_bytes.create(l1 + l2 | 0);
+  Caml_external_polyfill.resolve("caml_blit_string")(s1, 0, s, 0, l1);
+  Caml_external_polyfill.resolve("caml_blit_string")(s2, 0, s, l1, l2);
   return s;
 }
 
@@ -132,7 +137,7 @@ function bool_of_string(param) {
 }
 
 function string_of_int(n) {
-  return Caml_format.caml_format_int("%d", n);
+  return Caml_format.format_int("%d", n);
 }
 
 function valid_float_lexem(s) {
@@ -160,7 +165,7 @@ function valid_float_lexem(s) {
 }
 
 function string_of_float(f) {
-  return valid_float_lexem(Caml_format.caml_format_float("%.12g", f));
+  return valid_float_lexem(Caml_format.format_float("%.12g", f));
 }
 
 function $at(l1, l2) {
@@ -349,7 +354,7 @@ function really_input(ic, s, ofs, len) {
 }
 
 function really_input_string(ic, len) {
-  var s = Caml_bytes.caml_create_bytes(len);
+  var s = Caml_bytes.create(len);
   really_input(ic, s, 0, len);
   return s;
 }
@@ -364,7 +369,7 @@ function input_line(chan) {
       }
       var hd = param.hd;
       var len = hd.length;
-      Caml_bytes.caml_blit_string(hd, 0, buf, pos - len | 0, len);
+      Caml_external_polyfill.resolve("caml_blit_string")(hd, 0, buf, pos - len | 0, len);
       _param = param.tl;
       _pos = pos - len | 0;
       continue ;
@@ -378,7 +383,7 @@ function input_line(chan) {
     var n = Caml_external_polyfill.resolve("caml_ml_input_scan_line")(chan);
     if (n === 0) {
       if (accu) {
-        return build_result(Caml_bytes.caml_create_bytes(len), len, accu);
+        return build_result(Caml_bytes.create(len), len, accu);
       }
       throw {
             RE_EXN_ID: "End_of_file",
@@ -386,19 +391,19 @@ function input_line(chan) {
           };
     }
     if (n > 0) {
-      var res = Caml_bytes.caml_create_bytes(n - 1 | 0);
+      var res = Caml_bytes.create(n - 1 | 0);
       Caml_external_polyfill.resolve("caml_ml_input")(chan, res, 0, n - 1 | 0);
       Caml_external_polyfill.resolve("caml_ml_input_char")(chan);
       if (!accu) {
         return res;
       }
       var len$1 = (len + n | 0) - 1 | 0;
-      return build_result(Caml_bytes.caml_create_bytes(len$1), len$1, {
+      return build_result(Caml_bytes.create(len$1), len$1, {
                   hd: res,
                   tl: accu
                 });
     }
-    var beg = Caml_bytes.caml_create_bytes(-n | 0);
+    var beg = Caml_bytes.create(-n | 0);
     Caml_external_polyfill.resolve("caml_ml_input")(chan, beg, 0, -n | 0);
     _len = len - n | 0;
     _accu = {
@@ -439,7 +444,7 @@ function do_at_exit(param) {
 
 function exit(retcode) {
   Curry._1(exit_function.contents, undefined);
-  return Caml_sys.caml_sys_exit(retcode);
+  return Caml_sys.sys_exit(retcode);
 }
 
 Caml_external_polyfill.resolve("caml_register_named_value")("Pervasives.do_at_exit", do_at_exit);
@@ -494,4 +499,4 @@ exports.exit_function = exit_function;
 exports.at_exit = at_exit;
 exports.do_at_exit = do_at_exit;
 exports.exit = exit;
-/* No side effect */
+/*  Not a pure module */

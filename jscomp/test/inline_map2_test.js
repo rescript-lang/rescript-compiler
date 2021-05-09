@@ -730,7 +730,7 @@ function add(x, data, param) {
   var d = param._2;
   var v = param._1;
   var l = param._0;
-  var c = Caml.caml_int_compare(x, v);
+  var c = Caml.int_compare(x, v);
   if (c === 0) {
     return /* Node */{
             _0: l,
@@ -750,7 +750,7 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml.caml_int_compare(x, param._1);
+      var c = Caml.int_compare(x, param._1);
       if (c === 0) {
         return param._2;
       }
@@ -770,7 +770,7 @@ function mem(x, _param) {
     if (!param) {
       return false;
     }
-    var c = Caml.caml_int_compare(x, param._1);
+    var c = Caml.int_compare(x, param._1);
     if (c === 0) {
       return true;
     }
@@ -845,7 +845,7 @@ function remove(x, param) {
   var d = param._2;
   var v = param._1;
   var l = param._0;
-  var c = Caml.caml_int_compare(x, v);
+  var c = Caml.int_compare(x, v);
   if (c === 0) {
     if (!l) {
       return r;
@@ -1020,7 +1020,7 @@ function split(x, param) {
   var d = param._2;
   var v = param._1;
   var l = param._0;
-  var c = Caml.caml_int_compare(x, v);
+  var c = Caml.int_compare(x, v);
   if (c === 0) {
     return [
             l,
@@ -1150,7 +1150,7 @@ function compare(cmp, m1, m2) {
     if (!e2) {
       return 1;
     }
-    var c = Caml.caml_int_compare(e1._0, e2._0);
+    var c = Caml.int_compare(e1._0, e2._0);
     if (c !== 0) {
       return c;
     }
@@ -1401,7 +1401,7 @@ function add$1(x, data, param) {
   var d = param._2;
   var v = param._1;
   var l = param._0;
-  var c = Caml.caml_string_compare(x, v);
+  var c = Caml.string_compare(x, v);
   if (c === 0) {
     return /* Node */{
             _0: l,
@@ -1421,7 +1421,7 @@ function find$1(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml.caml_string_compare(x, param._1);
+      var c = Caml.string_compare(x, param._1);
       if (c === 0) {
         return param._2;
       }
@@ -1441,7 +1441,7 @@ function mem$1(x, _param) {
     if (!param) {
       return false;
     }
-    var c = Caml.caml_string_compare(x, param._1);
+    var c = Caml.string_compare(x, param._1);
     if (c === 0) {
       return true;
     }
@@ -1516,7 +1516,7 @@ function remove$1(x, param) {
   var d = param._2;
   var v = param._1;
   var l = param._0;
-  var c = Caml.caml_string_compare(x, v);
+  var c = Caml.string_compare(x, v);
   if (c === 0) {
     if (!l) {
       return r;
@@ -1691,7 +1691,7 @@ function split$1(x, param) {
   var d = param._2;
   var v = param._1;
   var l = param._0;
-  var c = Caml.caml_string_compare(x, v);
+  var c = Caml.string_compare(x, v);
   if (c === 0) {
     return [
             l,
@@ -1821,7 +1821,7 @@ function compare$1(cmp, m1, m2) {
     if (!e2) {
       return 1;
     }
-    var c = Caml.caml_string_compare(e1._0, e2._0);
+    var c = Caml.string_compare(e1._0, e2._0);
     if (c !== 0) {
       return c;
     }
@@ -1851,7 +1851,7 @@ function equal$1(cmp, m1, m2) {
     if (!e2) {
       return false;
     }
-    if (Caml.caml_string_compare(e1._0, e2._0) !== 0) {
+    if (Caml.string_compare(e1._0, e2._0) !== 0) {
       return false;
     }
     if (!Curry._2(cmp, e1._1, e2._1)) {

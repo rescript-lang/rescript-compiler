@@ -102,15 +102,14 @@ external ( /. ) : float -> float -> float = "%divfloat"
 
 external ( ** ) : float -> float -> float = "pow" [@@bs.val] [@@bs.scope "Math"]
 external exp : float -> float = "exp" [@@bs.val][@@bs.scope "Math"]
-external expm1 : float -> float = "caml_expm1_float" "caml_expm1"
-  [@@unboxed] [@@noalloc]
+external expm1 : float -> float = "?expm1_float" 
 
 external acos : float -> float =  "acos" [@@bs.val] [@@bs.scope "Math"]
 external asin : float -> float = "asin" [@@bs.val] [@@bs.scope "Math"]
 external atan : float -> float = "atan" [@@bs.val] [@@bs.scope "Math"]
 external atan2 : float -> float -> float = "atan2" [@@bs.val] [@@bs.scope "Math"]
 external hypot : float -> float -> float
-               = "caml_hypot_float" "caml_hypot" [@@unboxed] [@@noalloc]
+               = "?hypot_float"
 
 external cos : float -> float = "cos" [@@bs.val] [@@bs.scope "Math"]
 external cosh : float -> float = "cosh" [@@bs.val] [@@bs.scope "Math"]
@@ -126,14 +125,12 @@ external ceil : float -> float =  "ceil" [@@bs.val] [@@bs.scope "Math"]
 external floor : float -> float =  "floor" [@@bs.val] [@@bs.scope "Math"]
 external abs_float : float -> float = "abs"[@@bs.val] [@@bs.scope "Math"]
 external copysign : float -> float -> float
-                  = "caml_copysign_float" "caml_copysign"
-                  [@@unboxed] [@@noalloc]
-external mod_float : float -> float -> float = "caml_fmod_float" "fmod"
-  [@@unboxed] [@@noalloc]
-external frexp : float -> float * int = "caml_frexp_float"
-external ldexp : (float [@unboxed]) -> (int [@untagged]) -> (float [@unboxed]) =
-  "caml_ldexp_float" "caml_ldexp_float_unboxed" [@@noalloc]
-external modf : float -> float * float = "caml_modf_float"
+                  = "?copysign_float"
+external mod_float : float -> float -> float = "?fmod_float"
+external frexp : float -> float * int = "?frexp_float"
+external ldexp : float -> int -> float  =
+  "?ldexp_float" 
+external modf : float -> float * float = "?modf_float"
 external float : int -> float = "%floatofint"
 external float_of_int : int -> float = "%floatofint"
 external truncate : float -> int = "%intoffloat"
@@ -206,7 +203,7 @@ type ('a, 'b) result = ('a, 'b) Belt.Result.t =
   | Error of 'b
 
 (* String conversion functions *)
-external format_float : string -> float -> string = "caml_format_float"
+external format_float : string -> float -> string = "?format_float"
 
 let string_of_bool b =
   if b then "true" else "false"
@@ -223,7 +220,7 @@ let bool_of_string_opt = function
 
 external string_of_int : int -> string = "String" [@@bs.val]
 
-external int_of_string : string -> int = "caml_int_of_string"
+external int_of_string : string -> int = "?int_of_string"
 
 let int_of_string_opt s =
   (* TODO: provide this directly as a non-raising primitive. *)
@@ -244,7 +241,7 @@ let valid_float_lexem s =
 
 let string_of_float f = valid_float_lexem (format_float "%.12g" f)
 
-external float_of_string : string -> float = "caml_float_of_string"
+external float_of_string : string -> float = "?float_of_string"
 
 let float_of_string_opt s =
   (* TODO: provide this directly as a non-raising primitive. *)
@@ -280,7 +277,7 @@ let print_string = print_endline
 
 (* Miscellaneous *)
 
-external sys_exit : int -> 'a = "caml_sys_exit"
+external sys_exit : int -> 'a = "?sys_exit"
 
 let exit_function = ref ignore
 

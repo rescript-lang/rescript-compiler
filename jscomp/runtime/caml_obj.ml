@@ -53,7 +53,7 @@ end
    on how objects are encoded in buckle.
 
    There are potentially some issues with wrong implementation of
-   `caml_obj_dup`, for example, people call `Obj.dup` for a record,
+   `obj_dup`, for example, people call `Obj.dup` for a record,
    and new record, since currently, `new record` will generate a
    `slice` function (which assume the record is an array), and the
    output is no longer an array. (it might be  something like { 0 : x , 1 : y} )
@@ -66,14 +66,14 @@ end
    ==>
 
    {[
-     var u = caml_obj_dup (x)
+     var u = obj_dup (x)
        var new_record = u.slice ()
 
    ]}
-   `caml_obj_dup` is a superset of `caml_array_dup`
+   `obj_dup` is a superset of `array_dup`
 *)
 
-let caml_obj_dup : Obj.t -> Obj.t = [%raw{|function(x){
+let obj_dup : Obj.t -> Obj.t = [%raw{|function(x){
   if(Array.isArray(x)){
     var len = x.length  
     var v = new Array(len)
@@ -138,7 +138,7 @@ let update_dummy : _ -> _ -> unit= [%raw{|function(x,y){
     The compare function can be used as the comparison function required by the [Set.Make] and [Map.Make] functors,
     as well as the [List.sort] and [Array.sort] functions.
 *)
-let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
+let rec compare (a : Obj.t) (b : Obj.t) : int =
   if a == b then 0 else
     (*front and formoest, we do not compare function values*)
     let a_type = Js.typeof a in 
@@ -215,19 +215,19 @@ and aux_same_length  (a : Obj.t array) (b : Obj.t array) i same_length =
   if i = same_length then
     0
   else
-    let res = caml_compare (Caml_array_extern.unsafe_get  a i) (Caml_array_extern.unsafe_get b i) in
+    let res = compare (Caml_array_extern.unsafe_get  a i) (Caml_array_extern.unsafe_get b i) in
     if res <> 0 then res
     else aux_same_length  a b (i + 1) same_length
 and aux_length_a_short (a : Obj.t array)  (b : Obj.t array)  i short_length    =
   if i = short_length then -1
   else
-    let res = caml_compare (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i) in
+    let res = compare (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i) in
     if res <> 0 then res
     else aux_length_a_short a b (i+1) short_length
 and aux_length_b_short (a : Obj.t array) (b : Obj.t array) i short_length =
   if i = short_length then 1
   else
-    let res = caml_compare (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i) in
+    let res = compare (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i) in
     if res <> 0 then res
     else aux_length_b_short a b (i+1) short_length
 and aux_obj_compare (a: Obj.t) (b: Obj.t) =
@@ -235,7 +235,7 @@ and aux_obj_compare (a: Obj.t) (b: Obj.t) =
   let min_key_rhs = ref None in
   let do_key (a, b, min_key) key =
     if not (O.hasOwnProperty b key) ||
-       caml_compare (O.get_value a key) (O.get_value b key) > 0
+       compare (O.get_value a key) (O.get_value b key) > 0
     then
       match min_key.contents with
       | None -> min_key .contents<- Some key
@@ -258,7 +258,7 @@ type eq = Obj.t -> Obj.t -> bool
 (** It is easier to do equality check than comparision, since as long as its
     basic type is not the same, it will not equal 
 *)
-let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
+let rec equal (a : Obj.t) (b : Obj.t) : bool =
   (*front and formoest, we do not compare function values*)
   if a == b then true
   else 
@@ -300,7 +300,7 @@ and aux_equal_length  (a : Obj.t array) (b : Obj.t array) i same_length =
   if i = same_length then
     true
   else
-    caml_equal (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i)
+    equal (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i)
     && aux_equal_length  a b (i + 1) same_length
 and aux_obj_equal (a: Obj.t) (b: Obj.t) =
   let result = ref true in
@@ -309,42 +309,42 @@ and aux_obj_equal (a: Obj.t) (b: Obj.t) =
     then result .contents<- false in
   let do_key_b key =
     if not (O.hasOwnProperty a key) ||
-       not (caml_equal (O.get_value b key) (O.get_value a key))
+       not (equal (O.get_value b key) (O.get_value a key))
     then result .contents<- false in
   O.for_in a do_key_a ;
   if result.contents then O.for_in b do_key_b;
   result.contents
 
-let caml_equal_null (x : Obj.t) (y : Obj.t Js.null) = 
+let equal_null (x : Obj.t) (y : Obj.t Js.null) = 
   match Js.nullToOption y with    
   | None -> x == (Obj.magic y)
-  | Some y -> caml_equal x y 
+  | Some y -> equal x y 
 
-let caml_equal_undefined (x : Obj.t) (y : Obj.t Js.undefined) =    
+let equal_undefined (x : Obj.t) (y : Obj.t Js.undefined) =    
   match Js.undefinedToOption y with 
   | None -> x == (Obj.magic y)
-  | Some y -> caml_equal x y 
+  | Some y -> equal x y 
 
-let caml_equal_nullable ( x: Obj.t) (y : Obj.t Js.nullable) =    
+let equal_nullable ( x: Obj.t) (y : Obj.t Js.nullable) =    
   match Js.toOption  y with 
   | None -> x == (Obj.magic y)
-  | Some y -> caml_equal x y
+  | Some y -> equal x y
 
-let caml_notequal a  b =  not (caml_equal a  b)
+let notequal a  b =  not (equal a  b)
 
-let caml_greaterequal a b = caml_compare a b >= 0
+let greaterequal a b = compare a b >= 0
 
-let caml_greaterthan a b = caml_compare a b > 0
+let greaterthan a b = compare a b > 0
 
-let caml_lessequal a b = caml_compare a b <= 0
+let lessequal a b = compare a b <= 0
 
-let caml_lessthan a b = caml_compare a b < 0
+let lessthan a b = compare a b < 0
 
-let caml_min (x : Obj.t) y =   
-  if caml_compare  x y <= 0 then x else y 
+let min (x : Obj.t) y =   
+  if compare  x y <= 0 then x else y 
 
-let caml_max (x : Obj.t) y =    
-  if caml_compare x y >= 0 then x else y 
+let max (x : Obj.t) y =    
+  if compare x y >= 0 then x else y 
 
 
 

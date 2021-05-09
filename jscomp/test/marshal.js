@@ -1,6 +1,6 @@
 'use strict';
 
-var Caml_bytes = require("../../lib/js/caml_bytes.js");
+var Bytes = require("../../lib/js/bytes.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 
 function to_buffer(buff, ofs, len, v, flags) {
@@ -49,7 +49,7 @@ function from_bytes(buff, ofs) {
 }
 
 function from_string(buff, ofs) {
-  return from_bytes(Caml_bytes.bytes_of_string(buff), ofs);
+  return from_bytes(Bytes.unsafe_of_string(buff), ofs);
 }
 
 var header_size = 20;

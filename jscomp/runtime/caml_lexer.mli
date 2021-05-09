@@ -31,9 +31,9 @@
 type lex_tables 
 type lexbuf
 
-val caml_lex_engine : 
+val lex_engine : 
   lex_tables -> int -> lexbuf -> int
 
 
-val caml_new_lex_engine : 
+val new_lex_engine : 
   lex_tables -> int -> lexbuf -> int

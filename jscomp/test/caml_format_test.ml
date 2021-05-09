@@ -30,7 +30,7 @@ let from_of_string xs =
 let to_str s = int_of_string s
 
 
-external format_int : string -> int -> string = "caml_format_int"
+external format_int : string -> int -> string = "?format_int"
 
 let suites :  Mt.pair_suites = 
   from_of_string of_string @
@@ -74,7 +74,7 @@ let suites :  Mt.pair_suites =
 let ff = format_int "%32d"
 
 external format_float: string -> float -> string
-  = "caml_format_float"
+  = "?format_float"
 
 (* ("%3.10f", 3e+56, *)
     (*  "300000000000000005792779041490073052596128503513888063488.0000000000"); *)

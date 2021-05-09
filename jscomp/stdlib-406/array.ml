@@ -20,23 +20,23 @@ external get: 'a array -> int -> 'a = "%array_safe_get"
 external set: 'a array -> int -> 'a -> unit = "%array_safe_set"
 external unsafe_get: 'a array -> int -> 'a = "%array_unsafe_get"
 external unsafe_set: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
-external make: int -> 'a -> 'a array = "caml_make_vect"
-external create: int -> 'a -> 'a array = "caml_make_vect"
-external unsafe_sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
+external make: int -> 'a -> 'a array = "?make_vect"
+external create: int -> 'a -> 'a array = "?make_vect"
+external unsafe_sub : 'a array -> int -> int -> 'a array = "?array_sub"
 #if BS
 external append_prim : 'a array -> 'a array -> 'a array = "concat"
 [@@bs.send]
 #else
 external append_prim : 'a array -> 'a array -> 'a array = "caml_array_append"
 #end
-external concat : 'a array list -> 'a array = "caml_array_concat"
+external concat : 'a array list -> 'a array = "?array_concat"
 external unsafe_blit :
-  'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
-external create_float: int -> float array = "caml_make_float_vect"
+  'a array -> int -> 'a array -> int -> int -> unit = "?array_blit"
+external create_float: int -> float array = "?make_float_vect"
 let make_float = create_float
 
 module Floatarray = struct
-  external create : int -> floatarray = "caml_floatarray_create"
+  external create : int -> floatarray = "?floatarray_create"
   external length : floatarray -> int = "%floatarray_length"
   external get : floatarray -> int -> float = "%floatarray_safe_get"
   external set : floatarray -> int -> float -> unit = "%floatarray_safe_set"

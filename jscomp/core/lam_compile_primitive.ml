@@ -504,7 +504,7 @@ let translate  loc
          [E.str "BS"] Immutable
     )
   | Pduprecord (Record_regular| Record_extension| Record_inlined _ ) -> 
-    Lam_dispatch_primitive.translate loc "caml_obj_dup" args
+    Lam_dispatch_primitive.translate loc "?obj_dup" args
 
   | Plazyforce  
     (* FIXME: we don't inline lazy force or at least 

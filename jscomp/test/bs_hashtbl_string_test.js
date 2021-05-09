@@ -12,7 +12,7 @@ var Caml_hash_primitive = require("../../lib/js/caml_hash_primitive.js");
 var Belt_internalBucketsType = require("../../lib/js/belt_internalBucketsType.js");
 
 function hash_string(s) {
-  return Caml_hash_primitive.caml_hash_final_mix(Caml_hash_primitive.caml_hash_mix_string(0, s));
+  return Caml_hash_primitive.hash_final_mix(Caml_hash_primitive.hash_mix_string(0, s));
 }
 
 var hashString = (function(str){ 
@@ -33,7 +33,7 @@ var String1 = Belt_Id.hashable(hashString, (function (x, y) {
       }));
 
 var String2 = Belt_Id.hashable((function (x) {
-        return Caml_hash_primitive.caml_hash_final_mix(Caml_hash_primitive.caml_hash_mix_string(0, x));
+        return Caml_hash_primitive.hash_final_mix(Caml_hash_primitive.hash_mix_string(0, x));
       }), (function (x, y) {
         return x === y;
       }));
@@ -139,7 +139,7 @@ function bench3(m) {
       };
 }
 
-var Sx = Belt_Id.comparable(Caml.caml_string_compare);
+var Sx = Belt_Id.comparable(Caml.string_compare);
 
 function bench4(param) {
   var table = Belt_internalBucketsType.make(undefined, undefined, 1000000);

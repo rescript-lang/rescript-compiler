@@ -21,7 +21,7 @@ external unsafe_chr: int -> char = "%identity"
 let chr n =
   if n < 0 || n > 255 then invalid_arg "Char.chr" else unsafe_chr n
 
-external bytes_create: int -> bytes = "caml_create_bytes"
+external bytes_create: int -> bytes = "?create_bytes"
 external bytes_unsafe_set : bytes -> int -> char -> unit
                            = "%bytes_unsafe_set"
 external unsafe_to_string : bytes -> string = "%bytes_to_string"

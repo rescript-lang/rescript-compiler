@@ -22,7 +22,7 @@ function setup_sprite(loopOpt, bbox_offsetOpt, bbox_sizeOpt, img_src, max_frames
       0,
       0
     ];
-  var bbox_size$1 = Caml_obj.caml_equal(bbox_size, [
+  var bbox_size$1 = Caml_obj.equal(bbox_size, [
         0,
         0
       ]) ? frame_size : bbox_size;
@@ -2372,7 +2372,7 @@ function mem_loc(checkloc, _loclist) {
     if (!loclist) {
       return false;
     }
-    if (Caml_obj.caml_equal(checkloc, loclist.hd[1])) {
+    if (Caml_obj.equal(checkloc, loclist.hd[1])) {
       return true;
     }
     _loclist = loclist.tl;

@@ -23,26 +23,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val caml_create_bytes : int -> bytes
-val caml_fill_bytes :  bytes -> int -> int -> char -> unit
+val create : int -> bytes
+
 val get : bytes -> int -> char
 val set : 
   bytes -> 
   int -> 
   char -> 
   unit
-val bytes_to_string : bytes -> string 
-val caml_blit_bytes : bytes -> int -> bytes -> int -> int -> unit
 
-val caml_blit_string : 
-  string -> 
-  int -> 
-  bytes -> 
-  int -> 
-  int -> 
-  unit
 
-val bytes_of_string : string -> bytes
 
 val caml_bytes_compare: 
   bytes -> bytes -> int

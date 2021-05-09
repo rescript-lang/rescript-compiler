@@ -30,7 +30,7 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
       case 1 :
           return {
                   TAG: /* NUMERAL */0,
-                  _0: Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf))
+                  _0: Caml_format.int_of_string(Lexing.lexeme(lexbuf))
                 };
       case 2 :
           return {

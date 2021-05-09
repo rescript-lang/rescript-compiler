@@ -16,6 +16,7 @@ var $$String = require("../../lib/js/string.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Filename = require("../../lib/js/filename.js");
+var Belt_List = require("../../lib/js/belt_List.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Pervasives = require("../../lib/js/pervasives.js");
@@ -119,12 +120,12 @@ function source_cmp(a, b) {
   if (k !== 0) {
     return k;
   } else {
-    return Caml.caml_string_compare(string_of_filename(a), string_of_filename(b));
+    return Caml.string_compare(string_of_filename(a), string_of_filename(b));
   }
 }
 
 function pos_cmp(a, b) {
-  return Caml_obj.caml_compare([
+  return Caml_obj.compare([
               a.line,
               a.column
             ], [
@@ -2027,10 +2028,11 @@ function parse_hex_symbol(f) {
 }
 
 function parse_exponent(f) {
-  var todo_str = $$String.concat("", List.map(Char.escaped, f.todo));
+  var xs = List.map(Char.escaped, f.todo);
+  var todo_str = Belt_List.toArray(xs).join("");
   var exponent;
   try {
-    exponent = Caml_format.caml_int_of_string(todo_str);
+    exponent = Caml_format.int_of_string(todo_str);
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
@@ -2122,7 +2124,7 @@ function parse_body(_f) {
 
 function float_of_string(str) {
   try {
-    return Caml_format.caml_float_of_string(str);
+    return Caml_format.float_of_string(str);
   }
   catch (e){
     if (Sys.win32) {
@@ -2308,10 +2310,10 @@ function mk_num_singleton(number_type, num, neg) {
   if (number_type !== 0) {
     switch (number_type) {
       case /* LEGACY_OCTAL */1 :
-          value = Caml_format.caml_int_of_string("0o" + num);
+          value = Caml_format.int_of_string("0o" + num);
           break;
       case /* OCTAL */2 :
-          value = Caml_format.caml_int_of_string(num);
+          value = Caml_format.int_of_string(num);
           break;
       case /* NORMAL */3 :
           value = float_of_string(num);
@@ -2319,7 +2321,7 @@ function mk_num_singleton(number_type, num, neg) {
       
     }
   } else {
-    value = Caml_format.caml_int_of_string(num);
+    value = Caml_format.int_of_string(num);
   }
   var value$1 = neg === "" ? value : -value;
   return {
@@ -3625,7 +3627,7 @@ function jsx_text(env, mode, buf, raw, lexbuf) {
           var n = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos + 3 | 0, lexbuf.lex_curr_pos - 1 | 0);
           var s = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos);
           $$Buffer.add_string(raw, s);
-          var code = Caml_format.caml_int_of_string("0x" + n);
+          var code = Caml_format.int_of_string("0x" + n);
           List.iter((function (param) {
                   return $$Buffer.add_char(buf, param);
                 }), utf16to8(code));
@@ -3634,7 +3636,7 @@ function jsx_text(env, mode, buf, raw, lexbuf) {
           var n$1 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos + 2 | 0, lexbuf.lex_curr_pos - 1 | 0);
           var s$1 = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos, lexbuf.lex_curr_pos);
           $$Buffer.add_string(raw, s$1);
-          var code$1 = Caml_format.caml_int_of_string(n$1);
+          var code$1 = Caml_format.int_of_string(n$1);
           List.iter((function (param) {
                   return $$Buffer.add_char(buf, param);
                 }), utf16to8(code$1));
@@ -5133,7 +5135,7 @@ function string_escape(env, buf, lexbuf) {
                 ];
       case 14 :
           var hex_code = Lexing.sub_lexeme(lexbuf, lexbuf.lex_start_pos + 2 | 0, lexbuf.lex_curr_pos - 1 | 0);
-          var code$6 = Caml_format.caml_int_of_string("0x" + hex_code);
+          var code$6 = Caml_format.int_of_string("0x" + hex_code);
           var env$1 = code$6 > 1114111 ? lex_error(env, from_lb(env.lex_source, lexbuf), {
                   TAG: /* UnexpectedToken */1,
                   _0: "ILLEGAL"
@@ -5362,7 +5364,7 @@ function add(x, t) {
   var r = t.r;
   var v = t.v;
   var l = t.l;
-  var c = Caml.caml_string_compare(x, v);
+  var c = Caml.string_compare(x, v);
   if (c === 0) {
     return t;
   }
@@ -5388,7 +5390,7 @@ function mem(x, _param) {
     if (!param) {
       return false;
     }
-    var c = Caml.caml_string_compare(x, param.v);
+    var c = Caml.string_compare(x, param.v);
     if (c === 0) {
       return true;
     }
@@ -5652,61 +5654,61 @@ function lookahead(iOpt, env) {
 }
 
 function with_strict(in_strict_mode, env) {
-  var newrecord = Caml_obj.caml_obj_dup(env);
+  var newrecord = Caml_obj.obj_dup(env);
   newrecord.in_strict_mode = in_strict_mode;
   return newrecord;
 }
 
 function with_in_function(in_function, env) {
-  var newrecord = Caml_obj.caml_obj_dup(env);
+  var newrecord = Caml_obj.obj_dup(env);
   newrecord.in_function = in_function;
   return newrecord;
 }
 
 function with_allow_yield(allow_yield, env) {
-  var newrecord = Caml_obj.caml_obj_dup(env);
+  var newrecord = Caml_obj.obj_dup(env);
   newrecord.allow_yield = allow_yield;
   return newrecord;
 }
 
 function with_no_let(no_let, env) {
-  var newrecord = Caml_obj.caml_obj_dup(env);
+  var newrecord = Caml_obj.obj_dup(env);
   newrecord.no_let = no_let;
   return newrecord;
 }
 
 function with_in_loop(in_loop, env) {
-  var newrecord = Caml_obj.caml_obj_dup(env);
+  var newrecord = Caml_obj.obj_dup(env);
   newrecord.in_loop = in_loop;
   return newrecord;
 }
 
 function with_no_in(no_in, env) {
-  var newrecord = Caml_obj.caml_obj_dup(env);
+  var newrecord = Caml_obj.obj_dup(env);
   newrecord.no_in = no_in;
   return newrecord;
 }
 
 function with_in_switch(in_switch, env) {
-  var newrecord = Caml_obj.caml_obj_dup(env);
+  var newrecord = Caml_obj.obj_dup(env);
   newrecord.in_switch = in_switch;
   return newrecord;
 }
 
 function with_in_export(in_export, env) {
-  var newrecord = Caml_obj.caml_obj_dup(env);
+  var newrecord = Caml_obj.obj_dup(env);
   newrecord.in_export = in_export;
   return newrecord;
 }
 
 function with_no_call(no_call, env) {
-  var newrecord = Caml_obj.caml_obj_dup(env);
+  var newrecord = Caml_obj.obj_dup(env);
   newrecord.no_call = no_call;
   return newrecord;
 }
 
 function with_error_callback(error_callback, env) {
-  var newrecord = Caml_obj.caml_obj_dup(env);
+  var newrecord = Caml_obj.obj_dup(env);
   newrecord.error_callback = error_callback;
   return newrecord;
 }
@@ -5720,19 +5722,19 @@ function error_list(env) {
 }
 
 function without_error_callback(env) {
-  var newrecord = Caml_obj.caml_obj_dup(env);
+  var newrecord = Caml_obj.obj_dup(env);
   newrecord.error_callback = undefined;
   return newrecord;
 }
 
 function add_label(env, label) {
-  var newrecord = Caml_obj.caml_obj_dup(env);
+  var newrecord = Caml_obj.obj_dup(env);
   newrecord.labels = add(label, env.labels);
   return newrecord;
 }
 
 function enter_function(env, async, generator) {
-  var newrecord = Caml_obj.caml_obj_dup(env);
+  var newrecord = Caml_obj.obj_dup(env);
   newrecord.allow_await = async;
   newrecord.allow_yield = generator;
   newrecord.in_function = true;
@@ -6064,14 +6066,14 @@ function semicolon(env) {
 }
 
 function token$4(env, t) {
-  if (Caml_obj.caml_notequal(token$2(undefined, env), t)) {
+  if (Caml_obj.notequal(token$2(undefined, env), t)) {
     error_unexpected(env);
   }
   return token$3(env);
 }
 
 function maybe(env, t) {
-  if (Caml_obj.caml_equal(token$2(undefined, env), t)) {
+  if (Caml_obj.equal(token$2(undefined, env), t)) {
     token$3(env);
     return true;
   } else {
@@ -6261,7 +6263,7 @@ function add$1(x, t) {
   var r = t.r;
   var v = t.v;
   var l = t.l;
-  var c = Caml.caml_string_compare(x, v);
+  var c = Caml.string_compare(x, v);
   if (c === 0) {
     return t;
   }
@@ -6287,7 +6289,7 @@ function mem$1(x, _param) {
     if (!param) {
       return false;
     }
-    var c = Caml.caml_string_compare(x, param.v);
+    var c = Caml.string_compare(x, param.v);
     if (c === 0) {
       return true;
     }
@@ -6390,7 +6392,7 @@ function add$2(x, data, m) {
   var d = m.d;
   var v = m.v;
   var l = m.l;
-  var c = Caml.caml_string_compare(x, v);
+  var c = Caml.string_compare(x, v);
   if (c === 0) {
     if (d === data) {
       return m;
@@ -6424,7 +6426,7 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml.caml_string_compare(x, param.v);
+      var c = Caml.string_compare(x, param.v);
       if (c === 0) {
         return param.d;
       }
@@ -6441,7 +6443,7 @@ function find(x, _param) {
 function compare$1(param, param$1) {
   var loc = compare(param[0], param$1[0]);
   if (loc === 0) {
-    return Caml_obj.caml_compare(param[1], param$1[1]);
+    return Caml_obj.compare(param[1], param$1[1]);
   } else {
     return loc;
   }
@@ -6712,28 +6714,6 @@ var Parse = Caml_module.init_mod([
       ]
     });
 
-function postfix_with(env, _t) {
-  while(true) {
-    var t = _t;
-    if (!(!Curry._1(Parser_env_Peek.is_line_terminator, env) && maybe(env, /* T_LBRACKET */5))) {
-      return t;
-    }
-    var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-    token$4(env, /* T_RBRACKET */6);
-    var loc = btwn(t[0], end_loc);
-    var t_1 = {
-      TAG: /* Array */3,
-      _0: t
-    };
-    var t$1 = [
-      loc,
-      t_1
-    ];
-    _t = t$1;
-    continue ;
-  };
-}
-
 function primary(env) {
   var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   var token$5 = Curry._2(Parser_env_Peek.token, undefined, env);
@@ -6926,17 +6906,68 @@ function primary(env) {
   }
 }
 
-function function_param_list(env) {
-  token$4(env, /* T_LPAREN */3);
-  var ret = Curry._2(function_param_list_without_parens, env, /* [] */0);
-  token$4(env, /* T_RPAREN */4);
-  return ret;
+function generic(env) {
+  return Curry._2(raw_generic_with_identifier, env, Curry._2(Parse.identifier, undefined, env));
+}
+
+function primitive(param) {
+  if (typeof param !== "number") {
+    return ;
+  }
+  if (param === 27) {
+    return /* Null */2;
+  }
+  if (param < 107) {
+    return ;
+  }
+  switch (param) {
+    case /* T_ANY_TYPE */107 :
+        return /* Any */0;
+    case /* T_BOOLEAN_TYPE */108 :
+        return /* Boolean */5;
+    case /* T_NUMBER_TYPE */109 :
+        return /* Number */3;
+    case /* T_STRING_TYPE */110 :
+        return /* String */4;
+    case /* T_VOID_TYPE */111 :
+        return /* Void */1;
+    
+  }
+}
+
+function postfix_with(env, _t) {
+  while(true) {
+    var t = _t;
+    if (!(!Curry._1(Parser_env_Peek.is_line_terminator, env) && maybe(env, /* T_LBRACKET */5))) {
+      return t;
+    }
+    var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+    token$4(env, /* T_RBRACKET */6);
+    var loc = btwn(t[0], end_loc);
+    var t_1 = {
+      TAG: /* Array */3,
+      _0: t
+    };
+    var t$1 = [
+      loc,
+      t_1
+    ];
+    _t = t$1;
+    continue ;
+  };
 }
 
 function union(env) {
   maybe(env, /* T_BIT_OR */80);
   var left = intersection(env);
   return Curry._2(union_with, env, left);
+}
+
+function function_param_list(env) {
+  token$4(env, /* T_LPAREN */3);
+  var ret = Curry._2(function_param_list_without_parens, env, /* [] */0);
+  token$4(env, /* T_RPAREN */4);
+  return ret;
 }
 
 function function_param_with_id(env, name) {
@@ -6953,6 +6984,59 @@ function function_param_with_id(env, name) {
             typeAnnotation: typeAnnotation,
             optional: optional
           }
+        ];
+}
+
+function generic_type_with_identifier(env, id) {
+  var match = Curry._2(raw_generic_with_identifier, env, id);
+  return [
+          match[0],
+          {
+            TAG: /* Generic */4,
+            _0: match[1]
+          }
+        ];
+}
+
+function intersection(env) {
+  maybe(env, /* T_BIT_AND */82);
+  var left = prefix(env);
+  return Curry._2(intersection_with, env, left);
+}
+
+function rev_nonempty_acc(acc) {
+  var end_loc;
+  if (acc) {
+    end_loc = acc.hd[0];
+  } else {
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "parser_flow.ml",
+            127,
+            13
+          ],
+          Error: new Error()
+        };
+  }
+  var acc$1 = List.rev(acc);
+  var start_loc;
+  if (acc$1) {
+    start_loc = acc$1.hd[0];
+  } else {
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "parser_flow.ml",
+            131,
+            13
+          ],
+          Error: new Error()
+        };
+  }
+  return [
+          btwn(start_loc, end_loc),
+          acc$1
         ];
 }
 
@@ -7058,10 +7142,22 @@ function param_list_or_type(env) {
   return ret;
 }
 
-function intersection(env) {
-  maybe(env, /* T_BIT_AND */82);
-  var left = prefix(env);
-  return Curry._2(intersection_with, env, left);
+function prefix(env) {
+  var match = Curry._2(Parser_env_Peek.token, undefined, env);
+  if (match !== 76) {
+    var t = primary(env);
+    return postfix_with(env, t);
+  }
+  var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+  token$4(env, /* T_PLING */76);
+  var t$1 = prefix(env);
+  return [
+          btwn(loc, t$1[0]),
+          {
+            TAG: /* Nullable */0,
+            _0: t$1
+          }
+        ];
 }
 
 function function_param_or_generic_type(env) {
@@ -7084,349 +7180,12 @@ function function_param_or_generic_type(env) {
         };
 }
 
-function primitive(param) {
-  if (typeof param !== "number") {
-    return ;
-  }
-  if (param === 27) {
-    return /* Null */2;
-  }
-  if (param < 107) {
-    return ;
-  }
-  switch (param) {
-    case /* T_ANY_TYPE */107 :
-        return /* Any */0;
-    case /* T_BOOLEAN_TYPE */108 :
-        return /* Boolean */5;
-    case /* T_NUMBER_TYPE */109 :
-        return /* Number */3;
-    case /* T_STRING_TYPE */110 :
-        return /* String */4;
-    case /* T_VOID_TYPE */111 :
-        return /* Void */1;
-    
-  }
-}
-
-function generic_type_with_identifier(env, id) {
-  var match = Curry._2(raw_generic_with_identifier, env, id);
-  return [
-          match[0],
-          {
-            TAG: /* Generic */4,
-            _0: match[1]
-          }
-        ];
-}
-
-function prefix(env) {
-  var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (match !== 76) {
-    var t = primary(env);
-    return postfix_with(env, t);
-  }
-  var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-  token$4(env, /* T_PLING */76);
-  var t$1 = prefix(env);
-  return [
-          btwn(loc, t$1[0]),
-          {
-            TAG: /* Nullable */0,
-            _0: t$1
-          }
-        ];
-}
-
-function rev_nonempty_acc(acc) {
-  var end_loc;
-  if (acc) {
-    end_loc = acc.hd[0];
-  } else {
-    throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "parser_flow.ml",
-            127,
-            13
-          ],
-          Error: new Error()
-        };
-  }
-  var acc$1 = List.rev(acc);
-  var start_loc;
-  if (acc$1) {
-    start_loc = acc$1.hd[0];
-  } else {
-    throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "parser_flow.ml",
-            131,
-            13
-          ],
-          Error: new Error()
-        };
-  }
-  return [
-          btwn(start_loc, end_loc),
-          acc$1
-        ];
-}
-
-function generic(env) {
-  return Curry._2(raw_generic_with_identifier, env, Curry._2(Parse.identifier, undefined, env));
-}
-
-function params(env, allow_default, _require_default, _acc) {
-  while(true) {
-    var acc = _acc;
-    var require_default = _require_default;
-    var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    var variance = typeof match === "number" ? (
-        match !== 94 ? (
-            match !== 95 ? undefined : (token$3(env), /* Minus */1)
-          ) : (token$3(env), /* Plus */0)
-      ) : undefined;
-    var match$1 = Curry._2(Parse.identifier_with_type, env, /* StrictParamName */28);
-    var id = match$1[1];
-    var loc = match$1[0];
-    var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
-    var match$3 = allow_default ? (
-        match$2 === 75 ? (token$3(env), [
-              union(env),
-              true
-            ]) : (require_default ? error_at(env, [
-                    loc,
-                    /* MissingTypeParamDefault */58
-                  ]) : undefined, [
-              undefined,
-              require_default
-            ])
-      ) : [
-        undefined,
-        false
-      ];
-    var param_1 = {
-      name: id.name,
-      bound: id.typeAnnotation,
-      variance: variance,
-      default: match$3[0]
-    };
-    var param = [
-      loc,
-      param_1
-    ];
-    var acc$1 = {
-      hd: param,
-      tl: acc
-    };
-    var match$4 = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match$4 === "number") {
-      if (match$4 === 90) {
-        return List.rev(acc$1);
-      }
-      if (match$4 === 105) {
-        return List.rev(acc$1);
-      }
-      
-    }
-    token$4(env, /* T_COMMA */8);
-    if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_GREATER_THAN */90) {
-      return List.rev(acc$1);
-    }
-    _acc = acc$1;
-    _require_default = match$3[1];
-    continue ;
-  };
-}
-
-function type_parameter_declaration(allow_default, env) {
-  var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-  if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_LESS_THAN */89) {
-    return ;
-  }
-  if (!env.parse_options.types) {
-    error(env, /* UnexpectedTypeAnnotation */6);
-  }
-  token$4(env, /* T_LESS_THAN */89);
-  var params$1 = params(env, allow_default, false, /* [] */0);
-  var loc = btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env));
-  token$4(env, /* T_GREATER_THAN */90);
-  return [
-          loc,
-          {
-            params: params$1
-          }
-        ];
-}
-
-function identifier(env, _param) {
-  while(true) {
-    var param = _param;
-    var qualification = param[1];
-    var q_loc = param[0];
-    if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_PERIOD */9) {
-      return [
-              q_loc,
-              qualification
-            ];
-    }
-    token$4(env, /* T_PERIOD */9);
-    var id = Curry._2(Parse.identifier, undefined, env);
-    var loc = btwn(q_loc, id[0]);
-    var qualification$1 = {
-      TAG: /* Qualified */1,
-      _0: [
-        loc,
-        {
-          qualification: qualification,
-          id: id
-        }
-      ]
-    };
-    _param = [
-      loc,
-      qualification$1
-    ];
-    continue ;
-  };
-}
-
-function raw_generic_with_identifier(env, id) {
-  var id_0 = id[0];
-  var id_1 = {
-    TAG: /* Unqualified */0,
-    _0: id
-  };
-  var id$1 = [
-    id_0,
-    id_1
-  ];
-  var match = identifier(env, id$1);
-  var id_loc = match[0];
-  var typeParameters = Curry._1(type_parameter_instantiation, env);
-  var loc = typeParameters !== undefined ? btwn(id_loc, typeParameters[0]) : id_loc;
-  return [
-          loc,
-          {
-            id: match[1],
-            typeParameters: typeParameters
-          }
-        ];
-}
-
-function union_with(env, left) {
-  if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_BIT_OR */80) {
-    var _acc = {
-      hd: left,
-      tl: /* [] */0
-    };
-    while(true) {
-      var acc = _acc;
-      var match = Curry._2(Parser_env_Peek.token, undefined, env);
-      if (match === 80) {
-        token$4(env, /* T_BIT_OR */80);
-        _acc = {
-          hd: intersection(env),
-          tl: acc
-        };
-        continue ;
-      }
-      var match$1 = rev_nonempty_acc(acc);
-      return [
-              match$1[0],
-              {
-                TAG: /* Union */5,
-                _0: match$1[1]
-              }
-            ];
-    };
-  } else {
-    return left;
-  }
-}
-
-function param(env) {
-  var match = Curry._1(Parse.identifier_or_reserved_keyword, env);
-  return function_param_with_id(env, match[0]);
-}
-
-function function_param_list_without_parens(env) {
-  return function (param$1) {
-    var _acc = param$1;
-    while(true) {
-      var acc = _acc;
-      var t = Curry._2(Parser_env_Peek.token, undefined, env);
-      var exit = 0;
-      exit = typeof t === "number" ? (
-          t > 11 || t < 4 ? (
-              t !== 105 ? 1 : 2
-            ) : (
-              t > 10 || t < 5 ? 2 : 1
-            )
-        ) : 1;
-      switch (exit) {
-        case 1 :
-            var acc_0 = param(env);
-            var acc$1 = {
-              hd: acc_0,
-              tl: acc
-            };
-            if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RPAREN */4) {
-              token$4(env, /* T_COMMA */8);
-            }
-            _acc = acc$1;
-            continue ;
-        case 2 :
-            var rest = t === /* T_ELLIPSIS */11 ? (token$4(env, /* T_ELLIPSIS */11), param(env)) : undefined;
-            return [
-                    rest,
-                    List.rev(acc)
-                  ];
-        
-      }
-    };
-  };
-}
-
-function intersection_with(env, left) {
-  if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_BIT_AND */82) {
-    var _acc = {
-      hd: left,
-      tl: /* [] */0
-    };
-    while(true) {
-      var acc = _acc;
-      var match = Curry._2(Parser_env_Peek.token, undefined, env);
-      if (match === 82) {
-        token$4(env, /* T_BIT_AND */82);
-        _acc = {
-          hd: prefix(env),
-          tl: acc
-        };
-        continue ;
-      }
-      var match$1 = rev_nonempty_acc(acc);
-      return [
-              match$1[0],
-              {
-                TAG: /* Intersection */6,
-                _0: match$1[1]
-              }
-            ];
-    };
-  } else {
-    return left;
-  }
-}
-
-function params$1(env, _acc) {
+function types(env, _acc) {
   while(true) {
     var acc = _acc;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
     if (typeof match === "number") {
-      if (match === 90) {
+      if (match === 6) {
         return List.rev(acc);
       }
       if (match === 105) {
@@ -7439,29 +7198,12 @@ function params$1(env, _acc) {
       hd: acc_0,
       tl: acc
     };
-    if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_GREATER_THAN */90) {
+    if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RBRACKET */6) {
       token$4(env, /* T_COMMA */8);
     }
     _acc = acc$1;
     continue ;
   };
-}
-
-function type_parameter_instantiation(env) {
-  var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-  if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_LESS_THAN */89) {
-    return ;
-  }
-  token$4(env, /* T_LESS_THAN */89);
-  var params$2 = params$1(env, /* [] */0);
-  var loc = btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env));
-  token$4(env, /* T_GREATER_THAN */90);
-  return [
-          loc,
-          {
-            params: params$2
-          }
-        ];
 }
 
 function methodish(env, start_loc) {
@@ -7723,12 +7465,95 @@ function _object(allow_staticOpt, env) {
         ];
 }
 
-function types(env, _acc) {
+function params(env, allow_default, _require_default, _acc) {
+  while(true) {
+    var acc = _acc;
+    var require_default = _require_default;
+    var match = Curry._2(Parser_env_Peek.token, undefined, env);
+    var variance = typeof match === "number" ? (
+        match !== 94 ? (
+            match !== 95 ? undefined : (token$3(env), /* Minus */1)
+          ) : (token$3(env), /* Plus */0)
+      ) : undefined;
+    var match$1 = Curry._2(Parse.identifier_with_type, env, /* StrictParamName */28);
+    var id = match$1[1];
+    var loc = match$1[0];
+    var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
+    var match$3 = allow_default ? (
+        match$2 === 75 ? (token$3(env), [
+              union(env),
+              true
+            ]) : (require_default ? error_at(env, [
+                    loc,
+                    /* MissingTypeParamDefault */58
+                  ]) : undefined, [
+              undefined,
+              require_default
+            ])
+      ) : [
+        undefined,
+        false
+      ];
+    var param_1 = {
+      name: id.name,
+      bound: id.typeAnnotation,
+      variance: variance,
+      default: match$3[0]
+    };
+    var param = [
+      loc,
+      param_1
+    ];
+    var acc$1 = {
+      hd: param,
+      tl: acc
+    };
+    var match$4 = Curry._2(Parser_env_Peek.token, undefined, env);
+    if (typeof match$4 === "number") {
+      if (match$4 === 90) {
+        return List.rev(acc$1);
+      }
+      if (match$4 === 105) {
+        return List.rev(acc$1);
+      }
+      
+    }
+    token$4(env, /* T_COMMA */8);
+    if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_GREATER_THAN */90) {
+      return List.rev(acc$1);
+    }
+    _acc = acc$1;
+    _require_default = match$3[1];
+    continue ;
+  };
+}
+
+function type_parameter_declaration(allow_default, env) {
+  var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+  if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_LESS_THAN */89) {
+    return ;
+  }
+  if (!env.parse_options.types) {
+    error(env, /* UnexpectedTypeAnnotation */6);
+  }
+  token$4(env, /* T_LESS_THAN */89);
+  var params$1 = params(env, allow_default, false, /* [] */0);
+  var loc = btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env));
+  token$4(env, /* T_GREATER_THAN */90);
+  return [
+          loc,
+          {
+            params: params$1
+          }
+        ];
+}
+
+function params$1(env, _acc) {
   while(true) {
     var acc = _acc;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
     if (typeof match === "number") {
-      if (match === 6) {
+      if (match === 90) {
         return List.rev(acc);
       }
       if (match === 105) {
@@ -7741,12 +7566,189 @@ function types(env, _acc) {
       hd: acc_0,
       tl: acc
     };
-    if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RBRACKET */6) {
+    if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_GREATER_THAN */90) {
       token$4(env, /* T_COMMA */8);
     }
     _acc = acc$1;
     continue ;
   };
+}
+
+function type_parameter_instantiation(env) {
+  var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+  if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_LESS_THAN */89) {
+    return ;
+  }
+  token$4(env, /* T_LESS_THAN */89);
+  var params$2 = params$1(env, /* [] */0);
+  var loc = btwn(start_loc, Curry._2(Parser_env_Peek.loc, undefined, env));
+  token$4(env, /* T_GREATER_THAN */90);
+  return [
+          loc,
+          {
+            params: params$2
+          }
+        ];
+}
+
+function param(env) {
+  var match = Curry._1(Parse.identifier_or_reserved_keyword, env);
+  return function_param_with_id(env, match[0]);
+}
+
+function function_param_list_without_parens(env) {
+  return function (param$1) {
+    var _acc = param$1;
+    while(true) {
+      var acc = _acc;
+      var t = Curry._2(Parser_env_Peek.token, undefined, env);
+      var exit = 0;
+      exit = typeof t === "number" ? (
+          t > 11 || t < 4 ? (
+              t !== 105 ? 1 : 2
+            ) : (
+              t > 10 || t < 5 ? 2 : 1
+            )
+        ) : 1;
+      switch (exit) {
+        case 1 :
+            var acc_0 = param(env);
+            var acc$1 = {
+              hd: acc_0,
+              tl: acc
+            };
+            if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_RPAREN */4) {
+              token$4(env, /* T_COMMA */8);
+            }
+            _acc = acc$1;
+            continue ;
+        case 2 :
+            var rest = t === /* T_ELLIPSIS */11 ? (token$4(env, /* T_ELLIPSIS */11), param(env)) : undefined;
+            return [
+                    rest,
+                    List.rev(acc)
+                  ];
+        
+      }
+    };
+  };
+}
+
+function union_with(env, left) {
+  if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_BIT_OR */80) {
+    var _acc = {
+      hd: left,
+      tl: /* [] */0
+    };
+    while(true) {
+      var acc = _acc;
+      var match = Curry._2(Parser_env_Peek.token, undefined, env);
+      if (match === 80) {
+        token$4(env, /* T_BIT_OR */80);
+        _acc = {
+          hd: intersection(env),
+          tl: acc
+        };
+        continue ;
+      }
+      var match$1 = rev_nonempty_acc(acc);
+      return [
+              match$1[0],
+              {
+                TAG: /* Union */5,
+                _0: match$1[1]
+              }
+            ];
+    };
+  } else {
+    return left;
+  }
+}
+
+function intersection_with(env, left) {
+  if (Curry._2(Parser_env_Peek.token, undefined, env) === /* T_BIT_AND */82) {
+    var _acc = {
+      hd: left,
+      tl: /* [] */0
+    };
+    while(true) {
+      var acc = _acc;
+      var match = Curry._2(Parser_env_Peek.token, undefined, env);
+      if (match === 82) {
+        token$4(env, /* T_BIT_AND */82);
+        _acc = {
+          hd: prefix(env),
+          tl: acc
+        };
+        continue ;
+      }
+      var match$1 = rev_nonempty_acc(acc);
+      return [
+              match$1[0],
+              {
+                TAG: /* Intersection */6,
+                _0: match$1[1]
+              }
+            ];
+    };
+  } else {
+    return left;
+  }
+}
+
+function identifier(env, _param) {
+  while(true) {
+    var param = _param;
+    var qualification = param[1];
+    var q_loc = param[0];
+    if (Curry._2(Parser_env_Peek.token, undefined, env) !== /* T_PERIOD */9) {
+      return [
+              q_loc,
+              qualification
+            ];
+    }
+    token$4(env, /* T_PERIOD */9);
+    var id = Curry._2(Parse.identifier, undefined, env);
+    var loc = btwn(q_loc, id[0]);
+    var qualification$1 = {
+      TAG: /* Qualified */1,
+      _0: [
+        loc,
+        {
+          qualification: qualification,
+          id: id
+        }
+      ]
+    };
+    _param = [
+      loc,
+      qualification$1
+    ];
+    continue ;
+  };
+}
+
+function raw_generic_with_identifier(env, id) {
+  var id_0 = id[0];
+  var id_1 = {
+    TAG: /* Unqualified */0,
+    _0: id
+  };
+  var id$1 = [
+    id_0,
+    id_1
+  ];
+  var match = identifier(env, id$1);
+  var id_loc = match[0];
+  var typeParameters = Curry._1(type_parameter_instantiation, env);
+  var loc = typeParameters !== undefined ? btwn(id_loc, typeParameters[0]) : id_loc;
+  return [
+          loc,
+          {
+            id: match[1],
+            typeParameters: typeParameters
+          }
+        ];
 }
 
 var _type = union;
@@ -8813,10 +8815,10 @@ function number(env, number_type) {
     switch (number_type) {
       case /* LEGACY_OCTAL */1 :
           strict_error(env, /* StrictOctalLiteral */31);
-          value$1 = Caml_format.caml_int_of_string("0o" + value);
+          value$1 = Caml_format.int_of_string("0o" + value);
           break;
       case /* OCTAL */2 :
-          value$1 = Caml_format.caml_int_of_string(value);
+          value$1 = Caml_format.int_of_string(value);
           break;
       case /* NORMAL */3 :
           try {
@@ -8834,7 +8836,7 @@ function number(env, number_type) {
       
     }
   } else {
-    value$1 = Caml_format.caml_int_of_string(value);
+    value$1 = Caml_format.int_of_string(value);
   }
   token$4(env, {
         TAG: /* T_NUMBER */0,
@@ -11214,43 +11216,69 @@ function class_expression(env) {
         ];
 }
 
-function expression(env) {
-  var expression$1 = Curry._1(Parse.expression, env);
-  var loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-  var end_loc = loc !== undefined ? loc : expression$1[0];
+function declare_function(env, start_loc) {
+  token$4(env, /* T_FUNCTION */13);
+  var id = Curry._2(Parse.identifier, undefined, env);
+  var start_sig_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+  var typeParameters = Curry._1(type_parameter_declaration$1, env);
+  var match = wrap(function_param_list, env);
+  token$4(env, /* T_COLON */77);
+  var returnType = wrap(_type, env);
+  var end_loc = returnType[0];
+  var loc = btwn(start_sig_loc, end_loc);
+  var value_1 = {
+    TAG: /* Function */1,
+    _0: {
+      params: match[1],
+      returnType: returnType,
+      rest: match[0],
+      typeParameters: typeParameters
+    }
+  };
+  var value = [
+    loc,
+    value_1
+  ];
+  var typeAnnotation = [
+    loc,
+    value
+  ];
+  var init = id[1];
+  var id_0 = btwn(id[0], end_loc);
+  var id_1 = {
+    name: init.name,
+    typeAnnotation: typeAnnotation,
+    optional: init.optional
+  };
+  var id$1 = [
+    id_0,
+    id_1
+  ];
+  var end_loc$1 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+  var end_loc$2 = end_loc$1 !== undefined ? end_loc$1 : end_loc;
+  var predicate = Curry._1(Parse.predicate, env);
   semicolon(env);
+  var loc$1 = btwn(start_loc, end_loc$2);
   return [
-          btwn(expression$1[0], end_loc),
+          loc$1,
           {
-            TAG: /* Expression */1,
-            _0: {
-              expression: expression$1
-            }
+            id: id$1,
+            predicate: predicate
           }
         ];
 }
 
-function type_alias_helper(env) {
-  var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-  if (!env.parse_options.types) {
-    error(env, /* UnexpectedTypeAlias */5);
-  }
-  token$4(env, /* T_TYPE */59);
-  push_lex_mode(env, /* TYPE */1);
-  var id = Curry._2(Parse.identifier, undefined, env);
-  var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env);
-  token$4(env, /* T_ASSIGN */75);
-  var right = wrap(_type, env);
-  var end_loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-  var end_loc$1 = end_loc !== undefined ? end_loc : right[0];
+function declare_var(env, start_loc) {
+  token$4(env, /* T_VAR */22);
+  var id = Curry._2(Parse.identifier_with_type, env, /* StrictVarName */27);
+  var loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+  var end_loc = loc !== undefined ? loc : id[0];
+  var loc$1 = btwn(start_loc, end_loc);
   semicolon(env);
-  pop_lex_mode(env);
   return [
-          btwn(start_loc, end_loc$1),
+          loc$1,
           {
-            id: id,
-            typeParameters: typeParameters,
-            right: right
+            id: id
           }
         ];
 }
@@ -11329,58 +11357,27 @@ function export_specifiers_and_errs(env, _specifiers, _errs) {
   };
 }
 
-function extract_ident_name(param) {
-  return param[1].name;
-}
-
-function declare_function(env, start_loc) {
-  token$4(env, /* T_FUNCTION */13);
+function type_alias_helper(env) {
+  var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+  if (!env.parse_options.types) {
+    error(env, /* UnexpectedTypeAlias */5);
+  }
+  token$4(env, /* T_TYPE */59);
+  push_lex_mode(env, /* TYPE */1);
   var id = Curry._2(Parse.identifier, undefined, env);
-  var start_sig_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-  var typeParameters = Curry._1(type_parameter_declaration$1, env);
-  var match = wrap(function_param_list, env);
-  token$4(env, /* T_COLON */77);
-  var returnType = wrap(_type, env);
-  var end_loc = returnType[0];
-  var loc = btwn(start_sig_loc, end_loc);
-  var value_1 = {
-    TAG: /* Function */1,
-    _0: {
-      params: match[1],
-      returnType: returnType,
-      rest: match[0],
-      typeParameters: typeParameters
-    }
-  };
-  var value = [
-    loc,
-    value_1
-  ];
-  var typeAnnotation = [
-    loc,
-    value
-  ];
-  var init = id[1];
-  var id_0 = btwn(id[0], end_loc);
-  var id_1 = {
-    name: init.name,
-    typeAnnotation: typeAnnotation,
-    optional: init.optional
-  };
-  var id$1 = [
-    id_0,
-    id_1
-  ];
-  var end_loc$1 = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-  var end_loc$2 = end_loc$1 !== undefined ? end_loc$1 : end_loc;
-  var predicate = Curry._1(Parse.predicate, env);
+  var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env);
+  token$4(env, /* T_ASSIGN */75);
+  var right = wrap(_type, env);
+  var end_loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+  var end_loc$1 = end_loc !== undefined ? end_loc : right[0];
   semicolon(env);
-  var loc$1 = btwn(start_loc, end_loc$2);
+  pop_lex_mode(env);
   return [
-          loc$1,
+          btwn(start_loc, end_loc$1),
           {
-            id: id$1,
-            predicate: predicate
+            id: id,
+            typeParameters: typeParameters,
+            right: right
           }
         ];
 }
@@ -11436,21 +11433,6 @@ function export_source(env) {
   return ret;
 }
 
-function declare_var(env, start_loc) {
-  token$4(env, /* T_VAR */22);
-  var id = Curry._2(Parse.identifier_with_type, env, /* StrictVarName */27);
-  var loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
-  var end_loc = loc !== undefined ? loc : id[0];
-  var loc$1 = btwn(start_loc, end_loc);
-  semicolon(env);
-  return [
-          loc$1,
-          {
-            id: id
-          }
-        ];
-}
-
 function type_alias(env) {
   if (!Curry._2(Parser_env_Peek.is_identifier, 1, env)) {
     return Curry._1(Parse.statement, env);
@@ -11460,31 +11442,6 @@ function type_alias(env) {
           match[0],
           {
             TAG: /* TypeAlias */7,
-            _0: match[1]
-          }
-        ];
-}
-
-function $$interface(env) {
-  if (!Curry._2(Parser_env_Peek.is_identifier, 1, env)) {
-    return expression(env);
-  }
-  var match = Curry._1(interface_helper, env);
-  return [
-          match[0],
-          {
-            TAG: /* InterfaceDeclaration */21,
-            _0: match[1]
-          }
-        ];
-}
-
-function declare_var_statement(env, start_loc) {
-  var match = declare_var(env, start_loc);
-  return [
-          match[0],
-          {
-            TAG: /* DeclareVariable */22,
             _0: match[1]
           }
         ];
@@ -11814,6 +11771,20 @@ function declare_export_declaration(allow_export_typeOpt, env) {
   }
 }
 
+function $$interface(env) {
+  if (!Curry._2(Parser_env_Peek.is_identifier, 1, env)) {
+    return expression(env);
+  }
+  var match = Curry._1(interface_helper, env);
+  return [
+          match[0],
+          {
+            TAG: /* InterfaceDeclaration */21,
+            _0: match[1]
+          }
+        ];
+}
+
 function declare_function_statement(env, start_loc) {
   var match = declare_function(env, start_loc);
   return [
@@ -11821,6 +11792,37 @@ function declare_function_statement(env, start_loc) {
           {
             TAG: /* DeclareFunction */23,
             _0: match[1]
+          }
+        ];
+}
+
+function declare_var_statement(env, start_loc) {
+  var match = declare_var(env, start_loc);
+  return [
+          match[0],
+          {
+            TAG: /* DeclareVariable */22,
+            _0: match[1]
+          }
+        ];
+}
+
+function extract_ident_name(param) {
+  return param[1].name;
+}
+
+function expression(env) {
+  var expression$1 = Curry._1(Parse.expression, env);
+  var loc = Curry._2(Parser_env_Peek.semicolon_loc, undefined, env);
+  var end_loc = loc !== undefined ? loc : expression$1[0];
+  semicolon(env);
+  return [
+          btwn(expression$1[0], end_loc),
+          {
+            TAG: /* Expression */1,
+            _0: {
+              expression: expression$1
+            }
           }
         ];
 }
@@ -12016,16 +12018,14 @@ function supers(env, _acc) {
   };
 }
 
-function interface_helper(env) {
-  var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
-  if (!env.parse_options.types) {
-    error(env, /* UnexpectedTypeInterface */10);
-  }
-  token$4(env, /* T_INTERFACE */51);
-  var id = Curry._2(Parse.identifier, undefined, env);
-  var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env);
-  var $$extends = Curry._2(Parser_env_Peek.token, undefined, env) === /* T_EXTENDS */39 ? (token$4(env, /* T_EXTENDS */39), supers(env, /* [] */0)) : /* [] */0;
-  var body = _object$1(true, env);
+function declare_class(env, start_loc) {
+  var env$1 = with_strict(true, env);
+  token$4(env$1, /* T_CLASS */38);
+  var id = Curry._2(Parse.identifier, undefined, env$1);
+  var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env$1);
+  var $$extends = Curry._2(Parser_env_Peek.token, undefined, env$1) === /* T_EXTENDS */39 ? (token$4(env$1, /* T_EXTENDS */39), supers(env$1, /* [] */0)) : /* [] */0;
+  var mixins = Curry._2(Parser_env_Peek.value, undefined, env$1) === "mixins" ? (contextual(env$1, "mixins"), supers(env$1, /* [] */0)) : /* [] */0;
+  var body = _object$1(true, env$1);
   var loc = btwn(start_loc, body[0]);
   return [
           loc,
@@ -12034,7 +12034,7 @@ function interface_helper(env) {
             typeParameters: typeParameters,
             body: body,
             extends: $$extends,
-            mixins: /* [] */0
+            mixins: mixins
           }
         ];
 }
@@ -12057,14 +12057,16 @@ function supers$1(env, _acc) {
   };
 }
 
-function declare_class(env, start_loc) {
-  var env$1 = with_strict(true, env);
-  token$4(env$1, /* T_CLASS */38);
-  var id = Curry._2(Parse.identifier, undefined, env$1);
-  var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env$1);
-  var $$extends = Curry._2(Parser_env_Peek.token, undefined, env$1) === /* T_EXTENDS */39 ? (token$4(env$1, /* T_EXTENDS */39), supers$1(env$1, /* [] */0)) : /* [] */0;
-  var mixins = Curry._2(Parser_env_Peek.value, undefined, env$1) === "mixins" ? (contextual(env$1, "mixins"), supers$1(env$1, /* [] */0)) : /* [] */0;
-  var body = _object$1(true, env$1);
+function interface_helper(env) {
+  var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
+  if (!env.parse_options.types) {
+    error(env, /* UnexpectedTypeInterface */10);
+  }
+  token$4(env, /* T_INTERFACE */51);
+  var id = Curry._2(Parse.identifier, undefined, env);
+  var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env);
+  var $$extends = Curry._2(Parser_env_Peek.token, undefined, env) === /* T_EXTENDS */39 ? (token$4(env, /* T_EXTENDS */39), supers$1(env, /* [] */0)) : /* [] */0;
+  var body = _object$1(true, env);
   var loc = btwn(start_loc, body[0]);
   return [
           loc,
@@ -12073,7 +12075,7 @@ function declare_class(env, start_loc) {
             typeParameters: typeParameters,
             body: body,
             extends: $$extends,
-            mixins: mixins
+            mixins: /* [] */0
           }
         ];
 }
@@ -14851,8 +14853,6 @@ function module_body(term_fn, env) {
   };
 }
 
-var class_declaration$1 = class_declaration;
-
 function statement_list$1(term_fn, env) {
   var _acc = /* [] */0;
   while(true) {
@@ -14871,6 +14871,8 @@ function statement_list$1(term_fn, env) {
     continue ;
   };
 }
+
+var class_declaration$1 = class_declaration;
 
 function identifier$2(restricted_error, env) {
   var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
@@ -14910,6 +14912,17 @@ function identifier$2(restricted_error, env) {
         ];
 }
 
+function module_body_with_directives(env, term_fn) {
+  var match = Curry._3(directives, env, term_fn, module_item);
+  var stmts = Curry._2(module_body, term_fn, match[0]);
+  return List.fold_left((function (acc, stmt) {
+                return {
+                        hd: stmt,
+                        tl: acc
+                      };
+              }), stmts, match[1]);
+}
+
 function statement_list_with_directives(term_fn, env) {
   var match = Curry._3(directives, env, term_fn, (function (eta) {
           return statement_list_item(undefined, eta);
@@ -14926,17 +14939,6 @@ function statement_list_with_directives(term_fn, env) {
           stmts$1,
           env$1.in_strict_mode
         ];
-}
-
-function module_body_with_directives(env, term_fn) {
-  var match = Curry._3(directives, env, term_fn, module_item);
-  var stmts = Curry._2(module_body, term_fn, match[0]);
-  return List.fold_left((function (acc, stmt) {
-                return {
-                        hd: stmt,
-                        tl: acc
-                      };
-              }), stmts, match[1]);
 }
 
 function program(env) {

@@ -29,11 +29,11 @@
 type parse_tables 
 type parser_env
 
-val  caml_parse_engine :     
+val parse_engine :     
   parse_tables -> parser_env -> 
   Obj.t (* Parsing.parser_input *) -> Obj.t -> 
   (* parser_output *)  Obj.t
 
 
 
-val caml_set_parser_trace : bool -> bool
+val set_parser_trace : bool -> bool

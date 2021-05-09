@@ -37,9 +37,9 @@ let fields : exn -> string = [%raw{|function(x){
 
 
 
-(* external exn_slot_id :  exn -> int  = "caml_exn_slot_id" *)
 
-external exn_slot_name : exn -> string = "caml_exn_slot_name"
+
+external exn_slot_name : exn -> string = "?exn_slot_name"
 
 let to_string x = 
   let rec conv = function
