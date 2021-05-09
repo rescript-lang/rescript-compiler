@@ -289,9 +289,9 @@ let translate loc (prim_name : string)
             call Js_runtime_modules.caml_primitive
         | _ -> assert false 
       end
-
-
-    (* customized primitives *)      
+(******************************************************************************)      
+(************************* customized primitives ******************************)      
+(******************************************************************************) 
     | "?int_of_float"
       -> 
       begin match args with 
@@ -328,7 +328,6 @@ let translate loc (prim_name : string)
         | [e0;e1] -> E.float_mod e0 e1
         | _ -> assert false 
       end
-
     | "?string_repeat"
       ->   
       begin match args with 
@@ -373,15 +372,7 @@ let translate loc (prim_name : string)
       call Js_runtime_modules.exceptions
     | "?as_js_exn" ->
       call Js_runtime_modules.caml_js_exceptions  
-
     | "?sys_get_argv" 
-    (** TODO: refine
-        Inlined here is helpful for DCE
-        {[ external get_argv: unit -> string * string array = "?sys_get_argv" ]}
-    *)
-    (* Js_of_lam_tuple.make [E.str "cmd";  *)
-    (*                       Js_of_lam_array.make_array NA Pgenarray [] *)
-    (*                      ] *)
     | "?sys_file_exists"
     | "?sys_time"
     | "?sys_getenv"
@@ -414,8 +405,6 @@ let translate loc (prim_name : string)
 
     | "?make_vect" 
       -> E.runtime_call Js_runtime_modules.array "make" args
-
-
     | "?format_float"
     | "?hexstring_of_float"  
     | "?float_of_string"
