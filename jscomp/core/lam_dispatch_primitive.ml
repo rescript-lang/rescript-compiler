@@ -84,15 +84,15 @@ let translate loc (prim_name : string)
     | "caml_int64_equal_nullable" 
       -> Js_long.equal_nullable args 
 
-    | "caml_int64_to_float"
+    | "?int64_to_float"
       -> Js_long.to_float args
-    | "caml_int64_of_float"
+    | "?int64_of_float"
       -> Js_long.of_float args
     | "caml_int64_compare"
       -> Js_long.compare args     
-    | "caml_int64_bits_of_float"
+    | "?int64_bits_of_float"
       -> Js_long.bits_of_float args     
-    | "caml_int64_float_of_bits"
+    | "?int64_float_of_bits"
       -> Js_long.float_of_bits args 
     | "caml_int64_min"       
       ->  Js_long.min args 

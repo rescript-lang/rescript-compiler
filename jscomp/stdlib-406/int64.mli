@@ -115,16 +115,14 @@ external to_int : int64 -> int = "%int64_to_int"
    during the conversion. *)
 
 external of_float : float -> int64
-  = "caml_int64_of_float" "caml_int64_of_float_unboxed"
-  [@@unboxed] [@@noalloc]
+  = "?int64_of_float" 
 (** Convert the given floating-point number to a 64-bit integer,
    discarding the fractional part (truncate towards 0).
    The result of the conversion is undefined if, after truncation,
    the number is outside the range \[{!Int64.min_int}, {!Int64.max_int}\]. *)
 
 external to_float : int64 -> float
-  = "caml_int64_to_float" "caml_int64_to_float_unboxed"
-  [@@unboxed] [@@noalloc]
+  = "?int64_to_float" 
 (** Convert the given 64-bit integer to a floating-point number. *)
 
 
@@ -173,8 +171,7 @@ val to_string : int64 -> string
 (** Return the string representation of its argument, in decimal. *)
 
 external bits_of_float : float -> int64
-  = "caml_int64_bits_of_float" "caml_int64_bits_of_float_unboxed"
-  [@@unboxed] [@@noalloc]
+  = "?int64_bits_of_float" 
 (** Return the internal representation of the given float according
    to the IEEE 754 floating-point 'double format' bit layout.
    Bit 63 of the result represents the sign of the float;
@@ -182,8 +179,7 @@ external bits_of_float : float -> int64
    represent the mantissa. *)
 
 external float_of_bits : int64 -> float
-  = "caml_int64_float_of_bits" "caml_int64_float_of_bits_unboxed"
-  [@@unboxed] [@@noalloc]
+  = "?int64_float_of_bits" 
 (** Return the floating-point number whose internal representation,
    according to the IEEE 754 floating-point 'double format' bit layout,
    is the given [int64]. *)

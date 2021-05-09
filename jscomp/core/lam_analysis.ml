@@ -49,7 +49,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
           match prim_name,args with 
           | (
             (* register to c runtime does not make sense  in ocaml *)
-             "caml_int64_float_of_bits"
+             "?int64_float_of_bits"
             (* more safe to check if arguments are constant *)
             (* non-observable side effect *)    
             | "?sys_get_argv" (* should be fine *)
@@ -58,7 +58,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
             | "?create_bytes"
             | "?obj_dup"
             | "caml_array_dup" 
-
             | "?nativeint_add"         
             | "?nativeint_div"
             | "?nativeint_mod"
@@ -66,13 +65,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
             | "?nativeint_mul"
 
             ), _  -> true 
-          | "caml_ml_open_descriptor_in", [Lconst (  (Const_int {i = 0l}))] -> true 
-          | "caml_ml_open_descriptor_out", 
-            [Lconst (  (Const_int {i = 1l|2l})) ]
-            -> true
-          (* we can not mark it pure
-             only when we guarantee this exception is caught...
-          *)
           | _ , _-> false
         end 
       | Pmodint

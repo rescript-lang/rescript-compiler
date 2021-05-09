@@ -30,11 +30,9 @@ external shift_right_logical : int64 -> int -> int64 = "%int64_lsr"
 external of_int : int -> int64 = "%int64_of_int"
 external to_int : int64 -> int = "%int64_to_int"
 external of_float : float -> int64
-  = "caml_int64_of_float" "caml_int64_of_float_unboxed"
-  [@@unboxed] [@@noalloc]
+  = "?int64_of_float"  
 external to_float : int64 -> float
-  = "caml_int64_to_float" "caml_int64_to_float_unboxed"
-  [@@unboxed] [@@noalloc]
+  = "?int64_to_float" 
 external of_int32 : int -> int64 = "%int64_of_int32"
 external to_int32 : int64 -> int = "%int64_to_int32"
 external of_nativeint : nativeint -> int64 = "%int64_of_nativeint"
@@ -64,11 +62,11 @@ let of_string_opt s =
 
 
 external bits_of_float : float -> int64
-  = "caml_int64_bits_of_float" "caml_int64_bits_of_float_unboxed"
-  [@@unboxed] [@@noalloc]
+  = "?int64_bits_of_float" 
+  
 external float_of_bits : int64 -> float
-  = "caml_int64_float_of_bits" "caml_int64_float_of_bits_unboxed"
-  [@@unboxed] [@@noalloc]
+  = "?int64_float_of_bits" 
+  
 
 type t = int64
 

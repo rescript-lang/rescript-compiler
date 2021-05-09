@@ -140,7 +140,7 @@ external float : int -> float = "%floatofint"
 external float_of_int : int -> float = "%floatofint"
 external truncate : float -> int = "%intoffloat"
 external int_of_float : float -> int = "%intoffloat"
-external float_of_bits : int64 -> float = "caml_int64_float_of_bits"
+external float_of_bits : int64 -> float = "?int64_float_of_bits"
 let infinity =
   float_of_bits 0x7F_F0_00_00_00_00_00_00L
 let neg_infinity =
