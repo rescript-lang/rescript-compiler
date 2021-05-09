@@ -52,12 +52,12 @@ let create len : bytes =
     result 
   
 
-let rec caml_bytes_compare_aux (s1 : bytes) (s2 : bytes) off len def =   
+let rec bytes_compare_aux (s1 : bytes) (s2 : bytes) off len def =   
   if off < len then 
     let a, b = s1.![off], s2.![off] in  
     if a > b then 1
     else if a < b then -1 
-    else caml_bytes_compare_aux s1 s2 (off + 1) len def 
+    else bytes_compare_aux s1 s2 (off + 1) len def 
   else def   
 
 (* code path could be using a tuple if we can eliminate the tuple allocation for code below
@@ -68,35 +68,35 @@ let rec caml_bytes_compare_aux (s1 : bytes) (s2 : bytes) off len def =
    ]}
 
 *)
-let caml_bytes_compare (s1 : bytes) (s2 : bytes) : int =  
+let bytes_compare (s1 : bytes) (s2 : bytes) : int =  
   let len1, len2 = length s1, length s2 in 
   if len1 = len2 then 
-    caml_bytes_compare_aux s1 s2 0 len1 0 
+    bytes_compare_aux s1 s2 0 len1 0 
   else if len1 < len2 then   
-    caml_bytes_compare_aux s1 s2 0 len1 (-1)
+    bytes_compare_aux s1 s2 0 len1 (-1)
   else
-    caml_bytes_compare_aux s1 s2 0 len2 1 
+    bytes_compare_aux s1 s2 0 len2 1 
 
-let rec caml_bytes_equal_aux (s1 : bytes) s2 (off : int) len =      
+let rec bytes_equal_aux (s1 : bytes) s2 (off : int) len =      
   if off = len then true 
   else 
     let a, b = s1.![off], s2.![off] in  
     a = b
-    && caml_bytes_equal_aux s1 s2 (off + 1) len 
+    && bytes_equal_aux s1 s2 (off + 1) len 
 
-let caml_bytes_equal (s1 : bytes) (s2 : bytes) : bool = 
+let bytes_equal (s1 : bytes) (s2 : bytes) : bool = 
   let len1, len2 = length s1, length s2 in 
   len1 = len2 &&
-  caml_bytes_equal_aux s1 s2 0 len1 
+  bytes_equal_aux s1 s2 0 len1 
 
-let caml_bytes_greaterthan (s1 : bytes) s2 = 
-  caml_bytes_compare s1 s2 > 0  
+let bytes_greaterthan (s1 : bytes) s2 = 
+  bytes_compare s1 s2 > 0  
 
-let caml_bytes_greaterequal (s1 : bytes) s2 = 
-  caml_bytes_compare s1 s2 >= 0  
+let bytes_greaterequal (s1 : bytes) s2 = 
+  bytes_compare s1 s2 >= 0  
 
-let caml_bytes_lessthan (s1 : bytes) s2 = 
-  caml_bytes_compare s1 s2 < 0
+let bytes_lessthan (s1 : bytes) s2 = 
+  bytes_compare s1 s2 < 0
 
-let caml_bytes_lessequal (s1 : bytes) s2 =    
-  caml_bytes_compare s1 s2 <= 0  
+let bytes_lessequal (s1 : bytes) s2 =    
+  bytes_compare s1 s2 <= 0  

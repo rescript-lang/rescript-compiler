@@ -1400,7 +1400,7 @@ function delta(tbl_ref, next_cat, $$char, st) {
 
 function flatten_match(m) {
   var ma = List.fold_left((function (ma, param) {
-          return Caml.caml_int_max(ma, param[0]);
+          return Caml.int_max(ma, param[0]);
         }), -1, m);
   var res = Caml_array.make(ma + 1 | 0, -1);
   List.iter((function (param) {

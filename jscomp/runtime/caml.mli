@@ -36,22 +36,21 @@ type 'a selector = 'a -> 'a -> 'a
 val int_compare : int -> int -> int
 val bool_compare : bool -> bool -> int
 val float_compare : float -> float -> int 
-
 val string_compare : string -> string -> int 
 
 
 
-val caml_bool_min : bool selector 
-val caml_int_min : int selector
-val caml_float_min : float selector 
-val caml_string_min : string selector  
+val bool_min : bool selector 
+val int_min : int selector
+val float_min : float selector 
+val string_min : string selector  
 
 
 
-val caml_bool_max : bool selector
-val caml_int_max : int selector
-val caml_float_max : float selector 
-val caml_string_max : string selector  
+val bool_max : bool selector
+val int_max : int selector
+val float_max : float selector 
+val string_max : string selector  
 
 
 

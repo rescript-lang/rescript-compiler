@@ -50,7 +50,7 @@ function from_lb_p(source, start, _end) {
           },
           _end: {
             line: _end.pos_lnum,
-            column: Caml.caml_int_max(0, _end.pos_cnum - _end.pos_bol | 0),
+            column: Caml.int_max(0, _end.pos_cnum - _end.pos_bol | 0),
             offset: _end.pos_cnum
           }
         };

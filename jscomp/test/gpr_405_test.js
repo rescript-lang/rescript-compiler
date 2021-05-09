@@ -81,7 +81,7 @@ function Make(funarg) {
                       });
           }
           var x = find_default(on_the_stack, successor) ? Curry._2(H.find, n_labels, successor) : Curry._2(H.find, l_labels, successor);
-          Curry._3(H.add, l_labels, top$1, Caml.caml_int_max(Curry._2(H.find, l_labels, top$1), x));
+          Curry._3(H.add, l_labels, top$1, Caml.int_max(Curry._2(H.find, l_labels, top$1), x));
           _successors = successors.tl;
           continue ;
         }
@@ -105,7 +105,7 @@ function Make(funarg) {
         var match = rest_of_stack$1.hd;
         var new_top = match[0];
         Curry._3(H.add, on_the_stack, top$1, false);
-        Curry._3(H.add, l_labels, new_top, Caml.caml_int_max(Curry._2(H.find, l_labels, top$1), Curry._2(H.find, l_labels, new_top)));
+        Curry._3(H.add, l_labels, new_top, Caml.int_max(Curry._2(H.find, l_labels, top$1), Curry._2(H.find, l_labels, new_top)));
         _rest_of_stack = rest_of_stack$1.tl;
         _top = new_top;
         _successors = match[1];

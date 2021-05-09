@@ -190,11 +190,11 @@ eq("File \"ext_bytes_test.ml\", line 115, characters 7-14", s, s2);
 
 function f$1(a, b) {
   return [
-          Caml_bytes.caml_bytes_greaterthan(a, b),
-          Caml_bytes.caml_bytes_greaterequal(a, b),
-          Caml_bytes.caml_bytes_lessthan(a, b),
-          Caml_bytes.caml_bytes_lessequal(a, b),
-          Caml_bytes.caml_bytes_equal(a, b)
+          Caml_bytes.bytes_greaterthan(a, b),
+          Caml_bytes.bytes_greaterequal(a, b),
+          Caml_bytes.bytes_lessthan(a, b),
+          Caml_bytes.bytes_lessequal(a, b),
+          Caml_bytes.bytes_equal(a, b)
         ];
 }
 

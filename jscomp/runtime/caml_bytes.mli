@@ -34,20 +34,20 @@ val set :
 
 
 
-val caml_bytes_compare: 
+val bytes_compare: 
   bytes -> bytes -> int
 
-val caml_bytes_greaterthan:
+val bytes_greaterthan:
   bytes -> bytes -> bool 
 
-val caml_bytes_greaterequal:
+val bytes_greaterequal:
   bytes -> bytes -> bool 
 
-val caml_bytes_lessthan:
+val bytes_lessthan:
   bytes -> bytes -> bool 
 
-val caml_bytes_lessequal:
+val bytes_lessequal:
   bytes -> bytes -> bool 
 
-val caml_bytes_equal : 
+val bytes_equal : 
   bytes -> bytes -> bool 
