@@ -7,7 +7,7 @@ external ff : int -> int -> int = "?fancy_add"
 
 
 [%%raw{|
-require('../../lib/js/caml_external_polyfill.js').register("?fancy_add", function(x,y){
+require('../../lib/js/caml_external_polyfill.js').register("fancy_add", function(x,y){
   return + ((""+x ) + (""+y))
 })
 |}]
