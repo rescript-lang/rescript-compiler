@@ -43,13 +43,10 @@ let const_char (i : char) =
   E.int  
     ~c:i (Int32.of_int @@ Char.code i)
 
-let caml_char_of_int  (v : J.expression)  =  v
-
-let caml_char_to_int  v =  v
 
 (* string [s[i]] expects to return a [ocaml_char] *)
 let ref_string e e1 = 
-  E.char_to_int (E.string_index e e1)
+  E.string_index e e1
 
 (* [s[i]] excepts to return a [ocaml_char]
    We use normal array for [bytes]

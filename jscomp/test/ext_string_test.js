@@ -105,7 +105,7 @@ function starts_with(s, beg) {
     return false;
   }
   var i = 0;
-  while(i < beg_len && s[i] === beg[i]) {
+  while(i < beg_len && s.charCodeAt(i) === beg.charCodeAt(i)) {
     i = i + 1 | 0;
   };
   return i === beg_len;
@@ -125,7 +125,7 @@ function ends_with_index(s, end_) {
     if (k < 0) {
       return j + 1 | 0;
     }
-    if (s[j] !== end_[k]) {
+    if (s.charCodeAt(j) !== end_.charCodeAt(k)) {
       return -1;
     }
     _k = k - 1 | 0;
@@ -251,7 +251,7 @@ function unsafe_is_sub(sub, i, s, j, len) {
       if (k === len) {
         return true;
       }
-      if (sub[i + k | 0] !== s[j + k | 0]) {
+      if (sub.charCodeAt(i + k | 0) !== s.charCodeAt(j + k | 0)) {
         return false;
       }
       _k = k + 1 | 0;
@@ -378,7 +378,7 @@ function starts_with_and_number(s, offset, beg) {
     return -1;
   }
   var i = offset;
-  while(i < finish_delim && s[i] === beg[i - offset | 0]) {
+  while(i < finish_delim && s.charCodeAt(i) === beg.charCodeAt(i - offset | 0)) {
     i = i + 1 | 0;
   };
   if (i === finish_delim) {
