@@ -57,7 +57,7 @@ function trim(s) {
   while((function () {
           var tmp = false;
           if (i < j) {
-            var u = s.charCodeAt(i);
+            var u = s.codePointAt(i);
             tmp = u === /* '\t' */9 || u === /* '\n' */10 || u === /* ' ' */32;
           }
           return tmp;
@@ -68,7 +68,7 @@ function trim(s) {
   while((function () {
           var tmp = false;
           if (k >= i) {
-            var u = s.charCodeAt(k);
+            var u = s.codePointAt(k);
             tmp = u === /* '\t' */9 || u === /* '\n' */10 || u === /* ' ' */32;
           }
           return tmp;
@@ -105,7 +105,7 @@ function starts_with(s, beg) {
     return false;
   }
   var i = 0;
-  while(i < beg_len && s.charCodeAt(i) === beg.charCodeAt(i)) {
+  while(i < beg_len && s.codePointAt(i) === beg.codePointAt(i)) {
     i = i + 1 | 0;
   };
   return i === beg_len;
@@ -125,7 +125,7 @@ function ends_with_index(s, end_) {
     if (k < 0) {
       return j + 1 | 0;
     }
-    if (s.charCodeAt(j) !== end_.charCodeAt(k)) {
+    if (s.codePointAt(j) !== end_.codePointAt(k)) {
       return -1;
     }
     _k = k - 1 | 0;
@@ -175,7 +175,7 @@ function escaped(s) {
       if (i >= s.length) {
         return false;
       }
-      var match = s.charCodeAt(i);
+      var match = s.codePointAt(i);
       if (match < 32) {
         return true;
       }
@@ -206,7 +206,7 @@ function unsafe_for_all_range(s, _start, finish, p) {
     if (start > finish) {
       return true;
     }
-    if (!Curry._1(p, s.charCodeAt(start))) {
+    if (!Curry._1(p, s.codePointAt(start))) {
       return false;
     }
     _start = start + 1 | 0;
@@ -251,7 +251,7 @@ function unsafe_is_sub(sub, i, s, j, len) {
       if (k === len) {
         return true;
       }
-      if (sub.charCodeAt(i + k | 0) !== s.charCodeAt(j + k | 0)) {
+      if (sub.codePointAt(i + k | 0) !== s.codePointAt(j + k | 0)) {
         return false;
       }
       _k = k + 1 | 0;
@@ -378,7 +378,7 @@ function starts_with_and_number(s, offset, beg) {
     return -1;
   }
   var i = offset;
-  while(i < finish_delim && s.charCodeAt(i) === beg.charCodeAt(i - offset | 0)) {
+  while(i < finish_delim && s.codePointAt(i) === beg.codePointAt(i - offset | 0)) {
     i = i + 1 | 0;
   };
   if (i === finish_delim) {
@@ -398,7 +398,7 @@ function rindex_rec(s, _i, c) {
     if (i < 0) {
       return i;
     }
-    if (s.charCodeAt(i) === c) {
+    if (s.codePointAt(i) === c) {
       return i;
     }
     _i = i - 1 | 0;
@@ -412,7 +412,7 @@ function rindex_rec_opt(s, _i, c) {
     if (i < 0) {
       return ;
     }
-    if (s.charCodeAt(i) === c) {
+    if (s.codePointAt(i) === c) {
       return i;
     }
     _i = i - 1 | 0;
@@ -433,7 +433,7 @@ function is_valid_module_file(s) {
   if (len <= 0) {
     return false;
   }
-  var match = s.charCodeAt(0);
+  var match = s.codePointAt(0);
   if (match >= 91) {
     if (match > 122 || match < 97) {
       return false;
@@ -465,7 +465,7 @@ function is_valid_npm_package_name(s) {
   if (len <= 0) {
     return false;
   }
-  var match = s.charCodeAt(0);
+  var match = s.codePointAt(0);
   if (match >= 97) {
     if (match >= 123) {
       return false;
@@ -520,7 +520,7 @@ function unsafe_no_char(x, ch, _i, last_idx) {
     if (i > last_idx) {
       return true;
     }
-    if (x.charCodeAt(i) === ch) {
+    if (x.codePointAt(i) === ch) {
       return false;
     }
     _i = i + 1 | 0;
@@ -534,7 +534,7 @@ function unsafe_no_char_idx(x, ch, _i, last_idx) {
     if (i > last_idx) {
       return -1;
     }
-    if (x.charCodeAt(i) === ch) {
+    if (x.codePointAt(i) === ch) {
       return i;
     }
     _i = i + 1 | 0;

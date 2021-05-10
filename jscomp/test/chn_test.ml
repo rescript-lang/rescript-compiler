@@ -16,7 +16,7 @@ let convert (s : string) : int list  =
     Js_array2.fromMap
         (Js_string.castToArrayLike s)
         (fun x ->
-        match Js_string.codePointAt 0 x with
+        match Js_string2.codePointAt x 0 with
         | None -> assert false
         | Some x -> x ) |> Array.to_list
 
@@ -69,10 +69,12 @@ let () =
    *)
   (* eq __LOC__
     (Js.String.codePointAt 0 {js|\uD83D\uDE80\0|js} ) 128640; *)
-   eq "No inline string access"
-    (Char.code {js|\uD83D\uDE80\0|js}.[0] land 255)
+   eq __LOC__
+    ({js|\uD83D\uDE80\0|js}.[0] :> int)
     (*TODO: Char.code need normalization? *)
-    61;
+    128640;
+   eq __LOC__ ({j|🚀|j}.[0] :> int) 128640;
+      
   (* "\uD83D\uDE80".charCodeAt(0) & 255
   61   *)
   (** Note that [char] maximum is 255  *)

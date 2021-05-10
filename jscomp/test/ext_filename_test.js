@@ -90,7 +90,7 @@ function chop_extension_if_any(fname) {
   }
 }
 
-var os_path_separator_char = Filename.dir_sep.charCodeAt(0);
+var os_path_separator_char = Filename.dir_sep.codePointAt(0);
 
 function relative_path(file_or_dir_1, file_or_dir_2) {
   var relevant_dir1 = file_or_dir_1.NAME === "File" ? Curry._1(Filename.dirname, file_or_dir_1.VAL) : file_or_dir_1.VAL;
@@ -159,7 +159,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
               Error: new Error()
             };
       }
-      var curr_char = file2.charCodeAt(i);
+      var curr_char = file2.codePointAt(i);
       if (!(curr_char === os_path_separator_char || curr_char === /* '.' */46)) {
         return i;
       }
