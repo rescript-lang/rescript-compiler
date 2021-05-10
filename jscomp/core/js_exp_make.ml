@@ -554,21 +554,7 @@ let function_length ?comment (e : t) : t =
 (* let js_global_dot ?comment (x : string)  (e1 : string) : t = 
    { expression_desc = Static_index (js_global x,  e1,None); comment} 
 
-   let char_of_int ?comment (v : t) : t = 
-   match v.expression_desc with
-   | Number (Int {i; _}) ->
-    str  (String.make 1(Char.chr (Int32.to_int i)))
-   | Char_to_int v -> v 
-   | _ ->  {comment ; expression_desc = Char_of_int v} *)
-
-let char_to_int ?comment (v : t) : t = 
-  match v.expression_desc with 
-  | Str (_, x) -> (* No optimization for .. *)
-    assert (String.length x = 1) ;
-    int ~comment:(Printf.sprintf "%S"  x )  
-      (Int32.of_int @@ Char.code x.[0])
-  | Char_of_int v -> v 
-  | _ -> {comment; expression_desc = Char_to_int v }
+   *)
 
 
 
@@ -623,28 +609,20 @@ let float_mod ?comment e1 e2 : J.expression =
 let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
   match e0.expression_desc, e1.expression_desc with
   | (Null| Undefined), 
-    (Char_of_int _ | Char_to_int _ 
-    | Bool _ | Number _ | Typeof _
+    ( Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ )
     when  no_side_effect e1 -> 
     false_ 
   | 
-    (Char_of_int _ | Char_to_int _ 
-    | Bool _ | Number _ | Typeof _
+    ( Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ ),  (Null|Undefined)
     when no_side_effect e0 -> 
     false_
   | Str (_,x), Str (_,y) ->  (* CF*)
     bool (Ext_string.equal x y)
-  | Char_to_int a , Char_to_int b -> 
-    triple_equal ?comment a b 
-  | Char_to_int a , Number (Int {i=_; c = Some v}) 
-  | Number (Int {i=_; c = Some v}), Char_to_int a  -> 
-    triple_equal ?comment a (str (String.make 1 v))
   | Number (Int {i = i0; _}), Number (Int {i = i1; _}) 
     -> 
     bool (i0 = i1)      
-  | Char_of_int a , Char_of_int b 
   | Optional_block (a,_), Optional_block (b,_)
     -> 
     triple_equal ?comment a b     
@@ -835,14 +813,6 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
     float_equal ?comment a e1
   | Number (Float {f = f0; _}), Number (Float {f = f1 ; }) when f0 = f1 -> 
     true_
-
-  | Char_to_int a , Char_to_int b ->
-    float_equal ?comment a b
-  | Char_to_int a , Number (Int {i = _; c = Some v})
-  | Number (Int {i = _; c = Some v}), Char_to_int a  ->
-    float_equal ?comment a (str (String.make 1 v))
-  | Char_of_int a , Char_of_int b ->
-    float_equal ?comment a b
 
   | _ ->  
     {expression_desc = Bin(EqEqEq, e0,e1); comment}
@@ -1375,13 +1345,11 @@ let is_null_undefined ?comment (x: t) : t =
 let eq_null_undefined_boolean ?comment (a : t) (b : t) = 
   match a.expression_desc, b.expression_desc with 
   | (Null | Undefined),   
-    (Char_of_int _ | Char_to_int _ 
-    | Bool _ | Number _ | Typeof _
+    ( Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ )
     -> 
     false_
-  | (Char_of_int _ | Char_to_int _ 
-    | Bool _ | Number _ | Typeof _
+  | ( Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ ), 
     (Null | Undefined)
     -> 
@@ -1399,13 +1367,11 @@ let eq_null_undefined_boolean ?comment (a : t) (b : t) =
 let neq_null_undefined_boolean ?comment (a : t) (b : t) = 
   match a.expression_desc, b.expression_desc with 
   | (Null | Undefined),   
-    (Char_of_int _ | Char_to_int _ 
-    | Bool _ | Number _ | Typeof _
+    ( Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ )
     -> 
     true_
-  | (Char_of_int _ | Char_to_int _ 
-    | Bool _ | Number _ | Typeof _
+  | ( Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ ), 
     (Null | Undefined)
     -> 

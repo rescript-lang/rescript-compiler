@@ -123,8 +123,6 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | String_append (a,b)
   | Seq (a,b) -> no_side_effect a && no_side_effect b 
   | Length (e, _)
-  | Char_of_int e 
-  | Char_to_int e 
   | Caml_block_tag e 
   | Typeof e
     -> no_side_effect e 
@@ -263,8 +261,6 @@ let rec eq_expression
         | _ -> false 
       end 
     | Length _ 
-    | Char_of_int _
-    | Char_to_int _ 
     | Is_null_or_undefined _ 
     | String_append _ 
     | Typeof _ 

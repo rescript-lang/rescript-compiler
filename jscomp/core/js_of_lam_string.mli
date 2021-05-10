@@ -41,12 +41,7 @@ val ref_byte : J.expression -> J.expression -> J.expression
 
 val set_byte : J.expression -> J.expression -> J.expression -> J.expression 
 
-val caml_char_of_int : 
-  J.expression -> J.expression
 
-val caml_char_to_int : 
-
-  J.expression -> J.expression
 
 val const_char : char -> J.expression
 

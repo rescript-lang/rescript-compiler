@@ -181,8 +181,6 @@ let exp_need_paren  (e : J.expression) =
   | String_index _
   | Array_index _
   | String_append _
-  | Char_of_int _
-  | Char_to_int _
   | Var _
   | Undefined
   | Null
@@ -613,29 +611,15 @@ and expression_desc cxt ~(level:int) f x : cxt  =
             expression ~level:1 cxt f el
           )
       )
-  | Char_to_int e ->
-    (match e.expression_desc with
-     | String_index (a,b) ->
-       P.group f 1 (fun _ ->
-           let cxt = expression ~level:15 cxt f a in
-           P.string f L.dot;
-           P.string f L.char_code_at;
-           P.paren_group f 1 (fun _ -> expression ~level:0 cxt f b);
-         )
-     | _ ->
-       P.group f 1 (fun _ ->
-           let cxt = expression ~level:15 cxt f e in
-           P.string f L.dot;
-           P.string f L.char_code_at;
-           P.string f "(0)";
-           cxt))
-  | Char_of_int e ->
+  | String_index (a,b) -> 
     P.group f 1 (fun _ ->
-        P.string f L.string_cap;
+        let cxt = expression ~level:15 cxt f a in
         P.string f L.dot;
-        P.string f L.fromCharcode;
-        P.paren_group f 1 (fun _ -> arguments cxt f [e])
-      )  
+        P.string f L.codePointAt;
+        (* FIXME: use code_point_at *)
+        P.paren_group f 1 (fun _ -> expression ~level:0 cxt f b);
+      )
+
   | Unicode s ->
     P.string f "\"";
     P.string f s ;
@@ -891,7 +875,6 @@ and expression_desc cxt ~(level:int) f x : cxt  =
         P.string f L.tag ;
         cxt)
   | Array_index (e, p)
-  | String_index (e,p)
     ->
     P.cond_paren_group f (level > 15) 1 (fun _ -> 
         P.group f 1  (fun _ ->

@@ -160,9 +160,7 @@ val bytes_length :  ?comment:string -> t -> t
 
 val function_length : ?comment:string -> t -> t 
 
-(* val char_of_int : ?comment:string -> t -> t  *)
 
-val char_to_int : ?comment:string -> t -> t 
 
 val string_append : ?comment:string -> t -> t -> t 
 (**

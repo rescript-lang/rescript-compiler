@@ -43,6 +43,7 @@ let throw = "throw"
 let default = "default"
 let length = "length"
 let char_code_at = "charCodeAt"
+let codePointAt = "charCodeAt" (* FIXME*)
 let new_ = "new"
 let array = "Array"
 let question = "?"      

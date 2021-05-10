@@ -104,8 +104,6 @@ and property_map =
 and length_object = Js_op.length_object
 and expression_desc =
   | Length of expression * length_object
-  | Char_of_int of expression
-  | Char_to_int of expression 
   | Is_null_or_undefined of expression 
   (** where we use a trick [== null ] *)
   | String_append of expression * expression 
