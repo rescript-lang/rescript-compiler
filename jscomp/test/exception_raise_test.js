@@ -191,7 +191,7 @@ try {
 }
 catch (raw_e$2){
   var e = Caml_js_exceptions.internalToOCamlException(raw_e$2);
-  eq("File \"exception_raise_test.ml\", line 131, characters 7-14", Caml_js_exceptions.caml_as_js_exn(e) !== undefined, true);
+  eq("File \"exception_raise_test.ml\", line 131, characters 7-14", Caml_js_exceptions.as_js_exn(e) !== undefined, true);
 }
 
 try {
@@ -202,7 +202,7 @@ try {
 }
 catch (raw_e$3){
   var e$1 = Caml_js_exceptions.internalToOCamlException(raw_e$3);
-  eq("File \"exception_raise_test.ml\", line 138, characters 7-14", Caml_js_exceptions.caml_as_js_exn(e$1) !== undefined, false);
+  eq("File \"exception_raise_test.ml\", line 138, characters 7-14", Caml_js_exceptions.as_js_exn(e$1) !== undefined, false);
 }
 
 function fff0(x, g) {

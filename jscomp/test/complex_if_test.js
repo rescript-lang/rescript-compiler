@@ -35,7 +35,7 @@ function escaped(s) {
   if (n === s.length) {
     return Bytes.copy(s);
   }
-  var s$p = Caml_bytes.caml_create_bytes(n);
+  var s$p = Caml_bytes.create(n);
   n = 0;
   for(var i$1 = 0 ,i_finish$1 = s.length; i$1 < i_finish$1; ++i$1){
     var c = s[i$1];

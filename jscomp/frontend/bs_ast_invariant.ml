@@ -178,17 +178,27 @@ let emit_external_warnings : iterator=
          | ( {
              pval_loc;
              pval_prim =
-               "%identity"::_;
+               [byte_name];
              pval_type
-           } : Parsetree.value_description)
-           when not
-               (Ast_core_type.is_arity_one pval_type)
-           -> 
-           Location.raise_errorf
-             ~loc:pval_loc
-             "%%identity expect its type to be of form 'a -> 'b (arity 1)"
-         | _ ->
-           super.value_description self v 
+           } : Parsetree.value_description) -> 
+           begin match byte_name with 
+             | "%identity" 
+               when not
+                   (Ast_core_type.is_arity_one pval_type)
+               -> 
+               Location.raise_errorf
+                 ~loc:pval_loc
+                 "%%identity expect its type to be of form 'a -> 'b (arity 1)"
+             | _ ->
+               if byte_name <> "" then 
+                 let c = String.unsafe_get byte_name 0 in 
+                 if not (c = '%' || c = '#' || c = '?') then 
+                 Location.prerr_warning pval_loc (Warnings.Bs_ffi_warning ( byte_name ^ " such externals are unsafe"))
+                 else  
+                   super.value_description self v 
+               else Location.prerr_warning pval_loc (Warnings.Bs_ffi_warning ( byte_name ^ " such externals are unsafe"))
+           end 
+         | _ -> super.value_description self v 
       );
     pat = begin fun self (pat : Parsetree.pattern) -> 
       match pat.ppat_desc with

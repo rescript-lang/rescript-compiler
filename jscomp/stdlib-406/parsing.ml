@@ -80,10 +80,10 @@ let _ = [Read_token; Raise_parse_error; Grow_stacks_1; Grow_stacks_2;
 
 external parse_engine :
     parse_tables -> parser_env -> parser_input -> Obj.t -> parser_output
-    = "caml_parse_engine"
+    = "?parse_engine"
 
 external set_trace: bool -> bool
-    = "caml_set_parser_trace"
+    = "?set_parser_trace"
 
 let env =
   { s_stack = Array.make 100 0;

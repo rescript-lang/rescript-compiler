@@ -25,7 +25,7 @@
 
 
 external getEnv : 'a -> string -> string option = "" [@@bs.get_index] 
-let caml_sys_getenv s =
+let sys_getenv s =
   if Js.typeof [%raw{|process|}] = "undefined"
   || [%raw{|process.env|}] = Caml_undefined_extern.empty 
   then raise Not_found
@@ -51,13 +51,13 @@ let os_type : unit -> string = [%raw{|function(_){
 
 
 
-(* let caml_initial_time = now ()  *. 0.001 *)
+(* let initial_time = now ()  *. 0.001 *)
 
 type process
 external uptime : process -> unit -> float = "uptime" [@@bs.send]
 external exit : process -> int -> 'a =  "exit"  [@@bs.send]
 
-let caml_sys_time () =
+let sys_time () =
   if Js.typeof [%raw{|process|}] = "undefined" 
   || [%raw{|process.uptime|}] = Caml_undefined_extern.empty
   then -1.
@@ -78,9 +78,8 @@ external readAs : spawnResult ->
 *)
 
 
-let caml_sys_system_command _cmd = 127
 
-let caml_sys_getcwd : unit -> string = [%raw{|function(param){
+let sys_getcwd : unit -> string = [%raw{|function(param){
     if (typeof process === "undefined" || process.cwd === undefined){
       return "/"  
     }
@@ -89,7 +88,7 @@ let caml_sys_getcwd : unit -> string = [%raw{|function(param){
 
 
 (* Called by {!Sys} in the toplevel, should never fail*)
-let caml_sys_get_argv () : string * string array = 
+let sys_get_argv () : string * string array = 
   if Js.typeof [%raw{|process|}] = "undefined" then "",[|""|] 
   else 
     let argv = [%raw{|process.argv|}] in 
@@ -97,18 +96,18 @@ let caml_sys_get_argv () : string * string array =
     else Caml_array_extern.unsafe_get argv 0, argv
 
 (** {!Pervasives.sys_exit} *)
-let caml_sys_exit :int -> 'a = fun exit_code -> 
+let sys_exit :int -> 'a = fun exit_code -> 
   if Js.typeof [%raw{|process|}] <> "undefined"  then 
     exit [%raw{|process|}] exit_code 
 
 
 
-let caml_sys_is_directory _s = 
-  raise (Failure "caml_sys_is_directory not implemented")
+let sys_is_directory _s = 
+  raise (Failure "sys_is_directory not implemented")
 
 (** Need polyfill to make cmdliner work 
     {!Sys.is_directory} or {!Sys.file_exists} {!Sys.command} 
 *)
-let caml_sys_file_exists _s = 
-  raise ( Failure "caml_sys_file_exists not implemented")
+let sys_file_exists _s = 
+  raise ( Failure "sys_file_exists not implemented")
 

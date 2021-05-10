@@ -152,7 +152,7 @@ type parse_tables
 type parser_env 
 
 
-let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)Obj.t -> Obj.t -> Obj.t = 
+let parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)Obj.t -> Obj.t -> Obj.t = 
   [%raw{|function (tables /* parser_table */, env /* parser_env */, cmd /* parser_input*/, arg /* Obj.t*/) {
     var ERRCODE = 256;
     //var START = 0;
@@ -380,12 +380,12 @@ let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)O
 
 
 (**
- * external set_trace: bool -> bool = "caml_set_parser_trace"
+ * external set_trace: bool -> bool = "?set_parser_trace"
  * parsing.ml
  * @param {boolean}
  * @returns {boolean}
 *)
-let caml_set_parser_trace : bool -> bool = [%raw{|function (v) {
+let set_parser_trace : bool -> bool = [%raw{|function (v) {
     var old = PARSER_TRACE;
     PARSER_TRACE = v;
     return old;

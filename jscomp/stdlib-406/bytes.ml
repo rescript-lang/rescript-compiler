@@ -22,21 +22,106 @@
 *)
 
 external length : bytes -> int = "%bytes_length"
-external string_length : string -> int = "%string_length"
+external%private string_length : string -> int = "%string_length"
 external get : bytes -> int -> char = "%bytes_safe_get"
 external set : bytes -> int -> char -> unit = "%bytes_safe_set"
-external create : int -> bytes = "caml_create_bytes"
+external create : int -> bytes = "?create_bytes"
+
 external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
 external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
-external unsafe_fill : bytes -> int -> int -> char -> unit
-                     = "caml_fill_bytes" [@@noalloc]
-external unsafe_to_string : bytes -> string = "%bytes_to_string"
-external unsafe_of_string : string -> bytes = "%bytes_of_string"
+external (.![]) : bytes -> int -> char = "%bytes_unsafe_get"
+external (.![]<-) : bytes -> int -> char -> unit = "%bytes_unsafe_set"
+external new_uninitialized : int -> bytes = "Array"  [@@bs.new]
+external to_int_array : bytes -> int array = "%identity"
 
-external unsafe_blit : bytes -> int -> bytes -> int -> int -> unit
-                     = "caml_blit_bytes" [@@noalloc]
-external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-                     = "caml_blit_string" [@@noalloc]
+let unsafe_fill : bytes -> int -> int -> char -> unit
+  = fun (s : bytes) i l (c : char) ->
+    if l > 0 then
+      for k = i to l + i - 1 do 
+        s.![k] <- c 
+      done
+
+
+
+
+(** Same as {!Array.prototype.copyWithin} *)
+let copyWithin (s1 : bytes) i1 i2 len = 
+  if i1 < i2  then (* nop for i1 = i2 *)
+    let range_a =  length s1 - i2 - 1 in
+    let range_b = len - 1 in         
+    let range = if range_a > range_b then range_b else range_a in
+    for j = range downto 0 do
+      s1.![i2 + j] <- s1.![i1 + j]
+    done
+  else if i1 > i2 then
+    let range_a = length s1 - i1 - 1 in 
+    let range_b = len - 1 in 
+    let range = if range_a > range_b then range_b else range_a in 
+    for k = 0 to range  do 
+      s1.![i2 + k] <- s1.![i1 + k]
+    done
+
+(* TODO: when the compiler could optimize small function calls, 
+   use high order functions instead
+*)
+let unsafe_blit (s1:bytes) i1 (s2:bytes) i2 len = 
+  if len > 0 then
+    if s1 == s2 then
+      copyWithin s1 i1 i2 len 
+    else
+      let off1 = length s1 - i1 in
+      if len <= off1 then 
+        for i = 0 to len - 1 do 
+          s2.![i2 + i] <-  s1.![i1 + i]
+        done
+      else 
+        begin
+          for i = 0 to off1 - 1 do 
+            s2.![i2 + i] <- s1.![i1 + i]
+          done;
+          for i = off1 to len - 1 do 
+            s2.![i2 + i] <- '\000'
+          done
+        end      
+
+let unsafe_blit_string (s1 : string) i1 (s2 : bytes) i2 (len : int ) = 
+  if len > 0 then
+    let off1 = Caml_string_extern.length s1 - i1 in
+    if len <= off1 then 
+      for i = 0 to len - 1 do 
+        s2.![i2 + i] <- Caml_string_extern.unsafe_get s1 (i1 + i)
+      done
+    else 
+      begin
+        for i = 0 to off1 - 1 do 
+          s2.![i2 + i] <- Caml_string_extern.unsafe_get s1 (i1 + i)
+        done;
+        for i = off1 to len - 1 do 
+          s2.![i2 + i] <- '\000'
+        done
+      end
+let string_of_large_bytes (bytes : bytes) i len = 
+  let s = ref "" in
+  let s_len = ref len in
+  let seg = 1024 in
+  if i = 0 && len <= 4 * seg && len = length bytes then 
+    Caml_string_extern.of_small_int_array  (to_int_array bytes)
+  else 
+    begin
+      let offset = ref 0 in
+      while s_len.contents > 0 do 
+        let next = if s_len.contents < 1024 then s_len.contents else seg in
+        let tmp_bytes = new_uninitialized next in
+        for k = 0 to next - 1 do 
+          tmp_bytes.![k] <- bytes.![k + offset.contents]  
+        done;   
+        s.contents <- s.contents ^ Caml_string_extern.of_small_int_array (to_int_array tmp_bytes);
+        s_len.contents <- s_len.contents - next ; 
+        offset.contents <- offset.contents + next;
+      done;
+      s.contents
+    end
+
 
 let make n c =
   let s = create n in
@@ -58,8 +143,24 @@ let copy s =
   unsafe_blit s 0 r 0 len;
   r
 
-let to_string b = unsafe_to_string (copy b)
-let of_string s = copy (unsafe_of_string s)
+let to_string (a : bytes) : string  = 
+  string_of_large_bytes a 0 (length a)   
+
+let unsafe_to_string = to_string
+
+(** checkout [Bytes.empty] -- to be inlined? *)
+let of_string  (s : string) = 
+  let len = string_length s in
+  let res = new_uninitialized len  in
+  for i = 0 to len - 1 do 
+    res.![i] <- Caml_string_extern.unsafe_get s i
+    (* Note that when get a char and convert it to int immedately, should be optimized
+       should be [s.charCodeAt[i]]
+    *)
+  done;
+  res
+
+let unsafe_of_string = of_string
 
 let sub s ofs len =
   if ofs < 0 || len < 0 || ofs > length s - len
@@ -95,13 +196,13 @@ let fill s ofs len c =
 
 let blit s1 ofs1 s2 ofs2 len =
   if len < 0 || ofs1 < 0 || ofs1 > length s1 - len
-             || ofs2 < 0 || ofs2 > length s2 - len
+     || ofs2 < 0 || ofs2 > length s2 - len
   then invalid_arg "Bytes.blit"
   else unsafe_blit s1 ofs1 s2 ofs2 len
 
 let blit_string s1 ofs1 s2 ofs2 len =
   if len < 0 || ofs1 < 0 || ofs1 > string_length s1 - len
-             || ofs2 < 0 || ofs2 > length s2 - len
+     || ofs2 < 0 || ofs2 > length s2 - len
   then invalid_arg "String.blit / Bytes.blit_string"
   else unsafe_blit_string s1 ofs1 s2 ofs2 len
 
@@ -132,9 +233,9 @@ let rec unsafe_blits dst pos sep seplen = function
 let concat sep = function
     [] -> empty
   | l -> let seplen = length sep in
-          unsafe_blits
-            (create (sum_lengths 0 seplen l))
-            0 sep seplen l
+    unsafe_blits
+      (create (sum_lengths 0 seplen l))
+      0 sep seplen l
 
 let cat s1 s2 =
   let l1 = length s1 in
@@ -145,7 +246,6 @@ let cat s1 s2 =
   r
 
 
-external char_code: char -> int = "%identity"
 external char_chr: int -> char = "%identity"
 
 let is_space = function
@@ -171,29 +271,29 @@ let escaped s =
   let n = ref 0 in
   for i = 0 to length s - 1 do
     n := !n +
-      (match unsafe_get s i with
-       | '\"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
-       | ' ' .. '~' -> 1
-       | _ -> 4)
+         (match unsafe_get s i with
+          | '\"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
+          | ' ' .. '~' -> 1
+          | _ -> 4)
   done;
   if !n = length s then copy s else begin
     let s' = create !n in
     n := 0;
     for i = 0 to length s - 1 do
       begin match unsafe_get s i with
-      | ('\"' | '\\') as c ->
+        | ('\"' | '\\') as c ->
           unsafe_set s' !n '\\'; incr n; unsafe_set s' !n c
-      | '\n' ->
+        | '\n' ->
           unsafe_set s' !n '\\'; incr n; unsafe_set s' !n 'n'
-      | '\t' ->
+        | '\t' ->
           unsafe_set s' !n '\\'; incr n; unsafe_set s' !n 't'
-      | '\r' ->
+        | '\r' ->
           unsafe_set s' !n '\\'; incr n; unsafe_set s' !n 'r'
-      | '\b' ->
+        | '\b' ->
           unsafe_set s' !n '\\'; incr n; unsafe_set s' !n 'b'
-      | (' ' .. '~') as c -> unsafe_set s' !n c
-      | c ->
-          let a = char_code c in
+        | (' ' .. '~') as c -> unsafe_set s' !n c
+        | c ->
+          let a =  (c :> int) in
           unsafe_set s' !n '\\';
           incr n;
           unsafe_set s' !n (char_chr (48 + a / 100));
@@ -256,13 +356,13 @@ let index_opt s c = index_rec_opt s (length s) 0 c
 let index_from s i c =
   let l = length s in
   if i < 0 || i > l then invalid_arg "String.index_from / Bytes.index_from" else
-  index_rec s l i c
+    index_rec s l i c
 
 (* duplicated in string.ml *)
 let index_from_opt s i c =
   let l = length s in
   if i < 0 || i > l then invalid_arg "String.index_from_opt / Bytes.index_from_opt" else
-  index_rec_opt s l i c
+    index_rec_opt s l i c
 
 (* duplicated in string.ml *)
 let rec rindex_rec s i c =
@@ -318,12 +418,5 @@ let rcontains_from s i c =
 type t = bytes
 
 let compare (x: t) (y: t) = Pervasives.compare x y
-external equal : t -> t -> bool = "caml_bytes_equal"
+let equal (x : t) (y : t) = x = y
 
-(* Deprecated functions implemented via other deprecated functions *)
-[@@@ocaml.warning "-3"]
-let uppercase s = map Char.uppercase s
-let lowercase s = map Char.lowercase s
-
-let capitalize s = apply1 Char.uppercase s
-let uncapitalize s = apply1 Char.lowercase s

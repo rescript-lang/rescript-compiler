@@ -30,11 +30,9 @@ external shift_right_logical : int64 -> int -> int64 = "%int64_lsr"
 external of_int : int -> int64 = "%int64_of_int"
 external to_int : int64 -> int = "%int64_to_int"
 external of_float : float -> int64
-  = "caml_int64_of_float" "caml_int64_of_float_unboxed"
-  [@@unboxed] [@@noalloc]
+  = "?int64_of_float"  
 external to_float : int64 -> float
-  = "caml_int64_to_float" "caml_int64_to_float_unboxed"
-  [@@unboxed] [@@noalloc]
+  = "?int64_to_float" 
 external of_int32 : int -> int64 = "%int64_of_int32"
 external to_int32 : int64 -> int = "%int64_to_int32"
 external of_nativeint : nativeint -> int64 = "%int64_of_nativeint"
@@ -44,17 +42,17 @@ let zero = 0L
 let one = 1L
 let minus_one = -1L
 (* let succ n = add n 1L *)
-external succ : int64 -> int64 = "caml_int64_succ"
+external succ : int64 -> int64 = "?int64_succ"
 let pred n = sub n 1L
 let abs n = if n >= 0L then n else neg n
 let min_int = 0x8000000000000000L
 let max_int = 0x7FFFFFFFFFFFFFFFL
 let lognot n = logxor n (-1L)
 
-external format : string -> int64 -> string = "caml_int64_format"
-external to_string : int64 -> string = "caml_int64_to_string"
+external format : string -> int64 -> string = "?int64_format"
+external to_string : int64 -> string = "?int64_to_string"
 
-external of_string : string -> int64 = "caml_int64_of_string"
+external of_string : string -> int64 = "?int64_of_string"
 
 let of_string_opt s =
   (* TODO: expose a non-raising primitive directly. *)
@@ -64,11 +62,11 @@ let of_string_opt s =
 
 
 external bits_of_float : float -> int64
-  = "caml_int64_bits_of_float" "caml_int64_bits_of_float_unboxed"
-  [@@unboxed] [@@noalloc]
+  = "?int64_bits_of_float" 
+  
 external float_of_bits : int64 -> float
-  = "caml_int64_float_of_bits" "caml_int64_float_of_bits_unboxed"
-  [@@unboxed] [@@noalloc]
+  = "?int64_float_of_bits" 
+  
 
 type t = int64
 

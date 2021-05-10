@@ -29,20 +29,20 @@ val argv : string array
 val executable_name : string
 (** The name of the file containing the executable currently running. *)
 
-external file_exists : string -> bool = "caml_sys_file_exists"
+external file_exists : string -> bool = "?sys_file_exists"
 (** Test if a file with the given name exists. *)
 
-external is_directory : string -> bool = "caml_sys_is_directory"
+external is_directory : string -> bool = "?sys_is_directory"
 (** Returns [true] if the given name refers to a directory,
     [false] if it refers to another kind of file.
     Raise [Sys_error] if no file exists with the given name.
     @since 3.10.0
 *)
 
-external remove : string -> unit = "caml_sys_remove"
+external remove : string -> unit = "?sys_remove"
 (** Remove the given file name from the file system. *)
 
-external rename : string -> string -> unit = "caml_sys_rename"
+external rename : string -> string -> unit = "?sys_rename"
 (** Rename a file.  [rename oldpath newpath] renames the file
     called [oldpath], giving it [newpath] as its new name,
     moving it between directories if needed.  If [newpath] already
@@ -52,7 +52,7 @@ external rename : string -> string -> unit = "caml_sys_rename"
     those of [oldpath].
    @since 4.06 concerning the "replace existing file" behavior *)
 
-external getenv : string -> string = "caml_sys_getenv"
+external getenv : string -> string = "?sys_getenv"
 (** Return the value associated to a variable in the process
    environment. Raise [Not_found] if the variable is unbound. *)
 
@@ -62,21 +62,21 @@ val getenv_opt: string -> string option
     @since 4.05
 *)
 
-external command : string -> int = "caml_sys_system_command"
+val command : string -> int
 (** Execute the given shell command and return its exit code. *)
 
-external time : unit -> (float [@unboxed]) =
-  "caml_sys_time" "caml_sys_time_unboxed" [@@noalloc]
+external time : unit -> float =
+  "?sys_time" 
 (** Return the processor time, in seconds, used by the program
    since the beginning of execution. *)
 
-external chdir : string -> unit = "caml_sys_chdir"
+external chdir : string -> unit = "?sys_chdir"
 (** Change the current working directory of the process. *)
 
-external getcwd : unit -> string = "caml_sys_getcwd"
+external getcwd : unit -> string = "?sys_getcwd"
 (** Return the current working directory of the process. *)
 
-external readdir : string -> string array = "caml_sys_read_directory"
+external readdir : string -> string array = "?sys_read_directory"
 (** Return the names of all files present in the given directory.
    Names denoting the current directory and the parent directory
    (["."] and [".."] in Unix) are not returned.  Each string in the
@@ -147,13 +147,13 @@ val max_array_length : int
     array is [max_array_length/2] on 32-bit machines and
     [max_array_length] on 64-bit machines. *)
 
-external runtime_variant : unit -> string = "caml_runtime_variant"
+external runtime_variant : unit -> string = "?runtime_variant"
 (** Return the name of the runtime variant the program is running on.
     This is normally the argument given to [-runtime-variant] at compile
     time, but for byte-code it can be changed after compilation.
     @since 4.03.0 *)
 
-external runtime_parameters : unit -> string = "caml_runtime_parameters"
+external runtime_parameters : unit -> string = "?runtime_parameters"
 (** Return the value of the runtime parameters, in the same format
     as the contents of the [OCAMLRUNPARAM] environment variable.
     @since 4.03.0 *)
@@ -173,8 +173,8 @@ type signal_behavior =
    - [Signal_handle f]: call function [f], giving it the signal
    number as argument. *)
 
-external signal :
-  int -> signal_behavior -> signal_behavior = "caml_install_signal_handler"
+val signal :
+  int -> signal_behavior -> signal_behavior 
 (** Set the behavior of the system on receipt of a given signal.  The
    first argument is the signal number.  Return the behavior
    previously associated with the signal. If the signal number is

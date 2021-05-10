@@ -30,33 +30,33 @@ type t = Obj.t
 
 
 
-val caml_obj_dup : Obj.t -> Obj.t
+val obj_dup : Obj.t -> Obj.t
 
 
 val update_dummy : Obj.t -> Obj.t -> unit
 
 
-val caml_compare : Obj.t -> Obj.t  -> int
+val compare : Obj.t -> Obj.t  -> int
 
 type eq = Obj.t -> Obj.t -> bool
 
-val caml_equal : eq
+val equal : eq
 
-val caml_equal_null : Obj.t -> Obj.t Js.null -> bool 
-val caml_equal_undefined : Obj.t -> Obj.t Js.undefined -> bool 
-val caml_equal_nullable : Obj.t -> Obj.t Js.nullable -> bool 
+val equal_null : Obj.t -> Obj.t Js.null -> bool 
+val equal_undefined : Obj.t -> Obj.t Js.undefined -> bool 
+val equal_nullable : Obj.t -> Obj.t Js.nullable -> bool 
 
-val caml_notequal : eq
-val caml_greaterequal : eq
-val caml_greaterthan : eq
-val caml_lessthan : eq
-val caml_lessequal : eq
-
-
+val notequal : eq
+val greaterequal : eq
+val greaterthan : eq
+val lessthan : eq
+val lessequal : eq
 
 
-val caml_min : 
+
+
+val min : 
   t -> t -> t 
-val caml_max : 
+val max : 
   t -> t -> t 
 

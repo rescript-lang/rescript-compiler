@@ -36,7 +36,7 @@ function commutative_add(result, a, b) {
         };
 }
 
-var generic_compare = Caml_obj.caml_compare;
+var generic_compare = Caml_obj.compare;
 
 var shift_left_tests_0 = $$Array.map((function (i) {
         return Caml_int64.lsl_(Caml_int64.one, i);
@@ -1936,7 +1936,7 @@ var suites = Pervasives.$at({
                                                                           (function (param) {
                                                                               return {
                                                                                       TAG: /* Eq */0,
-                                                                                      _0: Caml_obj.caml_compare([
+                                                                                      _0: Caml_obj.compare([
                                                                                             1,
                                                                                             0
                                                                                           ], Caml_int64.one) > 0,
@@ -1967,7 +1967,7 @@ var suites = Pervasives.$at({
                                                                               (function (param) {
                                                                                   return {
                                                                                           TAG: /* Eq */0,
-                                                                                          _0: Caml_obj.caml_compare([
+                                                                                          _0: Caml_obj.compare([
                                                                                                 0,
                                                                                                 2147483648
                                                                                               ], Caml_int64.one) > 0,

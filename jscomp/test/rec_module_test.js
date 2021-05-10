@@ -79,7 +79,7 @@ var Odd = {};
 function compare(t1, t2) {
   if (t1.TAG === /* Leaf */0) {
     if (t2.TAG === /* Leaf */0) {
-      return Caml.caml_string_compare(t1._0, t2._0);
+      return Caml.string_compare(t1._0, t2._0);
     } else {
       return 1;
     }

@@ -37,7 +37,7 @@ module Caml_char = struct
 end  
 
 let failwith s = raise (Failure  s)
-(* let caml_invalid_argument s= raise (Invalid_argument s ) *)
+(* let invalid_argument s= raise (Invalid_argument s ) *)
 
 let (>>>) = Caml_nativeint_extern.shift_right_logical
 
@@ -93,7 +93,7 @@ let parse_sign_and_base (s : string) =
   (i.contents, sign.contents, base.contents)
 
 
-let caml_int_of_string (s : string) : int = 
+let int_of_string (s : string) : int = 
   let i, sign, hbase = parse_sign_and_base s in
   let base = int_of_string_base hbase in
   let threshold = (-1 >>> 0) in 
@@ -134,7 +134,7 @@ let hex_threshold,
   2305843009213693951L,
   9223372036854775807L
 
-let caml_int64_of_string s = 
+let int64_of_string s = 
   let i, sign, hbase = parse_sign_and_base s in
   let base  = Caml_int64_extern.of_int (int_of_string_base hbase) in
   let sign = Caml_int64_extern.of_int sign in
@@ -382,7 +382,7 @@ let aux f (i : int) : string =
     end ;
   finish_formatting f s.contents
 
-let caml_format_int fmt i = 
+let format_int fmt i = 
   if fmt = "%d" then Caml_nativeint_extern.to_string i 
   else 
     let f = parse_format fmt in 
@@ -472,7 +472,7 @@ let oct_of_int64 x =
    let a, b = Caml_int64.(div_mod (unsafe_of_int64 x) (unsafe_of_int64 y)) in   
    Caml_int64.unsafe_to_int64 a , Caml_int64.unsafe_to_int64 b 
 *)
-let caml_int64_format fmt x =
+let int64_format fmt x =
   if fmt = "%d" then Caml_int64.to_string  x
   else
     let f = parse_format fmt in
@@ -504,7 +504,7 @@ let caml_int64_format fmt x =
 
     finish_formatting f fill_s
 
-let caml_format_float fmt x = 
+let format_float fmt x = 
   let module String = Caml_string_extern in 
   let f = parse_format fmt in 
   let prec = if f.prec < 0 then 6 else f.prec in 
@@ -587,7 +587,7 @@ let caml_format_float fmt x =
 
 
 
-let caml_hexstring_of_float : float -> int -> char -> string =    
+let hexstring_of_float : float -> int -> char -> string =    
   [%raw{|function(x,prec,style){
   if (!isFinite(x)) {
     if (isNaN(x)) return "nan";
@@ -666,22 +666,18 @@ let float_of_string : string -> exn ->  float  =
 
 
 (**
-   Pervasives.float_of_string : string -> float = "caml_float_of_string"
+   Pervasives.float_of_string : string -> float = "?float_of_string"
    Semantics is slightly different from javascript :
-   console.assert(caml_float_of_string('infinity')===Infinity)
-   console.assert(caml_float_of_string('Infinity')===Infinity
+   console.assert(float_of_string('infinity')===Infinity)
+   console.assert(float_of_string('Infinity')===Infinity
    parseFloat('Infinity') === Infinity
    parseFloat('infinity') === Nan
 *)
-let caml_float_of_string (s : string) : float  = 
+let float_of_string (s : string) : float  = 
   float_of_string s (Failure "float_of_string") 
 
-let caml_nativeint_format = caml_format_int
 
 
 
-
-
-let caml_nativeint_of_string = caml_int_of_string
 
 

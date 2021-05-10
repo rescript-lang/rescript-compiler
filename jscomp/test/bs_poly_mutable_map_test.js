@@ -25,7 +25,7 @@ function b(loc, v) {
   return Mt.bool_suites(test_id, suites, loc, v);
 }
 
-var Icmp = Belt_Id.comparable(Caml.caml_int_compare);
+var Icmp = Belt_Id.comparable(Caml.int_compare);
 
 function f(x) {
   return Belt_MutableMap.fromArray(x, Icmp);

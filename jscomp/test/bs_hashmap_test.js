@@ -32,7 +32,7 @@ function eq(x, y) {
 
 var hash = Hashtbl.hash;
 
-var cmp = Caml.caml_int_compare;
+var cmp = Caml.int_compare;
 
 var Y = Belt_Id.hashable(hash, eq);
 

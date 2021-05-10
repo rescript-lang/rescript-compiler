@@ -206,7 +206,7 @@ function add(x, data, m) {
   var d = m.d;
   var v = m.v;
   var l = m.l;
-  var c = Caml_obj.caml_compare(x, v);
+  var c = Caml_obj.compare(x, v);
   if (c === 0) {
     if (d === data) {
       return m;
@@ -240,7 +240,7 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_obj.caml_compare(x, param.v);
+      var c = Caml_obj.compare(x, param.v);
       if (c === 0) {
         return param.d;
       }
@@ -414,7 +414,7 @@ function find_opt(x, _param) {
     if (!param) {
       return ;
     }
-    var c = Caml_obj.caml_compare(x, param.v);
+    var c = Caml_obj.compare(x, param.v);
     if (c === 0) {
       return Caml_option.some(param.d);
     }
@@ -429,7 +429,7 @@ function mem(x, _param) {
     if (!param) {
       return false;
     }
-    var c = Caml_obj.caml_compare(x, param.v);
+    var c = Caml_obj.compare(x, param.v);
     if (c === 0) {
       return true;
     }
@@ -551,7 +551,7 @@ function remove(x, m) {
   var d = m.d;
   var v = m.v;
   var l = m.l;
-  var c = Caml_obj.caml_compare(x, v);
+  var c = Caml_obj.compare(x, v);
   if (c === 0) {
     return merge(l, r);
   }
@@ -577,7 +577,7 @@ function update(x, f, m) {
     var d = m.d;
     var v = m.v;
     var l = m.l;
-    var c = Caml_obj.caml_compare(x, v);
+    var c = Caml_obj.compare(x, v);
     if (c === 0) {
       var data = Curry._1(f, Caml_option.some(d));
       if (data === undefined) {
@@ -783,7 +783,7 @@ function split$1(x, param) {
   var d = param.d;
   var v = param.v;
   var l = param.l;
-  var c = Caml_obj.caml_compare(x, v);
+  var c = Caml_obj.compare(x, v);
   if (c === 0) {
     return [
             l,
@@ -952,7 +952,7 @@ function compare(cmp, m1, m2) {
     if (!e2) {
       return 1;
     }
-    var c = Caml_obj.caml_compare(e1._0, e2._0);
+    var c = Caml_obj.compare(e1._0, e2._0);
     if (c !== 0) {
       return c;
     }
@@ -982,7 +982,7 @@ function equal(cmp, m1, m2) {
     if (!e2) {
       return false;
     }
-    if (!Caml_obj.caml_equal(e1._0, e2._0)) {
+    if (!Caml_obj.equal(e1._0, e2._0)) {
       return false;
     }
     if (!Curry._2(cmp, e1._1, e2._1)) {
@@ -1141,7 +1141,7 @@ function compute_update_sequences(all_tickers) {
                                 Error: new Error()
                               };
                         }
-                        return Caml.caml_int_compare(x._0, y._0);
+                        return Caml.int_compare(x._0, y._0);
                       }), l);
                 return add(k, l$1, map);
               }), map, map);
@@ -1206,7 +1206,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                     };
               }
               var ticker_map$1 = ticker_map !== undefined ? Caml_option.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
-              var value = Caml_format.caml_float_of_string(match$1.hd);
+              var value = Caml_format.float_of_string(match$1.hd);
               process_quote(ticker_map$1, match.hd, value);
               return [
                       all_tickers,

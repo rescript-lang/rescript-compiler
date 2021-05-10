@@ -112,7 +112,7 @@ var length_10_id = Belt_List.makeBy(10, (function (x) {
       }));
 
 function f13$1(param) {
-  return Caml_obj.caml_equal(Belt_List.take(length_10_id, 8), {
+  return Caml_obj.equal(Belt_List.take(length_10_id, 8), {
               hd: 1,
               tl: {
                 hd: 2,
@@ -124,45 +124,45 @@ function f13$1(param) {
             });
 }
 
-b("File \"option_repr_test.ml\", line 94, characters 4-11", Caml_obj.caml_lessthan(undefined, null));
+b("File \"option_repr_test.ml\", line 94, characters 4-11", Caml_obj.lessthan(undefined, null));
 
-b("File \"option_repr_test.ml\", line 95, characters 4-11", !Caml_obj.caml_greaterthan(undefined, null));
+b("File \"option_repr_test.ml\", line 95, characters 4-11", !Caml_obj.greaterthan(undefined, null));
 
-b("File \"option_repr_test.ml\", line 96, characters 4-11", Caml_obj.caml_greaterthan(null, undefined));
+b("File \"option_repr_test.ml\", line 96, characters 4-11", Caml_obj.greaterthan(null, undefined));
 
-b("File \"option_repr_test.ml\", line 97, characters 4-11", Caml_obj.caml_lessthan(undefined, Caml_option.some(undefined)));
+b("File \"option_repr_test.ml\", line 97, characters 4-11", Caml_obj.lessthan(undefined, Caml_option.some(undefined)));
 
-b("File \"option_repr_test.ml\", line 98, characters 4-11", Caml_obj.caml_greaterthan(Caml_option.some(undefined), undefined));
+b("File \"option_repr_test.ml\", line 98, characters 4-11", Caml_obj.greaterthan(Caml_option.some(undefined), undefined));
 
 console.log(6, undefined);
 
 function ltx(a, b) {
-  if (Caml_obj.caml_lessthan(a, b)) {
-    return Caml_obj.caml_greaterthan(b, a);
+  if (Caml_obj.lessthan(a, b)) {
+    return Caml_obj.greaterthan(b, a);
   } else {
     return false;
   }
 }
 
 function gtx(a, b) {
-  if (Caml_obj.caml_greaterthan(a, b)) {
-    return Caml_obj.caml_lessthan(b, a);
+  if (Caml_obj.greaterthan(a, b)) {
+    return Caml_obj.lessthan(b, a);
   } else {
     return false;
   }
 }
 
 function eqx(a, b) {
-  if (Caml_obj.caml_equal(a, b)) {
-    return Caml_obj.caml_equal(b, a);
+  if (Caml_obj.equal(a, b)) {
+    return Caml_obj.equal(b, a);
   } else {
     return false;
   }
 }
 
 function neqx(a, b) {
-  if (Caml_obj.caml_notequal(a, b)) {
-    return Caml_obj.caml_notequal(b, a);
+  if (Caml_obj.notequal(a, b)) {
+    return Caml_obj.notequal(b, a);
   } else {
     return false;
   }

@@ -1358,7 +1358,7 @@ var ll2 = Belt_List.setAssoc(ll1, 22, "2", (function (prim0, prim1) {
         return prim0 === prim1;
       }));
 
-b("File \"bs_list_test.ml\", line 200, characters 4-11", Caml_obj.caml_equal(ll2, {
+b("File \"bs_list_test.ml\", line 200, characters 4-11", Caml_obj.equal(ll2, {
           hd: [
             22,
             "2"
@@ -1368,7 +1368,7 @@ b("File \"bs_list_test.ml\", line 200, characters 4-11", Caml_obj.caml_equal(ll2
 
 b("File \"bs_list_test.ml\", line 201, characters 4-11", Belt_List.tailExn(ll2) === ll1);
 
-b("File \"bs_list_test.ml\", line 202, characters 4-11", Caml_obj.caml_equal(Belt_List.setAssoc({
+b("File \"bs_list_test.ml\", line 202, characters 4-11", Caml_obj.equal(Belt_List.setAssoc({
               hd: [
                 1,
                 "a"
@@ -1408,7 +1408,7 @@ b("File \"bs_list_test.ml\", line 202, characters 4-11", Caml_obj.caml_equal(Bel
           }
         }));
 
-b("File \"bs_list_test.ml\", line 204, characters 4-11", Caml_obj.caml_equal(Belt_List.setAssoc({
+b("File \"bs_list_test.ml\", line 204, characters 4-11", Caml_obj.equal(Belt_List.setAssoc({
               hd: [
                 1,
                 "a"
@@ -1498,7 +1498,7 @@ eq("File \"bs_list_test.ml\", line 210, characters 5-12", Belt_List.setAssoc({
       }
     });
 
-b("File \"bs_list_test.ml\", line 211, characters 4-11", Caml_obj.caml_equal(Belt_List.getAssoc({
+b("File \"bs_list_test.ml\", line 211, characters 4-11", Caml_obj.equal(Belt_List.getAssoc({
               hd: [
                 1,
                 "a"
@@ -1814,7 +1814,7 @@ b("File \"bs_list_test.ml\", line 273, characters 4-11", Belt_List.reduceReverse
             return prim0 - prim1 | 0;
           })) === 0);
 
-b("File \"bs_list_test.ml\", line 274, characters 4-11", Caml_obj.caml_equal(Belt_List.reduceReverse({
+b("File \"bs_list_test.ml\", line 274, characters 4-11", Caml_obj.equal(Belt_List.reduceReverse({
               hd: 1,
               tl: {
                 hd: 2,
@@ -1872,7 +1872,7 @@ b("File \"bs_list_test.ml\", line 276, characters 4-11", Belt_List.reduce({
             return prim0 - prim1 | 0;
           })) === 0);
 
-b("File \"bs_list_test.ml\", line 277, characters 4-11", Caml_obj.caml_equal(Belt_List.reduce({
+b("File \"bs_list_test.ml\", line 277, characters 4-11", Caml_obj.equal(Belt_List.reduce({
               hd: 1,
               tl: {
                 hd: 2,
@@ -2134,7 +2134,7 @@ b("File \"bs_list_test.ml\", line 310, characters 4-11", Belt_List.cmp({
               }
             }
           }
-        }, Caml.caml_int_compare) > 0);
+        }, Caml.int_compare) > 0);
 
 b("File \"bs_list_test.ml\", line 311, characters 4-11", Belt_List.cmp({
           hd: 1,
@@ -2157,7 +2157,7 @@ b("File \"bs_list_test.ml\", line 311, characters 4-11", Belt_List.cmp({
               tl: /* [] */0
             }
           }
-        }, Caml.caml_int_compare) > 0);
+        }, Caml.int_compare) > 0);
 
 b("File \"bs_list_test.ml\", line 312, characters 4-11", Belt_List.cmp({
           hd: 1,
@@ -2180,7 +2180,7 @@ b("File \"bs_list_test.ml\", line 312, characters 4-11", Belt_List.cmp({
               }
             }
           }
-        }, Caml.caml_int_compare) < 0);
+        }, Caml.int_compare) < 0);
 
 b("File \"bs_list_test.ml\", line 313, characters 4-11", Belt_List.cmp({
           hd: 1,
@@ -2200,7 +2200,7 @@ b("File \"bs_list_test.ml\", line 313, characters 4-11", Belt_List.cmp({
               tl: /* [] */0
             }
           }
-        }, Caml.caml_int_compare) > 0);
+        }, Caml.int_compare) > 0);
 
 b("File \"bs_list_test.ml\", line 314, characters 4-11", Belt_List.cmp({
           hd: 1,
@@ -2220,7 +2220,7 @@ b("File \"bs_list_test.ml\", line 314, characters 4-11", Belt_List.cmp({
               tl: /* [] */0
             }
           }
-        }, Caml.caml_int_compare) === 0);
+        }, Caml.int_compare) === 0);
 
 b("File \"bs_list_test.ml\", line 315, characters 4-11", Belt_List.cmp({
           hd: 1,
@@ -2240,7 +2240,7 @@ b("File \"bs_list_test.ml\", line 315, characters 4-11", Belt_List.cmp({
               tl: /* [] */0
             }
           }
-        }, Caml.caml_int_compare) > 0);
+        }, Caml.int_compare) > 0);
 
 b("File \"bs_list_test.ml\", line 316, characters 4-11", Belt_List.cmpByLength(/* [] */0, /* [] */0) === 0);
 
@@ -2470,7 +2470,7 @@ eq("File \"bs_list_test.ml\", line 344, characters 5-12", u1, {
       }
     });
 
-b("File \"bs_list_test.ml\", line 345, characters 4-11", Caml_obj.caml_equal(Belt_List.keepMap({
+b("File \"bs_list_test.ml\", line 345, characters 4-11", Caml_obj.equal(Belt_List.keepMap({
               hd: 1,
               tl: {
                 hd: 2,

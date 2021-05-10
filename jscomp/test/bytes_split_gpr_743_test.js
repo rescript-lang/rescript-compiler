@@ -46,7 +46,7 @@ Caml_bytes.set(b, 2, /* 'c' */99);
 
 Bytes.blit(b, 0, b, 1, 2);
 
-var res = Caml_bytes.bytes_to_string(b);
+var res = Bytes.unsafe_to_string(b);
 
 console.log(res);
 
@@ -69,7 +69,7 @@ Caml_bytes.set(b$1, 2, /* 'c' */99);
 
 Bytes.blit(b$1, 1, b$1, 0, 2);
 
-var res2 = Caml_bytes.bytes_to_string(b$1);
+var res2 = Bytes.unsafe_to_string(b$1);
 
 console.log(res2);
 

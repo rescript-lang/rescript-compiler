@@ -28,7 +28,7 @@ o stdlib-406/bytesLabels.cmj : cc_cmi stdlib-406/bytesLabels.ml | stdlib-406/byt
     bsc_flags = $bsc_flags -nolabels
 o stdlib-406/bytesLabels.cmi : cc stdlib-406/bytesLabels.mli | stdlib-406/pervasives.cmj others
     bsc_flags = $bsc_flags -nolabels
-o stdlib-406/callback.cmj : cc_cmi stdlib-406/callback.ml | stdlib-406/callback.cmi stdlib-406/obj.cmj others
+o stdlib-406/callback.cmj : cc_cmi stdlib-406/callback.ml | stdlib-406/callback.cmi others
 o stdlib-406/callback.cmi : cc stdlib-406/callback.mli | stdlib-406/pervasives.cmj others
 o stdlib-406/camlinternalLazy.cmj : cc_cmi stdlib-406/camlinternalLazy.ml | stdlib-406/camlinternalLazy.cmi others
 o stdlib-406/camlinternalLazy.cmi : cc stdlib-406/camlinternalLazy.mli | stdlib-406/pervasives.cmj others

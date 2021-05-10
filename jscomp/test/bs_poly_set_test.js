@@ -31,7 +31,7 @@ function t(loc, x) {
   return Mt.throw_suites(test_id, suites, loc, x);
 }
 
-var IntCmp = Belt_Id.comparable(Caml.caml_int_compare);
+var IntCmp = Belt_Id.comparable(Caml.int_compare);
 
 var u0 = Belt_Set.fromArray(Array_data_util.range(0, 30), IntCmp);
 
@@ -156,7 +156,7 @@ var u29 = Belt_Set.union(u26, u27);
 
 b("File \"bs_poly_set_test.ml\", line 72, characters 4-11", Belt_Set.eq(u28, u29));
 
-b("File \"bs_poly_set_test.ml\", line 73, characters 4-11", Caml_obj.caml_equal(Belt_SetDict.toArray(u29.data), Belt_SortArray.stableSortBy(Belt_Array.concat(ss, [3]), Caml.caml_int_compare)));
+b("File \"bs_poly_set_test.ml\", line 73, characters 4-11", Caml_obj.equal(Belt_SetDict.toArray(u29.data), Belt_SortArray.stableSortBy(Belt_Array.concat(ss, [3]), Caml.int_compare)));
 
 b("File \"bs_poly_set_test.ml\", line 74, characters 4-11", Belt_Set.eq(u19, u20));
 
@@ -178,7 +178,7 @@ b("File \"bs_poly_set_test.ml\", line 82, characters 4-11", Belt_Set.subset(u21,
 
 b("File \"bs_poly_set_test.ml\", line 83, characters 4-11", 47 === Belt_Set.getUndefined(u22, 47));
 
-b("File \"bs_poly_set_test.ml\", line 84, characters 4-11", Caml_obj.caml_equal(47, Belt_Set.get(u22, 47)));
+b("File \"bs_poly_set_test.ml\", line 84, characters 4-11", Caml_obj.equal(47, Belt_Set.get(u22, 47)));
 
 b("File \"bs_poly_set_test.ml\", line 85, characters 4-11", Belt_Set.getUndefined(u22, 59) === undefined);
 

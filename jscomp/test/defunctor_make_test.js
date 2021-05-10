@@ -140,13 +140,13 @@ function empty(v) {
         };
 }
 
-var compare = Caml.caml_int_compare;
+var compare = Caml.int_compare;
 
 var V0 = {
   compare: compare
 };
 
-var compare$1 = Caml.caml_int_compare;
+var compare$1 = Caml.int_compare;
 
 var V1 = {
   compare: compare$1

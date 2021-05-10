@@ -22,7 +22,7 @@ var Inline_record = /* @__PURE__ */Caml_exceptions.create("Record_extension_test
 
 function f(x) {
   if (x.RE_EXN_ID === Inline_record) {
-    return x.x + Caml_format.caml_int_of_string(x.y) | 0;
+    return x.x + Caml_format.int_of_string(x.y) | 0;
   }
   
 }

@@ -116,7 +116,7 @@ function add(x, data, m) {
   var d = m.d;
   var v = m.v;
   var l = m.l;
-  var c = Caml.caml_int_compare(x, v);
+  var c = Caml.int_compare(x, v);
   if (c === 0) {
     if (d === data) {
       return m;
@@ -150,7 +150,7 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml.caml_int_compare(x, param.v);
+      var c = Caml.int_compare(x, param.v);
       if (c === 0) {
         return param.d;
       }
@@ -324,7 +324,7 @@ function find_opt(x, _param) {
     if (!param) {
       return ;
     }
-    var c = Caml.caml_int_compare(x, param.v);
+    var c = Caml.int_compare(x, param.v);
     if (c === 0) {
       return Caml_option.some(param.d);
     }
@@ -339,7 +339,7 @@ function mem(x, _param) {
     if (!param) {
       return false;
     }
-    var c = Caml.caml_int_compare(x, param.v);
+    var c = Caml.int_compare(x, param.v);
     if (c === 0) {
       return true;
     }
@@ -461,7 +461,7 @@ function remove(x, m) {
   var d = m.d;
   var v = m.v;
   var l = m.l;
-  var c = Caml.caml_int_compare(x, v);
+  var c = Caml.int_compare(x, v);
   if (c === 0) {
     return merge(l, r);
   }
@@ -487,7 +487,7 @@ function update(x, f, m) {
     var d = m.d;
     var v = m.v;
     var l = m.l;
-    var c = Caml.caml_int_compare(x, v);
+    var c = Caml.int_compare(x, v);
     if (c === 0) {
       var data = Curry._1(f, Caml_option.some(d));
       if (data === undefined) {
@@ -693,7 +693,7 @@ function split(x, param) {
   var d = param.d;
   var v = param.v;
   var l = param.l;
-  var c = Caml.caml_int_compare(x, v);
+  var c = Caml.int_compare(x, v);
   if (c === 0) {
     return [
             l,
@@ -862,7 +862,7 @@ function compare(cmp, m1, m2) {
     if (!e2) {
       return 1;
     }
-    var c = Caml.caml_int_compare(e1._0, e2._0);
+    var c = Caml.int_compare(e1._0, e2._0);
     if (c !== 0) {
       return c;
     }

@@ -35,7 +35,7 @@ external set : 'a array -> int -> 'a -> unit = "%array_safe_set"
    Raise [Invalid_argument "index out of bounds"]
    if [n] is outside the range 0 to [Array.length a - 1]. *)
 
-external make : int -> 'a -> 'a array = "caml_make_vect"
+external make : int -> 'a -> 'a array = "?make_vect"
 (** [Array.make n x] returns a fresh array of length [n],
    initialized with [x].
    All the elements of this new array are initially
@@ -48,11 +48,11 @@ external make : int -> 'a -> 'a array = "caml_make_vect"
    If the value of [x] is a floating-point number, then the maximum
    size is only [Sys.max_array_length / 2].*)
 
-external create : int -> 'a -> 'a array = "caml_make_vect"
+external create : int -> 'a -> 'a array = "?make_vect"
   [@@ocaml.deprecated "Use Array.make instead."]
 (** @deprecated [Array.create] is an alias for {!Array.make}. *)
 
-external create_float: int -> float array = "caml_make_float_vect"
+external create_float: int -> float array = "?make_float_vect"
 (** [Array.create_float n] returns a fresh float array of length [n],
     with uninitialized data.
     @since 4.03 *)
@@ -265,7 +265,7 @@ external unsafe_get : 'a array -> int -> 'a = "%array_unsafe_get"
 external unsafe_set : 'a array -> int -> 'a -> unit = "%array_unsafe_set"
 
 module Floatarray : sig
-  external create : int -> floatarray = "caml_floatarray_create"
+  external create : int -> floatarray = "?floatarray_create"
   external length : floatarray -> int = "%floatarray_length"
   external get : floatarray -> int -> float = "%floatarray_safe_get"
   external set : floatarray -> int -> float -> unit = "%floatarray_safe_set"

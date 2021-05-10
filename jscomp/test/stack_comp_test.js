@@ -79,14 +79,14 @@ assert_("File \"stack_comp_test.ml\", line 33, characters 32-39", to_list(s) ===
 
 Stack.push(1, s);
 
-assert_("File \"stack_comp_test.ml\", line 34, characters 32-39", Caml_obj.caml_equal(to_list(s), {
+assert_("File \"stack_comp_test.ml\", line 34, characters 32-39", Caml_obj.equal(to_list(s), {
           hd: 1,
           tl: /* [] */0
         }) && s.len === 1);
 
 Stack.push(2, s);
 
-assert_("File \"stack_comp_test.ml\", line 35, characters 32-39", Caml_obj.caml_equal(to_list(s), {
+assert_("File \"stack_comp_test.ml\", line 35, characters 32-39", Caml_obj.equal(to_list(s), {
           hd: 1,
           tl: {
             hd: 2,
@@ -96,7 +96,7 @@ assert_("File \"stack_comp_test.ml\", line 35, characters 32-39", Caml_obj.caml_
 
 Stack.push(3, s);
 
-assert_("File \"stack_comp_test.ml\", line 36, characters 32-39", Caml_obj.caml_equal(to_list(s), {
+assert_("File \"stack_comp_test.ml\", line 36, characters 32-39", Caml_obj.equal(to_list(s), {
           hd: 1,
           tl: {
             hd: 2,
@@ -109,7 +109,7 @@ assert_("File \"stack_comp_test.ml\", line 36, characters 32-39", Caml_obj.caml_
 
 Stack.push(4, s);
 
-assert_("File \"stack_comp_test.ml\", line 37, characters 32-39", Caml_obj.caml_equal(to_list(s), {
+assert_("File \"stack_comp_test.ml\", line 37, characters 32-39", Caml_obj.equal(to_list(s), {
           hd: 1,
           tl: {
             hd: 2,
@@ -125,7 +125,7 @@ assert_("File \"stack_comp_test.ml\", line 37, characters 32-39", Caml_obj.caml_
 
 assert_("File \"stack_comp_test.ml\", line 38, characters 10-17", Stack.pop(s) === 4);
 
-assert_("File \"stack_comp_test.ml\", line 38, characters 41-48", Caml_obj.caml_equal(to_list(s), {
+assert_("File \"stack_comp_test.ml\", line 38, characters 41-48", Caml_obj.equal(to_list(s), {
           hd: 1,
           tl: {
             hd: 2,
@@ -138,7 +138,7 @@ assert_("File \"stack_comp_test.ml\", line 38, characters 41-48", Caml_obj.caml_
 
 assert_("File \"stack_comp_test.ml\", line 39, characters 10-17", Stack.pop(s) === 3);
 
-assert_("File \"stack_comp_test.ml\", line 39, characters 41-48", Caml_obj.caml_equal(to_list(s), {
+assert_("File \"stack_comp_test.ml\", line 39, characters 41-48", Caml_obj.equal(to_list(s), {
           hd: 1,
           tl: {
             hd: 2,
@@ -148,7 +148,7 @@ assert_("File \"stack_comp_test.ml\", line 39, characters 41-48", Caml_obj.caml_
 
 assert_("File \"stack_comp_test.ml\", line 40, characters 10-17", Stack.pop(s) === 2);
 
-assert_("File \"stack_comp_test.ml\", line 40, characters 41-48", Caml_obj.caml_equal(to_list(s), {
+assert_("File \"stack_comp_test.ml\", line 40, characters 41-48", Caml_obj.equal(to_list(s), {
           hd: 1,
           tl: /* [] */0
         }) && s.len === 1);
@@ -226,7 +226,7 @@ assert_("File \"stack_comp_test.ml\", line 68, characters 10-17", s$3.len === 0)
 
 assert_("File \"stack_comp_test.ml\", line 69, characters 10-17", does_raise(Stack.pop, s$3));
 
-assert_("File \"stack_comp_test.ml\", line 70, characters 10-17", Caml_obj.caml_equal(s$3, {
+assert_("File \"stack_comp_test.ml\", line 70, characters 10-17", Caml_obj.equal(s$3, {
           c: /* [] */0,
           len: 0
         }));
@@ -246,7 +246,7 @@ for(var i$1 = 1; i$1 <= 10; ++i$1){
 
 var s2 = Stack.copy(s1);
 
-assert_("File \"stack_comp_test.ml\", line 79, characters 10-17", Caml_obj.caml_equal(to_list(s1), {
+assert_("File \"stack_comp_test.ml\", line 79, characters 10-17", Caml_obj.equal(to_list(s1), {
           hd: 1,
           tl: {
             hd: 2,
@@ -278,7 +278,7 @@ assert_("File \"stack_comp_test.ml\", line 79, characters 10-17", Caml_obj.caml_
           }
         }));
 
-assert_("File \"stack_comp_test.ml\", line 80, characters 10-17", Caml_obj.caml_equal(to_list(s2), {
+assert_("File \"stack_comp_test.ml\", line 80, characters 10-17", Caml_obj.equal(to_list(s2), {
           hd: 1,
           tl: {
             hd: 2,
@@ -394,7 +394,7 @@ for(var i$8 = 1; i$8 <= 4; ++i$8){
 
 assert_("File \"stack_comp_test.ml\", line 126, characters 10-17", s1$2.len === 4);
 
-assert_("File \"stack_comp_test.ml\", line 126, characters 45-52", Caml_obj.caml_equal(to_list(s1$2), {
+assert_("File \"stack_comp_test.ml\", line 126, characters 45-52", Caml_obj.equal(to_list(s1$2), {
           hd: 1,
           tl: {
             hd: 2,
@@ -412,7 +412,7 @@ var s2$2 = Stack.copy(s1$2);
 
 assert_("File \"stack_comp_test.ml\", line 128, characters 10-17", s1$2.len === 4);
 
-assert_("File \"stack_comp_test.ml\", line 128, characters 45-52", Caml_obj.caml_equal(to_list(s1$2), {
+assert_("File \"stack_comp_test.ml\", line 128, characters 45-52", Caml_obj.equal(to_list(s1$2), {
           hd: 1,
           tl: {
             hd: 2,
@@ -428,7 +428,7 @@ assert_("File \"stack_comp_test.ml\", line 128, characters 45-52", Caml_obj.caml
 
 assert_("File \"stack_comp_test.ml\", line 129, characters 10-17", s2$2.len === 4);
 
-assert_("File \"stack_comp_test.ml\", line 129, characters 45-52", Caml_obj.caml_equal(to_list(s2$2), {
+assert_("File \"stack_comp_test.ml\", line 129, characters 45-52", Caml_obj.equal(to_list(s2$2), {
           hd: 1,
           tl: {
             hd: 2,

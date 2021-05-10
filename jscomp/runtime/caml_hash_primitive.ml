@@ -31,7 +31,7 @@ let rotl32 (x : int) n  =
   (x lsl n) lor (x lsr (32 - n))
 
 external (.![]) : string -> int -> int = "charCodeAt" [@@bs.send]
-let caml_hash_mix_int h  d = 
+let hash_mix_int h  d = 
   let d = ref d in 
   d.contents <- d.contents * 0xcc9e2d51 ;
   d.contents <- rotl32 d.contents 15 ;
@@ -40,7 +40,7 @@ let caml_hash_mix_int h  d =
   h.contents <- rotl32 h.contents 13 ;
   h.contents + (h.contents lsl 2)  + 0xe6546b64  
 
-let caml_hash_final_mix h = 
+let hash_final_mix h = 
   let h = ref (h lxor (h lsr 16)) in
   h.contents <- h.contents * 0x85ebca6b ;
   h.contents <- h.contents lxor (h.contents lsr 13);
@@ -48,7 +48,7 @@ let caml_hash_final_mix h =
   h.contents lxor (h.contents lsr 16)
 (* Caml_nativeint_extern.logand  (h.contents ^ (h.contents >>> 16)) 0x3FFFFFFFn *)
 
-let caml_hash_mix_string h  s = 
+let hash_mix_string h  s = 
 
   let len =Caml_string_extern.length s in
   let block = len / 4 - 1  in
@@ -61,7 +61,7 @@ let caml_hash_mix_string h  s =
       (s.![j+2] lsl 16) lor 
       (s.![j+3] lsl 24)
     in
-    hash.contents <- caml_hash_mix_int hash.contents  w
+    hash.contents <- hash_mix_int hash.contents  w
   done ;
   let modulo =  len land 0b11 in 
   if modulo <> 0 then 
@@ -76,7 +76,7 @@ let caml_hash_mix_string h  s =
           s.![len -2]
         else  s.![len - 1] 
       in 
-      hash.contents <- caml_hash_mix_int hash.contents  w
+      hash.contents <- hash_mix_int hash.contents  w
     end;
   hash.contents <- hash.contents lxor len ;
   hash.contents 

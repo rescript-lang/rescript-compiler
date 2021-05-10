@@ -97,7 +97,7 @@ function add(x, data, m) {
   var d = m.d;
   var v = m.v;
   var l = m.l;
-  var c = Caml.caml_int_compare(x, v);
+  var c = Caml.int_compare(x, v);
   if (c === 0) {
     if (d === data) {
       return m;

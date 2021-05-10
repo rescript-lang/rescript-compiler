@@ -426,7 +426,7 @@ function mem(x, _param) {
     if (!param) {
       return false;
     }
-    if (Caml_obj.caml_equal(param.hd, x)) {
+    if (Caml_obj.equal(param.hd, x)) {
       return true;
     }
     _param = param.tl;
@@ -453,7 +453,7 @@ function assoc(x, _param) {
     var param = _param;
     if (param) {
       var match = param.hd;
-      if (Caml_obj.caml_equal(match[0], x)) {
+      if (Caml_obj.equal(match[0], x)) {
         return match[1];
       }
       _param = param.tl;
@@ -490,7 +490,7 @@ function mem_assoc(x, _param) {
     if (!param) {
       return false;
     }
-    if (Caml_obj.caml_equal(param.hd[0], x)) {
+    if (Caml_obj.equal(param.hd[0], x)) {
       return true;
     }
     _param = param.tl;
@@ -518,7 +518,7 @@ function remove_assoc(x, param) {
   }
   var l = param.tl;
   var pair = param.hd;
-  if (Caml_obj.caml_equal(pair[0], x)) {
+  if (Caml_obj.equal(pair[0], x)) {
     return l;
   } else {
     return {

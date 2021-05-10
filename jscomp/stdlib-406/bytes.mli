@@ -56,7 +56,7 @@ external set : bytes -> int -> char -> unit = "%bytes_safe_set"
 
     Raise [Invalid_argument] if [n] is not a valid index in [s]. *)
 
-external create : int -> bytes = "caml_create_bytes"
+external create : int -> bytes = "?create_bytes"
 (** [create n] returns a new byte sequence of length [n]. The
     sequence is uninitialized and contains arbitrary bytes.
 
@@ -259,31 +259,6 @@ val rcontains_from : bytes -> int -> char -> bool
     Raise [Invalid_argument] if [stop < 0] or [stop+1] is not a valid
     position in [s]. *)
 
-val uppercase : bytes -> bytes
-  [@@ocaml.deprecated "Use Bytes.uppercase_ascii instead."]
-(** Return a copy of the argument, with all lowercase letters
-   translated to uppercase, including accented letters of the ISO
-   Latin-1 (8859-1) character set.
-   @deprecated Functions operating on Latin-1 character set are deprecated. *)
-
-val lowercase : bytes -> bytes
-  [@@ocaml.deprecated "Use Bytes.lowercase_ascii instead."]
-(** Return a copy of the argument, with all uppercase letters
-   translated to lowercase, including accented letters of the ISO
-   Latin-1 (8859-1) character set.
-   @deprecated Functions operating on Latin-1 character set are deprecated. *)
-
-val capitalize : bytes -> bytes
-  [@@ocaml.deprecated "Use Bytes.capitalize_ascii instead."]
-(** Return a copy of the argument, with the first character set to uppercase,
-   using the ISO Latin-1 (8859-1) character set..
-   @deprecated Functions operating on Latin-1 character set are deprecated. *)
-
-val uncapitalize : bytes -> bytes
-  [@@ocaml.deprecated "Use Bytes.uncapitalize_ascii instead."]
-(** Return a copy of the argument, with the first character set to lowercase,
-   using the ISO Latin-1 (8859-1) character set..
-   @deprecated Functions operating on Latin-1 character set are deprecated. *)
 
 val uppercase_ascii : bytes -> bytes
 (** Return a copy of the argument, with all lowercase letters
@@ -453,8 +428,3 @@ let s = Bytes.of_string "hello"
 
 external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
 external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
-external unsafe_blit :
-  bytes -> int -> bytes -> int -> int -> unit
-  = "caml_blit_bytes" [@@noalloc]
-external unsafe_fill :
-  bytes -> int -> int -> char -> unit = "caml_fill_bytes" [@@noalloc]

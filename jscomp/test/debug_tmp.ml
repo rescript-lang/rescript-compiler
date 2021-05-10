@@ -1,13 +1,14 @@
 
 [@@@config {
   flags = [|
-    (* "-w";
-       "@A" *)
+    "-w";
+       "@A";
     (* "-drawlambda"; *)
     (* "-dtypedtree"; *)
     (* "-bs-diagnose"; *)
-    (* "-dparsetree"; *)
+    "-dparsetree";
     (* "-dsource"; *)
   |]
 }]
+
 

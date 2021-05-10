@@ -25,15 +25,12 @@ external length : string -> int = "%string_length"
 external get : string -> int -> char = "%string_safe_get"
 external unsafe_get : string -> int -> char = "%string_unsafe_get"
 
-external unsafe_blit : string -> int ->  bytes -> int -> int -> unit
-                     = "caml_blit_string" [@@noalloc]
-
 module B = Bytes
 
 let bts = B.unsafe_to_string
 let bos = B.unsafe_of_string
 
-external make : int -> char -> string = "caml_string_repeat"  
+external make : int -> char -> string = "?string_repeat"  
 
 let init n f =
   B.init n f |> bts
@@ -42,28 +39,12 @@ let sub s ofs len =
 let blit =
   B.blit_string
 
-let ensure_ge (x:int) y = if x >= y then x else invalid_arg "String.concat"
 
-let rec sum_lengths acc seplen = function
-  | [] -> acc
-  | hd :: [] -> length hd + acc
-  | hd :: tl -> sum_lengths (ensure_ge (length hd + seplen + acc) acc) seplen tl
 
-let rec unsafe_blits dst pos sep seplen = function
-    [] -> dst
-  | hd :: [] ->
-    unsafe_blit hd 0 dst pos (length hd); dst
-  | hd :: tl ->
-    unsafe_blit hd 0 dst pos (length hd);
-    unsafe_blit sep 0 dst (pos + length hd) seplen;
-    unsafe_blits dst (pos + length hd + seplen) sep seplen tl
+external%private join : string array -> string -> string = "join" [@@send]
 
-let concat sep = function
-    [] -> ""
-  | l -> let seplen = length sep in bts @@
-          unsafe_blits
-            (B.create (sum_lengths 0 seplen l))
-            0 sep seplen l
+let concat (sep : string) (xs : string list) =
+  xs |. Belt_List.toArray |. join sep
 
 (* duplicated in bytes.ml *)
 let iter f s =
@@ -89,7 +70,7 @@ let is_space = function
 let trim s =
   if s = "" then s
   else if is_space (unsafe_get s 0) || is_space (unsafe_get s (length s - 1))
-    then bts (B.trim (bos s))
+  then bts (B.trim (bos s))
   else s
 
 let escaped s =
@@ -131,7 +112,7 @@ let index_from s i c =
 let index_from_opt s i c =
   let l = length s in
   if i < 0 || i > l then invalid_arg "String.index_from_opt / Bytes.index_from_opt" else
-  index_rec_opt s l i c
+    index_rec_opt s l i c
 
 (* duplicated in bytes.ml *)
 let rec rindex_rec s i c =
@@ -193,7 +174,7 @@ let uncapitalize_ascii s =
 type t = string
 
 let compare (x: t) (y: t) = Pervasives.compare x y
-external equal : string -> string -> bool = "caml_string_equal"
+let equal : string -> string -> bool = fun a b -> a = b
 
 let split_on_char sep s =
   let r = ref [] in
@@ -206,13 +187,4 @@ let split_on_char sep s =
   done;
   sub s 0 !j :: !r
 
-(* Deprecated functions implemented via other deprecated functions *)
-[@@@ocaml.warning "-3"]
-let uppercase s =
-  B.uppercase (bos s) |> bts
-let lowercase s =
-  B.lowercase (bos s) |> bts
-let capitalize s =
-  B.capitalize (bos s) |> bts
-let uncapitalize s =
-  B.uncapitalize (bos s) |> bts
+

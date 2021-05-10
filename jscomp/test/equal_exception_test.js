@@ -138,7 +138,7 @@ function eq(param) {
 
 var Not_found = /* @__PURE__ */Caml_exceptions.create("Equal_exception_test.Not_found");
 
-if (Caml_obj.caml_equal(e, {
+if (Caml_obj.equal(e, {
         RE_EXN_ID: Not_found
       }) !== false) {
   throw {

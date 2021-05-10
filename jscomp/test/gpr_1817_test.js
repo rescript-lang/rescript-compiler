@@ -33,8 +33,8 @@ function f(param) {
   var x = new Date();
   var y = new Date();
   return [
-          Caml_obj.caml_greaterthan(y, x),
-          Caml_obj.caml_lessthan(y, x),
+          Caml_obj.greaterthan(y, x),
+          Caml_obj.lessthan(y, x),
           true
         ];
 }

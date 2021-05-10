@@ -54,9 +54,9 @@ function switchNum(param) {
   }
 }
 
-var same = Caml_obj.caml_equal;
+var same = Caml_obj.equal;
 
-var compare = Caml_obj.caml_compare;
+var compare = Caml_obj.compare;
 
 var Path = {
   same: same,

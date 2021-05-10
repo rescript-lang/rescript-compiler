@@ -29,7 +29,7 @@ type t = Caml_js_exceptions.t
 exception Error = Caml_js_exceptions.Error
 
 external asJsExn : exn -> t option = 
-  "caml_as_js_exn"
+  "?as_js_exn"
 
 external stack : t -> string option = "stack"
   [@@bs.get] 
@@ -43,7 +43,7 @@ external fileName : t -> string option = "fileName"
 type error
 external makeError : string -> error = "Error" [@@bs.new]
 external isCamlExceptionOrOpenVariant : 
-  'a -> bool = "caml_is_extension"
+  'a -> bool = "?is_extension"
 
 let anyToExnInternal x = 
     Caml_js_exceptions.internalToOCamlException (Obj.repr x)

@@ -7,7 +7,7 @@ function f(x) {
 }
 
 function u(x, y) {
-  return x + Caml_format.caml_int_of_string(y) | 0;
+  return x + Caml_format.int_of_string(y) | 0;
 }
 
 function u1(f) {

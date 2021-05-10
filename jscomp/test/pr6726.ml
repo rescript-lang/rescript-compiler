@@ -11,7 +11,7 @@
 (***********************************************************************)
 
 module ExtUnixAll = struct
- external unused : unit -> unit = "caml_blit_string"
+ external unused : unit -> unit = "%identity"
  module BigEndian = struct
    let get_uint8 str off = 33
  end

@@ -122,7 +122,7 @@ let add
 (* let not ( {lo; hi })  = mk ~lo:(lognot lo) ~hi:(lognot hi) *)
 
 
-
+let equal x y = x.lo = y.lo && x.hi =y.hi    
 let equal_null x y =    
   match Js.nullToOption y with 
   | None -> false 
@@ -307,7 +307,7 @@ let two_ptr_32_dbl = 4294967296. (* 2. ** 32*)
 let two_ptr_63_dbl = 9.22337203685477581e+18 (* 2. ** 63.*)
 let neg_two_ptr_63 = -9.22337203685477581e+18 (*-. (2. ** 63.)*)
 
-external mod_float : float -> float -> float = "caml_fmod_float"
+external mod_float : float -> float -> float = "?fmod_float"
 (* note that we make sure the const number can acutally be represented
    {[
      (2. ** 63. -. 1. = 2. ** 63.) ;;

@@ -12,7 +12,7 @@ function f(H) {
   Curry._3(H.add, tbl, 1, /* '1' */49);
   Curry._3(H.add, tbl, 2, /* '2' */50);
   return List.sort((function (param, param$1) {
-                return Caml.caml_int_compare(param[0], param$1[0]);
+                return Caml.int_compare(param[0], param$1[0]);
               }), Curry._3(H.fold, (function (k, v, acc) {
                     return {
                             hd: [
@@ -42,7 +42,7 @@ function g(H, count) {
                 };
         }), tbl, /* [] */0);
   return $$Array.of_list(List.sort((function (param, param$1) {
-                    return Caml.caml_int_compare(param[0], param$1[0]);
+                    return Caml.int_compare(param[0], param$1[0]);
                   }), v));
 }
 

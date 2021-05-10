@@ -22,7 +22,7 @@ function setup_sprite(loopOpt, bbox_offsetOpt, bbox_sizeOpt, img_src, max_frames
       0,
       0
     ];
-  var bbox_size$1 = Caml_obj.caml_equal(bbox_size, [
+  var bbox_size$1 = Caml_obj.equal(bbox_size, [
         0,
         0
       ]) ? frame_size : bbox_size;
@@ -982,7 +982,7 @@ function update_player(player, keys, context) {
                 if (!player.jumping && player.grounded) {
                   player.jumping = true;
                   player.grounded = false;
-                  player.vel.y = Caml.caml_float_max(player.vel.y - (5.7 + Math.abs(player.vel.x) * 0.25), -6);
+                  player.vel.y = Caml.float_max(player.vel.y - (5.7 + Math.abs(player.vel.x) * 0.25), -6);
                   return ;
                 } else {
                   return ;
@@ -1056,7 +1056,7 @@ function update_vel$1(obj) {
     obj.vel.y = 0;
     return ;
   } else if (obj.params.has_gravity) {
-    obj.vel.y = Caml.caml_float_min(obj.vel.y + 0.2 + Math.abs(obj.vel.y) * 0.01, 4.5);
+    obj.vel.y = Caml.float_min(obj.vel.y + 0.2 + Math.abs(obj.vel.y) * 0.01, 4.5);
     return ;
   } else {
     return ;
@@ -1540,7 +1540,7 @@ function make$3(param, param$1) {
 
 function calc_viewport_point(cc, vc, mc) {
   var vc_half = vc / 2;
-  return Caml.caml_float_min(Caml.caml_float_max(cc - vc_half, 0), Caml.caml_float_min(mc - vc, Math.abs(cc - vc_half)));
+  return Caml.float_min(Caml.float_max(cc - vc_half, 0), Caml.float_min(mc - vc, Math.abs(cc - vc_half)));
 }
 
 function in_viewport(v, pos) {
@@ -2372,7 +2372,7 @@ function mem_loc(checkloc, _loclist) {
     if (!loclist) {
       return false;
     }
-    if (Caml_obj.caml_equal(checkloc, loclist.hd[1])) {
+    if (Caml_obj.equal(checkloc, loclist.hd[1])) {
       return true;
     }
     _loclist = loclist.tl;

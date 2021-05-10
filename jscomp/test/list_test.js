@@ -70,7 +70,7 @@ var list_suites_1 = {
         (function (param) {
             return {
                     TAG: /* Eq */0,
-                    _0: List.sort(Caml.caml_int_compare, {
+                    _0: List.sort(Caml.int_compare, {
                           hd: 4,
                           tl: {
                             hd: 1,
@@ -99,7 +99,73 @@ var list_suites_1 = {
                   };
           })
       ],
-      tl: /* [] */0
+      tl: {
+        hd: [
+          "File \"list_test.ml\", line 20, characters 2-9",
+          (function (param) {
+              return {
+                      TAG: /* Eq */0,
+                      _0: true,
+                      _1: List.mem(3, {
+                            hd: 1,
+                            tl: {
+                              hd: 2,
+                              tl: {
+                                hd: 3,
+                                tl: /* [] */0
+                              }
+                            }
+                          })
+                    };
+            })
+        ],
+        tl: {
+          hd: [
+            "File \"list_test.ml\", line 23, characters 2-9",
+            (function (param) {
+                return {
+                        TAG: /* Eq */0,
+                        _0: false,
+                        _1: List.mem(4, {
+                              hd: 1,
+                              tl: {
+                                hd: 2,
+                                tl: {
+                                  hd: 3,
+                                  tl: /* [] */0
+                                }
+                              }
+                            })
+                      };
+              })
+          ],
+          tl: {
+            hd: [
+              "File \"list_test.ml\", line 26, characters 2-9",
+              (function (param) {
+                  return {
+                          TAG: /* Eq */0,
+                          _0: 9,
+                          _1: List.assoc(4, {
+                                hd: [
+                                  1,
+                                  2
+                                ],
+                                tl: {
+                                  hd: [
+                                    4,
+                                    9
+                                  ],
+                                  tl: /* [] */0
+                                }
+                              })
+                        };
+                })
+            ],
+            tl: /* [] */0
+          }
+        }
+      }
     }
   }
 };

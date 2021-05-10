@@ -34,7 +34,7 @@ function eq(loc, x, y) {
 }
 
 function f(x) {
-  var y = Caml_obj.caml_obj_dup(x);
+  var y = Caml_obj.obj_dup(x);
   return {
           a0: 1,
           a1: y.a1,

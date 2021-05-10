@@ -30,15 +30,13 @@ external shift_right_logical : t -> int -> t = "%int32_lsr"
 external of_int : int -> t = "%int32_of_int"
 external to_int : t -> int = "%int32_to_int"
 external of_float : float -> t
-  = "caml_int_of_float" 
+  = "?int_of_float" 
 external to_float : t -> float
-  = "caml_int_to_float" 
+  = "?int_to_float" 
 external bits_of_float : float -> t
-  = "caml_int_bits_of_float" "caml_int_bits_of_float_unboxed"
-  [@@noalloc]
+  = "?int_bits_of_float" 
 external float_of_bits : t -> float
-  = "caml_int_float_of_bits" "caml_int_float_of_bits_unboxed"
-  [@@noalloc]
+  = "?int_float_of_bits" 
 
 let zero = 0l
 let one = 1l
@@ -50,10 +48,10 @@ let min_int = 0x80000000l
 let max_int = 0x7FFFFFFFl
 let lognot n = logxor n (-1l)
 
-external format : string -> t -> string = "caml_format_int"
+external format : string -> t -> string = "?format_int"
 let to_string n = format "%d" n
 
-external of_string : string -> t = "caml_int_of_string"
+external of_string : string -> t = "?int_of_string"
 
 let of_string_opt s =
   (* TODO: expose a non-raising primitive directly. *)

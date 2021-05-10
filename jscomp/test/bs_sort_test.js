@@ -280,7 +280,7 @@ eq("File \"bs_sort_test.ml\", line 111, characters 5-12", Belt_SortArray.binaryS
           3,
           5,
           7
-        ], 4, Caml.caml_int_compare) ^ -1, 2);
+        ], 4, Caml.int_compare) ^ -1, 2);
 
 eq("File \"bs_sort_test.ml\", line 112, characters 5-12", Belt_SortArray.binarySearchBy([
           1,

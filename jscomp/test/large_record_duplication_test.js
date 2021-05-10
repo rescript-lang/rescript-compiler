@@ -17,7 +17,7 @@ function eq(loc, x, y) {
 }
 
 function f0(x) {
-  var newrecord = Caml_obj.caml_obj_dup(x);
+  var newrecord = Caml_obj.obj_dup(x);
   newrecord.x0 = 1;
   return newrecord;
 }
@@ -50,7 +50,7 @@ eq("File \"large_record_duplication_test.ml\", line 72, characters 6-13", f_smal
       y: ""
     });
 
-eq("File \"large_record_duplication_test.ml\", line 74, characters 6-13", Caml_obj.caml_equal(h, {
+eq("File \"large_record_duplication_test.ml\", line 74, characters 6-13", Caml_obj.equal(h, {
           RE_EXN_ID: Small,
           x: 2,
           y: ""
@@ -93,7 +93,7 @@ function f1(x) {
   if (!x) {
     return /* A1 */0;
   }
-  var newrecord = Caml_obj.caml_obj_dup(x);
+  var newrecord = Caml_obj.obj_dup(x);
   newrecord.x0 = 1;
   return newrecord;
 }
@@ -138,7 +138,7 @@ function f2(x) {
   if (x.TAG !== /* A0 */0) {
     return x;
   }
-  var newrecord = Caml_obj.caml_obj_dup(x);
+  var newrecord = Caml_obj.obj_dup(x);
   newrecord.x0 = 1;
   return newrecord;
 }
@@ -151,7 +151,7 @@ function f3(x) {
   if (x.RE_EXN_ID !== A0) {
     return x;
   }
-  var newrecord = Caml_obj.caml_obj_dup(x);
+  var newrecord = Caml_obj.obj_dup(x);
   newrecord.x0 = 1;
   return newrecord;
 }

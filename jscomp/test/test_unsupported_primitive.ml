@@ -7,7 +7,7 @@ type extern_flags =
 
 external to_buffer_unsafe:
       bytes -> int -> int -> 'a -> extern_flags list -> int
-    = "caml_output_value_to_buffer"
+    = "?caml_output_value_to_buffer"
 
 let to_buffer buff ofs len v flags =
   if ofs < 0 || len < 0 || ofs > Bytes.length buff - len

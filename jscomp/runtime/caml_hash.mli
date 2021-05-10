@@ -26,4 +26,4 @@
 
 
 (** *)
-val caml_hash : int -> 'a -> int -> Obj.t -> int
+val hash : int -> 'a -> int -> Obj.t -> int

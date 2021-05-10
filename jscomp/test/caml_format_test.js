@@ -92,7 +92,7 @@ function from_of_string(xs) {
                             (function (param) {
                                 return {
                                         TAG: /* Eq */0,
-                                        _0: Caml_format.caml_int_of_string(b),
+                                        _0: Caml_format.int_of_string(b),
                                         _1: a
                                       };
                               })
@@ -100,7 +100,7 @@ function from_of_string(xs) {
                   }), of_string));
 }
 
-var to_str = Caml_format.caml_int_of_string;
+var to_str = Caml_format.int_of_string;
 
 var pairs = [
   [
@@ -147,7 +147,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
                 return {
                         TAG: /* Eq */0,
                         _0: true,
-                        _1: Pervasives.classify_float(Caml_format.caml_float_of_string("nan")) === /* FP_nan */4
+                        _1: Pervasives.classify_float(Caml_format.float_of_string("nan")) === /* FP_nan */4
                       };
               })
           ],
@@ -161,7 +161,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
                                     return {
                                             TAG: /* Eq */0,
                                             _0: a,
-                                            _1: Pervasives.classify_float(Caml_format.caml_float_of_string(b))
+                                            _1: Pervasives.classify_float(Caml_format.float_of_string(b))
                                           };
                                   })
                               ];
@@ -172,7 +172,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
                         return {
                                 TAG: /* ThrowAny */7,
                                 _0: (function (param) {
-                                    Caml_format.caml_float_of_string("");
+                                    Caml_format.float_of_string("");
                                     
                                   })
                               };
@@ -185,7 +185,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
                           return {
                                   TAG: /* Eq */0,
                                   _0: "                              33",
-                                  _1: Caml_format.caml_format_int("%32d", 33)
+                                  _1: Caml_format.format_int("%32d", 33)
                                 };
                         })
                     ],
@@ -200,14 +200,14 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
                                         return {
                                                 TAG: /* Eq */0,
                                                 _0: a,
-                                                _1: Caml_format.caml_float_of_string(b)
+                                                _1: Caml_format.float_of_string(b)
                                               };
                                       })
                                   ];
                           }), pairs$1))))));
 
 function ff(param) {
-  return Caml_format.caml_format_int("%32d", param);
+  return Caml_format.format_int("%32d", param);
 }
 
 var float_data = [
@@ -432,7 +432,7 @@ Mt.from_pair_suites("Caml_format_test", Pervasives.$at(suites, Pervasives.$at($$
                                 (function (param) {
                                     return {
                                             TAG: /* Eq */0,
-                                            _0: Caml_format.caml_format_float(fmt, f),
+                                            _0: Caml_format.format_float(fmt, f),
                                             _1: str_result
                                           };
                                   })
@@ -445,7 +445,7 @@ Mt.from_pair_suites("Caml_format_test", Pervasives.$at(suites, Pervasives.$at($$
                                     (function (param) {
                                         return {
                                                 TAG: /* Eq */0,
-                                                _0: Caml_format.caml_int64_of_string(b),
+                                                _0: Caml_format.int64_of_string(b),
                                                 _1: a
                                               };
                                       })

@@ -1022,7 +1022,7 @@ var suites_1 = {
                                                                                                                                           var c = new Date("2013-03-01T01:10:01");
                                                                                                                                           return {
                                                                                                                                                   TAG: /* Ok */4,
-                                                                                                                                                  _0: Caml_obj.caml_equal(a, b) && Caml_obj.caml_notequal(b, c) && Caml_obj.caml_greaterthan(c, b)
+                                                                                                                                                  _0: Caml_obj.equal(a, b) && Caml_obj.notequal(b, c) && Caml_obj.greaterthan(c, b)
                                                                                                                                                 };
                                                                                                                                         })
                                                                                                                                     ],

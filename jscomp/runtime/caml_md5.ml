@@ -145,7 +145,7 @@ let md5blk = [|
 |] 
 external (.![]) : string -> int -> int = "charCodeAt" [@@bs.send]
 
-let caml_md5_string (s : string) start len = 
+let md5_string (s : string) start len = 
   let module String = Caml_string_extern in 
   let module Array = Caml_array_extern (* reuse the sugar .. *)
   in 

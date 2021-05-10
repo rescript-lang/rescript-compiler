@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Bytes = require("../../lib/js/bytes.js");
-var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 
@@ -79,7 +78,7 @@ eq("File \"format_test.ml\", line 62, characters 5-12", (1 + 65535 / 65536) * 8,
 
 function f(loc, ls) {
   return List.iter((function (param) {
-                return eq(loc, Caml_format.caml_float_of_string(param[0]), param[1]);
+                return eq(loc, Caml_format.float_of_string(param[0]), param[1]);
               }), ls);
 }
 
@@ -104,12 +103,12 @@ f("File \"format_test.ml\", line 75, characters 6-13", {
     });
 
 function sl(f) {
-  return Caml_format.caml_hexstring_of_float(f, -1, /* '-' */45);
+  return Caml_format.hexstring_of_float(f, -1, /* '-' */45);
 }
 
 function aux_list(loc, ls) {
   return List.iter((function (param) {
-                return eq(loc, Caml_format.caml_hexstring_of_float(param[0], -1, /* '-' */45), param[1]);
+                return eq(loc, Caml_format.hexstring_of_float(param[0], -1, /* '-' */45), param[1]);
               }), ls);
 }
 
@@ -175,12 +174,12 @@ var literals = {
 
 aux_list("File \"format_test.ml\", line 109, characters 11-18", literals);
 
-var s = Caml_format.caml_hexstring_of_float(7.875, -1, /* '-' */45);
+var s = Caml_format.hexstring_of_float(7.875, -1, /* '-' */45);
 
-eq("File \"format_test.ml\", line 112, characters 5-12", Caml_bytes.bytes_to_string(Bytes.uppercase_ascii(Caml_bytes.bytes_of_string(s))), "0X1.F8P+2");
+eq("File \"format_test.ml\", line 112, characters 5-12", Bytes.unsafe_to_string(Bytes.uppercase_ascii(Bytes.unsafe_of_string(s))), "0X1.F8P+2");
 
 function scan_float(loc, s, expect) {
-  return eq(loc, Caml_format.caml_float_of_string(s), expect);
+  return eq(loc, Caml_format.float_of_string(s), expect);
 }
 
 scan_float("File \"format_test.ml\", line 119, characters 13-20", "0x3f.p1", 126);

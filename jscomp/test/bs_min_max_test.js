@@ -22,14 +22,14 @@ function b(param, param$1) {
 }
 
 function f(x, y) {
-  return Caml.caml_int_compare(x + y | 0, y + x | 0);
+  return Caml.int_compare(x + y | 0, y + x | 0);
 }
 
 function f2(x, y) {
-  return Caml.caml_int_compare(x + y | 0, y);
+  return Caml.int_compare(x + y | 0, y);
 }
 
-var f3 = Caml.caml_int_compare;
+var f3 = Caml.int_compare;
 
 function f4(x, y) {
   if (x < y) {
@@ -39,9 +39,9 @@ function f4(x, y) {
   }
 }
 
-var f5_min = Caml_obj.caml_min;
+var f5_min = Caml_obj.min;
 
-var f5_max = Caml_obj.caml_max;
+var f5_max = Caml_obj.max;
 
 b("File \"bs_min_max_test.ml\", line 28, characters 4-11", Caml.i64_eq(Caml.i64_min(Caml_int64.zero, Caml_int64.one), Caml_int64.zero));
 
@@ -64,17 +64,17 @@ b("File \"bs_min_max_test.ml\", line 30, characters 4-11", Caml.i64_eq(Caml.i64_
           3
         ]));
 
-eq("File \"bs_min_max_test.ml\", line 31, characters 5-12", Caml_obj.caml_min(undefined, 3), undefined);
+eq("File \"bs_min_max_test.ml\", line 31, characters 5-12", Caml_obj.min(undefined, 3), undefined);
 
-eq("File \"bs_min_max_test.ml\", line 32, characters 5-12", Caml_obj.caml_min(3, undefined), undefined);
+eq("File \"bs_min_max_test.ml\", line 32, characters 5-12", Caml_obj.min(3, undefined), undefined);
 
-eq("File \"bs_min_max_test.ml\", line 33, characters 5-12", Caml_obj.caml_max(3, undefined), 3);
+eq("File \"bs_min_max_test.ml\", line 33, characters 5-12", Caml_obj.max(3, undefined), 3);
 
-eq("File \"bs_min_max_test.ml\", line 34, characters 5-12", Caml_obj.caml_max(undefined, 3), 3);
+eq("File \"bs_min_max_test.ml\", line 34, characters 5-12", Caml_obj.max(undefined, 3), 3);
 
-b("File \"bs_min_max_test.ml\", line 35, characters 4-11", Caml_obj.caml_greaterequal(5, undefined));
+b("File \"bs_min_max_test.ml\", line 35, characters 4-11", Caml_obj.greaterequal(5, undefined));
 
-b("File \"bs_min_max_test.ml\", line 36, characters 4-11", Caml_obj.caml_lessequal(undefined, 5));
+b("File \"bs_min_max_test.ml\", line 36, characters 4-11", Caml_obj.lessequal(undefined, 5));
 
 b("File \"bs_min_max_test.ml\", line 37, characters 4-11", true);
 

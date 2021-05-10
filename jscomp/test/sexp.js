@@ -8,9 +8,9 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var equal = Caml_obj.caml_equal;
+var equal = Caml_obj.equal;
 
-var compare = Caml_obj.caml_compare;
+var compare = Caml_obj.compare;
 
 var hash = Hashtbl.hash;
 
@@ -242,7 +242,7 @@ function _try_atom(e, f) {
 }
 
 function to_int(e) {
-  return _try_atom(e, Caml_format.caml_int_of_string);
+  return _try_atom(e, Caml_format.int_of_string);
 }
 
 function to_bool(e) {
@@ -250,7 +250,7 @@ function to_bool(e) {
 }
 
 function to_float(e) {
-  return _try_atom(e, Caml_format.caml_float_of_string);
+  return _try_atom(e, Caml_format.float_of_string);
 }
 
 function to_string(e) {
@@ -374,7 +374,7 @@ function get_field(name, e) {
                     _l = l.tl;
                     continue ;
                   }
-                  if (Caml_obj.caml_equal(name, match$2.VAL)) {
+                  if (Caml_obj.equal(name, match$2.VAL)) {
                     return match$3.hd;
                   }
                   _l = l.tl;
@@ -420,7 +420,7 @@ function _get_field_list(name, _l) {
           var match$2 = match$1.hd;
           if (typeof match$2 === "object") {
             if (match$2.NAME === "Atom") {
-              if (Caml_obj.caml_equal(name, match$2.VAL)) {
+              if (Caml_obj.equal(name, match$2.VAL)) {
                 return match$1.tl;
               }
               _l = l.tl;
@@ -457,7 +457,7 @@ function _get_variant(s, args, _l) {
       return ;
     }
     var match = l.hd;
-    if (Caml_obj.caml_equal(s, match[0])) {
+    if (Caml_obj.equal(s, match[0])) {
       return Curry._1(match[1], args);
     }
     _l = l.tl;

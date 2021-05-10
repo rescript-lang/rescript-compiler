@@ -57,7 +57,7 @@ function f(i, y) {
 }
 
 function Test3($star) {
-  var f = Caml_obj.caml_equal;
+  var f = Caml_obj.equal;
   var Caml_obj$1 = {};
   return {
           f: f,
@@ -67,7 +67,7 @@ function Test3($star) {
 
 function Test4($star) {
   var Caml_obj$1 = {};
-  var f = Caml_obj.caml_equal;
+  var f = Caml_obj.equal;
   return {
           Caml_obj: Caml_obj$1,
           f: f

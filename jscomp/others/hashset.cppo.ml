@@ -1,16 +1,16 @@
 #ifdef TYPE_STRING
 type key = string
 type seed = int
-external caml_hash_mix_string : seed -> string -> seed  = "caml_hash_mix_string"
-external final_mix : seed -> seed = "caml_hash_final_mix"
+external caml_hash_mix_string : seed -> string -> seed  = "?hash_mix_string"
+external final_mix : seed -> seed = "?hash_final_mix"
 let hash (s : key) =   
   final_mix  (caml_hash_mix_string 0 s )
     
 #elif defined TYPE_INT
 type key = int
 type seed = int
-external caml_hash_mix_int : seed -> int -> seed  = "caml_hash_mix_int"
-external final_mix : seed -> seed = "caml_hash_final_mix"
+external caml_hash_mix_int : seed -> int -> seed  = "?hash_mix_int"
+external final_mix : seed -> seed = "?hash_final_mix"
 let hash (s : key) = 
   final_mix (caml_hash_mix_int 0 s)
 #else 

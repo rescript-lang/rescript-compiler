@@ -303,7 +303,7 @@ function error(s) {
 }
 
 function check(r, v, msg) {
-  if (Caml_obj.caml_notequal(r.contents, v)) {
+  if (Caml_obj.notequal(r.contents, v)) {
     console.log("error (%s)");
     return ;
   }
@@ -366,7 +366,7 @@ function test(argv) {
       }
     }
   };
-  if (Caml_obj.caml_notequal(result, reference)) {
+  if (Caml_obj.notequal(result, reference)) {
     var f = function (x, y) {
       console.log(x, y);
       

@@ -82,7 +82,7 @@ let () =
 ;;
 
 external hexstring_of_float: float -> int -> char -> string
-  = "caml_hexstring_of_float" 
+  = "?hexstring_of_float" 
 
 
 let sl (f : float) : string = 

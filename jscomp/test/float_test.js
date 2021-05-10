@@ -33,11 +33,11 @@ var epsilon_float = Caml_int64.float_of_bits([
       0
     ]);
 
-var match = Caml_float.caml_frexp_float(12.0);
+var match = Caml_float.frexp_float(12.0);
 
-var match$1 = Caml_float.caml_frexp_float(0);
+var match$1 = Caml_float.frexp_float(0);
 
-var match$2 = Caml_float.caml_frexp_float(-12.0);
+var match$2 = Caml_float.frexp_float(-12.0);
 
 var results = $$Array.append([
       [
@@ -45,47 +45,47 @@ var results = $$Array.append([
         0.301029995663981198
       ],
       [
-        Caml_float.caml_ldexp_float(1, 6),
+        Caml_float.ldexp_float(1, 6),
         64
       ],
       [
-        Caml_float.caml_ldexp_float(1, 5),
+        Caml_float.ldexp_float(1, 5),
         32
       ],
       [
-        Caml_float.caml_ldexp_float(1.e-5, 1024),
+        Caml_float.ldexp_float(1.e-5, 1024),
         1.79769313486231605e+303
       ],
       [
-        Caml_float.caml_ldexp_float(1, -1024),
+        Caml_float.ldexp_float(1, -1024),
         5.56268464626800346e-309
       ],
       [
-        Caml_float.caml_hypot_float(3, 4),
+        Caml_float.hypot_float(3, 4),
         5
       ],
       [
-        Caml_float.caml_hypot_float(4, 3),
+        Caml_float.hypot_float(4, 3),
         5
       ],
       [
-        Caml_float.caml_hypot_float(5, 12),
+        Caml_float.hypot_float(5, 12),
         13
       ],
       [
-        Caml_float.caml_hypot_float(12, 5),
+        Caml_float.hypot_float(12, 5),
         13
       ],
       [
-        Caml_float.caml_copysign_float(22.3, -1),
+        Caml_float.copysign_float(22.3, -1),
         -22.3
       ],
       [
-        Caml_float.caml_copysign_float(22.3, 1),
+        Caml_float.copysign_float(22.3, 1),
         22.3
       ],
       [
-        Caml_float.caml_expm1_float(1e-15),
+        Caml_float.expm1_float(1e-15),
         1.00000000000000067e-15
       ],
       [
@@ -136,16 +136,16 @@ function from_pairs(ps) {
                   }), ps));
 }
 
-var float_compare = Caml.caml_float_compare;
+var float_compare = Caml.float_compare;
 
 Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 47, characters 5-12", Pervasives.classify_float(3), /* FP_normal */0);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 48, characters 5-12", Caml_float.caml_modf_float(-3.125), [
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 48, characters 5-12", Caml_float.modf_float(-3.125), [
       -0.125,
       -3
     ]);
 
-var match$3 = Caml_float.caml_modf_float(Number.NaN);
+var match$3 = Caml_float.modf_float(Number.NaN);
 
 Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 49, characters 5-12", [
       Number.isNaN(match$3[0]),
@@ -164,7 +164,7 @@ Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 52, characte
               return 0;
             }
           }), $$Array.map((function (param) {
-                return Caml.caml_float_compare(param[0], param[1]);
+                return Caml.float_compare(param[0], param[1]);
               }), [
               [
                 1,
@@ -184,19 +184,19 @@ Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 52, characte
       1
     ]);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 56, characters 5-12", Caml_float.caml_copysign_float(-3, 0), 3);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 56, characters 5-12", Caml_float.copysign_float(-3, 0), 3);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 57, characters 5-12", Caml_float.caml_copysign_float(3, 0), 3);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 57, characters 5-12", Caml_float.copysign_float(3, 0), 3);
 
 Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 58, characters 5-12", Math.log10(10), 1);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 59, characters 5-12", Caml_float.caml_expm1_float(0), 0);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 59, characters 5-12", Caml_float.expm1_float(0), 0);
 
 Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 60, characters 5-12", Number("3.0"), 3.0);
 
-Mt_global.collect_approx(test_id, suites, "File \"float_test.ml\", line 61, characters 9-16", Caml_float.caml_expm1_float(2), 6.38905609893065);
+Mt_global.collect_approx(test_id, suites, "File \"float_test.ml\", line 61, characters 9-16", Caml_float.expm1_float(2), 6.38905609893065);
 
-var match$4 = Caml_float.caml_modf_float(32.3);
+var match$4 = Caml_float.modf_float(32.3);
 
 var b = match$4[1];
 

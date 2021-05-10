@@ -77,7 +77,7 @@ let create (str : string) : string =
 
    This is not a problem in `try .. with` since the logic above is not expressible, see more design in [destruct_exn.md]
 *)
-let caml_is_extension (type a ) (e : a) :  bool  =
+let is_extension (type a ) (e : a) :  bool  =
   if Js.testAny e then false 
   else Js.typeof (Obj.magic e : t) .id = "string"
 
@@ -85,4 +85,4 @@ let caml_is_extension (type a ) (e : a) :  bool  =
 
 
 (**FIXME: remove the trailing `/` *)
-let caml_exn_slot_name (x : t) : string = x.id
+let exn_slot_name (x : t) : string = x.id

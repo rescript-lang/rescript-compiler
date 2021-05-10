@@ -17,7 +17,7 @@ function assoc3(x, _l) {
     var l = _l;
     if (l) {
       var match = l.hd;
-      if (Caml_obj.caml_equal(match[0], x)) {
+      if (Caml_obj.equal(match[0], x)) {
         return match[1];
       }
       _l = l.tl;
