@@ -180,7 +180,7 @@ external typeof : 'a -> string = "#typeof"
 *)
 
 external log : 'a -> unit = "log"
-[@@bs.val] [@@bs.scope "console"]
+[@@val] [@@scope "console"]
 (** A convenience function to log everything *)
 
 external log2 : 'a -> 'b -> unit = "log"
