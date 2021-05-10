@@ -64,7 +64,7 @@ let implementation ~use_super_errors impl str  : Js.Unsafe.obj =
 
   try
     Js_config.jsx_version :=  3 ; (* default *)
-    let ast = impl (Lexing.from_string str) in     
+    let ast = impl str in     
     let ast = Ppx_entry.rewrite_implementation ast in 
     let typed_tree = 
       let (a,b,_,signature) = Typemod.type_implementation_more modulename modulename modulename env ast in
@@ -129,7 +129,7 @@ let make_compiler name impl =
                          (compile impl ~use_super_errors:true (Js.to_string code)));                    
                     "version", Js.Unsafe.inject (Js.string (Bs_version.version));
                   |]))
-let () = make_compiler "ocaml" Parse.implementation
+let () = make_compiler "res" Res_driver.parse_implementation
 
 (* local variables: *)
 (* compile-command: "ocamlbuild -use-ocamlfind -pkg compiler-libs -no-hygiene driver.cmo" *)
