@@ -72,6 +72,10 @@ let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf  =
        ppf  tmpfile ~outputprefix  );
   Ast_reason_pp.clean tmpfile 
 
+let ml_token_init () = 
+  Lexer.replace_directive_bool "BS" true;
+  Lexer.replace_directive_bool "JS" true;
+  Lexer.replace_directive_string "BS_VERSION"  Bs_version.version 
 
 let process_file sourcefile ?(kind ) ppf = 
   (* This is a better default then "", it will be changed later 
@@ -91,12 +95,14 @@ let process_file sourcefile ?(kind ) ppf =
     handle_reason Mli sourcefile ppf  
   (* The printer setup is doen in [handle_reason] *)
   | Ml ->
+    ml_token_init ();
     let sourcefile = set_abs_input_name  sourcefile in     
     setup_compiler_printer `ml;
     Js_implementation.implementation 
       ~parser:Pparse_driver.parse_implementation
       ppf sourcefile 
   | Mli  ->   
+    ml_token_init ();
     let sourcefile = set_abs_input_name  sourcefile in   
     setup_compiler_printer `ml;
     Js_implementation.interface 
