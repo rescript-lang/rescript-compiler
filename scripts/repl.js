@@ -50,7 +50,7 @@ function prepare(isDev) {
     : ["production", "", ""];
   console.log(`building byte code version of the compiler [${env}]`);
   e(
-    `${OCAMLC} ${ocamlFlag}-w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_refmt_compiler.mli ${jsRefmtCompDir}/js_refmt_compiler.ml -o jsc.byte `
+    `${OCAMLC} ${ocamlFlag}-w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_compiler.mli ${jsRefmtCompDir}/js_compiler.ml -o jsc.byte `
   );
   console.log("building js version");
   e(`${OCAMLRUN} ${JSOO} compile jsc.byte ${jsooFlag}-o exports.js`);

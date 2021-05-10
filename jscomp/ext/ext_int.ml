@@ -29,6 +29,7 @@ let compare (x : t) (y : t) = Pervasives.compare x y
 
 let equal (x : t) (y : t) = x = y
 
+(* FIXME: make it work on 32 bit platform (browser)*)
 let move = 0x1_0000_0000
 (* works only on 64 bit platform *)
 let int32_unsigned_to_int (n : int32) : int =
