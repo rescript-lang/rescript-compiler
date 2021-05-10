@@ -186,14 +186,16 @@ eq("File \"chn_test.ml\", line 63, characters 5-12", convert("\uD83D\uDE80\uD83D
 
 eq("No inline string length", "\uD83D\uDE80\0".length, 3);
 
-eq("No inline string access", Caml_string.get("\uD83D\uDE80\0", 0) & 255, 61);
+eq("File \"chn_test.ml\", line 72, characters 6-13", Caml_string.get("\uD83D\uDE80\0", 0), 128640);
 
-eq("File \"chn_test.ml\", line 79, characters 5-12", convert("\uD83D\uDE80"), {
+eq("File \"chn_test.ml\", line 76, characters 6-13", Caml_string.get("🚀", 0), 128640);
+
+eq("File \"chn_test.ml\", line 81, characters 5-12", convert("\uD83D\uDE80"), {
       hd: 128640,
       tl: /* [] */0
     });
 
-eq("File \"chn_test.ml\", line 81, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80"), {
+eq("File \"chn_test.ml\", line 83, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80"), {
       hd: 128640,
       tl: {
         hd: 128640,
@@ -201,7 +203,7 @@ eq("File \"chn_test.ml\", line 81, characters 5-12", convert("\uD83D\uDE80\uD83D
       }
     });
 
-eq("File \"chn_test.ml\", line 82, characters 5-12", convert(" \b\t\n\v\f\ra"), {
+eq("File \"chn_test.ml\", line 84, characters 5-12", convert(" \b\t\n\v\f\ra"), {
       hd: 32,
       tl: {
         hd: 8,
@@ -227,7 +229,7 @@ eq("File \"chn_test.ml\", line 82, characters 5-12", convert(" \b\t\n\v\f\ra"), 
       }
     });
 
-eq("File \"chn_test.ml\", line 89, characters 6-13", convert(" \b\t\n\v\f\r\"'\\\0a"), {
+eq("File \"chn_test.ml\", line 91, characters 6-13", convert(" \b\t\n\v\f\r\"'\\\0a"), {
       hd: 32,
       tl: {
         hd: 8,
