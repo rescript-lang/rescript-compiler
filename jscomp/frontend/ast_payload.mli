@@ -45,6 +45,7 @@ val is_single_int : t -> int option
 (** Convert %raw into expression *)
 val raw_as_string_exp_exn :
   kind: Js_raw_info.raw_kind ->
+  ?is_function:bool ref -> 
   t ->
   Parsetree.expression option
 

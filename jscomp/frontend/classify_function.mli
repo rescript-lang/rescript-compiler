@@ -28,5 +28,7 @@ val classify :
   string -> 
   Js_raw_info.exp 
 
+val classify_exp : 
+  (Loc.t, Loc.t) Flow_ast.Expression.t -> Js_raw_info.exp 
 val classify_stmt :  
   string -> Js_raw_info.stmt
