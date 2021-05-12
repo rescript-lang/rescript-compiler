@@ -13,7 +13,8 @@ var pairs = [
   ["Clflags.strict_sequence", "true"],
   ["Clflags.strict_formats", "true"],
   ["Clflags.compile_only", "true"],
-  ["Clflags.recursive_types","false"]
+  ["Clflags.recursive_types","false"],
+  ["Clflags.principal", "false"],
 ];
 
 var regexp = RegExp(
