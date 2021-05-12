@@ -354,7 +354,8 @@ let bs_get_arity : attr
 
 let bs_set : attr
   =  {txt = "bs.set"; loc = locg}, Ast_payload.empty
-
+let internal_expansive : attr 
+  =  {txt = "internal.expansive"; loc = locg}, Ast_payload.empty  
 let bs_return_undefined : attr
   =
   {txt = "bs.return"; loc = locg },

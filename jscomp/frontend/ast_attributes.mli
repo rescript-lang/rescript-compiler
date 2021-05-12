@@ -105,5 +105,5 @@ val bs_get_index : attr
 val bs_get_arity : attr 
 val bs_set : attr
 val bs_return_undefined : attr
-
+val internal_expansive : attr 
 (* val deprecated : string -> attr *)

@@ -480,6 +480,7 @@ o test/poly_empty_array.cmi test/poly_empty_array.cmj : cc test/poly_empty_array
 o test/poly_type.cmi test/poly_type.cmj : cc test/poly_type.ml | $stdlib
 o test/poly_variant_test.cmj : cc_cmi test/poly_variant_test.ml | test/mt.cmj test/poly_variant_test.cmi $stdlib
 o test/poly_variant_test.cmi : cc test/poly_variant_test.mli | $stdlib
+o test/polymorphic_raw_test.cmi test/polymorphic_raw_test.cmj : cc test/polymorphic_raw_test.ml | test/mt.cmj $stdlib
 o test/polymorphism_test.cmj : cc_cmi test/polymorphism_test.ml | test/polymorphism_test.cmi $stdlib
 o test/polymorphism_test.cmi : cc test/polymorphism_test.mli | $stdlib
 o test/polyvar_convert.cmi test/polyvar_convert.cmj : cc test/polyvar_convert.ml | $stdlib

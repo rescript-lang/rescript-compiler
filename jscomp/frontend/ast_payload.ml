@@ -70,8 +70,8 @@ let is_single_int (x : t ) : int option =
 
 
 let raw_as_string_exp_exn 
-    ~(kind: Js_raw_info.raw_kind)
-    (x : t ) : _ option = 
+    ~(kind: Js_raw_info.raw_kind) ?(is_function)
+    (x : t ) : Parsetree.expression option = 
   match x with  (** TODO also need detect empty phrase case *)
   | PStr [ {
       pstr_desc =  
@@ -82,15 +82,23 @@ let raw_as_string_exp_exn
           ;
             pexp_loc = loc} as e ,_);
       _}] -> 
+
     Bs_flow_ast_utils.check_flow_errors ~loc ~offset:(Bs_flow_ast_utils.flow_deli_offset deli) (match kind with 
         | Raw_re 
         | Raw_exp ->  
-          let (_loc,e),errors =  Parser_flow.parse_expression (Parser_env.init_env None str) false in 
+          let ((_loc,e) as prog),errors =  Parser_flow.parse_expression (Parser_env.init_env None str) false in 
           if kind = Raw_re then 
             (match e with 
              | Literal {value = RegExp _} -> ()
              | _ -> Location.raise_errorf ~loc "Syntax error: a valid JS regex literal expected"
             );
+          (match is_function with 
+           | Some is_function ->   
+             begin match Classify_function.classify_exp prog with 
+               | Js_function {arity= _;  _} -> is_function := true
+               | _ -> ()
+             end 
+           | None -> ());
           errors
         | Raw_program ->  
           snd (Parser_flow.parse_program false None str)

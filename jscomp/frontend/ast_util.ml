@@ -225,7 +225,7 @@ let ocaml_obj_as_js_object
            label.Asttypes.txt
            label_type acc           
       ) in
-  Ast_external_mk.local_extern_cont
+  Ast_external_mk.local_extern_cont_to_obj
     loc
     ~pval_prim:(Ast_external_process.pval_prim_of_labels labels)
     (fun e ->

@@ -75,8 +75,9 @@ let handle_debugger loc (payload : Ast_payload.t) =
 
 
 let handle_raw ~kind loc payload =
+  let is_function = ref false in   
   begin match Ast_payload.raw_as_string_exp_exn 
-                ~kind payload with
+                ~kind ~is_function payload with
   | None ->
     Location.raise_errorf ~loc
       "bs.raw can only be applied to a string"
@@ -84,7 +85,11 @@ let handle_raw ~kind loc payload =
     { exp with pexp_desc = Ast_external_mk.local_external_apply
                    loc ~pval_prim:["#raw_expr"]
                    ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
-                   [exp]}
+                   [exp];
+                   pexp_attributes = if !is_function then 
+                    Ast_attributes.internal_expansive :: exp.pexp_attributes 
+                    else exp.pexp_attributes
+    }
   end
 let handle_raw_structure loc payload = 
   begin match Ast_payload.raw_as_string_exp_exn 
