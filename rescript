@@ -498,6 +498,18 @@ if (
         reasons_to_rebuild = [];
         LAST_BUILD_START = +Date.now();
       }
+      // if acquiring lock failed, no need retry here
+      // since build_finished_callback will try again
+      // however this is no longer the case for multiple-process
+      // it could fail due to other issues like .bsb.lock
+      else {
+        dlog(`Acquire lock failed, do the build later ${depth} : ${reasons_to_rebuild}`);
+        var waitTime = Math.pow(2, depth) * 40;
+        setTimeout(function () {
+          var d = Math.min(depth + 1, 5);
+          build(d);
+        }, waitTime);
+      }
     }
     /**
      *
