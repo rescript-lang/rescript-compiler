@@ -173,6 +173,9 @@ function releaseBuild() {
     is_building = false;
   }
 }
+
+// We use [~perm:0o664] rather than our usual default perms, [0o666], because
+// lock files shouldn't rely on the umask to disallow tampering by other.
 function acquireBuild() {
   if (is_building) {
     return false;
@@ -285,55 +288,30 @@ if (
 
     function onUncaughtException(err) {
       console.error("Uncaught Exception", err);
+      releaseBuild();
       process.exit(1);
     }
-    function onExit() {
-      try {
-        fs.unlinkSync(lockFileName);
-      } catch (err) {
-        process.exitCode = 1;
-      }
-    }
     function exitProcess() {
+      releaseBuild();
       process.exit(0);
     }
 
-    /**
-     * @return {boolean}
-     */
-    function acquireLockFile() {
-      try {
-        // We use [~perm:0o664] rather than our usual default perms, [0o666], because
-        // lock files shouldn't rely on the umask to disallow tampering by other.
-        var fd = fs.openSync(lockFileName, "wx", 0o664);
-        try {
-          fs.writeFileSync(fd, String(process.pid), "ascii");
-          fs.closeSync(fd);
-        } catch (err) {}
+    process.on("uncaughtException", onUncaughtException);
 
-        process.on("exit", onExit);
-        process.on("uncaughtException", onUncaughtException);
+    // OS signal handlers
+    // Ctrl+C
+    process.on("SIGINT", exitProcess);
+    // kill pid
+    process.on("SIGUSR1", exitProcess);
+    process.on("SIGUSR2", exitProcess);
+    process.on("SIGTERM", exitProcess);
+    process.on("SIGHUP", exitProcess);
 
-        // OS signal handlers
-        // Ctrl+C
-        process.on("SIGINT", exitProcess);
-        // kill pid
-        process.on("SIGUSR1", exitProcess);
-        process.on("SIGUSR2", exitProcess);
-        process.on("SIGTERM", exitProcess);
-        process.on("SIGHUP", exitProcess);
-
-        process.stdin.on("close", exitProcess);
-        // close when stdin stops
-        if (os.platform() !== "win32") {
-          process.stdin.on("end", exitProcess);
-          process.stdin.resume();
-        }
-
-        return true;
-      } catch (exn) {
-        return false;
-      }
+    process.stdin.on("close", exitProcess);
+    // close when stdin stops
+    if (os.platform() !== "win32") {
+      process.stdin.on("end", exitProcess);
+      process.stdin.resume();
     }
 
     var sourcedirs = path.join("lib", "bs", ".sourcedirs.json");
