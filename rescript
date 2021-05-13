@@ -170,6 +170,9 @@ var maybe_subcommand = process_argv[2];
 var is_building = false;
 function releaseBuild() {
   if (is_building) {
+    try {
+      fs.unlinkSync(lockFileName);
+    } catch (err) {}
     is_building = false;
   }
 }
@@ -180,8 +183,15 @@ function acquireBuild() {
   if (is_building) {
     return false;
   } else {
-    is_building = true;
-    return true;
+    try {
+      fs.openSync(lockFileName, "wx", 0o664);
+      is_building = true;
+    } catch (err) {
+      if (err.code === "EEXIST") {
+        console.warn(lockFileName, "already exists, try later");
+      } else console.log(err);
+    }
+    return is_building;
   }
 }
 
