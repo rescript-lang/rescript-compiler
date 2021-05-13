@@ -262,25 +262,33 @@ if (
    * @type {child_process.ChildProcess}
    */
   var p;
-  try {
-    p = child_process.spawn(bsb_exe, delegate_args, { stdio: "inherit" });
-    LAST_BUILD_START = +Date.now();
-  } catch (e) {
-    if (e.code === "ENOENT") {
-      // when bsb is actually not found
-      console.error(String(e));
+  if (acquireBuild) {
+    try {
+      p = child_process.spawn(bsb_exe, delegate_args, { stdio: "inherit" });
+      LAST_BUILD_START = +Date.now();
+    } catch (e) {
+      if (e.code === "ENOENT") {
+        // when bsb is actually not found
+        console.error(String(e));
+      }
+      releaseBuild();
+      process.exit(2);
     }
-    process.exit(2);
+    // The 'close' event will always emit after 'exit' was already emitted, or
+    // 'error' if the child failed to spawn.
+    p.on("close", (code, signal) => {
+      releaseBuild();
+      if (code !== 0) {
+        process.exit(code);
+      } else if (watch_mode) {
+        in_watch_mode(useWebSocket);
+      }
+    });
+  } else {
+    console.warn(`Another build detected or staled lockfile ${lockFileName}`);
+    // racing magic code
+    process.exit(133);
   }
-
-  p.on("close", (code, signal) => {
-    if (code !== 0) {
-      process.exit(code);
-    } else if (watch_mode) {
-      in_watch_mode(useWebSocket);
-    }
-  });
-
   /**
    *
    * @param {boolean} useWebSocket
