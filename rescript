@@ -444,7 +444,7 @@ if (
       logFinish(code);
       releaseBuild();
       if (needRebuild()) {
-        build();
+        build(0);
       } else {
         var files = getWatchFiles(sourcedirs);
         watch_build(files);
@@ -469,7 +469,12 @@ if (
     // it relies on the fact that ninja will merege stdout and stderr
     // of the compiler output, if it does not
     // then we should have a way to not filter the compiler output
-    function build() {
+    /**
+     *
+     * @param {number} depth
+     * @returns
+     */
+    function build(depth) {
       if (reasons_to_rebuild.length === 0) {
         dlog("No need to rebuild");
         return;
@@ -526,7 +531,7 @@ if (
             if (process.env.BS_WATCH_CLEAR && console.clear) {
               console.clear();
             }
-            build();
+            build(0);
           }
         });
       }
@@ -586,6 +591,6 @@ if (
       }
     }
     watchers.push({ watcher: fs.watch(bsconfig, on_change), dir: bsconfig });
-    build();
+    build(0);
   }
 }
