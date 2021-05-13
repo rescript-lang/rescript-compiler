@@ -15,6 +15,7 @@ var bsconfig = "bsconfig.json";
 var bsb_exe = path.join(__dirname, process.platform, "rescript.exe");
 
 var LAST_BUILD_START = 0;
+var LAST_FIRED_EVENT = 0;
 /**
  * @type {[string,string][]}
  */
@@ -502,7 +503,7 @@ if (
       var event_time = +Date.now();
       var time_diff = event_time - LAST_BUILD_START;
       dlog(`Since last build : ${time_diff}`);
-      if (time_diff < 5) {
+      if (time_diff < 5 || event_time - LAST_FIRED_EVENT < 5) {
         // for 5ms, we could think that the ninja not get
         // kicked yet, so there is really no need
         // to send more events here
@@ -512,6 +513,7 @@ if (
         // save the event loop call `setImmediate`
         return;
       }
+      LAST_FIRED_EVENT = event_time;
       if (validEvent(event, reason)) {
         dlog(`Event ${event} ${reason}`);
         reasons_to_rebuild.push([event, reason]);
