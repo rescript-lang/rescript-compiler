@@ -169,7 +169,9 @@ The default \`rescript\` is equivalent to \`rescript build\` subcommand
 var maybe_subcommand = process_argv[2];
 var is_building = false;
 function releaseBuild() {
-  is_building = false;
+  if (is_building) {
+    is_building = false;
+  }
 }
 function acquireBuild() {
   if (is_building) {
@@ -503,7 +505,9 @@ if (
       // however this is no longer the case for multiple-process
       // it could fail due to other issues like .bsb.lock
       else {
-        dlog(`Acquire lock failed, do the build later ${depth} : ${reasons_to_rebuild}`);
+        dlog(
+          `Acquire lock failed, do the build later ${depth} : ${reasons_to_rebuild}`
+        );
         var waitTime = Math.pow(2, depth) * 40;
         setTimeout(function () {
           var d = Math.min(depth + 1, 5);
