@@ -14,6 +14,7 @@ var fs = require("fs");
 var bsconfig = "bsconfig.json";
 var bsb_exe = path.join(__dirname, process.platform, "rescript.exe");
 
+var LAST_BUILD_START = 0;
 var LAST_SUCCESS_BUILD_STAMP = 0;
 var cwd = process.cwd();
 var lockFileName = path.join(cwd, ".bsb.lock");
@@ -228,6 +229,7 @@ if (
   var p;
   try {
     p = child_process.spawn(bsb_exe, delegate_args, { stdio: "inherit" });
+    LAST_BUILD_START = +Date.now();
   } catch (e) {
     if (e.code === "ENOENT") {
       // when bsb is actually not found
@@ -460,17 +462,21 @@ if (
         } else {
           dlog(`Rebuilding since ${reasons_to_rebuild}`);
         }
-        reasons_to_rebuild = [];
-        var p = child_process.spawn(bsb_exe, [], {
-          stdio: ["inherit", "inherit", "pipe"],
-        });
-        p.on("exit", build_finished_callback);
-        p.stderr
-          .setEncoding("utf8")
+
+        child_process
+          .spawn(bsb_exe, [], {
+            stdio: ["inherit", "inherit", "pipe"],
+          })
           // @ts-ignore
           .on("data", function (s) {
             error_output(s, "ninja: error");
-          });
+          })
+          .on("exit", build_finished_callback)
+          .stderr.setEncoding("utf8");
+        // This is important to clean up all 
+        // previous queued events 
+        reasons_to_rebuild = [];
+        LAST_BUILD_START = +Date.now();
       }
     }
     /**
@@ -479,6 +485,20 @@ if (
      * @param {string} reason
      */
     function on_change(event, reason) {
+      var event_time = +Date.now();
+      var time_diff = event_time - LAST_BUILD_START;
+      dlog(`Since last build : ${time_diff}`);
+      if (time_diff < 5) {
+        // for 5ms, we could think that the ninja not get
+        // kicked yet, so there is really no need
+        // to send more events here
+
+        // note reasons_to_rebuild also 
+        // helps avoid redundant build, but this will 
+        // save the event loop call `setImmediate`        
+        return;
+
+      }
       if (validEvent(event, reason)) {
         dlog(`Event ${event} ${reason}`);
         reasons_to_rebuild.push([event, reason]);
