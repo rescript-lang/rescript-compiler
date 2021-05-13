@@ -395,6 +395,19 @@ val map: 'a array ->  ('a -> 'b ) -> 'b array
   ```
 *)
 
+val flatMapU: 'a array -> ('a -> 'b array [@bs]) -> 'b array
+val flatMap: 'a array -> ('a -> 'b array) -> 'b array
+(**
+  `flatMap xs f `
+
+  **return** a new array by calling `f` for each element of `xs` from
+  the beginning to end, and then concatenating the results
+
+  ```
+  flatMap [|1;2|] (fun x-> [|x + 10;x + 20|]) = [|11;21;12;22|]
+  ```
+*)
+
 val getByU: 'a array -> ('a -> bool [@bs]) -> 'a option
 val getBy: 'a array -> ('a -> bool) -> 'a option
 (**
