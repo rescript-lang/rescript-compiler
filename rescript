@@ -15,6 +15,11 @@ var bsconfig = "bsconfig.json";
 var bsb_exe = path.join(__dirname, process.platform, "rescript.exe");
 
 var LAST_BUILD_START = 0;
+/**
+ * @type {[string,string][]}
+ */
+var reasons_to_rebuild = [];
+
 var LAST_SUCCESS_BUILD_STAMP = 0;
 var cwd = process.cwd();
 var lockFileName = path.join(cwd, ".bsb.lock");
@@ -63,6 +68,20 @@ function updateFinishTime() {
   var diff = process.hrtime(startTime);
   return diff[0] * 1e9 + diff[1];
 }
+
+/**
+ *
+ * @param {string} file
+ * @returns
+ */
+function getWatchFiles(file) {
+  if (fs.existsSync(file)) {
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } else {
+    return { dirs: [], generated: [] };
+  }
+}
+
 /**
  *
  * @param {*} str
@@ -255,11 +274,6 @@ if (
       setUpWebSocket();
     }
     // for column one based error message
-
-    /**
-     * @type {[string,string][]}
-     */
-    var reasons_to_rebuild = [];
 
     /**
      * watchers are held so that we close it later
@@ -473,8 +487,8 @@ if (
           })
           .on("exit", build_finished_callback)
           .stderr.setEncoding("utf8");
-        // This is important to clean up all 
-        // previous queued events 
+        // This is important to clean up all
+        // previous queued events
         reasons_to_rebuild = [];
         LAST_BUILD_START = +Date.now();
       }
@@ -493,11 +507,10 @@ if (
         // kicked yet, so there is really no need
         // to send more events here
 
-        // note reasons_to_rebuild also 
-        // helps avoid redundant build, but this will 
-        // save the event loop call `setImmediate`        
+        // note reasons_to_rebuild also
+        // helps avoid redundant build, but this will
+        // save the event loop call `setImmediate`
         return;
-
       }
       if (validEvent(event, reason)) {
         dlog(`Event ${event} ${reason}`);
@@ -513,13 +526,6 @@ if (
             build();
           }
         });
-      }
-    }
-    function getWatchFiles(file) {
-      if (fs.existsSync(file)) {
-        return JSON.parse(fs.readFileSync(file, "utf8"));
-      } else {
-        return { dirs: [], generated: [] };
       }
     }
 
