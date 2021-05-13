@@ -112,3 +112,6 @@ type t = [
   | #1(string)
   | #2(int, string)
 ]
+
+// don't pick int with suffix as numeric polyvar
+type t = [#"10s" | #"20t"]
