@@ -86,3 +86,8 @@ type node <_, 'value> =
       updateF: 'value => 'value,
       mutable updatedTime: float,
     }): node<derived, 'value>
+
+type delta = Compute({"blocked_ids": unit} => unit)
+type queryDelta =
+  | Compute({"blocked_ids": unit} => unit)
+  | Compute({"blocked_ids": unit} => unit, {"allowed_ids": unit} => unit)

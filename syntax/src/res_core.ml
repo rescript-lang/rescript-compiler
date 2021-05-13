@@ -4396,7 +4396,11 @@ and parseConstrDeclArgs p =
             ) in
             Parser.expect Rbrace p;
             let loc = mkLoc startPos p.prevEndPos in
-            let typ = Ast_helper.Typ.object_ ~loc ~attrs:[] fields closedFlag in
+            let typ =
+              Ast_helper.Typ.object_ ~loc ~attrs:[] fields closedFlag
+              |> parseTypeAlias p
+            in
+            let typ = parseArrowTypeRest ~es6Arrow:true ~startPos typ p in
             Parser.optional p Comma |> ignore;
             let moreArgs =
               parseCommaDelimitedRegion
