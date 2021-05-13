@@ -19,7 +19,7 @@ var LAST_FIRED_EVENT = 0;
 /**
  * @type {[string,string][]}
  */
-var reasons_to_rebuild = [];
+var reasons_to_rebuild = [["proj", "started"]];
 
 var LAST_SUCCESS_BUILD_STAMP = 0;
 var cwd = process.cwd();
@@ -470,14 +470,14 @@ if (
     // of the compiler output, if it does not
     // then we should have a way to not filter the compiler output
     function build() {
+      if (reasons_to_rebuild.length === 0) {
+        dlog("No need to rebuild");
+        return;
+      } else {
+        dlog(`Rebuilding since ${reasons_to_rebuild}`);
+      }
       if (acquireBuild()) {
         logStart();
-        if (reasons_to_rebuild.length === 0) {
-          dlog("Rebuilding since just got started");
-        } else {
-          dlog(`Rebuilding since ${reasons_to_rebuild}`);
-        }
-
         child_process
           .spawn(bsb_exe, [], {
             stdio: ["inherit", "inherit", "pipe"],
@@ -502,8 +502,9 @@ if (
     function on_change(event, reason) {
       var event_time = +Date.now();
       var time_diff = event_time - LAST_BUILD_START;
-      dlog(`Since last build : ${time_diff}`);
-      if (time_diff < 5 || event_time - LAST_FIRED_EVENT < 5) {
+      var event_diff = event_time - LAST_FIRED_EVENT;
+      dlog(`Since last build : ${time_diff} -- ${event_diff}`);
+      if (time_diff < 5 || event_diff < 5) {
         // for 5ms, we could think that the ninja not get
         // kicked yet, so there is really no need
         // to send more events here
@@ -515,7 +516,7 @@ if (
       }
       LAST_FIRED_EVENT = event_time;
       if (validEvent(event, reason)) {
-        dlog(`Event ${event} ${reason}`);
+        dlog(`\nEvent ${event} ${reason}`);
         reasons_to_rebuild.push([event, reason]);
         // Some editors are using temporary files to store edits.
         // This results in two sync change events: change + rename and two sync builds.
