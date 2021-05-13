@@ -549,59 +549,6 @@ if (
       }
     }
 
-    /**
-     *
-     * @param potential_pid {number}
-     */
-    function existPid(potential_pid) {
-      try {
-        return process.kill(potential_pid, 0);
-      } catch (err) {
-        return false;
-      }
-    }
-
-    // Initialization and get locker file
-    while (true) {
-      if (acquireLockFile()) {
-        break;
-      } else {
-        var potential_pid;
-        try {
-          var content = fs.readFileSync(lockFileName, "ascii");
-          potential_pid = parseInt(content);
-        } catch (err) {
-          // ignore
-        }
-        var validPid = potential_pid !== undefined && !isNaN(potential_pid);
-
-        if (validPid && !existPid(potential_pid)) {
-          console.log("Stale file detected : ", lockFileName);
-          try {
-            fs.unlinkSync(lockFileName);
-          } catch (err) {}
-          console.log("Retry:");
-          continue;
-        } else {
-          error_output("Error: could not acquire lockfile", "Error");
-          console.error(" " + lockFileName);
-
-          console.log(
-            "Could be another process running in the background",
-            "\nEither kill that process or delete the staled lock"
-          );
-          if (validPid) {
-            console.error(
-              "Try run command: ",
-              "`kill ",
-              potential_pid,
-              " || rm -f .bsb.lock`"
-            );
-          }
-          process.exit(2);
-        }
-      }
-    }
     watchers.push({ watcher: fs.watch(bsconfig, on_change), dir: bsconfig });
     build(0);
   }
