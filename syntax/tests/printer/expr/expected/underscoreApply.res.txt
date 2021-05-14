@@ -52,3 +52,12 @@ f(a, b, _)[ix]
 f(a, b, _)[ix] = 2
 
 getDirector(a, b, _).name = "Steve"
+
+filterNone |> Array.get(_, 0)
+filterNone->Array.get(_, 0)
+Array.get(_, 0)
+1 + Array.get(_, 0)
+Array.get(_, 1) + Array.get(_, 0)
+let f = Array.get(_, 0)
+
+let photo = pricedRoom["room"]["photos"] |> filterNone |> Array.get(_, 0)

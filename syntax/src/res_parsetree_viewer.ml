@@ -569,3 +569,8 @@ let isUnderscoreApplySugar expr =
       {pexp_desc = Pexp_apply _}
     ) -> true
   | _ -> false
+
+let isRewrittenUnderscoreApplySugar expr =
+  match expr.pexp_desc with
+  | Pexp_ident {txt = Longident.Lident "_"} -> true
+  | _ -> false

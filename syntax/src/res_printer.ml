@@ -3670,7 +3670,8 @@ and printPexpApply expr cmtTbl =
   | Pexp_apply (
       {pexp_desc = Pexp_ident {txt = Longident.Ldot (Lident "Array", "get")}},
       [Nolabel, parentExpr; Nolabel, memberExpr]
-    ) ->
+    ) when not (ParsetreeViewer.isRewrittenUnderscoreApplySugar parentExpr) ->
+      (* Don't print the Array.get(_, 0) sugar a.k.a. (__x) => Array.get(__x, 0) as _[0] *)
       let member =
         let memberDoc =
           let doc = printExpressionWithComments memberExpr cmtTbl in
