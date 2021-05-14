@@ -530,10 +530,10 @@ if (
         // helps avoid redundant build, but this will
         // save the event loop call `setImmediate`
         return;
-      }
-      LAST_FIRED_EVENT = event_time;
+      }      
       if (validEvent(event, reason)) {
         dlog(`\nEvent ${event} ${reason}`);
+        LAST_FIRED_EVENT = event_time;
         reasons_to_rebuild.push([event, reason]);
         // Some editors are using temporary files to store edits.
         // This results in two sync change events: change + rename and two sync builds.
