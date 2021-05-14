@@ -10,11 +10,21 @@
 var child_process = require("child_process");
 var os = require("os");
 var path = require("path");
+var fs = require("fs");
 var bsconfig = "bsconfig.json";
 var bsb_exe = path.join(__dirname, process.platform, "rescript.exe");
 
+var LAST_BUILD_START = 0;
+var LAST_FIRED_EVENT = 0;
+/**
+ * @type {[string,string][]}
+ */
+var reasons_to_rebuild = [["proj", "started"]];
+
 var LAST_SUCCESS_BUILD_STAMP = 0;
-process.env.BSB_PROJECT_ROOT = process.cwd();
+var cwd = process.cwd();
+var lockFileName = path.join(cwd, ".bsb.lock");
+process.env.BSB_PROJECT_ROOT = cwd;
 // console.log('BSB_PROJECT_ROOT:', process.env.BSB_PROJECT_ROOT)
 
 // All clients of type MiniWebSocket
@@ -37,7 +47,15 @@ var webSocketPort = 9999;
  */
 function getDateAsString() {
   var n = new Date();
-  return n.getHours() + ":" + n.getMinutes() + ":" + n.getSeconds();
+  return (
+    n.getHours() +
+    ":" +
+    n.getMinutes() +
+    ":" +
+    n.getSeconds() +
+    ":" +
+    n.getMilliseconds()
+  );
 }
 /**
  * @time{[number,number]}
@@ -51,6 +69,20 @@ function updateFinishTime() {
   var diff = process.hrtime(startTime);
   return diff[0] * 1e9 + diff[1];
 }
+
+/**
+ *
+ * @param {string} file
+ * @returns
+ */
+function getWatchFiles(file) {
+  if (fs.existsSync(file)) {
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } else {
+    return { dirs: [], generated: [] };
+  }
+}
+
 /**
  *
  * @param {*} str
@@ -135,6 +167,33 @@ The default \`rescript\` is equivalent to \`rescript build\` subcommand
 }
 
 var maybe_subcommand = process_argv[2];
+var is_building = false;
+function releaseBuild() {
+  if (is_building) {
+    try {
+      fs.unlinkSync(lockFileName);
+    } catch (err) {}
+    is_building = false;
+  }
+}
+
+// We use [~perm:0o664] rather than our usual default perms, [0o666], because
+// lock files shouldn't rely on the umask to disallow tampering by other.
+function acquireBuild() {
+  if (is_building) {
+    return false;
+  } else {
+    try {
+      fs.openSync(lockFileName, "wx", 0o664);
+      is_building = true;
+    } catch (err) {
+      if (err.code === "EEXIST") {
+        console.warn(lockFileName, "already exists, try later");
+      } else console.log(err);
+    }
+    return is_building;
+  }
+}
 
 if (
   maybe_subcommand !== undefined &&
@@ -179,49 +238,66 @@ if (
   var delegate_args = process_argv.slice(2);
   var watch_mode = delegate_args.includes("-w");
   var wsParamIndex = delegate_args.indexOf("-ws");
-  if(wsParamIndex > -1) {
-    var hostAndPortNumber = (process_argv[wsParamIndex + 1] || '').split(':');
+  if (wsParamIndex > -1) {
+    var hostAndPortNumber = (process_argv[wsParamIndex + 1] || "").split(":");
     /**
      * @type {number}
      */
     var portNumber;
     if (hostAndPortNumber.length === 1) {
-        portNumber = parseInt(hostAndPortNumber[0]);
+      portNumber = parseInt(hostAndPortNumber[0]);
     } else {
-        webSocketHost = hostAndPortNumber[0];
-        portNumber = parseInt(hostAndPortNumber[1]);
+      webSocketHost = hostAndPortNumber[0];
+      portNumber = parseInt(hostAndPortNumber[1]);
     }
     if (!isNaN(portNumber)) {
-        webSocketPort = portNumber;
+      webSocketPort = portNumber;
     }
     useWebSocket = true;
     dlog(`WebSocket host & port number: ${webSocketHost}:${webSocketPort}`);
-  };
-
-  verbose = delegate_args.includes("-verbose");
-
-  try {
-    child_process.execFileSync(bsb_exe, delegate_args, { stdio: "inherit" });
-  } catch (e) {
-    if (e.code === "ENOENT") {
-      // when bsb is actually not found
-      console.error(String(e));
-    }
-    process.exit(2);
   }
 
-  if (watch_mode) {
-    var fs = require("fs");
+  verbose = delegate_args.includes("-verbose");
+  /**
+   * @type {child_process.ChildProcess}
+   */
+  var p;
+  if (acquireBuild) {
+    try {
+      p = child_process.spawn(bsb_exe, delegate_args, { stdio: "inherit" });
+      LAST_BUILD_START = +Date.now();
+    } catch (e) {
+      if (e.code === "ENOENT") {
+        // when bsb is actually not found
+        console.error(String(e));
+      }
+      releaseBuild();
+      process.exit(2);
+    }
+    // The 'close' event will always emit after 'exit' was already emitted, or
+    // 'error' if the child failed to spawn.
+    p.on("close", (code, signal) => {
+      releaseBuild();
+      if (code !== 0) {
+        process.exit(code);
+      } else if (watch_mode) {
+        in_watch_mode(useWebSocket);
+      }
+    });
+  } else {
+    console.warn(`Another build detected or staled lockfile ${lockFileName}`);
+    // racing magic code
+    process.exit(133);
+  }
+  /**
+   *
+   * @param {boolean} useWebSocket
+   */
+  function in_watch_mode(useWebSocket) {
     if (useWebSocket) {
       setUpWebSocket();
     }
     // for column one based error message
-    var cwd = process.cwd();
-    var lockFileName = path.join(cwd, ".bsb.lock");
-    /**
-     * @type {[string,string][]}
-     */
-    var reasons_to_rebuild = [];
 
     /**
      * watchers are held so that we close it later
@@ -230,69 +306,32 @@ if (
 
     function onUncaughtException(err) {
       console.error("Uncaught Exception", err);
+      releaseBuild();
       process.exit(1);
     }
-    function onExit() {
-      try {
-        fs.unlinkSync(lockFileName);
-      } catch (err) {
-        process.exitCode = 1;
-      }
-    }
     function exitProcess() {
+      releaseBuild();
       process.exit(0);
     }
 
-    /**
-     * @return {boolean}
-     */
-    function acquireLockFile() {
-      try {
-        // We use [~perm:0o664] rather than our usual default perms, [0o666], because
-        // lock files shouldn't rely on the umask to disallow tampering by other.
-        var fd = fs.openSync(lockFileName, "wx", 0o664);
-        try {
-          fs.writeFileSync(fd, String(process.pid), "ascii");
-          fs.closeSync(fd);
-        } catch (err) {}
+    process.on("uncaughtException", onUncaughtException);
 
-        process.on("exit", onExit);
-        process.on("uncaughtException", onUncaughtException);
+    // OS signal handlers
+    // Ctrl+C
+    process.on("SIGINT", exitProcess);
+    // kill pid
+    process.on("SIGUSR1", exitProcess);
+    process.on("SIGUSR2", exitProcess);
+    process.on("SIGTERM", exitProcess);
+    process.on("SIGHUP", exitProcess);
 
-        // OS signal handlers
-        // Ctrl+C
-        process.on("SIGINT", exitProcess);
-        // kill pid
-        process.on("SIGUSR1", exitProcess);
-        process.on("SIGUSR2", exitProcess);
-        process.on("SIGTERM", exitProcess);
-        process.on("SIGHUP", exitProcess);
-
-        process.stdin.on("close", exitProcess);
-        // close when stdin stops
-        if (os.platform() !== "win32") {
-          process.stdin.on("end", exitProcess);
-          process.stdin.resume();
-        }
-
-        return true;
-      } catch (exn) {
-        return false;
-      }
+    process.stdin.on("close", exitProcess);
+    // close when stdin stops
+    if (os.platform() !== "win32") {
+      process.stdin.on("end", exitProcess);
+      process.stdin.resume();
     }
 
-    var is_building = false;
-    function releaseBuild() {
-      is_building = false;
-    }
-    function acquireBuild() {
-      if (is_building) {
-        return false;
-      } else {
-        is_building = true;
-        return true;
-      }
-    }
     var sourcedirs = path.join("lib", "bs", ".sourcedirs.json");
     var watch_generated = [];
 
@@ -403,7 +442,7 @@ if (
       logFinish(code);
       releaseBuild();
       if (needRebuild()) {
-        build();
+        build(0);
       } else {
         var files = getWatchFiles(sourcedirs);
         watch_build(files);
@@ -428,25 +467,48 @@ if (
     // it relies on the fact that ninja will merege stdout and stderr
     // of the compiler output, if it does not
     // then we should have a way to not filter the compiler output
-    function build() {
+    /**
+     *
+     * @param {number} depth
+     * @returns
+     */
+    function build(depth) {
+      if (reasons_to_rebuild.length === 0) {
+        dlog("No need to rebuild");
+        return;
+      } else {
+        dlog(`Rebuilding since ${reasons_to_rebuild}`);
+      }
       if (acquireBuild()) {
         logStart();
-        if (reasons_to_rebuild.length === 0) {
-          dlog("Rebuilding since just got started");
-        } else {
-          dlog(`Rebuilding since ${reasons_to_rebuild}`);
-        }
-        reasons_to_rebuild = [];
-        var p = child_process.spawn(bsb_exe, [], {
-          stdio: ["inherit", "inherit", "pipe"],
-        });
-        p.on("exit", build_finished_callback);
-        p.stderr
-          .setEncoding("utf8")
+        child_process
+          .spawn(bsb_exe, [], {
+            stdio: ["inherit", "inherit", "pipe"],
+          })
           // @ts-ignore
           .on("data", function (s) {
             error_output(s, "ninja: error");
-          });
+          })
+          .on("exit", build_finished_callback)
+          .stderr.setEncoding("utf8");
+        // This is important to clean up all
+        // previous queued events
+        reasons_to_rebuild = [];
+        LAST_BUILD_START = +Date.now();
+      }
+      // if acquiring lock failed, no need retry here
+      // since build_finished_callback will try again
+      // however this is no longer the case for multiple-process
+      // it could fail due to other issues like .bsb.lock
+      else {
+        dlog(
+          `Acquire lock failed, do the build later ${depth} : ${reasons_to_rebuild}`
+        );
+        var waitTime = Math.pow(2, depth) * 40;
+        setTimeout(function () {
+          var d = Math.min(depth + 1, 5);
+          build(d);
+        }, waitTime);
       }
     }
     /**
@@ -455,8 +517,23 @@ if (
      * @param {string} reason
      */
     function on_change(event, reason) {
+      var event_time = +Date.now();
+      var time_diff = event_time - LAST_BUILD_START;
+      var event_diff = event_time - LAST_FIRED_EVENT;
+      dlog(`Since last build : ${time_diff} -- ${event_diff}`);
+      if (time_diff < 5 || event_diff < 5) {
+        // for 5ms, we could think that the ninja not get
+        // kicked yet, so there is really no need
+        // to send more events here
+
+        // note reasons_to_rebuild also
+        // helps avoid redundant build, but this will
+        // save the event loop call `setImmediate`
+        return;
+      }      
       if (validEvent(event, reason)) {
-        dlog(`Event ${event} ${reason}`);
+        dlog(`\nEvent ${event} ${reason}`);
+        LAST_FIRED_EVENT = event_time;
         reasons_to_rebuild.push([event, reason]);
         // Some editors are using temporary files to store edits.
         // This results in two sync change events: change + rename and two sync builds.
@@ -466,73 +543,13 @@ if (
             if (process.env.BS_WATCH_CLEAR && console.clear) {
               console.clear();
             }
-            build();
+            build(0);
           }
         });
       }
     }
-    function getWatchFiles(file) {
-      if (fs.existsSync(file)) {
-        return JSON.parse(fs.readFileSync(file, "utf8"));
-      } else {
-        return { dirs: [], generated: [] };
-      }
-    }
 
-    /**
-     *
-     * @param potential_pid {number}
-     */
-    function existPid(potential_pid) {
-      try {
-        return process.kill(potential_pid, 0);
-      } catch (err) {
-        return false;
-      }
-    }
-
-    // Initialization and get locker file
-    while (true) {
-      if (acquireLockFile()) {
-        break;
-      } else {
-        var potential_pid;
-        try {
-          var content = fs.readFileSync(lockFileName, "ascii");
-          potential_pid = parseInt(content);
-        } catch (err) {
-          // ignore
-        }
-        var validPid = potential_pid !== undefined && !isNaN(potential_pid);
-
-        if (validPid && !existPid(potential_pid)) {
-          console.log("Stale file detected : ", lockFileName);
-          try {
-            fs.unlinkSync(lockFileName);
-          } catch (err) {}
-          console.log("Retry:");
-          continue;
-        } else {
-          error_output("Error: could not acquire lockfile", "Error");
-          console.error(" " + lockFileName);
-
-          console.log(
-            "Could be another process running in the background",
-            "\nEither kill that process or delete the staled lock"
-          );
-          if (validPid) {
-            console.error(
-              "Try run command: ",
-              "`kill ",
-              potential_pid,
-              " || rm -f .bsb.lock`"
-            );
-          }
-          process.exit(2);
-        }
-      }
-    }
     watchers.push({ watcher: fs.watch(bsconfig, on_change), dir: bsconfig });
-    build();
+    build(0);
   }
 }
