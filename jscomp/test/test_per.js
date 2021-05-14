@@ -10,7 +10,7 @@ var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 
-Caml_external_polyfill.resolve("caml_register_named_value")("Pervasives.array_bound_error", {
+Caml_external_polyfill.resolve("register_named_value")("Pervasives.array_bound_error", {
       RE_EXN_ID: "Invalid_argument",
       _1: "index out of bounds"
     });
@@ -97,8 +97,8 @@ function $caret(s1, s2) {
   var l1 = s1.length;
   var l2 = s2.length;
   var s = Caml_bytes.create(l1 + l2 | 0);
-  Caml_external_polyfill.resolve("caml_blit_string")(s1, 0, s, 0, l1);
-  Caml_external_polyfill.resolve("caml_blit_string")(s2, 0, s, l1, l2);
+  Caml_external_polyfill.resolve("blit_string")(s1, 0, s, 0, l1);
+  Caml_external_polyfill.resolve("blit_string")(s2, 0, s, l1, l2);
   return s;
 }
 
@@ -180,7 +180,7 @@ function $at(l1, l2) {
 }
 
 function open_out_gen(mode, perm, name) {
-  return Caml_external_polyfill.resolve("caml_ml_open_descriptor_out")(Caml_external_polyfill.resolve("caml_sys_open")(name, mode, perm));
+  return Caml_external_polyfill.resolve("ml_open_descriptor_out")(Caml_external_polyfill.resolve("sys_open")(name, mode, perm));
 }
 
 function open_out(name) {
@@ -216,14 +216,14 @@ function open_out_bin(name) {
 }
 
 function flush_all(param) {
-  var _param = Caml_external_polyfill.resolve("caml_ml_out_channels_list")(undefined);
+  var _param = Caml_external_polyfill.resolve("ml_out_channels_list")(undefined);
   while(true) {
     var param$1 = _param;
     if (!param$1) {
       return ;
     }
     try {
-      Caml_external_polyfill.resolve("caml_ml_flush")(param$1.hd);
+      Caml_external_polyfill.resolve("ml_flush")(param$1.hd);
     }
     catch (exn){
       
@@ -234,11 +234,11 @@ function flush_all(param) {
 }
 
 function output_bytes(oc, s) {
-  return Caml_external_polyfill.resolve("caml_ml_output")(oc, s, 0, s.length);
+  return Caml_external_polyfill.resolve("ml_output")(oc, s, 0, s.length);
 }
 
 function output_string(oc, s) {
-  return Caml_external_polyfill.resolve("caml_ml_output")(oc, s, 0, s.length);
+  return Caml_external_polyfill.resolve("ml_output")(oc, s, 0, s.length);
 }
 
 function output(oc, s, ofs, len) {
@@ -249,7 +249,7 @@ function output(oc, s, ofs, len) {
           Error: new Error()
         };
   }
-  return Caml_external_polyfill.resolve("caml_ml_output")(oc, s, ofs, len);
+  return Caml_external_polyfill.resolve("ml_output")(oc, s, ofs, len);
 }
 
 function output_substring(oc, s, ofs, len) {
@@ -260,27 +260,27 @@ function output_substring(oc, s, ofs, len) {
           Error: new Error()
         };
   }
-  return Caml_external_polyfill.resolve("caml_ml_output")(oc, s, ofs, len);
+  return Caml_external_polyfill.resolve("ml_output")(oc, s, ofs, len);
 }
 
 function output_value(chan, v) {
-  return Caml_external_polyfill.resolve("caml_output_value")(chan, v, /* [] */0);
+  return Caml_external_polyfill.resolve("output_value")(chan, v, /* [] */0);
 }
 
 function close_out(oc) {
-  Caml_external_polyfill.resolve("caml_ml_flush")(oc);
-  return Caml_external_polyfill.resolve("caml_ml_close_channel")(oc);
+  Caml_external_polyfill.resolve("ml_flush")(oc);
+  return Caml_external_polyfill.resolve("ml_close_channel")(oc);
 }
 
 function close_out_noerr(oc) {
   try {
-    Caml_external_polyfill.resolve("caml_ml_flush")(oc);
+    Caml_external_polyfill.resolve("ml_flush")(oc);
   }
   catch (exn){
     
   }
   try {
-    return Caml_external_polyfill.resolve("caml_ml_close_channel")(oc);
+    return Caml_external_polyfill.resolve("ml_close_channel")(oc);
   }
   catch (exn$1){
     return ;
@@ -288,7 +288,7 @@ function close_out_noerr(oc) {
 }
 
 function open_in_gen(mode, perm, name) {
-  return Caml_external_polyfill.resolve("caml_ml_open_descriptor_in")(Caml_external_polyfill.resolve("caml_sys_open")(name, mode, perm));
+  return Caml_external_polyfill.resolve("ml_open_descriptor_in")(Caml_external_polyfill.resolve("sys_open")(name, mode, perm));
 }
 
 function open_in(name) {
@@ -319,7 +319,7 @@ function input(ic, s, ofs, len) {
           Error: new Error()
         };
   }
-  return Caml_external_polyfill.resolve("caml_ml_input")(ic, s, ofs, len);
+  return Caml_external_polyfill.resolve("ml_input")(ic, s, ofs, len);
 }
 
 function unsafe_really_input(ic, s, _ofs, _len) {
@@ -329,7 +329,7 @@ function unsafe_really_input(ic, s, _ofs, _len) {
     if (len <= 0) {
       return ;
     }
-    var r = Caml_external_polyfill.resolve("caml_ml_input")(ic, s, ofs, len);
+    var r = Caml_external_polyfill.resolve("ml_input")(ic, s, ofs, len);
     if (r === 0) {
       throw {
             RE_EXN_ID: "End_of_file",
@@ -369,7 +369,7 @@ function input_line(chan) {
       }
       var hd = param.hd;
       var len = hd.length;
-      Caml_external_polyfill.resolve("caml_blit_string")(hd, 0, buf, pos - len | 0, len);
+      Caml_external_polyfill.resolve("blit_string")(hd, 0, buf, pos - len | 0, len);
       _param = param.tl;
       _pos = pos - len | 0;
       continue ;
@@ -380,7 +380,7 @@ function input_line(chan) {
   while(true) {
     var len = _len;
     var accu = _accu;
-    var n = Caml_external_polyfill.resolve("caml_ml_input_scan_line")(chan);
+    var n = Caml_external_polyfill.resolve("ml_input_scan_line")(chan);
     if (n === 0) {
       if (accu) {
         return build_result(Caml_bytes.create(len), len, accu);
@@ -392,8 +392,8 @@ function input_line(chan) {
     }
     if (n > 0) {
       var res = Caml_bytes.create(n - 1 | 0);
-      Caml_external_polyfill.resolve("caml_ml_input")(chan, res, 0, n - 1 | 0);
-      Caml_external_polyfill.resolve("caml_ml_input_char")(chan);
+      Caml_external_polyfill.resolve("ml_input")(chan, res, 0, n - 1 | 0);
+      Caml_external_polyfill.resolve("ml_input_char")(chan);
       if (!accu) {
         return res;
       }
@@ -404,7 +404,7 @@ function input_line(chan) {
                 });
     }
     var beg = Caml_bytes.create(-n | 0);
-    Caml_external_polyfill.resolve("caml_ml_input")(chan, beg, 0, -n | 0);
+    Caml_external_polyfill.resolve("ml_input")(chan, beg, 0, -n | 0);
     _len = len - n | 0;
     _accu = {
       hd: beg,
@@ -416,7 +416,7 @@ function input_line(chan) {
 
 function close_in_noerr(ic) {
   try {
-    return Caml_external_polyfill.resolve("caml_ml_close_channel")(ic);
+    return Caml_external_polyfill.resolve("ml_close_channel")(ic);
   }
   catch (exn){
     return ;
@@ -447,7 +447,7 @@ function exit(retcode) {
   return Caml_sys.sys_exit(retcode);
 }
 
-Caml_external_polyfill.resolve("caml_register_named_value")("Pervasives.do_at_exit", do_at_exit);
+Caml_external_polyfill.resolve("register_named_value")("Pervasives.do_at_exit", do_at_exit);
 
 var max_int = 2147483647;
 

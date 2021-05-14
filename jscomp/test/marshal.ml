@@ -21,12 +21,12 @@ type extern_flags =
 (* note: this type definition is used in 'byterun/debugger.c' *)
 
 external to_bytes: 'a -> extern_flags list -> bytes
-    = "caml_output_value_to_string"
+    = "?output_value_to_string"
 external to_string: 'a -> extern_flags list -> string
-    = "caml_output_value_to_string"
+    = "?output_value_to_string"
 external to_buffer_unsafe:
       bytes -> int -> int -> 'a -> extern_flags list -> int
-    = "caml_output_value_to_buffer"
+    = "?output_value_to_buffer"
 
 let to_buffer buff ofs len v flags =
   if ofs < 0 || len < 0 || ofs > Bytes.length buff - len
@@ -41,8 +41,8 @@ let to_buffer buff ofs len v flags =
 
 
 external from_bytes_unsafe: bytes -> int -> 'a
-                           = "caml_input_value_from_string"
-external data_size_unsafe: bytes -> int -> int = "caml_marshal_data_size"
+                           = "?input_value_from_string"
+external data_size_unsafe: bytes -> int -> int = "?marshal_data_size"
 
 let header_size = 20
 let data_size buff ofs =
