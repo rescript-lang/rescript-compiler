@@ -170,7 +170,7 @@ module Internal = struct
   (* Use opaque instead of `._n` to prevent some optimizations happening *)
 
   external run : 'a arity0 -> 'a = "#run" "0"
-  (* 
+  (* FIXME: remove the need for native string
     x##meth a b --> 
     fullApppy (
         (id (unsafe_downgrade x)#meth).I_2) 

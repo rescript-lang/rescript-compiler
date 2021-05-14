@@ -595,7 +595,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       Lam.handle_bs_non_obj_ffi arg_types result_type ffi args loc prim_name
     | Ffi_inline_const i -> Lam.const i
 
-  and convert_js_primitive (p: Primitive.description) (args : Lambda.lambda list) loc =
+  and convert_js_primitive (p: Primitive.description) (args : Lambda.lambda list) loc : Lam.t =
     let s = p.prim_name in
     match () with
     | _ when s = "#is_not_none" -> 
