@@ -9,7 +9,7 @@ let {x: xCoord, y: yCoord, _} = 1
 let {xxxxxxxxxxxxxxxxxxxxxxxxx, yyyyyyyyyyyyyyyyyyyyyyyyy, zzzzzzzzzzzzzzzzzzzzzzzzz } = 1
 let {xxxxxxxxxxxxxxxxxxxxxxxxx, yyyyyyyyyyyyyyyyyyyyyyyyy, zzzzzzzzzzzzzzzzzzzzzzzzz, _ } = 1
 
-let {x as y} = z
+let {x: y} = z
 let {x: x as y} = z
 
 let get_age3 = ({age: (age2: int), name: _}) => age2

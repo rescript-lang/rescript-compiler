@@ -1380,15 +1380,7 @@ and parseRecordPatternField p =
       ~loc:label.loc
       (Location.mkloc (Longident.last label.txt) label.loc)
   in
-  match p.token with
-  | As -> (* {bar as baz} -> {bar: baz} *)
-    Parser.next p;
-    let (name, loc) = parseLident p in
-    let var = Location.mkloc name loc in
-    let newNameOfLabel = Ast_helper.Pat.var ~loc var in
-    (label, newNameOfLabel)
-  | _ ->
-    (label, pattern)
+  (label, pattern)
 
  (* TODO: there are better representations than PatField|Underscore ? *)
 and parseRecordPatternItem p =

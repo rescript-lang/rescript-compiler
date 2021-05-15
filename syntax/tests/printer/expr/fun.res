@@ -205,7 +205,7 @@ let add = ([a, b]): array<intWithSuperLongName, stringWithSuperLongName, intWith
 let add = ([superLongParameterName, bsuperLongParameterName, superLongParameterName, superLongParameterName]): array<intWithSuperLongName, stringWithSuperLongName, intWithSuperLongName, intWithSuperLongName>  => a + b
 
 let add = ({x: superLongParameterName, y: superLongParameterName, z: superLongParameterName}) => x + y + z
-let add = ({x as superLongParameterName, y as superLongParameterName, z as superLongParameterName}) => x + y + z
+let add = ({x: superLongParameterName, y: superLongParameterName, z: superLongParameterName}) => x + y + z
 let add = ({x: x as superLongParameterName, y: y as superLongParameterName, z: z as superLongParameterName}) => x + y + z
 
 
