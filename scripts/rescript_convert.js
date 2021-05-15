@@ -1,9 +1,11 @@
 //@ts-check
 var arg = require("./rescript_arg.js");
 var format_usage = `Usage: rescript convert <options> [files]
-rescript convert -- it converts the current directory
-Note this subcommand will remove old reason/ml files and 
-create new ReScript files, make sure your work is saved first.
+
+\`rescript convert\` converts the current directory
+
+**This command removes old Reason/OCaml files and creates new ReScript 
+files. Make sure your work is saved first!**
 `;
 
 var child_process = require("child_process");
@@ -22,7 +24,7 @@ var specs = [
   [
     "-all",
     { kind: "Unit", data: { kind: "Unit_set", data: formatProject } },
-    "Formatting the whole project ",
+    "Convert the whole project",
   ],
 ];
 

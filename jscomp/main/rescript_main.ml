@@ -85,12 +85,11 @@ let ninja_command_exit (type t) (ninja_args : string array)  : t =
    What will happen, some flags are really not good
    ninja -C _build
 *)
-let clean_usage = "Usage : rescript.exe clean <options>\n\
-                   It only clean the current project by default"
-let build_usage =  "Usage : rescript.exe build <options> -- <ninja_options>\n\
-                    It only builds the current project by default\n\
-                    For ninja options, try rescript.exe --  -h.  \n\
-                    Note they are supposed to be internals and not reliable."
+let clean_usage = "Usage: rescript.exe clean <options>\n\n\
+                   `rescript clean` only cleans the current project\n"
+let build_usage =  "Usage: rescript.exe build <options> -- <ninja_options>\n\n\
+                    `rescript build` implicitly builds dependencies if they aren't built\n\n\
+                    `rescript.exe -- -h` for Ninja options (internal usage only; unstable)\n"
 
 
 
@@ -138,14 +137,14 @@ let build_subcommand ~start  argv argv_len =
     "-w", unit_set_spec watch_mode, 
     "Watch mode";
     "-with-deps", unit_set_spec make_world,
-    "Build with deps";
+    "Build dependencies explicitly";
     "-install", unit_set_spec do_install,
     "*internal* Install public interface files for dependencies ";
     (* This should be put in a subcommand
       previously it works with the implication `bsb && bsb -install`
     *)
     "-ws", string_set_spec (ref ""),
-    "[host]:port set the host, port for websocket build notifications";
+    "[host]:port set up host & port for WebSocket build notifications";
     "-regen", unit_set_spec force_regenerate,
     "*internal* \n\
      Always regenerate build.ninja no matter bsconfig.json is changed or not";
@@ -184,14 +183,14 @@ let clean_subcommand ~start argv =
   Bsb_arg.parse_exn 
     ~usage:clean_usage ~start ~argv [|
     "-with-deps", unit_set_spec make_world,
-    "clean its deps too"
+    "Clean dependencies too"
   |] failed_annon;
   if !make_world then 
     Bsb_clean.clean_bs_deps Bsb_global_paths.cwd ; 
   Bsb_clean.clean_self Bsb_global_paths.cwd      
 let init_usage = "Init the project\n\
                   rescript init [project-name]\n\
-                  defaults to the current directory if not set\n\
+                  defaults to the current directory if [project-name] isn't set\n\
                  "
 let init_subcommand ~start argv =   
   Bsb_arg.parse_exn 

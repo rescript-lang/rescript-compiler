@@ -125,7 +125,7 @@ function setUpWebSocket() {
       // @ts-ignore
       if (err !== undefined && err.code === "EADDRINUSE") {
         var error = std_is_tty ? `\x1b[1;31mERROR:\x1b[0m` : `ERROR:`;
-        console.error(`${error} The websocket port number ${webSocketPort} is in use. 
+        console.error(`${error} The websocket port number ${webSocketPort} is in use.
 Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
       } else {
         console.error(err);
@@ -149,21 +149,24 @@ if (process.env.NINJA_ANSI_FORCED === undefined) {
   dlog(`NINJA_ANSI_FORCED: "${process.env.NINJA_ANSI_FORCED}"`);
 }
 function help() {
-  console.log(`Available flags
--v, -version  display version number
--h, -help     display help 
+  console.log(`Usage: rescript <options> <subcommand>
+
+\`rescript\` is equivalent to \`rescript build\`
+
+Options:
+  -v, -version  display version number
+  -h, -help     display help
+
 Subcommands:
-    build    
-    clean
-    format
-    convert
-    help
-Run rescript subcommand -h for more details,
-For example:
-    rescript build -h
-    rescript format -h
-The default \`rescript\` is equivalent to \`rescript build\` subcommand
-  `);
+  build
+  clean
+  format
+  convert
+  help
+
+Run \`rescript <subcommand> -h\` for subcommand help. Examples:
+  rescript build -h
+  rescript format -h`);
 }
 
 var maybe_subcommand = process_argv[2];
@@ -530,7 +533,7 @@ if (
         // helps avoid redundant build, but this will
         // save the event loop call `setImmediate`
         return;
-      }      
+      }
       if (validEvent(event, reason)) {
         dlog(`\nEvent ${event} ${reason}`);
         LAST_FIRED_EVENT = event_time;
