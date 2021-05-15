@@ -1,7 +1,8 @@
 //@ts-check
 var arg = require("./rescript_arg.js");
 var format_usage = `Usage: rescript format <options> [files]
-rescript format -- it format the current directory
+
+\`rescript format\` formats the current directory
 `;
 var child_process = require("child_process");
 var path = require("path");
@@ -23,14 +24,14 @@ var specs = [
   [
     "-stdin",
     { kind: "String", data: { kind: "String_set", data: stdin } },
-    `[.res|.resi|.ml|.mli|.re|.rei] Read the format code from stdin and print the formatted code
-in the stdout (in rescript syntax)`,
+    `[.res|.resi|.ml|.mli|.re|.rei] Read the code from stdin and print
+the formatted code to stdout in ReScript syntax`,
   ],
   //  ml|mli
   [
     "-all",
     { kind: "Unit", data: { kind: "Unit_set", data: format } },
-    "Formatting the whole project ",
+    "Format the whole project ",
   ],
 ];
 var formattedStdExtensions = [".res", ".resi", ".ml", ".mli", ".re", ".rei"];

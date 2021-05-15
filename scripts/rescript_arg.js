@@ -38,7 +38,7 @@ function usage_b(b, usage, specs) {
   b.add(usage);
   b.add(`\nOptions:\n`);
   if(specs.length === 0){
-    return 
+    return
   }
   var max_col = 0;
   for (let [key] of specs) {
@@ -46,7 +46,8 @@ function usage_b(b, usage, specs) {
       max_col = key.length;
     }
   }
-  for (let [key, _, doc] of specs) {
+  for (let i = 0; i < specs.length; i++) {
+    let [key, _, doc] = specs[i]
     if (!doc.startsWith("*internal*")) {
       b.add("  ")
         .add(key)
@@ -66,7 +67,9 @@ function usage_b(b, usage, specs) {
           cur = i + 1;
         }
       }
-      b.add("\n");
+      if (i < specs.length - 1) {
+        b.add("\n");
+      }
     }
   }
 }
