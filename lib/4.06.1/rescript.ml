@@ -14386,7 +14386,12 @@ let root = ([
     \  \"sources\": {\n\
     \    \"dir\" : \"src\",\n\
     \    \"subdirs\" : true\n\
-    \  }\n\
+    \  },\n\
+    \  \"package-specs\": {\n\
+    \    \"module\": \"es6\",\n\
+    \    \"in-source\": true\n\
+    \  },\n\
+    \  \"suffix\": \".bs.js\"\n\
     }\n\
     "
     );
@@ -14410,7 +14415,7 @@ let root = ([
     }"
     );
     Dir("src",[
-     File("demo.res",
+     File("Demo.res",
      "\n\
      Js.log(\"Hello, ReScript\")"
      )        
