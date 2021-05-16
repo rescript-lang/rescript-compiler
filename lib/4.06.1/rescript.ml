@@ -16765,10 +16765,9 @@ let clean_subcommand ~start argv =
   if !make_world then 
     Bsb_clean.clean_bs_deps Bsb_global_paths.cwd ; 
   Bsb_clean.clean_self Bsb_global_paths.cwd      
-let init_usage = "Init the project\n\
-                  rescript init [project-name]\n\
-                  defaults to the current directory if [project-name] isn't set\n\
-                 "
+let init_usage = "Usage: rescript init [folder-name]\n\n\
+                  `rescript init` adds a small ReScript project template to the current folder\n\n\
+                  Pass folder-name to add them to a dedicated folder\n"
 let init_subcommand ~start argv =   
   Bsb_arg.parse_exn 
     ~usage:init_usage ~start ~argv [|
