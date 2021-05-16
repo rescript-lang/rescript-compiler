@@ -1,4 +1,5 @@
 {
+  "name": "rescript",
   "devDependencies": {
     "mocha": "^7.2.0",
     "nyc": "^15.0.0"
@@ -19,7 +20,6 @@
     "test-env-comipler": "BS_TRAVIS_CI=1 node scripts/install.js -use-env-compiler",
     "coverage": "nyc --timeout=3000 --reporter=html mocha jscomp/test/*test.js && open ./coverage/index.html"
   },
-  "name": "rescript",
   "version": "10.0.0",
   "description": "ReScript toolchain",
   "repository": {
@@ -28,7 +28,10 @@
   },
   "keywords": [
     "ReScript",
-    "Functional Programming"
+    "Compiler",
+    "Types",
+    "JavaScript",
+    "Language"
   ],
   "author": {
     "name": "Hongbo Zhang"
@@ -43,5 +46,5 @@
   "bugs": {
     "url": "https://github.com/rescript-lang/rescript-compiler/issues"
   },
-  "homepage": "https://github.com/rescript-lang/rescript-compiler#readme"
+  "homepage": "http://rescript-lang.org"
 }
