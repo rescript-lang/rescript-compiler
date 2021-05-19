@@ -634,6 +634,26 @@ let external_desc_of_non_obj
     end
   | {module_as_val = Some _; _} ->
     Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with %@module.")
+
+  | {get_name = `Nm_na;
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     new_name = `Nm_na ;
+     set_name = `Nm_na ;
+     external_module_name = None;
+     splice ;
+     scopes ;
+     mk_obj = _; (* mk_obj is always false *)
+     return_wrapper = _;
+
+    } -> 
+    let name = string_of_bundle_source prim_name_or_pval_prim in
+    Js_call {splice; name; external_module_name = None; scopes}   
   | {call_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name) ;
      splice;
      scopes ;
@@ -834,25 +854,6 @@ let external_desc_of_non_obj
       Location.raise_errorf ~loc "Ill defined attribute %@bs.get (only one argument)"
   | {get_name = #bundle_source; _}
     -> Location.raise_errorf ~loc "Attribute found that conflicts with %@bs.get"
-
-  | {get_name = `Nm_na;
-     val_name = `Nm_na  ;
-     call_name = `Nm_na ;
-     module_as_val = None;
-     set_index = false;
-     get_index = false;
-     val_send = `Nm_na ;
-     val_send_pipe = None;
-     new_name = `Nm_na ;
-     set_name = `Nm_na ;
-     external_module_name = None;
-     splice = _ ;
-     scopes = _;
-     mk_obj = _;
-     return_wrapper = _;
-
-    }
-    ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot %@val? "  
 
 (** Note that the passed [type_annotation] is already processed by visitor pattern before*)
 let handle_attributes
