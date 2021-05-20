@@ -11,7 +11,7 @@ function to_buffer(buff, ofs, len, v, flags) {
           Error: new Error()
         };
   }
-  return Caml_external_polyfill.resolve("caml_output_value_to_buffer")(buff, ofs, len, v, flags);
+  return Caml_external_polyfill.resolve("output_value_to_buffer")(buff, ofs, len, v, flags);
 }
 
 function data_size(buff, ofs) {
@@ -22,7 +22,7 @@ function data_size(buff, ofs) {
           Error: new Error()
         };
   }
-  return Caml_external_polyfill.resolve("caml_marshal_data_size")(buff, ofs);
+  return Caml_external_polyfill.resolve("marshal_data_size")(buff, ofs);
 }
 
 function total_size(buff, ofs) {
@@ -37,7 +37,7 @@ function from_bytes(buff, ofs) {
           Error: new Error()
         };
   }
-  var len = Caml_external_polyfill.resolve("caml_marshal_data_size")(buff, ofs);
+  var len = Caml_external_polyfill.resolve("marshal_data_size")(buff, ofs);
   if (ofs > (buff.length - (20 + len | 0) | 0)) {
     throw {
           RE_EXN_ID: "Invalid_argument",
@@ -45,7 +45,7 @@ function from_bytes(buff, ofs) {
           Error: new Error()
         };
   }
-  return Caml_external_polyfill.resolve("caml_input_value_from_string")(buff, ofs);
+  return Caml_external_polyfill.resolve("input_value_from_string")(buff, ofs);
 }
 
 function from_string(buff, ofs) {

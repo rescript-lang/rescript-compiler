@@ -143,12 +143,49 @@ let external_attrs = [|
   "set_index";
   Literals.gentype_import
 |]    
-(* ATT: Special cases for built-in attributes handling *)
-let external_needs_to_be_encoded (attrs : t)=
-  Ext_list.exists_fst attrs 
-    (fun {txt} ->
-       Ext_string.starts_with txt "bs." ||
-       Ext_array.exists external_attrs (fun (x : string) -> txt = x) ) 
+
+let first_char_special (x : string) = 
+  match String.unsafe_get x  0 with   
+  | '#' | '?' | '%' -> true
+  | _ -> false
+
+let first_marshal_char (x : string) = 
+  x <> ""   &&
+  ( String.unsafe_get x  0 = '\132')
+
+let prims_to_be_encoded (attrs : string list) = 
+  match attrs with 
+  | [] -> assert false (* normal val declaration *)  
+  | x :: _ when first_char_special x  ->  false
+  | _ :: x :: _ when first_marshal_char x -> false
+  | _ -> true
+
+(**
+
+   [@@inline]
+   let a = 3
+
+   [@@inline]
+   let a : 3 
+
+   They are not considered externals, they are part of the language
+*)    
+
+
+let rs_externals (attrs : t)  pval_prim = 
+  match attrs , pval_prim with 
+  | _, [] -> false 
+  (* This is  val *)
+  | [] , _ -> 
+    (* Not any attribute found *)
+    prims_to_be_encoded pval_prim    
+  | _, _ -> 
+    Ext_list.exists_fst attrs 
+      (fun ({txt} : string Asttypes.loc) ->
+         Ext_string.starts_with txt "bs." ||
+         Ext_array.exists external_attrs (fun (x : string) -> txt = x) ) 
+    || 
+    prims_to_be_encoded pval_prim
 
 let is_inline : attr -> bool =        
   (fun 

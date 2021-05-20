@@ -8,10 +8,10 @@ let suites = Mt.[
   (* "string_of_char_array", (fun _ -> 
     Eq(S.caml_string_of_char_array [|'a';'b';'c'|], "abc")
                           ); *)
-  "caml_is_printable", (fun _ ->
+  "?is_printable", (fun _ ->
     Eq(Test_char.caml_is_printable 'a', true)
                        );
-  "caml_string_of_bytes", (fun  _ ->
+  "?string_of_bytes", (fun  _ ->
 
     let f len = 
       let b = Bytes.create len in

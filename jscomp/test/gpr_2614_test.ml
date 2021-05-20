@@ -4,14 +4,18 @@
 type t = {
 
   mutable hi : int
-    [@bs.as "Content-Type"];
+    [@as "Content-Type"];
   mutable low : int
-    [@bs.as "l"];
+    [@as "l"];
   mutable x : int;
-    [@bs.as "open"]
-} [@@bs.deriving abstract]
+    [@as "open"]
+} [@@deriving abstract]
   (* [@@bs.x] *)
-
+(*
+external hiSet :
+      t -> int -> unit = "Content-Type"
+        "\132\149\166\190\000\000\000\019\000\000\000\004\000\000\000\014\000\000\000\012\176\145BE\167,Content-Type@"
+*)
 
 let v = t ~hi:3 ~low:2 ~x:2
 

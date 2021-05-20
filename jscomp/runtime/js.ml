@@ -43,8 +43,7 @@
 
 (**/**)
 (** Types for JS objects *)
-type 'a t = 'a
-[@@ocaml.deprecated "Js.t is not needed any more, you can remove it"]
+type 'a t = < .. > as 'a
 (**/**)
 
 (* internal types for FFI, these types are not used by normal users 

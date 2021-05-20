@@ -7,7 +7,7 @@ var Test_char = require("./test_char.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 
 var suites_0 = [
-  "caml_is_printable",
+  "?is_printable",
   (function (param) {
       return {
               TAG: /* Eq */0,
@@ -19,7 +19,7 @@ var suites_0 = [
 
 var suites_1 = {
   hd: [
-    "caml_string_of_bytes",
+    "?string_of_bytes",
     (function (param) {
         var match = List.split(List.map((function (x) {
                     var b = Caml_bytes.create(x);

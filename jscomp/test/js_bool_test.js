@@ -31,7 +31,7 @@ var u = 1;
 var v = true;
 
 var suites_0 = [
-  "caml_bool_eq_caml_bool",
+  "?bool_eq_caml_bool",
   (function (param) {
       return {
               TAG: /* Eq */0,

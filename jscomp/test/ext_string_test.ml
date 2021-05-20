@@ -418,7 +418,7 @@ let empty = ""
 #if BS_BROWSER then
 let compare = Bs_hash_stubs.string_length_based_compare    
 #else    
-external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+external compare : string -> string -> int = "?string_length_based_compare" "noalloc";;
 
 #end
 let single_space = " "

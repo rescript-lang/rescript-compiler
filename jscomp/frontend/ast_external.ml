@@ -33,11 +33,14 @@ let handleExternalInSig
   let pval_type = self.typ self prim.pval_type in
   let pval_attributes = self.attributes self prim.pval_attributes in
   match prim.pval_prim with
-  | [] 
-  | _ :: _ :: _ ->
+  | [] -> 
     Location.raise_errorf
       ~loc
-      "only a single string is allowed in bs external" 
+      "empty primitive string" 
+  | a :: b :: _ ->
+    Location.raise_errorf
+      ~loc
+      "only a single string is allowed in bs external %S %S" a b
   | [ v ] ->
     match Ast_external_process.handle_attributes_as_string
             loc
@@ -65,11 +68,16 @@ let handleExternalInStru
   let pval_type = self.typ self prim.pval_type in
   let pval_attributes = self.attributes self prim.pval_attributes in
   match prim.pval_prim with
-  | [] | _ :: _ :: _
+  | [] 
     -> 
     Location.raise_errorf
       ~loc 
-      "only a single string is allowed in bs external" 
+      "empty primitive string" 
+  | a :: b :: _
+    -> 
+    Location.raise_errorf
+      ~loc 
+      "only a single string is allowed in bs external %S : %S"  a b 
   | [ v] ->
     match Ast_external_process.handle_attributes_as_string
             loc
