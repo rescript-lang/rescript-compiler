@@ -24,7 +24,18 @@
 
 (** JavaScript String API *)
 
-[@@@warning "-103"]
+[@@@config {
+  flags = [|
+    "-w";
+       "a";
+    (* "-drawlambda"; *)
+    (* "-dtypedtree"; *)
+    (* "-bs-diagnose"; *)
+    "-dsource";
+    (* "-dsource"; *)
+  |]
+}]
+
 
 type t = string
 

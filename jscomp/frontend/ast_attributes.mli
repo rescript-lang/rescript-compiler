@@ -107,3 +107,5 @@ val internal_expansive : attr
 (* val deprecated : string -> attr *)
 
 val rs_externals :  t -> string list  -> bool 
+
+val process_send_pipe : t -> Parsetree.core_type option * t 

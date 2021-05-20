@@ -56,7 +56,9 @@ val is_user_option : t -> bool
 *)
 val get_uncurry_arity : t -> int option
 
+val get_curry_arity : t -> int 
 
+val get_curry_labels : t -> Asttypes.arg_label list 
 
 (** fails when Ptyp_poly *)
 val list_of_arrow :
@@ -65,3 +67,4 @@ val list_of_arrow :
   Ast_compatible.param_type list
 
 val is_arity_one : t -> bool
+

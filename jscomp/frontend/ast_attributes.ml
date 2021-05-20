@@ -221,7 +221,25 @@ let process_derive_type (attrs : t) : derive_attr * t =
          st, attr::acc
     ) 
 
-
+let process_send_pipe (attrs : t ) : Parsetree.core_type option * t = 
+  Ext_list.fold_left attrs (None, []) 
+    (fun (st, acc) ({txt ; loc}, payload  as attr)  ->
+       match   txt  with
+       |  "bs.send.pipe" 
+         ->
+         begin match st with 
+           |  None -> 
+             Location.prerr_warning loc (Warnings.Bs_ffi_warning "This attribute is deprecated, use @send instead.");
+             Some
+               (Ast_payload.as_core_type loc payload), 
+                (({Asttypes.txt = "bs.send";loc}, Parsetree.PStr []):: acc)
+           | Some _
+             ->
+             Location.raise_errorf ~loc "Duplicated bs.send.pipe"
+         end 
+       | _  ->
+         st, attr::acc
+    ) 
 
 (* duplicated @uncurry @string not allowed,
    it is worse in @uncurry since it will introduce
