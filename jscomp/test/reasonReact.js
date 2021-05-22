@@ -2,6 +2,7 @@
 
 var Curry = require("../../lib/js/curry.js");
 var React = require("react");
+var Js_array = require("../../lib/js/js_array.js");
 var ReasonReactOptimizedCreateClass = require("./reasonReactOptimizedCreateClass.js");
 
 function createDomElement(s, props, children) {
@@ -129,10 +130,9 @@ function createClass(debugName) {
                   }
                   var subs = $$this.subscriptions;
                   if (subs !== null) {
-                    subs.forEach(function (unsubscribe) {
-                          return Curry._1(unsubscribe, undefined);
-                        });
-                    return ;
+                    return Js_array.forEach((function (unsubscribe) {
+                                  return Curry._1(unsubscribe, undefined);
+                                }), subs);
                   }
                   
                 }),

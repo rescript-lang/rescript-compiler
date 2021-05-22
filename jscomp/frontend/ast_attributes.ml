@@ -221,7 +221,37 @@ let process_derive_type (attrs : t) : derive_attr * t =
          st, attr::acc
     ) 
 
+let process_send_pipe (attrs : t ) : (Parsetree.core_type * t) option  = 
+  match attrs with 
+  | [] -> None   
+  | _ -> 
+    if not (Ext_list.exists_fst attrs (fun {txt} -> txt = "bs.send.pipe")) then 
+      (* fast path *)
+      None 
+    else 
+      let ty = ref None in  
+      let attrs = 
+        Ext_list.fold_left attrs []
+          (fun acc ({txt ; loc}, payload  as attr)  ->
+             match   txt  with
+             |  "bs.send.pipe" 
+               ->
+               begin match !ty with 
+                 |  None -> 
+                   Location.prerr_warning loc (Warnings.Bs_ffi_warning "This attribute is deprecated, use @send instead.");
 
+                   ty:=Some (Ast_payload.as_core_type loc payload);
+                   (({Asttypes.txt = "bs.send";loc}, Parsetree.PStr []):: acc)
+                 | Some _
+                   ->
+                   Location.raise_errorf ~loc "Duplicated bs.send.pipe"
+               end 
+             | _  ->
+               attr::acc
+          ) in 
+      match !ty with 
+      | None -> assert false
+      | Some ty -> Some (ty, attrs)
 
 (* duplicated @uncurry @string not allowed,
    it is worse in @uncurry since it will introduce

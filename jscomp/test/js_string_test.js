@@ -1,6 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Js_array = require("../../lib/js/js_array.js");
 var Belt_Option = require("../../lib/js/belt_Option.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
@@ -281,9 +282,7 @@ var suites_1 = {
                                                                 "hello ",
                                                                 undefined
                                                               ],
-                                                              _1: Belt_Option.map(Caml_option.null_to_opt("hello word".match(/hello (world)?/)), (function (prim) {
-                                                                      return prim.slice();
-                                                                    }))
+                                                              _1: Belt_Option.map(Caml_option.null_to_opt("hello word".match(/hello (world)?/)), Js_array.copy)
                                                             };
                                                     })
                                                 ],
