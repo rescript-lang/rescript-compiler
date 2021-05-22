@@ -116,61 +116,64 @@ let handleExternalInStru
               pval_prim;
               pval_attributes
              }} in 
+      let normal () =
+        if not no_inline_cross_module then   
+          external_result
+        else
+          let open Ast_helper in 
+          Str.include_ ~loc 
+            (Incl.mk ~loc 
+               (Mod.constraint_ ~loc
+                  (Mod.structure ~loc 
+                     [external_result])
+                  (Mty.signature ~loc [
+                      {
+                        psig_desc = Psig_value {
+                            prim with 
+                            pval_type ; 
+                            pval_prim = [];
+                            pval_attributes ;
+                          };
+                        psig_loc = loc
+                      }]))) in        
       if !send_pipe then        
         let [@warning "-8"] ((_::params) as args) = Ast_core_type.get_curry_labels pval_type in 
         let arity = List.length args in 
-        let open Ast_helper in 
-        Str.include_ ~loc 
-          (Incl.mk ~loc 
-             (Mod.structure ~loc 
-                [external_result;
-                 Str.value 
-                   ~loc Nonrecursive [
-                   Vb.mk ~loc 
-                     (Pat.var ~loc prim.pval_name)
+        if arity = 1 then normal () else 
+          let open Ast_helper in 
+          Str.include_ ~loc 
+            (Incl.mk ~loc 
+               (Mod.structure ~loc 
+                  [external_result;
+                   Str.value 
+                     ~loc Nonrecursive [
+                     Vb.mk ~loc 
+                       (Pat.var ~loc prim.pval_name)
 
-                     (let body = (Exp.apply ~loc 
-                                    (Exp.ident ~loc {txt = Lident prim.pval_name.txt; loc }) 
-                                    (Ext_list.mapi args (fun i x ->
-                                         match x with 
-                                         | Asttypes.Nolabel -> 
-                                           Asttypes.Nolabel, Exp.ident {txt = Lident ("arg"^string_of_int i); loc}
-                                         | Labelled s 
-                                         | Optional s 
-                                           -> 
-                                           x, Exp.ident {txt = Lident s ; loc}
-                                       ))
-                                 ) in 
-                      snd @@ 
-                      Ext_list.fold_right
-                        params (0, Exp.fun_  Nolabel None (Pat.var ~loc { txt = "arg0"; loc} ) body) (
-                        fun arg (i, obj) -> 
-                          i + 1, Exp.fun_ arg None 
-                            (Pat.var ~loc {txt = (match arg with | Labelled s | Optional s -> s 
-                                                                 | Nolabel -> "arg" ^ string_of_int (arity - i - 1)); loc}) obj
-                      )
-                     )
-                 ]
-                ])
-          )
+                       (let body = (Exp.apply ~loc 
+                                      (Exp.ident ~loc {txt = Lident prim.pval_name.txt; loc }) 
+                                      (Ext_list.mapi args (fun i x ->
+                                           match x with 
+                                           | Asttypes.Nolabel -> 
+                                             Asttypes.Nolabel, Exp.ident {txt = Lident ("arg"^string_of_int i); loc}
+                                           | Labelled s 
+                                           | Optional s 
+                                             -> 
+                                             x, Exp.ident {txt = Lident s ; loc}
+                                         ))
+                                   ) in 
+                        snd @@ 
+                        Ext_list.fold_right
+                          params (0, Exp.fun_  Nolabel None (Pat.var ~loc { txt = "arg0"; loc} ) body) (
+                          fun arg (i, obj) -> 
+                            i + 1, Exp.fun_ arg None 
+                              (Pat.var ~loc {txt = (match arg with | Labelled s | Optional s -> s 
+                                                                   | Nolabel -> "arg" ^ string_of_int (arity - i - 1)); loc}) obj
+                        )
+                       )
+                   ]
+                  ])
+            )
       else 
-      if not no_inline_cross_module then   
-        external_result
-      else
-        let open Ast_helper in 
-        Str.include_ ~loc 
-          (Incl.mk ~loc 
-             (Mod.constraint_ ~loc
-                (Mod.structure ~loc 
-                   [external_result])
-                (Mty.signature ~loc [
-                    {
-                      psig_desc = Psig_value {
-                          prim with 
-                          pval_type ; 
-                          pval_prim = [];
-                          pval_attributes ;
-                        };
-                      psig_loc = loc
-                    }])))
+        normal()
 
