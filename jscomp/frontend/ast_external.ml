@@ -149,26 +149,29 @@ let handleExternalInStru
                      ~loc Nonrecursive [
                      Vb.mk ~loc 
                        (Pat.var ~loc prim.pval_name)
-
-                       (let body = (Exp.apply ~loc 
-                                      (Exp.ident ~loc {txt = Lident prim.pval_name.txt; loc }) 
-                                      (Ext_list.mapi args (fun i x ->
-                                           match x with 
-                                           | Asttypes.Nolabel -> 
-                                             Asttypes.Nolabel, Exp.ident {txt = Lident ("arg"^string_of_int i); loc}
-                                           | Labelled s 
-                                           | Optional s 
-                                             -> 
-                                             x, Exp.ident {txt = Lident s ; loc}
-                                         ))
-                                   ) in 
+                       (let body = 
+                          Exp.apply ~loc 
+                            (Exp.ident ~loc {txt = Lident prim.pval_name.txt; loc }) 
+                            (
+                              (Asttypes.Nolabel, Exp.ident ~loc {txt = Lident "obj"; loc}) ::
+                              Ext_list.mapi params (fun i x ->
+                                  (x,                                  
+                                   match x with 
+                                   | Asttypes.Nolabel -> 
+                                     Exp.ident {txt = Lident ("arg"^string_of_int (i + 1)); loc}
+                                   | Labelled s
+                                   | Optional s 
+                                     -> 
+                                     Exp.ident {txt = Lident s ; loc})))
+                        in 
                         snd @@ 
                         Ext_list.fold_right
-                          params (0, Exp.fun_  Nolabel None (Pat.var ~loc { txt = "arg0"; loc} ) body) (
+                          params (0, Exp.fun_  Nolabel None (Pat.var ~loc { txt = "obj"; loc} ) body) (
                           fun arg (i, obj) -> 
                             i + 1, Exp.fun_ arg None 
-                              (Pat.var ~loc {txt = (match arg with | Labelled s | Optional s -> s 
-                                                                   | Nolabel -> "arg" ^ string_of_int (arity - i - 1)); loc}) obj
+                              (Pat.var ~loc {txt = (match arg with 
+                                   | Labelled s | Optional s -> s 
+                                   | Nolabel -> "arg" ^ string_of_int (arity - i - 1)); loc}) obj
                         )
                        )
                    ]
