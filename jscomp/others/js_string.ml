@@ -482,11 +482,7 @@ external split : t -> t array  = "split" [@@bs.send.pipe: t]
 *)
 external splitAtMost: t -> limit:int -> t array = "split" [@@bs.send.pipe: t]
 
-(**
-  Deprecated - Please use `splitAtMost`
-*)
-external splitLimited : t -> int -> t array = "split" [@@bs.send.pipe: t]
-[@@deprecated "Please use splitAtMost"]
+
 
 (**
   `splitByRe regex str` splits the given `str` at every occurrence of `regex` and returns an
@@ -513,11 +509,7 @@ external splitByRe : Js_re.t ->  t option array = "split" [@@bs.send.pipe: t]
 *)
 external splitByReAtMost : Js_re.t -> limit:int ->  t option array = "split" [@@bs.send.pipe: t]
 
-(**
-  Deprecated - Please use `splitByReAtMost`
-*)
-external splitRegexpLimited : Js_re.t -> int ->  t array = "split" [@@bs.send.pipe: t]
-[@@deprecated "Please use splitByReAtMost"]
+
 
 (**
   ES2015:
