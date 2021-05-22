@@ -331,50 +331,29 @@ let translate_ffi
         E.new_ fn args
       end            
 
-  | Js_send {splice ; name ; pipe ; js_send_scopes } -> 
-    if pipe then 
-      (* splice should not happen *)
-      (* assert (js_splice = false) ;  *)
-      if splice then 
-        let args, self = Ext_list.split_at_last args in
-        let arg_types, _ = Ext_list.split_at_last arg_types in
-        let args, eff, dynamic = assemble_args_has_splice  arg_types args in
-        add_eff eff (          
-          let self = translate_scoped_access js_send_scopes self in 
-          if dynamic then
-            splice_obj_fn_apply self name args 
-          else 
-            E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
-      else 
-        let args, self = Ext_list.split_at_last args in
-        let arg_types, _ = Ext_list.split_at_last arg_types in
-        let args, eff = assemble_args_no_splice   arg_types args in
-        add_eff eff (
-          let self = translate_scoped_access js_send_scopes self in 
-          E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
-    else    
-      begin match args  with
-        | self :: args -> 
-          (* PR2162 [self_type] more checks in syntax:
-             - should not be [@as] *)
-          let [@warning"-8"] ( _self_type::arg_types )
-            = arg_types in
-          if splice then   
-            let args, eff, dynamic = assemble_args_has_splice   arg_types args in
-            add_eff eff ( 
-              let self = translate_scoped_access js_send_scopes self in 
-              if dynamic then 
-                splice_obj_fn_apply self name args 
-              else               
-                E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
-          else 
-            let args, eff = assemble_args_no_splice   arg_types args in
-            add_eff eff ( 
-              let self = translate_scoped_access js_send_scopes self in 
+  | Js_send {splice ; name ;  js_send_scopes } -> 
+    begin match args  with
+      | self :: args -> 
+        (* PR2162 [self_type] more checks in syntax:
+           - should not be [@as] *)
+        let [@warning"-8"] ( _self_type::arg_types )
+          = arg_types in
+        if splice then   
+          let args, eff, dynamic = assemble_args_has_splice   arg_types args in
+          add_eff eff ( 
+            let self = translate_scoped_access js_send_scopes self in 
+            if dynamic then 
+              splice_obj_fn_apply self name args 
+            else               
               E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
-        | _ -> 
-          assert false 
-      end
+        else 
+          let args, eff = assemble_args_no_splice   arg_types args in
+          add_eff eff ( 
+            let self = translate_scoped_access js_send_scopes self in 
+            E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
+      | _ -> 
+        assert false 
+    end
 
   | Js_module_as_var module_name -> 
     external_var module_name  

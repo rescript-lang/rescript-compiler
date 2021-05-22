@@ -205,7 +205,6 @@ type external_desc =
     external_module_name : External_ffi_types.external_module_name option;
     module_as_val : External_ffi_types.external_module_name option;
     val_send : name_source ;
-    val_send_pipe : Ast_core_type.t option;
     splice : bool ; (* mutable *)
     scopes : string list ;
     set_index : bool; (* mutable *)
@@ -225,8 +224,7 @@ let init_st =
     val_name = `Nm_na;
     external_module_name = None ;
     module_as_val = None;
-    val_send = `Nm_na;
-    val_send_pipe = None;
+    val_send = `Nm_na;    
     splice = false;
     scopes = [];
     set_index = false;
@@ -328,10 +326,6 @@ let parse_external_attributes
             | "bs.variadic" | "variadic" -> {st with splice = true}
             | "bs.send" | "send" ->
               { st with val_send = name_from_payload_or_prim ~loc payload}
-            | "bs.send.pipe"
-              ->
-              Location.prerr_warning loc (Warnings.Bs_ffi_warning "This attribute is deprecated, use @send instead.");
-              { st with val_send_pipe = Some (Ast_payload.as_core_type loc payload)}
             | "bs.set" | "set" ->
               {st with set_name = name_from_payload_or_prim ~loc  payload}
             | "bs.get" | "get" ->
@@ -414,7 +408,6 @@ let process_obj
     external_module_name = None ;
     module_as_val = None;
     val_send = `Nm_na;
-    val_send_pipe = None;
     splice = false;
     new_name = `Nm_na;
     call_name = `Nm_na;
@@ -557,7 +550,6 @@ let external_desc_of_non_obj
      external_module_name = None ;
      module_as_val = None;
      val_send = `Nm_na;
-     val_send_pipe = None;
      splice = false;
      scopes ;
      get_index = false;
@@ -582,8 +574,6 @@ let external_desc_of_non_obj
      external_module_name = None ;
      module_as_val = None;
      val_send = `Nm_na;
-     val_send_pipe = None;
-
      splice = false;
      scopes ;
      new_name = `Nm_na;
@@ -609,7 +599,6 @@ let external_desc_of_non_obj
 
      external_module_name = None ;
      val_send = `Nm_na;
-     val_send_pipe = None;
      scopes = []; (* module as var does not need scopes *)
      splice;
      call_name = `Nm_na;
@@ -642,7 +631,6 @@ let external_desc_of_non_obj
      set_index = false;
      get_index = false;
      val_send = `Nm_na ;
-     val_send_pipe = None;
      new_name = `Nm_na ;
      set_name = `Nm_na ;
      external_module_name = None;
@@ -662,7 +650,7 @@ let external_desc_of_non_obj
      val_name = `Nm_na ;
      module_as_val = None;
      val_send = `Nm_na ;
-     val_send_pipe = None;
+
 
      set_index = false;
      get_index = false;
@@ -682,7 +670,7 @@ let external_desc_of_non_obj
      call_name = `Nm_na ;
      module_as_val = None;
      val_send = `Nm_na ;
-     val_send_pipe = None;
+
      set_index = false;
      get_index = false;
      new_name = `Nm_na;
@@ -711,7 +699,7 @@ let external_desc_of_non_obj
      call_name = `Nm_na ;
      module_as_val = None;
      val_send = `Nm_na ;
-     val_send_pipe = None;
+
      set_index = false;
      get_index = false;
      new_name = `Nm_na;
@@ -733,7 +721,7 @@ let external_desc_of_non_obj
   | {val_send = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      splice;
      scopes;
-     val_send_pipe = None;
+
      val_name = `Nm_na  ;
      call_name = `Nm_na ;
      module_as_val = None;
@@ -758,35 +746,10 @@ let external_desc_of_non_obj
         Location.raise_errorf
           ~loc "Ill defined attribute %@send(first argument can't be const)"
       | _ :: _  ->
-        Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
+        Js_send {splice ; name; js_send_scopes = scopes }
     end
   | {val_send = #bundle_source; _ }
     -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with %@send"
-  | {val_send_pipe = Some _;
-     (* splice = (false as splice); *)
-     val_send = `Nm_na;
-     val_name = `Nm_na  ;
-     call_name = `Nm_na ;
-     module_as_val = None;
-     set_index = false;
-     get_index = false;
-     new_name = `Nm_na;
-     set_name = `Nm_na ;
-     get_name = `Nm_na ;
-     external_module_name = None ;
-     mk_obj = _;
-     return_wrapper = _;
-     scopes;
-     splice ;
-    } ->
-    (** can be one argument *)
-    Js_send {splice  ;
-             name = string_of_bundle_source prim_name_or_pval_prim;
-             js_send_scopes = scopes;
-             pipe = true}
-
-  | {val_send_pipe = Some _ ; _}
-    -> Location.raise_errorf ~loc "conflict attributes found with [%@%@bs.send.pipe]"
 
   | {new_name = (`Nm_val lazy name | `Nm_external name | `Nm_payload name);
      external_module_name;
@@ -797,7 +760,7 @@ let external_desc_of_non_obj
      set_index = false;
      get_index = false;
      val_send = `Nm_na ;
-     val_send_pipe = None;
+
      set_name = `Nm_na ;
      get_name = `Nm_na ;
      splice = false;
@@ -815,7 +778,7 @@ let external_desc_of_non_obj
      set_index = false;
      get_index = false;
      val_send = `Nm_na ;
-     val_send_pipe = None;
+
      new_name = `Nm_na ;
      get_name = `Nm_na ;
      external_module_name = None;
@@ -838,7 +801,7 @@ let external_desc_of_non_obj
      set_index = false;
      get_index = false;
      val_send = `Nm_na ;
-     val_send_pipe = None;
+
      new_name = `Nm_na ;
      set_name = `Nm_na ;
      external_module_name = None;
@@ -893,24 +856,7 @@ let handle_attributes
   else
     let splice = external_desc.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
-      let init : External_arg_spec.params * Ast_compatible.param_type list * int  = 
-        match external_desc.val_send_pipe with
-        | Some obj ->
-          let arg_type = refine_arg_type ~nolabel:true obj in
-          begin match arg_type with
-            | Arg_cst _ ->
-              Location.raise_errorf ~loc:obj.ptyp_loc "%@as is not supported in %@send type "
-            | _ ->
-              (* more error checking *)
-              [{arg_label = Arg_empty; arg_type}],
-              [{label = Nolabel;
-                ty = obj;
-                attr =  [];
-                loc = obj.ptyp_loc} ],
-              0           
-          end
-        | None -> [],[], 0 in 
-      Ext_list.fold_right arg_types_ty init
+      Ext_list.fold_right arg_types_ty (([],[],0): External_arg_spec.params * Ast_compatible.param_type list * int )
         (fun  param_type (arg_type_specs, arg_types, i) ->
            let arg_label =  param_type.label in
            let ty = param_type.ty in 

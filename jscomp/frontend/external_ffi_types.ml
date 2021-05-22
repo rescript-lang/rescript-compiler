@@ -33,7 +33,6 @@ type external_module_name = {
   module_bind_name : module_bind_name
 }
 
-type pipe = bool
 
 (** TODO: information between [arg_type] and [arg_label] are duplicated,
     design a more compact representation so that it is also easy to seralize by hand
@@ -66,7 +65,6 @@ type external_spec =
   | Js_send of {
       name : string ;
       splice : bool ;
-      pipe : pipe  ;
       js_send_scopes : string list;
     } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
@@ -211,7 +209,7 @@ let check_ffi ?loc ffi : bool =
       Ext_option.iter external_module_name (fun name -> 
           upgrade (is_package_relative_path name.bundle));
       valid_global_name ?loc  name
-    | Js_send {name ; pipe = _; splice = _; js_send_scopes = _}
+    | Js_send {name ;  splice = _; js_send_scopes = _}
     | Js_set  {js_set_name = name; js_set_scopes = _}
     | Js_get { js_get_name = name; js_get_scopes = _}
       ->  valid_method_name ?loc name
