@@ -22,6 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+[@@@deprecated "Use Belt.List instead"]
 
 type 'a t  = 'a list 
 
@@ -66,6 +67,6 @@ val countBy : ('a -> bool [@bs]) -> 'a list -> int
 
 val init : int -> (int -> 'a [@bs]) -> 'a t 
 
-val toVector : 'a t -> 'a Js_vector.t 
+val toVector : 'a t -> 'a array
 
 val equal : ('a -> 'a -> bool [@bs]) -> 'a list -> 'a list -> bool
