@@ -267,6 +267,11 @@ let mapU a f =
 
 let map a f = mapU a (fun[@bs] a -> f a)
 
+let flatMapU a f =
+  concatMany (mapU a f)
+
+let flatMap a f = flatMapU a (fun[@bs] a -> f a)
+
 let getByU a p =
   let l = length a in
   let i = ref 0 in
