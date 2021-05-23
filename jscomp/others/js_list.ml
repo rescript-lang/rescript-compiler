@@ -22,7 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** WIP: List operations *)
+[@@@warning "-3"]
+
 type 'a t = 'a list
 
 
@@ -151,7 +152,7 @@ let countBy f xs = countByAux f 0 xs
 let init n f =
   Js_vector.toList (Js_vector.init n f )
 
-external createUnsafe : int -> 'a Js_vector.t =
+external createUnsafe : int -> 'a array =
   "Array" [@@bs.new]
 
 let toVector xs =

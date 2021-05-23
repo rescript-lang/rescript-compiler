@@ -12,15 +12,15 @@
 (***********************************************************************)
 
 (* Array operations *)
-
-external length: 'a array -> int = "%array_length"
-external size: 'a array -> int = "%array_length"
-external getUnsafe: 'a array -> int -> 'a = "%array_unsafe_get"
-external setUnsafe: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
-external (.!()): 'a array -> int -> 'a = "%array_unsafe_get"
-external (.!()<-): 'a array -> int -> 'a -> unit = "%array_unsafe_set"
-external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
-(* external get: 'a array -> int -> 'a = "%array_safe_get" *)
+type 'a t = 'a array
+external length: 'a t -> int = "%array_length"
+external size: 'a t -> int = "%array_length"
+external getUnsafe: 'a t -> int -> 'a = "%array_unsafe_get"
+external setUnsafe: 'a t -> int -> 'a -> unit = "%array_unsafe_set"
+external (.!()): 'a t -> int -> 'a = "%array_unsafe_get"
+external (.!()<-): 'a t -> int -> 'a -> unit = "%array_unsafe_set"
+external getUndefined: 'a t -> int -> 'a Js.undefined = "%array_unsafe_get"
+(* external get: 'a t -> int -> 'a = "%array_safe_get" *)
 let get arr i =
   if i >= 0 && i < length arr then Some arr.!(i) else None
 let getExn arr i =
@@ -34,12 +34,12 @@ let setExn arr i v =
   arr.!(i) <- v
 
 
-external truncateToLengthUnsafe : 'a array -> int ->  unit = "length" [@@bs.set]
+external truncateToLengthUnsafe : 'a t -> int ->  unit = "length" [@@bs.set]
 external makeUninitialized : int -> 'a Js.undefined array = "Array" [@@bs.new]
 external makeUninitializedUnsafe : int -> 'a  array = "Array" [@@bs.new]
 
 
-external copy : 'a array -> (_ [@bs.as 0]) -> 'a array =
+external copy : 'a t -> (_ [@bs.as 0]) -> 'a t =
   "slice"  [@@bs.send]
 
 
@@ -527,3 +527,14 @@ let joinWithU a sep toString =
         else aux (i + 1) (res ^ toString a.!(i) [@bs] ^ sep) in
       aux 0 ""
 let joinWith a sep toString = joinWithU a sep (fun [@bs] x -> toString x)
+
+let initU n f  =
+  let v = makeUninitializedUnsafe n in
+  for i = 0 to n - 1 do
+    v.!(i) <- f i [@bs]
+  done ;
+  v
+
+let init n f = initU n (fun[@bs] i -> f i )
+
+external push : 'a t -> 'a -> unit = "push" [@@send]

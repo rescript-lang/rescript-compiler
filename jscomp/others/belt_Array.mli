@@ -17,14 +17,15 @@
   Utililites for Array functions
 *)
 
+type 'a t = 'a array
 
-external length: 'a array -> int = "%array_length"
+external length: 'a t -> int = "%array_length"
 (** `length xs` return the size of the array *)
 
-external size: 'a array -> int = "%array_length"
+external size: 'a t -> int = "%array_length"
 (** **See** [`length`]() *)
 
-val get: 'a array -> int -> 'a option
+val get: 'a t -> int -> 'a option
 (**
   `get arr i`
 
@@ -38,14 +39,14 @@ val get: 'a array -> int -> 'a option
   ```
 *)
 
-val getExn: 'a array -> int -> 'a
+val getExn: 'a t -> int -> 'a
 (**
   `getExn arr i`
 
   **raise** an exception if `i` is out of range;otherwise return the value at index `i` in `arr`
 *)
 
-external getUnsafe: 'a array -> int -> 'a = "%array_unsafe_get"
+external getUnsafe: 'a t -> int -> 'a = "%array_unsafe_get"
 (**
   `getUnsafe arr i`
 
@@ -55,7 +56,7 @@ external getUnsafe: 'a array -> int -> 'a = "%array_unsafe_get"
   if `i` does not stay within range
 *)
 
-external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
+external getUndefined: 'a t -> int -> 'a Js.undefined = "%array_unsafe_get"
 (**
   `getUndefined arr i`
 
@@ -64,7 +65,7 @@ external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
   in range or not
 *)
 
-val set: 'a array -> int -> 'a -> bool
+val set: 'a t -> int -> 'a -> bool
 (**
   `set arr n x` modifies `arr` in place;
   it replaces the nth element of `arr` with `x`
@@ -72,23 +73,23 @@ val set: 'a array -> int -> 'a -> bool
   **return** false means not updated due to out of range
 *)
 
-val setExn: 'a array -> int -> 'a -> unit
+val setExn: 'a t -> int -> 'a -> unit
 (**
   `setExn arr i x`
 
   **raise** an exception if `i` is out of range
 *)
 
-external setUnsafe: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
+external setUnsafe: 'a t -> int -> 'a -> unit = "%array_unsafe_set"
 
-val shuffleInPlace: 'a array -> unit
+val shuffleInPlace: 'a t -> unit
 (** `shuffleInPlace arr` randomly re-orders the items in `arr` *)
 
-val shuffle: 'a array -> 'a array
+val shuffle: 'a t -> 'a t
 (** `shuffle xs`
   **return** a fresh array with items in original array randomly shuffled *)
 
-val reverseInPlace: 'a array -> unit
+val reverseInPlace: 'a t -> unit
 (**
   `reverseInPlace arr` reverses items in `arr` in place
 
@@ -99,7 +100,7 @@ val reverseInPlace: 'a array -> unit
   ```
 *)
 
-val reverse: 'a array -> 'a array
+val reverse: 'a t -> 'a t
 (**
   `reverse arr`
 
@@ -121,7 +122,7 @@ external makeUninitialized: int -> 'a Js.undefined array = "Array" [@@bs.new]
    ```
 *)
 
-external makeUninitializedUnsafe: int -> 'a array = "Array" [@@bs.new]
+external makeUninitializedUnsafe: int -> 'a t = "Array" [@@bs.new]
 (**
   `makeUninitializedUnsafe n`
 
@@ -136,7 +137,7 @@ external makeUninitializedUnsafe: int -> 'a array = "Array" [@@bs.new]
 *)
 
 
-val make: int -> 'a  -> 'a array
+val make: int -> 'a  -> 'a t
 (**
   `make n e`
 
@@ -174,8 +175,8 @@ val rangeBy: int -> int -> step:int -> int array
   ```
 *)
 
-val makeByU: int -> (int -> 'a [@bs]) -> 'a array
-val makeBy: int -> (int -> 'a ) -> 'a array
+val makeByU: int -> (int -> 'a [@bs]) -> 'a t
+val makeBy: int -> (int -> 'a ) -> 'a t
 (**
   `makeBy n f`
 
@@ -189,15 +190,15 @@ val makeBy: int -> (int -> 'a ) -> 'a array
   ```
 *)
 
-val makeByAndShuffleU: int -> (int -> 'a [@bs]) -> 'a array
-val makeByAndShuffle: int -> (int -> 'a ) -> 'a array
+val makeByAndShuffleU: int -> (int -> 'a [@bs]) -> 'a t
+val makeByAndShuffle: int -> (int -> 'a ) -> 'a t
 (**
   `makeByAndShuffle n f`
   Equivalent to `shuffle (makeBy n f)`
 *)
 
 
-val zip: 'a array -> 'b array -> ('a * 'b) array
+val zip: 'a t -> 'b array -> ('a * 'b) array
 (**
   `zip a b`
 
@@ -210,8 +211,8 @@ val zip: 'a array -> 'b array -> ('a * 'b) array
 *)
 
 
-val zipByU: 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array
-val zipBy: 'a array -> 'b array -> ('a -> 'b -> 'c ) -> 'c array
+val zipByU: 'a t -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array
+val zipBy: 'a t -> 'b array -> ('a -> 'b -> 'c ) -> 'c array
 (**
    `zipBy xs ys f`
 
@@ -225,7 +226,7 @@ val zipBy: 'a array -> 'b array -> ('a -> 'b -> 'c ) -> 'c array
    ```
 *)
 
-val unzip: ('a * 'b) array -> 'a array * 'b array
+val unzip: ('a * 'b) array -> 'a t * 'b array
 (**
   `unzip a` takes an array of pairs and creates a pair of arrays. The first array contains all the first items of the pairs; the second array contains all the second items.
 
@@ -235,7 +236,7 @@ val unzip: ('a * 'b) array -> 'a array * 'b array
   ```
 *)
 
-val concat: 'a array -> 'a array -> 'a array
+val concat: 'a t -> 'a t -> 'a t
 (**
   `concat xs ys`
 
@@ -249,7 +250,7 @@ val concat: 'a array -> 'a array -> 'a array
   ```
 *)
 
-val concatMany: 'a array array -> 'a array
+val concatMany: 'a t array -> 'a t
 (**
   `concatMany xss`
 
@@ -260,7 +261,7 @@ val concatMany: 'a array array -> 'a array
   ```
 *)
 
-val slice: 'a array -> offset:int -> len:int -> 'a array
+val slice: 'a t -> offset:int -> len:int -> 'a t
 (**
   `slice xs offset len` creates a new array with the `len` elements of `xs` starting at `offset` for
 
@@ -281,7 +282,7 @@ val slice: 'a array -> offset:int -> len:int -> 'a array
   ```
 *)
 
-val sliceToEnd: 'a array -> int -> 'a array
+val sliceToEnd: 'a t -> int -> 'a t
 (**
   `sliceToEnd xs offset` creates a new array with the elements of `xs` starting at `offset`
 
@@ -297,14 +298,14 @@ val sliceToEnd: 'a array -> int -> 'a array
 *)
 
 
-external copy : 'a array -> (_ [@bs.as 0]) -> 'a array = "slice" [@@bs.send]
+external copy : 'a t -> (_ [@bs.as 0]) -> 'a t = "slice" [@@bs.send]
 (**
   `copy a`
 
   **return** a shallow copy of `a`
 *)
 
-val fill: 'a array -> offset:int -> len:int -> 'a -> unit
+val fill: 'a t -> offset:int -> len:int -> 'a -> unit
 (**
   `fill arr ~offset ~len x`
 
@@ -326,7 +327,7 @@ val fill: 'a array -> offset:int -> len:int -> 'a -> unit
 *)
 
 val blit:
-  src:'a array -> srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit
+  src:'a t -> srcOffset:int -> dst:'a t -> dstOffset:int -> len:int -> unit
 (**
   `blit ~src:v1 ~srcOffset:o1 ~dst:v2 ~dstOffset:o2 ~len`
 
@@ -354,13 +355,13 @@ val blit:
 *)
 
 val blitUnsafe:
-  src:'a array -> srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit
+  src:'a t -> srcOffset:int -> dst:'a t -> dstOffset:int -> len:int -> unit
 (**
   **Unsafe** blit without bounds checking
 *)
 
-val forEachU: 'a array ->  ('a -> unit [@bs]) -> unit
-val forEach: 'a array ->  ('a -> unit ) -> unit
+val forEachU: 'a t ->  ('a -> unit [@bs]) -> unit
+val forEach: 'a t ->  ('a -> unit ) -> unit
 (**
   `forEach xs f`
 
@@ -382,8 +383,8 @@ val forEach: 'a array ->  ('a -> unit ) -> unit
   ```
 *)
 
-val mapU: 'a array ->  ('a -> 'b [@bs]) -> 'b array
-val map: 'a array ->  ('a -> 'b ) -> 'b array
+val mapU: 'a t ->  ('a -> 'b [@bs]) -> 'b array
+val map: 'a t ->  ('a -> 'b ) -> 'b array
 (**
   `map xs f `
 
@@ -395,8 +396,8 @@ val map: 'a array ->  ('a -> 'b ) -> 'b array
   ```
 *)
 
-val flatMapU: 'a array -> ('a -> 'b array [@bs]) -> 'b array
-val flatMap: 'a array -> ('a -> 'b array) -> 'b array
+val flatMapU: 'a t -> ('a -> 'b array [@bs]) -> 'b array
+val flatMap: 'a t -> ('a -> 'b array) -> 'b array
 (**
   `flatMap xs f `
 
@@ -408,8 +409,8 @@ val flatMap: 'a array -> ('a -> 'b array) -> 'b array
   ```
 *)
 
-val getByU: 'a array -> ('a -> bool [@bs]) -> 'a option
-val getBy: 'a array -> ('a -> bool) -> 'a option
+val getByU: 'a t -> ('a -> bool [@bs]) -> 'a option
+val getBy: 'a t -> ('a -> bool) -> 'a option
 (**
   `getBy xs p` returns `Some value` for the first value in `xs` that satisifies the predicate function `p`; returns `None` if no element satisifies the function.
 
@@ -419,8 +420,8 @@ val getBy: 'a array -> ('a -> bool) -> 'a option
   ```
 *)
 
-val getIndexByU: 'a array -> ('a -> bool [@bs]) -> int option
-val getIndexBy: 'a array -> ('a -> bool) -> int option
+val getIndexByU: 'a t -> ('a -> bool [@bs]) -> int option
+val getIndexBy: 'a t -> ('a -> bool) -> int option
 (**
   `getIndexBy xs p` returns `Some index` for the first value in `xs` that satisifies the predicate function `p`; returns `None` if no element satisifies the function.
 
@@ -430,8 +431,8 @@ val getIndexBy: 'a array -> ('a -> bool) -> int option
   ```
 *)
 
-val keepU: 'a array -> ('a -> bool [@bs]) -> 'a array
-val keep: 'a array -> ('a -> bool ) -> 'a array
+val keepU: 'a t -> ('a -> bool [@bs]) -> 'a t
+val keep: 'a t -> ('a -> bool ) -> 'a t
 (**
   `keep xs p `
 
@@ -442,8 +443,8 @@ val keep: 'a array -> ('a -> bool ) -> 'a array
   ```
 *)
 
-val keepWithIndexU: 'a array -> ('a -> int -> bool [@bs]) -> 'a array
-val keepWithIndex: 'a array -> ('a -> int -> bool ) -> 'a array
+val keepWithIndexU: 'a t -> ('a -> int -> bool [@bs]) -> 'a t
+val keepWithIndex: 'a t -> ('a -> int -> bool ) -> 'a t
 (**
   `keepWithIndex xs p `
 
@@ -457,8 +458,8 @@ val keepWithIndex: 'a array -> ('a -> int -> bool ) -> 'a array
   ```
 *)
 
-val keepMapU: 'a array -> ('a -> 'b option [@bs]) -> 'b array
-val keepMap: 'a array -> ('a -> 'b option) -> 'b array
+val keepMapU: 'a t -> ('a -> 'b option [@bs]) -> 'b array
+val keepMap: 'a t -> ('a -> 'b option) -> 'b array
 (**
   `keepMap xs p`
 
@@ -470,8 +471,8 @@ val keepMap: 'a array -> ('a -> 'b option) -> 'b array
   ```
 *)
 
-val forEachWithIndexU: 'a array ->  (int -> 'a -> unit [@bs]) -> unit
-val forEachWithIndex: 'a array ->  (int -> 'a -> unit ) -> unit
+val forEachWithIndexU: 'a t ->  (int -> 'a -> unit [@bs]) -> unit
+val forEachWithIndex: 'a t ->  (int -> 'a -> unit ) -> unit
 (**
   `forEachWithIndex xs f`
 
@@ -492,8 +493,8 @@ val forEachWithIndex: 'a array ->  (int -> 'a -> unit ) -> unit
   ```
 *)
 
-val mapWithIndexU: 'a array ->  (int -> 'a -> 'b [@bs]) -> 'b array
-val mapWithIndex: 'a array ->  (int -> 'a -> 'b ) -> 'b array
+val mapWithIndexU: 'a t ->  (int -> 'a -> 'b [@bs]) -> 'b array
+val mapWithIndex: 'a t ->  (int -> 'a -> 'b ) -> 'b array
 (**
   `mapWithIndex xs f `
 
@@ -507,8 +508,8 @@ val mapWithIndex: 'a array ->  (int -> 'a -> 'b ) -> 'b array
 *)
 
 
-val partitionU : 'a array -> ('a -> bool [@bs]) -> 'a array * 'a array
-val partition : 'a array ->  ('a -> bool) -> 'a array * 'a array
+val partitionU : 'a t -> ('a -> bool [@bs]) -> 'a t * 'a t
+val partition : 'a t ->  ('a -> bool) -> 'a t * 'a t
 (**
   `partition f a` split array into tuple of two arrays based on predicate f; first of tuple where predicate cause true, second where predicate cause false
 
@@ -547,9 +548,9 @@ val reduceReverse: 'b array -> 'a -> ('a -> 'b ->  'a ) ->  'a
 *)
 
 val reduceReverse2U:
-  'a array -> 'b array -> 'c  -> ('c -> 'a -> 'b ->  'c [@bs]) ->  'c
+  'a t -> 'b array -> 'c  -> ('c -> 'a -> 'b ->  'c [@bs]) ->  'c
 val reduceReverse2:
-  'a array -> 'b array -> 'c  -> ('c -> 'a -> 'b ->  'c) ->  'c
+  'a t -> 'b array -> 'c  -> ('c -> 'a -> 'b ->  'c) ->  'c
 (**
   `reduceReverse2 xs ys init f`
   Reduces two arrays `xs` and `ys`, taking items starting at `min (length xs) (length ys)`
@@ -560,8 +561,8 @@ val reduceReverse2:
   ```
 *)
 
-val reduceWithIndexU:  'a array -> 'b -> ('b -> 'a -> int -> 'b [@bs]) -> 'b
-val reduceWithIndex:  'a array -> 'b -> ('b -> 'a -> int -> 'b) -> 'b
+val reduceWithIndexU:  'a t -> 'b -> ('b -> 'a -> int -> 'b [@bs]) -> 'b
+val reduceWithIndex:  'a t -> 'b -> ('b -> 'a -> int -> 'b) -> 'b
 (**
   `reduceWithIndex xs f`
 
@@ -574,8 +575,8 @@ val reduceWithIndex:  'a array -> 'b -> ('b -> 'a -> int -> 'b) -> 'b
   ```
 *)
 
-val joinWithU: 'a array -> string -> ('a -> string [@bs]) -> string
-val joinWith: 'a array -> string -> ('a -> string) -> string
+val joinWithU: 'a t -> string -> ('a -> string [@bs]) -> string
+val joinWith: 'a t -> string -> ('a -> string) -> string
 (**
   `joinWith xs sep toString`
 
@@ -592,8 +593,8 @@ val joinWith: 'a array -> string -> ('a -> string) -> string
   ```
 *)
 
-val someU: 'a array -> ('a -> bool [@bs]) -> bool
-val some: 'a array -> ('a -> bool) -> bool
+val someU: 'a t -> ('a -> bool [@bs]) -> bool
+val some: 'a t -> ('a -> bool) -> bool
 (**
   `some xs p`
 
@@ -606,8 +607,8 @@ val some: 'a array -> ('a -> bool) -> bool
   ```
 *)
 
-val everyU: 'a array -> ('a -> bool [@bs]) -> bool
-val every: 'a array -> ('a -> bool ) -> bool
+val everyU: 'a t -> ('a -> bool [@bs]) -> bool
+val every: 'a t -> ('a -> bool ) -> bool
 (**
   `every xs p`
 
@@ -620,8 +621,8 @@ val every: 'a array -> ('a -> bool ) -> bool
   ```
 *)
 
-val every2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
-val every2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
+val every2U: 'a t -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
+val every2: 'a t -> 'b array -> ('a -> 'b -> bool ) -> bool
 (**
   `every2 xs ys p` returns true if `p xi yi` is true for all pairs of elements
   up to the shorter length (i.e. `min (length xs) (length ys)`)
@@ -634,8 +635,8 @@ val every2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
   ```
 *)
 
-val some2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
-val some2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
+val some2U: 'a t -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
+val some2: 'a t -> 'b array -> ('a -> 'b -> bool ) -> bool
 (**
   `some2 xs ys p` returns true if `p xi yi` is true for any pair of elements
   up to the shorter length (i.e. `min (length xs) (length ys)`)
@@ -647,8 +648,8 @@ val some2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
   ```
 *)
 
-val cmpU: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
-val cmp: 'a array -> 'a array -> ('a -> 'a -> int ) -> int
+val cmpU: 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
+val cmp: 'a t -> 'a t -> ('a -> 'a -> int ) -> int
 (**
   `cmp xs ys f`
 
@@ -666,8 +667,8 @@ val cmp: 'a array -> 'a array -> ('a -> 'a -> int ) -> int
   ```
 *)
 
-val eqU:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool
-val eq:  'a array -> 'a array -> ('a -> 'a -> bool ) -> bool
+val eqU:  'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
+val eq:  'a t -> 'a t -> ('a -> 'a -> bool ) -> bool
 (**
   `eq xs ys`
 
@@ -679,7 +680,7 @@ val eq:  'a array -> 'a array -> ('a -> 'a -> bool ) -> bool
   ```
 *)
 
-external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]
+external truncateToLengthUnsafe: 'a t -> int ->  unit = "length" [@@bs.set]
 (**
   **Unsafe**
 
@@ -695,3 +696,13 @@ external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]
   arr = [|"ant";"bee";"cat"|];;
   ```
 *)
+
+
+val initU : int -> (int -> 'a [@bs]) -> 'a t 
+val init : int -> (int -> 'a) -> 'a t 
+
+(**
+  `arr->push(item)`
+  push element `item` into the array
+*)
+external push : 'a t -> 'a -> unit = "push" [@@send]
