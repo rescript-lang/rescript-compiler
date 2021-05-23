@@ -74,8 +74,6 @@ external unshiftMany : 'a array -> int = "unshift" [@@bs.send.pipe: 'a t as 'thi
 
 (* Accessor functions
 *)
-external append : 'a -> 'this = "concat" [@@bs.send.pipe: 'a t as 'this]
-[@@deprecated "append is not type-safe. Use `concat` instead, and see #1884"]
 external concat : 'this -> 'this = "concat" [@@bs.send.pipe: 'a t as 'this]
 external concatMany : 'this array -> 'this = "concat" [@@bs.send.pipe: 'a t as 'this] [@@bs.splice]
 
@@ -92,16 +90,10 @@ external joinWith : string -> string = "join" [@@bs.send.pipe: 'a t as 'this]
 
 external lastIndexOf : 'a -> int = "lastIndexOf" [@@bs.send.pipe: 'a t as 'this]
 external lastIndexOfFrom : 'a -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: 'a t as 'this]
-external lastIndexOf_start : 'a -> int = "lastIndexOf" [@@bs.send.pipe: 'a t as 'this]
-[@@deprecated "Please use `lastIndexOf"]
 
 external slice : start:int -> end_:int -> 'this = "slice" [@@bs.send.pipe: 'a t as 'this]
 external copy : 'this = "slice" [@@bs.send.pipe: 'a t as 'this]
-external slice_copy : unit -> 'this = "slice" [@@bs.send.pipe: 'a t as 'this]
-[@@deprecated "Please use `copy`"]
 external sliceFrom : int -> 'this = "slice" [@@bs.send.pipe: 'a t as 'this]
-external slice_start : int -> 'this = "slice" [@@bs.send.pipe: 'a t as 'this]
-[@@deprecated "Please use `sliceFrom`"]
 
 external toString : string = "toString" [@@bs.send.pipe: 'a t as 'this]
 external toLocaleString : string = "toLocaleString" [@@bs.send.pipe: 'a t as 'this]

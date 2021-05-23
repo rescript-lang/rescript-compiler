@@ -57,6 +57,7 @@ val is_user_option : t -> bool
 val get_uncurry_arity : t -> int option
 
 
+val get_curry_labels : t -> Asttypes.arg_label list 
 
 (** fails when Ptyp_poly *)
 val list_of_arrow :
