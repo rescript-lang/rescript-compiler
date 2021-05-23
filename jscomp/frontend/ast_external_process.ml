@@ -612,7 +612,7 @@ let external_desc_of_non_obj
       | [], `Nm_na,  _ -> Js_module_as_var external_module_name
       | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
       | _, #bundle_source, #bundle_source ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with %@module.")
+        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with @module.")
 
       | _, (`Nm_val _ | `Nm_external _) , `Nm_na
         -> Js_module_as_class external_module_name
@@ -621,9 +621,16 @@ let external_desc_of_non_obj
         Location.raise_errorf ~loc
           "Incorrect FFI attribute found: (%@new should not carry a payload here)"
     end
-  | {module_as_val = Some _; _} ->
-    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with %@module.")
-
+  | {module_as_val = Some _; get_index ; val_send ; _} ->
+    let reason =
+      begin match get_index, val_send with 
+        | true , _ -> 
+          "@module is for imports from a module, @get_index does not need import a module "
+        | _, #bundle_source -> 
+          "@module is for imports from a module, @send does not need import a module "
+        | _ -> "Attribute found that conflicts with @module."
+      end in 
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute reason)
   | {get_name = `Nm_na;
      val_name = `Nm_na  ;
      call_name = `Nm_na ;
