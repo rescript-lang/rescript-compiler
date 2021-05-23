@@ -700,3 +700,9 @@ external truncateToLengthUnsafe: 'a t -> int ->  unit = "length" [@@bs.set]
 
 val initU : int -> (int -> 'a [@bs]) -> 'a t 
 val init : int -> (int -> 'a) -> 'a t 
+
+(**
+  `arr->push(item)`
+  push element `item` into the array
+*)
+external push : 'a t -> 'a -> unit = "push" [@@send]

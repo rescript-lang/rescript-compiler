@@ -536,3 +536,5 @@ let initU n f  =
   v
 
 let init n f = initU n (fun[@bs] i -> f i )
+
+external push : 'a t -> 'a -> unit = "push" [@@send]
