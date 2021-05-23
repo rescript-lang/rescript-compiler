@@ -11,6 +11,9 @@ let neq loc x y =
 
 module A = Belt.Array
 module L = Belt.List
+
+let {push } = (module A)
+
 type 'a t = 'a Js.Array2.t
 let () =
   [| 1; 2; 3; 4 |]
@@ -23,8 +26,8 @@ let () =
 let () =
   let v = [|1;2|] in
   eq __LOC__
-  (A.get  v 0, A.get v 1, A.get v 2, A.get v 3, A.get v (-1) )
-  (Some 1,Some 2, None, None, None);
+    (A.get  v 0, A.get v 1, A.get v 2, A.get v 3, A.get v (-1) )
+    (Some 1,Some 2, None, None, None);
   throw __LOC__ (fun _ -> A.getExn [|0;1|] (-1) |> ignore);
   throw __LOC__ (fun _ -> A.getExn [|0;1|] (2) |> ignore);
   b __LOC__ (let f = A.getExn [|0;1|] in  (f 0, f 1) =(0,1 ));
@@ -38,28 +41,28 @@ let () =
 
 let id x =
   eq __LOC__
-   (Js.Vector.toList @@ Js.List.toVector x ) x
+    (Js.Vector.toList @@ Js.List.toVector x ) x
 
 let () =
   eq __LOC__ (Js.List.toVector [1;2;3]) [|1;2;3|];
   eq  __LOC__
-  ( Js.Vector.map (fun [@bs] x -> x + 1) [|1;2;3|] )
-  [|2;3;4|];
+    ( Js.Vector.map (fun [@bs] x -> x + 1) [|1;2;3|] )
+    [|2;3;4|];
   eq __LOC__  (Js.Vector.make 5 3)
     [|3;3;3;3;3|];
   eq __LOC__
-  ( let a = Js.Vector.init 5  (fun [@bs] i -> i + 1) in
-    Js.Vector.filterInPlace (fun [@bs] j -> j mod 2 = 0) a ;
-    a
-  )
-  [|2;4|];
+    ( let a = Js.Vector.init 5  (fun [@bs] i -> i + 1) in
+      Js.Vector.filterInPlace (fun [@bs] j -> j mod 2 = 0) a ;
+      a
+    )
+    [|2;4|];
 
   eq __LOC__
-  ( let a = Js.Vector.init 5  (fun [@bs] i -> i + 1) in
-    Js.Vector.filterInPlace (fun [@bs] j -> j mod 2 <> 0) a ;
-    a
-  )
-  [|1;3;5|];
+    ( let a = Js.Vector.init 5  (fun [@bs] i -> i + 1) in
+      Js.Vector.filterInPlace (fun [@bs] j -> j mod 2 <> 0) a ;
+      a
+    )
+    [|1;3;5|];
 
   eq __LOC__
     (Js.List.toVector [1;2;3] ) [|1;2;3|];
@@ -122,7 +125,7 @@ let () =
   eq __LOC__ (A.makeBy 3 begin fun i -> i end) [|0;1;2|];
   eq __LOC__ (makeMatrixExn 3 4 1
 
-  ) [| [|1;1;1;1|]; [|1;1;1;1|]; [|1;1;1;1|]|];
+             ) [| [|1;1;1;1|]; [|1;1;1;1|]; [|1;1;1;1|]|];
   eq __LOC__ (makeMatrixExn 3 0 0 ) [| [||] ; [||]; [||] |];
   eq __LOC__ (makeMatrixExn  0 3 1 ) [||];
   eq __LOC__ (makeMatrixExn 1 1 1) [| [|1 |] |];
@@ -276,15 +279,15 @@ let () =
     let c = ref 0 in
     A.forEachWithIndex [|1;1;1|] (fun i v ->  c:= !c + i + v);
     !c = 6
-    )
+  )
 
 
 
 
 let id loc x =
   eq __LOC__
-  (A.reverse x)
-  (let u = A.copy x in A.reverseInPlace u; u)
+    (A.reverse x)
+    (let u = A.copy x in A.reverseInPlace u; u)
 
 let ()  =
   id __LOC__ [||];
@@ -336,6 +339,15 @@ let () =
 
 let () =
   eq __LOC__ (A.getIndexBy [|1;2;3|] (fun x -> x > 1)) (Some 1);
-  eq __LOC__ (A.getIndexBy [|1;2;3|] (fun x -> x > 3)) None;
+  eq __LOC__ (A.getIndexBy [|1;2;3|] (fun x -> x > 3)) None
 
+
+let ()= 
+  let arr =   
+    [||]  in 
+  arr |. push 3 ; 
+  arr |. push  2 ; 
+  arr |. push 1 ; 
+  eq __LOC__ arr [|3;2;1|]
+  
 ;; Mt.from_pair_suites __LOC__ !suites
