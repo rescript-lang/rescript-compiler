@@ -105,15 +105,15 @@ let () =
 let addone = fun [@bs] x -> x + 1
 
 let makeMatrixExn sx sy init =
-  let open A in
+  (* let open A in *)
   assert (sx >=0 && sy >=0 );
-  let res = makeUninitializedUnsafe sx in
+  let res = A.makeUninitializedUnsafe sx in
   for x = 0 to  sx - 1 do
-    let initY = makeUninitializedUnsafe sy in
+    let initY = A.makeUninitializedUnsafe sy in
     for y = 0 to sy - 1 do
-      setUnsafe initY y init
+      A.setUnsafe initY y init
     done ;
-    setUnsafe res x initY
+    A.setUnsafe res x initY
   done;
   res
 
