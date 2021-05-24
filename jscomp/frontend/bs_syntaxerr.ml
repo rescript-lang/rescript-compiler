@@ -123,7 +123,7 @@ let pp_error fmt err =
          each constructor must have an argument."
       | Conflict_ffi_attribute str
         ->
-        "Conflicting FFI attributes found: " ^ str
+        "Conflicting attributes: " ^ str
       | Bs_this_simple_pattern
         ->
         "%@this expect its pattern variable to be simple form")

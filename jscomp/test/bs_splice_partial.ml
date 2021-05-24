@@ -36,7 +36,7 @@ let test_hi x =
 
 
 external hi__2 : int -> int array -> int option = "hi__2"
-[@@bs.splice] [@@bs.return nullable ]
+[@@variadic] [@@return nullable ]
 [@@send]
 
 let test_hi__2 x = 
@@ -47,12 +47,12 @@ let test_hi__2 x =
 type id = int -> int 
 
 external cb : int -> string -> int array -> id = "cb"    
-[@@bs.splice] [@@send]
+[@@variadic] [@@send]
 
 
 type id2 = int -> int [@bs]
 external cb2 : int -> string -> int array -> id2 = "cb2"    
-[@@bs.splice] [@@send]
+[@@variadic] [@@send]
 
 
 let test_cb x = 
