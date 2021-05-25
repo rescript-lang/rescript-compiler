@@ -171,7 +171,7 @@ external counters : unit -> float * float * float = "caml_gc_counters"
     is as fast as [quick_stat]. *)
 
 external minor_words : unit -> (float [@unboxed])
-  = "caml_gc_minor_words" "caml_gc_minor_words_unboxed"
+  = "caml_gc_minor_words_unboxed"
 (** Number of words allocated in the minor heap since the program was
     started. This number is accurate in byte-code programs, but only an
     approximation in programs compiled to native code.

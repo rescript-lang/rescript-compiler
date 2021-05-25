@@ -115,7 +115,7 @@ external to_int : int64 -> int = "%int64_to_int"
    during the conversion. *)
 
 external of_float : float -> int64
-  = "caml_int64_of_float" "caml_int64_of_float_unboxed"
+  = "caml_int64_of_float_unboxed"
   [@@unboxed] [@@noalloc]
 (** Convert the given floating-point number to a 64-bit integer,
    discarding the fractional part (truncate towards 0).
@@ -123,7 +123,7 @@ external of_float : float -> int64
    the number is outside the range \[{!Int64.min_int}, {!Int64.max_int}\]. *)
 
 external to_float : int64 -> float
-  = "caml_int64_to_float" "caml_int64_to_float_unboxed"
+  = "caml_int64_to_float_unboxed"
   [@@unboxed] [@@noalloc]
 (** Convert the given 64-bit integer to a floating-point number. *)
 
@@ -150,7 +150,7 @@ external to_nativeint : int64 -> nativeint = "%int64_to_nativeint"
 
 external of_string : string -> int64 = "caml_int64_of_string"
 (** Convert the given string to a 64-bit integer.
-   The string is read in decimal (by default, or if the string 
+   The string is read in decimal (by default, or if the string
    begins with [0u]) or in hexadecimal, octal or binary if the
    string begins with [0x], [0o] or [0b] respectively.
 
@@ -173,7 +173,7 @@ val to_string : int64 -> string
 (** Return the string representation of its argument, in decimal. *)
 
 external bits_of_float : float -> int64
-  = "caml_int64_bits_of_float" "caml_int64_bits_of_float_unboxed"
+  = "caml_int64_bits_of_float_unboxed"
   [@@unboxed] [@@noalloc]
 (** Return the internal representation of the given float according
    to the IEEE 754 floating-point 'double format' bit layout.
@@ -182,7 +182,7 @@ external bits_of_float : float -> int64
    represent the mantissa. *)
 
 external float_of_bits : int64 -> float
-  = "caml_int64_float_of_bits" "caml_int64_float_of_bits_unboxed"
+  = "caml_int64_float_of_bits_unboxed"
   [@@unboxed] [@@noalloc]
 (** Return the floating-point number whose internal representation,
    according to the IEEE 754 floating-point 'double format' bit layout,

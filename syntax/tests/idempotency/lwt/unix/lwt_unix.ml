@@ -153,7 +153,7 @@ external start_job : 'a job -> async_method -> bool = "lwt_unix_start_job"
    if the job is already terminated. *)
 
 [@@@ocaml.warning "-3"]
-external check_job : 'a job -> int -> bool = "lwt_unix_check_job" "noalloc"
+external check_job : 'a job -> int -> bool = "noalloc"
 (* Check whether that a job has terminated or not. If it has not
    yet terminated, it is marked so it will send a notification
    when it finishes. *)
@@ -294,7 +294,7 @@ type file_descr = {
 }
 
 [@@@ocaml.warning "-3"]
-external is_socket : Unix.file_descr -> bool = "lwt_unix_is_socket" "noalloc"
+external is_socket : Unix.file_descr -> bool = "noalloc"
 [@@@ocaml.warning "+3"]
 
 external guess_blocking_job : Unix.file_descr -> bool job = "lwt_unix_guess_blocking_job"
@@ -1602,7 +1602,7 @@ let recvfrom ch buf pos len flags =
     let do_recvfrom = if Sys.win32 then Unix.recvfrom else stub_recvfrom in
     wrap_syscall Read ch (fun () -> do_recvfrom ch.fd buf pos len flags)
 
-external stub_sendto : Unix.file_descr -> Bytes.t -> int -> int -> Unix.msg_flag list -> Unix.sockaddr -> int = "lwt_unix_sendto_byte" "lwt_unix_sendto"
+external stub_sendto : Unix.file_descr -> Bytes.t -> int -> int -> Unix.msg_flag list -> Unix.sockaddr -> int = "lwt_unix_sendto"
 
 let sendto ch buf pos len flags addr =
   if pos < 0 || len < 0 || pos > Bytes.length buf - len then
@@ -2448,10 +2448,10 @@ let handle_unix_error f x =
    +-----------------------------------------------------------------+ *)
 
 [@@@ocaml.warning "-3"]
-external pool_size : unit -> int = "lwt_unix_pool_size" "noalloc"
-external set_pool_size : int -> unit = "lwt_unix_set_pool_size" "noalloc"
-external thread_count : unit -> int = "lwt_unix_thread_count" "noalloc"
-external thread_waiting_count : unit -> int = "lwt_unix_thread_waiting_count" "noalloc"
+external pool_size : unit -> int = "lwt_unix_pool_size"
+external set_pool_size : int -> unit = "lwt_unix_set_pool_size"
+external thread_count : unit -> int = "lwt_unix_thread_count"
+external thread_waiting_count : unit -> int = "lwt_unix_thread_waiting_count"
 [@@@ocaml.warning "+3"]
 
 (* +-----------------------------------------------------------------+

@@ -30,16 +30,16 @@ external shift_right_logical : int32 -> int -> int32 = "%int32_lsr"
 external of_int : int -> int32 = "%int32_of_int"
 external to_int : int32 -> int = "%int32_to_int"
 external of_float : float -> int32
-  = "caml_int32_of_float" "caml_int32_of_float_unboxed"
+  = "caml_int32_of_float_unboxed"
   [@@unboxed] [@@noalloc]
 external to_float : int32 -> float
-  = "caml_int32_to_float" "caml_int32_to_float_unboxed"
+  = "caml_int32_to_float_unboxed"
   [@@unboxed] [@@noalloc]
 external bits_of_float : float -> int32
-  = "caml_int32_bits_of_float" "caml_int32_bits_of_float_unboxed"
+  = "caml_int32_bits_of_float_unboxed"
   [@@unboxed] [@@noalloc]
 external float_of_bits : int32 -> float
-  = "caml_int32_float_of_bits" "caml_int32_float_of_bits_unboxed"
+  = "caml_int32_float_of_bits_unboxed"
   [@@unboxed] [@@noalloc]
 
 let zero = 0l

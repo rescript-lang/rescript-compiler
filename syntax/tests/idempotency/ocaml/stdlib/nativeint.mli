@@ -132,7 +132,7 @@ external to_int : nativeint -> int = "%nativeint_to_int"
    the conversion. *)
 
 external of_float : float -> nativeint
-  = "caml_nativeint_of_float" "caml_nativeint_of_float_unboxed"
+  = "caml_nativeint_of_float_unboxed"
   [@@unboxed] [@@noalloc]
 (** Convert the given floating-point number to a native integer,
    discarding the fractional part (truncate towards 0).
@@ -141,7 +141,7 @@ external of_float : float -> nativeint
    \[{!Nativeint.min_int}, {!Nativeint.max_int}\]. *)
 
 external to_float : nativeint -> float
-  = "caml_nativeint_to_float" "caml_nativeint_to_float_unboxed"
+  = "caml_nativeint_to_float_unboxed"
   [@@unboxed] [@@noalloc]
 (** Convert the given native integer to a floating-point number. *)
 
@@ -158,7 +158,7 @@ external to_int32 : nativeint -> int32 = "%nativeint_to_int32"
 
 external of_string : string -> nativeint = "caml_nativeint_of_string"
 (** Convert the given string to a native integer.
-   The string is read in decimal (by default, or if the string 
+   The string is read in decimal (by default, or if the string
    begins with [0u]) or in hexadecimal, octal or binary if the
    string begins with [0x], [0o] or [0b] respectively.
 

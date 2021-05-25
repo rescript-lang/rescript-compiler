@@ -17,7 +17,7 @@ external unsafe_get : t -> int -> char = "%caml_ba_unsafe_ref_1"
 external unsafe_set : t -> int -> char -> unit = "%caml_ba_unsafe_set_1"
 
 [@@@ocaml.warning "-3"]
-external unsafe_fill : t -> int -> int -> char -> unit = "lwt_unix_fill_bytes" "noalloc"
+external unsafe_fill : t -> int -> int -> char -> unit = "noalloc"
 [@@@ocaml.warning "+3"]
 
 let fill bytes ofs len ch =
@@ -31,9 +31,9 @@ let fill bytes ofs len ch =
    +-----------------------------------------------------------------+ *)
 
 [@@@ocaml.warning "-3"]
-external unsafe_blit_from_bytes : Bytes.t -> int -> t -> int -> int -> unit = "lwt_unix_blit_from_bytes" "noalloc"
-external unsafe_blit_to_bytes : t -> int -> Bytes.t -> int -> int -> unit = "lwt_unix_blit_to_bytes" "noalloc"
-external unsafe_blit : t -> int -> t -> int -> int -> unit = "lwt_unix_blit" "noalloc"
+external unsafe_blit_from_bytes : Bytes.t -> int -> t -> int -> int -> unit = "noalloc"
+external unsafe_blit_to_bytes : t -> int -> Bytes.t -> int -> int -> unit = "noalloc"
+external unsafe_blit : t -> int -> t -> int -> int -> unit = "noalloc"
 [@@@ocaml.warning "+3"]
 
 let blit_from_bytes src_buf src_ofs dst_buf dst_ofs len =
@@ -154,7 +154,7 @@ let recvfrom fd buf pos len flags =
   else
     wrap_syscall Read fd (fun () -> stub_recvfrom (unix_file_descr fd) buf pos len flags)
 
-external stub_sendto : Unix.file_descr -> t -> int -> int -> Unix.msg_flag list -> Unix.sockaddr -> int = "lwt_unix_bytes_sendto_byte" "lwt_unix_bytes_sendto"
+external stub_sendto : Unix.file_descr -> t -> int -> int -> Unix.msg_flag list -> Unix.sockaddr -> int = "lwt_unix_bytes_sendto"
 
 let sendto fd buf pos len flags addr =
   if pos < 0 || len < 0 || pos > length buf - len then
@@ -171,7 +171,7 @@ let map_file ~fd ?pos ~shared ?(size=(-1)) () =
   |> Bigarray.array1_of_genarray
 
 [@@@ocaml.warning "-3"]
-external mapped : t -> bool = "lwt_unix_mapped" "noalloc"
+external mapped : t -> bool = "noalloc"
 [@@@ocaml.warning "+3"]
 
 type advice =

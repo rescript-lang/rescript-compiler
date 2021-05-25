@@ -53,7 +53,6 @@ type t =
   | Implementation
   | Attribute
   | TypeConstraint
-  | Primitive
   | AtomicTypExpr
   | ListExpr
   | JsFfiImport
@@ -111,7 +110,6 @@ let toString = function
   | Implementation -> "implementation"
   | Attribute -> "an attribute"
   | TypeConstraint -> "constraints on a type"
-  | Primitive -> "an external primitive"
   | AtomicTypExpr -> "a type"
   | ListExpr -> "an ocaml list expr"
   | PackageConstraint -> "a package constraint"
@@ -335,7 +333,6 @@ let isListElement grammar token =
   | TypeConstraint -> token = Constraint
   | PackageConstraint -> token = And
   | ConstructorDeclaration -> token = Bar
-  | Primitive -> begin match token with Token.String _ -> true | _ -> false end
   | JsxAttribute -> isJsxAttributeStart token
   | JsFfiImport -> isJsFfiImportStart token
   | AttributePayload -> token = Lparen
@@ -363,8 +360,6 @@ let isListTerminator grammar token =
   | TypeConstraint, token when token <> Constraint -> true
   | PackageConstraint, token when token <> And -> true
   | ConstructorDeclaration, token when token <> Bar -> true
-  | Primitive, Semicolon -> true
-  | Primitive, token when isStructureItemStart token -> true
   | AttributePayload, Rparen -> true
 
   | _ -> false

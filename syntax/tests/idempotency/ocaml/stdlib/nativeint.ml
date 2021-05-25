@@ -30,10 +30,10 @@ external shift_right_logical: nativeint -> int -> nativeint = "%nativeint_lsr"
 external of_int: int -> nativeint = "%nativeint_of_int"
 external to_int: nativeint -> int = "%nativeint_to_int"
 external of_float : float -> nativeint
-  = "caml_nativeint_of_float" "caml_nativeint_of_float_unboxed"
+  = "caml_nativeint_of_float_unboxed"
   [@@unboxed] [@@noalloc]
 external to_float : nativeint -> float
-  = "caml_nativeint_to_float" "caml_nativeint_to_float_unboxed"
+  = "caml_nativeint_to_float_unboxed"
   [@@unboxed] [@@noalloc]
 external of_int32: int32 -> nativeint = "%nativeint_of_int32"
 external to_int32: nativeint -> int32 = "%nativeint_to_int32"

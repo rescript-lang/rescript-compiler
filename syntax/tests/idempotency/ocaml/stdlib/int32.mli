@@ -114,7 +114,7 @@ external to_int : int32 -> int = "%int32_to_int"
    is exact. *)
 
 external of_float : float -> int32
-  = "caml_int32_of_float" "caml_int32_of_float_unboxed"
+  = "caml_int32_of_float_unboxed"
   [@@unboxed] [@@noalloc]
 (** Convert the given floating-point number to a 32-bit integer,
    discarding the fractional part (truncate towards 0).
@@ -122,13 +122,13 @@ external of_float : float -> int32
    the number is outside the range \[{!Int32.min_int}, {!Int32.max_int}\]. *)
 
 external to_float : int32 -> float
-  = "caml_int32_to_float" "caml_int32_to_float_unboxed"
+  = "caml_int32_to_float_unboxed"
   [@@unboxed] [@@noalloc]
 (** Convert the given 32-bit integer to a floating-point number. *)
 
 external of_string : string -> int32 = "caml_int32_of_string"
 (** Convert the given string to a 32-bit integer.
-   The string is read in decimal (by default, or if the string 
+   The string is read in decimal (by default, or if the string
    begins with [0u]) or in hexadecimal, octal or binary if the
    string begins with [0x], [0o] or [0b] respectively.
 
@@ -152,7 +152,7 @@ val to_string : int32 -> string
 (** Return the string representation of its argument, in signed decimal. *)
 
 external bits_of_float : float -> int32
-  = "caml_int32_bits_of_float" "caml_int32_bits_of_float_unboxed"
+  = "caml_int32_bits_of_float_unboxed"
   [@@unboxed] [@@noalloc]
 (** Return the internal representation of the given float according
    to the IEEE 754 floating-point 'single format' bit layout.
@@ -161,7 +161,7 @@ external bits_of_float : float -> int32
    represent the mantissa. *)
 
 external float_of_bits : int32 -> float
-  = "caml_int32_float_of_bits" "caml_int32_float_of_bits_unboxed"
+  = "caml_int32_float_of_bits_unboxed"
   [@@unboxed] [@@noalloc]
 (** Return the floating-point number whose internal representation,
    according to the IEEE 754 floating-point 'single format' bit layout,

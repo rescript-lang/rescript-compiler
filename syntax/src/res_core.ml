@@ -5209,19 +5209,6 @@ and parseTypeDefinitionOrExtension ~attrs p =
     let typeDefs = parseTypeDefinitions ~attrs ~name ~params ~startPos p in
     TypeDef {recFlag; types = typeDefs}
 
-and parsePrimitive p =
-  match p.Parser.token with
-  | String s -> Parser.next p; Some s
-  | _ -> None
-
-and parsePrimitives p =
-  match (parseRegion ~grammar:Grammar.Primitive ~f:parsePrimitive p) with
-  | [] ->
-    let msg = "An external definition should have at least one primitive. Example: \"setTimeout\"" in
-    Parser.err p (Diagnostics.message msg);
-    []
-  | primitives -> primitives
-
 (* external value-name : typexp = external-declaration *)
 and parseExternalDef ~attrs ~startPos p =
   Parser.leaveBreadcrumb p Grammar.External;
@@ -5230,8 +5217,18 @@ and parseExternalDef ~attrs ~startPos p =
   let name = Location.mkloc name loc in
   Parser.expect ~grammar:(Grammar.TypeExpression) Colon p;
   let typExpr = parseTypExpr p in
+  let equalStart = p.startPos in
+  let equalEnd = p.endPos in
   Parser.expect Equal p;
-  let prim = parsePrimitives p in
+  let prim = match p.token with
+  | String s -> Parser.next p; [s]
+  | _ ->
+      Parser.err ~startPos:equalStart ~endPos:equalEnd p
+        (Diagnostics.message
+          ("An external requires the name of the JS value you're referring to, like \""
+          ^ name.txt ^ "\"."));
+    []
+  in
   let loc = mkLoc startPos p.prevEndPos in
   let vb = Ast_helper.Val.mk ~loc ~attrs ~prim name typExpr in
   Parser.eatBreadcrumb p;
