@@ -56,11 +56,10 @@ let handleExternalInSig
         ~loc
         "only a single string is allowed in bs external %S %S" a b
     | [ v ] ->
-      match Ast_external_process.handle_attributes_as_string
+      match Ast_external_process.encode_attributes_as_string
               loc
               pval_type
               pval_attributes
-              prim.pval_name.txt            
               v 
       with
       | {pval_type; pval_prim; pval_attributes; no_inline_cross_module} ->        
@@ -100,11 +99,10 @@ let handleExternalInStru
       ~loc 
       "only a single string is allowed in bs external %S : %S"  a b 
   | [ v] ->
-    match Ast_external_process.handle_attributes_as_string
+    match Ast_external_process.encode_attributes_as_string
             loc
             pval_type 
             pval_attributes 
-            prim.pval_name.txt
             v with 
     | { pval_type; pval_prim; pval_attributes; no_inline_cross_module} ->
       let external_result = 

@@ -830,7 +830,6 @@ let handle_attributes
     (loc : Bs_loc.t)
     (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) 
-    (pval_name : string )
     (prim_name : string)
   : Parsetree.core_type *  External_ffi_types.t * Parsetree.attributes * bool
   =
@@ -842,9 +841,7 @@ let handle_attributes
     Location.raise_errorf
       ~loc "%@uncurry can not be applied to the whole definition";
   let prim_name_or_pval_name =
-    if String.length prim_name = 0 then  
-      `Nm_val (lazy (Location.prerr_warning loc (Bs_fragile_external pval_name); pval_name))
-    else  `Nm_external prim_name  (* need check name *) in
+    `Nm_external prim_name  (* need check name *) in
   let result_type, arg_types_ty =
     (* Note this assumes external type is syntatic (no abstraction)*)
     Ast_core_type.list_of_arrow type_annotation in
@@ -935,15 +932,14 @@ let handle_attributes
 
 
 
-let handle_attributes_as_string
+let encode_attributes_as_string
     (pval_loc : Location.t)
     (typ : Ast_core_type.t) 
-    (attrs : Ast_attributes.t) 
-    (pval_name : string)
+    (attrs : Ast_attributes.t)     
     (prim_name : string) 
   : response =
   let pval_type, ffi, pval_attributes, no_inline_cross_module  =
-    handle_attributes pval_loc typ attrs pval_name prim_name  in
+    handle_attributes pval_loc typ attrs  prim_name  in
   { pval_type;
     pval_prim = [prim_name; External_ffi_types.to_string ffi];
     pval_attributes;

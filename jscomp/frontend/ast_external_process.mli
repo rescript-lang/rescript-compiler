@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,19 +32,18 @@ type response = {
 }
 
 (**
-   [handle_attributes_as_string
+   [encode_attributes_as_string
    loc pval_name.txt pval_type pval_attributes pval_prim]
    [pval_name.txt] is the name of identifier
    [pval_prim] is the name of string literal
 
    return value is of [pval_type, pval_prims, new_attrs]
 *)
-val handle_attributes_as_string :
+val encode_attributes_as_string :
   Bs_loc.t ->
   Ast_core_type.t ->
   Ast_attributes.t ->
   string  ->  
-  string  ->
   response
 
 
