@@ -1,5 +1,6 @@
 ## Unreleased
 
+* Implement syntax for arity zero vs arity one in uncurried application in [#139](https://github.com/rescript-lang/syntax/pull/139)
 * Fix parsing of first class module exprs as part of binary/ternary expr in [#256](https://github.com/rescript-lang/syntax/pull/256)
 
 ## ReScript 9.0.0

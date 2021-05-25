@@ -3385,14 +3385,13 @@ and parseArgument p =
     match p.Parser.token with
     | Dot ->
       let uncurried = true in
-      let startPos = p.Parser.startPos in
       Parser.next(p);
       begin match p.token with
         (* apply(.) *)
         | Rparen ->
-          let loc = mkLoc startPos p.prevEndPos in
-          let unitExpr = Ast_helper.Exp.construct ~loc
-            (Location.mkloc (Longident.Lident "()") loc) None
+          let unitExpr = Ast_helper.Exp.construct
+            (Location.mknoloc (Longident.Lident "()"))
+            None
           in
           Some (uncurried, Asttypes.Nolabel, unitExpr)
         | _ ->
@@ -3486,6 +3485,37 @@ and parseCallExpr p funExpr =
       Ast_helper.Exp.construct
         ~loc (Location.mkloc (Longident.Lident "()") loc) None
     ]
+  | [
+      true,
+      Asttypes.Nolabel,
+      ({
+        pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, None);
+        pexp_loc = loc;
+        pexp_attributes = []
+      } as expr)
+    ] when (not loc.loc_ghost) && p.mode = ParseForTypeChecker ->
+      (*  Since there is no syntax space for arity zero vs arity one,
+       *  we expand
+       *    `fn(. ())` into
+       *    `fn(. {let __res_unit = (); __res_unit})`
+       *  when the parsetree is intended for type checking
+       *
+       *  Note:
+       *    `fn(.)` is treated as zero arity application.
+       *  The invisible unit expression here has loc_ghost === true
+       *
+       *  Related: https://github.com/rescript-lang/syntax/issues/138
+       *)
+   [
+     true,
+     Asttypes.Nolabel,
+     Ast_helper.Exp.let_
+      Asttypes.Nonrecursive
+      [Ast_helper.Vb.mk
+        (Ast_helper.Pat.var (Location.mknoloc "__res_unit"))
+        expr]
+      (Ast_helper.Exp.ident (Location.mknoloc (Longident.Lident "__res_unit")))
+   ]
   | args -> args
   in
   let loc = {funExpr.pexp_loc with loc_end = p.prevEndPos} in

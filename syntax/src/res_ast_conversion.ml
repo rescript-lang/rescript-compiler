@@ -318,6 +318,11 @@ let stringLiteralMapper stringData =
     )
   }
 
+let hasUncurriedAttribute attrs = List.exists (fun attr -> match attr with
+  | ({Asttypes.txt = "bs"}, Parsetree.PStr []) -> true
+  | _ -> false
+) attrs
+
 let normalize =
   let open Ast_mapper in
   { default_mapper with
@@ -393,6 +398,21 @@ let normalize =
         {expr with
           pexp_attributes = mapper.attributes mapper expr.pexp_attributes;
           pexp_desc = Pexp_constant s
+        }
+      | Pexp_apply (
+          callExpr,
+          [
+            Nolabel,
+            ({pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, None); pexp_attributes = []} as unitExpr)
+          ]
+        ) when hasUncurriedAttribute expr.pexp_attributes
+        ->
+        {expr with
+          pexp_attributes = mapper.attributes mapper expr.pexp_attributes;
+          pexp_desc = Pexp_apply (
+            callExpr,
+            [Nolabel, {unitExpr with pexp_loc = {unitExpr.pexp_loc with loc_ghost = true}}]
+          )
         }
       | Pexp_function cases ->
         let loc = match (cases, List.rev cases) with

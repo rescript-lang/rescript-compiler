@@ -1,4 +1,5 @@
-let foo ~a:((a)[@ns.namedArgLoc ])  = ((a ())[@bs ]) +. 1.
+let foo ~a:((a)[@ns.namedArgLoc ])  =
+  ((a (let __res_unit = () in __res_unit))[@bs ]) +. 1.
 let a = ((fun () -> 2)[@bs ])
 let bar = foo ~a:((a)[@ns.namedArgLoc ])
 let comparisonResult =
@@ -8,3 +9,5 @@ let comparisonResult =
 ;;((document.createElementWithOptions "div"
       (elementProps ~onClick:((fun _ -> Js.log "hello world")
          [@ns.namedArgLoc ])))[@bs ])
+;;((resolve ())[@bs ])
+;;((resolve (let __res_unit = () in __res_unit))[@bs ])

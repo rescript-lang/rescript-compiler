@@ -4248,8 +4248,15 @@ and printArgumentsWithCallbackInLastPosition ~uncurried args cmtTbl =
 
 and printArguments ~uncurried (args : (Asttypes.arg_label * Parsetree.expression) list) cmtTbl =
   match args with
-  | [Nolabel, {pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, _)}] ->
-    if uncurried then Doc.text "(.)" else Doc.text "()"
+  | [Nolabel, {pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, _); pexp_loc = loc}] ->
+    (* See "parseCallExpr", ghost unit expression is used the implement
+     * arity zero vs arity one syntax.
+     * Related: https://github.com/rescript-lang/syntax/issues/138 *)
+    begin match uncurried, loc.loc_ghost with
+    | true, true -> Doc.text "(.)" (* arity zero *)
+    | true, false -> Doc.text "(. ())" (* arity one *)
+    | _ -> Doc.text "()"
+    end
   | [(Nolabel, arg)] when ParsetreeViewer.isHuggableExpression arg ->
     let argDoc =
       let doc = printExpressionWithComments arg cmtTbl in

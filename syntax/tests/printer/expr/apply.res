@@ -70,3 +70,6 @@ f(. {
   exception Exit
   raise(Exit)
 })
+
+resolve(.)
+resolve(. ())

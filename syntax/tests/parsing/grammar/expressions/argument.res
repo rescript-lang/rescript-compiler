@@ -7,3 +7,7 @@ callback(. firstNode, ~y)
 document.createElementWithOptions(. "div", elementProps(~onClick=_ =>
     Js.log("hello world")
   ))
+
+
+resolve(.)
+resolve(. ())
