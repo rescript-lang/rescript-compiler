@@ -72,4 +72,4 @@ src/res_scanner.cmi : src/res_token.cmx src/res_diagnostics.cmi
 src/res_token.cmx : src/res_comment.cmx
 tests/res_test.cmx : src/res_token.cmx src/res_parser.cmx \
     src/res_outcome_printer.cmx src/res_multi_printer.cmx src/res_io.cmx \
-    src/res_driver.cmx
+    src/res_driver.cmx src/res_core.cmx

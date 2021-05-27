@@ -98,9 +98,12 @@ let _printDebug ~startPos ~endPos scanner token =
 let next scanner =
   let nextOffset = scanner.offset + 1 in
   (match scanner.ch with
-  | '\n' | '\r' ->
+  | '\n' ->
     scanner.lineOffset <- nextOffset;
     scanner.lnum <- scanner.lnum + 1;
+    (* What about CRLF (\r + \n) on windows?
+     * \r\n will always be terminated by a \n
+     * -> we can just bump the line count on \n *)
   | _ -> ());
   if nextOffset < String.length scanner.src then (
     scanner.offset <- nextOffset;

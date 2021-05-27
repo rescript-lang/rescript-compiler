@@ -147,8 +147,32 @@ module ParserApiTest = struct
     assert (parser.token = Res_token.Let);
     print_endline "✅ Parser make: initializes parser and checking offsets"
 
+  let unixLf () =
+    let src = "let x = 1\nlet y = 2\nlet z = 3" in
+    let parser = Res_parser.make src "test.res" in
+    (match Res_core.parseImplementation parser with
+    | [x; y; z] ->
+      assert (x.pstr_loc.loc_start.pos_lnum = 1);
+      assert (y.pstr_loc.loc_start.pos_lnum = 2);
+      assert (z.pstr_loc.loc_start.pos_lnum = 3)
+    | _ -> assert false);
+    print_endline "✅ Parser handles LF correct"
+
+  let windowsCrlf () =
+    let src = "let x = 1\r\nlet y = 2\r\nlet z = 3" in
+    let parser = Res_parser.make src "test.res" in
+    (match Res_core.parseImplementation parser with
+    | [x; y; z] ->
+      assert (x.pstr_loc.loc_start.pos_lnum = 1);
+      assert (y.pstr_loc.loc_start.pos_lnum = 2);
+      assert (z.pstr_loc.loc_start.pos_lnum = 3)
+    | _ -> assert false);
+    print_endline "✅ Parser handles CRLF correct"
+
   let run () =
     makeDefault();
+    unixLf();
+    windowsCrlf()
 
 end
 
