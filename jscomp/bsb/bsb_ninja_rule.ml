@@ -246,7 +246,11 @@ let make_custom_rules
       ~restat:()
       ~command:
         (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
-      "deps" in 
+      "deps" (* 
+      it seems we already have restat = 1
+      now it is an implicit dependency, we need avoid write duplicated files
+    *)
+  in 
   let build_bin_deps_dev =
     define
       ~restat:()
