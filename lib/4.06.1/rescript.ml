@@ -12995,7 +12995,11 @@ let make_custom_rules
       ~restat:()
       ~command:
         (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
-      "deps" in 
+      "deps" (* 
+      it seems we already have restat = 1
+      now it is an implicit dependency, we need avoid write duplicated files
+    *)
+  in 
   let build_bin_deps_dev =
     define
       ~restat:()
@@ -14184,6 +14188,7 @@ let regenerate_ninja
       "@{<info>BSB check@} build spec : %a @." Bsb_ninja_check.pp_check_result check_result;
     if check_result = Bsb_bsc_version_mismatch then begin 
       Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
+      Bsb_clean.clean_bs_deps per_proj_dir;
       Bsb_clean.clean_self  per_proj_dir; 
     end ; 
 

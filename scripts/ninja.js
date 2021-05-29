@@ -1610,10 +1610,6 @@ o ../${
     libs = ocamlcommon.cmxa
 o ../${
     process.platform
-  }/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
-    libs = ocamlcommon.cmxa unix.cmxa str.cmxa
-o ../${
-    process.platform
   }/rescript.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/rescript_main.cmx
       libs = ocamlcommon.cmxa unix.cmxa str.cmxa    
 o ../${
