@@ -27,20 +27,10 @@ let (//) = Ext_path.combine
 
 
 
-(* TODO: sync up with {!Js_packages_info.module_system}  *)
-type format = Ext_module_system.t = 
-  | NodeJS | Es6 | Es6_global
 
-type spec = {
-  format : format;
-  in_source : bool;
-  suffix : Ext_js_suffix.t 
-}
 
 (*FIXME: use assoc list instead *)
-module Spec_set = Set.Make( struct type t = spec 
-    let compare = Pervasives.compare 
-  end)
+module Spec_set = Bsb_spec_set
 
 type t = {
   modules : Spec_set.t;
@@ -59,13 +49,13 @@ let bad_module_format_message_exn ~loc format =
     Literals.es6
     Literals.es6_global
 
-let supported_format (x : string) loc = 
+let supported_format (x : string) loc : Ext_module_system.t = 
   if x = Literals.commonjs then NodeJS
   else if x = Literals.es6 then Es6
   else if x = Literals.es6_global then Es6_global
   else bad_module_format_message_exn ~loc x 
 
-let string_of_format (x : format) =
+let string_of_format (x : Ext_module_system.t) =
   match x with 
   | NodeJS -> Literals.commonjs
   | Es6 -> Literals.es6
@@ -91,7 +81,7 @@ let rec from_array suffix (arr : Ext_json_types.t array) : Spec_set.t =
   !spec
 
 (* TODO: FIXME: better API without mutating *)
-and from_json_single suffix (x : Ext_json_types.t) : spec =
+and from_json_single suffix (x : Ext_json_types.t) : Bsb_spec_set.spec =
   match x with
   | Str {str = format; loc } ->    
     {format = supported_format format loc  ; in_source = false ; suffix }    
@@ -136,7 +126,7 @@ let bs_package_output = "-bs-package-output"
     coordinate with command line flag 
     {[ -bs-package-output commonjs:lib/js/jscomp/test:.js ]}    
 *)
-let package_flag ({format; in_source; suffix } : spec) dir =
+let package_flag ({format; in_source; suffix } : Bsb_spec_set.spec) dir =
   Ext_string.inter2
     bs_package_output 
     (Ext_string.concat5
@@ -151,13 +141,30 @@ let package_flag ({format; in_source; suffix } : spec) dir =
 (* FIXME: we should adapt it *)    
 let package_flag_of_package_specs (package_specs : t) 
     ~(dirname : string ) : string  = 
-  let res = Spec_set.fold (fun format acc ->
-      Ext_string.inter2 acc (package_flag format dirname )
-    ) package_specs.modules Ext_string.empty in 
+  let res =
+    match (package_specs.modules :> Bsb_spec_set.spec list) with 
+    | [] -> Ext_string.empty 
+    | [format] -> 
+      Ext_string.inter2 Ext_string.empty (package_flag format dirname)
+    | [a;b] -> 
+      Ext_string.inter3 Ext_string.empty 
+        (package_flag a dirname) 
+        (package_flag b dirname)
+    | [a;b;c] -> 
+      Ext_string.inter4
+        Ext_string.empty
+        (package_flag a dirname) 
+        (package_flag b dirname)  
+        (package_flag c dirname)
+    | _ ->  
+      Spec_set.fold (fun format acc ->
+          Ext_string.inter2 acc (package_flag format dirname )
+        ) package_specs.modules Ext_string.empty in 
   match package_specs.runtime with 
   | None -> res
   | Some x -> 
-    res ^ " -runtime " ^ x 
+    Ext_string.inter3 res "-runtime" x 
+
 let default_package_specs suffix = 
   Spec_set.singleton 
     { format = NodeJS ; in_source = false; suffix  }
@@ -173,7 +180,7 @@ let get_list_of_output_js
     (output_file_sans_extension : string)
   = 
   Spec_set.fold 
-    (fun (spec : spec) acc ->
+    (fun (spec : Bsb_spec_set.spec) acc ->
        let basename =  
          Ext_namespace.change_ext_ns_suffix
            output_file_sans_extension
@@ -189,7 +196,7 @@ let list_dirs_by
     (package_specs : t)
     (f : string -> unit)
   =  
-  Spec_set.iter (fun (spec : spec)  -> 
+  Spec_set.iter (fun (spec : Bsb_spec_set.spec)  -> 
       if not spec.in_source then     
         f (Bsb_config.top_prefix_of_format spec.format) 
     ) package_specs.modules 
