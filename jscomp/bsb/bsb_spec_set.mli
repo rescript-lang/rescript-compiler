@@ -1,5 +1,5 @@
-(* Copyright (C) 2020 - Hongbo Zhang, Authors of ReScript 
- *
+(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,29 +16,21 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-
- *
+ * GNU Lesser General Public License for more details.
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type format = Ext_module_system.t
+type spec = {
+  format : format;
+  in_source : bool;
+  suffix : Ext_js_suffix.t 
+}
 
-type t = 
-  | Toplevel
-  | Dependency of Bsb_package_specs.t 
-  | Pinned_dependency of Bsb_package_specs.t 
-  (*  This package specs comes from the toplevel to 
-      override the current settings
-  *)
-
-
-let encode_no_nl ( x : t) = 
-  match x with 
-  | Toplevel -> "0"
-  | Dependency x -> 
-    "1" ^ 
-    Bsb_package_specs.package_flag_of_package_specs x 
-      ~dirname:"."  
-  | Pinned_dependency x -> 
-    "2" ^ 
-    Bsb_package_specs.package_flag_of_package_specs x 
-      ~dirname:"."  
+type  t = private spec list 
+val empty : t 
+val add : spec -> t  ->  t
+val singleton : spec -> t 
+val fold : (spec -> 'a -> 'a) -> t -> 'a -> 'a
+val iter : (spec -> unit) ->t -> unit
