@@ -141,7 +141,7 @@ let build_subcommand ~start  argv argv_len =
     "-install", unit_set_spec do_install,
     "*internal* Install public interface files for dependencies ";
     (* This should be put in a subcommand
-      previously it works with the implication `bsb && bsb -install`
+       previously it works with the implication `bsb && bsb -install`
     *)
     "-ws", string_set_spec (ref ""),
     "[host]:port set up host & port for WebSocket build notifications";
@@ -183,7 +183,9 @@ let clean_subcommand ~start argv =
   Bsb_arg.parse_exn 
     ~usage:clean_usage ~start ~argv [|
     "-with-deps", unit_set_spec make_world,
-    "Clean dependencies too"
+    "Clean dependencies too";
+    "-verbose", call_spec Bsb_log.verbose,
+    "Set the output to be verbose";
   |] failed_annon;
   if !make_world then 
     Bsb_clean.clean_bs_deps Bsb_global_paths.cwd ; 

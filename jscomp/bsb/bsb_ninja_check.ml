@@ -106,11 +106,7 @@ let record
   let buf = Ext_buffer.create 1_000 in   
   Ext_buffer.add_string_char buf Bs_version.version '\n';  
   Ext_buffer.add_string_char buf per_proj_dir '\n';
-  (match package_kind with 
-   | Toplevel -> Ext_buffer.add_string buf "0\n"
-   | Dependency _ -> Ext_buffer.add_string buf "1\n"
-   | Pinned_dependency _ -> Ext_buffer.add_string buf "2\n"
-  );
+  Ext_buffer.add_string_char buf (Bsb_package_kind.encode_no_nl package_kind) '\n';
   Ext_list.iter file_or_dirs (fun f -> 
       Ext_buffer.add_string_char buf f '\t'; 
       Ext_buffer.add_string_char buf 
@@ -147,12 +143,7 @@ let check
       if per_proj_dir <> source_directory then Bsb_source_directory_changed else
       if forced then Bsb_forced (* No need walk through *)
       else if 
-
-        not (match package_kind, package_kind_str with 
-            | Toplevel, "0" 
-            | Dependency _, "1"
-            | Pinned_dependency _, "2" -> true 
-            | _ -> false ) then 
+         (Bsb_package_kind.encode_no_nl package_kind <> package_kind_str) then 
         Bsb_package_kind_inconsistent
       else
         begin 
