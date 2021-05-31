@@ -1,5 +1,23 @@
 `*` means  potential break changes
 
+# 9.1.3 (bug fix release)
+
+## Build 
+
+- #5154  when toplevel package-specs get changed, its dependencies should be rebuilt
+- #5152 Rebuild not triggered when deletion with nested modules
+- #5153 when Different compiler version triggered, 
+  it should clean the whole dependencies instead of just the repo itself
+- #5080 Add back -ws option for the build   
+
+## Syntax 
+- #425 fix CRLF handling for windows
+- #414 Fix printing of underscore Pexp_fun sugar in context of Array.get
+- #408 Don't parse Int token with suffices as hash ident for poly variants 
+- #410 Fix parsing of arrow type with objects in constructor declaration args
+- #404 fix printing of Osig_module in outcome printer
+- #402 Implement printing of `Otyp_module` in outcome printer
+
 # 9.1
 - Remove depercated APIs Js.Re.exec, Js.Re.test, Node.Fs.on
 - #5014 #5063 #5027 the new ReScript CLI interface
