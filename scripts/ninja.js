@@ -1532,6 +1532,55 @@ ${buildNapkinFiles}
     encoding: "utf8",
   });
 }
+
+var sourceDirs = [
+  "stubs",
+  "ext",
+  "common",
+  "js_parser",
+  "frontend",
+  "depends",
+  "core",
+  "super_errors",
+  "outcome_printer",
+  "bsb",
+  "bsb_helper",
+  "ounit",
+  "napkin",
+  "ounit_tests",
+  "main",
+];
+/**
+ *
+ * @param {string[]} dirs
+ */
+function makeLibs(dirs) {
+  return dirs.map((x) => `${x}/${x}.cmxa`).join(' ');
+}
+var bsc_libs = [
+  "js_parser",
+  "stubs",
+  "ext",
+  "napkin",
+  "common",
+  "frontend",
+  "depends",
+  "super_errors",
+  "outcome_printer",
+  "core",
+];
+
+var bspack_libs = ["stubs", "ext", "common", "frontend", "depends"];
+
+var bsb_helper_libs = ["stubs", "ext", "common","bsb_helper"];
+
+var rescript_libs = ["stubs",'ext','common','bsb']
+
+var cmjdumps_libs = ["stubs", "ext", "common", "frontend", "depends", "core"];
+
+var cmij_libs = ["stubs", "ext", "common", "frontend", "depends", "core"];
+
+var tests_libs = [ 'ounit','stubs','ext','common','frontend','depends','bsb','bsb_helper','core','ounit_tests']
 /**
  * Note don't run `ninja -t clean -g`
  * Since it will remove generated ml file which has
@@ -1539,23 +1588,7 @@ ${buildNapkinFiles}
  */
 function nativeNinja() {
   var ninjaOutput = "compiler.ninja";
-  var sourceDirs = [
-    "stubs",
-    "ext",
-    "common",
-    "js_parser",
-    "frontend",
-    "depends",
-    "core",
-    "super_errors",
-    "outcome_printer",
-    "bsb",
-    "bsb_helper",
-    "ounit",
-    "napkin",
-    "ounit_tests",
-    "main",
-  ];
+
   var includes = sourceDirs.map((x) => `-I ${x}`).join(" ");
 
   var templateNative = `
@@ -1604,31 +1637,31 @@ o core/js_record_map.ml: p4of core/j.ml
 o core/js_record_fold.ml: p4of core/j.ml
     flags = -record-fold
 
-o ../${
-    process.platform
-  }/bsc.exe: link  js_parser/js_parser.cmxa stubs/stubs.cmxa ext/ext.cmxa napkin/napkin.cmxa common/common.cmxa frontend/frontend.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/rescript_compiler_main.cmx
+o ../${process.platform}/bsc.exe: link  ${makeLibs(
+    bsc_libs
+  )} main/rescript_compiler_main.cmx
     libs = ocamlcommon.cmxa
 o ../${
     process.platform
-  }/rescript.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/rescript_main.cmx
+  }/rescript.exe: link ${makeLibs(rescript_libs)} main/rescript_main.cmx
       libs = ocamlcommon.cmxa unix.cmxa str.cmxa    
-o ../${
-    process.platform
-  }/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa bsb_helper/bsb_helper.cmxa main/bsb_helper_main.cmx
+o ../${process.platform}/bsb_helper.exe: link ${makeLibs(
+    bsb_helper_libs
+  )} main/bsb_helper_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
-o ./bin/bspack.exe: link stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./frontend/frontend.cmxa depends/depends.cmxa ./main/bspack_main.cmx
+o ./bin/bspack.exe: link ${makeLibs(bspack_libs)} ./main/bspack_main.cmx
     libs = unix.cmxa ocamlcommon.cmxa
     flags = -I ./bin -w -40-30    
-o ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa frontend/frontend.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx
+o ./bin/cmjdump.exe: link ${makeLibs(cmjdumps_libs)} main/cmjdump_main.cmx
     libs = ocamlcommon.cmxa    
-o ./bin/cmij.exe: link ./stubs/stubs.cmxa ext/ext.cmxa  common/common.cmxa frontend/frontend.cmxa depends/depends.cmxa core/core.cmxa main/cmij_main.cmx
+o ./bin/cmij.exe: link ${makeLibs(cmij_libs)} main/cmij_main.cmx
     libs = ocamlcommon.cmxa
 
 rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
     generator = true
-o ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa frontend/frontend.cmxa depends/depends.cmxa bsb/bsb.cmxa bsb_helper/bsb_helper.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
+o ./bin/tests.exe: link ${makeLibs(tests_libs)} main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
 
 ${mllRule}

@@ -39,7 +39,7 @@ o $SNAP/rescript.ml: bspack | ./bin/bspack.exe $LTO
 
 
 o $SNAP/unstable/all_ounit_tests.ml: bspack | ./bin/bspack.exe $LTO
-    flags =  -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I bsb_helper -I common -I ext -I frontend -I depends  -I core -I main
+    flags =  -bs-MD    $includes
     main = Ounit_tests_main         
 
 o $SNAP/unstable/bspack.ml: bspack | ./bin/bspack.exe $LTO
