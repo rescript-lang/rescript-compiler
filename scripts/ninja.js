@@ -1534,6 +1534,10 @@ ${buildNapkinFiles}
 }
 
 var sourceDirs = [
+  "bytecomp",
+  "parsing",
+  "typing",
+  "utils",
   "stubs",
   "ext",
   "common",
@@ -1555,9 +1559,10 @@ var sourceDirs = [
  * @param {string[]} dirs
  */
 function makeLibs(dirs) {
-  return dirs.map((x) => `${x}/${x}.cmxa`).join(' ');
+  return dirs.map((x) => `${x}/${x}.cmxa`).join(" ");
 }
-var bsc_libs = [
+var compiler_libs = ['utils','parsing', 'typing','bytecomp']
+var bsc_libs = compiler_libs.concat([
   "js_parser",
   "stubs",
   "ext",
@@ -1568,19 +1573,31 @@ var bsc_libs = [
   "super_errors",
   "outcome_printer",
   "core",
-];
+]);
 
-var bspack_libs = ["stubs", "ext", "common", "frontend", "depends"];
 
-var bsb_helper_libs = ["stubs", "ext", "common","bsb_helper"];
+var bspack_libs = compiler_libs.concat(["stubs", "ext", "common", "frontend", "depends"]);
 
-var rescript_libs = ["stubs",'ext','common','bsb']
+var bsb_helper_libs = ["stubs", "ext", "common", "bsb_helper"];
 
-var cmjdumps_libs = ["stubs", "ext", "common", "frontend", "depends", "core"];
+var rescript_libs = ["stubs", "ext", "common", "bsb"];
 
-var cmij_libs = ["stubs", "ext", "common", "frontend", "depends", "core"];
+var cmjdumps_libs = compiler_libs.concat(["stubs", "ext", "common", "frontend", "depends", "core"]);
 
-var tests_libs = [ 'ounit','stubs','ext','common','frontend','depends','bsb','bsb_helper','core','ounit_tests']
+var cmij_libs = compiler_libs.concat(["stubs", "ext", "common", "frontend", "depends", "core"]);
+
+var tests_libs = compiler_libs.concat([
+  "ounit",
+  "stubs",
+  "ext",
+  "common",
+  "frontend",
+  "depends",
+  "bsb",
+  "bsb_helper",
+  "core",
+  "ounit_tests",
+]);
 /**
  * Note don't run `ninja -t clean -g`
  * Since it will remove generated ml file which has
@@ -1593,9 +1610,9 @@ function nativeNinja() {
 
   var templateNative = `
 subninja ${getPreprocessorFileName()}
-compilerlibs := ../native/4.06.1/lib/ocaml/compiler-libs/ocamlcommon.cmxa
+
 rule optc
-    command = $ocamlopt -strict-sequence -safe-string -I +compiler-libs -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50 -warn-error A -absname -c $in # $compilerlibs
+    command = $ocamlopt -strict-sequence -safe-string  -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50-44-45 -warn-error A -absname -c $in 
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
@@ -1640,29 +1657,28 @@ o core/js_record_fold.ml: p4of core/j.ml
 o ../${process.platform}/bsc.exe: link  ${makeLibs(
     bsc_libs
   )} main/rescript_compiler_main.cmx
-    libs = ocamlcommon.cmxa
-o ../${
-    process.platform
-  }/rescript.exe: link ${makeLibs(rescript_libs)} main/rescript_main.cmx
-      libs = ocamlcommon.cmxa unix.cmxa str.cmxa    
+o ../${process.platform}/rescript.exe: link ${makeLibs(
+    rescript_libs
+  )} main/rescript_main.cmx
+      libs =  unix.cmxa str.cmxa    
 o ../${process.platform}/bsb_helper.exe: link ${makeLibs(
     bsb_helper_libs
   )} main/bsb_helper_main.cmx
-    libs = ocamlcommon.cmxa unix.cmxa str.cmxa
+    libs =  unix.cmxa str.cmxa
 o ./bin/bspack.exe: link ${makeLibs(bspack_libs)} ./main/bspack_main.cmx
-    libs = unix.cmxa ocamlcommon.cmxa
+    libs = unix.cmxa 
     flags = -I ./bin -w -40-30    
 o ./bin/cmjdump.exe: link ${makeLibs(cmjdumps_libs)} main/cmjdump_main.cmx
-    libs = ocamlcommon.cmxa    
+    
 o ./bin/cmij.exe: link ${makeLibs(cmij_libs)} main/cmij_main.cmx
-    libs = ocamlcommon.cmxa
+    
 
 rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
     generator = true
 o ./bin/tests.exe: link ${makeLibs(tests_libs)} main/ounit_tests_main.cmx
-    libs = str.cmxa unix.cmxa ocamlcommon.cmxa
+    libs = str.cmxa unix.cmxa 
 
 ${mllRule}
 ${mllList("ext", ["ext_json_parse.mll"])}

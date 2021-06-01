@@ -4412,7 +4412,7 @@ let num_loc_lines = ref 0 (* number of lines already printed after input *)
 
 (* Print the location in some way or another *)
 
-open Format
+open! Format
 
 let absolute_path s = (* This function could go into Filename *)
   let open Filename in
@@ -14740,7 +14740,7 @@ module Ast_helper : sig
 
 open Asttypes
 open Docstrings
-open Parsetree
+open! Parsetree
 
 type lid = Longident.t loc
 type str = string loc
