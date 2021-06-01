@@ -12,7 +12,7 @@ OCAML_SRC_TYPING=$native_ocaml_path/typing
 OCAML_SRC_BYTECOMP=$native_ocaml_path/bytecomp
 OCAML_SRC_DRIVER=$native_ocaml_path/driver
 OCAML_SRC_TOOLS=$native_ocaml_path/tools   
-includes = -I js_parser -I stubs -I ext -I common -I frontend -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I napkin -I main
+includes = -I js_parser -I stubs -I ext -I common -I frontend -I bsb_helper -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I napkin -I main
 SNAP=../lib/$snapshot_path
 
 o snapshot: phony  $SNAP/whole_compiler.ml   $SNAP/bsb_helper.ml  $SNAP/unstable/all_ounit_tests.ml
@@ -23,18 +23,15 @@ o $SNAP/whole_compiler.ml: bspack | ./bin/bspack.exe $LTO
     post_process = && node $LTO $SNAP/whole_compiler.ml
 
 o $SNAP/bsb_helper.ml: bspack | ./bin/bspack.exe $LTO
-     flags = -bs-MD ${releaseMode}   -I stubs -I common -I ext -I frontend -I depends -I bsb_helper  -I main 
+     flags = -bs-MD ${releaseMode}   $includes
      main = Bsb_helper_main 
 
-# o $SNAP/bsb.ml: bspack | ./bin/bspack.exe $LTO
-#     flags =   -D BS_MIN_LEX_DEPS=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I frontend -I depends -I bsb -I ext -I main 
-#     main = Bsb_main 
 
 o $SNAP/rescript.ml: bspack | ./bin/bspack.exe $LTO
-     flags =   -D BS_MIN_LEX_DEPS=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I frontend -I depends -I bsb -I ext -I main 
+     flags =   -D BS_MIN_LEX_DEPS=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING $includes
      main = Rescript_main 
 # o $SNAP/bspp.ml: bspack | ./bin/bspack.exe $LTO
-#     flags = -D BS_MIN_LEX_DEPS=true ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I frontend -I depends -I bspp -I core -I main 
+#     flags = -D BS_MIN_LEX_DEPS=true ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext $includes
 #     main = Bspp_main 
 
 
@@ -42,15 +39,15 @@ o $SNAP/rescript.ml: bspack | ./bin/bspack.exe $LTO
 
 
 o $SNAP/unstable/all_ounit_tests.ml: bspack | ./bin/bspack.exe $LTO
-    flags =  -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I bsb_helper -I common -I ext -I frontend -I depends -I bspp -I core -I main
+    flags =  -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I bsb_helper -I common -I ext -I frontend -I depends  -I core -I main
     main = Ounit_tests_main         
 
 o $SNAP/unstable/bspack.ml: bspack | ./bin/bspack.exe $LTO
-    flags = -D BS_PACK=true -bs-MD -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_PARSING -I $OCAML_SRC_UTILS -I stubs -I ext -I common -I depends -I core -I main -bs-main Bspack_main
+    flags = -D BS_PACK=true -bs-MD -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_PARSING -I $OCAML_SRC_UTILS $includes
     main = Bspack_main
 
 o $SNAP/unstable/js_compiler.ml: bspack | ./bin/bspack.exe $LTO
-    flags = -D BS_BROWSER=true -D BS_ONLY=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER -I stubs -I ext -I napkin -I frontend -I depends -I common -I core -I super_errors -I bsb -I outcome_printer -I js_parser -I main
+    flags = -D BS_BROWSER=true -D BS_ONLY=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER $includes
     main  = Jsoo_main
 
 
