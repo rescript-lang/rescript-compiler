@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Source of truth for the ReScript parser & printer",
   "devDependencies": {
-    "reanalyze": "^2.15.0"
+    "reanalyze": "^2.17.0"
   },
   "private": true,
   "scripts": {},
