@@ -173,7 +173,6 @@ module ParserApiTest = struct
     makeDefault();
     unixLf();
     windowsCrlf()
-
 end
 
 let () = OutcomePrinterTests.run()

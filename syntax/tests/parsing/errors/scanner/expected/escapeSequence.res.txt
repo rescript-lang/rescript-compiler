@@ -20,4 +20,4 @@
   unknown escape sequence
 
 let x = "\\0"
-let x = "\\0AAA"
+let x = "\\oAAA"
