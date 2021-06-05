@@ -12,7 +12,17 @@ var os = require("os");
 var path = require("path");
 var fs = require("fs");
 var bsconfig = "bsconfig.json";
-var bsb_exe = path.join(__dirname, process.platform, "rescript.exe");
+
+/**
+ * 
+ * @type{string}
+ */
+var bin_path = path.join(__dirname, process.platform === 'darwin' && process.arch === 'arm64' ? process.platform + process.arch : process.platform)
+
+/**
+ * @type{string}
+ */
+var bsb_exe = path.join(bin_path, "rescript.exe");
 
 var LAST_BUILD_START = 0;
 var LAST_FIRED_EVENT = 0;
@@ -175,7 +185,7 @@ function releaseBuild() {
   if (is_building) {
     try {
       fs.unlinkSync(lockFileName);
-    } catch (err) {}
+    } catch (err) { }
     is_building = false;
   }
 }
@@ -206,7 +216,11 @@ if (
   maybe_subcommand !== "info"
   // delegate to native
 ) {
-  var bsc_exe = path.join(__dirname, process.platform, "bsc.exe");
+  /**
+   * @type {string}
+   */
+  var bsc_exe = path.join(bin_path, "bsc.exe")
+
   switch (maybe_subcommand) {
     case "format":
       require("./scripts/rescript_format.js").main(

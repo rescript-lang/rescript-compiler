@@ -24,8 +24,14 @@ if (supported_os.indexOf(process.platform) < 0) {
 }
 var is_windows = process.platform === "win32";
 
-var ninja_bin_output = path.join(root_dir, process.platform, "ninja.exe");
+var my_target = process.platform === 'darwin' && process.arch === 'arm64' ? process.platform + process.arch : process.platform;
+var bin_path =
+  path.join(root_dir, my_target);
+
+var ninja_bin_output = path.join(bin_path, "ninja.exe");
 var use_env_compiler = process.argv.includes("-use-env-compiler");
+var force_compiler_rebuild = process.argv.includes('-force-compiler-rebuild');
+var force_lib_rebuild = process.argv.includes('-force-lib-rebuild');
 /**
  * Make sure `ninja_bin_output` exists
  * The installation of `ninja.exe` is re-entrant, since we always pre-check if it is already installed
@@ -109,12 +115,12 @@ function ensureExists(dir) {
  * @returns {string|undefined}
  */
 function checkPrebuiltBscCompiler() {
-  if (process.env.BS_TRAVIS_CI) {
+  if (process.env.BS_TRAVIS_CI || force_compiler_rebuild) {
     return;
   }
   try {
     var version = String(
-      cp.execFileSync(path.join(root_dir, process.platform, "bsc.exe"), ["-v"])
+      cp.execFileSync(path.join(bin_path, "bsc.exe"), ["-v"])
     );
 
     var myOCamlVersion = version.substr(
@@ -143,7 +149,7 @@ function buildLibs(stdlib) {
   ensureExists(path.join(lib_dir, "es6"));
   process.env.NINJA_IGNORE_GENERATOR = "true";
   var releaseNinja = `
-bsc = ../${process.platform}/bsc.exe
+bsc = ../${my_target}/bsc.exe
 stdlib = ${stdlib}
 subninja runtime/release.ninja
 subninja others/release.ninja
@@ -223,7 +229,7 @@ provideCompiler();
 
 var stdlib = "stdlib-406";
 
-if (process.env.BS_TRAVIS_CI) {
+if (process.env.BS_TRAVIS_CI || force_lib_rebuild) {
   buildLibs(stdlib);
   require("./installUtils.js").install();
 }
