@@ -44,7 +44,7 @@ let call_info_of_ap_status (ap_status : Lam.apply_status) : Js_call_info.t =
 
 let rec apply_with_arity_aux (fn : J.expression)
     (arity : int list) (args : E.t list) (len : int)  : E.t =
-  if len = 0 then fn (** All arguments consumed so far *)
+  if len = 0 then fn (* All arguments consumed so far *)
   else 
     match arity with 
     |  x :: rest   ->
@@ -1386,7 +1386,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
   |  {primitive = Pjs_unsafe_downgrade {name = property; setter }; args = [obj]}
 
     ->
-    (**
+    (*
        either a getter {[ x #. height ]} or {[ x ## method_call ]}
     *)
     assert (not setter);

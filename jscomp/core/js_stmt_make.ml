@@ -289,7 +289,7 @@ let if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t
       | ifso1::ifso_rest,  ifnot1::ifnot_rest
         when Js_analyzer.eq_statement ifnot1 ifso1 && Js_analyzer.no_side_effect_expression e
         ->
-        (** here we do agressive optimization, because it can help optimization later,
+        (* here we do agressive optimization, because it can help optimization later,
             move code outside of branch is generally helpful later
         *)
         add_prefix ifso1 ; 

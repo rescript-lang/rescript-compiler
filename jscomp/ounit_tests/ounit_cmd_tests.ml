@@ -89,7 +89,7 @@ external ff :
     end;
 
     __LOC__ >:: begin fun _ ->
-      (** used in return value
+      (* used in return value
           This should fail, we did not
           support uncurry return value yet
       *)

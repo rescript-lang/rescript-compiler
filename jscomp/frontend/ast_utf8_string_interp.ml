@@ -120,14 +120,14 @@ let update_position border
     (pos : Lexing.position)=
   if lnum = 0 then
     {pos with pos_cnum = pos.pos_cnum + border + offset  }
-    (** When no newline, the column number is [border + offset] *)
+    (* When no newline, the column number is [border + offset] *)
   else
     {
       pos with
       pos_lnum = pos.pos_lnum + lnum ;
       pos_bol = pos.pos_cnum + border + byte_bol;
       pos_cnum = pos.pos_cnum + border + byte_bol + offset;
-      (** when newline, the column number is [offset] *)
+      (* when newline, the column number is [offset] *)
     }
 let update border
     (start : pos)
@@ -240,7 +240,7 @@ let rec check_and_transform (loc : int )  s byte_offset ({s_len; buf} as cxt : c
           done;
           check_and_transform (loc + 1 )  s (i' + 1) cxt
         end
-(**Lets keep identifier simple, so that we could generating a function easier in the future
+(* Lets keep identifier simple, so that we could generating a function easier in the future
    for example
    let f = [%fn{| $x + $y = $x_add_y |}]
 *)

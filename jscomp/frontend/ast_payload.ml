@@ -25,7 +25,7 @@
 type t = Parsetree.payload
 
 let is_single_string (x : t ) = 
-  match x with  (** TODO also need detect empty phrase case *)
+  match x with  (* TODO also need detect empty phrase case *)
   | PStr [ {
       pstr_desc =  
         Pstr_eval (
@@ -39,7 +39,7 @@ let is_single_string (x : t ) =
 
 let is_single_string_as_ast (x : t ) 
   : Parsetree.expression option = 
-  match x with  (** TODO also need detect empty phrase case *)
+  match x with  (*TODO also need detect empty phrase case *)
   | PStr [ {
       pstr_desc =  
         Pstr_eval (
@@ -72,7 +72,7 @@ let is_single_int (x : t ) : int option =
 let raw_as_string_exp_exn 
     ~(kind: Js_raw_info.raw_kind) ?(is_function)
     (x : t ) : Parsetree.expression option = 
-  match x with  (** TODO also need detect empty phrase case *)
+  match x with  (* TODO also need detect empty phrase case *)
   | PStr [ {
       pstr_desc =  
         Pstr_eval (

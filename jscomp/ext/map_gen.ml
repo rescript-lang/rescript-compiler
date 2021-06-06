@@ -12,7 +12,7 @@
 (***********************************************************************)
 
 [@@@warnerror "+55"]
-(** adapted from stdlib *)
+(* adapted from stdlib *)
 
 type ('key,'a) t0 =
   | Empty
@@ -390,6 +390,7 @@ sig
   (** Return the list of all bindings of the given map.
       The returned list is sorted in increasing order with respect
       to the ordering *)
+
   val keys : 'a t -> key list 
   (* Increasing order *)
 
@@ -409,6 +410,7 @@ sig
   val find_exn: 'a t -> key ->  'a
   (** [find x m] returns the current binding of [x] in [m],
       or raises [Not_found] if no such binding exists. *)
+      
   val find_opt:  'a t ->  key ->'a option
   val find_default: 'a t -> key  ->  'a  -> 'a 
   val map: 'a t -> ('a -> 'b) -> 'b t

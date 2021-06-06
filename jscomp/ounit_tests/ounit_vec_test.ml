@@ -14,7 +14,7 @@ let suites =
   __FILE__ 
   >:::
   [
-    (** idea 
+    (* idea 
       [%loc "inplace filter" ] --> __LOC__ ^ "inplace filter" 
       or "inplace filter" [@bs.loc]
     *)

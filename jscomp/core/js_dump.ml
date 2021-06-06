@@ -373,7 +373,7 @@ and  pp_function ~is_method
        optimize len ~p:(arity = NA && len <=8) cxt f v)
 
   | _  ->
-    let set_env : Set_ident.t = (** identifiers will be printed following*)
+    let set_env : Set_ident.t = (* identifiers will be printed following*)
       match fn_state with
       | Is_return
       | No_name _ ->
@@ -730,7 +730,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
        handle parens..
     *)
     ->
-    (** TODO: parenthesize when necessary *)
+    (* TODO: parenthesize when necessary *)
     (match delta, op with
      | {expression_desc = Number (Int { i =  1l; _})}, Plus
      | {expression_desc = Number (Int { i =  -1l; _})}, Minus
@@ -789,7 +789,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
         P.space f;
         expression  ~level:rght cxt   f e2)
   | Array (el,_) ->
-    (** TODO: simplify for singleton list *)
+    (* TODO: simplify for singleton list *)
     (match el with
      | []| [ _ ] -> P.bracket_group f 1 (fun _ -> array_element_list  cxt f el)
      | _ -> P.bracket_vgroup f 1 (fun _ -> array_element_list  cxt f el))
@@ -892,7 +892,7 @@ and expression_desc cxt ~(level:int) f x : cxt  =
         cxt) 
 
   | Length (e, _) ->
-    (** Todo: check parens *)
+    (*Todo: check parens *)
     P.cond_paren_group f (level > 15) 1 (fun _ -> 
         let cxt = expression ~level:15 cxt f e in
         P.string f L.dot;

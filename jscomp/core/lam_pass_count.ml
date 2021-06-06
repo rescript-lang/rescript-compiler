@@ -106,7 +106,7 @@ let collect_occurs  lam : occ_tbl =
     match lam with 
     | Lfunction{body = l} ->
       count Map_ident.empty l
-    (** when entering a function local [bv] 
+    (* when entering a function local [bv] 
         is cleaned up, so that all closure variables will not be
         carried over, since the parameters are never rebound, 
         so it is fine to kep it empty
@@ -137,7 +137,7 @@ let collect_occurs  lam : occ_tbl =
     | Lletrec(bindings, body) ->
       List.iter (fun (_v, l) -> count bv l) bindings;
       count bv body
-    (** Note there is a difference here when do beta reduction for *)
+    (* Note there is a difference here when do beta reduction for *)
     | Lapply{ap_func = Lfunction{params; body};  ap_args = args; _}
       when  Ext_list.same_length params args ->
       count bv (Lam_beta_reduce.no_names_beta_reduce  params body args)

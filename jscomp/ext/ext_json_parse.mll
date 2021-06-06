@@ -265,7 +265,8 @@ let  parse_json lexbuf =
     | Lbracket -> parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
     | Lbrace -> parse_map lexbuf.lex_start_p Map_string.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
-(** Note if we remove [trailing_comma] support 
+
+(* Note if we remove [trailing_comma] support 
     we should report errors (actually more work), for example 
     {[
     match token () with 

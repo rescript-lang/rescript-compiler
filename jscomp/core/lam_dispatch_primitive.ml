@@ -120,7 +120,7 @@ let translate loc (prim_name : string)
       -> 
       begin match args with 
         | [e0; e1] -> E.string_comp NotEqEq e0 e1
-        (** TODO: convert to ocaml ones*)
+        (* TODO: convert to ocaml ones*)
         | _ -> assert false 
       end
     | "caml_string_lessequal"
@@ -172,7 +172,7 @@ let translate loc (prim_name : string)
       -> 
       begin match args with 
         | [e0; e1] -> E.bool_comp Cneq e0 e1
-        (** TODO: specialized in OCaml ones*)
+        (* TODO: specialized in OCaml ones*)
         | _ -> assert false 
       end
     | "caml_bool_lessequal"
@@ -365,7 +365,7 @@ let translate loc (prim_name : string)
           E.runtime_call Js_runtime_modules.bytes
             "create" args
       end
-    (** Note we captured [exception/extension] creation in the early pass, this primitive is 
+    (* Note we captured [exception/extension] creation in the early pass, this primitive is 
         like normal one to set the identifier *)
     | "?exn_slot_name"    
     | "?is_extension" ->

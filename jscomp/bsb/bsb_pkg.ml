@@ -38,6 +38,7 @@ let node_paths : string list Lazy.t =
   lazy (try Ext_string.split (Sys.getenv "NODE_PATH")
               (if Sys.win32 then ';' else ':')   
         with _ -> [])
+        
 (** It makes sense to have this function raise, when [bsb] could not resolve a package, it used to mean
     a failure
 *)

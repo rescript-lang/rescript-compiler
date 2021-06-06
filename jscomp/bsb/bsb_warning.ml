@@ -82,7 +82,7 @@ let from_map (m : Ext_json_types.t Map_string.t) =
         -> Warn_error_number str
       | Some x -> Bsb_exception.config_error x "expect true/false or string"
       | None -> Warn_error_false
-      (** To make it less intrusive : warning error has to be enabled*)
+      (* To make it less intrusive : warning error has to be enabled*)
     in
     let number =
       match number_opt with

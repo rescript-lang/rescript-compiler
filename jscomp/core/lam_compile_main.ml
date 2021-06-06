@@ -43,7 +43,7 @@ let compile_group (meta : Lam_stats.t)
         3. [E.mldot]
      *)
   (* ATTENTION: check {!Lam_compile_global} for consistency  *)      
-  (** Special handling for values in [Pervasives] *)  
+  (* Special handling for values in [Pervasives] *)  
   (* 
          we delegate [stdout, stderr, and stdin] into [caml_io] module, 
          the motivation is to help dead code eliminatiion, it's helpful 

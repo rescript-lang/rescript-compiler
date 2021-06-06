@@ -169,7 +169,7 @@ let translate  loc
        Js_of_lam_block.field_by_exp self  index 
      | _ -> assert false
     )
-  (** Negate boxed int *)
+  (* Negate boxed int *)
 
   | Pnegint
     -> 
@@ -183,7 +183,7 @@ let translate  loc
   | Pnegfloat 
     -> 
     E.float_minus (E.zero_float_lit) (Ext_list.singleton_exn args) 
-  (** Negate boxed int end*)
+  (* Negate boxed int end*)
   (* Int addition and subtraction *)
   | Paddint 
     ->
@@ -430,14 +430,14 @@ let translate  loc
       | [e;e1] -> Js_of_lam_string.ref_string e e1 
       | _ -> assert false
     end
-  (** only when Lapply -> expand = true*)
+  (* only when Lapply -> expand = true*)
   | Praise  -> assert false (* handled before here *)
   (* Runtime encoding relevant *)
   | Parraylength -> 
     E.array_length (Ext_list.singleton_exn args)      
   | Psetfield (i, field_info) -> 
     (match args with 
-     | [e0;e1] ->  (** RUNTIME *)
+     | [e0;e1] ->  (* RUNTIME *)
        ensure_value_unit cxt.continuation 
          (Js_of_lam_block.set_field field_info e0 (Int32.of_int i) e1)
      (*TODO: get rid of [E.unit ()]*)
@@ -474,7 +474,7 @@ let translate  loc
   | Pjs_call {arg_types; ffi} -> 
     Lam_compile_external_call.translate_ffi 
       cxt arg_types ffi args 
-  (** FIXME, this can be removed later *)
+  (* FIXME, this can be removed later *)
   | Pisint -> 
     E.is_type_number (Ext_list.singleton_exn args)
   | Pis_poly_var_block -> 

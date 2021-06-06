@@ -169,10 +169,10 @@ let subst_helper (subst : subst_tbl) (query : int -> int) (lam : Lam.t) : Lam.t 
        | ( _ , Lvar _
          | _, Lconst _) (* when i >= 0  # 2316 *) ->  
          Hash_int.add subst i (xs, Id (simplif l2)) ;
-         simplif l1 (** l1 will inline *)
-       | 1,_ when i >= 0 -> (** Ask: Note that we have predicate i >=0 *)
+         simplif l1 (* l1 will inline *)
+       | 1,_ when i >= 0 -> (* Ask: Note that we have predicate i >=0 *)
          Hash_int.add subst i (xs, Id (simplif l2)) ;
-         simplif l1 (** l1 will inline *)
+         simplif l1 (* l1 will inline *)
        |  _ ->
          let l2 = simplif l2 in 
          (* we only inline when [l2] does not contain bound variables

@@ -31,7 +31,7 @@
 
 type t =  
   int  Map_int.t Map_string.t
-(**
+(*
    -- "name" --> int map -- stamp --> index suffix
 *)
 let empty : t = 

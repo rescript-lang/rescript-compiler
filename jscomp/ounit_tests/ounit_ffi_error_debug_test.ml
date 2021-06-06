@@ -48,7 +48,7 @@ let output = bsc_eval {|
         end;
 
         __LOC__ >:: begin fun _ ->
-          (**
+          (*
              Each [@bs.unwrap] variant constructor requires an argument
           *)
           let output =
@@ -62,7 +62,7 @@ let output = bsc_eval {|
         end;
 
         __LOC__ >:: begin fun _ ->
-          (**
+          (*
              [@bs.unwrap] args are not supported in [@@bs.obj] functions
           *)
           let output =

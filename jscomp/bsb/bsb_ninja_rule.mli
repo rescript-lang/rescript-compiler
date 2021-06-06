@@ -39,11 +39,11 @@ type builtin = {
   build_ast : t;
   build_ast_from_re : t ;
 
-  (** platform dependent, on Win32,
+  (* platform dependent, on Win32,
       invoking cmd.exe
   *)
   copy_resources : t;
-  (** Rules below all need restat *)
+  (* Rules below all need restat *)
   build_bin_deps : t ;
   build_bin_deps_dev : t ;
   mj : t;
@@ -65,7 +65,7 @@ type builtin = {
 *)
 
 type command = string
-(** Since now we generate ninja files per bsconfig.json in a single process, 
+(* Since now we generate ninja files per bsconfig.json in a single process, 
     we must make sure it is re-entrant
 *)
 val make_custom_rules : 

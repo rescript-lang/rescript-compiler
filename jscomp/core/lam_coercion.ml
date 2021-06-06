@@ -163,13 +163,13 @@ let handle_exports (meta : Lam_stats.t)
          (match x with
           | Single (_,id,lam) when Set_ident.mem export_set id 
             -> Map_ident.add export_map id lam 
-          (** relies on the Invariant that [eoid] can not be bound before
+          (* relies on the Invariant that [eoid] can not be bound before
               FIX: such invariant may not hold
           *)
           | _ -> export_map), x :: acc )  in
   { result with export_map ; groups = Lam_dce.remove export_list coerced_input }
 
-(** TODO: more flattening,
+(* TODO: more flattening,
     - also for function compilation, flattening should be done first
     - [compile_group] and [compile] become mutually recursive function
 *)

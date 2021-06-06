@@ -268,7 +268,7 @@ let output_ninja_and_namespace_map
    | None -> ()
    | Some x -> output_string oc ("cleaner = " ^ x.path ^ "\n"));   
   output_static_resources static_resources rules.copy_resources oc ;
-  (** Generate build statement for each file *)        
+  (* Generate build statement for each file *)        
   Ext_list.iter bs_file_groups 
     (fun files_per_dir ->
        Bsb_ninja_file_groups.handle_files_per_dir oc  

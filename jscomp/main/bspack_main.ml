@@ -477,7 +477,7 @@ let () =
                    Queue.add ml_name collection_modules;
                    Queue.add mli_name collection_modules
                  end; 
-               (** if export 
+               (* if export 
                    print it as 
                    {[inclue (struct end : sig end)]}
                *)   

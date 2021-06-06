@@ -818,7 +818,7 @@ let handle_attributes
     (prim_name : string)
   : Parsetree.core_type *  External_ffi_types.t * Parsetree.attributes * bool
   =
-  (** sanity check here
+  (* sanity check here
       {[ int -> int -> (int -> int -> int [@uncurry])]}
       It does not make sense
   *)

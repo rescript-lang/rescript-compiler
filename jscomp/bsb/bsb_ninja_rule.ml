@@ -91,11 +91,11 @@ type builtin = {
   (* build_ast_from_rei : t ; *)
 
 
-  (** platform dependent, on Win32,
+  (* platform dependent, on Win32,
       invoking cmd.exe
   *)
   copy_resources : t;
-  (** Rules below all need restat *)
+  (* Rules below all need restat *)
   build_bin_deps : t ;
   build_bin_deps_dev : t;        
   mj : t;
@@ -134,7 +134,7 @@ let make_custom_rules
   builtin = 
   let bs_dep = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep in
   let bsc = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc in 
-  (** FIXME: We don't need set [-o ${out}] when building ast 
+  (* FIXME: We don't need set [-o ${out}] when building ast 
       since the default is already good -- it does not*)
   let buf = Ext_buffer.create 100 in     
   let ns_flag = 
@@ -293,11 +293,11 @@ let make_custom_rules
   {
     build_ast ;
     build_ast_from_re  ;
-    (** platform dependent, on Win32,
+    (* platform dependent, on Win32,
         invoking cmd.exe
     *)
     copy_resources;
-    (** Rules below all need restat *)
+    (* Rules below all need restat *)
     build_bin_deps ;
     build_bin_deps_dev;
     mj  ;

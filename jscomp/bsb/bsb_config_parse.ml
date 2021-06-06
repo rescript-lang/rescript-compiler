@@ -290,7 +290,7 @@ let interpret_json
 
   : Bsb_config_types.t =
 
-  (** we should not resolve it too early,
+  (* we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
 
@@ -377,7 +377,7 @@ let interpret_json
           files_to_install = Queue.create ();
           built_in_dependency = built_in_package;
           generate_merlin = 
-            extract_boolean map Bsb_build_schemas.generate_merlin true;
+            extract_boolean map Bsb_build_schemas.generate_merlin false;
           reason_react_jsx  ;  
           generators = extract_generators map ; 
           cut_generators ;

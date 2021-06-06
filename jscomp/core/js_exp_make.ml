@@ -639,7 +639,7 @@ let bin ?comment (op : J.binop) (e0 : t) (e1 : t) : t =
   match op, e0.expression_desc, e1.expression_desc with
   | EqEqEq,_,_ -> triple_equal ?comment e0 e1
   | Ge, Length (e,_), Number (Int {i = 0l}) when no_side_effect e -> 
-    true_ (** x.length >=0 | [x] is pure  -> true*)
+    true_ (* x.length >=0 | [x] is pure  -> true*)
   | Gt, Length (_,_), Number (Int {i = 0l}) -> 
     (* [e] is kept so no side effect check needed *)
     {expression_desc = Bin(NotEqEq,e0, e1); comment }

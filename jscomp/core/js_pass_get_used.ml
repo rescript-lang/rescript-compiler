@@ -42,7 +42,7 @@ let post_process_stats my_export_set (defined_idents : J.variable_declaration Ha
             Js_op_util.update_used_stats v.ident_info 
               (if pure then Once_pure else Used) 
     ) ; defined_idents  
-(** Update ident info use cases, it is a non pure function, 
+(* Update ident info use cases, it is a non pure function, 
     it will annotate [program] with some meta data
     TODO: Ident Hash could be improved, 
     since in this case it can not be global?  

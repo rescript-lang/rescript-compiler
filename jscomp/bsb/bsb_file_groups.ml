@@ -77,6 +77,7 @@ let cons ~file_group ?globbed_dir (v : t) : t =
       | None -> v.globbed_dirs
       | Some f -> f :: v.globbed_dirs
   }
+  
 (** when [is_empty file_group]
     we don't need issue [-I] [-S] in [.merlin] file
 *)  

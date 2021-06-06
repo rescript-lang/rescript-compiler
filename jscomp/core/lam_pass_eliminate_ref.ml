@@ -17,7 +17,7 @@
 exception Real_reference
 
 let rec eliminate_ref id (lam : Lam.t) = 
-  match lam with  (** we can do better escape analysis in Javascript backend *)
+  match lam with  (* we can do better escape analysis in Javascript backend *)
   | Lvar v ->
     if Ident.same v id then raise_notrace Real_reference else lam
   | Lprim {primitive = Pfield (0,_); args =  [Lvar v]} when Ident.same v id ->

@@ -29,7 +29,7 @@
 
 
 
-(** Check, it is shared across ident_tbl, 
+(* Check, it is shared across ident_tbl, 
     Only [Lassign] will break such invariant,
     how about guarantee that [Lassign] only check the local ref 
     and we track which ids are [Lassign]ed
@@ -68,7 +68,7 @@ let collect_info  (meta : Lam_stats.t) (lam : Lam.t)  =
     match lam with 
     | Lconst v 
       -> 
-      Hash_ident.replace meta.ident_tbl ident (Constant v); (** *)
+      Hash_ident.replace meta.ident_tbl ident (Constant v)
     | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args=  ls}
       -> 
       Hash_ident.replace meta.ident_tbl ident 
@@ -108,9 +108,9 @@ let collect_info  (meta : Lam_stats.t) (lam : Lam.t)  =
         (* else () *)
       )
     | Lfunction{ params; body}
-      (** TODO record parameters ident ?, but it will be broken after inlining *)  
+      (* TODO record parameters ident ?, but it will be broken after inlining *)  
       -> 
-      (** TODO could be optimized in one pass? 
+      (* TODO could be optimized in one pass? 
           -- since collect would iter everywhere,
           so -- it would still iterate internally
       *)

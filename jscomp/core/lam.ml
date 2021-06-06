@@ -557,7 +557,7 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
       | Pintcomp cmp,  (Const_int a),  (Const_int b)
         -> Lift.bool (Lam_compat.cmp_int32  cmp a.i b.i)
       | Pfloatcomp  cmp,  (Const_float a),  (Const_float b)
-        -> (** FIXME: could raise? *)
+        -> (* FIXME: could raise? *)
         Lift.bool (Lam_compat.cmp_float  cmp (float_of_string a) (float_of_string b))
 
       | Pintcomp (Ceq | Cneq as op) ,
@@ -802,16 +802,16 @@ let if_ (a : t) (b : t) (c : t) : t =
 
 
 
-(** TODO: the smart constructor is not exploited yet*)
-(** [l || r ] *)
+(* TODO: the smart constructor is not exploited yet*)
+(* [l || r ] *)
 let sequor l r = if_ l true_ r
 
 (** [l && r ] *)
 let sequand l r = if_ l r false_  
 
 (******************************************************************)
-(** only [handle_bs_non_obj_ffi] will be used outside *)
-(**
+(* only [handle_bs_non_obj_ffi] will be used outside *)
+(*
    [no_auto_uncurried_arg_types xs]
    check if the FFI have @uncurry attribute.
    if it does not we wrap it in a nomral way otherwise

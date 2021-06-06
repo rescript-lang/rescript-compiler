@@ -39,7 +39,7 @@ let rec eliminate_tuple (id : Ident.t) (lam : Lam.t) acc =
     else  Some (acc,lam)
 (* [groups] are in reverse order *)
 
-(** be careful to flatten letrec
+(* be careful to flatten letrec
     like below :
     {[
       let rec even =
