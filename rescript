@@ -14,10 +14,15 @@ var fs = require("fs");
 var bsconfig = "bsconfig.json";
 
 /**
- * 
+ *
  * @type{string}
  */
-var bin_path = path.join(__dirname, process.platform === 'darwin' && process.arch === 'arm64' ? process.platform + process.arch : process.platform)
+var bin_path = path.join(
+  __dirname,
+  process.platform === "darwin" && process.arch === "arm64"
+    ? process.platform + process.arch
+    : process.platform
+);
 
 /**
  * @type{string}
@@ -172,6 +177,7 @@ Subcommands:
   clean
   format
   convert
+  dump
   help
 
 Run \`rescript <subcommand> -h\` for subcommand help. Examples:
@@ -185,7 +191,7 @@ function releaseBuild() {
   if (is_building) {
     try {
       fs.unlinkSync(lockFileName);
-    } catch (err) { }
+    } catch (err) {}
     is_building = false;
   }
 }
@@ -219,11 +225,18 @@ if (
   /**
    * @type {string}
    */
-  var bsc_exe = path.join(bin_path, "bsc.exe")
+  var bsc_exe = path.join(bin_path, "bsc.exe");
 
   switch (maybe_subcommand) {
     case "format":
       require("./scripts/rescript_format.js").main(
+        process.argv.slice(3),
+        bsb_exe,
+        bsc_exe
+      );
+      break;
+    case "dump":
+      require("./scripts/rescript_dump.js").main(
         process.argv.slice(3),
         bsb_exe,
         bsc_exe

@@ -36,10 +36,10 @@ function bad_arg(s) {
  */
 function usage_b(b, usage, specs) {
   b.add(usage);
-  b.add(`\nOptions:\n`);
-  if(specs.length === 0){
-    return
+  if (specs.length === 0) {
+    return;
   }
+  b.add(`\nOptions:\n`);
   var max_col = 0;
   for (let [key] of specs) {
     if (key.length > max_col) {
@@ -47,7 +47,7 @@ function usage_b(b, usage, specs) {
     }
   }
   for (let i = 0; i < specs.length; i++) {
-    let [key, _, doc] = specs[i]
+    let [key, _, doc] = specs[i];
     if (!doc.startsWith("*internal*")) {
       b.add("  ")
         .add(key)
@@ -86,7 +86,7 @@ function stop_raise(usage, error, specs) {
     case "Unknown":
       if (["-help", "--help", "-h"].includes(error.data)) {
         usage_b(b, usage, specs);
-        console.error(b.val);
+        process.stderr.write(b.val);
         process.exit(0);
       } else {
         b.add("unknown option: '").add(error.data).add("'.\n");
@@ -163,6 +163,6 @@ function parse_exn(
   }
   annofun(list);
 }
-
+exports.bad_arg = bad_arg;
 exports.parse_exn = parse_exn;
 exports.ArgError = ArgError;
