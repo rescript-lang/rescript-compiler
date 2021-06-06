@@ -9,7 +9,7 @@
     "bsc": "bsc",
     "bsrefmt": "bsrefmt",
     "bstracing": "lib/bstracing",
-    "rescript" : "rescript"
+    "rescript": "rescript"
   },
   "scripts": {
     "test": "node scripts/ciTest.js  -all",
