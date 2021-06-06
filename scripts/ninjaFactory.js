@@ -9,7 +9,7 @@
 /**
  * @type{string}
  */
-var targetDir = process.platform === 'darwin' && process.arch === 'arm64' ? process.platform + process.arch : process.arch
+var targetDir = process.platform === 'darwin' && process.arch === 'arm64' ? process.platform + process.arch : process.platform
 
 
 /**

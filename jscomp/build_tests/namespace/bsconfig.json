@@ -19,5 +19,6 @@
     "number" : "-40+6+7",
     "error" : true
   },
-  "suffix": ".bs.js"
+  "suffix": ".bs.js",
+  "generate-merlin": true
 }
