@@ -183,7 +183,9 @@ Subcommands:
 
 Run \`rescript <subcommand> -h\` for subcommand help. Examples:
   rescript build -h
-  rescript format -h`);
+  rescript format -h
+The default \`rescript\` is equivalent to \`rescript build\` subcommand  
+`);
 }
 
 var maybe_subcommand = process_argv[2];
@@ -231,6 +233,13 @@ if (
   switch (maybe_subcommand) {
     case "format":
       require("./scripts/rescript_format.js").main(
+        process.argv.slice(3),
+        rescript_exe,
+        bsc_exe
+      );
+      break;
+    case "dump":
+      require("./scripts/rescript_dump.js").main(
         process.argv.slice(3),
         rescript_exe,
         bsc_exe
