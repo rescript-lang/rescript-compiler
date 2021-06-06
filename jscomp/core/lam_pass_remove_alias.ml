@@ -122,7 +122,7 @@ let simplify_alias
       begin
         match  Lam_compile_env.query_external_id_info ident fld_name with                   
         | {persistent_closed_lambda=Some Lfunction{params; body; _} } 
-          (** be more cautious when do cross module inlining *)
+          (* be more cautious when do cross module inlining *)
           when
             Ext_list.same_length params args &&
             Ext_list.for_all args (fun arg ->

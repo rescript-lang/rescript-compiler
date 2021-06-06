@@ -726,7 +726,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | Lapply 
         {ap_func = fn; ap_args = args; ap_loc = loc; ap_inlined}
       ->
-      (** we need do this eargly in case [aux fn] add some wrapper *)
+      (* we need do this eargly in case [aux fn] add some wrapper *)
       Lam.apply (convert_aux fn) (Ext_list.map args convert_aux ) {ap_loc = loc; ap_inlined = (convert_inline_attr ap_inlined); ap_status =  App_na}
     | Lfunction 
         {kind; params; body ; attr }

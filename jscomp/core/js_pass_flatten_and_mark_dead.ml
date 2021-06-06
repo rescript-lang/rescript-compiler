@@ -78,7 +78,7 @@ let mark_dead_code (js : J.program) : J.program =
                              Js_op_util.update_used_stats ident_info Used; 
                              Hash_ident.replace ident_use_stats ident (Info ident_info)
                            | Some (Info _) ->  
-                             (** check [camlinternlFormat,box_type] inlined twice 
+                             (* check [camlinternlFormat,box_type] inlined twice 
                                  FIXME: seems we have redeclared identifiers
                              *)
                              ()
@@ -172,7 +172,7 @@ let subst_map (substitution : J.expression Hash_ident.t) = { super
                                                                                    {expression_desc = (Caml_block ( _:: _ :: _ as ls, Immutable, tag, tag_info) 
                                                                                                       )} as block)
                                                                              } as variable) -> 
-                                                                   (** If we do this, we should prevent incorrect inlning to inline it into an array :) 
+                                                                   (* If we do this, we should prevent incorrect inlning to inline it into an array :) 
                                                                        do it only when block size is larger than one
                                                                    *)
                                                                    let (_, e, bindings) = 

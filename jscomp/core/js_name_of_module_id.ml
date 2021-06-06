@@ -57,17 +57,17 @@ let get_runtime_module_path
         ~from:pkg.rel_path
         ~to_:dep_path 
         js_file
-        (** TODO: we assume that both [x] and [path] could only be relative path
+        (* TODO: we assume that both [x] and [path] could only be relative path
             which is guaranteed by [-bs-package-output]
         *)
     else  
       match module_system with 
       | NodeJS | Es6 -> 
         Js_packages_info.runtime_package_path module_system js_file              
-      (** Note we did a post-processing when working on Windows *)
+      (* Note we did a post-processing when working on Windows *)
       | Es6_global 
         -> 
-        (** lib/ocaml/xx.cmj --               
+        (* lib/ocaml/xx.cmj --               
             HACKING: FIXME
             maybe we can caching relative package path calculation or employ package map *)
         (* assert false  *)
@@ -99,7 +99,7 @@ let string_of_module_id
   fix_path_for_windows (    
     match dep_module_id.kind  with 
     | External {name} -> name (* the literal string for external package *)
-    (** This may not be enough, 
+    (* This may not be enough, 
         1. For cross packages, we may need settle 
         down a single js package
         2. We may need es6 path for dead code elimination
@@ -143,7 +143,7 @@ let string_of_module_id
               ~from:cur_pkg.rel_path
               ~to_:dep_pkg.rel_path 
               js_file
-              (** TODO: we assume that both [x] and [path] could only be relative path
+              (* TODO: we assume that both [x] and [path] could only be relative path
                   which is guaranteed by [-bs-package-output]
               *)
           else  
@@ -153,7 +153,7 @@ let string_of_module_id
             begin match module_system with 
               | NodeJS | Es6 -> 
                 dep_pkg.pkg_rel_path // js_file
-              (** Note we did a post-processing when working on Windows *)
+              (* Note we did a post-processing when working on Windows *)
               | Es6_global 
                 ->             
                 begin 

@@ -24,7 +24,7 @@
 
 
 let arity_of_var (meta : Lam_stats.t) (v : Ident.t)  =
-  (** for functional parameter, if it is a high order function,
+  (* for functional parameter, if it is a high order function,
       if it's not from function parameter, we should warn
   *)
   match Hash_ident.find_opt meta.ident_tbl v with 

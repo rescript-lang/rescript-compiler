@@ -51,6 +51,10 @@ function rebuild() {
   });
 }
 
+var use_env_compiler = process.argv.includes('-use-env-compiler')
+var bin_path =
+  path.join(__dirname, '..', process.platform === 'darwin' && process.arch === 'arm64' ? process.platform + process.arch : process.platform)
+
 function buildCompiler() {
   // for 4.02.3 it relies on OCAMLLIB to find stdlib path
   // for 4.06.1 OCAMLLIB is another PATH
@@ -58,29 +62,32 @@ function buildCompiler() {
   var prebuilt = "prebuilt.ninja";
   var content = require("./ninjaFactory.js").libNinja({
     ocamlopt: is_windows
-      ? `ocamlopt.opt.exe`
-      : `../native/${ocamlVersion}/bin/ocamlopt.opt`,
+      ? `ocamlopt.opt.exe` :
+      (use_env_compiler ? `ocamlopt.opt`
+        : `../native/${ocamlVersion}/bin/ocamlopt.opt`),
     INCL: ocamlVersion,
     isWin: is_windows,
   });
 
   fs.writeFileSync(path.join(root, "lib", prebuilt), content, "ascii");
-  process.env.PATH = `${path.join(__dirname, "..", process.platform)}${
-    path.delimiter
-  }${process.env.PATH}`;
+  // This is for ninja access
+  process.env.PATH = `${bin_path}${path.delimiter}${process.env.PATH}`;
   let ninjaPath = `ninja.exe`;
+  console.log(`start build`)
   cp.execSync(
     `${ninjaPath} -C lib -f ${prebuilt} -v -t clean && ${ninjaPath} -v -C lib -f ${prebuilt}`,
     root_config
   );
+  console.log('compiler built done')
 }
 if (!is_windows) {
-  if (!process.argv.includes("-noclean")) {
+  if (!process.argv.includes("-no-clean")) {
     require("./pack").updateThemes();
     rebuild();
+    require("./ninja.js").updateRelease();
   }
 
-  require("./ninja.js").updateRelease();
+
 }
 
 function createOCamlTar() {

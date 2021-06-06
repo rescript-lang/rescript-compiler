@@ -209,7 +209,7 @@ let rec
     let sources = 
       match input.?(Bsb_build_schemas.files) with 
       | None ->  
-        (** We should avoid temporary files *)
+        (* We should avoid temporary files *)
         Ext_array.fold_left (Lazy.force base_name_array) output_sources (fun acc basename -> 
             if is_input_or_output scanned_generators basename then acc 
             else 
@@ -233,7 +233,7 @@ let rec
     in 
     let resources = extract_resources input in
     let public = extract_pub input sources in 
-    (** Doing recursive stuff *)  
+    (* Doing recursive stuff *)  
     let children =     
       match sub_dirs_field, 
             cxt.traverse with 
@@ -259,7 +259,7 @@ let rec
       | Some (False _), _  -> Bsb_file_groups.empty
       | Some s, _  -> parse_sources cxt s 
     in 
-    (** Do some clean up *)  
+    (* Do some clean up *)  
     (* prune_staled_bs_js_files cxt sources ; *)
     Bsb_file_groups.cons 
       ~file_group:{ dir ; 

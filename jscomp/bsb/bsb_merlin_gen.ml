@@ -182,7 +182,7 @@ let merlin_file_gen ~per_proj_dir:(per_proj_dir:string)
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );
-    Ext_list.iter bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
+    Ext_list.iter bs_dev_dependencies (*TODO: shall we generate .merlin for dev packages ?*)
       (fun package ->    
          let path = package.package_install_path in
          Buffer.add_string buffer merlin_s ;

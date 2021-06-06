@@ -187,7 +187,7 @@ let report_error env ppf = function
   | Expr_type_clash (
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),arityA,_),_,_)}) ::
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),arityB,_),_,_)}) :: _
-    ) ->
+    ) when arityA <> arityB ->
     reportJsFnArityMismatch ~arityA ~arityB ppf
   | Expr_type_clash (
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),a,_),_,_)}) ::

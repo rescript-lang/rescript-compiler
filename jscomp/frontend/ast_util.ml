@@ -43,17 +43,17 @@ let ocaml_obj_as_js_object
     (self_pat : Parsetree.pattern)
     (clfs : Parsetree.class_field list) =
 
-  (** Attention: we should avoid type variable conflict for each method  
+  (* Attention: we should avoid type variable conflict for each method  
       Since the method name is unique, there would be no conflict 
       OCaml does not allow duplicate instance variable and duplicate methods, 
       but it does allow duplicates between instance variable and method name, 
       we should enforce such rules 
-      {[
-        object [@bs]
-          val x = 3
-          method x = 3 
-        end 
-      ]} should not compile with a meaningful error message
+     {[
+       object [@bs]
+         val x = 3
+         method x = 3 
+       end 
+     ]} should not compile with a meaningful error message
   *)
 
   let generate_val_method_pair 
@@ -74,7 +74,7 @@ let ocaml_obj_as_js_object
   *)  
 
 
-  (** we need calculate the real object type 
+  (* we need calculate the real object type 
       and exposed object type, in some cases there are equivalent
 
       for public object type its [@meth] it does not depend on itself

@@ -78,7 +78,7 @@ let pat_mapper (self : mapper) (e : Parsetree.pattern) =
   | _ -> default_pat_mapper  self e 
 let expr_mapper  (self : mapper) (e : Parsetree.expression) =
   match e.pexp_desc with
-  (** Its output should not be rewritten anymore *)
+  (* Its output should not be rewritten anymore *)
   | Pexp_extension extension ->
     Ast_exp_extension.handle_extension e self extension
   | Pexp_setinstvar ({txt;loc},expr) -> 
@@ -107,7 +107,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
     Pconst_integer(s, Some 'l')
   ) ->
     {e with pexp_desc = Pexp_constant(Pconst_integer (s,None))} 
-  (** End rewriting *)
+  (* End rewriting *)
   | Pexp_function cases ->
     (* {[ function [@bs.exn]
          | Not_found -> 0
@@ -133,7 +133,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
         ->  Location.raise_errorf ~loc:e.pexp_loc "%@meth is not supported in function expression"
       | Meth_callback _, pexp_attributes
         ->
-        (** FIXME: does it make sense to have a label for [this] ? *)
+        (* FIXME: does it make sense to have a label for [this] ? *)
         {e with pexp_desc = Ast_uncurry_gen.to_method_callback e.pexp_loc  self label pat body ;
                 pexp_attributes }
     end
@@ -466,7 +466,7 @@ let  mapper : mapper =
     value_bindings = Ast_tuple_pattern_flatten.value_bindings_mapper;
     structure_item = structure_item_mapper;
     structure = structure_mapper;
-    (** Ad-hoc way to internalize stuff *)
+    (* Ad-hoc way to internalize stuff *)
     label_declaration = (fun self lbl -> 
         let lbl = default_mapper.label_declaration self lbl in 
         match lbl.pld_attributes with 

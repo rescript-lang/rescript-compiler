@@ -256,7 +256,7 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
             end
         end 
     | None, _ ->      
-      (** In this case [fn] is not [Lfunction], otherwise we would get [arity] *)
+      (* In this case [fn] is not [Lfunction], otherwise we would get [arity] *)
       if to_ = 0 then 
         let wrapper, new_fn  = 
           match fn with 

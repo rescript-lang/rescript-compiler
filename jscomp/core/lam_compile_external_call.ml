@@ -72,7 +72,7 @@ let append_list  x xs =
   | Splice0 -> xs 
   | Splice1 a -> a::xs 
   | Splice2 (a,b) -> a::b::xs
-(** The first return value is value, the second argument is side effect expressions 
+(* The first return value is value, the second argument is side effect expressions 
     Only the [unit] with no label will be ignored
     When  we are passing a boxed value to external(optional), we need
     unbox it in the first place.
@@ -80,17 +80,17 @@ let append_list  x xs =
     Note when optional value is not passed, the unboxed value would be 
     [undefined], with the combination of `[@int]` it would be still be 
     [undefined], this by default is still correct..  
-    {[
-      (function () {
-           switch (undefined) {
-             case 97 : 
-               return "a";
-             case 98 : 
-               return "b";
+   {[
+     (function () {
+          switch (undefined) {
+            case 97 : 
+              return "a";
+            case 98 : 
+              return "b";
 
-           }
-         }()) === undefined
-    ]} 
+          }
+        }()) === undefined
+   ]} 
 
      This would not work with [NonNullString]
 *)
@@ -137,7 +137,7 @@ let ocaml_to_js_eff
     let single_arg =
       match arg_label with
       | Arg_optional  ->
-        (**
+        (*
            If this is an optional arg (like `?arg`), we have to potentially do
            2 levels of unwrapping:
            - if ocaml arg is `None`, let js arg be `undefined` (no unwrapping)
@@ -198,7 +198,7 @@ let assemble_args_no_splice
   args,
   begin  match eff with
     | [] -> None 
-    | x::xs ->  (** FIXME: the order of effects? *)
+    | x::xs ->  (* FIXME: the order of effects? *)
       Some (E.fuse_to_seq x xs) 
   end
 let assemble_args_has_splice  (arg_types : specs) (args : exprs) 
@@ -230,7 +230,7 @@ let assemble_args_has_splice  (arg_types : specs) (args : exprs)
   args,
   (match eff with
    | [] -> None 
-   | x::xs ->  (** FIXME: the order of effects? *)
+   | x::xs ->  (* FIXME: the order of effects? *)
      Some (E.fuse_to_seq x xs)), !dynamic
 
 

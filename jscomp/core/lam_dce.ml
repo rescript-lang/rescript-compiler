@@ -75,7 +75,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
         | Nop lam ->
           if Lam_analysis.no_side_effects lam then acc
           else 
-            (** its free varaibles here will be defined above *)
+            (* its free varaibles here will be defined above *)
             Set_ident.fold (Lam_free_variables.pass_free_variables lam) acc (fun x acc -> x :: acc) 
       )  in 
   let visited = transitive_closure initial_idents ident_free_vars in 

@@ -11,7 +11,8 @@
 (*                                                                     *)
 (***********************************************************************)
 [@@@warnerror "+55"]
-(** balanced tree based on stdlib distribution *)
+
+(* balanced tree based on stdlib distribution *)
 
 type 'a t0 = 
   | Empty 

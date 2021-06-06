@@ -143,6 +143,7 @@ val if_ : t -> t -> t -> t
 
 (** constant folding*)
 val switch : t -> lambda_switch -> t 
+
 (** constant folding*)
 val stringswitch : t -> (string * t) list -> t option -> t 
 
@@ -152,6 +153,7 @@ val unit : t
 
 (** convert [l || r] to [if l then true else r]*)
 val sequor : t -> t -> t
+
 (** convert [l && r] to [if l then r else false *)
 val sequand : t -> t -> t
 

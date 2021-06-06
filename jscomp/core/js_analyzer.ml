@@ -64,7 +64,7 @@ let free_variables (stats : idents_stats) = {
   expression = begin fun self exp -> 
     match exp.expression_desc with
     | Fun(_, _,_, env)
-      (** a optimization to avoid walking into funciton again
+      (* a optimization to avoid walking into funciton again
           if it's already comuted
       *)
       ->
@@ -111,7 +111,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Array (xs,_mutable_flag)  
   | Caml_block (xs, _mutable_flag, _, _)
     ->
-    (** create [immutable] block,
+    (* create [immutable] block,
         does not really mean that this opreation itself is [pure].
 
         the block is mutable does not mean this operation is non-pure

@@ -206,7 +206,7 @@ let record_scope_pass = {
                 (* self#add_loop_mutable_variable ident *) (* assert false *)
                 | Some x
                   ->
-                  (** 
+                  (*
                       when x is an immediate immutable value, 
                       (like integer .. )
                       not a reference, it should be Immutable

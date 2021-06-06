@@ -89,7 +89,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pnull_undefined_to_opt 
       | Pjs_fn_make _         
       | Pjs_object_create _
-      (** TODO: check *)      
+      (* TODO: check *)      
       | Pbytes_to_string 
       | Pbytes_of_string 
       | Pmakeblock _  (* whether it's mutable or not *)
@@ -187,7 +187,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lstringswitch (_,_,_) -> false
   | Lstaticraise _ -> false
   | Lstaticcatch _ -> false 
-  (** It would be nice that we can also analysis some small functions 
+  (* It would be nice that we can also analysis some small functions 
       for example [String.contains], 
       [Format.make_queue_elem]
   *)
@@ -240,7 +240,7 @@ let rec size (lam : Lam.t) =
             } -> really_big ()
     | Lprim {args = ll; _} -> size_lams 1 ll
 
-    (** complicated 
+    (* complicated 
         1. inline this function
         2. ...
         exports.Make=

@@ -34,7 +34,7 @@ let write_file fname digest contents =
   output_char oc '\n';
   Ext_buffer.output_buffer oc contents;
   close_out oc 
-(** 
+(*
    TODO:
    sort filegroupts to ensure deterministic behavior
 
