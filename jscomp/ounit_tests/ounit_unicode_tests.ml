@@ -48,6 +48,15 @@ let suites =
             "\\n" =~ "\\n"
         end;
         __LOC__ >:: begin fun _ ->
+            Ast_utf8_string.transform_test "\\u{1d306}" =~ "\\u{1d306}"
+        end;
+        __LOC__ >:: begin fun _ ->
+            Ast_utf8_string.transform_test "unicode escape: \\u{1d306}" =~ "unicode escape: \\u{1d306}"
+        end;
+        __LOC__ >:: begin fun _ ->
+            Ast_utf8_string.transform_test "unicode escape: \\u{1d306} with suffix text" =~ "unicode escape: \\u{1d306} with suffix text"
+        end;
+        __LOC__ >:: begin fun _ ->
           Ast_utf8_string.transform_test
             "\\\\\\b\\t\\n\\v\\f\\r\\0\\$" =~
           "\\\\\\b\\t\\n\\v\\f\\r\\0\\$"
