@@ -1420,8 +1420,10 @@ function test(dir) {
       return (
         (x.endsWith(".ml") || x.endsWith(".mli")) &&
         !(x.endsWith(".cppo.ml") || x.endsWith(".cppo.mli")) &&
-        !x.includes('bytelibrarian') && !x.includes('bytelink') && 
-        !x.includes('bytepackager') && !x.includes('emitcode')
+        !x.includes("bytelibrarian") &&
+        !x.includes("bytelink") &&
+        !x.includes("bytepackager") &&
+        !x.includes("emitcode")
       );
     })
     .map((x) => path.join(dir, x));
@@ -1522,7 +1524,7 @@ ${buildNapkinFiles}
 `;
   var cppoNinjaFile = getPreprocessorFileName();
   writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
-  cp.execFileSync(vendorNinjaPath, ["-f", cppoNinjaFile, "--verbose",'-v'], {
+  cp.execFileSync(vendorNinjaPath, ["-f", cppoNinjaFile, "--verbose", "-v"], {
     cwd: jscompDir,
     stdio: [0, 1, 2],
     encoding: "utf8",
@@ -1557,8 +1559,9 @@ var sourceDirs = [
 function makeLibs(dirs) {
   return dirs.map((x) => `${x}/${x}.cmxa`).join(" ");
 }
-var compiler_libs = ['utils','parsing', 'typing','bytecomp']
-var bsc_libs = compiler_libs.concat([
+var compiler_libs = ["utils", "parsing", "typing", "bytecomp"];
+var bsc_libs = [
+  ...compiler_libs,
   "js_parser",
   "stubs",
   "ext",
@@ -1569,20 +1572,43 @@ var bsc_libs = compiler_libs.concat([
   "super_errors",
   "outcome_printer",
   "core",
-]);
+];
 
-
-var bspack_libs = compiler_libs.concat(["stubs", "ext", "common", "frontend", "depends"]);
+var bspack_libs = [
+  ...compiler_libs,
+  "stubs",
+  "ext",
+  "common",
+  "frontend",
+  "depends",
+];
 
 var bsb_helper_libs = ["stubs", "ext", "common", "bsb_helper"];
 
 var rescript_libs = ["stubs", "ext", "common", "bsb"];
 
-var cmjdumps_libs = compiler_libs.concat(["stubs", "ext", "common", "frontend", "depends", "core"]);
+var cmjdumps_libs = [
+  ...compiler_libs,
+  "stubs",
+  "ext",
+  "common",
+  "frontend",
+  "depends",
+  "core",
+];
 
-var cmij_libs = compiler_libs.concat(["stubs", "ext", "common", "frontend", "depends", "core"]);
+var cmij_libs = [
+  ...compiler_libs,
+  "stubs",
+  "ext",
+  "common",
+  "frontend",
+  "depends",
+  "core",
+];
 
-var tests_libs = compiler_libs.concat([
+var tests_libs = [
+  ...compiler_libs,
   "ounit",
   "stubs",
   "ext",
@@ -1593,7 +1619,7 @@ var tests_libs = compiler_libs.concat([
   "bsb_helper",
   "core",
   "ounit_tests",
-]);
+];
 /**
  * Note don't run `ninja -t clean -g`
  * Since it will remove generated ml file which has
