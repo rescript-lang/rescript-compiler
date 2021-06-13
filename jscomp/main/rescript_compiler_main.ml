@@ -248,7 +248,7 @@ let [@inline] string_list_add s : Bsc_args.spec =
 let buckle_script_flags : (string * Bsc_args.spec * string) array =
   [|
     "-I", string_list_add  Clflags.include_dirs ,
-    "<dir>  Add <dir> to the list of include directories" ;
+    "*internal* <dir>  Add <dir> to the list of include directories" ;
 
     "-w", string_call (Warnings.parse_options false),
     "<list>  Enable or disable warnings according to <list>:\n\
@@ -262,16 +262,16 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
 
     "-o", string_optional_set Clflags.output_name, 
-    "<file>  set output file name to <file>";
+    "*internal* <file>  set output file name to <file>";
 
     "-bs-read-cmi",  unit_call (fun _ -> Clflags.assume_no_mli := Mli_exists), 
     "*internal* Assume mli always exist ";
 
     "-ppx", string_list_add Clflags.all_ppx,
-    "<command>  Pipe abstract syntax trees through preprocessor <command>";
+    "*internal* <command>  Pipe abstract syntax trees through preprocessor <command>";
 
     "-open", string_list_add Clflags.open_modules,
-    "<module>  Opens the module <module> before typing";
+    "*internal* <module>  Opens the module <module> before typing";
 
     "-bs-jsx", string_call (fun i -> 
         (if i <> "3" then Bsc_args.bad_arg (" Not supported jsx version : " ^  i));
@@ -285,7 +285,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal* Generate binary .mli_ast and ml_ast and stop";
 
     "-bs-syntax-only", set Js_config.syntax_only,
-    "Only check syntax";
+    "*internal* Only check syntax";
 
     "-bs-g", unit_call (fun _ -> Js_config.debug := true; Lexer.replace_directive_bool "DEBUG" true),
     "Debug mode";
@@ -293,10 +293,10 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-v", string_call ignore, 
     "*internal* version check to force a rebuild";
     "-bs-package-name", string_call Js_packages_state.set_package_name, 
-    "Set package name, useful when you want to produce npm packages";
+    "*internal* Set package name, useful when you want to produce npm packages";
 
     "-bs-ns", string_call Js_packages_state.set_package_map, 
-    "Set package map, not only set package name but also use it as a namespace" ;
+    "*internal* Set package map, not only set package name but also use it as a namespace" ;
 
     "-as-ppx", set Js_config.as_ppx, 
     "*internal*As ppx for editor integration";
@@ -312,15 +312,15 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
 
     "-bs-super-errors", unit_lazy Super_main.setup,
-    "Better error message combined with other tools ";
+    "*internal* Better error message combined with other tools ";
 
     "-unboxed-types", set Clflags.unboxed_types,
-    "Unannotated unboxable types will be unboxed";
+    "*internal* Unannotated unboxable types will be unboxed";
 
     "-bs-re-out", unit_call (fun _ -> Config.syntax_kind := `reason),
-    "Print compiler output in Reason syntax";
+    "*internal* Print compiler output in Reason syntax";
     "-bs-ml-out", unit_call (fun _ -> Config.syntax_kind := `ml),
-    "Print compiler output in ML syntax";
+    "*internal* Print compiler output in ML syntax";
 
     "-bs-D",  string_call define_variable,
     "Define conditional variable e.g, -D DEBUG=true";
@@ -335,7 +335,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal* Built in check corrupted data";  
 
     "-color", string_call set_color_option,
-    "Enable or disable colors in compiler messages\n\
+    "*internal* Enable or disable colors in compiler messages\n\
      The following settings are supported:\n\
      auto    use heuristics to enable colors only if supported\n\
      always  enable colors\n\
@@ -346,7 +346,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
      not empty or \"dumb\", and that isatty(stderr) holds.";    
 
     "-bs-list-conditionals", unit_call (fun () -> Lexer.list_variables Format.err_formatter),
-    "List existing conditional variables";  
+    "*internal* List existing conditional variables";  
 
     "-bs-eval", string_call (fun  s -> eval s ~suffix:Literals.suffix_ml), 
     "*internal* (experimental) set the string to be evaluated in OCaml syntax";
@@ -409,41 +409,41 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal* print source";
 
     "-format", string_call format_file,
-    "Format as Res syntax";
+    "*internal* Format as Res syntax";
 
     "-where", unit_call print_standard_library, 
-    "Print location of standard library and exit";
+    "*internal* Print location of standard library and exit";
 
     "-verbose", set Clflags.verbose, 
-    "Print calls to external commands";
+    "*internal* Print calls to external commands";
 
     "-keep-locs", set Clflags.keep_locs, 
-    "Keep locations in .cmi files";
+    "*internal* Keep locations in .cmi files";
 
     "-no-keep-locs", clear Clflags.keep_locs, 
-    "Do not keep locations in .cmi files";
+    "*internal* Do not keep locations in .cmi files";
 
     "-nopervasives", set Clflags.nopervasives, 
     "*internal*";
 
     "-v", unit_call print_version_string,
-    " Print compiler version and location of standard library and exit";  
+    "Print compiler version and location of standard library and exit";  
 
     "-version", unit_call print_version_string, 
     "Print version and exit";
 
     "-pp", string_optional_set Clflags.preprocessor,
-    "<command>  Pipe sources through preprocessor <command>";
+    "*internal* <command>  Pipe sources through preprocessor <command>";
 
     "-absname", set Location.absname, 
-    "Show absolute filenames in error messages";  
+    "*internal* Show absolute filenames in error messages";  
     (* Not used, the build system did the expansion *)
 
     "-bs-no-bin-annot",  clear Clflags.binary_annotations, 
-    "Disable binary annotations (by default on)";
+    "*internal* Disable binary annotations (by default on)";
 
     "-i", set Clflags.print_types, 
-    "Print inferred interface";  
+    "*internal* Print inferred interface";  
 
     "-nolabels", set Clflags.classic, 
     "*internal* Ignore non-optional labels in types";  
@@ -452,7 +452,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal* Shorten paths in types";
 
     "-unsafe", set Clflags.fast, 
-    "Do not compile bounds checking on array and string access";
+    "*internal* Do not compile bounds checking on array and string access";
 
     "-warn-help", unit_call Warnings.help_warnings, 
     "Show description of warning numbers";
