@@ -93,7 +93,7 @@ function main(argv, bsb_exe, bsc_exe) {
       files = output.stdout.split("\n").map((x) => x.trim());
       for (let arg of files) {
         if (isSupportedFile(arg)) {
-          // console.log(`processing ${arg}`);
+          // console.error(`processing ${arg}`);
           child_process.execFile(
             bsc_exe,
             ["-o", arg, "-format", arg],
@@ -102,7 +102,7 @@ function main(argv, bsb_exe, bsc_exe) {
                 // todo
               } else {
                 // todo error handling
-                console.log(stderr);
+                console.error(stderr);
               }
             }
           );
@@ -126,7 +126,7 @@ function main(argv, bsb_exe, bsc_exe) {
               if (error === null) {
                 console.log(stdout.trimEnd());
               } else {
-                console.log(stderr);
+                console.error(stderr);
                 process.exit(2);
               }
             }
@@ -161,7 +161,7 @@ function main(argv, bsb_exe, bsc_exe) {
               console.log(stdout);
             }
           } else {
-            console.log(stderr);
+            console.error(stderr);
           }
         });
       });
