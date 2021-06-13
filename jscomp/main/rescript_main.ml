@@ -183,12 +183,11 @@ let clean_subcommand ~start argv =
   Bsb_arg.parse_exn 
     ~usage:clean_usage ~start ~argv [|
     "-with-deps", unit_set_spec make_world,
-    "Clean dependencies too";
+    "*internal* Clean dependencies too";
     "-verbose", call_spec Bsb_log.verbose,
     "Set the output to be verbose";
   |] failed_annon;
-  if !make_world then 
-    Bsb_clean.clean_bs_deps Bsb_global_paths.cwd ; 
+  Bsb_clean.clean_bs_deps Bsb_global_paths.cwd ; 
   Bsb_clean.clean_self Bsb_global_paths.cwd      
 let init_usage = "Usage: rescript init [folder-name]\n\n\
                   `rescript init` adds a small ReScript project template to the current folder\n\n\
