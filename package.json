@@ -1,4 +1,5 @@
 {
+  "version": "9.1.4",
   "devDependencies": {
     "mocha": "^7.2.0",
     "nyc": "^15.0.0"
@@ -18,7 +19,6 @@
     "coverage": "nyc --timeout=3000 --reporter=html mocha jscomp/test/*test.js && open ./coverage/index.html"
   },
   "name": "rescript",
-  "version": "9.1.3",
   "description": "ReScript toolchain",
   "repository": {
     "type": "git",
