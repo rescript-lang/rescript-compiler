@@ -1,53 +1,189 @@
 //@ts-check
-var arg = require("./rescript_arg.js");
-var format_usage = `Usage: rescript format <options> [files]
-
-\`rescript format\` formats the current directory
-`;
 var child_process = require("child_process");
 var path = require("path");
 var fs = require("fs");
-/**
- * @type {arg.stringref}
- */
-var stdin = { val: undefined };
+
+var supportedInputExtensions = [".res", ".resi", ".ml", ".mli", ".re", ".rei"];
+
+function usage() {
+  console.error("rescript format");
+  console.error("");
+  console.error("Automatically format code in ReScript syntax");
+  console.error("");
+  console.error("Commands");
+  console.error("  rescript format               Format all .res(i) files in the current directory");
+  console.error("  rescript format -all          Format all .res(i) files in the whole project");
+  console.error("  rescript format <file>...     Format the specified files");
+  console.error("                                Files with .res(i) syntax are formatted in place");
+  console.error("                                Files with other supported extensions are printed to stdout in ReScript syntax");
+  console.error("  rescript format -stdin <ext>  Read code from stdin and print the formatted code to stdout in ReScript syntax");
+  console.error("                                The syntax of the input must be specified by passing an extension (like .res)");
+  console.error("  rescript format -h            Show this help");
+  console.error("");
+  console.error("Supported inputs");
+  console.error("  Formatting in place:  .res, .resi");
+  console.error("  Printing to stdout:   " + supportedInputExtensions.join(", "));
+}
 
 /**
- * @type {arg.boolref}
- */
-var format = { val: undefined };
-
-/**
- * @type{arg.specs}
- */
-var specs = [
-  [
-    "-stdin",
-    { kind: "String", data: { kind: "String_set", data: stdin } },
-    `[.res|.resi|.ml|.mli|.re|.rei] Read the code from stdin and print
-the formatted code to stdout in ReScript syntax`,
-  ],
-  //  ml|mli
-  [
-    "-all",
-    { kind: "Unit", data: { kind: "Unit_set", data: format } },
-    "Format the whole project ",
-  ],
-];
-var formattedStdExtensions = [".res", ".resi", ".ml", ".mli", ".re", ".rei"];
-var formattedFileExtensions = [".res", ".resi"];
-
-/**
- *
  * @param {string[]} extensions
+ * @returns {(file: string) => boolean}
  */
 function hasExtension(extensions) {
-  /**
-   * @param {string} x
-   */
-  var pred = (x) => extensions.some((ext) => x.endsWith(ext));
-  return pred;
+  return (file) => extensions.some(ext => file.endsWith(ext))
 }
+
+var isSupportedInputFile = hasExtension(supportedInputExtensions);
+var isReScriptFile = hasExtension([".res", ".resi"]);
+
+class ArgumentError extends Error { }
+
+/**
+ * @param {string[]} argv
+ * @param {string} bsb_exe
+ * @param {string} bsc_exe
+ */
+function main(argv, bsb_exe, bsc_exe) {
+  format(argv, bsb_exe, bsc_exe)
+    .catch(err => {
+      if (err instanceof ArgumentError) {
+        console.error(`Error: ${err.message}`)
+        console.error();
+        usage()
+      } else {
+        console.error(err)
+      }
+      process.exit(2);
+    })
+}
+
+/**
+ * @param {string[]} argv
+ * @param {string} bsb_exe
+ * @param {string} bsc_exe
+ */
+async function format(argv, bsb_exe, bsc_exe) {
+  var files = [];
+  var arg;
+  loop:
+  while ((arg = argv.shift()) !== undefined) {
+    switch (arg) {
+      case "--":
+        files.push(...argv);
+        break loop;
+      case "-all":
+        if (argv.length != 0 || files.length != 0) {
+          throw new ArgumentError("-all does not accept other arguments");
+        }
+        return formatProject(bsb_exe, bsc_exe);
+      case "-stdin":
+        if (argv.length != 1 || files.length != 0) throw new ArgumentError("-stdin requires an extension argument")
+        return formatStdin(bsc_exe, argv[0]);
+      case "-h":
+      case "-help":
+      case "--help":
+        return usage();
+      default:
+        if (arg.startsWith("-")) {
+          throw new ArgumentError(`unrecognized option: ${arg}`);
+        }
+        files.push(arg)
+    }
+  }
+  if (files.length > 0) {
+    return formatFiles(bsc_exe, files);
+  } else {
+    return formatDirectory(bsc_exe, process.cwd());
+  }
+}
+
+/**
+ * rescript format -all
+ * @param {string} bsb_exe
+ * @param {string} bsc_exe
+ */
+async function formatProject(bsb_exe, bsc_exe) {
+  var output = child_process.spawnSync(bsb_exe, ["info", "-list-files"], {
+    encoding: "utf-8",
+  });
+  if (output.status !== 0) {
+    console.error(output.stdout);
+    console.error(output.stderr);
+    process.exit(2);
+  }
+  return Promise.all(
+    output.stdout
+      .split("\n")
+      .map(x => x.trim())
+      .filter(isReScriptFile)
+      .map(async file => formatFileInPlace(bsc_exe, file))
+  )
+}
+
+/**
+ * @param {string} bsc_exe
+ * @param {string} file
+ */
+async function formatFileInPlace(bsc_exe, file) {
+  return new Promise((resolve, reject) => {
+    child_process.execFile(
+      bsc_exe,
+      ["-o", file, "-format", file],
+      (error, _stdout, stderr) => {
+        if (error === null) {
+          resolve();
+        } else {
+          reject(stderr);
+        }
+      }
+    )
+  })
+}
+
+/**
+ * @param {string} bsc_exe
+ * @param {string} file
+ */
+async function getFormattedFile(bsc_exe, file) {
+  return new Promise((resolve, reject) => {
+    child_process.execFile(
+      bsc_exe,
+      ["-format", file],
+      (error, stdout, stderr) => {
+        if (error === null) {
+          resolve(stdout);
+        } else {
+          reject(stderr);
+        }
+      }
+    )
+  })
+}
+
+/**
+ * rescript format <file>...
+ * @param {string} bsc_exe
+ * @param {string[]} files
+ */
+async function formatFiles(bsc_exe, files) {
+  var invalid;
+  if (invalid = files.find(file => !isSupportedInputFile(file))) {
+    throw new ArgumentError(`unsupported input file: ${invalid}`)
+  }
+  return Promise.all(
+    files.map(async file => {
+      // This is surprising behaviour. Either multiple files should be formatted
+      // in place, or a single file should be printed to stdout.
+      if (isReScriptFile(file)) {
+        return formatFileInPlace(bsc_exe, file)
+      } else {
+        return getFormattedFile(bsc_exe, file)
+          .then(formatted => process.stdout.write(formatted))
+      }
+    })
+  )
+}
+
 async function readStdin() {
   var stream = process.stdin;
   const chunks = [];
@@ -56,123 +192,40 @@ async function readStdin() {
 }
 
 /**
- * @param {string[]} argv
- * @param {string} bsb_exe
+ * rescript format -stdin <ext>
  * @param {string} bsc_exe
+ * @param {string} extension
  */
-function main(argv, bsb_exe, bsc_exe) {
-  var isSupportedFile = hasExtension(formattedFileExtensions);
-  var isSupportedStd = hasExtension(formattedStdExtensions);
-
-  try {
-    /**
-     * @type {string[]}
-     */
-    var files = [];
-    arg.parse_exn(format_usage, argv, specs, (xs) => {
-      files = xs;
-    });
-
-    var format_project = format.val;
-    var use_stdin = stdin.val;
-    if (format_project) {
-      if (use_stdin || files.length !== 0) {
-        console.error("format -all can not be in use with other flags");
-        process.exit(2);
-      }
-      // -all
-      // TODO: check the rest arguments
-      var output = child_process.spawnSync(bsb_exe, ["info", "-list-files"], {
-        encoding: "utf-8",
-      });
-      if (output.status !== 0) {
-        console.error(output.stdout);
-        console.error(output.stderr);
-        process.exit(2);
-      }
-      files = output.stdout.split("\n").map((x) => x.trim());
-      for (let arg of files) {
-        if (isSupportedFile(arg)) {
-          // console.error(`processing ${arg}`);
-          child_process.execFile(
-            bsc_exe,
-            ["-o", arg, "-format", arg],
-            (error, stdout, stderr) => {
-              if (error === null) {
-                // todo
-              } else {
-                // todo error handling
-                console.error(stderr);
-              }
-            }
-          );
-        }
-      }
-    } else if (use_stdin) {
-      if (isSupportedStd(use_stdin)) {
-        var crypto = require("crypto");
-        var os = require("os");
-        var filename = path.join(
-          os.tmpdir(),
-          "rescript_" + crypto.randomBytes(8).toString("hex") + use_stdin
-        );
-        (async function () {
-          var content = await readStdin();
-          fs.writeFileSync(filename, content, "utf8");
-          child_process.execFile(
-            bsc_exe,
-            ["-format", filename],
-            (error, stdout, stderr) => {
-              if (error === null) {
-                console.log(stdout.trimEnd());
-              } else {
-                console.error(stderr);
-                process.exit(2);
-              }
-            }
-          );
-        })();
-      } else {
-        console.error(`Unsupported exetnsion ${use_stdin}`);
-        console.error(`Supported extensions: ${formattedStdExtensions} `);
-        process.exit(2);
-      }
-    } else {
-      if (files.length === 0) {
-        // none of argumets set
-        // format the current directory
-        files = fs.readdirSync(process.cwd()).filter(isSupportedFile);
-      }
-
-      for (let i = 0; i < files.length; ++i) {
-        let file = files[i];
-        if (!isSupportedStd(file)) {
-          console.error(`Don't know what do with ${file}`);
-          console.error(`Supported extensions: ${formattedFileExtensions}`);
-          process.exit(2);
-        }
-      }
-      files.forEach((file) => {
-        var write = isSupportedFile(file);
-        var flags = write ? ["-o", file, "-format", file] : ["-format", file];
-        child_process.execFile(bsc_exe, flags, (error, stdout, stderr) => {
-          if (error === null) {
-            if (!write) {
-              console.log(stdout);
-            }
-          } else {
-            console.error(stderr);
-          }
-        });
-      });
-    }
-  } catch (e) {
-    if (e instanceof arg.ArgError) {
-      console.error(e.message);
-      process.exit(2);
-    } else {
-      throw e;
-    }
+async function formatStdin(bsc_exe, extension) {
+  if (!supportedInputExtensions.includes(extension)) {
+    throw new ArgumentError(`unsupported extension: ${extension}`)
   }
+
+  var crypto = require("crypto");
+  var os = require("os");
+
+  var filename = path.join(
+    os.tmpdir(),
+    "rescript_" + crypto.randomBytes(8).toString("hex") + extension
+  );
+  var content = await readStdin();
+  fs.writeFileSync(filename, content, "utf8");
+
+  return getFormattedFile(bsc_exe, filename)
+    .then(formatted => process.stdout.write(formatted))
 }
+
+/**
+ * rescript format
+ * @param {string} bsc_exe
+ * @param {string} directory
+ */
+async function formatDirectory(bsc_exe, directory) {
+  return Promise.all(
+    fs.readdirSync(directory)
+      .filter(isReScriptFile)
+      .map(async file => formatFileInPlace(bsc_exe, file))
+  )
+}
+
 exports.main = main;
