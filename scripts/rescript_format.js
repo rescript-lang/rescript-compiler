@@ -2,6 +2,8 @@
 var child_process = require("child_process");
 var path = require("path");
 var fs = require("fs/promises");
+var crypto = require("crypto");
+var os = require("os");
 
 var supportedInputExtensions = [".res", ".resi", ".ml", ".mli", ".re", ".rei"];
 
@@ -201,15 +203,19 @@ async function formatStdin(bsc_exe, extension) {
     throw new ArgumentError(`unsupported extension: ${extension}`)
   }
 
-  var crypto = require("crypto");
-  var os = require("os");
+  var content = await readStdin();
 
+  // Generate a random filename and try to create it. Fails if the file already exists.
+  // TODO: Retry a few times if we pick a filename that already exists?
   var filename = path.join(
     os.tmpdir(),
     "rescript_" + crypto.randomBytes(8).toString("hex") + extension
   );
-  var content = await readStdin();
-  await fs.writeFile(filename, content, "utf8");
+  var fd = await fs.open(filename, 'wx', 0o600);
+  process.addListener('exit', async () => fs.unlink(filename));
+
+  await fd.writeFile(content, "utf-8");
+  await fd.close();
 
   return getFormattedFile(bsc_exe, filename)
     .then(formatted => process.stdout.write(formatted))
