@@ -173,6 +173,7 @@ Options:
   -h, -help     display help
 
 Subcommands:
+  init
   build
   clean
   format
@@ -191,7 +192,7 @@ function releaseBuild() {
   if (is_building) {
     try {
       fs.unlinkSync(lockFileName);
-    } catch (err) {}
+    } catch (err) { }
     is_building = false;
   }
 }
