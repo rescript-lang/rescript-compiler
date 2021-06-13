@@ -1,7 +1,7 @@
 //@ts-check
 var child_process = require("child_process");
 var path = require("path");
-var fs = require("fs");
+var fs = require("fs/promises");
 
 var supportedInputExtensions = [".res", ".resi", ".ml", ".mli", ".re", ".rei"];
 
@@ -209,7 +209,7 @@ async function formatStdin(bsc_exe, extension) {
     "rescript_" + crypto.randomBytes(8).toString("hex") + extension
   );
   var content = await readStdin();
-  fs.writeFileSync(filename, content, "utf8");
+  await fs.writeFile(filename, content, "utf8");
 
   return getFormattedFile(bsc_exe, filename)
     .then(formatted => process.stdout.write(formatted))
@@ -221,8 +221,9 @@ async function formatStdin(bsc_exe, extension) {
  * @param {string} directory
  */
 async function formatDirectory(bsc_exe, directory) {
+  var files = await fs.readdir(directory)
   return Promise.all(
-    fs.readdirSync(directory)
+    files
       .filter(isReScriptFile)
       .map(async file => formatFileInPlace(bsc_exe, file))
   )
