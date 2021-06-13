@@ -7,3 +7,4 @@ lib/*
 !lib/README.md
 .vscode/settings.json
  # each person has its own preferences
+ _build

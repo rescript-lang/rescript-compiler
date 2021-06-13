@@ -487,11 +487,11 @@ let scanTemplateLiteralToken scanner =
       | _ ->
         next scanner;
         scan ())
-    | ch when ch == hackyEOFChar ->
+    | ch when ch = hackyEOFChar ->
       let endPos = position scanner in
       scanner.err ~startPos ~endPos Diagnostics.unclosedTemplate;
       Token.TemplateTail(
-        (String.sub [@doesNotRaise]) scanner.src startOff (scanner.offset - 1 - startOff)
+        (String.sub [@doesNotRaise]) scanner.src startOff (max (scanner.offset - 1 - startOff) 0)
       )
     | _ ->
       next scanner;
