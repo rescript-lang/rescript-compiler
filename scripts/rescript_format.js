@@ -32,7 +32,7 @@ function usage() {
  * @returns {(file: string) => boolean}
  */
 function hasExtension(extensions) {
-  return (file) => extensions.some(ext => file.endsWith(ext))
+  return (file) => extensions.some(ext => file.endsWith(ext));
 }
 
 var isSupportedInputFile = hasExtension(supportedInputExtensions);
@@ -49,14 +49,14 @@ function main(argv, bsb_exe, bsc_exe) {
   format(argv, bsb_exe, bsc_exe)
     .catch(err => {
       if (err instanceof ArgumentError) {
-        console.error(`Error: ${err.message}`)
+        console.error(`Error: ${err.message}`);
         console.error();
-        usage()
+        usage();
       } else {
-        console.error(err)
+        console.error(err);
       }
       process.exit(2);
-    })
+    });
 }
 
 /**
@@ -79,7 +79,9 @@ async function format(argv, bsb_exe, bsc_exe) {
         }
         return formatProject(bsb_exe, bsc_exe);
       case "-stdin":
-        if (argv.length != 1 || files.length != 0) throw new ArgumentError("-stdin requires an extension argument")
+        if (argv.length != 1 || files.length != 0) {
+          throw new ArgumentError("-stdin requires an extension argument");
+        }
         return formatStdin(bsc_exe, argv[0]);
       case "-h":
       case "-help":
@@ -89,7 +91,7 @@ async function format(argv, bsb_exe, bsc_exe) {
         if (arg.startsWith("-")) {
           throw new ArgumentError(`unrecognized option: ${arg}`);
         }
-        files.push(arg)
+        files.push(arg);
     }
   }
   if (files.length > 0) {
@@ -119,7 +121,7 @@ async function formatProject(bsb_exe, bsc_exe) {
       .map(x => x.trim())
       .filter(isReScriptFile)
       .map(async file => formatFileInPlace(bsc_exe, file))
-  )
+  );
 }
 
 /**
@@ -139,7 +141,7 @@ async function formatFileInPlace(bsc_exe, file) {
         }
       }
     )
-  })
+  });
 }
 
 /**
@@ -159,7 +161,7 @@ async function getFormattedFile(bsc_exe, file) {
         }
       }
     )
-  })
+  });
 }
 
 /**
@@ -170,17 +172,17 @@ async function getFormattedFile(bsc_exe, file) {
 async function formatFiles(bsc_exe, files) {
   var invalid;
   if (invalid = files.find(file => !isSupportedInputFile(file))) {
-    throw new ArgumentError(`unsupported input file: ${invalid}`)
+    throw new ArgumentError(`unsupported input file: ${invalid}`);
   }
   return Promise.all(
     files.map(async file => {
       // This is surprising behaviour. Either multiple files should be formatted
       // in place, or a single file should be printed to stdout.
       if (isReScriptFile(file)) {
-        return formatFileInPlace(bsc_exe, file)
+        return formatFileInPlace(bsc_exe, file);
       } else {
         return getFormattedFile(bsc_exe, file)
-          .then(formatted => process.stdout.write(formatted))
+          .then(formatted => process.stdout.write(formatted));
       }
     })
   )
@@ -200,7 +202,7 @@ async function readStdin() {
  */
 async function formatStdin(bsc_exe, extension) {
   if (!supportedInputExtensions.includes(extension)) {
-    throw new ArgumentError(`unsupported extension: ${extension}`)
+    throw new ArgumentError(`unsupported extension: ${extension}`);
   }
 
   var content = await readStdin();
@@ -218,7 +220,7 @@ async function formatStdin(bsc_exe, extension) {
   await fd.close();
 
   return getFormattedFile(bsc_exe, filename)
-    .then(formatted => process.stdout.write(formatted))
+    .then(formatted => process.stdout.write(formatted));
 }
 
 /**
@@ -227,12 +229,12 @@ async function formatStdin(bsc_exe, extension) {
  * @param {string} directory
  */
 async function formatDirectory(bsc_exe, directory) {
-  var files = await fs.readdir(directory)
+  var files = await fs.readdir(directory);
   return Promise.all(
     files
       .filter(isReScriptFile)
       .map(async file => formatFileInPlace(bsc_exe, file))
-  )
+  );
 }
 
 exports.main = main;
