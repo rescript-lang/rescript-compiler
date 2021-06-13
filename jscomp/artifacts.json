@@ -989,6 +989,7 @@
     "repl.js",
     "rescript_arg.js",
     "rescript_convert.js",
+    "rescript_dump.js",
     "rescript_format.js",
     "shake.js",
     "tasks.js",
