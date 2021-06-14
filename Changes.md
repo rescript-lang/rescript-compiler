@@ -1,4 +1,42 @@
 `*` means  potential break changes
+# 9.1.4
+
+## Build
+- #5167 add dump subcommand so that
+```
+rescript dump path/to/file.cmi
+```
+Will dump the interface to a readable output, note this is integrated into the build system that the build will try to build it if it is not already there
+- clean will clean its dependency by default.
+  subcommand `clean -with-deps`, `-with-deps` is not needed any more
+- hide most bsc options, officially supported bsc flags (this is not a breaking change, those internal options are still there but subject to removal in the future)
+```
+Usage: bsc <options> <files>
+Options are:
+Options:
+  -w                        <list>  Enable or disable warnings according to <list>:
+                            +<spec>   enable warnings in <spec>
+                            -<spec>   disable warnings in <spec>
+                            @<spec>   enable warnings in <spec> and treat them as errors
+                            <spec> can be:
+                            <num>             a single warning number
+                            <num1>..<num2>    a range of consecutive warning numbers
+                            default setting is +a-4-9-20-40-41-42-50-61-102
+  -bs-g                     Debug mode
+  -bs-D                     Define conditional variable e.g, -D DEBUG=true
+  -e                        (experimental) set the string to be evaluated in ReScript syntax
+  -v                        Print compiler version and location of standard library and exit
+  -version                  Print version and exit
+  -warn-help                Show description of warning numbers
+  -warn-error               <list>  Enable or disable error status for warnings according
+                            to <list>.  See option -w for the syntax of <list>.
+                            Default setting is -a+5+6+101+109
+```
+## Syntax
+- #432 bad error message for unterminated quote
+## Compiler
+- #5165 bad error message for uncurried type mistmatch
+- #5169 fix a code gen issue with user defined `None`
 
 # 9.1.3 (bug fix release)
 
