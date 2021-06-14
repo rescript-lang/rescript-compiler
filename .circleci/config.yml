@@ -5,26 +5,32 @@ jobs: # a collection of steps
     docker: # run the steps with Docker
       - image: circleci/node:dubnium # ...with this image as the primary container; this is where all `steps` will run
     steps: # a collection of executable commands
+      - restore_cache: # try to restore .git folder from cache to speed up checkout
+          keys:
+            - source-v1-{{ .Branch }}-{{ .Revision }}
+            - source-v1-{{ .Branch }}-
+            - source-v1-
       - checkout # special step to check out source code to working directory
+      - run:
+          name: "Pull git submodules"
+          command: |
+            git submodule sync
+            git submodule update --init
+      - save_cache: # write .git folder to cache
+          key: source-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
+            
       - run:       
-          name: "Setting env variables"
+          name: "Set environment variables"
           command: |
             echo 'export BS_TRAVIS_CI=1' >> $BASH_ENV
             echo 'export NINJA_FORCE_REBUILD=1' >> $BASH_ENV
             echo 'export OCAMLRUNPARAM="b"' >> $BASH_ENV
       - run:    
-          name: "Check env variables"
+          name: "Check environment variables"
           command: |
             echo BS_TRAVIS_CI ${BS_TRAVIS_CI}
-      - run:
-          name: "Pull Submodules"
-          command: |
-            git submodule init
-            git submodule update
-      - run:
-          name: ci-install
-          command: npm ci # `npm ci` is not available on node v8
 
-      - run: # run tests
-          name: test
-          command: npm test
+      - run: npm ci # `npm ci` is not available on node v8
+      - run: npm test
