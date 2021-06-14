@@ -57,10 +57,10 @@ async function readStdin() {
 
 /**
  * @param {string[]} argv
- * @param {string} bsb_exe
+ * @param {string} rescript_exe
  * @param {string} bsc_exe
  */
-function main(argv, bsb_exe, bsc_exe) {
+function main(argv, rescript_exe, bsc_exe) {
   var isSupportedFile = hasExtension(formattedFileExtensions);
   var isSupportedStd = hasExtension(formattedStdExtensions);
 
@@ -82,7 +82,7 @@ function main(argv, bsb_exe, bsc_exe) {
       }
       // -all
       // TODO: check the rest arguments
-      var output = child_process.spawnSync(bsb_exe, ["info", "-list-files"], {
+      var output = child_process.spawnSync(rescript_exe, ["info", "-list-files"], {
         encoding: "utf-8",
       });
       if (output.status !== 0) {

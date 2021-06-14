@@ -9,10 +9,10 @@ var specs = [];
 
 /**
  * @param {string[]} argv
- * @param {string} bsb_exe
+ * @param {string} rescript_exe
  * @param {string} bsc_exe
  */
-function main(argv, bsb_exe, bsc_exe) {
+function main(argv, rescript_exe, bsc_exe) {
   var target;
   arg.parse_exn(dump_usage, argv, specs, (xs) => {
     if (xs.length !== 1) {
@@ -29,7 +29,7 @@ function main(argv, bsb_exe, bsc_exe) {
 
 
   var output = child_process.spawnSync(
-    bsb_exe,
+    rescript_exe,
     ["build", "--", target],
     {
       encoding: "utf-8",
