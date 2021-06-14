@@ -1,4 +1,5 @@
 //@ts-check
+var arg = require("./rescript_arg.js");
 var child_process = require("child_process");
 var path = require("path");
 var fs = require("fs").promises;
@@ -7,25 +8,20 @@ var os = require("os");
 
 var supportedInputExtensions = [".res", ".resi", ".ml", ".mli", ".re", ".rei"];
 
-function usage() {
-  console.error("rescript format");
-  console.error("");
-  console.error("Automatically format code in ReScript syntax");
-  console.error("");
-  console.error("Commands");
-  console.error("  rescript format               Format all .res(i) files in the current directory");
-  console.error("  rescript format -all          Format all .res(i) files in the whole project");
-  console.error("  rescript format <file>...     Format the specified files");
-  console.error("                                Files with .res(i) syntax are formatted in place");
-  console.error("                                Files with other supported extensions are printed to stdout in ReScript syntax");
-  console.error("  rescript format -stdin <ext>  Read code from stdin and print the formatted code to stdout in ReScript syntax");
-  console.error("                                The syntax of the input must be specified by passing an extension (like .res)");
-  console.error("  rescript format -h            Show this help");
-  console.error("");
-  console.error("Supported inputs");
-  console.error("  Formatting in place:  .res, .resi");
-  console.error("  Printing to stdout:   " + supportedInputExtensions.join(", "));
-}
+var usage = `rescript format
+
+Automatically format code in ReScript syntax
+
+Commands:
+  rescript format               Format all .res(i) files in the current directory
+  rescript format -all          Format all .res(i) files in the whole project
+  rescript format <file>...     Format the specified files
+                                Files with .res(i) syntax are formatted in place
+                                Files with other supported extensions are printed to stdout in ReScript syntax
+  rescript format -stdin <ext>  Read code from stdin and print the formatted code to stdout in ReScript syntax
+                                The syntax of the input must be specified by passing an extension (like .res)
+  rescript format -h            Show this help
+`
 
 /**
  * @param {string[]} extensions
@@ -38,7 +34,7 @@ function hasExtension(extensions) {
 var isSupportedInputFile = hasExtension(supportedInputExtensions);
 var isReScriptFile = hasExtension([".res", ".resi"]);
 
-class ArgumentError extends Error { }
+class UsageError extends Error { }
 
 /**
  * @param {string[]} argv
@@ -48,10 +44,12 @@ class ArgumentError extends Error { }
 function main(argv, bsb_exe, bsc_exe) {
   format(argv, bsb_exe, bsc_exe)
     .catch(err => {
-      if (err instanceof ArgumentError) {
+      if (err instanceof arg.ArgError) {
+        console.error(err.message);
+      } else if (err instanceof UsageError) {
         console.error(`Error: ${err.message}`);
         console.error();
-        usage();
+        console.error(usage);
       } else {
         console.error(err);
       }
@@ -65,39 +63,52 @@ function main(argv, bsb_exe, bsc_exe) {
  * @param {string} bsc_exe
  */
 async function format(argv, bsb_exe, bsc_exe) {
+  /**
+   * @type {arg.stringref}
+   */
+  var optStdin = { val: undefined };
+  /**
+   * @type {arg.boolref}
+   */
+  var optAll = { val: undefined };
+  /**
+   * @type{arg.specs}
+   */
+  var specs = [
+    [
+      "-stdin",
+      { kind: "String", data: { kind: "String_set", data: optStdin } },
+      `[.res|.resi|.ml|.mli|.re|.rei] Read the code from stdin and print
+the formatted code to stdout in ReScript syntax`,
+    ],
+    //  ml|mli
+    [
+      "-all",
+      { kind: "Unit", data: { kind: "Unit_set", data: optAll } },
+      "Format the whole project",
+    ],
+  ];
+
+  /**
+   * @type {string[]}
+   */
   var files = [];
-  var arg;
-  loop:
-  while ((arg = argv.shift()) !== undefined) {
-    switch (arg) {
-      case "--":
-        files.push(...argv);
-        break loop;
-      case "-all":
-        if (argv.length != 0 || files.length != 0) {
-          throw new ArgumentError("-all does not accept other arguments");
-        }
-        return formatProject(bsb_exe, bsc_exe);
-      case "-stdin":
-        if (argv.length != 1 || files.length != 0) {
-          throw new ArgumentError("-stdin requires an extension argument");
-        }
-        return formatStdin(bsc_exe, argv[0]);
-      case "-h":
-      case "-help":
-      case "--help":
-        return usage();
-      default:
-        if (arg.startsWith("-")) {
-          throw new ArgumentError(`unrecognized option: ${arg}`);
-        }
-        files.push(arg);
+  // Exist when -h is passed
+  arg.parse_exn(usage, argv, specs, (xs) => {
+    files = xs;
+  })
+
+  if (optAll.val) {
+    if (optStdin.val || files.length != 0) {
+      throw new UsageError("-all does not accept other arguments");
     }
-  }
-  if (files.length > 0) {
-    return formatFiles(bsc_exe, files);
-  } else {
+    return formatProject(bsb_exe, bsc_exe);
+  } else if (optStdin.val) {
+    return formatStdin(bsc_exe, optStdin.val);
+  } else if (files.length == 0) {
     return formatDirectory(bsc_exe, process.cwd());
+  } else {
+    return formatFiles(bsc_exe, files);
   }
 }
 
@@ -172,7 +183,7 @@ async function getFormattedFile(bsc_exe, file) {
 async function formatFiles(bsc_exe, files) {
   var invalid;
   if (invalid = files.find(file => !isSupportedInputFile(file))) {
-    throw new ArgumentError(`unsupported input file: ${invalid}`);
+    throw new UsageError(`unsupported input file: ${invalid}`);
   }
   return Promise.all(
     files.map(async file => {
@@ -202,7 +213,7 @@ async function readStdin() {
  */
 async function formatStdin(bsc_exe, extension) {
   if (!supportedInputExtensions.includes(extension)) {
-    throw new ArgumentError(`unsupported extension: ${extension}`);
+    throw new UsageError(`unsupported extension: ${extension}`);
   }
 
   var content = await readStdin();
