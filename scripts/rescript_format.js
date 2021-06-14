@@ -1,7 +1,7 @@
 //@ts-check
 var child_process = require("child_process");
 var path = require("path");
-var fs = require("fs/promises");
+var fs = require("fs").promises;
 var crypto = require("crypto");
 var os = require("os");
 
