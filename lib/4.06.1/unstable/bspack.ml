@@ -2660,6 +2660,11 @@ type inlining_arguments = {
   inline_toplevel_threshold : int option;
 }
 
+val classic_arguments : inlining_arguments
+val o1_arguments : inlining_arguments
+val o2_arguments : inlining_arguments
+val o3_arguments : inlining_arguments
+
 (** Set all the inlining arguments for a round.
     The default is set if no round is provided. *)
 val use_inlining_arguments_set : ?round:int -> inlining_arguments -> unit
@@ -3125,6 +3130,67 @@ let use_inlining_arguments_set ?round (arg:inlining_arguments) =
     default_inline_threshold arg.inline_threshold;
   set_int inline_toplevel_threshold
     default_inline_toplevel_threshold arg.inline_toplevel_threshold
+
+(* o1 is the default *)
+let o1_arguments = {
+  inline_call_cost = None;
+  inline_alloc_cost = None;
+  inline_prim_cost = None;
+  inline_branch_cost = None;
+  inline_indirect_cost = None;
+  inline_lifting_benefit = None;
+  inline_branch_factor = None;
+  inline_max_depth = None;
+  inline_max_unroll = None;
+  inline_threshold = None;
+  inline_toplevel_threshold = None;
+}
+
+let classic_arguments = {
+  inline_call_cost = None;
+  inline_alloc_cost = None;
+  inline_prim_cost = None;
+  inline_branch_cost = None;
+  inline_indirect_cost = None;
+  inline_lifting_benefit = None;
+  inline_branch_factor = None;
+  inline_max_depth = None;
+  inline_max_unroll = None;
+  (* [inline_threshold] matches the current compiler's default.
+     Note that this particular fraction can be expressed exactly in
+     floating point. *)
+  inline_threshold = Some (10. /. 8.);
+  (* [inline_toplevel_threshold] is not used in classic mode. *)
+  inline_toplevel_threshold = Some 1;
+}
+
+let o2_arguments = {
+  inline_call_cost = Some (2 * default_inline_call_cost);
+  inline_alloc_cost = Some (2 * default_inline_alloc_cost);
+  inline_prim_cost = Some (2 * default_inline_prim_cost);
+  inline_branch_cost = Some (2 * default_inline_branch_cost);
+  inline_indirect_cost = Some (2 * default_inline_indirect_cost);
+  inline_lifting_benefit = None;
+  inline_branch_factor = None;
+  inline_max_depth = Some 2;
+  inline_max_unroll = None;
+  inline_threshold = Some 25.;
+  inline_toplevel_threshold = Some (25 * inline_toplevel_multiplier);
+}
+
+let o3_arguments = {
+  inline_call_cost = Some (3 * default_inline_call_cost);
+  inline_alloc_cost = Some (3 * default_inline_alloc_cost);
+  inline_prim_cost = Some (3 * default_inline_prim_cost);
+  inline_branch_cost = Some (3 * default_inline_branch_cost);
+  inline_indirect_cost = Some (3 * default_inline_indirect_cost);
+  inline_lifting_benefit = None;
+  inline_branch_factor = Some 0.;
+  inline_max_depth = Some 3;
+  inline_max_unroll = Some 1;
+  inline_threshold = Some 50.;
+  inline_toplevel_threshold = Some (50 * inline_toplevel_multiplier);
+}
 
 let all_passes = ref []
 let dumped_passes_list = ref []

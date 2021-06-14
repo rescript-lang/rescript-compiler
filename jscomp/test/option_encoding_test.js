@@ -8,7 +8,7 @@ var u = [
   3
 ];
 
-var h;
+var h = /* None */0;
 
 exports.N = N;
 exports.u = u;
