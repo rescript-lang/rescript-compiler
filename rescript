@@ -27,7 +27,7 @@ var bin_path = path.join(
 /**
  * @type{string}
  */
-var bsb_exe = path.join(bin_path, "rescript.exe");
+var rescript_exe = path.join(bin_path, "rescript.exe");
 
 var LAST_BUILD_START = 0;
 var LAST_FIRED_EVENT = 0;
@@ -232,14 +232,14 @@ if (
     case "format":
       require("./scripts/rescript_format.js").main(
         process.argv.slice(3),
-        bsb_exe,
+        rescript_exe,
         bsc_exe
       );
       break;
     case "dump":
       require("./scripts/rescript_dump.js").main(
         process.argv.slice(3),
-        bsb_exe,
+        rescript_exe,
         bsc_exe
       );
       break;
@@ -247,7 +247,7 @@ if (
       // Todo
       require("./scripts/rescript_convert.js").main(
         process.argv.slice(3),
-        bsb_exe,
+        rescript_exe,
         bsc_exe
       );
       break;
@@ -295,7 +295,7 @@ if (
   var p;
   if (acquireBuild) {
     try {
-      p = child_process.spawn(bsb_exe, delegate_args, { stdio: "inherit" });
+      p = child_process.spawn(rescript_exe, delegate_args, { stdio: "inherit" });
       LAST_BUILD_START = +Date.now();
     } catch (e) {
       if (e.code === "ENOENT") {
@@ -513,7 +513,7 @@ if (
       if (acquireBuild()) {
         logStart();
         child_process
-          .spawn(bsb_exe, [], {
+          .spawn(rescript_exe, [], {
             stdio: ["inherit", "inherit", "pipe"],
           })
           // @ts-ignore
