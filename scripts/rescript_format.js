@@ -119,6 +119,7 @@ function main(argv, rescript_exe, bsc_exe) {
         (async function () {
           var content = await readStdin();
           fs.writeFileSync(filename, content, "utf8");
+          process.addListener('exit', () => fs.unlinkSync(filename));
           child_process.execFile(
             bsc_exe,
             ["-format", filename],
