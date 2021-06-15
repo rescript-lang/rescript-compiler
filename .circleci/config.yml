@@ -1,36 +1,93 @@
-version: 2 # use CircleCI 2.0
-jobs: # a collection of steps
-  build: # runs not using Workflows must have a `build` job as entry point
-    working_directory: ~/git/bucklescript # directory where steps will run
-    docker: # run the steps with Docker
-      - image: circleci/node:dubnium # ...with this image as the primary container; this is where all `steps` will run
-    steps: # a collection of executable commands
+version: '2.1'
+
+executors:
+  # TODO: we currently have python as a build dependency; it is accidentally included in circleci/node
+  linux-node-v10:
+    docker:
+      - image: circleci/node:10
+  linux-node-v12:
+    docker:
+      - image: circleci/node:12
+  linux-node-v14:
+    docker:
+      - image: circleci/node:14
+  linux-node-v16:
+    docker:
+      - image: circleci/node:16
+  macos:
+    macos:
+      xcode: 12.5.0
+
+orbs:
+  node: circleci/node@4.5.0
+
+jobs:
+  build-test:
+    parameters:
+      executor:
+        type: executor
+      install-node:
+        type: boolean
+        default: false
+      # defaults are the same as circleci/node orb:
+      install-node-lts:
+        type: boolean
+        default: false
+      install-node-version:
+        type: string
+        default: "node"
+      install-npm-version:
+        type: string
+        default: "latest"
+    executor: << parameters.executor >>
+    environment:
+      BS_TRAVIS_CI: 1
+      NINJA_FORCE_REBUILD: 1
+      OCAMLRUNPARAM: "b"
+    steps:
       - restore_cache: # try to restore .git folder from cache to speed up checkout
           keys:
-            - source-v1-{{ .Branch }}-{{ .Revision }}
-            - source-v1-{{ .Branch }}-
-            - source-v1-
-      - checkout # special step to check out source code to working directory
-      - run:
-          name: "Pull git submodules"
-          command: |
-            git submodule sync
-            git submodule update --init
+            - source-v4-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+            - source-v4-{{ arch }}-{{ .Branch }}-
+            - source-v4-{{ arch }}
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
       - save_cache: # write .git folder to cache
-          key: source-v1-{{ .Branch }}-{{ .Revision }}
+          key: source-v4-{{ arch }}-{{ .Branch }}-{{ .Revision }}
           paths:
             - ".git"
-            
-      - run:       
-          name: "Set environment variables"
-          command: |
-            echo 'export BS_TRAVIS_CI=1' >> $BASH_ENV
-            echo 'export NINJA_FORCE_REBUILD=1' >> $BASH_ENV
-            echo 'export OCAMLRUNPARAM="b"' >> $BASH_ENV
-      - run:    
-          name: "Check environment variables"
-          command: |
-            echo BS_TRAVIS_CI ${BS_TRAVIS_CI}
 
-      - run: npm ci # `npm ci` is not available on node v8
+      # install node and npm for executors where they are not preinstalled
+      - when:
+          condition: << parameters.install-node >>
+          steps:
+            - node/install:
+                lts: << parameters.install-node-lts >>
+                node-version: << parameters.install-node-version >>
+                npm-version: << parameters.install-npm-version >>
+
+      - node/install-packages # npm ci
       - run: npm test
+
+workflows:
+  version: 2
+  build-test-all: # workflow name
+    jobs:
+      - build-test:
+          name: linux-node-v10
+          executor: linux-node-v10
+      - build-test:
+          name: linux-node-v12
+          executor: linux-node-v12
+      - build-test:
+          name: linux-node-v14
+          executor: linux-node-v14
+      - build-test:
+          name: linux-node-v16
+          executor: linux-node-v16
+      - build-test:
+          name: macos-node-lts
+          executor: macos
+          install-node: true
+          install-node-lts: true

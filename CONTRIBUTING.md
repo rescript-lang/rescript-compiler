@@ -4,7 +4,7 @@ Thanks for your help! Due to ReScript's nature, the contribution setup isn't all
 
 ## Prerequisites
 
-- [NodeJS](https://nodejs.org/)
+- [NodeJS](https://nodejs.org/) v10 or newer
 - C compiler toolchain (you probably already have it installed)
 - OS: Mac/Linux (ReScript works on Windows, but developing the repo using Windows isn't tested. Contribution welcome!)
 
