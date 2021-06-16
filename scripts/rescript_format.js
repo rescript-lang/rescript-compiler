@@ -102,7 +102,7 @@ function main(argv, rescript_exe, bsc_exe) {
                 // todo
               } else {
                 // todo error handling
-                console.log(stderr);
+                console.error(stderr);
               }
             }
           );
@@ -127,7 +127,7 @@ function main(argv, rescript_exe, bsc_exe) {
               if (error === null) {
                 process.stdout.write(stdout);
               } else {
-                console.log(stderr);
+                console.error(stderr);
                 process.exit(2);
               }
             }
@@ -162,7 +162,7 @@ function main(argv, rescript_exe, bsc_exe) {
               process.stdout.write(stdout);
             }
           } else {
-            console.log(stderr);
+            console.error(stderr);
           }
         });
       });
