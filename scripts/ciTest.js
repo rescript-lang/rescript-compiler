@@ -1,7 +1,7 @@
 //@ts-check
 var cp = require("child_process");
-
 var path = require("path");
+var fs = require("fs");
 
 var installGlobal = false;
 var ounitTest = false;
@@ -41,8 +41,6 @@ if (all) {
   bsbTest = true;
 }
 
-var fs = require("fs");
-
 function init() {
   var vendorOCamlPath = path.join(
     __dirname,
@@ -61,9 +59,7 @@ function init() {
   }
 }
 
-function main() {
-  init();
-
+function runTests() {
   // when binary was prebuilt, there can be no ocaml installation
   // var output =
   //     cp.execSync('which ocaml', { encoding: 'ascii' })
@@ -156,4 +152,13 @@ function main() {
   }
 }
 
+function main() {
+  try {
+    init();
+    runTests();
+  } catch (err) {
+    console.error(err);
+    process.exit(2);
+  }
+}
 main();
