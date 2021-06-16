@@ -91,22 +91,24 @@ function main(argv, rescript_exe, bsc_exe) {
         process.exit(2);
       }
       files = output.stdout.split("\n").map((x) => x.trim());
+      var hasError = false;
       for (let arg of files) {
         if (isSupportedFile(arg)) {
           // console.log(`processing ${arg}`);
           child_process.execFile(
             bsc_exe,
             ["-o", arg, "-format", arg],
-            (error, stdout, stderr) => {
-              if (error === null) {
-                // todo
-              } else {
-                // todo error handling
+            (error, _stdout, stderr) => {
+              if (error !== null) {
                 console.error(stderr);
+                hasError = true;
               }
             }
           );
         }
+      }
+      if (hasError) {
+        process.exit(2);
       }
     } else if (use_stdin) {
       if (isSupportedStd(use_stdin)) {
@@ -153,6 +155,7 @@ function main(argv, rescript_exe, bsc_exe) {
           process.exit(2);
         }
       }
+      var hasError = false;
       files.forEach((file) => {
         var write = isSupportedFile(file);
         var flags = write ? ["-o", file, "-format", file] : ["-format", file];
@@ -163,9 +166,13 @@ function main(argv, rescript_exe, bsc_exe) {
             }
           } else {
             console.error(stderr);
+            hasError = true;
           }
         });
       });
+      if (hasError) {
+        process.exit(2);
+      }
     }
   } catch (e) {
     if (e instanceof arg.ArgError) {
