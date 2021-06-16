@@ -66,6 +66,8 @@ jobs:
                 lts: << parameters.install-node-lts >>
                 node-version: << parameters.install-node-version >>
                 npm-version: << parameters.install-npm-version >>
+      - run: node --version
+      - run: npm --version
 
       - node/install-packages # npm ci
       - run: npm test
