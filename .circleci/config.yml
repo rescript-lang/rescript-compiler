@@ -5,15 +5,6 @@ executors:
   linux-node-v10:
     docker:
       - image: circleci/node:10
-  linux-node-v12:
-    docker:
-      - image: circleci/node:12
-  linux-node-v14:
-    docker:
-      - image: circleci/node:14
-  linux-node-v16:
-    docker:
-      - image: circleci/node:16
   macos:
     macos:
       xcode: 12.5.0
@@ -80,16 +71,8 @@ workflows:
           name: linux-node-v10
           executor: linux-node-v10
       - build-test:
-          name: linux-node-v12
-          executor: linux-node-v12
-      - build-test:
-          name: linux-node-v14
-          executor: linux-node-v14
-      - build-test:
-          name: linux-node-v16
-          executor: linux-node-v16
-      - build-test:
-          name: macos-node-lts
+          name: macos-node-v10
           executor: macos
           install-node: true
-          install-node-lts: true
+          install-node-version: "10.24.1"
+          install-npm-version: "6.14.12"
