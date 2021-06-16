@@ -125,7 +125,7 @@ function main(argv, rescript_exe, bsc_exe) {
             ["-format", filename],
             (error, stdout, stderr) => {
               if (error === null) {
-                console.log(stdout.trimEnd());
+                process.stdout.write(stdout);
               } else {
                 console.log(stderr);
                 process.exit(2);
@@ -159,7 +159,7 @@ function main(argv, rescript_exe, bsc_exe) {
         child_process.execFile(bsc_exe, flags, (error, stdout, stderr) => {
           if (error === null) {
             if (!write) {
-              console.log(stdout);
+              process.stdout.write(stdout);
             }
           } else {
             console.log(stderr);
