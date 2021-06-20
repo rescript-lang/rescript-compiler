@@ -45,12 +45,10 @@
   ],
   "lib/4.06.1": [
     "bsb_helper.ml",
-    "bsb.ml",
     "refmt_main3.ml",
     "rescript.ml",
     "whole_compiler.ml",
     "bsb_helper.mli",
-    "bsb.mli",
     "refmt_main3.mli",
     "rescript.mli",
     "whole_compiler.mli"
