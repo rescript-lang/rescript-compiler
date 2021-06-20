@@ -1703,7 +1703,7 @@ o ./bin/tests.exe: link ${makeLibs(tests_libs)} main/ounit_tests_main.cmx
 
 ${mllRule}
 ${mllList("ext", ["ext_json_parse.mll"])}
-
+${mllList("parsing", ["lexer.mll"])}
 
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in
