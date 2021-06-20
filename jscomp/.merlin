@@ -10,6 +10,16 @@ B stubs
 
 S bsb
 B bsb
+
+S parsing
+B parsing
+
+S typing
+B typing
+
+S bytecomp
+B bytecomp
+
 S ounit
 B ounit
 S ounit_tests
@@ -24,8 +34,6 @@ B depends
 S outcome_printer
 B outcome_printer
 
-PKG compiler-libs.common
-B +compiler-libs
 
 
 # S runtime
