@@ -31,7 +31,7 @@ var my_target =
 var bin_path = path.join(root_dir, my_target);
 
 var ninja_bin_output = path.join(bin_path, "ninja.exe");
-var use_env_compiler = process.argv.includes("-use-env-compiler");
+
 var force_compiler_rebuild = process.argv.includes("-force-compiler-rebuild");
 var force_lib_rebuild = process.argv.includes("-force-lib-rebuild");
 /**
@@ -178,6 +178,25 @@ o all: phony runtime others $stdlib
 }
 
 /**
+ * works only on *unix
+ * used for dev environment or our prebuilt compiler
+ * does not work for such version
+ * @returns {boolean}
+ */
+function checkEnvCompiler() {
+  try {
+    var o = child_process.execSync(`ocamlopt.opt -version`, {
+      encoding: "utf-8",
+    });
+    console.log("checking env compiler");
+    console.log(o);
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+/**
  * @returns {string}
  */
 function provideCompiler() {
@@ -187,20 +206,10 @@ function provideCompiler() {
   } else {
     var ocamlopt = "ocamlopt.opt";
     myVersion = "4.06.1";
-    if (!use_env_compiler) {
-      var ocamlopt = path.join(
-        __dirname,
-        "..",
-        "native",
-        myVersion,
-        "bin",
-        "ocamlopt.opt"
-      );
-      if (!fs.existsSync(ocamlopt)) {
-        require("./buildocaml.js").build(true);
-      } else {
-        console.log(ocamlopt, "is already there");
-      }
+    if (!checkEnvCompiler()) {
+      // no compiler available
+      var prefix = require("./buildocaml.js").build(true);
+      ocamlopt=`${prefix}/bin/${ocamlopt}`
     }
     // Note this ninja file only works under *nix due to the suffix
     // under windows require '.exe'

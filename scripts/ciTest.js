@@ -86,7 +86,7 @@ function runTests() {
       path.join(binDir, "all_ounit_tests.ml")
     );
     cp.execSync(
-      `ocamlopt.opt -g -w -40-30 ../stubs/ext_basic_hash_stubs.c -I +compiler-libs ocamlcommon.cmxa unix.cmxa str.cmxa all_ounit_tests.ml -o test.exe`,
+      `ocamlopt.opt -g -w -40-30 ../stubs/ext_basic_hash_stubs.c  unix.cmxa str.cmxa all_ounit_tests.ml -o test.exe`,
       {
         cwd: binDir,
         stdio: [0, 1, 2],

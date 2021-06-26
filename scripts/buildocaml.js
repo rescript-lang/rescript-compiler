@@ -46,6 +46,7 @@ exports.getVersionPrefix = getVersionPrefix;
 /**
  *
  * @param {boolean} config
+ * @returns {string}
  */
 function build(config) {
   ensureOCamlExistsSync();
@@ -68,6 +69,7 @@ function build(config) {
     cwd: ocamlSrcDir,
     stdio: [0, 1, 2],
   });
+  return prefix
 }
 
 exports.build = build;

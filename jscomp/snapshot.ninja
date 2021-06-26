@@ -3,15 +3,16 @@ rule bspack
     command = ./bin/bspack.exe $releaseMode $flags -bs-main $main -o $out  $post_process
     depfile = $out.d
     generator = true
-native_ocaml_path = ../ocaml/
+
 snapshot_path = 4.06.1
 LTO= ../scripts/buckle_lto.js
-OCAML_SRC_UTILS=$native_ocaml_path/utils
-OCAML_SRC_PARSING=$native_ocaml_path/parsing
-OCAML_SRC_TYPING=$native_ocaml_path/typing
-OCAML_SRC_BYTECOMP=$native_ocaml_path/bytecomp
-OCAML_SRC_DRIVER=$native_ocaml_path/driver
-OCAML_SRC_TOOLS=$native_ocaml_path/tools   
+
+OCAML_SRC_UTILS=utils
+OCAML_SRC_PARSING=parsing
+OCAML_SRC_TYPING=typing
+OCAML_SRC_BYTECOMP=bytecomp
+
+
 includes = -I js_parser -I stubs -I ext -I common -I frontend -I bsb_helper -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I napkin -I main
 SNAP=../lib/$snapshot_path
 
@@ -32,11 +33,8 @@ build $SNAP/rescript.ml: bspack | ./bin/bspack.exe $LTO
      main = Rescript_main 
 
 
-     
-
-
 o $SNAP/unstable/all_ounit_tests.ml: bspack | ./bin/bspack.exe $LTO
-    flags =  -bs-MD    $includes
+    flags =  -bs-MD    $includes -I utils -I parsing -I typing -I bytecomp
     main = Ounit_tests_main         
 
 o $SNAP/unstable/bspack.ml: bspack | ./bin/bspack.exe $LTO
