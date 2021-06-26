@@ -11,7 +11,7 @@
 // old compiler.ml
 // This will be run in npm postinstall, don't use too fancy features here
 
-var cp = require("child_process");
+var child_process = require("child_process");
 var fs = require("fs");
 var path = require("path");
 var root_dir = path.join(__dirname, "..");
@@ -44,13 +44,13 @@ function provideNinja() {
     console.log(`building ninja`);
     ensureExists(ninja_source_dir);
     if (fs.existsSync(path.join(root_dir, "vendor", "ninja.tar.gz"))) {
-      cp.execSync(`tar xzvf ../ninja.tar.gz`, {
+      child_process.execSync(`tar xzvf ../ninja.tar.gz`, {
         cwd: ninja_source_dir,
         stdio: [0, 1, 2],
       });
       console.log("No prebuilt Ninja, building Ninja now");
       var build_ninja_command = "./configure.py --bootstrap";
-      cp.execSync(build_ninja_command, {
+      child_process.execSync(build_ninja_command, {
         cwd: ninja_source_dir,
         stdio: [0, 1, 2],
       });
@@ -72,7 +72,7 @@ function provideNinja() {
   function test_ninja_compatible(binary_path) {
     var version;
     try {
-      version = cp
+      version = child_process
         .execSync(JSON.stringify(binary_path) + " --version", {
           encoding: "utf8",
           stdio: ["pipe", "pipe", "ignore"], // execSync outputs to stdout even if we catch the error. Silent it here
@@ -120,7 +120,7 @@ function checkPrebuiltBscCompiler() {
   }
   try {
     var version = String(
-      cp.execFileSync(path.join(bin_path, "bsc.exe"), ["-v"])
+      child_process.execFileSync(path.join(bin_path, "bsc.exe"), ["-v"])
     );
 
     var myOCamlVersion = version.substr(
@@ -160,13 +160,13 @@ o all: phony runtime others $stdlib
   var filePath = path.join(jscomp_dir, "release.ninja");
   fs.writeFileSync(filePath, releaseNinja, "ascii");
   var cleanArgs = ["-f", "release.ninja", "-t", "clean"];
-  cp.execFileSync(ninja_bin_output, cleanArgs, {
+  child_process.execFileSync(ninja_bin_output, cleanArgs, {
     cwd: jscomp_dir,
     stdio: [0, 1, 2],
     shell: false,
   });
   var buildArgs = ["-f", "release.ninja", "--verbose", "-k", "1"];
-  cp.execFileSync(ninja_bin_output, buildArgs, {
+  child_process.execFileSync(ninja_bin_output, buildArgs, {
     cwd: jscomp_dir,
     stdio: [0, 1, 2],
     shell: false,
@@ -210,11 +210,11 @@ function provideCompiler() {
 
     var filePath = path.join(lib_dir, "release.ninja");
     fs.writeFileSync(filePath, releaseNinja, "ascii");
-    cp.execFileSync(ninja_bin_output, ["-f", "release.ninja", "-t", "clean"], {
+    child_process.execFileSync(ninja_bin_output, ["-f", "release.ninja", "-t", "clean"], {
       cwd: lib_dir,
       stdio: [0, 1, 2],
     });
-    cp.execFileSync(ninja_bin_output, ["-f", "release.ninja", "-v"], {
+    child_process.execFileSync(ninja_bin_output, ["-f", "release.ninja", "-v"], {
       cwd: lib_dir,
       stdio: [0, 1, 2],
     });
