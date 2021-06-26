@@ -681,7 +681,6 @@ let sorted_keywords = [|
   "super";
   "switch";
   "synchronized";
-  "then";
   "this";
   "throw";
   "transient";

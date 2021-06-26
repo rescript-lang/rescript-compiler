@@ -7,7 +7,7 @@ let test_id = ref 0
 
 let eq loc x y : unit = Mt.eq_suites ~test_id loc  ~suites x y
 
-#if OCAML_VERSION =~ ">4.03.0" 
+
 
 external int_size : unit -> int = "%int_size"
 
@@ -37,6 +37,6 @@ let  f () =
     done 
   with A _ -> ()
 
-#end
+
 
 ;; Mt.from_pair_suites __MODULE__ !suites

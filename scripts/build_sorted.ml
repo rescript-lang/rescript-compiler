@@ -30,7 +30,7 @@
     "debugger";"default";"delete";"do";
     "else";
     "finally";"for";"function";
-    "if"; "then"; "in";"instanceof";
+    "if"; (* "then";  *) "in";"instanceof";
     "new";
     "return";
     "switch";
