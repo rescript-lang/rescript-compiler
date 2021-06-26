@@ -688,6 +688,7 @@ o test/test_unsupported_primitive.cmi test/test_unsupported_primitive.cmj : cc t
 o test/test_while_closure.cmi test/test_while_closure.cmj : cc test/test_while_closure.ml | $stdlib
 o test/test_while_side_effect.cmi test/test_while_side_effect.cmj : cc test/test_while_side_effect.ml | $stdlib
 o test/test_zero_nullable.cmi test/test_zero_nullable.cmj : cc test/test_zero_nullable.ml | test/mt.cmj $stdlib
+o test/then_mangle_test.cmi test/then_mangle_test.cmj : cc test/then_mangle_test.res | test/mt.cmj $stdlib
 o test/ticker.cmi test/ticker.cmj : cc test/ticker.ml | $stdlib
 o test/to_string_test.cmi test/to_string_test.cmj : cc test/to_string_test.ml | test/mt.cmj $stdlib
 o test/topsort_test.cmi test/topsort_test.cmj : cc test/topsort_test.ml | $stdlib
