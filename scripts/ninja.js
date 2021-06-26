@@ -1403,7 +1403,15 @@ exports.updateRelease = updateRelease;
 function readdirSync(dir) {
   return fs.readdirSync(dir, "ascii");
 }
-
+var black_list = [
+  "bytelibrarian",
+  "bytelink",
+  "bytepackager",
+  "emitcode",
+  "simplif",
+  "translobj",
+  "translclass"
+]
 /**
  *
  * @param {string} dir
@@ -1414,10 +1422,7 @@ function test(dir) {
       return (
         (x.endsWith(".ml") || x.endsWith(".mli")) &&
         !(x.endsWith(".cppo.ml") || x.endsWith(".cppo.mli")) &&
-        !x.includes("bytelibrarian") &&
-        !x.includes("bytelink") &&
-        !x.includes("bytepackager") &&
-        !x.includes("emitcode")
+        !black_list.some(name=>x.includes(name))
       );
     })
     .map((x) => path.join(dir, x));
