@@ -76,14 +76,8 @@ exports.vendorNinjaPath = vendorNinjaPath;
  * Note ocamldep.opt has built-in macro handling OCAML_VERSION
  */
 var getOcamldepFile = () => {
-  return path.join(
-    __dirname,
-    "..",
-    "native",
-    require("./buildocaml.js").getVersionPrefix(),
-    "bin",
-    "ocamldep.opt"
-  );
+  return "ocamldep.opt"
+  
 };
 
 /**
