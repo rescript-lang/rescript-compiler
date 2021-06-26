@@ -4,7 +4,7 @@ var cp = require("child_process");
 var path = require("path");
 var fs = require("fs");
 
-var ocamlSrcDir = path.join(__dirname, "..", "ocaml");
+var ocamlSrcDir = path.join(__dirname, "..", "native");
 var ocamlVersionFilePath = path.join(ocamlSrcDir, "VERSION");
 
 /**
@@ -12,9 +12,6 @@ var ocamlVersionFilePath = path.join(ocamlSrcDir, "VERSION");
  * or by extracting the vendor/ocaml.tar.gz there
  */
 function ensureOCamlExistsSync() {
-  if (!fs.existsSync(ocamlSrcDir)) {
-    fs.mkdirSync(ocamlSrcDir);
-  }
   if (!fs.existsSync(ocamlVersionFilePath)) {
     cp.execSync(`tar xzvf ../vendor/ocaml.tar.gz`, {
       cwd: ocamlSrcDir,
@@ -49,6 +46,7 @@ exports.getVersionPrefix = getVersionPrefix;
 /**
  *
  * @param {boolean} config
+ * @returns {string}
  */
 function build(config) {
   ensureOCamlExistsSync();
@@ -71,6 +69,7 @@ function build(config) {
     cwd: ocamlSrcDir,
     stdio: [0, 1, 2],
   });
+  return prefix
 }
 
 exports.build = build;

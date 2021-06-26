@@ -11,7 +11,7 @@
 // old compiler.ml
 // This will be run in npm postinstall, don't use too fancy features here
 
-var cp = require("child_process");
+var child_process = require("child_process");
 var fs = require("fs");
 var path = require("path");
 var root_dir = path.join(__dirname, "..");
@@ -24,14 +24,16 @@ if (supported_os.indexOf(process.platform) < 0) {
 }
 var is_windows = process.platform === "win32";
 
-var my_target = process.platform === 'darwin' && process.arch === 'arm64' ? process.platform + process.arch : process.platform;
-var bin_path =
-  path.join(root_dir, my_target);
+var my_target =
+  process.platform === "darwin" && process.arch === "arm64"
+    ? process.platform + process.arch
+    : process.platform;
+var bin_path = path.join(root_dir, my_target);
 
 var ninja_bin_output = path.join(bin_path, "ninja.exe");
-var use_env_compiler = process.argv.includes("-use-env-compiler");
-var force_compiler_rebuild = process.argv.includes('-force-compiler-rebuild');
-var force_lib_rebuild = process.argv.includes('-force-lib-rebuild');
+
+var force_compiler_rebuild = process.argv.includes("-force-compiler-rebuild");
+var force_lib_rebuild = process.argv.includes("-force-lib-rebuild");
 /**
  * Make sure `ninja_bin_output` exists
  * The installation of `ninja.exe` is re-entrant, since we always pre-check if it is already installed
@@ -44,13 +46,13 @@ function provideNinja() {
     console.log(`building ninja`);
     ensureExists(ninja_source_dir);
     if (fs.existsSync(path.join(root_dir, "vendor", "ninja.tar.gz"))) {
-      cp.execSync(`tar xzvf ../ninja.tar.gz`, {
+      child_process.execSync(`tar xzvf ../ninja.tar.gz`, {
         cwd: ninja_source_dir,
         stdio: [0, 1, 2],
       });
       console.log("No prebuilt Ninja, building Ninja now");
       var build_ninja_command = "./configure.py --bootstrap";
-      cp.execSync(build_ninja_command, {
+      child_process.execSync(build_ninja_command, {
         cwd: ninja_source_dir,
         stdio: [0, 1, 2],
       });
@@ -72,7 +74,7 @@ function provideNinja() {
   function test_ninja_compatible(binary_path) {
     var version;
     try {
-      version = cp
+      version = child_process
         .execSync(JSON.stringify(binary_path) + " --version", {
           encoding: "utf8",
           stdio: ["pipe", "pipe", "ignore"], // execSync outputs to stdout even if we catch the error. Silent it here
@@ -120,7 +122,7 @@ function checkPrebuiltBscCompiler() {
   }
   try {
     var version = String(
-      cp.execFileSync(path.join(bin_path, "bsc.exe"), ["-v"])
+      child_process.execFileSync(path.join(bin_path, "bsc.exe"), ["-v"])
     );
 
     var myOCamlVersion = version.substr(
@@ -160,13 +162,13 @@ o all: phony runtime others $stdlib
   var filePath = path.join(jscomp_dir, "release.ninja");
   fs.writeFileSync(filePath, releaseNinja, "ascii");
   var cleanArgs = ["-f", "release.ninja", "-t", "clean"];
-  cp.execFileSync(ninja_bin_output, cleanArgs, {
+  child_process.execFileSync(ninja_bin_output, cleanArgs, {
     cwd: jscomp_dir,
     stdio: [0, 1, 2],
     shell: false,
   });
   var buildArgs = ["-f", "release.ninja", "--verbose", "-k", "1"];
-  cp.execFileSync(ninja_bin_output, buildArgs, {
+  child_process.execFileSync(ninja_bin_output, buildArgs, {
     cwd: jscomp_dir,
     stdio: [0, 1, 2],
     shell: false,
@@ -175,6 +177,25 @@ o all: phony runtime others $stdlib
   console.log("Build finished");
 }
 
+/**
+ * works only on *unix
+ * used for dev environment or our prebuilt compiler
+ * does not work for such version
+ * @returns {boolean}
+ */
+function checkEnvCompiler() {
+  try {
+    var o = child_process.execSync(`ocamlopt.opt -version`, {
+      encoding: "utf-8",
+    });
+    console.log("checking env compiler");
+    console.log(o);
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
 /**
  * @returns {string}
  */
@@ -185,20 +206,10 @@ function provideCompiler() {
   } else {
     var ocamlopt = "ocamlopt.opt";
     myVersion = "4.06.1";
-    if (!use_env_compiler) {
-      var ocamlopt = path.join(
-        __dirname,
-        "..",
-        "native",
-        myVersion,
-        "bin",
-        "ocamlopt.opt"
-      );
-      if (!fs.existsSync(ocamlopt)) {
-        require("./buildocaml.js").build(true);
-      } else {
-        console.log(ocamlopt, "is already there");
-      }
+    if (!checkEnvCompiler()) {
+      // no compiler available
+      var prefix = require("./buildocaml.js").build(true);
+      ocamlopt=`${prefix}/bin/${ocamlopt}`
     }
     // Note this ninja file only works under *nix due to the suffix
     // under windows require '.exe'
@@ -210,14 +221,22 @@ function provideCompiler() {
 
     var filePath = path.join(lib_dir, "release.ninja");
     fs.writeFileSync(filePath, releaseNinja, "ascii");
-    cp.execFileSync(ninja_bin_output, ["-f", "release.ninja", "-t", "clean"], {
-      cwd: lib_dir,
-      stdio: [0, 1, 2],
-    });
-    cp.execFileSync(ninja_bin_output, ["-f", "release.ninja", "-v"], {
-      cwd: lib_dir,
-      stdio: [0, 1, 2],
-    });
+    child_process.execFileSync(
+      ninja_bin_output,
+      ["-f", "release.ninja", "-t", "clean"],
+      {
+        cwd: lib_dir,
+        stdio: [0, 1, 2],
+      }
+    );
+    child_process.execFileSync(
+      ninja_bin_output,
+      ["-f", "release.ninja", "-v"],
+      {
+        cwd: lib_dir,
+        stdio: [0, 1, 2],
+      }
+    );
     fs.unlinkSync(filePath);
     return myVersion;
   }

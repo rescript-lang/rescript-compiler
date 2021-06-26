@@ -67,7 +67,7 @@ function runTests() {
   var binDir = path.join(__dirname, "..", "jscomp", "bin");
   if (ounitTest) {
     cp.execSync(
-      `ocamlc.opt -I . -c js_compiler.mli js_compiler.ml`,
+      `ocamlc.opt -warn-error -a -I . -c js_compiler.mli js_compiler.ml`,
       {
         cwd: path.join(__dirname, "..", "lib", "4.06.1", "unstable"),
         stdio: [0, 1, 2],
@@ -86,7 +86,7 @@ function runTests() {
       path.join(binDir, "all_ounit_tests.ml")
     );
     cp.execSync(
-      `ocamlopt.opt -g -w -40-30 ../stubs/ext_basic_hash_stubs.c -I +compiler-libs ocamlcommon.cmxa unix.cmxa str.cmxa all_ounit_tests.ml -o test.exe`,
+      `ocamlopt.opt -g -w -40-30 ../stubs/ext_basic_hash_stubs.c  unix.cmxa str.cmxa all_ounit_tests.ml -o test.exe`,
       {
         cwd: binDir,
         stdio: [0, 1, 2],

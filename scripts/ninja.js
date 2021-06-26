@@ -76,14 +76,8 @@ exports.vendorNinjaPath = vendorNinjaPath;
  * Note ocamldep.opt has built-in macro handling OCAML_VERSION
  */
 var getOcamldepFile = () => {
-  return path.join(
-    __dirname,
-    "..",
-    "native",
-    require("./buildocaml.js").getVersionPrefix(),
-    "bin",
-    "ocamldep.opt"
-  );
+  return "ocamldep.opt"
+  
 };
 
 /**
@@ -1444,13 +1438,12 @@ function setSortedToStringAsNativeDeps(xs) {
  * @returns {string}
  */
 function getVendorConfigNinja() {
-  var prefix = `../native/${require("./buildocaml.js").getVersionPrefix()}/bin`;
   return `
-ocamlopt = ${prefix}/ocamlopt.opt
-ocamllex = ${prefix}/ocamllex.opt
-ocamlc = ${prefix}/ocamlc.opt
-ocamlmklib = ${prefix}/ocamlmklib
-ocaml = ${prefix}/ocaml
+ocamlopt = ocamlopt.opt
+ocamllex = ocamllex.opt
+ocamlc = ocamlc.opt
+ocamlmklib = ocamlmklib
+ocaml = ocaml
 `;
 }
 
@@ -1704,7 +1697,7 @@ o ./bin/tests.exe: link ${makeLibs(tests_libs)} main/ounit_tests_main.cmx
 
 ${mllRule}
 ${mllList("ext", ["ext_json_parse.mll"])}
-
+${mllList("parsing", ["lexer.mll"])}
 
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in

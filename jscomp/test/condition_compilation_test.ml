@@ -40,7 +40,7 @@ type open_flag =
 #end
 
 let vv =
-#if OCAML_PATCH = "BS"
+#if 1
       3
 #else
       1
@@ -50,7 +50,7 @@ let vv =
 let v = ref 1
 
 let a =
-#if OCAML_PATCH = "BS"
+#if 1
 let () = incr v  in
 #end !v
 
