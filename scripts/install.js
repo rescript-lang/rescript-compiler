@@ -24,14 +24,16 @@ if (supported_os.indexOf(process.platform) < 0) {
 }
 var is_windows = process.platform === "win32";
 
-var my_target = process.platform === 'darwin' && process.arch === 'arm64' ? process.platform + process.arch : process.platform;
-var bin_path =
-  path.join(root_dir, my_target);
+var my_target =
+  process.platform === "darwin" && process.arch === "arm64"
+    ? process.platform + process.arch
+    : process.platform;
+var bin_path = path.join(root_dir, my_target);
 
 var ninja_bin_output = path.join(bin_path, "ninja.exe");
 var use_env_compiler = process.argv.includes("-use-env-compiler");
-var force_compiler_rebuild = process.argv.includes('-force-compiler-rebuild');
-var force_lib_rebuild = process.argv.includes('-force-lib-rebuild');
+var force_compiler_rebuild = process.argv.includes("-force-compiler-rebuild");
+var force_lib_rebuild = process.argv.includes("-force-lib-rebuild");
 /**
  * Make sure `ninja_bin_output` exists
  * The installation of `ninja.exe` is re-entrant, since we always pre-check if it is already installed
@@ -210,14 +212,22 @@ function provideCompiler() {
 
     var filePath = path.join(lib_dir, "release.ninja");
     fs.writeFileSync(filePath, releaseNinja, "ascii");
-    child_process.execFileSync(ninja_bin_output, ["-f", "release.ninja", "-t", "clean"], {
-      cwd: lib_dir,
-      stdio: [0, 1, 2],
-    });
-    child_process.execFileSync(ninja_bin_output, ["-f", "release.ninja", "-v"], {
-      cwd: lib_dir,
-      stdio: [0, 1, 2],
-    });
+    child_process.execFileSync(
+      ninja_bin_output,
+      ["-f", "release.ninja", "-t", "clean"],
+      {
+        cwd: lib_dir,
+        stdio: [0, 1, 2],
+      }
+    );
+    child_process.execFileSync(
+      ninja_bin_output,
+      ["-f", "release.ninja", "-v"],
+      {
+        cwd: lib_dir,
+        stdio: [0, 1, 2],
+      }
+    );
     fs.unlinkSync(filePath);
     return myVersion;
   }
