@@ -8,11 +8,26 @@ Thanks for your help! Due to ReScript's nature, the contribution setup isn't all
 - C compiler toolchain (you probably already have it installed)
 - OS: Mac/Linux (ReScript works on Windows, but developing the repo using Windows isn't tested. Contribution welcome!)
 
+## Install native OCaml compiler
+
+If you are familiar with OCaml toolchain, you can use 
+
+```
+opam switch 4.06.1+rescript
+eval $(opam env)
+```
+
+If you don't want to bother with opam, we provided a vendored compiler, you can use it directly
+```
+node ./scripts/buildocaml.js
+# make sure the built compiler is in your PATH, checkout native directory
+```
+
+
 ## Build
 
 ```sh
 git submodule update --init # we vendor a fork of ocaml and a syntax repo
-node scripts/buildocaml.js # buid the vendored ocaml compiler
 npm install # install some JS tools for testing purposes
 ./scripts/ninja.js config # the repo is build with Ninja. Generate the ninja build files
 ./scripts/ninja.js build # runs `ninja` under the hood against the generated ninja build files
