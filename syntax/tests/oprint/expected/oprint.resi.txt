@@ -491,3 +491,4 @@ and ASet: {
   let find_last_opt: (elt => bool, t) => option<elt>
   let of_list: list<elt> => t
 }
+type emptyObject = {.}

@@ -332,3 +332,5 @@ module rec A: {
     }
 }
 and ASet: Set.S with type elt = A.t = Set.Make(A)
+
+type emptyObject = {.}

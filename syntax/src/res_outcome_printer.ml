@@ -468,7 +468,7 @@ let printPolyVarIdent txt =
    and printObjectFields fields rest =
      let dots = match rest with
      | Some non_gen -> Doc.text ((if non_gen then "_" else "") ^ "..")
-     | None -> Doc.nil
+     | None -> if fields = [] then Doc.dot else Doc.nil
      in
      Doc.group (
        Doc.concat [
