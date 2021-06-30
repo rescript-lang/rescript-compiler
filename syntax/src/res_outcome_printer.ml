@@ -348,7 +348,7 @@ let printPolyVarIdent txt =
       | [], [] -> Doc.nil
       | labels, types ->
         let i = ref 0 in
-        let package = Doc.join ~sep:Doc.line (List.map2 (fun lbl typ ->
+        let package = Doc.join ~sep:Doc.line ((List.map2 [@doesNotRaise]) (fun lbl typ ->
           Doc.concat [
             Doc.text (if i.contents > 0 then "and " else "with ");
             Doc.text lbl;
@@ -376,13 +376,21 @@ let printPolyVarIdent txt =
      let (typArgs, typ) = collectArrowArgs typ [] in
      let args = Doc.join ~sep:(Doc.concat [Doc.comma; Doc.line]) (
        List.map (fun (lbl, typ) ->
-         if lbl = "" then
+         let lblLen = String.length lbl in
+         if lblLen = 0 then
            printOutTypeDoc typ
          else
+           let (lbl, optionalIndicator) =
+             (* the ocaml compiler hardcodes the optional label inside the string of the label in printtyp.ml *)
+             match String.unsafe_get lbl 0 with
+             | '?' -> ((String.sub [@doesNotRaise]) lbl 1 (lblLen - 1) , Doc.text "=?")
+             | _ -> (lbl, Doc.nil)
+           in
            Doc.group (
              Doc.concat [
                Doc.text ("~" ^ lbl ^ ": ");
-               printOutTypeDoc typ
+               printOutTypeDoc typ;
+               optionalIndicator
              ]
            )
        ) typArgs

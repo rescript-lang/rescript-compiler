@@ -492,3 +492,4 @@ and ASet: {
   let of_list: list<elt> => t
 }
 type emptyObject = {.}
+let f: (~x: 'a=?, ~y: 'b) => option<'a>
