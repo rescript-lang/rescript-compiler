@@ -483,6 +483,21 @@ function mllList(cwd, xs) {
     })
     .join("\n");
 }
+
+/**
+ *
+ * @param {string} cwd
+ * @param {string[]} xs
+ * @returns {string}
+ */
+ function mlyList(cwd, xs) {
+  return xs
+    .map((x) => {
+      var output = baseName(x) + ".ml";
+      return ninjaQuickBuild(output, x, mlyRuleName, cwd, [], [], []);
+    })
+    .join("\n");
+}
 /**
  *
  * @param {string} name
@@ -953,6 +968,13 @@ rule ${mllRuleName}
     command = $ocamllex $in
     generator = true
 `;
+
+var mlyRuleName = `mly`
+var mlyRule = `
+rule ${mlyRuleName}
+    command = $ocamlyacc -v --strict $in
+    generator = true
+`;
 async function othersNinja(devmode = true) {
   var externalDeps = [runtimeTarget];
   var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
@@ -1403,14 +1425,11 @@ exports.updateRelease = updateRelease;
 function readdirSync(dir) {
   return fs.readdirSync(dir, "ascii");
 }
+/**
+ * @type {string[]}
+ */
 var black_list = [
-  "bytelibrarian",
-  "bytelink",
-  "bytepackager",
-  "emitcode",
-  "simplif",
-  "translobj",
-  "translclass"
+  
 ]
 /**
  *
@@ -1449,6 +1468,7 @@ ocamllex = ocamllex.opt
 ocamlc = ocamlc.opt
 ocamlmklib = ocamlmklib
 ocaml = ocaml
+ocamlyacc = ocamlyacc
 `;
 }
 
@@ -1701,9 +1721,10 @@ o ./bin/tests.exe: link ${makeLibs(tests_libs)} main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa 
 
 ${mllRule}
+${mlyRule}
 ${mllList("ext", ["ext_json_parse.mll"])}
 ${mllList("parsing", ["lexer.mll"])}
-
+${mlyList("parsing",["parser.mly"])}
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in
 o ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/generator.ml

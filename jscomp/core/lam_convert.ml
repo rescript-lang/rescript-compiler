@@ -204,7 +204,6 @@ let convert_record_repr ( x : Types.record_representation)
 
 let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   match p with
-  | Pint_as_pointer
   | Pidentity -> Ext_list.singleton_exn args 
   | Pccall _ -> assert false
   | Prevapply -> assert false
@@ -469,22 +468,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
       | Pint32 -> prim ~primitive:(Pasrint) ~args loc
       | Pint64 -> prim ~primitive:(Pasrint64) ~args loc
     end
-  | Pbigarraydim _ 
-  | Pbigstring_load_16 _
-  | Pbigstring_load_32 _
-  | Pbigstring_load_64 _
-  | Pbigstring_set_16 _
-  | Pbigstring_set_32 _
-  | Pbigstring_set_64 _
-  | Pstring_load_16 _
-  | Pstring_load_32 _
-  | Pstring_load_64 _
-  | Pstring_set_16 _ 
-  | Pstring_set_32 _ 
-  | Pbigarrayref _
-  | Pbigarrayset _
-  | Pstring_set_64 _ -> 
-    Location.raise_errorf ~loc "unsupported primitive"
   | Pctconst x ->
     begin match x with
       | Word_size 
@@ -525,9 +508,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Popaque -> Ext_list.singleton_exn args      
   | Psetfield_computed _ ->  
     prim ~primitive:Psetfield_computed ~args loc 
-  | Pbbswap _
-  | Pbswap16 
-  | Pbittest
   | Pduparray _ ->  assert false 
 (* Does not exist since we compile array in js backend unlike native backend *)
 
@@ -833,10 +813,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
           (Ext_list.map meth_args convert_aux) {ap_loc = loc; ap_inlined = Default_inline; ap_status = App_na}             
 
     | Lsend _ -> assert false  
-    | Levent _ ->
-      (* disabled by upstream*)
-      assert false
-    | Lifused (_, _) -> assert false
+
 
   and convert_let (kind : Lam_compat.let_kind) id (e : Lambda.lambda) body : Lam.t = 
     match kind, e with

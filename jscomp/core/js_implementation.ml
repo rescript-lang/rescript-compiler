@@ -80,10 +80,7 @@ let after_parsing_sig ppf  outputprefix ast  =
       Lam_compile_env.reset () ;
       let initial_env = Res_compmisc.initial_env () in
       Env.set_unit_name modulename;
-
-      let tsg = Typemod.type_interface 
-          !Location.input_name
-          initial_env ast in
+      let tsg = Typemod.transl_signature initial_env ast in
       if !Clflags.dump_typedtree then fprintf ppf "%a@." Printtyped.interface tsg;
       let sg = tsg.sig_type in
       if !Clflags.print_types then

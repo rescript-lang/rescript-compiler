@@ -2,7 +2,10 @@ S .
 B .
 B common
 B ext
+
 B syntax
+S syntax
+
 B core
 S stubs
 B stubs
