@@ -9553,7 +9553,7 @@ module Clflags : sig
 #1 "clflags.mli"
 val output_name : string option ref
 val include_dirs : string list ref
-val print_types : bool ref
+
 val debug : bool ref
 val fast : bool ref
 val classic : bool ref
@@ -9589,9 +9589,9 @@ val color : Misc.Color.setting option ref
 val unboxed_types : bool ref
 
 
+
 type mli_status =  Mli_exists | Mli_non_exists
 val assume_no_mli : mli_status ref
-val record_event_when_debug : bool ref
 val bs_vscode : bool
 val dont_record_crc_unit : string option ref
 val bs_gentype : string option ref
@@ -9607,7 +9607,6 @@ end = struct
 
 let  output_name = ref (None : string option) (* -o *)
 and include_dirs = ref ([] : string list)(* -I *)
-and print_types = ref false             (* -i *)
 and debug = ref false                   (* -g *)
 and fast = ref false                    (* -unsafe *)
 and classic = ref false                 (* -nolabels *)
@@ -9643,12 +9642,6 @@ let keep_locs = ref true               (* -keep-locs *)
 
 
 
-
-
-
-
-
-
 let all_passes = ref []
 let dumped_passes_list = ref []
 let dumped_pass s =
@@ -9681,7 +9674,6 @@ let unboxed_types = ref false
 
 type mli_status =  Mli_exists | Mli_non_exists
 let assume_no_mli = ref Mli_non_exists
-let record_event_when_debug = ref true (* turned off in BuckleScript*)
 let bs_vscode =
     try ignore @@ Sys.getenv "BS_VSCODE" ; true with _ -> false
     (* We get it from environment variable mostly due to
