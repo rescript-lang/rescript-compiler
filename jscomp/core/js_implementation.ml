@@ -83,15 +83,10 @@ let after_parsing_sig ppf  outputprefix ast  =
       let tsg = Typemod.transl_signature initial_env ast in
       if !Clflags.dump_typedtree then fprintf ppf "%a@." Printtyped.interface tsg;
       let sg = tsg.sig_type in
-      if !Clflags.print_types then
-        Printtyp.wrap_printing_env initial_env (fun () ->
-            fprintf Format.std_formatter "%a@."
-              Printtyp.signature (Typemod.simplify_signature sg));
       ignore (Includemod.signatures initial_env sg sg);
       Typecore.force_delayed_checks ();
       Warnings.check_fatal ();
-      if not !Clflags.print_types then begin
-
+      begin
         let deprecated = Builtin_attributes.deprecated_of_sig ast in
         let sg =
           Env.save_signature ~deprecated sg modulename (outputprefix ^ ".cmi")
@@ -192,7 +187,7 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
       let typedtree_coercion = (typedtree, coercion) in        
       print_if ppf Clflags.dump_typedtree
         Printtyped.implementation_with_coercion  typedtree_coercion ;
-      if !Clflags.print_types || !Js_config.cmi_only then begin
+      if  !Js_config.cmi_only then begin
         Warnings.check_fatal ();
       end else begin
         let lambda = Translmod.transl_implementation modulename typedtree_coercion in 

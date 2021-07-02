@@ -46,7 +46,6 @@ let setup_env () =
      otherwise [bsc -I sc src/hello.ml ] will include current directory to search path
   *)
   Clflags.debug := true;
-  Clflags.record_event_when_debug := false;
   Clflags.binary_annotations := true;
   (* Turn on [-no-alias-deps] by default -- double check *)
   Oprint.out_ident := Outcome_printer_ns.out_ident;

@@ -442,8 +442,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-no-bin-annot",  clear Clflags.binary_annotations, 
     "*internal* Disable binary annotations (by default on)";
 
-    "-i", set Clflags.print_types, 
-    "*internal* Print inferred interface";  
 
     "-nolabels", set Clflags.classic, 
     "*internal* Ignore non-optional labels in types";  
