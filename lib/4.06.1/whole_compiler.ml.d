@@ -623,8 +623,6 @@
 ../lib/4.06.1/whole_compiler.ml: ./typing/typetexp.mli
 ../lib/4.06.1/whole_compiler.ml: ./typing/untypeast.ml
 ../lib/4.06.1/whole_compiler.ml: ./typing/untypeast.mli
-../lib/4.06.1/whole_compiler.ml: ./utils/arg_helper.ml
-../lib/4.06.1/whole_compiler.ml: ./utils/arg_helper.mli
 ../lib/4.06.1/whole_compiler.ml: ./utils/ccomp.ml
 ../lib/4.06.1/whole_compiler.ml: ./utils/ccomp.mli
 ../lib/4.06.1/whole_compiler.ml: ./utils/clflags.ml
@@ -635,10 +633,6 @@
 ../lib/4.06.1/whole_compiler.ml: ./utils/identifiable.mli
 ../lib/4.06.1/whole_compiler.ml: ./utils/misc.ml
 ../lib/4.06.1/whole_compiler.ml: ./utils/misc.mli
-../lib/4.06.1/whole_compiler.ml: ./utils/numbers.ml
-../lib/4.06.1/whole_compiler.ml: ./utils/numbers.mli
-../lib/4.06.1/whole_compiler.ml: ./utils/profile.ml
-../lib/4.06.1/whole_compiler.ml: ./utils/profile.mli
 ../lib/4.06.1/whole_compiler.ml: ./utils/tbl.ml
 ../lib/4.06.1/whole_compiler.ml: ./utils/tbl.mli
 ../lib/4.06.1/whole_compiler.ml: ./utils/warnings.ml

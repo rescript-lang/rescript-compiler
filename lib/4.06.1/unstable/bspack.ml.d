@@ -78,17 +78,9 @@
 ../lib/4.06.1/unstable/bspack.ml: ./parsing/syntaxerr.ml
 ../lib/4.06.1/unstable/bspack.ml: ./parsing/syntaxerr.mli
 ../lib/4.06.1/unstable/bspack.ml: ./stubs/bs_hash_stubs.ml
-../lib/4.06.1/unstable/bspack.ml: ./utils/arg_helper.ml
-../lib/4.06.1/unstable/bspack.ml: ./utils/arg_helper.mli
 ../lib/4.06.1/unstable/bspack.ml: ./utils/clflags.ml
 ../lib/4.06.1/unstable/bspack.ml: ./utils/clflags.mli
-../lib/4.06.1/unstable/bspack.ml: ./utils/identifiable.ml
-../lib/4.06.1/unstable/bspack.ml: ./utils/identifiable.mli
 ../lib/4.06.1/unstable/bspack.ml: ./utils/misc.ml
 ../lib/4.06.1/unstable/bspack.ml: ./utils/misc.mli
-../lib/4.06.1/unstable/bspack.ml: ./utils/numbers.ml
-../lib/4.06.1/unstable/bspack.ml: ./utils/numbers.mli
-../lib/4.06.1/unstable/bspack.ml: ./utils/profile.ml
-../lib/4.06.1/unstable/bspack.ml: ./utils/profile.mli
 ../lib/4.06.1/unstable/bspack.ml: ./utils/warnings.ml
 ../lib/4.06.1/unstable/bspack.ml: ./utils/warnings.mli

@@ -181,8 +181,6 @@
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./stubs/bs_hash_stubs.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./typing/ident.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./typing/ident.mli
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/arg_helper.ml
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/arg_helper.mli
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/clflags.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/clflags.mli
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/config.ml
@@ -191,9 +189,5 @@
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/identifiable.mli
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/misc.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/misc.mli
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/numbers.ml
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/numbers.mli
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/profile.ml
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/profile.mli
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/warnings.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/warnings.mli

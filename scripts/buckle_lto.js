@@ -6,14 +6,11 @@ var pairs = [
   ["Clflags.native_code", "false"],
   ["Clflags.unsafe_string", "false"],
   ["Clflags.record_event_when_debug", "false"],
-  ["Clflags.no_std_include", "true"],
   ["Clflags.use_threads", "false"],
   ["Clflags.use_vmthreads", "false"],
   ["Clflags.no_implicit_current_dir", "true"],
-  ["Clflags.strict_sequence", "true"],
   ["Clflags.strict_formats", "true"],
   ["Clflags.compile_only", "true"],
-  ["Clflags.recursive_types","false"],
   ["Clflags.principal", "false"],
 ];
 

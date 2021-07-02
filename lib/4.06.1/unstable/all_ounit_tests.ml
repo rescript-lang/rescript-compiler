@@ -8424,617 +8424,6 @@ let () =
 
 
 end
-module Arg_helper : sig 
-#1 "arg_helper.mli"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*                       Pierre Chambart, OCamlPro                        *)
-(*           Mark Shinwell and Leo White, Jane Street Europe              *)
-(*                                                                        *)
-(*   Copyright 2015--2016 OCamlPro SAS                                    *)
-(*   Copyright 2015--2016 Jane Street Group LLC                           *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(** Decipher command line arguments of the form
-        <value> | <key>=<value>[,...]
-    (as used for example for the specification of inlining parameters
-    varying by simplification round).
-*)
-
-module Make (S : sig
-  module Key : sig
-    type t
-
-    (** The textual representation of a key must not contain '=' or ','. *)
-    val of_string : string -> t
-
-    module Map : Map.S with type key = t
-  end
-
-  module Value : sig
-    type t
-
-    (** The textual representation of a value must not contain ','. *)
-    val of_string : string -> t
-  end
-end) : sig
-  type parsed
-
-  val default : S.Value.t -> parsed
-
-  val set_base_default : S.Value.t -> parsed -> parsed
-
-  val add_base_override : S.Key.t -> S.Value.t -> parsed -> parsed
-
-  val reset_base_overrides : parsed -> parsed
-
-  val set_user_default : S.Value.t -> parsed -> parsed
-
-  val add_user_override : S.Key.t -> S.Value.t -> parsed -> parsed
-
-  val parse : string -> string -> parsed ref -> unit
-
-  type parse_result =
-    | Ok
-    | Parse_failed of exn
-
-  val parse_no_error : string -> parsed ref -> parse_result
-
-  val get : key:S.Key.t -> parsed -> S.Value.t
-end
-
-end = struct
-#1 "arg_helper.ml"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*                       Pierre Chambart, OCamlPro                        *)
-(*           Mark Shinwell and Leo White, Jane Street Europe              *)
-(*                                                                        *)
-(*   Copyright 2015--2016 OCamlPro SAS                                    *)
-(*   Copyright 2015--2016 Jane Street Group LLC                           *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-let fatal err =
-  prerr_endline err;
-  exit 2
-
-module Make (S : sig
-  module Key : sig
-    type t
-    val of_string : string -> t
-    module Map : Map.S with type key = t
-  end
-
-  module Value : sig
-    type t
-    val of_string : string -> t
-  end
-end) = struct
-  type parsed = {
-    base_default : S.Value.t;
-    base_override : S.Value.t S.Key.Map.t;
-    user_default : S.Value.t option;
-    user_override : S.Value.t S.Key.Map.t;
-  }
-
-  let default v =
-    { base_default = v;
-      base_override = S.Key.Map.empty;
-      user_default = None;
-      user_override = S.Key.Map.empty; }
-
-  let set_base_default value t =
-    { t with base_default = value }
-
-  let add_base_override key value t =
-    { t with base_override = S.Key.Map.add key value t.base_override }
-
-  let reset_base_overrides t =
-    { t with base_override = S.Key.Map.empty }
-
-  let set_user_default value t =
-    { t with user_default = Some value }
-
-  let add_user_override key value t =
-    { t with user_override = S.Key.Map.add key value t.user_override }
-
-  exception Parse_failure of exn
-
-  let parse_exn str ~update =
-    (* Is the removal of empty chunks really relevant here? *)
-    (* (It has been added to mimic the old Misc.String.split.) *)
-    let values = String.split_on_char ',' str |> List.filter ((<>) "") in
-    let parsed =
-      List.fold_left (fun acc value ->
-          match String.index value '=' with
-          | exception Not_found ->
-            begin match S.Value.of_string value with
-            | value -> set_user_default value acc
-            | exception exn -> raise (Parse_failure exn)
-            end
-          | equals ->
-            let key_value_pair = value in
-            let length = String.length key_value_pair in
-            assert (equals >= 0 && equals < length);
-            if equals = 0 then begin
-              raise (Parse_failure (
-                Failure "Missing key in argument specification"))
-            end;
-            let key =
-              let key = String.sub key_value_pair 0 equals in
-              try S.Key.of_string key
-              with exn -> raise (Parse_failure exn)
-            in
-            let value =
-              let value =
-                String.sub key_value_pair (equals + 1) (length - equals - 1)
-              in
-              try S.Value.of_string value
-              with exn -> raise (Parse_failure exn)
-            in
-            add_user_override key value acc)
-        !update
-        values
-    in
-    update := parsed
-
-  let parse str help_text update =
-    match parse_exn str ~update with
-    | () -> ()
-    | exception (Parse_failure exn) ->
-      fatal (Printf.sprintf "%s: %s" (Printexc.to_string exn) help_text)
-
-  type parse_result =
-    | Ok
-    | Parse_failed of exn
-
-  let parse_no_error str update =
-    match parse_exn str ~update with
-    | () -> Ok
-    | exception (Parse_failure exn) -> Parse_failed exn
-
-  let get ~key parsed =
-    match S.Key.Map.find key parsed.user_override with
-    | value -> value
-    | exception Not_found ->
-      match parsed.user_default with
-      | Some value -> value
-      | None ->
-        match S.Key.Map.find key parsed.base_override with
-        | value -> value
-        | exception Not_found -> parsed.base_default
-
-end
-
-end
-module Config : sig 
-#1 "config.mli"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
-(*                                                                        *)
-(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(* System configuration *)
-
-val version: string
-        (* The current version number of the system *)
-
-val standard_library: string
-        (* The directory containing the standard libraries *)
-
-val syntax_kind : [ `ml | `reason | `rescript ] ref       
-
-val bs_only : bool ref 
-
-val unsafe_empty_array: bool ref 
-
-val standard_runtime: string
-        (* The full path to the standard bytecode interpreter ocamlrun *)
-val ccomp_type: string
-        (* The "kind" of the C compiler, assembler and linker used: one of
-               "cc" (for Unix-style C compilers)
-               "msvc" (for Microsoft Visual C++ and MASM) *)
-val c_compiler: string
-        (* The compiler to use for compiling C files *)
-val c_output_obj: string
-        (* Name of the option of the C compiler for specifying the output file *)
-val ocamlc_cflags : string
-        (* The flags ocamlc should pass to the C compiler *)
-val ocamlc_cppflags : string
-        (* The flags ocamlc should pass to the C preprocessor *)
-val ocamlopt_cflags : string
-        (* The flags ocamlopt should pass to the C compiler *)
-val ocamlopt_cppflags : string
-        (* The flags ocamlopt should pass to the C preprocessor *)
-val bytecomp_c_libraries: string
-        (* The C libraries to link with custom runtimes *)
-val native_c_libraries: string
-        (* The C libraries to link with native-code programs *)
-val native_pack_linker: string
-        (* The linker to use for packaging (ocamlopt -pack) and for partial
-           links (ocamlopt -output-obj). *)
-val mkdll: string
-        (* The linker command line to build dynamic libraries. *)
-val mkexe: string
-        (* The linker command line to build executables. *)
-val mkmaindll: string
-        (* The linker command line to build main programs as dlls. *)
-val ranlib: string
-        (* Command to randomize a library, or "" if not needed *)
-val ar: string
-        (* Name of the ar command, or "" if not needed  (MSVC) *)
-val cc_profile : string
-        (* The command line option to the C compiler to enable profiling. *)
-
-val load_path: string list ref
-        (* Directories in the search path for .cmi and .cmo files *)
-
-val interface_suffix: string ref
-        (* Suffix for interface file names *)
-
-val exec_magic_number: string
-        (* Magic number for bytecode executable files *)
-val cmi_magic_number: string
-        (* Magic number for compiled interface files *)
-val cmo_magic_number: string
-        (* Magic number for object bytecode files *)
-val cma_magic_number: string
-        (* Magic number for archive files *)
-val cmx_magic_number: string
-        (* Magic number for compilation unit descriptions *)
-val cmxa_magic_number: string
-        (* Magic number for libraries of compilation unit descriptions *)
-val ast_intf_magic_number: string
-        (* Magic number for file holding an interface syntax tree *)
-val ast_impl_magic_number: string
-        (* Magic number for file holding an implementation syntax tree *)
-val cmxs_magic_number: string
-        (* Magic number for dynamically-loadable plugins *)
-val cmt_magic_number: string
-        (* Magic number for compiled interface files *)
-
-val max_tag: int
-        (* Biggest tag that can be stored in the header of a regular block. *)
-val lazy_tag : int
-        (* Normally the same as Obj.lazy_tag.  Separate definition because
-           of technical reasons for bootstrapping. *)
-val max_young_wosize: int
-        (* Maximal size of arrays that are directly allocated in the
-           minor heap *)
-val stack_threshold: int
-        (* Size in words of safe area at bottom of VM stack,
-           see byterun/config.h *)
-val stack_safety_margin: int
-        (* Size in words of the safety margin between the bottom of
-           the stack and the stack pointer. This margin can be used by
-           intermediate computations of some instructions, or the event
-           handler. *)
-
-val architecture: string
-        (* Name of processor type for the native-code compiler *)
-val model: string
-        (* Name of processor submodel for the native-code compiler *)
-val system: string
-        (* Name of operating system for the native-code compiler *)
-
-val asm: string
-        (* The assembler (and flags) to use for assembling
-           ocamlopt-generated code. *)
-
-val asm_cfi_supported: bool
-        (* Whether assembler understands CFI directives *)
-val with_frame_pointers : bool
-        (* Whether assembler should maintain frame pointers *)
-
-val ext_obj: string
-        (* Extension for object files, e.g. [.o] under Unix. *)
-val ext_asm: string
-        (* Extension for assembler files, e.g. [.s] under Unix. *)
-val ext_lib: string
-        (* Extension for library files, e.g. [.a] under Unix. *)
-val ext_dll: string
-        (* Extension for dynamically-loaded libraries, e.g. [.so] under Unix.*)
-
-val default_executable_name: string
-        (* Name of executable produced by linking if none is given with -o,
-           e.g. [a.out] under Unix. *)
-
-val systhread_supported : bool
-        (* Whether the system thread library is implemented *)
-
-val flexdll_dirs : string list
-        (* Directories needed for the FlexDLL objects *)
-
-val host : string
-        (* Whether the compiler is a cross-compiler *)
-
-val target : string
-        (* Whether the compiler is a cross-compiler *)
-
-val print_config : out_channel -> unit;;
-
-val profiling : bool
-        (* Whether profiling with gprof is supported on this platform *)
-
-val flambda : bool
-        (* Whether the compiler was configured for flambda *)
-
-val spacetime : bool
-        (* Whether the compiler was configured for Spacetime profiling *)
-val enable_call_counts : bool
-        (* Whether call counts are to be available when Spacetime profiling *)
-val profinfo : bool
-        (* Whether the compiler was configured for profiling *)
-val profinfo_width : int
-        (* How many bits are to be used in values' headers for profiling
-           information *)
-val libunwind_available : bool
-        (* Whether the libunwind library is available on the target *)
-val libunwind_link_flags : string
-        (* Linker flags to use libunwind *)
-
-val safe_string: bool
-        (* Whether the compiler was configured with -force-safe-string;
-           in that case, the -unsafe-string compile-time option is unavailable
-
-           @since 4.05.0 *)
-val default_safe_string: bool
-        (* Whether the compiler was configured to use the -safe-string
-           or -unsafe-string compile-time option by default.
-
-           @since 4.06.0 *)
-val flat_float_array : bool
-        (* Whether the compiler and runtime automagically flatten float
-           arrays *)
-val windows_unicode: bool
-        (* Whether Windows Unicode runtime is enabled *)
-val afl_instrument : bool
-        (* Whether afl-fuzz instrumentation is generated by default *)
-
-end = struct
-#1 "config.ml"
-#2 "utils/config.mlp"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
-(*                                                                        *)
-(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(* The main OCaml version string has moved to ../VERSION *)
-let version = Sys.ocaml_version
-
-let standard_library_default = "/Users/hongbozhang/git/bucklescript/native/4.06.1/lib/ocaml"
-
-let standard_library =
-
-  try
-    Sys.getenv "OCAMLLIB"
-  with Not_found ->
-  try
-    Sys.getenv "CAMLLIB"
-  with Not_found ->
-
-    standard_library_default
-let bs_only = ref false
-let unsafe_empty_array = ref true
-let syntax_kind = ref `ml
-let standard_runtime = "/Users/hongbozhang/git/bucklescript/native/4.06.1/bin/ocamlrun"
-let ccomp_type = "cc"
-let c_compiler = "gcc -Wno-implicit-function-declaration -fcommon"
-let c_output_obj = "-o "
-let ocamlc_cflags = "-O2 -fno-strict-aliasing -fwrapv "
-let ocamlc_cppflags = "-D_FILE_OFFSET_BITS=64"
-let ocamlopt_cflags = "-O2 -fno-strict-aliasing -fwrapv"
-let ocamlopt_cppflags = "-D_FILE_OFFSET_BITS=64"
-let bytecomp_c_libraries = ""
-(* bytecomp_c_compiler and native_c_compiler have been supported for a
-   long time and are retained for backwards compatibility.
-   For programs that don't need compatibility with older OCaml releases
-   the recommended approach is to use the constituent variables
-   c_compiler, ocamlc_cflags, ocamlc_cppflags etc., directly.
-*)
-let bytecomp_c_compiler =
-  c_compiler ^ " " ^ ocamlc_cflags ^ " " ^ ocamlc_cppflags
-let native_c_compiler =
-  c_compiler ^ " " ^ ocamlopt_cflags ^ " " ^ ocamlopt_cppflags
-let native_c_libraries = ""
-let native_pack_linker = "ld -r -arch x86_64 -o\ "
-let ranlib = "ranlib"
-let ar = "ar"
-let cc_profile = "-pg"
-let mkdll, mkexe, mkmaindll =
-  (* @@DRA Cygwin - but only if shared libraries are enabled, which we
-     should be able to detect? *)
-  if Sys.os_type = "Win32" then
-    try
-      let flexlink =
-        let flexlink = Sys.getenv "OCAML_FLEXLINK" in
-        let f i =
-          let c = flexlink.[i] in
-          if c = '/' then '\\' else c in
-        (String.init (String.length flexlink) f) ^ " " in
-      flexlink,
-      flexlink ^ " -exe",
-      flexlink ^ " -maindll"
-    with Not_found ->
-      "gcc -Wno-implicit-function-declaration -fcommon -shared -flat_namespace -undefined suppress                    -Wl,-no_compact_unwind", "gcc -Wno-implicit-function-declaration -fcommon -O2 -fno-strict-aliasing -fwrapv -Wall -D_FILE_OFFSET_BITS=64 -DCAML_NAME_SPACE   -Wl,-no_compact_unwind", "gcc -Wno-implicit-function-declaration -fcommon -shared -flat_namespace -undefined suppress                    -Wl,-no_compact_unwind"
-  else
-    "gcc -Wno-implicit-function-declaration -fcommon -shared -flat_namespace -undefined suppress                    -Wl,-no_compact_unwind", "gcc -Wno-implicit-function-declaration -fcommon -O2 -fno-strict-aliasing -fwrapv -Wall -D_FILE_OFFSET_BITS=64 -DCAML_NAME_SPACE   -Wl,-no_compact_unwind", "gcc -Wno-implicit-function-declaration -fcommon -shared -flat_namespace -undefined suppress                    -Wl,-no_compact_unwind"
-
-let profiling = true
-let flambda = true
-let safe_string = false
-let default_safe_string = true
-let windows_unicode = 0 != 0
-
-let flat_float_array = true
-
-let afl_instrument = false
-
-let exec_magic_number = "Caml1999X011"
-and cmi_magic_number = "Caml1999I022"
-and cmo_magic_number = "Caml1999O022"
-and cma_magic_number = "Caml1999A022"
-and cmx_magic_number =
-  if flambda then
-    "Caml1999y022"
-  else
-    "Caml1999Y022"
-and cmxa_magic_number =
-  if flambda then
-    "Caml1999z022"
-  else
-    "Caml1999Z022"
-and ast_impl_magic_number = "Caml1999M022"
-and ast_intf_magic_number = "Caml1999N022"
-and cmxs_magic_number = "Caml1999D022"
-    (* cmxs_magic_number is duplicated in otherlibs/dynlink/natdynlink.ml *)
-and cmt_magic_number = "Caml1999T022"
-
-let load_path = ref ([] : string list)
-
-let interface_suffix = ref ".mli"
-
-let max_tag = 245
-(* This is normally the same as in obj.ml, but we have to define it
-   separately because it can differ when we're in the middle of a
-   bootstrapping phase. *)
-let lazy_tag = 246
-
-let max_young_wosize = 256
-let stack_threshold = 256 (* see byterun/config.h *)
-let stack_safety_margin = 60
-
-let architecture = "amd64"
-let model = "default"
-let system = "macosx"
-
-let asm = "clang -arch x86_64 -Wno-trigraphs -c"
-let asm_cfi_supported = true
-let with_frame_pointers = false
-let spacetime = false
-let enable_call_counts = true
-let libunwind_available = false
-let libunwind_link_flags = ""
-let profinfo = false
-let profinfo_width = 0
-
-let ext_exe = ""
-let ext_obj = ".o"
-let ext_asm = ".s"
-let ext_lib = ".a"
-let ext_dll = ".so"
-
-let host = "x86_64-apple-darwin20.5.0"
-let target = "x86_64-apple-darwin20.5.0"
-
-let default_executable_name =
-  match Sys.os_type with
-    "Unix" -> "a.out"
-  | "Win32" | "Cygwin" -> "camlprog.exe"
-  | _ -> "camlprog"
-
-let systhread_supported = false;;
-
-let flexdll_dirs = [];;
-
-let print_config oc =
-  let p name valu = Printf.fprintf oc "%s: %s\n" name valu in
-  let p_int name valu = Printf.fprintf oc "%s: %d\n" name valu in
-  let p_bool name valu = Printf.fprintf oc "%s: %B\n" name valu in
-  p "version" version;
-  p "standard_library_default" standard_library_default;
-  p "standard_library" standard_library;
-  p "standard_runtime" standard_runtime;
-  p "ccomp_type" ccomp_type;
-  p "c_compiler" c_compiler;
-  p "ocamlc_cflags" ocamlc_cflags;
-  p "ocamlc_cppflags" ocamlc_cppflags;
-  p "ocamlopt_cflags" ocamlopt_cflags;
-  p "ocamlopt_cppflags" ocamlopt_cppflags;
-  p "bytecomp_c_compiler" bytecomp_c_compiler;
-  p "native_c_compiler" native_c_compiler;
-  p "bytecomp_c_libraries" bytecomp_c_libraries;
-  p "native_c_libraries" native_c_libraries;
-  p "native_pack_linker" native_pack_linker;
-  p "ranlib" ranlib;
-  p "cc_profile" cc_profile;
-  p "architecture" architecture;
-  p "model" model;
-  p_int "int_size" Sys.int_size;
-  p_int "word_size" Sys.word_size;
-  p "system" system;
-  p "asm" asm;
-  p_bool "asm_cfi_supported" asm_cfi_supported;
-  p_bool "with_frame_pointers" with_frame_pointers;
-  p "ext_exe" ext_exe;
-  p "ext_obj" ext_obj;
-  p "ext_asm" ext_asm;
-  p "ext_lib" ext_lib;
-  p "ext_dll" ext_dll;
-  p "os_type" Sys.os_type;
-  p "default_executable_name" default_executable_name;
-  p_bool "systhread_supported" systhread_supported;
-  p "host" host;
-  p "target" target;
-  p_bool "profiling" profiling;
-  p_bool "flambda" flambda;
-  p_bool "spacetime" spacetime;
-  p_bool "safe_string" safe_string;
-  p_bool "default_safe_string" default_safe_string;
-  p_bool "flat_float_array" flat_float_array;
-  p_bool "afl_instrument" afl_instrument;
-  p_bool "windows_unicode" windows_unicode;
-
-  (* print the magic number *)
-  p "exec_magic_number" exec_magic_number;
-  p "cmi_magic_number" cmi_magic_number;
-  p "cmo_magic_number" cmo_magic_number;
-  p "cma_magic_number" cma_magic_number;
-  p "cmx_magic_number" cmx_magic_number;
-  p "cmxa_magic_number" cmxa_magic_number;
-  p "ast_impl_magic_number" ast_impl_magic_number;
-  p "ast_intf_magic_number" ast_intf_magic_number;
-  p "cmxs_magic_number" cmxs_magic_number;
-  p "cmt_magic_number" cmt_magic_number;
-
-  flush oc;
-;;
-
-end
 module Misc : sig 
 #1 "misc.mli"
 (**************************************************************************)
@@ -10160,981 +9549,13 @@ module MakeHooks(M: sig
 end
 
 end
-module Identifiable : sig 
-#1 "identifiable.mli"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*                       Pierre Chambart, OCamlPro                        *)
-(*           Mark Shinwell and Leo White, Jane Street Europe              *)
-(*                                                                        *)
-(*   Copyright 2013--2016 OCamlPro SAS                                    *)
-(*   Copyright 2014--2016 Jane Street Group LLC                           *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(** Uniform interface for common data structures over various things. *)
-
-module type Thing = sig
-  type t
-
-  include Hashtbl.HashedType with type t := t
-  include Map.OrderedType with type t := t
-
-  val output : out_channel -> t -> unit
-  val print : Format.formatter -> t -> unit
-end
-
-module Pair : functor (A : Thing) (B : Thing) -> Thing with type t = A.t * B.t
-
-module type Set = sig
-  module T : Set.OrderedType
-  include Set.S
-    with type elt = T.t
-     and type t = Set.Make (T).t
-
-  val output : out_channel -> t -> unit
-  val print : Format.formatter -> t -> unit
-  val to_string : t -> string
-  val of_list : elt list -> t
-  val map : (elt -> elt) -> t -> t
-end
-
-module type Map = sig
-  module T : Map.OrderedType
-  include Map.S
-    with type key = T.t
-     and type 'a t = 'a Map.Make (T).t
-
-  val filter_map : (key -> 'a -> 'b option) -> 'a t -> 'b t
-  val of_list : (key * 'a) list -> 'a t
-
-  (** [disjoint_union m1 m2] contains all bindings from [m1] and
-      [m2]. If some binding is present in both and the associated
-      value is not equal, a Fatal_error is raised *)
-  val disjoint_union : ?eq:('a -> 'a -> bool) -> ?print:(Format.formatter -> 'a -> unit) -> 'a t -> 'a t -> 'a t
-
-  (** [union_right m1 m2] contains all bindings from [m1] and [m2]. If
-      some binding is present in both, the one from [m2] is taken *)
-  val union_right : 'a t -> 'a t -> 'a t
-
-  (** [union_left m1 m2 = union_right m2 m1] *)
-  val union_left : 'a t -> 'a t -> 'a t
-
-  val union_merge : ('a -> 'a -> 'a) -> 'a t -> 'a t -> 'a t
-  val rename : key t -> key -> key
-  val map_keys : (key -> key) -> 'a t -> 'a t
-  val keys : 'a t -> Set.Make(T).t
-  val data : 'a t -> 'a list
-  val of_set : (key -> 'a) -> Set.Make(T).t -> 'a t
-  val transpose_keys_and_data : key t -> key t
-  val transpose_keys_and_data_set : key t -> Set.Make(T).t t
-  val print :
-    (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a t -> unit
-end
-
-module type Tbl = sig
-  module T : sig
-    type t
-    include Map.OrderedType with type t := t
-    include Hashtbl.HashedType with type t := t
-  end
-  include Hashtbl.S
-    with type key = T.t
-     and type 'a t = 'a Hashtbl.Make (T).t
-
-  val to_list : 'a t -> (T.t * 'a) list
-  val of_list : (T.t * 'a) list -> 'a t
-
-  val to_map : 'a t -> 'a Map.Make(T).t
-  val of_map : 'a Map.Make(T).t -> 'a t
-  val memoize : 'a t -> (key -> 'a) -> key -> 'a
-  val map : 'a t -> ('a -> 'b) -> 'b t
-end
-
-module type S = sig
-  type t
-
-  module T : Thing with type t = t
-  include Thing with type t := T.t
-
-  module Set : Set with module T := T
-  module Map : Map with module T := T
-  module Tbl : Tbl with module T := T
-end
-
-module Make (T : Thing) : S with type t := T.t
-
-end = struct
-#1 "identifiable.ml"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*                       Pierre Chambart, OCamlPro                        *)
-(*           Mark Shinwell and Leo White, Jane Street Europe              *)
-(*                                                                        *)
-(*   Copyright 2013--2016 OCamlPro SAS                                    *)
-(*   Copyright 2014--2016 Jane Street Group LLC                           *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-module type Thing = sig
-  type t
-
-  include Hashtbl.HashedType with type t := t
-  include Map.OrderedType with type t := t
-
-  val output : out_channel -> t -> unit
-  val print : Format.formatter -> t -> unit
-end
-
-module type Set = sig
-  module T : Set.OrderedType
-  include Set.S
-    with type elt = T.t
-     and type t = Set.Make (T).t
-
-  val output : out_channel -> t -> unit
-  val print : Format.formatter -> t -> unit
-  val to_string : t -> string
-  val of_list : elt list -> t
-  val map : (elt -> elt) -> t -> t
-end
-
-module type Map = sig
-  module T : Map.OrderedType
-  include Map.S
-    with type key = T.t
-     and type 'a t = 'a Map.Make (T).t
-
-  val filter_map : (key -> 'a -> 'b option) -> 'a t -> 'b t
-  val of_list : (key * 'a) list -> 'a t
-
-  val disjoint_union : ?eq:('a -> 'a -> bool) -> ?print:(Format.formatter -> 'a -> unit) -> 'a t -> 'a t -> 'a t
-
-  val union_right : 'a t -> 'a t -> 'a t
-
-  val union_left : 'a t -> 'a t -> 'a t
-
-  val union_merge : ('a -> 'a -> 'a) -> 'a t -> 'a t -> 'a t
-  val rename : key t -> key -> key
-  val map_keys : (key -> key) -> 'a t -> 'a t
-  val keys : 'a t -> Set.Make(T).t
-  val data : 'a t -> 'a list
-  val of_set : (key -> 'a) -> Set.Make(T).t -> 'a t
-  val transpose_keys_and_data : key t -> key t
-  val transpose_keys_and_data_set : key t -> Set.Make(T).t t
-  val print :
-    (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a t -> unit
-end
-
-module type Tbl = sig
-  module T : sig
-    type t
-    include Map.OrderedType with type t := t
-    include Hashtbl.HashedType with type t := t
-  end
-  include Hashtbl.S
-    with type key = T.t
-     and type 'a t = 'a Hashtbl.Make (T).t
-
-  val to_list : 'a t -> (T.t * 'a) list
-  val of_list : (T.t * 'a) list -> 'a t
-
-  val to_map : 'a t -> 'a Map.Make(T).t
-  val of_map : 'a Map.Make(T).t -> 'a t
-  val memoize : 'a t -> (key -> 'a) -> key -> 'a
-  val map : 'a t -> ('a -> 'b) -> 'b t
-end
-
-module Pair (A : Thing) (B : Thing) : Thing with type t = A.t * B.t = struct
-  type t = A.t * B.t
-
-  let compare (a1, b1) (a2, b2) =
-    let c = A.compare a1 a2 in
-    if c <> 0 then c
-    else B.compare b1 b2
-
-  let output oc (a, b) = Printf.fprintf oc " (%a, %a)" A.output a B.output b
-  let hash (a, b) = Hashtbl.hash (A.hash a, B.hash b)
-  let equal (a1, b1) (a2, b2) = A.equal a1 a2 && B.equal b1 b2
-  let print ppf (a, b) = Format.fprintf ppf " (%a, @ %a)" A.print a B.print b
-end
-
-module Make_map (T : Thing) = struct
-  include Map.Make (T)
-
-  let filter_map f t  =
-    fold (fun id v map ->
-        match f id v with
-        | None -> map
-        | Some r -> add id r map) t empty
-
-  let of_list l =
-    List.fold_left (fun map (id, v) -> add id v map) empty l
-
-  let disjoint_union ?eq ?print m1 m2 =
-    union (fun id v1 v2 ->
-        let ok = match eq with
-          | None -> false
-          | Some eq -> eq v1 v2
-        in
-        if not ok then
-          let err =
-            match print with
-            | None ->
-              Format.asprintf "Map.disjoint_union %a" T.print id
-            | Some print ->
-              Format.asprintf "Map.disjoint_union %a => %a <> %a"
-                T.print id print v1 print v2
-          in
-          Misc.fatal_error err
-        else Some v1)
-      m1 m2
-
-  let union_right m1 m2 =
-    merge (fun _id x y -> match x, y with
-        | None, None -> None
-        | None, Some v
-        | Some v, None
-        | Some _, Some v -> Some v)
-      m1 m2
-
-  let union_left m1 m2 = union_right m2 m1
-
-  let union_merge f m1 m2 =
-    let aux _ m1 m2 =
-      match m1, m2 with
-      | None, m | m, None -> m
-      | Some m1, Some m2 -> Some (f m1 m2)
-    in
-    merge aux m1 m2
-
-  let rename m v =
-    try find v m
-    with Not_found -> v
-
-  let map_keys f m =
-    of_list (List.map (fun (k, v) -> f k, v) (bindings m))
-
-  let print f ppf s =
-    let elts ppf s = iter (fun id v ->
-        Format.fprintf ppf "@ (@[%a@ %a@])" T.print id f v) s in
-    Format.fprintf ppf "@[<1>{@[%a@ @]}@]" elts s
-
-  module T_set = Set.Make (T)
-
-  let keys map = fold (fun k _ set -> T_set.add k set) map T_set.empty
-
-  let data t = List.map snd (bindings t)
-
-  let of_set f set = T_set.fold (fun e map -> add e (f e) map) set empty
-
-  let transpose_keys_and_data map = fold (fun k v m -> add v k m) map empty
-  let transpose_keys_and_data_set map =
-    fold (fun k v m ->
-        let set =
-          match find v m with
-          | exception Not_found ->
-            T_set.singleton k
-          | set ->
-            T_set.add k set
-        in
-        add v set m)
-      map empty
-end
-
-module Make_set (T : Thing) = struct
-  include Set.Make (T)
-
-  let output oc s =
-    Printf.fprintf oc " ( ";
-    iter (fun v -> Printf.fprintf oc "%a " T.output v) s;
-    Printf.fprintf oc ")"
-
-  let print ppf s =
-    let elts ppf s = iter (fun e -> Format.fprintf ppf "@ %a" T.print e) s in
-    Format.fprintf ppf "@[<1>{@[%a@ @]}@]" elts s
-
-  let to_string s = Format.asprintf "%a" print s
-
-  let of_list l = match l with
-    | [] -> empty
-    | [t] -> singleton t
-    | t :: q -> List.fold_left (fun acc e -> add e acc) (singleton t) q
-
-  let map f s = of_list (List.map f (elements s))
-end
-
-module Make_tbl (T : Thing) = struct
-  include Hashtbl.Make (T)
-
-  module T_map = Make_map (T)
-
-  let to_list t =
-    fold (fun key datum elts -> (key, datum)::elts) t []
-
-  let of_list elts =
-    let t = create 42 in
-    List.iter (fun (key, datum) -> add t key datum) elts;
-    t
-
-  let to_map v = fold T_map.add v T_map.empty
-
-  let of_map m =
-    let t = create (T_map.cardinal m) in
-    T_map.iter (fun k v -> add t k v) m;
-    t
-
-  let memoize t f = fun key ->
-    try find t key with
-    | Not_found ->
-      let r = f key in
-      add t key r;
-      r
-
-  let map t f =
-    of_map (T_map.map f (to_map t))
-end
-
-module type S = sig
-  type t
-
-  module T : Thing with type t = t
-  include Thing with type t := T.t
-
-  module Set : Set with module T := T
-  module Map : Map with module T := T
-  module Tbl : Tbl with module T := T
-end
-
-module Make (T : Thing) = struct
-  module T = T
-  include T
-
-  module Set = Make_set (T)
-  module Map = Make_map (T)
-  module Tbl = Make_tbl (T)
-end
-
-end
-module Numbers : sig 
-#1 "numbers.mli"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*                       Pierre Chambart, OCamlPro                        *)
-(*           Mark Shinwell and Leo White, Jane Street Europe              *)
-(*                                                                        *)
-(*   Copyright 2013--2016 OCamlPro SAS                                    *)
-(*   Copyright 2014--2016 Jane Street Group LLC                           *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(** Modules about numbers, some of which satisfy {!Identifiable.S}. *)
-
-module Int : sig
-  include Identifiable.S with type t = int
-
-  (** [zero_to_n n] is the set of numbers \{0, ..., n\} (inclusive). *)
-  val zero_to_n : int -> Set.t
-end
-
-module Int8 : sig
-  type t
-
-  val zero : t
-  val one : t
-
-  val of_int_exn : int -> t
-  val to_int : t -> int
-end
-
-module Int16 : sig
-  type t
-
-  val of_int_exn : int -> t
-  val of_int64_exn : Int64.t -> t
-
-  val to_int : t -> int
-end
-
-module Float : Identifiable.S with type t = float
-
-end = struct
-#1 "numbers.ml"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*                       Pierre Chambart, OCamlPro                        *)
-(*           Mark Shinwell and Leo White, Jane Street Europe              *)
-(*                                                                        *)
-(*   Copyright 2013--2016 OCamlPro SAS                                    *)
-(*   Copyright 2014--2016 Jane Street Group LLC                           *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-module Int_base = Identifiable.Make (struct
-  type t = int
-
-  let compare x y = x - y
-  let output oc x = Printf.fprintf oc "%i" x
-  let hash i = i
-  let equal (i : int) j = i = j
-  let print = Format.pp_print_int
-end)
-
-module Int = struct
-  type t = int
-
-  include Int_base
-
-  let rec zero_to_n n =
-    if n < 0 then Set.empty else Set.add n (zero_to_n (n-1))
-end
-
-module Int8 = struct
-  type t = int
-
-  let zero = 0
-  let one = 1
-
-  let of_int_exn i =
-    if i < -(1 lsl 7) || i > ((1 lsl 7) - 1) then
-      Misc.fatal_errorf "Int8.of_int_exn: %d is out of range" i
-    else
-      i
-
-  let to_int i = i
-end
-
-module Int16 = struct
-  type t = int
-
-  let of_int_exn i =
-    if i < -(1 lsl 15) || i > ((1 lsl 15) - 1) then
-      Misc.fatal_errorf "Int16.of_int_exn: %d is out of range" i
-    else
-      i
-
-  let lower_int64 = Int64.neg (Int64.shift_left Int64.one 15)
-  let upper_int64 = Int64.sub (Int64.shift_left Int64.one 15) Int64.one
-
-  let of_int64_exn i =
-    if Int64.compare i lower_int64 < 0
-        || Int64.compare i upper_int64 > 0
-    then
-      Misc.fatal_errorf "Int16.of_int64_exn: %Ld is out of range" i
-    else
-      Int64.to_int i
-
-  let to_int t = t
-end
-
-module Float = struct
-  type t = float
-
-  include Identifiable.Make (struct
-    type t = float
-
-    let compare x y = Pervasives.compare x y
-    let output oc x = Printf.fprintf oc "%f" x
-    let hash f = Hashtbl.hash f
-    let equal (i : float) j = i = j
-    let print = Format.pp_print_float
-  end)
-end
-
-end
-module Profile : sig 
-#1 "profile.mli"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*                      Pierre Chambart, OCamlPro                         *)
-(*                                                                        *)
-(*   Copyright 2015 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(** Compiler performance recording *)
-
-type file = string
-
-val reset : unit -> unit
-(** erase all recorded profile information *)
-
-val record_call : ?accumulate:bool -> string -> (unit -> 'a) -> 'a
-(** [record_call pass f] calls [f] and records its profile information. *)
-
-val record : ?accumulate:bool -> string -> ('a -> 'b) -> 'a -> 'b
-(** [record pass f arg] records the profile information of [f arg] *)
-
-type column = [ `Time | `Alloc | `Top_heap | `Abs_top_heap ]
-
-val print : Format.formatter -> column list -> unit
-(** Prints the selected recorded profiling information to the formatter. *)
-
-(** Command line flags *)
-
-val options_doc : string
-val all_columns : column list
-
-(** A few pass names that are needed in several places, and shared to
-    avoid typos. *)
-
-val generate : string
-val transl : string
-val typing : string
-
-end = struct
-#1 "profile.ml"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*                      Pierre Chambart, OCamlPro                         *)
-(*                                                                        *)
-(*   Copyright 2015 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-[@@@ocaml.warning "+a-18-40-42-48"]
-
-type file = string
-
-external time_include_children: bool -> float = "caml_sys_time_include_children"
-let cpu_time () = time_include_children true
-
-module Measure = struct
-  type t = {
-    time : float;
-    allocated_words : float;
-    top_heap_words : int;
-  }
-  let create () =
-    let stat = Gc.quick_stat () in
-    {
-      time = cpu_time ();
-      allocated_words = stat.minor_words +. stat.major_words;
-      top_heap_words = stat.top_heap_words;
-    }
-  let zero = { time = 0.; allocated_words = 0.; top_heap_words = 0 }
-end
-
-module Measure_diff = struct
-  let timestamp = let r = ref (-1) in fun () -> incr r; !r
-  type t = {
-    timestamp : int;
-    duration : float;
-    allocated_words : float;
-    top_heap_words_increase : int;
-  }
-  let zero () = {
-    timestamp = timestamp ();
-    duration = 0.;
-    allocated_words = 0.;
-    top_heap_words_increase = 0;
-  }
-  let accumulate t (m1 : Measure.t) (m2 : Measure.t) = {
-    timestamp = t.timestamp;
-    duration = t.duration +. (m2.time -. m1.time);
-    allocated_words =
-      t.allocated_words +. (m2.allocated_words -. m1.allocated_words);
-    top_heap_words_increase =
-      t.top_heap_words_increase + (m2.top_heap_words - m1.top_heap_words);
-  }
-  let of_diff m1 m2 =
-    accumulate (zero ()) m1 m2
-end
-
-type hierarchy =
-  | E of (string, Measure_diff.t * hierarchy) Hashtbl.t
-[@@unboxed]
-
-let create () = E (Hashtbl.create 2)
-let hierarchy = ref (create ())
-let initial_measure = ref None
-let reset () = hierarchy := create (); initial_measure := None
-
-let record_call ?(accumulate = false) name f =
-  let E prev_hierarchy = !hierarchy in
-  let start_measure = Measure.create () in
-  if !initial_measure = None then initial_measure := Some start_measure;
-  let this_measure_diff, this_table =
-    (* We allow the recording of multiple categories by the same name, for tools
-       like ocamldoc that use the compiler libs but don't care about profile
-       information, and so may record, say, "parsing" multiple times. *)
-    if accumulate
-    then
-      match Hashtbl.find prev_hierarchy name with
-      | exception Not_found -> Measure_diff.zero (), Hashtbl.create 2
-      | measure_diff, E table ->
-        Hashtbl.remove prev_hierarchy name;
-        measure_diff, table
-    else Measure_diff.zero (), Hashtbl.create 2
-  in
-  hierarchy := E this_table;
-  Misc.try_finally f
-    (fun () ->
-       hierarchy := E prev_hierarchy;
-       let end_measure = Measure.create () in
-       let measure_diff =
-         Measure_diff.accumulate this_measure_diff start_measure end_measure in
-       Hashtbl.add prev_hierarchy name (measure_diff, E this_table))
-
-let record ?accumulate pass f x = record_call ?accumulate pass (fun () -> f x)
-
-type display = {
-  to_string : max:float -> width:int -> string;
-  worth_displaying : max:float -> bool;
-}
-
-let time_display v : display =
-  (* Because indentation is meaningful, and because the durations are
-     the first element of each row, we can't pad them with spaces. *)
-  let to_string_without_unit v ~width = Printf.sprintf "%0*.03f" width v in
-  let to_string ~max:_ ~width =
-    to_string_without_unit v ~width:(width - 1) ^ "s" in
-  let worth_displaying ~max:_ =
-    float_of_string (to_string_without_unit v ~width:0) <> 0. in
-  { to_string; worth_displaying }
-
-let memory_word_display =
-  (* To make memory numbers easily comparable across rows, we choose a single
-     scale for an entire column. To keep the display compact and not overly
-     precise (no one cares about the exact number of bytes), we pick the largest
-     scale we can and we only show 3 digits. Avoiding showing tiny numbers also
-     allows us to avoid displaying passes that barely allocate compared to the
-     rest of the compiler.  *)
-  let bytes_of_words words = words *. float_of_int (Sys.word_size / 8) in
-  let to_string_without_unit v ~width scale =
-    let precision = 3 and precision_power = 1e3 in
-    let v_rescaled = bytes_of_words v /. scale in
-    let v_rounded =
-      floor (v_rescaled *. precision_power +. 0.5) /. precision_power in
-    let v_str = Printf.sprintf "%.*f" precision v_rounded in
-    let index_of_dot = String.index v_str '.' in
-    let v_str_truncated =
-      String.sub v_str 0
-        (if index_of_dot >= precision
-         then index_of_dot
-         else precision + 1)
-    in
-    Printf.sprintf "%*s" width v_str_truncated
-  in
-  let choose_memory_scale =
-    let units = [|"B"; "kB"; "MB"; "GB"|] in
-    fun words ->
-      let bytes = bytes_of_words words in
-      let scale = ref (Array.length units - 1) in
-      while !scale > 0 && bytes < 1024. ** float_of_int !scale do
-        decr scale
-      done;
-      1024. ** float_of_int !scale, units.(!scale)
-  in
-  fun ?previous v : display ->
-    let to_string ~max ~width =
-      let scale, scale_str = choose_memory_scale max in
-      let width = width - String.length scale_str in
-      to_string_without_unit v ~width scale ^ scale_str
-    in
-    let worth_displaying ~max =
-      let scale, _ = choose_memory_scale max in
-      float_of_string (to_string_without_unit v ~width:0 scale) <> 0.
-      && match previous with
-      | None -> true
-      | Some p ->
-         (* This branch is for numbers that represent absolute quantity, rather
-            than differences. It allows us to skip displaying the same absolute
-            quantity many times in a row. *)
-         to_string_without_unit p ~width:0 scale
-         <> to_string_without_unit v ~width:0 scale
-    in
-    { to_string; worth_displaying }
-
-let profile_list (E table) =
-  let l = Hashtbl.fold (fun k d l -> (k, d) :: l) table [] in
-  List.sort (fun (_, (p1, _)) (_, (p2, _)) ->
-    compare p1.Measure_diff.timestamp p2.Measure_diff.timestamp) l
-
-let compute_other_category (E table : hierarchy) (total : Measure_diff.t) =
-  let r = ref total in
-  Hashtbl.iter (fun _pass ((p2 : Measure_diff.t), _) ->
-    let p1 = !r in
-    r := {
-      timestamp = p1.timestamp;
-      duration = p1.duration -. p2.duration;
-      allocated_words = p1.allocated_words -. p2.allocated_words;
-      top_heap_words_increase =
-        p1.top_heap_words_increase - p2.top_heap_words_increase;
-    }
-  ) table;
-  !r
-
-type row = R of string * (float * display) list * row list
-type column = [ `Time | `Alloc | `Top_heap | `Abs_top_heap ]
-
-let rec rows_of_hierarchy ~nesting make_row name measure_diff hierarchy env =
-  let rows =
-    rows_of_hierarchy_list
-      ~nesting:(nesting + 1) make_row hierarchy measure_diff env in
-  let values, env =
-    make_row env measure_diff ~toplevel_other:(nesting = 0 && name = "other") in
-  R (name, values, rows), env
-
-and rows_of_hierarchy_list ~nesting make_row hierarchy total env =
-  let list = profile_list hierarchy in
-  let list =
-    if list <> [] || nesting = 0
-    then list @ [ "other", (compute_other_category hierarchy total, create ()) ]
-    else []
-  in
-  let env = ref env in
-  List.map (fun (name, (measure_diff, hierarchy)) ->
-    let a, env' =
-      rows_of_hierarchy ~nesting make_row name measure_diff hierarchy !env in
-    env := env';
-    a
-  ) list
-
-let rows_of_hierarchy hierarchy measure_diff initial_measure columns =
-  (* Computing top heap size is a bit complicated: if the compiler applies a
-     list of passes n times (rather than applying pass1 n times, then pass2 n
-     times etc), we only show one row for that pass but what does "top heap
-     size at the end of that pass" even mean?
-     It seems the only sensible answer is to pretend the compiler applied pass1
-     n times, pass2 n times by accumulating all the heap size increases that
-     happened during each pass, and then compute what the heap size would have
-     been. So that's what we do.
-     There's a bit of extra complication, which is that the heap can increase in
-     between measurements. So the heap sizes can be a bit off until the "other"
-     rows account for what's missing. We special case the toplevel "other" row
-     so that any increases that happened before the start of the compilation is
-     correctly reported, as a lot of code may run before the start of the
-     compilation (eg functor applications). *)
-    let make_row prev_top_heap_words (p : Measure_diff.t) ~toplevel_other =
-      let top_heap_words =
-        prev_top_heap_words
-        + p.top_heap_words_increase
-        - if toplevel_other
-          then initial_measure.Measure.top_heap_words
-          else 0
-      in
-      let make value ~f = value, f value in
-      List.map (function
-        | `Time ->
-          make p.duration ~f:time_display
-        | `Alloc ->
-          make p.allocated_words ~f:memory_word_display
-        | `Top_heap ->
-          make (float_of_int p.top_heap_words_increase) ~f:memory_word_display
-        | `Abs_top_heap ->
-          make (float_of_int top_heap_words)
-           ~f:(memory_word_display ~previous:(float_of_int prev_top_heap_words))
-      ) columns,
-      top_heap_words
-  in
-  rows_of_hierarchy_list ~nesting:0 make_row hierarchy measure_diff
-    initial_measure.top_heap_words
-
-let max_by_column ~n_columns rows =
-  let a = Array.make n_columns 0. in
-  let rec loop (R (_, values, rows)) =
-    List.iteri (fun i (v, _) -> a.(i) <- max a.(i) v) values;
-    List.iter loop rows
-  in
-  List.iter loop rows;
-  a
-
-let width_by_column ~n_columns ~display_cell rows =
-  let a = Array.make n_columns 1 in
-  let rec loop (R (_, values, rows)) =
-    List.iteri (fun i cell ->
-      let _, str = display_cell i cell ~width:0 in
-      a.(i) <- max a.(i) (String.length str)
-    ) values;
-    List.iter loop rows;
-  in
-  List.iter loop rows;
-  a
-
-let display_rows ppf rows =
-  let n_columns =
-    match rows with
-    | [] -> 0
-    | R (_, values, _) :: _ -> List.length values
-  in
-  let maxs = max_by_column ~n_columns rows in
-  let display_cell i (_, c) ~width =
-    let display_cell = c.worth_displaying ~max:maxs.(i) in
-    display_cell, if display_cell
-                  then c.to_string ~max:maxs.(i) ~width
-                  else String.make width '-'
-  in
-  let widths = width_by_column ~n_columns ~display_cell rows in
-  let rec loop (R (name, values, rows)) ~indentation =
-    let worth_displaying, cell_strings =
-      values
-      |> List.mapi (fun i cell -> display_cell i cell ~width:widths.(i))
-      |> List.split
-    in
-    if List.exists (fun b -> b) worth_displaying then
-      Format.fprintf ppf "%s%s %s@\n"
-        indentation (String.concat " " cell_strings) name;
-    List.iter (loop ~indentation:("  " ^ indentation)) rows;
-  in
-  List.iter (loop ~indentation:"") rows
-
-let print ppf columns =
-  match columns with
-  | [] -> ()
-  | _ :: _ ->
-     let initial_measure =
-       match !initial_measure with
-       | Some v -> v
-       | None -> Measure.zero
-     in
-     let total = Measure_diff.of_diff Measure.zero (Measure.create ()) in
-     display_rows ppf (rows_of_hierarchy !hierarchy total initial_measure columns)
-
-let column_mapping = [
-  "time", `Time;
-  "alloc", `Alloc;
-  "top-heap", `Top_heap;
-  "absolute-top-heap", `Abs_top_heap;
-]
-
-let column_names = List.map fst column_mapping
-
-let options_doc =
-  Printf.sprintf
-    " Print performance information for each pass\
-   \n    The columns are: %s."
-    (String.concat " " column_names)
-
-let all_columns = List.map snd column_mapping
-
-let generate = "generate"
-let transl = "transl"
-let typing = "typing"
-
-end
 module Clflags : sig 
 #1 "clflags.mli"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
-(*                                                                        *)
-(*   Copyright 2005 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(** Command line flags *)
-
-(** Optimization parameters represented as ints indexed by round number. *)
-module Int_arg_helper : sig
-  type parsed
-
-  val parse : string -> string -> parsed ref -> unit
-
-  type parse_result =
-    | Ok
-    | Parse_failed of exn
-  val parse_no_error : string -> parsed ref -> parse_result
-
-  val get : key:int -> parsed -> int
-end
-
-(** Optimization parameters represented as floats indexed by round number. *)
-module Float_arg_helper : sig
-  type parsed
-
-  val parse : string -> string -> parsed ref -> unit
-
-  type parse_result =
-    | Ok
-    | Parse_failed of exn
-  val parse_no_error : string -> parsed ref -> parse_result
-
-  val get : key:int -> parsed -> float
-end
-
-type inlining_arguments = {
-  inline_call_cost : int option;
-  inline_alloc_cost : int option;
-  inline_prim_cost : int option;
-  inline_branch_cost : int option;
-  inline_indirect_cost : int option;
-  inline_lifting_benefit : int option;
-  inline_branch_factor : float option;
-  inline_max_depth : int option;
-  inline_max_unroll : int option;
-  inline_threshold : float option;
-  inline_toplevel_threshold : int option;
-}
-
-(** Set all the inlining arguments for a round.
-    The default is set if no round is provided. *)
-val use_inlining_arguments_set : ?round:int -> inlining_arguments -> unit
-
-val objfiles : string list ref
-val ccobjs : string list ref
-val dllibs : string list ref
-val compile_only : bool ref
 val output_name : string option ref
 val include_dirs : string list ref
-val no_std_include : bool ref
 val print_types : bool ref
-val make_archive : bool ref
 val debug : bool ref
 val fast : bool ref
-val use_linscan : bool ref
-val link_everything : bool ref
-val custom_runtime : bool ref
-val no_check_prims : bool ref
-val bytecode_compatible_32 : bool ref
-val output_c_object : bool ref
-val output_complete_object : bool ref
-val all_ccopts : string list ref
 val classic : bool ref
 val nopervasives : bool ref
 val open_modules : string list ref
@@ -11142,115 +9563,21 @@ val preprocessor : string option ref
 val all_ppx : string list ref
 val annotations : bool ref
 val binary_annotations : bool ref
-val use_threads : bool ref
-val use_vmthreads : bool ref
 val noassert : bool ref
 val verbose : bool ref
-val noprompt : bool ref
-val nopromptcont : bool ref
-val init_file : string option ref
-val noinit : bool ref
-val noversion : bool ref
-val use_prims : string ref
-val use_runtime : string ref
 val principal : bool ref
 val real_paths : bool ref
-val recursive_types : bool ref
-val strict_sequence : bool ref
-val strict_formats : bool ref
 val applicative_functors : bool ref
-val make_runtime : bool ref
-val gprofile : bool ref
-val c_compiler : string option ref
-val no_auto_link : bool ref
-val dllpaths : string list ref
-val make_package : bool ref
-val for_package : string option ref
 val error_size : int ref
-val float_const_prop : bool ref
 val transparent_modules : bool ref
 val dump_source : bool ref
 val dump_parsetree : bool ref
 val dump_typedtree : bool ref
 val dump_rawlambda : bool ref
 val dump_lambda : bool ref
-val dump_rawclambda : bool ref
-val dump_clambda : bool ref
-val dump_rawflambda : bool ref
-val dump_flambda : bool ref
-val dump_flambda_let : int option ref
-val dump_instr : bool ref
-val keep_asm_file : bool ref
-val optimize_for_speed : bool ref
-val dump_cmm : bool ref
-val dump_selection : bool ref
-val dump_cse : bool ref
-val dump_live : bool ref
-val dump_avail : bool ref
-val debug_runavail : bool ref
-val dump_spill : bool ref
-val dump_split : bool ref
-val dump_interf : bool ref
-val dump_prefer : bool ref
-val dump_regalloc : bool ref
-val dump_reload : bool ref
-val dump_scheduling : bool ref
-val dump_linear : bool ref
-val dump_interval : bool ref
-val keep_startup_file : bool ref
-val dump_combine : bool ref
-val native_code : bool ref
-val default_inline_threshold : float
-val inline_threshold : Float_arg_helper.parsed ref
-val inlining_report : bool ref
-val simplify_rounds : int option ref
-val default_simplify_rounds : int ref
-val rounds : unit -> int
-val default_inline_max_unroll : int
-val inline_max_unroll : Int_arg_helper.parsed ref
-val default_inline_toplevel_threshold : int
-val inline_toplevel_threshold : Int_arg_helper.parsed ref
-val default_inline_call_cost : int
-val default_inline_alloc_cost : int
-val default_inline_prim_cost : int
-val default_inline_branch_cost : int
-val default_inline_indirect_cost : int
-val default_inline_lifting_benefit : int
-val inline_call_cost : Int_arg_helper.parsed ref
-val inline_alloc_cost : Int_arg_helper.parsed ref
-val inline_prim_cost : Int_arg_helper.parsed ref
-val inline_branch_cost : Int_arg_helper.parsed ref
-val inline_indirect_cost : Int_arg_helper.parsed ref
-val inline_lifting_benefit : Int_arg_helper.parsed ref
-val default_inline_branch_factor : float
-val inline_branch_factor : Float_arg_helper.parsed ref
 val dont_write_files : bool ref
-val std_include_flag : string -> string
-val std_include_dir : unit -> string list
-val shared : bool ref
-val dlcode : bool ref
-val pic_code : bool ref
-val runtime_variant : string ref
-val force_slash : bool ref
 val keep_docs : bool ref
 val keep_locs : bool ref
-val unsafe_string : bool ref
-val opaque : bool ref
-val profile_columns : Profile.column list ref
-val flambda_invariant_checks : bool ref
-val unbox_closures : bool ref
-val unbox_closures_factor : int ref
-val default_unbox_closures_factor : int
-val unbox_free_vars_of_closures : bool ref
-val unbox_specialised_args : bool ref
-val clambda_checks : bool ref
-val default_inline_max_depth : int
-val inline_max_depth : Int_arg_helper.parsed ref
-val remove_unused_arguments : bool ref
-val dump_flambda_verbose : bool ref
-val classic_inlining : bool ref
-val afl_instrument : bool ref
-val afl_inst_ratio : int ref
 
 val all_passes : string list ref
 val dumped_pass : string -> bool
@@ -11261,29 +9588,8 @@ val color : Misc.Color.setting option ref
 
 val unboxed_types : bool ref
 
-val arg_spec : (string * Arg.spec * string) list ref
 
-(* [add_arguments __LOC__ args] will add the arguments from [args] at
-   the end of [arg_spec], checking that they have not already been
-   added by [add_arguments] before. A warning is printed showing the
-   locations of the function from which the argument was previously
-   added. *)
-val add_arguments : string -> (string * Arg.spec * string) list -> unit
-
-(* [parse_arguments anon_arg usage] will parse the arguments, using
-  the arguments provided in [Clflags.arg_spec]. It allows plugins to
-  provide their own arguments.
-*)
-val parse_arguments : Arg.anon_fun -> string -> unit
-
-(* [print_arguments usage] print the standard usage message *)
-val print_arguments : string -> unit
-
-(* [reset_arguments ()] clear all declared arguments *)
-val reset_arguments : unit -> unit
-
-type mli_status = Mli_na | Mli_exists | Mli_non_exists
-val no_implicit_current_dir : bool ref
+type mli_status =  Mli_exists | Mli_non_exists
 val assume_no_mli : mli_status ref
 val record_event_when_debug : bool ref
 val bs_vscode : bool
@@ -11295,288 +9601,53 @@ val dump_location : bool ref
 
 end = struct
 #1 "clflags.ml"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
-(*                                                                        *)
-(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
 
-(* Command-line parameters *)
 
-module Int_arg_helper = Arg_helper.Make (struct
-  module Key = struct
-    include Numbers.Int
-    let of_string = int_of_string
-  end
 
-  module Value = struct
-    include Numbers.Int
-    let of_string = int_of_string
-  end
-end)
-module Float_arg_helper = Arg_helper.Make (struct
-  module Key = struct
-    include Numbers.Int
-    let of_string = int_of_string
-  end
 
-  module Value = struct
-    include Numbers.Float
-    let of_string = float_of_string
-  end
-end)
-
-let objfiles = ref ([] : string list)   (* .cmo and .cma files *)
-and ccobjs = ref ([] : string list)     (* .o, .a, .so and -cclib -lxxx *)
-and dllibs = ref ([] : string list)     (* .so and -dllib -lxxx *)
-
-let compile_only = ref false            (* -c *)
-and output_name = ref (None : string option) (* -o *)
+let  output_name = ref (None : string option) (* -o *)
 and include_dirs = ref ([] : string list)(* -I *)
-and no_std_include = ref false          (* -nostdlib *)
 and print_types = ref false             (* -i *)
-and make_archive = ref false            (* -a *)
 and debug = ref false                   (* -g *)
 and fast = ref false                    (* -unsafe *)
-and use_linscan = ref false             (* -linscan *)
-and link_everything = ref false         (* -linkall *)
-and custom_runtime = ref false          (* -custom *)
-and no_check_prims = ref false          (* -no-check-prims *)
-and bytecode_compatible_32 = ref false  (* -compat-32 *)
-and output_c_object = ref false         (* -output-obj *)
-and output_complete_object = ref false  (* -output-complete-obj *)
-and all_ccopts = ref ([] : string list)     (* -ccopt *)
 and classic = ref false                 (* -nolabels *)
 and nopervasives = ref false            (* -nopervasives *)
 and preprocessor = ref(None : string option) (* -pp *)
 and all_ppx = ref ([] : string list)        (* -ppx *)
 let annotations = ref false             (* -annot *)
 let binary_annotations = ref false      (* -annot *)
-and use_threads = ref false             (* -thread *)
-and use_vmthreads = ref false           (* -vmthread *)
 and noassert = ref false                (* -noassert *)
 and verbose = ref false                 (* -verbose *)
-and noversion = ref false               (* -no-version *)
-and noprompt = ref false                (* -noprompt *)
-and nopromptcont = ref false            (* -nopromptcont *)
-and init_file = ref (None : string option)   (* -init *)
-and noinit = ref false                  (* -noinit *)
 and open_modules = ref []               (* -open *)
-and use_prims = ref ""                  (* -use-prims ... *)
-and use_runtime = ref ""                (* -use-runtime ... *)
 and principal = ref false               (* -principal *)
 and real_paths = ref true               (* -short-paths *)
-and recursive_types = ref false         (* -rectypes *)
-and strict_sequence = ref false         (* -strict-sequence *)
-and strict_formats = ref false          (* -strict-formats *)
 and applicative_functors = ref true     (* -no-app-funct *)
-and make_runtime = ref false            (* -make-runtime *)
-and gprofile = ref false                (* -p *)
-and c_compiler = ref (None: string option) (* -cc *)
-and no_auto_link = ref false            (* -noautolink *)
-and dllpaths = ref ([] : string list)   (* -dllpath *)
-and make_package = ref false            (* -pack *)
-and for_package = ref (None: string option) (* -for-pack *)
 and error_size = ref 500                (* -error-size *)
-and float_const_prop = ref true         (* -no-float-const-prop *)
 and transparent_modules = ref false     (* -trans-mod *)
 let dump_source = ref false             (* -dsource *)
 let dump_parsetree = ref false          (* -dparsetree *)
 and dump_typedtree = ref false          (* -dtypedtree *)
 and dump_rawlambda = ref false          (* -drawlambda *)
 and dump_lambda = ref false             (* -dlambda *)
-and dump_rawclambda = ref false         (* -drawclambda *)
-and dump_clambda = ref false            (* -dclambda *)
-and dump_rawflambda = ref false            (* -drawflambda *)
-and dump_flambda = ref false            (* -dflambda *)
-and dump_flambda_let = ref (None : int option) (* -dflambda-let=... *)
-and dump_flambda_verbose = ref false    (* -dflambda-verbose *)
-and dump_instr = ref false              (* -dinstr *)
 
-let keep_asm_file = ref false           (* -S *)
-let optimize_for_speed = ref true       (* -compact *)
-and opaque = ref false                  (* -opaque *)
-
-and dump_cmm = ref false                (* -dcmm *)
-let dump_selection = ref false          (* -dsel *)
-let dump_cse = ref false                (* -dcse *)
-let dump_live = ref false               (* -dlive *)
-let dump_avail = ref false              (* -davail *)
-let dump_spill = ref false              (* -dspill *)
-let dump_split = ref false              (* -dsplit *)
-let dump_interf = ref false             (* -dinterf *)
-let dump_prefer = ref false             (* -dprefer *)
-let dump_regalloc = ref false           (* -dalloc *)
-let dump_reload = ref false             (* -dreload *)
-let dump_scheduling = ref false         (* -dscheduling *)
-let dump_linear = ref false             (* -dlinear *)
-let dump_interval = ref false           (* -dinterval *)
-let keep_startup_file = ref false       (* -dstartup *)
-let dump_combine = ref false            (* -dcombine *)
-let profile_columns : Profile.column list ref = ref [] (* -dprofile/-dtimings *)
-
-let debug_runavail = ref false          (* -drunavail *)
-
-let native_code = ref false             (* set to true under ocamlopt *)
-
-let force_slash = ref false             (* for ocamldep *)
-let clambda_checks = ref false          (* -clambda-checks *)
-
-let flambda_invariant_checks = ref true (* -flambda-invariants *)
 
 let dont_write_files = ref false        (* set to true under ocamldoc *)
 
-let std_include_flag prefix =
-  if !no_std_include then ""
-  else (prefix ^ (Filename.quote Config.standard_library))
-;;
 
-let std_include_dir () =
-  if !no_std_include then [] else [Config.standard_library]
-;;
 
-let shared = ref false (* -shared *)
-let dlcode = ref true (* not -nodynlink *)
 
-let pic_code = ref (match Config.architecture with (* -fPIC *)
-                     | "amd64" -> true
-                     | _       -> false)
 
-let runtime_variant = ref "";;      (* -runtime-variant *)
 
 let keep_docs = ref false              (* -keep-docs *)
 let keep_locs = ref true               (* -keep-locs *)
-let unsafe_string =
-  if Config.safe_string then ref false
-  else ref (not Config.default_safe_string)
-                                   (* -safe-string / -unsafe-string *)
-
-let classic_inlining = ref false       (* -Oclassic *)
-let inlining_report = ref false    (* -inlining-report *)
-
-let afl_instrument = ref Config.afl_instrument (* -afl-instrument *)
-let afl_inst_ratio = ref 100           (* -afl-inst-ratio *)
-
-let simplify_rounds = ref None        (* -rounds *)
-let default_simplify_rounds = ref 1        (* -rounds *)
-let rounds () =
-  match !simplify_rounds with
-  | None -> !default_simplify_rounds
-  | Some r -> r
-
-let default_inline_threshold = if Config.flambda then 10. else 10. /. 8.
-let inline_toplevel_multiplier = 16
-let default_inline_toplevel_threshold =
-  int_of_float ((float inline_toplevel_multiplier) *. default_inline_threshold)
-let default_inline_call_cost = 5
-let default_inline_alloc_cost = 7
-let default_inline_prim_cost = 3
-let default_inline_branch_cost = 5
-let default_inline_indirect_cost = 4
-let default_inline_branch_factor = 0.1
-let default_inline_lifting_benefit = 1300
-let default_inline_max_unroll = 0
-let default_inline_max_depth = 1
-
-let inline_threshold = ref (Float_arg_helper.default default_inline_threshold)
-let inline_toplevel_threshold =
-  ref (Int_arg_helper.default default_inline_toplevel_threshold)
-let inline_call_cost = ref (Int_arg_helper.default default_inline_call_cost)
-let inline_alloc_cost = ref (Int_arg_helper.default default_inline_alloc_cost)
-let inline_prim_cost = ref (Int_arg_helper.default default_inline_prim_cost)
-let inline_branch_cost =
-  ref (Int_arg_helper.default default_inline_branch_cost)
-let inline_indirect_cost =
-  ref (Int_arg_helper.default default_inline_indirect_cost)
-let inline_branch_factor =
-  ref (Float_arg_helper.default default_inline_branch_factor)
-let inline_lifting_benefit =
-  ref (Int_arg_helper.default default_inline_lifting_benefit)
-let inline_max_unroll =
-  ref (Int_arg_helper.default default_inline_max_unroll)
-let inline_max_depth =
-  ref (Int_arg_helper.default default_inline_max_depth)
 
 
-let unbox_specialised_args = ref true   (* -no-unbox-specialised-args *)
-let unbox_free_vars_of_closures = ref true
-let unbox_closures = ref false          (* -unbox-closures *)
-let default_unbox_closures_factor = 10
-let unbox_closures_factor =
-  ref default_unbox_closures_factor      (* -unbox-closures-factor *)
-let remove_unused_arguments = ref false (* -remove-unused-arguments *)
 
-type inlining_arguments = {
-  inline_call_cost : int option;
-  inline_alloc_cost : int option;
-  inline_prim_cost : int option;
-  inline_branch_cost : int option;
-  inline_indirect_cost : int option;
-  inline_lifting_benefit : int option;
-  inline_branch_factor : float option;
-  inline_max_depth : int option;
-  inline_max_unroll : int option;
-  inline_threshold : float option;
-  inline_toplevel_threshold : int option;
-}
 
-let set_int_arg round (arg:Int_arg_helper.parsed ref) default value =
-  let value : int =
-    match value with
-    | None -> default
-    | Some value -> value
-  in
-  match round with
-  | None ->
-    arg := Int_arg_helper.set_base_default value
-             (Int_arg_helper.reset_base_overrides !arg)
-  | Some round ->
-    arg := Int_arg_helper.add_base_override round value !arg
 
-let set_float_arg round (arg:Float_arg_helper.parsed ref) default value =
-  let value =
-    match value with
-    | None -> default
-    | Some value -> value
-  in
-  match round with
-  | None ->
-    arg := Float_arg_helper.set_base_default value
-             (Float_arg_helper.reset_base_overrides !arg)
-  | Some round ->
-    arg := Float_arg_helper.add_base_override round value !arg
 
-let use_inlining_arguments_set ?round (arg:inlining_arguments) =
-  let set_int = set_int_arg round in
-  let set_float = set_float_arg round in
-  set_int inline_call_cost default_inline_call_cost arg.inline_call_cost;
-  set_int inline_alloc_cost default_inline_alloc_cost arg.inline_alloc_cost;
-  set_int inline_prim_cost default_inline_prim_cost arg.inline_prim_cost;
-  set_int inline_branch_cost
-    default_inline_branch_cost arg.inline_branch_cost;
-  set_int inline_indirect_cost
-    default_inline_indirect_cost arg.inline_indirect_cost;
-  set_int inline_lifting_benefit
-    default_inline_lifting_benefit arg.inline_lifting_benefit;
-  set_float inline_branch_factor
-    default_inline_branch_factor arg.inline_branch_factor;
-  set_int inline_max_depth
-    default_inline_max_depth arg.inline_max_depth;
-  set_int inline_max_unroll
-    default_inline_max_unroll arg.inline_max_unroll;
-  set_float inline_threshold
-    default_inline_threshold arg.inline_threshold;
-  set_int inline_toplevel_threshold
-    default_inline_toplevel_threshold arg.inline_toplevel_threshold
+
+
 
 let all_passes = ref []
 let dumped_passes_list = ref []
@@ -11606,45 +9677,10 @@ let color = ref None ;; (* -color *)
 let unboxed_types = ref false
 
 
-let arg_spec = ref []
-let arg_names = ref Misc.StringMap.empty
-
-let reset_arguments () =
-  arg_spec := [];
-  arg_names := Misc.StringMap.empty
-
-let add_arguments loc args =
-  List.iter (function (arg_name, _, _) as arg ->
-    try
-      let loc2 = Misc.StringMap.find arg_name !arg_names in
-      Printf.eprintf
-        "Warning: plugin argument %s is already defined:\n" arg_name;
-      Printf.eprintf "   First definition: %s\n" loc2;
-      Printf.eprintf "   New definition: %s\n" loc;
-    with Not_found ->
-      arg_spec := !arg_spec @ [ arg ];
-      arg_names := Misc.StringMap.add arg_name loc !arg_names
-  ) args
-
-let print_arguments usage =
-  Arg.usage !arg_spec usage
-
-(* This function is almost the same as [Arg.parse_expand], except
-   that [Arg.parse_expand] could not be used because it does not take a
-   reference for [arg_spec].*)
-let parse_arguments f msg =
-  try
-    let argv = ref Sys.argv in
-    let current = ref (!Arg.current) in
-    Arg.parse_and_expand_argv_dynamic current argv arg_spec f msg
-  with
-  | Arg.Bad msg -> Printf.eprintf "%s" msg; exit 2
-  | Arg.Help msg -> Printf.printf "%s" msg; exit 0
 
 
-type mli_status = Mli_na | Mli_exists | Mli_non_exists
-let no_implicit_current_dir = ref false
-let assume_no_mli = ref Mli_na
+type mli_status =  Mli_exists | Mli_non_exists
+let assume_no_mli = ref Mli_non_exists
 let record_event_when_debug = ref true (* turned off in BuckleScript*)
 let bs_vscode =
     try ignore @@ Sys.getenv "BS_VSCODE" ; true with _ -> false
@@ -11656,6 +9692,107 @@ let bs_gentype = ref None
 let no_assert_false = ref false
 let dump_location = ref true
 
+end
+module Config : sig 
+#1 "config.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* System configuration *)
+
+val version: string
+        (* The current version number of the system *)
+
+val standard_library: string
+        (* The directory containing the standard libraries *)
+
+val syntax_kind : [ `ml | `reason | `rescript ] ref       
+
+val bs_only : bool ref 
+
+val unsafe_empty_array: bool ref 
+
+
+val load_path: string list ref
+        (* Directories in the search path for .cmi and .cmo files *)
+
+val interface_suffix: string ref
+        (* Suffix for interface file names *)
+
+val cmi_magic_number: string
+        (* Magic number for compiled interface files *)
+val ast_intf_magic_number: string
+        (* Magic number for file holding an interface syntax tree *)
+val ast_impl_magic_number: string
+        (* Magic number for file holding an implementation syntax tree *)
+val cmt_magic_number: string
+        (* Magic number for compiled interface files *)
+
+val lazy_tag : int
+        (* Normally the same as Obj.lazy_tag.  Separate definition because
+           of technical reasons for bootstrapping. *)
+
+
+val print_config : out_channel -> unit;;
+
+
+
+end = struct
+#1 "config.ml"
+let version = "4.06.1+BS"
+let standard_library =
+  let (//) = Filename.concat in   
+  Filename.dirname Sys.executable_name // Filename.parent_dir_name //  "lib" // "ocaml"
+let standard_library_default = standard_library
+let syntax_kind = ref `ml
+let bs_only = ref true
+let unsafe_empty_array = ref true
+
+
+and cmi_magic_number = "Caml1999I022"
+
+and ast_impl_magic_number = "Caml1999M022"
+and ast_intf_magic_number = "Caml1999N022"
+and cmt_magic_number = "Caml1999T022"
+
+let load_path = ref ([] : string list)
+
+let interface_suffix = ref ".mli"
+
+
+(* This is normally the same as in obj.ml, but we have to define it
+   separately because it can differ when we're in the middle of a
+   bootstrapping phase. *)
+let lazy_tag = 246
+
+
+
+
+let print_config oc =
+  let p name valu = Printf.fprintf oc "%s: %s\n" name valu in
+  p "version" version;
+  p "standard_library_default" standard_library_default;
+  p "standard_library" standard_library;
+  (* print the magic number *)
+
+  p "cmi_magic_number" cmi_magic_number;
+  p "ast_impl_magic_number" ast_impl_magic_number;
+  p "ast_intf_magic_number" ast_intf_magic_number;
+  p "cmt_magic_number" cmt_magic_number;
+  flush oc;
+;;
 
 end
 module Warnings : sig 
@@ -34751,6 +32888,374 @@ let suites =
       ys =~ ["0";"1";"2";"3";"4";"5";"6";"7";"8";"9"]
     end
   ]
+
+end
+module Identifiable : sig 
+#1 "identifiable.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*                       Pierre Chambart, OCamlPro                        *)
+(*           Mark Shinwell and Leo White, Jane Street Europe              *)
+(*                                                                        *)
+(*   Copyright 2013--2016 OCamlPro SAS                                    *)
+(*   Copyright 2014--2016 Jane Street Group LLC                           *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(** Uniform interface for common data structures over various things. *)
+
+module type Thing = sig
+  type t
+
+  include Hashtbl.HashedType with type t := t
+  include Map.OrderedType with type t := t
+
+  val output : out_channel -> t -> unit
+  val print : Format.formatter -> t -> unit
+end
+
+module Pair : functor (A : Thing) (B : Thing) -> Thing with type t = A.t * B.t
+
+module type Set = sig
+  module T : Set.OrderedType
+  include Set.S
+    with type elt = T.t
+     and type t = Set.Make (T).t
+
+  val output : out_channel -> t -> unit
+  val print : Format.formatter -> t -> unit
+  val to_string : t -> string
+  val of_list : elt list -> t
+  val map : (elt -> elt) -> t -> t
+end
+
+module type Map = sig
+  module T : Map.OrderedType
+  include Map.S
+    with type key = T.t
+     and type 'a t = 'a Map.Make (T).t
+
+  val filter_map : (key -> 'a -> 'b option) -> 'a t -> 'b t
+  val of_list : (key * 'a) list -> 'a t
+
+  (** [disjoint_union m1 m2] contains all bindings from [m1] and
+      [m2]. If some binding is present in both and the associated
+      value is not equal, a Fatal_error is raised *)
+  val disjoint_union : ?eq:('a -> 'a -> bool) -> ?print:(Format.formatter -> 'a -> unit) -> 'a t -> 'a t -> 'a t
+
+  (** [union_right m1 m2] contains all bindings from [m1] and [m2]. If
+      some binding is present in both, the one from [m2] is taken *)
+  val union_right : 'a t -> 'a t -> 'a t
+
+  (** [union_left m1 m2 = union_right m2 m1] *)
+  val union_left : 'a t -> 'a t -> 'a t
+
+  val union_merge : ('a -> 'a -> 'a) -> 'a t -> 'a t -> 'a t
+  val rename : key t -> key -> key
+  val map_keys : (key -> key) -> 'a t -> 'a t
+  val keys : 'a t -> Set.Make(T).t
+  val data : 'a t -> 'a list
+  val of_set : (key -> 'a) -> Set.Make(T).t -> 'a t
+  val transpose_keys_and_data : key t -> key t
+  val transpose_keys_and_data_set : key t -> Set.Make(T).t t
+  val print :
+    (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a t -> unit
+end
+
+module type Tbl = sig
+  module T : sig
+    type t
+    include Map.OrderedType with type t := t
+    include Hashtbl.HashedType with type t := t
+  end
+  include Hashtbl.S
+    with type key = T.t
+     and type 'a t = 'a Hashtbl.Make (T).t
+
+  val to_list : 'a t -> (T.t * 'a) list
+  val of_list : (T.t * 'a) list -> 'a t
+
+  val to_map : 'a t -> 'a Map.Make(T).t
+  val of_map : 'a Map.Make(T).t -> 'a t
+  val memoize : 'a t -> (key -> 'a) -> key -> 'a
+  val map : 'a t -> ('a -> 'b) -> 'b t
+end
+
+module type S = sig
+  type t
+
+  module T : Thing with type t = t
+  include Thing with type t := T.t
+
+  module Set : Set with module T := T
+  module Map : Map with module T := T
+  module Tbl : Tbl with module T := T
+end
+
+module Make (T : Thing) : S with type t := T.t
+
+end = struct
+#1 "identifiable.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*                       Pierre Chambart, OCamlPro                        *)
+(*           Mark Shinwell and Leo White, Jane Street Europe              *)
+(*                                                                        *)
+(*   Copyright 2013--2016 OCamlPro SAS                                    *)
+(*   Copyright 2014--2016 Jane Street Group LLC                           *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+module type Thing = sig
+  type t
+
+  include Hashtbl.HashedType with type t := t
+  include Map.OrderedType with type t := t
+
+  val output : out_channel -> t -> unit
+  val print : Format.formatter -> t -> unit
+end
+
+module type Set = sig
+  module T : Set.OrderedType
+  include Set.S
+    with type elt = T.t
+     and type t = Set.Make (T).t
+
+  val output : out_channel -> t -> unit
+  val print : Format.formatter -> t -> unit
+  val to_string : t -> string
+  val of_list : elt list -> t
+  val map : (elt -> elt) -> t -> t
+end
+
+module type Map = sig
+  module T : Map.OrderedType
+  include Map.S
+    with type key = T.t
+     and type 'a t = 'a Map.Make (T).t
+
+  val filter_map : (key -> 'a -> 'b option) -> 'a t -> 'b t
+  val of_list : (key * 'a) list -> 'a t
+
+  val disjoint_union : ?eq:('a -> 'a -> bool) -> ?print:(Format.formatter -> 'a -> unit) -> 'a t -> 'a t -> 'a t
+
+  val union_right : 'a t -> 'a t -> 'a t
+
+  val union_left : 'a t -> 'a t -> 'a t
+
+  val union_merge : ('a -> 'a -> 'a) -> 'a t -> 'a t -> 'a t
+  val rename : key t -> key -> key
+  val map_keys : (key -> key) -> 'a t -> 'a t
+  val keys : 'a t -> Set.Make(T).t
+  val data : 'a t -> 'a list
+  val of_set : (key -> 'a) -> Set.Make(T).t -> 'a t
+  val transpose_keys_and_data : key t -> key t
+  val transpose_keys_and_data_set : key t -> Set.Make(T).t t
+  val print :
+    (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a t -> unit
+end
+
+module type Tbl = sig
+  module T : sig
+    type t
+    include Map.OrderedType with type t := t
+    include Hashtbl.HashedType with type t := t
+  end
+  include Hashtbl.S
+    with type key = T.t
+     and type 'a t = 'a Hashtbl.Make (T).t
+
+  val to_list : 'a t -> (T.t * 'a) list
+  val of_list : (T.t * 'a) list -> 'a t
+
+  val to_map : 'a t -> 'a Map.Make(T).t
+  val of_map : 'a Map.Make(T).t -> 'a t
+  val memoize : 'a t -> (key -> 'a) -> key -> 'a
+  val map : 'a t -> ('a -> 'b) -> 'b t
+end
+
+module Pair (A : Thing) (B : Thing) : Thing with type t = A.t * B.t = struct
+  type t = A.t * B.t
+
+  let compare (a1, b1) (a2, b2) =
+    let c = A.compare a1 a2 in
+    if c <> 0 then c
+    else B.compare b1 b2
+
+  let output oc (a, b) = Printf.fprintf oc " (%a, %a)" A.output a B.output b
+  let hash (a, b) = Hashtbl.hash (A.hash a, B.hash b)
+  let equal (a1, b1) (a2, b2) = A.equal a1 a2 && B.equal b1 b2
+  let print ppf (a, b) = Format.fprintf ppf " (%a, @ %a)" A.print a B.print b
+end
+
+module Make_map (T : Thing) = struct
+  include Map.Make (T)
+
+  let filter_map f t  =
+    fold (fun id v map ->
+        match f id v with
+        | None -> map
+        | Some r -> add id r map) t empty
+
+  let of_list l =
+    List.fold_left (fun map (id, v) -> add id v map) empty l
+
+  let disjoint_union ?eq ?print m1 m2 =
+    union (fun id v1 v2 ->
+        let ok = match eq with
+          | None -> false
+          | Some eq -> eq v1 v2
+        in
+        if not ok then
+          let err =
+            match print with
+            | None ->
+              Format.asprintf "Map.disjoint_union %a" T.print id
+            | Some print ->
+              Format.asprintf "Map.disjoint_union %a => %a <> %a"
+                T.print id print v1 print v2
+          in
+          Misc.fatal_error err
+        else Some v1)
+      m1 m2
+
+  let union_right m1 m2 =
+    merge (fun _id x y -> match x, y with
+        | None, None -> None
+        | None, Some v
+        | Some v, None
+        | Some _, Some v -> Some v)
+      m1 m2
+
+  let union_left m1 m2 = union_right m2 m1
+
+  let union_merge f m1 m2 =
+    let aux _ m1 m2 =
+      match m1, m2 with
+      | None, m | m, None -> m
+      | Some m1, Some m2 -> Some (f m1 m2)
+    in
+    merge aux m1 m2
+
+  let rename m v =
+    try find v m
+    with Not_found -> v
+
+  let map_keys f m =
+    of_list (List.map (fun (k, v) -> f k, v) (bindings m))
+
+  let print f ppf s =
+    let elts ppf s = iter (fun id v ->
+        Format.fprintf ppf "@ (@[%a@ %a@])" T.print id f v) s in
+    Format.fprintf ppf "@[<1>{@[%a@ @]}@]" elts s
+
+  module T_set = Set.Make (T)
+
+  let keys map = fold (fun k _ set -> T_set.add k set) map T_set.empty
+
+  let data t = List.map snd (bindings t)
+
+  let of_set f set = T_set.fold (fun e map -> add e (f e) map) set empty
+
+  let transpose_keys_and_data map = fold (fun k v m -> add v k m) map empty
+  let transpose_keys_and_data_set map =
+    fold (fun k v m ->
+        let set =
+          match find v m with
+          | exception Not_found ->
+            T_set.singleton k
+          | set ->
+            T_set.add k set
+        in
+        add v set m)
+      map empty
+end
+
+module Make_set (T : Thing) = struct
+  include Set.Make (T)
+
+  let output oc s =
+    Printf.fprintf oc " ( ";
+    iter (fun v -> Printf.fprintf oc "%a " T.output v) s;
+    Printf.fprintf oc ")"
+
+  let print ppf s =
+    let elts ppf s = iter (fun e -> Format.fprintf ppf "@ %a" T.print e) s in
+    Format.fprintf ppf "@[<1>{@[%a@ @]}@]" elts s
+
+  let to_string s = Format.asprintf "%a" print s
+
+  let of_list l = match l with
+    | [] -> empty
+    | [t] -> singleton t
+    | t :: q -> List.fold_left (fun acc e -> add e acc) (singleton t) q
+
+  let map f s = of_list (List.map f (elements s))
+end
+
+module Make_tbl (T : Thing) = struct
+  include Hashtbl.Make (T)
+
+  module T_map = Make_map (T)
+
+  let to_list t =
+    fold (fun key datum elts -> (key, datum)::elts) t []
+
+  let of_list elts =
+    let t = create 42 in
+    List.iter (fun (key, datum) -> add t key datum) elts;
+    t
+
+  let to_map v = fold T_map.add v T_map.empty
+
+  let of_map m =
+    let t = create (T_map.cardinal m) in
+    T_map.iter (fun k v -> add t k v) m;
+    t
+
+  let memoize t f = fun key ->
+    try find t key with
+    | Not_found ->
+      let r = f key in
+      add t key r;
+      r
+
+  let map t f =
+    of_map (T_map.map f (to_map t))
+end
+
+module type S = sig
+  type t
+
+  module T : Thing with type t = t
+  include Thing with type t := T.t
+
+  module Set : Set with module T := T
+  module Map : Map with module T := T
+  module Tbl : Tbl with module T := T
+end
+
+module Make (T : Thing) = struct
+  module T = T
+  include T
+
+  module Set = Make_set (T)
+  module Map = Make_map (T)
+  module Tbl = Make_tbl (T)
+end
 
 end
 module Ident : sig 
