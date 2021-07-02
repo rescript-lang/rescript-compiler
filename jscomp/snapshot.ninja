@@ -19,7 +19,7 @@ SNAP=../lib/$snapshot_path
 build snapshot: phony  $SNAP/whole_compiler.ml   $SNAP/bsb_helper.ml  $SNAP/unstable/all_ounit_tests.ml
 # $SNAP/bspp.ml
 build $SNAP/whole_compiler.ml: bspack | ./bin/bspack.exe $LTO
-    flags = ${releaseMode} -D BS_ONLY=true -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP   $includes
+    flags = ${releaseMode} -D BS_ONLY=true -bs-MD    -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP   $includes
     main = Rescript_compiler_main
     post_process = && node $LTO $SNAP/whole_compiler.ml
 
@@ -38,11 +38,11 @@ o $SNAP/unstable/all_ounit_tests.ml: bspack | ./bin/bspack.exe $LTO
     main = Ounit_tests_main         
 
 o $SNAP/unstable/bspack.ml: bspack | ./bin/bspack.exe $LTO
-    flags = -D BS_PACK=true -bs-MD -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_PARSING -I $OCAML_SRC_UTILS $includes
+    flags = -D BS_PACK=true -bs-MD   -I $OCAML_SRC_PARSING -I $OCAML_SRC_UTILS $includes
     main = Bspack_main
 
 o $SNAP/unstable/js_compiler.ml: bspack | ./bin/bspack.exe $LTO
-    flags = -D BS_BROWSER=true -D BS_ONLY=true -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP  $includes
+    flags = -D BS_BROWSER=true -D BS_ONLY=true -bs-MD    -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP  $includes
     main  = Jsoo_main
 
 

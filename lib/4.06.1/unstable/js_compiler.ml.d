@@ -30,8 +30,6 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/compile_rec_module.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/config_util.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/config_util.mli
-../lib/4.06.1/unstable/js_compiler.ml: ./core/config_whole_compiler.ml
-../lib/4.06.1/unstable/js_compiler.ml: ./core/config_whole_compiler.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/j.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_analyzer.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/js_analyzer.mli

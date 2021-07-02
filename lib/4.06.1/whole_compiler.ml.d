@@ -34,8 +34,6 @@
 ../lib/4.06.1/whole_compiler.ml: ./core/compile_rec_module.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/config_util.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/config_util.mli
-../lib/4.06.1/whole_compiler.ml: ./core/config_whole_compiler.ml
-../lib/4.06.1/whole_compiler.ml: ./core/config_whole_compiler.mli
 ../lib/4.06.1/whole_compiler.ml: ./core/j.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/js_analyzer.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/js_analyzer.mli
@@ -627,6 +625,8 @@
 ../lib/4.06.1/whole_compiler.ml: ./utils/ccomp.mli
 ../lib/4.06.1/whole_compiler.ml: ./utils/clflags.ml
 ../lib/4.06.1/whole_compiler.ml: ./utils/clflags.mli
+../lib/4.06.1/whole_compiler.ml: ./utils/config.ml
+../lib/4.06.1/whole_compiler.ml: ./utils/config.mli
 ../lib/4.06.1/whole_compiler.ml: ./utils/consistbl.ml
 ../lib/4.06.1/whole_compiler.ml: ./utils/consistbl.mli
 ../lib/4.06.1/whole_compiler.ml: ./utils/identifiable.ml

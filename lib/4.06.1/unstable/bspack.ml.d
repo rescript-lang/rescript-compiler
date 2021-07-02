@@ -2,8 +2,6 @@
 ../lib/4.06.1/unstable/bspack.ml: ./common/js_config.mli
 ../lib/4.06.1/unstable/bspack.ml: ./common/ml_binary.ml
 ../lib/4.06.1/unstable/bspack.ml: ./common/ml_binary.mli
-../lib/4.06.1/unstable/bspack.ml: ./core/config_whole_compiler.ml
-../lib/4.06.1/unstable/bspack.ml: ./core/config_whole_compiler.mli
 ../lib/4.06.1/unstable/bspack.ml: ./depends/ast_extract.ml
 ../lib/4.06.1/unstable/bspack.ml: ./depends/ast_extract.mli
 ../lib/4.06.1/unstable/bspack.ml: ./depends/bs_exception.ml
@@ -80,6 +78,8 @@
 ../lib/4.06.1/unstable/bspack.ml: ./stubs/bs_hash_stubs.ml
 ../lib/4.06.1/unstable/bspack.ml: ./utils/clflags.ml
 ../lib/4.06.1/unstable/bspack.ml: ./utils/clflags.mli
+../lib/4.06.1/unstable/bspack.ml: ./utils/config.ml
+../lib/4.06.1/unstable/bspack.ml: ./utils/config.mli
 ../lib/4.06.1/unstable/bspack.ml: ./utils/misc.ml
 ../lib/4.06.1/unstable/bspack.ml: ./utils/misc.mli
 ../lib/4.06.1/unstable/bspack.ml: ./utils/warnings.ml
