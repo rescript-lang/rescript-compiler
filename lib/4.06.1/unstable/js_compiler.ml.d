@@ -559,6 +559,8 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./utils/ccomp.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./utils/clflags.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./utils/clflags.mli
+../lib/4.06.1/unstable/js_compiler.ml: ./utils/config.ml
+../lib/4.06.1/unstable/js_compiler.ml: ./utils/config.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./utils/consistbl.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./utils/consistbl.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./utils/identifiable.ml

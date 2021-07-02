@@ -2282,9 +2282,6 @@ val get_pos_info: Lexing.position -> string * int * int (* file, line, char *)
 val print_loc: formatter -> t -> unit
 val print_error: formatter -> t -> unit
 val print_error_cur_file: formatter -> unit -> unit
- (* Not using below APIs in ReScript *)
-val print_warning: t -> formatter -> Warnings.t -> unit
-val formatter_for_warnings : formatter ref
 
 val prerr_warning: t -> Warnings.t -> unit
 val echo_eof: unit -> unit
