@@ -1603,7 +1603,7 @@ var bspack_libs = [
 
 var bsb_helper_libs = ["stubs", "ext", "common", "bsb_helper"];
 
-var rescript_libs = ["stubs", "ext", "common", "bsb"];
+var rescript_libs = ["stubs","utils", "ext", "common", "bsb"];
 
 var cmjdumps_libs = [
   ...compiler_libs,

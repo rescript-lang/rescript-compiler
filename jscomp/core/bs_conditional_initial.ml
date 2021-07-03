@@ -35,8 +35,7 @@ let setup_env () =
   Matching.call_switcher_variant_constr := Polyvar_pattern_match.call_switcher_variant_constr;
   Ctype.variant_is_subtype := Matching_polyfill.variant_is_subtype;
 
-  Warnings.parse_options false Bsc_warnings.defaults_w;
-  Warnings.parse_options true Bsc_warnings.defaults_warn_error;
+
   Clflags.dump_location := false;  
   Config.syntax_kind := `rescript;
   Config.unsafe_empty_array := false;
