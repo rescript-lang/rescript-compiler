@@ -29,7 +29,16 @@ let () =
   eq __LOC__ (F.fromString "-1.0") (Some (-1.0));
   eq __LOC__ (F.fromString "-1.5") (Some (-1.5));
   eq __LOC__ (F.fromString "-1.7") (Some (-1.7));
-  eq __LOC__ (F.fromString "not a float") None
+  eq __LOC__ (F.fromString "17e-1") (Some (1.7));
+  eq __LOC__ (F.fromString "-17e-1") (Some (-1.7));
+  eq __LOC__ (F.fromString "  -17e-1  ") (Some (-1.7));
+  eq __LOC__ (F.fromString "0x11") (Some (17.));
+  eq __LOC__ (F.fromString "0b11") (Some (3.));
+  eq __LOC__ (F.fromString "0o11") (Some (9.));
+  eq __LOC__ (F.fromString "") (Some (0.));
+  eq __LOC__ (F.fromString "not a float") None;
+  eq __LOC__ (F.fromString "100.0abcdef") None;
+  eq __LOC__ (F.fromString "123_456.7") None
 
 let () =
   eq __LOC__ (F.toString 1.0) "1";

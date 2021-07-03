@@ -32,7 +32,7 @@ external toInt: float -> int = "%intoffloat"
 
 external fromInt: int -> float = "%identity"
 
-external fromString: string -> float = "parseFloat" [@@bs.val]
+external fromString: string -> float = "Number" [@@bs.val]
 
 let fromString i =
   match (fromString i) with
