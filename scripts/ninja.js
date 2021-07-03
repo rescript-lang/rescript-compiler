@@ -76,8 +76,7 @@ exports.vendorNinjaPath = vendorNinjaPath;
  * Note ocamldep.opt has built-in macro handling OCAML_VERSION
  */
 var getOcamldepFile = () => {
-  return "ocamldep.opt"
-  
+  return "ocamldep.opt";
 };
 
 /**
@@ -490,7 +489,7 @@ function mllList(cwd, xs) {
  * @param {string[]} xs
  * @returns {string}
  */
- function mlyList(cwd, xs) {
+function mlyList(cwd, xs) {
   return xs
     .map((x) => {
       var output = baseName(x) + ".ml";
@@ -969,7 +968,7 @@ rule ${mllRuleName}
     generator = true
 `;
 
-var mlyRuleName = `mly`
+var mlyRuleName = `mly`;
 var mlyRule = `
 rule ${mlyRuleName}
     command = $ocamlyacc -v --strict $in
@@ -1428,9 +1427,7 @@ function readdirSync(dir) {
 /**
  * @type {string[]}
  */
-var black_list = [
-  
-]
+var black_list = [];
 /**
  *
  * @param {string} dir
@@ -1441,7 +1438,7 @@ function test(dir) {
       return (
         (x.endsWith(".ml") || x.endsWith(".mli")) &&
         !(x.endsWith(".cppo.ml") || x.endsWith(".cppo.mli")) &&
-        !black_list.some(name=>x.includes(name))
+        !black_list.some((name) => x.includes(name))
       );
     })
     .map((x) => path.join(dir, x));
@@ -1603,7 +1600,7 @@ var bspack_libs = [
 
 var bsb_helper_libs = ["stubs", "ext", "common", "bsb_helper"];
 
-var rescript_libs = ["stubs","utils", "ext", "common", "bsb"];
+var rescript_libs = ["stubs", "utils", "ext", "common", "bsb"];
 
 var cmjdumps_libs = [
   ...compiler_libs,
@@ -1724,7 +1721,7 @@ ${mllRule}
 ${mlyRule}
 ${mllList("ext", ["ext_json_parse.mll"])}
 ${mllList("parsing", ["lexer.mll"])}
-${mlyList("parsing",["parser.mly"])}
+${mlyList("parsing", ["parser.mly"])}
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in
 o ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/generator.ml
