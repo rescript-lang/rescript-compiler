@@ -3,6 +3,9 @@ B .
 B common
 B ext
 
+B depends
+S depends
+
 B syntax
 S syntax
 
@@ -42,7 +45,8 @@ B depends
 S outcome_printer
 B outcome_printer
 
-
+S super_errors
+B super_errors
 
 # S runtime
 # B runtime
