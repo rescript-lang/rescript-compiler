@@ -1462,20 +1462,6 @@ function setSortedToStringAsNativeDeps(xs) {
 /**
  * @returns {string}
  */
-function getVendorConfigNinja() {
-  return `
-ocamlopt = ocamlopt.opt
-ocamllex = ocamllex.opt
-ocamlc = ocamlc.opt
-ocamlmklib = ocamlmklib
-ocaml = ocaml
-ocamlyacc = ocamlyacc
-`;
-}
-
-/**
- * @returns {string}
- */
 function getPreprocessorFileName() {
   return "cppoVendor.ninja";
 }
@@ -1490,7 +1476,12 @@ function preprocessorNinjaSync() {
     .map((file) => `o napkin/${file} : copy ../syntax/src/${file}`)
     .join("\n");
   var cppoNative = `
-${getVendorConfigNinja()}
+ocamlopt = ocamlopt.opt
+ocamllex = ocamllex.opt
+ocamlc = ocamlc.opt
+ocamlmklib = ocamlmklib
+ocaml = ocaml
+ocamlyacc = ocamlyacc  
 rule link
     command =  $ocamlopt -g   $flags $libs $in -o $out
 rule bytelink
@@ -1649,6 +1640,12 @@ function nativeNinja() {
   var includes = sourceDirs.map((x) => `-I ${x}`).join(" ");
 
   var templateNative = `
+ocamlopt = ocamlopt.opt
+ocamllex = ocamllex.opt
+ocamlc = ocamlc.opt
+ocamlmklib = ocamlmklib
+ocaml = ocaml
+ocamlyacc = ocamlyacc
 subninja ${getPreprocessorFileName()}
 
 rule optc
@@ -1712,13 +1709,17 @@ o ./bin/cmjdump.exe: link ${makeLibs(cmjdumps_libs)} main/cmjdump_main.cmx
     
 o ./bin/cmij.exe: link ${makeLibs(cmij_libs)} main/cmij_main.cmx
     
-
+o ./bin/tests.exe: link ${makeLibs(tests_libs)} main/ounit_tests_main.cmx
+    libs = str.cmxa unix.cmxa 
+build native: phony ../${my_target}/bsc.exe ../${
+    my_target
+  }/rescript.exe ../${
+    my_target
+  }/bsb_helper.exe ./bin/bspack.exe ./bin/cmjdump.exe ./bin/cmij.exe ./bin/tests.exe
 rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
     generator = true
-o ./bin/tests.exe: link ${makeLibs(tests_libs)} main/ounit_tests_main.cmx
-    libs = str.cmxa unix.cmxa 
 
 ${mllRule}
 ${mlyRule}
