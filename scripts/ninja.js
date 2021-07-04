@@ -88,6 +88,10 @@ var getOcamldepFile = () => {
  */
 var versionString = undefined;
 
+/**
+ *
+ * @returns {string}
+ */
 var getVersionString = () => {
   if (versionString === undefined) {
     var searcher = "version";
@@ -662,9 +666,7 @@ function depModulesForBscAsync(files, dir, depsMap) {
   return [
     new Promise((resolve, reject) => {
       cp.exec(
-        `../../${
-          my_target
-        }/bsc.exe  -modules -bs-syntax-only ${resFiles.join(
+        `../../${my_target}/bsc.exe  -modules -bs-syntax-only ${resFiles.join(
           " "
         )} ${reFiles.join(" ")} ${ocamlFiles.join(" ")}`,
         config,
@@ -1389,13 +1391,13 @@ include body.ninja
 `
   );
 
-  preprocessorNinjaSync();
+  preprocessorNinjaSync(); // This is needed so that ocamldep makes sense
   nativeNinja();
   runtimeNinja();
   stdlibNinja(true);
-  if(fs.existsSync(path.join(__dirname,'..',my_target,'bsc.exe'))){
-    testNinja()
-  }  
+  if (fs.existsSync(path.join(__dirname, "..", my_target, "bsc.exe"))) {
+    testNinja();
+  }
   othersNinja();
 }
 exports.updateDev = updateDev;
@@ -1439,12 +1441,6 @@ function setSortedToStringAsNativeDeps(xs) {
   return arr.join(" ").replace(/\.cmx/g, ".cmi");
 }
 
-/**
- * @returns {string}
- */
-function getPreprocessorFileName() {
-  return "cppoVendor.ninja";
-}
 /**
  * Built cppo.exe refmt.exe etc for dev purpose
  */
@@ -1506,7 +1502,7 @@ rule copy
   description = $in -> $out    
 ${buildNapkinFiles}    
 `;
-  var cppoNinjaFile = getPreprocessorFileName();
+  var cppoNinjaFile = "cppoVendor.ninja";
   writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
   cp.execFileSync(vendorNinjaPath, ["-f", cppoNinjaFile, "--verbose", "-v"], {
     cwd: jscompDir,
@@ -1614,6 +1610,10 @@ function nativeNinja() {
 
   var includes = sourceDirs.map((x) => `-I ${x}`).join(" ");
 
+  var flags = "-w A-4-9-40..42-30-48-50-44-45";  
+  if (+getVersionString().split(".")[1] > 7) {
+    flags += "-3-67 -error-style short";
+  }
   var templateNative = `
 ocamlopt = ocamlopt.opt
 ocamllex = ocamllex.opt
@@ -1621,10 +1621,10 @@ ocamlc = ocamlc.opt
 ocamlmklib = ocamlmklib
 ocaml = ocaml
 ocamlyacc = ocamlyacc
-subninja ${getPreprocessorFileName()}
+subninja cppoVendor.ninja
 
 rule optc
-    command = $ocamlopt -strict-sequence -safe-string  -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50-44-45 -warn-error A -absname -c $in 
+    command = $ocamlopt -strict-sequence -safe-string  -opaque ${includes} -g -linscan ${flags} -warn-error A -absname -c $in 
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
@@ -1686,11 +1686,7 @@ o ./bin/cmij.exe: link ${makeLibs(cmij_libs)} main/cmij_main.cmx
     
 o ./bin/tests.exe: link ${makeLibs(tests_libs)} main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa 
-build native: phony ../${my_target}/bsc.exe ../${
-    my_target
-  }/rescript.exe ../${
-    my_target
-  }/bsb_helper.exe ./bin/bspack.exe ./bin/cmjdump.exe ./bin/cmij.exe ./bin/tests.exe
+build native: phony ../${my_target}/bsc.exe ../${my_target}/rescript.exe ../${my_target}/bsb_helper.exe ./bin/bspack.exe ./bin/cmjdump.exe ./bin/cmij.exe ./bin/tests.exe
 rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
