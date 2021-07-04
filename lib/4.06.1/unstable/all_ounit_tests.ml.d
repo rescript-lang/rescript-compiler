@@ -181,6 +181,7 @@
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./stubs/bs_hash_stubs.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./typing/ident.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./typing/ident.mli
+../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/bsc_warnings.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/clflags.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/clflags.mli
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./utils/config.ml

@@ -76,6 +76,7 @@
 ../lib/4.06.1/unstable/bspack.ml: ./parsing/syntaxerr.ml
 ../lib/4.06.1/unstable/bspack.ml: ./parsing/syntaxerr.mli
 ../lib/4.06.1/unstable/bspack.ml: ./stubs/bs_hash_stubs.ml
+../lib/4.06.1/unstable/bspack.ml: ./utils/bsc_warnings.ml
 ../lib/4.06.1/unstable/bspack.ml: ./utils/clflags.ml
 ../lib/4.06.1/unstable/bspack.ml: ./utils/clflags.mli
 ../lib/4.06.1/unstable/bspack.ml: ./utils/config.ml

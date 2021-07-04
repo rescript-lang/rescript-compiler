@@ -220,7 +220,6 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./depends/bs_exception.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ext/bsc_args.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ext/bsc_args.mli
-../lib/4.06.1/unstable/js_compiler.ml: ./ext/bsc_warnings.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ext/ext_array.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ext/ext_array.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ext/ext_buffer.ml
@@ -555,6 +554,7 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./typing/typetexp.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./typing/untypeast.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./typing/untypeast.mli
+../lib/4.06.1/unstable/js_compiler.ml: ./utils/bsc_warnings.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./utils/ccomp.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./utils/ccomp.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./utils/clflags.ml
