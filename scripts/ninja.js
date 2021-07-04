@@ -662,32 +662,11 @@ function depModulesForBscAsync(files, dir, depsMap) {
   return [
     new Promise((resolve, reject) => {
       cp.exec(
-        `${getOcamldepFile()} -allow-approx -modules -one-line -native ${ocamlFiles.join(
+        `../../${
+          my_target
+        }/bsc.exe  -modules -bs-syntax-only ${resFiles.join(
           " "
-        )}`,
-        config,
-        cb(resolve, reject)
-      );
-    }),
-
-    new Promise((resolve, reject) => {
-      cp.exec(
-        `${getOcamldepFile()} -pp '../../${
-          process.platform
-        }/refmt.exe --print=binary' -modules -one-line -native -ml-synonym .re -mli-synonym .rei ${reFiles.join(
-          " "
-        )}`,
-        config,
-        cb(resolve, reject)
-      );
-    }),
-    new Promise((resolve, reject) => {
-      cp.exec(
-        `${getOcamldepFile()} -pp '../../${
-          process.platform
-        }/bsc.byte -as-pp' -modules -one-line -native -ml-synonym .res -mli-synonym .resi ${resFiles.join(
-          " "
-        )}`,
+        )} ${reFiles.join(" ")} ${ocamlFiles.join(" ")}`,
         config,
         cb(resolve, reject)
       );
@@ -1390,10 +1369,9 @@ function updateDev() {
   writeFileAscii(
     path.join(jscompDir, "build.ninja"),
     `
-${getVendorConfigNinja()}
+subninja compiler.ninja
 stdlib = stdlib-406
 ${BSC_COMPILER}      
-subninja compiler.ninja
 subninja runtime/build.ninja
 subninja others/build.ninja
 subninja $stdlib/build.ninja
@@ -1415,7 +1393,9 @@ include body.ninja
   nativeNinja();
   runtimeNinja();
   stdlibNinja(true);
-  testNinja();
+  if(fs.existsSync(path.join(__dirname,'..',my_target,'bsc.exe'))){
+    testNinja()
+  }  
   othersNinja();
 }
 exports.updateDev = updateDev;
@@ -1520,11 +1500,6 @@ ${cppoList("outcome_printer", [
   ["reason_syntax_util.mli", "reason_syntax_util.cppo.mli", ""],
 ])}
 
-o ../${
-    process.platform
-  }/bsc.byte: bytelink  ${refmtMainPath}/whole_compiler.mli ${refmtMainPath}/whole_compiler.ml
-      flags = -custom ./stubs/ext_basic_hash_stubs.c -I ${refmtMainPath}  -w a -no-alias-deps
-      generator = true
   
 rule copy
   command = cp $in $out
@@ -1840,7 +1815,7 @@ function main() {
     switch (subcommand) {
       case "build":
         try {
-          cp.execFileSync(vendorNinjaPath, ["-k", "1"], {
+          cp.execFileSync(vendorNinjaPath, ["native", "all"], {
             encoding: "utf8",
             cwd: jscompDir,
             stdio: [0, 1, 2],
