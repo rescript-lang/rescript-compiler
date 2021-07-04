@@ -27,8 +27,12 @@ var js_package = pseudoTarget("js_pkg");
 var runtimeTarget = pseudoTarget("runtime");
 var othersTarget = pseudoTarget("others");
 var stdlibTarget = pseudoTarget("$stdlib");
+var my_target =
+  process.platform === "darwin" && process.arch === "arm64"
+    ? process.platform + process.arch
+    : process.platform;
 
-var vendorNinjaPath = path.join(__dirname, "..", process.platform, "ninja.exe");
+var vendorNinjaPath = path.join(__dirname, "..", my_target, "ninja.exe");
 
 exports.vendorNinjaPath = vendorNinjaPath;
 /**
@@ -869,7 +873,7 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
   return build_stmts;
 }
 
-var COMPILIER = `../${process.platform}/bsc.exe`;
+var COMPILIER = `../${my_target}/bsc.exe`;
 var BSC_COMPILER = `bsc = ${COMPILIER}`;
 var compilerTarget = pseudoTarget(COMPILIER);
 
@@ -1479,7 +1483,6 @@ function getPreprocessorFileName() {
  * Built cppo.exe refmt.exe etc for dev purpose
  */
 function preprocessorNinjaSync() {
-  var refmtMainPath = "../lib/4.06.1";
   var napkinFiles = fs
     .readdirSync(path.join(jscompDir, "..", "syntax", "src"), "ascii")
     .filter((x) => x.endsWith(".ml") || x.endsWith(".mli"));
@@ -1691,14 +1694,14 @@ o core/js_record_map.ml: p4of core/j.ml
 o core/js_record_fold.ml: p4of core/j.ml
     flags = -record-fold
 
-o ../${process.platform}/bsc.exe: link  ${makeLibs(
+o ../${my_target}/bsc.exe: link  ${makeLibs(
     bsc_libs
   )} main/rescript_compiler_main.cmx
-o ../${process.platform}/rescript.exe: link ${makeLibs(
+o ../${my_target}/rescript.exe: link ${makeLibs(
     rescript_libs
   )} main/rescript_main.cmx
       libs =  unix.cmxa str.cmxa    
-o ../${process.platform}/bsb_helper.exe: link ${makeLibs(
+o ../${my_target}/bsb_helper.exe: link ${makeLibs(
     bsb_helper_libs
   )} main/bsb_helper_main.cmx
     libs =  unix.cmxa str.cmxa
@@ -1875,7 +1878,7 @@ function main() {
           });
         } catch (e) {}
         cp.execSync(
-          `git clean -dfx jscomp ${process.platform} lib && rm -rf lib/js/*.js && rm -rf lib/es6/*.js`,
+          `git clean -dfx jscomp ${my_target} lib && rm -rf lib/js/*.js && rm -rf lib/es6/*.js`,
           {
             encoding: "utf8",
             cwd: path.join(__dirname, ".."),
