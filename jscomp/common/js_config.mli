@@ -102,3 +102,5 @@ val customize_runtime : string option ref
 val as_pp: bool ref
 
 val self_stack : string Stack.t
+
+val modules : bool ref

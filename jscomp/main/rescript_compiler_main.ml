@@ -160,7 +160,15 @@ let anonymous ~(rev_args : string list) =
         process_file filename ppf
       | [] -> ()  
       | _ -> 
-        Bsc_args.bad_arg "can not handle multiple files"
+        if !Js_config.syntax_only then 
+          Ext_list.rev_iter rev_args (fun filename -> 
+              begin 
+                Clflags.reset_dump_state ();
+                Warnings.reset (); 
+                process_file filename ppf
+              end )
+        else 
+          Bsc_args.bad_arg "can not handle multiple files"
     end
 
 (** used by -impl -intf *)
@@ -442,7 +450,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-no-bin-annot",  clear Clflags.binary_annotations, 
     "*internal* Disable binary annotations (by default on)";
 
-
+    "-modules", set Js_config.modules, 
+    "*internal* serve similar to ocamldep";
     "-nolabels", set Clflags.classic, 
     "*internal* Ignore non-optional labels in types";  
 

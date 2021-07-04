@@ -95,3 +95,5 @@ let customize_runtime = ref None
 let as_pp = ref false
 
 let self_stack : string Stack.t = Stack.create ()
+
+let modules = ref false
