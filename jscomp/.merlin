@@ -48,6 +48,9 @@ B outcome_printer
 S super_errors
 B super_errors
 
+S napkin
+B napkin
+
 # S runtime
 # B runtime
 
@@ -62,4 +65,4 @@ B super_errors
 
 
 
-FLG -w -40-30+6-23
+FLG -w -40-30+6-23-3
