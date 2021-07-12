@@ -70,6 +70,7 @@
 ../lib/4.06.1/rescript.ml: ./common/bs_version.mli
 ../lib/4.06.1/rescript.ml: ./ext/bsb_db.ml
 ../lib/4.06.1/rescript.ml: ./ext/bsb_db.mli
+../lib/4.06.1/rescript.ml: ./ext/bsc_warnings.ml
 ../lib/4.06.1/rescript.ml: ./ext/ext_array.ml
 ../lib/4.06.1/rescript.ml: ./ext/ext_array.mli
 ../lib/4.06.1/rescript.ml: ./ext/ext_buffer.ml
@@ -134,4 +135,3 @@
 ../lib/4.06.1/rescript.ml: ./main/rescript_main.ml
 ../lib/4.06.1/rescript.ml: ./main/rescript_main.mli
 ../lib/4.06.1/rescript.ml: ./stubs/bs_hash_stubs.ml
-../lib/4.06.1/rescript.ml: ./utils/bsc_warnings.ml
