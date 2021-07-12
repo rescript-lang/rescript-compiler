@@ -500,7 +500,7 @@ and transl_structure loc fields cc rootpath final_env = function
               fields;
             Format.eprintf "@]@.";*)
             assert (List.length runtime_fields = List.length pos_cc_list);
-            let v = Misc.array_of_list_rev fields in
+            let v = Ext_array.reverse_of_list fields in
             let get_field pos = Lvar v.(pos)
             and ids = List.fold_right IdentSet.add fields IdentSet.empty in
             let get_field_name _name = get_field in 

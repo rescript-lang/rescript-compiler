@@ -14,9 +14,7 @@
 (**************************************************************************)
 
 (* Miscellaneous useful types and functions *)
-#if true then
-val array_of_list_rev : 'a list -> 'a array
-#end
+
 
 val fatal_error: string -> 'a
 val fatal_errorf: ('a, Format.formatter, unit, 'b) format4 -> 'a
