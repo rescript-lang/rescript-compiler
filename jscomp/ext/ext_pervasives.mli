@@ -47,8 +47,12 @@ val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
 
 
+val max_int : int -> int -> int 
 
-
+val max_int_option : 
+  int option -> 
+  int option -> 
+  int option 
 
 
 

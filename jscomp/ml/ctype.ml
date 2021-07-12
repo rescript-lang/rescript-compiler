@@ -1426,7 +1426,7 @@ let expand_abbrev_gen kind find_type_expansion env ty =
             (* For gadts, remember type as non exportable *)
             (* The ambiguous level registered for ty' should be the highest *)
             if !trace_gadt_instances then begin
-              match max lv (Env.gadt_instance_level env ty) with
+              match Ext_pervasives.max_int_option lv (Env.gadt_instance_level env ty) with
                 None -> ()
               | Some lv ->
                   if level < lv then raise (Unify [(ty, newvar2 level)]);
