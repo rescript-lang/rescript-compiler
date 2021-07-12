@@ -550,43 +550,6 @@ and class_type_declaration i ppf x =
   line i ppf "pci_expr =\n";
   class_type (i+1) ppf x.pci_expr;
 
-and class_expr i ppf x =
-  line i ppf "class_expr %a\n" fmt_location x.pcl_loc;
-  attributes i ppf x.pcl_attributes;
-  let i = i+1 in
-  match x.pcl_desc with
-  | Pcl_constr (li, l) ->
-      line i ppf "Pcl_constr %a\n" fmt_longident_loc li;
-      list i core_type ppf l;
-  | Pcl_structure (cs) ->
-      line i ppf "Pcl_structure\n";
-      class_structure i ppf cs;
-  | Pcl_fun (l, eo, p, e) ->
-      line i ppf "Pcl_fun\n";
-      arg_label i ppf l;
-      option i expression ppf eo;
-      pattern i ppf p;
-      class_expr i ppf e;
-  | Pcl_apply (ce, l) ->
-      line i ppf "Pcl_apply\n";
-      class_expr i ppf ce;
-      list i label_x_expression ppf l;
-  | Pcl_let (rf, l, ce) ->
-      line i ppf "Pcl_let %a\n" fmt_rec_flag rf;
-      list i value_binding ppf l;
-      class_expr i ppf ce;
-  | Pcl_constraint (ce, ct) ->
-      line i ppf "Pcl_constraint\n";
-      class_expr i ppf ce;
-      class_type i ppf ct;
-  | Pcl_extension (s, arg) ->
-      line i ppf "Pcl_extension \"%s\"\n" s.txt;
-      payload i ppf arg
-  | Pcl_open (ovf, m, e) ->
-      line i ppf "Pcl_open %a \"%a\"\n" fmt_override_flag ovf
-        fmt_longident_loc m;
-      class_expr i ppf e
-
 and class_structure i ppf { pcstr_self = p; pcstr_fields = l } =
   line i ppf "class_structure\n";
   pattern (i+1) ppf p;
@@ -597,10 +560,7 @@ and class_field i ppf x =
   let i = i + 1 in
   attributes i ppf x.pcf_attributes;
   match x.pcf_desc with
-  | Pcf_inherit (ovf, ce, so) ->
-      line i ppf "Pcf_inherit %a\n" fmt_override_flag ovf;
-      class_expr (i+1) ppf ce;
-      option (i+1) string_loc ppf so;
+  | Pcf_inherit () -> ()
   | Pcf_val (s, mf, k) ->
       line i ppf "Pcf_val %a\n" fmt_mutable_flag mf;
       line (i+1) ppf "%a\n" fmt_string_loc s;

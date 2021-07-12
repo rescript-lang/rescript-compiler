@@ -343,7 +343,7 @@ module Cf = struct
      pcf_attributes = add_docs_attrs docs attrs;
     }
 
-  let inherit_ ?loc ?attrs a b c = mk ?loc ?attrs (Pcf_inherit (a, b, c))
+  
   let val_ ?loc ?attrs a b c = mk ?loc ?attrs (Pcf_val (a, b, c))
   let method_ ?loc ?attrs a b c = mk ?loc ?attrs (Pcf_method (a, b, c))
   let constraint_ ?loc ?attrs a b = mk ?loc ?attrs (Pcf_constraint (a, b))

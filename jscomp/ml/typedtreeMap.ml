@@ -351,16 +351,10 @@ module MakeMap(Map : MapArgument) = struct
         | Texp_send (exp, meth, expo) ->
           Texp_send (map_expression exp, meth, may_map map_expression expo)
         | Texp_new _ -> exp.exp_desc
-        | Texp_instvar _ -> exp.exp_desc
-        | Texp_setinstvar (path, lid, path2, exp) ->
-          Texp_setinstvar (path, lid, path2, map_expression exp)
-        | Texp_override (path, list) ->
-          Texp_override (
-            path,
-            List.map (fun (path, lid, exp) ->
-              (path, lid, map_expression exp)
-            ) list
-          )
+        | Texp_instvar _ 
+        | Texp_setinstvar _ 
+        | Texp_override _ -> 
+          assert false
         | Texp_letmodule (id, name, mexpr, exp) ->
           Texp_letmodule (
             id, name,
@@ -374,8 +368,8 @@ module MakeMap(Map : MapArgument) = struct
           )
         | Texp_assert exp -> Texp_assert (map_expression exp)
         | Texp_lazy exp -> Texp_lazy (map_expression exp)
-        | Texp_object (cl, string_list) ->
-          Texp_object (map_class_structure cl, string_list)
+        | Texp_object () ->
+          Texp_object ()
         | Texp_pack (mexpr) ->
           Texp_pack (map_module_expr mexpr)
         | Texp_unreachable ->

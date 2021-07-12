@@ -491,28 +491,10 @@ and add_top_phrase bv = function
   | Ptop_def str -> add_structure bv str
   | Ptop_dir (_, _) -> bv
 
-and add_class_expr bv ce =
-  match ce.pcl_desc with
-    Pcl_constr(l, tyl) ->
-      add bv l; List.iter (add_type bv) tyl
-  | Pcl_structure { pcstr_self = pat; pcstr_fields = fieldl } ->
-      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
-  | Pcl_fun(_, opte, pat, ce) ->
-      add_opt add_expr bv opte;
-      let bv = add_pattern bv pat in add_class_expr bv ce
-  | Pcl_apply(ce, exprl) ->
-      add_class_expr bv ce; List.iter (fun (_,e) -> add_expr bv e) exprl
-  | Pcl_let(rf, pel, ce) ->
-      let bv = add_bindings rf bv pel in add_class_expr bv ce
-  | Pcl_constraint(ce, ct) ->
-      add_class_expr bv ce; add_class_type bv ct
-  | Pcl_extension e -> handle_extension e
-  | Pcl_open (_ovf, m, e) ->
-      let bv = open_module bv m.txt in add_class_expr bv e
 
 and add_class_field bv pcf =
   match pcf.pcf_desc with
-    Pcf_inherit(_, ce, _) -> add_class_expr bv ce
+    Pcf_inherit() -> ()
   | Pcf_val(_, _, Cfk_concrete (_, e))
   | Pcf_method(_, _, Cfk_concrete (_, e)) -> add_expr bv e
   | Pcf_val(_, _, Cfk_virtual ty)

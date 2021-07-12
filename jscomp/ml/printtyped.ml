@@ -302,7 +302,7 @@ and expression i ppf x =
   in
   match x.exp_desc with
   | Texp_ident (li,_,_) -> line i ppf "Texp_ident %a\n" fmt_path li;
-  | Texp_instvar (_, li,_) -> line i ppf "Texp_instvar %a\n" fmt_path li;
+  | Texp_instvar () -> assert false
   | Texp_constant (c) -> line i ppf "Texp_constant %a\n" fmt_constant c;
   | Texp_let (rf, l, e) ->
       line i ppf "Texp_let %a\n" fmt_rec_flag rf;
@@ -383,12 +383,9 @@ and expression i ppf x =
       expression i ppf e;
       option i expression ppf eo
   | Texp_new (li, _, _) -> line i ppf "Texp_new %a\n" fmt_path li;
-  | Texp_setinstvar (_, s, _, e) ->
-      line i ppf "Texp_setinstvar \"%a\"\n" fmt_path s;
-      expression i ppf e;
-  | Texp_override (_, l) ->
-      line i ppf "Texp_override\n";
-      list i string_x_expression ppf l;
+  | Texp_setinstvar _
+  | Texp_override _ ->
+    ()
   | Texp_letmodule (s, _, me, e) ->
       line i ppf "Texp_letmodule \"%a\"\n" fmt_ident s;
       module_expr i ppf me;
@@ -403,9 +400,8 @@ and expression i ppf x =
   | Texp_lazy (e) ->
       line i ppf "Texp_lazy";
       expression i ppf e;
-  | Texp_object (s, _) ->
-      line i ppf "Texp_object";
-      class_structure i ppf s
+  | Texp_object () ->
+      ()
   | Texp_pack me ->
       line i ppf "Texp_pack";
       module_expr i ppf me
@@ -550,78 +546,6 @@ and class_type_declaration i ppf x =
   line i ppf "pci_expr =\n";
   class_type (i+1) ppf x.ci_expr;
 
-and class_expr i ppf x =
-  line i ppf "class_expr %a\n" fmt_location x.cl_loc;
-  attributes i ppf x.cl_attributes;
-  let i = i+1 in
-  match x.cl_desc with
-  | Tcl_ident (li, _, l) ->
-      line i ppf "Tcl_ident %a\n" fmt_path li;
-      list i core_type ppf l;
-  | Tcl_structure (cs) ->
-      line i ppf "Tcl_structure\n";
-      class_structure i ppf cs;
-  | Tcl_fun (l, p, _, ce, _) ->
-      line i ppf "Tcl_fun\n";
-      arg_label i ppf l;
-      pattern i ppf p;
-      class_expr i ppf ce
-  | Tcl_apply (ce, l) ->
-      line i ppf "Tcl_apply\n";
-      class_expr i ppf ce;
-      list i label_x_expression ppf l;
-  | Tcl_let (rf, l1, l2, ce) ->
-      line i ppf "Tcl_let %a\n" fmt_rec_flag rf;
-      list i value_binding ppf l1;
-      list i ident_x_loc_x_expression_def ppf l2;
-      class_expr i ppf ce;
-  | Tcl_constraint (ce, Some ct, _, _, _) ->
-      line i ppf "Tcl_constraint\n";
-      class_expr i ppf ce;
-      class_type i ppf ct
-  | Tcl_constraint (ce, None, _, _, _) -> class_expr i ppf ce
-  | Tcl_open (ovf, m, _, _, e) ->
-      line i ppf "Tcty_open %a \"%a\"\n" fmt_override_flag ovf fmt_path m;
-      class_expr i ppf e
-
-and class_structure i ppf { cstr_self = p; cstr_fields = l } =
-  line i ppf "class_structure\n";
-  pattern (i+1) ppf p;
-  list (i+1) class_field ppf l;
-
-and class_field i ppf x =
-  line i ppf "class_field %a\n" fmt_location x.cf_loc;
-  let i = i + 1 in
-  attributes i ppf x.cf_attributes;
-  match x.cf_desc with
-  | Tcf_inherit (ovf, ce, so, _, _) ->
-      line i ppf "Tcf_inherit %a\n" fmt_override_flag ovf;
-      class_expr (i+1) ppf ce;
-      option (i+1) string ppf so;
-  | Tcf_val (s, mf, _, k, _) ->
-      line i ppf "Tcf_val \"%s\" %a\n" s.txt fmt_mutable_flag mf;
-      class_field_kind (i+1) ppf k
-  | Tcf_method (s, pf, k) ->
-      line i ppf "Tcf_method \"%s\" %a\n" s.txt fmt_private_flag pf;
-      class_field_kind (i+1) ppf k
-  | Tcf_constraint (ct1, ct2) ->
-      line i ppf "Tcf_constraint\n";
-      core_type (i+1) ppf ct1;
-      core_type (i+1) ppf ct2;
-  | Tcf_initializer (e) ->
-      line i ppf "Tcf_initializer\n";
-      expression (i+1) ppf e;
-  | Tcf_attribute (s, arg) ->
-      line i ppf "Tcf_attribute \"%s\"\n" s.txt;
-      Printast.payload i ppf arg
-
-and class_field_kind i ppf = function
-  | Tcfk_concrete (o, e) ->
-      line i ppf "Concrete %a\n" fmt_override_flag o;
-      expression i ppf e
-  | Tcfk_virtual t ->
-      line i ppf "Virtual\n";
-      core_type i ppf t
 
 and module_type i ppf x =
   line i ppf "module_type %a\n" fmt_location x.mty_loc;
@@ -844,9 +768,6 @@ and value_binding i ppf x =
   pattern (i+1) ppf x.vb_pat;
   expression (i+1) ppf x.vb_expr
 
-and string_x_expression i ppf (s, _, e) =
-  line i ppf "<override> \"%a\"\n" fmt_path s;
-  expression (i+1) ppf e;
 
 and record_field i ppf = function
   | _, Overridden (li, e) ->
@@ -859,10 +780,6 @@ and label_x_expression i ppf (l, e) =
   line i ppf "<arg>\n";
   arg_label (i+1) ppf l;
   (match e with None -> () | Some e -> expression (i+1) ppf e)
-
-and ident_x_loc_x_expression_def i ppf (l,_, e) =
-  line i ppf "<def> \"%a\"\n" fmt_ident l;
-  expression (i+1) ppf e;
 
 and label_x_bool_x_core_type_list i ppf x =
   match x with

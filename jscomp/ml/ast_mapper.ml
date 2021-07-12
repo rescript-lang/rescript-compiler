@@ -30,7 +30,6 @@ type mapper = {
   attributes: mapper -> attribute list -> attribute list;
   case: mapper -> case -> case;
   cases: mapper -> case list -> case list;
-  class_declaration: mapper -> class_declaration -> class_declaration;
   class_description: mapper -> class_description -> class_description;
   class_expr: mapper -> class_expr -> class_expr;
   class_field: mapper -> class_field -> class_field;
@@ -470,9 +469,8 @@ module CE = struct
     let loc = sub.location sub loc in
     let attrs = sub.attributes sub attrs in
     match desc with
-    | Pcf_inherit (o, ce, s) ->
-        inherit_ ~loc ~attrs o (sub.class_expr sub ce)
-          (map_opt (map_loc sub) s)
+    | Pcf_inherit () ->
+      {pcf_desc = desc; pcf_loc = loc; pcf_attributes = attrs}
     | Pcf_val (s, m, k) -> val_ ~loc ~attrs (map_loc sub s) m (map_kind sub k)
     | Pcf_method (s, p, k) ->
         method_ ~loc ~attrs (map_loc sub s) p (map_kind sub k)
@@ -512,8 +510,6 @@ let default_mapper =
     signature_item = MT.map_signature_item;
     module_type = MT.map;
     with_constraint = MT.map_with_constraint;
-    class_declaration =
-      (fun this -> CE.class_infos this (this.class_expr this));
     class_expr = CE.map;
     class_field = CE.map_field;
     class_structure = CE.map_structure;

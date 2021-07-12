@@ -971,30 +971,10 @@ and transl_exp0 e =
              ap_args=[lambda_unit];
              ap_inlined=Default_inline;
              ap_specialised=Default_specialise}
-  | Texp_instvar(path_self, path, _) ->
-      Lprim(Pfield_computed,
-            [transl_normal_path path_self; transl_normal_path path], e.exp_loc)
-  | Texp_setinstvar(path_self, path, _, expr) ->
-      transl_setinstvar e.exp_loc (transl_normal_path path_self) path expr
-  | Texp_override(_path_self, _modifs) ->
-#if 1
+  | Texp_instvar _
+  | Texp_setinstvar _
+  | Texp_override _ ->
       assert false
-#else  
-      let cpy = Ident.create "copy" in
-      Llet(Strict, Pgenval, cpy,
-           Lapply{ap_should_be_tailcall=false;
-                  ap_loc=Location.none;
-                  ap_func=Translobj.oo_prim "copy";
-                  ap_args=[transl_normal_path path_self];
-                  ap_inlined=Default_inline;
-                  ap_specialised=Default_specialise},
-           List.fold_right
-             (fun (path, _, expr) rem ->
-                Lsequence(transl_setinstvar Location.none
-                            (Lvar cpy) path expr, rem))
-             modifs
-             (Lvar cpy))
-#end             
   | Texp_letmodule(id, _loc, modl, body) ->
       let defining_expr =
          !transl_module Tcoerce_none None modl
@@ -1052,16 +1032,8 @@ and transl_exp0 e =
                              body = transl_exp e} in
           Lprim(Pmakeblock(Config.lazy_tag, Lambda.default_tag_info (*IIRELEVANT*), Mutable, None), [fn], e.exp_loc)
       end
-  | Texp_object (cs, meths) ->
-      let cty = cs.cstr_type in
-      let cl = Ident.create "class" in
-      !transl_object cl meths
-        { cl_desc = Tcl_structure cs;
-          cl_loc = e.exp_loc;
-          cl_type = Cty_signature cty;
-          cl_env = e.exp_env;
-          cl_attributes = [];
-         }
+  | Texp_object () ->
+      assert false
   | Texp_unreachable ->
       raise (Error (e.exp_loc, Unreachable_reached))
 
@@ -1239,9 +1211,6 @@ and transl_let rec_flag pat_expr_list body =
         (id, lam) in
       Lletrec(List.map2 transl_case pat_expr_list idlist, body)
 
-and transl_setinstvar loc self var expr =
-  Lprim(Psetfield_computed (maybe_pointer expr, Assignment),
-    [self; transl_normal_path var; transl_exp expr], loc)
 
 and transl_record loc env fields repres opt_init_expr =
    match opt_init_expr, repres, fields with 

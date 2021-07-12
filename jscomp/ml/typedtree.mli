@@ -218,14 +218,14 @@ and expression_desc =
         expression
   | Texp_send of expression * meth * expression option
   | Texp_new of Path.t * Longident.t loc * Types.class_declaration
-  | Texp_instvar of Path.t * Path.t * string loc
-  | Texp_setinstvar of Path.t * Path.t * string loc * expression
-  | Texp_override of Path.t * (Path.t * string loc * expression) list
+  | Texp_instvar of unit
+  | Texp_setinstvar of unit
+  | Texp_override of unit
   | Texp_letmodule of Ident.t * string loc * module_expr * expression
   | Texp_letexception of extension_constructor * expression
   | Texp_assert of expression
   | Texp_lazy of expression
-  | Texp_object of class_structure * string list
+  | Texp_object of unit
   | Texp_pack of module_expr
   | Texp_unreachable
   | Texp_extension_constructor of Longident.t loc * Path.t

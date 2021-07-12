@@ -618,7 +618,7 @@ and class_field =
     }
 
 and class_field_desc =
-  | Pcf_inherit of override_flag * class_expr * string loc option
+  | Pcf_inherit of unit
         (* inherit CE
            inherit CE as x
            inherit! CE
@@ -645,7 +645,7 @@ and class_field_kind =
   | Cfk_virtual of core_type
   | Cfk_concrete of override_flag * expression
 
-and class_declaration = class_expr class_infos
+
 
 (** {1 Module language} *)
 

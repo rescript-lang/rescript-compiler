@@ -29,7 +29,6 @@ type iterator = {
   attributes: iterator -> attribute list -> unit;
   case: iterator -> case -> unit;
   cases: iterator -> case list -> unit;
-  class_declaration: iterator -> class_declaration -> unit;
   class_description: iterator -> class_description -> unit;
   class_expr: iterator -> class_expr -> unit;
   class_field: iterator -> class_field -> unit;
@@ -445,7 +444,7 @@ module CE = struct
     sub.location sub loc;
     sub.attributes sub attrs;
     match desc with
-    | Pcf_inherit (_o, ce, _s) -> sub.class_expr sub ce
+    | Pcf_inherit () -> ()
     | Pcf_val (s, _m, k) -> iter_loc sub s; iter_kind sub k
     | Pcf_method (s, _p, k) ->
         iter_loc sub s; iter_kind sub k
@@ -481,8 +480,6 @@ let default_iterator =
     signature_item = MT.iter_signature_item;
     module_type = MT.iter;
     with_constraint = MT.iter_with_constraint;
-    class_declaration =
-      (fun this -> CE.class_infos this (this.class_expr this));
     class_expr = CE.iter;
     class_field = CE.iter_field;
     class_structure = CE.iter_structure;

@@ -311,18 +311,9 @@ let expr sub x =
           )
     | Texp_new _
     | Texp_instvar _ as d -> d
-    | Texp_setinstvar (path1, path2, id, exp) ->
-        Texp_setinstvar (
-          path1,
-          path2,
-          id,
-          sub.expr sub exp
-        )
-    | Texp_override (path, list) ->
-        Texp_override (
-          path,
-          List.map (tuple3 id id (sub.expr sub)) list
-        )
+    | Texp_setinstvar _
+    | Texp_override _ ->
+      assert false
     | Texp_letmodule (id, s, mexpr, exp) ->
         Texp_letmodule (
           id,
@@ -339,8 +330,8 @@ let expr sub x =
         Texp_assert (sub.expr sub exp)
     | Texp_lazy exp ->
         Texp_lazy (sub.expr sub exp)
-    | Texp_object (cl, sl) ->
-        Texp_object (sub.class_structure sub cl, sl)
+    | Texp_object () ->
+        Texp_object ()
     | Texp_pack mexpr ->
         Texp_pack (sub.module_expr sub mexpr)
     | Texp_unreachable ->

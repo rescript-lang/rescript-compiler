@@ -25,7 +25,6 @@ type mapper = {
   attributes: mapper -> T.attribute list -> attribute list;
   case: mapper -> T.case -> case;
   cases: mapper -> T.case list -> case list;
-  class_declaration: mapper -> T.class_declaration -> class_declaration;
   class_description: mapper -> T.class_description -> class_description;
   class_expr: mapper -> T.class_expr -> class_expr;
   class_field: mapper -> T.class_field -> class_field;
@@ -441,14 +440,10 @@ let expression sub exp =
             Tmeth_name name -> mkloc name loc
           | Tmeth_val id -> mkloc (Ident.name id) loc)
     | Texp_new (_path, lid, _) -> Pexp_new (map_loc sub lid)
-    | Texp_instvar (_, path, name) ->
-      Pexp_ident ({loc = sub.location sub name.loc ; txt = lident_of_path path})
-    | Texp_setinstvar (_, _path, lid, exp) ->
-        Pexp_setinstvar (map_loc sub lid, sub.expr sub exp)
-    | Texp_override (_, list) ->
-        Pexp_override (List.map (fun (_path, lid, exp) ->
-              (map_loc sub lid, sub.expr sub exp)
-          ) list)
+    | Texp_instvar _
+    | Texp_setinstvar _
+    | Texp_override _ ->
+        assert false
     | Texp_letmodule (_id, name, mexpr, exp) ->
         Pexp_letmodule (name, sub.module_expr sub mexpr,
           sub.expr sub exp)
@@ -457,8 +452,8 @@ let expression sub exp =
                            sub.expr sub exp)
     | Texp_assert exp -> Pexp_assert (sub.expr sub exp)
     | Texp_lazy exp -> Pexp_lazy (sub.expr sub exp)
-    | Texp_object (cl, _) ->
-        Pexp_object (sub.class_structure sub cl)
+    | Texp_object () ->
+        assert false
     | Texp_pack (mexpr) ->
         Pexp_pack (sub.module_expr sub mexpr)
     | Texp_unreachable ->
@@ -543,7 +538,6 @@ let class_infos f sub ci =
     (map_loc sub ci.ci_id_name)
     (f sub ci.ci_expr)
 
-let class_declaration sub = class_infos sub.class_expr sub
 let class_description sub = class_infos sub.class_type sub
 let class_type_declaration sub = class_infos sub.class_type sub
 
@@ -734,9 +728,8 @@ let class_field sub cf =
   let loc = sub.location sub cf.cf_loc in
   let attrs = sub.attributes sub cf.cf_attributes in
   let desc = match cf.cf_desc with
-      Tcf_inherit (ovf, cl, super, _vals, _meths) ->
-        Pcf_inherit (ovf, sub.class_expr sub cl,
-                     map_opt (fun v -> mkloc v loc) super)
+      Tcf_inherit _ ->
+        assert false
     | Tcf_constraint (cty, cty') ->
         Pcf_constraint (sub.typ sub cty, sub.typ sub cty')
     | Tcf_val (lab, mut, _, Tcfk_virtual cty, _) ->
@@ -780,7 +773,6 @@ let default_mapper =
     signature_item = signature_item;
     module_type = module_type;
     with_constraint = with_constraint;
-    class_declaration = class_declaration;
     class_expr = class_expr;
     class_field = class_field;
     class_structure = class_structure;

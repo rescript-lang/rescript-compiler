@@ -402,8 +402,6 @@ module Cf:
       class_field
     val attr: class_field -> attribute -> class_field
 
-    val inherit_: ?loc:loc -> ?attrs:attrs -> override_flag -> class_expr ->
-      str option -> class_field
     val val_: ?loc:loc -> ?attrs:attrs -> str -> mutable_flag ->
       class_field_kind -> class_field
     val method_: ?loc:loc -> ?attrs:attrs -> str -> private_flag ->

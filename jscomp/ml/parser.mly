@@ -30,7 +30,6 @@ let mkmty ?attrs d = Mty.mk ~loc:(symbol_rloc()) ?attrs d
 let mksig d = Sig.mk ~loc:(symbol_rloc()) d
 let mkmod ?attrs d = Mod.mk ~loc:(symbol_rloc()) ?attrs d
 let mkstr d = Str.mk ~loc:(symbol_rloc()) d
-let mkclass ?attrs d = Cl.mk ~loc:(symbol_rloc()) ?attrs d
 let mkcty ?attrs d = Cty.mk ~loc:(symbol_rloc()) ?attrs d
 let mkctf ?attrs ?docs d =
   Ctf.mk ~loc:(symbol_rloc()) ?attrs ?docs d
@@ -258,8 +257,6 @@ let wrap_pat_attrs pat (ext, attrs) =
 let mkpat_attrs d attrs =
   wrap_pat_attrs (mkpat d) attrs
 
-let wrap_class_attrs body attrs =
-  {body with pcl_attributes = attrs @ body.pcl_attributes}
 let wrap_class_type_attrs body attrs =
   {body with pcty_attributes = attrs @ body.pcty_attributes}
 let wrap_mod_attrs body attrs =
@@ -363,17 +360,6 @@ let expr_of_let_bindings lbs body =
     mkexp_attrs (Pexp_let(lbs.lbs_rec, List.rev bindings, body))
       (lbs.lbs_extension, [])
 
-let class_of_let_bindings lbs body =
-  let bindings =
-    List.map
-      (fun lb ->
-         Vb.mk ~loc:lb.lb_loc ~attrs:lb.lb_attributes
-           lb.lb_pattern lb.lb_expression)
-      lbs.lbs_bindings
-  in
-    if lbs.lbs_extension <> None then
-      raise Syntaxerr.(Error(Not_expecting(lbs.lbs_loc, "extension")));
-    mkclass(Pcl_let (lbs.lbs_rec, List.rev bindings, body))
 
 
 (* Alternatively, we could keep the generic module type in the Parsetree
@@ -990,46 +976,6 @@ class_type_parameters:
     /*empty*/                                   { [] }
   | LBRACKET type_parameter_list RBRACKET       { List.rev $2 }
 ;
-class_fun_def:
-    labeled_simple_pattern MINUSGREATER class_expr
-      { let (l,o,p) = $1 in mkclass(Pcl_fun(l, o, p, $3)) }
-  | labeled_simple_pattern class_fun_def
-      { let (l,o,p) = $1 in mkclass(Pcl_fun(l, o, p, $2)) }
-;
-class_expr:
-    class_simple_expr
-      { $1 }
-  | FUN attributes class_fun_def
-      { wrap_class_attrs $3 $2 }
-  | class_simple_expr simple_labeled_expr_list
-      { mkclass(Pcl_apply($1, List.rev $2)) }
-  | let_bindings IN class_expr
-      { class_of_let_bindings $1 $3 }
-  | LET OPEN override_flag attributes mod_longident IN class_expr
-      { wrap_class_attrs (mkclass(Pcl_open($3, mkrhs $5 5, $7))) $4 }
-  | class_expr attribute
-      { Cl.attr $1 $2 }
-  | extension
-      { mkclass(Pcl_extension $1) }
-;
-class_simple_expr:
-    LBRACKET core_type_comma_list RBRACKET class_longident
-      { mkclass(Pcl_constr(mkloc $4 (rhs_loc 4), List.rev $2)) }
-  | class_longident
-      { mkclass(Pcl_constr(mkrhs $1 1, [])) }
-  | OBJECT attributes class_structure END
-      { mkclass ~attrs:$2 (Pcl_structure $3) }
-  | OBJECT attributes class_structure error
-      { unclosed "object" 1 "end" 4 }
-  | LPAREN class_expr COLON class_type RPAREN
-      { mkclass(Pcl_constraint($2, $4)) }
-  | LPAREN class_expr COLON class_type error
-      { unclosed "(" 1 ")" 5 }
-  | LPAREN class_expr RPAREN
-      { $2 }
-  | LPAREN class_expr error
-      { unclosed "(" 1 ")" 3 }
-;
 class_structure:
   |  class_self_pattern class_fields
        { Cstr.mk $1 (extra_cstr 2 (List.rev $2)) }
@@ -1049,9 +995,6 @@ class_fields:
       { $2 :: (text_cstr 2) @ $1 }
 ;
 class_field:
-  | INHERIT override_flag attributes class_expr parent_binder
-    post_item_attributes
-      { mkcf (Pcf_inherit ($2, $4, $5)) ~attrs:($3@$6) ~docs:(symbol_docs ()) }
   | VAL value post_item_attributes
       { let v, attrs = $2 in
         mkcf (Pcf_val v) ~attrs:(attrs@$3) ~docs:(symbol_docs ()) }
@@ -1067,12 +1010,6 @@ class_field:
   | floating_attribute
       { mark_symbol_docs ();
         mkcf (Pcf_attribute $1) }
-;
-parent_binder:
-    AS LIDENT
-          { Some (mkrhs $2 2) }
-  | /* empty */
-          { None }
 ;
 value:
 /* TODO: factorize these rules (also with method): */

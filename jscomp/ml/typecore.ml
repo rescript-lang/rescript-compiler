@@ -217,22 +217,11 @@ let iter_expression f e =
     | Pstr_recmodule l -> List.iter (fun x -> module_expr x.pmb_expr) l
     | Pstr_class () -> ()
 
-  and class_expr ce =
-    match ce.pcl_desc with
-    | Pcl_constr _ -> ()
-    | Pcl_structure { pcstr_fields = fs } -> List.iter class_field fs
-    | Pcl_fun (_, eo, _,  ce) -> may expr eo; class_expr ce
-    | Pcl_apply (ce, lel) ->
-        class_expr ce; List.iter (fun (_, e) -> expr e) lel
-    | Pcl_let (_, pel, ce) ->
-        List.iter binding pel; class_expr ce
-    | Pcl_open (_, _, ce)
-    | Pcl_constraint (ce, _) -> class_expr ce
-    | Pcl_extension _ -> ()
+
 
   and class_field cf =
     match cf.pcf_desc with
-    | Pcf_inherit (_, ce, _) -> class_expr ce
+    | Pcf_inherit () -> ()
     | Pcf_val (_, _, Cfk_virtual _)
     | Pcf_method (_, _, Cfk_virtual _ ) | Pcf_constraint _ -> ()
     | Pcf_val (_, _, Cfk_concrete (_, e))
@@ -1621,23 +1610,8 @@ let rec is_nonexpansive exp =
       true
   (* Note: nonexpansive only means no _observable_ side effects *)
   | Texp_lazy e -> is_nonexpansive e
-  | Texp_object ({cstr_fields=fields; cstr_type = { csig_vars=vars}}, _) ->
-      let count = ref 0 in
-      List.for_all
-        (fun field -> match field.cf_desc with
-            Tcf_method _ -> true
-          | Tcf_val (_, _, _, Tcfk_concrete (_, e), _) ->
-              incr count; is_nonexpansive e
-          | Tcf_val (_, _, _, Tcfk_virtual _, _) ->
-              incr count; true
-          | Tcf_initializer e -> is_nonexpansive e
-          | Tcf_constraint _ -> true
-          | Tcf_inherit _ -> false
-          | Tcf_attribute _ -> true)
-        fields &&
-      Vars.fold (fun _ (mut,_,_) b -> decr count; b && mut = Immutable)
-        vars true &&
-      !count = 0
+  | Texp_object () ->
+    assert false
   | Texp_letmodule (_, _, mexp, e) ->
       is_nonexpansive_mod mexp && is_nonexpansive e
   | Texp_pack mexp ->
@@ -2048,24 +2022,23 @@ struct
                 (inspect (option expression env eo)))
       | Texp_field (e, _, _) ->
         Use.(inspect (expression env e))
-      | Texp_setinstvar (_,_,_,e) ->
-          Use.(inspect (expression env e))
+      | Texp_setinstvar () ->
+        assert false
       | Texp_letexception (_, e) ->
           expression env e
       | Texp_assert e ->
           Use.inspect (expression env e)
       | Texp_pack m ->
           modexp env m
-      | Texp_object (clsstrct, _) ->
-          class_structure env clsstrct
+      | Texp_object () ->
+          assert false
       | Texp_try (e, cases) ->
         (* This is more permissive than the old check. *)
         let case env {Typedtree.c_rhs} = expression env c_rhs in
         Use.join (expression env e)
           (list case env cases)
-      | Texp_override (_, fields) ->
-        let field env (_, _, e) = expression env e in
-        Use.inspect (list field env fields)
+      | Texp_override () ->
+        assert false
       | Texp_function { cases } ->
         Use.delay (list (case ~scrutinee:Use.empty) env cases)
       | Texp_lazy e ->
@@ -2089,28 +2062,6 @@ struct
   and array : 'a. (Env.env -> 'a -> Use.t) -> Env.env -> 'a array -> Use.t =
     fun f env ->
       Array.fold_left (fun typ item -> Use.join (f env item) typ) Use.empty
-  and class_structure : Env.env -> Typedtree.class_structure -> Use.t =
-    fun env cs -> Use.(inspect (list class_field env cs.cstr_fields))
-  and class_field : Env.env -> Typedtree.class_field -> Use.t =
-    fun env cf -> match cf.cf_desc with
-      | Tcf_inherit (_, ce, _super, _inh_vars, _inh_meths) ->
-          Use.inspect (class_expr env ce)
-      | Tcf_val (_lab, _mut, _, cfk, _) ->
-          class_field_kind env cfk
-      | Tcf_method (_, _, cfk) ->
-          class_field_kind env cfk
-      | Tcf_constraint _ ->
-          Use.empty
-      | Tcf_initializer e ->
-          Use.inspect (expression env e)
-      | Tcf_attribute _ ->
-          Use.empty
-  and class_field_kind : Env.env -> Typedtree.class_field_kind -> Use.t =
-    fun env cfk -> match cfk with
-      | Tcfk_virtual _ ->
-          Use.empty
-      | Tcfk_concrete (_, e) ->
-          Use.inspect (expression env e)
   and modexp : Env.env -> Typedtree.module_expr -> Use.t =
     fun env m -> match m.mod_desc with
       | Tmod_ident (pth, _) ->
@@ -2184,27 +2135,6 @@ struct
           Env.empty, Use.inspect (modexp env inc.incl_mod)
       | Tstr_attribute _ ->
           Env.empty, Use.empty
-  and class_expr : Env.env -> Typedtree.class_expr -> Use.t =
-    fun env ce -> match ce.cl_desc with
-      | Tcl_ident (pth, _, _) ->
-          Use.inspect (path env pth)
-      | Tcl_structure cs ->
-          class_structure env cs
-      | Tcl_fun (_, _, args, ce, _) ->
-          let arg env (_, _, e) = expression env e in
-          Use.inspect (Use.join (list arg env args)
-                          (class_expr env ce))
-      | Tcl_apply (ce, args) ->
-          let arg env (_, eo) = option expression env eo in
-          Use.inspect (Use.join (class_expr env ce)
-                          (list arg env args))
-      | Tcl_let (rec_flag, valbinds, _, ce) ->
-          let _, ty = value_bindings rec_flag env valbinds in
-          Use.(inspect (join ty (class_expr env ce)))
-      | Tcl_constraint (ce, _, _, _, _) ->
-          class_expr env ce
-      | Tcl_open (_, _, _, _, ce) ->
-          class_expr env ce
   and case : Env.env -> Typedtree.case -> scrutinee:Use.t -> Use.t =
     fun env { Typedtree.c_lhs; c_guard; c_rhs } ~scrutinee:ty ->
       let ty =
@@ -2662,14 +2592,8 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         rue {
           exp_desc =
             begin match desc.val_kind with
-              Val_ivar (_, cl_num) ->
-                let (self_path, _) =
-                  Env.lookup_value (Longident.Lident ("self-" ^ cl_num)) env
-                in
-                Texp_instvar(self_path, path,
-                             match lid.txt with
-                                 Longident.Lident txt -> { txt; loc = lid.loc }
-                               | _ -> assert false)
+              Val_ivar (_, _cl_num) ->
+                assert false
             | Val_self (_, _, cl_num, _) ->
                 let (path, _) =
                   Env.lookup_value (Longident.Lident ("self-" ^ cl_num)) env
@@ -3372,76 +3296,9 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
               exp_attributes = sexp.pexp_attributes;
               exp_env = env }
         end
-  | Pexp_setinstvar (lab, snewval) ->
-      begin try
-        let (path, desc) = Env.lookup_value (Longident.Lident lab.txt) env in
-        match desc.val_kind with
-          Val_ivar (Mutable, cl_num) ->
-            let newval =
-              type_expect env snewval (instance env desc.val_type) in
-            let (path_self, _) =
-              Env.lookup_value (Longident.Lident ("self-" ^ cl_num)) env
-            in
-            rue {
-              exp_desc = Texp_setinstvar(path_self, path, lab, newval);
-              exp_loc = loc; exp_extra = [];
-              exp_type = instance_def Predef.type_unit;
-              exp_attributes = sexp.pexp_attributes;
-              exp_env = env }
-        | Val_ivar _ ->
-            raise(Error(loc, env, Instance_variable_not_mutable(true,lab.txt)))
-        | _ ->
-            raise(Error(loc, env, Instance_variable_not_mutable(false,lab.txt)))
-      with
-        Not_found ->
-          let collect_vars name _path val_desc li =
-            match val_desc.val_kind with
-            | Val_ivar (Mutable, _) -> name::li
-            | _ -> li in
-          let valid_vars = Env.fold_values collect_vars None env [] in
-          raise(Error(loc, env,
-                      Unbound_instance_variable (lab.txt, valid_vars)))
-      end
-  | Pexp_override lst ->
-      let _ =
-       List.fold_right
-        (fun (lab, _) l ->
-           if List.exists (fun l -> l.txt = lab.txt) l then
-             raise(Error(loc, env,
-                         Value_multiply_overridden lab.txt));
-           lab::l)
-        lst
-        [] in
-      begin match
-        try
-          Env.lookup_value (Longident.Lident "selfpat-*") env,
-          Env.lookup_value (Longident.Lident "self-*") env
-        with Not_found ->
-          raise(Error(loc, env, Outside_class))
-      with
-        (_, {val_type = self_ty; val_kind = Val_self (_, vars, _, _)}),
-        (path_self, _) ->
-          let type_override (lab, snewval) =
-            begin try
-              let (id, _, _, ty) = Vars.find lab.txt !vars in
-              (Path.Pident id, lab, type_expect env snewval (instance env ty))
-            with
-              Not_found ->
-                let vars = Vars.fold (fun var _ li -> var::li) !vars [] in
-                raise(Error(loc, env,
-                            Unbound_instance_variable (lab.txt, vars)))
-            end
-          in
-          let modifs = List.map type_override lst in
-          rue {
-            exp_desc = Texp_override(path_self, modifs);
-            exp_loc = loc; exp_extra = [];
-            exp_type = self_ty;
-            exp_attributes = sexp.pexp_attributes;
-            exp_env = env }
-      | _ ->
-          assert false
-      end
+  | Pexp_setinstvar _ 
+  | Pexp_override _ ->
+        assert false
   | Pexp_letmodule(name, smodl, sbody) ->
       let ty = newvar() in
       (* remember original level *)
@@ -3512,15 +3369,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         exp_attributes = sexp.pexp_attributes;
         exp_env = env;
       }
-  | Pexp_object s ->
-      let desc, sign, meths = !type_object env loc s in
-      rue {
-        exp_desc = Texp_object (desc, (*sign,*) meths);
-        exp_loc = loc; exp_extra = [];
-        exp_type = sign.csig_self;
-        exp_attributes = sexp.pexp_attributes;
-        exp_env = env;
-      }
+  | Pexp_object _ -> assert false  
   | Pexp_poly(sbody, sty) ->
       if !Clflags.principal then begin_def ();
       let ty, cty =

@@ -334,14 +334,10 @@ module MakeIterator(Iter : IteratorArgument) : sig
                 None -> ()
               | Some exp -> iter_expression exp
           end
-        | Texp_new _ -> ()
-        | Texp_instvar _ -> ()
-        | Texp_setinstvar (_, _, _, exp) ->
-            iter_expression exp
-        | Texp_override (_, list) ->
-            List.iter (fun (_path, _, exp) ->
-                iter_expression exp
-            ) list
+        | Texp_new _ 
+        | Texp_instvar _ 
+        | Texp_setinstvar _ 
+        | Texp_override _ -> ()
         | Texp_letmodule (_id, _, mexpr, exp) ->
             iter_module_expr mexpr;
             iter_expression exp
@@ -350,8 +346,8 @@ module MakeIterator(Iter : IteratorArgument) : sig
             iter_expression exp
         | Texp_assert exp -> iter_expression exp
         | Texp_lazy exp -> iter_expression exp
-        | Texp_object (cl, _) ->
-            iter_class_structure cl
+        | Texp_object () ->
+            ()
         | Texp_pack (mexpr) ->
             iter_module_expr mexpr
         | Texp_unreachable ->

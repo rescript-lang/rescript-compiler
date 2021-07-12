@@ -854,13 +854,7 @@ and class_type_declaration_list ctxt f l =
 
 and class_field ctxt f x =
   match x.pcf_desc with
-  | Pcf_inherit (ovf, ce, so) ->
-      pp f "@[<2>inherit@ %s@ %a%a@]%a" (override ovf)
-        (class_expr ctxt) ce
-        (fun f so -> match so with
-           | None -> ();
-           | Some (s) -> pp f "@ as %s" s.txt ) so
-        (item_attributes ctxt) x.pcf_attributes
+  | Pcf_inherit () -> ()  
   | Pcf_val (s, mf, Cfk_concrete (ovf, e)) ->
       pp f "@[<2>val%s %a%s =@;%a@]%a" (override ovf)
         mutable_flag mf s.txt
@@ -918,40 +912,6 @@ and class_structure ctxt f { pcstr_self = p; pcstr_fields =  l } =
        | Ppat_constraint _ -> pp f " %a" (pattern ctxt) p
        | _ -> pp f " (%a)" (pattern ctxt) p) p
     (list (class_field ctxt)) l
-
-and class_expr ctxt f x =
-  if x.pcl_attributes <> [] then begin
-    pp f "((%a)%a)" (class_expr ctxt) {x with pcl_attributes=[]}
-      (attributes ctxt) x.pcl_attributes
-  end else
-    match x.pcl_desc with
-    | Pcl_structure (cs) -> class_structure ctxt f cs
-    | Pcl_fun (l, eo, p, e) ->
-        pp f "fun@ %a@ ->@ %a"
-          (label_exp ctxt) (l,eo,p)
-          (class_expr ctxt) e
-    | Pcl_let (rf, l, ce) ->
-        pp f "%a@ in@ %a"
-          (bindings ctxt) (rf,l)
-          (class_expr ctxt) ce
-    | Pcl_apply (ce, l) ->
-        pp f "((%a)@ %a)" (* Cf: #7200 *)
-          (class_expr ctxt) ce
-          (list (label_x_expression_param ctxt)) l
-    | Pcl_constr (li, l) ->
-        pp f "%a%a"
-          (fun f l-> if l <>[] then
-              pp f "[%a]@ "
-                (list (core_type ctxt) ~sep:",") l) l
-          longident_loc li
-    | Pcl_constraint (ce, ct) ->
-        pp f "(%a@ :@ %a)"
-          (class_expr ctxt) ce
-          (class_type ctxt) ct
-    | Pcl_extension e -> extension ctxt f e
-    | Pcl_open (ovf, lid, e) ->
-        pp f "@[<2>let open%s %a in@;%a@]" (override ovf) longident_loc lid
-          (class_expr ctxt) e
 
 and module_type ctxt f x =
   if x.pmty_attributes <> [] then begin

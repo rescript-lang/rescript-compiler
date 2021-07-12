@@ -43,9 +43,6 @@ type class_type_info = {
   clsty_info : Typedtree.class_type_declaration;
 }
 
-val class_declarations:
-  Env.t -> Parsetree.class_declaration list ->
-  Typedtree.class_declaration class_info list * Env.t
 
 (*
 and class_declaration =
