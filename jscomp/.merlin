@@ -13,23 +13,27 @@ B core
 S stubs
 B stubs
 
-S utils
-B utils
-
 S bsb
 B bsb
 
-S parsing
-B parsing
 
 S frontend
 B frontend
 
-S typing
-B typing
+S ml
+B ml
 
-S bytecomp
-B bytecomp
+# S utils
+# B utils
+
+# S parsing
+# B parsing
+
+# S typing
+# B typing
+
+# S bytecomp
+# B bytecomp
 
 S ounit
 B ounit

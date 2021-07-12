@@ -1512,10 +1512,7 @@ ${buildNapkinFiles}
 }
 
 var sourceDirs = [
-  "bytecomp",
-  "parsing",
-  "typing",
-  "utils",
+  "ml",  
   "stubs",
   "ext",
   "common",
@@ -1539,12 +1536,12 @@ var sourceDirs = [
 function makeLibs(dirs) {
   return dirs.map((x) => `${x}/${x}.cmxa`).join(" ");
 }
-var compiler_libs = ["utils", "parsing", "typing", "bytecomp"];
+var compiler_libs = ["ml"];
 var bsc_libs = [
-  ...compiler_libs,
-  "js_parser",
   "stubs",
   "ext",
+  ...compiler_libs,
+  "js_parser",  
   "napkin",
   "common",
   "frontend",
@@ -1555,9 +1552,9 @@ var bsc_libs = [
 ];
 
 var bspack_libs = [
-  ...compiler_libs,
   "stubs",
   "ext",
+  ...compiler_libs,  
   "common",
   "frontend",
   "depends",
@@ -1565,11 +1562,11 @@ var bspack_libs = [
 
 var bsb_helper_libs = ["stubs", "ext", "common", "bsb_helper"];
 
-var rescript_libs = ["stubs", "utils", "ext", "common", "bsb"];
+var rescript_libs = ["stubs",  "ext", "common", "bsb"];
 
 var cmjdumps_libs = [
-  ...compiler_libs,
   "stubs",
+  ...compiler_libs,
   "ext",
   "common",
   "frontend",
@@ -1578,9 +1575,9 @@ var cmjdumps_libs = [
 ];
 
 var cmij_libs = [
-  ...compiler_libs,
   "stubs",
   "ext",
+  ...compiler_libs,    
   "common",
   "frontend",
   "depends",
@@ -1588,10 +1585,10 @@ var cmij_libs = [
 ];
 
 var tests_libs = [
-  ...compiler_libs,
-  "ounit",
   "stubs",
   "ext",
+  ...compiler_libs,
+  "ounit",
   "common",
   "frontend",
   "depends",
@@ -1695,8 +1692,8 @@ rule bspack
 ${mllRule}
 ${mlyRule}
 ${mllList("ext", ["ext_json_parse.mll"])}
-${mllList("parsing", ["lexer.mll"])}
-${mlyList("parsing", ["parser.mly"])}
+${mllList("ml", ["lexer.mll"])}
+${mlyList("ml", ["parser.mly"])}
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in
 o ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/generator.ml
