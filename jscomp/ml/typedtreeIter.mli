@@ -33,7 +33,6 @@ module type IteratorArgument = sig
     val enter_with_constraint : with_constraint -> unit
     val enter_class_expr : class_expr -> unit
     val enter_class_signature : class_signature -> unit
-    val enter_class_declaration : class_declaration -> unit
     val enter_class_description : class_description -> unit
     val enter_class_type_declaration : class_type_declaration -> unit
     val enter_class_type : class_type -> unit
@@ -59,7 +58,6 @@ module type IteratorArgument = sig
     val leave_with_constraint : with_constraint -> unit
     val leave_class_expr : class_expr -> unit
     val leave_class_signature : class_signature -> unit
-    val leave_class_declaration : class_declaration -> unit
     val leave_class_description : class_description -> unit
     val leave_class_type_declaration : class_type_declaration -> unit
     val leave_class_type : class_type -> unit

@@ -16,7 +16,6 @@
 open Parsetree
 open Asttypes
 open Types
-open Typecore
 open Typetexp
 open Format
 
@@ -485,137 +484,6 @@ let class_type env scty =
   cty
 
 (*******************************)
-
-let rec class_field _self_loc _cl_num _self_type _meths _vars _arg cf =
-  Builtin_attributes.warning_scope cf.pcf_attributes
-    (fun () -> assert false (*class_field_aux self_loc cl_num self_type meths vars arg cf*))
-
-
-and class_structure cl_num final val_env met_env loc
-  { pcstr_self = spat; pcstr_fields = str } =
-  (* Environment for substructures *)
-  let par_env = met_env in
-
-  (* Location of self. Used for locations of self arguments *)
-  let self_loc = {spat.ppat_loc with Location.loc_ghost = true} in
-
-  (* Self type, with a dummy method preventing it from being closed/escaped. *)
-  let self_type = Ctype.newvar () in
-  Ctype.unify val_env
-    (Ctype.filter_method val_env dummy_method Private self_type)
-    (Ctype.newty (Ttuple []));
-
-  (* Private self is used for private method calls *)
-  let private_self = if final then Ctype.newvar () else self_type in
-
-  (* Self binder *)
-  let (pat, meths, vars, val_env, meth_env, par_env) =
-    type_self_pattern cl_num private_self val_env met_env par_env spat
-  in
-  let public_self = pat.pat_type in
-
-  (* Check that the binder has a correct type *)
-  let ty =
-    if final then Ctype.newty (Tobject (Ctype.newvar(), ref None))
-    else self_type in
-  begin try Ctype.unify val_env public_self ty with
-    Ctype.Unify _ ->
-      raise(Error(spat.ppat_loc, val_env, Pattern_type_clash public_self))
-  end;
-  let get_methods ty =
-    (fst (Ctype.flatten_fields
-            (Ctype.object_fields (Ctype.expand_head val_env ty)))) in
-  if final then begin
-    (* Copy known information to still empty self_type *)
-    List.iter
-      (fun (lab,kind,ty) ->
-        let k =
-          if Btype.field_kind_repr kind = Fpresent then Public else Private in
-        try Ctype.unify val_env ty
-            (Ctype.filter_method val_env lab k self_type)
-        with _ -> assert false)
-      (get_methods public_self)
-  end;
-
-  (* Typing of class fields *)
-  let (_, _, _, fields, concr_meths, _, inher, _local_meths, _local_vals) =
-    Builtin_attributes.warning_scope []
-      (fun () ->
-         List.fold_left (class_field self_loc cl_num self_type meths vars)
-           (val_env, meth_env, par_env, [], Concr.empty, Concr.empty, [],
-            Concr.empty, Concr.empty)
-           str
-      )
-  in
-  Ctype.unify val_env self_type (Ctype.newvar ());
-  let sign =
-    {csig_self = public_self;
-     csig_vars = Vars.map (fun (_id, mut, vr, ty) -> (mut, vr, ty)) !vars;
-     csig_concr = concr_meths;
-      csig_inher = inher} in
-  let methods = get_methods self_type in
-  let priv_meths =
-    List.filter (fun (_,kind,_) -> Btype.field_kind_repr kind <> Fpresent)
-      methods in
-  if final then begin
-    (* Unify private_self and a copy of self_type. self_type will not
-       be modified after this point *)
-    Ctype.close_object self_type;
-    let mets = virtual_methods {sign with csig_self = self_type} in
-    let vals =
-      Vars.fold
-        (fun name (_mut, vr, _ty) l -> if vr = Virtual then name :: l else l)
-        sign.csig_vars [] in
-    if mets <> [] || vals <> [] then
-      raise(Error(loc, val_env, Virtual_class(true, final, mets, vals)));
-    let self_methods =
-      List.fold_right
-        (fun (lab,kind,ty) rem ->
-          if lab = dummy_method then
-            (* allow public self and private self to be unified *)
-            match Btype.field_kind_repr kind with
-              Fvar r -> Btype.set_kind r Fabsent; rem
-            | _ -> rem
-          else
-            Ctype.newty(Tfield(lab, Btype.copy_kind kind, ty, rem)))
-        methods (Ctype.newty Tnil) in
-    begin try
-      Ctype.unify val_env private_self
-        (Ctype.newty (Tobject(self_methods, ref None)));
-      Ctype.unify val_env public_self self_type
-    with Ctype.Unify trace -> raise(Error(loc, val_env, Final_self_clash trace))
-    end;
-  end;
-
-  (* Typing of method bodies *)
-  (* if !Clflags.principal then *) begin
-    let ms = !meths in
-    (* Generalize the spine of methods accessed through self *)
-    Meths.iter (fun _ (_,ty) -> Ctype.generalize_spine ty) ms;
-    meths :=
-      Meths.map (fun (id,ty) -> (id, Ctype.generic_instance val_env ty)) ms;
-    (* But keep levels correct on the type of self *)
-    Meths.iter (fun _ (_,ty) -> Ctype.unify val_env ty (Ctype.newvar ())) ms
-  end;
-  let fields = List.map Lazy.force (List.rev fields) in
-  let meths = Meths.map (function (id, _ty) -> id) !meths in
-
-  (* Check for private methods made public *)
-  let pub_meths' =
-    List.filter (fun (_,kind,_) -> Btype.field_kind_repr kind = Fpresent)
-      (get_methods public_self) in
-  let names = List.map (fun (x,_,_) -> x) in
-  let l1 = names priv_meths and l2 = names pub_meths' in
-  let added = List.filter (fun x -> List.mem x l1) l2 in
-  if added <> [] then
-    Location.prerr_warning loc (Warnings.Implicit_public_methods added);
-  let sign = if final then sign else
-      {sign with Types.csig_self = Ctype.expand_head val_env public_self} in
-  {
-    cstr_self = pat;
-    cstr_fields = fields;
-    cstr_type = sign;
-    cstr_meths = meths}, sign (* redondant, since already in cstr_type *)
 
 
 (*******************************)
@@ -1087,7 +955,6 @@ let type_classes define_class approx kind env cls =
   let res = List.map (check_coercions env) res in
   (res, env)
 
-let class_num = ref 0
 
 let class_description env sexpr =
   let expr = class_type env sexpr in
@@ -1114,44 +981,7 @@ let class_type_declarations env cls =
      decls,
    env)
 
-let rec unify_parents env ty cl =
-  match cl.cl_desc with
-    Tcl_ident (p, _, _) ->
-      begin try
-        let decl = Env.find_class p env in
-        let _, body = Ctype.find_cltype_for_path env decl.cty_path in
-        Ctype.unify env ty (Ctype.instance env body)
-      with
-        Not_found -> ()
-      | _exn -> assert false
-      end
-  | Tcl_structure st -> unify_parents_struct env ty st
-  | Tcl_open (_, _, _, _, cl)
-  | Tcl_fun (_, _, _, cl, _)
-  | Tcl_apply (cl, _)
-  | Tcl_let (_, _, _, cl)
-  | Tcl_constraint (cl, _, _, _, _) -> unify_parents env ty cl
-and unify_parents_struct env ty st =
-  List.iter
-    (function
-      | {cf_desc = Tcf_inherit (_, cl, _, _, _)} ->
-          unify_parents env ty cl
-      | _ -> ())
-    st.cstr_fields
 
-let type_object env loc s =
-  incr class_num;
-  let (desc, sign) =
-    class_structure (string_of_int !class_num) true env env loc s in
-  let sty = Ctype.expand_head env sign.csig_self in
-  Ctype.hide_private_methods sty;
-  let (fields, _) = Ctype.flatten_fields (Ctype.object_fields sty) in
-  let meths = List.map (fun (s,_,_) -> s) fields in
-  unify_parents_struct env sign.csig_self desc;
-  (desc, sign, meths)
-
-let () =
-  Typecore.type_object := type_object
 
 (*******************************)
 

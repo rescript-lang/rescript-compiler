@@ -34,7 +34,7 @@ module type MapArgument = sig
   val enter_with_constraint : with_constraint -> with_constraint
   val enter_class_expr : class_expr -> class_expr
   val enter_class_signature : class_signature -> class_signature
-  val enter_class_declaration : class_declaration -> class_declaration
+
   val enter_class_description : class_description -> class_description
   val enter_class_type_declaration :
     class_type_declaration -> class_type_declaration
@@ -63,7 +63,7 @@ module type MapArgument = sig
   val leave_with_constraint : with_constraint -> with_constraint
   val leave_class_expr : class_expr -> class_expr
   val leave_class_signature : class_signature -> class_signature
-  val leave_class_declaration : class_declaration -> class_declaration
+
   val leave_class_description : class_description -> class_description
   val leave_class_type_declaration :
     class_type_declaration -> class_type_declaration
@@ -350,7 +350,7 @@ module MakeMap(Map : MapArgument) = struct
           )
         | Texp_send (exp, meth, expo) ->
           Texp_send (map_expression exp, meth, may_map map_expression expo)
-        | Texp_new _ -> exp.exp_desc
+        | Texp_new _ 
         | Texp_instvar _ 
         | Texp_setinstvar _ 
         | Texp_override _ -> 
@@ -673,7 +673,7 @@ module DefaultMapArgument = struct
   let enter_with_constraint t = t
   let enter_class_expr t = t
   let enter_class_signature t = t
-  let enter_class_declaration t = t
+
   let enter_class_description t = t
   let enter_class_type_declaration t = t
   let enter_class_type t = t
@@ -700,7 +700,7 @@ module DefaultMapArgument = struct
   let leave_with_constraint t = t
   let leave_class_expr t = t
   let leave_class_signature t = t
-  let leave_class_declaration t = t
+
   let leave_class_description t = t
   let leave_class_type_declaration t = t
   let leave_class_type t = t

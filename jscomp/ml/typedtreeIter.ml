@@ -39,7 +39,7 @@ module type IteratorArgument = sig
     val enter_with_constraint : with_constraint -> unit
     val enter_class_expr : class_expr -> unit
     val enter_class_signature : class_signature -> unit
-    val enter_class_declaration : class_declaration -> unit
+
     val enter_class_description : class_description -> unit
     val enter_class_type_declaration : class_type_declaration -> unit
     val enter_class_type : class_type -> unit
@@ -65,7 +65,7 @@ module type IteratorArgument = sig
     val leave_with_constraint : with_constraint -> unit
     val leave_class_expr : class_expr -> unit
     val leave_class_signature : class_signature -> unit
-    val leave_class_declaration : class_declaration -> unit
+
     val leave_class_description : class_description -> unit
     val leave_class_type_declaration : class_type_declaration -> unit
     val leave_class_type : class_type -> unit
@@ -628,7 +628,7 @@ module DefaultIteratorArgument = struct
       let enter_with_constraint _ = ()
       let enter_class_expr _ = ()
       let enter_class_signature _ = ()
-      let enter_class_declaration _ = ()
+
       let enter_class_description _ = ()
       let enter_class_type_declaration _ = ()
       let enter_class_type _ = ()
@@ -654,7 +654,7 @@ module DefaultIteratorArgument = struct
       let leave_with_constraint _ = ()
       let leave_class_expr _ = ()
       let leave_class_signature _ = ()
-      let leave_class_declaration _ = ()
+
       let leave_class_description _ = ()
       let leave_class_type_declaration _ = ()
       let leave_class_type _ = ()

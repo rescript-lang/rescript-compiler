@@ -102,7 +102,7 @@ and expression_desc =
       Ident.t * Parsetree.pattern * expression * expression * direction_flag *
         expression
   | Texp_send of expression * meth * expression option
-  | Texp_new of Path.t * Longident.t loc * Types.class_declaration
+  | Texp_new of unit
   | Texp_instvar of unit
   | Texp_setinstvar of unit
   | Texp_override of unit
@@ -508,8 +508,6 @@ and class_type_field_desc =
   | Tctf_constraint of (core_type * core_type)
   | Tctf_attribute of attribute
 
-and class_declaration =
-  class_expr class_infos
 
 and class_description =
   class_type class_infos

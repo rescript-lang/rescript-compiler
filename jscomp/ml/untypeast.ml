@@ -439,7 +439,7 @@ let expression sub exp =
         Pexp_send (sub.expr sub exp, match meth with
             Tmeth_name name -> mkloc name loc
           | Tmeth_val id -> mkloc (Ident.name id) loc)
-    | Texp_new (_path, lid, _) -> Pexp_new (map_loc sub lid)
+    | Texp_new _
     | Texp_instvar _
     | Texp_setinstvar _
     | Texp_override _ ->

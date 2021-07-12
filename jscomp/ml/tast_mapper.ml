@@ -23,7 +23,6 @@ type mapper =
   {
     case: mapper -> case -> case;
     cases: mapper -> case list -> case list;
-    class_declaration: mapper -> class_declaration -> class_declaration;
     class_description: mapper -> class_description -> class_description;
     class_expr: mapper -> class_expr -> class_expr;
     class_field: mapper -> class_field -> class_field;
@@ -96,8 +95,6 @@ let include_infos f x = {x with incl_mod = f x.incl_mod}
 let class_type_declaration sub x =
   class_infos sub (sub.class_type sub) x
 
-let class_declaration sub x =
-  class_infos sub (sub.class_expr sub) x
 
 let structure_item sub {str_desc; str_loc; str_env} =
   let str_env = sub.env sub str_env in
@@ -651,7 +648,6 @@ let default =
   {
     case;
     cases;
-    class_declaration;
     class_description;
     class_expr;
     class_field;

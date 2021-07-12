@@ -671,32 +671,9 @@ let rec transl_exp e =
 and transl_exp0 e =
   match e.exp_desc with
     Texp_ident(path, _, {val_kind = Val_prim p}) ->
-#if 1
-#else
-      let public_send = p.prim_name = "%send" in
-      if public_send || p.prim_name = "%sendself" then
-        let kind = if public_send then Public None else Self in
-        let obj = Ident.create "obj" and meth = Ident.create "meth" in
-        Lfunction{kind = Curried; params = [obj; meth];
-                  attr = default_stub_attribute;
-                  loc = e.exp_loc;
-                  body = Lsend(kind, Lvar meth, Lvar obj, [], e.exp_loc)}
-      else if p.prim_name = "%sendcache" then
-        let obj = Ident.create "obj" and meth = Ident.create "meth" in
-        let cache = Ident.create "cache" and pos = Ident.create "pos" in
-        Lfunction{kind = Curried; params = [obj; meth; cache; pos];
-                  attr = default_stub_attribute;
-                  loc = e.exp_loc;
-                  body = Lsend(Cached, Lvar meth, Lvar obj,
-                               [Lvar cache; Lvar pos], e.exp_loc)}
-      else
-#end      
-        transl_primitive e.exp_loc p e.exp_env e.exp_type (Some path)
-  | Texp_ident(_, _, {val_kind = Val_anc _}) ->
-      raise(Error(e.exp_loc, Free_super_var))
-  | Texp_ident(path, _, {val_kind = Val_reg | Val_self _}) ->
+      transl_primitive e.exp_loc p e.exp_env e.exp_type (Some path)
+  | Texp_ident(path, _, {val_kind = Val_reg }) ->
       transl_value_path ~loc:e.exp_loc e.exp_env path
-  | Texp_ident _ -> fatal_error "Translcore.transl_exp: bad Texp_ident"
   | Texp_constant cst ->
       Lconst(Const_base cst)
   | Texp_let(rec_flag, pat_expr_list, body) ->
@@ -964,13 +941,7 @@ and transl_exp0 e =
       in
       event_after e lam
 #end      
-  | Texp_new (cl, {Location.loc=loc}, _) ->
-      Lapply{ap_should_be_tailcall=false;
-             ap_loc=loc;
-             ap_func=Lprim(Pfield (0, Fld_tuple), [transl_class_path ~loc e.exp_env cl], loc);
-             ap_args=[lambda_unit];
-             ap_inlined=Default_inline;
-             ap_specialised=Default_specialise}
+  | Texp_new _ 
   | Texp_instvar _
   | Texp_setinstvar _
   | Texp_override _ ->

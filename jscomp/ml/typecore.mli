@@ -33,17 +33,6 @@ val type_let:
           Typedtree.value_binding list * Env.t
 val type_expression:
         Env.t -> Parsetree.expression -> Typedtree.expression
-val type_class_arg_pattern:
-        string -> Env.t -> Env.t -> arg_label -> Parsetree.pattern ->
-        Typedtree.pattern * (Ident.t * string loc * Ident.t * type_expr) list *
-        Env.t * Env.t
-val type_self_pattern:
-        string -> type_expr -> Env.t -> Env.t -> Env.t -> Parsetree.pattern ->
-        Typedtree.pattern *
-        (Ident.t * type_expr) Meths.t ref *
-        (Ident.t * Asttypes.mutable_flag * Asttypes.virtual_flag * type_expr)
-            Vars.t ref *
-        Env.t * Env.t * Env.t
 val check_partial:
         ?lev:int -> Env.t -> type_expr ->
         Location.t -> Typedtree.case list -> Typedtree.partial
@@ -147,9 +136,6 @@ val type_open:
    Longident.t loc -> Path.t * Env.t)
     ref
 (* Forward declaration, to be filled in by Typeclass.class_structure *)
-val type_object:
-  (Env.t -> Location.t -> Parsetree.class_structure ->
-   Typedtree.class_structure * Types.class_signature * string list) ref
 val type_package:
   (Env.t -> Parsetree.module_expr -> Path.t -> Longident.t list ->
   Typedtree.module_expr * type_expr list) ref

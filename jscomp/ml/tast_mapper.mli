@@ -22,7 +22,6 @@ type mapper =
   {
     case: mapper -> case -> case;
     cases: mapper -> case list -> case list;
-    class_declaration: mapper -> class_declaration -> class_declaration;
     class_description: mapper -> class_description -> class_description;
     class_expr: mapper -> class_expr -> class_expr;
     class_field: mapper -> class_field -> class_field;
