@@ -35,6 +35,15 @@ let print_if ppf flag printer arg =
   if !flag then fprintf ppf "%a@." printer arg
 
 
+let output_deps_set name  set  =
+  output_string stdout name;   
+  output_string stdout ": ";
+  Depend.StringSet.iter (fun s -> 
+      if s <> "" && s.[0] <> '*' then begin 
+        output_string stdout s ; 
+        output_string stdout " "
+      end ) set;
+  output_string stdout "\n"
 
 let process_with_gentype filename =    
   match !Clflags.bs_gentype with
@@ -56,6 +65,9 @@ let process_with_gentype filename =
 
 let after_parsing_sig ppf  outputprefix ast  =
   Ast_config.iter_on_bs_config_sigi ast;  
+  if !Js_config.modules then begin
+    output_deps_set !Location.input_name (Ast_extract.read_parse_and_extract Mli ast)
+  end;
   if !Js_config.binary_ast then
     begin 
       let sourcefile = !Location.input_name in   
@@ -83,15 +95,10 @@ let after_parsing_sig ppf  outputprefix ast  =
       let tsg = Typemod.transl_signature initial_env ast in
       if !Clflags.dump_typedtree then fprintf ppf "%a@." Printtyped.interface tsg;
       let sg = tsg.sig_type in
-      if !Clflags.print_types then
-        Printtyp.wrap_printing_env initial_env (fun () ->
-            fprintf Format.std_formatter "%a@."
-              Printtyp.signature (Typemod.simplify_signature sg));
       ignore (Includemod.signatures initial_env sg sg);
       Typecore.force_delayed_checks ();
       Warnings.check_fatal ();
-      if not !Clflags.print_types then begin
-
+      begin
         let deprecated = Builtin_attributes.deprecated_of_sig ast in
         let sg =
           Env.save_signature ~deprecated sg modulename (outputprefix ^ ".cmi")
@@ -166,6 +173,9 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
   let ast =
     if !Js_config.no_export  then 
       no_export ast else ast in     
+  if !Js_config.modules then begin    
+    output_deps_set !Location.input_name (Ast_extract.read_parse_and_extract Ml ast)
+  end;  
   if !Js_config.binary_ast then begin 
     let sourcefile = !Location.input_name in 
     Binary_ast.write_ast ~sourcefile
@@ -192,7 +202,7 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
       let typedtree_coercion = (typedtree, coercion) in        
       print_if ppf Clflags.dump_typedtree
         Printtyped.implementation_with_coercion  typedtree_coercion ;
-      if !Clflags.print_types || !Js_config.cmi_only then begin
+      if  !Js_config.cmi_only then begin
         Warnings.check_fatal ();
       end else begin
         let lambda = Translmod.transl_implementation modulename typedtree_coercion in 

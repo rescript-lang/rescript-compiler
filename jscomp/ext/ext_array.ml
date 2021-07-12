@@ -48,15 +48,16 @@ let reverse a =
     done;
     b  
 
-let reverse_of_list =  function
-  | [] -> [||]
-  | hd::tl as l ->
-    let len = List.length l in
-    let a = Array.make len hd in
-    let rec fill i = function
-      | [] -> a
-      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
-    fill 0 tl
+
+let reverse_of_list = function
+    [] -> [||]
+  | hd::tl ->
+      let len =  List.length tl in 
+      let a = Array.make (len + 1) hd in
+      let rec fill i = function
+          [] -> a
+        | hd::tl -> Array.unsafe_set a i hd; fill (i-1) tl in
+      fill (len - 1) tl
 
 let filter a f =
   let arr_len = Array.length a in

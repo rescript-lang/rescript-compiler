@@ -508,7 +508,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Popaque -> Ext_list.singleton_exn args      
   | Psetfield_computed _ ->  
     prim ~primitive:Psetfield_computed ~args loc 
-  | Pduparray _ ->  assert false 
+
 (* Does not exist since we compile array in js backend unlike native backend *)
 
 let convert_inline_attr (inline : Lambda.inline_attribute) : Lam.inline_attribute = 

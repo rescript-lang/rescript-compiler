@@ -27,7 +27,7 @@ let init_path () =
   let exp_dirs =
     List.map (Misc.expand_directory Config.standard_library) dirs in
   Config.load_path :=
-    List.rev_append exp_dirs (Clflags.std_include_dir ());
+    List.rev_append exp_dirs [];
   Env.reset_cache ()
 
 (* Return the initial environment in which compilation proceeds. *)

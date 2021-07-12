@@ -27,8 +27,12 @@ var js_package = pseudoTarget("js_pkg");
 var runtimeTarget = pseudoTarget("runtime");
 var othersTarget = pseudoTarget("others");
 var stdlibTarget = pseudoTarget("$stdlib");
+var my_target =
+  process.platform === "darwin" && process.arch === "arm64"
+    ? process.platform + process.arch
+    : process.platform;
 
-var vendorNinjaPath = path.join(__dirname, "..", process.platform, "ninja.exe");
+var vendorNinjaPath = path.join(__dirname, "..", my_target, "ninja.exe");
 
 exports.vendorNinjaPath = vendorNinjaPath;
 /**
@@ -76,8 +80,7 @@ exports.vendorNinjaPath = vendorNinjaPath;
  * Note ocamldep.opt has built-in macro handling OCAML_VERSION
  */
 var getOcamldepFile = () => {
-  return "ocamldep.opt"
-  
+  return "ocamldep.opt";
 };
 
 /**
@@ -85,6 +88,10 @@ var getOcamldepFile = () => {
  */
 var versionString = undefined;
 
+/**
+ *
+ * @returns {string}
+ */
 var getVersionString = () => {
   if (versionString === undefined) {
     var searcher = "version";
@@ -490,7 +497,7 @@ function mllList(cwd, xs) {
  * @param {string[]} xs
  * @returns {string}
  */
- function mlyList(cwd, xs) {
+function mlyList(cwd, xs) {
   return xs
     .map((x) => {
       var output = baseName(x) + ".ml";
@@ -659,32 +666,9 @@ function depModulesForBscAsync(files, dir, depsMap) {
   return [
     new Promise((resolve, reject) => {
       cp.exec(
-        `${getOcamldepFile()} -allow-approx -modules -one-line -native ${ocamlFiles.join(
+        `../../${my_target}/bsc.exe  -modules -bs-syntax-only ${resFiles.join(
           " "
-        )}`,
-        config,
-        cb(resolve, reject)
-      );
-    }),
-
-    new Promise((resolve, reject) => {
-      cp.exec(
-        `${getOcamldepFile()} -pp '../../${
-          process.platform
-        }/refmt.exe --print=binary' -modules -one-line -native -ml-synonym .re -mli-synonym .rei ${reFiles.join(
-          " "
-        )}`,
-        config,
-        cb(resolve, reject)
-      );
-    }),
-    new Promise((resolve, reject) => {
-      cp.exec(
-        `${getOcamldepFile()} -pp '../../${
-          process.platform
-        }/bsc.byte -as-pp' -modules -one-line -native -ml-synonym .res -mli-synonym .resi ${resFiles.join(
-          " "
-        )}`,
+        )} ${reFiles.join(" ")} ${ocamlFiles.join(" ")}`,
         config,
         cb(resolve, reject)
       );
@@ -870,7 +854,7 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
   return build_stmts;
 }
 
-var COMPILIER = `../${process.platform}/bsc.exe`;
+var COMPILIER = `../${my_target}/bsc.exe`;
 var BSC_COMPILER = `bsc = ${COMPILIER}`;
 var compilerTarget = pseudoTarget(COMPILIER);
 
@@ -969,7 +953,7 @@ rule ${mllRuleName}
     generator = true
 `;
 
-var mlyRuleName = `mly`
+var mlyRuleName = `mly`;
 var mlyRule = `
 rule ${mlyRuleName}
     command = $ocamlyacc -v --strict $in
@@ -1387,10 +1371,9 @@ function updateDev() {
   writeFileAscii(
     path.join(jscompDir, "build.ninja"),
     `
-${getVendorConfigNinja()}
+subninja compiler.ninja
 stdlib = stdlib-406
 ${BSC_COMPILER}      
-subninja compiler.ninja
 subninja runtime/build.ninja
 subninja others/build.ninja
 subninja $stdlib/build.ninja
@@ -1408,11 +1391,13 @@ include body.ninja
 `
   );
 
-  preprocessorNinjaSync();
+  preprocessorNinjaSync(); // This is needed so that ocamldep makes sense
   nativeNinja();
   runtimeNinja();
   stdlibNinja(true);
-  testNinja();
+  if (fs.existsSync(path.join(__dirname, "..", my_target, "bsc.exe"))) {
+    testNinja();
+  }
   othersNinja();
 }
 exports.updateDev = updateDev;
@@ -1428,9 +1413,7 @@ function readdirSync(dir) {
 /**
  * @type {string[]}
  */
-var black_list = [
-  
-]
+var black_list = [];
 /**
  *
  * @param {string} dir
@@ -1441,7 +1424,7 @@ function test(dir) {
       return (
         (x.endsWith(".ml") || x.endsWith(".mli")) &&
         !(x.endsWith(".cppo.ml") || x.endsWith(".cppo.mli")) &&
-        !black_list.some(name=>x.includes(name))
+        !black_list.some((name) => x.includes(name))
       );
     })
     .map((x) => path.join(dir, x));
@@ -1459,30 +1442,9 @@ function setSortedToStringAsNativeDeps(xs) {
 }
 
 /**
- * @returns {string}
- */
-function getVendorConfigNinja() {
-  return `
-ocamlopt = ocamlopt.opt
-ocamllex = ocamllex.opt
-ocamlc = ocamlc.opt
-ocamlmklib = ocamlmklib
-ocaml = ocaml
-ocamlyacc = ocamlyacc
-`;
-}
-
-/**
- * @returns {string}
- */
-function getPreprocessorFileName() {
-  return "cppoVendor.ninja";
-}
-/**
  * Built cppo.exe refmt.exe etc for dev purpose
  */
 function preprocessorNinjaSync() {
-  var refmtMainPath = "../lib/4.06.1";
   var napkinFiles = fs
     .readdirSync(path.join(jscompDir, "..", "syntax", "src"), "ascii")
     .filter((x) => x.endsWith(".ml") || x.endsWith(".mli"));
@@ -1490,7 +1452,12 @@ function preprocessorNinjaSync() {
     .map((file) => `o napkin/${file} : copy ../syntax/src/${file}`)
     .join("\n");
   var cppoNative = `
-${getVendorConfigNinja()}
+ocamlopt = ocamlopt.opt
+ocamllex = ocamllex.opt
+ocamlc = ocamlc.opt
+ocamlmklib = ocamlmklib
+ocaml = ocaml
+ocamlyacc = ocamlyacc  
 rule link
     command =  $ocamlopt -g   $flags $libs $in -o $out
 rule bytelink
@@ -1529,18 +1496,13 @@ ${cppoList("outcome_printer", [
   ["reason_syntax_util.mli", "reason_syntax_util.cppo.mli", ""],
 ])}
 
-o ../${
-    process.platform
-  }/bsc.byte: bytelink  ${refmtMainPath}/whole_compiler.mli ${refmtMainPath}/whole_compiler.ml
-      flags = -custom ./stubs/ext_basic_hash_stubs.c -I ${refmtMainPath}  -w a -no-alias-deps
-      generator = true
   
 rule copy
   command = cp $in $out
   description = $in -> $out    
 ${buildNapkinFiles}    
 `;
-  var cppoNinjaFile = getPreprocessorFileName();
+  var cppoNinjaFile = "cppoVendor.ninja";
   writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
   cp.execFileSync(vendorNinjaPath, ["-f", cppoNinjaFile, "--verbose", "-v"], {
     cwd: jscompDir,
@@ -1550,10 +1512,7 @@ ${buildNapkinFiles}
 }
 
 var sourceDirs = [
-  "bytecomp",
-  "parsing",
-  "typing",
-  "utils",
+  "ml",  
   "stubs",
   "ext",
   "common",
@@ -1577,12 +1536,12 @@ var sourceDirs = [
 function makeLibs(dirs) {
   return dirs.map((x) => `${x}/${x}.cmxa`).join(" ");
 }
-var compiler_libs = ["utils", "parsing", "typing", "bytecomp"];
+var compiler_libs = ["ml"];
 var bsc_libs = [
-  ...compiler_libs,
-  "js_parser",
   "stubs",
   "ext",
+  ...compiler_libs,
+  "js_parser",  
   "napkin",
   "common",
   "frontend",
@@ -1593,9 +1552,9 @@ var bsc_libs = [
 ];
 
 var bspack_libs = [
-  ...compiler_libs,
   "stubs",
   "ext",
+  ...compiler_libs,  
   "common",
   "frontend",
   "depends",
@@ -1603,11 +1562,11 @@ var bspack_libs = [
 
 var bsb_helper_libs = ["stubs", "ext", "common", "bsb_helper"];
 
-var rescript_libs = ["stubs", "ext", "common", "bsb"];
+var rescript_libs = ["stubs",  "ext", "common", "bsb"];
 
 var cmjdumps_libs = [
-  ...compiler_libs,
   "stubs",
+  ...compiler_libs,
   "ext",
   "common",
   "frontend",
@@ -1616,9 +1575,9 @@ var cmjdumps_libs = [
 ];
 
 var cmij_libs = [
-  ...compiler_libs,
   "stubs",
   "ext",
+  ...compiler_libs,    
   "common",
   "frontend",
   "depends",
@@ -1626,10 +1585,10 @@ var cmij_libs = [
 ];
 
 var tests_libs = [
-  ...compiler_libs,
-  "ounit",
   "stubs",
   "ext",
+  ...compiler_libs,
+  "ounit",
   "common",
   "frontend",
   "depends",
@@ -1648,11 +1607,21 @@ function nativeNinja() {
 
   var includes = sourceDirs.map((x) => `-I ${x}`).join(" ");
 
+  var flags = "-w A-4-9-40..42-30-48-50-44-45";  
+  if (+getVersionString().split(".")[1] > 7) {
+    flags += "-3-67 -error-style short";
+  }
   var templateNative = `
-subninja ${getPreprocessorFileName()}
+ocamlopt = ocamlopt.opt
+ocamllex = ocamllex.opt
+ocamlc = ocamlc.opt
+ocamlmklib = ocamlmklib
+ocaml = ocaml
+ocamlyacc = ocamlyacc
+subninja cppoVendor.ninja
 
 rule optc
-    command = $ocamlopt -strict-sequence -safe-string  -opaque ${includes} -g -linscan -w A-4-9-40..42-30-48-50-44-45 -warn-error A -absname -c $in 
+    command = $ocamlopt -strict-sequence -safe-string  -opaque ${includes} -g -linscan ${flags} -warn-error A -absname -c $in 
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
@@ -1694,14 +1663,14 @@ o core/js_record_map.ml: p4of core/j.ml
 o core/js_record_fold.ml: p4of core/j.ml
     flags = -record-fold
 
-o ../${process.platform}/bsc.exe: link  ${makeLibs(
+o ../${my_target}/bsc.exe: link  ${makeLibs(
     bsc_libs
   )} main/rescript_compiler_main.cmx
-o ../${process.platform}/rescript.exe: link ${makeLibs(
+o ../${my_target}/rescript.exe: link ${makeLibs(
     rescript_libs
   )} main/rescript_main.cmx
       libs =  unix.cmxa str.cmxa    
-o ../${process.platform}/bsb_helper.exe: link ${makeLibs(
+o ../${my_target}/bsb_helper.exe: link ${makeLibs(
     bsb_helper_libs
   )} main/bsb_helper_main.cmx
     libs =  unix.cmxa str.cmxa
@@ -1712,19 +1681,19 @@ o ./bin/cmjdump.exe: link ${makeLibs(cmjdumps_libs)} main/cmjdump_main.cmx
     
 o ./bin/cmij.exe: link ${makeLibs(cmij_libs)} main/cmij_main.cmx
     
-
+o ./bin/tests.exe: link ${makeLibs(tests_libs)} main/ounit_tests_main.cmx
+    libs = str.cmxa unix.cmxa 
+build native: phony ../${my_target}/bsc.exe ../${my_target}/rescript.exe ../${my_target}/bsb_helper.exe ./bin/bspack.exe ./bin/cmjdump.exe ./bin/cmij.exe ./bin/tests.exe
 rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
     generator = true
-o ./bin/tests.exe: link ${makeLibs(tests_libs)} main/ounit_tests_main.cmx
-    libs = str.cmxa unix.cmxa 
 
 ${mllRule}
 ${mlyRule}
 ${mllList("ext", ["ext_json_parse.mll"])}
-${mllList("parsing", ["lexer.mll"])}
-${mlyList("parsing",["parser.mly"])}
+${mllList("ml", ["lexer.mll"])}
+${mlyList("ml", ["parser.mly"])}
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in
 o ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/generator.ml
@@ -1839,7 +1808,7 @@ function main() {
     switch (subcommand) {
       case "build":
         try {
-          cp.execFileSync(vendorNinjaPath, ["-k", "1"], {
+          cp.execFileSync(vendorNinjaPath, ["native", "all"], {
             encoding: "utf8",
             cwd: jscompDir,
             stdio: [0, 1, 2],
@@ -1878,7 +1847,7 @@ function main() {
           });
         } catch (e) {}
         cp.execSync(
-          `git clean -dfx jscomp ${process.platform} lib && rm -rf lib/js/*.js && rm -rf lib/es6/*.js`,
+          `git clean -dfx jscomp ${my_target} lib && rm -rf lib/js/*.js && rm -rf lib/es6/*.js`,
           {
             encoding: "utf8",
             cwd: path.join(__dirname, ".."),

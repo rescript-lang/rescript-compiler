@@ -144,3 +144,4 @@ darwin/bsc
 .nyc_output
 themes
 .vscode/settings.json
+*.output # yacc output

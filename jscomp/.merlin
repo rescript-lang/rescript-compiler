@@ -3,6 +3,9 @@ B .
 B common
 B ext
 
+B depends
+S depends
+
 B syntax
 S syntax
 
@@ -10,18 +13,27 @@ B core
 S stubs
 B stubs
 
-
 S bsb
 B bsb
 
-S parsing
-B parsing
 
-S typing
-B typing
+S frontend
+B frontend
 
-S bytecomp
-B bytecomp
+S ml
+B ml
+
+# S utils
+# B utils
+
+# S parsing
+# B parsing
+
+# S typing
+# B typing
+
+# S bytecomp
+# B bytecomp
 
 S ounit
 B ounit
@@ -37,7 +49,11 @@ B depends
 S outcome_printer
 B outcome_printer
 
+S super_errors
+B super_errors
 
+S napkin
+B napkin
 
 # S runtime
 # B runtime
@@ -53,4 +69,4 @@ B outcome_printer
 
 
 
-FLG -w -40-30+6-23
+FLG -w -40-30+6-23-3
